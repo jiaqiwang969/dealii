@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/full_matrix.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -1546,7 +1545,7 @@ FullMatrix<number>::cholesky(const FullMatrix<number2> &A)
     }
   else
     {
-       /* reinit *this to 0 */ 
+      /* reinit *this to 0 */
       this->reinit(A.m(), A.n());
 
       for (size_type i = 0; i < this->n_cols(); ++i)
@@ -1972,5 +1971,3 @@ FullMatrix<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

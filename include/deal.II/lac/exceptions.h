@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/exceptions_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2019 by the deal.II authors
@@ -26,33 +25,28 @@ DEAL_II_NAMESPACE_OPEN
 namespace LACExceptions
 {
   /**
-   * @addtogroup  异常情况
-   *
+   * @addtogroup Exceptions
    */
   //@{
 
   /**
-   * 这个函数只对二次元矩阵有效。
-   *
+   * This function only works for quadratic matrices.
    */
   DeclExceptionMsg(ExcNotQuadratic,
                    "This function only works for quadratic objects!");
 
   /**
-   * 由于矩阵是奇异的，所以操作无法完成。
-   *
+   * The operation cannot be finished since the matrix is singular.
    */
   DeclException0(ExcSingular);
 
   /**
-   * 两个块对象的块索引不同。
-   *
+   * Block indices of two block objects are different.
    */
   DeclException0(ExcDifferentBlockIndices);
 
   /**
-   * 该操作需要一个稀疏的模式。
-   *
+   * The operation requires a sparsity pattern.
    */
   DeclExceptionMsg(
     ExcNeedsSparsityPattern,
@@ -62,11 +56,12 @@ namespace LACExceptions
     "reinit() call which would have added the sparsity pattern.");
 
   /**
-   * 当一个PETSc函数报告错误时抛出的异常。如果可能的话，这个异常使用
-   * <code>PetscErrorMessage</code> 提供的信息来打印错误的描述。
-   * @note
-   * 为了向后兼容，无论deal.II是否与PETSc一起编译，这都被定义。
+   * Exception thrown when a PETSc function reports an error. If possible,
+   * this exception uses the message provided by
+   * <code>PetscErrorMessage</code> to print a description of the error.
    *
+   * @note For backwards compatibility this is defined whether or not deal.II
+   * is compiled with PETSc.
    */
   class ExcPETScError : public dealii::ExceptionBase
   {
@@ -80,8 +75,8 @@ namespace LACExceptions
   };
 
   /**
-   * 遇到了一个Trilinos函数的错误。请查阅Trilinos文档以了解详情。
-   *
+   * An error of a Trilinos function was encountered. Check the Trilinos
+   * documentation for details.
    */
   DeclException1(ExcTrilinosError,
                  int,
@@ -98,5 +93,3 @@ using namespace LACExceptions;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/sundials/ida_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2017 - 2020 by the deal.II authors
@@ -63,82 +62,121 @@ DEAL_II_NAMESPACE_OPEN
 namespace SUNDIALS
 {
   /**
-   * SUNDIALS隐式微分代数（IDA）求解器的接口。
-   * IDA类是SUNDIALS隐式微分代数求解器的一个封装器，它是一个通用的微分代数方程（DAE）系统的求解器。
-   * 用户必须提供以下内容的实现  std::functions:  。
+   * Interface to SUNDIALS Implicit Differential-Algebraic (IDA) solver.
    *
+   * The class IDA is a wrapper to SUNDIALS Implicit Differential-Algebraic
+   * solver which is a general purpose solver for systems of
+   * Differential-Algebraic Equations (DAEs).
    *
+   * The user has to provide the implementation of the following std::functions:
+   *  - reinit_vector;
+   *  - residual;
+   *  - setup_jacobian;
+   *  - solve_jacobian_system/solve_with_jacobian;
    *
+   * The function `solve_jacobian_system` should be implemented for SUNDIALS
+   * < 4.0.0. For later versions, you should use
+   * `solve_with_jacobian` to leverage better non-linear
+   * algorithms.
    *
+   * Optionally, also the following functions could be provided. By default
+   * they do nothing, or are not required. If you call the constructor in a way
+   * that requires a not-implemented function, an Assertion will be
+   * thrown.
+   *  - solver_should_restart;
+   *  - differential_components;
+   *  - get_local_tolerances;
    *
-   * - reinit_vector;
-   * - 残留物。
+   * To output steps, connect a function to the signal
+   *  - output_step;
    *
-   * - setup_jacobian;
+   * Citing from the SUNDIALS documentation:
    *
+   *   Consider a system of Differential-Algebraic Equations written in the
+   *   general form
    *
+   * \f[
+   *   \begin{cases}
+   *       F(t,y,\dot y) = 0\, , \\
+   *       y(t_0) = y_0\, , \\
+   *       \dot y (t_0) = \dot y_0\, .
+   *   \end{cases}
+   * \f]
    *
+   * where $y,\dot y$ are vectors in $\mathbb{R}^n$, $t$ is often the time (but
+   * can also be a parametric quantity), and
+   * $F:\mathbb{R}\times\mathbb{R}^n\times \mathbb{R}^n\rightarrow\mathbb{R}^n$.
+   * Such problem is solved using Newton iteration augmented with a line search
+   * global strategy. The integration method used in IDA is the variable-order,
+   * variable-coefficient BDF (Backward Differentiation Formula), in
+   * fixed-leading-coefficient. The method order ranges from 1 to 5, with
+   * the BDF of order $q$ given by the multistep formula
    *
+   * \f[
+   *   \sum_{i=0}^q \alpha_{n,i}\,y_{n-i}=h_n\,\dot y_n\, ,
+   *   \label{eq:bdf}
+   * \f]
    *
-   * - solve_jacobian_system/solve_with_jacobian; 函数`solve_jacobian_system`应该在SUNDIALS < 4.0.0中实现。对于后来的版本，你应该使用`solve_with_jacobian`来利用更好的非线性算法。    也可以选择提供以下函数。默认情况下，它们什么都不做，或者不需要。如果你在调用构造函数时需要一个未实现的函数，将抛出一个断言。
+   * where $y_n$ and $\dot y_n$ are the computed approximations of $y(t_n)$
+   * and $\dot y(t_n)$, respectively, and the step size is
+   * $h_n=t_n-t_{n-1}$. The coefficients $\alpha_{n,i}$ are uniquely
+   * determined by the order $q$, and the history of the step sizes. The
+   * application of the BDF method to the DAE system results in a nonlinear
+   *algebraic system to be solved at each time step:
    *
+   * \f[
+   *   G(y_n)\equiv F\left(t_n,y_n,\dfrac{1}{h_n}\sum_{i=0}^q
+   *  \alpha_{n,i}\,y_{n-i}\right)=0\, .
+   * \f]
+   * The Newton method leads to a linear system of the form
+   * \f[
+   *   J[y_{n(m+1)}-y_{n(m)}]=-G(y_{n(m)})\, ,
+   * \f]
    *
+   *where $y_{n(m)}$ is the $m$-th approximation to $y_n$, and $J$ is the
+   *approximation of the system Jacobian
    *
+   * \f[
+   *   J=\dfrac{\partial G}{\partial y} = \dfrac{\partial F}{\partial y} +
+   *  \alpha \dfrac{\partial F}{\partial \dot y}\, ,
+   * \f]
    *
+   * and $\alpha = \alpha_{n,0}/h_n$. It is worth mentioning that the
+   * scalar $\alpha$ changes whenever the step size or method order
+   * changes.
    *
+   * To provide a simple example, consider the following harmonic oscillator
+   *problem: \f[ \begin{split}
+   *   u'' & = -k^2 u \\
+   *   u (0) & = 0 \\
+   *   u'(0) & = k
+   * \end{split}
+   * \f]
    *
-   * - solver_should_restart;
+   * We write it in terms of a first order ode:
+   *\f[
+   * \begin{matrix}
+   *   y_0' & -y_1      & = 0 \\
+   *   y_1' & + k^2 y_0 & = 0
+   * \end{matrix}
+   * \f]
    *
+   * That is $F(y', y, t) = y' + A y = 0 $
+   * where
+   * \f[
+   * \begin{matrix}
+   * 0 & -1 \\
+   * k^2 &0
+   * \end{matrix}
+   * \f]
+   * and $y(0)=(0, k)$, $y'(0) = (k, 0)$.
    *
-   * - 差异化的成分。
+   * The exact solution is $y_0(t) = \sin(k t)$, $y_1(t) = y_0'(t) = k \cos(k
+   *t)$, $y_1'(t) = -k^2 \sin(k t)$.
    *
+   * The Jacobian to assemble is the following:  $J = \alpha I + A$.
    *
-   *
-   *
-   * - get_local_tolerances; 要输出步骤，请将一个函数连接到信号上
-   *
-   *
-   *
-   *
-   *
-   * - output_step; 引自SUNDIALS文档。      考虑一个一般形式的微分代数方程组 \f[
-   * \begin{cases} F(t,y,\dot y) = 0\, , \\ y(t_0) = y_0\, , \\ \dot y (t_0) =
-   * \dot y_0\, . \end{cases} \f] ，其中  $y,\dot y$  是  $\mathbb{R}^n$
-   * 中的向量，  $t$
-   * 通常是时间（但也可以是一个参数量），以及
-   * $F:\mathbb{R}\times\mathbb{R}^n\times
-   * \mathbb{R}^n\rightarrow\mathbb{R}^n$  。
-   * 这样的问题是用牛顿迭代和直线搜索全局策略来解决的。IDA中使用的积分方法是变阶、变系数的BDF（后向微分公式），为固定导程系数。方法的阶数从1到5，阶数为
-   * $q$ 的BDF由多步公式\f[ \sum_{i=0}^q \alpha_{n,i}\,y_{n-i}=h_n\,\dot
-   * y_n\, , \label{eq:bdf} \f]给出，其中 $y_n$ 和 $\dot y_n$ 分别是
-   * $y(t_n)$ 和 $\dot y(t_n)$ 的计算近似值，步长为
-   * $h_n=t_n-t_{n-1}$  。系数 $\alpha_{n,i}$ 由阶数 $q$
-   * 和步长的历史唯一地决定。将BDF方法应用于DAE系统的结果是在每个时间步长上需要解决一个非线性代数系统。
-   * \f[ G(y_n)\equiv F\left(t_n,y_n,\dfrac{1}{h_n}\sum_{i=0}^q
-   * \alpha_{n,i}\,y_{n-i}\right)=0\, . \f]
-   * 牛顿方法导致了一个形式为\f[
-   * J[y_{n(m+1)}-y_{n(m)}]=-G(y_{n(m)})\, , \f]的线性系统，其中
-   * $y_{n(m)}$ 是 $m$ 对 $y_n$ 的第1次近似， $J$
-   * 是系统雅各布\f[ J=\dfrac{\partial G}{\partial y} = \dfrac{\partial
-   * F}{\partial y} + \alpha \dfrac{\partial F}{\partial \dot y}\, , \f]和
-   * $\alpha = \alpha_{n,0}/h_n$
-   * 的近似。值得一提的是，每当步长或方法阶数改变时，标量
-   * $\alpha$ 就会改变。
-   * 为了提供一个简单的例子，考虑下面的谐波振荡器问题：
-   * \f[ \begin{split} u'' & =
-   *
-   * -k^2 u \\ u (0) & = 0 \\ u'(0) & = k \end{split} \f]
-   * 我们用一阶奥德来写它。 \f[ \begin{matrix} y_0' &
-   *
-   * -y_1      & = 0 \\ y_1' & + k^2 y_0 & = 0 \end{matrix} \f] 即 $F(y', y,
-   * t) = y' + A y = 0 $  其中\f[ \begin{matrix} 0 &
-   *
-   * -1 \\ k^2 &0 \end{matrix} \f] 和 $y(0)=(0, k)$  ,  $y'(0) = (k, 0)$  。
-   * 精确解是  $y_0(t) = \sin(k t)$  ,  $y_1(t) = y_0'(t) = k \cos(k t)$
-   * ,  $y_1'(t) =
-   *
-   * -k^2 \sin(k t)$  。    要集合的雅各布系数如下。   $J =
-   * \alpha I + A$  .     这可以通过以下代码片段实现。
+   * This is achieved by the following snippet of code:
    * @code
    * using VectorType = Vector<double>;
    *
@@ -148,9 +186,7 @@ namespace SUNDIALS
    * double kappa = 1.0;
    *
    * FullMatrix<double> A(2,2);
-   * A(0,1) =
-   *
-   * -1.0;
+   * A(0,1) = -1.0;
    * A(1,0) = kappa*kappa;
    *
    * FullMatrix<double> J(2,2);
@@ -160,108 +196,118 @@ namespace SUNDIALS
    *
    * time_stepper.reinit_vector = [&] (VectorType&v)
    * {
-   * v.reinit(2);
+   *   v.reinit(2);
    * };
    *
    * time_stepper.residual = [&](const double t,
-   *                           const VectorType &y,
-   *                           const VectorType &y_dot,
-   *                           VectorType &res)
-   *
-   * ->int
+   *                             const VectorType &y,
+   *                             const VectorType &y_dot,
+   *                             VectorType &res) ->int
    * {
-   * res = y_dot;
-   * A.vmult_add(res, y);
-   * return 0;
+   *   res = y_dot;
+   *   A.vmult_add(res, y);
+   *   return 0;
    * };
    *
    * time_stepper.setup_jacobian = [&](const double ,
-   *                                 const VectorType &,
-   *                                 const VectorType &,
-   *                                 const double alpha)
-   *
-   * ->int
+   *                                   const VectorType &,
+   *                                   const VectorType &,
+   *                                   const double alpha) ->int
    * {
-   * J = A;
+   *   J = A;
    *
-   * J(0,0) = alpha;
-   * J(1,1) = alpha;
+   *   J(0,0) = alpha;
+   *   J(1,1) = alpha;
    *
-   * Jinv.invert(J);
-   * return 0;
+   *   Jinv.invert(J);
+   *   return 0;
    * };
    *
    * time_stepper.solve_jacobian_system = [&](const VectorType &src,
-   *                                        VectorType &dst)
-   *
-   * ->int
+   *                                          VectorType &dst) ->int
    * {
-   * Jinv.vmult(dst,src);
-   * return 0;
+   *   Jinv.vmult(dst,src);
+   *   return 0;
    * };
    *
    * y[1] = kappa;
    * y_dot[0] = kappa;
    * time_stepper.solve_dae(y,y_dot);
    * @endcode
-   *
-   *
    */
   template <typename VectorType = Vector<double>>
   class IDA
   {
   public:
     /**
-     * 可以传递给IDA类的额外参数。
-     *
+     * Additional parameters that can be passed to the IDA class.
      */
     class AdditionalData
     {
     public:
       /**
-       * IDA是一个微分代数求解器。因此，它对一阶导数也需要初始条件。如果你没有提供一致的初始条件，（即F(y_dot(0),
-       * y(0),
-       * 0)=0的条件），你可以要求SUNDIALS为你计算初始条件，在`initial_time`（`ic_type`）和复位后（`reset_type`）指定初始条件的InitialConditionCorrection。
-       *
+       * IDA is a Differential Algebraic solver. As such, it requires initial
+       * conditions also for the first order derivatives. If you do not provide
+       * consistent initial conditions, (i.e., conditions for which F(y_dot(0),
+       * y(0), 0) = 0), you can ask SUNDIALS to compute initial conditions for
+       * you by specifying InitialConditionCorrection for the initial
+       * conditions both at the `initial_time` (`ic_type`) and after a reset
+       * has occurred (`reset_type`).
        */
       enum InitialConditionCorrection
       {
         /**
-         * 不要试图使初始条件一致。
-         *
+         * Do not try to make initial conditions consistent.
          */
         none = 0,
 
         /**
-         * 计算y的代数分量和y_dot的微分分量，给定y的微分分量。该选项要求用户在函数get_differential_components中指定微分和代数分量。
-         *
+         * Compute the algebraic components of y and differential
+         * components of y_dot, given the differential components of y.
+         *    This option requires that the user specifies differential and
+         *    algebraic components in the function get_differential_components.
          */
         use_y_diff = 1,
 
         /**
-         * 计算y的所有分量，给定y_dot。
-         *
+         * Compute all components of y, given y_dot.
          */
         use_y_dot = 2
       };
 
       /**
-       * IDA的初始化参数。            全局参数。
-       * @param  initial_time 初始时间  @param  final_time 最终时间
-       * @param  initial_step_size 初始步长  @param  output_period
-       * 每次输出的时间间隔 运行参数。              @param
-       * minimum_step_size 最小步长  @param  maximum_order 最大BDF阶数
-       * @param  maximum_non_linear_iterations 最大非线性迭代次数
-       * @param  ls_norm_factor
-       * 从积分器容限到线性求解器容限迭代的转换系数
-       * 错误参数。              @param  absolute_tolerance
-       * 绝对误差公差  @param  relative_tolerance 相对误差公差
-       * @param  ignore_algebraic_terms_for_errors
-       * 忽略误差计算的代数项。              @param  ic_type
-       * 初始条件修正类型  @param  reset_type
-       * 重启后的初始条件修正类型  @param
-       * maximum_non_linear_iterations_ic 初始条件Newton最大迭代次数
+       * Initialization parameters for IDA.
        *
+       * Global parameters:
+       *
+       * @param initial_time Initial time
+       * @param final_time Final time
+       * @param initial_step_size Initial step size
+       * @param output_period Time interval between each output
+       *
+       * Running parameters:
+       *
+       * @param minimum_step_size Minimum step size
+       * @param maximum_order Maximum BDF order
+       * @param maximum_non_linear_iterations Maximum number of nonlinear
+       * iterations
+       * @param ls_norm_factor Converting factor from the integrator tolerance
+       * to the linear solver tolerance
+       * iterations
+       *
+       * Error parameters:
+       *
+       * @param absolute_tolerance Absolute error tolerance
+       * @param relative_tolerance Relative error tolerance
+       * @param ignore_algebraic_terms_for_errors Ignore algebraic terms for
+       * error computations
+       *
+       * Initial condition correction parameters:
+       *
+       * @param ic_type Initial condition correction type
+       * @param reset_type Initial condition correction type after restart
+       * @param maximum_non_linear_iterations_ic Initial condition Newton max
+       * iterations
        */
       AdditionalData( // Initial parameters
         const double initial_time      = 0.0,
@@ -298,34 +344,46 @@ namespace SUNDIALS
       {}
 
       /**
-       * 将所有AdditionalData()参数添加到给定的ParameterHandler对象中。当参数从文件中被解析出来时，内部参数会自动更新。
-       * 声明了以下参数。
+       * Add all AdditionalData() parameters to the given ParameterHandler
+       * object. When the parameters are parsed from a file, the internal
+       * parameters are automatically updated.
+       *
+       * The following parameters are declared:
+       *
        * @code
        * set Final time                        = 1.000000
        * set Initial time                      = 0.000000
        * set Time interval between each output = 0.2
        * subsection Error control
-       * set Absolute error tolerance                      = 0.000001
-       * set Ignore algebraic terms for error computations = true
-       * set Relative error tolerance                      = 0.00001
-       * set Use local tolerances                          = false
+       *   set Absolute error tolerance                      = 0.000001
+       *   set Ignore algebraic terms for error computations = true
+       *   set Relative error tolerance                      = 0.00001
+       *   set Use local tolerances                          = false
        * end
        * subsection Initial condition correction parameters
-       * set Correction type at initial time        = none
-       * set Correction type after restart          = none
-       * set Maximum number of nonlinear iterations = 5
+       *   set Correction type at initial time        = none
+       *   set Correction type after restart          = none
+       *   set Maximum number of nonlinear iterations = 5
        * end
        * subsection Running parameters
-       * set Initial step size                      = 0.1
-       * set Maximum number of nonlinear iterations = 10
-       * set Maximum order of BDF                   = 5
-       * set Minimum step size                      = 0.000001
+       *   set Initial step size                      = 0.1
+       *   set Maximum number of nonlinear iterations = 10
+       *   set Maximum order of BDF                   = 5
+       *   set Minimum step size                      = 0.000001
        * end
        * @endcode
-       * 这些参数与你在构建时可以传递的选项是一一对应的。
-       * 你在构建时传递的选项在ParameterHandler对象`prm`中被设置为默认值。之后你可以通过使用`prm`解析参数文件来修改它们。每当`prm`的内容被更新时，参数的值就会被更新。
-       * 请确保这个类的寿命比`prm`长。如果你破坏了这个类，然后用`prm`解析一个参数文件，将会发生未定义的行为。
        *
+       * These are one-to-one with the options you can pass at construction
+       * time.
+       *
+       * The options you pass at construction time are set as default values in
+       * the ParameterHandler object `prm`. You can later modify them by parsing
+       * a parameter file using `prm`. The values of the parameter will be
+       * updated whenever the content of `prm` is updated.
+       *
+       * Make sure that this class lives longer than `prm`. Undefined behavior
+       * will occur if you destroy this class, and then parse a parameter file
+       * using `prm`.
        */
       void
       add_parameters(ParameterHandler &prm)
@@ -411,187 +469,189 @@ namespace SUNDIALS
       }
 
       /**
-       * DAE的初始时间。
-       *
+       * Initial time for the DAE.
        */
       double initial_time;
 
       /**
-       * 最终时间。
-       *
+       * Final time.
        */
       double final_time;
 
       /**
-       * 初始步骤大小。
-       *
+       * Initial step size.
        */
       double initial_step_size;
 
       /**
-       * 最小步长。
-       *
+       * Minimum step size.
        */
       double minimum_step_size;
 
       /**
-       * 自适应时间步进的绝对误差容限。
-       *
+       * Absolute error tolerance for adaptive time stepping.
        */
       double absolute_tolerance;
 
       /**
-       * 自适应时间步进的相对误差容限。
-       *
+       * Relative error tolerance for adaptive time stepping.
        */
       double relative_tolerance;
 
       /**
-       * BDF的最大顺序。
-       *
+       * Maximum order of BDF.
        */
       unsigned int maximum_order;
 
       /**
-       * 每个输出之间的时间周期。
-       *
+       * Time period between each output.
        */
       double output_period;
 
       /**
-       * 忽略错误的代数项。
-       *
+       * Ignore algebraic terms for errors.
        */
       bool ignore_algebraic_terms_for_errors;
 
       /**
-       * 对初始条件的修正类型。
-       * 如果你没有提供一致的初始条件，（即 $F(y_dot(0),
-       * y(0), 0) = 0$
-       * 的条件），你可以在构造时使用`ic_type`参数，要求SUNDIALS为你计算初始条件。
-       * 请注意，原则上你可以使用这个功能来解决稳态问题，将y_dot设置为零，并要求计算出满足
-       * $F(0, y(0), 0) = 0$ 的 $y(0)$
-       * ，然而IDA内部使用的非线性求解器可能对有几百万个未知数的复杂问题不够强大。
+       * Type of correction for initial conditions.
        *
+       * If you do not provide consistent initial conditions, (i.e., conditions
+       * for which $F(y_dot(0), y(0), 0) = 0$), you can ask SUNDIALS to compute
+       * initial conditions for you by using the `ic_type` parameter at
+       * construction time.
+       *
+       * Notice that you could in principle use this capabilities to solve for
+       * steady state problems by setting y_dot to zero, and asking to compute
+       * $y(0)$ that satisfies $F(0, y(0), 0) = 0$, however the nonlinear solver
+       * used inside IDA may not be robust enough for complex problems with
+       * several millions unknowns.
        */
       InitialConditionCorrection ic_type;
 
       /**
-       * 解算器重启后使用的初始条件修正类型。
-       * 如果你在重启后没有一致的初始条件，（即F(y_dot(t_restart),
-       * y(t_restart), t_restart) =
-       * 0的条件），你可以要求SUNDIALS在构造时使用`reset_type`参数为你计算新的初始条件。
+       * Type of correction for initial conditions to be used after a solver
+       * restart.
        *
+       * If you do not have consistent initial conditions after a restart,
+       * (i.e., conditions for which F(y_dot(t_restart), y(t_restart),
+       * t_restart) = 0), you can ask SUNDIALS to compute the new initial
+       * conditions for you by using the `reset_type` parameter at construction
+       * time.
        */
       InitialConditionCorrection reset_type;
 
       /**
-       * IC计算中牛顿法的最大迭代次数。
-       *
+       * Maximum number of iterations for Newton method in IC calculation.
        */
       unsigned maximum_non_linear_iterations_ic;
 
       /**
-       * 在时间推进过程中，牛顿方法的最大迭代次数。
-       *
+       * Maximum number of iterations for Newton method during time advancement.
        */
       unsigned int maximum_non_linear_iterations;
 
       /**
-       * 从积分器公差转换到线性求解器公差时使用的系数。
-       *
+       * Factor to use when converting from the integrator tolerance to the
+       * linear solver tolerance
        */
       double ls_norm_factor;
     };
 
     /**
-     * 构造器。通过传递一个设定所有求解器参数的AdditionalData()对象，可以对SUNDIALS
-     * IDA求解器进行微调。
-     * IDA是一个微分代数求解器。因此，它对一阶导数也需要初始条件。如果你没有提供一致的初始条件，（即F(y_dot(0),
-     * y(0),
-     * 0)=0的条件），你可以在构造时使用`ic_type`参数要求SUNDIALS为你计算初始条件。
-     * 你有三个选择
+     * Constructor. It is possible to fine tune the SUNDIALS IDA solver by
+     * passing an AdditionalData() object that sets all of the solver
+     * parameters.
      *
+     * IDA is a Differential Algebraic solver. As such, it requires initial
+     * conditions also for the first order derivatives. If you do not provide
+     * consistent initial conditions, (i.e., conditions for which F(y_dot(0),
+     * y(0), 0) = 0), you can ask SUNDIALS to compute initial conditions for you
+     * by using the `ic_type` parameter at construction time.
      *
+     * You have three options
+     * -  none: do not try to make initial conditions consistent.
+     * -  use_y_diff: compute the algebraic components of y and differential
+     *    components of y_dot, given the differential components of y.
+     *    This option requires that the user specifies differential and
+     *    algebraic components in the function get_differential_components.
+     * -  use_y_dot: compute all components of y, given y_dot.
      *
+     * By default, this class assumes that all components are differential, and
+     * that you want to solve a standard ode. In this case, the initial
+     * component type is set to `use_y_diff`, so that the `y_dot` at time
+     * t=`initial_time` is computed by solving the nonlinear problem $F(y_dot,
+     * y(t0), t0) = 0$ in the variable `y_dot`.
      *
+     * Notice that a Newton solver is used for this computation. The Newton
+     * solver parameters can be tweaked by acting on `ic_alpha` and
+     * `ic_max_iter`.
      *
-     * - 无：不要试图使初始条件一致。
+     * If you reset the solver at some point, you may want to select a different
+     * computation for the initial conditions after reset. Say, for example,
+     * that you have refined a grid, and after transferring the solution to the
+     * new grid, the initial conditions are no longer consistent. Then you can
+     * choose how these are made consistent, using the same three options that
+     * you used for the initial conditions in `reset_type`.
      *
+     * The MPI communicator is simply ignored in the serial case.
      *
-     *
-     * - use_y_diff: 计算y的代数成分和y_dot的微分成分，给定y的微分成分。这个选项要求用户在函数get_differential_components中指定微分和代数成分。
-     *
-     *
-     *
-     *
-     *
-     *
-     * - use_y_dot: 计算y的所有分量，给定y_dot。        默认情况下，该类假设所有分量都是微分，并且你想解决一个标准的颂歌。在这种情况下，初始分量类型被设置为`use_y_diff'，因此在时间t=`初始时间'的`y_dot'是通过解决变量`y_dot'的非线性问题 $F(y_dot,
-     * y(t0), t0) = 0$ 计算的。
-     * 请注意，牛顿求解器被用于这一计算。牛顿求解器的参数可以通过作用于`ic_alpha`和`ic_max_iter`进行调整。
-     * 如果你在某个时候重置求解器，你可能想在重置后为初始条件选择一个不同的计算。比如说，你完善了一个网格，在将解转移到新的网格后，初始条件不再一致了。那么你可以选择如何使其一致，使用与`reset_type`中初始条件相同的三个选项。
-     * 在串行情况下，MPI通信器被简单地忽略了。
-     * @param  data IDA配置数据  @param  mpi_comm MPI通信器
-     *
+     * @param data IDA configuration data
+     * @param mpi_comm MPI communicator
      */
     IDA(const AdditionalData &data     = AdditionalData(),
         const MPI_Comm &      mpi_comm = MPI_COMM_WORLD);
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     ~IDA();
 
     /**
-     * 对微分代数方程进行积分。该函数返回最终的计算步骤数。
-     *
+     * Integrate differential-algebraic equations. This function returns the
+     * final number of computed steps.
      */
     unsigned int
     solve_dae(VectorType &solution, VectorType &solution_dot);
 
     /**
-     * 清理内部内存，以干净的对象开始。这个函数在模拟开始时和用户对solver_should_restart()的调用返回true时被调用。
-     * 默认情况下，solver_should_restart()返回false。如果用户需要实现例如空间的局部适应性，可以给solver_should_restart()指定一个不同的函数，执行所有的网格变化，将解和解点转移到新的网格，并返回true。
-     * 在reset()过程中，y和yp都会被检查是否一致，根据指定的ic_type（如果t==initial_time）或reset_type（如果t>initial_time），yp、y或两者都被修改以获得一致的初始数据集。
-     * @param[in]  t 新的起始时间  @param[in]  h
-     * 新的（暂定）起始时间步骤  @param[in,out]  y
-     * 新的（暂定）初始解  @param[in,out]  yp
-     * 新的（暂定）初始解_dot
+     * Clear internal memory and start with clean objects. This function is
+     * called when the simulation start and when the user returns true to a
+     * call to solver_should_restart().
      *
+     * By default solver_should_restart() returns false. If the user needs to
+     * implement, for example, local adaptivity in space, he or she may assign
+     * a different function to solver_should_restart() that performs all mesh
+     * changes, transfers the solution and the solution dot to the new mesh,
+     * and returns true.
+     *
+     * During reset(), both y and yp are checked for consistency, and according
+     * to what was specified as ic_type (if t==initial_time) or reset_type (if
+     * t>initial_time), yp, y, or both are modified to obtain a consistent set
+     * of initial data.
+     *
+     * @param[in] t  The new starting time
+     * @param[in] h  The new (tentative) starting time step
+     * @param[in,out] y   The new (tentative) initial solution
+     * @param[in,out] yp  The new (tentative) initial solution_dot
      */
     void
     reset(const double t, const double h, VectorType &y, VectorType &yp);
 
     /**
-     * 重新设置向量，使其具有正确的大小和MPI通信器等。
-     *
+     * Reinit vector to have the right size, MPI communicator, etc.
      */
     std::function<void(VectorType &)> reinit_vector;
 
     /**
-     * 计算残差。返回  $F(t, y, \dot y)$  。
-     * 这个函数应该返回。
+     * Compute residual. Return $F(t, y, \dot y)$.
      *
-     *
-     *
-     *
-     *
-     * - 0: 成功
-     *
-     *
-     *
-     *
-     * - >0: 可恢复的错误（如果发生这种情况，将调用IDAReinit，然后再次尝试最后一个函数
-     *
-     *
-     *
-     *
-     *
-     *
-     * - <0: 无法恢复的错误，计算将被中止，并抛出一个断言。
-     *
+     * This function should return:
+     * - 0: Success
+     * - >0: Recoverable error (IDAReinit will be called if this happens, and
+     *       then last function will be attempted again
+     * - <0: Unrecoverable error the computation will be aborted and an
+     * assertion will be thrown.
      */
     std::function<int(const double      t,
                       const VectorType &y,
@@ -600,34 +660,38 @@ namespace SUNDIALS
       residual;
 
     /**
-     * 计算雅各布系数。IDA在任何需要更新雅各布的时候都会调用这个函数。用户应该计算Jacobian（或者更新所有允许应用Jacobian的变量）。IDA在调用solve_jacobian_system()（适用于SUNDIALS
-     * < 4.0.0）或solve_with_jacobian()（适用于SUNDIALS >=
-     * 4.0.0）之前，会调用该函数一次。        雅各邦 $J$
-     * 应该是\f[ J=\dfrac{\partial G}{\partial y} = \dfrac{\partial
-     * F}{\partial y} + \alpha \dfrac{\partial F}{\partial \dot y}.
-     * \f]的一个（可能是不精确的）计算，如果用户使用基于矩阵的雅各邦计算，那么在这里应该调用一个装配例程来装配雅各邦系统的矩阵和预处理程序。
-     * 随后调用（可能不止一次）solve_jacobian_system()或solve_with_jacobian()可以假设这个函数至少被调用过一次。
-     * 请注意，这个接口没有假设用户在这个函数中应该做什么。IDA只假设在调用setup_jacobian()后，有可能调用solve_jacobian_system()或solve_with_jacobian()来获得系统的解
-     * $x$  。        这个函数应该返回。
+     * Compute Jacobian. This function is called by IDA any time a Jacobian
+     * update is required. The user should compute the Jacobian (or update all
+     * the variables that allow the application of the Jacobian). This function
+     * is called by IDA once, before any call to solve_jacobian_system() (for
+     * SUNDIALS < 4.0.0) or solve_with_jacobian() (for
+     * SUNDIALS >= 4.0.0).
      *
+     * The Jacobian $J$ should be a (possibly inexact) computation of
+     * \f[
+     *   J=\dfrac{\partial G}{\partial y} = \dfrac{\partial F}{\partial y} +
+     *  \alpha \dfrac{\partial F}{\partial \dot y}.
+     * \f]
      *
+     * If the user uses a matrix based computation of the Jacobian, than this
+     * is the right place where an assembly routine should be called to
+     * assemble both a matrix and a preconditioner for the Jacobian system.
+     * Subsequent calls (possibly more than one) to solve_jacobian_system() or
+     * solve_with_jacobian() can assume that this function has
+     * been called at least once.
      *
+     * Notice that no assumption is made by this interface on what the user
+     * should do in this function. IDA only assumes that after a call to
+     * setup_jacobian() it is possible to call solve_jacobian_system() or
+     * solve_with_jacobian() to obtain a solution $x$ to the
+     * system $J x = b$.
      *
-     *
-     * - 0: 成功
-     *
-     *
-     *
-     *
-     * - >0: 可恢复的错误（如果发生这种情况，将调用IDAReinit，然后再次尝试最后一个函数
-     *
-     *
-     *
-     *
-     *
-     *
-     * - <0: 无法恢复的错误，计算将被中止，并抛出一个断言。
-     *
+     * This function should return:
+     * - 0: Success
+     * - >0: Recoverable error (IDAReinit will be called if this happens, and
+     *       then last function will be attempted again
+     * - <0: Unrecoverable error the computation will be aborted and an
+     * assertion will be thrown.
      */
     std::function<int(const double      t,
                       const VectorType &y,
@@ -636,80 +700,99 @@ namespace SUNDIALS
       setup_jacobian;
 
     /**
-     * 解决Jacobian线性系统。这个函数将在setup_jacobian()被调用至少一次之后被IDA调用（可能是多次）。IDA试图尽最大努力调用setup_jacobian()最少的次数。如果不更新雅各布式就能实现收敛，那么IDA就不会再次调用setup_jacobian()。相反，如果IDA内部收敛测试失败，那么IDA会用更新的向量和系数再次调用setup_jacobian()，这样连续调用solve_jacobian_systems()会导致牛顿过程中更好的收敛。
-     * 雅可比 $J$ 应该是系统雅可比\f[ J=\dfrac{\partial G}{\partial
-     * y} = \dfrac{\partial F}{\partial y} + \alpha \dfrac{\partial
-     * F}{\partial \dot y}.
-     * \f]的（近似值）。对该函数的调用应该在`dst`中存储
-     * $J^{-1}$ 应用于`src`的结果，即`J*dst =
-     * src`。用户有责任在这个函数中设置适当的求解器和预处理器。
-     * 这个函数应该返回。
+     * Solve the Jacobian linear system. This function will be called by IDA
+     * (possibly several times) after setup_jacobian() has been called at least
+     * once. IDA tries to do its best to call setup_jacobian() the minimum
+     * amount of times. If convergence can be achieved without updating the
+     * Jacobian, then IDA does not call setup_jacobian() again. If, on the
+     * contrary, internal IDA convergence tests fail, then IDA calls again
+     * setup_jacobian() with updated vectors and coefficients so that successive
+     * calls to solve_jacobian_systems() lead to better convergence in the
+     * Newton process.
      *
+     * The jacobian $J$ should be (an approximation of) the system Jacobian
+     * \f[
+     *   J=\dfrac{\partial G}{\partial y} = \dfrac{\partial F}{\partial y} +
+     *  \alpha \dfrac{\partial F}{\partial \dot y}.
+     * \f]
      *
+     * A call to this function should store in `dst` the result of $J^{-1}$
+     * applied to `src`, i.e., `J*dst = src`. It is the users responsibility
+     * to set up proper solvers and preconditioners inside this function.
      *
+     * This function should return:
+     * - 0: Success
+     * - >0: Recoverable error (IDAReinit will be called if this happens, and
+     *       then last function will be attempted again
+     * - <0: Unrecoverable error the computation will be aborted and an
+     * assertion will be thrown.
      *
-     *
-     * - 0: 成功
-     *
-     *
-     *
-     *
-     * - >0: 可恢复的错误（如果发生这种情况，将调用IDAReinit，然后再次尝试最后一个函数
-     *
-     *
-     *
-     *
-     *
-     *
-     * - <0: 无法恢复的错误，计算将被中止，并抛出一个断言。          @warning  从SUNDIALS 4.1开始，SUNDIALS提供了指定分辨率的公差的可能性。从公差的一部分只提供`rhs`，`dst`需要返回。
-     *
+     * @warning Starting with SUNDIALS 4.1, SUNDIALS provides the possibility of
+     * specifying the tolerance for the resolution. A part from the tolerance
+     * only `rhs` is provided and `dst` needs to be returned.
      */
     DEAL_II_DEPRECATED
     std::function<int(const VectorType &rhs, VectorType &dst)>
       solve_jacobian_system;
 
     /**
-     * 解决雅各布线性系统，直到指定的公差。这个函数将在setup_jacobian()被调用至少一次之后被IDA调用（可能是多次）。IDA试图尽最大努力调用setup_jacobian()的最少次数。如果不更新雅各布式就能实现收敛，那么IDA就不会再次调用setup_jacobian()。相反，如果IDA内部收敛测试失败，那么IDA会用更新的向量和系数再次调用setup_jacobian()，这样连续调用solve_with_jacobian()会导致牛顿过程中更好的收敛。
-     * 雅各邦 $J$ 应该是系统雅各邦\f[ J=\dfrac{\partial G}{\partial
-     * y} = \dfrac{\partial F}{\partial y} + \alpha \dfrac{\partial
-     * F}{\partial \dot y}.
-     * \f]的（近似值），函数的参数是。          @param[in]  rhs
-     * 要解决的系统右侧。      @param[out]  dst  $J^{-1} src$
-     * 的解。      @param[in]  tolerance 解决线性方程组的公差。
-     * 对该函数的调用应该在`dst`中存储 $J^{-1}$
-     * 应用于`src`的结果，即线性系统`J*dst = src`的解。
-     * 用户有责任在这个函数中或在`setup_jacobian()`函数中设置适当的求解器和预处理器。例如，后者是
-     * step-77
-     * 程序所做的。所有昂贵的操作都发生在`setup_jacobian()`中，因为该函数被调用的频率远低于当前函数）。)
-     * 这个函数应该返回。
+     * Solve the Jacobian linear system up to a specified tolerance. This
+     * function will be called by IDA (possibly several times) after
+     * setup_jacobian() has been called at least once. IDA tries to do its best
+     * to call setup_jacobian() the minimum number of times. If convergence can
+     * be achieved without updating the Jacobian, then IDA does not call
+     * setup_jacobian() again. If, on the contrary, internal IDA convergence
+     * tests fail, then IDA calls again setup_jacobian() with updated vectors
+     * and coefficients so that successive calls to
+     * solve_with_jacobian() lead to better convergence in the
+     * Newton process.
      *
+     * The Jacobian $J$ should be (an approximation of) the system Jacobian
+     * \f[
+     *   J=\dfrac{\partial G}{\partial y} = \dfrac{\partial F}{\partial y} +
+     *  \alpha \dfrac{\partial F}{\partial \dot y}.
+     * \f]
      *
+     * Arguments to the function are:
      *
+     * @param[in] rhs The system right hand side to solve for.
+     * @param[out] dst The solution of $J^{-1} * src$.
+     * @param[in] tolerance The tolerance with which to solve the linear system
+     *   of equations.
      *
+     * A call to this function should store in `dst` the result of $J^{-1}$
+     * applied to `src`, i.e., the solution of the linear system `J*dst = src`.
+     * It is the user's responsibility to set up proper solvers and
+     * preconditioners either inside this function, or already within the
+     * `setup_jacobian()` function. (The latter is, for example, what the
+     * step-77 program does: All expensive operations happen in
+     * `setup_jacobian()`, given that that function is called far less often
+     * than the current one.)
      *
-     * - 0: 成功
-     *
-     *
-     *
-     *
-     * - >0: 可恢复的错误（如果发生这种情况，将调用IDAReinit，然后再次尝试最后一个函数）。
-     *
-     *
-     *
-     *
-     *
-     *
-     * - <0: 无法恢复的错误，计算将被中止，并抛出一个断言。
-     *
+     * This function should return:
+     * - 0: Success
+     * - >0: Recoverable error (IDAReinit will be called if this happens, and
+     *       then the last function will be attempted again).
+     * - <0: Unrecoverable error the computation will be aborted and an
+     * assertion will be thrown.
      */
     std::function<
       int(const VectorType &rhs, VectorType &dst, const double tolerance)>
       solve_with_jacobian;
 
     /**
-     * 处理解决方案。这个函数由IDA在固定的时间步数上调用，每隔`output_period`秒，它被传递给解决方案的多项式插值及其时间导数，使用当前的BDF顺序和（内部存储的）先前计算的解决方案步数计算。
-     * 请注意，IDA内部计算的时间步长很可能比`output_period`步长大得多，因此通过简单地执行所有中间插值，连续多次调用这个函数。这个函数被调用的次数和实际计算的时间步数之间没有关系。
+     * Process solution. This function is called by IDA at fixed time steps,
+     * every `output_period` seconds, and it is passed a polynomial
+     * interpolation of the solution and of its time derivative, computed using
+     * the current BDF order and the (internally stored) previously computed
+     * solution steps.
      *
+     * Notice that it is well possible that internally IDA computes a time step
+     * which is much larger than the `output_period` step, and therefore calls
+     * this function consecutively several times by simply performing all
+     * intermediate interpolations. There is no relationship between how many
+     * times this function is called and how many time steps have actually been
+     * computed.
      */
     std::function<void(const double       t,
                        const VectorType & sol,
@@ -718,33 +801,50 @@ namespace SUNDIALS
       output_step;
 
     /**
-     * 评估求解器是否应该被重新启动（例如因为自由度的数量发生了变化）。
-     * 这个函数应该执行所有在`sol`和`sol_dot`中需要的操作，以确保得到的向量是一致的，并且最终大小正确。
-     * 例如，我们可以决定在时间t有必要进行局部细化。这个函数应该返回true，并改变sol和sol_dot的尺寸以反映新的尺寸。由于IDA不知道新的维度，所以内部重置是必要的。
-     * 默认实现只是返回
-     * "false"，也就是说，在演化过程中不进行重启。
+     * Evaluate whether the solver should be restarted (for example because the
+     * number of degrees of freedom has changed).
      *
+     * This function is supposed to perform all operations that are necessary in
+     * `sol` and `sol_dot` to make sure that the resulting vectors are
+     * consistent, and of the correct final size.
+     *
+     * For example, one may decide that a local refinement is necessary at time
+     * t. This function should then return true, and change the dimension of
+     * both sol and sol_dot to reflect the new dimension. Since IDA does not
+     * know about the new dimension, an internal reset is necessary.
+     *
+     * The default implementation simply returns `false`, i.e., no restart is
+     * performed during the evolution.
      */
     std::function<bool(const double t, VectorType &sol, VectorType &sol_dot)>
       solver_should_restart;
 
     /**
-     * 返回一个包含微分成分的索引集。
-     * 这个函数的实现是可选的。默认是返回一个完整的索引集。如果你的方程也是代数的（即它包含代数约束，或拉格朗日乘数），你应该覆盖这个函数，以便只返回系统的微分成分。
-     * 当并行运行时，每个进程都会独立地调用这个函数，同步将在初始化设置结束时发生，以沟通哪些组件是本地的。确保你只返回本地拥有的（或本地相关的）组件，以减少进程间的通信。
+     * Return an index set containing the differential components.
+     * Implementation of this function is optional. The default is to return a
+     * complete index set. If your equation is also algebraic (i.e., it
+     * contains algebraic constraints, or Lagrange multipliers), you should
+     * overwrite this function in order to return only the differential
+     * components of your system.
      *
+     * When running in parallel, every process will call this function
+     * independently, and synchronization will happen at the end of the
+     * initialization setup to communicate what components are local. Make sure
+     * you only return the locally owned (or locally relevant) components, in
+     * order to minimize communication between processes.
      */
     std::function<IndexSet()> differential_components;
 
     /**
-     * 返回一个向量，其成分是IDA用来计算向量法线的权重。这个函数的实现是可选的。如果用户没有提供实现，则假设权重为所有的1。
-     *
+     * Return a vector whose components are the weights used by IDA to compute
+     * the vector norm. The implementation of this function is optional. If the
+     * user does not provide an implementation, the weights are assumed to be
+     * all ones.
      */
     std::function<VectorType &()> get_local_tolerances;
 
     /**
-     * 处理IDA的异常。
-     *
+     * Handle IDA exceptions.
      */
     DeclException1(ExcIDAError,
                    int,
@@ -755,8 +855,8 @@ namespace SUNDIALS
 
   private:
     /**
-     * 当一个具有给定名称的函数没有实现时，抛出一个异常。
-     *
+     * Throw an exception when a function with the given name is not
+     * implemented.
      */
     DeclException1(ExcFunctionNotProvided,
                    std::string,
@@ -764,34 +864,32 @@ namespace SUNDIALS
                    << arg1 << "\"");
 
     /**
-     * 这个函数在构造时被执行，以设置上面的 std::function
-     * ，如果它们没有被实现，则触发一个断言。
-     *
+     * This function is executed at construction time to set the
+     * std::function above to trigger an assert if they are not
+     * implemented.
      */
     void
     set_functions_to_trigger_an_assert();
 
     /**
-     * IDA配置数据。
-     *
+     * IDA configuration data.
      */
     const AdditionalData data;
 
     /**
-     * IDA内存对象。
-     *
+     * IDA memory object.
      */
     void *ida_mem;
 
     /**
-     * MPI通信器。SUNDIALS解算器可以愉快地并行运行。注意，如果库的编译没有MPI支持，MPI_Comm被别名为int。
-     *
+     * MPI communicator. SUNDIALS solver runs happily in
+     * parallel. Note that if the library is compiled without MPI
+     * support, MPI_Comm is aliased as int.
      */
     MPI_Comm communicator;
 
     /**
-     * 向量的内存池。
-     *
+     * Memory pool of vectors.
      */
     GrowingVectorMemory<VectorType> mem;
 
@@ -815,5 +913,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_SUNDIALS
 
 #endif
-
-

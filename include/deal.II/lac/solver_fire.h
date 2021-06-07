@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_fire_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -31,134 +30,117 @@
 DEAL_II_NAMESPACE_OPEN
 
 
- /*!@addtogroup Solvers */ 
- /*@{*/ 
+/*!@addtogroup Solvers */
+/*@{*/
 
 /**
- * FIRE（快速惯性放松引擎）用于最小化（潜在的非线性）目标函数
- * $E(\mathbf x)$  ，  $\mathbf x$  是一个  $n$  变量的向量（  $n$
- * 是目标函数的变量数）。像所有其他求解器类一样，只要满足一定的要求，它可以在任何类型的向量和矩阵上工作（关于使用该类的矩阵和向量的要求，请参见求解器基类的文档）。求解向量的类型必须作为模板参数传递，默认为
- * dealii::Vector<double>.  。 FIRE是Bitzek等人在<a
- * href="https://doi.org/10.1103/PhysRevLett.97.170201">Structural Relaxation
- * Made
- * Simple</a>中描述的一种阻尼动力学方法，通常用于寻找计算材料科学中原子系统的稳定平衡配置。从给定的原子系统初始配置开始，该算法依靠惯性来获得势能最小的（最近的）配置。
- * 符号。
+ * FIRE (Fast Inertial Relaxation Engine) for minimization of (potentially
+ * non-linear) objective function $E(\mathbf x)$, $\mathbf x$ is a vector of
+ * $n$ variables ($n$ is the number of variables of the objective function).
+ * Like all other solver classes, it can work on any kind of vector and matrix
+ * as long as they satisfy certain requirements (for the requirements on
+ * matrices and vectors in order to work with this class, see the documentation
+ * of the Solver base class). The type of the solution vector must be passed as
+ * template argument, and defaults to dealii::Vector<double>.
  *
+ * FIRE is a damped dynamics method described in
+ * <a href="https://doi.org/10.1103/PhysRevLett.97.170201">Structural
+ * Relaxation Made Simple</a> by Bitzek et al. 2006, typically used to find
+ * stable equilibrium configurations of atomistic systems in computational
+ * material science. Starting from a given initial configuration of the
+ * atomistic system, the algorithm relies on inertia to obtain (nearest)
+ * configuration with least potential energy.
  *
+ * Notation:
+ *  - The global vector of unknown variables: $\mathbf x$.
+ *  - Objective function:                     $E(\mathbf x)$.
+ *  - Rate of change of unknowns:             $\mathbf v$.
+ *  - Gradient of the objective
+ *    function w.r.t unknowns:                $\mathbf g = \nabla E(\mathbf x)$.
+ *  - Mass matrix:                            $\mathbf M$.
+ *  - Initial guess of unknowns:              $\mathbf x_0$.
+ *  - Time step:                              $\Delta t$.
  *
+ * Given initial values for $\Delta t$, $\alpha = \alpha_0$, $\epsilon$,
+ * $\mathbf x = \mathbf x_0$ and $\mathbf v= \mathbf 0$ along with a given mass
+ * matrix $\mathbf M$, FIRE algorithm is as follows,
+ * 1. Calculate $\mathbf g = \nabla E(\mathbf x)$ and check for convergence
+ *    ($\mathbf g \cdot \mathbf g < \epsilon^2 $).
+ * 2. Update $\mathbf x$ and $V$ using simple (forward) Euler integration step,
+ *    <BR>
+ *        $\mathbf x = \mathbf x + \Delta t \mathbf v$,                 <BR>
+ *        $\mathbf v = \mathbf v + \Delta t \mathbf M^{-1} \cdot \mathbf g$.
+ * 3. Calculate $p = \mathbf g \cdot \mathbf v$.
+ * 4. Set $\mathbf v = (1-\alpha) \mathbf v
+ *                   + \alpha \frac{|\mathbf v|}{|\mathbf g|} \mathbf g$.
+ * 5. If $p<0$ and number of steps since $p$ was last negative is larger
+ *    than certain value, then increase time step $\Delta t$ and decrease
+ *    $\alpha$.
+ * 6. If $p>0$, then decrease the time step, freeze the system i.e.,
+ *    $\mathbf v = \mathbf 0$ and reset $\alpha = \alpha_0$.
+ * 7. Return to 1.
  *
- * - 未知变量的全局向量。  $\mathbf x$  .
- *
- *
- *
- *
- * - 目标函数。                      $E(\mathbf x)$  .
- *
- *
- *
- *
- * - 未知数的变化率。              $\mathbf v$  .
- *
- *
- *
- *
- * - 目标函数的梯度与未知数的关系。                 $\mathbf g = \nabla E(\mathbf x)$  .
- *
- *
- *
- *
- * - 质量矩阵。                             $\mathbf M$  .
- *
- *
- *
- *
- *
- * - 未知数的初始猜测。               $\mathbf x_0$  .
- *
- *
- *
- *
- *
- * - 时间步骤。                               $\Delta t$  .
- * 给出 $\Delta t$ 、 $\alpha = \alpha_0$ 、 $\epsilon$ 、 $\mathbf x =
- * \mathbf x_0$ 和 $\mathbf v= \mathbf 0$
- * 的初始值以及给定的质量矩阵 $\mathbf M$
- * ，FIRE算法如下：1.计算 $\mathbf g = \nabla E(\mathbf x)$
- * 并检查收敛情况（ $\mathbf g \cdot \mathbf g < \epsilon^2 $ ）。2.
- * 使用简单的（正向）欧拉积分步骤更新 $\mathbf x$ 和 $V$
- * ，<BR>  $\mathbf x = \mathbf x + \Delta t \mathbf v$  ，<BR>  $\mathbf v
- * = \mathbf v + \Delta t \mathbf M^{-1} \cdot \mathbf g$  。3. 计算 $p =
- * \mathbf g \cdot \mathbf v$  。4. 设置 $\mathbf v = (1-\alpha) \mathbf v
- * + \alpha \frac{|\mathbf v|}{|\mathbf g|} \mathbf g$  。5. 如果 $p<0$
- * 和自 $p$
- * 最后一次为负数以来的步数大于特定值，则增加时间步数
- * $\Delta t$ 并减少 $\alpha$  。6. 如果  $p>0$
- * ，则减少时间步长，冻结系统，即  $\mathbf v = \mathbf 0$
- * 并重置  $\alpha = \alpha_0$  。7. 返回到1。 也见Eidel等人的<a
- * href="http://onlinelibrary.wiley.com/doi/10.1002/pamm.201110246/full">
- * Energy-Minimization in Atomic-to-Continuum Scale-Bridging Methods
- * </a>，2011年。
- *
- *
+ * Also see
+ * <a href="http://onlinelibrary.wiley.com/doi/10.1002/pamm.201110246/full">
+ * Energy-Minimization in Atomic-to-Continuum Scale-Bridging Methods </a> by
+ * Eidel et al. 2011.
  */
 template <typename VectorType = Vector<double>>
 class SolverFIRE : public SolverBase<VectorType>
 {
 public:
   /**
-   * 标准化的数据结构，用于向求解器输送额外的数据。
-   *
+   * Standardized data struct to pipe additional data to the solver.
    */
   struct AdditionalData
   {
     /**
-     * 构造函数。默认情况下，将（正向）欧拉积分步骤的初始时间步长设置为0.1，最大时间步长设置为1，任何变量的最大允许变化（每次迭代）为1。
-     *
+     * Constructor. By default, set the initial time step for the (forward)
+     * Euler integration step to 0.1, the maximum time step to 1 and the
+     * maximum change allowed in any variable (per iteration) to 1.
      */
     explicit AdditionalData(const double initial_timestep    = 0.1,
                             const double maximum_timestep    = 1,
                             const double maximum_linfty_norm = 1);
 
     /**
-     * (正向)欧拉积分步骤的初始时间步长。
-     *
+     * Initial time step for the (forward) Euler integration step.
      */
     const double initial_timestep;
 
     /**
-     * (正向)欧拉积分步骤的最大时间步长。
-     *
+     * Maximum time step for the (forward) Euler integration step.
      */
     const double maximum_timestep;
 
     /**
-     * 允许目标函数的任何变量的最大变化。
-     *
+     * Maximum change allowed in any variable of the objective function.
      */
     const double maximum_linfty_norm;
   };
 
   /**
-   * 构造器。
-   *
+   * Constructor.
    */
   SolverFIRE(SolverControl &           solver_control,
              VectorMemory<VectorType> &vector_memory,
              const AdditionalData &    data = AdditionalData());
 
   /**
-   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
-   *
+   * Constructor. Use an object of type GrowingVectorMemory as a default to
+   * allocate memory.
    */
   SolverFIRE(SolverControl &       solver_control,
              const AdditionalData &data = AdditionalData());
 
   /**
-   * 获得一组变量 @p x ，使多态函数包装器 @p compute,
-   * 描述的目标函数最小化，并具有给定的预处理器 @p
-   * inverse_mass_matrix 和初始 @p x 值。  函数 @p compute
-   * 返回目标函数的值，并根据第二个参数--变量的状态，作为第一个参数传入时，更新目标函数的梯度（相对于变量）。
-   *
+   * Obtain a set of variables @p x that minimize an objective function
+   * described by the polymorphic function wrapper @p compute, with a given
+   * preconditioner @p inverse_mass_matrix and initial @p x values.
+   * The function @p compute returns the objective function's value and updates
+   * the objective function's gradient (with respect to the variables) when
+   * passed in as first argument based on the second argument-- the state of
+   * variables.
    */
   template <typename PreconditionerType = DiagonalMatrix<VectorType>>
   void
@@ -167,11 +149,9 @@ public:
         const PreconditionerType &inverse_mass_matrix);
 
   /**
-   * 当 $E(\mathbf x) = \frac{1}{2} \mathbf x^{T} \mathbf A \mathbf x
-   *
-   * - \mathbf x^{T} \mathbf b$ 时，求解x，使 $E(\mathbf x)$
-   * 的<EM>特殊情况</EM>最小。
-   *
+   * Solve for x that minimizes $E(\mathbf x)$ for the <EM>special case</EM>
+   * when $E(\mathbf x)
+   * = \frac{1}{2} \mathbf x^{T} \mathbf A \mathbf x - \mathbf x^{T} \mathbf b$.
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -182,10 +162,10 @@ public:
 
 protected:
   /**
-   * 派生类的接口。这个函数在每个步骤中获得当前迭代 @p
-   * x （变量）， @p v （x的时间导数）和 @p g （梯度）。
-   * 它可以用于收敛历史的图形输出。
-   *
+   * Interface for derived class. This function gets the current iteration
+   * @p x (variables), @p v (x's time derivative) and @p g (the gradient) in
+   * each step.
+   * It can be used for graphical output of the convergence history.
    */
   virtual void
   print_vectors(const unsigned int,
@@ -194,15 +174,14 @@ protected:
                 const VectorType &g) const;
 
   /**
-   * 解算器的附加数据。
-   *
+   * Additional data to the solver.
    */
   const AdditionalData additional_data;
 };
 
- /*@}*/ 
+/*@}*/
 
- /*------------------------- Implementation ----------------------------*/ 
+/*------------------------- Implementation ----------------------------*/
 
 #ifndef DOXYGEN
 
@@ -406,5 +385,3 @@ SolverFIRE<VectorType>::print_vectors(const unsigned int,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

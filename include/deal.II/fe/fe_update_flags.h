@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_update_flags_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -36,19 +35,33 @@ template <int, int>
 class FiniteElement;
 #endif
 
- /*!@addtogroup feaccess */ 
- /*@{*/ 
+/*!@addtogroup feaccess */
+/*@{*/
 
 /**
- * 给予FEValues、FEFaceValues和FESubfaceValues的构造函数的枚举类型，告诉这些对象在每个网格单元上需要哪些数据。
- * 以限制性的方式选择这些标志对于 FEValues::reinit(),
- * FEFaceValues::reinit() 和 FESubfaceValues::reinit().
- * 的效率至关重要。因此，应该只选择实际需要的标志。相关的Mapping和FiniteElement有责任根据自己的要求添加额外的标志。例如，如果选择了#update_gradients，大多数有限元会添加#update_covariant_transformation。
- * 默认情况下，所有标志都是关闭的，也就是说，不会进行重新初始化。
- * 你可以用位数或运算符|(UpdateFlags,UpdateFlags)通过串联的方式选择多个标志。
+ * The enum type given to the constructors of FEValues, FEFaceValues and
+ * FESubfaceValues, telling those objects which data will be needed on each
+ * mesh cell.
+ *
+ * Selecting these flags in a restrictive way is crucial for the efficiency of
+ * FEValues::reinit(), FEFaceValues::reinit() and FESubfaceValues::reinit().
+ * Therefore, only the flags actually needed should be selected. It is the
+ * responsibility of the involved Mapping and FiniteElement to add additional
+ * flags according to their own requirements. For instance, most finite
+ * elements will add #update_covariant_transformation if #update_gradients is
+ * selected.  By default, all flags are off, i.e. no reinitialization will be
+ * done.
+ *
+ * You can select more than one flag by concatenation using the bitwise or
+ * operator|(UpdateFlags,UpdateFlags).
+ *
  * <h3>Use of these flags flags</h3>
  *
- *
+ * More information on the use of this type both in user code as well as
+ * internally can be found in the documentation modules on
+ * @ref UpdateFlags "The interplay of UpdateFlags, Mapping, and FiniteElement in FEValues"
+ * and
+ * @ref FE_vs_Mapping_vs_FEValues "How Mapping, FiniteElement, and FEValues work together".
  */
 enum UpdateFlags
 {
@@ -56,139 +69,149 @@ enum UpdateFlags
   update_default = 0,
   //! Shape function values
   /**
-   * 计算实空间单元上正交点的形状函数值。对于通常的拉格朗日元素，这些值等于单元格上正交点的形状函数值，但对于更复杂的元素，如FE_RaviartThomas元素，它们是不同的。
-   *
+   * Compute the values of the shape functions at the quadrature points on the
+   * real space cell. For the usual Lagrange elements, these values are equal
+   * to the values of the shape functions at the quadrature points on the unit
+   * cell, but they are different for more complicated elements, such as
+   * FE_RaviartThomas elements.
    */
   update_values = 0x0001,
   //! Shape function gradients
   /**
-   * 计算实单元坐标中形状函数的梯度。
-   *
+   * Compute the gradients of the shape functions in coordinates of the real
+   * cell.
    */
   update_gradients = 0x0002,
   //! Second derivatives of shape functions
   /**
-   * 计算实心单元坐标下的形状函数的二阶导数。
-   *
+   * Compute the second derivatives of the shape functions in coordinates of
+   * the real cell.
    */
   update_hessians = 0x0004,
   //! Third derivatives of shape functions
   /**
-   * 计算实心单元坐标中的形状函数的第三导数
-   *
+   * Compute the third derivatives of the shape functions in coordinates of
+   * the real cell
    */
   update_3rd_derivatives = 0x0008,
   //! Outer normal vector, not normalized
   /**
-   * 切向矢量的矢量乘积，产生一个法向矢量，其长度对应于表面元素；可能比计算两者更有效。
-   *
+   * Vector product of tangential vectors, yielding a normal vector with a
+   * length corresponding to the surface element; may be more efficient than
+   * computing both.
    */
   update_boundary_forms = 0x0010,
   //! Transformed quadrature points
   /**
-   * 计算实际单元坐标中的正交点位置。
-   * FEValues对象将参考单元上的正交点位置作为构造函数的一个参数（通过Quadrature对象）。对于大多数有限元来说，知道参考单元上正交点的位置是评估形状函数、评估映射和其他事情所必需的。另一方面，如果你想在真实单元上的正交点位置
-   * $\mathbf x_q$ 评估一个右手函数 $f(\mathbf x_q)$
-   * ，你需要将这个标志传递给FEValues构造函数，以确保你以后可以访问它们。
-   * 在DataPostprocessor的背景下，
-   * DataPostprocessorInputs::CommonInputs::evaluation_points 将被更新。
+   * Compute the quadrature points location in real cell coordinates.
    *
+   * FEValues objects take the quadrature point locations on the
+   * reference cell as an argument of the constructor (via the
+   * Quadrature object). For most finite elements, knowing the
+   * location of quadrature points on the reference cell is all that
+   * is necessary to evaluate shape functions, evaluate the mapping,
+   * and other things. On the other hand, if you want to evaluate a
+   * right hand side function $f(\mathbf x_q)$ at quadrature point
+   * locations $\mathbf x_q$ on the real cell, you need to pass this
+   * flag to the FEValues constructor to make sure you can later
+   * access them.
+   *
+   * In the context of DataPostprocessor,
+   * DataPostprocessorInputs::CommonInputs::evaluation_points will be updated.
    */
   update_quadrature_points = 0x0020,
   //! Transformed quadrature weights
   /**
-   * 计算实数单元上的正交权重，即正交规则的权重乘以从参考单元到实数单元的转换的雅各布定理。
-   *
+   * Compute the quadrature weights on the real cell, i.e. the weights of the
+   * quadrature rule multiplied with the determinant of the Jacobian of the
+   * transformation from reference to real cell.
    */
   update_JxW_values = 0x0040,
   //! Normal vectors
   /**
-   * 计算法向量，可以是一个面，也可以是一个一维的单元。对任何其他对象设置这个标志都会引起一个错误。
-   *
+   * Compute the normal vectors, either for a face or for a cell of
+   * codimension one. Setting this flag for any other object will raise an
+   * error.
    */
   update_normal_vectors = 0x0080,
   //! Volume element
   /**
-   * 计算从参考单元到实际单元的转换的雅各布系数。
-   *
+   * Compute the Jacobian of the transformation from the reference cell to the
+   * real cell.
    */
   update_jacobians = 0x0100,
   //! Gradient of volume element
   /**
-   * 计算变换的Jacobian的导数。
-   *
+   * Compute the derivatives of the Jacobian of the transformation.
    */
   update_jacobian_grads = 0x0200,
   //! Volume element
   /**
-   * 计算从参考单元到实数单元的变换的逆雅各布系数。
-   *
+   * Compute the inverse Jacobian of the transformation from the reference
+   * cell to the real cell.
    */
   update_inverse_jacobians = 0x0400,
   //! Covariant transformation
   /**
-   * 计算Mapping对向量进行反演变换所需的所有数值。对于像MappingCartesian这样的特殊映射，这可能比#update_inverse_jacobians更简单。
-   *
+   * Compute all values the Mapping needs to perform a contravariant
+   * transformation of vectors. For special mappings like MappingCartesian
+   * this may be simpler than #update_inverse_jacobians.
    */
   update_covariant_transformation = 0x0800,
   //! Contravariant transformation
   /**
-   * 计算Mapping需要的所有值，以便对向量进行逆向变换。对于像MappingCartesian这样的特殊映射，这可能比#update_jacobians更简单。
-   *
+   * Compute all values the Mapping needs to perform a contravariant
+   * transformation of vectors. For special mappings like MappingCartesian
+   * this may be simpler than #update_jacobians.
    */
   update_contravariant_transformation = 0x1000,
   //! Shape function values of transformation
   /**
-   * 计算由Mapping定义的变换的形状函数值。
-   *
+   * Compute the shape function values of the transformation defined by the
+   * Mapping.
    */
   update_transformation_values = 0x2000,
   //! Shape function gradients of transformation
   /**
-   * 计算由Mapping定义的变换的形状函数梯度。
-   *
+   * Compute the shape function gradients of the transformation defined by the
+   * Mapping.
    */
   update_transformation_gradients = 0x4000,
   //! Determinant of the Jacobian
   /**
-   * 计算每个正交点的体积元素。
-   *
+   * Compute the volume element in each quadrature point.
    */
   update_volume_elements = 0x10000,
   /**
-   * 计算向前推到实际单元坐标的变换的雅各布系数的导数。
-   *
+   * Compute the derivatives of the Jacobian of the transformation pushed
+   * forward to the real cell coordinates.
    */
   update_jacobian_pushed_forward_grads = 0x100000,
   /**
-   * 计算变换的Jacobian的二次导数。
-   *
+   * Compute the second derivatives of the Jacobian of the transformation.
    */
   update_jacobian_2nd_derivatives = 0x200000,
   /**
-   * 计算向前推至真实单元坐标的变换的雅各布系数的二阶导数。
-   *
+   * Compute the second derivatives of the Jacobian of the transformation
+   * pushed forward to the real cell coordinates.
    */
   update_jacobian_pushed_forward_2nd_derivatives = 0x400000,
   /**
-   * 计算变换的雅各布系数的第三导数。
-   *
+   * Compute the third derivatives of the Jacobian of the transformation.
    */
   update_jacobian_3rd_derivatives = 0x800000,
   /**
-   * 计算向前推至实数单元坐标的变换的雅各布系数的第三导数。
-   *
+   * Compute the third derivatives of the Jacobian of the transformation
+   * pushed forward to the real cell coordinates.
    */
   update_jacobian_pushed_forward_3rd_derivatives = 0x1000000,
   //! Values needed for Piola transform
   /**
-   * 结合Hdiv元素的Piola变换所需的标志。
-   *
+   * Combination of the flags needed for Piola transform of Hdiv elements.
    */
   update_piola = update_volume_elements | update_contravariant_transformation,
   /**
-   * 需要进行映射计算的标志的组合
-   *
+   * Combination of the flags that require a mapping calculation
    */
   update_mapping =
     // Direct data
@@ -208,10 +231,9 @@ enum UpdateFlags
 
 
 /**
- * 输出操作符，它将更新标志作为一组or'd文本值输出。
+ * Output operator which outputs update flags as a set of or'd text values.
+ *
  * @ref UpdateFlags
- *
- *
  */
 template <class StreamType>
 inline StreamType &
@@ -263,11 +285,13 @@ operator<<(StreamType &s, const UpdateFlags u)
 
 
 /**
- * 全局操作符，它返回一个对象，其中所有的位都被设置为第一或第二个参数中的设置。这个操作符的存在是因为如果它不存在，那么bit-or
- * <tt>操作符|</tt>的结果将是一个整数，当我们试图将其分配给UpdateFlags类型的对象时，又会引发编译器警告。
+ * Global operator which returns an object in which all bits are set which are
+ * either set in the first or the second argument. This operator exists since
+ * if it did not then the result of the bit-or <tt>operator |</tt> would be an
+ * integer which would in turn trigger a compiler warning when we tried to
+ * assign it to an object of type UpdateFlags.
+ *
  * @ref UpdateFlags
- *
- *
  */
 inline UpdateFlags
 operator|(const UpdateFlags f1, const UpdateFlags f2)
@@ -279,10 +303,10 @@ operator|(const UpdateFlags f1, const UpdateFlags f2)
 
 
 /**
- * 全局操作符，它将第二个参数的位也设置在第一个参数中。
+ * Global operator which sets the bits from the second argument also in the
+ * first one.
+ *
  * @ref UpdateFlags
- *
- *
  */
 inline UpdateFlags &
 operator|=(UpdateFlags &f1, const UpdateFlags f2)
@@ -293,10 +317,13 @@ operator|=(UpdateFlags &f1, const UpdateFlags f2)
 
 
 /**
- * 全局操作符，它返回一个对象，其中所有位都被设置在第一个和第二个参数中。这个操作符的存在是因为如果它不存在，那么位和<tt>操作符&</tt>的结果将是一个整数，当我们试图将其分配给UpdateFlags类型的对象时，会引发编译器警告。
+ * Global operator which returns an object in which all bits are set which are
+ * set in the first as well as the second argument. This operator exists since
+ * if it did not then the result of the bit-and <tt>operator &</tt> would be
+ * an integer which would in turn trigger a compiler warning when we tried to
+ * assign it to an object of type UpdateFlags.
+ *
  * @ref UpdateFlags
- *
- *
  */
 inline UpdateFlags operator&(const UpdateFlags f1, const UpdateFlags f2)
 {
@@ -306,10 +333,10 @@ inline UpdateFlags operator&(const UpdateFlags f1, const UpdateFlags f2)
 
 
 /**
- * 全局操作符，如果第一个参数中的所有位没有在第二个参数中设置，则将其清除。
+ * Global operator which clears all the bits in the first argument if they are
+ * not also set in the second argument.
+ *
  * @ref UpdateFlags
- *
- *
  */
 inline UpdateFlags &
 operator&=(UpdateFlags &f1, const UpdateFlags f2)
@@ -321,34 +348,34 @@ operator&=(UpdateFlags &f1, const UpdateFlags f2)
 
 
 /**
- * 这个枚举定义用于存储当前单元与先前访问的单元的相似性。这些信息用于在调用方法
- * FEValues::reinit()
- * 时重复使用数据（比如导数，如果一个单元格只是前一个单元格的翻译，则导数不会改变）。目前，这个变量只能识别一个平移和一个倒置的平移（如果dim<spacedim）。然而，这个概念使得在FEValues/FEFaceValues中添加额外的状态来检测这些相似性也变得容易。
- *
- *
+ * This enum definition is used for storing similarities of the current cell
+ * to the previously visited cell. This information is used for reusing data
+ * when calling the method FEValues::reinit() (like derivatives, which do not
+ * change if one cell is just a translation of the previous). Currently, this
+ * variable does only recognize a translation and an inverted translation (if
+ * dim<spacedim). However, this concept makes it easy to add additional states
+ * to be detected in FEValues/FEFaceValues for making use of these
+ * similarities as well.
  */
 namespace CellSimilarity
 {
   enum Similarity
   {
     /**
-     * 除了平移或倒置的平移之外，单元格还存在一些差异。
-     *
+     * The cells differ by something besides a translation or inverted
+     * translations.
      */
     none,
     /**
-     * 这些单元格因翻译而不同。
-     *
+     * The cells differ by a translation.
      */
     translation,
     /**
-     * 这些单元格因倒置的平移而不同。
-     *
+     * The cells differ by an inverted translation.
      */
     inverted_translation,
     /**
-     * 下一个单元格是无效的。
-     *
+     * The next cell is not valid.
      */
     invalid_next_cell
   };
@@ -360,125 +387,129 @@ namespace internal
   namespace FEValuesImplementation
   {
     /**
-     * 一个存储所有用于 dealii::FEValues,  dealii::FEFaceValues, 和
-     * dealii::FESubfaceValues 对象中的映射相关数据的类。当
-     * dealii::FEValues::reinit() 调用 Mapping::fill_fe_values()
-     * 时，这种对象将作为<i>output</i>的参数提供给某个单元、面或子面。
-     * 然后这里的数据将作为<i>input</i>参数在下面调用
-     * FiniteElement::fill_fe_values(). 时提供。
-     * @ingroup feaccess
+     * A class that stores all of the mapping related data used in
+     * dealii::FEValues, dealii::FEFaceValues, and dealii::FESubfaceValues
+     * objects. Objects of this kind will be given as <i>output</i> argument
+     * when dealii::FEValues::reinit() calls Mapping::fill_fe_values() for a
+     * given cell, face, or subface.
      *
+     * The data herein will then be provided as <i>input</i> argument in the
+     * following call to FiniteElement::fill_fe_values().
+     *
+     * @ingroup feaccess
      */
     template <int dim, int spacedim = dim>
     class MappingRelatedData
     {
     public:
       /**
-       * 将所有向量初始化为正确的大小。
-       *
+       * Initialize all vectors to correct size.
        */
       void
       initialize(const unsigned int n_quadrature_points,
                  const UpdateFlags  flags);
 
       /**
-       * 计算并返回这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Compute and return an estimate for the memory consumption (in bytes)
+       * of this object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 在正交点存储一个权重乘以雅可比行列式的数组。每次调用reinit()时，这个函数都会被重置。雅可比行列式实际上是存储在这个类中的雅可比矩阵的倒数值，更多信息见这个类的一般文档。
-       * 然而，如果这个对象指的是FEFaceValues或FESubfaceValues对象，那么JxW_values对应的是面的变换的雅可比，而不是单元，也就是说，维度是面的量度，而不是体积的量度。在这种情况下，它是由边界形式，而不是由雅各布矩阵计算出来的。
+       * Store an array of weights times the Jacobi determinant at the
+       * quadrature points. This function is reset each time reinit() is
+       * called. The Jacobi determinant is actually the reciprocal value of
+       * the Jacobi matrices stored in this class, see the general
+       * documentation of this class for more information.
        *
+       * However, if this object refers to an FEFaceValues or FESubfaceValues
+       * object, then the JxW_values correspond to the Jacobian of the
+       * transformation of the face, not the cell, i.e. the dimensionality is
+       * that of a surface measure, not of a volume measure. In this case, it
+       * is computed from the boundary forms, rather than the Jacobian matrix.
        */
       std::vector<double> JxW_values;
 
       /**
-       * 正交点的雅各布矩阵的阵列。
-       *
+       * Array of the Jacobian matrices at the quadrature points.
        */
       std::vector<DerivativeForm<1, dim, spacedim>> jacobians;
 
       /**
-       * 雅各布矩阵在正交点的导数数组。
-       *
+       * Array of the derivatives of the Jacobian matrices at the quadrature
+       * points.
        */
       std::vector<DerivativeForm<2, dim, spacedim>> jacobian_grads;
 
       /**
-       * 正交点上的反雅各布矩阵阵列。
-       *
+       * Array of the inverse Jacobian matrices at the quadrature points.
        */
       std::vector<DerivativeForm<1, spacedim, dim>> inverse_jacobians;
 
       /**
-       * 正交点的雅各布矩阵的导数数组，向前推至实际单元坐标。
-       *
+       * Array of the derivatives of the Jacobian matrices at the quadrature
+       * points, pushed forward to the real cell coordinates.
        */
       std::vector<Tensor<3, spacedim>> jacobian_pushed_forward_grads;
 
       /**
-       * 正交点的雅各布矩阵的二阶导数数组。
-       *
+       * Array of the second derivatives of the Jacobian matrices at the
+       * quadrature points.
        */
       std::vector<DerivativeForm<3, dim, spacedim>> jacobian_2nd_derivatives;
 
       /**
-       * 在正交点的雅各布矩阵的二阶导数数组，向前推至真实单元坐标。
-       *
+       * Array of the  second derivatives of the Jacobian matrices at the
+       * quadrature points, pushed forward to the real cell coordinates.
        */
       std::vector<Tensor<4, spacedim>> jacobian_pushed_forward_2nd_derivatives;
 
       /**
-       * 正交点上的雅各布矩阵的第三导数数组。
-       *
+       * Array of the  third derivatives of the Jacobian matrices at the
+       * quadrature points.
        */
       std::vector<DerivativeForm<4, dim, spacedim>> jacobian_3rd_derivatives;
 
       /**
-       * 在正交点的雅各布矩阵的三次导数数组，向前推至真实单元坐标。
-       *
+       * Array of the  third derivatives of the Jacobian matrices at the
+       * quadrature points, pushed forward to the real cell coordinates.
        */
       std::vector<Tensor<5, spacedim>> jacobian_pushed_forward_3rd_derivatives;
 
       /**
-       * 正交点的数组。这个数组是在调用reinit()时设置的，包含实数元素上的正交点，而不是参考元素上的。
-       *
+       * Array of quadrature points. This array is set up upon calling
+       * reinit() and contains the quadrature points on the real element,
+       * rather than on the reference element.
        */
       std::vector<Point<spacedim>> quadrature_points;
 
       /**
-       * 正交点的外向法向量列表。
-       *
+       * List of outward normal vectors at the quadrature points.
        */
       std::vector<Tensor<1, spacedim>> normal_vectors;
 
       /**
-       * 正交点上的边界形式列表。
-       *
+       * List of boundary forms at the quadrature points.
        */
       std::vector<Tensor<1, spacedim>> boundary_forms;
     };
 
 
     /**
-     * 一个存储所有用于 dealii::FEValues,  dealii::FEFaceValues, 和
-     * dealii::FESubfaceValues
-     * 对象中的形状函数相关数据的类。当
-     * dealii::FEValues::reinit() 调用 FiniteElement::fill_fe_values().
-     * 时，这种对象将作为<i>output</i>参数给出。
-     * @ingroup feaccess
+     * A class that stores all of the shape function related data used in
+     * dealii::FEValues, dealii::FEFaceValues, and dealii::FESubfaceValues
+     * objects. Objects of this kind will be given as <i>output</i> argument
+     * when dealii::FEValues::reinit() calls FiniteElement::fill_fe_values().
      *
+     * @ingroup feaccess
      */
     template <int dim, int spacedim = dim>
     class FiniteElementRelatedData
     {
     public:
       /**
-       * 将所有向量初始化为正确的大小。
-       *
+       * Initialize all vectors to correct size.
        */
       void
       initialize(const unsigned int                  n_quadrature_points,
@@ -486,78 +517,104 @@ namespace internal
                  const UpdateFlags                   flags);
 
       /**
-       * 计算并返回这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Compute and return an estimate for the memory consumption (in bytes)
+       * of this object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 形状值的存储类型。矩阵中的每一行表示不同点上的单个形状函数的值，列是针对单个点的不同形状函数。
-       * 如果一个形状函数有一个以上的非零分量（在deal.II的字典中：它是非正数），那么我们为每个非零分量分配一行，并将随后的行向后移。
-       * 因此，如果整个有限元是原始的（即所有形状函数都是原始的），为一个形状函数查询正确的行是很简单的，因为那时形状函数的编号等于行的编号。否则，使用#shape_function_to_row_table数组来获得属于这个特定形状函数的第一行，并使用
-       * FiniteElement::get_nonzero_components()
-       * 函数在这个形状函数的所有行中导航，该函数告诉我们哪些组件是非零的，因此在目前讨论的数组中有一行。
+       * Storage type for shape values. Each row in the matrix denotes the
+       * values of a single shape function at the different points, columns
+       * are for a single point with the different shape functions.
        *
+       * If a shape function has more than one non-zero component (in deal.II
+       * diction: it is non-primitive), then we allocate one row per non-zero
+       * component, and shift subsequent rows backward.  Lookup of the correct
+       * row for a shape function is thus simple in case the entire finite
+       * element is primitive (i.e. all shape functions are primitive), since
+       * then the shape function number equals the row number. Otherwise, use
+       * the #shape_function_to_row_table array to get at the first row that
+       * belongs to this particular shape function, and navigate among all the
+       * rows for this shape function using the
+       * FiniteElement::get_nonzero_components() function which tells us which
+       * components are non-zero and thus have a row in the array presently
+       * under discussion.
        */
       using ShapeVector = dealii::Table<2, double>;
 
       /**
-       * 梯度的存储类型。数据的布局与#ShapeVector数据类型相同。
-       *
+       * Storage type for gradients. The layout of data is the same as for the
+       * #ShapeVector data type.
        */
       using GradientVector = dealii::Table<2, Tensor<1, spacedim>>;
 
       /**
-       * 同样，对于二阶导数也是如此。
-       *
+       * Likewise for second order derivatives.
        */
       using HessianVector = dealii::Table<2, Tensor<2, spacedim>>;
 
       /**
-       * 而同样的情况也适用于三阶导数。
-       *
+       * And the same also applies to the third order derivatives.
        */
       using ThirdDerivativeVector = dealii::Table<2, Tensor<3, spacedim>>;
 
       /**
-       * 存储正交点的形状函数的值。关于这个字段中的数据布局，请参见数据类型的描述。
-       *
+       * Store the values of the shape functions at the quadrature points. See
+       * the description of the data type for the layout of the data in this
+       * field.
        */
       ShapeVector shape_values;
 
       /**
-       * 存储形状函数在正交点的梯度。
-       * 参见数据类型的描述，了解该字段的数据布局。
-       *
+       * Store the gradients of the shape functions at the quadrature points.
+       * See the description of the data type for the layout of the data in
+       * this field.
        */
       GradientVector shape_gradients;
 
       /**
-       * 存储形状函数在正交点的二阶导数。
-       * 参见数据类型的描述，了解该字段的数据布局。
-       *
+       * Store the 2nd derivatives of the shape functions at the quadrature
+       * points.  See the description of the data type for the layout of the
+       * data in this field.
        */
       HessianVector shape_hessians;
 
       /**
-       * 存储正交点上的形状函数的3次导数。
-       * 参见数据类型的描述，了解该字段的数据布局。
-       *
+       * Store the 3rd derivatives of the shape functions at the quadrature
+       * points.  See the description of the data type for the layout of the
+       * data in this field.
        */
       ThirdDerivativeVector shape_3rd_derivatives;
 
       /**
-       * 当被问及形状函数i的第c个向量分量的值（或梯度，或Hessian）时，我们需要在#shape_values、#shape_gradients和#shape_hessians数组中查找它。
-       * 问题是，在这个数组中，形状函数i的c分量的数据在哪里？这就是这个表的答案。
-       * 该表的格式如下。
+       * When asked for the value (or gradient, or Hessian) of shape function
+       * i's c-th vector component, we need to look it up in the
+       * #shape_values, #shape_gradients and #shape_hessians arrays.  The
+       * question is where in this array does the data for shape function i,
+       * component c reside. This is what this table answers.
        *
-       * - 它有dofs_per_cell乘以n_components条目。
+       * The format of the table is as follows: - It has dofs_per_cell times
+       * n_components entries. - The entry that corresponds to shape function
+       * i, component c is <code>i * n_components + c</code>. - The value
+       * stored at this position indicates the row in #shape_values and the
+       * other tables where the corresponding datum is stored for all the
+       * quadrature points.
        *
-       * - 对应于形状函数i，组件c的条目是 <code>i n_components + c</code>  。
+       * In the general, vector-valued context, the number of components is
+       * larger than one, but for a given shape function, not all vector
+       * components may be nonzero (e.g., if a shape function is primitive,
+       * then exactly one vector component is non-zero, while the others are
+       * all zero). For such zero components, #shape_values and friends do not
+       * have a row. Consequently, for vector components for which shape
+       * function i is zero, the entry in the current table is
+       * numbers::invalid_unsigned_int.
        *
-       * - 存储在这个位置的值表示#shape_values和其他表格中所有正交点的对应基准点的行。            在一般情况下，矢量值的情况下，分量的数量大于1，但是对于一个给定的形状函数，并非所有的矢量分量都是非零的（例如，如果一个形状函数是原始的，那么正好有一个矢量分量是非零的，而其他的都是零）。对于这种零分量，#shape_values和friends没有一行。因此，对于形状函数i为零的向量分量，在当前表中的条目是 numbers::invalid_unsigned_int.  另一方面，该表保证每个形状函数至少有一个有效的索引。特别是，对于原始有限元，每个形状函数正好有一个非零分量，因此对于每个i，在 <code>[i*n_components, (i+1)*n_components)</code> 范围内正好有一个有效索引。
-       *
+       * On the other hand, the table is guaranteed to have at least one valid
+       * index for each shape function. In particular, for a primitive finite
+       * element, each shape function has exactly one nonzero component and so
+       * for each i, there is exactly one valid index within the range
+       * <code>[i*n_components, (i+1)*n_components)</code>.
        */
       std::vector<unsigned int> shape_function_to_row_table;
     };
@@ -565,12 +622,10 @@ namespace internal
 } // namespace internal
 
 
- /*@}*/ 
+/*@}*/
 
 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

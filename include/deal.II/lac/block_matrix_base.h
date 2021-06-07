@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/block_matrix_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -45,68 +44,58 @@ class MatrixIterator;
 #endif
 
 
-/*!   @addtogroup  Matrix1  @{ ! 
-
-* 
-* */
+/*! @addtogroup Matrix1
+ *@{
+ */
 
 /**
- * 实现块状矩阵中迭代器的名称空间。
- *
- *
+ * Namespace in which iterators in block matrices are implemented.
  */
 namespace BlockMatrixIterators
 {
   /**
-   * 块状矩阵访问器的基类，实现对矩阵的步进。
-   *
+   * Base class for block matrix accessors, implementing the stepping through
+   * a matrix.
    */
   template <class BlockMatrixType>
   class AccessorBase
   {
   public:
     /**
-     * 声明容器大小的类型。
-     *
+     * Declare type for container size.
      */
     using size_type = types::global_dof_index;
 
     /**
-     * Typedef我们指向的矩阵的值类型。
-     *
+     * Typedef the value type of the matrix we point into.
      */
     using value_type = typename BlockMatrixType::value_type;
 
     /**
-     * 将数据字段初始化为默认值。
-     *
+     * Initialize data fields to default values.
      */
     AccessorBase();
 
     /**
-     * 该对象所代表的元素的块行。
-     *
+     * Block row of the element represented by this object.
      */
     unsigned int
     block_row() const;
 
     /**
-     * 此对象所代表的元素的块列。
-     *
+     * Block column of the element represented by this object.
      */
     unsigned int
     block_column() const;
 
   protected:
     /**
-     * 我们目前所指向的块行。
-     *
+     * Block row into which we presently point.
      */
     unsigned int row_block;
 
     /**
-     * 我们现在所指向的块列。
-     *
+     * Block column into which we presently point.
      */
     unsigned int col_block;
 
@@ -118,98 +107,87 @@ namespace BlockMatrixIterators
 
 
   /**
-   * 块矩阵中的访问器类。
-   *
+   * Accessor classes in block matrices.
    */
   template <class BlockMatrixType, bool Constness>
   class Accessor;
 
 
   /**
-   * 非恒定矩阵的块状矩阵访问器。
-   *
+   * Block matrix accessor for non const matrices.
    */
   template <class BlockMatrixType>
   class Accessor<BlockMatrixType, false> : public AccessorBase<BlockMatrixType>
   {
   public:
     /**
-     * 声明容器大小的类型。
-     *
+     * Declare type for container size.
      */
     using size_type = types::global_dof_index;
 
     /**
-     * 在这个访问器中使用的矩阵的类型。
-     *
+     * Type of the matrix used in this accessor.
      */
     using MatrixType = BlockMatrixType;
 
     /**
-     * Typedef我们指向的矩阵的值类型。
-     *
+     * Typedef the value type of the matrix we point into.
      */
     using value_type = typename BlockMatrixType::value_type;
 
     /**
-     * 构造器。因为我们只使用访问器进行读取访问，所以一个常量矩阵指针就足够了。
-     * 将迭代器放在矩阵给定行的开头，如果 @p row
-     * 等于矩阵的总行数，则创建末端指针。
+     * Constructor. Since we use accessors only for read access, a const
+     * matrix pointer is sufficient.
      *
+     * Place the iterator at the beginning of the given row of the matrix, or
+     * create the end pointer if @p row equals the total number of rows in the
+     * matrix.
      */
     Accessor(BlockMatrixType *m, const size_type row, const size_type col);
 
     /**
-     * 这个对象所代表的元素的行数。
-     *
+     * Row number of the element represented by this object.
      */
     size_type
     row() const;
 
     /**
-     * 这个对象所代表的元素的列号。
-     *
+     * Column number of the element represented by this object.
      */
     size_type
     column() const;
 
     /**
-     * 当前位置的条目值。
-     *
+     * Value of the entry at the current position.
      */
     value_type
     value() const;
 
     /**
-     * 设置新值。
-     *
+     * Set new value.
      */
     void
     set_value(value_type newval) const;
 
   protected:
     /**
-     * 访问的矩阵。
-     *
+     * The matrix accessed.
      */
     BlockMatrixType *matrix;
 
     /**
-     * 底层矩阵类的迭代器。
-     *
+     * Iterator of the underlying matrix class.
      */
     typename BlockMatrixType::BlockType::iterator base_iterator;
 
     /**
-     * 向前移动一个元素。
-     *
+     * Move ahead one element.
      */
     void
     advance();
 
     /**
-     * 将这个访问器与另一个访问器进行比较，以确定是否相等。
-     *
+     * Compare this accessor with another one for equality.
      */
     bool
     operator==(const Accessor &a) const;
@@ -220,91 +198,82 @@ namespace BlockMatrixIterators
   };
 
   /**
-   * 用于常数矩阵的块状矩阵访问器，实现对矩阵的步进。
-   *
+   * Block matrix accessor for constant matrices, implementing the stepping
+   * through a matrix.
    */
   template <class BlockMatrixType>
   class Accessor<BlockMatrixType, true> : public AccessorBase<BlockMatrixType>
   {
   public:
     /**
-     * 声明容器大小的类型。
-     *
+     * Declare type for container size.
      */
     using size_type = types::global_dof_index;
 
     /**
-     * 该访问器中使用的矩阵的类型。
-     *
+     * Type of the matrix used in this accessor.
      */
     using MatrixType = const BlockMatrixType;
 
     /**
-     * Typedef我们指向的矩阵的值类型。
-     *
+     * Typedef the value type of the matrix we point into.
      */
     using value_type = typename BlockMatrixType::value_type;
 
     /**
-     * 构造器。因为我们只使用访问器进行读取访问，所以一个常量矩阵指针就足够了。
-     * 将迭代器放在矩阵给定行的开头，如果 @p row
-     * 等于矩阵的总行数，则创建末端指针。
+     * Constructor. Since we use accessors only for read access, a const
+     * matrix pointer is sufficient.
      *
+     * Place the iterator at the beginning of the given row of the matrix, or
+     * create the end pointer if @p row equals the total number of rows in the
+     * matrix.
      */
     Accessor(const BlockMatrixType *m,
              const size_type        row,
              const size_type        col);
 
     /**
-     * 从非常量访问器初始化常量访问器。
-     *
+     * Initialize const accessor from non const accessor.
      */
     Accessor(const Accessor<BlockMatrixType, false> &);
 
     /**
-     * 这个对象所代表的元素的行数。
-     *
+     * Row number of the element represented by this object.
      */
     size_type
     row() const;
 
     /**
-     * 这个对象所代表的元素的列号。
-     *
+     * Column number of the element represented by this object.
      */
     size_type
     column() const;
 
     /**
-     * 当前位置的条目值。
-     *
+     * Value of the entry at the current position.
      */
     value_type
     value() const;
 
   protected:
     /**
-     * 访问的矩阵。
-     *
+     * The matrix accessed.
      */
     const BlockMatrixType *matrix;
 
     /**
-     * 底层矩阵类的迭代器。
-     *
+     * Iterator of the underlying matrix class.
      */
     typename BlockMatrixType::BlockType::const_iterator base_iterator;
 
     /**
-     * 向前移动一个元素。
-     *
+     * Move ahead one element.
      */
     void
     advance();
 
     /**
-     * 将这个访问器与另一个访问器进行比较，以确定是否相等。
-     *
+     * Compare this accessor with another one for equality.
      */
     bool
     operator==(const Accessor &a) const;
@@ -318,44 +287,76 @@ namespace BlockMatrixIterators
 
 
 /**
- * 封锁的矩阵类。这种类型的对象的行为几乎和通常的矩阵对象一样，大部分的功能都在两个类中实现。主要的区别是，这个对象所代表的矩阵是由一个矩阵数组（例如SparseMatrix<number>类型）组成的，对这个对象的元素的所有访问都被转发到对基础矩阵的访问。这个矩阵的各个块的实际类型是模板参数的类型，例如可以是通常的SparseMatrix或
- * PETScWrappers::SparseMatrix.  。
- * 除了通常的矩阵访问和线性代数函数外，还有一些函数block()，允许访问矩阵的不同块。例如，当你想实现舒尔补码方法或块状预处理时，这可能会有帮助，因为每个块都属于你目前正在离散化的方程的一个特定部分。
- * 请注意，块和行的数量是由使用的稀疏模式对象隐含决定的。
- * 当一个微分方程系统的解属于不同类别的变量时，这种类型的对象经常被使用。例如，斯托克斯或纳维尔-斯托克斯方程的解有
- * @p dim
- * 个速度分量和一个压力分量。在这种情况下，将线性方程组视为2x2块的系统可能是有意义的，人们可以在这个2x2块结构的基础上构建预调节器或求解器。在这种情况下，这个类可以帮助你，因为它允许把矩阵看作是一个大矩阵，或者看作是一些单独的块。
+ * Blocked matrix class. The behavior of objects of this type is almost as
+ * for the usual matrix objects, with most of the functions being implemented
+ * in both classes. The main difference is that the matrix represented by this
+ * object is composed of an array of matrices (e.g. of type
+ * SparseMatrix<number>) and all accesses to the elements of this object are
+ * relayed to accesses of the base matrices. The actual type of the individual
+ * blocks of this matrix is the type of the template argument, and can, for
+ * example be the usual SparseMatrix or PETScWrappers::SparseMatrix.
  *
- *  <h3>Inheriting from this class</h3>
- * 由于这个类只是将其调用转发给子对象（如果需要的话，在调整了表示哪个子对象的索引后），这个类完全独立于子对象的实际类型。然而，设置块状矩阵和销毁块状矩阵的函数必须在派生类中实现。这些函数也必须填充这个基类所提供的数据成员，因为它们在这个类中只是被动地使用。
+ * In addition to the usual matrix access and linear algebra functions, there
+ * are functions block() which allow access to the different blocks of the
+ * matrix. This may, for example, be of help when you want to implement Schur
+ * complement methods, or block preconditioners, where each block belongs to a
+ * specific component of the equation you are presently discretizing.
  *
- * 大多数函数都需要一个向量或块向量参数。一般来说，只有当这个矩阵的各个块实现了各自在有关向量类型上操作的函数时，这些函数才能被成功编译。例如，如果你有一个在deal.II
- * SparseMatrix对象上的块状稀疏矩阵，那么你很可能无法用
- * PETScWrappers::SparseMatrix
- * 对象上的块状向量形成矩阵-向量乘法。如果你试图这样做，你可能会得到一系列的编译器错误。
+ * Note that the numbers of blocks and rows are implicitly determined by the
+ * sparsity pattern objects used.
+ *
+ * Objects of this type are frequently used when a system of differential
+ * equations has solutions with variables that fall into different classes.
+ * For example, solutions of the Stokes or Navier-Stokes equations have @p dim
+ * velocity components and one pressure component. In this case, it may make
+ * sense to consider the linear system of equations as a system of 2x2 blocks,
+ * and one can construct preconditioners or solvers based on this 2x2 block
+ * structure. This class can help you in these cases, as it allows to view the
+ * matrix alternatively as one big matrix, or as a number of individual
+ * blocks.
  *
  *
- * @note
- * 这个模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
- * 其他可以在应用程序中生成（见手册中 @ref Instantiations
- * 一节）。
- * @see   @ref GlossBlockLA  "块（线性代数）"
+ * <h3>Inheriting from this class</h3>
+ *
+ * Since this class simply forwards its calls to the subobjects (if necessary
+ * after adjusting indices denoting which subobject is meant), this class is
+ * completely independent of the actual type of the subobject. The functions
+ * that set up block matrices and destroy them, however, have to be
+ * implemented in derived classes. These functions also have to fill the data
+ * members provided by this base class, as they are only used passively in
+ * this class.
  *
  *
+ * Most of the functions take a vector or block vector argument. These
+ * functions can, in general, only successfully be compiled if the individual
+ * blocks of this matrix implement the respective functions operating on the
+ * vector type in question. For example, if you have a block sparse matrix
+ * over deal.II SparseMatrix objects, then you will likely not be able to form
+ * the matrix-vector multiplication with a block vector over
+ * PETScWrappers::SparseMatrix objects. If you attempt anyway, you will likely
+ * get a number of compiler errors.
+ *
+ * @note Instantiations for this template are provided for <tt>@<float@> and
+ * @<double@></tt>; others can be generated in application programs (see the
+ * section on
+ * @ref Instantiations
+ * in the manual).
+ *
+ * @see
+ * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <typename MatrixType>
 class BlockMatrixBase : public Subscriptor
 {
 public:
   /**
-   * Typedef底层矩阵的类型。
-   *
+   * Typedef the type of the underlying matrix.
    */
   using BlockType = MatrixType;
 
   /**
-   * 矩阵条目的类型。这些类似于标准库容器中的别名。
-   *
+   * Type of matrix entries. These are analogous to alias in the standard
+   * library containers.
    */
   using value_type      = typename BlockType::value_type;
   using real_type       = typename numbers::NumberTraits<value_type>::real_type;
@@ -373,88 +374,100 @@ public:
 
 
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   BlockMatrixBase() = default;
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   ~BlockMatrixBase() override;
 
   /**
-   * 将作为参数的矩阵复制到当前对象中。
-   * 复制矩阵是一个昂贵的操作，我们不希望通过编译器生成的代码意外发生
-   * <code>operator=</code>
-   * 。（例如，如果不小心声明了一个当前类型为<i>by
-   * value</i>而不是<i>by
-   * reference</i>的函数参数，就会发生这种情况）。复制矩阵的功能是在这个成员函数中实现的。因此，该类型对象的所有复制操作都需要一个明确的函数调用。
-   * 源矩阵可以是一个任意类型的矩阵，只要其数据类型可以转换为该矩阵的数据类型。
-   * 该函数返回一个对<tt>this</tt>的引用。
+   * Copy the matrix given as argument into the current object.
    *
+   * Copying matrices is an expensive operation that we do not want to happen
+   * by accident through compiler generated code for <code>operator=</code>.
+   * (This would happen, for example, if one accidentally declared a function
+   * argument of the current type <i>by value</i> rather than <i>by
+   * reference</i>.) The functionality of copying matrices is implemented in
+   * this member function instead. All copy operations of objects of this type
+   * therefore require an explicit function call.
+   *
+   * The source matrix may be a matrix of arbitrary type, as long as its data
+   * type is convertible to the data type of this matrix.
+   *
+   * The function returns a reference to <tt>this</tt>.
    */
   template <class BlockMatrixType>
   BlockMatrixBase &
   copy_from(const BlockMatrixType &source);
 
   /**
-   * 访问具有给定坐标的块。
-   *
+   * Access the block with the given coordinates.
    */
   BlockType &
   block(const unsigned int row, const unsigned int column);
 
 
   /**
-   * 访问具有给定坐标的区块。常量对象的版本。
-   *
+   * Access the block with the given coordinates. Version for constant
+   * objects.
    */
   const BlockType &
   block(const unsigned int row, const unsigned int column) const;
 
   /**
-   * 返回共域（或范围）空间的维数。注意，矩阵的维度是
-   * $m \times n$  。
-   *
+   * Return the dimension of the codomain (or range) space. Note that the
+   * matrix is of dimension $m \times n$.
    */
   size_type
   m() const;
 
   /**
-   * 返回域空间的维度。请注意，矩阵的维度是 $m \times n$  .
-   *
+   * Return the dimension of the domain space. Note that the matrix is of
+   * dimension $m \times n$.
    */
   size_type
   n() const;
 
 
   /**
-   * 返回一列中的块数。如果目前没有与此矩阵相关的稀疏模式，则返回0。
-   *
+   * Return the number of blocks in a column. Returns zero if no sparsity
+   * pattern is presently associated to this matrix.
    */
   unsigned int
   n_block_rows() const;
 
   /**
-   * 返回一个行中的块数。如果目前没有与该矩阵相关的稀疏模式，则返回0。
-   *
+   * Return the number of blocks in a row. Returns zero if no sparsity pattern
+   * is presently associated to this matrix.
    */
   unsigned int
   n_block_cols() const;
 
   /**
-   * 将元素<tt>(i,j)/tt>设置为<tt>值</tt>。如果该条目不存在或者<tt>value</tt>不是一个有限的数字，则抛出一个错误。尽管如此，它仍然允许在不存在的字段中存储零值。
-   *
+   * Set the element <tt>(i,j)</tt> to <tt>value</tt>. Throws an error if the
+   * entry does not exist or if <tt>value</tt> is not a finite number. Still,
+   * it is allowed to store zero values in non-existent fields.
    */
   void
   set(const size_type i, const size_type j, const value_type value);
 
   /**
-   * 将FullMatrix中给出的所有元素设置到<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素写入调用的矩阵中，对矩阵的行和列都使用<tt>indices</tt>指定的本地到全球的索引。这个函数假设一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中的通常情况。
-   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要设置零值，还是要过滤掉零值（如果存在的话，不改变相应元素中的先前内容）。默认值是<tt>false</tt>，也就是说，即使是零值也要处理。
+   * Set all elements given in a FullMatrix into the sparse matrix locations
+   * given by <tt>indices</tt>. In other words, this function writes the
+   * elements in <tt>full_matrix</tt> into the calling matrix, using the
+   * local-to-global indexing specified by <tt>indices</tt> for both the rows
+   * and the columns of the matrix. This function assumes a quadratic sparse
+   * matrix and a quadratic full_matrix, the usual situation in FE
+   * calculations.
    *
+   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
+   * whether zero values should be set anyway or they should be filtered away
+   * (and not change the previous content in the respective element if it
+   * exists). The default value is <tt>false</tt>, i.e., even zero values are
+   * treated.
    */
   template <typename number>
   void
@@ -463,8 +476,9 @@ public:
       const bool                    elide_zero_values = false);
 
   /**
-   * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
-   *
+   * Same function as before, but now including the possibility to use
+   * rectangular full_matrices and different local-to-global indexing on rows
+   * and columns, respectively.
    */
   template <typename number>
   void
@@ -474,9 +488,14 @@ public:
       const bool                    elide_zero_values = false);
 
   /**
-   * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
-   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要设置零值，还是要过滤掉零值（如果存在的话，不改变相应元素中的先前内容）。默认值是<tt>false</tt>，也就是说，即使是零值也要处理。
+   * Set several elements in the specified row of the matrix with column
+   * indices as given by <tt>col_indices</tt> to the respective value.
    *
+   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
+   * whether zero values should be set anyway or they should be filtered away
+   * (and not change the previous content in the respective element if it
+   * exists). The default value is <tt>false</tt>, i.e., even zero values are
+   * treated.
    */
   template <typename number>
   void
@@ -486,9 +505,13 @@ public:
       const bool                    elide_zero_values = false);
 
   /**
-   * 将几个元素设置为由<tt>values</tt>给出的值，在给定的行和col_indices给出的列中设置为稀疏矩阵。
-   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要插入零值还是要过滤掉它们。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+   * Set several elements to values given by <tt>values</tt> in a given row in
+   * columns given by col_indices into the sparse matrix.
    *
+   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
+   * whether zero values should be inserted anyway or they should be filtered
+   * away. The default value is <tt>false</tt>, i.e., even zero values are
+   * inserted/replaced.
    */
   template <typename number>
   void
@@ -499,17 +522,26 @@ public:
       const bool       elide_zero_values = false);
 
   /**
-   * 向元素添加<tt>value</tt>（<i>i,j</i>）。
-   * 如果该条目不存在或者<tt>value</tt>不是一个有限的数字，则抛出一个错误。尽管如此，它仍然允许在不存在的字段中存储零值。
-   *
+   * Add <tt>value</tt> to the element (<i>i,j</i>).  Throws an error if the
+   * entry does not exist or if <tt>value</tt> is not a finite number. Still,
+   * it is allowed to store zero values in non-existent fields.
    */
   void
   add(const size_type i, const size_type j, const value_type value);
 
   /**
-   * 将FullMatrix<double>中给出的所有元素添加到由<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素添加到调用矩阵的相应条目中，使用<tt>indices</tt>为矩阵的行和列指定的本地到全球索引。这个函数假定一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中通常的情况。
-   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+   * Add all elements given in a FullMatrix<double> into sparse matrix
+   * locations given by <tt>indices</tt>. In other words, this function adds
+   * the elements in <tt>full_matrix</tt> to the respective entries in calling
+   * matrix, using the local-to-global indexing specified by <tt>indices</tt>
+   * for both the rows and the columns of the matrix. This function assumes a
+   * quadratic sparse matrix and a quadratic full_matrix, the usual situation
+   * in FE calculations.
    *
+   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
+   * whether zero values should be added anyway or these should be filtered
+   * away and only non-zero data is added. The default value is <tt>true</tt>,
+   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -518,8 +550,9 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
-   *
+   * Same function as before, but now including the possibility to use
+   * rectangular full_matrices and different local-to-global indexing on rows
+   * and columns, respectively.
    */
   template <typename number>
   void
@@ -529,9 +562,13 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
-   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+   * Set several elements in the specified row of the matrix with column
+   * indices as given by <tt>col_indices</tt> to the respective value.
    *
+   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
+   * whether zero values should be added anyway or these should be filtered
+   * away and only non-zero data is added. The default value is <tt>true</tt>,
+   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -541,9 +578,13 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * 在给定的全局矩阵行中，在稀疏矩阵中由col_indices指定的列中添加一个由<tt>values</tt>给出的数值阵列。
-   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+   * Add an array of values given by <tt>values</tt> in the given global
+   * matrix row at columns specified by col_indices in the sparse matrix.
    *
+   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
+   * whether zero values should be added anyway or these should be filtered
+   * away and only non-zero data is added. The default value is <tt>true</tt>,
+   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -555,97 +596,117 @@ public:
       const bool       col_indices_are_sorted = false);
 
   /**
-   * 将<tt>matrix</tt>按<tt>factor</tt>的比例添加到这个矩阵中，也就是说，矩阵<tt>factor*matrix</tt>被添加到<tt>this</tt>。如果调用矩阵的稀疏性模式不包含输入矩阵的稀疏性模式中的所有元素，这个函数将抛出一个异常。
-   * 然而，根据MatrixType，可能会出现额外的限制。
-   * 一些稀疏矩阵格式要求<tt>matrix</tt>是基于与调用矩阵相同的稀疏模式的。
+   * Add <tt>matrix</tt> scaled by <tt>factor</tt> to this matrix, i.e. the
+   * matrix <tt>factor*matrix</tt> is added to <tt>this</tt>. If the sparsity
+   * pattern of the calling matrix does not contain all the elements in the
+   * sparsity pattern of the input matrix, this function will throw an
+   * exception.
    *
+   * Depending on MatrixType, however, additional restrictions might arise.
+   * Some sparse matrix formats require <tt>matrix</tt> to be based on the
+   * same sparsity pattern as the calling matrix.
    */
   void
   add(const value_type factor, const BlockMatrixBase<MatrixType> &matrix);
 
   /**
-   * 返回条目(i,j)的值。
-   * 这可能是一个昂贵的操作，你应该始终注意在哪里调用这个函数。
-   * 为了避免滥用，如果想要的元素在矩阵中不存在，这个函数会抛出一个异常。
-   *
+   * Return the value of the entry (i,j).  This may be an expensive operation
+   * and you should always take care where to call this function.  In order to
+   * avoid abuse, this function throws an exception if the wanted element does
+   * not exist in the matrix.
    */
   value_type
   operator()(const size_type i, const size_type j) const;
 
   /**
-   * 这个函数主要像operator()()，它返回矩阵条目<tt>(i,j)</tt>的值。唯一的区别是，如果这个条目不存在于稀疏模式中，那么就不会引发异常，而是返回0。虽然这在某些情况下可能很方便，但请注意，由于没有使用矩阵的稀疏性，写出的算法与最优解相比很简单，很慢。
-   *
+   * This function is mostly like operator()() in that it returns the value of
+   * the matrix entry <tt>(i,j)</tt>. The only difference is that if this
+   * entry does not exist in the sparsity pattern, then instead of raising an
+   * exception, zero is returned. While this may be convenient in some cases,
+   * note that it is simple to write algorithms that are slow compared to an
+   * optimal solution, since the sparsity of the matrix is not used.
    */
   value_type
   el(const size_type i, const size_type j) const;
 
   /**
-   * 返回第<i>i</i>行中的主对角线元素。如果矩阵不是二次方的，以及矩阵的对角线块不是二次方的，这个函数会抛出一个错误。
-   * 这个函数比operator()()快得多，因为对于二次矩阵来说，对角线条目可能是每行中第一个被存储的，因此访问时不需要搜索正确的列号。
+   * Return the main diagonal element in the <i>i</i>th row. This function
+   * throws an error if the matrix is not quadratic and also if the diagonal
+   * blocks of the matrix are not quadratic.
    *
+   * This function is considerably faster than the operator()(), since for
+   * quadratic matrices, the diagonal entry may be the first to be stored in
+   * each row and access therefore does not involve searching for the right
+   * column number.
    */
   value_type
   diag_element(const size_type i) const;
 
   /**
-   * 在矩阵的所有子块上调用compress()函数。      参见 @ref GlossCompress "压缩分布式对象 "
-   * 以获得更多信息。
+   * Call the compress() function on all the subblocks of the matrix.
    *
+   *
+   * See
+   * @ref GlossCompress "Compressing distributed objects"
+   * for more information.
    */
   void
   compress(::dealii::VectorOperation::values operation);
 
   /**
-   * 将整个矩阵乘以一个固定系数。
-   *
+   * Multiply the entire matrix by a fixed factor.
    */
   BlockMatrixBase &
   operator*=(const value_type factor);
 
   /**
-   * 将整个矩阵除以一个固定系数。
-   *
+   * Divide the entire matrix by a fixed factor.
    */
   BlockMatrixBase &
   operator/=(const value_type factor);
 
   /**
-   * 加法 矩阵-向量乘法。在 $dst$ 上添加 $M*src$ ， $M$
-   * 为该矩阵。
-   *
+   * Adding Matrix-vector multiplication. Add $M*src$ on $dst$ with $M$ being
+   * this matrix.
    */
   template <class BlockVectorType>
   void
   vmult_add(BlockVectorType &dst, const BlockVectorType &src) const;
 
   /**
-   * 添加矩阵-向量乘法。将<i>M<sup>T</sup>src</i>加到<i>dst</i>上，<i>M</i>是这个矩阵。这个函数与vmult_add()的作用相同，但需要转置的矩阵。
-   *
+   * Adding Matrix-vector multiplication. Add <i>M<sup>T</sup>src</i> to
+   * <i>dst</i> with <i>M</i> being this matrix. This function does the same
+   * as vmult_add() but takes the transposed matrix.
    */
   template <class BlockVectorType>
   void
   Tvmult_add(BlockVectorType &dst, const BlockVectorType &src) const;
 
   /**
-   * 返回向量<i>v</i>相对于该矩阵诱导的规范，即<i>v<sup>T</sup>Mv)</i>的规范。这很有用，例如在有限元背景下，一个函数的<i>L<sup>T</sup></i>规范等于相对于代表有限元函数节点值的向量矩阵的矩阵规范。请注意，尽管函数的名称可能暗示了一些不同的东西，但由于历史原因，返回的不是法线，而是它的平方，正如上面所定义的标量积。
-   * 很明显，对于这个操作，矩阵需要是平方的。
+   * Return the norm of the vector <i>v</i> with respect to the norm induced
+   * by this matrix, i.e. <i>v<sup>T</sup>Mv)</i>. This is useful, e.g. in the
+   * finite element context, where the <i>L<sup>T</sup></i>-norm of a function
+   * equals the matrix norm with respect to the mass matrix of the vector
+   * representing the nodal values of the finite element function. Note that
+   * even though the function's name might suggest something different, for
+   * historic reasons not the norm but its square is returned, as defined
+   * above by the scalar product.
    *
+   * Obviously, the matrix needs to be square for this operation.
    */
   template <class BlockVectorType>
   value_type
   matrix_norm_square(const BlockVectorType &v) const;
 
   /**
-   * 返回矩阵的frobenius
-   * norm，即矩阵中所有条目的平方和的平方根。
-   *
+   * Return the frobenius norm of the matrix, i.e. the square root of the sum
+   * of squares of all entries in the matrix.
    */
   real_type
   frobenius_norm() const;
 
   /**
-   * 计算矩阵标量乘积  $\left(u,Mv\right)$  。
-   *
+   * Compute the matrix scalar product $\left(u,Mv\right)$.
    */
   template <class BlockVectorType>
   value_type
@@ -653,8 +714,7 @@ public:
                         const BlockVectorType &v) const;
 
   /**
-   * 计算残差<i>r=b-Ax</i>。将残差写进<tt>dst</tt>。
-   *
+   * Compute the residual <i>r=b-Ax</i>. Write the residual into <tt>dst</tt>.
    */
   template <class BlockVectorType>
   value_type
@@ -663,97 +723,88 @@ public:
            const BlockVectorType &b) const;
 
   /**
-   * 打印矩阵到给定的数据流中，使用格式<tt>(line,col)
-   * value</tt>，即每行有一个矩阵的非零条目。可选的标志是根据底层稀疏矩阵的类型，以不同的风格输出稀疏模式。
-   *
+   * Print the matrix to the given stream, using the format <tt>(line,col)
+   * value</tt>, i.e. one nonzero entry of the matrix per line. The optional
+   * flag outputs the sparsity pattern in a different style according to the
+   * underlying sparse matrix type.
    */
   void
   print(std::ostream &out, const bool alternative_output = false) const;
 
   /**
-   * 迭代器从第一个条目开始。
-   *
+   * Iterator starting at the first entry.
    */
   iterator
   begin();
 
   /**
-   * 最后的迭代器。
-   *
+   * Final iterator.
    */
   iterator
   end();
 
   /**
-   * 从<tt>r</tt>行的第一个条目开始的迭代器。
-   *
+   * Iterator starting at the first entry of row <tt>r</tt>.
    */
   iterator
   begin(const size_type r);
 
   /**
-   * 行<tt>r</tt>的最终迭代器。
-   *
+   * Final iterator of row <tt>r</tt>.
    */
   iterator
   end(const size_type r);
   /**
-   * 从第一条开始的迭代器。
-   *
+   * Iterator starting at the first entry.
    */
   const_iterator
   begin() const;
 
   /**
-   * 最后的迭代器。
-   *
+   * Final iterator.
    */
   const_iterator
   end() const;
 
   /**
-   * 从<tt>r</tt>行的第一个条目开始的迭代器。
-   *
+   * Iterator starting at the first entry of row <tt>r</tt>.
    */
   const_iterator
   begin(const size_type r) const;
 
   /**
-   * 行<tt>r</tt>的最终迭代器。
-   *
+   * Final iterator of row <tt>r</tt>.
    */
   const_iterator
   end(const size_type r) const;
 
   /**
-   * 返回对行的底层BlockIndices数据的引用。
-   *
+   * Return a reference to the underlying BlockIndices data of the rows.
    */
   const BlockIndices &
   get_row_indices() const;
 
   /**
-   * 返回对列的基本BlockIndices数据的引用。
-   *
+   * Return a reference to the underlying BlockIndices data of the columns.
    */
   const BlockIndices &
   get_column_indices() const;
 
   /**
-   * 确定此对象的内存消耗（以字节为单位）的估计值。注意，如果是在基于MPI的程序中调用，则只返回当前处理器上保留的内存。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object. Note that only the memory reserved on the current processor is
+   * returned in case this is called in an MPI-based program.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * @addtogroup  异常  @{ .
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException4(ExcIncompatibleRowNumbers,
                  int,
@@ -763,8 +814,7 @@ public:
                  << "The blocks [" << arg1 << ',' << arg2 << "] and [" << arg3
                  << ',' << arg4 << "] have differing row numbers.");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException4(ExcIncompatibleColNumbers,
                  int,
@@ -776,106 +826,160 @@ public:
   //@}
 protected:
   /**
-   * 释放所有内存并返回到与调用默认构造函数后相同的状态。它也忘记了它之前绑定的稀疏模式。
-   * 这个函数对所有的子矩阵进行清除，然后将这个对象重置为完全没有块。
-   * 这个函数是受保护的，因为它可能需要释放额外的结构。如果足够的话，一个派生类可以再次将其公开。
+   * Release all memory and return to a state just like after having called
+   * the default constructor. It also forgets the sparsity pattern it was
+   * previously tied to.
    *
+   * This calls clear for all sub-matrices and then resets this object to have
+   * no blocks at all.
+   *
+   * This function is protected since it may be necessary to release
+   * additional structures. A derived class can make it public again, if it is
+   * sufficient.
    */
   void
   clear();
 
   /**
-   * 行和列的索引数组。
-   *
+   * Index arrays for rows and columns.
    */
   BlockIndices row_block_indices;
   BlockIndices column_block_indices;
 
   /**
-   * 子矩阵的数组。
-   *
+   * Array of sub-matrices.
    */
   Table<2, SmartPointer<BlockType, BlockMatrixBase<MatrixType>>> sub_objects;
 
   /**
-   * 这个函数收集了子对象的大小，并将其存储在内部数组中，以便能够将矩阵的全局索引转为子对象的索引。在你改变了子对象的大小之后，你必须*每次都调用这个函数。
-   * 每当子对象的大小发生变化， @p X_block_indices
-   * 数组需要更新时，派生类应该调用这个函数。
-   * 注意，这个函数不是公开的，因为不是所有的派生类都需要导出其接口。例如，对于通常的deal.II
-   * SparseMatrix类，每当调用reinit()时，大小都是隐式确定的，而且单个块不能被调整大小。因此，对于该类，这个函数不必是公共的。另一方面，对于PETSc类来说，没有相关的稀疏模式对象来决定块的大小，对于这些类来说，这个函数必须是公开可用的。因此，这些类导出了这个函数。
+   * This function collects the sizes of the sub-objects and stores them in
+   * internal arrays, in order to be able to relay global indices into the
+   * matrix to indices into the subobjects. You *must* call this function each
+   * time after you have changed the size of the sub-objects.
    *
+   * Derived classes should call this function whenever the size of the sub-
+   * objects has changed and the @p X_block_indices arrays need to be updated.
+   *
+   * Note that this function is not public since not all derived classes need
+   * to export its interface. For example, for the usual deal.II SparseMatrix
+   * class, the sizes are implicitly determined whenever reinit() is called,
+   * and individual blocks cannot be resized. For that class, this function
+   * therefore does not have to be public. On the other hand, for the PETSc
+   * classes, there is no associated sparsity pattern object that determines
+   * the block sizes, and for these the function needs to be publicly
+   * available. These classes therefore export this function.
    */
   void
   collect_sizes();
 
   /**
-   * 矩阵-向量乘法：让 $dst = M*src$ 与 $M$ 是这个矩阵。
-   * 由于在vmult/Tvmult函数的块和非块版本之间衍生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，在一个独特的名称下，模板参数可以被编译器衍生。
+   * Matrix-vector multiplication: let $dst = M*src$ with $M$ being this
+   * matrix.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class BlockVectorType>
   void
   vmult_block_block(BlockVectorType &dst, const BlockVectorType &src) const;
 
   /**
-   * 矩阵-向量乘法。就像之前的函数一样，但只适用于矩阵只有一个块列的情况。
-   * 由于在vmult/Tvmult函数的块和非块版本之间派生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，在一个独特的名称下，模板参数可以被编译器派生。
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block column.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class BlockVectorType, class VectorType>
   void
   vmult_block_nonblock(BlockVectorType &dst, const VectorType &src) const;
 
   /**
-   * 矩阵-向量乘法。就像之前的函数一样，但只适用于矩阵只有一个块行的情况。
-   * 由于在vmult/Tvmult函数的块和非块版本之间派生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，在一个独特的名字下，模板参数可以被编译器派生。
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block row.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class BlockVectorType, class VectorType>
   void
   vmult_nonblock_block(VectorType &dst, const BlockVectorType &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块的情况。
-   * 由于在vmult/Tvmult函数的块和非块版本之间派生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，其模板参数可以由编译器派生出来的唯一名称。
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class VectorType>
   void
   vmult_nonblock_nonblock(VectorType &dst, const VectorType &src) const;
 
   /**
-   * 矩阵-向量乘法：让 $dst = M^T*src$ 与 $M$
-   * 是这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
-   * 由于vmult/Tvmult函数的块和非块版本之间的模板参数派生问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，其模板参数可以由编译器派生出来的唯一名称。
+   * Matrix-vector multiplication: let $dst = M^T*src$ with $M$ being this
+   * matrix. This function does the same as vmult() but takes the transposed
+   * matrix.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class BlockVectorType>
   void
   Tvmult_block_block(BlockVectorType &dst, const BlockVectorType &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块行的情况。
-   * 由于在vmult/Tvmult函数的块和非块版本之间派生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，在一个唯一的名称下，模板参数可以被编译器派生。
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block row.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class BlockVectorType, class VectorType>
   void
   Tvmult_block_nonblock(BlockVectorType &dst, const VectorType &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块列的情况。
-   * 由于在vmult/Tvmult函数的块和非块版本之间派生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，在一个独特的名称下，模板参数可以被编译器派生。
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block column.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class BlockVectorType, class VectorType>
   void
   Tvmult_nonblock_block(VectorType &dst, const BlockVectorType &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块的情况。
-   * 由于在vmult/Tvmult函数的块和非块版本之间派生模板参数的问题，实际的函数是在派生类中实现的，实现者将调用转发给这里提供的实现者，其模板参数可以由编译器派生的唯一名称。
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block.
    *
+   * Due to problems with deriving template arguments between the block and
+   * non-block versions of the vmult/Tvmult functions, the actual functions
+   * are implemented in derived classes, with implementations forwarding the
+   * calls to the implementations provided here under a unique name for which
+   * template arguments can be derived by the compiler.
    */
   template <class VectorType>
   void
@@ -884,15 +988,17 @@ protected:
 
 protected:
   /**
-   * 一些矩阵类型，特别是PETSc，需要同步设置和添加操作。这必须对BlockMatrix中的所有矩阵进行操作。本例程通过通知所有块来准备添加元素。在添加元素之前，所有的内部例程都会调用它。
-   *
+   * Some matrix types, in particular PETSc, need to synchronize set and add
+   * operations. This has to be done for all matrices in the BlockMatrix. This
+   * routine prepares adding of elements by notifying all blocks. Called by
+   * all internal routines before adding elements.
    */
   void
   prepare_add_operation();
 
   /**
-   * 通知所有区块，让它们为设置元素做准备，见prepare_add_operation()。
-   *
+   * Notifies all blocks to let them prepare for setting elements, see
+   * prepare_add_operation().
    */
   void
   prepare_set_operation();
@@ -900,43 +1006,47 @@ protected:
 
 private:
   /**
-   * 一个包含set()和add()函数使用的一些字段的结构，用于对输入字段进行预排序。由于人们可以合理地期望从多个线程同时调用set()和add()，只要所触及的矩阵索引是不相干的，这些临时数据字段需要由一个mutex来保护；因此该结构包含这样一个mutex作为成员变量。
-   *
+   * A structure containing some fields used by the set() and add() functions
+   * that is used to pre-sort the input fields. Since one can reasonably
+   * expect to call set() and add() from multiple threads at once as long as
+   * the matrix indices that are touched are disjoint, these temporary data
+   * fields need to be guarded by a mutex; the structure therefore contains
+   * such a mutex as a member variable.
    */
   struct TemporaryData
   {
     /**
-     * 临时向量，用于计算在做集体添加或设置时写入各个块的元素。
-     *
+     * Temporary vector for counting the elements written into the individual
+     * blocks when doing a collective add or set.
      */
     std::vector<size_type> counter_within_block;
 
     /**
-     * 临时向量，用于在每个稀疏矩阵上将局部数据写入全局数据时，每个块上的列索引。
-     *
+     * Temporary vector for column indices on each block when writing local to
+     * global data on each sparse matrix.
      */
     std::vector<std::vector<size_type>> column_indices;
 
     /**
-     * 用于存储本地值的临时向量（在将本地值写入全局时需要对它们进行重新排序）。
-     *
+     * Temporary vector for storing the local values (they need to be
+     * reordered when writing local to global).
      */
     std::vector<std::vector<value_type>> column_values;
 
     /**
-     * 一个突变变量，用于保护对该结构的成员变量的访问。
-     *
+     * A mutex variable used to guard access to the member variables of this
+     * structure;
      */
     std::mutex mutex;
 
     /**
-     * 拷贝操作符。需要这样做是因为这个类的默认拷贝操作符被删除了（因为
-     * std::mutex
-     * 是不可拷贝的），因此包围类的默认拷贝操作符也被删除。
-     * 这里的实现只是没有做任何事情
+     * Copy operator. This is needed because the default copy operator of this
+     * class is deleted (since std::mutex is not copyable) and hence the
+     * default copy operator of the enclosing class is also deleted.
      *
-     * - TemporaryData对象只是在开始使用时被调整大小的抓取对象，所以实际上没有必要复制任何东西。
-     *
+     * The implementation here simply does nothing -- TemporaryData objects
+     * are just scratch objects that are resized at the beginning of their
+     * use, so there is no point actually copying anything.
      */
     TemporaryData &
     operator=(const TemporaryData &)
@@ -946,8 +1056,10 @@ private:
   };
 
   /**
-   * 一组可以被add()和set()函数使用的从头开始的数组，这些函数在使用前采取数据的指针来预排序索引。来自多个线程的访问通过作为该结构一部分的mutex变量进行同步。
-   *
+   * A set of scratch arrays that can be used by the add() and set() functions
+   * that take pointers to data to pre-sort indices before use. Access from
+   * multiple threads is synchronized via the mutex variable that is part of
+   * the structure.
    */
   TemporaryData temporary_data;
 
@@ -961,10 +1073,10 @@ private:
 };
 
 
- /*@}*/ 
+/*@}*/
 
 #ifndef DOXYGEN
- /* ------------------------- Template functions ---------------------- */ 
+/* ------------------------- Template functions ---------------------- */
 
 
 namespace BlockMatrixIterators
@@ -2547,5 +2659,3 @@ BlockMatrixBase<MatrixType>::prepare_set_operation()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_block_matrix_base_h
-
-

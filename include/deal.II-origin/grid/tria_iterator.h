@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/tria_iterator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -17,7 +18,7 @@
 #  define dealii_tria_iterator_h
 
 
-/*----------------------------   tria-iterator.h ---------------------------*/
+ /*----------------------------   tria-iterator.h ---------------------------*/ 
 
 
 #  include <deal.II/base/config.h>
@@ -55,223 +56,128 @@ class TriaActiveIterator;
 
 
 /**
- * This class implements an iterator, analogous to those used in the standard
- * library. It fulfills the requirements of a bidirectional iterator. See the
- * C++ documentation for further details of iterator specification and usage.
+ * 这个类实现了一个迭代器，类似于标准库中使用的那些迭代器。它满足了双向迭代器的要求。关于迭代器规格和用法的进一步细节，请参见C++文档。
  *
+ *  除了标准接口之外，这个类的迭代器还提供了一个<tt>-
+ * @></tt> 操作符，也就是说，你可以写这样的语句
  *
- * In addition to the standard interface, an iterator of this class provides a
- * <tt>-@></tt> operator, i.e. you can write statements like
  * @code
  * cell->set_refine_flag ();
  * @endcode
  *
- * Iterators are used whenever a loop over all lines, quads, cells etc. is to
- * be performed. These loops can then be coded like this:
+ * 每当要对所有的线、四边形、单元格等进行循环时，就会用到迭代器。这些循环可以像这样编码。
+ *
  * @code
  * cell_iterator cell = tria.begin();
  * cell_iterator end  = tria.end();
  * for (; cell!=end; ++cell)
- *   if (cell->at_boundary())
- *     cell->set_refine_flag();
+ * if (cell->at_boundary())
+ *   cell->set_refine_flag();
  * @endcode
  *
- * Note the usage of <tt>++cell</tt> instead of <tt>cell++</tt> since this does
- * not involve temporaries and copying. It is recommended to use a fixed value
- * <tt>end</tt> inside the loop instead of <tt>tria.end()</tt>, since the
- * creation and copying of these iterators is rather expensive compared to
- * normal pointers.
- *
- * The objects pointed to are accessors, derived from TriaAccessorBase. Which
- * kind of accessor is determined by the template argument <em>Accessor</em>.
- * These accessors are not so much data structures as they are a collection of
- * functions providing access to the data stored in Triangulation or
- * DoFHandler objects. Using these accessors, the structure of these classes
- * is hidden from the application program.
- *
+ * 注意使用<tt>++cell</tt>而不是<tt>cell++</tt>，因为这不涉及暂存器和复制。建议在循环中使用一个固定值<tt>end</tt>而不是<tt>tria.end()</tt>，因为与普通的指针相比，这些迭代器的创建和复制相当昂贵。
+ * 指向的对象是访问器，来自于TriaAccessorBase。哪种访问器由模板参数决定
+ * <em>  访问器  </em>
+ * 。这些访问器与其说是数据结构，不如说是提供访问存储在Triangulation或DoFHandler对象中的数据的函数集合。使用这些访问器，这些类的结构被隐藏在应用程序中。
  * <h3>Which iterator to use when</h3>
- *
- * @attention Application programs will rarely use TriaRawIterator, but rather
- * one of the derived classes TriaIterator or TriaActiveIterator.
- *
- * <ul>
- * <li> TriaRawIterator objects point to lines, cells, etc in the lists
- * whether they are used or not (in the vectors, also <i>dead</i> objects are
- * stored, since deletion in vectors is expensive and we also do not want to
- * destroy the ordering induced by the numbering in the vectors). Therefore
- * not all raw iterators point to valid objects.
- *
- * <li> The derived class TriaIterator selects the valid cells, that is, cells
- * used somewhere in the triangulation hierarchy.
- *
- * <li> TriaActiveIterator objects which only loop over active cells.
- * </ul>
- *
+ * @attention
+ * 应用程序很少使用TriaRawIterator，而是使用派生类TriaIterator或TriaActiveIterator中的一个。
+ * <ul>   <li>  TriaRawIterator对象指向列表中的行、单元格等，无论它们是否被使用（在向量中，也存储<i>dead</i>对象，因为向量中的删除很昂贵，我们也不希望破坏向量中的编号所引起的排序）。因此不是所有的原始迭代器都指向有效的对象。
+ * <li>
+ * 派生类TriaIterator选择有效的单元，也就是在三角形层次结构中某个地方使用的单元。
+ * <li>  TriaActiveIterator对象，只在活动单元上循环。  </ul>
  * <h3>Purpose</h3>
- *
- * Iterators are not much slower than operating directly on the data
- * structures, since they perform the loops that you had to handcode yourself
- * anyway. Most iterator and accessor functions are inlined.
- *
- * The main functionality of iterators, resides in the <tt>++</tt> and
- * <tt>\--</tt> operators. These move the iterator forward or backward just as
- * if it were a pointer into an array. Here, this operation is not so easy,
- * since it may include skipping some elements and the transition between the
- * triangulation levels. This is completely hidden from the user, though you
- * can still create an iterator pointing to an arbitrary element.  Actually,
- * the operation of moving iterators back and forth is not done in the
- * iterator classes, but rather in the accessor classes. Since these are
- * passed as template arguments, you can write your own versions here to add
- * more functionality.
- *
- * Furthermore, the iterators described here satisfy the requirement of input
- * and bidirectional iterators as stated by the C++ standard. It is therefore
- * possible to use the functions from the algorithm section of the C++
- * standard, e.g., <em>count_if</em> (see the documentation for Triangulation
- * for an example) and several others.
- *
+ * 迭代器并不比直接在数据结构上操作慢多少，因为它们执行的是你必须自己手工编码的循环。大多数迭代器和访问器函数是内联的。
+ * 迭代器的主要功能在于<tt>++</tt>和<tt>--</tt>操作符。这些操作将迭代器向前或向后移动，就像它是一个指向数组的指针一样。在这里，这个操作并不容易，因为它可能包括跳过一些元素和三角化水平之间的过渡。这对用户来说是完全隐藏的，尽管你仍然可以创建一个指向任意元素的迭代器。
+ * 实际上，来回移动迭代器的操作不是在迭代器类中完成的，而是在访问器类中完成的。因为这些是作为模板参数传递的，所以你可以在这里写出你自己的版本来增加更多的功能。
+ * 此外，这里描述的迭代器满足了C++标准所规定的输入和双向迭代器的要求。因此，可以使用C++标准中算法部分的函数，例如，
+ * <em>  count_if  </em>
+ * （见Triangulation的文档中的一个例子）和其他几个。
  * <h3>Implementation</h3>
- *
- * The iterator class itself does not have much functionality. It only becomes
- * useful when assigned an Accessor (the second template parameter), which
- * really does the access to data. An Accessor has to fulfill some
- * requirements:
- *
- * <ul>
- * <li> It must have two members named <tt>present_level</tt> and
- * <tt>present_index</tt> storing the address of the element in the
- * triangulation presently pointed to. These data have to be accessible by all
- * triangulation iterators listed above.
- *
- * <li> It must have a constructor which takes a Triangulation* and two
- * unsigned integers, denoting the initial level and index, as well as a data
- * object depending on its type.
- *
- * <li> For the TriaIterator and the TriaActiveIterator class, it must have a
- * member function <tt>bool used()</tt>, for the latter a member function
- * <tt>bool active()</tt>.
- *
- * <li> It must have void operators <tt>++</tt> and <tt>\--</tt>.
- *
- * <li> It must declare a local alias <tt>AccessorData</tt> which states the
- * data type the accessor expects to get passed as fourth constructor
- * argument. By declaring a local data type, the respective iterator class may
- * type-safely enforce that data type to be one of its own constructor
- * argument types. If an accessor class does not need additional data, this
- * type shall be <tt>void</tt>.
- * </ul>
- *
- * Then the iterator is able to do what it is supposed to. All of the
- * necessary functions are implemented in the <tt>Accessor</tt> base class,
- * but you may write your own version (non-virtual, since we use templates) to
- * add functionality.
- *
- * The accessors provided by the library consist of two groups, determined by
- * whether they access the data of Triangulation objects or DoFHandler objects.
- * They are derived from TriaAccessor and DoFAccessor, respectively. Each group
- * also has specialized accessors for cells (as opposed to faces and lines) that
- * offer more functionality such as accessing neighbors.
- *
- * @attention It seems impossible to preserve constness of a triangulation
- * through iterator usage. Thus, if you declare pointers to a <tt>const</tt>
- * triangulation object, you should be well aware that you might involuntarily
- * alter the data stored in the triangulation.
- *
- * @note More information on valid and invalid iterators can be found in the
- * documentation of TriaAccessorBase, where the iterator states are checked
- * and implemented.
+ * 迭代器类本身并没有什么功能。它只有在分配给Accessor（第二个模板参数）时才变得有用，Accessor才真正对数据进行访问。一个Accessor必须满足一些要求。
+ * <ul>   <li>  它必须有两个名为<tt>present_level</tt>和<tt>present_index</tt>的成员，存储目前所指向的三角结构中的元素的地址。这些数据必须能被上面列出的所有三角形迭代器访问。
+ * <li>
+ * 它必须有一个构造函数，接收一个三角形*和两个无符号整数，表示初始级别和索引，以及一个取决于其类型的数据对象。
+ * <li>
+ * 对于TriaIterator和TriaActiveIterator类，它必须有一个成员函数<tt>bool
+ * used()</tt>，对于后者有一个成员函数<tt>bool active()</tt>。
+ * <li>  它必须有无效操作符<tt>++</tt>和<tt>--</tt>。
+ * <li>  它必须声明一个本地别名<tt>AccessorData</tt>，说明访问器期望得到的数据类型作为第四个构造参数传递。通过声明本地数据类型，相应的迭代器类可以类型安全地强制该数据类型为它自己的构造器参数类型之一。如果一个存取器类不需要额外的数据，这个类型应是<tt>void</tt>。  </ul>
+ * 那么迭代器就能够做它应该做的事情。所有必要的函数都在<tt>Accessor</tt>基类中实现，但你可以编写自己的版本（非虚拟的，因为我们使用模板）来增加功能。
+ * 该库提供的访问器由两组组成，由它们是访问Triangulation对象还是DoFHandler对象的数据决定。它们分别来自TriaAccessor和DoFAccessor。每组都有专门的单元格（相对于面和线）的访问器，提供更多的功能，如访问邻居。
+ * @attention
+ * 似乎不可能通过迭代器的使用来保持三角形的不变性。因此，如果你声明指向<tt>const</tt>
+ * triangulation对象的指针，你应该清楚地意识到你可能会不由自主地改变存储在三角结构中的数据。
  *
  *
- * <h3>Past-the-end iterators</h3>
+ * @note
+ * 关于有效和无效的迭代器的更多信息可以在TriaAccessorBase的文档中找到，其中检查和实现了迭代器状态。
  *
- * There is a representation of past-the-end-pointers, denoted by special
- * values of the member variables @p present_level and @p present_index: If
- * <tt>present_level>=0</tt> and <tt>present_index>=0</tt>, then the object is
- * valid (there is no check whether the triangulation really has that many
- * levels or that many cells on the present level when we investigate the
- * state of an iterator; however, in many places where an iterator is
- * dereferenced we make this check); if <tt>present_level==-1</tt> and
- * <tt>present_index==-1</tt>, then the iterator points past the end; in all
- * other cases, the iterator is considered invalid. You can check this by
- * calling the <tt>state()</tt> function.
- *
- * An iterator is also invalid, if the pointer pointing to the Triangulation
- * object is invalid or zero.
- *
- * Finally, an iterator is invalid, if the element pointed to by @p
- * present_level and @p present_index is not used, i.e. if the @p used flag is
- * set to false.
- *
- * The last two checks are not made in <tt>state()</tt> since both cases
- * should only occur upon uninitialized construction through @p memcpy and the
- * like (the parent triangulation can only be set upon construction). If an
- * iterator is constructed empty through the empty constructor,
- * <tt>present_level==-2</tt> and <tt>present_index==-2</tt>. Thus, the
- * iterator is invalid anyway, regardless of the state of the triangulation
- * pointer and the state of the element pointed to.
- *
- * Past-the-end iterators may also be used to compare an iterator with the
- * <i>before-the-start</i> value, when running backwards. There is no
- * distinction between the iterators pointing past the two ends of a vector.
- *
- * By defining only one value to be past-the-end and making all other values
- * invalid provides a second track of security: if we should have forgotten a
- * check in the library when an iterator is incremented or decremented, we
- * automatically convert the iterator from the allowed state "past-the-end" to
- * the disallowed state "invalid" which increases the chance that some time
- * earlier than for past-the-end iterators an exception is raised.
- *
+ *  <h3>Past-the-end iterators</h3>
+ * 有一种past-the-end-pointers的表示方法，由成员变量的特殊值表示
+ * @p present_level  和  @p present_index:  ]
+ * 如果<tt>present_level>=0</tt>和<tt>present_index>=0</tt>，那么这个对象是有效的（当我们调查一个迭代器的状态时，没有检查三角形是否真的有那么多层或者在本层有那么多单元。然而，在许多迭代器被取消引用的地方，我们会进行这样的检查）；如果<tt>present_level==-1</tt>和<tt>present_index==-1</tt>，那么迭代器就指向了终点；在所有其他情况下，迭代器被视为无效。你可以通过调用<tt>state()</tt>函数来检查这一点。
+ * 如果指向Triangulation对象的指针无效或为零，那么一个迭代器也是无效的。
+ * 最后，如果 @p  present_level和 @p present_index
+ * 所指向的元素没有被使用，即 @p used
+ * 标志被设置为false，则迭代器是无效的。
+ * 后面两个检查不在<tt>state()</tt>中进行，因为这两种情况应该只在通过
+ * @p memcpy
+ * 和类似的未初始化构造时发生（父三角形只能在构造时被设置）。如果一个迭代器通过空构造函数被构造为空，<tt>present_level==-2</tt>和<tt>present_index==-2</tt>。因此，无论如何，这个迭代器是无效的，不管三角指针的状态和所指向的元素的状态如何。
+ * 过去的迭代器也可以用来比较一个迭代器和<i>before-the-start</i>的值，当向后运行时。指向一个向量两端过去的迭代器之间没有区别。
+ * 通过只定义一个值为过端，并使所有其他的值无效，提供了第二个安全轨道：如果我们应该在迭代器被递增或递减时忘记了库中的检查，我们自动将迭代器从允许的状态
+ * "过端 "转换为不允许的状态
+ * "无效"，这增加了比过端迭代器早一些时间引发异常的机会。
  * @ref Triangulation
  * @ingroup grid
+ *
  * @ingroup Iterators
+ *
  */
 template <typename Accessor>
 class TriaRawIterator
 {
 public:
   /**
-   * Declare the type of the Accessor for use in the outside world. This way
-   * other functions can use the Accessor's type without knowledge of how the
-   * exact implementation actually is.
+   * 声明Accessor的类型，以便在外部世界使用。这样其他函数就可以使用Accessor的类型而不知道具体的实现方式。
+   *
    */
   using AccessorType = Accessor;
 
   /**
-   * Default constructor. This constructor creates an iterator pointing
-   * to an invalid object. The iterator is consequently not usable.
+   * 默认构造函数。这个构造函数创建一个指向无效对象的迭代器。因此，该迭代器是不可用的。
+   *
    */
   TriaRawIterator();
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   TriaRawIterator(const TriaRawIterator &);
 
   /**
-   * Construct an iterator from the given accessor; the given accessor needs
-   * not be of the same type as the accessor of this class is, but it needs to
-   * be convertible.
-   *
-   * Through this constructor, it is also possible to construct objects for
-   * derived iterators:
+   * 从给定的访问器中构造一个迭代器；给定的访问器不需要与本类的访问器是同一类型，但它需要是可转换的。
+   * 通过这个构造函数，也可以构造派生迭代器的对象。
    * @code
    * DoFCellAccessor dof_accessor;
    * Triangulation::active_cell_iterator cell = dof_accessor;
    * @endcode
+   *
+   *
    */
   explicit TriaRawIterator(const Accessor &a);
 
   /**
-   * Constructor. Assumes that the other accessor type is convertible to the
-   * current one.
+   * 构造器。假设其他访问器类型可以转换为当前的类型。
+   *
    */
   template <typename OtherAccessor>
   explicit TriaRawIterator(const OtherAccessor &a);
 
   /**
-   * Proper constructor, initialized with the triangulation, the level and
-   * index of the object pointed to. The last parameter is of a type declared
-   * by the accessor class.
+   * 适当的构造函数，用三角形、水平和指向的对象的索引进行初始化。最后一个参数是访问器类所声明的类型。
+   *
    */
   TriaRawIterator(
     const Triangulation<Accessor::dimension, Accessor::space_dimension> *parent,
@@ -280,21 +186,19 @@ public:
     const typename AccessorType::AccessorData *local_data = nullptr);
 
   /**
-   * This is a conversion operator (constructor) which takes another iterator
-   * type and copies the data; this conversion works, if there is a conversion
-   * path from the @p OtherAccessor class to the @p Accessor class of this
-   * object. One such path would be derived class to base class, which for
-   * example may be used to get a Triangulation::raw_cell_iterator from a
-   * DoFHandler::raw_cell_iterator, since the DoFAccessor class is derived
-   * from the TriaAccessorBase class.
+   * 这是一个转换操作符（构造器），它接受另一个迭代器类型并复制数据；如果有一个从
+   * @p OtherAccessor 类到这个对象的 @p Accessor
+   * 类的转换路径，那么这个转换就能发挥作用。一个这样的路径是派生类到基类，例如可以用来从
+   * DoFHandler::raw_cell_iterator, 中获得 Triangulation::raw_cell_iterator
+   * ，因为DoFAccessor类是派生自TriaAccessorBase类。
+   *
    */
   template <typename OtherAccessor>
   TriaRawIterator(const TriaRawIterator<OtherAccessor> &i);
 
   /**
-   * Another conversion operator, where we use the pointers to the
-   * Triangulation from a TriaAccessorBase object, while the additional data
-   * is used according to the actual type of Accessor.
+   * 另一个转换操作符，我们使用来自TriaAccessorBase对象的Triangulation指针，同时根据Accessor的实际类型使用附加数据。
+   *
    */
   TriaRawIterator(
     const TriaAccessorBase<Accessor::structure_dimension,
@@ -303,78 +207,77 @@ public:
     const typename Accessor::AccessorData *            local_data);
 
   /**
-   * Conversion constructor. Same as above with the difference that it
-   * converts from TriaIterator classes (not TriaRawIterator).
+   * 转换构造器。与上述相同，不同的是它从TriaIterator类（而不是TriaRawIterator）进行转换。
+   *
    */
   template <typename OtherAccessor>
   TriaRawIterator(const TriaIterator<OtherAccessor> &i);
 
   /**
-   * Conversion constructor. Same as above with the difference that it
-   * converts from TriaActiveIterator classes (not TriaRawIterator).
+   * 转换构造函数。和上面一样，不同的是它转换自TriaActiveIterator类（而不是TriaRawIterator）。
+   *
    */
   template <typename OtherAccessor>
   TriaRawIterator(const TriaActiveIterator<OtherAccessor> &i);
 
   /**
-   * @name Dereferencing
+   * @name  解除引用
+   *
    */
-  /*@{*/
+   /*@{*/ 
   /**
-   * Dereferencing operator, returns a reference to an accessor. Usage is thus
-   * like <tt>(*i).index ();</tt>
+   * 解除引用操作符，返回对一个访问器的引用。因此，用法类似于<tt>(*i).index
+   * ();</tt> 这个函数必须为不同的 @p
+   * 指针进行明确的专业化处理，以允许一个
+   * <tt>iterator<1,TriangulationLevel<1>::LinesData></tt>
+   * 指向<tt>tria->lines.cell[index]</tt>，而对于高一维，则必须指向<tt>tria->quads.cell[index]</tt>。
+   * 你不能解读无效的或超过终点的迭代器。
    *
-   * This function has to be specialized explicitly for the different @p
-   * Pointees, to allow an
-   * <tt>iterator<1,TriangulationLevel<1>::LinesData></tt> to point to
-   * <tt>tria->lines.cells[index]</tt> while for one dimension higher it has
-   * to point to <tt>tria->quads.cells[index]</tt>.
-   *
-   * You must not dereference invalid or past the end iterators.
    */
   const Accessor &operator*() const;
 
   /**
-   * Dereferencing operator, non-@p const version.
+   * 去引用操作符，非 @p const 版本。
+   *
    */
   Accessor &operator*();
 
   /**
-   * Dereferencing operator, returns a reference of the cell pointed to. Usage
-   * is thus like <tt>i->index ();</tt>
+   * 去引用操作符，返回指向的单元格的引用。使用方法类似于
+   * <tt>i->index ();</tt> 有一个  @p const  和一个非  @p const
+   * 版本。
    *
-   * There is a @p const and a non-@p const version.
    */
   const Accessor *operator->() const;
 
   /**
-   * Dereferencing operator, non-@p const version.
+   * 去引用操作符，非 @p const 版本。
+   *
    */
   Accessor *operator->();
 
 
   /**
-   * In order be able to assign end-iterators for different accessors to each
-   * other, we need an access function which returns the accessor regardless
-   * of its state.
+   * 为了能够将不同的访问器的末尾迭代器相互分配，我们需要一个访问函数，无论访问器的状态如何，都会返回访问器。
+   * @warning
+   * 这个函数不应该在应用程序中使用。它只用于库内的有限用途，而且会使调试工作变得更加困难。
    *
-   * @warning This function should not be used in application programs. It is
-   * only intended for limited purposes inside the library and it makes
-   * debugging much harder.
    */
   const Accessor &
   access_any() const;
 
-  /*@}*/
+   /*@}*/ 
 
   /**
-   * Assignment operator.
+   * 赋值运算符。
+   *
    */
   TriaRawIterator &
   operator=(const TriaRawIterator &);
 
   /**
-   * Compare for equality.
+   * 等价比较。
+   *
    */
   template <typename OtherAccessor = Accessor>
   typename std::enable_if<std::is_convertible<OtherAccessor, Accessor>::value,
@@ -382,100 +285,81 @@ public:
   operator==(const TriaRawIterator<OtherAccessor> &) const;
 
   /**
-   * Compare for inequality.
+   * 不等式比较。
+   *
    */
   bool
   operator!=(const TriaRawIterator &) const;
 
   /**
-   * Ordering relation for iterators.
+   * 迭代器的排序关系。    这种关系试图对单元格进行总排序。    该关系定义如下。    对于 <tt>Accessor::structure_dimension < Accessor::dimension</tt>, 的对象，我们只需比较这种对象的索引。  排序是根据以下的层次结构进行的（在这个意义上，只有当前一个测试没有结果时，才会应用下一个测试）。      <ol>   <li>  过去结束的迭代器总是最后排序。两个过去-结束的迭代器排名相同，因此在这种情况下会返回false。 </li>   <li>  单元的级别。 </li>   <li>  级别内的单元格的索引。 </li>   </ol>  级别内的单元格。
+   * @note  在一个 parallel::distributed::Triangulation
+   * 中，不同的处理器之间的排序是不一致的，因为我们依靠index()，这很可能是不一样的。
    *
-   * This relation attempts a total ordering of cells.
-   *
-   * The relation is defined as follows:
-   *
-   * For objects of <tt>Accessor::structure_dimension <
-   * Accessor::dimension</tt>, we simply compare the index of such an object.
-   * The ordering is lexicographic according to the following hierarchy (in
-   * the sense, that the next test is only applied if the previous was
-   * inconclusive):
-   *
-   * <ol>
-   * <li> The past-the-end iterator is always ordered last. Two past-the-end
-   * iterators rank the same, thus false is returned in that case.</li>
-   *
-   * <li> The level of the cell.</li>
-   * <li> The index of a cell inside the level.</li>
-   * </ol>
-   *
-   * @note The ordering is not consistent between different processor in a
-   * parallel::distributed::Triangulation because we rely on index(), which is
-   * likely not the same.
    */
   bool
   operator<(const TriaRawIterator &) const;
 
   /**
-   * Another comparison operator, implementing with the same ordering as
-   * #operator<.
+   * 另一个比较运算符，实现与#operator<相同的排序。
+   *
    */
   bool
   operator>(const TriaRawIterator &) const;
 
   /**
-   * @name Advancement of iterators
+   * @name  推进迭代器的发展
+   *
    */
-  /*@{*/
+   /*@{*/ 
   /**
-   * Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances
-   * the iterator to the next element and returns a reference to
-   * <tt>*this</tt>.
+   * 前缀<tt>++</tt>操作符。<tt>++iterator</tt>。这个操作符将迭代器推进到下一个元素，并返回一个对<tt>*this</tt>的引用。
+   *
    */
   TriaRawIterator &
   operator++();
 
   /**
-   * Postfix <tt>++</tt> operator: <tt>iterator++</tt>. This operator advances
-   * the iterator to the next element, but returns an iterator to the element
-   * previously pointed to.
+   * 后缀<tt>++</tt>操作符。<tt>iterator++</tt>。该操作符将迭代器推进到下一个元素，但返回之前指向的元素的迭代器。
+   * 由于这个操作涉及到一个临时和复制操作，而且对于一个指针来说，
+   * @p iterator
+   * 是一个相当大的对象，所以尽可能使用前缀操作符<tt>++iterator</tt>，特别是在for循环的头部（<tt>for
+   * (; iterator!=end;
+   * ++iterator)</tt>），因为在那里你通常不需要返回值。
    *
-   * Since this operation involves a temporary and a copy operation and since
-   * an @p iterator is quite a large object for a pointer, use the prefix
-   * operator <tt>++iterator</tt> whenever possible, especially in the header
-   * of for loops (<tt>for (; iterator!=end; ++iterator)</tt>) since there you
-   * normally never need the returned value.
    */
   TriaRawIterator
   operator++(int);
 
   /**
-   * Prefix @p \-- operator: @p \--iterator. This operator moves the iterator to
-   * the previous element and returns a reference to <tt>*this</tt>.
+   * 前缀  @p \--  操作符。  @p \--iterator.
+   * 这个操作符将迭代器移动到前一个元素，并返回一个对<tt>*this</tt>的引用。
+   *
    */
   TriaRawIterator &
   operator--();
 
   /**
-   * Postfix @p \-- operator: @p iterator\--. This operator moves the iterator
-   * to the previous element, but returns an iterator to the element
-   * previously pointed to.
+   * 后缀  @p \--  操作符。  @p iterator\--.
+   * 该操作符将迭代器移动到前一个元素，但返回之前指向的元素的迭代器。
+   * 这与后缀操作符++的情况相同：如果可能的话，使用前缀操作符的形式来避免它，以避免使用临时变量。
    *
-   * The same applies as for the postfix operator++: If possible, avoid it by
-   * using the prefix operator form to avoid the use of a temporary variable.
    */
   TriaRawIterator
   operator--(int);
-  /*@}*/
+   /*@}*/ 
 
   /**
-   * Return the state of the iterator.
+   * 返回迭代器的状态。
+   *
    */
   IteratorState::IteratorStates
   state() const;
 
   /**
-   * Print the iterator to a stream <code>out</code>. The format is
-   * <tt>level.index</tt>.
+   * 打印迭代器到一个流  <code>out</code>
+   * 。格式是<tt>level.index</tt>。
+   *
    */
   template <class StreamType>
   void
@@ -483,16 +367,15 @@ public:
 
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Mark the class as bidirectional iterator and declare some alias which
-   * are standard for iterators and are used by algorithms to enquire about the
-   * specifics of the iterators they work on.
+   * 将该类标记为双向迭代器，并声明一些别名，这些别名是迭代器的标准，被算法用来查询它们所工作的迭代器的具体内容。
+   *
    */
   using iterator_category = std::bidirectional_iterator_tag;
   using value_type        = Accessor;
@@ -501,11 +384,13 @@ public:
   using reference         = Accessor &;
 
   /**
-   * @name Exceptions
+   * @name  异常情况
+   *
    */
-  /*@{*/
+   /*@{*/ 
   /**
-   * Exception for TriaObjects with level, i.e. cells.
+   * 有水平的TriaObjects的异常，即单元格。
+   *
    */
   DeclException1(ExcDereferenceInvalidCell,
                  Accessor,
@@ -520,7 +405,8 @@ public:
                           "invalid")));
 
   /**
-   * Exception.
+   * 异常情况。
+   *
    */
   DeclException1(ExcDereferenceInvalidObject,
                  Accessor,
@@ -534,18 +420,21 @@ public:
                           "invalid")));
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcAdvanceInvalidObject);
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcInvalidComparison);
 
-  /*@}*/
+   /*@}*/ 
 protected:
   /**
-   * Object holding the real data.
+   * 持有真实数据的对象。
+   *
    */
   Accessor accessor;
 
@@ -567,46 +456,44 @@ protected:
 
 
 /**
- * This specialization of TriaRawIterator provides access only to the
- * <em>used</em> lines, quads, cells, etc.
+ * TriaRawIterator的这种特殊化只提供对 <em> 使用的 </em>
+ * 线、四边形、单元格等的访问。
+ *
  *
  * @ingroup grid
+ *
  * @ingroup Iterators
+ *
  */
 template <typename Accessor>
 class TriaIterator : public TriaRawIterator<Accessor>
 {
 public:
   /**
-   * Default constructor. This constructor creates an iterator pointing
-   * to an invalid object. The iterator is consequently not usable.
+   * 默认构造函数。这个构造函数创建一个指向无效对象的迭代器。因此，该迭代器是不可用的。
+   *
    */
   TriaIterator();
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   TriaIterator(const TriaIterator<Accessor> &);
 
   /**
-   * Conversion constructor from iterators potentially pointing to non-active
-   * objects (i.e., for objects for which we can't tell that the object is
-   * used just by looking at its type).
+   * 从可能指向非活动对象的迭代器的转换构造器（即，对于那些我们不能仅通过查看其类型就知道该对象被使用的对象）。
+   * @pre
+   * 传递给这个构造函数的参数必须是(i)一个过去的迭代器；或者(ii)它必须指向一个已使用的对象。所有其他情况都会导致异常。
    *
-   * @pre The argument passed to this constructor must either be
-   *   (i) a past-the-end iterator; or (ii) it must point to
-   *   a used object. All other cases will result in an exception.
    */
   TriaIterator(const TriaRawIterator<Accessor> &);
 
   /**
-   * Constructor, initialized with the triangulation, the level and
-   * index of the object pointed to. The last parameter is of a type declared
-   * by the accessor class.
+   * 构造函数，用三角形、水平和指向的对象的索引进行初始化。最后一个参数是由访问器类声明的类型。
+   * @pre
+   * 传递给这个构造函数的参数必须是（i）一个过去的迭代器；或者（ii）它必须指向一个使用过的对象。所有其他情况都会导致异常。
    *
-   * @pre The argument passed to this constructor must either be
-   *   (i) a past-the-end iterator; or (ii) it must point to
-   *   a used object. All other cases will result in an exception.
    */
   TriaIterator(
     const Triangulation<Accessor::dimension, Accessor::space_dimension> *parent,
@@ -615,28 +502,26 @@ public:
     const typename Accessor::AccessorData *local_data = nullptr);
 
   /**
-   * Construct from an accessor of type OtherAccessor that is convertible to
-   * the type Accessor.
+   * 从一个可转换为Accessor类型的OtherAccessor的访问器构造。
+   *
    */
   template <typename OtherAccessor>
   explicit TriaIterator(const OtherAccessor &a);
 
   /**
-   * This is a conversion operator (constructor) which takes another iterator
-   * type and copies the data; this conversion works, if there is a conversion
-   * path from the @p OtherAccessor class to the @p Accessor class of this
-   * object. One such path would be derived class to base class, which for
-   * example may be used to get a Triangulation::cell_iterator from a
-   * DoFHandler::cell_iterator, since the DoFAccessor class is derived from
-   * the TriaAccessorBase class.
+   * 这是一个转换操作符（构造器），它接收另一个迭代器类型并复制数据；如果有一个从
+   * @p OtherAccessor 类到该对象的 @p Accessor
+   * 类的转换路径，那么这种转换就能发挥作用。一个这样的路径是派生类到基类，例如可以用来从
+   * DoFHandler::cell_iterator, 中获得 Triangulation::cell_iterator
+   * ，因为DoFAccessor类是派生自TriaAccessorBase类。
+   *
    */
   template <typename OtherAccessor>
   TriaIterator(const TriaIterator<OtherAccessor> &i);
 
   /**
-   * Another conversion operator, where we use the pointers to the
-   * Triangulation from a TriaAccessorBase object, while the additional data
-   * is used according to the actual type of Accessor.
+   * 另一个转换操作符，我们使用TriaAccessorBase对象的三角函数的指针，同时根据Accessor的实际类型使用附加数据。
+   *
    */
   TriaIterator(const TriaAccessorBase<Accessor::structure_dimension,
                                       Accessor::dimension,
@@ -644,92 +529,90 @@ public:
                const typename Accessor::AccessorData *            local_data);
 
   /**
-   * Similar conversion operator to the above one, but does a check whether
-   * the iterator points to a used element, which is necessary for raw
-   * iterators.
+   * 类似于上面的转换操作符，但做了一个检查迭代器是否指向一个使用的元素，这对原始迭代器来说是必要的。
+   *
    */
   template <typename OtherAccessor>
   TriaIterator(const TriaRawIterator<OtherAccessor> &i);
 
   /**
-   * Similar conversion operator to the above one, but for conversion from
-   * active iterators.
+   * 与上面那个类似的转换操作符，但用于从活动迭代器的转换。
+   *
    */
   template <typename OtherAccessor>
   TriaIterator(const TriaActiveIterator<OtherAccessor> &i);
 
   /**
-   * Assignment operator.
+   * 赋值运算符。
+   *
    */
   TriaIterator<Accessor> &
   operator=(const TriaIterator<Accessor> &);
 
   /**
-   * Cross assignment operator. This assignment is only valid if the given
-   * iterator points to a used element.
+   * 交叉赋值运算符。这个赋值只有在给定的迭代器指向一个使用的元素时才有效。
+   *
    */
   TriaIterator<Accessor> &
   operator=(const TriaRawIterator<Accessor> &);
 
   /**
-   * Assignment operator. Requires, that Accessor can be copied from
-   * OtherAccessor.
+   * 赋值运算符。要求，Accessor可以从OtherAccessor复制。
+   *
    */
   template <class OtherAccessor>
   TriaIterator<Accessor> &
   operator=(const TriaIterator<OtherAccessor> &);
 
   /**
-   * Cross assignment operator. This assignment is only valid if the given
-   * iterator points to a used element. Requires, that Accessor can be copied
-   * from OtherAccessor.
+   * 交叉赋值运算符。这个赋值只有在给定的迭代器指向一个使用的元素时才有效。要求，Accessor可以从OtherAccessor中复制。
+   *
    */
   template <class OtherAccessor>
   TriaIterator<Accessor> &
   operator=(const TriaRawIterator<OtherAccessor> &);
 
   /**
-   * @name Advancement of iterators
+   * @name  迭代器的推进
+   *
    */
-  /*@{*/
+   /*@{*/ 
   /**
-   * Prefix <tt>++</tt> operator: <tt>++i</tt>. This operator advances the
-   * iterator to the next used element and returns a reference to
-   * <tt>*this</tt>.
+   * 前缀<tt>++</tt>操作符。<tt>++i</tt>。这个操作符将迭代器推进到下一个使用的元素，并返回一个对<tt>*this</tt>的引用。
+   *
    */
   TriaIterator<Accessor> &
   operator++();
 
   /**
-   * Postfix <tt>++</tt> operator: <tt>i++</tt>. This operator advances the
-   * iterator to the next used element, but returns an iterator to the element
-   * previously pointed to. Since this involves a temporary and a copy
-   * operation and since an @p active_iterator is quite a large object for a
-   * pointer, use the prefix operator <tt>++i</tt> whenever possible,
-   * especially in the head of for loops (<tt>for (; i!=end; ++i)</tt>) since
-   * there you normally never need the returned value.
+   * 后缀<tt>++</tt>操作符。<tt>i++</tt>。这个操作符将迭代器推进到下一个使用的元素，但返回一个迭代器到之前指向的元素。由于这涉及到一个临时和复制操作，而且对于一个指针来说，
+   * @p active_iterator
+   * 是一个相当大的对象，所以尽可能使用前缀操作符<tt>++i</tt>，特别是在for循环的头部（<tt>for
+   * (; i!=end; ++i)</tt>），因为在那里你通常不需要返回值。
+   *
    */
   TriaIterator<Accessor>
   operator++(int);
 
   /**
-   * Prefix @p \-- operator: @p \--i. This operator advances the iterator to the
-   * previous used element and returns a reference to <tt>*this</tt>.
+   * 前缀  @p \--  操作符。  @p \--i.
+   * 这个操作符将迭代器推进到前一个使用的元素，并返回对<tt>*this</tt>的引用。
+   *
    */
   TriaIterator<Accessor> &
   operator--();
 
   /**
-   * Postfix @p \-- operator: @p i\--.
+   * Postfix  @p \--  操作符。  @p i\--.
+   *
    */
   TriaIterator<Accessor>
   operator--(int);
-  /*@}*/
+   /*@}*/ 
 
   /**
-   * Declare some aliases which are standard for iterators and are used
-   * by algorithms to enquire about the specifics of the iterators they
-   * work on.
+   * 声明一些别名，这些别名是迭代器的标准，被算法用来查询它们所工作的迭代器的具体内容。
+   *
    */
   using iterator_category =
     typename TriaRawIterator<Accessor>::iterator_category;
@@ -739,66 +622,59 @@ public:
   using difference_type = typename TriaRawIterator<Accessor>::difference_type;
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcAssignmentOfUnusedObject);
 };
 
 
 /**
- * This specialization of TriaIterator provides access only to the
- * <em>active</em> lines, quads, cells, etc. An active cell is a cell which is
- * not refined and thus a cell on which calculations on the finest level are
- * done.
+ * TriaIterator的这种特殊化只提供对 <em> 活动 </em>
+ * 线、四边形、单元格等的访问。活动单元是指没有被细化的单元，因此是在最细级别上进行计算的单元。
+ *
  *
  * @ingroup grid
  * @ingroup Iterators
+ *
  */
 template <typename Accessor>
 class TriaActiveIterator : public TriaIterator<Accessor>
 {
 public:
   /**
-   * Default constructor. This constructor creates an iterator pointing
-   * to an invalid object. The iterator is consequently not usable.
+   * 默认构造函数。这个构造函数创建一个指向无效对象的迭代器。因此，该迭代器是不可用的。
+   *
    */
   TriaActiveIterator();
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   TriaActiveIterator(const TriaActiveIterator<Accessor> &);
 
   /**
-   * Conversion constructor creating an active iterator from an iterators
-   * pointing to a potentially non-active object (or at least from which
-   * it is not apparent from the type alone that it is active).
+   * 转换构造函数从指向潜在非活动对象的迭代器（或至少从其类型上看不出它是活动的）创建一个活动的迭代器。
+   * @pre
+   * 传递给这个构造函数的参数必须是(i)一个已过终点的迭代器；或者(ii)它必须指向一个活动对象。所有其他情况都会导致异常。
    *
-   * @pre The argument passed to this constructor must either be
-   *   (i) a past-the-end iterator; or (ii) it must point to
-   *   an active object. All other cases will result in an exception.
    */
   TriaActiveIterator(const TriaRawIterator<Accessor> &);
 
   /**
-   * Conversion constructor creating an active iterator from an iterators
-   * pointing to a potentially non-active object (or at least from which
-   * it is not apparent from the type alone that it is active).
+   * 转换构造器从一个指向潜在非活动对象的迭代器中创建一个活动迭代器（或者至少从其类型上看不出它是活动的）。
+   * @pre
+   * 传递给这个构造函数的参数必须是(i)一个已过终点的迭代器；或者(ii)它必须指向一个活动对象。所有其他情况都会导致异常。
    *
-   * @pre The argument passed to this constructor must either be
-   *   (i) a past-the-end iterator; or (ii) it must point to
-   *   an active object. All other cases will result in an exception.
    */
   TriaActiveIterator(const TriaIterator<Accessor> &);
 
   /**
-   * Constructor, initialized with the triangulation, the level and
-   * index of the object pointed to. The last parameter is of a type declared
-   * by the accessor class used by the current iterator.
+   * 构造函数，用三角形、级别和指向的对象的索引进行初始化。最后一个参数是由当前迭代器使用的访问器类所声明的类型。
+   * @pre
+   * 传递给这个构造函数的参数必须是(i)一个已过终点的迭代器；或者(ii)它必须指向一个活动对象。所有其他的情况将导致一个异常。
    *
-   * @pre The argument passed to this constructor must either be
-   *   (i) a past-the-end iterator; or (ii) it must point to
-   *   an active object. All other cases will result in an exception.
    */
   TriaActiveIterator(
     const Triangulation<Accessor::dimension, Accessor::space_dimension> *parent,
@@ -807,21 +683,20 @@ public:
     const typename Accessor::AccessorData *local_data = nullptr);
 
   /**
-   * This is a conversion operator (constructor) which takes another iterator
-   * type and copies the data; this conversion works, if there is a conversion
-   * path from the @p OtherAccessor class to the @p Accessor class of this
-   * object. One such path would be derived class to base class, which for
-   * example may be used to get a Triangulation::active_cell_iterator from a
-   * DoFHandler::active_cell_iterator, since the DoFAccessor class is derived
-   * from the TriaAccessorBase class.
+   * 这是一个转换操作符（构造函数），它接收另一个迭代器类型并复制数据；如果有一个从
+   * @p OtherAccessor 类到该对象的 @p Accessor
+   * 类的转换路径，那么这种转换就能发挥作用。一个这样的路径是派生类到基类，例如可以用来从
+   * DoFHandler::active_cell_iterator, 中获得
+   * Triangulation::active_cell_iterator
+   * ，因为DoFAccessor类是派生自TriaAccessorBase类。
+   *
    */
   template <typename OtherAccessor>
   TriaActiveIterator(const TriaActiveIterator<OtherAccessor> &i);
 
   /**
-   * Another conversion operator, where we use the pointers to the
-   * Triangulation from a TriaAccessorBase object, while the additional data
-   * is used according to the actual type of Accessor.
+   * 另一个转换操作符，我们使用TriaAccessorBase对象的三角函数的指针，同时根据Accessor的实际类型使用附加数据。
+   *
    */
   TriaActiveIterator(
     const TriaAccessorBase<Accessor::structure_dimension,
@@ -830,107 +705,100 @@ public:
     const typename Accessor::AccessorData *            local_data);
 
   /**
-   * Similar conversion operator to the above one, but does a check whether
-   * the iterator points to a used element, and is active, which is necessary
-   * for raw iterators. Since usual iterators are also raw iterators, this
-   * constructor works also for parameters of type
-   * <tt>TriaIterator<OtherAccessor></tt>.
+   * 与上面的转换操作类似，但做了一个检查迭代器是否指向一个使用的元素，并且是活动的，这对原始迭代器来说是必要的。由于通常的迭代器也是原始迭代器，这个构造函数也适用于<tt>TriaIterator<OtherAccessor></tt>类型的参数。
+   * @pre
+   * 传递给这个构造函数的参数必须是(i)一个过去的迭代器；或者(ii)它必须指向一个活动对象。所有其他情况都会导致异常。
    *
-   * @pre The argument passed to this constructor must either be
-   *   (i) a past-the-end iterator; or (ii) it must point to
-   *   an active object. All other cases will result in an exception.
    */
   template <typename OtherAccessor>
   TriaActiveIterator(const TriaRawIterator<OtherAccessor> &i);
 
   /**
-   * Assignment operator.
+   * 赋值运算符。
+   *
    */
   TriaActiveIterator<Accessor> &
   operator=(const TriaActiveIterator<Accessor> &);
 
   /**
-   * Cross assignment operator. This assignment is only valid if the given
-   * iterator points to an active element.
+   * 交叉赋值运算符。这个赋值只有在给定的迭代器指向一个活动元素时才有效。
+   *
    */
   TriaActiveIterator<Accessor> &
   operator=(const TriaIterator<Accessor> &);
 
   /**
-   * Cross assignment operator. This assignment is only valid if the given
-   * iterator points to an active element or past the end.
+   * 交叉赋值运算符。这个赋值只有在给定的迭代器指向一个活动元素或超过终点时才有效。
+   *
    */
   TriaActiveIterator<Accessor> &
   operator=(const TriaRawIterator<Accessor> &);
 
   /**
-   * Assignment operator. Requires, that Accessor can be copied from
-   * OtherAccessor.
+   * 赋值运算符。要求，Accessor可以从OtherAccessor中复制。
+   *
    */
   template <class OtherAccessor>
   TriaActiveIterator<Accessor> &
   operator=(const TriaActiveIterator<OtherAccessor> &);
 
   /**
-   * Cross assignment operator. This assignment is only valid if the given
-   * iterator points to an active element or past the end. Requires, that
-   * Accessor can be copied from OtherAccessor.
+   * 交叉赋值运算符。这个赋值只有在给定的迭代器指向一个活动元素或超过终点时才有效。要求，Accessor可以从OtherAccessor中复制。
+   *
    */
   template <class OtherAccessor>
   TriaActiveIterator<Accessor> &
   operator=(const TriaRawIterator<OtherAccessor> &);
 
   /**
-   * Cross assignment operator. This assignment is only valid if the given
-   * iterator points to an active element. Requires, that Accessor can be
-   * copied from OtherAccessor.
+   * 交叉赋值运算符。这个赋值只有在给定的迭代器指向一个活动元素时才有效。要求Accessor可以从OtherAccessor中复制。
+   *
    */
   template <class OtherAccessor>
   TriaActiveIterator<Accessor> &
   operator=(const TriaIterator<OtherAccessor> &);
 
   /**
-   * Prefix <tt>++</tt> operator: <tt>++i</tt>. This operator advances the
-   * iterator to the next active element and returns a reference to
-   * <tt>*this</tt>.
+   * 前缀<tt>++</tt>操作符。<tt>++i</tt>。这个操作符将迭代器推进到下一个活动元素，并返回一个对<tt>*this</tt>的引用。
+   *
    */
   TriaActiveIterator<Accessor> &
   operator++();
 
   /**
-   * @name Advancement of iterators
+   * @name  迭代器的前进
+   *
    */
-  /*@{*/
+   /*@{*/ 
   /**
-   * Postfix <tt>++</tt> operator: <tt>i++</tt>. This operator advances the
-   * iterator to the next active element, but returns an iterator to the
-   * element previously pointed to. Since this involves a temporary and a copy
-   * operation and since an @p active_iterator is quite a large object for a
-   * pointer, use the prefix operator <tt>++i</tt> whenever possible,
-   * especially in the head of for loops (<tt>for (; i!=end; ++i)</tt>) since
-   * there you normally never need the returned value.
+   * 后缀<tt>++</tt>操作符。<tt>i++</tt>。该操作符将迭代器推进到下一个活动元素，但返回之前指向的元素的迭代器。由于这涉及到一个临时和复制操作，而且对于一个指针来说，
+   * @p active_iterator
+   * 是一个相当大的对象，所以尽可能使用前缀操作符<tt>++i</tt>，特别是在for循环的头部（<tt>for
+   * (; i!=end; ++i)</tt>），因为在那里你通常不需要返回值。
+   *
    */
   TriaActiveIterator<Accessor>
   operator++(int);
 
   /**
-   * Prefix @p \-- operator: @p \--i. This operator advances the iterator to the
-   * previous active element and returns a reference to <tt>*this</tt>.
+   * 前缀  @p \--  操作符。  @p \--i.
+   * 这个操作符将迭代器推进到前一个活动元素，并返回一个对<tt>*this</tt>的引用。
+   *
    */
   TriaActiveIterator<Accessor> &
   operator--();
 
   /**
-   * Postfix @p \-- operator: @p i\--.
+   * Postfix  @p \--  操作符。  @p i\--.
+   *
    */
   TriaActiveIterator<Accessor>
   operator--(int);
-  /*@}*/
+   /*@}*/ 
 
   /**
-   * Declare some alias which are standard for iterators and are used
-   * by algorithms to enquire about the specifics of the iterators they
-   * work on.
+   * 声明一些别名，这些别名是迭代器的标准，被算法用来查询它们所工作的迭代器的具体内容。
+   *
    */
   using iterator_category = typename TriaIterator<Accessor>::iterator_category;
   using value_type        = typename TriaIterator<Accessor>::value_type;
@@ -939,13 +807,14 @@ public:
   using difference_type   = typename TriaIterator<Accessor>::difference_type;
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcAssignmentOfInactiveObject);
 };
 
 
-/*----------------------- Inline functions -------------------*/
+ /*----------------------- Inline functions -------------------*/ 
 
 
 template <typename Accessor>
@@ -1218,9 +1087,11 @@ inline TriaActiveIterator<Accessor>::TriaActiveIterator(
 
 
 /**
- * Print the address to which this iterator points to @p out. The address is
- * given by the pair <tt>(level,index)</tt>, where @p index is an index
- * relative to the level in which the object is that is pointed to.
+ * 打印这个迭代器指向的地址  @p out.
+ * 这个地址由一对<tt>(level,index)</tt>给出，其中 @p index
+ * 是相对于被指向的对象所在的层的索引。
+ *
+ *
  */
 template <typename Accessor>
 inline std::ostream &
@@ -1233,9 +1104,11 @@ operator<<(std::ostream &out, const TriaRawIterator<Accessor> &i)
 
 
 /**
- * Print the address to which this iterator points to @p out. The address is
- * given by the pair <tt>(level,index)</tt>, where @p index is an index
- * relative to the level in which the object is that is pointed to.
+ * 打印这个迭代器指向的地址  @p out.
+ * 这个地址由一对<tt>(level,index)</tt>给出，其中 @p index
+ * 是相对于被指向的对象所在级别的一个索引。
+ *
+ *
  */
 template <typename Accessor>
 inline std::ostream &
@@ -1248,9 +1121,11 @@ operator<<(std::ostream &out, const TriaIterator<Accessor> &i)
 
 
 /**
- * Print the address to which this iterator points to @p out. The address is
- * given by the pair <tt>(level,index)</tt>, where @p index is an index
- * relative to the level in which the object is that is pointed to.
+ * 打印这个迭代器指向的地址  @p out.
+ * 这个地址由一对<tt>(level,index)</tt>给出，其中 @p index
+ * 是相对于被指向的对象所在级别的一个索引。
+ *
+ *
  */
 template <typename Accessor>
 inline std::ostream &
@@ -1270,6 +1145,8 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif
 
 
-/*----------------------------   tria-iterator.h ---------------------------*/
+ /*----------------------------   tria-iterator.h ---------------------------*/ 
 #endif
-/*----------------------------   tria-iterator.h ---------------------------*/
+ /*----------------------------   tria-iterator.h ---------------------------*/ 
+
+

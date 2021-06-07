@@ -1,4 +1,3 @@
-//include/deal.II-translator/particles/particle_accessor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -38,174 +37,218 @@ namespace Particles
 #endif
 
   /**
-   * ParticleIterator使用的访问器类，用于访问粒子数据。
-   *
+   * Accessor class used by ParticleIterator to access particle data.
    */
   template <int dim, int spacedim = dim>
   class ParticleAccessor
   {
   public:
     /**
-     * @copydoc   Particle::write_particle_data_to_memory .
-     *
+     * @copydoc Particle::write_particle_data_to_memory
      */
     void *
     write_particle_data_to_memory(void *data) const;
 
 
     /**
-     * @copydoc   Particle::read_particle_data_from_memory .
-     *
+     * @copydoc Particle::read_particle_data_from_memory
      */
     const void *
     read_particle_data_from_memory(const void *data);
 
     /**
-     * 设置这个粒子的位置。注意，这并不检查这是否是模拟域中的有效位置。
-     * @param  [in] new_location 这个粒子的新位置。
+     * Set the location of this particle. Note that this does not check
+     * whether this is a valid location in the simulation domain.
      *
+     * @param [in] new_location The new location for this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_location(const Point<spacedim> &new_location);
 
     /**
-     * 获取这个粒子的位置。          @return
-     * 这个粒子的位置。
+     * Get the location of this particle.
      *
+     * @return The location of this particle.
      */
     const Point<spacedim> &
     get_location() const;
 
     /**
-     * 设置此粒子的参考位置。          @param  [in]
-     * new_reference_location 这个粒子的新参考位置。
+     * Set the reference location of this particle.
      *
+     * @param [in] new_reference_location The new reference location for
+     * this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_reference_location(const Point<dim> &new_reference_location);
 
     /**
-     * 返回这个粒子在其当前单元中的参考位置。
-     *
+     * Return the reference location of this particle in its current cell.
      */
     const Point<dim> &
     get_reference_location() const;
 
     /**
-     * 返回这个粒子的ID号。
-     *
+     * Return the ID number of this particle.
      */
     types::particle_index
     get_id() const;
 
     /**
-     * 告诉粒子在哪里存储它的属性（即使它不拥有属性）。通常情况下，每个粒子只做一次，但是由于粒子生成器不知道属性，我们希望在构造时不做。这个函数的另一个用途是在粒子转移到一个新进程之后。
-     *
+     * Tell the particle where to store its properties (even if it does not
+     * own properties). Usually this is only done once per particle, but
+     * since the particle generator does not know about the properties
+     * we want to do it not at construction time. Another use for this
+     * function is after particle transfer to a new process.
      */
     void
     set_property_pool(PropertyPool<dim, spacedim> &property_pool);
 
     /**
-     * 返回这个粒子是否有一个有效的属性库和一个有效的属性句柄。
-     *
+     * Return whether this particle has a valid property pool and a valid
+     * handle to properties.
      */
     bool
     has_properties() const;
 
     /**
-     * 设置此粒子的属性。          @param  [in] new_properties
-     * 一个包含此粒子的新属性的向量。
+     * Set the properties of this particle.
      *
+     * @param [in] new_properties A vector containing the
+     * new properties for this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_properties(const std::vector<double> &new_properties);
 
     /**
-     * 设置这个粒子的属性。          @param  [in] new_properties
-     * 一个ArrayView，指向包含此粒子的新属性的内存位置。
+     * Set the properties of this particle.
      *
+     * @param [in] new_properties An ArrayView pointing to memory locations
+     * containing the new properties for this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_properties(const ArrayView<const double> &new_properties);
 
     /**
-     * 获得对这个粒子的属性的写访问权。          @return
-     * 这个粒子的属性的ArrayView。
+     * Get write-access to properties of this particle.
      *
+     * @return An ArrayView of the properties of this particle.
      */
     const ArrayView<double>
     get_properties();
 
     /**
-     * 获取对该粒子的属性的读取权限。          @return
-     * 此粒子的属性的ArrayView。
+     * Get read-access to properties of this particle.
      *
+     * @return An ArrayView of the properties of this particle.
      */
     const ArrayView<const double>
     get_properties() const;
 
     /**
-     * 返回这个粒子在所有数据被序列化的情况下所占的字节数（即这个类的write_data函数所写入的字节数）。
-     *
+     * Return the size in bytes this particle occupies if all of its data is
+     * serialized (i.e. the number of bytes that is written by the write_data
+     * function of this class).
      */
     std::size_t
     serialized_size_in_bytes() const;
 
     /**
-     * 获取当前粒子周围的单元格的迭代器。
-     * 由于粒子是以三角形的结构组织的，但是三角形本身并不存储在粒子中，所以这个操作需要对三角形的引用。
-     *
+     * Get a cell iterator to the cell surrounding the current particle.
+     * As particles are organized in the structure of a triangulation,
+     * but the triangulation itself is not stored in the particle this
+     * operation requires a reference to the triangulation.
      */
     typename Triangulation<dim, spacedim>::cell_iterator
     get_surrounding_cell(
       const Triangulation<dim, spacedim> &triangulation) const;
 
     /**
-     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)对该类的内容进行序列化。
-     *
+     * Serialize the contents of this class using the [BOOST serialization
+     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
      */
     template <class Archive>
     void
     serialize(Archive &ar, const unsigned int version);
 
     /**
-     * 将ParticleAccessor推进到下一个粒子。
-     *
+     * Advance the ParticleAccessor to the next particle.
      */
     void
     next();
 
     /**
-     * 将ParticleAccessor移动到前一个粒子。
-     *
+     * Move the ParticleAccessor to the previous particle.
      */
     void
     prev();
 
     /**
-     * 不等式运算符。
-     *
+     * Inequality operator.
      */
     bool
     operator!=(const ParticleAccessor<dim, spacedim> &other) const;
 
     /**
-     * 等价运算符。
-     *
+     * Equality operator.
      */
     bool
     operator==(const ParticleAccessor<dim, spacedim> &other) const;
 
   private:
     /**
-     * 构建一个无效的访问器。这样的对象是不能使用的。
-     *
+     * Construct an invalid accessor. Such an object is not usable.
      */
     ParticleAccessor();
 
     /**
-     * 从对地图的引用和对地图的迭代器构造一个访问器。这个构造函数是`private`的，所以它只能被朋友类访问。
-     *
+     * Construct an accessor from a reference to a map and an iterator to the
+     * map. This constructor is `private` so that it can only be accessed by
+     * friend classes.
      */
     ParticleAccessor(
       const std::multimap<internal::LevelInd, Particle<dim, spacedim>> &map,
@@ -215,14 +258,14 @@ namespace Particles
 
   private:
     /**
-     * 一个指向存储粒子的容器的指针。很明显，如果容器发生变化，这个访问器就会失效。
-     *
+     * A pointer to the container that stores the particles. Obviously,
+     * this accessor is invalidated if the container changes.
      */
     std::multimap<internal::LevelInd, Particle<dim, spacedim>> *map;
 
     /**
-     * 一个进入粒子容器的迭代器。很明显，如果容器发生变化，这个访问器就会失效。
-     *
+     * An iterator into the container of particles. Obviously,
+     * this accessor is invalidated if the container changes.
      */
     typename std::multimap<internal::LevelInd,
                            Particle<dim, spacedim>>::iterator particle;
@@ -497,18 +540,15 @@ namespace boost
       struct indexable;
 
       /**
-       * 确保我们可以从 Particles::ParticleAccessor
-       * 对象中构建一个RTree。
-       *
+       * Make sure we can construct an RTree from Particles::ParticleAccessor
+       * objects.
        */
       template <int dim, int spacedim>
       struct indexable<dealii::Particles::ParticleAccessor<dim, spacedim>>
       {
         /**
-         * boost::rtree
-         * 期望一个可索引对象的常量引用。对于一个
-         * Particles::Particle 对象，这是它的引用位置。
-         *
+         * boost::rtree expects a const reference to an indexable object. For
+         * a Particles::Particle object, this is its reference location.
          */
         using result_type = const dealii::Point<spacedim> &;
 
@@ -524,5 +564,3 @@ namespace boost
 } // namespace boost
 
 #endif
-
-

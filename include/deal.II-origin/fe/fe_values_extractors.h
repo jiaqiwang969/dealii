@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_values_extractors_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -23,98 +24,81 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * A namespace in which we declare "extractors", i.e. classes that when used
- * as subscripts in operator[] expressions on FEValues, FEFaceValues, and
- * FESubfaceValues objects extract certain components of a vector-valued
- * element. The result of applying an extractor to these objects is an object
- * with corresponding type from the namespace FEValuesViews. There are
- * extractors for single scalar components, vector components consisting of
- * <code>dim</code> elements, and second order symmetric tensors consisting of
- * <code>(dim*dim + dim)/2</code> components, as well as second order
- * nonsymmetric tensors.
+ * 一个命名空间，我们在其中声明
+ * "提取器"，即当作为FEValues、FEFaceValues和FESubfaceValues对象上的operator[]表达式的子标时，提取矢量值元素的某些成分的类。对这些对象应用提取器的结果是一个来自命名空间FEValuesViews的具有相应类型的对象。有一些提取器用于单个标量分量、由
+ * <code>dim</code> 元素组成的向量分量和由 <code>(dim*dim +
+ * dim)/2</code>
+ * 分量组成的二阶对称张量，以及二阶非对称张量。
+ * 我们可以把提取器看作是相当于一个索引，或者一个索引范围。在标量提取器（即
+ * FEValuesExtractors::Scalar 类）的情况下，创建一个像（见
+ * step-20 的用途）的对象
  *
- * One can think of extractors as the equivalent of an index, or an index range.
- * In the case of scalar extractors (i.e., the FEValuesExtractors::Scalar
- * class), creating an object like (see step-20 for this use)
  * @code
- *   const FEValuesExtractors::Scalar pressure(dim);
+ * const FEValuesExtractors::Scalar pressure(dim);
  * @endcode
- * can be thought of as creating a single index with value `dim`. By
- * itself, an index does not know what it is an index to, so it takes
- * the equivalent of an array to extract anything. Consequently,
- * assume that there is a finite element with at least `dim+1` vector
- * components (as indeed there is in step-20), and an FEValues object
- * that operates on it, then writing
- * @code
- *   fe_values[pressure]
- * @endcode
- * results in an object that represents the shape functions of only the
- * `dim`th component of the overall element. In the example, these
- * would be the values of the pressure shape functions, or more precisely:
- * the (scalar) pressure values of all shape functions (even for shape
- * functions that are not associated with the pressure, but for example
- * the velocity). In the example above, the result of using
- * `operator[]` on the `fe_values` object as shown is of type
- * FEValuesViews::Scalar.
+ * 可以被认为是创建一个具有`dim`值的单一索引。就其本身而言，一个索引不知道它是什么索引，所以它需要相当于一个数组的东西来提取。因此，假设有一个至少有`dim+1`个向量分量的有限元素（在
+ * step-20
+ * 中确实有），以及一个对其进行操作的FEValues对象，那么就可以编写
  *
- * Likewise, when using
  * @code
- *   const FEValuesExtractors::Vector velocities(0);
+ * fe_values[pressure]
  * @endcode
- * then the object so created can be thought of as an <i>index range</i>,
- * starting at zero and extending exactly `dim` components on. In Matlab
- * notation, one could write this as `0:dim-1`. Then, writing
- * @code
- *   fe_values[velocities]
- * @endcode
- * will result in an object that represents the values of a subset of
- * exactly `dim` vector components of the overall finite element, in
- * much the same way as writing `array(3:7)` in Matlab would return
- * an array of length 5 that has been extracted from the original
- * array by looking at indices 3 through 7 (inclusive).
+ * 的结果是一个对象，它只代表整个元素的第`dim`个分量的形状函数。在这个例子中，这些将是压力形状函数的值，或者更准确地说：所有形状函数的（标量）压力值（即使是与压力无关的形状函数，但例如速度）。在上面的例子中，如图所示，在`fe_values`对象上使用`operator[]`的结果是
+ * FEValuesViews::Scalar. 类型。 同样的，当使用
  *
- * See the description of the
- * @ref vector_valued
- * module for examples how to use the features of this namespace.
+ * @code
+ * const FEValuesExtractors::Vector velocities(0);
+ * @endcode
+ * 那么这样创建的对象可以被认为是一个<i>index
+ * range</i>，从零开始，正好延伸到`dim`组件上。用Matlab的符号，可以写成`0:dim-1`。然后，写
+ *
+ * @code
+ * fe_values[velocities]
+ * @endcode
+ * 就像在Matlab中写 "array(3:7)
+ * "会返回一个长度为5的数组，这个数组是通过查看索引3到7（包括7）从原始数组中提取的。
+ * 参见 @ref
+ * vector_valued
+ * 模块的描述，以了解如何使用该命名空间的功能的例子。
+ *
  *
  * @ingroup feaccess vector_valued
+ *
+ *
  */
 namespace FEValuesExtractors
 {
   /**
-   * Extractor for a single scalar component of a vector-valued element. The
-   * result of applying an object of this type to an FEValues, FEFaceValues or
-   * FESubfaceValues object is of type FEValuesViews::Scalar. The concept of
-   * extractors is defined in the documentation of the namespace
-   * FEValuesExtractors and in the
-   * @ref vector_valued
-   * module.
-   *
+   * 矢量值元素的单一标量分量的提取器。将这种类型的对象应用于FEValues、FEFaceValues或FESubfaceValues对象的结果是 FEValuesViews::Scalar.
+   * 提取器的概念在命名空间FEValuesExtractors的文档和 @ref
+   * vector_valued 模块中定义。
    * @ingroup feaccess vector_valued
+   *
    */
   struct Scalar
   {
     /**
-     * The selected scalar component of the vector.
+     * 矢量的选定标量分量。
+     *
      */
     unsigned int component;
 
     /**
-     * Default constructor. Initialize the object with an invalid component.
-     * This leads to an object that can not be used, but it allows objects of
-     * this kind to be put into arrays that require a default constructor upon
-     * resizing the array, and then later assigning a suitable object to each
-     * element of the array.
+     * 默认构造函数。用一个无效的分量初始化该对象。
+     * 这导致了一个不能使用的对象，但它允许将这种对象放入数组中，在调整数组大小时需要一个默认的构造函数，然后再将一个合适的对象分配给数组的每个元素。
+     *
      */
     Scalar();
 
     /**
-     * Constructor. Take the selected vector component as argument.
+     * 构造函数。以选定的向量分量作为参数。
+     *
      */
     Scalar(const unsigned int component);
 
     /**
-     * Return a string that uniquely identifies this finite element extractor.
+     * 返回一个字符串，唯一标识这个有限元提取器。
+     *
      */
     std::string
     get_name() const;
@@ -122,55 +106,35 @@ namespace FEValuesExtractors
 
 
   /**
-   * Extractor for a vector of <code>spacedim</code> components of a vector-
-   * valued element. The value of <code>spacedim</code> is defined by the
-   * FEValues object the extractor is applied to. The result of applying an
-   * object of this type to an FEValues, FEFaceValues or FESubfaceValues
-   * object is of type FEValuesViews::Vector.
-   *
-   * The concept of extractors is defined in the documentation of the
-   * namespace FEValuesExtractors and in the
-   * @ref vector_valued
-   * module.
-   *
-   * Note that in the current context, a vector is meant in the sense physics
-   * uses it: it has <code>spacedim</code> components that behave in specific
-   * ways under coordinate system transformations. Examples include velocity
-   * or displacement fields. This is opposed to how mathematics uses the word
-   * "vector" (and how we use this word in other contexts in the library, for
-   * example in the Vector class), where it really stands for a collection of
-   * numbers. An example of this latter use of the word could be the set of
-   * concentrations of chemical species in a flame; however, these are really
-   * just a collection of scalar variables, since they do not change if the
-   * coordinate system is rotated, unlike the components of a velocity vector,
-   * and consequently, this class should not be used for this context.
-   *
+   * 向量值元素的 <code>spacedim</code> 分量的提取器。 <code>spacedim</code> 的值由该提取器应用的FEValues对象定义。将这种类型的对象应用于FEValues、FEFaceValues或FESubfaceValues对象的结果是 FEValuesViews::Vector. 类型。 提取器的概念在命名空间FEValuesExtractors的文档和 @ref vector_valued 模块中定义。    请注意，在当前的上下文中，矢量是指物理学上使用的矢量：它具有 <code>spacedim</code> 分量，在坐标系变换下以特定的方式表现出来。例子包括速度或位移场。这与数学中使用 "向量 "
+   * 一词的方式相反（以及我们在库中的其他上下文中使用这个词的方式，例如在向量类中），在那里它真正代表了一个数字的集合。后者的一个例子是火焰中化学物种浓度的集合；然而，这些实际上只是标量变量的集合，因为如果坐标系被旋转，它们不会改变，不像速度矢量的分量，因此，这个类不应该被用于这种情况。
    * @ingroup feaccess vector_valued
+   *
    */
   struct Vector
   {
     /**
-     * The first component of the vector view.
+     * 矢量视图的第一个分量。
+     *
      */
     unsigned int first_vector_component;
 
     /**
-     * Default constructor. Initialize the object with an invalid component.
-     * This leads to an object that can not be used, but it allows objects of
-     * this kind to be put into arrays that require a default constructor upon
-     * resizing the array, and then later assigning a suitable object to each
-     * element of the array.
+     * 默认构造函数。用一个无效的分量初始化对象。
+     * 这导致了一个不能使用的对象，但它允许将这种对象放入数组中，在调整数组大小时需要一个默认的构造函数，然后再将一个合适的对象分配给数组的每个元素。
+     *
      */
     Vector();
 
     /**
-     * Constructor. Take the first component of the selected vector inside the
-     * FEValues object as argument.
+     * 构造函数。以FEValues对象内部所选向量的第一个分量作为参数。
+     *
      */
     Vector(const unsigned int first_vector_component);
 
     /**
-     * Return a string that uniquely identifies this finite element extractor.
+     * 返回一个唯一标识这个有限元提取器的字符串。
+     *
      */
     std::string
     get_name() const;
@@ -178,46 +142,40 @@ namespace FEValuesExtractors
 
 
   /**
-   * Extractor for a symmetric tensor of a rank specified by the template
-   * argument. For a second order symmetric tensor, this represents a
-   * collection of <code>(dim*dim + dim)/2</code> components of a vector-
-   * valued element. The value of <code>dim</code> is defined by the FEValues
-   * object the extractor is applied to. The result of applying an object of
-   * this type to an FEValues, FEFaceValues or FESubfaceValues object is of
-   * type FEValuesViews::SymmetricTensor.
-   *
-   * The concept of extractors is defined in the documentation of the
-   * namespace FEValuesExtractors and in the
-   * @ref vector_valued
-   * module.
-   *
+   * 对由模板参数指定的等级的对称张量进行提取。对于一个二阶对称张量，这表示一个矢量元素的 <code>(dim*dim
+   * + dim)/2</code> 分量的集合。 <code>dim</code>
+   * 的值由提取器所应用的FEValues对象定义。将这种类型的对象应用于FEValues、FEFaceValues或FESubfaceValues对象的结果是
+   * FEValuesViews::SymmetricTensor.
+   * 提取器的概念在命名空间FEValuesExtractors的文档和 @ref
+   * vector_valued 模块中定义。
    * @ingroup feaccess vector_valued
+   *
    */
   template <int rank>
   struct SymmetricTensor
   {
     /**
-     * The first component of the tensor view.
+     * 张量视图的第一个组成部分。
+     *
      */
     unsigned int first_tensor_component;
 
     /**
-     * Default constructor. Initialize the object with an invalid component.
-     * This leads to an object that can not be used, but it allows objects of
-     * this kind to be put into arrays that require a default constructor upon
-     * resizing the array, and then later assigning a suitable object to each
-     * element of the array.
+     * 默认构造函数。用一个无效的组件初始化对象。
+     * 这导致了一个不能使用的对象，但它允许将这种对象放入数组中，在调整数组大小时需要一个默认的构造函数，然后再将一个合适的对象分配给数组的每个元素。
+     *
      */
     SymmetricTensor();
 
     /**
-     * Constructor. Take the first component of the selected tensor inside the
-     * FEValues object as argument.
+     * 构造函数。以FEValues对象内部所选张量的第一个分量作为参数。
+     *
      */
     SymmetricTensor(const unsigned int first_tensor_component);
 
     /**
-     * Return a string that uniquely identifies this finite element extractor.
+     * 返回一个唯一标识这个有限元提取器的字符串。
+     *
      */
     std::string
     get_name() const;
@@ -225,46 +183,40 @@ namespace FEValuesExtractors
 
 
   /**
-   * Extractor for a general tensor of a given rank specified by
-   * the template argument. For a second order tensor, this represents a
-   * collection of <code>(dim*dim)</code> components of a vector-valued
-   * element. The value of <code>dim</code> is defined by the FEValues object
-   * the extractor is applied to. The result of applying an object of this
-   * type to an FEValues, FEFaceValues or FESubfaceValues object is of type
+   * 对由模板参数指定的给定等级的一般张量的提取器。对于一个二阶张量，这代表一个矢量值元素的 <code>(dim*dim)</code>
+   * 分量的集合。 <code>dim</code>
+   * 的值由提取器所应用的FEValues对象定义。将这种类型的对象应用于FEValues、FEFaceValues或FESubfaceValues对象的结果是
    * FEValuesViews::Tensor.
-   *
-   * The concept of extractors is defined in the documentation of the
-   * namespace FEValuesExtractors and in the
-   * @ref vector_valued
-   * module.
-   *
+   * 提取器的概念在命名空间FEValuesExtractors的文档和 @ref
+   * vector_valued 模块中定义。
    * @ingroup feaccess vector_valued
+   *
    */
   template <int rank>
   struct Tensor
   {
     /**
-     * The first component of the tensor view.
+     * 张量视图的第一个组成部分。
+     *
      */
     unsigned int first_tensor_component;
 
     /**
-     * Default constructor. Initialize the object with an invalid component.
-     * This leads to an object that can not be used, but it allows objects of
-     * this kind to be put into arrays that require a default constructor upon
-     * resizing the array, and then later assigning a suitable object to each
-     * element of the array.
+     * 默认构造函数。用一个无效的组件初始化对象。
+     * 这导致了一个不能使用的对象，但它允许将这种对象放入数组中，在调整数组大小时需要一个默认的构造函数，然后再将一个合适的对象分配给数组的每个元素。
+     *
      */
     Tensor();
 
     /**
-     * Constructor. Take the first component of the selected tensor inside the
-     * FEValues object as argument.
+     * 构造函数。以FEValues对象内部所选张量的第一个分量作为参数。
+     *
      */
     Tensor(const unsigned int first_tensor_component);
 
     /**
-     * Return a string that uniquely identifies this finite element extractor.
+     * 返回一个唯一标识此有限元提取器的字符串。
+     *
      */
     std::string
     get_name() const;
@@ -272,7 +224,7 @@ namespace FEValuesExtractors
 } // namespace FEValuesExtractors
 
 
-/*-------------- Inline functions: namespace FEValuesExtractors -------------*/
+ /*-------------- Inline functions: namespace FEValuesExtractors -------------*/ 
 
 namespace FEValuesExtractors
 {
@@ -328,3 +280,5 @@ namespace FEValuesExtractors
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

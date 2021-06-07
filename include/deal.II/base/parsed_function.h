@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/parsed_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2021 by the deal.II authors
@@ -29,151 +28,187 @@ DEAL_II_NAMESPACE_OPEN
 namespace Functions
 {
   /**
-   * FunctionParser类的友好接口。这个类是作为FunctionParser类的一个封装器。它被用于
-   * step-34 的教程程序中。
-   * 它提供了两个方法来声明和解析一个ParameterHandler对象，并创建在参数文件中声明的Function对象。这个类派生于AutoDerivativeFunction类，所以你不需要指定导数。这个类的一个使用例子如下。
-   * @code
-   * // A parameter handler
-   * ParameterHandler prm;
+   * Friendly interface to the FunctionParser class. This class is meant as a
+   * wrapper for the FunctionParser class. It is used in the step-34 tutorial
+   * program.
    *
-   * // Declare a section for the function we need
-   * prm.enter_subsection("My vector function");
-   * ParsedFunction<dim>::declare_parameters(prm, dim);
-   * prm.leave_subsection();
+   * It provides two methods to declare and parse a ParameterHandler object
+   * and creates the Function object declared in the parameter file. This
+   * class is derived from the AutoDerivativeFunction class, so you don't need
+   * to specify derivatives. An example of usage of this class is as follows:
    *
-   * // Create a ParsedFunction
-   * ParsedFunction<dim> my_vector_function(dim);
+   *   @code
+   *   // A parameter handler
+   *   ParameterHandler prm;
    *
-   * // Parse an input file.
-   * prm.parse_input(some_input_file);
+   *   // Declare a section for the function we need
+   *   prm.enter_subsection("My vector function");
+   *   ParsedFunction<dim>::declare_parameters(prm, dim);
+   *   prm.leave_subsection();
    *
-   * // Initialize the ParsedFunction object with the given file
-   * prm.enter_subsection("My vector function");
-   * my_vector_function.parse_parameters(prm);
-   * prm.leave_subsection();
+   *   // Create a ParsedFunction
+   *   ParsedFunction<dim> my_vector_function(dim);
    *
-   * @endcode
-   * 下面是一个输入参数的例子（关于函数定义的语法的详细描述，请看FunctionParser类的文档）。
-   * @code
+   *   // Parse an input file.
+   *   prm.parse_input(some_input_file);
    *
-   * # A test two dimensional vector function, depending on time
-   * subsection My vector function
-   * set Function constants  = kappa=.1, lambda=2.
-   * set Function expression = if(y>.5, kappa*x*(1-x),0); t^2*cos(lambda*pi*x)
-   * set Variable names      = x,y,t
-   * end
+   *   // Initialize the ParsedFunction object with the given file
+   *   prm.enter_subsection("My vector function");
+   *   my_vector_function.parse_parameters(prm);
+   *   prm.leave_subsection();
    *
-   * @endcode
+   *   @endcode
+   *
+   * And here is an example of how the input parameter could look like (see
+   * the documentation of the FunctionParser class for a detailed description
+   * of the syntax of the function definition):
+   *
+   *   @code
+   *
+   *   # A test two dimensional vector function, depending on time
+   *   subsection My vector function
+   *   set Function constants  = kappa=.1, lambda=2.
+   *   set Function expression = if(y>.5, kappa*x*(1-x),0); t^2*cos(lambda*pi*x)
+   *   set Variable names      = x,y,t
+   *   end
+   *
+   *   @endcode
    *
    * @ingroup functions
-   *
    */
   template <int dim>
   class ParsedFunction : public AutoDerivativeFunction<dim>
   {
   public:
     /**
-     * 构建一个向量函数。生成的向量函数有 @p n_components
-     * 个分量（默认为1）。参数 @p h
-     * 用于初始化AutoDerivativeFunction类，该类来源于此。
-     *
+     * Construct a vector function. The vector function which is generated has
+     * @p n_components components (defaults to 1). The parameter @p h is used
+     * to initialize the AutoDerivativeFunction class from which this class is
+     * derived.
      */
     ParsedFunction(const unsigned int n_components = 1, const double h = 1e-8);
 
     /**
-     * 声明本类所需的参数。额外的参数 @p
-     * n_components用于根据将解析这个ParameterHandler的函数的组件数量来生成正确的代码。如果被解析的组件数量与此对象的组件数量不一致，就会抛出一个断言，并且程序被中止。
-     * 这个类的默认行为是声明以下条目。
-     * @code
+     * Declare parameters needed by this class. The additional parameter @p
+     * n_components is used to generate the right code according to the number
+     * of components of the function that will parse this ParameterHandler. If
+     * the number of components which is parsed does not match the number of
+     * components of this object, an assertion is thrown and the program is
+     * aborted.  The default behavior for this class is to declare the
+     * following entries:
      *
-     * set Function constants  =
-     * set Function expression = 0
-     * set Variable names      = x,y,t
+     *  @code
      *
-     * @endcode
+     *  set Function constants  =
+     *  set Function expression = 0
+     *  set Variable names      = x,y,t
      *
-     *
+     *  @endcode
      */
     static void
     declare_parameters(ParameterHandler & prm,
                        const unsigned int n_components = 1);
 
     /**
-     * 该类所需的解析参数。
-     * 如果被解析的组件数量与此对象的组件数量不一致，就会抛出一个断言，并中止程序。
-     * 为了使该类能够正常运行，我们遵循FunctionParser类中声明的相同约定（关于函数声明的语法，请看那里的详细说明）。
-     * 可以从参数文件中解析的变量有以下三种。
-     * @code
+     * Parse parameters needed by this class.  If the number of components
+     * which is parsed does not match the number of components of this object,
+     * an assertion is thrown and the program is aborted.  In order for the
+     * class to function properly, we follow the same conventions declared in
+     * the FunctionParser class (look there for a detailed description of the
+     * syntax for function declarations).
      *
-     * set Function constants  =
-     * set Function expression =
-     * set Variable names      =
+     * The three variables that can be parsed from a parameter file are the
+     * following:
      *
-     * @endcode
-     * %函数常量是以name=value为形式的一对集合，用逗号分隔，例如。
-     * @code
+     *  @code
      *
-     * set Function constants = lambda=1., alpha=2., gamma=3.
+     *  set Function constants  =
+     *  set Function expression =
+     *  set Variable names      =
      *
-     * @endcode
-     * 这些常量可以在函数表达式的声明中使用，它遵循FunctionParser类的惯例。
-     * 为了指定向量函数，必须用分号来分隔不同的组成部分，例如
-     * @code
+     *  @endcode
      *
-     * set Function expression = cos(pi*x); cos(pi*y)
+     * %Function constants is a collection of pairs in the form name=value,
+     * separated by commas, for example:
      *
-     * @endcode
-     * 变量名称条目可以用来自定义函数中使用的变量名称。它的默认值是
-     * @code
+     *  @code
      *
-     * set Variable names      = x,t
+     *  set Function constants = lambda=1., alpha=2., gamma=3.
      *
-     * @endcode
-     * 对于一维的问题。
-     * @code
+     *  @endcode
      *
-     * set Variable names      = x,y,t
+     * These constants can be used in the declaration of the function
+     * expression, which follows the convention of the FunctionParser class.
+     * In order to specify vector functions, semicolons have to be used to
+     * separate the different components, e.g.:
      *
-     * @endcode
-     * 用于二维问题和
-     * @code
+     *  @code
      *
-     * set Variable names      = x,y,z,t
+     *  set Function expression = cos(pi*x); cos(pi*y)
      *
-     * @endcode
-     * 适用于三维问题。
-     * 时间变量可以根据FunctionTime基类的规格来设置。
+     *  @endcode
      *
+     * The variable names entry can be used to customize the name of the
+     * variables used in the Function. It defaults to
+     *
+     *  @code
+     *
+     *  set Variable names      = x,t
+     *
+     *  @endcode
+     *
+     * for one dimensional problems,
+     *
+     *  @code
+     *
+     *  set Variable names      = x,y,t
+     *
+     *  @endcode
+     *
+     * for two dimensional problems and
+     *
+     *  @code
+     *
+     *  set Variable names      = x,y,z,t
+     *
+     *  @endcode
+     *
+     * for three dimensional problems.
+     *
+     * The time variable can be set according to specifications in the
+     * FunctionTime base class.
      */
     void
     parse_parameters(ParameterHandler &prm);
 
     /**
-     * 返回一个向量值函数在给定点的所有分量  @p  p。
-     *
+     * Return all components of a vector-valued function at the given point @p
+     * p.
      */
     virtual void
     vector_value(const Point<dim> &p, Vector<double> &values) const override;
 
     /**
-     * 返回该函数在给定点的值。除非只有一个分量（即函数是标量的），否则你应该说明你想评估的分量；它默认为零，即第一个分量。
-     *
+     * Return the value of the function at the given point. Unless there is
+     * only one component (i.e. the function is scalar), you should state the
+     * component you want to have evaluated; it defaults to zero, i.e. the
+     * first component.
      */
     virtual double
     value(const Point<dim> &p, const unsigned int component = 0) const override;
 
     /**
-     * 对于时间相关的函数，将时间设置为一个特定的值。
-     * 我们需要覆盖这一点，以便在访问器FunctionParser<dim>中也设置时间。
+     * Set the time to a specific value for time-dependent functions.
      *
+     * We need to overwrite this to set the time also in the accessor
+     * FunctionParser<dim>.
      */
     virtual void
     set_time(const double newtime) override;
 
   private:
     /**
-     * 我们用来做计算的对象。
-     *
+     * The object with which we do computations.
      */
     FunctionParser<dim> function_object;
   };
@@ -182,5 +217,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

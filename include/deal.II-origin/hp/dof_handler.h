@@ -1,3 +1,4 @@
+//include/deal.II-translator/hp/dof_handler_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -23,102 +24,31 @@ DEAL_II_NAMESPACE_OPEN
 namespace hp
 {
   /**
-   * Manage the distribution and numbering of the degrees of freedom for hp-
-   * FEM algorithms. This class satisfies the
-   * @ref ConceptMeshType "MeshType concept"
-   * requirements.
-   *
-   * The purpose of this class is to allow for an enumeration of degrees of
-   * freedom in the same way as the ::DoFHandler class, but it allows to use a
-   * different finite element on every cell. To this end, one assigns an
-   * <code>active_fe_index</code> to every cell that indicates which element
-   * within a collection of finite elements (represented by an object of type
-   * hp::FECollection) is the one that lives on this cell. The class then
-   * enumerates the degree of freedom associated with these finite elements on
-   * each cell of a triangulation and, if possible, identifies degrees of
-   * freedom at the interfaces of cells if they match. If neighboring cells
-   * have degrees of freedom along the common interface that do not immediate
-   * match (for example, if you have $Q_2$ and $Q_3$ elements meeting at a
-   * common face), then one needs to compute constraints to ensure that the
-   * resulting finite element space on the mesh remains conforming.
-   *
-   * The whole process of working with objects of this type is explained in
-   * step-27. Many of the algorithms this class implements are described in
-   * the
-   * @ref hp_paper "hp-paper".
    *
    *
-   * <h3>Active FE indices and their behavior under mesh refinement</h3>
-   *
-   * The typical workflow for using this class is to create a mesh, assign an
-   * active FE index to every active cell, calls
-   * hp::DoFHandler::distribute_dofs(), and then assemble a linear system and
-   * solve a problem on this finite element space. However, one can skip
-   * assigning active FE indices upon mesh refinement in certain
-   * circumstances. In particular, the following rules apply:
-   * - Upon mesh refinement, child cells inherit the active FE index of
-   *   the parent.
-   * - When coarsening cells, the (now active) parent cell will be assigned
-   *   an active FE index that is determined from its (no longer active)
-   *   children, following the FiniteElementDomination logic: Out of the set of
-   *   elements previously assigned to the former children, we choose the one
-   *   dominated by all children for the parent cell. If none was found, we pick
-   *   the most dominant element in the whole collection that is dominated by
-   *   all former children. See hp::FECollection::find_dominated_fe_extended()
-   *   for further information on this topic.
-   *
-   * @note Finite elements need to be assigned to each cell by either calling
-   * set_fe() or distribute_dofs() first to make this functionality available.
    *
    *
-   * <h3>Active FE indices and parallel meshes</h3>
    *
-   * When this class is used with either a parallel::shared::Triangulation
-   * or a parallel::distributed::Triangulation, you can only set active
-   * FE indices on cells that are locally owned,
-   * using a call such as <code>cell-@>set_active_fe_index(...)</code>.
-   * On the other hand, setting the active FE index on ghost
-   * or artificial cells is not allowed.
    *
-   * Ghost cells do acquire the information what element
-   * is active on them, however: whenever
-   * you call hp::DoFHandler::distribute_dofs(), all processors that
-   * participate in the parallel mesh exchange information in such a way
-   * that the active FE index on ghost cells equals the active FE index
-   * that was set on that processor that owned that particular ghost cell.
-   * Consequently, one can <i>query</i> the @p active_fe_index on ghost
-   * cells, just not set it by hand.
+   * - 网格细化时，子单元会继承父单元的活动FE索引。
    *
-   * On artificial cells, no information is available about the
-   * @p active_fe_index used there. That's because we don't even know
-   * whether these cells exist at all, and even if they did, the
-   * current processor does not know anything specific about them.
-   * See
-   * @ref GlossArtificialCell "the glossary entry on artificial cells"
-   * for more information.
-   *
-   * During refinement and coarsening, information about the @p active_fe_index
-   * of each cell will be automatically transferred.
-   *
-   * However, using a parallel::distributed::Triangulation with an
-   * hp::DoFHandler requires additional attention during serialization, since no
-   * information on active FE indices will be automatically transferred. This
-   * has to be done manually using the
-   * prepare_for_serialization_of_active_fe_indices() and
-   * deserialize_active_fe_indices() functions. The former has to be called
-   * before parallel::distributed::Triangulation::save() is invoked, and the
-   * latter needs to be run after parallel::distributed::Triangulation::load().
-   * If further data will be attached to the triangulation via the
+   * - 当粗化单元时，（现在活动的）父单元将被分配一个活动的FE索引，该索引由其（不再活动的）子单元决定，遵循FiniteElementDomination逻辑。在以前分配给前子女的元素集合中，我们选择一个由所有子女支配的元素作为父单元。如果没有找到，我们就在整个集合中挑选一个被所有以前的孩子支配的最主要的元素。关于这个主题的进一步信息，请参见 hp::FECollection::find_dominated_fe_extended() 。
+   * @note  有限元素需要先通过调用set_fe()或distribution_dofs()来分配给每个单元格，以使这个功能可用。      <h3>Active FE indices and parallel meshes</h3> 当这个类与 parallel::shared::Triangulation 或 parallel::distributed::Triangulation, 一起使用时，你只能在本地拥有的单元上设置活动FE指数，使用诸如 <code>cell-@>set_active_fe_index(...)</code> 的调用。  另一方面，不允许在幽灵或人工单元上设置活动FE指数。    然而，幽灵单元确实获得了什么元素在其上处于活动状态的信息：每当你调用 hp::DoFHandler::distribute_dofs(), 时，所有参与并行网格的处理器都会以这样的方式交换信息，幽灵单元上的活动FE指数等于在拥有该特定幽灵单元的处理器上设置的活动FE指数。  因此，人们可以<i>query</i>幽灵单元上的 @p active_fe_index ，只是不能用手去设置。    在人工单元上，没有关于那里使用的 @p active_fe_index 的信息可用。这是因为我们甚至不知道这些细胞是否存在，即使存在，当前的处理器也不知道关于它们的任何具体信息。  更多信息见 @ref GlossArtificialCell "人工细胞的词汇表条目"
+   * 。    在细化和粗化过程中，关于每个单元的 @p
+   * active_fe_index 的信息将被自动转移。    然而，使用
+   * parallel::distributed::Triangulation 和 hp::DoFHandler
+   * 需要在序列化过程中额外注意，因为活动FE指数的信息不会被自动转移。这必须使用prepare_for_serialization_of_active_fe_indices()和deserialize_active_fe_indices()函数手动完成。前者必须在调用
+   * parallel::distributed::Triangulation::save()
+   * 之前调用，后者需要在
+   * parallel::distributed::Triangulation::load(). 之后运行。
+   * 如果进一步的数据将通过
    * parallel::distributed::CellDataTransfer,
-   * parallel::distributed::SolutionTransfer, or Particles::ParticleHandler
-   * classes, all corresponding preparation and deserialization function calls
-   * need to happen in the same order. Consult the documentation of
-   * parallel::distributed::SolutionTransfer for more information.
+   * parallel::distributed::SolutionTransfer, 或 Particles::ParticleHandler
+   * 类附加到三角形上，所有相应的准备和反序列化函数调用需要以相同的顺序发生。更多信息请参考
+   * parallel::distributed::SolutionTransfer 的文档。
+   * @ingroup dofs   @deprecated  基本的 dealii::DoFHandler
+   * 现在能够进行hp-adaptation。
    *
-   *
-   * @ingroup dofs
-   *
-   * @deprecated The basic dealii::DoFHandler is capable of hp-adaptation now.
    */
   template <int dim, int spacedim = dim>
   using DoFHandler DEAL_II_DEPRECATED = dealii::DoFHandler<dim, spacedim>;
@@ -127,3 +57,5 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

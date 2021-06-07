@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/mutable_bind_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -30,9 +29,14 @@ DEAL_II_NAMESPACE_OPEN
 namespace Utilities
 {
   /**
-   * std::bind,
-   * 的一个可变版本，它将一个函数指针的所有参数绑定到一个存储的元组上，并允许你在调用之间更新元组。
-   * 这个类的一个使用实例是通过辅助函数mutable_bind()，该函数根据其参数在运行中创建一个MutableBind对象。
+   * A mutable version of std::bind, that binds all arguments of a function
+   * pointer to a stored tuple, and allows you to update the tuple between
+   * calls.
+   *
+   * An example usage of this class is through the helper function
+   * mutable_bind() that creates a MutableBind object on the fly, based on its
+   * arguments:
+   *
    * @code
    * void my_function(const int &a, const double &b);
    *
@@ -46,97 +50,99 @@ namespace Utilities
    * bound.parse_arguments("3: 4.0");
    * bound(); // will execute my_function(3, 4.0);
    * @endcode
-   * 参数被复制到元组中，并去除它们的引用和const属性。只有可复制的构造对象才被允许作为函数参数。如果你需要保留一些引用，你可以把你的函数包装成一个lambda函数。
+   *
+   * The arguments are copied to the tuple, with their reference and const
+   * attributes removed. Only copy constructible objects are allowed as
+   * function arguments. If you need to keep some references around, you may
+   * wrap your function into a lambda function:
+   *
    * @code
-   * void
-   * example_function(const Point<2> &p,
-   *                 const double &d,
-   *                 const unsigned int i = 3) {
-   * ...
-   * };
+   *  void
+   *  example_function(const Point<2> &p,
+   *                   const double &d,
+   *                   const unsigned int i = 3) {
+   *  ...
+   *  };
    *
-   * const Point<2> p(1, 2);
+   *  const Point<2> p(1, 2);
    *
-   * Utilities::MutableBind<void, double, unsigned int> exp = {
-   *  [&p](const double &d,
-   *       const unsigned int i)
-   *  {
-   *    example_function(p, d, i);
-   *  },
-   *  {}};
+   *  Utilities::MutableBind<void, double, unsigned int> exp = {
+   *    [&p](const double &d,
+   *         const unsigned int i)
+   *    {
+   *      example_function(p, d, i);
+   *    },
+   *    {}};
    *
-   * exp.parse_arguments("3.0 : 4");
-   * exp(); // calls example_function(p, 3.0, 4);
+   *  exp.parse_arguments("3.0 : 4");
+   *  exp(); // calls example_function(p, 3.0, 4);
    * @endcode
-   *
-   *
    */
   template <typename ReturnType, class... FunctionArgs>
   class MutableBind
   {
   public:
     /**
-     * 对存储的 std::tuple
-     * 类型的别名。只有可复制构造的对象才允许作为元组成员。
-     *
+     * An alias to the stored std::tuple type. Only copy constructible
+     * objects are allowed as tuple members.
      */
     using TupleType = std::tuple<typename std::remove_cv<
       typename std::remove_reference<FunctionArgs>::type>::type...>;
 
     /**
-     * 构建一个MutableBind对象，指定函数，以及每个参数分别。
-     *
+     * Construct a MutableBind object specifying the function, and
+     * each arguments separately.
      */
     template <class FunctionType>
     MutableBind(FunctionType function, FunctionArgs &&... arguments);
 
     /**
-     * 构造一个MutableBind对象，指定函数，以及作为一个元组的参数。
-     *
+     * Construct a MutableBind object specifying the function, and
+     * the arguments as a tuple.
      */
     template <class FunctionType>
     MutableBind(FunctionType function, TupleType &&arguments);
 
     /**
-     * 构造一个只指定函数的MutableBind对象。默认情况下，参数被保留为其默认的构造函数值。
-     *
+     * Construct a MutableBind object specifying only the function. By default,
+     * the arguments are left to their default constructor values.
      */
     template <class FunctionType>
     MutableBind(FunctionType function);
 
     /**
-     * 调用原始函数，将绑定参数的元组作为参数传递。
-     *
+     * Call the original function, passing as arguments the elements of the
+     * tuple of bound arguments.
      */
     ReturnType
     operator()() const;
 
     /**
-     * 设置参数，以便在下次调用operator()()时使用移动语义，在
-     * @p function, 中使用。
-     *
+     * Set the arguments to use in @p function, for next time
+     * operator()() is called, using move semantic.
      */
     void
     set_arguments(TupleType &&arguments);
 
     /**
-     * 设置在 @p function,
-     * 中使用的参数，以便在下次调用operator()()时，使用移动语义。
-     *
+     * Set the arguments to use in @p function, for next time
+     * operator()() is called, using move semantic.
      */
     void
     set_arguments(FunctionArgs &&... arguments);
 
     /**
-     * 将 @p function
-     * 中的参数从字符串中解析出来，以便下次调用operator()()时使用。
-     * 该转换是使用用户提供的 Patterns::PatternBase
-     * 对象进行的。默认情况下，
-     * Patterns::Tools::Convert<TupleType>::to_pattern()
-     * 被用来确定如何从 @p value_string 转换为TupleType对象。
-     * @param  value_string 要转换的字符串  @param  pattern
-     * 执行转换时使用的模式的唯一指针
+     * Parse the arguments to use in @p function from a string, for next time
+     * operator()() is called.
      *
+     * The conversion is performed using a user supplied Patterns::PatternBase
+     * object. By default, Patterns::Tools::Convert<TupleType>::to_pattern() is
+     * used to determine how to convert from @p value_string to a TupleType
+     * object.
+     *
+     * @param value_string The string to convert from
+     * @param pattern A unique pointer to the pattern to use when performing
+     * the conversion
      */
     void
     parse_arguments(const std::string &          value_string,
@@ -145,14 +151,13 @@ namespace Utilities
 
   private:
     /**
-     * 一个存储原始函数的 std::function 。
-     *
+     * An std::function that stores the original function.
      */
     const std::function<ReturnType(FunctionArgs...)> function;
 
     /**
-     * 目前存储的参数。当调用operator()()时，这些参数会被转发给上面的函数对象。
-     *
+     * Currently stored arguments. These are forwarded to the function object
+     * above, when calling operator()().
      */
     TupleType arguments;
   };
@@ -160,8 +165,10 @@ namespace Utilities
 
 
   /**
-   * 从一个函数指针和一个参数列表创建一个MutableBind对象。
-   * 一个用法的例子是这样给出的。
+   * Create a MutableBind object from a function pointer and a list of
+   * arguments.
+   *
+   * An example usage is given by:
    * @code
    * void my_function(const int &a, const double &b);
    *
@@ -175,8 +182,6 @@ namespace Utilities
    * bound.parse_arguments("3: 4.0");
    * bound(); // will execute my_function(3, 4.0);
    * @endcode
-   *
-   *
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
@@ -184,8 +189,7 @@ namespace Utilities
                typename identity<FunctionArgs>::type &&... arguments);
 
   /**
-   * 和上面一样，使用 std::function 对象。
-   *
+   * Same as above, using a std::function object.
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
@@ -193,20 +197,21 @@ namespace Utilities
                typename identity<FunctionArgs>::type &&... arguments);
 
   /**
-   * 从一个函数指针创建一个MutableBind对象，带有未初始化的参数。
-   * 注意，如果你不调用 MutableBind::set_arguments()
-   * 方法中的一个，或者在返回的对象上调用
-   * MutableBind::parse_arguments()
-   * 函数，那么传递给函数对象的参数将被初始化，其值来自每个参数的默认构造函数。
+   * Create a MutableBind object from a function pointer, with uninitialized
+   * arguments.
    *
+   * Notice that if you do not call one of the MutableBind::set_arguments()
+   * methods, or the MutableBind::parse_arguments() function on the returned
+   * object, then the arguments passed to the function object will be
+   * initialized with the values coming from each of the arguments' default
+   * constructors.
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
     mutable_bind(ReturnType (*function)(FunctionArgs...));
 
   /**
-   * 与上述相同，使用 std::function 对象。
-   *
+   * Same as above, using a std::function object.
    */
   template <typename ReturnType, class... FunctionArgs>
   MutableBind<ReturnType, FunctionArgs...>
@@ -327,5 +332,3 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/data_out_rotation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -33,8 +32,9 @@ namespace internal
   namespace DataOutRotationImplementation
   {
     /**
-     * 一个派生类，用于DataOutFaces类中。这是一个用于WorkStream类的文档中讨论的AdditionalData那种数据结构的类。
-     *
+     * A derived class for use in the DataOutFaces class. This is a class for
+     * the AdditionalData kind of data structure discussed in the
+     * documentation of the WorkStream class.
      */
     template <int dim, int spacedim>
     struct ParallelData
@@ -60,32 +60,56 @@ namespace internal
 
 
 /**
- * 这个类在全域的计算中生成输出，这些计算是利用域和解的旋转对称性完成的。特别是，如果一个三维问题的计算是围绕
- * @p z-axis 旋转对称的（即在 @p r-z-plane)
- * 中完成的，那么这个类可以用来生成原始 @p x-y-z
- * 空间中的输出。为了做到这一点，它从计算网格中的每个单元生成一个空间中的单元，其尺寸比DoFHandler对象的尺寸大。这样的输出将由六面体组成，形成一个围绕Z轴旋转对称的对象。由于大多数图形程序不能表示环状结构，角度（旋转）变量也被离散成有限数量的区间；这些区间的数量必须交给
- * @p build_patches
- * 函数。然而，需要注意的是，虽然这个函数生成了整个领域的漂亮图片，但它经常产生
- * <em> 非常 </em> 大的输出文件。
+ * This class generates output in the full domain of computations that were
+ * done using rotational symmetry of domain and solution. In particular, if a
+ * computation of a three dimensional problem with rotational symmetry around
+ * the @p z-axis (i.e. in the @p r-z-plane) was done, then this class can be
+ * used to generate the output in the original @p x-y-z space. In order to do
+ * so, it generates from each cell in the computational mesh a cell in the
+ * space with dimension one greater than that of the DoFHandler object. The
+ * resulting output will then consist of hexahedra forming an object that has
+ * rotational symmetry around the z-axis. As most graphical programs can not
+ * represent ring-like structures, the angular (rotation) variable is
+ * discretized into a finite number of intervals as well; the number of these
+ * intervals must be given to the @p build_patches function. It is noted,
+ * however, that while this function generates nice pictures of the whole
+ * domain, it often produces <em>very</em> large output files.
  *
- *  <h3>Interface</h3>
- * 这个类的接口是从DataOut类复制过来的。此外，它们共享共同的父类DataOut_DoFData()。关于接口的讨论以及如何通过从这个类派生出更多的类来扩展它，请参见这两个类的参考文献。
  *
- *  <h3>Details for 1d computations</h3>
- * 传递给这个类的DoFHandler对象所使用的三角测量中的一个坐标被当作径向变量，然后输出将是一个圆或一个环域。用户有责任保证径向坐标只达到非负值。
+ * <h3>Interface</h3>
  *
- *  <h3>Details for 2d computations</h3>
- * 我们认为计算（由附加到该类的DoFHandler对象表示）发生在
- * @p r-z-plane, 中，其中 @p r 是径向变量， @p z
- * 表示围绕解决方案对称的旋转轴。输出是在 @p x-y-z
- * 空间，其中径向依赖被转换到 @p x-y
- * 平面。目前，不可能交换模拟所在平面的第一个和第二个变量的含义，即生成模拟的输出，其中第一个变量表示对称轴，第二个表示径向变量。在第一次为你的应用程序编程时，你必须考虑到这一点。
- * 用户有责任确保径向变量只达到非负值。
+ * The interface of this class is copied from the DataOut class. Furthermore,
+ * they share the common parent class DataOut_DoFData(). See the reference of
+ * these two classes for a discussion of the interface and how to extend it by
+ * deriving further classes from this class.
  *
+ *
+ * <h3>Details for 1d computations</h3>
+ *
+ * The one coordinate in the triangulation used by the DoFHandler object
+ * passed to this class is taken as the radial variable, and the output will
+ * then be either a circle or a ring domain. It is in the user's
+ * responsibility to assure that the radial coordinate only attains non-
+ * negative values.
+ *
+ *
+ * <h3>Details for 2d computations</h3>
+ *
+ * We consider the computation (represented by the DoFHandler object that is
+ * attached to this class) to have happened in the @p r-z-plane, where @p r is
+ * the radial variable and @p z denotes the axis of revolution around which
+ * the solution is symmetric. The output is in @p x-y-z space, where the
+ * radial dependence is transformed to the @p x-y plane. At present, it is not
+ * possible to exchange the meaning of the first and second variable of the
+ * plane in which the simulation was made, i.e. generate output from a
+ * simulation where the first variable denoted the symmetry axis, and the
+ * second denoted the radial variable. You have to take that into account when
+ * first programming your application.
+ *
+ * It is in the responsibility of the user to make sure that the radial
+ * variable attains only non-negative values.
  *
  * @ingroup output
- *
- *
  */
 template <int dim, int spacedim = dim>
 class DataOutRotation
@@ -95,55 +119,65 @@ class DataOutRotation
 
 public:
   /**
-   * 补丁的尺寸参数。
-   *
+   * Dimension parameters for the patches.
    */
   static constexpr int patch_dim      = dim + 1;
   static constexpr int patch_spacedim = spacedim + 1;
 
   /**
-   * 对所考虑的dof处理程序类的迭代器类型的类型定义。
-   *
+   * Typedef to the iterator type of the dof handler class under
+   * consideration.
    */
   using cell_iterator =
     typename DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::
       cell_iterator;
 
   /**
-   * 这是该类的核心功能，因为它建立了由基类的低级函数编写的补丁列表。从本质上讲，补丁是三角形和DoFHandler对象的每个单元上的数据的一些中间表示，然后可以用来以某种可视化程序可读的格式编写文件。
-   * 你可以在这个类的一般文档中找到关于这个函数的使用概述。在这个类的基类DataOut_DoFData的文档中也提供了一个例子。
-   * @param  n_patches_per_circle
-   * 表示角度（旋转）变量将被细分为多少个间隔。
-   * @param  n_subdivisions 参见 DataOut::build_patches()
-   * 对该参数的详细描述。
+   * This is the central function of this class since it builds the list of
+   * patches to be written by the low-level functions of the base class. A
+   * patch is, in essence, some intermediate representation of the data on
+   * each cell of a triangulation and DoFHandler object that can then be used
+   * to write files in some format that is readable by visualization programs.
    *
+   * You can find an overview of the use of this function in the general
+   * documentation of this class. An example is also provided in the
+   * documentation of this class's base class DataOut_DoFData.
+   *
+   * @param n_patches_per_circle Denotes into how many intervals the angular
+   * (rotation) variable is to be subdivided.
+   *
+   * @param n_subdivisions See DataOut::build_patches() for an extensive
+   * description of this parameter.
    */
   virtual void
   build_patches(const unsigned int n_patches_per_circle,
                 const unsigned int n_subdivisions = 0);
 
   /**
-   * 返回我们想要输出的第一个单元格。默认实现返回第一个 @ref GlossActive "活动单元"
-   * ，但你可能想在派生类中返回其他单元。
-   *
+   * Return the first cell which we want output for. The default
+   * implementation returns the first
+   * @ref GlossActive "active cell",
+   * but you might want to return other cells in a derived class.
    */
   virtual cell_iterator
   first_cell();
 
   /**
-   * 返回 @p cell
-   * 之后我们想要输出的下一个单元格。如果没有更多的单元格，应返回<tt>dofs->end()</tt>。
-   * 默认实现返回下一个活动单元，但你可能想在派生类中返回其他单元。请注意，默认实现假设给定的
-   * @p cell 是活动的，只要 @p first_cell
-   * 也被用于默认实现，就可以保证。只重载这两个函数中的一个可能不是个好主意。
+   * Return the next cell after @p cell which we want output for. If there are
+   * no more cells, <tt>dofs->end()</tt> shall be returned.
    *
+   * The default implementation returns the next active cell, but you might
+   * want to return other cells in a derived class. Note that the default
+   * implementation assumes that the given @p cell is active, which is
+   * guaranteed as long as @p first_cell is also used from the default
+   * implementation. Overloading only one of the two functions might not be a
+   * good idea.
    */
   virtual cell_iterator
   next_cell(const cell_iterator &cell);
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcRadialVariableHasNegativeValues,
                  double,
@@ -157,8 +191,9 @@ public:
 
 private:
   /**
-   * 建立与第一个参数中给出的单元格相对应的所有补丁。在WorkStream中使用第二个参数作为并行调用的抓取空间，并将结果放到最后一个参数中。
-   *
+   * Build all of the patches that correspond to the cell given in the first
+   * argument. Use the second argument as scratch space for parallel
+   * invocation in WorkStream, and put the results into the last argument.
    */
   void
   build_one_patch(
@@ -170,9 +205,8 @@ private:
 namespace Legacy
 {
   /**
-   * @deprecated  使用没有DoFHandlerType模板的 dealii::DataOutRotation
-   * 代替。
-   *
+   * @deprecated Use dealii::DataOutRotation without the DoFHandlerType
+   * template instead.
    */
   template <int dim, typename DoFHandlerType = DoFHandler<dim>>
   using DataOutRotation DEAL_II_DEPRECATED =
@@ -183,5 +217,3 @@ namespace Legacy
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/copy_data_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -32,32 +31,19 @@ DEAL_II_NAMESPACE_OPEN
 namespace MeshWorker
 {
   /**
-   * 帮助复制数据结构。    这个类对于 WorkStream::run() 和
-   * MeshWorker::mesh_loop()
-   * 函数来说是一个很好的默认投放的CopyData对象。
-   * 它是（局部）全矩阵、向量和局部自由度索引向量的数组，其大小由相应的模板参数决定。
-   * 特别是，你可以指定以下模板参数
+   * Helper copy data struct.
    *
+   * This class is a good default drop in CopyData object for the
+   * WorkStream::run() and MeshWorker::mesh_loop() functions.
    *
+   * It arrays of (local) full matrices, vectors, and local degrees of freedom
+   * index vectors, with size determined by the corresponding template argument.
    *
+   * In particular, you can specify the following template arguments
    *
-   *
-   * -  @tparam  n_matrices: 矩阵阵列的大小
-   *
-   *
-   *
-   *
-   *
-   *
-   * -  @tparam  n_vectors: 向量阵列的大小
-   *
-   *
-   *
-   *
-   *
-   *
-   * -  @tparam  n_dof_indices: 本地dof指数阵列的大小
-   *
+   * - @tparam n_matrices: Size of the array of matrices
+   * - @tparam n_vectors: size of the array of vectors
+   * - @tparam n_dof_indices: size of the array of local dof indices
    */
   template <int n_matrices    = 1,
             int n_vectors     = n_matrices,
@@ -65,15 +51,13 @@ namespace MeshWorker
   struct CopyData
   {
     /**
-     * 用相同的 @p size. 初始化所有东西
-     * 这通常是局部自由度的数量。
-     *
+     * Initialize everything with the same @p size. This is usually the number
+     * of local degrees of freedom.
      */
     explicit CopyData(const unsigned int size);
 
     /**
-     * 对于每个对象，指定它们应该有的尺寸。
-     *
+     * For every object, specify the size they should have.
      */
     explicit CopyData(
       const ndarray<unsigned int, n_matrices, 2> &   matrix_sizes,
@@ -81,27 +65,23 @@ namespace MeshWorker
       const std::array<unsigned int, n_dof_indices> &dof_indices_sizes);
 
     /**
-     * 深度复制构造函数。
-     *
+     * Deep copy constructor.
      */
     CopyData(const CopyData<n_matrices, n_vectors, n_dof_indices> &other) =
       default;
 
     /**
-     * 一个本地矩阵的数组。
-     *
+     * An array of local matrices.
      */
     std::array<FullMatrix<double>, n_matrices> matrices;
 
     /**
-     * 一个本地向量的数组。
-     *
+     * An array of local vectors.
      */
     std::array<Vector<double>, n_vectors> vectors;
 
     /**
-     * 一个本地自由度指数的数组。
-     *
+     * An array of local degrees of freedom indices.
      */
     std::array<std::vector<types::global_dof_index>, n_dof_indices>
       local_dof_indices;
@@ -148,5 +128,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

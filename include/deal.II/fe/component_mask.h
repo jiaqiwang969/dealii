@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/component_mask_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
@@ -31,170 +30,199 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 该类代表一个掩码，可用于选择有限元的单个矢量分量（另见 @ref GlossComponentMask "该术语条目"
- * ）。它通常有与有限元的矢量分量一样多的元素，人们可以使用
- * <code>operator[]</code> 来查询某个特定分量是否被选中。
+ * This class represents a mask that can be used to select individual vector
+ * components of a finite element (see also
+ * @ref GlossComponentMask "this glossary entry").
+ * It will typically have as many elements as the finite element has vector
+ * components, and one can use <code>operator[]</code> to query whether a
+ * particular component has been selected.
  *
+ * @note A "mask" represents a data structure with @p true and @p false
+ *   entries that is generally used to enable or disable an operation
+ *   for a particular vector component. By this definition, disabled
+ *   vector components still exist -- they are simply not touched. As
+ *   a consequence, when you apply a component mask for interpolating
+ *   boundary values (to choose just one example) of a problem with
+ *   $C$ vector components, the input argument that describes the
+ *   boundary values will still have to provide $C$ components even
+ *   if the mask says that we only want to interpolate a subset of
+ *   these components onto the finite element space. In other words,
+ *   a component mask does not represent a <i>reduction</i> operation;
+ *   it represents a <i>selection</i>.
  *
- * @note  "掩码 "代表一个具有 @p true 和 @p false
- * 项的数据结构，通常用于启用或禁用某个特定向量分量的操作。根据这个定义，禁用的向量组件仍然存在
- *
- * - 它们只是没有被触及。因此，当你应用分量掩码来插值一个带有 $C$ 矢量分量的问题时（仅选择一个例子），描述边界值的输入参数仍然必须提供 $C$ 分量，即使掩码说我们只想把这些分量的一个子集插值到有限元空间。换句话说，分量掩码不代表<i>reduction</i>操作，它代表<i>selection</i>。
- * 这类对象在很多地方被使用，人们希望将操作限制在某个分量子集上，例如在 DoFTools::make_zero_boundary_values()
- * 或 VectorTools::interpolate_boundary_values(). 中。
- * 这些对象可以手工创建，或者更简单，要求有限元使用代码从某些选定的分量中生成一个分量掩码，例如我们创建一个只表示斯托克斯元速度分量的掩码（见
- * @ref vector_valued  ）。
- *
+ * Objects of this kind are used in many places where one wants to restrict
+ * operations to a certain subset of components, e.g. in
+ * DoFTools::make_zero_boundary_values() or
+ * VectorTools::interpolate_boundary_values(). These objects can either be
+ * created by hand, or, simpler, by asking the finite element to generate a
+ * component mask from certain selected components using code such as this
+ * where we create a mask that only denotes the velocity components of a
+ * Stokes element (see
+ * @ref vector_valued):
  * @code
- * // Q2 element for the velocities, Q1 element for the pressure
- * FESystem<dim> stokes_fe (FE_Q<dim>(2), dim,
- *                          FE_Q<dim>(1), 1);
- * FEValuesExtractors::Scalar pressure(dim);
- * ComponentMask pressure_mask = stokes_fe.component_mask (pressure);
+ *   // Q2 element for the velocities, Q1 element for the pressure
+ *   FESystem<dim> stokes_fe (FE_Q<dim>(2), dim,
+ *                            FE_Q<dim>(1), 1);
+ *   FEValuesExtractors::Scalar pressure(dim);
+ *   ComponentMask pressure_mask = stokes_fe.component_mask (pressure);
  * @endcode
- * 结果是一个分量掩码，在2d中，它的值是<code>[false, false,
- * true]</code>。同样地，使用
- *
+ * The result is a component mask that, in 2d, would have values <code>[false,
+ * false, true]</code>. Similarly, using
  * @code
- * FEValuesExtractors::Vector velocities(0);
- * ComponentMask velocity_mask = stokes_fe.component_mask (velocities);
+ *   FEValuesExtractors::Vector velocities(0);
+ *   ComponentMask velocity_mask = stokes_fe.component_mask (velocities);
  * @endcode
- * 在2d中会产生一个 <code>[true, true, false]</code>
- * 的掩码。当然，在3D中，其结果将是 <code>[true, true, true,
- * false]</code>  。
- *
+ * would result in a mask <code>[true, true, false]</code> in 2d. Of course,
+ * in 3d, the result would be <code>[true, true, true, false]</code>.
  *
  * @ingroup fe
- *
  * @ingroup vector_valued
- *
  */
 class ComponentMask
 {
 public:
   /**
-   * 初始化一个组件掩码。默认情况下，一个组件掩码代表一组<i>all</i>被选中的组件，也就是说，调用这个构造函数的结果是一个组件掩码，每当问到一个组件是否被选中时，总是返回
-   * <code>true</code> 。
-   *
+   * Initialize a component mask. The default is that a component mask
+   * represents a set of components that are <i>all</i> selected, i.e.,
+   * calling this constructor results in a component mask that always returns
+   * <code>true</code> whenever asked whether a component is selected.
    */
   ComponentMask() = default;
 
   /**
-   * 用参数指定的一组选定的组件初始化这个类型的对象。
-   * @param  component_mask 一个 <code>true/false</code>
-   * 项的向量，决定有限元的哪些分量被选择。如果给定矢量的长度为零，则解释为<i>every</i>分量被选中的情况。
+   * Initialize an object of this type with a set of selected components
+   * specified by the argument.
    *
+   * @param component_mask A vector of <code>true/false</code> entries that
+   * determine which components of a finite element are selected. If the
+   * length of the given vector is zero, then this interpreted as the case
+   * where <i>every</i> component is selected.
    */
   ComponentMask(const std::vector<bool> &component_mask);
 
   /**
-   * 用一定数量的元素初始化分量掩码，这些元素要么是真，要么是假。
-   * @param  n_components 这个掩码的元素数量  @param  initializer
-   * 这些元素中的每一个应该具有的值：要么是真，要么是假。
+   * Initialize the component mask with a number of elements that are either
+   * all true or false.
    *
+   * @param n_components The number of elements of this mask
+   * @param initializer The value each of these elements is supposed to have:
+   * either true or false.
    */
   ComponentMask(const unsigned int n_components, const bool initializer);
 
   /**
-   * 将掩码中的某个条目设置为一个值。
-   *
+   * Set a particular entry in the mask to a value.
    */
   void
   set(const unsigned int index, const bool value);
 
   /**
-   * 如果这个组件掩码已经被初始化为一个大小大于0的掩码，那么返回这个对象所代表的掩码的大小。
-   * 另一方面，如果这个掩码已被初始化为一个空对象，代表一个对每个元素都是真的掩码（即，如果这个对象在调用
-   * represents_the_all_selected_mask()时将返回true），那么返回0，因为没有明确的大小。
-   *
+   * If this component mask has been initialized with a mask of size greater
+   * than zero, then return the size of the mask represented by this object.
+   * On the other hand, if this mask has been initialized as an empty object
+   * that represents a mask that is true for every element (i.e., if this
+   * object would return true when calling represents_the_all_selected_mask())
+   * then return zero since no definite size is known.
    */
   unsigned int
   size() const;
 
   /**
-   * 返回一个特定的组件是否被这个掩码所选择。如果这个掩码代表了选择<i>all
-   * components</i>的对象的情况（例如，如果它是用默认的构造函数创建的，或者是从bool类型的空向量转换而来的），那么无论给定的参数是什么，这个函数都返回true。
-   * @param  component_index
-   * 该函数应返回该组件是否被选中的索引。如果这个对象代表一个掩码，其中所有组件总是被选中，那么这里允许任何索引。
-   * 否则，给定的索引需要在零和该掩码所代表的组件数量之间。
+   * Return whether a particular component is selected by this mask. If this
+   * mask represents the case of an object that selects <i>all components</i>
+   * (e.g. if it is created using the default constructor or is converted from
+   * an empty vector of type bool) then this function returns true regardless
+   * of the given argument.
    *
+   * @param component_index The index for which the function should return
+   * whether the component is selected. If this object represents a mask in
+   * which all components are always selected then any index is allowed here.
+   * Otherwise, the given index needs to be between zero and the number of
+   * components that this mask represents.
    */
   bool operator[](const unsigned int component_index) const;
 
   /**
-   * 返回这个分量掩码是否正好代表 <code>n</code>
-   * 分量的掩码。如果它被初始化为一个正好有 <code>n</code>
-   * entries of type <code>bool</code> 的向量（在这种情况下， @p n
-   * 必须等于size()的结果），或者它被初始化为一个空向量（或者使用默认构造函数），在这种情况下，它可以代表一个有任意数量组件的掩码，并且将总是说一个组件被选中，这就是真的。
-   *
+   * Return whether this component mask represents a mask with exactly
+   * <code>n</code> components. This is true if either it was initialized with
+   * a vector with exactly <code>n</code> entries of type <code>bool</code>
+   * (in this case, @p n must equal the result of size()) or if it was
+   * initialized with an empty vector (or using the default constructor) in
+   * which case it can represent a mask with an arbitrary number of components
+   * and will always say that a component is selected.
    */
   bool
   represents_n_components(const unsigned int n) const;
 
   /**
-   * 返回被这个掩码选中的组件的数量。
-   * 由于空的组件掩码代表每个组件都会返回 <code>true</code>
-   * ，这个函数可能不知道组件掩码的真实大小，因此它需要一个参数来表示组件的总数量。
-   * 如果该对象已经被初始化为一个非空的掩码（即，如果size()函数返回大于0的东西，或者等价地，如果respresent_the_all_selected_mask()返回false），那么该参数可以被省略，而size()的结果被取走。
+   * Return the number of components that are selected by this mask.
    *
+   * Since empty component masks represent a component mask that would return
+   * <code>true</code> for every component, this function may not know the
+   * true size of the component mask and it therefore requires an argument
+   * that denotes the overall number of components.
+   *
+   * If the object has been initialized with a non-empty mask (i.e., if the
+   * size() function returns something greater than zero, or equivalently if
+   * represents_the_all_selected_mask() returns false) then the argument can
+   * be omitted and the result of size() is taken.
    */
   unsigned int
   n_selected_components(const unsigned int overall_number_of_components =
                           numbers::invalid_unsigned_int) const;
 
   /**
-   * 返回第一个被选中的组件的索引。该参数存在的原因与n_selected_components()函数存在的原因相同。
-   * 如果没有任何组件被选中，该函数会抛出一个异常。
+   * Return the index of the first selected component. The argument is there
+   * for the same reason it exists with the n_selected_components() function.
    *
+   * The function throws an exception if no component is selected at all.
    */
   unsigned int
   first_selected_component(const unsigned int overall_number_of_components =
                              numbers::invalid_unsigned_int) const;
 
   /**
-   * 如果这个掩码代表一个默认构建的掩码，对应于所有组件被选中的掩码，则返回true。如果为真，那么size()函数将返回0。
-   *
+   * Return true if this mask represents a default constructed mask that
+   * corresponds to one in which all components are selected. If true, then
+   * the size() function will return zero.
    */
   bool
   represents_the_all_selected_mask() const;
 
   /**
-   * 返回一个包含由当前对象选择的组件和作为参数传递的组件的联合体的组件掩码。
-   *
+   * Return a component mask that contains the union of the components
+   * selected by the current object and the one passed as an argument.
    */
   ComponentMask
   operator|(const ComponentMask &mask) const;
 
   /**
-   * 返回一个组件掩码，该掩码只包含那些在当前对象以及作为参数传递的对象中都被设置的元素。
-   *
+   * Return a component mask that has only those elements set that are set
+   * both in the current object as well as the one passed as an argument.
    */
   ComponentMask operator&(const ComponentMask &mask) const;
 
   /**
-   * 返回这个对象和参数是否相同。
-   *
+   * Return whether this object and the argument are identical.
    */
   bool
   operator==(const ComponentMask &mask) const;
 
   /**
-   * 返回这个对象和参数是否不相同。
-   *
+   * Return whether this object and the argument are not identical.
    */
   bool
   operator!=(const ComponentMask &mask) const;
 
   /**
-   * 确定此对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclExceptionMsg(ExcNoComponentSelected,
                    "The number of selected components in a mask "
@@ -202,8 +230,7 @@ public:
 
 private:
   /**
-   * 实际的组件掩码。
-   *
+   * The actual component mask.
    */
   std::vector<bool> component_mask;
 
@@ -215,12 +242,14 @@ private:
 
 
 /**
- * 将一个组件掩码写到输出流中。如果组件掩码代表所有的组件都被选中，而没有指定掩码的特定大小，那么它就会将字符串<code>[所有组件被选中]</code>写到流中。否则，它将以
- * <code>[true,true,true,false]</code> 这样的形式打印出组件掩码。
- * @param  out 要写入的流。  @param  mask 要写的掩码。  @return
- * 对第一个参数的引用。
+ * Write a component mask to an output stream. If the component mask
+ * represents one where all components are selected without specifying a
+ * particular size of the mask, then it writes the string <code>[all
+ * components selected]</code> to the stream. Otherwise, it prints the
+ * component mask in a form like <code>[true,true,true,false]</code>.
  *
- *
+ * @param out The stream to write to.
+ * @param mask The mask to write. @return A reference to the first argument.
  */
 std::ostream &
 operator<<(std::ostream &out, const ComponentMask &mask);
@@ -388,5 +417,3 @@ ComponentMask::operator!=(const ComponentMask &mask) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

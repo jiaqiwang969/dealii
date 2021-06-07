@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/signaling_nan_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -33,27 +34,27 @@ namespace numbers
   namespace internal
   {
     /**
-     * A namespace for the implementation of functions that create signaling
-     * NaN objects. This is where the numbers::signaling_nan() function
-     * calls into.
+     * 一个命名空间，用于实现创建信令NaN对象的函数。这就是
+     * numbers::signaling_nan() 函数调用的地方。
+     *
      */
     namespace SignalingNaN
     {
       /**
-       * A general template for classes that know how to initialize objects of
-       * type @p T with signaling NaNs to denote invalid values.
+       * 一个通用模板，用于知道如何用信号NaN来初始化 @p T
+       * 类型的对象，以表示无效的值。
+       * 这个类的真正实现发生在对模板参数 @p T.
+       * 的特定值的（部分）专门化中。
        *
-       * The real implementation of this class happens in (partial)
-       * specializations for particular values of the template argument @p T.
        */
       template <typename T>
       struct NaNInitializer;
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a @p float value equal to the invalid signaling
-       * NaN.
+       * 一般NaNInitializer类的特殊化，提供了一个函数，返回一个等于无效信号NaN的
+       * @p float 值。
+       *
        */
       template <>
       struct NaNInitializer<float>
@@ -67,9 +68,9 @@ namespace numbers
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a @p double value equal to the invalid
-       * signaling NaN.
+       * 一般NaNInitializer类的特殊化，它提供了一个函数，返回一个等于无效信号NaN的
+       * @p double 值。
+       *
        */
       template <>
       struct NaNInitializer<double>
@@ -83,9 +84,8 @@ namespace numbers
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a Tensor<1,dim> value whose components are
-       * invalid signaling NaN values.
+       * 一般NaNInitializer类的特殊化，它提供了一个函数，返回一个Tensor<1,dim>值，其组成部分是无效的信号NaN值。
+       *
        */
       template <int dim, typename T>
       struct NaNInitializer<Tensor<1, dim, T>>
@@ -105,9 +105,8 @@ namespace numbers
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a Tensor<rank,dim> value whose components are
-       * invalid signaling NaN values.
+       * 一般NaNInitializer类的特殊化，它提供了一个函数来返回一个Tensor<rank,dim>值，其组件是无效的信号NaN值。
+       *
        */
       template <int rank, int dim, typename T>
       struct NaNInitializer<Tensor<rank, dim, T>>
@@ -129,9 +128,8 @@ namespace numbers
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a Tensor<rank,dim> value whose components are
-       * invalid signaling NaN values.
+       * 一般NaNInitializer类的特殊化，它提供了一个函数来返回一个Tensor<rank,dim>值，其组件是无效的信号NaN值。
+       *
        */
       template <int dim, typename T>
       struct NaNInitializer<Point<dim, T>>
@@ -151,9 +149,8 @@ namespace numbers
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a SymmetricTensor<rank,dim> value whose
-       * components are invalid signaling NaN values.
+       * 一般NaNInitializer类的特殊化，它提供了一个函数，返回一个SymmetricTensor<rank,dim>值，其组件是无效的信号NaN值。
+       *
        */
       template <int rank, int dim, typename T>
       struct NaNInitializer<SymmetricTensor<rank, dim, T>>
@@ -176,9 +173,8 @@ namespace numbers
 
 
       /**
-       * A specialization of the general NaNInitializer class that provides a
-       * function that returns a DerivativeForm<order,dim,spacedim> value
-       * whose components are invalid signaling NaN values.
+       * 一般NaNInitializer类的特殊化，它提供了一个函数，返回一个DerivativeForm<order,dim,spacedim>值，其组件是无效的信号NaN值。
+       *
        */
       template <int order, int dim, int spacedim, typename T>
       struct NaNInitializer<DerivativeForm<order, dim, spacedim, T>>
@@ -201,58 +197,39 @@ namespace numbers
 
 
   /**
-   * Provide an object of type @p T filled with a signaling NaN that will
-   * cause an exception when used in a computation. The content of these
-   * objects is a "signaling NaN" ("NaN" stands for "not a number", and
-   * "signaling" implies that at least on platforms where this is supported,
-   * any arithmetic operation using them terminates the program). The purpose
-   * of such objects is to use them as markers for invalid objects and
-   * arrays that are required to be initialized to valid values at some point,
-   * and to trigger an error when this later initialization does not happen
-   * before the first use. An example is code such as this:
+   * 提供一个类型为 @p T
+   * 的对象，里面充满了信号NaN，在计算中使用时会引起异常。这些对象的内容是一个
+   * "信号NaN"（"NaN "代表 "不是一个数字"，而 "信号
+   * "意味着至少在支持这个的平台上，任何使用它们的算术运算都会终止程序）。这类对象的目的是把它们作为无效对象和数组的标记，这些对象和数组需要在某个时候被初始化为有效值，当这种后来的初始化没有在第一次使用之前发生时，就会触发错误。一个例子是像这样的代码。
    * @code
-   *   double x = numbers::signaling_nan<double>();
-   *   if (some condition)
-   *   {
-   *     ...much code computing a,b,c...
-   *     x = f(a,b,c);
-   *   }
-   *   else
-   *   {
-   *     ...more code...
-   *     // bug: we forgot to assign a value to 'x'.
-   *   }
+   * double x = numbers::signaling_nan<double>();
+   * if (some condition)
+   * {
+   *   ...much code computing a,b,c...
+   *   x = f(a,b,c);
+   * }
+   * else
+   * {
+   *   ...more code...
+   *   // bug: we forgot to assign a value to 'x'.
+   * }
    *
-   *   return std::sin(x);
+   * return std::sin(x);
    * @endcode
-   * The bug is that the `else` branch forgot to write a value into the `x`
-   * variable. If your platform supports signaling NaNs, then this mistake
-   * will become apparent in the last line above because the program is
-   * going to be terminated by a floating point exception: The processor
-   * realizes that the code is attempting to do an operation on the signaling
-   * NaN still stored in `x` and aborts the program, thereby facilitating
-   * an easy way to find what the problem is. This would not have been an easy
-   * bug to find if one had just initialized `x` to zero in the first line
-   * (or just left it uninitialized altogether): In that case, the call to
-   * `std::sin` in the last line would have simply computed the sine of
-   * "something" if `some condition == false`, but this invalid results may
-   * not have been obvious to the calling site and would have required
-   * a substantial amount of debugging to uncover because downstream
-   * computations would simply have been wrong, without any indication of
-   * *why* they are wrong.
+   * 错误在于`else`分支忘记向`x`变量写入一个值。如果你的平台支持信号NaN，那么这个错误在上面的最后一行会变得很明显，因为程序会被一个浮点异常终止。处理器意识到代码正试图对仍然存储在`x`中的信令NaN进行操作，并终止了程序，从而便于找到问题所在。如果在第一行将`x`初始化为零（或者完全不初始化），这就不是一个容易发现的错误。在这种情况下，最后一行对
+   * `std::sin` 的调用将简单地计算 "某某
+   * "的正弦，如果`某某条件==假`，但这种无效的结果对调用者来说可能并不明显，需要大量的调试才能发现，因为下游的计算将是错误的，没有任何指示*它们为什么是错误的。
+   * @tparam  T
+   * 返回无效对象的类型。这个类型可以是标量，也可以是Tensor、SymmetricTensor或DerivativeForm类型。如果
+   * internal::SignalingNaN::NaNInitializer
+   * 类对该类型有相应的专门化，可以支持其他类型。
+   * @note  因为 @p T
+   * 类型不作为函数参数使用，编译器不能从参数的类型中推断出它。因此，你必须明确地提供它。例如，这一行
+   * @code
+   *   Tensor<1,dim> tensor = Utilities::signaling_nan<Tensor<1,dim> >();
+   * @endcode
+   * 用无效的值初始化一个张量。
    *
-   * @tparam T The type of the returned invalid object. This type can either
-   * be a scalar, or of type Tensor, SymmetricTensor, or DerivativeForm. Other
-   * types may be supported if there is a corresponding specialization of the
-   * internal::SignalingNaN::NaNInitializer class for this type.
-   *
-   * @note Because the type @p T is not used as a function argument, the
-   * compiler cannot deduce it from the type of arguments. Consequently, you
-   * have to provide it explicitly. For example, the line
-   *   @code
-   *     Tensor<1,dim> tensor = Utilities::signaling_nan<Tensor<1,dim> >();
-   *   @endcode
-   * initializes a tensor with invalid values.
    */
   template <class T>
   T
@@ -269,3 +246,5 @@ namespace numbers
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

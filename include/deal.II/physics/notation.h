@@ -1,4 +1,3 @@
-//include/deal.II-translator/physics/notation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -38,135 +37,255 @@ namespace Physics
   {
     /**
      * @brief A namespace with functions that assist in the conversion of
-     * 向量和张量使用Kelvin记号和加权的压缩格式来回转换。
-     * Kelvin和Voigt符号都采用相同的索引惯例。
-     * 具体到空间维度3的情况，对于一个等级2的对称张量
-     * $\mathbf{S}$ ，我们列举其张量成分@f[ \mathbf{S} \dealcoloneq
-     * \left[ \begin{array}{ccc} S_{00}          & S_{01}          & S_{02} \\
-     * S_{10} = S_{01} & S_{11}          & S_{12} \\ S_{20} = S_{02} & S_{21}
-     * = S_{12} & S_{22} \end{array} \right] \quad \Rightarrow \quad \left[
-     * \begin{array}{ccc} n = 0 & n = 5 & n = 4 \\ sym   & n = 1 & n = 3 \\
-     * sym   & sym   & n = 2 \end{array} \right] ,
-     * @f]，其中 $n$ 表示张量成分的开尔文索引，而对于一般等级2的张量 $\mathbf{T}$  ] @f[
-     * \mathbf{T} \dealcoloneq \left[ \begin{array}{ccc} T_{00} & T_{01} &
-     * T_{02} \\ T_{10} & T_{11} & T_{12} \\ T_{20} & T_{21} & T_{22}
-     * \end{array}\right] \quad \Rightarrow \quad \left[ \begin{array}{ccc} n
-     * = 0 & n = 5 & n = 4 \\ n = 6 & n = 1 & n = 3 \\ n = 7 & n = 8 & n = 2
+     * vectors and tensors to and from a compressed format using Kelvin notation
+     * and weighting.
+     *
+     * Both Kelvin and Voigt notation adopt the same indexing convention.
+     * With specific reference to the spatial dimension 3 case, for
+     * a rank-2 symmetric tensor $\mathbf{S}$ we enumerate its tensor
+     * components
+     * @f[
+     * \mathbf{S} \dealcoloneq \left[ \begin{array}{ccc}
+     *  S_{00}          & S_{01}          & S_{02} \\
+     *  S_{10} = S_{01} & S_{11}          & S_{12} \\
+     *  S_{20} = S_{02} & S_{21} = S_{12} & S_{22}
+     * \end{array} \right]
+     * \quad \Rightarrow \quad
+     * \left[ \begin{array}{ccc}
+     *  n = 0 & n = 5 & n = 4 \\
+     *  sym   & n = 1 & n = 3 \\
+     *  sym   & sym   & n = 2
+     * \end{array} \right] ,
+     * @f]
+     * where $n$ denotes the Kelvin index for the tensor component,
+     * while for a general rank-2 tensor $\mathbf{T}$
+     * @f[
+     * \mathbf{T} \dealcoloneq \left[ \begin{array}{ccc}
+     *  T_{00} & T_{01} & T_{02} \\
+     *  T_{10} & T_{11} & T_{12} \\
+     *  T_{20} & T_{21} & T_{22}
+     * \end{array}\right]
+     * \quad \Rightarrow \quad
+     * \left[ \begin{array}{ccc}
+     *  n = 0 & n = 5 & n = 4 \\
+     *  n = 6 & n = 1 & n = 3 \\
+     *  n = 7 & n = 8 & n = 2
      * \end{array}\right] ,
-     * @f]，对于秩-1张量 $\mathbf{v}$ @f[
-     * \mathbf{v} \dealcoloneq \left[ \begin{array}{c} v_{0} \\ v_{1} \\ v_{2}
-     * \end{array}\right] \quad \Rightarrow \quad \left[ \begin{array}{c} n =
-     * 0 \\ n = 1 \\ n = 2 \end{array}\right] . @f]
-     * 总结一下，张量和开尔文指数之间的关系对于三维情况和类似的辨别二维情况概述在下面的表中。
-     * <table> <tr> <th align="center"> Dimension 2 </th> <th align="center">
-     * Dimension 3 </th> </tr> <tr> <td align="middle"> <table> <tr>
-     * <th>Tensor index pairs</th> <th>Kelvin index</th> </tr> <tr> <td
-     * align="center">00</td> <td align="center">0</td> </tr> <tr> <td
-     * align="center">11</td> <td align="center">1</td> </tr> <tr> <td
-     * align="center">12</td> <td align="center">2</td> </tr> <tr> <td
-     * align="center">21</td> <td align="center">3</td> </tr> </table>  </td>
-     * <td align="middle">  <table> <tr> <th>Tensor index pairs</th>
-     * <th>Kelvin index</th> </tr> <tr> <td align="center">00</td> <td
-     * align="center">0</td> </tr> <tr> <td align="center">11</td> <td
-     * align="center">1</td> </tr> <tr> <td align="center">22</td> <td
-     * align="center">2</td> </tr> <tr> <td align="center">12</td> <td
-     * align="center">3</td> </tr> <tr> <td align="center">02</td> <td
-     * align="center">4</td> </tr> <tr> <td align="center">01</td> <td
-     * align="center">5</td> </tr> <tr> <td align="center">10</td> <td
-     * align="center">6</td> </tr> <tr> <td align="center">20</td> <td
-     * align="center">7</td> </tr> <tr> <td align="center">21</td> <td
-     * align="center">8</td> </tr>
-     * </table>  </td> </tr> </table>为了说明这个符号的目的，考虑等级2的对称张量 $\mathbf{S}$ 和 $\mathbf{E}$ ，它们之间的关系是 $\mathbf{S} = \cal{C} : \mathbf{E}$  ，其中算子 $\cal{C}$  是一个四阶对称的张量。相对于常用的Voigt符号，当 $\mathbf{S}$ 和 $\mathbf{E}$ 都是对称的时候，Kelvin（或Mandel）符号对内积 $\mathbf{S} : \mathbf{E}$ 的定义保持不变。一般来说，所有对称和一般张量的内积都是一样的，无论用什么符号表示。        为了实现这两个属性，即@f[
+     * @f]
+     * and for a rank-1 tensor $\mathbf{v}$
+     * @f[
+     * \mathbf{v} \dealcoloneq \left[ \begin{array}{c}
+     *  v_{0} \\ v_{1} \\ v_{2}
+     * \end{array}\right]
+     * \quad \Rightarrow \quad
+     * \left[ \begin{array}{c}
+     *  n = 0 \\ n = 1 \\ n = 2
+     * \end{array}\right] .
+     * @f]
+     * To summarize, the relationship between tensor and Kelvin indices for both
+     * the three-dimensional case and the analogously discerned two-dimensional
+     * case outlined in the following table:
+     * <table>
+     * <tr>
+     *   <th align="center"> Dimension 2 </th>
+     *   <th align="center"> Dimension 3 </th>
+     * </tr>
+     * <tr>
+     * <td align="middle">
+     *   <table>
+     *   <tr>
+     *     <th>Tensor index pairs</th>
+     *     <th>Kelvin index</th>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">00</td>
+     *     <td align="center">0</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">11</td>
+     *     <td align="center">1</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">12</td>
+     *     <td align="center">2</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">21</td>
+     *     <td align="center">3</td>
+     *   </tr>
+     *   </table>
+     * </td>
+     * <td align="middle">
+     *   <table>
+     *   <tr>
+     *     <th>Tensor index pairs</th>
+     *     <th>Kelvin index</th>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">00</td>
+     *     <td align="center">0</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">11</td>
+     *     <td align="center">1</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">22</td>
+     *     <td align="center">2</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">12</td>
+     *     <td align="center">3</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">02</td>
+     *     <td align="center">4</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">01</td>
+     *     <td align="center">5</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">10</td>
+     *     <td align="center">6</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">20</td>
+     *     <td align="center">7</td>
+     *   </tr>
+     *   <tr>
+     *     <td align="center">21</td>
+     *     <td align="center">8</td>
+     *   </tr>
+     *   </table>
+     * </td>
+     * </tr>
+     * </table>
+     *
+     * To illustrate the purpose of this notation, consider the rank-2 symmetric
+     * tensors $\mathbf{S}$ and $\mathbf{E}$ that are related to one another by
+     * $\mathbf{S} = \cal{C} : \mathbf{E}$, where the operator $\cal{C}$ is a
+     * fourth-order symmetric tensor. As opposed to the commonly used Voigt
+     * notation, Kelvin (or Mandel) notation keeps the same definition of the
+     * inner product $\mathbf{S} : \mathbf{E}$ when both $\mathbf{S}$ and
+     * $\mathbf{E}$ are symmetric. In general, the inner product of all
+     * symmetric and general tensors remain the same regardless of the notation
+     * with which it is represented.
+     *
+     * To achieve these two properties, namely that
+     * @f[
      * \mathbf{S} = \cal{C} : \mathbf{E}
      * \quad \Rightarrow   \quad
      * \tilde{\mathbf{S}} = \tilde{\cal{C}} \; \tilde{\mathbf{E}}
-     * @f]和@f[
-     * \mathbf{S} : \mathbf{E} \, \equiv \, \tilde{\mathbf{S}} \cdot
-     * \tilde{\mathbf{E}} ,
-     * @f]，它认为之前定义的对称张量的开尔文缩合等价物，由 $\tilde{\left(\bullet\right)}$ 表示，必须定义为@f[
-     * \tilde{\mathbf{S}} = \left[ \begin{array}{c} S_{00} \\ S_{11} \\ S_{22}
-     * \\ \sqrt{2} S_{12} \\ \sqrt{2} S_{02} \\ \sqrt{2} S_{01}
-     * \end{array}\right] \quad \text{and} \quad \tilde{\mathbf{E}} = \left[
-     * \begin{array}{c} E_{00} \\ E_{11} \\ E_{22} \\ \sqrt{2} E_{12} \\
-     * \sqrt{2} E_{02} \\ \sqrt{2} E_{01} \end{array}\right] .
-     * @f] ] 相应的、一致的浓缩四阶对称张量是@f[
-     * \tilde{\cal{C}} = \left[ \begin{array}{cccccc} \tilde{\cal{C}}_{00} &
-     * \tilde{\cal{C}}_{01} & \tilde{\cal{C}}_{02} & \tilde{\cal{C}}_{03} &
-     * \tilde{\cal{C}}_{04} & \tilde{\cal{C}}_{05} \\ \tilde{\cal{C}}_{10} &
-     * \tilde{\cal{C}}_{11} & \tilde{\cal{C}}_{12} & \tilde{\cal{C}}_{13} &
-     * \tilde{\cal{C}}_{14} & \tilde{\cal{C}}_{15} \\ \tilde{\cal{C}}_{20} &
-     * \tilde{\cal{C}}_{21} & \tilde{\cal{C}}_{22} & \tilde{\cal{C}}_{23} &
-     * \tilde{\cal{C}}_{24} & \tilde{\cal{C}}_{25} \\ \tilde{\cal{C}}_{30} &
-     * \tilde{\cal{C}}_{31} & \tilde{\cal{C}}_{32} & \tilde{\cal{C}}_{33} &
-     * \tilde{\cal{C}}_{34} & \tilde{\cal{C}}_{35} \\ \tilde{\cal{C}}_{40} &
-     * \tilde{\cal{C}}_{41} & \tilde{\cal{C}}_{42} & \tilde{\cal{C}}_{43} &
-     * \tilde{\cal{C}}_{44} & \tilde{\cal{C}}_{45} \\ \tilde{\cal{C}}_{50} &
-     * \tilde{\cal{C}}_{51} & \tilde{\cal{C}}_{52} & \tilde{\cal{C}}_{53} &
-     * \tilde{\cal{C}}_{54} & \tilde{\cal{C}}_{55} \end{array}\right] \equiv
-     * \left[ \begin{array}{cccccc} {\cal{C}}_{0000}           &
-     * {\cal{C}}_{0011}          & {\cal{C}}_{0022}           & \sqrt{2}
-     * {\cal{C}}_{0012}  & \sqrt{2} {\cal{C}}_{0002}  & \sqrt{2}
-     * {\cal{C}}_{0001} \\ {\cal{C}}_{1100}           & {\cal{C}}_{1111}
-     * & {\cal{C}}_{1122}           & \sqrt{2} {\cal{C}}_{1112}  & \sqrt{2}
-     * {\cal{C}}_{1102}  & \sqrt{2} {\cal{C}}_{1101} \\ {\cal{C}}_{2200}
-     * & {\cal{C}}_{2211}          & {\cal{C}}_{2222}           & \sqrt{2}
-     * {\cal{C}}_{2212}  & \sqrt{2} {\cal{C}}_{2202}  & \sqrt{2}
-     * {\cal{C}}_{2201} \\ \sqrt{2} {\cal{C}}_{1200}  & \sqrt{2}
-     * {\cal{C}}_{1211} & \sqrt{2} {\cal{C}}_{1222}  & 2 {\cal{C}}_{1212}
-     * & 2 {\cal{C}}_{1202} & 2 {\cal{C}}_{1201}        \\ \sqrt{2}
-     * {\cal{C}}_{0200}  & \sqrt{2} {\cal{C}}_{0211} & \sqrt{2}
+     * @f]
+     * and
+     * @f[
+     * \mathbf{S} : \mathbf{E}
+     * \, \equiv \,
+     * \tilde{\mathbf{S}} \cdot \tilde{\mathbf{E}} ,
+     * @f]
+     * it holds that the Kelvin-condensed equivalents of the previously defined
+     * symmetric tensors, indicated by the $\tilde{\left(\bullet\right)}$, must
+     * be defined as
+     * @f[
+     * \tilde{\mathbf{S}}
+     *   = \left[ \begin{array}{c}
+     *   S_{00} \\ S_{11} \\ S_{22} \\ \sqrt{2} S_{12} \\ \sqrt{2} S_{02} \\
+     * \sqrt{2} S_{01} \end{array}\right] \quad \text{and} \quad
+     * \tilde{\mathbf{E}}
+     *   = \left[ \begin{array}{c}
+     *   E_{00} \\ E_{11} \\ E_{22} \\ \sqrt{2} E_{12} \\ \sqrt{2} E_{02} \\
+     * \sqrt{2} E_{01} \end{array}\right] .
+     * @f]
+     * The corresponding and consistent condensed fourth-order symmetric tensor
+     * is
+     * @f[
+     * \tilde{\cal{C}}
+     *   = \left[ \begin{array}{cccccc}
+     *   \tilde{\cal{C}}_{00} & \tilde{\cal{C}}_{01} & \tilde{\cal{C}}_{02} &
+     * \tilde{\cal{C}}_{03} & \tilde{\cal{C}}_{04} & \tilde{\cal{C}}_{05} \\
+     *   \tilde{\cal{C}}_{10} & \tilde{\cal{C}}_{11} & \tilde{\cal{C}}_{12} &
+     * \tilde{\cal{C}}_{13} & \tilde{\cal{C}}_{14} & \tilde{\cal{C}}_{15} \\
+     *   \tilde{\cal{C}}_{20} & \tilde{\cal{C}}_{21} & \tilde{\cal{C}}_{22} &
+     * \tilde{\cal{C}}_{23} & \tilde{\cal{C}}_{24} & \tilde{\cal{C}}_{25} \\
+     *   \tilde{\cal{C}}_{30} & \tilde{\cal{C}}_{31} & \tilde{\cal{C}}_{32} &
+     * \tilde{\cal{C}}_{33} & \tilde{\cal{C}}_{34} & \tilde{\cal{C}}_{35} \\
+     *   \tilde{\cal{C}}_{40} & \tilde{\cal{C}}_{41} & \tilde{\cal{C}}_{42} &
+     * \tilde{\cal{C}}_{43} & \tilde{\cal{C}}_{44} & \tilde{\cal{C}}_{45} \\
+     *   \tilde{\cal{C}}_{50} & \tilde{\cal{C}}_{51} & \tilde{\cal{C}}_{52} &
+     * \tilde{\cal{C}}_{53} & \tilde{\cal{C}}_{54} & \tilde{\cal{C}}_{55}
+     *   \end{array}\right]
+     *   \equiv
+     *   \left[ \begin{array}{cccccc}
+     *   {\cal{C}}_{0000}           & {\cal{C}}_{0011}          &
+     * {\cal{C}}_{0022}           & \sqrt{2} {\cal{C}}_{0012}  & \sqrt{2}
+     * {\cal{C}}_{0002}  & \sqrt{2} {\cal{C}}_{0001} \\
+     *   {\cal{C}}_{1100}           & {\cal{C}}_{1111}          &
+     * {\cal{C}}_{1122}           & \sqrt{2} {\cal{C}}_{1112}  & \sqrt{2}
+     * {\cal{C}}_{1102}  & \sqrt{2} {\cal{C}}_{1101} \\
+     *   {\cal{C}}_{2200}           & {\cal{C}}_{2211}          &
+     * {\cal{C}}_{2222}           & \sqrt{2} {\cal{C}}_{2212}  & \sqrt{2}
+     * {\cal{C}}_{2202}  & \sqrt{2} {\cal{C}}_{2201} \\
+     *   \sqrt{2} {\cal{C}}_{1200}  & \sqrt{2} {\cal{C}}_{1211} & \sqrt{2}
+     * {\cal{C}}_{1222}  & 2 {\cal{C}}_{1212}         & 2 {\cal{C}}_{1202} & 2
+     * {\cal{C}}_{1201}        \\
+     *   \sqrt{2} {\cal{C}}_{0200}  & \sqrt{2} {\cal{C}}_{0211} & \sqrt{2}
      * {\cal{C}}_{0222}  & 2 {\cal{C}}_{0212}         & 2 {\cal{C}}_{0202} & 2
      * {\cal{C}}_{0201}        \\ \sqrt{2} {\cal{C}}_{0100}  & \sqrt{2}
      * {\cal{C}}_{0111} & \sqrt{2} {\cal{C}}_{0122}  & 2 {\cal{C}}_{0112} & 2
-     * {\cal{C}}_{0102}         & 2 {\cal{C}}_{0101} \end{array}\right] . @f]
-     * 从FullMatrix $\tilde{\cal{C}}$
-     * 的两个开尔文指数到等级4的SymmetricTensor $\cal{C}$
-     * 的映射可以用上面的表格推断出来。
-     * 一个重要的观察是，左侧张量 $\tilde{\mathbf{S}}$
-     * 和右侧张量 $\tilde{\mathbf{E}}$
-     * 都有相同的形式；这是一个在Voigt符号中不存在的属性。
-     * 引入 $\tilde{\mathbf{S}}$ 、 $\tilde{\mathbf{E}}$ 和
-     * $\tilde{\cal{C}}$
-     * 的各种因素说明了张量的对称性。对其非对称对应物的开尔文描述不包括这些因素。
-     * 一些有用的参考资料显示了这种符号的作用，其中包括。
+     * {\cal{C}}_{0102}         & 2 {\cal{C}}_{0101} \end{array}\right] .
+     * @f]
+     * The mapping from the two Kelvin indices of the FullMatrix
+     * $\tilde{\cal{C}}$ to the rank-4 SymmetricTensor $\cal{C}$ can be inferred
+     * using the table shown above.
+     *
+     * An important observation is that both the left-hand side tensor
+     * $\tilde{\mathbf{S}}$ and right-hand side tensor $\tilde{\mathbf{E}}$ have
+     * the same form; this is a property that is not present in Voigt notation.
+     * The various factors introduced into $\tilde{\mathbf{S}}$,
+     * $\tilde{\mathbf{E}}$ and $\tilde{\cal{C}}$ account for the symmetry of
+     * the tensors. The Kelvin description of their non-symmetric counterparts
+     * include no such factors.
+     *
+     * Some useful references that show how this notation works include, amongst
+     * others,
      * @code{.bib}
      * @article{Nagel2016,
-     * author  = {Nagel, T. and G{\"o}rke, U-J. and Moerman, K. and Kolditz,
-     *            O.},
-     * title   = {On advantages of the Kelvin mapping in finite element
-     *            implementations of deformation processes},
-     * journal = {Environmental Earth Sciences},
-     * year    = {2016},
-     * volume  = {75},
-     * number  = {11},
-     * pages   = {937}
+     *   author  = {Nagel, T. and G{\"o}rke, U-J. and Moerman, K. and Kolditz,
+     *              O.},
+     *   title   = {On advantages of the Kelvin mapping in finite element
+     *              implementations of deformation processes},
+     *   journal = {Environmental Earth Sciences},
+     *   year    = {2016},
+     *   volume  = {75},
+     *   number  = {11},
+     *   pages   = {937}
      * }
      * @endcode
-     * 和
+     * and
      * @code{.bib}
      * @article{Dellinger1998,
-     * author  = {Dellinger, J. and Vasicek, D. and Sondergeld, C.},
-     * title   = {Kelvin notation for stabilizing elastic-constant inversion},
-     * journal = {Revue de l'Institut Fran{\c{c}}ais du P{\'e}trole},
-     * year    = {1998},
-     * volume  = {53},
-     * number  = {5},
-     * pages   = {709--719},
-     * url     = {http://sepwww.stanford.edu/oldsep/joe/Reprints/8IWSA.pdf},
+     *   author  = {Dellinger, J. and Vasicek, D. and Sondergeld, C.},
+     *   title   = {Kelvin notation for stabilizing elastic-constant inversion},
+     *   journal = {Revue de l'Institut Fran{\c{c}}ais du P{\'e}trole},
+     *   year    = {1998},
+     *   volume  = {53},
+     *   number  = {5},
+     *   pages   = {709--719},
+     *   url     = {http://sepwww.stanford.edu/oldsep/joe/Reprints/8IWSA.pdf},
      * }
      * @endcode
-     * 以及在<a
+     * as well as the online reference found on
+     * <a
      * href="https://en.wikipedia.org/wiki/Voigt_notation#Mandel_notation">this
-     * wikipedia page</a>和<a
+     * wikipedia page</a> and <a
      * href="https://github.com/dealii/dealii/tree/master/tests/physics/notation-kelvin_02.cc">the
-     * unit tests</a>上发现的在线参考。
-     *
+     * unit tests</a>.
      */
     namespace Kelvin
     {
       /**
-       * 输入矩阵的行数不正确。
-       *
+       * Input matrix has incorrect number of rows.
        */
       DeclException3(ExcNotationExcFullMatrixToTensorRowSize2,
                      int,
@@ -178,8 +297,7 @@ namespace Physics
 
 
       /**
-       * 输入的矩阵有不正确的行数。
-       *
+       * Input matrix has incorrect number of rows.
        */
       DeclException4(ExcNotationExcFullMatrixToTensorRowSize3,
                      int,
@@ -192,8 +310,7 @@ namespace Physics
 
 
       /**
-       * 输入的矩阵有不正确的列数。
-       *
+       * Input matrix has incorrect number of columns.
        */
       DeclException3(ExcNotationExcFullMatrixToTensorColSize2,
                      int,
@@ -205,8 +322,7 @@ namespace Physics
 
 
       /**
-       * 输入的矩阵有不正确的列数。
-       *
+       * Input matrix has incorrect number of columns.
        */
       DeclException4(ExcNotationExcFullMatrixToTensorColSize3,
                      int,
@@ -219,15 +335,14 @@ namespace Physics
 
 
       /**
-       * @name  正向操作。张量符号到开尔文符号
-       *
+       * @name Forward operation: Tensor notation to Kelvin notation
        */
       //@{
 
       /**
-       * 将一个标量值转换为其压缩的矢量等值。
-       * 输出向量有一个条目。
+       * Convert a scalar value to its compressed vector equivalent.
        *
+       * The output vector has one entry.
        */
       template <typename Number>
       Vector<Number>
@@ -235,9 +350,9 @@ namespace Physics
 
 
       /**
-       * 将一个0级张量转换为其压缩向量等价物。
-       * 输出向量有一个条目。
+       * Convert a rank-0 tensor to its compressed vector equivalent.
        *
+       * The output vector has one entry.
        */
       template <int dim, typename Number>
       Vector<Number>
@@ -245,9 +360,9 @@ namespace Physics
 
 
       /**
-       * 将一个秩-1张量转换为其压缩向量等价物。
-       * 输出向量有 $dim$ 个条目。
+       * Convert a rank-1 tensor to its compressed vector equivalent.
        *
+       * The output vector has $dim$ entries.
        */
       template <int dim, typename Number>
       Vector<Number>
@@ -255,9 +370,9 @@ namespace Physics
 
 
       /**
-       * 将一个秩-2张量转换为其压缩向量等价物。
-       * 输出向量有 Tensor<2,dim>::n_independent_components 个条目。
+       * Convert a rank-2 tensor to its compressed vector equivalent.
        *
+       * The output vector has Tensor<2,dim>::n_independent_components entries.
        */
       template <int dim, typename Number>
       Vector<Number>
@@ -265,10 +380,10 @@ namespace Physics
 
 
       /**
-       * 将一个等级2的对称张量转换为其压缩向量等价物。
-       * 输出的向量有 SymmetricTensor<2,dim>::n_independent_components
-       * 个条目。
+       * Convert a rank-2 symmetric tensor to its compressed vector equivalent.
        *
+       * The output vector has SymmetricTensor<2,dim>::n_independent_components
+       * entries.
        */
       template <int dim, typename Number>
       Vector<Number>
@@ -276,9 +391,9 @@ namespace Physics
 
 
       /**
-       * 将一个标量值转换为它的压缩矩阵等值。
-       * 输出的矩阵将有一行和一列。
+       * Convert a scalar value to its compressed matrix equivalent.
        *
+       * The output matrix will have one row and one column.
        */
       template <typename Number>
       FullMatrix<Number>
@@ -286,9 +401,9 @@ namespace Physics
 
 
       /**
-       * 将一个0级张量转换为其压缩矩阵等价物。
-       * 输出的矩阵将有一行和一列。
+       * Convert a rank-0 tensor to its compressed matrix equivalent.
        *
+       * The output matrix will have one row and one column.
        */
       template <int dim, typename Number>
       FullMatrix<Number>
@@ -296,9 +411,9 @@ namespace Physics
 
 
       /**
-       * 将一个秩-1张量转换为其压缩矩阵等价物。
-       * 输出的矩阵将有 $dim$ 行和一列。
+       * Convert a rank-1 tensor to its compressed matrix equivalent.
        *
+       * The output matrix will have $dim$ rows and one column.
        */
       template <int dim, typename Number>
       FullMatrix<Number>
@@ -306,9 +421,9 @@ namespace Physics
 
 
       /**
-       * 将一个秩-2张量转换为其压缩矩阵等价物。
-       * 输出的矩阵将有 $dim$ 行和 $dim$ 列。
+       * Convert a rank-2 tensor to its compressed matrix equivalent.
        *
+       * The output matrix will have $dim$ rows and $dim$ columns.
        */
       template <int dim, typename Number>
       FullMatrix<Number>
@@ -316,44 +431,49 @@ namespace Physics
 
 
       /**
-       * 将一个2级对称张量转换为其压缩矩阵等价物。
-       * 输出矩阵将有 $dim$ 行和 $dim$
-       * 列，其格式与非对称张量的等价函数相同。这是因为不可能将
-       * SymmetricTensor<2,dim>::n_independent_components
-       * 的唯一条目压缩到一个方形矩阵中。
+       * Convert a rank-2 symmetric tensor to its compressed matrix equivalent.
        *
+       * The output matrix will have $dim$ rows and $dim$ columns, with the same
+       * format as the equivalent function for non-symmetric tensors. This is
+       * because it is not possible to compress the
+       * SymmetricTensor<2,dim>::n_independent_components unique entries into a
+       * square matrix.
        */
       template <int dim, typename Number>
       FullMatrix<Number>
       to_matrix(const SymmetricTensor<2, dim, Number> &st);
 
       /**
-       * 将一个等级3的张量转换为其压缩的矩阵等价物。
-       * 模板参数 @p SubTensor1 和 @p SubTensor2
-       * 决定了解卷的发生方式，特别是如何解释秩-3张量的元素。
-       * 因此，举例来说，在以下两个转换中
+       * Convert a rank-3 tensor to its compressed matrix equivalent.
+       *
+       * The template arguments @p SubTensor1 and @p SubTensor2 determine how
+       * the unrolling occurs, in particular how the elements of the rank-3
+       * tensor are to be interpreted.
+       *
+       * So, for example, with the following two conversions
        * @code
        * Tensor<3,dim> r3_tnsr;      // All elements filled differently
        * Tensor<3,dim> r3_symm_tnsr; // Some elements filled symmetrically
        *
        * const FullMatrix<double> mtrx_1 =
-       * Physics::Notation::to_matrix<dim,
-       *                              Tensor<2,dim>,
-       *                              Tensor<1,dim>*>(r3_tnsr);
+       *   Physics::Notation::to_matrix<dim,
+       *                                Tensor<2,dim>,
+       *                                Tensor<1,dim>*>(r3_tnsr);
        * const FullMatrix<double> mtrx_2 =
-       * Physics::Notation::to_matrix<dim,
-       *                              Tensor<1,dim>,
-       *                              SymmetricTensor<2,dim>*>(r3_symm_tnsr);
+       *   Physics::Notation::to_matrix<dim,
+       *                                Tensor<1,dim>,
+       *                                SymmetricTensor<2,dim>*>(r3_symm_tnsr);
        * @endcode
-       * 矩阵 @p mtrx_1 将有 $dim \times dim$ 行和 $dim$
-       * 列（即大小为 Tensor<2,dim>::n_independent_components  $\times$
-       * Tensor<1,dim>::n_independent_components), ，而那些矩阵 @p
-       * mtrx_2 将有 $dim$  ]行和 $(dim \times dim + dim)/2$
-       * 列（即大小为 Tensor<1,dim>::n_independent_components  $\times$
-       * SymmetricTensor<2,dim>::n_independent_components),
-       * ，因为假定对应于第二和第三指数交替的条目是相等的。这就是说，
-       * <code>r3_symm_tnsr[i][j][k] == r3_symm_tnsr[i][k][j]</code>  .
-       *
+       * the matrix @p mtrx_1 will have $dim \times dim$ rows and $dim$ columns
+       * (i.e. size Tensor<2,dim>::n_independent_components $\times$
+       * Tensor<1,dim>::n_independent_components),
+       * while those of the matrix @p mtrx_2 will have $dim$ rows and
+       * $(dim \times dim + dim)/2$ columns
+       * (i.e. size Tensor<1,dim>::n_independent_components $\times$
+       * SymmetricTensor<2,dim>::n_independent_components), as it is assumed
+       * that the entries corresponding to the alternation of the second and
+       * third indices are equal. That is to say that
+       * <code>r3_symm_tnsr[i][j][k] == r3_symm_tnsr[i][k][j]</code>.
        */
       template <int dim,
                 typename SubTensor1 = Tensor<2, dim>,
@@ -364,10 +484,10 @@ namespace Physics
 
 
       /**
-       * 将一个等级4的张量转换为其压缩矩阵等价物。
-       * 输出的矩阵将有 Tensor<2,dim>::n_independent_components 行和
-       * Tensor<2,dim>::n_independent_components 列。
+       * Convert a rank-4 tensor to its compressed matrix equivalent.
        *
+       * The output matrix will have Tensor<2,dim>::n_independent_components
+       * rows and Tensor<2,dim>::n_independent_components columns.
        */
       template <int dim, typename Number>
       FullMatrix<Number>
@@ -375,11 +495,11 @@ namespace Physics
 
 
       /**
-       * 将一个4级对称张量转换为其压缩矩阵等价物。
-       * 输出的矩阵将有
-       * SymmetricTensor<2,dim>::n_independent_components 行和
-       * SymmetricTensor<2,dim>::n_independent_components 列。
+       * Convert a rank-4 symmetric tensor to its compressed matrix equivalent.
        *
+       * The output matrix will have
+       * SymmetricTensor<2,dim>::n_independent_components rows and
+       * SymmetricTensor<2,dim>::n_independent_components columns.
        */
       template <int dim, typename Number>
       FullMatrix<Number>
@@ -388,14 +508,12 @@ namespace Physics
       //@}
 
       /**
-       * @name  反向操作。开尔文符号到张量符号
-       *
+       * @name Reverse operation: Kelvin notation to tensor notation
        */
       //@{
 
       /**
-       * 将一个压缩的向量转换为其等效的标量值。
-       *
+       * Convert a compressed vector to its equivalent scalar value.
        */
       template <typename Number>
       void
@@ -403,8 +521,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩的向量转换为其等价的秩0张量。
-       *
+       * Convert a compressed vector to its equivalent rank-0 tensor.
        */
       template <int dim, typename Number>
       void
@@ -412,8 +529,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩的向量转换为其等效的秩-1张量。
-       *
+       * Convert a compressed vector to its equivalent rank-1 tensor.
        */
       template <int dim, typename Number>
       void
@@ -421,8 +537,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩的向量转换为它的等效秩-2张量。
-       *
+       * Convert a compressed vector to its equivalent rank-2 tensor.
        */
       template <int dim, typename Number>
       void
@@ -430,8 +545,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩的向量转换为其等效的秩-2对称张量。
-       *
+       * Convert a compressed vector to its equivalent rank-2 symmetric tensor.
        */
       template <int dim, typename Number>
       void
@@ -439,8 +553,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩的矩阵转换为它的等效标量值。
-       *
+       * Convert a compressed matrix to its equivalent scalar value.
        */
       template <typename Number>
       void
@@ -448,8 +561,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩矩阵转换为它的等效秩0张量。
-       *
+       * Convert a compressed matrix to its equivalent rank-0 tensor.
        */
       template <int dim, typename Number>
       void
@@ -457,8 +569,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩的矩阵转换为其等效的秩-1张量。
-       *
+       * Convert a compressed matrix to its equivalent rank-1 tensor.
        */
       template <int dim, typename Number>
       void
@@ -466,8 +577,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩矩阵转换为它的等效秩-2张量。
-       *
+       * Convert a compressed matrix to its equivalent rank-2 tensor.
        */
       template <int dim, typename Number>
       void
@@ -475,8 +585,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩矩阵转换为其等效的秩-2对称张量。
-       *
+       * Convert a compressed matrix to its equivalent rank-2 symmetric tensor.
        */
       template <int dim, typename Number>
       void
@@ -485,10 +594,13 @@ namespace Physics
 
 
       /**
-       * 将一个压缩矩阵转换为其等效的秩-3张量。
-       * @note 基于矩阵 @p mtrx, 的大小， @p t
-       * 的一些组件可以被解释为具有对称的对应关系。这与对应的to_matrix()函数的文档中解释的操作相反。
+       * Convert a compressed matrix to its equivalent rank-3 tensor.
        *
+       * @note Based on the size of the matrix @p mtrx, some of the
+       * components of @p t may be interpreted as having symmetric
+       * counterparts. This is the reverse of the operation explained
+       * in the documentation of the counterpart to_matrix()
+       * function.
        */
       template <int dim, typename Number>
       void
@@ -496,8 +608,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩矩阵转换为其等价的等级4张量。
-       *
+       * Convert a compressed matrix to its equivalent rank-4 tensor.
        */
       template <int dim, typename Number>
       void
@@ -505,8 +616,7 @@ namespace Physics
 
 
       /**
-       * 将一个压缩矩阵转换为其等效的秩-4对称张量。
-       *
+       * Convert a compressed matrix to its equivalent rank-4 symmetric tensor.
        */
       template <int dim, typename Number>
       void
@@ -515,9 +625,8 @@ namespace Physics
 
 
       /**
-       * 一个通用的辅助函数，可以将一个压缩的向量转换为其等价物
-       * @p TensorType.  。
-       *
+       * A generic helper function that will convert a compressed vector
+       * to its equivalent @p TensorType.
        */
       template <typename TensorType, typename Number>
       TensorType
@@ -525,9 +634,8 @@ namespace Physics
 
 
       /**
-       * 一个通用的辅助函数，将压缩矩阵转换为其等价物
-       * @p TensorType.  。
-       *
+       * A generic helper function that will convert a compressed matrix
+       * to its equivalent @p TensorType.
        */
       template <typename TensorType, typename Number>
       TensorType
@@ -555,10 +663,11 @@ namespace Physics
       namespace internal
       {
         /**
-         * 返回与一个压缩组件索引相关的张量指数 <code><row,
-         * column></code> 。 @p symmetric 标志表示 @p component_n
-         * 指数是否与具有对称项的张量相关。
-         *
+         * Return the tensor indices <code><row, column></code>
+         * associated with a condensed component index. The
+         * @p symmetric flag indicates whether or not the
+         * @p component_n index is associated with a tensor that
+         * has symmetric entries.
          */
         template <int dim>
         std::pair<unsigned int, unsigned int>
@@ -651,8 +760,8 @@ namespace Physics
 
 
         /**
-         * 返回应用于浓缩向量中的条目的缩放因子。
-         *
+         * Return the scaling factor to be applied to the
+         * entry in the condensed vector.
          */
         template <int dim>
         double
@@ -670,8 +779,8 @@ namespace Physics
 
 
         /**
-         * 返回应用于浓缩矩阵中的条目的缩放系数。
-         *
+         * Return the scaling factor to be applied to the
+         * entry in the condensed matrix.
          */
         template <int dim>
         double
@@ -1494,5 +1603,3 @@ namespace Physics
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/block_vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2018 by the deal.II authors
@@ -210,5 +209,3 @@ BlockVector<Number>::block_read(std::istream &in)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/Matrix_free/face_info_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -35,77 +34,90 @@ namespace internal
   namespace MatrixFreeFunctions
   {
     /**
-     * 数据类型，用于建立用于面积分矢量化的批次信息。面的批次的设置是独立于单元的，因此，我们必须存储与单元索引的关系，以便访问自由度。
-     * 内部面由两个相邻的单元存储，我们将其标记为面的
-     * "内部 "和 "外部
-     * "侧。存储在MappingInfo中的法线向量只存储一次，是
-     * "内部 "面的单元的外侧法线，而 "外部
-     * "面的符号则相反。
-     * 这个数据字段被存储为所有参与计算的面的一个向量。为了避免在内存表示中出现空隙，四个
-     * "char
-     * "变量被放在彼此旁边，这与大多数架构上的无符号整数所占的大小相同。
+     * Data type for information about the batches build for vectorization of
+     * the face integrals. The setup of the batches for the faces is
+     * independent of the cells, and thus, we must store the relation to the
+     * cell indexing for accessing the degrees of freedom.
      *
+     * Interior faces are stored by the two adjacent cells, which we label as
+     * "interior" and "exterior" side of the face. Normal vectors stored in
+     * MappingInfo are only stored once and are the outer normals to the cells
+     * on the "interior" side, whereas the sign is the opposite for the
+     * "exterior" side.
+     *
+     * This data field is stored as a vector for all faces involved in the
+     * computation. In order to avoid gaps in the memory representation, the
+     * four 'char' variables are put next to each other which occupies the
+     * same size as the unsigned integers on most architectures.
      */
     template <int vectorization_width>
     struct FaceToCellTopology
     {
       /**
-       * 当前面批中的面的指数，与面的逻辑 "内部
-       * "侧的单元格的数字相比，该面的逻辑 "内部 "侧与
-       * FEEvaluation::get_normal_vector(). 的方向对齐。
-       *
+       * Indices of the faces in the current face batch as compared to the
+       * numbers of the cells on the logical "interior" side of the face which
+       * is aligned to the direction of FEEvaluation::get_normal_vector().
        */
       std::array<unsigned int, vectorization_width> cells_interior;
 
       /**
-       * 当前面批中的面的指数与面的逻辑 "外部
-       * "侧的单元格数量相比，该面与
-       * FEEvaluation::get_normal_vector().
-       * 的方向相反。注意，内部和外部面的区分是纯逻辑的，仅指法线方向。在问题的实际离散化过程中，离散化通常需要确保内部和外部面得到正确的处理，例如上风通量。
-       * 对于边界面，数字被设置为 `numbers::invalid_unsigned_int`.
-       * 。
+       * Indices of the faces in the current face batch as compared to the
+       * numbers of the cells on the logical "exterior" side of the face which
+       * is aligned to the opposite direction of
+       * FEEvaluation::get_normal_vector(). Note that the distinction into
+       * interior and exterior faces is purely logical and refers to the
+       * direction of the normal only. In the actual discretization of a
+       * problem, the discretization typically needs to make sure that interior
+       * and exterior sides are treated properly, such as with upwind fluxes.
        *
+       * For boundary faces, the numbers are set to
+       * `numbers::invalid_unsigned_int`.
        */
       std::array<unsigned int, vectorization_width> cells_exterior;
 
       /**
-       * 在面的 "外部 "的单元格内，0和
-       * GeometryInfo::faces_per_cell 之间的面的索引。
-       * 对于一个边界面，这个数据字段存储了边界ID。
+       * Index of the face between 0 and GeometryInfo::faces_per_cell within
+       * the cells on the "exterior" side of the faces.
        *
+       * For a boundary face, this data field stores the boundary id.
        */
       types::boundary_id exterior_face_no;
 
       /**
-       * 在面的 "内部 "一侧的单元格中，介于0和
-       * GeometryInfo::faces_per_cell 之间的面的索引。
-       *
+       * Index of the face between 0 and GeometryInfo::faces_per_cell within
+       * the cells on the "interior" side of the faces.
        */
       unsigned char interior_face_no;
 
       /**
-       * 对于自适应细化网格，面的外侧的单元格可能比内侧的细化程度低。这个指数表示外侧的可能的子面指数。
-       *
+       * For adaptively refined meshes, the cell on the exterior side of the
+       * face might be less refined than the interior side. This index
+       * indicates the possible subface index on the exterior side.
        */
       unsigned char subface_index;
 
       /**
-       * 在三维中，与一个面相邻的两个单元中的一个可能使用与标准方向不同的方向（也称为面朝向、面翻转和面旋转）。这个变量在第一个自由位中存储了本批面的面朝向、面翻转和面旋转（用于内部或外部的一个面）的值。如果内部单元有非标准方向，则第四位为一。
-       * @note
-       * 与库中其他地方相比，面的方向位（第一位）是翻转的。
+       * In 3D, one of the two cells adjacent to a face might use a different
+       * orientation (also called as face orientation, face flip and face
+       * rotation) than the standard orientation. This variable stores the
+       * values of face orientation, face flip and face
+       * rotation (for one of the interior or exterior side) for the present
+       * batch of faces in the first free bits. The forth bit is one if the
+       * internal cell has non-standard orientation.
        *
+       * @note In contrast to other place in the library, the face-orientation
+       *   bit (first bit) is flipped.
        */
       unsigned char face_orientation;
 
       /**
-       * 给定面的参考单元类型。0代表直线或四边形，1代表三角形。
-       *
+       * Reference-cell type of the given face: 0 for line or quadrilateral,
+       * 1 for triangle.
        */
       unsigned char face_type;
 
       /**
-       * 返回当前数据结构的内存消耗。
-       *
+       * Return the memory consumption of the present data structure.
        */
       std::size_t
       memory_consumption() const
@@ -117,15 +129,15 @@ namespace internal
 
 
     /**
-     * 保存面和单元之间的连接性的数据结构。
-     *
+     * A data structure that holds the connectivity between the faces and the
+     * cells.
      */
     template <int vectorization_width>
     struct FaceInfo
     {
       /**
-       * 清除所有数据字段，使其处于类似于调用默认构造函数后的状态。
-       *
+       * Clear all data fields to be in a state similar to after having
+       * called the default constructor.
        */
       void
       clear()
@@ -136,8 +148,7 @@ namespace internal
       }
 
       /**
-       * 返回当前数据结构的内存消耗。
-       *
+       * Return the memory consumption of the present data structure.
        */
       std::size_t
       memory_consumption() const
@@ -148,21 +159,21 @@ namespace internal
       }
 
       /**
-       * 内部面的矢量存储，链接到矢量单元存储中的两个单元。
-       *
+       * Vectorized storage of interior faces, linking to the two cells in the
+       * vectorized cell storage.
        */
       std::vector<FaceToCellTopology<vectorization_width>> faces;
 
       /**
-       * 该表将宏观单元编号、单元内的面的索引和向量化的单元批内的索引三者转化为
-       * @p faces 数组内的索引。
-       *
+       * This table translates a triple of the macro cell number, the index of a
+       * face within a cell and the index within the cell batch of vectorization
+       * into the index within the @p faces array.
        */
       ::dealii::Table<3, unsigned int> cell_and_face_to_plain_faces;
 
       /**
-       * 使用与cell_and_face_to_plain_faces数据结构相同的索引，以矢量化格式存储面的边界ID
-       *
+       * Stores the boundary ids of the faces in vectorized format using the
+       * same indexing as the cell_and_face_to_plain_faces data structure
        */
       ::dealii::Table<3, types::boundary_id> cell_and_face_boundary_id;
     };
@@ -172,5 +183,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

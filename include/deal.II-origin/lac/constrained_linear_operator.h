@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/constrained_linear_operator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2020 by the deal.II authors
@@ -27,38 +28,36 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * @name Indirectly applying constraints to LinearOperator
+ * @name  间接对LinearOperator施加约束
+ *
+ *
  */
 //@{
 
 
 /**
- * This function takes an AffineConstraints object @p constraints and
- * an operator exemplar @p exemplar (this exemplar is usually a linear
- * operator that describes the system matrix - it is only used to create
- * domain and range vectors of appropriate sizes, its action <tt>vmult</tt>
- * is never used). A LinearOperator object associated with the "homogeneous
- * action" of the underlying AffineConstraints object is returned:
+ * 这个函数接收一个AffineConstraints对象 @p constraints
+ * 和一个运算器示例 @p exemplar
+ * （这个示例通常是一个描述系统矩阵的线性运算器
  *
- * Applying the LinearOperator object on a vector <code>u</code> results in a
- * vector <code>v</code> that stores the result of calling
- * AffineConstraints::distribute() on <code>u</code> - with one important
- * difference: inhomogeneities are not applied, but always treated as 0
- * instead.
+ * -它只用于创建适当大小的域和范围向量，它的动作<tt>vmult</tt>从不使用）。)
+ * 一个与底层AffineConstraints对象的 "同质动作
+ * "相关的LinearOperator对象被返回。 在向量 <code>u</code>
+ * 上应用LinearOperator对象的结果是一个向量 <code>v</code>
+ * ，它存储了在 <code>u</code> 上调用 AffineConstraints::distribute()
+ * 的结果。
  *
- * The LinearOperator object created by this function is primarily used
- * internally in constrained_linear_operator() to build up a modified system
- * of linear equations. How to solve a linear system of equations with this
- * approach is explained in detail in the
- * @ref constraints
- * module.
+ * - 有一个重要的区别：不均匀性不被应用，而是始终被视为0。
+ * 这个函数创建的LinearOperator对象主要在内部用于constrained_linear_operator()，以建立一个修正的线性方程组。如何用这种方法解决线性方程组，在 @ref
+ * constraints 模块中有详细解释。
  *
  *
- * @note Currently, this function may not work correctly for distributed data
- * structures.
  *
- * @relatesalso LinearOperator
+ * @note
+ * 目前，这个函数对于分布式数据结构可能无法正确工作。
+ * @relatesalso  LinearOperator
  * @ingroup constraints
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -144,14 +143,13 @@ distribute_constraints_linear_operator(
 
 
 /**
- * Given a AffineConstraints @p constraints and an operator exemplar @p
- * exemplar, return a LinearOperator that is the projection to the subspace of
- * constrained degrees of freedom, i.e. all entries of the result vector that
- * correspond to unconstrained degrees of freedom are set to zero.
+ * 给定一个AffineConstraints @p constraints 和一个运算符示例 @p
+ * 示例，返回一个LinearOperator，该运算符是对受限自由度子空间的投影，即结果向量中对应于非受限自由度的所有条目被设置为零。
  *
+ * @relatesalso  LinearOperator
  *
- * @relatesalso LinearOperator
  * @ingroup constraints
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -206,40 +204,37 @@ project_to_constrained_linear_operator(
 
 
 /**
- * Given a AffineConstraints object @p constraints and a LinearOperator
- * @p linop, this function creates a LinearOperator object consisting of the
- * composition of three operations and a regularization:
+ * 给定一个AffineConstraints对象 @p constraints 和一个LinearOperator
+ * @p linop,
+ * ，该函数创建一个LinearOperator对象，由三个操作和一个正则化组成。
+ *
  * @code
- *   Ct * linop * C + Id_c;
+ * Ct linop C + Id_c;
  * @endcode
- * with
+ * 与
+ *
  * @code
- *   C = distribute_constraints_linear_operator(constraints, linop);
- *   Ct = transpose_operator(C);
- *   Id_c = project_to_constrained_linear_operator(constraints, linop);
+ * C = distribute_constraints_linear_operator(constraints, linop);
+ * Ct = transpose_operator(C);
+ * Id_c = project_to_constrained_linear_operator(constraints, linop);
  * @endcode
- * and <code>Id_c</code> is the projection to the subspace consisting of all
- * vector entries associated with constrained degrees of freedom.
+ * 而 <code>Id_c</code>
+ * 是对由所有与受限自由度相关的向量条目组成的子空间的投影。
+ * 这个LinearOperator对象与constrained_right_hand_side()一起使用，建立了以下修改后的线性方程系统。@f[
+ * (C^T A C + Id_c) x = C^T (b
  *
- * This LinearOperator object is used together with
- * constrained_right_hand_side() to build up the following modified system of
- * linear equations:
- * @f[
- *   (C^T A C + Id_c) x = C^T (b - A\,k)
- * @f]
- * with a given (unconstrained) system matrix $A$, right hand side $b$, and
- * linear constraints $C$ with inhomogeneities $k$.
- *
- * A detailed explanation of this approach is given in the
- * @ref constraints
- * module.
+ * - A\,k)
+ * @f] 具有给定的（无约束的）系统矩阵  $A$  ，右手边  $b$  ，以及具有不均匀性的线性约束  $C$  。
+ * 在 @ref
+ * constraints 模块中对这种方法进行了详细解释。
  *
  *
- * @note Currently, this function may not work correctly for distributed data
- * structures.
  *
- * @relatesalso LinearOperator
+ * @note
+ * 目前，这个函数对于分布式数据结构可能无法正确工作。
+ * @relatesalso  LinearOperator
  * @ingroup constraints
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -255,37 +250,38 @@ constrained_linear_operator(
 
 
 /**
- * Given a AffineConstraints object @p constraints, a LinearOperator @p
- * linop and a right-hand side @p right_hand_side, this function creates a
- * PackagedOperation that stores the following computation:
+ * 给定一个AffineConstraints对象 @p constraints, 一个LinearOperator @p
+ * linop和一个右手边 @p right_hand_side,
+ * ，这个函数创建一个PackagedOperation，存储以下计算结果。
+ *
  * @code
- *   Ct * (right_hand_side - linop * k)
+ * Ct (right_hand_side
+ *
+ * - linop k)
  * @endcode
- * with
+ * 与
+ *
  * @code
- *   C = distribute_constraints_linear_operator(constraints, linop);
- *   Ct = transpose_operator(C);
+ * C = distribute_constraints_linear_operator(constraints, linop);
+ * Ct = transpose_operator(C);
  * @endcode
  *
- * This LinearOperator object is used together with
- * constrained_right_hand_side() to build up the following modified system of
- * linear equations:
- * @f[
- *   (C^T A C + Id_c) x = C^T (b - A\,k)
- * @f]
- * with a given (unconstrained) system matrix $A$, right hand side $b$, and
- * linear constraints $C$ with inhomogeneities $k$.
+ * 这个LinearOperator对象与constrained_right_hand_side()一起用于建立以下修改后的线性方程组。@f[
+ * (C^T A C + Id_c) x = C^T (b
  *
- * A detailed explanation of this approach is given in the
- * @ref constraints
- * module.
+ * - A\,k)
+ * @f] 具有给定的（无约束的）系统矩阵  $A$  ，右手边  $b$  ，以及具有不均匀性的线性约束  $C$  。
+ * 在 @ref
+ * constraints 模块中对这种方法进行了详细解释。
  *
  *
- * @note Currently, this function may not work correctly for distributed data
- * structures.
  *
- * @relatesalso LinearOperator
+ * @note
+ * 目前，这个函数对于分布式数据结构可能无法正确工作。
+ * @relatesalso  LinearOperator
  * @ingroup constraints
+ *
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 PackagedOperation<Range>
@@ -304,7 +300,7 @@ constrained_right_hand_side(
 
     GrowingVectorMemory<Domain>            vector_memory;
     typename VectorMemory<Domain>::Pointer k(vector_memory);
-    linop.reinit_domain_vector(*k, /*bool fast=*/false);
+    linop.reinit_domain_vector(*k,  /*bool fast=*/ false);
     constraints.distribute(*k);
 
     v += Ct * (right_hand_side - linop * *k);
@@ -323,3 +319,5 @@ constrained_right_hand_side(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

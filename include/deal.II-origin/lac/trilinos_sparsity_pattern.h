@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/trilinos_sparsity_pattern_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2021 by the deal.II authors
@@ -64,56 +65,58 @@ namespace TrilinosWrappers
   namespace SparsityPatternIterators
   {
     /**
-     * Accessor class for iterators into sparsity patterns. This class is also
-     * the base class for both const and non-const accessor classes into
-     * sparse matrices.
-     *
-     * Note that this class only allows read access to elements, providing
-     * their row and column number. It does not allow modifying the sparsity
-     * pattern itself.
-     *
+     * 迭代器进入稀疏性模式的访问器类。这个类也是进入稀疏矩阵的常量和非常量访问器类的基类。
+     * 请注意，这个类只允许对元素进行读取访问，提供它们的行和列号。它不允许修改稀疏模式本身。
      * @ingroup TrilinosWrappers
+     *
      */
     class Accessor
     {
     public:
       /**
-       * Declare type for container size.
+       * 声明容器大小的类型。
+       *
        */
       using size_type = dealii::types::global_dof_index;
 
       /**
-       * Constructor.
+       * 构造函数。
+       *
        */
       Accessor(const SparsityPattern *sparsity_pattern,
                const size_type        row,
                const size_type        index);
 
       /**
-       * Row number of the element represented by this object.
+       * 这个对象所代表的元素的行数。
+       *
        */
       size_type
       row() const;
 
       /**
-       * Index in row of the element represented by this object.
+       * 这个对象所代表的元素在行中的索引。
+       *
        */
       size_type
       index() const;
 
       /**
-       * Column number of the element represented by this object.
+       * 这个对象所代表的元素的列号。
+       *
        */
       size_type
       column() const;
 
       /**
-       * Exception
+       * 异常情况
+       *
        */
       DeclException0(ExcBeyondEndOfSparsityPattern);
 
       /**
-       * Exception
+       * 异常情况
+       *
        */
       DeclException3(ExcAccessToNonlocalRow,
                      size_type,
@@ -126,38 +129,33 @@ namespace TrilinosWrappers
 
     private:
       /**
-       * The matrix accessed.
+       * 访问的矩阵。
+       *
        */
       mutable SparsityPattern *sparsity_pattern;
 
       /**
-       * Current row number.
+       * 当前行数。
+       *
        */
       size_type a_row;
 
       /**
-       * Current index in row.
+       * 当前行中的索引。
+       *
        */
       size_type a_index;
 
       /**
-       * Cache where we store the column indices of the present row. This is
-       * necessary, since Trilinos makes access to the elements of its
-       * matrices rather hard, and it is much more efficient to copy all
-       * column entries of a row once when we enter it than repeatedly asking
-       * Trilinos for individual ones. This also makes some sense since it is
-       * likely that we will access them sequentially anyway.
+       * 缓存，我们在这里存储当前行的列索引。这是必要的，因为Trilinos对其矩阵元素的访问相当困难，当我们进入某一行时，一次性复制该行的所有列项，比反复向Trilinos索取单个列项要高效得多。这也有一定的意义，因为无论如何，我们很可能会按顺序访问它们。
+       * 为了使迭代器/存取器的复制具有可接受的性能，我们为这些条目保留了一个共享指针，以便在必要时有多个存取器可以访问这些数据。
        *
-       * In order to make copying of iterators/accessor of acceptable
-       * performance, we keep a shared pointer to these entries so that more
-       * than one accessor can access this data if necessary.
        */
       std::shared_ptr<const std::vector<size_type>> colnum_cache;
 
       /**
-       * Discard the old row caches (they may still be used by other
-       * accessors) and generate new ones for the row pointed to presently by
-       * this accessor.
+       * 丢弃旧的行缓存（它们可能仍然被其他访问器使用），并为这个访问器目前所指向的行生成新的行缓存。
+       *
        */
       void
       visit_present_row();
@@ -167,76 +165,84 @@ namespace TrilinosWrappers
     };
 
     /**
-     * Iterator class for sparsity patterns of type
-     * TrilinosWrappers::SparsityPattern. Access to individual elements of the
-     * sparsity pattern is handled by the Accessor class in this namespace.
+     * 类型为 TrilinosWrappers::SparsityPattern.
+     * 的稀疏模式的迭代器类，对稀疏模式的单个元素的访问由该命名空间的访问器类处理。
+     *
      */
     class Iterator
     {
     public:
       /**
-       * Declare type for container size.
+       * 声明容器大小的类型。
+       *
        */
       using size_type = dealii::types::global_dof_index;
 
       /**
-       * Constructor. Create an iterator into the matrix @p matrix for the
-       * given row and the index within it.
+       * 构造器。为给定的行和其中的索引创建一个进入矩阵
+       * @p matrix 的迭代器。
+       *
        */
       Iterator(const SparsityPattern *sparsity_pattern,
                const size_type        row,
                const size_type        index);
 
       /**
-       * Copy constructor.
+       * 复制构造函数。
+       *
        */
       Iterator(const Iterator &i);
 
       /**
-       * Prefix increment.
+       * 前缀增量。
+       *
        */
       Iterator &
       operator++();
 
       /**
-       * Postfix increment.
+       * 后缀增量。
+       *
        */
       Iterator
       operator++(int);
 
       /**
-       * Dereferencing operator.
+       * 撤消运算符。
+       *
        */
       const Accessor &operator*() const;
 
       /**
-       * Dereferencing operator.
+       * 解除引用操作符。
+       *
        */
       const Accessor *operator->() const;
 
       /**
-       * Comparison. True, if both iterators point to the same matrix
-       * position.
+       * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+       *
        */
       bool
       operator==(const Iterator &) const;
 
       /**
-       * Inverse of <tt>==</tt>.
+       * <tt>==</tt>的倒数。
+       *
        */
       bool
       operator!=(const Iterator &) const;
 
       /**
-       * Comparison operator. Result is true if either the first row number is
-       * smaller or if the row numbers are equal and the first index is
-       * smaller.
+       * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
+       *
        */
       bool
       operator<(const Iterator &) const;
 
       /**
-       * Exception
+       * 异常情况
+       *
        */
       DeclException2(ExcInvalidIndexWithinRow,
                      size_type,
@@ -246,7 +252,8 @@ namespace TrilinosWrappers
 
     private:
       /**
-       * Store an object of the accessor class.
+       * 存储一个访问器类的对象。
+       *
        */
       Accessor accessor;
 
@@ -257,101 +264,89 @@ namespace TrilinosWrappers
 
 
   /**
-   * This class implements a wrapper class to use the Trilinos distributed
-   * sparsity pattern class Epetra_FECrsGraph. This class is designed to be
-   * used for construction of %parallel Trilinos matrices. The functionality
-   * of this class is modeled after the existing sparsity pattern classes,
-   * with the difference that this class can work fully in %parallel according
-   * to a partitioning of the sparsity pattern rows.
-   *
-   * This class has many similarities to the  DynamicSparsityPattern, since it
-   * can dynamically add elements to the pattern without any memory being
-   * previously reserved for it. However, it also has a method
-   * SparsityPattern::compress(), that finalizes the pattern and enables its
-   * use with Trilinos sparse matrices.
-   *
+   * 该类实现了一个包装类，用于使用Trilinos分布式稀疏性模式类Epetra_FECrsGraph。该类被设计用于构建%平行的Tridinos矩阵。该类的功能是以现有的稀疏模式类为模型，不同的是，该类可以根据稀疏模式行的划分，完全并行地工作。
+   * 这个类与DynamicSparsityPattern有很多相似之处，因为它可以动态地添加元素到模式中，而不需要事先为其保留任何内存。然而，它也有一个方法
+   * SparsityPattern::compress(),
+   * 可以最终确定该模式，并使其能够与特里诺斯稀疏矩阵一起使用。
    * @ingroup TrilinosWrappers
    * @ingroup Sparsity
+   *
    */
   class SparsityPattern : public Subscriptor
   {
   public:
     /**
-     * Declare type for container size.
+     * 声明容器尺寸的类型。
+     *
      */
     using size_type = dealii::types::global_dof_index;
 
     /**
-     * Declare an alias for the iterator class.
+     * 为迭代器类声明一个别名。
+     *
      */
     using const_iterator = SparsityPatternIterators::Iterator;
 
     /**
-     * @name Basic constructors and initialization
+     * @name  基本构造函数和初始化
+     *
      */
     //@{
     /**
-     * Default constructor. Generates an empty (zero-size) sparsity pattern.
+     * 默认构造函数。生成一个空的（零大小）稀疏模式。
+     *
      */
     SparsityPattern();
 
     /**
-     * Generate a sparsity pattern that is completely stored locally, having
-     * $m$ rows and $n$ columns. The resulting matrix will be completely
-     * stored locally, too.
+     * 生成一个完全本地存储的稀疏模式，有 $m$ 行和 $n$
+     * 列。产生的矩阵也将完全存储在本地。
+     * 可以使用可选的 @p n_entries_per_row
+     * 参数来指定每行的列条目数。然而，这个值不需要准确，甚至根本不需要给出，因为在建立稀疏模式之前，人们通常没有这种信息（通常情况下，当函数
+     * DoFTools::make_sparsity_pattern()
+     * 被调用）。条目是以类似于deal.II
+     * DynamicSparsityPattern类的方式动态分配的。然而，一个好的估计将减少稀疏模式的设置时间。
      *
-     * It is possible to specify the number of columns entries per row using
-     * the optional @p n_entries_per_row argument. However, this value does
-     * not need to be accurate or even given at all, since one does usually
-     * not have this kind of information before building the sparsity pattern
-     * (the usual case when the function DoFTools::make_sparsity_pattern() is
-     * called). The entries are allocated dynamically in a similar manner as
-     * for the deal.II DynamicSparsityPattern classes. However, a good
-     * estimate will reduce the setup time of the sparsity pattern.
      */
     SparsityPattern(const size_type m,
                     const size_type n,
                     const size_type n_entries_per_row = 0);
 
     /**
-     * Generate a sparsity pattern that is completely stored locally, having
-     * $m$ rows and $n$ columns. The resulting matrix will be completely
-     * stored locally, too.
+     * 生成一个完全存储在本地的稀疏度模式，有 $m$ 行和
+     * $n$ 列。产生的矩阵也将完全存储在本地。
+     * 向量<tt>n_entries_per_row</tt>指定了每一行的条目数（不过这个信息通常是不可用的）。
      *
-     * The vector <tt>n_entries_per_row</tt> specifies the number of entries
-     * in each row (an information usually not available, though).
      */
     SparsityPattern(const size_type               m,
                     const size_type               n,
                     const std::vector<size_type> &n_entries_per_row);
 
     /**
-     * Move constructor. Create a new sparse matrix by stealing the internal
-     * data.
+     * 移动构造函数。通过窃取内部数据创建一个新的稀疏矩阵。
+     *
      */
     SparsityPattern(SparsityPattern &&other) noexcept;
 
     /**
-     * Copy constructor. Sets the calling sparsity pattern to be the same as
-     * the input sparsity pattern.
+     * 复制构造函数。将调用的稀疏模式设置为与输入的稀疏模式相同。
+     *
      */
     SparsityPattern(const SparsityPattern &input_sparsity_pattern);
 
     /**
-     * Destructor. Made virtual so that one can use pointers to this class.
+     * 解除构造函数。虚化，以便人们可以使用指向该类的指针。
+     *
      */
     virtual ~SparsityPattern() override = default;
 
     /**
-     * Initialize a sparsity pattern that is completely stored locally, having
-     * $m$ rows and $n$ columns. The resulting matrix will be completely
-     * stored locally.
+     * 初始化一个完全存储在本地的稀疏度模式，有 $m$ 行和
+     * $n$ 列。由此产生的矩阵将被完全存储在本地。
+     * 每行的列条目数被指定为最大条目数参数。
+     * 这不需要是一个准确的数字，因为条目是以类似于deal.II
+     * DynamicSparsityPattern类的方式动态分配的，但是一个好的估计将减少稀疏模式的设置时间。
      *
-     * The number of columns entries per row is specified as the maximum
-     * number of entries argument.  This does not need to be an accurate
-     * number since the entries are allocated dynamically in a similar manner
-     * as for the deal.II DynamicSparsityPattern classes, but a good estimate
-     * will reduce the setup time of the sparsity pattern.
      */
     void
     reinit(const size_type m,
@@ -359,12 +354,10 @@ namespace TrilinosWrappers
            const size_type n_entries_per_row = 0);
 
     /**
-     * Initialize a sparsity pattern that is completely stored locally, having
-     * $m$ rows and $n$ columns. The resulting matrix will be completely
-     * stored locally.
+     * 初始化一个完全存储在本地的稀疏度模式，有 $m$ 行和
+     * $n$ 列。由此产生的矩阵将被完全存储在本地。
+     * 向量<tt>n_entries_per_row</tt>指定每一行的条目数。
      *
-     * The vector <tt>n_entries_per_row</tt> specifies the number of entries
-     * in each row.
      */
     void
     reinit(const size_type               m,
@@ -372,100 +365,73 @@ namespace TrilinosWrappers
            const std::vector<size_type> &n_entries_per_row);
 
     /**
-     * Copy function. Sets the calling sparsity pattern to be the same as the
-     * input sparsity pattern.
+     * 复制功能。将调用的稀疏度模式设置为与输入的稀疏度模式相同。
+     *
      */
     void
     copy_from(const SparsityPattern &input_sparsity_pattern);
 
     /**
-     * Copy function from one of the deal.II sparsity patterns. If used in
-     * parallel, this function uses an ad-hoc partitioning of the rows and
-     * columns.
+     * 拷贝函数，来自一个deal.II稀疏度模式。如果并行使用，该函数使用行和列的临时划分。
+     *
      */
     template <typename SparsityPatternType>
     void
     copy_from(const SparsityPatternType &nontrilinos_sparsity_pattern);
 
     /**
-     * Copy operator. This operation is only allowed for empty objects, to
-     * avoid potentially very costly operations automatically synthesized by
-     * the compiler. Use copy_from() instead if you know that you really want
-     * to copy a sparsity pattern with non-trivial content.
+     * 复制操作。这个操作只允许用于空对象，以避免由编译器自动合成的潜在的非常昂贵的操作。如果你知道你真的想复制一个具有非琐碎内容的稀疏模式，请使用copy_from()代替。
+     *
      */
     SparsityPattern &
     operator=(const SparsityPattern &input_sparsity_pattern);
 
     /**
-     * Release all memory and return to a state just like after having called
-     * the default constructor.
+     * 释放所有内存并返回到与调用默认构造函数后相同的状态。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     void
     clear();
 
     /**
-     * In analogy to our own SparsityPattern class, this function compresses
-     * the sparsity pattern and allows the resulting pattern to be used for
-     * actually generating a (Trilinos-based) matrix. This function also
-     * exchanges non-local data that might have accumulated during the
-     * addition of new elements. This function must therefore be called once
-     * the structure is fixed. This is a collective operation, i.e., it needs
-     * to be run on all processors when used in parallel.
+     * 与我们自己的SparsityPattern类相类似，这个函数压缩了稀疏模式，并允许产生的模式用于实际生成一个（基于Trilinos）矩阵。这个函数还交换了在添加新元素过程中可能积累的非局部数据。因此，一旦结构被固定，就必须调用这个函数。这是一个集体操作，即在并行使用时需要在所有处理器上运行。
+     *
      */
     void
     compress();
     //@}
 
     /**
-     * @name Constructors and initialization using an IndexSet description
+     * @name  使用IndexSet描述的构造器和初始化
+     *
      */
     //@{
 
     /**
-     * Constructor for a square sparsity pattern using an IndexSet and an MPI
-     * communicator for the description of the %parallel partitioning.
-     * Moreover, the number of nonzero entries in the rows of the sparsity
-     * pattern can be specified. Note that this number does not need to be
-     * exact, and it is even allowed that the actual sparsity structure has
-     * more nonzero entries than specified in the constructor. However it is
-     * still advantageous to provide good estimates here since a good value
-     * will avoid repeated allocation of memory, which considerably increases
-     * the performance when creating the sparsity pattern.
+     * 使用一个IndexSet和一个MPI通信器的方形稀疏模式的构造器，用于描述%并行分区。
+     * 此外，可以指定稀疏模式的行中非零条目的数量。请注意，这个数字不需要精确，甚至允许实际的稀疏结构有比构造函数中指定的更多非零条目。但是在这里提供好的估计值仍然是有利的，因为一个好的值可以避免重复分配内存，这大大增加了创建稀疏度模式时的性能。
+     *
      */
     SparsityPattern(const IndexSet &parallel_partitioning,
                     const MPI_Comm &communicator      = MPI_COMM_WORLD,
                     const size_type n_entries_per_row = 0);
 
     /**
-     * Same as before, but now use the exact number of nonzeros in each m row.
-     * Since we know the number of elements in the sparsity pattern exactly in
-     * this case, we can already allocate the right amount of memory, which
-     * makes the creation process by the respective SparsityPattern::reinit
-     * call considerably faster. However, this is a rather unusual situation,
-     * since knowing the number of entries in each row is usually connected to
-     * knowing the indices of nonzero entries, which the sparsity pattern is
-     * designed to describe.
+     * 与之前相同，但现在使用每m行中非零的确切数量。
+     * 由于在这种情况下我们确切地知道稀疏模式中的元素数，我们已经可以分配适当数量的内存，这使得各自的
+     * SparsityPattern::reinit
+     * 调用的创建过程大大加快。然而，这是一个相当不寻常的情况，因为知道每一行的条目数通常与知道非零条目的指数有关，而稀疏模式就是为了描述这些非零条目。
+     *
      */
     SparsityPattern(const IndexSet &              parallel_partitioning,
                     const MPI_Comm &              communicator,
                     const std::vector<size_type> &n_entries_per_row);
 
     /**
-     * This constructor is similar to the one above, but it now takes two
-     * different index sets to describe the %parallel partitioning of rows and
-     * columns. This interface is meant to be used for generating rectangular
-     * sparsity pattern. Note that there is no real parallelism along the
-     * columns &ndash; the processor that owns a certain row always owns all
-     * the column elements, no matter how far they might be spread out. The
-     * second Epetra_Map is only used to specify the number of columns and for
-     * internal arrangements when doing matrix-vector products with vectors
-     * based on that column map.
+     * 这个构造函数与上面的构造函数类似，但是它现在需要两个不同的索引集来描述行和列的%平行分割。这个接口是为了用于生成矩形稀疏模式。请注意，沿着列没有真正的并行性；拥有某一行的处理器总是拥有所有的列元素，不管它们可能分散得多远。第二个Epetra_Map仅用于指定列数，以及在基于该列图与向量进行矩阵-向量乘积时的内部安排。
+     * 每行的列条目数被指定为最大条目数的参数。
      *
-     * The number of columns entries per row is specified as the maximum
-     * number of entries argument.
      */
     SparsityPattern(const IndexSet &row_parallel_partitioning,
                     const IndexSet &col_parallel_partitioning,
@@ -473,15 +439,8 @@ namespace TrilinosWrappers
                     const size_type n_entries_per_row = 0);
 
     /**
-     * This constructor is similar to the one above, but it now takes two
-     * different index sets for rows and columns. This interface is meant to
-     * be used for generating rectangular matrices, where one map specifies
-     * the %parallel distribution of rows and the second one specifies the
-     * distribution of degrees of freedom associated with matrix columns. This
-     * second map is however not used for the distribution of the columns
-     * themselves &ndash; rather, all column elements of a row are stored on
-     * the same processor. The vector <tt>n_entries_per_row</tt> specifies the
-     * number of entries in each row of the newly generated matrix.
+     * 这个构造函数与上面的构造函数类似，但它现在需要两个不同的行和列的索引集。这个接口是用来生成矩形矩阵的，其中一个映射指定了行的%平行分布，第二个映射指定了与矩阵列相关的自由度分布。然而，这第二个映射并不用于列本身的分布&ndash；相反，一行的所有列元素都存储在同一个处理器上。向量<tt>n_entries_per_row</tt>指定了新生成的矩阵中每一行的条目数。
+     *
      */
     SparsityPattern(const IndexSet &              row_parallel_partitioning,
                     const IndexSet &              col_parallel_partitioning,
@@ -489,30 +448,16 @@ namespace TrilinosWrappers
                     const std::vector<size_type> &n_entries_per_row);
 
     /**
-     * This constructor constructs general sparsity patterns, possible non-
-     * square ones. Constructing a sparsity pattern this way allows the user
-     * to explicitly specify the rows into which we are going to add elements.
-     * This set is required to be a superset of the first index set @p
-     * row_parallel_partitioning that includes also rows that are owned by
-     * another processor (ghost rows). Note that elements can only be added to
-     * rows specified by @p writable_rows.
+     * 这个构造函数可以构造一般的稀疏模式，可能是非方形的。通过这种方式构建稀疏模式，用户可以明确地指定我们要添加元素的行。
+     * 这个集合被要求是第一个索引集 @p
+     * row_parallel_partitioning的超集，其中也包括被另一个处理器拥有的行（ghost
+     * rows）。注意，元素只能被添加到 @p writable_rows.
+     * 指定的行中。当处理器要写入的行可以在实际插入元素到矩阵中之前被确定时，这种方法是有益的。对于deal.II中使用的典型的
+     * parallel::distributed::Triangulation
+     * 类，我们知道处理器只为我们所说的本地相关的道夫添加行元素（见
+     * DoFTools::extract_locally_relevant_dofs). ）。
+     * 其他构造函数方法使用一般的Trilinos设施，允许向任意的行添加元素（正如所有其他reinit函数所做的那样）。然而，这种灵活性是有代价的，最突出的是，只要使用MPI，从共享内存中的多个线程向同一矩阵添加元素是不安全的。对于这些设置，目前的方法是可以选择的。它将把处理器外的数据存储为一个额外的稀疏模式（然后通过reinit方法传递给Trilinos矩阵），其组织方式可以确保线程安全（当然，只要用户确保不同时写入同一矩阵行）。
      *
-     * This method is beneficial when the rows to which a processor is going
-     * to write can be determined before actually inserting elements into the
-     * matrix. For the typical parallel::distributed::Triangulation class used
-     * in deal.II, we know that a processor only will add row elements for
-     * what we call the locally relevant dofs (see
-     * DoFTools::extract_locally_relevant_dofs). The other constructors
-     * methods use general Trilinos facilities that allow to add elements to
-     * arbitrary rows (as done by all the other reinit functions). However,
-     * this flexibility come at a cost, the most prominent being that adding
-     * elements into the same matrix from multiple threads in shared memory is
-     * not safe whenever MPI is used. For these settings, the current method
-     * is the one to choose: It will store the off-processor data as an
-     * additional sparsity pattern (that is then passed to the Trilinos matrix
-     * via the reinit method) which can be organized in such a way that
-     * thread-safety can be ensured (as long as the user makes sure to never
-     * write into the same matrix row simultaneously, of course).
      */
     SparsityPattern(const IndexSet &row_parallel_partitioning,
                     const IndexSet &col_parallel_partitioning,
@@ -521,19 +466,9 @@ namespace TrilinosWrappers
                     const size_type n_entries_per_row = 0);
 
     /**
-     * Reinitialization function for generating a square sparsity pattern
-     * using an IndexSet and an MPI communicator for the description of the
-     * %parallel partitioning and the number of nonzero entries in the rows of
-     * the sparsity pattern. Note that this number does not need to be exact,
-     * and it is even allowed that the actual sparsity structure has more
-     * nonzero entries than specified in the constructor. However it is still
-     * advantageous to provide good estimates here since this will
-     * considerably increase the performance when creating the sparsity
-     * pattern.
+     * 重新初始化函数，用于生成一个方形稀疏模式，使用IndexSet和MPI通信器来描述%并行分区和稀疏模式的行中非零项的数量。请注意，这个数字不需要精确，甚至允许实际的稀疏结构有比构造函数中指定的更多的非零条目。然而，在这里提供良好的估计仍然是有利的，因为这将大大增加创建稀疏模式时的性能。
+     * 这个函数本身不创建任何条目，但提供了正确的数据结构，可以被相应的add()函数使用。
      *
-     * This function does not create any entries by itself, but provides the
-     * correct data structures that can be used by the respective add()
-     * function.
      */
     void
     reinit(const IndexSet &parallel_partitioning,
@@ -541,14 +476,9 @@ namespace TrilinosWrappers
            const size_type n_entries_per_row = 0);
 
     /**
-     * Same as before, but now use the exact number of nonzeros in each m row.
-     * Since we know the number of elements in the sparsity pattern exactly in
-     * this case, we can already allocate the right amount of memory, which
-     * makes process of adding entries to the sparsity pattern considerably
-     * faster. However, this is a rather unusual situation, since knowing the
-     * number of entries in each row is usually connected to knowing the
-     * indices of nonzero entries, which the sparsity pattern is designed to
-     * describe.
+     * 与之前相同，但现在使用每m行中非零的确切数量。
+     * 由于在这种情况下我们确切地知道稀疏模式中的元素数，我们已经可以分配适当数量的内存，这使得向稀疏模式添加条目的过程大大加快。然而，这是一个相当不寻常的情况，因为知道每一行的条目数通常与知道非零条目的指数有关，而稀疏模式就是为了描述这些非零条目。
+     *
      */
     void
     reinit(const IndexSet &              parallel_partitioning,
@@ -556,20 +486,9 @@ namespace TrilinosWrappers
            const std::vector<size_type> &n_entries_per_row);
 
     /**
-     * This reinit function is similar to the one above, but it now takes two
-     * different index sets for rows and columns. This interface is meant to
-     * be used for generating rectangular sparsity pattern, where one index
-     * set describes the %parallel partitioning of the dofs associated with
-     * the sparsity pattern rows and the other one of the sparsity pattern
-     * columns. Note that there is no real parallelism along the columns
-     * &ndash; the processor that owns a certain row always owns all the
-     * column elements, no matter how far they might be spread out. The second
-     * IndexSet is only used to specify the number of columns and for internal
-     * arrangements when doing matrix-vector products with vectors based on an
-     * EpetraMap based on that IndexSet.
+     * 这个reinit函数与上面的函数类似，但它现在需要两个不同的行和列的索引集。这个接口是用来生成矩形稀疏模式的，其中一个索引集描述了与稀疏模式行相关的%平行分割，另一个是稀疏模式列的平行分割。请注意，沿着列没有真正的并行性；拥有某一行的处理器总是拥有所有的列元素，不管它们可能分散得多远。第二个IndexSet仅用于指定列数，以及在与基于该IndexSet的EpetraMap的向量进行矩阵-向量乘积时用于内部安排。
+     * 每行的列条目数由参数<tt>n_entries_per_row</tt>指定。
      *
-     * The number of columns entries per row is specified by the argument
-     * <tt>n_entries_per_row</tt>.
      */
     void
     reinit(const IndexSet &row_parallel_partitioning,
@@ -578,29 +497,17 @@ namespace TrilinosWrappers
            const size_type n_entries_per_row = 0);
 
     /**
-     * This reinit function is used to specify general matrices, possibly non-
-     * square ones. In addition to the arguments of the other reinit method
-     * above, it allows the user to explicitly specify the rows into which we
-     * are going to add elements. This set is a superset of the first index
-     * set @p row_parallel_partitioning that includes also rows that are owned
-     * by another processor (ghost rows).
+     * 这个reinit函数用于指定一般的矩阵，可能是非方形的。除了上述其他reinit方法的参数外，它允许用户明确指定我们要添加元素的行。这个集合是第一个索引集
+     * @p row_parallel_partitioning
+     * 的超集，也包括被另一个处理器拥有的行（ghost
+     * rows）。
+     * 当一个处理器要写入的行可以在实际插入元素到矩阵之前确定时，这种方法是有益的。对于deal.II中使用的典型
+     * parallel::distributed::Triangulation
+     * 类，我们知道处理器只为我们所说的本地相关的道夫添加行元素（见
+     * DoFTools::extract_locally_relevant_dofs).
+     * ）Trilinos矩阵允许向任意的行添加元素（正如所有其他reinit函数所做的那样），这也是所有其他reinit方法所做的。
+     * 然而，这种灵活性是有代价的，最突出的是在使用MPI时，从共享内存的多个线程向同一个矩阵添加元素是不安全的。对于这些设置，当前的方法是值得选择的。它将把处理器外的数据存储为一个额外的稀疏模式（然后通过reinit方法传递给Trilinos矩阵），其组织方式可以确保线程安全（当然，只要用户确保不同时写入同一矩阵行）。
      *
-     * This method is beneficial when the rows to which a processor is going
-     * to write can be determined before actually inserting elements into the
-     * matrix. For the typical parallel::distributed::Triangulation class used
-     * in deal.II, we know that a processor only will add row elements for
-     * what we call the locally relevant dofs (see
-     * DoFTools::extract_locally_relevant_dofs). Trilinos matrices allow to
-     * add elements to arbitrary rows (as done by all the other reinit
-     * functions) and this is what all the other reinit methods do, too.
-     * However, this flexibility come at a cost, the most prominent being that
-     * adding elements into the same matrix from multiple threads in shared
-     * memory is not safe whenever MPI is used. For these settings, the
-     * current method is the one to choose: It will store the off-processor
-     * data as an additional sparsity pattern (that is then passed to the
-     * Trilinos matrix via the reinit method) which can be organized in such a
-     * way that thread-safety can be ensured (as long as the user makes sure
-     * to never write into the same matrix row simultaneously, of course).
      */
     void
     reinit(const IndexSet &row_parallel_partitioning,
@@ -610,8 +517,8 @@ namespace TrilinosWrappers
            const size_type n_entries_per_row = 0);
 
     /**
-     * Same as before, but now using a vector <tt>n_entries_per_row</tt> for
-     * specifying the number of entries in each row of the sparsity pattern.
+     * 和以前一样，但现在使用一个向量<tt>n_entries_per_row</tt>来指定稀疏模式的每一行的条目数。
+     *
      */
     void
     reinit(const IndexSet &              row_parallel_partitioning,
@@ -620,13 +527,10 @@ namespace TrilinosWrappers
            const std::vector<size_type> &n_entries_per_row);
 
     /**
-     * Reinit function. Takes one of the deal.II sparsity patterns and the
-     * %parallel partitioning of the rows and columns specified by two index
-     * sets and a %parallel communicator for initializing the current Trilinos
-     * sparsity pattern. The optional argument @p exchange_data can be used
-     * for reinitialization with a sparsity pattern that is not fully
-     * constructed. This feature is only implemented for input sparsity
-     * patterns of type DynamicSparsityPattern.
+     * Reinit函数。接受一个deal.II稀疏模式和由两个索引集指定的行和列的%平行分割，以及一个用于初始化当前Trilinos稀疏模式的%平行通信器。可选参数
+     * @p exchange_data
+     * 可用于用未完全构建的稀疏模式进行重新初始化。这个功能只对动态稀疏模式类型的输入稀疏模式实现。
+     *
      */
     template <typename SparsityPatternType>
     void
@@ -637,12 +541,10 @@ namespace TrilinosWrappers
            const bool                 exchange_data = false);
 
     /**
-     * Reinit function. Takes one of the deal.II sparsity patterns and a
-     * %parallel partitioning of the rows and columns for initializing the
-     * current Trilinos sparsity pattern. The optional argument @p
-     * exchange_data can be used for reinitialization with a sparsity pattern
-     * that is not fully constructed. This feature is only implemented for
-     * input sparsity patterns of type DynamicSparsityPattern.
+     * Reinit函数。接受一个deal.II稀疏度模式和一个%平行分割的行和列，用于初始化当前Trilinos稀疏度模式。可选参数
+     * @p
+     * exchange_data可用于重新初始化未完全构建的稀疏度模式。这个功能只对动态稀疏模式类型的输入稀疏模式实现。
+     *
      */
     template <typename SparsityPatternType>
     void
@@ -652,133 +554,132 @@ namespace TrilinosWrappers
            const bool                 exchange_data = false);
     //@}
     /**
-     * @name Information on the sparsity pattern
+     * @name  稀疏度模式的信息
+     *
      */
     //@{
 
     /**
-     * Return the state of the sparsity pattern, i.e., whether compress()
-     * needs to be called after an operation requiring data exchange.
+     * 返回稀疏性模式的状态，即在需要数据交换的操作之后是否需要调用compress()。
+     *
      */
     bool
     is_compressed() const;
 
     /**
-     * Return the maximum number of entries per row on the current processor.
+     * 返回当前处理器上每行的最大条目数。
+     *
      */
     unsigned int
     max_entries_per_row() const;
 
     /**
-     * Return the number of rows in this sparsity pattern.
+     * 返回该稀疏模式中的行数。
+     *
      */
     size_type
     n_rows() const;
 
     /**
-     * Return the number of columns in this sparsity pattern.
+     * 返回这个稀疏模式中的列数。
+     *
      */
     size_type
     n_cols() const;
 
     /**
-     * Return the local dimension of the sparsity pattern, i.e. the number of
-     * rows stored on the present MPI process. In the sequential case, this
-     * number is the same as n_rows(), but for parallel matrices it may be
-     * smaller.
+     * 返回稀疏模式的局部维度，即存储在当前MPI进程中的行数。在顺序情况下，这个数字与n_rows()相同，但是对于并行矩阵，这个数字可能更小。
+     * 要想知道到底哪些元素被存储在本地，可以使用local_range()。
      *
-     * To figure out which elements exactly are stored locally, use
-     * local_range().
      */
     unsigned int
     local_size() const;
 
     /**
-     * Return a pair of indices indicating which rows of this sparsity pattern
-     * are stored locally. The first number is the index of the first row
-     * stored, the second the index of the one past the last one that is
-     * stored locally. If this is a sequential matrix, then the result will be
-     * the pair (0,n_rows()), otherwise it will be a pair (i,i+n), where
-     * <tt>n=local_size()</tt>.
+     * 返回一对指数，表明该稀疏模式的哪些行被存储在本地。第一个数字是存储的第一行的索引，第二个数字是本地存储的最后一行之后的那一行的索引。如果这是一个顺序矩阵，那么结果将是一对（0,n_rows()），否则将是一对（i,i+n），其中<tt>n=local_size()</tt>。
+     *
      */
     std::pair<size_type, size_type>
     local_range() const;
 
     /**
-     * Return whether @p index is in the local range or not, see also
-     * local_range().
+     * 返回 @p index 是否在本地范围内，另见local_range()。
+     *
      */
     bool
     in_local_range(const size_type index) const;
 
     /**
-     * Return the number of nonzero elements of this sparsity pattern.
+     * 返回这个稀疏模式的非零元素的数量。
+     *
      */
     size_type
     n_nonzero_elements() const;
 
     /**
-     * Return the number of entries in the given row.
+     * 返回给定行中的条目数。
+     * 在一个并行的环境中，有关的行当然可能不存储在当前的处理器上，在这种情况下，就不可能查询其中的条目数。在这种情况下，返回值是`static_cast<size_type>(-1)`。
      *
-     * In a parallel context, the row in question may of course not be
-     * stored on the current processor, and in that case it is not
-     * possible to query the number of entries in it. In that case,
-     * the returned value is `static_cast<size_type>(-1)`.
      */
     size_type
     row_length(const size_type row) const;
 
     /**
-     * Compute the bandwidth of the matrix represented by this structure. The
-     * bandwidth is the maximum of $|i-j|$ for which the index pair $(i,j)$
-     * represents a nonzero entry of the matrix. Consequently, the maximum
-     * bandwidth a $n\times m$ matrix can have is $\max\{n-1,m-1\}$.
+     * 计算这个结构所代表的矩阵的带宽。该带宽是 $|i-j|$
+     * 的最大值，其中索引对 $(i,j)$
+     * 代表矩阵的非零条目。因此， $n\times m$
+     * 矩阵的最大带宽是 $\max\{n-1,m-1\}$  。
+     *
      */
     size_type
     bandwidth() const;
 
     /**
-     * Return whether the object is empty. It is empty if no memory is
-     * allocated, which is the same as when both dimensions are zero.
+     * 返回该对象是否为空。如果没有分配内存，它就是空的，这与两个维度都是0时的情况相同。
+     *
      */
     bool
     empty() const;
 
     /**
-     * Return whether the index (<i>i,j</i>) exists in the sparsity pattern
-     * (i.e., it may be non-zero) or not.
+     * 返回索引（<i>i,j</i>）是否存在于稀疏模式中（即它可能是非零）。
+     *
      */
     bool
     exists(const size_type i, const size_type j) const;
 
     /**
-     * Return whether a given @p row is stored in the current object
-     * on this process.
+     * 返回给定的 @p row
+     * 是否被存储在这个进程的当前对象中。
+     *
      */
     bool
     row_is_stored_locally(const size_type i) const;
 
     /**
-     * Determine an estimate for the memory consumption (in bytes) of this
-     * object. Currently not implemented for this class.
+     * 确定这个对象的内存消耗（以字节为单位）的估计值。目前这个类没有实现。
+     *
      */
     std::size_t
     memory_consumption() const;
 
     //@}
     /**
-     * @name Adding entries
+     * @name 添加条目
+     *
      */
     //@{
     /**
-     * Add the element (<i>i,j</i>) to the sparsity pattern.
+     * 将元素（<i>i,j</i>）添加到稀疏模式中。
+     *
      */
     void
     add(const size_type i, const size_type j);
 
 
     /**
-     * Add several elements in one row to the sparsity pattern.
+     * 在一行中添加几个元素到稀疏模式中。
+     *
      */
     template <typename ForwardIterator>
     void
@@ -788,59 +689,59 @@ namespace TrilinosWrappers
                 const bool      indices_are_sorted = false);
     //@}
     /**
-     * @name Access of underlying Trilinos data
+     * @name 访问底层的Trilinos数据
+     *
      */
     //@{
 
     /**
-     * Return a const reference to the underlying Trilinos Epetra_CrsGraph
-     * data that stores the sparsity pattern.
+     * 返回一个对存储稀疏模式的底层Trilinos
+     * Epetra_CrsGraph数据的常量引用。
+     *
      */
     const Epetra_FECrsGraph &
     trilinos_sparsity_pattern() const;
 
     /**
-     * Return a const reference to the underlying Trilinos Epetra_Map that
-     * sets the parallel partitioning of the domain space of this sparsity
-     * pattern, i.e., the partitioning of the vectors matrices based on this
-     * sparsity pattern are multiplied with.
+     * 返回一个对底层Trilinos
+     * Epetra_Map的常量引用，该Map设置了该稀疏模式的域空间的平行分区，即基于该稀疏模式的向量矩阵的分区与之相乘。
+     *
      */
     const Epetra_Map &
     domain_partitioner() const;
 
     /**
-     * Return a const reference to the underlying Trilinos Epetra_Map that
-     * sets the partitioning of the range space of this sparsity pattern,
-     * i.e., the partitioning of the vectors that are result from matrix-
-     * vector products.
+     * 返回一个对底层Trilinos
+     * Epetra_Map的常量引用，该Map设置了该稀疏模式的范围空间的划分，即由矩阵-向量乘积产生的向量的划分。
+     *
      */
     const Epetra_Map &
     range_partitioner() const;
 
     /**
-     * Return the MPI communicator object in use with this matrix.
+     * 返回与该矩阵一起使用的MPI通信器对象。
+     *
      */
     MPI_Comm
     get_mpi_communicator() const;
     //@}
 
     /**
-     * @name Partitioners
+     * @name  分割器
+     *
      */
     //@{
 
     /**
-     * Return the partitioning of the domain space of this pattern, i.e., the
-     * partitioning of the vectors a matrix based on this sparsity pattern has
-     * to be multiplied with.
+     * 返回该模式的域空间的分区，即基于该稀疏模式的矩阵必须与之相乘的向量的分区。
+     *
      */
     IndexSet
     locally_owned_domain_indices() const;
 
     /**
-     * Return the partitioning of the range space of this pattern, i.e., the
-     * partitioning of the vectors that are the result from matrix-vector
-     * products from a matrix based on this pattern.
+     * 返回该模式的范围空间划分，即基于该模式的矩阵向量乘积所产生的向量的划分。
+     *
      */
     IndexSet
     locally_owned_range_indices() const;
@@ -848,93 +749,82 @@ namespace TrilinosWrappers
     //@}
 
     /**
-     * @name Iterators
+     * @name  迭代器
+     *
      */
     //@{
 
     /**
-     * Iterator starting at the first entry.
+     * 迭代器从第一个条目开始。
+     *
      */
     const_iterator
     begin() const;
 
     /**
-     * Final iterator.
+     * 最后的迭代器。
+     *
      */
     const_iterator
     end() const;
 
     /**
-     * Iterator starting at the first entry of row @p r.
+     * 从第 @p r. 行的第一个条目开始的迭代器
+     * 注意，如果给定的行是空的，即不包含任何非零条目，那么这个函数返回的迭代器就等于<tt>end(r)</tt>。还要注意的是，在这种情况下，迭代器可能不能被解除引用。
      *
-     * Note that if the given row is empty, i.e. does not contain any nonzero
-     * entries, then the iterator returned by this function equals
-     * <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable
-     * in that case.
      */
     const_iterator
     begin(const size_type r) const;
 
     /**
-     * Final iterator of row <tt>r</tt>. It points to the first element past
-     * the end of line @p r, or past the end of the entire sparsity pattern.
+     * 行<tt>r</tt>的最终迭代器。它指向过了 @p r,
+     * 行末尾的第一个元素，或者过了整个稀疏模式的末尾。
+     * 请注意，结束迭代器不一定是可被解除引用的。特别是如果它是一个矩阵的最后一行的结束迭代器，情况更是如此。
      *
-     * Note that the end iterator is not necessarily dereferenceable. This is
-     * in particular the case if it is the end iterator for the last row of a
-     * matrix.
      */
     const_iterator
     end(const size_type r) const;
 
     //@}
     /**
-     * @name Input/Output
+     * @name  输入/输出
+     *
      */
     //@{
 
     /**
-     * Abstract Trilinos object that helps view in ASCII other Trilinos
-     * objects. Currently this function is not implemented.  TODO: Not
-     * implemented.
+     * 抽象的Trilinos对象，帮助在ASCII中查看其他Trilinos对象。目前这个功能还没有实现。
+     * TODO：未实现。
+     *
      */
     void
     write_ascii();
 
     /**
-     * Print (the locally owned part of) the sparsity pattern to the given
-     * stream, using the format <tt>(line,col)</tt>. The optional flag outputs
-     * the sparsity pattern in Trilinos style, where even the according
-     * processor number is printed to the stream, as well as a summary before
-     * actually writing the entries.
+     * 使用<tt>(line,col)</tt>格式，向给定的流打印（本地拥有的部分）稀疏模式。可选的标志是以Trilinos风格输出稀疏模式，在实际写入条目之前，甚至根据处理器的编号也会打印到流中，以及一个摘要。
+     *
      */
     void
     print(std::ostream &out,
           const bool    write_extended_trilinos_info = false) const;
 
     /**
-     * Print the sparsity of the matrix in a format that <tt>gnuplot</tt>
-     * understands and which can be used to plot the sparsity pattern in a
-     * graphical way. The format consists of pairs <tt>i j</tt> of nonzero
-     * elements, each representing one entry of this matrix, one per line of
-     * the output file. Indices are counted from zero on, as usual. Since
-     * sparsity patterns are printed in the same way as matrices are
-     * displayed, we print the negative of the column index, which means that
-     * the <tt>(0,0)</tt> element is in the top left rather than in the bottom
-     * left corner.
+     * 以<tt>gnuplot</tt>能理解的格式打印矩阵的稀疏度，该格式可用于以图形方式绘制稀疏度模式。该格式由成对的<tt>i
+     * j</tt>非零元素组成，每个元素代表该矩阵的一个条目，输出文件中每行一个。指数从零开始计算，和平常一样。由于稀疏模式的打印方式与矩阵的显示方式相同，我们打印的是列索引的负数，这意味着<tt>(0,0)</tt>元素在左上角而不是左下角。
+     * 在gnuplot中通过将数据样式设置为点或点来打印稀疏模式，并使用<tt>plot</tt>命令。
      *
-     * Print the sparsity pattern in gnuplot by setting the data style to dots
-     * or points and use the <tt>plot</tt> command.
      */
     void
     print_gnuplot(std::ostream &out) const;
 
     //@}
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup  异常情况  @{
+     *
      */
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException1(ExcTrilinosError,
                    int,
@@ -942,7 +832,8 @@ namespace TrilinosWrappers
                    << " occurred while calling a Trilinos function");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException2(ExcInvalidIndex,
                    size_type,
@@ -951,7 +842,8 @@ namespace TrilinosWrappers
                    << "> does not exist.");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclExceptionMsg(
       ExcSourceEqualsDestination,
@@ -960,7 +852,8 @@ namespace TrilinosWrappers
       "two objects are in fact different.");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException4(ExcAccessToNonLocalElement,
                    size_type,
@@ -974,7 +867,8 @@ namespace TrilinosWrappers
                    << "] are stored locally and can be accessed.");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException2(ExcAccessToNonPresentElement,
                    size_type,
@@ -986,23 +880,21 @@ namespace TrilinosWrappers
     //@}
   private:
     /**
-     * Pointer to the user-supplied Epetra Trilinos mapping of the matrix
-     * columns that assigns parts of the matrix to the individual processes.
+     * 指向用户提供的矩阵列的Epetra
+     * Trilinos映射的指针，它将矩阵的一部分分配给各个进程。
+     *
      */
     std::unique_ptr<Epetra_Map> column_space_map;
 
     /**
-     * A sparsity pattern object in Trilinos to be used for finite element
-     * based problems which allows for adding non-local elements to the
-     * pattern.
+     * Trilinos中的稀疏模式对象，用于基于有限元的问题，允许向模式添加非局部元素。
+     *
      */
     std::unique_ptr<Epetra_FECrsGraph> graph;
 
     /**
-     * A sparsity pattern object for the non-local part of the sparsity
-     * pattern that is going to be sent to the owning processor. Only used
-     * when the particular constructor or reinit method with writable_rows
-     * argument is set
+     * 稀疏模式的非本地部分的稀疏模式对象，将被发送到拥有的处理器。只有在设置了特定的构造函数或带有writable_rows参数的reinit方法时才使用
+     *
      */
     std::unique_ptr<Epetra_CrsGraph> nonlocal_graph;
 
@@ -1256,7 +1148,7 @@ namespace TrilinosWrappers
   SparsityPattern::add_entries(const size_type row,
                                ForwardIterator begin,
                                ForwardIterator end,
-                               const bool /*indices_are_sorted*/)
+                               const bool  /*indices_are_sorted*/ )
   {
     if (begin == end)
       return;
@@ -1341,7 +1233,9 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_TRILINOS
 
 
-/*--------------------   trilinos_sparsity_pattern.h     --------------------*/
+ /*--------------------   trilinos_sparsity_pattern.h     --------------------*/ 
 
 #endif
-/*--------------------   trilinos_sparsity_pattern.h     --------------------*/
+ /*--------------------   trilinos_sparsity_pattern.h     --------------------*/ 
+
+

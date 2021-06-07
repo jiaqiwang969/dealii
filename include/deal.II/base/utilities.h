@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/utilities_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -68,35 +67,38 @@ class Point;
 #endif
 
 /**
- * 一个用于实用功能的命名空间，这些功能不是特别针对有限元计算或数值程序的，但在编写应用程序时，在各种情况下都需要。
- *
+ * A namespace for utility functions that are not particularly specific to
+ * finite element computing or numerical programs, but nevertheless are needed
+ * in various contexts when writing applications.
  *
  * @ingroup utilities
- *
- *
  */
 namespace Utilities
 {
   /**
-   * 返回一个形式为 "deal.II version x.y.z "的字符串，其中
-   * "x.y.z
-   * "标识了你正在使用的deal.II的版本。这个信息也是由DEAL_II_PACKAGE_NAME和DEAL_II_PACKAGE_VERSION预处理器变量提供的。
-   *
+   * Return a string of the form "deal.II version x.y.z" where "x.y.z"
+   * identifies the version of deal.II you are using. This information
+   * is also provided by the DEAL_II_PACKAGE_NAME and
+   * DEAL_II_PACKAGE_VERSION preprocessor variables.
    */
   std::string
   dealii_version_string();
 
   /**
-   * 使用希尔伯特空间填充曲线给 @p points
-   * 中的每个点分配一个索引。  为此，将确定 @p points
-   * 的一个边界框，在此基础上计算它们的整数坐标。
-   * 线性索引是以比特的昏暗集合的形式给出的，从高到低。
-   * 这样做是为了保持沿每个轴的位深度的最大分辨率。请注意，这个dim-integer索引仍然可以很容易地用于分类和排序，例如使用整数组的lexicographic排序。
-   * 希尔伯特曲线的深度（即每维的比特数）默认等于
-   * <code>64</code>  .
-   * @note
-   * 这个函数也可以处理退化的情况，例如，当包围盒在其中一个维度的大小为零时。
+   * Assign to each point in @p points an index using the Hilbert space filling curve.
+   * To that end, a bounding box for @p points will be determined, based on which their
+   * integer coordinates are calculated.
+   * The linear index is given as a dim-collection of bits, from high to low.
+   * This is done in order to keep the maximum resolution in terms of bit depth
+   * along each axis. Note that this dim-integer index can still be easily used
+   * for sorting and ordering, for example using the lexicographic ordering of
+   * tuples of integers.
    *
+   * The depth of the Hilbert curve (i.e. the number of bits per dimension) by
+   * default is equal to <code>64</code>.
+   *
+   * @note This function can also handle degenerate cases, e.g. when the bounding
+   * box has zero size in one of the dimensions.
    */
   template <int dim, typename Number>
   std::vector<std::array<std::uint64_t, dim>>
@@ -105,8 +107,7 @@ namespace Utilities
     const int                              bits_per_dim = 64);
 
   /**
-   * 与上述相同，但对于整数坐标的点。
-   *
+   * Same as above, but for points in integer coordinates.
    */
   template <int dim>
   std::vector<std::array<std::uint64_t, dim>>
@@ -115,18 +116,19 @@ namespace Utilities
     const int                                          bits_per_dim = 64);
 
   /**
-   * 将 @p index 的每个元素中最不重要的 @p bits_per_dim
-   * 位（从最后一位开始）打包成一个无符号整数。 @p index
-   * 的最后一个元素将用于设置所得整数中的第一个 @p
-   * bits_per_dim 位，倒数第二个元素用于设置下一个 @p
-   * bits_per_dim
-   * 位，等等。为了将所有的数据装入输出，下面应该保持
-   * <code>bits\_per\_dim dim <= 64</code>  。
-   * 该函数在调试和可视化由inverse_Hilbert_space_filling_curve()返回的指数时很有用。
-   * @note
-   * 为了比较inverse_Hilbert_space_filling_curve()返回的指数，没有必要使用这个函数，因为这可以通过
-   * <code>std::lexicographical_compare()</code>  轻松完成。
+   * Pack the least significant @p bits_per_dim bits from each element of @p index
+   * (starting from last) into a single unsigned integer. The last element
+   * of @p index will be used to set the first @p bits_per_dim bits in the
+   * resulting integer, the second to last element is used to set the next @p bits_per_dim bits,
+   * etc.. To fit all the data into the output, the following should hold
+   * <code>bits\_per\_dim * dim <= 64</code>.
    *
+   * The function is useful in debugging and visualization of indices returned
+   * by inverse_Hilbert_space_filling_curve().
+   *
+   * @note There is no need to use this function in order to compare indices
+   * returned by inverse_Hilbert_space_filling_curve(), as that can easily be
+   * done via <code>std::lexicographical_compare()</code>.
    */
   template <int dim>
   std::uint64_t
@@ -134,75 +136,98 @@ namespace Utilities
                 const int                             bits_per_dim);
 
   /**
-   * 如果库被配置为ZLIB，那么这个函数会压缩输入字符串，并返回一个包含压缩后的输入的非零终止的字符串。
-   * 如果库没有配置启用ZLIB，则返回的字符串与输入字符串相同。
-   * @param[in]  input 要压缩的字符串  @return
-   * 输入字符串的压缩版本
+   * If the library is configured with ZLIB, then this function compresses the
+   * input string and returns a non-zero terminated string containing the
+   * compressed input.
    *
+   * If the library was not configured with ZLIB enabled, the returned string
+   * is identical to the input string.
+   *
+   * @param[in] input The string to compress
+   *
+   * @return A compressed version of the input string
    */
   std::string
   compress(const std::string &input);
 
   /**
-   * 如果库中配置了ZLIB，那么这个函数假定输入的字符串已经用compress()函数进行了压缩，并返回原始的解压缩字符串。
-   * 如果库没有配置启用ZLIB，则返回的字符串与输入字符串相同。
-   * @param[in]  compressed_input
-   * 一个压缩的字符串，由函数compress()返回  @return
-   * 原始未压缩的字符串。
+   * If the library is configured with ZLIB, then this function assumes that the
+   * input string has been compressed using the compress() function, and returns
+   * the original decompressed string.
    *
+   * If the library was not configured with ZLIB enabled, the returned string
+   * is identical to the input string.
+   *
+   * @param[in] compressed_input A compressed string, as returned by the
+   * function compress()
+   *
+   * @return The original uncompressed string.
    */
   std::string
   decompress(const std::string &compressed_input);
 
   /**
-   * 将二进制输入编码为base64字符串。
-   * Base64是一组二进制到文本的编码方案，通过将二进制数据转化为radix-64表示法，以ASCII字符串格式表示。Base64被设计用来在只可靠地支持文本内容的通道上携带以二进制格式存储的数据。它也被用来以独立于机器的方式存储二进制格式。
-   * @param  binary_input
-   * 一个字符向量，代表你的输入为二进制数据。    @return
-   * 一个包含二进制输入的字符串，作为base64字符串。
+   * Encodes the binary input as a base64 string.
    *
+   * Base64 is a group of binary-to-text encoding schemes that represent binary
+   * data in an ASCII string format by translating it into a radix-64
+   * representation. Base64 is designed to carry data stored in binary formats
+   * across channels that only reliably support text content. It is used also
+   * to store binary formats in a machine independent way.
+   *
+   * @param binary_input A vector of characters, representing your input as
+   * binary data.
+   * @return A string containing the binary input as a base64 string.
    */
   std::string
   encode_base64(const std::vector<unsigned char> &binary_input);
 
   /**
-   * 将base64字符串解码为二进制输出。
-   * 这是上面的encode_base64()函数的逆运算。      @param
-   * base64_input 一个包含base64格式输入的字符串。    @return
-   * 一个字符向量，表示你的输入为二进制数据。
+   * Decodes a base64 string into a binary output.
    *
+   * This is the inverse of the encode_base64() function above.
+   *
+   * @param base64_input A string that contains the input in base64 format.
+   * @return A vector of characters that represents your input as binary data.
    */
   std::vector<unsigned char>
   decode_base64(const std::string &base64_input);
 
   /**
-   * 将一个数字 @p value
-   * 转换成一个字符串，有多少个数字就用多少个前导零填充。
-   * 如果第二个参数保留为默认值，则数字不会被填充前导零。其结果与调用标准C++
-   * `std::to_string` （或旧的C函数`itoa()`）的结果相同。
-   * 这个函数需要一个`无符号int'作为参数。因此，如果你用`signed
-   * int`（当然与`int`的类型相同）调用它，参数会被隐含地转换为无符号整数，负数可能不会像你希望的那样被打印出来。同样地，如果你用`long
-   * int`调用函数，打印出来的结果可能会显示转换为`unsigned
-   * int`时的溢出效果。
-   * @note  不鼓励使用这个函数，用户应该使用
-   * <code>Utilities::to_string()</code>
-   * 代替。在目前的实现中，该函数只是简单地调用<code>to_string
-   * @<unsigned  int  @>()</code>.  。
+   * Convert a number @p value to a string, with as many digits as given to
+   * fill with leading zeros.
    *
+   * If the second parameter is left at its default value, the number is not
+   * padded with leading zeros. The result is then the same as if the standard
+   * C++ `std::to_string` (or the older C function `itoa()`) had been called.
+   *
+   * This function takes an `unsigned int` as argument. As a consequence,
+   * if you call it with a `signed int` (which is of course the same
+   * type as `int`), the argument is implicitly converted to
+   * unsigned integers and negative numbers may not be printed as you had
+   * hoped. Similarly, if you call the function with a `long int`, the
+   * printed result might show the effects of an overflow upon conversion
+   * to `unsigned int`.
+   *
+   * @note The use of this function is discouraged and users should use
+   * <code>Utilities::to_string()</code> instead. In its current
+   * implementation the function simply calls <code>to_string@<unsigned
+   * int@>()</code>.
    */
   std::string
   int_to_string(const unsigned int value,
                 const unsigned int digits = numbers::invalid_unsigned_int);
 
   /**
-   * 将一个数字 @p value 转换成一个字符串，其中有 @p digits
-   * 个字符。字符串被填充了前导零，在可能的减号之后。
-   * 因此，填充零的总数是 @p digits
-   * 减去任何符号、小数点和 @p value. 的数字。
-   * 如果第二个参数保持其默认值，数字就不会被填充前导零。结果与调用C++函数
-   * `std::to_string()` （对于积分类型）或调用
-   * `boost::lexical_cast()` （对于所有其他类型）的情况相同。
+   * Convert a number @p value to a string, with @p digits characters. The
+   * string is padded with leading zeros, after a possible minus sign.
+   * Therefore the total number of padding zeros is @p digits minus any signs,
+   * decimal points and digits of @p value.
    *
+   * If the second parameter is left at its default value, the number is not
+   * padded with leading zeros. The result is then the same as if the C++
+   * function `std::to_string()` had been called (for integral types),
+   * or if `boost::lexical_cast()` had been called (for all other types).
    */
   template <typename number>
   std::string
@@ -210,114 +235,130 @@ namespace Utilities
             const unsigned int digits = numbers::invalid_unsigned_int);
 
   /**
-   * 确定需要多少个数字来表示最多和给定数字一样大的数字。
-   *
+   * Determine how many digits are needed to represent numbers at most as
+   * large as the given number.
    */
   unsigned int
   needed_digits(const unsigned int max_number);
 
   /**
-   * 这个函数允许在 @p n_digits 的精度之后切断一个浮点数 @p
-   * number ，即在科学浮点符号的小数点后 @p n_digits
-   * 位之后切断。当解释为四舍五入操作时，这个函数减少了浮点数的绝对值，并且总是向零舍入，因为小数点位被简单地切断了。
-   *
+   * This function allows to cut off a floating point number @p number
+   * after @p n_digits of accuracy, i.e., after @p n_digits decimal places
+   * in scientific floating point notation. When interpreted as rounding
+   * operation, this function reduces the absolute value of a floating point
+   * number and always rounds towards zero, since decimal places are simply
+   * cut off.
    */
   template <typename Number>
   Number
   truncate_to_n_digits(const Number number, const unsigned int n_digits);
 
   /**
-   * 给定一个字符串，将其转换为一个整数。如果不可能，则抛出一个断言。
-   *
+   * Given a string, convert it to an integer. Throw an assertion if that is
+   * not possible.
    */
   int
   string_to_int(const std::string &s);
 
   /**
-   * 返回一个描述对象尺寸的字符串。通常，deal.II库以及用户代码中的函数需要定义一个字符串，包含一些使用两个模板参数定义的对象的模板尺寸：dim（对象的拓扑尺寸）和spacedim（嵌入欧几里得空间的尺寸）。
-   * 由于在所有deal.II类中，默认情况下spacedim等于dimension，上述字符串通常被缩减为"<dim>"，而不是"<dim,spacedim>"。
-   * 如果dim等于spacedim，该函数返回一个包含 "dim
-   * "的字符串，否则返回 "dim,spacedim"。
-   *
+   * Return a string describing the dimensions of the object. Often, functions
+   * in the deal.II library as well as in user codes need to define a string
+   * containing the template dimensions of some objects defined using two
+   * template parameters: dim (the topological dimension of the object) and
+   * spacedim (the dimension of the embedding Euclidean space).  Since in all
+   * deal.II classes, by default spacedim is equal to dimension, the above
+   * string is usually contracted to "<dim>", instead of "<dim,spacedim>".
+   * This function returns a string containing "dim" if dim is equal to
+   * spacedim, otherwise it returns "dim,spacedim".
    */
   std::string
   dim_string(const int dim, const int spacedim);
 
   /**
-   * 给出一个字符串列表，将其转换为一个整数列表。如果不可能，则抛出一个断言。
-   *
+   * Given a list of strings, convert it to a list of integers. Throw an
+   * assertion if that is not possible.
    */
   std::vector<int>
   string_to_int(const std::vector<std::string> &s);
 
   /**
-   * 给定一个字符串，将其转换为一个双数。如果不可能，抛出一个断言。
-   *
+   * Given a string, convert it to an double. Throw an assertion if that is
+   * not possible.
    */
   double
   string_to_double(const std::string &s);
 
 
   /**
-   * 给出一个字符串的列表，将其转换为一个双数的列表。如果不可能，抛出一个断言。
-   *
+   * Given a list of strings, convert it to a list of doubles. Throw an
+   * assertion if that is not possible.
    */
   std::vector<double>
   string_to_double(const std::vector<std::string> &s);
 
 
   /**
-   * 给出一个包含由 @p delimiter,
-   * 分隔的文本的字符串，将其分割成其组成部分；对于每个组成部分，去除前面和后面的空格。分隔符的默认值是逗号，因此该函数可以分割逗号分隔的字符串列表。
-   * 为了使来自表格的数据输入更简单，如果输入的字符串以定界符结束（后面可能有任意数量的空白），那么最后这个定界符将被忽略。比如说。
-   * @code
-   * Utilities::split_string_list("abc; def; ghi; ", ';');
-   * @endcode
-   * 产生的3个元素的输出 <code>{"abc","def","ghi"}</code>
-   * 与你在输入时得到的相同
-   * @code
-   * Utilities::split_string_list("abc; def; ghi", ';');
-   * @endcode
-   * 或
-   * @code
-   * Utilities::split_string_list("abc; def; ghi;", ';');
-   * @endcode
-   * 作为这一规则的结果，像这样的调用
-   * @code
-   * Utilities::split_string_list(" ; ", ';');
-   * @endcode
-   * 产生了一个单元素的列表。由于修剪了空白，这个单元素是空字符串。
-   * 这个函数可以消化定界符是空格的情况。在这种情况下，它返回字符串中的所有单词。结合上面的规则，这意味着
-   * @code
-   * Utilities::split_string_list("abc def ghi ", ' ');
-   * @endcode
-   * 尽管在字符串的末尾存在空格，*还是会产生上面的输出
-   * <code>{"abc","def","ghi"}</code> 的3元素列表。此外。
-   * @code
-   * Utilities::split_string_list("      ", ' ');
-   * @endcode
-   * 无论字符串中有多少空格，都会产生一个空列表。
+   * Given a string that contains text separated by a @p delimiter, split it
+   * into its components; for each component, remove leading and trailing
+   * spaces. The default value of the delimiter is a comma, so that the
+   * function splits comma separated lists of strings.
    *
+   * To make data input from tables simpler, if the input string ends in a
+   * delimiter (possibly followed by an arbitrary amount of whitespace), then
+   * this last delimiter is ignored. For example,
+   * @code
+   *   Utilities::split_string_list("abc; def; ghi; ", ';');
+   * @endcode
+   * yields the same 3-element list of output <code>{"abc","def","ghi"}</code>
+   * as you would get if the input had been
+   * @code
+   *   Utilities::split_string_list("abc; def; ghi", ';');
+   * @endcode
+   * or
+   * @code
+   *   Utilities::split_string_list("abc; def; ghi;", ';');
+   * @endcode
+   * As a consequence of this rule, a call like
+   * @code
+   *   Utilities::split_string_list(" ; ", ';');
+   * @endcode
+   * yields a one-element list. Because of the trimming of whitespace, the
+   * single element is the empty string.
+   *
+   * This function can digest the case that the delimiter is a space. In this
+   * case, it returns all words in the string. Combined with the rules above,
+   * this implies that
+   * @code
+   *   Utilities::split_string_list("abc def ghi ", ' ');
+   * @endcode
+   * yields again the 3-element list of output
+   * <code>{"abc","def","ghi"}</code> from above despite the presence of space
+   * at the end of the string. Furthermore,
+   * @code
+   *   Utilities::split_string_list("      ", ' ');
+   * @endcode
+   * yields an empty list regardless of the number of spaces in the string.
    */
   std::vector<std::string>
   split_string_list(const std::string &s, const std::string &delimiter = ",");
 
 
   /**
-   * split_string_list()的特殊化，用于分隔符为单个字符的情况。
-   *
+   * Specialization of split_string_list() for the case where the delimiter
+   * is a single char.
    */
   std::vector<std::string>
   split_string_list(const std::string &s, const char delimiter);
 
 
   /**
-   * 取一个文本，通常是一个文档或其他东西，并尝试将其分割成最多
-   * @p width 个字符宽的独立文本行，在文本中由 @p delimiter
-   * 标记的位置进行分割。如果这是不可能的，则返回长于
-   * @p width.
-   * 的最短的几行，分隔符的默认值是一个空格字符。如果original_text包含换行符(/n)，字符串也会在这些位置被分割。
-   *
+   * Take a text, usually a documentation or something, and try to break it
+   * into individual lines of text at most @p width characters wide, by
+   * breaking at positions marked by @p delimiter in the text. If this is not
+   * possible, return the shortest lines that are longer than @p width.  The
+   * default value of the delimiter is a space character. If original_text
+   * contains newline characters (\n), the string is split at these locations,
+   * too.
    */
   std::vector<std::string>
   break_text_into_lines(const std::string &original_text,
@@ -325,27 +366,26 @@ namespace Utilities
                         const char         delimiter = ' ');
 
   /**
-   * 如果给定的模式字符串出现在字符串的第一个位置，则返回true。
-   *
+   * Return true if the given pattern string appears in the first position of
+   * the string.
    */
   bool
   match_at_string_start(const std::string &name, const std::string &pattern);
 
   /**
-   * 读取一个（有符号的）整数，从第二个参数指示的 @p
-   * name
-   * 中的位置开始，并将这个整数与它在字符串中所占的字符数一起作为一对返回。
-   * 如果在指定的位置没有读到整数，则返回
-   * (-1,numbers::invalid_unsigned_int)  。
+   * Read a (signed) integer starting at the position in @p name indicated by
+   * the second argument, and return this integer as a pair together with how
+   * many characters it takes up in the string.
    *
+   * If no integer can be read at the indicated position, return
+   * (-1,numbers::invalid_unsigned_int)
    */
   std::pair<int, unsigned int>
   get_integer_at_position(const std::string &name, const unsigned int position);
 
   /**
-   * 返回一个字符串，其中 @p input 中所有出现的 @p from 都被
-   * @p to. 替换。
-   *
+   * Return a string with all occurrences of @p from in @p input replaced by
+   * @p to.
    */
   std::string
   replace_in_string(const std::string &input,
@@ -353,57 +393,68 @@ namespace Utilities
                     const std::string &to);
 
   /**
-   * 返回一个字符串，删除 @p input
-   * 开头和结尾的所有标准空白字符（包括'<tt>\t</tt>',
-   * '<tt>\n</tt>', 和 '<tt>\r</tt>'）。
-   *
+   * Return a string with all standard whitespace characters (including
+   * '<tt>\\t</tt>', '<tt>\\n</tt>', and '<tt>\\r</tt>') at the beginning and
+   * end of @p input removed.
    */
   std::string
   trim(const std::string &input);
 
   /**
-   * 从以 @p a 为中心、标准差为 @p sigma.
-   * 的归一化高斯概率分布中生成一个随机数，每次调用该函数时返回的数字都会不同。
-   * 这个函数是可重入的，也就是说，它可以安全地从多个线程同时调用。此外，每个线程每次都会得到相同的数字序列。另一方面，如果你通过线程积木运行
-   * Threads::Task
-   * 对象，那么任务将被分配到大部分随机的线程中，并且可能在程序的不同运行中获得不同的随机数序列，因为之前的任务可能已经消耗了为你所在的线程生成的前几个随机数。如果这是一个问题，你需要在每次想从一个定义的点开始时创建自己的随机数生成器对象。
-   * @note
-   * 与系统函数rand()一样，这个函数在每次程序启动时都会产生相同的随机数序列。这是调试代码的一个重要特性，但它使我们无法真正验证代码的统计特性。对于`rand()`，你可以调用`srand()`来
-   * "播种
-   * "随机数发生器，以便在每次调用程序时得到不同的随机数序列。然而，这个函数不允许给随机数发生器播种。如果你需要这个，如上所述，请使用C++或BOOST设施之一。
+   * Generate a random number from a normalized Gaussian probability
+   * distribution centered around @p a and with standard deviation @p sigma.
+   * The returned number will be different every time the function is called.
    *
+   * This function is reentrant, i.e., it can safely be called from multiple
+   * threads at the same time. In addition, each thread will get the same
+   * sequence of numbers every time. On the other hand, if you run
+   * Threads::Task objects via the Threading Building Blocks, then tasks will
+   * be assigned to mostly random threads, and may get a different sequence of
+   * random numbers in different runs of the program, since a previous task
+   * may already have consumed the first few random numbers generated for the
+   * thread you're on. If this is a problem, you need to create your own
+   * random number generator objects every time you want to start from a
+   * defined point.
+   *
+   * @note Like the system function rand(), this function produces the same
+   * sequence of random numbers every time a program is started. This is an
+   * important property for debugging codes, but it makes it impossible to
+   * really verify statistical properties of a code. For `rand()`, you can call
+   * `srand()` to "seed" the random number generator to get different sequences
+   * of random numbers every time a program is called. However, this function
+   * does not allow seeding the random number generator. If you need this, as
+   * above, use one of the C++ or BOOST facilities.
    */
   double
   generate_normal_random_number(const double a, const double sigma);
 
   /**
-   * 返回变量类型的字符串描述  @p t.
-   * 一般来说，C++使用混杂的名称来识别类型。这个函数使用
-   * boost::core::demangle
-   * 来返回一个人类可读的字符串，描述作为参数传递的变量的类型。
+   * Return a string description of the type of the variable @p t.
    *
+   * In general, C++ uses mangled names to identify types. This function
+   * uses boost::core::demangle to return a human readable string describing
+   * the type of the variable passed as argument.
    */
   template <class T>
   std::string
   type_to_string(const T &t);
 
   /**
-   * 计算一个固定的幂，作为模板参数提供，是一个数字的计算。
-   * 这个函数提供了一种有效的方法来计算诸如
-   * <code>t^N</code> where <code>N</code>
-   * 是一个已知的数字在编译时。    使用这个函数，如
-   * <code>fixed_power@<dim@> (n)</code>  .
+   * Calculate a fixed power, provided as a template argument, of a number.
    *
+   * This function provides an efficient way to calculate things like
+   * <code>t^N</code> where <code>N</code> is a known number at compile time.
+   *
+   * Use this function as in <code>fixed_power@<dim@> (n)</code>.
    */
   template <int N, typename T>
   T
   fixed_power(const T t);
 
   /**
-   * 替换 <code>std::pow</code>
-   * ，允许对常量表达式参数进行编译时计算。 @p base
-   * 必须是整数类型，指数 @p iexp 不能是负数。
-   *
+   * A replacement for <code>std::pow</code> that allows compile-time
+   * calculations for constant expression arguments. The @p base must
+   * be an integer type and the exponent @p iexp must not be negative.
    */
   template <typename T>
   constexpr T
@@ -453,17 +504,25 @@ namespace Utilities
   }
 
   /**
-   * 对 <tt>std::lower_bound</tt>
-   * 的优化替换，用于在列索引的范围内搜索。对于目前的应用来说，执行时间大约减少了一半，部分原因是二进制搜索被小循环长度的线性搜索所取代。
-   * 这个功能的另一个原因相当不明显：当使用GCC的libstdc++函数
-   * std::lower_bound, 时，复杂性为O(log(N))，符合要求。
-   * 然而，当使用GCC
-   * libstdc++的调试版本时，正如我们在运行测试套件时所做的那样，那么
-   * std::lower_bound 测试序列是否实际上是相对于枢轴 "值
-   * "而言的分区（也就是说，本质上序列是按照二进制搜索的要求进行排序的）。
-   * 然而，验证这一点意味着 std::lower_bound
-   * 的复杂度跃升至O(N)；我们在下面调用这个函数O(N)次，使得整体复杂度为O(N*2)。其后果是，一些有大网格的测试完全跑出了测试的时间限制，并在libstdc++调试模式下失败。这个函数只是假设序列是排序的，而我们根本不做额外的检查。
+   * Optimized replacement for <tt>std::lower_bound</tt> for searching within
+   * the range of column indices. Slashes execution time by approximately one
+   * half for the present application, partly because the binary search is
+   * replaced by a linear search for small loop lengths.
    *
+   * Another reason for this function is rather obscure: when using the GCC
+   * libstdc++ function std::lower_bound, complexity is O(log(N)) as required.
+   * However, when using the debug version of the GCC libstdc++ as we do when
+   * running the testsuite, then std::lower_bound tests whether the sequence
+   * is in fact partitioned with respect to the pivot 'value' (i.e. in essence
+   * that the sequence is sorted as required for binary search to work).
+   * However, verifying this means that the complexity of std::lower_bound
+   * jumps to O(N); we call this function O(N) times below, making the overall
+   * complexity O(N**2). The consequence is that a few tests with big meshes
+   * completely run off the wall time limit for tests and fail with the
+   * libstdc++ debug mode
+   *
+   * This function simply makes the assumption that the sequence is sorted,
+   * and we simply don't do the additional check.
    */
   template <typename Iterator, typename T>
   Iterator
@@ -471,43 +530,46 @@ namespace Utilities
 
 
   /**
-   * 与上面的函数相同，但接受一个参数，用来比较迭代器所指向的对象序列的各个元素。
-   *
+   * The same function as above, but taking an argument that is used to
+   * compare individual elements of the sequence of objects pointed to by the
+   * iterators.
    */
   template <typename Iterator, typename T, typename Comp>
   Iterator
   lower_bound(Iterator first, Iterator last, const T &val, const Comp comp);
 
   /**
-   * 给定一个排列向量（即一个向量 $p_0\ldots p_{N-1}$
-   * ，其中每个 $p_i\in [0,N)$ 和 $p_i\neq p_j$ 为 $i\neq j$
-   * ），产生反向排列 $q_i=N-1-p_i$  。
-   *
+   * Given a permutation vector (i.e. a vector $p_0\ldots p_{N-1}$ where each
+   * $p_i\in [0,N)$ and $p_i\neq p_j$ for $i\neq j$), produce the reverse
+   * permutation $q_i=N-1-p_i$.
    */
   template <typename Integer>
   std::vector<Integer>
   reverse_permutation(const std::vector<Integer> &permutation);
 
   /**
-   * 给出一个互换向量（即一个向量 $p_0\ldots p_{N-1}$
-   * ，其中每个 $p_i\in [0,N)$ 和 $p_i\neq p_j$ 为 $i\neq j$
-   * ），产生反互换 $q_0\ldots q_{N-1}$ ，以便 $q_{p_i}=p_{q_i}=i$
-   * .
-   *
+   * Given a permutation vector (i.e. a vector $p_0\ldots p_{N-1}$ where each
+   * $p_i\in [0,N)$ and $p_i\neq p_j$ for $i\neq j$), produce the inverse
+   * permutation $q_0\ldots q_{N-1}$ so that $q_{p_i}=p_{q_i}=i$.
    */
   template <typename Integer>
   std::vector<Integer>
   invert_permutation(const std::vector<Integer> &permutation);
 
   /**
-   * 给定一个T类型的任意对象，使用 boost::serialization
-   * 工具将该对象打包成一个字符向量，并将其追加到给定的缓冲区中。被添加到缓冲区的元素的数量将被返回。该对象可以使用下面的
-   * Utilities::unpack 函数进行解包。
-   * 如果库在编译时启用了ZLIB，那么输出缓冲区可以被压缩。这可以通过参数
-   * @p allow_compression,
-   * 来触发，并且只有在启用ZLIB时才有效。
-   * 如果考虑用同一个缓冲区进行多次连续调用，出于性能考虑，建议确保缓冲区有足够的容量。
+   * Given an arbitrary object of type T, use boost::serialization utilities
+   * to pack the object into a vector of characters and append it to the
+   * given buffer. The number of elements that have been added to the buffer
+   * will be returned. The object can be unpacked using the Utilities::unpack
+   * function below.
    *
+   * If the library has been compiled with ZLIB enabled, then the output buffer
+   * can be compressed. This can be triggered with the parameter
+   * @p allow_compression, and is only of effect if ZLIB is enabled.
+   *
+   * If many consecutive calls with the same buffer are considered, it is
+   * recommended for reasons of performance to ensure that its capacity is
+   * sufficient.
    */
   template <typename T>
   size_t
@@ -516,49 +578,58 @@ namespace Utilities
        const bool         allow_compression = true);
 
   /**
-   * 使用上面提到的pack函数，只为给定对象创建并返回一个缓冲区。
-   * 如果该库在编译时启用了ZLIB，那么输出缓冲区可以被压缩。这可以通过参数
-   * @p allow_compression,
-   * 来触发，并且只有在启用ZLIB时才有效。
+   * Creates and returns a buffer solely for the given object, using the
+   * above mentioned pack function.
    *
+   * If the library has been compiled with ZLIB enabled, then the output buffer
+   * can be compressed. This can be triggered with the parameter
+   * @p allow_compression, and is only of effect if ZLIB is enabled.
    */
   template <typename T>
   std::vector<char>
   pack(const T &object, const bool allow_compression = true);
 
   /**
-   * 给定一个字符向量，通过调用函数 Utilities::pack,
-   * 获得，在一个T类型的对象中恢复其内容。
-   * 这个函数使用 boost::serialization
-   * 实用程序从字符向量中解压缩对象，它是函数
-   * Utilities::pack(). 的逆函数。 @p allow_compression
-   * 参数表示要读取的缓冲区是否以前用ZLIB压缩过，并且只有在启用ZLIB时才有效。
-   * @note  因为这个函数的参数不取决于模板类型  @p T,
-   * 你必须在调用这个函数时手动指定模板参数。
-   * @note
-   * 如果你想打包()或解压()对象的数组，那么下面的方法可行。
-   * @code
-   *  double array[3] = {1,2,3};
-   *  std::vector<char> buffer = Utilities::pack(array);
-   * @endcode
-   * 然而，反过来就不行了。
-   * @code
-   *  array = Utilities::unpack<double[3]>(buffer);
-   * @endcode
-   * 这是因为C++不允许函数返回数组。
-   * 因此，有一个单独的解包()函数用于数组，见下文。
+   * Given a vector of characters, obtained through a call to the function
+   * Utilities::pack, restore its content in an object of type T.
    *
+   * This function uses boost::serialization utilities to unpack the object
+   * from a vector of characters, and it is the inverse of the function
+   * Utilities::pack().
+   *
+   * The @p allow_compression parameter denotes if the buffer to
+   * read from could have been previously compressed with ZLIB, and
+   * is only of effect if ZLIB is enabled.
+   *
+   * @note Since no arguments to this function depend on the template type
+   *  @p T, you must manually specify the template argument when calling
+   *  this function.
+   *
+   * @note If you want to pack() or unpack() arrays of objects, then the
+   *  following works:
+   *  @code
+   *    double array[3] = {1,2,3};
+   *    std::vector<char> buffer = Utilities::pack(array);
+   *  @endcode
+   *  However, the converse does not:
+   *  @code
+   *    array = Utilities::unpack<double[3]>(buffer);
+   *  @endcode
+   *  This is because C++ does not allow functions to return arrays.
+   *  Consequently, there is a separate unpack() function for arrays, see
+   *  below.
    */
   template <typename T>
   T
   unpack(const std::vector<char> &buffer, const bool allow_compression = true);
 
   /**
-   * 与上面的解包函数相同，但在给定的 std::vector<char>
-   * 类型的打包缓冲区上（一部分）采取恒定的迭代器来代替。
-   * @p allow_compression
-   * 参数表示要读取的缓冲区是否以前用ZLIB压缩过，并且只有在启用ZLIB时才有效。
+   * Same unpack function as above, but takes constant iterators on
+   * (a fraction of) a given packed buffer of type std::vector<char> instead.
    *
+   * The @p allow_compression parameter denotes if the buffer to
+   * read from could have been previously compressed with ZLIB, and
+   * is only of effect if ZLIB is enabled.
    */
   template <typename T>
   T
@@ -567,29 +638,36 @@ namespace Utilities
          const bool                               allow_compression = true);
 
   /**
-   * 给定一个字符向量，通过调用函数 Utilities::pack,
-   * 获得，将其内容还原为T型数组。    这个函数使用
-   * boost::serialization
-   * 实用程序从字符向量中解压缩对象，它是函数
-   * Utilities::pack(). 的逆函数。 @p allow_compression
-   * 参数表示要读取的缓冲区是否以前用ZLIB压缩过，只有当ZLIB被启用时才有效。
-   * @note
-   * 这个函数的存在是由于C++的一个怪癖。具体来说，如果你想打包()或解压()对象的数组，那么下面的方法就可以。
-   * @code
-   *  double array[3] = {1,2,3};
-   *  std::vector<char> buffer = Utilities::pack(array);
-   * @endcode
-   * 然而，反过来就不行了。
-   * @code
-   *  array = Utilities::unpack<double[3]>(buffer);
-   * @endcode
-   * 这是因为C++不允许函数返回数组。
-   * 因此，当前的函数允许写
-   * @code
-   *  Utilities::unpack(buffer, array);
-   * @endcode
-   * 注意，与其他unpack()函数不同，不需要明确指定模板参数，因为它们可以从第二个参数中推导出来。
+   * Given a vector of characters, obtained through a call to the function
+   * Utilities::pack, restore its content in an array of type T.
    *
+   * This function uses boost::serialization utilities to unpack the object
+   * from a vector of characters, and it is the inverse of the function
+   * Utilities::pack().
+   *
+   * The @p allow_compression parameter denotes if the buffer to
+   * read from could have been previously compressed with ZLIB, and
+   * is only of effect if ZLIB is enabled.
+   *
+   * @note This function exists due to a quirk of C++. Specifically,
+   *  if you want to pack() or unpack() arrays of objects, then the
+   *  following works:
+   *  @code
+   *    double array[3] = {1,2,3};
+   *    std::vector<char> buffer = Utilities::pack(array);
+   *  @endcode
+   *  However, the converse does not:
+   *  @code
+   *    array = Utilities::unpack<double[3]>(buffer);
+   *  @endcode
+   *  This is because C++ does not allow functions to return arrays.
+   *  The current function therefore allows to write
+   *  @code
+   *    Utilities::unpack(buffer, array);
+   *  @endcode
+   *  Note that unlike the other unpack() function, it is not necessary
+   *  to explicitly specify the template arguments since they can be
+   *  deduced from the second argument.
    */
   template <typename T, int N>
   void
@@ -598,11 +676,12 @@ namespace Utilities
          const bool allow_compression = true);
 
   /**
-   * 和上面的解包函数一样，但是在给定的 std::vector<char>
-   * 类型的打包缓冲区上（一部分）采取常数迭代器来代替。
-   * @p allow_compression
-   * 参数表示要读取的缓冲区是否以前用ZLIB压缩过，并且只有在启用ZLIB时才有效。
+   * Same unpack function as above, but takes constant iterators on
+   * (a fraction of) a given packed buffer of type std::vector<char> instead.
    *
+   * The @p allow_compression parameter denotes if the buffer to
+   * read from could have been previously compressed with ZLIB, and
+   * is only of effect if ZLIB is enabled.
    */
   template <typename T, int N>
   void
@@ -612,223 +691,238 @@ namespace Utilities
          const bool allow_compression = true);
 
   /**
-   * 检查 @p number 中 @p n 位置的位是否被设置。
-   *
+   * Check if the bit at position @p n in @p number is set.
    */
   bool
   get_bit(const unsigned char number, const unsigned int n);
 
 
   /**
-   * 将 @p number 中位置 @p n 的位设置为值 @p x. 。
-   *
+   * Set the bit at position @p n in @p number to value @p x.
    */
   void
   set_bit(unsigned char &number, const unsigned int n, const bool x);
 
 
   /**
-   * 将一个类型为 `std::unique_ptr<From>` 的对象转换为类型为
-   * `std::unique_ptr<To>`,
-   * 的对象，这里假定我们可以使用`dynamic_cast`将指向`From`的指针转换为指向`To`的指针。
+   * Convert an object of type `std::unique_ptr<From>` to an object of
+   * type `std::unique_ptr<To>`, where it is assumed that we can cast
+   * the pointer to `From` to a pointer to `To` using a `dynamic_cast`
+   * -- in other words, we assume that `From` and `To` are connected
+   * through a class hierarchy, and that the object pointed to is in
+   * fact of a type that contains both a `From` and a `To`. An example
+   * is if either `To` is derived from `From` or the other way around.
    *
+   * The function throws an exception of type `std::bad_cast` if the
+   * `dynamic_cast` does not succeed. This is the same exception you
+   * would get if a regular `dynamic_cast` between object types (but not
+   * pointer types) does not succeed.
    *
-   *
-   *
-   *
-   *
-   * - 换句话说，我们假设`From'和`To'是通过一个类的层次结构连接起来的，而且所指向的对象实际上是一个同时包含`From'和`To'的类型。一个例子是如果`To`是从`From`派生出来的，或者反过来。    如果`dynamic_cast`不成功，该函数会抛出一个类型为 `std::bad_cast` 的异常。这和你在对象类型（但不是指针类型）之间的常规`dynamic_cast`不成功时得到的异常一样。    这个函数如何工作的例子如下。
+   * An example of how this function works is as follows:
    * @code
-   * // A base class. Assume that it has virtual
-   * // functions so that dynamic_cast can work.
-   * class B
-   * {
-   *   ...
-   * };
+   *   // A base class. Assume that it has virtual
+   *   // functions so that dynamic_cast can work.
+   *   class B
+   *   {
+   *     ...
+   *   };
    *
-   * // A derived class
-   * class D : public B
-   * {
-   *   ...
-   * };
+   *   // A derived class
+   *   class D : public B
+   *   {
+   *     ...
+   *   };
    *
-   * // A factory function
-   * std::unique_ptr<B> create_object (...)
-   * {
-   *   ...
-   * }
+   *   // A factory function
+   *   std::unique_ptr<B> create_object (...)
+   *   {
+   *     ...
+   *   }
    *
-   * void foo (...)
-   * {
-   *   std::unique_ptr<B> b = create_object (...);
+   *   void foo (...)
+   *   {
+   *     std::unique_ptr<B> b = create_object (...);
    *
-   *   // Assume that we know for some reason that the object above must
-   *   // have created a D object but returned it as a std::unique_ptr<B>.
-   *   // In order to access the D functionality, we need to cast the
-   *   // pointer. Use the equivalent to dynamic_cast:
-   *   std::unique_ptr<D> d = dynamic_unique_cast<D>(std::move(b));
+   *     // Assume that we know for some reason that the object above must
+   *     // have created a D object but returned it as a std::unique_ptr<B>.
+   *     // In order to access the D functionality, we need to cast the
+   *     // pointer. Use the equivalent to dynamic_cast:
+   *     std::unique_ptr<D> d = dynamic_unique_cast<D>(std::move(b));
    *
-   *   // If the object really was a D, then 'd' now points to it. Note
-   *   // also that in accordance with the semantics of std::unique_ptr,
-   *   // it was necessary to std::move the 'b' object, and indeed 'b'
-   *   // now no longer points to anything
-   *
-   * -- ownership has been
-   *   // transferred to 'd'!
+   *     // If the object really was a D, then 'd' now points to it. Note
+   *     // also that in accordance with the semantics of std::unique_ptr,
+   *     // it was necessary to std::move the 'b' object, and indeed 'b'
+   *     // now no longer points to anything -- ownership has been
+   *     // transferred to 'd'!
    * @endcode
-   * @note  这个函数不会尝试转换 `std::unique_ptr`
-   * 对象所存储的`Deleter`对象。因此，该函数只在deleter对象处于默认状态时起作用，即，如果它们是
-   * `std::default_delete<To>` 和 `std::default_delete<From>`.
-   * 类型的对象。
    *
+   * @note This function does not try to convert the `Deleter` objects stored
+   *   by `std::unique_ptr` objects. The function therefore only works if the
+   *   deleter objects are at their defaults, i.e., if they are of type
+   *   `std::default_delete<To>` and `std::default_delete<From>`.
    */
   template <typename To, typename From>
   std::unique_ptr<To>
   dynamic_unique_cast(std::unique_ptr<From> &&p);
 
   /**
-   * 返回基本值。默认：返回输入。
-   *
+   * Return underlying value. Default: return input.
    */
   template <typename T>
   T &
   get_underlying_value(T &p);
 
   /**
-   * 返回基本值。对 std::shared_ptr<T>. 的特殊化。
-   *
+   * Return underlying value. Specialization for std::shared_ptr<T>.
    */
   template <typename T>
   T &
   get_underlying_value(std::shared_ptr<T> &p);
 
   /**
-   * 返回底层值。对const  std::shared_ptr<T>. 的特化。
-   *
+   * Return underlying value. Specialization for const std::shared_ptr<T>.
    */
   template <typename T>
   T &
   get_underlying_value(const std::shared_ptr<T> &p);
 
   /**
-   * 返回基本值。对 std::unique_ptr<T>. 的特化
-   *
+   * Return underlying value. Specialization for std::unique_ptr<T>.
    */
   template <typename T>
   T &
   get_underlying_value(std::unique_ptr<T> &p);
 
   /**
-   * 返回基本值。对const  std::unique_ptr<T>. 的特化。
-   *
+   * Return underlying value. Specialization for const std::unique_ptr<T>.
    */
   template <typename T>
   T &
   get_underlying_value(const std::unique_ptr<T> &p);
 
   /**
-   * 一个用于探测系统属性的实用函数的命名空间。
-   * @ingroup utilities
+   * A namespace for utility functions that probe system properties.
    *
+   * @ingroup utilities
    */
   namespace System
   {
     /**
-     * 返回由 "uptime
-     * "返回的CPU负载。注意，这个数字的解释取决于机器中实际的处理器数量。目前只在Linux上实现，使用/proc/loadavg伪文件，在其他系统上，我们只是返回0。
-     *
+     * Return the CPU load as returned by "uptime". Note that the
+     * interpretation of this number depends on the actual number of
+     * processors in the machine. This is presently only implemented on Linux,
+     * using the /proc/loadavg pseudo-file, on other systems we simply return
+     * zero.
      */
     double
     get_cpu_load();
 
     /**
-     * 以字符串形式返回vectorization.h中DEAL_II_VECTORIZATION_WIDTH_IN_BITS描述的矢量化的指令集扩展。可能的返回值列表是。
-     * <table> <tr> <td><tt>VECTORIZATION_LEVEL</tt></td> <td>Return
-     * Value</td> <td>Width in bits</td> </tr> <tr> <td>0</td>
-     * <td>disabled</td> <td>64</td> </tr> <tr> <td>1</td>
-     * <td>SSE2/AltiVec</td> <td>128</td> </tr> <tr> <td>2</td> <td>AVX</td>
-     * <td>256</td> </tr> <tr> <td>3</td> <td>AVX512</td> <td>512</td> </tr>
-     * </table>
+     * Return the instruction set extension for vectorization as described by
+     * DEAL_II_VECTORIZATION_WIDTH_IN_BITS in vectorization.h as a string. The
+     * list of possible return values is:
      *
+     * <table>
+     * <tr>
+     *   <td><tt>VECTORIZATION_LEVEL</tt></td>
+     *   <td>Return Value</td>
+     *   <td>Width in bits</td>
+     * </tr>
+     * <tr>
+     *   <td>0</td>
+     *   <td>disabled</td>
+     *   <td>64</td>
+     * </tr>
+     * <tr>
+     *   <td>1</td>
+     *   <td>SSE2/AltiVec</td>
+     *   <td>128</td>
+     * </tr>
+     * <tr>
+     *   <td>2</td>
+     *   <td>AVX</td>
+     *   <td>256</td>
+     * </tr>
+     * <tr>
+     *   <td>3</td>
+     *   <td>AVX512</td>
+     *   <td>512</td>
+     * </tr>
+     * </table>
      */
     const std::string
     get_current_vectorization_level();
 
     /**
-     * 保存内存使用信息的结构，单位是KB。由get_memory_stats()使用。详见man
-     * 5 proc entry /status。
-     *
+     * Structure that hold information about memory usage in kB. Used by
+     * get_memory_stats(). See man 5 proc entry /status for details.
      */
     struct MemoryStats
     {
       /**
-       * 虚拟内存的峰值大小，单位为 kB。
-       *
+       * Peak virtual memory size in kB.
        */
       unsigned long int VmPeak;
 
       /**
-       * 当前虚拟内存大小，单位为 kB。
-       *
+       * Current virtual memory size in kB.
        */
       unsigned long int VmSize;
 
       /**
-       * 峰值常驻内存大小，单位为千字节。也被称为
-       * "高水位线"(HWM)。
-       *
+       * Peak resident memory size in kB. Also known as "high water mark" (HWM).
        */
       unsigned long int VmHWM;
 
       /**
-       * 当前常驻内存大小，单位为 kB。也被称为
-       * "常驻组大小"(RSS)。
-       *
+       * Current resident memory size in kB. Also known as "resident set size"
+       * (RSS).
        */
       unsigned long int VmRSS;
     };
 
 
     /**
-     * 在 @p stats
-     * 结构中填充有关该进程的内存消耗信息。这仅在Linux上实现。
-     *
+     * Fill the @p stats structure with information about the memory
+     * consumption of this process. This is only implemented on Linux.
      */
     void
     get_memory_stats(MemoryStats &stats);
 
 
     /**
-     * 返回这个进程所运行的主机的名称。
-     *
+     * Return the name of the host this process runs on.
      */
     std::string
     get_hostname();
 
 
     /**
-     * 返回现在的时间为HH:MM:SS。
-     *
+     * Return the present time as HH:MM:SS.
      */
     std::string
     get_time();
 
     /**
-     * 返回当前日期为YYY/MM/DD。MM和DD可以是一个或两个数字。
-     *
+     * Return the present date as YYYY/MM/DD. MM and DD may be either one or
+     * two digits.
      */
     std::string
     get_date();
 
     /**
-     * 调用系统函数posix_memalign，如果没有，则调用一个替代函数，以分配具有某种最小对齐方式的内存。然后第一个参数将返回这个内存块的指针，以后可以通过标准的
-     * <code>free</code> 调用来释放。          @param  memptr
-     * 一个指针变量的地址，在这个调用之后将指向所分配的内存。
-     * @param  alignment 内存块的最小对齐方式，字节数。
-     * @param  size 要分配的内存块的大小，以字节为单位。
-     * @note
-     * 这个函数在内部检查错误代码，而不是把这个任务留给调用站点。
+     * Call the system function posix_memalign, or a replacement function if
+     * not available, to allocate memory with a certain minimal alignment. The
+     * first argument will then return a pointer to this memory block that can
+     * be released later on through a standard <code>free</code> call.
      *
+     * @param memptr The address of a pointer variable that will after this
+     * call point to the allocated memory.
+     * @param alignment The minimal alignment of the memory block, in bytes.
+     * @param size The size of the memory block to be allocated, in bytes.
+     *
+     * @note This function checks internally for error codes, rather than
+     * leaving this task to the calling site.
      */
     void
     posix_memalign(void **memptr, std::size_t alignment, std::size_t size);
@@ -837,78 +931,136 @@ namespace Utilities
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * 这个命名空间提供了一些用于初始化Trilinos对象的基本结构（例如，矩阵、向量和预调节器）。
-   *
+   * This namespace provides some of the basic structures used in the
+   * initialization of the Trilinos objects (e.g., matrices, vectors, and
+   * preconditioners).
    */
   namespace Trilinos
   {
     /**
-     * 返回创建Epetra_Maps所需的Trilinos Epetra_Comm对象。
-     * 如果deal.II被配置为使用不支持MPI的编译器，那么生成的通信器将是一个串行的。否则，该通信器将对应于MPI_COMM_WORLD，即一个包含该MPI宇宙中所有进程的通信器。
+     * Return a Trilinos Epetra_Comm object needed for creation of
+     * Epetra_Maps.
      *
+     * If deal.II has been configured to use a compiler that does not support
+     * MPI then the resulting communicator will be a serial one. Otherwise,
+     * the communicator will correspond to MPI_COMM_WORLD, i.e. a communicator
+     * that encompasses all processes within this MPI universe.
      */
     const Epetra_Comm &
     comm_world();
 
     /**
-     * 返回一个创建Epetra_Maps所需的Trilinos Epetra_Comm对象。
-     * 如果deal.II被配置为使用不支持MPI的编译器，那么产生的通信器将是一个串行通信器。否则，该通信器将对应于MPI_COMM_SELF，即一个只包括这一个处理器的通信器。
+     * Return a Trilinos Epetra_Comm object needed for creation of
+     * Epetra_Maps.
      *
+     * If deal.II has been configured to use a compiler that does not support
+     * MPI then the resulting communicator will be a serial one. Otherwise,
+     * the communicator will correspond to MPI_COMM_SELF, i.e. a communicator
+     * that comprises only this one processor.
      */
     const Epetra_Comm &
     comm_self();
 
     /**
-     * 返回创建 Tpetra::Maps. 所需的 Teuchos::Comm 对象
-     * 如果deal.II被配置为使用不支持MPI的编译器，那么产生的通信器将是一个串行通信器。否则，该通信器将对应于MPI_COMM_SELF，即一个只包括这一个处理器的通信器。
+     * Return a Teuchos::Comm object needed for creation of Tpetra::Maps.
      *
+     * If deal.II has been configured to use a compiler that does not support
+     * MPI then the resulting communicator will be a serial one. Otherwise,
+     * the communicator will correspond to MPI_COMM_SELF, i.e. a communicator
+     * that comprises only this one processor.
      */
     const Teuchos::RCP<const Teuchos::Comm<int>> &
     tpetra_comm_self();
 
     /**
-     * 给定一个通讯器，复制它。如果给定的通信器是串行的，这意味着只是返回它的一个副本。另一方面，如果它是%并行的，我们就复制底层的MPI_Comm对象：我们创建一个单独的MPI通信器，包含相同的处理器和相同的顺序，但有一个独立的标识符，与给定的通信器不同。该函数返回一个指向从Epetra_Comm派生的类的新对象的指针。这个函数的调用者需要承担这个函数的所有权。返回的对象应使用destroy_communicator()函数销毁。
-     * 这个设施是用来分离通信流的。例如，一个程序可以简单地使用MPI_Comm_World来处理一切。但是很容易出现这样的情况：有时不是所有的处理器都参与到一个旨在实现全局的通信中来
+     * Given a communicator, duplicate it. If the given communicator is
+     * serial, that means to just return a copy of itself. On the other hand,
+     * if it is %parallel, we duplicate the underlying MPI_Comm object: we
+     * create a separate MPI communicator that contains the same processors
+     * and in the same order but has a separate identifier distinct from the
+     * given communicator. The function returns a pointer to a new object of a
+     * class derived from Epetra_Comm. The caller of this function needs to
+     * assume ownership of this function. The returned object should be
+     * destroyed using the destroy_communicator() function.
      *
-     * - 例如，如果我们在一个粗略的网格上组装一个矩阵，其单元数少于处理器的数量，一些处理器可能不会与其他处理器同步他们的矩阵，因为他们没有写进矩阵，因为他们没有拥有单元。这显然是一个错误。然而，如果这些处理器只是继续他们的工作，而下一个%并行操作恰好是对不同矩阵的同步，那么同步就可能成功
+     * This facility is used to separate streams of communication. For
+     * example, a program could simply use MPI_Comm_World for everything. But
+     * it is easy to come up with scenarios where sometimes not all processors
+     * participate in a communication that is intended to be global -- for
+     * example if we assemble a matrix on a coarse mesh with fewer cells than
+     * there are processors, some processors may not sync their matrices with
+     * the rest because they haven't written into it because they own no
+     * cells. That's clearly a bug. However, if these processors just continue
+     * their work, and the next %parallel operation happens to be a sync on a
+     * different matrix, then the sync could succeed -- by accident, since
+     * different processors are talking about different matrices.
      *
-     * - 偶然的，因为不同的处理器在谈论不同的矩阵。        如果我们对不同的矩阵使用不同的通信器，就可以避免这种情况，这就减少了本应分开的通信因为发生在同一通信器上而不被识别的可能性。此外，可以想象的是，一些MPI操作可以使用多个线程进行并行化，因为它们的通信器识别了相关的通信，而不是像只使用单个通信器的顺序程序那样识别它们的相对时间。
-     *
+     * This kind of situation can be avoided if we use different communicators
+     * for different matrices which reduces the likelihood that communications
+     * meant to be separate aren't recognized as such just because they happen
+     * on the same communicator. In addition, it is conceivable that some MPI
+     * operations can be parallelized using multiple threads because their
+     * communicators identifies the communication in question, not their
+     * relative timing as is the case in a sequential program that just uses a
+     * single communicator.
      */
     Epetra_Comm *
     duplicate_communicator(const Epetra_Comm &communicator);
 
     /**
-     * 给出一个由Diplicate_communicator()函数创建的Epetra通信器，销毁底层MPI通信器对象，并将Epetra_Comm对象重置为comm_self()的结果。
-     * 当不再需要diplicate_communicator()的结果时，有必要调用这个函数。原因是在该函数中，我们首先创建一个新的MPI_Comm对象，然后围绕它创建一个Epetra_Comm。虽然我们可以负责销毁后者，但它并没有销毁通讯器，因为它只能假设它可能还被程序中的其他对象使用。因此，我们必须自己明确地销毁它。
-     * 这个函数正是这样做的。因为这必须在Epetra_Comm对象仍然存在的情况下进行，所以它首先重置后者，然后销毁通信器对象。
-     * @note
-     * 如果你在一个不是由diplicate_communicator()创建的Epetra_Comm对象上调用这个函数，你很可能做错了什么。请不要这样做。
+     * Given an Epetra communicator that was created by the
+     * duplicate_communicator() function, destroy the underlying MPI
+     * communicator object and reset the Epetra_Comm object to a the result of
+     * comm_self().
      *
+     * It is necessary to call this function at the time when the result of
+     * duplicate_communicator() is no longer needed. The reason is that in
+     * that function, we first create a new MPI_Comm object and then create an
+     * Epetra_Comm around it. While we can take care of destroying the latter,
+     * it doesn't destroy the communicator since it can only assume that it
+     * may also be still used by other objects in the program. Consequently,
+     * we have to take care of destroying it ourselves, explicitly.
+     *
+     * This function does exactly that. Because this has to happen while the
+     * Epetra_Comm object is still around, it first resets the latter and then
+     * destroys the communicator object.
+     *
+     * @note If you call this function on an Epetra_Comm object that is not
+     * created by duplicate_communicator(), you are likely doing something
+     * quite wrong. Don't do this.
      */
     void
     destroy_communicator(Epetra_Comm &communicator);
 
     /**
-     * 返回给定的 @ref GlossMPICommunicator "communicator "
-     * 对象中存在的MPI进程的数量。如果这是一个顺序作业（即程序根本没有使用MPI，或者使用MPI但只启动了一个MPI进程），那么通信器必然只涉及一个进程，该函数返回1。
-     *
+     * Return the number of MPI processes there exist in the given
+     * @ref GlossMPICommunicator "communicator"
+     * object. If this is a sequential job (i.e., the program
+     * is not using MPI at all, or is using MPI but has been started with
+     * only one MPI process), then the communicator necessarily involves
+     * only one process and the function returns 1.
      */
     unsigned int
     get_n_mpi_processes(const Epetra_Comm &mpi_communicator);
 
     /**
-     * 返回给定通信器所描述的进程空间中的当前MPI进程的编号。对于每个进程来说，这将是一个唯一的值，介于零和（小于）所有进程的数量（由get_n_mpi_processes()给出）之间。
-     *
+     * Return the number of the present MPI process in the space of processes
+     * described by the given communicator. This will be a unique value for
+     * each process between zero and (less than) the number of all processes
+     * (given by get_n_mpi_processes()).
      */
     unsigned int
     get_this_mpi_process(const Epetra_Comm &mpi_communicator);
 
     /**
-     * 给定一个Trilinos
-     * Epetra地图，创建一个新的地图，其元素与处理器的细分相同，但使用给定的通信器对象而不是存储在第一个参数中的对象。实质上，这意味着我们创建一个地图，以同样的方式在相同的处理器之间进行通信，但使用一个单独的通道。
-     * 这个函数通常与一个通过Diplicate_communicator()函数获得的通信器一起使用。
+     * Given a Trilinos Epetra map, create a new map that has the same
+     * subdivision of elements to processors but uses the given communicator
+     * object instead of the one stored in the first argument. In essence,
+     * this means that we create a map that communicates among the same
+     * processors in the same way, but using a separate channel.
      *
+     * This function is typically used with a communicator that has been
+     * obtained by the duplicate_communicator() function.
      */
     Epetra_Map
     duplicate_map(const Epetra_BlockMap &map, const Epetra_Comm &comm);
@@ -1395,5 +1547,3 @@ namespace boost
 #endif
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/solver_control_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -29,45 +30,26 @@ DEAL_II_NAMESPACE_OPEN
 class ParameterHandler;
 #endif
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
- * Control class to determine convergence of iterative solvers.
+ * 控制类，用于确定迭代求解器的收敛性。
+ * 由迭代方法使用，以确定是否应该继续迭代。为此，虚函数<tt>check()</tt>在每次迭代中被调用，并给出当前的迭代步骤和表示收敛的值（通常是残差）。
+ * 迭代结束后，可以用函数last_value()和last_step()来获取迭代的最终状态信息。
+ * check()可以在派生类中被替换，以允许进行更复杂的测试。
  *
- * Used by iterative methods to determine whether the iteration should be
- * continued. To this end, the virtual function <tt>check()</tt> is called in
- * each iteration with the current iteration step and the value indicating
- * convergence (usually the residual).
+ *  <h3>State</h3>
+ * 检查函数的返回状态是#State类型的，它是本类的一个枚举。它表示解算器所处的状态。
+ * State的可能值是  <ul>   <li>  <tt>iterate = 0</tt>: 继续迭代。  <li>   @p success:  目标达成，迭代方法可以成功终止。  <li>   @p failure:  迭代方法应该停止，因为在给定的最大迭代次数内无法实现或至少无法实现收敛。  </ul>
  *
- * After the iteration has terminated, the functions last_value() and
- * last_step() can be used to obtain information about the final state of the
- * iteration.
- *
- * check() can be replaced in derived classes to allow for more sophisticated
- * tests.
- *
- *
- * <h3>State</h3> The return states of the check function are of type #State,
- * which is an enum local to this class. It indicates the state the solver is
- * in.
- *
- * The possible values of State are
- * <ul>
- * <li> <tt>iterate = 0</tt>: continue the iteration.
- * <li> @p success: the goal is reached, the iterative method can terminate
- * successfully.
- * <li> @p failure: the iterative method should stop because convergence could
- * not be achieved or at least was not achieved within the given maximal
- * number of iterations.
- * </ul>
  */
 class SolverControl : public Subscriptor
 {
 public:
   /**
-   * Enum denoting the different states a solver can be in. See the general
-   * documentation of this class for more information.
+   * 表示求解器可以处于的不同状态的枚举。更多信息请参见该类的一般文档。
+   *
    */
   enum State
   {
@@ -82,13 +64,9 @@ public:
 
 
   /**
-   * Class to be thrown upon failing convergence of an iterative solver, when
-   * either the number of iterations exceeds the limit or the residual fails
-   * to reach the desired limit, e.g. in the case of a break-down.
+   * 迭代求解器收敛失败时抛出的类，当迭代次数超过极限或残差没有达到期望的极限时，例如崩溃的情况。
+   * 最后一次迭代的残差，以及最后一步的迭代数都存储在这个对象中，并且可以在捕捉到这个类别的异常时恢复。
    *
-   * The residual in the last iteration, as well as the iteration number of
-   * the last step are stored in this object and can be recovered upon
-   * catching an exception of this class.
    */
 
   class NoConvergence : public dealii::ExceptionBase
@@ -124,12 +102,14 @@ public:
     }
 
     /**
-     * Iteration number of the last step.
+     * 最后一步的迭代号。
+     *
      */
     const unsigned int last_step;
 
     /**
-     * Residual in the last step.
+     * 最后一步的残差。
+     *
      */
     const double last_residual;
   };
@@ -137,15 +117,13 @@ public:
 
 
   /**
-   * Constructor. The parameters @p n and @p tol are the maximum number of
-   * iteration steps before failure and the tolerance to determine success of
-   * the iteration.
+   * 构造函数。参数 @p n 和 @p tol
+   * 是失败前的最大迭代步数和确定迭代成功的公差。
+   * @p log_history
+   * 指定是否应将历史记录（即要检查的值和迭代步数）打印到
+   * @p  deallog流。 默认为：不打印。同样， @p log_result
+   * 指定最终结果是否被记录到 @p deallog. 中，默认为是。
    *
-   * @p log_history specifies whether the history (i.e. the value to be
-   * checked and the number of the iteration step) shall be printed to @p
-   * deallog stream.  Default is: do not print. Similarly, @p log_result
-   * specifies the whether the final result is logged to @p deallog. Default
-   * is yes.
    */
   SolverControl(const unsigned int n           = 100,
                 const double       tol         = 1.e-10,
@@ -153,280 +131,297 @@ public:
                 const bool         log_result  = true);
 
   /**
-   * Virtual destructor is needed as there are virtual functions in this
-   * class.
+   * 需要虚拟析构器，因为这个类中有虚拟函数。
+   *
    */
   virtual ~SolverControl() override = default;
 
   /**
-   * Interface to parameter file.
+   * 到参数文件的接口。
+   *
    */
   static void
   declare_parameters(ParameterHandler &param);
 
   /**
-   * Read parameters from file.
+   * 从文件中读取参数。
+   *
    */
   void
   parse_parameters(ParameterHandler &param);
 
   /**
-   * Decide about success or failure of an iteration.  This function gets the
-   * current iteration step to determine, whether the allowed number of steps
-   * has been exceeded and returns @p failure in this case. If @p check_value
-   * is below the prescribed tolerance, it returns @p success. In all other
-   * cases @p iterate is returned to suggest continuation of the iterative
-   * procedure.
+   * 决定一个迭代的成功或失败。
+   * 这个函数获取当前的迭代步骤，以确定是否超过了允许的步骤数，在这种情况下返回
+   * @p failure 。如果 @p check_value 低于规定的公差，则返回 @p
+   * success.  在所有其他情况下，返回 @p iterate
+   * 以建议继续进行迭代程序。
+   * 如果残差变成了一个去规范化的值，迭代也会被终止（
+   * @p NaN).  <tt>check()</tt>另外保留了 @p step  和  @p check_value.
+   * 这些值可以通过<tt>last_value()</tt>和<tt>last_step()</tt>访问。
+   * 派生类可以重载这个函数，例如，记录收敛指标（  @p
+   * check_value)  或做其他计算。
    *
-   * The iteration is also aborted if the residual becomes a denormalized
-   * value (@p NaN).
-   *
-   * <tt>check()</tt> additionally preserves @p step and @p check_value. These
-   * values are accessible by <tt>last_value()</tt> and <tt>last_step()</tt>.
-   *
-   * Derived classes may overload this function, e.g. to log the convergence
-   * indicators (@p check_value) or to do other computations.
    */
   virtual State
   check(const unsigned int step, const double check_value);
 
   /**
-   * Return the result of the last check operation.
+   * 返回最后一次检查操作的结果。
+   *
    */
   State
   last_check() const;
 
   /**
-   * Return the initial convergence criterion.
+   * 返回初始收敛准则。
+   *
    */
   double
   initial_value() const;
 
   /**
-   * Return the convergence value of last iteration step for which @p check
-   * was called by the solver.
+   * 返回求解器调用 @p check 的最后一个迭代步骤的收敛值。
+   *
    */
   double
   last_value() const;
 
   /**
-   * Number of last iteration step.
+   * 最后一个迭代步骤的数量。
+   *
    */
   unsigned int
   last_step() const;
 
   /**
-   * Maximum number of steps.
+   * 最大的步骤数。
+   *
    */
   unsigned int
   max_steps() const;
 
   /**
-   * Change maximum number of steps.
+   * 改变最大步数。
+   *
    */
   unsigned int
   set_max_steps(const unsigned int);
 
   /**
-   * Enables the failure check. Solving is stopped with @p ReturnState @p
-   * failure if <tt>residual>failure_residual</tt> with
-   * <tt>failure_residual := rel_failure_residual*first_residual</tt>.
+   * 启用失败检查。如果<tt>residual>failure_residual</tt>与<tt>failure_residual
+   * := rel_failure_residual*first_residual</tt>，求解将以 @p ReturnState
+   * @p 失败停止。
+   *
    */
   void
   set_failure_criterion(const double rel_failure_residual);
 
   /**
-   * Disables failure check and resets @p relative_failure_residual and @p
-   * failure_residual to zero.
+   * 禁用故障检查，并将 @p relative_failure_residual 和 @p
+   * failure_residual重置为零。
+   *
    */
   void
   clear_failure_criterion();
 
   /**
-   * Tolerance.
+   * 宽容。
+   *
    */
   double
   tolerance() const;
 
   /**
-   * Change tolerance.
+   * 改变容忍度。
+   *
    */
   double
   set_tolerance(const double);
 
   /**
-   * Enables writing residuals of each step into a vector for later analysis.
+   * 使得每一步的残差写成一个向量，以便以后分析。
+   *
    */
   void
   enable_history_data();
 
   /**
-   * Provide read access to the collected residual data.
+   * 提供对收集的残差数据的读取权限。
+   *
    */
   const std::vector<double> &
   get_history_data() const;
 
   /**
-   * Average error reduction over all steps.
+   * 所有步骤的平均误差减少。    需要 enable_history_data()
    *
-   * Requires enable_history_data()
    */
   double
   average_reduction() const;
   /**
-   * Error reduction of the last step; for stationary iterations, this
-   * approximates the norm of the iteration matrix.
+   * 最后一步的误差减少；对于静止的迭代，这近似于迭代矩阵的规范。
+   * 需要 enable_history_data()
    *
-   * Requires enable_history_data()
    */
   double
   final_reduction() const;
 
   /**
-   * Error reduction of any iteration step.
+   * 任何迭代步骤的误差减少。    需要 enable_history_data()
    *
-   * Requires enable_history_data()
    */
   double
   step_reduction(unsigned int step) const;
 
   /**
-   * Log each iteration step. Use @p log_frequency for skipping steps.
+   * 记录每个迭代步骤。使用 @p log_frequency 来跳过步骤。
+   *
    */
   void
   log_history(const bool);
 
   /**
-   * Return the @p log_history flag.
+   * 返回 @p log_history 标志。
+   *
    */
   bool
   log_history() const;
 
   /**
-   * Set logging frequency.
+   * 设置记录频率。
+   *
    */
   unsigned int
   log_frequency(unsigned int);
 
   /**
-   * Log start and end step.
+   * 记录开始和结束的步骤。
+   *
    */
   void
   log_result(const bool);
 
   /**
-   * Return the @p log_result flag.
+   * 返回 @p log_result 标志。
+   *
    */
   bool
   log_result() const;
 
   /**
-   * This exception is thrown if a function operating on the vector of history
-   * data of a SolverControl object id called, but storage of history data was
-   * not enabled by enable_history_data().
+   * 如果一个对SolverControl对象的历史数据矢量进行操作的函数被调用，但历史数据的存储没有被enable_history_data()所启用，则会产生这个异常。
+   *
    */
   DeclException0(ExcHistoryDataRequired);
 
 protected:
   /**
-   * Maximum number of steps.
+   * 最大步骤数。
+   *
    */
   unsigned int maxsteps;
 
   /**
-   * Prescribed tolerance to be achieved.
+   * 要达到的规定的公差。
+   *
    */
   double tol;
 
   /**
-   * Result of last check operation.
+   * 最后一次检查操作的结果。
+   *
    */
   State lcheck;
 
   /**
-   * Initial value.
+   * 初始值。
+   *
    */
   double initial_val;
 
   /**
-   * Last value of the convergence criterion.
+   * 收敛标准的最后值。
+   *
    */
   double lvalue;
 
   /**
-   * Last step.
+   * 最后一步。
+   *
    */
   unsigned int lstep;
 
   /**
-   * Is set to @p true by @p set_failure_criterion and enables failure
-   * checking.
+   * 被 @p set_failure_criterion 设置为 @p true 并启用故障检查。
+   *
    */
   bool check_failure;
 
   /**
-   * Stores the @p rel_failure_residual set by @p set_failure_criterion
+   * 存储由 @p set_failure_criterion 设置的 @p rel_failure_residual 。
+   *
    */
   double relative_failure_residual;
 
   /**
-   * @p failure_residual equals the first residual multiplied by @p
-   * relative_crit set by @p set_failure_criterion (see there).
+   * @p failure_residual 等于第一个残差乘以 @p 由 @p
+   * set_failure_criterion 设置的relative_crit（见那里）。
+   * 在知道第一个残差之前，它是0。
    *
-   * Until the first residual is known it is 0.
    */
   double failure_residual;
 
   /**
-   * Log convergence history to @p deallog.
+   * 对数收敛历史到 @p deallog. 。
+   *
    */
   bool m_log_history;
 
   /**
-   * Log only every nth step.
+   * 只记录每第n步。
+   *
    */
   unsigned int m_log_frequency;
 
   /**
-   * Log iteration result to @p deallog.  If true, after finishing the
-   * iteration, a statement about failure or success together with @p lstep
-   * and @p lvalue are logged.
+   * 记录迭代结果到 @p deallog.
+   * 如果是真的，在完成迭代后，关于失败或成功的声明以及
+   * @p lstep 和 @p lvalue 被记录下来。
+   *
    */
   bool m_log_result;
 
   /**
-   * Control over the storage of history data. Set by enable_history_data().
+   * 对历史数据存储的控制。由enable_history_data()设置。
+   *
    */
   bool history_data_enabled;
 
   /**
-   * Vector storing the result after each iteration step for later statistical
-   * analysis.
+   * 存储每个迭代步骤后的结果的向量，用于以后的统计分析。
+   * 这个向量的使用由enable_history_data()来启用。
    *
-   * Use of this vector is enabled by enable_history_data().
    */
   std::vector<double> history_data;
 };
 
 
 /**
- * Specialization of @p SolverControl which returns @p success if either the
- * specified tolerance is achieved or if the initial residual (or whatever
- * criterion was chosen by the solver class) is reduced by a given factor.
- * This is useful in cases where you don't want to solve exactly, but rather
- * want to gain two digits or if the maximal number of iterations is achieved.
- * For example: The maximal number of iterations is 20, the reduction factor
- * is 1% and the tolerance is 0.1%. The initial residual is 2.5. The process
- * will break if 20 iteration are completed or the new residual is less then
- * 2.5*1% or if it is less then 0.1%.
+ * @p SolverControl
+ * 的特殊化，如果达到了指定的容差，或者初始残差（或解算器类选择的任何标准）减少了一个给定的系数，则返回
+ * @p success
+ * 。这在你不想精确求解，而是想获得两位数或达到最大迭代数的情况下很有用。比如说。最大的迭代次数是20次，减少系数是1%，公差是0.1%。最初的残差是2.5。如果完成了20次迭代，或者新的残差小于2.5*1%，或者小于0.1%，这个过程将中断。
+ *
+ *
  */
 class ReductionControl : public SolverControl
 {
 public:
   /**
-   * Constructor.  Provide the reduction factor in addition to arguments that
-   * have the same meaning as those of the constructor of the SolverControl
-   * constructor.
+   * 构造函数。
+   * 除了与SolverControl构造函数含义相同的参数外，还提供还原系数。
+   *
    */
   ReductionControl(const unsigned int maxiter     = 100,
                    const double       tolerance   = 1.e-10,
@@ -435,85 +430,90 @@ public:
                    const bool         log_result  = true);
 
   /**
-   * Initialize with a SolverControl object. The result will emulate
-   * SolverControl by setting @p reduce to zero.
+   * 用一个SolverControl对象进行初始化。其结果将通过将 @p
+   * reduce 设置为零来模拟SolverControl。
+   *
    */
   ReductionControl(const SolverControl &c);
 
   /**
-   * Assign a SolverControl object to ReductionControl. The result of the
-   * assignment will emulate SolverControl by setting @p reduce to zero.
+   * 将一个SolverControl对象赋值给ReductionControl。赋值的结果将通过设置
+   * @p reduce 为零来模拟SolverControl。
+   *
    */
   ReductionControl &
   operator=(const SolverControl &c);
 
   /**
-   * Virtual destructor is needed as there are virtual functions in this
-   * class.
+   * 由于该类中存在虚拟函数，所以需要虚拟析构器。
+   *
    */
   virtual ~ReductionControl() override = default;
 
   /**
-   * Interface to parameter file.
+   * 到参数文件的接口。
+   *
    */
   static void
   declare_parameters(ParameterHandler &param);
 
   /**
-   * Read parameters from file.
+   * 从文件中读取参数。
+   *
    */
   void
   parse_parameters(ParameterHandler &param);
 
   /**
-   * Decide about success or failure of an iteration.  This function calls the
-   * one in the base class, but sets the tolerance to <tt>reduction * initial
-   * value</tt> upon the first iteration.
+   * 决定一个迭代的成功或失败。
+   * 这个函数调用基类中的函数，但在第一次迭代时将容忍度设置为<tt>还原初始值</tt>。
+   *
    */
   virtual State
   check(const unsigned int step, const double check_value) override;
 
   /**
-   * Reduction factor.
+   * 缩减系数。
+   *
    */
   double
   reduction() const;
 
   /**
-   * Change reduction factor.
+   * 改变减少系数。
+   *
    */
   double
   set_reduction(const double);
 
 protected:
   /**
-   * Desired reduction factor.
+   * 希望的减少系数。
+   *
    */
   double reduce;
 
   /**
-   * Reduced tolerance. Stop iterations if either this value is achieved or if
-   * the base class indicates success.
+   * 减少的容忍度。如果达到这个值或者基类表示成功，则停止迭代。
+   *
    */
   double reduced_tol;
 };
 
 /**
- * Specialization of @p SolverControl which returns @p success if a given
- * number of iteration was performed, irrespective of the actual residual.
- * This is useful in cases where you don't want to solve exactly, but rather
- * want to perform a fixed number of iterations, e.g. in an inner solver. The
- * arguments given to this class are exactly the same as for the SolverControl
- * class and the solver terminates similarly when one of the given tolerance
- * or the maximum iteration count were reached. The only difference to
- * SolverControl is that the solver returns success in the latter case.
+ * @p SolverControl
+ * 的特殊化，如果执行了给定的迭代次数，则返回 @p success
+ * ，而不考虑实际的残差。这在你不想精确求解，而是想执行固定次数的迭代的情况下很有用，例如在一个内部求解器中。给予该类的参数与SolverControl类的参数完全相同，当达到给定的容差或最大迭代次数之一时，求解器也会同样终止。与SolverControl的唯一区别是，在后一种情况下，求解器会返回成功。
+ *
+ *
  */
 class IterationNumberControl : public SolverControl
 {
 public:
   /**
-   * Constructor.  Provide exactly the same arguments as the constructor of
-   * the SolverControl class.
+   * 构造函数。
+   * 提供与SolverControl类的构造函数完全相同的参数。
+   *
    */
   IterationNumberControl(const unsigned int maxiter     = 100,
                          const double       tolerance   = 1e-12,
@@ -521,29 +521,27 @@ public:
                          const bool         log_result  = true);
 
   /**
-   * Initialize with a SolverControl object. The result will emulate
-   * SolverControl by setting the reduction target to zero.
+   * 用一个SolverControl对象进行初始化。结果将模仿SolverControl，将还原目标设置为零。
+   *
    */
   IterationNumberControl(const SolverControl &c);
 
   /**
-   * Assign a SolverControl object to ReductionControl. The result of the
-   * assignment will emulate SolverControl by setting the reduction target to
-   * zero.
+   * 将一个SolverControl对象分配给ReductionControl。赋值的结果将通过将还原目标设置为零来模拟SolverControl。
+   *
    */
   IterationNumberControl &
   operator=(const SolverControl &c);
 
   /**
-   * Virtual destructor is needed as there are virtual functions in this
-   * class.
+   * 需要虚拟析构器，因为这个类中有虚拟函数。
+   *
    */
   virtual ~IterationNumberControl() override = default;
 
   /**
-   * Decide about success or failure of an iteration. This function bases
-   * success solely on the fact if a given number of iterations was reached or
-   * the check value reached exactly zero.
+   * 决定一个迭代的成功或失败。这个函数将成功完全建立在是否达到了给定的迭代次数或者检查值正好为零的事实上。
+   *
    */
   virtual State
   check(const unsigned int step, const double check_value) override;
@@ -551,24 +549,23 @@ public:
 
 
 /**
- * Specialization of @p SolverControl which returns SolverControl::State::success if
- * and only if a certain positive number of consecutive iterations satisfy the
- * specified tolerance. This is useful in cases when solving nonlinear problems
- * using inexact Hessian.
+ * @p SolverControl
+ * 的特化，当且仅当一定数量的连续迭代满足指定的公差时，返回
+ * SolverControl::State::success
+ * 。这在使用非精确Hessian解决非线性问题的情况下很有用。
+ * 比如说。要求的连续收敛迭代次数是2，公差是0.2。ConsecutiveControl将只在序列0.5,
+ * 0.0005, 1.0, 0.05, 0.01的最后一步返回 SolverControl::State::success
+ * 。
  *
- * For example: The requested number of consecutively converged iterations is 2,
- * the tolerance is 0.2. The ConsecutiveControl will return
- * SolverControl::State::success only at the last step in the sequence 0.5,
- * 0.0005, 1.0, 0.05, 0.01.
+ *
  */
 class ConsecutiveControl : public SolverControl
 {
 public:
   /**
-   * Constructor. @p n_consecutive_iterations is the number of
-   * consecutive iterations which should satisfy the prescribed tolerance for
-   * convergence. Other arguments have the same meaning as those of the
-   * constructor of the SolverControl.
+   * 构建器。  @p n_consecutive_iterations
+   * 是连续迭代的次数，应满足收敛的规定公差。其他参数的含义与SolverControl的构造函数相同。
+   *
    */
   ConsecutiveControl(const unsigned int maxiter                  = 100,
                      const double       tolerance                = 1.e-10,
@@ -577,46 +574,48 @@ public:
                      const bool         log_result               = false);
 
   /**
-   * Initialize with a SolverControl object. The result will emulate
-   * SolverControl by setting @p n_consecutive_iterations to one.
+   * 用一个SolverControl对象进行初始化。结果将通过设置 @p
+   * n_consecutive_iterations 为1来模拟SolverControl。
+   *
    */
   ConsecutiveControl(const SolverControl &c);
 
   /**
-   * Assign a SolverControl object to ConsecutiveControl. The result of the
-   * assignment will emulate SolverControl by setting @p n_consecutive_iterations
-   * to one.
+   * 将一个SolverControl对象分配给ConsecutiveControl。赋值的结果将通过设置
+   * @p n_consecutive_iterations 为1来模拟SolverControl。
+   *
    */
   ConsecutiveControl &
   operator=(const SolverControl &c);
 
   /**
-   * Virtual destructor is needed as there are virtual functions in this
-   * class.
+   * 由于该类中存在虚拟函数，所以需要虚拟析构器。
+   *
    */
   virtual ~ConsecutiveControl() override = default;
 
   /**
-   * Decide about success or failure of an iteration, see the class description
-   * above.
+   * 决定一个迭代的成功或失败，见上面的类描述。
+   *
    */
   virtual State
   check(const unsigned int step, const double check_value) override;
 
 protected:
   /**
-   * The number of consecutive iterations which should satisfy the prescribed
-   * tolerance for convergence.
+   * 连续迭代的次数，应满足规定的收敛容忍度。
+   *
    */
   unsigned int n_consecutive_iterations;
 
   /**
-   * Counter for the number of consecutively converged iterations.
+   * 连续收敛的迭代次数的计数器。
+   *
    */
   unsigned int n_converged_iterations;
 };
 
-/*@}*/
+ /*@}*/ 
 //---------------------------------------------------------------------------
 
 #ifndef DOXYGEN
@@ -724,3 +723,5 @@ ReductionControl::set_reduction(const double t)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

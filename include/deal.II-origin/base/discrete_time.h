@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/discrete_time_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -21,428 +22,358 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This class provides a means to keep track of the simulation time in a
- * time-dependent simulation. It manages stepping forward from a start time
- * $T_{\text{start}}$ to an end time $T_{\text{end}}$. It also allows adjusting
- * the time step size during the simulation. This class provides the necessary
- * interface to be incorporated in any time-dependent simulation.
- * The usage of this class is demonstrated in step-19 and step-21.
+ * 这个类提供了一种方法来跟踪随时间变化的模拟的时间。它管理着从开始时间
+ * $T_{\text{start}}$ 到结束时间 $T_{\text{end}}$
+ * 的向前迈进。它还允许在仿真过程中调整时间步长。该类提供了必要的接口，可以被纳入任何时间依赖性的仿真。这个类的用法在
+ * step-19  和  step-21  中演示。
+ * 该类提供了一些保证在任何时候都是真实的不变量。
+ * 当前的模拟时间是在开始时间和结束时间之间的封闭区间内（
+ * $T_{\text{start}} \le t \le T_{\text{end}}$
+ * ）。每当时间递增时，步长是正的（ $dt > 0$ ）。
+ * 换句话说，时间以严格的升序前进（  $m < n \Leftrightarrow
+ * t_m < t_n$  ）。
+ * 这个类所遵循的模型是，人们通过构造函数或使用set_desired_next_step_size()函数设置期望的*时间步长。这个步长将用于接下来所有对advance_time()函数的调用，但在模拟结束时可以稍作调整，以确保模拟时间与结束时间完全一致。这种调整对于以下原因是很有用的。
+ * 假设你通过使用`for`循环来循环所有的时间步骤
  *
- * This class provides a number of invariants that are guaranteed to be
- * true at all times.
- *
- * * The current simulation time is within the closed interval between the
- *   start time and the end time ($T_{\text{start}} \le t \le T_{\text{end}}$).
- * * Whenever time is incremented, the step size is positive ($dt > 0$).
- *   In other words, time advances in strictly ascending order
- *   ($m < n \Leftrightarrow t_m < t_n$).
- *
- * The model this class follows is that one sets a *desired* time step length
- * either through the constructor or using set_desired_next_step_size()
- * function. This step size will then be used in all following calls to the
- * advance_time() function, but may be adjusted slightly towards the end of the
- * simulation to ensure that the simulation time hits the end time exactly. The
- * adjustment is useful for the following reasons:
- *
- * Let's say that you loop over all of the time steps by using a `for` loop
  * @code
- *   for (DiscreteTime time(0., 1., 0.3);
- *        time.is_at_end() == false;
- *        time.advance_time())
- *   {
- *     // Insert simulation code here
- *   }
+ * for (DiscreteTime time(0., 1., 0.3);
+ *      time.is_at_end() == false;
+ *      time.advance_time())
+ * {
+ *   // Insert simulation code here
+ * }
  * @endcode
- * or, if you like this better, the equivalent `while` loop:
- * @code
- *   DiscreteTime time(0., 1., 0.3);
- *   while (time.is_at_end() == false)
- *   {
- *     // Insert simulation code here
+ * 或者，如果你更喜欢这种方式，可以使用等效的 "while
+ * "循环。
  *
+ * @code
+ * DiscreteTime time(0., 1., 0.3);
+ * while (time.is_at_end() == false)
+ * {
+ *   // Insert simulation code here
+ *
+ *   time.advance_time();
+ * }
+ * @endcode
+ *
+ * 在上面的例子中，时间从 $T_{\text{start}} = 0$ 开始，直到
+ * $T_{\text{end}}=1$  。假设时间步数  $dt = 0.3$
+ * 在循环内没有被修改，时间从  $t = 0$  推进到  $t = 0.3$  ,
+ * $t = 0.6$  ,  $t = 0.9$  ，最后它在  $t = 1.0$
+ * 到达结束时间。在这里，最后的步长需要从它的理想值0.3减少到
+ * $dt = 0.1$
+ * ，以确保我们正好在指定的结束时间完成模拟。事实上，你应该假设不仅最后的时间步长可以调整，而且以前的时间步长也可以调整。
+ *
+ * - 例如，这个类可能会擅自将时间步长的减少分散到几个时间步长中，并将时间从 $t=0$ ，增加到 $0.3$ ， $0.6$ ， $0.8$ ，最后到 $t=T_{\text{end}}=1$ ，以避免时间步长从一个步骤到另一个步骤的变化太大。
+ * 另一种需要调整时间步长的情况（这次是调整为稍大的数值）是如果时间增量刚好低于最终时间。例如，想象一下，与上述情况类似，但结束时间不同。
+ *
+ * @code
+ * for (DiscreteTime time(0., 1.21, 0.3);
+ *      time.is_at_end() == false;
+ *      time.advance_time())
+ * {
+ *   // Insert simulation code here
+ * }
+ * @endcode
+ * 这里，从 $t=0.9$ 到 $t=1.2$ 的时间步长刚好低于最终时间
+ * $T_{\text{end}}=1.21$  。而不是用一个长度为 $dt=0.01$
+ * 的非常小的步骤来跟进，该类人将最后的时间步骤（或最后的时间步骤）稍微拉长，以达到所需的结束时间。
+ * 上面的例子清楚地表明，给这个类的时间步长只是一个期望的*步长。你可以使用get_next_step_size()函数查询实际的时间步长。
+ *
+ *  # ### 时间步长的细节
+ * 因为在我们的模拟中，时间是以离散的方式向前推进的，所以我们需要讨论如何增加时间。在时间步进过程中，我们每一步都会进入两个独立的交替状态。
+ * *快照**阶段（*当前**阶段，*一致**阶段 阶段）。)
+ * 在这部分算法中，我们处于 $t = t_n$
+ * ，所有的模拟量（位移、应变、温度等）都是 $t = t_n$
+ * 的最新情况。在这个阶段，当前时间*是指 $t_n$
+ * ，下一个时间*是指 $t_{n+1}$ ，上一个时间*是指 $t_{n-1}$
+ * 。其他有用的符号量是下一个*时间步长  $t_{n+1}
+ *
+ * - t_n$  和上一个*时间步长  $t_n
+ *
+ * - t_{n-1}$
+ * 。在这个阶段，使用用户代码中的打印命令生成文本输出是一个完美的场合。此外，还可以在这里准备后处理输出，然后可以通过可视化程序如
+ * "Tecplot"、"Paraview "和 "VisIt
+ * "查看。此外，在快照阶段，代码可以评估前一个步骤的质量，并决定是否要增加或减少时间步长。在这里可以通过调用set_desired_next_step_size()来修改下一个时间步骤的步骤大小。更新**阶段（*过渡**阶段，*不一致**阶段
+ * 阶段）。) 在这部分程序中，模拟的内部状态被从 $t_n$
+ * 更新到 $t_{n+1}$
+ * 。所有的变量都需要逐一更新，步数被增加，时间被增加
+ * $dt = t_{n+1}
+ *
+ * - t_n$
+ * ，时间积分算法被用来更新其他模拟量。在这个阶段的中间，一些变量已经被更新到
+ * $t_{n+1}$ ，但其他变量仍然代表它们在 $t_n$
+ * 的值。因此，我们把这个阶段称为不一致阶段，要求在这个阶段内不发生与状态变量相关的后处理输出。状态变量，即那些与时间、解场和任何内部变量有关的变量，并不是同步的，然后逐一得到更新。一般来说，更新变量的顺序是任意的，但如果它们之间存在相互依赖关系，就应该注意一些。例如，如果某个变量如
+ * $x$ 依赖于另一个变量如 $y$ 的计算，那么 $y$ 必须在 $x$
+ * 被更新之前被更新。
+ * 问题是，在更新状态量之前，时间是否应该被递增。存在多种可能性，取决于程序和配方的要求，可能还有程序员的偏好。
+ * 时间在*其余的更新之前被递增。在这种情况下，即使时间被递增到
+ * $t_{n+1}$ ，也不是所有变量都被更新。在这个更新阶段，
+ * $dt$
+ * 等于previous*时间步长。Previous*意味着它是指之前执行的`advance_time()`命令的
+ * $dt$
+ * 。在下面的示例代码中，我们假设`a`和`b`是两个需要在这个时间步长中更新的状态变量。
+ * @code
  *     time.advance_time();
- *   }
+ *     new_a = update_a(a, b, time.get_previous_step_size());
+ *     b = update_b(a, b, time.get_previous_step_size());
+ *     a = new_a;
  * @endcode
- *
- * In the above example the time starts at $T_{\text{start}} = 0$ until
- * $T_{\text{end}}=1$. Assuming the time step $dt = 0.3$ is not modified inside
- * the loop, the time is advanced from $t = 0$ to $t = 0.3$, $t = 0.6$, $t =
- * 0.9$ and finally it reaches the end time at $t = 1.0$. Here, the final step
- * size needs to be reduced from its desired value of 0.3 to $dt = 0.1$ in order
- * to ensure that we finish the simulation exactly at the specified end time. In
- * fact, you should assume that not only the last time step length may be
- * adjusted, but also previously ones -- for example, this class may take the
- * liberty to spread the decrease in time step size out over several time steps
- * and increment time from $t=0$, to $0.3$, $0.6$, $0.8$, and finally
- * $t=T_{\text{end}}=1$ to avoid too large a change in time step size from one
- * step to another.
- *
- * The other situation in which the time step needs to be adjusted (this time to
- * slightly larger values) is if a time increment falls just short of the final
- * time. Imagine, for example, a similar situation as above, but with different
- * end time:
+ * 这里，代码开始时是一致的状态，但是一旦调用advance_time()，时间变量、`a`和`b`就不再相互一致，直到最后一条语句之后。在这一点上，这些变量又都是一致的。
+ * 在*所有变量已经更新为 $t_{n+1}$ 之后，时间从 $t_n$
+ * 递增到 $t_{n+1}$  。在更新阶段， $dt$
+ * 被表示为下一个*时间步长。下一个*意味着 $dt$
+ * 的步长对应于随后发生的`advance_time()`命令。
  * @code
- *   for (DiscreteTime time(0., 1.21, 0.3);
- *        time.is_at_end() == false;
- *        time.advance_time())
- *   {
- *     // Insert simulation code here
- *   }
+ *     new_a = update_a(a, b, time.get_next_step_size());
+ *     b = update_b(a, b, time.get_next_step_size());
+ *     a = new_a;
+ *     time.advance_time();
  * @endcode
- * Here, the time step from $t=0.9$ to $t=1.2$ falls just short of the final
- * time $T_{\text{end}}=1.21$. Instead of following up with a very small step of
- * length $dt=0.01$, the class stretches the last time step (or last time steps)
- * slightly to reach the desired end time.
+ * 时间是在其他更新的中间递增的。在这种情况下， $dt$
+ * 将对应xt*或previous*，取决于它是在调用`advance_time()'之前还是之后使用。
+ * @code
+ *     new_a = update_a(a, b, time.get_next_step_size());
+ *     time.advance_time();
+ *     b = update_b(a, b, time.get_previous_step_size());
+ *     a = new_a;
+ * @endcode
  *
- * The examples above make clear that the time step size given to this class is
- * only a *desired* step size. You can query the actual time step size using the
- * get_next_step_size() function.
+ * 需要注意的是，在更新阶段， $dt$
+ * 是指*下一个**或*上一个**时间步长，这取决于是否已经调用了advance_time()。当前*时间步长的概念定义不明确。事实上，在更新阶段，每个变量的定义都取决于它是否已经被更新，因此被称为*不一致的阶段**。
+ * 下面的代码片段显示了在一个完整的时间依赖性仿真的背景下，快照阶段和更新阶段的代码部分。这段代码遵循了教程实例中的编码惯例。请注意，尽管这个例子是以
+ * "for "循环的格式写的，但它也可以等同于写成 "while "或
+ * "do while "循环（如 step-21 所示）。
  *
- *
- * ### Details of time-stepping
- *
- * Since time is marched forward in a discrete manner in our simulations, we
- * need to discuss how we increment time. During time stepping we enter two
- * separate alternating regimes in every step.
- *
- * * The **snapshot** stage (the **current** stage, the **consistent**
- *   stage): In this part of the algorithm, we are at $t = t_n$ and all
- *   quantities of the simulation (displacements, strains, temperatures, etc.)
- *   are up-to-date for $t = t_n$. In this stage, *current time* refers to
- *   $t_n$, *next time* refers to $t_{n+1}$, *previous time* refers to
- *   $t_{n-1}$. The other useful notation quantities are the *next* time step
- *   size $t_{n+1} - t_n$ and *previous* time step size $t_n - t_{n-1}$. In
- *   this stage, it is a perfect occasion to generate text output using print
- *   commands within the user's code. Additionally, post-processed outputs can
- *   be prepared here, which can then later be viewed by visualization programs
- *   such as `Tecplot`, `Paraview`, and `VisIt`. Additionally, during the
- *   snapshot stage, the code can assess the quality of the previous step and
- *   decide whether it wants to increase or decrease the time step size. The
- *   step size for the next time step can be modified here, by calling
- *   set_desired_next_step_size().
- * * The **update** stage (the **transition** stage, the **inconsistent**
- *   stage): In this section of the program, the internal state of the
- *   simulation is getting updated from $t_n$ to $t_{n+1}$. All of the
- *   variables need to be updated one by one, the step number is incremented,
- *   the time is incremented by $dt = t_{n+1} - t_n$, and time-integration
- *   algorithms are used to update the other simulation quantities. In the
- *   middle of this stage, some variables have been updated to $t_{n+1}$ but
- *   other variables still represent their value at $t_n$. Thus, we call this
- *   the inconsistent stage, requiring that no post-processing output related
- *   to the state variables take place within it. The state variables, namely
- *   those related to time, the solution field and any internal variables, are
- *   not synchronized and then get updated one by one. In general, the order of
- *   updating variables is arbitrary, but some care should be taken if there
- *   are interdependencies between them. For example, if some variable such as
- *   $x$ depends on the calculation of another variable such as $y$, then $y$
- *   must be updated before $x$ can be updated.
- *
- *   The question arises whether time should be incremented before updating
- *   state quantities. Multiple possibilities exist, depending on program and
- *   formulation requirements, and possibly the programmer's preferences:
- *   * Time is incremented *before* the rest of the updates. In this case, even
- *     though time is incremented to $t_{n+1}$, not all variables are updated
- *     yet. During this update phase, $dt$ equals the *previous* time step
- *     size. *Previous* means that it is referring to the $dt$ of the
- *     `advance_time()` command that was performed previously. In the
- *     following example code, we are assuming that `a` and `b` are two state
- *     variables that need to be updated in this time step.
- *     @code
- *       time.advance_time();
- *       new_a = update_a(a, b, time.get_previous_step_size());
- *       b = update_b(a, b, time.get_previous_step_size());
- *       a = new_a;
- *     @endcode
- *     Here, the code starts in a consistent state, but once advance_time()
- *     is called, the time variable, `a`, and `b` are no longer consistent
- *     with each other until after the last statement. At that point,
- *     the variables are all consistent again.
- *   * Time is incremented from $t_n$ to $t_{n+1}$ *after* all variables have
- *     already been updated for $t_{n+1}$. During the update stage, $dt$ is
- *     denoted as the *next* time step size. *Next* means that $dt$ of the
- *     step corresponds to the `advance_time()` command that will happen
- *     subsequently.
- *     @code
- *       new_a = update_a(a, b, time.get_next_step_size());
- *       b = update_b(a, b, time.get_next_step_size());
- *       a = new_a;
- *       time.advance_time();
- *     @endcode
- *   * Time is incremented in the middle of the other updates: In this case
- *     $dt$ would correspond to *next* or *previous* depending of whether it
- *     is used before or after the call to `advance_time()`.
- *     @code
- *       new_a = update_a(a, b, time.get_next_step_size());
- *       time.advance_time();
- *       b = update_b(a, b, time.get_previous_step_size());
- *       a = new_a;
- *     @endcode
- *
- * One thing to note is that, during the update phase, $dt$ is referred to
- * either **next** or **previous** time step size, depending on whether
- * advance_time() has been called yet. The notion of *current* time
- * step size is ill-defined. In fact, in the update stage the definition of
- * every variable depends on whether it has been updated yet or not, hence the
- * name **the inconsistent stage**.
- *
- * The following code snippet shows the code sections for the snapshot stage
- * and the update stage in the context of a complete time-dependent
- * simulation. This code follows the coding conventions incorporated in the
- * tutorial examples. Note that even though this example is written in the
- * format of a `for` loop, it can equivalently be written as a `while` or
- * `do while` loop (as shown in step-21).
  * @code
  * // pre-processing/setup stage {
  * make_grid();
  * setup_system();
  * for (DiscreteTime time(0., 1., 0.1);  // } end pre-processing/setup stage
- *      time.is_at_end() == false;
- *      time.advance_time())             // part of the update stage, runs at
- *                                       // the end of the loop body
+ *    time.is_at_end() == false;
+ *    time.advance_time())             // part of the update stage, runs at
+ *                                     // the end of the loop body
  * {
- *   // snapshot stage {
- *   const double time_of_simulation = time.get_next_time();
- *   const double timestep_size      = time.get_next_step_size();
+ * // snapshot stage {
+ * const double time_of_simulation = time.get_next_time();
+ * const double timestep_size      = time.get_next_step_size();
  *
- *   std::cout
- *     << "Timestep: " << time.get_step_number() << " -- "
- *     << "Solving for the solution at "
- *     << "t = " << time_of_simulation << " with "
- *     << "dt = " << timestep_size << "." << std::endl;
- *   // } end snapshot stage
+ * std::cout
+ *   << "Timestep: " << time.get_step_number() << "
  *
- *   // update stage {
- *   assemble_system(time_of_simulation, timestep_size);
- *   solve();
- *   update_solutions();
- *   // } end update stage
+ * -- "
+ *   << "Solving for the solution at "
+ *   << "t = " << time_of_simulation << " with "
+ *   << "dt = " << timestep_size << "." << std::endl;
+ * // } end snapshot stage
  *
- *   // snapshot stage {
- *   output_results(time_of_solution);
+ * // update stage {
+ * assemble_system(time_of_simulation, timestep_size);
+ * solve();
+ * update_solutions();
+ * // } end update stage
  *
- *   // propose a new timestep size if need be
- *   // time.set_desired_next_step_size(...);
- *   // } end snapshot stage
+ * // snapshot stage {
+ * output_results(time_of_solution);
+ *
+ * // propose a new timestep size if need be
+ * // time.set_desired_next_step_size(...);
+ * // } end snapshot stage
  * }
  * @endcode
- * The `run()` function in step-19 shows a very similar example where the call
- * to advance_time() ends the update stage and is followed by generating
- * graphical output with the then-current time.
+ * step-19
+ * 中的`run()`函数显示了一个非常类似的例子，其中对advance_time()的调用结束了更新阶段，随后用当时的时间生成了图形输出。
+ *
+ *
  */
 class DiscreteTime
 {
 public:
   /**
-   * Constructor.
+   * 构造函数。      @param[in]  start_time 仿真开始时的时间。
+   * @param[in]  end_time 仿真结束时的时间。      @param[in]
+   * desired_start_step_size
+   * 用于第一步时间递增的预期步长。不保证这个值会被实际用作第一步的大小，这一点在介绍中已经讨论过。
+   * @pre   @p desired_start_step_size  必须为非负数。
+   * @note   @p desired_start_step_size
+   * 是一个可选的参数。如果没有提供或指定为零，表明时间步长的所需尺寸将在代码中的不同位置计算。在这种情况下，创建的对象不能增加时间，直到通过调用set_desired_next_step_size()改变步长大小。
    *
-   * @param[in] start_time The time at the start of the simulation.
-   *
-   * @param[in] end_time The time at the end of the simulation.
-   *
-   * @param[in] desired_start_step_size A desired step size for incrementing
-   * time for the first step. It is not guaranteed that this value will be
-   * actually used as the size of the first step, as discussed in the
-   * introduction.
-   *
-   * @pre @p desired_start_step_size must be non-negative.
-   *
-   * @note @p desired_start_step_size is an optional parameter. If it is not
-   * provided or it is specified as zero, it indicates that the
-   * desired size for the time step will be calculated at a different location
-   * in the code. In this case, the created object cannot increment time until
-   * the step size is changed by calling set_desired_next_step_size().
    */
   DiscreteTime(const double start_time,
                const double end_time,
                const double desired_start_step_size = 0.);
 
   /**
-   * Return the current time.
+   * 返回当前时间。
+   *
    */
   double
   get_current_time() const;
 
   /**
-   * Return the next time that we would reach if we were to advance the time
-   * by one step.
+   * 返回如果我们将时间提前一步，将达到的下一个时间。
+   * @note 如果模拟到了结束时间，该方法返回结束时间。
    *
-   * @note If the simulation is at the end time, this method returns the
-   * end time.
    */
   double
   get_next_time() const;
 
   /**
-   * Return the time we were at before `advance_time()` was called last time.
+   * 返回我们上次调用`advance_time()`之前的时间。
+   * @note 如果模拟处于开始时间，此方法返回开始时间。
    *
-   * @note If the simulation is at the start time, this method returns the
-   * start time.
    */
   double
   get_previous_time() const;
 
   /**
-   * Return the start time.
+   * 返回开始时间。
+   *
    */
   double
   get_start_time() const;
 
   /**
-   * Return the end of the time interval.
-   * The final time step ends exactly at this point. This exact floating-point
-   * equality is very important because it allows us to equality-compare
-   * current time with end time and decide whether we have reached the end of
-   * the simulation.
+   * 返回时间区间的结束时间。
+   * 最后的时间步骤正好在这一点上结束。这个精确的浮点数是非常重要的，因为它允许我们将当前时间与结束时间进行等价比较，并决定我们是否已经到达了模拟的终点。
+   *
    */
   double
   get_end_time() const;
 
   /**
-   * Return whether no step has taken place yet.
+   * 返回是否还没有发生任何步骤。
+   *
    */
   bool
   is_at_start() const;
 
   /**
-   * Return whether time has reached the end time.
+   * 返回时间是否已经到达结束时间。
+   *
    */
   bool
   is_at_end() const;
 
   /**
-   * Return the size of the step from current time step to the
-   * next. As discussed in the introduction to the class, this is the
-   * *actual* time step, and may differ from the *desired* time step
-   * set in the constructor or through the
-   * set_desired_next_step_size() function.
+   * 返回从当前时间步长到下一个时间步长的大小。正如在类的介绍中所讨论的，这是实际的*时间步长，可能与在构造函数中或通过set_desired_next_step_size()函数设置的desired*时间步长不同。
+   * @note 如果仿真处于结束时间，该方法返回0。
    *
-   * @note If the simulation is at the end time, this method returns zero.
    */
   double
   get_next_step_size() const;
 
   /**
-   * Return the step size of the previous step.
+   * 返回上一步的步长。
+   * @note  如果仿真处于开始时间，该方法返回0。
    *
-   * @note If the simulation is at the start time, this method returns zero.
    */
   double
   get_previous_step_size() const;
 
   /**
-   * Return the number of times the simulation time has been incremented.
-   * Return zero when the simulation is at the start time.
+   * 返回仿真时间被增加的次数。
+   * 当仿真处于开始时间时，返回0。
+   *
    */
   unsigned int
   get_step_number() const;
 
   /**
-   * Set the *desired* value of the next time step size. By calling this
-   * method, we are indicating the next time advance_time() is called, we
-   * would like @p time_step_size to be used to advance the simulation time.
-   * However, if the step is too large such that the next
-   * simulation time exceeds the end time, the step size is truncated.
-   * Additionally, if the step size is such that the next simulation time
-   * approximates the end time (but falls just slightly short of it), the step
-   * size is adjusted such that the next simulation time exactly matches the
-   * end time.
+   * 设置下一个时间步长的期望*值。通过调用这个方法，我们表明下次调用advance_time()时，我们希望用
+   * @p time_step_size 来推进仿真时间。
+   * 但是，如果步长过大，导致下一次仿真时间超过结束时间，步长就会被截断。
+   * 此外，如果步长使下一次模拟时间接近结束时间（但略微低于结束时间），步长将被调整，使下一次模拟时间与结束时间完全一致。
+   *
    */
   void
   set_desired_next_step_size(const double time_step_size);
 
   /**
-   * Set the *actual* value of the next time step size. By calling this
-   * method, we are indicating the next time advance_time() is called,
-   * @p time_step_size is to be used to advance the simulation time.
+   * 设置下一个时间步长的实际*值。通过调用这个方法，我们表明下次调用advance_time()时，将使用
+   * @p time_step_size 来推进仿真时间。
+   * @note
+   * set_next_step_size()和set_desired_next_step_size()的区别在于，前者完全使用提供的
+   * $dt$ 而不做任何调整，但如果 $dt$
+   * 不在可接受的范围内，就会产生一个错误（在调试模式）。
+   * 一般来说，set_desired_next_step_size()是首选方法，因为它可以根据
+   * $T_{\text{end}}$  智能地调整 $dt$  。    @pre   $0 < dt \le
+   * T_{\text{end}}
    *
-   * @note The difference between set_next_step_size() and
-   * set_desired_next_step_size() is that the former uses the provided $dt$
-   * exactly without any adjustment, but produces an
-   * error (in debug mode) if $dt$ is not in the acceptable range.
-   * Generally, set_desired_next_step_size() is the preferred method because
-   * it can adjust the $dt$ intelligently, based on $T_{\text{end}}$.
-   * @pre $0 < dt \le T_{\text{end}} - t$.
+   * - t$  。
+   *
    */
   void
   set_next_step_size(const double time_step_size);
 
   /**
-   * Advance the current time based on the value of the current step.
-   * If you want to adjust the next time step size, call the method
-   * set_desired_next_step_size() before calling this method.
-   * If you call this function repeatedly, the time
-   * is increased with the same step size until it reaches the end
-   * time. See the documentation of set_desired_next_step_size() for
-   * explanation of the rules for automatic adjustment of the step size.
+   * 根据当前步骤的数值推进当前时间。
+   * 如果你想调整下一个时间步长，请在调用此方法之前调用set_desired_next_step_size()方法。
+   * 如果你重复调用这个函数，时间会以相同的步长增加，直到达到结束时间。参见set_desired_next_step_size()的文档，了解自动调整步长的规则。
+   * @pre
+   * 当前时间必须小于结束时间。如果对象已经到了结束时间，就不能推进时间。创建这条规则是为了避免在循环内调用
+   * advance_time() 时产生无限循环。      @pre
+   * 时间步长必须为非零。如果当前的步长为零，请在调用advance_time()之前通过调用set_desired_next_step_size()来改变它。
    *
-   * @pre Current time must be smaller than the end time. The object cannot
-   * advance time if it is already at the end time. This rule is created to
-   * avoid the creation of an infinite loop when advance_time() is called
-   * inside a loop.
-   *
-   * @pre The time step size must be nonzero. If the step size is currently
-   * zero, change it by calling set_desired_next_step_size() before calling
-   * advance_time().
    */
   void
   advance_time();
 
   /**
-   * Set the current time equal to start time and set the step size to the
-   * initial step size.
+   * 设置当前时间等于开始时间，并将步长设置为初始步长。
+   *
    */
   void
   restart();
 
 private:
   /**
-   * The beginning of the time interval.
+   * 时间间隔的起始时间。
+   *
    */
   double start_time;
 
   /**
-   *The end of the time interval.
+   * 时间间隔的结束。
+   *
    */
   double end_time;
 
   /**
-   * The current time.
+   * 当前的时间。
+   *
    */
   double current_time;
 
   /**
-   * The time at the next step.
+   * 下一个步骤的时间。
+   * @note
+   * 在内部，下一个模拟时间被存储，而不是当前的步长。例如，当方法set_desired_next_step_size()被调用时，它计算出适当的下一个模拟时间并存储起来。当advance_time()被调用时，current_time被next_time所取代。这种对内部状态的选择使得代码更加简单，并确保当我们在最后一步调用advance_time()时，时间的浮点值与结束时间完全一致。
    *
-   * @note Internally, the next simulation time is stored instead of the
-   * current step size. For example, when the method
-   * set_desired_next_step_size() is called, it computes the appropriate next
-   * simulation time and stores it. When advance_time() is called, the
-   * current_time is replaced by next_time. This choice for the internal state
-   * allows for simpler code and ensures than when we call advance_time() at
-   * the last step, the floating-point value of the time exactly matches the
-   * end time.
    */
   double next_time;
 
   /**
-   * The previous time.
+   * 之前的时间。
+   *
    */
   double previous_time;
 
   /**
-   * The size of the first step.
+   * 第一个步骤的大小。
+   *
    */
   double start_step_size;
 
   /**
-   * The step number i.e. the number of times the simulation time ha been
-   * incremented.
+   * 步数，即模拟时间被递增的次数。
+   *
    */
   unsigned int step_number;
 };
 
 
-/*---------------------- Inline functions ------------------------------*/
+ /*---------------------- Inline functions ------------------------------*/ 
 
 
 inline double
@@ -527,3 +458,5 @@ DiscreteTime::get_step_number() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

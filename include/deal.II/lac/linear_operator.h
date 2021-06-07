@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/linear_operator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2021 by the deal.II authors
@@ -81,31 +80,37 @@ identity_operator(const LinearOperator<Range, Domain, Payload> &);
 
 
 /**
- * 一个用于存储线性算子的抽象概念的类。 该类本质上由
- * <code>std::function</code> 对象组成，这些对象通过实现抽象的
- * @p Matrix 接口来存储如何应用线性运算符的知识。
+ * A class to store the abstract concept of a linear operator.
  *
+ * The class essentially consists of <code>std::function</code> objects that
+ * store the knowledge of how to apply the linear operator by implementing the
+ * abstract @p Matrix interface:
  * @code
- * std::function<void(Range &, const Domain &)> vmult;
- * std::function<void(Range &, const Domain &)> vmult_add;
- * std::function<void(Domain &, const Range &)> Tvmult;
- * std::function<void(Domain &, const Range &)> Tvmult_add;
+ *   std::function<void(Range &, const Domain &)> vmult;
+ *   std::function<void(Range &, const Domain &)> vmult_add;
+ *   std::function<void(Domain &, const Range &)> Tvmult;
+ *   std::function<void(Domain &, const Range &)> Tvmult_add;
  * @endcode
  *
- * 但是，与通常的矩阵对象不同，线性运算符的域和范围也被绑定到类型级别的LinearOperator类上。因为这个原因，
- * <code>LinearOperator <Range, Domain></code> 有两个额外的函数对象
- *
+ * But, in contrast to a usual matrix object, the domain and range of the
+ * linear operator are also bound to the LinearOperator class on the type
+ * level. Because of this, <code>LinearOperator <Range, Domain></code> has two
+ * additional function objects
  * @code
- * std::function<void(Range &, bool)> reinit_range_vector;
- * std::function<void(Domain &, bool)> reinit_domain_vector;
+ *   std::function<void(Range &, bool)> reinit_range_vector;
+ *   std::function<void(Domain &, bool)> reinit_domain_vector;
  * @endcode
- * 储存了如何初始化（调整大小+内部数据结构） @p Range 和
- * @p Domain 空间的任意矢量的知识。
- * 这个类的主要目的是为复杂的矩阵-向量操作提供语法糖，使用户不必手工创建、设置和处理中间存储位置。
- * 作为一个例子，考虑操作 $(A+k\,B)\,C$ ，其中 $A$ 、 $B$ 和
- * $C$ 表示（可能不同的）矩阵。为了构造一个LinearOperator
- * <code>op</code> 来存储这个操作的知识，我们可以这样写。
+ * that store the knowledge how to initialize (resize + internal data
+ * structures) an arbitrary vector of the @p Range and @p Domain space.
  *
+ * The primary purpose of this class is to provide syntactic sugar for complex
+ * matrix-vector operations and free the user from having to create, set up
+ * and handle intermediate storage locations by hand.
+ *
+ * As an example consider the operation $(A+k\,B)\,C$, where $A$, $B$ and $C$
+ * denote (possible different) matrices. In order to construct a
+ * LinearOperator <code>op</code> that stores the knowledge of this operation,
+ * one can write:
  *
  * @code
  * #include <deal.II/lac/linear_operator_tools.h>
@@ -119,57 +124,68 @@ identity_operator(const LinearOperator<Range, Domain, Payload> &);
  * const auto op_b = linear_operator(B);
  * const auto op_c = linear_operator(C);
  *
- * const auto op = (op_a + k op_b) op_c;
+ * const auto op = (op_a + k * op_b) * op_c;
  * @endcode
  *
+ * @note This class makes heavy use of <code>std::function</code> objects and
+ * lambda functions. This flexibility comes with a run-time penalty. Only use
+ * this object to encapsulate matrix object of medium to large size (as a rule
+ * of thumb, sparse matrices with a size $1000\times1000$, or larger).
  *
+ * @note In order to use Trilinos or PETSc sparse matrices and preconditioners
+ * in conjunction with the LinearOperator class, it is necessary to extend the
+ * functionality of the LinearOperator class by means of an additional Payload.
  *
- * @note  这个类大量使用了 <code>std::function</code>
- * 对象和lambda函数。这种灵活性带来了运行时间的惩罚。只用这个对象来封装大中型的矩阵对象（作为经验法则，稀疏矩阵的大小为
- * $1000\times1000$ ，或更大）。
- *
- *
- * @note
- * 为了将Trilinos或PETSc稀疏矩阵和预处理程序与LinearOperator类结合使用，有必要通过一个额外的Payload来扩展LinearOperator类的功能。
- * 例如。代表矩阵求逆的LinearOperator实例通常需要调用一些线性求解器。这些求解器可能没有与LinearOperator的接口（例如，它可能代表一个复合操作）。因此，
+ * For example: LinearOperator instances representing matrix inverses usually
+ * require calling some linear solver. These solvers may not have interfaces
+ * to the LinearOperator (which, for example, may represent a composite
+ * operation). The
  * TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload
- * 为LinearOperator提供了一个接口扩展，以便它可以被传递给求解器并被求解器使用，就像它是一个Trilinos算子一样。这意味着特定Trilinos算子的所有必要功能都在Payload类中被重载。这包括算子-向量乘法和反算子-向量乘法，其中算子可以是
- * TrilinosWrappers::SparseMatrix 或 TrilinosWrappers::PreconditionBase
- * ，向量是本地Trilinos向量。
- * 另一种情况是，当构建复合运算时（通过运算符重载），有效载荷为LinearOperator类提供了重要补充。在这种情况下，又有必要提供一个接口，以产生与Trilinos求解器使用的Trilinos算子兼容的这种复合操作的结果。
+ * therefore provides an interface extension to the LinearOperator so that it
+ * can be passed to the solver and used by the solver as if it were a Trilinos
+ * operator. This implies that all of the necessary functionality of the
+ * specific Trilinos operator has been overloaded within the Payload class.
+ * This includes operator-vector multiplication and inverse operator-vector
+ * multiplication, where the operator can be either a
+ * TrilinosWrappers::SparseMatrix or a TrilinosWrappers::PreconditionBase
+ * and the vector is a native Trilinos vector.
  *
+ * Another case where payloads provide a crucial supplement to the
+ * LinearOperator class are when composite operations are constructed (via
+ * operator overloading). In this instance, it is again necessary to provide
+ * an interface that produces the result of this composite operation that is
+ * compatible with Trilinos operator used by Trilinos solvers.
  *
- * @note
- * LinearOperator的许多用例会导致中间表达式需要一个PackagedOperation。为了一次性包含所有必要的头文件，可以考虑使用
- *
+ * @note Many use cases of LinearOperator lead to intermediate expressions
+ * requiring a PackagedOperation. In order to include all necessary header
+ * files in one go consider using
  * @code
  * #include <deal.II/lac/linear_operator_tools.h>
  * @endcode
  *
- * 为了使用完整的LinearOperator和PackagedOperation
+ * In order to use the full LinearOperator and PackagedOperation
  *
+ * @note To ensure that the correct payload is provided, wrapper functions
+ * for linear operators have been provided within the respective
+ * TrilinosWrappers (and, in the future, PETScWrappers) namespaces.
  *
- * @note
- * 为了确保提供正确的有效载荷，在各自的TrilinosWrappers（以及未来的PETScWrappers）命名空间中提供了线性操作符的封装函数。
- *
- *
- * @note   step-20
- * 教程中有一个LinearOperator类的详细使用例子。
- *
+ * @note The step-20 tutorial program has a detailed usage example of the
+ * LinearOperator class.
  *
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload>
 class LinearOperator : public Payload
 {
 public:
   /**
-   * 创建一个空的LinearOperator对象。
-   * 当一个有效载荷被传递给这个构造函数时，产生的运算器会被构造成一个功能性的有效载荷。
-   * 在这两种情况下，这个构造函数产生的对象实际上不能用于任何线性运算符的操作，并且在调用时将抛出一个异常。
-   *
+   * Create an empty LinearOperator object.
+   * When a payload is passed to this constructor, the resulting operator is
+   * constructed with a functional payload.
+   * In either case, this constructor yields an object that can not actually
+   * be used for any linear operator operations, and will throw an exception
+   * upon invocation.
    */
   LinearOperator(const Payload &payload = Payload())
     : Payload(payload)
@@ -213,16 +229,14 @@ public:
   }
 
   /**
-   * 默认的复制构造函数。
-   *
+   * Default copy constructor.
    */
   LinearOperator(const LinearOperator<Range, Domain, Payload> &) = default;
 
   /**
-   * 模板化的复制构造函数，从定义了转换函数
-   * <code>linear_operator</code> 的对象 @p op
-   * 中创建一个LinearOperator对象。
-   *
+   * Templated copy constructor that creates a LinearOperator object from an
+   * object @p op for which the conversion function
+   * <code>linear_operator</code> is defined.
    */
   template <typename Op,
             typename = typename std::enable_if<
@@ -234,16 +248,14 @@ public:
   }
 
   /**
-   * 默认的复制赋值运算符。
-   *
+   * Default copy assignment operator.
    */
   LinearOperator<Range, Domain, Payload> &
   operator=(const LinearOperator<Range, Domain, Payload> &) = default;
 
   /**
-   * 定义了转换函数 <code>linear_operator</code> 的对象 @p op
-   * 的模板化的复制赋值运算符。
-   *
+   * Templated copy assignment operator for an object @p op for which the
+   * conversion function <code>linear_operator</code> is defined.
    */
   template <typename Op,
             typename = typename std::enable_if<
@@ -257,56 +269,56 @@ public:
   }
 
   /**
-   * 将LinearOperator对象应用于 @p Domain 空间的向量u，得到 @p
-   * Range 空间的向量v。
-   *
+   * Application of the LinearOperator object to a vector u of the @p Domain
+   * space giving a vector v of the @p Range space.
    */
   std::function<void(Range &v, const Domain &u)> vmult;
 
   /**
-   * 将LinearOperator对象应用于 @p Domain
-   * 空间的向量u。其结果被添加到向量v中。
-   *
+   * Application of the LinearOperator object to a vector u of the @p Domain
+   * space. The result is added to the vector v.
    */
   std::function<void(Range &v, const Domain &u)> vmult_add;
 
   /**
-   * 对 @p Range 空间的向量u应用转置LinearOperator对象，得到 @p
-   * Domain 空间的向量v。
-   *
+   * Application of the transpose LinearOperator object to a vector u of the
+   * @p Range space giving a vector v of the @p Domain space.
    */
   std::function<void(Domain &v, const Range &u)> Tvmult;
 
   /**
-   * 对 @p Range 空间的向量 @p u
-   * 应用转置LinearOperator对象。结果被添加到向量 @p v. 。
-   *
+   * Application of the transpose LinearOperator object to a vector @p u of
+   * the @p Range space.The result is added to the vector @p v.
    */
   std::function<void(Domain &v, const Range &u)> Tvmult_add;
 
   /**
-   * 初始化Range空间的一个向量v，可以直接作为vmult应用中的目标参数使用。与向量类的reinit函数类似，布尔值决定是否进行快速初始化，也就是说，如果它被设置为false，向量的内容就被设置为0。
-   *
+   * Initializes a vector v of the Range space to be directly usable as the
+   * destination parameter in an application of vmult. Similar to the reinit
+   * functions of the vector classes, the boolean determines whether a fast
+   * initialization is done, i.e., if it is set to false the content of the
+   * vector is set to 0.
    */
   std::function<void(Range &v, bool omit_zeroing_entries)> reinit_range_vector;
 
   /**
-   * 初始化域空间的一个向量，以便在vmult的应用中可以直接作为源参数使用。与向量类的reinit函数类似，布尔值决定是否进行快速初始化，也就是说，如果它被设置为false，向量的内容就被设置为0。
-   *
+   * Initializes a vector of the Domain space to be directly usable as the
+   * source parameter in an application of vmult. Similar to the reinit
+   * functions of the vector classes, the boolean determines whether a fast
+   * initialization is done, i.e., if it is set to false the content of the
+   * vector is set to 0.
    */
   std::function<void(Domain &v, bool omit_zeroing_entries)>
     reinit_domain_vector;
 
   /**
-   * @name  原地向量空间操作
-   *
+   * @name In-place vector space operations
    */
   //@{
 
   /**
-   * 用LinearOperator @p second_op 进行加法运算，同 @p Domain 和 @p
-   * Range. 。
-   *
+   * Addition with a LinearOperator @p second_op with the same @p Domain and
+   * @p Range.
    */
   LinearOperator<Range, Domain, Payload> &
   operator+=(const LinearOperator<Range, Domain, Payload> &second_op)
@@ -316,8 +328,8 @@ public:
   }
 
   /**
-   * 用LinearOperator  @p second_op 和 @p Range. 做减法。
-   *
+   * Subtraction with a LinearOperator @p second_op with the same @p Domain
+   * and @p Range.
    */
   LinearOperator<Range, Domain, Payload> &
   operator-=(const LinearOperator<Range, Domain, Payload> &second_op)
@@ -327,9 +339,8 @@ public:
   }
 
   /**
-   * 与 @p Domain 空间的内形态 @p second_op
-   * 的LinearOperator的构成。
-   *
+   * Composition of the LinearOperator with an endomorphism @p second_op of
+   * the @p Domain space.
    */
   LinearOperator<Range, Domain, Payload> &
   operator*=(const LinearOperator<Domain, Domain, Payload> &second_op)
@@ -339,8 +350,8 @@ public:
   }
 
   /**
-   * LinearOperator与 @p number 从右边开始的标量乘法。
-   *
+   * Scalar multiplication of the LinearOperator with @p number from the
+   * right.
    */
   LinearOperator<Range, Domain, Payload>
   operator*=(typename Domain::value_type number)
@@ -350,8 +361,9 @@ public:
   }
 
   /**
-   * 这个bool用于确定线性运算符是否是空运算符。在这种情况下，该类能够优化一些操作，如乘法或加法。
-   *
+   * This bool is used to determine whether a linear operator is a null
+   * operator. In this case the class is able to optimize some operations like
+   * multiplication or addition.
    */
   bool is_null_operator;
 
@@ -360,19 +372,18 @@ public:
 
 
 /**
- * @name  矢量空间操作
- *
- *
+ * @name Vector space operations
  */
 //@{
 
 /**
- * @relatesalso  线性运算器 两个线性运算符 @p first_op 和 @p
- * second_op 的相加，由 $(\mathrm{first\_op}+\mathrm{second\_op})x
- * \dealcoloneq \mathrm{first\_op}(x) + \mathrm{second\_op}(x)$ 给出。
+ * @relatesalso LinearOperator
+ *
+ * Addition of two linear operators @p first_op and @p second_op given by
+ * $(\mathrm{first\_op}+\mathrm{second\_op})x \dealcoloneq \mathrm{first\_op}(x)
+ * + \mathrm{second\_op}(x)$
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -425,16 +436,13 @@ operator+(const LinearOperator<Range, Domain, Payload> &first_op,
 
 
 /**
- * @relatesalso  线性运算器 两个线性运算符 @p first_op 和 @p
- * second_op 的减法，由 $(\mathrm{first\_op}-\mathrm{second\_op})x
- * \dealcoloneq \mathrm{first\_op}(x)
+ * @relatesalso LinearOperator
  *
- *
- *
- * - \mathrm{second\_op}(x)$ 给出。
+ * Subtraction of two linear operators @p first_op and @p second_op given by
+ * $(\mathrm{first\_op}-\mathrm{second\_op})x \dealcoloneq \mathrm{first\_op}(x)
+ * - \mathrm{second\_op}(x)$
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -458,20 +466,21 @@ operator-(const LinearOperator<Range, Domain, Payload> &first_op,
 
 
 /**
- * @relatesalso  LinearOperator ScalarOperator对象 @p op 与 @p number
- * 的标量乘法，从左边开始。 @p Domain 和 @p Range
- * 类型必须实现以下 <code>operator*=</code>
- * 成员函数，接受适当的标量Number类型进行重新缩放。
+ * @relatesalso LinearOperator
  *
+ * Scalar multiplication of a ScalarOperator object @p op with @p number from
+ * the left.
+ *
+ * The @p Domain and @p Range types must implement the following
+ * <code>operator*=</code> member functions accepting the appropriate scalar
+ * Number type for rescaling:
  *
  * @code
- * Domain & operator=(Domain::value_type);
- * Range & operator=(Range::value_type);
+ * Domain & operator *=(Domain::value_type);
+ * Range & operator *=(Range::value_type);
  * @endcode
  *
- *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -526,22 +535,19 @@ operator*(typename Range::value_type                    number,
 
 
 /**
- * @relatesalso  LinearOperator
- * 从右边开始对一个ScalarOperator对象进行标量乘法。 @p Domain
- * 和 @p Range 类型必须实现以下 <code>operator*=</code>
- * 成员函数，用于重新缩放。
+ * @relatesalso LinearOperator
  *
+ * Scalar multiplication of a ScalarOperator object from the right.
+ *
+ * The @p Domain and @p Range types must implement the following
+ * <code>operator*=</code> member functions for rescaling:
  *
  * @code
- * Domain & operator=(Domain::value_type);
- * Range & operator=(Range::value_type);
+ * Domain & operator *=(Domain::value_type);
+ * Range & operator *=(Range::value_type);
  * @endcode
  *
- *
- *
  * @ingroup LAOperators
- *
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -560,21 +566,18 @@ operator*(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @name  LinearOperator的组成和操作
- *
- *
+ * @name Composition and manipulation of a LinearOperator
  */
 //@{
 
 /**
- * @relatesalso  线性运算器 两个线性运算符 @p first_op 和 @p
- * second_op 的组合，由 $(\mathrm{first\_op}*\mathrm{second\_op})x
- * \dealcoloneq \mathrm{first\_op}(\mathrm{second\_op}(x))$ 给出。
+ * @relatesalso LinearOperator
  *
+ * Composition of two linear operators @p first_op and @p second_op given by
+ * $(\mathrm{first\_op}*\mathrm{second\_op})x \dealcoloneq
+ * \mathrm{first\_op}(\mathrm{second\_op}(x))$
  *
  * @ingroup LAOperators
- *
- *
  */
 template <typename Range,
           typename Intermediate,
@@ -607,7 +610,7 @@ operator*(const LinearOperator<Range, Intermediate, Payload> & first_op,
         GrowingVectorMemory<Intermediate> vector_memory;
 
         typename VectorMemory<Intermediate>::Pointer i(vector_memory);
-        second_op.reinit_range_vector(*i,  /*bool omit_zeroing_entries =*/ true);
+        second_op.reinit_range_vector(*i, /*bool omit_zeroing_entries =*/true);
         second_op.vmult(*i, u);
         first_op.vmult(v, *i);
       };
@@ -616,7 +619,7 @@ operator*(const LinearOperator<Range, Intermediate, Payload> & first_op,
         GrowingVectorMemory<Intermediate> vector_memory;
 
         typename VectorMemory<Intermediate>::Pointer i(vector_memory);
-        second_op.reinit_range_vector(*i,  /*bool omit_zeroing_entries =*/ true);
+        second_op.reinit_range_vector(*i, /*bool omit_zeroing_entries =*/true);
         second_op.vmult(*i, u);
         first_op.vmult_add(v, *i);
       };
@@ -625,7 +628,7 @@ operator*(const LinearOperator<Range, Intermediate, Payload> & first_op,
         GrowingVectorMemory<Intermediate> vector_memory;
 
         typename VectorMemory<Intermediate>::Pointer i(vector_memory);
-        first_op.reinit_domain_vector(*i,  /*bool omit_zeroing_entries =*/ true);
+        first_op.reinit_domain_vector(*i, /*bool omit_zeroing_entries =*/true);
         first_op.Tvmult(*i, u);
         second_op.Tvmult(v, *i);
       };
@@ -634,7 +637,7 @@ operator*(const LinearOperator<Range, Intermediate, Payload> & first_op,
         GrowingVectorMemory<Intermediate> vector_memory;
 
         typename VectorMemory<Intermediate>::Pointer i(vector_memory);
-        first_op.reinit_domain_vector(*i,  /*bool omit_zeroing_entries =*/ true);
+        first_op.reinit_domain_vector(*i, /*bool omit_zeroing_entries =*/true);
         first_op.Tvmult(*i, u);
         second_op.Tvmult_add(v, *i);
       };
@@ -645,11 +648,12 @@ operator*(const LinearOperator<Range, Intermediate, Payload> & first_op,
 
 
 /**
- * @relatesalso  LinearOperator 返回 @p op. 的转置线性运算。
+ * @relatesalso LinearOperator
+ *
+ * Return the transpose linear operations of @p op.
  *
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Domain, Range, Payload>
@@ -670,21 +674,23 @@ transpose_operator(const LinearOperator<Range, Domain, Payload> &op)
 
 
 /**
- * @relatesalso  LinearOperator
- * 返回一个代表LinearOperator的逆运算的对象  @p op.  。
- * 该函数需要引用 @p solver 和 @p preconditioner
- * 一个迭代求解器和一个预处理器，这些都是LinearOperator对象的
- * <code>vmult</code> and <code>Tvmult</code> 实现中使用的。 创建的
- * LinearOperator 对象存储了对  @p solver  和  @p preconditioner.
- * 的引用。因此，这两个对象必须在 LinearOperator
- * 对象的整个生命周期内保持有效引用。 @p solver
- * 对象的内部数据结构将在调用  <code>vmult</code> or
- * <code>Tvmult</code>  时被修改。
+ * @relatesalso LinearOperator
  *
+ * Return an object representing the inverse of the LinearOperator @p op.
+ *
+ * The function takes references @p solver and @p preconditioner to an
+ * iterative solver and a preconditioner that are used in the
+ * <code>vmult</code> and <code>Tvmult</code> implementations of the
+ * LinearOperator object.
+ *
+ * The LinearOperator object that is created stores a reference to @p solver
+ * and @p preconditioner. Thus, both objects must remain a valid reference for
+ * the whole lifetime of the LinearOperator object. Internal data structures
+ * of the @p solver object will be modified upon invocation of
+ * <code>vmult</code> or <code>Tvmult</code>.
  *
  *
  * @ingroup LAOperators
- *
  */
 template <typename Payload,
           typename Solver,
@@ -703,7 +709,7 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
   return_op.reinit_domain_vector = op.reinit_range_vector;
 
   return_op.vmult = [op, &solver, &preconditioner](Range &v, const Domain &u) {
-    op.reinit_range_vector(v,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(v, /*bool omit_zeroing_entries =*/false);
     solver.solve(op, v, u, preconditioner);
   };
 
@@ -712,13 +718,13 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer v2(vector_memory);
-    op.reinit_range_vector(*v2,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(*v2, /*bool omit_zeroing_entries =*/false);
     solver.solve(op, *v2, u, preconditioner);
     v += *v2;
   };
 
   return_op.Tvmult = [op, &solver, &preconditioner](Range &v, const Domain &u) {
-    op.reinit_range_vector(v,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(v, /*bool omit_zeroing_entries =*/false);
     solver.solve(transpose_operator(op), v, u, preconditioner);
   };
 
@@ -727,7 +733,7 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer v2(vector_memory);
-    op.reinit_range_vector(*v2,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(*v2, /*bool omit_zeroing_entries =*/false);
     solver.solve(transpose_operator(op), *v2, u, preconditioner);
     v += *v2;
   };
@@ -737,12 +743,12 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @relatesalso  LinearOperator 上述函数的变体，接受 LinearOperator
- * @p preconditioner  作为预处理参数。
+ * @relatesalso LinearOperator
+ *
+ * Variant of above function that takes a LinearOperator @p preconditioner
+ * as preconditioner argument.
  *
  * @ingroup LAOperators
- *
- *
  */
 template <typename Payload,
           typename Solver,
@@ -760,7 +766,7 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
   return_op.reinit_domain_vector = op.reinit_range_vector;
 
   return_op.vmult = [op, &solver, preconditioner](Range &v, const Domain &u) {
-    op.reinit_range_vector(v,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(v, /*bool omit_zeroing_entries =*/false);
     solver.solve(op, v, u, preconditioner);
   };
 
@@ -769,13 +775,13 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer v2(vector_memory);
-    op.reinit_range_vector(*v2,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(*v2, /*bool omit_zeroing_entries =*/false);
     solver.solve(op, *v2, u, preconditioner);
     v += *v2;
   };
 
   return_op.Tvmult = [op, &solver, preconditioner](Range &v, const Domain &u) {
-    op.reinit_range_vector(v,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(v, /*bool omit_zeroing_entries =*/false);
     solver.solve(transpose_operator(op), v, u, preconditioner);
   };
 
@@ -784,7 +790,7 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer v2(vector_memory);
-    op.reinit_range_vector(*v2,  /*bool omit_zeroing_entries =*/ false);
+    op.reinit_range_vector(*v2, /*bool omit_zeroing_entries =*/false);
     solver.solve(transpose_operator(op), *v2, u, preconditioner);
     v += *v2;
   };
@@ -794,13 +800,13 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @relatesalso  LinearOperator
- * 上述函数的变体，没有预处理参数。在这种情况下， @p op
- * 参数的ident_operator()被用作预处理。这等同于使用PreconditionIdentity。
+ * @relatesalso LinearOperator
  *
+ * Variant of above function without a preconditioner argument. In this
+ * case the identity_operator() of the @p op argument is used as a
+ * preconditioner. This is equivalent to using PreconditionIdentity.
  *
  * @ingroup LAOperators
- *
  */
 template <typename Payload,
           typename Solver,
@@ -815,13 +821,12 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @relatesalso  LinearOperator
- * 上述函数的特殊重载，需要一个PreconditionIdentity参数。
+ * @relatesalso LinearOperator
  *
+ * Special overload of above function that takes a PreconditionIdentity
+ * argument.
  *
  * @ingroup LAOperators
- *
- *
  */
 template <typename Payload,
           typename Solver,
@@ -839,24 +844,20 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @name  创建一个LinearOperator
- *
- *
+ * @name Creation of a LinearOperator
  */
 //@{
 
 /**
- * @relatesalso  LinearOperator
- * 返回一个LinearOperator，它是向量空间的标识  @p Range.  。
- * 该函数需要一个 <code>std::function</code> 对象 @p reinit_vector
- * 作为参数，以初始化LinearOperator对象的
- * <code>reinit_range_vector</code> 和 <code>reinit_domain_vector</code>
- * 对象。
+ * @relatesalso LinearOperator
  *
+ * Return a LinearOperator that is the identity of the vector space @p Range.
+ *
+ * The function takes an <code>std::function</code> object @p reinit_vector as
+ * an argument to initialize the <code>reinit_range_vector</code> and
+ * <code>reinit_domain_vector</code> objects of the LinearOperator object.
  *
  * @ingroup LAOperators
- *
- *
  */
 template <
   typename Range,
@@ -882,16 +883,16 @@ identity_operator(const std::function<void(Range &, bool)> &reinit_vector)
 
 
 /**
- * @relatesalso  LinearOperator
- * 返回一个LinearOperator，它是向量空间的标识  @p Range.  。
- * 该函数接收一个LinearOperator  @p op
- * 并使用其范围初始化器来创建一个身份算子。与上面的函数不同，这个函数还确保底层的Payload与输入的Payload相匹配
- * @p op.
+ * @relatesalso LinearOperator
  *
+ * Return a LinearOperator that is the identity of the vector space @p Range.
+ *
+ * The function takes a LinearOperator @p op and uses its range initializer
+ * to create an identity operator. In contrast to the function above, this
+ * function also ensures that the underlying Payload matches that of the
+ * input @p op.
  *
  * @ingroup LAOperators
- *
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -905,15 +906,13 @@ identity_operator(const LinearOperator<Range, Domain, Payload> &op)
 
 
 /**
- * @relatesalso  LinearOperator 返回LinearOperator  @p op,
- * 的空变体，即具有优化的 LinearOperator::vmult,
- * LinearOperator::vmult_add, 等函数，并将
- * LinearOperator::is_null_operator 设置为真。
+ * @relatesalso LinearOperator
  *
+ * Return a nulled variant of the LinearOperator @p op, i.e. with optimized
+ * LinearOperator::vmult, LinearOperator::vmult_add, etc. functions and with
+ * LinearOperator::is_null_operator set to true.
  *
  * @ingroup LAOperators
- *
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -939,16 +938,16 @@ null_operator(const LinearOperator<Range, Domain, Payload> &op)
 
 
 /**
- * @relatesalso  LinearOperator
- * 返回一个LinearOperator，作为一个均值过滤器。这个矩阵的vmult()函数减去向量的均值。
- * 该函数需要一个 <code>std::function</code> 对象 @p reinit_vector
- * 作为参数来初始化LinearOperator对象的
- * <code>reinit_range_vector</code> 和 <code>reinit_domain_vector</code>
- * 对象。
+ * @relatesalso LinearOperator
  *
+ * Return a LinearOperator that acts as a mean value filter. The vmult()
+ * functions of this matrix subtract the mean values of the vector.
+ *
+ * The function takes an <code>std::function</code> object @p reinit_vector as
+ * an argument to initialize the <code>reinit_range_vector</code> and
+ * <code>reinit_domain_vector</code> objects of the LinearOperator object.
  *
  * @ingroup LAOperators
- *
  */
 template <
   typename Range,
@@ -983,15 +982,16 @@ mean_value_filter(const std::function<void(Range &, bool)> &reinit_vector)
 
 
 /**
- * @relatesalso  LinearOperator
- * 返回一个LinearOperator，作为一个均值过滤器。这个矩阵的vmult()函数减去向量的均值。
- * 该函数接收一个LinearOperator  @p op
- * 并使用其范围初始化器来创建一个均值过滤器运算器。该函数还确保底层的Payload与输入的Payload相匹配
- * @p op.  。
+ * @relatesalso LinearOperator
  *
+ * Return a LinearOperator that acts as a mean value filter. The vmult()
+ * functions of this matrix subtract the mean values of the vector.
+ *
+ * The function takes a LinearOperator @p op and uses its range initializer
+ * to create an mean value filter operator. The function also ensures that
+ * the underlying Payload matches that of the input @p op.
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload>
 LinearOperator<Range, Domain, Payload>
@@ -1009,23 +1009,30 @@ namespace internal
   namespace LinearOperatorImplementation
   {
     /**
-     * 一个辅助类，负责初始化一个向量，使其可以直接作为目标参数，或者在矩阵的vmult应用中的源参数。
-     * 这个类的通用版本只是分别调用
-     * <code>Vector::reinit()</code> 和 <code>Matrix::m()</code> or
-     * <code>Matrix::n()</code> 的结果。
-     * 这个类专门用于更复杂的数据结构，如
-     * TrilinosWrappers::MPI::Vector, 等。
+     * A helper class that is responsible for the initialization of a vector
+     * to be directly usable as the destination parameter, or source parameter
+     * in an application of vmult of a matrix.
      *
+     * The generic version of this class just calls
+     * <code>Vector::reinit()</code> with the result of
+     * <code>Matrix::m()</code> or <code>Matrix::n()</code>, respectively.
+     * This class is specialized for more complicated data structures, such as
+     * TrilinosWrappers::MPI::Vector, etc.
      */
     template <typename Vector>
     class ReinitHelper
     {
     public:
       /**
-       * 初始化Range空间的一个向量v，以便在vmult的应用中直接作为目标参数使用。与向量类的reinit函数类似，布尔值决定是否进行快速初始化，即如果它被设置为false，向量的内容就被设置为0。这个类的通用版本只是调用
-       * <code>Vector::reinit()</code> ，其结果是
-       * <code>Matrix::m()</code>  。
+       * Initializes a vector v of the Range space to be directly usable as
+       * the destination parameter in an application of vmult. Similar to the
+       * reinit functions of the vector classes, the boolean determines
+       * whether a fast initialization is done, i.e., if it is set to false the
+       * content of the vector is set to 0.
        *
+       * The generic version of this class just calls
+       * <code>Vector::reinit()</code> with the result of
+       * <code>Matrix::m()</code>.
        */
       template <typename Matrix>
       static void
@@ -1037,8 +1044,15 @@ namespace internal
       }
 
       /**
-       * 初始化域空间的一个向量，在vmult的应用中可直接作为源参数使用。与向量类的reinit函数类似，布尔值决定是否进行快速初始化，也就是说，如果它被设置为false，向量的内容就被设置为0。
+       * Initializes a vector of the Domain space to be directly usable as the
+       * source parameter in an application of vmult. Similar to the reinit
+       * functions of the vector classes, the boolean determines whether a
+       * fast initialization is done, i.e., if it is set to false the content
+       * of the vector is set to 0.
        *
+       * The generic version of this class just calls
+       * <code>Vector::reinit()</code> with the result of
+       * <code>Matrix::n()</code>.
        */
       template <typename Matrix>
       static void
@@ -1052,18 +1066,25 @@ namespace internal
 
 
     /**
-     * 一个假的类，用于不需要任何扩展的LinearOperators，以方便对矩阵进行操作。
-     * 这是通常与deal.II的原生SparseMatrix相关的Payload类。为了使用Trilinos和PETSc稀疏矩阵类，有必要用它们相关的Payload初始化LinearOperator。
-     * @ingroup LAOperators
+     * A dummy class for LinearOperators that do not require any extensions to
+     * facilitate the operations of the matrix.
      *
+     * This is the Payload class typically associated with deal.II's native
+     * SparseMatrix. To use Trilinos and PETSc sparse matrix classes it is
+     * necessary to initialize a LinearOperator with their associated Payload.
+     *
+     *
+     * @ingroup LAOperators
      */
     class EmptyPayload
     {
     public:
       /**
-       * 默认构造函数
-       * 由于这个类不做任何特别的事情，也不需要特别的配置，所以我们只有一个通用构造函数，可以在任何条件下调用。
+       * Default constructor
        *
+       * Since this class does not do anything in particular and needs no
+       * special configuration, we have only one generic constructor that can
+       * be called under any conditions.
        */
       template <typename... Args>
       EmptyPayload(const Args &...)
@@ -1071,8 +1092,7 @@ namespace internal
 
 
       /**
-       * 返回一个为身份操作配置的有效载荷
-       *
+       * Return a payload configured for identity operations
        */
       EmptyPayload
       identity_payload() const
@@ -1082,8 +1102,7 @@ namespace internal
 
 
       /**
-       * 返回一个为空操作而配置的有效载荷
-       *
+       * Return a payload configured for null operations
        */
       EmptyPayload
       null_payload() const
@@ -1093,8 +1112,7 @@ namespace internal
 
 
       /**
-       * 返回一个为转置操作配置的有效载荷
-       *
+       * Return a payload configured for transpose operations
        */
       EmptyPayload
       transpose_payload() const
@@ -1104,8 +1122,7 @@ namespace internal
 
 
       /**
-       * 返回一个为反转操作配置的有效载荷
-       *
+       * Return a payload configured for inverse operations
        */
       template <typename Solver, typename Preconditioner>
       EmptyPayload
@@ -1116,8 +1133,8 @@ namespace internal
     };
 
     /**
-     * 返回一个配置为支持两个LinearOperators相加的有效载荷的操作符
-     *
+     * Operator that returns a payload configured to support the addition of
+     * two LinearOperators
      */
     inline EmptyPayload
     operator+(const EmptyPayload &, const EmptyPayload &)
@@ -1126,8 +1143,8 @@ namespace internal
     }
 
     /**
-     * 返回被配置为支持两个LinearOperators的乘法的有效载荷的操作符。
-     *
+     * Operator that returns a payload configured to support the
+     * multiplication of two LinearOperators
      */
     inline EmptyPayload operator*(const EmptyPayload &, const EmptyPayload &)
     {
@@ -1172,7 +1189,7 @@ namespace internal
       GrowingVectorMemory<Range> vector_memory;
 
       typename VectorMemory<Range>::Pointer i(vector_memory);
-      i->reinit(v,  /*bool omit_zeroing_entries =*/ true);
+      i->reinit(v, /*bool omit_zeroing_entries =*/true);
 
       function(*i, u);
 
@@ -1203,7 +1220,7 @@ namespace internal
                 [&matrix](Range &b, const Domain &a) { matrix.vmult(b, a); },
                 v,
                 u,
-                 /*bool add =*/ false);
+                /*bool add =*/false);
             }
           else
             {
@@ -1217,7 +1234,7 @@ namespace internal
             [&matrix](Range &b, const Domain &a) { matrix.vmult(b, a); },
             v,
             u,
-             /*bool add =*/ true);
+            /*bool add =*/true);
         };
 
         op.Tvmult = [&matrix](Domain &v, const Range &u) {
@@ -1229,7 +1246,7 @@ namespace internal
                 [&matrix](Domain &b, const Range &a) { matrix.Tvmult(b, a); },
                 v,
                 u,
-                 /*bool add =*/ false);
+                /*bool add =*/false);
             }
           else
             {
@@ -1243,7 +1260,7 @@ namespace internal
             [&matrix](Domain &b, const Range &a) { matrix.Tvmult(b, a); },
             v,
             u,
-             /*bool add =*/ true);
+            /*bool add =*/true);
         };
       }
     };
@@ -1273,7 +1290,7 @@ namespace internal
                 [&matrix](Range &b, const Domain &a) { matrix.vmult(b, a); },
                 v,
                 u,
-                 /*bool add =*/ true);
+                /*bool add =*/true);
             }
           else
             {
@@ -1288,7 +1305,7 @@ namespace internal
                 [&matrix](Domain &b, const Range &a) { matrix.Tvmult(b, a); },
                 v,
                 u,
-                 /*bool add =*/ true);
+                /*bool add =*/true);
             }
           else
             {
@@ -1302,57 +1319,60 @@ namespace internal
 
 
 /**
- * @relatesalso  LinearOperator 一个将作用于兼容矢量类型的通用
- * @p matrix
- * 对象封装为LinearOperator的函数。被创建的LinearOperator对象存储了一个对矩阵对象的引用。因此，
- * @p matrix
- * 必须在LinearOperator对象的整个生命周期内保持有效引用。
- * 在创建LinearOperator对象之后，对 @p matrix
- * 所做的所有更改都会被操作者对象所反映。例如，首先创建一个LinearOperator，然后调整大小，以后再重新组合矩阵，这是一个有效的程序。
- * 有关的矩阵类必须提供以下最小接口。
+ * @relatesalso LinearOperator
  *
+ * A function that encapsulates generic @p matrix objects that act on a
+ * compatible Vector type into a LinearOperator. The LinearOperator object
+ * that is created stores a reference to the matrix object. Thus, @p matrix
+ * must remain a valid reference for the whole lifetime of the LinearOperator
+ * object.
  *
- * @code
- * class Matrix
- * {
- * public:
- * // (type specific) information how to create a Range and Domain vector
- * // with appropriate size and internal layout
+ * All changes made on @p matrix after the creation of the LinearOperator
+ * object are reflected by the operator object. For example, it is a valid
+ * procedure to first create a LinearOperator and resize, reassemble the
+ * matrix later.
  *
- * // Application of matrix to vector src, writes the result into dst.
- * vmult(Range &dst, const Domain &src);
- *
- * // Application of the transpose of matrix to vector src, writes the
- * // result into dst. (Depending on the usage of the linear operator
- * // class this can be a dummy implementation throwing an error.)
- * Tvmult(Range &dst, const Domain &src);
- * };
- * @endcode
- *
- * 如果有以下（可选）接口，则使用该接口。
- *
+ * The Matrix class in question must provide the following minimal interface:
  *
  * @code
  * class Matrix
  * {
  * public:
- * // Application of matrix to vector src, adds the result to dst.
- * vmult_add(Range &dst, const Domain &src);
+ *   // (type specific) information how to create a Range and Domain vector
+ *   // with appropriate size and internal layout
  *
- * // Application of the transpose of matrix to vector src, adds the
- * // result to dst.
- * Tvmult_add(Range &dst, const Domain &src);
+ *   // Application of matrix to vector src, writes the result into dst.
+ *   vmult(Range &dst, const Domain &src);
+ *
+ *   // Application of the transpose of matrix to vector src, writes the
+ *   // result into dst. (Depending on the usage of the linear operator
+ *   // class this can be a dummy implementation throwing an error.)
+ *   Tvmult(Range &dst, const Domain &src);
  * };
  * @endcode
  *
- * 如果矩阵不提供 <code>vmult_add</code> 和 <code>Tvmult_add</code>
- * ，则以 <code>vmult</code> and <code>Tvmult</code>
- * 的方式实现（需要中间存储）。
+ * The following (optional) interface is used if available:
  *
+ * @code
+ * class Matrix
+ * {
+ * public:
+ *   // Application of matrix to vector src, adds the result to dst.
+ *   vmult_add(Range &dst, const Domain &src);
+ *
+ *   // Application of the transpose of matrix to vector src, adds the
+ *   // result to dst.
+ *   Tvmult_add(Range &dst, const Domain &src);
+ * };
+ * @endcode
+ *
+ * If the Matrix does not provide <code>vmult_add</code> and
+ * <code>Tvmult_add</code>, they are implemented in terms of
+ * <code>vmult</code> and <code>Tvmult</code> (requiring intermediate
+ * storage).
  *
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload, typename Matrix>
 LinearOperator<Range, Domain, Payload>
@@ -1365,17 +1385,18 @@ linear_operator(const Matrix &matrix)
 
 
 /**
- * @relatesalso  LinearOperator
- * 上述函数的变体，需要一个操作者对象 @p
- * operator_exemplar作为额外参考。这个对象被用来填充
- * reinit_domain_vector 和 reinit_range_vector 函数对象。引用 @p
- * matrix 用于构造vmult、Tvmult等。
- * 这个变体可以，例如，用于封装预处理程序（通常不暴露任何关于底层矩阵的信息）。
+ * @relatesalso LinearOperator
  *
+ * Variant of above function that takes an operator object @p
+ * operator_exemplar as an additional reference. This object is used to
+ * populate the reinit_domain_vector and reinit_range_vector function objects.
+ * The reference @p matrix is used to construct vmult, Tvmult, etc.
+ *
+ * This variant can, for example, be used to encapsulate preconditioners (that
+ * typically do not expose any information about the underlying matrix).
  *
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range,
           typename Domain,
@@ -1420,16 +1441,20 @@ linear_operator(const OperatorExemplar &operator_exemplar, const Matrix &matrix)
 
 
 /**
- * @relatesalso  LinearOperator 上述函数的变体，将LinearOperator  @p
- * operator_exemplar作为一个额外的引用。reinit_domain_vector 和
- * reinit_range_vector 函数是从  @p operator_exemplar
- * 对象中复制的。 参考 @p matrix 用于构造vmult、Tvmult等。
- * 这个变体可以，例如，用于封装预处理程序（通常不暴露任何关于底层矩阵的信息）。
+ * @relatesalso LinearOperator
  *
+ * Variant of above function that takes a LinearOperator @p
+ * operator_exemplar as an additional reference.
+ * The reinit_domain_vector and reinit_range_vector function are copied
+ * from the @p operator_exemplar object.
+ *
+ * The reference @p matrix is used to construct vmult, Tvmult, etc.
+ *
+ * This variant can, for example, be used to encapsulate preconditioners (that
+ * typically do not expose any information about the underlying matrix).
  *
  *
  * @ingroup LAOperators
- *
  */
 template <typename Range, typename Domain, typename Payload, typename Matrix>
 LinearOperator<Range, Domain, Payload>
@@ -1544,5 +1569,3 @@ inverse_operator(const LinearOperator<Range, Domain, Payload> &,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

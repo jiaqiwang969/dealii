@@ -1,4 +1,3 @@
-//include/deal.II-translator/integrators/patches_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -34,7 +33,6 @@ namespace LocalIntegrators
 {
   /**
    * @brief Integrators writing patches with values in quadrature points
-   *
    */
   namespace Patches
   {
@@ -63,5 +61,3 @@ namespace LocalIntegrators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

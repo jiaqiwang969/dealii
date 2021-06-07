@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_bdm_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
@@ -31,43 +32,34 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * The Brezzi-Douglas-Marini element.
+ * 布雷兹-道格拉斯-马里尼元素。 <h3>Degrees of freedom</h3>
+ * @todo
+ * 三维版本表现出一些数值上的不稳定性，特别是对于高阶
+ * @todo  限制矩阵丢失。
+ * 阶<i>k</i>的FE_BDM的匹配压力空间是阶<i>k-1</i>的FE_DGP元素。
+ * 阶数为 @p p
+ * 的BDM元素在每个面上都有<i>p+1</i>个自由度。这些都是在每个面上的<i>p+1</i>高斯点中实现的函数值。
+ * 此外，对于大于或等于2的阶，我们有额外的<i>p(p-1)</i>，即<i>P<sub>p</sub></i>中的向量值多项式的数量，内部自由度。这些是单元格中<i>p<sup>2</sup></i>高斯点中第一个<i>p(p-1)/2</i>的向量函数值。
  *
- * <h3>Degrees of freedom</h3>
- *
- * @todo The 3D version exhibits some numerical instabilities, in particular
- * for higher order
- *
- * @todo Restriction matrices are missing.
- *
- * The matching pressure space for FE_BDM of order <i>k</i> is the element
- * FE_DGP of order <i>k-1</i>.
- *
- * The BDM element of order @p p has <i>p+1</i> degrees of freedom on each
- * face. These are implemented as the function values in the <i>p+1</i> Gauss
- * points on each face.
- *
- * Additionally, for order greater or equal 2, we have additional
- * <i>p(p-1)</i>, the number of vector valued polynomials in
- * <i>P<sub>p</sub></i>, interior degrees of freedom. These are the vector
- * function values in the first <i>p(p-1)/2</i> of the <i>p<sup>2</sup></i>
- * Gauss points in the cell.
  *
  * @ingroup fe
+ *
+ *
  */
 template <int dim>
 class FE_BDM : public FE_PolyTensor<dim>
 {
 public:
   /**
-   * Constructor for the BDM element of degree @p p.
+   * 程度为 @p p. 的BDM元素的构造函数
+   *
    */
   FE_BDM(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_BDM<dim>(degree)</tt>, with @p dim and @p degree replaced
-   * by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_BDM<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 由适当的值代替。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -83,48 +75,45 @@ public:
 
 private:
   /**
-   * Only for internal use. Its full name is @p get_dofs_per_object_vector
-   * function and it creates the @p dofs_per_object vector that is needed
-   * within the constructor to be passed to the constructor of @p
-   * FiniteElementData.
+   * 仅供内部使用。它的全名是 @p get_dofs_per_object_vector
+   * 函数，它创建了 @p dofs_per_object
+   * 向量，在构造函数中需要传递给 @p
+   * FiniteElementData的构造函数。
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * Compute the vector used for the @p restriction_is_additive field passed
-   * to the base class's constructor.
+   * 计算用于传递给基类构造函数的 @p restriction_is_additive
+   * 字段的向量。
+   *
    */
   static std::vector<bool>
   get_ria_vector(const unsigned int degree);
   /**
-   * Initialize the FiniteElement<dim>::generalized_support_points and
-   * FiniteElement<dim>::generalized_face_support_points fields. Called from
-   * the constructor. See the
-   * @ref GlossGeneralizedSupport "glossary entry on generalized support points"
-   * for more information.
+   * 初始化 FiniteElement<dim>::generalized_support_points 和 FiniteElement<dim>::generalized_face_support_points 字段。从构造函数中调用。更多信息请参见 @ref GlossGeneralizedSupport "关于广义支持点的词汇条"
+   * 。
+   *
    */
   void
   initialize_support_points(const unsigned int bdm_degree);
   /**
-   * The values in the face support points of the polynomials needed as test
-   * functions. The outer vector is indexed by quadrature points, the inner by
-   * the test function. The test function space is PolynomialsP<dim-1>.
+   * 作为测试函数需要的多项式的面支持点中的值。外侧向量由正交点索引，内部由测试函数索引。测试函数空间是PolynomialsP<dim-1>。
+   *
    */
   std::vector<std::vector<double>> test_values_face;
   /**
-   * The values in the interior support points of the polynomials needed as
-   * test functions. The outer vector is indexed by quadrature points, the
-   * inner by the test function. The test function space is PolynomialsP<dim>.
+   * 作为测试函数需要的多项式的内部支持点的值。外侧向量以正交点为索引，内部以测试函数为索引。测试函数空间是PolynomialsP<dim>。
+   *
    */
   std::vector<std::vector<double>> test_values_cell;
 
   /**
-   * Initialize the permutation pattern and the pattern of sign change.
+   * 初始化置换模式和符号变化模式。
+   * @note
+   * 这个函数还没有完全填充正确的实现。它需要在未来的版本中统一实现，以便在包含有翻转面的单元格的网格上工作。
    *
-   * @note This function is not fully filled with the correct implementation
-   * yet. It needs to be consistently implemented in a future release to work
-   * on meshes that contain cells with flipped faces.
    */
   void
   initialize_quad_dof_index_permutation_and_sign_change();
@@ -133,3 +122,5 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/cuda_atomic_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -28,10 +27,10 @@ namespace LinearAlgebra
   namespace CUDAWrappers
   {
     /**
-     * 为浮点数提供atomicAdd。          @deprecated
-     * 直接使用atomicAdd（address, val）。
-     * @ingroup CUDAWrappers
+     * Provide atomicAdd for floats.
      *
+     * @deprecated Use atomicAdd(address, val) directly.
+     * @ingroup CUDAWrappers
      */
     DEAL_II_DEPRECATED
     inline __device__ float
@@ -43,10 +42,10 @@ namespace LinearAlgebra
 
 
     /**
-     * 为双数提供atomicAdd。          @deprecated
-     * 直接使用atomicAdd(address, val)。
-     * @ingroup CUDAWrappers
+     * Provide atomicAdd for doubles.
      *
+     * @deprecated Use atomicAdd(address, val) directly.
+     * @ingroup CUDAWrappers
      */
     DEAL_II_DEPRECATED
     inline __device__ double
@@ -58,9 +57,9 @@ namespace LinearAlgebra
 
 
     /**
-     * 为浮点数提供atomicMax。
-     * @ingroup CUDAWrappers
+     * Provide atomicMax for floats.
      *
+     * @ingroup CUDAWrappers
      */
     inline __device__ float
     atomicMax_wrapper(float *address, float val)
@@ -82,9 +81,9 @@ namespace LinearAlgebra
 
 
     /**
-     * 为双数提供atomicMax。
-     * @ingroup CUDAWrappers
+     * Provide atomicMax for doubles.
      *
+     * @ingroup CUDAWrappers
      */
     inline __device__ double
     atomicMax_wrapper(double *address, double val)
@@ -113,5 +112,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
-
-

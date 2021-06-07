@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/matrix_iterator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -24,95 +25,101 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Iterator for constant and non-constant matrices.
+ * 用于常数和非常数矩阵的迭代器。
+ * 这个迭代器是从实际的矩阵类型中抽象出来的，可以用于任何具有所需ACCESSOR类型的矩阵。
  *
- * This iterator is abstracted from the actual matrix type and can be used for
- * any matrix having the required ACCESSOR type.
+ *
  */
 template <class ACCESSOR>
 class MatrixIterator
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Typedef for the matrix type (including constness) we are to operate on.
+   * 为我们要操作的矩阵类型（包括常数）提供类型定义。
+   *
    */
   using MatrixType = typename ACCESSOR::MatrixType;
 
   /**
-   * Constructor. Create an iterator into the matrix <tt>matrix</tt> for the
-   * given <tt>row</tt> and the <tt>index</tt> within it.
+   * 构造函数。为给定的<tt>行</tt>和其中的<tt>索引</tt>创建一个进入矩阵<tt>matrix</tt>的迭代器。
+   *
    */
   MatrixIterator(MatrixType *    matrix,
                  const size_type row   = 0,
                  const size_type index = 0);
 
   /**
-   * Copy from another matrix iterator. Mostly implemented to allow
-   * initialization of a constant iterator from a non constant, this function
-   * only requires that a conversion from the other iterator's accessor to
-   * this accessor object is possible.
+   * 从另一个矩阵迭代器复制。主要是为了允许从一个非常量的迭代器初始化，这个函数只要求从另一个迭代器的访问器转换到这个访问器对象就可以了。
+   *
    */
   template <class OtherAccessor>
   MatrixIterator(const MatrixIterator<OtherAccessor> &other);
 
   /**
-   * Prefix increment.
+   * 前缀增量。
+   *
    */
   MatrixIterator &
   operator++();
 
   /**
-   * Postfix increment.
+   * 后缀增量。
+   *
    */
   MatrixIterator
   operator++(int);
 
   /**
-   * Dereferencing operator.
+   * 撤消运算符。
+   *
    */
   const ACCESSOR &operator*() const;
 
   /**
-   * Dereferencing operator.
+   * 解除引用操作符。
+   *
    */
   const ACCESSOR *operator->() const;
 
   /**
-   * Comparison. True, if both accessors are equal.
+   * 比较。真，如果两个访问器都相等。
+   *
    */
   bool
   operator==(const MatrixIterator &) const;
 
   /**
-   * Inverse of <tt>==</tt>.
+   * <tt>==</tt>的倒数。
+   *
    */
   bool
   operator!=(const MatrixIterator &) const;
 
   /**
-   * Comparison operator. Result is true if either the first row number is
-   * smaller or if the row numbers are equal and the first index is smaller.
+   * 比较运算符。如果第一个行号较小，或者行号相等且第一个索引较小，则结果为真。
+   * 这个函数只有在两个迭代器都指向同一个矩阵时才有效。
    *
-   * This function is only valid if both iterators point into the same matrix.
    */
   bool
   operator<(const MatrixIterator &) const;
 
   /**
-   * Comparison operator. Works in the same way as above operator, just the
-   * other way round.
+   * 比较运算符。与上述运算符的工作方式相同，只是反过来了。
+   *
    */
   bool
   operator>(const MatrixIterator &) const;
 
 private:
   /**
-   * Store an object of the accessor class.
+   * 存储一个访问器类的对象。
+   *
    */
   ACCESSOR accessor;
 
@@ -210,3 +217,5 @@ MatrixIterator<ACCESSOR>::operator>(const MatrixIterator &other) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

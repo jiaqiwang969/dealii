@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/mg_block_smoother_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -32,25 +33,26 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*
- * MGSmootherBase is defined in mg_base.h
- */
+/* MGSmootherBase在mg_base.h中定义。
 
-/*!@addtogroup mg */
-/*@{*/
+* 
+* */
+
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 /**
- * General smoother class for block vectors. This class gives complete freedom
- * to the choice of a block smoother by being initialized with a matrix and a
- * smoother object. Therefore, the smoother object for each level must be
- * constructed by hand.
+ * 用于块状向量的通用平滑器类。该类通过初始化一个矩阵和一个平滑器对象，给了选择块状平滑器的完全自由。因此，每一级的平滑器对象必须由手工构建。
+ *
+ *
  */
 template <typename MatrixType, class RelaxationType, typename number>
 class MGSmootherBlock : public MGSmoother<BlockVector<number>>
 {
 public:
   /**
-   * Constructor.
+   * 构造器。
+   *
    */
   MGSmootherBlock(const unsigned int steps     = 1,
                   const bool         variable  = false,
@@ -59,38 +61,34 @@ public:
                   const bool         reverse   = false);
 
   /**
-   * Initialize for matrices. The parameter <tt>matrices</tt> can be any
-   * object having functions <tt>get_minlevel()</tt> and
-   * <tt>get_maxlevel()</tt> as well as an <tt>operator[]</tt> returning a
-   * reference to @p MatrixType.
+   * 对矩阵进行初始化。参数<tt>matrices</tt>可以是任何具有<tt>get_minlevel()</tt>和<tt>get_maxlevel()</tt>函数以及<tt>operator[]</tt>的对象，返回对
+   * @p MatrixType.
+   * 的引用。参数<tt>smoothers</tt>使用同样的约定，这样<tt>operator[]</tt>返回在单一层次上做块平滑的对象。
+   * 这个函数存储了指向每个级别的级别矩阵和平滑运算器的指针。
    *
-   * The same convention is used for the parameter <tt>smoothers</tt>, such
-   * that <tt>operator[]</tt> returns the object doing the block-smoothing on
-   * a single level.
-   *
-   * This function stores pointers to the level matrices and smoothing
-   * operator for each level.
    */
   template <class MGMatrixType, class MGRelaxationType>
   void
   initialize(const MGMatrixType &matrices, const MGRelaxationType &smoothers);
 
   /**
-   * Empty all vectors.
+   * 清空所有的向量。
+   *
    */
   void
   clear();
 
   /**
-   * Switch on/off reversed. This is mutually exclusive with transpose().
+   * 开启/关闭反转。这与转置()是相互排斥的。
+   *
    */
   void
   set_reverse(const bool);
 
   /**
-   * Implementation of the interface for @p Multigrid. This function does
-   * nothing, which by comparison with the definition of this function means
-   * that the smoothing operator equals the null operator.
+   * 对 @p Multigrid. 接口的实现
+   * 这个函数什么都不做，通过与这个函数的定义比较，这意味着平滑运算符等于空运算符。
+   *
    */
   virtual void
   smooth(const unsigned int         level,
@@ -98,36 +96,41 @@ public:
          const BlockVector<number> &rhs) const;
 
   /**
-   * Memory used by this object.
+   * 这个对象使用的内存。
+   *
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * Pointer to the matrices.
+   * 指向矩阵的指针。
+   *
    */
   MGLevelObject<LinearOperator<BlockVector<number>>> matrices;
 
   /**
-   * Pointer to the matrices.
+   * 指向矩阵的指针。
+   *
    */
   MGLevelObject<LinearOperator<BlockVector<number>>> smoothers;
 
   /**
-   * Reverse?
+   * 反转？
+   *
    */
   bool reverse;
 
   /**
-   * Memory for auxiliary vectors.
+   * 用于辅助向量的内存。
+   *
    */
   SmartPointer<VectorMemory<BlockVector<number>>,
                MGSmootherBlock<MatrixType, RelaxationType, number>>
     mem;
 };
 
-/**@}*/
+ /**@}*/ 
 
 //---------------------------------------------------------------------------
 
@@ -252,3 +255,5 @@ MGSmootherBlock<MatrixType, RelaxationType, number>::smooth(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

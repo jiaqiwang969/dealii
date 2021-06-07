@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/quadrature_lib_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -23,58 +24,51 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Quadrature */
-/*@{*/
+ /*!@addtogroup Quadrature */ 
+ /*@{*/ 
 
 /**
- * The Gauss-Legendre family of quadrature rules for numerical integration.
- *
- * The coefficients of these quadrature rules are computed by the function
- * described in <a
+ * 用于数值积分的Gauss-Legendre系列的正交规则。
+ * 这些正交规则的系数是由<a
  * href="http://en.wikipedia.org/wiki/Numerical_Recipes">Numerical
- * Recipes</a>.
+ * Recipes</a>中描述的函数计算的。
+ *
+ *
  */
 template <int dim>
 class QGauss : public Quadrature<dim>
 {
 public:
   /**
-   * Generate a formula with <tt>n</tt> quadrature points (in each space
-   * direction), exact for polynomials of degree <tt>2n-1</tt>.
+   * 生成一个有<tt>n</tt>个正交点（在每个空间方向）的公式，对<tt>2n-1</tt>度的多项式是精确的。
+   *
    */
   QGauss(const unsigned int n);
 };
 
 
 /**
- * The Gauss-Lobatto family of quadrature rules for numerical integration.
+ * 高斯-洛巴托系列的正交规则用于数值积分。
+ * 这种对高斯正交的修改也使用了两个区间的端点。对于度数为<i>2n-3</i>的多项式是精确的，这个公式有两个度数的次优。
+ * 正交点是区间端点加上度数为<i>n-1</i>的Legendre多项式<i>P<sub>n-1</sub></i>的导数的根。正交权重为<i>2/(n(n-1)(P<sub>n-1</sub>(x<sub>i</sub>)<sup>2</sup>)</i>。
  *
- * This modification of the Gauss quadrature uses the two interval end points
- * as well. Being exact for polynomials of degree <i>2n-3</i>, this formula is
- * suboptimal by two degrees.
  *
- * The quadrature points are interval end points plus the roots of the
- * derivative of the Legendre polynomial <i>P<sub>n-1</sub></i> of degree
- * <i>n-1</i>. The quadrature weights are
- * <i>2/(n(n-1)(P<sub>n-1</sub>(x<sub>i</sub>)<sup>2</sup>)</i>.
+ * @note
+ * 这个实现没有在数值稳定性和效率方面进行优化。它可以很容易地适应具有任意参数的Gauss-Lobatto-Jacobi-Bouzitat正交的一般情况
+ * $\alpha$  ,  $\beta$  ，其中Gauss-Lobatto-Legendre正交（  $\alpha =
+ * \beta = 0$  ）是一个特殊情况。 @sa
+ * http://en.wikipedia.org/wiki/Handbook_of_Mathematical_Functions  @sa
+ * Karniadakis, G.E. and Sherwin, S.J.: Spectral/HP element methods for
+ * computational fluid dynamics. 牛津。牛津大学出版社，2005
  *
- * @note This implementation has not been optimized concerning numerical
- * stability and efficiency. It can be easily adapted to the general case of
- * Gauss-Lobatto-Jacobi-Bouzitat quadrature with arbitrary parameters
- * $\alpha$, $\beta$, of which the Gauss-Lobatto-Legendre quadrature ($\alpha
- * = \beta = 0$) is a special case.
- *
- * @sa http://en.wikipedia.org/wiki/Handbook_of_Mathematical_Functions @sa
- * Karniadakis, G.E. and Sherwin, S.J.: Spectral/hp element methods for
- * computational fluid dynamics. Oxford: Oxford University Press, 2005
  */
 template <int dim>
 class QGaussLobatto : public Quadrature<dim>
 {
 public:
   /**
-   * Generate a formula with <tt>n</tt> quadrature points (in each space
-   * direction).
+   * 生成一个具有<tt>n</tt>正交点的公式（在每个空间方向）。
+   *
    */
   QGaussLobatto(const unsigned int n);
 };
@@ -82,8 +76,9 @@ public:
 
 
 /**
- * The midpoint rule for numerical quadrature. This one-point formula is exact
- * for linear polynomials.
+ * 数字正交的中点规则。这个单点公式对线性多项式是精确的。
+ *
+ *
  */
 template <int dim>
 class QMidpoint : public Quadrature<dim>
@@ -94,8 +89,9 @@ public:
 
 
 /**
- * The Simpson rule for numerical quadrature. This formula with 3 quadrature
- * points is exact for polynomials of degree 3.
+ * 数字正交的辛普森规则。这个有3个正交点的公式对3度的多项式是精确的。
+ *
+ *
  */
 template <int dim>
 class QSimpson : public Quadrature<dim>
@@ -107,12 +103,10 @@ public:
 
 
 /**
- * The trapezoidal rule for numerical quadrature. This formula with two
- * quadrature points is exact for linear polynomials and uses the
- * end points of an interval for function evaluation in 1d, see
- * https://en.wikipedia.org/wiki/Trapezoidal_rule . In higher dimensions,
- * the class is constructed via a tensor product and then uses the
- * vertices of a quadrilateral or hexahedron for function evaluation.
+ * 数字正交的梯形规则。这个有两个正交点的公式对线性多项式是精确的，并使用区间的端点进行1d中的函数评估，见https://en.wikipedia.org/wiki/Trapezoidal_rule
+ * 。在更高的维度上，该类是通过张量积构建的，然后使用四边形或六面体的顶点进行函数评估。
+ *
+ *
  */
 template <int dim>
 class QTrapezoid : public Quadrature<dim>
@@ -123,15 +117,13 @@ public:
 
 
 /**
- * An alias for QTrapezoid available for historic reasons. This name is
- * deprecated.
+ * QTrapezoid的一个别名，由于历史原因可用。这个名字已经被废弃了。
+ * 该类最初被命名为QTrapez，这是一个糟糕的命名选择，因为正交公式的正确名称是
+ * "梯形规则"，或者有时也被称为
+ * "梯形规则"。这个错误的名字是由于它的原作者的英语水平很差，导致他们错误地从德语
+ * "Trapezregel "翻译了这个名字。
  *
- * The class was originally named QTrapez, a poorly named choice since the
- * proper name of the quadrature formula
- * is "trapezoidal rule", or sometimes also called the "trapezoid rule". The
- * misnomer resulted from the fact that its original authors' poor English
- * language skills led them to translate the name incorrectly from the German
- * "Trapezregel".
+ *
  */
 template <int dim>
 using QTrapez DEAL_II_DEPRECATED = QTrapezoid<dim>;
@@ -139,10 +131,9 @@ using QTrapez DEAL_II_DEPRECATED = QTrapezoid<dim>;
 
 
 /**
- * The Milne rule for numerical quadrature formula. The Milne rule is a closed
- * Newton-Cotes formula and is exact for polynomials of degree 5.
+ * 数字正交公式的米尔恩规则。Milne规则是一个封闭的Newton-Cotes公式，对于5度的多项式是精确的。
+ * @sa  Stoer: Einführung in die Numerische Mathematik I, p. 102
  *
- * @sa Stoer: Einführung in die Numerische Mathematik I, p. 102
  */
 template <int dim>
 class QMilne : public Quadrature<dim>
@@ -153,10 +144,9 @@ public:
 
 
 /**
- * The Weddle rule for numerical quadrature. The Weddle rule is a closed
- * Newton-Cotes formula and is exact for polynomials of degree 7.
+ * 数值正交的韦德尔规则。Weddle规则是一个封闭的Newton-Cotes公式，对于7度的多项式是精确的。
+ * @sa  Stoer: Einführung in die Numerische Mathematik I, p. 102
  *
- * @sa Stoer: Einführung in die Numerische Mathematik I, p. 102
  */
 template <int dim>
 class QWeddle : public Quadrature<dim>
@@ -168,36 +158,37 @@ public:
 
 
 /**
- * A class for Gauss quadrature with logarithmic weighting function. This
- * formula is used to integrate $\ln|x|\;f(x)$ on the interval $[0,1]$, where
- * $f$ is a smooth function without singularities. The collection of
- * quadrature points and weights has been obtained using <tt>Numerical
- * Recipes</tt>.
+ * 带对数加权函数的高斯正交的一个类。这个公式用于在区间
+ * $[0,1]$ 上积分 $\ln|x|\;f(x)$ ，其中 $f$
+ * 是一个没有奇点的平滑函数。正交点和权重的集合已经用<tt>数字配方</tt>得到。
+ * 注意只应提供函数 $f(x)$ ，即 $\int_0^1 f(x) \ln|x| dx =
+ * \sum_{i=0}^N w_i f(q_i)$  。在构造时将 @p revert 标志设置为
+ * "真"，可以将权重从 $\ln|x|$ 切换到 $\ln|1-x|$  。
+ * 权重和函数已经表到了12阶。
  *
- * Notice that only the function $f(x)$ should be provided, i.e., $\int_0^1
- * f(x) \ln|x| dx = \sum_{i=0}^N w_i f(q_i)$. Setting the @p revert flag to
- * true at construction time switches the weight from $\ln|x|$ to $\ln|1-x|$.
  *
- * The weights and functions have been tabulated up to order 12.
  */
 template <int dim>
 class QGaussLog : public Quadrature<dim>
 {
 public:
   /**
-   * Generate a formula with <tt>n</tt> quadrature points
+   * 产生一个具有<tt>n</tt>正交点的公式
+   *
    */
   QGaussLog(const unsigned int n, const bool revert = false);
 
 private:
   /**
-   * Compute the points of the quadrature formula.
+   * 计算正交公式的点。
+   *
    */
   static std::vector<double>
   get_quadrature_points(const unsigned int n);
 
   /**
-   * Compute the weights of the quadrature formula.
+   * 计算正交公式的权重。
+   *
    */
   static std::vector<double>
   get_quadrature_weights(const unsigned int n);
@@ -206,51 +197,39 @@ private:
 
 
 /**
- * A class for Gauss quadrature with arbitrary logarithmic weighting function.
- * This formula is used to integrate $\ln(|x-x_0|/\alpha)\;f(x)$ on the
- * interval $[0,1]$, where $f$ is a smooth function without singularities, and
- * $x_0$ and $\alpha$ are given at construction time, and are the location of
- * the singularity $x_0$ and an arbitrary scaling factor in the singularity.
+ * 一个用于高斯正交的类，具有任意的对数加权函数。这个公式用于在区间
+ * $[0,1]$ 上对 $\ln(|x-x_0|/\alpha)\;f(x)$ 进行积分，其中 $f$
+ * 是一个没有奇点的平滑函数， $x_0$ 和 $\alpha$
+ * 是在构造时给出的，是奇点的位置 $x_0$
+ * 和奇点中一个任意的缩放因子。 你必须确保点 $x_0$
+ * 不是阶数为 $N$
+ * 的高斯正交点之一，否则会出现异常，因为正交权重不能被正确计算。
+ * 这个正交公式相当昂贵，因为它在内部使用了两个n阶的高斯正交公式来积分因子的非辛格部分，以及两个GaussLog正交公式来积分独立的片段
+ * $[0,x_0]$  和  $[x_0,1]$
+ * 。如果奇点是其中一个极值，且因子α为1，那么这个正交就与QGaussLog相同。
+ * 构造函数的最后一个参数允许你以两种可能的方式之一使用这个正交规则。\f[
+ * \int_0^1 g(x) dx = \int_0^1 f(x) \ln\left(\frac{|x-x_0|}{\alpha}\right) dx
+ * = \sum_{i=0}^N w_i g(q_i) = \sum_{i=0}^N \bar{w}_i f(q_i) \f]
+ * 提供两组权重中的哪一组，可以通过 @p
+ * factor_out_singular_weight参数选择。如果它是假的（默认），那么将计算
+ * $\bar{w}_i$ 权重，你应该只提供平滑函数 $f(x)$
+ * ，因为奇异点被包含在正交里面。如果参数设置为
+ * "true"，那么奇异点将从正交公式中剔除，你应该提供一个函数
+ * $g(x)$  ，它至少应该类似于  $\ln(|x-x_0|/\alpha)$  。
+ * 请注意，如果你试图将这个正交规则用于常规函数，一旦你将奇异点剔除，这个正交规则就没有价值。
+ * 权重和函数已经列到了12阶。
  *
- * You have to make sure that the point $x_0$ is not one of the Gauss
- * quadrature points of order $N$, otherwise an exception is thrown, since the
- * quadrature weights cannot be computed correctly.
  *
- * This quadrature formula is rather expensive, since it uses internally two
- * Gauss quadrature formulas of order n to integrate the nonsingular part of
- * the factor, and two GaussLog quadrature formulas to integrate on the
- * separate segments $[0,x_0]$ and $[x_0,1]$. If the singularity is one of the
- * extremes and the factor alpha is 1, then this quadrature is the same as
- * QGaussLog.
- *
- * The last argument from the constructor allows you to use this quadrature
- * rule in one of two possible ways: \f[ \int_0^1 g(x) dx = \int_0^1 f(x)
- * \ln\left(\frac{|x-x_0|}{\alpha}\right) dx = \sum_{i=0}^N w_i g(q_i) =
- * \sum_{i=0}^N \bar{w}_i f(q_i) \f]
- *
- * Which one of the two sets of weights is provided, can be selected by the @p
- * factor_out_singular_weight parameter. If it is false (the default), then
- * the $\bar{w}_i$ weights are computed, and you should provide only the
- * smooth function $f(x)$, since the singularity is included inside the
- * quadrature. If the parameter is set to true, then the singularity is
- * factored out of the quadrature formula, and you should provide a function
- * $g(x)$, which should at least be similar to $\ln(|x-x_0|/\alpha)$.
- *
- * Notice that this quadrature rule is worthless if you try to use it for
- * regular functions once you factored out the singularity.
- *
- * The weights and functions have been tabulated up to order 12.
  */
 template <int dim>
 class QGaussLogR : public Quadrature<dim>
 {
 public:
   /**
-   * The constructor takes four arguments: the order of the Gauss formula on
-   * each of the segments $[0,x_0]$ and $[x_0,1]$, the actual location of the
-   * singularity, the scale factor inside the logarithmic function and a flag
-   * that decides whether the singularity is left inside the quadrature
-   * formula or it is factored out, to be included in the integrand.
+   * 构造函数需要四个参数：高斯公式在每段 $[0,x_0]$ 和
+   * $[x_0,1]$
+   * 上的顺序，奇点的实际位置，对数函数内部的比例因子和一个标志，决定奇点是留在正交公式内还是被因子化掉，以包括在积分里。
+   *
    */
   QGaussLogR(const unsigned int n,
              const Point<dim> & x0                         = Point<dim>(),
@@ -258,68 +237,51 @@ public:
              const bool         factor_out_singular_weight = false);
 
   /**
-   * Move constructor. We cannot rely on the move constructor for `Quadrature`,
-   * since it does not know about the additional member `fraction` of this
-   * class.
+   * 移动构造器。我们不能依赖`正交'的移动构造函数，因为它不知道这个类的额外成员`分数'。
+   *
    */
   QGaussLogR(QGaussLogR<dim> &&) noexcept = default;
 
 protected:
   /**
-   * This is the length of interval $(0,origin)$, or 1 if either of the two
-   * extremes have been selected.
+   * 这是区间 $(0,origin)$
+   * 的长度，如果两个极端中的任何一个已经被选中，则为1。
+   *
    */
   const double fraction;
 };
 
 
 /**
- * A class for Gauss quadrature with $1/R$ weighting function. This formula
- * can be used to integrate $1/R \ f(x)$ on the reference element $[0,1]^2$,
- * where $f$ is a smooth function without singularities, and $R$ is the
- * distance from the point $x$ to the vertex $\xi$, given at construction time
- * by specifying its index. Notice that this distance is evaluated in the
- * reference element.
+ * 一个用于高斯正交的类，带有 $1/R$
+ * 加权函数。这个公式可以用来在参考元素 $[0,1]^2$ 上积分
+ * $1/R \ f(x)$ ，其中 $f$ 是一个没有奇点的平滑函数， $R$
+ * 是点 $x$ 到顶点 $\xi$
+ * 的距离，在构造时通过指定其索引给出。请注意，这个距离是在参考元素中评估的。
+ * 这个正交公式是由两个QGauss正交公式得到的，将它们转换为以奇点为中心的极坐标系，然后再转换为另一个参考元素。这使得奇点可以被转换的部分雅各布系数所抵消，其中包含
+ * $R$
+ * 。在实践中，参考元素通过折叠与奇点相邻的一条边而被转化为一个三角形。这个变换的Jacobian包含
+ * $R$
+ * ，在对原始正交进行缩放之前，这个Jacobian被去除，这个过程对下一个半元素重复进行。
+ * 在构建时，可以指定我们是否要去除奇点。换句话说，这个正交可以用来整合
+ * $g(x) = 1/R\ f(x)$ ，或者简单地整合 $f(x)$ ， $1/R$
+ * 因子已经包含在正交的权重中。
  *
- * This quadrature formula is obtained from two QGauss quadrature formulas,
- * upon transforming them into polar coordinate system centered at the
- * singularity, and then again into another reference element. This allows for
- * the singularity to be cancelled by part of the Jacobian of the
- * transformation, which contains $R$. In practice the reference element is
- * transformed into a triangle by collapsing one of the sides adjacent to the
- * singularity. The Jacobian of this transformation contains $R$, which is
- * removed before scaling the original quadrature, and this process is
- * repeated for the next half element.
  *
- * Upon construction it is possible to specify whether we want the singularity
- * removed, or not. In other words, this quadrature can be used to integrate
- * $g(x) = 1/R\ f(x)$, or simply $f(x)$, with the $1/R$ factor already
- * included in the quadrature weights.
  */
 template <int dim>
 class QGaussOneOverR : public Quadrature<dim>
 {
 public:
   /**
-   * This constructor takes three arguments: the order of the Gauss formula,
-   * the point of the reference element in which the singularity is located,
-   * and whether we include the weighting singular function inside the
-   * quadrature, or we leave it in the user function to be integrated.
-   *
-   * Traditionally, quadrature formulas include their weighting function, and
-   * the last argument is set to false by default. There are cases, however,
-   * where this is undesirable (for example when you only know that your
-   * singularity has the same order of 1/R, but cannot be written exactly in
-   * this way).
-   *
-   * In other words, you can use this function in either of the following way,
-   * obtaining the same result:
-   *
+   * 这个构造函数需要三个参数：高斯公式的顺序，奇点所在的参考元素的点，以及我们是将加权奇点函数包含在正交里面，还是将其留在用户函数中进行积分。
+   * 传统上，正交公式包括其加权函数，最后一个参数默认设置为假。然而，有些情况下这是不可取的（例如，当你只知道你的奇点具有1/R的相同阶数，但不能准确地以这种方式书写）。
+   * 换句话说，你可以用以下两种方式使用这个函数，获得相同的结果。
    * @code
    * QGaussOneOverR singular_quad(order, q_point, false);
    * // This will produce the integral of f(x)/R
    * for(unsigned int i=0; i<singular_quad.size(); ++i)
-   *   integral += f(singular_quad.point(i))*singular_quad.weight(i);
+   * integral += f(singular_quad.point(i))*singular_quad.weight(i);
    *
    * // And the same here
    * QGaussOneOverR singular_quad_noR(order, q_point, true);
@@ -327,36 +289,25 @@ public:
    * // This also will produce the integral of f(x)/R, but 1/R has to
    * // be specified.
    * for(unsigned int i=0; i<singular_quad.size(); ++i) {
-   *   double R = (singular_quad_noR.point(i)-cell->vertex(vertex_id)).norm();
-   *   integral += f(singular_quad_noR.point(i))*singular_quad_noR.weight(i)/R;
+   * double R = (singular_quad_noR.point(i)-cell->vertex(vertex_id)).norm();
+   * integral += f(singular_quad_noR.point(i))*singular_quad_noR.weight(i)/R;
    * }
    * @endcode
+   *
+   *
    */
   QGaussOneOverR(const unsigned int n,
                  const Point<dim> & singularity,
                  const bool         factor_out_singular_weight = false);
   /**
-   * The constructor takes three arguments: the order of the Gauss formula,
-   * the index of the vertex where the singularity is located, and whether we
-   * include the weighting singular function inside the quadrature, or we
-   * leave it in the user function to be integrated. Notice that this is a
-   * specialized version of the previous constructor which works only for the
-   * vertices of the quadrilateral.
-   *
-   * Traditionally, quadrature formulas include their weighting function, and
-   * the last argument is set to false by default. There are cases, however,
-   * where this is undesirable (for example when you only know that your
-   * singularity has the same order of 1/R, but cannot be written exactly in
-   * this way).
-   *
-   * In other words, you can use this function in either of the following way,
-   * obtaining the same result:
-   *
+   * 构造函数需要三个参数：高斯公式的顺序，奇点所在顶点的索引，以及我们是将加权奇点函数包含在正交里面，还是将它留在用户函数中进行积分。请注意，这是前一个构造函数的专门版本，只对四边形的顶点起作用。
+   * 传统上，正交公式包括其加权函数，最后一个参数默认设置为假。然而，有些情况下这是不可取的（例如，当你只知道你的奇点具有1/R的相同阶数，但不能准确地以这种方式书写）。
+   * 换句话说，你可以用以下两种方式使用这个函数，获得相同的结果。
    * @code
    * QGaussOneOverR singular_quad(order, vertex_id, false);
    * // This will produce the integral of f(x)/R
    * for(unsigned int i=0; i<singular_quad.size(); ++i)
-   *   integral += f(singular_quad.point(i))*singular_quad.weight(i);
+   * integral += f(singular_quad.point(i))*singular_quad.weight(i);
    *
    * // And the same here
    * QGaussOneOverR singular_quad_noR(order, vertex_id, true);
@@ -364,10 +315,12 @@ public:
    * // This also will produce the integral of f(x)/R, but 1/R has to
    * // be specified.
    * for(unsigned int i=0; i<singular_quad.size(); ++i) {
-   *   double R = (singular_quad_noR.point(i)-cell->vertex(vertex_id)).norm();
-   *   integral += f(singular_quad_noR.point(i))*singular_quad_noR.weight(i)/R;
+   * double R = (singular_quad_noR.point(i)-cell->vertex(vertex_id)).norm();
+   * integral += f(singular_quad_noR.point(i))*singular_quad_noR.weight(i)/R;
    * }
    * @endcode
+   *
+   *
    */
   QGaussOneOverR(const unsigned int n,
                  const unsigned int vertex_index,
@@ -375,9 +328,8 @@ public:
 
 private:
   /**
-   * Given a quadrature point and a degree n, this function returns the size
-   * of the singular quadrature rule, considering whether the point is inside
-   * the cell, on an edge of the cell, or on a corner of the cell.
+   * 给定一个正交点和一个度数n，这个函数返回奇异正交规则的大小，考虑到该点是否在单元格内，是否在单元格的边缘，是否在单元格的角落。
+   *
    */
   static unsigned int
   quad_size(const Point<dim> &singularity, const unsigned int n);
@@ -386,117 +338,115 @@ private:
 
 
 /**
- * Sorted Quadrature. Given an arbitrary quadrature formula, this class
- * generates a quadrature formula where the quadrature points are ordered
- * according the weights, from those with smaller corresponding weight, to
- * those with higher corresponding weights. This might be necessary, for
- * example, when integrating high order polynomials, since in these cases you
- * might sum very big numbers with very small numbers, and summation is not
- * stable if the numbers to sum are not close to each other.
+ * 排序的正交法。给定一个任意的正交公式，该类生成一个正交公式，其中正交点根据权重排序，从对应权重小的点到对应权重大的点。这可能是必要的，例如，在整合高阶多项式时，因为在这些情况下，你可能会用非常小的数字来求和，如果要求和的数字不相近，求和就不稳定。
+ *
+ *
  */
 template <int dim>
 class QSorted : public Quadrature<dim>
 {
 public:
   /**
-   * The constructor takes an arbitrary quadrature formula @p quad and sorts
-   * its points and weights according to ascending weights.
+   * 构造函数接受一个任意的正交公式 @p quad
+   * ，并按照升序权重对其点和权重进行排序。
+   *
    */
   QSorted(const Quadrature<dim> &quad);
 
 private:
   /**
-   * A rule for std::sort to reorder pairs of points and weights.
-   * @p a and @p b are indices into the weights array and the result will
-   * be determined by comparing the weights.
+   * 一个用于 std::sort 的规则，对点和权重进行重新排序。
+   * @p a 和 @p b
+   * 是权重数组的索引，结果将通过比较权重来确定。
+   *
    */
   bool
   compare_weights(const unsigned int a, const unsigned int b) const;
 };
 
 /**
- * Telles quadrature of arbitrary order.
+ * 任意阶数的Telles正交。
+ * 这些正交规则的系数是使用非线性的变量变化从Gauss-Legendre正交公式开始计算的。这是用一个三次多项式，
+ * $n = a x^3 + b x^2 + c x + d$
+ * 来完成的，以便整合一个奇异的积分，奇异点在给定的x_0。
+ * 我们从一个具有任意函数的高斯正交公式开始。然后我们应用三维变量变化。在论文中，J.C.F.Telles：A
+ * Self-Adaptive Co-ordinate Transformation For Efficient Numerical Evaluation
+ * of General Boundary Element Integrals. 1987年，作者在参考单元
+ * $[-1, 1]$ 上应用变换。
  *
- * The coefficients of these quadrature rules are computed using a non linear
- * change of variables starting from a Gauss-Legendre quadrature formula. This
- * is done using a cubic polynomial, $n = a x^3 + b x^2 + c x + d$ in order to
- * integrate a singular integral, with singularity at a given point x_0.
- *
- * We start from a Gauss Quadrature Formula with arbitrary function. Then we
- * apply the cubic variable change. In the paper, J.C.F.Telles:A Self-Adaptive
- * Co-ordinate Transformation For Efficient Numerical Evaluation of General
- * Boundary Element Integrals. International Journal for Numerical Methods in
- * Engineering, vol 24, pages 959–973. year 1987, the author applies the
- * transformation on the reference cell $[-1, 1]$ getting
  * @f{align*}{
- * n(1) &= 1, \\ n(-1) &= -1, \\ \frac{dn}{dx} &= 0 \text{ at }
+ * n(1) &= 1, \\ n(-1) &=
+ *
+ * -1, \\ \frac{dn}{dx} &= 0 \text{ at }
  * x = x_0, \\ \frac{d^2n}{dx^2} &= 0 \text{ at  } x = x_0
  * @f}
- * We get
+ * 我们得到
+ *
  * @f{align*}{
  * a &= \frac{1}{q}, \\
- * b &= -3 \frac{\bar{\Gamma}}{q}, \\
+ * b &=
+ *
+ * -3 \frac{\bar{\Gamma}}{q}, \\
  * c &= 3 \frac{\bar{\Gamma}}{q}, \\
- * d &= -b,
+ * d &=
+ *
+ * -b,
  * @f}
- * with
+ * 与
  * @f{align*}{
- * \eta^{*} &= \bar{\eta}^2 - 1, \\
+ * \eta^{*} &= \bar{\eta}^2
+ *
+ * - 1, \\
  * \bar{\Gamma}  &= \sqrt[3]{\bar{\eta} \eta^{*} + |\eta^{*} | }
- *                  + \sqrt[3]{ \bar{\eta} \eta^{*} - |\eta^{*} | }
- *                  + \bar{\eta}, \\
+ *                + \sqrt[3]{ \bar{\eta} \eta^{*}
+ *
+ * - |\eta^{*} | }
+ *                + \bar{\eta}, \\
  * q &= (\Gamma-\bar{\Gamma})^3 + \bar{\Gamma}
- *      \frac{\bar{\Gamma}^2+3}{1+3\bar{\Gamma}^2}
+ *    \frac{\bar{\Gamma}^2+3}{1+3\bar{\Gamma}^2}
  * @f}
- * Since the library assumes $[0,1]$ as reference interval, we will map these
- * values on the proper reference interval in the implementation.
+ * 由于库中假设 $[0,1]$
+ * 为参考区间，我们将在实现中把这些值映射到适当的参考区间上。
+ * 这种变量变化可以用来整合奇异积分。一个例子是
+ * $f(x)/|x-x_0|$ 在参考区间 $[0,1]$ 上，其中 $x_0$
+ * 是在构造时给出的，是奇点 $x_0$ 的位置，而 $f(x)$
+ * 是一个平滑的非奇异函数。
+ * 奇异正交公式是相当昂贵的，然而Telles的正交公式相对于Lachat-Watson等其他奇异积分技术来说，更容易计算。
+ * 我们已经实现了 $dim = 1$ 的情况。当我们处理 $dim >1$
+ * 的情况时，我们已经计算出正交公式有一个一维Telles正交公式的张量乘积，考虑到奇点的不同组成部分。
+ * 高斯Legendre公式的权重和函数已被制成表格，最高可达12阶。
  *
- * This variable change can be used to integrate singular integrals. One
- * example is $f(x)/|x-x_0|$ on the reference interval $[0,1]$, where $x_0$ is
- * given at construction time, and is the location of the singularity $x_0$,
- * and $f(x)$ is a smooth non singular function.
  *
- * Singular quadrature formula are rather expensive, nevertheless Telles'
- * quadrature formula are much easier to compute with respect to other
- * singular integration techniques as Lachat-Watson.
- *
- * We have implemented the case for $dim = 1$. When we deal the case $dim >1$
- * we have computed the quadrature formula has a tensorial product of one
- * dimensional Telles' quadrature formulas considering the different
- * components of the singularity.
- *
- * The weights and functions for Gauss Legendre formula have been tabulated up
- * to order 12.
  */
 template <int dim>
 class QTelles : public Quadrature<dim>
 {
 public:
   /**
-   * A constructor that takes a quadrature formula and a singular point as
-   * argument. The quadrature formula will be mapped using Telles' rule. Make
-   * sure that the order of the quadrature rule is appropriate for the
-   * singularity in question.
+   * 一个构造函数，接受一个正交公式和一个奇点作为参数。正交公式将使用Telles规则进行映射。请确保正交规则的顺序适合于有关的奇点。
+   *
    */
   QTelles(const Quadrature<1> &base_quad, const Point<dim> &singularity);
   /**
-   * A variant of above constructor that takes as parameters the order @p n
-   * and location of a singularity. A Gauss Legendre quadrature of order n
-   * will be used
+   * 上述构造函数的一个变体，将阶数 @p n
+   * 和奇点的位置作为参数。将使用n阶的高斯勒格朗德正交。
+   *
    */
   QTelles(const unsigned int n, const Point<dim> &singularity);
 };
 
 /**
- * Gauss-Chebyshev quadrature rules integrate the weighted product
- * $\int_{-1}^1 f(x) w(x) dx$ with weight given by: $w(x) = 1/\sqrt{1-x^2}$.
- * The nodes and weights are known analytically, and are exact for monomials
- * up to the order $2n-1$, where $n$ is the number of quadrature points. Here
- * we rescale the quadrature formula so that it is defined on the interval
- * $[0,1]$ instead of $[-1,1]$. So the quadrature formulas integrate exactly
- * the integral $\int_0^1 f(x) w(x) dx$ with the weight: $w(x) =
- * 1/\sqrt{x(1-x)}$. For details see: M. Abramowitz & I.A. Stegun: Handbook of
- * Mathematical Functions, par. 25.4.38
+ * 高斯-切比雪夫正交规则整合了加权乘积 $\int_{-1}^1 f(x) w(x)
+ * dx$ ，其权重由以下因素给出。  $w(x) = 1/\sqrt{1-x^2}$  .
+ * 节点和权重是已知的分析结果，对单项式来说，精确到阶
+ * $2n-1$  ，其中 $n$
+ * 是正交点的数量。在这里，我们重新调整正交公式，使其定义在区间
+ * $[0,1]$  而不是  $[-1,1]$  上。所以正交公式恰恰是对积分
+ * $\int_0^1 f(x) w(x) dx$  进行了加权整合。  $w(x) = 1/\sqrt{x(1-x)}$
+ * . 详见。M. Abramowitz & I.A. Stegun:
+ * 数学函数手册》，第2页。25.4.38
+ *
+ *
  */
 template <int dim>
 class QGaussChebyshev : public Quadrature<dim>
@@ -508,34 +458,34 @@ public:
 
 
 /**
- * Gauss-Radau-Chebyshev quadrature rules integrate the weighted product
- * $\int_{-1}^1 f(x) w(x) dx$ with weight given by: $w(x) = 1/\sqrt{1-x^2}$
- * with the additional constraint that a quadrature point lies at one of the
- * two extrema of the interval. The nodes and weights are known analytically,
- * and are exact for monomials up to the order $2n-2$, where $n$ is the number
- * of quadrature points. Here we rescale the quadrature formula so that it is
- * defined on the interval $[0,1]$ instead of $[-1,1]$. So the quadrature
- * formulas integrate exactly the integral $\int_0^1 f(x) w(x) dx$ with the
- * weight: $w(x) = 1/\sqrt{x(1-x)}$. By default the quadrature is constructed
- * with the left endpoint as quadrature node, but the quadrature node can be
- * imposed at the right endpoint through the variable ep that can assume the
- * values left or right.
+ * 高斯-拉道-切比雪夫正交规则整合了加权乘积 $\int_{-1}^1
+ * f(x) w(x) dx$ ，其权重由。  $w(x) = 1/\sqrt{1-x^2}$
+ * ，附加约束条件是正交点位于区间的两个极值之一。节点和权重是已知的分析结果，对单项式来说是精确的，直到阶
+ * $2n-2$  ，其中 $n$
+ * 是正交点的数量。在这里，我们重新调整正交公式，使其定义在区间
+ * $[0,1]$ 而不是 $[-1,1]$ 。所以正交公式恰恰是对积分
+ * $\int_0^1 f(x) w(x) dx$  进行了加权整合。  $w(x) = 1/\sqrt{x(1-x)}$
+ * .
+ * 默认情况下，正交公式是以左端点为正交节点构建的，但正交节点可以通过变量ep强加在右端点，变量ep可以向左或向右取值。
+ *
+ *
  */
 template <int dim>
 class QGaussRadauChebyshev : public Quadrature<dim>
 {
 public:
-  /* EndPoint is used to specify which of the two endpoints of the unit interval
-   * is used also as quadrature point
-   */
+  /* EndPoint用于指定单位区间的两个端点中的哪一个也作为正交点使用。 
+* */
   enum EndPoint
   {
     /**
-     * Left end point.
+     * 左侧端点。
+     *
      */
     left,
     /**
-     * Right end point.
+     * 右端点。
+     *
      */
     right
   };
@@ -544,8 +494,9 @@ public:
                        EndPoint           ep = QGaussRadauChebyshev::left);
 
   /**
-   * Move constructor. We cannot rely on the move constructor for `Quadrature`,
-   * since it does not know about the additional member `ep` of this class.
+   * 移动构造器。我们不能依靠 "正交
+   * "的移动构造函数，因为它不知道这个类的额外成员`ep'。
+   *
    */
   QGaussRadauChebyshev(QGaussRadauChebyshev<dim> &&) noexcept = default;
 
@@ -554,17 +505,17 @@ private:
 };
 
 /**
- * Gauss-Lobatto-Chebyshev quadrature rules integrate the weighted product
- * $\int_{-1}^1 f(x) w(x) dx$ with weight given by: $w(x) = 1/\sqrt{1-x^2}$,
- * with the additional constraint that two of the quadrature points are
- * located at the endpoints of the quadrature interval. The nodes and weights
- * are known analytically, and are exact for monomials up to the order $2n-3$,
- * where $n$ is the number of quadrature points. Here we rescale the
- * quadrature formula so that it is defined on the interval $[0,1]$ instead of
- * $[-1,1]$. So the quadrature formulas integrate exactly the integral
- * $\int_0^1 f(x) w(x) dx$ with the weight: $w(x) = 1/\sqrt{x(1-x)}$. For
- * details see: M. Abramowitz & I.A. Stegun: Handbook of Mathematical
- * Functions, par. 25.4.40
+ * Gauss-Lobatto-Chebyshev正交规则整合了加权乘积 $\int_{-1}^1 f(x)
+ * w(x) dx$ ，其权重由以下因素给出。  $w(x) = 1/\sqrt{1-x^2}$
+ * ，附加约束条件是两个正交点位于正交区间的端点。节点和权重是已知的分析结果，对单项式来说是准确的，直到阶数
+ * $2n-3$ ，其中 $n$
+ * 是正交点的数量。在这里，我们重新调整正交公式，使其定义在区间
+ * $[0,1]$  而不是  $[-1,1]$  上。所以正交公式恰恰是对积分
+ * $\int_0^1 f(x) w(x) dx$  进行了加权整合。  $w(x) = 1/\sqrt{x(1-x)}$
+ * . 详见。M. Abramowitz & I.A. Stegun:
+ * 数学函数手册》，第2页。25.4.40
+ *
+ *
  */
 template <int dim>
 class QGaussLobattoChebyshev : public Quadrature<dim>
@@ -575,69 +526,39 @@ public:
 };
 
 /**
- * Given an arbitrary quadrature formula, return one that chops the quadrature
- * points above the hyper-plane defined by $\sum_i x_i = 1$. In other words,
- * it extracts those quadrature points from the base formula that satisfy
- * $\sum_i (\mathbf x_q)_i \le 1+10^{-12}$."
+ * 给定一个任意的正交公式，返回一个在 $\sum_i x_i = 1$
+ * 所定义的超平面之上的正交点。换句话说，它从基础公式中提取那些满足
+ * $\sum_i (\mathbf x_q)_i \le 1+10^{-12}$ 的正交点。"
+ * 一般来说，所得到的正交点不是很有用，除非你开始的正交点是专门为在三角形或四面体上积分而构建的。该类仅确保所产生的正交公式仅在参考单轴或其边界上有正交点。
+ * 没有对权重进行转换，提及参考单轴以外的点的权重被简单地丢弃了。
+ * 这个正交公式的主要用途不是用来切张量积正交的。理想情况下，你应该向这个类传递一个直接使用参考单轴中的点和权重构造的正交公式，能够在三角形或四面体上积分。
+ * 对于基于四边形和六面体的有限元，QSimplex正交公式本身并不十分有用。这个类通常和其他类一起使用，比如QSplit，用几个QSimplex正交公式来修补参考元素。
+ * 这样的正交公式对于整合在某些点上有奇点的函数，或者在参考元素内部沿同维度表面出现跳跃的函数是非常有用的，比如在扩展有限元方法（XFEM）中。
  *
- * In general the resulting quadrature is not very useful, unless the
- * quadrature you started from has been constructed specifically to integrate
- * over triangles or tetrahedra. This class only ensures that the resulting
- * quadrature formula only has quadrature points in the reference simplex or on
- * its boundary.
  *
- * No transformation is applied to the weights, and the weights referring to
- * points that live outside the reference simplex are simply discarded.
- *
- * The main use of this quadrature formula is not to chop tensor product
- * quadratures. Ideally you should pass to this class a quadrature formula
- * constructed directly using points and weights in the reference simplex,
- * capable of integrating on triangles or tetrahedra.
- *
- * For finite elements based on quadrilaterals and hexahedra, a QSimplex
- * quadrature formula is not very useful on its own. This class is typically
- * used in conjunction with other classes, like QSplit, to patch the reference
- * element using several QSimplex quadrature formulas.
- *
- * Such quadrature formulas are useful to integrate functions with
- * singularities at certain points, or functions that present jumps along a
- * co-dimension one surface inside the reference element, like in the extended
- * finite element method (XFEM).
  */
 template <int dim>
 class QSimplex : public Quadrature<dim>
 {
 public:
   /**
-   * Construct a quadrature that only contains the points that are in the lower
-   * left reference simplex.
+   * 构建一个只包含在左下角参考单轴的点的正交。
+   * @param[in]  quad 输入的正交点。
    *
-   * @param[in] quad The input quadrature.
    */
   QSimplex(const Quadrature<dim> &quad);
 
   /**
-   * Return an affine transformation of this quadrature, that can be used to
-   * integrate on the simplex identified by `vertices`.
+   * 返回该正交的仿射变换，可用于在`vertices'标识的单轴上进行积分。
+   * 正交点的位置和权重都被转换，因此你可以有效地使用所得到的正交点在单线上积分。
+   * 转换定义为\f[ x = v_0 + B \hat x
+   * \f]，其中矩阵 $B$ 由 $B_{ij} = v[j][i]-v[0][i]$ 给出。
+   * 权重以 $B$ 的行列式的绝对值为尺度，即 $J \dealcoloneq
+   * |\text{det}(B)|$ 。如果 $J$
+   * 为零，将返回一个空的正交。这种情况可能会发生，在二维空间，如果三个顶点是对齐的，或者在三维空间，如果四个顶点在同一个平面上。
+   * @param[in]  顶点 你希望在单线上积分的顶点  @return
+   * 一个正交对象，可用于在单线上积分。
    *
-   * Both the quadrature point locations and the weights are transformed, so
-   * that you can effectively use the resulting quadrature to integrate on the
-   * simplex.
-   *
-   * The transformation is defined as
-   * \f[
-   * x = v_0 + B \hat x
-   * \f]
-   * where the matrix $B$ is given by $B_{ij} = v[j][i]-v[0][i]$.
-   *
-   * The weights are scaled with the absolute value of the determinant of $B$,
-   * that is $J \dealcoloneq |\text{det}(B)|$. If $J$ is zero, an empty
-   * quadrature is returned. This may happen, in two dimensions, if the three
-   * vertices are aligned, or in three dimensions if the four vertices are on
-   * the same plane.
-   *
-   * @param[in] vertices The vertices of the simplex you wish to integrate on
-   * @return A quadrature object that can be used to integrate on the simplex
    */
   Quadrature<dim>
   compute_affine_transformation(
@@ -645,244 +566,209 @@ public:
 };
 
 /**
- * A quadrature that implements a polar transformation from a square to a
- * triangle to integrate singularities in the origin of the reference simplex.
- * The quadrature is obtained through the following polar transformation:
+ * 一个实现从正方形到三角形的极性变换的正交，以整合参考单线原点的奇异点。该正交是通过以下极坐标变换得到的。
+ * \f[ \begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} \frac{\hat
+ * x}{\sin(\theta)+\cos(\theta)} cos(\theta) \\ \frac{\hat
+ * x}{\sin(\theta)+\cos(\theta)} sin(\theta) \end{pmatrix} \qquad \theta
+ * \dealcoloneq \frac\pi 2 \hat y \f]
  *
- * \f[
- *  \begin{pmatrix}
- *  x \\
- *  y
- *  \end{pmatrix}
- *  =
- * \begin{pmatrix}
- *  \frac{\hat x}{\sin(\theta)+\cos(\theta)} cos(\theta) \\
- *  \frac{\hat x}{\sin(\theta)+\cos(\theta)} sin(\theta)
- *  \end{pmatrix}
- *  \qquad \theta \dealcoloneq \frac\pi 2 \hat y
- * \f]
+ *
  */
 class QTrianglePolar : public QSimplex<2>
 {
 public:
   /**
-   * Construct a QTrianglePolar quadrature, with different formulas in the
-   * radial and angular directions.
+   * 构建一个QTrianglePolar正交，在径向和角度方向的公式不同。
+   * @param  radial_quadrature 径向正交  @param  angular_quadrature
+   * 角度正交
    *
-   * @param radial_quadrature Radial quadrature
-   * @param angular_quadrature Angular quadrature
    */
   QTrianglePolar(const Quadrature<1> &radial_quadrature,
                  const Quadrature<1> &angular_quadrature);
 
   /**
-   * Call the other constructor, with QGauss<1>(n) for both radial and
-   * angular quadrature.
+   * 调用另一个构造函数，用QGauss<1>(n)表示径向和角向四分仪。
+   * @param  n QGauss正交的阶数
    *
-   * @param n Order of QGauss quadrature
    */
   QTrianglePolar(const unsigned int n);
 };
 
 /**
- * A quadrature that implements the Duffy transformation from a square to a
- * triangle to integrate singularities in the origin of the reference
- * simplex.
- *
- * The Duffy transformation is defined as
- * \f[
- * \begin{pmatrix}
- * x\\
- * y
- * \end{pmatrix}
- * =
- * \begin{pmatrix}
- * \hat x^\beta (1-\hat y)\\
- * \hat x^\beta \hat y
- * \end{pmatrix}
- * \f]
- *
- * with determinant of the Jacobian equal to $J= \beta \hat x^{2\beta-1}$.
- * Such transformation maps the reference square $[0,1]\times[0,1]$ to the
- * reference simplex, by collapsing the left side of the square and squeezing
- * quadrature points towards the origin, and then shearing the resulting
- * triangle to the reference one. This transformation shows good convergence
- * properties when $\beta = 1$ with singularities of order $1/R$ in the origin,
- * but different $\beta$ values can be selected to increase convergence and/or
- * accuracy when higher order Gauss rules are used (see "Generalized Duffy
+ * 一个实现Duffy变换的正交，从一个正方形到一个三角形，以整合参考单轴的原点的奇异性。
+ * 达菲变换被定义为\f[ \begin{pmatrix} x\\ y \end{pmatrix} =
+ * \begin{pmatrix} \hat x^\beta (1-\hat y)\\ \hat x^\beta \hat y \end{pmatrix}
+ * \f]。 Jacobian的行列式等于 $J= \beta \hat x^{2\beta-1}$
+ * 。这种变换将参考正方形 $[0,1]\times[0,1]$
+ * 映射到参考单轴，通过折叠正方形的左侧并将正交点向原点挤压，然后将得到的三角形剪切到参考三角形。当
+ * $\beta = 1$ 在原点有阶 $1/R$
+ * 的奇异点时，这种变换显示出良好的收敛特性，但当使用更高阶的高斯规则时，可以选择不同的
+ * $\beta$ 值来提高收敛性和/或准确性（见 "Generalized Duffy
  * transformation for integrating vertex singularities", S. E. Mousavi, N.
- * Sukumar, Computational Mechanics 2009).
+ * Sukumar, Computational Mechanics 2009）。 当 $\beta = 1$
+ * ，这种变换也被称为Lachat-Watson变换。
  *
- * When $\beta = 1$, this transformation is also known as the Lachat-Watson
- * transformation.
+ *
  */
 class QDuffy : public QSimplex<2>
 {
 public:
   /**
-   * Constructor that allows the specification of different quadrature rules
-   * along the "radial" and "angular" directions.
+   * 构造函数，允许沿 "径向 "和 "角度
+   * "方向指定不同的正交规则。
+   * 由于这种正交不是基于坐标的极地变化，所以谈论径向和角度方向是不完全恰当的。然而，达菲变换的效果类似于极坐标的改变，因为所产生的正交点是相对于奇点的径向排列。
+   * @param  radial_quadrature 在径向使用的基础正交  @param
+   * angular_quadrature 在角度使用的基础正交  @param  beta
+   * 变换中使用的指数
    *
-   * Since this quadrature is not based on a Polar change of coordinates, it
-   * is not fully proper to talk about radial and angular directions. However,
-   * the effect of the Duffy transformation is similar to a polar change
-   * of coordinates, since the resulting quadrature points are aligned radially
-   * with respect to the singularity.
-   *
-   * @param radial_quadrature Base quadrature to use in the radial direction
-   * @param angular_quadrature Base quadrature to use in the angular direction
-   * @param beta Exponent used in the transformation
    */
   QDuffy(const Quadrature<1> &radial_quadrature,
          const Quadrature<1> &angular_quadrature,
          const double         beta = 1.0);
 
   /**
-   * Call the above constructor with QGauss<1>(n) quadrature formulas for
-   * both the radial and angular quadratures.
+   * 用QGauss<1>(n)正交公式调用上述构造函数，以获得径向和角向的正交公式。
+   * @param  n QGauss正交的阶数  @param  变换中使用的β指数
    *
-   * @param n Order of QGauss quadrature
-   * @param beta Exponent used in the transformation
    */
   QDuffy(const unsigned int n, const double beta);
 };
 
 /**
- * A quadrature to use when the cell should be split into subregions to
- * integrate using one or more base quadratures.
+ * 当单元应被分割成子区域以使用一个或多个基础正交率进行积分时，使用的正交率。
+ *
+ *
  */
 template <int dim>
 class QSplit : public Quadrature<dim>
 {
 public:
   /**
-   * Construct a quadrature formula by splitting the reference hyper cube into
-   * the minimum number of simplices that have vertex zero coinciding with
-   * @p split_point, and patch together affine transformations of the @p base
-   * quadrature. The point @p split_point should be in the reference element,
-   * and an exception is thrown if this is not the case.
-   *
-   * In two dimensions, the resulting quadrature formula will be composed of
-   * two, three, or four triangular quadrature formulas if @p split_point
-   * coincides with one of the vertices, if it lies on one of the edges, or if
-   * it is internal to the reference element respectively.
-   *
-   * The same is true for the three dimensional case, with six, eight, ten, or
-   * twelve tetrahedral quadrature formulas if @p split_point coincides with one
-   * of the vertices, if it lies on one of the edges, on one of the faces, or
-   * if it is internal to the reference element respectively.
-   *
-   * The resulting quadrature can be used, for example, to integrate functions
-   * with integrable singularities at the split point, provided that you select
-   * as base quadrature one that can integrate singular points on vertex zero
-   * of the reference simplex.
-   *
-   * An example usage in dimension two is given by:
+   * 通过将参考超立方体分割成顶点零点与 @p split_point,
+   * 重合的最小数量的单纯点，并将 @p base
+   * 正交的仿生变换修补在一起，构建一个正交公式。点 @p
+   * split_point
+   * 应该在参考元素中，如果不是这样就会出现异常。
+   * 在二维空间中，如果 @p split_point
+   * 与其中一个顶点重合，如果它位于其中一条边上，或者如果它在参考元素的内部，那么产生的正交公式将分别由两个、三个或四个三角正交公式组成。
+   * 三维情况也是如此，如果 @p split_point
+   * 与其中一个顶点重合，如果它位于其中一条边上，位于其中一个面上，或者如果它是参考元素的内部，则分别有六个、八个、十个或十二个四面体正交公式。
+   * 由此产生的正交可以用于，例如，在分裂点上具有可整定奇点的函数的积分，只要你选择一个可以在参考单纯线的顶点零上积分奇点的正交作为基础。
+   * 一个维度为2的例子是这样的。
    * @code
    * const unsigned int order = 5;
    * QSplit<2> quad(QTrianglePolar(order), Point<2>(.3,.4));
    * @endcode
+* 由此产生的正交函数将如下所示。    @image html split_quadrature.png ""   @param  base 要使用的基础QSimplex正交函数  @param  split_point 在哪里分割超立方体？
    *
-   * The resulting quadrature will look like the following:
-   * @image html split_quadrature.png ""
-   *
-   * @param base Base QSimplex quadrature to use
-   * @param split_point Where to split the hyper cube
    */
   QSplit(const QSimplex<dim> &base, const Point<dim> &split_point);
 };
 
 /**
- * Integration rule for simplex entities.
+ * 单元实体的整合规则。
+ * 用户指定一个数字`n_points_1D`，作为准确集成的多项式程度的指示，类似于QGauss正交对象中的点数，尽管目前的正交公式不是张量积。对于n_points_1D=1,2,3,4，给定的值被转化为二维和三维的正交点的数量。
  *
- * Users specify a number `n_points_1D` as an indication of what polynomial
- * degree to be integrated exactly, similarly to the number of points in a
- * QGauss quadrature object, even though the present quadrature formula is not
- * a tensor product. The given value is translated for n_points_1D=1,2,3,4 to
- * following number of quadrature points for 2D and 3D:
- *   - 2D: 1, 3, 7, 15
- *   - 3D: 1, 4, 10, 35
  *
- * For 1D, the quadrature rule degenerates to a
- * `dealii::QGauss<1>(n_points_1D)`.
+ *
+ *
+ *
+ * - 2D: 1, 3, 7, 15
+ *
+ *
+ *
+ *
+ * - 3D: 1, 4, 10, 35
+ * 对于一维，正交规则退化为一个
+ * `dealii::QGauss<1>(n_points_1D)`. 。
+ *
  *
  * @ingroup simplex
+ *
+ *
  */
 template <int dim>
 class QGaussSimplex : public QSimplex<dim>
 {
 public:
   /**
-   * Constructor taking the number of quadrature points in 1D direction
-   * @p n_points_1D.
+   * 构造函数获取一维方向上的正交点数量  @p n_points_1D.  。
+   *
    */
   explicit QGaussSimplex(const unsigned int n_points_1D);
 };
 
 /**
- * Witherden-Vincent rules for simplex entities.
+ * 单轴实体的Witherden-Vincent规则。
+ * 像QGauss一样，用户应该指定一个数字`n_points_1D`，作为确切地整合什么程度的多项式的指示（例如，对于
+ * $n$ 点，该规则可以确切地整合程度为 $2 n
  *
- * Like QGauss, users should specify a number `n_points_1D` as an indication
- * of what polynomial degree to be integrated exactly (e.g., for $n$ points,
- * the rule can integrate polynomials of degree $2 n - 1$ exactly). The given
- * value for n_points_1D = 1, 2, 3, 4, 5 results in the following number of
- * quadrature points in 2D and 3D:
+ * - 1$ 的多项式）。n_points_1D = 1, 2, 3, 4,
+ * 5的给定值导致2D和3D的正交点数量如下。
+ *
+ *
+ *
  * - 2D: 1, 6, 7, 15, 19
+ *
+ *
+ *
  * - 3D: 1, 8, 14, 35, 59
+ * 对于一维，正交规则退化为一个
+ * `dealii::QGauss<1>(n_points_1D)`. 。 这些规则与quadpy  @cite quadpy
+ * 库中为Witherden-Vincent列出的规则相匹配，并在  @cite
+ * witherden2015identification  中首次描述。
  *
- * For 1D, the quadrature rule degenerates to a
- * `dealii::QGauss<1>(n_points_1D)`.
- *
- * These rules match the ones listed for Witherden-Vincent in the quadpy
- * @cite quadpy library and were first described in
- * @cite witherden2015identification.
  *
  * @ingroup simplex
+ *
  */
 template <int dim>
 class QWitherdenVincentSimplex : public QSimplex<dim>
 {
 public:
   /**
-   * Constructor taking the number of quadrature points in 1D direction
-   * @p n_points_1D.
+   * 构造函数，获取一维方向上的正交点数量  @p n_points_1D.
+   * 。
+   *
    */
   explicit QWitherdenVincentSimplex(const unsigned int n_points_1D);
 };
 
 /**
- * Integration rule for wedge entities.
+ * 楔形实体的积分规则。
+ *
+ *
  */
 template <int dim>
 class QGaussWedge : public Quadrature<dim>
 {
 public:
   /**
-   * Users specify a number `n_points_1D` as an indication of what polynomial
-   * degree to be integrated exactly. For details, see the comments of
-   * QGaussSimplex.
+   * 用户指定一个数字`n_points_1D`作为精确集成的多项式程度的指示。详情请见QGaussSimplex的注释。
+   *
    */
   explicit QGaussWedge(const unsigned int n_points_1D);
 };
 
 /**
- * Integration rule for pyramid entities.
+ * 金字塔实体的积分规则。
+ *
+ *
  */
 template <int dim>
 class QGaussPyramid : public Quadrature<dim>
 {
 public:
   /**
-   * Users specify a number `n_points_1D` as an indication of what polynomial
-   * degree to be integrated exactly. For details, see the comments of
-   * QGaussSimplex.
+   * 用户指定一个数字`n_points_1D`，作为准确集成的多项式程度的指示。详情请见QGaussSimplex的注释。
+   *
    */
   explicit QGaussPyramid(const unsigned int n_points_1D);
 };
 
-/*@}*/
+ /*@}*/ 
 
-/* -------------- declaration of explicit specializations ------------- */
+ /* -------------- declaration of explicit specializations ------------- */ 
 
 #ifndef DOXYGEN
 template <>
@@ -927,3 +813,5 @@ QTelles<1>::QTelles(const Quadrature<1> &base_quad,
 
 DEAL_II_NAMESPACE_CLOSE
 #endif
+
+

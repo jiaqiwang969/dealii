@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/block_sparsity_pattern_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -38,207 +39,170 @@ class BlockSparseMatrix;
 class BlockDynamicSparsityPattern;
 #endif
 
-/*! @addtogroup Sparsity
- *@{
- */
+/*!   @addtogroup  稀疏性  @{  
+
+* 
+* */
 
 
 /**
- * This is the base class for block versions of the sparsity pattern and
- * dynamic sparsity pattern classes. It has not much functionality, but only
- * administrates an array of sparsity pattern objects and delegates work to
- * them. It has mostly the same interface as has the SparsityPattern, and
- * DynamicSparsityPattern, and simply transforms calls to its member functions
- * to calls to the respective member functions of the member sparsity
- * patterns.
+ * 这是块版本的稀疏模式和动态稀疏模式类的基类。它的功能不多，只是管理一个疏散模式对象的数组，并将工作委托给它们。它与SparsityPattern和DynamicSparsityPattern的接口基本相同，只是将对其成员函数的调用转换为对成员疏散模式的各自成员函数的调用。
+ * SparsityPattern和DynamicSparsityPattern类和这个类之间最大的区别是，大多数情况下，矩阵有不同的属性，你会想在构成矩阵的块上工作，而不是整个矩阵。你可以使用<tt>block(row,col)</tt>函数访问不同的块。
+ * 注意：如果它的一个子对象的大小发生变化，这个对象不会被自动通知。因此，在你初始化子对象的大小后，你将不得不调用这个类的<tt>collect_sizes()</tt>函数!
+ * 注意，当然，一个（块）行中的所有子矩阵必须有相同的行数，而一个（块）列中的所有子矩阵必须有相同的列数。
+ * 一般来说，你不会想使用这个类，而是使用其中的一个派生类。
+ * @todo  正确处理底层SparsityPattern的对角线元素的优化。
+ * @see   @ref GlossBlockLA  "块（线性代数）"
  *
- * The largest difference between the SparsityPattern and
- * DynamicSparsityPattern classes and this class is that mostly, the matrices
- * have different properties and you will want to work on the blocks making up
- * the matrix rather than the whole matrix. You can access the different
- * blocks using the <tt>block(row,col)</tt> function.
  *
- * Attention: this object is not automatically notified if the size of one of
- * its subobjects' size is changed. After you initialize the sizes of the
- * subobjects, you will therefore have to call the <tt>collect_sizes()</tt>
- * function of this class! Note that, of course, all sub-matrices in a
- * (block-)row have to have the same number of rows, and that all sub-matrices
- * in a (block-)column have to have the same number of columns.
- *
- * You will in general not want to use this class, but one of the derived
- * classes.
- *
- * @todo Handle optimization of diagonal elements of the underlying
- * SparsityPattern correctly.
- *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <typename SparsityPatternType>
 class BlockSparsityPatternBase : public Subscriptor
 {
 public:
   /**
-   * Declare type for container size.
+   * 申报容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Define a value which is used to indicate that a certain value in the @p
-   * colnums array is unused, i.e. does not represent a certain column number
-   * index.
+   * 定义一个值，用来表示 @p
+   * colnums数组中的某个值是未使用的，即不代表某个列号索引。
+   * 这个值只是SparsityPattern类中各自数值的别名。
    *
-   * This value is only an alias to the respective value of the
-   * SparsityPattern class.
    */
   static const size_type invalid_entry = SparsityPattern::invalid_entry;
 
   /**
-   * Initialize the matrix empty, that is with no memory allocated. This is
-   * useful if you want such objects as member variables in other classes. You
-   * can make the structure usable by calling the reinit() function.
+   * 初始化矩阵为空，也就是没有分配内存。如果你想让这样的对象在其他类中作为成员变量，这很有用。你可以通过调用reinit()函数使该结构可用。
+   *
    */
   BlockSparsityPatternBase();
 
   /**
-   * Initialize the matrix with the given number of block rows and columns.
-   * The blocks themselves are still empty, and you have to call
-   * collect_sizes() after you assign them sizes.
+   * 用给定的块的行和列的数量初始化矩阵。
+   * 块本身仍然是空的，你必须在给它们分配尺寸后调用
+   * collect_sizes()。
+   *
    */
   BlockSparsityPatternBase(const size_type n_block_rows,
                            const size_type n_block_columns);
 
   /**
-   * Copy constructor. This constructor is only allowed to be called if the
-   * sparsity pattern to be copied is empty, i.e. there are no block allocated
-   * at present. This is for the same reason as for the SparsityPattern, see
-   * there for the details.
+   * 复制构造函数。这个构造函数只允许在要复制的稀疏模式是空的情况下被调用，也就是说，目前没有分配的块。这与SparsityPattern的原因相同，详见那里。
+   *
    */
   BlockSparsityPatternBase(const BlockSparsityPatternBase &bsp);
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   ~BlockSparsityPatternBase() override;
 
   /**
-   * Resize the matrix, by setting the number of block rows and columns. This
-   * deletes all blocks and replaces them with uninitialized ones, i.e. ones
-   * for which also the sizes are not yet set. You have to do that by calling
-   * the reinit() functions of the blocks themselves. Do not forget to call
-   * collect_sizes() after that on this object.
+   * 通过设置块的行数和列数，调整矩阵的大小。这将删除所有的块，并用未初始化的块代替它们，也就是说，那些块的大小还没有被设置。你必须通过调用块本身的reinit()函数来做到这一点。不要忘了在这之后对这个对象调用collect_sizes()。
+   * 你必须自己设置块的大小的原因是，大小可能是变化的，每行的最大元素数可能是变化的，等等。在这里不复制SparsityPattern类的接口是比较简单的，而是让用户调用他们想要的任何函数。
    *
-   * The reason that you have to set sizes of the blocks yourself is that the
-   * sizes may be varying, the maximum number of elements per row may be
-   * varying, etc. It is simpler not to reproduce the interface of the
-   * SparsityPattern class here but rather let the user call whatever function
-   * they desire.
    */
   void
   reinit(const size_type n_block_rows, const size_type n_block_columns);
 
   /**
-   * Copy operator. For this the same holds as for the copy constructor: it is
-   * declared, defined and fine to be called, but the latter only for empty
-   * objects.
+   * 复制操作符。对于这一点，与复制构造函数的情况相同：它被声明、定义并可以被调用，但后者只针对空对象。
+   *
    */
   BlockSparsityPatternBase &
   operator=(const BlockSparsityPatternBase &);
 
   /**
-   * This function collects the sizes of the sub-objects and stores them in
-   * internal arrays, in order to be able to relay global indices into the
-   * matrix to indices into the subobjects. You *must* call this function each
-   * time after you have changed the size of the sub-objects.
+   * 这个函数收集子对象的大小，并将其存储在内部数组中，以便能够将矩阵的全局索引转为子对象的索引。在你改变了子对象的大小之后，你必须*每次都调用这个函数。
+   *
    */
   void
   collect_sizes();
 
   /**
-   * Access the block with the given coordinates.
+   * 访问具有给定坐标的块。
+   *
    */
   SparsityPatternType &
   block(const size_type row, const size_type column);
 
 
   /**
-   * Access the block with the given coordinates. Version for constant
-   * objects.
+   * 访问具有给定坐标的块。对于常量对象的版本。
+   *
    */
   const SparsityPatternType &
   block(const size_type row, const size_type column) const;
 
   /**
-   * Grant access to the object describing the distribution of row indices to
-   * the individual blocks.
+   * 授权访问描述行指数分布到各个块的对象。
+   *
    */
   const BlockIndices &
   get_row_indices() const;
 
   /**
-   * Grant access to the object describing the distribution of column indices
-   * to the individual blocks.
+   * 允许访问描述各个块的列索引分布的对象。
+   *
    */
   const BlockIndices &
   get_column_indices() const;
 
   /**
-   * This function compresses the sparsity structures that this object
-   * represents. It simply calls @p compress for all sub-objects.
+   * 这个函数压缩了这个对象所代表的稀疏结构。它只是为所有子对象调用
+   * @p compress 。
+   *
    */
   void
   compress();
 
   /**
-   * Return the number of blocks in a column.
+   * 返回一列中的块的数量。
+   *
    */
   size_type
   n_block_rows() const;
 
   /**
-   * Return the number of blocks in a row.
+   * 返回一行中的块数。
+   *
    */
   size_type
   n_block_cols() const;
 
   /**
-   * Return whether the object is empty. It is empty if no memory is
-   * allocated, which is the same as that both dimensions are zero. This
-   * function is just the concatenation of the respective call to all sub-
-   * matrices.
+   * 返回该对象是否为空。如果没有分配内存，它就是空的，这与两个维度都是零是一样的。这个函数只是对所有子矩阵的相应调用的串联。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Return the maximum number of entries per row. It returns the maximal
-   * number of entries per row accumulated over all blocks in a row, and the
-   * maximum over all rows.
+   * 返回每行的最大条目数。它返回每行的最大条目数，在一行的所有块上累积，以及所有行的最大条目数。
+   *
    */
   size_type
   max_entries_per_row() const;
 
   /**
-   * Add a nonzero entry to the matrix. This function may only be called for
-   * non-compressed sparsity patterns.
+   * 向矩阵添加一个非零条目。这个函数只能用于非压缩的稀疏模式。
+   * 如果该条目已经存在，则不会发生任何坏事。
+   * 这个函数只是找出<tt>(i,j)</tt>属于哪个块，然后转发到该块。
    *
-   * If the entry already exists, nothing bad happens.
-   *
-   * This function simply finds out to which block <tt>(i,j)</tt> belongs and
-   * then relays to that block.
    */
   void
   add(const size_type i, const size_type j);
 
   /**
-   * Add several nonzero entries to the specified matrix row.  This function
-   * may only be called for non-compressed sparsity patterns.
+   * 向指定的矩阵行添加几个非零条目。
+   * 这个函数只可用于非压缩的稀疏模式。
+   * 如果有些条目已经存在，则不会发生什么坏事。
+   * 这个函数只是找出迭代器范围内<tt>col</tt>的块<tt>(row,col)</tt>，然后转发到这些块。
    *
-   * If some of the entries already exist, nothing bad happens.
-   *
-   * This function simply finds out to which blocks <tt>(row,col)</tt> for
-   * <tt>col</tt> in the iterator range belong and then relays to those
-   * blocks.
    */
   template <typename ForwardIterator>
   void
@@ -248,80 +212,73 @@ public:
               const bool      indices_are_sorted = false);
 
   /**
-   * Return number of rows of this matrix, which equals the dimension of the
-   * image space. It is the sum of rows of the (block-)rows of sub-matrices.
+   * 返回该矩阵的行数，等于图像空间的维度。它是子矩阵的（块-）行数之和。
+   *
    */
   size_type
   n_rows() const;
 
   /**
-   * Return number of columns of this matrix, which equals the dimension of
-   * the range space. It is the sum of columns of the (block-)columns of sub-
-   * matrices.
+   * 返回该矩阵的列数，相当于范围空间的维度。它是子矩阵的（块）列的列数之和。
+   *
    */
   size_type
   n_cols() const;
 
   /**
-   * Check if a value at a certain position may be non-zero.
+   * 检查某个位置的值是否可能是非零。
+   *
    */
   bool
   exists(const size_type i, const size_type j) const;
 
   /**
-   * Number of entries in a specific row, added up over all the blocks that
-   * form this row.
+   * 某一行的条目数，与构成这一行的所有块相加。
+   *
    */
   unsigned int
   row_length(const size_type row) const;
 
   /**
-   * Return the number of nonzero elements of this matrix. Actually, it
-   * returns the number of entries in the sparsity pattern; if any of the
-   * entries should happen to be zero, it is counted anyway.
+   * 返回这个矩阵的非零元素的数量。实际上，它返回的是稀疏模式中的条目数；如果任何一个条目碰巧是零，无论如何都会被计算在内。
+   * 这个函数只有在矩阵结构被压缩的情况下才能被调用。否则就没有太大意义了。
+   * 在当前情况下，它是子对象返回的数值之和。
    *
-   * This function may only be called if the matrix struct is compressed. It
-   * does not make too much sense otherwise anyway.
-   *
-   * In the present context, it is the sum of the values as returned by the
-   * sub-objects.
    */
   size_type
   n_nonzero_elements() const;
 
   /**
-   * Print the sparsity of the matrix. The output consists of one line per row
-   * of the format <tt>[i,j1,j2,j3,...]</tt>. <i>i</i> is the row number and
-   * <i>jn</i> are the allocated columns in this row.
+   * 打印矩阵的稀疏度。输出包括每行一行，格式为<tt>[i,j1,j2,j3,...]/tt>。<i>i</i>是行号，<i>jn</i>是该行中分配的列。
+   *
    */
   void
   print(std::ostream &out) const;
 
   /**
-   * Print the sparsity of the matrix in a format that <tt>gnuplot</tt>
-   * understands and which can be used to plot the sparsity pattern in a
-   * graphical way. This is the same functionality implemented for usual
-   * sparsity patterns, see
-   * SparsityPatternBase::print_gnuplot().
+   * 以<tt>gnuplot</tt>理解的格式打印矩阵的稀疏度，可以用来以图形方式绘制稀疏度模式。这与通常的稀疏度模式实现的功能相同，见
+   * SparsityPatternBase::print_gnuplot().  。
+   *
    */
   void
   print_gnuplot(std::ostream &out) const;
 
   /**
-   * Print the sparsity of the matrix in <tt>svg</tt> format. This is the same
-   * functionality implemented for usual sparsity patterns, see
-   * SparsityPatternBase::print_svg().
+   * 以<tt>svg</tt>格式打印矩阵的稀疏度。这与通常的稀疏度模式实现的功能相同，见
+   * SparsityPatternBase::print_svg().  。
+   *
    */
   void
   print_svg(std::ostream &out) const;
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  例外  @{ .
+   *
    */
 
   /**
-   * Exception
+   * 例外情况
+   *
    */
   DeclException4(ExcIncompatibleRowNumbers,
                  int,
@@ -331,7 +288,8 @@ public:
                  << "The blocks [" << arg1 << ',' << arg2 << "] and [" << arg3
                  << ',' << arg4 << "] have differing row numbers.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException4(ExcIncompatibleColNumbers,
                  int,
@@ -344,17 +302,20 @@ public:
 
 protected:
   /**
-   * Number of block rows.
+   * 块的行数。
+   *
    */
   size_type rows;
 
   /**
-   * Number of block columns.
+   * 块的列数。
+   *
    */
   size_type columns;
 
   /**
-   * Array of sparsity patterns.
+   * 稀疏模式的阵列。
+   *
    */
   Table<2,
         SmartPointer<SparsityPatternType,
@@ -362,27 +323,27 @@ protected:
     sub_objects;
 
   /**
-   * Object storing and managing the transformation of row indices to indices
-   * of the sub-objects.
+   * 储存和管理行索引到子对象索引的转换的对象。
+   *
    */
   BlockIndices row_indices;
 
   /**
-   * Object storing and managing the transformation of column indices to
-   * indices of the sub-objects.
+   * 储存和管理列索引到子对象索引的转换的对象。
+   *
    */
   BlockIndices column_indices;
 
 private:
   /**
-   * Temporary vector for counting the elements written into the individual
-   * blocks when doing a collective add or set.
+   * 临时向量，用于计算在做集体添加或设置时写入各个块的元素。
+   *
    */
   std::vector<size_type> counter_within_block;
 
   /**
-   * Temporary vector for column indices on each block when writing local to
-   * global data on each sparse matrix.
+   * 临时向量，用于在每个稀疏矩阵上将局部数据写入全局数据时，每个块上的列索引。
+   *
    */
   std::vector<std::vector<size_type>> block_column_indices;
 
@@ -395,48 +356,42 @@ private:
 
 
 /**
- * This class extends the base class to implement an array of sparsity
- * patterns that can be used by block sparse matrix objects. It only adds a
- * few additional member functions, but the main interface stems from the base
- * class, see there for more information.
+ * 这个类扩展了基类，实现了一个可以被块状稀疏矩阵对象使用的稀疏模式阵列。它只增加了一些额外的成员函数，但主要的接口源于基类，更多信息请看那里。
+ * 这个类是  @ref Sparsity  的 "静态 "
+ * 类型的一个例子。
  *
- * This class is an example of the "static" type of
- * @ref Sparsity.
+ *
  */
 class BlockSparsityPattern : public BlockSparsityPatternBase<SparsityPattern>
 {
 public:
   /**
-   * Initialize the matrix empty, that is with no memory allocated. This is
-   * useful if you want such objects as member variables in other classes. You
-   * can make the structure usable by calling the reinit() function.
+   * 初始化矩阵为空，也就是没有分配内存。如果你想让这样的对象作为其他类中的成员变量，这很有用。你可以通过调用reinit()函数使该结构可用。
+   *
    */
   BlockSparsityPattern() = default;
 
   /**
-   * Initialize the matrix with the given number of block rows and columns.
-   * The blocks themselves are still empty, and you have to call
-   * collect_sizes() after you assign them sizes.
+   * 用给定的块的行和列的数量初始化矩阵。
+   * 块本身仍然是空的，你必须在给它们分配尺寸后调用
+   * collect_sizes()。
+   *
    */
   BlockSparsityPattern(const size_type n_rows, const size_type n_columns);
 
   /**
-   * Forwarding to BlockSparsityPatternBase::reinit().
+   * 转发到 BlockSparsityPatternBase::reinit(). 。
+   *
    */
   void
   reinit(const size_type n_block_rows, const size_type n_block_columns);
 
   /**
-   * Initialize the pattern with two BlockIndices for the block structures of
-   * matrix rows and columns as well as a row length vector.
+   * 用两个BlockIndices初始化模式，用于矩阵行和列的块结构，以及一个行长向量。
+   * 行长向量应该是由DoFTools产生的格式。
+   * 另外，还有一个简化版本，每个内向量的长度为1。然后，相应的条目被用作最大的行长。
+   * 对于对角线块，内部SparsityPattern用优化的对角线初始化，而对于非对角线块则不这样做。
    *
-   * The row length vector should be in the format produced by DoFTools.
-   * Alternatively, there is a simplified version, where each of the inner
-   * vectors has length one. Then, the corresponding entry is used as the
-   * maximal row length.
-   *
-   * For the diagonal blocks, the inner SparsityPattern is initialized with
-   * optimized diagonals, while this is not done for the off-diagonal blocks.
    */
   void
   reinit(const BlockIndices &                          row_indices,
@@ -445,23 +400,22 @@ public:
 
 
   /**
-   * Return whether the structure is compressed or not, i.e. whether all sub-
-   * matrices are compressed.
+   * 返回该结构是否被压缩，即所有子矩阵是否被压缩。
+   *
    */
   bool
   is_compressed() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定该对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Copy data from an object of type BlockDynamicSparsityPattern, i.e. resize
-   * this object to the size of the given argument, and copy over the contents
-   * of each of the subobjects. Previous content of this object is lost.
+   * 从BlockDynamicSparsityPattern类型的对象中复制数据，即把这个对象的大小调整为给定参数的大小，并把每个子对象的内容复制过去。这个对象以前的内容会丢失。
+   *
    */
   void
   copy_from(const BlockDynamicSparsityPattern &dsp);
@@ -470,55 +424,49 @@ public:
 
 
 /**
- * This class extends the base class to implement an array of compressed
- * sparsity patterns that can be used to initialize objects of type
- * BlockSparsityPattern. It does not add additional member functions, but
- * rather acts as an @p alias to introduce the name of this class, without
- * requiring the user to specify the templated name of the base class. For
- * information on the interface of this class refer to the base class. The
- * individual blocks are based on the DynamicSparsityPattern class.
+ * 这个类扩展了基类，实现了一个压缩稀疏模式的数组，可以用来初始化BlockSparsityPattern类型的对象。它没有增加额外的成员函数，而是作为一个
+ * @p alias
+ * 来介绍这个类的名称，而不要求用户指定基类的模板名称。关于这个类的接口的信息请参考基类。各个区块是基于DynamicSparsityPattern类的。
+ * 这个类是  @ref Sparsity  的 "动态 "
+ * 类型的一个例子。 <h3>Example</h3>
+ * 这个类的用法与DynamicSparsityPattern非常相似，但由于使用块索引会引起一些额外的复杂情况，我们举一个简短的例子。
+ * 在DoFHandler <tt>dof</tt>和AffineConstraints
+ * <tt>constraints</tt>已经设置了系统元素后，我们必须计算每个矩阵块中的自由度。
  *
- * This class is an example of the "dynamic" type of
- * @ref Sparsity.
- *
- * <h3>Example</h3>
- *
- * Usage of this class is very similar to DynamicSparsityPattern, but since
- * the use of block indices causes some additional complications, we give a
- * short example.
- *
- * After the DoFHandler <tt>dof</tt> and the AffineConstraints
- * <tt>constraints</tt> have been set up with a system element, we must count
- * the degrees of freedom in each matrix block:
  *
  * @code
  * const std::vector<unsigned int> dofs_per_block =
- *   DoFTools::count_dofs_per_fe_block(dof);
+ * DoFTools::count_dofs_per_fe_block(dof);
  * @endcode
  *
- * Now, we are ready to set up the BlockDynamicSparsityPattern.
+ * 现在，我们准备设置BlockDynamicSparsityPattern。
+ *
  *
  * @code
  * BlockDynamicSparsityPattern dsp(fe.n_blocks(), fe.n_blocks());
  * for (unsigned int i = 0; i < fe.n_blocks(); ++i)
- *   for (unsigned int j = 0; j < fe.n_blocks(); ++j)
- *     dsp.block(i, j).reinit(dofs_per_block[i], dofs_per_block[j]);
+ * for (unsigned int j = 0; j < fe.n_blocks(); ++j)
+ *   dsp.block(i, j).reinit(dofs_per_block[i], dofs_per_block[j]);
  * dsp.collect_sizes();
  * @endcode
  *
- * It is filled as if it were a normal pattern
+ * 它被填充，就像它是一个正常的模式一样
+ *
  *
  * @code
  * DoFTools::make_sparsity_pattern(dof, dsp);
  * constraints.condense(dsp);
  * @endcode
  *
- * In the end, it is copied to a normal BlockSparsityPattern for later use.
+ * 最后，它被复制到一个正常的BlockSparsityPattern中供以后使用。
+ *
  *
  * @code
  * BlockSparsityPattern sparsity;
  * sparsity.copy_from(dsp);
  * @endcode
+ *
+ *
  */
 
 class BlockDynamicSparsityPattern
@@ -526,88 +474,81 @@ class BlockDynamicSparsityPattern
 {
 public:
   /**
-   * Initialize the matrix empty, that is with no memory allocated. This is
-   * useful if you want such objects as member variables in other classes. You
-   * can make the structure usable by calling the reinit() function.
+   * 初始化矩阵为空，也就是没有分配内存。如果你想把这样的对象作为其他类中的成员变量，这是很有用的。你可以通过调用reinit()函数使该结构可用。
+   *
    */
   BlockDynamicSparsityPattern() = default;
 
   /**
-   * Initialize the matrix with the given number of block rows and columns.
-   * The blocks themselves are still empty, and you have to call
-   * collect_sizes() after you assign them sizes.
+   * 用给定的块的行和列的数量初始化矩阵。
+   * 块本身仍然是空的，你必须在给它们分配尺寸后调用
+   * collect_sizes()。
+   *
    */
   BlockDynamicSparsityPattern(const size_type n_rows,
                               const size_type n_columns);
 
   /**
-   * Initialize the pattern with two BlockIndices for the block structures of
-   * matrix rows and columns. This function is equivalent to calling the
-   * previous constructor with the length of the two index vector and then
-   * entering the index values.
+   * 用两个BlockIndices初始化模式，用于矩阵行和列的块结构。这个函数相当于用两个索引向量的长度调用前面的构造函数，然后输入索引值。
+   *
    */
   BlockDynamicSparsityPattern(const std::vector<size_type> &row_block_sizes,
                               const std::vector<size_type> &col_block_sizes);
 
   /**
-   * Initialize the pattern with symmetric blocks. The number of IndexSets in
-   * the vector determine the number of rows and columns of blocks. The size
-   * of each block is determined by the size() of the respective IndexSet.
-   * Each block only stores the rows given by the values in the IndexSet,
-   * which is useful for distributed memory parallel computations and usually
-   * corresponds to the locally owned DoFs.
+   * 用对称块初始化模式。向量中IndexSets的数量决定了块的行和列的数量。每个块的大小由各自IndexSet的size()决定。
+   * 每个块只存储由IndexSet中的值给出的行，这对分布式内存并行计算很有用，通常对应于本地拥有的DoF。
+   *
    */
   BlockDynamicSparsityPattern(const std::vector<IndexSet> &partitioning);
 
   /**
-   * Initialize the pattern with two BlockIndices for the block structures of
-   * matrix rows and columns.
+   * 用两个BlockIndices初始化模式，用于矩阵行和列的块结构。
+   *
    */
   BlockDynamicSparsityPattern(const BlockIndices &row_indices,
                               const BlockIndices &col_indices);
 
 
   /**
-   * Resize the pattern to a tensor product of matrices with dimensions
-   * defined by the arguments.
+   * 将模式调整为由参数定义的尺寸的矩阵的张量乘积。
+   * 矩阵将有与两个参数中的条目一样多的块行和块列。在位置（<i>i,j</i>）的块将有<tt>row_block_sizes[i]</tt>乘以<tt>col_block_sizes[j]</tt>的尺寸。
    *
-   * The matrix will have as many block rows and columns as there are entries
-   * in the two arguments. The block at position (<i>i,j</i>) will have the
-   * dimensions <tt>row_block_sizes[i]</tt> times <tt>col_block_sizes[j]</tt>.
    */
   void
   reinit(const std::vector<size_type> &row_block_sizes,
          const std::vector<size_type> &col_block_sizes);
 
   /**
-   * Resize the pattern with symmetric blocks determined by the size() of each
-   * IndexSet. See the constructor taking a vector of IndexSets for details.
+   * 用每个IndexSet的size()决定的对称块来调整模式的大小。详见接受一个IndexSets向量的构造函数。
+   *
    */
   void
   reinit(const std::vector<IndexSet> &partitioning);
 
   /**
-   * Resize the matrix to a tensor product of matrices with dimensions defined
-   * by the arguments. The two BlockIndices objects must be initialized and
-   * the sparsity pattern will have the same block structure afterwards.
+   * 将矩阵调整为由参数定义的尺寸的矩阵的张量积。两个BlockIndices对象必须被初始化，之后的稀疏模式将具有相同的块结构。
+   *
    */
   void
   reinit(const BlockIndices &row_indices, const BlockIndices &col_indices);
 
   /**
-   * Access to column number field. Return the column number of the @p index
-   * th entry in row @p row.
+   * 访问列号字段。返回第 @p index 行中第 @p row.
+   * 个条目的列号。
+   *
    */
   size_type
   column_number(const size_type row, const unsigned int index) const;
 
   /**
-   * Allow the use of the reinit functions of the base class as well.
+   * 也允许使用基类的 reinit 函数。
+   *
    */
   using BlockSparsityPatternBase<DynamicSparsityPattern>::reinit;
 };
 
-/*@}*/
+ /*@}*/ 
 
 
 #ifdef DEAL_II_WITH_TRILINOS
@@ -615,74 +556,55 @@ public:
 
 namespace TrilinosWrappers
 {
-  /*! @addtogroup TrilinosWrappers
-   *@{
-   */
+  /*!   @addtogroup  TrilinosWrappers  @{ !   
+* */
 
   /**
-   * This class extends the base class to implement an array of Trilinos
-   * sparsity patterns that can be used to initialize Trilinos block sparse
-   * matrices that can be distributed among different processors. It is used in
-   * the same way as the dealii::BlockSparsityPattern except that it builds upon
-   * the TrilinosWrappers::SparsityPattern instead of the
-   * dealii::SparsityPattern.
+   * 这个类扩展了基类，实现了一个Trilinos稀疏模式的数组，可以用来初始化Trilinos块状稀疏矩阵，可以分布在不同的处理器中。除了建立在 TrilinosWrappers::SparsityPattern 而不是 dealii::SparsityPattern. 的基础上，它的使用方式与 dealii::BlockSparsityPattern 相同。该类具有 @ref Sparsity 的 "动态 "
+   * 类型的属性（即如果分配的元素太少，它可以扩展内存），但其他方面更像基本的deal.II
+   * SparsityPattern（即在使用该模式之前需要调用compress()方法）。
+   * 这个类在  step-32  中使用。
    *
-   * This class is has properties of the "dynamic" type of
-   * @ref Sparsity
-   * (in the sense that it can extend the memory if too little elements were
-   * allocated), but otherwise is more like the basic deal.II SparsityPattern
-   * (in the sense that the method compress() needs to be called before the
-   * pattern can be used).
-   *
-   * This class is used in step-32.
    */
   class BlockSparsityPattern
     : public dealii::BlockSparsityPatternBase<SparsityPattern>
   {
   public:
     /**
-     * Initialize the matrix empty, that is with no memory allocated. This is
-     * useful if you want such objects as member variables in other classes.
-     * You can make the structure usable by calling the reinit() function.
+     * 初始化矩阵为空，也就是没有分配内存。如果你想让这样的对象作为其他类的成员变量，这很有用。
+     * 你可以通过调用reinit()函数使该结构可用。
+     *
      */
     BlockSparsityPattern() = default;
 
     /**
-     * Initialize the matrix with the given number of block rows and columns.
-     * The blocks themselves are still empty, and you have to call
-     * collect_sizes() after you assign them sizes.
+     * 用给定的块的行和列的数量初始化矩阵。
+     * 块本身仍然是空的，你必须在给它们分配尺寸后调用collect_sizes()。
+     *
      */
     BlockSparsityPattern(const size_type n_rows, const size_type n_columns);
 
     /**
-     * Initialize the pattern with two BlockIndices for the block structures
-     * of matrix rows and columns. This function is equivalent to calling the
-     * previous constructor with the length of the two index vector and then
-     * entering the index values.
+     * 用两个BlockIndices初始化模式，用于矩阵行和列的块结构。这个函数相当于用两个索引向量的长度调用前面的构造函数，然后输入索引值。
+     *
      */
     BlockSparsityPattern(const std::vector<size_type> &row_block_sizes,
                          const std::vector<size_type> &col_block_sizes);
 
     /**
-     * Initialize the pattern with an array of index sets that specifies both
-     * rows and columns of the matrix (so the final matrix will be a square
-     * matrix), where the size() of the IndexSets specifies the size of the
-     * blocks and the values in each IndexSet denotes the rows that are going
-     * to be saved in each block.
+     * 用一个索引集数组初始化模式，该数组指定了矩阵的行和列（所以最终的矩阵将是一个方形矩阵），其中IndexSets的size()指定了块的大小，每个IndexSet中的值表示每个块中要保存的行。
+     *
      */
     BlockSparsityPattern(const std::vector<IndexSet> &parallel_partitioning,
                          const MPI_Comm &communicator = MPI_COMM_WORLD);
 
     /**
-     * Initialize the pattern with two arrays of index sets that specify rows
-     * and columns of the matrix, where the size() of the IndexSets specifies
-     * the size of the blocks and the values in each IndexSet denotes the rows
-     * that are going to be saved in each block. The additional index set
-     * writable_rows is used to set all rows that we allow to write locally.
-     * This constructor is used to create matrices that allow several threads
-     * to write simultaneously into the matrix (to different rows, of course),
-     * see the method TrilinosWrappers::SparsityPattern::reinit method with
-     * three index set arguments for more details.
+     * 用两个指定矩阵的行和列的索引集数组初始化该模式，其中IndexSets的size()指定了块的大小，每个IndexSet中的值表示每个块中要保存的行。额外的索引集
+     * writable_rows 用来设置所有我们允许本地写入的行。
+     * 这个构造函数用于创建允许多个线程同时向矩阵中写入的矩阵（当然是向不同的行写入），更多细节请参见方法
+     * TrilinosWrappers::SparsityPattern::reinit
+     * 带有三个索引集参数的方法。
+     *
      */
     BlockSparsityPattern(
       const std::vector<IndexSet> &row_parallel_partitioning,
@@ -691,30 +613,25 @@ namespace TrilinosWrappers
       const MPI_Comm &             communicator = MPI_COMM_WORLD);
 
     /**
-     * Resize the matrix to a tensor product of matrices with dimensions
-     * defined by the arguments.
+     * 调整矩阵的大小，使其成为一个由参数定义的尺寸的矩阵的张量积。
+     * 矩阵将有与两个参数中的条目一样多的块行和块列。在位置（<i>i,j</i>）的块将有<tt>row_block_sizes[i]</tt>乘以<tt>col_block_sizes[j]</tt>的尺寸。
      *
-     * The matrix will have as many block rows and columns as there are
-     * entries in the two arguments. The block at position (<i>i,j</i>) will
-     * have the dimensions <tt>row_block_sizes[i]</tt> times
-     * <tt>col_block_sizes[j]</tt>.
      */
     void
     reinit(const std::vector<size_type> &row_block_sizes,
            const std::vector<size_type> &col_block_sizes);
 
     /**
-     * Resize the matrix to a square tensor product of matrices. See the
-     * constructor that takes a vector of IndexSets for details.
+     * 将矩阵调整为矩阵的平方张量积。详见接受一个IndexSets向量的构造函数。
+     *
      */
     void
     reinit(const std::vector<IndexSet> &parallel_partitioning,
            const MPI_Comm &             communicator = MPI_COMM_WORLD);
 
     /**
-     * Resize the matrix to a rectangular block matrices. This method allows
-     * rows and columns to be different, both in the outer block structure and
-     * within the blocks.
+     * 将矩阵调整为一个矩形块状矩阵。这种方法允许行和列是不同的，在外部块结构和块内都是如此。
+     *
      */
     void
     reinit(const std::vector<IndexSet> &row_parallel_partitioning,
@@ -722,12 +639,10 @@ namespace TrilinosWrappers
            const MPI_Comm &             communicator = MPI_COMM_WORLD);
 
     /**
-     * Resize the matrix to a rectangular block matrices that furthermore
-     * explicitly specify the writable rows in each of the blocks. This method
-     * is used to create matrices that allow several threads to write
-     * simultaneously into the matrix (to different rows, of course), see the
-     * method TrilinosWrappers::SparsityPattern::reinit method with three
-     * index set arguments for more details.
+     * 将矩阵调整为一个矩形块矩阵，进一步明确指定每个块中的可写行。这个方法用于创建允许几个线程同时向矩阵中写入的矩阵（当然是向不同的行写入），更多细节请参见方法
+     * TrilinosWrappers::SparsityPattern::reinit
+     * 带有三个索引集参数的方法。
+     *
      */
     void
     reinit(const std::vector<IndexSet> &row_parallel_partitioning,
@@ -736,18 +651,19 @@ namespace TrilinosWrappers
            const MPI_Comm &             communicator = MPI_COMM_WORLD);
 
     /**
-     * Allow the use of the reinit functions of the base class as well.
+     * 也允许使用基类的reinit函数。
+     *
      */
     using BlockSparsityPatternBase<SparsityPattern>::reinit;
   };
 
-  /*@}*/
+   /*@}*/ 
 
-} /* namespace TrilinosWrappers */
+}  /* namespace TrilinosWrappers */ 
 
 #endif
 
-/*--------------------- Template functions ----------------------------------*/
+ /*--------------------- Template functions ----------------------------------*/ 
 
 
 
@@ -995,3 +911,5 @@ BlockSparsityPattern::reinit(const size_type n_block_rows,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

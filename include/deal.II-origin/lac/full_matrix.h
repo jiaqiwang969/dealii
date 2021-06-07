@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/full_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -43,27 +44,24 @@ template <typename number>
 class LAPACKFullMatrix;
 #endif
 
-/*! @addtogroup Matrix1
- *@{
- */
+/*!   @addtogroup  Matrix1  @{ ! 
+
+ 
+* */
 
 
 /**
- * Implementation of a classical rectangular scheme of numbers. The data type
- * of the entries is provided in the template argument <tt>number</tt>.  The
- * interface is quite fat and in fact has grown every time a new feature was
- * needed. So, a lot of functions are provided.
+ * 实现一个经典的矩形数字方案。条目的数据类型由模板参数<tt>number</tt>提供。
+ * 该接口相当肥大，事实上，每次需要新的功能时，它都会增长。所以，提供了很多功能。
+ * 内部计算通常是以函数的向量参数的精度来完成的。如果没有数字类型的参数，则使用矩阵数字类型。
  *
- * Internal calculations are usually done with the accuracy of the vector
- * argument to functions. If there is no argument with a number type, the
- * matrix number type is used.
  *
- * @note Instantiations for this template are provided for <tt>@<float@>,
- * @<double@>, @<std::complex@<float@>@>,
- * @<std::complex@<double@>@></tt>. Others can be generated in application
- * programs, see
- * @ref Instantiations
- * for details.
+ * @note
+ * 本模板的实例化提供给<tt>  @<float@>,   @<double@>,
+ * @<std::complex@<float@>@>,   @<std::complex@<double@>@></tt>.
+ * 其他可以在应用程序中生成，详见 @ref Instantiations  。
+ *
+ *
  */
 template <typename number>
 class FullMatrix : public Table<2, number>
@@ -76,125 +74,131 @@ public:
     "The FullMatrix class does not support auto-differentiable numbers.");
 
   /**
-   * A type of used to index into this container.
+   * 用于对该容器进行索引的一种类型。
+   *
    */
   using size_type = std::size_t;
 
   /**
-   * Type of matrix entries. This alias is analogous to <tt>value_type</tt>
-   * in the standard library containers.
+   * 矩阵条目的类型。这个别名类似于标准库容器中的<tt>value_type</tt>。
+   *
    */
   using value_type = number;
 
   /**
-   * Use the base class mutable iterator type.
+   * 使用基类的可变迭代器类型。
+   *
    */
   using iterator = typename Table<2, number>::iterator;
 
   /**
-   * Use the base class constant iterator type.
+   * 使用基类的常数迭代器类型。
+   *
    */
   using const_iterator = typename Table<2, number>::const_iterator;
 
   /**
-   * Use the base class iterator functions.
+   * 使用基类的迭代器函数。
+   *
    */
   using Table<2, number>::begin;
 
   /**
-   * Use the base class iterator functions
+   * 使用基类迭代器函数
+   *
    */
   using Table<2, number>::end;
 
   /**
-   * Declare a type that has holds real-valued numbers with the same precision
-   * as the template argument to this class. If the template argument of this
-   * class is a real data type, then real_type equals the template argument.
-   * If the template argument is a std::complex type then real_type equals the
-   * type underlying the complex numbers.
+   * 声明一个类型，该类型持有与本类的模板参数相同精度的实值数。如果这个类的模板参数是一个实数数据类型，那么real_type就等于模板参数。
+   * 如果模板参数是一个 std::complex
+   * 类型，那么real_type等于复数的基础类型。
+   * 这个别名被用来表示规范的返回类型。
    *
-   * This alias is used to represent the return type of norms.
    */
   using real_type = typename numbers::NumberTraits<number>::real_type;
 
   /**
-   * @name Constructors and initialization.  See also the base class Table.
+   * @name  构造函数和初始化。 也见基类Table。
+   *
    */
   //@{
 
   /**
-   * Constructor. Initialize the matrix as a square matrix with dimension
-   * <tt>n</tt>.
+   * 构造函数。将矩阵初始化为一个维度为<tt>n</tt>的正方形矩阵。
+   * 为了避免整数和其他类型的矩阵的隐式转换，这个构造函数被声明为<tt>explicit</tt>。
+   * 默认情况下，不分配内存。
    *
-   * In order to avoid the implicit conversion of integers and other types to
-   * a matrix, this constructor is declared <tt>explicit</tt>.
-   *
-   * By default, no memory is allocated.
    */
   explicit FullMatrix(const size_type n = 0);
 
   /**
-   * Constructor. Initialize the matrix as a rectangular matrix.
+   * 构造函数。将矩阵初始化为一个矩形矩阵。
+   *
    */
   FullMatrix(const size_type rows, const size_type cols);
 
   /**
-   * Constructor initializing from an array of numbers. The array is arranged
-   * line by line. No range checking is performed.
+   * 构造函数从一个数组中初始化。该数组被逐行排列。不进行范围检查。
+   *
    */
   FullMatrix(const size_type rows, const size_type cols, const number *entries);
 
   /**
-   * Construct a full matrix that equals the identity matrix of the size of
-   * the argument. Using this constructor, one can easily create an identity
-   * matrix of size <code>n</code> by saying
+   * 构建一个全矩阵，等于参数大小的身份矩阵。使用这个构造函数，我们可以很容易地创建一个大小为
+   * <code>n</code> 的身份矩阵，方法是说
    * @code
    * FullMatrix<double> M(IdentityMatrix(n));
    * @endcode
+   *
+   *
    */
   FullMatrix(const IdentityMatrix &id);
   /**
    * @}
+   *
    */
 
   /**
-   * @name Copying into and out of other matrices
+   * @name  复制到其他矩阵中或从其他矩阵中复制出来
+   *
    */
   /**
    * @{
+   *
    */
 
   /**
-   * Variable assignment operator.
+   * 变量赋值运算符。
+   *
    */
   template <typename number2>
   FullMatrix<number> &
   operator=(const FullMatrix<number2> &);
 
   /**
-   * This operator assigns a scalar to a matrix. To avoid confusion with the
-   * semantics of this function, zero is the only value allowed for
-   * <tt>d</tt>, allowing you to clear a matrix in an intuitive way.
-   *
+   * 这个操作符将一个标量分配给一个矩阵。为了避免与这个函数的语义相混淆，0是<tt>d</tt>唯一允许的值，允许你以一种直观的方式清除一个矩阵。
    * @dealiiOperationIsMultithreaded
+   *
    */
   FullMatrix<number> &
   operator=(const number d);
 
   /**
-   * Copy operator to create a full matrix that equals the identity matrix of
-   * the size of the argument. This way, one can easily create an identity
-   * matrix of size <code>n</code> by saying
+   * 复制操作符，创建一个完整的矩阵，等于参数大小的身份矩阵。这样一来，人们可以很容易地创建一个大小为
+   * <code>n</code> 的身份矩阵，只要说
    * @code
-   *   M = IdentityMatrix(n);
+   * M = IdentityMatrix(n);
    * @endcode
+   *
+   *
    */
   FullMatrix<number> &
   operator=(const IdentityMatrix &id);
 
   /**
-   * Assignment operator for a LapackFullMatrix. The calling matrix must be of
-   * the same size as the LAPACK matrix.
+   * LapackFullMatrix的赋值操作。调用的矩阵必须与LAPACK矩阵的大小相同。
+   *
    */
   template <typename number2>
   FullMatrix<number> &
@@ -202,29 +206,26 @@ public:
 
 
   /**
-   * Assignment from different matrix classes. This assignment operator uses
-   * iterators of the typename MatrixType. Therefore, sparse matrices are
-   * possible sources.
+   * 来自不同矩阵类的赋值。这个赋值运算符使用类型名MatrixType的迭代器。因此，稀疏矩阵是可能的来源。
+   *
    */
   template <typename MatrixType>
   void
   copy_from(const MatrixType &);
 
   /**
-   * Transposing assignment from different matrix classes. This assignment
-   * operator uses iterators of the typename MatrixType. Therefore, sparse
-   * matrices are possible sources.
+   * 来自不同矩阵类的转置赋值。这个赋值运算符使用了typename
+   * MatrixType的迭代器。因此，稀疏矩阵是可能的来源。
+   *
    */
   template <typename MatrixType>
   void
   copy_transposed(const MatrixType &);
 
   /**
-   * Fill matrix with elements extracted from a tensor, taking rows included
-   * between <tt>r_i</tt> and <tt>r_j</tt> and columns between <tt>c_i</tt>
-   * and <tt>c_j</tt>. The resulting matrix is then inserted in the
-   * destination matrix at position <tt>(dst_r, dst_c)</tt> Checks on the
-   * indices are made.
+   * 用从张量中提取的元素填充矩阵，取包括在<tt>r_i</tt>和<tt>r_j</tt>之间的行以及<tt>c_i</tt>和<tt>c_j</tt>之间的列。然后将得到的矩阵插入目标矩阵的<tt>(dst_r,
+   * dst_c)</tt>位置，对索引进行检查。
+   *
    */
   template <int dim>
   void
@@ -237,11 +238,9 @@ public:
             const size_type       dst_c   = 0);
 
   /**
-   * Insert a submatrix (also rectangular) into a tensor, putting its upper
-   * left element at the specified position <tt>(dst_r, dst_c)</tt> and the
-   * other elements consequently. Default values are chosen so that no
-   * parameter needs to be specified if the size of the tensor and that of the
-   * matrix coincide.
+   * 将一个子矩阵（也是矩形的）插入张量中，将其左上角的元素放在指定的位置<tt>(dst_r,
+   * dst_c)</tt>，其他元素也随之插入。默认值的选择是，如果张量的大小和矩阵的大小一致，则不需要指定参数。
+   *
    */
   template <int dim>
   void copy_to(Tensor<2, dim> &   T,
@@ -253,16 +252,13 @@ public:
                const unsigned int dst_c   = 0) const;
 
   /**
-   * Copy a subset of the rows and columns of another matrix into the current
-   * object.
+   * 将另一个矩阵的行和列的一个子集复制到当前对象中。
+   * @param  矩阵 要从中提取子集的矩阵。    @param  row_index_set
+   * 要提取的 @p matrix 的行的集合。    @param  column_index_set
+   * 要提取的 @p matrix 的列的集合。  @pre   @p row_index_set  和
+   * @p
+   * column_index_set中的元素数量应等于当前对象的行和列的数量。换句话说，在这个操作中，当前对象的大小不会被调整。
    *
-   * @param matrix The matrix from which a subset is to be taken from.
-   * @param row_index_set The set of rows of @p matrix from which to extract.
-   * @param column_index_set The set of columns of @p matrix from which to
-   * extract. @pre The number of elements in @p row_index_set and @p
-   * column_index_set shall be equal to the number of rows and columns in the
-   * current object. In other words, the current object is not resized for
-   * this operation.
    */
   template <typename MatrixType, typename index_type>
   void
@@ -271,16 +267,12 @@ public:
                          const std::vector<index_type> &column_index_set);
 
   /**
-   * Copy the elements of the current matrix object into a specified set of
-   * rows and columns of another matrix. Thus, this is a scatter operation.
+   * 将当前矩阵对象的元素复制到另一个矩阵的指定行和列集合中。因此，这是一个散点操作。
+   * @param  row_index_set 要写入的 @p matrix 的行。    @param
+   * column_index_set 要写入的 @p matrix 的列。    @param  matrix
+   * 某些元素要被替换的矩阵。  @pre   @p row_index_set 和 @p
+   * column_index_set中的元素数量应等于当前对象的行和列的数量。换句话说，在这个操作中，当前对象的大小不会被调整。
    *
-   * @param row_index_set The rows of @p matrix into which to write.
-   * @param column_index_set The columns of @p matrix into which to write.
-   * @param matrix The matrix within which certain elements are to be
-   * replaced. @pre The number of elements in @p row_index_set and @p
-   * column_index_set shall be equal to the number of rows and columns in the
-   * current object. In other words, the current object is not resized for
-   * this operation.
    */
   template <typename MatrixType, typename index_type>
   void
@@ -289,14 +281,11 @@ public:
                     MatrixType &                   matrix) const;
 
   /**
-   * Fill rectangular block.
+   * 填充矩形块。
+   * 矩阵<tt>src</tt>的一个矩形块被复制到<tt>this</tt>。被复制的块的左上角是<tt>(src_offset_i,src_offset_j)</tt>。
+   * 被复制块的左上角是<tt>(dst_offset_i,dst_offset_j)</tt>。
+   * 被复制的矩形块的尺寸是可能的最大尺寸，由<tt>this</tt>或<tt>src</tt>的尺寸决定。
    *
-   * A rectangular block of the matrix <tt>src</tt> is copied into
-   * <tt>this</tt>. The upper left corner of the block being copied is
-   * <tt>(src_offset_i,src_offset_j)</tt>.  The upper left corner of the
-   * copied block is <tt>(dst_offset_i,dst_offset_j)</tt>.  The size of the
-   * rectangular block being copied is the maximum size possible, determined
-   * either by the size of <tt>this</tt> or <tt>src</tt>.
    */
   template <typename number2>
   void
@@ -308,22 +297,19 @@ public:
 
 
   /**
-   * Make function of base class available.
+   * 使基类的功能可用。
+   *
    */
   template <typename number2>
   void
   fill(const number2 *);
 
   /**
-   * Fill with permutation of another matrix.
+   * 用另一个矩阵的permutation来填充。
+   * 矩阵<tt>src</tt>被复制到目标中。两个互换<tt>p_r</tt>和<tt>p_c</tt>的操作方式，使得<tt>result(i,j)
+   * = src(p_r[i], p_c[j]) </tt>。
+   * 如果矩阵<tt>src</tt>更大的话，向量也可能是从更大的整数集中选择出来的。也可以通过这种方法来复制行或列。
    *
-   * The matrix <tt>src</tt> is copied into the target. The two permutation
-   * <tt>p_r</tt> and <tt>p_c</tt> operate in a way, such that <tt>result(i,j)
-   * = src(p_r[i], p_c[j])</tt>.
-   *
-   * The vectors may also be a selection from a larger set of integers, if the
-   * matrix <tt>src</tt> is bigger. It is also possible to duplicate rows or
-   * columns by this method.
    */
   template <typename number2>
   void
@@ -332,84 +318,74 @@ public:
                    const std::vector<size_type> &p_cols);
 
   /**
-   * Set a particular entry of the matrix to a value. Thus, calling
-   * <code>A.set(1,2,3.141);</code> is entirely equivalent to the operation
-   * <code>A(1,2) = 3.141;</code>. This function exists for compatibility with
-   * the various sparse matrix objects.
+   * 将矩阵的某一特定条目设置为一个值。因此，调用
+   * <code>A.set(1,2,3.141);</code>  完全等同于操作  <code>A(1,2) =
+   * 3.141;</code>
+   * 。这个函数的存在是为了与各种稀疏矩阵对象兼容。
+   * @param  i 要设置的元素的行索引。    @param  j
+   * 要设置的元素的列索引。    @param  value
+   * 要写进元素的值。
    *
-   * @param i The row index of the element to be set.
-   * @param j The columns index of the element to be set.
-   * @param value The value to be written into the element.
    */
   void
   set(const size_type i, const size_type j, const number value);
   /**
    * @}
+   *
    */
   /**
-   * @name Non-modifying operators
+   * @name  非修饰性操作符
+   *
    */
   /**
    * @{
+   *
    */
 
   /**
-   * Comparison operator. Be careful with this thing, it may eat up huge
-   * amounts of computing time! It is most commonly used for internal
-   * consistency checks of programs.
+   * 比较运算符。对这个东西要小心，它可能会吞噬大量的计算时间
+   * 它最常用于程序的内部一致性检查。
+   *
    */
   bool
   operator==(const FullMatrix<number> &) const;
 
   /**
-   * Number of rows of this matrix.  Note that the matrix is of dimension <i>m
-   * x n</i>.
+   * 这个矩阵的行数。 注意，这个矩阵的维度是<i>m x n</i>。
+   *
    */
   size_type
   m() const;
 
   /**
-   * Number of columns of this matrix.  Note that the matrix is of dimension
-   * <i>m x n</i>.
+   * 该矩阵的列数。 请注意，该矩阵的维度为<i>m x n</i>。
+   *
    */
   size_type
   n() const;
 
   /**
-   * Return whether the matrix contains only elements with value zero. This
-   * function is mainly for internal consistency checks and should seldom be
-   * used when not in debug mode since it uses quite some time.
+   * 返回该矩阵是否只包含数值为0的元素。这个函数主要用于内部一致性检查，在非调试模式下应该很少使用，因为它需要花费相当多的时间。
+   *
    */
   bool
   all_zero() const;
 
   /**
-   * Return the square of the norm of the vector <tt>v</tt> induced by this
-   * matrix, i.e. <i>(v,Mv)</i>. This is useful, e.g. in the finite element
-   * context, where the <i>L<sup>2</sup></i> norm of a function equals the
-   * matrix norm with respect to the mass matrix of the vector representing
-   * the nodal values of the finite element function.
+   * 返回由该矩阵引起的向量<tt>v</tt>的规范的平方，即<i>(v,Mv)</i>。这很有用，例如在有限元背景下，一个函数的<i>L<sup>2</sup></i>规范等于相对于代表有限元函数节点值的向量矩阵的矩阵规范。
+   * 显然，对于这个操作，矩阵需要是二次的，而且为了使结果真正成为一个规范，它还需要是实数对称的或复数隐式的。
+   * 该矩阵和给定向量的基础模板类型应该都是实值或复值，但不是混合的，这样这个函数才有意义。
    *
-   * Obviously, the matrix needs to be quadratic for this operation, and for
-   * the result to actually be a norm it also needs to be either real
-   * symmetric or complex hermitian.
-   *
-   * The underlying template types of both this matrix and the given vector
-   * should either both be real or complex-valued, but not mixed, for this
-   * function to make sense.
    */
   template <typename number2>
   number2
   matrix_norm_square(const Vector<number2> &v) const;
 
   /**
-   * Build the matrix scalar product <tt>u<sup>T</sup> M v</tt>. This function
-   * is mostly useful when building the cellwise scalar product of two
-   * functions in the finite element context.
+   * 建立矩阵标量乘积<tt>u<sup>T</sup>M
+   * v</tt>。这个函数在有限元背景下建立两个函数的单元标量积时大多有用。
+   * 这个矩阵和给定向量的基本模板类型应该都是实数或复数，但不是混合的，这样这个函数才有意义。
    *
-   * The underlying template types of both this matrix and the given vector
-   * should either both be real or complex-valued, but not mixed, for this
-   * function to make sense.
    */
   template <typename number2>
   number2
@@ -417,61 +393,59 @@ public:
                         const Vector<number2> &v) const;
 
   /**
-   * Return the <i>l<sub>1</sub></i>-norm of the matrix, where $||M||_1 =
-   * \max_j \sum_i |M_{ij}|$ (maximum of the sums over columns).
+   * 返回矩阵的<i>l<sub>1</sub></i>-norm，其中 $||M||_1 = \max_j
+   * \sum_i |M_{ij}|$ （列上之和的最大值）。
+   *
    */
   real_type
   l1_norm() const;
 
   /**
-   * Return the $l_\infty$-norm of the matrix, where $||M||_\infty = \max_i
-   * \sum_j |M_{ij}|$ (maximum of the sums over rows).
+   * 返回矩阵的 $l_\infty$ -Norm，其中 $||M||_\infty = \max_i \sum_j
+   * |M_{ij}|$ （行上和的最大值）。
+   *
    */
   real_type
   linfty_norm() const;
 
   /**
-   * Compute the Frobenius norm of the matrix.  Return value is the root of
-   * the square sum of all matrix entries.
+   * 计算矩阵的Frobenius规范。
+   * 返回值是所有矩阵条目的平方和的根。
+   * @note
+   * 对于我们中的胆小鬼：这个规范不是与向量空间的<i>l<sub>2</sub></i>规范兼容的规范。
    *
-   * @note For the timid among us: this norm is not the norm compatible with
-   * the <i>l<sub>2</sub></i>-norm of the vector space.
    */
   real_type
   frobenius_norm() const;
 
   /**
-   * Compute the relative norm of the skew-symmetric part. The return value is
-   * the Frobenius norm of the skew-symmetric part of the matrix divided by
-   * that of the matrix.
+   * 计算歪斜对称部分的相对规范。返回值是矩阵的倾斜对称部分的Frobenius规范除以矩阵的规范。
+   * 这个函数的主要目的是检查，一个矩阵是否在一定的精度范围内是对称的。
    *
-   * Main purpose of this function is to check, if a matrix is symmetric
-   * within a certain accuracy, or not.
    */
   real_type
   relative_symmetry_norm2() const;
 
   /**
-   * Compute the determinant of a matrix.  This is only implemented for one,
-   * two, and three dimensions, since for higher dimensions the numerical work
-   * explodes.  Obviously, the matrix needs to be quadratic for this function.
+   * 计算矩阵的行列式。
+   * 这个功能只在一维、二维和三维空间实现，因为对于更高的维度，数值工作就会爆发。
+   * 很明显，对于这个函数来说，矩阵需要是二次的。
+   *
    */
   number
   determinant() const;
 
   /**
-   * Return the trace of the matrix, i.e. the sum of the diagonal values
-   * (which happens to also equal the sum of the eigenvalues of a matrix).
-   * Obviously, the matrix needs to be quadratic for this function.
+   * 返回矩阵的轨迹，即对角线值的总和（恰好也等于矩阵的特征值的总和）。
+   * 很明显，对于这个函数来说，矩阵需要是二次的。
+   *
    */
   number
   trace() const;
 
   /**
-   * Output of the matrix in user-defined format given by the specified
-   * precision and width. This function saves width and precision of the
-   * stream before setting these given values for output, and restores the
-   * previous values after output.
+   * 以用户定义的格式输出由指定的精度和宽度给出的矩阵。这个函数在为输出设置这些给定值之前保存了流的宽度和精度，并在输出后恢复之前的值。
+   *
    */
   template <class StreamType>
   void
@@ -480,26 +454,18 @@ public:
         const unsigned int precision = 2) const;
 
   /**
-   * Print the matrix and allow formatting of entries.
+   * 打印矩阵并允许对条目进行格式化。
+   * 参数允许对输出格式进行灵活设置。      @arg
+   * <tt>precision</tt>表示尾数的数量。      @arg
+   * <tt>scientific</tt>用于确定数字格式，其中<tt>scientific</tt> =
+   * <tt>false</tt>表示固定点符号。      @arg
+   * <tt>width</tt>表示每列的与。<tt>width</tt>的零条目使函数计算出一个宽度，但如果输出粗略，可以将其改为正值。
+   * @arg  <tt>zero_string</tt>为零条目指定一个打印的字符串。
+   * @arg  <tt>denominator</tt>
+   * 将整个矩阵乘以这个共同的分母，得到更漂亮的数字。
+   * @arg
+   * <tt>阈值</tt>：所有绝对值小于此值的条目都被视为零。
    *
-   * The parameters allow for a flexible setting of the output format:
-   *
-   * @arg <tt>precision</tt> denotes the number of trailing digits.
-   *
-   * @arg <tt>scientific</tt> is used to determine the number format, where
-   * <tt>scientific</tt> = <tt>false</tt> means fixed point notation.
-   *
-   * @arg <tt>width</tt> denotes the with of each column. A zero entry for
-   * <tt>width</tt> makes the function compute a width, but it may be changed
-   * to a positive value, if output is crude.
-   *
-   * @arg <tt>zero_string</tt> specifies a string printed for zero entries.
-   *
-   * @arg <tt>denominator</tt> Multiply the whole matrix by this common
-   * denominator to get nicer numbers.
-   *
-   * @arg <tt>threshold</tt>: all entries with absolute value smaller than
-   * this are considered zero.
    */
   void
   print_formatted(std::ostream &     out,
@@ -511,8 +477,8 @@ public:
                   const double       threshold   = 0.) const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -522,25 +488,29 @@ public:
   //@{
 
   /**
-   * Mutable iterator starting at the first entry of row <tt>r</tt>.
+   * 可变的迭代器，从<tt>r</tt>行的第一个条目开始。
+   *
    */
   iterator
   begin(const size_type r);
 
   /**
-   * One past the end mutable iterator of row <tt>r</tt>.
+   * 超过行<tt>r</tt>末尾的一个可变迭代器。
+   *
    */
   iterator
   end(const size_type r);
 
   /**
-   * Constant iterator starting at the first entry of row <tt>r</tt>.
+   * 从<tt>r</tt>行的第一个条目开始的恒定迭代器。
+   *
    */
   const_iterator
   begin(const size_type r) const;
 
   /**
-   * One past the end constant iterator of row <tt>r</tt>.
+   * 从第<tt>r</tt>行的最后一条开始的恒定迭代器。
+   *
    */
   const_iterator
   end(const size_type r) const;
@@ -550,34 +520,32 @@ public:
   //@{
 
   /**
-   * Scale the entire matrix by a fixed factor.
+   * 用一个固定的因子来缩放整个矩阵。
+   *
    */
   FullMatrix &
   operator*=(const number factor);
 
   /**
-   * Scale the entire matrix by the inverse of the given factor.
+   * 用给定系数的逆数来缩放整个矩阵。
+   *
    */
   FullMatrix &
   operator/=(const number factor);
 
   /**
-   * Simple addition of a scaled matrix, i.e. <tt>*this += a*A</tt>.
+   * 缩放后的矩阵的简单加法，即<tt>*this += a*A</tt>。
+   * 矩阵<tt>A</tt>可以是一个任意底层标量类型上的全矩阵，只要其数据类型可以转换为该矩阵的数据类型。
    *
-   * The matrix <tt>A</tt> may be a full matrix over an arbitrary underlying
-   * scalar type, as long as its data type is convertible to the data type of
-   * this matrix.
    */
   template <typename number2>
   void
   add(const number a, const FullMatrix<number2> &A);
 
   /**
-   * Multiple addition of scaled matrices, i.e. <tt>*this += a*A + b*B</tt>.
+   * 缩放矩阵的多重加法，即<tt>*this += a*A + b*B</tt>。
+   * 矩阵<tt>A</tt>和<tt>B</tt>可以是一个任意底层标量类型上的全矩阵，只要其数据类型可以转换为该矩阵的数据类型。
    *
-   * The matrices <tt>A</tt> and <tt>B</tt> may be a full matrix over an
-   * arbitrary underlying scalar type, as long as its data type is convertible
-   * to the data type of this matrix.
    */
   template <typename number2>
   void
@@ -587,12 +555,10 @@ public:
       const FullMatrix<number2> &B);
 
   /**
-   * Multiple addition of scaled matrices, i.e. <tt>*this += a*A + b*B +
-   * c*C</tt>.
+   * 缩放矩阵的多重加法，即<tt>*this += a*A + b*B + c*C</tt>。
+   * 矩阵<tt>A</tt>,
+   * <tt>B</tt>和<tt>C</tt>可以是一个任意底层标量类型上的全矩阵，只要其数据类型可以转换为这个矩阵的数据类型。
    *
-   * The matrices <tt>A</tt>, <tt>B</tt> and <tt>C</tt> may be a full matrix
-   * over an arbitrary underlying scalar type, as long as its data type is
-   * convertible to the data type of this matrix.
    */
   template <typename number2>
   void
@@ -604,15 +570,12 @@ public:
       const FullMatrix<number2> &C);
 
   /**
-   * Add rectangular block.
+   * 添加矩形块。
+   * 矩阵<tt>src</tt>的一个矩形块被添加到<tt>this</tt>。
+   * 被复制的块的左上角是<tt>(src_offset_i,src_offset_j)/tt>。
+   * 被复制块的左上角是<tt>(dst_offset_i,dst_offset_j)</tt>。
+   * 被复制的矩形块的尺寸是可能的最大尺寸，由<tt>this</tt>或<tt>src</tt>的尺寸和给定的偏移量决定。
    *
-   * A rectangular block of the matrix <tt>src</tt> is added to <tt>this</tt>.
-   * The upper left corner of the block being copied is
-   * <tt>(src_offset_i,src_offset_j)</tt>.  The upper left corner of the
-   * copied block is <tt>(dst_offset_i,dst_offset_j)</tt>.  The size of the
-   * rectangular block being copied is the maximum size possible, determined
-   * either by the size of <tt>this</tt> or <tt>src</tt> and the given
-   * offsets.
    */
   template <typename number2>
   void
@@ -624,24 +587,20 @@ public:
       const size_type            src_offset_j = 0);
 
   /**
-   * Weighted addition of the transpose of <tt>B</tt> to <tt>this</tt>.
+   * 将<tt>B</tt>的转置加到<tt>this</tt>。    <i>A += s
+   * B<sup>T</sup></i>
    *
-   * <i>A += s B<sup>T</sup></i>
    */
   template <typename number2>
   void
   Tadd(const number s, const FullMatrix<number2> &B);
 
   /**
-   * Add transpose of a rectangular block.
+   * 增加一个矩形块的转置。
+   * 矩阵<tt>src</tt>的一个矩形块被转置并添加到<tt>this</tt>。被复制的块的左上角是<tt>(src_offset_i,src_offset_j)</tt>在<b>non</b>转置的矩阵的坐标。
+   * 被复制块的左上角是<tt>(dst_offset_i,dst_offset_j)</tt>。
+   * 被复制的矩形块的尺寸是可能的最大尺寸，由<tt>this</tt>或<tt>src</tt>的尺寸决定。
    *
-   * A rectangular block of the matrix <tt>src</tt> is transposed and
-   * addedadded to <tt>this</tt>. The upper left corner of the block being
-   * copied is <tt>(src_offset_i,src_offset_j)</tt> in the coordinates of the
-   * <b>non</b>-transposed matrix.  The upper left corner of the copied block
-   * is <tt>(dst_offset_i,dst_offset_j)</tt>.  The size of the rectangular
-   * block being copied is the maximum size possible, determined either by the
-   * size of <tt>this</tt> or <tt>src</tt>.
    */
   template <typename number2>
   void
@@ -653,19 +612,17 @@ public:
        const size_type            src_offset_j = 0);
 
   /**
-   * Add a single element at the given position.
+   * 在给定的位置添加一个单一元素。
+   *
    */
   void
   add(const size_type row, const size_type column, const number value);
 
   /**
-   * Add an array of values given by <tt>values</tt> in the given global
-   * matrix row at columns specified by col_indices in the full matrix. This
-   * function is present for compatibility with the various sparse matrices in
-   * deal.II. In particular, the two boolean fields @p elide_zero_values and
-   * @p col_indices_are_sorted do not impact the performance of this routine,
-   * as opposed to the sparse matrix case and are indeed ignored in the
-   * implementation.
+   * 在给定的全局矩阵行中，在全局矩阵中由col_indices指定的列上添加一个由<tt>values</tt>给出的数值数组。这个函数的出现是为了与deal.II中的各种稀疏矩阵兼容。特别是，两个布尔字段
+   * @p elide_zero_values 和 @p col_indices_are_sorted
+   * 并不影响这个例程的性能，与稀疏矩阵的情况不同，在实现中确实被忽略了。
+   *
    */
   template <typename number2, typename index_type>
   void
@@ -677,14 +634,16 @@ public:
       const bool        col_indices_are_sorted = false);
 
   /**
-   * <i>A(i,1...n) += s*A(j,1...n)</i>.  Simple addition of rows of this
+   * <i>A(i,1...n) += s*A(j,1...n)</i>.  简单地增加这一行的数量
+   *
    */
   void
   add_row(const size_type i, const number s, const size_type j);
 
   /**
-   * <i>A(i,1...n) += s*A(j,1...n) + t*A(k,1...n)</i>.  Multiple addition of
-   * rows of this.
+   * <i>A(i,1...n) += s*A(j,1...n) + t*A(k,1...n)</i>.
+   * 多次增加这的行数。
+   *
    */
   void
   add_row(const size_type i,
@@ -694,14 +653,15 @@ public:
           const size_type k);
 
   /**
-   * <i>A(1...n,i) += s*A(1...n,j)</i>.  Simple addition of columns of this.
+   * <i>A(1...n,i) += s*A(1...n,j)</i>.  简单添加这的列。
+   *
    */
   void
   add_col(const size_type i, const number s, const size_type j);
 
   /**
-   * <i>A(1...n,i) += s*A(1...n,j) + t*A(1...n,k)</i>.  Multiple addition of
-   * columns of this.
+   * <i>A(1...n,i) += s*A(1...n,j) + t*A(1...n,k)</i>.  多次增加此列。
+   *
    */
   void
   add_col(const size_type i,
@@ -711,33 +671,39 @@ public:
           const size_type k);
 
   /**
-   * Swap <i>A(i,1...n) <-> A(j,1...n)</i>.  Swap rows i and j of this
+   * 交换 <i>A(i,1...n) <-> A(j,1...n)</i>.
+   * 交换这个的第i行和第j行
+   *
    */
   void
   swap_row(const size_type i, const size_type j);
 
   /**
-   * Swap <i>A(1...n,i) <-> A(1...n,j)</i>.  Swap columns i and j of this
+   * 交换<i>A(1...n,i) <-> A(1...n,j)</i>。
+   * 交换这个的第i列和第j列
+   *
    */
   void
   swap_col(const size_type i, const size_type j);
 
   /**
-   * Add constant to diagonal elements of this, i.e. add a multiple of the
-   * identity matrix.
+   * 给这个的对角线元素添加常数，即添加身份矩阵的一个倍数。
+   *
    */
   void
   diagadd(const number s);
 
   /**
-   * Assignment <tt>*this = a*A</tt>.
+   * 赋值 <tt>*this = a*A</tt>.
+   *
    */
   template <typename number2>
   void
   equ(const number a, const FullMatrix<number2> &A);
 
   /**
-   * Assignment <tt>*this = a*A + b*B</tt>.
+   * 分配 <tt>*this = a*A + b*B</tt>.
+   *
    */
   template <typename number2>
   void
@@ -747,7 +713,8 @@ public:
       const FullMatrix<number2> &B);
 
   /**
-   * Assignment <tt>*this = a*A + b*B + c*C</tt>.
+   * 分配 <tt>*this = a*A + b*B + c*C</tt>.
+   *
    */
   template <typename number2>
   void
@@ -759,74 +726,67 @@ public:
       const FullMatrix<number2> &C);
 
   /**
-   * Symmetrize the matrix by forming the mean value between the existing
-   * matrix and its transpose, <i>A = 1/2(A+A<sup>T</sup>)</i>.
+   * 通过形成现有矩阵和它的转置<i>A =
+   * 1/2(A+A<sup>T</sup>)</i>之间的平均值，对矩阵进行对称。
+   * 很明显，矩阵必须是二次方的，才能进行这一操作。
    *
-   * Obviously the matrix must be quadratic for this operation.
    */
   void
   symmetrize();
 
   /**
-   * A=Inverse(A). A must be a square matrix.  Inversion of this matrix by
-   * Gauss-Jordan algorithm with partial pivoting.  This process is well-
-   * behaved for positive definite matrices, but be aware of round-off errors
-   * in the indefinite case.
+   * A=Inverse(A)。A必须是一个方形矩阵。
+   * 通过高斯-乔丹算法对该矩阵进行反演，并进行部分透视。
+   * 这个过程对于正定矩阵来说表现良好，但要注意在不确定的情况下的舍入误差。
+   * 在deal.II被配置为LAPACK的情况下，函数Xgetrf和Xgetri建立了一个LU因式分解，并在该因式分解的基础上反转矩阵，提供了最好的性能，直到有几百个行和列的矩阵。
+   * 对一个<tt>n x
+   * n</tt>矩阵进行反转的数值努力是<tt>n*3</tt>。
    *
-   * In case deal.II was configured with LAPACK, the functions Xgetrf and
-   * Xgetri build an LU factorization and invert the matrix upon that
-   * factorization, providing best performance up to matrices with a few
-   * hundreds rows and columns.
-   *
-   * The numerical effort to invert an <tt>n x n</tt> matrix is of the order
-   * <tt>n**3</tt>.
    */
   void
   gauss_jordan();
 
   /**
-   * Assign the inverse of the given matrix to <tt>*this</tt>. This function
-   * is hardcoded for quadratic matrices of dimension one to four. However,
-   * since the amount of code needed grows quickly, the method gauss_jordan()
-   * is invoked implicitly if the dimension is larger.
+   * 将给定矩阵的逆运算分配给<tt>*this</tt>。这个函数是针对一到四维的二次元矩阵的硬编码。然而，由于所需的代码量增长很快，如果维数更大，则隐含地调用gauss_jordan()方法。
+   *
    */
   template <typename number2>
   void
   invert(const FullMatrix<number2> &M);
 
   /**
-   * Assign the Cholesky decomposition $A=:L L^T$ of the given matrix $A$ to
-   * <tt>*this</tt>, where $L$ is lower triangular matrix. The given matrix must
-   * be symmetric positive definite.
+   * 将给定矩阵 $A$ 的Cholesky分解 $A=:L L^T$
+   * 分配给<tt>*this</tt>，其中 $L$
+   * 为下三角矩阵。给定的矩阵必须是对称正定的。
+   * 如果矩阵不是正定的，就会抛出ExcMatrixNotPositiveDefinite。
    *
-   * ExcMatrixNotPositiveDefinite will be thrown in the case that the matrix
-   * is not positive definite.
    */
   template <typename number2>
   void
   cholesky(const FullMatrix<number2> &A);
 
   /**
-   * <tt>*this(i,j)</tt> = $V(i) W(j)$ where $V,W$ are vectors of the same
-   * length.
+   * <tt>*this(i,j)</tt> =  $V(i) W(j)$  其中 $V,W$
+   * 是相同长度的向量。
+   *
    */
   template <typename number2>
   void
   outer_product(const Vector<number2> &V, const Vector<number2> &W);
 
   /**
-   * Assign the left_inverse of the given matrix to <tt>*this</tt>. The
-   * calculation being performed is <i>(A<sup>T</sup>*A)<sup>-1</sup>
-   * *A<sup>T</sup></i>.
+   * 将给定矩阵的左逆分配给<tt>*this</tt>。正在进行的计算是<i>(A<sup>T</sup>*A)<sup>-1</sup>
+   * A<sup>T</sup></i>。
+   *
    */
   template <typename number2>
   void
   left_invert(const FullMatrix<number2> &M);
 
   /**
-   * Assign the right_inverse of the given matrix to <tt>*this</tt>. The
-   * calculation being performed is <i>A<sup>T</sup>*(A*A<sup>T</sup>)
-   * <sup>-1</sup></i>.
+   * 将给定矩阵的右逆分配给<tt>*this</tt>。正在执行的计算是<i>A<sup>T</sup>*(A*A<sup>T</sup>)
+   * <sup>-1</sup></i>。
+   *
    */
   template <typename number2>
   void
@@ -837,22 +797,12 @@ public:
   //@{
 
   /**
-   * Matrix-matrix-multiplication.
+   * 矩阵-矩阵-乘法。
+   * 可选参数<tt>adding</tt>决定，结果是存储在<tt>C</tt>中，还是添加到<tt>C</tt>中。
+   * if (adding) <i>C += A*B</i> if (!adding) <i>C = A*B</i>
+   * 假设<tt>A</tt>和<tt>B</tt>的大小兼容，并且<tt>C</tt>已经具有正确大小。
+   * 如果三个矩阵维度的乘积大于300，并且在配置过程中检测到BLAS，则该函数使用BLAS函数Xgemm。使用BLAS通常会带来相当大的性能提升。
    *
-   * The optional parameter <tt>adding</tt> determines, whether the result is
-   * stored in <tt>C</tt> or added to <tt>C</tt>.
-   *
-   * if (adding) <i>C += A*B</i>
-   *
-   * if (!adding) <i>C = A*B</i>
-   *
-   * Assumes that <tt>A</tt> and <tt>B</tt> have compatible sizes and that
-   * <tt>C</tt> already has the right size.
-   *
-   * This function uses the BLAS function Xgemm if the product of the three
-   * matrix dimensions is larger than 300 and BLAS was detected during
-   * configuration. Using BLAS usually results in considerable performance
-   * gains.
    */
   template <typename number2>
   void
@@ -861,22 +811,13 @@ public:
         const bool                 adding = false) const;
 
   /**
-   * Matrix-matrix-multiplication using transpose of <tt>this</tt>.
+   * 矩阵-矩阵-乘法，使用<tt>this</tt>的转置。
+   * 可选的参数<tt>adding</tt>决定了结果是存储在<tt>C</tt>中还是添加到<tt>C</tt>中。
+   * if (adding) <i>C += A<sup>T</sup>*B</i> if (!adding) <i>C =
+   * A<sup>T</sup>*B</i>
+   * 假设<tt>A</tt>和<tt>B</tt>具有兼容的大小，并且<tt>C</tt>已经具有正确大小。
+   * 如果三个矩阵维度的乘积大于300，并且在配置过程中检测到BLAS，则该函数使用BLAS函数Xgemm。使用BLAS通常会带来相当大的性能提升。
    *
-   * The optional parameter <tt>adding</tt> determines, whether the result is
-   * stored in <tt>C</tt> or added to <tt>C</tt>.
-   *
-   * if (adding) <i>C += A<sup>T</sup>*B</i>
-   *
-   * if (!adding) <i>C = A<sup>T</sup>*B</i>
-   *
-   * Assumes that <tt>A</tt> and <tt>B</tt> have compatible sizes and that
-   * <tt>C</tt> already has the right size.
-   *
-   * This function uses the BLAS function Xgemm if the product of the three
-   * matrix dimensions is larger than 300 and BLAS was detected during
-   * configuration. Using BLAS usually results in considerable performance
-   * gains.
    */
   template <typename number2>
   void
@@ -885,22 +826,13 @@ public:
          const bool                 adding = false) const;
 
   /**
-   * Matrix-matrix-multiplication using transpose of <tt>B</tt>.
+   * 使用<tt>B</tt>的转置进行矩阵-矩阵乘法。
+   * 可选的参数<tt>adding</tt>决定了结果是存储在<tt>C</tt>中还是添加到<tt>C</tt>中。
+   * if (adding) <i>C += A*B<sup>T</sup></i> if (!adding) <i>C =
+   * A*B<sup>T</sup></i>
+   * 假设<tt>A</tt>和<tt>B</tt>具有兼容的大小，并且<tt>C</tt>已经具有正确大小。
+   * 如果三个矩阵维度的乘积大于300，并且在配置过程中检测到BLAS，则该函数使用BLAS函数Xgemm。使用BLAS通常会带来相当大的性能提升。
    *
-   * The optional parameter <tt>adding</tt> determines, whether the result is
-   * stored in <tt>C</tt> or added to <tt>C</tt>.
-   *
-   * if (adding) <i>C += A*B<sup>T</sup></i>
-   *
-   * if (!adding) <i>C = A*B<sup>T</sup></i>
-   *
-   * Assumes that <tt>A</tt> and <tt>B</tt> have compatible sizes and that
-   * <tt>C</tt> already has the right size.
-   *
-   * This function uses the BLAS function Xgemm if the product of the three
-   * matrix dimensions is larger than 300 and BLAS was detected during
-   * configuration. Using BLAS usually results in considerable performance
-   * gains.
    */
   template <typename number2>
   void
@@ -909,23 +841,13 @@ public:
          const bool                 adding = false) const;
 
   /**
-   * Matrix-matrix-multiplication using transpose of <tt>this</tt> and
-   * <tt>B</tt>.
+   * 使用<tt>this</tt>和<tt>B</tt>的转置进行矩阵-矩阵乘法。
+   * 可选的参数<tt>adding</tt>决定了结果是存储在<tt>C</tt>中还是添加到<tt>C</tt>中。
+   * if (adding) <i>C += A<sup>T</sup>*B<sup>T</sup></i> if (!adding) <i>C =
+   * A<sup>T</sup>*B<sup>T</sup></i>
+   * 假设<tt>A</tt>和<tt>B</tt>具有兼容的大小，并且<tt>C</tt>已经具有正确大小。
+   * 如果三个矩阵维度的乘积大于300，并且在配置过程中检测到BLAS，则该函数使用BLAS函数Xgemm。使用BLAS通常会带来相当大的性能提升。
    *
-   * The optional parameter <tt>adding</tt> determines, whether the result is
-   * stored in <tt>C</tt> or added to <tt>C</tt>.
-   *
-   * if (adding) <i>C += A<sup>T</sup>*B<sup>T</sup></i>
-   *
-   * if (!adding) <i>C = A<sup>T</sup>*B<sup>T</sup></i>
-   *
-   * Assumes that <tt>A</tt> and <tt>B</tt> have compatible sizes and that
-   * <tt>C</tt> already has the right size.
-   *
-   * This function uses the BLAS function Xgemm if the product of the three
-   * matrix dimensions is larger than 300 and BLAS was detected during
-   * configuration. Using BLAS usually results in considerable performance
-   * gains.
    */
   template <typename number2>
   void
@@ -934,14 +856,12 @@ public:
           const bool                 adding = false) const;
 
   /**
-   * Add to the current matrix the triple product <b>B A D</b>. Optionally,
-   * use the transposes of the matrices <b>B</b> and <b>D</b>. The scaling
-   * factor scales the whole product, which is helpful when adding a multiple
-   * of the triple product to the matrix.
+   * 在当前矩阵中加入三乘积<b>B A
+   * D</b>。可以选择使用矩阵的转置<b>B</b>和<b>D</b>。缩放因子对整个乘积进行缩放，这在向矩阵添加三乘积的倍数时很有帮助。
+   * 这个乘积是在考虑到舒尔补码<b>B<sup>T</sup> A<sup>-1</sup>
+   * D</b>的情况下编写的。
+   * 请注意，在这种情况下，<tt>A</tt>的参数必须是矩阵<b>A</b>的逆值。
    *
-   * This product was written with the Schur complement <b>B<sup>T</sup>
-   * A<sup>-1</sup> D</b> in mind.  Note that in this case the argument for
-   * <tt>A</tt> must be the inverse of the matrix <b>A</b>.
    */
   void
   triple_product(const FullMatrix<number> &A,
@@ -952,16 +872,11 @@ public:
                  const number              scaling     = number(1.));
 
   /**
-   * Matrix-vector-multiplication.
+   * 矩阵-向量-乘法。
+   * 可选参数<tt>adding</tt>决定，结果是存储在<tt>w</tt>中，还是添加到<tt>w</tt>中。
+   * if (adding) <i>w += A*v</i> if (!adding) <i>w = A*v</i>
+   * 源和目的必须不是同一个向量。
    *
-   * The optional parameter <tt>adding</tt> determines, whether the result is
-   * stored in <tt>w</tt> or added to <tt>w</tt>.
-   *
-   * if (adding) <i>w += A*v</i>
-   *
-   * if (!adding) <i>w = A*v</i>
-   *
-   * Source and destination must not be the same vector.
    */
   template <typename number2>
   void
@@ -970,26 +885,20 @@ public:
         const bool             adding = false) const;
 
   /**
-   * Adding Matrix-vector-multiplication.  <i>w += A*v</i>
+   * 加法 矩阵-向量-乘法。 <i>w += A*v</i>
+   * 源和目的必须不是同一个向量。
    *
-   * Source and destination must not be the same vector.
    */
   template <typename number2>
   void
   vmult_add(Vector<number2> &w, const Vector<number2> &v) const;
 
   /**
-   * Transpose matrix-vector-multiplication.
+   * 转置矩阵-向量-乘法。
+   * 可选参数<tt>adding</tt>决定，结果是存储在<tt>w</tt>中，还是添加到<tt>w</tt>中。
+   * if (adding) <i>w += A<sup>T</sup>*v</i> if (!adding) <i>w =
+   * A<sup>T</sup>*v</i> 源和目的必须不是同一个向量。
    *
-   * The optional parameter <tt>adding</tt> determines, whether the result is
-   * stored in <tt>w</tt> or added to <tt>w</tt>.
-   *
-   * if (adding) <i>w += A<sup>T</sup>*v</i>
-   *
-   * if (!adding) <i>w = A<sup>T</sup>*v</i>
-   *
-   *
-   * Source and destination must not be the same vector.
    */
   template <typename number2>
   void
@@ -998,19 +907,17 @@ public:
          const bool             adding = false) const;
 
   /**
-   * Adding transpose matrix-vector-multiplication.  <i>w +=
-   * A<sup>T</sup>*v</i>
+   * 添加转置矩阵-向量-乘法。 <i>w += A<sup>T</sup>*v</i>
+   * 源和目的必须不是同一个向量。
    *
-   * Source and destination must not be the same vector.
    */
   template <typename number2>
   void
   Tvmult_add(Vector<number2> &w, const Vector<number2> &v) const;
 
   /**
-   * Apply the Jacobi preconditioner, which multiplies every element of the
-   * <tt>src</tt> vector by the inverse of the respective diagonal element and
-   * multiplies the result with the damping factor <tt>omega</tt>.
+   * 应用雅可比预处理程序，将<tt>src</tt>向量的每个元素乘以各自对角线元素的逆值，并将结果与阻尼系数<tt>omega</tt>相乘。
+   *
    */
   template <typename somenumber>
   void
@@ -1019,10 +926,10 @@ public:
                       const number              omega = 1.) const;
 
   /**
-   * <i>dst=b-A*x</i>. Residual calculation, returns the
-   * <i>l<sub>2</sub></i>-norm |<i>dst</i>|.
+   * <i>dst=b-A*x</i>.
+   * 残差计算，返回<i>l<sub>2</sub></i>-norm|<i>dst</i>|。
+   * 源<i>x</i>和目的<i>dst</i>不能是同一个向量。
    *
-   * Source <i>x</i> and destination <i>dst</i> must not be the same vector.
    */
   template <typename number2, typename number3>
   number
@@ -1031,25 +938,20 @@ public:
            const Vector<number3> &b) const;
 
   /**
-   * Forward elimination of lower triangle.  Inverts the lower triangle of a
-   * rectangular matrix for a given right hand side.
+   * 正向消除下三角。
+   * 对于一个给定的右手边，反转矩形矩阵的下三角。
+   * 如果矩阵的列数多于行数，该函数只对左边的二次元子矩阵进行操作。如果行数多，则考虑矩阵的上二次方部分。
+   * @note  对 @p dst 和 @p src. 使用同一个对象是安全的。
    *
-   * If the matrix has more columns than rows, this function only operates on
-   * the left quadratic submatrix. If there are more rows, the upper quadratic
-   * part of the matrix is considered.
-   *
-   * @note It is safe to use the same object for @p dst and @p src.
    */
   template <typename number2>
   void
   forward(Vector<number2> &dst, const Vector<number2> &src) const;
 
   /**
-   * Backward elimination of upper triangle.
+   * 向后消除上三角。    参见forward()
+   * @note  对 @p dst 和 @p src. 使用同一对象是安全的。
    *
-   * See forward()
-   *
-   * @note It is safe to use the same object for @p dst and @p src.
    */
   template <typename number2>
   void
@@ -1058,17 +960,19 @@ public:
   //@}
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况 @{ 。
+   *
    */
 
   /**
-   * Exception
+   * 例外情况
+   *
    */
   DeclException0(ExcEmptyMatrix);
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException1(
     ExcNotRegular,
@@ -1076,7 +980,8 @@ public:
     << "The maximal pivot is " << arg1
     << ", which is below the threshold. The matrix may be singular.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException3(ExcInvalidDestination,
                  size_type,
@@ -1086,23 +991,25 @@ public:
                  << arg1 << ", size of new matrix=" << arg2
                  << ", offset=" << arg3);
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcSourceEqualsDestination,
                    "You are attempting an operation on two matrices that "
                    "are the same object, but the operation requires that the "
                    "two objects are in fact different.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcMatrixNotPositiveDefinite);
   //@}
 };
 
-/**@}*/
+ /**@}*/ 
 
 #ifndef DOXYGEN
-/*-------------------------Inline functions -------------------------------*/
+ /*-------------------------Inline functions -------------------------------*/ 
 
 
 
@@ -1375,3 +1282,5 @@ FullMatrix<number>::print(StreamType &       s,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/function_tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2021 by the deal.II authors
@@ -27,34 +28,24 @@ DEAL_II_NAMESPACE_OPEN
 namespace FunctionTools
 {
   /**
-   * Estimate bounds on the value and bounds on each gradient component of a
-   * Function, $f$, over a BoundingBox, by approximating it by a 2nd order
-   * Taylor polynomial starting from the box center.
+   * 估算一个函数 $f$
+   * 的值和每个梯度分量的边界，在一个BoundingBox上，通过从盒子中心开始的二阶泰勒多项式对其进行逼近。
+   * 每个下限和上限都以 <code>std::pair<double, double></code>
+   * 的形式返回，第一项是下限， $L$ ，第二项是上限， $U$
+   * ，即 $f(x) \in [L, U]$  。
+   * 函数值、梯度和Hessian是在盒子中心计算的。
+   * 然后，函数值的边界被估计为  $f(x) \in [f(x_c)
    *
-   * Each lower and upper bound is returned as a
-   * <code>std::pair<double, double></code>, such that the first entry is the
-   * lower bound, $L$, and the second is the upper bound, $U$, i.e.
-   * $f(x) \in [L, U]$.
+   * - F, f(x_c) + F]$  ，其中  $F = \sum_i |\partial_i f(x_c)| h_i + 1/2
+   * \sum_i \sum_j |\partial_i \partial_j f(x_c)| h_i h_j$  。    这里，
+   * $h_i$ 是盒子在 $i$
+   * 个坐标方向上边长的一半，这是我们外推的距离。梯度分量的界限估计类似于
+   * $\partial_i f \in [\partial_i f(x_c)
    *
-   * The function value, gradient, and Hessian are computed at the box center.
-   * The bounds on the value of the function are then estimated as
+   * - G_i, \partial_i f(x_c) + G_i]$  ，其中  $G_i = \sum_j |\partial_i
+   * \partial_j f(x_c)| h_j$  。    如果函数有1个以上的分量， @p
+   * component 参数可以用来指定计算哪个函数分量的边界。
    *
-   * $f(x) \in [f(x_c) - F, f(x_c) + F]$,
-   * where
-   * $F = \sum_i |\partial_i f(x_c)| h_i
-   *    + 1/2 \sum_i \sum_j |\partial_i \partial_j f(x_c)| h_i h_j$.
-   *
-   * Here, $h_i$ is half the side length of the box in the $i$th coordinate
-   * direction, which is the distance we extrapolate. The bounds on the gradient
-   * components are estimated similarly as
-   *
-   * $\partial_i f \in [\partial_i f(x_c) - G_i, \partial_i f(x_c) + G_i]$,
-   * where
-   * $G_i = \sum_j |\partial_i \partial_j f(x_c)| h_j$.
-   *
-   * If the function has more than 1 component the @p component parameter can
-   * be used to specify which function component the bounds should be computed
-   * for.
    */
   template <int dim>
   void
@@ -68,4 +59,6 @@ namespace FunctionTools
 } // namespace FunctionTools
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_function_tools_h */
+#endif  /* dealii_function_tools_h */ 
+
+

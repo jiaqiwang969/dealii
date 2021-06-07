@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/path_search_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -31,18 +32,13 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Support for searching files in a list of paths and with a list of suffixes.
+ * 支持在路径列表和后缀列表中搜索文件。
+ * 为支持的每个文件类别维护一个搜索路径列表。一个文件类别是由一个唯一的字符串定义的。提供的类有：
+ * <dl>  <dt> MESH  <dd>  各种格式的网格输入文件（见GridIn）
+ * <dt> PARAMETER  <dd>  参数文件（<tt>.prm</tt>）  </dl>
+ * 使用add_class()可以很容易地添加额外的文件类别。
+ * 使用方法。首先，你为某个文件类构造一个PathSearch对象，比如说网格。然后，你使用find()方法获得一个完整的路径名称，你就可以打开文件了。
  *
- * A list of search paths is maintained for each file class supported. A file
- * class is defined by a unique string. The classes provided are <dl> <dt>
- * MESH <dd> mesh input files in various formats (see GridIn) <dt> PARAMETER
- * <dd> Parameter files (<tt>.prm</tt>) </dl>
- *
- * Additional file classes can be added easily by using add_class().
- *
- * Usage: First, you construct a PathSearch object for a certain file class,
- * e.g. meshes. Then, you use the find() method to obtain a full path name and
- * you can open the file.
  * @code
  * #include <deal.II/base/path_search.h>
  *
@@ -52,39 +48,32 @@ DEAL_II_NAMESPACE_OPEN
  * ...
  * @endcode
  *
- * This piece of code will first traverse all paths in the list set up for
- * file class <tt>MESH</tt>. If it manages to open a file, it returns the
- * <tt>istream</tt> object. If not, it will try to append the first suffix of
- * the suffix list and do the same. And so on. If no file is found in the end,
- * an exception is thrown.
+ * 这段代码将首先遍历为文件类<tt>MESH</tt>设置的列表中的所有路径。如果它成功地打开了一个文件，它将返回<tt>istream</tt>对象。如果没有，它将尝试追加后缀列表中的第一个后缀，并进行同样的操作。以此类推。如果最后没有找到文件，会抛出一个异常。
+ * 如果你想把你的搜索限制在某个网格格式，例如<tt>.inp</tt>，那么要么在上面的代码中使用<tt>"grid.inp"</tt>，要么使用替代的find(const
+ * std::string&,const   std::string&,const  char*) 函数
  *
- * If you want to restrict your search to a certain mesh format, <tt>.inp</tt>
- * for instance, then either use <tt>"grid.inp"</tt> in the code above or use
- * the alternative find(const std::string&,const std::string&,const char*)
- * function
  * @code
  * std::string full_name = search.find("grid", ".inp");
  * @endcode
  *
- * Path lists are by default starting with the current directory
- * (<tt>"./"</tt>), followed optionally by a standard directory of deal.II.
- * Use show() to find out the path list for a given class. Paths and suffixes
- * can be added using the functions add_path() and add_suffix(), respectively.
+ * 路径列表默认以当前目录（<tt>"./"<tt>）开始，后面可以选择以标准目录的deal.II开始。使用show()来找出一个给定类的路径列表。路径和后缀可以分别用函数add_path()和add_suffix()来添加。
  *
- * @note Directories in the path list should always end with a trailing
- * <tt>"/"</tt>, while suffixes should always start with a dot. These
- * characters are not added automatically (allowing you to do some real file
- * name editing).
  *
- * @todo Add support for environment variables like in kpathsea.
+ * @note
+ * 路径列表中的目录应该总是以尾部的<tt>"/"<tt>结束，而后缀应该总是以点开始。这些字符不会被自动添加（允许你做一些真正的文件名编辑）。
+ * @todo  增加对环境变量的支持，就像在kpathsea中一样。
+ *
  *
  * @ingroup input
+ *
+ *
  */
 class PathSearch
 {
 public:
   /**
-   * Position for adding a new item to a list.
+   * 向列表中添加新项目的位置。
+   *
    */
   enum Position
   {
@@ -97,49 +86,41 @@ public:
   };
 
   /**
-   * Constructor. The first argument is a string identifying the class of
-   * files to be searched for.
+   * 构造函数。第一个参数是一个字符串，确定要搜索的文件的类别。
+   * debug参数决定了该类文件的粗略程度。
    *
-   * The debug argument determines the verbosity of this class.
    */
   PathSearch(const std::string &cls, const unsigned int debug = 0);
 
   /**
-   * Find a file in the class specified by the constructor and return its
-   * complete path name (including a possible suffix).
+   * 在构造函数指定的类中寻找一个文件，并返回其完整的路径名称（包括可能的后缀）。
+   * 文件搜索的工作方式是实际尝试打开该文件。如果 @p
+   * fopen 与提供的 @p open_mode,
+   * 成功，那么文件就被找到了，否则搜索继续进行。
+   * @warning  小心使用 @p open_mode!
+   * 特别是，要非常小心地使用<tt>"w"</tt>!
+   * 如果文件不存在，就无法找到它。如果它确实存在， @p
+   * fopen 函数将把它截断成零长度。      @param  filename
+   * 要找到的文件的基本名称，不包括路径成分和后缀。
+   * @param  open_mode 移交给 @p fopen 函数的模式。
    *
-   * File search works by actually trying to open the file. If @p fopen is
-   * successful with the provided @p open_mode, then the file is found,
-   * otherwise the search continues.
-   *
-   * @warning Be careful with @p open_mode! In particular, use <tt>"w"</tt>
-   * with great care! If the file does not exist, it cannot be found. If it
-   * does exist, the @p fopen function will truncate it to zero length.
-   *
-   * @param filename The base name of the file to be found, without path
-   * components and suffix.
-   * @param open_mode The mode handed over to the @p fopen function.
    */
   std::string
   find(const std::string &filename, const char *open_mode = "r");
 
   /**
-   * Find a file in the class specified by the constructor and return its
-   * complete path name. Do not use the standard suffix list, but only try to
-   * apply the suffix given.
+   * 在构造函数指定的类中找到一个文件，并返回其完整的路径名称。不使用标准的后缀列表，而只尝试应用给定的后缀。
+   * 文件搜索的工作方式是实际尝试打开该文件。如果 @p
+   * fopen 与所提供的 @p open_mode,
+   * 成功，那么文件就被找到了，否则搜索继续进行。
+   * @warning  小心使用 @p open_mode!
+   * 特别是，要非常小心地使用<tt>"w"</tt>!
+   * 如果文件不存在，就无法找到它。如果它确实存在， @p
+   * fopen 函数将把它截断成零长度。      @param  filename
+   * 要找到的文件的基本名称，不包括路径组件和后缀。
+   * @param  后缀 打开时要使用的后缀。    @param  open_mode
+   * 移交给  @p fopen  函数的模式。
    *
-   * File search works by actually trying to open the file. If @p fopen is
-   * successful with the provided @p open_mode, then the file is found,
-   * otherwise the search continues.
-   *
-   * @warning Be careful with @p open_mode! In particular, use <tt>"w"</tt>
-   * with great care! If the file does not exist, it cannot be found. If it
-   * does exist, the @p fopen function will truncate it to zero length.
-   *
-   * @param filename The base name of the file to be found, without path
-   * components and suffix.
-   * @param suffix The suffix to be used for opening.
-   * @param open_mode The mode handed over to the @p fopen function.
    */
   std::string
   find(const std::string &filename,
@@ -147,44 +128,49 @@ public:
        const char *       open_mode = "r");
 
   /**
-   * Show the paths and suffixes used for this object.
+   * 显示此对象使用的路径和后缀。
+   *
    */
   template <class StreamType>
   void
   show(StreamType &stream) const;
 
   /**
-   * Add a new class.
+   * 添加一个新的类。
+   *
    */
   static void
   add_class(const std::string &cls);
 
   /**
-   * Add a path to the current class. See PathSearch::Position for possible
-   * position arguments.
+   * 为当前的类添加一个路径。参见 PathSearch::Position
+   * 中可能的位置参数。
+   *
    */
   void
   add_path(const std::string &path, Position pos = back);
 
   /**
-   * Add a path to the current class. See PathSearch::Position for possible
-   * position arguments.
+   * 为当前的类添加一个路径。见 PathSearch::Position
+   * 中可能的位置参数。
+   *
    */
   void
   add_suffix(const std::string &suffix, Position pos = back);
 
   /**
-   * This class was not registered in the path search mechanism.
+   * 这个类没有在路径搜索机制中注册。
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcNoClass,
                  std::string,
                  << "The class " << arg1
                  << " must be registered before referring it in PathSearch.");
   /**
-   * The PathSearch class could not find a file with this name in its path
-   * list.
+   * PathSearch类在其路径列表中找不到有此名称的文件。
    * @ingroup Exceptions
+   *
    */
   DeclException2(ExcFileNotFound,
                  std::string,
@@ -194,68 +180,77 @@ public:
 
 private:
   /**
-   * Type of values in the class maps.
+   * 类映射中的值的类型。
+   *
    */
   using map_type = std::map<std::string, std::vector<std::string>>::value_type;
 
   /**
-   * Initialize the static list objects for further use.
+   * 初始化静态列表对象以便进一步使用。
+   *
    */
   static void
   initialize_classes();
 
   /**
-   * Get path list for a certain class. Used to set up #my_path_list in
-   * constructor.
+   * 获取某个类的路径列表。用来在构造函数中设置#my_path_list。
+   *
    */
   static std::vector<std::string> &
   get_path_list(const std::string &cls);
 
   /**
-   * Get suffix list for a certain class. Used to set up #my_suffix_list in
-   * constructor.
+   * 获取某类的后缀列表。用于在构造函数中设置#my_suffix_list。
+   *
    */
   static std::vector<std::string> &
   get_suffix_list(const std::string &cls);
 
   /**
-   * The file class handled by this object.
+   * 这个对象所处理的文件类。
+   *
    */
   const std::string cls;
 
   /**
-   * All path lists for all classes, such that we can build them only once.
+   * 所有类的所有路径列表，这样我们就可以只建立一次。
+   *
    */
   static std::map<std::string, std::vector<std::string>> path_lists;
 
   /**
-   * List of suffixes for each class.
+   * 每个类的后缀列表。
+   *
    */
   static std::map<std::string, std::vector<std::string>> suffix_lists;
 
   /**
-   * Path list for the class this object belongs to.
+   * 这个对象所属的类的路径列表。
+   *
    */
   std::vector<std::string> &my_path_list;
 
   /**
-   * Suffix list for the class this object belongs to.
+   * 此对象所属类的后缀列表。
+   *
    */
   std::vector<std::string> &my_suffix_list;
 
   /**
-   * Debug flag. No output if zero.
+   * 调试标志。如果为零则没有输出。
+   *
    */
   const unsigned int debug;
 
   /**
-   * The empty string.
+   * 空字符串。
+   *
    */
   static std::string empty;
 };
 
 
-/* ----------------------------- inline functions ------------------------- */
+ /* ----------------------------- inline functions ------------------------- */ 
 
 
 template <class StreamType>
@@ -280,3 +275,5 @@ PathSearch::show(StreamType &out) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

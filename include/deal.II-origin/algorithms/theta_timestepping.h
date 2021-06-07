@@ -1,3 +1,4 @@
+//include/deal.II-translator/algorithms/theta_timestepping_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -34,13 +35,10 @@ class ParameterHandler;
 namespace Algorithms
 {
   /**
-   * A little structure, gathering the size of a timestep and the current
-   * time. Time stepping schemes can use this to provide time step information
-   * to the classes actually performing a single step.
+   * 一个小结构，收集一个时间步长的大小和当前时间。时间步进方案可以使用它来向实际执行单步的类提供时间步进信息。
+   * 什么是 "当前时间
+   * "的定义取决于该方案。对于一个显式方案来说，这就是步长开始时的时间。对于隐式方案，它通常是结束时的时间。
    *
-   * The definition of what is considered "current time" depends on the
-   * scheme. For an explicit scheme, this is the time at the beginning of the
-   * step. For an implicit scheme, it is usually the time at the end.
    */
   struct TimestepData
   {
@@ -51,384 +49,308 @@ namespace Algorithms
   };
 
   /**
-   * Application class performing the theta timestepping scheme.
+   * 执行theta时间步进方案的应用类。    Theta方案是对隐式和显式欧拉方案、Crank-Nicholson方案以及这些方案的线性组合的抽象。实际方案的选择由参数#theta控制，如下所示。    <ul>   <li>  #theta=0：显式欧拉方案  <li>  #theta=1：隐式欧拉方案  <li>  #theta=½。Crank-Nicholson方案  </ul>  对于固定的#theta，Crank-Nicholson方案是唯一的二阶方案。然而，通过选择大于1/2的#theta可以实现进一步的稳定性，从而引入一个一阶误差项。为了避免收敛顺序的损失，可以使用自适应theta方案，其中<i>#theta=½+c dt</i>。    假设我们要解决方程<i>u' + F(u) = 0</i>，步长为<i>k</i>。 Theta方案的一个步骤可以写成@f[
+   * M u_{n+1} + \theta k F(u_{n+1})  = M u_n
    *
-   * The theta scheme is an abstraction of implicit and explicit Euler
-   * schemes, the Crank-Nicholson scheme and linear combinations of those. The
-   * choice of the actual scheme is controlled by the parameter #theta as
-   * follows.
-   * <ul>
-   * <li> #theta=0: explicit Euler scheme
-   * <li> #theta=1: implicit Euler scheme
-   * <li> #theta=½: Crank-Nicholson scheme
-   * </ul>
-   *
-   * For fixed #theta, the Crank-Nicholson scheme is the only second order
-   * scheme. Nevertheless, further stability may be achieved by choosing
-   * #theta larger than ½, thereby introducing a first order error term. In
-   * order to avoid a loss of convergence order, the adaptive theta scheme can
-   * be used, where <i>#theta=½+c dt</i>.
-   *
-   * Assume that we want to solve the equation <i>u' + F(u) = 0</i> with a
-   * step size <i>k</i>.  A step of the theta scheme can be written as
-   *
-   * @f[
-   *   M u_{n+1} + \theta k F(u_{n+1})  = M u_n - (1-\theta)k F(u_n).
-   * @f]
-   *
-   * Here, <i>M</i> is the mass matrix. We see, that the right hand side
-   * amounts to an explicit Euler step with modified step size in weak form
-   * (up to inversion of M). The left hand side corresponds to an implicit
-   * Euler step with modified step size (right hand side given). Thus, the
-   * implementation of the theta scheme will use two Operator objects, one for
-   * the explicit, one for the implicit part. Each of these will use its own
-   * TimestepData to account for the modified step sizes (and different times
-   * if the problem is not autonomous). Note that once the explicit part has
-   * been computed, the left hand side actually constitutes a linear or
-   * nonlinear system which has to be solved.
-   *
+   * - (1-\theta)k F(u_n). @f]
+   * 这里，<i>M</i>是质量矩阵。我们看到，右手边相当于一个显式欧拉步骤，其步骤大小以弱形式修改（直到M的反转）。左手边对应的是一个隐式欧拉步长的修改步长（右手边给出）。因此，theta方案的实现将使用两个运算器对象，一个用于显式部分，一个用于隐式部分。每个对象都将使用自己的TimestepData来说明修改后的步长（如果问题不是自主的，则使用不同的时间）。请注意，一旦显式部分被计算出来，左手边实际上构成了一个必须被解决的线性或非线性系统。
    * <h3>Usage AnyData</h3>
-   *
-   * ThetaTimestepping uses AnyData for communicating vectors and time step
-   * information. With outer or inner Operator objects. It does not use itself
-   * the input vectors provided, but forwards them to the explicit and
-   * implicit operators.
-   *
+   * ThetaTimestepping使用AnyData来交流向量和时间步长信息。与外部或内部的操作者对象。它本身并不使用所提供的输入向量，而是将它们转发给显式和隐式算子。
    * <h4>Vector data</h4>
-   *
-   * The explicit Operator #op_explicit receives in its input in first place
-   * the vector "Previous iterate", which is the solution value after the
-   * previous timestep. It is followed by all vectors provided to
-   * ThetaTimestepping::operator() as input argument. #op_explicit is supposed
-   * to write its result into the first position of its output argument,
-   * labeled "Result".
-   *
-   * The implicit Operator #op_implicit receives the result of #op_explicit in
-   * its first input vector labeled "Previous time". It is followed by all
-   * vectors provided to ThetaTimestepping::operator() as input argument. The
-   * output of #op_implicit is directly written into the output argument given
-   * to ThetaTimestepping.
-   *
+   * 显式运算符#op_explicit在其输入中首先接收向量 "Previous
+   * iterate"，这是上一个时间步长后的解值。接下来是提供给
+   * ThetaTimestepping::operator()
+   * 的所有向量作为输入参数。#op_explicit应该将其结果写入其输出参数的第一个位置，标为
+   * "结果"。
+   * 隐式运算符#op_implicit在其第一个输入向量中接收#op_explicit的结果，标签为
+   * "前次"。它的后面是作为输入参数提供给
+   * ThetaTimestepping::operator()
+   * 的所有向量。#op_implicit的输出被直接写入给ThetaTimestepping的输出参数中。
    * <h4>Scalar data</h4>
-   *
-   * Since the introduction of AnyData, ThetaTimestepping is able to
-   * communicate the current time step information through AnyData as well.
-   * Therefore, the AnyData objects handed as input to #op_explicit and
-   * #op_implicit contain two entries of type `const double*` named "Time" and
-   * "Timestep". Note that "Time" refers to the time at the beginning of the
-   * current step for #op_explicit and at the end for #op_implicit,
-   * respectively.
-   *
+   * 自从引入AnyData后，ThetaTimestepping也能通过AnyData传递当前时间步长信息。
+   * 因此，作为#op_explicit和#op_implicit输入的AnyData对象包含两个类型为`const
+   * double*`的条目，名为 "Time "和 "Timestep"。请注意，"时间
+   * "对于#op_explicit和#op_implicit来说，分别指的是当前步骤开始的时间和结束的时间。
    * <h3>Usage of ThetaTimestepping</h3>
-   *
-   * The use ThetaTimestepping is more complicated than for instance Newton,
-   * since the inner operators will usually need to access the TimeStepData.
-   * Thus, we have a circular dependency of information, and we include the
-   * following example for its use.
-   *
-   * First, we define the two operators used by ThetaTimestepping and call
-   * them <code>Implicit</code> and <code>Explicit</code>. They both share the
-   * public interface of Operator, and additionally provide storage for the
-   * matrices to be used and a pointer to TimestepData. Note that we do not
-   * use a SmartPointer here, since the TimestepData will be destroyed before
-   * the operator.
-   *
+   * ThetaTimestepping的使用比牛顿等更复杂，因为内部运算符通常需要访问TimeStepData。
+   * 因此，我们有一个信息的循环依赖，我们包括下面的例子来说明其使用。
+   * 首先，我们定义ThetaTimestepping使用的两个算子，并将其称为
+   * <code>Implicit</code> and <code>Explicit</code>
+   * 。它们都共享Operator的公共接口，另外还提供了要使用的矩阵的存储空间和一个指向TimestepData的指针。注意，我们在这里没有使用SmartPointer，因为TimestepData将在操作者之前被销毁。
    * @code
    * class Explicit : public OperatorBase
    * {
    * public:
-   *   Explicit(const FullMatrix<double> &matrix);
-   *   void operator()(AnyData &out, const AnyData &in);
+   * Explicit(const FullMatrix<double> &matrix);
+   * void operator()(AnyData &out, const AnyData &in);
    *
    * private:
-   *   SmartPointer<const FullMatrix<double>, Explicit> matrix;
-   *   FullMatrix<double>                               m;
+   * SmartPointer<const FullMatrix<double>, Explicit> matrix;
+   * FullMatrix<double>                               m;
    * };
    *
    * class Implicit : public OperatorBase
    * {
    * public:
-   *   Implicit(const FullMatrix<double> &matrix);
-   *   void operator()(AnyData &out, const AnyData &in);
+   * Implicit(const FullMatrix<double> &matrix);
+   * void operator()(AnyData &out, const AnyData &in);
    *
    * private:
-   *   SmartPointer<const FullMatrix<double>, Implicit> matrix;
-   *   FullMatrix<double>                               m;
+   * SmartPointer<const FullMatrix<double>, Implicit> matrix;
+   * FullMatrix<double>                               m;
    * };
    * @endcode
-   *
-   * These operators will be implemented after the main program. But let us
-   * look first at how they get used. First, let us define a matrix to be used
-   * for our system and also an OutputOperator in order to write the data of
-   * each timestep to a file.
-   *
+   * 这些操作符将在主程序之后实现。但让我们先看看它们是如何被使用的。首先，让我们定义一个用于我们系统的矩阵和一个OutputOperator，以便将每个时间段的数据写到一个文件中。
    * @code
    * int main()
    * {
-   *   FullMatrix<double> matrix(2);
-   *   matrix(0, 0) = 0.;
-   *   matrix(1, 1) = 0.;
-   *   matrix(0, 1) = 3.14;
-   *   matrix(1, 0) = -3.14;
+   * FullMatrix<double> matrix(2);
+   * matrix(0, 0) = 0.;
+   * matrix(1, 1) = 0.;
+   * matrix(0, 1) = 3.14;
+   * matrix(1, 0) =
    *
-   *   OutputOperator<Vector<double>> out;
-   *   out.initialize_stream(std::cout);
+   * -3.14;
+   *
+   * OutputOperator<Vector<double>> out;
+   * out.initialize_stream(std::cout);
    * @endcode
-   *
-   * Now we create objects for the implicit and explicit parts of the steps as
-   * well as the ThetaTimestepping itself. We initialize the timestepping with
-   * the output operator in order to be able to see the output in every step.
-   *
+   * 现在我们为步骤的隐式和显式部分以及ThetaTimestepping本身创建对象。我们用输出运算符初始化timestepping，以便能够看到每个步骤中的输出。
    * @code
-   *   Explicit                          op_explicit(matrix);
-   *   Implicit                          op_implicit(matrix);
-   *   ThetaTimestepping<Vector<double>> solver(op_explicit, op_implicit);
-   *   solver.set_output(out);
+   * Explicit                          op_explicit(matrix);
+   * Implicit                          op_implicit(matrix);
+   * ThetaTimestepping<Vector<double>> solver(op_explicit, op_implicit);
+   * solver.set_output(out);
    * @endcode
-   *
-   * The next step is providing the vectors to be used. <tt>value</tt> is
-   * filled with the initial value and is also the vector where the solution
-   * at each timestep will be. Because the interface of Operator has to be
-   * able to handle several vectors, we need to store it in an AnyData object.
-   * Since our problem has no additional parameters, the input AnyData object
-   * remains empty.
-   *
+   * 下一步是提供要使用的向量。<tt>value</tt>被填入初始值，也是每个时间步长的解决方案的向量。因为Operator的接口必须能够处理多个向量，所以我们需要将其存储在一个AnyData对象中。
+   * 由于我们的问题没有额外的参数，输入的AnyData对象仍然是空的。
    * @code
-   *   Vector<double> value(2);
-   *   value(0) = 1.;
-   *   AnyData indata;
-   *   AnyData outdata;
-   *   outdata.add(&value, "value");
+   * Vector<double> value(2);
+   * value(0) = 1.;
+   * AnyData indata;
+   * AnyData outdata;
+   * outdata.add(&value, "value");
    * @endcode
-   *
-   * Finally, we are ready to tell the solver, that we are starting at the
-   * initial timestep and run it.
-   *
+   * 最后，我们准备告诉求解器，我们将从初始时间步长开始，并运行它。
    * @code
-   *   solver.notify(Events::initial);
-   *   solver(outdata, indata);
+   * solver.notify(Events::initial);
+   * solver(outdata, indata);
    * }
    * @endcode
-   *
-   * Besides the main function, we need to define the members functions
-   * of the implicit and explicit operators.
-   * First the constructor, which simply copies the system matrix into the
-   * member pointer for later use.
-   *
+   * 除了主函数，我们还需要定义隐式和显式运算符的成员函数。
+   * 首先是构造函数，它只是将系统矩阵复制到成员指针中，供以后使用。
    * @code
    * Explicit::Explicit(const FullMatrix<double> &M)
-   *   : matrix(&M)
+   * : matrix(&M)
    * {
-   *   m.reinit(M.m(), M.n());
+   * m.reinit(M.m(), M.n());
    * }
    * @endcode
+   * 现在我们需要研究隐式和显式运算符的应用。我们假设指针
+   * <code>matrix</code>
+   * 指向主程序中创建的矩阵（构造函数为我们做了这个）。
+   * 在这里，我们首先从作为输入的AnyData对象中获得时间步长。然后，如果我们处于第一步或者时间步长发生了变化，我们就填充本地矩阵
+   * $m$ ，这样与给定的矩阵 $M$ 一起就变成了\f[ m = I
    *
-   * Now we need to study the application of the implicit and explicit
-   * operator. We assume that the pointer <code>matrix</code> points to the
-   * matrix created in the main program (the constructor did this for us).
-   * Here, we first get the time step size from the AnyData object that was
-   * provided as input. Then, if we are in the first step or if the timestep
-   * has changed, we fill the local matrix $m$, such that with the given
-   * matrix $M$, it becomes \f[ m = I - \Delta t M. \f] After we have worked
-   * off the notifications, we clear them, such that the matrix is only
-   * generated when necessary.
-   *
+   * - \Delta t M. \f]
+   * 在我们处理完通知后，我们清除它们，这样矩阵就只在必要时生成。
    * @code
    * void Explicit::operator()(AnyData &out, const AnyData &in)
    * {
-   *   const double timestep = *in.read_ptr<double>("Timestep");
-   *   if (this->notifications.test(Events::initial) ||
-   *       this->notifications.test(Events::new_timestep_size))
-   *     {
-   *       m.equ(-timestep, *matrix);
-   *       for (unsigned int i = 0; i < m.m(); ++i)
-   *         m(i, i) += 1.;
-   *     }
-   *   this->notifications.clear();
+   * const double timestep =in.read_ptr<double>("Timestep");
+   * if (this->notifications.test(Events::initial) ||
+   *     this->notifications.test(Events::new_timestep_size))
+   *   {
+   *     m.equ(-timestep,matrix);
+   *     for (unsigned int i = 0; i < m.m(); ++i)
+   *       m(i, i) += 1.;
+   *   }
+   * this->notifications.clear();
    * @endcode
-   *
-   * Now we multiply the input vector with the new matrix and store on output.
-   *
+   * 现在我们将输入向量与新矩阵相乘，并存储在输出上。
    * @code
-   *   m.vmult(*out.entry<Vector<double> *>(0),
-   *           *in.read_ptr<Vector<double>>("Previous iterate"));
+   * m.vmult(*out.entry<Vector<double>>(0),
+   *        in.read_ptr<Vector<double>>("Previous iterate"));
    * }
    * @endcode
-   *
-   * The code for the implicit operator is almost the same, except
-   * that we change the sign in front of the timestep and use the inverse of
-   * the matrix.
-   *
+   * 隐式运算符的代码几乎相同，只是我们改变了时间步长前面的符号，并使用了矩阵的倒数。
    * @code
    * Implicit::Implicit(const FullMatrix<double> &M)
-   *   : matrix(&M)
+   * : matrix(&M)
    * {
-   *   m.reinit(M.m(), M.n());
+   * m.reinit(M.m(), M.n());
    * }
    *
    * void Implicit::operator()(AnyData &out, const AnyData &in)
    * {
-   *   const double timestep = *in.read_ptr<double>("Timestep");
-   *   if (this->notifications.test(Events::initial) ||
-   *       this->notifications.test(Events::new_timestep_size))
-   *     {
-   *       m.equ(timestep, *matrix);
-   *       for (unsigned int i = 0; i < m.m(); ++i)
-   *         m(i, i) += 1.;
-   *       m.gauss_jordan();
-   *     }
-   *   this->notifications.clear();
-   *   m.vmult(*out.entry<Vector<double> *>(0),
-   *           *in.read_ptr<Vector<double>>("Previous time"));
+   * const double timestep =in.read_ptr<double>("Timestep");
+   * if (this->notifications.test(Events::initial) ||
+   *     this->notifications.test(Events::new_timestep_size))
+   *   {
+   *     m.equ(timestep,matrix);
+   *     for (unsigned int i = 0; i < m.m(); ++i)
+   *       m(i, i) += 1.;
+   *     m.gauss_jordan();
+   *   }
+   * this->notifications.clear();
+   * m.vmult(*out.entry<Vector<double>>(0),
+   *        in.read_ptr<Vector<double>>("Previous time"));
    * }
    * @endcode
+   *
+   *
    */
   template <typename VectorType>
   class ThetaTimestepping : public OperatorBase
   {
   public:
     /**
-     * Constructor, receiving the two operators stored in #op_explicit and
-     * #op_implicit. For their meaning, see the description of those
-     * variables.
+     * 构造函数，接收存储在#op_explicit和#op_implicit中的两个运算符。关于它们的含义，见这些变量的描述。
+     *
      */
     ThetaTimestepping(OperatorBase &op_explicit, OperatorBase &op_implicit);
 
     /**
-     * The timestepping scheme.
+     * 时隙方案。          @param
+     * in被ThetaTimestepping忽略，但被合并到AnyData对象中，作为运算符#op_explicit和#op_implicit的输入。
+     * @param
+     * out在其第一个参数中必须包含一个指向VectorType实例的指针，它包含运算符被调用时的初始值。
+     * 它包含运算符返回时的最终值。
      *
-     * @param in is ignored by ThetaTimestepping, but is merged into the
-     * AnyData objects used as input for the operators #op_explicit and
-     * #op_implicit.
-     *
-     * @param out in its first argument must contain a pointer to a VectorType
-     * instance, which contains the initial value when the operator is called.
-     * It contains the final value when the operator returns.
      */
     virtual void
     operator()(AnyData &out, const AnyData &in) override;
 
     /**
-     * Register an event triggered by an outer iteration.
+     * 注册一个由外部迭代触发的事件。
+     *
      */
     virtual void
     notify(const Event &) override;
 
     /**
-     * Define an operator which will output the result in each step. Note that
-     * no output will be generated without this.
+     * 定义一个运算符，它将在每个步骤中输出结果。请注意，没有这个就不会产生输出。
+     *
      */
     void
     set_output(OutputOperator<VectorType> &output);
 
     /**
-     * Declare parameters in a parameter handler.
+     * 在一个参数处理程序中声明参数。
+     *
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * Read the parameters in the ParameterHandler.
+     * 读取ParameterHandler中的参数。
+     *
      */
     void
     parse_parameters(ParameterHandler &param);
 
     /**
-     * The current time in the timestepping scheme.
+     * 在时序计划中的当前时间。
+     *
      */
     double
     current_time() const;
 
     /**
-     * The weight between implicit and explicit part.
+     * 隐性和显性部分之间的权重。
+     *
      */
     double
     theta() const;
 
     /**
-     * Set a new weight and return the old
+     * 设置一个新的权重并返回旧的权重
+     *
      */
     double
     theta(double new_theta);
 
     /**
-     * The data handed to the #op_explicit time stepping operator.
+     * 交给#op_explicit time stepping operator的数据。
+     * 这里的时间是当前步骤开始时的时间，时间步长是实际时间步长的（1-#theta）倍。
      *
-     * The time in here is the time at the beginning of the current step, the
-     * time step is (1-#theta) times the actual time step.
      */
     const TimestepData &
     explicit_data() const;
 
     /**
-     * The data handed to the #op_implicit time stepping operator.
+     * 交给#op_implicit时间步长运算器的数据。
+     * 这里的时间是当前步骤开始时的时间，时间步长是实际时间步长的#theta倍。
      *
-     * The time in here is the time at the beginning of the current step, the
-     * time step is #theta times the actual time step.
      */
     const TimestepData &
     implicit_data() const;
 
     /**
-     * Allow access to the control object.
+     * 允许对控制对象的访问。
+     *
      */
     TimestepControl &
     timestep_control();
 
   private:
     /**
-     * The object controlling the time step size and computing the new time in
-     * each step.
+     * 控制时间步长和计算每步新时间的对象。
+     *
      */
     TimestepControl control;
 
     /**
-     * The control parameter theta in the range <tt>[0,1]</tt>. It defaults to
-     * 0.5.
+     * 控制参数theta，范围为<tt>[0,1]</tt>。它的默认值是0.5。
+     *
      */
     double vtheta;
     /**
-     * Use adaptive #theta if <tt>true</tt>. Not yet implemented.
+     * 如果<tt>true</tt>，使用自适应的#theta。还没有实现。
+     *
      */
     bool adaptive;
 
     /**
-     * The data for the explicit part of the scheme.
+     * 方案的显式部分的数据。
+     *
      */
     TimestepData d_explicit;
 
     /**
-     * The data for the implicit part of the scheme.
+     * 方案的隐性部分的数据。
+     *
      */
     TimestepData d_implicit;
 
 
     /**
-     * The operator computing the explicit part of the scheme. This will
-     * receive in its input data the value at the current time with name
-     * "Current time solution". It should obtain the current time and time
-     * step size from explicit_data().
+     * 计算方案的显式部分的运算器。这将在其输入数据中收到当前时间的值，名称为
+     * "当前时间解决方案"。它应该从
+     * explicit_data()获得当前时间和时间步长。
+     * 它的返回值是  $ Mu+cF(u) $  ，其中  $u$
+     * 是当前状态向量，  $M$  是质量矩阵，  $F$
+     * 是空间算子，  $c$  是调整的时间步长  $(1-\theta) \Delta
+     * t$  。
      *
-     * Its return value is $ Mu+cF(u) $, where $u$ is the current state
-     * vector, $M$ the mass matrix, $F$ the operator in space and $c$ is the
-     * adjusted time step size $(1-\theta) \Delta t$.
      */
     SmartPointer<OperatorBase, ThetaTimestepping<VectorType>> op_explicit;
 
     /**
-     * The operator solving the implicit part of the scheme. It will receive
-     * in its input data the vector "Previous time". Information on the
-     * timestep should be obtained from implicit_data().
+     * 算子解决方案的隐含部分。它将在其输入数据中收到矢量
+     * "上一时间"。关于时间步长的信息应该从
+     * implicit_data()中获得。
+     * 它的返回值是<i>Mu-cF(u)=f</i>的解<i>u</i>，其中<i>f</i>是在输入数据的
+     * "前次
+     * "条目中找到的对偶空间向量，<i>M</i>是质量矩阵，<i>F</i>是空间中的运算器，<i>c</i>是调整后的时间步长
+     * $ \theta \Delta t$
      *
-     * Its return value is the solution <i>u</i> of <i>Mu-cF(u)=f</i>, where
-     * <i>f</i> is the dual space vector found in the "Previous time" entry of
-     * the input data, <i>M</i> the mass matrix, <i>F</i> the operator in
-     * space and <i>c</i> is the adjusted time step size $ \theta \Delta t$
      */
     SmartPointer<OperatorBase, ThetaTimestepping<VectorType>> op_implicit;
 
     /**
-     * The operator writing the output in each time step
+     * 运算器在每个时间步长中写出的输出
+     *
      */
     SmartPointer<OutputOperator<VectorType>, ThetaTimestepping<VectorType>>
       output;
@@ -495,3 +417,5 @@ namespace Algorithms
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

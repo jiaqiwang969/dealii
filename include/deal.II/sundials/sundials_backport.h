@@ -1,4 +1,3 @@
-//include/deal.II-translator/sundials/sundials_backport_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2020 - 2021 by the deal.II authors
@@ -14,17 +13,15 @@
 //
 //-----------------------------------------------------------
 
-/* 这个文件中的函数是基于SUNDIALS软件包中分发的实现，请看这里的许可证：https://computing.llnl.gov/projects/sundials/license。
-* 
-
-* 
-* 
-* - --------------------------------------------------------------- 程序员（们）。Daniel Reynolds @ SMU David J. Gardner, Carol S. Woodward, and Slaven Peles @ LLNL
- 
-
-* 
-* 
-* - ---------------------------------------------------------------*/
+/*
+ * The functions in this file are based on an implementation distributed within
+ * the SUNDIALS package, see the license here:
+ * https://computing.llnl.gov/projects/sundials/license.
+ * -----------------------------------------------------------------
+ * Programmer(s): Daniel Reynolds @ SMU
+ *                David J. Gardner, Carol S. Woodward, and
+ *                Slaven Peles @ LLNL
+ * -----------------------------------------------------------------*/
 
 #ifndef dealii_sundials_backport_h
 #define dealii_sundials_backport_h
@@ -46,9 +43,9 @@ namespace SUNDIALS
       N_Vector     v   = new _generic_N_Vector;
       N_Vector_Ops ops = new _generic_N_Vector_Ops;
 
-       /* initialize operations to nullptr */ 
+      /* initialize operations to nullptr */
 
-       /* constructors, destructors, and utility operations */ 
+      /* constructors, destructors, and utility operations */
       ops->nvgetvectorid     = nullptr;
       ops->nvclone           = nullptr;
       ops->nvcloneempty      = nullptr;
@@ -61,7 +58,7 @@ namespace SUNDIALS
       ops->nvgetlength       = nullptr;
 #  endif
 
-       /* standard vector operations */ 
+      /* standard vector operations */
       ops->nvlinearsum    = nullptr;
       ops->nvconst        = nullptr;
       ops->nvprod         = nullptr;
@@ -83,12 +80,12 @@ namespace SUNDIALS
       ops->nvminquotient  = nullptr;
 
 #  if DEAL_II_SUNDIALS_VERSION_GTE(5, 0, 0)
-       /* fused vector operations (optional) */ 
+      /* fused vector operations (optional) */
       ops->nvlinearcombination = nullptr;
       ops->nvscaleaddmulti     = nullptr;
       ops->nvdotprodmulti      = nullptr;
 
-       /* vector array operations (optional) */ 
+      /* vector array operations (optional) */
       ops->nvlinearsumvectorarray         = nullptr;
       ops->nvscalevectorarray             = nullptr;
       ops->nvconstvectorarray             = nullptr;
@@ -97,7 +94,7 @@ namespace SUNDIALS
       ops->nvscaleaddmultivectorarray     = nullptr;
       ops->nvlinearcombinationvectorarray = nullptr;
 
-       /* local reduction operations (optional) */ 
+      /* local reduction operations (optional) */
       ops->nvdotprodlocal     = nullptr;
       ops->nvmaxnormlocal     = nullptr;
       ops->nvminlocal         = nullptr;
@@ -109,20 +106,20 @@ namespace SUNDIALS
       ops->nvwsqrsummasklocal = nullptr;
 
 #    if DEAL_II_SUNDIALS_VERSION_GTE(5, 4, 0)
-       /* XBraid interface operations */ 
+      /* XBraid interface operations */
       ops->nvbufsize   = nullptr;
       ops->nvbufpack   = nullptr;
       ops->nvbufunpack = nullptr;
 #    endif
 
 #    if DEAL_II_SUNDIALS_VERSION_GTE(5, 3, 0)
-       /* debugging functions (called when SUNDIALS_DEBUG_PRINTVEC is defined) */ 
+      /* debugging functions (called when SUNDIALS_DEBUG_PRINTVEC is defined) */
       ops->nvprint     = nullptr;
       ops->nvprintfile = nullptr;
 #    endif
 #  endif
 
-       /* attach ops and initialize content to nullptr */ 
+      /* attach ops and initialize content to nullptr */
       v->ops     = ops;
       v->content = nullptr;
 
@@ -137,12 +134,12 @@ namespace SUNDIALS
       if (v == nullptr)
         return;
 
-       /* free non-nullptr ops structure */ 
+      /* free non-nullptr ops structure */
       if (v->ops)
         delete v->ops;
       v->ops = nullptr;
 
-       /* free overall N_Vector object and return */ 
+      /* free overall N_Vector object and return */
       delete v;
     }
 
@@ -151,15 +148,15 @@ namespace SUNDIALS
     int
     N_VCopyOps(N_Vector w, N_Vector v)
     {
-       /* Check that ops structures exist */ 
+      /* Check that ops structures exist */
       if (w == nullptr || v == nullptr)
         return (-1);
       if (w->ops == nullptr || v->ops == nullptr)
         return (-1);
 
-       /* Copy ops from w to v */ 
+      /* Copy ops from w to v */
 
-       /* constructors, destructors, and utility operations */ 
+      /* constructors, destructors, and utility operations */
       v->ops->nvgetvectorid     = w->ops->nvgetvectorid;
       v->ops->nvclone           = w->ops->nvclone;
       v->ops->nvcloneempty      = w->ops->nvcloneempty;
@@ -172,7 +169,7 @@ namespace SUNDIALS
       v->ops->nvgetlength       = w->ops->nvgetlength;
 #  endif
 
-       /* standard vector operations */ 
+      /* standard vector operations */
       v->ops->nvlinearsum    = w->ops->nvlinearsum;
       v->ops->nvconst        = w->ops->nvconst;
       v->ops->nvprod         = w->ops->nvprod;
@@ -194,12 +191,12 @@ namespace SUNDIALS
       v->ops->nvminquotient  = w->ops->nvminquotient;
 
 #  if DEAL_II_SUNDIALS_VERSION_GTE(5, 0, 0)
-       /* fused vector operations */ 
+      /* fused vector operations */
       v->ops->nvlinearcombination = w->ops->nvlinearcombination;
       v->ops->nvscaleaddmulti     = w->ops->nvscaleaddmulti;
       v->ops->nvdotprodmulti      = w->ops->nvdotprodmulti;
 
-       /* vector array operations */ 
+      /* vector array operations */
       v->ops->nvlinearsumvectorarray     = w->ops->nvlinearsumvectorarray;
       v->ops->nvscalevectorarray         = w->ops->nvscalevectorarray;
       v->ops->nvconstvectorarray         = w->ops->nvconstvectorarray;
@@ -209,7 +206,7 @@ namespace SUNDIALS
       v->ops->nvlinearcombinationvectorarray =
         w->ops->nvlinearcombinationvectorarray;
 
-       /* local reduction operations */ 
+      /* local reduction operations */
       v->ops->nvdotprodlocal     = w->ops->nvdotprodlocal;
       v->ops->nvmaxnormlocal     = w->ops->nvmaxnormlocal;
       v->ops->nvminlocal         = w->ops->nvminlocal;
@@ -221,14 +218,14 @@ namespace SUNDIALS
       v->ops->nvwsqrsummasklocal = w->ops->nvwsqrsummasklocal;
 
 #    if DEAL_II_SUNDIALS_VERSION_GTE(5, 4, 0)
-       /* XBraid interface operations */ 
+      /* XBraid interface operations */
       v->ops->nvbufsize   = w->ops->nvbufsize;
       v->ops->nvbufpack   = w->ops->nvbufpack;
       v->ops->nvbufunpack = w->ops->nvbufunpack;
 #    endif
 
 #    if DEAL_II_SUNDIALS_VERSION_GTE(5, 3, 0)
-       /* debugging functions (called when SUNDIALS_DEBUG_PRINTVEC is defined) */ 
+      /* debugging functions (called when SUNDIALS_DEBUG_PRINTVEC is defined) */
       v->ops->nvprint     = w->ops->nvprint;
       v->ops->nvprintfile = w->ops->nvprintfile;
 #    endif
@@ -242,5 +239,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif // DEAL_II_WITH_SUNDIALS
 #endif // dealii_sundials_sunlinsol_newempty_h
-
-

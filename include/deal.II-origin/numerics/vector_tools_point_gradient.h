@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_point_gradient_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -45,41 +46,24 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Evaluation of functions and errors
+   * @name  函数的评估和错误
+   *
    */
   //@{
 
   /**
-   * Evaluate a possibly vector-valued finite element function defined by the
-   * given DoFHandler and nodal vector at the given point, and return the
-   * (vector) gradient of this function through the last argument.
+   * 评估由给定DoFHandler和节点向量在给定点定义的可能是矢量值的有限元函数，并通过最后一个参数返回该函数的（矢量）梯度。
+   * 这是一个使用单元格边界的Q1映射来调用其他point_gradient()函数的包装函数。
+   * 这个函数不是特别便宜。这是因为它首先需要找到给定点所在的单元格，然后在参考单元格上找到与给定评估点相匹配的点，然后在那里评估形状函数。你可能不想用这个函数来评估<i>many</i>点的解。对于这种应用，FEFieldFunction类至少提供了一些优化。另一方面，如果你想在同一个点上评估<i>many
+   * solutions</i>，你可能想看看
+   * VectorTools::create_point_source_vector() 函数。
+   * @note
+   * 如果发现点所在的单元格不是本地拥有的，就会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然，这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * This is a wrapper function using a Q1-mapping for cell boundaries to call
-   * the other point_gradient() function.
-   *
-   * This function is not particularly cheap. This is because it first
-   * needs to find which cell a given point is in, then find the point
-   * on the reference cell that matches the given evaluation point,
-   * and then evaluate the shape functions there. You probably do not
-   * want to use this function to evaluate the solution at <i>many</i>
-   * points. For this kind of application, the FEFieldFunction class
-   * offers at least some optimizations. On the other hand, if you
-   * want to evaluate <i>many solutions</i> at the same point, you may
-   * want to look at the VectorTools::create_point_source_vector()
-   * function.
-   *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -90,20 +74,14 @@ namespace VectorTools
     std::vector<Tensor<1, spacedim, typename VectorType::value_type>> &value);
 
   /**
-   * Same as above for hp.
+   * 与上述hp的情况相同。
+   * @note
+   * 如果找到的点所在的单元格不是本地拥有的，会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然，这只能在一定的数字公差内完成。
+   * 因此，对于处于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -114,36 +92,18 @@ namespace VectorTools
     std::vector<Tensor<1, spacedim, typename VectorType::value_type>> &value);
 
   /**
-   * Evaluate a scalar finite element function defined by the given DoFHandler
-   * and nodal vector at the given point, and return the gradient of this
-   * function.
+   * 评估由给定DoFHandler和节点向量在给定点定义的标量有限元函数，并返回这个函数的梯度。
+   * 与另一个同名的函数相比，这是一个使用Q1映射的单元格的包装函数。
+   * 这个函数不是特别便宜。这是因为它首先需要找到一个给定的点在哪个单元格中，然后在参考单元格上找到与给定的评估点相匹配的点，然后评估那里的形状函数。你可能不想用这个函数来评估<i>many</i>点的解。对于这种应用，FEFieldFunction类至少提供了一些优化。另一方面，如果你想在同一个点上评估<i>many
+   * solutions</i>，你可能想看一下
+   * VectorTools::create_point_source_vector() 函数。
+   * @note
+   * 如果发现点所在的单元格不是本地拥有的，就会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * Compared with the other function of the same name, this is a wrapper
-   * function using a Q1-mapping for cells.
-   *
-   * This function is not particularly cheap. This is because it first
-   * needs to find which cell a given point is in, then find the point
-   * on the reference cell that matches the given evaluation point,
-   * and then evaluate the shape functions there. You probably do not
-   * want to use this function to evaluate the solution at <i>many</i>
-   * points. For this kind of application, the FEFieldFunction class
-   * offers at least some optimizations. On the other hand, if you
-   * want to evaluate <i>many solutions</i> at the same point, you may
-   * want to look at the VectorTools::create_point_source_vector()
-   * function.
-   *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   Tensor<1, spacedim, typename VectorType::value_type>
@@ -152,20 +112,14 @@ namespace VectorTools
                  const Point<spacedim, double> &  point);
 
   /**
-   * Same as above for hp.
+   * 与上述hp的情况相同。
+   * @note
+   * 如果找到的点所在的单元格不是本地拥有的，会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然，这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   Tensor<1, spacedim, typename VectorType::value_type>
@@ -174,36 +128,18 @@ namespace VectorTools
                  const Point<spacedim, double> &  point);
 
   /**
-   * Evaluate a possibly vector-valued finite element function defined by the
-   * given DoFHandler and nodal vector at the given point, and return the
-   * gradients of this function through the last argument.
+   * 评估由给定DoFHandler和节点向量在给定点定义的可能是矢量值的有限元函数，并通过最后一个参数返回这个函数的梯度。
+   * 与另一个同名的函数相比，这个函数使用一个任意的映射进行评估。
+   * 这个函数不是特别便宜。这是因为它首先需要找到给定点所在的单元格，然后在参考单元格上找到与给定评价点相匹配的点，然后在那里评价形状函数。你可能不想用这个函数来评估<i>many</i>点的解。对于这种应用，FEFieldFunction类至少提供了一些优化。另一方面，如果你想在同一个点上评估<i>many
+   * solutions</i>，你可能想看一下
+   * VectorTools::create_point_source_vector() 函数。
+   * @note
+   * 如果发现点所在的单元格不是本地拥有的，就会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * Compared with the other function of the same name, this function uses an
-   * arbitrary mapping for evaluation.
-   *
-   * This function is not particularly cheap. This is because it first
-   * needs to find which cell a given point is in, then find the point
-   * on the reference cell that matches the given evaluation point,
-   * and then evaluate the shape functions there. You probably do not
-   * want to use this function to evaluate the solution at <i>many</i>
-   * points. For this kind of application, the FEFieldFunction class
-   * offers at least some optimizations. On the other hand, if you
-   * want to evaluate <i>many solutions</i> at the same point, you may
-   * want to look at the VectorTools::create_point_source_vector()
-   * function.
-   *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -215,20 +151,14 @@ namespace VectorTools
     std::vector<Tensor<1, spacedim, typename VectorType::value_type>> &value);
 
   /**
-   * Same as above for hp.
+   * 与上述hp的情况相同。
+   * @note
+   * 如果找到的点所在的单元格不是本地拥有的，会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然，这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -240,36 +170,18 @@ namespace VectorTools
     std::vector<Tensor<1, spacedim, typename VectorType::value_type>> &value);
 
   /**
-   * Evaluate a scalar finite element function defined by the given DoFHandler
-   * and nodal vector at the given point, and return the gradient of this
-   * function.
+   * 评估由给定DoFHandler和节点向量在给定点定义的标量有限元函数，并返回这个函数的梯度。
+   * 与另一个同名的函数相比，这个函数使用一个任意的映射进行评估。
+   * 这个函数不是特别便宜。这是因为它首先需要找到给定点所在的单元格，然后在参考单元格上找到与给定评价点相匹配的点，然后在那里评价形状函数。你可能不想用这个函数来评估<i>many</i>点的解。对于这种应用，FEFieldFunction类至少提供了一些优化。另一方面，如果你想在同一个点上评估<i>many
+   * solutions</i>，你可能想看一下
+   * VectorTools::create_point_source_vector() 函数。
+   * @note
+   * 如果发现点所在的单元格不是本地拥有的，就会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * Compared with the other function of the same name, this function uses an
-   * arbitrary mapping for evaluation.
-   *
-   * This function is not particularly cheap. This is because it first
-   * needs to find which cell a given point is in, then find the point
-   * on the reference cell that matches the given evaluation point,
-   * and then evaluate the shape functions there. You probably do not
-   * want to use this function to evaluate the solution at <i>many</i>
-   * points. For this kind of application, the FEFieldFunction class
-   * offers at least some optimizations. On the other hand, if you
-   * want to evaluate <i>many solutions</i> at the same point, you may
-   * want to look at the VectorTools::create_point_source_vector()
-   * function.
-   *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   Tensor<1, spacedim, typename VectorType::value_type>
@@ -279,20 +191,14 @@ namespace VectorTools
                  const Point<spacedim, double> &  point);
 
   /**
-   * Same as above for hp.
+   * 与上述hp的情况相同。
+   * @note
+   * 如果找到的点所在的单元格不是本地拥有的，会抛出一个
+   * VectorTools::ExcPointNotAvailableHere 类型的异常。
+   * @note
+   * 这个函数需要找到一个点所在的单元格，当然，这只能在一定的数字公差内完成。
+   * 因此，对于位于或接近单元边界的点，你可能会在这里或那里得到有限元场的梯度，这取决于该点是在哪个单元中找到的。因为对于大多数元素来说，梯度从一个单元到另一个单元都是不连续的，所以对于单元边界上的点或接近单元边界的点，你会得到不可预测的值，正如人们在试图评估不连续函数的点值时所期望的那样。
    *
-   * @note If the cell in which the point is found is not locally owned, an
-   * exception of type VectorTools::ExcPointNotAvailableHere is thrown.
-   *
-   * @note This function needs to find the cell within which a point lies,
-   *   and this can only be done up to a certain numerical tolerance of course.
-   *   Consequently, for points that are on, or close to, the boundary of
-   *   a cell, you may get the gradient of the finite element field either
-   *   here or there, depending on which cell the point is found in. Since
-   *   the gradient is, for most elements, discontinuous from one cell or
-   *   the other, you will get unpredictable values for
-   *   points on or close to the boundary of the cell, as one would expect
-   *   when trying to evaluate point values of discontinuous functions.
    */
   template <int dim, typename VectorType, int spacedim>
   Tensor<1, spacedim, typename VectorType::value_type>
@@ -307,3 +213,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_point_gradient_h
+
+

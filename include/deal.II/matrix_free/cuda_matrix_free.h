@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/cuda_matrix_free_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -54,14 +53,30 @@ namespace CUDAWrappers
 #  endif
 
   /**
-   * 这个类收集了所有为矩阵自由实现而存储的数据。这个存储方案是针对用相同数据进行的几个循环而定制的，也就是说，通常在同一个网格上做许多矩阵-向量乘积或残差计算。
-   * 该类不实现任何涉及有限元基函数的操作，也就是说，关于在单元上进行的操作。对于这些操作，FEEvaluation类被设计为使用该类中收集的数据。
-   * 这个类实现了所有单元的循环（cell_loop()）。这个循环的调度方式是，共享自由度的单元不会同时工作，这意味着可以并行地写入向量，而不必明确地同步访问这些向量和矩阵。这个类没有实现任何形状值，它所做的只是缓存相应的数据。要实现有限元操作，请使用类
-   * CUDAWrappers::FEEvalutation.
-   * 这个类以不同的顺序遍历单元，而不是通常的deal.II的Triangulation类。
-   * @note  只支持float和double。
-   * @ingroup CUDAWrappers
+   * This class collects all the data that is stored for the matrix free
+   * implementation. The storage scheme is tailored towards several loops
+   * performed with the same data, i.e., typically doing many matrix-vector
+   * products or residual computations on the same mesh.
    *
+   * This class does not implement any operations involving finite element basis
+   * functions, i.e., regarding the operation performed on the cells. For these
+   * operations, the class FEEvaluation is designed to use the data collected in
+   * this class.
+   *
+   * This class implements a loop over all cells (cell_loop()). This loop is
+   * scheduled in such a way that cells that share degrees of freedom
+   * are not worked on simultaneously, which implies that it is possible to
+   * write to vectors in parallel without having to explicitly synchronize
+   * access to these vectors and matrices. This class does not implement any
+   * shape values, all it does is to cache the respective data. To implement
+   * finite element operations, use the class CUDAWrappers::FEEvalutation.
+   *
+   * This class traverse the cells in a different order than the usual
+   * Triangulation class in deal.II.
+   *
+   * @note Only float and double are supported.
+   *
+   * @ingroup CUDAWrappers
    */
   template <int dim, typename Number = double>
   class MatrixFree : public Subscriptor
@@ -73,9 +88,9 @@ namespace CUDAWrappers
       FilteredIterator<typename DoFHandler<dim>::active_cell_iterator>;
 
     /**
-     * 使用的并行化方案：parallel_in_elem（自由度层面的并行）或
-     * parallel_over_elem（单元格层面的并行）。
-     *
+     * Parallelization scheme used: parallel_in_elem (parallelism at the level
+     * of degrees of freedom) or parallel_over_elem (parallelism at the level of
+     * cells)
      */
     enum ParallelizationScheme
     {
@@ -84,14 +99,12 @@ namespace CUDAWrappers
     };
 
     /**
-     * 标准化的数据结构，用于向MatrixFree输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to MatrixFree.
      */
     struct AdditionalData
     {
       /**
-       * 构造函数。
-       *
+       * Constructor.
        */
       AdditionalData(
         const ParallelizationScheme parallelization_scheme = parallel_in_elem,
@@ -118,118 +131,119 @@ namespace CUDAWrappers
               "Overlapping communication and coloring are incompatible options. Only one of them can be enabled."));
       }
       /**
-       * 使用的并行化方案，在自由度或单元上的并行化。
-       *
+       * Parallelization scheme used, parallelization over degrees of freedom or
+       * over cells.
        */
       ParallelizationScheme parallelization_scheme;
       /**
-       * 这个标志是用来决定哪些数量应该被缓存。该类可以缓存梯度计算（反雅各布）、雅各布行列式（JxW）、正交点以及Hessians（雅各布导数）的数据。默认情况下，只有梯度和雅各布行列式乘以正交权重JxW的数据被缓存。如果需要二次导数的正交点，必须由这个字段指定。
-       *
+       * This flag is used to determine which quantities should be cached. This
+       * class can cache data needed for gradient computations (inverse
+       * Jacobians), Jacobian determinants (JxW), quadrature points as well as
+       * data for Hessians (derivative of Jacobians). By default, only data for
+       * gradients and Jacobian determinants times quadrature weights, JxW, are
+       * cached. If quadrature points of second derivatives are needed, they
+       * must be specified by this field.
        */
       UpdateFlags mapping_update_flags;
 
       /**
-       * 如果为真，使用图形着色。否则，使用原子操作。图形着色保证了位数的可重复性，但是在Pascal和较新的架构上会比较慢。
-       *
+       * If true, use graph coloring. Otherwise, use atomic operations. Graph
+       * coloring ensures bitwise reproducibility but is slower on Pascal and
+       * newer architectures.
        */
       bool use_coloring;
 
       /**
-       * 将MPI通信与计算重叠。这需要CUDA感知的MPI和use_coloring必须是假的。
-       *
+       *  Overlap MPI communications with computation. This requires CUDA-aware
+       *  MPI and use_coloring must be false.
        */
       bool overlap_communication_computation;
     };
 
     /**
-     * 传递给内核的结构。它用于将所有必要的信息从CPU传递给GPU。
-     *
+     * Structure which is passed to the kernel. It is used to pass all the
+     * necessary information from the CPU to the GPU.
      */
     struct Data
     {
       /**
-       * 指向正交点的指针。
-       *
+       * Pointer to the quadrature points.
        */
       point_type *q_points;
 
       /**
-       * 将本地向量中的位置映射到全局向量中的位置。
-       *
+       * Map the position in the local vector to the position in the global
+       * vector.
        */
       types::global_dof_index *local_to_global;
 
       /**
-       * 指向反雅各布的指针。
-       *
+       * Pointer to the inverse Jacobian.
        */
       Number *inv_jacobian;
 
       /**
-       * 指向Jacobian乘以权重的指针。
-       *
+       * Pointer to the Jacobian times the weights.
        */
       Number *JxW;
 
       /**
-       * 相关MatrixFree对象的ID。
-       *
+       * ID of the associated MatrixFree object.
        */
       unsigned int id;
 
       /**
-       * 单元的数量。
-       *
+       * Number of cells.
        */
       unsigned int n_cells;
 
       /**
-       * 填充物的长度。
-       *
+       * Length of the padding.
        */
       unsigned int padding_length;
 
       /**
-       * 行开始（包括填充物）。
-       *
+       * Row start (including padding).
        */
       unsigned int row_start;
 
       /**
-       * 决定在一个给定的单元格上设置约束的掩码。
-       *
+       * Mask deciding where constraints are set on a given cell.
        */
       unsigned int *constraint_mask;
 
       /**
-       * 如果为真，则使用图形着色，我们可以简单地添加到目的地向量中。否则，使用原子操作。
-       *
+       * If true, use graph coloring has been used and we can simply add into
+       * the destingation vector. Otherwise, use atomic operations.
        */
       bool use_coloring;
     };
 
     /**
-     * 默认构造函数。
-     *
+     * Default constructor.
      */
     MatrixFree();
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     ~MatrixFree();
 
     /**
-     * 返回padding的长度。
-     *
+     * Return the length of the padding.
      */
     unsigned int
     get_padding_length() const;
 
     /**
-     * 提取在单元格上进行循环所需的信息。DoFHandler和AffineConstraints对象描述了自由度的布局，DoFHandler和映射描述了从单元到实数单元的转换，DoFHandler底层的有限元与正交公式一起描述了局部操作。这个函数需要一个IteratorFilters对象（谓词）来循环处理活动单元的一个子集。当使用MPI时，该谓词应过滤掉非本地拥有的单元。
-     *
+     * Extracts the information needed to perform loops over cells. The
+     * DoFHandler and AffineConstraints objects describe the layout of
+     * degrees of freedom, the DoFHandler and the mapping describe the
+     * transformation from unit to real cell, and the finite element
+     * underlying the DoFHandler together with the quadrature formula
+     * describe the local operations. This function takes an IteratorFilters
+     * object (predicate) to loop over a subset of the active cells. When using
+     * MPI, the predicate should filter out non locally owned cells.
      */
     template <typename IteratorFiltersType>
     void
@@ -241,8 +255,7 @@ namespace CUDAWrappers
            const AdditionalData &           additional_data = AdditionalData());
 
     /**
-     * 与上述相同，使用 Iterators::LocallyOwnedCell() 作为谓词。
-     *
+     * Same as above using Iterators::LocallyOwnedCell() as predicate.
      */
     void
     reinit(const Mapping<dim> &             mapping,
@@ -252,8 +265,7 @@ namespace CUDAWrappers
            const AdditionalData &           additional_data = AdditionalData());
 
     /**
-     * 初始化数据结构。与上述相同，但使用Q1映射。
-     *
+     * Initializes the data structures. Same as above but using a Q1 mapping.
      */
     void
     reinit(const DoFHandler<dim> &          dof_handler,
@@ -262,23 +274,28 @@ namespace CUDAWrappers
            const AdditionalData &           AdditionalData = AdditionalData());
 
     /**
-     * 返回与 @p color. 相关的数据结构。
-     *
+     * Return the Data structure associated with @p color.
      */
     Data
     get_data(unsigned int color) const;
 
     // clang-format off
     /**
-     * 这个方法在所有单元格上运行循环，并在每个元素上并行应用局部操作。
-     * @p func 是一个漏斗，它被应用于每个颜色。          @p
-     * func 需要定义 /code __device__ void operator()( const unsigned int
-     * cell, const typename  CUDAWrappers::MatrixFree<dim,
-     * Number>::Datagpu_data,   CUDAWrappers::SharedData<dim,  Number>
-     * shared_data, const Number src, Number dst) const; static const unsigned
-     * int n_dofs_1d; static const unsigned int n_local_dofs; static const
-     * unsigned int n_q_points; \endcode
+     * This method runs the loop over all cells and apply the local operation on
+     * each element in parallel. @p func is a functor which is applied on each color.
      *
+     * @p func needs to define
+     * \code
+     * __device__ void operator()(
+     *   const unsigned int                                          cell,
+     *   const typename CUDAWrappers::MatrixFree<dim, Number>::Data *gpu_data,
+     *   CUDAWrappers::SharedData<dim, Number> *                     shared_data,
+     *   const Number *                                              src,
+     *   Number *                                                    dst) const;
+     *   static const unsigned int n_dofs_1d;
+     *   static const unsigned int n_local_dofs;
+     *   static const unsigned int n_q_points;
+     * \endcode
      */
     // clang-format on
     template <typename Functor, typename VectorType>
@@ -288,91 +305,98 @@ namespace CUDAWrappers
               VectorType &      dst) const;
 
     /**
-     * 这个方法在所有单元格上运行循环，并在每个元素上并行应用局部操作。这个函数与cell_loop()非常相似，但它使用了一个更简单的函数。
-     * @p func  需要定义 /code __device__ void operator()( const unsigned
-     * int cell, const typename  CUDAWrappers::MatrixFree<dim,
-     * Number>::Datagpu_data);  static const unsigned int n_dofs_1d; static
-     * const unsigned int n_local_dofs; static const unsigned int n_q_points;
-     * \endcode
+     * This method runs the loop over all cells and apply the local operation on
+     * each element in parallel. This function is very similar to cell_loop()
+     * but it uses a simpler functor.
      *
+     * @p func needs to define
+     * \code
+     *  __device__ void operator()(
+     *    const unsigned int                                          cell,
+     *    const typename CUDAWrappers::MatrixFree<dim, Number>::Data *gpu_data);
+     * static const unsigned int n_dofs_1d;
+     * static const unsigned int n_local_dofs;
+     * static const unsigned int n_q_points;
+     * \endcode
      */
     template <typename Functor>
     void
     evaluate_coefficients(Functor func) const;
 
     /**
-     * 从 @p src 复制约束项的值到 @p dst.
-     * 这是用来施加零迪里希特边界条件。
-     *
+     * Copy the values of the constrained entries from @p src to @p dst. This is
+     * used to impose zero Dirichlet boundary condition.
      */
     template <typename VectorType>
     void
     copy_constrained_values(const VectorType &src, VectorType &dst) const;
 
     /**
-     * 将 @p dst 中对应于约束值的条目设置为 @p val.
-     * 这个函数的主要目的是将cell_loop()中使用的源向量的约束条目设置为零。
-     *
+     * Set the entries in @p dst corresponding to constrained values to @p val.
+     * The main purpose of this function is to set the constrained entries of
+     * the source vector used in cell_loop() to zero.
      */
     template <typename VectorType>
     void
     set_constrained_values(const Number val, VectorType &dst) const;
 
     /**
-     * 初始化一个序列向量。其大小与DoFHandler对象中的自由度数相对应。
-     *
+     * Initialize a serial vector. The size corresponds to the number of degrees
+     * of freedom in the DoFHandler object.
      */
     void
     initialize_dof_vector(
       LinearAlgebra::CUDAWrappers::Vector<Number> &vec) const;
 
     /**
-     * 初始化一个分布式向量。本地元素对应于本地拥有的自由度，鬼魂元素对应于（额外的）本地相关自由度。
-     *
+     * Initialize a distributed vector. The local elements correspond to the
+     * locally owned degrees of freedom and the ghost elements correspond to the
+     * (additional) locally relevant dofs.
      */
     void
     initialize_dof_vector(
       LinearAlgebra::distributed::Vector<Number, MemorySpace::CUDA> &vec) const;
 
     /**
-     * 返回本地拥有的活动单元的彩色图。
-     *
+     * Return the colored graph of locally owned active cells.
      */
     const std::vector<std::vector<CellFilter>> &
     get_colored_graph() const;
 
     /**
-     * 返回代表本地拥有的数据的分区器，以及单元格循环需要访问的幽灵索引。分区器是由各自字段给出的本地拥有的道夫和幽灵道夫构建的。如果你想知道这些对象的具体信息，你可以用各自的访问函数来查询它们。如果你只是想初始化一个（平行）向量，你通常应该更喜欢这种数据结构，因为数据交换信息可以从一个向量重复使用到另一个向量。
-     *
+     * Return the partitioner that represents the locally owned data and the
+     * ghost indices where access is needed to for the cell loop. The
+     * partitioner is constructed from the locally owned dofs and ghost dofs
+     * given by the respective fields. If you want to have specific information
+     * about these objects, you can query them with the respective access
+     * functions. If you just want to initialize a (parallel) vector, you should
+     * usually prefer this data structure as the data exchange information can
+     * be reused from one vector to another.
      */
     const std::shared_ptr<const Utilities::MPI::Partitioner> &
     get_vector_partitioner() const;
 
     /**
-     * 释放所有分配的内存。
-     *
+     * Free all the memory allocated.
      */
     void
     free();
 
     /**
-     * 返回DoFHandler。
-     *
+     * Return the DoFHandler.
      */
     const DoFHandler<dim> &
     get_dof_handler() const;
 
     /**
-     * 返回这个类的内存消耗的近似值，单位是字节。
-     *
+     * Return an approximation of the memory consumption of this class in bytes.
      */
     std::size_t
     memory_consumption() const;
 
   private:
     /**
-     * 初始化数据结构。
-     *
+     * Initializes the data structures.
      */
     template <typename IteratorFiltersType>
     void
@@ -385,8 +409,8 @@ namespace CUDAWrappers
                     const AdditionalData             additional_data);
 
     /**
-     * 帮助函数。循环所有的单元格，并在每个元素上并行地应用函数。这个函数在不使用MPI时使用。
-     *
+     * Helper function. Loop over all the cells and apply the functor on each
+     * element in parallel. This function is used when MPI is not used.
      */
     template <typename Functor, typename VectorType>
     void
@@ -395,8 +419,8 @@ namespace CUDAWrappers
                      VectorType &      dst) const;
 
     /**
-     * 辅助函数。在所有的单元格上循环，并在每个元素上平行地应用函数。这个函数在使用MPI的时候使用。
-     *
+     * Helper function. Loop over all the cells and apply the functor on each
+     * element in parallel. This function is used when MPI is used.
      */
     template <typename Functor>
     void
@@ -406,9 +430,9 @@ namespace CUDAWrappers
       LinearAlgebra::distributed::Vector<Number, MemorySpace::CUDA> &dst) const;
 
     /**
-     * 这个函数不应该被调用。调用它将导致一个内部错误。这个函数的存在只是因为cell_loop需要distributed_cell_loop()的存在，因为
-     * LinearAlgebra::CUDAWrappers::Vector.
-     *
+     * This function should never be called. Calling it results in an internal
+     * error. This function exists only because cell_loop needs
+     * distributed_cell_loop() to exist for LinearAlgebra::CUDAWrappers::Vector.
      */
     template <typename Functor>
     void
@@ -418,9 +442,8 @@ namespace CUDAWrappers
       LinearAlgebra::CUDAWrappers::Vector<Number> &      dst) const;
 
     /**
-     * 帮助函数。将 @p src 的约束项的值复制到 @p dst.
-     * 这个函数在不使用MPI时使用。
-     *
+     * Helper function. Copy the values of the constrained entries of @p src to
+     * @p dst. This function is used when MPI is not used.
      */
     template <typename VectorType>
     void
@@ -428,9 +451,8 @@ namespace CUDAWrappers
                                    VectorType &      dst) const;
 
     /**
-     * 帮助功能。将 @p src 的受限项的值复制到 @p dst.
-     * 中，该函数在使用MPI时使用。
-     *
+     * Helper function. Copy the values of the constrained entries of @p src to
+     * @p dst. This function is used when MPI is used.
      */
     void
     distributed_copy_constrained_values(
@@ -438,9 +460,10 @@ namespace CUDAWrappers
       LinearAlgebra::distributed::Vector<Number, MemorySpace::CUDA> &dst) const;
 
     /**
-     * 这个函数永远不应该被调用。调用它将导致一个内部错误。这个函数的存在只是因为copy_constrained_values需要distributed_copy_constrained_values()存在
-     * LinearAlgebra::CUDAWrappers::Vector.  。
-     *
+     * This function should never be called. Calling it results in an internal
+     * error. This function exists only because copy_constrained_values needs
+     * distributed_copy_constrained_values() to exist for
+     * LinearAlgebra::CUDAWrappers::Vector.
      */
     void
     distributed_copy_constrained_values(
@@ -448,18 +471,16 @@ namespace CUDAWrappers
       LinearAlgebra::CUDAWrappers::Vector<Number> &      dst) const;
 
     /**
-     * 帮助功能。将 @p dst 的约束项设置为 @p val.
-     * ，该函数在不使用MPI时使用。
-     *
+     * Helper function. Set the constrained entries of @p dst to @p val. This
+     * function is used when MPI is not used.
      */
     template <typename VectorType>
     void
     serial_set_constrained_values(const Number val, VectorType &dst) const;
 
     /**
-     * 帮助功能。将 @p dst 的受限条目设置为 @p val.
-     * 当使用MPI时，该函数被使用。
-     *
+     * Helper function. Set the constrained entries of @p dst to @p val. This
+     * function is used when MPI is used.
      */
     void
     distributed_set_constrained_values(
@@ -467,9 +488,10 @@ namespace CUDAWrappers
       LinearAlgebra::distributed::Vector<Number, MemorySpace::CUDA> &dst) const;
 
     /**
-     * 这个函数永远不应该被调用。调用它将导致一个内部错误。这个函数的存在只是因为set_constrained_values需要distributed_set_constrained_values()存在
-     * LinearAlgebra::CUDAWrappers::Vector.  。
-     *
+     * This function should never be called. Calling it results in an internal
+     * error. This function exists only because set_constrained_values needs
+     * distributed_set_constrained_values() to exist for
+     * LinearAlgebra::CUDAWrappers::Vector.
      */
     void
     distributed_set_constrained_values(
@@ -477,164 +499,151 @@ namespace CUDAWrappers
       LinearAlgebra::CUDAWrappers::Vector<Number> &dst) const;
 
     /**
-     * 与该对象相关的唯一ID。
-     *
+     * Unique ID associated with the object.
      */
     int my_id;
 
     /**
-     * 使用的并行化方案，在自由度或单元上的并行化。
-     *
+     * Parallelization scheme used, parallelization over degrees of freedom or
+     * over cells.
      */
     ParallelizationScheme parallelization_scheme;
 
     /**
-     * 如果为真，使用图形着色。否则，使用原子操作。图形着色可以确保位数的可重复性，但是在Pascal和新的架构上会比较慢。
-     *
+     * If true, use graph coloring. Otherwise, use atomic operations. Graph
+     * coloring ensures bitwise reproducibility but is slower on Pascal and
+     * newer architectures.
      */
     bool use_coloring;
 
     /**
-     * 将MPI通信与计算重叠。这需要CUDA感知的MPI，并且use_coloring必须为假。
-     *
+     *  Overlap MPI communications with computation. This requires CUDA-aware
+     *  MPI and use_coloring must be false.
      */
     bool overlap_communication_computation;
 
     /**
-     * 总自由度数。
-     *
+     * Total number of degrees of freedom.
      */
     types::global_dof_index n_dofs;
 
     /**
-     * 所用有限元的度数。
-     *
+     * Degree of the finite element used.
      */
     unsigned int fe_degree;
 
     /**
-     * 每个单元的自由度数。
-     *
+     * Number of degrees of freedom per cell.
      */
     unsigned int dofs_per_cell;
 
     /**
-     * 受限自由度的数量。
-     *
+     * Number of constrained degrees of freedom.
      */
     unsigned int n_constrained_dofs;
 
     /**
-     * 每个单元的正交点的数量。
-     *
+     * Number of quadrature points per cells.
      */
     unsigned int q_points_per_cell;
 
     /**
-     * 图形着色算法产生的颜色数量。
-     *
+     * Number of colors produced by the graph coloring algorithm.
      */
     unsigned int n_colors;
 
     /**
-     * 每种颜色的单元格数量。
-     *
+     * Number of cells in each color.
      */
     std::vector<unsigned int> n_cells;
 
     /**
-     * 与每种颜色的单元格相关的正交点的指针矢量。
-     *
+     * Vector of pointers to the quadrature points associated to the cells of
+     * each color.
      */
     std::vector<point_type *> q_points;
 
     /**
-     * 将本地向量中的位置映射到全局向量中的位置。
-     *
+     * Map the position in the local vector to the position in the global
+     * vector.
      */
     std::vector<types::global_dof_index *> local_to_global;
 
     /**
-     * 与每种颜色的单元格相关的反雅各布系数的指针向量。
-     *
+     * Vector of pointer to the inverse Jacobian associated to the cells of each
+     * color.
      */
     std::vector<Number *> inv_jacobian;
 
     /**
-     * 指向每个颜色的单元格相关的雅各布系数乘以权重的矢量。
-     *
+     * Vector of pointer to the Jacobian times the weights associated to the
+     * cells of each color.
      */
     std::vector<Number *> JxW;
 
     /**
-     * 指向受限自由度的指针。
-     *
+     * Pointer to the constrained degrees of freedom.
      */
     types::global_dof_index *constrained_dofs;
 
     /**
-     * 决定在一个给定单元上设置约束的掩码。
-     *
+     * Mask deciding where constraints are set on a given cell.
      */
     std::vector<unsigned int *> constraint_mask;
 
     /**
-     * 与不同颜色相关的网格尺寸。网格尺寸用于启动CUDA内核。
-     *
+     * Grid dimensions associated to the different colors. The grid dimensions
+     * are used to launch the CUDA kernels.
      */
     std::vector<dim3> grid_dim;
 
     /**
-     * 与不同颜色相关的块尺寸。块的尺寸用于启动CUDA内核。
-     *
+     * Block dimensions associated to the different colors. The block dimensions
+     * are used to launch the CUDA kernels.
      */
     std::vector<dim3> block_dim;
 
     /**
-     * 用于cell_loop中的分布式矢量的共享指针。当不使用MPI时，该指针为空。
-     *
+     * Shared pointer to a Partitioner for distributed Vectors used in
+     * cell_loop. When MPI is not used the pointer is null.
      */
     std::shared_ptr<const Utilities::MPI::Partitioner> partitioner;
 
     /**
-     * 每块单元格（由函数cell_per_block_shmem()决定）。
-     *
+     * Cells per block (determined by the function cells_per_block_shmem() ).
      */
     unsigned int cells_per_block;
 
     /**
-     * 用于启动CUDA内核的网格尺寸 in_constrained_values-operations.
-     *
+     * Grid dimensions used to launch the CUDA kernels
+     * in *_constrained_values-operations.
      */
     dim3 constraint_grid_dim;
 
     /**
-     * 用于启动CUDA内核的块状尺寸_受限值-操作。
-     *
+     * Block dimensions used to launch the CUDA kernels
+     * in *_constrained_values-operations.
      */
     dim3 constraint_block_dim;
 
     /**
-     * 填充物的长度（大于或等于线程数的最接近2的幂）。
-     *
+     * Length of the padding (closest power of two larger than or equal to
+     * the number of thread).
      */
     unsigned int padding_length;
 
     /**
-     * 每个颜色的行开始。
-     *
+     * Row start of each color.
      */
     std::vector<unsigned int> row_start;
 
     /**
-     * 指向与该对象相关的DoFHandler的指针。
-     *
+     * Pointer to the DoFHandler associated with the object.
      */
     const DoFHandler<dim> *dof_handler;
 
     /**
-     * 本地拥有的活动单元的彩色图谱。
-     *
+     * Colored graphed of locally owned active cells.
      */
     std::vector<std::vector<CellFilter>> graph;
 
@@ -646,15 +655,13 @@ namespace CUDAWrappers
   // TODO find a better place to put these things
 
   /**
-   * 用于将共享内存传递给一般用户函数的结构。
-   *
+   * Structure to pass the shared memory into a general user function.
    */
   template <int dim, typename Number>
   struct SharedData
   {
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     __device__
     SharedData(Number *vd, Number *gq[dim])
@@ -665,15 +672,14 @@ namespace CUDAWrappers
     }
 
     /**
-     * 用于dof和quad值的共享内存。
-     *
+     * Shared memory for dof and quad values.
      */
     Number *values;
 
     /**
-     * 参考坐标系中计算的梯度的共享内存。
-     * 每个方向的梯度以数组结构的形式保存，也就是说，首先，X方向的所有梯度都会被保存。
-     *
+     * Shared memory for computed gradients in reference coordinate system.
+     * The gradient in each direction is saved in a struct-of-array
+     * format, i.e. first, all gradients in the x-direction come...
      */
     Number *gradients[dim];
   };
@@ -686,7 +692,7 @@ namespace CUDAWrappers
   __host__ __device__ constexpr unsigned int
            cells_per_block_shmem(int dim, int fe_degree)
   {
-     /* clang-format off */ 
+    /* clang-format off */
     // We are limiting the number of threads according to the
     // following formulas:
     //  - in 2D: `threads = cells * (k+1)^d <= 4*CUDAWrappers::warp_size`
@@ -699,15 +705,15 @@ namespace CUDAWrappers
            dim==3 ? (fe_degree==1 ? CUDAWrappers::warp_size/4 :  //  64
                      fe_degree==2 ? CUDAWrappers::warp_size/16 : //  54
                      1) : 1;
-     /* clang-format on */ 
+    /* clang-format on */
   }
 
 
-   /*----------------------- Helper functions ---------------------------------*/ 
+  /*----------------------- Helper functions ---------------------------------*/
   /**
-   * 计算给定线程的本地单元中的正交点索引。      @relates
-   * CUDAWrappers::MatrixFree 。
+   * Compute the quadrature point index in the local cell of a given thread.
    *
+   * @relates CUDAWrappers::MatrixFree
    */
   template <int dim>
   __device__ inline unsigned int
@@ -724,9 +730,10 @@ namespace CUDAWrappers
 
 
   /**
-   * 返回一个给定线程的本地正交点索引。该索引只对一个给定的MPI进程是唯一的。
-   * @relates   CUDAWrappers::MatrixFree
+   * Return the quadrature point index local of a given thread. The index is
+   * only unique for a given MPI process.
    *
+   * @relates CUDAWrappers::MatrixFree
    */
   template <int dim, typename Number>
   __device__ inline unsigned int
@@ -743,9 +750,9 @@ namespace CUDAWrappers
 
 
   /**
-   * 返回与给定线程相关的正交点。      @relates
-   * CUDAWrappers::MatrixFree  *返回与指定线程相关的正交点。
+   * Return the quadrature point associated with a given thread.
    *
+   * @relates CUDAWrappers::MatrixFree
    */
   template <int dim, typename Number>
   __device__ inline typename CUDAWrappers::MatrixFree<dim, Number>::point_type &
@@ -759,69 +766,61 @@ namespace CUDAWrappers
   }
 
   /**
-   * 传递给内核的结构。它用于将所有必要的信息从CPU传递给GPU。
-   *
+   * Structure which is passed to the kernel. It is used to pass all the
+   * necessary information from the CPU to the GPU.
    */
   template <int dim, typename Number>
   struct DataHost
   {
     /**
-     * 正交点的矢量。
-     *
+     * Vector of quadrature points.
      */
     std::vector<Point<dim, Number>> q_points;
 
     /**
-     * 将本地向量中的位置映射到全局向量中的位置。
-     *
+     * Map the position in the local vector to the position in the global
+     * vector.
      */
     std::vector<types::global_dof_index> local_to_global;
 
     /**
-     * 反雅各布系数的矢量。
-     *
+     * Vector of inverse Jacobians.
      */
     std::vector<Number> inv_jacobian;
 
     /**
-     * 雅各布系数乘以权重的向量。
-     *
+     * Vector of Jacobian times the weights.
      */
     std::vector<Number> JxW;
 
     /**
-     * 相关MatrixFree对象的ID。
-     *
+     * ID of the associated MatrixFree object.
      */
     unsigned int id;
 
     /**
-     * 单元的数量。
-     *
+     * Number of cells.
      */
     unsigned int n_cells;
 
     /**
-     * 填充物的长度。
-     *
+     * Length of the padding.
      */
     unsigned int padding_length;
 
     /**
-     * 行开始（包括填充物）。
-     *
+     * Row start (including padding).
      */
     unsigned int row_start;
 
     /**
-     * 决定在一个给定的单元格上设置约束的掩码。
-     *
+     * Mask deciding where constraints are set on a given cell.
      */
     std::vector<unsigned int> constraint_mask;
 
     /**
-     * 如果为真，则使用图形着色，我们可以简单地添加到目的地向量中。否则，使用原子操作。
-     *
+     * If true, use graph coloring has been used and we can simply add into
+     * the destingation vector. Otherwise, use atomic operations.
      */
     bool use_coloring;
   };
@@ -829,10 +828,10 @@ namespace CUDAWrappers
 
 
   /**
-   * 将 @p data 从设备复制到设备。  @p update_flags 应该与
-   * MatrixFree::AdditionalData.  @relates  CUDAWrappers::MatrixFree
-   * 中使用的相同。
+   * Copy @p data from the device to the device. @p update_flags should be
+   * identical to the one used in MatrixFree::AdditionalData.
    *
+   * @relates CUDAWrappers::MatrixFree
    */
   template <int dim, typename Number>
   DataHost<dim, Number>
@@ -883,9 +882,9 @@ namespace CUDAWrappers
 
 
   /**
-   * 这个函数是local_q_point_id()的主机版本。      @relates
-   * CUDAWrappers::MatrixFree
+   * This function is the host version of local_q_point_id().
    *
+   * @relates CUDAWrappers::MatrixFree
    */
   template <int dim, typename Number>
   inline unsigned int
@@ -900,11 +899,11 @@ namespace CUDAWrappers
 
 
   /**
-   * 该函数是主机版的get_quadrature_point()。它假定MatrixFree<dim,
-   * Number>::Data
-   * 中的数据已经用copy_mf_data_to_host()复制到主机上了。
-   * @relates   CUDAWrappers::MatrixFree 。
+   * This function is the host version of get_quadrature_point(). It assumes
+   * that the data in MatrixFree<dim, Number>::Data has been copied to the host
+   * using copy_mf_data_to_host().
    *
+   * @relates CUDAWrappers::MatrixFree
    */
   template <int dim, typename Number>
   inline Point<dim, Number>
@@ -916,7 +915,7 @@ namespace CUDAWrappers
   }
 
 
-   /*----------------------- Inline functions ---------------------------------*/ 
+  /*----------------------- Inline functions ---------------------------------*/
 
 #  ifndef DOXYGEN
 
@@ -956,5 +955,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif
 #endif
-
-

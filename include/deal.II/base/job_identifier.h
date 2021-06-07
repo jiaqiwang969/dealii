@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/job_identifier_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -24,56 +23,58 @@
 
 DEAL_II_NAMESPACE_OPEN
 /**
- * 识别一个程序的运行。<tt>JobIdentifier</tt>确定一个程序运行的开始时间，并将其作为一个程序标识符存储。存在一个该类的库对象<tt>dealjobid</tt>。这个对象可以被所有的输出函数访问，为当前的工作提供一个ID。
- *
+ * Identification of a program run. <tt>JobIdentifier</tt> determines the
+ * start time of a program run and stores it as a program identifier. There
+ * exists a library object <tt>dealjobid</tt> of this class. This object can
+ * be accessed by all output functions to provide an id for the current job.
  *
  * @ingroup utilities
- *
- *
  */
 class JobIdentifier
 {
 public:
   /**
-   * 构造函数。设置程序标识符为<tt>program_id</tt>与当前时间相连接的值。
-   *
+   * Constructor. Set program identifier to value of <tt>program_id</tt>
+   * concatenated with the present time.
    */
   JobIdentifier();
 
   /**
-   * 这个函数返回运行中的程序的标识符。目前，该库提供了一个返回
-   * "JobID "的函数。
-   * 用户可以在他们的源代码中定义这个函数的替换，避免链接库的版本。不幸的是，这种机制对共享库不起作用。
+   * This function returns an identifier for the running program. Currently,
+   * the library provides a function returning "JobID".
    *
+   * The user may define a replacement of this function in their source code and
+   * avoid linking the library version. Unfortunately, this mechanism does not
+   * work with shared libraries.
    */
   static const char *
   program_id();
 
   /**
-   * 获得作为参数传递的文件名的基本名称。也就是说，如果文件是<tt>mypath/file.cc</tt>，只返回<tt>file</tt>。例如，这个函数可以从一个用户程序中调用，参数为<tt>__FILE__</tt>，为正在运行的程序创建一个标识符。
-   *
+   * Obtain the base name of the filename passed as argument. That is,
+   * if the file is <tt>mypath/file.cc</tt> return just
+   * <tt>file</tt>. For example, this function can be called from a
+   * user program with argument <tt>__FILE__</tt> to create an
+   * identifier for the program being run.
    */
   static std::string
   base_name(const std::string &filename);
 
   /**
-   * 返回<tt>id</tt>的值。
-   *
+   * Return the value of <tt>id</tt>.
    */
   const std::string
   operator()() const;
 
   /**
-   * 识别当前运行程序的%函数。
-   *
+   * %Function to identify the presently running program.
    */
   static const JobIdentifier &
   get_dealjobid();
 
 private:
   /**
-   * 持有目前正在运行的程序的标识符的字符串。
-   *
+   * String holding the identifier of the presently running program.
    */
   std::string id;
 };
@@ -81,5 +82,3 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

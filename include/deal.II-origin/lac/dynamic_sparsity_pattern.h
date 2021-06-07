@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/dynamic_sparsity_pattern_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -36,13 +37,16 @@ DEAL_II_NAMESPACE_OPEN
 class DynamicSparsityPattern;
 #endif
 
-/*! @addtogroup Sparsity
- *@{
- */
+/*!   @addtogroup  稀疏性  @{  
+
+* 
+* */
 
 
 /**
- * Iterators on objects of type DynamicSparsityPattern.
+ * DynamicSparsityPattern类型对象的迭代器。
+ *
+ *
  */
 namespace DynamicSparsityPatternIterators
 {
@@ -50,70 +54,72 @@ namespace DynamicSparsityPatternIterators
   class Iterator;
 
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Accessor class for iterators into objects of type DynamicSparsityPattern.
+   * 迭代器进入DynamicSparsityPattern类型的对象的访问器类。
+   * 请注意，这个类只允许对元素进行读取访问，提供它们的行和列号（或者是完整的稀疏模式中的索引）。它不允许修改稀疏度模式本身。
    *
-   * Note that this class only allows read access to elements, providing their
-   * row and column number (or alternatively the index within the complete
-   * sparsity pattern). It does not allow modifying the sparsity pattern
-   * itself.
    */
   class Accessor
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     Accessor(const DynamicSparsityPattern *sparsity_pattern,
              const size_type               row,
              const unsigned int            index_within_row);
 
     /**
-     * Constructor. Construct the end accessor for the given sparsity pattern.
+     * 构造函数。为给定的稀疏模式构造结束访问器。
+     *
      */
     Accessor(const DynamicSparsityPattern *sparsity_pattern);
 
     /**
-     * Default constructor creating a dummy accessor. This constructor is here
-     * only to be able to store accessors in STL containers such as
-     * `std::vector`.
+     * 默认构造器创建一个假访问器。这个构造函数在这里只是为了能够在STL容器中存储访问器，例如
+     * `std::vector`.  。
+     *
      */
     Accessor();
 
     /**
-     * Row number of the element represented by this object.
+     * 这个对象所代表的元素的行数。
+     *
      */
     size_type
     row() const;
 
     /**
-     * Index within the current row of the element represented by this object.
+     * 这个对象所代表的元素在当前行中的索引。
+     *
      */
     size_type
     index() const;
 
     /**
-     * Column number of the element represented by this object.
+     * 这个对象所代表的元素的列号。
+     *
      */
     size_type
     column() const;
 
     /**
-     * Comparison. True, if both iterators point to the same matrix position.
+     * 比较。如果两个迭代器都指向同一个矩阵位置，则为真。
+     *
      */
     bool
     operator==(const Accessor &) const;
 
     /**
-     * Comparison operator. Result is true if either the first row number is
-     * smaller or if the row numbers are equal and the first index is smaller.
+     * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
+     * 这个函数只有在两个迭代器都指向同一个稀疏模式时才有效。
      *
-     * This function is only valid if both iterators point into the same
-     * sparsity pattern.
      */
     bool
     operator<(const Accessor &) const;
@@ -126,31 +132,32 @@ namespace DynamicSparsityPatternIterators
                      " not do any operations.");
 
     /**
-     * The sparsity pattern we operate on accessed.
+     * 我们所操作的稀疏模式被访问。
+     *
      */
     const DynamicSparsityPattern *sparsity_pattern;
 
     /**
-     * The row we currently point into.
+     * 我们当前指向的行。
+     *
      */
     size_type current_row;
 
     /**
-     * A pointer to the element within the current row that we currently point
-     * to.
+     * 一个指向当前行内的元素的指针，我们当前指向的元素。
+     *
      */
     std::vector<size_type>::const_iterator current_entry;
 
     /**
-     * A pointer to the end of the current row. We store this to make
-     * comparison against the end of line iterator cheaper as it otherwise
-     * needs to do the IndexSet translation from row index to the index within
-     * the 'lines' array of DynamicSparsityPattern.
+     * 一个指向当前行结束的指针。我们存储这个指针是为了与行末迭代器进行比较，这样做比较便宜，否则它需要进行IndexSet转换，从行的索引到DynamicSparsityPattern的'lines'数组中的索引。
+     *
      */
     std::vector<size_type>::const_iterator end_of_row;
 
     /**
-     * Move the accessor to the next nonzero entry in the matrix.
+     * 将访问器移动到矩阵中的下一个非零条目。
+     *
      */
     void
     advance();
@@ -162,110 +169,97 @@ namespace DynamicSparsityPatternIterators
 
 
   /**
-   * An iterator class for walking over the elements of a sparsity pattern.
+   * 一个迭代器类，用于在稀疏性模式的元素上行走。
+   * 这些迭代器的典型用途是迭代稀疏模式的元素（或者，因为它们也是迭代相关矩阵的元素的基础，所以是迭代稀疏矩阵的元素），或者迭代单个行的元素。不能保证行的元素实际上是按照列数单调增加的顺序来遍历的。更多信息请参见SparsityPattern类的文档。
+   * @note
+   * 该类直接对DynamicSparsityPattern类的内部数据结构进行操作。因此，有些操作很便宜，有些则不然。特别是，访问指向的稀疏模式条目的列索引很便宜。另一方面，计算两个迭代器之间的距离是很昂贵的。因此，当你设计使用这些迭代器的算法时，通常的做法是不一次性循环疏散模式的<i>all</i>元素，而是在所有行上有一个外循环，并在这个循环中迭代这个行的元素。这样，你只需要解除对迭代器的引用以获得列索引，而通过使用循环索引可以避免对行索引的（昂贵）查找。
    *
-   * The typical use for these iterators is to iterate over the elements of a
-   * sparsity pattern (or, since they also serve as the basis for iterating
-   * over the elements of an associated matrix, over the elements of a sparse
-   * matrix), or over the elements of individual rows. There is no guarantee
-   * that the elements of a row are actually traversed in an order in which
-   * column numbers monotonically increase. See the documentation of the
-   * SparsityPattern class for more information.
-   *
-   * @note This class operates directly on the internal data structures of the
-   * DynamicSparsityPattern class. As a consequence, some operations are cheap
-   * and some are not. In particular, it is cheap to access the column index
-   * of the sparsity pattern entry pointed to. On the other hand, it is
-   * expensive to compute the distance between two iterators. As a
-   * consequence, when you design algorithms that use these iterators, it is
-   * common practice to not loop over <i>all</i> elements of a sparsity
-   * pattern at once, but to have an outer loop over all rows and within this
-   * loop iterate over the elements of this row. This way, you only ever need
-   * to dereference the iterator to obtain the column indices whereas the
-   * (expensive) lookup of the row index can be avoided by using the loop
-   * index instead.
    */
   class Iterator
   {
   public:
     /**
-     * Constructor. Create an iterator into the sparsity pattern @p sp for the
-     * given global index (i.e., the index of the given element counting from
-     * the zeroth row).
+     * 构造函数。为给定的全局索引（即从第2行开始计算的给定元素的索引）创建一个进入稀疏模式
+     * @p sp 的迭代器。
+     *
      */
     Iterator(const DynamicSparsityPattern *sp,
              const size_type               row,
              const unsigned int            index_within_row);
 
     /**
-     * Constructor. Create an invalid (end) iterator into the sparsity pattern
-     * @p sp.
+     * 构造函数。创建一个无效的（结束）迭代器进入稀疏模式
+     * @p sp.  。
+     *
      */
     Iterator(const DynamicSparsityPattern *sp);
 
     /**
-     * Default constructor creating an invalid iterator. This constructor is
-     * here only to be able to store iterators in STL containers such as
-     * `std::vector`.
+     * 默认的构造函数，创建一个无效的迭代器。这个构造函数在这里只是为了能够在STL容器中存储迭代器，如
+     * `std::vector`. 。
+     *
      */
     Iterator() = default;
 
     /**
-     * Prefix increment.
+     * 前缀增量。
+     *
      */
     Iterator &
     operator++();
 
     /**
-     * Postfix increment.
+     * 后缀增量。
+     *
      */
     Iterator
     operator++(int);
 
     /**
-     * Dereferencing operator.
+     * 撤消运算符。
+     *
      */
     const Accessor &operator*() const;
 
     /**
-     * Dereferencing operator.
+     * 解除引用操作符。
+     *
      */
     const Accessor *operator->() const;
 
     /**
-     * Comparison. True, if both iterators point to the same matrix position.
+     * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+     *
      */
     bool
     operator==(const Iterator &) const;
 
     /**
-     * Inverse of <tt>==</tt>.
+     * <tt>==</tt>的倒数。
+     *
      */
     bool
     operator!=(const Iterator &) const;
 
     /**
-     * Comparison operator. Result is true if either the first row number is
-     * smaller or if the row numbers are equal and the first index is smaller.
+     * 比较运算符。如果第一个行号较小，或者行号相等且第一个索引较小，则结果为真。
+     * 这个函数只有在两个迭代器都指向同一个矩阵时才有效。
      *
-     * This function is only valid if both iterators point into the same
-     * matrix.
      */
     bool
     operator<(const Iterator &) const;
 
     /**
-     * Return the distance between the current iterator and the argument. The
-     * distance is given by how many times one has to apply operator++ to the
-     * current iterator to get the argument (for a positive return value), or
-     * operator-- (for a negative return value).
+     * 返回当前迭代器与参数之间的距离。这个距离是通过对当前迭代器应用operator++多少次才能得到参数（对于正的返回值），或operator--（对于负的返回值）。
+     *
      */
     int
     operator-(const Iterator &p) const;
 
   private:
     /**
-     * Store an object of the accessor class.
+     * 存储一个访问器类的对象。
+     *
      */
     Accessor accessor;
   };
@@ -273,124 +267,105 @@ namespace DynamicSparsityPatternIterators
 
 
 /**
- * This class acts as an intermediate form of the SparsityPattern class. From
- * the interface it mostly represents a SparsityPattern object that is kept
- * compressed at all times. However, since the final sparsity pattern is not
- * known while constructing it, keeping the pattern compressed at all times
- * can only be achieved at the expense of either increased memory or run time
- * consumption upon use. The main purpose of this class is to avoid some
- * memory bottlenecks, so we chose to implement it memory conservative. The
- * chosen data format is too unsuited to be used for actual matrices, though.
- * It is therefore necessary to first copy the data of this object over to an
- * object of type SparsityPattern before using it in actual matrices.
- *
- * Another viewpoint is that this class does not need up front allocation of a
- * certain amount of memory, but grows as necessary.  An extensive description
- * of sparsity patterns can be found in the documentation of the
+ * 这个类作为SparsityPattern类的一个中间形式。从界面上看，它主要代表一个SparsityPattern对象，该对象在任何时候都保持压缩。然而，由于最终的稀疏度模式在构建时并不为人所知，因此在任何时候都保持压缩的模式只能以增加内存或使用时的运行时间消耗为代价。这个类的主要目的是为了避免一些内存瓶颈，所以我们选择实现它的内存保守性。不过，所选择的数据格式太不适合用于实际的矩阵。因此，在实际的矩阵中使用它之前，有必要先把这个对象的数据复制到SparsityPattern类型的对象上。
+ * 另一个观点是，这个类不需要预先分配一定的内存，而是根据需要增长。 在
  * @ref Sparsity
- * module.
- *
- * This class is an example of the "dynamic" type of
- * @ref Sparsity.
- * It is used in most tutorial programs in one way or another.
- *
+ * 模块的文档中可以找到关于稀疏性模式的广泛描述。
+ * 这个类是  @ref Sparsity  的 "动态 "
+ * 类型的一个例子。它以这样或那样的方式被用于大多数教程程序中。
  * <h3>Interface</h3>
+ * 因为这个类是作为SparsityPattern类的中间替代物，所以它的接口大部分是相同的，在必要的地方有小的改动。特别是add()函数，以及查询稀疏模式属性的函数都是一样的。
  *
- * Since this class is intended as an intermediate replacement of the
- * SparsityPattern class, it has mostly the same interface, with small changes
- * where necessary. In particular, the add() function, and the functions
- * inquiring properties of the sparsity pattern are the same.
+ *  <h3>Usage</h3> 这个类的用法在 step-2 （无约束）和 step-6
+ * （有AffineConstraints）中解释，通常看起来如下。
  *
- *
- * <h3>Usage</h3>
- *
- * Usage of this class is explained in step-2 (without constraints) and step-6
- * (with AffineConstraints) and typically looks as follows:
  * @code
  * DynamicSparsityPattern dynamic_pattern (dof_handler.n_dofs());
  * DoFTools::make_sparsity_pattern (dof_handler,
- *                                  dynamic_pattern,
- *                                  constraints);
+ *                                dynamic_pattern,
+ *                                constraints);
  * SparsityPattern sp;
  * sp.copy_from (dynamic_pattern);
  * @endcode
+ *
+ *
+ *
  */
 class DynamicSparsityPattern : public Subscriptor
 {
 public:
   /**
-   * Declare the type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Typedef an for iterator class that allows to walk over all nonzero
-   * elements of a sparsity pattern.
+   * Typedef一个迭代器类，允许在一个稀疏模式的所有非零元素上行走。
+   * 由于迭代器不允许修改稀疏模式，这个类型与 @p
+   * const_iterator. 的类型相同。
    *
-   * Since the iterator does not allow to modify the sparsity pattern, this
-   * type is the same as that for @p const_iterator.
    */
   using iterator = DynamicSparsityPatternIterators::Iterator;
 
   /**
-   * Typedef for an iterator class that allows to walk over all nonzero
-   * elements of a sparsity pattern.
+   * 迭代器类的类型定义，允许在稀疏模式的所有非零元素上行走。
+   *
    */
   using const_iterator = DynamicSparsityPatternIterators::Iterator;
 
   /**
-   * Initialize as an empty object. This is useful if you want such objects as
-   * member variables in other classes. You can make the structure usable by
-   * calling the reinit() function.
+   * 初始化为一个空对象。如果你想让这样的对象作为其他类的成员变量，这很有用。你可以通过调用reinit()函数使该结构可用。
+   *
    */
   DynamicSparsityPattern();
 
   /**
-   * Copy constructor. This constructor is only allowed to be called if the
-   * sparsity structure to be copied is empty. This is so in order to prevent
-   * involuntary copies of objects for temporaries, which can use large
-   * amounts of computing time.  However, copy constructors are needed if you
-   * want to place a DynamicSparsityPattern in a container, e.g. to write such
-   * statements like <tt>v.push_back (DynamicSparsityPattern());</tt>, with @p
-   * v a vector of @p DynamicSparsityPattern objects.
+   * 复制构造函数。这个构造函数只允许在要复制的稀疏结构为空时被调用。这样做是为了防止临时性的对象的非自愿复制，这可能会使用大量的计算时间。
+   * 然而，如果你想把一个DynamicSparsityPattern放在一个容器中，例如写这样的语句，如<tt>v.push_back(DynamicSparsityPattern());</tt>，
+   * @p v是一个 @p DynamicSparsityPattern
+   * 对象的向量，就需要拷贝构造函数。
+   *
    */
   DynamicSparsityPattern(const DynamicSparsityPattern &);
 
   /**
-   * Initialize a rectangular sparsity pattern with @p m rows and @p n
-   * columns. The @p rowset restricts the storage to elements in rows of this
-   * set.  Adding elements outside of this set has no effect. The default
-   * argument keeps all entries.
+   * 初始化一个具有 @p m 行和 @p n 列的矩形稀疏模式。 @p
+   * rowset 限制了对这个集合的行的元素的存储。
+   * 添加这个集合以外的元素没有影响。默认参数保留所有条目。
+   *
    */
   DynamicSparsityPattern(const size_type m,
                          const size_type n,
                          const IndexSet &rowset = IndexSet());
 
   /**
-   * Create a square SparsityPattern using the given index set. The total size
-   * is given by the size of @p indexset and only rows corresponding to
-   * indices in @p indexset are stored on the current processor.
+   * 使用给定的索引集创建一个方形SparsityPattern。总大小由
+   * @p indexset 的大小给出，并且只有与 @p indexset
+   * 中的索引相对应的行被存储在当前处理器上。
+   *
    */
   DynamicSparsityPattern(const IndexSet &indexset);
 
   /**
-   * Initialize a square pattern of dimension @p n.
+   * 初始化一个尺寸为 @p n. 的方形图案。
+   *
    */
   DynamicSparsityPattern(const size_type n);
 
   /**
-   * Copy operator. For this the same holds as for the copy constructor: it is
-   * declared, defined and fine to be called, but the latter only for empty
-   * objects.
+   * 复制操作。对于这一点，与复制构造函数的情况相同：它被声明、定义并可以被调用，但后者只针对空对象。
+   *
    */
   DynamicSparsityPattern &
   operator=(const DynamicSparsityPattern &);
 
   /**
-   * Reallocate memory and set up data structures for a new sparsity pattern
-   * with @p m rows and @p n columns. The @p rowset restricts the storage to
-   * elements in rows of this set.  Adding elements outside of this set has no
-   * effect. The default argument keeps all entries.
+   * 为具有 @p m 行和 @p n
+   * 列的新稀疏模式重新分配内存并设置数据结构。 @p rowset
+   * 限制了对这个集合的行的元素的存储。
+   * 添加这个集合以外的元素没有影响。默认参数保留所有条目。
+   *
    */
   void
   reinit(const size_type m,
@@ -398,36 +373,36 @@ public:
          const IndexSet &rowset = IndexSet());
 
   /**
-   * Since this object is kept compressed at all times anyway, this function
-   * does nothing, but is declared to make the interface of this class as much
-   * alike as that of the SparsityPattern class.
+   * 由于这个对象无论如何都是保持压缩的，所以这个函数什么都不做，但声明这个函数是为了使这个类的接口与SparsityPattern类的接口一样。
+   *
    */
   void
   compress();
 
   /**
-   * Return whether the object is empty. It is empty if no memory is
-   * allocated, which is the same as that both dimensions are zero.
+   * 返回该对象是否为空。如果没有分配内存，它就是空的，这与两个维度都是零是一样的。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Return the maximum number of entries per row. Note that this number may
-   * change as entries are added.
+   * 返回每行的最大条目数。注意，这个数字可能会随着条目的增加而改变。
+   *
    */
   size_type
   max_entries_per_row() const;
 
   /**
-   * Add a nonzero entry. If the entry already exists, this call does nothing.
+   * 添加一个非零的条目。如果该条目已经存在，这个调用不做任何事情。
+   *
    */
   void
   add(const size_type i, const size_type j);
 
   /**
-   * Add several nonzero entries to the specified row. Already existing
-   * entries are ignored.
+   * 在指定的行中添加几个非零的条目。已经存在的条目会被忽略。
+   *
    */
   template <typename ForwardIterator>
   void
@@ -437,33 +412,33 @@ public:
               const bool      indices_are_unique_and_sorted = false);
 
   /**
-   * Check if a value at a certain position may be non-zero.
+   * 检查某个位置的值是否可能为非零。
+   *
    */
   bool
   exists(const size_type i, const size_type j) const;
 
   /**
-   * Return a view of this sparsity pattern.
-   * That is, for all rows in @p rows extract non-empty columns.
-   * The resulting sparsity pattern will have number of rows equal
-   * `rows.n_elements()`.
+   * 返回该稀疏模式的视图。  也就是说，对于 @p rows
+   * 中的所有行，提取非空列。
+   * 得到的稀疏模式的行数将等于`rows.n_elements()`。
+   *
    */
   DynamicSparsityPattern
   get_view(const IndexSet &rows) const;
 
   /**
-   * Make the sparsity pattern symmetric by adding the sparsity pattern of the
-   * transpose object.
+   * 通过添加转置对象的稀疏度模式使稀疏度模式对称。
+   * 如果稀疏模式不代表一个正方形矩阵，这个函数会抛出一个异常。
    *
-   * This function throws an exception if the sparsity pattern does not
-   * represent a square matrix.
    */
   void
   symmetrize();
 
   /**
-   * Construct and store in this object the sparsity pattern corresponding to
-   * the product of @p left and @p right sparsity pattern.
+   * 构建并在此对象中存储对应于 @p left 和 @p right
+   * 稀疏模式的乘积的稀疏模式。
+   *
    */
   template <typename SparsityPatternTypeLeft, typename SparsityPatternTypeRight>
   void
@@ -471,8 +446,9 @@ public:
                         const SparsityPatternTypeRight &right);
 
   /**
-   * Construct and store in this object the sparsity pattern corresponding to
-   * the product of transposed @p left and non-transpose @p right sparsity pattern.
+   * 构造并在此对象中存储对应于转置 @p left 和非转置 @p
+   * right 稀疏模式乘积的稀疏模式。
+   *
    */
   template <typename SparsityPatternTypeLeft, typename SparsityPatternTypeRight>
   void
@@ -480,123 +456,107 @@ public:
                          const SparsityPatternTypeRight &right);
 
   /**
-   * Print the sparsity pattern. The output consists of one line per row of
-   * the format <tt>[i,j1,j2,j3,...]</tt>. <i>i</i> is the row number and
-   * <i>jn</i> are the allocated columns in this row.
+   * 打印稀疏性模式。输出包括每行一行，格式为<tt>[i,j1,j2,j3,...]/tt>。<i>i</i>是行号，<i>jn</i>是这一行中分配的列。
+   *
    */
   void
   print(std::ostream &out) const;
 
   /**
-   * Print the sparsity pattern in a format that @p gnuplot understands and
-   * which can be used to plot the sparsity pattern in a graphical way. The
-   * format consists of pairs <tt>i j</tt> of nonzero elements, each
-   * representing one entry, one per line of the output file. Indices are
-   * counted from zero on, as usual. Since sparsity patterns are printed in
-   * the same way as matrices are displayed, we print the negative of the
-   * column index, which means that the <tt>(0,0)</tt> element is in the top
-   * left rather than in the bottom left corner.
+   * 以 @p gnuplot
+   * 理解的格式打印稀疏模式，该格式可用于以图形方式绘制稀疏模式。该格式由成对的<tt>i
+   * j</tt>非零元素组成，每个代表一个条目，在输出文件中每行一个。指数从零开始计算，如常。由于稀疏模式的打印方式与矩阵的显示方式相同，我们打印的是列索引的负数，这意味着<tt>(0,0)</tt>元素位于左上角而不是左下角。
+   * 在gnuplot中通过将数据样式设置为点或点来打印稀疏模式，并使用
+   * @p plot 命令。
    *
-   * Print the sparsity pattern in gnuplot by setting the data style to dots
-   * or points and use the @p plot command.
    */
   void
   print_gnuplot(std::ostream &out) const;
 
   /**
-   * Return the number of rows, which equals the dimension of the image space.
+   * 返回行数，相当于图像空间的尺寸。
+   *
    */
   size_type
   n_rows() const;
 
   /**
-   * Return the number of columns, which equals the dimension of the range
-   * space.
+   * 返回列数，相当于范围空间的尺寸。
+   *
    */
   size_type
   n_cols() const;
 
   /**
-   * Number of entries in a specific row. This function can only be called if
-   * the given row is a member of the index set of rows that we want to store.
+   * 特定行中的条目数。只有当给定的行是我们要存储的行的索引集的成员时，才能调用这个函数。
+   *
    */
   size_type
   row_length(const size_type row) const;
 
   /**
-   * Clear all entries stored in a specific row.
+   * 清除存储在某一特定行中的所有条目。
+   *
    */
   void
   clear_row(const size_type row);
 
   /**
-   * Access to column number field.  Return the column number of the @p
-   * indexth entry in @p row.
+   * 访问列号字段。 返回 @p 中的第 @p row.
+   * 个索引条目的列号。
+   *
    */
   size_type
   column_number(const size_type row, const size_type index) const;
 
   /**
-   * Return index of column @p col in row @p row. If the column does not
-   * exist in this sparsity pattern, the returned value will be
-   * 'numbers::invalid_size_type'.
+   * 返回 @p row. 行中 @p col 列的索引
+   * 如果该列在此稀疏模式中不存在，返回值将是
+   * 'numbers::invalid_size_type'.  。
+   *
    */
   size_type
   column_index(const size_type row, const size_type col) const;
 
   /**
-   * @name Iterators
+   * @name  迭代器
+   *
    */
   // @{
 
   /**
-   * Iterator starting at the first entry of the matrix. The resulting
-   * iterator can be used to walk over all nonzero entries of the sparsity
-   * pattern.
+   * 迭代器从矩阵的第一个条目开始。产生的迭代器可以用来走过疏散模式的所有非零条目。
+   * 注意这个类的一般文档中关于元素被访问的顺序的讨论。
+   * @note
+   * 如果稀疏模式已经用IndexSet初始化，表示要存储哪些行，那么迭代器将简单地跳过没有存储的行。换句话说，它们看起来像空行，但是在迭代这些行的时候不会产生异常。
    *
-   * Note the discussion in the general documentation of this class about the
-   * order in which elements are accessed.
-   *
-   * @note If the sparsity pattern has been initialized with an IndexSet that
-   * denotes which rows to store, then iterators will simply skip over rows
-   * that are not stored. In other words, they will look like empty rows, but
-   * no exception will be generated when iterating over such rows.
    */
   iterator
   begin() const;
 
   /**
-   * Final iterator.
+   * 最终的迭代器。
+   *
    */
   iterator
   end() const;
 
   /**
-   * Iterator starting at the first entry of row <tt>r</tt>.
+   * 迭代器从<tt>r</tt>行的第一个条目开始。
+   * 注意，如果给定的行是空的，即不包含任何非零条目，那么这个函数返回的迭代器就等于<tt>end(r)</tt>。还要注意的是，在这种情况下，迭代器可能是不能被解除引用的。
+   * 还要注意这个类的一般文档中关于元素被访问的顺序的讨论。
+   * @note
+   * 如果稀疏模式已经用IndexSet初始化，表示要存储哪些行，那么迭代器将简单地跳过没有存储的行。换句话说，它们看起来像空行，但是在迭代这些行的时候不会产生异常。
    *
-   * Note that if the given row is empty, i.e. does not contain any nonzero
-   * entries, then the iterator returned by this function equals
-   * <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in
-   * that case.
-   *
-   * Note also the discussion in the general documentation of this class about
-   * the order in which elements are accessed.
-   *
-   * @note If the sparsity pattern has been initialized with an IndexSet that
-   * denotes which rows to store, then iterators will simply skip over rows
-   * that are not stored. In other words, they will look like empty rows, but
-   * no exception will be generated when iterating over such rows.
    */
   iterator
   begin(const size_type r) const;
 
   /**
-   * Final iterator of row <tt>r</tt>. It points to the first element past the
-   * end of line @p r, or past the end of the entire sparsity pattern.
+   * 行<tt>r</tt>的最终迭代器。它指向超过 @p r,
+   * 行末尾的第一个元素，或者超过整个稀疏模式的末尾。
+   * 请注意，结束迭代器不一定是可被解除引用的。特别是如果它是一个矩阵的最后一行的结束迭代器，情况更是如此。
    *
-   * Note that the end iterator is not necessarily dereferenceable. This is in
-   * particular the case if it is the end iterator for the last row of a
-   * matrix.
    */
   iterator
   end(const size_type r) const;
@@ -604,112 +564,111 @@ public:
   // @}
 
   /**
-   * Compute the bandwidth of the matrix represented by this structure. The
-   * bandwidth is the maximum of $|i-j|$ for which the index pair $(i,j)$
-   * represents a nonzero entry of the matrix.
+   * 计算这个结构所代表的矩阵的带宽。带宽是 $|i-j|$
+   * 的最大值，其中索引对 $(i,j)$
+   * 代表矩阵的一个非零条目。
+   *
    */
   size_type
   bandwidth() const;
 
   /**
-   * Return the number of nonzero elements allocated through this sparsity
-   * pattern.
+   * 返回通过该稀疏模式分配的非零元素的数量。
+   *
    */
   size_type
   n_nonzero_elements() const;
 
   /**
-   * Return the IndexSet that sets which rows are active on the current
-   * processor. It corresponds to the IndexSet given to this class in the
-   * constructor or in the reinit function.
+   * 返回设定哪些行在当前处理器上是活动的IndexSet。它对应于在构造函数或reinit函数中给这个类的IndexSet。
+   *
    */
   const IndexSet &
   row_index_set() const;
 
   /**
-   * Return the IndexSet that contains entries for all columns in which at least
-   * one element exists in this sparsity pattern.
+   * 返回包含所有列的条目的IndexSet，其中至少有一个元素存在于这个稀疏模式中。
+   * @note 在并行情况下，这只考虑本地存储的行。
    *
-   * @note In a parallel context, this only considers the locally stored rows.
    */
   IndexSet
   nonempty_cols() const;
 
   /**
-   * Return the IndexSet that contains entries for all rows in which at least
-   * one element exists in this sparsity pattern.
+   * 返回IndexSet，该索引集包含所有行的条目，其中至少有一个元素存在于该稀疏模式中。
+   * @note 在并行情况下，这只考虑本地存储的行。
    *
-   * @note In a parallel context, this only considers the locally stored rows.
    */
   IndexSet
   nonempty_rows() const;
 
   /**
-   * return whether this object stores only those entries that have been added
-   * explicitly, or if the sparsity pattern contains elements that have been
-   * added through other means (implicitly) while building it. For the current
-   * class, the result is always true.
+   * 返回这个对象是否只存储那些显式添加的条目，或者稀疏模式是否包含在构建它时通过其他方式（隐式）添加的元素。对于当前的类，结果总是为真。
+   * 这个函数的主要作用是在几种稀疏模式可以作为模板参数传递的情况下描述当前类。
    *
-   * This function mainly serves the purpose of describing the current class
-   * in cases where several kinds of sparsity patterns can be passed as
-   * template arguments.
    */
   static bool
   stores_only_added_elements();
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   size_type
   memory_consumption() const;
 
 private:
   /**
-   * A flag that stores whether any entries have been added so far.
+   * 一个标志，存储到目前为止是否有任何条目被添加。
+   *
    */
   bool have_entries;
 
   /**
-   * Number of rows that this sparsity structure shall represent.
+   * 该稀疏结构应代表的行数。
+   *
    */
   size_type rows;
 
   /**
-   * Number of columns that this sparsity structure shall represent.
+   * 这个稀疏结构所代表的列的数量。
+   *
    */
   size_type cols;
 
   /**
-   * A set that contains the valid rows.
+   * 一个包含有效行的集合。
+   *
    */
 
   IndexSet rowset;
 
 
   /**
-   * Store some data for each row describing which entries of this row are
-   * nonzero. Data is stored sorted in the @p entries std::vector.  The vector
-   * per row is dynamically growing upon insertion doubling its memory each
-   * time.
+   * 为每一行存储一些数据，描述这一行的哪些条目是非零的。数据被分类存储在
+   * @p entries   std::vector.
+   * 每行的向量在插入时是动态增长的，每次将其内存翻倍。
+   *
    */
   struct Line
   {
   public:
     /**
-     * Storage for the column indices of this row. This array is always kept
-     * sorted.
+     * 该行的列索引的存储。这个数组总是保持排序的。
+     *
      */
     std::vector<size_type> entries;
 
     /**
-     * Add the given column number to this line.
+     * 将给定的列号添加到这一行。
+     *
      */
     void
     add(const size_type col_num);
 
     /**
-     * Add the columns specified by the iterator range to this line.
+     * 将迭代器范围指定的列添加到这一行。
+     *
      */
     template <typename ForwardIterator>
     void
@@ -718,7 +677,8 @@ private:
                 const bool      indices_are_sorted);
 
     /**
-     * estimates memory consumption.
+     * 估计内存消耗。
+     *
      */
     size_type
     memory_consumption() const;
@@ -726,7 +686,8 @@ private:
 
 
   /**
-   * Actual data: store for each row the set of nonzero entries.
+   * 实际数据：为每行存储非零条目的集合。
+   *
    */
   std::vector<Line> lines;
 
@@ -734,8 +695,8 @@ private:
   friend class DynamicSparsityPatternIterators::Accessor;
 };
 
-/*@}*/
-/*---------------------- Inline functions -----------------------------------*/
+ /*@}*/ 
+ /*---------------------- Inline functions -----------------------------------*/ 
 
 
 namespace DynamicSparsityPatternIterators
@@ -1204,3 +1165,5 @@ DynamicSparsityPattern::stores_only_added_elements()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

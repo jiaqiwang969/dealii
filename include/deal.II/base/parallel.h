@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/parallel_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
@@ -50,9 +49,8 @@ namespace parallel
   namespace internal
   {
     /**
-     * 帮助结构，告诉我们是否可以对给定的 @p Number
-     * 类型使用SIMD指令。
-     *
+     * Helper struct to tell us if we can use SIMD instructions for the given
+     * @p Number type.
      */
     template <typename Number>
     struct EnableOpenMPSimdFor
@@ -75,15 +73,14 @@ namespace parallel
 
 
     /**
-     * 将F类型的函数对象转换成可以应用于同步迭代器范围的所有元素的对象。
-     *
+     * Convert a function object of type F into an object that can be applied
+     * to all elements of a range of synchronous iterators.
      */
     template <typename F>
     struct Body
     {
       /**
-       * 构造器。取出并打包给定的函数对象。
-       *
+       * Constructor. Take and package the given function object.
        */
       Body(const F &f)
         : f(f)
@@ -100,14 +97,12 @@ namespace parallel
 
     private:
       /**
-       * 存储的函数对象。
-       *
+       * The stored function object.
        */
       const F f;
 
       /**
-       * 将F应用于一个有两个元素的迭代器集合。
-       *
+       * Apply F to a set of iterators with two elements.
        */
       template <typename I1, typename I2>
       static void
@@ -117,8 +112,7 @@ namespace parallel
       }
 
       /**
-       * 将F应用于一个有三个元素的迭代器集合。
-       *
+       * Apply F to a set of iterators with three elements.
        */
       template <typename I1, typename I2, typename I3>
       static void
@@ -128,8 +122,7 @@ namespace parallel
       }
 
       /**
-       * 将F应用于一个有三个元素的迭代器集合。
-       *
+       * Apply F to a set of iterators with three elements.
        */
       template <typename I1, typename I2, typename I3, typename I4>
       static void
@@ -142,10 +135,10 @@ namespace parallel
 
 
     /**
-     * 取一个函数对象并从中创建一个Body对象。我们在这个辅助函数中这样做，因为我们必须指定F的实际数据类型。
-     *
-     * - 对于函数对象来说，这往往是非常复杂的。
-     *
+     * Take a function object and create a Body object from it. We do this in
+     * this helper function since alternatively we would have to specify the
+     * actual data type of F -- which for function objects is often
+     * extraordinarily complicated.
      */
     template <typename F>
     Body<F>
@@ -158,8 +151,7 @@ namespace parallel
 
 #ifdef DEAL_II_WITH_TBB
     /**
-     * 封装  tbb::parallel_for.  。
-     *
+     * Encapsulate tbb::parallel_for.
      */
     template <typename Iterator, typename Functor>
     void
@@ -176,8 +168,7 @@ namespace parallel
 
 
     /**
-     * 当提供一个affinite_partitioner时，封装 tbb::parallel_for 。
-     *
+     * Encapsulate tbb::parallel_for when an affinite_partitioner is provided.
      */
     template <typename Iterator, typename Functor>
     void
@@ -195,9 +186,27 @@ namespace parallel
   } // namespace internal
 
   /**
-   * 一个执行<code>*out++ = predicate(*in++)</code>动作的算法，其中 <code>in</code> 迭代器在给定的输入范围内。    这个算法的作用与 std::transform 的作用差不多。不同的是，当deal.II被配置为使用多线程时，该函数可以并行运行。    如果是并行运行，迭代器范围会被分割成若干块，每块都被打包成一个任务，并交给线程积木调度器，在计算资源可用的情况下进行处理。一旦所有的块都被处理完毕，该函数就会返回。最后一个参数表示每个任务的迭代器范围的最小元素数；这个数字必须大到足以摊销新任务的启动成本，小到足以确保任务可以合理地负载平衡。    关于这个函数适用于哪类问题的讨论，见 @ref threads "多处理器的并行计算 "
-   * 模块。
+   * An algorithm that performs the action <code>*out++ =
+   * predicate(*in++)</code> where the <code>in</code> iterator ranges over
+   * the given input range.
    *
+   * This algorithm does pretty much what std::transform does. The difference
+   * is that the function can run in parallel when deal.II is configured to
+   * use multiple threads.
+   *
+   * If running in parallel, the iterator range is split into several chunks
+   * that are each packaged up as a task and given to the Threading Building
+   * Blocks scheduler to work on as compute resources are available. The
+   * function returns once all chunks have been worked on. The last argument
+   * denotes the minimum number of elements of the iterator range per task;
+   * the number must be large enough to amortize the startup cost of new
+   * tasks, and small enough to ensure that tasks can be reasonably load
+   * balanced.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename InputIterator, typename OutputIterator, typename Predicate>
   void
@@ -229,9 +238,27 @@ namespace parallel
 
 
   /**
-   * 一个执行<code>*out++ = predicate(*in1++, in2++)</code>动作的算法，其中 <code>in1</code> 迭代器在给定的输入范围内，使用tbb的并行for操作符。    这个算法几乎做了 std::transform 的工作。不同的是，当deal.II被配置为使用多线程时，该函数可以并行运行。    如果是并行运行，迭代器范围会被分割成若干块，每块都被打包成一个任务，并交给线程构件调度器，在计算资源可用的情况下进行处理。一旦所有的块都被处理完毕，该函数就会返回。最后一个参数表示每个任务的迭代器范围的最小元素数；这个数字必须大到足以摊销新任务的启动成本，小到足以确保任务可以合理地负载平衡。    关于这个函数适用于哪类问题的讨论，见 @ref threads "多处理器的并行计算 "
-   * 模块。
+   * An algorithm that performs the action <code>*out++ = predicate(*in1++,
+   * *in2++)</code> where the <code>in1</code> iterator ranges over the given
+   * input range, using the parallel for operator of tbb.
    *
+   * This algorithm does pretty much what std::transform does. The difference
+   * is that the function can run in parallel when deal.II is configured to
+   * use multiple threads.
+   *
+   * If running in parallel, the iterator range is split into several chunks
+   * that are each packaged up as a task and given to the Threading Building
+   * Blocks scheduler to work on as compute resources are available. The
+   * function returns once all chunks have been worked on. The last argument
+   * denotes the minimum number of elements of the iterator range per task;
+   * the number must be large enough to amortize the startup cost of new
+   * tasks, and small enough to ensure that tasks can be reasonably load
+   * balanced.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename InputIterator1,
             typename InputIterator2,
@@ -268,9 +295,27 @@ namespace parallel
 
 
   /**
-   * 一个执行<code>*out++ = predicate(*in1++, in2++,in3++)</code>动作的算法，其中 <code>in1</code> 迭代器在给定的输入范围内。    这种算法的作用与 std::transform 的作用差不多。不同的是，当deal.II被配置为使用多线程时，该函数可以并行运行。    如果是并行运行，迭代器范围会被分割成若干块，每块都被打包成一个任务，并交给线程积木调度器，在计算资源可用时进行处理。一旦所有的块都被处理完毕，该函数就会返回。最后一个参数表示每个任务的迭代器范围的最小元素数；这个数字必须大到足以摊销新任务的启动成本，小到足以确保任务可以合理地负载平衡。    关于这个函数适用于哪类问题的讨论，见 @ref threads "多处理器的并行计算 "
-   * 模块。
+   * An algorithm that performs the action <code>*out++ = predicate(*in1++,
+   * *in2++, *in3++)</code> where the <code>in1</code> iterator ranges over
+   * the given input range.
    *
+   * This algorithm does pretty much what std::transform does. The difference
+   * is that the function can run in parallel when deal.II is configured to
+   * use multiple threads.
+   *
+   * If running in parallel, the iterator range is split into several chunks
+   * that are each packaged up as a task and given to the Threading Building
+   * Blocks scheduler to work on as compute resources are available. The
+   * function returns once all chunks have been worked on. The last argument
+   * denotes the minimum number of elements of the iterator range per task;
+   * the number must be large enough to amortize the startup cost of new
+   * tasks, and small enough to ensure that tasks can be reasonably load
+   * balanced.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename InputIterator1,
             typename InputIterator2,
@@ -314,8 +359,8 @@ namespace parallel
   {
 #ifdef DEAL_II_WITH_TBB
     /**
-     * 接受一个范围参数，并以其开始和结束来调用给定的函数。
-     *
+     * Take a range argument and call the given function with its begin and
+     * end.
      */
     template <typename RangeType, typename Function>
     void
@@ -329,52 +374,73 @@ namespace parallel
 
 
   /**
-   * 这个函数将给定的函数参数 @p f 应用于范围
-   * <code>[begin,end)</code>
-   * 中的所有元素，并可能以并行方式进行。 step-69
-   * 中给出了它的一个使用实例。
-   * 然而，在许多情况下，在每个元素上调用一个函数并不高效，所以这个函数在子范围上调用给定的函数对象。
-   * 换句话说：如果给定的范围  <code>[begin,end)</code>
-   * 小于grainsize，或者多线程没有启用，那么我们就调用
-   * <code>f(begin,end)</code>
-   * ；否则，我们可能会执行，可能是%并行的，一连串的调用
-   * <code>f(b,e)</code>  ，其中  <code>[b,e)</code> are subintervals of
-   * <code>[begin,end)</code>  和我们对  <code>f(.,.)</code>
-   * 的调用集合将发生在不相交的子区间，共同覆盖原始区间
-   * <code>[begin,end)</code>  。
-   * 很多时候，被调用的函数当然要获得额外的信息，例如，对于迭代器参数的给定值，要对哪个对象进行处理。这可以通过
-   * <i>binding</i>
-   * 某些参数来实现。例如，这里有一个对全矩阵 $A$
-   * 和向量 $x,y$ 的矩阵-向量乘法 $y=Ax$ 的实现。
+   * This function applies the given function argument @p f to all elements in
+   * the range <code>[begin,end)</code> and may do so in parallel. An example
+   * of its use is given in step-69.
+   *
+   * However, in many cases it is not efficient to call a function on each
+   * element, so this function calls the given function object on sub-ranges.
+   * In other words: if the given range <code>[begin,end)</code> is smaller
+   * than grainsize or if multithreading is not enabled, then we call
+   * <code>f(begin,end)</code>; otherwise, we may execute, possibly in
+   * %parallel, a sequence of calls <code>f(b,e)</code> where
+   * <code>[b,e)</code> are subintervals of <code>[begin,end)</code> and the
+   * collection of calls we do to <code>f(.,.)</code> will happen on disjoint
+   * subintervals that collectively cover the original interval
+   * <code>[begin,end)</code>.
+   *
+   * Oftentimes, the called function will of course have to get additional
+   * information, such as the object to work on for a given value of the
+   * iterator argument. This can be achieved by <i>binding</i> certain
+   * arguments. For example, here is an implementation of a matrix-vector
+   * multiplication $y=Ax$ for a full matrix $A$ and vectors $x,y$:
    * @code
-   * void matrix_vector_product (const FullMatrix &A,
-   *                             const Vector     &x,
-   *                             Vector           &y)
-   * {
-   *   parallel::apply_to_subranges
-   *      (0, A.n_rows(),
-   *       [&](const unsigned int begin_row,
-   *           const unsigned int end_row)
-   *       {
-   *         mat_vec_on_subranges(begin_row, end_row, A, x, y);
-   *       },
-   *       50);
-   * }
+   *   void matrix_vector_product (const FullMatrix &A,
+   *                               const Vector     &x,
+   *                               Vector           &y)
+   *   {
+   *     parallel::apply_to_subranges
+   *        (0, A.n_rows(),
+   *         [&](const unsigned int begin_row,
+   *             const unsigned int end_row)
+   *         {
+   *           mat_vec_on_subranges(begin_row, end_row, A, x, y);
+   *         },
+   *         50);
+   *   }
    *
-   * void mat_vec_on_subranges (const unsigned int begin_row,
-   *                            const unsigned int end_row,
-   *                            const FullMatrix &A,
-   *                            const Vector     &x,
-   *                            Vector           &y)
-   * {
-   *   for (unsigned int row=begin_row; row!=end_row; ++row)
-   *     for (unsigned int col=0; col<x.size(); ++col)
-   *       y(row) += A(row,col) x(col);
-   * }
+   *   void mat_vec_on_subranges (const unsigned int begin_row,
+   *                              const unsigned int end_row,
+   *                              const FullMatrix &A,
+   *                              const Vector     &x,
+   *                              Vector           &y)
+   *   {
+   *     for (unsigned int row=begin_row; row!=end_row; ++row)
+   *       for (unsigned int col=0; col<x.size(); ++col)
+   *         y(row) += A(row,col) * x(col);
+   *   }
    * @endcode
-   * 注意我们是如何使用lambda函数将 <code>mat_vec_on_subranges</code> 从一个需要5个参数的函数转换为一个需要2个参数的函数，并将其余参数绑定。由此产生的函数对象只需要两个参数，`begin_row'和`end_row'，而其他参数都是固定的。    如果在单线程模式下，该代码将在整个范围 <code>[0,n_rows)</code> 上调用 <code>mat_vec_on_subranges</code> 一次。然而，在多线程模式下，它可能会在这个区间的子范围内被多次调用，可能允许一个以上的CPU核心来处理部分工作。     @p grainsize 参数（在上面的例子中为50）确保子区间不会变得太小，以避免在调度子区间的CPU资源上花费更多的时间，而不是在做实际工作。    关于这个函数适用于哪类问题的讨论，也可以参见 @ref threads "多处理器的并行计算 "
-   * 模块。
    *
+   * Note how we use the lambda function to convert
+   * <code>mat_vec_on_subranges</code> from a function that takes 5 arguments
+   * to one taking 2 by binding the remaining arguments. The resulting function
+   * object requires only two arguments, `begin_row` and `end_row`, with all
+   * other arguments fixed.
+   *
+   * The code, if in single-thread mode, will call
+   * <code>mat_vec_on_subranges</code> on the entire range
+   * <code>[0,n_rows)</code> exactly once. In multi-threaded mode, however, it
+   * may be called multiple times on subranges of this interval, possibly
+   * allowing more than one CPU core to take care of part of the work.
+   *
+   * The @p grainsize argument (50 in the example above) makes sure that
+   * subranges do not become too small, to avoid spending more time on
+   * scheduling subranges to CPU resources than on doing actual work.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see also the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename RangeType, typename Function>
   void
@@ -403,26 +469,47 @@ namespace parallel
 
 
   /**
-   * 这是一个专门用于for循环的类，其固定范围由无符号整数给出。这是一个抽象的基类，一个实际的工作者函数是从它派生出来的。有一个公共函数apply可以并行地发出for循环，只要有足够的工作要做（即元素的数量大于grain_size），就把工作细分到可用的处理器核心上。在这个函数中，一个虚拟函数apply_to_subrange被调用，它指定了两个整数的范围<tt>[lower,
-   * upper)</tt>，这需要在一个派生类中定义。
-   * 这个类所涵盖的并行化情况是函数apply_to_subranges所能实现的一个子集（它也涵盖了可能不是由整数范围描述的更一般的迭代器的情况）。然而，对于简单的整数范围，人们可能更喜欢这个类，比如当有许多结构相似的循环时，例如对一个指针数组进行一些简单的复制或算术操作。在这种情况下，apply_to_subranges将产生大量的代码（或者说，大量的符号），因为它将由
-   * std::bind
-   * 产生的长名称传递给TBB中函数的模板化并行。这可以大大增加编译时间和目标代码的大小。同样地，不正确地使用
-   * std::bind
-   * 往往会导致非常隐晦的错误信息，这一点可以通过这个类来避免（只有一个虚拟函数需要在派生类中定义）。最后，在并行函数的背景下，虚拟函数的额外成本是可以忽略不计的。将工作实际发布到线程上的成本要高得多，而这又应该比for循环中的实际工作要少得多。
+   * This is a class specialized to for loops with a fixed range given by
+   * unsigned integers. This is an abstract base class that an actual worker
+   * function is derived from. There is a public function apply that issues a
+   * for loop in parallel, subdividing the work onto available processor cores
+   * whenever there is enough work to be done (i.e., the number of elements is
+   * larger than grain_size). Inside the function, a virtual function
+   * apply_to_subrange specifying a range of two integers <tt>[lower,
+   * upper)</tt> is called which needs to be defined in a derived class.
    *
+   * The parallelization cases covered by this class are a subset of what is
+   * possible with the function apply_to_subranges (which also covers the case
+   * of more general iterators that might not be described by an integer
+   * range). However, for simple integer ranges one might prefer this class,
+   * like when there are many structurally similar loops, e.g., some simple
+   * copy or arithmetic operations on an array of pointers. In that case,
+   * apply_to_subranges will generate a lot of code (or rather, a lot of
+   * symbols) because it passes the long names generated by std::bind to the
+   * templated parallel for functions in TBB. This can considerably increase
+   * compile times and the size of the object code. Similarly, the incorrect
+   * use of std::bind often results in very cryptic error messages, which can
+   * be avoided by this class (only a virtual function needs to be defined in
+   * a derived class). Finally, the additional cost of a virtual function is
+   * negligible in the context of parallel functions: It is much more
+   * expensive to actually issue the work onto a thread, which in turn should
+   * be much less than the actual work done in the for loop.
    */
   struct ParallelForInteger
   {
     /**
-     * 解构器。变成了虚拟的，以确保派生类也有虚拟的析构器。
-     *
+     * Destructor. Made virtual to ensure that derived classes also have
+     * virtual destructors.
      */
     virtual ~ParallelForInteger() = default;
 
     /**
-     * 这个函数在给定的范围内运行for循环<tt>[lower,upper)</tt>，当end-begin大于最小并行粒度时，可能是并行的。这个函数被标记为const，因为当几个线程同时处理相同的数据时，它的任何改变派生类数据的操作本质上都不是线程安全的。
-     *
+     * This function runs the for loop over the given range
+     * <tt>[lower,upper)</tt>, possibly in parallel when end-begin is larger
+     * than the minimum parallel grain size. This function is marked const
+     * because it any operation that changes the data of a derived class will
+     * inherently not be thread-safe when several threads work with the same
+     * data simultaneously.
      */
     void
     apply_parallel(const std::size_t begin,
@@ -430,9 +517,10 @@ namespace parallel
                    const std::size_t minimum_parallel_grain_size) const;
 
     /**
-     * 在派生类中定义的用于处理子范围的虚拟函数。
-     * 这个函数被标记为const，因为当几个线程同时处理相同的数据时，任何改变派生类的数据的操作本质上都不是线程安全的。
-     *
+     * Virtual function for working on subrange to be defined in a derived
+     * class.  This function is marked const because it any operation that
+     * changes the data of a derived class will inherently not be thread-safe
+     * when several threads work with the same data simultaneously.
      */
     virtual void
     apply_to_subrange(const std::size_t, const std::size_t) const = 0;
@@ -444,24 +532,27 @@ namespace parallel
   {
 #ifdef DEAL_II_WITH_TBB
     /**
-     * 一个符合TBB
-     * parallel_reduce函数正文要求的类。第一个模板参数表示要进行还原的类型。第二个模板参数表示对每个子范围应调用的函数对象的类型。
-     *
+     * A class that conforms to the Body requirements of the TBB
+     * parallel_reduce function. The first template argument denotes the type
+     * on which the reduction is to be done. The second denotes the type of
+     * the function object that shall be called for each subrange.
      */
     template <typename ResultType, typename Function>
     struct ReductionOnSubranges
     {
       /**
-       * 一个变量，它将保存还原的结果。
-       *
+       * A variable that will hold the result of the reduction.
        */
       ResultType result;
 
       /**
-       * 构造器。取出对每个子范围要调用的函数对象，以及相对于还原操作的中性元素。
-       * 第二个参数表示一个函数对象，它将被用来把两个计算的结果还原成一个数字。如果我们想简单地累积整数结果，一个例子是
-       * std::plus<int>().  。
+       * Constructor. Take the function object to call on each sub-range as
+       * well as the neutral element with respect to the reduction operation.
        *
+       * The second argument denotes a function object that will be used to
+       * reduce the result of two computations into one number. An example if
+       * we want to simply accumulate integer results would be
+       * std::plus<int>().
        */
       template <typename Reductor>
       ReductionOnSubranges(const Function & f,
@@ -474,8 +565,7 @@ namespace parallel
       {}
 
       /**
-       * 分割构造函数。关于这一点，请看TBB书中的更多细节。
-       *
+       * Splitting constructor. See the TBB book for more details about this.
        */
       ReductionOnSubranges(const ReductionOnSubranges &r, tbb::split)
         : result(r.neutral_element)
@@ -485,8 +575,8 @@ namespace parallel
       {}
 
       /**
-       * 连接操作：合并不同子区间上的计算结果。
-       *
+       * Join operation: merge the results from computations on different sub-
+       * intervals.
        */
       void
       join(const ReductionOnSubranges &r)
@@ -495,8 +585,7 @@ namespace parallel
       }
 
       /**
-       * 在指定的范围内执行给定的函数。
-       *
+       * Execute the given function on the specified range.
        */
       template <typename RangeType>
       void
@@ -507,20 +596,20 @@ namespace parallel
 
     private:
       /**
-       * 在每个子区间上调用的函数对象。
-       *
+       * The function object to call on every sub-range.
        */
       const Function f;
 
       /**
-       * 相对于还原操作的中性元素。在调用分割构造函数时需要这个，因为在这种情况下我们必须重新设置结果变量。
-       *
+       * The neutral element with respect to the reduction operation. This is
+       * needed when calling the splitting constructor since we have to re-set
+       * the result variable in this case.
        */
       const ResultType neutral_element;
 
       /**
-       * 用来将两次调用的结果减少为一个数字的函数对象。
-       *
+       * The function object to be used to reduce the result of two calls into
+       * one number.
        */
       const std::function<ResultType(ResultType, ResultType)> reductor;
     };
@@ -529,43 +618,64 @@ namespace parallel
 
 
   /**
-   * 这个函数的工作原理很像apply_to_subranges()，但是它允许将在每个子范围内计算的数字结果累积为一个数字。
-   * 这个数字的类型是由需要明确指定的ResultType模板参数给出的。
-   * 使用这个函数的一个例子是计算一个正方形矩阵  $A$
-   * 和一个向量  $x$  的表达式  $x^T A x$
-   * 的值。对行的求和可以被并行化，整个代码可能看起来像这样。
+   * This function works a lot like the apply_to_subranges(), but it allows to
+   * accumulate numerical results computed on each subrange into one number.
+   * The type of this number is given by the ResultType template argument that
+   * needs to be explicitly specified.
+   *
+   * An example of use of this function is to compute the value of the
+   * expression $x^T A x$ for a square matrix $A$ and a vector $x$. The sum
+   * over rows can be parallelized and the whole code might look like this:
    * @code
-   * void matrix_norm (const FullMatrix &A,
-   *                   const Vector     &x)
-   * {
-   *   return
-   *    std::sqrt
-   *     (parallel::accumulate_from_subranges<double>
-   *      (0, A.n_rows(),
-   *       [&](const unsigned int begin_row,
-   *           const unsigned int end_row)
-   *       {
-   *         mat_vec_on_subranges(begin_row, end_row, A, x, y);
-   *       },
-   *       50);
-   * }
+   *   void matrix_norm (const FullMatrix &A,
+   *                     const Vector     &x)
+   *   {
+   *     return
+   *      std::sqrt
+   *       (parallel::accumulate_from_subranges<double>
+   *        (0, A.n_rows(),
+   *         [&](const unsigned int begin_row,
+   *             const unsigned int end_row)
+   *         {
+   *           mat_vec_on_subranges(begin_row, end_row, A, x, y);
+   *         },
+   *         50);
+   *   }
    *
-   * double
-   * mat_norm_sqr_on_subranges (const unsigned int begin_row,
-   *                            const unsigned int end_row,
-   *                            const FullMatrix &A,
-   *                            const Vector     &x)
-   * {
-   *   double norm_sqr = 0;
-   *   for (unsigned int row=begin_row; row!=end_row; ++row)
-   *     for (unsigned int col=0; col<x.size(); ++col)
-   *       norm_sqr += x(row) A(row,col) x(col);
-   *   return norm_sqr;
-   * }
+   *   double
+   *   mat_norm_sqr_on_subranges (const unsigned int begin_row,
+   *                              const unsigned int end_row,
+   *                              const FullMatrix &A,
+   *                              const Vector     &x)
+   *   {
+   *     double norm_sqr = 0;
+   *     for (unsigned int row=begin_row; row!=end_row; ++row)
+   *       for (unsigned int col=0; col<x.size(); ++col)
+   *         norm_sqr += x(row) * A(row,col) * x(col);
+   *     return norm_sqr;
+   *   }
    * @endcode
-   * 这里，如果 <code>mat_norm_sqr_on_subranges</code> 的范围小于最小粒度（上面选择的是50），或者如果deal.II被配置为不使用多线程，则在整个 <code>[0,A.n_rows())</code> 上调用。否则，它可以在给定范围的子集上调用，并在内部累积各个子集的结果。      @warning  如果ResultType是一个浮点类型，那么累加就不是一个关联操作。换句话说，如果给定的函数对象在三个子范围上被调用三次，返回值  $a,b,c$  ，那么这个函数的返回结果是  $(a+b)+c$  。然而，根据这三个子任务在可用CPU资源上的分布情况，结果也可能是 $(a+c)+b$ 或其他任何排列组合；因为浮点加法不是关联性的（当然，与实数%数的加法相反），多次调用这个函数的结果可能在舍入的顺序上有所不同。    关于这个函数适用于哪类问题的讨论，请参见 @ref threads "多处理器的并行计算 "
-   * 模块。
    *
+   * Here, <code>mat_norm_sqr_on_subranges</code> is called on the entire
+   * range <code>[0,A.n_rows())</code> if this range is less than the minimum
+   * grainsize (above chosen as 50) or if deal.II is configured to not use
+   * multithreading. Otherwise, it may be called on subsets of the given
+   * range, with results from the individual subranges accumulated internally.
+   *
+   * @warning If ResultType is a floating point type, then accumulation is not
+   * an associative operation. In other words, if the given function object is
+   * called three times on three subranges, returning values $a,b,c$, then the
+   * returned result of this function is $(a+b)+c$. However, depending on how
+   * the three sub-tasks are distributed on available CPU resources, the
+   * result may also be $(a+c)+b$ or any other permutation; because floating
+   * point addition is not associative (as opposed, of course, to addition of
+   * real %numbers), the result of invoking this function several times may
+   * differ on the order of round-off.
+   *
+   * For a discussion of the kind of problems to which this function is
+   * applicable, see also the
+   * @ref threads "Parallel computing with multiple processors"
+   * module.
    */
   template <typename ResultType, typename RangeType, typename Function>
   ResultType
@@ -594,8 +704,13 @@ namespace parallel
   // --------------------- for loop affinity partitioner -----------------------
 
   /**
-   * 一个以线程安全的方式包装TBB亲和分区器的类。在Vector中，我们使用一个共享指针，在相同大小的不同向量之间共享一个亲和分区器，以提高数据（和NUMA）的定位性。然而，当一个外部任务进行多个向量操作时，共享指针可能导致竞赛条件。这个类只允许一个实例获得一个分区器。其他对象不能使用该对象，需要创建自己的副本。
-   *
+   * A class that wraps a TBB affinity partitioner in a thread-safe way. In
+   * Vector, we use a shared pointer to share an affinity partitioner
+   * between different vectors of the same size for improving data (and
+   * NUMA) locality. However, when an outer task does multiple vector
+   * operations, the shared pointer could lead to race conditions. This
+   * class only allows one instance to get a partitioner. The other objects
+   * cannot use that object and need to create their own copy.
    */
   namespace internal
   {
@@ -603,49 +718,49 @@ namespace parallel
     {
     public:
       /**
-       * 构造函数。
-       *
+       * Constructor.
        */
       TBBPartitioner();
 
 #ifdef DEAL_II_WITH_TBB
       /**
-       * 销毁器。检查该对象是否不再被使用，即所有的循环都已完成。
-       *
+       * Destructor. Check that the object is not in use any more, i.e., all
+       * loops have been completed.
        */
       ~TBBPartitioner();
 
       /**
-       * 返回一个亲和分区器。如果类所拥有的分区器是自由的，它将在此返回。如果另一个线程还没有释放它，就会创建一个新的对象。要再次释放该分区器，请通过release_one_partitioner()调用返回它。
-       *
+       * Return an affinity partitioner. In case the partitioner owned by the
+       * class is free, it is returned here. In case another thread has not
+       * released it yet, a new object is created. To free the partitioner
+       * again, return it by the release_one_partitioner() call.
        */
       std::shared_ptr<tbb::affinity_partitioner>
       acquire_one_partitioner();
 
       /**
-       * 在通过acquisition_one_partitioner()在tbb循环中使用分区器后，这个调用使分区器再次可用。
-       *
+       * After using the partitioner in a tbb loop through
+       * acquire_one_partitioner(), this call makes the partitioner available
+       * again.
        */
       void
       release_one_partitioner(std::shared_ptr<tbb::affinity_partitioner> &p);
 
     private:
       /**
-       * 存储的分区器，可以在多次运行 tbb::parallel_for
-       * 中积累知识。
-       *
+       * The stored partitioner that can accumulate knowledge over several
+       * runs of tbb::parallel_for
        */
       std::shared_ptr<tbb::affinity_partitioner> my_partitioner;
 
       /**
-       * 一个标志，表示该分区器是否已经获得但尚未释放，即它在其他地方使用。
-       *
+       * A flag to indicate whether the partitioner has been acquired but not
+       * released yet, i.e., it is in use somewhere else.
        */
       bool in_use;
 
       /**
-       * 一个突变器，用于保护对in_use标志的访问。
-       *
+       * A mutex to guard the access to the in_use flag.
        */
       std::mutex mutex;
 #endif
@@ -659,11 +774,18 @@ namespace internal
   namespace VectorImplementation
   {
     /**
-     * 如果我们对向量进行并行计算（例如，我们将两个向量相加得到第三个向量，并对所有元素进行并行循环），那么这个变量决定了最小的元素数，对于这个最小的元素数，将一个范围的元素再分割开来分配给不同的线程是有利的。
-     * 这个变量可以作为一个全局可写变量，以便让测试组也能测试并行情况。默认情况下，它被设置为几千个元素，这是一个测试工具通常不会遇到的情况。因此，在testuite中，我们将其设置为一个
+     * If we do computations on vectors in parallel (say, we add two vectors
+     * to get a third, and we do the loop over all elements in parallel), then
+     * this variable determines the minimum number of elements for which it is
+     * profitable to split a range of elements any further to distribute to
+     * different threads.
      *
-     * - 一个巨大的无益的值，但肯定会测试并行操作。
-     *
+     * This variable is available as a global writable variable in order to
+     * allow the testsuite to also test the parallel case. By default, it is
+     * set to several thousand elements, which is a case that the testsuite
+     * would not normally encounter. As a consequence, in the testsuite we set
+     * it to one -- a value that's hugely unprofitable but definitely tests
+     * parallel operations.
      */
     extern unsigned int minimum_parallel_grain_size;
   } // namespace VectorImplementation
@@ -672,9 +794,9 @@ namespace internal
   namespace SparseMatrixImplementation
   {
     /**
-     * 就像 internal::VectorImplementation::minimum_parallel_grain_size,
-     * 一样，但现在表示一个矩阵的行数，应该作为最低限度的工作。
-     *
+     * Like internal::VectorImplementation::minimum_parallel_grain_size, but now
+     * denoting the number of rows of a matrix that should be worked on as a
+     * minimum.
      */
     extern unsigned int minimum_parallel_grain_size;
   } // namespace SparseMatrixImplementation
@@ -682,7 +804,7 @@ namespace internal
 } // end of namespace internal
 
 
- /* --------------------------- inline functions ------------------------- */ 
+/* --------------------------- inline functions ------------------------- */
 
 namespace parallel
 {
@@ -691,8 +813,8 @@ namespace parallel
   namespace internal
   {
     /**
-     * 这是TBB为ParallelForInteger类实际调用的函数。
-     *
+     * This is the function actually called by TBB for the ParallelForInteger
+     * class.
      */
     struct ParallelForWrapper
     {
@@ -736,5 +858,3 @@ namespace parallel
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

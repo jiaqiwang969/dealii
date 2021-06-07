@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/dof_info_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
@@ -42,18 +41,35 @@ namespace MeshWorker
 #endif
 
   /**
-   * 一个包含网格对象的几何和自由度信息的类。
-   * 这些对象中的信息通常会被某个Assembler类所使用。这也是基于网格的矩阵（通常被称为无矩阵方法）中需要的信息。
-   * 除了存储在该类中的自由度信息外，它还为在LocalResults中操作的工作对象提供本地计算空间。这个基类将在每个单元上自动被重新初始化，但初始设置由用户决定，应该在调用这个类的initialize()时完成。
-   * 该类在两种不同的模式下运行，与Assembler命名空间文档中讨论的数据模型相对应。
-   * 本地数据模型的选择由向量 BlockInfo::local_renumbering,
-   * 触发，而向量通常由 BlockInfo::initialize_local().
-   * 填充。如果使用了这个函数，或者向量已经从零长度改变，那么存储在这个对象中的本地dof指数将自动重新编号以反映本地块结构。这意味着，
-   * @p indices
-   * 中的第一个条目将指的是系统的第一个块，然后是第二个块，依此类推。
-   * BlockInfo对象是作为一个指针来存储的。因此，如果块结构发生变化，例如因为网格细化，DoFInfo类将自动使用新的结构。
-   * @ingroup MeshWorker
+   * A class containing information on geometry and degrees of freedom of a
+   * mesh object.
    *
+   * The information in these objects is usually used by one of the Assembler
+   * classes. It is also the kind of information which is needed in mesh based
+   * matrices (often referred to as matrix free methods).
+   *
+   * In addition to the information on degrees of freedom stored in this
+   * class, it also provides the local computation space for the worker object
+   * operating on it in LocalResults. This base class will automatically be
+   * reinitialized on each cell, but initial setup is up to the user and
+   * should be done when initialize() for this class is called.
+   *
+   * This class operates in two different modes, corresponding to the data
+   * models discussed in the Assembler namespace documentation.
+   *
+   * The choice of the local data model is triggered by the vector
+   * BlockInfo::local_renumbering, which in turn is usually filled by
+   * BlockInfo::initialize_local(). If this function has been used, or the
+   * vector has been changed from zero-length, then local dof indices stored
+   * in this object will automatically be renumbered to reflect local block
+   * structure. This means, the first entries in @p indices will refer to the
+   * first block of the system, then comes the second block and so on.
+   *
+   * The BlockInfo object is stored as a pointer. Therefore, if the block
+   * structure changes, for instance because of mesh refinement, the DoFInfo
+   * class will automatically use the new structures.
+   *
+   * @ingroup MeshWorker
    */
   template <int dim, int spacedim = dim, typename number = double>
   class DoFInfo : public LocalResults<number>
@@ -66,56 +82,53 @@ namespace MeshWorker
     typename Triangulation<dim, spacedim>::face_iterator face;
 
     /**
-     * 当前单元上的当前面的编号。        如果 @p info
-     * 对象被初始化为一个单元格，那么这个数字就是
-     * numbers::invalid_unsigned_int 。
+     * The number of the current face on the current cell.
      *
+     * This number is numbers::invalid_unsigned_int if the @p info object was
+     * initialized with a cell.
      */
     unsigned int face_number;
 
     /**
-     * 当前面上的子面的编号 如果 @p info
-     * 对象没有被初始化为子面，这个编号是
-     * numbers::invalid_unsigned_int 。
+     * The number of the current subface on the current face
      *
+     * This number is numbers::invalid_unsigned_int if the @p info object was not
+     * initialized with a subface.
      */
     unsigned int sub_number;
 
     /**
-     * 当前单元的DoF指数
-     *
+     * The DoF indices of the
+     * current cell
      */
     std::vector<types::global_dof_index> indices;
 
     /**
-     * 当前单元上的DoF指数，按本地块组织。这个向量的大小是零，除非使用局部块。
-     *
+     * The DoF indices on the current cell, organized by local blocks. The
+     * size of this vector is zero, unless local blocks are used.
      */
     std::vector<std::vector<types::global_dof_index>> indices_by_block;
 
     /**
-     * 设置#block_info指针的构造函数。
-     *
+     * Constructor setting the #block_info pointer.
      */
     DoFInfo(const BlockInfo &block_info);
 
     /**
-     * 构造函数让#block_info指针为空，但设置#aux_local_indices。
-     *
+     * Constructor leaving the #block_info pointer empty, but setting the
+     * #aux_local_indices.
      */
     DoFInfo(const DoFHandler<dim, spacedim> &dof_handler);
 
     /**
-     * 设置当前单元格并填充 @p indices. 。
-     *
+     * Set the current cell and fill @p indices.
      */
     template <class DHCellIterator>
     void
     reinit(const DHCellIterator &c);
 
     /**
-     * 如果#单元格发生变化，设置当前面和填充 @p indices 。
-     *
+     * Set the current face and fill @p indices if the #cell changed.
      */
     template <class DHCellIterator, class DHFaceIterator>
     void
@@ -124,9 +137,7 @@ namespace MeshWorker
            const unsigned int    face_no);
 
     /**
-     * 设置当前的子面，如果#单元格发生变化，则填充 @p
-     * indices 。
-     *
+     * Set the current subface and fill @p indices if the #cell changed.
      */
     template <class DHCellIterator, class DHFaceIterator>
     void
@@ -136,18 +147,16 @@ namespace MeshWorker
            const unsigned int    subface_no);
 
     /**
-     * 切换到同一单元格的新面。不改变 @p indices
-     * ，不重置LocalResults中的数据。
-     *
+     * Switch to a new face of the same cell. Does not change @p indices and
+     * does not reset data in LocalResults.
      */
     template <class DHFaceIterator>
     void
     set_face(const DHFaceIterator &f, const unsigned int face_no);
 
     /**
-     * 切换到同一单元的一个新的子面。不改变 @p indices
-     * ，不重置LocalResults中的数据。
-     *
+     * Switch to a new subface of the same cell. Does not change @p indices
+     * and does not reset data in LocalResults.
      */
     template <class DHFaceIterator>
     void
@@ -163,15 +172,15 @@ namespace MeshWorker
     SmartPointer<const BlockInfo, DoFInfo<dim, spacedim>> block_info;
 
     /**
-     * 该结构指的是具有水平数据的单元，而不是活动数据。
-     *
+     * The structure refers to a cell with level data instead of active data.
      */
     bool level_cell;
 
   private:
     /**
-     * 标准构造函数，不设置任何区块索引。不推荐使用这个构造函数，但DoFInfoBox中的数组需要它。
-     *
+     * Standard constructor, not setting any block indices. Use of this
+     * constructor is not recommended, but it is needed for the arrays in
+     * DoFInfoBox.
      */
     DoFInfo();
 
@@ -188,8 +197,9 @@ namespace MeshWorker
     std::vector<types::global_dof_index> indices_org;
 
     /**
-     * 如果#block_info没有被设置，则创建一个辅助的本地BlockIndices对象。它只包含每个单元的自由度大小的单一块。
-     *
+     * An auxiliary local BlockIndices object created if #block_info is not
+     * set. It contains just a single block of the size of degrees of freedom
+     * per cell.
      */
     BlockIndices aux_local_indices;
 
@@ -198,46 +208,46 @@ namespace MeshWorker
 
 
   /**
-   * 一个捆绑单元上使用的 MeshWorker::DoFInfo 对象的类。
-   * @todo
-   * 目前，我们为单元存储一个对象，为每个面存储两个对象。我们可以将所有与单元格本身有关的面的数据收集在一个对象中，这样可以节省一点内存和一些操作，但会牺牲一些清洁度。
-   * @ingroup MeshWorker
+   * A class bundling the MeshWorker::DoFInfo objects used on a cell.
    *
+   * @todo Currently, we are storing an object for the cells and two for each
+   * face. We could gather all face data pertaining to the cell itself in one
+   * object, saving a bit of memory and a few operations, but sacrificing some
+   * cleanliness.
+   *
+   * @ingroup MeshWorker
    */
   template <int dim, class DOFINFO>
   class DoFInfoBox
   {
   public:
     /**
-     * 构造函数将种子复制到所有其他对象中。
-     *
+     * Constructor copying the seed into all other objects.
      */
     DoFInfoBox(const DOFINFO &seed);
 
     /**
-     * 复制构造函数，取#cell并将其作为其他构造函数中的种子。
-     *
+     * Copy constructor, taking #cell and using it as a seed in the other
+     * constructor.
      */
     DoFInfoBox(const DoFInfoBox<dim, DOFINFO> &);
 
     /**
-     * 复制赋值运算符，以另一个对象为种子。
-     *
+     * Copy assignment operator, taking another object as seed.
      */
     DoFInfoBox &
     operator=(const DoFInfoBox<dim, DOFINFO> &);
 
     /**
-     * 重置所有的可用标志。
-     *
+     * Reset all the availability flags.
      */
     void
     reset();
 
     /**
-     * 在所有DOFINFO对象被适当填充后，使用ASSEMBLER对象将它们组装成全局数据。参见
-     * MeshWorker::Assembler 中的可用类。
-     *
+     * After all DOFINFO objects have been filled appropriately, use the
+     * ASSEMBLER object to assemble them into the global data. See
+     * MeshWorker::Assembler for available classes.
      */
     template <class ASSEMBLER>
     void
@@ -245,36 +255,32 @@ namespace MeshWorker
 
 
     /**
-     * 单元的数据。
-     *
+     * The data for the cell.
      */
     DOFINFO cell;
     /**
-     * 里面的面的数据。
-     *
+     * The data for the faces from inside.
      */
     DOFINFO interior[GeometryInfo<dim>::faces_per_cell];
     /**
-     * 来自外部的面的数据。
-     *
+     * The data for the faces from outside.
      */
     DOFINFO exterior[GeometryInfo<dim>::faces_per_cell];
 
     /**
-     * 一组标志，表明内部面的数据是否可用。
-     *
+     * A set of flags, indicating whether data on an interior face is
+     * available.
      */
     bool interior_face_available[GeometryInfo<dim>::faces_per_cell];
 
     /**
-     * 一组标志，表明外部面的数据是否可用。
-     *
+     * A set of flags, indicating whether data on an exterior face is
+     * available.
      */
     bool exterior_face_available[GeometryInfo<dim>::faces_per_cell];
 
     /**
-     * 一个标志，指定当前对象是否已被设置为有效单元。
-     *
+     * A flag to specify if the current object has been set to a valid cell.
      */
     bool cell_valid;
   };
@@ -510,5 +516,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

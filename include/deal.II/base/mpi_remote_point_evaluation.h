@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/mpi_remote_point_evaluation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -32,40 +31,48 @@ namespace Utilities
   namespace MPI
   {
     /**
-     * 用于访问非匹配网格上的值的帮助类。
-     * @note
-     * 字段的名称是在考虑到evaluation_and_process()方法的情况下选择的。在这里，数量是在指定的任意定位点（甚至在MPI宇宙中的远程进程上）逐个单元计算的，这些值被发送给请求进程，请求进程接收结果并根据各点的情况对结果进行求助。
+     * Helper class to access values on non-matching grids.
      *
+     * @note The name of the fields are chosen with the method
+     *   evaluate_and_process() in mind. Here, quantities are
+     *   computed at specified arbitrary positioned points (and even on remote
+     *   processes in the MPI universe) cell by cell and these values are sent
+     *   to requesting processes, which receive the result and resort the
+     *   result according to the points.
      */
     template <int dim, int spacedim = dim>
     class RemotePointEvaluation
     {
     public:
       /**
-       * 构造器。              @param  tolerance
-       * 在reinit()过程中，用于确定传递给类的点周围所有单元的单元坐标的公差。根据问题的不同，可能需要调整公差，以便能够确定一个单元。
-       * 浮点运算意味着，一般来说，一个点不会完全位于一个顶点、边缘或面。
-       * @param  enforce_unique_mapping
-       * 强制执行唯一映射，即点和单元的（一对一）关系。
-       * @param  rtree_level 构建边界框时使用的RTree级别。
+       * Constructor.
        *
+       * @param tolerance Tolerance in terms of unit cell coordinates for
+       *   determining all cells around a point passed to the class during
+       *   reinit(). Depending on the problem, it might be necessary to adjust
+       *   the tolerance in order to be able to identify a cell.
+       *   Floating point arithmetic implies that a point will, in general, not
+       *   lie exactly on a vertex, edge, or face.
+       * @param enforce_unique_mapping Enforce unique mapping, i.e.,
+       *   (one-to-one) relation of points and cells.
+       * @param rtree_level RTree level to be used during the construction of the bounding boxes.
        */
       RemotePointEvaluation(const double       tolerance              = 1e-6,
                             const bool         enforce_unique_mapping = false,
                             const unsigned int rtree_level            = 0);
 
       /**
-       * 销毁器。
-       *
+       * Destructor.
        */
       ~RemotePointEvaluation();
 
       /**
-       * 根据点列表 @p points 和网格描述（ @p tria 和 @p
-       * 的映射）设置内部数据结构和通信模式。
-       * @warning
-       * 这是一个集体调用，需要由通信器中的所有处理器来执行。
+       * Set up internal data structures and communication pattern based on
+       * a list of points @p points and mesh description (@p tria and @p
+       * mapping).
        *
+       * @warning This is a collective call that needs to be executed by all
+       *   processors in the communicator.
        */
       void
       reinit(const std::vector<Point<spacedim>> &points,
@@ -73,38 +80,40 @@ namespace Utilities
              const Mapping<dim, spacedim> &      mapping);
 
       /**
-       * 定位在一个单元中的点的数据。
-       *
+       * Data of points positioned in a cell.
        */
       struct CellData
       {
         /**
-         * 单元的级别和索引。
-         *
+         * Level and index of cells.
          */
         std::vector<std::pair<int, int>> cells;
 
         /**
-         * 指向与单元格相关的（参考）点的开始和结束的指针。
-         *
+         * Pointers to beginning and ending of the (reference) points
+         * associated to the cell.
          */
         std::vector<unsigned int> reference_point_ptrs;
 
         /**
-         * 区间[0,1]^dim中的参考点。
-         *
+         * Reference points in the interval [0,1]^dim.
          */
         std::vector<Point<dim>> reference_point_values;
       };
 
       /**
-       * 在给定的点和三角结构中评估函数 @p evaluation_function
-       * 。结果存储在 @p output. 中。
-       * @note
-       * 如果点到单元格的映射不是一对一的关系（is_map_unique()==false），结果需要借助get_point_ptrs()来处理。如果一个点与一个被多个单元共享的几何实体（例如，顶点）重合，或者一个点在计算域之外，就会出现这种情况。
-       * @warning
-       * 这是一个集体调用，需要由通信器中的所有处理器执行。
+       * Evaluate function @p evaluation_function in the given  points and
+       * triangulation. The result is stored in @p output.
        *
+       * @note If the map of points to cells is not a
+       *   one-to-one relation (is_map_unique()==false), the result needs to be
+       *   processed with the help of get_point_ptrs(). This
+       *   might be the case if a point coincides with a geometric entity (e.g.,
+       *   vertex) that is shared by multiple cells or a point is outside of the
+       *   computational domain.
+       *
+       * @warning This is a collective call that needs to be executed by all
+       *   processors in the communicator.
        */
       template <typename T>
       void
@@ -115,10 +124,12 @@ namespace Utilities
           &evaluation_function) const;
 
       /**
-       * 这个方法是evaluate_and_process()方法的逆过程。它使 @p
-       * input, 提供的各点数据在 @p evaluation_function.  @warning
-       * 函数中可用。这是一个集体调用，需要由通信器中的所有处理器执行。
+       * This method is the inverse of the method evaluate_and_process(). It
+       * makes the data at the points, provided by @p input, available in the
+       * function @p evaluation_function.
        *
+       * @warning This is a collective call that needs to be executed by all
+       *   processors in the communicator.
        */
       template <typename T>
       void
@@ -129,134 +140,128 @@ namespace Utilities
           &evaluation_function) const;
 
       /**
-       * 返回一个类似CRS的数据结构，以确定结果对应的一个点的位置和数量。
-       *
+       * Return a CRS-like data structure to determine the position of the
+       * result corresponding a point and the amount.
        */
       const std::vector<unsigned int> &
       get_point_ptrs() const;
 
       /**
-       * 如果点和单元格有一对一的关系，则返回。如果一个点不为任何单元所拥有（该点在域外）或多个单元拥有该点（该点位于相邻单元共享的几何实体上），则不是这种情况。
-       *
+       * Return if points and cells have a one-to-one relation. This is not the
+       * case if a point is not owned by any cell (the point is outside of the
+       * domain) or if multiple cells own the point (the point is positioned
+       * on a geometric entity shared by neighboring cells).
        */
       bool
       is_map_unique() const;
 
       /**
-       * 返回在reinit()过程中使用的三角测量对象。
-       *
+       * Return the Triangulation object used during reinit().
        */
       const Triangulation<dim, spacedim> &
       get_triangulation() const;
 
       /**
-       * 返回reinit()过程中使用的Mapping对象。
-       *
+       * Return the Mapping object used during reinit().
        */
       const Mapping<dim, spacedim> &
       get_mapping() const;
 
       /**
-       * 返回内部数据结构是否已经设置好，如果是，它们是否仍然有效（并且没有因为三角结构的变化而失效）。
-       *
+       * Return if the internal data structures have been set up and if yes
+       * whether they are still valid (and not invalidated due to changes of the
+       * Triangulation).
        */
       bool
       is_ready() const;
 
     private:
       /**
-       * 在确定一个点的周围单元时要使用的公差。
-       *
+       * Tolerance to be used while determining the surrounding cells of a
+       * point.
        */
       const double tolerance;
 
       /**
-       * 强制执行唯一映射，即点和单元的（一对一）关系。
-       *
+       * Enforce unique mapping, i.e., (one-to-one) relation of points and
+       * cells.
        */
       const bool enforce_unique_mapping;
 
       /**
-       * 在构建边界框的过程中，要使用RTree级别。
-       *
+       * RTree level to be used during the construction of the bounding boxes.
        */
       const unsigned int rtree_level;
 
       /**
-       * 存储三角测量信号的状态。
-       *
+       * Storage for the status of the triangulation signal.
        */
       boost::signals2::connection tria_signal;
 
       /**
-       * 指示是否调用过reinit()函数的标志，如果是的话，三角剖分此后没有被修改（可能会使通信模式无效）。
-       *
+       * Flag indicating if the reinit() function has been called and if yes
+       * the triangulation has not been modified since then (potentially
+       * invalidating the communication pattern).
        */
       bool ready_flag;
 
       /**
-       * 对在reinit()过程中使用的Triangulation对象的引用。
-       *
+       * Reference to the Triangulation object used during reinit().
        */
       SmartPointer<const Triangulation<dim, spacedim>> tria;
 
       /**
-       * 对reinit()过程中使用的Mapping对象的引用。
-       *
+       * Reference to the Mapping object used during reinit().
        */
       SmartPointer<const Mapping<dim, spacedim>> mapping;
 
       /**
-       * 点和单元格的（一对一）关系。
-       *
+       * (One-to-one) relation of points and cells.
        */
       bool unique_mapping;
 
       /**
-       * 因为对于每个点来说，可以有多个或没有结果，所以这个向量中的指针以类似CRS的方式表示与一个点相关的第一个和最后一个条目。
-       *
+       * Since for each point multiple or no results can be available, the
+       * pointers in this vector indicate the first and last entry associated
+       * with a point in a CRS-like fashion.
        */
       std::vector<unsigned int> point_ptrs;
 
       /**
-       * 在recv缓冲区内的互斥索引。
-       *
+       * Permutation index within a recv buffer.
        */
       std::vector<unsigned int> recv_permutation;
 
       /**
-       * 一个接收缓冲区内的范围指针，由recv_ranks指定的等级来填充。
-       *
+       * Pointers of ranges within a receive buffer that are filled by ranks
+       * specified by recv_ranks.
        */
       std::vector<unsigned int> recv_ptrs;
 
       /**
-       * 接收数据的等级。
-       *
+       * Ranks from where data is received.
        */
       std::vector<unsigned int> recv_ranks;
 
       /**
-       * 根据单元格排序的点数据，以便对每个单元格只需进行一次评估（包括自由度的读取）。
-       *
+       * Point data sorted according to cells so that evaluation (incl. reading
+       * of degrees of freedoms) needs to performed only once per cell.
        */
       CellData cell_data;
 
       /**
-       * 发送缓冲区内的互换索引。
-       *
+       * Permutation index within a send buffer.
        */
       std::vector<unsigned int> send_permutation;
 
       /**
-       * 要发送的等级。
-       *
+       * Ranks to send to.
        */
       std::vector<unsigned int> send_ranks;
 
       /**
-       * 发送缓冲区内的范围指针，将被发送至send_ranks指定的等级。
-       *
+       * Pointers of ranges within a send buffer to be sent to the ranks
+       * specified by send_ranks.
        */
       std::vector<unsigned int> send_ptrs;
     };
@@ -561,5 +566,3 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

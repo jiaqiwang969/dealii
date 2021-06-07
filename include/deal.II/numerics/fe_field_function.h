@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/fe_field_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
@@ -48,15 +47,34 @@ namespace VectorTools
 namespace Functions
 {
   /**
-   * 这是一个针对给定的dof处理程序和给定的解决方案向量的插值函数。这个函数可以被评估的点必须是在dof处理程序的域内，但除了这一点，没有给出其他要求。这个函数相当慢，因为它需要为你想评估有限元函数的点（或点组）构造一个正交对象。为了做到这一点，它需要找出这些点的位置。
-   * 如果你事先知道你的点位于哪个单元，你可以在要求函数的值或梯度之前调用set_active_cell()来加快事情的进展。如果你不这样做，而你的点不在当前存储的单元格中，那么就会调用函数
-   * GridTools::find_active_cell_around_point 来找出点的位置。
-   * 你可以指定一个可选的映射，以便在网格中寻找点时使用。如果你不这样做，这个函数就会使用一个Q1的映射。
-   * 一旦 FEFieldFunction
-   * 知道了点的位置，它就会为这些点创建一个正交公式，然后用给定的正交点调用
-   * FEValues::get_function_values  或  FEValues::get_function_gradients  。
-   * 如果你只需要正交点，而不需要有限元函数的值（你可能想要这个用于邻接插值），你也可以单独使用函数compute_point_locations()。
-   * 下面是使用这个函数的一个例子。
+   * This is an interpolation function for the given dof handler and the given
+   * solution vector. The points at which this function can be evaluated MUST
+   * be inside the domain of the dof handler, but except from this, no other
+   * requirement is given. This function is rather slow, as it needs to
+   * construct a quadrature object for the point (or set of points) where you
+   * want to evaluate your finite element function. In order to do so, it
+   * needs to find out where the points lie.
+   *
+   * If you know in advance in which cell your points lie, you can accelerate
+   * things a bit, by calling set_active_cell() before asking for values or
+   * gradients of the function. If you don't do this, and your points don't
+   * lie in the cell that is currently stored, the function
+   * GridTools::find_active_cell_around_point is called to find out where the
+   * point is.
+   * You can specify an optional mapping to use when looking for points in
+   * the grid. If you don't do so, this function uses a Q1 mapping.
+   *
+   * Once the FEFieldFunction knows where the points lie, it creates a
+   * quadrature formula for those points, and calls
+   * FEValues::get_function_values or FEValues::get_function_gradients with
+   * the given quadrature points.
+   *
+   * If you only need the quadrature points but not the values of the finite
+   * element function (you might want this for the adjoint interpolation), you
+   * can also use the function compute_point_locations() alone.
+   *
+   * An example of how to use this function is the following:
+   *
    * @code
    *
    * // Generate two triangulations
@@ -64,7 +82,7 @@ namespace Functions
    * Triangulation<dim> tria_2;
    *
    * // Read the triangulations from files, or build them up, or get them
-   * // from some place. Assume that tria_2 isentirely* included in tria_1.
+   * // from some place. Assume that tria_2 is *entirely* included in tria_1.
    *
    * // Associate a dof handler and a solution to the first triangulation
    * DoFHandler<dim> dh1 (tria_1);
@@ -84,50 +102,78 @@ namespace Functions
    * // values from outside the first domain:
    * Functions::FEFieldFunction<dim> fe_function_1 (dh_1, solution_1);
    * VectorTools::project (dh_2, constraints_2, quad,
-   *                     fe_function_1, solution_2);
+   *                       fe_function_1, solution_2);
    *
    * // Alternatively, we could have also interpolated it:
    * Vector<double> solution_3;
    * VectorTools::interpolate (dh_2, fe_function_1, solution_3);
    * @endcode
-   * 上面的代码片断将工作，假设第二个三角形完全包含在第一个三角形中。    FEFieldFunction被设计成一种简单的方式来获取你在不同的、可能不匹配的网格中的计算结果。在这个类中没有假定点的位置的知识，这使得它的工作完全依赖于 GridTools::find_active_cell_around_point 工具。然而，该类可以通过使用 FEFieldFunction::set_active_cell 的方法，对将要计算的点的位置进行 "有根据的猜测"
-   * ，所以如果你有一个聪明的方法来告诉你的点在哪里，你可以让这个类知道，从而节省大量的计算时间。
-   * <h3>Using FEFieldFunction with
-   * parallel::distributed::Triangulation</h3>当使用这个类与并行分布式三角测量对象并在一个特定的点上评估解决方案时，不是每个处理器都会拥有评估解决方案的单元。相反，可能发现这个点的单元实际上是一个幽灵或人工单元（见
-   * @ref GlossArtificialCell 和 @ref GlossGhostCell ）。
-   * 解决方案可以在幽灵单元上进行评估，但对于人工单元，我们无法访问那里的解决方案，在这样的点上评估解决方案的函数将触发一个
-   * VectorTools::ExcPointNotAvailableHere. 类型的异常。
-   * 为了处理这种情况，你将希望使用如下代码，例如，在原点评估解决方案时（这里使用一个平行的TrilinosWrappers向量来保存解决方案）。
+   *
+   * The snippet of code above will work assuming that the second
+   * triangulation is entirely included in the first one.
+   *
+   * FEFieldFunction is designed to be an easy way to get the results of your
+   * computations across different, possibly non matching, grids. No knowledge
+   * of the location of the points is assumed in this class, which makes it
+   * rely entirely on the GridTools::find_active_cell_around_point utility for
+   * its job. However the class can be fed an "educated guess" of where the
+   * points that will be computed actually are by using the
+   * FEFieldFunction::set_active_cell method, so if you have a smart way to
+   * tell where your points are, you will save a lot of computational time by
+   * letting this class know.
+   *
+   *
+   * <h3>Using FEFieldFunction with parallel::distributed::Triangulation</h3>
+   *
+   * When using this class with a parallel distributed triangulation object
+   * and evaluating the solution at a particular point, not every processor
+   * will own the cell at which the solution is evaluated. Rather, it may be
+   * that the cell in which this point is found is in fact a ghost or
+   * artificial cell (see
+   * @ref GlossArtificialCell
+   * and
+   * @ref GlossGhostCell).
+   * The solution can be evaluated on ghost cells, but for artificial cells
+   * we have no access to the solution there and
+   * functions that evaluate the solution at such a point will trigger an
+   * exception of type VectorTools::ExcPointNotAvailableHere.
+   *
+   * To deal with this situation, you will want to use code as follows when,
+   * for example, evaluating the solution at the origin (here using a parallel
+   * TrilinosWrappers vector to hold the solution):
    * @code
-   * Functions::FEFieldFunction<dim,TrilinosWrappers::MPI::Vector>
-   *   solution_function (dof_handler, solution);
-   * Point<dim> origin = Point<dim>();
+   *   Functions::FEFieldFunction<dim,TrilinosWrappers::MPI::Vector>
+   *     solution_function (dof_handler, solution);
+   *   Point<dim> origin = Point<dim>();
    *
-   * double solution_at_origin;
-   * bool   point_found = true;
-   * try
-   *   {
-   *     solution_at_origin = solution_function.value (origin);
-   *   }
-   * catch (const VectorTools::ExcPointNotAvailableHere &)
-   *   {
-   *     point_found = false;
-   *   }
+   *   double solution_at_origin;
+   *   bool   point_found = true;
+   *   try
+   *     {
+   *       solution_at_origin = solution_function.value (origin);
+   *     }
+   *   catch (const VectorTools::ExcPointNotAvailableHere &)
+   *     {
+   *       point_found = false;
+   *     }
    *
-   * if (point_found == true)
-   *   ...do something...;
+   *   if (point_found == true)
+   *     ...do something...;
    * @endcode
    *
    * @ingroup functions
-   *
    */
   template <int dim, typename VectorType = Vector<double>, int spacedim = dim>
   class FEFieldFunction : public Function<dim, typename VectorType::value_type>
   {
   public:
     /**
-     * 构建一个向量函数。一个智能指针被存储到dof处理程序中，所以你必须确保它在这个对象的整个生命周期内是有意义的。这个函数的组件数量等于有限元对象的组件数量。如果指定了一个映射，这就是用来找出点的位置。否则就使用标准的Q1映射。
-     *
+     * Construct a vector function. A smart pointers is stored to the dof
+     * handler, so you have to make sure that it make sense for the entire
+     * lifetime of this object. The number of components of this functions is
+     * equal to the number of components of the finite element object. If a
+     * mapping is specified, that is what is used to find out where the points
+     * lay. Otherwise the standard Q1 mapping is used.
      */
     FEFieldFunction(
       const DoFHandler<dim, spacedim> &dh,
@@ -135,21 +181,28 @@ namespace Functions
       const Mapping<dim> &             mapping = StaticMappingQ1<dim>::mapping);
 
     /**
-     * 设置当前单元。如果你事先知道你的点在哪里，你可以通过调用这个函数告诉这个对象。这将使事情变得更快一些。
-     *
+     * Set the current cell. If you know in advance where your points lie, you
+     * can tell this object by calling this function. This will speed things
+     * up a little.
      */
     void
     set_active_cell(
       const typename DoFHandler<dim, spacedim>::active_cell_iterator &newcell);
 
     /**
-     * 在给定的点上获得一个矢量值。使用单点的效率很低。如果你一次需要多于一个，请使用vector_value_list()函数。出于效率的考虑，如果所有的点都位于同一个单元格上，那就更好了。这并不是强制性的，但是它确实能加快事情的进展。
-     * @note
-     * 当在 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Get one vector value at the given point. It is inefficient to use
+     * single points. If you need more than one at a time, use the
+     * vector_value_list() function. For efficiency reasons, it is better if
+     * all the points lie on the same cell. This is not mandatory, however it
+     * does speed things up.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     vector_value(
@@ -157,27 +210,39 @@ namespace Functions
       Vector<typename VectorType::value_type> &values) const override;
 
     /**
-     * 返回函数在给定点的值。除非只有一个分量（即该函数是标量的），否则你应该说明你想要评估的分量；它默认为零，即第一个分量。使用单点的效率很低。如果你一次需要多于一个，请使用vector_value_list()函数。出于效率的考虑，如果所有的点都位于同一个单元格上，那就更好了。这并不是强制性的，但是它确实能加快事情的进展。
-     * @note
-     * 当在一个 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Return the value of the function at the given point. Unless there is
+     * only one component (i.e. the function is scalar), you should state the
+     * component you want to have evaluated; it defaults to zero, i.e. the
+     * first component. It is inefficient to use single points. If you need
+     * more than one at a time, use the vector_value_list() function. For
+     * efficiency reasons, it is better if all the points lie on the same
+     * cell. This is not mandatory, however it does speed things up.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual typename VectorType::value_type
     value(const Point<dim> &p, const unsigned int component = 0) const override;
 
     /**
-     * 将 @p values 设置为 @p points. 处的函数指定分量的点值
-     * 假设 @p values
-     * 已经有了合适的大小，即与点阵的大小相同。如果所有的点都位于同一个单元格上，这就相当有效。如果不是这样的话，事情可能会变得有点慢。
-     * @note
-     * 当在一个 parallel::distributed::Triangulation
-     * 上使用这个函数时，你可能会在试图评估位于一个人造单元上的点的解决方案时得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Set @p values to the point values of the specified component of the
+     * function at the @p points. It is assumed that @p values already has the
+     * right size, i.e. the same size as the points array. This is rather
+     * efficient if all the points lie on the same cell. If this is not the
+     * case, things may slow down a bit.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     value_list(const std::vector<Point<dim>> &               points,
@@ -186,15 +251,19 @@ namespace Functions
 
 
     /**
-     * 将 @p values 设置为 @p points. 处的函数的点值 假设 @p
-     * values
-     * 已经有了合适的大小，即与点阵列的大小相同。如果所有的点都位于同一个单元格上，这就相当有效。如果不是这样的话，事情可能会变得有点慢。
-     * @note
-     * 当在一个 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Set @p values to the point values of the function at the @p points. It
+     * is assumed that @p values already has the right size, i.e. the same
+     * size as the points array. This is rather efficient if all the points
+     * lie on the same cell. If this is not the case, things may slow down a
+     * bit.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     vector_value_list(const std::vector<Point<dim>> &points,
@@ -202,14 +271,19 @@ namespace Functions
                         &values) const override;
 
     /**
-     * 返回函数在给定点的所有分量的梯度。
-     * 使用单点的效率很低。如果你一次需要多于一个，请使用vector_value_list()函数。出于效率的考虑，如果所有的点都位于同一个单元格上，那就更好了。这并不是强制性的，但是它确实能加快事情的进展。
-     * @note
-     * 当在一个 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Return the gradient of all components of the function at the given
+     * point.  It is inefficient to use single points. If you need more than
+     * one at a time, use the vector_value_list() function. For efficiency
+     * reasons, it is better if all the points lie on the same cell. This is
+     * not mandatory, however it does speed things up.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     vector_gradient(const Point<dim> &p,
@@ -217,26 +291,36 @@ namespace Functions
                       &gradients) const override;
 
     /**
-     * 返回函数的指定分量在给定点的梯度。使用单点的效率很低。如果你一次需要多于一个，请使用vector_value_list()函数。出于效率的考虑，如果所有的点都位于同一个单元格上，那就更好了。这并不是强制性的，但是它确实能加快事情的进展。
-     * @note
-     * 当在一个 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Return the gradient of the specified component of the function at the
+     * given point. It is inefficient to use single points. If you need more
+     * than one at a time, use the vector_value_list() function. For efficiency
+     * reasons, it is better if all the points lie on the same cell. This is
+     * not mandatory, however it does speed things up.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual Tensor<1, dim, typename VectorType::value_type>
     gradient(const Point<dim> & p,
              const unsigned int component = 0) const override;
 
     /**
-     * 返回所有给定点的函数的所有分量的梯度。如果所有的点都在同一个单元格上，这就相当有效。如果不是这种情况，事情可能会变得有点慢。
-     * @note
-     * 当在 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上求解时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Return the gradient of all components of the function at all the given
+     * points. This is rather efficient if all the points lie on the same
+     * cell. If this is not the case, things may slow down a bit.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     vector_gradient_list(
@@ -245,14 +329,17 @@ namespace Functions
         &gradients) const override;
 
     /**
-     * 返回函数的指定分量在所有给定点的梯度。
-     * 如果所有的点都在同一个单元格上，这就相当有效。如果不是这种情况，事情可能会慢一点。
-     * @note
-     * 当在 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上求解时可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Return the gradient of the specified component of the function at all
+     * the given points.  This is rather efficient if all the points lie on
+     * the same cell. If this is not the case, things may slow down a bit.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     gradient_list(
@@ -262,26 +349,31 @@ namespace Functions
 
 
     /**
-     * 计算点<tt>p</tt>处给定分量的拉普拉斯。
-     * @note
-     * 当在一个 parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Compute the Laplacian of a given component at point <tt>p</tt>.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual typename VectorType::value_type
     laplacian(const Point<dim> & p,
               const unsigned int component = 0) const override;
 
     /**
-     * 计算点<tt>p</tt>上所有分量的拉普拉斯，并将其存储在<tt>values</tt>中。
-     * @note 当在一个
-     * parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上评估解决方案时，你可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell  ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Compute the Laplacian of all components at point <tt>p</tt> and store
+     * them in <tt>values</tt>.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     vector_laplacian(
@@ -289,13 +381,15 @@ namespace Functions
       Vector<typename VectorType::value_type> &values) const override;
 
     /**
-     * 计算一组点上的一个分量的拉普拉斯（Laplacian）。
-     * @note 当在一个
-     * parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上求解时，可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Compute the Laplacian of one component at a set of points.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     laplacian_list(const std::vector<Point<dim>> &               points,
@@ -303,13 +397,15 @@ namespace Functions
                    const unsigned int component = 0) const override;
 
     /**
-     * 计算一组点上的所有分量的拉普拉斯系数。
-     * @note 当在一个
-     * parallel::distributed::Triangulation
-     * 上使用这个函数时，当你试图在一个位于人工单元上的点上求解时，可能会得到一个异常（见
-     * @ref GlossLocallyOwnedCell ）。
-     * 更多信息请参见该类的一般文档中的章节。
+     * Compute the Laplacians of all components at a set of points.
      *
+     * @note When using this function on a
+     * parallel::distributed::Triangulation you may get an exception when
+     * trying to evaluate the solution at a point that lies on an artificial
+     * cell (see
+     * @ref GlossLocallyOwnedCell).
+     * See the section in the general documentation of this class for more
+     * information.
      */
     virtual void
     vector_laplacian_list(const std::vector<Point<dim>> &points,
@@ -317,17 +413,26 @@ namespace Functions
                             &values) const override;
 
     /**
-     * 给出一组位于域中的点（或者，在并行三角计算的情况下，位于域的局部拥有的部分或当前处理器的幽灵单元上），将这些点分类到至少有一个点所在的每个单元的桶中。
-     * 这个函数填充了三个输出向量。  @p cells,   @p qpoints  和
-     * @p maps.
-     * 第一个是包含这些点的单元格的列表，第二个是与第一个列表的每个单元格相匹配的正交点的列表，第三个包含给定的正交点的索引，即
-     * @p points[maps[3][4]]
-     * 最后是第四个单元格的第五个正交点。          @return
-     * 这个函数返回共同包含给定 @p
-     * 点的单元格的数量。这也等同于输出数组的长度。
-     * 这个函数简单地调用了 GridTools::compute_point_locations
-     * ：使用原始函数避免了在每次函数调用时计算一个新的Cache。
+     * Given a set of points located in the domain (or, in the case of
+     * a parallel Triangulation, in the locally owned part of the domain
+     * or on the ghost cells for the current processor), sort these
+     * points into buckets for each of the cells on which at least
+     * one of the points is located.
      *
+     * This function fills three output vectors: @p cells, @p qpoints
+     * and @p maps. The first is a list of the cells that contain the
+     * points, the second is a list of quadrature points matching each
+     * cell of the first list, and the third contains the index of the
+     * given quadrature points, i.e., @p points[maps[3][4]] ends up as
+     * the 5th quadrature point in the 4th cell.
+     *
+     * @return This function returns the number of cells that
+     *   collectively contain the set of points give as @p
+     *   points. This also equals the lengths of the output arrays.
+     *
+     * This function simply calls GridTools::compute_point_locations :
+     * using the original function avoids computing a
+     * new Cache at every function call.
      */
     unsigned int
     compute_point_locations(
@@ -339,48 +444,42 @@ namespace Functions
 
   private:
     /**
-     * 持有本地cell_hint的类型定义。
-     *
+     * Typedef holding the local cell_hint.
      */
     using cell_hint_t = Threads::ThreadLocalStorage<
       typename DoFHandler<dim, spacedim>::active_cell_iterator>;
 
     /**
-     * 指向dof处理程序的指针。
-     *
+     * Pointer to the dof handler.
      */
     SmartPointer<const DoFHandler<dim, spacedim>,
                  FEFieldFunction<dim, VectorType, spacedim>>
       dh;
 
     /**
-     * 对实际数据向量的引用。
-     *
+     * A reference to the actual data vector.
      */
     const VectorType &data_vector;
 
     /**
-     * 一个对正在使用的映射的引用。
-     *
+     * A reference to the mapping being used.
      */
     const Mapping<dim> &mapping;
 
     /**
-     * 缓存对象
-     *
+     * The Cache object
      */
     GridTools::Cache<dim, spacedim> cache;
 
     /**
-     * 最新的单元格提示。
-     *
+     * The latest cell hint.
      */
     mutable cell_hint_t cell_hint;
 
     /**
-     * 给定一个单元格，如果它确实位于该单元格内，则返回该单元格内给定点的参考坐标。否则返回一个未初始化的
-     * std_cxx17::optional 对象。
-     *
+     * Given a cell, return the reference coordinates of the given point
+     * within this cell if it indeed lies within the cell. Otherwise return an
+     * uninitialized std_cxx17::optional object.
      */
     std_cxx17::optional<Point<dim>>
     get_reference_coordinates(
@@ -394,9 +493,8 @@ namespace Legacy
   namespace Functions
   {
     /**
-     * @deprecated  使用没有DoFHandlerType模板的
-     * dealii::Functions::FEFieldFunction 代替。
-     *
+     * @deprecated Use dealii::Functions::FEFieldFunction without the
+     * DoFHandlerType template instead.
      */
     template <int dim,
               typename DoFHandlerType = DoFHandler<dim>,
@@ -410,5 +508,3 @@ namespace Legacy
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

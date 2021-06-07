@@ -1,4 +1,3 @@
-//include/deal.II-translator/algorithms/general_data_storage_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -34,195 +33,214 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 这个类方便了任何一般数据的存储。它提供了一个机制来存储任何数量的数据，任何类型的数据，然后通过一个标识符字符串来访问。
- * 当使用这个类时，请引用
+ * This class facilitates the storage of any general data.
+ * It offers a mechanism to store any amount of data, of any type,
+ * which is then made accessible by an identifier string.
  *
+ * When using this class, please cite
  *
  * @code{.bib}
  * @article{SartoriGiulianiBardelloni-2018-a,
- * Author = {Sartori, Alberto and Giuliani, Nicola and
- *          Bardelloni, Mauro and Heltai, Luca},
- * Journal = {SoftwareX},
- * Pages = {318--327},
- * Title = {{deal2lkit: A toolkit library for high performance
- *          programming in deal.II}},
- * Volume = {7},
- * Year = {2018}}
+ *  Author = {Sartori, Alberto and Giuliani, Nicola and
+ *            Bardelloni, Mauro and Heltai, Luca},
+ *  Journal = {SoftwareX},
+ *  Pages = {318--327},
+ *  Title = {{deal2lkit: A toolkit library for high performance
+ *            programming in deal.II}},
+ *  Volume = {7},
+ *  Year = {2018}}
  * @endcode
- *
- *
- *
  */
 class GeneralDataStorage : public Subscriptor
 {
 public:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   GeneralDataStorage() = default;
 
   /**
-   * 复制构造函数。
-   *
+   * Copy constructor.
    */
   GeneralDataStorage(const GeneralDataStorage &) = default;
 
   /**
-   * 移动构造函数。
-   *
+   * Move constructor.
    */
   GeneralDataStorage(GeneralDataStorage &&) = default;
 
   /**
-   * 这个类实例所存储的对象的数量。
-   *
+   * Number of objects stored by this class instance.
    */
   std::size_t
   size() const;
 
   /**
-   * 将 @p other_data 的内容与此对象合并。
-   *
+   * Merge the contents of @p other_data with this object.
    */
   void
   merge(const GeneralDataStorage &other_data);
 
   /**
-   * 打印内部缓存的内容到 @p stream.   @p any_data
-   * 映射中的每个键和值对都打印在单独的一行，
-   * <tt>std::string</tt>
-   * 键列在前面，后面是相关映射类型的拆分<tt>type_id</tt>。
+   * Print the contents of the internal cache to the @p stream.
    *
+   * Each key and value pair in the @p any_data map are printed on an
+   * individual line, with the <tt>std::string</tt> key listed first
+   * followed by the demangled <tt>type_id</tt> of the associated mapped
+   * type.
    */
   template <class Stream>
   void
   print_info(Stream &stream);
 
   /**
-   * 清除存储在这个类实例中的所有数据。
-   * 当你调用这个函数时，它会销毁所有你要求以副本形式存储的对象，并且忘记你要求以引用形式存储的数据的引用。因此，你现在可以在任何时候自由地销毁你所存储的引用的对象。
+   * Clear all data stored in this class instance.
    *
-   * - 在当前的`GeneralDataStorage`对象被销毁之前或之后。    为了澄清这一点，请考虑下面这个小例子。
+   * When you call this function, it destroys all objects you asked to be stored
+   * as copies, and it forgets about the references to data you asked to store
+   * by reference. As a consequence, you are now free to destroy the objects to
+   * which references were stored at whatever time you want -- before or after
+   * the current `GeneralDataStorage` object is destroyed.
+   *
+   * To clarify this point, consider the following small example:
+   *
    * @code
-   * GeneralDataStorage data;
-   *
-   * {
-   *   const double some_number = ...;
-   *   data.add_unique_reference("value", some_number);
-   *
-   *   // Adding either of these next two lines could fix the
-   *   // issue, by removing the association of some_number with data:
-   *   // data.remove_object_with_name("value");
-   *   // data.reset();
-   * } // some_number goes out of scope here
-   *
-   * const double some_other_number
-   *   = data.get_object_with_name<double>("value"); // Invalid call
-   * @endcode
-   * 在上面的代码中， @p data
-   * 对象的范围比<tt>some_number</tt>长。当我们从 @p data
-   * 中获取<tt>"value"</tt>时，对 @p some_number
-   * 的引用已不再有效。
-   * 同样地，对于复制到GeneralDataStorage对象中的数据，我们应该考虑它在哪个范围内保持有效。
-   * @code
-   * double* ptr_to_some_number = null_ptr;
-   *
-   * {
    *   GeneralDataStorage data;
-   *   const double some_number = ...;
-   *   data.add_unique_copy("value", some_number);
    *
-   *   ptr_to_some_number = &(data.get_object_with_name<double>("value"));
-   * } // The copy to some_number goes out of scope here
+   *   {
+   *     const double some_number = ...;
+   *     data.add_unique_reference("value", some_number);
    *
-   * const double some_other_number
-   *   =ptr_to_some_number; // Invalid call
+   *     // Adding either of these next two lines could fix the
+   *     // issue, by removing the association of some_number with data:
+   *     // data.remove_object_with_name("value");
+   *     // data.reset();
+   *   } // some_number goes out of scope here
+   *
+   *   const double some_other_number
+   *     = data.get_object_with_name<double>("value"); // Invalid call
    * @endcode
-   * 与第一个例子类似，我们必须意识到这样一个事实：由
-   * @p data 存储的任何 @p Type
-   * 的副本只有在存储它的GeneralDataStorage实例活着时才有效。
-   * 此外，正如上一个例子所阐明的，当调用reset()函数时，或通过调用remove_object_with_name()删除时，被指向的类实例（由GeneralDataStorage拥有）的副本就不再是活的。
+   *
+   * In the code above, the @p data  object has a longer scope than
+   * <tt>some_number</tt>. By the time we fetch the <tt>"value"</tt> from
+   * @p data , the reference to @p some_number is no longer valid.
+   *
+   * Similarly, for data copied into a GeneralDataStorage object one should
+   * consider the scope under which it remains valid:
+   *
    * @code
-   * GeneralDataStorage data;
-   * double* ptr_to_some_number = null_ptr;
+   *   double* ptr_to_some_number = null_ptr;
    *
-   * {
-   *   const double some_number = ...;
-   *   data.add_unique_copy("value", some_number);
+   *   {
+   *     GeneralDataStorage data;
+   *     const double some_number = ...;
+   *     data.add_unique_copy("value", some_number);
    *
-   *   ptr_to_some_number = &(data.get_object_with_name<double>("value"));
+   *     ptr_to_some_number = &(data.get_object_with_name<double>("value"));
+   *   } // The copy to some_number goes out of scope here
    *
-   *   // The copy to some_number would go out of scope when either of
-   *   // following two calls are made:
-   *   data.remove_object_with_name("value");
-   *   data.reset();
-   * }
-   *
-   * const double some_other_number
-   *   =ptr_to_some_number; // Invalid call
+   *   const double some_other_number
+   *     = *ptr_to_some_number; // Invalid call
    * @endcode
    *
+   * Similar to the first example, we must be conscious of the fact that the
+   * copies of any @p Type stored by @p data only remains valid while the
+   * GeneralDataStorage instance in which it is stored is alive.
    *
+   * Furthermore, as elucidated in the last example, the copy of the
+   * class instance (owned by GeneralDataStorage) that is being pointed to
+   * is no longer alive when the reset() function is called, or when it is
+   * removed via a call to remove_object_with_name().
+   *
+   * @code
+   *   GeneralDataStorage data;
+   *   double* ptr_to_some_number = null_ptr;
+   *
+   *   {
+   *     const double some_number = ...;
+   *     data.add_unique_copy("value", some_number);
+   *
+   *     ptr_to_some_number = &(data.get_object_with_name<double>("value"));
+   *
+   *     // The copy to some_number would go out of scope when either of
+   *     // following two calls are made:
+   *     data.remove_object_with_name("value");
+   *     data.reset();
+   *   }
+   *
+   *   const double some_other_number
+   *     = *ptr_to_some_number; // Invalid call
+   * @endcode
    */
   void
   reset();
 
   /**
-   * @name  数据存储和访问
-   *
+   * @name Data storage and access
    */
   //@{
 
   /**
-   * 在内部存储一个给定对象的副本。被复制的对象为这个类所拥有，并且可以通过get_object_with_name()方法通过引用访问。
-   * 这个函数确保没有 @p entry 与给定的 @p name
-   * 已经被这个类实例所存储。
+   * Store internally a copy of the given object. The copied object is
+   * owned by this class, and is accessible via reference through the
+   * get_object_with_name() method.
    *
+   * This function ensures that no @p entry with the given @p name is
+   * already stored by this class instance.
    */
   template <typename Type>
   void
   add_unique_copy(const std::string &name, const Type &entry);
 
   /**
-   * 在内部存储一个给定对象的副本。被复制的对象为这个类所拥有，并且可以通过引用get_object_with_name()方法来访问。
-   * 这个函数不进行任何检查以确保具有给定 @p name 的 @p
-   * entry 已经被这个类实例存储。如果 @p name
-   * 确实指向现有的数据，那么这将被覆盖。
+   * Store internally a copy of the given object. The copied object is
+   * owned by this class, and is accessible via reference through the
+   * get_object_with_name() method.
    *
+   * This function does not perform any checks to ensure that the @p entry
+   * with the given @p name is already stored by this class instance. If the
+   * @p name does in fact point to existing data, then this is overwritten.
    */
   template <typename Type>
   void
   add_or_overwrite_copy(const std::string &name, const Type &entry);
 
   /**
-   * 为一个已经存在的对象添加一个引用。该对象不属于这个类，用户必须保证被引用的对象比这个类实例的寿命长。存储的引用可以通过get_object_with_name()方法访问。
-   * 这个函数确保没有任何具有给定 @p name 的 @p entry
-   * 已经被这个类实例所存储。
+   * Add a reference to an already existing object. The object is not
+   * owned by this class, and the user has to guarantee that the
+   * referenced object lives longer than this class instance. The stored
+   * reference is accessible through the get_object_with_name() method.
    *
+   * This function ensures that no @p entry with the given @p name is
+   * already stored by this class instance.
    */
   template <typename Type>
   void
   add_unique_reference(const std::string &name, Type &entry);
 
   /**
-   * 为一个已经存在的对象添加一个引用。该对象不属于这个类，而且用户必须保证被引用的对象比这个类实例的寿命长。存储的引用可以通过get_object_with_name()方法访问。
-   * 这个函数不执行任何检查以确保具有给定 @p name 的 @p
-   * entry 已经被这个类实例所存储。如果 @p name
-   * 确实指向现有的数据，那么这将被覆盖。
+   * Add a reference to an already existing object. The object is not
+   * owned by this class, and the user has to guarantee that the
+   * referenced object lives longer than this class instance. The stored
+   * reference is accessible through the get_object_with_name() method.
    *
+   * This function does not perform any checks to ensure that the @p entry
+   * with the given @p name is already stored by this class instance. If the
+   * @p name does in fact point to existing data, then this is overwritten.
    */
   template <typename Type>
   void
   add_or_overwrite_reference(const std::string &name, Type &entry);
 
   /**
-   * 返回一个给定名称的对象的引用。如果该对象不存在，那么输入的
-   * @p arguments 将被用来构造一个给定的 @p Type
-   * 的对象，然后返回这个新对象的引用。    一个 @p Type
-   * 类型的对象的副本，是由这个类实例拥有的，通过调用它的构造函数和给定的参数集来生成。对于这个函数，
-   * @p arguments 作为<tt>lvalue</tt>引用被传递。
+   * Return a reference to the object with given name. If the object does
+   * not exist, then the input @p arguments will be used to construct an object
+   * of the given @p Type and a reference to this new object then be returned.
    *
+   * A copy of an object of type @p Type , which is owned by this class
+   * instance, is generated by calling its constructor with the given set of
+   * arguments. For this function, the @p arguments are passed as
+   * <tt>lvalue</tt> references.
    */
   template <typename Type, typename Arg, typename... Args>
   Type &
@@ -231,23 +249,25 @@ public:
                               Args &... arguments);
 
   /**
-   * 返回一个给定名称的对象的引用。如果该对象不存在，那么输入的
-   * @p arguments 将被用来构造一个给定的 @p Type
-   * 的对象，然后返回这个新对象的引用。
-   * 与上述单参数的情况相同。
+   * Return a reference to the object with given name. If the object does
+   * not exist, then the input @p arguments will be used to construct an object
+   * of the given @p Type and a reference to this new object then be returned.
    *
+   * Same as above for a single argument.
    */
   template <typename Type, typename Arg>
   Type &
   get_or_add_object_with_name(const std::string &name, Arg &argument);
 
   /**
-   * 返回一个对给定名称的对象的引用。如果该对象不存在，那么输入的
-   * @p arguments 将被用来构造一个给定的 @p Type
-   * 的对象，然后返回这个新对象的引用。    一个 @p Type
-   * 类型的对象的副本，是由这个类实例所拥有的，通过调用它的构造函数和给定的参数集来生成。与之前的同名函数不同的是，对于这个函数，
-   * @p arguments 是作为<tt>rvalue</tt>引用传递的。
+   * Return a reference to the object with given name. If the object does
+   * not exist, then the input @p arguments will be used to construct an object
+   * of the given @p Type and a reference to this new object then be returned.
    *
+   * A copy of an object of type @p Type , which is owned by this class
+   * instance, is generated by calling its constructor with the given set of
+   * arguments. In contrast to the previous function of the same name, for
+   * this function the @p arguments are passed as <tt>rvalue</tt> references.
    */
   template <typename Type, typename Arg, typename... Args>
   Type &
@@ -256,56 +276,53 @@ public:
                               Args &&... arguments);
 
   /**
-   * 返回一个给定名称的对象的引用。如果该对象不存在，那么输入的
-   * @p arguments 将被用来构造一个给定的 @p Type
-   * 的对象，然后返回这个新对象的引用。
-   * 与上述单参数的情况相同。
+   * Return a reference to the object with given name. If the object does
+   * not exist, then the input @p arguments will be used to construct an object
+   * of the given @p Type and a reference to this new object then be returned.
    *
+   * Same as above for a single argument.
    */
   template <typename Type, typename Arg>
   Type &
   get_or_add_object_with_name(const std::string &name, Arg &&argument);
 
   /**
-   * 同上面的默认构造函数。
-   *
+   * Same as above for default constructors.
    */
   template <typename Type>
   Type &
   get_or_add_object_with_name(const std::string &name);
 
   /**
-   * 返回一个给定名称的对象的引用。
-   * 如果具有给定名称的对象没有存储在这个类中，或者具有给定名称的对象既不是精确指定的
-   * @p Type 也不是指向 @p Type.
-   * 的指针，这个函数会抛出一个异常。
+   * Return a reference to the object with given name.
    *
+   * This function throws an exception if either an object with the given name
+   * is not stored in this class, or if the object with the given name is
+   * neither of the exact specified @p Type nor a pointer to the @p Type.
    */
   template <typename Type>
   Type &
   get_object_with_name(const std::string &name);
 
   /**
-   * 返回一个给定名称的对象的常数引用。
-   * 如果具有给定名称的对象没有存储在这个类中，或者如果具有给定名称的对象既不是精确指定的
-   * @p Type 也不是指向 @p Type.
-   * 的指针，这个函数会抛出一个异常。
+   * Return a constant reference to the object with the given name.
    *
+   * This function throws an exception if either an object with the given name
+   * is not stored in this class, or if the object with the given name is
+   * neither of the exact specified @p Type nor a pointer to the @p Type.
    */
   template <typename Type>
   const Type &
   get_object_with_name(const std::string &name) const;
 
   /**
-   * 找出我们是否存储了一个具有给定名称的对象。
-   *
+   * Find out if we store an object with given name.
    */
   bool
   stores_object_with_name(const std::string &name) const;
 
   /**
-   * 删除具有给定名称的对象。
-   *
+   * Remove the object with given name.
    */
   void
   remove_object_with_name(const std::string &name);
@@ -313,24 +330,21 @@ public:
   //@}
 
   /**
-   * 在内部 boost::any 地图中不存在一个具有此名称的条目。
-   *
+   * An entry with this name does not exist in the internal boost::any map.
    */
   DeclException1(ExcNameNotFound,
                  std::string,
                  << "No entry with the name " << arg1 << " exists.");
 
   /**
-   * 在内部 boost::any 地图中不存在具有此名称的条目。
-   *
+   * An entry with this name does not exist in the internal boost::any map.
    */
   DeclException1(ExcNameHasBeenFound,
                  std::string,
                  << "An entry with the name " << arg1 << " already exists.");
 
   /**
-   * 请求的类型和存储的类型不同。
-   *
+   * The requested type and the stored type are different.
    */
   DeclException3(ExcTypeMismatch,
                  std::string,
@@ -341,14 +355,13 @@ public:
 
 private:
   /**
-   * 任意的用户数据，由一个字符串标识。
-   *
+   * Arbitrary user data, identified by a string.
    */
   std::map<std::string, boost::any> any_data;
 };
 
 
- /*----------------- Inline and template methods -----------------*/ 
+/*----------------- Inline and template methods -----------------*/
 
 
 #ifndef DOXYGEN
@@ -534,5 +547,3 @@ GeneralDataStorage::get_or_add_object_with_name(const std::string &name)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_algorithms_general_data_storage_h
-
-

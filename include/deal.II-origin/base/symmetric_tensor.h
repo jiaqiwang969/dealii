@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/symmetric_tensor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -116,30 +117,29 @@ namespace internal
   // end workaround
 
   /**
-   * A namespace for functions and classes that are internal to how the
-   * SymmetricTensor class (and its associate functions) works.
+   * 一个命名空间，用于SymmetricTensor类（及其相关函数）工作方式的内部函数和类。
+   *
    */
   namespace SymmetricTensorImplementation
   {
     /**
-     * Compute the inverse of a symmetric tensor of a
-     * generic @p rank, @p dim and @p Number type.
+     * 计算通用 @p rank,  @p dim 和 @p Number
+     * 类型的对称张量的逆运算。
+     *
      */
     template <int rank, int dim, typename Number>
     struct Inverse;
   } // namespace SymmetricTensorImplementation
 
   /**
-   * A namespace for classes that are internal to how the SymmetricTensor
-   * class works.
+   * 一个命名空间，用于SymmetricTensor类工作方式的内部类。
+   *
    */
   namespace SymmetricTensorAccessors
   {
     /**
-     * Create a TableIndices<2> object where the first entries up to
-     * <tt>position-1</tt> are taken from previous_indices, and new_index is
-     * put at position <tt>position</tt>. The remaining indices remain in
-     * invalid state.
+     * 创建一个TableIndices<2>对象，其中到<tt>position-1</tt>的第一个条目来自previous_indices，而new_index被放在<tt>position</tt>的位置。其余的指数仍处于无效状态。
+     *
      */
     DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE TableIndices<2>
                                                    merge(const TableIndices<2> &previous_indices,
@@ -157,10 +157,8 @@ namespace internal
 
 
     /**
-     * Create a TableIndices<4> object where the first entries up to
-     * <tt>position-1</tt> are taken from previous_indices, and new_index is
-     * put at position <tt>position</tt>. The remaining indices remain in
-     * invalid state.
+     * 创建一个TableIndices<4>对象，其中到<tt>position-1</tt>的第一个条目取自previous_indices，new_index被放在<tt>position</tt>的位置。其余的指数仍处于无效状态。
+     *
      */
     DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE TableIndices<4>
                                                    merge(const TableIndices<4> &previous_indices,
@@ -199,10 +197,8 @@ namespace internal
 
 
     /**
-     * Typedef template magic denoting the result of a double contraction
-     * between two tensors or ranks rank1 and rank2. In general, this is a
-     * tensor of rank <tt>rank1+rank2-4</tt>, but if this is zero it is a
-     * single scalar Number. For this case, we have a specialization.
+     * Typedef模板魔法，表示两个张量或等级rank1和rank2之间的双倍收缩结果。一般来说，这是一个等级<tt>rank1+rank2-4</tt>的张量，但如果这是零的话，就是一个单一的标量Number。对于这种情况，我们有一个特殊化。
+     *
      */
     template <int rank1,
               int rank2,
@@ -218,10 +214,8 @@ namespace internal
 
 
     /**
-     * Typedef template magic denoting the result of a double contraction
-     * between two tensors or ranks rank1 and rank2. In general, this is a
-     * tensor of rank <tt>rank1+rank2-4</tt>, but if this is zero it is a
-     * single scalar Number. For this case, we have a specialization.
+     * Typedef模板魔法表示两个张量或等级rank1和rank2之间的双重收缩的结果。一般来说，这是一个等级<tt>rank1+rank2-4</tt>的张量，但如果这是零的话，就是一个单一的标量数。对于这种情况，我们有一个特殊化。
+     *
      */
     template <int dim, typename Number, typename OtherNumber>
     struct double_contraction_result<2, 2, dim, Number, OtherNumber>
@@ -232,35 +226,30 @@ namespace internal
 
 
     /**
-     * Declaration of alias for the type of data structures which are used
-     * to store symmetric tensors. For example, for rank-2 symmetric tensors,
-     * we use a flat vector to store all the elements. On the other hand,
-     * symmetric rank-4 tensors are mappings from symmetric rank-2 tensors
-     * into symmetric rank-2 tensors, so they can be represented as matrices,
-     * etc.
+     * 声明用于存储对称张量的数据结构类型的别名。例如，对于等级2的对称张量，我们使用一个平面向量来存储所有的元素。另一方面，对称秩-4张量是从对称秩-2张量映射到对称秩-2张量，所以它们可以被表示为矩阵等。
+     * 除了需要这些信息的访问器类之外，其他人可能对这些信息不感兴趣。特别是，你不应该在你的应用程序中对存储格式做任何假设。
      *
-     * This information is probably of little interest to all except the
-     * accessor classes that need it. In particular, you shouldn't make any
-     * assumptions about the storage format in your application programs.
      */
     template <int rank, int dim, typename Number>
     struct StorageType;
 
     /**
-     * Specialization of StorageType for rank-2 tensors.
+     * 用于秩2张量的StorageType的特殊化。
+     *
      */
     template <int dim, typename Number>
     struct StorageType<2, dim, Number>
     {
       /**
-       * Number of independent components of a symmetric tensor of rank 2. We
-       * store only the upper right half of it.
+       * 等级2的对称张量的独立成分的数量。我们只存储它的右上半部分。
+       *
        */
       static const unsigned int n_independent_components =
         (dim * dim + dim) / 2;
 
       /**
-       * Declare the type in which we actually store the data.
+       * 声明我们实际存储数据的类型。
+       *
        */
       using base_tensor_type = Tensor<1, n_independent_components, Number>;
     };
@@ -268,30 +257,30 @@ namespace internal
 
 
     /**
-     * Specialization of StorageType for rank-4 tensors.
+     * 用于等级4张量的StorageType的特殊化。
+     *
      */
     template <int dim, typename Number>
     struct StorageType<4, dim, Number>
     {
       /**
-       * Number of independent components of a symmetric tensor of rank 2.
-       * Since rank-4 tensors are mappings between such objects, we need this
-       * information.
+       * 等级2的对称张量的独立分量的数量。
+       * 由于秩-4张量是这类对象之间的映射，我们需要这些信息。
+       *
        */
       static const unsigned int n_rank2_components = (dim * dim + dim) / 2;
 
       /**
-       * Number of independent components of a symmetric tensor of rank 4.
+       * 等级4的对称张量的独立分量的数量。
+       *
        */
       static const unsigned int n_independent_components =
         (n_rank2_components *
          StorageType<2, dim, Number>::n_independent_components);
 
       /**
-       * Declare the type in which we actually store the data. Symmetric
-       * rank-4 tensors are mappings between symmetric rank-2 tensors, so we
-       * can represent the data as a matrix if we represent the rank-2 tensors
-       * as vectors.
+       * 声明我们实际存储数据的类型。对称秩4张量是对称秩2张量之间的映射，所以如果我们将秩2张量表示为向量，我们可以将数据表示为矩阵。
+       *
        */
       using base_tensor_type = Tensor<2, n_rank2_components, Number>;
     };
@@ -299,17 +288,16 @@ namespace internal
 
 
     /**
-     * Switch type to select a tensor of rank 2 and dimension <tt>dim</tt>,
-     * switching on whether the tensor should be constant or not.
+     * 切换类型，选择一个秩2和维度<tt>dim</tt>的张量，切换张量是否应该是常数。
+     *
      */
     template <int rank, int dim, bool constness, typename Number>
     struct AccessorTypes;
 
     /**
-     * Switch type to select a tensor of rank 2 and dimension <tt>dim</tt>,
-     * switching on whether the tensor should be constant or not.
+     * 切换类型选择一个等级为2，维度为<tt>dim</tt>的张量，切换张量是否应该是常数。
+     * 对常数张量的特殊化。
      *
-     * Specialization for constant tensors.
      */
     template <int rank, int dim, typename Number>
     struct AccessorTypes<rank, dim, true, Number>
@@ -320,10 +308,9 @@ namespace internal
     };
 
     /**
-     * Switch type to select a tensor of rank 2 and dimension <tt>dim</tt>,
-     * switching on whether the tensor should be constant or not.
+     * 切换类型选择等级2和维度<tt>dim</tt>的张量，切换张量是否应该是常数。
+     * 对非常数张量的特殊化。
      *
-     * Specialization for non-constant tensors.
      */
     template <int rank, int dim, typename Number>
     struct AccessorTypes<rank, dim, false, Number>
@@ -336,42 +323,19 @@ namespace internal
 
     /**
      * @internal
+     * 作为SymmetricTensor类型元素的访问器的类。模板参数<tt>constness</tt>可以是true或false，表示所处理的对象是否是常数（即只有在值为false时才允许写访问）。
+     * 因为在<tt>N</tt>索引中，应用<tt>operator[]</tt>的效果是获得对<tt>N-1</tt>索引的访问，我们必须递归地实现这些访问器类，当我们只剩下一个索引时就停止。对于后一种情况，下面声明了这个类的特殊化，调用<tt>operator[]</tt>可以访问张量实际存储的对象；张量类还确保只访问我们实际存储的那些元素，也就是说，必要时它会重新排列索引。模板参数<tt>P</tt>表示有多少个剩余的索引。对于一个等级为2的张量，<tt>P</tt>可能是两个，而当使用<tt>operator[]</tt>时，会出现一个<tt>P=1</tt>的对象。
+     * 正如对整个命名空间所说的，你通常不会直接与这些类打交道，也不应该试图直接使用它们的接口，因为它可能会在没有通知的情况下改变。事实上，由于构造函数是私有的，你甚至不能生成这个类的对象，因为它们只被认为是访问表类元素的暂时性的，而不是作为函数的参数来传递它们，等等。
+     * 这个类是一个用于表类的类似类的改编。
      *
-     * Class that acts as accessor to elements of type SymmetricTensor. The
-     * template parameter <tt>constness</tt> may be either true or false, and
-     * indicates whether the objects worked on are constant or not (i.e. write
-     * access is only allowed if the value is false).
-     *
-     * Since with <tt>N</tt> indices, the effect of applying
-     * <tt>operator[]</tt> is getting access to something with <tt>N-1</tt>
-     * indices, we have to implement these accessor classes recursively, with
-     * stopping when we have only one index left. For the latter case, a
-     * specialization of this class is declared below, where calling
-     * <tt>operator[]</tt> gives you access to the objects actually stored by
-     * the tensor; the tensor class also makes sure that only those elements
-     * are actually accessed which we actually store, i.e. it reorders indices
-     * if necessary. The template parameter <tt>P</tt> indicates how many
-     * remaining indices there are. For a rank-2 tensor, <tt>P</tt> may be
-     * two, and when using <tt>operator[]</tt>, an object with <tt>P=1</tt>
-     * emerges.
-     *
-     * As stated for the entire namespace, you will not usually have to do
-     * with these classes directly, and should not try to use their interface
-     * directly as it may change without notice. In fact, since the
-     * constructors are made private, you will not even be able to generate
-     * objects of this class, as they are only thought as temporaries for
-     * access to elements of the table class, not for passing them around as
-     * arguments of functions, etc.
-     *
-     * This class is an adaptation of a similar class used for the Table
-     * class.
      */
     template <int rank, int dim, bool constness, int P, typename Number>
     class Accessor
     {
     public:
       /**
-       * Import two alias from the switch class above.
+       * 从上面的switch类中导入两个别名。
+       *
        */
       using reference =
         typename AccessorTypes<rank, dim, constness, Number>::reference;
@@ -380,48 +344,41 @@ namespace internal
 
     private:
       /**
-       * Constructor. Take a reference to the tensor object which we will
-       * access.
+       * 构造函数。取一个我们要访问的张量对象的引用。
+       * 第二个参数表示进入张量的前几个索引的值。例如，对于一个等级为4的张量，如果P=2，那么我们将已经有两个连续的元素选择（例如通过<tt>tensor[1][2]</tt>），这两个索引值必须被储存在某个地方。因此，这个类只利用这个数组的第一个等级-P元素，但用P-1将其传递给下一级，由其填充下一个条目，以此类推。
+       * 构造函数是私有的，以防止你身边有这样的对象。创建这种对象的唯一方法是通过<tt>Table</tt>类，它只作为临时对象生成它们。
+       * 这保证了访问器对象比母对象更早退出范围，避免了数据一致性的问题。
        *
-       * The second argument denotes the values of previous indices into the
-       * tensor. For example, for a rank-4 tensor, if P=2, then we will
-       * already have had two successive element selections (e.g. through
-       * <tt>tensor[1][2]</tt>), and the two index values have to be stored
-       * somewhere. This class therefore only makes use of the first rank-P
-       * elements of this array, but passes it on to the next level with P-1
-       * which fills the next entry, and so on.
-       *
-       * The constructor is made private in order to prevent you having such
-       * objects around. The only way to create such objects is via the
-       * <tt>Table</tt> class, which only generates them as temporary objects.
-       * This guarantees that the accessor objects go out of scope earlier
-       * than the mother object, avoid problems with data consistency.
        */
       constexpr Accessor(tensor_type &             tensor,
                          const TableIndices<rank> &previous_indices);
 
       /**
-       * Copy constructor.
+       * 复制构造函数。
+       *
        */
       constexpr DEAL_II_ALWAYS_INLINE
       Accessor(const Accessor &) = default;
 
     public:
       /**
-       * Index operator.
+       * 索引操作符。
+       *
        */
       constexpr Accessor<rank, dim, constness, P - 1, Number>
       operator[](const unsigned int i);
 
       /**
-       * Index operator.
+       * 索引操作符。
+       *
        */
       constexpr Accessor<rank, dim, constness, P - 1, Number>
       operator[](const unsigned int i) const;
 
     private:
       /**
-       * Store the data given to the constructor.
+       * 存储给构造函数的数据。
+       *
        */
       tensor_type &            tensor;
       const TableIndices<rank> previous_indices;
@@ -439,18 +396,17 @@ namespace internal
 
 
     /**
-     * @internal Accessor class for SymmetricTensor. This is the
-     * specialization for the last index, which actually allows access to the
-     * elements of the table, rather than recursively returning access objects
-     * for further subsets. The same holds for this specialization as for the
-     * general template; see there for more information.
+     * @internal
+     * SymmetricTensor的访问器类。这是最后一个索引的特殊化，它实际上允许访问表中的元素，而不是递归地返回进一步子集的访问对象。这种特殊化与一般模板的情况相同；更多信息请看那里。
+     *
      */
     template <int rank, int dim, bool constness, typename Number>
     class Accessor<rank, dim, constness, 1, Number>
     {
     public:
       /**
-       * Import two alias from the switch class above.
+       * 从上面的开关类中导入两个别名。
+       *
        */
       using reference =
         typename AccessorTypes<rank, dim, constness, Number>::reference;
@@ -459,49 +415,40 @@ namespace internal
 
     private:
       /**
-       * Constructor. Take a reference to the tensor object which we will
-       * access.
+       * 构造函数。取一个我们要访问的张量对象的引用。
+       * 第二个参数表示进入张量的前几个索引的值。例如，对于一个等级为4的张量，如果P=2，那么我们将已经有两个连续的元素选择（例如通过<tt>tensor[1][2]</tt>），这两个索引值必须被储存在某个地方。因此，这个类只利用这个数组的第一个等级-P元素，但用P-1将其传递给下一级，而P-1则填充了下一个条目，以此类推。
+       * 对于这个特殊的特殊化，即对于P==1，除了最后一个索引，其他的都已经被填充了。
+       * 构造函数是私有的，以防止你身边有这样的对象。创建这种对象的唯一方法是通过<tt>Table</tt>类，它只生成临时对象。
+       * 这保证了访问器对象比母对象更早退出范围，避免了数据一致性的问题。
        *
-       * The second argument denotes the values of previous indices into the
-       * tensor. For example, for a rank-4 tensor, if P=2, then we will
-       * already have had two successive element selections (e.g. through
-       * <tt>tensor[1][2]</tt>), and the two index values have to be stored
-       * somewhere. This class therefore only makes use of the first rank-P
-       * elements of this array, but passes it on to the next level with P-1
-       * which fills the next entry, and so on.
-       *
-       * For this particular specialization, i.e. for P==1, all but the last
-       * index are already filled.
-       *
-       * The constructor is made private in order to prevent you having such
-       * objects around. The only way to create such objects is via the
-       * <tt>Table</tt> class, which only generates them as temporary objects.
-       * This guarantees that the accessor objects go out of scope earlier
-       * than the mother object, avoid problems with data consistency.
        */
       constexpr Accessor(tensor_type &             tensor,
                          const TableIndices<rank> &previous_indices);
 
       /**
-       * Copy constructor.
+       * 复制构造函数。
+       *
        */
       constexpr DEAL_II_ALWAYS_INLINE
       Accessor(const Accessor &) = default;
 
     public:
       /**
-       * Index operator.
+       * 索引操作符。
+       *
        */
       constexpr reference operator[](const unsigned int);
 
       /**
-       * Index operator.
+       * 索引运算器。
+       *
        */
       constexpr reference operator[](const unsigned int) const;
 
     private:
       /**
-       * Store the data given to the constructor.
+       * 存储给构造函数的数据。
+       *
        */
       tensor_type &            tensor;
       const TableIndices<rank> previous_indices;
@@ -522,76 +469,45 @@ namespace internal
 
 
 /**
- * Provide a class that stores symmetric tensors of rank 2,4,... efficiently,
- * i.e. only store those off-diagonal elements of the full tensor that are not
- * redundant. For example, for symmetric $2\times 2$ tensors, this would be the
- * elements 11, 22, and 12, while the element 21 is equal to the 12 element.
- * Within this documentation, second order symmetric tensors are denoted as
- * bold-faced upper-case Latin letters such as $\mathbf A, \mathbf B, \dots$
- * or bold-faced Greek letters such as $\boldsymbol{\varepsilon}$,
- * $\boldsymbol{\sigma}$. The Cartesian coordinates of a second-order tensor
- * such as $\mathbf A$ are represented as $A_{ij}$ where $i,j$ are indices
- * ranging from 0 to <tt>dim-1</tt>.
- *
- * Using this class for symmetric tensors of rank 2 has advantages over
- * matrices in many cases since the dimension is known to the compiler as well
- * as the location of the data. It is therefore possible to produce far more
- * efficient code than for matrices with runtime-dependent dimension. It is
- * also more efficient than using the more general <tt>Tensor</tt> class,
- * since fewer elements are stored, and the class automatically makes sure that
- * the tensor represents a symmetric object.
- *
- * For tensors of higher rank, the savings in storage are even higher. For
- * example for the $3 \times 3 \times 3 \times 3$ tensors of rank 4, only 36
- * instead of the full 81 entries have to be stored. These rank 4 tensors are
- * denoted by blackboard-style upper-case Latin letters such as $\mathbb A$
- * with components $\mathcal{A}_{ijkl}$.
- *
- * While the definition of a symmetric rank-2 tensor is obvious, tensors of
- * rank 4 are considered symmetric if they are operators mapping symmetric
- * rank-2 tensors onto symmetric rank-2 tensors. This so-called minor symmetry
- * of the rank 4 tensor requires that for every set of four indices
- * $i, j, k, l$, the identity $\mathcal{C}_{ijkl} = \mathcal{C}_{jikl} =
- * \mathcal{C}_{ijlk}$ holds. However, it does not imply the relation
- * $\mathcal{C}_{ijkl} = \mathcal{C}_{klij}$.
- * Consequently, symmetric tensors of rank 4 as understood here are only
- * tensors that map symmetric tensors onto symmetric tensors, but they do not
- * necessarily induce a symmetric scalar product $\mathbf A : \mathbb C :
- * \mathbf B = \mathbf B : \mathbb C : \mathbf A$ or even
- * a positive (semi-)definite form $\mathbf A : \mathbb C : \mathbf A$, where
- * $\mathbf A, \mathbf B$ are symmetric rank-2 tensors and the colon indicates
- * the common double-index contraction that acts as a scalar product for
- * symmetric tensors.
- *
- * Symmetric tensors are most often used in structural and fluid
- * mechanics, where strains and stresses are usually symmetric
- * tensors, and the stress-strain relationship is given by a symmetric
- * rank-4 tensor.
- *
- * @note Symmetric tensors only exist with even numbers of indices. In
- * other words, the only objects that you can use are
- * <tt>SymmetricTensor<2,dim></tt>, <tt>SymmetricTensor<4,dim></tt>, etc, but
- * <tt>SymmetricTensor<1,dim></tt> and <tt>SymmetricTensor<3,dim></tt> do not
- * exist and their use will most likely lead to compiler errors.
+ * 提供一个能有效地存储等级为2,4,...的对称张量的类，即只存储全张量中那些不多余的对角线元素。例如，对于对称
+ * $2\times 2$
+ * 张量，这将是元素11、22和12，而元素21等于12的元素。在本文档中，二阶对称张量用粗体大写拉丁字母表示，如
+ * $\mathbf A, \mathbf B, \dots$  或粗体希腊字母，如
+ * $\boldsymbol{\varepsilon}$  ,  $\boldsymbol{\sigma}$  。二阶张量如
+ * $\mathbf A$ 的直角坐标表示为 $A_{ij}$ ，其中 $i,j$
+ * 是0到<tt>dim-1</tt>的指数。
+ * 在许多情况下，对秩为2的对称张量使用这个类比矩阵有优势，因为编译器知道维度以及数据的位置。因此有可能产生比运行时间相关的维度的矩阵更有效的代码。它也比使用更通用的<tt>Tensor</tt>类更有效，因为存储的元素更少，而且该类会自动确保张量代表一个对称对象。
+ * 对于更高等级的张量，存储方面的节省甚至更高。例如，对于等级为4的
+ * $3 \times 3 \times 3 \times 3$
+ * 张量，只需要存储36个而不是全部81个条目。这些等级4的张量用黑板风格的大写拉丁字母表示，如
+ * $\mathbb A$ ，其组成部分 $\mathcal{A}_{ijkl}$  。
+ * 虽然对称秩-2张量的定义很明显，但如果秩4张量是将对称秩-2张量映射到对称秩-2张量上的算子，则被视为对称的。这种所谓的秩4张量的次要对称性要求对于每一组四个指数
+ * $i, j, k, l$ ，身份 $\mathcal{C}_{ijkl} = \mathcal{C}_{jikl} =
+ * \mathcal{C}_{ijlk}$ 成立。然而，它并不意味着关系
+ * $\mathcal{C}_{ijkl} = \mathcal{C}_{klij}$
+ * 。因此，这里所理解的等级4的对称张子只是将对称张子映射到对称张子上的张子，但它们不一定能引起对称标量积
+ * $\mathbf A : \mathbb C : \mathbf B = \mathbf B : \mathbb C : \mathbf A$
+ * ，甚至是正（半）定式 $\mathbf A : \mathbb C : \mathbf A$
+ * ，其中 $\mathbf A, \mathbf B$
+ * 是对称等级2张子，冒号表示常见的双指数收缩，作为对称张子的标量积作用。
+ * 对称张量最常用于结构和流体力学，其中应变和应力通常是对称张量，应力-应变关系由对称秩4张量给出。
  *
  *
- * <h3>Accessing elements</h3>
+ * @note
+ * 对称张量只存在于偶数的指数。换句话说，你可以使用的对象只有<tt>SymmetricTensor<2,dim></tt>,
+ * <tt>SymmetricTensor<4,dim></tt>等，但是<tt>SymmetricTensor<1,dim></tt>和<tt>SymmetricTensor<3,dim></tt>并不存在，使用它们很可能导致编译器错误。
  *
- * The elements of a tensor $\mathbb C$ can be accessed using the bracket
- * operator, i.e. for a tensor of rank 4, <tt>C[0][1][0][1]</tt> accesses the
- * element $\mathcal{C}_{0101}$. This access can be used for both reading
- * and writing (if the tensor is non-constant at least). You may also perform
- * other operations on it, although that may lead to confusing situations
- * because several elements of the tensor are stored at the same location. For
- * example, for a rank-2 tensor that is assumed to be zero at the beginning,
- * writing <tt>A[0][1]+=1; A[1][0]+=1;</tt> will lead to the same element
- * being increased by one <em>twice</em>, because even though the accesses use
- * different indices, the elements that are accessed are symmetric and
- * therefore stored at the same location. It may therefore be useful in
- * application programs to restrict operations on individual elements to
- * simple reads or writes.
+ *  <h3>Accessing elements</h3> 张量 $\mathbb C$
+ * 的元素可以使用括号运算符来访问，即对于等级为4的张量，<tt>C[0][1][0][1]</tt>可以访问元素
+ * $\mathcal{C}_{0101}$
+ * 。这种访问可以用于读和写（如果张量至少是非常数）。你也可以对它进行其他操作，尽管这可能会导致混乱的情况，因为张量的几个元素被存储在同一个位置。例如，对于一个假定开始时为零的秩-2张量，写<tt>A[0][1]+=1;
+ * A[1][0]+=1;</tt>将导致同一个元素被增加1 <em> 两次 </em>
+ * ，因为即使访问使用不同的索引，被访问的元素是对称的，因此存储在同一位置。因此，在应用程序中，将对单个元素的操作限制为简单的读或写可能是有用的。
+ *
  *
  * @ingroup geomprimitives
+ *
+ *
  */
 template <int rank_, int dim, typename Number>
 class SymmetricTensor
@@ -600,199 +516,182 @@ public:
   static_assert(rank_ % 2 == 0, "A SymmetricTensor must have even rank!");
 
   /**
-   * Provide a way to get the dimension of an object without explicit
-   * knowledge of it's data type. Implementation is this way instead of
-   * providing a function <tt>dimension()</tt> because now it is possible to
-   * get the dimension at compile time without the expansion and preevaluation
-   * of an inlined function; the compiler may therefore produce more efficient
-   * code and you may use this value to declare other data types.
+   * 提供一种方法来获取一个对象的尺寸，而不需要明确知道它的数据类型。实现这种方式而不是提供一个函数<tt>dimension()</tt>，因为现在有可能在编译时获得尺寸，而不需要内联函数的扩展和预评估；因此编译器可能产生更有效的代码，你可以使用这个值来声明其他数据类型。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Publish the rank of this tensor to the outside world.
+   * 向外界公布这个张量的等级。
+   *
    */
   static const unsigned int rank = rank_;
 
   /**
-   * An integer denoting the number of independent components that fully
-   * describe a symmetric tensor. In $d$ space dimensions, this number equals
-   * $\frac 12 (d^2+d)$ for symmetric tensors of rank 2.
+   * 一个整数，表示完全描述一个对称张量的独立成分的数量。在
+   * $d$ 空间维度中，这个数字等于 $\frac 12 (d^2+d)$
+   * 的对称张量的等级2。
+   *
    */
   static constexpr unsigned int n_independent_components =
     internal::SymmetricTensorAccessors::StorageType<rank_, dim, Number>::
       n_independent_components;
 
   /**
-   * Default constructor. Creates a tensor with all entries equal to zero.
+   * 默认构造函数。创建一个所有条目都等于零的张量。
+   *
    */
   constexpr DEAL_II_ALWAYS_INLINE
   SymmetricTensor() = default;
 
   /**
-   * Constructor. Generate a symmetric tensor from a general one. Assumes that
-   * @p t is already symmetric, and in debug mode this is in fact checked.
-   * Note that no provision is made to assure that the tensor is symmetric
-   * only up to round-off error: if the incoming tensor is not exactly
-   * symmetric, then an exception is thrown. If you know that incoming tensor
-   * is symmetric only up to round-off, then you may want to call the
-   * <tt>symmetrize()</tt> function first. If you aren't sure, it is good
-   * practice to check before calling <tt>symmetrize()</tt>.
+   * 构造函数。从一个一般的张量生成一个对称的张量。假设
+   * @p t
+   * 已经是对称的，在调试模式下，这实际上是检查的。
+   * 注意，没有规定保证张量只在四舍五入的情况下是对称的：如果传入的张量不是完全对称的，那么会抛出一个异常。如果你知道传入的张量只到四舍五入为止是对称的，那么你可能想先调用<tt>symmetrize()</tt>函数。如果你不确定，在调用<tt>symmetrize()</tt>之前进行检查是很好的做法。
+   * 因为我们通过非constexpr函数调用来检查对称性，所以你必须在constexpr上下文中使用symmetrize()函数来代替。
    *
-   * Because we check for symmetry via a non-constexpr function call, you will
-   * have to use the symmetrize() function in constexpr contexts instead.
    */
   template <typename OtherNumber>
   explicit SymmetricTensor(const Tensor<2, dim, OtherNumber> &t);
 
   /**
-   * A constructor that creates a symmetric tensor from an array holding its
-   * independent elements. Using this constructor assumes that the caller
-   * knows the order in which elements are stored in symmetric tensors; its
-   * use is therefore discouraged, but if you think you want to use it anyway
-   * you can query the order of elements using the unrolled_index() function.
+   * 一个构造函数，用于从持有独立元素的数组中创建一个对称的张量。使用这个构造函数假定调用者知道元素在对称张量中的存储顺序；因此不鼓励使用它，但是如果你认为你想使用它，你可以使用unrolled_index()函数查询元素的顺序。
+   * 这个构造函数目前只针对等级为2的对称张量实现。
+   * 传递的数组的大小等于
+   * SymmetricTensor<rank_,dim>::n_independent_components;
+   * 使用内部命名空间的对象的原因是为了解决一些旧编译器的错误。
    *
-   * This constructor is currently only implemented for symmetric tensors of
-   * rank 2.
-   *
-   * The size of the array passed is equal to
-   * SymmetricTensor<rank_,dim>::n_independent_components; the reason for using
-   * the object from the internal namespace is to work around bugs in some
-   * older compilers.
    */
   constexpr SymmetricTensor(const Number (&array)[n_independent_components]);
 
   /**
-   * Copy constructor from tensors with different underlying scalar type. This
-   * obviously requires that the @p OtherNumber type is convertible to @p
-   * Number.
+   * 从具有不同底层标量类型的张量复制构造函数。这显然要求
+   * @p OtherNumber 类型可以转换为 @p 数。
+   *
    */
   template <typename OtherNumber>
   constexpr explicit SymmetricTensor(
     const SymmetricTensor<rank_, dim, OtherNumber> &initializer);
 
   /**
-   * Return a pointer to the first element of the underlying storage.
+   * 返回一个指向底层存储的第一个元素的指针。
+   *
    */
   Number *
   begin_raw();
 
   /**
-   * Return a const pointer to the first element of the underlying storage.
+   * 返回一个指向底层存储的第一个元素的常量指针。
+   *
    */
   const Number *
   begin_raw() const;
 
   /**
-   * Return a pointer to the element past the end of the underlying storage.
+   * 返回一个指向底层存储结束后的元素的指针。
+   *
    */
   Number *
   end_raw();
 
   /**
-   * Return a const pointer to the element past the end of the underlying
-   * storage.
+   * 返回一个超过底层存储结束的元素的常量指针。
+   *
    */
   const Number *
   end_raw() const;
 
   /**
-   * Assignment operator from symmetric tensors with different underlying scalar
-   * type.
-   * This obviously requires that the @p OtherNumber type is convertible to
-   * @p Number.
+   * 来自具有不同底层标量类型的对称张量的赋值运算符。
+   * 这显然要求 @p OtherNumber 类型可以转换为 @p Number. 。
+   *
    */
   template <typename OtherNumber>
   constexpr SymmetricTensor &
   operator=(const SymmetricTensor<rank_, dim, OtherNumber> &rhs);
 
   /**
-   * This operator assigns a scalar to a tensor. To avoid confusion with what
-   * exactly it means to assign a scalar value to a tensor, zero is the only
-   * value allowed for <tt>d</tt>, allowing the intuitive notation
-   * $\mathbf A = 0$ to reset all elements of the tensor to zero.
+   * 这个操作符将一个标量分配给一个张量。为了避免混淆将标量值分配给张量的确切含义，零是<tt>d</tt>唯一允许的值，允许用直观的符号
+   * $\mathbf A = 0$ 将张量的所有元素重置为零。
+   *
    */
   constexpr SymmetricTensor &
   operator=(const Number &d);
 
   /**
-   * Convert the present symmetric tensor into a full tensor with the same
-   * elements, but using the different storage scheme of full tensors.
+   * 将目前的对称张量转换成具有相同元素的全张量，但使用全张量的不同存储方案。
+   *
    */
   constexpr operator Tensor<rank_, dim, Number>() const;
 
   /**
-   * Test for equality of two tensors.
+   * 测试两个张量的相等性。
+   *
    */
   constexpr bool
   operator==(const SymmetricTensor &) const;
 
   /**
-   * Test for inequality of two tensors.
+   * 测试两个张量的不等式。
+   *
    */
   constexpr bool
   operator!=(const SymmetricTensor &) const;
 
   /**
-   * Add another tensor.
+   * 添加另一个张量。
+   *
    */
   template <typename OtherNumber>
   constexpr SymmetricTensor &
   operator+=(const SymmetricTensor<rank_, dim, OtherNumber> &);
 
   /**
-   * Subtract another tensor.
+   * 减去另一个张量。
+   *
    */
   template <typename OtherNumber>
   constexpr SymmetricTensor &
   operator-=(const SymmetricTensor<rank_, dim, OtherNumber> &);
 
   /**
-   * Scale the tensor by <tt>factor</tt>, i.e. multiply all components by
-   * <tt>factor</tt>.
+   * 用<tt>因子</tt>缩放张量，即用<tt>因子</tt>乘以所有组件。
+   *
    */
   template <typename OtherNumber>
   constexpr SymmetricTensor &
   operator*=(const OtherNumber &factor);
 
   /**
-   * Scale the tensor by <tt>1/factor</tt>.
+   * 用<tt>1/factor</tt>缩放张量。
+   *
    */
   template <typename OtherNumber>
   constexpr SymmetricTensor &
   operator/=(const OtherNumber &factor);
 
   /**
-   * Unary minus operator. Negate all entries of a tensor.
+   * 单元减法运算符。负掉张量的所有条目。
+   *
    */
   constexpr SymmetricTensor
   operator-() const;
 
   /**
-   * Double contraction product between the present symmetric tensor and a
-   * tensor of rank 2. For example, if the present object is the symmetric
-   * rank-2 tensor $\mathbf{A}$ and it is multiplied by another symmetric
-   * rank-2 tensor $\mathbf{B}$, then the result is the scalar-product double
-   * contraction $\mathbf A : \mathbf B = \sum_{i,j} A_{ij} B_{ij}$.
-   * In this case, the return value evaluates to a single
-   * scalar. While it is possible to define other scalar products (and
-   * associated induced norms), this one seems to be the most appropriate one.
+   * 本对称张量与一个等级为2的张量之间的双重收缩积。例如，如果当前对象是对称秩2张量
+   * $\mathbf{A}$ ，它与另一个对称秩2张量 $\mathbf{B}$
+   * 相乘，那么结果是标量积双收缩  $\mathbf A : \mathbf B =
+   * \sum_{i,j} A_{ij} B_{ij}$  。
+   * 在这种情况下，返回值被评估为一个单一的标量。虽然有可能定义其他标量积（以及相关的诱导规范），但这个似乎是最合适的一个。
+   * 如果当前对象是一个秩-4张量，比如 $\mathbb A$
+   * ，那么结果是一个秩-2张量 $\mathbf C = \mathbb A : \mathbf B$
+   * ，也就是说，该操作在当前对象的最后两个索引和参数的索引上收缩，结果是一个秩2的张量（
+   * $C_{ij} = \sum_{k,l} \mathcal{A}_{ijkl} B_{kl}$ ）。
+   * 请注意，对称张量的乘法算子被定义为对两个索引的双重收缩，而对于普通<tt>张量</tt>对象，它被定义为对一个索引的单一收缩。因此，对于对称张量，它的作用方式在数学文献中通常用
+   * "冒号乘法 "来表示。
+   * 有一些全局函数<tt>double_contract</tt>做了与这个操作符相同的工作，但它们不是将结果作为返回值，而是将其写入函数的第一个参数中。
    *
-   * If the present object is a rank-4 tensor such as $\mathbb A$, then the
-   * result is a rank-2 tensor $\mathbf C = \mathbb A : \mathbf B$, i.e.,
-   * the operation contracts over the last two indices of the present object
-   * and the indices of the argument, and the result is a tensor of rank 2
-   * ($C_{ij} = \sum_{k,l} \mathcal{A}_{ijkl} B_{kl}$).
-   *
-   * Note that the multiplication operator for symmetric tensors is defined to
-   * be a double contraction over two indices, while it is defined as a single
-   * contraction over only one index for regular <tt>Tensor</tt> objects. For
-   * symmetric tensors it therefore acts in a way that is commonly denoted by
-   * a "colon multiplication" in the mathematical literature.
-   *
-   * There are global functions <tt>double_contract</tt> that do the same work
-   * as this operator, but rather than returning the result as a return value,
-   * they write it into the first argument to the function.
    */
   template <typename OtherNumber>
   DEAL_II_CONSTEXPR typename internal::SymmetricTensorAccessors::
@@ -800,8 +699,8 @@ public:
     operator*(const SymmetricTensor<2, dim, OtherNumber> &s) const;
 
   /**
-   * Contraction over two indices of the present object with the rank-4
-   * symmetric tensor given as argument.
+   * 在本对象的两个索引上收缩，并将等级4的对称张量作为参数给出。
+   *
    */
   template <typename OtherNumber>
   DEAL_II_CONSTEXPR typename internal::SymmetricTensorAccessors::
@@ -809,121 +708,107 @@ public:
     operator*(const SymmetricTensor<4, dim, OtherNumber> &s) const;
 
   /**
-   * Return a read-write reference to the indicated element.
+   * 返回一个对指定元素的读写引用。
+   *
    */
   constexpr Number &
   operator()(const TableIndices<rank_> &indices);
 
   /**
-   * Return a @p const reference to the value referred to by the argument.
+   * 返回一个 @p const 对参数所指的值的引用。
+   *
    */
   constexpr const Number &
   operator()(const TableIndices<rank_> &indices) const;
 
   /**
-   * Access the elements of a row of this symmetric tensor. This function is
-   * called for constant tensors.
+   * 访问这个对称张量的某一行的元素。这个函数是为常数张量调用的。
+   *
    */
   constexpr internal::SymmetricTensorAccessors::
     Accessor<rank_, dim, true, rank_ - 1, Number>
     operator[](const unsigned int row) const;
 
   /**
-   * Access the elements of a row of this symmetric tensor. This function is
-   * called for non-constant tensors.
+   * 访问这个对称张量的一行元素。对于非常数张量，这个函数被调用。
+   *
    */
   constexpr internal::SymmetricTensorAccessors::
     Accessor<rank_, dim, false, rank_ - 1, Number>
     operator[](const unsigned int row);
 
   /**
-   * Return a @p const reference to the value referred to by the argument.
+   * 返回一个 @p const 对参数所指数值的引用。
+   * 与operator()完全相同。
    *
-   * Exactly the same as operator().
    */
   constexpr const Number &operator[](const TableIndices<rank_> &indices) const;
 
   /**
-   * Return a read-write reference to the indicated element.
+   * 返回一个对指定元素的读写引用。
+   * 与operator()完全相同。
    *
-   * Exactly the same as operator().
    */
   constexpr Number &operator[](const TableIndices<rank_> &indices);
 
   /**
-   * Access to an element according to unrolled index. The function
-   * <tt>s.access_raw_entry(unrolled_index)</tt> does the same as
-   * <tt>s[s.unrolled_to_component_indices(unrolled_index)]</tt>, but more
-   * efficiently.
+   * 根据unrolled
+   * index访问一个元素。函数<tt>s.access_raw_entry(unrolled_index)</tt>与<tt>s[s.unrolled_to_component_indices(unrolled_index)]</tt>的作用相同，但更有效。
+   *
    */
   constexpr const Number &
   access_raw_entry(const unsigned int unrolled_index) const;
 
   /**
-   * Access to an element according to unrolled index. The function
-   * <tt>s.access_raw_entry(unrolled_index)</tt> does the same as
-   * <tt>s[s.unrolled_to_component_indices(unrolled_index)]</tt>, but more
-   * efficiently.
+   * 根据unrolled
+   * index来访问一个元素。函数<tt>s.access_raw_entry(unrolled_index)</tt>与<tt>s[s.unrolled_to_component_indices(unrolled_index)]</tt>的作用相同，但效率更高。
+   *
    */
   constexpr Number &
   access_raw_entry(const unsigned int unrolled_index);
 
   /**
-   * Return the Frobenius-norm of a tensor, i.e. the square root of the sum of
-   * squares of all entries. This norm is induced by the scalar product
-   * defined above for two symmetric tensors. Note that it includes <i>all</i>
-   * entries of the tensor, counting symmetry, not only the unique ones (for
-   * example, for rank-2 tensors, this norm includes adding up the squares of
-   * upper right as well as lower left entries, not just one of them, although
-   * they are equal for symmetric tensors).
+   * 返回张量的Frobenius-norm，即所有条目平方之和的平方根。这个准则是由上面为两个对称张量定义的标量乘引起的。请注意，它包括张量的<i>all</i>个条目，计算对称性，而不仅仅是唯一的条目（例如，对于等级2的张量，这个准则包括将右上和左下条目的平方相加，而不仅仅是其中之一，尽管它们对于对称张量是相等的）。
+   *
    */
   constexpr typename numbers::NumberTraits<Number>::real_type
   norm() const;
 
   /**
-   * Tensor objects can be unrolled by simply pasting all elements into one
-   * long vector, but for this an order of elements has to be defined. For
-   * symmetric tensors, this function returns which index within the range
-   * <code>[0,n_independent_components)</code> the given entry in a symmetric
-   * tensor has.
+   * 张量对象可以通过简单地将所有元素粘贴到一个长矢量中来展开，但为此必须定义一个元素的顺序。对于对称张量，该函数返回对称张量中给定条目在
+   * <code>[0,n_independent_components)</code> 范围内的哪个索引。
+   *
    */
   static constexpr unsigned int
   component_to_unrolled_index(const TableIndices<rank_> &indices);
 
   /**
-   * The opposite of the previous function: given an index $i$ in the unrolled
-   * form of the tensor, return what set of indices $(k,l)$ (for rank-2
-   * tensors) or $(k,l,m,n)$ (for rank-4 tensors) corresponds to it.
+   * 与前一个函数相反：给定张量的解卷形式中的一个索引
+   * $i$ ，返回与之相对应的索引集 $(k,l)$
+   * （对于秩-2张量）或 $(k,l,m,n)$ （对于秩-4张量）。
+   *
    */
   static constexpr TableIndices<rank_>
   unrolled_to_component_indices(const unsigned int i);
 
   /**
-   * Reset all values to zero.
+   * 将所有数值重置为零。    请注意，这与标准库容器的 @p
+   * clear()成员函数和deal.II中的其他几个类的语义部分不一致，它们不仅将存储元素的值重置为零，而且释放所有内存并将对象返回到处女状态。然而，由于本类型的对象的大小是由其模板参数决定的，所以调整大小是不可能的，事实上，所有元素的值都为零的状态就是这样一个对象构造后的状态。
    *
-   * Note that this is partly inconsistent with the semantics of the @p
-   * clear() member functions of the standard library containers and of
-   * several other classes within deal.II, which not only reset the values of
-   * stored elements to zero, but release all memory and return the object
-   * into a virginial state. However, since the size of objects of the present
-   * type is determined by its template parameters, resizing is not an option,
-   * and indeed the state where all elements have a zero value is the state
-   * right after construction of such an object.
    */
   constexpr void
   clear();
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   static constexpr std::size_t
   memory_consumption();
 
   /**
-   * Read or write the data of this object to or from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
@@ -931,18 +816,21 @@ public:
 
 private:
   /**
-   * A structure that describes properties of the base tensor.
+   * 一个描述基数张量的属性的结构。
+   *
    */
   using base_tensor_descriptor =
     internal::SymmetricTensorAccessors::StorageType<rank_, dim, Number>;
 
   /**
-   * Data storage type for a symmetric tensor.
+   * 对称张量的数据存储类型。
+   *
    */
   using base_tensor_type = typename base_tensor_descriptor::base_tensor_type;
 
   /**
-   * The place where we store the data of the tensor.
+   * 我们存储张量数据的地方。
+   *
    */
   base_tensor_type data;
 
@@ -2482,20 +2370,18 @@ SymmetricTensor<rank_, dim, Number>::serialize(Archive &ar, const unsigned int)
 
 #endif // DOXYGEN
 
-/* ----------------- Non-member functions operating on tensors. ------------ */
+ /* ----------------- Non-member functions operating on tensors. ------------ */ 
 
 
 /**
- * Addition of two symmetric tensors of equal rank. The result is another
- * SymmetricTensor that has a number type that is compatible with the
- * operation.
+ * 两个等级相同的对称张量相加。结果是另一个SymmetricTensor，它的数字类型与该操作兼容。
+ * 如果可能的话（例如，当 @p Number 和 @p OtherNumber
+ * 是同一类型时，或者如果 <code>Number() + OtherNumber()</code>
+ * 的结果是另一个 @p Number),
+ * ，你应该使用<tt>操作符+=</tt>来代替，因为这不需要创建一个临时变量。
+ * @relatesalso  SymmetricTensor
  *
- * If possible (e.g. when @p Number and @p OtherNumber are of the same type,
- * or if the result of <code>Number() + OtherNumber()</code> is another @p Number),
- * you should use <tt>operator+=</tt> instead since this does not require the
- * creation of a temporary variable.
  *
- * @relatesalso SymmetricTensor
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE
@@ -2511,16 +2397,14 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Subtraction of two symmetric tensors of equal rank. The result is another
- * SymmetricTensor that has a number type that is compatible with the
- * operation.
+ * 减去两个等级相同的对称张量。其结果是另一个SymmetricTensor，它的数字类型与该操作兼容。
+ * 如果可能的话（例如，当 @p Number 和 @p OtherNumber
+ * 是相同的类型，或者如果<code>Number()的结果
  *
- * If possible (e.g. when @p Number and @p OtherNumber are of the same type,
- * or if the result of <code>Number() - OtherNumber()</code> is another @p Number),
- * you should use <tt>operator-=</tt> instead since this does not require the
- * creation of a temporary variable.
+ * - OtherNumber()</code>是另一个 @p Number), ，你应该使用<tt>operator-=</tt>代替，因为这不需要创建一个临时变量。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE
@@ -2536,11 +2420,10 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Addition of a SymmetricTensor and a general Tensor of equal rank. The
- * result is a general Tensor that has a number type that is compatible with the
- * operation.
+ * 将一个对称张量和一个相同等级的一般张量相加。其结果是一个一般的张量，其数字类型与该操作兼容。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE
@@ -2553,11 +2436,10 @@ constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Addition of a general Tensor with a SymmetricTensor of equal rank. The
- * result is a general Tensor that has a number type that is compatible with the
- * operation.
+ * 一个普通张量与一个相同等级的对称张量相加。其结果是一个一般的张量，其数字类型与该操作兼容。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE
@@ -2570,11 +2452,10 @@ constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Subtraction of a general Tensor from a SymmetricTensor of equal rank. The
- * result is a general Tensor that has a number type that is compatible with the
- * operation.
+ * 从一个相同等级的对称张量中减去一个一般张量。其结果是一个一般的张量，其数字类型与该操作兼容。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE
@@ -2587,11 +2468,10 @@ constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Subtraction of a SymmetricTensor from a general Tensor of equal rank. The
- * result is a general Tensor that has a number type that is compatible with the
- * operation.
+ * 从一个相同等级的一般张量中减去一个对称张量。其结果是一个一般的张量，其数字类型与该操作兼容。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE
@@ -2605,17 +2485,12 @@ constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Compute the determinant of a rank 2 symmetric tensor. The determinant is
- * also commonly referred to as the third invariant of rank-2 tensors.
+ * 计算一个等级2的对称张量的行列式。行列式通常也被称为等级2张量的第三不变量。
+ * 对于一个一维张量，行列式等于唯一的元素，因此等同于轨迹。
+ * 为了简化符号学，还有一个<tt>third_invariant()</tt>函数可以返回一个张量的行列式。
+ * @relatesalso  SymmetricTensor
  *
- * For a one-dimensional tensor, the determinant equals the only element and
- * is therefore equivalent to the trace.
  *
- * For greater notational simplicity, there is also a
- * <tt>third_invariant()</tt>
- * function that returns the determinant of a tensor.
- *
- * @relatesalso SymmetricTensor
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE Number
@@ -2647,15 +2522,11 @@ constexpr inline DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * Compute the determinant of a rank 2 symmetric tensor. This function
- * therefore computes the same value as the <tt>determinant()</tt> functions
- * and is only provided for greater notational simplicity (since there are
- * also functions first_invariant() and second_invariant()).
- * \f[
- *   I_3 (\mathbf A) = III (\mathbf A) = \det (\mathbf A)
- * \f]
+ * 计算一个等级2的对称张量的行列式。因此，这个函数计算的值与<tt>determinant()</tt>函数相同，提供这个函数只是为了在符号上更加简单（因为还有first_invariant()和second_invariant()函数）。\f[
+ * I_3 (\mathbf A) = III (\mathbf A) = \det (\mathbf A) \f]
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2667,13 +2538,11 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * Compute and return the trace of a tensor of rank 2, i.e. the sum of its
- * diagonal entries. The trace is the first invariant of a rank-2 tensor.
- * \f[
- *   \text{tr} \mathbf A = \sum_i A_{ii}
- * \f]
+ * 计算并返回等级为2的张量的轨迹，即其对角线项的总和。跟踪是秩2张量的第一个不变量。\f[
+ * \text{tr} \mathbf A = \sum_i A_{ii} \f]
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE Number
@@ -2687,15 +2556,11 @@ constexpr inline DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * Compute the trace of a rank 2 symmetric tensor. This function therefore
- * computes the same value as the <tt>trace()</tt> functions and is only
- * provided for greater notational simplicity (since there are also functions
- * second_invariant() and third_invariant()).
- * \f[
- *   I_1 (\mathbf A) = I (\mathbf A) = \text{tr} \mathbf A = \sum_i A_{ii}
- * \f]
+ * 计算一个秩2对称张量的迹。因此，这个函数计算的值与<tt>trace()</tt>函数相同，提供这个函数只是为了在符号上更加简单（因为还有second_invariant()和third_invariant()函数）。\f[
+ * I_1 (\mathbf A) = I (\mathbf A) = \text{tr} \mathbf A = \sum_i A_{ii} \f]
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 constexpr Number
@@ -2706,15 +2571,15 @@ first_invariant(const SymmetricTensor<2, dim, Number> &t)
 
 
 /**
- * Compute the second invariant of a tensor of rank 2. The second invariant of
- * a tensor $\mathbf A$ is defined as
- * $I_2 (\mathbf A) = II(\mathbf A) = \frac 12
- * \left[ (\text{tr} \mathbf A)^2 - \text{tr} (\mathbf{A}^2) \right]$.
+ * 计算一个等级为2的张量的第二个不变式。张量 $\mathbf A$
+ * 的第二不变量定义为 $I_2 (\mathbf A) = II(\mathbf A) = \frac 12
+ * \left[ (\text{tr} \mathbf A)^2
  *
- * For the kind of arguments to this function, i.e., a rank-2 tensor of
- * size 1, the result is simply zero.
+ * - \text{tr} (\mathbf{A}^2) \right]$  。
+ * 对于这个函数的参数种类，即大小为1的秩2张量，其结果只是零。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2726,22 +2591,23 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * Compute the second invariant of a tensor of rank 2. The second invariant of
- * a tensor $\mathbf A$ is defined as
- * $I_2 (\mathbf A) = II(\mathbf A) = \frac 12
- * \left[ (\text{tr} \mathbf A)^2 - \text{tr} (\mathbf{A}^2) \right]$.
+ * 计算一个等级为2的张量的第二不变量。张量 $\mathbf A$
+ * 的第二不变量定义为 $I_2 (\mathbf A) = II(\mathbf A) = \frac 12
+ * \left[ (\text{tr} \mathbf A)^2
  *
- * For the kind of arguments to this function, i.e., a symmetric rank-2 tensor
- * of size 2, the result is (counting indices starting at one)
- * $I_2(\mathbf A) = II(\mathbf A) = \frac 12
- *   \left[ (A_{11} + A_{22})^2 - (A_{11}^2+2 A_{12}^2+ A_{22}^2) \right]
- *   = A_{11} A_{22} - A_{12}^2$. As expected, for the
- * $2\times 2$ symmetric tensors this function handles, this equals the
- * determinant of the tensor. (This is so because for $2\times 2$ symmetric
- * tensors, there really are only two invariants, so the second and third
- * invariant are the same; the determinant is the third invariant.)
+ * - \text{tr} (\mathbf{A}^2) \right]$  。
+ * 对于这个函数的参数种类，即大小为2的对称秩-2张量，其结果是（从1开始计算指数）
+ * $I_2(\mathbf A) = II(\mathbf A) = \frac 12 \left[ (A_{11} + A_{22})^2
  *
- * @relatesalso SymmetricTensor
+ * - (A_{11}^2+2 A_{12}^2+ A_{22}^2) \right] = A_{11} A_{22}
+ *
+ * - A_{12}^2$  。正如预期的那样，对于这个函数处理的
+ * $2\times 2$ 对称张量，这等于张量的行列式。这是因为对于
+ * $2\times 2$
+ * 对称张量，实际上只有两个不变式，所以第二个和第三个不变式是一样的；行列式是第三个不变式）。
+ * @relatesalso  对称张量
+ *
+ *
  */
 template <typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2753,12 +2619,13 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * Compute the second invariant of a tensor of rank 2. The second invariant of
- * a tensor $\mathbf A$ is defined as
- * $I_2 (\mathbf A) = II(\mathbf A) = \frac 12
- * \left[ (\text{tr} \mathbf A)^2 - \text{tr} (\mathbf{A}^2) \right]$.
+ * 计算一个等级为2的张量的第二个不变式。张量 $\mathbf A$
+ * 的第二不变量定义为 $I_2 (\mathbf A) = II(\mathbf A) = \frac 12
+ * \left[ (\text{tr} \mathbf A)^2
  *
- * @relatesalso SymmetricTensor
+ * - \text{tr} (\mathbf{A}^2) \right]$  。
+ * @relatesalso  对称张量
+ *
  */
 template <typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2771,11 +2638,11 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * Return the eigenvalues of a symmetric $1 \times 1$ tensor.
- * The (single) entry of the tensor is, of course, equal to the (single)
- * eigenvalue.
+ * 返回一个对称的 $1 \times 1$
+ * 张量的特征值。当然，张量的（单一）条目等于（单一）特征值。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <typename Number>
 std::array<Number, 1>
@@ -2784,26 +2651,27 @@ eigenvalues(const SymmetricTensor<2, 1, Number> &T);
 
 
 /**
- * Return the eigenvalues of a symmetric $2\times 2$ tensor.
- * The array of eigenvalues is sorted in descending order.
- *
- * For $2\times 2$ tensors, the eigenvalues of tensor $\mathbf T$ are the
- * roots of <a
+ * 返回一个对称的 $2\times 2$
+ * 张量的特征值。特征值的数组按降序排序。 对于 $2\times
+ * 2$ 张量，张量 $\mathbf T$ 的特征值是<a
  * href="https://en.wikipedia.org/wiki/Eigenvalue_algorithm#2.C3.972_matrices">the
- * characteristic polynomial</a> $0 = \lambda^2
- * - \lambda\;\text{tr}\mathbf{T} + \det \mathbf{T}$ as given by
- * $\lambda_1, \lambda_2 = \frac{1}{2} \left[ \text{tr} \mathbf{T} \pm
- * \sqrt{(\text{tr} \mathbf{T})^2 - 4 \det \mathbf{T}} \right]$.
+ * characteristic polynomial</a>  $0 = \lambda^2
  *
- * @warning The algorithm employed here determines the eigenvalues by
- * computing the roots of the characteristic polynomial. In the case that there
- * exists a common root (the eigenvalues are equal), the computation is
- * <a href="https://scicomp.stackexchange.com/q/23686">subject to round-off
- * errors</a> of order $\sqrt{\epsilon}$. As an alternative, the eigenvectors()
- * function provides a more robust, but costly, method to compute the
- * eigenvalues of a symmetric tensor.
  *
- * @relatesalso SymmetricTensor
+ *
+ * - \lambda\;\text{tr}\mathbf{T} + \det \mathbf{T}$ 的根，由 $\lambda_1,
+ * \lambda_2 = \frac{1}{2} \left[ \text{tr} \mathbf{T} \pm \sqrt{(\text{tr}
+ * \mathbf{T})^2
+ *
+ * - 4 \det \mathbf{T}} \right]$ 给出。
+ * @warning
+ * 这里采用的算法通过计算特征多项式的根来确定特征值。在存在共根的情况下（特征值相等），计算结果为<a
+ * href="https://scicomp.stackexchange.com/q/23686">subject to round-off
+ * errors</a>阶的 $\sqrt{\epsilon}$
+ * 。作为一种替代方法，eigenvectors()函数提供了一种更稳健但昂贵的方法来计算对称张量的特征值。
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <typename Number>
 std::array<Number, 2>
@@ -2812,26 +2680,29 @@ eigenvalues(const SymmetricTensor<2, 2, Number> &T);
 
 
 /**
- * Return the eigenvalues of a symmetric $3\times 3$ tensor.
- * The array of eigenvalues is sorted in descending order.
- *
- * For $3\times 3$ tensors, the eigenvalues of tensor $\mathbf T$ are the
- * roots of <a
+ * 返回一个对称 $3\times 3$
+ * 张量的特征值。特征值的数组按降序排序。 对于 $3\times
+ * 3$ 张量，张量 $\mathbf T$ 的特征值是<a
  * href="https://en.wikipedia.org/wiki/Eigenvalue_algorithm#3.C3.973_matrices">the
- * characteristic polynomial</a> $0 = \lambda^3 - \lambda^2\;\text{tr}\mathbf T
- * - \frac{1}{2} \lambda
- * \left[\text{tr}(\mathbf{T}^2) - (\text{tr}\mathbf T)^2\right] -
- * \det \mathbf T$.
+ * characteristic polynomial</a>  $0 = \lambda^3
  *
- * @warning The algorithm employed here determines the eigenvalues by
- * computing the roots of the characteristic polynomial. In the case that there
- * exists a common root (the eigenvalues are equal), the computation is
- * <a href="https://scicomp.stackexchange.com/q/23686">subject to round-off
- * errors</a> of order $\sqrt{\epsilon}$. As an alternative, the eigenvectors()
- * function provides a more robust, but costly, method to compute the
- * eigenvalues of a symmetric tensor.
+ * - \lambda^2\;\text{tr}\mathbf T
  *
- * @relatesalso SymmetricTensor
+ *
+ *
+ * - \frac{1}{2} \lambda \left[\text{tr}(\mathbf{T}^2)
+ *
+ * - (\text{tr}\mathbf T)^2\right]
+ *
+ * - \det \mathbf T$  的根。
+ * @warning
+ * 这里采用的算法通过计算特征多项式的根来确定特征值。在存在共根的情况下（特征值相等），计算是<a
+ * href="https://scicomp.stackexchange.com/q/23686">subject to round-off
+ * errors</a>的顺序 $\sqrt{\epsilon}$
+ * 。作为一种替代方法，eigenvectors()函数提供了一种更稳健但昂贵的方法来计算一个对称张量的特征值。
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <typename Number>
 std::array<Number, 3>
@@ -2844,41 +2715,41 @@ namespace internal
   namespace SymmetricTensorImplementation
   {
     /**
-     * Tridiagonalize a rank-2 symmetric tensor using the Householder method.
-     * The specialized algorithm implemented here is given in
+     * 使用Householder方法对一个等级2的对称张量进行三对角化。
+     * 这里实现的专门算法是在
      * @code{.bib}
      * @article{Kopp2008,
-     *   title       = {Efficient numerical diagonalization of hermitian 3x3
-     *                  matrices},
-     *   author      = {Kopp, J.},
-     *   journal     = {International Journal of Modern Physics C},
-     *   year        = {2008},
-     *   volume      = {19},
-     *   number      = {3},
-     *   pages       = {523--548},
-     *   doi         = {10.1142/S0129183108012303},
-     *   eprinttype  = {arXiv},
-     *   eprint      = {physics/0610206v3},
-     *   eprintclass = {physics.comp-ph},
-     *   url         =
+     * title       = {Efficient numerical diagonalization of hermitian 3x3
+     *                matrices},
+     * author      = {Kopp, J.},
+     * journal     = {International Journal of Modern Physics C},
+     * year        = {2008},
+     * volume      = {19},
+     * number      = {3},
+     * pages       = {523--548},
+     * doi         = {10.1142/S0129183108012303},
+     * eprinttype  = {arXiv},
+     * eprint      = {physics/0610206v3},
+     * eprintclass = {physics.comp-ph},
+     * url         =
      * {https://www.mpi-hd.mpg.de/personalhomes/globes/3x3/index.html}
      * }
      * @endcode
-     * and is based off of the generic algorithm presented in section 11.3.2 of
+     * 中给出的，并且是基于11.3.2节中提出的通用算法。
      * @code{.bib}
      * @book{Press2007,
-     *   title   = {Numerical recipes 3rd edition: The art of scientific
-     *              computing},
-     *   author  = {Press, W. H.},
-     *   journal = {Cambridge university press},
-     *   year    = {2007}
+     * title   = {Numerical recipes 3rd edition: The art of scientific
+     *            computing},
+     * author  = {Press, W. H.},
+     * journal = {Cambridge university press},
+     * year    = {2007}
      * }
      * @endcode
+     * @param[in]  A 要被三对角化的张量  @param[out]  Q
+     * 实现转换的正交矩阵  @param[out]  d
+     * 三对角矩阵的对角线元素  @param[out]  e
+     * 三对角矩阵的非对角线元素
      *
-     * @param[in]  A This tensor to be tridiagonalized
-     * @param[out] Q The orthogonal matrix effecting the transformation
-     * @param[out] d The diagonal elements of the tridiagonal matrix
-     * @param[out] e The off-diagonal elements of the tridiagonal matrix
      */
     template <int dim, typename Number>
     void
@@ -2890,43 +2761,40 @@ namespace internal
 
 
     /**
-     * Compute the eigenvalues and eigenvectors of a real-valued rank-2
-     * symmetric tensor using the QL algorithm with implicit shifts.
-     * The specialized algorithm implemented here is given in
+     * 使用QL算法计算实值等级为2的对称张量的特征值和特征向量，并采用隐式移位的方法。
+     * 这里实现的专门算法是在
      * @code{.bib}
      * @article{Kopp2008,
-     *   title       = {Efficient numerical diagonalization of hermitian 3x3
-     *                  matrices},
-     *   author      = {Kopp, J.},
-     *   journal     = {International Journal of Modern Physics C},
-     *   year        = {2008},
-     *   volume      = {19},
-     *   number      = {3},
-     *   pages       = {523--548},
-     *   doi         = {10.1142/S0129183108012303},
-     *   eprinttype  = {arXiv},
-     *   eprint      = {physics/0610206v3},
-     *   eprintclass = {physics.comp-ph},
-     *   url         =
+     * title       = {Efficient numerical diagonalization of hermitian 3x3
+     *                matrices},
+     * author      = {Kopp, J.},
+     * journal     = {International Journal of Modern Physics C},
+     * year        = {2008},
+     * volume      = {19},
+     * number      = {3},
+     * pages       = {523--548},
+     * doi         = {10.1142/S0129183108012303},
+     * eprinttype  = {arXiv},
+     * eprint      = {physics/0610206v3},
+     * eprintclass = {physics.comp-ph},
+     * url         =
      * {https://www.mpi-hd.mpg.de/personalhomes/globes/3x3/index.html}
      * }
      * @endcode
-     * and is based off of the generic algorithm presented in section 11.4.3 of
+     * 的第11.4.3节中提出的通用算法的基础上。
      * @code{.bib}
      * @book{Press2007,
-     *   title   = {Numerical recipes 3rd edition: The art of scientific
-     *              computing},
-     *   author  = {Press, W. H.},
-     *   journal = {Cambridge university press},
-     *   year    = {2007}
+     * title   = {Numerical recipes 3rd edition: The art of scientific
+     *            computing},
+     * author  = {Press, W. H.},
+     * journal = {Cambridge university press},
+     * year    = {2007}
      * }
      * @endcode
+     * @param[in]  A 要计算特征向量和特征值的张量。
+     * @return  一个包含特征向量和相关特征值的数组。
+     * 该数组不按任何特定顺序排序。
      *
-     * @param[in] A The tensor of which the eigenvectors and eigenvalues are
-     * to be computed.
-     *
-     * @return An array containing the eigenvectors and the associated eigenvalues.
-     * The array is not sorted in any particular order.
      */
     template <int dim, typename Number>
     std::array<std::pair<Number, Tensor<1, dim, Number>>, dim>
@@ -2935,43 +2803,40 @@ namespace internal
 
 
     /**
-     * Compute the eigenvalues and eigenvectors of a real-valued rank-2
-     * symmetric tensor using the Jacobi algorithm.
-     * The specialized algorithm implemented here is given in
+     * 使用雅可比算法计算实值秩2对称张量的特征值和特征向量。
+     * 这里实现的专门算法是在
      * @code{.bib}
      * @article{Kopp2008,
-     *   title       = {Efficient numerical diagonalization of hermitian 3x3
-     *                  matrices},
-     *   author      = {Kopp, J.},
-     *   journal     = {International Journal of Modern Physics C},
-     *   year        = {2008},
-     *   volume      = {19},
-     *   number      = {3},
-     *   pages       = {523--548},
-     *   doi         = {10.1142/S0129183108012303},
-     *   eprinttype  = {arXiv},
-     *   eprint      = {physics/0610206v3},
-     *   eprintclass = {physics.comp-ph},
-     *   url         =
+     * title       = {Efficient numerical diagonalization of hermitian 3x3
+     *                matrices},
+     * author      = {Kopp, J.},
+     * journal     = {International Journal of Modern Physics C},
+     * year        = {2008},
+     * volume      = {19},
+     * number      = {3},
+     * pages       = {523--548},
+     * doi         = {10.1142/S0129183108012303},
+     * eprinttype  = {arXiv},
+     * eprint      = {physics/0610206v3},
+     * eprintclass = {physics.comp-ph},
+     * url         =
      * {https://www.mpi-hd.mpg.de/personalhomes/globes/3x3/index.html}
      * }
      * @endcode
-     * and is based off of the generic algorithm presented in section 11.4.3 of
+     * 的第11.4.3节中提出的通用算法的基础上。
      * @code{.bib}
      * @book{Press2007,
-     *   title   = {Numerical recipes 3rd edition: The art of scientific
-     *              computing},
-     *   author  = {Press, W. H.},
-     *   journal = {Cambridge university press},
-     *   year    = {2007}
+     * title   = {Numerical recipes 3rd edition: The art of scientific
+     *            computing},
+     * author  = {Press, W. H.},
+     * journal = {Cambridge university press},
+     * year    = {2007}
      * }
      * @endcode
+     * @param[in]  A 要计算的特征向量和特征值的张量。
+     * @return  一个包含特征向量和相关特征值的数组。
+     * 该数组不按任何特定顺序排序。
      *
-     * @param[in] A The tensor of which the eigenvectors and eigenvalues are
-     * to be computed.
-     *
-     * @return An array containing the eigenvectors and the associated eigenvalues.
-     * The array is not sorted in any particular order.
      */
     template <int dim, typename Number>
     std::array<std::pair<Number, Tensor<1, dim, Number>>, dim>
@@ -2980,17 +2845,11 @@ namespace internal
 
 
     /**
-     * Compute the eigenvalues and eigenvectors of a real-valued rank-2
-     * symmetric 2x2 tensor using the characteristic equation to compute
-     * eigenvalues and an analytical approach based on the cross-product for the
-     * eigenvectors. If the computations are deemed too inaccurate then the
-     * method falls back to ql_implicit_shifts.
+     * 计算实值等级为2的对称2x2张量的特征值和特征向量，使用特征方程计算特征值，并使用基于交叉积的分析方法计算特征向量。如果计算结果被认为太不准确，那么该方法就会退回到ql_implicit_shifts。
+     * @param[in]  A 将要计算特征向量和特征值的张量。
+     * @return  一个包含特征向量和相关特征值的数组。
+     * 该数组不按任何特定顺序排序。
      *
-     * @param[in] A The tensor of which the eigenvectors and eigenvalues are
-     * to be computed.
-     *
-     * @return An array containing the eigenvectors and the associated eigenvalues.
-     * The array is not sorted in any particular order.
      */
     template <typename Number>
     std::array<std::pair<Number, Tensor<1, 2, Number>>, 2>
@@ -2999,44 +2858,37 @@ namespace internal
 
 
     /**
-     * Compute the eigenvalues and eigenvectors of a real-valued rank-2
-     * symmetric 3x3 tensor using the characteristic equation to compute
-     * eigenvalues and an analytical approach based on the cross-product for the
-     * eigenvectors. If the computations are deemed too inaccurate then the
-     * method falls back to ql_implicit_shifts. The specialized algorithm
-     * implemented here is given in
+     * 计算实值等级为2的对称3x3张量的特征值和特征向量，使用特征方程计算特征值，并使用基于交叉积的分析方法计算特征向量。如果计算结果被认为太不准确，那么该方法就会退回到ql_implicit_shifts。这里实现的专门算法是在
      * @code{.bib}
      * @article{Kopp2008,
-     *   title       = {Efficient numerical diagonalization of hermitian 3x3
-     *                  matrices},
-     *   author      = {Kopp, J.},
-     *   journal     = {International Journal of Modern Physics C},
-     *   year        = {2008},
-     *   volume      = {19},
-     *   number      = {3},
-     *   pages       = {523--548},
-     *   doi         = {10.1142/S0129183108012303},
-     *   eprinttype  = {arXiv},
-     *   eprint      = {physics/0610206v3},
-     *   eprintclass = {physics.comp-ph},
-     *   url         =
+     * title       = {Efficient numerical diagonalization of hermitian 3x3
+     *                matrices},
+     * author      = {Kopp, J.},
+     * journal     = {International Journal of Modern Physics C},
+     * year        = {2008},
+     * volume      = {19},
+     * number      = {3},
+     * pages       = {523--548},
+     * doi         = {10.1142/S0129183108012303},
+     * eprinttype  = {arXiv},
+     * eprint      = {physics/0610206v3},
+     * eprintclass = {physics.comp-ph},
+     * url         =
      * {https://www.mpi-hd.mpg.de/personalhomes/globes/3x3/index.html}
      * }
      * @endcode
+     * @param[in]  A 要计算特征向量和特征值的张量。
+     * @return  一个包含特征向量和相关特征值的数组。
+     * 该数组不按任何特定顺序排序。
      *
-     * @param[in] A The tensor of which the eigenvectors and eigenvalues are
-     * to be computed.
-     *
-     * @return An array containing the eigenvectors and the associated eigenvalues.
-     * The array is not sorted in any particular order.
      */
     template <typename Number>
     std::array<std::pair<Number, Tensor<1, 3, Number>>, 3>
     hybrid(const dealii::SymmetricTensor<2, 3, Number> &A);
 
     /**
-     * A struct that is used to sort arrays of pairs of eign=envalues and
-     * eigenvectors. Sorting is performed in descending order of eigenvalue.
+     * 一个结构，用于对eign=envalues和特征向量的数组进行排序。排序是按照特征值的降序进行的。
+     *
      */
     template <int dim, typename Number>
     struct SortEigenValuesVectors
@@ -3058,62 +2910,53 @@ namespace internal
 // The line below is to ensure that doxygen puts the full description
 // of this global enumeration into the documentation
 // See https://stackoverflow.com/a/1717984
-/** @file */
+ /** @file */ 
 /**
- * An enumeration for the algorithm to be employed when performing
- * the computation of normalized eigenvectors and their corresponding
- * eigenvalues by the eigenvalues() and eigenvectors() methods operating on
- * SymmetricTensor objects.
+ * 枚举算法，用于在对SymmetricTensor对象使用eigenvalues()和eigenvectors()方法进行归一化特征向量及其相应特征值的计算时使用。
+ * 在计算特征向量时使用的专门算法在下文中介绍。
  *
- * The specialized algorithms utilized in computing the eigenvectors are
- * presented in
  * @code{.bib}
  * @article{Kopp2008,
- *   title       = {Efficient numerical diagonalization of hermitian 3x3
- *                  matrices},
- *   author      = {Kopp, J.},
- *   journal     = {International Journal of Modern Physics C},
- *   year        = {2008},
- *   volume      = {19},
- *   number      = {3},
- *   pages       = {523--548},
- *   doi         = {10.1142/S0129183108012303},
- *   eprinttype  = {arXiv},
- *   eprint      = {physics/0610206v3},
- *   eprintclass = {physics.comp-ph},
- *   url         =
+ * title       = {Efficient numerical diagonalization of hermitian 3x3
+ *                matrices},
+ * author      = {Kopp, J.},
+ * journal     = {International Journal of Modern Physics C},
+ * year        = {2008},
+ * volume      = {19},
+ * number      = {3},
+ * pages       = {523--548},
+ * doi         = {10.1142/S0129183108012303},
+ * eprinttype  = {arXiv},
+ * eprint      = {physics/0610206v3},
+ * eprintclass = {physics.comp-ph},
+ * url         =
  * {https://www.mpi-hd.mpg.de/personalhomes/globes/3x3/index.html}
  * }
  * @endcode
+ *
+ *
+ *
  */
 enum struct SymmetricTensorEigenvectorMethod
 {
   /**
-   * A hybrid approach that preferentially uses the characteristic equation to
-   * compute eigenvalues and an analytical approach based on the cross-product
-   * for the eigenvectors. If the computations are deemed too inaccurate then
-   * the method falls back to ql_implicit_shifts.
+   * 一种混合方法，优先使用特征方程来计算特征值，并使用基于交叉积的分析方法来计算特征向量。如果计算结果被认为太不准确，那么该方法就会退回到ql_implicit_shifts。
+   * 如果没有遇到病态的情况，这种方法可能会提供最快速的计算。
    *
-   * This method potentially offers the quickest computation if the pathological
-   * case is not encountered.
    */
   hybrid,
   /**
-   * The iterative QL algorithm with implicit shifts applied after
-   * tridiagonalization of the tensor using the householder method.
+   * 迭代QL算法，在使用Householder方法对张量进行三对角化后应用隐式移位。
+   * 这种方法在计算速度和它的稳健性之间提供了一个折中。当
+   * $T$
+   * 的元素有很大的变化幅度时，这种方法特别有用，这通常会导致在计算较小的特征值时失去准确性。
    *
-   * This method offers a compromise between speed of computation and its
-   * robustness. This method is particularly useful when the elements
-   * of $T$ have greatly varying magnitudes, which would typically lead to a
-   * loss of accuracy when computing the smaller eigenvalues.
    */
   ql_implicit_shifts,
   /**
-   * The iterative Jacobi algorithm.
+   * 迭代雅可比算法。
+   * 这种方法提供的是现有选项中最稳健的，即使是最病态的情况也能得到可靠的结果。然而，它是所有实施的算法中最慢的算法。
    *
-   * This method offers is the most robust of the available options, with
-   * reliable results obtained for even the most pathological cases. It is,
-   * however, the slowest algorithm of all of those implemented.
    */
   jacobi
 };
@@ -3121,32 +2964,32 @@ enum struct SymmetricTensorEigenvectorMethod
 
 
 /**
- * Return the eigenvalues and eigenvectors of a real-valued rank-2 symmetric
- * tensor $\mathbf T$. The array of matched eigenvalue and eigenvector pairs
- * is sorted in descending order (determined by the eigenvalues).
+ * 返回实值等级2的对称张量的特征值和特征向量  $\mathbf T$
+ * 。匹配的特征值和特征向量对阵列按降序排序（由特征值决定）。
+ * 在计算特征向量时利用的专门算法见于
  *
- * The specialized algorithms utilized in computing the eigenvectors are
- * presented in
  * @code{.bib}
  * @article{Kopp2008,
- *   title       = {Efficient numerical diagonalization of hermitian 3x3
- *                  matrices},
- *   author      = {Kopp, J.},
- *   journal     = {International Journal of Modern Physics C},
- *   year        = {2008},
- *   volume      = {19},
- *   number      = {3},
- *   pages       = {523--548},
- *   doi         = {10.1142/S0129183108012303},
- *   eprinttype  = {arXiv},
- *   eprint      = {physics/0610206v3},
- *   eprintclass = {physics.comp-ph},
- *   url         =
+ * title       = {Efficient numerical diagonalization of hermitian 3x3
+ *                matrices},
+ * author      = {Kopp, J.},
+ * journal     = {International Journal of Modern Physics C},
+ * year        = {2008},
+ * volume      = {19},
+ * number      = {3},
+ * pages       = {523--548},
+ * doi         = {10.1142/S0129183108012303},
+ * eprinttype  = {arXiv},
+ * eprint      = {physics/0610206v3},
+ * eprintclass = {physics.comp-ph},
+ * url         =
  * {https://www.mpi-hd.mpg.de/personalhomes/globes/3x3/index.html}
  * }
  * @endcode
  *
- * @relatesalso SymmetricTensor
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <int dim, typename Number>
 std::array<std::pair<Number, Tensor<1, dim, Number>>,
@@ -3158,12 +3001,10 @@ eigenvectors(const SymmetricTensor<2, dim, Number> &T,
 
 
 /**
- * Return the transpose of the given symmetric tensor. Since we are working
- * with symmetric objects, the transpose is of course the same as the original
- * tensor. This function mainly exists for compatibility with the Tensor
- * class.
+ * 返回给定的对称张量的转置。由于我们正在处理对称对象，转置当然与原始张量相同。这个函数的存在主要是为了与张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number>
 constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
@@ -3175,14 +3016,15 @@ constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
 
 
 /**
- * Compute the deviator of a symmetric tensor, which is defined as
- * $\text{dev} \mathbf T = \mathbf T -
- * \frac{1}{\text{dim}} \text{tr}\mathbf T \; \mathbf I$, where $\mathbf I$
- * is the identity operator. This
- * quantity equals the original tensor minus its contractive or dilative
- * component and refers to the shear in, for example, elasticity.
+ * 计算对称张量的偏差，其定义为  $\text{dev} \mathbf T = \mathbf
+ * T
  *
- * @relatesalso SymmetricTensor
+ * - \frac{1}{\text{dim}} \text{tr}\mathbf T \; \mathbf I$  ，其中
+ * $\mathbf I$
+ * 是身份算子。这个量等于原始张量减去其收缩或扩张成分，指的是弹性等方面的剪切力。
+ * @relatesalso  对称张量
+ *
+ *
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
@@ -3201,10 +3043,11 @@ constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
 
 
 /**
- * Return a unit symmetric tensor of rank 2, i.e., the
- * $\text{dim}\times\text{dim}$ identity matrix $\mathbf I$.
+ * 返回一个等级为2的单位对称张量，即
+ * $\text{dim}\times\text{dim}$ 身份矩阵 $\mathbf I$  。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
@@ -3235,11 +3078,11 @@ DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
 
 
 /**
- * unit_symmetric_tensor<dim>() is the specialization of the function
- * unit_symmetric_tensor<dim,Number>() which
- * uses <code>double</code> as the data type for the elements.
+ * unit_symmetric_tensor<dim>()是unit_symmetric_tensor<dim,Number>()函数的特殊化，它使用
+ * <code>double</code>  作为元素的数据类型。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim>
 DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim>
@@ -3251,32 +3094,77 @@ DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim>
 
 
 /**
- * Return the tensor of rank 4 that, when multiplied by a symmetric rank 2
- * tensor $\mathbf T$ returns the deviator $\text{dev}\ \mathbf T$. It is the
- * operator representation of the linear deviator operator $\mathbb P$, also
- * known as the volumetric projection tensor, calculated as:
- * \f{align*}{
- *   \mathbb{P} &=\mathbb{I} -\frac{1}{\text{dim}} \mathbf I \otimes \mathbf I
- *   \\
- *   \mathcal{P}_{ijkl} &= \frac 12 \left(\delta_{ik} \delta_{jl} +
- *                                        \delta_{il} \delta_{jk} \right)
- *                         - \frac{1}{\text{dim}} \delta_{ij} \delta_{kl}
- * \f}
+ * 返回等级4的张量，当与对称等级2的张量 $\mathbf T$
+ * 相乘时，返回偏差 $\text{dev}\ \mathbf T$
+ * 。它是线性偏差算子 $\mathbb P$
+ * 的算子表示，也被称为体积投影张量，计算公式为：。\f{align*}{
+ * \mathbb{P} &=\mathbb{I}
  *
- * For every tensor <tt>T</tt>, there holds the identity
- * <tt>deviator<dim,Number>(T) == deviator_tensor<dim,Number>() * T</tt>,
- * up to numerical round-off.
- * \f[
- *   \text{dev}\mathbf T = \mathbb P : \mathbf T
- * \f]
+ * -\frac{1}{\text{dim}} \mathbf I \otimes \mathbf I \\ \mathcal{P}_{ijkl} &=
+ * \frac 12 \left(\delta_{ik} \delta_{jl} + \delta_{il} \delta_{jk} \right)
  *
- * @note The reason this operator representation is provided is to simplify
- * taking derivatives of the deviatoric part of tensors:
- * \f[
- *   \frac{\partial \text{dev}\mathbf{T}}{\partial \mathbf T} = \mathbb P.
- * \f]
  *
- * @relatesalso SymmetricTensor
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * - \frac{1}{\text{dim}} \delta_{ij} \delta_{kl} \f}
+ * 对于每一个张量<tt>T</tt>，都有一个特征<tt>deviator<dim,Number>(T)
+ * == deviator_tensor<dim,Number>() T</tt>，直到数字上的舍入。\f[
+ * \text{dev}\mathbf T = \mathbb P : \mathbf T \f]
+ *
+ *
+ * @note
+ * 提供这种运算符表示的原因是为了简化对张量的偏离部分的求导。\f[
+ * \frac{\partial \text{dev}\mathbf{T}}{\partial \mathbf T} = \mathbb P. \f]
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <int dim, typename Number>
 DEAL_II_CONSTEXPR inline SymmetricTensor<4, dim, Number>
@@ -3307,11 +3195,10 @@ deviator_tensor()
 
 
 /**
- * This version of the deviator_tensor<dim>() function is a specialization of
- * deviator_tensor<dim,Number>() that uses <tt>double</tt> as the
- * data type for the elements of the tensor.
+ * 这个版本的deviator_tensor<dim>()函数是deviator_tensor<dim,Number>()的特殊化，使用<tt>double</tt>作为张量元素的数据类型。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim>
 DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<4, dim>
@@ -3323,41 +3210,28 @@ DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<4, dim>
 
 
 /**
- * Return the fourth-order symmetric identity tensor $\mathbb I$ which maps
- * symmetric second-order tensors, such as  $\mathbf A$, to themselves.
- * \f[
- *   \mathbb I : \mathbf A = \mathbf A
- * \f]
+ * 返回四阶对称身份张量 $\mathbb I$
+ * ，它将对称的二阶张量，如 $\mathbf A$
+ * ，映射到它们自己。\f[ \mathbb I : \mathbf A = \mathbf A \f]
+ * 请注意，这个张量，尽管它是同一性的，但它的形式有些滑稽，特别是不只由零和一组成。例如，对于<tt>dim=2</tt>，身份张量除了\f[
+ * \mathcal{I}_{0000} = \mathcal{I}_{1111} = 1 \f] \f[ \mathcal{I}_{0101} =
+ * \mathcal{I}_{0110} = \mathcal{I}_{1001} = \mathcal{I}_{1010} = \frac 12.
+ * \f] 以指数符号表示，我们可以写出一般的形式\f[
+ * \mathcal{I}_{ijkl} = \frac 12 \left( \delta_{ik} \delta_{jl} + \delta_{il}
+ * \delta_{jl} \right). \f] 为了了解为什么 $1 / 2$
+ * 的这个因子是必要的，考虑计算 $\mathbf A= \mathbb I : \mathbf
+ * B$  。对于元素  $A_{01}$  我们有  $A_{01} = \mathcal{I}_{0100}
+ * B_{00} + \mathcal{I}_{0111} B_{11} + \mathcal{I}_{0101} B_{01} +
+ * \mathcal{I}_{0110} B_{10}$  。另一方面，我们需要有 $A_{01} =
+ * B_{01}$ ，对称性意味着 $B_{01}=B_{10}$ ，导致 $A_{01} =
+ * (\mathcal{I}_{0101} + \mathcal{I}_{0110}) B_{01}$
+ * ，或者，同样通过对称性， $\mathcal{I}_{0101} =
+ * \mathcal{I}_{0110} = \frac 12$
+ * 。类似的考虑也适用于三维的情况。 这个问题在 step-44
+ * 的介绍中也有解释。
+ * @relatesalso  SymmetricTensor
  *
- * Note that this tensor, even though it is the identity, has a somewhat funny
- * form, and in particular does not only consist of zeros and ones. For
- * example, for <tt>dim=2</tt>, the identity tensor has all zero entries
- * except for
- * \f[
- *   \mathcal{I}_{0000} = \mathcal{I}_{1111} = 1
- * \f]
- * \f[
- *   \mathcal{I}_{0101} = \mathcal{I}_{0110} = \mathcal{I}_{1001}
- *                      = \mathcal{I}_{1010} = \frac 12.
- * \f]
- * In index notation, we can write the general form
- * \f[
- *   \mathcal{I}_{ijkl} = \frac 12 \left( \delta_{ik} \delta_{jl} +
- *                                        \delta_{il} \delta_{jl} \right).
- * \f]
- * To see why this factor of $1 / 2$ is necessary, consider computing
- * $\mathbf A= \mathbb I : \mathbf B$.
- * For the element $A_{01}$ we have $A_{01} = \mathcal{I}_{0100} B_{00} +
- * \mathcal{I}_{0111} B_{11} + \mathcal{I}_{0101} B_{01} +
- * \mathcal{I}_{0110} B_{10}$. On the other hand, we need
- * to have $A_{01} = B_{01}$, and symmetry implies $B_{01}=B_{10}$,
- * leading to $A_{01} = (\mathcal{I}_{0101} + \mathcal{I}_{0110}) B_{01}$, or,
- * again by symmetry, $\mathcal{I}_{0101} = \mathcal{I}_{0110} = \frac 12$.
- * Similar considerations hold for the three-dimensional case.
  *
- * This issue is also explained in the introduction to step-44.
- *
- * @relatesalso SymmetricTensor
  */
 template <int dim, typename Number>
 DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<4, dim, Number>
@@ -3386,11 +3260,10 @@ DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<4, dim, Number>
 
 
 /**
- * This version of the identity_tensor<dim>() function is the specialization of
- * identity_tensor<dim,Number>() which uses <tt>double</tt> as the
- * data type for the elements of the tensor.
+ * 这个版本的identity_tensor<dim>()函数是identity_tensor<dim,Number>()的特殊化，它使用<tt>double</tt>作为张量的元素的数据类型。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim>
 DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<4, dim>
@@ -3402,13 +3275,14 @@ DEAL_II_CONSTEXPR inline DEAL_II_ALWAYS_INLINE SymmetricTensor<4, dim>
 
 
 /**
- * Invert a symmetric rank-2 tensor.
+ * 反转一个对称的秩2张量。
  *
- * @note If a tensor is not invertible, then the result is unspecified, but will
- * likely contain the results of a division by zero or a very small number at
- * the very least.
  *
- * @relatesalso SymmetricTensor
+ * @note
+ * 如果一个张量不是可反转的，那么其结果是不明确的，但很可能包含除以0的结果或至少是一个非常小的数字。
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <int dim, typename Number>
 constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
@@ -3421,14 +3295,11 @@ constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
 
 
 /**
- * Invert a symmetric rank-4 tensor. Since symmetric rank-4 tensors are
- * mappings from and to symmetric rank-2 tensors, they can have an inverse.
+ * 反转一个对称的秩-4张量。由于对称秩-4张量是对称秩-2张量的映射，它们可以有一个反转。
+ * 如果一个张量不是可逆的，那么其结果是不明确的，但可能包含除以0的结果或至少是一个非常小的数字。
+ * @relatesalso  SymmetricTensor
  *
- * If a tensor is not invertible, then the result is unspecified, but will
- * likely contain the results of a division by zero or a very small number at
- * the very least.
  *
- * @relatesalso SymmetricTensor
  */
 template <int dim, typename Number>
 constexpr SymmetricTensor<4, dim, Number>
@@ -3441,25 +3312,19 @@ invert(const SymmetricTensor<4, dim, Number> &t)
 
 
 /**
- * Return the tensor of rank 4 that is the outer product of the two tensors
- * given as arguments, i.e. the result
- * $\mathbb A = \mathbf{T}_1 \otimes \mathbf{T}_2$ satisfies
- * $\mathbb A : \mathbf B = (\mathbf{T}_2 : \mathbf B) \mathbf{T}_1$
- * for all symmetric tensors $\mathbf B$. In index notation
- * \f[
- *   \mathcal{A}_{ijkl} = (T_1)_{ij} (T_2)_{kl}
- * \f]
+ * 返回等级为4的张量，它是作为参数给出的两个张量的外积，即结果
+ * $\mathbb A = \mathbf{T}_1 \otimes \mathbf{T}_2$ 满足 $\mathbb A : \mathbf
+ * B = (\mathbf{T}_2 : \mathbf B) \mathbf{T}_1$ 的所有对称张量 $\mathbf
+ * B$  。在索引符号中\f[ \mathcal{A}_{ijkl} = (T_1)_{ij} (T_2)_{kl} \f]
+ * 。 例如，偏差张量 $\mathbb P = \mathbb I
  *
- * For example, the deviator tensor
- * $\mathbb P = \mathbb I - \frac{1}{\text{dim}} \mathbf I \otimes \mathbf I$
- * can be computed as
- * <tt>identity_tensor<dim>() - 1/d *
- * outer_product (unit_symmetric_tensor<dim>(),
- * unit_symmetric_tensor<dim>())</tt>,
- * since the (double) contraction with the unit tensor yields the trace
- * of a symmetric tensor ($\mathbf I : \mathbf B = \text{tr} \mathbf B$).
+ * - \frac{1}{\text{dim}} \mathbf I \otimes \mathbf I$
+ * 可以被计算为<tt>identity_tensor<dim>()
  *
- * @relatesalso SymmetricTensor
+ * - 1/d outer_product (unit_symmetric_tensor<dim>(), unit_symmetric_tensor<dim>())</tt>，因为与单位张量的（双）收缩会产生对称张量的迹线（ $\mathbf I : \mathbf B = \text{tr} \mathbf B$  ）。
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <int dim, typename Number>
 constexpr inline SymmetricTensor<4, dim, Number>
@@ -3481,11 +3346,12 @@ outer_product(const SymmetricTensor<2, dim, Number> &t1,
 
 
 /**
- * Return the symmetrized version of a full rank-2 tensor, i.e.
- * $\text{sym}\mathbf A = \frac 12 \left(\mathbf A + \mathbf{A}^T\right)$,
- * as a symmetric rank-2 tensor. This is the version for general dimensions.
+ * 返回全秩2张量的对称版本，即 $\text{sym}\mathbf A = \frac 12
+ * \left(\mathbf A + \mathbf{A}^T\right)$
+ * ，作为对称秩2张量。这是对一般维度的版本。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
@@ -3505,11 +3371,10 @@ constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<2, dim, Number>
 
 
 /**
- * Multiplication of a symmetric tensor of general rank with a scalar from the
- * right. This version of the operator is used if the scalar has the same data
- * type as is used to store the elements of the symmetric tensor.
+ * 一般等级的对称张量与一个来自右边的标量相乘。如果标量的数据类型与用于存储对称张量元素的数据类型相同，则使用该运算符的这个版本。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
@@ -3523,11 +3388,10 @@ constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
 
 
 /**
- * Multiplication of a symmetric tensor of general rank with a scalar from the
- * left. This version of the operator is used if the scalar has the same data
- * type as is used to store the elements of the symmetric tensor.
+ * 一般等级的对称张量与来自左边的标量相乘。如果标量的数据类型与用于存储对称张量元素的数据类型相同，则使用该运算符的这个版本。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number>
 constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
@@ -3540,29 +3404,18 @@ constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
 
 
 /**
- * Multiplication of a symmetric tensor with a scalar number from the right.
+ * 对称张量与来自右边的标量数字的乘法。
+ * 这个运算符的目的是只实现张量与标量数（即浮点数、复数浮点数等）的乘法。该函数的写法是，只有在第二个参数确实是标量数的情况下，编译器才会考虑这个函数
  *
- * The purpose of this operator is to enable only multiplication of a tensor
- * by a scalar number (i.e., a floating point number, a complex floating point
- * number, etc.). The function is written in a way that only allows the
- * compiler to consider the function if the second argument is indeed a scalar
- * number -- in other words, @p OtherNumber will not match, for example
- * <code>std::vector@<double@></code> as the product of a tensor and a vector
- * clearly would make no sense. The mechanism by which the compiler is
- * prohibited of considering this operator for multiplication with non-scalar
- * types are explained in the documentation of the EnableIfScalar class.
+ * - 换句话说， @p OtherNumber 将不匹配，例如 <code>std::vector@<double@></code> ，因为张量和矢量的乘积显然没有意义。在EnableIfScalar类的文档中解释了编译器禁止考虑这个操作符与非标量类型的乘法的机制。
+ * 函数的返回类型被选择为与张量和标量参数的类型一致。例如，如果你用
+ * <code>SymmetricTensor@<2,dim,double@></code>  乘以
+ * <code>std::complex@<double@></code>  ，那么结果将是
+ * <code>SymmetricTensor@<2,dim,std::complex@<double@>@></code>
+ * 。换句话说，返回的张量存储其组件的类型等于你用标量因子乘以输入张量的单个组件后得到的类型。
+ * @relatesalso  SymmetricTensor  @relatesalso  EnableIfScalar
  *
- * The return type of the function is chosen so that it matches the types of
- * both the tensor and the scalar argument. For example, if you multiply a
- * <code>SymmetricTensor@<2,dim,double@></code> by
- * <code>std::complex@<double@></code>, then the result will be a
- * <code>SymmetricTensor@<2,dim,std::complex@<double@>@></code>. In other
- * words, the type with which the returned tensor stores its components equals
- * the type you would get if you multiplied an individual component of the
- * input tensor by the scalar factor.
  *
- * @relatesalso SymmetricTensor
- * @relatesalso EnableIfScalar
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<
@@ -3587,12 +3440,10 @@ operator*(const SymmetricTensor<rank_, dim, Number> &t,
 
 
 /**
- * Multiplication of a symmetric tensor with a scalar number from the left.
- * See the discussion with the operator with switched arguments for more
- * information about template arguments and the return type.
+ * 对称张量与左边的标量数字相乘。关于模板参数和返回类型的更多信息，请参见与带交换参数的运算符的讨论。
+ * @relatesalso  SymmetricTensor  @relatesalso  EnableIfScalar
  *
- * @relatesalso SymmetricTensor
- * @relatesalso EnableIfScalar
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<
@@ -3610,9 +3461,10 @@ operator*(const Number &                                  factor,
 
 
 /**
- * Division of a symmetric tensor of general rank by a scalar.
+ * 一般等级的对称张量除以一个标量。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim, typename Number, typename OtherNumber>
 constexpr inline SymmetricTensor<
@@ -3632,10 +3484,10 @@ operator/(const SymmetricTensor<rank_, dim, Number> &t,
 
 
 /**
- * Multiplication of a symmetric tensor of general rank with a scalar from the
- * right.
+ * 一般等级的对称张量与一个标量从右边相乘。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim>
@@ -3649,10 +3501,10 @@ constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim>
 
 
 /**
- * Multiplication of a symmetric tensor of general rank with a scalar from the
- * left.
+ * 一般等级的对称张量与来自左边的标量相乘。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim>
 constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim>
@@ -3666,9 +3518,10 @@ constexpr inline DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim>
 
 
 /**
- * Division of a symmetric tensor of general rank by a scalar.
+ * 一般等级的对称张量除以一个标量。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int rank_, int dim>
 constexpr inline SymmetricTensor<rank_, dim>
@@ -3680,13 +3533,14 @@ operator/(const SymmetricTensor<rank_, dim> &t, const double factor)
 }
 
 /**
- * Compute the scalar product $\mathbf A: \mathbf B=\sum_{i,j} A_{ij}B_{ij}$
- * between two tensors $\mathbf A, \mathbf B$ of rank 2. In the current case
- * where both arguments are symmetric tensors, this is equivalent to calling
- * the expression <code>A*B</code> which uses
- * <code>SymmetricTensor::operator*()</code>.
+ * 计算两个秩为2的张量 $\mathbf A, \mathbf B$ 之间的标量乘积
+ * $\mathbf A: \mathbf B=\sum_{i,j} A_{ij}B_{ij}$
+ * 。在当前两个参数都是对称张量的情况下，这相当于调用表达式
+ * <code>A*B</code> ，它使用 <code>SymmetricTensor::operator*()</code>
+ * 。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE typename ProductType<Number, OtherNumber>::type
@@ -3698,17 +3552,14 @@ scalar_product(const SymmetricTensor<2, dim, Number> &     t1,
 
 
 /**
- * Compute the scalar product $\mathbf A: \mathbf B=\sum_{i,j} A_{ij}B_{ij}$
- * between two tensors $\mathbf A, \mathbf B$ of rank 2. We don't use
- * <code>operator*</code> for this
- * operation since the product between two tensors is usually assumed to be
- * the contraction over the last index of the first tensor and the first index
- * of the second tensor. For example, if <tt>B</tt> is a Tensor, calling
- * <tt>A*B</tt> (instead of <tt>scalar_product(A,B)</tt>) provides
- * $(\mathbf A \cdot\mathbf B)_{ij}=\sum_k A_{ik}B_{kj}$.
+ * 计算两个等级为2的张量 $\mathbf A, \mathbf B$
+ * 之间的标量乘积 $\mathbf A: \mathbf B=\sum_{i,j} A_{ij}B_{ij}$
+ * 。我们不使用 <code>operator*</code>
+ * 进行这个操作，因为两个张量之间的乘积通常被认为是对第一个张量的最后一个索引和第二个张量的第一个索引的收缩。例如，如果<tt>B</tt>是一个张量，调用<tt>A*B</tt>（而不是<tt>scalar_product(A,B)</tt>）提供
+ * $(\mathbf A \cdot\mathbf B)_{ij}=\sum_k A_{ik}B_{kj}$  。
+ * @relatesalso  Tensor  @relatesalso  SymmetricTensor
  *
- * @relatesalso Tensor
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE
@@ -3726,17 +3577,14 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Compute the scalar product $\mathbf A:\mathbf B=\sum_{i,j} A_{ij}B_{ij}$
- * between two tensors $\mathbf A, \mathbf B$ of rank 2.
- * We don't use <code>operator*</code> for this
- * operation since the product between two tensors is usually assumed to be
- * the contraction over the last index of the first tensor and the first index
- * of the second tensor. For example, if <tt>A</tt> is a Tensor, calling
- * <tt>A*B</tt> (instead of <tt>scalar_product(A,B)</tt>) provides
- * $(\mathbf A \cdot\mathbf B)_{ij}=\sum_k A_{ik}B_{kj}$.
+ * 计算两个等级为2的张量 $\mathbf A, \mathbf B$
+ * 之间的标量乘积 $\mathbf A:\mathbf B=\sum_{i,j} A_{ij}B_{ij}$
+ * 。我们不使用 <code>operator*</code>
+ * 进行这个操作，因为两个张量之间的乘积通常被认为是对第一个张量的最后一个索引和第二个张量的第一个索引的收缩。例如，如果<tt>A</tt>是一个张量，调用<tt>A*B</tt>（而不是<tt>scalar_product(A,B)</tt>）提供
+ * $(\mathbf A \cdot\mathbf B)_{ij}=\sum_k A_{ik}B_{kj}$  。
+ * @relatesalso  Tensor  @relatesalso  SymmetricTensor
  *
- * @relatesalso Tensor
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE typename ProductType<Number, OtherNumber>::type
@@ -3748,18 +3596,12 @@ scalar_product(const Tensor<2, dim, Number> &              t1,
 
 
 /**
- * Double contraction between a rank-4 and a rank-2 symmetric tensor,
- * resulting in the symmetric tensor of rank 2 that is given as first argument
- * to this function. This operation is the symmetric tensor analogon of a
- * matrix-vector multiplication.
+ * 在等级4和等级2的对称张量之间进行双重收缩，产生等级2的对称张量，作为该函数的第一个参数给出。这个操作是矩阵-向量乘法的对称张量类似物。
+ * 这个函数的作用与 SymmetricTensor::operator*().
+ * 相同，但是不应该使用它，因为成员运算器知道实际的数据存储格式，并且至少快两个数量级。这个函数的存在主要是为了与一般的张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * This function does the same as SymmetricTensor::operator*().
- * It should not be used, however, since the member operator has
- * knowledge of the actual data storage format and is at least 2 orders of
- * magnitude faster. This function mostly exists for compatibility purposes
- * with the general Tensor class.
  *
- * @relatesalso SymmetricTensor
  */
 template <typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE void double_contract(
@@ -3773,18 +3615,12 @@ constexpr inline DEAL_II_ALWAYS_INLINE void double_contract(
 
 
 /**
- * Double contraction between a rank-4 and a rank-2 symmetric tensor,
- * resulting in the symmetric tensor of rank 2 that is given as first argument
- * to this function. This operation is the symmetric tensor analogon of a
- * matrix-vector multiplication.
+ * 在等级4和等级2的对称张量之间进行双重收缩，产生等级2的对称张量，作为该函数的第一个参数给出。这个操作是矩阵-向量乘法的对称张量类似物。
+ * 这个函数的作用与 SymmetricTensor::operator*().
+ * 相同，但是不应该使用它，因为成员运算器知道实际的数据存储格式，并且至少快两个数量级。这个函数的存在主要是为了与一般的张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * This function does the same as SymmetricTensor::operator*().
- * It should not be used, however, since the member operator has
- * knowledge of the actual data storage format and is at least 2 orders of
- * magnitude faster. This function mostly exists for compatibility purposes
- * with the general Tensor class.
  *
- * @relatesalso SymmetricTensor
  */
 template <typename Number, typename OtherNumber>
 constexpr inline void double_contract(
@@ -3798,18 +3634,12 @@ constexpr inline void double_contract(
 
 
 /**
- * Double contraction between a rank-4 and a rank-2 symmetric tensor,
- * resulting in the symmetric tensor of rank 2 that is given as first argument
- * to this function. This operation is the symmetric tensor analogon of a
- * matrix-vector multiplication.
+ * 在等级4和等级2的对称张量之间进行双重收缩，产生等级2的对称张量，作为这个函数的第一个参数给出。这个操作是矩阵-向量乘法的对称张量类似物。
+ * 这个函数的作用与 SymmetricTensor::operator*().
+ * 相同，但是不应该使用它，因为成员运算器知道实际的数据存储格式，并且至少快两个数量级。这个函数的存在主要是为了与一般的张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * This function does the same as SymmetricTensor::operator*().
- * It should not be used, however, since the member operator has
- * knowledge of the actual data storage format and is at least 2 orders of
- * magnitude faster. This function mostly exists for compatibility purposes
- * with the general Tensor class.
  *
- * @relatesalso SymmetricTensor
  */
 template <typename Number, typename OtherNumber>
 constexpr inline void double_contract(
@@ -3828,18 +3658,12 @@ constexpr inline void double_contract(
 
 
 /**
- * Double contraction between a rank-4 and a rank-2 symmetric tensor,
- * resulting in the symmetric tensor of rank 2 that is given as first argument
- * to this function. This operation is the symmetric tensor analogon of a
- * matrix-vector multiplication.
+ * 在等级4和等级2的对称张量之间进行双重收缩，产生等级2的对称张量，作为这个函数的第一个参数给出。这个操作是矩阵-向量乘法的对称张量类似物。
+ * 这个函数的作用与 SymmetricTensor::operator*().
+ * 相同，但是不应该使用它，因为成员运算器知道实际的数据存储格式，并且至少快两个数量级。这个函数的存在主要是为了与一般的张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * This function does the same as SymmetricTensor::operator*().
- * It should not be used, however, since the member operator has
- * knowledge of the actual data storage format and is at least 2 orders of
- * magnitude faster. This function mostly exists for compatibility purposes
- * with the general Tensor class.
  *
- * @relatesalso SymmetricTensor
  */
 template <typename Number, typename OtherNumber>
 constexpr inline void double_contract(
@@ -3858,18 +3682,12 @@ constexpr inline void double_contract(
 
 
 /**
- * Double contraction between a rank-4 and a rank-2 symmetric tensor,
- * resulting in the symmetric tensor of rank 2 that is given as first argument
- * to this function. This operation is the symmetric tensor analogon of a
- * matrix-vector multiplication.
+ * 在等级4和等级2的对称张量之间进行双重收缩，产生等级2的对称张量，作为这个函数的第一个参数给出。这个操作是矩阵-向量乘法的对称张量类似物。
+ * 这个函数的作用与 SymmetricTensor::operator*().
+ * 相同，但是不应该使用它，因为成员运算器知道实际的数据存储格式，并且至少要快两个数量级。这个函数的存在主要是为了与一般的张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * This function does the same as SymmetricTensor::operator*().
- * It should not be used, however, since the member operator has
- * knowledge of the actual data storage format and is at least 2 orders of
- * magnitude faster. This function mostly exists for compatibility purposes
- * with the general Tensor class.
  *
- * @relatesalso SymmetricTensor
  */
 template <typename Number, typename OtherNumber>
 constexpr inline void double_contract(
@@ -3889,18 +3707,12 @@ constexpr inline void double_contract(
 
 
 /**
- * Double contraction between a rank-4 and a rank-2 symmetric tensor,
- * resulting in the symmetric tensor of rank 2 that is given as first argument
- * to this function. This operation is the symmetric tensor analogon of a
- * matrix-vector multiplication.
+ * 在等级4和等级2的对称张量之间进行双重收缩，产生等级2的对称张量，作为这个函数的第一个参数给出。这个操作是矩阵-向量乘法的对称张量类似物。
+ * 这个函数的作用与 SymmetricTensor::operator*().
+ * 相同，但是不应该使用它，因为成员运算器知道实际的数据存储格式，并且至少要快两个数量级。这个函数的存在主要是为了与一般的张量类兼容。
+ * @relatesalso  SymmetricTensor
  *
- * This function does the same as SymmetricTensor::operator*().
- * It should not be used, however, since the member operator has
- * knowledge of the actual data storage format and is at least 2 orders of
- * magnitude faster. This function mostly exists for compatibility purposes
- * with the general Tensor class.
  *
- * @relatesalso SymmetricTensor
  */
 template <typename Number, typename OtherNumber>
 constexpr inline void double_contract(
@@ -3920,10 +3732,10 @@ constexpr inline void double_contract(
 
 
 /**
- * Multiply a symmetric rank-2 tensor (i.e., a matrix) by a rank-1 tensor
- * (i.e., a vector). The result is a rank-1 tensor (i.e., a vector).
+ * 将一个对称的秩2张量（即一个矩阵）乘以一个秩1张量（即一个向量）。其结果是一个秩-1张量（即一个矢量）。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr Tensor<1, dim, typename ProductType<Number, OtherNumber>::type>
@@ -3939,10 +3751,10 @@ operator*(const SymmetricTensor<2, dim, Number> &src1,
 
 
 /**
- * Multiply a rank-1 tensor (i.e., a vector) by a symmetric rank-2 tensor
- * (i.e., a matrix). The result is a rank-1 tensor (i.e., a vector).
+ * 将一个秩-1张量（即一个向量）与一个对称的秩-2张量（即一个矩阵）相乘。其结果是一个秩-1张量（即一个向量）。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr Tensor<1, dim, typename ProductType<Number, OtherNumber>::type>
@@ -3956,23 +3768,21 @@ operator*(const Tensor<1, dim, Number> &              src1,
 
 
 /**
- * The dot product (single contraction) for tensors: Return a tensor of rank
- * $(\text{rank}_1 + \text{rank}_2 - 2)$ that is the contraction of the last
- * index of a tensor @p src1 of rank @p rank_1 with the first index of a
- * tensor @p src2 of rank @p rank_2:
- * @f[
- *   \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- *   = \sum_{k}
- *     \text{left}_{i_1,\ldots,i_{r1}, k}
- *     \text{right}_{k, j_1,\ldots,j_{r2}}
- * @f]
+ * 张量的点乘（单一收缩）。返回一个等级为 $(\text{rank}_1 +
+ * \text{rank}_2
  *
- * @note As one operand is a Tensor, the multiplication operator only performs a
- * contraction over a single pair of indices. This is in contrast to the
- * multiplication operator for SymmetricTensor, which does the double
- * contraction.
+ * - 2)$ 的张量，它是等级为 @p src1 的张量的最后一个索引与等级为 @p rank_2: 的张量的第一个索引的收缩@f[
+ * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ * = \sum_{k}
+ *   \text{left}_{i_1,\ldots,i_{r1}, k}
+ *   \text{right}_{k, j_1,\ldots,j_{r2}}
+ * @f] 。
  *
- * @relatesalso SymmetricTensor
+ * @note
+ * 由于一个操作数是张量，乘法运算符只对一对索引执行收缩。这与SymmetricTensor的乘法运算符不同，后者做的是双倍收缩。
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <int rank_1,
           int rank_2,
@@ -3992,23 +3802,21 @@ constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * The dot product (single contraction) for tensors: Return a tensor of rank
- * $(\text{rank}_1 + \text{rank}_2 - 2)$ that is the contraction of the last
- * index of a tensor @p src1 of rank @p rank_1 with the first index of a
- * tensor @p src2 of rank @p rank_2:
- * @f[
- *   \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- *   = \sum_{k}
- *     \text{left}_{i_1,\ldots,i_{r1}, k}
- *     \text{right}_{k, j_1,\ldots,j_{r2}}
- * @f]
+ * 张量的点积（单收缩）。返回一个等级为 $(\text{rank}_1 +
+ * \text{rank}_2
  *
- * @note As one operand is a Tensor, the multiplication operator only performs a
- * contraction over a single pair of indices. This is in contrast to the
- * multiplication operator for SymmetricTensor, which does the double
- * contraction.
+ * - 2)$ 的张量，它是等级为 @p rank_1 的张量 @p src1 的最后一个索引与等级为 @p rank_2: 的张量@f[
+ * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ * = \sum_{k}
+ *   \text{left}_{i_1,\ldots,i_{r1}, k}
+ *   \text{right}_{k, j_1,\ldots,j_{r2}}
+ * @f]的第一个索引的收缩。
  *
- * @relatesalso SymmetricTensor
+ * @note
+ * 由于一个操作数是张量，乘法运算符只对一对索引执行收缩。这与SymmetricTensor的乘法运算符不同，后者做的是双倍收缩。
+ * @relatesalso  SymmetricTensor
+ *
+ *
  */
 template <int rank_1,
           int rank_2,
@@ -4028,13 +3836,10 @@ constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * Output operator for symmetric tensors of rank 2. Print the elements
- * consecutively, with a space in between, two spaces between rank 1
- * subtensors, three between rank 2 and so on. No special amends are made to
- * represents the symmetry in the output, for example by outputting only the
- * unique entries.
+ * 秩为2的对称张量的输出运算符。连续打印元素，中间有一个空格，等级1的子张量之间有两个空格，等级2之间有三个空格，以此类推。在输出中不做特殊的修改来表示对称性，例如只输出唯一的条目。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 inline std::ostream &
@@ -4055,13 +3860,10 @@ operator<<(std::ostream &out, const SymmetricTensor<2, dim, Number> &t)
 
 
 /**
- * Output operator for symmetric tensors of rank 4. Print the elements
- * consecutively, with a space in between, two spaces between rank 1
- * subtensors, three between rank 2 and so on. No special amends are made to
- * represents the symmetry in the output, for example by outputting only the
- * unique entries.
+ * 秩为4的对称张量的输出运算符。连续打印元素，中间有一个空格，等级1的子张量之间有两个空格，等级2之间有三个空格，以此类推。在输出中不做特殊的修改以表示对称性，例如只输出唯一的条目。
+ * @relatesalso  SymmetricTensor
  *
- * @relatesalso SymmetricTensor
+ *
  */
 template <int dim, typename Number>
 inline std::ostream &
@@ -4085,3 +3887,5 @@ operator<<(std::ostream &out, const SymmetricTensor<4, dim, Number> &t)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

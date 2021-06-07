@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/auto_derivative_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2020 by the deal.II authors
@@ -26,19 +25,25 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 这个类通过采用数字差商自动计算一个函数的梯度。这只是在用户函数没有自己提供梯度函数的情况下。
- * 下面是一个用户定义函数的例子，它只重载并实现了value()函数，但没有实现gradient()函数。如果梯度()函数被调用，那么由AutoDerivativeFunction实现的梯度函数将被调用，其中后者的函数采用了数字差商。
+ * This class automatically computes the gradient of a function by employing
+ * numerical difference quotients. This only, if the user function does not
+ * provide the gradient function himself.
  *
+ * The following example of an user defined function overloads and implements
+ * only the value() function but not the gradient() function. If the
+ * gradient() function is invoked then the gradient function implemented by
+ * the AutoDerivativeFunction is called, where the latter function employs
+ * numerical difference quotients.
  *
  * @code
  * class UserFunction: public AutoDerivativeFunction
  * {
- * // access to one component at one point
- * double value (const Point<dim>   &p,
- *               const unsigned int component = 0) const override
- * {
- *   // Implementation ....
- * };
+ *   // access to one component at one point
+ *   double value (const Point<dim>   &p,
+ *                 const unsigned int component = 0) const override
+ *   {
+ *     // Implementation ....
+ *   };
  * };
  *
  * UserFunction user_function;
@@ -47,121 +52,140 @@ DEAL_II_NAMESPACE_OPEN
  * Tensor<1,dim> grad=user_function.gradient(some_point);
  * @endcode
  *
- * 如果用户也重载并实现了梯度函数，那么，当然会调用用户的梯度函数。
- * 注意，上面解释的value()和gradient()函数的用法也适用于value_list()和gradient_list()函数，以及这些函数的向量值版本，例如vector_value(),
- * vector_gradient(), vector_value_list() 和 vector_gradient_list()。
- * gradient()和gradient_list()函数使用了 Function::value()
- * 函数。vector_gradient()和vector_gradient_list()使用的是
- * Function::vector_value()
- * 函数。请确保用户定义的函数分别实现value()函数和vector_value()函数。
- * 此外要注意，这个类的对象确实<b>not</b>代表了一个函数的导数，像FunctionDerivative，通过调用value()函数给出一个方向性的导数。事实上，这个类（AutoDerivativeFunction类）可以替代Function类作为用户定义类的基类。这个类实现了自动计算数字差商的梯度()函数，并作为基函数类和用户定义函数类之间的中间类。
+ * If the user overloads and implements also the gradient function, then, of
+ * course, the users gradient function is called.
  *
+ * Note, that the usage of the value() and gradient() functions explained
+ * above, also applies to the value_list() and gradient_list() functions as
+ * well as to the vector valued versions of these functions, see e.g.
+ * vector_value(), vector_gradient(), vector_value_list() and
+ * vector_gradient_list().
+ *
+ * The gradient() and gradient_list() functions make use of the
+ * Function::value() function. The vector_gradient() and
+ * vector_gradient_list() make use of the Function::vector_value() function.
+ * Make sure that the user defined function implements the value() function
+ * and the vector_value() function, respectively.
+ *
+ * Furthermore note, that an object of this class does <b>not</b> represent
+ * the derivative of a function, like FunctionDerivative, that gives a
+ * directional derivative by calling the value() function. In fact, this class
+ * (the AutoDerivativeFunction class) can substitute the Function class as
+ * base class for user defined classes. This class implements the gradient()
+ * functions for automatic computation of numerical difference quotients and
+ * serves as intermediate class between the base Function class and the user
+ * defined function class.
  *
  * @ingroup functions
- *
- *
  */
 template <int dim>
 class AutoDerivativeFunction : public Function<dim>
 {
 public:
   /**
-   * 差额公式的名称。
-   *
+   * Names of difference formulas.
    */
   enum DifferenceFormula
   {
     /**
-     * 二阶的对称欧拉公式。    @f[
+     * The symmetric Euler formula of second order:
+     * @f[
      * u'(t) \approx
-     * \frac{u(t+h)
-     *
-     * -
+     * \frac{u(t+h) -
      * u(t-h)}{2h}.
      * @f]
-     *
      */
     Euler,
     /**
-     * 一阶的上风欧拉公式。    @f[
+     * The upwind Euler formula of first order:
+     * @f[
      * u'(t) \approx
-     * \frac{u(t)
-     *
-     * -
+     * \frac{u(t) -
      * u(t-h)}{h}.
      * @f]
-     *
      */
     UpwindEuler,
     /**
-     * 四阶方案@f[
+     * The fourth order scheme
+     * @f[
      * u'(t) \approx
-     * \frac{u(t-2h)
-     *
-     * - 8u(t-h)
-     * +  8u(t+h)
-     *
-     * - u(t+2h)}{12h}.
-     * @f]。
-     *
+     * \frac{u(t-2h) - 8u(t-h)
+     * +  8u(t+h) - u(t+2h)}{12h}.
+     * @f]
      */
     FourthOrder
   };
 
   /**
-   * 构造函数。取差分步长<tt>h</tt>。在这里选择一个合适的值是用户的责任。<tt>h</tt>的选择应该考虑到绝对值以及函数的局部变化量。设置<tt>h=1e-6</tt>可能是绝对值为1左右的函数的一个好选择，而且变化不大。
-   * <tt>h</tt>可以在以后使用set_h()函数来改变。
-   * 设置DifferenceFormula
-   * <tt>formula</tt>为set_formula()函数的默认<tt>Euler</tt>公式。通过调用set_formula()函数改变这个预设公式。
+   * Constructor. Takes the difference step size <tt>h</tt>. It's within the
+   * user's responsibility to choose an appropriate value here. <tt>h</tt>
+   * should be chosen taking into account the absolute value as well as the
+   * amount of local variation of the function. Setting <tt>h=1e-6</tt> might
+   * be a good choice for functions with an absolute value of about 1, that
+   * furthermore does not vary to much.
    *
+   * <tt>h</tt> can be changed later using the set_h() function.
+   *
+   * Sets DifferenceFormula <tt>formula</tt> to the default <tt>Euler</tt>
+   * formula of the set_formula() function. Change this preset formula by
+   * calling the set_formula() function.
    */
   AutoDerivativeFunction(const double       h,
                          const unsigned int n_components = 1,
                          const double       initial_time = 0.0);
 
   /**
-   * 虚拟析构器；在这种情况下绝对必要。
-   *
+   * Virtual destructor; absolutely necessary in this case.
    */
   virtual ~AutoDerivativeFunction() override = default;
 
   /**
-   * 选择差异公式。参见枚举#DifferenceFormula以了解可用的选择。
-   *
+   * Choose the difference formula. See the enum #DifferenceFormula for
+   * available choices.
    */
   void
   set_formula(const DifferenceFormula formula = Euler);
 
   /**
-   * 取差值的步长<tt>h</tt>。在这里选择一个合适的值是用户的责任。<tt>h</tt>的选择应该考虑到函数的绝对值以及局部变化的量。设置<tt>h=1e-6</tt>可能是绝对值为1左右的函数的一个好选择，而且变化不大。
-   *
+   * Takes the difference step size <tt>h</tt>. It's within the user's
+   * responsibility to choose an appropriate value here. <tt>h</tt> should be
+   * chosen taking into account the absolute value of as well as the amount of
+   * local variation of the function. Setting <tt>h=1e-6</tt> might be a good
+   * choice for functions with an absolute value of about 1, that furthermore
+   * does not vary to much.
    */
   void
   set_h(const double h);
 
   /**
-   * 返回函数的指定分量在给定点的梯度。
-   * 使用预设的#DifferenceFormula来计算数字差商。
+   * Return the gradient of the specified component of the function at the
+   * given point.
    *
+   * Compute numerical difference quotients using the preset
+   * #DifferenceFormula.
    */
   virtual Tensor<1, dim>
   gradient(const Point<dim> & p,
            const unsigned int component = 0) const override;
 
   /**
-   * 返回函数的所有分量在给定点的梯度。
-   * 使用预设的#DifferenceFormula来计算数字差商。
+   * Return the gradient of all components of the function at the given point.
    *
+   * Compute numerical difference quotients using the preset
+   * #DifferenceFormula.
    */
   virtual void
   vector_gradient(const Point<dim> &           p,
                   std::vector<Tensor<1, dim>> &gradients) const override;
 
   /**
-   * 将<tt>gradients</tt>设为函数的指定分量在<tt>点</tt>的梯度。
-   * 假设<tt>gradients</tt>已经有合适的大小，即与<tt>points</tt>数组的大小相同。
-   * 使用预设的#DifferenceFormula来计算数字差商。
+   * Set <tt>gradients</tt> to the gradients of the specified component of the
+   * function at the <tt>points</tt>.  It is assumed that <tt>gradients</tt>
+   * already has the right size, i.e.  the same size as the <tt>points</tt>
+   * array.
    *
+   * Compute numerical difference quotients using the preset
+   * #DifferenceFormula.
    */
   virtual void
   gradient_list(const std::vector<Point<dim>> &points,
@@ -169,10 +193,16 @@ public:
                 const unsigned int             component = 0) const override;
 
   /**
-   * 将<tt>gradients</tt>设置为函数在<tt>points</tt>处的梯度，适用于所有组件。假设<tt>gradients</tt>已经有正确的大小，即与<tt>points</tt>数组的大小相同。
-   * <tt>gradients</tt>的外循环是在列表中的点上，内循环是在函数的不同成分上。
-   * 使用预设的#DifferenceFormula来计算数字差商。
+   * Set <tt>gradients</tt> to the gradients of the function at the
+   * <tt>points</tt>, for all components. It is assumed that
+   * <tt>gradients</tt> already has the right size, i.e. the same size as the
+   * <tt>points</tt> array.
    *
+   * The outer loop over <tt>gradients</tt> is over the points in the list,
+   * the inner loop over the different components of the function.
+   *
+   * Compute numerical difference quotients using the preset
+   * #DifferenceFormula.
    */
   virtual void
   vector_gradient_list(
@@ -180,8 +210,7 @@ public:
     std::vector<std::vector<Tensor<1, dim>>> &gradients) const override;
 
   /**
-   * 返回一个最小顺序为<tt>ord</tt>的#DifferenceFormula。
-   *
+   * Return a #DifferenceFormula of the order <tt>ord</tt> at minimum.
    */
   static DifferenceFormula
   get_formula_of_order(const unsigned int ord);
@@ -189,20 +218,17 @@ public:
 
 private:
   /**
-   * 差分公式的步骤大小。由set_h()函数设定。
-   *
+   * Step size of the difference formula. Set by the set_h() function.
    */
   double h;
 
   /**
-   * 包括按<tt>h</tt>缩放的单位向量。
-   *
+   * Includes the unit vectors scaled by <tt>h</tt>.
    */
   std::vector<Tensor<1, dim>> ht;
 
   /**
-   * 差分公式。由set_formula()函数设置。
-   *
+   * Difference formula. Set by the set_formula() function.
    */
   DifferenceFormula formula;
 };
@@ -211,5 +237,3 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

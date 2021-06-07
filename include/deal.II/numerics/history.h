@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/history_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -28,14 +27,23 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个辅助类，用于存储一个有限大小的`T'类型的对象集合。如果元素的数量超过了指定的容器的最大尺寸，最古老的元素就会被移除。此外，元素的随机访问和移除也被实现。索引是相对于最后添加的元素进行的。
- * 为了优化容器，使其适用于需要内存的对象（即线性代数向量），删除一个元素并不释放内存。相反，该元素被保存在一个单独的缓存中，这样后续的添加就不需要重新分配内存了。
- * 该类的主要用途是在求解器中存储向量的历史。也就是说，如果在迭代
- * $k$ 时，我们存储了 $m$ 以前迭代 $\{k-1,k-2,...,k-m\}$
- * 的向量，那么新元素的加入将使对象包含迭代
- * $\{k,k-1,k-2,...,k-m+1\}$ 的元素。
+ * A helper class to store a finite-size collection of objects of type `T`.
+ * If the number of elements exceeds the specified maximum size of the
+ * container, the oldest element is removed. Additionally, random access and
+ * removal of elements is implemented. Indexing is done relative to the last
+ * added element.
  *
+ * In order to optimize the container for usage with
+ * memory-demanding objects (i.e. linear algebra vectors), the removal of an
+ * element does not free the memory. Instead the element
+ * is being kept in a separate cache so that subsequent addition does not
+ * require re-allocation of memory.
  *
+ * The primary usage of this class is in solvers to store a history of vectors.
+ * That is, if at the iteration $k$ we store $m$ vectors from previous
+ * iterations
+ * $\{k-1,k-2,...,k-m\}$, then addition of the new element will make
+ * the object contain elements from iterations $\{k,k-1,k-2,...,k-m+1\}$.
  */
 template <typename T>
 class FiniteSizeHistory
@@ -46,81 +54,76 @@ public:
     "This class requires that the elements of type T are default constructible.");
 
   /**
-   * 构造函数。      @param  max_elements
-   * 储存在历史中的最大元素数。
+   * Constructor.
    *
+   * @param max_elements maximum number of elements to be stored in the
+   * history.
    */
   FiniteSizeHistory(const std::size_t max_elements = 0);
 
   /**
-   * 通过复制添加新对象。
-   * 如果达到最大的元素数，最老的元素会被删除。
-   *
+   * Add new object by copying.
+   * If the maximum number of elements is reached, the oldest element is
+   * removed.
    */
   void
   add(const T &element);
 
   /**
-   * 删除一个从最后添加的元素开始计算的索引 @p index,
-   * 的元素。  `index==0`因此对应于删除新闻组元素。
-   *
+   * Remove an element with index @p index,
+   * counting from the last added element.
+   * `index==0` therefore corresponds to removing
+   * the newset element.
    */
   void
   remove(const std::size_t index);
 
   /**
-   * 读/写访问一个索引为 @p index,
-   * 的元素，从最后添加的元素算起。
-   * `index==0`因此对应于newset元素。
-   *
+   * Read/write access to an element with index @p index,
+   * counting from the last added element.
+   * `index==0` therefore corresponds to the newset element.
    */
   T &operator[](const std::size_t index);
 
   /**
-   * 读取索引为 @p index,
-   * 的元素，从最后添加的元素开始计算。
-   * `index==0`因此对应于newset元素。
-   *
+   * Read access to an element with index @p index,
+   * counting from the last added element.
+   * `index==0` therefore corresponds to the newset element.
    */
   const T &operator[](const std::size_t index) const;
 
   /**
-   * 返回历史记录的当前大小。
-   *
+   * Return the current size of the history.
    */
   std::size_t
   size() const;
 
   /**
-   * 返回历史记录的最大允许大小。
-   *
+   * Return the maximum allowed size of the history.
    */
   std::size_t
   max_size() const;
 
   /**
-   * 清除内容，包括缓存。
-   *
+   * Clear the contents, including the cache.
    */
   void
   clear();
 
 private:
   /**
-   * 要存储的最大元素数。
-   *
+   * Maximum number of elements to be stored.
    */
   std::size_t max_n_elements;
 
   /**
-   * 一个存储数据的deque。
-   *
+   * A deque which stores the data.
    */
   std::deque<std::unique_ptr<T>> data;
 
   /**
-   * 一个用于缓存数据的deque，特别是在移除后再添加的情况下。
-   *
+   * A deque to cache data, in particular for the case when
+   * removal is followed by addition.
    */
   std::deque<std::unique_ptr<T>> cache;
 };
@@ -248,5 +251,3 @@ FiniteSizeHistory<T>::clear()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_storage_h
-
-

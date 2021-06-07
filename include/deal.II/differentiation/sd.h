@@ -1,4 +1,3 @@
-//include/deal.II-translator/differentiation/sd_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -36,20 +35,17 @@ DEAL_II_NAMESPACE_OPEN
 namespace Differentiation
 {
   /**
-   * 符号微分库的封装器。目前对以下库的支持。
+   * Wrappers for symbolic differentiation libraries. Currently there is support
+   * for the following libraries:
+   *   - SymEngine
    *
-   *
-   *
-   *
-   * - SymEngine
    * @ingroup auto_symb_diff
-   *
    */
   namespace SD
   {
     /**
-     * 这个命名空间定义了有助于为符号数和操作提供结构化接口的类和函数。
-     *
+     * This namespace defines the classes and functions that help provide a
+     * structured interface to symbolic numbers and operations.
      */
     namespace internal
     {}
@@ -61,5 +57,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_SYMENGINE
 
 #endif // dealii_differentiation_sd_h
-
-

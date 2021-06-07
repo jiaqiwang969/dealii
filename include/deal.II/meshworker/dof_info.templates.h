@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/dof_info.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2019 by the deal.II authors
@@ -64,5 +63,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

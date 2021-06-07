@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/quadrature_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -29,42 +28,42 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 该类实现了以字符串形式传递给其构造函数的正交规则。支持的正交规则有QGauss（所有阶数）、QMidpoint、QMilne、QSimpson、QTrapezoid和QWeddle。
- * 如果你想使用灵活的正交规则，这个类很有用，它可以从一个参数文件中读取（见ParameterHandler）。
+ * This class implements the quadrature rule passed to its constructor as a
+ * string. Supported quadratures are QGauss (of all orders), QMidpoint,
+ * QMilne, QSimpson, QTrapezoid and QWeddle.
  *
+ * This class is useful if you want to use flexible quadrature rules, that are
+ * read from a parameter file (see ParameterHandler for this).
  *
  * @ingroup Quadrature
- *
- *
  */
 template <int dim>
 class QuadratureSelector : public Quadrature<dim>
 {
 public:
   /**
-   * 构造函数。取正交规则的名称（"高斯"、"米尔尼"、"韦德尔
-   * "等之一），如果是
-   * "高斯"，则取每个坐标方向上的正交点的数量。
-   *
+   * Constructor. Takes the name of the quadrature rule (one of "gauss",
+   * "milne", "weddle", etc) and, if it is "gauss", the number of quadrature
+   * points in each coordinate direction.
    */
   QuadratureSelector(const std::string &s, const unsigned int order = 0);
 
   /**
-   * 该函数以列表形式返回所有可能的正交点名称，并以<tt>|</tt>分隔，这样你可以用它来定义参数文件（详见ParameterHandler）。
-   *
+   * This function returns all possible names for quadratures as a list
+   * separated by <tt>|</tt>, so that you can use it for the definition of
+   * parameter files (see ParameterHandler for details).
    */
   static std::string
   get_quadrature_names();
 
   /**
-   * @addtogroup  异常情况  @{ .
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcInvalidQGaussOrder,
                  int,
@@ -74,8 +73,7 @@ public:
                  << "direction. This number must be greater than or equal "
                  << "to 1.");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException2(ExcInvalidOrder,
                  std::string,
@@ -84,8 +82,7 @@ public:
                  << " object; no order is needed for objects of this kind, but "
                  << arg2 << " was given as argument.");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcInvalidQuadrature,
                  std::string,
@@ -93,9 +90,9 @@ public:
   //@}
 private:
   /**
-   * 这个静态函数根据给定的字符串名称和适当的顺序（如果名称是
-   * "高斯"）创建一个正交对象。它是由构造函数调用的。
-   *
+   * This static function creates a quadrature object according to the name
+   * given as a string, and the appropriate order (if the name is "gauss"). It
+   * is called from the constructor.
    */
   static Quadrature<dim>
   create_quadrature(const std::string &s, const unsigned int order);
@@ -103,5 +100,3 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

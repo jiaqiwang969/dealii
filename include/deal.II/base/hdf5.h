@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/hdf5_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -35,15 +34,29 @@ DEAL_II_NAMESPACE_OPEN
 // links because they are longer than 80 characters
 // clang-format off
 /**
- * 包含deal.II的HDF5接口的命名空间。
- * [层次数据格式（HDF）]（https://www.hdfgroup.org/）是一种跨平台和高I/O性能的格式，旨在存储大量的数据。它支持串行和MPI
- * I/O访问。这组类提供了一个与[HDF5库](https://www.hdfgroup.org/downloads/hdf5/)的接口。
- * 教程 step-62 展示了如何使用deal.II的HDF5接口。 #
- * 组、数据集和属性
- * 一个HDF5文件被组织在[组](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Groups/HDF5_Groups.htm)和[数据集](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Datasets/HDF5_Datasets.htm)中。组可以包含数据集和其他组。数据集是由数据元素的集合组成的对象。数据集等同于张量和矩阵。此外，属性可以被附加到根文件、组或数据集。一个[HDF5属性]（https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Attributes/HDF5_Attributes.htm）是一个小型的元数据。方法
- * HDF5Object::get_attribute() 和 HDF5Object::set_attribute()
- * 可以用来获取和设置属性。 一个例子显示如下
+ * Namespace containing deal.II's HDF5 interface.
  *
+ * The [Hierarchical Data Format (HDF)](https://www.hdfgroup.org/) is a cross
+ * platform and a high I/O performance format designed to store large amounts of
+ * data. It supports serial and MPI I/O access. This set of classes provides an
+ * interface to the [HDF5 library](https://www.hdfgroup.org/downloads/hdf5/).
+ *
+ * The tutorial step-62 shows how to use deal.II's HDF5 interface.
+ *
+ * # Groups, Datasets and attributes
+ * An HDF5 file is organized in
+ * [groups](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Groups/HDF5_Groups.htm)
+ * and
+ * [datasets](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Datasets/HDF5_Datasets.htm).
+ * Groups can contain datasets and other groups. Datasets are objects composed by
+ * a collection of data elements. Datasets are equivalent to tensors and matrices.
+ * In addition, attributes can be attached to the root file, a group or a
+ * dataset. An [HDF5
+ * attribute](https://bitbucket.hdfgroup.org/pages/HDFFV/hdf5doc/master/browse/html/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Attributes/HDF5_Attributes.htm)
+ * is a small meta data. The methods HDF5Object::get_attribute() and
+ * HDF5Object::set_attribute() can be used to get and set attributes.
+ *
+ * An example is shown below
  * @code
  * HDF5::File data_file(filename, HDF5::File::FileAccessMode::create);
  * double double_attribute = 2.2;
@@ -52,106 +65,133 @@ DEAL_II_NAMESPACE_OPEN
  * group.set_attribute("simulation_type", std::string("elastic_equation"));
  * auto dataset = group.create_dataset<double>("dataset_name", dimensions);
  * dataset.set_attribute("complex_double_attribute",
- *                     std::complex<double>(2,2.3));
+ *                       std::complex<double>(2,2.3));
  * @endcode
  *
  * # MPI I/O
- * 一个HDF5文件可以用串行（一个单一进程）或MPI支持（几个进程访问同一个HDF5文件）来打开/创建。
- * File::File(const   std::string  &, const
- * FileAccessMode）为串行操作打开/创建一个HDF5文件。
- * File::File(const   std::string  &, const FileAccessMode, const MPI_Comm &)
- * 使用MPI并行地创建或打开一个HDF5文件。修改文件结构的HDF5调用总是集体进行的，而数据集中的原始数据的写入和读取可以独立进行，也可以集体进行。[集体访问通常更快](https://www.hdfgroup.org/2015/08/parallel-io-with-hdf5/)，因为它允许MPI进行优化。在deal.II的HDF5接口中，为了最大限度地提高性能，所有的调用都被设置为集体调用。这意味着所有的MPI进程都必须对每一次调用做出贡献，即使他们没有数据需要写入。MPI
- * HDF5要求deal.II和HDF5已经被编译为MPI支持。 ##
- * 写一个并行的hyperslab
- * Hyperslab是数据集的一部分。一个hyperslab可以是一个数据集中连续的点的集合，也可以是一个数据集中有规律的点或块的模式。Hyperslabs等同于python
- * numpy和h5py
- * [slices](http://docs.h5py.org/en/latest/high/dataset.html#reading-writing-data)。参见HDF5用户指南中的<a
+ * An HDF5 file can be opened/created with serial (one single process) or
+ * MPI support (several processes access the same HDF5 file).
+ * File::File(const std::string &, const FileAccessMode)
+ * opens/creates an HDF5 file for serial operations.
+ * File::File(const std::string &, const FileAccessMode, const MPI_Comm &)
+ * creates or opens an HDF5 file in parallel using MPI. The HDF5 calls that
+ * modify the structure of the file are always collective, whereas writing
+ * and reading raw data in a dataset can be done independently or collectively.
+ * [Collective access is usually faster](https://www.hdfgroup.org/2015/08/parallel-io-with-hdf5/)
+ * since it allows MPI to do optimizations. In the deal.II's HDF5 interface all
+ * the calls are set to collective in order to maximize the performance. This
+ * means that all the MPI processes have to contribute to every single call, even
+ * if they don't have data to write. MPI HDF5 requires that deal.II and HDF5 have
+ * been compiled with MPI support.
+ *
+ * ## Write a hyperslab in parallel
+ * Hyperslabs are portions of datasets. A hyperslab can be a contiguous
+ * collection of points in a dataset, or it can be a regular pattern of points
+ * or blocks in a datataset. Hyperslabs are equivalent to python numpy and h5py
+ * [slices](http://docs.h5py.org/en/latest/high/dataset.html#reading-writing-data).
+ * See the <a
  * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Dataspaces/HDF5_Dataspaces_and_Partial_I_O.htm?rhtocid=7.2#TOC_7_4_Dataspaces_and_Databc-6">Dataspaces
- * and Data Transfer</a>部分。也可参见<a
+ * and Data Transfer</a>  section in the HDF5 User's Guide. See as well the
+ * <a
  * href="https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab">H5Sselect_hyperslab
- * definition</a>。
- * 下面的例子显示了如何编写一个简单的矩形超文本。偏移量定义了原始数据集中超文本的原点。超文本的尺寸是`hyperslab_dimensions
- * ={2,
- * 5}`。注意，每个进程可以写一个不同尺寸的超文本。如果一个进程根本不写任何数据，该进程应该调用函数
- * DataSet::write_none()
- * ，因为该操作是集体的*，所有MPI进程都必须为该调用作出贡献，即使它们没有数据可写。
+ * definition</a>.
  *
+ * The example below shows how to write a simple rectangular hyperslab. The
+ * offset defines the origin of the hyperslab in the original dataset. The
+ * dimensions of the hyperslab are `hyperslab_dimensions = {2, 5}`. Note that
+ * each process can write a hyperslab with a different size. If a process does
+ * not write any data at all, the process should call the function
+ * DataSet::write_none() because the operation is *collective* and all the MPI
+ * processes have to contribute to the call, even if they don't have data to
+ * write.
  * @code
  * std::vector<hsize_t> dataset_dimensions = {50, 30};
  * auto dataset = group.create_dataset<double>("name", dataset_dimensions);
  * if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
- * {
- *   // hyperslab_data can be std::vector, FullMatrix or Vector
- *   FullMatrix<double> hyperslab_data = {...};
- *   std::vector<hsize_t> hyperslab_offset     = {1, 2};
- *   std::vector<hsize_t> hyperslab_dimensions = {2, 3};
- *   dataset.write_hyperslab(hyperslab_data,
- *                           hyperslab_offset,
- *                           hyperslab_dimensions);
- * }
+ *   {
+ *     // hyperslab_data can be std::vector, FullMatrix or Vector
+ *     FullMatrix<double> hyperslab_data = {...};
+ *     std::vector<hsize_t> hyperslab_offset     = {1, 2};
+ *     std::vector<hsize_t> hyperslab_dimensions = {2, 3};
+ *     dataset.write_hyperslab(hyperslab_data,
+ *                             hyperslab_offset,
+ *                             hyperslab_dimensions);
+ *   }
  * else
- * {
- *   dataset.write_none<double>();
- * }
+ *   {
+ *     dataset.write_none<double>();
+ *   }
  * @endcode
  *
- * 函数 DataSet::write_hyperslab(const  Container &,const
- * std::vector<hsize_t>  &, const  std::vector<hsize_t>
- * &)用于写简单的超板，函数 DataSet::write_hyperslab(const
- * Container &,const  std::vector<hsize_t>  &, const  std::vector<hsize_t>  &,
- * const  std::vector<hsize_t>  &, const  std::vector<hsize_t>  &, const
- * std::vector<hsize_t>  &)用于写复杂超板。 ##并行写入无序数据
- * 下面的例子显示了如何写入一个选择的数据。请注意，每个进程可以写入不同数量的数据。如果一个进程根本不写任何数据，该进程应该调用函数
- * DataSet::write_none()
- * ，因为该操作是collective*，所有的MPI进程都必须为该调用作出贡献，即使他们没有数据可写。一个更详细的例子可以在
- * step-62 中找到。
+ * The function
+ * DataSet::write_hyperslab(const Container &,const std::vector<hsize_t> &, const std::vector<hsize_t> &)
+ * is used to write simple hyperslabs and the function
+ * DataSet::write_hyperslab(const Container &,const std::vector<hsize_t> &, const std::vector<hsize_t> &, const std::vector<hsize_t> &, const std::vector<hsize_t> &, const std::vector<hsize_t> &)
+ * is used to write complex hyperslabs.
  *
+ * ## Write unordered data in parallel
+ * The example below shows how to write a selection of data. Note that each
+ * process can write a different amount of data. If a process does not write
+ * any data at all, the process should call the function
+ * DataSet::write_none() because the operation is *collective* and all the MPI
+ * processes have to contribute to the call, even if they don't have data to
+ * write. A more detailed example can be found in step-62.
  * @code
  * std::vector<hsize_t> dataset_dimensions = {50, 30};
  * auto dataset = group.create_dataset<double>("name", dataset_dimensions);
  *
  * if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
- * {
- *   std::vector<hsize_t> coordinates = {0,
- *                                       0, // first point
- *                                       0,
- *                                       2, // second point
- *                                       3,
- *                                       4, // third point
- *                                       25,
- *                                       12}; // fourth point
- *   std::vector<double>  data        = {2, 3, 5, 6};
- *   dataset.write_selection(data, coordinates);
- * }
+ *   {
+ *     std::vector<hsize_t> coordinates = {0,
+ *                                         0, // first point
+ *                                         0,
+ *                                         2, // second point
+ *                                         3,
+ *                                         4, // third point
+ *                                         25,
+ *                                         12}; // fourth point
+ *     std::vector<double>  data        = {2, 3, 5, 6};
+ *     dataset.write_selection(data, coordinates);
+ *   }
  * else if (Utilities::MPI::this_mpi_process(mpi_communicator) == 1)
- * {
- *   std::vector<hsize_t> coordinates = {5,
- *                                       0, // first point
- *                                       0,
- *                                       4, // second point
- *                                       5,
- *                                       4, // third point
- *                                       26,
- *                                       12}; // fourth point
- *   std::vector<double>  data        = {9, 4, 7, 6};
- *   dataset.write_selection(data, coordinates);
- * }
+ *   {
+ *     std::vector<hsize_t> coordinates = {5,
+ *                                         0, // first point
+ *                                         0,
+ *                                         4, // second point
+ *                                         5,
+ *                                         4, // third point
+ *                                         26,
+ *                                         12}; // fourth point
+ *     std::vector<double>  data        = {9, 4, 7, 6};
+ *     dataset.write_selection(data, coordinates);
+ *   }
  * else
- * {
- *   dataset.write_none<double>();
- * }
+ *   {
+ *     dataset.write_none<double>();
+ *   }
  * @endcode
  *
- * ## 查询HDF5在最后一次并行I/O调用中使用的I/O模式
- * 在deal.II的HDF5
- * C++接口中，默认的访问模式是集体访问，这通常会更快，因为它允许MPI做更多的优化。在某些情况下，比如有类型转换时，HDF5库可以决定做独立的I/O而不是集体I/O，即使用户要求集体I/O。参见下面的[文章]（https://www.hdfgroup.org/2015/08/parallel-io-with-hdf5/）。在需要最大性能的情况下，确保所有的MPI读/写操作都是集体的，这很重要。HDF5库提供了API例程，可以在读/写I/O操作之后使用，以查询I/O模式。如果
- * DataSet::query_io_mode
- * 为True，那么在每次读/写操作之后，deal.II的HDF5接口都会调用例程[H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)和[H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause)
- * 。结果存储在  DataSet::io_mode,   DataSet::local_no_collective_cause
- * 和  DataSet::get_global_no_collective_cause.
- * 我们建议只在调试模式下查询I/O模式，因为它需要调用额外的HDF5程序。
- * 以下代码可用于查询I/O方式。
+ * ## Query the I/O mode that HDF5 used in the last parallel I/O call
+ * The default access mode in the deal.II's HDF5 C++ interface  is collective
+ * which is typically faster since it allows MPI to do more optimizations. In
+ * some cases, such as when there is type conversion, the HDF5 library can
+ * decide to do independent I/O instead of collective I/O, even if the user asks
+ * for collective I/O. See the following
+ * [article](https://www.hdfgroup.org/2015/08/parallel-io-with-hdf5/).
+ * In cases where maximum performance is a requirement, it is important to
+ * make sure that all MPI read/write operations are collective. The HDF5 library
+ * provides API routines that can be used after the read/write I/O operations to
+ * query the I/O mode. If DataSet::query_io_mode is True, then after
+ * every read/write operation the deal.II's HDF5 interface calls the routines
+ * [H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)
+ * and
+ * [H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).
+ * The results are stored in DataSet::io_mode, DataSet::local_no_collective_cause
+ * and DataSet::get_global_no_collective_cause. We suggest to query the I/O mode
+ * only in Debug mode because it requires calling additional HDF5 routines.
  *
+ * The following code can be used to query the I/O method.
  * @code
  * auto dataset = group.create_dataset<double>("name", dimensions);
  * #ifdef DEBUG
@@ -159,97 +199,117 @@ DEAL_II_NAMESPACE_OPEN
  * #endif
  *
  * if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
- * {
- *   dataset.write(data);
- * }
+ *   {
+ *     dataset.write(data);
+ *   }
  * else
- * {
- *   dataset.write_none<double>();
- * }
+ *   {
+ *     dataset.write_none<double>();
+ *   }
  *
  * if(dataset.get_query_io_mode()){
- * pcout << "IO mode: " << dataset.io_mode() << std::endl;
- * pcout << "Local no collective cause: "
- *       << dataset.local_no_collective_cause() << std::endl;
- * pcout << "Global no collective cause: "
- *       << dataset.get_global_no_collective_cause() <<
+ *   pcout << "IO mode: " << dataset.io_mode() << std::endl;
+ *   pcout << "Local no collective cause: "
+ *         << dataset.local_no_collective_cause() << std::endl;
+ *   pcout << "Global no collective cause: "
+ *         << dataset.get_global_no_collective_cause() <<
  * std::endl;
  * }
  * @endcode
  *
- * 如果写操作是集体的，那么输出应该是
- *
+ * If the write operation was collective then the output should be
  * @code
  * IO mode: H5D_MPIO_CONTIGUOUS_COLLECTIVE
  * Local no collective cause: H5D_MPIO_COLLECTIVE
  * Global no collective cause: H5D_MPIO_COLLECTIVE
  * @endcode
- * 参见 DataSet::get_io_mode(),   DataSet::get_local_no_collective_cause()
- * 和  DataSet::get_global_no_collective_cause()
- * 所有可能的返回代码。 # HDF5数据集和hyperslabs的等级
- * deal.II的HDF5接口可以用来向任何特定等级的数据集和hyperslabs写入/读取数据。`FullMatrix`只能用于向等级为2的数据集和超文本写入/读取数据。另一方面，
- * `std::vector`
- * 和`Vector`可以用来向等级为1、2、3和更高的数据集和hyperslab写/读数据，数据是按照C和C++矩阵中常用的[row-major
- * order]（https://en.wikipedia.org/wiki/Row-_and_column-major_order）组织的。我们可以用
- * std::vector 重写上一节的代码
+ * See DataSet::get_io_mode(), DataSet::get_local_no_collective_cause() and
+ * DataSet::get_global_no_collective_cause() for all the possible return
+ * codes.
  *
+ * # Rank of HDF5 datasets and hyperslabs
+ * The deal.II's HDF5 interface can be used to write/read data to datasets and
+ * hyperslabs of any particular rank. `FullMatrix` can only be used to
+ * write/read data to datasets and hyperslabs of rank 2. In the other hand,
+ * `std::vector` and `Vector` can be used to write/read data to datasets and
+ * hyperslabs of rank 1, 2, 3 and higher, the data is organized in
+ * [row-major order](https://en.wikipedia.org/wiki/Row-_and_column-major_order)
+ * which is commonly used in C and C++ matrices. We can re-write the code from
+ * the previous section using std::vector
  * @code
  * // Dataset of rank 2. dim_0 = 50, dim_1 = 30
  * std::vector<hsize_t> dataset_dimensions = {50, 30};
  * auto dataset = group.create_dataset<double>("name", dataset_dimensions);
  * if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
- * {
- *   // hyperslab_data can be std::vector, FullMatrix or Vector
- *   std::vector<double> hyperslab_data = {0,1,2,3,4,5};
- *   // hyperslab of rank 2. dim_0 = 2 and dim_1 = 3
- *   std::vector<hsize_t> hyperslab_offset     = {1, 2};
- *   std::vector<hsize_t> hyperslab_dimensions = {2, 3};
- *   dataset.write_hyperslab(hyperslab_data,
- *                           hyperslab_offset,
- *                           hyperslab_dimensions);
- * }
+ *   {
+ *     // hyperslab_data can be std::vector, FullMatrix or Vector
+ *     std::vector<double> hyperslab_data = {0,1,2,3,4,5};
+ *     // hyperslab of rank 2. dim_0 = 2 and dim_1 = 3
+ *     std::vector<hsize_t> hyperslab_offset     = {1, 2};
+ *     std::vector<hsize_t> hyperslab_dimensions = {2, 3};
+ *     dataset.write_hyperslab(hyperslab_data,
+ *                             hyperslab_offset,
+ *                             hyperslab_dimensions);
+ *   }
  * else
- * {
- *   dataset.write_none<double>();
- * }
+ *   {
+ *     dataset.write_none<double>();
+ *   }
  * @endcode
- * 前面的代码写出了以下的超简约矩阵
- *
+ * The previous code writes the following hyperslab matrix
  * @code
  * 0 1
  * 2 3
  * 4 5
  * @endcode
  *
- * # 数据类型 属性数据类型可以是float, `double`,
- * `std::complex<float>`,   `std::complex<double>`,  `int`, `unsigned int`,
- * `bool`和  `std::string`.   HDF5Object::get_attribute()  和
- * HDF5Object::set_attribute()  可以使用所有这些数据类型。
- * 数据集数据类型可以是`float`，`double`，  `std::complex<float>`,
- * `std::complex<double>`,  `int`和`unsigned int`。  DataSet::read(),
- * DataSet::write(),   DataSet::read_selection(),
- * 等可以与所有这些数据类型一起使用。注意，数据集数据类型不能是`bool'，原因是不能假设
- * `std::vector<bool>` 以连续的方式存储元素。
+ * # Datatypes
+ * Attribute datatypes can be float, `double`, `std::complex<float>`,
+ * `std::complex<double>`, `int`, `unsigned int`, `bool` and `std::string`.
+ * HDF5Object::get_attribute() and HDF5Object::set_attribute() can be used with
+ * all of these datatypes.
  *
- *  ## 复数和HDF5 在HDF5文件中没有正式的HDF5格式来存储
- * `std::complex` 数字。但是事实上*的标准是将 `std::complex`
- * 数字存储在一个复合类型中，其中`r`对应实部，`i`对应虚部。在这个接口中，我们定义了两个复合类型，一个用于
- * `std::complex<double>` ，对应于`(double,double)`，另一个用于
- * `std::complex<float>`
- * ，对应于`（float,float）`。这两种类型分别对应于python/numpy/h5py的类型：`complex128`和`complex64`。这意味着本接口生成的文件将被python/numpy/h5py正确读取，同时本接口能够读取python/numpy/h5py生成的文件。
- * # 与python脚本交换数据
- * HDF5格式可以用来与python脚本交换数据。字符串被存储为HDF5可变长度的UTF-8字符串，复数，如上所述，被存储为HDF5复合数据类型，与[h5py](https://www.h5py.org/)和[numpy](http://www.numpy.org/)兼容。
- * 下面的python脚本写了一个deal.II模拟的参数。~~~~~~~~~~~~~{.py}
- * h5_file = h5py.File('simulation.hdf5','w') data =
- * h5_file.create_group('data') data.attrs['nb_frequency_points'] = 50 # int
- * data.attrs['rho'] = 2300.5 # double data.attrs['save_vtk_files'] = True #
- * bool data.attrs['simulation_type'] = 'elastic_equation' # utf8 string
- * ~~~~~~~~~~~~~ 用MPI HDF5进行C++ deal.II仿真。
+ * Dataset datatypes can be `float`, `double`, `std::complex<float>`,
+ * `std::complex<double>`, `int` and `unsigned int`. DataSet::read(),
+ * DataSet::write(), DataSet::read_selection(), etc. can be used with all of
+ * these datatypes. Note that the dataset datatype can not be `bool`, the
+ * reason is that it can not be assumed that `std::vector<bool>` stores the
+ * elements in a contiguous way.
  *
+ *
+ * ## Complex numbers and HDF5
+ * There is no official HDF5 format to store `std::complex` numbers in a HDF5
+ * file. But the *de facto* standard is to store the `std::complex` number in a
+ * compound type in which `r` corresponds to the real part and `i` corresponds
+ * to the imaginary part. In this interface we define two compound types one for
+ * `std::complex<double>` which corresponds to `(double,double)` and another
+ * one for `std::complex<float>` which corresponds to `(float,float)`. These two
+ * types correspond respectively to the types of python/numpy/h5py:
+ * `complex128` and `complex64`. This means that the files generated by this
+ * interface will be read correctly by python/numpy/h5py and at the same time
+ * this interface is able to read the files generated by python/numpy/h5py.
+ *
+ * # Data exchange with python scripts
+ * The HDF5 format can be used to exchange data with python scripts. The strings
+ * are stored as HDF5 variable-length UTF-8 strings and the complex numbers, as
+ * explained above, are stored as HDF5 compound datatypes compatible with
+ * [h5py](https://www.h5py.org/) and [numpy](http://www.numpy.org/).
+ *
+ * The following python script writes the parameters for a deal.II simulation:
+ * ~~~~~~~~~~~~~{.py}
+ * h5_file = h5py.File('simulation.hdf5','w')
+ * data = h5_file.create_group('data')
+ * data.attrs['nb_frequency_points'] = 50 # int
+ * data.attrs['rho'] = 2300.5 # double
+ * data.attrs['save_vtk_files'] = True # bool
+ * data.attrs['simulation_type'] = 'elastic_equation' # utf8 string
+ * ~~~~~~~~~~~~~
+ *
+ * C++ deal.II simulation with MPI HDF5:
  * @code
  * HDF5::File data_file("simulation.hdf5",
- *                    HDF5::File::FileAccessMode::open,
- *                    MPI_COMM_WORLD);
+ *                      HDF5::File::FileAccessMode::open,
+ *                      MPI_COMM_WORLD);
  * HDF5::Group data = data_file.open_group("data");
  *
  * auto nb_frequency_points = data.get_attribute<int>("nb_frequency_points");
@@ -265,93 +325,103 @@ DEAL_II_NAMESPACE_OPEN
  * data.set_attribute("active_cells", triangulation.n_active_cells());
  * @endcode
  *
- * 用python读取模拟结果。~~~~~~~~~~~~~{.py} h5_file =
- * h5py.File('simulation.hdf5','r+') data = h5_file['data'] displacement =
- * data['displacement'] # complex128 dtype active_cells =
- * data.attrs['deges_of_freedom']) ~~~~~~~~~~~~~ # HDF5和线程安全
- * 默认情况下，HDF5不是线程安全的。HDF5库可以被配置为线程安全的，参见[HDF5文档](https://support.hdfgroup.org/HDF5/faq/threadsafe.html)。线程安全的HDF5版本将API序列化，但不提供任何级别的并发性。为了实现HDF5的高并行性能，我们建议将HDF5与MPI一起使用。
+ * Read the simulation results with python:
+ * ~~~~~~~~~~~~~{.py}
+ * h5_file = h5py.File('simulation.hdf5','r+')
+ * data = h5_file['data']
+ * displacement = data['displacement'] # complex128 dtype
+ * active_cells = data.attrs['degrees_of_freedom'])
+ * ~~~~~~~~~~~~~
  *
- *
+ * # HDF5 and thread safety
+ * By default HDF5 is not thread-safe. The HDF5 library can be configured to be
+ * thread-safe, see [the HDF5
+ * documentation](https://support.hdfgroup.org/HDF5/faq/threadsafe.html). The
+ * thread-safe HDF5 version serializes the API but does not provide any level of
+ * concurrency. To achieve high parallel performance with HDF5, we advice to use
+ * HDF5 with MPI.
  */
 // clang-format on
 namespace HDF5
 {
   /**
-   * HDF5对象的基类。
-   *
+   * Base class for the HDF5 objects.
    */
   class HDF5Object
   {
   protected:
     /**
-     * 构造函数。  @p string_name  是HDF5对象的名称。如果 @p mpi
-     * 为True，则使用MPI I/O。
-     *
+     * Constructor. @p string_name is the name of the HDF5 Object. If @p mpi is
+     * True then MPI I/O is used.
      */
     HDF5Object(const std::string &name, const bool mpi);
 
   public:
     /**
-     * 读取一个属性。  @p T  可以是`float`, `double`,
-     * `std::complex<float>`,   `std::complex<double>`,  `int`, `unsigned
-     * int`, `bool` 或  `std::string`.  注意  `std::string`
-     * 的编码是UTF8，以便与python3兼容。
-     * 数据类型转换在读或写时进行，是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
+     * Reads an attribute. @p T can be `float`, `double`, `std::complex<float>`,
+     * `std::complex<double>`, `int`, `unsigned int`, `bool` or `std::string`.
+     * Note that the encoding of `std::string` is UTF8 in order to be compatible
+     * with python3.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     template <typename T>
     T
     get_attribute(const std::string &attr_name) const;
 
     /**
-     * 写入一个属性。  @p T  可以是`float`, `double`,
-     * `std::complex<float>`,   `std::complex<double>`,  `int`, `unsigned
-     * int`, `bool` 或  `std::string`.  注意，为了与python3兼容，
-     * `std::string`  的编码为UTF8。
-     * 数据类型转换在读或写时进行，是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
+     * Writes an attribute. @p T can be `float`, `double`, `std::complex<float>`,
+     * `std::complex<double>`, `int`, `unsigned int`, `bool` or `std::string`.
+     * Note that the encoding of `std::string` is UTF8 in order to be compatible
+     * with python3.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     template <typename T>
     void
     set_attribute(const std::string &attr_name, const T value);
 
     /**
-     * 返回对象的#名称。在文件的情况下，#name对应的是文件名。在Group和DataSet的情况下，#name对应于HDF5文件中的对象名称。
-     *
+     * Returns the #name of the object. In the case of File, #name corresponds
+     * to the file name. In the case of Group and DataSet, #name corresponds to
+     * the name of the object in the HDF5 file.
      */
     std::string
     get_name() const;
 
   protected:
     /**
-     * HDF5Oject的名称。在文件的情况下， @p name
-     * 对应于文件名。在Group和DataSet的情况下， @p name
-     * 对应于HDF5文件中的对象名称。
-     *
+     * Name of the HDF5Oject. In the case of File, @p name corresponds to the
+     * file name. In the case of Group and DataSet @p name corresponds to the
+     * name of the object in the HDF5 file.
      */
     const std::string name;
 
     /**
-     * 文件、组和数据集对象的HDF5标识符。 `std::shared_ptr<>`
-     * 指针允许对象被复制。例如，程序的几个部分可以共享和访问同一个组；当所有访问该组的函数关闭时，该组的HDF5资源将被自动释放。
-     *
+     * HDF5 identifier for the objects File, Group and DataSet. The
+     * `std::shared_ptr<>` pointer allows the object to be copied. For example
+     * several parts of the program can share and access the same group; when
+     * all the functions that access the group are closed, the HDF5 resources of
+     * the group will be automatically released.
      */
     std::shared_ptr<hid_t> hdf5_reference;
 
     /**
-     * 如果为真则使用并行HDF5，如果为假则使用串行HDF5。
-     *
+     * If true use parallel HDF5, if false use serial HDF5.
      */
     const bool mpi;
   };
 
   /**
-   * 这个类实现了一个HDF5数据集。
-   *
+   * This class implements an HDF5 DataSet.
    */
   class DataSet : public HDF5Object
   {
@@ -359,16 +429,14 @@ namespace HDF5
 
   protected:
     /**
-     * 打开数据集。这是一个内部构造函数。应该使用函数
-     * Group::open_dataset() 来打开一个数据集。
-     *
+     * Open dataset. This is an internal constructor. The function
+     * Group::open_dataset() should be used to open a dataset.
      */
     DataSet(const std::string &name, const hid_t &parent_group_id, bool mpi);
 
     /**
-     * 创建数据集。这是一个内部构造函数。应该使用函数
-     * Group::create_dataset() 来创建一个数据集。
-     *
+     * Create dataset. This is an internal constructor. The function
+     * Group::create_dataset() should be used to create a dataset.
      */
     DataSet(const std::string &           name,
             const hid_t &                 parent_group_id,
@@ -378,45 +446,58 @@ namespace HDF5
 
   public:
     /**
-     * 读取数据集的所有数据。
-     * 数据类型转换在读取操作时进行，是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。        容器
-     * "可以是 `std::vector<float>`,   `std::vector<double>`,
-     * `std::vector<std::complex<float>>`,
-     * `std::vector<std::complex<double>>`,   `std::vector<int>`,
-     * `std::vector<unsigned  int>`、`Vector<float>`、`Vector<double>`、
-     * `Vector<std::complex<float>>`,   `Vector<std::complex<double>>`,
-     * `FullMatrix<float>`、`FullMatrix<double>`、
-     * `FullMatrix<std::complex<float>>`  或
-     * `FullMatrix<std::complex<double>>`.
+     * Reads all the data of the dataset.
      *
+     * Datatype conversion takes place at the time of the read operation and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * `Container` can be `std::vector<float>`, `std::vector<double>`,
+     * `std::vector<std::complex<float>>`, `std::vector<std::complex<double>>`,
+     * `std::vector<int>`, `std::vector<unsigned int>`, `Vector<float>`,
+     * `Vector<double>`, `Vector<std::complex<float>>`,
+     * `Vector<std::complex<double>>`, `FullMatrix<float>`,
+     * `FullMatrix<double>`, `FullMatrix<std::complex<float>>` or
+     * `FullMatrix<std::complex<double>>`.
      */
     template <typename Container>
     Container
     read();
 
     /**
-     * 读取数据集的一个子集的数据。
-     * 数据类型转换在读取操作时进行，并且是自动的。参见HDF5用户指南中的<a
+     * Reads data of a subset of the dataset.
+     *
+     * Datatype conversion takes place at the time of the read operation and is
+     * automatic. See the <a
      * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
-     * 选定的元素可以是分散的，在数据集中采取任何形状。
-     * 例如，在一个等级为4的数据集的情况下，选择3个点将由一个3乘4的数组来描述。请注意，索引是基于零的。要选择(1,1,1,1)、(14,6,12,18)和(8,22,30,22)这几个点，点选择阵列将如下。
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * The selected elements can be scattered and take any shape in the dataset.
+     * For example, in the case of a dataset with rank 4 a selection of 3 points
+     * will be described by a 3-by-4 array. Note the indexing is zero-based. To
+     * select the points (1,1,1,1), (14,6,12,18), and (8,22,30,22), the point
+     * selection array would be as follows:
+     *
      * @code
-     *  0  0  0  0
+     *    0  0  0  0
      *
-     * 13  5 11 17
+     *   13  5 11 17
      *
-     *  7 21 29 21
+     *    7 21 29 21
      * @endcode
+     *
      * <a
      * href="https://support.hdfgroup.org/newsletters/newsletter140.html">Parallel
      * HDF5 supports collective I/O on point selections.</a>
-     * 数据类型转换在读操作时进行，是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
      *
+     * Datatype conversion takes place at the time of the read operation and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     template <typename Container>
     Container
@@ -424,36 +505,37 @@ namespace HDF5
 
     // clang-format off
     /**
-     * 从数据集中读取一个超文本。参数总结如下。
+     * Reads a hyperslab from the dataset. The parameters are summarized
+     * below:
+     *  - @p offset: The starting location for the hyperslab.
+     *  - @p count: The number of elements to select along each dimension.
      *
+     * When reading a hyperslab, HDF5 also allows to provide "stride" and
+     * "block" parameters (see the [HDF5 documentation](https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab)).
+     * These are not used by the current function and set to `nullptr`. However
+     * these parameters can be used with the function
+     * read_hyperslab(const std::vector<hsize_t> &, const std::vector<hsize_t> &, const std::vector<hsize_t> &, const std::vector<hsize_t> &, const std::vector<hsize_t> &)
      *
-     *
-     *
-     *
-     * -  @p offset:  超级板块的起始位置。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p count:  沿着每个维度要选择的元素数量。        当读取一个超文本时，HDF5也允许提供 "stride "和 "block "参数（参见[HDF5文档](https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab)）。    这些参数不会被当前函数使用，而是被设置为 "nullptr"。然而，这些参数可以在函数read_hyperslab(const  std::vector<hsize_t>  &, const  std::vector<hsize_t>  &, const  std::vector<hsize_t>  &, const  std::vector<hsize_t>  &, const  std::vector<hsize_t>  &) 中使用。        参见HDF5用户指南中的<a
+     * See the <a
      * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Dataspaces/HDF5_Dataspaces_and_Partial_I_O.htm?rhtocid=7.2#TOC_7_4_Dataspaces_and_Databc-6">Dataspaces
-     * and Data Transfer</a>部分。也可以参见<a
+     * and Data Transfer</a>  section in the HDF5 User's Guide. See as well the
+     * <a
      * href="https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab">H5Sselect_hyperslab
-     * definition</a>。
-     * 数据类型转换是在读或写的时候进行的，是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。        容器
-     * "可以是 `std::vector<float>`,   `std::vector<double>`,
-     * `std::vector<std::complex<float>>`,
-     * `std::vector<std::complex<double>>`,   `std::vector<int>`,
-     * `std::vector<unsigned  int>`、`Vector<float>`、`Vector<double>`、
-     * `Vector<std::complex<float>>`,   `Vector<std::complex<double>>`,
-     * `FullMatrix<float>`、`FullMatrix<double>`、
-     * `FullMatrix<std::complex<float>>`  或
-     * `FullMatrix<std::complex<double>>`.
+     * definition</a>.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * `Container` can be `std::vector<float>`, `std::vector<double>`,
+     * `std::vector<std::complex<float>>`, `std::vector<std::complex<double>>`,
+     * `std::vector<int>`, `std::vector<unsigned int>`, `Vector<float>`,
+     * `Vector<double>`, `Vector<std::complex<float>>`,
+     * `Vector<std::complex<double>>`, `FullMatrix<float>`,
+     * `FullMatrix<double>`, `FullMatrix<std::complex<float>>` or
+     * `FullMatrix<std::complex<double>>`.
      */
     // clang-format on
     template <typename Container>
@@ -462,56 +544,36 @@ namespace HDF5
                    const std::vector<hsize_t> &count);
 
     /**
-     * 向数据集写入一个数据超文本。参数总结如下。
+     * Writes a data hyperslab to the dataset. The parameters are summarized
+     * below:
+     *  - @p dataset_dimensions: the dimensions of the data memory block.
+     *  - @p offset: The starting location for the hyperslab.
+     *  - @p stride: The number of elements to separate each element or block to
+     *               be selected.
+     *  - @p count: The number of elements or blocks to select along each
+     *              dimension.
+     *  - @p block: The size of the block selected from the dataspace.
      *
-     *
-     *
-     *
-     *
-     * -  @p dataset_dimensions:  数据存储块的尺寸。
-     *
-     *
-     *
-     *
-     *
-     * -  @p offset:  超级板块的起始位置。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p stride:  分隔每个要选择的元素或块的元素数量。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p count:  沿着每个维度要选择的元素或块的数量。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p block:  从数据空间选择的块的大小。        参见HDF5用户指南中的<a
+     * See the <a
      * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Dataspaces/HDF5_Dataspaces_and_Partial_I_O.htm?rhtocid=7.2#TOC_7_4_Dataspaces_and_Databc-6">Dataspaces
-     * and Data Transfer</a>部分。也可参见<a
+     * and Data Transfer</a>  section in the HDF5 User's Guide. See as well the
+     * <a
      * href="https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab">H5Sselect_hyperslab
-     * definition</a>。
-     * 数据类型转换是在读或写的时候进行的，而且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。        容器
-     * "可以是 `std::vector<float>`,   `std::vector<double>`,
-     * `std::vector<std::complex<float>>`,
-     * `std::vector<std::complex<double>>`,   `std::vector<int>`,
-     * `std::vector<unsigned  int>`、`Vector<float>`、`Vector<double>`、
-     * `Vector<std::complex<float>>`,   `Vector<std::complex<double>>`,
-     * `FullMatrix<float>`、`FullMatrix<double>`、
-     * `FullMatrix<std::complex<float>>`  或
-     * `FullMatrix<std::complex<double>>`.
+     * definition</a>.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * `Container` can be `std::vector<float>`, `std::vector<double>`,
+     * `std::vector<std::complex<float>>`, `std::vector<std::complex<double>>`,
+     * `std::vector<int>`, `std::vector<unsigned int>`, `Vector<float>`,
+     * `Vector<double>`, `Vector<std::complex<float>>`,
+     * `Vector<std::complex<double>>`, `FullMatrix<float>`,
+     * `FullMatrix<double>`, `FullMatrix<std::complex<float>>` or
+     * `FullMatrix<std::complex<double>>`.
      */
     template <typename Container>
     Container
@@ -522,59 +584,69 @@ namespace HDF5
                    const std::vector<hsize_t> &block);
 
     /**
-     * 这个函数不读取任何数据，但它可以为集体读取调用作出贡献。
-     * @p number  可以是`float`, `double`,  `std::complex<float>`,
-     * `std::complex<double>`,  `int`或`unsigned int`。
-     * 数据类型的转换是在读或写时进行的，并且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
+     * This function does not read any data, but it can contribute to a
+     * collective read call. @p number can be `float`, `double`,
+     * `std::complex<float>`, `std::complex<double>`, `int` or `unsigned int`.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     template <typename number>
     void
     read_none();
 
     /**
-     * 写入数据集中的数据。  @p number
-     * 可以是`float`，`double`， `std::complex<float>`,
-     * `std::complex<double>`,  `int`或`unsigned int`。
-     * 数据类型的转换是在读或写时进行的，并且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。        容器
-     * "可以是 `std::vector<float>`,   `std::vector<double>`,
-     * `std::vector<std::complex<float>>`,
-     * `std::vector<std::complex<double>>`,   `std::vector<int>`,
-     * `std::vector<unsigned  int>`、`Vector<float>`、`Vector<double>`、
-     * `Vector<std::complex<float>>`,   `Vector<std::complex<double>>`,
-     * `FullMatrix<float>`、`FullMatrix<double>`、
-     * `FullMatrix<std::complex<float>>`  或
-     * `FullMatrix<std::complex<double>>`.
+     * Writes data in the dataset. @p number can be `float`, `double`,
+     * `std::complex<float>`, `std::complex<double>`, `int` or `unsigned int`.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * `Container` can be `std::vector<float>`, `std::vector<double>`,
+     * `std::vector<std::complex<float>>`, `std::vector<std::complex<double>>`,
+     * `std::vector<int>`, `std::vector<unsigned int>`, `Vector<float>`,
+     * `Vector<double>`, `Vector<std::complex<float>>`,
+     * `Vector<std::complex<double>>`, `FullMatrix<float>`,
+     * `FullMatrix<double>`, `FullMatrix<std::complex<float>>` or
+     * `FullMatrix<std::complex<double>>`.
      */
     template <typename Container>
     void
     write(const Container &data);
 
     /**
-     * 将数据写入数据集的一个子集。  @p number
-     * 可以是`float`, `double`,  `std::complex<float>`,
-     * `std::complex<double>`,  `int`或`unsigned int`。
-     * 选择的元素可以是分散的，在数据集中采取任何形状。
-     * 例如，在一个等级为4的数据集的情况下，3个点的选择将由一个3乘4的数组来描述。请注意，索引是基于零的。为了选择(1,1,1,1)、(14,6,12,18)和(8,22,30,22)这几个点，点选择阵列将如下。
+     * Writes data to a subset of the dataset. @p number can be `float`, `double`,
+     * `std::complex<float>`, `std::complex<double>`, `int` or `unsigned int`.
+     *
+     * The selected elements can be scattered and take any shape in the dataset.
+     * For example, in the case of a dataset with rank 4 a selection of 3 points
+     * will be described by a 3-by-4 array. Note the indexing is zero-based. To
+     * select the points (1,1,1,1), (14,6,12,18), and (8,22,30,22), the point
+     * selection array would be as follows:
+     *
      * @code
-     *  0  0  0  0
+     *    0  0  0  0
      *
-     * 13  5 11 17
+     *   13  5 11 17
      *
-     *  7 21 29 21
+     *    7 21 29 21
      * @endcode
+     *
      * <a
      * href="https://support.hdfgroup.org/newsletters/newsletter140.html">Parallel
      * HDF5 supports collective I/O on point selections.</a>
-     * 数据类型转换在读或写时进行，是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     template <typename Container>
     void
@@ -583,28 +655,29 @@ namespace HDF5
 
     // clang-format off
     /**
-     * 向数据集写入一个数据超文本。参数总结如下。
+     * Writes a data hyperslab to the dataset. The parameters are summarized
+     * below:
+     *  - @p offset: The starting location for the hyperslab.
+     *  - @p count: The number of elements to select along each dimension.
      *
+     * When writing a hyperslab, HDF5 also allows to provide "stride" and
+     * "block" parameters (see the [HDF5 documentation](https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab)).
+     * These are not used by the current function and set to `nullptr`. However
+     * these parameters can be used with the function
+     * write_hyperslab(const Container &data, const std::vector<hsize_t> &data_dimensions, const std::vector<hsize_t> &offset, const std::vector<hsize_t> &stride, const std::vector<hsize_t> &count, const std::vector<hsize_t> &block).
      *
-     *
-     *
-     *
-     * -  @p offset:  超文本的起始位置。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p count:  沿着每个维度要选择的元素数量。        在编写超文本时，HDF5还允许提供 "stride "和 "block "参数（见[HDF5文档](https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab)）。    这些参数不会被当前函数使用，而是被设置为 "nullptr"。但是这些参数可以在函数write_hyperslab(const Container &data, const  std::vector<hsize_t>  &data_dimensions, const  std::vector<hsize_t>  &offset, const  std::vector<hsize_t>  &stride, const  std::vector<hsize_t>  &count, const  std::vector<hsize_t>  &block) 中使用。        参见HDF5用户指南中的<a
+     * See the <a
      * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Dataspaces/HDF5_Dataspaces_and_Partial_I_O.htm?rhtocid=7.2#TOC_7_4_Dataspaces_and_Databc-6">Dataspaces
-     * and Data Transfer</a>部分。也可参见<a
+     * and Data Transfer</a>  section in the HDF5 User's Guide. See as well the
+     * <a
      * href="https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab">H5Sselect_hyperslab
-     * definition</a>。
-     * 数据类型转换是在读或写的时候进行的，而且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
+     * definition</a>.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     // clang-format on
     template <typename Container>
@@ -614,57 +687,36 @@ namespace HDF5
                     const std::vector<hsize_t> &count);
 
     /**
-     * 向数据集写入一个数据超文本。参数总结如下。
+     * Writes a data hyperslab to the dataset. The parameters are summarized
+     * below:
+     *  - @p dataset_dimensions: the dimensions of the data memory block.
+     *  - @p offset: The starting location for the hyperslab.
+     *  - @p stride: The number of elements to separate each element or block to be
+     *               selected.
+     *  - @p count: The number of elements or blocks to select along each
+     *              dimension.
+     *  - @p block: The size of the block selected from the dataspace.
      *
-     *
-     *
-     *
-     *
-     * -  @p dataset_dimensions:  数据存储块的尺寸。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p offset:  超级板块的起始位置。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p stride:  分隔每个要选择的元素或块的元素数量。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p count:  沿着每个维度要选择的元素或块数。
-     *
-     *
-     *
-     *
-     *
-     *
-     * -  @p block:  从数据空间中选择的块的大小。        参见HDF5用户指南中的<a
+     * See the <a
      * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/HDF5_Users_Guide/Dataspaces/HDF5_Dataspaces_and_Partial_I_O.htm?rhtocid=7.2#TOC_7_4_Dataspaces_and_Databc-6">Dataspaces
-     * and Data Transfer</a>部分。也可参见<a
+     * and Data Transfer</a>  section in the HDF5 User's Guide. See as well the
+     * <a
      * href="https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-SelectHyperslab">H5Sselect_hyperslab
-     * definition</a>。
-     * 数据类型转换是在读或写的时候进行的，而且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。        容器
-     * "可以是 `std::vector<float>`,   `std::vector<double>`,
-     * `std::vector<std::complex<float>>`,
-     * `std::vector<std::complex<double>>`,   `std::vector<int>`,
-     * `std::vector<unsigned  int>`、`Vector<float>`、`Vector<double>`、
-     * `Vector<std::complex<float>>`,   `Vector<std::complex<double>>`,
-     * `FullMatrix<float>`、`FullMatrix<double>`、
-     * `FullMatrix<std::complex<float>>`  或
-     * `FullMatrix<std::complex<double>>`.
+     * definition</a>.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * `Container` can be `std::vector<float>`, `std::vector<double>`,
+     * `std::vector<std::complex<float>>`, `std::vector<std::complex<double>>`,
+     * `std::vector<int>`, `std::vector<unsigned int>`, `Vector<float>`,
+     * `Vector<double>`, `Vector<std::complex<float>>`,
+     * `Vector<std::complex<double>>`, `FullMatrix<float>`,
+     * `FullMatrix<double>`, `FullMatrix<std::complex<float>>` or
+     * `FullMatrix<std::complex<double>>`.
      */
     template <typename Container>
     void
@@ -676,251 +728,275 @@ namespace HDF5
                     const std::vector<hsize_t> &block);
 
     /**
-     * 这个函数不写任何数据，但它可以为集体写调用作出贡献。在MPI集体写调用的情况下，如果一个进程根本不写任何数据，该进程应该调用这个函数，因为该操作是集体的*，所有的MPI进程都必须为该调用作出贡献，即使他们没有数据可写。
-     * @p number  可以是 "float"、"double"、 `std::complex<float>`,
-     * `std::complex<double>`,  `int'或`unsigned int'。
-     * 数据类型的转换是在读或写时进行的，并且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
-     * 如何使用这个函数的例子可以在  step-62  中找到。
+     * This function does not write any data, but it can contribute to a
+     * collective write call. In the context of a collective MPI write call,
+     * if a process does not write any data at all, the process should call
+     * this function because the operation is *collective* and all the MPI
+     * processes have to contribute to the call, even if they don't have data
+     * to write. @p number can be `float`, `double`, `std::complex<float>`,
+     * `std::complex<double>`, `int` or `unsigned int`.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * An example of how to use this function can be found in step-62.
      */
     template <typename number>
     void
     write_none();
 
     /**
-     * 该函数返回boolean query_io_mode。
-     * 在必须实现最大性能的情况下，确保所有的MPI读/写操作是集体的，这一点很重要。HDF5库提供了API例程，可以在读/写I/O操作之后使用，以查询I/O模式。如果query_io_mode设置为true，那么在每次读/写操作之后，deal.II的HDF5接口都会调用例程[H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)和[H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause)
-     * 。
-     * 结果存储在io_mode、local_no_collective_cause和global_no_collective_cause。我们建议只在Debug模式下查询I/O模式，因为这需要调用额外的HDF5例程。
+     * This function returns the boolean query_io_mode.
      *
+     * In cases where maximum performance has to be achieved, it is important to
+     * make sure that all MPI read/write operations are collective. The HDF5
+     * library provides API routines that can be used after the read/write I/O
+     * operations to query the I/O mode. If query_io_mode is set to true, then
+     * after every read/write operation the deal.II's HDF5 interface calls the
+     * routines
+     * [H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)
+     * and
+     * [H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).
+     * The results are stored in io_mode, local_no_collective_cause and
+     * global_no_collective_cause. We suggest to query the I/O mode only in
+     * Debug mode because it requires calling additional HDF5 routines.
      */
     bool
     get_query_io_mode() const;
 
     /**
-     * 这个函数设置布尔查询_io_mode。
-     *
+     * This function sets the boolean query_io_mode.
      */
     void
     set_query_io_mode(const bool new_query_io_mode);
 
     /**
-     * 该函数返回最后一次并行I/O调用时使用的I/O模式。参见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode">H5Pget_mpio_actual_io_mode</a>。
-     * 返回值是一个 `std::string` ，可以是Value | Meaning。
+     * This function returns the I/O mode that was used on the last
+     * parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode">H5Pget_mpio_actual_io_mode</a>.
      *
-     *
-     *
-     *
-     *
-     *
-     * - ---------------------------- |
-     *
-     * - ----- H5D_MPIO_NO_COLLECTIVE | 没有执行集体I/O。没有要求进行集体I/O，或者在这个数据集上不可能进行集体I/O。    H5D_MPIO_CHUNK_INDEPENDENT | HDF5执行了分块集体优化方案，每个分块被独立访问。    H5D_MPIO_CHUNK_COLLECTIVE | HDF5执行大块集体优化方案，每个大块被集体访问。    H5D_MPIO_CHUNK_MIXED | HDF5执行大块集体优化方案，有些大块被独立访问，有些被集体访问。    H5D_MPIO_CONTIGUOUS_COLLECTIVE | 对一个连续的数据集进行了集体I/O。
-     *
+     * The return value is a `std::string` and can be
+     * Value                          | Meaning
+     * ------------------------------ | -------
+     * H5D_MPIO_NO_COLLECTIVE         | No collective I/O was performed. Collective I/O was not requested or collective I/O isn't possible on this dataset.
+     * H5D_MPIO_CHUNK_INDEPENDENT     | HDF5 performed chunk collective optimization schemes and each chunk was accessed independently.
+     * H5D_MPIO_CHUNK_COLLECTIVE      | HDF5 performed chunk collective optimization and each chunk was accessed collectively.
+     * H5D_MPIO_CHUNK_MIXED           | HDF5 performed chunk collective optimization and some chunks were accessed independently, some collectively.
+     * H5D_MPIO_CONTIGUOUS_COLLECTIVE | Collective I/O was performed on a contiguous dataset.
      */
     std::string
     get_io_mode();
 
     /**
-     * 该函数返回最后一次并行I/O调用时使用的I/O模式。参见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode">H5Pget_mpio_actual_io_mode</a>。
-     * 返回类型为`H5D_mpio_actual_io_mode_t`，对应于H5Pget_mpio_actual_io_mode的返回值。
-     * 返回值可以是Value | Meaning
+     * This function returns the I/O mode that was used on the last
+     * parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode">H5Pget_mpio_actual_io_mode</a>.
+     * The return type is `H5D_mpio_actual_io_mode_t` which corresponds to the
+     * value returned by H5Pget_mpio_actual_io_mode.
      *
-     *
-     *
-     *
-     *
-     *
-     * - ---------------------------- |
-     *
-     * - ----- H5D_MPIO_NO_COLLECTIVE | 没有执行集体I/O。没有要求进行集体I/O，或者在这个数据集上不可能进行集体I/O。    H5D_MPIO_CHUNK_INDEPENDENT | HDF5进行了分块集体优化，每个分块被独立访问。    H5D_MPIO_CHUNK_COLLECTIVE | HDF5执行大块集体优化，每个大块被集体访问。    H5D_MPIO_CHUNK_MIXED | HDF5执行大块集体优化，有些大块被独立访问，有些被集体访问。    H5D_MPIO_CONTIGUOUS_COLLECTIVE | 对一个连续的数据集进行了集体I/O。
-     *
+     * The return value can be
+     * Value                          | Meaning
+     * ------------------------------ | -------
+     * H5D_MPIO_NO_COLLECTIVE         | No collective I/O was performed. Collective I/O was not requested or collective I/O isn't possible on this dataset.
+     * H5D_MPIO_CHUNK_INDEPENDENT     | HDF5 performed chunk collective optimization and each chunk was accessed independently.
+     * H5D_MPIO_CHUNK_COLLECTIVE      | HDF5 performed chunk collective optimization and each chunk was accessed collectively.
+     * H5D_MPIO_CHUNK_MIXED           | HDF5 performed chunk collective optimization and some chunks were accessed independently, some collectively.
+     * H5D_MPIO_CONTIGUOUS_COLLECTIVE | Collective I/O was performed on a contiguous dataset.
      */
     H5D_mpio_actual_io_mode_t
     get_io_mode_as_hdf5_type();
 
     /**
-     * 这个函数返回在最后一次并行I/O调用中破坏集体I/O的本地原因。见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>。
-     * 返回值是一个字符串，可以是 Value | Meaning
+     * This function returns the local causes that broke collective I/O on the
+     * last parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>.
      *
-     *
-     *
-     *
-     *
-     *
-     * - ---------------------------------------- |
-     *
-     * - ----- H5D_MPIO_COLLECTIVE | 集体I/O已成功执行。    H5D_MPIO_SET_INDEPENDENT | 因为要求独立的I/O，所以没有执行集体I/O。    H5D_MPIO_DATATYPE_CONVERSION | 因为需要进行数据类型转换，所以没有执行集体I/O。    H5D_MPIO_DATA_TRANSFORMS | 因为需要应用数据转换，所以没有执行集体I/O。    H5D_MPIO_SET_MPIPOSIX | 因为选择的文件驱动是MPI-POSIX，所以没有执行集体I/O。    H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES | 因为其中一个数据空间既不简单也不标量，所以没有执行集体I/O。    H5D_MPIO_POINT_SELECTIONS | 由于其中一个数据空间中存在点选择，所以没有执行集体I/O。    H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | 由于数据集既不是连续的也不是分块的，所以没有执行集体I/O。    H5D_MPIO_FILTERS | 因为需要应用过滤器而没有执行集体I/O。
-     *
+     * The return value is a string and can be
+     * Value                                      | Meaning
+     * ------------------------------------------ | -------
+     * H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.
+     * H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.
+     * H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.
+     * H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.
+     * H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.
+     * H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.
+     * H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.
+     * H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.
+     * H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.
      */
     std::string
     get_local_no_collective_cause();
 
     /**
-     * 这个函数返回在最后一次并行I/O调用中破坏集体I/O的本地原因。参见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>。
-     * 返回类型为`uint32_t`，对应于[H5Pget_mpio_no_collective_cause](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause)返回的值。
-     * 返回值可以是Value | Meaning
+     * This function returns the local causes that broke collective I/O on the
+     * last parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>.
+     * The return type is `uint32_t` and corresponds to the value returned by
+     * [H5Pget_mpio_no_collective_cause](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).
      *
-     *
-     *
-     *
-     *
-     *
-     * - ---------------------------------------- |
-     *
-     * - ----- H5D_MPIO_COLLECTIVE | 集体I/O已成功执行。    H5D_MPIO_SET_INDEPENDENT | 因为要求独立的I/O，所以没有执行集体I/O。    H5D_MPIO_DATATYPE_CONVERSION | 因为需要进行数据类型转换，所以没有执行集体I/O。    H5D_MPIO_DATA_TRANSFORMS | 因为需要应用数据转换，所以没有执行集体I/O。    H5D_MPIO_SET_MPIPOSIX | 因为选择的文件驱动是MPI-POSIX，所以没有执行集体I/O。    H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES | 因为其中一个数据空间既不简单也不标量，所以没有执行集体I/O。    H5D_MPIO_POINT_SELECTIONS | 由于其中一个数据空间中存在点选择，所以没有执行集体I/O。    H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | 由于数据集既不是连续的也不是分块的，所以没有执行集体I/O。    H5D_MPIO_FILTERS | 因为需要应用过滤器而没有执行集体I/O。
-     *
+     * The return value can be
+     * Value                                      | Meaning
+     * ------------------------------------------ | -------
+     * H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.
+     * H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.
+     * H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.
+     * H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.
+     * H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.
+     * H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.
+     * H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.
+     * H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.
+     * H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.
      */
     uint32_t
     get_local_no_collective_cause_as_hdf5_type();
 
     /**
-     * 这个函数检索在最后一次并行I/O调用中破坏集体I/O的全局原因。见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>。
-     * 返回值是一个 std::string ，可以是Value | Meaning。
+     * This function retrieves the global causes that broke collective I/O on
+     * the last parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>.
      *
-     *
-     *
-     *
-     *
-     *
-     * - ---------------------------------------- |
-     *
-     * - ----- H5D_MPIO_COLLECTIVE | 集体I/O已成功执行。    H5D_MPIO_SET_INDEPENDENT | 因为要求独立的I/O，所以没有执行集体I/O。    H5D_MPIO_DATATYPE_CONVERSION | 因为需要进行数据类型转换，所以没有执行集体I/O。    H5D_MPIO_DATA_TRANSFORMS | 因为需要应用数据转换，所以没有执行集体I/O。    H5D_MPIO_SET_MPIPOSIX | 因为选择的文件驱动是MPI-POSIX，所以没有执行集体I/O。    H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES | 因为其中一个数据空间既不简单也不标量，所以没有执行集体I/O。    H5D_MPIO_POINT_SELECTIONS | 由于其中一个数据空间中存在点选择，所以没有执行集体I/O。    H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | 由于数据集既不是连续的也不是分块的，所以没有执行集体I/O。    H5D_MPIO_FILTERS | 因为需要应用过滤器而没有执行集体I/O。
-     *
+     * The return value is a std::string and can be
+     * Value                                      | Meaning
+     * ------------------------------------------ | -------
+     * H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.
+     * H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.
+     * H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.
+     * H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.
+     * H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.
+     * H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.
+     * H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.
+     * H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.
+     * H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.
      */
     std::string
     get_global_no_collective_cause();
 
     /**
-     * 这个函数返回在最后一次并行I/O调用中破坏集体I/O的全局原因。参见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>。
-     * 返回类型为`uint32_t`，与H5Pget_mpio_no_collective_cause返回的值对应。
-     * 返回值可以是 Value | Meaning
+     * This function returns the global causes that broke collective I/O on the
+     * last parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>.
+     * The return type is `uint32_t` and corresponds to the value returned by
+     * H5Pget_mpio_no_collective_cause.
      *
-     *
-     *
-     *
-     *
-     *
-     * - ---------------------------------------- |
-     *
-     * - ----- H5D_MPIO_COLLECTIVE | 集体I/O已成功执行。    H5D_MPIO_SET_INDEPENDENT | 因为要求独立的I/O，所以没有执行集体I/O。    H5D_MPIO_DATATYPE_CONVERSION | 因为需要进行数据类型转换，所以没有执行集体I/O。    H5D_MPIO_DATA_TRANSFORMS | 因为需要应用数据转换，所以没有执行集体I/O。    H5D_MPIO_SET_MPIPOSIX | 因为选择的文件驱动是MPI-POSIX，所以没有执行集体I/O。    H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES | 因为其中一个数据空间既不简单也不标量，所以没有执行集体I/O。    H5D_MPIO_POINT_SELECTIONS | 由于其中一个数据空间中存在点选择，所以没有执行集体I/O。    H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | 由于数据集既不是连续的也不是分块的，所以没有执行集体I/O。    H5D_MPIO_FILTERS | 因为需要应用过滤器，所以没有执行集体I/O。
-     *
+     * The return value can be
+     * Value                                      | Meaning
+     * ------------------------------------------ | -------
+     * H5D_MPIO_COLLECTIVE                        | Collective I/O was performed successfully.
+     * H5D_MPIO_SET_INDEPENDENT                   | Collective I/O was not performed because independent I/O was requested.
+     * H5D_MPIO_DATATYPE_CONVERSION               | Collective I/O was not performed because datatype conversions were required.
+     * H5D_MPIO_DATA_TRANSFORMS                   | Collective I/O was not performed because data transforms needed to be applied.
+     * H5D_MPIO_SET_MPIPOSIX                      | Collective I/O was not performed because the selected file driver was MPI-POSIX.
+     * H5D_MPIO_NOT_SIMPLE_OR_SCALAR_DATASPACES   | Collective I/O was not performed because one of the dataspaces was neither simple nor scalar.
+     * H5D_MPIO_POINT_SELECTIONS                  | Collective I/O was not performed because there were point selections in one of the dataspaces.
+     * H5D_MPIO_NOT_CONTIGUOUS_OR_CHUNKED_DATASET | Collective I/O was not performed because the dataset was neither contiguous nor chunked.
+     * H5D_MPIO_FILTERS                           | Collective I/O was not performed because filters needed to be applied.
      */
     uint32_t
     get_global_no_collective_cause_as_hdf5_type();
 
     /**
-     * 这个函数返回数据集的尺寸。向量dimensions是一个大小为rank的一维数组，指定数据集的每个维度的大小。
-     *
+     * This function returns the dimensions of the dataset. The vector
+     * dimensions is a one-dimensional array of size rank specifying the size of
+     * each dimension of the dataset.
      */
     std::vector<hsize_t>
     get_dimensions() const;
 
     /**
-     * 该函数返回数据集的总元素数。
-     *
+     * This function returns the total number of elements in the dataset.
      */
     unsigned int
     get_size() const;
 
     /**
-     * 此函数返回数据集的等级。
-     *
+     * This function returns the rank of the dataset.
      */
     unsigned int
     get_rank() const;
 
   private:
     /**
-     * 数据集的等级
-     *
+     * Rank of the DataSet
      */
     unsigned int rank;
 
     /**
-     * 向量`dimensions`是一个大小为rank的一维数组，指定数据集的每个维度的大小。
-     *
+     * The vector `dimensions` is a one-dimensional array of size rank
+     * specifying the size of each dimension of the dataset.
      */
     std::vector<hsize_t> dimensions;
 
     /**
-     * HDF5数据空间标识符。
-     *
+     * HDF5 dataspace identifier.
      */
     std::shared_ptr<hid_t> dataspace;
 
     /**
-     * 数据集的总元素数。
-     *
+     * Total number of elements in the dataset.
      */
     unsigned int size;
 
     /**
-     * 如果query_io_mode设置为true，那么在每次读/写操作之后，deal.II的HDF5接口都会调用例程[H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)和[H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause)
-     * 。
-     * 结果存储在io_mode、local_no_collective_cause和global_no_collective_cause。
-     *
+     * If query_io_mode is set to true, then after every read/write operation
+     * the deal.II's HDF5 interface calls the routines
+     * [H5Pget_mpio_actual_io_mode()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioActualIoMode)
+     * and
+     * [H5Pget_mpio_no_collective_cause()](https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause).
+     * The results are stored in io_mode, local_no_collective_cause and
+     * global_no_collective_cause.
      */
     bool query_io_mode;
 
     /**
-     * 在最后一次并行I/O调用时执行的I/O模式。
-     *
+     * I/O mode that was performed on the last parallel I/O call.
      */
     H5D_mpio_actual_io_mode_t io_mode;
 
     /**
-     * 在最后一次并行I/O调用中破坏集体I/O的本地原因。见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>。
-     *
+     * Local causes that broke collective I/O on the
+     * last parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>.
      */
     uint32_t local_no_collective_cause;
 
     /**
-     * 在最后一次并行I/O调用中破坏集体I/O的全局原因。见<a
-     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>。
-     *
+     * Global causes that broke collective I/O on the
+     * last parallel I/O call. See <a
+     * href="https://support.hdfgroup.org/HDF5/doc/RM/RM_H5P.html#Property-GetMpioNoCollectiveCause">H5Pget_mpio_no_collective_cause</a>.
      */
     uint32_t global_no_collective_cause;
   };
 
   /**
-   * 该类实现了一个HDF5组
-   *
+   * This class implements an HDF5 Group
    */
   class Group : public HDF5Object
   {
   protected:
     /**
-     * 组的访问模式
-     *
+     * Group access mode
      */
     enum class GroupAccessMode
     {
       /**
-       * 打开一个现有的组
-       *
+       * Opens an existing group
        */
       open,
       /**
-       * 创建一个新的群组
-       *
+       * Creates a new group
        */
       create
     };
     /**
-     * 这个构造函数创建或打开一个组，取决于 @p mode.
-     * 的值，该组将被放在组内 @p parent_group. 的参数 @p mpi
-     * 定义了I/O操作是串行还是并行。这是一个内部构造函数，应该使用当前类的函数open_group()和create_group()来打开或创建一个组。
-     *
+     * This constructor creates or opens a group depending on the value of
+     * @p mode. The group will be placed inside the group @p parent_group. The
+     * parameter @p mpi defines if the I/O operations are serial or
+     * parallel. This is an internal constructor, the functions open_group() and
+     * create_group() of the current class should be used to open or create a
+     * group.
      */
     Group(const std::string &   name,
           const Group &         parent_group,
@@ -928,42 +1004,40 @@ namespace HDF5
           const GroupAccessMode mode);
 
     /**
-     * 文件使用的内部构造函数。该构造函数设置HDF5Group的受保护常量成员。
-     * @p name  和  @p mpi.  它不会创建或打开一个组。
-     *
+     * Internal constructor used by File. The constructor sets the protected
+     * const members of HDF5Group: @p name and @p mpi. It does not create or
+     * open a Group.
      */
     Group(const std::string &name, const bool mpi);
 
   public:
     /**
-     * 打开当前组或文件的一个子组。
-     *
+     * Opens a sub-group of the current Group or File.
      */
     Group
     open_group(const std::string &name) const;
 
     /**
-     * 在当前组或文件中创建一个子组。
-     *
+     * Creates a sub-group in the current Group or File.
      */
     Group
     create_group(const std::string &name) const;
 
     /**
-     * 打开一个数据集。
-     *
+     * Opens a dataset.
      */
     DataSet
     open_dataset(const std::string &name) const;
 
     /**
-     * 创建一个数据集。  @p number  可以是`float`, `double`,
-     * `std::complex<float>`,   `std::complex<double>`,  `int`或`unsigned
-     * int`。
-     * 数据类型的转换是在读或写时进行的，并且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。
+     * Creates a dataset. @p number can be `float`, `double`,
+     * `std::complex<float>`, `std::complex<double>`, `int` or `unsigned int`.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
      */
     template <typename number>
     DataSet
@@ -971,21 +1045,22 @@ namespace HDF5
                    const std::vector<hsize_t> &dimensions) const;
 
     /**
-     * 创建并向数据集写入数据。  @p number
-     * 可以是`float`、`double`、 `std::complex<float>`,
-     * `std::complex<double>`,  `int`或`unsigned int`。
-     * 数据类型的转换是在读或写时进行的，并且是自动的。参见HDF5用户指南中的<a
-     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
-     * Transfer: Datatype Conversion and Selection</a>部分。        容器
-     * "可以是 `std::vector<float>`,   `std::vector<double>`,
-     * `std::vector<std::complex<float>>`,
-     * `std::vector<std::complex<double>>`,   `std::vector<int>`,
-     * `std::vector<unsigned  int>`、`Vector<float>`、`Vector<double>`、
-     * `Vector<std::complex<float>>`,   `Vector<std::complex<double>>`,
-     * `FullMatrix<float>`、`FullMatrix<double>`、
-     * `FullMatrix<std::complex<float>>`  或
-     * `FullMatrix<std::complex<double>>`.
+     * Create and write data to a dataset. @p number can be `float`, `double`,
+     * `std::complex<float>`, `std::complex<double>`, `int` or `unsigned int`.
      *
+     * Datatype conversion takes place at the time of a read or write and is
+     * automatic. See the <a
+     * href="https://support.hdfgroup.org/HDF5/doc/UG/HDF5_Users_Guide-Responsive%20HTML5/index.html#t=HDF5_Users_Guide%2FDatatypes%2FHDF5_Datatypes.htm%23TOC_6_10_Data_Transferbc-26&rhtocid=6.5_2">Data
+     * Transfer: Datatype Conversion and Selection</a>  section in the HDF5
+     * User's Guide.
+     *
+     * `Container` can be `std::vector<float>`, `std::vector<double>`,
+     * `std::vector<std::complex<float>>`, `std::vector<std::complex<double>>`,
+     * `std::vector<int>`, `std::vector<unsigned int>`, `Vector<float>`,
+     * `Vector<double>`, `Vector<std::complex<float>>`,
+     * `Vector<std::complex<double>>`, `FullMatrix<float>`,
+     * `FullMatrix<double>`, `FullMatrix<std::complex<float>>` or
+     * `FullMatrix<std::complex<double>>`.
      */
     template <typename Container>
     void
@@ -993,42 +1068,39 @@ namespace HDF5
   };
 
   /**
-   * 该类实现了一个HDF5文件
-   *
+   * This class implements an HDF5 File
    */
   class File : public Group
   {
   public:
     /**
-     * 文件访问模式
-     *
+     * File access mode
      */
     enum class FileAccessMode
     {
       /**
-       * 读/写，文件必须存在
-       *
+       * Read/write, file must exist
        */
       open,
       /**
-       * 创建文件，如果存在则截断
-       *
+       * Create file, truncate if exists
        */
       create
     };
 
     /**
-     * 创建或打开一个HDF5文件进行串行操作。这个调用不需要MPI支持。它创建或打开一个HDF5文件，取决于
-     * @p mode. 的值。
-     *
+     * Creates or opens an HDF5 file for serial operations. This call does not
+     * require MPI support. It creates or opens an HDF5 file depending on the
+     * value of @p mode.
      */
     File(const std::string &name, const FileAccessMode mode);
 
     /**
-     * 使用MPI并行地创建或打开一个HDF5文件。这需要deal.II和HDF5在编译时支持MPI。它创建或打开一个HDF5文件，取决于
-     * @p mode.   @p mpi_communicator
-     * 的值，定义了参与此调用的进程；`MPI_COMM_WORLD`是MPI通信器的一个通用值。
-     *
+     * Creates or opens an HDF5 file in parallel using MPI. This requires that
+     * deal.II and HDF5 were compiled with MPI support. It creates or opens a
+     * HDF5 file depending on the value of @p mode. @p mpi_communicator
+     * defines the processes that participate in this call; `MPI_COMM_WORLD` is
+     * a common value for the MPI communicator.
      */
     File(const std::string &  name,
          const FileAccessMode mode,
@@ -1036,10 +1108,11 @@ namespace HDF5
 
   private:
     /**
-     * 授权的内部构造函数。    File(const  std::string  &, const
-     * MPI_Comm &, const Mode); 和 File(const  std::string  &, const Mode)
-     * 应该被用来打开或创建HDF5文件。
-     *
+     * Delegation internal constructor.
+     * File(const std::string &, const MPI_Comm &, const Mode);
+     * and
+     * File(const std::string &, const Mode)
+     * should be used to open or create HDF5 files.
      */
     File(const std::string &  name,
          const FileAccessMode mode,
@@ -1049,85 +1122,83 @@ namespace HDF5
 
   namespace internal
   {
-    /**
-     * 该函数返回与C++类型对应的HDF5数据类型。    在
-     * std::complex 类型的情况下，HDF5处理程序使用
-     * `std::shared_ptr`. 的析构器自动释放 `std::shared_ptr` 而不是
-     * `std::unique_ptr` ，因为 `std::shared_ptr`
-     * 的析构器不需要在模板参数中定义。另一方面，
-     * `std::unique`
-     * 的析构器必须在模板参数中定义。像`H5T_NATIVE_DOUBLE`这样的本地类型不需要析构器，但是像
-     * std::complex<double>
-     * 这样的复合类型需要一个析构器来释放HDF5资源。
-     *
+    /** This function returns the HDF5 datatype corresponding to the C++ type.
+     * In the case of std::complex types the HDF5 handlers are automatically
+     * freed using the destructor of `std::shared_ptr`. `std::shared_ptr` is
+     * used instead of `std::unique_ptr` because the destructor of
+     * `std::shared_ptr` doesn't have to be defined in the template argument. In
+     * the other hand, the destructor of `std::unique` has to be defined in the
+     * template argument. Native types such as `H5T_NATIVE_DOUBLE` do not
+     * require a destructor, but compound types such as std::complex<double>
+     * require a destructor to free the HDF5 resources.
      */
     template <typename number>
     std::shared_ptr<hid_t>
     get_hdf5_datatype();
 
-    /**
-     * 返回`data`的尺寸。对于一个 std::vector 该函数返回
+    /** Return the dimensions of `data`. For a std::vector this function returns
      * `std::vector<hsize_t>{vector_size}`.
-     * 几个HDF5函数，如H5Screate_simple()需要一个一维数组，指定容器的每个维度的大小，见：https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-CreateSimple
      *
+     * Several HDF5 functions such as H5Screate_simple() require a
+     * one-dimensional array that specifies the size of each dimension of the
+     * container, see:
+     * https://support.hdfgroup.org/HDF5/doc1.8/RM/RM_H5S.html#Dataspace-CreateSimple
      */
     template <typename number>
     std::vector<hsize_t>
     get_container_dimensions(const std::vector<number> &data);
 
-    /**
-     * 返回`data`的尺寸。对于一个矢量，这个函数返回
-     * `std::vector<hsize_t>{vector_size}`. 。
-     *
+    /** Return the dimensions of `data`. For a Vector this function returns
+     * `std::vector<hsize_t>{vector_size}`.
      */
     template <typename number>
     std::vector<hsize_t>
     get_container_dimensions(const Vector<number> &data);
 
-    /**
-     * 返回`data`的尺寸。对于FullMatrix，该函数返回
-     * `std::vector<hsize_t>{rows, 列}`。
-     *
+    /** Return the dimensions of `data`. For a FullMatrix the function returns
+     * `std::vector<hsize_t>{rows, columns}`.
      */
     template <typename number>
     std::vector<hsize_t>
     get_container_dimensions(const FullMatrix<number> &data);
 
-    /**
-     * 这个函数返回容器的总尺寸。对于一个 std::vector
-     * ，该函数返回`int(vector_size)`。
-     *
+    /** This function returns the total size of the container. For a std::vector
+     * the function returns `int(vector_size)`.
      */
     template <typename number>
     unsigned int
     get_container_size(const std::vector<number> &data);
 
-    /**
-     * 此函数返回容器的总大小。对于一个向量，该函数返回`int(vector_size)`。
-     *
+    /** This function returns the total size of the container. For a Vector the
+     * function returns `int(vector_size)`.
      */
     template <typename number>
     unsigned int
     get_container_size(const Vector<number> &data);
 
-    /**
-     * 此函数返回容器的总大小。对于FullMatrix，该函数返回`int(rows*columns)`。
-     *
+    /** This function returns the total size of the container. For a FullMatrix
+     * the function returns `int(rows*columns)`.
      */
     template <typename number>
     unsigned int
     get_container_size(const FullMatrix<number> &data);
 
-    /**
-     * 这个函数初始化并返回一个 std::vector,
-     * Vector或FullMatrix类型的容器。该函数不设置容器中元素的值。该容器可以存储HDF5数据集或HDF5选择的数据。维度参数保存HDF5数据集或选择的维度。
-     * 在 std::vector,
-     * 的情况下，向量的大小将是由维度给出的总大小。例如，在一个等级为3的数据集的情况下，尺寸为
-     * `std::vector<hsize_t>{dim_0,dim_1,dim_2}`. ，返回的 std::vector
-     * 的大小将是`dim_0*dim_1*dim_2`。        如果是 dealii::Vector,
-     * ，返回的 dealii::Vector 的大小也将是`dim_0*dim_1*dim_2'。
-     * 一个FullMatrix只能存储等级为2的HDF5数据集的数据。FullMatrix的大小将是FullMatrix(dim_0,dim_2)
+    /** This function initializes and returns a container of type std::vector,
+     * Vector or FullMatrix. The function does not set the values of the
+     * elements of the container. The container can store data of a HDF5 dataset
+     * or a HDF5 selection. The dimensions parameter holds the dimensions of the
+     * HDF5 dataset or selection.
      *
+     * In the case of a std::vector, the size of the vector will be the total
+     * size given by dimensions. For example in the case of a dataset of rank 3,
+     * the dimensions are `std::vector<hsize_t>{dim_0,dim_1,dim_2}`. The size of
+     * the returned std::vector will be `dim_0*dim_1*dim_2`.
+     *
+     * In the case of a dealii::Vector, the size of the returned dealii::Vector
+     * will be as well `dim_0*dim_1*dim_2`.
+     *
+     * A FullMatrix can store only data of HDF5 datasets with rank 2. The size
+     * of the FullMatrix will be FullMatrix(dim_0,dim_2)
      */
     template <typename Container>
     typename std::enable_if<
@@ -1136,9 +1207,7 @@ namespace HDF5
       Container>::type
     initialize_container(const std::vector<hsize_t> &dimensions);
 
-    /**
-     * 同上。
-     *
+    /** Same as above.
      */
     template <typename Container>
     typename std::enable_if<
@@ -1146,9 +1215,7 @@ namespace HDF5
       Container>::type
     initialize_container(const std::vector<hsize_t> &dimensions);
 
-    /**
-     * 同上。
-     *
+    /** Same as above.
      */
     template <typename Container>
     typename std::enable_if<
@@ -1157,16 +1224,20 @@ namespace HDF5
       Container>::type
     initialize_container(const std::vector<hsize_t> &dimensions);
 
-    /**
-     * 这个辅助函数设置了DataSet的读写操作的属性列表。必须为MPI驱动创建一个属性列表。对于串行驱动，可以使用默认的H5P_DEFAULT。此外，H5Pset_dxpl_mpio被用来设置MPI模式为集体模式。
-     *
+    /** This helper function sets the property list of the read and write
+     * operations of DataSet. A property list has to be created for the MPI
+     * driver. For the serial driver the default H5P_DEFAULT can be used. In
+     * addition H5Pset_dxpl_mpio is used to set the MPI mode to collective.
      */
     inline void
     set_plist(hid_t &plist, const bool mpi);
 
-    /**
-     * 这个辅助函数释放了DataSet的读写操作的属性列表处理程序。对于串行版本，不需要释放属性列表处理程序，因为已经使用了H5P_DEFAULT。如果query_io_mode为True，那么H5Pget_mpio_actual_io_mode和H5Pget_mpio_no_collective_cause被用来检查该操作是否已经被集合。
-     *
+    /** This helper function releases the property list handler of the read and
+     * write operations of DataSet. For the serial version there is no need to
+     * release the property list handler because H5P_DEFAULT has been used. If
+     * query_io_mode is True then H5Pget_mpio_actual_io_mode and
+     * H5Pget_mpio_no_collective_cause are used to check if the operation has
+     * been collective.
      */
     inline void
     release_plist(hid_t &                    plist,
@@ -1176,9 +1247,7 @@ namespace HDF5
                   const bool                 mpi,
                   const bool                 query_io_mode);
 
-    /**
-     * 将HDF5 no_collective_cause代码转换成人类可读的字符串。
-     *
+    /** Convert a HDF5 no_collective_cause code to a human readable string.
      */
     inline std::string
     no_collective_cause_to_string(const uint32_t no_collective_cause);
@@ -1558,7 +1627,7 @@ namespace HDF5
     hid_t  type;
     herr_t ret;
 
-     /* Create a datatype to refer to. */ 
+    /* Create a datatype to refer to. */
     type = H5Tcopy(H5T_C_S1);
     Assert(type >= 0, ExcInternalError());
 
@@ -1602,8 +1671,9 @@ namespace HDF5
     const std::shared_ptr<hid_t> t_type = internal::get_hdf5_datatype<T>();
 
 
-    /* 创建标量属性。   
-* */
+    /*
+     * Create scalar attribute.
+     */
     aid = H5Screate(H5S_SCALAR);
     Assert(aid >= 0, ExcMessage("Error at H5Screate"));
     attr = H5Acreate2(*hdf5_reference,
@@ -1614,8 +1684,9 @@ namespace HDF5
                       H5P_DEFAULT);
     Assert(attr >= 0, ExcMessage("Error at H5Acreate2"));
 
-    /* 编写标量属性。   
-* */
+    /*
+     * Write scalar attribute.
+     */
     ret = H5Awrite(attr, *t_type, &value);
     Assert(ret >= 0, ExcMessage("Error at H5Awrite"));
 
@@ -1644,7 +1715,7 @@ namespace HDF5
     hid_t  t_type;
     herr_t ret;
 
-     /* Create a datatype to refer to. */ 
+    /* Create a datatype to refer to. */
     t_type = H5Tcopy(H5T_C_S1);
     Assert(t_type >= 0, ExcInternalError());
 
@@ -1655,16 +1726,21 @@ namespace HDF5
     ret = H5Tset_size(t_type, H5T_VARIABLE);
     Assert(ret >= 0, ExcInternalError());
 
-    /* 创建标量属性。   
-* */
+    /*
+     * Create scalar attribute.
+     */
     aid = H5Screate(H5S_SCALAR);
     Assert(aid >= 0, ExcMessage("Error at H5Screate"));
     attr = H5Acreate2(
       *hdf5_reference, attr_name.data(), t_type, aid, H5P_DEFAULT, H5P_DEFAULT);
     Assert(attr >= 0, ExcMessage("Error at H5Acreate2"));
 
-    /* 编写标量属性。    在大多数情况下，H5Awrite和H5Dwrite需要一个指向数据的指针。    但是在可变长度的字符串的特殊情况下，H5Awrite取的是字符串的指针的地址。   
-* */
+    /*
+     * Write scalar attribute.
+     * In most of the cases H5Awrite and H5Dwrite take a pointer to the data.
+     * But in the particular case of a variable length string, H5Awrite takes
+     * the address of the pointer of the string.
+     */
     const char *c_string_value = value.c_str();
     ret                        = H5Awrite(attr, t_type, &c_string_value);
     Assert(ret >= 0, ExcInternalError());
@@ -2171,5 +2247,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_HDF5
 
 #endif // dealii_hdf5_h
-
-

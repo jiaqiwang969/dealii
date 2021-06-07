@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/undefine_macros_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -117,3 +118,5 @@
 #ifdef DeclExceptionMsg
 #  undef DeclExceptionMsg
 #endif // #ifdef DeclExceptionMsg
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/trilinos_epetra_communication_pattern_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -36,26 +37,28 @@ namespace LinearAlgebra
   namespace EpetraWrappers
   {
     /**
-     * This class implements a wrapper to a Trilinos Epetra_Import object,
-     * for use in places where a Utilities::MPI::CommunicationPatternBase object
-     * is required.
+     * 该类实现了对Trilinos
+     * Epetra_Import对象的包装器，用于需要
+     * Utilities::MPI::CommunicationPatternBase 对象的地方。
+     *
      */
     class CommunicationPattern : public Utilities::MPI::CommunicationPatternBase
     {
     public:
       /**
-       * Initialize the communication pattern. The first argument @p
-       * vector_space_vector_index_set is the index set associated to a
-       * VectorSpaceVector object. The second argument @p
-       * read_write_vector_index_set is the index set associated to a
-       * ReadWriteVector object.
+       * 初始化通信模式。第一个参数 @p
+       * vector_space_vector_index_set是与一个VectorSpaceVector对象相关的索引集。第二个参数
+       * @p
+       * read_write_vector_index_set是与一个ReadWriteVector对象相关的索引集。
+       *
        */
       CommunicationPattern(const IndexSet &vector_space_vector_index_set,
                            const IndexSet &read_write_vector_index_set,
                            const MPI_Comm &communicator);
 
       /**
-       * Reinitialize the object.
+       * 重新初始化该对象。
+       *
        */
       virtual void
       reinit(const IndexSet &vector_space_vector_index_set,
@@ -63,25 +66,29 @@ namespace LinearAlgebra
              const MPI_Comm &communicator) override;
 
       /**
-       * Return the underlying MPI communicator.
+       * 返回底层的MPI通信器。
+       *
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const override;
 
       /**
-       * Return the underlying Epetra_Import object.
+       * 返回底层的Epetra_Import对象。
+       *
        */
       const Epetra_Import &
       get_epetra_import() const;
 
     private:
       /**
-       * Shared pointer to the MPI communicator used.
+       * 用于MPI通信器的共享指针。
+       *
        */
       std::shared_ptr<const MPI_Comm> comm;
 
       /**
-       * Shared pointer to the Epetra_Import object used.
+       * 使用的Epetra_Import对象的共享指针。
+       *
        */
       std::unique_ptr<Epetra_Import> importer;
     };
@@ -95,3 +102,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

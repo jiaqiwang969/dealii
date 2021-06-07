@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/tensor_product_polynomials_bubbles_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2012 - 2021 by the deal.II authors
@@ -31,79 +32,74 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup Polynomials
- * @{
+ * @addtogroup  多项式  @{ .
+ *
  */
 
 /**
- * A class that represents a space of tensor product polynomials, augmented
- * by $dim$ (non-normalized) bubble functions of form
- * $\varphi_j(\mathbf x)
- * = 2^{\text{degree}-1}\left(x_j-frac 12\right)^{\text{degree}-1}
- * \left[\prod_{i=0}^{dim-1}(x_i(1-x_i))\right]$
- * for $j=0,\ldots,dim-1$. If `degree` is one, then the first factor
- * disappears and one receives the usual bubble function centered
- * at the mid-point of the cell.
+ * 一个代表张量积多项式空间的类，由 $dim$
+ * （非归一化）形式的 $\varphi_j(\mathbf x) =
+ * 2^{\text{degree}-1}\left(x_j-frac 12\right)^{\text{degree}-1}
+ * \left[\prod_{i=0}^{dim-1}(x_i(1-x_i))\right]$ 气泡函数对
+ * $j=0,\ldots,dim-1$ 进行增强。如果 "度
+ * "为1，那么第一个因子就会消失，人们会得到以单元格中点为中心的通常的气泡函数。
+ * 该类从TensorProductPolynomials继承了大部分功能。气泡的丰富性是为最后一个索引添加的。
  *
- * This class inherits
- * most of its functionality from TensorProductPolynomials. The bubble
- * enrichments are added for the last index.
+ *
  */
 template <int dim>
 class TensorProductPolynomialsBubbles : public ScalarPolynomialsBase<dim>
 {
 public:
   /**
-   * Access to the dimension of this object, for checking and automatic
-   * setting of dimension in other classes.
+   * 访问此对象的维度，用于检查和自动设置其他类中的维度。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Constructor. <tt>pols</tt> is a vector of objects that should be derived
-   * or otherwise convertible to one-dimensional polynomial objects. It will
-   * be copied element by element into a private variable.
+   * 构造函数。<tt>pols</tt>是一个对象的向量，应该是派生的或以其他方式转换为一维多项式对象。它将被逐个元素复制到一个私有变量中。
+   *
    */
   template <class Pol>
   TensorProductPolynomialsBubbles(const std::vector<Pol> &pols);
 
   /**
-   * Print the list of <tt>tensor_polys</tt> indices to <tt>out</tt>.
+   * 打印<tt>tensor_polys</tt>的索引列表到<tt>out</tt>。
+   *
    */
   void
   output_indices(std::ostream &out) const;
 
   /**
-   * Set the ordering of the polynomials. Requires
-   * <tt>renumber.size()==tensor_polys.n()</tt>.  Stores a copy of
-   * <tt>renumber</tt>.
+   * 设置多项式的排序。需要<tt>renumber.size()==tensor_polys.n()</tt>。
+   * 存储一个<tt>renumber</tt>的副本。
+   *
    */
   void
   set_numbering(const std::vector<unsigned int> &renumber);
 
   /**
-   * Give read access to the renumber vector.
+   * 给予对renumber向量的读取权限。
+   *
    */
   const std::vector<unsigned int> &
   get_numbering() const;
 
   /**
-   * Give read access to the inverse renumber vector.
+   * 给予对逆向renumber向量的读取权限。
+   *
    */
   const std::vector<unsigned int> &
   get_numbering_inverse() const;
 
   /**
-   * Compute the value and the first and second derivatives of each tensor
-   * product polynomial at <tt>unit_point</tt>.
+   * 计算每个张量积多项式在<tt>unit_point</tt>的值和一、二导数。
+   * 向量的大小必须等于0或等于n()。在第一种情况下，该函数将不计算这些值。
+   * 如果你需要所有张量积多项式的值或导数，那么使用这个函数，而不是使用任何一个compute_value(),
+   * compute_grad() 或 compute_grad_grad()
+   * 函数，见下文，在所有张量积多项式上循环。
    *
-   * The size of the vectors must either be equal 0 or equal n(). In the first
-   * case, the function will not compute these values.
-   *
-   * If you need values or derivatives of all tensor product polynomials then
-   * use this function, rather than using any of the compute_value(),
-   * compute_grad() or compute_grad_grad() functions, see below, in a loop
-   * over all tensor product polynomials.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -114,137 +110,120 @@ public:
            std::vector<Tensor<4, dim>> &fourth_derivatives) const override;
 
   /**
-   * Compute the value of the <tt>i</tt>th tensor product polynomial at
-   * <tt>unit_point</tt>. Here <tt>i</tt> is given in tensor product
-   * numbering.
+   * 计算<tt>i</tt>第张量积多项式在<tt>unit_point</tt>的值。这里<tt>i</tt>是用张量积的编号给出的。
+   * 注意，在所有张量积多项式的循环中使用这个函数并不高效，因为这样底层（一维）多项式的每个点值都要（不必要地）计算多次。
+   * 相反，使用evaluate()函数和<tt>values.size()==</tt>n()来一次性获得所有张量多项式的点值，而且效率更高。
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each point value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function with
-   * <tt>values.size()==</tt>n() to get the point values of all tensor
-   * polynomials all at once and in a much more efficient way.
    */
   double
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * Compute the order @p order derivative of the <tt>i</tt>th tensor product
-   * polynomial at <tt>unit_point</tt>. Here <tt>i</tt> is given in tensor
-   * product numbering.
+   * 计算<tt>i</tt>第1个张量积多项式在<tt>unit_point</tt>处的阶
+   * @p order 导数。这里<tt>i</tt>是用张量积的编号给出的。
+   * 注意，在所有张量积多项式的循环中使用这个函数并不高效，因为这样一来，底层（一维）多项式的每个导数值都要（不必要地）计算多次。
+   * 相反，使用evaluate()函数，见上文，将适当的参数大小设置为n()，以一次获得所有张量多项式的点值，而且效率更高。
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each derivative value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function, see above, with the
-   * size of the appropriate parameter set to n() to get the point value of
-   * all tensor polynomials all at once and in a much more efficient way.
    */
   template <int order>
   Tensor<order, dim>
   compute_derivative(const unsigned int i, const Point<dim> &p) const;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_1st_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_1st_derivative() .
+   *
    */
   virtual Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_2nd_derivative()
+   *
    */
   virtual Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_3rd_derivative()
+   *
    */
   virtual Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_4th_derivative()
+   *
    */
   virtual Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * Compute the grad of the <tt>i</tt>th tensor product polynomial at
-   * <tt>unit_point</tt>. Here <tt>i</tt> is given in tensor product
-   * numbering.
+   * 计算<tt>i</tt>第张量积多项式在<tt>unit_point</tt>的梯度。这里<tt>i</tt>是用张量积的编号给出的。
+   * 注意，在所有张量积多项式的循环中使用这个函数并不高效，因为这样一来，底层（一维）多项式的每个导数值都要（不必要地）计算多次。
+   * 相反，使用evaluate()函数，见上文，用<tt>grads.size()==</tt>n()来一次性获得所有张量多项式的点值，而且效率更高。
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each derivative value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function, see above, with
-   * <tt>grads.size()==</tt>n() to get the point value of all tensor
-   * polynomials all at once and in a much more efficient way.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * Compute the second derivative (grad_grad) of the <tt>i</tt>th tensor
-   * product polynomial at <tt>unit_point</tt>. Here <tt>i</tt> is given in
-   * tensor product numbering.
+   * 计算<tt>i</tt>第1个张量积多项式在<tt>unit_point</tt>的二阶导数（grad_grad）。这里<tt>i</tt>是用张量积的编号给出的。
+   * 注意，在所有张量积多项式的循环中使用这个函数并不高效，因为这样一来，底层（一维）多项式的每个导数值都要（不必要地）计算多次。
+   * 相反，使用evaluate()函数，见上文，用<tt>grad_grads.size()==</tt>n()来一次性获得所有张量多项式的点值，而且效率更高。
    *
-   * Note, that using this function within a loop over all tensor product
-   * polynomials is not efficient, because then each derivative value of the
-   * underlying (one-dimensional) polynomials is (unnecessarily) computed
-   * several times.  Instead use the evaluate() function, see above, with
-   * <tt>grad_grads.size()==</tt>n() to get the point value of all tensor
-   * polynomials all at once and in a much more efficient way.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * Return the number of tensor product polynomials plus the bubble
-   * enrichments. For <i>n</i> 1d polynomials this is <i>n<sup>dim</sup>+1</i>
-   * if the maximum degree of the polynomials is one and
-   * <i>n<sup>dim</sup>+dim</i> otherwise.
+   * 返回张量积多项式的数量，加上气泡的丰富程度。对于<i>n</i>1d多项式，如果多项式的最大度数是1，这就是<i>n<sup>dim</sup>+1</i>，否则就是<i>n<sup>dim</sup>+dim</i>。
+   *
    */
   unsigned int
   n() const;
 
   /**
-   * Return the name of the space, which is
-   * <tt>TensorProductPolynomialsBubbles</tt>.
+   * 返回空间的名称，即<tt>TensorProductPolynomialsBubbles</tt>。
+   *
    */
   std::string
   name() const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::clone()
+   * @copydoc   ScalarPolynomialsBase::clone() .
+   *
    */
   virtual std::unique_ptr<ScalarPolynomialsBase<dim>>
   clone() const override;
 
 private:
   /**
-   * The TensorProductPolynomials object
+   * TensorProductPolynomials对象
+   *
    */
   TensorProductPolynomials<dim> tensor_polys;
 
   /**
-   * Index map for reordering the polynomials.
+   * 用于重新排序多项式的索引图。
+   *
    */
   std::vector<unsigned int> index_map;
 
   /**
-   * Index map for reordering the polynomials.
+   * 用于对多项式进行重新排序的索引图。
+   *
    */
   std::vector<unsigned int> index_map_inverse;
 };
 
-/** @} */
+ /** @} */ 
 
 
-/* ---------------- template and inline functions ---------- */
+ /* ---------------- template and inline functions ---------- */ 
 
 #ifndef DOXYGEN
 
@@ -320,7 +299,7 @@ TensorProductPolynomialsBubbles<dim>::compute_derivative(
 {
   const unsigned int q_degree      = tensor_polys.polynomials.size() - 1;
   const unsigned int max_q_indices = tensor_polys.n();
-  Assert(i < max_q_indices + /* n_bubbles= */ ((q_degree <= 1) ? 1 : dim),
+  Assert(i < max_q_indices +  /* n_bubbles= */  ((q_degree <= 1) ? 1 : dim),
          ExcInternalError());
 
   // treat the regular basis functions
@@ -508,3 +487,5 @@ TensorProductPolynomialsBubbles<dim>::compute_4th_derivative(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

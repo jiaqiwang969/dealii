@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_transfer_matrix_free_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -36,14 +35,20 @@
 DEAL_II_NAMESPACE_OPEN
 
 
- /*!@addtogroup mg */ 
- /*@{*/ 
+/*!@addtogroup mg */
+/*@{*/
 
 /**
- * MGTransferBase接口的实现，其转移操作是基于底层有限元的插值矩阵，以无矩阵的方式实现。这比MGTransferPrebuilt需要的内存少得多，也比该变体快得多。
- * 该类目前仅适用于基于FE_Q和FE_DGQ元素的张量积有限元，包括涉及这些元素之一的多个组件的系统。带有不同元素或其他元素的系统目前还没有实现。
+ * Implementation of the MGTransferBase interface for which the transfer
+ * operations is implemented in a matrix-free way based on the interpolation
+ * matrices of the underlying finite element. This requires considerably less
+ * memory than MGTransferPrebuilt and can also be considerably faster than
+ * that variant.
  *
- *
+ * This class currently only works for tensor-product finite elements based on
+ * FE_Q and FE_DGQ elements, including systems involving multiple components
+ * of one of these elements. Systems with different elements or other elements
+ * are currently not implemented.
  */
 template <int dim, typename Number>
 class MGTransferMatrixFree
@@ -51,45 +56,48 @@ class MGTransferMatrixFree
 {
 public:
   /**
-   * 没有约束矩阵的构造函数。只在不连续的有限元或没有局部细化的情况下使用这个构造函数。
-   *
+   * Constructor without constraint matrices. Use this constructor only with
+   * discontinuous finite elements or with no local refinement.
    */
   MGTransferMatrixFree();
 
   /**
-   * 带约束的构造器。相当于默认的构造函数，后面加上initialize_constraints()。
-   *
+   * Constructor with constraints. Equivalent to the default constructor
+   * followed by initialize_constraints().
    */
   MGTransferMatrixFree(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~MGTransferMatrixFree() override = default;
 
   /**
-   * 初始化将在build()中使用的约束。
-   *
+   * Initialize the constraints to be used in build().
    */
   void
   initialize_constraints(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
-   * 将对象重置为默认构造函数之后的状态。
-   *
+   * Reset the object to the state it had right after the default constructor.
    */
   void
   clear();
 
   /**
-   * 实际构建每一层的延长线的信息。
-   * 外部分区器的可选第二个参数允许用户建议对各层进行矢量分区。如果发现分区器包含所有通过转移访问的幽灵未知数，则选择给定的分区器。这就保证了在延长和限制过程中矢量与用户给出的外部分区器的兼容性，这反过来又节省了一些复制操作。然而，在有未知数丢失的情况下
+   * Actually build the information for the prolongation for each level.
    *
-   * 在h-coarsening过程中通常会出现这种情况，因为处理器需要退出，因此某个处理器上的子单元的未知数需要作为另一个处理器上的父单元的幽灵。
-   *
-   * - 提供的外部分区器被忽略，而使用内部的变体。
-   *
+   * The optional second argument of external partitioners allows the user to
+   * suggest vector partitioning on the levels. In case the partitioners
+   * are found to contain all ghost unknowns that are visited through the
+   * transfer, the given partitioners are chosen. This ensures compatibility
+   * of vectors during prolongate and restrict with external partitioners as
+   * given by the user, which in turn saves some copy operations. However, in
+   * case there are unknowns missing -- and this is typically the case at some
+   * point during h-coarsening since processors will need to drop out and
+   * thus children's unknowns on some processor will be needed as ghosts to a
+   * parent cell on another processor -- the provided external partitioners are
+   * ignored and internal variants are used instead.
    */
   void
   build(const DoFHandler<dim, dim> &dof_handler,
@@ -98,12 +106,18 @@ public:
             std::vector<std::shared_ptr<const Utilities::MPI::Partitioner>>());
 
   /**
-   * 使用底层有限元的嵌入矩阵将一个向量从<tt>to_level-1</tt>延长到<tt>to_level</tt>。<tt>dst</tt>的先前内容被覆盖。
-   * @param  to_level 要延长到的层次的索引，即 @p dst.   @param
-   * src是一个向量，其元素数与涉及的较粗层次上的自由度相同。
-   * @param
-   * dst有多少个元素，就有多少个更细层次上的自由度。
+   * Prolongate a vector from level <tt>to_level-1</tt> to level
+   * <tt>to_level</tt> using the embedding matrices of the underlying finite
+   * element. The previous content of <tt>dst</tt> is overwritten.
    *
+   * @param to_level The index of the level to prolongate to, which is the
+   * level of @p dst.
+   *
+   * @param src is a vector with as many elements as there are degrees of
+   * freedom on the coarser level involved.
+   *
+   * @param dst has as many elements as there are degrees of freedom on the
+   * finer level.
    */
   virtual void
   prolongate(
@@ -118,12 +132,22 @@ public:
     const LinearAlgebra::distributed::Vector<Number> &src) const override;
 
   /**
-   * 使用prolongate()方法的转置操作，将一个向量从<tt>from_level</tt>级限制到<tt>from_level-1</tt>级。如果<tt>from_level</tt>层的单元所覆盖的区域小于<tt>from_level-1</tt>层的区域（局部细化），那么<tt>dst</tt>中的一些自由度是有效的，将不会被改变。对于其他自由度，限制的结果被添加。
-   * @param  from_level 要限制的层次的索引，即 @p src.   @param
-   * src是一个向量，其元素数量与所涉及的更细层次上的自由度相同。
-   * @param
-   * dst有多少个元素，就有多少个在较粗层次上的自由度。
+   * Restrict a vector from level <tt>from_level</tt> to level
+   * <tt>from_level-1</tt> using the transpose operation of the prolongate()
+   * method. If the region covered by cells on level <tt>from_level</tt> is
+   * smaller than that of level <tt>from_level-1</tt> (local refinement), then
+   * some degrees of freedom in <tt>dst</tt> are active and will not be
+   * altered. For the other degrees of freedom, the result of the restriction
+   * is added.
    *
+   * @param from_level The index of the level to restrict from, which is the
+   * level of @p src.
+   *
+   * @param src is a vector with as many elements as there are degrees of
+   * freedom on the finer level involved.
+   *
+   * @param dst has as many elements as there are degrees of freedom on the
+   * coarser level.
    */
   virtual void
   restrict_and_add(
@@ -132,15 +156,18 @@ public:
     const LinearAlgebra::distributed::Vector<Number> &src) const override;
 
   /**
-   * 将精细网格场 @p src 插值到 @p dof_handler
-   * 中的每个多网格层次，并将结果存储在 @p dst.
-   * 中。这个函数与限制不同，限制是将加权残差转移到较粗的层次（延长矩阵的转置）。
-   * 参数 @p dst
-   * 必须根据三角结构的层数以正确的大小进行初始化。
-   * 如果 @p dst
-   * 的内向量是空的或者有不正确的局部拥有的大小，它将被调整为每个层次上的局部相关自由度。
-   * 这个函数的使用在 step-66 中得到了证明。
+   * Interpolate fine-mesh field @p src to each multigrid level in
+   * @p dof_handler and store the result in @p dst. This function is different
+   * from restriction, where a weighted residual is
+   * transferred to a coarser level (transposition of prolongation matrix).
    *
+   * The argument @p dst has to be initialized with the correct size according
+   * to the number of levels of the triangulation.
+   *
+   * If an inner vector of @p dst is empty or has incorrect locally owned size,
+   * it will be resized to locally relevant degrees of freedom on each level.
+   *
+   * The use of this function is demonstrated in step-66.
    */
   template <typename Number2, int spacedim>
   void
@@ -150,98 +177,110 @@ public:
     const LinearAlgebra::distributed::Vector<Number2> &        src) const;
 
   /**
-   * 有限元不提供延长矩阵。
-   *
+   * Finite element does not provide prolongation matrices.
    */
   DeclException0(ExcNoProlongation);
 
   /**
-   * 这个对象使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * 一个变量，存储传递给build()的DoFHandler中包含的有限元的程度。计算内核的选择是基于这个数字的。
-   *
+   * A variable storing the degree of the finite element contained in the
+   * DoFHandler passed to build(). The selection of the computational kernel is
+   * based on this number.
    */
   unsigned int fe_degree;
 
   /**
-   * 一个变量，存储该元素是否是连续的，并且在一维线的中心有一个联合自由度。
-   *
+   * A variable storing whether the element is continuous and there is a joint
+   * degree of freedom in the center of the 1D line.
    */
   bool element_is_continuous;
 
   /**
-   * 一个变量，用于存储传递给build()的DoFHandler中包含的有限元的分量数量。
-   *
+   * A variable storing the number of components in the finite element contained
+   * in the DoFHandler passed to build().
    */
   unsigned int n_components;
 
   /**
-   * 一个存储所有子单元的自由度数量的变量。对于DG元素来说，它是<tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt>，对于连续元素来说，它的数量要少一些。
-   *
+   * A variable storing the number of degrees of freedom on all child cells. It
+   * is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and
+   * somewhat less for continuous elements.
    */
   unsigned int n_child_cell_dofs;
 
   /**
-   * 这个变量保存了给定层次上的单元格的索引，从DoFHandler中提取出来以便快速访问。一个给定层次上的所有DoF指数被存储为一个普通数组（因为这个类假设每个单元的DoF是恒定的）。要索引到这个数组，使用单元格编号乘以dofs_per_cell。
-   * 这个数组首先被安排成所有本地拥有的级别的单元首先出现（在变量n_owned_level_cells中找到），然后是转移到下一级别所需的其他单元。
+   * This variable holds the indices for cells on a given level, extracted from
+   * DoFHandler for fast access. All DoF indices on a given level are stored as
+   * a plain array (since this class assumes constant DoFs per cell). To index
+   * into this array, use the cell number times dofs_per_cell.
    *
+   * This array first is arranged such that all locally owned level cells come
+   * first (found in the variable n_owned_level_cells) and then other cells
+   * necessary for the transfer to the next level.
    */
   std::vector<std::vector<unsigned int>> level_dof_indices;
 
   /**
-   * 一个变量存储了每个级别的父级到子级单元格编号的连接。
-   *
+   * A variable storing the connectivity from parent to child cell numbers for
+   * each level.
    */
   std::vector<std::vector<std::pair<unsigned int, unsigned int>>>
     parent_child_connect;
 
   /**
-   * 一个存储每一级在给定进程上拥有的单元格数量的变量（为工作者循环设定界限）。
-   *
+   * A variable storing the number of cells owned on a given process (sets the
+   * bounds for the worker loops) for each level.
    */
   std::vector<unsigned int> n_owned_level_cells;
 
   /**
-   * 这个变量持有从母元素到所有子元素的一维嵌入（延长）矩阵。
-   *
+   * This variable holds the one-dimensional embedding (prolongation) matrix
+   * from mother element to all the children.
    */
   AlignedVector<VectorizedArray<Number>> prolongation_matrix_1d;
 
   /**
-   * 这个变量保存了张量评估的临时值。
-   *
+   * This variable holds the temporary values for the tensor evaluation
    */
   mutable AlignedVector<VectorizedArray<Number>> evaluation_data;
 
   /**
-   * 对于连续元素，限制不是加法的，我们需要在延长结束时（和限制开始时）根据自由度的价位对结果进行加权，也就是说，根据它们出现的元素数量进行加权。我们以矢量的形式存储数据，以允许廉价的访问。此外，我们利用了我们只需要存储<tt>3<sup>dim</sup></tt>指数的事实。
-   * 数据以每一层（外向量）和每一层的单元格（内向量）为单位组织。
+   * For continuous elements, restriction is not additive and we need to
+   * weight the result at the end of prolongation (and at the start of
+   * restriction) by the valence of the degrees of freedom, i.e., on how many
+   * elements they appear. We store the data in vectorized form to allow for
+   * cheap access. Moreover, we utilize the fact that we only need to store
+   * <tt>3<sup>dim</sup></tt> indices.
    *
+   * Data is organized in terms of each level (outer vector) and the cells on
+   * each level (inner vector).
    */
   std::vector<AlignedVector<VectorizedArray<Number>>> weights_on_refined;
 
   /**
-   * 一个存储所有层次（外指数）、层次内的单元（第二指数）和单元上的指数（内指数）的Dirichlet边界条件的局部指数的变量。
-   *
+   * A variable storing the local indices of Dirichlet boundary conditions on
+   * cells for all levels (outer index), the cells within the levels (second
+   * index), and the indices on the cell (inner index).
    */
   std::vector<std::vector<std::vector<unsigned short>>> dirichlet_indices;
 
   /**
-   * 一个向量，持有转移的分区器的共享指针。这些分区器可能与通过build()从外部传入的东西共享，或者与从MGLevelGlobalTransfer继承的级别向量共享。
-   *
+   * A vector that holds shared pointers to the partitioners of the
+   * transfer. These partitioners might be shared with what was passed in from
+   * the outside through build() or be shared with the level vectors inherited
+   * from MGLevelGlobalTransfer.
    */
   MGLevelObject<std::shared_ptr<const Utilities::MPI::Partitioner>>
     vector_partitioners;
 
   /**
-   * 执行延长操作。
-   *
+   * Perform the prolongation operation.
    */
   template <int degree>
   void
@@ -251,8 +290,7 @@ private:
     const LinearAlgebra::distributed::Vector<Number> &src) const;
 
   /**
-   * 执行限制性操作。
-   *
+   * Performs the restriction operation.
    */
   template <int degree>
   void
@@ -263,11 +301,17 @@ private:
 
 
 /**
- * MGTransferBase接口的实现，其转移操作是基于底层有限元的插值矩阵，以无矩阵的方式实现。这比MGTransferPrebuilt需要的内存少得多，也比该变体快得多。
- * 该类与 LinearAlgebra::distributed::BlockVector
- * 一起工作，对每个区块执行与MGTransferMatrixFree完全相同的转移操作。支持所有块使用相同的DoFHandler和每个块使用自己的DoFHandler两种情况。
+ * Implementation of the MGTransferBase interface for which the transfer
+ * operations is implemented in a matrix-free way based on the interpolation
+ * matrices of the underlying finite element. This requires considerably less
+ * memory than MGTransferPrebuilt and can also be considerably faster than
+ * that variant.
  *
- *
+ * This class works with LinearAlgebra::distributed::BlockVector and
+ * performs exactly the same transfer operations for each block as
+ * MGTransferMatrixFree.
+ * Both the cases that the same DoFHandler is used for all the blocks
+ * and that each block uses its own DoFHandler are supported.
  */
 template <int dim, typename Number>
 class MGTransferBlockMatrixFree
@@ -275,74 +319,72 @@ class MGTransferBlockMatrixFree
 {
 public:
   /**
-   * 没有约束矩阵的构造函数。只在不连续的有限元或没有局部细化的情况下使用这个构造函数。
-   *
+   * Constructor without constraint matrices. Use this constructor only with
+   * discontinuous finite elements or with no local refinement.
    */
   MGTransferBlockMatrixFree() = default;
 
   /**
-   * 带约束的构造器。相当于默认的构造函数，后面加上initialize_constraints()。
-   *
+   * Constructor with constraints. Equivalent to the default constructor
+   * followed by initialize_constraints().
    */
   MGTransferBlockMatrixFree(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
-   * 与上面的情况相同，每个块都有自己的DoFHandler。
-   *
+   * Same as above for the case that each block has its own DoFHandler.
    */
   MGTransferBlockMatrixFree(
     const std::vector<MGConstrainedDoFs> &mg_constrained_dofs);
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~MGTransferBlockMatrixFree() override = default;
 
   /**
-   * 初始化将在build()中使用的约束。
-   *
+   * Initialize the constraints to be used in build().
    */
   void
   initialize_constraints(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
-   * 对于每个块都有自己的DoFHandler的情况，与上述相同。
-   *
+   * Same as above for the case that each block has its own DoFHandler.
    */
   void
   initialize_constraints(
     const std::vector<MGConstrainedDoFs> &mg_constrained_dofs);
 
   /**
-   * 将对象重置为默认构造函数后的状态。
-   *
+   * Reset the object to the state it had right after the default constructor.
    */
   void
   clear();
 
   /**
-   * 实际建立每一层的延长线的信息。
-   *
+   * Actually build the information for the prolongation for each level.
    */
   void
   build(const DoFHandler<dim, dim> &dof_handler);
 
   /**
-   * 在每个区块都有自己的DoFHandler的情况下，与上面一样。
-   *
+   * Same as above for the case that each block has its own DoFHandler.
    */
   void
   build(const std::vector<const DoFHandler<dim, dim> *> &dof_handler);
 
   /**
-   * 使用底层有限元的嵌入矩阵，将一个向量从<tt>to_level-1</tt>延长到<tt>to_level</tt>。<tt>dst</tt>的先前内容被覆盖。
-   * @param  to_level 要延长到的层次的索引，也就是 @p dst.
-   * @param
-   * src是一个向量，其元素数量与所涉及的较粗层次上的自由度相同。
-   * @param
-   * dst有多少个元素，就有多少个更细层次上的自由度。
+   * Prolongate a vector from level <tt>to_level-1</tt> to level
+   * <tt>to_level</tt> using the embedding matrices of the underlying finite
+   * element. The previous content of <tt>dst</tt> is overwritten.
    *
+   * @param to_level The index of the level to prolongate to, which is the
+   * level of @p dst.
+   *
+   * @param src is a vector with as many elements as there are degrees of
+   * freedom on the coarser level involved.
+   *
+   * @param dst has as many elements as there are degrees of freedom on the
+   * finer level.
    */
   virtual void
   prolongate(
@@ -357,12 +399,22 @@ public:
     const LinearAlgebra::distributed::BlockVector<Number> &src) const override;
 
   /**
-   * 使用prolongate()方法的转置操作，将一个向量从<tt>from_level</tt>级限制到<tt>from_level-1</tt>级。如果<tt>from_level</tt>层的单元所覆盖的区域小于<tt>from_level-1</tt>层的区域（局部细化），那么<tt>dst</tt>中的一些自由度是有效的，将不会被改变。对于其他自由度，限制的结果被添加。
-   * @param  from_level 要限制的层次的索引，即 @p src.   @param
-   * src是一个向量，其元素数量与所涉及的更细层次上的自由度相同。
-   * @param
-   * dst有多少个元素，就有多少个在较粗层次上的自由度。
+   * Restrict a vector from level <tt>from_level</tt> to level
+   * <tt>from_level-1</tt> using the transpose operation of the prolongate()
+   * method. If the region covered by cells on level <tt>from_level</tt> is
+   * smaller than that of level <tt>from_level-1</tt> (local refinement), then
+   * some degrees of freedom in <tt>dst</tt> are active and will not be
+   * altered. For the other degrees of freedom, the result of the restriction
+   * is added.
    *
+   * @param from_level The index of the level to restrict from, which is the
+   * level of @p src.
+   *
+   * @param src is a vector with as many elements as there are degrees of
+   * freedom on the finer level involved.
+   *
+   * @param dst has as many elements as there are degrees of freedom on the
+   * coarser level.
    */
   virtual void
   restrict_and_add(
@@ -371,13 +423,14 @@ public:
     const LinearAlgebra::distributed::BlockVector<Number> &src) const override;
 
   /**
-   * 从全局网格上的块向量转移到每个层次上的块向量，分别定义为活动自由度。
-   * 特别是，对于一个全局细化的网格，只有 @p dst
-   * 中最细的层次被填充为 @p src.
-   * 的普通拷贝，其他的层次对象都没有被触动。
-   * 如果需要的话，这个函数会根据Multigrid类的要求，相应地初始化
-   * @p dst 。
+   * Transfer from a block-vector on the global grid to block-vectors defined
+   * on each of the levels separately for active degrees of freedom.
+   * In particular, for a globally refined mesh only the finest level in @p dst
+   * is filled as a plain copy of @p src. All the other level objects are left
+   * untouched.
    *
+   * This function will initialize @p dst accordingly if needed as required by
+   * the Multigrid class.
    */
   template <typename Number2, int spacedim>
   void
@@ -387,8 +440,7 @@ public:
     const LinearAlgebra::distributed::BlockVector<Number2> &        src) const;
 
   /**
-   * 对于每个块都有自己的DoFHandler的情况，与上述相同。
-   *
+   * Same as above for the case that each block has its own DoFHandler.
    */
   template <typename Number2, int spacedim>
   void
@@ -398,8 +450,7 @@ public:
     const LinearAlgebra::distributed::BlockVector<Number2> &        src) const;
 
   /**
-   * 从多级块-向量转移到法向量。
-   *
+   * Transfer from multi-level block-vector to normal vector.
    */
   template <typename Number2, int spacedim>
   void
@@ -410,8 +461,7 @@ public:
     const;
 
   /**
-   * 与上述每个块都有自己的DoFHandler的情况相同。
-   *
+   * Same as above for the case that each block has its own DoFHandler.
    */
   template <typename Number2, int spacedim>
   void
@@ -422,34 +472,32 @@ public:
     const;
 
   /**
-   * 这个对象使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 这个类既可以用一个DoFHandler，也可以为每个区块用一个单独的DoFHandler。
-   *
+   * This class can both be used with a single DoFHandler
+   * or a separate DoFHandler for each block.
    */
   static const bool supports_dof_handler_vector = true;
 
 private:
   /**
-   * 非块的无矩阵版本的转移操作。
-   *
+   * Non-block matrix-free versions of transfer operation.
    */
   std::vector<MGTransferMatrixFree<dim, Number>> matrix_free_transfer_vector;
 
   /**
-   * 一个标志，表示所有组件使用同一个DoFHandler，还是每个块都有自己的DoFHandler。
-   *
+   * A flag to indicate whether the same DoFHandler is used for all
+   * the components or if each block has its own DoFHandler.
    */
   const bool same_for_all;
 };
 
 
- /*@}*/ 
+/*@}*/
 
 
 //------------------------ templated functions -------------------------
@@ -720,5 +768,3 @@ MGTransferBlockMatrixFree<dim, Number>::copy_from_mg(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

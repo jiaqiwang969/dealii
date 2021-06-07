@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/event_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2019 by the deal.II authors
@@ -30,96 +29,91 @@ DEAL_II_NAMESPACE_OPEN
 namespace Algorithms
 {
   /**
-   * 这类对象用于通知内部应用程序由外循环引发的变化。它们通过
-   * Operator::notify()
-   * 被交给应用程序，如何处理它们由实际的应用程序决定。
-   * 事件被组织成一个可扩展的二进制枚举器。每个类都可以使用assign()添加自己的事件。一个典型的代码例子是
+   * Objects of this kind are used to notify interior applications of changes
+   * provoked by an outer loop. They are handed to the application through
+   * Operator::notify() and it is up to the actual application how to handle
+   * them.
+   *
+   * Event is organized as an extensible binary enumerator. Every class can
+   * add its own events using assign(). A typical code example is
+   *
    * @code
    * class A
    * {
-   * static Event event;
+   *   static Event event;
    * };
    *
    * Event A::event = Event::assign("Event for A");
    * @endcode
-   *
-   *
    */
   class Event
   {
   public:
     /**
-     * 这个函数注册了一个新的事件类型，并给它分配了一个唯一的标识符。这个函数的结果应该被储存起来以便以后使用。
-     *
+     * This function registers a new event type and assigns a unique
+     * identifier to it. The result of this function should be stored for
+     * later use.
      */
     static Event
     assign(const std::string &name);
 
     /**
-     * 如果你忘了存储assign的结果，下面是如何在知道名字的情况下检索它。
-     *
+     * If you forgot to store the result of assign, here is how to retrieve it
+     * knowing the name.
      */
     //      static Event find(const std::string& name);
 
     /**
-     * 构造函数，生成一个清晰的事件。
-     *
+     * Constructor, generating a clear Event.
      */
     Event();
 
     /**
-     * 清除所有标志
-     *
+     * Clear all flags
      */
     void
     clear();
 
     /**
-     * 设置所有标志
-     *
+     * Set all flags
      */
     void
     all();
 
     /**
-     * 添加其他事件的标志
-     *
+     * Add the flags of the other event
      */
     Event &
     operator+=(const Event &event);
 
     /**
-     * 清除另一个事件的标志
-     *
+     * Clear the flags of the other event
      */
     Event &
     operator-=(const Event &event);
 
     /**
-     * 测试在其他事件中设置的所有标志是否也在这个事件中设置。
-     *
+     * Test whether all the flags set in the other Event are also set in this
+     * one.
      */
     bool
     test(const Event &event) const;
 
     /**
-     * 如果有事件被设置，返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if any event is set.
      */
     bool
     any() const;
 
     /**
-     * 列出到一个流的标志。
-     *
+     * List the flags to a stream.
      */
     template <class OS>
     void
     print(OS &os) const;
 
     /**
-     * 列出所有分配的事件。
-     *
+     * List all assigned events.
      */
     template <class OS>
     static void
@@ -127,58 +121,50 @@ namespace Algorithms
 
   private:
     /**
-     * 有时，必须通过各种手段来采取行动。因此，如果这个值为真，test()总是返回真。
-     *
+     * Sometimes, actions have to be taken by all means. Therefore, if this
+     * value is true, test() always returns true.
      */
     bool all_true;
 
     /**
-     * 事件的实际列表
-     *
+     * The actual list of events
      */
     std::vector<bool> flags;
 
     /**
-     * 注册事件的名称
-     *
+     * The names of registered events
      */
     // TODO: This static field must be guarded by a mutex to be thread-safe!
     static std::vector<std::string> names;
   };
 
   /**
-   * 库操作者使用的事件
-   *
+   * Events used by library operators
    */
   namespace Events
   {
     /**
-     * 程序刚刚开始，一切都应该是新的。
-     *
+     * The program has just started and everything should be new.
      */
     extern const Event initial;
 
     /**
-     * 网格已经改变。
-     *
+     * The mesh has changed.
      */
     extern const Event remesh;
 
     /**
-     * 当前的导数导致牛顿方法收敛缓慢。
-     *
+     * The current derivative leads to slow convergence of Newton's method.
      */
     extern const Event bad_derivative;
 
     /**
-     * 时间步长方案开始了新的时间步长。
-     *
+     * The time stepping scheme starts a new time step.
      */
     extern const Event new_time;
 
     /**
-     * 时间步长方案改变了时间步长的大小。
-     *
+     * The time stepping scheme has changed the time step size.
      */
     extern const Event new_timestep_size;
   } // namespace Events
@@ -298,9 +284,9 @@ namespace Algorithms
 
 
   /**
-   * 输出事件的移位运算符。调用  Event::print().   @relatesalso
-   * 事件
+   * Output shift operator for events. Calls Event::print().
    *
+   * @relatesalso Event
    */
   template <class OS>
   OS &
@@ -314,5 +300,3 @@ namespace Algorithms
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

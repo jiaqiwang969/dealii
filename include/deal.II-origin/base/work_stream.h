@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/work_stream_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
@@ -42,161 +43,74 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * A namespace whose main template function supports running multiple threads
- * each of which operates on a subset of the given range of objects. The class
- * uses the Intel Threading Building Blocks (TBB) to load balance the
- * individual subranges onto the available threads. For a lengthy discussion
- * of the rationale of this class, see the
- * @ref threads "Parallel computing with multiple processors"
- * module. It is used in the tutorial first in step-9, and again in step-13,
- * step-14, step-32 and others.
+ * 一个命名空间，其主要的模板函数支持运行多个线程，每个线程在给定的对象范围内的一个子集上操作。该类使用英特尔线程构件（TBB）来平衡各个子范围在可用线程上的负载。关于这个类的原理的长篇讨论，见 @ref threads "多处理器的并行计算 "
+ * 模块。它在教程中首先用于 step-9 ，然后在 step-13 、
+ * step-14 、 step-32 和其他地方再次使用。
+ * 该类建立在以下前提之上：人们经常有一些工作需要在一连串的对象上完成；一个典型的例子是将单元格的贡献集合到一个系统矩阵或右手边。在许多这样的例子中，部分工作可以完全独立和并行地完成，可能使用一台具有共享内存的机器上的几个处理器核心。然而，这项工作的其他部分可能需要同步进行，并按顺序完成。在组装矩阵的例子中，局部贡献的计算可以完全并行完成，但将局部贡献复制到全局矩阵中需要一些注意。首先，几个线程不能同时写入，而是需要使用mutex来同步写入；其次，我们希望本地贡献加入全局矩阵的顺序总是相同的，因为浮点加法不是换元的，以不同的顺序将本地贡献加入全局矩阵会导致微妙的不同结果，这可能会影响迭代求解器的迭代次数，以及随机的解的舍弃误差。因此，我们要确保每次只有一个线程写入全局矩阵，而且结果是以稳定和可重复的顺序复制的。
+ * 这个类实现了这种工作模式的框架。它处理一个由迭代器范围给定的对象流，在所有这些对象上并行地运行一个工作函数，然后将每个对象传递给一个后处理函数，该函数按顺序运行，并完全按照对象在输入迭代器范围中出现的顺序获得对象。所有的同步工作都不会暴露给这个类的用户。
+ * 在内部，给这个类的run()函数的范围被分割成一连串的
+ * "项目"，然后根据一些%的内部算法分配到可用线程的数量上。一个项目是我们要操作的迭代器范围中的一个元素；例如，为了组装矩阵或评估错误指标，一个项目可以是一个单元。TBB库决定了创建多少个线程（通常与处理器核心一样多），但在任何特定时间可能处于活动状态的项的数量由构造函数的参数指定。它应该大于或等于处理器内核的数量
  *
- * The class is built on the following premise: One frequently has some work
- * that needs to be done on a sequence of objects; a prototypical example is
- * assembling cell contributions to a system matrix or right hand side. In
- * many such examples, part of the work can be done entirely independently and
- * in parallel, possibly using several processor cores on a machine with
- * shared memory. However, some other part of this work may need to be
- * synchronized and be done in order. In the example of assembling a matrix,
- * the computation of local contributions can be done entirely in parallel,
- * but copying the local contributions into the global matrix requires some
- * care: First, several threads can't write at the same time, but need to
- * synchronize writing using a mutex; secondly, we want the order in which
- * local contributions are added to the global matrix to be always the same
- * because floating point addition is not commutative and adding local
- * contributions to the global matrix in different orders leads to subtly
- * different results that can affect the number of iterations for iterative
- * solvers as well as the round-off error in the solution in random ways.
- * Consequently, we want to ensure that only one thread at a time writes into
- * the global matrix, and that results are copied in a stable and reproducible
- * order.
+ * - 默认是当前系统中核心数量的四倍。
+ * 每当一个工作线程处于空闲状态或预计将成为空闲状态时，TBB就会根据请求创建项目。然后，它被移交给一个工作者函数，通常是一个主类的成员函数。这些工作函数在一些线程上并行运行，而且不能保证它们被要求以任何特定的顺序处理项目，特别是不一定以项目从迭代器范围生成的顺序。
+ * 通常情况下，工作者函数需要额外的数据，例如FEValues对象、输入数据向量等，其中有些数据不能在线程之间共享。为此，run()函数需要另一个模板参数ScratchData，它指定了一种类型的对象，这些对象与每个项目一起存储，线程可以将其作为私有数据使用而不必与其他线程共享。run()函数需要一个额外的参数，其中有一个ScratchData类型的对象，该对象将被复制为传递给每个工作者函数的参数。
+ * 此外，工作者函数将其结果存储在模板类型CopyData的对象中。然后，这些被移交给一个单独的函数，称为copier，它可能使用存储的结果，将它们转移到永久存储中。例如，它可以将工作函数计算的矩阵的局部贡献的结果复制到全局矩阵中。然而，与工作函数不同的是，在任何给定的时间内，只有一个复制器的实例在运行；因此，它可以安全地将本地贡献复制到全局矩阵中，而不需要使用突变器或类似手段锁定全局对象。此外，它保证复制器与CopyData对象的运行顺序与相关项目的创建顺序相同；因此，即使工作线程可能以非指定的顺序计算结果，复制器也总是以项目创建时的相同顺序接收结果。
+ * 一旦一个项目被复制器处理，它就会被删除，在其计算中使用的ScratchData和CopyData对象被认为是未使用的，并且可以在这个线程或另一个线程上的工作者函数的下一次调用中重新使用。然而，WorkStream函数没有试图将这些对象重置为任何一种原始状态
  *
- * This class implements a framework for this work model. It works with a
- * stream of objects given by an iterator range, runs a worker function in
- * parallel on all of these objects and then passes each object to a
- * postprocessor function that runs sequentially and gets objects in exactly
- * the order in which they appear in the input iterator range. None of the
- * synchronization work is exposed to the user of this class.
+ * - 工作者应该假定它得到的CopyData对象有先前的内容，并以任何看起来合适的方式首先清除它，然后再把内容放进它，以后可以由复制者再次处理。
+ * ScratchData和CopyData中的成员变量可以独立于这些数据结构副本的其他并发使用而被访问。因此，将与ScratchData和CopyData相关的辅助数据结构的大小调整到每个单元上的不同长度是完全可以的。例如，与
+ * LocalIntegrators::L2::weighted_mass_matrix()
+ * 一起用于组装局部矩阵的持有每个正交点密度的向量可以被调整为具有hp-capabilities的DoFHandlers中当前单元的相应正交点的数量。同样，CopyData中的局部刚度矩阵也可以根据当前单元上的局部DoF的数量来调整大小。
  *
- * Internally, the range given to the run() function of this class is split
- * into a sequence of "items", which are then distributed according to some
- * %internal algorithm onto the number of available threads. An item is an
- * element of the range of iterators on which we are to operate; for example,
- * for the purpose of assembling matrices or evaluating error indicators, an
- * item could be a cell. The TBB library determines how many threads are
- * created (typically as many as there are processor cores), but the number of
- * items that may be active at any given time is specified by the argument to
- * the constructor. It should be bigger or equal to the number of processor
- * cores - the default is four times the number of cores on the current
- * system.
  *
- * Items are created upon request by the TBB whenever one of the worker
- * threads is idle or is expected to become idle. It is then handed off to a
- * worker function, typically a member function of a main class. These worker
- * functions are run in parallel on a number of threads, and there is no
- * guarantee that they are asked to work on items in any particular order, in
- * particular not necessarily in the order in which items are generated from
- * the iterator range.
+ * @note
+ * 对于单元格和面的积分，使用比当前函数更具体的方法往往是有用的（它不在乎迭代器是在单元格、向量元素还是其他类型的范围上）。
+ * MeshWorker::mesh_loop()
+ * 函数是一个特别适合于积分的接口的实现。
  *
- * Typically, worker functions need additional data, for example FEValues
- * objects, input data vectors, etc, some of which can not be shared among
- * threads. To this end, the run() function takes another template argument,
- * ScratchData, which designates a type objects of which are stored with each
- * item and which threads can use as private data without having to share them
- * with other threads. The run() function takes an additional argument with an
- * object of type ScratchData that is going to be copied for the arguments
- * passed to each of the worker functions.
  *
- * In addition, worker functions store their results in objects of template
- * type CopyData. These are then handed off to a separate function, called
- * copier, that may use the stored results to transfer them into permanent
- * storage. For example, it may copy the results of local contributions to a
- * matrix computed by a worker function into the global matrix. In contrast to
- * the worker function, however, only one instance of the copier is run at any
- * given time; it can therefore safely copy local contributions into the
- * global matrix without the need to lock the global object using a mutex or
- * similar means. Furthermore, it is guaranteed that the copier is run with
- * CopyData objects in the same order in which their associated items were
- * created; consequently, even if worker threads may compute results in
- * unspecified order, the copier always receives the results in exactly the
- * same order as the items were created.
+ * @note
+ * 这个命名空间中的函数只有在deal.II配置时选择了多线程模式时才会真正并行工作。否则，它们只是按顺序对每个项目工作。
  *
- * Once an item is processed by the copier, it is deleted and the ScratchData
- * and CopyData objects that were used in its computation are considered
- * unused and may be re-used for the next invocation of the worker function,
- * on this or another thread. However, the WorkStream functions make no
- * attempt to reset these objects to any kind of pristine state -- a worker
- * should assume that the CopyData object it gets handed has prior content
- * and clear it first in whatever manner seems appropriate, before putting
- * content into it that can later be processed again by the copier.
- *
- * The member variables in ScratchData and CopyData can be accessed
- * independently of other concurrent uses of copies of these data structures.
- * Therefore, it is perfectly fine to resize auxiliary data structures
- * associated with ScratchData and CopyData to different lengths on each cell.
- * For example, a vector holding densities at each quadrature point which is
- * used with LocalIntegrators::L2::weighted_mass_matrix() to assemble the local
- * matrix could be resized to the corresponding number of quadrature points of
- * the current cell in DoFHandlers with hp-capabilities. Similarly, local
- * stiffness matrix in CopyData can be resized in accordance with the number of
- * local DoFs on the current cell.
- *
- * @note For integration over cells and faces, it is often useful to use
- * methods more specific to the task than the current function (which doesn't
- * care whether the iterators are over cells, vector elements, or any other
- * kind of range). An implementation of an interface specifically suited to
- * integration is the MeshWorker::mesh_loop() function.
- *
- * @note The functions in this namespace only really work in parallel when
- * multithread mode was selected during deal.II configuration. Otherwise they
- * simply work on each item sequentially.
  *
  * @ingroup threads
+ *
  */
 namespace WorkStream
 {
   /**
-   * The nested namespaces contain various implementations of the workstream
-   * algorithms.
+   * 嵌套命名空间包含工作流算法的各种实现。
+   *
    */
   namespace internal
   {
 #  ifdef DEAL_II_WITH_TBB
     /**
-     * A namespace for the implementation of details of the WorkStream pattern
-     * and function. This namespace holds classes that deal with the second
-     * implementation described in the paper by Turcksin, Kronbichler and
-     * Bangerth (see
-     * @ref workstream_paper).
-     * Here, no coloring is provided, so copying is done sequentially using a
-     * TBB filter.
+     * 一个命名空间，用于实现WorkStream模式和函数的细节。这个命名空间持有处理Turcksin、Kronbichler和Bangerth的论文中描述的第二个实现的类（见 @ref
+     * workstream_paper  ）。
+     * 在这里，没有提供着色，所以复制是使用TBB过滤器顺序进行的。
+     * 尽管这个实现比那篇论文中讨论的第三个实现要慢，我们还是需要保留它，原因有二。(i)用户可能不会给我们一个图形着色，(ii)我们想用这个实现来处理那些太小的颜色。
      *
-     * Even though this implementation is slower than the third implementation
-     * discussed in that paper, we need to keep it around for two reasons: (i)
-     * a user may not give us a graph coloring, (ii) we want to use this
-     * implementation for colors that are just too small.
      */
     namespace tbb_no_coloring
     {
       /**
-       * A class that creates a sequence of items from a range of iterators.
+       * 一个可以从一系列迭代器中创建一个项目序列的类。
+       *
        */
       template <typename Iterator, typename ScratchData, typename CopyData>
       class IteratorRangeToItemStream : public tbb::filter
       {
       public:
         /**
-         * A data type that we use to identify items to be worked on. This is
-         * the structure that is passed around between the different parts of
-         * the WorkStream implementation to identify what needs to be done by
-         * the various stages of the pipeline.
+         * 一个数据类型，我们用它来识别要处理的项目。这是一个结构，在WorkStream实现的不同部分之间传递，以确定流水线的各个阶段需要做什么。
+         *
          */
         struct ItemType
         {
           /**
-           * A structure that contains a pointer to a scratch data object
-           * along with a flag that indicates whether this object is currently
-           * in use.
+           * 一个结构，它包含一个指向抓取数据对象的指针，以及一个指示该对象当前是否正在使用的标志。
+           *
            */
           struct ScratchDataObject
           {
@@ -204,7 +118,8 @@ namespace WorkStream
             bool                         currently_in_use;
 
             /**
-             * Default constructor.
+             * 默认构造函数。
+             *
              */
             ScratchDataObject()
               : currently_in_use(false)
@@ -227,80 +142,60 @@ namespace WorkStream
 
 
           /**
-           * Typedef to a list of scratch data objects. The rationale for this
-           * list is provided in the variables that use these lists.
+           * 类型化为一个从头数据对象的列表。这个列表的原理是在使用这些列表的变量中提供的。
+           *
            */
           using ScratchDataList = std::list<ScratchDataObject>;
 
           /**
-           * A list of iterators that need to be worked on. Only the first
-           * n_items are relevant.
+           * 一个需要被处理的迭代器的列表。只有前面的n_个项目是相关的。
+           *
            */
           std::vector<Iterator> work_items;
 
           /**
-           * The CopyData objects that the Worker part of the pipeline fills
-           * for each work item. Again, only the first n_items elements are
-           * what we care about.
+           * 管道的Worker部分为每个工作项目填充的CopyData对象。同样，只有前n_items元素是我们所关心的。
+           *
            */
           std::vector<CopyData> copy_datas;
 
           /**
-           * Number of items identified by the work_items array that the
-           * Worker and Copier pipeline stage need to work on. The maximum
-           * value of this variable will be chunk_size.
+           * Work_items数组所标识的、Worker和Copier管道阶段需要工作的项目数量。这个变量的最大值将是chunk_size。
+           *
            */
           unsigned int n_items;
 
           /**
-           * Pointer to a thread local variable identifying the scratch data
-           * objects this thread will use. The initial implementation of this
-           * class using thread local variables provided only a single scratch
-           * object per thread. This doesn't work, because the worker
-           * functions may start tasks itself and then call
-           * Threads::TaskGroup::join_all() or a similar function, which the
-           * TBB scheduler may use to run something else on the current thread
-           * -- for example another instance of the worker function.
-           * Consequently, there would be two instances of the worker function
-           * that use the same scratch object if we only provided a single
-           * scratch object per thread. The solution is to provide a list of
-           * scratch objects for each thread, together with a flag indicating
-           * whether this scratch object is currently used. If a thread needs
-           * a scratch object, it walks this list until it finds an unused
-           * object, or, if there is none, creates one itself. Note that we
-           * need not use synchronization primitives for this process since
-           * the lists are thread-local and we are guaranteed that only a
-           * single thread accesses them as long as we have no yield point in
-           * between the accesses to the list.
+           * 指向线程局部变量的指针，识别该线程将使用的抓取数据对象。这个类的最初实现是使用线程局部变量，每个线程只提供一个从头开始的对象。这并不奏效，因为工作者函数可能会自己启动任务，然后调用
+           * Threads::TaskGroup::join_all()
+           * 或类似的函数，TBB调度器可能会用它来在当前线程上运行其他东西
            *
-           * The pointers to scratch objects stored in each of these lists
-           * must be so that they are deleted on all threads when the thread
-           * local object is destroyed. This is achieved by using unique_ptr.
            *
-           * Note that when a worker needs to create a scratch object, it
-           * allocates it using sample_scratch_data to copy from. This has the
-           * advantage of a first-touch initialization, i.e., the memory for
-           * the scratch data object is allocated and initialized by the same
-           * thread that will later use it.
+           *
+           *
+           *
+           *
+           * - 例如工作者函数的另一个实例。          因此，如果我们只为每个线程提供一个抓取对象，就会有两个工作者函数的实例使用同一个抓取对象。解决方案是为每个线程提供一个从头开始的对象列表，同时提供一个标志，表明这个从头开始的对象目前是否被使用。如果一个线程需要一个抓取对象，它就会浏览这个列表，直到找到一个未使用的对象，或者，如果没有，就自己创建一个。请注意，我们不需要为这个过程使用同步原语，因为这些列表是线程本地的，只要我们在访问列表之间没有屈服点，就能保证只有一个线程访问它们。                    存放在这些列表中的指向scratch对象的指针必须是这样的：当线程本地对象被销毁时，它们会在所有线程上被删除。这可以通过使用unique_ptr来实现。                    请注意，当一个工作者需要创建一个从头开始的对象时，它会使用sample_scratch_data来分配它，以便从中复制。这样做的好处是第一次接触初始化，也就是说，从头数据对象的内存是由后来使用它的同一个线程分配和初始化的。
+           *
            */
           Threads::ThreadLocalStorage<ScratchDataList> *scratch_data;
 
           /**
-           * Pointer to a sample scratch data object, to be used to initialize
-           * the scratch data objects created for each individual thread.
+           * 指针指向一个样本的抓取数据对象，用于初始化为每个单独线程创建的抓取数据对象。
+           *
            */
           const ScratchData *sample_scratch_data;
 
           /**
-           * Flag is true if the buffer is used and false if the buffer can be
-           * used.
+           * 如果缓冲区被使用，则标志为真；如果缓冲区可以使用，则标志为假。
+           *
            */
           bool currently_in_use;
 
 
           /**
-           * Default constructor. Initialize everything that doesn't have a
-           * default constructor itself.
+           * 默认构造函数。初始化所有本身没有默认构造函数的东西。
+           *
            */
           ItemType()
             : n_items(0)
@@ -312,9 +207,8 @@ namespace WorkStream
 
 
         /**
-         * Constructor. Take an iterator range, the size of a buffer that can
-         * hold items, and the sample additional data object that will be
-         * passed to each worker and copier function invocation.
+         * 构造函数。取一个迭代器范围，可以容纳项目的缓冲区的大小，以及将传递给每个工作者和复制者函数调用的附加数据对象样本。
+         *
          */
         IteratorRangeToItemStream(const Iterator &   begin,
                                   const Iterator &   end,
@@ -322,7 +216,7 @@ namespace WorkStream
                                   const unsigned int chunk_size,
                                   const ScratchData &sample_scratch_data,
                                   const CopyData &   sample_copy_data)
-          : tbb::filter(/*is_serial=*/true)
+          : tbb::filter( /*is_serial=*/ true)
           , remaining_iterator_range(begin, end)
           , item_buffer(buffer_size)
           , sample_scratch_data(sample_scratch_data)
@@ -346,7 +240,8 @@ namespace WorkStream
 
 
         /**
-         * Create an item and return a pointer to it.
+         * 创建一个项目并返回它的指针。
+         *
          */
         virtual void *
         operator()(void *) override
@@ -401,61 +296,39 @@ namespace WorkStream
 
       private:
         /**
-         * The interval of iterators still to be worked on. This range will
-         * shrink over time.
+         * 仍待处理的迭代器的区间。这个范围会随着时间的推移而缩小。
+         *
          */
         std::pair<Iterator, Iterator> remaining_iterator_range;
 
         /**
-         * A buffer that will store items.
+         * 一个缓冲区，它将存储项目。
+         *
          */
         std::vector<ItemType> item_buffer;
 
         /**
-         * Pointer to a thread local variable identifying the scratch data
-         * objects this thread will use. The initial implementation of this
-         * class using thread local variables provided only a single scratch
-         * object per thread. This doesn't work, because the worker functions
-         * may start tasks itself and then call Threads::TaskGroup::join_all()
-         * or a similar function, which the TBB scheduler may use to run
-         * something else on the current thread -- for example another
-         * instance of the worker function. Consequently, there would be two
-         * instances of the worker function that use the same scratch object
-         * if we only provided a single scratch object per thread. The
-         * solution is to provide a list of scratch objects for each thread,
-         * together with a flag indicating whether this scratch object is
-         * currently used. If a thread needs a scratch object, it walks this
-         * list until it finds an unused object, or, if there is none, creates
-         * one itself. Note that we need not use synchronization primitives
-         * for this process since the lists are thread-local and we are
-         * guaranteed that only a single thread accesses them as long as we
-         * have no yield point in between the accesses to the list.
+         * 指向线程局部变量的指针，用于识别该线程将使用的抓取数据对象。这个类的最初实现是使用线程局部变量，每个线程只提供一个抓取对象。这并不奏效，因为工作者函数可能会自己启动任务，然后调用
+         * Threads::TaskGroup::join_all()
+         * 或类似的函数，TBB调度器可能会用它来在当前线程上运行其他东西
          *
-         * The pointers to scratch objects stored in each of these lists must
-         * be so that they are deleted on all threads when the thread local
-         * object is destroyed. This is achieved by using unique_ptr.
+         * --例如，工作函数的另一个实例。因此，如果我们只为每个线程提供一个划痕对象，就会有两个工作函数的实例使用同一个划痕对象。解决办法是为每个线程提供一个从头开始的对象列表，同时提供一个标志，表明这个从头开始的对象目前是否被使用。如果一个线程需要一个抓取对象，它就会浏览这个列表，直到找到一个未使用的对象，或者，如果没有，就自己创建一个。请注意，我们不需要为这个过程使用同步原语，因为这些列表是线程本地的，只要我们在访问列表之间没有屈服点，就能保证只有一个线程访问它们。
+         * 存放在这些列表中的指向scratch对象的指针必须是这样的：当线程本地对象被销毁时，它们会在所有线程上被删除。这可以通过使用unique_ptr来实现。
+         * 请注意，当一个工作者需要创建一个从头开始的对象时，它会使用sample_scratch_data来分配它，以便从中复制。这样做的好处是第一次接触初始化，也就是说，划痕数据对象的内存是由后来使用它的同一个线程分配和初始化的。
          *
-         * Note that when a worker needs to create a scratch object, it
-         * allocates it using sample_scratch_data to copy from. This has the
-         * advantage of a first-touch initialization, i.e., the memory for the
-         * scratch data object is allocated and initialized by the same thread
-         * that will later use it.
          */
         Threads::ThreadLocalStorage<typename ItemType::ScratchDataList>
           thread_local_scratch;
 
         /**
-         * A reference to a sample scratch data that will be used to
-         * initialize the thread-local pointers to a scratch data object each
-         * of the worker tasks uses.
+         * 对抓取数据样本的引用，该样本将被用于初始化每个工作任务所使用的抓取数据对象的线程本地指针。
+         *
          */
         const ScratchData &sample_scratch_data;
 
         /**
-         * Number of elements of the iterator range that each thread should
-         * work on sequentially; a large number makes sure that each thread
-         * gets a significant amount of work before the next task switch
-         * happens, whereas a small number is better for load balancing.
+         * 每个线程应按顺序工作的迭代器范围的元素数；一个大的数字可以确保每个线程在下一个任务切换发生之前得到大量的工作，而一个小的数字则更有利于负载平衡。
+         *
          */
         const unsigned int chunk_size;
       };
@@ -463,31 +336,30 @@ namespace WorkStream
 
 
       /**
-       * A class that manages calling the worker function on a number of
-       * parallel threads. Note that it is, in the TBB notation, a filter that
-       * can run in parallel.
+       * 一个管理在若干并行线程上调用工作者函数的类。请注意，用TBB的说法，它是一个可以并行运行的过滤器。
+       *
        */
       template <typename Iterator, typename ScratchData, typename CopyData>
       class TBBWorker : public tbb::filter
       {
       public:
         /**
-         * Constructor. Takes a reference to the object on which we will
-         * operate as well as a pointer to the function that will do the
-         * assembly.
+         * 构造函数。取一个对我们要操作的对象的引用，以及一个指向将进行装配的函数的指针。
+         *
          */
         TBBWorker(
           const std::function<void(const Iterator &, ScratchData &, CopyData &)>
             &  worker,
           bool copier_exist = true)
-          : tbb::filter(/* is_serial= */ false)
+          : tbb::filter( /* is_serial= */  false)
           , worker(worker)
           , copier_exist(copier_exist)
         {}
 
 
         /**
-         * Work on an item.
+         * 对一个项目进行操作。
+         *
          */
         void *
         operator()(void *item) override
@@ -595,15 +467,15 @@ namespace WorkStream
 
       private:
         /**
-         * Pointer to the function that does the assembling on the sequence of
-         * cells.
+         * 指向对单元格序列进行装配的函数的指针。
+         *
          */
         const std::function<void(const Iterator &, ScratchData &, CopyData &)>
           worker;
 
         /**
-         * This flag is true if the copier stage exist. If it does not, the
-         * worker has to free the buffer. Otherwise the copier will do it.
+         * 如果复制器阶段存在，该标志为真。如果它不存在，工作者必须释放缓冲区。否则，复制者将会做这件事。
+         *
          */
         bool copier_exist;
       };
@@ -611,28 +483,26 @@ namespace WorkStream
 
 
       /**
-       * A class that manages calling the copier function. Note that it is, in
-       * the TBB notation, a filter that runs sequentially, ensuring that all
-       * items are copied in the same order in which they are created.
+       * 一个管理调用复制器函数的类。请注意，在TBB符号中，它是一个按顺序运行的过滤器，确保所有项目按照它们被创建的相同顺序被复制。
+       *
        */
       template <typename Iterator, typename ScratchData, typename CopyData>
       class TBBCopier : public tbb::filter
       {
       public:
         /**
-         * Constructor. Takes a reference to the object on which we will
-         * operate as well as a pointer to the function that will do the
-         * copying from the additional data object to the global matrix or
-         * similar.
+         * 构造函数。接受一个对我们要操作的对象的引用，以及一个指向函数的指针，该函数将完成从附加数据对象到全局矩阵的复制或类似的复制。
+         *
          */
         TBBCopier(const std::function<void(const CopyData &)> &copier)
-          : tbb::filter(/*is_serial=*/true)
+          : tbb::filter( /*is_serial=*/ true)
           , copier(copier)
         {}
 
 
         /**
-         * Work on a single item.
+         * 在一个单项上工作。
+         *
          */
         void *
         operator()(void *item) override
@@ -677,7 +547,8 @@ namespace WorkStream
 
       private:
         /**
-         * Pointer to the function that does the copying of data.
+         * 指向进行数据复制的函数的指针。
+         *
          */
         const std::function<void(const CopyData &)> copier;
       };
@@ -726,15 +597,14 @@ namespace WorkStream
 
 
     /**
-     * A reference implementation without using multithreading to be used if we
-     * don't have multithreading support or if the user requests to run things
-     * sequentially. This is more efficient than using TBB or taskflow if we
-     * only have a single thread.
+     * 一个不使用多线程的参考实现，如果我们没有多线程支持，或者用户要求按顺序运行的话，就可以使用。如果我们只有一个单线程，这比使用TBB或taskflow更有效率。
+     *
      */
     namespace sequential
     {
       /**
-       * Sequential version without colors.
+       * 没有颜色的顺序版本。
+       *
        */
       template <typename Worker,
                 typename Copier,
@@ -776,7 +646,8 @@ namespace WorkStream
 
 
       /**
-       * Sequential version with colors
+       * 有颜色的顺序版本
+       *
        */
       template <typename Worker,
                 typename Copier,
@@ -822,18 +693,15 @@ namespace WorkStream
 
 #  ifdef DEAL_II_WITH_TBB
     /**
-     * A namespace for the implementation of details of the WorkStream pattern
-     * and function. This namespace holds classes that deal with the third
-     * implementation described in the paper by Turcksin, Kronbichler and
-     * Bangerth (see
-     * @ref workstream_paper).
+     * 一个用于实现WorkStream模式和功能细节的命名空间。这个命名空间拥有处理Turcksin、Kronbichler和Bangerth的论文中描述的第三个实现的类（见 @ref
+     * workstream_paper  ）。
+     *
      */
     namespace tbb_colored
     {
       /**
-       * A structure that contains a pointer to scratch and copy data objects
-       * along with a flag that indicates whether this object is currently in
-       * use.
+       * 一个结构，包含一个指向从头开始和复制数据对象的指针，以及一个指示该对象当前是否正在使用的标志。
+       *
        */
       template <typename Iterator, typename ScratchData, typename CopyData>
       struct ScratchAndCopyDataObjects
@@ -843,7 +711,8 @@ namespace WorkStream
         bool                         currently_in_use;
 
         /**
-         * Default constructor.
+         * 默认构造函数。
+         *
          */
         ScratchAndCopyDataObjects()
           : currently_in_use(false)
@@ -868,16 +737,16 @@ namespace WorkStream
 
 
       /**
-       * A class that manages calling the worker and copier functions. Unlike
-       * the other implementations, parallel_for is used instead of a
-       * pipeline.
+       * 一个管理调用worker和copyer函数的类。与其他实现不同的是，使用parallel_for而不是流水线。
+       *
        */
       template <typename Iterator, typename ScratchData, typename CopyData>
       class WorkerAndCopier
       {
       public:
         /**
-         * Constructor.
+         * 构造函数。
+         *
          */
         WorkerAndCopier(
           const std::function<void(const Iterator &, ScratchData &, CopyData &)>
@@ -893,8 +762,8 @@ namespace WorkStream
 
 
         /**
-         * The function that calls the worker and the copier functions on a
-         * range of items denoted by the two arguments.
+         * 在由两个参数表示的项目范围内调用工作器和复制器函数的函数。
+         *
          */
         void
         operator()(const tbb::blocked_range<
@@ -991,35 +860,37 @@ namespace WorkStream
           ScratchAndCopyDataObjects<Iterator, ScratchData, CopyData>;
 
         /**
-         * Typedef to a list of scratch data objects. The rationale for this
-         * list is provided in the variables that use these lists.
+         * 对抓取数据对象的列表的类型化定义。这个列表的原理是在使用这些列表的变量中提供的。
+         *
          */
         using ScratchAndCopyDataList = std::list<ScratchAndCopyDataObjects>;
 
         Threads::ThreadLocalStorage<ScratchAndCopyDataList> data;
 
         /**
-         * Pointer to the function that does the assembling on the sequence of
-         * cells.
+         * 指向在单元格序列上进行组装的函数的指针。
+         *
          */
         const std::function<void(const Iterator &, ScratchData &, CopyData &)>
           worker;
 
         /**
-         * Pointer to the function that does the copying from local
-         * contribution to global object.
+         * 指向从本地贡献复制到全局对象的函数的指针。
+         *
          */
         const std::function<void(const CopyData &)> copier;
 
         /**
-         * References to sample scratch and copy data for when we need them.
+         * 当我们需要的时候，对样本刮擦和复制数据的引用。
+         *
          */
         const ScratchData &sample_scratch_data;
         const CopyData &   sample_copy_data;
       };
 
       /**
-       * The colored run function using TBB.
+       * 使用TBB的彩色运行函数。
+       *
        */
       template <typename Worker,
                 typename Copier,
@@ -1069,51 +940,15 @@ namespace WorkStream
 
 
   /**
-   * This is one of two main functions of the WorkStream concept, doing work
-   * as described in the introduction to this namespace. It corresponds to
-   * implementation 3 of the paper by Turcksin, Kronbichler and Bangerth, see
-   * @ref workstream_paper.
-   * As such, it takes not a range of iterators described by a begin and end
-   * iterator, but a "colored" graph of iterators where each color represents
-   * cells for which writing the cell contributions into the global object
-   * does not conflict (in other words, these cells are not neighbors). Each
-   * "color" is represented by std::vectors of cells. The first argument to
-   * this function, a set of sets of cells (which are represent as a vector of
-   * vectors, for efficiency), is typically constructed by calling
-   * GraphColoring::make_graph_coloring(). See there for more information.
+   * @note
+   * 如果你的数据对象很大，或者它们的构造函数很昂贵，记住<tt>queue_length</tt>拷贝的<tt>ScratchData</tt>对象和<tt>queue_length*chunk_size</tt>拷贝的<tt>CopyData</tt>对象是有帮助的。
+   * @note  在复制器不做任何事情的情况下，传递
+   * `std::function<void(const  CopyData &)>()`作为 @p copier
+   * 以确保内部使用更有效的算法。然而，重要的是要认识到，上面创建的空函数对象并不*
+   * 与具有空主体的lambda函数不同，`[](const CopyData &){}`。
    *
-   * This function that can be used for worker and copier objects that are
-   * either pointers to non-member functions or objects that allow to be
-   * called with an operator(), for example objects created by lambda functions
-   * or std::bind.
+   * - 从这个函数的角度来看，没有办法识别作为复制者提供的λ函数在其主体中是否做了什么，所以需要复制。另一方面，一个默认构造的 `std::function` 对象可以*被识别，然后被用来选择一个更有效的算法。
    *
-   * The two data types <tt>ScratchData</tt> and <tt>CopyData</tt> need to
-   * have a working copy constructor. <tt>ScratchData</tt> is only used in the
-   * <tt>worker</tt> function, while <tt>CopyData</tt> is the object passed
-   * from the <tt>worker</tt> to the <tt>copier</tt>.
-   *
-   * The @p queue_length argument indicates the number of items that can be
-   * live at any given time. Each item consists of @p chunk_size elements of
-   * the input stream that will be worked on by the worker and copier
-   * functions one after the other on the same thread.
-   *
-   * @note If your data objects are large, or their constructors are
-   * expensive, it is helpful to keep in mind that <tt>queue_length</tt>
-   * copies of the <tt>ScratchData</tt> object and
-   * <tt>queue_length*chunk_size</tt> copies of the <tt>CopyData</tt> object
-   * are generated.
-   *
-   * @note In case the copier does not do anything, pass
-   * `std::function<void(const CopyData &)>()` as @p copier to make sure
-   * a more efficient algorithm is used internally. It is important, however,
-   * to recognize that the empty function object created above is *not*
-   * the same as a lambda function with an empty body,
-   * `[](const CopyData &) {}` -- from the perspective of this function,
-   * there is no way to recognize whether a lambda function provided as
-   * a copier does something or does not do something in its body,
-   * and so it needs to be copied. On the other hand, a default-constructed
-   * `std::function` object *can* be recognized, and is then used to select
-   * a more efficient algorithm.
    */
   template <typename Worker,
             typename Copier,
@@ -1131,53 +966,31 @@ namespace WorkStream
 
 
   /**
-   * This is one of two main functions of the WorkStream concept, doing work
-   * as described in the introduction to this namespace. It corresponds to
-   * implementation 2 of the paper by Turcksin, Kronbichler and Bangerth (see
-   * @ref workstream_paper).
+   * 这是WorkStream概念的两个主要功能之一，做本命名空间介绍中描述的工作。它对应于Turcksin、Kronbichler和Bangerth的论文中的实现2（见 @ref
+   * workstream_paper ）。
+   * 这个函数可以用于worker和copyer对象，这些对象要么是指向非成员函数的指针，要么是允许用operator()调用的对象，例如lambda函数或由
+   * std::bind. 创建的对象。
+   * 如果copyer是一个空函数，它在管道中会被忽略。然而，一个具有空主体的lambda函数并不*等同于一个空的
+   * `std::function` 对象，因此，不会被忽略。    作为 @p end
+   * 传递的参数必须可以转换为与 @p
+   * 开始时相同的类型，但本身不一定是相同的类型。这允许编写类似<code>WorkStream().run(dof_handler.begin_active(),
+   * dof_handler.end(), ...</code>的代码，其中第一个是
+   * DoFHandler::active_cell_iterator 类型，而第二个是
+   * DoFHandler::raw_cell_iterator. 类型。
+   * 两个数据类型<tt>ScratchData</tt>和<tt>CopyData</tt>需要有一个工作拷贝构造器。<tt>ScratchData</tt>只在<tt>worker</tt>函数中使用，而<tt>CopyData</tt>是由<tt>worker</tt>传递给<tt>copier</tt>的对象。
+   * @p queue_length
+   * 参数表示在任何给定时间内可以活用的项目数量。每个项目由输入流的
+   * @p chunk_size
+   * 个元素组成，这些元素将被worker和copier函数在同一个线程上一个接一个地处理。
+   * @note
+   * 如果你的数据对象很大，或者它们的构造函数很昂贵，记住<tt>queue_length</tt>拷贝的<tt>ScratchData</tt>对象和<tt>queue_length*chunk_size</tt>拷贝的<tt>CopyData</tt>对象是有帮助的。
+   * @note  在拷贝器不做任何事情的情况下，传递
+   * `std::function<void(const  CopyData &)>()`作为 @p copier
+   * 以确保内部使用更高效的算法。然而，重要的是要认识到，上面创建的空函数对象并不*
+   * 与具有空主体的lambda函数不同，`[](const CopyData &){}`。
    *
-   * This function that can be used for worker and copier objects that are
-   * either pointers to non-member functions or objects that allow to be
-   * called with an operator(), for example lambda functions
-   * or objects created by std::bind. If the copier is an empty function, it is
-   * ignored in the pipeline. (However, a lambda function with an empty body is
-   * *not* equivalent to an empty `std::function` object and will, consequently,
-   * not be ignored.
+   * - 从这个函数的角度来看，没有办法识别作为复制者提供的λ函数在其主体中是否做了什么，所以需要复制。另一方面，一个默认构造的 `std::function` 对象可以*被识别，然后被用来选择一个更有效的算法。
    *
-   * The argument passed as @p end must be convertible to the same type as @p
-   * begin, but doesn't have to be of the same type itself. This allows to
-   * write code like <code>WorkStream().run(dof_handler.begin_active(),
-   * dof_handler.end(), ...</code> where the first is of type
-   * DoFHandler::active_cell_iterator whereas the second is of type
-   * DoFHandler::raw_cell_iterator.
-   *
-   * The two data types <tt>ScratchData</tt> and <tt>CopyData</tt> need to
-   * have a working copy constructor. <tt>ScratchData</tt> is only used in the
-   * <tt>worker</tt> function, while <tt>CopyData</tt> is the object passed
-   * from the <tt>worker</tt> to the <tt>copier</tt>.
-   *
-   * The @p queue_length argument indicates the number of items that can be
-   * live at any given time. Each item consists of @p chunk_size elements of
-   * the input stream that will be worked on by the worker and copier
-   * functions one after the other on the same thread.
-   *
-   * @note If your data objects are large, or their constructors are
-   * expensive, it is helpful to keep in mind that <tt>queue_length</tt>
-   * copies of the <tt>ScratchData</tt> object and
-   * <tt>queue_length*chunk_size</tt> copies of the <tt>CopyData</tt> object
-   * are generated.
-   *
-   * @note In case the copier does not do anything, pass
-   * `std::function<void(const CopyData &)>()` as @p copier to make sure
-   * a more efficient algorithm is used internally. It is important, however,
-   * to recognize that the empty function object created above is *not*
-   * the same as a lambda function with an empty body,
-   * `[](const CopyData &) {}` -- from the perspective of this function,
-   * there is no way to recognize whether a lambda function provided as
-   * a copier does something or does not do something in its body,
-   * and so it needs to be copied. On the other hand, a default-constructed
-   * `std::function` object *can* be recognized, and is then used to select
-   * a more efficient algorithm.
    */
   template <typename Worker,
             typename Copier,
@@ -1263,11 +1076,11 @@ namespace WorkStream
 
 
   /**
-   * Same as the function above, but for iterator ranges and C-style arrays.
-   * A class that fulfills the requirements of an iterator range defines the
-   * functions `IteratorRangeType::begin()` and `IteratorRangeType::end()`,
-   * both of which return iterators to elements that form the bounds of the
-   * range.
+   * 与上面的函数相同，但用于迭代器范围和C风格的数组。
+   * 一个满足迭代器范围要求的类定义了
+   * `IteratorRangeType::begin()` 和 `IteratorRangeType::end()`,
+   * 两个函数，这两个函数都返回到构成范围边界的元素的迭代器。
+   *
    */
   template <typename Worker,
             typename Copier,
@@ -1299,7 +1112,8 @@ namespace WorkStream
 
 
   /**
-   * Same as the function above, but for deal.II's IteratorRange.
+   * 与上面的函数相同，但针对deal.II的IteratorRange。
+   *
    */
   template <typename Worker,
             typename Copier,
@@ -1378,45 +1192,27 @@ namespace WorkStream
 
 
   /**
-   * This is a variant of one of the two main functions of the WorkStream
-   * concept, doing work as described in the introduction to this namespace.
-   * It corresponds to implementation 2 of the paper by Turcksin, Kronbichler
-   * and Bangerth (see
-   * @ref workstream_paper).
+   * 这是WorkStream概念的两个主要函数之一的变体，做本命名空间介绍中描述的工作。
+   * 它对应于Turcksin、Kronbichler和Bangerth的论文中的实现2（见
+   * @ref workstream_paper  ）。
+   * 这是可以用于作为类的成员函数的工作者和复制者函数的函数。如果复制器是一个空函数，那么它在管道中会被忽略。
+   * 作为 @p end 传递的参数必须可以转换为与 @p
+   * 开始相同的类型，但本身不一定是同一类型。这允许编写类似<code>WorkStream().run(dof_handler.begin_active(),
+   * dof_handler.end(), ...</code>的代码，其中第一个是
+   * DoFHandler::active_cell_iterator 类型，而第二个是
+   * DoFHandler::raw_cell_iterator. 类型。  @p queue_length
+   * 参数表示在任何特定时间可以直播的项目数量。每个项目由输入流的
+   * @p chunk_size
+   * 个元素组成，这些元素将由工作者和复制者函数在同一线程上一个接一个地处理。
+   * @note
+   * 如果你的数据对象很大，或者它们的构造函数很昂贵，记住<tt>queue_length</tt>拷贝的<tt>ScratchData</tt>对象和<tt>queue_length*chunk_size</tt>拷贝的<tt>CopyData</tt>对象是有帮助的。
+   * @note  在拷贝器不做任何事情的情况下，传递
+   * `std::function<void(const  CopyData &)>()`作为 @p copier
+   * 以确保内部使用更有效的算法。然而，重要的是要认识到，上面创建的空函数对象并不*
+   * 与具有空主体的lambda函数不同，`[](const CopyData &){}`。
    *
-   * This is the function that can be used for worker and copier functions
-   * that are member functions of a class. If the copier is an empty function,
-   * it is ignored in the pipeline.
+   * - 从这个函数的角度来看，没有办法识别作为复制者提供的λ函数在其主体中是否做了什么，所以需要复制。另一方面，一个默认构造的 `std::function` 对象可以*被识别，然后被用来选择一个更有效的算法。
    *
-   * The argument passed as @p end must be convertible to the same type as @p
-   * begin, but doesn't have to be of the same type itself. This allows to
-   * write code like <code>WorkStream().run(dof_handler.begin_active(),
-   * dof_handler.end(), ...</code> where the first is of type
-   * DoFHandler::active_cell_iterator whereas the second is of type
-   * DoFHandler::raw_cell_iterator.
-   *
-   * The @p queue_length argument indicates the number of items that can be
-   * live at any given time. Each item consists of @p chunk_size elements of
-   * the input stream that will be worked on by the worker and copier
-   * functions one after the other on the same thread.
-   *
-   * @note If your data objects are large, or their constructors are
-   * expensive, it is helpful to keep in mind that <tt>queue_length</tt>
-   * copies of the <tt>ScratchData</tt> object and
-   * <tt>queue_length*chunk_size</tt> copies of the <tt>CopyData</tt> object
-   * are generated.
-   *
-   * @note In case the copier does not do anything, pass
-   * `std::function<void(const CopyData &)>()` as @p copier to make sure
-   * a more efficient algorithm is used internally. It is important, however,
-   * to recognize that the empty function object created above is *not*
-   * the same as a lambda function with an empty body,
-   * `[](const CopyData &) {}` -- from the perspective of this function,
-   * there is no way to recognize whether a lambda function provided as
-   * a copier does something or does not do something in its body,
-   * and so it needs to be copied. On the other hand, a default-constructed
-   * `std::function` object *can* be recognized, and is then used to select
-   * a more efficient algorithm.
    */
   template <typename MainClass,
             typename Iterator,
@@ -1486,11 +1282,11 @@ namespace WorkStream
 
 
   /**
-   * Same as the function above, but for iterator ranges and C-style arrays.
-   * A class that fulfills the requirements of an iterator range defines the
-   * functions `IteratorRangeType::begin()` and `IteratorRangeType::end()`,
-   * both of which return iterators to elements that form the bounds of the
-   * range.
+   * 与上面的函数相同，但用于迭代器范围和C风格的数组。
+   * 一个满足迭代器范围要求的类定义了
+   * `IteratorRangeType::begin()` 和 `IteratorRangeType::end()`,
+   * 两个函数，这两个函数都返回到构成范围边界的元素的迭代器。
+   *
    */
   template <typename MainClass,
             typename IteratorRangeType,
@@ -1526,7 +1322,8 @@ namespace WorkStream
 
 
   /**
-   * Same as the function above, but for deal.II's IteratorRange.
+   * 与上面的函数相同，但针对deal.II的IteratorRange。
+   *
    */
   template <typename MainClass,
             typename Iterator,
@@ -1566,3 +1363,5 @@ DEAL_II_NAMESPACE_CLOSE
 // end of #ifndef dealii_work_stream_h
 #endif
 //----------------------------   work_stream.h     ---------------------------
+
+

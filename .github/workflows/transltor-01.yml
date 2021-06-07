@@ -1,4 +1,4 @@
-name: deal.ii include testing
+name: deal.ii 
 
 on: [push, pull_request]
 

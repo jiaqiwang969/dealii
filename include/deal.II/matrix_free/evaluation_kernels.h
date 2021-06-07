@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/evaluation_kernels_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -93,10 +92,20 @@ namespace internal
 
 
   /**
-   * 该结构用于对张量有限元的函数值、梯度和Hessians进行评估。该操作用于对称和非对称情况，在各个坐标方向使用不同的应用函数'值'、'梯度'。值的应用函数是通过EvaluatorTensorProduct模板类之一提供的，而这些模板类又是从
-   * MatrixFreeFunctions::ElementType 模板参数中选择的。
-   * 有两个专门的实现类FEEvaluationImplCollocation（用于Gauss-Lobatto元素，其中结点和正交点重合，'值'的操作是identity）和FEEvaluationImplTransformToCollocation（可以转换到collocation空间，然后可以在这些空间使用identity），它们都可以使代码缩短。
+   * This struct performs the evaluation of function values, gradients and
+   * Hessians for tensor-product finite elements. The operation is used for
+   * both the symmetric and non-symmetric case, which use different apply
+   * functions 'values', 'gradients' in the individual coordinate
+   * directions. The apply functions for values are provided through one of
+   * the template classes EvaluatorTensorProduct which in turn are selected
+   * from the MatrixFreeFunctions::ElementType template argument.
    *
+   * There are two specialized implementation classes
+   * FEEvaluationImplCollocation (for Gauss-Lobatto elements where the nodal
+   * points and the quadrature points coincide and the 'values' operation is
+   * identity) and FEEvaluationImplTransformToCollocation (which can be
+   * transformed to a collocation space and can then use the identity in these
+   * spaces), which both allow for shorter code.
    */
   template <MatrixFreeFunctions::ElementType type,
             int                              dim,
@@ -129,9 +138,8 @@ namespace internal
 
 
   /**
-   * 对 MatrixFreeFunctions::tensor_none,
-   * 的特化，它不能使用和-因子化的内核。
-   *
+   * Specialization for MatrixFreeFunctions::tensor_none, which cannot use the
+   * sum-factorization kernels.
    */
   template <int dim, int fe_degree, int n_q_points_1d, typename Number>
   struct FEEvaluationImpl<MatrixFreeFunctions::tensor_none,
@@ -824,9 +832,13 @@ namespace internal
 
 
   /**
-   * 该结构实现了两个不同基数之间的变化。这是FEEvaluationImplTransformToCollocation类中的一个成分，我们首先转换到适当的基数，在那里我们可以通过collocation技术计算导数。
-   * 这个类允许独立于维度的操作应用，通过模板递归来实现。它已经被测试到了6维。
+   * This struct implements the change between two different bases. This is an
+   * ingredient in the FEEvaluationImplTransformToCollocation class where we
+   * first transform to the appropriate basis where we can compute the
+   * derivative through collocation techniques.
    *
+   * This class allows for dimension-independent application of the operation,
+   * implemented by template recursion. It has been tested up to 6D.
    */
   template <EvaluatorVariant  variant,
             EvaluatorQuantity quantity,
@@ -841,19 +853,26 @@ namespace internal
                   "The second dimension must not be smaller than the first");
 
     /**
-     * 这应用了在系数数组的行上收缩的变换，沿着系数数组的列生成数值。
-     * @param  n_components 矢量成分的数量。      @param
-     * transformation_matrix
-     * 作为矢量递进的系数矩阵，如果解释为矩阵，则使用
-     * @p basis_size_1 行和 @p basis_size_2 列。      @param  values_in
-     * 大小为base_size_1^dim的输入数组。它可以与values_out同义
-     * @param  values_out
-     * 大小为basis_size_2^dim的数组，用于存储转换的结果。它可以与value_in数组别名。
-     * @param  basis_size_1_variable
-     * 如果模板参数basis_size_1为零，第一个基的大小可以作为运行时参数传入。如果模板参数为非零，出于效率的考虑，模板参数优先考虑。
-     * @param  basis_size_2_variable
-     * 在模板参数basis_size_1为零的情况下，第二个基的大小可以作为运行时参数传入。
+     * This applies the transformation that contracts over the rows of the
+     * coefficient array, generating values along the columns of the
+     * coefficient array.
      *
+     * @param n_components The number of vector components.
+     * @param transformation_matrix The coefficient matrix handed in as a
+     *                     vector, using @p basis_size_1 rows and @p basis_size_2
+     *                     columns if interpreted as a matrix.
+     * @param values_in    The array of the input of size basis_size_1^dim. It
+     *                     may alias with values_out
+     * @param values_out   The array of size basis_size_2^dim where the results
+     *                     of the transformation are stored. It may alias with
+     *                     the values_in array.
+     * @param basis_size_1_variable In case the template argument basis_size_1
+     * is zero, the size of the first basis can alternatively be passed in as a
+     * run time argument. The template argument takes precedence in case it is
+     * nonzero for efficiency reasons.
+     * @param basis_size_2_variable In case the template argument basis_size_1
+     * is zero, the size of the second basis can alternatively be passed in as a
+     * run time argument.
      */
 #ifndef DEBUG
     DEAL_II_ALWAYS_INLINE
@@ -950,26 +969,34 @@ namespace internal
     }
 
     /**
-     * 这适用于在系数数组的列上收缩的变换，沿着系数数组的行生成数值。
-     * @param  n_components 矢量成分的数量。      @param
-     * transformation_matrix
-     * 作为向量递进的系数矩阵，如果解释为矩阵，则使用
-     * @p basis_size_1 行和 @p basis_size_2 列。      @param
-     * add_into_result 定义结果是否应该被添加到数组 @p
-     * values_out
-     * 中（如果为真）或覆盖之前的内容。如果values_in和values_out指向同一个数组，并且
-     * @p add_into_result
-     * 为真，那么结果是未定义的，在这种情况下会抛出一个异常。
-     * @param  values_in
-     * 大小为base_size_2^dim的输入数组。它可以与values_out同义。请注意，之前的
-     * @p values_in 的内容在函数中被覆盖了。      @param
-     * values_out
-     * 大小为base_size_1^dim的数组，用于存储转换的结果。它可以与
-     * @p values_in 数组别名。      @param  basis_size_1_variable
-     * 如果模板参数basis_size_1为零，第一个基的大小可以作为运行时参数传入。如果模板参数为非零，出于效率的考虑，模板参数优先考虑。
-     * @param  basis_size_2_variable
-     * 在模板参数basis_size_1为零的情况下，第二个基的大小可以作为运行时参数传入。
+     * This applies the transformation that contracts over the columns of the
+     * coefficient array, generating values along the rows of the coefficient
+     * array.
      *
+     * @param n_components The number of vector components.
+     * @param transformation_matrix The coefficient matrix handed in as a
+     *                     vector, using @p basis_size_1 rows and @p basis_size_2
+     *                     columns if interpreted as a matrix.
+     * @param add_into_result Define whether the result should be added into the
+     *                     array @p values_out (if true) or overwrite the
+     *                     previous content. The result is undefined in case
+     *                     values_in and values_out point to the same array and
+     *                     @p add_into_result is true, in which case an
+     *                     exception is thrown.
+     * @param values_in    The array of the input of size basis_size_2^dim. It
+     *                     may alias with values_out. Note that the previous
+     *                     content of @p values_in is overwritten within the
+     *                     function.
+     * @param values_out   The array of size basis_size_1^dim where the results
+     *                     of the transformation are stored. It may alias with
+     *                     the @p values_in array.
+     * @param basis_size_1_variable In case the template argument basis_size_1
+     * is zero, the size of the first basis can alternatively be passed in as a
+     * run time argument. The template argument takes precedence in case it is
+     * nonzero for efficiency reasons.
+     * @param basis_size_2_variable In case the template argument basis_size_1
+     * is zero, the size of the second basis can alternatively be passed in as a
+     * run time argument.
      */
 #ifndef DEBUG
     DEAL_II_ALWAYS_INLINE
@@ -1105,20 +1132,24 @@ namespace internal
     }
 
     /**
-     * 该操作应用了类似质量矩阵的操作，由do_forward()操作、正交点的系数乘法和do_backward()操作组成。
-     * @param  n_components 矢量成分的数量。      @param
-     * transformation_matrix
-     * 作为矢量递进的系数矩阵，如果解释为矩阵，则使用
-     * @p basis_size_1  行和 @p basis_size_2  列。      @param
-     * coefficients
-     * 系数数组，结果被乘以该数组。其长度必须是basis_size_2^dim或n_components*basis_size_2^dim。
-     * @param  values_in
-     * 大小为basis_size_2^dim的输入阵列。它可以与values_out同义。
-     * @param  scratch_data
-     * 在操作过程中用于保存临时数据的数组。
-     * 必须是长度为base_size_2^dim的。      @param  values_out
-     * 用于存储转换结果的base_size_1^dim数组。它可以与value_in数组别名。
+     * This operation applies a mass-matrix-like operation, consisting of a
+     * do_forward() operation, multiplication by the coefficients in the
+     * quadrature points, and the do_backward() operation.
      *
+     * @param n_components The number of vector components.
+     * @param transformation_matrix The coefficient matrix handed in as a
+     *                     vector, using @p basis_size_1 rows and @p basis_size_2
+     *                     columns if interpreted as a matrix.
+     * @param coefficients The array of coefficients by which the result is
+     *                     multiplied. Its length must be either
+     *                     basis_size_2^dim or n_components*basis_size_2^dim.
+     * @param values_in    The array of the input of size basis_size_2^dim. It
+     *                     may alias with values_out.
+     * @param scratch_data Array to hold temporary data during the operation.
+     *                     Must be of length basis_size_2^dim.
+     * @param values_out   The array of size basis_size_1^dim where the results
+     *                     of the transformation are stored. It may alias with
+     *                     the values_in array.
      */
     static void
     do_mass(const unsigned int            n_components,
@@ -1201,11 +1232,16 @@ namespace internal
 
 
   /**
-   * 该结构执行张量有限元的函数值、梯度和Hessians的评估。这是对节点点与正交点重合的元素的特化，如Gauss-Lobatto元素上的FE_Q形状函数与Gauss-Lobatto正交的集成。这一类的假设是形状
-   * "值
-   * "的操作是相同的，这使得我们可以编写更短的代码。
-   * 在文献中，这种评价形式通常被称为谱系评价、谱系配位或简单的配位，意思是形状函数和评价空间（正交点）的位置相同。
+   * This struct performs the evaluation of function values, gradients and
+   * Hessians for tensor-product finite elements. This a specialization for
+   * elements where the nodal points coincide with the quadrature points like
+   * FE_Q shape functions on Gauss-Lobatto elements integrated with
+   * Gauss-Lobatto quadrature. The assumption of this class is that the shape
+   * 'values' operation is identity, which allows us to write shorter code.
    *
+   * In literature, this form of evaluation is often called spectral
+   * evaluation, spectral collocation or simply collocation, meaning the same
+   * location for shape functions and evaluation space (quadrature points).
    */
   template <int dim, int fe_degree, typename Number>
   struct FEEvaluationImplCollocation
@@ -1375,8 +1411,14 @@ namespace internal
 
 
   /**
-   * 该结构对张量有限元的函数值、梯度和Hessians进行评估。这是对关于单位区间中点0.5的对称基函数的特化，其正交点的数量与自由度相同。在这种情况下，我们可以首先将基数转换为在正交点上有结点的基数（即配位空间），然后在这个转换后的空间中进行一、二次导数的求值，对形状值使用同一性操作。
-   *
+   * This struct performs the evaluation of function values, gradients and
+   * Hessians for tensor-product finite elements. This a specialization for
+   * symmetric basis functions about the mid point 0.5 of the unit interval
+   * with the same number of quadrature points as degrees of freedom. In that
+   * case, we can first transform the basis to one that has the nodal points
+   * in the quadrature points (i.e., the collocation space) and then perform
+   * the evaluation of the first and second derivatives in this transformed
+   * space, using the identity operation for the shape values.
    */
   template <int dim, int fe_degree, int n_q_points_1d, typename Number>
   struct FEEvaluationImplTransformToCollocation
@@ -1500,7 +1542,7 @@ namespace internal
                       nullptr,
                       gradients_quad,
                       nullptr,
-                       /*add_into_values_array=*/ integration_flag &
+                      /*add_into_values_array=*/integration_flag &
                         EvaluationFlags::values);
 
         // transform back to the original space
@@ -1525,16 +1567,19 @@ namespace internal
 
 
   /**
-   * 该类根据模板参数和shape_info变量选择合适的评估策略，该变量包含策略底层的运行时参数
-   * FEEvaluation::evaluate(), ，即该类调用
-   * internal::FEEvaluationImpl::evaluate(),
-   * internal::FEEvaluationImplCollocation::evaluate() 或
-   * internal::FEEvaluationImplTransformToCollocation::evaluate()
-   * 适当的模板参数。如果模板参数fe_degree和n_q_points_1d包含有效信息（即fe_degree>-1和n_q_points_1d>0），我们只需将这些值传递给相应的模板专业化。
-   * 否则，我们会对运行时参数进行运行时匹配以找到正确的专业化。这种匹配目前支持
-   * $0\leq fe\_degree \leq 9$  和  $degree+1\leq n\_q\_points\_1d\leq
-   * fe\_degree+2$  。
-   *
+   * This class chooses an appropriate evaluation strategy based on the
+   * template parameters and the shape_info variable which contains runtime
+   * parameters for the strategy underlying FEEvaluation::evaluate(), i.e.
+   * this calls internal::FEEvaluationImpl::evaluate(),
+   * internal::FEEvaluationImplCollocation::evaluate() or
+   * internal::FEEvaluationImplTransformToCollocation::evaluate() with
+   * appropriate template parameters. In case the template parameters
+   * fe_degree and n_q_points_1d contain valid information (i.e. fe_degree>-1
+   * and n_q_points_1d>0), we simply pass these values to the respective
+   * template specializations.  Otherwise, we perform a runtime matching of
+   * the runtime parameters to find the correct specialization. This matching
+   * currently supports $0\leq fe\_degree \leq 9$ and $degree+1\leq
+   * n\_q\_points\_1d\leq fe\_degree+2$.
    */
   template <int dim, typename Number>
   struct FEEvaluationImplEvaluateSelector
@@ -1684,16 +1729,19 @@ namespace internal
 
 
   /**
-   * 该类根据模板参数和shape_info变量选择合适的评估策略，该变量包含策略基础
-   * FEEvaluation::integrate(), 的运行时参数，即该类调用
-   * internal::FEEvaluationImpl::integrate(),
-   * internal::FEEvaluationImplCollocation::integrate() 或
-   * internal::FEEvaluationImplTransformToCollocation::integrate()
-   * 合适的模板参数。如果模板参数fe_degree和n_q_points_1d包含有效信息（即fe_degree>-1和n_q_points_1d>0），我们只需将这些值传递给相应的模板专业化。
-   * 否则，我们会对运行时参数进行运行时匹配以找到正确的专业化。这种匹配目前支持
-   * $0\leq fe\_degree \leq 9$  和  $degree+1\leq n\_q\_points\_1d\leq
-   * fe\_degree+2$  。
-   *
+   * This class chooses an appropriate evaluation strategy based on the
+   * template parameters and the shape_info variable which contains runtime
+   * parameters for the strategy underlying FEEvaluation::integrate(), i.e.
+   * this calls internal::FEEvaluationImpl::integrate(),
+   * internal::FEEvaluationImplCollocation::integrate() or
+   * internal::FEEvaluationImplTransformToCollocation::integrate() with
+   * appropriate template parameters. In case the template parameters
+   * fe_degree and n_q_points_1d contain valid information (i.e. fe_degree>-1
+   * and n_q_points_1d>0), we simply pass these values to the respective
+   * template specializations.  Otherwise, we perform a runtime matching of
+   * the runtime parameters to find the correct specialization. This matching
+   * currently supports $0\leq fe\_degree \leq 9$ and $degree+1\leq
+   * n\_q\_points\_1d\leq fe\_degree+2$.
    */
   template <int dim, typename Number>
   struct FEEvaluationImplIntegrateSelector
@@ -2228,8 +2276,7 @@ namespace internal
     }
 
     /**
-     * 将单元格正交点上的数值内插到一个面上。
-     *
+     * Interpolate the values on the cell quadrature points onto a face.
      */
     template <bool do_evaluate, bool add_into_output>
     static void
@@ -2884,7 +2931,7 @@ namespace internal
           .shape_data_on_face[0][fe_degree + (integrate ?
                                                 (2 - (face_nos[0] % 2)) :
                                                 (1 + (face_nos[0] % 2)))] :
-        VectorizedArrayType(0.0  /*dummy*/ );
+        VectorizedArrayType(0.0 /*dummy*/);
 
     constexpr unsigned int static_dofs_per_component =
       fe_degree > -1 ? Utilities::pow(fe_degree + 1, dim) :
@@ -3189,7 +3236,7 @@ namespace internal
                                    ++v)
                                 ind1[v] =
                                   indices[v] +
-                                  index_array_hermite[0  /*TODO*/ ][2 * i] *
+                                  index_array_hermite[0 /*TODO*/][2 * i] *
                                     strides[v];
                               unsigned int ind2[VectorizedArrayType::size()];
                               DEAL_II_OPENMP_SIMD_PRAGMA
@@ -3198,7 +3245,7 @@ namespace internal
                                    ++v)
                                 ind2[v] =
                                   indices[v] +
-                                  index_array_hermite[0  /*TODO*/ ][2 * i + 1] *
+                                  index_array_hermite[0 /*TODO*/][2 * i + 1] *
                                     strides[v];
                               proc.hermite_grad_vectorized_indexed(
                                 temp1[i_],
@@ -3732,7 +3779,7 @@ namespace internal
                                fe_degree,
                                n_q_points_1d,
                                VectorizedArrayType>::
-            evaluate_in_face( /* n_components */  1,
+            evaluate_in_face(/* n_components */ 1,
                              data,
                              temp1,
                              values_quad + comp * n_q_points,
@@ -3747,7 +3794,7 @@ namespace internal
                                fe_degree,
                                n_q_points_1d,
                                VectorizedArrayType>::
-            evaluate_in_face( /* n_components */  1,
+            evaluate_in_face(/* n_components */ 1,
                              data,
                              temp1,
                              values_quad + comp * n_q_points,
@@ -4002,7 +4049,7 @@ namespace internal
 
         FEFaceNormalEvaluationImpl<dim, fe_degree, VectorizedArrayType>::
           template interpolate<false, false>(
-             /* n_components */  1,
+            /* n_components */ 1,
             data,
             temp1,
             values_array + comp * data.dofs_per_component_on_cell,
@@ -4030,7 +4077,7 @@ namespace internal
                                          fe_degree,
                                          n_q_points_1d,
                                          VectorizedArrayType>::
-            integrate_in_face( /* n_components */  1,
+            integrate_in_face(/* n_components */ 1,
                               data,
                               temp1,
                               values_quad + comp * n_q_points,
@@ -4045,7 +4092,7 @@ namespace internal
                                          fe_degree,
                                          n_q_points_1d,
                                          VectorizedArrayType>::
-            integrate_in_face( /* n_components */  1,
+            integrate_in_face(/* n_components */ 1,
                               data,
                               temp1,
                               values_quad + comp * n_q_points,
@@ -4085,8 +4132,8 @@ namespace internal
 
 
   /**
-   * 该结构使用FEEvaluationBaseData参数实现了反质量矩阵操作的动作。
-   *
+   * This struct implements the action of the inverse mass matrix operation
+   * using an FEEvaluationBaseData argument.
    */
   template <int dim, typename Number>
   struct CellwiseInverseMassMatrixImplBasic
@@ -4209,8 +4256,8 @@ namespace internal
 
 
   /**
-   * 这个结构实现了使用FEEvaluationBaseData参数的反质量矩阵操作的动作。
-   *
+   * This struct implements the action of the inverse mass matrix operation
+   * using an FEEvaluationBaseData argument.
    */
   template <int dim, typename Number>
   struct CellwiseInverseMassMatrixImplFlexible
@@ -4276,8 +4323,7 @@ namespace internal
     }
 
     /**
-     * 度的版本=  -
-     *
+     * Version for degree = -1
      */
     template <int fe_degree, int = 0>
     static bool
@@ -4297,8 +4343,8 @@ namespace internal
 
 
   /**
-   * 该结构使用FEEvaluationBaseData参数实现了反质量矩阵操作的动作。
-   *
+   * This struct implements the action of the inverse mass matrix operation
+   * using an FEEvaluationBaseData argument.
    */
   template <int dim, typename Number>
   struct CellwiseInverseMassMatrixImplTransformFromQPoints
@@ -4409,5 +4455,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

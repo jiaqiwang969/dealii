@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_interpolate_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -46,22 +47,20 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Interpolation and projection
+   * @name  内插和投影
+   *
    */
   //@{
 
   /**
-   * Compute the interpolation of @p function at the support points to the
-   * finite element space described by the Triangulation and FiniteElement
-   * object with which the given DoFHandler argument is initialized. It is
-   * assumed that the number of components of @p function matches that of the
-   * finite element used by @p dof.
+   * 计算 @p function
+   * 在支持点的内插到由给定DoFHandler参数初始化的Triangulation和FiniteElement对象描述的有限元空间。假设
+   * @p function 的分量数与 @p dof.
+   * 使用的有限元的分量数相匹配。注意，你可能要在事后用空间
+   * @p dof
+   * 的悬空节点调用<tt>hanging_nodes.distribution(vec)</tt>，以便使结果再次连续。
+   * 更多信息请参见该命名空间的一般文档。
    *
-   * Note that you may have to call <tt>hanging_nodes.distribute(vec)</tt>
-   * with the hanging nodes from space @p dof afterwards, to make the result
-   * continuous again.
-   *
-   * See the general documentation of this namespace for further information.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -73,7 +72,8 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Same as above but in an hp-context.
+   * 与上述相同，但在hp-context中。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -86,8 +86,9 @@ namespace VectorTools
 
 
   /**
-   * Call the @p interpolate() function above with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>.
+   * 用<tt>mapping=MappingQGeneric  @<dim,spacedim@>(1)</tt>. 调用上面的
+   * @p interpolate() 函数。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -98,22 +99,16 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Interpolate different finite element spaces. The interpolation of vector
-   * @p data_1 (which is assumed to be ghosted, see
-   * @ref GlossGhostedVector)
-   * is executed from the FE space represented by @p dof_1
-   * to the vector @p data_2 on FE space @p dof_2.
-   * The interpolation on each cell is represented by the matrix @p transfer.
-   * Curved boundaries are neglected so far.
+   * 对不同的有限元空间进行插值。从 @p
+   * dof_1 代表的FE空间到FE空间 @p dof_2. 上的向量 @p data_2
+   * 执行向量 @p data_1 的插值（假设是重影，见 @ref
+   * GlossGhostedVector ），每个单元上的插值由矩阵 @p transfer.
+   * 表示，迄今为止，弯曲的边界被忽略了。
+   * 请注意，你可能要在之后调用<tt>hanging_nodes.distribution(data_2)</tt>与空间
+   * @p dof_2 中的悬挂节点，以使结果再次连续。
+   * @note
+   * 这个模板的实例化提供给一些矢量类型（见命名空间的一般文档），但只有InVector和OutVector的同一个矢量。其他组合必须通过手工实例化。
    *
-   * Note that you may have to call <tt>hanging_nodes.distribute(data_2)</tt>
-   * with the hanging nodes from space @p dof_2 afterwards, to make the result
-   * continuous again.
-   *
-   * @note Instantiations for this template are provided for some vector types
-   * (see the general documentation of the namespace), but only the same
-   * vector for InVector and OutVector. Other combinations must be
-   * instantiated by hand.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -124,50 +119,34 @@ namespace VectorTools
               OutVector &                      data_2);
 
   /**
-   * This function is a kind of generalization or modification of the very
-   * first interpolate() function in the series. It interpolates a set of
-   * functions onto the finite element space defined by the DoFHandler argument,
-   * where the determination which function to use on each cell is made
-   * based on the material id (see
-   * @ref GlossMaterialId)
-   * of each cell.
+   * 这个函数是该系列中第一个interpolate()函数的一种概括或修改。它将一组函数插值到由DoFHandler参数定义的有限元空间上，根据每个单元的材料ID（见 @ref
+   * GlossMaterialId ）来决定在每个单元上使用哪个函数。
+   * @param[in]  mapping
+   * 用来确定要评估函数的支持点位置的映射。    @param[in]
+   * dof_handler
+   * 用Triangulation和FiniteElement对象初始化的DoFHandler，它定义了有限元空间。
+   * @param[in]  function_map A  std::map
+   * 反映了那些应该被内插的单元上的材料ID与要内插到有限元空间上的函数之间的对应关系。
+   * @param[out]  dst 全局有限元向量，保存内插值的输出。
+   * @param[in]  component_mask 应被内插的组件的掩码。
+   * @note  如果算法遇到一个单元，其材料ID没有列在给定的
+   * @p function_map, 中，那么 @p dst
+   * 将不会在输出向量的各自自由度中被更新。例如，如果
+   * @p dst
+   * 被初始化为零，那么在调用此函数后，那些对应于遗漏的材料ID的零将仍然保留在
+   * @p dst 中。
+   * @note
+   * 位于不同材料id的单元之间的面的自由度将由在本函数中实现的各单元循环中最后调用的单元获得其值。由于单元格的顺序在某种程度上是任意的，你无法控制它。然而，如果你想控制单元格被访问的顺序，让我们看一下下面的例子。让
+   * @p u 是一个感兴趣的变量，它被一些CG有限元所近似。让
+   * @p 0,  @p 1 和 @p 2
+   * 为三角形上的单元的材料id。让0：0.0，1：1.0，2：2.0是你想传递给这个函数的整个
+   * @p function_map ，其中 @p key 是材料ID， @p value 是 @p u. 的值
+   * 通过使用整个 @p function_map
+   * ，你并不真正知道哪些值会被分配给面的DoF。另一方面，如果你把整个
+   * @p
+   * function_map分成三个较小的独立对象0：0.0和1：1.0以及2：2.0，并对这个函数进行三次不同的调用，分别传递这些对象（顺序取决于你想在单元间得到什么），那么后面的每次调用将重写前一次的单元间
+   * @p  dofs。
    *
-   * @param[in] mapping        The mapping to use to determine the location of
-   *   support points at which the functions are to be evaluated.
-   * @param[in] dof_handler    DoFHandler initialized with Triangulation and
-   *   FiniteElement objects and that defines the finite element space.
-   * @param[in] function_map   A std::map reflecting the correspondence between
-   *   material ids on those cells on which something should be interpolated,
-   *   and the functions to be interpolated onto the finite element space.
-   * @param[out] dst           The global finie element vector holding the
-   *   output of the interpolated values.
-   * @param[in] component_mask A mask of components that shall be interpolated.
-   *
-   * @note If the algorithm encounters a cell whose material id is not listed
-   * in the given @p function_map, then @p dst will not be updated in the
-   * respective degrees of freedom of the output vector. For example, if
-   * @p dst was initialized to zero, then those zeros which correspond to
-   * the missed material ids will still remain in @p dst after calling
-   * this function.
-   *
-   * @note Degrees of freedom located on faces between cells of different
-   * material ids will get their value by that cell which was called last in
-   * the respective loop over cells implemented in this function. Since the
-   * order of cells is somewhat arbitrary, you cannot control it. However, if
-   * you want to have control over the order in which cells are visited, let us
-   * take a
-   * look at the following example: Let @p u be a variable of interest which
-   * is approximated by some CG finite element. Let @p 0, @p 1 and @p 2 be
-   * material ids of cells on the triangulation. Let 0: 0.0, 1: 1.0, 2: 2.0 be
-   * the whole @p function_map that you want to pass to this function, where
-   * @p key is a material id and @p value is a value of @p u. By using the
-   * whole @p function_map you do not really know which values will be
-   * assigned to the face DoFs. On the other hand, if you split the whole @p
-   * function_map into three smaller independent objects 0: 0.0 and 1: 1.0 and
-   * 2: 2.0 and make three distinct calls of this function passing each of
-   * these objects separately (the order depends on what you want to get
-   * between cells), then each subsequent call will rewrite the intercell @p
-   * dofs of the previous one.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -181,28 +160,19 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Compute the interpolation of a @p dof1-function @p u1 to a @p dof2-function
-   * @p u2, where @p dof1 and @p dof2 represent different triangulations with
-   * a common coarse grid.
-   *
-   * dof1 and dof2 need to have the same finite element discretization.
-   *
-   * Note that for continuous elements on grids with hanging nodes (i.e.
-   * locally refined grids) this function does not give the expected output.
-   * Indeed, the resulting output vector does not necessarily respect
-   * continuity requirements at hanging nodes, due to local cellwise
-   * interpolation.
-   *
-   * For this case (continuous elements on grids with hanging nodes), please
-   * use the interpolate_to_different_mesh function with an additional
-   * AffineConstraints argument, see below, or make the field conforming
-   * yourself by calling the @p AffineConstraints::distribute function of your
-   * hanging node constraints object.
-   *
-   * @note This function works with parallel::distributed::Triangulation, but
-   * only if the parallel partitioning is the same for both meshes (see the
+   * 计算 @p dof1-function  @p u1 到 @p dof2-function  @p u2,
+   * 的插值，其中 @p dof1 和 @p dof2
+   * 代表具有共同粗网格的不同三角形。
+   * dof1和dof2需要具有相同的有限元离散化。
+   * 请注意，对于有悬挂节点的网格上的连续元素（即局部细化网格），这个函数并不能给出预期的输出。
+   * 事实上，由于局部单元插值的原因，所产生的输出矢量不一定尊重悬空节点的连续性要求。
+   * 对于这种情况（有悬挂节点的网格上的连续元素），请使用带有额外AffineConstraints参数的interpolate_to_different_mesh函数，见下文，或者通过调用悬挂节点约束对象的
+   * @p AffineConstraints::distribute 函数使场符合要求。
+   * @note 这个函数与 parallel::distributed::Triangulation,
+   * 一起工作，但只有在两个网格的平行分区相同的情况下（见
    * parallel::distributed::Triangulation<dim>::no_automatic_repartitioning
-   * flag).
+   * 标志）。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -212,17 +182,17 @@ namespace VectorTools
                                 VectorType &                     u2);
 
   /**
-   * Compute the interpolation of a @p dof1-function @p u1 to a @p dof2-function
-   * @p u2, where @p dof1 and @p dof2 represent different triangulations with
-   * a common coarse grid.
+   * 计算 @p dof1-function  @p u1 到 @p dof2-function  @p u2,
+   * 的插值，其中 @p dof1 和 @p dof2
+   * 代表具有共同粗网格的不同三角形。Dof1和Dof2需要具有相同的有限元离散化。
+   * @p constraints  是对应于 @p
+   * dof2的悬挂节点约束对象。当插值到具有悬挂节点的网格（局部细化网格）上的连续元素时，这个对象特别重要。
+   * 没有它
    *
-   * dof1 and dof2 need to have the same finite element discretization.
+   * - 由于单元格内插的原因
    *
-   * @p constraints is a hanging node constraints object corresponding to @p
-   * dof2. This object is particularly important when interpolating onto
-   * continuous elements on grids with hanging nodes (locally refined grids):
-   * Without it - due to cellwise interpolation - the resulting output vector
-   * does not necessarily respect continuity requirements at hanging nodes.
+   * - 产生的输出矢量不一定尊重悬挂节点的连续性要求。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -234,11 +204,10 @@ namespace VectorTools
     VectorType &                                              u2);
 
   /**
-   * The same function as above, but takes an InterGridMap object directly as
-   * a parameter. Useful for interpolating several vectors at the same time.
+   * 与上述函数相同，但直接接受InterGridMap对象作为参数。对于同时插值几个向量很有用。
+   * @p intergridmap 必须通过 InterGridMap::make_mapping
+   * 从源DoFHandler指向目的DoFHandler进行初始化。
    *
-   * @p intergridmap has to be initialized via InterGridMap::make_mapping
-   * pointing from a source DoFHandler to a destination DoFHandler.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -251,33 +220,18 @@ namespace VectorTools
   //@}
 
   /**
-   * Geometrical interpolation
+   * 几何插值
+   *
    */
   //@{
   /**
-   * Given a DoFHandler containing at least a spacedim vector field, this
-   * function interpolates the Triangulation at the support points of a FE_Q()
-   * finite element of the same degree as the degree of the required
-   * components.
+   * 给定一个至少包含一个间隔向量场的DoFHandler，这个函数在FE_Q()有限元的支持点上插值三角图，该有限元的度数与所需组件的度数相同。
+   * 曲线流形得到尊重，产生的VectorType将是几何上一致的。产生的映射保证在FE_Q()有限元的支持点上是插值的，其程度与所需组件的程度相同。
+   * 如果底层有限元是FE_Q(1)^spacedim，那么产生的 @p VectorType
+   * 是三角结构顶点的有限元场表示。
+   * 可选的ComponentMask参数可以用来指定FiniteElement的哪些组件来描述几何。如果在构造时没有指定掩码，那么将使用默认的构造掩码，这将被解释为假设FiniteElement的第一个`spacedim'分量来代表问题的几何形状。
+   * 这个函数只对指定组件是原始的FiniteElements实现。
    *
-   * Curved manifold are respected, and the resulting VectorType will be
-   * geometrically consistent. The resulting map is guaranteed to be
-   * interpolatory at the support points of a FE_Q() finite element of the
-   * same degree as the degree of the required components.
-   *
-   * If the underlying finite element is an FE_Q(1)^spacedim, then the
-   * resulting @p VectorType is a finite element field representation of the
-   * vertices of the Triangulation.
-   *
-   * The optional ComponentMask argument can be used to specify what
-   * components of the FiniteElement to use to describe the
-   * geometry. If no mask is specified at construction time, then a
-   * default-constructed mask is used, which is then interpreted as
-   * saying that the first `spacedim` components of the FiniteElement
-   * are assumed to represent the geometry of the problem.
-   *
-   * This function is only implemented for FiniteElements where the specified
-   * components are primitive.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -286,12 +240,10 @@ namespace VectorTools
                       const ComponentMask &            mask = ComponentMask());
 
   /**
-   * Like the above function but also taking @p mapping as argument.
-   * This will introduce an additional approximation between the true geometry
-   * specified by the manifold if the degree of the mapping is lower than the
-   * degree of the finite element in the DoFHandler @p dh, but more
-   * importantly it allows to fill location vectors for mappings that do not
-   * preserve vertex locations (like Eulerian mappings).
+   * 与上述函数类似，但也以 @p mapping 为参数。
+   * 如果映射的度数低于DoFHandler @p dh,
+   * 中有限元素的度数，这将在流形指定的真实几何之间引入一个额外的近似值，但更重要的是它允许为不保留顶点位置的映射（如欧拉映射）填充位置向量。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -306,3 +258,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_interpolate_h
+
+

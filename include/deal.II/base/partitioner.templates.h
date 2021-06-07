@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/partitioner.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -772,5 +771,3 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

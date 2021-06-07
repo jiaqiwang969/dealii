@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_evaluate_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -32,44 +33,48 @@ DEAL_II_NAMESPACE_OPEN
 namespace VectorTools
 {
   /**
-   * Namespace for the flags for point_values() and point_gradients().
+   * 用于point_values()和point_gradients()的标志的命名空间。
+   *
    */
   namespace EvaluationFlags
   {
     /**
-     * Flags for point_values() and point_gradients().
+     * 用于point_values()和point_gradients()的标志。
+     *
      */
     enum EvaluationFlags
     {
       /**
-       * Compute average.
+       * 计算平均数。
+       *
        */
       avg = 0,
       /**
-       * Compute maximum.
+       * 计算最大值。
+       * @note 只对标量值有效。
        *
-       * @note Only available for scalar values.
        */
       max = 1,
       /**
-       * Compute minimum.
+       * 计算最小值。
+       * @note  仅适用于标量值。
        *
-       * @note Only available for scalar values.
        */
       min = 2,
       /**
-       * Take any value.
+       * 取任何值。
+       *
        */
       insert = 3
     };
   } // namespace EvaluationFlags
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the values at
-   * the (arbitrary and even remote) points specified by @p evaluation_points.
+   * 给定一个（分布式）解决方案向量  @p vector,  评估由  @p
+   * evaluation_points.  指定的（任意甚至是远程）点的值
+   * @warning
+   * 这是一个集体调用，需要由通信器的所有处理器执行。
    *
-   * @warning This is a collective call that needs to be executed by all
-   *   processors in the communicator.
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::value_type>
@@ -82,15 +87,13 @@ namespace VectorTools
     const EvaluationFlags::EvaluationFlags flags = EvaluationFlags::avg);
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the values at
-   * the points specified by @p cache which might have been set up by the
-   * above function.
+   * 给定一个（分布式）解决方案向量 @p vector, ，评估由 @p
+   * cache 指定的点的值，这些点可能是由上述函数设置的。
+   * @note
+   * 细化/粗化/重新分区导致缓存无效，因此必须再次调用上述函数。
+   * @warning
+   * 这是一个集体调用，需要由通信器中的所有处理器来执行。
    *
-   * @note Refinement/coarsening/repartitioning leads to the invalidation of the
-   *   cache so that the above function has to be called again.
-   *
-   * @warning This is a collective call that needs to be executed by all
-   *   processors in the communicator.
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::value_type>
@@ -101,8 +104,10 @@ namespace VectorTools
     const EvaluationFlags::EvaluationFlags flags = EvaluationFlags::avg);
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the gradients at
-   * the (arbitrary and even remote) points specified by @p evaluation_points.
+   * 给定一个（分布式）解决方案向量  @p vector,  评估由  @p
+   * evaluation_points.
+   * 指定的（任意的甚至是遥远的）点的梯度。
+   *
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::gradient_type>
@@ -115,12 +120,11 @@ namespace VectorTools
     const EvaluationFlags::EvaluationFlags flags = EvaluationFlags::avg);
 
   /**
-   * Given a (distributed) solution vector @p vector, evaluate the gradients at
-   * the points specified by @p cache which might have been set up by the
-   * above function.
+   * 给定一个（分布式）解向量 @p vector, ，评估由 @p cache
+   * 指定的点的梯度，这可能是由上述函数设置的。
+   * @note
+   * 细化/粗化/重新划分导致缓存无效，因此必须再次调用上述函数。
    *
-   * @note Refinement/coarsening/repartitioning leads to the invalidation of the
-   *   cache so that the above function has to be called again.
    */
   template <int n_components, int dim, int spacedim, typename VectorType>
   std::vector<typename FEPointEvaluation<n_components, dim>::gradient_type>
@@ -172,7 +176,8 @@ namespace VectorTools
   namespace internal
   {
     /**
-     * Perform reduction for scalars.
+     * 对标量进行还原。
+     *
      */
     template <typename T>
     T
@@ -201,7 +206,8 @@ namespace VectorTools
 
 
     /**
-     * Perform reduction for tensors.
+     * 对张量进行还原。
+     *
      */
     template <int rank, int dim, typename Number>
     Tensor<rank, dim, Number>
@@ -408,3 +414,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_boundary_h
+
+

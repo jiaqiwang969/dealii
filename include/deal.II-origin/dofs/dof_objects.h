@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/dof_objects_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
@@ -43,50 +44,33 @@ namespace internal
 #endif
 
     /**
-     * Store the indices of the degrees of freedom which are located on
-     * objects of dimension @p dim.
-     *
-     * <h3>Information for all DoFObjects classes</h3>
-     *
-     * The DoFObjects classes store the global indices of the degrees of
-     * freedom for each cell on a certain level. The global index or number of
-     * a degree of freedom is the zero-based index of the according value in
-     * the solution vector and the row and column index in the global matrix
-     * or the multigrid matrix for this level. These indices refer to the
-     * unconstrained vectors and matrices, where we have not taken account of
-     * the constraints introduced by hanging nodes.
-     *
-     * Since vertices are not associated with a particular level, the indices
-     * associated with vertices are not stored in the DoFObjects classes but
-     * rather in the DoFHandler::vertex_dofs array.
-     *
-     * The DoFObjects classes are not used directly, but objects of these
-     * classes are included in the DoFLevel and DoFFaces classes.
-     *
+     * 存储位于维度为 @p dim. <h3>Information for all DoFObjects
+     * classes</h3>的对象上的自由度的索引。DoFObjects类存储了某一层面上每个单元的自由度的全局索引。一个自由度的全局索引或数字是解向量中相应值的零基索引，以及该层的全局矩阵或多网格矩阵的行和列索引。这些指数指的是无约束的向量和矩阵，其中我们没有考虑到悬挂节点引入的约束。
+     * 由于顶点不与某一特定层次相关联，与顶点相关的指数不存储在DoFObjects类中，而是存储在
+     * DoFHandler::vertex_dofs 数组中。
+     * DoFObjects类不被直接使用，但这些类的对象被包含在DoFLevel和DoFFaces类中。
      * @ingroup dofs
+     *
      */
     template <int dim>
     class DoFObjects
     {
     public:
       /**
-       * Store the global indices of the degrees of freedom.
+       * 存储自由度的全局指数。
+       *
        */
       std::vector<types::global_dof_index> dofs;
 
     public:
       /**
-       * Set the global index of the @p local_index-th degree of freedom
-       * located on the object with number @p obj_index to the value given by
-       * the last argument. The @p dof_handler argument is used to access the
-       * finite element that is to be used to compute the location where this
-       * data is stored.
+       * 将位于编号为 @p obj_index 的对象上的 @p local_index-th
+       * 自由度的全局索引设置为最后一个参数所给的值。参数
+       * @p dof_handler
+       * 用于访问要用来计算存储该数据的位置的有限元。
+       * 第三个参数， @p fe_index,
+       * 必须等于零。否则它是未使用的，但我们保留这个参数，以便我们可以为非hp-和hp-有限元方法使用相同的接口，实际上使hp-和非hp-类之间共享DoFAccessor类的层次结构成为可能。
        *
-       * The third argument, @p fe_index, must equal zero. It is otherwise
-       * unused, but we retain the argument so that we can use the same
-       * interface for non-hp- and hp-finite element methods, in effect making
-       * it possible to share the DoFAccessor class hierarchy between hp- and
-       * non-hp-classes.
        */
       template <int dh_dim, int spacedim>
       void
@@ -97,16 +81,12 @@ namespace internal
                     const types::global_dof_index               global_index);
 
       /**
-       * Return the global index of the @p local_index-th degree of freedom
-       * located on the object with number @p obj_index. The @p dof_handler
-       * argument is used to access the finite element that is to be used to
-       * compute the location where this data is stored.
+       * 返回位于编号为 @p obj_index. 的对象上的 @p local_index-th
+       * 自由度的全局索引。  @p dof_handler
+       * 参数用于访问要用来计算该数据存储位置的有限元。
+       * 第三个参数， @p fe_index,
+       * 必须等于零。否则它将不被使用，但我们保留这个参数，以便我们可以为非hp-和hp-有限元方法使用相同的接口，实际上使hp-和非hp-类之间共享DoFAccessor类的层次结构成为可能。
        *
-       * The third argument, @p fe_index, must equal zero. It is otherwise
-       * unused, but we retain the argument so that we can use the same
-       * interface for non-hp- and hp-finite element methods, in effect making
-       * it possible to share the DoFAccessor class hierarchy between hp- and
-       * non-hp-classes.
        */
       template <int dh_dim, int spacedim>
       types::global_dof_index
@@ -116,9 +96,10 @@ namespace internal
                     const unsigned int local_index) const;
 
       /**
-       * Return the value 1. The meaning of this function becomes clear by
-       * looking at what the corresponding functions in the classes
+       * 返回值为1。这个函数的含义通过查看类
        * internal::hp::DoFObjects
+       * 中的相应函数的内容而变得清晰。
+       *
        */
       template <int dh_dim, int spacedim>
       unsigned int
@@ -127,8 +108,8 @@ namespace internal
         const types::global_dof_index               index) const;
 
       /**
-       * Similar to the function above. Assert that the given index is zero,
-       * and then return true.
+       * 与上面的函数类似。断言给定的索引是零，然后返回真。
+       *
        */
       template <int dh_dim, int spacedim>
       bool
@@ -138,16 +119,15 @@ namespace internal
         const unsigned int                          fe_index) const;
 
       /**
-       * Determine an estimate for the memory consumption (in bytes) of this
-       * object.
+       * 确定这个对象的内存消耗（以字节为单位）的估计值。
+       *
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * Read or write the data of this object to or from a stream for the
-       * purpose of serialization using the [BOOST serialization
-       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+       *
        */
       template <class Archive>
       void
@@ -239,3 +219,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

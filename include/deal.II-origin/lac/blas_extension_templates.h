@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/blas_extension_templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 by the deal.II authors
@@ -172,3 +173,5 @@ omatcopy(char                        ordering,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

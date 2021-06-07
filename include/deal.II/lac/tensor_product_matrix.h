@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/tensor_product_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -38,71 +37,85 @@ class FullMatrix;
 #endif
 
 /**
- * 这是一个抽象的基类，用于一个特殊的矩阵类，即TensorProductMatrixSymmetricSum。
- * 首先，这个基类就像一个容器，存储一维质量矩阵和一维导数矩阵，以及每个张量方向的广义特征值和特征向量。对于这些矩阵和相应的广义特征问题的详细定义，我们可以参考TensorProductMatrixSymmetricSum的主要文档。
+ * This is an abstract base class used for a special matrix class, namely the
+ * TensorProductMatrixSymmetricSum.
  *
+ * First, the base class acts like a container storing 1D mass matrices and
+ * 1D derivative matrices as well as the generalized eigenvalues and
+ * eigenvectors for each tensor direction. For a detailed definition of these
+ * matrices and corresponding generalized eigenproblems we refer to the main
+ * documentation of TensorProductMatrixSymmetricSum.
  *
- * @note
- * 这个基类没有计算所给质量和导数矩阵的特征值和特征向量的功能。初始化数据成员的责任完全在于派生类。
- * 其次，它用张量乘积矩阵（vmult()）和它的逆（apply_inverse()）实现了矩阵-向量乘积，如TensorProductMatrixSymmetricSum的主要文档中所述。
+ * @note This base class has no functionality to calculate eigenvalues and
+ * eigenvectors for mass and derivative matrices given. The responsibility of
+ * initializing the data members completely lies with the derived class.
  *
+ * Second, it implements the matrix-vector product with the tensor product
+ * matrix (vmult()) and its inverse (apply_inverse()) as described in the
+ * main documentation of TensorProductMatrixSymmetricSum.
  *
- * @note
- * 该类使用一个临时数组来存储中间结果，它是一个类成员。一个mutex被用来保护对这个数组的访问，并确保正确的结果。如果几个线程并行运行这个类的实例，建议每个线程持有自己的矩阵版本。
- * @tparam  dim
- * 问题的尺寸。目前，一维、二维和三维代码已经实现。
- * @tparam  Number 底层数组元素的算术类型。
- * @tparam  n_rows_1d
- * 编译时一维矩阵的行数（只有在每个维度的行数和列数重合时才有效）。默认情况下，在
+ * @note This class uses a temporary array for storing intermediate results
+ * that is a class member. A mutex is used to protect access to this array and
+ * ensure correct results. If several threads run parallel instances of this
+ * class, it is recommended that each threads holds its own matrix version.
  *
- * - ，这意味着行数是在运行时通过传递给reinit()函数的矩阵来确定。
+ * @tparam dim Dimension of the problem. Currently, 1D, 2D, and 3D codes are
+ * implemented.
  *
+ * @tparam Number Arithmetic type of the underlying array elements.
  *
+ * @tparam n_rows_1d Compile-time number of rows of 1D matrices (only
+ * valid if the number of rows and columns coincide for each
+ * dimension). By default at -1, which means that the number of rows
+ * is determined at run-time by means of the matrices passed to the
+ * reinit() function.
  */
 template <int dim, typename Number, int n_rows_1d = -1>
 class TensorProductMatrixSymmetricSumBase
 {
 public:
   /**
-   * 矩阵条目的类型。这个别名类似于标准库容器中的<tt>value_type</tt>。
-   *
+   * Type of matrix entries. This alias is analogous to <tt>value_type</tt>
+   * in the standard library containers.
    */
   using value_type = Number;
 
   /**
-   * 一维矩阵的静态行数。详情见模板参数<tt>n_rows_1d</tt>的描述。
-   *
+   * The static number of rows of the 1D matrices. For more details,
+   * see the description of the template parameter <tt>n_rows_1d</tt>.
    */
   static constexpr int n_rows_1d_static = n_rows_1d;
 
   /**
-   * 返回由一维矩阵的克朗克积产生的张量积矩阵的行数，在TensorProductMatrixSymmetricSum的主文档中有所描述。
-   *
+   * Return the number of rows of the tensor product matrix
+   * resulting from the Kronecker product of 1D matrices, which is described
+   * in the main documentation of TensorProductMatrixSymmetricSum.
    */
   unsigned int
   m() const;
 
   /**
-   * 返回由一维矩阵的克朗克积产生的张量积矩阵的列数，这在TensorProductMatrixSymmetricSum的主要文档中描述。
-   *
+   * Return the number of columns of the tensor product matrix
+   * resulting from the Kronecker product of 1D matrices, which is described
+   * in the main documentation of TensorProductMatrixSymmetricSum.
    */
   unsigned int
   n() const;
 
   /**
-   * 实现与底层矩阵的矩阵-向量乘积，在TensorProductMatrixSymmetricSum的主要文档中有所描述。
-   * 这个函数在ArrayView上操作，以允许检查与 @p dst 和 @p src.
-   * 有关的阵列界限。
-   *
+   * Implements a matrix-vector product with the underlying matrix as
+   * described in the main documentation of TensorProductMatrixSymmetricSum.
+   * This function is operating on ArrayView to allow checks of
+   * array bounds with respect to @p dst and @p src.
    */
   void
   vmult(const ArrayView<Number> &dst, const ArrayView<const Number> &src) const;
 
   /**
-   * 如TensorProductMatrixSymmetricSum的主文档中所述，实现了与底层矩阵的矩阵-向量乘积。
-   * 这个函数在ArrayView上操作，以允许检查与 @p dst 和 @p src.
-   * 有关的阵列界限。
-   *
+   * Implements a matrix-vector product with the underlying matrix as
+   * described in the main documentation of TensorProductMatrixSymmetricSum.
+   * This function is operating on ArrayView to allow checks of
+   * array bounds with respect to @p dst and @p src.
    */
   void
   apply_inverse(const ArrayView<Number> &      dst,
@@ -110,45 +123,40 @@ public:
 
 protected:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   TensorProductMatrixSymmetricSumBase() = default;
 
   /**
-   * 一个包含每个张量方向的质量矩阵的数组。
-   *
+   * An array containing a mass matrix for each tensor direction.
    */
   std::array<Table<2, Number>, dim> mass_matrix;
 
   /**
-   * 一个包含每个张量方向的导数矩阵的数组。
-   *
+   * An array containing a derivative matrix for each tensor direction.
    */
   std::array<Table<2, Number>, dim> derivative_matrix;
 
   /**
-   * 一个存储每个张量方向的广义特征值的数组。
-   *
+   * An array storing the generalized eigenvalues
+   * for each tensor direction.
    */
   std::array<AlignedVector<Number>, dim> eigenvalues;
 
   /**
-   * 一个存储每个张量方向的广义特征向量的数组。
-   *
+   * An array storing the generalized eigenvectors
+   * for each tensor direction.
    */
   std::array<Table<2, Number>, dim> eigenvectors;
 
 private:
   /**
-   * 一个用于临时数据的数组。
-   *
+   * An array for temporary data.
    */
   mutable AlignedVector<Number> tmp_array;
 
   /**
-   * 一个保护对数组访问的突变器  @p tmp_array.  。
-   *
+   * A mutex that guards access to the array @p tmp_array.
    */
   mutable Threads::Mutex mutex;
 };
@@ -156,62 +164,75 @@ private:
 
 
 /**
- * 这是一个特殊的矩阵类，定义为一维矩阵的张量积（或克朗克积），其类型为
- *
+ * This is a special matrix class defined as the tensor product (or Kronecker
+ * product) of 1D matrices of the type
  * @f{align*}{
  * L &= A_1 \otimes M_0 + M_1 \otimes A_0
  * @f}
- * 在二维和
- *
+ * in 2D and
  * @f{align*}{
  * L &= A_2 \otimes M_1 \otimes M_0 + M_2 \otimes A_1 \otimes M_0 + M_2 \otimes
  * M_1 \otimes A_0
  * @f}
- * 在三维中。典型的应用设置是拉普拉斯 $L$
- * 在笛卡尔（轴对齐）几何上的离散化，它可以准确地由一维质量矩阵
- * $M$ 和一维拉普拉斯矩阵 $A$
- * 在每个张量方向的克朗克或张量乘积来表示（由于对称性
- * $M$ 和 $A$
- * 在每个维度都相同）。结果类的维度是一维矩阵的乘积。
- * 这个类实现了两个基本操作，即通常的向量乘法和逆向操作。对于这两种操作，可以应用快速的张量技术，在
- * $\text{size}(M)^{d+1}$
- * 的算术运算中实现运算符的评估，大大低于
- * $\text{size}(M)^{2d}$ 的天真正向变换和 $\text{size}(M)^{3d}$
- * 的设置逆运算。 有趣的是，由于1964年<a
+ * in 3D. The typical application setting is a discretization of the Laplacian
+ * $L$ on a Cartesian (axis-aligned) geometry, where it can be exactly
+ * represented by the Kronecker or tensor product of a 1D mass matrix $M$ and
+ * a 1D Laplace matrix $A$ in each tensor direction (due to symmetry $M$ and $A$
+ * are the same in each dimension). The dimension of the resulting class is the
+ * product of the one-dimensional matrices.
+ *
+ * This class implements two basic operations, namely the usual multiplication
+ * by a vector and the inverse. For both operations, fast tensorial techniques
+ * can be applied that implement the operator evaluation in
+ * $\text{size}(M)^{d+1}$ arithmetic operations, considerably less than
+ * $\text{size}(M)^{2d}$ for the naive forward transformation and
+ * $\text{size}(M)^{3d}$ for setting up the inverse of $L$.
+ *
+ * Interestingly, the exact inverse of the matrix $L$ can be found through
+ * tensor products due to an article by <a
  * href="http://dl.acm.org/citation.cfm?id=2716130">R. E. Lynch, J. R. Rice,
  * D. H. Thomas, Direct solution of partial difference equations by tensor
- * product methods, Numerische Mathematik 6,
- * 185-199</a>的一篇文章，矩阵 $L$
- * 的精确逆可以通过张量积找到。
- *
+ * product methods, Numerische Mathematik 6, 185-199</a> from 1964,
  * @f{align*}{
  * L^{-1} &= S_1 \otimes S_0 (\Lambda_1 \otimes I + I \otimes \Lambda_0)^{-1}
  * S_1^\mathrm T \otimes S_0^\mathrm T,
  * @f}
- * 其中 $S_d$
- * 是给定张量方向上广义特征值问题的特征向量矩阵 $d$  。
- *
+ * where $S_d$ is the matrix of eigenvectors to the generalized eigenvalue
+ * problem in the given tensor direction $d$:
  * @f{align*}{
  * A_d s  &= \lambda M_d s, d = 0, \quad \ldots,\mathrm{dim},
  * @f}
- * 而 $\Lambda_d$ 是代表广义特征值的对角线矩阵  $\lambda$
- * 。请注意，向量 $s$ 是这样的：它们同时对角化 $A_d$ 和
- * $M_d$ ，即 $S_d^{\mathrm T} A_d S_d = \Lambda_d$ 和 $S_d^{\mathrm T} M_d
- * S_d = I$  。这种矩阵反演的方法被称为快速对角线化法。
- * 这个类需要LAPACK支持。
- * 请注意，这个类允许两种使用模式。第一种是对矩阵维度使用运行时常数的使用模式，通过设置可选的模板参数<tt>n_rows_1d</tt>来实现。
+ * and $\Lambda_d$ is the diagonal matrix representing the generalized
+ * eigenvalues $\lambda$. Note that the vectors $s$ are such that they
+ * simultaneously diagonalize $A_d$ and $M_d$, i.e. $S_d^{\mathrm T} A_d S_d =
+ * \Lambda_d$ and $S_d^{\mathrm T} M_d S_d = I$. This method of matrix inversion
+ * is called fast diagonalization method.
  *
- * - . 第二种是更快的使用模式，允许将模板参数设置为编译时常量，特别是对于小尺寸的矩阵，给出明显更快的代码。
- * @tparam  dim
- * 问题的尺寸。目前，已经实现了一维、二维和三维代码。
- * @tparam  Number
- * 基础数组元素的算术类型。请注意，底层的LAPACK实现只支持浮点数和双数，所以目前通用类只支持这两种类型。然而，存在一个针对矢量化类型VectorizedArray<float>和VectorizedArray<double>的模板特化。这对于为每个矢量化通道执行LAPACK计算是必要的，也就是说，对于支持的浮点数和双数。
- * @tparam  n_rows_1d
- * 编译时一维矩阵的行数（只有在每个维度的行数和列数重合时才有效）。默认情况下，在
+ * This class requires LAPACK support.
  *
- * - ，这意味着行数是在运行时通过传递给reinit()函数的矩阵来确定。
+ * Note that this class allows for two modes of usage. The first is a use case
+ * with run time constants for the matrix dimensions that is achieved by
+ * setting the optional template parameter <tt>n_rows_1d</tt> to -1. The second
+ * mode of usage that is faster allows to set the template parameter as a
+ * compile time constant, giving significantly faster code in particular for
+ * small sizes of the matrix.
  *
+ * @tparam dim Dimension of the problem. Currently, 1D, 2D, and 3D codes are
+ * implemented.
  *
+ * @tparam Number Arithmetic type of the underlying array elements. Note that the
+ * underlying LAPACK implementation supports only float and double numbers, so
+ * only these two types are currently supported by the generic class.
+ * Nevertheless, a template specialization for the vectorized types
+ * VectorizedArray<float> and VectorizedArray<double> exists. This is necessary
+ * to perform LAPACK calculations for each vectorization lane, i.e. for the
+ * supported float and double numbers.
+ *
+ * @tparam n_rows_1d Compile-time number of rows of 1D matrices (only
+ * valid if the number of rows and columns coincide for each
+ * dimension). By default at -1, which means that the number of rows
+ * is determined at run-time by means of the matrices passed to the
+ * reinit() function.
  */
 template <int dim, typename Number, int n_rows_1d = -1>
 class TensorProductMatrixSymmetricSum
@@ -219,68 +240,65 @@ class TensorProductMatrixSymmetricSum
 {
 public:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   TensorProductMatrixSymmetricSum() = default;
 
   /**
-   * 相当于空构造函数的构造函数，并立即调用 reinit(
-   * std::array<Table<2,Number>,  dim>&,const  std::array<Table<2,Number>,
-   * dim>&) 。
-   *
+   * Constructor that is equivalent to the empty constructor and
+   * immediately calling
+   * reinit(const std::array<Table<2,Number>, dim>&,const
+   * std::array<Table<2,Number>, dim>&).
    */
   TensorProductMatrixSymmetricSum(
     const std::array<Table<2, Number>, dim> &mass_matrix,
     const std::array<Table<2, Number>, dim> &derivative_matrix);
 
   /**
-   * 等同于空构造函数的构造函数，并立即调用 reinit(const
-   * std::array<FullMatrix<Number>,dim>&,const
-   * std::array<FullMatrix<Number>,dim>&). )
-   *
+   * Constructor that is equivalent to the empty constructor and
+   * immediately calling
+   * reinit(const std::array<FullMatrix<Number>,dim>&,const
+   * std::array<FullMatrix<Number>,dim>&).
    */
   TensorProductMatrixSymmetricSum(
     const std::array<FullMatrix<Number>, dim> &mass_matrix,
     const std::array<FullMatrix<Number>, dim> &derivative_matrix);
 
   /**
-   * 相当于空构造函数并立即调用 reinit(const
-   * Table<2,Number>&,const Table<2,Number>&) 的构造函数。
-   *
+   * Constructor that is equivalent to the empty constructor and
+   * immediately calling reinit(const Table<2,Number>&,const Table<2,Number>&).
    */
   TensorProductMatrixSymmetricSum(const Table<2, Number> &mass_matrix,
                                   const Table<2, Number> &derivative_matrix);
 
   /**
-   * 通过将一维质量矩阵 @p mass_matrix 和一维导数矩阵 @p
-   * derivative_matrix
-   * 的数组分别复制到它的基类对应物中，并通过在
-   * TensorProductMatrixSymmetricSumBase::eigenvalues 和
-   * TensorProductMatrixSymmetricSumBase::eigenvectors,
-   * 中分别组装关于广义特征值和特征向量来初始化张量积矩阵。
-   * 注意，目前的实现要求每个 $M_{d}$
-   * 都是对称的和正定的，每个 $A_{d}$
-   * 都是对称的和可逆的，但不一定是正定的。
-   *
+   * Initializes the tensor product matrix by copying the arrays of 1D mass
+   * matrices @p mass_matrix and 1D derivative matrices @p derivative_matrix into its
+   * base class counterparts, respectively, and by assembling the regarding
+   * generalized eigenvalues and eigenvectors in
+   * TensorProductMatrixSymmetricSumBase::eigenvalues
+   * and TensorProductMatrixSymmetricSumBase::eigenvectors, respectively.
+   * Note that the current implementation requires each $M_{d}$ to be symmetric
+   * and positive definite and every $A_{d}$ to be symmetric and invertible but
+   * not necessarily positive definite.
    */
   void
   reinit(const std::array<Table<2, Number>, dim> &mass_matrix,
          const std::array<Table<2, Number>, dim> &derivative_matrix);
 
   /**
-   * 这个函数等同于之前的 reinit()，只是 @p mass_matrix 和 @p
-   * derivative_matrix 中的一维矩阵分别以FullMatrix的形式传递。
-   *
+   * This function is equivalent to the previous reinit() except that
+   * the 1D matrices in @p mass_matrix and @p derivative_matrix are
+   * passed in terms of a FullMatrix, respectively.
    */
   void
   reinit(const std::array<FullMatrix<Number>, dim> &mass_matrix,
          const std::array<FullMatrix<Number>, dim> &derivative_matrix);
 
   /**
-   * 这个函数等同于第一个reinit()，只是我们为每个张量方向考虑相同的一维质量矩阵
-   * @p mass_matrix 和相同的一维导数矩阵 @p derivative_matrix 。
-   *
+   * This function is equivalent to the first reinit() except that
+   * we consider the same 1D mass matrix @p mass_matrix and the same 1D
+   * derivative matrix @p derivative_matrix for each tensor direction.
    */
   void
   reinit(const Table<2, Number> &mass_matrix,
@@ -288,12 +306,12 @@ public:
 
 private:
   /**
-   * 一个基于完美转发的所有reinit()函数的通用实现，允许传递lvalue以及rvalue参数。
-   * @tparam  MatrixArray 必须可以转换为
-   * TensorProductMatrixSymmetricSumBase::mass_matrix 和
+   * A generic implementation of all reinit() functions based on
+   * perfect forwarding, that allows to pass lvalue as well
+   * as rvalue arguments.
+   * @tparam MatrixArray Has to be convertible to the underlying
+   * type of TensorProductMatrixSymmetricSumBase::mass_matrix and
    * TensorProductMatrixSymmetricSumBase::derivative_matrix.
-   * 的基本类型。
-   *
    */
   template <typename MatrixArray>
   void
@@ -303,9 +321,10 @@ private:
 
 
 /**
- * 这是VectorizedArray<Number>的模板特化，是算术模板。详细说明见通用TensorProductMatrixSymmetricSum类的主文件。
- *
- *
+ * This is the template specialization for VectorizedArray<Number>
+ * being the arithmetic template. For a detailed description see
+ * the main documentation of the generic
+ * TensorProductMatrixSymmetricSum class.
  */
 template <int dim, typename Number, int n_rows_1d>
 class TensorProductMatrixSymmetricSum<dim, VectorizedArray<Number>, n_rows_1d>
@@ -315,16 +334,15 @@ class TensorProductMatrixSymmetricSum<dim, VectorizedArray<Number>, n_rows_1d>
 {
 public:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   TensorProductMatrixSymmetricSum() = default;
 
   /**
-   * 等同于空构造函数的构造函数，并立即调用
-   * reinit(constitution  std::array<Table<2,VectorizedArray<Number>  >,
-   * dim>&,const  std::array<Table<2,VectorizedArray<Number>  >, dim>&) 。
-   *
+   * Constructor that is equivalent to the empty constructor and
+   * immediately calling
+   * reinit(const std::array<Table<2,VectorizedArray<Number> >, dim>&,const
+   * std::array<Table<2,VectorizedArray<Number> >, dim>&).
    */
   TensorProductMatrixSymmetricSum(
     const std::array<Table<2, VectorizedArray<Number>>, dim> &mass_matrix,
@@ -332,26 +350,25 @@ public:
       &derivative_matrix);
 
   /**
-   * 相当于空构造函数并立即调用
-   * reinit(Table<2,VectorizedArray<Number> >&,const
-   * Table<2,VectorizedArray<Number> >&) 的构造函数。
-   *
+   * Constructor that is equivalent to the empty constructor and
+   * immediately calling
+   * reinit(const Table<2,VectorizedArray<Number> >&,const
+   * Table<2,VectorizedArray<Number> >&).
    */
   TensorProductMatrixSymmetricSum(
     const Table<2, VectorizedArray<Number>> &mass_matrix,
     const Table<2, VectorizedArray<Number>> &derivative_matrix);
 
   /**
-   * 通过将一维质量矩阵 @p mass_matrix 和一维导数矩阵 @p
-   * derivative_matrix
-   * 的数组分别复制到它的基类对应物中，并通过在
-   * TensorProductMatrixSymmetricSumBase::eigenvalues 和
-   * TensorProductMatrixSymmetricSumBase::eigenvectors,
-   * 中分别组装关于广义特征值和特征向量来初始化张量积矩阵。
-   * 请注意，目前的实现要求每个 $M_{d}$
-   * 都是对称的和正定的，每个 $A_{d}$
-   * 都是对称的和可逆的，但不一定是正定的。
-   *
+   * Initializes the tensor product matrix by copying the arrays of 1D mass
+   * matrices @p mass_matrix and 1D derivative matrices @p derivative_matrix into its
+   * base class counterparts, respectively, and by assembling the regarding
+   * generalized eigenvalues and eigenvectors in
+   * TensorProductMatrixSymmetricSumBase::eigenvalues
+   * and TensorProductMatrixSymmetricSumBase::eigenvectors, respectively.
+   * Note that the current implementation requires each $M_{d}$ to be symmetric
+   * and positive definite and every $A_{d}$ to be symmetric and invertible but
+   * not necessarily positive definite.
    */
   void
   reinit(const std::array<Table<2, VectorizedArray<Number>>, dim> &mass_matrix,
@@ -359,9 +376,9 @@ public:
            &derivative_matrix);
 
   /**
-   * 这个函数等同于之前的reinit()，只是我们为每个张量方向考虑相同的一维质量矩阵
-   * @p mass_matrix 和相同的一维导数矩阵 @p derivative_matrix 。
-   *
+   * This function is equivalent to the previous reinit() except that
+   * we consider the same 1D mass matrix @p mass_matrix and the same 1D
+   * derivative matrix @p derivative_matrix for each tensor direction.
    */
   void
   reinit(const Table<2, VectorizedArray<Number>> &mass_matrix,
@@ -369,12 +386,12 @@ public:
 
 private:
   /**
-   * 一个基于完美转发的所有reinit()函数的通用实现，允许传递lvalue以及rvalue参数。
-   * @tparam  MatrixArray 必须可以转换为
-   * TensorProductMatrixSymmetricSumBase::mass_matrix 和
+   * A generic implementation of all reinit() functions based on
+   * perfect forwarding, that allows to pass lvalue as well
+   * as rvalue arguments.
+   * @tparam MatrixArray Has to be convertible to the underlying
+   * type of TensorProductMatrixSymmetricSumBase::mass_matrix and
    * TensorProductMatrixSymmetricSumBase::derivative_matrix.
-   * 的基本类型。
-   *
    */
   template <typename MatrixArray>
   void
@@ -382,7 +399,7 @@ private:
 };
 
 
- /*----------------------- Inline functions ----------------------------------*/ 
+/*----------------------- Inline functions ----------------------------------*/
 
 #ifndef DOXYGEN
 
@@ -391,10 +408,12 @@ namespace internal
   namespace TensorProductMatrix
   {
     /**
-     * 计算实际广义对称特征问题的广义特征值和特征向量
-     * $A v = \lambda M v$
-     * 。由于我们是在纯指针上操作，我们需要事先知道矩阵的大小。注意，特征值和特征向量的数据数组也必须被初始化为适当的大小。(不可能检查数组的界限)
-     *
+     * Compute generalized eigenvalues and eigenvectors of the real
+     * generalized symmetric eigenproblem $A v = \lambda M v$. Since we are
+     * operating on plain pointers we require the size of the matrices
+     * beforehand. Note that the data arrays for the eigenvalues and
+     * eigenvectors have to be initialized to a proper size, too. (no check of
+     * array bounds possible)
      */
     template <typename Number>
     void
@@ -887,5 +906,3 @@ TensorProductMatrixSymmetricSum<dim, VectorizedArray<Number>, n_rows_1d>::
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

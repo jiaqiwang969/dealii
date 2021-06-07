@@ -1,3 +1,4 @@
+//include/deal.II-translator/matrix_free/operators_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -106,81 +107,39 @@ namespace MatrixFreeOperators
   } // namespace BlockHelper
 
   /**
-   * Abstract base class for matrix-free operators which can be used both at
-   * the finest mesh or at a certain level in geometric multigrid.
-   *
-   * A derived class has to implement apply_add() method as well as
-   * compute_diagonal() to initialize the protected member
-   * inverse_diagonal_entries and/or diagonal_entries. In case of a
-   * non-symmetric operator, Tapply_add() should be additionally implemented.
-   *
-   * Currently, the only supported vectors are
-   * LinearAlgebra::distributed::Vector and
-   * LinearAlgebra::distributed::BlockVector.
-   *
-   * <h4>Selective use of blocks in MatrixFree</h4>
-   *
-   * MatrixFree allows to use several DoFHandler/AffineConstraints combinations
-   * by passing a std::vector with pointers to the respective objects into
-   * the MatrixFree::reinit function. This class supports to select only some
-   * of the blocks in the underlying MatrixFree object by optional integer
-   * lists that specify the chosen blocks.
-   *
-   * One application of constructing a matrix-free operator only on selected
-   * blocks would be the setting of the step-32 tutorial program: This
-   * problem has three <i>blocks</i>, one for the velocity, one for the
-   * pressure, and one for temperature. The time lag scheme used for temporal
-   * evolution splits the temperature equation away from the Stokes system in
-   * velocity and pressure. However, there are cross terms like the velocity
-   * that enters the temperature advection-diffusion equation or the
-   * temperature that enters the right hand side of the velocity. In order to
-   * be sure that MatrixFree uses the same integer indexing to the different
-   * blocks, one needs to put all the three blocks into the same MatrixFree
-   * object. However, when solving a linear system the operators involved
-   * either address the first two in the Stokes solver, or the last one for
-   * the temperature solver. In the former case, a BlockVector of two
-   * components would be selected with a vector selecting the blocks {0, 1} in
-   * MatrixFree, whereas in the latter, a non-block vector selecting the block
-   * {2} would be used.
-   *
-   * A second application of selection is in problems with a Newton-type
-   * iteration or problems with inhomogeneous boundary conditions. In such a
-   * case, one has to deal with two different sets of constraints: One set of
-   * constraints applies to the solution vector which might include hanging
-   * node constraints or periodicity constraints but no constraints on
-   * inhomogeneous Dirichlet boundaries. Before the nonlinear iteration, the
-   * boundary values are set to the expected value in the vector, representing
-   * the initial guess. In each iteration of the Newton method, a linear
-   * system subject to zero Dirichlet boundary conditions is solved that is
-   * then added to the initial guess. This setup can be realized by using a
-   * vector of two pointers pointing to the same DoFHandler object and a
-   * vector of two pointers to the two AffineConstraints objects. If the first
-   * AffineConstraints object is the one including the zero Dirichlet
-   * constraints, one would give a std::vector<unsigned int>(1, 0) to the
-   * initialize() function, i.e., a vector of length 1 that selects exactly the
-   * first AffineConstraints object with index 0.
-   *
-   * For systems of PDEs where the different blocks of MatrixFree are
-   * associated with different physical components of the equations, adding
-   * another block with a different AffineConstraints argument solely for the
-   * purpose of boundary conditions might lead to cumbersome index
-   * handling. Instead, one could set up a second MatrixFree instance with the
-   * different AffineConstraints object but the same interpretation of blocks,
-   * and use that for interpolating inhomogeneous boundary conditions (see also
-   * the discussion in the results section of the step-37 tutorial program):
-   *
+   * 无矩阵运算符的抽象基类，可以用于最细的网格或几何多网格中的某个层次。
+   * 派生类必须实现apply_add()方法以及compute_diagonal()来初始化受保护成员inverse_diagonal_entries和/或diagonal_entries。在非对称运算符的情况下，应该额外实现Tapply_add()。
+   * 目前，唯一支持的向量是 LinearAlgebra::distributed::Vector 和
+   * LinearAlgebra::distributed::BlockVector.  <h4>Selective use of blocks in
+   * MatrixFree</h4>
+   * MatrixFree允许使用几个DoFHandler/AffineConstraints组合，方法是在
+   * MatrixFree::reinit
+   * 函数中传递一个带有指向各自对象的指针的 std::vector
+   * 。该类支持在底层MatrixFree对象中只选择一些块，通过可选的整数列表来指定所选的块。
+   * 只在选定的块上构造无矩阵运算符的一个应用是 step-32
+   * 教程程序的设置。这个问题有三个<i>blocks</i>，一个用于速度，一个用于压力，一个用于温度。用于时间演化的时滞方案将温度方程从速度和压力的斯托克斯系统中分割出来。然而，还有一些交叉项，如进入温度平流-扩散方程的速度或进入速度右侧的温度。为了确保MatrixFree对不同的块使用相同的整数索引，人们需要将所有三个块放入同一个MatrixFree对象。然而，当求解一个线性系统时，所涉及的运算符要么在斯托克斯求解器中针对前两个，要么在温度求解器中针对最后一个。在前一种情况下，一个有两个分量的BlockVector将被选择，在MatrixFree中选择块{0,
+   * 1}，而在后一种情况下，将使用一个选择块{2}的非块向量。
+   * 选择的第二个应用是在具有牛顿式迭代的问题或具有不均匀边界条件的问题中。在这种情况下，我们必须处理两组不同的约束。一套约束条件适用于解向量，其中可能包括悬挂节点约束或周期性约束，但没有对不均匀的Dirichlet边界的约束。在非线性迭代之前，边界值被设置为向量中的预期值，代表初始猜测。在牛顿方法的每次迭代中，一个受零Dirichlet边界条件约束的线性系统被解决，然后被加入到初始猜测中。这个设置可以通过使用一个指向同一DoFHandler对象的两个指针的向量和一个指向两个AffineConstraints对象的两个指针的向量来实现。如果第一个AffineConstraints对象是包括零Dirichlet约束的对象，我们将给initialize()函数一个
+   * std::vector<unsigned  int>(1,
+   * 0)，也就是说，一个长度为1的向量，正好选择索引为0的第一个AffineConstraints对象。
+   * 对PDEs系统来说，MatrixFree的不同块与方程的不同物理成分相关，仅仅为了边界条件的目的而添加另一个具有不同AffineConstraints参数的块可能导致繁琐的索引处理。相反，可以用不同的AffineConstraints对象设置第二个MatrixFree实例，但对块的解释相同，并使用它来插值不均匀的边界条件（也可参见
+   * step-37 教程程序中结果部分的讨论）。
    * @code
    * matrix_free_inhomogeneous.reinit(dof_handler, constraints_no_dirichlet,
-   *                                  quadrature, additional_data);
+   *                                quadrature, additional_data);
    * operator_inhomogeneous.initialize(matrix_free_inhomogeneous,
-   *                                   selected_blocks);
+   *                                 selected_blocks);
    * LinearAlgebra::distributed::Vector<double> inhomogeneity;
    * matrix_free_inhomogeneous.initialize_dof_vector(inhomogeneity);
    * constraints_with_dirichlet.distribute(inhomogeneity);
    * operator_inhomogeneous.vmult(system_rhs, inhomogeneity);
-   * system_rhs *= -1.;
+   * system_rhs=
+   *
+   * -1.;
    * // proceed with other terms from right hand side...
    * @endcode
+   *
+   *
    */
   template <int dim,
             typename VectorType = LinearAlgebra::distributed::Vector<double>,
@@ -190,47 +149,49 @@ namespace MatrixFreeOperators
   {
   public:
     /**
-     * Number alias.
+     * 数字别名。
+     *
      */
     using value_type = typename VectorType::value_type;
 
     /**
-     * size_type needed for preconditioner classes.
+     * 先决条件类所需的size_type。
+     *
      */
     using size_type = typename VectorType::size_type;
 
     /**
-     * Default constructor.
+     * 默认构造函数。
+     *
      */
     Base();
 
     /**
-     * Virtual destructor.
+     * 虚拟解构器。
+     *
      */
     virtual ~Base() override = default;
 
     /**
-     * Release all memory and return to a state just like after having called
-     * the default constructor.
+     * 释放所有内存并返回到与调用默认构造函数后相同的状态。
+     *
      */
     virtual void
     clear();
 
     /**
-     * Initialize operator on fine scale.
+     * 初始化操作者在精细的规模上。
+     * 可选的选择向量允许从底层的MatrixFree对象中只选择一些组件，例如，只选择一个。矢量中的
+     * @p selected_row_blocks[i]
+     * 项选择了DoFHandler和AffineConstraints对象，该对象被作为
+     * @p selected_row_blocks[i]-th 参数给到 MatrixFree::reinit()
+     * 调用。
+     * 行和列的不同参数也使得选择非对角线块或矩形块成为可能。如果行向量为空，则选择所有组件，否则其大小必须小于或等于
+     * MatrixFree::n_components()
+     * ，并且所有指数需要是唯一的，并且在0和
+     * MatrixFree::n_components(). 的范围内
+     * 如果列选择向量为空，其取值与行选择相同，定义一个对角块。
      *
-     * The optional selection vector allows to choose only some components
-     * from the underlying MatrixFree object, e.g. just a single one. The
-     * entry @p selected_row_blocks[i] in the vector chooses the DoFHandler
-     * and AffineConstraints object that was given as the
-     * @p selected_row_blocks[i]-th argument to the MatrixFree::reinit() call.
-     * Different arguments for rows and columns also make it possible to
-     * select non-diagonal blocks or rectangular blocks. If the row vector is
-     * empty, all components are selected, otherwise its size must be smaller
-     * or equal to MatrixFree::n_components() and all indices need to be
-     * unique and within the range of 0 and MatrixFree::n_components(). If the
-     * column selection vector is empty, it is taken the same as the row
-     * selection, defining a diagonal block.
      */
     void
     initialize(std::shared_ptr<
@@ -241,17 +202,14 @@ namespace MatrixFreeOperators
                  std::vector<unsigned int>());
 
     /**
-     * Initialize operator on a level @p level for a single FiniteElement.
+     * 在一个层次 @p level
+     * 上对单个有限元素进行初始化操作。
+     * 可选的选择向量允许从底层的MatrixFree对象中只选择一些组件，例如只选择一个。矢量中的
+     * @p selected_row_blocks[i]
+     * 项选择DoFHandler和AffineConstraints对象，该对象被作为 @p
+     * selected_row_blocks[i]-th 参数给到 MatrixFree::reinit() 调用。
+     * 由于多网格运算符总是与反转矩阵相关，因此代表对角线块，相对于非水平初始化函数，行和列的向量是相同的。如果是空的，所有的组件都被选中。
      *
-     * The optional selection vector allows to choose only some components
-     * from the underlying MatrixFree object, e.g. just a single one. The
-     * entry @p selected_row_blocks[i] in the vector chooses the DoFHandler
-     * and AffineConstraints object that was given as the
-     * @p selected_row_blocks[i]-th argument to the MatrixFree::reinit() call.
-     * Since a multigrid operator is always associated to inverting a matrix
-     * and thus represents a diagonal block, the same vector for rows and
-     * columns is used as opposed to the non-level initialization function. If
-     * empty, all components are selected.
      */
     void
     initialize(std::shared_ptr<
@@ -262,18 +220,13 @@ namespace MatrixFreeOperators
                  std::vector<unsigned int>());
 
     /**
-     * Initialize operator on a level @p level for multiple FiniteElement
-     * objects.
+     * 对多个FiniteElement对象进行水平 @p level 初始化操作。
+     * 可选的选择向量允许只从底层的MatrixFree对象中选择一些组件，例如，只选择一个。矢量中的
+     * @p selected_row_blocks[i]
+     * 项选择DoFHandler和AffineConstraints对象，该对象被作为 @p
+     * selected_row_blocks[i]-th 参数给到 MatrixFree::reinit() 调用。
+     * 由于多网格运算符总是与反转矩阵相关，因此代表对角线块，相对于非水平初始化函数，行和列的向量是相同的。如果是空的，所有的组件都被选中。
      *
-     * The optional selection vector allows to choose only some components
-     * from the underlying MatrixFree object, e.g. just a single one. The
-     * entry @p selected_row_blocks[i] in the vector chooses the DoFHandler
-     * and AffineConstraints object that was given as the
-     * @p selected_row_blocks[i]-th argument to the MatrixFree::reinit() call.
-     * Since a multigrid operator is always associated to inverting a matrix
-     * and thus represents a diagonal block, the same vector for rows and
-     * columns is used as opposed to the non-level initialization function. If
-     * empty, all components are selected.
      */
     void
     initialize(std::shared_ptr<
@@ -284,106 +237,115 @@ namespace MatrixFreeOperators
                  std::vector<unsigned int>());
 
     /**
-     * Return the dimension of the codomain (or range) space.
+     * 返回共域（或范围）空间的维度。
+     *
      */
     size_type
     m() const;
 
     /**
-     * Return the dimension of the domain space.
+     * 返回域空间的维数。
+     *
      */
     size_type
     n() const;
 
     /**
-     * vmult operator for interface.
+     * 接口的vmult运算符。
+     *
      */
     void
     vmult_interface_down(VectorType &dst, const VectorType &src) const;
 
     /**
-     * vmult operator for interface.
+     * 用于接口的vmult运算符。
+     *
      */
     void
     vmult_interface_up(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Matrix-vector multiplication.
+     * 矩阵-向量乘法。
+     *
      */
     void
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Transpose matrix-vector multiplication.
+     * 转置矩阵-向量乘法。
+     *
      */
     void
     Tvmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Adding Matrix-vector multiplication.
+     * 加法 矩阵-向量乘法。
+     *
      */
     void
     vmult_add(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Adding transpose matrix-vector multiplication.
+     * 加法转置矩阵-向量乘法。
+     *
      */
     void
     Tvmult_add(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Return the value of the matrix entry (row,col). In matrix-free context
-     * this function is valid only for row==col when diagonal is initialized.
+     * 返回矩阵条目(row,col)的值。在无矩阵情况下，当对角线被初始化时，这个函数只对row==col有效。
+     *
      */
     value_type
     el(const unsigned int row, const unsigned int col) const;
 
     /**
-     * Determine an estimate for the memory consumption (in bytes) of this
-     * object.
+     * 确定此对象的内存消耗（以字节为单位）的估计值。
+     *
      */
     virtual std::size_t
     memory_consumption() const;
 
     /**
-     * A wrapper for initialize_dof_vector() of MatrixFree object.
+     * MatrixFree对象的initialize_dof_vector()的一个封装器。
+     *
      */
     void
     initialize_dof_vector(VectorType &vec) const;
 
     /**
-     * Compute diagonal of this operator.
+     * 计算此运算符的对角线。
+     * 派生类需要实现这个函数并相应地调整和填充保护成员inverse_diagonal_entries和/或diagonal_entries的大小。
      *
-     * A derived class needs to implement this function and resize and fill
-     * the protected member inverse_diagonal_entries and/or diagonal_entries
-     * accordingly.
      */
     virtual void
     compute_diagonal() = 0;
 
     /**
-     * Get read access to the MatrixFree object stored with this operator.
+     * 获得对用该操作符存储的MatrixFree对象的读取权限。
+     *
      */
     std::shared_ptr<const MatrixFree<dim, value_type, VectorizedArrayType>>
     get_matrix_free() const;
 
     /**
-     * Get read access to the inverse diagonal of this operator.
+     * 获得对该运算符的反对角线的读取权限。
+     *
      */
     const std::shared_ptr<DiagonalMatrix<VectorType>> &
     get_matrix_diagonal_inverse() const;
 
     /**
-     * Get read access to the diagonal of this operator.
+     * 获取对这个运算符的对角线的读取权限。
+     *
      */
     const std::shared_ptr<DiagonalMatrix<VectorType>> &
     get_matrix_diagonal() const;
 
 
     /**
-     * Apply the Jacobi preconditioner, which multiplies every element of the
-     * <tt>src</tt> vector by the inverse of the respective diagonal element and
-     * multiplies the result with the relaxation factor <tt>omega</tt>.
+     * 应用雅可比预处理程序，该程序将<tt>src</tt>向量的每个元素乘以各自对角线元素的逆值，并将结果乘以松弛因子<tt>omega</tt>。
+     *
      */
     void
     precondition_Jacobi(VectorType &      dst,
@@ -392,91 +354,97 @@ namespace MatrixFreeOperators
 
   protected:
     /**
-     * Perform necessary operations related to constraints before calling
-     * apply_add() or Tapply_add() inside mult_add().
+     * 在调用mult_add()内的apply_add()或Tapply_add()之前，执行与约束有关的必要操作。
+     *
      */
     void
     preprocess_constraints(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Perform necessary operations related to constraints after calling
-     * apply_add() or Tapply_add() inside mult_add().
+     * 在调用mult_add()内的apply_add()或Tapply_add()后，执行与约束有关的必要操作。
+     *
      */
     void
     postprocess_constraints(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Set constrained entries (both from hanging nodes and edge constraints)
-     * of @p dst to one.
+     * 将 @p dst
+     * 的约束条目（包括来自悬挂节点和边缘约束）设为1。
+     *
      */
     void
     set_constrained_entries_to_one(VectorType &dst) const;
 
     /**
-     * Apply operator to @p src and add result in @p dst.
+     * 对 @p src 应用运算符，并在 @p dst. 中添加结果。
+     *
      */
     virtual void
     apply_add(VectorType &dst, const VectorType &src) const = 0;
 
     /**
-     * Apply transpose operator to @p src and add result in @p dst.
+     * 对 @p src 应用转置运算符，并在 @p dst. 中添加结果
+     * 默认实现是调用apply_add()。
      *
-     * Default implementation is to call apply_add().
      */
     virtual void
     Tapply_add(VectorType &dst, const VectorType &src) const;
 
     /**
-     * MatrixFree object to be used with this operator.
+     * MatrixFree对象将与该操作符一起使用。
+     *
      */
     std::shared_ptr<const MatrixFree<dim, value_type, VectorizedArrayType>>
       data;
 
     /**
-     * A shared pointer to a diagonal matrix that stores the
-     * diagonal elements as a vector.
+     * 一个指向对角线矩阵的共享指针，将对角线元素作为一个向量存储。
+     *
      */
     std::shared_ptr<DiagonalMatrix<VectorType>> diagonal_entries;
 
     /**
-     * A shared pointer to a diagonal matrix that stores the inverse of
-     * diagonal elements as a vector.
+     * 一个指向对角线矩阵的共享指针，该矩阵将对角线元素的倒数作为一个向量存储。
+     *
      */
     std::shared_ptr<DiagonalMatrix<VectorType>> inverse_diagonal_entries;
 
     /**
-     * A vector which defines the selection of sub-components of MatrixFree
-     * for the rows of the matrix representation.
+     * 一个向量，它定义了MatrixFree的子组件对矩阵表示的行的选择。
+     *
      */
     std::vector<unsigned int> selected_rows;
 
     /**
-     * A vector which defines the selection of sub-components of MatrixFree
-     * for the columns of the matrix representation.
+     * 一个向量，它定义了矩阵表示的列的MatrixFree的子组件的选择。
+     *
      */
     std::vector<unsigned int> selected_columns;
 
   private:
     /**
-     * Indices of DoFs on edge in case the operator is used in GMG context.
+     * 如果操作者在GMG背景下使用，边缘上的DoF的索引。
+     *
      */
     std::vector<std::vector<unsigned int>> edge_constrained_indices;
 
     /**
-     * Auxiliary vector.
+     * 辅助向量。
+     *
      */
     mutable std::vector<std::vector<std::pair<value_type, value_type>>>
       edge_constrained_values;
 
     /**
-     * A flag which determines whether or not this operator has interface
-     * matrices in GMG context.
+     * 一个标志，决定该运算符在GMG背景下是否有接口矩阵。
+     *
      */
     bool have_interface_matrices;
 
     /**
-     * %Function which implements vmult_add (@p transpose = false) and
-     * Tvmult_add (@p transpose = true).
+     * 实现vmult_add (  @p transpose  = false) 和Tvmult_add (  @p transpose
+     * = true) 的%函数。
+     *
      */
     void
     mult_add(VectorType &      dst,
@@ -484,11 +452,8 @@ namespace MatrixFreeOperators
              const bool        transpose) const;
 
     /**
-     * Adjust the ghost range of the vectors to the storage requirements of
-     * the underlying MatrixFree class. This is used inside the mult_add() as
-     * well as vmult_interface_up() and vmult_interface_down() methods in
-     * order to ensure that the cell loops will be able to access the ghost
-     * indices with the correct local indices.
+     * 根据底层MatrixFree类的存储要求，调整向量的ghost范围。这在mult_add()以及vmult_interface_up()和vmult_interface_down()方法中使用，以确保单元格循环能够以正确的本地索引访问ghost索引。
+     *
      */
     void
     adjust_ghost_range_if_necessary(const VectorType &vec,
@@ -498,86 +463,71 @@ namespace MatrixFreeOperators
 
 
   /**
-   * Auxiliary class to provide interface vmult/Tvmult methods required in
-   * adaptive geometric multgrids. @p OperatorType class should be derived
-   * from MatrixFreeOperators::Base class.
+   * 辅助类，提供自适应几何多网格中需要的接口vmult/Tvmult方法。  @p OperatorType 类应派生于 MatrixFreeOperators::Base 类。    deal.II中的自适应多网格实现了一种叫做局部平滑的方法。这意味着最细级别的平滑只覆盖固定（最细）网格级别所定义的网格的局部部分，而忽略了计算域中终端单元比该级别更粗的部分。随着该方法向更粗的级别发展，越来越多的全局网格将被覆盖。在某个更粗的层次上，整个网格将被覆盖。由于多网格方法中的所有层次矩阵都覆盖了网格中的单一层次，所以在层次矩阵上不会出现悬空节点。在多网格层之间的界面上，在平滑的同时设置同质Dirichlet边界条件。然而，当残差被转移到下一个更粗的层次时，需要考虑到多网格界面的耦合。  这是由所谓的界面（或边缘）矩阵来完成的，它计算了被具有同质Dirichlet条件的层次矩阵所遗漏的残差部分。我们参考 @ref mg_paper "Janssen和Kanschat的多网格论文 "
+   * 以了解更多细节。
+   * 对于这些接口矩阵的实现，大部分基础设施已经到位，由
+   * MatrixFreeOperators::Base
+   * 通过两个乘法例程vmult_interface_down()和vmult_interface_up()提供。MGInterfaceOperator所做的唯一事情是包装这些操作，并使它们可以通过
+   * @p vmult() 和 @p Tvmult
+   * 接口访问，正如多网格例程（最初是为矩阵编写的，因此期待这些名称）所期望的那样。
+   * 请注意，vmult_interface_down在多网格V周期的限制阶段使用，而vmult_interface_up在延长阶段使用。
    *
-   * The adaptive multigrid realization in deal.II implements an approach
-   * called local smoothing. This means that the smoothing on the finest level
-   * only covers the local part of the mesh defined by the fixed (finest) grid
-   * level and ignores parts of the computational domain where the terminal
-   * cells are coarser than this level. As the method progresses to coarser
-   * levels, more and more of the global mesh will be covered. At some coarser
-   * level, the whole mesh will be covered. Since all level matrices in the
-   * multigrid method cover a single level in the mesh, no hanging nodes
-   * appear on the level matrices. At the interface between multigrid levels,
-   * homogeneous Dirichlet boundary conditions are set while smoothing. When
-   * the residual is transferred to the next coarser level, however, the
-   * coupling over the multigrid interface needs to be taken into account.
-   * This is done by the so-called interface (or edge) matrices that compute
-   * the part of the residual that is missed by the level matrix with
-   * homogeneous Dirichlet conditions. We refer to the
-   * @ref mg_paper "Multigrid paper by Janssen and Kanschat"
-   * for more details.
-   *
-   * For the implementation of those interface matrices, most infrastructure
-   * is already in place and provided by MatrixFreeOperators::Base through the
-   * two multiplication routines vmult_interface_down() and
-   * vmult_interface_up(). The only thing MGInterfaceOperator does is
-   * wrapping those operations and make them accessible via
-   * @p vmult() and @p Tvmult interface as expected by the multigrid routines
-   * (that were originally written for matrices, hence expecting those names).
-   * Note that the vmult_interface_down is used during the restriction phase of
-   * the multigrid V-cycle, whereas vmult_interface_up is used during the
-   * prolongation phase.
    */
   template <typename OperatorType>
   class MGInterfaceOperator : public Subscriptor
   {
   public:
     /**
-     * Number alias.
+     * 编号别名。
+     *
      */
     using value_type = typename OperatorType::value_type;
 
     /**
-     * Size type.
+     * 尺寸类型。
+     *
      */
     using size_type = typename OperatorType::size_type;
 
     /**
-     * Default constructor.
+     * 默认构造函数。
+     *
      */
     MGInterfaceOperator();
 
     /**
-     * Clear the pointer to the OperatorType object.
+     * 清除指向OperatorType对象的指针。
+     *
      */
     void
     clear();
 
     /**
-     * Initialize this class with an operator @p operator_in.
+     * 用一个操作符来初始化这个类  @p operator_in.
+     *
      */
     void
     initialize(const OperatorType &operator_in);
 
     /**
-     * vmult operator, see class description for more info.
+     * vmult运算符，更多信息见类描述。
+     *
      */
     template <typename VectorType>
     void
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Tvmult operator, see class description for more info.
+     * Tvmult运算符，更多信息见类的描述。
+     *
      */
     template <typename VectorType>
     void
     Tvmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * A wrapper for initialize_dof_vector() of OperatorType object.
+     * OperatorType对象的initialize_dof_vector()的封装器。
+     *
      */
     template <typename VectorType>
     void
@@ -586,7 +536,8 @@ namespace MatrixFreeOperators
 
   private:
     /**
-     * Const pointer to the operator class.
+     * 指向操作员类的常量指针。
+     *
      */
     SmartPointer<const OperatorType> mf_base_operator;
   };
@@ -594,21 +545,9 @@ namespace MatrixFreeOperators
 
 
   /**
-   * This class implements the operation of the action of the inverse of a
-   * mass matrix on an element for the special case of an evaluation object
-   * with as many quadrature points as there are cell degrees of freedom. It
-   * uses algorithms from FEEvaluation and produces the exact mass matrix for
-   * DGQ elements. This algorithm uses tensor products of inverse 1D shape
-   * matrices over quadrature points, so the inverse operation is exactly as
-   * expensive as applying the forward operator on each cell. Of course, for
-   * continuous finite elements this operation does not produce the inverse of
-   * a mass operation as the coupling between the elements cannot be
-   * considered by this operation.
+   * 该类实现了质量矩阵的反作用于元素的操作，适用于评估对象的正交点与单元自由度一样多的特殊情况。它使用FEEvaluation的算法，为DGQ元素产生精确的质量矩阵。该算法使用正交点上的反一维形状矩阵的张量乘积，因此反操作与在每个单元上应用正向操作一样昂贵。当然，对于连续有限元来说，这种运算并不能产生质量运算的逆运算，因为元素之间的耦合不能被这种运算所考虑。
+   * 方程可能包含可变系数，所以用户需要提供一个数组，用于局部系数的逆运算（该类提供了一个辅助方法'fill_inverse_JxW_values'来获得常数系数运算的逆运算）。
    *
-   * The equation may contain variable coefficients, so the user is required
-   * to provide an array for the inverse of the local coefficient (this class
-   * provide a helper method 'fill_inverse_JxW_values' to get the inverse of a
-   * constant-coefficient operator).
    */
   template <int dim,
             int fe_degree,
@@ -623,8 +562,8 @@ namespace MatrixFreeOperators
 
   public:
     /**
-     * Constructor. Initializes the shape information from the ShapeInfo field
-     * in the class FEEval.
+     * 构造函数。从FEEval类中的ShapeInfo字段初始化形状信息。
+     *
      */
     CellwiseInverseMassMatrix(
       const FEEvaluationBase<dim,
@@ -634,12 +573,10 @@ namespace MatrixFreeOperators
                              VectorizedArrayType> &fe_eval);
 
     /**
-     * Applies the inverse mass matrix operation on an input array. It is
-     * assumed that the passed input and output arrays are of correct size,
-     * namely FEEvaluation::dofs_per_cell long. The inverse of the
-     * local coefficient (also containing the inverse JxW values) must be
-     * passed as first argument. Passing more than one component in the
-     * coefficient is allowed.
+     * 在一个输入数组上应用反质量矩阵操作。假设传递的输入和输出数组的大小正确，即
+     * FEEvaluation::dofs_per_cell
+     * 长。本地系数的逆值（也包含逆JxW值）必须作为第一个参数传递。允许在系数中传递一个以上的分量。
+     *
      */
     void
     apply(const AlignedVector<VectorizedArrayType> &inverse_coefficient,
@@ -648,52 +585,38 @@ namespace MatrixFreeOperators
           VectorizedArrayType *                     out_array) const;
 
     /**
-     * Applies the inverse mass matrix operation on an input array, using the
-     * inverse of the JxW values provided by the `fe_eval` argument passed to
-     * the constructor of this class. Note that the user code must call
-     * FEEvaluation::reinit() on the underlying evaluator to make the
-     * FEEvaluationBase::JxW() method return the information of the correct
-     * cell. It is assumed that the pointers of the input and output arrays
-     * are valid over the length FEEvaluation::dofs_per_cell, which is the
-     * number of entries processed by this function. The `in_array` and
-     * `out_array` arguments may point to the same memory position.
+     * 在一个输入数组上应用反质量矩阵操作，使用由传递给该类构造函数的`fe_eval`参数提供的JxW值的逆值。注意，用户代码必须在底层评估器上调用
+     * FEEvaluation::reinit() ，以使 FEEvaluationBase::JxW()
+     * 方法返回正确单元的信息。假设输入和输出数组的指针在长度
+     * FEEvaluation::dofs_per_cell,
+     * 上是有效的，这个长度是这个函数处理的条目数。`in_array`和`out_array`参数可以指向相同的内存位置。
+     *
      */
     void
     apply(const VectorizedArrayType *in_array,
           VectorizedArrayType *      out_array) const;
 
     /**
-     * This operation performs a projection from the data given in quadrature
-     * points to the actual basis underlying this object. This projection can
-     * also be interpreted as a change of the basis from the Lagrange
-     * interpolation polynomials in the quadrature points to the
-     * basis underlying the current `fe_eval` object.
-     *
-     * Calling this function on an array as
+     * 这个操作执行从正交点中给出的数据到这个对象的实际基础的投影。这个投影也可以解释为从正交点的拉格朗日插值多项式到当前`fe_eval`对象的基础的变化。
+     * 在一个数组上调用这个函数为
      * @code
      * inverse_mass.transform_from_q_points_to_basis(1, array,
-     *                                               phi.begin_dof_values());
+     *                                             phi.begin_dof_values());
      * @endcode
-     * is equivalent to
+     * 相当于
      * @code
      * for (unsigned int q=0; q<phi.n_q_points; ++q)
-     *   phi.submit_value(array[q], q);
+     * phi.submit_value(array[q], q);
      * phi.integrate(EvaluationFlags::values);
      * inverse_mass.apply(coefficients, 1, phi.begin_dof_values(),
-     *                    phi.begin_dof_values());
+     *                  phi.begin_dof_values());
      * @endcode
-     * provided that @p coefficients holds the inverse of the quadrature
-     * weights and no additional coefficients. This setup highlights the
-     * underlying projection, testing a right hand side and applying an
-     * inverse mass matrix. This function works both for the scalar case as
-     * described in the example or for multiple components that are laid out
-     * component by component.
+     * 只要 @p coefficients
+     * 持有正交权重的逆值，没有额外的系数。这种设置突出了基本的投影，测试了一个右手边，并应用了一个反质量矩阵。这个函数既适用于例子中描述的标量情况，也适用于逐个组件排列的多个组件。
+     * 与更繁琐的替代方法相比，给定的程序要快得多，因为它可以绕过
+     * @p integrate()
+     * 步骤和正交点转换的前半部分，将张量积调用的数量从3*dim*n_components减少到dim*n_components。
      *
-     * Compared to the more verbose alternative, the given procedure is
-     * considerably faster because it can bypass the @p integrate() step
-     * and the first half of the transformation to the quadrature points,
-     * reducing the number of tensor product calls from 3*dim*n_components to
-     * dim*n_components.
      */
     void
     transform_from_q_points_to_basis(const unsigned int n_actual_components,
@@ -701,9 +624,8 @@ namespace MatrixFreeOperators
                                      VectorizedArrayType *out_array) const;
 
     /**
-     * Fills the given array with the inverse of the JxW values, i.e., a mass
-     * matrix with coefficient 1. Non-unit coefficients must be multiplied (in
-     * inverse form) to this array.
+     * 用JxW值的逆值填充给定数组，即系数为1的质量矩阵。非单位系数必须与该数组相乘（以反形式）。
+     *
      */
     void
     fill_inverse_JxW_values(
@@ -711,7 +633,8 @@ namespace MatrixFreeOperators
 
   private:
     /**
-     * A reference to the FEEvaluation object for getting the JxW_values.
+     * 对FEEvaluation对象的引用，用于获取JxW_值。
+     *
      */
     const FEEvaluationBase<dim,
                            n_components,
@@ -723,11 +646,9 @@ namespace MatrixFreeOperators
 
 
   /**
-   * This class implements the operation of the action of a mass matrix.
+   * 这个类实现了质量矩阵的动作操作。
+   * 请注意，这个类只支持Base操作的非阻塞矢量变体，因为在apply函数中只使用一个FEEvaluation对象。
    *
-   * Note that this class only supports the non-blocked vector variant of the
-   * Base operator because only a single FEEvaluation object is used in the
-   * apply function.
    */
   template <int dim,
             int fe_degree,
@@ -740,40 +661,43 @@ namespace MatrixFreeOperators
   {
   public:
     /**
-     * Number alias.
+     * 数字别名。
+     *
      */
     using value_type =
       typename Base<dim, VectorType, VectorizedArrayType>::value_type;
 
     /**
-     * size_type needed for preconditioner classes.
+     * 先决条件类需要的size_type。
+     *
      */
     using size_type =
       typename Base<dim, VectorType, VectorizedArrayType>::size_type;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     MassOperator();
 
     /**
-     * For preconditioning, we store a lumped mass matrix at the diagonal
-     * entries.
+     * 对于预处理，我们在对角线条目处存储一个块状的质量矩阵。
+     *
      */
     virtual void
     compute_diagonal() override;
 
   private:
     /**
-     * Applies the mass matrix operation on an input vector. It is
-     * assumed that the passed input and output vector are correctly initialized
-     * using initialize_dof_vector().
+     * 在一个输入向量上应用质量矩阵运算。假设通过的输入和输出向量使用initialize_dof_vector()进行了正确的初始化。
+     *
      */
     virtual void
     apply_add(VectorType &dst, const VectorType &src) const override;
 
     /**
-     * For this operator, there is just a cell contribution.
+     * 对于这个运算符，只有一个单元格的贡献。
+     *
      */
     void
     local_apply_cell(
@@ -786,14 +710,12 @@ namespace MatrixFreeOperators
 
 
   /**
-   * This class implements the operation of the action of a Laplace matrix,
-   * namely $ L_{ij} = \int_\Omega c(\mathbf x) \mathbf \nabla N_i(\mathbf x)
-   * \cdot \mathbf \nabla N_j(\mathbf x)\,d \mathbf x$, where $c(\mathbf x)$ is
-   * the scalar heterogeneity coefficient.
+   * 这个类实现了拉普拉斯矩阵的作用的操作，即 $ L_{ij} =
+   * \int_\Omega c(\mathbf x) \mathbf \nabla N_i(\mathbf x) \cdot \mathbf
+   * \nabla N_j(\mathbf x)\,d \mathbf x$ ，其中 $c(\mathbf x)$
+   * 是标量异质性系数。
+   * 请注意，这个类只支持Base操作的非阻塞矢量变体，因为在apply函数中只使用一个FEEvaluation对象。
    *
-   * Note that this class only supports the non-blocked vector variant of the
-   * Base operator because only a single FEEvaluation object is used in the
-   * apply function.
    */
   template <int dim,
             int fe_degree,
@@ -806,112 +728,94 @@ namespace MatrixFreeOperators
   {
   public:
     /**
-     * Number alias.
+     * 数字别名。
+     *
      */
     using value_type =
       typename Base<dim, VectorType, VectorizedArrayType>::value_type;
 
     /**
-     * size_type needed for preconditioner classes.
+     * 先决条件类需要的size_type。
+     *
      */
     using size_type =
       typename Base<dim, VectorType, VectorizedArrayType>::size_type;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     LaplaceOperator();
 
     /**
-     * The diagonal is approximated by computing a local diagonal matrix per
-     * element and distributing it to the global diagonal. This will lead to
-     * wrong results on element with hanging nodes but is still an acceptable
-     * approximation to be used in preconditioners.
+     * 对角线是通过计算每个元素的局部对角线矩阵并将其分配给全局对角线来近似计算的。这将导致在有悬空节点的元素上出现错误的结果，但仍是一个可接受的近似值，可用于预处理程序中。
+     *
      */
     virtual void
     compute_diagonal() override;
 
     /**
-     * Set the heterogeneous scalar coefficient @p scalar_coefficient to be
-     * used at the quadrature points. The Table needs to have as many rows as
-     * there are cell batches in the underlying MatrixFree object,
-     * MatrixFree::n_cell_batches(). The number of batches is related to the
-     * fact that the matrix-free operators do not work on individual cells,
-     * but instead of batches of cells at once due to vectorization. The Table
-     * can take two different numbers of columns.  One case is to select it
-     * equal to the total number of quadrature points in `dim` dimensions,
-     * which is the `dim`th power of the `n_q_points_1d` template
-     * parameter. Here, `(*scalar_coefficient)(cell,q)` corresponds to the
-     * value of the coefficient on cell batch `cell` and quadrature point
-     * index `q`. The second supported variant is a Table with a single
-     * column, in which case the same variable coefficient value is used at
-     * all quadrature points of a cell.
-     *
-     * Such tables can be initialized by
+     * 设置异质标量系数 @p scalar_coefficient
+     * ，在正交点使用。表的行数需要与底层MatrixFree对象中的单元格批次一样多，
+     * MatrixFree::n_cell_batches().
+     * 批次的数量与无矩阵运算符不在单个单元格上工作有关，而是由于矢量化而一次对单元格的批次工作。表可以采取两种不同的列数。
+     * 一种情况是选择它等于`dim`维度上的正交点总数，这是`n_q_points_1d`模板参数的`dim`次方。这里，`(*scalar_coefficient)(cell,q)`对应于单元批`cell`和正交点指数`q`上的系数值。第二个支持的变体是一个单列的表，在这种情况下，一个单元格的所有正交点都使用相同的可变系数值。
+     * 这种表可以通过以下方式初始化
      * @code
      * std::shared_ptr<Table<2, VectorizedArray<double> > > coefficient;
      * coefficient = std::make_shared<Table<2, VectorizedArray<double> > >();
      * {
-     *   FEEvaluation<dim,fe_degree,n_q_points_1d,1,double> fe_eval(mf_data);
-     *   const unsigned int n_cells = mf_data.n_cell_batches();
-     *   const unsigned int n_q_points = fe_eval.n_q_points;
-     *   coefficient->reinit(n_cells, n_q_points);
-     *   for (unsigned int cell=0; cell<n_cells; ++cell)
-     *     {
-     *       fe_eval.reinit(cell);
-     *       for (unsigned int q=0; q<n_q_points; ++q)
-     *         (*coefficient)(cell,q) =
-     *           function.value(fe_eval.quadrature_point(q));
-     *     }
+     * FEEvaluation<dim,fe_degree,n_q_points_1d,1,double> fe_eval(mf_data);
+     * const unsigned int n_cells = mf_data.n_cell_batches();
+     * const unsigned int n_q_points = fe_eval.n_q_points;
+     * coefficient->reinit(n_cells, n_q_points);
+     * for (unsigned int cell=0; cell<n_cells; ++cell)
+     *   {
+     *     fe_eval.reinit(cell);
+     *     for (unsigned int q=0; q<n_q_points; ++q)
+     *       (*coefficient)(cell,q) =
+     *         function.value(fe_eval.quadrature_point(q));
+     *   }
      * }
      * @endcode
-     * where <code>mf_data</code> is a MatrixFree object and
-     * <code>function</code> is a function which provides the following method
-     * <code>VectorizedArray<double> value(const Point<dim,
-     * VectorizedArray<double> > &p_vec)</code>.
+     * 其中 <code>mf_data</code> 是一个MatrixFree对象，
+     * <code>function</code>
+     * 是一个函数，它提供了以下方法<code>VectorizedArray<double>
+     * value(const Point<dim, VectorizedArray<double> > &p_vec)</code>。
+     * 如果这个函数没有被调用，那么系数就被认为是统一的。
+     * 这个函数的参数是一个指向这样一个表的共享指针。该类存储了这个表的共享指针，而不是一个深度拷贝，并使用它来形成拉普拉斯矩阵。因此，你可以更新该表并重新使用当前对象，以获得具有该更新系数的拉普拉斯矩阵的动作。另外，如果表的值只需要填充一次，原来的共享指针也可以在用户代码中超出范围，clear()命令或这个类的析构器将删除表。
      *
-     * If this function is not called, the coefficient is assumed to be unity.
-     *
-     * The argument to this function is a shared pointer to such a table. The
-     * class stores the shared pointer to this table, not a deep copy
-     * and uses it to form the Laplace matrix. Consequently, you can update the
-     * table and re-use the current object to obtain the action of a Laplace
-     * matrix with this updated coefficient. Alternatively, if the table values
-     * are only to be filled once, the original shared pointer can also go out
-     * of scope in user code and the clear() command or destructor of this class
-     * will delete the table.
      */
     void
     set_coefficient(
       const std::shared_ptr<Table<2, VectorizedArrayType>> &scalar_coefficient);
 
     /**
-     * Resets all data structures back to the same state as for a newly
-     * constructed object.
+     * 将所有数据结构重新设置为与新构建的对象相同的状态。
+     *
      */
     virtual void
     clear() override;
 
     /**
-     * Read/Write access to coefficients to be used in Laplace operator.
+     * 读/写对拉普拉斯运算器中使用的系数的访问。
+     * 如果之前没有通过set_coefficient()函数设置系数，该函数将抛出一个错误。
      *
-     * The function will throw an error if coefficients are not previously set
-     * by set_coefficient() function.
      */
     std::shared_ptr<Table<2, VectorizedArrayType>>
     get_coefficient();
 
   private:
     /**
-     * Applies the laplace matrix operation on an input vector. It is
-     * assumed that the passed input and output vector are correctly initialized
-     * using initialize_dof_vector().
+     * 在一个输入矢量上应用拉普拉斯矩阵运算。假设传递的输入和输出向量已经用initialize_dof_vector()函数正确初始化。
+     *
      */
     virtual void
     apply_add(VectorType &dst, const VectorType &src) const override;
 
     /**
-     * Applies the Laplace operator on a cell.
+     * 在一个单元格上应用拉普拉斯算子。
+     *
      */
     void
     local_apply_cell(
@@ -921,7 +825,8 @@ namespace MatrixFreeOperators
       const std::pair<unsigned int, unsigned int> &           cell_range) const;
 
     /**
-     * Apply diagonal part of the Laplace operator on a cell.
+     * 在一个单元格上应用拉普拉斯算子的对角线部分。
+     *
      */
     void
     local_diagonal_cell(
@@ -931,7 +836,8 @@ namespace MatrixFreeOperators
       const std::pair<unsigned int, unsigned int> &cell_range) const;
 
     /**
-     * Apply Laplace operator on a cell @p cell.
+     * 在单元格上应用拉普拉斯算子 @p cell. 。
+     *
      */
     void
     do_operation_on_cell(
@@ -940,7 +846,8 @@ namespace MatrixFreeOperators
       const unsigned int cell) const;
 
     /**
-     * User-provided heterogeneity coefficient.
+     * 用户提供的异质性系数。
+     *
      */
     std::shared_ptr<Table<2, VectorizedArrayType>> scalar_coefficient;
   };
@@ -1984,7 +1891,7 @@ namespace MatrixFreeOperators
     this->data->cell_loop(&LaplaceOperator::local_diagonal_cell,
                           this,
                           diagonal_vector,
-                          /*unused*/ diagonal_vector);
+                           /*unused*/  diagonal_vector);
     this->set_constrained_entries_to_one(diagonal_vector);
 
     inverse_diagonal_vector = diagonal_vector;
@@ -2193,3 +2100,5 @@ namespace MatrixFreeOperators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

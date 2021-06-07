@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/packaged_operation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
@@ -38,77 +39,88 @@ class PackagedOperation;
 
 
 /**
- * A class to store a computation.
+ * 一个用于存储计算的类。
+ * PackagedOperation类允许对涉及向量和线性运算符的表达式进行懒惰评估。这是通过存储计算表达式来实现的，只有当对象被隐含地转换为向量对象，或者
+ * <code>apply</code> （或 <code>apply_add</code>
+ * ）被手动调用时才执行计算。这就避免了不必要的中间结果的临时存储。
+ * 该类本质上由 <code>std::function</code>
+ * 对象组成，这些对象存储了如何生成计算结果并将其存储在向量中的知识。
  *
- * The PackagedOperation class allows lazy evaluation of expressions involving
- * vectors and linear operators. This is done by storing the computational
- * expression and only performing the computation when either the object is
- * implicitly converted to a vector object, or <code>apply</code> (or
- * <code>apply_add</code>) is invoked by hand. This avoids unnecessary
- * temporary storage of intermediate results.
- *
- * The class essentially consists of <code>std::function</code> objects that
- * store the knowledge of how to generate the result of a computation and
- * store it in a vector:
  * @code
- *   std::function<void(Range &)> apply;
- *   std::function<void(Range &)> apply_add;
+ * std::function<void(Range &)> apply;
+ * std::function<void(Range &)> apply_add;
  * @endcode
  *
- * Similar to the LinearOperator class it also has knowledge about how to
- * initialize a vector of the @p Range space:
+ * 与LinearOperator类相似，它也有关于如何初始化 @p Range
+ * 空间的向量的知识。
+ *
  * @code
- *   std::function<void(Range &, bool)> reinit_vector;
+ * std::function<void(Range &, bool)> reinit_vector;
  * @endcode
  *
- * As an example consider the addition of multiple vectors
- * @code
- *   Vector<double> a, b, c, d;
- *   // ..
- *   Vector<double> result = a + b - c + d;
- * @endcode
- * or the computation of a residual $b-Ax$:
- * @code
- *   SparseMatrix<double> A;
- *   Vector<double> b, x;
- *   // ..
- *   const auto op_a = linear_operator(A);
+ * 作为一个例子，考虑多个向量的相加问题
  *
- *   auto residual =  b - op_a * x;
- * @endcode
- * The expression <code>residual</code> is of type
- * <code>PackagedOperation<Vector<double>></code>. It stores
- * references to <code>A</code>, <code>b</code> and <code>x</code> and defers
- * the actual computation until <code>apply</code>, or <code>apply_add</code>
- * are explicitly invoked,
  * @code
- *   Vector<double> y;
- *   residual.reinit_vector(y);
- *   residual.apply(y);
- *   residual.apply_add(y);
+ * Vector<double> a, b, c, d;
+ * // ..
+ * Vector<double> result = a + b
+ *
+ * - c + d;
  * @endcode
- * or until the @p PackagedOperation object is implicitly converted:
+ * 或者计算一个残差  $b-Ax$  。
+ *
  * @code
- *   Vector<double> y;
- *   y = residual;
- *   y += residual;
- *   y -= residual;
+ * SparseMatrix<double> A;
+ * Vector<double> b, x;
+ * // ..
+ * const auto op_a = linear_operator(A);
+ *
+ * auto residual =  b
+ *
+ * - op_a x;
+ * @endcode
+ * 表达式  <code>residual</code>  是
+ * <code>PackagedOperation<Vector<double>></code>  的类型。它存储对
+ * <code>A</code>, <code>b</code> and <code>x</code>
+ * 的引用，并将实际计算推迟到 <code>apply</code>, or
+ * <code>apply_add</code> 被明确调用时进行。
+ *
+ * @code
+ * Vector<double> y;
+ * residual.reinit_vector(y);
+ * residual.apply(y);
+ * residual.apply_add(y);
+ * @endcode
+ * 或者直到 @p PackagedOperation 对象被隐式转换。
+ *
+ * @code
+ * Vector<double> y;
+ * y = residual;
+ * y += residual;
+ * y
+ *
+ * -= residual;
  * @endcode
  *
- * @note The step-20 tutorial program has a detailed usage example of the
- * LinearOperator class.
+ *
+ *
+ * @note   step-20
+ * 教程中有一个LinearOperator类的详细使用例子。
+ *
  *
  *
  * @ingroup LAOperators
+ *
  */
 template <typename Range>
 class PackagedOperation
 {
 public:
   /**
-   * Create an empty PackagedOperation object. All <code>std::function</code>
-   * member objects are initialized with default variants that throw an
-   * exception upon invocation.
+   * 创建一个空的PackagedOperation对象。所有的
+   * <code>std::function</code>
+   * 成员对象都用默认的变体初始化，在调用时抛出一个异常。
+   *
    */
   PackagedOperation()
   {
@@ -132,18 +144,18 @@ public:
   }
 
   /**
-   * Default copy constructor.
+   * 默认的复制构造函数。
+   *
    */
   PackagedOperation(const PackagedOperation<Range> &) = default;
 
   /**
-   * Constructor that creates a PackagedOperation object from a reference
-   * vector @p u. The PackagedOperation returns @p u.
+   * 从引用向量创建PackagedOperation对象的构造函数  @p u.
+   * PackagedOperation返回  @p u.
+   * 被创建的PackagedOperation对象存储了对  @p u.
+   * 的引用。因此，向量必须在PackagedOperation对象的整个生命周期内保持有效引用。在创建PackagedOperation对象后，在
+   * @p u 上所做的所有改变都会被操作者对象所反映。
    *
-   * The PackagedOperation object that is created stores a reference to @p u.
-   * Thus, the vector must remain a valid reference for the whole lifetime of
-   * the PackagedOperation object. All changes made on @p u after the creation
-   * of the PackagedOperation object are reflected by the operator object.
    */
   PackagedOperation(const Range &u)
   {
@@ -151,19 +163,19 @@ public:
   }
 
   /**
-   * Default copy assignment operator.
+   * 默认的复制赋值运算符。
+   *
    */
   PackagedOperation<Range> &
   operator=(const PackagedOperation<Range> &) = default;
 
   /**
-   * Copy assignment operator that creates a PackagedOperation object from a
-   * reference vector @p u. The PackagedOperation returns @p u.
+   * 复制赋值操作符，从一个引用向量创建一个PackagedOperation对象
+   * @p u.  PackagedOperation返回  @p u.
+   * 被创建的PackagedOperation对象存储了对  @p u.
+   * 的引用。因此，向量必须在PackagedOperation对象的整个生命周期中保持有效引用。在PackagedOperation对象创建后，在
+   * @p u 上所做的所有改变都会被操作者对象所反映。
    *
-   * The PackagedOperation object that is created stores a reference to @p u.
-   * Thus, the vector must remain a valid reference for the whole lifetime of
-   * the PackagedOperation object. All changes made on @p u after the creation
-   * of the PackagedOperation object are reflected by the operator object.
    */
   PackagedOperation<Range> &
   operator=(const Range &u)
@@ -180,28 +192,30 @@ public:
   }
 
   /**
-   * Convert a PackagedOperation to its result.
+   * 将一个PackagedOperation转换为其结果。
+   * 这个转换操作者创建一个Range空间的向量，并对其调用
+   * <code>apply()</code> 。
    *
-   * This conversion operator creates a vector of the Range space and calls
-   * <code>apply()</code> on it.
    */
   operator Range() const
   {
     Range result_vector;
 
-    reinit_vector(result_vector, /*bool omit_zeroing_entries=*/true);
+    reinit_vector(result_vector,  /*bool omit_zeroing_entries=*/ true);
     apply(result_vector);
 
     return result_vector;
   }
 
   /**
-   * @name In-place vector space operations
+   * @name  就地的向量空间操作
+   *
    */
   //@{
 
   /**
-   * Addition with a PackagedOperation @p second_comp with the same @p Range.
+   * 用具有相同 @p Range. 的PackagedOperation @p second_comp 加法。
+   *
    */
   PackagedOperation<Range> &
   operator+=(const PackagedOperation<Range> &second_comp)
@@ -211,8 +225,8 @@ public:
   }
 
   /**
-   * Subtraction with a PackagedOperation @p second_comp with the same @p
-   * Range.
+   * 用相同的 @p second_comp 的打包操作 @p 做减法，范围。
+   *
    */
   PackagedOperation<Range> &
   operator-=(const PackagedOperation<Range> &second_comp)
@@ -222,8 +236,9 @@ public:
   }
 
   /**
-   * Add a constant @p offset (of the @p Range space) to the result of a
-   * PackagedOperation.
+   * 将一个常数 @p offset （属于 @p Range
+   * 空间）添加到一个PackagedOperation的结果中。
+   *
    */
   PackagedOperation<Range> &
   operator+=(const Range &offset)
@@ -233,8 +248,9 @@ public:
   }
 
   /**
-   * Subtract a constant @p offset (of the @p Range space) from the result of
-   * a PackagedOperation.
+   * 从一个PackagedOperation的结果中减去一个常数 @p offset
+   * （属于 @p Range 空间）。
+   *
    */
   PackagedOperation<Range> &
   operator-=(const Range &offset)
@@ -244,7 +260,8 @@ public:
   }
 
   /**
-   * Scalar multiplication of the PackagedOperation with a @p number.
+   * 将PackagedOperation与一个 @p number. 的标量乘法。
+   *
    */
   PackagedOperation<Range> &
   operator*=(typename Range::value_type number)
@@ -255,40 +272,42 @@ public:
   //@}
 
   /**
-   * Store the result of the PackagedOperation in a vector v of the @p Range
-   * space.
+   * 将PackagedOperation的结果存储在 @p Range
+   * 空间的一个向量v中。
+   *
    */
   std::function<void(Range &v)> apply;
 
   /**
-   * Add the result of the PackagedOperation to a vector v of the @p Range
-   * space.
+   * 将PackagedOperation的结果添加到 @p Range
+   * 空间的一个向量v中。
+   *
    */
   std::function<void(Range &v)> apply_add;
 
   /**
-   * Initializes a vector v of the Range space to be directly usable as the
-   * destination parameter in an application of apply, or apply_add. Similar
-   * to the reinit functions of the vector classes, the boolean determines
-   * whether a fast initialization is done, i.e., if it is set to false the
-   * content of the vector is set to 0.
+   * 初始化Range空间的一个向量v，使其可以直接作为apply或apply_add应用中的目标参数使用。与向量类的reinit函数类似，布尔值决定是否进行快速初始化，即如果它被设置为false，则向量的内容被设置为0。
+   *
    */
   std::function<void(Range &v, bool omit_zeroing_entries)> reinit_vector;
 };
 
 
 /**
- * @name Vector space operations
+ * @name  矢量空间操作
+ *
+ *
  */
 //@{
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 两个PackagedOperation对象 @p first_comp 和 @p second_comp
+ * 的加法，通过向量空间加法给出相应结果。
  *
- * Addition of two PackagedOperation objects @p first_comp and @p second_comp
- * given by vector space addition of the corresponding results.
  *
  * @ingroup LAOperators
+ *
  */
 template <typename Range>
 PackagedOperation<Range>
@@ -316,12 +335,14 @@ operator+(const PackagedOperation<Range> &first_comp,
 }
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 两个PackagedOperation对象 @p first_comp 和 @p
+ * second_comp的减法，由相应结果的向量空间相加给出。
  *
- * Subtraction of two PackagedOperation objects @p first_comp and @p
- * second_comp given by vector space addition of the corresponding results.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range>
 PackagedOperation<Range>
@@ -352,12 +373,15 @@ operator-(const PackagedOperation<Range> &first_comp,
 }
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 一个PackagedOperation对象 @p comp 与一个标量 @p number
+ * 的标量乘法，这个标量是由PackagedOperation的结果与 @p
+ * number. 的标量给出的。
  *
- * Scalar multiplication of a PackagedOperation objects @p comp with a scalar
- * @p number given by a scaling PackagedOperation result with @p number.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range>
 PackagedOperation<Range> operator*(const PackagedOperation<Range> &comp,
@@ -392,12 +416,15 @@ PackagedOperation<Range> operator*(const PackagedOperation<Range> &comp,
 }
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 一个PackagedOperation对象 @p comp 与一个标量 @p number
+ * 的标量乘法，这个标量是由PackagedOperation的结果与 @p
+ * number. 的标量给定的。
  *
- * Scalar multiplication of a PackagedOperation objects @p comp with a scalar
- * @p number given by a scaling PackagedOperation result with @p number.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range>
 PackagedOperation<Range> operator*(typename Range::value_type      number,
@@ -407,12 +434,14 @@ PackagedOperation<Range> operator*(typename Range::value_type      number,
 }
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 在PackagedOperation的结果中添加一个常数 @p offset （属于 @p
+ * Range 空间）。
  *
- * Add a constant @p offset (of the @p Range space) to the result of a
- * PackagedOperation.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range>
 PackagedOperation<Range>
@@ -422,12 +451,13 @@ operator+(const PackagedOperation<Range> &comp, const Range &offset)
 }
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 在PackagedOperation的结果中添加一个常数 @p offset （属于 @p
+ * Range 空间）。
  *
- * Add a constant @p offset (of the @p Range space) to the result of a
- * PackagedOperation.
  *
  * @ingroup LAOperators
+ *
  */
 template <typename Range>
 PackagedOperation<Range>
@@ -437,12 +467,14 @@ operator+(const Range &offset, const PackagedOperation<Range> &comp)
 }
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 从一个PackagedOperation的结果中减去一个常数 @p offset
+ * （属于 @p Range 空间）。
  *
- * Subtract a constant @p offset (of the @p Range space) from the result of a
- * PackagedOperation.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range>
 PackagedOperation<Range>
@@ -453,13 +485,13 @@ operator-(const PackagedOperation<Range> &comp, const Range &offset)
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作 从一个常数 @p offset （属于 @p Range
+ * 空间）减去一个计算结果。其结果是一个PackagedOperation对象，应用这个计算。
  *
- * Subtract a computational result from a constant @p offset (of the @p Range
- * space). The result is a PackagedOperation object that applies this
- * computation.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range>
 PackagedOperation<Range>
@@ -472,7 +504,9 @@ operator-(const Range &offset, const PackagedOperation<Range> &comp)
 
 
 /**
- * @name Creation of a PackagedOperation object
+ * @name  创建一个PackagedOperation对象
+ *
+ *
  */
 //@{
 
@@ -508,17 +542,16 @@ namespace internal
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 创建一个PackagedOperation对象，存储两个向量的相加。
+ * 创建的PackagedOperation对象存储了对 @p u 和 @p v.
+ * 的引用。因此，向量必须在PackagedOperation对象的整个生命周期内保持有效引用。在创建PackagedOperation对象后，在
+ * @p u 或 @p v 上所做的所有更改都会被操作者对象所反映。
  *
- * Create a PackagedOperation object that stores the addition of two vectors.
- *
- * The PackagedOperation object that is created stores a reference to @p u and
- * @p v. Thus, the vectors must remain valid references for the whole lifetime
- * of the PackagedOperation object. All changes made on @p u or @p v after the
- * creation of the PackagedOperation object are reflected by the operator
- * object.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 
 template <typename Range,
@@ -552,18 +585,16 @@ operator+(const Range &u, const Range &v)
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 创建一个PackagedOperation对象，存储两个向量的减法。
+ * 创建的PackagedOperation对象存储了对 @p u 和 @p v.
+ * 的引用。因此，这些向量必须在PackagedOperation对象的整个生命周期内保持有效的引用。在创建PackagedOperation对象后，在
+ * @p u 或 @p v 上所做的所有改变都会被操作者对象所反映。
  *
- * Create a PackagedOperation object that stores the subtraction of two
- * vectors.
- *
- * The PackagedOperation object that is created stores a reference to @p u and
- * @p v. Thus, the vectors must remain valid references for the whole lifetime
- * of the PackagedOperation object. All changes made on @p u or @p v after the
- * creation of the PackagedOperation object are reflected by the operator
- * object.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 
 template <typename Range,
@@ -597,18 +628,17 @@ operator-(const Range &u, const Range &v)
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 创建一个PackagedOperation对象，该对象存储一个具有 @p
+ * number. 的向量的缩放比例。
+ * 创建的PackagedOperation对象存储了对 @p u.
+ * 的引用。因此，向量必须在PackagedOperation对象的整个生命周期内保持有效的引用。在创建PackagedOperation对象后，在
+ * @p u 或 @p v 上所做的所有改变都会被操作者对象所反映。
  *
- * Create a PackagedOperation object that stores the scaling of a vector with
- * a @p number.
- *
- * The PackagedOperation object that is created stores a reference to @p u.
- * Thus, the vectors must remain valid references for the whole lifetime of
- * the PackagedOperation object. All changes made on @p u or @p v after the
- * creation of the PackagedOperation object are reflected by the operator
- * object.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range,
           typename = typename std::enable_if<
@@ -622,18 +652,17 @@ PackagedOperation<Range> operator*(const Range &              u,
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 创建一个PackagedOperation对象，该对象存储了对一个具有 @p
+ * number. 的向量的缩放。 创建的PackagedOperation对象存储了对
+ * @p u.
+ * 的引用。因此，向量必须在PackagedOperation对象的整个生命周期内保持有效的引用。在创建PackagedOperation对象后，在
+ * @p u 或 @p v 上所做的所有改变都会被操作者对象所反映。
  *
- * Create a PackagedOperation object that stores the scaling of a vector with
- * a @p number.
- *
- * The PackagedOperation object that is created stores a reference to @p u.
- * Thus, the vectors must remain valid references for the whole lifetime of
- * the PackagedOperation object. All changes made on @p u or @p v after the
- * creation of the PackagedOperation object are reflected by the operator
- * object.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range,
           typename = typename std::enable_if<
@@ -647,20 +676,19 @@ PackagedOperation<Range> operator*(typename Range::value_type number,
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 从一个LinearOperator和对域空间的向量 @p u
+ * 的引用中创建一个PackagedOperation对象。该对象存储PackagedOperation
+ * $\text{op} \,u$  （用矩阵表示）。  <code>return</code>  (
+ * <code>return_add</code>) are implemented with <code>vmult(__1,u)</code>  (
+ * <code>vmult_add(__1,u)</code>  ) 。
+ * 创建的PackagedOperation对象存储了对 @p u.
+ * 的引用。因此，在PackagedOperation对象的整个生命周期中，该向量必须保持有效的引用。在创建PackagedOperation对象后，在
+ * @p u 上所做的所有改变都会被操作者对象所反映。
  *
- * Create a PackagedOperation object from a LinearOperator and a reference to
- * a vector @p u of the Domain space. The object stores the PackagedOperation
- * $\text{op} \,u$ (in matrix notation). <code>return</code>
- * (<code>return_add</code>) are implemented with <code>vmult(__1,u)</code>
- * (<code>vmult_add(__1,u)</code>).
- *
- * The PackagedOperation object that is created stores a reference to @p u.
- * Thus, the vector must remain a valid reference for the whole lifetime of
- * the PackagedOperation object. All changes made on @p u after the creation
- * of the PackagedOperation object are reflected by the operator object.
  *
  * @ingroup LAOperators
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 PackagedOperation<Range>
@@ -682,20 +710,19 @@ operator*(const LinearOperator<Range, Domain, Payload> &op, const Domain &u)
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作（PackagedOperation
+ * 从一个LinearOperator和一个对Range空间的向量 @p u
+ * 的引用创建一个PackagedOperation对象。该对象存储PackagedOperation
+ * $\text{op}^T \,u$  （用矩阵符号表示）。  <code>return</code>  (
+ * <code>return_add</code>) are implemented with <code>Tvmult(__1,u)</code>  (
+ * <code>Tvmult_add(__1,u)</code>  ) 。
+ * 创建的PackagedOperation对象存储了对 @p u.
+ * 的引用。因此，在PackagedOperation对象的整个生命周期内，该向量必须保持有效引用。在创建PackagedOperation对象后，在
+ * @p u 上所做的所有改变都会被操作者对象所反映。
  *
- * Create a PackagedOperation object from a LinearOperator and a reference to
- * a vector @p u of the Range space. The object stores the PackagedOperation
- * $\text{op}^T \,u$ (in matrix notation). <code>return</code>
- * (<code>return_add</code>) are implemented with <code>Tvmult(__1,u)</code>
- * (<code>Tvmult_add(__1,u)</code>).
- *
- * The PackagedOperation object that is created stores a reference to @p u.
- * Thus, the vector must remain a valid reference for the whole lifetime of
- * the PackagedOperation object. All changes made on @p u after the creation
- * of the PackagedOperation object are reflected by the operator object.
  *
  * @ingroup LAOperators
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 PackagedOperation<Domain>
@@ -717,12 +744,13 @@ operator*(const Range &u, const LinearOperator<Range, Domain, Payload> &op)
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作(PackagedOperation)
+ * 一个PackagedOperation对象与一个LinearOperator的组合。该对象存储了计算
+ * $\text{op} \,comp$ （用矩阵符号表示）。
  *
- * Composition of a PackagedOperation object with a LinearOperator. The object
- * stores the computation $\text{op} \,comp$ (in matrix notation).
  *
  * @ingroup LAOperators
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 PackagedOperation<Range>
@@ -740,7 +768,7 @@ operator*(const LinearOperator<Range, Domain, Payload> &op,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer i(vector_memory);
-    op.reinit_domain_vector(*i, /*bool omit_zeroing_entries =*/true);
+    op.reinit_domain_vector(*i,  /*bool omit_zeroing_entries =*/ true);
 
     comp.apply(*i);
     op.vmult(v, *i);
@@ -750,7 +778,7 @@ operator*(const LinearOperator<Range, Domain, Payload> &op,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer i(vector_memory);
-    op.reinit_range_vector(*i, /*bool omit_zeroing_entries =*/true);
+    op.reinit_range_vector(*i,  /*bool omit_zeroing_entries =*/ true);
 
     comp.apply(*i);
     op.vmult_add(v, *i);
@@ -761,12 +789,14 @@ operator*(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @relatesalso PackagedOperation
+ * @relatesalso  打包操作(PackagedOperation)
+ * 一个PackagedOperation对象与一个LinearOperator的组合。该对象存储了计算
+ * $\text{op}^T \,comp$ （用矩阵符号表示）。
  *
- * Composition of a PackagedOperation object with a LinearOperator. The object
- * stores the computation $\text{op}^T \,comp$ (in matrix notation).
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range, typename Domain, typename Payload>
 PackagedOperation<Domain>
@@ -784,7 +814,7 @@ operator*(const PackagedOperation<Range> &              comp,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer i(vector_memory);
-    op.reinit_range_vector(*i, /*bool omit_zeroing_entries =*/true);
+    op.reinit_range_vector(*i,  /*bool omit_zeroing_entries =*/ true);
 
     comp.apply(*i);
     op.Tvmult(v, *i);
@@ -794,7 +824,7 @@ operator*(const PackagedOperation<Range> &              comp,
     GrowingVectorMemory<Range> vector_memory;
 
     typename VectorMemory<Range>::Pointer i(vector_memory);
-    op.reinit_range_vector(*i, /*bool omit_zeroing_entries =*/true);
+    op.reinit_range_vector(*i,  /*bool omit_zeroing_entries =*/ true);
 
     comp.apply(*i);
     op.Tvmult_add(v, *i);
@@ -808,3 +838,5 @@ operator*(const PackagedOperation<Range> &              comp,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/meshworker/integration_info_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
@@ -36,42 +37,18 @@ DEAL_II_NAMESPACE_OPEN
 namespace MeshWorker
 {
   /**
-   * Class for objects handed to local integration functions.
-   *
-   * Objects of this class contain one or more objects of type FEValues,
-   * FEFaceValues or FESubfaceValues to be used in local integration. They are
-   * stored in an array of pointers to the base classes FEValuesBase. The
-   * template parameter VectorType allows the use of different data types for
-   * the global system.
-   *
-   * Additionally, this function contains space to store the values of finite
-   * element functions stored in #global_data in the quadrature points. These
-   * vectors are initialized automatically on each cell or face. In order to
-   * avoid initializing unused vectors, you can use initialize_selector() to
-   * select the vectors by name that you actually want to use.
-   *
+   * 用于交给本地集成函数的对象的类。
+   * 这个类的对象包含一个或多个类型为FEValues、FEFaceValues或FESubfaceValues的对象，用于局部整合。它们被存储在一个指向基类FEValuesBase的数组中。模板参数VectorType允许在全局系统中使用不同的数据类型。
+   * 此外，这个函数包含了存储在#global_data中的正交点的有限元函数值的空间。这些向量在每个单元或面都会自动初始化。为了避免初始化未使用的向量，你可以使用initialize_selector()来按名称选择你真正想要使用的向量。
    * <h3>Integration models</h3>
-   *
-   * This class supports two local integration models, corresponding to the
-   * data models in the documentation of the Assembler namespace. One is the
-   * standard model suggested by the use of FESystem. Namely, there is one
-   * FEValuesBase object in this class, containing all shape functions of the
-   * whole system, and having as many components as the system. Using this
-   * model involves loops over all system shape functions. It requires to
-   * identify the system components for each shape function and to select the
-   * correct bilinear form, usually in an @p if or @p switch statement.
-   *
-   * The second integration model builds one FEValuesBase object per base
-   * element of the system. The degrees of freedom on each cell are renumbered
-   * by block, such that they represent the same block structure as the global
-   * system. Objects performing the integration can then process each block
-   * separately, which improves reusability of code considerably.
-   *
-   * @note As described in DoFInfo, the use of the local block model is
-   * triggered by calling BlockInfo::initialize_local() before using
-   * initialize() in this class.
-   *
+   * 该类支持两种局部集成模型，对应于Assembler命名空间的文档中的数据模型。一种是由使用FESystem建议的标准模型。也就是说，这个类中有一个FEValuesBase对象，包含了整个系统的所有形状函数，并且拥有和系统一样多的组件。使用这个模型需要对所有的系统形状函数进行循环。它要求识别每个形状函数的系统组件，并选择正确的双线性形式，通常在
+   * @p if 或 @p switch 语句中。
+   * 第二个集成模型为系统的每个基元建立一个FEValuesBase对象。每个单元上的自由度按块重新编号，这样它们就代表了与全局系统相同的块结构。然后，执行集成的对象可以单独处理每个块，这大大改善了代码的可重复使用性。
+   * @note
+   * 正如DoFInfo中描述的那样，在这个类中使用initialize()之前，通过调用
+   * BlockInfo::initialize_local() 来触发对本地块模型的使用。
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim>
   class IntegrationInfo
@@ -85,32 +62,28 @@ namespace MeshWorker
     static const unsigned int space_dimension = spacedim;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     IntegrationInfo();
 
     /**
-     * Copy constructor, creating a clone to be used by WorkStream::run().
+     * 复制构造函数，创建一个克隆，供 WorkStream::run().
+     * 使用。
+     *
      */
     IntegrationInfo(const IntegrationInfo<dim, spacedim> &other);
 
     /**
-     * Build all internal structures, in particular the FEValuesBase objects
-     * and allocate space for data vectors.
+     * 建立所有的内部结构，特别是FEValuesBase对象，并为数据向量分配空间。
+     * @param  el是DoFHandler的有限元素。          @param
+     * mapping是用于映射网格单元的Mapping对象。          @param
+     * quadrature是在FEVALUES对象的构造器中使用的正交公式。
+     * @param
+     * flags是在FEVALUES对象的构造函数中使用的UpdateFlags。
+     * @param
+     * local_block_info是PDE系统的一个可选参数。如果它提供了合理的数据，那么单元格上的自由度将被重新排序以反映系统的块结构。
      *
-     * @param el is the finite element of the DoFHandler.
-     *
-     * @param mapping is the Mapping object used to map the mesh cells.
-     *
-     * @param quadrature is a Quadrature formula used in the constructor of
-     * the FEVALUES objects.
-     *
-     * @param flags are the UpdateFlags used in the constructor of the
-     * FEVALUES objects.
-     *
-     * @param local_block_info is an optional parameter for systems of PDE. If
-     * it is provided with reasonable data, then the degrees of freedom on the
-     * cells will be re-ordered to reflect the block structure of the system.
      */
     template <class FEVALUES>
     void
@@ -121,20 +94,22 @@ namespace MeshWorker
                const BlockInfo *local_block_info = nullptr);
 
     /**
-     * Initialize the data vector and cache the selector.
+     * 初始化数据向量并缓存选择器。
+     *
      */
     void
     initialize_data(const std::shared_ptr<VectorDataBase<dim, spacedim>> &data);
 
     /**
-     * Delete the data created by initialize().
+     * 删除由initialize()创建的数据。
+     *
      */
     void
     clear();
 
     /**
-     * Return a reference to the FiniteElement that was used to initialize
-     * this object.
+     * 返回一个对用于初始化此对象的FiniteElement的引用。
+     *
      */
     const FiniteElement<dim, spacedim> &
     finite_element() const;
@@ -143,61 +118,52 @@ namespace MeshWorker
     bool multigrid;
     /// Access to finite element
     /**
-     * This is the access function being used, if initialize() for a single
-     * element was used (without the BlockInfo argument). It throws an
-     * exception, if applied to a vector of elements.
+     * 如果对单个元素使用initialize()，这就是正在使用的访问函数（没有BlockInfo参数）。如果应用于一个元素的向量，它会抛出一个异常。
+     *
      */
     const FEValuesBase<dim, spacedim> &
     fe_values() const;
 
     /// Access to finite elements
     /**
-     * This access function must be used if the initialize() for a group of
-     * elements was used (with a valid BlockInfo object).
+     * 如果对一组元素使用了initialize()（有一个有效的BlockInfo对象），必须使用这个访问函数。
+     *
      */
     const FEValuesBase<dim, spacedim> &
     fe_values(const unsigned int i) const;
 
     /**
-     * The vector containing the values of finite element functions in the
-     * quadrature points.
+     * 包含正交点中的有限元函数值的向量。
+     * 每个选定的有限元函数有一个向量，每个分量有一个向量，包含每个正交点的值的向量。
      *
-     * There is one vector per selected finite element function, containing
-     * one vector for each component, containing vectors with values for each
-     * quadrature point.
      */
     std::vector<std::vector<std::vector<double>>> values;
 
     /**
-     * The vector containing the derivatives of finite element functions in
-     * the quadrature points.
+     * 包含有限元函数在正交点的导数的向量。
+     * 每个选定的有限元函数有一个向量，每个分量包含一个向量，包含每个正交点的值的向量。
      *
-     * There is one vector per selected finite element function, containing
-     * one vector for each component, containing vectors with values for each
-     * quadrature point.
      */
     std::vector<std::vector<std::vector<Tensor<1, spacedim>>>> gradients;
 
     /**
-     * The vector containing the second derivatives of finite element
-     * functions in the quadrature points.
+     * 包含有限元函数在正交点的二阶导数的向量。
+     * 每个选定的有限元函数有一个向量，每个分量包含一个向量，包含每个正交点的值的向量。
      *
-     * There is one vector per selected finite element function, containing
-     * one vector for each component, containing vectors with values for each
-     * quadrature point.
      */
     std::vector<std::vector<std::vector<Tensor<2, spacedim>>>> hessians;
 
     /**
-     * Reinitialize internal data structures for use on a cell.
+     * 重新初始化内部数据结构，以便在一个单元上使用。
+     *
      */
     template <typename number>
     void
     reinit(const DoFInfo<dim, spacedim, number> &i);
 
     /**
-     * Use the finite element functions in #global_data and fill the vectors
-     * #values, #gradients and #hessians.
+     * 使用#global_data中的有限元函数，填充向量#values、#gradients和#hessians。
+     *
      */
     template <typename number>
     void
@@ -205,29 +171,30 @@ namespace MeshWorker
                     bool                                  split_fevalues);
 
     /**
-     * The global data vector used to compute function values in quadrature
-     * points.
+     * 用于计算正交点的函数值的全局数据向量。
+     *
      */
     std::shared_ptr<VectorDataBase<dim, spacedim>> global_data;
 
     /**
-     * The memory used by this object.
+     * 这个对象所使用的内存。
+     *
      */
     std::size_t
     memory_consumption() const;
 
   private:
     /**
-     * The pointer to the (system) element used for initialization.
+     * 用于初始化的（系统）元素的指针。
+     *
      */
     SmartPointer<const FiniteElement<dim, spacedim>,
                  IntegrationInfo<dim, spacedim>>
       fe_pointer;
 
     /**
-     * Use the finite element functions in #global_data and fill the vectors
-     * #values, #gradients and #hessians with values according to the
-     * selector.
+     * 使用#global_data中的有限元函数，并根据选择器的值填充向量#values、#gradients和#hessians。
+     *
      */
     template <typename TYPE>
     void
@@ -235,84 +202,37 @@ namespace MeshWorker
                     VectorSelector &                             selector,
                     bool split_fevalues) const;
     /**
-     * Cache the number of components of the system element.
+     * 缓存系统元素的组件数量。
+     *
      */
     unsigned int n_components;
   };
 
   /**
-   * The object holding the scratch data for integrating over cells and faces.
-   * IntegrationInfoBox serves three main purposes:
-   *
-   * <ol>
-   * <li> It provides the interface needed by MeshWorker::loop(), namely the
-   * two functions post_cell() and post_faces(), as well as the data members
-   * #cell, #boundary, #face, #subface, and #neighbor.
-   *
-   * <li> It contains all information needed to initialize the FEValues and
-   * FEFaceValues objects in the IntegrationInfo data members.
-   *
-   * <li> It stores information on finite element vectors and whether their
-   * data should be used to compute values or derivatives of functions at
-   * quadrature points.
-   *
-   * <li> It makes educated guesses on quadrature rules and update flags, so
-   * that minimal code has to be written when default parameters are
-   * sufficient.
-   * </ol>
-   *
-   * In order to allow for sufficient generality, a few steps have to be
-   * undertaken to use this class.
-   *
-   * First, you should consider if you need values from any vectors in a
-   * AnyData object. If so, fill the VectorSelector objects #cell_selector,
-   * #boundary_selector and #face_selector with their names and the data type
-   * (value, gradient, Hessian) to be extracted.
-   *
-   * Afterwards, you will need to consider UpdateFlags for FEValues objects. A
-   * good start is initialize_update_flags(), which looks at the selectors
-   * filled before and adds all the flags needed to get the selection.
-   * Additional flags can be set with add_update_flags().
-   *
-   * Finally, we need to choose quadrature formulas. In the simplest case, you
-   * might be happy with the default settings, which are <i>n</i>-point Gauss
-   * formulas. If only derivatives of the shape functions are used
-   * (#update_values is not set) <i>n</i> equals the highest polynomial degree
-   * in the FiniteElement, if #update_values is set, <i>n</i> is one higher
-   * than this degree.  If you choose to use Gauss formulas of other size, use
-   * initialize_gauss_quadrature() with appropriate values. Otherwise, you can
-   * fill the variables #cell_quadrature, #boundary_quadrature and
-   * #face_quadrature directly.
-   *
-   * In order to save time, you can set the variables boundary_fluxes and
-   * interior_fluxes of the base class to false, thus telling the
-   * Meshworker::loop() not to loop over those faces.
-   *
-   * All the information in here is used to set up IntegrationInfo objects
-   * correctly, typically in an IntegrationInfoBox.
-   *
+   * 持有用于整合单元格和面的划痕数据的对象。  IntegrationInfoBox有三个主要用途。      <ol>   <li>  它提供了 MeshWorker::loop(), 所需的接口，即两个函数post_cell()和post_faces()，以及数据成员#cell、#boundary、#face、#subface和#neighbor。      <li>  它包含了初始化 IntegrationInfo 数据成员中的 FEValues 和 FEFaceValues 对象所需的所有信息。      <li>  它存储了关于有限元向量的信息，以及它们的数据是否应该被用来计算正交点的函数值或导数。      <li>  它对正交规则和更新标志进行有根据的猜测，因此在默认参数足够的情况下，需要编写最少的代码。    </ol>  为了允许足够的通用性，必须采取几个步骤来使用这个类。    首先，你应该考虑你是否需要AnyData对象中任何向量的值。如果是的话，将VectorSelector对象#cell_selector、#boundary_selector和#face_selector的名称和要提取的数据类型（值、梯度、Hessian）填入。    之后，你将需要考虑FEValues对象的UpdateFlags。一个好的开始是initialize_update_flags()，它查看之前填写的选择器，并添加所有需要的标志以获得选择。  其他的标志可以用add_update_flags()来设置。    最后，我们需要选择正交公式。在最简单的情况下，你可能对默认设置感到满意，即<i>n</i>-点高斯公式。如果只使用形状函数的导数（#update_values没有设置），<i>n</i>等于FiniteElement中的最高多项式度数，如果#update_values设置了，<i>n</i>是比这个度数高一个。 如果你选择使用其他大小的高斯公式，请使用initialize_gauss_quadrature()的适当值。否则，你可以直接填写#cell_quadrature、#boundary_quadrature和#face_quadrature这些变量。    为了节省时间，你可以将基类的boundary_fluxes和internal_fluxes变量设置为false，从而告诉 Meshworker::loop() 不要在这些面上循环。    这里的所有信息都是用来正确设置IntegrationInfo对象的，通常是在一个IntegrationInfoBox中。
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim>
   class IntegrationInfoBox
   {
   public:
     /**
-     * The type of the @p info object for cells.
+     * 单元的 @p info 对象的类型。
+     *
      */
     using CellInfo = IntegrationInfo<dim, spacedim>;
 
     /**
-     * Default constructor.
+     * 默认构造函数。
+     *
      */
     IntegrationInfoBox();
 
     /**
-     * Initialize the IntegrationInfo objects contained.
+     * 初始化包含的IntegrationInfo对象。
+     * 在这样做之前，添加必要的更新标志以产生所需的数据，同时将未初始化的正交规则设置为高斯公式，该公式精确地整合多项式双线性形式。
      *
-     * Before doing so, add update flags necessary to produce the data needed
-     * and also set uninitialized quadrature rules to Gauss formulas, which
-     * integrate polynomial bilinear forms exactly.
      */
     void
     initialize(const FiniteElement<dim, spacedim> &el,
@@ -320,11 +240,9 @@ namespace MeshWorker
                const BlockInfo *                   block_info = nullptr);
 
     /**
-     * Initialize the IntegrationInfo objects contained.
+     * 初始化包含的IntegrationInfo对象。
+     * 在这样做之前，添加必要的更新标志以产生所需的数据，同时将未初始化的正交规则设置为高斯公式，该公式完全集成多项式双线性形式。
      *
-     * Before doing so, add update flags necessary to produce the data needed
-     * and also set uninitialized quadrature rules to Gauss formulas, which
-     * integrate polynomial bilinear forms exactly.
      */
     template <typename VectorType>
     void
@@ -334,11 +252,9 @@ namespace MeshWorker
                const VectorType &                  dummy,
                const BlockInfo *                   block_info = nullptr);
     /**
-     * Initialize the IntegrationInfo objects contained.
+     * 初始化包含的IntegrationInfo对象。
+     * 在这样做之前，添加必要的更新标志以产生所需的数据，同时将未初始化的正交规则设置为高斯公式，该公式完全集成多项式双线性形式。
      *
-     * Before doing so, add update flags necessary to produce the data needed
-     * and also set uninitialized quadrature rules to Gauss formulas, which
-     * integrate polynomial bilinear forms exactly.
      */
     template <typename VectorType>
     void
@@ -348,53 +264,52 @@ namespace MeshWorker
                const MGLevelObject<VectorType> &   dummy,
                const BlockInfo *                   block_info = nullptr);
     /**
-     * @name FEValues setup
+     * @name  FEValues设置
+     *
      */
-    /* @{ */
+     /* @{ */ 
 
     /**
-     * Call this function before initialize() in order to guess the update
-     * flags needed, based on the data selected.
+     * 在initialize()之前调用这个函数，以便根据选择的数据猜测需要的更新标志。
+     * 在计算面通量时，我们通常可以使用原始单元的几何图形（积分权重和法向量），从而可以避免在邻近单元上更新这些值。将<tt>neighbor_geometry</tt>设置为true，以便将这些值也初始化。
      *
-     * When computing face fluxes, we normally can use the geometry
-     * (integration weights and normal vectors) from the original cell and
-     * thus can avoid updating these values on the neighboring cell. Set
-     * <tt>neighbor_geometry</tt> to true in order to initialize these values
-     * as well.
      */
     void
     initialize_update_flags(bool neighbor_geometry = false);
 
     /**
-     * Add FEValues UpdateFlags for integration on all objects (cells,
-     * boundary faces and all interior faces).
+     * 增加FEValues
+     * UpdateFlags，以便在所有对象（单元格、边界面和所有内部面）上进行整合。
+     *
      */
     void
     add_update_flags_all(const UpdateFlags flags);
 
     /**
-     * Add FEValues UpdateFlags for integration on cells.
+     * 添加FEValues UpdateFlags用于单元格的整合。
+     *
      */
     void
     add_update_flags_cell(const UpdateFlags flags);
 
     /**
-     * Add FEValues UpdateFlags for integration on boundary faces.
+     * 添加FEValues UpdateFlags用于边界面的积分。
+     *
      */
     void
     add_update_flags_boundary(const UpdateFlags flags);
 
     /**
-     * Add FEValues UpdateFlags for integration on interior faces.
+     * 添加FEValues UpdateFlags用于内部面的积分。
+     *
      */
     void
     add_update_flags_face(const UpdateFlags flags);
 
     /**
-     * Add additional update flags to the ones already set in this program.
-     * The four boolean flags indicate whether the additional flags should be
-     * set for cell, boundary, interelement face for the cell itself or
-     * neighbor cell, or any combination thereof.
+     * 在本程序中已经设置的更新标志的基础上，增加额外的更新标志。
+     * 四个布尔标志表示是否应该为单元、边界、单元本身或相邻单元的元素间面，或它们的任何组合设置额外的标志。
+     *
      */
     void
     add_update_flags(const UpdateFlags flags,
@@ -404,13 +319,9 @@ namespace MeshWorker
                      const bool        neighbor = true);
 
     /**
-     * Assign n-point Gauss quadratures to each of the quadrature rules. Here,
-     * a size of zero points means that no loop over these grid entities
-     * should be performed.
+     * 为每个正交规则分配n点高斯正交值。这里，0点的大小意味着不应该对这些网格实体进行循环。
+     * 如果参数<tt>force</tt>为真，那么所有的正交集都被填入新的正交规则。如果它是假的，那么只有空的规则被改变。
      *
-     * If the parameter <tt>force</tt> is true, then all quadrature sets are
-     * filled with new quadrature rules. If it is false, then only empty rules
-     * are changed.
      */
     void
     initialize_gauss_quadrature(unsigned int n_cell_points,
@@ -419,160 +330,152 @@ namespace MeshWorker
                                 const bool   force = true);
 
     /**
-     * The memory used by this object.
+     * 这个对象所使用的内存。
+     *
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * The set of update flags for boundary cell integration.
+     * 用于边界单元集成的更新标志集。
+     * 默认为#update_JxW_values。
      *
-     * Defaults to #update_JxW_values.
      */
     UpdateFlags cell_flags;
     /**
-     * The set of update flags for boundary face integration.
+     * 用于边界面集成的更新标志集。
+     * 默认为#update_JxW_values和#update_normal_vectors。
      *
-     * Defaults to #update_JxW_values and #update_normal_vectors.
      */
     UpdateFlags boundary_flags;
 
     /**
-     * The set of update flags for interior face integration.
+     * 用于内部面集成的更新标志集。
+     * 默认为#update_JxW_values和#update_normal_vectors。
      *
-     * Defaults to #update_JxW_values and #update_normal_vectors.
      */
     UpdateFlags face_flags;
 
     /**
-     * The set of update flags for interior face integration.
+     * 用于内部面集成的更新标志集。
+     * 默认为#update_default，因为正交权重取自其他单元。
      *
-     * Defaults to #update_default, since quadrature weights are taken from
-     * the other cell.
      */
     UpdateFlags neighbor_flags;
 
     /**
-     * The quadrature rule used on cells.
+     * 在单元格上使用的正交规则。
+     *
      */
     Quadrature<dim> cell_quadrature;
 
     /**
-     * The quadrature rule used on boundary faces.
+     * 用于边界面的正交规则。
+     *
      */
     Quadrature<dim - 1> boundary_quadrature;
 
     /**
-     * The quadrature rule used on interior faces.
+     * 用于内部面的正交规则。
+     *
      */
     Quadrature<dim - 1> face_quadrature;
-    /* @} */
+     /* @} */ 
 
     /**
-     * @name Data vectors
-     */
-    /* @{ */
-
-    /**
-     * Initialize the VectorSelector objects #cell_selector,
-     * #boundary_selector and #face_selector in order to save computational
-     * effort. If no selectors are used, then values for all named vectors in
-     * DoFInfo::global_data will be computed in all quadrature points.
+     * @name  数据向量
      *
-     * This function will also add UpdateFlags to the flags stored in this
-     * class.
+     */
+     /* @{ */ 
+
+    /**
+     * 初始化VectorSelector对象#cell_selector、#boundary_selector和#face_selector，以节省计算工作。如果没有使用选择器，那么
+     * DoFInfo::global_data
+     * 中所有命名的向量的值都将在所有正交点中计算。
+     * 这个函数还将把UpdateFlags添加到存储在这个类中的标志中。
+     *
      */
     /**
-     * Select the vectors from DoFInfo::global_data that should be computed in
-     * the quadrature points on cells.
+     * 从 DoFInfo::global_data
+     * 中选择应该在单元格上的正交点计算的向量。
+     *
      */
     MeshWorker::VectorSelector cell_selector;
 
     /**
-     * Select the vectors from DoFInfo::global_data that should be computed in
-     * the quadrature points on boundary faces.
+     * 从 DoFInfo::global_data
+     * 中选择应该在边界面上的正交点计算的向量。
+     *
      */
     MeshWorker::VectorSelector boundary_selector;
 
     /**
-     * Select the vectors from DoFInfo::global_data that should be computed in
-     * the quadrature points on interior faces.
+     * 从 DoFInfo::global_data
+     * 中选择应该在内部面的正交点上计算的向量。
+     *
      */
     MeshWorker::VectorSelector face_selector;
 
     std::shared_ptr<MeshWorker::VectorDataBase<dim, spacedim>> cell_data;
     std::shared_ptr<MeshWorker::VectorDataBase<dim, spacedim>> boundary_data;
     std::shared_ptr<MeshWorker::VectorDataBase<dim, spacedim>> face_data;
-    /* @} */
+     /* @} */ 
 
     /**
-     * @name Interface for MeshWorker::loop()
+     * @name   MeshWorker::loop() 的接口。
+     *
      */
-    /* @{ */
+     /* @{ */ 
     /**
-     * A callback function which is called in the loop over all cells, after
-     * the action on a cell has been performed and before the faces are dealt
-     * with.
+     * 一个回调函数，它在所有单元格的循环中被调用，在对一个单元格的操作被执行后，在面的处理之前。
+     * 为了使这个函数产生这种效果，至少loop()的参数<tt>boundary_worker</tt>或<tt>face_worker</tt>应该是非零的。此外，<tt>cells_first</tt>应该为真。如果<tt>cells_first</tt>是假的，那么在对一个单元格采取任何行动之前就会调用这个函数。
+     * 在这个类中是空函数，但在其他类中可以用loop()代替。
+     * 参见loop()和cell_action()以了解该函数的更多使用细节。
      *
-     * In order for this function to have this effect, at least either of the
-     * arguments <tt>boundary_worker</tt> or <tt>face_worker</tt> arguments of
-     * loop() should be nonzero. Additionally, <tt>cells_first</tt> should be
-     * true. If <tt>cells_first</tt> is false, this function is called before
-     * any action on a cell is taken.
-     *
-     * And empty function in this class, but can be replaced in other classes
-     * given to loop() instead.
-     *
-     * See loop() and cell_action() for more details of how this function can
-     * be used.
      */
     template <class DOFINFO>
     void
     post_cell(const DoFInfoBox<dim, DOFINFO> &);
 
     /**
-     * A callback function which is called in the loop over all cells, after
-     * the action on the faces of a cell has been performed and before the
-     * cell itself is dealt with (assumes <tt>cells_first</tt> is false).
+     * 一个回调函数，它在所有单元格的循环中被调用，在对一个单元格的面进行操作后，在处理该单元格本身之前（假设<tt>cells_first</tt>为假）。
+     * 为了使这个函数有合理的效果，至少loop()的参数<tt>boundary_worker</tt>或<tt>face_worker</tt>应该是非零的。此外，<tt>cells_first</tt>应该是假的。
+     * 而且在这个类中是空函数，但在其他类中可以用loop()代替。
+     * 参见loop()和cell_action()以了解该函数的详细使用方法。
      *
-     * In order for this function to have a reasonable effect, at least either
-     * of the arguments <tt>boundary_worker</tt> or <tt>face_worker</tt>
-     * arguments of loop() should be nonzero. Additionally,
-     * <tt>cells_first</tt> should be false.
-     *
-     * And empty function in this class, but can be replaced in other classes
-     * given to loop() instead.
-     *
-     * See loop() and cell_action() for more details of how this function can
-     * be used.
      */
     template <class DOFINFO>
     void
     post_faces(const DoFInfoBox<dim, DOFINFO> &);
 
     /**
-     * The @p info object for a cell.
+     * 一个单元格的 @p info 对象。
+     *
      */
     CellInfo cell;
     /**
-     * The @p info object for a boundary face.
+     * 边界面的 @p info 对象。
+     *
      */
     CellInfo boundary;
     /**
-     * The @p info object for a regular interior face, seen from the first cell.
+     * 从第一个单元看到的 @p info
+     * 对象为一个规则的内部面。
+     *
      */
     CellInfo face;
     /**
-     * The @p info object for the refined side of an interior face seen from the
-     * first cell.
+     * 从第一个单元看到的内部面的 @p info 对象的精炼面。
+     *
      */
     CellInfo subface;
     /**
-     * The @p info object for an interior face, seen from the other cell.
+     * 从另一个单元看到的内部面的 @p info 对象。
+     *
      */
     CellInfo neighbor;
 
-    /* @} */
+     /* @} */ 
   };
 
 
@@ -902,3 +805,5 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

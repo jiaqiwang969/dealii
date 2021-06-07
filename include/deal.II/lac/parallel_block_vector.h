@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/parallel_block_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2020 by the deal.II authors
@@ -35,25 +34,35 @@ namespace parallel
 {
   namespace distributed
   {
-    /*!   @addtogroup 矢量  @{ !     
-* */
+    /*! @addtogroup Vectors
+     *@{
+     */
 
     /**
-     * 一个基于分布式deal.II向量的块向量的实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型的特定函数。
-     * @note  这个模板的实例提供给<tt>  @<float@>  和  @<double@></tt>;  其他可以在应用程序中生成（见手册中的 @ref Instantiations 部分）。          @see   @ref GlossBlockLA  "块（线性代数）"
-     * @deprecated  用 LinearAlgebra::distributed::BlockVector 代替。
+     * An implementation of block vectors based on distributed deal.II
+     * vectors. While the base class provides for most of the interface, this
+     * class handles the actual allocation of vectors and provides functions
+     * that are specific to the underlying vector type.
      *
+     * @note Instantiations for this template are provided for <tt>@<float@>
+     * and @<double@></tt>; others can be generated in application programs
+     * (see the section on
+     * @ref Instantiations
+     * in the manual).
+     *
+     * @see
+     * @ref GlossBlockLA "Block (linear algebra)"
+     *
+     * @deprecated Use LinearAlgebra::distributed::BlockVector instead.
      */
     template <typename Number>
     using BlockVector DEAL_II_DEPRECATED =
       LinearAlgebra::distributed::BlockVector<Number>;
 
-     /*@}*/ 
+    /*@}*/
   } // namespace distributed
 } // namespace parallel
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

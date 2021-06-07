@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/grid_in_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -39,136 +38,268 @@ struct CellData;
 #endif
 
 /**
+ * This class implements an input mechanism for grid data. It allows to read a
+ * grid structure into a triangulation object. At present, UCD (unstructured
+ * cell data), DB Mesh, XDA, %Gmsh, Tecplot, UNV, VTK, ASSIMP, and Cubit
+ * are supported as input format for grid data. Any numerical data other than
+ * geometric (vertex locations) and topological (how vertices form cells,
+ * faces, and edges) information is ignored, but the readers for the various
+ * formats generally do read information that associates material ids or
+ * boundary ids to cells or faces (see
+ * @ref GlossMaterialId "this"
+ * and
+ * @ref GlossBoundaryIndicator "this"
+ * glossary entry for more information).
+ *
+ * @note Since deal.II only supports line, quadrilateral and hexahedral
+ * meshes, the functions in this class can only read meshes that consist
+ * exclusively of such cells. If you absolutely need to work with a mesh that
+ * uses triangles or tetrahedra, then your only option is to convert the mesh
+ * to quadrilaterals and hexahedra. A tool that can do this is tethex,
+ * available <a href="https://github.com/martemyev/tethex">here</a>.
+ *
+ * The mesh you read will form the coarsest level of a @p Triangulation
+ * object. As such, it must not contain hanging nodes or other forms of
+ * adaptive refinement, or strange things will happen if the mesh represented
+ * by the input file does in fact have them. This is due to the fact that most
+ * mesh description formats do not store neighborship information between
+ * cells, so the grid reading functions have to regenerate it. They do so by
+ * checking whether two cells have a common face. If there are hanging nodes
+ * in a triangulation, adjacent cells have no common (complete) face, so the
+ * grid reader concludes that the adjacent cells have no neighbors along these
+ * faces and must therefore be at the boundary. In effect, an internal crack
+ * of the domain is introduced this way. Since such cases are very hard to
+ * detect (how is GridIn supposed to decide whether a place where the faces of
+ * two small cells coincide with the face or a larger cell is in fact a
+ * hanging node associated with local refinement, or is indeed meant to be a
+ * crack in the domain?), the library does not make any attempt to catch such
+ * situations, and you will get a triangulation that probably does not do what
+ * you want. If your goal is to save and later read again a triangulation that
+ * has been adaptively refined, then this class is not your solution; rather
+ * take a look at the PersistentTriangulation class.
+ *
+ * To read grid data, the triangulation to be filled has to be empty.
+ * Upon calling the functions of this class, the input file may
+ * contain only lines in one dimension; lines and quads in two
+ * dimensions; and lines, quads, and hexes in three dimensions. All
+ * other cell types (e.g. triangles in two dimensions, triangles or
+ * tetrahedra in 3d) are rejected.  (Here, the "dimension" refers to
+ * the dimensionality of the mesh; it may be embedded in a higher
+ * dimensional space, such as a mesh on the two-dimensional surface of
+ * the sphere embedded in 3d, or a 1d mesh that discretizes a line in
+ * 3d.) The result will be a triangulation that consists of the cells
+ * described in the input file, and to the degree possible with
+ * material indicators and boundary indicators correctly set as
+ * described in the input file.
+ *
+ * @note You can not expect vertex and cell numbers in the triangulation
+ * to match those in the input file. (This is already clear based on the
+ * fact that we number cells and vertices separately, whereas this is not
+ * the case for some input file formats; some formats also do not require
+ * consecutive numbering, or start numbering at indices other than zero.)
  *
  *
- * @note
- * 由于deal.II只支持线、四边形和六面体网格，这个类中的函数只能读取完全由这些单元组成的网格。如果你绝对需要使用三角形或四面体的网格，那么你唯一的选择就是将网格转换成四边形和六面体。一个可以做到这一点的工具是tethex，可用<a
- * href="https://github.com/martemyev/tethex">here</a>。
- * 你读取的网格将形成 @p Triangulation
- * 对象的最粗层次。因此，它必须不包含悬空节点或其他形式的自适应细化，否则如果输入文件所代表的网格确实有这些节点，就会发生奇怪的事情。这是由于大多数网格描述格式并不存储单元间的邻接信息，所以网格读取函数必须重新生成这些信息。他们通过检查两个单元是否有一个共同的面来实现这一目的。如果在一个三角形中存在悬挂的节点，相邻的单元格就没有共同的（完整的）面，所以网格读取器得出结论，相邻的单元格沿这些面没有邻居，因此必须在边界上。实际上，域的内部裂缝就是这样被引入的。由于这种情况很难被发现（GridIn如何决定两个小单元的面与面重合的地方或者一个较大的单元实际上是一个与局部细化相关的悬空节点，还是确实是域中的一个裂缝？如果你的目标是保存并在以后再次读取经过自适应改进的三角图，那么这个类就不是你的解决方案；而是看一下PersistentTriangulation类。
- * 要读取网格数据，需要填充的三角图必须是空的。在调用这个类的函数时，输入文件可能只包含一维的线；二维的线和四边形；以及三维的线、四边形和六角形。所有其他的单元类型（例如，二维的三角形，三维的三角形或四面体）都会被拒绝。
- * 这里的 "维度
- * "指的是网格的维度；它可能被嵌入到一个更高的维度空间中，比如一个嵌入三维的球体二维表面上的网格，或者一个离散化三维线条的一维网格）。结果将是一个由输入文件中描述的单元组成的三角形，并尽可能正确地设置输入文件中描述的材料指标和边界指标。
+ * <h3>Supported input formats</h3>
  *
- *
- * @note
- * 你不能期望三角结构中的顶点和单元编号与输入文件中的一致。(根据我们对单元和顶点分别进行编号的事实，这一点已经很清楚了，而对于某些输入文件格式则不是这样的；有些格式也不要求连续编号，或者从零以外的索引开始编号)。
- *
- *  <h3>Supported input formats</h3>
- * 目前，支持以下输入格式。  <ul>   <li>   @p UCD  （非结构化单元数据）格式：这种格式用于网格输入以及数据输出。如果输入文件中有数据矢量，它们会被忽略，因为我们只对这一类的网格感兴趣。UCD格式要求顶点按以下顺序排列：在2d中
- *
+ * At present, the following input formats are supported:
+ * <ul>
+ * <li> @p UCD (unstructured cell data) format: this format is used for grid
+ * input as well as data output. If there are data vectors in the input file,
+ * they are ignored, as we are only interested in the grid in this class. The
+ * UCD format requires the vertices to be in following ordering: in 2d
  * @verbatim
- *    3-----2
- *    |     |
- *    |     |
- *    |     |
- *    0-----1
+ *      3-----2
+ *      |     |
+ *      |     |
+ *      |     |
+ *      0-----1
  * @endverbatim
- * 而在三维中
- *
+ * and in 3d
  * @verbatim
- *       7-------6        7-------6
- *      /|       |       /       /|
- *     / |       |      /       / |
- *    /  |       |     /       /  |
- *   3   |       |    3-------2   |
- *   |   4-------5    |       |   5
- *   |  /       /     |       |  /
- *   | /       /      |       | /
- *   |/       /       |       |/
- *   0-------1        0-------1
+ *         7-------6        7-------6
+ *        /|       |       /       /|
+ *       / |       |      /       / |
+ *      /  |       |     /       /  |
+ *     3   |       |    3-------2   |
+ *     |   4-------5    |       |   5
+ *     |  /       /     |       |  /
+ *     | /       /      |       | /
+ *     |/       /       |       |/
+ *     0-------1        0-------1
  * @endverbatim
- * 注意，这种排序方式与deal.II的编号方式不同，见Triangulation类。
- * 关于UCD格式的确切描述可以在AVS
- * Explorer手册中找到（见http://www.avs.com）。  @p UCD
- * 格式可以通过read_ucd()函数读取。
- * <li>  <tt>DB网格</tt>格式：该格式被 @p BAMG
- * 网格生成器使用（见http://www-rocq.inria.fr/gamma/cdrom/www/bamg/eng.htm.
- * @p BAMG
- * 手册中关于该格式的文档非常不完整，所以我们实际上并没有解析输出的许多字段，因为我们不知道它们的含义，但是读取的数据足以按照网格生成器的意图建立起网格。这种格式可以通过read_dbmesh()函数来读取。
- * <li>   @p XDA
- * 格式：这是一个相当简单的格式，由MGF代码使用。我们没有确切的格式规范，但是阅读器可以读到几个例子文件。如果阅读器没有摸透你的文件，那么扩展它应该是相当简单的。
- * <li>  <tt>%Gmsh 1.0 mesh</tt>格式：这个格式被 @p %Gmsh
- * 网格生成器使用（见http://gmsh.info/）。 @p %Gmsh
- * 手册中的文档解释了如何生成与deal.II库兼容的网格（即四边形而非三角形）。为了使用这种格式，%Gmsh必须以旧的1.0格式来输出文件。这可以在输入文件中加入
- * "Mesh.MshFileVersion = 1 "一行来完成。
- * <li>  <tt>%Gmsh 2.0
- * mesh</tt>格式：这是上述格式的一个变种。read_msh()函数会自动判断一个输入文件是版本1还是版本2。
- * <li>  <tt>Tecplot</tt>格式：这个格式被 @p TECPLOT
- * 使用，通常作为不同应用程序之间数据交换的基础。注意，目前只支持ASCII格式，二进制数据不能被读取。
- * <li>  <tt>UNV</tt>格式：这种格式是由Salome网格生成器生成的，见http://www.salome-platform.org/ 。这里记录了 GridIn::read_unv 函数所支持的格式的部分。  <ul>   <li>  第2411节：http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse/universal-dataset-number-2411  <li>  第2412节：http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse/universal-dataset-number-2412  <li>  第2467节：http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse/universal-dataset-number-2467  <li>  这个格式的所有部分，即使在我们的阅读器中可能不被支持，也可以在这里找到：http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse  </ul>  注意，Salome，比方在2D，只能在一个正好有4条边（或4块边界）的物体上制作一个四维网格。这意味着，如果你有一个更复杂的物体，并想用四边形网格，你将需要把这个物体分解成>=2个独立的对象。然后1）对这些独立的对象进行网格化，2）创建与这些独立对象相关的适当的单元组和/或面，3）建立一个复合网格，4）删除所有可能与该复合网格的一些内部面相关的数字。
- * <li>
- * <tt>VTK</tt>格式。VTK非结构化网格遗留文件阅读器生成器。该阅读器目前只能处理非结构化网格格式的二维和三维几何数据。一般遗留的vtk文件，包括非结构化网格格式的文档可以在这里找到：http://www.cacr.caltech.edu/~slombey/asci/vtk/vtk_formats.simple.html
- * VTK格式要求顶点按以下顺序排列：在2d中
+ * Note, that this ordering is different from the deal.II numbering scheme,
+ * see the Triangulation class.  The exact description of the UCD format can
+ * be found in the AVS Explorer manual (see http://www.avs.com).  The @p UCD
+ * format can be read by the read_ucd() function.
  *
- * @verbatim
- *    3-----2
- *    |     |
- *    |     |
- *    |     |
- *    0-----1
- * @endverbatim
- * 在三维中
+ * <li> <tt>DB mesh</tt> format: this format is used by the @p BAMG mesh
+ * generator (see http://www-rocq.inria.fr/gamma/cdrom/www/bamg/eng.htm. The
+ * documentation of the format in the @p BAMG manual is very incomplete, so we
+ * don't actually parse many of the fields of the output since we don't know
+ * their meaning, but the data that is read is enough to build up the mesh as
+ * intended by the mesh generator. This format can be read by the
+ * read_dbmesh() function.
  *
- * @verbatim
- *       7-------6        7-------6
- *      /|       |       /       /|
- *     / |       |      /       / |
- *    /  |       |     /       /  |
- *   4   |       |    4-------5   |
- *   |   3-------2    |       |   2
- *   |  /       /     |       |  /
- *   | /       /      |       | /
- *   |/       /       |       |/
- *   0-------1        0-------1
- * @endverbatim
+ * <li> @p XDA format: this is a rather simple format used by the MGF code. We
+ * don't have an exact specification of the format, but the reader can read in
+ * several example files. If the reader does not grok your files, it should be
+ * fairly simple to extend it.
  *
- * <li>  <tt>Cubit</tt>格式:
- * deal.II目前不直接支持从Cubit导入。然而，Cubit可以用一个简单的插件以UCD格式导出，然后产生的UCD文件可以被这个类读取。插件的脚本可以在deal.II
- * wiki页面的<a
- * href="https://github.com/dealii/dealii/wiki/Mesh-Input-And-Output">Mesh
- * Input and Output</a>下找到。
- * 另外，Cubit可以生成ABAQUS文件，可以通过read_abaqus()函数读入。这可能是一个更好的选择，对于具有复杂的边界条件表面和多种材料的几何形状。
+ * <li> <tt>%Gmsh 1.0 mesh</tt> format: this format is used by the @p %Gmsh mesh
+ * generator (see http://gmsh.info/). The documentation in the @p %Gmsh
+ * manual explains how to generate meshes compatible with the deal.II library
+ * (i.e. quads rather than triangles). In order to use this format, %Gmsh has
+ * to output the file in the old format 1.0. This is done adding the line
+ * "Mesh.MshFileVersion = 1" to the input file.
  *
- * - 目前不容易通过Cubit的python接口获得的信息。
+ * <li> <tt>%Gmsh 2.0 mesh</tt> format: this is a variant of the above format.
+ * The read_msh() function automatically determines whether an input file is
+ * version 1 or version 2.
+ *
+ * <li> <tt>Tecplot</tt> format: this format is used by @p TECPLOT and often
+ * serves as a basis for data exchange between different applications. Note,
+ * that currently only the ASCII format is supported, binary data cannot be
+ * read.
+ *
+ * <li> <tt>UNV</tt> format: this format is generated by the Salome mesh
+ * generator, see http://www.salome-platform.org/ . The sections of the format
+ * that the GridIn::read_unv function supports are documented here:
+ * <ul>
+ * <li> section 2411:
+ * http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse/universal-dataset-number-2411
+ * <li> section 2412:
+ * http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse/universal-dataset-number-2412
+ * <li> section 2467:
+ * http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse/universal-dataset-number-2467
+ * <li> all sections of this format, even if they may not be supported in our
+ * reader, can be found here:
+ * http://www.sdrl.uc.edu/sdrl/referenceinfo/universalfileformats/file-format-storehouse
  * </ul>
+ * Note that Salome, let's say in 2D, can only make a quad mesh on an object
+ * that has exactly 4 edges (or 4 pieces of the boundary). That means, that if
+ * you have a more complicated object and would like to mesh it with quads,
+ * you will need to decompose the object into >= 2 separate objects. Then 1)
+ * each of these separate objects is meshed, 2) the appropriate groups of
+ * cells and/or faces associated with each of these separate objects are
+ * created, 3) a compound mesh is built up, and 4) all numbers that might be
+ * associated with some of the internal faces of this compound mesh are
+ * removed.
+ *
+ * <li> <tt>VTK</tt> format: VTK Unstructured Grid Legacy file reader
+ * generator. The reader can handle only Unstructured Grid format of data at
+ * present for 2D & 3D geometries. The documentation for the general legacy
+ * vtk file, including Unstructured Grid format can be found here:
+ * http://www.cacr.caltech.edu/~slombey/asci/vtk/vtk_formats.simple.html
+ *
+ * The VTK format requires the vertices to be in following ordering: in 2d
+ * @verbatim
+ *      3-----2
+ *      |     |
+ *      |     |
+ *      |     |
+ *      0-----1
+ * @endverbatim
+ * and in 3d
+ * @verbatim
+ *         7-------6        7-------6
+ *        /|       |       /       /|
+ *       / |       |      /       / |
+ *      /  |       |     /       /  |
+ *     4   |       |    4-------5   |
+ *     |   3-------2    |       |   2
+ *     |  /       /     |       |  /
+ *     | /       /      |       | /
+ *     |/       /       |       |/
+ *     0-------1        0-------1
+ * @endverbatim
+ *
+ *
+ * <li> <tt>Cubit</tt> format: deal.II doesn't directly support importing from
+ * Cubit at this time. However, Cubit can export in UCD format using a simple
+ * plug-in, and the resulting UCD file can then be read by this class. The
+ * plug-in script can be found on the deal.II wiki page under
+ * <a href="https://github.com/dealii/dealii/wiki/Mesh-Input-And-Output">Mesh
+ * Input and Output</a>.
+ *
+ * Alternatively, Cubit can generate ABAQUS files that can be read in via the
+ * read_abaqus() function. This may be a better option for geometries with
+ * complex boundary condition surfaces and multiple materials - information
+ * which is currently not easily obtained through Cubit's python interface.
+ *
+ * </ul>
+ *
  * <h3>Structure of input grid data. The GridReordering class</h3>
- * 你有责任在单元格列表中使用正确的顶点编号，即对于1d的线，你必须首先给出坐标值较低的顶点，然后是坐标值较高的顶点。对于二维的四边形，
- * @p quad 列表中的顶点索引必须使顶点按逆时针方向编号。
- * 在二维空间中，出现了另一个困难，这与四边形的意义有关。一个四边形由四条线组成，这些线有一个方向，根据定义，这个方向如下。
  *
+ * It is your duty to use a correct numbering of vertices in the cell list,
+ * i.e. for lines in 1d, you have to first give the vertex with the lower
+ * coordinate value, then that with the higher coordinate value. For
+ * quadrilaterals in two dimensions, the vertex indices in the @p quad list
+ * have to be such that the vertices are numbered in counter-clockwise sense.
+ *
+ * In two dimensions, another difficulty occurs, which has to do with the
+ * sense of a quadrilateral. A quad consists of four lines which have a
+ * direction, which is by definition as follows:
  * @verbatim
- * 3-->--2
- * |     |
- * ^     ^
- * |     |
- * 0-->--1
+ *   3-->--2
+ *   |     |
+ *   ^     ^
+ *   |     |
+ *   0-->--1
  * @endverbatim
- * 现在，两个相邻的单元格必须有一个顶点编号，使得公共边的方向是相同的。例如，以下两个四边形
- *
+ * Now, two adjacent cells must have a vertex numbering such that the
+ * direction of the common side is the same. For example, the following two
+ * quads
  * @verbatim
- * 3---4---5
- * |   |   |
- * 0---1---2
+ *   3---4---5
+ *   |   |   |
+ *   0---1---2
  * @endverbatim
- * 可以用顶点编号<tt>(0 1 4 3)</tt>和<tt>(1 2 5
- * 4)</tt>来描述，因为从两个单元格看，中间的线会得到方向<tt>1->4</tt>。
- * 编号<tt>(0 1 4 3)</tt>和<tt>(5 4 1
- * 2)</tt>将是不允许的，因为左边的四边形将给公共线以<tt>1->4</tt>的方向，而右边的四边形则希望使用<tt>4->1</tt>，导致模糊不清。Triangulation对象能够检测到这种特殊情况，可以通过将右侧四边形的指数旋转2来消除这种情况。然而，如果你给了顶点指数<tt>(4
- * 1 2
- * 5)</tt>，它就不知道该怎么做了，因为这样它就必须旋转一个元素或三个元素，决定采取哪种方式还没有实现。
- * 还有更多模棱两可的情况，如果不使用复杂的算法，三角法可能根本就不知道该怎么做。此外，类似的问题也存在于三个空间维度中，其中面和线的方向需要被照顾到。
- * 由于这个原因，这个类的<tt>read_*</tt>函数在读取各种输入格式的网格时，会调用GridReordering类，将定义单元格的顶点顺序变成满足三角计算类要求的顺序。如果你在通过这个类读取网格时遇到意外问题，请务必阅读该类的文档。
+ * may be characterised by the vertex numbers <tt>(0 1 4 3)</tt> and <tt>(1 2
+ * 5 4)</tt>, since the middle line would get the direction <tt>1->4</tt> when
+ * viewed from both cells.  The numbering <tt>(0 1 4 3)</tt> and <tt>(5 4 1
+ * 2)</tt> would not be allowed, since the left quad would give the common
+ * line the direction <tt>1->4</tt>, while the right one would want to use
+ * <tt>4->1</tt>, leading to an ambiguity. The Triangulation object is capable
+ * of detecting this special case, which can be eliminated by rotating the
+ * indices of the right quad by two. However, it would not know what to do if
+ * you gave the vertex indices <tt>(4 1 2 5)</tt>, since then it would have to
+ * rotate by one element or three, the decision which to take is not yet
+ * implemented.
  *
- *  <h3>Dealing with distorted mesh cells</h3>
- * 对于每一个网格读取函数，最后一个调用总是指向 Triangulation::create_triangulation(). ，该函数检查它所创建的作为粗网格一部分的所有单元是否扭曲（这里的扭曲意味着从参考单元到实际单元的映射的Jacobian有一个非正的行列式，即该单元被挤压或扭曲；参见术语表中 @ref GlossDistorted "扭曲的单元 "
- * 条目）。如果它发现任何这样的单元格，它就会抛出一个异常。这个异常不会在当前类的网格阅读器函数中被捕获，因此会传播到调用它的函数中。在那里，如果你确定处理这样的单元格没有坏处的话，你可以捕捉并忽略这个异常。如果你不知道你的网格有这样的单元格，那么如果你忽略这个异常，你的结果可能最多只能是可疑的质量。
+ * There are more ambiguous cases, where the triangulation may not know what
+ * to do at all without the use of sophisticated algorithms. Furthermore,
+ * similar problems exist in three space dimensions, where faces and lines
+ * have orientations that need to be taken care of.
  *
+ * For this reason, the <tt>read_*</tt> functions of this class that read in
+ * grids in various input formats call the GridReordering class to bring the
+ * order of vertices that define the cells into an ordering that satisfies the
+ * requirements of the Triangulation class. Be sure to read the documentation
+ * of that class if you experience unexpected problems when reading grids
+ * through this class.
+ *
+ *
+ * <h3>Dealing with distorted mesh cells</h3>
+ *
+ * For each of the mesh reading functions, the last call is always to
+ * Triangulation::create_triangulation(). That function checks whether all the
+ * cells it creates as part of the coarse mesh are distorted or not (where
+ * distortion here means that the Jacobian of the mapping from the reference
+ * cell to the real cell has a non-positive determinant, i.e. the cell is
+ * pinched or twisted; see the entry on
+ * @ref GlossDistorted "distorted cells"
+ * in the glossary). If it finds any such cells, it throws an exception. This
+ * exception is not caught in the grid reader functions of the current class,
+ * and so will propagate through to the function that called it. There, you
+ * can catch and ignore the exception if you are certain that there is no harm
+ * in dealing with such cells. If you were not aware that your mesh had such
+ * cells, your results will likely be of dubious quality at best if you ignore
+ * the exception.
  *
  *
  * @ingroup grid
- * @ingroup input  Pelteret 2015, Timo Heister 2015, Krzysztof Bzowski, 2015
- *
+ * @ingroup input
+ * Pelteret 2015, Timo Heister 2015,  Krzysztof Bzowski, 2015
  */
 
 template <int dim, int spacedim = dim>
@@ -176,8 +307,8 @@ class GridIn
 {
 public:
   /**
-   * 可能的网格输入格式列表。这些值在调用函数read()时使用，以确定要调用的实际阅读器。
-   *
+   * List of possible mesh input formats. These values are used when calling
+   * the function read() in order to determine the actual reader to be called.
    */
   enum Format
   {
@@ -208,227 +339,214 @@ public:
   };
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   GridIn();
 
   /**
-   * 构造函数。附上这个三角图，用网格数据来输入。
-   *
+   * Constructor. Attach this triangulation to be fed with the grid data.
    */
   GridIn(Triangulation<dim, spacedim> &tria);
 
   /**
-   * 附上这个三角图，用网格数据来输入。
-   *
+   * Attach this triangulation to be fed with the grid data.
    */
   void
   attach_triangulation(Triangulation<dim, spacedim> &tria);
 
   /**
-   * 从给定的流中读取。如果没有给出格式，则使用
-   * GridIn::Format::Default 。
-   *
+   * Read from the given stream. If no format is given,
+   * GridIn::Format::Default is used.
    */
   void
   read(std::istream &in, Format format = Default);
 
   /**
-   * 打开由字符串给定的文件，并调用前面的函数read()。
-   * 这个函数使用PathSearch机制来查找文件。使用的文件类是
-   * <code>MESH</code>  。
-   *
+   * Open the file given by the string and call the previous function read().
+   * This function uses the PathSearch mechanism to find files. The file class
+   * used is <code>MESH</code>.
    */
   void
   read(const std::string &in, Format format = Default);
 
   /**
-   * 从一个非结构化的vtk文件中读取网格数据。vtk文件可能包含以下VTK单元类型。VTK_HEXAHEDRON（12），VTK_TETRA（10），VTK_QUAD（9），VTK_TRIANGLE（5），以及VTK_LINE（3）。
-   * 根据模板维度的不同，只接受上述的部分内容。
-   * 特别是，在三个维度中，该函数希望文件包含
+   * Read grid data from a unstructured vtk file. The vtk file may contain
+   * the following VTK cell types: VTK_HEXAHEDRON (12), VTK_TETRA (10),
+   * VTK_QUAD (9), VTK_TRIANGLE (5), and VTK_LINE (3).
    *
+   * Depending on the template dimension, only some of the above are accepted.
    *
+   * In particular, in three dimensions, this function expects the file to
+   * contain
    *
+   * - VTK_HEXAHEDRON/VTK_TETRA cell types
+   * - VTK_QUAD/VTK_TRIANGLE cell types, to specify optional boundary or
+   *   interior quad faces
+   * - VTK_LINE cell types, to specify optional boundary or interior edges
    *
-   * - VTK_HEXAHEDRON/VTK_TETRA细胞类型
+   * In two dimensions:
    *
-   * - VTK_QUAD/VTK_TRIANGLE单元类型，以指定可选的边界或内部四边形面
+   * - VTK_QUAD/VTK_TRIANGLE cell types
+   * - VTK_LINE cell types, to specify optional boundary or interior edges
    *
+   * In one dimension
    *
+   * - VTK_LINE cell types
    *
+   * The input file may specify boundary ids, material ids, and manifold ids
+   * using the CELL_DATA section of the
+   * [VTK file format](http://www.vtk.org/VTK/img/file-formats.pdf).
    *
+   * This function interprets two types of CELL_DATA contained in the input
+   * file: `SCALARS MaterialID`, used to specify the material_id of the cells,
+   * or the boundary_id of the faces and edges, and `SCALARS ManifoldID`, that
+   * can be used to specify the manifold id of any Triangulation object (cell,
+   * face, or edge).
    *
-   * - VTK_LINE单元格类型，用于指定可选的边界或内部边缘 在二维方面。
+   * The companion GridOut::write_vtk function can be used to write VTK files
+   * compatible with this method.
    *
-   *
-   *
-   *
-   *
-   *
-   * - VTK_QUAD/VTK_TRIANGLE单元类型
-   *
-   * - VTK_LINE单元格类型，用于指定可选的边界或内部边缘 在一个维度上
-   *
-   *
-   *
-   *
-   *
-   *
-   * - VTK_LINE单元格类型 输入文件可以使用[VTK文件格式](http://www.vtk.org/VTK/img/file-formats.pdf)的CELL_DATA部分指定边界ID、材料ID和流形ID。    该函数解释了输入文件中包含的两种CELL_DATA类型。`SCALARS MaterialID`，用于指定单元的材料ID，或面和边的边界ID，以及`SCALARS ManifoldID`，可用于指定任何三角测量对象（单元、面或边）的流形ID。    配套的 GridOut::write_vtk 函数可用于编写与此方法兼容的VTK文件。
    * @ingroup simplex
-   *
    */
   void
   read_vtk(std::istream &in);
 
   /**
-   * 从非结构化的vtu文件中读取网格数据，由deal.II使用
-   * GridOut::write_vtu(), 保存，标志
-   * GridOutFlags::Vtu::serialize_triangulation 设置为真。
-   * 注意，这个函数不支持读入任意的vtu文件，而只支持由deal.II自己编写的文件，使用函数
-   * GridOut::write_vtu 并设置 GridOutFlags::Vtu::serialize_triangulation
-   * 为true。    当这个标志被设置为 "true
-   * "时，生成的vtu文件在一个xml部分中包含了三角测量，这个部分会被一般的vtu阅读器忽略。
-   * 如果没有这个部分，就会产生一个异常。
+   * Read grid data from a unstructured vtu file, saved by deal.II using
+   * GridOut::write_vtu(), with the flag
+   * GridOutFlags::Vtu::serialize_triangulation set to true.
    *
+   * Notice that this function does not support reading in arbitrary vtu files,
+   * but only files that were written by deal.II itself, using the function
+   * GridOut::write_vtu and setting GridOutFlags::Vtu::serialize_triangulation
+   * to true.
+   *
+   * When this flag is set to true, the generated vtu file contains the
+   * triangulation in a xml section which is ignored by general vtu readers.
+   * If this section is absent, an exception is thrown.
    */
   void
   read_vtu(std::istream &in);
 
 
   /**
-   * 读取由Salome网格生成器生成的unv文件中的网格数据。数值数据被忽略。
-   * 请注意在这个类的一般文档中对生成这种文件格式的评论。
+   * Read grid data from an unv file as generated by the Salome mesh
+   * generator. Numerical data is ignored.
    *
+   * Note the comments on generating this file format in the general
+   * documentation of this class.
    */
   void
   read_unv(std::istream &in);
 
   /**
-   * 从一个ucd文件中读取网格数据。数值数据被忽略。
-   * 不可能使用ucd文件为同一个单元同时设置 boundary_id 和
-   * manifold_id。但是可以使用标志apply_all_indicators_to_manifolds来决定文件中的指标是指流形（标志设置为真）还是指边界（标志设置为假）。如果该标志被设置，这些指标也会被用作单元格的流形标识。
-   *
+   * Read grid data from an ucd file. Numerical data is ignored.
+   * It is not possible to use a ucd file to set both boundary_id and
+   * manifold_id for the same cell. Yet it is possible to use
+   * the flag apply_all_indicators_to_manifolds to decide if
+   * the indicators in the file refer to manifolds (flag set to true)
+   * or boundaries (flag set to false). If the flag is set, the
+   * indicators are used for cells as manifold id, too.
    */
   void
   read_ucd(std::istream &in,
            const bool    apply_all_indicators_to_manifolds = false);
 
   /**
-   * 从Abaqus文件中读取网格数据。数值和构成数据被忽略。与ucd文件格式的情况一样，可以使用标志apply_all_indicators_to_manifolds来决定文件中的指标是指流形（标志设置为真）还是指边界（标志设置为假）。
-   * @note
-   * 目前这个网格阅读器的实现是次优的，因此对于大的网格来说可能会很慢。
-   * @note  Cubit的使用提示。
+   * Read grid data from an Abaqus file. Numerical and constitutive data is
+   * ignored. As in the case of the ucd file format, it is possible to use
+   * the flag apply_all_indicators_to_manifolds to decide if
+   * the indicators in the file refer to manifolds (flag set to true)
+   * or boundaries (flag set to false).
    *
+   * @note The current implementation of this mesh reader is suboptimal, and
+   * may therefore be slow for large meshes.
    *
+   * @note Usage tips for Cubit:
+   * - Multiple material-id's can be defined in the mesh.
+   * This is done by specifying blocksets in the pre-processor.
+   * - Arbitrary surface boundaries can be defined in the mesh.
+   * This is done by specifying sidesets in the pre-processor. In particular,
+   * boundaries are not confined to just surfaces (in 3d) individual element
+   * faces can be added to the sideset as well. This is useful when a boundary
+   * condition is to be applied on a complex shape boundary that is difficult
+   * to define using "surfaces" alone. Similar can be done in 2d.
    *
-   *
-   *
-   *
-   * - 可以在网格中定义多个材料ID。  这可以通过在预处理程序中指定块组来实现。
-   *
-   *
-   *
-   *
-   * - 可以在网格中定义任意的表面边界。  这是通过在预处理程序中指定边集来实现的。特别是，边界不仅仅局限于表面（在三维中），单个元素面也可以被添加到边集中。当边界条件要应用在一个复杂的形状边界上时，这是非常有用的，因为仅仅使用 "面 "是难以定义的。类似的情况也可以在2d中完成。
-   * @note  该文件格式的兼容性信息如下。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 在Abaqus CAE 6.12中生成的文件已被验证可以正确导入，但较早（或较新）版本的Abaqus也可以生成有效的输入甲板。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 使用Cubit 11.x, 12.x, 13.x, 14.x和15.x生成的文件是有效的,但只有在使用一组特定的导出步骤时。这些步骤如下。
-   *
-   *
-   *
-   *
-   * - 点击右侧工具栏中的光盘图标，进入 "分析设置模式"。
-   *
-   *
-   *
-   *
-   * - 在 "操作 "下选择 "导出网格"，点击右边工具栏上的必要图标。
-   *
-   * - 选择一个输出文件。在Cubit 11.0和12.0版本中，可能需要点击浏览按钮，在弹出的对话中输入。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 选择要输出的尺寸。
-   *
-   *
-   *
-   *
-   * - 勾选覆盖的方框。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 如果使用Cubit v12.0以后,取消勾选 "使用Cubit ID的导出"。如果不勾选这个框，一个无效的文件将遇到错误。
-   *
-   *
-   *
-   *
-   * - 点击应用。
-   *
+   * @note Compatibility information for this file format is listed below.
+   * - Files generated in Abaqus CAE 6.12 have been verified to be
+   * correctly imported, but older (or newer) versions of Abaqus may also
+   * generate valid input decks.
+   * - Files generated using Cubit 11.x, 12.x, 13.x, 14.x and 15.x are valid,
+   * but only when using a specific set of export steps. These are as follows:
+   *     - Go to "Analysis setup mode" by clicking on the disc icon in the
+   * toolbar on the right.
+   *     - Select "Export Mesh" under "Operation" by clicking on the
+   * necessary icon in the toolbar on the right.
+   *     - Select an output file. In Cubit version 11.0 and 12.0 it might be
+   * necessary to click on the browse button and type it in the dialogue that
+   * pops up.
+   *     - Select the dimension to output in.
+   *     - Tick the overwrite box.
+   *     - If using Cubit v12.0 onwards, uncheck the box "Export using Cubit
+   * ID's". An invalid file will encounter errors if this box is left checked.
+   *     - Click apply.
    */
   void
   read_abaqus(std::istream &in,
               const bool    apply_all_indicators_to_manifolds = false);
 
   /**
-   * 从一个包含DB网格格式数据的文件中读取网格数据。
-   *
+   * Read grid data from a file containing data in the DB mesh format.
    */
   void
   read_dbmesh(std::istream &in);
 
   /**
-   * 从一个包含XDA格式数据的文件中读取网格数据。
-   *
+   * Read grid data from a file containing data in the XDA format.
    */
   void
   read_xda(std::istream &in);
 
   /**
-   * 从msh文件中读取网格数据，可以是该文件格式的第一版或第二版。%Gmsh格式的文件在http://www.gmsh.info/。
-   * @note
-   * deal.II的输入函数不区分换行和其他空白。因此，deal.II将能够读取比%Gmsh略微通用的格式的文件。
-   * @ingroup simplex
+   * Read grid data from an msh file, either version 1 or version 2 of that
+   * file format. The %Gmsh formats are documented at
+   * http://www.gmsh.info/.
    *
+   * @note The input function of deal.II does not distinguish between newline
+   * and other whitespace. Therefore, deal.II will be able to read files in a
+   * slightly more general format than %Gmsh.
+   *
+   * @ingroup simplex
    */
   void
   read_msh(std::istream &in);
 
 #ifdef DEAL_II_GMSH_WITH_API
   /**
-   * 使用Gmsh
-   * API读取网格数据。任何由Gmsh支持的文件都可以作为参数传递。格式是由文件名的扩展名推断出来的。
-   * 该函数将非命名的物理id（gmsh格式<4.0）解释为材料或边界id（类似于其他read_msh()函数的情况）。如果你想指定非默认的流形或边界ID，你必须将所有需要非默认边界或流形ID的实体分组到命名的物理组中，其中名称是使用应用于
-   * `std::map<std::string,  int>`的函数 Patterns::Tools::to_value()
-   * 来解释的。键值可以是`MaterialID`（如果物理组指的是尺寸为`dim`的对象），`BoundaryID`（如果组指的是尺寸<`dim`的对象），或者`ManifoldID`。
-   * 从Gmsh文档中，物理标签的格式遵循以下惯例。
+   * Read grid data using Gmsh API. Any file supported by Gmsh can be passed as
+   * argument. The format is deduced from the filename extension.
+   *
+   * This function interprets non-named physical ids (gmsh format < 4.0) as
+   * material or boundary ids (similarly to what happens with the other
+   * read_msh() function). If you want to specify non default manifold or
+   * boundary ids, you must group all entities that require a non default
+   * boundary or manifold id into named physical groups, where the name is
+   * interpreted using the function Patterns::Tools::to_value() applied to a
+   * `std::map<std::string, int>`. The keys can be either `MaterialID` (if the
+   * physical group refers to object of dimension `dim`), `BoundaryID` (if the
+   * group refers to objects of dimension < `dim`), or `ManifoldID`.
+   *
+   * From the Gmsh documentation, the formats of the physical tags follows the
+   * following conventions:
    * @code
    * \$PhysicalNames // same as MSH version 2
-   * numPhysicalNames(ASCII int)
-   * dimension(ASCII int) physicalTag(ASCII int) "name"(127 characters max)
-   * ...
+   *   numPhysicalNames(ASCII int)
+   *   dimension(ASCII int) physicalTag(ASCII int) "name"(127 characters max)
+   *   ...
    * \$EndPhysicalNames
    * @endcode
-   * 例如，下面是网格文件的片段
+   *
+   * For example, the following snippet of mesh file
    * @code
    * MeshFormat
    * 4.1 0 8
@@ -436,76 +554,72 @@ public:
    * \$PhysicalNames
    * 4
    * 1 1 "ManifoldID:0"
-   * 1 2 "BoundaryID:
-   *
-   * -1, ManifoldID: 1"
+   * 1 2 "BoundaryID: -1, ManifoldID: 1"
    * 2 3 "ManifoldID: 1"
    * 2 4 "MaterialID: 2, ManifoldID: 1"
    * \$EndPhysicalNames
    * \$Entities
    * ...
    * @endcode
-   * 指的是一个二维网格，其中。
    *
+   * refers to a two dimensional grid where:
+   * - a portion of the boundary of dimension 1 has physical tag 1, and manifold
+   *   id 0
+   * - some internal faces (lines of dimension 1) have manifold id 1
+   * - some elements have manifold id 1 (and material id equal to the default
+   *   value, i.e., zero)
+   * - some elements have manifold id 1 and material id equal to 2
    *
+   * If the physical groups are not named, then the behaviour is the same as
+   * the other read_msh() function, i.e., the physical tag itself is interpreted
+   * as a boundary or material id.
    *
-   *
-   *
-   *
-   * - 维度1的部分边界具有物理标签1，流形ID 0
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 一些内部面（维度为1的线）有流形ID 1
-   *
-   *
-   *
-   *
-   *
-   * - 一些元素的流形ID为1（而材料ID等于默认值，即0）。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 一些元素的流形id为1，材料id等于2 如果物理组没有命名，那么行为与其他read_msh()函数相同，即物理标签本身被解释为边界或材料id。
    * @ingroup simplex
-   *
    */
   void
   read_msh(const std::string &filename);
 #endif
 
   /**
-   * 从一个包含tecplot
-   * ASCII数据的文件中读取网格数据。这在没有安装任何tecplot的情况下也可以工作。
-   *
+   * Read grid data from a file containing tecplot ASCII data. This also works
+   * in the absence of any tecplot installation.
    */
   void
   read_tecplot(std::istream &in);
 
   /**
-   * 读取Assimp支持的文件，并从中生成一个三角图。
-   * 如果你指定一个 @p mesh_index,
-   * ，只有给定索引的网格会被提取出来，否则文件中存在的所有网格都会被用于生成三角图。
-   * 这个函数只能用来读取二维网格（可能嵌入三维）。这是图形软件的标准，如blender或3D
-   * studio max，这也是原始Assimp库的建立目的。我们把它
-   * "弯曲
-   * "到deal.II，以支持复杂的共维一维网格和复杂的二维网格。
-   * 如果 @p remove_duplicates
-   * 被设置为true（默认），那么重复的顶点将被移除，如果它们的距离低于
-   * @p tol.
-   * ，那么只有与给定维度和空间维度兼容的元素将被从网格中提取，并且只支持那些与deal.II兼容的元素。如果你设置了`ignore_unsupported_element_types`，所有其他的元素类型都会被这个算法直接忽略。例如，如果你的网格包含三角形和四边形的混合体，那么只有四边形会被提取出来。如果你混合了兼容和不兼容的元素类型，所得到的网格（在三角剖分对象中表示）可能没有任何意义。如果`ignore_unsupported_element_types`被设置为`false`，那么当遇到不支持的类型时，就会抛出一个异常。
-   * @param  filename 要读取的文件  @param  mesh_index
-   * 文件中网格的索引  @param  remove_duplicates 删除重复的顶点
-   * @param  tol 删除顶点时使用的公差  @param
-   * ignore_unsupported_element_types
-   * 如果我们在解析过程中遇到不支持的类型，不要抛出异常。
+   * Read in a file supported by Assimp, and generate a Triangulation
+   * out of it.  If you specify a @p mesh_index, only the mesh with
+   * the given index will be extracted, otherwise all meshes which are
+   * present in the file will be used to generate the Triangulation.
    *
+   * This function can only be used to read two-dimensional meshes (possibly
+   * embedded in three dimensions). This is the standard for graphical software
+   * such as blender, or 3D studio max, and that is what the original Assimp
+   * library was built for. We "bend" it to deal.II to support complex
+   * co-dimension one meshes and complex two-dimensional meshes.
+   *
+   * If @p remove_duplicates is set to true (the default), then
+   * duplicated vertices will be removed if their distance is lower
+   * than @p tol.
+   *
+   * Only the elements compatible with the given dimension and space dimension
+   * will be extracted from the mesh, and only those elements that are
+   * compatible with deal.II are supported. If you set
+   * `ignore_unsupported_element_types`, all the other element types are simply
+   * ignored by this algorithm. If your mesh contains a mixture of triangles
+   * and quadrilaterals, for example, only the quadrilaterals will be
+   * extracted. The resulting mesh (as represented in the Triangulation object)
+   * may not make any sense if you are mixing compatible and incompatible
+   * element types. If `ignore_unsupported_element_types` is set to `false`,
+   * then an exception is thrown when an unsupported type is encountered.
+   *
+   * @param filename The file to read from
+   * @param mesh_index Index of the mesh within the file
+   * @param remove_duplicates Remove duplicated vertices
+   * @param tol Tolerance to use when removing vertices
+   * @param ignore_unsupported_element_types Don't throw exceptions if we
+   *        encounter unsupported types during parsing
    */
   void
   read_assimp(const std::string &filename,
@@ -515,57 +629,104 @@ public:
               const bool         ignore_unsupported_element_types = true);
 
   /**
-   * 一个包含ExodusII提供的一些信息的结构，这些信息在Triangulation对象中没有直接表示。
-   * @note
-   * 这个结构的存在是为了与可能提供额外输出数据的read_exodusii的未来版本实现向前兼容，但现在它只有一个字段。
+   * A structure containing some of the information provided by ExodusII that
+   * doesn't have a direct representation in the Triangulation object.
    *
+   * @note This struct exists to enable forward compatibility with future
+   * versions of read_exodusii that may provide additional output data, but for
+   * now it has a single field.
    */
   struct ExodusIIData
   {
     /**
-     * 一个向量，包含从deal.II边界id（或流形id）到所提供的ExodusII
-     * sideset id的映射。
-     *
+     * A vector containing a mapping from deal.II boundary ids (or manifold ids)
+     * to the provided ExodusII sideset ids.
      */
     std::vector<std::vector<int>> id_to_sideset_ids;
   };
 
   /**
-   * 读取以ExodusII文件格式存储的网格。    ExodusII是一种功能丰富的文件格式，比本类支持的大多数其他网格格式支持更多的功能（如节点集、有限元场、质量保证数据等）。其中许多特征在deal.II中没有等效的表示，因此不被支持（例如，deal.II不直接将自由度分配给节点，所以以节点格式存储的数据不能被这个函数加载）。目前，只从输入文件中提取以下信息。      <ol>   <li>  块标识：元素的块标识被加载为其材料标识。 </li>   <li>  元素和顶点：存储在ExodusII文件中的核心几何信息填充到所附的三角测量对象中。高阶元素被自动截断为低阶元素，因为deal.II不支持这一功能（例如，在deal.II中没有相当于 <code>QUAD9</code> 的元素，因为所有四边形都有四个顶点，额外的几何信息被存储在Manifold或类似MappingQEulerian的东西）。 </li>   <li>  边集id：这些被解释为边界id或流形id（见下面关于输出值的说明）。如果你试图读取一个ExodusII文件，将一个sidet id分配给一个内部面的边界id，将会发生错误。 </li>   </ol>  对于非零二维的三角形，边集id不被翻译，因为这些三角形不支持边界id的设置。      @param  filename 要读取的文件的名称。      @param  apply_all_indicators_to_manifolds 布尔型，决定边集id是否应该被解释为流形id或边界id。默认值是<tt>false</tt>，即把所有sidet ids都当作边界ids。如果你的网格将sidet ids设置在内部面，那么就有必要将这个参数设置为 <code>true</code> ，然后做一些后处理来正确设置边界ids。      @return  这个函数返回一个结构体，包含一些由ExodusII文件存储的额外数据，这些数据不能被加载到Triangulation中。
+   * Read in a mesh stored in the ExodusII file format.
    *
-   * - 更多信息见ExodusIIData。    ExodusII中的一个单元面可以在任意数量的边集中（即，它可以有任意数量的边集ID
+   * ExodusII is a feature-rich file format that supports many more features
+   * (like node sets, finite element fields, quality assurance data, and more)
+   * than most other grid formats supported by this class. Many of these
+   * features do not have equivalent representations in deal.II and are
+   * therefore not supported (for example, deal.II does not assign degrees of
+   * freedom directly to nodes, so data stored in a nodal format is not loaded
+   * by this function). At the current time only the following information is
+   * extracted from the input file:
    *
-   * - 然而，在deal.II中，一个边界单元面正好有一个边界id。所有不在边集中的边界面都被赋予（默认）边界ID  $0$  。这个函数然后将边集组合成唯一的集合，并给每个集合一个边界ID。比如说。考虑一个单四边形网格，其左侧没有边集ID，右侧有边集ID  $0$  和  $1$  ，其底部和顶部的边集ID为  $0$  。左侧面的边界id为 $0$ ，顶部和底部面的边界id为 $1$ ，右侧面的边界id为 $2$  。因此，在这种情况下，这个函数返回的向量将是  $\{\{\}, \{0\}, \{0, 1\}\}$  。
+   * <ol>
+   *   <li>Block ids: the block id of an element is loaded as its material
+   *     id.</li>
+   *   <li>Elements and vertices: the core geometric information stored in the
+   *     ExodusII file populates the attached Triangulation object. Higher-order
+   *     elements are automatically truncated to lower-order elements since
+   *     deal.II does not support this feature (e.g., there is no equivalent to
+   *     the <code>QUAD9</code> element in deal.II since all quadrilaterals have
+   *     four vertices and additional geometric information is either stored in
+   *     a Manifold or something like MappingQEulerian).</li>
+   *   <li>Sideset ids: these are interpreted as boundary ids or manifold ids
+   *     (see the note on the output value below). An error will occur if you
+   *     attempt to read an ExodusII file that assigns a sideset id to an
+   *     internal face boundary id.</li>
+   * </ol>
    *
+   * Sideset ids are not translated for Triangulations with nonzero codimension
+   * since those Triangulations do not support the setting of boundary ids.
+   *
+   * @param filename The name of the file to read from.
+   *
+   * @param apply_all_indicators_to_manifolds Boolean determining if the sideset
+   * ids should be interpreted as manifold ids or boundary ids. The default
+   * value is <tt>false</tt>, i.e., treat all sideset ids as boundary ids. If
+   * your mesh sets sideset ids on internal faces then it will be necessary to
+   * set this argument to <code>true</code> and then do some postprocessing to
+   * set the boundary ids correctly.
+   *
+   * @return This function returns a struct containing some extra data stored by
+   * the ExodusII file that cannot be loaded into a Triangulation - see
+   * ExodusIIData for more information.
+   *
+   * A cell face in ExodusII can be in an arbitrary number of sidesets (i.e., it
+   * can have an arbitrary number of sideset ids) - however, a boundary cell
+   * face in deal.II has exactly one boundary id. All boundary faces that are
+   * not in a sideset are given the (default) boundary id of $0$. This function
+   * then groups sidesets together into unique sets and gives each one a
+   * boundary id. For example: Consider a single-quadrilateral mesh whose left
+   * side has no sideset id, right side has sideset ids $0$ and $1$, and whose
+   * bottom and top sides have sideset ids of $0$. The left face will have a
+   * boundary id of $0$, the top and bottom faces boundary ids of $1$, and the
+   * right face a boundary id of $2$. Hence the vector returned by this function
+   * in that case will be $\{\{\}, \{0\}, \{0, 1\}\}$.
    */
   ExodusIIData
   read_exodusii(const std::string &filename,
                 const bool         apply_all_indicators_to_manifolds = false);
 
   /**
-   * 以这种格式返回文件的标准后缀。
-   *
+   * Return the standard suffix for a file in this format.
    */
   static std::string
   default_suffix(const Format format);
 
   /**
-   * 返回格式名称的枚举格式。
-   *
+   * Return the enum Format for the format name.
    */
   static Format
   parse_format(const std::string &format_name);
 
   /**
-   * 返回一个已实现的输入格式的列表。不同的名字用竖条符号（<tt>`|'</tt>）分开，如ParameterHandler类所使用的那样。
-   *
+   * Return a list of implemented input formats. The different names are
+   * separated by vertical bar signs (<tt>`|'</tt>) as used by the
+   * ParameterHandler classes.
    */
   static std::string
   get_format_names();
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcUnknownSectionType,
                  int,
@@ -573,8 +734,7 @@ public:
                  << "input file is not implemented.");
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcUnknownElementType,
                  int,
@@ -582,8 +742,7 @@ public:
                  << "input file is not implemented.");
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcUnknownIdentifier,
                  std::string,
@@ -593,8 +752,7 @@ public:
                  << "(Maybe the space dimension of triangulation and "
                  << "input file do not match?");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclExceptionMsg(ExcNoTriangulationSelected,
                    "No Triangulation has been attached to this GridIn object "
@@ -603,8 +761,7 @@ public:
                    "to be  filled in the constructor GridIn(tria) or attach "
                    "it with the function call GridIn::attach_triangulation().");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException2(
     ExcInvalidVertexIndex,
@@ -614,8 +771,7 @@ public:
     << ", you are referencing a vertex with index " << arg2
     << " but no vertex with this index has been described in the input file.");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException3(
     ExcInvalidVertexIndexGmsh,
@@ -626,13 +782,11 @@ public:
     << " in the input file), you are referencing a vertex with index " << arg3
     << " but no vertex with this index has been described in the input file.");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcInvalidDBMeshFormat);
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcInvalidDBMESHInput,
                  std::string,
@@ -641,8 +795,7 @@ public:
                  << " position of a DB Mesh file.");
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(
     ExcDBMESHWrongDimension,
@@ -673,15 +826,29 @@ public:
 
 protected:
   /**
-   * 存储要用读入的数据输入的三角图的地址。
-   *
+   * Store address of the triangulation to be fed with the data read in.
    */
   SmartPointer<Triangulation<dim, spacedim>, GridIn<dim, spacedim>> tria;
 
   /**
-   * 这个函数可以将<tt>read_*</tt>函数创建的原始单元数据对象以Gnuplot格式写入一个流。如果想看看实际创建的数据，这有时是很方便的，如果知道数据在某些方面不正确，但Triangulation类因为这些错误而拒绝生成三角图。特别是，这个类的输出写出了单元格的编号，以及每个单元格的面的方向。特别是需要后者的信息来验证单元格数据对象是否遵循单元格及其面的排序要求，即所有面需要有唯一的方向和相对于相邻单元格的指定方向（见该类和GridReordering类的文档）。
-   * 这个函数的输出包括每条界于单元格的线的向量，表明它相对于这个单元格的方向，以及单元格的编号。整个输出的形式是，它可以被Gnuplot读入，并生成完整的图，而不需要用户进一步操作。
+   * This function can write the raw cell data objects created by the
+   * <tt>read_*</tt> functions in Gnuplot format to a stream. This is
+   * sometimes handy if one would like to see what actually was created, if it
+   * is known that the data is not correct in some way, but the Triangulation
+   * class refuses to generate a triangulation because of these errors. In
+   * particular, the output of this class writes out the cell numbers along
+   * with the direction of the faces of each cell. In particular the latter
+   * information is needed to verify whether the cell data objects follow the
+   * requirements of the ordering of cells and their faces, i.e. that all
+   * faces need to have unique directions and specified orientations with
+   * respect to neighboring cells (see the documentations to this class and
+   * the GridReordering class).
    *
+   * The output of this function consists of vectors for each line bounding
+   * the cells indicating the direction it has with respect to the orientation
+   * of this cell, and the cell number. The whole output is in a form such
+   * that it can be read in by Gnuplot and generate the full plot without
+   * further ado by the user.
    */
   static void
   debug_output_grid(const std::vector<CellData<dim>> &  cells,
@@ -690,24 +857,28 @@ protected:
 
 private:
   /**
-   * 跳过输入流中的空行，即不包含任何内容或只包含白色空间的行。
-   *
+   * Skip empty lines in the input stream, i.e. lines that contain either
+   * nothing or only whitespace.
    */
   static void
   skip_empty_lines(std::istream &in);
 
   /**
-   * 跳过给定输入流目前所在点之后以指定字符（例如<tt>#</tt>）开始的注释行。调用此函数后，数据流处于注释行后第一行的开始位置，如果没有注释行，则处于与之前相同的位置。
-   *
+   * Skip lines of comment that start with the indicated character (e.g.
+   * <tt>#</tt>) following the point where the given input stream presently
+   * is. After the call to this function, the stream is at the start of the
+   * first line after the comment lines, or at the same position as before if
+   * there were no lines of comments.
    */
   static void
   skip_comment_lines(std::istream &in, const char comment_start);
 
   /**
-   * 这个函数做了一个讨厌的工作（由于非常宽松的约定和不同版本的tecplot格式），从一个tecplot头中提取重要的参数，包含在字符串
-   * @p header.
-   * 中，其他变量是输出变量，它们的值对函数执行没有影响。
-   *
+   * This function does the nasty work (due to very lax conventions and
+   * different versions of the tecplot format) of extracting the important
+   * parameters from a tecplot header, contained in the string @p header. The
+   * other variables are output variables, their value has no influence on the
+   * function execution..
    */
   static void
   parse_tecplot_header(std::string &              header,
@@ -720,13 +891,12 @@ private:
                        bool &                     blocked);
 
   /**
-   * 如果没有给出格式，read()使用的输入格式。
-   *
+   * Input format used by read() if no format is given.
    */
   Format default_format;
 };
 
- /* -------------- declaration of explicit specializations ------------- */ 
+/* -------------- declaration of explicit specializations ------------- */
 
 #ifndef DOXYGEN
 
@@ -752,5 +922,3 @@ GridIn<3>::debug_output_grid(const std::vector<CellData<3>> &cells,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

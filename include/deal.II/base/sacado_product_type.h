@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/sacado_product_type_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 by the deal.II authors
@@ -25,5 +24,3 @@ DEAL_II_WARNING(`"This file is deprecated. Use <deal.II/differentiation/ad/sacad
 #include <deal.II/differentiation/ad/sacado_product_types.h>
 
 #endif
-
-

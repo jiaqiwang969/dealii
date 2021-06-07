@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/tensor_product_manifold_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -33,26 +32,33 @@ DEAL_II_NAMESPACE_OPEN
 
 /**
  * @brief Tensor product manifold of two ChartManifolds.
- * 这个流形将结合构造函数中给出的ChartManifold  @p A  和  @p B
- * ，通过建立张量积  $A\otimes B$  ，形成一个新的ChartManifold
- * 。实空间的第一个 @p spacedim_A 维度和图表的第一个 @p
- * chartdim_A 维度将由流形 @p A, 给出，而其余坐标由 @p B.
- * 给出。流形将由<tt>三角法 @<dim,  space_dim_A+space_dim_B
- * @></tt>.  使用。
- * 一个例子是将空间维度为2的SphericalManifold和空间维度为1的FlatManifold结合起来，形成一个圆柱形流形。
- * pull_back()、push_forward()和push_forward_gradient()是通过将输入参数按照给定的维度分割成
- * @p A 和 @p B
- * 的输入并在连接结果之前应用相应的操作来实现的。
  *
+ * This manifold will combine the ChartManifolds @p A and @p B given in the
+ * constructor to form a new ChartManifold by building the tensor product
+ * $A\otimes B$. The first @p spacedim_A dimensions in the real space and the
+ * first @p chartdim_A dimensions of the chart will be given by manifold @p A,
+ * while the remaining coordinates are given by @p B. The manifold is to be
+ * used by a <tt>Triangulation@<dim, space_dim_A+space_dim_B@></tt>.
  *
- * @note  尺寸参数 @p dim_A 和 @p dim_B 不被使用。
- * @tparam  dim
- * 单元的尺寸（需要与要连接的三角结构的第一个模板参数相匹配。
- * @tparam  dim_A ChartManifold A的尺寸。  @tparam  spacedim_A
- * ChartManifold A的空间尺寸。  @tparam  chartdim_A ChartManifold
- * A的图表尺寸。
+ * An example usage would be the combination of a SphericalManifold with space
+ * dimension 2 and a FlatManifold with space dimension 1 to form a cylindrical
+ * manifold.
  *
+ * pull_back(), push_forward(), and push_forward_gradient() are implemented by
+ * splitting the input argument into inputs for @p A and @p B according to the
+ * given dimensions and applying the corresponding operations before
+ * concatenating the result.
  *
+ * @note The dimension arguments @p dim_A and @p dim_B are not used.
+ *
+ * @tparam dim Dimension of cells (needs to match first template argument of
+ * the Triangulation to be attached to.
+ * @tparam dim_A Dimension of ChartManifold A.
+ * @tparam spacedim_A Spacial dimension of ChartManifold A.
+ * @tparam chartdim_A Chart dimension of ChartManifold A.
+ * @tparam dim_B Dimension of ChartManifold B.
+ * @tparam spacedim_B Spacial dimension of ChartManifold B.
+ * @tparam chartdim_B Chart dimension of ChartManifold B.
  */
 template <int dim,
           int dim_A,
@@ -66,48 +72,43 @@ class TensorProductManifold
 {
 public:
   /**
-   * 图表尺寸是流形 @p A 和 @p B. 的图表尺寸之和。
-   *
+   * The chart dimension is the sum of the chart dimensions of the manifolds
+   * @p A and @p B.
    */
   static const unsigned int chartdim = chartdim_A + chartdim_B;
   /**
-   * 空间维度是流形 @p A 和 @p B. 的空间维度之和。
-   *
+   * The space dimension is the sum of the space dimensions of the manifolds
+   * @p A and @p B.
    */
   static const unsigned int spacedim = spacedim_A + spacedim_B;
 
   /**
-   * 构建器。
-   *
+   * Constructor.
    */
   TensorProductManifold(
     const ChartManifold<dim_A, spacedim_A, chartdim_A> &manifold_A,
     const ChartManifold<dim_B, spacedim_B, chartdim_B> &manifold_B);
 
   /**
-   * 克隆此流形。
-   *
+   * Clone this manifold.
    */
   virtual std::unique_ptr<Manifold<dim, spacedim_A + spacedim_B>>
   clone() const override;
 
   /**
-   * 拉回操作。
-   *
+   * Pull back operation.
    */
   virtual Point<chartdim>
   pull_back(const Point<spacedim> &space_point) const override;
 
   /**
-   * 前推操作。
-   *
+   * Push forward operation.
    */
   virtual Point<spacedim>
   push_forward(const Point<chartdim> &chart_point) const override;
 
   /**
-   * 梯度。
-   *
+   * Gradient.
    */
   virtual DerivativeForm<1, chartdim, spacedim>
   push_forward_gradient(const Point<chartdim> &chart_point) const override;
@@ -122,7 +123,7 @@ private:
 
 
 
- /*------------------Template Implementations------------------------*/ 
+/*------------------Template Implementations------------------------*/
 
 
 
@@ -377,5 +378,3 @@ TensorProductManifold<dim,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

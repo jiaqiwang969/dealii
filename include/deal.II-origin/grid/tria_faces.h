@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/tria_faces_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
@@ -29,74 +30,68 @@ namespace internal
   namespace TriangulationImplementation
   {
     /**
-     * This class contains information belonging to the faces of a
-     * triangulation. These classes are similar to the TriaLevel classes. As
-     * cells are organised in a hierarchical structure of levels, each
-     * triangulation consists of several such TriaLevels. However the faces of
-     * a triangulation, lower dimensional objects like lines in 2D or lines
-     * and quads in 3D, do not have to be based on such a hierarchical
-     * structure. In fact we have to organise them in only one object if we
-     * want to enable anisotropic refinement. Therefore the TriaFaces classes
-     * store the information belonging to the faces of a triangulation
-     * separately from the TriaLevel classes.
+     * 这个类包含了属于三角形的面的信息。这些类类似于TriaLevel类。由于细胞是以层次结构组织起来的，每个三角形由几个这样的TriaLevels组成。然而，三角形的面，低维物体，如二维的线或三维的线和四边形，不一定要基于这样的层次结构。事实上，如果我们想实现各向异性的细化，我们必须将它们组织在一个对象中。因此，TriaFaces类将属于三角形的面的信息与TriaLevel类分开存储。
+     *
      */
     class TriaFaces
     {
     public:
       /**
-       * Constructor.
+       * 构造函数。
+       *
        */
       TriaFaces(const unsigned int dim);
 
       /**
-       * Default constructor for Boost::serialization.
+       * Boost::serialization. 的默认构造函数。
+       *
        */
       TriaFaces() = default;
 
       /**
-       * Dimension of the underlying triangulation.
+       * 底层三角结构的尺寸。
+       *
        */
       unsigned int dim;
 
       /**
-       * The TriaObject containing the data of quads.
+       * 包含四边形数据的TriaObject。
+       * @note 只用于dim=3。
        *
-       * @note Used only for dim=3.
        */
       TriaObjects quads;
 
       /**
-       * Orientation of each line of each quad.
+       * 每个四边形的每一行的方向。
+       * @note 仅用于dim=3。
        *
-       * @note Used only for dim=3.
        */
       std::vector<unsigned char> quads_line_orientations;
 
       /**
-       * Reference cell type of each quad.
+       * 每个四边形的参考单元类型。
+       * @note  仅用于dim=3。
        *
-       * @note Used only for dim=3.
        */
       std::vector<dealii::ReferenceCell> quad_reference_cell;
 
       /**
-       * The TriaObject containing the data of lines.
+       * 包含线的数据的TriaObject。
+       * @note  仅用于dim>1。
        *
-       * @note Used only for dim>1.
        */
       TriaObjects lines;
 
       /**
-       * Determine an estimate for the memory consumption (in bytes) of this
-       * object.
+       * 确定此对象的内存消耗（以字节为单位）的估计值。
+       *
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * Read or write the data of this object to or from a stream for the
-       * purpose of serialization using the [BOOST serialization
-       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，将此对象的数据读入或写入一个流中。
+       *
        */
       template <class Archive>
       void
@@ -123,3 +118,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

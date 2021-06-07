@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/data_out_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -56,316 +57,160 @@ class XDMFEntry;
 #endif
 
 /**
- * This is a base class for output of data on meshes of very general form.
- * Output data is expected as a set of <tt>patches</tt> and written to the
- * output stream in the format expected by the visualization tool. For a list
- * of output formats, check the enumeration #OutputFormat. For each format
- * listed there, this class contains a function <tt>write_format</tt>, writing
- * the output. Refer to the documentation of those functions for details on a
- * certain format.
- *
+ * 这是一个基类，用于输出非常一般形式的网格上的数据。输出数据被期望为一组<tt>patches</tt>，并以可视化工具所期望的格式写入输出流。对于输出格式的列表，请查看枚举#OutputFormat。对于其中列出的每一种格式，这个类包含一个函数<tt>write_format</tt>，写出输出。关于某种格式的细节，请参考这些函数的文档。
  * <h3>Structure of the output data</h3>
+ * 数据不是用deal.II网状结构写入的。相反，它依赖于一组由派生类（例如DataOut、DataOutStack、DataOutFaces、DataOutRotation或MatrixOut类）创建的<tt>patches</tt>。
+ * 每个补丁描述一个网格的单一逻辑单元，可能会被细分若干次，以表示在这个单元上定义的高阶多项式。为此，一个补丁由一个<tt>dim</tt>维的规则网格组成，每个方向上的网格点数量相同。在最简单的情况下，它可能由单个网格单元的角点组成。对于这个局部网格的每个点，Patch包含任意数量的数据值，不过每个Patch上每个点的数据集数量必须相同。
+ * 通过为不同的输出格式提供这个接口，可以简单地将这个类扩展到新的格式，而不需要依赖诸如实际的三角计算和数据矢量的处理。这些东西应该由派生类提供，它有一个用户可调用的接口，然后。
+ * 在每个补丁中，数据是按照通常的词典顺序组织的，<i>x</i>运行最快，然后是<i>y</i>和<i>z</i>。节点是按照这个顺序存储的，单元也是如此。三维的每个单元都被存储，使其正面位于<i>xz</i>平面。为了提高这一概念的可理解性，以下两节是从本文档的前一版本中保留下来的。
  *
- * Data is not written with the deal.II mesh structure. Instead, it relies on
- * a set of <tt>patches</tt> created by a derived class (for example the
- * DataOut, DataOutStack, DataOutFaces, DataOutRotation, or MatrixOut
- * classes).  Each Patch describes a single logical cell of a mesh, possibly
- * subdivided a number of times to represent higher order polynomials defined
- * on this cell. To this end, a patch consists of a <tt>dim</tt>-dimensional
- * regular grid with the same number of grid points in each direction. In the
- * simplest case it may consist of the corner points of a single mesh cell.
- * For each point of this local grid, the Patch contains an arbitrary number
- * of data values, though the number of data sets must be the same for each
- * point on each patch.
+ *  <h4>Patches</h4>
+ * 网格可以被认为是一个单元格的集合；如果你想在这样的网格上写出数据，你可以通过一次写一个单元格来实现。因此，这个类中的函数接收一个描述每个单元格上的数据的对象列表。每个单元的数据通常包括这个单元的顶点列表，以及每个顶点的数据值（例如，解决方案数据、错误信息等）的列表。
+ * 然而，在某些情况下，单元格的这种接口过于局限。例如，你可能有高阶元素，只打印顶点的值是不够的。出于这个原因，我们不仅提供了只写顶点上的数据，而且还将数据组织成每个单元的张量积网格。参数<tt>n_subdivisions</tt>是为每个补丁单独给出的，它表示单元被分割输出的频率；例如，<tt>n_subdivisions==1</tt>产生的单元没有被分割，<tt>n_subdivisions==2</tt>将产生一个二维空间3乘3点的网格，三维空间3乘3点，<tt>n_subdivisions==3</tt>将产生4乘4（乘4）点，等等。这些点在补丁上的实际位置将通过多线性变换从为这个补丁给出的顶点计算出来。
+ * 对于边界上的单元，可能会使用一个映射来计算内部点的位置。在这种情况下，坐标被存储在补丁内，因为它们不容易被恢复。
+ * 鉴于这些注释，要在这个点的补丁上打印的实际数据由几个数据集组成，每个数据集在每个补丁点上都有一个值。例如在两个空间维度的<tt>n_subdivisions==2</tt>，每个数据集要提供9个值，由于补丁要被打印成张量积（或其向实空间单元的转化），其值要像<i>(x0,y0)
+ * (x0,y1) (x0,y2) (x1,y0) (x1,y1) (x1,y2) (x2,y0) (x2,y1)
+ * (x2,y2)</i>那样排序，即z坐标运行最快，然后是y坐标，然后是x（如果有那么多空间方向）。
  *
- * By offering this interface to the different output formats, it is simple to
- * extend this class to new formats without depending on such things as actual
- * triangulations and handling of data vectors. These things shall be provided
- * by derived class which have a user callable interface then.
- *
- * Inside each patch, the data is organized in the usual lexicographical
- * order, <i>x</i> running fastest, then <i>y</i> and <i>z</i>. Nodes are
- * stored in this order and cells as well. Each cell in 3D is stored such that
- * the front face is in the <i>xz</i>-plane. In order to enhance
- * intelligibility of this concept, the following two sections are kept from a
- * previous version of this documentation.
- *
- *
- * <h4>Patches</h4>
- *
- * Grids can be thought of as a collection of cells; if you want to write out
- * data on such a grid, you can do so by writing them one cell at a time. The
- * functions in this class therefore take a list of objects describing the
- * data on one cell each. This data for each cell usually consists of a list
- * of vertices for this cell, and a list of data values (for example solution
- * data, error information, etc) at each of these vertices.
- *
- * In some cases, this interface to a cell is too restricted, however. For
- * example, you may have higher order elements and printing the values at the
- * vertices only is not enough. For this reason, we not only provide writing
- * the data on the vertices only, but the data is organizes as a tensor
- * product grid on each cell. The parameter <tt>n_subdivisions</tt>, which is
- * given for each patch separately, denotes how often the cell is to be
- * divided for output; for example, <tt>n_subdivisions==1</tt> yields no
- * subdivision of the cell, <tt>n_subdivisions==2</tt> will produce a grid of
- * 3 times 3 points in two spatial dimensions and 3 times 3 times 3 points in
- * three dimensions, <tt>n_subdivisions==3</tt> will yield 4 times 4 (times 4)
- * points, etc. The actual location of these points on the patch will be
- * computed by a multilinear transformation from the vertices given for this
- * patch.  For cells at the boundary, a mapping might be used to calculate the
- * position of the inner points. In that case the coordinates are stored
- * inside the Patch, as they cannot be easily recovered otherwise.
- *
- * Given these comments, the actual data to be printed on this patch of points
- * consists of several data sets each of which has a value at each of the
- * patch points. For example with <tt>n_subdivisions==2</tt> in two space
- * dimensions, each data set has to provide nine values, and since the patch
- * is to be printed as a tensor product (or its transformation to the real
- * space cell), its values are to be ordered like <i>(x0,y0) (x0,y1) (x0,y2)
- * (x1,y0) (x1,y1) (x1,y2) (x2,y0) (x2,y1) (x2,y2)</i>, i.e. the z-coordinate
- * runs fastest, then the y-coordinate, then x (if there are that many space
- * directions).
- *
- *
- * <h4>Generalized patches</h4>
- *
- * In general, the patches as explained above might be too restricted. For
- * example, one might want to draw only the outer faces of a domain in a
- * three-dimensional computation, if one is not interested in what happens
- * inside. Then, the objects that should be drawn are two-dimensional in a
- * three-dimensional world. The Patch class and associated output functions
- * handle these cases. The Patch class therefore takes two template
- * parameters, the first, named <tt>dim</tt> denoting the dimension of the
- * object (in the above example, this would be two), while the second, named
- * <tt>spacedim</tt>, denotes the dimension of the embedding space (this would
- * be three). The corner points of a patch have the dimension of the space,
- * while their number is determined by the dimension of the patch. By default,
- * the second template parameter has the same value as the first, which would
- * correspond to outputting a cell, rather than a face or something else.
- *
+ *  <h4>Generalized patches</h4>
+ * 一般来说，上面解释的补丁可能太受限制。例如，在一个三维计算中，如果人们对内部发生的事情不感兴趣，可能只想画出一个域的外表面。那么，在一个三维的世界中，应该绘制的对象是二维的。Patch类和相关的输出函数可以处理这些情况。因此，Patch类需要两个模板参数，第一个名为<tt>dim</tt>，表示对象的维度（在上面的例子中，这将是两个），而第二个名为<tt>spacedim</tt>，表示嵌入空间的维度（这将是三个）。一个补丁的角点具有空间的维度，而它们的数量则由补丁的维度决定。默认情况下，第二个模板参数的值与第一个相同，这将对应于输出一个单元，而不是一个面或其他东西。
  * <h3>DataOutBaseInterface</h3>
+ * 这个命名空间的成员通常不会从用户代码中直接调用。相反，使用这里声明的函数的类通常是从DataOutInterface派生的。
+ * 这个类的接口基本上由一个描述补丁的数据类型的声明和一堆函数组成，这些函数接收一个补丁列表，并将它们以一种格式或其他方式写入流。派生类的责任是提供这个补丁列表。除了补丁列表之外，还可以给每个数据集起一个名字。
  *
- * The members of this namespace are not usually called from user code
- * directly. Rather, classes that use the functions declared here are
- * typically derived from DataOutInterface.
- *
- * The interface of this class basically consists of the declaration of a data
- * type describing a patch and a bunch of functions taking a list of patches
- * and writing them in one format or other to the stream. It is in the
- * responsibility of the derived classes to provide this list of patches. In
- * addition to the list of patches, a name for each data set may be given.
- *
- *
- * <h3>Querying interface</h3>
- *
- * This class also provides a few functions (parse_output_format(),
- * get_output_format_names(), default_suffix()) that can be used to query
- * which output formats this class supports. The provide a list of names for
- * all the formats we can output, parse a string and return an enum indicating
- * each format, and provide a way to convert a value of this enum into the
- * usual suffix used for files of that name. Using these functions, one can
- * entirely free applications from knowledge which formats the library
- * presently allows to output; several of the example programs show how to do
- * this.
- *
+ *  <h3>Querying interface</h3>
+ * 这个类还提供了几个函数（parse_output_format(),
+ * get_output_format_names(),
+ * default_suffix()），可以用来查询这个类支持哪些输出格式。这些函数提供了一个我们可以输出的所有格式的名称列表，解析一个字符串并返回一个表示每个格式的枚举，并提供一种方法将这个枚举的值转换为该名称的文件通常使用的后缀。使用这些函数，可以使应用程序完全摆脱对库目前允许输出的格式的了解；几个例子程序显示了如何做到这一点。
  * <h3>Output parameters</h3>
- *
- * All functions take a parameter which is a structure of type
- * <tt>XFlags</tt>, where <tt>X</tt> is the name of the output format. To find
- * out what flags are presently supported, read the documentation of the
- * different structures.
- *
- * Note that usually the output formats used for scientific visualization
- * programs have no or very few parameters (apart from some compatibility
- * flags) because there the actual appearance of output is determined using
- * the visualization program and the files produced by this class store more
- * or less only raw data.
- *
- * The direct output formats, like Postscript or Povray need to be given a lot
- * more parameters, though, since there the output file has to contain all
- * details of the viewpoint, light source, etc.
- *
+ * 所有的函数都有一个参数，是一个<tt>XFlags</tt>类型的结构，其中<tt>X</tt>是输出格式的名称。要知道目前支持哪些标志，请阅读不同结构的文档。
+ * 注意，通常用于科学可视化程序的输出格式没有或只有很少的参数（除了一些兼容性标志），因为在那里，输出的实际外观是由可视化程序决定的，这个类产生的文件或多或少只存储原始数据。
+ * 直接的输出格式，如Postscript或Povray，需要给予更多的参数，虽然，因为在那里，输出文件必须包含所有的观点、光源等细节。
  * <h3>Writing backends</h3>
- *
- * An abstraction layer has been introduced to facilitate coding backends for
- * additional visualization tools. It is applicable for data formats
- * separating the information into a field of vertices, a field of connection
- * information for the grid cells and data fields.
- *
- * For each of these fields, output functions are implemented, namely
- * write_nodes(), write_cells() and write_data(). In order to use these
- * functions, a format specific output stream must be written, following the
- * examples of DXStream, GmvStream, VtkStream and so on, implemented in the
- * .cc file.
- *
- * In this framework, the implementation of a new output format is reduced to
- * writing the section headers and the new output stream class for writing a
- * single mesh object.
- *
- * <h3>Credits</h3>
- * <ul>
- *
- * <li>EPS output based on an earlier implementation by Stefan Nauber for the
- * old DataOut class
- *
- * <li>Povray output by Thomas Richter
- *
- * <li>Tecplot output by Benjamin Shelton Kirk
- *
- * <li>Lagrange VTK output by Alexander Grayver
- *
+ * 引入了一个抽象层，以方便其他可视化工具的编码后端。它适用于将信息分离成顶点字段、网格单元的连接信息字段和数据字段的数据格式。
+ * 对于每一个字段，都实现了输出函数，即write_nodes()、write_cells()和write_data()。为了使用这些函数，必须编写一个特定格式的输出流，遵循DXStream、GmvStream、VtkStream等的例子，在.cc文件中实现。
+ * 在这个框架中，一个新的输出格式的实现被简化为编写章节头和新的输出流类，用于编写单个网格对象。
+ * <h3>Credits</h3>  <ul>
+ * <li>  EPS输出基于Stefan Nauber对旧的DataOut类的早期实现
+ * <li>  Thomas Richter的Povray输出。
+ * <li>  Benjamin Shelton Kirk的Tecplot输出。
+ * <li>  拉格朗日VTK输出 作者：Alexander Grayver
  * </ul>
  *
- * @ingroup output
+ *
  */
 namespace DataOutBase
 {
   /**
-   * Data structure describing a patch of data in <tt>dim</tt> space
-   * dimensions.
-   *
-   * A patch consists of the following data:
-   * <ul>
-   * <li> the corner #vertices,
-   * <li> the number #n_subdivisions of the number of cells the Patch has in
-   * each space direction,
-   * <li> the #data attached to each vertex, in the usual lexicographic
-   * ordering,
-   * <li> information on #neighbors.
-   * </ul>
-   *
-   * See the general documentation of the DataOutBase class for more
-   * information on its contents and purposes.  In the case of two dimensions,
-   * the next picture is an example of <tt>n_subdivisions</tt> = 4 because the
-   * number of (sub)cells within each patch is equal to
-   * <tt>2<sup>dim</sup></tt>.
-   *
+   * 描述一个<tt>dim</tt>空间维度的数据补丁的数据结构。    一个补丁由以下数据组成。    <ul>   <li>  角的#顶点， <li>  Patch在每个空间方向的单元数的#n_细分， <li>  附在每个顶点的#数据，以通常的lexicographic排序， <li>  关于#邻居的信息。    </ul>  有关其内容和目的的更多信息，请参见DataOutBase类的一般文档。 在二维的情况下，下图是一个<tt>n_subdivisions</tt>=4的例子，因为每个补丁内的（子）单元数等于<tt>2<sup>dim</sup></tt>。
    * @ingroup output
+   *
    */
   template <int dim, int spacedim = dim>
   struct Patch
   {
     /**
-     * Make the <tt>spacedim</tt> template parameter available.
+     * 使<tt>spacedim</tt>模板参数可用。
+     *
      */
     static const unsigned int space_dim = spacedim;
 
     /**
-     * Corner points of a patch.  Interior points are computed by a multilinear
-     * transformation of the unit cell to the cell specified by these corner
-     * points, if <code>points_are_available==false</code>.
+     * 一个补丁的角点。 如果
+     * <code>points_are_available==false</code>
+     * ，内部点是通过单元格到这些角点所指定的单元格的多线性变换来计算的。
+     * 另一方面，如果 <code>points_are_available==true</code>
+     * ，那么要产生输出的点的坐标被附加到 <code>data</code>
+     * 表中的额外行中。
+     * 点的顺序与三角测量中的单元相同。
      *
-     * On the other hand, if <code>points_are_available==true</code>, then
-     * the coordinates of the points at which output is to be generated
-     * is attached in additional rows to the <code>data</code> table.
-     *
-     * The order of points is the same as for cells in the
-     * triangulation.
      */
     Point<spacedim> vertices[GeometryInfo<dim>::vertices_per_cell];
 
     /**
-     * Patch indices of neighbors of the current patch. This is made available
-     * for the OpenDX format that requires neighbor
-     * information for advanced output.
+     * 当前补丁的邻居的补丁索引。这是为OpenDX格式提供的，该格式需要邻居信息来进行高级输出。
+     *
      */
     std::array<unsigned int, GeometryInfo<dim>::faces_per_cell> neighbors;
 
     /**
-     * Number of this patch. Since we are not sure patches are always
-     * handled in the same order, we better store this.
+     * 这个补丁的编号。由于我们不确定补丁是否总是以相同的顺序处理，我们最好存储这个。
+     *
      */
     unsigned int patch_index;
 
     /**
-     * Number of subdivisions with which this patch is to be written.
-     * <tt>1</tt> means no subdivision, <tt>2</tt> means bisection, <tt>3</tt>
-     * trisection, etc.
+     * 这个补丁要写的分区的数量。
+     * <tt>1</tt>表示没有细分，<tt>2</tt>表示二分法，<tt>3</tt>三分法，等等。
+     *
      */
     unsigned int n_subdivisions;
 
     /**
-     * Data vectors. The format is as follows: <tt>data(i,.)</tt> denotes the
-     * data belonging to the <tt>i</tt>th data vector. <tt>data.n_cols()</tt>
-     * therefore equals the number of output points; this number is
-     * <tt>(subdivisions+1)^{dim}</tt>. <tt>data.n_rows()</tt> equals the number
-     * of data vectors. For the current purpose, a data vector equals one
-     * scalar, even if multiple scalars may later be interpreted as vectors.
+     * 数据向量。其格式如下。<tt>data(i,.)</tt>表示属于<tt>i</tt>个数据向量的数据。<tt>data.n_cols()</tt>因此等于输出点的数量；这个数字是<tt>（subdivisions+1）^{dim}</tt>。<tt>data.n_rows()</tt>等于数据向量的数量。就目前而言，一个数据向量等于一个标量，即使多个标量后来可能被解释为向量。
+     * 在每一列中，<tt>data(.,j)</tt>是输出点<tt>j</tt>的数据值，其中<tt>j</tt>表示deal.II中通常的lexicographic排序。这也是<tt>QIterated</tt>类提供的点的顺序，当与<tt>QTrapezoid</tt>类作为子正交使用时。
+     * 由于所有要打印的补丁的数据向量的数量通常是相同的，<tt>data.size()</tt>应该对所有提供的补丁产生相同的值。例外情况是设置了point_are_available的补丁，其中点的实际坐标被附加到'data'字段中，见point_are_available标志的文档。
      *
-     * Within each column, <tt>data(.,j)</tt> are the data values at the
-     * output point <tt>j</tt>, where <tt>j</tt> denotes the usual
-     * lexicographic ordering in deal.II. This is also the order of points as
-     * provided by the <tt>QIterated</tt> class when used with the
-     * <tt>QTrapezoid</tt> class as subquadrature.
-     *
-     * Since the number of data vectors is usually the same for all patches to
-     * be printed, <tt>data.size()</tt> should yield the same value for all
-     * patches provided. The exception are patches for which
-     * points_are_available are set, where the actual coordinates of the point
-     * are appended to the 'data' field, see the documentation of the
-     * points_are_available flag.
      */
     Table<2, float> data;
 
     /**
-     * A flag indicating whether the coordinates of the interior patch points
-     * (assuming that the patch is supposed to be subdivided further) are
-     * appended to the @p data table (@p true) or not (@p false). The latter
-     * is the default and in this case the locations of the points interior to
-     * this patch are computed by (bi-, tri-)linear interpolation from the
-     * vertices of the patch.
+     * 表示内部补丁点的坐标（假设该补丁应该被进一步细分）是否被附加到
+     * @p data 表中（  @p true)  或不附加（  @p false).
+     * 后者是默认的，在这种情况下，该补丁内部点的位置是由补丁顶点的（双，三）线性内插计算的。
+     * 这个选项的存在是因为补丁点可能是用Mapping（而不是通过线性插值）来评估的，因此必须存储在Patch结构中。
      *
-     * This option exists since patch points may be evaluated using a Mapping
-     * (rather than by a linear interpolation) and therefore have to be stored
-     * in the Patch structure.
      */
     bool points_are_available;
 
     /**
-     * Reference-cell type of the underlying cell of this patch.
+     * 这个补丁的基础单元的参考单元类型。
+     *
      */
     ReferenceCell reference_cell;
 
     /**
-     * Default constructor. Sets #n_subdivisions to one, #points_are_available
-     * to false, and #patch_index to #no_neighbor.
+     * 默认构造函数。设置#n_subdivisions为1，#points_are_available为假，#patch_index为#no_neighbor。
+     *
      */
     Patch();
 
     /**
-     * Compare the present patch for equality with another one. This is used
-     * in a few of the automated tests in our testsuite.
+     * 比较目前的补丁与另一个补丁是否相同。这在我们的测试套件中的一些自动测试中使用。
+     *
      */
     bool
     operator==(const Patch &patch) const;
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this
-     * object. This is not exact (but will usually be close) because
-     * calculating the memory usage of trees (e.g., <tt>std::map</tt>) is
-     * difficult.
+     * 返回这个对象的内存消耗估计值，以字节为单位。这不是精确的（但通常会很接近），因为计算树的内存使用量（例如，
+     * <tt>std::map</tt>) ）是困难的。
+     *
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * Swap the current object's contents with those of the given argument.
+     * 将当前对象的内容与给定参数的内容交换。
+     *
      */
     void
     swap(Patch<dim, spacedim> &other_patch);
 
     /**
-     * Value to be used if this patch has no neighbor on one side.
+     * 如果这个补丁的一侧没有邻居，则使用该值。
+     *
      */
     static const unsigned int no_neighbor = numbers::invalid_unsigned_int;
 
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup  异常情况  @{ .
+     *
      */
 
     /**
-     * Exception
+     * 例外情况
+     *
      */
     DeclException2(
       ExcInvalidCombinationOfDimensions,
@@ -380,141 +225,120 @@ namespace DataOutBase
 
 
   /**
-   * A specialization of the general Patch<dim,spacedim> template that is
-   * tailored to the case of points, i.e., zero-dimensional objects embedded
-   * in @p spacedim dimensional space.
+   * 一般Patch<dim,spacedim>模板的特殊化，专门针对点的情况，即嵌入
+   * @p spacedim 维空间的零维对象。
+   * 目前的类与通用模板兼容，允许使用相同的函数以通用方式访问任意维度的补丁。然而，它使一些对零维补丁来说毫无意义的变量变成了
+   * @p static
+   * 变量，这些变量在整个程序中只存在一次，而不是每个补丁一次。具体来说，
+   * @p neighbors 数组和 @p n_subdivisions
+   * 成员变量就是这种情况，它们对零维补丁没有意义，因为点在其不存在的面上没有自然相邻，也不能合理地被细分。
    *
-   * The current class is compatible with the general template to allow for
-   * using the same functions accessing patches of arbitrary dimensionality
-   * in a generic way. However, it makes some variables that are nonsensical
-   * for zero-dimensional patches into @p static variables that exist only
-   * once in the entire program, as opposed to once per patch. Specifically,
-   * this is the case for the @p neighbors array and the @p n_subdivisions
-   * member variable that make no sense for zero-dimensional patches because
-   * points have no natural neighbors across their non-existent faces, nor
-   * can they reasonably be subdivided.
    */
   template <int spacedim>
   struct Patch<0, spacedim>
   {
     /**
-     * Make the <tt>spacedim</tt> template parameter available.
+     * 使<tt>spacedim</tt>模板参数可用。
+     *
      */
     static const unsigned int space_dim = spacedim;
 
     /**
-     * Corner points of a patch.  For the current class of zero-dimensional
-     * patches, there is of course only a single vertex.
+     * 一个补丁的角点。
+     * 对于当前的零维补丁类，当然只有一个顶点。
+     * 如果  <code>points_are_available==true</code>
+     * ，那么要产生输出的点的坐标将作为附加行附在
+     * <code>data</code>  表上。
      *
-     * If <code>points_are_available==true</code>, then
-     * the coordinates of the point at which output is to be generated
-     * is attached as an additional row to the <code>data</code> table.
      */
     Point<spacedim> vertices[1];
 
     /**
-     * An unused, @p static variable that exists only to allow access
-     * from general code in a generic fashion.
+     * 一个未使用的、 @p static
+     * 的变量，它的存在只是为了允许从一般的代码中以通用方式访问。
+     *
      */
     static unsigned int neighbors[1];
 
     /**
-     * Number of this patch. Since we are not sure patches are always
-     * handled in the same order, we better store this.
+     * 这个补丁的编号。因为我们不确定补丁是否总是以相同的顺序处理，所以我们最好存储这个。
+     *
      */
     unsigned int patch_index;
 
     /**
-     * Number of subdivisions with which this patch is to be written.
-     * <tt>1</tt> means no subdivision, <tt>2</tt> means bisection, <tt>3</tt>
-     * trisection, etc.
+     * 这个补丁要写的分区的数量。
+     * <tt>1</tt>表示没有细分，<tt>2</tt>表示二分法，<tt>3</tt>三分法，等等。
+     * 由于细分对零维补丁没有意义，这个变量不被使用，它的存在只是为了允许从一般代码中以通用方式访问。
      *
-     * Since subdivision makes no sense for zero-dimensional patches,
-     * this variable is not used but exists only to allow access
-     * from general code in a generic fashion.
      */
     static unsigned int n_subdivisions;
 
     /**
-     * Data vectors. The format is as follows: <tt>data(i,.)</tt> denotes the
-     * data belonging to the <tt>i</tt>th data vector. <tt>data.n_cols()</tt>
-     * therefore equals the number of output points; this number is
-     * of course one for the current class, given that we produce output on
-     * points. <tt>data.n_rows()</tt> equals the number of
-     * data vectors. For the current purpose, a data vector equals one scalar,
-     * even if multiple scalars may later be interpreted as vectors.
+     * 数据向量。其格式如下。<tt>data(i,.)</tt>表示属于<tt>i</tt>个数据向量的数据。<tt>data.n_cols()</tt>因此等于输出点的数量；鉴于我们在点上产生输出，这个数字对于当前的类来说当然是1。<tt>data.n_rows()</tt>等于数据向量的数量。对于当前的目的，一个数据向量等于一个标量，即使多个标量后来可能被解释为向量。
+     * 在每一列中，<tt>data(.,j)</tt>是输出点<tt>j</tt>的数据值；对于当前类，
+     * @p j 只能是0。
+     * 由于所有要打印的补丁的数据向量的数量通常是相同的，<tt>data.size()</tt>应该对所有提供的补丁产生相同的值。例外的情况是设置了point_are_available的补丁，其中点的实际坐标被附加到'data'字段中，见point_are_available标志的文档。
      *
-     * Within each column, <tt>data(.,j)</tt> are the data values at the
-     * output point <tt>j</tt>; for the current class, @p j can only
-     * be zero.
-     *
-     * Since the number of data vectors is usually the same for all patches to
-     * be printed, <tt>data.size()</tt> should yield the same value for all
-     * patches provided. The exception are patches for which
-     * points_are_available are set, where the actual coordinates of the point
-     * are appended to the 'data' field, see the documentation of the
-     * points_are_available flag.
      */
     Table<2, float> data;
 
     /**
-     * A flag indicating whether the coordinates of the interior patch points
-     * (assuming that the patch is supposed to be subdivided further) are
-     * appended to the @p data table (@p true) or not (@p false). The latter
-     * is the default and in this case the locations of the points interior to
-     * this patch are computed by (bi-, tri-)linear interpolation from the
-     * vertices of the patch.
+     * 表示内部补丁点的坐标（假设该补丁应该被进一步细分）是否被附加到
+     * @p data 表中（  @p true)  或不附加（  @p false).
+     * 后者是默认的，在这种情况下，该补丁内部点的位置是由补丁顶点的（双，三）线性内插计算的。
+     * 这个选项的存在是因为补丁点可能是用Mapping（而不是通过线性插值）来评估的，因此必须存储在Patch结构中。
      *
-     * This option exists since patch points may be evaluated using a Mapping
-     * (rather than by a linear interpolation) and therefore have to be stored
-     * in the Patch structure.
      */
     bool points_are_available;
 
     /**
-     * Reference-cell type of the underlying cell of this patch.
+     * 这个补丁的基础单元的参考单元类型。
+     *
      */
     ReferenceCell reference_cell;
 
     /**
-     * Default constructor. Sets #points_are_available
-     * to false, and #patch_index to #no_neighbor.
+     * 默认构造函数。设置#points_are_available为false，#patch_index为#no_neighbor。
+     *
      */
     Patch();
 
     /**
-     * Compare the present patch for equality with another one. This is used
-     * in a few of the automated tests in our testsuite.
+     * 比较目前的补丁与另一个补丁是否平等。这在我们的测试套件中的一些自动测试中使用。
+     *
      */
     bool
     operator==(const Patch &patch) const;
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this
-     * object. This is not exact (but will usually be close) because
-     * calculating the memory usage of trees (e.g., <tt>std::map</tt>) is
-     * difficult.
+     * 返回这个对象的内存消耗估计值，以字节为单位。这不是精确的（但通常会很接近），因为计算树的内存使用量（例如，
+     * <tt>std::map</tt>) ）是困难的。
+     *
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * Swap the current object's contents with those of the given argument.
+     * 将当前对象的内容与给定参数的内容交换。
+     *
      */
     void swap(Patch<0, spacedim> &other_patch);
 
     /**
-     * Value to be used if this patch has no neighbor on one side.
+     * 如果这个补丁的一侧没有邻居，则使用该值。
+     *
      */
     static const unsigned int no_neighbor = numbers::invalid_unsigned_int;
 
     /**
-     * @addtogroup Exceptions
-     * @{
+     * @addtogroup  异常情况  @{ .
+     *
      */
 
     /**
-     * Exception
+     * 例外情况
+     *
      */
     DeclException2(
       ExcInvalidCombinationOfDimensions,
@@ -528,44 +352,36 @@ namespace DataOutBase
 
 
   /**
-   * Base class describing common functionality between different output
-   * flags.
-   *
-   * This is implemented with the "Curiously Recurring Template Pattern";
-   * derived classes use their own type to fill in the typename so that
-   * <tt>memory_consumption</tt> works correctly. See the Wikipedia page on
-   * the pattern for more information.
-   *
+   * 描述不同输出标志之间共同功能的基类。    这是用
+   * "奇怪的重复模板模式
+   * "实现的；派生类使用自己的类型来填充类型名，以便<tt>memory_consumption</tt>正确工作。更多信息请参见维基百科关于该模式的页面。
    * @ingroup output
+   *
    */
   template <typename FlagsType>
   struct OutputFlagsBase
   {
     /**
-     * Declare all flags with name and type as offered by this class, for use
-     * in input files.
+     * 用这个类提供的名称和类型声明所有标志，以便在输入文件中使用。
+     * 这个方法什么都不做，但是子类可以覆盖这个方法，将字段添加到<tt>prm</tt>。
      *
-     * This method does nothing, but child classes may override this method to
-     * add fields to <tt>prm</tt>.
      */
     static void
     declare_parameters(ParameterHandler &prm);
 
     /**
-     * Read the parameters declared in declare_parameters() and set the flags
-     * for this output format accordingly.
+     * 读取 declare_parameters()
+     * 中声明的参数，并为这种输出格式设置相应的标志。
+     * 这个方法什么都不做，但是子类可以重写这个方法来向<tt>prm</tt>添加字段。
      *
-     * This method does nothing, but child classes may override this method to
-     * add fields to <tt>prm</tt>.
      */
     void
     parse_parameters(const ParameterHandler &prm);
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this
-     * object. This is not exact (but will usually be close) because
-     * calculating the memory usage of trees (e.g., <tt>std::map</tt>) is
-     * difficult.
+     * 返回这个对象的内存消耗估计值，单位是字节。这不是精确的（但通常会很接近），因为计算树的内存使用量（例如，
+     * <tt>std::map</tt>) 是很困难的。
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -593,40 +409,43 @@ namespace DataOutBase
 
 
   /**
-   * Flags controlling the details of output in OpenDX format.
-   *
+   * 控制OpenDX格式的输出细节的标志。
    * @ingroup output
+   *
    */
   struct DXFlags : public OutputFlagsBase<DXFlags>
   {
     /**
-     * Write neighbor information. This information is necessary for instance,
-     * if OpenDX is supposed to compute integral curves (streamlines). If it
-     * is not present, streamlines end at cell boundaries.
+     * 写入邻居信息。例如，如果OpenDX要计算积分曲线（流线），这个信息是必要的。如果它不存在，流线就会在单元格边界结束。
+     *
      */
     bool write_neighbors;
     /**
-     * Write integer values of the Triangulation in binary format.
+     * 以二进制格式写入三角图的整数值。
+     *
      */
     bool int_binary;
     /**
-     * Write coordinate vectors in binary format.
+     * 以二进制格式写入坐标向量。
+     *
      */
     bool coordinates_binary;
 
     /**
-     * Write data vectors in binary format.
+     * 以二进制格式写入数据向量。
+     *
      */
     bool data_binary;
 
     /**
-     * Write binary coordinate vectors as double (64 bit) numbers instead of
-     * float (32 bit).
+     * 将二进制坐标向量写成双数（64位）而不是浮点数（32位）。
+     *
      */
     bool data_double;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     DXFlags(const bool write_neighbors    = false,
             const bool int_binary         = false,
@@ -634,107 +453,103 @@ namespace DataOutBase
             const bool data_binary        = false);
 
     /**
-     * Declare all flags with name and type as offered by this class, for use
-     * in input files.
+     * 用本类提供的名称和类型声明所有标志，以便在输入文件中使用。
+     *
      */
     static void
     declare_parameters(ParameterHandler &prm);
 
     /**
-     * Read the parameters declared in declare_parameters() and set the flags
-     * for this output format accordingly.
+     * 读取 declare_parameters()
+     * 中声明的参数，并相应地设置该输出格式的标志。
+     * 这样得到的标志会覆盖这个对象以前所有的内容。
      *
-     * The flags thus obtained overwrite all previous contents of this object.
      */
     void
     parse_parameters(const ParameterHandler &prm);
   };
 
   /**
-   * Flags controlling the details of output in UCD format for AVS.
-   *
+   * 控制AVS的UCD格式的输出细节的标志。
    * @ingroup output
+   *
    */
   struct UcdFlags : public OutputFlagsBase<UcdFlags>
   {
     /**
-     * Write a comment at the beginning of the file stating the date of
-     * creation and some other data.  While this is supported by the UCD
-     * format and AVS, some other programs get confused by this, so the
-     * default is to not write a preamble. However, a preamble can be written
-     * using this flag.
+     * 在文件的开头写一个注释，说明创建日期和其他一些数据。
+     * 虽然UCD格式和AVS支持这一点，但其他一些程序对此感到困惑，所以默认情况是不写序言。然而，可以用这个标志写一个序言。
+     * 默认值。  <code>false</code>  .
      *
-     * Default: <code>false</code>.
      */
     bool write_preamble;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     UcdFlags(const bool write_preamble = false);
 
     /**
-     * Declare all flags with name and type as offered by this class, for use
-     * in input files.
+     * 用本类提供的名称和类型声明所有标志，以便在输入文件中使用。
+     *
      */
     static void
     declare_parameters(ParameterHandler &prm);
 
     /**
-     * Read the parameters declared in declare_parameters() and set the flags
-     * for this output format accordingly.
+     * 读取 declare_parameters()
+     * 中声明的参数，并相应地设置该输出格式的标志。
+     * 这样得到的标志会覆盖这个对象以前所有的内容。
      *
-     * The flags thus obtained overwrite all previous contents of this object.
      */
     void
     parse_parameters(const ParameterHandler &prm);
   };
 
   /**
-   * Flags controlling the details of output in Gnuplot format.
-   *
+   * 控制Gnuplot格式的输出细节的标志。
    * @ingroup output
+   *
    */
   struct GnuplotFlags : public OutputFlagsBase<GnuplotFlags>
   {
     /**
-     * Default constructor. Sets up the dimension labels with the default values
-     of <tt>"x"</tt>, <tt>"y"</tt>, and <tt>"z"</tt>.
+     * 默认构造函数。用<tt>"x"</tt>, <tt>"y"</tt>,
+     * 和<tt>"z"</tt>的默认值设置尺寸标签。
+     *
      */
     GnuplotFlags();
 
     /**
-     * Constructor which sets up non-default values for the dimension labels.
+     * 构造函数，为尺寸标签设置非默认值。
+     *
      */
     GnuplotFlags(const std::vector<std::string> &space_dimension_labels);
 
     /**
-     * Labels to use in each spatial dimension. These default to <tt>"x"</tt>,
-     * <tt>"y"</tt>, and <tt>"z"</tt>. Labels are printed to the Gnuplot file
-     * surrounded by angle brackets: For example, if the space dimension is 2
-     * and the labels are <tt>"x"</tt> and <tt>"t"</tt>, then the relevant
-     * line will start with
+     * 在每个空间维度上使用的标签。这些标签默认为<tt>"x"</tt>,
+     * <tt>"y"</tt>,
+     * 和<tt>"z"</tt>。标签被打印到Gnuplot文件中，周围有角括号。例如，如果空间维度是2，标签是<tt>"x"</tt>和<tt>"t"</tt>，那么相关的行将以下列内容开始
      * @verbatim
      * # <x> <t>
      * @endverbatim
-     * Any extra labels will be ignored.
+     * 任何额外的标签都会被忽略。
+     * 如果你自己指定这些标签，那么至少应该有<tt>spacedim</tt>标签，其中<tt>spacedim</tt>是输出数据的空间尺寸。
      *
-     * If you specify these labels yourself then there should be at least
-     * <tt>spacedim</tt> labels, where <tt>spacedim</tt> is the spatial
-     * dimension of the output data.
      */
     std::vector<std::string> space_dimension_labels;
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this
-     * object.
+     * 返回这个对象的内存消耗估计值，单位是字节。
+     *
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * Exception to raise when there are not enough specified dimension
-     * labels.
+     * 当没有足够的指定维度标签时引发的异常情况。
+     *
      */
     DeclExceptionMsg(ExcNotEnoughSpaceDimensionLabels,
                      "There should be at least one space dimension per spatial "
@@ -742,54 +557,53 @@ namespace DataOutBase
   };
 
   /**
-   * Flags controlling the details of output in Povray format. Several flags
-   * are implemented, see their respective documentation.
-   *
+   * 控制Povray格式的输出细节的标志。有几个标志已经实现，请看它们各自的文档。
    * @ingroup output
+   *
    */
   struct PovrayFlags : public OutputFlagsBase<PovrayFlags>
   {
     /**
-     * Normal vector interpolation, if set to true
+     * 正常矢量插值，如果设置为真，默认=假
      *
-     * default = false
      */
     bool smooth;
 
     /**
-     * Use bicubic patches (b-splines) instead of triangles.
+     * 使用二次方补丁（b-splines）而不是三角形。 默认 =
+     * false
      *
-     * default = false
      */
     bool bicubic_patch;
 
     /**
-     * include external "data.inc" with camera, light and texture definition
-     * for the scene.
+     * 包括外部的
+     * "data.inc"，包括摄像机、灯光和场景的纹理定义。 默认
+     * = false
      *
-     * default = false
      */
     bool external_data;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     PovrayFlags(const bool smooth        = false,
                 const bool bicubic_patch = false,
                 const bool external_data = false);
 
     /**
-     * Declare all flags with name and type as offered by this class, for use
-     * in input files.
+     * 用本类提供的名称和类型声明所有标志，以便在输入文件中使用。
+     *
      */
     static void
     declare_parameters(ParameterHandler &prm);
 
     /**
-     * Read the parameters declared in declare_parameters() and set the flags
-     * for this output format accordingly.
+     * 读取 declare_parameters()
+     * 中声明的参数，并相应地设置该输出格式的标志。
+     * 这样得到的标志会覆盖这个对象以前所有的内容。
      *
-     * The flags thus obtained overwrite all previous contents of this object.
      */
     void
     parse_parameters(const ParameterHandler &prm);
@@ -797,31 +611,27 @@ namespace DataOutBase
 
 
   /**
-   * Flags controlling the details of output in encapsulated postscript
-   * format.
-   *
+   * 控制封装的postscript格式输出细节的标志。
    * @ingroup output
+   *
    */
   struct EpsFlags : public OutputFlagsBase<EpsFlags>
   {
     /**
-     * This denotes the number of the data vector which shall be used for
-     * generating the height information. By default, the first data vector is
-     * taken, i.e. <tt>height_vector==0</tt>, if there is any data vector. If
-     * there is no data vector, no height information is generated.
+     * 这表示将用于生成高度信息的数据向量的编号。默认情况下，如果有任何数据向量，就取第一个数据向量，即<tt>height_vector==0</tt>。如果没有数据向量，就不生成高度信息。
+     *
      */
     unsigned int height_vector;
 
     /**
-     * Number of the vector which is to be taken to colorize cells. The same
-     * applies as for #height_vector.
+     * 将被用于给单元格着色的向量的编号。与#height_vector同样适用。
+     *
      */
     unsigned int color_vector;
 
     /**
-     * Enum denoting the possibilities whether the scaling should be done such
-     * that the given <tt>size</tt> equals the width or the height of the
-     * resulting picture.
+     * 枚举表示是否应该进行缩放，使给定的<tt>size</tt>等于结果图片的宽度或高度。
+     *
      */
     enum SizeType
     {
@@ -832,106 +642,88 @@ namespace DataOutBase
     };
 
     /**
-     * See above. Default is <tt>width</tt>.
+     * 见上文。默认为<tt>width</tt>。
+     *
      */
     SizeType size_type;
 
     /**
-     * Width or height of the output as given in postscript units This usually
-     * is given by the strange unit 1/72 inch. Whether this is height or width
-     * is specified by the flag <tt>size_type</tt>.
+     * 以postscript单位给出的输出的宽度或高度
+     * 这通常是以奇怪的单位1/72英寸给出。这是高度还是宽度，由标志<tt>size_type</tt>指定。
+     * 默认值是300，这代表了大约10厘米的尺寸。
      *
-     * Default is 300, which represents a size of roughly 10 cm.
      */
     unsigned int size;
 
     /**
-     * Width of a line in postscript units. Default is 0.5.
+     * 一行的宽度，以postscript为单位。默认值是0.5。
+     *
      */
     double line_width;
 
     /**
-     * Angle of the line origin-viewer against the z-axis in degrees.
+     * 线条原点-查看器对Z轴的角度，单位是度。
+     * 默认为Gnuplot默认的60。
      *
-     * Default is the Gnuplot-default of 60.
      */
     double azimut_angle;
 
     /**
-     * Angle by which the viewers position projected onto the x-y-plane is
-     * rotated around the z-axis, in positive sense when viewed from above.
-     * The unit are degrees, and zero equals a position above or below the
-     * negative y-axis.
-     *
-     * Default is the Gnuplot-default of 30.  An example of a Gnuplot-default
-     * of 0 is the following:
-     *
+     * 观察者的位置投射到x-y平面上，围绕z轴旋转的角度，从上面看时为正数。
+     * 单位是度，零等于高于或低于负y轴的位置。
+     * 默认值是Gnuplot的默认值30。
+     * 下面是一个Gnuplot默认值为0的例子。
      * @verbatim
      *
-     *          3________7
-     *          /       /|
-     *         /       / |
-     *       2/______6/  |
-     *       |   |   |   |
+     *        3________7
+     *        /       /|
+     *       /       / |
+     *     2/______6/  |
+     *     |   |   |   |
      * O-->  |   0___|___4
-     *       |  /    |  /
-     *       | /     | /
-     *      1|/______5/
+     *     |  /    |  /
+     *     | /     | /
+     *    1|/______5/
      *
      * @endverbatim
+     *
+     *
      */
     double turn_angle;
 
     /**
-     * Factor by which the z-axis is to be stretched as compared to the x- and
-     * y-axes. This is to compensate for the different sizes that coordinate
-     * and solution values may have and to prevent that the plot looks to much
-     * out-of-place (no elevation at all if solution values are much smaller
-     * than coordinate values, or the common "extremely mountainous area" in
-     * the opposite case.
+     * 与x轴和y轴相比，z轴要被拉伸的系数。这是为了补偿坐标值和溶液值的不同大小，并防止绘图看起来很不合适（如果溶液值比坐标值小得多，则完全没有高程，反之则是常见的
+     * "极度山区"。        默认为<tt>1.0</tt>。
      *
-     * Default is <tt>1.0</tt>.
      */
     double z_scaling;
 
     /**
-     * Flag the determines whether the lines bounding the cells (or the parts
-     * of each patch) are to be plotted.
+     * 标志，决定是否要绘制单元格（或每个补丁的部分）的边界线。
+     * 默认值。<tt>true</tt>。
      *
-     * Default: <tt>true</tt>.
      */
     bool draw_mesh;
 
     /**
-     * Flag whether to fill the regions between the lines bounding the cells
-     * or not. If not, no hidden line removal is performed, which in this
-     * crude implementation is done through writing the cells in a back-to-
-     * front order, thereby hiding the cells in the background by cells in the
-     * foreground.
+     * 标记是否要填充单元格边界线之间的区域。如果不这样做，就不进行隐藏线的清除，在这个粗略的实现中，是通过从后向前的顺序写单元格来完成的，从而将背景中的单元格隐藏在前景中的单元格中。
+     * 如果这个标志是<tt>false</tt>，并且#draw_mesh也是<tt>false</tt>，就不会打印任何东西。
+     * 如果这个标志是<tt>true</tt>，那么单元格将被画成一个数据集的颜色（如果#shade_cells是<tt>true</tt>），或者纯白色（如果#shade_cells是假的或者没有数据集）。
+     * 默认为<tt>true</tt>。
      *
-     * If this flag is <tt>false</tt> and #draw_mesh is <tt>false</tt> as
-     * well, nothing will be printed.
-     *
-     * If this flag is <tt>true</tt>, then the cells will be drawn either
-     * colored by one of the data sets (if #shade_cells is <tt>true</tt>), or
-     * pure white (if #shade_cells is false or if there are no data sets).
-     *
-     * Default is <tt>true</tt>.
      */
     bool draw_cells;
 
     /**
-     * Flag to determine whether the cells shall be colorized by the data set
-     * denoted by #color_vector, or simply be painted in white. This flag only
-     * makes sense if <tt>#draw_cells==true</tt>. Colorization is done through
-     * #color_function.
+     * 决定单元格是否应被#color_vector表示的数据集着色，或简单地涂成白色的标志。这个标志只有在<tt>#draw_cells==true</tt>时才有意义。着色是通过#color_function完成的。
+     * 默认为<tt>true</tt>。
      *
-     * Default is <tt>true</tt>.
      */
     bool shade_cells;
 
     /**
-     * Structure keeping the three color values in the RGB system.
+     * 保持RGB系统中三个颜色值的结构。
+     *
      */
     struct RgbValues
     {
@@ -940,39 +732,34 @@ namespace DataOutBase
       float blue;
 
       /**
-       * Return <tt>true</tt> if the color represented by the three color
-       * values is a grey scale, i.e. all components are equal.
+       * 如果三个颜色值所代表的颜色是灰度，即所有成分都相等，则返回<tt>true</tt>。
+       *
        */
       bool
       is_grey() const;
     };
 
     /**
-     * Definition of a function pointer type taking a value and returning a
-     * triple of color values in RGB values.
+     * 一个函数指针类型的定义，接收一个值并返回RGB值的三色值。
+     * 除了要计算颜色的实际值外，还要给出要着色的数据的最小和最大值。
      *
-     * Besides the actual value by which the color is to be computed, min and
-     * max values of the data to be colorized are given as well.
      */
     using ColorFunction = RgbValues (*)(const double value,
                                         const double min_value,
                                         const double max_value);
 
     /**
-     * This is a pointer to the function which is used to colorize the cells.
-     * By default, it points to the static function default_color_function()
-     * which is a member of this class.
+     * 这是一个指向用于给单元格着色的函数的指针。
+     * 默认情况下，它指向静态函数default_color_function()，它是这个类的成员。
+     *
      */
     ColorFunction color_function;
 
 
     /**
-     * Default colorization function. This one does what one usually wants: It
-     * shifts colors from black (lowest value) through blue, green and red to
-     * white (highest value). For the exact definition of the color scale
-     * refer to the implementation.
+     * 默认的着色函数。这个函数做的是人们通常想要的。它将颜色从黑色（最低值）通过蓝色、绿色和红色转移到白色（最高值）。关于色阶的确切定义，请参考实现。
+     * 这个函数最初是由Stefan Nauber编写的。
      *
-     * This function was originally written by Stefan Nauber.
      */
     static RgbValues
     default_color_function(const double value,
@@ -980,9 +767,8 @@ namespace DataOutBase
                            const double max_value);
 
     /**
-     * This is an alternative color function producing a grey scale between
-     * black (lowest values) and white (highest values). You may use it by
-     * setting the #color_function variable to the address of this function.
+     * 这是一个替代性的颜色函数，产生黑色（最低值）和白色（最高值）之间的灰阶。你可以通过将#color_function变量设置为这个函数的地址来使用它。
+     *
      */
     static RgbValues
     grey_scale_color_function(const double value,
@@ -990,10 +776,8 @@ namespace DataOutBase
                               const double max_value);
 
     /**
-     * This is one more alternative color function producing a grey scale
-     * between white (lowest values) and black (highest values), i.e. the
-     * scale is reversed to the previous one. You may use it by setting the
-     * #color_function variable to the address of this function.
+     * 这是另外一个可供选择的颜色函数，产生介于白色（最低值）和黑色（最高值）之间的灰度，也就是说，刻度与之前的刻度是相反的。你可以通过将#color_function变量设置为这个函数的地址来使用它。
+     *
      */
     static RgbValues
     reverse_grey_scale_color_function(const double value,
@@ -1001,7 +785,8 @@ namespace DataOutBase
                                       const double max_value);
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     EpsFlags(const unsigned int  height_vector  = 0,
              const unsigned int  color_vector   = 0,
@@ -1017,160 +802,148 @@ namespace DataOutBase
              const ColorFunction color_function = &default_color_function);
 
     /**
-     * Declare all flags with name and type as offered by this class, for use
-     * in input files.
+     * 用本类提供的名称和类型声明所有标志，以便在输入文件中使用。
+     * 对于着色，只提供本类中声明的颜色函数。
      *
-     * For coloring, only the color functions declared in this class are
-     * offered.
      */
     static void
     declare_parameters(ParameterHandler &prm);
 
     /**
-     * Read the parameters declared in declare_parameters() and set the flags
-     * for this output format accordingly.
+     * 读取 declare_parameters()
+     * 中声明的参数，并为这个输出格式设置相应的标志。
+     * 这样得到的标志会覆盖这个对象以前所有的内容。
      *
-     * The flags thus obtained overwrite all previous contents of this object.
      */
     void
     parse_parameters(const ParameterHandler &prm);
   };
 
   /**
-   * Flags controlling the details of output in GMV format. At present no
-   * flags are implemented.
-   *
+   * 控制GMV格式的输出细节的标志。目前没有实施任何标志。
    * @ingroup output
+   *
    */
   struct GmvFlags : public OutputFlagsBase<GmvFlags>
   {};
 
   /**
-   * Flags controlling the details of output in Tecplot format.
-   *
+   * 控制Tecplot格式输出细节的标志。
    * @ingroup output
+   *
    */
   struct TecplotFlags : public OutputFlagsBase<TecplotFlags>
   {
     /**
-     * Tecplot allows to assign names to zones. This variable stores this
-     * name.
+     * Tecplot允许为区段分配名称。这个变量存储了这个名称。
+     *
      */
     const char *zone_name;
 
     /**
-     * Solution time for each zone in a strand. This value must be non-
-     * negative, otherwise it will not be written to file. Do not assign any
-     * value for this in case of a static zone.
+     * 绞股蓝中每个区域的解决时间。该值必须为非负值，否则将不会被写入文件。如果是静态区，不要给它指定任何值。
+     *
      */
     double solution_time;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     TecplotFlags(const char * zone_name     = nullptr,
                  const double solution_time = -1.0);
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this
-     * object.
+     * 返回这个对象的内存消耗估计值，单位是字节。
+     *
      */
     std::size_t
     memory_consumption() const;
   };
 
   /**
-   * Flags controlling the details of output in VTK format.
-   *
+   * 控制VTK格式的输出细节的标志。
    * @ingroup output
+   *
    */
   struct VtkFlags : public OutputFlagsBase<VtkFlags>
   {
     /**
-     * The time of the time step if this file is part of a time dependent
-     * simulation.
-     *
-     * The value of this variable is written into the output file according to
-     * the instructions provided in
-     * http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
-     * unless it is at its default value of
+     * 如果此文件是时间相关模拟的一部分，则为时间步长的时间。
+     * 该变量的值将根据http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
+     * 中提供的指示写入输出文件，除非它的默认值为
      * @verbatim std::numeric_limits<unsigned int>::min() @endverbatim.
+     *
      */
     double time;
 
     /**
-     * The number of the time step if this file is part of a time dependent
-     * simulation, or the cycle within a nonlinear or other iteration.
-     *
-     * The value of this variable is written into the output file according to
-     * the instructions provided in
-     * http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
-     * unless it is at its default value of
+     * 如果该文件是时间相关模拟的一部分，则是时间步数，或者是非线性或其他迭代中的周期。
+     * 该变量的值将根据http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
+     * 中提供的指令写入输出文件，除非它的默认值为
      * @verbatim std::numeric_limits<unsigned int>::min() @endverbatim.
+     *
      */
     unsigned int cycle;
 
     /**
-     * Flag to determine whether the current date and time shall be printed as
-     * a comment in the file's second line.
+     * 决定当前日期和时间是否应作为注释打印在文件的第二行的标志。
+     * 默认为<tt>true</tt>。
      *
-     * Default is <tt>true</tt>.
      */
     bool print_date_and_time;
 
     /**
-     * A data type providing the different possible zlib compression
-     * levels. These map directly to constants defined by zlib.
+     * 一个提供不同的zlib压缩级别的数据类型。这些直接映射到由zlib定义的常数。
+     *
      */
     enum ZlibCompressionLevel
     {
       /**
-       * Do not use any compression.
+       * 不使用任何压缩。
+       *
        */
       no_compression,
       /**
-       * Use the fastest available compression algorithm.
+       * 使用最快的可用压缩算法。
+       *
        */
       best_speed,
       /**
-       * Use the algorithm which results in the smallest compressed
-       * files. This is the default flag.
+       * 使用能产生最小的压缩文件的算法。这是默认的标志。
+       *
        */
       best_compression,
       /**
-       * Use the default compression algorithm. This is a compromise between
-       * speed and file size.
+       * 使用默认的压缩算法。这是在速度和文件大小之间的一个折衷。
+       *
        */
       default_compression
     };
 
     /**
-     * Flag determining the compression level at which zlib, if available, is
-     * run. The default is <tt>best_compression</tt>.
+     * 决定运行zlib（如果有的话）的压缩级别的标志。默认是<tt>best_compression</tt>。
+     *
      */
     ZlibCompressionLevel compression_level;
 
     /**
-     * Flag determining whether to write patches as linear cells
-     * or as a high-order Lagrange cell.
+     * 决定是否将补丁写成线性单元或高阶拉格朗日单元的标志。
+     * 默认为<tt>false</tt>。
+     * @note
+     * 写入对应于高阶多项式而不是简单的线性或双线性的数据的能力，是2017年12月VTK
+     * 8.1.0中才引入的一个功能。你至少需要在2018年4月发布的Paraview
+     * 5.5.0版本或类似的最新版本的VisIt才能使用这个功能（例如，2020年2月发布的VisIt
+     * 3.1.1还不支持这个功能）。这些程序的旧版本在试图读取用这个标志设置为
+     * "真
+     * "生成的文件时，很可能会导致错误。这些程序的经验表明，这些错误信息很可能不太具有描述性，而且比较隐晦。
      *
-     * Default is <tt>false</tt>.
-     *
-     * @note The ability to write data that corresponds to higher order
-     * polynomials rather than simply linear or bilinear is a feature that was
-     * only introduced in VTK 8.1.0 in December 2017. You will need at least
-     * Paraview version 5.5.0 released in April 2018 or a similarly recent
-     * version of VisIt for this feature to work (for example, VisIt 3.1.1,
-     * released in February 2020, does not yet support this feature). Older
-     * versions of these programs are likely going to result in errors when
-     * trying to read files generated with this flag set to true. Experience
-     * with these programs shows that these error messages are likely going to
-     * be rather less descriptive and more obscure.
      */
     bool write_higher_order_cells;
 
     /**
-     * Constructor.
+     * 构造器。
+     *
      */
     VtkFlags(
       const double       time  = std::numeric_limits<double>::min(),
@@ -1182,50 +955,53 @@ namespace DataOutBase
 
 
   /**
-   * Flags for SVG output.
-   *
+   * 用于SVG输出的标志。
    * @ingroup output
+   *
    */
   struct SvgFlags : public OutputFlagsBase<SvgFlags>
   {
     /**
-     * Height of the image in SVG units. Default value is 4000.
+     * 图像的高度，以SVG为单位。默认值为4000。
+     *
      */
     unsigned int height;
 
     /**
-     * Width of the image in SVG units. If left zero, the width is computed
-     * from the height.
+     * 图像的宽度，以SVG为单位。如果留为零，宽度将由高度计算。
+     *
      */
     unsigned int width;
 
     /**
-     * This denotes the number of the data vector which shall be used for
-     * generating the height information. By default, the first data vector is
-     * taken, i.e. <tt>#height_vector==0</tt>, if there is any data vector. If
-     * there is no data vector, no height information is generated.
+     * 这表示将用于生成高度信息的数据向量的编号。默认情况下，如果有任何数据向量的话，将使用第一个数据向量，即：<tt>#height_vector==0</tt>。如果没有数据向量，就不产生高度信息。
+     *
      */
     unsigned int height_vector;
 
     /**
-     * Angles for the perspective view
+     * 用于透视图的角度
+     *
      */
     int azimuth_angle, polar_angle;
 
     unsigned int line_thickness;
 
     /**
-     * Draw a margin of 5% around the plotted area
+     * 在绘制的区域周围画出5%的边距
+     *
      */
     bool margin;
 
     /**
-     * Draw a colorbar encoding the cell coloring
+     * 绘制一个编码单元格着色的色条
+     *
      */
     bool draw_colorbar;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     SvgFlags(const unsigned int height_vector  = 0,
              const int          azimuth_angle  = 37,
@@ -1237,122 +1013,102 @@ namespace DataOutBase
 
 
   /**
-   * Flags controlling the details of output in deal.II intermediate format.
-   * At present no flags are implemented.
-   *
+   * 控制以deal.II中间格式输出的细节的标志。
+   * 目前没有实现任何标志。
    * @ingroup output
+   *
    */
   struct Deal_II_IntermediateFlags
     : public OutputFlagsBase<Deal_II_IntermediateFlags>
   {
     /**
-     * An indicator of the current file format version used to write
-     * intermediate format. We do not attempt to be backward compatible, so
-     * this number is used only to verify that the format we are writing is
-     * what the current readers and writers understand.
+     * 用于编写中间格式的当前文件格式版本的指标。我们并不试图向后兼容，所以这个数字只是用来验证我们所写的格式是当前读者和写者所理解的。
+     *
      */
     static const unsigned int format_version;
   };
 
   /**
-   * Flags controlling the DataOutFilter.
-   *
+   * 控制DataOutFilter的标志。
    * @ingroup output
+   *
    */
   struct DataOutFilterFlags
   {
     /**
-     * Filter duplicate vertices and associated values. This will drastically
-     * reduce the output data size but will result in an output file that
-     * does not faithfully represent the actual data if the data corresponds
-     * to discontinuous fields. In particular, along subdomain boundaries
-     * the data will still be discontinuous, while it will look like a
-     * continuous field inside of the subdomain.
+     * 过滤重复的顶点和相关值。这将极大地减少输出数据的大小，但是如果数据对应的是不连续的领域，则会导致输出文件不能忠实地代表实际数据。特别是，沿着子域的边界，数据仍然是不连续的，而在子域内部则看起来是一个连续的场。
+     *
      */
     bool filter_duplicate_vertices;
 
     /**
-     * Whether the XDMF output refers to HDF5 files. This affects how output
-     * is structured.
+     * XDMF输出是否指的是HDF5文件。这将影响到输出的结构方式。
+     *
      */
     bool xdmf_hdf5_output;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     DataOutFilterFlags(const bool filter_duplicate_vertices = false,
                        const bool xdmf_hdf5_output          = false);
 
     /**
-     * Declare all flags with name and type as offered by this class, for use
-     * in input files.
+     * 用这个类提供的名称和类型来声明所有的标志，以便在输入文件中使用。
+     *
      */
     static void
     declare_parameters(ParameterHandler &prm);
 
     /**
-     * Read the parameters declared in <tt>declare_parameters</tt> and set the
-     * flags for this output format accordingly.
+     * 读取<tt>declare_parameters</tt>中声明的参数，并相应地设置该输出格式的标志。
+     * 这样得到的标志会覆盖这个对象以前所有的内容。
      *
-     * The flags thus obtained overwrite all previous contents of this object.
      */
     void
     parse_parameters(const ParameterHandler &prm);
 
     /**
-     * Determine an estimate for the memory consumption (in bytes) of this
-     * object.
+     * 确定此对象的内存消耗（以字节为单位）的估计值。
+     *
      */
     std::size_t
     memory_consumption() const;
   };
 
   /**
-   * DataOutFilter provides a way to remove redundant vertices and values
-   * generated by the deal.II output. By default, DataOutBase and the classes
-   * that build on it output data at each corner of each cell. This means that
-   * data is output multiple times for each vertex of the mesh. The purpose of
-   * this scheme is to support output of discontinuous quantities, either
-   * because the finite element space is discontinuous or because the quantity
-   * that is output is computed from a solution field and is discontinuous
-   * across faces.
+   * DataOutFilter提供了一种去除deal.II输出所产生的多余顶点和数值的方法。默认情况下，DataOutBase和建立在它之上的类在每个单元格的每个角上输出数据。这意味着数据对网格的每个顶点都要输出多次。这个方案的目的是支持不连续量的输出，要么是因为有限元空间是不连续的，要么是因为输出的量是由一个解场计算出来的，并且在各面之间是不连续的。
+   * 这个类别是为了控制写入的数据量。
+   * 如果写入文件的字段确实是不连续的，那么忠实地表示它们的唯一方法就是为每个顶点写入多个值（这通常是通过为同一个顶点写入多个节点位置并在这些节点上定义数据来实现的）。然而，对于精细的网格，人们不一定对输出场的精确表示感兴趣，因为输出场可能只有小的不连续。相反，每个顶点只输出一个值就足够了，这个值可以从任何相邻单元的顶点上定义的值中任意选择。
    *
-   * This class is an attempt to rein in the amount of data that is written.
-   * If the fields that are written to files are indeed discontinuous, the
-   * only way to faithfully represent them is indeed to write multiple values
-   * for each vertex (this is typically done by writing multiple node
-   * locations for the same vertex and defining data at these nodes). However,
-   * for fine meshes, one may not necessarily be interested in an exact
-   * representation of output fields that will likely only have small
-   * discontinuities. Rather, it may be sufficient to just output one value
-   * per vertex, which may be chosen arbitrarily from among those that are
-   * defined at this vertex from any of the adjacent cells.
    */
   class DataOutFilter
   {
   public:
     /**
-     * Default constructor.
+     * 默认构造函数。
+     *
      */
     DataOutFilter();
 
     /**
-     * Destructor with a given set of flags. See DataOutFilterFlags for
-     * possible flags.
+     * 带有一组给定标志的解构器。参见DataOutFilterFlags以了解可能的标志。
+     *
      */
     DataOutFilter(const DataOutBase::DataOutFilterFlags &flags);
 
     /**
-     * Write a point with the specified index into the filtered data set. If
-     * the point already exists and we are filtering redundant values, the
-     * provided index will internally refer to another recorded point.
+     * 将一个具有指定索引的点写入过滤后的数据集中。如果该点已经存在，并且我们正在过滤多余的值，所提供的索引将在内部指代另一个被记录的点。
+     *
      */
     template <int dim>
     void
     write_point(const unsigned int index, const Point<dim> &p);
 
     /**
-     * Record a deal.II cell in the internal reordered format.
+     * 以内部重新排序的格式记录一个deal.II单元。
+     *
      */
     template <int dim>
     void
@@ -1363,8 +1119,8 @@ namespace DataOutBase
                const unsigned int d3);
 
     /**
-     * Record a single deal.II cell without subdivisions (e.g. simplex) in the
-     * internal reordered format.
+     * 以内部重新排序的格式记录一个没有分区的单一deal.II单元（例如：单数）。
+     *
      */
     void
     write_cell_single(const unsigned int index,
@@ -1372,10 +1128,8 @@ namespace DataOutBase
                       const unsigned int n_points);
 
     /**
-     * Filter and record a data set. If there are multiple values at a given
-     * vertex and redundant values are being removed, one is arbitrarily
-     * chosen as the recorded value. In the future this can be expanded to
-     * average/min/max multiple values at a given vertex.
+     * 过滤并记录一个数据集。如果在一个给定的顶点有多个值，并且冗余的值被删除，则任意选择一个作为记录的值。在未来，这可以扩展到在一个给定的顶点上的平均/最小/最大多个值。
+     *
      */
     void
     write_data_set(const std::string &     name,
@@ -1384,68 +1138,72 @@ namespace DataOutBase
                    const Table<2, double> &data_vectors);
 
     /**
-     * Resize and fill a vector with all the filtered node vertex points, for
-     * output to a file.
+     * 调整大小，用所有过滤后的节点顶点填充一个向量，输出到文件。
+     *
      */
     void
     fill_node_data(std::vector<double> &node_data) const;
 
     /**
-     * Resize and fill a vector with all the filtered cell vertex indices, for
-     * output to a file.
+     * 调整一个向量的大小，并填充所有过滤后的单元格顶点指数，以输出到文件中。
+     *
      */
     void
     fill_cell_data(const unsigned int         local_node_offset,
                    std::vector<unsigned int> &cell_data) const;
 
     /**
-     * Get the name of the data set indicated by the set number.
+     * 获取数据集编号所指示的数据集名称。
+     *
      */
     std::string
     get_data_set_name(const unsigned int set_num) const;
 
     /**
-     * Get the dimensionality of the data set indicated by the set number.
+     * 获取由数据集编号指示的数据集的维度。
+     *
      */
     unsigned int
     get_data_set_dim(const unsigned int set_num) const;
 
     /**
-     * Get the raw double valued data of the data set indicated by the set
-     * number.
+     * 获取数据集编号所示数据集的原始双值数据。
+     *
      */
     const double *
     get_data_set(const unsigned int set_num) const;
 
     /**
-     * Return the number of nodes in this DataOutFilter. This may be smaller
-     * than the original number of nodes if filtering is enabled.
+     * 返回这个DataOutFilter中的节点数。如果启用了过滤功能，这可能小于原始节点数。
+     *
      */
     unsigned int
     n_nodes() const;
 
     /**
-     * Return the number of filtered cells in this DataOutFilter. Cells are
-     * not filtered so this will be the original number of cells.
+     * 返回这个DataOutFilter中被过滤的单元格的数量。单元没有被过滤，所以这将是原始的单元数。
+     *
      */
     unsigned int
     n_cells() const;
 
     /**
-     * Return the number of filtered data sets in this DataOutFilter. Data
-     * sets are not filtered so this will be the original number of data sets.
+     * 返回这个DataOutFilter中被过滤的数据集的数量。数据集没有被过滤，所以这将是原始数据集的数量。
+     *
      */
     unsigned int
     n_data_sets() const;
 
     /**
-     * Empty functions to do base class inheritance.
+     * 做基类继承的空函数。
+     *
      */
     void
     flush_points();
 
     /**
-     * Empty functions to do base class inheritance.
+     * 空函数来做基类的继承。
+     *
      */
     void
     flush_cells();
@@ -1453,26 +1211,16 @@ namespace DataOutBase
 
   private:
     /**
-     * Empty class to provide comparison function for Map3DPoint.
+     * 为Map3DPoint提供比较函数的空类。
+     *
      */
     struct Point3Comp
     {
       bool
       operator()(const Point<3> &one, const Point<3> &two) const
       {
-        /*
-         * The return statement below is an optimized version of the following
-         * code:
-         *
-         * for (unsigned int d=0; d<3; ++d)
-         * {
-         *   if (one(d) < two(d))
-         *     return true;
-         *   else if (one(d) > two(d))
-         *     return false;
-         * }
-         * return false;
-         */
+        /*下面的返回语句是以下代码的优化版本： for (unsigned int d=0; d<3; ++d){ if (one(d) < two(d)) return true; else if (one(d) > two(d) return false; } return false;        
+* */
 
         return (one(0) < two(0) ||
                 (!(two(0) < one(0)) &&
@@ -1483,55 +1231,65 @@ namespace DataOutBase
     using Map3DPoint = std::multimap<Point<3>, unsigned int, Point3Comp>;
 
     /**
-     * Flags used to specify filtering behavior.
+     * 用于指定过滤行为的标志。
+     *
      */
     DataOutBase::DataOutFilterFlags flags;
 
     /**
-     * The number of space dimensions in which the vertices represented
-     * by the current object live. This corresponds to the usual
-     * @p dim argument, but since this class is not templated on the
-     * dimension, we need to store it here.
+     * 当前对象所代表的顶点所处的空间维度的数量。这对应于通常的
+     * @p dim
+     * 参数，但由于这个类不是以维度为模板的，所以我们需要在这里存储它。
+     *
      */
     unsigned int node_dim;
 
     /**
-     * The number of cells stored in @ref filtered_cells.
+     * 存储在 @ref
+     * filtered_cells 中的单元格的数量。
+     *
      */
     unsigned int num_cells;
 
     /**
-     * Map of points to an internal index.
+     * 点的映射到内部索引。
+     *
      */
     Map3DPoint existing_points;
 
     /**
-     * Map of actual point index to internal point index.
+     * 实际点的索引与内部点的索引的映射。
+     *
      */
     std::map<unsigned int, unsigned int> filtered_points;
 
     /**
-     * Map of cells to the filtered points.
+     * 将单元格映射到过滤后的点。
+     *
      */
     std::map<unsigned int, unsigned int> filtered_cells;
 
     /**
-     * Data set names.
+     * 数据集名称。
+     *
      */
     std::vector<std::string> data_set_names;
 
     /**
-     * Data set dimensions.
+     * 数据集的尺寸。
+     *
      */
     std::vector<unsigned int> data_set_dims;
 
     /**
-     * Data set data.
+     * 数据集的数据。
+     *
      */
     std::vector<std::vector<double>> data_sets;
 
     /**
-     * Record a cell vertex index based on the internal reordering.
+     * 记录基于内部重排的单元格顶点索引。
+     *
      */
     void
     internal_add_cell(const unsigned int cell_index,
@@ -1540,92 +1298,107 @@ namespace DataOutBase
 
 
   /**
-   * Provide a data type specifying the presently supported output formats.
+   * 提供一个数据类型，指定目前支持的输出格式。
+   *
    */
   enum OutputFormat
   {
     /**
-     * Use the format already stored in the object.
+     * 使用已经存储在对象中的格式。
+     *
      */
     default_format,
 
     /**
-     * Do not write any output.
+     * 不写任何输出。
+     *
      */
     none,
 
     /**
-     * Output for OpenDX.
+     * 为OpenDX输出。
+     *
      */
     dx,
 
     /**
-     * Output in the UCD format for AVS.
+     * 为AVS提供UCD格式的输出。
+     *
      */
     ucd,
 
     /**
-     * Output for the Gnuplot tool.
+     * 为Gnuplot工具的输出。
+     *
      */
     gnuplot,
 
     /**
-     * Output for the Povray raytracer.
+     * 为Povray光线跟踪器提供的输出。
+     *
      */
     povray,
 
     /**
-     * Output in encapsulated PostScript.
+     * 在封装的PostScript中输出。
+     *
      */
     eps,
 
     /**
-     * Output for GMV.
+     * 用于GMV的输出。
+     *
      */
     gmv,
 
     /**
-     * Output for Tecplot in text format.
+     * 为Tecplot提供文本格式的输出。
+     *
      */
     tecplot,
 
     /**
-     * Output for Tecplot in binary format. Faster and smaller than text
-     * format.
+     * 以二进制格式输出Tecplot。比文本格式更快、更小。
+     * @deprecated 使用Tecplot的二进制输出已被弃用。
      *
-     * @deprecated Using Tecplot binary output is deprecated.
      */
     tecplot_binary,
 
     /**
-     * Output in VTK format.
+     * 以VTK格式输出。
+     *
      */
     vtk,
 
     /**
-     * Output in VTK format.
+     * 以VTK格式输出。
+     *
      */
     vtu,
 
     /**
-     * Output in SVG format.
+     * 以SVG格式输出。
+     *
      */
     svg,
 
     /**
-     * Output in deal.II intermediate format.
+     * 以deal.II中间格式输出。
+     *
      */
     deal_II_intermediate,
 
     /**
-     * Output in HDF5 format.
+     * 以HDF5格式输出。
+     *
      */
     hdf5
   };
 
 
   /**
-   * Write the given list of patches to the output stream in OpenDX format.
+   * 将给定的补丁列表以OpenDX格式写入输出流。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1642,48 +1415,17 @@ namespace DataOutBase
     std::ostream & out);
 
   /**
-   * Write the given list of patches to the output stream in eps format.
+   * 将给定的补丁列表以eps格式写到输出流中。
+   * 以这种格式输出可以规避使用辅助图形程序将一些输出格式转换为图形格式。这样做的好处是输出简单而快速，缺点是你必须给出一大堆参数，这些参数决定了视线的方向、着色的模式、高度轴的缩放等等（当然，所有这些参数都有合理的默认值，你可能想改变它们）。
+   * 这个函数只支持二维域的输出（即dim=2），垂直方向的数值取自数据矢量。
+   * 基本上，输出包含了网格和它们之间的单元。你可以画其中之一，或者两者都画，或者不画，如果你真的对一个空的图片感兴趣的话。如果写出来，网格使用黑线。网格之间的单元格要么不打印（这将导致隐线去除的损失，即你可以
+   * "看穿
+   * "单元格到后面的线条），要么打印成白色（除了隐线去除外没有任何作用），要么使用其中一个数据向量（不必与计算高度信息的向量相同）和一个可定制的颜色函数进行着色。默认的颜色函数在黑色、蓝色、绿色、红色和白色之间选择颜色，选择的数据字段的值越来越大，用于着色。目前，每个单元格只显示一种颜色，该颜色取自单元格中心的数据字段的值；不使用单元格上颜色的双线性插值。
+   * 默认情况下，视角的选择与GNUPLOT中的默认视角一样，即相对于正Z轴的角度为60度，相对于负Y轴的角度正向旋转30度（从上面看）。
+   * 当然，你可以改变这些设置。
+   * 编写EPS输出时，图片周围没有边界，也就是说，边界框在四面都靠近输出。坐标最多使用五位数来书写，以保持图片的合理尺寸。
+   * 所有的参数以及它们的默认值都列在这个类的<tt>EpsFlags</tt>成员类的文档中。更多详细的信息请见那里。
    *
-   * Output in this format circumvents the use of auxiliary graphic programs
-   * converting some output format into a graphics format. This has the
-   * advantage that output is easy and fast, and the disadvantage that you
-   * have to give a whole bunch of parameters which determine the direction of
-   * sight, the mode of colorization, the scaling of the height axis, etc. (Of
-   * course, all these parameters have reasonable default values, which you
-   * may want to change.)
-   *
-   * This function only supports output for two-dimensional domains (i.e.,
-   * with dim==2), with values in the vertical direction taken from a data
-   * vector.
-   *
-   * Basically, output consists of the mesh and the cells in between them. You
-   * can draw either of these, or both, or none if you are really interested
-   * in an empty picture. If written, the mesh uses black lines. The cells in
-   * between the mesh are either not printed (this will result in a loss of
-   * hidden line removal, i.e.  you can "see through" the cells to lines
-   * behind), printed in white (which does nothing apart from the hidden line
-   * removal), or colorized using one of the data vectors (which need not be
-   * the same as the one used for computing the height information) and a
-   * customizable color function. The default color functions chooses the
-   * color between black, blue, green, red and white, with growing values of
-   * the data field chosen for colorization. At present, cells are displayed
-   * with one color per cell only, which is taken from the value of the data
-   * field at the center of the cell; bilinear interpolation of the color on a
-   * cell is not used.
-   *
-   * By default, the viewpoint is chosen like the default viewpoint in
-   * GNUPLOT, i.e.  with an angle of 60 degrees with respect to the positive
-   * z-axis and rotated 30 degrees in positive sense (as seen from above) away
-   * from the negative y-axis.  Of course you can change these settings.
-   *
-   * EPS output is written without a border around the picture, i.e. the
-   * bounding box is close to the output on all four sides. Coordinates are
-   * written using at most five digits, to keep picture size at a reasonable
-   * size.
-   *
-   * All parameters along with their default values are listed in the
-   * documentation of the <tt>EpsFlags</tt> member class of this class. See
-   * there for more and detailed information.
    */
   template <int spacedim>
   void
@@ -1700,9 +1442,8 @@ namespace DataOutBase
     std::ostream &  out);
 
   /**
-   * This is the same function as above except for domains that are not two-
-   * dimensional. This function is not implemented (and will throw an error if
-   * called) but is declared to allow for dimension-independent programs.
+   * 这是一个与上面相同的函数，除了用于非二维的域。这个函数没有被实现（如果被调用将抛出一个错误），但被声明是为了允许与维度无关的程序。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1720,13 +1461,9 @@ namespace DataOutBase
 
 
   /**
-   * Write the given list of patches to the output stream in GMV format.
+   * 将给定的补丁列表以GMV格式写到输出流中。
+   * 数据以如下格式写入：节点被认为是斑块的点。在空间维度小于3的情况下，缺失的坐标会插入0。数据向量被写成节点或单元数据，对于第一种，数据空间被内插为（双，三）线性元素。
    *
-   * Data is written in the following format: nodes are considered the points
-   * of the patches. In spatial dimensions less than three, zeroes are
-   * inserted for the missing coordinates. The data vectors are written as
-   * node or cell data, where for the first the data space is interpolated to
-   * (bi-,tri-)linear elements.
    */
   template <int dim, int spacedim>
   void
@@ -1743,59 +1480,28 @@ namespace DataOutBase
     std::ostream &  out);
 
   /**
-   * Write the given list of patches to the output stream in gnuplot format.
-   * Visualization of two-dimensional data can then be achieved by starting
-   * <tt>gnuplot</tt> and entering the commands
-   *
+   * 将给定的补丁列表以gnuplot格式写到输出流中。
+   * 然后可以通过启动<tt>gnuplot</tt>并输入命令来实现二维数据的可视化
    * @verbatim
    * set data style lines
    * splot "filename" using 1:2:n
    * @endverbatim
-   * This example assumes that the number of the data vector displayed is
-   * <b>n-2</b>.
-   *
-   * The GNUPLOT format is not able to handle data on unstructured grids
-   * directly. Directly would mean that you only give the vertices and the
-   * solution values thereon and the program constructs its own grid to
-   * represent the data. This is only possible for a structured tensor product
-   * grid in two dimensions. However, it is possible to give several such
-   * patches within one file, which is exactly what the respective function of
-   * this class does: writing each cell's data as a patch of data, at least if
-   * the patches as passed from derived classes represent cells. Note that the
-   * functions on patches need not be continuous at interfaces between
-   * patches, so this method also works for discontinuous elements. Note also,
-   * that GNUPLOT can do hidden line removal for patched data.
-   *
-   * While this discussion applies to two spatial dimensions, it is more
-   * complicated in 3d. The reason is that we could still use patches, but it
-   * is difficult when trying to visualize them, since if we use a cut through
-   * the data (by, for example, using x- and z-coordinates, a fixed y-value
-   * and plot function values in z-direction, then the patched data is not a
-   * patch in the sense GNUPLOT wants it any more. Therefore, we use another
-   * approach, namely writing the data on the 3d grid as a sequence of lines,
-   * i.e. two points each associated with one or more data sets.  There are
-   * therefore 12 lines for each subcells of a patch.
-   *
-   * Given the lines as described above, a cut through this data in Gnuplot
-   * can then be achieved like this:
+   * 本例假设显示的数据矢量的编号为<b>n-2</b>。
+   * GNUPLOT格式不能直接处理非结构化网格上的数据。直接意味着你只给出顶点和其上的解值，而程序会构建自己的网格来表示这些数据。这只对二维的结构化张量积网格是可行的。然而，在一个文件内给出几个这样的补丁是可能的，这正是这个类的相应函数所做的：将每个单元格的数据写成一个数据补丁，至少在派生类传递的补丁代表单元格的情况下。请注意，补丁上的函数在补丁之间的界面上不需要是连续的，所以这个方法也适用于不连续的元素。还要注意的是，GNUPLOT可以对修补过的数据进行隐线去除。
+   * 虽然这个讨论适用于两个空间维度，但在三维空间中则更为复杂。原因是我们仍然可以使用补丁，但当我们试图将它们可视化时就很困难了，因为如果我们使用切开数据（例如，通过使用x和z坐标，一个固定的y值和z方向的绘图函数值，那么补丁数据就不是GNUPLOT想要的补丁了。因此，我们使用了另一种方法，即把数据写在三维网格上，作为一连串的线，即每两个点与一个或多个数据集有关。
+   * 因此，一个补丁的每个子单元有12条线。
+   * 鉴于上述的线条，在Gnuplot中可以实现对这些数据的切割，就像这样。
    * @verbatim
-   *   set data style lines
-   *   splot [:][:][0:] "T" using 1:2:(\$3==.5 ? \$4 : -1)
+   * set data style lines
+   * splot [:][:][0:] "T" using 1:2:(\$3==.5 ? \$4 :
+   *
+   * -1)
    * @endverbatim
+   * 这个命令在 $x$ -和 $y$ -方向上无限制地绘制数据，但在
+   * $z$ -方向上只绘制那些在 $x$ - $y$
+   * -平面以上的数据点（我们在这里假设一个正解，如果它有负值，你可能想减少下限）。此外，它只取z值（<tt>&3</tt>）等于0.5的数据点，即在<tt>z=0.5</tt>处切过域。对于这个平面上的数据点，第一个数据集（<tt>&4</tt>）的数据值在x-y平面上方的z方向上被提高；所有其他的点都被表示为<tt>-1</tt>的值，而不是数据向量的值，并且由于z绘图方向的下限，在第三对括号中给出，所以不被绘制。
+   * 更复杂的切割是可能的，包括非线性的切割。然而，请注意，只有那些实际在切割面上的点才被绘制出来。
    *
-   * This command plots data in $x$- and $y$-direction unbounded, but in
-   * $z$-direction only those data points which are above the $x$-$y$-plane (we
-   * assume here a positive solution, if it has negative values, you might
-   * want to decrease the lower bound). Furthermore, it only takes the data
-   * points with z-values (<tt>&3</tt>) equal to 0.5, i.e. a cut through the
-   * domain at <tt>z=0.5</tt>. For the data points on this plane, the data
-   * values of the first data set (<tt>&4</tt>) are raised in z-direction
-   * above the x-y-plane; all other points are denoted the value <tt>-1</tt>
-   * instead of the value of the data vector and are not plotted due to the
-   * lower bound in z plotting direction, given in the third pair of brackets.
-   *
-   * More complex cuts are possible, including nonlinear ones. Note however,
-   * that only those points which are actually on the cut-surface are plotted.
    */
   template <int dim, int spacedim>
   void
@@ -1812,49 +1518,13 @@ namespace DataOutBase
     std::ostream &      out);
 
   /**
-   * Write the given list of patches to the output stream for the Povray
-   * raytracer.
-   *
-   * Output in this format creates a povray source file, include standard
-   * camera and light source definition for rendering with povray 3.1 At
-   * present, this format only supports output for two-dimensional data, with
-   * values in the third direction taken from a data vector.
-   *
-   * The output uses two different povray-objects:
-   *
-   * <ul>
-   * <li> <tt>BICUBIC_PATCH</tt> A <tt>bicubic_patch</tt> is a 3-dimensional
-   * Bezier patch. It consists of 16 Points describing the surface. The 4
-   * corner points are touched by the object, while the other 12 points pull
-   * and stretch the patch into shape. One <tt>bicubic_patch</tt> is generated
-   * on each patch. Therefore the number of subdivisions has to be 3 to provide
-   * the patch with 16 points. A bicubic patch is not exact but generates very
-   * smooth images.
-   *
-   * <li> <tt>MESH</tt> The mesh object is used to store large number of
-   * triangles. Every square of the patch data is split into one upper-left
-   * and one lower-right triangle. If the number of subdivisions is three, 32
-   * triangle are generated for every patch.
-   *
-   * Using the smooth flag povray interpolates the normals on the triangles,
-   * imitating a curved surface
-   * </ul>
-   *
-   * All objects get one texture definition called Tex. This texture has to be
-   * declared somewhere before the object data. This may be in an external
-   * data file or at the beginning of the output file. Setting the
-   * <tt>external_data</tt> flag to false, an standard camera, light and
-   * texture (scaled to fit the scene) is added to the output file. Set to
-   * true an include file "data.inc" is included. This file is not generated
-   * by deal and has to include camera, light and the texture definition Tex.
-   *
-   * You need povray (>=3.0) to render the scene. The minimum options for
-   * povray are:
+   * 将给定的补丁列表写入Povray光线跟踪器的输出流中。    以这种格式输出会创建一个povray源文件，包括用povray 3.1渲染的标准相机和光源定义，目前，这种格式只支持二维数据的输出，第三个方向的数值取自数据矢量。    输出使用两个不同的povray-objects。      <ul>   <li>  <tt>BICUBIC_PATCH</tt> 一个<tt>bicubic_patch</tt>是一个3维的Bezier补丁。它由16个描述表面的点组成。4个角点被物体所接触，而其他12个点则拉动和拉伸补丁的形状。每个补丁上都会产生一个<tt>bicubic_patch</tt>。因此，细分的数量必须是3，以提供16个点的补丁。双三次元补丁并不精确，但能生成非常平滑的图像。      <li>  <tt>MESH</tt> 网格对象是用来存储大量的三角形的。补丁数据的每个正方形都被分割成一个左上角和一个右下角的三角形。如果细分的数量是3个，每个补丁就会产生32个三角形。    使用平滑标志povray在三角形上插值法线，模仿一个弯曲的表面 </ul> 。这个纹理必须在对象数据之前的某个地方声明。这可能是在一个外部数据文件中或在输出文件的开头。将<tt>external_data</tt>标志设置为false，一个标准的摄像机、灯光和纹理（按比例调整以适应场景）会被添加到输出文件中。设置为 "true"，一个包含文件 "data.inc "会被包括在内。这个文件不是由deal生成的，必须包括摄像机、灯光和纹理定义Tex。    你需要povray（>=3.0）来渲染这个场景。povray的最小选项是。
    * @verbatim
-   *   povray +I<inputfile> +W<horiz. size> +H<ver. size> +L<include path>
+   * povray +I<inputfile> +W<horiz. size> +H<ver. size> +L<include path>
    * @endverbatim
-   * If the external file "data.inc" is used, the path to this file has to be
-   * included in the povray options.
+   * 如果使用外部文件
+   * "data.inc"，这个文件的路径必须包含在povray选项中。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1871,10 +1541,10 @@ namespace DataOutBase
     std::ostream &     out);
 
   /**
-   * Write the given list of patches to the output stream in Tecplot ASCII
-   * format (FEBLOCK).
+   * 将给定的补丁列表以Tecplot
+   * ASCII格式（FEBLOCK）写入输出流。
+   * 更多信息请查阅Tecplot用户和参考手册。
    *
-   * For more information consult the Tecplot Users and Reference manuals.
    */
   template <int dim, int spacedim>
   void
@@ -1891,18 +1561,10 @@ namespace DataOutBase
     std::ostream &      out);
 
   /**
-   * Write the given list of patches to the output stream in UCD format
-   * described in the AVS developer's guide (now AVS). Due to limitations in
-   * the present format, only node based data can be output, which in one
-   * reason why we invented the patch concept. In order to write higher order
-   * elements, you may split them up into several subdivisions of each cell.
-   * These subcells will then, however, also appear as different cells by
-   * programs which understand the UCD format.
+   * 将给定的补丁列表以AVS开发者指南（现在的AVS）中描述的UCD格式写到输出流中。由于目前格式的限制，只能输出基于节点的数据，这也是我们发明补丁概念的原因之一。为了编写高阶元素，你可以把它们分割成每个单元的几个子单元。
+   * 然而，这些子单元也会被理解UCD格式的程序显示为不同的单元。
+   * 我们没有利用提供模型数据的可能性，因为所有UCD程序都不支持这些数据。你可以在派生类中给出单元格数据，方法是将一个补丁上给定数据集的所有值设置为相同的值。
    *
-   * No use is made of the possibility to give model data since these are not
-   * supported by all UCD aware programs. You may give cell data in derived
-   * classes by setting all values of a given data set on a patch to the same
-   * value.
    */
   template <int dim, int spacedim>
   void
@@ -1919,23 +1581,11 @@ namespace DataOutBase
     std::ostream &  out);
 
   /**
-   * Write the given list of patches to the output stream in VTK format. The
-   * data is written in the traditional VTK format as opposed to the XML-based
-   * format that write_vtu() produces.
+   * 将给定的补丁列表以VTK格式写到输出流中。数据是以传统的VTK格式写入的，而不是write_vtu()产生的基于XML的格式。
+   * nonscalar_data_ranges参数表示输出中的组件范围，被认为是一个矢量，而不是简单的标量字段的集合。VTK的输出格式有特殊的规定，允许这些组件用一个名字来输出，而不是在可视化程序中把几个标量字段归为一个矢量。
+   * @note
+   * VTK是一种遗留格式，在很大程度上已经被VTU格式（VTK的XML结构版本）所取代了。特别是，VTU允许对数据进行压缩，因此导致大文件的文件大小要比VTK文件小得多。由于所有支持VTK的可视化程序也支持VTU，你应该考虑使用后者的文件格式，通过使用write_vtu()函数来代替。
    *
-   * The nonscalar_data_ranges argument denotes ranges of components in the
-   * output that are considered a vector, rather than simply a collection of
-   * scalar fields. The VTK output format has special provisions that allow
-   * these components to be output by a single name rather than having to
-   * group several scalar fields into a vector later on in the visualization
-   * program.
-   *
-   * @note VTK is a legacy format and has largely been supplanted by the VTU
-   * format (an XML-structured version of VTK). In particular, VTU allows for
-   * the compression of data and consequently leads to much smaller file sizes
-   * that equivalent VTK files for large files. Since all visualization
-   * programs that support VTK also support VTU, you should consider using the
-   * latter file format instead, by using the write_vtu() function.
    */
   template <int dim, int spacedim>
   void
@@ -1953,27 +1603,19 @@ namespace DataOutBase
 
 
   /**
-   * Write the given list of patches to the output stream in VTU format. The
-   * data is written in the XML-based VTK format as opposed to the traditional
-   * format that write_vtk() produces.
+   * 将给定的补丁列表以VTU格式写入输出流中。数据是以基于XML的VTK格式写入的，而不是write_vtk()产生的传统格式。
+   * nonscalar_data_ranges参数表示输出中组件的范围，被认为是一个矢量，而不是简单的标量字段的集合。VTK的输出格式有特殊的规定，允许这些组件用一个名字来输出，而不是在可视化程序中把几个标量字段归为一个矢量。
+   * 一些可视化程序，如ParaView，可以读取几个独立的VTU文件来实现可视化的并行化。在这种情况下，你需要一个
+   * <code>.pvtu</code> 文件来描述哪些VTU文件构成一个组。
+   * DataOutInterface::write_pvtu_record()
+   * 函数可以生成这样一个集中的记录。同样，
+   * DataOutInterface::write_visit_record()
+   * 对VisIt也有同样的作用（尽管VisIt从2.5.1版开始也可以读取
+   * <code>pvtu</code>
+   * 记录）。最后，对于与时间有关的问题，你可能还想看看
+   * DataOutInterface::write_pvd_record()  这个函数的使用在  step-40
+   * 中有解释。
    *
-   * The nonscalar_data_ranges argument denotes ranges of components in the
-   * output that are considered a vector, rather than simply a collection of
-   * scalar fields. The VTK output format has special provisions that allow
-   * these components to be output by a single name rather than having to
-   * group several scalar fields into a vector later on in the visualization
-   * program.
-   *
-   * Some visualization programs, such as ParaView, can read several separate
-   * VTU files to parallelize visualization. In that case, you need a
-   * <code>.pvtu</code> file that describes which VTU files form a group. The
-   * DataOutInterface::write_pvtu_record() function can generate such a
-   * centralized record. Likewise, DataOutInterface::write_visit_record() does
-   * the same for VisIt (although VisIt can also read <code>pvtu</code> records
-   * since version 2.5.1). Finally, for time dependent problems, you may also
-   * want to look at DataOutInterface::write_pvd_record()
-   *
-   * The use of this function is explained in step-40.
    */
   template <int dim, int spacedim>
   void
@@ -1990,27 +1632,31 @@ namespace DataOutBase
     std::ostream &  out);
 
   /**
-   * This writes the header for the xml based vtu file format. This routine is
-   * used internally together with DataOutInterface::write_vtu_footer() and
-   * DataOutInterface::write_vtu_main() by DataOutBase::write_vtu().
+   * 这是为基于xml的vtu文件格式写头。这个例程与
+   * DataOutInterface::write_vtu_footer() 和
+   * DataOutInterface::write_vtu_main() 一起被 DataOutBase::write_vtu().
+   * 内部使用。
+   *
    */
   void
   write_vtu_header(std::ostream &out, const VtkFlags &flags);
 
   /**
-   * This function writes the footer for the xml based vtu file format. This
-   * routine is used internally together with
-   * DataOutInterface::write_vtu_header() and DataOutInterface::write_vtu_main()
-   * by DataOutBase::write_vtu().
+   * 该函数为基于xml的vtu文件格式写入页脚。本例程与
+   * DataOutInterface::write_vtu_header() 和
+   * DataOutInterface::write_vtu_main() 一起被 DataOutBase::write_vtu().
+   * 内部使用。
+   *
    */
   void
   write_vtu_footer(std::ostream &out);
 
   /**
-   * This function writes the main part for the xml based vtu file format. This
-   * routine is used internally together with
-   * DataOutInterface::write_vtu_header() and
-   * DataOutInterface::write_vtu_footer() by DataOutBase::write_vtu().
+   * 该函数为基于xml的vtu文件格式写入主要部分。这个程序在内部与
+   * DataOutInterface::write_vtu_header() 和
+   * DataOutInterface::write_vtu_footer() 一起被 DataOutBase::write_vtu().
+   * 使用。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2027,45 +1673,29 @@ namespace DataOutBase
     std::ostream &  out);
 
   /**
-   * Some visualization programs, such as ParaView, can read several separate
-   * VTU files that all form part of the same simulation, in order to
-   * parallelize visualization. In that case, you need a
-   * <code>.pvtu</code> file that describes which VTU files (written, for
-   * example, through the DataOutInterface::write_vtu() function) form a group.
-   * The current function can generate such a centralized record.
+   * 一些可视化程序，如ParaView，可以读取几个独立的VTU文件，这些文件都是同一模拟的一部分，以实现可视化的并行。在这种情况下，你需要一个
+   * <code>.pvtu</code> 文件来描述哪些VTU文件（例如，通过
+   * DataOutInterface::write_vtu() 函数写入）构成一个组。
+   * 当前的函数可以生成这样一个集中的记录。
+   * 这个函数通常不会从用户空间自己调用，但你可能想通过
+   * DataOutInterface::write_pvtu_record()
+   * 调用它，因为DataOutInterface类可以访问你必须手工提供给当前函数的信息。
+   * 在任何情况下，不管是直接调用这个函数还是通过
+   * DataOutInterface::write_pvtu_record(),
+   * 调用，这样编写的中央记录文件都包含一个（标量或矢量）字段的列表，描述哪些字段实际上可以在构成平行VTU文件集的各个文件中找到，以及这些文件的名称。这个函数通过第三和第四个参数获得字段的名称和类型；你可以用手来确定这些，但在实践中，这个函数最容易通过调用
+   * DataOutInterfaces::write_pvtu_record(), 来调用，它通过调用
+   * DataOutInterface::get_dataset_names() 和
+   * DataOutInterface::get_nonscalar_data_ranges()
+   * 函数确定最后两个参数。这个函数的第二个参数指定了构成并行集的文件名称。
+   * @note  使用 DataOutBase::write_vtu() 和 DataOutInterface::write_vtu()
+   * 来写每一块。还要注意，只有一个并行进程需要调用当前函数，列出所有并行进程写入的文件名。
+   * @note  为了告诉Paraview将多个 <code>pvtu</code>
+   * 文件组合在一起，每个文件描述一个与时间有关的模拟的一个时间步骤，请参阅
+   * DataOutBase::write_pvd_record() 函数。
+   * @note  旧版本的VisIt（2.5.1之前），不能读取
+   * <code>pvtu</code>
+   * 记录。然而，它可以读取由write_visit_record()函数写入的访问记录。
    *
-   * This function is typically not called by itself from user space, but
-   * you may want to call it through DataOutInterface::write_pvtu_record()
-   * since the DataOutInterface class has access to information that you
-   * would have to provide to the current function by hand.
-   *
-   * In any case, whether this function is called directly or via
-   * DataOutInterface::write_pvtu_record(), the central record file so
-   * written contains a list of (scalar or vector) fields that describes which
-   * fields can actually be found in the individual files that comprise the set
-   * of parallel VTU files along with the names of these files. This function
-   * gets the names and types of fields through the third and fourth
-   * argument; you can determine these by hand, but in practice, this function
-   * is most easily called by calling DataOutInterfaces::write_pvtu_record(),
-   * which determines the last two arguments by calling
-   * DataOutInterface::get_dataset_names() and
-   * DataOutInterface::get_nonscalar_data_ranges() functions. The second
-   * argument to this function specifies the names of the files that form the
-   * parallel set.
-   *
-   * @note Use DataOutBase::write_vtu() and DataOutInterface::write_vtu()
-   * for writing each piece. Also note that
-   * only one parallel process needs to call the current function, listing the
-   * names of the files written by all parallel processes.
-   *
-   * @note In order to tell Paraview to group together multiple
-   * <code>pvtu</code> files that each describe one time step of a time
-   * dependent simulation, see the DataOutBase::write_pvd_record()
-   * function.
-   *
-   * @note Older versions of VisIt (before 2.5.1), can not read
-   * <code>pvtu</code> records. However, it can read visit records as written
-   * by the write_visit_record() function.
    */
   void
   write_pvtu_record(
@@ -2080,52 +1710,44 @@ namespace DataOutBase
       &nonscalar_data_ranges);
 
   /**
-   * In ParaView it is possible to visualize time-dependent data tagged with
-   * the current integration time of a time dependent simulation. To use this
-   * feature you need a <code>.pvd</code> file that describes which VTU or
-   * PVTU file belongs to which timestep. This function writes a file that
-   * provides this mapping, i.e., it takes a list of pairs each of which
-   * indicates a particular time instant and the corresponding file that
-   * contains the graphical data for this time instant.
-   *
-   * A typical use case, in program that computes a time dependent solution,
-   * would be the following (<code>time</code> and <code>time_step</code> are
-   * member variables of the class with types <code>double</code> and
-   * <code>unsigned int</code>, respectively; the variable
-   * <code>times_and_names</code> is of type
-   * <code>std::vector@<std::pair@<double,std::string@> @></code>):
-   *
+   * 在ParaView中，可以将与时间有关的数据可视化，并将其标记为与时间有关的模拟的当前积分时间。为了使用这个功能，你需要一个
+   * <code>.pvd</code>
+   * 文件，描述哪个VTU或PVTU文件属于哪个时间段。这个函数写入一个提供这种映射的文件，也就是说，它需要一个对的列表，每个对表示一个特定的时间瞬时和包含这个时间瞬时的图形数据的相应文件。
+   * 一个典型的用例，在计算与时间有关的解决方案的程序中，将是以下内容（
+   * <code>time</code> and <code>time_step</code> 是类型为
+   * <code>double</code> 和 <code>unsigned int</code>
+   * 的类的成员变量；变量 <code>times_and_names</code> 的类型是
+   * <code>std::vector@<std::pair@<double,std::string@> @></code> ）。
    * @code
    * template <int dim>
    * void MyEquation<dim>::output_results () const
    * {
-   *   DataOut<dim> data_out;
+   * DataOut<dim> data_out;
    *
-   *   data_out.attach_dof_handler(dof_handler);
-   *   data_out.add_data_vector(solution, "U");
-   *   data_out.build_patches();
+   * data_out.attach_dof_handler(dof_handler);
+   * data_out.add_data_vector(solution, "U");
+   * data_out.build_patches();
    *
-   *   const std::string filename = "solution-" +
-   *                                Utilities::int_to_string (timestep_n, 3) +
-   *                                ".vtu";
-   *   std::ofstream output(filename);
-   *   data_out.write_vtu(output);
+   * const std::string filename = "solution-" +
+   *                              Utilities::int_to_string (timestep_n, 3) +
+   *                              ".vtu";
+   * std::ofstream output(filename);
+   * data_out.write_vtu(output);
    *
-   *   times_and_names.emplace_back (time, filename);
-   *   std::ofstream pvd_output ("solution.pvd");
-   *   DataOutBase::write_pvd_record (pvd_output, times_and_names);
+   * times_and_names.emplace_back (time, filename);
+   * std::ofstream pvd_output ("solution.pvd");
+   * DataOutBase::write_pvd_record (pvd_output, times_and_names);
    * }
    * @endcode
+   * @note  参见 DataOutInterface::write_vtu,
+   * DataOutInterface::write_pvtu_record, 和
+   * DataOutInterface::write_vtu_in_parallel
+   * ，用于编写每个时间步长的解决方案。
+   * @note
+   * 每对文件的第二个元素，即储存每个时间的图形数据的文件，本身又可以是一个引用其他文件的文件。例如，它可以是一个
+   * <code>.pvtu</code>
+   * 文件的名称，该文件引用了一个并行计算的多个部分。
    *
-   * @note See DataOutInterface::write_vtu, DataOutInterface::write_pvtu_record,
-   * and DataOutInterface::write_vtu_in_parallel
-   * for writing solutions at each timestep.
-   *
-   * @note The second element of each pair, i.e., the file in which the
-   * graphical data for each time is stored, may itself be again a file that
-   * references other files. For example, it could be the name for a
-   * <code>.pvtu</code> file that references multiple parts of a parallel
-   * computation.
    */
   void
   write_pvd_record(
@@ -2133,24 +1755,19 @@ namespace DataOutBase
     const std::vector<std::pair<double, std::string>> &times_and_names);
 
   /**
-   * This function is the exact equivalent of the write_pvtu_record() function
-   * but for older versions of the VisIt visualization program and for one
-   * visualization graph (or one time step only). See there for the purpose of
-   * this function.
-   *
-   * This function is documented in the "Creating a master file for parallel"
-   * section (section 5.7) of the "Getting data into VisIt" report that can be
-   * found here:
+   * 这个函数完全等同于write_pvtu_record()函数，但适用于旧版本的VisIt可视化程序和一个可视化图形（或仅一个时间步长）。关于这个函数的用途，见那里。
+   * 这个函数在 "将数据输入VisIt "报告中的
+   * "创建并行的主文件
+   * "部分（第5.7节）有记录，可以在这里找到：
    * https://wci.llnl.gov/codes/visit/2.0.0/GettingDataIntoVisIt2.0.0.pdf
+   *
    */
   void
   write_visit_record(std::ostream &                  out,
                      const std::vector<std::string> &piece_names);
 
   /**
-   * This function is equivalent to the write_visit_record() above but for
-   * multiple time steps. Here is an example of how the function would be
-   * used:
+   * 这个函数等同于上面的write_visit_record()，但用于多个时间步长。下面是一个如何使用该函数的例子。
    * @code
    * const unsigned int number_of_time_steps = 3;
    * std::vector<std::vector<std::string > > piece_names(number_of_time_steps);
@@ -2168,21 +1785,18 @@ namespace DataOutBase
    *
    * DataOutBase::write_visit_record(visit_output, piece_names);
    * @endcode
-   *
-   * This function is documented in the "Creating a master file for parallel"
-   * section (section 5.7) of the "Getting data into VisIt" report that can be
-   * found here:
+   * 这个函数在 "将数据输入VisIt "报告的
+   * "创建一个并行的主文件
+   * "一节（第5.7节）中有记录，可以在这里找到：
    * https://wci.llnl.gov/codes/visit/2.0.0/GettingDataIntoVisIt2.0.0.pdf
+   *
    */
   void
   write_visit_record(std::ostream &                               out,
                      const std::vector<std::vector<std::string>> &piece_names);
 
   /**
-   * This function is equivalent to the write_visit_record() above but for
-   * multiple time steps and with additional information about the time for
-   * each timestep. Here is an example of how the function would be
-   * used:
+   * 这个函数等同于上面的write_visit_record()，但是对于多个时间步长，而且每个时间步长的时间的附加信息。下面是一个如何使用该函数的例子。
    * @code
    * const unsigned int number_of_time_steps = 3;
    * std::vector<std::pair<double,std::vector<std::string > > >
@@ -2204,11 +1818,11 @@ namespace DataOutBase
    *
    * DataOutBase::write_visit_record(visit_output, times_and_piece_names);
    * @endcode
-   *
-   * This function is documented in the "Creating a master file for parallel"
-   * section (section 5.7) of the "Getting data into VisIt" report that can be
-   * found here:
+   * 这个函数在 "将数据输入VisIt "报告的
+   * "为并行创建主文件
+   * "一节（第5.7节）中有记录，可以在这里找到：
    * https://wci.llnl.gov/codes/visit/2.0.0/GettingDataIntoVisIt2.0.0.pdf
+   *
    */
   void
   write_visit_record(
@@ -2217,24 +1831,14 @@ namespace DataOutBase
       &times_and_piece_names);
 
   /**
-   * Write the given list of patches to the output stream in SVG format.
+   * 将给定的补丁列表以SVG格式写入输出流中。
+   * SVG（Scalable Vector
+   * Graphics）是一种基于XML的矢量图像格式，由万维网联盟（W3C）开发和维护。该功能符合2011年8月16日发布的最新规范SVG
+   * 1.1。通过设置或清除相应的标志（见SvgFlags结构），可以控制图形的输出。目前，这种格式只支持二维数据的输出，第三个方向的值取自数据矢量。
+   * 对于输出，每个补丁被细分为四个三角形，然后被写成多边形，并用线性颜色梯度填充。补丁产生的颜色使顶点的数据值从指定的数据向量中可视化。可以画一个色条来编码着色。
+   * @note
+   * 这个函数到目前为止只在两个维度上实现，并为数据信息保留了一个附加维度。
    *
-   * SVG (Scalable Vector Graphics) is an XML-based vector image format
-   * developed and maintained by the World Wide Web Consortium (W3C). This
-   * function conforms to the latest specification SVG 1.1, released on August
-   * 16, 2011. Controlling the graphic output is possible by setting or
-   * clearing the respective flags (see the SvgFlags struct). At present, this
-   * format only supports output for two-dimensional data, with values in the
-   * third direction taken from a data vector.
-   *
-   * For the output, each patch is subdivided into four triangles which are
-   * then written as polygons and filled with a linear color gradient. The
-   * arising coloring of the patches visualizes the data values at the
-   * vertices taken from the specified data vector. A colorbar can be drawn to
-   * encode the coloring.
-   *
-   * @note This function is so far only implemented for two dimensions with an
-   * additional dimension reserved for data information.
    */
   template <int spacedim>
   void
@@ -2251,41 +1855,13 @@ namespace DataOutBase
     std::ostream &  out);
 
   /**
-   * Write the given list of patches to the output stream in deal.II
-   * intermediate format. This is not a format understood by any other
-   * graphics program, but is rather a direct dump of the intermediate
-   * internal format used by deal.II. This internal format is generated by the
-   * various classes that can generate output using the DataOutBase class, for
-   * example from a finite element solution, and is then converted in the
-   * present class to the final graphics format.
+   * 将给定的补丁列表以deal.II中间格式写到输出流中。这不是任何其他图形程序所能理解的格式，而是直接转储deal.II所使用的内部中间格式。这种内部格式是由可以使用DataOutBase类产生输出的各种类产生的，例如从有限元求解中产生，然后在本类中转换为最终的图形格式。
+   * 注意，中间格式就像它的名字一样：内部数据的直接表示。它不是标准化的，每当我们改变内部表示时就会改变。你只能期望使用用于写入的同一版本的deal.II来处理以这种格式写入的文件。
+   * 我们提供写出这种中间格式的原因是，它可以使用DataOutReader类读回deal.II程序中，这至少在两种情况下是有帮助的。首先，这可以用来在以后生成任何其他目前能理解的图形格式的图形输出；这样，在运行时就不需要知道要求哪种输出格式，或者是否需要不同格式的多个输出文件。其次，与几乎所有其他图形格式相比，有可能合并几个包含中间格式数据的文件，并从中生成一个单一的输出文件，该文件可以再次采用中间格式或任何最终格式。后一种选择对并行程序最有帮助：正如
+   * step-17
+   * 示例程序所演示的，可以只让一个处理器为整个并行程序生成图形输出，但如果涉及许多处理器，这可能会变得效率极低，因为负载不再平衡。出路是让每个处理器为它的那块领域生成中间图形输出，而后将不同的文件合并成一个，这是一个比生成中间数据便宜得多的操作。
+   * 中间格式的deal.II数据通常存储在以<tt>.d2</tt>结尾的文件中。
    *
-   * Note that the intermediate format is what its name suggests: a direct
-   * representation of internal data. It isn't standardized and will change
-   * whenever we change our internal representation. You can only expect to
-   * process files written in this format using the same version of deal.II
-   * that was used for writing.
-   *
-   * The reason why we offer to write out this intermediate format is that it
-   * can be read back into a deal.II program using the DataOutReader class,
-   * which is helpful in at least two contexts: First, this can be used to
-   * later generate graphical output in any other graphics format presently
-   * understood; this way, it is not necessary to know at run-time which
-   * output format is requested, or if multiple output files in different
-   * formats are needed. Secondly, in contrast to almost all other graphics
-   * formats, it is possible to merge several files that contain intermediate
-   * format data, and generate a single output file from it, which may be
-   * again in intermediate format or any of the final formats. This latter
-   * option is most helpful for parallel programs: as demonstrated in the
-   * step-17 example program, it is possible to let only one processor
-   * generate the graphical output for the entire parallel program, but this
-   * can become vastly inefficient if many processors are involved, because
-   * the load is no longer balanced. The way out is to let each processor
-   * generate intermediate graphical output for its chunk of the domain, and
-   * the later merge the different files into one, which is an operation that
-   * is much cheaper than the generation of the intermediate data.
-   *
-   * Intermediate format deal.II data is usually stored in files with the
-   * ending <tt>.d2</tt>.
    */
   template <int dim, int spacedim>
   void
@@ -2302,8 +1878,9 @@ namespace DataOutBase
     std::ostream &                   out);
 
   /**
-   * Write the data in @p data_filter to a single HDF5 file containing both the
-   * mesh and solution values.
+   * 将 @p data_filter
+   * 中的数据写入一个包含网格和求解值的HDF5文件。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2313,11 +1890,12 @@ namespace DataOutBase
                       const MPI_Comm &                         comm);
 
   /**
-   * Write the data in @p data_filter to HDF5 file(s). If @p write_mesh_file is
-   * false, the mesh data will not be written and the solution file will
-   * contain only the solution values. If @p write_mesh_file is true and the
-   * filenames are the same, the resulting file will contain both mesh data
-   * and solution values.
+   * 将 @p data_filter 中的数据写入HDF5文件。如果 @p
+   * write_mesh_file
+   * 为假，网格数据将不被写入，解文件将只包含解的数值。如果
+   * @p write_mesh_file
+   * 为真，且文件名相同，生成的文件将同时包含网格数据和求解值。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2329,10 +1907,9 @@ namespace DataOutBase
                       const MPI_Comm &   comm);
 
   /**
-   * DataOutFilter is an intermediate data format that reduces the amount of
-   * data that will be written to files. The object filled by this function
-   * can then later be used again to write data in a concrete file format;
-   * see, for example, DataOutBase::write_hdf5_parallel().
+   * DataOutFilter是一种中间数据格式，可以减少将被写入文件的数据量。这个函数所填充的对象随后可以再次用于写入具体文件格式的数据；例如，见
+   * DataOutBase::write_hdf5_parallel(). 。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2348,71 +1925,44 @@ namespace DataOutBase
     DataOutFilter &filtered_data);
 
   /**
-   * Given an input stream that contains data written by
-   * write_deal_II_intermediate(), determine the <tt>dim</tt> and
-   * <tt>spacedim</tt> template parameters with which that function was
-   * called, and return them as a pair of values.
+   * 给出一个包含由write_deal_II_intermediate()写入的数据的输入流，确定调用该函数的<tt>dim</tt>和<tt>spacedim</tt>模板参数，并将它们作为一对值返回。
+   * 注意，这个函数在流的当前位置吃了一些元素，因此改变了它。为了使用例如DataOutReader类从它那里读取数据，你可能希望将流重置到它以前的位置，或者关闭并重新打开它。
    *
-   * Note that this function eats a number of elements at the present position
-   * of the stream, and therefore alters it. In order to read from it using,
-   * for example, the DataOutReader class, you may wish to either reset the
-   * stream to its previous position, or close and reopen it.
    */
   std::pair<unsigned int, unsigned int>
   determine_intermediate_format_dimensions(std::istream &input);
 
   /**
-   * Return the OutputFormat value corresponding to the given string. If the
-   * string does not match any known format, an exception is thrown.
+   * 返回对应于给定字符串的OutputFormat值。如果该字符串与任何已知的格式不匹配，就会抛出一个异常。
+   * 这个函数的主要目的是允许程序使用任何已实现的输出格式，而不需要在每次实现新的格式时扩展程序的分析器。
+   * 要获得目前可用的格式名称的列表，例如，要把它交给ParameterHandler类，请使用函数get_output_format_names()。
    *
-   * The main purpose of this function is to allow a program to use any
-   * implemented output format without the need to extend the program's parser
-   * each time a new format is implemented.
-   *
-   * To get a list of presently available format names, e.g. to give it to the
-   * ParameterHandler class, use the function get_output_format_names().
    */
   OutputFormat
   parse_output_format(const std::string &format_name);
 
   /**
-   * Return a list of implemented output formats. The different names are
-   * separated by vertical bar signs (<tt>`|'</tt>) as used by the
-   * ParameterHandler classes.
+   * 返回一个已实现的输出格式的列表。不同的名称由垂直条形符号（<tt>`|'</tt>）分开，正如ParameterHandler类所使用的那样。
+   *
    */
   std::string
   get_output_format_names();
 
   /**
-   * Provide a function which tells us which suffix a file with a given output
-   * format usually has. At present the following formats are defined:
-   * <ul>
-   * <li> <tt>dx</tt>: <tt>.dx</tt>
-   * <li> <tt>ucd</tt>: <tt>.inp</tt>
-   * <li> <tt>gnuplot</tt>: <tt>.gnuplot</tt>
-   * <li> <tt>povray</tt>: <tt>.pov</tt>
-   * <li> <tt>eps</tt>: <tt>.eps</tt>
-   * <li> <tt>gmv</tt>: <tt>.gmv</tt>
-   * <li> <tt>tecplot</tt>: <tt>.dat</tt>
-   * <li> <tt>tecplot_binary</tt>: <tt>.plt</tt>
-   * <li> <tt>vtk</tt>: <tt>.vtk</tt>
-   * <li> <tt>vtu</tt>: <tt>.vtu</tt>
-   * <li> <tt>svg</tt>: <tt>.svg</tt>
-   * <li> <tt>deal_II_intermediate</tt>: <tt>.d2</tt>.
-   * </ul>
+   * 提供一个函数，告诉我们一个给定输出格式的文件通常有哪个后缀。目前定义了以下格式。    <ul>   <li>  <tt>dx</tt>: <tt>.dx</tt>  <li>  <tt>ucd</tt>: <tt>.inp</tt>  <li>  <tt>gnuplot</tt>: <tt>.gnuplot</tt>  <li>  <tt>povray</tt>: <tt>.pov</tt>  <li>  <tt>eps</tt>: <tt>.eps</tt>  <li>  <tt>gmv</tt>: <tt>.gmv</tt>  <li>  <tt>tecplot</tt>: <tt>.dat</tt>  <li>  <tt>tecplot_binary</tt>: <tt>.plt</tt>  <li>  <tt>vtk</tt>: <tt>.vtk</tt>  <li>  <tt>vtu</tt>: <tt>.vtu</tt>  <li>  <tt>svg</tt>: <tt>.svg</tt>  <li>  <tt>deal_II_intermediate</tt>: <tt>.d2</tt>.     </ul>   @deprecated  使用Tecplot二进制输出已被废弃。
    *
-   * @deprecated Using Tecplot binary output is deprecated.
    */
   std::string
   default_suffix(const OutputFormat output_format);
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况 @{ 。
+   *
    */
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException2(ExcInvalidDatasetSize,
                  int,
@@ -2421,7 +1971,8 @@ namespace DataOutBase
                  << ", but we expected " << arg2
                  << " in each space direction.");
   /**
-   * An output function did not receive any patches for writing.
+   * 一个输出函数没有收到任何用于写入的补丁。
+   *
    */
   DeclExceptionMsg(ExcNoPatches,
                    "You are trying to write graphical data into a file, but "
@@ -2429,13 +1980,15 @@ namespace DataOutBase
                    "the DataOutBase functions require. Did you forget to "
                    "call a function such as DataOut::build_patches()?");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcTecplotAPIError,
                    "The error code of one of the Tecplot functions was "
                    "not zero as expected.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException1(ExcErrorOpeningTecplotFile,
                  char *,
@@ -2448,312 +2001,219 @@ namespace DataOutBase
 
 
 /**
- * This class is the interface to the functions in the DataOutBase namespace,
- * as already its name might suggest. It does not offer much functionality
- * apart from a way to access the implemented formats and a way to dynamically
- * dispatch what output format to chose.
+ * 这个类是DataOutBase命名空间中的函数的接口，正如其名字所暗示的那样。它没有提供太多的功能，只是提供了一种访问已实现的格式的方法和一种动态分配选择何种输出格式的方法。
+ * 这个类被认为是实际生成输出数据的类的基类。它有两个抽象的虚拟函数，get_patches()和get_dataset_names()产生实际需要的数据。这些是唯一需要被派生类重载的函数。除此之外，它还有一个针对底层基类所支持的每种输出格式的函数，它使用这两个虚拟函数获得输出数据，并将它们传递给原始输出函数。
+ * 这个类的目的主要有两个方面：支持存储标志，通过这些标志来控制不同输出格式的输出，并意味着以一种在运行时确定输出格式、标志和其他东西的方式来处理输出。除此之外，它还为上面简要讨论的派生类提供了抽象接口。
  *
- * This class is thought as a base class to classes actually generating data
- * for output. It has two abstract virtual functions, get_patches() and
- * get_dataset_names() produce the data which is actually needed. These are
- * the only functions that need to be overloaded by a derived class. In
- * addition to that, it has a function for each output format supported by
- * the underlying base class which gets the output data using these two
- * virtual functions and passes them to the raw output functions.
+ *  <h3>Output flags</h3>
+ * 我们在这个类中处理标志的方式与<tt>GridOut</tt>类中使用的方式非常相似。关于为什么和如何处理的详细信息，以及一个编程的例子，我们参考该类的文档。
+ * 基本上，这个类为底层的<tt>DataOutBase</tt>类所支持的每种输出格式存储了一组标志。只要使用<tt>write_*</tt>函数之一，就会用到这些标志。默认情况下，这些标志的值被设置为合理的启动，但如果你想改变它们，你可以创建一个结构，持有其中一种输出格式的标志，并使用这个类的<tt>set_flags</tt>函数来设置它，以确定该对象未来可能通过该输出格式产生的所有输出。
+ * 关于不同输出函数支持哪些参数的信息，请参见<tt>DataOutBase</tt>类及其成员类的文档。
  *
- * The purpose of this class is mainly two-fold: to support storing flags by
- * which the output in the different output formats are controlled, and means
- * to work with output in a way where output format, flags and other things
- * are determined at run time. In addition to that it offers the abstract
- * interface to derived classes briefly discussed above.
+ *  <h3>Run time selection of output parameters</h3>
+ * 在上面描述的输出标志类中，为不同格式的输出定义了许多标志。为了使它们对输入文件处理程序类<tt>ParameterHandler</tt>可用，每个都有一个函数向参数处理程序声明这些标志，并从实际的输入文件中读回它们。为了避免在用户程序中必须为每个可用的输出格式和各自的标志类调用这些函数，目前的<tt>DataOutInterface</tt>类提供了一个函数<tt>declare_parameters</tt>，调用所有已知输出格式标志类的相应函数。每个此类格式的标志都被打包在输入文件的一个小节中。同样，还有一个函数<tt>parse_parameters</tt>，它读取这些参数并将它们存储在与此对象相关的标志中（见上文）。
+ * 使用这些函数，你不必跟踪哪些格式是目前实现的。
+ * 使用方法如下。
  *
- *
- * <h3>Output flags</h3>
- *
- * The way we treat flags in this class is very similar to that used in the
- * <tt>GridOut</tt> class. For detailed information on the why's and how's, as
- * well as an example of programming, we refer to the documentation of that
- * class.
- *
- * Basically, this class stores a set of flags for each output format
- * supported by the underlying <tt>DataOutBase</tt> class. These are used
- * whenever one of the <tt>write_*</tt> functions is used. By default, the
- * values of these flags are set to reasonable start-ups, but in case you want
- * to change them, you can create a structure holding the flags for one of the
- * output formats and set it using the <tt>set_flags</tt> functions of this
- * class to determine all future output the object might produce by that
- * output format.
- *
- * For information on what parameters are supported by different output
- * functions, please see the documentation of the <tt>DataOutBase</tt> class
- * and its member classes.
- *
- *
- * <h3>Run time selection of output parameters</h3>
- *
- * In the output flags classes, described above, many flags are defined for
- * output in the different formats. In order to make them available to the
- * input file handler class <tt>ParameterHandler</tt>, each of these has a
- * function declaring these flags to the parameter handler and to read them
- * back from an actual input file. In order to avoid that in user programs
- * these functions have to be called for each available output format and the
- * respective flag class, the present <tt>DataOutInterface</tt> class offers a
- * function <tt>declare_parameters</tt> which calls the respective function of
- * all known output format flags classes. The flags of each such format are
- * packed together in a subsection in the input file. Likewise, there is a
- * function <tt>parse_parameters</tt> which reads these parameters and stores
- * them in the flags associated with this object (see above).
- *
- * Using these functions, you do not have to track which formats are presently
- * implemented.
- *
- * Usage is as follows:
  * @code
- *   // within function declaring parameters:
- *   prm.enter_subsection("Output format options");
- *   DataOutInterface<dim>::declare_parameters(prm);
- *   prm.leave_subsection();
+ * // within function declaring parameters:
+ * prm.enter_subsection("Output format options");
+ * DataOutInterface<dim>::declare_parameters(prm);
+ * prm.leave_subsection();
  *
- *   ...
- *   // within function doing the output:
- *   DataOut<dim> out;
- *   prm.enter_subsection("Output format options");
- *   out.parse_parameters(prm);
- *   prm.leave_subsection();
+ * ...
+ * // within function doing the output:
+ * DataOut<dim> out;
+ * prm.enter_subsection("Output format options");
+ * out.parse_parameters(prm);
+ * prm.leave_subsection();
  * @endcode
- * Note that in the present example, the class <tt>DataOut</tt> was used.
- * However, any other class derived from <tt>DataOutInterface</tt> would work
- * alike.
+ * 注意，在本例中，使用了<tt>DataOut</tt>类。然而，任何从<tt>DataOutInterface</tt>派生的其他类都可以同样工作。
  *
+ *  <h3>Run time selection of formats</h3>
+ * 这个类，很像<tt>GridOut</tt>类，有一组函数提供支持的输出格式列表，一个<tt>enum</tt>表示所有这些，还有一个函数解析一个字符串，如果它是一个有效的输出格式的名称，则返回相应的<tt>enum</tt>值（实际上，这些函数是从基类继承的）。最后，有一个函数<tt>write</tt>，它接收这个<tt>enum</tt>的值，并根据这个值所选择的输出格式，分派给实际的<tt>write_*</tt>函数之一。
+ * 提供不同输出格式名称的函数分别是：<tt>default_suffix</tt>,
+ * <tt>parse_output_format</tt>, 和
+ * <tt>get_output_format_names</tt>。它们使参数文件中输出格式的选择变得更加容易，尤其是独立于目前实现的格式。因此，每当一个新的格式被实施时，用户程序不需要改变。
+ * 此外，这个类的对象有一个默认格式，可以通过参数文件的
+ * "输出格式
+ * "参数来设置。在一个程序中，这可以通过成员函数<tt>set_default_format</tt>来改变。使用这个默认格式，可以将格式选择完全留给参数文件。输出文件名的合适后缀可以通过不带参数的<tt>default_suffix</tt>获得。
  *
- * <h3>Run time selection of formats</h3>
- *
- * This class, much like the <tt>GridOut</tt> class, has a set of functions
- * providing a list of supported output formats, an <tt>enum</tt> denoting all
- * these and a function to parse a string and return the respective
- * <tt>enum</tt> value if it is a valid output format's name (actually, these
- * functions are inherited from the base class). Finally, there is a function
- * <tt>write</tt>, which takes a value of this <tt>enum</tt> and dispatches to
- * one of the actual <tt>write_*</tt> functions depending on the output format
- * selected by this value.
- *
- * The functions offering the different output format names are, respectively,
- * <tt>default_suffix</tt>, <tt>parse_output_format</tt>, and
- * <tt>get_output_format_names</tt>. They make the selection of output formats
- * in parameter files much easier, and especially independent of the formats
- * presently implemented. User programs need therefore not be changed whenever
- * a new format is implemented.
- *
- * Additionally, objects of this class have a default format, which can be set
- * by the parameter "Output format" of the parameter file. Within a program,
- * this can be changed by the member function <tt>set_default_format</tt>.
- * Using this default format, it is possible to leave the format selection
- * completely to the parameter file. A suitable suffix for the output file
- * name can be obtained by <tt>default_suffix</tt> without arguments.
  *
  * @ingroup output
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class DataOutInterface
 {
 public:
   /**
-   * Constructor.
+   * 构建器。
+   *
    */
   DataOutInterface();
 
   /**
-   * Destructor. Does nothing, but is declared virtual since this class has
-   * virtual functions.
+   * 解构器。什么都不做，但由于这个类有虚拟函数，所以被声明为虚拟。
+   *
    */
   virtual ~DataOutInterface() = default;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in OpenDX
-   * format. See DataOutBase::write_dx.
+   * 通过get_patches()获取数据，并以OpenDX格式写入<tt>out</tt>。见
+   * DataOutBase::write_dx. 。
+   *
    */
   void
   write_dx(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in EPS
-   * format. See DataOutBase::write_eps.
+   * 通过get_patches()获取数据，并以EPS格式写到<tt>out</tt>。参见
+   * DataOutBase::write_eps.
+   *
    */
   void
   write_eps(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in GMV
-   * format. See DataOutBase::write_gmv.
+   * 通过get_patches()获取数据并以GMV格式写入<tt>out</tt>。参见
+   * DataOutBase::write_gmv.
+   *
    */
   void
   write_gmv(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in GNUPLOT
-   * format. See DataOutBase::write_gnuplot.
+   * 通过get_patches()获得数据并以GNUPLOT格式写入<tt>out</tt>。参见
+   * DataOutBase::write_gnuplot.  。
+   *
    */
   void
   write_gnuplot(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in POVRAY
-   * format. See DataOutBase::write_povray.
+   * 通过get_patches()获取数据，并以POVRAY格式写到<tt>out</tt>。参见
+   * DataOutBase::write_povray.
+   *
    */
   void
   write_povray(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in Tecplot
-   * format. See DataOutBase::write_tecplot.
+   * 通过get_patches()获取数据，并以Tecplot格式写到<tt>out</tt>。见
+   * DataOutBase::write_tecplot.
+   *
    */
   void
   write_tecplot(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in UCD
-   * format for AVS. See DataOutBase::write_ucd.
+   * 通过get_patches()获取数据，并以UCD格式写入<tt>out</tt>，用于AVS。参见
+   * DataOutBase::write_ucd.
+   *
    */
   void
   write_ucd(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in Vtk
-   * format. See DataOutBase::write_vtk.
+   * 通过get_patches()获取数据，并以Vtk格式写到<tt>out</tt>。参见
+   * DataOutBase::write_vtk.
+   * @note
+   * VTK是一种遗留格式，在很大程度上已经被VTU格式（VTK的XML结构版本）所取代了。特别是，VTU允许对数据进行压缩，因此导致大文件的文件大小要比VTK文件小得多。由于所有支持VTK的可视化程序也支持VTU，你应该考虑使用后者的文件格式，通过使用write_vtu()函数来代替。
    *
-   * @note VTK is a legacy format and has largely been supplanted by the VTU
-   * format (an XML-structured version of VTK). In particular, VTU allows for
-   * the compression of data and consequently leads to much smaller file sizes
-   * that equivalent VTK files for large files. Since all visualization
-   * programs that support VTK also support VTU, you should consider using the
-   * latter file format instead, by using the write_vtu() function.
    */
   void
   write_vtk(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in Vtu
-   * (VTK's XML) format. See DataOutBase::write_vtu.
+   * 通过get_patches()获取数据，并以Vtu（VTK的XML）格式写到<tt>out</tt>。参见
+   * DataOutBase::write_vtu.
+   * 一些可视化程序，如ParaView，可以读取几个独立的VTU文件以实现可视化的并行化。在这种情况下，你需要一个
+   * <code>.pvtu</code> 文件来描述哪些VTU文件构成一个组。
+   * DataOutInterface::write_pvtu_record()
+   * 函数可以生成这样一个集中的记录。同样，
+   * DataOutInterface::write_visit_record()
+   * 对旧版本的VisIt也有同样的作用（尽管VisIt从2.5.1版本开始也可以读取
+   * <code>pvtu</code> 记录）。最后，
+   * DataOutInterface::write_pvd_record()
+   * 可以用来将共同构成时间相关模拟的文件分组。
    *
-   * Some visualization programs, such as ParaView, can read several separate
-   * VTU files to parallelize visualization. In that case, you need a
-   * <code>.pvtu</code> file that describes which VTU files form a group. The
-   * DataOutInterface::write_pvtu_record() function can generate such a
-   * centralized record. Likewise, DataOutInterface::write_visit_record() does
-   * the same for older versions of VisIt (although VisIt can also read
-   * <code>pvtu</code> records since version 2.5.1). Finally,
-   * DataOutInterface::write_pvd_record() can be used to group together the
-   * files that jointly make up a time dependent simulation.
    */
   void
   write_vtu(std::ostream &out) const;
 
   /**
-   * Collective MPI call to write the solution from all participating nodes
-   * (those in the given communicator) to a single compressed .vtu file on a
-   * shared file system.  The communicator can be a sub communicator of the
-   * one used by the computation.  This routine uses MPI I/O to achieve high
-   * performance on parallel filesystems. Also see
-   * DataOutInterface::write_vtu().
+   * 集体MPI调用，将所有参与节点（给定通信器中的节点）的解决方案写入共享文件系统上的一个压缩的.vtu文件。
+   * 该通信器可以是计算所使用的通信器的一个子通信器。
+   * 这个程序使用MPI
+   * I/O来实现并行文件系统上的高性能。也可参见
+   * DataOutInterface::write_vtu(). 。
+   *
    */
   void
   write_vtu_in_parallel(const std::string &filename,
                         const MPI_Comm &   comm) const;
 
   /**
-   * Some visualization programs, such as ParaView, can read several separate
-   * VTU files that all form part of the same simulation, in order to
-   * parallelize visualization. In that case, you need a
-   * <code>.pvtu</code> file that describes which VTU files (written, for
-   * example, through the DataOutInterface::write_vtu() function) form a group.
-   * The current function can generate such a centralized record.
+   * 一些可视化程序，如ParaView，可以读取几个独立的VTU文件，这些文件都是同一模拟的一部分，以实现可视化的并行化。在这种情况下，你需要一个
+   * <code>.pvtu</code> 文件来描述哪些VTU文件（例如，通过
+   * DataOutInterface::write_vtu() 函数写入）构成一个组。
+   * 当前的函数可以生成这样一个集中记录。
+   * 该函数生成的中央记录文件包含一个（标量或矢量）字段列表，描述哪些字段实际上可以在构成平行VTU文件组的各个文件中找到，以及这些文件的名称。这个函数通过本类的get_dataset_names()和get_nonscalar_data_ranges()函数获得字段的名称和类型。这个函数的第二个参数指定了构成平行集的文件名。
+   * @note  使用 DataOutBase::write_vtu() 和 DataOutInterface::write_vtu()
+   * 来写每一块。还要注意，只有一个并行进程需要调用当前函数，列出所有并行进程写入的文件名。
+   * @note  这个函数的使用在  step-40  中解释。
+   * @note  为了告诉Paraview将多个 <code>pvtu</code>
+   * 文件组合在一起，每个文件描述一个与时间有关的仿真的一个时间步骤，请参见
+   * DataOutBase::write_pvd_record() 函数。
+   * @note  旧版本的VisIt（2.5.1之前），不能读取
+   * <code>pvtu</code>
+   * 记录。然而，它可以读取由write_visit_record()函数写入的访问记录。
    *
-   * The central record file generated by this function
-   * contains a list of (scalar or vector) fields that describes which
-   * fields can actually be found in the individual files that comprise the set
-   * of parallel VTU files along with the names of these files. This function
-   * gets the names and types of fields through the get_dataset_names() and
-   * get_nonscalar_data_ranges() functions of this class. The second argument
-   * to this function specifies the names of the files that form the parallel
-   * set.
-   *
-   * @note Use DataOutBase::write_vtu() and DataOutInterface::write_vtu()
-   * for writing each piece. Also note that
-   * only one parallel process needs to call the current function, listing the
-   * names of the files written by all parallel processes.
-   *
-   * @note The use of this function is explained in step-40.
-   *
-   * @note In order to tell Paraview to group together multiple
-   * <code>pvtu</code> files that each describe one time step of a time
-   * dependent simulation, see the DataOutBase::write_pvd_record()
-   * function.
-   *
-   * @note Older versions of VisIt (before 2.5.1), can not read
-   * <code>pvtu</code> records. However, it can read visit records as written
-   * by the write_visit_record() function.
    */
   void
   write_pvtu_record(std::ostream &                  out,
                     const std::vector<std::string> &piece_names) const;
 
   /**
-   * This function writes several .vtu files and a .pvtu record in parallel
-   * and constructs the filenames automatically. It is a combination of
-   * DataOutInterface::write_vtu() or
-   * DataOutInterface::write_vtu_in_parallel(), and
+   * 这个函数并行地写入几个.vtu文件和一个.pvtu记录，并自动构建文件名。它是
+   * DataOutInterface::write_vtu() 或
+   * DataOutInterface::write_vtu_in_parallel(), 和
    * DataOutInterface::write_pvtu_record().
-   *
-   * For example, running
-   * <code> write_vtu_with_pvtu_record("output/", "solution", 3, comm, 4, 2)
-   * </code> on 10 processes generates the files
+   * 的组合。例如，在10个进程中运行<code>
+   * write_vtu_with_pvtu_record("output/", "solution", 3, comm, 4, 2)
+   * </code>会生成这些文件
    * @code
    * output/solution_0003.0.vtu
    * output/solution_0003.1.vtu
    * output/solution_0003.pvtu
    * @endcode
-   * where the `.0.vtu` file contains the output of the first half of the
-   * processes grouped together, and the `.1.vtu` the data from the remaining
-   * half.
+   * 其中`.0.vtu`文件包含前一半进程的输出分组，而`.1.vtu`是其余一半进程的数据。
+   * 一个指定的 @p directory 和一个 @p filename_without_extension
+   * 构成文件名的第一部分。然后用 @p counter
+   * 扩展文件名，标明当前的时间步数/迭代次数/等等，处理器ID，最后是.vtu/.pvtu结尾。由于要写入的时间步数取决于应用，在文件名中保留的数字可以作为参数
+   * @p n_digits_for_counter,
+   * 来指定，如果该参数保持默认值，则数字不加前导零
+   * numbers::invalid_unsigned_int.
+   * 如果需要一个以上的文件标识符（例如时间步数和求解器的迭代计数器），最后一个标识符作为
+   * @p counter,
+   * 使用，而所有其他标识符必须在调用该函数时加入 @p
+   * filename_without_extension 。
+   * 在并行设置中，每个时间步长通常要写几个文件。并行写入的文件数量取决于MPI进程的数量（见参数
+   * @p mpi_communicator), 和默认值为0的指定数量 @p n_groups
+   * 。其背景是VTU文件输出支持在并行文件系统上写入时，使用MPI
+   * I/O将几个CPU的文件分组为给定数量的文件。 @p n_groups
+   * 的默认值是0，意味着每个MPI等级将写入一个文件。1的值将生成一个包含整个域的解决方案的大文件，而更大的值将创建
+   * @p n_groups 个文件（但不会超过MPI等级的数量）。
+   * 请注意，只有一个处理器需要生成.pvtu文件，其中零号处理器被选择来承担这项工作。
+   * 返回值是pvtu记录的集中文件的文件名。
+   * @note  代码简单地结合了字符串 @p directory 和 @p
+   * filename_without_extension, ，即用户必须确保 @p directory
+   * 包含一个尾部字符，例如"/"，将目录和文件名分开。
+   * @note
+   * 如果要将输出写入当前工作目录，则使用空字符串""作为第一个参数。
    *
-   * A specified @p directory and a @p filename_without_extension
-   * form the first part of the filename. The filename is then extended with
-   * a @p counter labeling the current timestep/iteration/etc., the processor ID,
-   * and finally the .vtu/.pvtu ending. Since the number of timesteps to be
-   * written depends on the application, the number of digits to be reserved in
-   * the filename can be specified as parameter @p n_digits_for_counter, and the number
-   * is not padded with leading zeros if this parameter is left at its default
-   * value numbers::invalid_unsigned_int. If more than one file identifier
-   * is needed (e.g. time step number and iteration counter of solver), the
-   * last identifier is used as @p counter, while all other identifiers have to be
-   * added to @p filename_without_extension when calling this function.
-   *
-   * In a
-   * parallel setting, several files are typically written per time step. The
-   * number of files written in parallel depends on the number of MPI processes
-   * (see parameter @p mpi_communicator), and a
-   * specified number of @p n_groups with default value 0. The background is that
-   * VTU file output supports grouping files from several CPUs into a given
-   * number of files using MPI I/O when writing on a parallel filesystem. The
-   * default value of @p n_groups is 0, meaning that every MPI rank will write one
-   * file. A value of 1 will generate one big file containing the solution over
-   * the whole domain, while a larger value will create @p n_groups files (but not
-   * more than there are MPI ranks).
-   *
-   * Note that only one processor needs to
-   * generate the .pvtu file, where processor zero is chosen to take over this
-   * job.
-   *
-   * The return value is the filename of the centralized file for the pvtu
-   * record.
-   *
-   * @note The code simply combines the strings @p directory and
-   * @p filename_without_extension, i.e., the user has to make sure that
-   * @p directory contains a trailing character, e.g. "/", that separates the
-   * directory from the filename.
-   *
-   * @note Use an empty string "" for the first argument if output is to be
-   * written in the current working directory.
    */
   std::string
   write_vtu_with_pvtu_record(
@@ -2765,29 +2225,25 @@ public:
     const unsigned int n_groups             = 0) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in SVG
-   * format. See DataOutBase::write_svg.
+   * 通过get_patches()获取数据，并以SVG格式写到<tt>out</tt>。参见
+   * DataOutBase::write_svg. 。
+   *
    */
   void
   write_svg(std::ostream &out) const;
 
   /**
-   * Obtain data through get_patches() and write it to <tt>out</tt> in deal.II
-   * intermediate format. See DataOutBase::write_deal_II_intermediate.
+   * 通过get_patches()获取数据，并以deal.II中间格式写到<tt>out</tt>中。参见
+   * DataOutBase::write_deal_II_intermediate.
+   * 注意，中间格式就像它的名字一样：内部数据的直接表示。它不是标准化的，每当我们改变内部表示时，它就会改变。你只能期望使用用于编写的相同版本的deal.II来处理以这种格式编写的文件。
    *
-   * Note that the intermediate format is what its name suggests: a direct
-   * representation of internal data. It isn't standardized and will change
-   * whenever we change our internal representation. You can only expect to
-   * process files written in this format using the same version of deal.II
-   * that was used for writing.
    */
   void
   write_deal_II_intermediate(std::ostream &out) const;
 
   /**
-   * Create an XDMFEntry based on the data in the data_filter. This assumes
-   * the mesh and solution data were written to a single file. See
-   * write_xdmf_file() for an example of usage.
+   * 基于data_filter中的数据创建一个XDMFEntry。这假设网格和求解数据被写到一个文件中。参见write_xdmf_file()中的使用实例。
+   *
    */
   XDMFEntry
   create_xdmf_entry(const DataOutBase::DataOutFilter &data_filter,
@@ -2796,9 +2252,8 @@ public:
                     const MPI_Comm &                  comm) const;
 
   /**
-   * Create an XDMFEntry based on the data in the data_filter. This assumes
-   * the mesh and solution data were written to separate files. See
-   * write_xdmf_file() for an example of usage.
+   * 基于data_filter中的数据，创建一个XDMFEntry。这假设网格和解的数据被写入不同的文件。参见write_xdmf_file()中的使用实例。
+   *
    */
   XDMFEntry
   create_xdmf_entry(const DataOutBase::DataOutFilter &data_filter,
@@ -2808,10 +2263,8 @@ public:
                     const MPI_Comm &                  comm) const;
 
   /**
-   * Write an XDMF file based on the provided vector of XDMFEntry objects.
-   * Below is an example of how to use this function with HDF5 and the
-   * DataOutFilter:
-   *
+   * 根据提供的XDMFEntry对象的向量，写一个XDMF文件。
+   * 下面是一个如何用HDF5和DataOutFilter使用这个函数的例子。
    * @code
    * DataOutBase::DataOutFilterFlags flags(true, true);
    * DataOutBase::DataOutFilter data_filter(flags);
@@ -2822,14 +2275,15 @@ public:
    * data_out.write_hdf5_parallel(data_filter, "solution.h5", MPI_COMM_WORLD);
    * // Create an XDMF entry detailing the HDF5 file
    * auto new_xdmf_entry = data_out.create_xdmf_entry(data_filter,
-   *                                                  "solution.h5",
-   *                                                  simulation_time,
-   *                                                  MPI_COMM_WORLD);
+   *                                                "solution.h5",
+   *                                                simulation_time,
+   *                                                MPI_COMM_WORLD);
    * // Add the XDMF entry to the list
    * xdmf_entries.push_back(new_xdmf_entry);
    * // Create an XDMF file from all stored entries
    * data_out.write_xdmf_file(xdmf_entries, "solution.xdmf", MPI_COMM_WORLD);
    * @endcode
+   *
    */
   void
   write_xdmf_file(const std::vector<XDMFEntry> &entries,
@@ -2837,10 +2291,8 @@ public:
                   const MPI_Comm &              comm) const;
 
   /**
-   * Write the data in @p data_filter to a single HDF5 file containing both the
-   * mesh and solution values. Below is an example of how to use this function
-   * with the DataOutFilter:
-   *
+   * 将 @p data_filter
+   * 中的数据写入一个单一的HDF5文件，包含网格和解的数值。下面是一个如何使用这个函数与DataOutFilter的例子。
    * @code
    * DataOutBase::DataOutFilterFlags flags(true, true);
    * DataOutBase::DataOutFilter data_filter(flags);
@@ -2849,6 +2301,8 @@ public:
    * // Write the filtered data to HDF5
    * data_out.write_hdf5_parallel(data_filter, "solution.h5", MPI_COMM_WORLD);
    * @endcode
+   *
+   *
    */
   void
   write_hdf5_parallel(const DataOutBase::DataOutFilter &data_filter,
@@ -2856,11 +2310,8 @@ public:
                       const MPI_Comm &                  comm) const;
 
   /**
-   * Write the data in data_filter to HDF5 file(s). If write_mesh_file is
-   * false, the mesh data will not be written and the solution file will
-   * contain only the solution values. If write_mesh_file is true and the
-   * filenames are the same, the resulting file will contain both mesh data
-   * and solution values.
+   * 将data_filter中的数据写到HDF5文件中。如果write_mesh_file为false，网格数据将不会被写入，而解文件将只包含解的数值。如果write_mesh_file为true，且文件名相同，则生成的文件将同时包含网格数据和求解值。
+   *
    */
   void
   write_hdf5_parallel(const DataOutBase::DataOutFilter &data_filter,
@@ -2870,22 +2321,19 @@ public:
                       const MPI_Comm &                  comm) const;
 
   /**
-   * DataOutFilter is an intermediate data format that reduces the amount of
-   * data that will be written to files. The object filled by this function
-   * can then later be used again to write data in a concrete file format;
-   * see, for example, DataOutBase::write_hdf5_parallel().
+   * DataOutFilter是一种中间数据格式，可以减少将被写入文件的数据量。这个函数所填充的对象随后可以再次用于写入具体文件格式的数据；例如，见
+   * DataOutBase::write_hdf5_parallel(). 。
+   *
    */
   void
   write_filtered_data(DataOutBase::DataOutFilter &filtered_data) const;
 
 
   /**
-   * Write data and grid to <tt>out</tt> according to the given data format.
-   * This function simply calls the appropriate <tt>write_*</tt> function. If
-   * no output format is requested, the <tt>default_format</tt> is written.
+   * 根据给定的数据格式向<tt>out</tt>写入数据和网格。
+   * 这个函数只是调用相应的<tt>write_*</tt>函数。如果没有要求输出格式，将写入<tt>default_format</tt>。
+   * 如果没有提供格式，而默认格式是<tt>default_format</tt>，则会发生错误。
    *
-   * An error occurs if no format is provided and the default format is
-   * <tt>default_format</tt>.
    */
   void
   write(std::ostream &                  out,
@@ -2893,16 +2341,16 @@ public:
           DataOutBase::default_format) const;
 
   /**
-   * Set the default format. The value set here is used anytime, output for
-   * format <tt>default_format</tt> is requested.
+   * 设置默认格式。这里设置的值在任何时候都会被使用，要求输出格式为<tt>default_format</tt>。
+   *
    */
   void
   set_default_format(const DataOutBase::OutputFormat default_format);
 
 
   /**
-   * Set the flags to be used for output. This method expects <tt>flags</tt>
-   * to be a member of one of the child classes of <tt>OutputFlagsBase</tt>.
+   * 设置用于输出的标志。这个方法希望<tt>flags</tt>是<tt>OutputFlagsBase</tt>的一个子类中的成员。
+   *
    */
   template <typename FlagType>
   void
@@ -2910,86 +2358,61 @@ public:
 
 
   /**
-   * A function that returns the same string as the respective function in the
-   * base class does; the only exception being that if the parameter is
-   * omitted, then the value for the present default format is returned, i.e.
-   * the correct suffix for the format that was set through
-   * set_default_format() or parse_parameters() before calling this function.
+   * 一个函数，返回与基类中相应函数相同的字符串；唯一的例外是，如果省略了参数，则返回当前默认格式的值，即在调用此函数之前通过set_default_format()或parse_parameters()设置的格式的正确后缀。
+   *
    */
   std::string
   default_suffix(const DataOutBase::OutputFormat output_format =
                    DataOutBase::default_format) const;
 
   /**
-   * Declare parameters for all output formats by declaring subsections within
-   * the parameter file for each output format and call the respective
-   * <tt>declare_parameters</tt> functions of the flag classes for each output
-   * format.
+   * 通过在每个输出格式的参数文件中声明子段来声明所有输出格式的参数，并调用每个输出格式的标志类的相应<tt>declare_parameters</tt>函数。
+   * 如果相应的格式不输出任何标志，那么某些声明的子段可能不包含条目。
+   * 请注意，表示每个补丁的分区数量和输出格式的顶层参数没有被声明，因为它们只被传递给虚拟函数，而不被存储在这种类型的对象中。你必须自己声明它们。
    *
-   * Some of the declared subsections may not contain entries, if the
-   * respective format does not export any flags.
-   *
-   * Note that the top-level parameters denoting the number of subdivisions
-   * per patch and the output format are not declared, since they are only
-   * passed to virtual functions and are not stored inside objects of this
-   * type. You have to declare them yourself.
    */
   static void
   declare_parameters(ParameterHandler &prm);
 
   /**
-   * Read the parameters declared in declare_parameters() and set the flags
-   * for the output formats accordingly.
+   * 读取 declare_parameters()
+   * 中声明的参数，并为输出格式设置相应的标志。
+   * 这样得到的标志会覆盖之前所有默认构建的或由set_flags()函数设置的标志对象的内容。
    *
-   * The flags thus obtained overwrite all previous contents of the flag
-   * objects as default-constructed or set by the set_flags() function.
    */
   void
   parse_parameters(ParameterHandler &prm);
 
   /**
-   * Return an estimate for the memory consumption, in bytes, of this object.
-   * This is not exact (but will usually be close) because calculating the
-   * memory usage of trees (e.g., <tt>std::map</tt>) is difficult.
+   * 返回这个对象的内存消耗估计值，单位是字节。
+   * 这不是精确的（但通常会很接近），因为计算树的内存使用量（例如，
+   * <tt>std::map</tt>) 是很困难的。
+   *
    */
   std::size_t
   memory_consumption() const;
 
 protected:
   /**
-   * This is the abstract function through which derived classes propagate
-   * preprocessed data in the form of Patch structures (declared in the base
-   * class DataOutBase) to the actual output function. You need to overload
-   * this function to allow the output functions to know what they shall
-   * print.
+   * 这是一个抽象函数，派生类通过这个函数将Patch结构形式的预处理数据（在基类DataOutBase中声明）传播给实际的输出函数。你需要重载这个函数，以便让输出函数知道它们应该打印什么。
+   *
    */
   virtual const std::vector<DataOutBase::Patch<dim, spacedim>> &
   get_patches() const = 0;
 
   /**
-   * Abstract virtual function through which the names of data sets are
-   * obtained by the output functions of the base class.
+   * 抽象的虚拟函数，基类的输出函数通过它获得数据集的名称。
+   *
    */
   virtual std::vector<std::string>
   get_dataset_names() const = 0;
 
   /**
-   * This functions returns information about how the individual components of
-   * output files that consist of more than one data set are to be
-   * interpreted.
+   * 该函数返回关于如何解释由一个以上数据集组成的输出文件的各个组成部分的信息。
+   * 它返回一个索引对和相应的名称和类型的列表，表明输出的哪些成分被认为是矢量或张量值，而不仅仅是标量数据的集合。索引对是包括在内的；例如，如果我们有一个2d的斯托克斯问题，其分量是(u,v,p)，那么相应的矢量数据范围应该是(0,1)，返回的列表将只包括一个元组元素，如(0,1,
+   * "速度",分量_是矢量的一部分)。
+   * 由于一些派生类不知道非标量数据，这个函数有一个默认的实现，即简单地返回一个空字符串，意味着所有的数据都将被视为标量字段的集合。
    *
-   * It returns a list of index pairs and corresponding name and type indicating
-   * which components of the output are to be considered vector- or
-   * tensor-valued rather than just a collection of scalar data. The index pairs
-   * are inclusive; for example, if we have a Stokes problem in 2d with
-   * components (u,v,p), then the corresponding vector data range should be
-   * (0,1), and the returned list would consist of only a single element with a
-   * tuple such as (0,1,"velocity",component_is_part_of_vector).
-   *
-   * Since some of the derived classes do not know about non-scalar data, this
-   * function has a default implementation that simply returns an empty
-   * string, meaning that all data is to be considered a collection of scalar
-   * fields.
    */
   virtual std::vector<
     std::tuple<unsigned int,
@@ -2999,87 +2422,84 @@ protected:
   get_nonscalar_data_ranges() const;
 
   /**
-   * Validate that the names of the datasets returned by get_dataset_names() and
-   * get_nonscalar_data_ranges() are valid. This currently consists of checking
-   * that names are not used more than once. If an invalid state is encountered,
-   * an Assert() will be triggered in debug mode.
+   * 验证get_dataset_names()和get_nonscalar_data_ranges()返回的数据集的名称是否有效。目前这包括检查名称是否被多次使用。如果遇到一个无效的状态，将在调试模式下触发一个Assert()。
+   *
    */
   void
   validate_dataset_names() const;
 
 
   /**
-   * The default number of subdivisions for patches. This is filled by
-   * parse_parameters() and should be obeyed by build_patches() in derived
-   * classes.
+   * 补丁的默认分区数。这是由parse_parameters()填充的，并且应该被派生类中的build_patches()遵守。
+   *
    */
   unsigned int default_subdivisions;
 
 private:
   /**
-   * Standard output format.  Use this format, if output format default_format
-   * is requested. It can be changed by the <tt>set_format</tt> function or in
-   * a parameter file.
+   * 标准的输出格式。
+   * 如果输出格式default_format被要求，则使用此格式。它可以通过<tt>set_format</tt>函数或在参数文件中改变。
+   *
    */
   DataOutBase::OutputFormat default_fmt;
 
   /**
-   * Flags to be used upon output of OpenDX data. Can be changed by using the
-   * <tt>set_flags</tt> function.
+   * OpenDX数据输出时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::DXFlags dx_flags;
 
   /**
-   * Flags to be used upon output of UCD data. Can be changed by using the
-   * <tt>set_flags</tt> function.
+   * 在输出UCD数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::UcdFlags ucd_flags;
 
   /**
-   * Flags to be used upon output of GNUPLOT data. Can be changed by using the
-   * <tt>set_flags</tt> function.
+   * 在输出GNUPLOT数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::GnuplotFlags gnuplot_flags;
 
   /**
-   * Flags to be used upon output of POVRAY data. Can be changed by using the
-   * <tt>set_flags</tt> function.
+   * 在输出POVRAY数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::PovrayFlags povray_flags;
 
   /**
-   * Flags to be used upon output of EPS data in one space dimension. Can be
-   * changed by using the <tt>set_flags</tt> function.
+   * 在一个空间维度上输出EPS数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::EpsFlags eps_flags;
 
   /**
-   * Flags to be used upon output of gmv data in one space dimension. Can be
-   * changed by using the <tt>set_flags</tt> function.
+   * 在一个空间维度上输出gmv数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::GmvFlags gmv_flags;
 
   /**
-   * Flags to be used upon output of Tecplot data in one space dimension. Can
-   * be changed by using the <tt>set_flags</tt> function.
+   * 在一个空间维度上输出Tecplot数据时使用的标志。可以通过<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::TecplotFlags tecplot_flags;
 
   /**
-   * Flags to be used upon output of vtk data in one space dimension. Can be
-   * changed by using the <tt>set_flags</tt> function.
+   * 在一个空间维度上输出vtk数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::VtkFlags vtk_flags;
 
   /**
-   * Flags to be used upon output of svg data in one space dimension. Can be
-   * changed by using the <tt>set_flags</tt> function.
+   * 在一个空间维度上输出svg数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::SvgFlags svg_flags;
 
   /**
-   * Flags to be used upon output of deal.II intermediate data in one space
-   * dimension. Can be changed by using the <tt>set_flags</tt> function.
+   * 在一个空间维度上输出deal.II中间数据时使用的标志。可以通过使用<tt>set_flags</tt>函数来改变。
+   *
    */
   DataOutBase::Deal_II_IntermediateFlags deal_II_intermediate_flags;
 };
@@ -3087,101 +2507,60 @@ private:
 
 
 /**
- * A class that is used to read data written in deal.II intermediate format
- * back in, so that it can be written out in any of the other supported
- * graphics formats. This class has two main purposes:
+ * 一个用于读回以deal.II中间格式写入的数据的类，以便它能以任何其他支持的图形格式写入。这个类有两个主要用途。
+ * 这个类的第一个用途是使应用程序可以推迟决定使用哪种图形格式，直到程序运行之后。数据以中间格式写入文件，以后可以将其转换为你希望的任何图形格式。这可能很有用，例如，如果你想把它转换为gnuplot格式以获得快速浏览，后来又想把它转换为OpenDX格式以获得高质量的数据版本。本类允许将这种中间格式读回程序中，并允许使用基类的相关函数将其写成任何其他支持的格式。
+ * 第二种用途在并行程序中大多是有用的：与其让一个中心进程为整个程序生成图形输出，不如让每个进程为它所拥有的单元格生成图形数据，并以中间格式将其写入一个单独的文件中。稍后，所有这些中间文件可以被读回并合并在一起，这个过程与首先生成数据相比是很快的。使用中间格式主要是因为它允许单独的文件被合并，而一旦数据以任何支持的既定图形格式被写出来，这几乎是不可能的。
+ * 这第二种使用情况在 step-18
+ * 示例程序中做了一些详细解释。
+ * 为了将数据读回这个对象，你必须知道写数据时使用的空间尺寸的模板参数。如果这种知识在编译时就可以得到，那么这就没有问题。然而，如果不是这样（比如在一个简单的格式转换器中），那么它就需要在运行时弄清楚，尽管编译器在编译时已经需要它。一个使用
+ * DataOutBase::determine_intermediate_format_dimensions() 函数的方法。
+ * 请注意，中间格式就像它的名字一样：内部数据的直接表示。它不是标准化的，每当我们改变内部表示时，它就会改变。你只能期望使用用于编写的同一版本的deal.II来处理以这种格式编写的文件。
  *
- * The first use of this class is so that application programs can defer the
- * decision of which graphics format to use until after the program has been
- * run. The data is written in intermediate format into a file, and later on
- * it can then be converted into any graphics format you wish. This may be
- * useful, for example, if you want to convert it to gnuplot format to get a
- * quick glimpse and later on want to convert it to OpenDX format as well to
- * get a high quality version of the data. The present class allows to read
- * this intermediate format back into the program, and allows it to be written
- * in any other supported format using the relevant functions of the base
- * class.
- *
- * The second use is mostly useful in parallel programs: rather than having
- * one central process generate the graphical output for the entire program,
- * one can let each process generate the graphical data for the cells it owns,
- * and write it into a separate file in intermediate format. Later on, all
- * these intermediate files can then be read back in and merged together, a
- * process that is fast compared to generating the data in the first place.
- * The use of the intermediate format is mostly because it allows separate
- * files to be merged, while this is almost impossible once the data has been
- * written out in any of the supported established graphics formats.
- *
- * This second use scenario is explained in some detail in the step-18 example
- * program.
- *
- * In order to read data back into this object, you have to know the template
- * parameters for the space dimension which were used when writing the
- * data. If this knowledge is available at compile time, then this is no
- * problem. However, if it is not (such as in a simple format converter), then
- * it needs to be figured out at run time, even though the compiler already
- * needs it at compile time. A way around using the
- * DataOutBase::determine_intermediate_format_dimensions() function.
- *
- * Note that the intermediate format is what its name suggests: a direct
- * representation of internal data. It isn't standardized and will change
- * whenever we change our internal representation. You can only expect to
- * process files written in this format using the same version of deal.II that
- * was used for writing.
  *
  * @ingroup input output
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class DataOutReader : public DataOutInterface<dim, spacedim>
 {
 public:
   /**
-   * Read a sequence of patches as written previously by
-   * <tt>DataOutBase::write_deal_II_intermediate</tt> and store them in the
-   * present object. This overwrites any previous content.
+   * 读取之前由 <tt>DataOutBase::write_deal_II_intermediate</tt>
+   * 写入的补丁序列，并将其存储在当前对象中。这将覆盖之前的任何内容。
+   *
    */
   void
   read(std::istream &in);
 
   /**
-   * This function can be used to merge the patches read by the other object
-   * into the patches that this present object stores. This is sometimes handy
-   * if one has, for example, a domain decomposition algorithm where each
-   * block is represented by a DoFHandler of its own, but one wants to output
-   * the solution on all the blocks at the same time. Alternatively, it may
-   * also be used for parallel programs, where each process only generates
-   * output for its share of the cells, even if all processes can see all
-   * cells.
+   * 这个函数可以用来将其他对象读取的补丁合并到本对象存储的补丁中。这有时很方便，例如，如果有一个领域分解算法，其中每个块由它自己的DoFHandler表示，但人们想同时输出所有块上的解决方案。另外，它也可用于并行程序，即每个进程只对其所占的单元产生输出，即使所有进程都能看到所有单元。
+   * 为了使其发挥作用，本对象的输入文件和给定参数需要有相同数量的输出向量，并且它们需要在每个补丁中使用相同数量的细分。如果两个对象中的补丁在空间上重叠，输出结果可能会看起来相当有趣。
+   * 如果你在合并补丁后为这个对象调用read()，之前的状态会被覆盖，合并的补丁会丢失。
+   * 如果这个对象或另一个对象还没有设置任何补丁，这个函数将会失败。
    *
-   * For this to work, the input files for the present object and the given
-   * argument need to have the same number of output vectors, and they need to
-   * use the same number of subdivisions per patch. The output will probably
-   * look rather funny if patches in both objects overlap in space.
-   *
-   * If you call read() for this object after merging in patches, the previous
-   * state is overwritten, and the merged-in patches are lost.
-   *
-   * This function will fail if either this or the other object did not yet
-   * set up any patches.
    */
   void
   merge(const DataOutReader<dim, spacedim> &other);
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcIncompatibleDatasetNames,
                    "You are trying to merge two sets of patches for which the "
                    "declared names of the variables do not match.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcIncompatiblePatchLists,
                    "You are trying to merge two sets of patches for which the "
                    "number of subdivisions or the number of vector components "
                    "do not match.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException4(ExcIncompatibleDimensions,
                  int,
@@ -3194,42 +2573,27 @@ public:
 
 protected:
   /**
-   * This is the function through which this class propagates preprocessed
-   * data in the form of Patch structures (declared in the base class
-   * DataOutBase) to the actual output function.
+   * 这是一个函数，该类通过该函数将预处理的数据以补丁结构（在基类DataOutBase中声明）的形式传播给实际的输出函数。
+   * 它返回上次给read()函数的流所读取的补丁。
    *
-   * It returns the patches as read the last time a stream was given to the
-   * read() function.
    */
   virtual const std::vector<dealii::DataOutBase::Patch<dim, spacedim>> &
   get_patches() const override;
 
   /**
-   * Abstract virtual function through which the names of data sets are
-   * obtained by the output functions of the base class.
+   * 抽象的虚拟函数，基类的输出函数通过它获得数据集的名称。
+   * 返回上次读取文件时读取的变量名称。
    *
-   * Return the names of the variables as read the last time we read a file.
    */
   virtual std::vector<std::string>
   get_dataset_names() const override;
 
   /**
-   * This functions returns information about how the individual components of
-   * output files that consist of more than one data set are to be
-   * interpreted.
+   * 该函数返回关于如何解释由一个以上数据集组成的输出文件的各个组成部分的信息。
+   * 它返回一个索引对和相应的名称的列表，表明输出的哪些成分被认为是矢量值的，而不仅仅是标量数据的集合。索引对是包括在内的；例如，如果我们有一个2d的斯托克斯问题，其分量是(u,v,p)，那么相应的矢量数据范围应该是(0,1)，返回的列表将只包括一个元组的元素，如(0,1,
+   * "速度") 。
+   * 由于一些派生类不知道矢量数据，这个函数有一个默认的实现，只是返回一个空字符串，这意味着所有的数据都将被视为标量字段的集合。
    *
-   * It returns a list of index pairs and corresponding name indicating which
-   * components of the output are to be considered vector-valued rather than
-   * just a collection of scalar data. The index pairs are inclusive; for
-   * example, if we have a Stokes problem in 2d with components (u,v,p), then
-   * the corresponding vector data range should be (0,1), and the returned
-   * list would consist of only a single element with a tuple such as
-   * (0,1,"velocity").
-   *
-   * Since some of the derived classes do not know about vector data, this
-   * function has a default implementation that simply returns an empty
-   * string, meaning that all data is to be considered a collection of scalar
-   * fields.
    */
   virtual std::vector<
     std::tuple<unsigned int,
@@ -3240,15 +2604,15 @@ protected:
 
 private:
   /**
-   * Arrays holding the set of patches as well as the names of output
-   * variables, all of which we read from an input stream.
+   * 保存补丁集以及输出变量名称的数组，所有这些都是我们从输入流中读取的。
+   *
    */
   std::vector<dealii::DataOutBase::Patch<dim, spacedim>> patches;
   std::vector<std::string>                               dataset_names;
 
   /**
-   * Information about whether certain components of the output field are to
-   * be considered vectors.
+   * 关于输出域的某些成分是否要被视为矢量的信息。
+   *
    */
   std::vector<
     std::tuple<unsigned int,
@@ -3261,24 +2625,24 @@ private:
 
 
 /**
- * A class to store relevant data to use when writing a lightweight XDMF
- * file. The XDMF file in turn points to heavy data files (such as HDF5)
- * where the actual simulation data is stored.
- * This allows flexibility in arranging the data, and also
- * allows the mesh to be separated from the point data.
+ * 一个用于存储相关数据的类，在编写轻量级XDMF文件时使用。XDMF文件反过来指向存储实际模拟数据的重型数据文件（如HDF5）。这允许灵活安排数据，也允许将网格与点数据分开。
+ *
+ *
  */
 class XDMFEntry
 {
 public:
   /**
-   * Default constructor that creates an invalid object.
+   * 默认的构造函数，可以创建一个无效的对象。
+   *
    */
   XDMFEntry();
 
   /**
-   * Simplified constructor that calls the complete constructor for
-   * cases where <code>solution_filename == mesh_filename</code>, and
-   * <code>dim==spacedim</code>.
+   * 简化的构造函数，在  <code>solution_filename ==
+   * mesh_filename</code>  , 和  <code>dim==spacedim</code>
+   * 的情况下调用完整的构造函数。
+   *
    */
   XDMFEntry(const std::string &filename,
             const double       time,
@@ -3287,8 +2651,9 @@ public:
             const unsigned int dim);
 
   /**
-   * Simplified constructor that calls the complete constructor for
-   * cases where <code>dim==spacedim</code>.
+   * 简化的构造函数，在  <code>dim==spacedim</code>
+   * 的情况下调用完整的构造函数。
+   *
    */
   XDMFEntry(const std::string &mesh_filename,
             const std::string &solution_filename,
@@ -3298,7 +2663,8 @@ public:
             const unsigned int dim);
 
   /**
-   * Constructor that sets all members to provided parameters.
+   * 将所有成员设置为所提供的参数的构造函数。
+   *
    */
   XDMFEntry(const std::string &mesh_filename,
             const std::string &solution_filename,
@@ -3309,38 +2675,39 @@ public:
             const unsigned int spacedim);
 
   /**
-   * Record an attribute and associated dimensionality.
+   * 记录一个属性和相关维度。
+   *
    */
   void
   add_attribute(const std::string &attr_name, const unsigned int dimension);
 
   /**
-   * Read or write the data of this object for serialization using the
-   * [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)读取或写入此对象的数据进行序列化。
+   *
    */
   template <class Archive>
   void
-  serialize(Archive &ar, const unsigned int /*version*/)
+  serialize(Archive &ar, const unsigned int  /*version*/ )
   {
     ar &valid &h5_sol_filename &h5_mesh_filename &entry_time &num_nodes
       &num_cells &dimension &space_dimension &attribute_dims;
   }
 
   /**
-   * Get the XDMF content associated with this entry.
-   * If the entry is not valid, this returns an empty string.
+   * 获取与此条目相关的XDMF内容。
+   * 如果该条目无效，则返回一个空字符串。      @deprecated
+   * 使用重载，取一个`无符号int`和一个`const ReferenceCell
+   * &`来代替。
    *
-   * @deprecated Use the overload taking an `unsigned int` and a
-   * `const ReferenceCell &` instead.
    */
   DEAL_II_DEPRECATED
   std::string
   get_xdmf_content(const unsigned int indent_level) const;
 
   /**
-   * Get the XDMF content associated with this entry.
-   * If the entry is not valid, this returns an empty string.
+   * 获取与该条目相关的XDMF内容。
+   * 如果该条目无效，则返回一个空字符串。
+   *
    */
   std::string
   get_xdmf_content(const unsigned int   indent_level,
@@ -3348,55 +2715,63 @@ public:
 
 private:
   /**
-   * Whether this entry is valid and contains data to be written.
+   * 该条目是否有效并包含要写入的数据。
+   *
    */
   bool valid;
 
   /**
-   * The name of the HDF5 heavy data solution file this entry references.
+   * 该条目引用的HDF5重数据解决方案文件的名称。
+   *
    */
   std::string h5_sol_filename;
 
   /**
-   * The name of the HDF5 mesh file this entry references.
+   * 此条目引用的HDF5网格文件的名称。
+   *
    */
   std::string h5_mesh_filename;
 
   /**
-   * The simulation time associated with this entry.
+   * 与此条目相关的模拟时间。
+   *
    */
   double entry_time;
 
   /**
-   * The number of data nodes.
+   * 数据节点的数量。
+   *
    */
   unsigned int num_nodes;
 
   /**
-   * The number of data cells.
+   * 数据单元的数量。
+   *
    */
   unsigned int num_cells;
 
   /**
-   * The dimension associated with the data.
+   * 与数据相关的维度。
+   *
    */
   unsigned int dimension;
 
   /**
-   * The dimension of the space the data lives in.
-   * Note that dimension <= space_dimension.
+   * 数据所处空间的维度。  请注意，维度<=空间维度。
+   *
    */
   unsigned int space_dimension;
 
   /**
-   * The attributes associated with this entry and their dimension.
+   * 与此条目相关的属性和它们的维度。
+   *
    */
   std::map<std::string, unsigned int> attribute_dims;
 };
 
 
 
-/* -------------------- inline functions ------------------- */
+ /* -------------------- inline functions ------------------- */ 
 
 namespace DataOutBase
 {
@@ -3407,13 +2782,12 @@ namespace DataOutBase
   }
 
 
-  /* -------------------- template functions ------------------- */
+   /* -------------------- template functions ------------------- */ 
 
   /**
-   * Output operator for an object of type <tt>DataOutBase::Patch</tt>. This
-   * operator dumps the intermediate graphics format represented by the patch
-   * data structure. It may later be converted into regular formats for a
-   * number of graphics programs.
+   * <tt>DataOutBase::Patch</tt>. 类型对象的输出操作符
+   * 该操作符转储由补丁数据结构代表的中间图形格式。它以后可以被转换为一些图形程序的常规格式。
+   *
    */
   template <int dim, int spacedim>
   std::ostream &
@@ -3422,10 +2796,9 @@ namespace DataOutBase
 
 
   /**
-   * Input operator for an object of type <tt>DataOutBase::Patch</tt>. This
-   * operator reads the intermediate graphics format represented by the patch
-   * data structure, using the format in which it was written using the
-   * operator<<.
+   * 类型对象的输入操作符  <tt>DataOutBase::Patch</tt>.
+   * 该操作符读取由补丁数据结构代表的中间图形格式，使用操作符<<的格式写入。
+   *
    */
   template <int dim, int spacedim>
   std::istream &
@@ -3436,3 +2809,5 @@ namespace DataOutBase
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

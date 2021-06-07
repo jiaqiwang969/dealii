@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/petsc_vector_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -48,130 +47,131 @@ namespace PETScWrappers
 #    endif
 
 /**
- * 一个命名空间，PETSc对象的封装类位于其中。
- *
+ * A namespace in which wrapper classes for PETSc objects reside.
  *
  * @ingroup PETScWrappers
- *
  * @ingroup Vectors
- *
  */
 namespace PETScWrappers
 {
   /**
-   * @cond 内部
-   *
+   * @cond internal
    */
 
   /**
-   * 一个命名空间，用于PETScWrapper成员的内部实现细节。
+   * A namespace for internal implementation details of the PETScWrapper
+   * members.
    * @ingroup PETScWrappers
-   *
    */
   namespace internal
   {
     /**
-     * 由于对PETSc向量的访问只通过函数进行，而不是通过获得一个向量元素的引用，所以我们需要一个包装器类，它的作用就像一个引用一样，基本上把所有的访问（读和写）重定向到这个类的成员函数。
-     * 这个类实现了这样一个封装器：它用一个向量和其中的一个元素进行初始化，并有一个转换操作符来提取这个元素的标量值。它也有各种赋值运算符，用于向这一个元素写入。
-     * @ingroup PETScWrappers
+     * Since access to PETSc vectors only goes through functions, rather than
+     * by obtaining a reference to a vector element, we need a wrapper class
+     * that acts as if it was a reference, and basically redirects all
+     * accesses (read and write) to member functions of this class.
      *
+     * This class implements such a wrapper: it is initialized with a vector
+     * and an element within it, and has a conversion operator to extract the
+     * scalar value of this element. It also has a variety of assignment
+     * operator for writing to this one element.
+     * @ingroup PETScWrappers
      */
     class VectorReference
     {
     public:
       /**
-       * 声明容器大小的类型。
-       *
+       * Declare type for container size.
        */
       using size_type = types::global_dof_index;
 
     private:
       /**
-       * 构造函数。它是私有的，以便只允许实际的向量类来创建它。
-       *
+       * Constructor. It is made private so as to only allow the actual vector
+       * class to create it.
        */
       VectorReference(const VectorBase &vector, const size_type index);
 
     public:
-      /*复制构造函数。     
-* */
+      /*
+       * Copy constructor.
+       */
       VectorReference(const VectorReference &vector) = default;
 
       /**
-       * 这看起来像一个复制操作符，但做的事情与平常不同。特别是，它并不复制这个引用的成员变量。相反，它处理的情况是，我们有两个向量
-       * @p v 和 @p w,
-       * ，像<tt>v(i)=w(i)</tt>中那样分配元素。这里，赋值的左手和右手都有数据类型VectorReference，但我们真正的意思是赋值这两个引用所代表的向量元素。这个操作符实现了这个操作。还要注意的是，这使得我们可以使赋值运算符成为常数。
-       *
+       * This looks like a copy operator, but does something different than
+       * usual. In particular, it does not copy the member variables of this
+       * reference. Rather, it handles the situation where we have two vectors
+       * @p v and @p w, and assign elements like in <tt>v(i)=w(i)</tt>. Here,
+       * both left and right hand side of the assignment have data type
+       * VectorReference, but what we really mean is to assign the vector
+       * elements represented by the two references. This operator implements
+       * this operation. Note also that this allows us to make the assignment
+       * operator const.
        */
       const VectorReference &
       operator=(const VectorReference &r) const;
 
       /**
-       * 与上面的函数相同，但用于非const引用对象。这个函数是需要的，因为编译器可能会自动为非常量对象生成一个拷贝操作符。
-       *
+       * The same function as above, but for non-const reference objects. The
+       * function is needed since the compiler might otherwise automatically
+       * generate a copy operator for non-const objects.
        */
       VectorReference &
       operator=(const VectorReference &r);
 
       /**
-       * 将向量的引用元素设置为<tt>s</tt>。
-       *
+       * Set the referenced element of the vector to <tt>s</tt>.
        */
       const VectorReference &
       operator=(const PetscScalar &s) const;
 
       /**
-       * 将<tt>s</tt>添加到矢量的引用元素中。
-       *
+       * Add <tt>s</tt> to the referenced element of the vector.
        */
       const VectorReference &
       operator+=(const PetscScalar &s) const;
 
       /**
-       * 从向量的参考元素中减去<tt>s</tt>。
-       *
+       * Subtract <tt>s</tt> from the referenced element of the vector.
        */
       const VectorReference &
       operator-=(const PetscScalar &s) const;
 
       /**
-       * 用<tt>s</tt>乘以矢量中的参考元素。
-       *
+       * Multiply the referenced element of the vector by <tt>s</tt>.
        */
       const VectorReference &
       operator*=(const PetscScalar &s) const;
 
       /**
-       * 将向量中的参考元素除以<tt>s</tt>。
-       *
+       * Divide the referenced element of the vector by <tt>s</tt>.
        */
       const VectorReference &
       operator/=(const PetscScalar &s) const;
 
       /**
-       * 返回参考元素数值的实数部分。
-       *
+       * Return the real part of the value of the referenced element.
        */
       PetscReal
       real() const;
 
       /**
-       * 返回参考元素值的虚数部分。
-       * @note
-       * 这个操作对实数来说没有定义，会产生一个异常。
+       * Return the imaginary part of the value of the referenced element.
        *
+       * @note This operation is not defined for real numbers and an exception
+       * is thrown.
        */
       PetscReal
       imag() const;
 
       /**
-       * 将引用转换为实际值，即返回向量中被引用元素的值。
-       *
+       * Convert the reference to an actual value, i.e. return the value of
+       * the referenced element of the vector.
        */
       operator PetscScalar() const;
       /**
-       * 异常情况
-       *
+       * Exception
        */
       DeclException3(
         ExcAccessToNonlocalElement,
@@ -190,8 +190,7 @@ namespace PETScWrappers
         << "'locally owned'). You need to pass a vector that has these "
         << "elements as ghost entries.");
       /**
-       * 异常情况。
-       *
+       * Exception.
        */
       DeclException2(ExcWrongMode,
                      int,
@@ -204,14 +203,12 @@ namespace PETScWrappers
 
     private:
       /**
-       * 指向我们所参考的向量。
-       *
+       * Point to the vector we are referencing.
        */
       const VectorBase &vector;
 
       /**
-       * 向量中被引用的元素的索引。
-       *
+       * Index of the referenced element of the vector.
        */
       const size_type index;
 
@@ -222,29 +219,41 @@ namespace PETScWrappers
   } // namespace internal
   /**
    * @endcond
-   *
    */
 
 
   /**
-   * 所有在PETSc向量类型之上实现的向量类的基类。由于在PETSc中，所有的向量类型（即顺序和平行的）都是通过填充一个抽象对象的内容来建立的，而这个抽象对象只能通过一个独立于实际向量类型的指针来引用，所以我们可以在这个基类中实现几乎所有的向量功能。因此，这个类也可以作为任何类型的PETSc
-   * <code>Vec</code>
-   * 对象的deal.II兼容包装器使用。派生类将只需要提供创建一种或另一种矢量的功能。
-   * 这个类的接口是以deal.II中现有的Vector类为模型的。它有几乎相同的成员函数，并且通常是可交换的。然而，由于PETSc只支持单一的标量类型（要么是double，要么是float，要么是一个复杂的数据类型），所以它没有模板化，只能与你的PETSc安装时定义的数据类型
-   * @p PetscScalar 一起工作。
-   * 请注意，只有在向量装配后调用了 @p VecAssemblyBegin 和 @p
-   * VecAssemblyEnd
-   * 这两个函数，PETSc才能保证操作符合你的期望。因此，你需要在实际使用矢量之前调用
-   * Vector::compress() 。
-   * @ingroup PETScWrappers
+   * Base class for all vector classes that are implemented on top of the
+   * PETSc vector types. Since in PETSc all vector types (i.e. sequential and
+   * parallel ones) are built by filling the contents of an abstract object
+   * that is only referenced through a pointer of a type that is independent
+   * of the actual vector type, we can implement almost all functionality of
+   * vectors in this base class. As such, this class can also be used as a
+   * deal.II-compatible wrapper for a PETSc <code>Vec</code> object of any
+   * type. Derived classes will then only have to provide the functionality to
+   * create one or the other kind of vector.
    *
+   * The interface of this class is modeled after the existing Vector class in
+   * deal.II. It has almost the same member functions, and is often
+   * exchangeable. However, since PETSc only supports a single scalar type
+   * (either double, float, or a complex data type), it is not templated, and
+   * only works with whatever your PETSc installation has defined the data
+   * type @p PetscScalar to.
+   *
+   * Note that PETSc only guarantees that operations do what you expect if the
+   * functions @p VecAssemblyBegin and @p VecAssemblyEnd have been called
+   * after vector assembly. Therefore, you need to call Vector::compress()
+   * before you actually use the vector.
+   *
+   * @ingroup PETScWrappers
    */
   class VectorBase : public Subscriptor
   {
   public:
     /**
-     * 声明一些在所有容器中使用的标准类型。这些类型与<tt>C++</tt>标准库<tt>vector<...></tt>类中的类型平行。
-     *
+     * Declare some of the standard types used in all containers. These types
+     * parallel those in the <tt>C++</tt> standard libraries
+     * <tt>vector<...></tt> class.
      */
     using value_type      = PetscScalar;
     using real_type       = PetscReal;
@@ -253,212 +262,252 @@ namespace PETScWrappers
     using const_reference = const internal::VectorReference;
 
     /**
-     * 默认构造函数。它不做任何事情，派生类将不得不初始化数据。
-     *
+     * Default constructor. It doesn't do anything, derived classes will have
+     * to initialize the data.
      */
     VectorBase();
 
     /**
-     * 复制构造函数。将维度设置为给定的向量，并复制所有元素。
-     *
+     * Copy constructor. Sets the dimension to that of the given vector, and
+     * copies all elements.
      */
     VectorBase(const VectorBase &v);
 
     /**
-     * 从一个PETSc
-     * Vec对象初始化一个向量。注意，我们没有复制向量，也没有获得所有权，所以我们没有在析构函数中销毁PETSc对象。
-     *
+     * Initialize a Vector from a PETSc Vec object. Note that we do not copy
+     * the vector and we do not obtain ownership, so we do not destroy the
+     * PETSc object in the destructor.
      */
     explicit VectorBase(const Vec &v);
 
     /**
-     * 删除了复制赋值运算符，以避免意外的使用带来意外的行为。
-     *
+     * The copy assignment operator is deleted to avoid accidental usage with
+     * unexpected behavior.
      */
     VectorBase &
     operator=(const VectorBase &) = delete;
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~VectorBase() override;
 
     /**
-     * 释放所有内存并返回到与调用默认构造函数后相同的状态。
-     *
+     * Release all memory and return to a state just like after having called
+     * the default constructor.
      */
     virtual void
     clear();
 
     /**
-     * 压缩PETSc对象的底层表示，即刷新矢量对象的缓冲区（如果它有的话）。这个函数在逐一写入矢量元素后，在对其进行任何其他操作之前是必要的。        更多信息请参见  @ref GlossCompress  "压缩分布式对象"
-     * 。
+     * Compress the underlying representation of the PETSc object, i.e. flush
+     * the buffers of the vector object if it has any. This function is
+     * necessary after writing into a vector element-by-element and before
+     * anything else can be done on it.
      *
+     * See
+     * @ref GlossCompress "Compressing distributed objects"
+     * for more information.
      */
     void
     compress(const VectorOperation::values operation);
 
     /**
-     * 将向量的所有分量设置为给定的数字  @p s.
-     * 只需将其传递给各个块对象，但我们仍然需要声明这个函数，以使讨论中给出的关于使构造函数显式的例子发挥作用。
-     * 由于将标量分配给向量的语义并不立即明确，这个操作符实际上应该只在你想将整个向量设置为零时才使用。这样就可以使用直观的符号<tt>v=0</tt>。赋予其他的值是被弃用的，将来可能会被禁止使用。
+     * Set all components of the vector to the given number @p s. Simply pass
+     * this down to the individual block objects, but we still need to declare
+     * this function to make the example given in the discussion about making
+     * the constructor explicit work.
      *
+     *
+     * Since the semantics of assigning a scalar to a vector are not
+     * immediately clear, this operator should really only be used if you want
+     * to set the entire vector to zero. This allows the intuitive notation
+     * <tt>v=0</tt>. Assigning other values is deprecated and may be
+     * disallowed in the future.
      */
     VectorBase &
     operator=(const PetscScalar s);
 
     /**
-     * 检验是否相等。这个函数假定现在的向量和要比较的向量已经有相同的大小，因为比较不同大小的向量反正没有什么意义。
-     *
+     * Test for equality. This function assumes that the present vector and
+     * the one to compare with have the same size already, since comparing
+     * vectors of different sizes makes not much sense anyway.
      */
     bool
     operator==(const VectorBase &v) const;
 
     /**
-     * 测试不平等。这个函数假定现在的向量和要比较的向量已经有相同的大小，因为比较不同大小的向量反正没有什么意义。
-     *
+     * Test for inequality. This function assumes that the present vector and
+     * the one to compare with have the same size already, since comparing
+     * vectors of different sizes makes not much sense anyway.
      */
     bool
     operator!=(const VectorBase &v) const;
 
     /**
-     * 返回向量的全局尺寸。
-     *
+     * Return the global dimension of the vector.
      */
     size_type
     size() const;
 
     /**
-     * 返回向量的局部尺寸，即存储在当前MPI进程中的元素数量。对于顺序向量，这个数字与size()相同，但对于并行向量，它可能更小。
-     * 要想知道到底哪些元素是存储在本地的，可以使用local_range()或local_owned_elements()。
-     * @deprecated 用local_owned_size()代替。
+     * Return the local dimension of the vector, i.e. the number of elements
+     * stored on the present MPI process. For sequential vectors, this number
+     * is the same as size(), but for parallel vectors it may be smaller.
      *
+     * To figure out which elements exactly are stored locally, use
+     * local_range() or locally_owned_elements().
+     *
+     * @deprecated use locally_owned_size() instead.
      */
     DEAL_II_DEPRECATED
     size_type
     local_size() const;
 
     /**
-     * 返回向量的本地维度，即存储在当前MPI进程中的元素数量。对于顺序向量，这个数字与size()相同，但对于并行向量，它可能更小。
-     * 要想知道哪些元素确切地存储在本地，可以使用local_range()或local_owned_elements()。
+     * Return the local dimension of the vector, i.e. the number of elements
+     * stored on the present MPI process. For sequential vectors, this number
+     * is the same as size(), but for parallel vectors it may be smaller.
      *
+     * To figure out which elements exactly are stored locally, use
+     * local_range() or locally_owned_elements().
      */
     size_type
     locally_owned_size() const;
 
     /**
-     * 返回一对指数，表明该向量的哪些元素被存储在本地。第一个数字是存储的第一个元素的索引，第二个数字是本地存储的最后一个元素之后的索引。如果这是一个顺序向量，那么结果将是一对（0,N），否则将是一对（i,i+n），其中<tt>n=locally_owned_size()</tt>。
-     *
+     * Return a pair of indices indicating which elements of this vector are
+     * stored locally. The first number is the index of the first element
+     * stored, the second the index of the one past the last one that is
+     * stored locally. If this is a sequential vector, then the result will be
+     * the pair (0,N), otherwise it will be a pair (i,i+n), where
+     * <tt>n=locally_owned_size()</tt>.
      */
     std::pair<size_type, size_type>
     local_range() const;
 
     /**
-     * 返回 @p index 是否在本地范围内，另见local_range()。
-     *
+     * Return whether @p index is in the local range or not, see also
+     * local_range().
      */
     bool
     in_local_range(const size_type index) const;
 
     /**
-     * 返回一个索引集，描述这个向量的哪些元素是由当前处理器拥有的。请注意，这个索引集不包括这个向量可能在本地存储为幽灵元素，但实际上是由另一个处理器拥有的元素。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相交的集合，加起来就是完整的索引集。
-     * 很明显，如果一个向量只在一个处理器上创建，那么结果将满足
+     * Return an index set that describes which elements of this vector are
+     * owned by the current processor. Note that this index set does not
+     * include elements this vector may store locally as ghost elements but
+     * that are in fact owned by another processor. As a consequence, the
+     * index sets returned on different processors if this is a distributed
+     * vector will form disjoint sets that add up to the complete index set.
+     * Obviously, if a vector is created on only one processor, then the
+     * result would satisfy
      * @code
-     * vec.locally_owned_elements() == complete_index_set (vec.size())
+     *   vec.locally_owned_elements() == complete_index_set (vec.size())
      * @endcode
-     *
-     *
      */
     IndexSet
     locally_owned_elements() const;
 
     /**
-     * 如果向量包含鬼魂元素，则返回。          @see   @ref GlossGhostedVector  "含有鬼魂元素的向量"
+     * Return if the vector contains ghost elements.
      *
+     * @see
+     * @ref GlossGhostedVector "vectors with ghost elements"
      */
     bool
     has_ghost_elements() const;
 
     /**
-     * 这个函数的存在只是为了与 @p
-     * LinearAlgebra::distributed::Vector
-     * 类兼容，并不做任何事情：这个类以不同的方式实现鬼魂值的更新，与底层的PETSc向量对象更加匹配。
-     *
+     * This function only exists for compatibility with the @p
+     * LinearAlgebra::distributed::Vector class and does nothing: this class
+     * implements ghost value updates in a different way that is a better fit
+     * with the underlying PETSc vector object.
      */
     void
     update_ghost_values() const;
 
     /**
-     * 提供对一个给定元素的访问，包括读和写。
-     *
+     * Provide access to a given element, both read and write.
      */
     reference
     operator()(const size_type index);
 
     /**
-     * 提供对一个元素的只读访问。
-     *
+     * Provide read-only access to an element.
      */
     PetscScalar
     operator()(const size_type index) const;
 
     /**
-     * 提供对一个给定元素的访问，包括读和写。
-     * 与operator()完全相同。
+     * Provide access to a given element, both read and write.
      *
+     * Exactly the same as operator().
      */
     reference operator[](const size_type index);
 
     /**
-     * 提供对一个元素的只读访问。
-     * 与operator()完全相同。
+     * Provide read-only access to an element.
      *
+     * Exactly the same as operator().
      */
     PetscScalar operator[](const size_type index) const;
 
     /**
-     * 一个集体的设置操作：这个函数允许一次性设置整个元素集，而不是设置一个向量的单个元素。
-     * 要设置的元素的索引在第一个参数中说明，相应的值在第二个参数中说明。
-     *
+     * A collective set operation: instead of setting individual elements of a
+     * vector, this function allows to set a whole set of elements at once.
+     * The indices of the elements to be set are stated in the first argument,
+     * the corresponding values in the second.
      */
     void
     set(const std::vector<size_type> &  indices,
         const std::vector<PetscScalar> &values);
 
     /**
-     * 与通过operator()获取向量中的单个元素不同，这个函数允许一次性获取一整组元素。要读取的元素的索引在第一个参数中说明，相应的值在第二个参数中返回。
-     * 如果当前的向量被称为 @p v,
-     * ，那么这个函数就等同于代码
-     * @code
-     * for (unsigned int i=0; i<indices.size(); ++i)
-     *   values[i] = v[indices[i]];
-     * @endcode
-     * @pre  @p indices 和 @p values 数组的大小必须是一致的。
+     * Instead of getting individual elements of a vector via operator(),
+     * this function allows getting a whole set of elements at once. The
+     * indices of the elements to be read are stated in the first argument, the
+     * corresponding values are returned in the second.
      *
+     * If the current vector is called @p v, then this function is the equivalent
+     * to the code
+     * @code
+     *   for (unsigned int i=0; i<indices.size(); ++i)
+     *     values[i] = v[indices[i]];
+     * @endcode
+     *
+     * @pre The sizes of the @p indices and @p values arrays must be identical.
      */
     void
     extract_subvector_to(const std::vector<size_type> &indices,
                          std::vector<PetscScalar> &    values) const;
 
     /**
-     * 这个函数不是通过operator()获得向量的单个元素，而是允许一次获得整个元素集。与前一个函数不同的是，这个函数通过取消引用前两个参数提供的迭代器范围内的所有元素来获得元素的索引，并将向量的值放入通过取消引用从第三个参数指向的位置开始的迭代器范围获得的内存位置。
-     * 如果当前的向量被称为 @p v,
-     * ，那么这个函数就等同于代码
-     * @code
-     * ForwardIterator indices_p = indices_begin;
-     * OutputIterator  values_p  = values_begin;
-     * while (indices_p != indices_end)
-     * {
-     *  values_p = v[*indices_p];
-     *   ++indices_p;
-     *   ++values_p;
-     * }
-     * @endcode
-     * @pre  必须能够写进从 @p values_begin
-     * 开始的尽可能多的内存位置，因为有 @p indices_begin 和
-     * @p indices_end. 之间的迭代器。
+     * Instead of getting individual elements of a vector via operator(),
+     * this function allows getting a whole set of elements at once. In
+     * contrast to the previous function, this function obtains the
+     * indices of the elements by dereferencing all elements of the iterator
+     * range provided by the first two arguments, and puts the vector
+     * values into memory locations obtained by dereferencing a range
+     * of iterators starting at the location pointed to by the third
+     * argument.
      *
+     * If the current vector is called @p v, then this function is the equivalent
+     * to the code
+     * @code
+     *   ForwardIterator indices_p = indices_begin;
+     *   OutputIterator  values_p  = values_begin;
+     *   while (indices_p != indices_end)
+     *   {
+     *     *values_p = v[*indices_p];
+     *     ++indices_p;
+     *     ++values_p;
+     *   }
+     * @endcode
+     *
+     * @pre It must be possible to write into as many memory locations
+     *   starting at @p values_begin as there are iterators between
+     *   @p indices_begin and @p indices_end.
      */
     template <typename ForwardIterator, typename OutputIterator>
     void
@@ -467,25 +516,25 @@ namespace PETScWrappers
                          OutputIterator        values_begin) const;
 
     /**
-     * 一个集体的添加操作。这个函数将存储在 @p values
-     * 中的一整组值添加到 @p indices. 指定的向量成分中。
-     *
+     * A collective add operation: This function adds a whole set of values
+     * stored in @p values to the vector components specified by @p indices.
      */
     void
     add(const std::vector<size_type> &  indices,
         const std::vector<PetscScalar> &values);
 
     /**
-     * 这是第二次集体添加操作。作为区别，这个函数需要一个deal.II的数值向量。
-     *
+     * This is a second collective add operation. As a difference, this
+     * function takes a deal.II vector of values.
      */
     void
     add(const std::vector<size_type> &       indices,
         const ::dealii::Vector<PetscScalar> &values);
 
     /**
-     * 取一个<tt>n_elements</tt>连续存储的地址，并将其添加到向量中。处理上述其他两个<tt>add()</tt>函数未涵盖的所有情况。
-     *
+     * Take an address where <tt>n_elements</tt> are stored contiguously and
+     * add them into the vector. Handles all cases which are not covered by
+     * the other two <tt>add()</tt> functions above.
      */
     void
     add(const size_type    n_elements,
@@ -493,154 +542,159 @@ namespace PETScWrappers
         const PetscScalar *values);
 
     /**
-     * 返回两个向量的标量乘积。这两个向量必须有相同的大小。
-     * 对于复值向量，这将得到  $\left(v^\ast,vec\right)$  。
+     * Return the scalar product of two vectors. The vectors must have the
+     * same size.
      *
+     * For complex valued vector, this gives$\left(v^\ast,vec\right)$.
      */
     PetscScalar operator*(const VectorBase &vec) const;
 
     /**
-     * 返回 $l_2$ -norm的平方。
-     *
+     * Return the square of the $l_2$-norm.
      */
     real_type
     norm_sqr() const;
 
     /**
-     * 返回这个向量的元素的平均值。
-     *
+     * Return the mean value of the elements of this vector.
      */
     PetscScalar
     mean_value() const;
 
     /**
-     * 该向量的 $l_1$ -norm。绝对值的总和。
-     * @note
-     * 在3.7.0以前的复值PETSc中，这个规范被实现为复数向量元素的实部和虚部的绝对值之和。
+     * $l_1$-norm of the vector. The sum of the absolute values.
      *
+     * @note In complex-valued PETSc priori to 3.7.0 this norm is implemented
+     * as the sum of absolute values of real and imaginary parts of elements
+     * of a complex vector.
      */
     real_type
     l1_norm() const;
 
     /**
-     * $l_2$  - 矢量的规范。 各元素的平方根之和。
-     *
+     * $l_2$-norm of the vector.  The square root of the sum of the squares of
+     * the elements.
      */
     real_type
     l2_norm() const;
 
     /**
-     * 元素绝对值的p次方之和的p次根。
-     *
+     * $l_p$-norm of the vector. The pth root of the sum of the pth powers of
+     * the absolute values of the elements.
      */
     real_type
     lp_norm(const real_type p) const;
 
     /**
-     * $l_\infty$
-     * -向量的规范。返回具有最大绝对值的向量元素的值。
-     *
+     * $l_\infty$-norm of the vector. Return the value of the vector element
+     * with the maximum absolute value.
      */
     real_type
     linfty_norm() const;
 
     /**
-     * 执行一个矢量加法和后续内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用
+     * Performs a combined operation of a vector addition and a subsequent
+     * inner product, returning the value of the inner product. In other
+     * words, the result of this function is the same as if the user called
      * @code
      * this->add(a, V);
-     * return_value =this W;
+     * return_value = *this * W;
      * @endcode
-     * 这个函数存在的原因是为了与deal.II自己的向量类兼容，后者可以用较少的内存传输实现这个功能。然而，对于PETSc向量来说，这样的组合操作是不被原生支持的，因此其代价完全等同于单独调用这两个方法。
-     * 对于复值向量，第二步中的标量乘积被实现为
-     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  .
      *
+     * The reason this function exists is for compatibility with deal.II's own
+     * vector classes which can implement this functionality with less memory
+     * transfer. However, for PETSc vectors such a combined operation is not
+     * natively supported and thus the cost is completely equivalent as
+     * calling the two methods separately.
+     *
+     * For complex-valued vectors, the scalar product in the second step is
+     * implemented as
+     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
      */
     PetscScalar
     add_and_dot(const PetscScalar a, const VectorBase &V, const VectorBase &W);
 
     /**
-     * 返回具有最大负值的向量元素的值。          @deprecated
-     * 为了提高与其他继承自VectorSpaceVector的类的兼容性，这个函数已经被废弃。如果你需要使用这个功能，那么请使用PETSc函数VecMin代替。
+     * Return the value of the vector element with the largest negative value.
      *
+     * @deprecated This function has been deprecated to improve compatibility
+     * with other classes inheriting from VectorSpaceVector. If you need to
+     * use this functionality then use the PETSc function VecMin instead.
      */
     DEAL_II_DEPRECATED
     real_type
     min() const;
 
     /**
-     * 返回具有最大正值的向量元素的值。          @deprecated
-     * 这个函数已经被废弃，以提高与其他继承自VectorSpaceVector的类的兼容性。如果你需要使用这个功能，那么请使用PETSc函数VecMax代替。
+     * Return the value of the vector element with the largest positive value.
      *
+     * @deprecated This function has been deprecated to improve compatibility
+     * with other classes inheriting from VectorSpaceVector. If you need to
+     * use this functionality then use the PETSc function VecMax instead.
      */
     DEAL_II_DEPRECATED
     real_type
     max() const;
 
     /**
-     * 返回向量是否只包含值为0的元素。这是一个集体操作。这个函数很昂贵，因为可能所有的元素都要被检查。
-     *
+     * Return whether the vector contains only elements with value zero. This
+     * is a collective operation. This function is expensive, because
+     * potentially all elements have to be checked.
      */
     bool
     all_zero() const;
 
     /**
-     * 如果向量没有负的条目，即所有条目都是零或正，则返回
-     * @p true
-     * 。例如，这个函数用于检查细化指标是否真的都是正的（或零）。
-     * @deprecated
-     * 这个函数已经被废弃，以改善与其他继承自VectorSpaceVector的类的兼容性。
+     * Return @p true if the vector has no negative entries, i.e. all entries
+     * are zero or positive. This function is used, for example, to check
+     * whether refinement indicators are really all positive (or zero).
      *
+     * @deprecated This function has been deprecated to improve compatibility
+     * with other classes inheriting from VectorSpaceVector.
      */
     DEAL_II_DEPRECATED
     bool
     is_non_negative() const;
 
     /**
-     * 将整个向量乘以一个固定的因子。
-     *
+     * Multiply the entire vector by a fixed factor.
      */
     VectorBase &
     operator*=(const PetscScalar factor);
 
     /**
-     * 将整个向量除以一个固定的因子。
-     *
+     * Divide the entire vector by a fixed factor.
      */
     VectorBase &
     operator/=(const PetscScalar factor);
 
     /**
-     * 将给定的向量添加到当前的向量中。
-     *
+     * Add the given vector to the present one.
      */
     VectorBase &
     operator+=(const VectorBase &V);
 
     /**
-     * 从现在的向量中减去给定的向量。
-     *
+     * Subtract the given vector from the present one.
      */
     VectorBase &
     operator-=(const VectorBase &V);
 
     /**
-     * 将 @p s 加到所有组件上。注意 @p s
-     * 是一个标量而不是一个向量。
-     *
+     * Addition of @p s to all components. Note that @p s is a scalar and not
+     * a vector.
      */
     void
     add(const PetscScalar s);
 
     /**
-     * 一个向量的倍数的简单加法，即<tt>*this += a*V</tt>。
-     *
+     * Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.
      */
     void
     add(const PetscScalar a, const VectorBase &V);
 
     /**
-     * 缩放向量的多重加法，即：<tt>*this += a*V+b*W</tt>。
-     *
+     * Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.
      */
     void
     add(const PetscScalar a,
@@ -649,47 +703,47 @@ namespace PETScWrappers
         const VectorBase &W);
 
     /**
-     * 缩放和简单的向量相加，即<tt>*this = s*(*this)+V</tt>。
-     *
+     * Scaling and simple vector addition, i.e. <tt>*this = s*(*this)+V</tt>.
      */
     void
     sadd(const PetscScalar s, const VectorBase &V);
 
     /**
-     * 缩放和简单加法，即：<tt>*this = s*(*this)+a*V</tt>。
-     *
+     * Scaling and simple addition, i.e. <tt>*this = s*(*this)+a*V</tt>.
      */
     void
     sadd(const PetscScalar s, const PetscScalar a, const VectorBase &V);
 
     /**
-     * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟对角线缩放矩阵的乘法（和立即重新分配）。
-     *
+     * Scale each element of this vector by the corresponding element in the
+     * argument. This function is mostly meant to simulate multiplication (and
+     * immediate re-assignment) by a diagonal scaling matrix.
      */
     void
     scale(const VectorBase &scaling_factors);
 
     /**
-     * 赋值 <tt>*this = a*V</tt>.
-     *
+     * Assignment <tt>*this = a*V</tt>.
      */
     void
     equ(const PetscScalar a, const VectorBase &V);
 
     /**
-     * 使用PETSc内部矢量查看器函数<tt>VecView</tt>打印PETSc矢量对象的值。默认格式是打印矢量的内容，包括矢量元素的索引。对于其他有效的视图格式，请参考http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Vec/VecView.html
-     *
+     * Prints the PETSc vector object values using PETSc internal vector
+     * viewer function <tt>VecView</tt>. The default format prints the
+     * vector's contents, including indices of vector elements. For other
+     * valid view formats, consult
+     * http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Vec/VecView.html
      */
     void
     write_ascii(const PetscViewerFormat format = PETSC_VIEWER_DEFAULT);
 
     /**
-     * 打印到一个流。  @p precision
-     * 表示打印数值所需的精度， @p scientific
-     * 是否应使用科学符号。如果 @p across 是 @p true
-     * ，那么向量将被打印在一行中，而如果 @p false
-     * 则元素被打印在单独的一行中。
-     *
+     * Print to a stream. @p precision denotes the desired precision with
+     * which values shall be printed, @p scientific whether scientific
+     * notation shall be used. If @p across is @p true then the vector is
+     * printed in a line, while if @p false then the elements are printed on a
+     * separate line each.
      */
     void
     print(std::ostream &     out,
@@ -698,59 +752,67 @@ namespace PETScWrappers
           const bool         across     = true) const;
 
     /**
-     * 交换这个向量和另一个向量的内容  @p v.
-     * 人们可以用一个临时变量和复制数据元素来完成这个操作，但是这个函数明显更有效率，因为它只交换了两个向量的数据指针，因此不需要分配临时存储和移动数据。
-     * 这个函数类似于所有C++标准容器的 @p swap
-     * 函数。此外，还有一个全局函数<tt>swap(u,v)</tt>，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数相类似。
+     * Swap the contents of this vector and the other vector @p v. One could
+     * do this operation with a temporary variable and copying over the data
+     * elements, but this function is significantly more efficient since it
+     * only swaps the pointers to the data of the two vectors and therefore
+     * does not need to allocate temporary storage and move data around.
      *
+     * This function is analogous to the @p swap function of all C++
+     * standard containers. Also, there is a global function
+     * <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in
+     * analogy to standard functions.
      */
     void
     swap(VectorBase &v);
 
     /**
-     * 转换操作符，以获得对底层PETSc类型的访问。如果你这样做，你就切断了这个类可能需要的一些信息，所以这个转换操作符应该只在你知道你要做什么的情况下使用。特别是，它应该只用于对向量的只读操作。
-     *
+     * Conversion operator to gain access to the underlying PETSc type. If you
+     * do this, you cut this class off some information it may need, so this
+     * conversion operator should only be used if you know what you do. In
+     * particular, it should only be used for read-only operations into the
+     * vector.
      */
     operator const Vec &() const;
 
     /**
-     * 对内存消耗的估计（这个类没有实现）。
-     *
+     * Estimate for the memory consumption (not implemented for this class).
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * 返回一个对与此对象一起使用的MPI通信器对象的引用。
-     *
+     * Return a reference to the MPI communicator object in use with this
+     * object.
      */
     virtual const MPI_Comm &
     get_mpi_communicator() const;
 
   protected:
     /**
-     * 一个PETSc中的通用向量对象。实际的类型，一个连续的向量，在构造函数中被设置。
-     *
+     * A generic vector object in PETSc. The actual type, a sequential vector,
+     * is set in the constructor.
      */
     Vec vector;
 
     /**
-     * 表示这个向量是否有与之相关的鬼魂索引。这意味着并行程序中至少有一个进程有至少一个幽灵索引。
-     *
+     * Denotes if this vector has ghost indices associated with it. This means
+     * that at least one of the processes in a parallel program has at least
+     * one ghost index.
      */
     bool ghosted;
 
     /**
-     * 这个向量包含鬼魂值的全局索引。这个向量中的位置表示本地编号，在PETSc中使用。
-     *
+     * This vector contains the global indices of the ghost values. The
+     * location in this vector denotes the local numbering, which is used in
+     * PETSc.
      */
     IndexSet ghost_indices;
 
     /**
-     * 存储最后一个动作是写操作还是加操作。这个变量是
-     * @p mutable
-     * ，这样访问器类就可以写到它，即使它们引用的向量对象是常量。
-     *
+     * Store whether the last action was a write or add operation. This
+     * variable is @p mutable so that the accessor classes can write to it,
+     * even though the vector object they refer to is constant.
      */
     mutable VectorOperation::values last_action;
 
@@ -758,16 +820,16 @@ namespace PETScWrappers
     friend class internal::VectorReference;
 
     /**
-     * 指定该向量是否是PETSc
-     * Vec的所有者。如果它是由这个类创建的，这就是真的，并决定它是否在析构器中被销毁。
-     *
+     * Specifies if the vector is the owner of the PETSc Vec. This is true if
+     * it got created by this class and determines if it gets destroyed in
+     * the destructor.
      */
     bool obtained_ownership;
 
     /**
-     * 集合设置或添加操作。这个函数由集体 @p set 和 @p add
-     * 调用， @p add_values 标志设置为相应的值。
-     *
+     * Collective set or add operation: This function is invoked by the
+     * collective @p set and @p add with the @p add_values flag set to the
+     * corresponding value.
      */
     void
     do_set_add_operation(const size_type    n_elements,
@@ -781,10 +843,11 @@ namespace PETScWrappers
   // ------------------- inline and template functions --------------
 
   /**
-   * 全局函数 @p swap
-   * ，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
-   * @relatesalso   PETScWrappers::VectorBase .
+   * Global function @p swap which overloads the default implementation of the
+   * C++ standard library which uses a temporary object. The function simply
+   * exchanges the data of the two vectors.
    *
+   * @relatesalso PETScWrappers::VectorBase
    */
   inline void
   swap(VectorBase &u, VectorBase &v)
@@ -1204,6 +1267,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
- /*---------------------------- petsc_vector_base.h --------------------------*/ 
-
-
+/*---------------------------- petsc_vector_base.h --------------------------*/

@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/householder_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -35,87 +34,92 @@ template <typename number>
 class Vector;
 #endif
 
-/*!   @addtogroup  Matrix2  @{ ! 
-
- 
-* */
+/*! @addtogroup Matrix2
+ *@{
+ */
 
 
 /**
- * 一个完整矩阵的QR分解。
- * 该类通过Householder算法计算给定矩阵的QR分解。然后，函数
- * least_squares() 可以用来计算给定向量  $x$  的最小化
- * $\|Ax-b\|$  的向量。 $A$
- * 的QR分解对这一目的很有用，因为最小化器由方程
- * $x=(A^TA)^{-1}A^Tb=(R^TQ^TQR)^{-1}R^TQ^Tb$
- * 给出，这很容易计算，因为 $Q$ 是一个正交矩阵，因此
- * $Q^TQ=I$  。因此，
- * $x=(R^TR)^{-1}R^TQ^Tb=R^{-1}R^{-T}R^TQ^Tb=R^{-1}Q^Tb$  . 此外， $R$
- * 是三角形的，所以将 $R^{-1}$
- * 应用于一个向量只涉及到后向或前向解。
+ * QR-decomposition of a full matrix.
  *
- *  <h3>Implementation details</h3> 该类实际上没有明确地将 $Q$ 和
- * $R$ 的因子存储为矩阵。它确实存储了 $R$ ，但是 $Q$
- * 因子被存储为形式为 $Q_i = I-v_i v_i^T$
- * 的Householder反射的乘积，其中向量 $v_i$
- * 是为了使它们可以存储在底层矩阵对象的下三角部分，而
- * $R$ 则存储在上三角部分。 $v_i$ 向量和 $R$
- * 矩阵现在发生了冲突，因为它们都想使用矩阵的对角线条目，但我们当然只能在这些位置存储一个。因此，
- * $(v_i)_i$ 的条目被单独存储在`对角线`成员变量中。
+ * This class computes the QR-decomposition of given matrix by the
+ * Householder algorithm. Then, the function least_squares() can be
+ * used to compute the vector $x$ minimizing $\|Ax-b\|$ for a given
+ * vector $b$. The QR decomposition of $A$ is useful for this purpose
+ * because the minimizer is given by the equation
+ * $x=(A^TA)^{-1}A^Tb=(R^TQ^TQR)^{-1}R^TQ^Tb$ which is easy to compute
+ * because $Q$ is an orthogonal matrix, and consequently
+ * $Q^TQ=I$. Thus,
+ * $x=(R^TR)^{-1}R^TQ^Tb=R^{-1}R^{-T}R^TQ^Tb=R^{-1}Q^Tb$. Furthermore,
+ * $R$ is triangular, so applying $R^{-1}$ to a vector only involves a
+ * backward or forward solve.
  *
  *
- * @note
- * 这个模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
- * 其他的可以在应用程序中生成（见手册中的 @ref
- * Instantiations 部分）。
+ * <h3>Implementation details</h3>
  *
+ * The class does not in fact store the $Q$ and $R$ factors explicitly
+ * as matrices. It does store $R$, but the $Q$ factor is stored as the
+ * product of Householder reflections of the form $Q_i = I-v_i v_i^T$
+ * where the vectors $v_i$ are so that they can be stored in the
+ * lower-triangular part of an underlying matrix object, whereas $R$
+ * is stored in the upper triangular part.
  *
+ * The $v_i$ vectors and the $R$ matrix now are in conflict because they
+ * both want to use the diagonal entry of the matrix, but we can only
+ * store one in these positions, of course. Consequently, the entries
+ * $(v_i)_i$ are stored separately in the `diagonal` member variable.
+ *
+ * @note Instantiations for this template are provided for <tt>@<float@> and
+ * @<double@></tt>; others can be generated in application programs (see the
+ * section on
+ * @ref Instantiations
+ * in the manual).
  */
 template <typename number>
 class Householder
 {
 public:
   /**
-   * 声明容器尺寸类型的类型。
-   *
+   * Declare type of container size type.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 创建一个空对象。
-   *
+   * Create an empty object.
    */
   Householder() = default;
 
   /**
-   * 创建一个持有矩阵的QR分解的对象  $A$  。
-   *
+   * Create an object holding the QR-decomposition of the matrix $A$.
    */
   template <typename number2>
   Householder(const FullMatrix<number2> &A);
 
   /**
-   * 计算给定矩阵的QR分解  $A$  。
-   * 这将覆盖任何先前计算的QR分解。
+   * Compute the QR-decomposition of the given matrix $A$.
    *
+   * This overwrites any previously computed QR decomposition.
    */
   template <typename number2>
   void
   initialize(const FullMatrix<number2> &A);
 
   /**
-   * 解决右手边<tt>src</tt>的最小二乘法问题。返回的标量值是近似误差的欧几里得准则。
-   * @arg   @c  dst包含返回的最小二乘问题的解。      @arg   @c
-   * src包含最小二乘法问题的右手边<i>b</i>。它将在算法过程中被改变，在返回时无法使用。
+   * Solve the least-squares problem for the right hand side <tt>src</tt>. The
+   * returned scalar value is the Euclidean norm of the approximation error.
    *
+   * @arg @c dst contains the solution of the least squares problem on return.
+   *
+   * @arg @c src contains the right hand side <i>b</i> of the least squares
+   * problem. It will be changed during the algorithm and is unusable on
+   * return.
    */
   template <typename number2>
   double
   least_squares(Vector<number2> &dst, const Vector<number2> &src) const;
 
   /**
-   * 这个函数与前一个函数的作用相同，但对BlockVectors而言。
-   *
+   * This function does the same as the previous one, but for BlockVectors.
    */
   template <typename number2>
   double
@@ -123,16 +127,16 @@ public:
                 const BlockVector<number2> &src) const;
 
   /**
-   * 一个对least_squares()的包装器，实现了标准的MatrixType接口。
-   *
+   * A wrapper to least_squares(), implementing the standard MatrixType
+   * interface.
    */
   template <class VectorType>
   void
   vmult(VectorType &dst, const VectorType &src) const;
 
   /**
-   * 一个对least_squares()的封装器，实现了与转置矩阵的乘法。
-   *
+   * A wrapper to least_squares() that implements multiplication with
+   * the transpose matrix.
    */
   template <class VectorType>
   void
@@ -141,22 +145,21 @@ public:
 
 private:
   /**
-   * 存储正交变换的对角线元素。更多信息请参见类文件。
-   *
+   * Storage for the diagonal elements of the orthogonal
+   * transformation. See the class documentation for more information.
    */
   std::vector<number> diagonal;
 
   /**
-   * 内部用于Householder变换的存储。
-   *
+   * Storage that is internally used for the Householder transformation.
    */
   FullMatrix<double> storage;
 };
 
- /*@}*/ 
+/*@}*/
 
 #ifndef DOXYGEN
- /*-------------------------Inline functions -------------------------------*/ 
+/*-------------------------Inline functions -------------------------------*/
 
 // QR-transformation cf. Stoer 1 4.8.2 (p. 191)
 
@@ -349,5 +352,3 @@ Householder<number>::Tvmult(VectorType &, const VectorType &) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

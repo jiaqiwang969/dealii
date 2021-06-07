@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/sparse_decomposition.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -246,3 +247,5 @@ SparseLUDecomposition<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_sparse_decomposition_templates_h
+
+

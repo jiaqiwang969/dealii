@@ -1,3 +1,4 @@
+//include/deal.II-translator/matrix_free/mapping_info_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -46,33 +47,33 @@ namespace internal
   namespace MatrixFreeFunctions
   {
     /**
-     * An enum to identify various types of cells and faces. The most general
-     * type is what we typically compute in the FEValues context but for many
-     * geometries we can save significant storage.
-     *
+     * 一个枚举用于识别各种类型的单元和面。最一般的类型是我们通常在FEValues上下文中计算的，但对于许多几何形状，我们可以节省大量的存储空间。
      * @ingroup matrixfree
+     *
      */
     enum GeometryType : unsigned char
     {
       /**
-       * The cell or face is Cartesian.
+       * 单元或面是笛卡尔式的。
+       *
        */
       cartesian = 0,
 
       /**
-       * The cell or face can be described with an affine mapping.
+       * 该单元或面可以用仿生映射来描述。
+       *
        */
       affine = 1,
 
       /**
-       * The face is flat, i.e., the normal factor on a face is the same on
-       * all quadrature points. This type is not assigned for cells.
+       * 面是平的，即面的法线因子在所有正交点上都是相同的。这种类型不分配给单元格。
+       *
        */
       flat_faces = 2,
 
       /**
-       * There is no special information available for compressing the
-       * representation of the object under consideration.
+       * 没有特殊信息可用于压缩所考虑的对象的表示。
+       *
        */
       general = 3
     };
@@ -80,36 +81,11 @@ namespace internal
 
 
     /**
-     * Definition of a structure that stores all cached data related to the
-     * evaluated geometry from the mapping. In order to support hp-adaptivity
-     * and compressed storage (in particular for Jacobians, JxW values, and
-     * normals), storage length can be different for different rows. Thus, it
-     * allows to jump at the data of individual rows similar to compressed row
-     * storage in sparse matrices. We have two different start indices for
-     * fields with different sizes. The first category of offsets are the
-     * indices for Jacobians of the transformation from unit to real cell (we
-     * store the inverse Jacobian), second derivatives, JxW values, and normal
-     * vectors. We keep separate arrays for all these data structures because
-     * a user code might access only some of them. In such a case, one array
-     * will be gone through in a contiguous order with access to all entries,
-     * which makes it easy for the processor to prefetch data. Having all data
-     * in a single array would require some strides in the access pattern,
-     * which is much more complicated for the processor to predict (and indeed
-     * leads to prefetching of data that does not get used on Intel processors
-     * such as BroadwellEP).
-     *
-     * The second category of indices are the offsets for the quadrature
-     * points. Quadrature points can be compressed less than the other fields
-     * and thus need longer fields. Quadrature point indices are often used in
-     * other contexts such as evaluation of right hand sides.
-     *
-     * The third component is a descriptor of data from the unit cells, called
-     * QuadratureDescriptor, which contains the quadrature weights and
-     * permutations of how to go through quadrature points in case of face
-     * data. The latter comes in a vector for the support of hp-adaptivity,
-     * with several data fields for the individual quadrature formulas.
-     *
+     * 定义一个结构，存储所有与来自映射的评估几何体有关的缓存数据。为了支持hp-adaptivity和压缩存储（特别是对于Jacobian、JxW值和法线），不同行的存储长度可以不同。因此，它允许在单个行的数据上进行跳跃，类似于稀疏矩阵中的压缩行存储。对于不同大小的字段，我们有两种不同的起始索引。第一类偏移是单位到实数单元转换的雅各布指数（我们存储逆雅各布）、二阶导数、JxW值和法向量的指数。我们为所有这些数据结构保留单独的数组，因为用户代码可能只访问其中的一部分。在这种情况下，一个数组将以连续的顺序访问所有条目，这使得处理器很容易预取数据。如果将所有数据放在一个数组中，就需要在访问模式上有一些跨度，这对处理器来说，预测起来要复杂得多（而且确实导致了在英特尔处理器（如BroadwellEP）上不使用的数据的预取）。
+     * 第二类指数是正交点的偏移量。正交点可以比其他字段压缩得更少，因此需要更长的字段。正交点指数经常被用于其他场合，如评估右手边的情况。
+     * 第三个组件是来自单元格的数据描述符，称为QuadratureDescriptor，它包含正交权重和在脸部数据的情况下如何通过正交点的排列组合。后者是支持hp-adaptivity的向量，有几个数据字段用于各个正交公式。
      * @ingroup matrixfree
+     *
      */
     template <int structdim,
               int spacedim,
@@ -124,12 +100,14 @@ namespace internal
       struct QuadratureDescriptor
       {
         /**
-         * Constructor. Does nothing.
+         * 构造函数。不做任何事情。
+         *
          */
         QuadratureDescriptor();
 
         /**
-         * Set up the lengths in the various members of this struct.
+         * 设置此结构的各个成员中的长度。
+         *
          */
         template <int dim_q>
         void
@@ -137,125 +115,109 @@ namespace internal
                    const UpdateFlags update_flags_inner_faces = update_default);
 
         /**
-         * Set up the lengths in the various members of this struct.
+         * 设置这个结构的各个成员的长度。
+         *
          */
         void
         initialize(const Quadrature<1> &quadrature_1d,
                    const UpdateFlags update_flags_inner_faces = update_default);
 
         /**
-         * Returns the memory consumption in bytes.
+         * 返回以字节为单位的内存消耗。
+         *
          */
         std::size_t
         memory_consumption() const;
 
         /**
-         * Number of quadrature points applied on the given cell or face.
+         * 应用在给定单元或面的正交点的数量。
+         *
          */
         unsigned int n_q_points;
 
         /**
-         * Original one-dimensional quadrature formula applied on the given
-         * cell or face.
+         * 应用在给定单元格或面的原始一维正交公式。
+         *
          */
         Quadrature<1> quadrature_1d;
 
         /**
-         * Quadrature formula applied on the given cell or face.
+         * 应用于给定单元格或面的正交公式。
+         *
          */
         Quadrature<structdim> quadrature;
 
         /**
-         * Quadrature weights separated by dimension for use in specific
-         * situations.
+         * 按尺寸分开的正交权重，用于特定情况。
+         *
          */
         std::array<AlignedVector<Number>, structdim> tensor_quadrature_weights;
 
         /**
-         * A cached vector of quadrature weights in the given number format
-         * (non-vectorized, as it is cheap to broadcast the value to all lanes
-         * when it is used in a vectorized context).
+         * 以给定的数字格式缓存的正交权重向量（非矢量化，因为在矢量化的情况下使用该值时，向所有车道广播的成本很低）。
+         *
          */
         AlignedVector<Number> quadrature_weights;
 
         /**
-         * For quadrature on faces, the evaluation of basis functions is not
-         * in the correct order if a face is not in the standard orientation
-         * to a given element. This data structure is used to re-order the
-         * data evaluated on quadrature points to represent the correct order.
+         * 对于面的正交，如果一个面不在给定元素的标准方向上，基函数的评估就没有正确的顺序。这个数据结构用于重新排列在正交点上评估的数据，以表示正确的顺序。
+         *
          */
         dealii::Table<2, unsigned int> face_orientations;
       };
 
       /**
-       * A class describing the layout of the sections in the @p data_storage
-       * field and also includes some data that depends on the number of
-       * quadrature points in the hp-context such as the inner quadrature
-       * formula and re-indexing for faces that are not in the standard
-       * orientation.
+       * 一个描述 @p data_storage
+       * 字段的布局的类，还包括一些取决于hp-context中正交点数量的数据，如内部正交公式和对不在标准方向上的面的重新索引。
+       *
        */
       std::vector<QuadratureDescriptor> descriptor;
 
       /**
-       * Collection of quadrature formulae applied on the given face.
+       * 应用于给定面的正交公式的集合。
+       * @note 只对面填充，因为面可能是四边形或三角形的。
        *
-       * @note Only filled for faces, since faces might be quadrilateral or
-       *   triangle shaped.
        */
       std::vector<dealii::hp::QCollection<structdim>> q_collection;
 
       /**
-       * Stores the index offset into the arrays @p jxw_values, @p jacobians,
-       * @p normal_vectors and the second derivatives. Note that affine cells
-       * have shorter fields of length 1, where the others have lengths equal
-       * to the number of quadrature points of the given cell.
+       * 存储索引偏移到数组 @p jxw_values,   @p jacobians,   @p
+       * normal_vectors
+       * 和二次导数。请注意，仿生单元的长度为1，其他单元的长度等于给定单元的正交点的数量。
+       *
        */
       AlignedVector<unsigned int> data_index_offsets;
 
       /**
-       * The storage of the Jacobian determinant (times the quadrature weight
-       * in case the transformation is non-affine) on quadrature
-       * points.
+       * 正交点上的雅各布行列式（在变换为非正交的情况下乘以正交权重）的存储。
+       * 以 @p data_index_offsets. 为索引。
        *
-       * Indexed by @p data_index_offsets.
        */
       AlignedVector<VectorizedArrayType> JxW_values;
 
       /**
-       * Stores the normal vectors.
+       * 存储法向量。            以 @p data_index_offsets. 为索引。
        *
-       * Indexed by @p data_index_offsets.
        */
       AlignedVector<Tensor<1, spacedim, VectorizedArrayType>> normal_vectors;
 
       /**
-       * The storage of covariant transformation on quadrature points, i.e.,
-       * the inverse and transposed Jacobians of the transformation from the
-       * unit to the real cell.
+       * 存储正交点上的协变变换，即从单位单元到实数单元的变换的逆和转置的雅各布系数。
+       * 索引为  @p data_index_offsets.
+       * 包含两个字段，用于从两侧访问内部面，但默认情况下（单元格积分或边界积分）只填充第2个分量，忽略第一个分量。
        *
-       * Indexed by @p data_index_offsets.
-       *
-       * Contains two fields for access from both sides for interior faces,
-       * but the default case (cell integrals or boundary integrals) only
-       * fills the zeroth component and ignores the first one.
        */
       std::array<AlignedVector<Tensor<2, spacedim, VectorizedArrayType>>, 2>
         jacobians;
 
       /**
-       * The storage of the gradients of the inverse Jacobian
-       * transformation. Because of symmetry, only the upper diagonal and
-       * diagonal part are needed. The first index runs through the
-       * derivatives, starting with the diagonal and then continuing row-wise,
-       * i.e., $\partial^2/\partial x_1 \partial x_2$ first, then
-       * $\partial^2/\partial x_1 \partial x_3$, and so on. The second index
-       * is the spatial coordinate.
+       * 反雅各布变换的梯度的存储。由于对称性，只需要上对角线和对角线部分。第一个索引贯穿导数，从对角线开始，然后逐行进行，即先是
+       * $\partial^2/\partial x_1 \partial x_2$ ，然后是
+       * $\partial^2/\partial x_1 \partial x_3$
+       * ，以此类推。第二个索引是空间坐标。
+       * 索引为  @p data_index_offsets.
+       * 包含两个字段，用于从两侧访问内部面，但默认情况下（单元格积分或边界积分）只填充第2个分量，忽略第一个分量。
        *
-       * Indexed by @p data_index_offsets.
-       *
-       * Contains two fields for access from both sides for interior faces,
-       * but the default case (cell integrals or boundary integrals) only
-       * fills the zeroth component and ignores the first one.
        */
       std::array<
         AlignedVector<Tensor<1,
@@ -265,50 +227,44 @@ namespace internal
         jacobian_gradients;
 
       /**
-       * Stores the Jacobian transformations times the normal vector (this
-       * represents a shortcut that is accessed often and can thus get higher
-       * performance).
+       * 存储雅各布变换乘以法向量（这代表一个经常访问的快捷方式，因此可以获得更高的性能）。
+       * 以 @p data_index_offsets. 为索引。
        *
-       * Indexed by @p data_index_offsets.
        */
       std::array<AlignedVector<Tensor<1, spacedim, VectorizedArrayType>>, 2>
         normals_times_jacobians;
 
       /**
-       * Stores the index offset of a particular cell into the quadrature
-       * points array in real coordinates. Note that Cartesian cells have
-       * shorter fields (length is @p n_q_points_1d) than non-Cartesian cells
-       * (length is @p n_q_points) or faces.
+       * 将某一单元的索引偏移量以实数坐标存储到正交点阵列中。请注意，直角坐标单元比非直角坐标单元（长度为
+       * @p n_q_points_1d) 或面。
+       *
        */
       AlignedVector<unsigned int> quadrature_point_offsets;
 
       /**
-       * Stores the quadrature points in real coordinates, including a
-       * compression scheme for Cartesian cells where we do not need to store
-       * the full data on all points.
+       * 以实坐标存储正交点，包括直角坐标单元的压缩方案，我们不需要存储所有点的完整数据。
+       * 以 @p quadrature_point_offsets. 为索引。
        *
-       * Indexed by @p quadrature_point_offsets.
        */
       AlignedVector<Point<spacedim, VectorizedArrayType>> quadrature_points;
 
       /**
-       * Clears all data fields except the descriptor vector.
+       * 清除除描述符向量之外的所有数据字段。
+       *
        */
       void
       clear_data_fields();
 
       /**
-       * Returns the quadrature index for a given number of quadrature
-       * points. If not in hp-mode or if the index is not found, this
-       * function always returns index 0. Hence, this function does not
-       * check whether the given degree is actually present.
+       * 返回给定数量的正交点的正交指数。如果不是在hp模式下或者没有找到索引，这个函数总是返回索引0。因此，这个函数不检查给定的度数是否真的存在。
+       *
        */
       unsigned int
       quad_index_from_n_q_points(const unsigned int n_q_points) const;
 
       /**
-       * Prints a detailed summary of memory consumption in the different
-       * structures of this class to the given output stream.
+       * 在给定的输出流中打印该类不同结构的内存消耗的详细摘要。
+       *
        */
       template <typename StreamType>
       void
@@ -316,7 +272,8 @@ namespace internal
                                const TaskInfo &task_info) const;
 
       /**
-       * Returns the memory consumption in bytes.
+       * 返回以字节为单位的内存消耗。
+       *
        */
       std::size_t
       memory_consumption() const;
@@ -325,21 +282,18 @@ namespace internal
 
 
     /**
-     * The class that stores all geometry-dependent data related with cell
-     * interiors for use in the matrix-free class.
-     *
+     * 存储所有与单元格内部相关的几何数据的类，以便在无矩阵类中使用。
      * @ingroup matrixfree
+     *
      */
     template <int dim, typename Number, typename VectorizedArrayType>
     struct MappingInfo
     {
       /**
-       * Compute the information in the given cells and faces. The cells are
-       * specified by the level and the index within the level (as given by
-       * CellIterator::level() and CellIterator::index(), in order to allow
-       * for different kinds of iterators, e.g. standard DoFHandler,
-       * multigrid, etc.)  on a fixed Triangulation. In addition, a mapping
-       * and several 1D quadrature formulas are given.
+       * 计算给定单元和面的信息。单元由层次和层次内的索引指定（如
+       * CellIterator::level() 和 CellIterator::index(),
+       * 给出的，以允许不同种类的迭代器，如标准DoFHandler、多网格等）在一个固定的三角结构上。此外，还给出了一个映射和几个一维正交公式。
+       *
        */
       void
       initialize(
@@ -355,10 +309,9 @@ namespace internal
         const UpdateFlags update_flags_faces_by_cells);
 
       /**
-       * Update the information in the given cells and faces that is the
-       * result of a change in the given `mapping` class, keeping the cells,
-       * quadrature formulas and other unknowns unchanged. This call is only
-       * valid if MappingInfo::initialize() has been called before.
+       * 更新给定单元和面的信息，该信息是给定的`映射`类变化的结果，保持单元、正交公式和其他未知数不变。这个调用只有在
+       * MappingInfo::initialize() 之前被调用过才有效。
+       *
        */
       void
       update_mapping(
@@ -369,26 +322,29 @@ namespace internal
         const std::shared_ptr<dealii::hp::MappingCollection<dim>> &mapping);
 
       /**
-       * Return the type of a given cell as detected during initialization.
+       * 返回初始化时检测到的给定单元的类型。
+       *
        */
       GeometryType
       get_cell_type(const unsigned int cell_chunk_no) const;
 
       /**
-       * Clear all data fields in this class.
+       * 清除该类中的所有数据字段。
+       *
        */
       void
       clear();
 
       /**
-       * Return the memory consumption of this class in bytes.
+       * 返回该类的内存消耗，单位为字节。
+       *
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * Prints a detailed summary of memory consumption in the different
-       * structures of this class to the given output stream.
+       * 在给定的输出流中打印出这个类的不同结构的内存消耗的详细摘要。
+       *
        */
       template <typename StreamType>
       void
@@ -396,100 +352,88 @@ namespace internal
                                const TaskInfo &task_info) const;
 
       /**
-       * The given update flags for computing the geometry on the cells.
+       * 给定的更新标志用于计算单元格上的几何图形。
+       *
        */
       UpdateFlags update_flags_cells;
 
       /**
-       * The given update flags for computing the geometry on the boundary
-       * faces.
+       * 给出的用于计算边界面的几何图形的更新标志。
+       *
        */
       UpdateFlags update_flags_boundary_faces;
 
       /**
-       * The given update flags for computing the geometry on the interior
-       * faces.
+       * 给出的用于计算内部面的几何图形的更新标志。
+       *
        */
       UpdateFlags update_flags_inner_faces;
 
       /**
-       * The given update flags for computing the geometry on the faces for
-       * cell-centric loops.
+       * 给出的用于计算以单元格为中心的循环的面的几何图形的更新标志。
+       *
        */
       UpdateFlags update_flags_faces_by_cells;
 
       /**
-       * Stores whether a cell is Cartesian (cell type 0), has constant
-       * transform data (Jacobians) (cell type 1), or is general (cell type
-       * 3). Type 2 is only used for faces and no cells are assigned this
-       * value.
+       * 存储一个单元是否是笛卡尔的（单元类型0），是否有恒定的变换数据（雅各布）（单元类型1），或者是一般的（单元类型3）。类型2仅用于面，没有单元格被分配此值。
+       *
        */
       std::vector<GeometryType> cell_type;
 
       /**
-       * Stores whether a face (and both cells adjacent to the face) is
-       * Cartesian (face type 0), whether it represents an affine situation
-       * (face type 1), whether it is a flat face where the normal vector is
-       * the same throughout the face (face type 2), or is general (face type
-       * 3).
+       * 存储一个面（以及与该面相邻的两个单元）是否是笛卡尔的（面类型0），是否代表一个仿生情况（面类型1），是否是一个平坦的面，法向量在整个面中是相同的（面类型2），或者是一般的（面类型3）。
+       *
        */
       std::vector<GeometryType> face_type;
 
       /**
-       * The data cache for the cells.
+       * 单元的数据缓存。
+       *
        */
       std::vector<MappingInfoStorage<dim, dim, Number, VectorizedArrayType>>
         cell_data;
 
       /**
-       * The data cache for the faces.
+       * 面的数据缓存。
+       *
        */
       std::vector<MappingInfoStorage<dim - 1, dim, Number, VectorizedArrayType>>
         face_data;
 
       /**
-       * The data cache for the face-associated-with-cell topology, following
-       * the @p cell_type variable for the cell types.
+       * 面的数据缓存--与细胞相关的拓扑结构，遵循细胞类型的
+       * @p cell_type 变量。
+       *
        */
       std::vector<MappingInfoStorage<dim - 1, dim, Number, VectorizedArrayType>>
         face_data_by_cells;
 
       /**
-       * The pointer to the underlying hp::MappingCollection object.
+       * 指向底层 hp::MappingCollection 对象的指针。
+       *
        */
       std::shared_ptr<dealii::hp::MappingCollection<dim>> mapping_collection;
 
       /**
-       * The pointer to the first entry of mapping_collection.
+       * 指向mapping_collection的第一个条目的指针。
+       *
        */
       SmartPointer<const Mapping<dim>> mapping;
 
       /**
-       * Reference-cell type related to each quadrature and active quadrature
-       * index.
+       * 与每个正交和活动正交索引相关的参考单元类型。
+       *
        */
       std::vector<std::vector<dealii::ReferenceCell>> reference_cell_types;
 
       /**
-       * Internal function to compute the geometry for the case the mapping is
-       * a MappingQ and a single quadrature formula per slot (non-hp-case) is
-       * used. This method computes all data from the underlying cell
-       * quadrature points using the fast operator evaluation techniques from
-       * the matrix-free framework itself, i.e., it uses a polynomial
-       * description of the cell geometry (that is computed in a first step)
-       * and then computes all Jacobians and normal vectors based on this
-       * information. This optimized approach is much faster than going
-       * through FEValues and FEFaceValues, especially when several different
-       * quadrature formulas are involved, and consumes less memory.
+       * 内部函数，用于计算映射是MappingQ且每个槽使用一个正交公式的情况下的几何图形（非hp情况）。该方法使用无矩阵框架本身的快速算子评估技术计算来自底层单元格正交点的所有数据，也就是说，它使用单元格几何的多项式描述（在第一步计算），然后根据这些信息计算所有雅各布和法向量。这种优化的方法比通过FEValues和FEFaceValues要快得多，特别是当涉及到几个不同的正交公式时，消耗的内存也更少。
+       * @param  tria 用于设置的三角形  @param  cells
+       * 要处理的三角形的实际单元，以级别和级别内索引的元组形式给出，在类的主初始化中使用
+       * @param  faces
+       * 从面到单元的连接描述，在MatrixFree类中填写。
        *
-       * @param tria The triangulation to be used for setup
-       *
-       * @param cells The actual cells of the triangulation to be worked on,
-       * given as a tuple of the level and index within the level as used in
-       * the main initialization of the class
-       *
-       * @param faces The description of the connectivity from faces to cells
-       * as filled in the MatrixFree class
        */
       void
       compute_mapping_q(
@@ -499,8 +443,8 @@ namespace internal
           &faces);
 
       /**
-       * Computes the information in the given cells, called within
-       * initialize.
+       * 计算给定单元中的信息，在初始化中调用。
+       *
        */
       void
       initialize_cells(
@@ -510,8 +454,8 @@ namespace internal
         const dealii::hp::MappingCollection<dim> &mapping);
 
       /**
-       * Computes the information in the given faces, called within
-       * initialize.
+       * 计算给定面的信息，在initialize中调用。
+       *
        */
       void
       initialize_faces(
@@ -523,8 +467,8 @@ namespace internal
         const dealii::hp::MappingCollection<dim> &mapping);
 
       /**
-       * Computes the information in the given faces, called within
-       * initialize.
+       * 计算给定面的信息，在初始化时调用。
+       *
        */
       void
       initialize_faces_by_cells(
@@ -533,8 +477,8 @@ namespace internal
         const dealii::hp::MappingCollection<dim> &                mapping);
 
       /**
-       * Helper function to determine which update flags must be set in the
-       * internal functions to initialize all data as requested by the user.
+       * 帮助函数，确定在内部函数中必须设置哪些更新标志，以便按照用户的要求初始化所有数据。
+       *
        */
       static UpdateFlags
       compute_update_flags(
@@ -546,8 +490,8 @@ namespace internal
 
 
     /**
-     * A helper class to extract either cell or face data from mapping info
-     * for use in FEEvaluationBase.
+     * 一个帮助类，用于从映射信息中提取单元或面孔数据，以便在FEEvaluationBase中使用。
+     *
      */
     template <int, typename, bool, typename>
     struct MappingInfoCellsOrFaces;
@@ -580,15 +524,13 @@ namespace internal
 
 
     /**
-     * A class that is used to compare floating point arrays (e.g. std::vectors,
-     * Tensor<1,dim>, etc.). The idea of this class is to consider two arrays as
-     * equal if they are the same within a given tolerance. We use this
-     * comparator class within a std::map<> of the given arrays. Note that this
-     * comparison operator does not satisfy all the mathematical properties one
-     * usually wants to have (consider e.g. the numbers a=0, b=0.1, c=0.2 with
-     * tolerance 0.15; the operator gives a<c, but neither a<b? nor b<c? is
-     * satisfied). This is not a problem in the use cases for this class, but be
-     * careful when using it in other contexts.
+     * 一个用于比较浮点数组的类（例如： std::vectors,
+     * Tensor<1,dim>，等等）。这个类的想法是，如果两个数组在一个给定的公差范围内是相同的，就认为它们是相等的。我们在给定数组的一个
+     * std::map<>
+     * 内使用这个比较器类。请注意，这个比较器并不满足人们通常想要的所有数学属性（考虑例如数字a=0,
+     * b=0.1,
+     * c=0.2，公差为0.15；该运算器给出a<c，但既不满足a<b?也不满足b<c?）。这在这个类的用例中不是问题，但在其他情况下使用它时要小心。
+     *
      */
     template <typename Number,
               typename VectorizedArrayType = VectorizedArray<Number>>
@@ -597,15 +539,16 @@ namespace internal
       FPArrayComparator(const Number scaling);
 
       /**
-       * Compare two vectors of numbers (not necessarily of the same length)
+       * 比较两个数字向量（不一定是相同长度的）。
+       *
        */
       bool
       operator()(const std::vector<Number> &v1,
                  const std::vector<Number> &v2) const;
 
       /**
-       * Compare two vectorized arrays (stored as tensors to avoid alignment
-       * issues).
+       * 比较两个向量的数组（存储为张量，以避免对齐问题）。
+       *
        */
       bool
       operator()(
@@ -613,8 +556,8 @@ namespace internal
         const Tensor<1, VectorizedArrayType::size(), Number> &t2) const;
 
       /**
-       * Compare two rank-1 tensors of vectorized arrays (stored as tensors to
-       * avoid alignment issues).
+       * 比较两个向量数组的秩-1张量（存储为张量，以避免对齐问题）。
+       *
        */
       template <int dim>
       bool
@@ -625,8 +568,8 @@ namespace internal
           &t2) const;
 
       /**
-       * Compare two rank-2 tensors of vectorized arrays (stored as tensors to
-       * avoid alignment issues).
+       * 比较向量数组的两个秩-2张量（存储为张量，以避免对齐问题）。
+       *
        */
       template <int dim>
       bool
@@ -637,7 +580,8 @@ namespace internal
           &t2) const;
 
       /**
-       * Compare two arrays of tensors.
+       * 比较两个数组的张量。
+       *
        */
       template <int dim>
       bool
@@ -649,7 +593,7 @@ namespace internal
 
 
 
-    /* ------------------- inline functions ----------------------------- */
+     /* ------------------- inline functions ----------------------------- */ 
 
     template <int structdim,
               int spacedim,
@@ -682,3 +626,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

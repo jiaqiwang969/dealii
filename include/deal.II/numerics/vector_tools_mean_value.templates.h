@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/vector_tools_mean_value.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -210,5 +209,3 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_mean_value_templates_h
-
-

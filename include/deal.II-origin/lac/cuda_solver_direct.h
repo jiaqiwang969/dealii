@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/cuda_solver_direct_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -30,54 +31,52 @@ DEAL_II_NAMESPACE_OPEN
 namespace CUDAWrappers
 {
   /**
-   * Direct solvers. These solvers call cuSOLVER underneath.
-   *
-   * @note Instantiations for this template are provided for <tt>@<float@></tt>
-   * and <tt>@<double@></tt>.
-   *
+   * 直接求解器。这些求解器在下面调用cuSOLVER。
+   * @note  此模板的实例化提供给<tt>  @<float@></tt>  和 <tt>
+   * @<double@></tt>.  。
    * @ingroup CUDAWrappers
+   *
    */
   template <typename Number>
   class SolverDirect
   {
   public:
     /**
-     * Struct for additional settings for SolverDirect.
+     * 用于SolverDirect额外设置的结构。
+     *
      */
     struct AdditionalData
     {
       /**
-       * Set the additional data field to the desired solver.
+       * 将附加数据字段设置为所需的解算器。
+       *
        */
       explicit AdditionalData(const std::string &solver_type = "LU_dense");
 
       /**
-       * Set the solver type. Possibilities are:
-       * <ul>
-       * <li> "Cholesky" which performs a Cholesky decomposition on the device
-       * </li>
-       * <li> "LU_dense" which converts the sparse matrix to a dense
-       * matrix and uses LU factorization </li>
-       * <li> "LU_host" which uses LU factorization on the host </li>
-       * </ul>
+       * 设置解算器类型。可能的情况是。        <ul>   <li>  "Cholesky"，在设备上执行Cholesky分解  </li>   <li>  "LU_dense"，将稀疏矩阵转换为密集矩阵并使用LU分解  </li>   <li>  "LU_host"，在主机上使用LU分解  </li>   </ul>  。
+       *
        */
       std::string solver_type;
     };
 
     /**
-     * Constructor. Takes the solver control object and creates the solver.
+     * 构造函数。接受求解器控制对象并创建求解器。
+     *
      */
     SolverDirect(const Utilities::CUDA::Handle &handle,
                  SolverControl &                cn,
                  const AdditionalData &         data = AdditionalData());
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     virtual ~SolverDirect() = default;
 
     /**
-     * Solve the linear system <tt>Ax=b</tt>.
+     * 解决线性系统<tt>Ax=b</tt>。
+     *
      */
     void
     solve(const SparseMatrix<Number> &                       A,
@@ -85,27 +84,28 @@ namespace CUDAWrappers
           const LinearAlgebra::CUDAWrappers::Vector<Number> &b);
 
     /**
-     * Access to object that controls convergence.
+     * 访问控制收敛的对象。
+     *
      */
     SolverControl &
     control() const;
 
   private:
     /**
-     * Handle
+     * 处理
+     *
      */
     const Utilities::CUDA::Handle &cuda_handle;
 
     /**
-     * Reference to the object that controls convergence of the iterative
-     * solver. In fact, for these CUDA wrappers, cuSOLVER and cuSPARSE do so
-     * themselves, but we copy the data from this object before starting the
-     * solution process, and copy the data back into it afterwards.
+     * 对控制迭代求解器收敛的对象的引用。事实上，对于这些CUDA封装器来说，cuSOLVER和cuSPARSE本身就是这样做的，但是我们在开始求解过程之前从这个对象中复制数据，之后再将数据复制回这个对象中。
+     *
      */
     SolverControl &solver_control;
 
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
   };
@@ -116,3 +116,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

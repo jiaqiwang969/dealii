@@ -1,3 +1,4 @@
+//include/deal.II-translator/distributed/p4est_wrappers_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -57,11 +58,10 @@ namespace internal
   namespace p4est
   {
     /**
-     * A structure whose explicit specializations contain alias to the
-     * relevant p4est_* and p8est_* types. Using this structure, for example
-     * by saying <tt>types<dim>::connectivity</tt> we can write code in a
-     * dimension independent way, either referring to p4est_connectivity_t or
-     * p8est_connectivity_t, depending on template argument.
+     * 一个结构，其明确的特殊化包含了对相关p4est_*和p8est_*类型的别名。使用这个结构，比如说通过说
+     * <tt>types<dim>::connectivity</tt>
+     * ，我们可以以独立于维度的方式编写代码，根据模板参数，可以引用p4est_connectivity_t或者p8est_connectivity_t。
+     *
      */
     template <int>
     struct types;
@@ -113,11 +113,10 @@ namespace internal
 
 
     /**
-     * A structure whose explicit specializations contain pointers to the
-     * relevant p4est_* and p8est_* functions. Using this structure, for
-     * example by saying functions<dim>::quadrant_compare, we can write code
-     * in a dimension independent way, either calling p4est_quadrant_compare
-     * or p8est_quadrant_compare, depending on template argument.
+     * 一个结构，其明确的专业化包含指向相关p4est_*和p8est_*函数的指针。使用这个结构，例如说
+     * functions<dim>::quadrant_compare,
+     * 我们可以以独立于维度的方式编写代码，可以调用p4est_quadrant_compare或者p8est_quadrant_compare，取决于模板参数。
+     *
      */
     template <int dim>
     struct functions;
@@ -495,10 +494,8 @@ namespace internal
 
 
     /**
-     * This struct templatizes the p4est iterate structs and function
-     * prototypes, which are used to execute callback functions for faces,
-     * edges, and corners that require local neighborhood information, i.e.
-     * the neighboring cells
+     * 该结构模板化了p4est迭代结构和函数原型，用于执行面、边和角的回调函数，这些函数需要本地邻域信息，即相邻的单元格。
+     *
      */
     template <int dim>
     struct iter;
@@ -531,8 +528,9 @@ namespace internal
 
 
     /**
-     * Initialize the GeometryInfo<dim>::max_children_per_cell children of the
-     * cell p4est_cell.
+     * 初始化单元格p4est_cell的
+     * GeometryInfo<dim>::max_children_per_cell 子女。
+     *
      */
     template <int dim>
     void
@@ -544,7 +542,8 @@ namespace internal
 
 
     /**
-     * Initialize quadrant to represent a coarse cell.
+     * 初始化象限以代表粗略的单元。
+     *
      */
     template <int dim>
     void
@@ -553,7 +552,8 @@ namespace internal
 
 
     /**
-     * Return whether q1 and q2 are equal
+     * 返回q1和q2是否相等
+     *
      */
     template <int dim>
     bool
@@ -563,7 +563,8 @@ namespace internal
 
 
     /**
-     * Return whether q1 is an ancestor of q2
+     * 返回q1是否是q2的祖先
+     *
      */
     template <int dim>
     bool
@@ -573,7 +574,8 @@ namespace internal
 
 
     /**
-     * Return whether the children of a coarse cell are stored locally
+     * 返回粗略的单元格的子代是否被存储在本地
+     *
      */
     template <int dim>
     bool
@@ -582,7 +584,8 @@ namespace internal
 
 
     /**
-     * Deep copy a p4est connectivity object.
+     * 深度复制一个p4est连接对象。
+     *
      */
     template <int dim>
     typename types<dim>::connectivity *
@@ -605,3 +608,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_P4EST
 
 #endif // dealii_p4est_wrappers_h
+
+

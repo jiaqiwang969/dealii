@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/bounding_box_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -26,171 +27,172 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * The enumerator NeighborType describes the neighboring relation between
- * two bounding boxes.
+ * 枚举器NeighborType描述了两个界线盒之间的相邻关系。
+ *
+ *
  */
 enum class NeighborType
 {
   /**
-   * Not neighbors: the intersection is empty.
+   * 不相邻：相交处为空。
+   *
    */
   not_neighbors = 0,
 
   /**
-   * Simple neighbors: the boxes intersect with an intersection of dimension at
-   * most `spacedim - 2`. For example, in 2d this means that the two boxes
-   * touch at one corner of the each box.
+   * 简单相邻：盒子与一个维度最多为`spacedim的交点相交。
+   *
+   * - 2`. 例如，在2d中，这意味着两个盒子在每个盒子的一个角上相接触。
+   *
    */
   simple_neighbors = 1,
 
   /**
-   * Attached neighbors: neighbors with an intersection of
-   * `dimension > spacedim - 2`. For example, in 2d this means that the two
-   * boxes touch along an edge.
+   * 附着的邻居：与`维度>spacedim的相交的邻居
+   *
+   * - 2`. 例如，在2d中，这意味着两个盒子沿着一条边接触。
+   *
    */
   attached_neighbors = 2,
 
   /**
-   * Mergeable neighbors: neighbors which can be expressed with a single
-   * BoundingBox, e.g.
-   *  @code
-   *  .--V--W    .-----V
-   *  |  |  | =  |     |
-   *  V--W--.    V-----.
-   *  @endcode
-   * or one is inside the other
+   * 可合并的邻居：可以用一个BoundingBox来表示的邻居，比如说
+   * @code
+   * .--V--W    .-----V
+   * |  |  | =  |     |
+   * V--W--.    V-----.
+   * @endcode
+   * 或者一个在另一个里面
+   *
    */
   mergeable_neighbors = 3
 };
 
 /**
- * A class that represents a box of arbitrary dimension <tt>spacedim</tt> and
- * with sides parallel to the coordinate axes, that is, a region
- *
+ * 一个表示任意尺寸<tt>spacedim</tt>且边与坐标轴平行的盒子的类，也就是一个区域
  * @f[
  * [x_0^L, x_0^U] \times ... \times [x_{spacedim-1}^L, x_{spacedim-1}^U],
  * @f]
+ * 其中 $(x_0^L , ..., x_{spacedim-1}^L) and $  (x_0^U , ...,
+ * x_{spacedim-1}^U)表示两个顶点（左下和右上），用于表示盒子。
+ * 从几何学上看，一个边界盒就是这样。
  *
- * where $(x_0^L , ..., x_{spacedim-1}^L) and $(x_0^U , ..., x_{spacedim-1}^U)
- * denote the two vertices (bottom left and top right) which are used to
- * represent the box.
  *
- * Geometrically, a bounding box is thus:
- * - 1D: a segment (represented by its vertices in the proper order)
- * - 2D: a rectangle (represented by the vertices V at bottom left, top right)
+ *
+ * - 1D：一个线段（由其顶点按适当顺序表示
+ *
+ *
+ *
+ * - 二维：一个长方形（由左下角和右上角的顶点V代表）。
+ *
  * @code
  * .--------V
  * |        |
  * V--------.
  * @endcode
  *
- * - 3D: a cuboid (in which case the two vertices V follow the convention and
- * are not owned by the same face)
+ *
+ *
+ *
+ * - 三维：长方体（在这种情况下，两个顶点V遵循惯例，不属于同一个面）。
+ *
  * @code
- *   .------V
- *  /      /|
+ * .------V
+ * /      /|
  * .------. |
  * |      | /
  * |      |/
  * V------.
  * @endcode
  *
- * Bounding boxes are, for example, useful in parallel distributed meshes to
- * give a general description of the owners of each portion of the mesh.
+ * 例如，边界盒在平行分布的网格中很有用，可以对网格的每一部分的所有者进行一般描述。
+ * 将BoundingBox<spacedim>的横截面与给定的方向正交，可以得到一个低一维的盒子：BoundingBox<spacedim
  *
- * Taking the cross section of a BoundingBox<spacedim> orthogonal to a given
- * direction gives a box in one dimension lower: BoundingBox<spacedim - 1>.
- * In 3D, the 2 coordinates of the cross section of BoundingBox<3> can be
- * ordered in 2 different ways. That is, if we take the cross section orthogonal
- * to the y direction we could either order a 3D-coordinate into a
- * 2D-coordinate as $(x,z)$ or as $(z,x)$. This class uses the second
- * convention, corresponding to the coordinates being ordered cyclicly
- * $x \rightarrow y \rightarrow z \rightarrow x \rightarrow ... $
- * To be precise, if we take a cross section:
+ * - 1>. 在三维中，BoundingBox<3>横截面的两个坐标可以用两种不同的方式排序。也就是说，如果我们将横截面与y方向正交，我们可以将3D坐标排序为 $(x,z)$ 或 $(z,x)$  的2D坐标。本类使用第二种约定，对应于坐标的循环排序 $x \rightarrow y \rightarrow z \rightarrow x \rightarrow ... $  准确地说，如果我们取一个横截面。
+ * 正交于 * 横截面坐标排序为 |
+ * |:-------------:|:------------------------------------:| | x | (y, z) | y |
+ * (z, x) | z | (x, y) 这是根据函数
+ * <code>coordinate_to_one_dim_higher</code> 所设定的惯例。
  *
- * | Orthogonal to | Cross section coordinates ordered as |
- * |:-------------:|:------------------------------------:|
- * |      x        |               (y, z)                 |
- * |      y        |               (z, x)                 |
- * |      z        |               (x, y)                 |
  *
- * This is according to the convention set by the function
- * <code>coordinate_to_one_dim_higher</code>.
  */
 template <int spacedim, typename Number = double>
 class BoundingBox
 {
 public:
   /**
-   * Standard constructor. Creates an object that corresponds to an empty box,
-   * i.e. a degenerate box with both points being the origin.
+   * 标准构造函数。创建一个对应于空盒子的对象，即一个两点都是原点的退化盒子。
+   *
    */
   BoundingBox() = default;
 
   /**
-   * Standard constructor for non-empty boxes: it uses a pair of points
-   * which describe the box: one for the bottom and one for the top
-   * corner.
+   * 非空盒子的标准构造函数：它使用一对描述盒子的点：一个是底角，一个是顶角。
+   *
    */
   BoundingBox(const std::pair<Point<spacedim, Number>, Point<spacedim, Number>>
                 &boundary_points);
 
   /**
-   * Construct the bounding box that encloses all the points in the given
-   * container.
+   * 构建包围给定容器中所有点的包围盒。
+   * 该构造函数支持任何为Point<spacedim,
+   * Number>元素提供begin()和end()遍历器的容器。
    *
-   * The constructor supports any Container that provides begin() and end()
-   * iterators to Point<spacedim, Number> elements.
    */
   template <class Container>
   BoundingBox(const Container &points);
 
   /**
-   * Return a reference to the boundary_points
+   * 返回一个对边界点的引用
+   *
    */
   std::pair<Point<spacedim, Number>, Point<spacedim, Number>> &
   get_boundary_points();
 
   /**
-   * Return a const reference to the boundary_points
+   * 返回一个对边界点的常量引用
+   *
    */
   const std::pair<Point<spacedim, Number>, Point<spacedim, Number>> &
   get_boundary_points() const;
 
   /**
-   * Test for equality.
+   * 测试是否相等。
+   *
    */
   bool
   operator==(const BoundingBox<spacedim, Number> &box) const;
 
   /**
-   * Test for inequality.
+   * 测试不等式。
+   *
    */
   bool
   operator!=(const BoundingBox<spacedim, Number> &box) const;
 
   /**
-   * Check if the current object and @p other_bbox are neighbors, i.e. if the boxes
-   * have dimension spacedim, check if their intersection is non empty.
+   * 检查当前对象和 @p other_bbox
+   * 是否为邻居，也就是说，如果盒子的尺寸为spacedim，检查它们的交集是否为非空。
+   * 返回一个NeighborType类型的枚举器。
    *
-   * Return an enumerator of type NeighborType.
    */
   NeighborType
   get_neighbor_type(const BoundingBox<spacedim, Number> &other_bbox) const;
 
   /**
-   * Enlarge the current object so that it contains @p other_bbox .
-   * If the current object already contains @p other_bbox then it is not changed
-   * by this function.
+   * 扩大当前对象，使其包含  @p other_bbox  。
+   * 如果当前对象已经包含 @p other_bbox
+   * ，那么它不会被这个函数所改变。
+   *
    */
   void
   merge_with(const BoundingBox<spacedim, Number> &other_bbox);
 
   /**
-   * Return true if the point is inside the Bounding Box, false otherwise. The
-   * parameter @p tolerance is a factor by which the bounding box is enlarged
-   * relative to the dimensions of the bounding box in order to determine in a
-   * numerically robust way whether the point is inside.
+   * 如果点在包围盒内，返回真，否则返回假。参数 @p
+   * tolerance
+   * 是一个系数，相对于包围盒的尺寸来说，包围盒被放大了，以便以一种数字上稳健的方式确定该点是否在里面。
+   *
    */
   bool
   point_inside(
@@ -198,104 +200,109 @@ public:
     const double tolerance = std::numeric_limits<Number>::epsilon()) const;
 
   /**
-   * Increase (or decrease) the size of the bounding box by the given amount.
-   * After calling this method, the lower left corner of the bounding box will
-   * have each coordinate decreased by @p amount, and the upper right corner
-   * of the bounding box will have each coordinate increased by @p amount.
+   * 按给定的数量增加（或减少）边界框的大小。
+   * 调用此方法后，边界框的左下角的每个坐标将减少 @p
+   * amount, ，边界框的右上角的每个坐标将增加 @p amount.
+   * 如果你用一个负数调用此方法，并且原始边界框的一个轴小于
+   * amount/2，此方法将触发一个断言。
    *
-   * If you call this method with a negative number, and one of the axes of the
-   * original bounding box is smaller than amount/2, the method will trigger
-   * an assertion.
    */
   void
   extend(const Number &amount);
 
   /**
-   * Compute the volume (i.e. the dim-dimensional measure) of the BoundingBox.
+   * 计算BoundingBox的体积（即二维度量）。
+   *
    */
   double
   volume() const;
 
   /**
-   * Returns the point in the center of the box.
+   * 返回盒子中心的点。
+   *
    */
   Point<spacedim, Number>
   center() const;
 
   /**
-   * Returns the side length of the box in @p direction.
+   * 返回盒子的边长，单位是 @p direction. 。
+   *
    */
   Number
   side_length(const unsigned int direction) const;
 
   /**
-   * Return the lower bound of the box in @p direction.
+   * 返回盒子的下限，单位为 @p direction. 。
+   *
    */
   Number
   lower_bound(const unsigned int direction) const;
 
   /**
-   * Return the upper bound of the box in @p direction.
+   * 返回 @p direction. 中的盒子的上界
+   *
    */
   Number
   upper_bound(const unsigned int direction) const;
 
   /**
-   * Return the bounds of the box in @p direction, as a one-dimensional box.
+   * 返回 @p direction,
+   * 中的盒子的边界，作为一个一维的盒子。
+   *
    */
   BoundingBox<1, Number>
   bounds(const unsigned int direction) const;
 
   /**
-   * Returns the indexth vertex of the box. Vertex is meant in the same way as
-   * for a cell, so that @p index $\in [0, 2^{\text{dim}} - 1]$.
+   * 返回盒子的第索引顶点。顶点的含义与单元格的含义相同，因此，
+   * @p index   $\in [0, 2^{\text{dim}}
+   *
+   * - 1]$  .
+   *
    */
   Point<spacedim, Number>
   vertex(const unsigned int index) const;
 
   /**
-   * Returns the indexth child of the box. Child is meant in the same way as for
-   * a cell.
+   * 返回盒子的第1个子节点。子项的含义与单元格的含义相同。
+   *
    */
   BoundingBox<spacedim, Number>
   child(const unsigned int index) const;
 
   /**
-   * Returns the cross section of the box orthogonal to @p direction.
-   * This is a box in one dimension lower.
+   * 返回正交于 @p direction.
+   * 的盒子的横截面，这是一个低一维的盒子。
+   * @note 在一维中调用此方法将导致一个异常，因为
+   * <code>BoundingBox&lt;0&gt;</code> 没有实现。
    *
-   * @note Calling this method in 1D will result in an exception since
-   * <code>BoundingBox&lt;0&gt;</code> is not implemented.
    */
   BoundingBox<spacedim - 1, Number>
   cross_section(const unsigned int direction) const;
 
   /**
-   * Apply the affine transformation that transforms this BoundingBox to a unit
-   * BoundingBox object.
+   * 应用仿射变换，将此BoundingBox转换为一个单元BoundingBox对象。
+   * 如果 $B$ 是这个边界盒，而 $\hat{B}$
+   * 是单位边界盒，计算满足 $G(B) = \hat{B}$
+   * 的仿生映射并将其应用于 @p point. 。
    *
-   * If $B$ is this bounding box, and $\hat{B}$ is the unit bounding box,
-   * compute the affine mapping that satisfies $G(B) = \hat{B}$ and apply it to
-   * @p point.
    */
   Point<spacedim, Number>
   real_to_unit(const Point<spacedim, Number> &point) const;
 
   /**
-   * Apply the affine transformation that transforms the unit BoundingBox object
-   * to this object.
+   * 应用将单位BoundingBox对象转换为该对象的仿射变换。
+   * 如果 $B$ 是这个边界盒，而 $\hat{B}$
+   * 是单位边界盒，计算满足 $F(\hat{B}) = B$
+   * 的仿生映射并将其应用于 @p point. 。
    *
-   * If $B$ is this bounding box, and $\hat{B}$ is the unit bounding box,
-   * compute the affine mapping that satisfies $F(\hat{B}) = B$ and apply it to
-   * @p point.
    */
   Point<spacedim, Number>
   unit_to_real(const Point<spacedim, Number> &point) const;
 
   /**
-   * Write or read the data of this object to or from a stream for the
-   * purpose of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
@@ -306,26 +313,29 @@ private:
 };
 
 /**
- * Specialization of BoundingBox for spacedim 0. This class exists to enable
- * dimension-independent programming but unconditionally throws an exception
- * in its constructor.
+ * 这个类的存在是为了实现与尺寸无关的编程，但在其构造函数中无条件地抛出一个异常。
+ *
+ *
  */
 template <typename Number>
 class BoundingBox<0, Number>
 {
 public:
   /**
-   * Default constructor. Throws an exception.
+   * 默认构造函数。抛出一个异常。
+   *
    */
   BoundingBox();
 
   /**
-   * Equivalent two-point constructor. Throws an exception.
+   * 等价的两点式构造函数。抛出一个异常。
+   *
    */
   BoundingBox(const std::pair<Point<0, Number>, Point<0, Number>> &);
 
   /**
-   * Equivalent container constructor. Throws an exception.
+   * 等效的容器构造函数。抛出一个异常。
+   *
    */
   template <class Container>
   BoundingBox(const Container &);
@@ -333,9 +343,10 @@ public:
 
 
 /**
- * Returns the unit box $[0,1]^\text{dim}$.
+ * 返回单位盒子  $[0,1]^\text{dim}$  。
+ * @relates  BoundingBox
  *
- * @relates BoundingBox
+ *
  */
 template <int dim, typename Number = double>
 BoundingBox<dim, Number>
@@ -345,36 +356,17 @@ create_unit_bounding_box();
 namespace internal
 {
   /**
-   * This function defines a convention for how coordinates in dim
-   * dimensions should translate to the coordinates in dim + 1 dimensions,
-   * when one of the coordinates in dim + 1 dimensions is locked to a given
-   * value.
+   * 这个函数定义了一个惯例，当dim+1维中的一个坐标被锁定为一个给定值时，dim维中的坐标应该如何转换为dim+1维中的坐标。
+   * 这个约定是这样的。从锁定的坐标开始，我们连续存储低维的坐标，并在越过维度时进行环绕。这种关系是，在二维中，|锁定在二维中|一维坐标|二维坐标||:------------:|:-------------:|:-------------:||x0|(a)|(x0,
+   * a)||x1|(a)|(a ,
+   * x1)|，在三维中，|锁定在三维|二维坐标|三维坐标||:-------------|。
+   * --------------:|:--------------:| | x0 | (a, b) | (x0, a, b) | | x1 | (a,
+   * b) | ( b, x1, a) | | x2 | (a, b) | ( a, b, x2) |
+   * 给定一个锁定坐标，这个函数将dim维度的坐标索引映射到dim+1维度的坐标索引。
+   * @param  locked_coordinate应该在[0, dim+1]范围内。    @param
+   * coordinate_in_dim应该在[0, dim]范围内。    @return  在[0,
+   * dim+1]范围内的一个坐标索引  @relates  BoundingBox
    *
-   * The convention is the following: Starting from the locked coordinate we
-   * store the lower dimensional coordinates consecutively and wrap around
-   * when going over the dimension. This relationship is, in 2D,
-   *
-   * | locked in 2D | 1D coordinate | 2D coordinate |
-   * |:------------:|:-------------:|:-------------:|
-   * |     x0       |      (a)      |   (x0,  a)    |
-   * |     x1       |      (a)      |   (a , x1)    |
-   *
-   * and, in 3D,
-   *
-   * | locked in 3D | 2D coordinates | 3D coordinates |
-   * |:-------------|:--------------:|:--------------:|
-   * |     x0       |    (a, b)      | (x0,  a,  b)   |
-   * |     x1       |    (a, b)      | ( b, x1,  a)   |
-   * |     x2       |    (a, b)      | ( a,  b, x2)   |
-   *
-   * Given a locked coordinate, this function maps a coordinate index in dim
-   * dimension to a coordinate index in dim + 1 dimensions.
-   *
-   * @param locked_coordinate should be in the range [0, dim+1).
-   * @param coordinate_in_dim should be in the range [0, dim).
-   * @return A coordinate index in the range [0, dim+1)
-   *
-   * @relates BoundingBox
    */
   template <int dim>
   inline int
@@ -388,7 +380,7 @@ namespace internal
 
 } // namespace internal
 
-/*------------------------ Inline functions: BoundingBox --------------------*/
+ /*------------------------ Inline functions: BoundingBox --------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -494,7 +486,7 @@ template <int spacedim, typename Number>
 template <class Archive>
 void
 BoundingBox<spacedim, Number>::serialize(Archive &ar,
-                                         const unsigned int /*version*/)
+                                         const unsigned int  /*version*/ )
 {
   ar &boundary_points;
 }
@@ -531,3 +523,5 @@ inline BoundingBox<0, Number>::BoundingBox(const Container &)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

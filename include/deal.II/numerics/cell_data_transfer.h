@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/cell_data_transfer_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -33,14 +32,23 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 在细化和/或粗化三角测量时，传输与每个活动单元相关的数据（如误差指标）。
- * 因此，这个类对于单元相关的信息，就像SolutionTransfer对于定义在三角剖分上的自由度值一样。
- * 必须提供一个非分布式的容器（如Vector或 `std::vector`)
- * ），它以活动单元被遍历的相同顺序持有单元的数据。换句话说，每个条目都对应于具有相同索引
- * CellAccessor::active_cell_index(), 的单元，容器的大小必须是
- * Triangulation::n_active_cells().  。 <h3>Transferring cell-wise data</h3>
- * 下面的代码片断演示了如何在细化/粗化注册三角的过程中传输单元的相关数据。
+ * Transfer data that is associated with each active cell (like error
+ * indicators) while refining and/or coarsening a triangulation.
  *
+ * This class therefore does for cell-related information what
+ * SolutionTransfer does for the values of degrees of freedom defined on a
+ * Triangulation.
+ *
+ * A non-distributed container (like Vector or `std::vector`) has to be
+ * provided, which holds the cell-wise data in the same order as active cells
+ * are traversed. In other words, each entry corresponds to the cell with the
+ * same index CellAccessor::active_cell_index(), and the container has to be of
+ * size Triangulation::n_active_cells().
+ *
+ * <h3>Transferring cell-wise data</h3>
+ *
+ * The following code snippet demonstrates how to transfer cell-related data
+ * across refinement/coarsening of the registered triangulation.
  *
  * @code
  * // prepare the triangulation,
@@ -52,7 +60,7 @@ DEAL_II_NAMESPACE_OPEN
  * //[fill data_to_transfer with cell-wise values...]
  *
  * CellDataTransfer<dim, spacedim, Vector<double>>
- * cell_data_trans(triangulation);
+ *   cell_data_trans(triangulation);
  * cell_data_trans.prepare_for_coarsening_and_refinement();
  *
  * // actually execute the refinement,
@@ -63,9 +71,9 @@ DEAL_II_NAMESPACE_OPEN
  * cell_data_trans.unpack(data_to_transfer, transferred_data);
  * @endcode
  *
- * 当使用 parallel::shared::Triangulation,
- * 时，我们需要确保在细化发生之前，我们的本地向量中有全局数据。我们可以通过以下方式实现这一点。
- *
+ * When using a parallel::shared::Triangulation, we need to ensure that we have
+ * the global data available in our local vector before refinement happened. We
+ * can achieve this as follows:
  *
  * @code
  * Vector<double> data_to_transfer(triangulation.n_active_cells());
@@ -73,51 +81,48 @@ DEAL_II_NAMESPACE_OPEN
  *
  * PETScWrappers::MPI::Vector
  * distributed_data_to_transfer(mpi_communicator,
- *                            triangulation.n_active_cells(),
- *                            triangulation.n_locally_owned_active_cells());
+ *                              triangulation.n_active_cells(),
+ *                              triangulation.n_locally_owned_active_cells());
  * for (const auto &cell : triangulation.active_cell_iterators())
- * if (cell->is_locally_owned())
- *   {
- *     const unsigned int index = cell->active_cell_index();
- *     distributed_data_to_transfer(index) = data_to_transfer(index);
- *   }
+ *   if (cell->is_locally_owned())
+ *     {
+ *       const unsigned int index = cell->active_cell_index();
+ *       distributed_data_to_transfer(index) = data_to_transfer(index);
+ *     }
  * distributed_data_to_transfer.compress(VectorOperation::insert);
  *
  * data_to_transfer = distributed_data_to_transfer;
  * @endcode
  *
- * 对于并行分布的情况，有一个指定的类
- * parallel::distributed::CellDataTransfer 。在使用
- * parallel::distributed::Triangulation. 时，请参考这个特定的类。
+ * For the parallel distributed case, a designated class
+ * parallel::distributed::CellDataTransfer is available. Please refer to this
+ * particular class when using a parallel::distributed::Triangulation.
  *
- *
- * @note
- * 参见SolutionTransfer的文档，以了解传输的匹配代码片段。
- *
+ * @note See the documentation of SolutionTransfer for matching code snippets
+ *   for transfer.
  *
  * @ingroup numerics
- *
- *
  */
 template <int dim, int spacedim = dim, typename VectorType = Vector<double>>
 class CellDataTransfer
 {
 private:
   /**
-   * 一个别名，定义了所提供的容器模板的数据类型。
-   *
+   * An alias that defines the data type of provided container template.
    */
   using value_type = typename VectorType::value_type;
 
 public:
   /**
-   * 构造函数。      @param[in]  triangulation
-   * 所有操作都将发生在这个三角形上。当这个构造函数被调用时，有关的细化还没有发生。
-   * @param[in]  refinement_strategy
-   * %函数，决定如何将数据从其父单元存储到细化单元上。
-   * @param[in]  coarsening_strategy
-   * %函数决定在子单元上存储哪些数据，其子单元将被粗化为。
+   * Constructor.
    *
+   * @param[in] triangulation The triangulation on which all operations will
+   *   happen. At the time when this constructor is called, the refinement
+   *   in question has not happened yet.
+   * @param[in] refinement_strategy %Function deciding how data will be stored
+   *   on refined cells from its parent cell.
+   * @param[in] coarsening_strategy %Function deciding which data to store on
+   *   a cell whose children will get coarsened into.
    */
   CellDataTransfer(
     const Triangulation<dim, spacedim> &triangulation,
@@ -132,35 +137,36 @@ public:
         check_equality<dim, spacedim, value_type>);
 
   /**
-   * 为粗化和细化当前对象做准备。
-   * 存储相关三角形上所有活动单元的active_cell_indices，并将它们归属于持久化、细化或粗化的单元。
+   * Prepare the current object for coarsening and refinement.
    *
+   * Stores the active_cell_indices of all active cells on the associated
+   * triangulation and attribute them to either persisting, refined or coarsened
+   * cells.
    */
   void
   prepare_for_coarsening_and_refinement();
 
   /**
-   * 将上一个网格的信息转移到更新的网格中。    由 @p in
-   * 提供的前一个网格的数据将被转移到更新的网格，并存储在
-   * @p out.  @p out
-   * 必须提供足够的空间来容纳转移的数据，即必须是`triangulation.n_active_cells()`的大小。
+   * Transfer the information from the previous mesh to the updated one.
    *
+   * Data from the previous mesh supplied by @p in will be transferred to the updated
+   * mesh and stored in @p out. @p out has to provide enough space to hold the
+   * transferred data, i.e. has to be of size `triangulation.n_active_cells()`.
    */
   void
   unpack(const VectorType &in, VectorType &out);
 
 private:
   /**
-   * 指向要处理的三角结构的指针。
-   *
+   * Pointer to the triangulation to work with.
    */
   SmartPointer<const Triangulation<dim, spacedim>,
                CellDataTransfer<dim, spacedim, VectorType>>
     triangulation;
 
   /**
-   * 决定数据如何从其父单元存储到细化单元的函数。
-   *
+   * %Function deciding how data will be stored on refined cells from its parent
+   * cell.
    */
   const std::function<std::vector<value_type>(
     const typename Triangulation<dim, spacedim>::cell_iterator &parent,
@@ -168,8 +174,8 @@ private:
     refinement_strategy;
 
   /**
-   * 决定如何处理来自子单元的数据以存储在父单元上的函数。
-   *
+   * %Function deciding on how to process data from children to be stored on the
+   * parent cell.
    */
   const std::function<value_type(
     const typename Triangulation<dim, spacedim>::cell_iterator &parent,
@@ -177,33 +183,36 @@ private:
     coarsening_strategy;
 
   /**
-   * 容器，用于临时存储持续存在的单元格的迭代器和活动单元格索引。
-   *
+   * Container to temporarily store the iterator and active cell index
+   * of cells that persist.
    */
   std::map<const typename Triangulation<dim, spacedim>::cell_iterator,
            const unsigned int>
     persisting_cells_active_index;
 
   /**
-   * 用于临时存储将被精炼的单元格的迭代器和活动单元格索引的容器。
-   *
+   * Container to temporarily store the iterator and active cell index
+   * of cells that will be refined.
    */
   std::map<const typename Triangulation<dim, spacedim>::cell_iterator,
            const unsigned int>
     refined_cells_active_index;
 
   /**
-   * 容器用于临时存储粗化后将保留的父单元格的迭代器以及相应子单元格的活动单元格索引。
-   *
+   * Container to temporarily store the iterator of parent cells that will
+   * remain after coarsening along with the active cell indices of the
+   * corresponding children cells.
    */
   std::map<const typename Triangulation<dim, spacedim>::cell_iterator,
            const std::set<unsigned int>>
     coarsened_cells_active_index;
 
   /**
-   * 初始三角形上尚未被细化的活动单元的数量。
-   * 它将在prepare_for_coarsening_and_refinement()中设置，并在细化发生后用于验证用户输入（仅在调试模式）。
+   * Number of active cells on the initial triangulation that has not been
+   * refined yet.
    *
+   * It will be set in prepare_for_coarsening_and_refinement() and used to
+   * validate user inputs after refinement happened (only in debug mode).
    */
   unsigned int n_active_cells_pre;
 };
@@ -211,6 +220,4 @@ private:
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif  /* dealii_cell_data_transfer_h */ 
-
-
+#endif /* dealii_cell_data_transfer_h */

@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_project_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -52,89 +53,61 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Interpolation and projection
+   * @name  内插和投影
+   *
    */
   //@{
 
   /**
-   * Compute the projection of @p function to the finite element space. In other
-   * words, given a function $f(\mathbf x)$, the current function computes a
-   * finite element function $f_h(\mathbf x)=\sum_j F_j \varphi_j(\mathbf x)$
-   * characterized by the (output) vector of nodal values $F$ that satisfies
-   * the equation
+   * 计算 @p function
+   * 对有限元空间的投影。换句话说，给定一个函数
+   * $f(\mathbf x)$ ，当前函数计算一个有限元函数 $f_h(\mathbf
+   * x)=\sum_j F_j \varphi_j(\mathbf x)$ ，其特征是节点值 $F$
+   * 的（输出）矢量满足方程
    * @f{align*}{
-   *   (\varphi_i, f_h)_\Omega = (\varphi_i,f)_\Omega
+   * (\varphi_i, f_h)_\Omega = (\varphi_i,f)_\Omega
    * @f}
-   * for all test functions $\varphi_i$. This requires solving a linear system
-   * involving the mass matrix since the equation above is equivalent to
-   * the linear system
+   * 对于所有测试函数  $\varphi_i$
+   * 。这需要解决一个涉及质量矩阵的线性系统，因为上面的方程等同于线性系统
    * @f{align*}{
-   *   \sum_j (\varphi_i, \varphi_j)_\Omega F_j = (\varphi_i,f)_\Omega
+   * \sum_j (\varphi_i, \varphi_j)_\Omega F_j = (\varphi_i,f)_\Omega
    * @f}
-   * which can also be written as $MF = \Phi$ with
-   * $M_{ij} = (\varphi_i, \varphi_j)_\Omega$ and
-   * $\Phi_i = (\varphi_i,f)_\Omega$.
+   * 这也可以写成  $MF = \Phi$  与  $M_{ij} = (\varphi_i,
+   * \varphi_j)_\Omega$  和  $\Phi_i = (\varphi_i,f)_\Omega$  。
+   * 默认情况下， $f_h$
+   * 的边界值不需要也没有强加，但是这个函数有一些可选的参数，允许强加零边界值，或者在第一步，以类似于上面的方式将
+   * $f$
+   * 的边界值投影到网格边界的有限元空间上，然后用这些值作为
+   * $f_h$
+   * 的强加边界值。这个函数的参数排序是这样的：如果你不想先投影到边界，你不需要给出第二个正交公式（类型为`正交<dim-1>`，用于计算矩阵和边界值投影的右手边），但如果你想这样做，你必须这样做。
+   * 如果满足以下条件，则使用MatrixFree实现。
    *
-   * By default, no boundary values for $f_h$ are needed nor
-   * imposed, but there are optional parameters to this function that allow
-   * imposing either zero boundary values or, in a first step, to project
-   * the boundary values of $f$ onto the finite element space on the boundary
-   * of the mesh in a similar way to above, and then using these values as the
-   * imposed boundary values for $f_h$. The ordering of arguments to this
-   * function is such that you need not give a second quadrature formula (of
-   * type `Quadrature<dim-1>` and used for the computation of the matrix and
-   * right hand side for the projection of boundary values) if you
-   * don't want to project to the boundary first, but that you must if you want
-   * to do so.
    *
-   * A MatrixFree implementation is used if the following conditions are met:
-   * - @p enforce_zero_boundary is false,
-   * - @p project_to_boundary_first is false,
-   * - the FiniteElement is supported by the MatrixFree class,
-   * - the FiniteElement has less than five components
-   * - the degree of the FiniteElement is less than nine.
-   * - dim==spacedim
    *
-   * In this case, this function performs numerical quadrature using the given
-   * quadrature formula for integration of the right hand side $\Phi_i$ while a
-   * QGauss(fe_degree+2) object is used for the mass operator. You should
-   * therefore make sure that the given quadrature formula is sufficiently
-   * accurate for creating the right-hand side.
    *
-   * Otherwise, only serial Triangulations are supported and the mass matrix
-   * is assembled using MatrixTools::create_mass_matrix. The given
-   * quadrature rule is then used for both the matrix and the right-hand side.
-   * You should therefore make sure that the given quadrature formula is also
-   * sufficient for creating the mass matrix. In particular, the degree of the
-   * quadrature formula must be sufficiently high to ensure that the mass
-   * matrix is invertible. For example, if you are using a FE_Q(k) element,
-   * then the integrand of the matrix entries $M_{ij}$ is of polynomial
-   * degree $2k$ in each variable, and you need a Gauss quadrature formula
-   * with $k+1$ points in each coordinate direction to ensure that $M$
-   * is invertible.
    *
-   * See the general documentation of this namespace for further information.
+   * -  @p enforce_zero_boundary  是假的。
    *
-   * In 1d, the default value of the boundary quadrature formula is an invalid
-   * object since integration on the boundary doesn't happen in 1d.
    *
-   * @param[in] mapping The mapping object to use.
-   * @param[in] dof The DoFHandler the describes the finite element space to
-   * project into and that corresponds to @p vec.
-   * @param[in] constraints Constraints to be used when assembling the mass
-   * matrix, typically needed when you have hanging nodes.
-   * @param[in] quadrature The quadrature formula to be used for assembling the
-   * mass matrix.
-   * @param[in] function The function to project into the finite element space.
-   * @param[out] vec The output vector where the projected function will be
-   * stored in. This vector is required to be already initialized and must not
-   * have ghost elements.
-   * @param[in] enforce_zero_boundary If true, @p vec will have zero boundary
-   * conditions.
-   * @param[in] q_boundary Quadrature rule to be used if @p project_to_boundary_first
-   * is true.
-   * @param[in] project_to_boundary_first If true, perform a projection on the
-   * boundary before projecting the interior of the function.
+   *
+   *
+   *
+   * -  @p project_to_boundary_first  是假的。
+   *
+   *
+   *
+   *
+   * - FiniteElement是由MatrixFree类支持的。
+   *
+   *
+   * - FiniteElement的组件少于5个
+   *
+   * - FiniteElement的度数小于9。
+   *
+   *
+   *
+   * - dim==spacedim 在这种情况下，这个函数使用给定的正交公式执行数值正交，用于右手边的积分 $\Phi_i$ ，而QGauss(fe_degree+2)对象被用于质量算子。因此，你应该确保给定的正交公式对于创建右手边是足够精确的。    否则，只支持串行三角计算，质量矩阵使用 MatrixTools::create_mass_matrix. 组装，然后给定的正交规则用于矩阵和右手边。  因此，你应该确保给定的正交公式也足以用来创建质量矩阵。特别是，正交公式的度数必须足够高，以确保质量矩阵是可逆的。例如，如果你使用的是FE_Q(k)元素，那么矩阵项 $M_{ij}$ 的积分在每个变量中都是多项式度数 $2k$ ，你需要一个在每个坐标方向都有 $k+1$ 点的高斯正交公式来确保 $M$ 是可倒的。    更多信息请参见该命名空间的一般文档。    在1d中，边界正交公式的默认值是一个无效的对象，因为在1d中不会发生边界上的积分。      @param[in]  mapping 要使用的映射对象。    @param[in]  dof 描述投射到的有限元空间的DoFHandler，对应于  @p vec.   @param[in]  约束 在组装质量矩阵时使用的约束，通常在你有悬挂节点时需要。    @param[in]  正交 要用于组装质量矩阵的正交公式。    @param[in]  function 投射到有限元空间的函数。    @param[out]  vec 投射的函数将被存储在输出向量中。这个向量必须已经被初始化，并且不能有鬼魂元素。    @param[in]  enforce_zero_boundary 如果为真， @p vec  将有零边界条件。    @param[in]  q_boundary 如果 @p project_to_boundary_first 为真，将使用正交规则。    @param[in]  project_to_boundary_first 如果为真，在投射函数的内部之前执行对边界的投射。
+   *
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -151,8 +124,9 @@ namespace VectorTools
           const bool                 project_to_boundary_first = false);
 
   /**
-   * Call the project() function above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 调用上面的project()函数，使用<tt>mapping=MappingQGeneric
+   * @<dim@>(1)</tt>.  。
+   *
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -168,7 +142,8 @@ namespace VectorTools
           const bool                 project_to_boundary_first = false);
 
   /**
-   * Same as above, but with hp-capabilities.
+   * 和上面一样，但有hp-capabilities。
+   *
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -184,8 +159,10 @@ namespace VectorTools
           const bool project_to_boundary_first = false);
 
   /**
-   * Call the project() function above, with a collection of $Q_1$ mapping
-   * objects, i.e., with hp::StaticMappingQ1::mapping_collection.
+   * 调用上面的project()函数，使用一个 $Q_1$
+   * 映射对象的集合，即使用
+   * hp::StaticMappingQ1::mapping_collection. 。
+   *
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -200,28 +177,28 @@ namespace VectorTools
           const bool project_to_boundary_first = false);
 
   /**
-   * The same as above for projection of scalar-valued quadrature data.
-   * The user provided function should return a value at the quadrature point
-   * based on the cell iterator and quadrature number and of course should be
-   * consistent with the provided @p quadrature object, which will be used
-   * to assemble the right-hand-side.
-   *
-   * This function can be used with lambdas:
+   * 与上述标量值正交数据的投影相同。
+   * 用户提供的函数应该根据单元格迭代器和正交数在正交点返回一个值，当然也应该与提供的
+   * @p quadrature 对象一致，该对象将被用来组装右手边。
+   * 这个函数可以和lambdas一起使用。
    * @code
    * VectorTools::project
    * (mapping,
-   *  dof_handler,
-   *  constraints,
-   *  quadrature_formula,
-   *  [&] (const typename DoFHandler<dim>::active_cell_iterator & cell,
-   *       const unsigned int q) -> double
-   *  {
-   *    return qp_data.get_data(cell)[q]->density;
-   *  },
-   *  field);
+   * dof_handler,
+   * constraints,
+   * quadrature_formula,
+   * [&] (const typename DoFHandler<dim>::active_cell_iterator & cell,
+   *     const unsigned int q)
+   *
+   * -> double
+   * {
+   *  return qp_data.get_data(cell)[q]->density;
+   * },
+   * field);
    * @endcode
-   * where <code>qp_data</code> is a CellDataStorage object, which stores
-   * quadrature point data.
+   * 其中 <code>qp_data</code>
+   * 是一个CellDataStorage对象，它存储正交点数据。
+   *
    */
   template <int dim, typename VectorType, int spacedim>
   void
@@ -235,32 +212,30 @@ namespace VectorTools
           VectorType &                                              vec_result);
 
   /**
-   * The same as above for projection of scalar-valued MatrixFree quadrature
-   * data.
-   * The user provided function @p func should return a VectorizedArray value
-   * at the quadrature point based on the cell number and quadrature number and
-   * should be consistent with the @p n_q_points_1d.
-   *
-   * This function can be used with lambdas:
+   * 与上述标量值MatrixFree正交数据的投影相同。
+   * 用户提供的函数 @p func
+   * 应根据单元格号和正交点号在正交点返回一个VectorizedArray值，并应与
+   * @p n_q_points_1d. 一致。这个函数可以与lambdas一起使用。
    * @code
    * VectorTools::project
    * (matrix_free_data,
-   *  constraints,
-   *  3,
-   *  [&] (const unsigned int cell,
-   *       const unsigned int q) -> VectorizedArray<double>
-   *  {
-   *    return qp_data(cell,q);
-   *  },
-   *  field);
-   * @endcode
-   * where <code>qp_data</code> is a an object of type Table<2,
-   * VectorizedArray<double> >, which stores quadrature point data.
+   * constraints,
+   * 3,
+   * [&] (const unsigned int cell,
+   *     const unsigned int q)
    *
-   * @p fe_component allow to additionally specify which component of @p data
-   * to use in case it was constructed with an <code>std::vector<const
-   * DoFHandler<dim>*></code>. It will be used internally in constructor of
-   * FEEvaluation object.
+   * -> VectorizedArray<double>
+   * {
+   *  return qp_data(cell,q);
+   * },
+   * field);
+   * @endcode
+   * 其中 <code>qp_data</code> 是一个类型为Table<2,
+   * VectorizedArray<double>>的对象，它存储正交点数据。      @p
+   * fe_component 允许额外指定使用 @p data
+   * 的哪个组件，如果它是用 <code>std::vector<const
+   * DoFHandler<dim>*></code>构造的。它将在内部用于FEEvaluation对象的构造器。
+   *
    */
   template <int dim, typename VectorType>
   void
@@ -278,8 +253,9 @@ namespace VectorTools
     const unsigned int                                        fe_component = 0);
 
   /**
-   * Same as above but for <code>n_q_points_1d =
-   * matrix_free.get_dof_handler().get_fe().degree+1</code>.
+   * 与上述相同，但对于<code>n_q_points_1d =
+   * matrix_free.get_dof_handler().get_fe().degree+1</code>。
+   *
    */
   template <int dim, typename VectorType>
   void
@@ -302,3 +278,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_project_h
+
+

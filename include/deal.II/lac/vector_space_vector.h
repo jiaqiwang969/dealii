@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/vector_space_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -41,12 +40,16 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*!   @addtogroup 矢量  @{ !   
-* */
+  /*! @addtogroup Vectors
+   *@{
+   */
 
   /**
-   * VectorSpaceVector是一个抽象类，用于定义向量类在想要实现全局操作时需要实现的接口。这个类是ReadWriteVector的补充，它允许访问单个元素，但不允许全局操作。
-   *
+   * VectorSpaceVector is an abstract class that is used to define the
+   * interface that vector classes need to implement when they want to
+   * implement global operations. This class is complementary of
+   * ReadWriteVector which allows the access of individual elements but does
+   * not allow global operations.
    */
   template <typename Number>
   class VectorSpaceVector
@@ -57,54 +60,51 @@ namespace LinearAlgebra
     using real_type  = typename numbers::NumberTraits<Number>::real_type;
 
     /**
-     * 将维度改为向量V的维度，V的元素不会被复制。
-     *
+     * Change the dimension to that of the vector V. The elements of V are not
+     * copied.
      */
     virtual void
     reinit(const VectorSpaceVector<Number> &V,
            const bool                       omit_zeroing_entries = false) = 0;
 
     /**
-     * 将向量的所有元素设置为标量 @p s. ，只有当 @p s
-     * 等于零时，才允许该操作。
-     *
+     * Sets all elements of the vector to the scalar @p s. This operation is
+     * only allowed if @p s is equal to zero.
      */
     virtual VectorSpaceVector<Number> &
     operator=(const Number s) = 0;
 
     /**
-     * 将整个向量乘以一个固定系数。
-     *
+     * Multiply the entire vector by a fixed factor.
      */
     virtual VectorSpaceVector<Number> &
     operator*=(const Number factor) = 0;
 
     /**
-     * 用整个向量除以一个固定的因子。
-     *
+     * Divide the entire vector by a fixed factor.
      */
     virtual VectorSpaceVector<Number> &
     operator/=(const Number factor) = 0;
 
     /**
-     * 将向量 @p V 添加到现在的向量中。
-     *
+     * Add the vector @p V to the present one.
      */
     virtual VectorSpaceVector<Number> &
     operator+=(const VectorSpaceVector<Number> &V) = 0;
 
     /**
-     * 从现在的向量中减去向量 @p V 。
-     *
+     * Subtract the vector @p V from the present one.
      */
     virtual VectorSpaceVector<Number> &
     operator-=(const VectorSpaceVector<Number> &V) = 0;
 
     /**
-     * 从输入向量 @p V.  VectorOperation::values  @p operation
-     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
-     * 中的元素是否应该添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
-     *
+     * Import all the elements present in the vector's IndexSet from the input
+     * vector @p V. VectorOperation::values @p operation is used to decide if
+     * the elements in @p V should be added to the current vector or replace the
+     * current elements. The last parameter can be used if the same
+     * communication pattern is used multiple times. This can be used to improve
+     * performance.
      */
     virtual void
     import(const ReadWriteVector<Number> &V,
@@ -113,29 +113,24 @@ namespace LinearAlgebra
              communication_pattern = {}) = 0;
 
     /**
-     * 返回两个向量的标量乘积。
-     *
+     * Return the scalar product of two vectors.
      */
     virtual Number operator*(const VectorSpaceVector<Number> &V) const = 0;
 
     /**
-     * 将 @p a 添加到所有组件中。注意 @p a
-     * 是一个标量而不是一个向量。
-     *
+     * Add @p a to all components. Note that @p a is a scalar not a vector.
      */
     virtual void
     add(const Number a) = 0;
 
     /**
-     * 矢量的倍数的简单加法，即：<tt>*this += a*V</tt>。
-     *
+     * Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.
      */
     virtual void
     add(const Number a, const VectorSpaceVector<Number> &V) = 0;
 
     /**
-     * 缩放向量的多重加法，即<tt>*this += a*V+b*W</tt>。
-     *
+     * Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.
      */
     virtual void
     add(const Number                     a,
@@ -144,9 +139,8 @@ namespace LinearAlgebra
         const VectorSpaceVector<Number> &W) = 0;
 
     /**
-     * 缩放和简单的向量倍数加法，即<tt>*this =
-     * s*(*this)+a*V</tt>。
-     *
+     * Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =
+     * s*(*this)+a*V</tt>.
      */
     virtual void
     sadd(const Number                     s,
@@ -154,68 +148,71 @@ namespace LinearAlgebra
          const VectorSpaceVector<Number> &V) = 0;
 
     /**
-     * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟对角线缩放矩阵的乘法（和立即重新分配）。
-     *
+     * Scale each element of this vector by the corresponding element in the
+     * argument. This function is mostly meant to simulate multiplication (and
+     * immediate re-assignment) by a diagonal scaling matrix.
      */
     virtual void
     scale(const VectorSpaceVector<Number> &scaling_factors) = 0;
 
     /**
-     * 赋值 <tt>*this = a*V</tt>.
-     *
+     * Assignment <tt>*this = a*V</tt>.
      */
     virtual void
     equ(const Number a, const VectorSpaceVector<Number> &V) = 0;
 
     /**
-     * 返回向量是否只包含值为0的元素。
-     *
+     * Return whether the vector contains only elements with value zero.
      */
     virtual bool
     all_zero() const = 0;
 
     /**
-     * 返回这个向量的所有条目的平均值。
-     *
+     * Return the mean value of all the entries of this vector.
      */
     virtual value_type
     mean_value() const = 0;
 
     /**
-     * 返回该向量的l<sub>1</sub>准则（即所有条目在所有处理器中的绝对值之和）。
-     *
+     * Return the l<sub>1</sub> norm of the vector (i.e., the sum of the
+     * absolute values of all entries among all processors).
      */
     virtual real_type
     l1_norm() const = 0;
 
     /**
-     * 返回向量的l<sub>2</sub>准则（即所有处理器中所有条目的平方之和的平方根）。
-     *
+     * Return the l<sub>2</sub> norm of the vector (i.e., the square root of
+     * the sum of the square of all entries among all processors).
      */
     virtual real_type
     l2_norm() const = 0;
 
     /**
-     * 返回向量的最大规范（即所有条目和所有处理器之间的最大绝对值）。
-     *
+     * Return the maximum norm of the vector (i.e., the maximum absolute value
+     * among all entries and among all processors).
      */
     virtual real_type
     linfty_norm() const = 0;
 
     /**
-     * 执行一个向量加法和后续内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用的
+     * Perform a combined operation of a vector addition and a subsequent
+     * inner product, returning the value of the inner product. In other
+     * words, the result of this function is the same as if the user called
      * @code
      * this->add(a, V);
-     * return_value =this W;
+     * return_value = *this * W;
      * @endcode
-     * 这个函数存在的原因是这个操作比单独调用这两个函数涉及的内存转移要少。这个方法只需要加载三个向量，
-     * @p this,   @p V,   @p W,
-     * ，而调用单独的方法意味着要加载调用向量 @p this
-     * 两次。由于大多数向量操作都有内存传输限制，这就使时间减少了25\%（如果
-     * @p W 等于 @p this). ，则减少50\%）。
-     * 对于复值向量，第二步的标量乘法实现为
-     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
      *
+     * The reason this function exists is that this operation involves less
+     * memory transfer than calling the two functions separately. This method
+     * only needs to load three vectors, @p this, @p V, @p W, whereas calling
+     * separate methods means to load the calling vector @p this twice. Since
+     * most vector operations are memory transfer limited, this reduces the
+     * time by 25\% (or 50\% if @p W equals @p this).
+     *
+     * For complex-valued vectors, the scalar product in the second step is
+     * implemented as
+     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
      */
     virtual Number
     add_and_dot(const Number                     a,
@@ -223,33 +220,34 @@ namespace LinearAlgebra
                 const VectorSpaceVector<Number> &W) = 0;
 
     /**
-     * 这个函数什么都不做，只是为了向后兼容而存在。
-     *
+     * This function does nothing and only exists for backward compatibility.
      */
     virtual void compress(VectorOperation::values)
     {}
 
     /**
-     * 返回向量的全局大小，等于所有处理器中本地拥有的索引数之和。
-     *
+     * Return the global size of the vector, equal to the sum of the number of
+     * locally owned indices among all processors.
      */
     virtual size_type
     size() const = 0;
 
     /**
-     * 返回一个索引集，描述这个向量的哪些元素是由当前处理器拥有的。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相交的集合，加起来就是完整的索引集。很明显，如果一个向量只在一个处理器上创建，那么结果将满足
+     * Return an index set that describes which elements of this vector are
+     * owned by the current processor. As a consequence, the index sets
+     * returned on different processors if this is a distributed vector will
+     * form disjoint sets that add up to the complete index set. Obviously, if
+     * a vector is created on only one processor, then the result would
+     * satisfy
      * @code
-     * vec.locally_owned_elements() == complete_index_set(vec.size())
+     *  vec.locally_owned_elements() == complete_index_set(vec.size())
      * @endcode
-     *
-     *
      */
     virtual dealii::IndexSet
     locally_owned_elements() const = 0;
 
     /**
-     * 将向量打印到输出流中  @p out.  。
-     *
+     * Print the vector to the output stream @p out.
      */
     virtual void
     print(std::ostream &     out,
@@ -258,19 +256,18 @@ namespace LinearAlgebra
           const bool         across     = true) const = 0;
 
     /**
-     * 以字节为单位返回这个类的内存消耗。
-     *
+     * Return the memory consumption of this class in bytes.
      */
     virtual std::size_t
     memory_consumption() const = 0;
 
     /**
-     * 解构器。声明为虚拟，以便继承类（可能管理自己的内存）被正确销毁。
-     *
+     * Destructor. Declared as virtual so that inheriting classes (which may
+     * manage their own memory) are destroyed correctly.
      */
     virtual ~VectorSpaceVector() = default;
   };
-   /*@}*/ 
+  /*@}*/
 } // namespace LinearAlgebra
 
 // ---------------------------- Free functions --------------------------
@@ -278,8 +275,8 @@ namespace LinearAlgebra
 namespace LinearAlgebra
 {
   /**
-   * 将向量的所有条目移动一个常数因子，使向量的平均值变为零。
-   *
+   * Shift all entries of the vector by a constant factor so that the mean
+   * value of the vector becomes zero.
    */
   template <typename Number>
   void
@@ -292,5 +289,3 @@ namespace LinearAlgebra
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

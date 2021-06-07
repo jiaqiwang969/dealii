@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/cuda_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -32,53 +33,61 @@ DEAL_II_NAMESPACE_OPEN
 namespace Utilities
 {
   /**
-   * A namespace for utility structures for CUDA.
+   * 一个用于CUDA的实用结构的命名空间。
+   *
    */
   namespace CUDA
   {
     /**
-     * Various CUDA APIs need an object to store internal data. This structure
-     * creates, initializes, stores, and destroys these so-called handles for
-     * the respective CUDA libraries used inside deal.II.
+     * 各种CUDA
+     * API需要一个对象来存储内部数据。这个结构为deal.II内部使用的各CUDA库创建、初始化、存储和销毁这些所谓的句柄。
+     *
      */
     struct Handle
     {
       /**
-       * Constructor. Initialize the handles for the different libraries.
+       * 构造函数。初始化不同库的句柄。
+       *
        */
       Handle();
 
       /**
-       * Copy constructor is deleted.
+       * 复制构造函数被删除。
+       *
        */
       Handle(Handle const &) = delete;
 
       /**
-       * Destructor. Destroy the handles.
+       * 销毁器。销毁句柄。
+       *
        */
       ~Handle();
 
       /**
-       * Pointer to an opaque cuSolverDN context.
-       * The handle must be passed to every cuSolverDN library function.
+       * 指针指向一个不透明的 cuSolverDN 上下文。
+       * 该句柄必须传递给每个cuSolverDN库函数。
+       *
        */
       cusolverDnHandle_t cusolver_dn_handle;
 
       /**
-       * Pointer to an opaque cuSolverSP context.
-       * The handle must be passed to every cuSolverSP library function.
+       * 指向一个不透明的cuSolverSP上下文的指针。
+       * 该句柄必须被传递给每个cuSolverSP库函数。
+       *
        */
       cusolverSpHandle_t cusolver_sp_handle;
 
       /**
-       * Pointer to an opaque cuSPARSE context.
-       * The handle must be passed to every cuSPARSE library function.
+       * 指向一个不透明的cuSPARSE上下文的指针。
+       * 该句柄必须被传递给每个cuSPARSE库函数。
+       *
        */
       cusparseHandle_t cusparse_handle;
     };
 
     /**
-     * Allocate @p n_elements on the device.
+     * 在设备上分配 @p n_elements 。
+     *
      */
     template <typename T>
     inline void
@@ -90,7 +99,8 @@ namespace Utilities
     }
 
     /**
-     * Free memory on the device.
+     * 释放设备上的内存。
+     *
      */
     template <typename T>
     inline void
@@ -102,7 +112,8 @@ namespace Utilities
     }
 
     /**
-     * Allocator to be used for `std::unique_ptr` pointing to device memory.
+     * 指向设备内存的 `std::unique_ptr` 要使用的分配器。
+     *
      */
     template <typename Number>
     Number *
@@ -114,7 +125,8 @@ namespace Utilities
     }
 
     /**
-     * Deleter to be used for `std::unique_ptr` pointing to device memory.
+     * 用于指向设备内存的 `std::unique_ptr` 的删除器。
+     *
      */
     template <typename Number>
     void
@@ -125,7 +137,8 @@ namespace Utilities
     }
 
     /**
-     * Copy the device ArrayView @p in to the host ArrayView @p out.
+     * 将设备ArrayView  @p in 复制到主机ArrayView  @p out. 。
+     *
      */
     template <typename T>
     inline void
@@ -141,7 +154,8 @@ namespace Utilities
     }
 
     /**
-     * Copy the host ArrayView @p in to the device ArrayView @p out.
+     * 复制主机ArrayView @p in 到设备ArrayView @p out. 。
+     *
      */
     template <typename T>
     inline void
@@ -157,7 +171,9 @@ namespace Utilities
     }
 
     /**
-     * Copy the elements in @p pointer_dev to the host in @p vector_host.
+     * 把 @p pointer_dev 中的元素复制到 @p vector_host.
+     * 中的主机上。
+     *
      */
     template <typename T>
     inline void
@@ -169,8 +185,10 @@ namespace Utilities
     }
 
     /**
-     * Copy the elements in @p vector_host to the device in @p pointer_dev. The
-     * memory needs to be allocate on the device before this function is called.
+     * 将 @p vector_host 中的元素复制到 @p pointer_dev.
+     * 中的设备上
+     * 在调用这个函数之前，需要在设备上分配内存。
+     *
      */
     template <typename T>
     inline void
@@ -186,3 +204,5 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 #endif
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/meshworker/assembler_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -38,98 +39,60 @@ DEAL_II_NAMESPACE_OPEN
 namespace MeshWorker
 {
   /**
-   * The namespace containing objects that can be used to assemble data
-   * computed on cells and faces into global objects. This can reach from
-   * collecting the total error estimate from cell and face contributions to
-   * assembling matrices and multilevel matrices.
-   *
+   * 含有对象的命名空间，可用于将单元格和面的计算数据组装成全局对象。这可以达到从收集单元和面的贡献的总误差估计到组装矩阵和多级矩阵的目的。
    * <h3>Data models</h3>
-   *
-   * The class chosen from this namespace determines which data model is used.
-   * For the local as well as the global objects, we have the choice between
-   * two models:
-   *
+   * 从这个命名空间中选择的类决定了哪种数据模型被使用。
+   * 对于局部和全局对象，我们可以选择两种模型。
    * <h4>The comprehensive data model</h4>
-   *
-   * This is the structure set up by the FESystem class. Globally, this means,
-   * data is assembled into one residual vector and into one matrix. These
-   * objects may be block vectors and block matrices, but the process of
-   * assembling ignores this fact.
-   *
-   * Similarly, there is only a single cell vector and cell matrix,
-   * respectively, which is indexed by all degrees of freedom of the FESystem.
-   * When building the cell matrix, it is necessary to distinguish between the
-   * different components of the system and select the right operator for each
-   * pair.
-   *
-   * <h4>The blocked data model</h4>
-   *
-   * Here, all the blocks are treated separately (in spite of using FESystem
-   * for its convenience in other places). For instance, no block matrix is
-   * assembled, but a list of blocks, which can be combined later by
-   * BlockMatrixArray. Locally, this means, that each matrix block of a system
-   * is generated separately and assembled into the corresponding global
-   * block.
-   *
-   * This approach is advantageous, if the number of matrices for each block
-   * position in the global system is different. For instance, block
-   * preconditioners for the Oseen problem require 3 pressure matrices, but
-   * only one divergence and one advection-diffusion operator for velocities.
-   *
-   * Additionally, this approach enables the construction of a system of
-   * equations from building blocks for each equation and coupling operator.
-   *
-   * Nevertheless, since a separate FEValues object must be created for each
-   * base element, it is not quite clear a priori, which data model is more
-   * efficient.
-   *
+   * 这是由FESystem类建立的结构。在全球范围内，这意味着，数据被集合到一个残差向量和一个矩阵中。这些对象可能是块状向量和块状矩阵，但组装的过程忽略了这个事实。
+   * 同样地，只有一个单元向量和单元矩阵，分别由FES系统的所有自由度来索引。
+   * 在建立单元矩阵时，有必要区分系统的不同组成部分，并为每对单元选择正确的运算符。
+   * <h4>The blocked data
+   * model</h4>在这里，所有的块都是单独处理的（尽管在其他地方使用FESystem是为了其方便）。例如，没有组装区块矩阵，而是一个区块的列表，以后可以通过BlockMatrixArray来组合。在本地，这意味着，一个系统的每个矩阵块都是单独生成的，并被组装成相应的全局块。
+   * 如果全局系统中每个块的矩阵数量不同，这种方法是有利的。例如，Oseen问题的块状预处理需要3个压力矩阵，但只有一个发散和一个速度的平流-扩散算子。
+   * 此外，这种方法能够从每个方程和耦合算子的构建块中构建一个方程系统。
+   * 然而，由于必须为每个基本元素创建一个单独的FEValues对象，所以先验地不太清楚哪种数据模型更有效。
    * @ingroup MeshWorker
+   *
    */
   namespace Assembler
   {
     /**
-     * Assemble local residuals into global residuals.
-     *
-     * The global residuals are expected as an FEVectors object. The local
-     * residuals are block vectors.
-     *
-     * Depending on whether the BlockInfo object was initialize with
-     * BlockInfo::initialize_local(), the comprehensive or block data model is
-     * used locally.
-     *
-     * In the block model, each of the blocks of the local vectors corresponds
-     * to the restriction of a single block of the system to this cell (see
-     * @ref GlossBlock).
-     * Thus, the size of this local block is the number of degrees of freedom
-     * of the corresponding base element of the FESystem.
-     *
-     * @todo Comprehensive model currently not implemented.
-     *
+     * 将局部残差组装成全局残差。
+     * 全局残差被期望为一个FEVectors对象。本地残差是块向量。
+     * 根据BlockInfo对象是否用 BlockInfo::initialize_local(),
+     * 初始化，在本地使用全面或块数据模型。
+     * 在块模型中，本地向量的每个块都对应于系统的单个块对这个单元的限制（见
+     * @ref GlossBlock ）。
+     * 因此，这个局部块的大小是FES系统中相应基元的自由度数。
+     * @todo  综合模型目前没有实现。
      * @ingroup MeshWorker
+     *
      */
     template <typename VectorType>
     class ResidualLocalBlocksToGlobalBlocks
     {
     public:
       /**
-       * Copy the BlockInfo and the matrix pointers into local variables.
+       * 将BlockInfo和矩阵指针复制到本地变量中。
+       *
        */
       void
       initialize(const BlockInfo *block_info, AnyData &residuals);
 
       /**
-       * Initialize the constraints.
+       * 初始化约束。
+       *
        */
       void
       initialize(
         const AffineConstraints<typename VectorType::value_type> &constraints);
 
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化以后用于装配的DoFInfo对象中的局部数据。
+       * 如果 <code>!face</code> ， @p info
+       * 对象指的是一个单元，否则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -137,14 +100,16 @@ namespace MeshWorker
 
 
       /**
-       * Assemble the local residuals into the global residuals.
+       * 将局部残差组装成全局残差。
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble both local residuals into the global residuals.
+       * 将两个局部残差集合到全局残差中。
+       *
        */
       template <class DOFINFO>
       void
@@ -152,7 +117,8 @@ namespace MeshWorker
 
     private:
       /**
-       * Assemble a single local residual into the global.
+       * 将一个局部残差装配到全局中。
+       *
        */
       void
       assemble(VectorType &                                global,
@@ -160,19 +126,22 @@ namespace MeshWorker
                const std::vector<types::global_dof_index> &dof);
 
       /**
-       * The global vectors, stored as an AnyData container of pointers.
+       * 全局向量，以AnyData容器的指针形式存储。
+       *
        */
       AnyData residuals;
 
       /**
-       * A pointer to the object containing the block structure.
+       * 一个指向包含块结构的对象的指针。
+       *
        */
       SmartPointer<const BlockInfo,
                    ResidualLocalBlocksToGlobalBlocks<VectorType>>
         block_info;
 
       /**
-       * A pointer to the object containing constraints.
+       * 一个指向包含约束的对象的指针。
+       *
        */
       SmartPointer<const AffineConstraints<typename VectorType::value_type>,
                    ResidualLocalBlocksToGlobalBlocks<VectorType>>
@@ -181,62 +150,50 @@ namespace MeshWorker
 
 
     /**
-     * A helper class assembling local matrices into global matrices.
-     *
-     * The global matrices are expected as a vector of MatrixBlock objects,
-     * each containing a matrix object with a function corresponding to
-     * SparseMatrix::add() and information on the block row and column this
-     * matrix represents in a block system.
-     *
-     * The local matrices are expected as a similar vector of MatrixBlock
-     * objects, but containing a FullMatrix.
-     *
-     * Like with ResidualLocalBlocksToGlobalBlocks, the initialization of the
-     * BlockInfo object decides whether the comprehensive data model or the
-     * block model is used.
-     *
-     * In the comprehensive model, each of the LocalMatrixBlocks has
-     * coordinates (0,0) and dimensions equal to the number of degrees of
-     * freedom of the FESystem.
-     *
-     * In the comprehensive model, each block has its own block coordinates
-     * and the size depends on the associated FESystem::base_element(). These
-     * blocks can be generated separately and will be assembled into the
-     * correct matrix block by this object.
-     *
+     * 一个帮助类，将本地矩阵组装成全局矩阵。
+     * 全局矩阵应该是MatrixBlock对象的一个向量，每个对象都包含一个矩阵对象，其函数对应于
+     * SparseMatrix::add()
+     * ，以及该矩阵在一个块系统中代表的块行和块列的信息。
+     * 本地矩阵被期望为一个类似的MatrixBlock对象的向量，但包含一个FullMatrix。
+     * 与ResidualLocalBlocksToGlobalBlocks一样，BlockInfo对象的初始化决定了是使用综合数据模型还是块模型。
+     * 在综合模型中，每个LocalMatrixBlocks的坐标（0,0）和尺寸等于FES系统的自由度数。
+     * 在综合模型中，每个块都有自己的块坐标，其大小取决于相关的
+     * FESystem::base_element().
+     * 这些块可以单独生成，并将由这个对象组装成正确的矩阵块。
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType, typename number = double>
     class MatrixLocalBlocksToGlobalBlocks
     {
     public:
       /**
-       * Constructor, initializing the #threshold, which limits how small
-       * numbers may be to be entered into the matrix.
+       * 构造函数，初始化#阈值，它限制了可以输入矩阵的小数字。
+       *
        */
       MatrixLocalBlocksToGlobalBlocks(double threshold = 1.e-12);
 
       /**
-       * Copy the BlockInfo and the matrix pointers into local variables and
-       * initialize cell matrix vectors.
+       * 将BlockInfo和矩阵指针复制到局部变量中，并初始化单元矩阵向量。
+       *
        */
       void
       initialize(const BlockInfo *              block_info,
                  MatrixBlockVector<MatrixType> &matrices);
 
       /**
-       * Initialize the constraints.
+       * 初始化约束。
+       *
        */
       void
       initialize(
         const AffineConstraints<typename MatrixType::value_type> &constraints);
 
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化以后用于装配的DoFInfo对象中的局部数据。
+       * 如果 @p info 对象指的是一个单元格，如果
+       * <code>!face</code> ，则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -244,14 +201,16 @@ namespace MeshWorker
 
 
       /**
-       * Assemble the local matrices into the global matrices.
+       * 将局部矩阵组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble all local matrices into the global matrices.
+       * 将所有局部矩阵集合到全局矩阵中。
+       *
        */
       template <class DOFINFO>
       void
@@ -259,7 +218,8 @@ namespace MeshWorker
 
     private:
       /**
-       * Assemble a single local matrix into a global one.
+       * 将单个局部矩阵组合成全局矩阵。
+       *
        */
       void
       assemble(MatrixBlock<MatrixType> &                   global,
@@ -270,20 +230,23 @@ namespace MeshWorker
                const std::vector<types::global_dof_index> &dof2);
 
       /**
-       * The global matrices, stored as a vector of pointers.
+       * 全局矩阵，以指针向量的形式存储。
+       *
        */
       SmartPointer<MatrixBlockVector<MatrixType>,
                    MatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
         matrices;
 
       /**
-       * A pointer to the object containing the block structure.
+       * 一个指向包含块结构的对象的指针。
+       *
        */
       SmartPointer<const BlockInfo,
                    MatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
         block_info;
       /**
-       * A pointer to the object containing constraints.
+       * 一个指向包含约束的对象的指针。
+       *
        */
 
       SmartPointer<const AffineConstraints<typename MatrixType::value_type>,
@@ -291,35 +254,21 @@ namespace MeshWorker
         constraints;
 
       /**
-       * The smallest positive number that will be entered into the global
-       * matrix. All smaller absolute values will be treated as zero and will
-       * not be assembled.
+       * 将被输入全局矩阵的最小的正数。所有更小的绝对值将被视为零，不会被集合。
+       *
        */
       const double threshold;
     };
 
     /**
-     * A helper class assembling local matrices into global multilevel
-     * matrices. This class is the multilevel equivalent of
-     * MatrixLocalBlocksToGlobalBlocks and documentation of that class applies
-     * here to a large extend.
-     *
-     * The global matrices are expected as a vector of pointers to MatrixBlock
-     * objects, each containing a MGLevelObject with matrices with a function
-     * corresponding to SparseMatrix::add() and information on the block row
-     * and column this matrix represents in a block system.
-     *
-     * The local matrices are a similar vector of MatrixBlock objects, but
-     * containing a FullMatrix.
-     *
-     * If local refinement occurs, the Multigrid method needs more matrices,
-     * two for continuous elements and another two if numerical fluxes are
-     * computed on interfaces. The second set can be added using
-     * initialize_edge_flux(). Once added, the contributions in all
-     * participating matrices will be assembled from the cell and face
-     * matrices automatically.
-     *
+     * 一个帮助类，将局部矩阵组装成全局多级矩阵。这个类是MatrixLocalBlocksToGlobalBlocks的多级等价物，该类的文档在很大程度上适用于此。
+     * 全局矩阵被期望为指向MatrixBlock对象的一个向量，每个对象都包含一个MGLevelObject，其中的矩阵具有对应于
+     * SparseMatrix::add()
+     * 的函数，以及该矩阵在块系统中代表的块行和块列的信息。
+     * 本地矩阵是一个类似MatrixBlock对象的向量，但包含一个FullMatrix。
+     * 如果发生局部细化，多重网格方法需要更多的矩阵，两个用于连续元素，另外两个如果在界面上计算数值通量。第二组矩阵可以通过initialize_edge_flux()添加。一旦加入，所有参与矩阵的贡献将从单元和面的矩阵中自动集合起来。
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType, typename number = double>
     class MGMatrixLocalBlocksToGlobalBlocks
@@ -331,46 +280,46 @@ namespace MeshWorker
                      MGMatrixLocalBlocksToGlobalBlocks<MatrixType, number>>;
 
       /**
-       * Constructor, initializing the #threshold, which limits how small
-       * numbers may be to be entered into the matrix.
+       * 构造函数，初始化#threshold，它限制了可以输入矩阵的小数字。
+       *
        */
       MGMatrixLocalBlocksToGlobalBlocks(double threshold = 1.e-12);
 
       /**
-       * Copy the BlockInfo and the matrix pointers into local variables and
-       * initialize cell matrix vectors.
+       * 将BlockInfo和矩阵指针复制到本地变量，并初始化单元格矩阵向量。
+       *
        */
       void
       initialize(const BlockInfo *block_info, MatrixPtrVector &matrices);
 
       /**
-       * Initialize the multilevel constraints.
+       * 初始化多级约束。
+       *
        */
       void
       initialize(const MGConstrainedDoFs &mg_constrained_dofs);
 
       /**
-       * Multigrid methods on locally refined meshes need additional matrices.
-       * For discontinuous Galerkin methods, these are two flux matrices
-       * across the refinement edge, which are set by this method.
+       * 局部细化网格上的多网格方法需要额外的矩阵。
+       * 对于不连续的Galerkin方法，这些是跨越细化边缘的两个通量矩阵，由该方法设置。
+       *
        */
       void
       initialize_edge_flux(MatrixPtrVector &up, MatrixPtrVector &down);
 
       /**
-       * Multigrid methods on locally refined meshes need additional matrices.
-       * For discontinuous Galerkin methods, these are two flux matrices
-       * across the refinement edge, which are set by this method.
+       * 局部细化网格上的多栅方法需要额外的矩阵。
+       * 对于不连续的Galerkin方法，这些是跨越细化边缘的两个通量矩阵，由该方法设置。
+       *
        */
       void
       initialize_interfaces(MatrixPtrVector &interface_in,
                             MatrixPtrVector &interface_out);
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化以后用于装配的DoFInfo对象中的局部数据。
+       * 如果 <code>!face</code> ， @p info
+       * 对象指的是一个单元，否则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
@@ -378,14 +327,16 @@ namespace MeshWorker
 
 
       /**
-       * Assemble the local matrices into the global matrices.
+       * 将局部矩阵组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble all local matrices into the global matrices.
+       * 将所有局部矩阵集合到全局矩阵中。
+       *
        */
       template <class DOFINFO>
       void
@@ -393,7 +344,8 @@ namespace MeshWorker
 
     private:
       /**
-       * Assemble a single local matrix into a global one.
+       * 将单个局部矩阵组合成全局矩阵。
+       *
        */
       void
       assemble(MatrixType &                                global,
@@ -407,7 +359,8 @@ namespace MeshWorker
                bool                                        transpose = false);
 
       /**
-       * Assemble a single local matrix into a global one.
+       * 将一个单一的局部矩阵组合成一个全局矩阵。
+       *
        */
       void
       assemble_fluxes(MatrixType &                                global,
@@ -420,7 +373,8 @@ namespace MeshWorker
                       const unsigned int                          level2);
 
       /**
-       * Assemble a single local matrix into a global one.
+       * 将一个单一的本地矩阵组合成一个全局矩阵。
+       *
        */
       void
       assemble_up(MatrixType &                                global,
@@ -433,7 +387,8 @@ namespace MeshWorker
                   const unsigned int                          level2);
 
       /**
-       * Assemble a single local matrix into a global one.
+       * 将一个单一的本地矩阵组合成一个全局矩阵。
+       *
        */
       void
       assemble_down(MatrixType &                                global,
@@ -446,7 +401,8 @@ namespace MeshWorker
                     const unsigned int                          level2);
 
       /**
-       * Assemble a single local matrix into a global one.
+       * 将一个单一的本地矩阵组合成一个全局矩阵。
+       *
        */
       void
       assemble_in(MatrixType &                                global,
@@ -459,7 +415,8 @@ namespace MeshWorker
                   const unsigned int                          level2);
 
       /**
-       * Assemble a single local matrix into a global one.
+       * 将一个单一的本地矩阵组合成一个全局矩阵。
+       *
        */
       void
       assemble_out(MatrixType &                                global,
@@ -472,43 +429,46 @@ namespace MeshWorker
                    const unsigned int                          level2);
 
       /**
-       * The level matrices, stored as a vector of pointers.
+       * 水平矩阵，存储为一个指向性的向量。
+       *
        */
       MatrixPtrVectorPtr matrices;
 
       /**
-       * The flux matrix between the fine and the coarse level at refinement
-       * edges.
+       * 细化边缘的细化水平和粗化水平之间的通量矩阵。
+       *
        */
       MatrixPtrVectorPtr flux_down;
 
       /**
-       * The flux matrix between the coarse and the fine level at refinement
-       * edges.
+       * 细化边缘的粗级和细级之间的通量矩阵。
+       *
        */
       MatrixPtrVectorPtr flux_up;
 
       /**
-       * The interface matrix between the fine and the coarse level at
-       * refinement edges.
+       * 细化边缘处精细级和粗化级之间的界面矩阵。
+       *
        */
       MatrixPtrVectorPtr interface_out;
 
       /**
-       * The interface matrix between the coarse and the fine level at
-       * refinement edges.
+       * 细化边缘处的粗级和细级之间的界面矩阵。
+       *
        */
       MatrixPtrVectorPtr interface_in;
 
       /**
-       * A pointer to the object containing the block structure.
+       * 一个指向包含块结构的对象的指针。
+       *
        */
       SmartPointer<const BlockInfo,
                    MGMatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
         block_info;
 
       /**
-       * A pointer to the object containing constraints.
+       * 一个指向包含约束条件的对象的指针。
+       *
        */
       SmartPointer<const MGConstrainedDoFs,
                    MGMatrixLocalBlocksToGlobalBlocks<MatrixType, number>>
@@ -516,9 +476,8 @@ namespace MeshWorker
 
 
       /**
-       * The smallest positive number that will be entered into the global
-       * matrix. All smaller absolute values will be treated as zero and will
-       * not be assembled.
+       * 将被输入全局矩阵的最小的正数。所有更小的绝对值将被视为零，不会被集合。
+       *
        */
       const double threshold;
     };
@@ -1467,3 +1426,5 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/algorithms/newton_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -37,54 +36,71 @@ class ParameterHandler;
 namespace Algorithms
 {
   /**
-   * 执行牛顿迭代的运算器类，具有标准步长控制和自适应矩阵生成功能。
-   * 这个类执行牛顿迭代，直到由#控制决定的收敛。如果在更新之后，残差的标准值变大，那么步长控制就会被激活，随后更新被除以2，直到残差真正变小（或者达到#n_stepsize_iterations确定的最小缩放系数）。
-   * 由于组装矩阵，取决于实现方式，往往是昂贵的，这个方法应用一个自适应的重新组装策略。只有当残差的减少系数超过#阈值时，事件
-   * Algorithms::bad_derivative
-   * 才会提交给#inverse_derivative。由这个对象来实现相应的重新组合。
-   * <h3>Contents of the AnyData objects</h3>
-   * 牛顿方法使用的唯一数值是operator()()参数<tt>out</tt>中的第一个向量。它作为牛顿方法的起始向量，并在最后包含了解。所有其他<tt>out</tt>的向量都被牛顿方法及其内部的operator对象所忽略。所有<tt>in</tt>的向量都会被转发给内部的运算符对象，并添加如下的附加信息。
-   * 当调用(*#residual)()时，给牛顿迭代的AnyData
-   * <tt>in</tt>被一个向量<tt>"Newton
-   * iterate"</tt>所预置，这是牛顿迭代的当前值，可用于评估此时的残差。
-   * 对于调用(*#inverse_derivative)，向量<tt>"Newton
-   * residual"</tt>被插入<tt>"Newton iterate"</tt>之前。
+   * Operator class performing Newton's iteration with standard step size
+   * control and adaptive matrix generation.
    *
+   * This class performs a Newton iteration up to convergence determined by
+   * #control. If after an update the norm of the residual has become larger,
+   * then step size control is activated and the update is subsequently
+   * divided by two until the residual actually becomes smaller (or the
+   * minimal scaling factor determined by #n_stepsize_iterations is reached).
+   *
+   * Since assembling matrices, depending on the implementation, tends to be
+   * costly, this method applies an adaptive reassembling strategy. Only if
+   * the reduction factor for the residual is more than #threshold, the event
+   * Algorithms::bad_derivative is submitted to #inverse_derivative. It is up
+   * to this object to implement reassembling accordingly.
+   *
+   * <h3>Contents of the AnyData objects</h3>
+   *
+   * The only value used by the Newton method is the first vector in the
+   * parameter <tt>out</tt> of operator()(). It serves as the start vector of
+   * Newton's method and in the end contains the solution. All other vectors
+   * of <tt>out</tt> are ignored by Newton's method and its inner Operator
+   * objects. All vectors of <tt>in</tt> are forwarded to the inner Operator
+   * objects, with additional information added as follows.
+   *
+   * When calling (*#residual)(), the AnyData <tt>in</tt> given to the Newton
+   * iteration is prepended by a vector <tt>"Newton iterate"</tt>, the current
+   * value of the Newton iterate, which can be used to evaluate the residual
+   * at this point.
+   *
+   * For the call to (*#inverse_derivative), the vector <tt>"Newton
+   * residual"</tt> is inserted before <tt>"Newton iterate"</tt>.
    */
   template <typename VectorType>
   class Newton : public OperatorBase
   {
   public:
     /**
-     * 构造函数，分别接收计算残差和解决线性问题的应用程序。
-     *
+     * Constructor, receiving the applications computing the residual and
+     * solving the linear problem, respectively.
      */
     Newton(OperatorBase &residual, OperatorBase &inverse_derivative);
 
     /**
-     * 声明适用于牛顿方法的参数。
-     *
+     * Declare the parameters applicable to Newton's method.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 读取ParameterHandler中的参数。
-     *
+     * Read the parameters in the ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
 
     /**
-     * 初始化用于调试的指针data_out。
-     *
+     * Initialize the pointer data_out for debugging.
      */
     void
     initialize(OutputOperator<VectorType> &output);
 
     /**
-     * 实际的牛顿迭代。初始值在<tt>out(0)</tt>中，它也包含收敛后的结果。<tt>in</tt>中的值不会被牛顿使用，但会被传给对象#residual和#inverse_derivative。
-     *
+     * The actual Newton iteration. The initial value is in <tt>out(0)</tt>,
+     * which also contains the result after convergence. Values in <tt>in</tt>
+     * are not used by Newton, but will be handed down to the objects
+     * #residual and #inverse_derivative.
      */
     virtual void
     operator()(AnyData &out, const AnyData &in) override;
@@ -93,70 +109,73 @@ namespace Algorithms
     notify(const Event &) override;
 
     /**
-     * 设置允许的最大残差减少量，而不触发下一步的装配。返回之前的值。
-     *
+     * Set the maximal residual reduction allowed without triggering
+     * assembling in the next step. Return the previous value.
      */
     double
     threshold(double new_value);
 
     /**
-     * 牛顿迭代的控制对象。
-     *
+     * Control object for the Newton iteration.
      */
     ReductionControl control;
 
   private:
     /**
-     * 计算残差的运算器。
-     *
+     * The operator computing the residual.
      */
     SmartPointer<OperatorBase, Newton<VectorType>> residual;
 
     /**
-     * 将反导数应用于残差的运算器。
-     *
+     * The operator applying the inverse derivative to the residual.
      */
     SmartPointer<OperatorBase, Newton<VectorType>> inverse_derivative;
 
     /**
-     * 在debug_vectors为真时处理输出的运算器。
-     * 首先调用初始化函数。
-     *
+     * The operator handling the output in case the debug_vectors is true.
+     * Call the initialize function first.
      */
     SmartPointer<OutputOperator<VectorType>, Newton<VectorType>> data_out;
 
     /**
-     * 这个标志是由函数assemble()设置的，表示矩阵在启动时必须重新组装。
-     *
+     * This flag is set by the function assemble(), indicating that the matrix
+     * must be assembled anew upon start.
      */
     bool assemble_now;
 
     /**
-     * 一个用于决定应该进行多少次步长迭代的标志。
-     * 默认值为原始值21。        在此输入0以关闭步长控制。
-     * @note  由参数文件中的<tt>步长迭代</tt>控制。
+     * A flag used to decide how many stepsize iteration should be made.
+     * Default is the original value of 21.
      *
+     * Enter zero here to turn off stepsize control.
+     *
+     * @note Controlled by <tt>Stepsize iterations</tt> in parameter file
      */
     unsigned int n_stepsize_iterations;
 
     /**
-     * 重新组合矩阵的阈值。
-     * 如果两个连续残差的商小于这个阈值，系统矩阵就不会在这一步中被组装起来。
-     * @note 该参数应调整为内解器的残差增益。
-     * 默认值为零，导致在每一个牛顿步骤中重新组装。
+     * Threshold for re-assembling matrix.
      *
+     * If the quotient of two consecutive residuals is smaller than this
+     * threshold, the system matrix is not assembled in this step.
+     *
+     * @note This parameter should be adjusted to the residual gain of the
+     * inner solver.
+     *
+     * The default values is zero, resulting in reassembling in every Newton
+     * step.
      */
     double assemble_threshold;
 
   public:
     /**
-     * 在每一步之后打印残差、更新和更新的解决方案到文件<tt>Newton_NNN</tt>?
-     *
+     * Print residual, update and updated solution after each step into file
+     * <tt>Newton_NNN</tt>?
      */
     bool debug_vectors;
     /**
-     * 将调试输出写到 @p deallog; ，数字越大，输出越多。
-     *
+     * Write debug output to @p deallog; the higher the number, the more
+     * output.
      */
     unsigned int debug;
   };
@@ -165,5 +184,3 @@ namespace Algorithms
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

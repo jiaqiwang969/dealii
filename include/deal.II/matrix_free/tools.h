@@ -1,4 +1,3 @@
-//include/deal.II-translator/Matrix_free/tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -29,16 +28,15 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 在无矩阵算子求值的背景下，是一个实用函数的命名空间。
- *
- *
+ * A namespace for utility functions in the context of matrix-free operator
+ * evaluation.
  */
 namespace MatrixFreeTools
 {
   /**
-   * 修改 @p additional_data
-   * ，使单元格根据其边界ID进行分类，使以单元格为中心的循环情况下的面积分更加简单。
-   *
+   * Modify @p additional_data so that cells are categorized
+   * according to their boundary IDs, making face integrals in the case of
+   * cell-centric loop simpler.
    */
   template <int dim, typename AdditionalData>
   void
@@ -46,12 +44,12 @@ namespace MatrixFreeTools
                              AdditionalData &          additional_data);
 
   /**
-   * 计算线性算子的对角线(  @p diagonal_global), 给定的 @p
-   * matrix_free 和局部单元格积分运算 @p local_vmult.
-   * 矢量在函数中被初始化为正确大小。    参数 @p dof_no,  @p
-   * quad_no, 和 @p first_selected_component
-   * 被传递给内部设置的FEEvaluation的构造器。
+   * Compute the diagonal of a linear operator (@p diagonal_global), given
+   * @p matrix_free and the local cell integral operation @p local_vmult. The
+   * vector is initialized to the right size in the function.
    *
+   * The parameters @p dof_no, @p quad_no, and @p first_selected_component are
+   * passed to the constructor of the FEEvaluation that is internally set up.
    */
   template <int dim,
             int fe_degree,
@@ -74,8 +72,7 @@ namespace MatrixFreeTools
     const unsigned int first_selected_component = 0);
 
   /**
-   * 与上述相同，但有一个类和一个函数指针。
-   *
+   * Same as above but with a class and a function pointer.
    */
   template <typename CLASS,
             int dim,
@@ -101,12 +98,12 @@ namespace MatrixFreeTools
 
 
   /**
-   * 计算线性算子的矩阵表示（  @p matrix),  给出  @p matrix_free
-   * 和局部单元积分运算  @p local_vmult.
-   * 对角线上的约束条目被设置为1。    参数 @p dof_no,  @p
-   * quad_no, 和 @p first_selected_component
-   * 被传递给内部设置的FEEvaluation的构造函数。
+   * Compute the matrix representation of a linear operator (@p matrix), given
+   * @p matrix_free and the local cell integral operation @p local_vmult.
+   * Constrained entries on the diagonal are set to one.
    *
+   * The parameters @p dof_no, @p quad_no, and @p first_selected_component are
+   * passed to the constructor of the FEEvaluation that is internally set up.
    */
   template <int dim,
             int fe_degree,
@@ -131,8 +128,7 @@ namespace MatrixFreeTools
     const unsigned int first_selected_component = 0);
 
   /**
-   * 与上述相同，但有一个类和一个函数指针。
-   *
+   * Same as above but with a class and a function pointer.
    */
   template <typename CLASS,
             int dim,
@@ -696,8 +692,8 @@ namespace MatrixFreeTools
   namespace internal
   {
     /**
-     * 如果矩阵和约束的值类型相等，返回给定的AffineConstraint实例的引用。
-     *
+     * If value type of matrix and constrains equals, return a reference
+     * to the given AffineConstraint instance.
      */
     template <typename MatrixType,
               typename Number,
@@ -716,8 +712,9 @@ namespace MatrixFreeTools
     }
 
     /**
-     * 如果矩阵的值类型和约束条件不相等，则创建一个具有矩阵值类型的新AffineConstraint实例，并返回对它的引用。
-     *
+     * If value type of matrix and constrains do not equal, a new
+     * AffineConstraint instance with the value type of the matrix is
+     * created and a reference to it is returned.
      */
     template <typename MatrixType,
               typename Number,
@@ -901,5 +898,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 
 #endif
-
-

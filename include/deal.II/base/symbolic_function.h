@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/symbolic_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -49,28 +48,48 @@ namespace Functions
 {
 #ifdef DEAL_II_WITH_SYMENGINE
   /**
-   * 一个函数类，利用符号微分来计算梯度、拉普拉斯、Hessians和时间导数。
-   * 这个类可用于使用 Differentiation::SD
-   * 命名空间提供的方法来定义函数。特别是，可以定义一个符号化的评价点（函数的参数），以及一个符号化的表达式。
-   * 符号梯度和符号Hessians在构造时计算，当用户使用update_user_substitution_map()方法要求在符号函数中进行替换时，也会计算。
-   * 每当一个评估方法被调用时，就会尝试进行替换，用评估点替换坐标符号参数，用get_time()方法返回的当前时间替换符号时间。用户必须确保在求值时，参数替换提供了一个完全求值的表达式（即除了数值之外，函数表达式中不包含其他符号），否则将抛出一个异常。额外的符号可以通过存储在用户提供的替换图中进行部分评估或替换，该替换图可以通过调用update_user_substitution_map（）或set_additional_function_arguments（）方法进行更新。
-   * 这个类的最简单的使用情况在下面的例子中给出。
+   * A Function class that leverages symbolic differentiation to compute
+   * gradients, Laplacians, Hessians, and time derivatives.
+   *
+   * This class can be used to define functions using methods provided by the
+   * Differentiation::SD namespace. In particular, one can define a symbolic
+   * evaluation point (the argument of the function), as well as a symbolic
+   * expression.
+   *
+   * The symbolic gradients and the symbolic Hessians are computed at
+   * construction time, and when a substitution in the symbolic functions is
+   * requested by the user using the method update_user_substitution_map().
+   *
+   * Whenever one of the evaluation methods is called, a substitution is
+   * attempted with the coordinate symbols argument replaced by the evaluation
+   * point and the symbolic time replaced by the current time, as returned by
+   * the get_time() method. The user has to make sure that at evaluation time
+   * argument substitution provides a fully evaluated expression (i.e., no other
+   * symbols are contained in the function expression, except numerical values),
+   * or an exception will be thrown. Additional symbols can be partially
+   * evaluated or substituted by storing them in a user supplied substitution
+   * maps, that can be updated by calling update_user_substitution_map() or the
+   * set_additional_function_arguments() methods.
+   *
+   * The simplest use case of this class is given in the following example:
    * @code
    * SymbolicFunction<2> fun("x^2+y; t*x*y");
    * fun.set_time(3.0);
    * Point<2> p(1.0, 2.0);
    *
-   * auto a = fun.value(p, / component / 0); // a = 3.0
-   * auto b = fun.value(p, / component / 1); // b = 6.0
+   * auto a = fun.value(p, / * component * / 0); // a = 3.0
+   * auto b = fun.value(p, / * component * / 1); // b = 6.0
    *
    * auto df_dt = fun.time_derivative();
    *
-   * auto c = df_dt.value(p, / component / 0); // c = 0.0
-   * auto d = df_dt.value(p, / component / 1); // d = 2.0
+   * auto c = df_dt.value(p, / * component * / 0); // c = 0.0
+   * auto d = df_dt.value(p, / * component * / 1); // d = 2.0
    * @endcode
-   * 在这个例子中，一个有两个组件的Function是用一个字符串定义的，这个字符串包含了用分号分隔的表达式。
-   * 一个更复杂的例子，明确地使用了
-   * Differentiation::SD::Expression 对象，由以下例子给出
+   * where a Function with two components is defined using a string containing
+   * their expressions separated by semicolons.
+   *
+   * A more involved example, that explicitly uses
+   * Differentiation::SD::Expression objects, is given by
    * @code
    * using namespace Differentiation::SD;
    * // Create a position Tensor<1,2,Differentiation::SD::Expression>
@@ -98,45 +117,83 @@ namespace Functions
    * auto dt_gradfp = time_derivative.gradient(p);
    * auto dt_lapfp = time_derivative.laplacian(p);
    * @endcode
-   * 部分替换是可能的（也就是说，你可以使用额外的符号来定义函数）。然而，一旦你评估该函数，你必须确保所有无关的符号（即那些没有提到空间
-   * @p coordinate_symbols 或 @p time_symbol
-   * 变量的符号）已经被数值，或空间或时间参数的表达式所替代，方法是调用update_user_substitution_map()或set_additional_function_arguments()方法。
-   * 如果你的函数需要评估额外的参数，你可以通过调用set_additional_function_arguments()方法指定它们。
-   * 如果你用相同的参数调用update_user_substitution_map()和set_additional_function_arguments()，对函数评估的影响将是相同的，然而，内部行为和函数导数将不同。update_user_substitution_map()方法执行一次替换（第一次需要替换），然后在内部存储一个结果表达式的副本，以及它的导数（如果需要）。然后在随后的所有评估中使用这些内容。调用set_additional_function_arguments()将在评估时间内，在*所有导数被计算之后，对传递的替换图进行实时评估。
-   * @note
-   * 这个类和FunctionParser类的区别在于，这个类允许计算一阶和二阶导数（以符号的方式），而FunctionParser类只计算一阶导数，使用有限差分。对于复杂的表达式，这个类可能比FunctionParser类要慢。
-   * @ingroup functions
    *
+   * Partial substitution is possible (i.e., you can define the function using
+   * additional symbols). However, as soon as you evaluate the function, you
+   * have to make sure that all extraneous symbols (i.e., those not referring
+   * to the spacial @p coordinate_symbols or to the @p time_symbol variable)
+   * have been substituted with numerical values, or expressions of the spatial
+   * or temporal argument, by calling the update_user_substitution_map() or the
+   * set_additional_function_arguments() methods.
+   *
+   * If your function requires additional arguments to be evaluated, you can
+   * specify them by calling the set_additional_function_arguments() method.
+   *
+   * If you call update_user_substitution_map() and
+   * set_additional_function_arguments() with the same argument, the effect on
+   * the function evaluation will be the same, however, the internal behavior
+   * and function derivatives will be different. The method
+   * update_user_substitution_map() performs the substitution once (the first
+   * time it is required), and then stores internally a copy of the resulting
+   * expression, together with its derivatives (if required). These are then
+   * used in all subsequent evaluations. Calling
+   * set_additional_function_arguments() will evaluate the passed
+   * substitution map on the fly during evaluation time, *after* all
+   * derivatives have been computed.
+   *
+   * @note The difference between this class and the FunctionParser class is
+   * that this class allows to compute first and second order derivatives (in a
+   * symbolic way), while the FunctionParser class computes first order
+   * derivatives only, using finite differences. For complicated expressions,
+   * this class may be slower than the FunctionParser class.
+   *
+   * @ingroup functions
    */
   template <int dim, typename RangeNumberType = double>
   class SymbolicFunction : public Function<dim, RangeNumberType>
   {
   public:
     /**
-     * 构造函数。
-     * 产生的Function对象将有与符号表达式向量 @p function.
-     * 中的条目一样多的组件。向量 @p function
-     * 应包含一个涉及坐标符号参数 @p coordinate_symbols
-     * 和可能的符号时间参数 @p time_symbol.
-     * 的符号表达式的列表，可以用其他符号定义它，只要可选参数
-     * @p user_substitution_map  ] 替换除  @p coordinate_symbols  和  @p
-     * time_symbol.
-     * 以外的所有符号，这在以下情况下很有用：例如，你想用你想用符号命名的材料参数来表达公式，而不是在定义公式时通过它们的数值，或者你想用极坐标而不是笛卡尔坐标来表达你的公式，并且你希望符号引擎能为你计算导数。
-     * 你以后可以通过调用update_user_substitution_map()来更新 @p
-     * user_substitution_map 中包含的符号图。          @param  函数
-     * 类型为 Differentiation::SD::Expression,
-     * 的符号表达式的向量，代表此Function的组成部分。
-     * @param  coordinate_symbols 代表坐标的符号张量，作为 @p
-     * function 矢量中包含的符号表达式的输入参数。默认的
-     * @p coordinate_symbols 是一个
-     * Tensor<1,dim,Differentiation::SD::Expression> ，包含符号 "x
-     * "代表`dim`等于1，"x"、"y "代表`dim`等于2，而 "x"、"y"、"z
-     * "代表`dim`等于3。          @param  time_symbol
-     * 一个代表时间的符号变量。它默认为一个名为 "t
-     * "的符号变量。          @param  user_substitution_map
-     * 任何可能包含在符号函数中的其他符号都需要在这个映射中指定。该地图可以是空的，函数仍然可以包含未评估的符号，只要你调用update_user_substitution_map()，并在任何评估发生之前提供除
-     * @p coordinate_symbols 和 @p time_symbol 外的所有符号的替换。
+     * Constructor.
      *
+     * The resulting Function object will have as many components as there
+     * are entries in the vector of symbolic expressions @p function.
+     *
+     * The vector @p function should contain a list of symbolic expression
+     * involving the coordinate symbols argument @p coordinate_symbols and
+     * possibly the symbolic time argument @p time_symbol. It is possible to
+     * define it in terms of other symbols, as long as the optional parameter
+     * @p user_substitution_map replaces all symbols except
+     * @p coordinate_symbols and @p time_symbol.
+     * This is useful if, for example, you want to express formulas in terms of
+     * material parameters that you want to name symbolically, rather than
+     * through their numeric values when defining the formula, or when you want
+     * to express your formula in terms of polar coordinates rather than
+     * cartesian ones, and you want the symbolic engine to compute the
+     * derivatives for you.
+     * You may later update the symbol map contained in @p user_substitution_map
+     * by calling update_user_substitution_map().
+     *
+     * @param function A vector of symbolic expressions of type
+     * Differentiation::SD::Expression, representing the components of this
+     * Function.
+     *
+     * @param coordinate_symbols A tensor of symbols representing coordinates,
+     * used as input argument in the symbolic expressions contained in the
+     * @p function vector. The default @p coordinate_symbols is a
+     * Tensor<1,dim,Differentiation::SD::Expression>
+     * containing the symbols "x" for `dim` equal to one, "x", "y" for `dim`
+     * equal to two, and "x", "y", "z" for `dim` equal to three.
+     *
+     * @param time_symbol A symbolic variable representing time. It defaults
+     * to a symbolic variable named "t".
+     *
+     * @param user_substitution_map Any other symbol that may be contained in
+     * the symbolic function needs to be specified in this map. The map may be
+     * empty, and the functions may still contain unevaluated symbols, provided
+     * that you call update_user_substitution_map() and provide a replacement of
+     * all symbols except @p coordinate_symbols and @p time_symbol before any
+     * evaluation occurs.
      */
     SymbolicFunction(
       const std::vector<Differentiation::SD::Expression> &function,
@@ -148,75 +205,89 @@ namespace Functions
         &user_substitution_map = {});
 
     /**
-     * 构造函数，接收一个描述函数表达式的单一字符串，作为一个分号分隔的表达式列表。
-     * 符号表达式可以使用默认的参数和默认的符号时间变量，再加上你可能需要的任何额外的符号，只要你在尝试评估函数或其导数之前，通过调用update_user_substitution_map()更新替换所有符号的用户替换图，并且使用set_additional_function_arguments()方法提供你函数的所有额外函数参数。
+     * Constructor that takes a single string that describes the function
+     * expression as a semicolon separated list of expressions.
      *
+     * The symbolic expression can use the default argument and the default
+     * symbolic time variable, plus any additional symbols that you may
+     * need, provided that you update the user substitution map that substitutes
+     * all of them before you try to evaluate the function or its derivatives,
+     * by calling update_user_substitution_map(), and that you provide all the
+     * additional function arguments of your function using the method
+     * set_additional_function_arguments().
      */
     SymbolicFunction(const std::string &expressions);
 
     /**
-     * 存储并应用替换映射 @p substitutions
-     * 到这个Function对象的每个符号组件。
-     * 注意，这个方法将触发对每个分量的梯度、Hessians和Laplacians的重新计算。
+     * Store and apply the substitution map @p substitutions to each symbolic
+     * component of this Function object.
      *
+     * Notice that this method will trigger a recomputation of the
+     * gradients, Hessians, and Laplacians of each component.
      */
     void
     update_user_substitution_map(
       const Differentiation::SD::types::substitution_map &substitutions);
 
     /**
-     * 设置额外的 @p arguments ，在下一个评估步骤中被替换。
-     * 注意， @p arguments 是在*评估 @p
-     * permanent_user_substitution_map,
-     * 和计算完所有导数之后被替换的。如果你传递的额外参数仍然依赖于坐标或时间符号，那么导数的评估将导致部分导数评估。
-     * 这种方法提供了一种方法来评估依赖于更多参数而不仅仅是坐标和时间的函数。如果你想对复杂的符号表达式计算总导数，你应该调用update_user_substitution_map()代替。
+     * Set the additional @p arguments to be substituted in next evaluation
+     * step.
      *
+     * Notice that the @p arguments are substituted *after* evaluating the
+     * @p permanent_user_substitution_map, and after all derivatives are
+     * computed. If the additional arguments you pass still depend on the
+     * coordinate or time symbols, then evaluation of derivatives will result in
+     * a partial derivative evaluation.
+     *
+     * This method provides a way to evaluate functions that depend on more
+     * arguments than simply the coordinates and time. If you want to compute
+     * the total derivative w.r.t. to complicated symbolic expressions, you
+     * should call update_user_substitution_map() instead.
      */
     void
     set_additional_function_arguments(
       const Differentiation::SD::types::substitution_map &arguments);
 
     /**
-     * 返回一个坐标符号的张量，可以用来定义这个符号函数对象的表达式。
-     * 默认参数是一个 Tensor<1,dim,Differentiation::SD::Expression>
-     * ，包含符号 "x "代表`dim`等于1，"x"，"y
-     * "代表`dim`等于2，"x"，"y"，"z "代表`dim`等于3。
+     * Return a tensor of coordinate symbols that can be used to define the
+     * expressions of this symbolic function object.
      *
+     * The default argument is a Tensor<1,dim,Differentiation::SD::Expression>
+     * containing the symbols "x" for `dim` equal to one, "x", "y" for `dim`
+     * equal to two, and "x", "y", "z" for `dim` equal to three.
      */
     static Tensor<1, dim, Differentiation::SD::Expression>
     get_default_coordinate_symbols();
 
     /**
-     * 获取符号函数中用于坐标的实际参数。这个对象不包括任何用户定义的参数。
-     *
+     * Get the actual arguments used for the coordinates in the symbolic
+     * function. This object does not include any user-defined arguments.
      */
     const Tensor<1, dim, Differentiation::SD::Expression> &
     get_coordinate_symbols() const;
 
     /**
-     * 获取该符号函数中实际使用的符号时间。
-     *
+     * Get the actual symbolic time in use in this symbolic function.
      */
     const Differentiation::SD::Expression &
     get_time_symbol() const;
 
     /**
-     * 获取该符号化函数中实际使用的符号化表达式。
-     *
+     * Get the actual symbolic expressions used in this symbolic function.
      */
     const std::vector<Differentiation::SD::Expression> &
     get_symbolic_function_expressions() const;
 
     /**
-     * 获取当前存储的 @p user_substitution_map. 。
-     *
+     * Get the currently stored @p user_substitution_map.
      */
     const Differentiation::SD::types::substitution_map &
     get_user_substitution_map() const;
 
     /**
-     * 返回一个SymbolicFunction对象，表示这个函数的时间导数。空间参数、符号时间和当前存储的用户替换图被转发给新函数。
-     *
+     * Return a SymbolicFunction object that represents the time derivative of
+     * this function. The spatial argument, the symbolic time, and the currently
+     * stored user substitution map are forwarded to the new function.
      */
     SymbolicFunction<dim, RangeNumberType>
     time_derivative() const;
@@ -241,8 +312,8 @@ namespace Functions
             const unsigned int component = 0) const override;
 
     /**
-     * 打印存储的参数和函数表达式，因为它将在调用方法value()时被评估。
-     *
+     * Print the stored arguments and function expression, as it would be
+     * evaluated when calling the method value().
      */
     template <typename StreamType>
     StreamType &
@@ -250,108 +321,109 @@ namespace Functions
 
   private:
     /**
-     * 返回一个替换图，用 @p point,
-     * 的值替换参数，用this->get_time()的值替换符号时间，用
+     * Return a substitution map that replaces the argument with the values of
+     * @p point, the symbolic time with the value of this->get_time(), and any
+     * additional arguments with the substitution map given by
      * @p additional_function_arguments.
-     * 给出的替换图替换任何其他参数。
-     *
      */
     Differentiation::SD::types::substitution_map
     create_evaluation_substitution_map(const Point<dim> &point) const;
 
     /**
-     * 重新计算函数的符号值，应用用户的置换图。这可能是一个昂贵的计算，只有在必要时才会调用。
-     *
+     * Recompute the symbolic value of the function, applying the user
+     * substitution map. This may be an expensive computation, and it is called
+     * only if necessary.
      */
     void
     update_values() const;
 
     /**
-     * 重新计算函数的符号梯度，应用用户置换图。这可能是一个昂贵的计算，只有在必要时才会调用。
-     *
+     * Recompute the symbolic gradient of the function, applying the user
+     * substitution map. This may be an expensive computation, and it is called
+     * only if necessary.
      */
     void
     update_first_derivatives() const;
 
     /**
-     * 重新计算函数的符号Hessian和符号Lapalacian。这可能是一个昂贵的计算，只有在必要时才会调用。
-     *
+     * Recompute the symbolic Hessian and the symbolic Lapalacian of the
+     * function. This may be an expensive computation, and it is called
+     * only if necessary.
      */
     void
     update_second_derivatives() const;
 
     /**
-     * 这个符号函数的组件，在发生任何子结构之前。这是不可改变的，并且在构造时生成。
-     * 在任何评估发生之前， @p user_substitution_map
-     * 被应用于这个对象，其结果被存储在内部变量函数中。
-     * 在评估过程中， @p symbolic_coordinate, 、 @p symbolic_time,
-     * 和任何剩余的符号被替换为输入评估点、当前时间和
-     * @p additional_function_arguments. 的内容。
+     * The components of this symbolic function, before any subustitution took
+     * place. This is immutable, and generated at construction time.
      *
+     * Before any evaluation takes place, the @p user_substitution_map is
+     * applied to this object, and the result is stored in the internal variable
+     * function.
+     *
+     * During evaluation, the @p symbolic_coordinate, the @p symbolic_time, and
+     * any remaining symbols are substituted with the input evaluation point,
+     * the current time, and the content of @p additional_function_arguments.
      */
     const std::vector<Differentiation::SD::Expression> user_function;
 
     /**
-     * 存储用于表达式置换的用户置换图。这可以通过调用update_user_substitution_map()来更新。请注意，该函数仍然可以有未解决的符号，只要通过调用set_additional_function_arguments()来解决这些符号。
-     *
+     * Store the user substitution map used for expression substitutions. This
+     * may be updated with a call to update_user_substitution_map(). Notice that
+     * the function may still have unresolved symbols, provided that they are
+     * resolved by a call to set_additional_function_arguments().
      */
     Differentiation::SD::types::substitution_map user_substitution_map;
 
     /**
-     * 存储一个用于额外参数替换的用户替换图。这将通过调用set_additional_function_arguments()来更新。
-     *
+     * Store a user substitution map used for additional argument
+     * substitutions. This will be updated by a call to
+     * set_additional_function_arguments().
      */
     Differentiation::SD::types::substitution_map additional_function_arguments;
 
     /**
-     * 这个符号函数的实际成分。这是从应用 @p
-     * user_substitution_map. 后的 @p user_function, 中得到的。
-     *
+     * The actual components of this symbolic function. This is obtained from
+     * the @p user_function, after applying the @p user_substitution_map.
      */
     mutable std::vector<Differentiation::SD::Expression> function;
 
     /**
-     * 这个符号函数的每个分量的梯度。这是通过计算对象
-     * @p function, 的符号梯度得到的，即应用 @p
-     * user_substitution_map 到 @p user_function. 之后的梯度。
-     *
+     * The gradients of each component of this symbolic function. This is
+     * obtained by computing the symbolic gradient of the object @p function,
+     * that is, after applying the @p user_substitution_map to @p user_function.
      */
     mutable std::vector<Tensor<1, dim, Differentiation::SD::Expression>>
       function_gradient;
 
     /**
-     * 这个符号函数的每个分量的Hessians。这是通过计算对象
-     * @p function, 的符号Hessian得到的，也就是说，在应用 @p
-     * user_substitution_map 到 @p user_function. 之后
-     *
+     * The Hessians of each component of this symbolic function. This is
+     * obtained by computing the symbolic Hessian of the object @p function,
+     * that is, after applying the @p user_substitution_map to @p user_function.
      */
     mutable std::vector<Tensor<2, dim, Differentiation::SD::Expression>>
       function_hessian;
 
     /**
-     * 这个符号函数的每个分量的拉普拉斯系数。这是通过计算对象
-     * @p function, 的符号拉普拉斯，即应用 @p user_substitution_map
-     * 到 @p user_function. 之后得到的。
-     *
+     * The Laplacians of each component of this symbolic function. This is
+     * obtained by computing the symbolic Laplacian of the object @p function,
+     * that is, after applying the @p user_substitution_map to @p user_function.
      */
     mutable std::vector<Differentiation::SD::Expression> function_laplacian;
 
     /**
-     * 函数的坐标符号参数。
-     *
+     * The coordinate symbols argument of the function.
      */
     Tensor<1, dim, Differentiation::SD::Expression> coordinate_symbols;
 
     /**
-     * 该函数的符号时间参数。
-     *
+     * The symbolic time argument of the function.
      */
     mutable Differentiation::SD::Expression time_symbol;
   };
 
   /**
-   * 允许使用位数左移运算符输出。
-   *
+   * Allow output using the bitwise left shift operator.
    */
   template <int dim, typename RangeNumberType>
   inline std::ostream &
@@ -408,5 +480,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

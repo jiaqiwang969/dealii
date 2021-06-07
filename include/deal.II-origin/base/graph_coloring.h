@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/graph_coloring_0.txt
 
 // ---------------------------------------------------------------------
 //
@@ -34,20 +35,20 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace containing functions that can color graphs.
+ * 一个包含可以给图形着色的函数的命名空间。
+ *
+ *
  */
 namespace GraphColoring
 {
   namespace internal
   {
     /**
-     * Given two sets of indices that are assumed to be sorted, determine
-     * whether they will have a nonempty intersection. The actual intersection
-     * is not computed.
-     * @param indices1 A set of indices, assumed sorted.
-     * @param indices2 A set of indices, assumed sorted.
-     * @return Whether the two sets of indices do have a nonempty
-     * intersection.
+     * 给定两组假设为排序的索引，确定它们是否会有一个非空的交集。实际的交集是不计算的。
+     * @param  indices1 一组指数，假定已排序。      @param
+     * indices2 一组指数，假定已排序。      @return
+     * 两组指数是否有一个非空的交集。
+     *
      */
     inline bool
     have_nonempty_intersection(
@@ -77,32 +78,18 @@ namespace GraphColoring
 
 
     /**
-     * Create a partitioning of the given range of iterators using a
-     * simplified version of the Cuthill-McKee algorithm (Breadth First Search
-     * algorithm). The function creates partitions that contain "zones" of
-     * iterators where the first partition contains the first iterator, the
-     * second zone contains all those iterators that have conflicts with the
-     * single element in the first zone, the third zone contains those
-     * iterators that have conflicts with the iterators of the second zone and
-     * have not previously been assigned to a zone, etc. If the iterators
-     * represent cells, then this generates partitions that are like onion
-     * shells around the very first cell. Note that elements in each zone may
-     * conflict with other elements in the same zone.
+     * 使用Cuthill-McKee算法（广度优先搜索算法）的简化版本创建给定范围的迭代器分区。该函数创建的分区包含迭代器的
+     * "区域"，其中第一个分区包含第一个迭代器，第二个区域包含所有与第一个区域的单一元素有冲突的迭代器，第三个区域包含那些与第二个区域的迭代器有冲突并且之前没有被分配到一个区域的迭代器，等等。如果迭代器代表单元，那么这就会产生像洋葱壳一样的分区，围绕着最开始的单元。请注意，每个区的元素可能与同一区的其他元素冲突。
+     * 两个迭代器是否冲突的问题由一个用户提供的函数决定。这个函数的含义在
+     * GraphColoring::make_graph_coloring() 函数的文档中讨论。
+     * @param[in]  begin 寻求分区的迭代器范围的第一个元素。
+     * @param[in]  end 迭代器范围结束后的元素。      @param[in]
+     * get_conflict_indices
+     * 一个用户定义的函数对象，返回一组描述代表冲突的指标。更深入的讨论见上文。
+     * @return  一组迭代器的集合（为了提高效率，集合由
+     * std::vector
+     * 表示）。最外层集合的每个元素都对应于指向处于同一分区（即同一区域）的对象的迭代器。
      *
-     * The question whether two iterators conflict is determined by a user-
-     * provided function. The meaning of this function is discussed in the
-     * documentation of the GraphColoring::make_graph_coloring() function.
-     *
-     * @param[in] begin The first element of a range of iterators for which a
-     * partitioning is sought.
-     * @param[in] end The element past the end of the range of iterators.
-     * @param[in] get_conflict_indices A user defined function object
-     * returning a set of indicators that are descriptive of what represents a
-     * conflict. See above for a more thorough discussion.
-     * @return A set of sets of iterators (where sets are represented by
-     * std::vector for efficiency). Each element of the outermost set
-     * corresponds to the iterators pointing to objects that are in the same
-     * partition (i.e., the same zone).
      */
     template <typename Iterator>
     std::vector<std::vector<Iterator>>
@@ -196,26 +183,34 @@ namespace GraphColoring
 
 
     /**
-     * This function uses DSATUR (Degree SATURation) to color the elements of
-     * a set. DSATUR works as follows:
-     * -# Arrange the vertices by decreasing order of degrees.
-     * -# Color a vertex of maximal degree with color 1.
-     * -# Choose a vertex with a maximal saturation degree. If there is
-     *    equality, choose any vertex of maximal degree in the uncolored
-     *    subgraph.
-     * -# Color the chosen vertex with the least possible (lowest numbered)
-     *    color.
-     * -# If all the vertices are colored, stop. Otherwise, return to 3.
+     * 这个函数使用DSATUR（Degree
+     * SATURation）来给一个集合的元素着色。DSATUR的工作原理如下。
      *
-     * @param[in] partition The set of iterators that should be colored.
-     * @param[in] get_conflict_indices A user defined function object
-     * returning a set of indicators that are descriptive of what represents a
-     * conflict. See above for a more thorough discussion.
-     * @param[out] partition_coloring A set of sets of iterators (where sets
-     * are represented by std::vector for efficiency). Each element of the
-     * outermost set corresponds to the iterators pointing to objects that are
-     * in the same partition (have the same color) and consequently do not
-     * conflict. The elements of different sets may conflict.
+     *
+     *
+     *
+     *
+     * - 按度数递减的顺序排列顶点。
+     *
+     *
+     * - 用颜色1给最大程度的顶点上色。
+     *
+     *
+     *
+     * - 选择一个具有最大饱和度的顶点。如果存在平等，则选择无色子图中的任何最大程度的顶点。
+     *
+     *
+     *
+     *
+     *
+     * - 用最少的可能（最低编号）的颜色给所选的顶点上色。
+     *
+     *
+     *
+     *
+     *
+     * - 如果所有的顶点都被着色，则停止。否则，返回到3。  @param[in]  partition 应该被着色的迭代器的集合。      @param[in]  get_conflict_indices 一个用户定义的函数对象，返回一组描述代表冲突的指标。更深入的讨论见上文。      @param[out]  partition_coloring 一组迭代器的集合（其中集合由 std::vector 表示，以提高效率）。最外层集合的每个元素都对应于指向处于同一分区（具有相同颜色）的对象的迭代器，因此不会冲突。不同集合中的元素可能会发生冲突。
+     *
      */
     template <typename Iterator>
     void
@@ -314,13 +309,8 @@ namespace GraphColoring
 
 
     /**
-     * Given a partition-coloring graph, i.e., a set of zones (partitions)
-     * each of which is colored, produce a combined coloring for the entire
-     * set of iterators. This is possible because any color on an even (resp.
-     * odd) zone does not conflict with any color of any other even (resp.
-     * odd) zone. Consequently, we can combine colors from all even and all
-     * odd zones. This function tries to create colors of similar number of
-     * elements.
+     * 给定一个分区着色图，即一组分区（partition），每个分区都有颜色，为整个迭代器集产生一个组合着色。这是可能的，因为一个偶数（或奇数）区的任何颜色都不会与任何其他偶数（或奇数）区的任何颜色冲突。因此，我们可以将所有偶数区和奇数区的颜色结合起来。这个函数试图创建元素数量相似的颜色。
+     *
      */
     template <typename Iterator>
     std::vector<std::vector<Iterator>>
@@ -459,81 +449,31 @@ namespace GraphColoring
 
 
   /**
-   * Create a partitioning of the given range of iterators so that iterators
-   * that point to conflicting objects will be placed into different
-   * partitions, where the question whether two objects conflict is determined
-   * by a user-provided function.
+   * 对给定范围的迭代器创建一个分区，这样指向冲突对象的迭代器将被放入不同的分区，其中两个对象是否冲突的问题由用户提供的函数决定。
+   * 这个函数也可以看作是一个图的着色：迭代器所指向的每个对象被认为是一个节点，每两个冲突的节点之间有一条边。然后，图形着色算法为每个节点分配一个颜色，使由一条边连接的两个节点不具有相同的颜色。
+   * 这个函数的一个典型的用例是在并行组装一个矩阵。在这里，人们希望同时在不同的单元上集合局部贡献（这种操作是纯粹的局部操作，因此不需要同步），但随后我们需要将这些局部贡献添加到全局矩阵中。一般来说，如果单元共享自由度，来自不同单元的贡献可能是对同一矩阵项的贡献，因此，除非我们想冒竞赛条件的风险，否则不能在同一时间发生（见http://en.wikipedia.org/wiki/Race_condition）。因此，我们称这两个单元为冲突单元，我们只能允许来自不冲突的单元的并行操作。换句话说，如果矩阵条目集（例如以行为特征的）有一个非空的交集，那么两个单元就处于冲突之中。
+   * 在这种情况下，计算冲突图需要调用一个确定两个迭代器（或它们代表的两个对象）是否冲突的函数，并为每一对迭代器调用，即
+   * $\frac 12 N (N-1)$
+   * 次。这在一般情况下是太昂贵了。一个更好的方法是要求一个用户定义的函数，为每个被调用的迭代器返回一个表征冲突的某种指标集；如果两个迭代器的冲突指标集有一个非空的交集，那么它们就是冲突的。在组装矩阵的例子中，冲突指标集将包含指向的单元上所有自由度的指数（在连续Galerkin方法的情况下），或者当前单元和与当前单元面相邻的所有单元上自由度指数的联合（在非连续Galerkin方法的情况下，因为在那里计算面积分，耦合由共同面连接的自由度
    *
-   * This function can also be considered as a graph coloring: each object
-   * pointed to by an iterator is considered to be a node and there is an edge
-   * between each two nodes that conflict. The graph coloring algorithm then
-   * assigns a color to each node in such a way that two nodes connected by an
-   * edge do not have the same color.
+   * - 见 step-12 ）。)
+   * @note
+   * 由作为第三个参数传递的用户定义函数返回的冲突集需要准确地描述<i>all</i>自由度，对于这些自由度，有什么东西被写进矩阵或右手边。换句话说，如果写入是通过
+   * AffineConstraints::copy_local_to_global(),
+   * 这样的函数发生的，那么冲突指标集实际上不仅要包含当前单元格上的自由度，还要包含它们通过约束条件（如悬挂节点）连接的自由度。
+   * 在其他情况下，冲突指标集可能代表完全不同的东西
    *
-   * A typical use case for this function is in assembling a matrix in
-   * parallel. There, one would like to assemble local contributions on
-   * different cells at the same time (an operation that is purely local and
-   * so requires no synchronization) but then we need to add these local
-   * contributions to the global matrix. In general, the contributions from
-   * different cells may be to the same matrix entries if the cells share
-   * degrees of freedom and, consequently, can not happen at the same time
-   * unless we want to risk a race condition (see
-   * http://en.wikipedia.org/wiki/Race_condition). Thus, we call these two
-   * cells in conflict, and we can only allow operations in parallel from
-   * cells that do not conflict. In other words, two cells are in conflict if
-   * the set of matrix entries (for example characterized by the rows) have a
-   * nonempty intersection.
+   * - 由这个函数的调用者来描述两个迭代器冲突的含义。鉴于此，计算冲突图边可以比用 ${\cal O}(N^2)$ 操作大大便宜。    在任何情况下，该函数的结果将是，其冲突指标集有重叠的迭代器不会被分配到相同的颜色。
+   * @note
+   * 这个函数中使用的算法在Turcksin、Kronbichler和Bangerth的论文中有所描述，见
+   * @ref workstream_paper  。      @param[in]  开始
+   * 寻求着色的迭代器范围的第一个元素。    @param[in]  结束
+   * 迭代器范围结束后的元素。    @param[in]  get_conflict_indices
+   * 一个用户定义的函数对象，返回一组代表冲突的描述性指标。
+   * 更深入的讨论见上文。    @return
+   * 一组迭代器的集合（为了提高效率，集合由 std::vector
+   * 表示）。最外层集合的每个元素都对应于指向处于同一分区（具有相同颜色）的对象的迭代器，因此不会冲突。不同集合中的元素可能会发生冲突。
    *
-   * In this generality, computing the graph of conflicts would require
-   * calling a function that determines whether two iterators (or the two
-   * objects they represent) conflict, and calling it for every pair of
-   * iterators, i.e., $\frac 12 N (N-1)$ times. This is too expensive in
-   * general. A better approach is to require a user-defined function that
-   * returns for every iterator it is called for a set of indicators of some
-   * kind that characterize a conflict; two iterators are in conflict if their
-   * conflict indicator sets have a nonempty intersection. In the example of
-   * assembling a matrix, the conflict indicator set would contain the indices
-   * of all degrees of freedom on the cell pointed to (in the case of
-   * continuous Galerkin methods) or the union of indices of degree of freedom
-   * on the current cell and all cells adjacent to the faces of the current
-   * cell (in the case of discontinuous Galerkin methods, because there one
-   * computes face integrals coupling the degrees of freedom connected by a
-   * common face -- see step-12).
-   *
-   * @note The conflict set returned by the user defined function passed as
-   * third argument needs to accurately describe <i>all</i> degrees of freedom
-   * for which anything is written into the matrix or right hand side. In
-   * other words, if the writing happens through a function like
-   * AffineConstraints::copy_local_to_global(), then the set of conflict
-   * indices must actually contain not only the degrees of freedom on the
-   * current cell, but also those they are linked to by constraints such as
-   * hanging nodes.
-   *
-   * In other situations, the conflict indicator sets may represent something
-   * different altogether -- it is up to the caller of this function to
-   * describe what it means for two iterators to conflict. Given this,
-   * computing conflict graph edges can be done significantly more cheaply
-   * than with ${\cal O}(N^2)$ operations.
-   *
-   * In any case, the result of the function will be so that iterators whose
-   * conflict indicator sets have overlap will not be assigned to the same
-   * color.
-   *
-   * @note The algorithm used in this function is described in a paper by
-   * Turcksin, Kronbichler and Bangerth, see
-   * @ref workstream_paper.
-   *
-   * @param[in] begin The first element of a range of iterators for which a
-   * coloring is sought.
-   * @param[in] end The element past the end of the range of iterators.
-   * @param[in] get_conflict_indices A user defined function object returning
-   * a set of indicators that are descriptive of what represents a conflict.
-   * See above for a more thorough discussion.
-   * @return A set of sets of iterators (where sets are represented by
-   * std::vector for efficiency). Each element of the outermost set
-   * corresponds to the iterators pointing to objects that are in the same
-   * partition (have the same color) and consequently do not conflict. The
-   * elements of different sets may conflict.
    */
   template <typename Iterator>
   std::vector<std::vector<Iterator>>
@@ -570,10 +510,11 @@ namespace GraphColoring
   }
 
   /**
-   * GraphColoring::color_sparsity_pattern, a wrapper function for
-   * SparsityTools::color_sparsity_pattern, is an alternate method for
-   * coloring using graph connections represented by SparsityPattern.
-   * For further details, refer to SparsityTools::color_sparsity_pattern.
+   * GraphColoring::color_sparsity_pattern, 是
+   * SparsityTools::color_sparsity_pattern,
+   * 的一个包装函数，是使用SparsityPattern表示的图连接进行着色的另一种方法。
+   * 进一步的细节，请参考 SparsityTools::color_sparsity_pattern. 。
+   *
    */
   unsigned int
   color_sparsity_pattern(const SparsityPattern &    sparsity_pattern,
@@ -588,3 +529,5 @@ DEAL_II_NAMESPACE_CLOSE
 // end of #ifndef dealii_graph_coloring_h
 #endif
 //----------------------------   graph_coloring.h ---------------------------
+
+

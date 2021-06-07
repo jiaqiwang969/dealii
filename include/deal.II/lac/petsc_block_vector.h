@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/petsc_block_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -38,34 +37,41 @@ namespace PETScWrappers
 
   namespace MPI
   {
-    /*!   @addtogroup  PETScWrappers  @{ !     
-* */
+    /*! @addtogroup PETScWrappers
+     *@{
+     */
 
     /**
-     * 基于PETScWrappers中实现的平行向量类的块向量的实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型的特定函数。
-     * 数据的分配模式是这样的：每个块都分布在MPI通信器中命名的所有MPI进程中。
-     * 也就是说，我们不只是分发整个向量，而是分发每个组件。因此，在构造函数和reinit()函数中，不仅要指定各个块的大小，还要指定这些块中每个元素在本地进程中的存储数量。
-     * @ingroup Vectors @see   @ref GlossBlockLA  "块（线性代数）"
+     * An implementation of block vectors based on the parallel vector class
+     * implemented in PETScWrappers. While the base class provides for most of
+     * the interface, this class handles the actual allocation of vectors and
+     * provides functions that are specific to the underlying vector type.
      *
+     * The model of distribution of data is such that each of the blocks is
+     * distributed across all MPI processes named in the MPI communicator.
+     * I.e. we don't just distribute the whole vector, but each component. In
+     * the constructors and reinit() functions, one therefore not only has to
+     * specify the sizes of the individual blocks, but also the number of
+     * elements of each of these blocks to be stored on the local process.
+     *
+     * @ingroup Vectors @see
+     * @ref GlossBlockLA "Block (linear algebra)"
      */
     class BlockVector : public BlockVectorBase<Vector>
     {
     public:
       /**
-       * 对基类进行类型化定义，以便更简单地访问它自己的别名。
-       *
+       * Typedef the base class for simpler access to its own alias.
        */
       using BaseClass = BlockVectorBase<Vector>;
 
       /**
-       * 类型化底层向量的类型。
-       *
+       * Typedef the type of the underlying vector.
        */
       using BlockType = BaseClass::BlockType;
 
       /**
-       * 从基类中导入别名。
-       *
+       * Import the alias from the base class.
        */
       using value_type      = BaseClass::value_type;
       using pointer         = BaseClass::pointer;
@@ -77,17 +83,15 @@ namespace PETScWrappers
       using const_iterator  = BaseClass::const_iterator;
 
       /**
-       * 默认构造函数。生成一个没有任何块的空向量。
-       *
+       * Default constructor. Generate an empty vector without any blocks.
        */
       BlockVector() = default;
 
       /**
-       * 构造函数。生成一个有 @p n_blocks
-       * 个块的向量，每个块都是跨越 @p communicator
-       * 的平行向量，有 @p block_size 个元素，其中 @p
-       * locally_owned_size 个元素被存储在当前进程中。
-       *
+       * Constructor. Generate a block vector with @p n_blocks blocks, each of
+       * which is a parallel vector across @p communicator with @p block_size
+       * elements of which @p locally_owned_size elements are stored on the
+       * present process.
        */
       explicit BlockVector(const unsigned int n_blocks,
                            const MPI_Comm &   communicator,
@@ -95,30 +99,31 @@ namespace PETScWrappers
                            const size_type    locally_owned_size);
 
       /**
-       * 复制构造函数。将平行向量的所有属性设置为给定参数的属性，并复制这些元素。
-       *
+       * Copy constructor. Set all the properties of the parallel vector to
+       * those of the given argument and copy the elements.
        */
       BlockVector(const BlockVector &V);
 
       /**
-       * 构造函数。将块的数量设置为<tt>block_sizes.size()</tt>，并以<tt>block_sizes[i]</tt>零元素初始化每个块。
-       * 各个块分布在给定的通信器上，并且每个块都在当前进程上存储<tt>local_elements[i]</tt>元素。
-       *
+       * Constructor. Set the number of blocks to <tt>block_sizes.size()</tt>
+       * and initialize each block with <tt>block_sizes[i]</tt> zero elements.
+       * The individual blocks are distributed across the given communicator,
+       * and each store <tt>local_elements[i]</tt> elements on the present
+       * process.
        */
       BlockVector(const std::vector<size_type> &block_sizes,
                   const MPI_Comm &              communicator,
                   const std::vector<size_type> &local_elements);
 
       /**
-       * 用parallel_partitioning.size()块创建一个BlockVector，每个块用给定的IndexSet初始化。
-       *
+       * Create a BlockVector with parallel_partitioning.size() blocks, each
+       * initialized with the given IndexSet.
        */
       explicit BlockVector(const std::vector<IndexSet> &parallel_partitioning,
                            const MPI_Comm &communicator = MPI_COMM_WORLD);
 
       /**
-       * 与上述相同，但包括幽灵元素
-       *
+       * Same as above, but include ghost elements
        */
       BlockVector(const std::vector<IndexSet> &parallel_partitioning,
                   const std::vector<IndexSet> &ghost_indices,
@@ -127,32 +132,31 @@ namespace PETScWrappers
 
 
       /**
-       * 销毁器。清除内存
-       *
+       * Destructor. Clears memory
        */
       ~BlockVector() override = default;
 
       /**
-       * 复制操作符：用给定的标量值填充本地存储的向量的所有组件。
-       *
+       * Copy operator: fill all components of the vector that are locally
+       * stored with the given scalar value.
        */
       BlockVector &
       operator=(const value_type s);
 
       /**
-       * 对相同类型的参数进行复制操作。
-       *
+       * Copy operator for arguments of the same type.
        */
       BlockVector &
       operator=(const BlockVector &V);
 
       /**
-       * 重新初始化BlockVector，使其包含大小为 @p block_size的
-       * @p n_blocks ，每个都在本地存储 @p locally_owned_size
-       * 元素。 @p communicator
-       * 参数表示这些块中的每个块应与哪个MPI通道通信。
-       * 如果<tt>omit_zeroing_entries==false</tt>，该向量将被填充为零。
+       * Reinitialize the BlockVector to contain @p n_blocks of size @p
+       * block_size, each of which stores @p locally_owned_size elements
+       * locally. The @p communicator argument denotes which MPI channel each
+       * of these blocks shall communicate.
        *
+       * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with
+       * zeros.
        */
       void
       reinit(const unsigned int n_blocks,
@@ -162,12 +166,24 @@ namespace PETScWrappers
              const bool         omit_zeroing_entries = false);
 
       /**
-       * 重新初始化BlockVector，使其包含<tt>block_sizes.size()</tt>块。每个块都被重新初始化为<tt>block_sizes[i]</tt>尺寸。它们中的每一个都在当前进程中存储<tt>locally_owned_sizes[i]</tt>元素。
-       * 如果块的数量与调用此函数前相同，所有的向量都保持不变，并为每个向量调用
-       * reinit()。
-       * 如果<tt>omit_zeroing_entries==false</tt>，则向量被填充为零。
-       * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新其缓存的向量大小。如果你调用其中一个块的reinit()，那么对这个对象的后续操作可能会产生不可预测的结果，因为它们可能被路由到错误的块。
+       * Reinitialize the BlockVector such that it contains
+       * <tt>block_sizes.size()</tt> blocks. Each block is reinitialized to
+       * dimension <tt>block_sizes[i]</tt>. Each of them stores
+       * <tt>locally_owned_sizes[i]</tt> elements on the present process.
        *
+       * If the number of blocks is the same as before this function was
+       * called, all vectors remain the same and reinit() is called for each
+       * vector.
+       *
+       * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with
+       * zeros.
+       *
+       * Note that you must call this (or the other reinit() functions)
+       * function, rather than calling the reinit() functions of an individual
+       * block, to allow the block vector to update its caches of vector
+       * sizes. If you call reinit() of one of the blocks, then subsequent
+       * actions on this object may yield unpredictable results since they may
+       * be routed to the wrong block.
        */
       void
       reinit(const std::vector<size_type> &block_sizes,
@@ -176,26 +192,32 @@ namespace PETScWrappers
              const bool                    omit_zeroing_entries = false);
 
       /**
-       * 将尺寸改为向量<tt>V</tt>的尺寸。这与其他reinit()函数的情况相同。
-       * <tt>V</tt>的元素不会被复制，也就是说，这个函数与调用<tt>reinit
-       * (V.size(), omit_zeroing_entries)</tt>相同。
-       * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新它的向量大小缓存。如果你在其中一个块上调用reinit()，那么对这个对象的后续操作可能会产生不可预测的结果，因为它们可能会被路由到错误的块上。
+       * Change the dimension to that of the vector <tt>V</tt>. The same
+       * applies as for the other reinit() function.
        *
+       * The elements of <tt>V</tt> are not copied, i.e.  this function is the
+       * same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.
+       *
+       * Note that you must call this (or the other reinit() functions)
+       * function, rather than calling the reinit() functions of an individual
+       * block, to allow the block vector to update its caches of vector
+       * sizes. If you call reinit() on one of the blocks, then subsequent
+       * actions on this object may yield unpredictable results since they may
+       * be routed to the wrong block.
        */
       void
       reinit(const BlockVector &V, const bool omit_zeroing_entries = false);
 
       /**
-       * 使用IndexSets重新初始化BlockVector。详细情况请参见具有相同参数的构造函数。
-       *
+       * Reinitialize the BlockVector using IndexSets. See the constructor
+       * with the same arguments for details.
        */
       void
       reinit(const std::vector<IndexSet> &parallel_partitioning,
              const MPI_Comm &             communicator);
 
       /**
-       * 与上述相同，但包括幽灵条目。
-       *
+       * Same as above but include ghost entries.
        */
       void
       reinit(const std::vector<IndexSet> &parallel_partitioning,
@@ -203,38 +225,49 @@ namespace PETScWrappers
              const MPI_Comm &             communicator);
 
       /**
-       * 将块的数量改为<tt>num_blocks</tt>。各个区块将被初始化为零大小，所以假定用户自己以适当的方式调整各个区块的大小，并在之后调用<tt>collect_sizes</tt>。
-       *
+       * Change the number of blocks to <tt>num_blocks</tt>. The individual
+       * blocks will get initialized with zero size, so it is assumed that the
+       * user resizes the individual blocks by herself in an appropriate way,
+       * and calls <tt>collect_sizes</tt> afterwards.
        */
       void
       reinit(const unsigned int num_blocks);
 
       /**
-       * 如果这个向量是一个重影向量（因此是只读的），则返回。
-       *
+       * Return if this vector is a ghosted vector (and thus read-only).
        */
       bool
       has_ghost_elements() const;
 
       /**
-       * 返回一个对与此向量一起使用的MPI通信器对象的引用。
-       *
+       * Return a reference to the MPI communicator object in use with this
+       * vector.
        */
       const MPI_Comm &
       get_mpi_communicator() const;
 
       /**
-       * 交换这个向量和另一个向量<tt>v</tt>的内容。我们可以用一个临时变量和复制数据元素来完成这个操作，但是这个函数明显更有效率，因为它只交换两个向量的数据指针，因此不需要分配临时存储和移动数据。
-       * 限制：现在这个函数只在两个向量有相同数量的块的情况下工作。如果需要，也应该交换块的数量。
-       * 这个函数类似于所有C++标准容器的swap()函数。此外，还有一个全局函数swap(u,v)，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数类比。
+       * Swap the contents of this vector and the other vector <tt>v</tt>. One
+       * could do this operation with a temporary variable and copying over
+       * the data elements, but this function is significantly more efficient
+       * since it only swaps the pointers to the data of the two vectors and
+       * therefore does not need to allocate temporary storage and move data
+       * around.
        *
+       * Limitation: right now this function only works if both vectors have
+       * the same number of blocks. If needed, the numbers of blocks should be
+       * exchanged, too.
+       *
+       * This function is analogous to the swap() function of all C++
+       * standard containers. Also, there is a global function swap(u,v) that
+       * simply calls <tt>u.swap(v)</tt>, again in analogy to standard
+       * functions.
        */
       void
       swap(BlockVector &v);
 
       /**
-       * 打印到一个流。
-       *
+       * Print to a stream.
        */
       void
       print(std::ostream &     out,
@@ -243,20 +276,18 @@ namespace PETScWrappers
             const bool         across     = true) const;
 
       /**
-       * 异常情况
-       *
+       * Exception
        */
       DeclException0(ExcIteratorRangeDoesNotMatchVectorSize);
       /**
-       * 异常情况
-       *
+       * Exception
        */
       DeclException0(ExcNonMatchingBlockVectors);
     };
 
-     /*@}*/ 
+    /*@}*/
 
-     /*--------------------- Inline functions --------------------------------*/ 
+    /*--------------------- Inline functions --------------------------------*/
 
     inline BlockVector::BlockVector(const unsigned int n_blocks,
                                     const MPI_Comm &   communicator,
@@ -458,9 +489,11 @@ namespace PETScWrappers
 
 
     /**
-     * 全局函数，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
-     * @relatesalso   PETScWrappers::MPI::BlockVector .
+     * Global function which overloads the default implementation of the C++
+     * standard library which uses a temporary object. The function simply
+     * exchanges the data of the two vectors.
      *
+     * @relatesalso PETScWrappers::MPI::BlockVector
      */
     inline void
     swap(BlockVector &u, BlockVector &v)
@@ -480,9 +513,8 @@ namespace internal
     class ReinitHelper;
 
     /**
-     * linear_operator.h中内部使用的一个辅助类。对
-     * PETScWrappers::MPI::BlockVector. 的特殊化。
-     *
+     * A helper class used internally in linear_operator.h. Specialization for
+     * PETScWrappers::MPI::BlockVector.
      */
     template <>
     class ReinitHelper<PETScWrappers::MPI::BlockVector>
@@ -492,7 +524,7 @@ namespace internal
       static void
       reinit_range_vector(const Matrix &                   matrix,
                           PETScWrappers::MPI::BlockVector &v,
-                          bool  /*omit_zeroing_entries*/ )
+                          bool /*omit_zeroing_entries*/)
       {
         v.reinit(matrix.locally_owned_range_indices(),
                  matrix.get_mpi_communicator());
@@ -502,7 +534,7 @@ namespace internal
       static void
       reinit_domain_vector(const Matrix &                   matrix,
                            PETScWrappers::MPI::BlockVector &v,
-                           bool  /*omit_zeroing_entries*/ )
+                           bool /*omit_zeroing_entries*/)
       {
         v.reinit(matrix.locally_owned_domain_indices(),
                  matrix.get_mpi_communicator());
@@ -510,13 +542,11 @@ namespace internal
     };
 
   } // namespace LinearOperatorImplementation
-}  /* namespace internal */ 
+} /* namespace internal */
 
 
 /**
- * 将 dealii::PETScWrappers::MPI::BlockVector 声明为分布式向量。
- *
- *
+ * Declare dealii::PETScWrappers::MPI::BlockVector as distributed vector.
  */
 template <>
 struct is_serial_vector<PETScWrappers::MPI::BlockVector> : std::false_type
@@ -528,5 +558,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_PETSC
 
 #endif
-
-

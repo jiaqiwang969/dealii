@@ -1,4 +1,3 @@
-//include/deal.II-translator/integrators/divergence_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -38,17 +37,17 @@ namespace LocalIntegrators
 {
   /**
    * @brief Local integrators related to the divergence operator and its
-   * 追踪。
-   * @ingroup Integrators
+   * trace.
    *
+   * @ingroup Integrators
    */
   namespace Divergence
   {
     /**
-     * 用于发散的单元矩阵。导数是在试验函数上。    \f[
-     * \int_Z v\nabla \cdot \mathbf u \,dx \f]
-     * 这是强发散算子，试验空间至少应该是<b>H</b><sup>div</sup>。试验函数可以是不连续的。
-     *
+     * Cell matrix for divergence. The derivative is on the trial function.
+     * \f[ \int_Z v\nabla \cdot \mathbf u \,dx \f] This is the strong
+     * divergence operator and the trial space should be at least
+     * <b>H</b><sup>div</sup>. The test functions may be discontinuous.
      */
     template <int dim>
     void
@@ -81,11 +80,13 @@ namespace LocalIntegrators
     }
 
     /**
-     * 强形式的发散算子的残差。\f[ \int_Z v\nabla \cdot \mathbf u
-     * \,dx
-     * \f]这是强发散算子，试验空间至少应该是<b>H</b><sup>div</sup>。试验函数可能是不连续的。
-     * 函数cell_matrix()是该函数相对于测试函数的Frechet导数。
+     * The residual of the divergence operator in strong form. \f[ \int_Z
+     * v\nabla \cdot \mathbf u \,dx \f] This is the strong divergence operator
+     * and the trial space should be at least <b>H</b><sup>div</sup>. The test
+     * functions may be discontinuous.
      *
+     * The function cell_matrix() is the Frechet derivative of this function
+     * with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -112,14 +113,13 @@ namespace LocalIntegrators
 
 
     /**
-     * 弱形式的发散算子的残差。\f[
+     * The residual of the divergence operator in weak form. \f[ - \int_Z
+     * \nabla v \cdot \mathbf u \,dx \f] This is the weak divergence operator
+     * and the test space should be at least <b>H</b><sup>1</sup>. The trial
+     * functions may be discontinuous.
      *
-     * - \int_Z
-     * \nabla v \cdot \mathbf u \,dx
-     * \f]这是弱发散算子，试验空间至少应是<b>H</b><sup>1</sup>。试验函数可能是不连续的。
-     * @todo
-     * 验证：函数cell_matrix()是该函数相对于试验函数的Frechet导数。
-     *
+     * @todo Verify: The function cell_matrix() is the Frechet derivative of
+     * this function with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -146,10 +146,11 @@ namespace LocalIntegrators
 
 
     /**
-     * 梯度的单元格矩阵。该导数是关于试验函数的。\f[
-     * \int_Z \nabla u \cdot \mathbf v\,dx
-     * \f]这是强梯度，试验空间至少要在<i>H</i><sup>1</sup>。试验函数可以是不连续的。
+     * Cell matrix for gradient. The derivative is on the trial function. \f[
+     * \int_Z \nabla u \cdot \mathbf v\,dx \f]
      *
+     * This is the strong gradient and the trial space should be at least in
+     * <i>H</i><sup>1</sup>. The test functions can be discontinuous.
      */
     template <int dim>
     void
@@ -183,11 +184,13 @@ namespace LocalIntegrators
     }
 
     /**
-     * 强形式的梯度算子的残差。\f[ \int_Z \mathbf v\cdot\nabla u
-     * \,dx
-     * \f]这是强梯度算子，试验空间至少应该是<b>H</b><sup>1</sup>。试验函数可能是不连续的。
-     * 函数gradient_matrix()是该函数相对于试验函数的Frechet导数。
+     * The residual of the gradient operator in strong form. \f[ \int_Z
+     * \mathbf v\cdot\nabla u \,dx \f] This is the strong gradient operator
+     * and the trial space should be at least <b>H</b><sup>1</sup>. The test
+     * functions may be discontinuous.
      *
+     * The function gradient_matrix() is the Frechet derivative of this
+     * function with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -214,14 +217,13 @@ namespace LocalIntegrators
     }
 
     /**
-     * 梯度算子的残差为弱形式。\f[
+     * The residual of the gradient operator in weak form. \f[ -\int_Z
+     * \nabla\cdot \mathbf v u \,dx \f] This is the weak gradient operator and
+     * the test space should be at least <b>H</b><sup>div</sup>. The trial
+     * functions may be discontinuous.
      *
-     * -\int_Z
-     * \nabla\cdot \mathbf v u \,dx
-     * \f]这是弱梯度算子，试验空间至少应该是<b>H</b><sup>div</sup>。试验函数可能是不连续的。
-     * @todo
-     * 验证：函数gradient_matrix()是该函数相对于试验函数的Frechet导数。
-     *
+     * @todo Verify: The function gradient_matrix() is the Frechet derivative
+     * of this function with respect to the test functions.
      */
     template <int dim, typename number>
     void
@@ -248,8 +250,9 @@ namespace LocalIntegrators
     }
 
     /**
-     * 发散算子的踪迹，即矢量值试验空间和测试空间的法向分量的乘积。    @f[ \int_F (\mathbf u\cdot \mathbf n) v \,ds @f]
-     *
+     * The trace of the divergence operator, namely the product of the normal
+     * component of the vector valued trial space and the test space.
+     * @f[ \int_F (\mathbf u\cdot \mathbf n) v \,ds @f]
      */
     template <int dim>
     void
@@ -278,10 +281,11 @@ namespace LocalIntegrators
     }
 
     /**
-     * 发散算子的轨迹，即向量值试验空间的法线分量与试验空间的乘积。    @f[
+     * The trace of the divergence operator, namely the product of the normal
+     * component of the vector valued trial space and the test space.
+     * @f[
      * \int_F (\mathbf u\cdot \mathbf n) v \,ds
      * @f]
-     *
      */
     template <int dim, typename number>
     void
@@ -309,10 +313,11 @@ namespace LocalIntegrators
     }
 
     /**
-     * 梯度算子的轨迹，即矢量值试验空间的法线分量与试验空间的乘积。    @f[
+     * The trace of the gradient operator, namely the product of the normal
+     * component of the vector valued test space and the trial space.
+     * @f[
      * \int_F u (\mathbf v\cdot \mathbf n) \,ds
      * @f]
-     *
      */
     template <int dim, typename number>
     void
@@ -340,11 +345,13 @@ namespace LocalIntegrators
     }
 
     /**
-     * 发散算子的踪迹，即矢量值试验函数的法线分量的跳跃与试验函数的平均值的乘积。    @f[
+     * The trace of the divergence operator, namely the product of the jump of
+     * the normal component of the vector valued trial function and the mean
+     * value of the test function.
+     * @f[
      * \int_F (\mathbf u_1\cdot \mathbf n_1 + \mathbf u_2 \cdot \mathbf n_2)
      * \frac{v_1+v_2}{2} \,ds
      * @f]
-     *
      */
     template <int dim>
     void
@@ -397,13 +404,13 @@ namespace LocalIntegrators
     }
 
     /**
-     * 正态分量的跳变 @f[
+     * The jump of the normal component
+     * @f[
      * \int_F
-     * (\mathbf u_1\cdot \mathbf n_1 + \mathbf u_2 \cdot \mathbf n_2)
-     * (\mathbf v_1\cdot \mathbf n_1 + \mathbf v_2 \cdot \mathbf n_2)
+     *  (\mathbf u_1\cdot \mathbf n_1 + \mathbf u_2 \cdot \mathbf n_2)
+     *  (\mathbf v_1\cdot \mathbf n_1 + \mathbf v_2 \cdot \mathbf n_2)
      * \,ds
-     * @f] 。
-     *
+     * @f]
      */
     template <int dim>
     void
@@ -453,9 +460,12 @@ namespace LocalIntegrators
     }
 
     /**
-     * 由FEValuesBase对象确定的正交集上的发散的<i>L</i><sup>2</sup>-norm。
-     * 该向量预计由长度等于正交点数量的dim向量组成。有限元的分量数量必须等于空间维度。
+     * The <i>L</i><sup>2</sup>-norm of the divergence over the quadrature set
+     * determined by the FEValuesBase object.
      *
+     * The vector is expected to consist of dim vectors of length equal to the
+     * number of quadrature points. The number of components of the finite
+     * element has to be equal to the space dimension.
      */
     template <int dim>
     double
@@ -483,5 +493,3 @@ namespace LocalIntegrators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

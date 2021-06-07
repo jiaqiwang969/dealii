@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/block_linear_operator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -95,49 +96,51 @@ block_diagonal_operator(
 
 
 /**
- * A class to store the concept of a block linear operator.
+ * 一个用于存储块状线性运算符概念的类。
+ * 这个类在LinearOperator（封装了 @p Matrix
+ * 接口）的接口上增加了三个额外的功能。
  *
- * This class increases the interface of LinearOperator (which encapsulates
- * the  @p Matrix interface) by three additional functions:
  * @code
- *   std::function<unsigned int()> n_block_rows;
- *   std::function<unsigned int()> n_block_cols;
- *   std::function<BlockType(unsigned int, unsigned int)> block;
+ * std::function<unsigned int()> n_block_rows;
+ * std::function<unsigned int()> n_block_cols;
+ * std::function<BlockType(unsigned int, unsigned int)> block;
  * @endcode
- * that describe the underlying block structure (of an otherwise opaque)
- * linear operator.
+ * 描述（原本不透明的）线性运算符的底层块结构。
+ * BlockLinearOperator类型的对象可以通过包装函数与LinearOperator类似地创建。
  *
- * Objects of type BlockLinearOperator can be created similarly to
- * LinearOperator with a wrapper function:
  * @code
  * dealii::BlockSparseMatrix<double> A;
  * const auto block_op_a = block_operator(A);
  * @endcode
  *
- * Alternatively, there are several helper functions available for creating
- * instances from multiple independent matrices of possibly different types.
- * Here is an example of a block diagonal matrix created from a FullMatrix and
- * a SparseMatrixEZ:
+ * 另外，还有几个辅助函数可用于从可能不同类型的多个独立矩阵中创建实例。下面是一个由FullMatrix和SparseMatrixEZ创建的块状对角线矩阵的例子。
+ *
  *
  * @code
  * FullMatrix<double> top_left(2, 2);
  * top_left(0, 0) = 2.0;
- * top_left(0, 1) = -1.0;
- * top_left(1, 0) = -1.0;
+ * top_left(0, 1) =
+ *
+ * -1.0;
+ * top_left(1, 0) =
+ *
+ * -1.0;
  * top_left(1, 1) = 2.0;
  *
  * SparseMatrixEZ<double> bottom_right(4, 4, 4);
  * for (std::size_t row_n = 0; row_n < 4; ++row_n)
- *   {
- *     bottom_right.add(row_n, row_n, 1.0);
- *     if (row_n < 3)
- *       bottom_right.add(row_n, row_n + 1, -1.0);
- *   }
+ * {
+ *   bottom_right.add(row_n, row_n, 1.0);
+ *   if (row_n < 3)
+ *     bottom_right.add(row_n, row_n + 1,
+ *
+ * -1.0);
+ * }
  *
  * auto top_left_op = linear_operator(top_left);
  * auto bottom_right_op = linear_operator(bottom_right);
  * std::array<decltype(top_left_op), 2> operators {{top_left_op,
- *                                                  bottom_right_op}};
+ *                                                bottom_right_op}};
  * auto block_op = block_diagonal_operator (operators);
  *
  * std::vector<BlockVector<double>::size_type> block_sizes {2, 4};
@@ -148,19 +151,21 @@ block_diagonal_operator(
  * @endcode
  *
  *
- * A BlockLinearOperator can be sliced to a LinearOperator at any time. This
- * removes all information about the underlying block structure (because above
- * <code>std::function</code> objects are no longer available) - the linear
- * operator interface, however, remains intact.
+ * 一个BlockLinearOperator可以在任何时候被切成一个LinearOperator。这将删除所有关于底层块结构的信息（因为上述
+ * <code>std::function</code> 对象不再可用）。
  *
- * @note This class makes heavy use of <code>std::function</code> objects and
- * lambda functions. This flexibility comes with a run-time penalty. Only use
- * this object to encapsulate object with medium to large individual block
- * sizes, and small block structure (as a rule of thumb, matrix blocks greater
- * than $1000\times1000$).
+ * - 线性操作符的接口，然而，仍然是完整的。
+ *
+ *
+ * @note  这个类大量使用了 <code>std::function</code>
+ * 对象和lambda函数。这种灵活性伴随着运行时间的惩罚。只使用这个对象来封装具有中到大的单个块大小和小块结构的对象（作为经验法则，矩阵块大于
+ * $1000\times1000$  ）。
+ *
  *
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range, typename Domain, typename BlockPayload>
 class BlockLinearOperator
@@ -172,11 +177,10 @@ public:
                                    typename BlockPayload::BlockType>;
 
   /**
-   * Create an empty BlockLinearOperator object.
+   * 创建一个空的BlockLinearOperator对象。
+   * All<code>std::function</code>
+   * 这个类和它的基类LinearOperator的成员对象被初始化为默认变体，在调用时抛出一个异常。
    *
-   * All<code>std::function</code> member objects of this class and its base
-   * class LinearOperator are initialized with default variants that throw an
-   * exception upon invocation.
    */
   BlockLinearOperator(const BlockPayload &payload)
     : LinearOperator<Range, Domain, typename BlockPayload::BlockType>(
@@ -208,15 +212,17 @@ public:
   }
 
   /**
-   * Default copy constructor.
+   * 默认的复制构造函数。
+   *
    */
   BlockLinearOperator(
     const BlockLinearOperator<Range, Domain, BlockPayload> &) = default;
 
   /**
-   * Templated copy constructor that creates a BlockLinearOperator object from
-   * an object @p op for which the conversion function
-   * <code>block_operator</code> is defined.
+   * 模板化的复制构造函数，从一个定义了转换函数
+   * <code>block_operator</code> 的对象 @p op
+   * 中创建一个BlockLinearOperator对象。
+   *
    */
   template <typename Op>
   BlockLinearOperator(const Op &op)
@@ -225,9 +231,9 @@ public:
   }
 
   /**
-   * Create a BlockLinearOperator from a two-dimensional array @p ops of
-   * LinearOperator. This constructor calls the corresponding block_operator()
-   * specialization.
+   * 从一个二维的LinearOperator数组 @p ops
+   * 中创建一个BlockLinearOperator。这个构造函数调用相应的block_operator()专用化。
+   *
    */
   template <std::size_t m, std::size_t n>
   BlockLinearOperator(const std::array<std::array<BlockType, n>, m> &ops)
@@ -236,9 +242,9 @@ public:
   }
 
   /**
-   * Create a block-diagonal BlockLinearOperator from a one-dimensional array
-   * @p ops of LinearOperator. This constructor calls the corresponding
-   * block_operator() specialization.
+   * 从一维数组 @p ops
+   * 的LinearOperator创建一个块对角线的BlockLinearOperator。这个构造函数调用相应的block_operator()专用化。
+   *
    */
   template <std::size_t m>
   BlockLinearOperator(const std::array<BlockType, m> &ops)
@@ -247,14 +253,16 @@ public:
   }
 
   /**
-   * Default copy assignment operator.
+   * 默认的复制赋值运算器。
+   *
    */
   BlockLinearOperator<Range, Domain, BlockPayload> &
   operator=(const BlockLinearOperator<Range, Domain, BlockPayload> &) = default;
 
   /**
-   * Templated copy assignment operator for an object @p op for which the
-   * conversion function <code>block_operator</code> is defined.
+   * 为一个定义了转换函数 <code>block_operator</code> 的对象 @p
+   * op 模板化的复制赋值运算符。
+   *
    */
   template <typename Op>
   BlockLinearOperator<Range, Domain, BlockPayload> &
@@ -265,9 +273,9 @@ public:
   }
 
   /**
-   * Copy assignment from a two-dimensional array @p ops of LinearOperator.
-   * This assignment operator calls the corresponding block_operator()
-   * specialization.
+   * 从一个二维数组 @p ops 的LinearOperator中复制赋值。
+   * 这个赋值运算符调用相应的block_operator()专用化。
+   *
    */
   template <std::size_t m, std::size_t n>
   BlockLinearOperator<Range, Domain, BlockPayload> &
@@ -278,9 +286,9 @@ public:
   }
 
   /**
-   * Copy assignment from a one-dimensional array @p ops of LinearOperator
-   * that creates a block-diagonal BlockLinearOperator. This assignment
-   * operator calls the corresponding block_operator() specialization.
+   * 从一维数组 @p ops
+   * 的LinearOperator复制赋值，创建一个块对角线的BlockLinearOperator。这个赋值运算符调用相应的block_operator()专用化。
+   *
    */
   template <std::size_t m>
   BlockLinearOperator<Range, Domain, BlockPayload> &
@@ -291,21 +299,24 @@ public:
   }
 
   /**
-   * Return the number of blocks in a column (i.e, the number of "block rows",
-   * or the number $m$, if interpreted as a $m\times n$ block system).
+   * 返回一列中的块数（即 "块行 "的数量，或者数字 $m$
+   * ，如果解释为 $m\times n$ 块系统）。
+   *
    */
   std::function<unsigned int()> n_block_rows;
 
   /**
-   * Return the number of blocks in a row (i.e, the number of "block columns",
-   * or the number $n$, if interpreted as a $m\times n$ block system).
+   * 返回一行的块数（即 "块列 "的数量，或者数字 $n$
+   * ，如果解释为 $m\times n$ 块系统）。
+   *
    */
   std::function<unsigned int()> n_block_cols;
 
   /**
-   * Access the block with the given coordinates. This
-   * <code>std::function</code> object returns a LinearOperator representing
-   * the $(i,j)$-th block of the BlockLinearOperator.
+   * 访问具有给定坐标的块。这个 <code>std::function</code>
+   * 对象返回一个LinearOperator，代表BlockLinearOperator的 $(i,j)$
+   * -th块。
+   *
    */
   std::function<BlockType(unsigned int, unsigned int)> block;
 };
@@ -334,7 +345,7 @@ namespace internal
       GrowingVectorMemory<Range> vector_memory;
 
       typename VectorMemory<Range>::Pointer tmp(vector_memory);
-      tmp->reinit(v, /*bool omit_zeroing_entries =*/true);
+      tmp->reinit(v,  /*bool omit_zeroing_entries =*/ true);
 
       const unsigned int n = u.n_blocks();
       const unsigned int m = v.n_blocks();
@@ -523,33 +534,28 @@ namespace internal
 
 
     /**
-     * A dummy class for BlockLinearOperators that do not require any
-     * extensions to facilitate the operations of the block matrix or its
-     * subblocks.
-     *
-     * This is the Payload class typically associated with deal.II's native
-     * BlockSparseMatrix. To use either TrilinosWrappers::BlockSparseMatrix or
-     * PETScWrappers::BlockSparseMatrix one must initialize a
-     * BlockLinearOperator with their associated BlockPayload.
-     *
-     *
+     * 一个用于BlockLinearOperator的假类，不需要任何扩展来促进块矩阵或其子块的操作。
+     * 这是通常与deal.II的本地BlockSparseMatrix相关的Payload类。要使用
+     * TrilinosWrappers::BlockSparseMatrix 或
+     * PETScWrappers::BlockSparseMatrix
+     * ，必须用它们相关的BlockPayload初始化BlockLinearOperator。
      * @ingroup LAOperators
+     *
      */
     template <typename PayloadBlockType>
     class EmptyBlockPayload
     {
     public:
       /**
-       * Type of payload held by each subblock
+       * 每个子块所持有的有效载荷的类型
+       *
        */
       using BlockType = PayloadBlockType;
 
       /**
-       * Default constructor
+       * 默认构造函数
+       * 由于这个类不做任何特别的事情，不需要特别的配置，我们只有一个通用的构造函数，可以在任何条件下调用。
        *
-       * Since this class does not do anything in particular and needs no
-       * special configuration, we have only one generic constructor that can
-       * be called under any conditions.
        */
       template <typename... Args>
       EmptyBlockPayload(const Args &...)
@@ -562,20 +568,22 @@ namespace internal
 
 
 /**
- * @name Creation of a BlockLinearOperator
+ * @name  创建一个BlockLinearOperator
+ *
+ *
  */
 //@{
 
 /**
- * @relatesalso BlockLinearOperator
+ * @relatesalso  BlockLinearOperator 一个将 @p block_matrix
+ * 封装为BlockLinearOperator的函数。
+ * 在BlockLinearOperator对象创建后，对 @p
+ * block_matrix的块结构和单个块所做的所有改变都会被操作者对象所反映。
  *
- * A function that encapsulates a @p block_matrix into a BlockLinearOperator.
- *
- * All changes made on the block structure and individual blocks of @p
- * block_matrix after the creation of the BlockLinearOperator object are
- * reflected by the operator object.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range,
           typename Domain,
@@ -617,31 +625,43 @@ block_operator(const BlockMatrixType &block_matrix)
 
 
 /**
- * @relatesalso BlockLinearOperator
+ * @relatesalso  BlockLinearOperator
+ * 上述函数的一个变体，它将一个给定的LinearOperator集合 @p
+ * ops
+ * 封装成一个块结构。这里假定Range和Domain是块状向量，即从
+ * @ref BlockVectorBase 中导出。 @p ops
+ * 中的各个线性运算符必须作用于块向量的底层向量类型，即在
+ * Domain::BlockType 中产生一个 Range::BlockType. 的结果。 列表 @p
+ * ops
+ * 最好作为初始化器列表传递。例如，考虑一个线性运算块（作用于Vector<double>）。
  *
- * A variant of above function that encapsulates a given collection @p ops of
- * LinearOperators into a block structure. Here, it is assumed that Range and
- * Domain are block vectors, i.e., derived from
- * @ref BlockVectorBase.
- * The individual linear operators in @p ops must act on the underlying vector
- * type of the block vectors, i.e., on Domain::BlockType yielding a result in
- * Range::BlockType.
- *
- * The list @p ops is best passed as an initializer list. Consider for example
- * a linear operator block (acting on Vector<double>)
  * @code
- *  op_a00 | op_a01
- *         |
- *  ---------------
- *         |
- *  op_a10 | op_a11
+ * op_a00 | op_a01
+ *       |
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * ---------------
+ *       |
+ * op_a10 | op_a11
  * @endcode
- * The corresponding block_operator invocation takes the form
+ * 相应的block_operator调用的形式是
+ *
  * @code
  * block_operator<2, 2, BlockVector<double>>({op_a00, op_a01, op_a10, op_a11});
  * @endcode
  *
+ *
+ *
  * @ingroup LAOperators
+ *
+ *
  */
 template <std::size_t m,
           std::size_t n,
@@ -683,19 +703,16 @@ block_operator(
 
 
 /**
- * @relatesalso BlockLinearOperator
+ * @relatesalso  BlockLinearOperator 这个函数提取 @p block_matrix
+ * 的对角线块（可以是块状矩阵类型，也可以是BlockLinearOperator），并创建一个具有对角线的BlockLinearOperator。对角线外的元素被初始化为null_operator（有正确的
+ * reinit_range_vector 和 reinit_domain_vector 方法）。
+ * 在创建BlockLinearOperator对象后，在 @p block_matrix
+ * 的各个对角线块上所做的所有改变都会被操作者对象所反映。
  *
- * This function extracts the diagonal blocks of @p block_matrix (either a
- * block matrix type or a BlockLinearOperator) and creates a
- * BlockLinearOperator with the diagonal. Off-diagonal elements are
- * initialized as null_operator (with correct reinit_range_vector and
- * reinit_domain_vector methods).
- *
- * All changes made on the individual diagonal blocks of @p block_matrix after
- * the creation of the BlockLinearOperator object are reflected by the
- * operator object.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range  = BlockVector<double>,
           typename Domain = Range,
@@ -741,21 +758,21 @@ block_diagonal_operator(const BlockMatrixType &block_matrix)
 
 
 /**
- * @relatesalso BlockLinearOperator
+ * @relatesalso  BlockLinearOperator
+ * 上述函数的一个变体，它从对角线元素的数组 @p ops
+ * 中建立起一个块状对角线线性运算器（非对角线块被假定为0）。
+ * 列表 @p ops
+ * 最好作为一个初始化器列表传递。例如考虑一个线性操作块（作用于Vector<double>）
+ * <code>diag(op_a0, op_a1, ...,
+ * op_am)</code>。相应的block_operator调用的形式是
  *
- * A variant of above function that builds up a block diagonal linear operator
- * from an array @p ops of diagonal elements (off-diagonal blocks are assumed
- * to be 0).
- *
- * The list @p ops is best passed as an initializer list. Consider for example
- * a linear operator block (acting on Vector<double>) <code>diag(op_a0, op_a1,
- * ..., op_am)</code>. The corresponding block_operator invocation takes the
- * form
  * @code
  * block_diagonal_operator<m, BlockVector<double>>({op_00, op_a1, ..., op_am});
  * @endcode
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <std::size_t m, typename Range, typename Domain, typename BlockPayload>
 BlockLinearOperator<Range, Domain, BlockPayload>
@@ -798,13 +815,14 @@ block_diagonal_operator(
 
 
 /**
- * @relatesalso BlockLinearOperator
+ * @relatesalso  BlockLinearOperator
+ * 上述函数的一个变体，它只接受一个LinearOperator参数 @p op
+ * ，并创建一个带有 @p m 副本的块对角线性算子。
  *
- * A variant of above function that only takes a single LinearOperator
- * argument @p op and creates a blockdiagonal linear operator with @p m copies
- * of it.
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <std::size_t m, typename Range, typename Domain, typename BlockPayload>
 BlockLinearOperator<Range, Domain, BlockPayload>
@@ -829,21 +847,19 @@ block_diagonal_operator(
 
 //@}
 /**
- * @name Manipulation of a BlockLinearOperator
+ * @name  对一个BlockLinearOperator的操纵
+ *
  */
 //@{
 
 /**
- * @relatesalso LinearOperator
- * @relatesalso BlockLinearOperator
+ * @relatesalso  LinearOperator  @relatesalso  BlockLinearOperator
+ * 这个函数实现了正向替换，以反转一个低级块状三角形矩阵。作为参数，它需要一个BlockLinearOperator
+ * @p
+ * block_operator，代表一个块状下三角矩阵，以及一个BlockLinearOperator
+ * @p diagonal_inverse  ，代表 @p block_operator.  对角线块的反转。
+ * 让我们假设我们有一个线性系统，其块结构如下。
  *
- * This function implements forward substitution to invert a lower block
- * triangular matrix. As arguments, it takes a BlockLinearOperator @p
- * block_operator representing a block lower triangular matrix, as well as a
- * BlockLinearOperator @p diagonal_inverse representing inverses of diagonal
- * blocks of @p block_operator.
- *
- * Let us assume we have a linear system with the following block structure:
  *
  * @code
  * A00 x0 + ...                   = y0
@@ -852,21 +868,35 @@ block_diagonal_operator(
  * A0n x0 + A1n x1 + ... + Ann xn = yn
  * @endcode
  *
- * First of all, <code>x0 = A00^-1 y0</code>. Then, we can use x0 to recover
- * x1:
+ * 首先， <code>x0 = A00^-1 y0</code>
+ * 。然后，我们可以用x0来恢复x1。
+ *
  * @code
- *    x1 = A11^-1 ( y1 - A01 x0 )
+ *  x1 = A11^-1 ( y1
+ *
+ * - A01 x0 )
  * @endcode
- * and therefore:
+ * 并因此。
  * @code
- *    xn = Ann^-1 ( yn - A0n x0 - ... - A(n-1)n x(n-1) )
+ *  xn = Ann^-1 ( yn
+ *
+ * - A0n x0
+ *
+ * - ...
+ *
+ * - A(n-1)n x(n-1) )
  * @endcode
  *
- * @note We are not using all blocks of the BlockLinearOperator arguments:
- * Just the lower triangular block matrix of @p block_operator is used as well
- * as the diagonal of @p diagonal_inverse.
+ *
+ * @note
+ * 我们没有使用BlockLinearOperator参数的所有块。只是使用了
+ * @p block_operator 的下三角块矩阵以及 @p diagonal_inverse.
+ * 的对角线。
+ *
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range  = BlockVector<double>,
           typename Domain = Range,
@@ -936,7 +966,7 @@ block_forward_substitution(
     for (unsigned int i = 1; i < m; ++i)
       {
         diagonal_inverse.block(i, i).reinit_range_vector(
-          *tmp, /*bool omit_zeroing_entries=*/true);
+          *tmp,  /*bool omit_zeroing_entries=*/ true);
         *tmp = u.block(i);
         *tmp *= -1.;
         for (unsigned int j = 0; j < i; ++j)
@@ -952,39 +982,50 @@ block_forward_substitution(
 
 
 /**
- * @relatesalso LinearOperator
- * @relatesalso BlockLinearOperator
+ * @relatesalso  LinearOperator  @relatesalso  BlockLinearOperator
+ * 这个函数实现了反置，以反转一个上块三角矩阵。作为参数，它需要一个BlockLinearOperator
+ * @p
+ * block_operator，代表一个上块三角矩阵，以及一个BlockLinearOperator
+ * @p diagonal_inverse  ，代表 @p block_operator.  的对角块的反转。
+ * 让我们假设我们有一个线性系统，其块结构如下。
  *
- * This function implements back substitution to invert an upper block
- * triangular matrix. As arguments, it takes a BlockLinearOperator @p
- * block_operator representing an upper block triangular matrix, as well as a
- * BlockLinearOperator @p diagonal_inverse representing inverses of diagonal
- * blocks of @p block_operator.
- *
- * Let us assume we have a linear system with the following block structure:
  *
  * @code
  * A00 x0 + A01 x1 + ... + A0n xn = yn
- *          A11 x1 + ...          = y1
- *                          ...     ..
- *                         Ann xn = yn
+ *        A11 x1 + ...          = y1
+ *                        ...     ..
+ *                       Ann xn = yn
+ * @endcode
+ *  首先， <code>xn = Ann^-1 yn</code>
+ * 。然后，我们可以用xn来恢复x(n-1)。
+ *
+ * @code
+ *  x(n-1) = A(n-1)(n-1)^-1 ( y(n-1)
+ *
+ * - A(n-1)n x(n-1) )
+ * @endcode
+ * 并因此。
+ *
+ * @code
+ *  x0 = A00^-1 ( y0
+ *
+ * - A0n xn
+ *
+ * - ...
+ *
+ * - A01 x1 )
  * @endcode
  *
- * First of all, <code>xn = Ann^-1 yn</code>. Then, we can use xn to recover
- * x(n-1):
- * @code
- *    x(n-1) = A(n-1)(n-1)^-1 ( y(n-1) - A(n-1)n x(n-1) )
- * @endcode
- * and therefore:
- * @code
- *    x0 = A00^-1 ( y0 - A0n xn - ... - A01 x1 )
- * @endcode
  *
- * @note We are not using all blocks of the BlockLinearOperator arguments:
- * Just the upper triangular block matrix of @p block_operator is used as well
- * as the diagonal of @p diagonal_inverse.
+ * @note
+ * 我们没有使用BlockLinearOperator参数的所有块。只是使用了
+ * @p block_operator 的上三角块矩阵以及 @p diagonal_inverse.
+ * 的对角线。
+ *
  *
  * @ingroup LAOperators
+ *
+ *
  */
 template <typename Range  = BlockVector<double>,
           typename Domain = Range,
@@ -1055,7 +1096,7 @@ block_back_substitution(
     for (int i = m - 2; i >= 0; --i)
       {
         diagonal_inverse.block(i, i).reinit_range_vector(
-          *tmp, /*bool omit_zeroing_entries=*/true);
+          *tmp,  /*bool omit_zeroing_entries=*/ true);
         *tmp = u.block(i);
         *tmp *= -1.;
         for (unsigned int j = i + 1; j < m; ++j)
@@ -1073,3 +1114,5 @@ block_back_substitution(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

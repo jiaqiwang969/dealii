@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/point_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -32,136 +33,96 @@ DEAL_II_ENABLE_EXTRA_DIAGNOSTICS
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A class that represents a point in a Cartesian space of dimension
- * @p dim .
- *
- * Objects of this class are used to represent points (i.e., vectors
- * anchored at the origin) of a vector space equipped with a <a
+ * 一个代表笛卡尔空间中一个点的类，其维度为  @p dim  。
+ * 这个类的对象用于表示配备有<a
  * href="https://en.wikipedia.org/wiki/Cartesian_coordinate_system">Cartesian
- * coordinate system</a>. They are, among other uses, passed to
- * functions that operate on points in spaces of a priori fixed
- * dimension: rather than using functions like <code>double f(const
- * double x)</code> and <code>double f(const double x, const double
- * y)</code>, you can use <code>double f(const Point<dim> &p)</code>
- * instead as it allows writing dimension independent code.
- *
- * deal.II specifically uses Point objects as indicating points that
- * are represented by Cartesian coordinates, i.e., where a point in @p
- * dim space dimensions is characterized by signed distances along the
- * axes of a coordinate system spanned by @p dim mutually orthogonal
- * unit vectors (called the "coordinate axes"). This choice of
- * representing a vector makes addition and scaling of vectors
- * particularly simple: one only has to add or multiply each
- * coordinate value. On the other hand, adding or scaling vectors is
- * not nearly as simple when a vector is represented in other kinds of
- * coordinate systems (e.g., <a
+ * coordinate
+ * system</a>的向量空间的点（即锚定在原点的向量）。在其他用途中，它们被传递给在先验固定维度空间中对点进行操作的函数：与其使用<code>double
+ * f(const double x)</code>和<code>double f(const double x, const double
+ * y)</code>这样的函数，不如使用 <code>double f(const Point<dim>
+ * &p)</code> ，因为它允许编写独立维度的代码。
+ * deal.II特别使用Point对象来表示由笛卡尔坐标表示的点，也就是说，在
+ * @p 二维空间维度中，一个点的特征是沿着由 @p dim
+ * 相互正交的单位向量（称为
+ * "坐标轴"）跨越的坐标系的轴的带符号距离。这种表示矢量的选择使得矢量的加法和缩放特别简单：人们只需要对每个坐标值进行加法或乘法。另一方面，当一个向量用其他类型的坐标系表示时（如<a
  * href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">spherical
- * coordinate systems</a>).
+ * coordinate
+ * systems</a>），添加或缩放向量就没有那么简单了。
  *
+ *  <h3>What's a <code>Point@<dim@></code> and what is a
+ * <code>Tensor@<1,dim@></code>?</h3> 点类派生于张量 @<1,dim@>
+ * ，因此共享后者的成员函数和其他属性。事实上，它本身的附加函数相对较少（最明显的例外是计算空间中两点之间欧几里得距离的distance()函数），因此这两个类通常可以互换使用。
+ * 尽管如此，还是有语义上的差异，使得我们在不同的、定义明确的语境中使用这些类。在deal.II中，我们用<tt>Point</tt>类来表示空间中的点，即表示
+ * <em> 锚定在原点 </em>
+ * 的向量（秩-1张量）。另一方面，锚定在其他地方的向量（因此在这个词的通常用法中不代表
+ * <em> 点 </em> ）由张量 @<1,dim@>. 类型的对象表示。 ]
+ * 特别是方向向量、法向量、梯度和两点之间的差值（即当你从一个点减去另一个点时得到的东西）：所有这些都由Tensor
+ * @<1,dim@> 对象而不是Point @<dim@>. 表示。
+ * 此外，点类只用于对象的坐标可以被认为拥有长度维度的地方。一个表示物体的重量、高度和成本的对象既不是点也不是张量（因为它缺乏坐标系旋转下的变换属性），因此不应该用这些类来表示。在这种情况下，使用一个大小为3的数组，或者使用
+ * <code>std::array</code>
+ * 类。另外，就像在矢量值函数的情况下，你可以使用矢量类型的对象或
+ * <code>std::vector</code>  。
  *
- * <h3>What's a <code>Point@<dim@></code> and what is a
- * <code>Tensor@<1,dim@></code>?</h3>
+ * @tparam  dim
+ * 一个整数，表示一个点所在的空间的维度。当然，这等于确定一个点的坐标数。
+ * @tparam  Number
+ * 用于存储坐标值的数据类型。几乎在所有情况下，这都是默认的
+ * @p double,
+ * ，但在某些情况下，人们可能希望以不同的（而且总是标量的）类型来存储坐标。一个例子是一个区间类型，它可以存储一个坐标的值以及它的不确定性。另一个例子是一个允许自动微分的类型（例如，见
+ * step-33
+ * 中使用的Sacado类型），从而可以在传递一个坐标被存储在这种类型中的点对象时产生函数的解析（空间）导数。
  *
- * The Point class is derived from Tensor@<1,dim@> and consequently shares the
- * latter's member functions and other attributes. In fact, it has relatively
- * few additional functions itself (the most notable exception being the
- * distance() function to compute the Euclidean distance between two points in
- * space), and these two classes can therefore often be used interchangeably.
- *
- * Nonetheless, there are semantic differences that make us use these classes
- * in different and well-defined contexts. Within deal.II, we use the
- * <tt>Point</tt> class to denote points in space, i.e., for vectors (rank-1
- * tensors) that are <em>anchored at the origin</em>. On the other hand,
- * vectors that are anchored elsewhere (and consequently do not represent
- * <em>points</em> in the common usage of the word) are represented by objects
- * of type Tensor@<1,dim@>. In particular, this is the case for direction
- * vectors, normal vectors, gradients, and the differences between two points
- * (i.e., what you get when you subtract one point from another): all of these
- * are represented by Tensor@<1,dim@> objects rather than Point@<dim@>.
- *
- * Furthermore, the Point class is only used where the coordinates of an
- * object can be thought to possess the dimension of a length. An object that
- * represents the weight, height, and cost of an object is neither a point nor
- * a tensor (because it lacks the transformation properties under rotation of
- * the coordinate system) and should consequently not be represented by either
- * of these classes. Use an array of size 3 in this case, or the
- * <code>std::array</code> class. Alternatively, as in the case of
- * vector-valued functions, you can use objects of type Vector or
- * <code>std::vector</code>.
- *
- *
- * @tparam dim An integer that denotes the dimension of the space in which a
- * point lies. This of course equals the number of coordinates that identify a
- * point.
- * @tparam Number The data type in which the coordinates values are to be
- * stored. This will, in almost all cases, simply be the default @p double,
- * but there are cases where one may want to store coordinates in a different
- * (and always scalar) type. An example would be an interval type that can
- * store the value of a coordinate as well as its uncertainty. Another example
- * would be a type that allows for Automatic Differentiation (see, for
- * example, the Sacado type used in step-33) and thereby can generate analytic
- * (spatial) derivatives of a function when passed a Point object whose
- * coordinates are stored in such a type.
  *
  *
  * @ingroup geomprimitives
+ *
  */
 template <int dim, typename Number = double>
 class Point : public Tensor<1, dim, Number>
 {
 public:
   /**
-   * Standard constructor. Creates an object that corresponds to the origin,
-   * i.e., all coordinates are set to zero.
+   * 标准构造函数。创建一个对应于原点的对象，即所有的坐标都设置为零。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   Point();
 
   /**
-   * Convert a tensor to a point.
+   * 将一个张量转换为一个点。
+   *
    */
   explicit DEAL_II_CUDA_HOST_DEV
   Point(const Tensor<1, dim, Number> &);
 
   /**
-   * Constructor for one dimensional points. This function is only implemented
-   * for <tt>dim==1</tt> since the usage is considered unsafe for points with
-   * <tt>dim!=1</tt> as it would leave some components of the point
-   * coordinates uninitialized.
+   * 一维点的构造函数。这个函数只对<tt>dim==1</tt>实现，因为对<tt>dim!=1</tt>的点的使用被认为是不安全的，因为它将使点坐标的一些分量未被初始化。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   explicit DEAL_II_CUDA_HOST_DEV
   Point(const Number x);
 
   /**
-   * Constructor for two dimensional points. This function is only implemented
-   * for <tt>dim==2</tt> since the usage is considered unsafe for points with
-   * <tt>dim!=2</tt> as it would leave some components of the point
-   * coordinates uninitialized (if dim>2) or would not use some arguments (if
-   * dim<2).
+   * 二维点的构造函数。这个函数只对<tt>dim==2</tt>实现，因为对于<tt>dim!=2</tt>的点来说，这个用法被认为是不安全的，因为它将使点坐标的某些分量未被初始化（如果dim>2）或不使用某些参数（如果dim<2）。
+   * @note 这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   Point(const Number x, const Number y);
 
   /**
-   * Constructor for three dimensional points. This function is only
-   * implemented for <tt>dim==3</tt> since the usage is considered unsafe for
-   * points with <tt>dim!=3</tt> as it would leave some components of the
-   * point coordinates uninitialized (if dim>3) or would not use some
-   * arguments (if dim<3).
+   * 三维点的构造函数。这个函数只对<tt>dim==3</tt>实现，因为对于<tt>dim!=3</tt>的点来说，这个用法被认为是不安全的，因为它将使点坐标的一些分量未被初始化（如果dim>3）或者不使用一些参数（如果dim<3）。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   Point(const Number x, const Number y, const Number z);
 
   /**
-   * Convert a boost::geometry::point to a dealii::Point.
+   * 将一个 boost::geometry::point 转换为一个 dealii::Point. 。
+   *
    */
   template <std::size_t dummy_dim,
             typename std::enable_if<(dim == dummy_dim) && (dummy_dim != 0),
@@ -170,99 +131,94 @@ public:
           point<Number, dummy_dim, boost::geometry::cs::cartesian> &boost_pt);
 
   /**
-   * Return a unit vector in coordinate direction <tt>i</tt>, i.e., a vector
-   * that is zero in all coordinates except for a single 1 in the <tt>i</tt>th
-   * coordinate.
+   * 返回一个坐标方向<tt>i</tt>的单位向量，即除了<tt>i</tt>第1个坐标中的一个1之外，所有坐标中的向量都是0。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   static DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                                unit_vector(const unsigned int i);
 
   /**
-   * Read access to the <tt>index</tt>th coordinate.
+   * 对<tt>index</tt>th坐标的读取访问。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Number
                         operator()(const unsigned int index) const;
 
   /**
-   * Read and write access to the <tt>index</tt>th coordinate.
+   * 对<tt>index</tt>th坐标的读和写访问。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Number &
                         operator()(const unsigned int index);
 
   /**
-   * Assignment operator from Tensor<1, dim, Number> with different underlying
-   * scalar type. This obviously requires that the @p OtherNumber type is
-   * convertible to @p Number.
+   * 来自Tensor<1, dim,
+   * Number>的赋值操作，其底层标量类型不同。这显然要求 @p
+   * OtherNumber 类型可以转换为 @p Number. 。
+   *
    */
   template <typename OtherNumber>
   Point<dim, Number> &
   operator=(const Tensor<1, dim, OtherNumber> &p);
 
   /**
-   * @name Addition and subtraction of points.
-   * @{
+   * @name  点的加法和减法。    @{
+   *
    */
 
   /**
-   * Add an offset given as Tensor<1,dim,Number> to a point.
+   * 将一个以张量<1,dim,Number>给出的偏移量添加到一个点上。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                         operator+(const Tensor<1, dim, Number> &) const;
 
   /**
-   * Subtract two points, i.e., obtain the vector that connects the two. As
-   * discussed in the documentation of this class, subtracting two points
-   * results in a vector anchored at one of the two points (rather than at the
-   * origin) and, consequently, the result is returned as a Tensor@<1,dim@>
-   * rather than as a Point@<dim@>.
+   * 减去两个点，即获得连接这两个点的向量。正如在这个类的文档中所讨论的，减去两个点的结果是一个锚定在两个点之一的向量（而不是原点），因此，结果是作为一个张量
+   * @<1,dim@> 而不是作为一个点 @<dim@>. 返回。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Tensor<1, dim, Number>
                         operator-(const Point<dim, Number> &) const;
 
   /**
-   * Subtract a difference vector (represented by a Tensor@<1,dim@>) from the
-   * current point. This results in another point and, as discussed in the
-   * documentation of this class, the result is then naturally returned as a
-   * Point@<dim@> object rather than as a Tensor@<1,dim@>.
+   * 从当前点减去一个差分向量（用张量 @<1,dim@>)
+   * 表示）。这将产生另一个点，正如在这个类的文档中所讨论的，然后结果自然是作为一个点
+   * @<dim@> 对象而不是作为一个张量 @<1,dim@>. 返回。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                         operator-(const Tensor<1, dim, Number> &) const;
 
   /**
-   * The opposite vector.
+   * 相反的向量。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Point<dim, Number>
                         operator-() const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Multiplication and scaling of points. Dot products. Norms.
-   * @{
+   * @name  点的乘法和缩放。点积。规范。    @{
+   *
    */
 
   /**
-   * Multiply the current point by a factor.
+   * 将当前点乘以一个系数。
+   * @note  这个函数也可以在CUDA设备代码中使用。
+   * @relatesalso  EnableIfScalar
    *
-   * @note This function can also be used in CUDA device code.
-   *
-   * @relatesalso EnableIfScalar
    */
   template <typename OtherNumber>
   DEAL_II_CUDA_HOST_DEV Point<
@@ -272,9 +228,9 @@ public:
   operator*(const OtherNumber) const;
 
   /**
-   * Divide the current point by a factor.
+   * 将当前点除以一个系数。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   DEAL_II_CUDA_HOST_DEV Point<
@@ -284,61 +240,54 @@ public:
   operator/(const OtherNumber) const;
 
   /**
-   * Return the scalar product of the vectors representing two points.
+   * 返回代表两点的向量的标量积。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV Number operator*(const Tensor<1, dim, Number> &p) const;
 
   /**
-   * Return the scalar product of this point vector with itself, i.e. the
-   * square, or the square of the norm. In case of a complex number type it is
-   * equivalent to the contraction of this point vector with a complex
-   * conjugate of itself.
+   * 返回该点向量与自身的标量乘积，即平方，或规范的平方。如果是复数类型，则相当于此点向量与自身的复共轭的收缩。
+   * @note  这个函数等同于 Tensor<rank,dim,Number>::norm_square()
+   * ，它返回弗罗本纽斯法线的平方。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function is equivalent to
-   * Tensor<rank,dim,Number>::norm_square() which returns the square of the
-   * Frobenius norm.
-   *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV typename numbers::NumberTraits<Number>::real_type
   square() const;
 
   /**
-   * Return the Euclidean distance of <tt>this</tt> point to the point
-   * <tt>p</tt>, i.e. the $l_2$ norm of the difference between the
-   * vectors representing the two points.
+   * 返回<tt>this</tt>点到<tt>p</tt>点的欧氏距离，即代表两点的向量之差的
+   * $l_2$ 规范。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV typename numbers::NumberTraits<Number>::real_type
   distance(const Point<dim, Number> &p) const;
 
   /**
-   * Return the squared Euclidean distance of <tt>this</tt> point to the point
-   * <tt>p</tt>.
+   * 返回<tt>this</tt>点到<tt>p</tt>点的平方欧氏距离。
+   * @note  这个函数也可以在CUDA设备代码中使用。
    *
-   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV typename numbers::NumberTraits<Number>::real_type
   distance_square(const Point<dim, Number> &p) const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * Read or write the data of this object to or from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
   serialize(Archive &ar, const unsigned int version);
 };
 
-/*--------------------------- Inline functions: Point -----------------------*/
+ /*--------------------------- Inline functions: Point -----------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -637,16 +586,17 @@ Point<dim, Number>::serialize(Archive &ar, const unsigned int)
 #endif // DOXYGEN
 
 
-/*--------------------------- Global functions: Point -----------------------*/
+ /*--------------------------- Global functions: Point -----------------------*/ 
 
 
 /**
- * Global operator scaling a point vector by a scalar.
+ * 用标量缩放点向量的全局运算符。
  *
- * @note This function can also be used in CUDA device code.
  *
- * @relatesalso Point
- * @relatesalso EnableIfScalar
+ * @note  这个函数也可以在CUDA设备代码中使用。
+ * @relatesalso  点  @relatesalso  EnableIfScalar
+ *
+ *
  */
 template <int dim, typename Number, typename OtherNumber>
 inline DEAL_II_CUDA_HOST_DEV
@@ -661,9 +611,10 @@ inline DEAL_II_CUDA_HOST_DEV
 
 
 /**
- * Output operator for points. Print the elements consecutively, with a space
- * in between.
- * @relatesalso Point
+ * 点的输出运算符。连续地打印元素，中间有一个空格。
+ * @relatesalso  点
+ *
+ *
  */
 template <int dim, typename Number>
 inline std::ostream &
@@ -679,8 +630,9 @@ operator<<(std::ostream &out, const Point<dim, Number> &p)
 
 
 /**
- * Input operator for points. Inputs the elements consecutively.
- * @relatesalso Point
+ * 点的输入运算符。连续地输入元素。  @relatesalso  点
+ *
+ *
  */
 template <int dim, typename Number>
 inline std::istream &
@@ -696,9 +648,9 @@ operator>>(std::istream &in, Point<dim, Number> &p)
 #ifndef DOXYGEN
 
 /**
- * Output operator for points of dimension 1. This is implemented specialized
- * from the general template in order to avoid a compiler warning that the
- * loop is empty.
+ * 维度为1的点的输出运算符。这是从一般模板中专门实现的，以避免编译器警告该循环是空的。
+ *
+ *
  */
 template <typename Number>
 inline std::ostream &
@@ -713,3 +665,5 @@ operator<<(std::ostream &out, const Point<1, Number> &p)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

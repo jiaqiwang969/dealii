@@ -1,4 +1,3 @@
-//include/deal.II-translator/particles/particle_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -30,256 +29,392 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个命名空间，包含所有与粒子实现相关的类，特别是基本的粒子类。
- *
- *
+ * A namespace that contains all classes that are related to the particle
+ * implementation, in particular the fundamental Particle class.
  */
 namespace Particles
 {
   namespace internal
   {
     /**
-     * 电池级别/索引对的内部别名。
-     *
+     * Internal alias of cell level/index pair.
      */
     using LevelInd = std::pair<int, int>;
   } // namespace internal
 
   /**
-   * 一个代表领域中的粒子的类，该领域由某种三角形网格组成。这个类所存储的数据是粒子在整体空间中的位置，粒子在它当前所在的单元的参考坐标系中的位置，一个在所有粒子中唯一的ID号，以及一个数量可变的
-   * "属性"。    附在该类每个对象上的 "属性
-   * "由一个PropertyPool对象存储。这些属性被存储为一个 "双
-   * "变量数组，可以通过ArrayView对象访问。例如，如果人们想给每个粒子配备一个
-   * "温度 "和 "化学成分
-   * "属性，这些属性会随着粒子的移动而移动（例如，可能会根据一些微分方程在不同的时间步长上发生变化），那么人们会在PropertyPool对象中给每个粒子分配两个属性。
-   * 然而，在实践中，人们经常希望将属性与粒子联系起来，而不是像上面的情况那样只是独立的数字。一个例子是，如果人们想要跟踪一个粒子所受到的应力或应变
+   * A class that represents a particle in a domain that is meshed by
+   * a triangulation of some kind. The data this class stores is the
+   * position of the particle in the overall space, the position of
+   * the particle in the reference coordinate system of the cell it is
+   * currently in, an ID number that is unique among all particles,
+   * and a variable number of "properties".
    *
-   * --一个张量值的量。在这些情况下，人们会将<i>interpret</i>这些标量属性作为<i>components
-   * of the stress or
-   * strain</i>。换句话说，我们首先会告诉PropertyPool为每个粒子分配尽可能多的属性，就像我们想要追踪的张量中的成分一样，然后编写小的转换函数，将get_properties()函数返回的标量属性的ArrayView转换为适当类型的张量。然后，这可以在每个时间步骤中被评估和演化。第二个转换函数将从张量转换回ArrayView对象，通过set_properties()函数将更新的数据存储回粒子中。
-   * 当然，在有些情况下，人们关心的属性不是实数（或者在计算机中是浮点），而是分类的。例如，人们可能想把一些粒子标记为
-   * "红色"、"蓝色 "或
-   * "绿色"。然后，该属性可能被表示为一个整数，或作为
-   * "enum
-   * "的一个元素。在这些情况下，人们需要想出一种方法来<i>represent</i>这些分类字段的浮点数字。例如，我们可以将
-   * "红色 "映射到浮点数1.0，"蓝色 "映射到2.0，"绿色
-   * "映射到3.0。那么，在这两种表示法之间进行转换的转换函数应该也不是很难写。
+   * The "properties" attached to each object of this class are
+   * stored by a PropertyPool object. These properties are
+   * stored as an array of `double` variables that can be accessed
+   * via an ArrayView object. For example, if one wanted to equip
+   * each particle with a "temperature" and "chemical composition"
+   * property that is advected along with the particle (and may change
+   * from time step to time step based on some differential equation,
+   * for example), then one would allocate two properties per particle
+   * in the PropertyPool object.
+   *
+   * In practice, however, one often wants to associate properties
+   * with particles that are not just independent numbers as in the
+   * situation above. An example would be if one wanted to track the
+   * stress or strain that a particle is subjected to -- a tensor-valued
+   * quantity. In these cases, one would <i>interpret</i> these scalar
+   * properties as the <i>components of the stress or strain</i>. In
+   * other words, one would first tell the PropertyPool to allocate
+   * as many properties per particle as there are components in the
+   * tensor one wants to track, and then write small conversion functions that
+   * take the ArrayView of scalar properties returned by the
+   * get_properties() function and convert it to a tensor of the
+   * appropriate type. This can then be evaluated and evolved in each
+   * time step. A second conversion function would convert back from a
+   * tensor to an ArrayView object to store the updated data back in the
+   * particle via the set_properties() function.
+   *
+   * There are of course cases where the properties one cares about are
+   * not real (or, in computers, floating point) numbers but rather
+   * categorical: For example, one may want to mark some particles
+   * as "red", "blue", or "green". The property might then either be
+   * represented as an integer, or as an element of an `enum`. In these
+   * cases, one would need to come up with a way to <i>represent</i>
+   * these sorts of categorical fields in terms of floating point
+   * numbers. For example, one could map "red" to the floating point number
+   * 1.0, "blue" to 2.0, and "green" to 3.0. The conversion functions
+   * to translate between these two representations should then not be very
+   * difficult to write either.
+   *
    * @ingroup Particle
-   *
    */
   template <int dim, int spacedim = dim>
   class Particle
   {
   public:
     /**
-     * 粒子的空构造函数，在原点创建一个粒子。
-     *
+     * Empty constructor for Particle, creates a particle at the
+     * origin.
      */
     Particle();
 
     /**
-     * 粒子的构造函数。这个函数在指定的位置创建一个具有指定ID的粒子。注意，没有对重复的粒子ID进行检查，所以用户必须确保在所有进程中ID是唯一的。数据被存储在一个全局的PropertyPool对象中（对应于全局的
-     * "堆"），但以后可以通过调用set_property_pool()转移到另一个属性池。
-     * @param[in]  location 粒子的初始位置。      @param[in]
-     * reference_location
-     * 粒子在参考单元的坐标系中的初始位置。      @param[in]
-     * id 粒子的全球唯一ID号。
+     * Constructor for Particle. This function creates a particle with the
+     * specified ID at the specified location. Note that there is no check for
+     * duplicate particle IDs so the user must make sure the IDs are unique over
+     * all processes. Data is stored in a global PropertyPool object
+     * (corresponding to the global "heap") but can later be transferred to
+     * another property pool by calling set_property_pool().
      *
+     * @param[in] location Initial location of particle.
+     * @param[in] reference_location Initial location of the particle
+     * in the coordinate system of the reference cell.
+     * @param[in] id Globally unique ID number of particle.
      */
     Particle(const Point<spacedim> &     location,
              const Point<dim> &          reference_location,
              const types::particle_index id);
 
     /**
-     * 粒子的复制构造器。这个函数创建一个与输入参数的状态完全相同的粒子。复制的数据存储在一个全局的PropertyPool对象中（对应于全局的
-     * "堆"），但以后可以通过调用set_property_pool()转移到另一个属性池。
-     *
+     * Copy-constructor for Particle. This function creates a particle with
+     * exactly the state of the input argument. The copied data is stored in a
+     * global PropertyPool object (corresponding to the global "heap") but can
+     * later be transferred to another property pool by calling
+     * set_property_pool().
      */
     Particle(const Particle<dim, spacedim> &particle);
 
     /**
-     * 粒子的构造函数。这个函数从一个数据矢量创建一个粒子。数据被存储在一个全局PropertyPool对象中（对应于全局
-     * "堆"），但以后可以通过调用set_property_pool()转移到另一个属性池中。这个构造函数通常在通过调用write_data()函数对粒子进行序列化之后被调用。
-     * @param[in,out]  begin_data
-     * 一个指向内存位置的指针，可以从中读取完全描述一个粒子的信息。然后这个类从这个内存位置反序列化它的数据，并将指针推进到已经读过的数据之外，以初始化粒子信息。
-     * @param[in,out]  property_pool
-     * 一个可选的指向属性池的指针，用于管理这个粒子所使用的属性数据。如果没有提供这个参数，那么就会使用一个全局属性池；另一方面，如果提供了一个非空的指针，那么这个构造函数就会假设
-     * @p begin_data 包含了由 @p property_pool.
-     * 分配的相同长度和类型的序列化数据。
-     * 如果这里提供的数据指针对应于有属性的粒子的数据，那么这个函数只有在提供一个属性池作为第二个参数，能够存储每个粒子正确数量的属性时才会成功。
+     * Constructor for Particle. This function creates a particle from a data
+     * vector. Data is stored in a global PropertyPool object (corresponding to
+     * the global "heap") but can later be transferred to another property pool
+     * by calling set_property_pool(). This constructor is usually called after
+     * serializing a particle by calling the write_data() function.
      *
+     * @param[in,out] begin_data A pointer to a memory location from which
+     * to read the information that completely describes a particle. This
+     * class then de-serializes its data from this memory location and
+     * advances the pointer beyond the data that has been read to initialize
+     * the particle information.
+     *
+     * @param[in,out] property_pool An optional pointer to a property pool
+     * that is used to manage the property data used by this particle. If this
+     * argument is not provided, then a global property pool is used; on the
+     * other hand,
+     * if a non-null pointer is provided, this constructor assumes @p begin_data
+     * contains serialized data of the same length and type that is allocated
+     * by @p property_pool. If the data pointer provided here corresponds
+     * to data for a particle that has properties, then this function will only
+     * succeed if a property pool is provided as second argument that is able to
+     * store the correct number of properties per particle.
      */
     Particle(const void *&                      begin_data,
              PropertyPool<dim, spacedim> *const property_pool = nullptr);
 
     /**
-     * 粒子的移动构造函数，通过窃取现有粒子的状态来创建一个粒子。
-     *
+     * Move constructor for Particle, creates a particle from an existing
+     * one by stealing its state.
      */
     Particle(Particle<dim, spacedim> &&particle) noexcept;
 
     /**
-     * 复制赋值运算符。
-     *
+     * Copy assignment operator.
      */
     Particle<dim, spacedim> &
     operator=(const Particle<dim, spacedim> &particle);
 
     /**
-     * 移动赋值运算符。
-     *
+     * Move assignment operator.
      */
     Particle<dim, spacedim> &
     operator=(Particle<dim, spacedim> &&particle) noexcept;
 
     /**
-     * 销毁器。如果属性句柄是有效的，则将其释放，从而为其他粒子释放内存空间。注意：内存是由属性池管理的，属性池负责对内存的处理。
-     *
+     * Destructor. Releases the property handle if it is valid, and
+     * therefore frees that memory space for other particles. (Note:
+     * the memory is managed by the property pool, and the pool is responsible
+     * for what happens to the memory.
      */
     ~Particle();
 
     /**
-     * 将粒子数据写入一个数据阵列。这个数组应该足够大，可以容纳这些数据，无效指针应该指向数组的第一个条目，这些数据应该被写入该数组。这个函数是用来序列化所有的粒子属性，然后通过调用适当的构造函数来反序列化这些属性
-     * Particle(void&data, PropertyPoolproperty_pool = nullptr);  @param  [in]
-     * data 要写进粒子数据的内存位置。          @return
-     * 指向已写入数据的阵列后的下一个字节的指针。
+     * Write particle data into a data array. The array is expected
+     * to be large enough to take the data, and the void pointer should
+     * point to the first entry of the array to which the data should be
+     * written. This function is meant for serializing all particle properties
+     * and later de-serializing the properties by calling the appropriate
+     * constructor Particle(void *&data, PropertyPool *property_pool = nullptr);
      *
+     * @param [in] data The memory location to write particle data
+     *   into.
+     *
+     * @return A pointer to the next byte after the array to which data has
+     *   been written.
      */
     void *
     write_particle_data_to_memory(void *data) const;
 
 
     /**
-     * 通过使用一个数据数组来更新与粒子相关的所有数据：ID、位置、参考位置，如果有的话，还有属性。这个数组应该足够大，以容纳这些数据，而且空指针应该指向数组的第一个条目，这些数据应该被写入这个数组中。这个函数是用来反序列化粒子数据的，不需要建立一个新的粒子类。这在ParticleHandler中被用来更新幽灵粒子，而不需要取消分配和重新分配内存。
-     * @param[in]  data
-     * 一个指向内存位置的指针，可以从中读取完全描述一个粒子的信息。然后这个类从这个内存位置去序列化它的数据。
-     * @return
-     * 一个指向从该阵列中读取数据后的下一个字节的指针。
+     * Update all of the data associated with a particle: id,
+     * location, reference location and, if any, properties by using a
+     * data array. The array is expected to be large enough to take the data,
+     * and the void pointer should point to the first entry of the array to
+     * which the data should be written. This function is meant for
+     * de-serializing the particle data without requiring that a new Particle
+     * class be built. This is used in the ParticleHandler to update the
+     * ghost particles without de-allocating and re-allocating memory.
      *
+     * @param[in] data A pointer to a memory location from which
+     * to read the information that completely describes a particle. This
+     * class then de-serializes its data from this memory location.
+     *
+     * @return A pointer to the next byte after the array from which data has
+     *   been read.
      */
     const void *
     read_particle_data_from_memory(const void *data);
 
     /**
-     * 设置这个粒子的位置。注意，这并不检查这是否是模拟域中的有效位置。
-     * @param  [in] new_location 这个粒子的新位置。
+     * Set the location of this particle. Note that this does not check
+     * whether this is a valid location in the simulation domain.
      *
+     * @param [in] new_location The new location for this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_location(const Point<spacedim> &new_location);
 
     /**
-     * 获取这个粒子的位置。          @return
-     * 这个粒子的位置。
+     * Get the location of this particle.
      *
+     * @return The location of this particle.
      */
     const Point<spacedim> &
     get_location() const;
 
     /**
-     * 设置此粒子的参考位置。          @param  [in]
-     * new_reference_location 这个粒子的新参考位置。
+     * Set the reference location of this particle.
      *
+     * @param [in] new_reference_location The new reference location for
+     * this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_reference_location(const Point<dim> &new_reference_location);
 
     /**
-     * 返回这个粒子在其当前单元中的参考位置。
-     *
+     * Return the reference location of this particle in its current cell.
      */
     const Point<dim> &
     get_reference_location() const;
 
     /**
-     * 返回这个粒子的ID号。粒子的ID是一个即使在并行计算中也是全局唯一的属性，如果它从当前处理器拥有的单元移动到另一个处理器拥有的单元，或者它所在的单元的所有权被转移到另一个处理器，那么它的ID将与粒子的其他属性一起被转移。
-     *
+     * Return the ID number of this particle. The ID of a particle is intended
+     * to be a property that is globally unique even in parallel computations
+     * and is transferred along with other properties of a particle if it
+     * moves from a cell owned by the current processor to a cell owned by
+     * a different processor, or if ownership of the cell it is on is
+     * transferred to a different processor.
      */
     types::particle_index
     get_id() const;
 
     /**
-     * 设置这个粒子的ID号。粒子的ID旨在成为一个全局唯一的属性，即使在并行计算中也是如此，如果它从当前处理器拥有的单元移动到另一个处理器拥有的单元，或者它所在的单元的所有权被转移到另一个处理器，那么它的ID将与粒子的其他属性一起转移。因此，在设置粒子的ID时，需要注意确保粒子具有全球唯一的ID。(ParticleHandler本身并不检查如此设置的粒子ID在并行设置中是否是全局唯一的，因为这将是一个非常昂贵的操作。)
-     * @param[in]  new_id 这个粒子的新ID号。
+     * Set the ID number of this particle. The ID of a particle is intended
+     * to be a property that is globally unique even in parallel computations
+     * and is transferred along with other properties of a particle if it
+     * moves from a cell owned by the current processor to a cell owned by
+     * a different processor, or if ownership of the cell it is on is
+     * transferred to a different processor. As a consequence, when setting
+     * the ID of a particle, care needs to be taken to ensure that particles
+     * have globally unique IDs. (The ParticleHandler does not itself check
+     * whether particle IDs so set are globally unique in a parallel setting
+     * since this would be a very expensive operation.)
      *
+     * @param[in] new_id The new ID number for this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_id(const types::particle_index &new_id);
 
     /**
-     * 告诉粒子在哪里存储它的属性（即使它并不拥有属性）。通常情况下，每个粒子只做一次，但是由于粒子不知道属性，我们希望在构造时不做。这个函数的另一个用途是在粒子转移到一个新进程之后。
-     * 如果一个粒子已经在一个属性池中存储了属性，那么它们的值就会被保存下来，之前的属性池中的内存会被释放，而这个粒子的属性副本将被分配到新的属性池中。
+     * Tell the particle where to store its properties (even if it does not
+     * own properties). Usually this is only done once per particle, but
+     * since the particle does not know about the properties,
+     * we want to do it not at construction time. Another use for this
+     * function is after particle transfer to a new process.
      *
+     * If a particle already stores properties in a property pool, then
+     * their values are saved, the memory is released in the previous
+     * property pool, and a copy of the particle's properties will be
+     * allocated in the new property pool.
      */
     void
     set_property_pool(PropertyPool<dim, spacedim> &property_pool);
 
     /**
-     * 返回这个粒子是否有一个有效的属性池和一个有效的属性句柄。
-     *
+     * Return whether this particle has a valid property pool and a valid
+     * handle to properties.
      */
     bool
     has_properties() const;
 
     /**
-     * 设置此粒子的属性。          @param  [in] new_properties
-     * 一个包含此粒子的新属性的ArrayView。
+     * Set the properties of this particle.
      *
+     * @param [in] new_properties An ArrayView containing the
+     * new properties for this particle.
+     *
+     * @note In parallel programs, the ParticleHandler class stores particles
+     *   on both the locally owned cells, as well as on ghost cells. The
+     *   particles on the latter are *copies* of particles owned on other
+     *   processors, and should therefore be treated in the same way as
+     *   ghost entries in @ref GlossGhostedVector "vectors with ghost elements"
+     *   or @ref GlossGhostCell "ghost cells": In both cases, one should
+     *   treat the ghost elements or cells as `const` objects that shouldn't
+     *   be modified even if the objects allow for calls that modify
+     *   properties. Rather, properties should only be modified on processors
+     *   that actually *own* the particle.
      */
     void
     set_properties(const ArrayView<const double> &new_properties);
 
     /**
-     * 获得对这个粒子的属性的写入权限。如果粒子还没有属性，但可以访问PropertyPool对象，它将分配属性以允许写入它们。如果它没有属性，也不能访问一个PropertyPool，这个函数将抛出一个异常。
-     * @return  这个粒子的属性的ArrayView。
+     * Get write-access to properties of this particle. If the
+     * particle has no properties yet, but has access to a
+     * PropertyPool object it will allocate properties to
+     * allow writing into them. If it has no properties and
+     * has no access to a PropertyPool this function will
+     * throw an exception.
      *
+     * @return An ArrayView of the properties of this particle.
      */
     const ArrayView<double>
     get_properties();
 
     /**
-     * 获取对该粒子的属性的读取权限。如果粒子没有属性，这个函数会抛出一个异常。
-     * @return  此粒子的属性的ArrayView。
+     * Get read-access to properties of this particle. If the particle
+     * has no properties this function throws an exception.
      *
+     * @return An ArrayView of the properties of this particle.
      */
     const ArrayView<const double>
     get_properties() const;
 
     /**
-     * 返回这个粒子在所有数据被序列化的情况下所占的字节数（即这个类的write_data函数所写入的字节数）。
-     *
+     * Return the size in bytes this particle occupies if all of its data is
+     * serialized (i.e. the number of bytes that is written by the write_data
+     * function of this class).
      */
     std::size_t
     serialized_size_in_bytes() const;
 
     /**
-     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写到一个流中，以便进行序列化。
-     *
+     * Write the data of this object to a stream for the purpose of
+     * serialization using the [BOOST serialization
+     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
      */
     template <class Archive>
     void
     save(Archive &ar, const unsigned int version) const;
 
     /**
-     * 为了序列化的目的，使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从流中读取此对象的数据。
-     * 请注意，为了正确地存储属性，在读取时必须知道这个粒子的属性库，即在调用这个函数之前，必须调用set_property_pool()。
-     *
+     * Read the data of this object from a stream for the purpose of
+     * serialization using the [BOOST serialization
+     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * Note that in order to store the properties correctly, the property pool
+     * of this particle has to be known at the time of reading, i.e.
+     * set_property_pool() has to have been called, before this function is
+     * called.
      */
     template <class Archive>
     void
     load(Archive &ar, const unsigned int version);
 
     /**
-     * 释放属性池的内存
-     *
+     * Free the memory of the property pool
      */
     void
     free_properties();
 
 #ifdef DOXYGEN
     /**
-     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从一个流中写入和读取此对象的数据，以便进行序列化。
-     *
+     * Write and read the data of this object from a stream for the purpose
+     * of serialization using the [BOOST serialization
+     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
      */
     template <class Archive>
     void
@@ -292,27 +427,26 @@ namespace Particles
 
   private:
     /**
-     * 一个全局属性池，当一个粒子没有与属于例如ParticleHandler的属性池相关联时使用。
-     *
+     * A global property pool used when a particle is not associated with
+     * a property pool that belongs to, for example, a ParticleHandler.
      */
     static PropertyPool<dim, spacedim> global_property_pool;
 
     /**
-     * 一个指向属性池的指针。从句柄到实际内存位置的转换是必要的。
-     *
+     * A pointer to the property pool. Necessary to translate from the
+     * handle to the actual memory locations.
      */
     PropertyPool<dim, spacedim> *property_pool;
 
     /**
-     * 一个指向所有粒子属性的句柄
-     *
+     * A handle to all particle properties
      */
     typename PropertyPool<dim, spacedim>::Handle property_pool_handle;
   };
 
 
 
-   /* ---------------------- inline and template functions ------------------ */ 
+  /* ---------------------- inline and template functions ------------------ */
 
   template <int dim, int spacedim>
   template <class Archive>
@@ -448,7 +582,7 @@ namespace Particles
     const Point<dim>            reference_location = get_reference_location();
     const types::particle_index id                 = get_id();
 
-    if ( /* old pool */  has_properties())
+    if (/* old pool */ has_properties())
       {
         ArrayView<const double> old_properties = this->get_properties();
         ArrayView<double>       new_properties =
@@ -518,17 +652,14 @@ namespace boost
       struct indexable;
 
       /**
-       * 确保我们可以构建一个 Particles::Particle 对象的RTree。
-       *
+       * Make sure we can construct an RTree of Particles::Particle objects.
        */
       template <int dim, int spacedim>
       struct indexable<dealii::Particles::Particle<dim, spacedim>>
       {
         /**
-         * boost::rtree
-         * 期望一个可索引对象的常量引用。对于一个
-         * Particles::Particle 对象，这是它的引用位置。
-         *
+         * boost::rtree expects a const reference to an indexable object. For
+         * a Particles::Particle object, this is its reference location.
          */
         using result_type = const dealii::Point<spacedim> &;
 
@@ -545,5 +676,3 @@ namespace boost
 } // namespace boost
 
 #endif
-
-

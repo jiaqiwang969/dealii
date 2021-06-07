@@ -1,4 +1,3 @@
-//include/deal.II-translator/hp/q_collection_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -33,95 +32,110 @@ DEAL_II_NAMESPACE_OPEN
 namespace hp
 {
   /**
-   * 这个类实现了一个正交对象的集合，与 hp::FECollection
-   * 实现有限元类集合的方式相同。
-   * 它实现了doxygen文档中描述的 @ref hpcollection
-   * 模块中的概念。
-   * @ingroup hp hpcollection
+   * This class implements a collection of quadrature objects in the same way
+   * as the hp::FECollection implements a collection of finite element
+   * classes.
    *
+   * It implements the concepts stated in the
+   * @ref hpcollection
+   * module described in the doxygen documentation.
+   *
+   * @ingroup hp hpcollection
    */
   template <int dim>
   class QCollection : public Collection<Quadrature<dim>>
   {
   public:
     /**
-     * 默认构造函数。导致一个空的集合，以后可以用push_back()来填充。
-     *
+     * Default constructor. Leads to an empty collection that can later be
+     * filled using push_back().
      */
     QCollection() = default;
 
     /**
-     * 复制构造函数。
-     *
+     * Copy constructor.
      */
     template <int dim_in>
     QCollection(const QCollection<dim_in> &other);
 
     /**
-     * 转换构造函数。这个构造函数从一个单一的正交法则创建一个QCollection。如果需要的话，可以用push_back()添加更多的正交公式，尽管用同样的方式添加所有的映射可能会更清楚。
-     *
+     * Conversion constructor. This constructor creates a QCollection from a
+     * single quadrature rule. More quadrature formulas can be added with
+     * push_back(), if desired, though it would probably be clearer to add all
+     * mappings the same way.
      */
     template <int dim_in>
     explicit QCollection(const Quadrature<dim_in> &quadrature);
 
     /**
-     * 构造函数。这个构造函数从传递给构造函数的一个或多个正交对象创建一个QCollection。为了使这个调用有效，所有的参数需要是派生自类正交<dim>的类型。
-     *
+     * Constructor. This constructor creates a QCollection from one or
+     * more quadrature objects passed to the constructor. For this
+     * call to be valid, all arguments need to be of types derived
+     * from class Quadrature<dim>.
      */
     template <class... QTypes>
     explicit QCollection(const QTypes &... quadrature_objects);
 
     /**
-     * 在QCollection中添加一个新的正交规则。在大多数情况下，你会希望按照元素被添加到
-     * hp::FECollection
-     * 中的相同顺序来添加正交规则，而这个正交规则集合就是为了这个正交规则。如果这样做，你将使用
-     * hp::FECollection 和 hp::QCollection 对象的 hp::FEValues
-     * 对象将自动选择相应的元素和正交公式。另一方面，在调用
-     * hp::FEValues::reinit() 或 hp::FEFaceValues::reinit().
-     * 时特别指定适当的索引，可以使用 hp::FECollection 和
-     * hp::QCollection 对象中元素和正交公式的任意组合。
-     * 在这些情况下， hp::FECollection 和 hp::QCollection
-     * 对象的元素之间不需要有对应关系；在这种情况下它们甚至不需要有相同大小。
-     * 顺便说一下，关于集合元素顺序的论点也可以针对
-     * hp::MappingCollection 对象的元素提出。
-     * 这个类创建了一个给定正交对象的副本，也就是说，你可以做类似<tt>push_back(QGauss<dim>(3));</tt>的事情。内部拷贝后来在整个集合被销毁时被这个对象销毁。
+     * Add a new quadrature rule to the QCollection. In most cases, you will
+     * want to add quadrature rules in the same order as the elements were
+     * added to the hp::FECollection for which this quadrature rule collection
+     * is meant. If done this way, the hp::FEValues objects with which you will
+     * use both hp::FECollection and hp::QCollection objects will automatically
+     * choose corresponding elements and quadrature formulas. On the other hand,
+     * it is possible to use arbitrary combinations of elements and quadrature
+     * formulas in hp::FECollection and hp::QCollection objects when
+     * specifically specifying appropriate indices in calls to
+     * hp::FEValues::reinit() or hp::FEFaceValues::reinit(). In those cases,
+     * there need not be a correspondence between elements of the
+     * hp::FECollection and hp::QCollection objects; they need not even be of
+     * the same size in this case.
      *
+     * The same arguments about the order of elements of collections can, by
+     * the way, also be made about the elements of hp::MappingCollection
+     * objects.
+     *
+     * This class creates a copy of the given quadrature object, i.e., you can
+     * do things like <tt>push_back(QGauss<dim>(3));</tt>. The internal copy
+     * is later destroyed by this object upon destruction of the entire
+     * collection.
      */
     template <int dim_in>
     void
     push_back(const Quadrature<dim_in> &new_quadrature);
 
     /**
-     * 等价比较运算符。所有存储的正交对象都按顺序进行比较。
-     *
+     * Equality comparison operator. All stored Quadrature objects are compared
+     * in order.
      */
     bool
     operator==(const QCollection<dim> &q_collection) const;
 
     /**
-     * 返回集合中所有元素的正交点的最大数量。这对初始化数组大多是有用的，以分配最大的内存量，当以后从这个集合中重新调整大小到一个特定的正交公式时，可能会用到这个内存量。
-     *
+     * Return the maximum number of quadrature points over all the elements of
+     * the collection. This is mostly useful to initialize arrays to allocate
+     * the maximum amount of memory that may be used when re-sizing later on
+     * to a articular quadrature formula from within this collection.
      */
     unsigned int
     max_n_quadrature_points() const;
 
     /**
-     * 例外
-     *
+     * Exception
      */
     DeclException0(ExcNoQuadrature);
 
   private:
     /**
-     * 实数容器，用于存储指向不同正交对象的指针。
-     *
+     * The real container, which stores pointers to the different quadrature
+     * objects.
      */
     std::vector<std::shared_ptr<const Quadrature<dim>>> quadratures;
   };
 
 
 
-   /* --------------- inline functions ------------------- */ 
+  /* --------------- inline functions ------------------- */
 
   template <int dim>
   template <int dim_in>
@@ -218,5 +232,3 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/vector_slice_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -22,3 +23,5 @@ DEAL_II_WARNING(
   "This file is deprecated. Use ArrayView instead of VectorSlice.")
 
 #endif
+
+

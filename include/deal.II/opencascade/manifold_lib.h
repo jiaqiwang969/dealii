@@ -1,4 +1,3 @@
-//include/deal.II-translator/opencascade/manifold_lib_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
@@ -36,47 +35,59 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup  OpenCASCADE  @{ 。
- *
+ * @addtogroup OpenCASCADE
+ * @{
  */
 
 namespace OpenCASCADE
 {
   /**
-   * 一个基于OpenCASCADE
-   * TopoDS_Shape的Manifold对象，其中新的点首先通过与FlatManifold相同的方式对周围的点进行平均计算，然后使用OpenCASCADE工具在法线方向进行投影。
-   * 这个类对你传递给它的形状不做任何假设，而Manifold的拓扑维度是由TopoDS_Shape本身推断出来的。在调试模式下，有一个理智检查，以确保周围的点（在project_to_manifold()中使用的点）确实存在于Manifold上，也就是说，在这些点上调用
-   * OpenCASCADE::closest_point()
-   * 会使它们不被触动。如果不是这种情况，就会抛出ExcPointNotOnManifold。
-   * 例如，如果你试图使用TopoDS_Edge类型的形状在一个面上投影时，这种情况可能发生。在这种情况下，面的顶点会被折叠到边缘上，而你周围的点不会位于给定的形状上，从而引发一个异常。
+   * A Manifold object based on OpenCASCADE TopoDS_Shape where new points are
+   * first computed by averaging the surrounding points in the same way as
+   * FlatManifold does, and are then projected in the normal direction using
+   * OpenCASCADE utilities.
    *
+   * This class makes no assumptions on the shape you pass to it, and the
+   * topological dimension of the Manifold is inferred from the TopoDS_Shape
+   * itself. In debug mode there is a sanity check to make sure that the
+   * surrounding points (the ones used in project_to_manifold()) actually live
+   * on the Manifold, i.e., calling OpenCASCADE::closest_point() on those
+   * points leaves them untouched. If this is not the case, an
+   * ExcPointNotOnManifold is thrown.
+   *
+   * This could happen, for example, if you are trying to use a shape of type
+   * TopoDS_Edge when projecting on a face. In this case, the vertices of the
+   * face would be collapsed to the edge, and your surrounding points would
+   * not be lying on the given shape, raising an exception.
    */
   template <int dim, int spacedim>
   class NormalProjectionManifold : public FlatManifold<dim, spacedim>
   {
   public:
     /**
-     * 标准构造函数接受一个通用的TopoDS_Shape  @p sh,
-     * 和一个用于内部计算距离的公差。
-     * TopoDS_Shape可以是任意的，即一个形状、面、边的集合，或一个单一的面或边。
+     * The standard constructor takes a generic TopoDS_Shape @p sh, and a
+     * tolerance used to compute distances internally.
      *
+     * The TopoDS_Shape can be arbitrary, i.e., a collection of shapes, faces,
+     * edges or a single face or edge.
      */
     NormalProjectionManifold(const TopoDS_Shape &sh,
                              const double        tolerance = 1e-7);
 
     /**
-     * 克隆当前的Manifold。
-     *
+     * Clone the current Manifold.
      */
     virtual std::unique_ptr<Manifold<dim, spacedim>>
     clone() const override;
 
     /**
-     * 执行对流形的实际投影。该函数在调试模式下，检查每个
-     * @p surrounding_points
-     * 是否在给定的TopoDS_Shape的公差范围内。如果不是这样，就会抛出一个异常。
-     * 投射点是使用OpenCASCADE的正常投影算法计算的。
+     * Perform the actual projection onto the manifold. This function, in
+     * debug mode, checks that each of the @p surrounding_points is within
+     * tolerance from the given TopoDS_Shape. If this is not the case, an
+     * exception is thrown.
      *
+     * The projected point is computed using OpenCASCADE normal projection
+     * algorithms.
      */
     virtual Point<spacedim>
     project_to_manifold(
@@ -86,55 +97,64 @@ namespace OpenCASCADE
 
   protected:
     /**
-     * 内部用于投影点的拓扑形状。你可以通过调用
-     * OpenCASCADE::read_IGES()
-     * 函数来构建这样的形状，它将用IGES文件中包含的几何图形创建一个TopoDS_Shape。
-     *
+     * The topological shape which is used internally to project points. You
+     * can construct such a shape by calling the OpenCASCADE::read_IGES()
+     * function, which will create a TopoDS_Shape with the geometry contained
+     * in the IGES file.
      */
     const TopoDS_Shape sh;
 
     /**
-     * 本类用于计算距离的相对公差。
-     *
+     * Relative tolerance used by this class to compute distances.
      */
     const double tolerance;
   };
 
   /**
-   * 一个基于OpenCASCADE
-   * TopoDS_Shape的流形对象，其中新的点首先通过与FlatManifold相同的方式对周围的点进行平均计算，然后使用OpenCASCADE工具沿着建造时指定的方向将它们投影到流形上。
-   * 这个类对你传递给它的形状不做任何假设，而流形的拓扑维度是由TopoDS_Shape本身推断出来的。在调试模式下，有一个理智检查，以确保周围的点（在project_to_manifold()中使用的点）确实存在于Manifold上，也就是说，在这些点上调用
-   * OpenCASCADE::closest_point()
-   * 会使它们不被触动。如果不是这样的话，就会抛出ExcPointNotOnManifold。
-   * 请注意，如果要精化的三角形接近给定的TopoDS_Shape的边界，或者当你在构造时使用的方向不与形状相交时，这种类型的Manifold描述符可能无法得到结果。当这种情况发生时，会抛出一个异常。
+   * A Manifold object based on OpenCASCADE TopoDS_Shape where new points are
+   * first computed by averaging the surrounding points in the same way as
+   * FlatManifold does, and then projecting them onto the manifold along the
+   * direction specified at construction time using OpenCASCADE utilities.
    *
+   * This class makes no assumptions on the shape you pass to it, and the
+   * topological dimension of the Manifold is inferred from the TopoDS_Shape
+   * itself. In debug mode there is a sanity check to make sure that the
+   * surrounding points (the ones used in project_to_manifold()) actually live
+   * on the Manifold, i.e., calling OpenCASCADE::closest_point() on those
+   * points leaves them untouched. If this is not the case, an
+   * ExcPointNotOnManifold is thrown.
+   *
+   * Notice that this type of Manifold descriptor may fail to give results if
+   * the triangulation to be refined is close to the boundary of the given
+   * TopoDS_Shape, or when the direction you use at construction time does not
+   * intersect the shape. An exception is thrown when this happens.
    */
   template <int dim, int spacedim>
   class DirectionalProjectionManifold : public FlatManifold<dim, spacedim>
   {
   public:
     /**
-     * 构建一个Manifold对象，该对象将沿着给定的 @p direction.
-     * 在TopoDS_Shape  @p sh, 上投影点。
-     *
+     * Construct a Manifold object which will project points on the
+     * TopoDS_Shape @p sh, along the given @p direction.
      */
     DirectionalProjectionManifold(const TopoDS_Shape &       sh,
                                   const Tensor<1, spacedim> &direction,
                                   const double               tolerance = 1e-7);
 
     /**
-     * 克隆当前的Manifold。
-     *
+     * Clone the current Manifold.
      */
     virtual std::unique_ptr<Manifold<dim, spacedim>>
     clone() const override;
 
     /**
-     * 执行对流形的实际投影。该函数在调试模式下，检查每个
-     * @p surrounding_points
-     * 是否在给定的TopoDS_Shape的公差范围内。如果不是这样，就会抛出一个异常。
-     * 投射点是使用OpenCASCADE的方向性投影算法计算的。
+     * Perform the actual projection onto the manifold. This function, in
+     * debug mode, checks that each of the @p surrounding_points is within
+     * tolerance from the given TopoDS_Shape. If this is not the case, an
+     * exception is thrown.
      *
+     * The projected point is computed using OpenCASCADE directional
+     * projection algorithms.
      */
     virtual Point<spacedim>
     project_to_manifold(
@@ -143,62 +163,90 @@ namespace OpenCASCADE
 
   protected:
     /**
-     * 内部用于投影点的拓扑形状。你可以通过调用
-     * OpenCASCADE::read_IGES()
-     * 函数来构建这样的形状，它将用IGES文件中包含的几何图形创建一个TopoDS_Shape。
-     *
+     * The topological shape which is used internally to project points. You
+     * can construct such a shape by calling the OpenCASCADE::read_IGES()
+     * function, which will create a TopoDS_Shape with the geometry contained
+     * in the IGES file.
      */
     const TopoDS_Shape sh;
 
     /**
-     * 用来在形状上投射新点的方向。
-     *
+     * Direction used to project new points on the shape.
      */
     const Tensor<1, spacedim> direction;
 
     /**
-     * 该类用于计算距离的相对公差。
-     *
+     * Relative tolerance used by this class to compute distances.
      */
     const double tolerance;
   };
 
 
   /**
-   * 一个基于OpenCASCADE
-   * TopoDS_Shape的流形对象，其中新的点首先通过与FlatManifold相同的方式对周围的点进行平均计算，然后使用OpenCASCADE工具沿着一个方向将它们投影到流形上，这个方向是对周围点（因此是网格单元）法线的估计。
-   * 网格的法线方向是特别有用的，因为它是网格中缺少节点的方向。例如，在细化一个单元的过程中，最初会在该单元的baricenter周围创建一个新的节点。这个位置在某种程度上保证了与旧单元的节点有一个统一的距离。沿着原单元的法线方向将这样的单元棒心投射到CAD表面，就可以保持与原单元的点的统一距离。当然，在网格生成阶段，没有定义dof处理程序和有限元，这样的方向必须被估计。对于存在8个周围点的情况，4个不同的三角形被确定为指定的点，这些三角形的法线被平均化以获得对单元的法线的近似值。
-   * 当然，存在2个周围点的情况（即：一个单元格边缘被细化）就比较麻烦了。首先计算2个周围点的CAD表面法线的平均值，然后投射到连接周围点的那段法线上。这也是为了让新的点与周围的点有相等的距离。这个类只对CAD面进行操作，并假设你传递给它的形状至少包含一个面。如果不是这样的话，就会抛出一个异常。在调试模式下，有一个理智的检查，以确保周围的点（在project_to_manifold()中使用的点）确实存在于Manifold上，也就是说，在这些点上调用
-   * OpenCASCADE::closest_point()
-   * 会使它们不被触动。如果不是这样的话，就会抛出ExcPointNotOnManifold。
-   * 请注意，如果要精化的三角形接近给定的TopoDS_Shape的边界，或者从周围的点估计的法线方向不与形状相交，这种类型的Manifold描述符可能无法提供结果。
-   * 当这种情况发生时，会抛出一个异常。
+   * A Manifold object based on OpenCASCADE TopoDS_Shape where new points are
+   * first computed by averaging the surrounding points in the same way as
+   * FlatManifold does, and then projecting them using OpenCASCADE utilities
+   * onto the manifold along a direction which is an estimation of the
+   * surrounding points (hence mesh cell) normal.
    *
+   * The direction normal to the mesh is particularly useful because it is the
+   * direction in which the mesh is missing nodes. For instance, during the
+   * refinement of a cell a new node is initially created around the
+   * baricenter of the cell. This location somehow ensures a uniform distance
+   * from the nodes of the old cell. Projecting such cell baricenter onto the
+   * CAD surface in the direction normal to the original cell will then retain
+   * uniform distance from the points of the original cell. Of course, at the
+   * stage of mesh generation, no dof handler nor finite element are defined,
+   * and such direction has to be estimated. For the case in which 8
+   * surrounding points are present, 4 different triangles are identified with
+   * the points assigned, and the normals of such triangles are averaged to
+   * obtain the approximation of the normal to the cell.
+   *
+   * The case in which 2 surrounding points are present (i.e.:a cell edge is
+   * being refined) is of course more tricky. The average of the CAD surface
+   * normals at the 2 surrounding points is first computed, and then projected
+   * onto the plane normal to the segment linking the surrounding points. This
+   * again is an attempt to have the new point with equal distance with
+   * respect to the surrounding points
+   *
+   * This class only operates with CAD faces and makes the assumption that the
+   * shape you pass to it contains at least one face. If that is not the case,
+   * an Exception is thrown. In debug mode there is a sanity check to make
+   * sure that the surrounding points (the ones used in project_to_manifold())
+   * actually live on the Manifold, i.e., calling OpenCASCADE::closest_point()
+   * on those points leaves them untouched. If this is not the case, an
+   * ExcPointNotOnManifold is thrown.
+   *
+   *
+   * Notice that this type of Manifold descriptor may fail to give results if
+   * the triangulation to be refined is close to the boundary of the given
+   * TopoDS_Shape, or when the normal direction estimated from the surrounding
+   * points does not intersect the shape.  An exception is thrown when this
+   * happens.
    */
   template <int dim, int spacedim>
   class NormalToMeshProjectionManifold : public FlatManifold<dim, spacedim>
   {
   public:
     /**
-     * 构建一个Manifold对象，将TopoDS_Shape  @p sh,
-     * 上的点沿着与网格单元近似的法线方向投影。
-     *
+     * Construct a Manifold object which will project points on the
+     * TopoDS_Shape @p sh, along a direction which is approximately normal to
+     * the mesh cell.
      */
     NormalToMeshProjectionManifold(const TopoDS_Shape &sh,
                                    const double        tolerance = 1e-7);
 
     /**
-     * 克隆当前的Manifold。
-     *
+     * Clone the current Manifold.
      */
     virtual std::unique_ptr<Manifold<dim, spacedim>>
     clone() const override;
 
     /**
-     * 执行对流形的实际投影。这个函数在调试模式下，检查每个
-     * @p surrounding_points
-     * 是否在给定的TopoDS_Shape的公差范围内。如果不是这样，就会抛出一个异常。
-     *
+     * Perform the actual projection onto the manifold. This function, in
+     * debug mode, checks that each of the @p surrounding_points is within
+     * tolerance from the given TopoDS_Shape. If this is not the case, an
+     * exception is thrown.
      */
     virtual Point<spacedim>
     project_to_manifold(
@@ -207,168 +255,167 @@ namespace OpenCASCADE
 
   protected:
     /**
-     * 内部用于投影点的拓扑形状。你可以通过调用
-     * OpenCASCADE::read_IGES()
-     * 函数来构建这样的形状，该函数将用IGES文件中包含的几何图形创建一个TopoDS_Shape。
-     *
+     * The topological shape which is used internally to project points. You
+     * can construct such a shape by calling the OpenCASCADE::read_IGES()
+     * function, which will create a TopoDS_Shape with the geometry contained
+     * in the IGES file.
      */
     const TopoDS_Shape sh;
 
     /**
-     * 该类用于计算距离的相对公差。
-     *
+     * Relative tolerance used by this class to compute distances.
      */
     const double tolerance;
   };
 
   /**
-   * 一个基于OpenCASCADE
-   * TopoDS_Shape对象的Manifold对象，其拓扑维度等于1（TopoDS_Edge或TopoDS_Wire），新点位于周围点的arclength平均值。如果给定的TopoDS_Shape可以被铸造为周期性（封闭）曲线，那么这个信息将被内部用来设置基础ChartManifold类的周期性。
-   * 这个类只能在TopoDS_Edge或TopoDS_Wire对象上工作，而且只有当spacedim为3时才有意义。如果你使用了一个拓扑维度为1的对象，就会产生一个异常。
-   * 在调试模式下，有一个额外的理智检查，以确保周围的点确实存在于Manifold上，也就是说，在这些点上调用
-   * OpenCASCADE::closest_point()
-   * 会让它们不被触动。如果不是这样的话，就会抛出一个ExcPointNotOnManifold。
+   * A Manifold object based on OpenCASCADE TopoDS_Shape objects which have
+   * topological dimension equal to one (TopoDS_Edge or TopoDS_Wire) where new
+   * points are located at the arclength average of the surrounding points. If
+   * the given TopoDS_Shape can be casted to a periodic (closed) curve, then
+   * this information is used internally to set the periodicity of the base
+   * ChartManifold class.
    *
+   * This class can only work on TopoDS_Edge or TopoDS_Wire objects, and it
+   * only makes sense when spacedim is three. If you use an object of
+   * topological dimension different from one, an exception is throw.
+   *
+   * In debug mode there is an additional sanity check to make sure that the
+   * surrounding points actually live on the Manifold, i.e., calling
+   * OpenCASCADE::closest_point() on those points leaves them untouched. If
+   * this is not the case, an ExcPointNotOnManifold is thrown.
    */
   template <int dim, int spacedim>
   class ArclengthProjectionLineManifold : public ChartManifold<dim, spacedim, 1>
   {
   public:
     /**
-     * 带有TopoDS_Edge的默认构造函数。
-     *
+     * Default constructor with a TopoDS_Edge.
      */
     ArclengthProjectionLineManifold(const TopoDS_Shape &sh,
                                     const double        tolerance = 1e-7);
 
     /**
-     * 克隆当前的Manifold。
-     *
+     * Clone the current Manifold.
      */
     virtual std::unique_ptr<Manifold<dim, spacedim>>
     clone() const override;
 
     /**
-     * 给出实空间上的一个点，找到其arclength参数。如果该点不在构造时给定的TopoDS_Edge上，在调试模式下会抛出一个错误。
-     *
+     * Given a point on real space, find its arclength parameter. Throws an
+     * error in debug mode, if the point is not on the TopoDS_Edge given at
+     * construction time.
      */
     virtual Point<1>
     pull_back(const Point<spacedim> &space_point) const override;
 
     /**
-     * 给定一个arclength参数，找到它在实空间的图像。
-     *
+     * Given an arclength parameter, find its image in real space.
      */
     virtual Point<spacedim>
     push_forward(const Point<1> &chart_point) const override;
 
   protected:
     /**
-     * 用于构建此物体的实际形状。
-     *
+     * The actual shape used to build this object.
      */
     const TopoDS_Shape sh;
 
     /**
-     * 一个曲线适配器。这是在计算中使用的一个，它指向上面的右边。
-     *
+     * A Curve adaptor. This is the one which is used in the computations, and
+     * it points to the right one above.
      */
     Handle_Adaptor3d_HCurve curve;
 
     /**
-     * 在所有内部计算中使用的相对公差。
-     *
+     * Relative tolerance used in all internal computations.
      */
     const double tolerance;
 
     /**
-     * 曲线的总长度。如果边缘是周期性的，这也会被用作周期。
-     *
+     * The total length of the curve. This is also used as a period if the
+     * edge is periodic.
      */
     const double length;
   };
 
   /**
-   * 使用OpenCASCADE导入的CAD的面的歧管描述。
-   * @ingroup manifold
+   * Manifold description for the face of a CAD imported using OpenCASCADE.
    *
+   * @ingroup manifold
    */
   template <int dim, int spacedim>
   class NURBSPatchManifold : public ChartManifold<dim, spacedim, 2>
   {
   public:
     /**
-     * 构造函数接收一个OpenCASCADE TopoDS_Face  @p face
-     * 和一个可选的  @p tolerance.
-     * 该类使用区间OpenCASCADE变量u, v来描述流形。
-     *
+     * The constructor takes an OpenCASCADE TopoDS_Face @p face and an optional
+     * @p tolerance. This class uses the interval OpenCASCADE variables u, v
+     * to describe the manifold.
      */
     NURBSPatchManifold(const TopoDS_Face &face, const double tolerance = 1e-7);
 
     /**
-     * 克隆当前的流形。
-     *
+     * Clone the current Manifold.
      */
     virtual std::unique_ptr<Manifold<dim, spacedim>>
     clone() const override;
 
     /**
-     * 从欧几里得空间拉回给定的点。将返回与该点相关的uv坐标
-     * @p space_point.  。
-     *
+     * Pull back the given point from the Euclidean space. Will return the uv
+     * coordinates associated with the point @p space_point.
      */
     virtual Point<2>
     pull_back(const Point<spacedim> &space_point) const override;
 
     /**
-     * 在uv坐标系中给定一个 @p chart_point
-     * ，该方法返回与之相关的欧几里得坐标。
-     *
+     * Given a @p chart_point in the uv coordinate system, this method returns the
+     * Euclidean coordinates associated.
      */
     virtual Point<spacedim>
     push_forward(const Point<2> &chart_point) const override;
 
     /**
-     * 给定间隔维欧氏空间中的一个点，该方法返回从uv坐标系映射到欧氏坐标系的函数
-     * $F$ 的导数。换句话说，它是一个大小为
-     * $\text{spacedim}\times\text{chartdim}$ 的矩阵。
-     * 这个函数被用于get_tangent_vector()函数所要求的计算中。
-     * 更多信息请参考该类的一般文档。
+     * Given a point in the spacedim dimensional Euclidean space, this
+     * method returns the derivatives of the function $F$ that maps from
+     * the uv coordinate system to the Euclidean coordinate
+     * system. In other words, it is a matrix of size
+     * $\text{spacedim}\times\text{chartdim}$.
      *
+     * This function is used in the computations required by the
+     * get_tangent_vector() function.
+     *
+     * Refer to the general documentation of this class for more information.
      */
     virtual DerivativeForm<1, 2, spacedim>
     push_forward_gradient(const Point<2> &chart_point) const override;
 
   protected:
     /**
-     * 返回一个代表u和v的最小值和最大值的元组。准确地说，它返回（u_min,
-     * u_max, v_min, v_max)
-     *
+     * Return a tuple representing the minimum and maximum values of u
+     * and v.  Precisely, it returns (u_min, u_max, v_min, v_max)
      */
     std::tuple<double, double, double, double>
     get_uv_bounds() const;
 
     /**
-     * 一个OpenCASCADE TopoDS_Face  @p face  由CAD给出。
-     *
+     * An OpenCASCADE TopoDS_Face @p face given by the CAD.
      */
     TopoDS_Face face;
 
     /**
-     * OpenCASCADE在每次操作中用来识别点的公差。
-     *
+     * Tolerance used by OpenCASCADE to identify points in each
+     * operation.
      */
     double tolerance;
   };
 
 } // namespace OpenCASCADE
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 
 #endif // DEAL_II_WITH_OPENCASCADE
 #endif // dealii_occ_manifold_lib_h
-
-

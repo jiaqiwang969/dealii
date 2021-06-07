@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/multigrid.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -355,3 +356,5 @@ Multigrid<VectorType>::connect_post_smoother_step(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

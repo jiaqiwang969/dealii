@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/mg_transfer_component_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2020 by the deal.II authors
@@ -44,25 +45,29 @@ template <int dim, int spacedim>
 class DoFHandler;
 #endif
 
-/*
- * MGTransferBase is defined in mg_base.h
- */
+/* MGTransferBase在mg_base.h中定义。
 
-/*!@addtogroup mg */
-/*@{*/
+* 
+* */
+
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 /**
- * Implementation of matrix generation for component wise multigrid transfer.
+ * 为组件明智的多栅格传输实现矩阵生成。
  *
- * @note MGTransferBlockBase is probably the more logical class. Still
- * eventually, a class should be developed allowing to select multiple
- * components.
+ *
+ * @note
+ * MGTransferBlockBase可能是一个更合理的类。但最终还是应该开发一个允许选择多个组件的类。
+ *
+ *
  */
 class MGTransferComponentBase
 {
 public:
   /**
-   * Memory used by this object.
+   * 这个对象使用的内存。
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -70,64 +75,65 @@ public:
 
 protected:
   /**
-   * Actually build the prolongation matrices for each level.
+   * 实际上是为每个层次建立延长矩阵。
+   * 这个函数只被派生类调用。这些也可以设置成员变量
+   * <code>selected_component</code> 和 <code>mg_selected_component</code>
+   * 成员变量来限制传递矩阵的某些成分。此外，它们使用
+   * <code>target_component</code> and <code>mg_target_component</code>
+   * 对组件进行重新排序和分组。
    *
-   * This function is only called by derived classes. These can also set the
-   * member variables <code>selected_component</code> and
-   * <code>mg_selected_component</code> member variables to restrict the
-   * transfer matrices to certain components. Furthermore, they use
-   * <code>target_component</code> and <code>mg_target_component</code> for
-   * re-ordering and grouping of components.
    */
   template <int dim, int spacedim>
   void
   build(const DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * Flag of selected components.
+   * 所选组件的标志。
+   * 转移运算符只作用于这里有<tt>true</tt>条目的组件。如果使用#target_component的重新编号，这指的是<b>renumbered</b>组件。
    *
-   * The transfer operators only act on the components having a <tt>true</tt>
-   * entry here. If renumbering by #target_component is used, this refers to
-   * the <b>renumbered</b> components.
    */
   ComponentMask component_mask;
 
   /**
-   * Flag of selected components.
+   * 所选组件的标志。
+   * 转移操作只作用于这里有<tt>true</tt>项的组件。如果使用#mg_target_component的重新编号，这指的是<b>renumbered</b>组件。
    *
-   * The transfer operators only act on the components having a <tt>true</tt>
-   * entry here. If renumbering by #mg_target_component is used, this refers
-   * to the <b>renumbered</b> components.
    */
   ComponentMask mg_component_mask;
 
   /**
-   * Target component of the fine-level vector if renumbering is required.
+   * 如果需要重新编号，细级向量的目标分量。
+   *
    */
   std::vector<unsigned int> target_component;
 
   /**
-   * Target component if renumbering of level vectors is required.
+   * 如果需要对水平向量进行重新编号，则为目标分量。
+   *
    */
   std::vector<unsigned int> mg_target_component;
 
   /**
-   * Sizes of the multi-level vectors.
+   * 多级向量的大小。
+   *
    */
   mutable std::vector<std::vector<types::global_dof_index>> sizes;
 
   /**
-   * Start index of each component.
+   * 每个组件的起始索引。
+   *
    */
   std::vector<types::global_dof_index> component_start;
 
   /**
-   * Start index of each component on all levels.
+   * 所有层次上的每个组件的起始索引。
+   *
    */
   std::vector<std::vector<types::global_dof_index>> mg_component_start;
 
   /**
-   * Call build() function first.
+   * 先调用build()函数。
+   *
    */
   DeclException0(ExcMatricesNotBuilt);
 
@@ -136,22 +142,22 @@ private:
 
 protected:
   /**
-   * The actual prolongation matrix. column indices belong to the dof indices
-   * of the mother cell, i.e. the coarse level. while row indices belong to
-   * the child cell, i.e. the fine level.
+   * 实际的延长矩阵。列指数属于母单元的道夫指数，即粗级别。而行指数属于子单元，即细级别。
+   *
    */
   std::vector<std::shared_ptr<BlockSparseMatrix<double>>> prolongation_matrices;
 
   /**
-   * This variable holds the mapping for the <tt>copy_to/from_mg</tt>-functions.
-   * The data is first the global index, then the level index.
+   * 这个变量持有<tt>copy_to/from_mg</tt>-函数的映射。
+   * 该数据首先是全局索引，然后是级别索引。
+   *
    */
   std::vector<std::vector<std::pair<types::global_dof_index, unsigned int>>>
     copy_to_and_from_indices;
 
   /**
-   * Store the boundary_indices. These are needed for the boundary values in
-   * the restriction matrix.
+   * 存储边界指数。这些是限制矩阵中的边界值所需要的。
+   *
    */
   std::vector<std::set<types::global_dof_index>> boundary_indices;
 };
@@ -161,13 +167,10 @@ protected:
 // TODO: Use same kind of template argument as MGTransferSelect
 
 /**
- * Implementation of the MGTransferBase interface for block matrices and
- * simple vectors. This class uses MGTransferComponentBase selecting a single
- * component or grouping several components into a single block. The transfer
- * operators themselves are implemented for Vector and BlockVector objects.
+ * MGTransferBase接口的实现，用于块状矩阵和简单向量。这个类使用MGTransferComponentBase选择一个单独的组件或将几个组件分组到一个块中。转移操作符本身是为Vector和BlockVector对象实现的。
+ * 请参阅MGTransferBase来了解哪一个转移类最适合你的需要。
  *
- * See MGTransferBase to find out which of the transfer classes is best for
- * your needs.
+ *
  */
 template <typename number>
 class MGTransferSelect : public MGTransferBase<Vector<number>>,
@@ -175,46 +178,39 @@ class MGTransferSelect : public MGTransferBase<Vector<number>>,
 {
 public:
   /**
-   * Constructor without constraint matrices. Use this constructor only with
-   * discontinuous finite elements or with no local refinement.
+   * 没有约束矩阵的构造函数。只在不连续的有限元或没有局部细化的情况下使用这个构造函数。
+   *
    */
   MGTransferSelect();
 
   /**
-   * Constructor with constraint matrices.
+   * 带有约束矩阵的构造函数。
+   *
    */
   MGTransferSelect(const AffineConstraints<double> &constraints);
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   virtual ~MGTransferSelect() override = default;
 
   // TODO: rewrite docs; make sure defaulted args are actually allowed
   /**
-   * Actually build the prolongation matrices for grouped components.
+   * 实际上是为分组的组件建立延长矩阵。
+   * 这个函数是MGTransferComponentBase中相同函数的前端。
+   * @arg 选定
+   * 要从多级向量复制到全局向量的块的编号。这个数字是指通过<tt>target_component</tt>重新编号。
+   * @arg  mg_selected 应建立转移矩阵的块的编号。
+   * 如果<tt>mg_target_component</tt>存在，这指的是重新编号的组件。
+   * @arg
+   * target_component这个参数允许对细级向量中的组件进行分组和重新编号（见
+   * DoFRenumbering::component_wise).   @arg
+   * mg_target_component这个参数允许对级向量中的组件进行分组和重新编号（见
+   * DoFRenumbering::component_wise).
+   * 它也会影响<tt>selected</tt>参数的行为  @arg
+   * boundary_indices持有每一级的边界指数。
    *
-   * This function is a front-end for the same function in
-   * MGTransferComponentBase.
-   *
-   * @arg selected Number of the block of the global vector to be copied from
-   * and to the multilevel vector. This number refers to the renumbering by
-   * <tt>target_component</tt>.
-   *
-   * @arg mg_selected Number of the block for which the transfer matrices
-   * should be built.
-   *
-   * If <tt>mg_target_component</tt> is present, this refers to the renumbered
-   * components.
-   *
-   * @arg target_component this argument allows grouping and renumbering of
-   * components in the fine-level vector (see DoFRenumbering::component_wise).
-   *
-   * @arg mg_target_component this argument allows grouping and renumbering
-   * of components in the level vectors (see DoFRenumbering::component_wise).
-   * It also affects the behavior of the <tt>selected</tt> argument
-   *
-   * @arg boundary_indices holds the boundary indices on each level.
    */
   template <int dim, int spacedim>
   void
@@ -229,7 +225,8 @@ public:
           std::vector<std::set<types::global_dof_index>>());
 
   /**
-   * Change selected component. Handle with care!
+   * 改变选定的组件。小心处理!
+   *
    */
   void
   select(const unsigned int component,
@@ -246,10 +243,10 @@ public:
                    const Vector<number> &src) const override;
 
   /**
-   * Transfer from a vector on the global grid to a multilevel vector for the
-   * active degrees of freedom. In particular, for a globally refined mesh only
-   * the finest level in @p dst is filled as a plain copy of @p src. All the
-   * other level objects are left untouched.
+   * 从全局网格上的向量转移到活动自由度的多级向量。特别是，对于一个全局细化的网格，只有
+   * @p dst 中最细的层次被填充为 @p src.
+   * 的普通拷贝，所有其他的层次对象都不被触动。
+   *
    */
   template <int dim, typename number2, int spacedim>
   void
@@ -258,10 +255,9 @@ public:
              const Vector<number2> &          src) const;
 
   /**
-   * Transfer from multilevel vector to normal vector.
+   * 从多级向量转移到普通向量。
+   * 将一个多级向量的活动部分的数据复制到向量的相应位置。
    *
-   * Copies data from active portions of an multilevel vector into the
-   * respective positions of a Vector.
    */
   template <int dim, typename number2, int spacedim>
   void
@@ -270,9 +266,9 @@ public:
                const MGLevelObject<Vector<number>> &src) const;
 
   /**
-   * Add a multi-level vector to a normal vector.
+   * 将一个多级向量添加到一个正常向量中。
+   * 和前面的函数一样工作，但可能不适合连续元素。
    *
-   * Works as the previous function, but probably not for continuous elements.
    */
   template <int dim, typename number2, int spacedim>
   void
@@ -281,10 +277,10 @@ public:
                    const MGLevelObject<Vector<number>> &src) const;
 
   /**
-   * Transfer from a vector on the global grid to a multilevel vector for the
-   * active degrees of freedom. In particular, for a globally refined mesh only
-   * the finest level in @p dst is filled as a plain copy of @p src. All the
-   * other level objects are left untouched.
+   * 从全局网格上的一个向量转移到活动自由度的多级向量。特别是，对于全局细化的网格，只有
+   * @p dst 中最细的层次被填充为 @p src.
+   * 的普通拷贝，其他的层次对象都没有被触动。
+   *
    */
   template <int dim, typename number2, int spacedim>
   void
@@ -293,10 +289,9 @@ public:
              const BlockVector<number2> &     src) const;
 
   /**
-   * Transfer from multilevel vector to normal vector.
+   * 从多级向量转移到普通向量。
+   * 将多级向量的活动部分的数据复制到全局BlockVector的相应位置。
    *
-   * Copies data from active portions of a multilevel vector into the
-   * respective positions of a global BlockVector.
    */
   template <int dim, typename number2, int spacedim>
   void
@@ -305,9 +300,9 @@ public:
                const MGLevelObject<Vector<number>> &src) const;
 
   /**
-   * Add a multi-level vector to a normal vector.
+   * 将一个多级向量添加到一个正常向量。
+   * 和前面的函数一样工作，但可能不适合连续元素。
    *
-   * Works as the previous function, but probably not for continuous elements.
    */
   template <int dim, typename number2, int spacedim>
   void
@@ -316,14 +311,16 @@ public:
                    const MGLevelObject<Vector<number>> &src) const;
 
   /**
-   * Memory used by this object.
+   * 这个对象使用的内存。
+   *
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * Implementation of the public function.
+   * 公共函数的实现。
+   *
    */
   template <int dim, class OutVector, int spacedim>
   void
@@ -332,7 +329,8 @@ private:
                   const MGLevelObject<Vector<number>> &src) const;
 
   /**
-   * Implementation of the public function.
+   * 公共函数的实现。
+   *
    */
   template <int dim, class OutVector, int spacedim>
   void
@@ -341,7 +339,8 @@ private:
                       const MGLevelObject<Vector<number>> &src) const;
 
   /**
-   * Actual implementation of copy_to_mg().
+   * copy_to_mg()的实际实现。
+   *
    */
   template <int dim, class InVector, int spacedim>
   void
@@ -349,29 +348,31 @@ private:
                 MGLevelObject<Vector<number>> &  dst,
                 const InVector &                 src) const;
   /**
-   * Selected component of global vector.
+   * 全局向量的选定组件。
+   *
    */
   unsigned int selected_component;
   /**
-   * Selected component inside multigrid.
+   * 多网格内的选定分量。
+   *
    */
   unsigned int mg_selected_component;
 
   /**
-   * The degrees of freedom on the refinement edges. For each level the index
-   * set denotes which level degrees of freedom are on the refinement edge
-   * towards the lower level, excluding boundary dofs.
+   * 细化边上的自由度。对于每一层，索引集表示哪一层的自由度在朝向下一层的细化边上，不包括边界自由度。
+   *
    */
   std::vector<IndexSet> interface_dofs;
 
   /**
-   * The constraints of the global system.
+   * 全局系统的约束。
+   *
    */
 public:
   SmartPointer<const AffineConstraints<double>> constraints;
 };
 
-/*@}*/
+ /*@}*/ 
 
 //---------------------------------------------------------------------------
 template <typename number>
@@ -387,3 +388,5 @@ MGTransferSelect<number>::select(const unsigned int component,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

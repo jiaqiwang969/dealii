@@ -1,4 +1,3 @@
-//include/deal.II-translator/dofs/dof_levels_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -36,60 +35,75 @@ namespace internal
   namespace DoFHandlerImplementation
   {
     /**
-     * 用于存储细胞自由度信息的结构，按级别组织。
-     * 我们在#cell_dof_indices_cache中存储了每个单元的自由度指数的缓存值，因为这是一个经常被要求的操作。这些值由
-     * DoFCellAccessor::update_cell_dof_indices_cache 设置，并由
-     * DoFCellAccessor::get_dof_indices.
-     * 使用。请注意，顶点是独立的，事实上与单元无关。因此，位于顶点上的自由度指数不存储在这里，而是存储在
-     * dealii::DoFHandler 类的成员变量中。
-     * 位于低维物体上的自由度指数，即二维的线上和三维的四边形和线上的自由度指数的处理与单元上的类似。然而，这些几何对象，作为一种概括，被称为面，并不是以层次结构的方式组织的。因此，位于这些对象上的自由度被存储在单独的类中，即<tt>DoFFaces</tt>类。
-     * 对该对象的访问通常是通过 DoFAccessor::set_dof_index() 和
-     * DoFAccessor::dof_index()
-     * 函数或派生类的类似函数，而派生类又使用
-     * DoFHandler::get_dof_index()
-     * 和相应的setter函数访问成员变量。因此，实际数据格式的知识被封装到目前的类的层次结构以及
-     * dealii::DoFHandler 类中。
+     * Structure for storing degree of freedom information for cells,
+     * organized by levels.
      *
+     * We store are cached values for the DoF indices on each cell
+     * in#cell_dof_indices_cache, since this is a frequently requested
+     * operation. The values are set by
+     * DoFCellAccessor::update_cell_dof_indices_cache and are used by
+     * DoFCellAccessor::get_dof_indices.
+     *
+     * Note that vertices are separate from, and in fact have nothing to do
+     * with cells. The indices of degrees of freedom located on vertices
+     * therefore are not stored here, but rather in member variables of the
+     * dealii::DoFHandler class.
+     *
+     * The indices of degrees of freedom located on lower dimensional objects,
+     * i.e. on lines for 2D and on quads and lines for 3D are treated
+     * similarly than that on cells. However, these geometrical objects, which
+     * are called faces as a generalization, are not organised in a
+     * hierarchical structure of levels. Therefore, the degrees of freedom
+     * located on these objects are stored in separate classes, namely the
+     * <tt>DoFFaces</tt> classes.
+     *
+     * Access to this object is usually through the
+     * DoFAccessor::set_dof_index() and DoFAccessor::dof_index() functions or
+     * similar functions of derived classes that in turn access the member
+     * variables using the DoFHandler::get_dof_index() and corresponding
+     * setter functions. Knowledge of the actual data format is therefore
+     * encapsulated to the present hierarchy of classes as well as the
+     * dealii::DoFHandler class.
      */
     template <int dim>
     class DoFLevel
     {
     public:
       /**
-       * 用于单元格上的DoF指数的缓存。这个数组的大小等于某一层的单元格数量乘以selected_fe.n_dofs_per_cell()。
-       *
+       * Cache for the DoF indices on cells. The size of this array equals the
+       * number of cells on a given level times selected_fe.n_dofs_per_cell().
        */
       std::vector<types::global_dof_index> cell_dof_indices_cache;
 
       /**
-       * 包含dof-indices和相关访问函数的对象。
-       *
+       * The object containing dof-indices and related access-functions
        */
       DoFObjects<dim> dof_object;
 
       /**
-       * 返回一个指针，指向给定单元的DoF指数缓存的开头。
-       * @param  obj_index 我们正在查看的单元的编号。
-       * @param  dofs_per_cell 该单元的每个DoFs的数量。
-       * @return
-       * 指向当前单元的第一个DoF索引的指针。接下来的
-       * dofs_per_cell 指数是针对当前单元的。
+       * Return a pointer to the beginning of the DoF indices cache for a
+       * given cell.
        *
+       * @param obj_index The number of the cell we are looking at.
+       * @param dofs_per_cell The number of DoFs per cell for this cell.
+       * @return A pointer to the first DoF index for the current cell. The
+       * next dofs_per_cell indices are for the current cell.
        */
       const types::global_dof_index *
       get_cell_cache_start(const unsigned int obj_index,
                            const unsigned int dofs_per_cell) const;
 
       /**
-       * 确定此对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-       *
+       * Read or write the data of this object to or from a stream for the
+       * purpose of serialization using the [BOOST serialization
+       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
        */
       template <class Archive>
       void
@@ -135,5 +149,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

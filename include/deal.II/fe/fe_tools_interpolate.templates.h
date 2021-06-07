@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_tools_interpolate.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -800,7 +799,5 @@ namespace FETools
 
 DEAL_II_NAMESPACE_CLOSE
 
- /*---------------------- fe_tools_interpolate_templates.h -------------------*/ 
+/*---------------------- fe_tools_interpolate_templates.h -------------------*/
 #endif // dealii_fe_tools_interpolate_templates_H
-
-

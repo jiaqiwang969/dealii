@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/polynomials_piecewise_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -30,50 +31,34 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup Polynomials
- * @{
+ * @addtogroup  多项式  @{
+ *
  */
 
 /**
- * A namespace in which classes relating to the description of 1d polynomial
- * spaces are declared.
+ * 一个命名空间，与描述1d多项式空间有关的类在其中被声明。
+ *
+ *
  */
 namespace Polynomials
 {
   /**
-   * Definition of piecewise 1D polynomials for the unit interval. This space
-   * allows the description of interpolating polynomials on parts of the unit
-   * interval, similarly to the definition of finite element basis functions
-   * on subdivided elements. The primary purpose of this class is to
-   * allow constructing the shape functions of the FE_Q_iso_Q1 class that has
-   * a number of interpolation points in each coordinate direction, but instead
-   * of using them for higher-order polynomials just chooses piecewise linear
-   * shape functions -- in effect, it is a $Q_1$ element defined on a
-   * subdivision of the reference cell, and replicated on each of these
-   * sub-cells.
+   * 单位区间的分片一维多项式的定义。这个空间允许在单位区间的部分上描述插值多项式，类似于在细分元素上定义有限元基函数。这个类的主要目的是允许构造FE_Q_iso_Q1类的形状函数，该类在每个坐标方向上都有一些插值点，但不是用它们来做高阶多项式，而只是选择片状线性形状函数
    *
-   * This class is not derived from the ScalarPolynomialsBase base class
-   * because it is not actually a polynomial -- it is a piecewise polynomial.
-   * However, it is interface-compatible with the Polynomials::Polynomial
-   * class, and consequently can be used as template argument for
-   * TensorProductPolynomials.
+   * - 实际上，它是一个 $Q_1$ 元素，定义在参考单元的细分上，并在这些子单元中的每一个上进行复制。    这个类不是从ScalarPolynomialsBase基类派生的，因为它实际上不是一个多项式
    *
+   * - 它是一个片状多项式。  然而，它与 Polynomials::Polynomial 类是接口兼容的，因此可以作为TensorProductPolynomials的模板参数。
    * @ingroup Polynomials
+   *
    */
   template <typename number>
   class PiecewisePolynomial : public Subscriptor
   {
   public:
     /**
-     * Constructor for Lagrange polynomial on an interval that is a subset of
-     * the unit interval. It uses a polynomial description that is scaled to
-     * the size of the subinterval compared to the unit interval, the total
-     * number of intervals (subdivisions), the current index of the interval
-     * as well as if the polynomial spans onto the next interval (e.g., if it
-     * lives on two neighboring intervals).
+     * 拉格朗日多项式的构造函数，该区间是单位区间的一个子集。它使用一个多项式描述，与单位区间相比，子区间的大小、区间的总数（细分）、区间的当前索引以及多项式是否跨越到下一个区间（例如，如果它生活在两个相邻的区间上）。
+     * 如果区间数为1，则分片多项式的表现与通常的多项式完全相同。
      *
-     * If the number of intervals is one, the piecewise polynomial behaves
-     * exactly like a usual polynomial.
      */
     PiecewisePolynomial(const Polynomial<number> &coefficients_on_interval,
                         const unsigned int        n_intervals,
@@ -81,45 +66,28 @@ namespace Polynomials
                         const bool                spans_next_interval);
 
     /**
-     * Return the value of this polynomial at the given point, evaluating the
-     * underlying polynomial. The polynomial evaluates to zero when outside of
-     * the given interval (and possible the next one to the right when it
-     * spans over that range).
+     * 返回该多项式在给定点的值，评估底层多项式。当超出给定的区间时，该多项式评估为零（当它跨过该区间时，可能是右边的下一个区间）。
+     *
      */
     number
     value(const number x) const;
 
     /**
-     * Return the values and the derivatives of the Polynomial at point
-     * <tt>x</tt>.  <tt>values[i], i=0,...,values.size()-1</tt> includes the
-     * <tt>i</tt>th derivative. The number of derivatives to be computed is
-     * thus determined by the size of the vector passed.
+     * 返回多项式在<tt>x</tt>点的值和导数。 <tt>values[i],
+     * i=0,...,values.size()-1</tt>包括<tt>i</tt>的导数。因此，要计算的导数的数量由传递的向量的大小决定。
+     * 请注意，所有的导数在单位区间内部的区间边界（假设是精确的算术）评估为零，因为在这种情况下对于片状多项式来说没有唯一的梯度值。这并不总是需要的（例如，当评估元素边界上的梯度跳跃时），但是当没有意义时，用户有责任避免在这些点进行评估。
      *
-     * Note that all the derivatives evaluate to zero at the border between
-     * intervals (assuming exact arithmetic) in the interior of the unit
-     * interval, as there is no unique gradient value in that case for a
-     * piecewise polynomial. This is not always desired (e.g., when evaluating
-     * jumps of gradients on the element boundary), but it is the user's
-     * responsibility to avoid evaluation at these points when it does not
-     * make sense.
      */
     void
     value(const number x, std::vector<number> &values) const;
 
     /**
-     * Return the values and the derivatives of the Polynomial at point
-     * <tt>x</tt>.  <tt>values[i], i=0,...,n_derivatives</tt> includes the
-     * <tt>i</tt>th derivative.The number of derivatives to be computed is
-     * determined by @p n_derivatives and @p values has to provide sufficient
-     * space for @p n_derivatives + 1 values.
+     * 返回多项式在<tt>x</tt>点的值和导数。 <tt>values[i],
+     * i=0,...,n_derivatives</tt>包括<tt>i</tt>的导数。要计算的导数数量由
+     * @p n_derivatives 决定， @p values 必须为 @p n_derivatives
+     * +1的值提供足够的空间。
+     * 请注意，所有导数在单位区间内部的区间边界（假设是精确算术）评估为零，因为在这种情况下，对于片状多项式没有唯一的梯度值。这并不总是需要的（例如，当评估元素边界上的梯度跳跃时），但是当没有意义时，用户有责任避免在这些点进行评估。
      *
-     * Note that all the derivatives evaluate to zero at the border between
-     * intervals (assuming exact arithmetic) in the interior of the unit
-     * interval, as there is no unique gradient value in that case for a
-     * piecewise polynomial. This is not always desired (e.g., when evaluating
-     * jumps of gradients on the element boundary), but it is the user's
-     * responsibility to avoid evaluation at these points when it does not
-     * make sense.
      */
     void
     value(const number       x,
@@ -127,49 +95,49 @@ namespace Polynomials
           number *           values) const;
 
     /**
-     * Degree of the polynomial. This is the degree of the underlying base
-     * polynomial.
+     * 多项式的度数。这是底层基础多项式的度数。
+     *
      */
     unsigned int
     degree() const;
 
     /**
-     * Write or read the data of this object to or from a stream for the
-     * purpose of serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
+     *
      */
     template <class Archive>
     void
     serialize(Archive &ar, const unsigned int version);
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this object.
+     * 返回此对象的内存消耗估计值（以字节为单位）。
+     *
      */
     virtual std::size_t
     memory_consumption() const;
 
   protected:
     /**
-     * Underlying polynomial object that is scaled to a subinterval and
-     * concatenated accordingly.
+     * 底层多项式对象，被缩放到一个子区间，并相应地进行连接。
+     *
      */
     Polynomial<number> polynomial;
 
     /**
-     * A variable storing the number of intervals that the unit interval is
-     * divided into.
+     * 一个存储单位区间被分成的区间数的变量。
+     *
      */
     unsigned int n_intervals;
 
     /**
-     * A variable storing the index of the current polynomial in the range of
-     * intervals.
+     * 一个存储当前多项式在区间范围内的索引的变量。
+     *
      */
     unsigned int interval;
 
     /**
-     * Store if the polynomial spans over two adjacent intervals, i.e., the
-     * one given in subinterval and the next one.
+     * 存储如果多项式跨越两个相邻的区间，即子区间中给出的区间和下一个区间。
+     *
      */
     bool spans_two_intervals;
   };
@@ -177,9 +145,8 @@ namespace Polynomials
 
 
   /**
-   * Generates a complete Lagrange basis on a subdivision of the unit interval
-   * in smaller intervals for a given degree on the subintervals and number of
-   * intervals.
+   * 在子区间上给定的度数和区间数的情况下，在单位区间的细分上生成一个完整的拉格朗日基础，并将其划分为更小的区间。
+   *
    */
   std::vector<PiecewisePolynomial<double>>
   generate_complete_Lagrange_basis_on_subdivisions(
@@ -189,9 +156,9 @@ namespace Polynomials
 } // namespace Polynomials
 
 
-/** @} */
+ /** @} */ 
 
-/* -------------------------- inline functions --------------------- */
+ /* -------------------------- inline functions --------------------- */ 
 
 namespace Polynomials
 {
@@ -263,3 +230,5 @@ namespace Polynomials
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

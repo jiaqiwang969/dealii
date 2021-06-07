@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_poly_tensor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -33,119 +34,80 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This class provides a unified framework for the implementation of
- * FiniteElement classes based on tensor-valued polynomial spaces like
- * PolynomialsBDM and PolynomialsRaviartThomas. In this, it is the
- * tensor-valued equivalent of the FE_Poly class.
+ * 这个类提供了一个统一的框架，用于实现基于张量值的多项式空间的FiniteElement类，如PolynomialsBDM和PolynomialsRaviartThomas。在这一点上，它是张量值的FE_Poly类的等同物。
+ * 本质上，这个类所要求的是，派生类向它描述一个（矢量值）多项式空间，其中每个多项式都正好有
+ * @p dim
+ * 个矢量分量。提供这种实现的类都是从TensorPolynomialsBase类派生出来的，这些派生类型中的一个对象需要提供给这个类的构造函数。
  *
- * In essence, what this class requires is that a derived class describes
- * to it a (vector-valued) polynomial space in which every polynomial
- * has exactly @p dim vector components. The classes that provide such
- * implementations are all derived from the TensorPolynomialsBase
- * class, and an object of one of these derived types needs to be
- * provided to the constructor of this class.
+ *  <h3>Deriving classes</h3>
+ * 这个类不是一个完全实现的FiniteElement类，但是实现了一些基于向量估值的多项式类的向量估值元素的共同特征。这里特别缺少的是关于节点值的拓扑位置的信息（即一个自由度在逻辑上是在顶点、边缘、面，还是在单元的内部
  *
+ * --这些信息决定了跨单元界面的相关形状函数的连续性属性），而派生类需要提供这些信息。
+ * 同样地，在许多情况下，节点函数取决于网格单元的形状，因为它们评估面的法向或切向分量。为了允许一系列的转换，引入了#mapping_kind这个变量。它需要在派生类的构造函数中设置。
+ * 任何派生类都必须决定要使用的多项式空间。
+ * 这个多项式空间应该简单地实现为一组矢量值的多项式，如PolynomialsBDM和PolynomialsRaviartThomas。
+ * 为了便于实现，多项式空间选择哪种基础对当前的类并不重要。
  *
- * <h3>Deriving classes</h3>
+ * - 正如接下来所描述的，这个类处理了从多项式空间模板参数所选择的基础到我们内部要用于有限元计算的基础的转换。
  *
- * This class is not a fully implemented FiniteElement class, but implements
- * some common features of vector valued elements based on vector valued
- * polynomial classes. What's missing here in particular is information on the
- * topological location of the node values (i.e., whether a degree of freedom
- * is logically at a vertex, edge, face, or the interior of a cell --
- * information that determines the continuity properties of the associated
- * shape functions across cell interfaces), and derived classes need to provide
- * this information.
+ *  <h4>Determining the correct basis</h4>
+ * 在大多数情况下，描述多项式空间的类所使用的基，
+ * $\{\tilde\varphi_j(\hat{\mathbf x})\}$
+ * ，并不符合我们想用于有限元描述的基，
+ * $\{\varphi_j(\hat{\mathbf x})\}$
+ * 。相反，我们需要将有限元形状函数表达为多项式空间所提供的基础的线性组合。
  *
- * Similarly, in many cases, node functionals depend on the shape of the mesh
- * cell, since they evaluate normal or tangential components on the faces. In
- * order to allow for a set of transformations, the variable #mapping_kind has
- * been introduced. It needs be set in the constructor of a derived
- * class.
- *
- * Any derived class must decide on the polynomial space to use.  This
- * polynomial space should be implemented simply as a set of vector valued
- * polynomials like PolynomialsBDM and PolynomialsRaviartThomas.  In order to
- * facilitate this implementation, which basis the polynomial space chooses
- * is not of importance to the current class -- as described next, this class
- * handles the transformation from the basis chosen by the polynomial space
- * template argument to the basis we want to use for finite element
- * computations internally.
- *
- *
- * <h4>Determining the correct basis</h4>
- *
- * In most cases, the basis used by the class that describes the polynomial
- * space, $\{\tilde\varphi_j(\hat{\mathbf x})\}$, does not match the one we
- * want to use for the finite element description,
- * $\{\varphi_j(\hat{\mathbf x})\}$. Rather, we need to express the finite
- * element shape functions as a linear combination of the basis provided
- * by the polynomial space:
  * @f{align*}{
- *   \varphi_j = \sum_k c_{jk} \tilde\varphi_j.
+ * \varphi_j = \sum_k c_{jk} \tilde\varphi_j.
  * @f}
- * These expansion coefficients $c_{jk}$ are typically computed in the
- * constructors of derived classes. To facilitate this, this class
- * at first (unless told otherwise, see below), assumes that the shape
- * functions should be exactly the ones provided by the polynomial
- * space. In the constructor of the derived class, one then typically has
- * code of the form
+ * 这些展开系数 $c_{jk}$
+ * 通常在派生类的构造函数中计算。为了方便，这个类一开始（除非另有告知，见下文），假定形状函数应该正是多项式空间所提供的。在派生类的构造函数中，我们通常会有如下形式的代码
+ *
  * @code
- *   // Now compute the inverse node matrix, generating the correct
- *   // basis functions from the raw ones. For a discussion of what
- *   // exactly happens here, see FETools::compute_node_matrix.
- *   const FullMatrix<double> M = FETools::compute_node_matrix(*this);
- *   this->inverse_node_matrix.reinit(n_dofs, n_dofs);
- *   this->inverse_node_matrix.invert(M);
- *   // From now on, the shape functions provided by FiniteElement::shape_value
- *   // and similar functions will be the correct ones, not
- *   // the raw shape functions from the polynomial space anymore.
+ * // Now compute the inverse node matrix, generating the correct
+ * // basis functions from the raw ones. For a discussion of what
+ * // exactly happens here, see FETools::compute_node_matrix.
+ * const FullMatrix<double> M = FETools::compute_node_matrix(*this);
+ * this->inverse_node_matrix.reinit(n_dofs, n_dofs);
+ * this->inverse_node_matrix.invert(M);
+ * // From now on, the shape functions provided by FiniteElement::shape_value
+ * // and similar functions will be the correct ones, not
+ * // the raw shape functions from the polynomial space anymore.
  * @endcode
- * The FETools::compute_node_matrix() function explains in more
- * detail what exactly it computes, and how; in any case, the result
- * is that @p inverse_node_matrix now contains the expansion coefficients
- * $c_{jk}$, and the fact that this block of code now sets the
- * matrix to a non-zero size indicates to the functions of the current
- * class that it should from then on use the expanded basis,
- * $\{\varphi_j(\hat{\mathbf x})\}$, and no longer the original, "raw"
- * basis $\{\tilde\varphi_j(\hat{\mathbf x})\}$ when asked for values
- * or derivatives of shape functions.
+ * FETools::compute_node_matrix()
+ * 函数更详细地解释了它到底计算什么，以及如何计算；无论如何，结果是
+ * @p inverse_node_matrix 现在包含了扩展系数 $c_{jk}$
+ * ，而且这块代码现在将矩阵设置为非零大小的事实向当前类的函数表明，当要求形状函数的值或导数时，它应该从那时起使用扩展的基础，
+ * $\{\varphi_j(\hat{\mathbf x})\}$ ，而不再是原始，"原始 "基础
+ * $\{\tilde\varphi_j(\hat{\mathbf x})\}$  。
+ * 为了使这个方案奏效，必须确保在调用
+ * FETools::compute_node_matrix() 时， @p inverse_node_matrix
+ * 的大小为零；因此，对这个函数的调用不能被内联到最后一行
  *
- * In order for this scheme to work, it is important to ensure that
- * the size of the @p inverse_node_matrix be zero at the time when
- * FETools::compute_node_matrix() is called; thus, the call to this
- * function cannot be inlined into the last line -- the result of
- * the call really does need to be stored in the temporary object
- * @p M.
+ * - 调用的结果确实需要存储在临时对象 @p M. 中。
  *
+ *  <h4>Setting the transformation</h4>
+ * 在大多数情况下，矢量值的基函数从参考单元映射到实际网格单元时必须进行转换。这些转换可以从MappingKind集合中选择，并存储在#mapping_kind中。因此，每个构造函数都应该包含这样一行。
  *
- * <h4>Setting the transformation</h4>
- *
- * In most cases, vector valued basis functions must be transformed when
- * mapped from the reference cell to the actual grid cell. These
- * transformations can be selected from the set MappingKind and stored in
- * #mapping_kind. Therefore, each constructor should contain a line like:
  * @code
  * this->mapping_kind = {mapping_none};
  * @endcode
- * (in case no mapping is required) or using whatever value among
- * the ones defined in MappingKind is appropriate for the element you
- * are implementing. If each shape function may be mapped by different
- * mappings, then @p mapping_kind may be a vector with the same number
- * of elements as there are shape functions.
- *
- * @see TensorPolynomialsBase
+ * （在不需要映射的情况下）或使用MappingKind中定义的任何值，以适合你正在实现的元素。如果每个形状函数可以通过不同的映射来实现，那么
+ * @p mapping_kind
+ * 可以是一个元素数量与形状函数数量相同的向量。
+ * @see  TensorPolynomialsBase
  * @ingroup febase
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_PolyTensor : public FiniteElement<dim, spacedim>
 {
 public:
   /**
-   * Constructor. This constructor does a deep copy of the polynomials
-   * object via the TensorPolynomialsBase::clone() function and stores
-   * a pointer to the copy. As a consequence, the calling site can
-   * simply pass a temporary object as the first argument.
+   * 构造函数。这个构造函数通过 TensorPolynomialsBase::clone()
+   * 函数对多项式对象进行深度拷贝，并存储一个指向该拷贝的指针。因此，调用网站可以简单地传递一个临时对象作为第一个参数。
+   *
    */
   FE_PolyTensor(const TensorPolynomialsBase<dim> &polynomials,
                 const FiniteElementData<dim> &    fe_data,
@@ -154,7 +116,8 @@ public:
 
 
   /**
-   * Copy constructor.
+   * 拷贝构造函数。
+   *
    */
   FE_PolyTensor(const FE_PolyTensor &fe);
 
@@ -163,10 +126,8 @@ public:
   requires_update_flags(const UpdateFlags update_flags) const override;
 
   /**
-   * Compute the (scalar) value of shape function @p i at the given quadrature
-   * point @p p. Since the elements represented by this class are vector
-   * valued, there is no such scalar value and the function therefore throws
-   * an exception.
+   * 计算形状函数 @p i 在给定正交点 @p p. 的（标量）值。
+   *
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
@@ -178,10 +139,9 @@ public:
                         const unsigned int component) const override;
 
   /**
-   * Compute the gradient of (scalar) shape function @p i at the given
-   * quadrature point @p p. Since the elements represented by this class are
-   * vector valued, there is no such scalar value and the function therefore
-   * throws an exception.
+   * 计算（标量）形状函数 @p i 在给定正交点的梯度  @p p.
+   * 由于该类代表的元素是矢量值，没有这样的标量值，因此该函数抛出了一个异常。
+   *
    */
   virtual Tensor<1, dim>
   shape_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -193,10 +153,9 @@ public:
                        const unsigned int component) const override;
 
   /**
-   * Compute the Hessian of (scalar) shape function @p i at the given
-   * quadrature point @p p. Since the elements represented by this class are
-   * vector valued, there is no such scalar value and the function therefore
-   * throws an exception.
+   * 计算（标量）形状函数 @p i 在给定正交点的Hessian  @p p.
+   * 由于该类所代表的元素是矢量值，没有这样的标量值，因此该函数抛出一个异常。
+   *
    */
   virtual Tensor<2, dim>
   shape_grad_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -209,33 +168,24 @@ public:
 
 protected:
   /**
-   * The mapping type to be used to map shape functions from the reference
-   * cell to the mesh cell. If this vector is length one, the same mapping
-   * will be applied to all shape functions. If the vector size is equal to
-   * the finite element dofs per cell, then each shape function will be mapped
-   * according to the corresponding entry in the vector.
+   * 用来将形状函数从参考单元映射到网格单元的映射类型。如果这个向量的长度为1，所有的形状函数都将采用相同的映射。如果向量的大小等于每个单元的有限元度数，那么每个形状函数将根据向量中的相应条目进行映射。
+   *
    */
   std::vector<MappingKind> mapping_kind;
 
   /**
-   * Returns a boolean that is true when the finite element uses a single
-   * mapping and false when the finite element uses multiple mappings.
+   * 返回一个布尔值，当有限元使用单一映射时为真，当有限元使用多个映射时为假。
+   *
    */
   bool
   single_mapping_kind() const;
 
   /**
-   * For faces with non-standard face_orientation in 3D, the dofs on faces
-   * (quads) have to be permuted in order to be combined with the correct
-   * shape functions and additionally can change the sign. Given a local
-   * dof @p index on a quad, return the
-   * sign of the permuted shape function, if the face has non-standard
-   * face_orientation, face_flip or face_rotation. In 2D and 1D there is no need
-   * for permutation and consequently it does nothing in this case.
+   * 对于三维中非标准面的方向，面（四边形）上的道夫必须被置换，以便与正确的形状函数相结合，另外还可以改变符号。给定一个四边形上的局部dof
+   * @p index
+   * ，如果该面有非标准的面朝向、面朝上或面朝下的旋转，则返回经过处理的形状函数的符号。在二维和一维中，没有必要进行包络，因此在这种情况下它没有任何作用。
+   * permutation本身由界面类FiniteElement<dim>中实现的adjust_quad_dof_index_for_face_orientation返回。
    *
-   * The permutation itself is returned by
-   * adjust_quad_dof_index_for_face_orientation implemented in the interface
-   * class FiniteElement<dim>.
    */
   bool
   adjust_quad_dof_sign_for_face_orientation(const unsigned int index,
@@ -245,34 +195,19 @@ protected:
                                             const bool face_rotation) const;
 
   /**
-   * For faces with non-standard face_orientation in 3D, the dofs on faces
-   * (quads) need not only to be permuted in order to be combined with the
-   * correct shape functions. Additionally they may change their sign.
    *
-   * The constructor of this class fills this table with 'false' values, i.e.,
-   * no sign change at all. Derived finite element classes have to
-   * fill this Table with the correct values, see the documentation in
-   * GeometryInfo<dim> and
-   * this @ref GlossFaceOrientation "glossary entry on face orientation".
-   *
-   * The table must be filled in finite element classes derived
-   * from FE_PolyTensor in a meaningful way since the permutation
-   * pattern and the pattern of sign changes depends on how the finite element
-   * distributes the local dofs on the faces. An example is the function
-   * `initialize_quad_dof_index_permutation_and_sign_change()` in the
-   * FE_RaviartThomas class that fills this table.
    */
   std::vector<Table<2, bool>> adjust_quad_dof_sign_for_face_orientation_table;
 
   /**
-   * Returns MappingKind @p i for the finite element.
+   * 返回有限元的MappingKind  @p i  。
+   *
    */
   MappingKind
   get_mapping_kind(const unsigned int i) const;
 
-  /* NOTE: The following function has its definition inlined into the class
-     declaration because we otherwise run into a compiler error with MS Visual
-     Studio. */
+  /*注意：以下函数的定义被内联到类的声明中，因为我们在MS Visual Studio中否则会遇到编译器错误。
+* */
   virtual std::unique_ptr<
     typename FiniteElement<dim, spacedim>::InternalDataBase>
   get_data(
@@ -466,39 +401,34 @@ protected:
       &output_data) const override;
 
   /**
-   * Fields of cell-independent data for FE_PolyTensor. Stores the values of
-   * the shape functions and their derivatives on the reference cell for later
-   * use.
+   * FE_PolyTensor的独立于细胞的数据字段。在参考单元格上存储形状函数的值和它们的导数，以便以后使用。
+   * 所有表格的组织方式是，正交点<i>k</i>的形状函数<i>i</i>的值可以通过索引<i>(i,k)</i>来访问。
    *
-   * All tables are organized in a way, that the value for shape function
-   * <i>i</i> at quadrature point <i>k</i> is accessed by indices
-   * <i>(i,k)</i>.
    */
   class InternalData : public FiniteElement<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * Array with shape function values in quadrature points. There is one row
-     * for each shape function, containing values for each quadrature point.
+     * 包含正交点的形状函数值的数组。每个形状函数都有一行，包含每个正交点的值。
+     *
      */
     Table<2, Tensor<1, dim>> shape_values;
 
     /**
-     * Array with shape function gradients in quadrature points. There is one
-     * row for each shape function, containing values for each quadrature
-     * point.
+     * 以正交点为单位的形状函数梯度数组。每个形状函数有一行，包含每个正交点的值。
+     *
      */
     Table<2, DerivativeForm<1, dim, spacedim>> shape_grads;
 
     /**
-     * Array with shape function hessians in quadrature points. There is one
-     * row for each shape function, containing values for each quadrature
-     * point.
+     * 以正交点为单位的形状函数豫备数组。每个形状函数有一行，包含每个正交点的值。
+     *
      */
     Table<2, DerivativeForm<2, dim, spacedim>> shape_grad_grads;
 
     /**
-     * Scratch arrays for intermediate computations
+     * 用于中间计算的抓取数组
+     *
      */
     mutable std::vector<double>              dof_sign_change;
     mutable std::vector<Tensor<1, spacedim>> transformed_shape_values;
@@ -513,49 +443,47 @@ protected:
 
 
   /**
-   * A copy of the object passed to the constructor that describes the
-   * polynomial space.
+   * 传递给构造函数的对象的副本，描述多项式空间。
+   *
    */
   const std::unique_ptr<const TensorPolynomialsBase<dim>> poly_space;
 
   /**
-   * The inverse of the matrix <i>a<sub>ij</sub></i> of node values
-   * <i>N<sub>i</sub></i> applied to polynomial <i>p<sub>j</sub></i>. This
-   * matrix is used to convert polynomials in the "raw" basis provided in
-   * #poly_space to the basis dual to the node functionals on the reference
-   * cell.
+   * 应用于多项式<i>p<sub>j</sub></i>的节点值<i>N<sub>i</sub></i>的矩阵<i>a<sub>ij</sub></i>的倒数。这个矩阵用于将#poly_space中提供的
+   * "原始
+   * "基础中的多项式转换为参考单元上的节点函数的对偶基础。
+   * 这个对象不是由FE_PolyTensor填充的，而是一个派生类允许重组基函数的机会。如果它留空，则使用#poly_space中的基础。
    *
-   * This object is not filled by FE_PolyTensor, but is a chance for a derived
-   * class to allow for reorganization of the basis functions. If it is left
-   * empty, the basis in #poly_space is used.
    */
   FullMatrix<double> inverse_node_matrix;
 
   /**
-   * A mutex to be used to guard access to the variables below.
+   * 一个mutex，用来保护对下面的变量的访问。
+   *
    */
   mutable std::mutex cache_mutex;
 
   /**
-   * If a shape function is computed at a single point, we must compute all of
-   * them to apply #inverse_node_matrix. In order to avoid too much overhead,
-   * we cache the point and the function values for the next evaluation.
+   * 如果一个形状函数是在一个点上计算的，我们必须计算所有的形状函数来应用#inverse_node_matrix。为了避免过多的开销，我们对点和函数值进行缓存，以便下次评估。
+   *
    */
   mutable Point<dim> cached_point;
 
   /**
-   * Cached shape function values after call to shape_value_component().
+   * 调用shape_value_component()后缓存的形状函数值。
+   *
    */
   mutable std::vector<Tensor<1, dim>> cached_values;
 
   /**
-   * Cached shape function gradients after call to shape_grad_component().
+   * 调用shape_grad_component()后缓存的形状函数梯度。
+   *
    */
   mutable std::vector<Tensor<2, dim>> cached_grads;
 
   /**
-   * Cached second derivatives of shape functions after call to
-   * shape_grad_grad_component().
+   * 在调用shape_grad_grad_component()后缓存形状函数的二阶导数。
+   *
    */
   mutable std::vector<Tensor<3, dim>> cached_grad_grads;
 };
@@ -563,3 +491,5 @@ protected:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

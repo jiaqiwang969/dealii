@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/integration_info.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
@@ -278,5 +277,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

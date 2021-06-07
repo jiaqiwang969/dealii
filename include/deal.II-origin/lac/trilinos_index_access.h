@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/trilinos_index_access_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2018 by the deal.II authors
@@ -32,9 +33,8 @@ DEAL_II_NAMESPACE_OPEN
 namespace TrilinosWrappers
 {
   /**
-   * A helper function that queries the size of an Epetra_BlockMap object
-   * and calls either the 32 or 64 bit function to get the number of global
-   * elements in the map.
+   * 一个辅助函数，用于查询Epetra_BlockMap对象的大小，并调用32位或64位函数来获得地图中全局元素的数量。
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_elements(const Epetra_BlockMap &map)
@@ -47,8 +47,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the minimum global index value on the
-   * calling processor by calling either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数找到调用处理器上的最小全局索引值。
+   *
    */
   inline TrilinosWrappers::types::int_type
   min_my_gid(const Epetra_BlockMap &map)
@@ -61,8 +61,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the maximum global index value on the
-   * calling processor by calling either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数，在调用的处理器上找到最大的全局索引值。
+   *
    */
   inline TrilinosWrappers::types::int_type
   max_my_gid(const Epetra_BlockMap &map)
@@ -75,8 +75,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that converts a local index to a global one calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数，将本地索引转换为全局索引。
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_index(const Epetra_BlockMap &               map,
@@ -90,9 +90,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that returns a pointer to the array containing the
-   * global indices assigned to the current process by calling either the 32
-   * or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数，返回一个指向包含分配给当前进程的全局索引的数组的指针。
+   *
    */
   inline TrilinosWrappers::types::int_type *
   my_global_elements(const Epetra_BlockMap &map)
@@ -105,8 +104,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global number of rows by calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数，找到全局的行数。
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_rows(const Epetra_CrsGraph &graph)
@@ -119,8 +118,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global number of columns by calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数来找到全局的列数。
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_cols(const Epetra_CrsGraph &graph)
@@ -133,8 +132,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the number of global entries by calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数来查找全局条目数。
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_entries(const Epetra_CrsGraph &graph)
@@ -147,8 +146,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global row index by calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数来查找全局行索引。
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_row_index(const Epetra_CrsMatrix &              matrix,
@@ -162,8 +161,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global column index by calling
-   * either the 32 or 64 bit function.
+   * 一个通过调用32位或64位函数找到全局列索引的辅助函数。
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_column_index(const Epetra_CrsMatrix &              matrix,
@@ -177,8 +176,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global length of a vector by calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数来查找向量的全局长度。
+   *
    */
   inline TrilinosWrappers::types::int_type
   global_length(const Epetra_MultiVector &vector)
@@ -191,8 +190,8 @@ namespace TrilinosWrappers
   }
 
   /**
-   * A helper function that finds the global number of rows by calling
-   * either the 32 or 64 bit function.
+   * 一个辅助函数，通过调用32位或64位函数找到全局的行数。
+   *
    */
   inline TrilinosWrappers::types::int_type
   n_global_rows(const Epetra_RowMatrix &matrix)
@@ -208,3 +207,5 @@ namespace TrilinosWrappers
 DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_TRILINOS
 #endif // dealii_trilinos_index_access_h
+
+

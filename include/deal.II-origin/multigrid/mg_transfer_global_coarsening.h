@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/mg_transfer_global_coarsening_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -44,39 +45,60 @@ namespace RepartitioningPolicyTools
 
 
 /**
- * Global coarsening utility functions.
+ * 全局粗化的实用函数。
+ *
+ *
  */
 namespace MGTransferGlobalCoarseningTools
 {
   /**
-   * Common polynomial coarsening sequences.
+   * 常见的多项式粗化序列。
+   * @note
+   * 这些高达9度的多项式粗化序列在MGTwoLevelTransfer中被预先编译了。也请参见。
+   * MGTwoLevelTransfer::fast_polynomial_transfer_supported()
    *
-   * @note These polynomial coarsening sequences up to a degree of 9 are
-   *   precompiled in MGTwoLevelTransfer. See also:
-   *   MGTwoLevelTransfer::fast_polynomial_transfer_supported()
    */
   enum class PolynomialCoarseningSequenceType
   {
     /**
-     * Half polynomial degree by integer division. For example, for degree=7
-     * the following sequence would be obtained:: 7 -> 3 -> 1
+     * 通过整数除法得到半数多项式的度数。例如，对于度数=7，将得到以下序列：。7
+     *
+     * -> 3
+     *
+     * -> 1
+     *
      */
     bisect,
     /**
-     * Decrease the polynomial degree by one. E.g., for degree=7 following
-     * sequence would result: 7 -> 6 -> 5 -> 4 -> 3 -> 2 -> 1
+     * 将多项式的度数减少一个。例如，对于度数=7的情况，将产生以下序列：7
+     *
+     * -> 6
+     *
+     * -> 5
+     *
+     * -> 4
+     *
+     * -> 3
+     *
+     * -> 2
+     *
+     * -> 1
+     *
      */
     decrease_by_one,
     /**
-     * Decrease the polynomial degree to one. E.g., for degree=7 following
-     * sequence would result: 7 -> 1
+     * 将多项式的度数减少到1。例如，对于度数=7的情况，将产生以下序列：7
+     *
+     * -> 1
+     *
      */
     go_to_one
   };
 
   /**
-   * For a given @p degree and polynomial coarsening sequence @p p_sequence,
-   * determine the next coarser degree.
+   * 对于给定的 @p degree 和多项式粗化序列 @p p_sequence,
+   * ，确定下一个粗化程度。
+   *
    */
   unsigned int
   create_next_polynomial_coarsening_degree(
@@ -84,9 +106,9 @@ namespace MGTransferGlobalCoarseningTools
     const PolynomialCoarseningSequenceType &p_sequence);
 
   /**
-   * For a given @p max_degree and polynomial coarsening sequence @p p_sequence,
-   * determine the full sequence of polynomial degrees, sorted in ascending
-   * order.
+   * 对于给定的 @p max_degree 和多项式粗化序列 @p p_sequence,
+   * ，确定多项式度数的完整序列，按升序排序。
+   *
    */
   std::vector<unsigned int>
   create_polynomial_coarsening_sequence(
@@ -94,14 +116,14 @@ namespace MGTransferGlobalCoarseningTools
     const PolynomialCoarseningSequenceType &p_sequence);
 
   /**
-   * For a given triangulation @p tria, determine the geometric coarsening
-   * sequence by repeated global coarsening of the provided triangulation.
+   * 对于一个给定的三角形 @p tria,
+   * 通过对所提供的三角形重复进行全局粗化来确定几何粗化序列。
+   * @note
+   * 为方便起见，在返回向量的最后一项中存储了对输入三角形的引用。
+   * @note  目前，没有为 parallel::fullydistributed::Triangulation.
+   * 实现。
+   * @note  返回三角形的类型与输入三角形的类型相同。
    *
-   * @note For convenience, a reference to the input triangulation is stored in
-   *   the last entry of the return vector.
-   * @note Currently, not implemented for parallel::fullydistributed::Triangulation.
-   * @note The type of the returned triangulations is the same as of the input
-   *   triangulation.
    */
   template <int dim, int spacedim>
   std::vector<std::shared_ptr<const Triangulation<dim, spacedim>>>
@@ -109,20 +131,18 @@ namespace MGTransferGlobalCoarseningTools
     const Triangulation<dim, spacedim> &tria);
 
   /**
-   * Similar to the above function but also taking a @p policy for
-   * repartitioning the triangulations on the coarser levels. If
-   * @p preserve_fine_triangulation is set, the input triangulation is not
-   * altered,
-   * else the triangulation is coarsened. If @p repartition_fine_triangulation
-   * is set, the triangulation on the finest level is repartitioned as well. If
-   * the flags are set to true/false, the input triangulation is simply used as
-   * the finest triangulation.
+   * 类似于上面的函数，但也取一个 @p policy
+   * ，用于在更粗的层次上重新划分三角形。如果 @p
+   * preserve_fine_triangulation
+   * 被设置，输入的三角形不被改变，否则三角形被粗化。如果
+   * @p repartition_fine_triangulation
+   * 被设置，最细层的三角形也会被重新划分。如果标志被设置为true/false，则输入的三角图被简单地用作最细的三角图。
+   * @note
+   * 为方便起见，在返回向量的最后一项中存储了对输入三角形的引用。
+   * @note  返回三角形的类型是
+   * parallel::fullydistributed::Triangulation.  。
+   * @note  目前，只对 parallel::distributed::Triangulation. 实现。
    *
-   * @note For convenience, a reference to the input triangulation is stored in
-   *   the last entry of the return vector.
-   * @note The type of the returned triangulations is
-   *   parallel::fullydistributed::Triangulation.
-   * @note Currently, only implemented for parallel::distributed::Triangulation.
    */
   template <int dim, int spacedim>
   std::vector<std::shared_ptr<const Triangulation<dim, spacedim>>>
@@ -133,9 +153,9 @@ namespace MGTransferGlobalCoarseningTools
     const bool repartition_fine_triangulation);
 
   /**
-   * Similar to the above function but taking in a constant version of
-   * @p tria and as a consequence not allowing to directly use it for
-   * coarsening, requiring that internally a temporal copy is created.
+   * 类似于上面的函数，但吸收了 @p tria
+   * 的恒定版本，因此不允许直接用于粗化，需要在内部创建一个时间性的副本。
+   *
    */
   template <int dim, int spacedim>
   std::vector<std::shared_ptr<const Triangulation<dim, spacedim>>>
@@ -149,29 +169,31 @@ namespace MGTransferGlobalCoarseningTools
 
 
 /**
- * Class for transfer between two multigrid levels for p- or global coarsening.
+ * 用于在两个多网格层次之间进行p-或全局粗化的转移的类。
+ *
+ *
  */
 template <int dim, typename VectorType>
 class MGTwoLevelTransfer
 {
 public:
   /**
-   * Perform prolongation.
+   * 进行延长。
+   *
    */
   void
   prolongate(VectorType &dst, const VectorType &src) const;
 
   /**
-   * Perform restriction.
+   * 执行限制。
+   *
    */
   void
   restrict_and_add(VectorType &dst, const VectorType &src) const;
 
   /**
-   * Perform interpolation of a solution vector from the fine level to the
-   * coarse level. This function is different from restriction, where a
-   * weighted residual is transferred to a coarser level (transposition of
-   * prolongation matrix).
+   * 对解向量进行从细级到粗级的插值。这个功能与限制不同，在限制中，加权残差被转移到一个更粗的层次（延长矩阵的转置）。
+   *
    */
   void
   interpolate(VectorType &dst, const VectorType &src) const;
@@ -180,17 +202,19 @@ public:
 
 
 /**
- * Class for transfer between two multigrid levels for p- or global coarsening.
- * Specialization for LinearAlgebra::distributed::Vector.
+ * 用于在两个多网格层次之间转移p-或全局粗化的类。对
+ * LinearAlgebra::distributed::Vector. 的专门化。
+ *
  */
 template <int dim, typename Number>
 class MGTwoLevelTransfer<dim, LinearAlgebra::distributed::Vector<Number>>
 {
 public:
   /**
-   * Set up global coarsening between the given DoFHandler objects (
-   * @p dof_handler_fine and @p dof_handler_coarse). The transfer
-   * can be only performed on active levels.
+   * 在给定的DoFHandler对象之间设置全局粗化（  @p
+   * dof_handler_fine  和  @p dof_handler_coarse).
+   * 转移只能在活动层上进行。
+   *
    */
   void
   reinit_geometric_transfer(const DoFHandler<dim> &          dof_handler_fine,
@@ -199,13 +223,13 @@ public:
                             const AffineConstraints<Number> &constraint_coarse);
 
   /**
-   * Set up polynomial coarsening between the given DoFHandler objects (
-   * @p dof_handler_fine and @p dof_handler_coarse). Polynomial transfers
-   * can be only performed on active levels (`numbers::invalid_unsigned_int`)
-   * or on coarse-grid levels.
+   * 在给定的DoFHandler对象之间设置多项式粗化 (  @p
+   * dof_handler_fine  和  @p dof_handler_coarse).
+   * 多项式转移只能在活动层  (`numbers::invalid_unsigned_int`)
+   * 或粗格层上执行。
+   * @note
+   * 函数polynomial_transfer_supported()可以用来检查是否支持给定的多项式粗化策略。
    *
-   * @note The function polynomial_transfer_supported() can be used to
-   *   check if the given polynomial coarsening strategy is supported.
    */
   void
   reinit_polynomial_transfer(
@@ -217,36 +241,35 @@ public:
     const unsigned int mg_level_coarse = numbers::invalid_unsigned_int);
 
   /**
-   * Check if a fast templated version of the polynomial transfer between
-   * @p fe_degree_fine and @p fe_degree_coarse is available.
+   * 检查是否有 @p fe_degree_fine 和 @p fe_degree_coarse
+   * 之间的快速模板化版本的多项式转移。
+   * @note 目前，多项式的粗化策略。1) go-to-one, 2) bisect, and 3)
+   * decrease-by-one 是预先编译好的9度以下的模板。
    *
-   * @note Currently, the polynomial coarsening strategies: 1) go-to-one,
-   *   2) bisect, and 3) decrease-by-one are precompiled with templates for
-   *   degrees up to 9.
    */
   static bool
   fast_polynomial_transfer_supported(const unsigned int fe_degree_fine,
                                      const unsigned int fe_degree_coarse);
 
   /**
-   * Perform prolongation.
+   * 进行延长。
+   *
    */
   void
   prolongate(LinearAlgebra::distributed::Vector<Number> &      dst,
              const LinearAlgebra::distributed::Vector<Number> &src) const;
 
   /**
-   * Perform restriction.
+   * 执行限制。
+   *
    */
   void
   restrict_and_add(LinearAlgebra::distributed::Vector<Number> &      dst,
                    const LinearAlgebra::distributed::Vector<Number> &src) const;
 
   /**
-   * Perform interpolation of a solution vector from the fine level to the
-   * coarse level. This function is different from restriction, where a
-   * weighted residual is transferred to a coarser level (transposition of
-   * prolongation matrix).
+   * 执行从细级到粗级的解向量的插值。这个功能与限制不同，在限制中，加权残差被转移到一个更粗的层次（延长矩阵的转置）。
+   *
    */
   void
   interpolate(LinearAlgebra::distributed::Vector<Number> &      dst,
@@ -254,159 +277,168 @@ public:
 
 private:
   /**
-   * A multigrid transfer scheme. A multrigrid transfer class can have different
-   * transfer schemes to enable p-adaptivity (one transfer scheme per
-   * polynomial degree pair) and to enable global coarsening (one transfer
-   * scheme for transfer between children and parent cells, as well as, one
-   * transfer scheme for cells that are not refined).
+   * 一个多栅格转移方案。一个multrigrid转移类可以有不同的转移方案，以实现p-adaptivity（每个多项式度数对有一个转移方案）和实现全局粗化（子单元和父单元之间的转移有一个转移方案，以及，未被细化的单元有一个转移方案）。
+   *
    */
   struct MGTransferScheme
   {
     /**
-     * Number of coarse cells.
+     * 粗化单元的数量。
+     *
      */
     unsigned int n_coarse_cells;
 
     /**
-     * Number of degrees of freedom of a coarse cell.
+     * 一个粗单元的自由度数。
+     *
      */
     unsigned int dofs_per_cell_coarse;
 
     /**
-     * Number of degrees of freedom of fine cell.
+     * 精细单元的自由度数。
+     *
      */
     unsigned int dofs_per_cell_fine;
 
     /**
-     * Polynomial degree of the finite element of the coarse cells.
+     * 粗单元的有限元的多项式程度。
+     *
      */
     unsigned int degree_coarse;
 
     /**
-     * Polynomial degree of the finite element of the fine cells.
+     * 精细单元的有限元的多项式程度。
+     *
      */
     unsigned int degree_fine;
 
     /**
-     * Weights for continuous elements.
+     * 连续元素的权重。
+     *
      */
     std::vector<Number> weights;
 
     /**
-     * Prolongation matrix for non-tensor-product elements.
+     * 非张量积元素的延长矩阵。
+     *
      */
     AlignedVector<VectorizedArray<Number>> prolongation_matrix;
 
     /**
-     * 1D prolongation matrix for tensor-product elements.
+     * 张量-乘积元素的一维延长矩阵。
+     *
      */
     AlignedVector<VectorizedArray<Number>> prolongation_matrix_1d;
 
     /**
-     * Restriction matrix for non-tensor-product elements.
+     * 非张量产品元素的限制矩阵。
+     *
      */
     AlignedVector<VectorizedArray<Number>> restriction_matrix;
 
     /**
-     * 1D restriction matrix for tensor-product elements.
+     * 张量-产品元素的一维限制矩阵。
+     *
      */
     AlignedVector<VectorizedArray<Number>> restriction_matrix_1d;
 
     /**
-     * DoF indices of the coarse cells, expressed in indices local to the MPI
-     * rank.
+     * 粗大单元的DoF指数，以MPI等级的本地指数表示。
+     *
      */
     std::vector<unsigned int> level_dof_indices_coarse;
 
     /**
-     * DoF indices of the fine cells, expressed in indices local to the MPI
-     * rank.
+     * 精细单元的DoF指数，以MPI等级的本地指数表示。
+     *
      */
     std::vector<unsigned int> level_dof_indices_fine;
   };
 
   /**
-   * Transfer schemes.
+   * 传输方案。
+   *
    */
   std::vector<MGTransferScheme> schemes;
 
   /**
-   * Flag if the finite elements on the fine cells are continuous. If yes,
-   * the multiplicity of DoF sharing a vertex/line as well as constraints have
-   * to be taken into account via weights.
+   * 标志着精细单元上的有限元是否是连续的。如果是，共享一个顶点/线的DoF的倍数以及约束必须通过权重来考虑。
+   *
    */
   bool fine_element_is_continuous;
 
   /**
-   * Partitioner needed by the intermediate vector.
+   * 中间向量所需的分区器。
+   *
    */
   std::shared_ptr<const Utilities::MPI::Partitioner> partitioner_fine;
 
   /**
-   * Partitioner needed by the intermediate vector.
+   * 中间向量需要的分区器。
+   *
    */
   std::shared_ptr<const Utilities::MPI::Partitioner> partitioner_coarse;
 
   /**
-   * Internal vector needed for collecting all degrees of freedom of the fine
-   * cells. It is only initialized if the fine-level DoF indices touch DoFs
-   * other than the locally active ones (which we always assume can be
-   * accessed by the given vectors in the prolongate/restrict functions),
-   * otherwise it is left at size zero.
+   * 收集精细单元的所有自由度所需的内部向量。它只有在精细级自由度指数触及局部活动自由度以外的自由度时才被初始化（我们总是假设可以通过延长/限制函数中的给定向量来访问这些自由度），否则它的大小将被保留为零。
+   *
    */
   mutable LinearAlgebra::distributed::Vector<Number> vec_fine;
 
   /**
-   * Internal vector on that the actual prolongation/restriction is performed.
+   * 内部向量，实际延长/限制是在其上进行的。
+   *
    */
   mutable LinearAlgebra::distributed::Vector<Number> vec_coarse;
 
   /**
-   * Internal vector for performing manual constraint_coarse.distribute(), which
-   * is needed for acceptable performance.
+   * 用于执行手动约束_coarse.distribution()的内部向量，这对于可接受的性能是必需的。
+   *
    */
   mutable LinearAlgebra::distributed::Vector<Number> vec_coarse_constraints;
 
   /**
-   * Constraint-entry indices for manually performing
-   * constraint_coarse.distribute() in MPI-local indices (for performance
-   * reasons).
+   * 用于在MPI本地索引中手动执行constraint_coarse.distribution()的约束条目索引（出于性能原因）。
+   *
    */
   std::vector<unsigned int> constraint_coarse_distribute_indices;
 
   /**
-   * Constraint-entry values for manually performing
-   * constraint_coarse.distribute() in MPI-local indices (for performance
-   * reasons).
+   * 用于在MPI-本地索引中手动执行constraint_coarse.distribution()的约束条目值（出于性能原因）。
+   *
    */
   std::vector<Number> constraint_coarse_distribute_values;
 
   /**
-   * Pointers to the constraint entries for performing manual
-   * constraint_coarse.distribute().
+   * 指向用于手动执行constraint_coarse.distribution()的约束条目的指针。
+   *
    */
   std::vector<unsigned int> constraint_coarse_distribute_ptr;
 
   /**
-   * Constraint-entry indices for performing manual
-   * constraint_coarse.distribute_local_to_global().
+   * 用于执行手动 constraint_coarse.distribut_local_to_global()
+   * 的约束条目索引。
+   *
    */
   std::vector<unsigned int> distribute_local_to_global_indices;
 
   /**
-   * Constraint-entry values for performing manual
-   * constraint_coarse.distribute_local_to_global().
+   * 用于执行手动 constraint_coarse.distribut_local_to_global()
+   * 的约束条目值。
+   *
    */
   std::vector<Number> distribute_local_to_global_values;
 
   /**
-   * Pointers to the constraint entries for performing manual
-   * constraint_coarse.distribute_local_to_global().
+   * 用于执行手动
+   * constraint_coarse.distribut_local_to_global()的约束条目的指针。
+   *
    */
   std::vector<unsigned int> distribute_local_to_global_ptr;
 
   /**
-   * Number of components.
+   * 组件的数量。
+   *
    */
   unsigned int n_components;
 
@@ -416,30 +448,25 @@ private:
 
 
 /**
- * Implementation of the MGTransferBase. In contrast to
- * other multigrid transfer operators, the user can provide separate
- * transfer operators of type MGTwoLevelTransfer between each level.
+ * MGTransferBase的实现。与其他多网格传输运算符相比，用户可以在每一层之间提供单独的MGTwoLevelTransfer类型的传输运算符。
+ * 该类目前只适用于基于FE_Q和FE_DGQ元素的张量-产品有限元。涉及这些元素之一的多个组件的系统，以及具有不同元素或其他元素的系统，目前没有实现。
  *
- * This class currently only works for tensor-product finite elements based on
- * FE_Q and FE_DGQ elements. Systems involving multiple components of
- * one of these element, as well as, systems with different elements or other
- * elements are currently not implemented.
+ *
  */
 template <int dim, typename VectorType>
 class MGTransferGlobalCoarsening : public dealii::MGTransferBase<VectorType>
 {
 public:
   /**
-   * Value type.
+   * 值类型。
+   *
    */
   using Number = typename VectorType::value_type;
 
   /**
-   * Constructor taking a collection of transfer operators (with the coarsest
-   * level kept
-   * empty in @p transfer) and an optional function that initializes the
-   * internal level vectors within the function call copy_to_mg() if used in the
-   * context of PreconditionMG.
+   * 构造函数取一个转移运算符的集合（在 @p transfer)
+   * 中，最粗大的层次保持为空，如果在PreconditionMG的背景下使用，则有一个可选的函数在函数调用copy_to_mg()内初始化内部层次向量。
+   *
    */
   MGTransferGlobalCoarsening(
     const MGLevelObject<MGTwoLevelTransfer<dim, VectorType>> &transfer,
@@ -447,7 +474,8 @@ public:
       &initialize_dof_vector = {});
 
   /**
-   * Perform prolongation.
+   * 进行延长。
+   *
    */
   void
   prolongate(const unsigned int to_level,
@@ -455,7 +483,8 @@ public:
              const VectorType & src) const override;
 
   /**
-   * Perform restriction.
+   * 执行限制。
+   *
    */
   virtual void
   restrict_and_add(const unsigned int from_level,
@@ -463,10 +492,10 @@ public:
                    const VectorType & src) const override;
 
   /**
-   * Initialize internal vectors and copy @p src vector to the finest
-   * multigrid level.
+   * 初始化内部向量，并将 @p src
+   * 向量复制到最细的多网格层。
+   * @note DoFHandler在这里不需要，但被接口要求。
    *
-   * @note DoFHandler is not needed here, but is required by the interface.
    */
   template <class InVector, int spacedim>
   void
@@ -475,10 +504,10 @@ public:
              const InVector &                 src) const;
 
   /**
-   * Initialize internal vectors and copy the values on the finest
-   * multigrid level to @p dst vector.
+   * 初始化内部向量，并将最细多网格层上的值复制到 @p dst
+   * 向量。
+   * @note DoFHandler在这里不需要，但被接口所需要。
    *
-   * @note DoFHandler is not needed here, but is required by the interface.
    */
   template <class OutVector, int spacedim>
   void
@@ -487,18 +516,15 @@ public:
                const MGLevelObject<VectorType> &src) const;
 
   /**
-   * Interpolate fine-mesh field @p src to each multigrid level in
-   * @p dof_handler and store the result in @p dst. This function is different
-   * from restriction, where a weighted residual is
-   * transferred to a coarser level (transposition of prolongation matrix).
+   * 将精细网格场 @p src 插值到 @p dof_handler
+   * 中的每个多网格层次，并将结果存储在 @p dst.
+   * 中。这个函数与限制不同，在限制中，加权残差被转移到更粗糙的层次（延长矩阵的转置）。
+   * 参数 @p dst
+   * 必须根据三角化的层数以正确的大小进行初始化。
+   * 如果 @p dst
+   * 的内向量是空的或者有不正确的局部拥有的大小，它将被调整为每一层的局部相关自由度。
+   * @note DoFHandler在这里不需要，但被接口所需要。
    *
-   * The argument @p dst has to be initialized with the correct size according
-   * to the number of levels of the triangulation.
-   *
-   * If an inner vector of @p dst is empty or has incorrect locally owned size,
-   * it will be resized to locally relevant degrees of freedom on each level.
-   *
-   * @note DoFHandler is not needed here, but is required by the interface.
    */
   template <class InVector, int spacedim>
   void
@@ -508,12 +534,14 @@ public:
 
 private:
   /**
-   * Collection of the two-level transfer operators.
+   * 两级转移运算符的集合。
+   *
    */
   const MGLevelObject<MGTwoLevelTransfer<dim, VectorType>> &transfer;
 
   /**
-   * %Function to initialize internal level vectors.
+   * 用于初始化内部级别向量的%函数。
+   *
    */
   const std::function<void(const unsigned int, VectorType &)>
     initialize_dof_vector;
@@ -523,7 +551,7 @@ private:
 
 #ifndef DOXYGEN
 
-/* ----------------------- Inline functions --------------------------------- */
+ /* ----------------------- Inline functions --------------------------------- */ 
 
 
 
@@ -639,3 +667,5 @@ MGTransferGlobalCoarsening<dim, VectorType>::interpolate_to_mg(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/ginkgo_solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2019 by the deal.II authors
@@ -37,67 +36,97 @@ DEAL_II_NAMESPACE_OPEN
 namespace GinkgoWrappers
 {
   /**
-   * 该类构成了Ginkgo所有迭代求解器的基类。
-   * 各个派生类只接受特定于它们的额外数据，并解决给定的线性系统。Ginkgo实现的全部求解器集合可在<a
-   * Ginkgo href="https://ginkgo-project.github.io/ginkgo/doc/develop/">
-   * documentation and manual pages</a>中找到。
-   * @ingroup GinkgoWrappers
+   * This class forms the base class for all of Ginkgo's iterative solvers.
+   * The various derived classes only take
+   * the additional data that is specific to them and solve the given linear
+   * system. The entire collection of solvers that Ginkgo implements is
+   * available at <a Ginkgo
+   * href="https://ginkgo-project.github.io/ginkgo/doc/develop/"> documentation
+   * and manual pages</a>.
    *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType, typename IndexType>
   class SolverBase
   {
   public:
     /**
-     * 构造器。         @p exec_type
-     * 定义了计算解决方案的范式。
-     * 它是一个字符串，可以选择 "OMP"、"参考 "或 "Cuda"。
-     * 各自的字符串创建各自的执行器，如下所述。
-     * Ginkgo目前支持三种不同的执行器类型。        +
-     * OmpExecutor指定数据应被存储并在支持OpenMP的设备（如主机CPU）上执行相关操作；
-     * ``` auto omp =  gko::create<gko::OmpExecutor>();  ``` +
-     * CudaExecutor指定数据应被存储并在NVIDIA
-     * GPU加速器上执行操作； ```
-     * if(gko::CudaExecutor::get_num_devices()  > 0 ){ auto cuda =
-     * gko::create<gko::CudaExecutor>();  }     ``` +
-     * ReferenceExecutor执行一个非优化的引用实现，可用于调试库。
-     * ``` auto ref =  gko::create<gko::ReferenceExecutor>();  ```
-     * 下面的代码片段演示了使用OpenMP执行器来创建一个求解器，它将使用OpenMP范式在CPU上求解系统。
-     * ``` auto omp =  gko::create<gko::OmpExecutor>();  using cg =
-     * gko::solver::Cg<>;  auto solver_gen =  cg::build()  .with_criteria(
-     * gko::stop::Iteration::build().with_max_iters(20u).on(omp),
-     * gko::stop::ResidualNormReduction<>::build()
-     * ].with_reduction_factor(1e-6) .on(mp)) .on(mp); auto solver =
-     * solver_gen->generate(system_matrix); solver->apply(lend(rhs),
-     * lend(solution)); ``  @p solver_control  对象与其他
-     * deal.II迭代解算器相同。
+     * Constructor.
      *
+     * The @p exec_type defines the paradigm where the solution is computed.
+     * It is a string and the choices are "omp" , "reference" or "cuda".
+     * The respective strings create the respective executors as given below.
+     *
+     * Ginkgo currently supports three different executor types:
+     *
+     * +    OmpExecutor specifies that the data should be stored and the
+     * associated operations executed on an OpenMP-supporting device (e.g. host
+     * CPU);
+     * ```
+     * auto omp = gko::create<gko::OmpExecutor>();
+     * ```
+     * +    CudaExecutor specifies that the data should be stored and the
+     *      operations executed on the NVIDIA GPU accelerator;
+     * ```
+     * if(gko::CudaExecutor::get_num_devices() > 0 ) {
+     *    auto cuda = gko::create<gko::CudaExecutor>();
+     * }
+     * ```
+     * +    ReferenceExecutor executes a non-optimized reference implementation,
+     *      which can be used to debug the library.
+     * ```
+     * auto ref = gko::create<gko::ReferenceExecutor>();
+     * ```
+     *
+     * The following code snippet demonstrates the using of the OpenMP executor
+     * to create a solver which would use the OpenMP paradigm to the solve the
+     * system on the CPU.
+     *
+     * ```
+     * auto omp = gko::create<gko::OmpExecutor>();
+     * using cg = gko::solver::Cg<>;
+     * auto solver_gen =
+     *     cg::build()
+     *          .with_criteria(
+     *              gko::stop::Iteration::build().with_max_iters(20u).on(omp),
+     *              gko::stop::ResidualNormReduction<>::build()
+     *                  .with_reduction_factor(1e-6)
+     *                  .on(omp))
+     *          .on(omp);
+     * auto solver = solver_gen->generate(system_matrix);
+     *
+     * solver->apply(lend(rhs), lend(solution));
+     * ```
+     *
+     *
+     * The @p solver_control object is the same as for other
+     * deal.II iterative solvers.
      */
     SolverBase(SolverControl &solver_control, const std::string &exec_type);
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~SolverBase() = default;
 
     /**
-     * 初始化矩阵并将其数据复制到Ginkgo的数据结构中。
-     *
+     * Initialize the matrix and copy over its data to Ginkgo's data structures.
      */
     void
     initialize(const SparseMatrix<ValueType> &matrix);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>。根据派生类提供的信息，选择Ginkgo的一个线性求解器。
-     *
+     * Solve the linear system <tt>Ax=b</tt>. Dependent on the information
+     * provided by derived classes one of Ginkgo's linear solvers is
+     * chosen.
      */
     void
     apply(Vector<ValueType> &solution, const Vector<ValueType> &rhs);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>。根据派生类提供的信息，选择Ginkgo的一个线性求解器。
-     *
+     * Solve the linear system <tt>Ax=b</tt>. Dependent on the information
+     * provided by derived classes one of Ginkgo's linear solvers is
+     * chosen.
      */
     void
     solve(const SparseMatrix<ValueType> &matrix,
@@ -105,8 +134,7 @@ namespace GinkgoWrappers
           const Vector<ValueType> &      rhs);
 
     /**
-     * 访问控制收敛的对象。
-     *
+     * Access to the object that controls convergence.
      */
     SolverControl &
     control() const;
@@ -114,103 +142,112 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 对控制迭代求解器收敛性的对象的引用。
-     *
+     * Reference to the object that controls convergence of the iterative
+     * solvers.
      */
     SolverControl &solver_control;
 
     /**
-     * Ginkgo生成的求解器工厂对象。
-     *
+     * The Ginkgo generated solver factory object.
      */
     std::shared_ptr<gko::LinOpFactory> solver_gen;
 
     /**
-     * 残差准则对象，该对象根据solver_control成员中设置的容忍度来控制残差的减少。
-     *
+     * The residual criterion object that controls the reduction of the residual
+     * based on the tolerance set in the solver_control member.
      */
     std::shared_ptr<gko::stop::ResidualNormReduction<>::Factory>
       residual_criterion;
 
     /**
-     * Ginkgo收敛记录器，用于检查收敛情况和其他需要的求解器数据。
-     *
+     * The Ginkgo convergence logger used to check for convergence and other
+     * solver data if needed.
      */
     std::shared_ptr<gko::log::Convergence<>> convergence_logger;
 
     /**
-     * Ginkgo组合工厂对象用于创建一个组合停顿准则，以传递给求解器。
-     *
+     * The Ginkgo combined factory object is used to create a combined stopping
+     * criterion to be passed to the solver.
      */
     std::shared_ptr<gko::stop::Combined::Factory> combined_factory;
 
     /**
-     * Ginkgo中的执行范式。可以在 `gko::OmpExecutor`,
-     * `gko::CudaExecutor` 和 `gko::ReferenceExecutor`
-     * 之间选择，更多细节可以在Ginkgo的文档中找到。
-     *
+     * The execution paradigm in Ginkgo. The choices are between
+     * `gko::OmpExecutor`, `gko::CudaExecutor` and `gko::ReferenceExecutor`
+     * and more details can be found in Ginkgo's documentation.
      */
     std::shared_ptr<gko::Executor> executor;
 
   private:
     /**
-     * 用事件掩码初始化Ginkgo记录器对象。参照<a
+     * Initialize the Ginkgo logger object with event masks. Refer to
+     * <a
      * href="https://github.com/ginkgo-project/ginkgo/blob/develop/include/ginkgo/core/log/logger.hpp">Ginkgo's
-     * logging event masks.</a>。
-     *
+     * logging event masks.</a>
      */
     void
     initialize_ginkgo_log();
 
     /**
-     * Ginkgo矩阵数据结构。第一个模板参数是用于存储矩阵的非零点阵列。第二个是用于行指针和列索引。
-     * @todo  基于矩阵类型的模板化。
+     * Ginkgo matrix data structure. First template parameter is for storing the
+     * array of the non-zeros of the matrix. The second is for the row pointers
+     * and the column indices.
      *
+     * @todo Templatize based on Matrix type.
      */
     std::shared_ptr<gko::matrix::Csr<ValueType, IndexType>> system_matrix;
 
     /**
-     * 执行范式为一个字符串，由用户设置。可以在`omp'、`cuda'和`reference'之间选择，更多细节可以在Ginkgo的文档中找到。
-     *
+     * The execution paradigm as a string to be set by the user. The choices
+     * are between `omp`, `cuda` and `reference` and more details can be found
+     * in Ginkgo's documentation.
      */
     const std::string exec_type;
   };
 
 
   /**
-   * 使用Ginkgo CG解算器的解算器接口的实现。
-   * @ingroup GinkgoWrappers
+   * An implementation of the solver interface using the Ginkgo CG solver.
    *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType = double, typename IndexType = int32_t>
   class SolverCG : public SolverBase<ValueType, IndexType>
   {
   public:
     /**
-     * 一个标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * A standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData
     {};
 
     /**
-     * 构造函数。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从求解线性系统的CG工厂设置CG求解器。
-     * @param[in]  exec_type CG求解器的执行范式。          @param[in]
-     * data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the CG solver from the CG factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the CG solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverCG(SolverControl &       solver_control,
              const std::string &   exec_type,
              const AdditionalData &data = AdditionalData());
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 解算器控制对象然后用于设置参数，并从解算线性系统的CG工厂设置CG解算器。
-     * @param[in]  exec_type CG求解器的执行范式。          @param[in]
-     * preconditioner 解算器的预处理程序。          @param[in]  data
-     * 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the CG solver from the CG factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the CG solver.
+     *
+     * @param[in] preconditioner The preconditioner for the solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverCG(SolverControl &                           solver_control,
              const std::string &                       exec_type,
@@ -219,47 +256,54 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 存储该特定求解器的设置副本。
-     *
+     * Store a copy of the settings for this particular solver.
      */
     const AdditionalData additional_data;
   };
 
 
   /**
-   * 使用Ginkgo Bicgstab解算器的解算器接口的实现。
-   * @ingroup GinkgoWrappers
+   * An implementation of the solver interface using the Ginkgo Bicgstab solver.
    *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType = double, typename IndexType = int32_t>
   class SolverBicgstab : public SolverBase<ValueType, IndexType>
   {
   public:
     /**
-     * 一个标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * A standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData
     {};
 
     /**
-     * 构造函数。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从Bicgstab工厂设置Bicgstab求解器，从而求解线性系统。
-     * @param[in]  exec_type Bicgstab求解器的执行范式。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the Bicgstab solver from the Bicgstab
+     * factory which solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the Bicgstab solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverBicgstab(SolverControl &       solver_control,
                    const std::string &   exec_type,
                    const AdditionalData &data = AdditionalData());
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 解算器控制对象然后用于设置参数，并从Bicgstab工厂设置Bicgstab解算器，该解算器解决线性系统。
-     * @param[in]  exec_type Bicgstab求解器的执行范式。
-     * @param[in]  preconditioner 解算器的预处理程序。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the Bicgstab solver from the Bicgstab
+     * factory which solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the Bicgstab solver.
+     *
+     * @param[in] preconditioner The preconditioner for the solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverBicgstab(SolverControl &                           solver_control,
                    const std::string &                       exec_type,
@@ -268,47 +312,56 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 存储该特定求解器的设置副本。
-     *
+     * Store a copy of the settings for this particular solver.
      */
     const AdditionalData additional_data;
   };
 
   /**
-   * 使用Ginkgo CGS求解器的求解器接口的实现。
-   * CGS或共轭梯度平方法是一种迭代型Krylov子空间方法，适用于一般系统。
-   * @ingroup GinkgoWrappers
+   * An implementation of the solver interface using the Ginkgo CGS solver.
    *
+   * CGS or the conjugate gradient square method is an iterative type Krylov
+   * subspace method which is suitable for general systems.
+   *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType = double, typename IndexType = int32_t>
   class SolverCGS : public SolverBase<ValueType, IndexType>
   {
   public:
     /**
-     * 一个标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * A standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData
     {};
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从CGS工厂设置CGS求解器，从而求解线性系统。
-     * @param[in]  exec_type CGS求解器的执行范式。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the CGS solver from the CGS factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the CGS solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverCGS(SolverControl &       solver_control,
               const std::string &   exec_type,
               const AdditionalData &data = AdditionalData());
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 解算器控制对象，然后用于设置参数，并从CGS工厂设置CGS解算器，解算线性系统。
-     * @param[in]  exec_type CGS求解器的执行范式。
-     * @param[in]  preconditioner 解算器的预处理程序。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the CGS solver from the CGS factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the CGS solver.
+     *
+     * @param[in] preconditioner The preconditioner for the solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverCGS(SolverControl &                           solver_control,
               const std::string &                       exec_type,
@@ -317,49 +370,65 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 存储该特定求解器的设置副本。
-     *
+     * Store a copy of the settings for this particular solver.
      */
     const AdditionalData additional_data;
   };
 
   /**
-   * 使用Ginkgo FCG求解器的求解器接口的实现。
-   * FCG或灵活共轭梯度法是一种迭代型Krylov子空间方法，适用于对称正定法。
-   * 虽然这种方法对对称正定矩阵表现非常好，但一般来说，它不适合一般的矩阵。
-   * 与基于Polack-Ribiere公式的标准CG相比，灵活的CG使用Fletcher-Reeves公式来创建跨越Krylov子空间的正态向量。这增加了每个Krylov求解器迭代的计算成本，但允许使用非恒定的预处理程序。
-   * @ingroup GinkgoWrappers
+   * An implementation of the solver interface using the Ginkgo FCG solver.
    *
+   * FCG or the flexible conjugate gradient method is an iterative type Krylov
+   * subspace method which is suitable for symmetric positive definite methods.
+   *
+   * Though this method performs very well for symmetric positive definite
+   * matrices, it is in general not suitable for general matrices.
+   *
+   * In contrast to the standard CG based on the Polack-Ribiere formula, the
+   * flexible CG uses the Fletcher-Reeves formula for creating the orthonormal
+   * vectors spanning the Krylov subspace. This increases the computational cost
+   * of every Krylov solver iteration but allows for non-constant
+   * preconditioners.
+   *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType = double, typename IndexType = int32_t>
   class SolverFCG : public SolverBase<ValueType, IndexType>
   {
   public:
     /**
-     * 一个标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * A standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData
     {};
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从FCG工厂设置FCG求解器，该求解器解决线性系统。
-     * @param[in]  exec_type FCG求解器的执行范式。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the FCG solver from the FCG factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the FCG solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverFCG(SolverControl &       solver_control,
               const std::string &   exec_type,
               const AdditionalData &data = AdditionalData());
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 解算器控制对象，然后用于设置参数，并从FCG工厂设置FCG解算器，解算线性系统。
-     * @param[in]  exec_type FCG求解器的执行范式。
-     * @param[in]  preconditioner 解算器的预处理程序。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the FCG solver from the FCG factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the FCG solver.
+     *
+     * @param[in] preconditioner The preconditioner for the solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverFCG(SolverControl &                           solver_control,
               const std::string &                       exec_type,
@@ -368,58 +437,64 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 存储该特定求解器的设置副本。
-     *
+     * Store a copy of the settings for this particular solver.
      */
     const AdditionalData additional_data;
   };
 
   /**
-   * 使用Ginkgo GMRES求解器的求解器接口的实现。
-   * @ingroup GinkgoWrappers
+   * An implementation of the solver interface using the Ginkgo GMRES solver.
    *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType = double, typename IndexType = int32_t>
   class SolverGMRES : public SolverBase<ValueType, IndexType>
   {
   public:
     /**
-     * 一个标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * A standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData
     {
       /**
-       * 构造函数。默认情况下，设置临时向量的数量为30，即每30次迭代做一次重启。
-       *
+       * Constructor. By default, set the number of temporary vectors to 30,
+       * i.e. do a restart every 30 iterations.
        */
       AdditionalData(const unsigned int restart_parameter = 30);
 
       /**
-       * 临时向量的最大数量。
-       *
+       * Maximum number of tmp vectors.
        */
       unsigned int restart_parameter;
     };
 
     /**
-     * 构造函数。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从GMRES工厂设置GMRES求解器，求解线性系统。
-     * @param[in]  exec_type GMRES求解器的执行范式。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the GMRES solver from the GMRES factory
+     * which solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the GMRES solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverGMRES(SolverControl &       solver_control,
                 const std::string &   exec_type,
                 const AdditionalData &data = AdditionalData());
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 解算器控制对象然后用于设置参数，并从GMRES工厂设置GMRES解算器，该解算器解决线性系统。
-     * @param[in]  exec_type GMRES求解器的执行范式。
-     * @param[in]  preconditioner 解算器的预处理程序。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the GMRES solver from the GMRES factory
+     * which solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the GMRES solver.
+     *
+     * @param[in] preconditioner The preconditioner for the solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverGMRES(SolverControl &                           solver_control,
                 const std::string &                       exec_type,
@@ -428,47 +503,57 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 存储该特定求解器的设置副本。
-     *
+     * Store a copy of the settings for this particular solver.
      */
     const AdditionalData additional_data;
   };
 
   /**
-   * 使用Ginkgo IR求解器的求解器接口的实现。
-   * 迭代细化（IR）是一种迭代方法，它使用另一种粗略的方法，通过当前的残差对当前解的误差进行近似。
-   * @ingroup GinkgoWrappers
+   * An implementation of the solver interface using the Ginkgo IR solver.
    *
+   * Iterative refinement (IR) is an iterative method that uses another coarse
+   * method to approximate the error of the current solution via the current
+   * residual.
+   *
+   * @ingroup GinkgoWrappers
    */
   template <typename ValueType = double, typename IndexType = int32_t>
   class SolverIR : public SolverBase<ValueType, IndexType>
   {
   public:
     /**
-     * 一个标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * A standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData
     {};
 
     /**
-     * 构造函数。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从解决线性系统的IR工厂设置IR求解器。
-     * @param[in]  exec_type 红外求解器的执行范式。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the IR solver from the IR factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the IR solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverIR(SolverControl &       solver_control,
              const std::string &   exec_type,
              const AdditionalData &data = AdditionalData());
 
     /**
-     * 构造器。          @param[in,out]  solver_control
-     * 然后，求解器控制对象被用来设置参数，并从求解线性系统的IR工厂设置IR求解器。
-     * @param[in]  exec_type 红外求解器的执行范式。
-     * @param[in]  inner_solver 用于IR求解器的内部求解器。
-     * @param[in]  data 解算器所需的额外数据。
+     * Constructor.
      *
+     * @param[in,out] solver_control The solver control object is then used to
+     * set the parameters and setup the IR solver from the IR factory which
+     * solves the linear system.
+     *
+     * @param[in] exec_type The execution paradigm for the IR solver.
+     *
+     * @param[in] inner_solver The Inner solver for the IR solver.
+     *
+     * @param[in] data The additional data required by the solver.
      */
     SolverIR(SolverControl &                           solver_control,
              const std::string &                       exec_type,
@@ -477,8 +562,7 @@ namespace GinkgoWrappers
 
   protected:
     /**
-     * 存储该特定求解器的设置副本。
-     *
+     * Store a copy of the settings for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -491,6 +575,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_GINKGO
 
 #endif
- /*----------------------------   ginkgo_solver.h ---------------------------*/ 
-
-
+/*----------------------------   ginkgo_solver.h ---------------------------*/

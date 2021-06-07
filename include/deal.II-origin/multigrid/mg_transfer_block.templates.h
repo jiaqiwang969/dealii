@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/mg_transfer_block.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -36,7 +37,7 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/* --------------------- MGTransferBlockSelect -------------- */
+ /* --------------------- MGTransferBlockSelect -------------- */ 
 
 // Simplify some things below
 using IT = std::vector<std::pair<unsigned int, unsigned int>>::const_iterator;
@@ -126,7 +127,7 @@ MGTransferBlockSelect<number>::memory_consumption() const
 }
 
 
-/* --------------------- MGTransferBlock -------------- */
+ /* --------------------- MGTransferBlock -------------- */ 
 
 
 
@@ -175,3 +176,5 @@ MGTransferBlock<number>::copy_from_mg_add(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

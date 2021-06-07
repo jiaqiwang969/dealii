@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_interpolate.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -155,7 +156,7 @@ namespace VectorTools
             // deal with a Lagrange element and do nothing.
             break;
 
-        } /*switch*/
+        }  /*switch*/ 
     }
 
 
@@ -377,7 +378,7 @@ namespace VectorTools
 
             const unsigned int offset =
               apply_transform(fe[fe_index],
-                              /* starting_offset = */ 0,
+                               /* starting_offset = */  0,
                               fe_values,
                               function_values);
             (void)offset;
@@ -446,7 +447,7 @@ namespace VectorTools
                     }
                 }
             }
-        } /* loop over dof_handler.active_cell_iterators() */
+        }  /* loop over dof_handler.active_cell_iterators() */ 
 
       interpolation.compress(VectorOperation::add);
       weights.compress(VectorOperation::add);
@@ -845,7 +846,8 @@ namespace VectorTools
   namespace internal
   {
     /**
-     * Return whether the cell and all of its descendants are locally owned.
+     * 返回该单元格及其所有的子代是否为本地所有。
+     *
      */
     template <typename cell_iterator>
     bool
@@ -996,3 +998,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_interpolate_templates_h
+
+

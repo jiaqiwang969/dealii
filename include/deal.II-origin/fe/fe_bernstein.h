@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_bernstein_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -25,38 +26,25 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup fe */
-/*@{*/
+ /*!@addtogroup fe */ 
+ /*@{*/ 
 
 /**
- * Implementation of a scalar Bernstein finite element @p that we call
- * FE_Bernstein in analogy with FE_Q that yields the finite element space of
- * continuous, piecewise Bernstein polynomials of degree @p p in each
- * coordinate direction. This class is realized using tensor product
- * polynomials of Bernstein basis polynomials.
+ * 实现标量伯恩斯坦有限元 @p that
+ * ，我们称之为FE_Bernstein，与FE_Q相类似，得到每个坐标方向上的连续、分片伯恩斯坦多项式
+ * @p p
+ * 度的有限元空间。这类空间是通过伯恩斯坦基础多项式的张量积多项式实现的。
  *
- *
- * The standard constructor of this class takes the degree @p p of this finite
- * element.
- *
- * For more information about the <tt>spacedim</tt> template parameter check
- * the documentation of FiniteElement or the one of Triangulation.
- *
+ *  该类的标准构造函数取该有限元的度数 @p p 。
+ * 关于<tt>spacedim</tt>模板参数的更多信息，请查阅FiniteElement或Triangulation的文档。
  * <h3>Implementation</h3>
- *
- * The constructor creates a TensorProductPolynomials object that includes the
- * tensor product of @p Bernstein polynomials of degree @p p. This @p
- * TensorProductPolynomials object provides all values and derivatives of the
- * shape functions.
- *
+ * 构造函数创建一个TensorProductPolynomials对象，其中包括度数为
+ * @p Bernstein 的多项式的张量积 @p p.  这个 @p
+ * TensorProductPolynomials对象提供形状函数的所有值和导数。
  * <h3>Numbering of the degrees of freedom (DoFs)</h3>
+ * TensorProductPolynomials所代表的形状函数的原始排序是张量乘法的编号。然而，单元格上的形状函数被重新编号，从支持点在顶点的形状函数开始，然后是在直线上，在四边形上，最后（对于三维）在六边形上。更多细节请参见FE_Q的文档。
  *
- * The original ordering of the shape functions represented by the
- * TensorProductPolynomials is a tensor product numbering. However, the shape
- * functions on a cell are renumbered beginning with the shape functions whose
- * support points are at the vertices, then on the line, on the quads, and
- * finally (for 3d) on the hexes. See the documentation of FE_Q for more
- * details.
+ *
  */
 
 template <int dim, int spacedim = dim>
@@ -64,27 +52,24 @@ class FE_Bernstein : public FE_Q_Base<dim, spacedim>
 {
 public:
   /**
-   * Constructor for tensor product polynomials of degree @p p.
+   * 度数为 @p p. 的张量乘积多项式的构造函数。
+   *
    */
   FE_Bernstein(const unsigned int p);
 
   /**
-   * FE_Bernstein is not interpolatory in the element interior, which prevents
-   * this element from defining an interpolation matrix. An exception will be
-   * thrown.
+   * FE_Bernstein在元素内部不是插值的，这使得这个元素不能定义插值矩阵。将会抛出一个异常。
+   * 这个函数覆盖了来自FE_Q_Base的实现。
    *
-   * This function overrides the implementation from FE_Q_Base.
    */
   virtual void
   get_interpolation_matrix(const FiniteElement<dim, spacedim> &source,
                            FullMatrix<double> &matrix) const override;
 
   /**
-   * FE_Bernstein is not interpolatory in the element interior, which prevents
-   * this element from defining a restriction matrix. An exception will be
-   * thrown.
+   * FE_Bernstein在元素内部没有插值，这使得这个元素无法定义限制矩阵。将会抛出一个异常。
+   * 这个函数重写了来自FE_Q_Base的实现。
    *
-   * This function overrides the implementation from FE_Q_Base.
    */
   virtual const FullMatrix<double> &
   get_restriction_matrix(
@@ -93,11 +78,9 @@ public:
       RefinementCase<dim>::isotropic_refinement) const override;
 
   /**
-   * FE_Bernstein is not interpolatory in the element interior, which prevents
-   * this element from defining a prolongation matrix. An exception will be
-   * thrown.
+   * FE_Bernstein在元素内部没有插值，这使得这个元素不能定义一个延长矩阵。将会抛出一个异常。
+   * 这个函数重写了来自FE_Q_Base的实现。
    *
-   * This function overrides the implementation from FE_Q_Base.
    */
   virtual const FullMatrix<double> &
   get_prolongation_matrix(
@@ -106,13 +89,11 @@ public:
       RefinementCase<dim>::isotropic_refinement) const override;
 
   /**
-   * Return the matrix interpolating from a face of one element to the face of
-   * the neighboring element.  The size of the matrix is then
-   * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. The
-   * FE_Bernstein element family only provides interpolation matrices for
-   * elements of the same type, for elements that have support points, and
-   * FE_Nothing. For all other elements, an exception of type
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented is thrown.
+   * 返回从一个元素的一个面插值到相邻元素的面的矩阵。
+   * 矩阵的大小是<tt>source.dofs_per_face</tt>乘以<tt>this->dofs_per_face</tt>。FE_Bernstein元素家族只为相同类型的元素、有支持点的元素和FE_Nothing提供插值矩阵。对于所有其他元素，会抛出一个
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented
+   * 类型的异常。
+   *
    */
   virtual void
   get_face_interpolation_matrix(const FiniteElement<dim, spacedim> &source,
@@ -120,13 +101,11 @@ public:
                                 const unsigned int face_no = 0) const override;
 
   /**
-   * Return the matrix interpolating from a face of one element to the face of
-   * the neighboring element.  The size of the matrix is then
-   * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>. The
-   * FE_Bernstein element family only provides interpolation matrices for
-   * elements of the same type, for elements that have support points, and
-   * FE_Nothing. For all other elements, an exception of type
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented is thrown.
+   * 返回从一个元素的一个面插值到相邻元素的面的矩阵。
+   * 矩阵的大小是<tt>source.dofs_per_face</tt>乘以<tt>this->dofs_per_face</tt>。FE_Bernstein元素家族只为相同类型的元素、有支持点的元素和FE_Nothing提供插值矩阵。对于所有其他元素，会抛出一个
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented
+   * 类型的异常。
+   *
    */
   virtual void
   get_subface_interpolation_matrix(
@@ -136,58 +115,51 @@ public:
     const unsigned int                  face_no = 0) const override;
 
   /**
-   * Return whether this element implements its hanging node constraints in
-   * the new way, which has to be used to make elements "hp-compatible".
+   * 返回这个元素是否以新的方式实现了它的悬挂节点约束，这必须被用来使元素
+   * "hp-compatible"。
+   *
    */
   virtual bool
   hp_constraints_are_implemented() const override;
 
   /**
-   * If, on a vertex, several finite elements are active, the hp-code first
-   * assigns the degrees of freedom of each of these FEs different global
-   * indices. It then calls this function to find out which of them should get
-   * identical values, and consequently can receive the same global DoF index.
-   * This function therefore returns a list of identities between DoFs of the
-   * present finite element object with the DoFs of @p fe_other, which is a
-   * reference to a finite element object representing one of the other finite
-   * elements active on this particular vertex. The function computes which of
-   * the degrees of freedom of the two finite element objects are equivalent,
-   * both numbered between zero and the corresponding value of
-   * n_dofs_per_vertex() of the two finite elements. The first index of each
-   * pair denotes one of the vertex dofs of the present element, whereas the
-   * second is the corresponding index of the other finite element.
+   * 如果在一个顶点上，有几个有限元处于活动状态，hp代码首先为这些FEs中的每个自由度分配不同的全局索引。然后调用这个函数来找出其中哪些应该得到相同的值，从而可以得到相同的全局自由度指数。
+   * 因此，该函数返回当前有限元对象的自由度与 @p fe_other,
+   * 的自由度之间的相同性列表，该列表是对代表该特定顶点上活动的其他有限元之一的有限元对象的引用。该函数计算两个有限元对象的哪些自由度是相等的，这两个自由度的编号都在零和两个有限元的n_dofs_per_vertex()的相应值之间。每一对的第一个索引表示本元素的一个顶点自由度，而第二个是另一个有限元素的相应索引。
+   *
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_vertex_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * Same as hp_vertex_dof_indices(), except that the function treats degrees
-   * of freedom on lines.
+   * 与hp_vertex_dof_indices()相同，只是该函数处理线上自由度。
+   *
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_line_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * Same as hp_vertex_dof_indices(), except that the function treats degrees
-   * of freedom on quads.
+   * 与hp_vertex_dof_indices()相同，只是该函数处理四边形上的自由度。
+   *
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_quad_dof_identities(const FiniteElement<dim, spacedim> &fe_other,
                          const unsigned int face_no = 0) const override;
 
   /**
-   * @copydoc FiniteElement::compare_for_domination()
+   * @copydoc   FiniteElement::compare_for_domination() .
+   *
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim, spacedim> &fe_other,
                          const unsigned int codim = 0) const override final;
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_Bernstein<dim>(degree)</tt>, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_Bernstein<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 由适当的值代替。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -197,17 +169,18 @@ public:
 
 protected:
   /**
-   * Only for internal use. Its full name is @p get_dofs_per_object_vector
-   * function and it creates the @p dofs_per_object vector that is needed
-   * within the constructor to be passed to the constructor of @p
-   * FiniteElementData.
+   * 仅供内部使用。它的全称是 @p get_dofs_per_object_vector
+   * 函数，它创建了 @p dofs_per_object
+   * 向量，在构造函数中需要传递给 @p
+   * FiniteElementData的构造函数。
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * This function renumbers Bernstein basis functions from hierarchic to
-   * lexicographic numbering.
+   * 该函数将伯恩斯坦基函数的编号从分层编号改为列举式编号。
+   *
    */
   TensorProductPolynomials<dim>
   renumber_bases(const unsigned int degree);
@@ -215,8 +188,10 @@ protected:
 
 
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

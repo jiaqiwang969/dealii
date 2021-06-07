@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/relaxation_block.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -177,8 +178,9 @@ RelaxationBlock<MatrixType, InverseNumberType, VectorType>::block_kernel(
 namespace internal
 {
   /**
-   * Default implementation for serial vectors. Here we don't need to make a
-   * copy into a ghosted vector, so just return a reference to @p prev.
+   * 串行向量的默认实现。在这里，我们不需要复制成一个重影向量，所以只需返回一个引用到
+   * @p prev.  。
+   *
    */
   template <class VectorType>
   const VectorType &
@@ -194,7 +196,8 @@ namespace internal
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * Specialization for Trilinos. Use the ghosted vector.
+   * 为Trilinos专门设计。使用重影向量。
+   *
    */
   template <>
   inline const TrilinosWrappers::MPI::Vector &
@@ -442,3 +445,5 @@ DEAL_II_NAMESPACE_CLOSE
 
 
 #endif
+
+

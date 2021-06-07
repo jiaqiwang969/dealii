@@ -1,4 +1,3 @@
-//include/deal.II-translator/Matrix_free/evaluation_template_factory_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -192,5 +191,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

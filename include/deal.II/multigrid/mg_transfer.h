@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_transfer_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2021 by the deal.II authors
@@ -234,37 +233,34 @@ namespace internal
 #endif
 } // namespace internal
 
-/* MGTransferBase在mg_base.h中定义。
+/*
+ * MGTransferBase is defined in mg_base.h
+ */
 
-* 
-* */
-
- /*!@addtogroup mg */ 
- /*@{*/ 
+/*!@addtogroup mg */
+/*@{*/
 
 
 
 /**
- * 实现全局向量和多网格层次之间的转移，用于派生类MGTransferPrebuilt和其他类。
- *
- *
+ * Implementation of transfer between the global vectors and the multigrid
+ * levels for use in the derived class MGTransferPrebuilt and other classes.
  */
 template <typename VectorType>
 class MGLevelGlobalTransfer : public MGTransferBase<VectorType>
 {
 public:
   /**
-   * 将对象重置为默认构造函数后的状态。
-   *
+   * Reset the object to the state it had right after the default constructor.
    */
   void
   clear();
 
   /**
-   * 从全局网格上的矢量转移到为活动自由度分别定义在各层的矢量。特别是，对于一个全局细化的网格，只有
-   * @p dst 中最细的层次被填充为 @p src.
-   * 的普通拷贝，所有其他的层次对象都没有被触动。
-   *
+   * Transfer from a vector on the global grid to vectors defined on each of
+   * the levels separately for the active degrees of freedom. In particular,
+   * for a globally refined mesh only the finest level in @p dst is filled as a
+   * plain copy of @p src. All the other level objects are left untouched.
    */
   template <int dim, class InVector, int spacedim>
   void
@@ -273,9 +269,11 @@ public:
              const InVector &                 src) const;
 
   /**
-   * 从多级向量转移到普通向量。
-   * 将MGVector的活动部分的数据复制到<tt>Vector<number></tt>的相应位置。为了保持结果的一致性，受限自由度被设置为零。
+   * Transfer from multi-level vector to normal vector.
    *
+   * Copies data from active portions of an MGVector into the respective
+   * positions of a <tt>Vector<number></tt>. In order to keep the result
+   * consistent, constrained degrees of freedom are set to zero.
    */
   template <int dim, class OutVector, int spacedim>
   void
@@ -284,9 +282,9 @@ public:
                const MGLevelObject<VectorType> &src) const;
 
   /**
-   * 将一个多级向量添加到一个法向量。
-   * 与前面的函数一样工作，但可能不适合连续元素。
+   * Add a multi-level vector to a normal vector.
    *
+   * Works as the previous function, but probably not for continuous elements.
    */
   template <int dim, class OutVector, int spacedim>
   void
@@ -295,33 +293,38 @@ public:
                    const MGLevelObject<VectorType> &src) const;
 
   /**
-   * 如果这个对象对BlockVector对象进行操作，我们需要描述各个矢量分量如何被映射到矢量的块上。
-   * 例如，对于斯托克斯系统，我们有dim+1的速度和压力的矢量分量，但我们可能想使用只有两个块的块状矢量，将所有的速度放在一个块中，压力变量放在另一个块中。
-   * 默认情况下，如果不调用这个函数，块向量的块数与有限元的向量分量一样多。然而，这可以通过调用这个函数来改变，该函数用一个数组来描述如何将矢量分量分组为块。该参数的含义与给
-   * DoFTools::count_dofs_per_component 函数的参数相同。
+   * If this object operates on BlockVector objects, we need to describe how
+   * the individual vector components are mapped to the blocks of a vector.
+   * For example, for a Stokes system, we have dim+1 vector components for
+   * velocity and pressure, but we may want to use block vectors with only two
+   * blocks for all velocities in one block, and the pressure variables in the
+   * other.
    *
+   * By default, if this function is not called, block vectors have as many
+   * blocks as the finite element has vector components. However, this can be
+   * changed by calling this function with an array that describes how vector
+   * components are to be grouped into blocks. The meaning of the argument is
+   * the same as the one given to the DoFTools::count_dofs_per_component
+   * function.
    */
   void
   set_component_to_block_map(const std::vector<unsigned int> &map);
 
   /**
-   * 这个对象使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 为调试目的打印拷贝索引字段。
-   *
+   * Print the copy index fields for debugging purposes.
    */
   void
   print_indices(std::ostream &os) const;
 
 protected:
   /**
-   * @p fill  copy_indices*的内部函数。由派生类调用。
-   *
+   * Internal function to @p fill copy_indices*. Called by derived classes.
    */
   template <int dim, int spacedim>
   void
@@ -329,61 +332,66 @@ protected:
     const DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * 多级向量的大小。
-   *
+   * Sizes of the multi-level vectors.
    */
   std::vector<types::global_dof_index> sizes;
 
   /**
-   * copy_to_mg()和copy_from_mg()函数的映射。这里只有本地拥有的索引对
-   * 数据的组织方式如下：每层一个向量。这些向量的每个元素首先包含全局索引，然后是级别索引。
+   * Mapping for the copy_to_mg() and copy_from_mg() functions. Here only
+   * index pairs locally owned
    *
+   * The data is organized as follows: one vector per level. Each element of
+   * these vectors contains first the global index, then the level index.
    */
   std::vector<
     std::vector<std::pair<types::global_dof_index, types::global_dof_index>>>
     copy_indices;
 
   /**
-   * 用于copy_to_mg()函数的额外自由度。这些是全局自由度为本地所有，而层次自由度则不是。
-   * 数据的组织与 @p copy_indices_mine. 相同。
+   * Additional degrees of freedom for the copy_to_mg() function. These are
+   * the ones where the global degree of freedom is locally owned and the
+   * level degree of freedom is not.
    *
+   * Organization of the data is like for @p copy_indices_mine.
    */
   std::vector<
     std::vector<std::pair<types::global_dof_index, types::global_dof_index>>>
     copy_indices_global_mine;
 
   /**
-   * 用于copy_from_mg()函数的额外自由度。这些是水平自由度是本地拥有的，而全局自由度不是。
-   * 数据的组织与 @p copy_indices_mine. 的情况一样。
+   * Additional degrees of freedom for the copy_from_mg() function. These are
+   * the ones where the level degree of freedom is locally owned and the
+   * global degree of freedom is not.
    *
+   * Organization of the data is like for @p copy_indices_mine.
    */
   std::vector<
     std::vector<std::pair<types::global_dof_index, types::global_dof_index>>>
     copy_indices_level_mine;
 
   /**
-   * 这个变量存储了从全局到层次向量的复制操作是否实际上是对最细层次的普通复制。这意味着网格没有自适应细化，最细的多网格层次上的编号与全局的情况相同。
-   *
+   * This variable stores whether the copy operation from the global to the
+   * level vector is actually a plain copy to the finest level. This means that
+   * the grid has no adaptive refinement and the numbering on the finest
+   * multigrid level is the same as in the global case.
    */
   bool perform_plain_copy;
 
   /**
-   * 存储给set_component_to_block_map()函数的向量。
-   *
+   * The vector that stores what has been given to the
+   * set_component_to_block_map() function.
    */
   std::vector<unsigned int> component_to_block_map;
 
   /**
-   * 水平系统的mg_constrained_dofs。
-   *
+   * The mg_constrained_dofs of the level systems.
    */
   SmartPointer<const MGConstrainedDoFs, MGLevelGlobalTransfer<VectorType>>
     mg_constrained_dofs;
 
 private:
   /**
-   * 调用这个函数是为了确保build()已经被调用。
-   *
+   * This function is called to make sure that build() has been invoked.
    */
   template <int dim, int spacedim>
   void
@@ -393,11 +401,12 @@ private:
 
 
 /**
- * 实现全局向量和多网格层次之间的转移，用于派生类MGTransferPrebuilt和其他类。这个类是针对
- * LinearAlgebra::distributed::Vector
- * 的情况的特殊化，与PETScWrappers和TrilinosWrappers命名空间中的%并行向量相比，需要一些不同的调用例程。
- *
- *
+ * Implementation of transfer between the global vectors and the multigrid
+ * levels for use in the derived class MGTransferPrebuilt and other classes.
+ * This class is a specialization for the case of
+ * LinearAlgebra::distributed::Vector that requires a few different calling
+ * routines as compared to the %parallel vectors in the PETScWrappers and
+ * TrilinosWrappers namespaces.
  */
 template <typename Number>
 class MGLevelGlobalTransfer<LinearAlgebra::distributed::Vector<Number>>
@@ -405,17 +414,16 @@ class MGLevelGlobalTransfer<LinearAlgebra::distributed::Vector<Number>>
 {
 public:
   /**
-   * 将对象重置为默认构造函数后的状态。
-   *
+   * Reset the object to the state it had right after the default constructor.
    */
   void
   clear();
 
   /**
-   * 从全局网格上的矢量转移到为活动自由度分别定义在每一层的矢量。特别是，对于一个全局细化的网格，只有
-   * @p dst 中最细的层次被填充为 @p src.
-   * 的普通拷贝，所有其他的层次对象都没有被触动。
-   *
+   * Transfer from a vector on the global grid to vectors defined on each of
+   * the levels separately for the active degrees of freedom. In particular, for
+   * a globally refined mesh only the finest level in @p dst is filled as a
+   * plain copy of @p src. All the other level objects are left untouched.
    */
   template <int dim, typename Number2, int spacedim>
   void
@@ -424,9 +432,11 @@ public:
              const LinearAlgebra::distributed::Vector<Number2> &src) const;
 
   /**
-   * 从多级向量转移到普通向量。
-   * 将MGVector的活动部分的数据复制到<tt>Vector<number></tt>的相应位置。为了保持结果的一致性，受限自由度被设置为零。
+   * Transfer from multi-level vector to normal vector.
    *
+   * Copies data from active portions of an MGVector into the respective
+   * positions of a <tt>Vector<number></tt>. In order to keep the result
+   * consistent, constrained degrees of freedom are set to zero.
    */
   template <int dim, typename Number2, int spacedim>
   void
@@ -436,9 +446,9 @@ public:
     const MGLevelObject<LinearAlgebra::distributed::Vector<Number>> &src) const;
 
   /**
-   * 将一个多级向量添加到一个法向量。
-   * 与前面的函数一样工作，但可能不适合连续元素。
+   * Add a multi-level vector to a normal vector.
    *
+   * Works as the previous function, but probably not for continuous elements.
    */
   template <int dim, typename Number2, int spacedim>
   void
@@ -448,34 +458,39 @@ public:
     const MGLevelObject<LinearAlgebra::distributed::Vector<Number>> &src) const;
 
   /**
-   * 如果这个对象对BlockVector对象进行操作，我们需要描述各个矢量分量如何被映射到矢量的块上。
-   * 例如，对于斯托克斯系统，我们有dim+1的速度和压力的矢量分量，但我们可能想使用只有两个块的块状矢量，将所有速度放在一个块中，压力变量放在另一个块中。
-   * 默认情况下，如果不调用这个函数，块向量的块数与有限元的向量分量一样多。然而，这可以通过调用这个函数来改变，该函数用一个数组来描述如何将矢量分量分组为块。该参数的含义与给
-   * DoFTools::count_dofs_per_component 函数的参数相同。
+   * If this object operates on BlockVector objects, we need to describe how
+   * the individual vector components are mapped to the blocks of a vector.
+   * For example, for a Stokes system, we have dim+1 vector components for
+   * velocity and pressure, but we may want to use block vectors with only two
+   * blocks for all velocities in one block, and the pressure variables in the
+   * other.
    *
+   * By default, if this function is not called, block vectors have as many
+   * blocks as the finite element has vector components. However, this can be
+   * changed by calling this function with an array that describes how vector
+   * components are to be grouped into blocks. The meaning of the argument is
+   * the same as the one given to the DoFTools::count_dofs_per_component
+   * function.
    */
   void
   set_component_to_block_map(const std::vector<unsigned int> &map);
 
   /**
-   * 这个对象使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 为调试目的打印拷贝索引字段。
-   *
+   * Print the copy index fields for debugging purposes.
    */
   void
   print_indices(std::ostream &os) const;
 
 protected:
   /**
-   * 内部函数，根据标志 @p solution_transfer.
-   * 执行残差或解决方案的转移。
-   *
+   * Internal function to perform transfer of residuals or solutions
+   * basesd on the flag @p solution_transfer.
    */
   template <int dim, typename Number2, int spacedim>
   void
@@ -485,8 +500,7 @@ protected:
              const bool solution_transfer) const;
 
   /**
-   * @p fill  copy_indices*的内部函数。由派生类调用。
-   *
+   * Internal function to @p fill copy_indices*. Called by derived classes.
    */
   template <int dim, int spacedim>
   void
@@ -494,71 +508,77 @@ protected:
     const DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * 多级向量的大小。
-   *
+   * Sizes of the multi-level vectors.
    */
   std::vector<types::global_dof_index> sizes;
 
   /**
-   * copy_to_mg()和copy_from_mg()函数的映射。这里只存储本地拥有的索引对。
-   * 数据的组织方式如下：每层有一个表。这个表有两行。第一行包含全局索引，第二行是级别索引。
+   * Mapping for the copy_to_mg() and copy_from_mg() functions. Here only
+   * index pairs locally owned is stored.
    *
+   * The data is organized as follows: one table per level. This table has two
+   * rows. The first row contains the global index, the second one the level
+   * index.
    */
   std::vector<Table<2, unsigned int>> copy_indices;
 
   /**
-   * 与上述相同，但用于传输解决方案向量。
-   *
+   * Same as above, but used to transfer solution vectors.
    */
   std::vector<Table<2, unsigned int>> solution_copy_indices;
 
   /**
-   * 用于copy_to_mg()函数的额外自由度。这些是全局自由度是本地拥有的，而水平自由度则不是。
-   * 数据的组织与 @p copy_indices. 相同。
+   * Additional degrees of freedom for the copy_to_mg() function. These are
+   * the ones where the global degree of freedom is locally owned and the
+   * level degree of freedom is not.
    *
+   * Organization of the data is like for @p copy_indices.
    */
   std::vector<Table<2, unsigned int>> copy_indices_global_mine;
 
   /**
-   * 与上述相同，但用于转移解向量。
-   *
+   * Same as above, but used to transfer solution vectors.
    */
   std::vector<Table<2, unsigned int>> solution_copy_indices_global_mine;
 
   /**
-   * 用于copy_from_mg()函数的额外自由度。这些是水平自由度是本地拥有的，而全局自由度不是。
-   * 数据的组织与 @p copy_indices. 一样。
+   * Additional degrees of freedom for the copy_from_mg() function. These are
+   * the ones where the level degree of freedom is locally owned and the
+   * global degree of freedom is not.
    *
+   * Organization of the data is like for @p copy_indices.
    */
   std::vector<Table<2, unsigned int>> copy_indices_level_mine;
 
   /**
-   * 与上述相同，但用于转移解向量。
-   *
+   * Same as above, but used to transfer solution vectors.
    */
   std::vector<Table<2, unsigned int>> solution_copy_indices_level_mine;
 
   /**
-   * 这个变量存储了从全局到水平向量的复制操作是否实际上是对最细水平的普通复制。这意味着网格没有自适应细化，最细的多网格层次上的编号与全局情况下的编号相同。
-   *
+   * This variable stores whether the copy operation from the global to the
+   * level vector is actually a plain copy to the finest level. This means that
+   * the grid has no adaptive refinement and the numbering on the finest
+   * multigrid level is the same as in the global case.
    */
   bool perform_plain_copy;
 
   /**
-   * 这个变量存储了从全局到层次向量的复制操作，除了在最细层次内对自由度进行重新编号外，实际上是对最细层次的普通复制。这意味着该网格没有自适应细化。
-   *
+   * This variable stores whether the copy operation from the global to the
+   * level vector is actually a plain copy to the finest level except for a
+   * renumbering within the finest level of the degrees of freedom. This means
+   * that the grid has no adaptive refinement.
    */
   bool perform_renumbered_plain_copy;
 
   /**
-   * 存储给set_component_to_block_map()函数的向量。
-   *
+   * The vector that stores what has been given to the
+   * set_component_to_block_map() function.
    */
   std::vector<unsigned int> component_to_block_map;
 
   /**
-   * 水平系统的mg_constrained_dofs。
-   *
+   * The mg_constrained_dofs of the level systems.
    */
   SmartPointer<
     const MGConstrainedDoFs,
@@ -566,36 +586,34 @@ protected:
     mg_constrained_dofs;
 
   /**
-   * 在函数copy_to_mg中，我们需要访问全局向量的重影项，以便插入到关卡向量中。这个向量是由这些条目填充的。
-   *
+   * In the function copy_to_mg, we need to access ghosted entries of the
+   * global vector for inserting into the level vectors. This vector is
+   * populated with those entries.
    */
   mutable LinearAlgebra::distributed::Vector<Number> ghosted_global_vector;
 
   /**
-   * 和上面一样，但在处理解向量时使用。
-   *
+   * Same as above but used when working with solution vectors.
    */
   mutable LinearAlgebra::distributed::Vector<Number>
     solution_ghosted_global_vector;
 
   /**
-   * 在函数copy_from_mg中，我们访问所有带有某些鬼魂条目的水平向量，以便将结果插入全局向量中。
-   *
+   * In the function copy_from_mg, we access all level vectors with certain
+   * ghost entries for inserting the result into a global vector.
    */
   mutable MGLevelObject<LinearAlgebra::distributed::Vector<Number>>
     ghosted_level_vector;
 
   /**
-   * 与上述相同，但在处理解向量时使用。
-   *
+   * Same as above but used when working with solution vectors.
    */
   mutable MGLevelObject<LinearAlgebra::distributed::Vector<Number>>
     solution_ghosted_level_vector;
 
 private:
   /**
-   * 调用这个函数是为了确保build()已经被调用。
-   *
+   * This function is called to make sure that build() has been invoked.
    */
   template <int dim, int spacedim>
   void
@@ -605,61 +623,66 @@ private:
 
 
 /**
- * MGTransferBase接口的实现，该接口的转移操作是在构建该类的对象为矩阵时预先构建的。这是快速的方法，因为它只需要通过循环所有单元格并将结果存储在每一层的矩阵中来构建一次操作，但需要额外的内存。
- * 参见MGTransferBase，了解哪一个转移类最适合你的需要。
+ * Implementation of the MGTransferBase interface for which the transfer
+ * operations are prebuilt upon construction of the object of this class as
+ * matrices. This is the fast way, since it only needs to build the operation
+ * once by looping over all cells and storing the result in a matrix for each
+ * level, but requires additional memory.
  *
- *
+ * See MGTransferBase to find out which of the transfer classes is best for
+ * your needs.
  */
 template <typename VectorType>
 class MGTransferPrebuilt : public MGLevelGlobalTransfer<VectorType>
 {
 public:
   /**
-   * 没有约束矩阵的构造函数。只在不连续的有限元或没有局部细化的情况下使用这个构造函数。
-   *
+   * Constructor without constraint matrices. Use this constructor only with
+   * discontinuous finite elements or with no local refinement.
    */
   MGTransferPrebuilt() = default;
 
   /**
-   * 带约束的构造器。相当于默认的构造函数，后面加上initialize_constraints()。
-   *
+   * Constructor with constraints. Equivalent to the default constructor
+   * followed by initialize_constraints().
    */
   MGTransferPrebuilt(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~MGTransferPrebuilt() override = default;
 
   /**
-   * 初始化将在build()中使用的约束。
-   *
+   * Initialize the constraints to be used in build().
    */
   void
   initialize_constraints(const MGConstrainedDoFs &mg_constrained_dofs);
 
   /**
-   * 将对象重置为默认构造函数之后的状态。
-   *
+   * Reset the object to the state it had right after the default constructor.
    */
   void
   clear();
 
   /**
-   * 实际构建转移操作所需的信息。在使用prolongate()或restrict_and_add()之前需要调用。
-   *
+   * Actually build the information required for the transfer operations. Needs
+   * to be called before prolongate() or restrict_and_add() can be used.
    */
   template <int dim, int spacedim>
   void
   build(const DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * 使用底层有限元的嵌入矩阵，将一个向量从<tt>to_level-1</tt>延长到<tt>to_level</tt>。之前<tt>dst</tt>的内容被覆盖。
-   * @arg
-   * src是一个向量，其元素数与所涉及的较粗层次上的自由度相同。
-   * @arg  dst有多少个元素，就有多少个更细层次的自由度。
+   * Prolongate a vector from level <tt>to_level-1</tt> to level
+   * <tt>to_level</tt> using the embedding matrices of the underlying finite
+   * element. The previous content of <tt>dst</tt> is overwritten.
    *
+   * @arg src is a vector with as many elements as there are degrees of
+   * freedom on the coarser level involved.
+   *
+   * @arg dst has as many elements as there are degrees of freedom on the
+   * finer level.
    */
   virtual void
   prolongate(const unsigned int to_level,
@@ -667,12 +690,19 @@ public:
              const VectorType & src) const override;
 
   /**
-   * 使用 @p prolongate
-   * 方法的转置操作，将一个矢量从<tt>from_level</tt>级限制到<tt>from_level-1</tt>级。如果<tt>from_level</tt>层的单元所覆盖的区域小于<tt>from_level-1</tt>层的区域（局部细化），那么<tt>dst</tt>中的一些自由度是有效的，将不会被改变。对于其他自由度，限制的结果将被添加。
-   * @arg
-   * src是一个向量，其元素数量与所涉及的更细层次上的自由度相同。
-   * @arg  dst的元素数与较粗层次上的自由度相同。
+   * Restrict a vector from level <tt>from_level</tt> to level
+   * <tt>from_level-1</tt> using the transpose operation of the @p prolongate
+   * method. If the region covered by cells on level <tt>from_level</tt> is
+   * smaller than that of level <tt>from_level-1</tt> (local refinement), then
+   * some degrees of freedom in <tt>dst</tt> are active and will not be
+   * altered. For the other degrees of freedom, the result of the restriction
+   * is added.
    *
+   * @arg src is a vector with as many elements as there are degrees of
+   * freedom on the finer level involved.
+   *
+   * @arg dst has as many elements as there are degrees of freedom on the
+   * coarser level.
    */
   virtual void
   restrict_and_add(const unsigned int from_level,
@@ -680,61 +710,55 @@ public:
                    const VectorType & src) const override;
 
   /**
-   * 有限元不提供延长矩阵。
-   *
+   * Finite element does not provide prolongation matrices.
    */
   DeclException0(ExcNoProlongation);
 
   /**
-   * 在使用这个对象之前，你必须调用build()。
-   *
+   * You have to call build() before using this object.
    */
   DeclException0(ExcMatricesNotBuilt);
 
   /**
-   * 这个对象使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 为调试目的打印所有的矩阵。
-   *
+   * Print all the matrices for debugging purposes.
    */
   void
   print_matrices(std::ostream &os) const;
 
 private:
   /**
-   * 转移矩阵的稀疏性模式。
-   *
+   * Sparsity patterns for transfer matrices.
    */
   std::vector<
     std::shared_ptr<typename internal::MatrixSelector<VectorType>::Sparsity>>
     prolongation_sparsities;
 
   /**
-   * 实际的延长矩阵。列指数属于母单元的道夫指数，即粗级别。而行指数属于子单元，即细级别。
-   *
+   * The actual prolongation matrix.  column indices belong to the dof indices
+   * of the mother cell, i.e. the coarse level.  while row indices belong to
+   * the child cell, i.e. the fine level.
    */
   std::vector<
     std::shared_ptr<typename internal::MatrixSelector<VectorType>::Matrix>>
     prolongation_matrices;
 
   /**
-   * 细化边上的自由度，不包括边界上的自由度。
-   *
+   * Degrees of freedom on the refinement edge excluding those on the
+   * boundary.
    */
   std::vector<std::vector<bool>> interface_dofs;
 };
 
 
- /*@}*/ 
+/*@}*/
 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/mapping_q1_eulerian_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2020 by the deal.II authors
@@ -32,89 +33,52 @@ template <typename>
 class Vector;
 
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 /**
- * This class provides a mapping that adds to the location of each cell
- * a $d$-linear displacement field. (The generalization to higher order
- * polynomials is provided in the MappingQEulerian class.) Each
- * cell is thus shifted in space by values given to the mapping through a
- * finite element field.
- *
+ * 该类提供了一个映射，在每个单元的位置上添加一个 $d$
+ * -线性位移场。对高阶多项式的概括在MappingQEulerian类中提供）。因此，每个单元在空间中的位移是通过有限元场给映射的值来实现的。
  * <h3>Usage</h3>
+ * 这个类的构造函数需要两个参数：一个是对定义从参考配置到当前配置的映射的向量的引用，一个是对DoFHandler的引用。然后，该向量应该代表一个在DoFHandler定义的节点上定义的（扁平化版本的）向量值场，其中向量场的分量数量等于空间维度的数量。因此，DoFHandler应该在一个有限元上操作，该有限元的分量与空间维数一样多。作为一个额外的要求，我们规定它的每个顶点的自由度与空间维数一样多；因为这个对象只在顶点评估有限元场，所有其他自由度的值（不与顶点相关）都被忽略了。如果给定的DoFHandler操作的有限元是由
+ * @p dim
+ * 连续的FE_Q()对象构造成系统元(FESystem)，则满足这些要求。
+ * 在许多情况下，移位矢量也将是所研究问题的解决矢量。如果不是这种情况（即解变量的分量数不等于空间维度，例如对于<tt>dim>1</tt>中的标量问题，欧拉坐标只给出一个背景场），或者对于需要计算更多变量而不仅仅是流场的耦合问题），那么必须在给定的三角形上设置一个不同的DoFHandler，然后将位移向量与之关联。
+ * 下面是一个例子。
  *
- * The constructor of this class takes two arguments: a reference to the
- * vector that defines the mapping from the reference configuration to the
- * current configuration and a reference to the DoFHandler. The vector should
- * then represent a (flattened out version of a) vector valued field defined
- * at nodes defined by the DoFHandler, where the number of components of
- * the vector field equals the number of space dimensions. Thus, the
- * DoFHandler shall operate on a finite element that has as many components as
- * space dimensions. As an additional requirement, we impose that it have as
- * many degree of freedom per vertex as there are space dimensions; since this
- * object only evaluates the finite element field at the vertices, the values
- * of all other degrees of freedom (not associated to vertices) are ignored.
- * These requirements are met if the finite element which the given DoFHandler
- * operates on is constructed as a system element (FESystem) from @p dim
- * continuous FE_Q() objects.
- *
- * In many cases, the shift vector will also be the solution vector of the
- * problem under investigation. If this is not the case (i.e. the number of
- * components of the solution variable is not equal to the space dimension,
- * e.g. for scalar problems in <tt>dim>1</tt> where the Eulerian coordinates
- * only give a background field) or for coupled problems where more variables
- * are computed than just the flow field), then a different DoFHandler has to
- * be set up on the given triangulation, and the shift vector has then to be
- * associated to it.
- *
- * An example is shown below:
  * @code
- *    FESystem<dim> fe(FE_Q<dim>(1), dim);
- *    DoFHandler<dim> flowfield_dof_handler(triangulation);
- *    flowfield_dof_handler.distribute_dofs(fe);
- *    Vector<double> displacement_field(flowfield_dof_handler.n_dofs());
- *    MappingQ1Eulerian<dim> mymapping(flowfield_dof_handler,
- *                                     displacement_field);
+ *  FESystem<dim> fe(FE_Q<dim>(1), dim);
+ *  DoFHandler<dim> flowfield_dof_handler(triangulation);
+ *  flowfield_dof_handler.distribute_dofs(fe);
+ *  Vector<double> displacement_field(flowfield_dof_handler.n_dofs());
+ *  MappingQ1Eulerian<dim> mymapping(flowfield_dof_handler,
+ *                                   displacement_field);
  * @endcode
  *
- * Note that since the vector of shift values and the dof handler are only
- * associated to this object at construction time, you have to make sure that
- * whenever you use this object, the given objects still represent valid data.
+ * 请注意，由于移位值向量和dof处理程序只在构造时与这个对象相关联，你必须确保无论何时使用这个对象，给定的对象仍然代表有效数据。
+ * 为了使MappingQ1Eulerian类也能在使用PETSc或Trilinos包装类的并行代码中使用，矢量的类型可以被指定为模板参数<tt>VectorType</tt>。
+ * 关于<tt>spacedim</tt>模板参数的更多信息，请查阅FiniteElement或Triangulation的文档。
  *
- * To enable the use of the MappingQ1Eulerian class also in the context of
- * parallel codes using the PETSc or Trilinos wrapper classes, the type of
- * the vector can be specified as template parameter <tt>VectorType</tt>.
  *
- * For more information about the <tt>spacedim</tt> template parameter check
- * the documentation of FiniteElement or the one of Triangulation.
  */
 template <int dim, typename VectorType = Vector<double>, int spacedim = dim>
 class MappingQ1Eulerian : public MappingQGeneric<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构造函数。      @param[in]  euler_dof_handler
+   * 一个DoFHandler对象，定义了一个有限元空间。这个空间需要有精确的dim分量，这些分量将被视为相对于三角形的单元的原始位置的位移。
+   * 这个DoFHandler必须基于一个 <code>FESystem(FE_Q(1),dim)</code>
+   * 有限元。    @param[in]  euler_vector
+   * 在第一个参数定义的空间中的一个有限元函数。这个函数的dim分量将被解释为我们在定义映射时使用的位移，相对于底层三角结构的单元位置。
    *
-   * @param[in] euler_dof_handler A DoFHandler object that defines a finite
-   * element space. This space needs to have exactly dim components
-   * and these will be considered displacements
-   * relative to the original positions of the cells of the triangulation.
-   * This DoFHandler must be based on a <code>FESystem(FE_Q(1),dim)</code>
-   * finite element.
-   * @param[in] euler_vector A finite element function in the space defined by
-   * the first argument. The dim components of this function will be
-   * interpreted as the displacement we use in defining the mapping, relative
-   * to the location of cells of the underlying triangulation.
    */
   MappingQ1Eulerian(const DoFHandler<dim, spacedim> &euler_dof_handler,
                     const VectorType &               euler_vector);
 
   /**
-   * Return the mapped vertices of the cell. For the current class, this
-   * function does not use the support points from the geometry of the current
-   * cell but instead evaluates an externally given displacement field in
-   * addition to the geometry of the cell.
+   * 返回单元格的映射顶点。对于当前类，这个函数不使用当前单元格的几何形状中的支持点，而是在单元格的几何形状之外，评估一个外部给定的位移场。
+   *
    */
   virtual boost::container::small_vector<Point<spacedim>,
                                          GeometryInfo<dim>::vertices_per_cell>
@@ -122,22 +86,23 @@ public:
     const override;
 
   /**
-   * Return a pointer to a copy of the present object. The caller of this copy
-   * then assumes ownership of it.
+   * 返回一个指向当前对象副本的指针。这个副本的调用者就拥有了它的所有权。
+   *
    */
   virtual std::unique_ptr<Mapping<dim, spacedim>>
   clone() const override;
 
   /**
-   * Always returns @p false because MappingQ1Eulerian does not in general
-   * preserve vertex locations (unless the translation vector happens to
-   * provide for zero displacements at vertex locations).
+   * 总是返回 @p false
+   * ，因为MappingQ1Eulerian一般不保留顶点位置（除非翻译矢量恰好规定顶点位置的位移为零）。
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
 
   /**
-   * Exception.
+   * 异常情况。
+   *
    */
   DeclException0(ExcInactiveCell);
 
@@ -145,12 +110,10 @@ public:
 
 protected:
   /**
-   * Compute mapping-related information for a cell. See the documentation of
-   * Mapping::fill_fe_values() for a discussion of purpose, arguments, and
-   * return value of this function.
+   * 计算一个单元的映射相关信息。关于这个函数的目的、参数和返回值的讨论，请参见
+   * Mapping::fill_fe_values() 的文档。
+   * 这个函数覆盖了基类中的函数，因为我们不能为这个类使用任何单元格的相似性。
    *
-   * This function overrides the function in the base class since we cannot
-   * use any cell similarity for this class.
    */
   virtual CellSimilarity::Similarity
   fill_fe_values(
@@ -162,10 +125,10 @@ protected:
       &output_data) const override;
 
   /**
-   * Compute the support points of the mapping. For the current class, these
-   * are the vertices, as obtained by calling Mapping::get_vertices(). See the
-   * documentation of MappingQGeneric::compute_mapping_support_points() for
-   * more information.
+   * 计算映射的支持点。对于当前类，这些是顶点，通过调用
+   * Mapping::get_vertices(). 得到的，更多信息请参见
+   * MappingQGeneric::compute_mapping_support_points() 的文档。
+   *
    */
   virtual std::vector<Point<spacedim>>
   compute_mapping_support_points(
@@ -173,22 +136,24 @@ protected:
     const override;
 
   /**
-   * Reference to the vector of shifts.
+   * 对移位矢量的引用。
+   *
    */
   SmartPointer<const VectorType, MappingQ1Eulerian<dim, VectorType, spacedim>>
     euler_transform_vectors;
 
   /**
-   * Pointer to the DoFHandler to which the mapping vector is associated.
+   * 指向映射向量所关联的DoFHandler的指针。
+   *
    */
   SmartPointer<const DoFHandler<dim, spacedim>,
                MappingQ1Eulerian<dim, VectorType, spacedim>>
     shiftmap_dof_handler;
 };
 
-/*@}*/
+ /*@}*/ 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -204,3 +169,5 @@ MappingQ1Eulerian<dim, VectorType, spacedim>::preserves_vertex_locations() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

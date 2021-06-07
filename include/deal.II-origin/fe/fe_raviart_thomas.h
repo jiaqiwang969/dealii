@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_raviart_thomas_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
@@ -31,111 +32,59 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup fe */
-/*@{*/
+ /*!@addtogroup fe */ 
+ /*@{*/ 
 
 /**
- * Implementation of Raviart-Thomas (RT) elements. The Raviart-Thomas space
- * is designed to solve problems in which the solution only lives in the
- * space
- * $H^\text{div}=\{ {\mathbf u} \in L_2: \text{div}\, {\mathbf u} \in L_2\}$,
- * rather than in the more commonly used space
- * $H^1=\{ u \in L_2: \nabla u \in L_2\}$. In other words, the solution must
- * be a vector field whose divergence is square integrable, but for which the
- * gradient may not be square integrable. The typical application for this
- * space (and these elements) is to the mixed formulation of the Laplace
- * equation and related situations, see for example step-20. The defining
- * characteristic of functions in $H^\text{div}$ is that they are in
- * general discontinuous -- but that if you draw a line in 2d (or a
- * surface in 3d), then the <i>normal</i> component of the vector
- * field must be continuous across the line (or surface) even though
- * the tangential component may not be. As a consequence, the
- * Raviart-Thomas element is constructed in such a way that (i) it is
- * @ref vector_valued "vector-valued", (ii) the shape functions are
- * discontinuous, but (iii) the normal component of the vector field
- * represented by each shape function is continuous across the faces
- * of cells.
+ * Raviart-Thomas（RT）元素的实现。Raviart-Thomas空间的设计是为了解决解只存在于空间
+ * $H^\text{div}=\{ {\mathbf u} \in L_2: \text{div}\, {\mathbf u} \in L_2\}$
+ * 的问题，而不是更常用的空间 $H^1=\{ u \in L_2: \nabla u \in
+ * L_2\}$
+ * 。换句话说，解决方案必须是一个矢量场，其发散是可平方整除的，但其梯度可能不是可平方整除的。这个空间（和这些元素）的典型应用是拉普拉斯方程的混合表述和相关情况，例如，见
+ * step-20  。 $H^\text{div}$
+ * 中的函数的决定性特征是它们一般是不连续的
  *
- * Other properties of the Raviart-Thomas element are that (i) it is
- * @ref GlossPrimitive "not a primitive element"; (ii) the shape functions
- * are defined so that certain integrals over the faces are either zero
- * or one, rather than the common case of certain point values being
- * either zero or one. (There is, however, the FE_RaviartThomasNodal
- * element that uses point values.)
+ * - 但如果你在2D中画一条线（或在3D中画一个面），那么矢量场的<i>normal</i>分量必须在线（或面）上连续，尽管切向分量可能不是。因此，Raviart-Thomas元素的构造是这样的：（i）它是 @ref vector_valued "矢量值"，（ii）形状函数是不连续的，但（iii）每个形状函数所代表的矢量场的法向分量在单元面上是连续的。
+ * Raviart-Thomas元素的其他特性是：(i)它是 @ref GlossPrimitive "非原始元素"
+ * ；(ii)形状函数的定义使某些面的积分为零或一，而不是常见的某些点值为零或一的情况。然而，有一个FE_RaviartThomasNodal元素使用点值）。
+ * 我们遵循通常使用的
  *
- * We follow the commonly used -- though confusing -- definition of the "degree"
- * of RT elements. Specifically, the "degree" of the element denotes
- * the polynomial degree of the <i>largest complete polynomial subspace</i>
- * contained in the finite element space, even if the space may contain shape
- * functions of higher polynomial degree. The lowest order element is
- * consequently FE_RaviartThomas(0), i.e., the Raviart-Thomas element "of
- * degree zero", even though the functions of this space are in general
- * polynomials of degree one in each variable. This choice of "degree"
- * implies that the approximation order of the function itself is
- * <i>degree+1</i>, as with usual polynomial spaces. The numbering so chosen
- * implies the sequence
- * @f[
- *   Q_{k+1}
- *   \stackrel{\text{grad}}{\rightarrow}
- *   \text{Nedelec}_k
- *   \stackrel{\text{curl}}{\rightarrow}
- *   \text{RaviartThomas}_k
- *   \stackrel{\text{div}}{\rightarrow}
- *   DGQ_{k}
- * @f]
+ * - 尽管很混乱
  *
- * This class is not implemented for the codimension one case (<tt>spacedim !=
- * dim</tt>).
+ * - RT元素的 "度 "的定义。具体来说，元素的 "度 "表示有限元空间中包含的<i>largest complete polynomial subspace</i>的多项式度，即使该空间可能包含更高多项式度的形状函数。因此，最低阶元素是FE_RaviartThomas(0)，即 "零度 "的Raviart-Thomas元素，尽管这个空间的函数一般是每个变量的一度多项式。这种 "度 "的选择意味着函数本身的近似顺序是<i>degree+1</i>，就像通常的多项式空间一样。如此选择的编号意味着序列为@f[
+ * Q_{k+1} \stackrel{\text{grad}}{\rightarrow} \text{Nedelec}_k
+ * \stackrel{\text{curl}}{\rightarrow} \text{RaviartThomas}_k
+ * \stackrel{\text{div}}{\rightarrow} DGQ_{k} @f]。
+ * 该类没有在二维一的情况下实现（<tt>spacedim != dim</tt>）。
  *
- *
- * <h3>Interpolation</h3>
- *
- * The
- * @ref GlossInterpolation "interpolation"
- * operators associated with the RT element are constructed such that
- * interpolation and computing the divergence are commuting operations. We
- * require this from interpolating arbitrary functions as well as the
- * #restriction matrices.  It can be achieved by two interpolation schemes,
- * the simplified one in FE_RaviartThomasNodal and the original one here:
- *
+ *  <h3>Interpolation</h3>
+ * 与RT元素相关的 @ref GlossInterpolation "插值 "
+ * 算子的构造是，插值和计算发散是互换的操作。我们从插值任意函数以及#限制矩阵中要求这一点。
+ * 这可以通过两种插值方案实现，FE_RaviartThomasNodal中的简化方案和这里的原始方案。
  * <h4>Node values on edges/faces</h4>
- *
- * On edges or faces, the
- * @ref GlossNodes "node values"
- * are the moments of the normal component of the interpolated function with
- * respect to the traces of the RT polynomials. Since the normal trace of the
- * RT space of degree <i>k</i> on an edge/face is the space
- * <i>Q<sub>k</sub></i>, the moments are taken with respect to this space.
- *
+ * 在边缘或面上， @ref GlossNodes "节点值 "
+ * 是内插函数的法线分量相对于RT多项式轨迹的矩。由于在一个边缘/面的度数为<i>k</i>的RT空间的法线轨迹是空间<i>Q<sub>k</sub></i>，因此相对于这个空间的矩。
  * <h4>Interior node values</h4>
- *
- * Higher order RT spaces have interior nodes. These are moments taken with
- * respect to the gradient of functions in <i>Q<sub>k</sub></i> on the cell
- * (this space is the matching space for RT<sub>k</sub> in a mixed
- * formulation).
- *
+ * 高阶RT空间有内部节点。这些是相对于<i>Q<sub>k</sub></i>中的函数在单元上的梯度所取的矩（这个空间是混合表述中RT<sub>k</sub>的匹配空间）。
  * <h4>Generalized support points</h4>
+ * 上面的节点值依赖于积分，这些积分将由正交规则本身计算出来。广义支持点是一组点，使这种正交能够以足够的精度进行。需要的点是每个面上的QGauss<sub>k+1</sub>以及单元内部的QGauss<sub>k+1</sub>（或者对于RT<sub>0</sub>来说没有）。
  *
- * The node values above rely on integrals, which will be computed by
- * quadrature rules themselves. The generalized support points are a set of
- * points such that this quadrature can be performed with sufficient accuracy.
- * The points needed are those of QGauss<sub>k+1</sub> on each face as well as
- * QGauss<sub>k+1</sub> in the interior of the cell (or none for
- * RT<sub>0</sub>).
+ *
  */
 template <int dim>
 class FE_RaviartThomas : public FE_PolyTensor<dim>
 {
 public:
   /**
-   * Constructor for the Raviart-Thomas element of degree @p p.
+   * 度数为 @p p. 的Raviart-Thomas元素的构造函数。
+   *
    */
   FE_RaviartThomas(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_RaviartThomas<dim>(degree)</tt>, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_RaviartThomas<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 用适当的值替换。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -145,11 +94,11 @@ public:
   clone() const override;
 
   /**
-   * This function returns @p true, if the shape function @p shape_index has
-   * non-zero function values somewhere on the face @p face_index.
+   * 如果形状函数 @p shape_index
+   * 在面的某处有非零函数值，该函数返回 @p true, 。
+   * 现在，这只在一维的RT0中实现。否则，总是返回  @p true.
+   * 。
    *
-   * Right now, this is only implemented for RT0 in 1D. Otherwise, returns
-   * always @p true.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
@@ -162,8 +111,8 @@ public:
     std::vector<double> &              nodal_values) const override;
 
   /**
-   * Return a list of constant modes of the element. This method is currently
-   * not correctly implemented because it returns ones for all components.
+   * 返回元素的恒定模式列表。这个方法目前没有正确实现，因为它对所有元件都返回1。
+   *
    */
   virtual std::pair<Table<2, bool>, std::vector<unsigned int>>
   get_constant_modes() const override;
@@ -173,69 +122,51 @@ public:
 
 private:
   /**
-   * Only for internal use. Its full name is @p get_dofs_per_object_vector
-   * function and it creates the @p dofs_per_object vector that is needed
-   * within the constructor to be passed to the constructor of @p
-   * FiniteElementData.
+   * 仅供内部使用。它的全称是 @p get_dofs_per_object_vector
+   * 函数，它创建了 @p dofs_per_object
+   * 向量，在构造函数中需要传递给 @p
+   * FiniteElementData的构造函数。
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * Initialize the @p generalized_support_points field of the FiniteElement
-   * class and fill the tables with interpolation weights (#boundary_weights
-   * and #interior_weights). Called from the constructor.
+   * 初始化FiniteElement类的 @p generalized_support_points
+   * 字段，用插值权重（#boundary_weights和#interior_weights）填充表格。从构造函数中调用。
+   *
    */
   void
   initialize_support_points(const unsigned int rt_degree);
 
   /**
-   * Initialize the interpolation from functions on refined mesh cells onto
-   * the father cell. According to the philosophy of the Raviart-Thomas
-   * element, this restriction operator preserves the divergence of a function
-   * weakly.
+   * 初始化从细化网格单元上的函数到父单元的插值。根据Raviart-Thomas元素的理念，这个限制算子弱地保留了函数的发散性。
+   *
    */
   void
   initialize_restriction();
 
   /**
-   * These are the factors multiplied to a function in the
-   * #generalized_face_support_points when computing the integration. They are
-   * organized such that there is one row for each generalized face support
-   * point and one column for each degree of freedom on the face.
+   * 这些是计算积分时乘以#generalized_face_support_points中的一个函数的系数。它们的组织方式是，每个广义面支持点有一行，面的每个自由度有一列。    更多信息请参见 @ref GlossGeneralizedSupport "广义支持点词汇表条目"
+   * 。
    *
-   * See the
-   * @ref GlossGeneralizedSupport "glossary entry on generalized support points"
-   * for more information.
    */
   Table<2, double> boundary_weights;
 
   /**
-   * Precomputed factors for interpolation of interior degrees of freedom. The
-   * rationale for this Table is the same as for #boundary_weights. Only, this
-   * table has a third coordinate for the space direction of the component
-   * evaluated.
+   * 用于内部自由度内插的预计算系数。此表的原理与#boundary_weights的原理相同。只是，这个表有第三个坐标，用于评估组件的空间方向。
+   *
    */
   Table<3, double> interior_weights;
 
   /**
-   * Fill the necessary tables defined in base classes such as
-   * <code>adjust_quad_dof_index_for_face_orientation_table</code> declared in
-   * fe.cc. We need to fill it with the correct values in case of non-standard,
-   * flipped (rotated by +180 degrees) or rotated (rotated by +90 degrees)
-   *faces. These are given in the form three flags (face_orientation, face_flip,
-   * face_rotation), see the documentation in GeometryInfo<dim> and
-   * this @ref GlossFaceOrientation "glossary entry on face orientation".
-   *
-   * <h3>Example: Raviart-Thomas Elements of order 2 (tensor polynomial
-   * degree 3)</h3>
-   *
-   * The dofs on a face are connected to a $n\times n$
-   * matrix where here <code>n=3</code>. In our example we can imagine the
-   * following dofs on a quad (face):
-   *
+   * 填充基类中定义的必要表格，如fe.cc中声明的 <code>adjust_quad_dof_index_for_face_orientation_table</code> 。在非标准面、翻转（旋转+180度）或旋转（旋转+90度）的情况下，我们需要用正确的值来填充它。这些是以三个标志的形式给出的（face_orientation, face_flip, face_rotation），见GeometryInfo<dim>中的文档和这个 @ref GlossFaceOrientation "关于面的方向的词汇条"
+   * 。    <h3>Example: Raviart-Thomas Elements of order 2 (tensor polynomial
+   * degree 3)</h3> 一个面的道夫被连接到一个  $n\times n$
+   * 矩阵，这里  <code>n=3</code>
+   * 。在我们的例子中，我们可以想象在一个四边形（面）上有以下的道夫。
    * @verbatim
-   *  ___________
+   * ___________
    * |           |
    * |  6  7  8  |
    * |           |
@@ -243,24 +174,18 @@ private:
    * |           |
    * |  0  1  2  |
    * |___________|
-   *@endverbatim
-   *
-   * We have for a local <code>face_dof_index=i+n*j</code> with index
-   * <code>i</code> in x-direction and index <code>j</code> in y-direction
-   * running from 0 to <code>n-1</code>.  To extract <code>i</code> and
-   * <code>j</code> we can use <code>i = face_dof_index % n</code> and <code>j =
-   * dof_index / n</code> (integer division). The indices <code>i</code> and
-   * <code>j</code> can then be used to compute the offset.
-   *
-   * For our example of Raviart-Thomas elements this means if the
-   * switches are <code>(true | true | true)</code> that means we rotate the
-   * face first by + 90 degree(counterclockwise) then by another +180
-   * degrees but we do not flip it since the face has standard
-   * orientation. The flip axis is the diagonal from the lower left to the upper
-   * right corner of the face. With these flags the configuration above becomes:
-   *
-   *@verbatim
-   *  ___________
+   * @endverbatim
+   * 我们有一个局部 <code>face_dof_index=i+n*j</code> ，索引
+   * <code>i</code> in x-direction and index <code>j</code>
+   * 在y方向上从0到 <code>n-1</code>.  To extract <code>i</code> 和
+   * <code>j</code> we can use <code>i = face_dof_index % n</code> ，<code>j
+   * = dof_index / n</code>（整数分割）。然后指数 <code>i</code>
+   * 和 <code>j</code> 可以用来计算偏移量。
+   * 对于我们的Raviart-Thomas元素的例子，这意味着如果开关是
+   * <code>(true | true | true)</code>
+   * ，意味着我们首先将面旋转+90度（逆时针），然后再旋转+180度，但我们不翻转它，因为面有标准方向。翻转轴是指从面的左下角到右上角的对角线。有了这些标志，上面的配置就变成了。
+   * @verbatim
+   * ___________
    * |           |
    * |  2  5  8  |
    * |           |
@@ -269,26 +194,38 @@ private:
    * |  0  3  6  |
    * |___________|
    * @endverbatim
-   *
-   * Note that the necessity of a permutation depends on the combination of the
-   * three flags.
-   *
-   * There is also a pattern for the sign change of the permuted shape functions
-   * that depends on the combination of the switches. In the above example it
-   * would be
-   *
+   * 请注意，排列组合的必要性取决于这三个标志的组合。
+   * 还有一种模式是，被烫的形状函数的符号变化取决于开关的组合。在上面的例子中，它将是
    * @verbatim
-   *  ___________
+   * ___________
    * |           |
-   * |  +  -  +  |
+   * |  +
+   *
+   *
+   *
+   *
+   *
+   * -  +  |
    * |           |
-   * |  +  -  +  |
+   * |  +
+   *
+   *
+   *
+   *
+   *
+   * -  +  |
    * |           |
-   * |  +  -  +  |
+   * |  +
+   *
+   *
+   *
+   *
+   *
+   * -  +  |
    * |___________|
    * @endverbatim
+   * 符号变化的相关表格在FE_PolyTensor中声明。
    *
-   * The relevant table for the sign changes is declared in FE_PolyTensor.
    */
   void
   initialize_quad_dof_index_permutation_and_sign_change();
@@ -301,55 +238,36 @@ private:
 
 
 /**
- * The Raviart-Thomas elements with node functionals defined as point values
- * in Gauss points.
- *
+ * Raviart-Thomas元素的节点函数定义为高斯点的点值。
  * <h3>Description of node values</h3>
+ * 对于这个Raviart-Thomas元素，节点值不是相对于某些多项式的单元和面矩，而是正交点中的值。按照自由度编号的一般方案，根据单元格边缘的自然排序，边缘上的节点值排在前面，逐个边缘排列。内部自由度排在最后。
+ * 对于一个度数为<i>k</i>的RT元素，我们在每个面上选择<i>(k+1)<sup>d-1</sup></i>个高斯点。这些点在面的方向上是按字母顺序排列的。这样一来，处于<i>Q<sub>k</sub></i>的法线分量就被唯一地确定了。此外，由于这个高斯公式在<i>Q<sub>2k+1</sub></i>上是精确的，这些节点值对应于RT-空间的精确积分矩。
+ * 在单元内部，矩是相对于各向异性的<i>Q<sub>k</sub></i>空间而言的，其中测试函数在对应于所考虑的矢量分量的方向上低一度。这是通过使用各向异性的高斯公式进行积分来模仿的。
+ * @todo
+ * 目前的实现只针对笛卡尔网格。你必须使用MappingCartesian。
+ * @todo
+ * 即使这个元素是为二维和三维空间实现的，节点值的定义也依赖于三维中一致方向的面。因此，在复杂的网格上应该注意。
  *
- * For this Raviart-Thomas element, the node values are not cell and face
- * moments with respect to certain polynomials, but the values in quadrature
- * points. Following the general scheme for numbering degrees of freedom, the
- * node values on edges are first, edge by edge, according to the natural
- * ordering of the edges of a cell. The interior degrees of freedom are last.
  *
- * For an RT-element of degree <i>k</i>, we choose <i>(k+1)<sup>d-1</sup></i>
- * Gauss points on each face. These points are ordered lexicographically with
- * respect to the orientation of the face. This way, the normal component
- * which is in <i>Q<sub>k</sub></i> is uniquely determined. Furthermore, since
- * this Gauss-formula is exact on <i>Q<sub>2k+1</sub></i>, these node values
- * correspond to the exact integration of the moments of the RT-space.
+ * @note  存储在成员变量 FiniteElementData<dim>::degree
+ * 中的度数比构造函数参数高一!
  *
- * In the interior of the cells, the moments are with respect to an
- * anisotropic <i>Q<sub>k</sub></i> space, where the test functions are one
- * degree lower in the direction corresponding to the vector component under
- * consideration. This is emulated by using an anisotropic Gauss formula for
- * integration.
  *
- * @todo The current implementation is for Cartesian meshes only. You must use
- * MappingCartesian.
- *
- * @todo Even if this element is implemented for two and three space
- * dimensions, the definition of the node values relies on consistently
- * oriented faces in 3D. Therefore, care should be taken on complicated
- * meshes.
- *
- * @note The degree stored in the member variable
- * FiniteElementData<dim>::degree is higher by one than the constructor
- * argument!
  */
 template <int dim>
 class FE_RaviartThomasNodal : public FE_PolyTensor<dim>
 {
 public:
   /**
-   * Constructor for the Raviart-Thomas element of degree @p p.
+   * 程度为 @p p. 的Raviart-Thomas元素的构造函数。
+   *
    */
   FE_RaviartThomasNodal(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_RaviartThomasNodal<dim>(degree)</tt>, with @p dim and @p
-   * degree replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_RaviartThomasNodal<dim>(degree)</tt>，其中
+   * @p dim 和 @p 度被适当的值取代。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -388,7 +306,8 @@ public:
                          const unsigned int        face_no = 0) const override;
 
   /**
-   * @copydoc FiniteElement::compare_for_domination()
+   * @copydoc   FiniteElement::compare_for_domination() 。
+   *
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim> &fe_other,
@@ -396,55 +315,54 @@ public:
 
 private:
   /**
-   * Only for internal use. Its full name is @p get_dofs_per_object_vector
-   * function and it creates the @p dofs_per_object vector that is needed
-   * within the constructor to be passed to the constructor of @p
-   * FiniteElementData.
+   * 仅供内部使用。它的全称是 @p get_dofs_per_object_vector
+   * 函数，它创建了 @p dofs_per_object
+   * 向量，在构造函数中需要传递给 @p
+   * FiniteElementData的构造函数。
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * Compute the vector used for the @p restriction_is_additive field passed
-   * to the base class's constructor.
+   * 计算用于传递给基类构造函数的 @p restriction_is_additive
+   * 字段的向量。
+   *
    */
   static std::vector<bool>
   get_ria_vector(const unsigned int degree);
 
   /**
-   * This function returns @p true, if the shape function @p shape_index has
-   * non-zero function values somewhere on the face @p face_index.
+   * 如果形状函数 @p shape_index
+   * 在面的某处有非零的函数值，这个函数返回 @p true,
+   * 。现在，这只在一维的RT0中实现。否则，总是返回  @p
+   * true.  。
    *
-   * Right now, this is only implemented for RT0 in 1D. Otherwise, returns
-   * always @p true.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
                       const unsigned int face_index) const override;
 
   /**
-   * Initialize the FiniteElement<dim>::generalized_support_points and
-   * FiniteElement<dim>::generalized_face_support_points fields. Called from
-   * the constructor.
+   * 初始化 FiniteElement<dim>::generalized_support_points 和 FiniteElement<dim>::generalized_face_support_points 字段。从构造函数中调用。    更多信息请参见 @ref GlossGeneralizedSupport "关于广义支持点的词汇表条目"
+   * 。
    *
-   * See the
-   * @ref GlossGeneralizedSupport "glossary entry on generalized support points"
-   * for more information.
    */
   void
   initialize_support_points(const unsigned int rt_degree);
 
   /**
-   * Initialize the permutation pattern and the pattern of sign change.
+   * 初始化包络模式和符号变化模式。
+   *
    */
   void
   initialize_quad_dof_index_permutation_and_sign_change();
 };
 
 
-/*@}*/
+ /*@}*/ 
 
-/* -------------- declaration of explicit specializations ------------- */
+ /* -------------- declaration of explicit specializations ------------- */ 
 
 #ifndef DOXYGEN
 
@@ -457,3 +375,5 @@ FE_RaviartThomas<1>::initialize_restriction();
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

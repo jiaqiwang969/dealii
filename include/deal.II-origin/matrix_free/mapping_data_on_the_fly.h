@@ -1,3 +1,4 @@
+//include/deal.II-translator/matrix_free/mapping_data_on_the_fly_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
@@ -41,20 +42,11 @@ namespace internal
   namespace MatrixFreeFunctions
   {
     /**
-     * This class provides evaluated mapping information using standard
-     * deal.II information in a form that FEEvaluation and friends can use for
-     * vectorized access. Since no vectorization over cells is available with
-     * the DoFHandler/Triangulation cell iterators, the interface to
-     * FEEvaluation's vectorization model is to use @p
-     * VectorizedArray::n_array_element copies of the same element. This
-     * interface is thus primarily useful for evaluating several operators on
-     * the same cell, e.g., when assembling cell matrices.
+     * 这个类使用标准的deal.II信息，以FEEvaluation和朋友们可以使用的形式，提供评估的映射信息，以便进行矢量化访问。由于DoFHandler/Triangulation单元迭代器没有对单元进行矢量化，所以FEEvaluation的矢量化模型的接口是使用同一元素的
+     * @p  VectorizedArray::n_array_element
+     * 副本。因此，这个接口主要适用于对同一个单元的几个运算符进行评估，例如，在组装单元矩阵时。
+     * 与deal.II中的Mapping类不同，这个类实际上并不提供可用于评估几何体的边界描述，而是以FEEvaluation可访问的形式提供来自给定deal.II映射的评估的几何体（如传递给这个类的构造函数）。
      *
-     * As opposed to the Mapping classes in deal.II, this class does not
-     * actually provide a boundary description that can be used to evaluate
-     * the geometry, but it rather provides the evaluated geometry from a
-     * given deal.II mapping (as passed to the constructor of this class) in a
-     * form accessible to FEEvaluation.
      */
     template <int dim, typename Number, typename VectorizedArrayType>
     class MappingDataOnTheFly
@@ -65,99 +57,98 @@ namespace internal
 
     public:
       /**
-       * Constructor, similar to FEValues. Since this class only evaluates the
-       * geometry, no finite element has to be specified and the simplest
-       * element, FE_Nothing, is used internally for the underlying FEValues
-       * object.
+       * 构造函数，类似于FEValues。因为这个类只评估几何，所以不需要指定有限元素，最简单的元素FE_Nothing在内部被用于底层的FEValues对象。
+       *
        */
       MappingDataOnTheFly(const Mapping<dim> & mapping,
                           const Quadrature<1> &quadrature,
                           const UpdateFlags    update_flags);
 
       /**
-       * Constructor. This constructor is equivalent to the other one except
-       * that it makes the object use a $Q_1$ mapping (i.e., an object of type
-       * MappingQGeneric(1)) implicitly.
+       * 构造函数。这个构造函数与另一个构造函数等价，只是它使对象隐含地使用
+       * $Q_1$ 映射（即MappingQGeneric(1)类型的对象）。
+       *
        */
       MappingDataOnTheFly(const Quadrature<1> &quadrature,
                           const UpdateFlags    update_flags);
 
       /**
-       * Initialize with the given cell iterator.
+       * 用给定的单元格迭代器进行初始化。
+       *
        */
       void
       reinit(typename dealii::Triangulation<dim>::cell_iterator cell);
 
       /**
-       * Return whether reinit() has been called at least once, i.e., a cell
-       * has been set.
+       * 返回reinit()是否被调用过至少一次，也就是说，一个单元格被设置过。
+       *
        */
       bool
       is_initialized() const;
 
       /**
-       * Return a triangulation iterator to the current cell.
+       * 返回当前单元格的三角形迭代器。
+       *
        */
       typename dealii::Triangulation<dim>::cell_iterator
       get_cell() const;
 
       /**
-       * Return a reference to the underlying FEValues object that evaluates
-       * certain quantities (only mapping-related ones like Jacobians or
-       * mapped quadrature points are accessible, as no finite element data is
-       * actually used).
+       * 返回一个对底层FEValues对象的引用，该对象评估了某些数量（只有与映射有关的，如Jacobian或映射的正交点可以访问，因为实际上没有使用有限元数据）。
+       *
        */
       const dealii::FEValues<dim> &
       get_fe_values() const;
 
       /**
-       * Return a reference to the underlying storage field of type
-       * MappingInfoStorage of the same format as the data fields in
-       * MappingInfo. This ensures compatibility with the precomputed data
-       * fields in the MappingInfo class.
+       * 返回对MappingInfoStorage类型的底层存储域的引用，其格式与MappingInfo中的数据域相同。这确保了与MappingInfo类中预计算的数据字段的兼容性。
+       *
        */
       const MappingInfoStorage<dim, dim, Number, VectorizedArrayType> &
       get_data_storage() const;
 
       /**
-       * Return a reference to 1D quadrature underlying this object.
+       * 返回这个对象底层的一维正交的引用。
+       *
        */
       const Quadrature<1> &
       get_quadrature() const;
 
     private:
       /**
-       * A cell iterator in case we generate the data on the fly to be able to
-       * check if we need to re-generate the information stored in this class.
+       * 一个单元格迭代器，以备我们在飞行中生成数据，能够检查我们是否需要重新生成存储在这个类中的信息。
+       *
        */
       typename dealii::Triangulation<dim>::cell_iterator present_cell;
 
       /**
-       * Dummy finite element object necessary for initializing the FEValues
-       * object.
+       * 为初始化FEValues对象所需的假有限元对象。
+       *
        */
       FE_Nothing<dim> fe_dummy;
 
       /**
-       * An underlying FEValues object that performs the (scalar) evaluation.
+       * 一个执行（标量）评估的底层FEValues对象。
+       *
        */
       dealii::FEValues<dim> fe_values;
 
       /**
-       * Get 1D quadrature formula to be used for reinitializing shape info.
+       * 获取用于重新初始化形状信息的一维正交公式。
+       *
        */
       const Quadrature<1> quadrature_1d;
 
       /**
-       * The storage part created for a single cell and held in analogy to
-       * MappingInfo.
+       * 为单个单元创建的存储部分，并与MappingInfo类比持有。
+       *
        */
       MappingInfoStorage<dim, dim, Number, VectorizedArrayType>
         mapping_info_storage;
     };
 
 
-    /*-------------------------- Inline functions ---------------------------*/
+     /*-------------------------- Inline functions ---------------------------*/ 
 
     template <int dim, typename Number, typename VectorizedArrayType>
     inline MappingDataOnTheFly<dim, Number, VectorizedArrayType>::
@@ -301,3 +292,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

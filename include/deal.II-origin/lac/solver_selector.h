@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/solver_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -34,17 +35,16 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
- * Selects a solver by changing a parameter.
+ * 通过改变一个参数来选择一个求解器。 通过调用这个 @p
+ * SolverSelector, 的 @p solve
+ * 函数，它选择在这个类的构造函数中指定的那个 @p Solver
+ * 的 @p solve 函数。 <h3>Usage</h3>
+ * 这个类的最简单的使用方法是如下。
  *
- * By calling the @p solve function of this @p SolverSelector, it selects the
- * @p solve function of that @p Solver that was specified in the constructor
- * of this class.
- *
- * <h3>Usage</h3> The simplest use of this class is the following:
  * @code
  * // generate a @p SolverSelector that calls the @p SolverCG
  * SolverControl control;
@@ -52,67 +52,77 @@ DEAL_II_NAMESPACE_OPEN
  *
  * // generate e.g. a @p PreconditionRelaxation
  * PreconditionRelaxation<SparseMatrix<double>, Vector<double> >
- *   preconditioning(
- *     A, &SparseMatrix<double>::template precondition_SSOR<double>,0.8);
+ * preconditioning(
+ *   A, &SparseMatrix<double>::template precondition_SSOR<double>,0.8);
  *
  * // call the @p solve function with this preconditioning as last argument
  * solver_selector.solve(A,x,b,preconditioning);
  * @endcode
- * But the full usefulness of the @p SolverSelector class is not clear until
- * the presentation of the following example that assumes the user using the
- * @p ParameterHandler class and having declared a "solver" entry, e.g. with
+ * 但 @p SolverSelector
+ * 类的全部用处要到下面的例子介绍时才清楚，该例子假设用户使用
+ * @p ParameterHandler 类，并且已经声明了一个 "解算器
+ * "条目，例如，用
+ *
  * @code
  * Parameter_Handler prm;
  * prm.declare_entry ("solver", "none",
- *                    Patterns::Selection(
- *                      SolverSelector<>::get_solver_names()));
+ *                  Patterns::Selection(
+ *                    SolverSelector<>::get_solver_names()));
  * ...
  * @endcode
- * Assuming that in the users parameter file there exists the line
+ * 假设在用户的参数文件中，存在这样一行
+ *
  * @code
  * set solver = cg
  * @endcode
- * then the constructor call in the above example can be written as
+ * 那么上面的例子中的构造器调用可以写成
+ *
  * @code
  * SolverSelector<SparseMatrix<double>, Vector<double> >
- *   solver_selector(prm.get("solver"), control);
+ * solver_selector(prm.get("solver"), control);
  * @endcode
  *
+ *  如果在某个时候存在一个新的求解器
+ * "xyz"，那么用户不需要改变他们的程序。只有在 @p
+ * SolverSelector
+ * 的实现中，才需要增加对这个求解器的调用，每个拥有上述程序行的用户只需要在他们的参数文件中'set
+ * solver = xyz'就可以获得对这个新求解器的访问。
  *
- * If at some time there exists a new solver "xyz" then the user does not need
- * to change their program. Only in the implementation of the @p SolverSelector
- * the calling of this solver has to be added and each user with program lines
- * quoted above only needs to 'set solver = xyz' in their parameter file to get
- * access to that new solver.
+ *
  */
 template <typename VectorType = Vector<double>>
 class SolverSelector : public Subscriptor
 {
 public:
   /**
-   * An alias for the underlying vector type
+   * 底层矢量类型的别名
+   *
    */
   using vector_type = VectorType;
 
   /**
-   * Constructor, filling in default values
+   * 构造函数，填入默认值
+   *
    */
   SolverSelector() = default;
 
   /**
-   * Constructor, selecting the solver @p name
-   * and the SolverControl object @p control already.
+   * 构造函数，选择解算器 @p name 和解算器控制对象 @p
+   * control 了。
+   *
    */
   SolverSelector(const std::string &name, SolverControl &control);
 
   /**
-   * Destructor
+   * 破坏器
+   *
    */
   virtual ~SolverSelector() override = default;
 
   /**
-   * Solver procedure. Calls the @p solve function of the @p solver whose @p
-   * SolverName was specified in the constructor.
+   * 解算器程序。调用 @p solver 的 @p solve 函数，其 @p
+   * SolverName是在构造函数中指定的。
+   *
    */
   template <class Matrix, class Preconditioner>
   void
@@ -122,71 +132,71 @@ public:
         const Preconditioner &precond) const;
 
   /**
-   * Select a new solver. Note that all solver names used in this class are
-   * all lower case.
+   * 选择一个新的求解器。请注意，这个类中使用的所有求解器名称都是小写的。
+   *
    */
   void
   select(const std::string &name);
 
   /**
-   * Set a new SolverControl. This needs to be set before solving.
+   * 设置一个新的SolverControl。这需要在解算前设置。
+   *
    */
   void
   set_control(SolverControl &ctrl);
 
   /**
-   * Set the additional data. For more information see the @p Solver class.
+   * 设置附加数据。更多信息见 @p Solver 类。
+   *
    */
   void
   set_data(const typename SolverRichardson<VectorType>::AdditionalData &data);
 
   /**
-   * Set the additional data. For more information see the @p Solver class.
+   * 设置附加数据。更多信息见 @p Solver 类。
+   *
    */
   void
   set_data(const typename SolverCG<VectorType>::AdditionalData &data);
 
   /**
-   * Set the additional data. For more information see the @p Solver class.
+   * 设置附加数据。更多信息见 @p Solver 类。
+   *
    */
   void
   set_data(const typename SolverMinRes<VectorType>::AdditionalData &data);
 
   /**
-   * Set the additional data. For more information see the @p Solver class.
+   * 设置附加数据。更多信息见 @p Solver 类。
+   *
    */
   void
   set_data(const typename SolverBicgstab<VectorType>::AdditionalData &data);
 
   /**
-   * Set the additional data. For more information see the @p Solver class.
+   * 设置附加数据。更多信息见 @p Solver 类。
+   *
    */
   void
   set_data(const typename SolverGMRES<VectorType>::AdditionalData &data);
 
   /**
-   * Set the additional data. For more information see the @p Solver class.
+   * 设置附加数据。更多信息见 @p Solver 类。
+   *
    */
   void
   set_data(const typename SolverFGMRES<VectorType>::AdditionalData &data);
 
   /**
-   * Get the names of all implemented solvers. The list of possible
-   * options includes:
-   * <ul>
-   * <li>  "richardson" </li>
-   * <li>  "cg" </li>
-   * <li>  "bicgstab" </li>
-   * <li>  "gmres" </li>
-   * <li>  "fgmres" </li>
-   * <li>  "minres" </li>
-   * </ul>
+   * 获取所有实现的求解器的名称。可能的选项列表包括。    <ul>   <li>  "Richardson"  </li>   <li>  "cg"  </li>   <li>  "bicgstab"  </li>   <li>  "gmres"  </li>   <li>  "fgres"  </li>   <li>  "minres"  </li>   </ul>
+   *
    */
   static std::string
   get_solver_names();
 
   /**
-   * Exception.
+   * 异常情况。
+   *
    */
   DeclException1(ExcSolverDoesNotExist,
                  std::string,
@@ -198,50 +208,58 @@ public:
 
 protected:
   /**
-   * Stores the @p SolverControl that is needed in the constructor of each @p
-   * Solver class. This can be changed with @p set_control().
+   * 存储每个 @p 解算器类的构造函数中需要的 @p SolverControl
+   * 。这可以用 @p set_control(). 来改变。
+   *
    */
   SmartPointer<SolverControl, SolverSelector<VectorType>> control;
 
   /**
-   * Stores the name of the solver.
+   * 存储解算器的名称。
+   *
    */
   std::string solver_name;
 
 private:
   /**
-   * Stores the additional data.
+   * 存储额外的数据。
+   *
    */
   typename SolverRichardson<VectorType>::AdditionalData richardson_data;
 
   /**
-   * Stores the additional data.
+   * 存储额外的数据。
+   *
    */
   typename SolverCG<VectorType>::AdditionalData cg_data;
 
   /**
-   * Stores the additional data.
+   * 存储额外的数据。
+   *
    */
   typename SolverMinRes<VectorType>::AdditionalData minres_data;
 
   /**
-   * Stores the additional data.
+   * 存储额外的数据。
+   *
    */
   typename SolverBicgstab<VectorType>::AdditionalData bicgstab_data;
 
   /**
-   * Stores the additional data.
+   * 存储额外的数据。
+   *
    */
   typename SolverGMRES<VectorType>::AdditionalData gmres_data;
 
   /**
-   * Stores the additional data.
+   * 存储额外的数据。
+   *
    */
   typename SolverFGMRES<VectorType>::AdditionalData fgmres_data;
 };
 
-/*@}*/
-/* --------------------- Inline and template functions ------------------- */
+ /*@}*/ 
+ /* --------------------- Inline and template functions ------------------- */ 
 
 
 template <typename VectorType>
@@ -385,3 +403,5 @@ SolverSelector<VectorType>::set_data(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

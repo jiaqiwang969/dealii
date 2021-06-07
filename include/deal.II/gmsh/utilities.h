@@ -1,4 +1,3 @@
-//include/deal.II-translator/gmsh/utilities_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -38,53 +37,51 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个%Gmsh相关的实用程序和类的集合。
- *
- *
+ * A collection of %Gmsh related utilities and classes.
  */
 namespace Gmsh
 {
   /**
-   * 一个参数类，用于向%Gmsh可执行程序传递选项。
-   *
+   * A parameter class used to pass options to the %Gmsh executable.
    */
   class AdditionalParameters
   {
   public:
     /**
-     * 将所有的附加参数设置为它们的默认值。
-     *
+     * Set all additional parameters to their default values.
      */
     AdditionalParameters(const double       characteristic_length = 1.0,
                          const std::string &output_base_name      = "");
 
     /**
-     * 为AdditionalParameters类的每个成员调用prm.add_parameter。
-     *
+     * Call prm.add_parameter for each member of the AdditionalParameters class.
      */
     void
     add_parameters(ParameterHandler &prm);
 
     /**
-     * 用于定义%Gmsh网格的特征长度。
-     * %Gmsh会尽量确保每条边的大小与这个值相近。
+     * The characteristic length used for the definition of the %Gmsh grid.
      *
+     * %Gmsh will try to make sure that the size of each edge is as close as
+     * possible to this value.
      */
     double characteristic_length = 1.0;
 
     /**
-     * 输出文件的基本名称。
-     * 如果这个名字留空，那么就会使用临时文件，当不再需要时就会删除。
+     * Basename for the output files.
      *
+     * If this is left empty, then temporary files are used, and removed when
+     * not needed any more.
      */
     std::string output_base_name = "";
   };
 
 #  ifdef DEAL_II_WITH_OPENCASCADE
   /**
-   * 给出一条平滑的闭合曲线，用 %Gmsh 创建一个三角形。
-   * 输入的曲线  @p boundary  应该是封闭的。
+   * Given a smooth closed curve, create a triangulation from it using
+   * %Gmsh.
    *
+   * The input curve @p boundary should be closed.
    */
   template <int spacedim>
   void
@@ -99,5 +96,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif
 #endif
-
-

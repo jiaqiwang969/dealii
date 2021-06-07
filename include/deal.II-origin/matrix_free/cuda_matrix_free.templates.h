@@ -1,3 +1,4 @@
+//include/deal.II-translator/matrix_free/cuda_matrix_free.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -131,8 +132,8 @@ namespace CUDAWrappers
     using CUDAVector = ::dealii::LinearAlgebra::CUDAWrappers::Vector<Number>;
 
     /**
-     * Transpose a N x M matrix stored in a one-dimensional array to a M x N
-     * matrix stored in a one-dimensional array.
+     * 将一个存储在一维数组中的N×M矩阵转变成一个存储在一维数组中的M×N矩阵。
+     *
      */
     template <typename Number>
     void
@@ -151,7 +152,8 @@ namespace CUDAWrappers
 
 
     /**
-     * Same as above but the source and the destination are the same vector.
+     * 同上，但源和目的是同一个向量。
+     *
      */
     template <typename Number>
     void
@@ -169,7 +171,9 @@ namespace CUDAWrappers
 
 
     /**
-     * Allocate an array to the device and copy @p array_host to the device.
+     * 为设备分配一个数组，并将 @p array_host
+     * 复制到设备上。
+     *
      */
     template <typename Number1>
     void
@@ -191,7 +195,8 @@ namespace CUDAWrappers
 
 
     /**
-     * Helper class to (re)initialize MatrixFree object.
+     * 帮助类来（重新）初始化MatrixFree对象。
+     *
      */
     template <int dim, typename Number>
     class ReinitHelper
@@ -1389,3 +1394,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

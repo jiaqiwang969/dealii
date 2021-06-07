@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/grid_out_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -40,55 +39,50 @@ class Mapping;
 
 
 /**
- * 在这个命名空间中，我们定义了几个结构，用来描述可以给网格输出例程的标志，以修改写进文件的网格的默认装备。更多细节请参见不同的子类和GridOut类的文档。
- *
+ * Within this namespace, we define several structures that are used to
+ * describe flags that can be given to grid output routines to modify the
+ * default outfit of the grids written into a file. See the different
+ * subclasses and the documentation of the GridOut class for more details.
  *
  * @ingroup output
- *
- *
  */
 namespace GridOutFlags
 {
   /**
-   * 用于OpenDX格式的网格输出的标志。
-   * @ingroup output
+   * Flags for grid output in OpenDX format.
    *
+   * @ingroup output
    */
   struct DX
   {
     /**
-     * 写入单元格。
-     *
+     * Write cells.
      */
     bool write_cells;
 
     /**
-     * 写入面。
-     *
+     * Write faces.
      */
     bool write_faces;
 
     /**
-     * 写出有直径的场。
-     *
+     * Write field with diameters.
      */
     bool write_diameter;
 
     /**
-     * 写入有面积/体积的字段。
-     *
+     * Write field with area/volume.
      */
     bool write_measure;
 
     /**
-     * 写所有的面，包括内部面。如果<tt>false</tt>，只写边界面。
-     *
+     * Write all faces, including interior faces. If <tt>false</tt>, only
+     * boundary faces are written.
      */
     bool write_all_faces;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     DX(const bool write_cells     = true,
        const bool write_faces     = false,
@@ -97,60 +91,66 @@ namespace GridOutFlags
        const bool write_all_faces = true);
 
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
   };
 
   /**
-   * 描述MSH格式的输出细节的标志。
-   * @ingroup output
+   * Flags describing the details of output in MSH format.
    *
+   * @ingroup output
    */
   struct Msh
   {
     /**
-     * 写入网格时，如果边界面的指示器不是默认的边界指示器（即零），则明确写入边界面。
-     * 这是必要的，如果你以后想重新读取网格，并希望得到三角形边界的不同部分的相同边界指示。
-     * 如果你只想写出三角图来查看或打印，则没有必要。
-     * 默认情况下。  @p false.
+     * When writing a mesh, write boundary faces explicitly if their boundary
+     * indicator is not the default boundary indicator, which is zero.  This
+     * is necessary if you later want to re-read the grid and want to get the
+     * same boundary indicators for the different parts of the boundary of the
+     * triangulation.
      *
+     * It is not necessary if you only want to write the triangulation to view
+     * or print it.
+     *
+     * Default: @p false.
      */
     bool write_faces;
     /**
-     * 写入网格时，如果边界线的指示器不是默认的边界指示器（即零），则明确写入边界线。
-     * 这是必要的，如果你以后想重新读取网格，并希望得到三角形边界的不同部分的相同边界指示。
-     * 如果你只想写三角剖面图来查看或打印，则没有必要。
-     * 只有在<tt>dim==3</tt>时才使用，其他情况下都忽略。
-     * 默认值。  @p false.
+     * When writing a mesh, write boundary lines explicitly if their boundary
+     * indicator is not the default boundary indicator, which is zero.  This
+     * is necessary if you later want to re-read the grid and want to get the
+     * same boundary indicators for the different parts of the boundary of the
+     * triangulation.
      *
+     * It is not necessary if you only want to write the triangulation to view
+     * or print it.
+     *
+     * This is used only if <tt>dim==3</tt>, and ignored in all other cases.
+     *
+     * Default: @p false.
      */
     bool write_lines;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Msh(const bool write_faces = false, const bool write_lines = false);
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
@@ -158,57 +158,68 @@ namespace GridOutFlags
 
 
   /**
-   * 描述UCD格式输出细节的标志。
-   * @ingroup output
+   * Flags describing the details of output in UCD format.
    *
+   * @ingroup output
    */
   struct Ucd
   {
     /**
-     * 在文件的开头写一个注释，说明创建日期和其他一些数据。
-     * 虽然UCD格式（和AVS程序）支持这一点，但其他一些程序对此感到困惑，所以默认情况是不写序言。然而，可以用这个标志写一个序言。
-     * 默认值。  <code>false</code>  .
+     * Write a comment at the beginning of the file stating the date of
+     * creation and some other data.  While this is supported by the UCD
+     * format (and the AVS program), some other programs get confused by this,
+     * so the default is to not write a preamble. However, a preamble can be
+     * written using this flag.
      *
+     * Default: <code>false</code>.
      */
     bool write_preamble;
 
     /**
-     * 写入网格时，如果边界面的指示器不是默认的边界指示器（即零），则明确写入边界面。
-     * 这是必要的，如果你以后想重新读取网格，并希望得到三角形边界的不同部分的相同边界指示。
-     * 如果你只想写出三角图来查看或打印，则没有必要。
-     * 默认情况下。  @p false.
+     * When writing a mesh, write boundary faces explicitly if their boundary
+     * indicator is not the default boundary indicator, which is zero.  This
+     * is necessary if you later want to re-read the grid and want to get the
+     * same boundary indicators for the different parts of the boundary of the
+     * triangulation.
      *
+     * It is not necessary if you only want to write the triangulation to view
+     * or print it.
+     *
+     * Default: @p false.
      */
     bool write_faces;
 
     /**
-     * 写入网格时，如果边界线的指示器不是默认的边界指示器（即零），就明确写入边界线。
-     * 这是必要的，如果你以后想重新读取网格，并希望得到三角形边界的不同部分的相同边界指示。
-     * 如果你只想写出三角图来查看或打印它，则没有必要。
-     * 如果<tt>dim!=3</tt>，这个指令会被忽略。
-     * 默认情况下。  @p false.
+     * When writing a mesh, write boundary lines explicitly if their boundary
+     * indicator is not the default boundary indicator, which is zero.  This
+     * is necessary if you later want to re-read the grid and want to get the
+     * same boundary indicators for the different parts of the boundary of the
+     * triangulation.
      *
+     * It is not necessary if you only want to write the triangulation to view
+     * or print it.
+     *
+     * This directive is ignored if <tt>dim!=3</tt>.
+     *
+     * Default: @p false.
      */
     bool write_lines;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Ucd(const bool write_preamble = false,
         const bool write_faces    = false,
         const bool write_lines    = false);
 
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
@@ -216,46 +227,52 @@ namespace GridOutFlags
 
 
   /**
-   * 描述GNUPLOT格式输出细节的标志。
-   * @ingroup output
+   * Flags describing the details of output in GNUPLOT format.
    *
+   * @ingroup output
    */
   struct Gnuplot
   {
     /**
-     * 将每个单元格的编号写进输出文件，然后再开始写它所组成的行，作为注释。如果你想找出网格的细节，例如你知道编号的单元格的位置，这可能很有用。然而，它大大增加了输出的大小。
-     * 默认值。  @p false.
+     * Write the number of each cell into the output file before starting with
+     * the lines it is composed of, as a comment. This might be useful if you
+     * want to find out details about the grid, for example the position of
+     * cells of which you know the number. It enlarges the size of the output
+     * significantly, however.
      *
+     * Default: @p false.
      */
     bool write_cell_numbers;
 
     /**
-     * 点的数量， <em> 不包括 </em>
-     * 顶点，用于绘制曲线。由于GNUPLOT只能绘制直线，将这个数字设置为大于0的值（对于精细的网格来说，4或5通常就足够了）会使绘图看起来是弯曲的，尽管它不是。
-     *
+     * Number of points, <em>excluding</em> the vertices, to plot on curved
+     * lines. Since GNUPLOT can only plot straight lines, setting this number
+     * to a value greater than zero (4 or 5 is usually enough for refined
+     * grids) makes the plot look curved even though it is not.
      */
     unsigned int n_extra_curved_line_points;
 
     /**
-     * 表示是否要用<tt>n_extra_curved_line_points</tt>线段绘制内部线的布尔值。
-     *
+     * Boolean indicating whether or not interior lines should be plotted with
+     * <tt>n_extra_curved_line_points</tt> line segments.
      */
     bool curved_inner_cells;
 
     /**
-     * 标志。如果为真，那么在写<tt>spacedim =
-     * 3</tt>输出时，在边界面上写<tt>2*n_extra_curved_line_points</tt>额外的线。
-     * 当<tt>spacedim =
-     * 2</tt>时，设置这个选项没有影响，因为在这种情况下，边界面是线，输出额外的线是没有意义的。
-     * @note  对于<tt>dim =
-     * 2</tt>的情况，这个选项还没有实现。然而，为了向后兼容，这将不会引发运行时错误。
+     * Flag. If true then, when writing <tt>spacedim = 3</tt> output, write
+     * <tt>2*n_extra_curved_line_points</tt> extra lines on boundary faces.
      *
+     * Setting this option has no effect when <tt>spacedim = 2</tt> since, in
+     * that case, boundary faces are lines and outputting additional lines
+     * does not make sense.
+     *
+     * @note This is not yet implemented for the <tt>dim = 2</tt> case. For
+     * backwards compatibility, however, this will not raise a runtime error.
      */
     bool write_additional_boundary_lines;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Gnuplot(const bool         write_cell_number               = false,
             const unsigned int n_extra_curved_line_points      = 2,
@@ -263,93 +280,97 @@ namespace GridOutFlags
             const bool         write_additional_boundary_lines = true);
 
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
   };
 
   /**
-   * 描述封装后的postscript的输出细节的标志。
-   * 在这个结构中，列出了所有尺寸通用的标志。只针对一个空间维度的标志被列在派生类中。
-   * 默认情况下，图片的尺寸是按比例缩放的，因此宽度等于300单位。
-   * @ingroup output
+   * Flags describing the details of output for encapsulated postscript.  In
+   * this structure, the flags common to all dimensions are listed. Flags
+   * which are specific to one space dimension only are listed in derived
+   * classes.
    *
+   * By default, the size of the picture is scaled such that the width equals
+   * 300 units.
+   *
+   * @ingroup output
    */
   struct EpsFlagsBase
   {
     /**
-     * 枚举表示是否应该进行缩放，使给定的 @p size
-     * 等于结果图片的宽度或高度。
-     *
+     * Enum denoting the possibilities whether the scaling should be done such
+     * that the given @p size equals the width or the height of the resulting
+     * picture.
      */
     enum SizeType
     {
       /**
-       * 按宽度缩放。
-       *
+       * Scale with the width.
        */
       width,
       /**
-       * 随高度缩放。
-       *
+       * Scale with the height.
        */
       height
     };
 
     /**
-     * 见上文。默认是 @p width. 。
-     *
+     * See above. Default is @p width.
      */
     SizeType size_type;
 
     /**
-     * 输出的宽度或高度以postscript单位给出，这通常是由奇怪的单位1/72英寸给出。这是高还是宽由标志
-     * @p size_type. 指定 默认为300。
+     * Width or height of the output as given in postscript units This usually
+     * is given by the strange unit 1/72 inch. Whether this is height or width
+     * is specified by the flag @p size_type.
      *
+     * Default is 300.
      */
     unsigned int size;
 
     /**
-     * 一行的宽度，以postscript为单位。默认为0.5。
-     *
+     * Width of a line in postscript units. Default is 0.5.
      */
     double line_width;
 
     /**
-     * 设置为 @p
-     * user_flag 的线条是否应该用不同的颜色（红色）绘制？
-     * 参见 @ref GlossUserFlags ，了解有关用户标志的信息。
-     *
+     * Should lines with a set @p user_flag be drawn in a different color
+     * (red)?  See
+     * @ref GlossUserFlags
+     * for information about user flags.
      */
     bool color_lines_on_user_flag;
 
     /**
-     * 边界面上的点的数量，除了该面的顶点外，还被绘制出来。
-     * 这个数字只在所使用的映射不是简单的标准 $Q_1$
-     * 映射（即MappingQGeneric(1)类型的对象）时使用，该映射可能将单元格的边缘描述为弯曲，然后将使用线段进行近似，中间点的数量由当前变量描述。
+     * The number of points on a boundary face that are plotted in addition to
+     * the vertices of the face.
      *
+     * This number is only used if the mapping used is not simply the standard
+     * $Q_1$ mapping (i.e., an object of kind MappingQGeneric(1)) that may
+     * describe edges of cells as curved and that will then be approximated
+     * using line segments with a number of intermediate points as described
+     * by the current variable.
      */
     unsigned int n_boundary_face_points;
 
     /**
-     * 线条是否应该根据其细化程度来着色？这将覆盖所有级别的color_lines_on_user_flag，除了级别0。
-     * 颜色是：0级：黑色，其他级别：从蓝色到红色的彩虹色。
-     *
+     * Should lines be colored according to their refinement level? This
+     * overrides color_lines_on_user_flag for all levels except level 0.
+     * Colors are: level 0: black, other levels: rainbow scale from blue to
+     * red.
      */
     bool color_lines_level;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     EpsFlagsBase(const SizeType     size_type                = width,
                  const unsigned int size                     = 300,
@@ -358,15 +379,13 @@ namespace GridOutFlags
                  const unsigned int n_boundary_face_points   = 2,
                  const bool         color_lines_level        = false);
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
@@ -374,26 +393,29 @@ namespace GridOutFlags
 
 
   /**
-   * 描述所有尺寸的封装postscript的输出细节的标志，下面没有明确地专门说明。在基类中列出了一些对所有维度通用的标志。
-   * 这个类实际上并不存在，我们只在这里声明一般的模板，并在下面声明明确的专门化。
-   * @ingroup output
+   * Flags describing the details of output for encapsulated postscript for
+   * all dimensions not explicitly specialized below. Some flags that are
+   * common to all dimensions are listed in the base class.
    *
+   * This class does not actually exist, we only here declare the general
+   * template and declare explicit specializations below.
+   *
+   * @ingroup output
    */
   template <int dim>
   struct Eps
   {};
 
   /**
-   * 专门针对一个空间维度的网格输出的标志。
-   * @ingroup output
+   * Flags specific to the output of grids in one space dimensions.
    *
+   * @ingroup output
    */
   template <>
   struct Eps<1> : public EpsFlagsBase
   {
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Eps(const SizeType     size_type                = width,
         const unsigned int size                     = 300,
@@ -401,15 +423,13 @@ namespace GridOutFlags
         const bool         color_lines_on_user_flag = false,
         const unsigned int n_boundary_face_points   = 2);
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
@@ -417,39 +437,39 @@ namespace GridOutFlags
 
 
   /**
-   * 专门针对二维空间的网格输出的标志。
-   * @ingroup output
+   * Flags specific to the output of grids in two space dimensions.
    *
+   * @ingroup output
    */
   template <>
   struct Eps<2> : public EpsFlagsBase
   {
     /**
-     * 如果这个标志被设置，那么我们就把单元格的编号放到每个单元格的中间。默认值是不这样做。
-     * 写入的单元格编号的格式是<tt>level.index</tt>，或者干脆是
-     * @p index, ，取决于以下标志的值。
+     * If this flag is set, then we place the number of the cell into the
+     * middle of each cell. The default value is to not do this.
      *
+     * The format of the cell number written is <tt>level.index</tt>, or
+     * simply @p index, depending on the value of the following flag.
      */
     bool write_cell_numbers;
     /**
-     * 如果单元格编号应被写入，使用上述标志，那么这个标志的值决定了格式是<tt>level.index</tt>，还是简单的
-     * @p index.  如果 @p true, ，则采取第一种格式。默认是 @p
-     * true.  如果 @p write_cell_numbers 是 @p false.
-     * ，该标志显然没有作用。
+     * If the cell numbers shall be written, using the above flag, then the
+     * value of this flag determines whether the format shall be
+     * <tt>level.index</tt>, or simply @p index. If @p true, the first format
+     * is taken. Default is @p true.
      *
+     * The flag has obviously no effect if @p write_cell_numbers is @p false.
      */
     bool write_cell_number_level;
 
     /**
-     * 顶点编号可以被写入顶点。这是由以下标志控制的。默认是
-     * @p false. 。
-     *
+     * Vertex numbers can be written onto the vertices. This is controlled by
+     * the following flag. Default is @p false.
      */
     bool write_vertex_numbers;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Eps(const SizeType     size_type                = width,
         const unsigned int size                     = 300,
@@ -461,46 +481,45 @@ namespace GridOutFlags
         const bool         write_vertex_numbers     = false,
         const bool         color_lines_level        = false);
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
   };
 
   /**
-   * 三维空间网格输出的特定标志。
-   * @ingroup output
+   * Flags specific to the output of grids in three space dimensions.
    *
+   * @ingroup output
    */
   template <>
   struct Eps<3> : public EpsFlagsBase
   {
     /**
-     * 线条原点观测器对Z轴的角度，单位是度。
-     * 默认为Gnuplot默认的60。
+     * Angle of the line origin-viewer against the z-axis in degrees.
      *
+     * Default is the Gnuplot-default of 60.
      */
     double azimut_angle;
 
     /**
-     * 从上面看时，观察者的位置投射到x-y平面上围绕z轴旋转的角度，为正数。
-     * 单位是度，零等于高于或低于负y轴的位置。
-     * 默认值是Gnuplot默认的30。
+     * Angle by which the viewers position projected onto the x-y-plane is
+     * rotated around the z-axis, in positive sense when viewed from above.
+     * The unit are degrees, and zero equals a position above or below the
+     * negative y-axis.
      *
+     * Default is the Gnuplot-default of 30.
      */
     double turn_angle;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Eps(const SizeType     size_type                = width,
         const unsigned int size                     = 300,
@@ -510,36 +529,32 @@ namespace GridOutFlags
         const double       azimut_angle             = 60,
         const double       turn_angle               = 30);
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
   };
 
   /**
-   * 用于XFig输出的标志。
-   * @ingroup output
+   * Flags for XFig output.
    *
+   * @ingroup output
    */
   struct XFig
   {
     /**
-     * 绘制边界线。默认为true。
-     *
+     * Draw boundary lines. Default is true.
      */
     bool draw_boundary;
 
     /**
-     * 一个枚举，用于决定哪个字段用于给单元格着色。
-     *
+     * An enum used for deciding which field is used for coloring the cells.
      */
     enum Coloring
     {
@@ -554,75 +569,71 @@ namespace GridOutFlags
     } color_by;
 
     /**
-     * 代码级别到深度。默认为真。如果是假的，颜色取决于材料或边界ID。
-     * 如果这个值为真，对象的深度为900级。
+     * Code level to depth. Default is true. If false, color depends on
+     * material or boundary id.
      *
+     * Depth of the object is 900-level, if this value is true.
      */
     bool level_depth;
 
     /**
-     * 弯曲边界的附加点。默认是没有。
-     *
+     * Additional points for curved boundaries. Default is none.
      */
     unsigned int n_boundary_face_points;
 
     /**
-     * 图形的缩放。默认是单位长度为一英寸。
-     *
+     * Scaling of graph. The default is a unit length of one inch.
      */
     Point<2> scaling;
 
     /**
-     * 图形的偏移。在缩放之前，坐标被移到这个值上。默认是每个方向上的零。
-     *
+     * Offset of the graph. Before scaling, the coordinates are shifted by
+     * this value. Default is zero in each direction.
      */
     Point<2> offset;
 
     /**
-     * 填充单元格的样式。默认是实心填充（20）。这个值会被转发到XFig的折线对象的相应字段<tt>fill_style</tt>中而不被改变。
-     *
+     * Style for filling cells. Default is solid fill (20). This value is
+     * forwarded unchanged into the corresponding field <tt>fill_style</tt> of
+     * the polyline object of XFig.
      */
     int fill_style;
 
     /**
-     * 绘制多边形边界线的样式。默认为实心（0），并转发到XFig。
-     *
+     * Style for drawing border lines of polygons. Defaults to solid (0) and
+     * is forwarded to XFig.
      */
     int line_style;
 
     /**
-     * 多边形边界线的厚度。默认为1。将其设置为0，以避免非常细的网格出现边界线。
+     * Thickness of border lines of polygons. Default is 1.
      *
+     * Set this to zero to avoid border lines for very fine meshes.
      */
     int line_thickness;
 
     /**
-     * 在边界上画线的样式。默认为实体（0）。
-     *
+     * Style for drawing lines at the boundary. Defaults to solid (0).
      */
     int boundary_style;
 
     /**
-     * 边界线的厚度。默认为3。
-     *
+     * Thickness of boundary lines. Default is 3.
      */
     int boundary_thickness;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     XFig();
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
@@ -630,69 +641,69 @@ namespace GridOutFlags
 
 
   /**
-   控制SVG输出的标志。    下图是SVG标志的放大图，说明了SVG标志能够产生的效果。这些确切的设置与测试中使用的设置相同  <code>tests/grid/grid_out_svg_02.cc</code>  ，只是增加了标志  <code>svg_flags.label_boundary_id = true;</code>  。      @image html svg_flags.png
-   * @ingroup output
+   * Flags controlling SVG output.
    *
+   * The figure below is a zoomed-in illustration of what the SVG flags are
+   * capable of producing. These exact settings are the same as those used
+   * in the test <code>tests/grid/grid_out_svg_02.cc</code> with the addition
+   * of the flag <code>svg_flags.label_boundary_id = true;</code> .
+   *
+   * @image html svg_flags.png
+   *
+   * @ingroup output
    */
   struct Svg
   {
     /**
-     * 绘图的高度，以SVG为单位，如果为0，则由宽度计算。默认为1000。
-     *
+     *  Height of the plot in SVG units, computed from width if zero. Defaults
+     *  to 1000.
      */
     unsigned int height;
 
     /**
-     * 绘图的宽度。如果为零，则由高度自动计算（默认）。
-     *
+     *  The width of the plot. Computed automatically from height if zero
+     *  (default).
      */
     unsigned int width;
 
     /**
-     * 单元间的线的厚度。
-     *
+     *  Thickness of the lines between cells.
      */
     unsigned int line_thickness;
     /**
-     * 边界处线条的厚度。
-     *
+     * Thickness of lines at the boundary.
      */
     unsigned int boundary_line_thickness;
 
     /**
-     * 绘图区域周围的边距。
-     *
+     *  Margin around the plotted area.
      */
     bool margin;
 
     /**
-     * 一个描述所有可能的背景风格的 "enum"。
-     *
+     * An `enum` describing all possible background styles.
      */
     enum Background
     {
       /**
-       * 使用SVG的透明值。
-       *
+       * Use transparent value of SVG.
        */
       transparent,
 
       /**
-       * 使用白色背景。
-       *
+       * Use white background.
        */
       white,
 
       /**
-       * 使用从白色（顶部）到钢蓝色（底部）的梯度，并添加日期和时间以及deal.II的标志。自动画出一个空白。
-       *
+       * Use a gradient from white (top) to steelblue (bottom), and add date
+       * and time plus a deal.II logo. Automatically draws a margin.
        */
       dealii
     };
 
     /**
-     * 用于网格背景的样式。
-     *
+     * The style used for the background of the mesh.
      */
     Background background;
 
@@ -700,20 +711,17 @@ namespace GridOutFlags
     // view).
 
     /**
-     * 从???测量的方位角，单位是度。默认为0。
-     *
+     * The azimuth angle measured from ??? in degrees. Default is 0.
      */
     int azimuth_angle;
 
     /**
-     * 从xy平面垂直方向上的角度。默认为0。
-     *
+     * The angle from vertically above the xy-plane. Default is 0.
      */
     int polar_angle;
 
     /**
-     * 单元的着色。
-     *
+     * Cell coloring.
      */
     enum Coloring
     {
@@ -736,68 +744,63 @@ namespace GridOutFlags
     bool convert_level_number_to_height;
 
     /**
-     * 决定层间垂直距离的因素（默认=0.3。
-     *
+     * The factor determining the vertical distance between levels (default =
+     * 0.3.
      */
     float level_height_factor;
 
     /**
-     * 用于单元格注释的字体缩放。默认为1。
-     *
+     * Scaling of the font for cell annotations. Defaults to 1.
      */
     float cell_font_scaling;
     /**
-     * 在每个单元格中写入级别编号。默认为false。
-     *
+     * Write level number into each cell. Defaults to false.
      */
     bool label_level_number;
 
     /**
-     * 在每个单元格中写入单元格索引。默认为false。
-     *
+     * Write cell index into each cell. Defaults to false.
      */
     bool label_cell_index;
 
     /**
-     * 写入每个单元格的材料ID。默认为false。
-     *
+     * Write material id of each cell. Defaults to false.
      */
     bool label_material_id;
 
     /**
-     * 写入每个单元格的子域ID。默认为false。
-     *
+     * Write subdomain id of each cell. Defaults to false.
      */
     bool label_subdomain_id;
 
     /**
-     * 写入每个单元格的子域ID。默认为false。
-     *
+     * Write level subdomain id of each cell. Defaults to false.
      */
     bool label_level_subdomain_id;
 
     /**
-     * 在相应的边界边上的圆圈中写入每个边界面的边界ID。默认为false。
-     * 注意：根据图像查看器的选择，边界ID标签可能不会出现在圆的中心。
+     * Write boundary id of each boundary face in a circle on the
+     * corresponding boundary edge. Defaults to false.
      *
+     * Note: Depending on the choice of image viewer, the boundary id
+     * labels may not appear to be centered in the circle.
      */
     bool label_boundary_id;
 
     /**
-     * 在绘制的网格旁边画一个颜色条，与选择的单元格的颜色有关。
-     *
+     * Draw a colorbar next to the plotted grid with respect to the chosen
+     * coloring of the cells.
      */
     bool draw_colorbar;
 
     /**
-     * 在绘制的网格旁边画一个图例，解释单元格的标签。
-     *
+     * Draw a legend next to the plotted grid, explaining the label of the
+     * cells.
      */
     bool draw_legend;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Svg(const unsigned int line_thickness                 = 2,
         const unsigned int boundary_line_thickness        = 4,
@@ -817,34 +820,30 @@ namespace GridOutFlags
   };
 
   /**
-   * 用于MathGL格式的网格输出的标志。
-   * @ingroup output
+   * Flags for grid output in MathGL format.
    *
+   * @ingroup output
    */
   struct MathGL
   {
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     MathGL();
 
     /**
-     * 在图形周围画一个包围盒。
-     *
+     * Draw a bounding box around the graph.
      */
     bool draw_bounding_box;
 
     /**
-     * 在ParameterHandler中声明参数。
-     *
+     * Declare parameters in ParameterHandler.
      */
     static void
     declare_parameters(ParameterHandler &param);
 
     /**
-     * 解析ParameterHandler的参数。
-     *
+     * Parse parameters of ParameterHandler.
      */
     void
     parse_parameters(ParameterHandler &param);
@@ -852,16 +851,15 @@ namespace GridOutFlags
 
 
   /**
-   * 用于Vtk格式的网格输出的标志。这些标志与
-   * DataOutBase::VtkFlags. 中声明的标志相同。
-   * @ingroup output
+   * Flags for grid output in Vtk format. These flags are the same as those
+   * declared in DataOutBase::VtkFlags.
    *
+   * @ingroup output
    */
   struct Vtk : public DataOutBase::VtkFlags
   {
     /**
-     * 默认构造函数。
-     *
+     * Default constructor.
      */
     Vtk(const bool output_cells         = true,
         const bool output_faces         = true,
@@ -874,37 +872,35 @@ namespace GridOutFlags
     {}
 
     /**
-     * 输出单元。
-     *
+     * Output cells.
      */
     bool output_cells;
 
     /**
-     * 输出面。
-     *
+     * Output faces.
      */
     bool output_faces;
 
     /**
-     * 输出共面/边。
-     *
+     * Output co-faces/edges.
      */
     bool output_edges;
 
     /**
-     * 只输出与默认设置不同的面孔/共同面孔（例如边界_id）。
-     *
+     * Output only faces/co-faces that differ from the default settings
+     * (e.g boundary_id).
      */
     bool output_only_relevant;
   };
 
 
   /**
-   * 用于Vtu格式的网格输出的标志。这些标志与
-   * DataOutBase::VtkFlags,
-   * 中声明的标志相同，但增加了一个标志，决定你是否要在vtu文件（实际上是一个xml文件）中增加一个包含整个三角测量序列化的条目。
-   * @ingroup output
+   * Flags for grid output in Vtu format. These flags are the same as those
+   * declared in DataOutBase::VtkFlags, with the addition of a flag that
+   * determines if you want to add a entry in the vtu file (which is really
+   * a xml file) containing the entire serialization of the triangulation.
    *
+   * @ingroup output
    */
   struct Vtu : public DataOutBase::VtkFlags
   {
@@ -913,8 +909,7 @@ namespace GridOutFlags
     {}
 
     /**
-     * 将序列化的三角图也添加到vtu文件中。
-     *
+     * Add to the vtu file also the serialized triangulation.
      */
     bool serialize_triangulation;
   };
@@ -923,65 +918,84 @@ namespace GridOutFlags
 
 
 /**
- * 这个类提供了一种方法，可以将三角图以不同的格式输出到文件中。参见枚举
- * GridOut::OutputFormat 中的格式列表和相应的输出函数名称。
- * 用法很简单：你可以使用直接的形式
+ * This class provides a means to output a triangulation to a file in
+ * different formats. See the enum GridOut::OutputFormat for a list of formats
+ * and the corresponding output function names.
  *
+ * Usage is simple: either you use the direct form
  * @code
- * std::ofstream output_file("some_filename");
- * GridOut().write_gnuplot (tria, output_file);
+ *   std::ofstream output_file("some_filename");
+ *   GridOut().write_gnuplot (tria, output_file);
  * @endcode
- * 如果你知道你想要哪种格式，或者你想让格式成为一个运行时参数，你可以编写
- *
+ * if you know which format you want to have, or if you want the format to be
+ * a runtime parameter, you can write
  * @code
- * GridOut::OutputFormat grid_format =
- *   GridOut::parse_output_format(get_format_name_from_somewhere());
- * std::ofstream output_file("some_filename"
- *                           + GridOut::default_suffix(output_format));
- * GridOut().write (tria, output_file, output_format);
+ *   GridOut::OutputFormat grid_format =
+ *     GridOut::parse_output_format(get_format_name_from_somewhere());
+ *   std::ofstream output_file("some_filename"
+ *                             + GridOut::default_suffix(output_format));
+ *   GridOut().write (tria, output_file, output_format);
  * @endcode
- * 函数<tt>get_output_format_names()</tt>以ParameterHandler类可理解的字符串提供了一个可能的输出格式名称的列表。
- * 注意，在这里，我们创建了一个未命名的GridOut类型的对象，并调用了它的一个<tt>write_*</tt>函数。这看起来好像真的可以让各自的函数
- * @p static.
- * 这不是为了让参数以一种与允许在运行时通过通用 @p write
- * 函数选择正确输出格式的方案相兼容的方式传递给不同的输出函数。
- * 为了解释这一点，考虑到每个函数都有一个或多个额外的参数，给出输出的细节，例如3D网格的观众位置，线的厚度等等。虽然这将允许每个输出函数具有它所需要的任何灵活性，但它不允许我们使用通用函数
- * @p write
- * ，该函数被赋予一个决定输出格式的参数，因为给它一个支持每一种输出格式的参数列表是不切实际的，然后它可以将其传递给各自的输出函数。
- * 相反，我们选择让这个类GridOut的每个对象为每个支持的输出格式拥有一组参数。这些参数被收集在GridOutFlags命名空间中声明的结构
- * GridOutFlags::Eps(),   GridOutFlags::Gnuplot(),
- * 等中，你可以像这样设置你的首选标志。
+ * The function <tt>get_output_format_names()</tt> provides a list of possible
+ * names of output formats in a string that is understandable by the
+ * ParameterHandler class.
  *
+ * Note that here, we have created an unnamed object of type GridOut and
+ * called one of its <tt>write_*</tt> functions. This looks like as if the
+ * respective function could really be made @p static. This was not done in
+ * order to allow for parameters to be passed to the different output
+ * functions in a way compatible with the scheme of allowing the right output
+ * format to be selected at run-time through the generic @p write function.
+ *
+ * In order to explain this, consider each function had one or more additional
+ * parameters giving the details of output, for example position of the
+ * spectator for 3d meshed, line thicknesses, etc. While this would allow each
+ * output function any flexibility it needs, it would not allow us to use the
+ * generic function @p write which is given a parameter determining the output
+ * format, since it is impractical to give it a list of parameters for each
+ * and every output format supported which it may then pass on to the
+ * respective output function.
+ *
+ * Rather, we have chosen to let each object of this class GridOut have a set
+ * of parameters for each supported output format. These are collected in
+ * structures GridOutFlags::Eps(), GridOutFlags::Gnuplot(), etc declared in
+ * the GridOutFlags namespace, and you can set your preferred flags like this:
  * @code
- * GridOut grid_out;
- * GridOutFlags::Ucd ucd_flags;
- * ...    // set some fields in ucd_flags
- * grid_out.set_flags (ucd_flags);
- * ...
- * ...    // write some file with data_out
+ *   GridOut grid_out;
+ *   GridOutFlags::Ucd ucd_flags;
+ *   ...    // set some fields in ucd_flags
+ *   grid_out.set_flags (ucd_flags);
+ *   ...
+ *   ...    // write some file with data_out
  * @endcode
- * 各个输出函数然后使用如此设置的标志。默认情况下，它们被设置为合理的值，如上面和不同标志结构的文档中所述。重置标志可以通过调用<tt>grid_out.set_flags
- * (GridOutFlags::Ucd());</tt>,
- * 来完成，因为每个标志结构的默认构造函数都将参数设置为初始值。
- * 这种方法的好处是，可以根据你的需要改变一个或多个输出格式的标志，然后再使用通用
- * @p write
- * 函数；然后调用的实际输出函数将使用之前设置的标志。
- * 注意，一些描述不同输出格式标志的结构是空的，因为各自的格式不支持任何标志。反正结构和
- * @p set_flags
- * 函数是提供的。还需要注意的是，有些结构在这个类所支持的尺寸之间可能有所不同；然后它们有一个模板参数，像往常一样。
+ * The respective output function then use the so-set flags. By default, they
+ * are set to reasonable values as described above and in the documentation of
+ * the different flags structures. Resetting the flags can be done by calling
+ * <tt>grid_out.set_flags (GridOutFlags::Ucd());</tt>, since the default
+ * constructor of each of the flags structures sets the parameters to their
+ * initial values.
  *
+ * The advantage of this approach is that it is possible to change the flags
+ * of one or more output formats according to your needs and later use the
+ * generic @p write function; the actual output function then called will use
+ * the flags as set before.
+ *
+ * Note that some of the structures describing the flags of the different
+ * output formats are empty since the respective format does not support any
+ * flags. The structure and the @p set_flags function are provided anyway.
+ * Note also that some of the structures may differ between the dimensions
+ * supported by this class; they then have a template parameter, as usual.
  *
  * @ingroup grid
- *
  * @ingroup output
- *
  */
 class GridOut
 {
 public:
   /**
-   * 为每个不同的输出格式声明一个名称。这些名称被通用输出函数write()用来确定实际的输出格式。
-   *
+   * Declaration of a name for each of the different output formats. These are
+   * used by the generic output function write() to determine the actual
+   * output format.
    */
   enum OutputFormat
   {
@@ -1010,35 +1024,51 @@ public:
   };
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   GridOut();
 
   /**
-   * 以OpenDX格式写入三角图。
-   * 单元或面与它们的水平面和它们的材料ID或边界指示器一起被写入。
-   * 在二维度为1的情况下不执行。
+   * Write triangulation in OpenDX format.
    *
+   * Cells or faces are written together with their level and their material
+   * id or boundary indicator, resp.
+   *
+   * Not implemented for the codimension one case.
    */
   template <int dim, int spacedim>
   void
   write_dx(const Triangulation<dim, spacedim> &tria, std::ostream &out) const;
 
   /**
-   * 用GNUPLOT格式写三角剖面图。
-   * 在GNUPLOT格式中，每个单元被写成其限定线的序列。除了线的端点坐标之外，单元格的水平和材料也被附加到每一行的输出中。因此，如果你让GNUPLOT把一个2D网格画成一个3D图，你会看到更精细的单元与更不精细的单元相对应。
-   * 另外，如果你在三维网格中画一个切面，你可以在与切面正交的方向挤出细化水平。同样的方法也可以用在材料ID上，材料ID被绘制在层次之后。
-   * 这个功能的一个更有用的应用是：如果你使用GNUPLOT命令（这里是指2d网格
-   * @verbatim
-   * splot [:][:][2.5:3.5] "grid_file.gnuplot"
-   * @endverbatim
-   * 那么整个x-和y-范围将被绘制出来，也就是整个网格，但只有那些z值在2.5和3.5之间的线条。由于z值被选择为一个单元格所属的级别，这就导致在这个例子中只绘制那些属于第3级的单元格。这样一来，就很容易产生不同级别网格的图。
-   * @p mapping
-   * 是一个指针，用于边界上的单元格转换的映射。如果为零，则使用标准的Q1映射。
-   * 控制输出的额外标志的名称和值可以在 GridOutFlags::Gnuplot
-   * 类的文档中找到，其中还描述了一些关于一维情况的注意事项。
+   * Write the triangulation in the gnuplot format.
    *
+   * In GNUPLOT format, each cell is written as a sequence of its confining
+   * lines. Apart from the coordinates of the lines' end points, the level and
+   * the material of the cell are appended to each line of output. Therefore,
+   * if you let GNUPLOT draw a 2d grid as a 3d plot, you will see more refined
+   * cells being raised against cells with less refinement.  Also, if you draw
+   * a cut through a 3d grid, you can extrude the refinement level in the
+   * direction orthogonal to the cut plane. The same can be done with the
+   * material id, which is plotted after the level.
+   *
+   * A more useful application of this feature is the following: if you use
+   * the GNUPLOT command (for a 2d grid here)
+   * @verbatim
+   * splot [:][:][2.5:3.5] "grid_file.gnuplot" *
+   * @endverbatim
+   * then the whole x- and y-range will be plotted, i.e. the whole grid, but
+   * only those lines with a z-value between 2.5 and 3.5. Since the z-values
+   * were chosen to be the level to which a cell belongs, this results in a
+   * plot of those cells only that belong to level 3 in this example. This
+   * way, it is easy to produce plots of the different levels of grid.
+   *
+   * @p mapping is a pointer to a mapping used for the transformation of cells
+   * at the boundary. If zero, then use standard Q1 mapping.
+   *
+   * Names and values of additional flags controlling the output can be found
+   * in the documentation of the GridOutFlags::Gnuplot class, which also
+   * describes some caveats for the codimension one case.
    */
   template <int dim, int spacedim>
   void
@@ -1047,13 +1077,22 @@ public:
                 const Mapping<dim, spacedim> *      mapping = nullptr) const;
 
   /**
-   * 以msh格式写入三角剖面图。
-   * Msh是%Gmsh使用的格式，它在%Gmsh用户指南中有所描述。除了通常只输出网格外，你可以通过额外的标志（见下文，以及
-   * GridOutFlags::Msh()
-   * 类的文档）决定是否应将边界指示器为非零的边界面明确写入文件。这很有用，如果你以后想重新读取网格，因为<tt>deal.II</tt>默认将边界指示器设置为零；因此，为了获得和以前一样的三角测量，你必须明确指定具有不同边界指示器的面，这是由这个标志完成的。
-   * 其他控制输出的标志的名称和值可以在 GridOutFlags::Msh()
-   * 类的文档中找到。    在维度为1的情况下也能工作。
+   * Write the triangulation in the msh format.
    *
+   * Msh is the format used by %Gmsh and it is described in the %Gmsh user's
+   * guide. Besides the usual output of the grid only, you can decide through
+   * additional flags (see below, and the documentation of the
+   * GridOutFlags::Msh() class) whether boundary faces with non-zero boundary
+   * indicator shall be written to the file explicitly. This is useful, if you
+   * want to re-read the grid later on, since <tt>deal.II</tt> sets the
+   * boundary indicator to zero by default; therefore, to obtain the same
+   * triangulation as before, you have to specify faces with differing
+   * boundary indicators explicitly, which is done by this flag.
+   *
+   * Names and values of further flags controlling the output can be found in
+   * the documentation of the GridOutFlags::Msh() class.
+   *
+   * Works also in the codimension one case.
    */
   template <int dim, int spacedim>
   void
@@ -1061,17 +1100,27 @@ public:
 
 #ifdef DEAL_II_GMSH_WITH_API
   /**
-   * 用gmsh API支持的任何格式来写三角剖面。    Gmsh
-   * API允许通过其C++
-   * API以多种格式写入其输出。这个函数将三角图对象翻译成gmsh的实体集合，并调用
-   * gmsh::write()
-   * 方法，将文件名作为参数传递。该方法为每一对独特的非默认流形id和边界id生成一个不同的实体，并为每一个独特的组合写一个gmsh物理组，允许你使用以字符串为参数的
-   * GridIn::read_msh() 方法读回三角图。
-   * 特别是，所有具有非默认边界ID或非默认流形ID的单元对象都被归入一个独特的物理标签，其名称包含边界和流形指标。名称是用
-   * Patterns::Tools::to_value() 应用于 `std::map<std::string,
-   * int>`构建的，其中键是`材料ID`、`边界ID`或`流形ID`，即一个材料ID为1、流形ID为3的单元将被分组在一个物理标签（其编号未被指定），命名为`材料ID:1,
-   * 流形ID:3`。
-   * 例如，用超球网格精炼一次后调用该方法，将导致输出文件中定义以下物理标签。
+   * Write the triangulation in any format supported by gmsh API.
+   *
+   * Gmsh API allows writing its output in several formats through their C++
+   * API. This function translates a Triangulation object into a gmsh collection
+   * of entities and calls the gmsh::write() method with the filename passed as
+   * argument. This method generates a different entity for each unique pair of
+   * non default manifold id and boundary id, and writes a gmsh physical group
+   * for each unique combination, allowing you to read back the triangulation
+   * using the GridIn::read_msh() method that takes a string as argument.
+   *
+   * In particular, all cell objects with non default boundary id or non
+   * default manifold id are grouped in a unique physical tag, whose name
+   * contains the boundary and manifold indicators. The names are constructed
+   * using Patterns::Tools::to_value() applied to a `std::map<std::string, int>`
+   * where the keys are either `MaterialID`, `BoundaryID`, or `ManifoldID`,
+   * i.e., a cell with material id 1, and manifold id 3 would be grouped in a
+   * physical tag (whose numbering is not specified), named
+   * `MaterialID:1, ManifoldID:3`.
+   *
+   * For example, calling the method with a hyper ball grid refined once,
+   * would results in the following physical tags defined in the output file:
    * @code
    * MeshFormat
    * 4.1 0 8
@@ -1085,8 +1134,10 @@ public:
    * \$Entities
    * ...
    * @endcode
-   * 特殊的边界ID`-1`是用来表示内部边界的。只要有必要指定一个非平面流形的id，就必须指定内部边界。
    *
+   * The special boundary id `-1` is used to indicate internal boundaries. The
+   * internal boundaries must be specified whenever it is necessary to specify
+   * a non-flat manifold id.
    */
   template <int dim, int spacedim>
   void
@@ -1095,32 +1146,56 @@ public:
 #endif
 
   /**
-   * 以ucd格式写入三角图。
-   * UCD（非结构化单元数据）是AVS和其他一些程序使用的格式。它在AVS的开发者指南中有所描述。除了通常只输出网格之外，你可以通过额外的标志（见下文，以及
-   * GridOutFlags::Ucd()
-   * 类的文档）决定是否将边界指示器为非零的边界面明确写入文件。这很有用，如果你以后想重新读取网格，因为<tt>deal.II</tt>默认将边界指示器设置为零；因此，为了获得和以前一样的三角测量，你必须明确指定具有不同边界指示器的面，这是由这个标志完成的。
-   * 其他控制输出的标志的名称和值可以在 GridOutFlags::Ucd()
-   * 类的文档中找到。    也适用于维度为1的情况。
+   * Write the triangulation in the ucd format.
    *
+   * UCD (unstructured cell data) is the format used by AVS and some other
+   * programs. It is described in the AVS developer's guide. Besides the usual
+   * output of the grid only, you can decide through additional flags (see
+   * below, and the documentation of the GridOutFlags::Ucd() class) whether
+   * boundary faces with non-zero boundary indicator shall be written to the
+   * file explicitly. This is useful, if you want to re-read the grid later
+   * on, since <tt>deal.II</tt> sets the boundary indicator to zero by
+   * default; therefore, to obtain the same triangulation as before, you have
+   * to specify faces with differing boundary indicators explicitly, which is
+   * done by this flag.
+   *
+   * Names and values of further flags controlling the output can be found in
+   * the documentation of the GridOutFlags::Ucd() class.
+   *
+   * Works also for the codimension one case.
    */
   template <int dim, int spacedim>
   void
   write_ucd(const Triangulation<dim, spacedim> &tria, std::ostream &out) const;
 
   /**
-   * 以封装的postscript格式编写三角图。
-   * 在这种格式中，三角图的每一行都是单独写的。我们对图片进行缩放，使X值或Y值的范围在0和固定大小之间。另一个轴的比例是相同的因素。哪一个轴被用来计算比例，以及它应适合的盒子的大小，由输出标志决定（见下文，以及
-   * GridOutFlags::Eps() 类的文档）。
-   * 界限盒的四边都接近三角形，没有额外的框架。线宽默认选择为0.5，但可以改变。线宽要与图片的延伸部分相比较，其默认值为300。
-   * 标志 @p color_lines_on_user_flag 允许在设置了 @p
-   * user_flag的情况下绘制红色的线条。在输出文件的序言中，黑色和红色被定义为
-   * @p b 和 @p r ，可以根据需要在那里进行更改。      @p
-   * mapping
-   * 是一个指向用于边界处单元格转换的映射的指针。如果为零，则使用标准的Q1映射。
-   * 控制输出的额外标志的名称和值可以在 GridOutFlags::Eps()
-   * 类的文档中找到。特别是对于三维网格的观点在这里是很重要的。
-   * 对于一维的情况没有实现。
+   * Write the triangulation in the encapsulated postscript format.
    *
+   * In this format, each line of the triangulation is written separately. We
+   * scale the picture such that either x-values or y-values range between
+   * zero and a fixed size. The other axis is scaled by the same factor. Which
+   * axis is taken to compute the scale and the size of the box it shall fit
+   * into is determined by the output flags (see below, and the documentation
+   * of the GridOutFlags::Eps() class).
+   *
+   * The bounding box is close to the triangulation on all four sides, without
+   * an extra frame. The line width is chosen to be 0.5 by default, but can be
+   * changed. The line width is to be compared with the extension of the
+   * picture, of which the default is 300.
+   *
+   * The flag @p color_lines_on_user_flag allows to draw lines with the @p
+   * user_flag set to be drawn in red. The colors black and red are defined as
+   * @p b and @p r in the preamble of the output file and can be changed there
+   * according to need.
+   *
+   * @p mapping is a pointer to a mapping used for the transformation of cells
+   * at the boundary. If zero, then use standard Q1 mapping.
+   *
+   * Names and values of additional flags controlling the output can be found
+   * in the documentation of the GridOutFlags::Eps() class. Especially the
+   * viewpoint for three dimensional grids is of importance here.
+   *
+   * Not implemented for the codimension one case.
    */
   template <int dim, int spacedim>
   void
@@ -1129,14 +1204,22 @@ public:
             const Mapping<dim, spacedim> *      mapping = nullptr) const;
 
   /**
-   * 写二维XFig-file。
-   * 这个函数将所有的网格单元写成多边形，也可以选择写成边界线。几个参数可以通过XFigFlags控制对象来调整。
-   * 如果层次被编码为深度，完整的网格层次就会在其父辈之前绘制出细小的单元。这样，在xfig中可以通过选择层次来开启或关闭层次。
-   * 多边形的深度为900级或900+ @p material_id, ，取决于标志 @p
-   * level_depth. 相应地，边界边缘的深度为800级或800+ @p
-   * boundary_id. 因此，边界边缘总是在单元的前面。
-   * 在二维度为1的情况下不执行。
+   * Write two-dimensional XFig-file.
    *
+   * This function writes all grid cells as polygons and optionally boundary
+   * lines. Several parameters can be adjusted by the XFigFlags control
+   * object.
+   *
+   * If levels are coded to depth, the complete grid hierarchy is plotted with
+   * fine cells before their parents. This way, levels can be switched on and
+   * off in xfig by selecting levels.
+   *
+   * Polygons are either at depth 900-level or at 900+@p material_id,
+   * depending on the flag @p level_depth. Accordingly, boundary edges are at
+   * depth 800-level or at 800+@p boundary_id. Therefore, boundary edges are
+   * always in front of cells.
+   *
+   * Not implemented for the codimension one case.
    */
   template <int dim, int spacedim>
   void
@@ -1145,23 +1228,32 @@ public:
              const Mapping<dim, spacedim> *      mapping = nullptr) const;
 
   /**
-   * 以SVG格式写入三角剖面图。    SVG（Scalable Vector
-   * Graphics）是一种基于XML的矢量图像格式，由万维网联盟（W3C）开发和维护。这个函数符合2011年8月16日发布的最新规范SVG
-   * 1.1。
-   * 三角形的单元被写成多边形，在三角形的边界处有附加线。为了使单元格的某个属性可视化，例如它们的级别或材料ID，还可以对单元格进行着色。可以画一个色条来编码所选择的颜色。
-   * 此外，还可以添加一个单元格标签，显示级别索引等。事实上，通过使用set_flags()和一个适当生成的
-   * GridOutFlags::Svg,
-   * 类型的对象，这个函数的可视化方式和内容的许多方面可以被定制。
-   * @note
-   * 这个函数目前只在两个空间维度的二维网格中实现。
+   * Write the triangulation in the SVG format.
    *
+   * SVG (Scalable Vector Graphics) is an XML-based vector image format
+   * developed and maintained by the World Wide Web Consortium (W3C). This
+   * function conforms to the latest specification SVG 1.1, released on August
+   * 16, 2011.
+   *
+   * The cells of the triangulation are written as polygons with additional
+   * lines at the boundary of the triangulation. A coloring of the cells is
+   * further possible in order to visualize a certain property of the cells
+   * such as their level or material id. A colorbar can be drawn to encode the
+   * chosen coloring.  Moreover, a cell label can be added, showing level
+   * index, etc. Indeed, by using the set_flags() with an appropriately
+   * generated object of type GridOutFlags::Svg, many aspects of how and
+   * what is being visualized by this function can be customized.
+   *
+   * @note This function is currently only implemented for two-dimensional
+   * grids in two space dimensions.
    */
   void
   write_svg(const Triangulation<2, 2> &tria, std::ostream &out) const;
 
   /**
-   * 对所有其他维度和空间维度声明与上述相同的函数。这个函数目前没有实现，声明存在只是为了支持独立维度编程。
-   *
+   * Declaration of the same function as above for all other dimensions and
+   * space dimensions. This function is not currently implemented and is only
+   * declared to exist to support dimension independent programming.
    */
   template <int dim, int spacedim>
   void
@@ -1169,12 +1261,18 @@ public:
 
 
   /**
-   * 以MathGL脚本格式编写三角剖面图。要解释这个文件，需要MathGL>=2.0.0的版本。
-   * 为了在图形环境中掌握所产生的MathGL脚本，需要一个解释器。建议从
-   * <code>mglview</code>, which is bundled with MathGL. <code>mglview</code>
-   * 开始，它可以在图形窗口中解释和显示中小型MathGL脚本，并能转换为其他格式，如EPS、PNG、JPG、SVG，以及查看/显示动画。还可以进行一些小的编辑，如修改照明或alpha通道。
-   * @note 未对二维码一的情况进行实现。
+   * Write triangulation in MathGL script format. To interpret this file a
+   * version of MathGL>=2.0.0 is required.
    *
+   * To get a handle on the resultant MathGL script within a graphical
+   * environment an interpreter is needed. A suggestion to start with is
+   * <code>mglview</code>, which is bundled with MathGL. <code>mglview</code>
+   * can interpret and display small-to-medium MathGL scripts in a graphical
+   * window and enables conversion to other formats such as EPS, PNG, JPG,
+   * SVG, as well as view/display animations. Some minor editing, such as
+   * modifying the lighting or alpha channels, can also be done.
+   *
+   * @note Not implemented for the codimension one case.
    */
   template <int dim, int spacedim>
   void
@@ -1182,60 +1280,96 @@ public:
                std::ostream &                      out) const;
 
   /**
-   * 以VTK格式写入三角图。该函数写入一个UNSTRUCTURED_GRID文件，该文件包含以下VTK单元类型。
-   * VTK_HEXAHEDRON, VTK_QUAD, 和 VTK_LINE, 取决于模板尺寸。
-   * 在三个维度中，该函数写入一个文件，其中包括
+   * Write triangulation in VTK format. This function writes a
+   * UNSTRUCTURED_GRID file, that contains the following VTK cell types:
+   * VTK_HEXAHEDRON, VTK_QUAD, and VTK_LINE, depending on the template
+   * dimension.
    *
+   * In three dimensions, this function writes a file that contains
    *
+   * - VTK_HEXAHEDRON cell types, containing the cell information of the
+   *   Triangulation
+   * - VTK_QUAD cell types, containing all boundary faces with non-zero
+   *   boundary ids, and all faces with non-flat manifold ids
+   * - VTK_LINE cell types, containing all boundary edges with non-zero
+   *   boundary ids, and all edges with non-flat manifold ids
    *
+   * In two dimensions:
    *
-   * - VTK_HEXAHEDRON单元格类型，包含三角测量的单元格信息
+   * - VTK_QUAD cell types, containing the cell information of the
+   *   Triangulation
+   * - VTK_LINE cell types, containing all boundary faces with non-zero
+   *   boundary ids, and all faces with non-flat manifold ids
    *
+   * In one dimension
    *
+   * - VTK_LINE cell types, containing the cell information of the
+   *   Triangulation
    *
+   * The output file will contain two CELL_DATA sections, `MaterialID` and
+   * `ManifoldID`, recording for each VTK cell type the material or boundary id,
+   * and the manifold. See the
+   * [VTK file format](http://www.vtk.org/VTK/img/file-formats.pdf)
+   * documentation for an explanation of the generated output.
    *
-   * - VTK_QUAD单元类型，包含所有具有非零边界ID的边界面，以及所有具有非平面流形ID的面
-   *
-   *
-   *
-   *
-   *
-   * - VTK_LINE单元格类型，包含所有边界id为非零的边界边，以及所有边界id为非平坦的流形边 在二维方面。
-   *
-   *
-   *
-   * - VTK_QUAD单元格类型，包含Triangulation的单元格信息
-   *
-   *
-   *
-   *
-   *
-   * - VTK_LINE单元格类型，包含所有具有非零边界ID的边界面，以及所有具有非平面流形ID的面 在一维中
-   *
-   *
-   *
-   * - VTK_LINE单元类型，包含三角测量的单元信息 输出文件将包含两个CELL_DATA部分，`MaterialID`和`ManifoldID`，记录每个VTK单元类型的材料或边界ID，以及流形。请参阅[VTK文件格式](http://www.vtk.org/VTK/img/file-formats.pdf)文件，了解生成输出的解释。    可以使用配套的 GridIn::read_vtk 函数来读取用这种方法生成的VTK文件。
-   *
+   * The companion GridIn::read_vtk function can be used to read VTK files
+   * generated with this method.
    */
   template <int dim, int spacedim>
   void
   write_vtk(const Triangulation<dim, spacedim> &tria, std::ostream &out) const;
 
   /**
-   * 以VTU格式写入三角图。
-   * 由于这个函数将数据写入输出流的方式，产生的输出文件对应于网格的忠实表示，即所有的单元都是可见的，以便进行可视化。一般来说，数据的格式不允许通过GridIn类再次读入这个文件。这是因为网格的每一个顶点都被复制了多次，就像相邻的单元一样。换句话说，每个单元都有自己独立的顶点集合，这些顶点与其他单元的顶点在同一位置，但被单独编号。
-   * 为了创建一个可以用GridIn类读取的文件，必须将标志
-   * GridOutFlags::Vtu::serialize_triangulation
-   * 设置为真。在这种情况下，生成的vtu文件将在xml部分包含三角图，一般的vtu阅读器会忽略它。
+   * Write triangulation in VTU format.
    *
+   * Due to the way this function writes data to the output stream,
+   * the resulting output files correspond to a faithful representation
+   * of the mesh in that all cells are visible for visualization. In general,
+   * the data is not in a format that allows reading this file in again
+   * through the GridIn class. This is because every vertex of the mesh is
+   * duplicated as many times as there are adjacent cells. In other words,
+   * every cell has its own, separate set of vertices that are at the
+   * same location as the vertices of other cells, but are separately
+   * numbered.
+   *
+   * In order to create a file that can be read with the GridIn class,
+   * the flag GridOutFlags::Vtu::serialize_triangulation must be set to true. In
+   * this case, the generated vtu file will contain the triangulation in a xml
+   * section which is ignored by general vtu readers.
    */
   template <int dim, int spacedim>
   void
   write_vtu(const Triangulation<dim, spacedim> &tria, std::ostream &out) const;
 
   /**
-   为每个处理器编写VTU格式的三角图，并为VisIt或Paraview的可视化添加一个.pvtu文件，将VTU文件的集合描述为同一模拟的所有部分。输出的形式是<tt>filename_without_extension.proc000*.vtu</tt>，其中是0,1,...,n_proc-1和<tt>filename_without_extension.pvtu</tt>。输入<tt>view_levels</tt>可以设置为true，以查看多层次方法的每一个层次。输入<tt>include_artificial</tt>可以设置为true，以查看每个处理器的人工单元。每个.vtu和.pvtu文件都会有subdomain、level_subdomain、level和proc_writing等属性。level值可用于将图像分离成多级方法中每一级的网格视图，proc_writing值可用于将图像分离成每个处理器的自有单元和幽灵单元。这是通过对每个值应用paraview中的 "标量翘曲 "过滤器来完成的。在打开输入<tt>view_levels</tt>设置为true的网格的.pvtu文件后，选择 "warp by scalar "过滤器。在 "Scalars "输入中选择<tt>proc_writing</tt>，在 "Normal "输入中输入1 0 0，然后点击应用。接下来再次选择 "标量翘曲 "过滤器。在 "Scalars "输入中选择<tt>level</tt>，在 "Normal "输入中输入0 1 0，然后点击Apply。这将给你提供以下图片。    @image html write_mesh_vtu_levels.png  如果<tt>view_levels</tt>保持为false，从而只给出活动层的网格，就足以将图像分成由不同处理器写入的视图。这在下面的图片中显示，其中<tt>include_artificial</tt>输入被设置为true。    @image html write_mesh_vtu_active.png 注意：根据网格的大小，你可能需要增加 "Scale Factor "的输入，以使每一块不重叠。
-   *
+   * Write triangulation in VTU format for each processor, and add a .pvtu file
+   * for visualization in VisIt or Paraview that describes the collection of VTU
+   * files as all part of the same simulation. The output is in the form
+   * <tt>filename_without_extension.proc000*.vtu</tt> where * is
+   * 0,1,...,n_proc-1 and <tt>filename_without_extension.pvtu</tt>. The input
+   * <tt>view_levels</tt> can be set as true to view each level of a multilevel
+   * method. The input <tt>include_artificial</tt> can be set as true to view
+   * the artificial cells for each processor. Each .vtu and .pvtu file will have
+   * the attributes subdomain, level_subdomain, level, and proc_writing. The
+   * level value can be used to separate the image into the view of the grid on
+   * each level of a multilevel method and the proc_writing value can be used to
+   * separate the image into each processor's owned and ghost cells. This is
+   * accomplished by applying the "warp by scalar" filter in paraview to each of
+   * the values. After opening the .pvtu file of a mesh where the input
+   * <tt>view_levels</tt> is set to true, select the "warp by scalar"
+   * filter. For the "Scalars" input select <tt>proc_writing</tt> and for the
+   * "Normal" input enter in 1 0 0, then click Apply. Next select the "warp by
+   * scalar" filter again. For the "Scalars" input select <tt>level</tt> and for
+   * the "Normal" input enter in 0 1 0, then click Apply. This will give you the
+   * following image.
+   * @image html write_mesh_vtu_levels.png
+   * If the <tt>view_levels</tt> remains at false, thereby only giving the mesh
+   * for the active level, it is enough to separate the image into the views
+   * written by different processors. This is shown in the following image where
+   * the <tt>include_artificial</tt> input is set as true.
+   * @image html write_mesh_vtu_active.png
+   * Note: Depending on the size of the mesh you may need to increase the "Scale
+   * Factor" input so that each piece does not overlap.
    */
   template <int dim, int spacedim>
   void
@@ -1245,9 +1379,8 @@ public:
                                   const bool include_artificial  = false) const;
 
   /**
-   * 根据给定的数据格式，将网格写到 @p out
-   * 。这个函数只是调用相应的<tt>write_*</tt>函数。
-   *
+   * Write grid to @p out according to the given data format. This function
+   * simply calls the appropriate <tt>write_*</tt> function.
    */
   template <int dim, int spacedim>
   void
@@ -1257,8 +1390,7 @@ public:
         const Mapping<dim, spacedim> *      mapping = nullptr) const;
 
   /**
-   * 以ParameterHandler设置的默认格式写入网格。
-   *
+   * Write mesh in default format set by ParameterHandler.
    */
   template <int dim, int spacedim>
   void
@@ -1267,246 +1399,245 @@ public:
         const Mapping<dim, spacedim> *      mapping = nullptr) const;
 
   /**
-   * 设置DX输出的标志
-   *
+   * Set flags for DX output
    */
   void
   set_flags(const GridOutFlags::DX &flags);
 
   /**
-   * 设置%Gmsh输出的标志
-   *
+   * Set flags for %Gmsh output
    */
   void
   set_flags(const GridOutFlags::Msh &flags);
 
   /**
-   * 设置UCD输出的标志
-   *
+   * Set flags for UCD output
    */
   void
   set_flags(const GridOutFlags::Ucd &flags);
 
   /**
-   * 设置GNUPLOT输出的标志
-   *
+   * Set flags for GNUPLOT output
    */
   void
   set_flags(const GridOutFlags::Gnuplot &flags);
 
   /**
-   * 为EPS输出的一维三角图设置标志
-   *
+   * Set flags for EPS output of a one-dimensional triangulation
    */
   void
   set_flags(const GridOutFlags::Eps<1> &flags);
 
   /**
-   * 为EPS输出的二维三角图设置标志
-   *
+   * Set flags for EPS output of a two-dimensional triangulation
    */
   void
   set_flags(const GridOutFlags::Eps<2> &flags);
 
   /**
-   * 为EPS输出的三维三角图设置标志
-   *
+   * Set flags for EPS output of a three-dimensional triangulation
    */
   void
   set_flags(const GridOutFlags::Eps<3> &flags);
 
   /**
-   * 为EPS输出的三维三角图设置标志
-   *
+   * Set flags for EPS output of a three-dimensional triangulation
    */
   void
   set_flags(const GridOutFlags::XFig &flags);
 
   /**
-   * 为SVG输出设置标志
-   *
+   * Set flags for SVG output
    */
   void
   set_flags(const GridOutFlags::Svg &flags);
 
   /**
-   * 设置MathGL输出的标志
-   *
+   * Set flags for MathGL output
    */
   void
   set_flags(const GridOutFlags::MathGL &flags);
 
   /**
-   * 设置VTK输出的标志
-   *
+   * Set flags for VTK output
    */
   void
   set_flags(const GridOutFlags::Vtk &flags);
 
   /**
-   * 设置VTU输出的标志
-   *
+   * Set flags for VTU output
    */
   void
   set_flags(const GridOutFlags::Vtu &flags);
 
   /**
-   * 提供一个函数，可以告诉我们一个给定的输出格式通常有哪个后缀。例如，它定义了以下的映射关系。    <ul>   <li>   @p OpenDX:  <tt>.dx</tt>  <li>   @p gnuplot:  <tt>.gnuplot</tt>  <li>   @p ucd:  <tt>.inp</tt>  <li>   @p eps:  <tt>.eps</tt>。    </ul>  对所有实现的格式都提供了类似的映射。    由于这个函数不需要这个对象的数据，它是静态的，因此可以在不创建这个类的对象的情况下调用。
+   * Provide a function that can tell us which suffix a given output format
+   * usually has. For example, it defines the following mappings:
+   * <ul>
+   * <li> @p OpenDX: <tt>.dx</tt>
+   * <li> @p gnuplot: <tt>.gnuplot</tt>
+   * <li> @p ucd: <tt>.inp</tt>
+   * <li> @p eps: <tt>.eps</tt>.
+   * </ul>
+   * Similar mappings are provided for all implemented formats.
    *
+   * Since this function does not need data from this object, it is static and
+   * can thus be called without creating an object of this class.
    */
   static std::string
   default_suffix(const OutputFormat output_format);
 
   /**
-   * 通过ParameterHandler选择的默认输出格式的默认后缀。
-   *
+   * Default suffix for the default output format selected through
+   * ParameterHandler.
    */
   std::string
   default_suffix() const;
 
   /**
-   * 返回对应于给定字符串的 @p OutputFormat
-   * 值。如果该字符串与任何已知的格式不匹配，就会抛出一个异常。
-   * 由于这个函数不需要这个对象的数据，它是静态的，因此可以在不创建这个类的对象的情况下调用。它的主要目的是允许程序使用任何已实现的输出格式，而不需要在每次实现新格式时扩展程序的分析器。
-   * 要获得目前可用的格式名称的列表，例如，将其交给ParameterHandler类，请使用函数get_output_format_names()。
+   * Return the @p OutputFormat value corresponding to the given string. If
+   * the string does not match any known format, an exception is thrown.
    *
+   * Since this function does not need data from this object, it is static and
+   * can thus be called without creating an object of this class. Its main
+   * purpose is to allow a program to use any implemented output format
+   * without the need to extend the program's parser each time a new format is
+   * implemented.
+   *
+   * To get a list of presently available format names, e.g. to give it to the
+   * ParameterHandler class, use the function get_output_format_names().
    */
   static OutputFormat
   parse_output_format(const std::string &format_name);
 
   /**
-   * 返回一个已实现的输出格式的列表。不同的名称由垂直条形符号（<tt>`|'</tt>）分开，如ParameterHandler类所使用的。
-   *
+   * Return a list of implemented output formats. The different names are
+   * separated by vertical bar signs (<tt>`|'</tt>) as used by the
+   * ParameterHandler classes.
    */
   static std::string
   get_output_format_names();
 
   /**
-   * 在ParameterHandler中声明参数。
-   *
+   * Declare parameters in ParameterHandler.
    */
   static void
   declare_parameters(ParameterHandler &param);
 
   /**
-   * 解析ParameterHandler的参数。
-   *
+   * Parse parameters of ParameterHandler.
    */
   void
   parse_parameters(ParameterHandler &param);
 
   /**
-   * 确定此对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcInvalidState);
 
 private:
   /**
-   * 默认的输出格式，由ParameterHandler设置。
-   *
+   * The default output format, set by a ParameterHandler.
    */
   OutputFormat default_format;
 
   /**
-   * OpenDX输出的标志。
-   *
+   * Flags for OpenDX output.
    */
   GridOutFlags::DX dx_flags;
 
   /**
-   * 用于%Gmsh输出的标志。可以通过使用set_flags(const
-   * GridOutFlags::Msh&)  函数来改变。
-   *
+   * Flags for %Gmsh output. Can be changed by using the set_flags(const
+   * GridOutFlags::Msh&) function.
    */
   GridOutFlags::Msh msh_flags;
 
   /**
-   * 用于UCD输出的标志。可以通过使用set_flags(const
-   * GridOutFlags::Ucd&) 函数来改变。
-   *
+   * Flags for UCD output. Can be changed by using the set_flags(const
+   * GridOutFlags::Ucd&) function.
    */
   GridOutFlags::Ucd ucd_flags;
 
   /**
-   * 输出GNUPLOT数据时使用的标志。可以通过使用set_flags(const
-   * GridOutFlags::Gnuplot&) 函数来改变。
-   *
+   * Flags to be used upon output of GNUPLOT data. Can be changed by using the
+   * set_flags(const GridOutFlags::Gnuplot&) function.
    */
   GridOutFlags::Gnuplot gnuplot_flags;
 
   /**
-   * 在输出一个空间维度的EPS数据时使用的标志。可以通过使用set_flags(const
-   * GridOutFlags::Eps<1>&) 函数来改变。
-   *
+   * Flags to be used upon output of EPS data in one space dimension. Can be
+   * changed by using the set_flags(const GridOutFlags::Eps<1>&) function.
    */
   GridOutFlags::Eps<1> eps_flags_1;
 
   /**
-   * 在两个空间维度上输出EPS数据时使用的标志。可以通过使用
-   * @p set_flags 函数来改变。
-   *
+   * Flags to be used upon output of EPS data in two space dimensions. Can be
+   * changed by using the @p set_flags function.
    */
   GridOutFlags::Eps<2> eps_flags_2;
 
   /**
-   * 在三维空间中输出EPS数据时使用的标志。可以通过使用
-   * @p set_flags 函数来改变。
-   *
+   * Flags to be used upon output of EPS data in three space dimensions. Can
+   * be changed by using the @p set_flags function.
    */
   GridOutFlags::Eps<3> eps_flags_3;
 
   /**
-   * 用于XFig输出的标志。
-   *
+   * Flags used for XFig output.
    */
   GridOutFlags::XFig xfig_flags;
 
   /**
-   * 用于Svg输出的标志。
-   *
+   * Flags used for Svg output.
    */
   GridOutFlags::Svg svg_flags;
 
   /**
-   * 用于MathGL输出的标志。
-   *
+   * Flags for MathGL output.
    */
   GridOutFlags::MathGL mathgl_flags;
 
   /**
-   * 用于VTK输出的标志。
-   *
+   * Flags for VTK output.
    */
   GridOutFlags::Vtk vtk_flags;
 
   /**
-   * 用于VTU输出的标志。
-   *
+   * Flags for VTU output.
    */
   GridOutFlags::Vtu vtu_flags;
 
   /**
-   * 将面的网格信息写到  @p out.
-   * 只有那些在边界上的面和边界指示器不等于0的面才会被打印出来，因为后者是边界面的默认值。
-   * 由于在%Gmsh中，几何元素是连续编号的，这个函数需要一个参数
-   * @p next_element_index
-   * 提供下一个几何元素的编号。这个索引的数值应该比之前用来写入几何元素的索引多一个
-   * @p out.   @returns  下一个不用的几何元素索引。      @warning
-   * @p next_element_index
-   * 应该（至少）比当前已经写入的三角形元素（线、单元、面）的数量多一个
-   * @p out.
-   * %如果有重复的索引，Gmsh将不能正确加载保存的文件。
-   * 不幸的是，这个函数不能包含在常规的 @p
-   * write_msh函数中，因为它需要对<tt>dim==1</tt>的情况进行特殊处理，在这种情况下，面迭代器是<tt>void*</tt>的，缺乏被调用的成员函数。我们实际上不会调用这些函数，但编译器在编译<tt>dim==1</tt>的函数时还是会抱怨。运气不好。
+   * Write the grid information about faces to @p out. Only those faces are
+   * printed which are on the boundary and which have a boundary indicator not
+   * equal to zero, since the latter is the default for boundary faces.
    *
+   * Since, in %Gmsh, geometric elements are continuously numbered, this
+   * function requires a parameter @p next_element_index providing the next
+   * geometric element number. This index should have a numerical value equal
+   * to one more than the index previously used to write a geometric element
+   * to @p out.
+   *
+   * @returns The next unused geometric element index.
+   *
+   * @warning @p next_element_index should be (at least) one larger than the
+   * current number of triangulation elements (lines, cells, faces) that have
+   * been written to @p out. %Gmsh will not load the saved file correctly if
+   * there are repeated indices.
+   *
+   * This function unfortunately can not be included in the regular @p
+   * write_msh function, since it needs special treatment for the case
+   * <tt>dim==1</tt>, in which case the face iterators are <tt>void*</tt>'s
+   * and lack the member functions which are called. We would not actually
+   * call these functions, but the compiler would complain anyway when
+   * compiling the function for <tt>dim==1</tt>. Bad luck.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -1515,16 +1646,15 @@ private:
                   std::ostream &                      out) const;
 
   /**
-   * 声明上述函数对1d的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d. Does nothing.
    */
   unsigned int
   write_msh_faces(const Triangulation<1, 1> &tria,
                   const unsigned int         next_element_index,
                   std::ostream &             out) const;
   /**
-   * 声明上述函数对1d, 2sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d, 2sd. Does
+   * nothing.
    */
   unsigned int
   write_msh_faces(const Triangulation<1, 2> &tria,
@@ -1538,19 +1668,29 @@ private:
 
 
   /**
-   * 将线的网格信息写到 @p out.
-   * 中，只打印那些在边界上的线和边界指示器不等于0的线，因为后者是边界面的默认值。
-   * 由于在%Gmsh中，几何元素是连续编号的，这个函数需要一个参数
-   * @p next_element_index
-   * 提供下一个几何元素编号。这个索引的数值应该比之前用来写入几何元素的索引多一个
-   * @p out.   @returns  下一个未使用的几何元素索引。
-   * @warning   @p next_element_index
-   * 应该（至少）比当前已经写入的三角形元素（线、单元、面）的数量多一个
-   * @p out.
-   * %如果有重复的索引，Gmsh将不能正确加载保存的文件。
-   * 不幸的是，这个函数不能包含在常规的 @p
-   * write_msh函数中，因为它需要对<tt>dim==1</tt>和<tt>dim==2</tt>的情况进行特殊处理，在这种情况下，边缘迭代器是<tt>void*</tt>的，缺乏被调用的成员函数。我们实际上不会调用这些函数，但编译器在编译<tt>dim==1/2</tt>的函数时还是会抱怨。运气不好。
+   * Write the grid information about lines to @p out. Only those lines are
+   * printed which are on the boundary and which have a boundary indicator not
+   * equal to zero, since the latter is the default for boundary faces.
    *
+   * Since, in %Gmsh, geometric elements are continuously numbered, this
+   * function requires a parameter @p next_element_index providing the next
+   * geometric element number. This index should have a numerical value equal
+   * to one more than the index previously used to write a geometric element
+   * to @p out.
+   *
+   * @returns The next unused geometric element index.
+   *
+   * @warning @p next_element_index should be (at least) one larger than the
+   * current number of triangulation elements (lines, cells, faces) that have
+   * been written to @p out. %Gmsh will not load the saved file correctly if
+   * there are repeated indices.
+   *
+   * This function unfortunately can not be included in the regular @p
+   * write_msh function, since it needs special treatment for the case
+   * <tt>dim==1</tt> and <tt>dim==2</tt>, in which case the edge iterators are
+   * <tt>void*</tt>'s and lack the member functions which are called. We would
+   * not actually call these functions, but the compiler would complain anyway
+   * when compiling the function for <tt>dim==1/2</tt>. Bad luck.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -1559,8 +1699,7 @@ private:
                   std::ostream &                      out) const;
 
   /**
-   * 声明上述函数对1d的特殊化。什么也没做。
-   *
+   * Declaration of the specialization of above function for 1d. Does nothing.
    */
   unsigned int
   write_msh_lines(const Triangulation<1, 1> &tria,
@@ -1568,8 +1707,8 @@ private:
                   std::ostream &             out) const;
 
   /**
-   * 声明上述函数对1d, 2sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d, 2sd. Does
+   * nothing.
    */
   unsigned int
   write_msh_lines(const Triangulation<1, 2> &tria,
@@ -1577,24 +1716,23 @@ private:
                   std::ostream &             out) const;
 
   /**
-   * 声明上述函数对1d, 3sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d, 3sd. Does
+   * nothing.
    */
   unsigned int
   write_msh_lines(const Triangulation<1, 3> &tria,
                   const unsigned int         next_element_index,
                   std::ostream &             out) const;
   /**
-   * 声明上述函数对2d的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 2d. Does nothing.
    */
   unsigned int
   write_msh_lines(const Triangulation<2, 2> &tria,
                   const unsigned int         next_element_index,
                   std::ostream &             out) const;
   /**
-   * 声明上述函数对2d, 3sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 2d, 3sd. Does
+   * nothing.
    */
   unsigned int
   write_msh_lines(const Triangulation<2, 3> &tria,
@@ -1602,19 +1740,29 @@ private:
                   std::ostream &             out) const;
 
   /**
-   * 将面的网格信息写到 @p out.
-   * 中，只打印那些在边界上的面和边界指示符不等于0的面，因为后者是边界面的默认值。
-   * 由于（在UCD格式中）几何元素是连续编号的，这个函数需要一个参数
-   * @p next_element_index
-   * 提供下一个几何元素的编号。这个索引的数值应该比之前用来写几何元素的索引多一个，以
-   * @p out.   @returns  下一个未使用的几何元素索引。
-   * @warning   @p next_element_index
-   * 应该（至少）比当前已经写入的三角测量元素（线、单元、面）的数量多一个
-   * @p out.
-   * 如果有重复的索引，可视化程序可能无法正确加载保存的文件。
-   * 不幸的是，这个函数不能包含在常规的 @p
-   * write_ucd函数中，因为它需要对<tt>dim==1</tt>的情况进行特殊处理，在这种情况下，面迭代器是<tt>void*</tt>的，缺乏被调用的成员函数。我们实际上不会调用这些函数，但编译器在编译<tt>dim==1</tt>的函数时还是会抱怨。运气不好。
+   * Write the grid information about faces to @p out. Only those faces are
+   * printed which are on the boundary and which have a boundary indicator not
+   * equal to zero, since the latter is the default for boundary faces.
    *
+   * Since (in the UCD format) geometric elements are continuously numbered,
+   * this function requires a parameter @p next_element_index providing the
+   * next geometric element number. This index should have a numerical value
+   * equal to one more than the index previously used to write a geometric
+   * element to @p out.
+   *
+   * @returns The next unused geometric element index.
+   *
+   * @warning @p next_element_index should be (at least) one larger than the
+   * current number of triangulation elements (lines, cells, faces) that have
+   * been written to @p out. Visualization programs may not load the saved
+   * file correctly if there are repeated indices.
+   *
+   * This function unfortunately can not be included in the regular @p
+   * write_ucd function, since it needs special treatment for the case
+   * <tt>dim==1</tt>, in which case the face iterators are <tt>void*</tt>'s
+   * and lack the member functions which are called. We would not actually
+   * call these functions, but the compiler would complain anyway when
+   * compiling the function for <tt>dim==1</tt>. Bad luck.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -1623,8 +1771,7 @@ private:
                   std::ostream &                      out) const;
 
   /**
-   * 声明上述函数对1d的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d. Does nothing.
    */
   unsigned int
   write_ucd_faces(const Triangulation<1, 1> &tria,
@@ -1632,8 +1779,8 @@ private:
                   std::ostream &             out) const;
 
   /**
-   * 声明上述函数对1d, 2sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d, 2sd. Does
+   * nothing.
    */
   unsigned int
   write_ucd_faces(const Triangulation<1, 2> &tria,
@@ -1646,19 +1793,29 @@ private:
 
 
   /**
-   * 将线的网格信息写到 @p out.
-   * 中，只打印那些在边界上的线和边界指示符不等于0的线，因为后者是边界线的默认值。
-   * 由于（在UCD格式中）几何元素是连续编号的，这个函数需要一个参数
-   * @p next_element_index
-   * 提供下一个几何元素的编号。这个索引的数值应该比之前用来写几何元素的索引多一个，以
-   * @p out.   @returns  下一个未使用的几何元素索引。
-   * @warning   @p next_element_index
-   * 应该（至少）比当前已经写入的三角测量元素（线、单元、面）的数量多一个
-   * @p out.
-   * 如果有重复的索引，可视化程序可能无法正确加载保存的文件。
-   * 不幸的是，这个函数不能包含在常规的 @p
-   * write_ucd函数中，因为它需要对<tt>dim==1/2</tt>的情况进行特殊处理，在这种情况下，边缘迭代器是<tt>void*</tt>的，缺乏被调用的成员函数。我们实际上不会调用这些函数，但编译器在编译<tt>dim==1/2</tt>的函数时还是会抱怨。运气不好。
+   * Write the grid information about lines to @p out. Only those lines are
+   * printed which are on the boundary and which have a boundary indicator not
+   * equal to zero, since the latter is the default for boundary lines.
    *
+   * Since (in the UCD format) geometric elements are continuously numbered,
+   * this function requires a parameter @p next_element_index providing the
+   * next geometric element number. This index should have a numerical value
+   * equal to one more than the index previously used to write a geometric
+   * element to @p out.
+   *
+   * @returns The next unused geometric element index.
+   *
+   * @warning @p next_element_index should be (at least) one larger than the
+   * current number of triangulation elements (lines, cells, faces) that have
+   * been written to @p out. Visualization programs may not load the saved
+   * file correctly if there are repeated indices.
+   *
+   * This function unfortunately can not be included in the regular @p
+   * write_ucd function, since it needs special treatment for the case
+   * <tt>dim==1/2</tt>, in which case the edge iterators are <tt>void*</tt>'s
+   * and lack the member functions which are called. We would not actually
+   * call these functions, but the compiler would complain anyway when
+   * compiling the function for <tt>dim==1/2</tt>. Bad luck.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -1667,24 +1824,23 @@ private:
                   std::ostream &                      out) const;
 
   /**
-   * 声明上述函数对1d的特殊化。什么也没做。
-   *
+   * Declaration of the specialization of above function for 1d. Does nothing.
    */
   unsigned int
   write_ucd_lines(const Triangulation<1, 1> &tria,
                   const unsigned int         next_element_index,
                   std::ostream &             out) const;
   /**
-   * 声明上述函数对1d, 2sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d, 2sd. Does
+   * nothing.
    */
   unsigned int
   write_ucd_lines(const Triangulation<1, 2> &tria,
                   const unsigned int         next_element_index,
                   std::ostream &             out) const;
   /**
-   * 声明上述函数对1d, 3sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 1d, 3sd. Does
+   * nothing.
    */
   unsigned int
   write_ucd_lines(const Triangulation<1, 3> &tria,
@@ -1693,16 +1849,15 @@ private:
 
 
   /**
-   * 声明上述函数对2d的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 2d. Does nothing.
    */
   unsigned int
   write_ucd_lines(const Triangulation<2, 2> &tria,
                   const unsigned int         next_element_index,
                   std::ostream &             out) const;
   /**
-   * 声明上述函数对2d, 3sd的特殊化。什么也不做。
-   *
+   * Declaration of the specialization of above function for 2d, 3sd. Does
+   * nothing.
    */
   unsigned int
   write_ucd_lines(const Triangulation<2, 3> &tria,
@@ -1711,80 +1866,88 @@ private:
 
 
   /**
-   * 返回三角形中边界指标不等于0的面的数量。只有这些面在<tt>write_*</tt>函数中被明确打印出来；所有指标为
-   * numbers::internal_face_boundary_id
-   * 的面是内部面，指标为零的边界面被认为是默认的。
-   * 这个函数在一个维度上总是返回一个空列表。
-   * 这个函数的原因与write_ucd_faces()的原因相同。更多信息见那里。
+   * Return the number of faces in the triangulation which have a boundary
+   * indicator not equal to zero. Only these faces are explicitly printed in
+   * the <tt>write_*</tt> functions; all faces with indicator
+   * numbers::internal_face_boundary_id are interior ones and an indicator
+   * with value zero for faces at the boundary  are considered default.
    *
+   * This function always returns an empty list in one dimension.
+   *
+   * The reason for this function is the same as for write_ucd_faces(). See
+   * there for more information.
    */
   template <int dim, int spacedim>
   unsigned int
   n_boundary_faces(const Triangulation<dim, spacedim> &tria) const;
 
   /**
-   * 声明上述函数对1d的特殊化。简单地返回0。
-   *
+   * Declaration of the specialization of above function for 1d. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_faces(const Triangulation<1, 1> &tria) const;
 
   /**
-   * 声明上述函数对1d, 2sd的特殊化。只需返回0。
-   *
+   * Declaration of the specialization of above function for 1d, 2sd. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_faces(const Triangulation<1, 2> &tria) const;
 
   /**
-   * 声明上述函数对1d, 3sd的特殊化。只需返回0。
-   *
+   * Declaration of the specialization of above function for 1d, 3sd. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_faces(const Triangulation<1, 3> &tria) const;
 
   /**
-   * 返回三角形中边界指标不等于0的线的数量。只有这些线在<tt>write_*</tt>函数中被明确打印出来；所有指标为
-   * numbers::internal_face_boundary_id
-   * 的线都是内部线，边界上的面的指标值为0，被视为默认。
-   * 这个函数在一维和二维中总是返回一个空列表。
-   * 这个函数的原因与write_ucd_faces()的原因相同。更多信息见那里。
+   * Return the number of lines in the triangulation which have a boundary
+   * indicator not equal to zero. Only these lines are explicitly printed in
+   * the <tt>write_*</tt> functions; all lines with indicator
+   * numbers::internal_face_boundary_id are interior ones and an indicator
+   * with value zero for faces at the boundary are considered default.
    *
+   * This function always returns an empty list in one and two dimensions.
+   *
+   * The reason for this function is the same as for write_ucd_faces(). See
+   * there for more information.
    */
   template <int dim, int spacedim>
   unsigned int
   n_boundary_lines(const Triangulation<dim, spacedim> &tria) const;
 
   /**
-   * 声明上述函数对1d的特殊化。简单地返回0。
-   *
+   * Declaration of the specialization of above function for 1d. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_lines(const Triangulation<1, 1> &tria) const;
 
   /**
-   * 声明上述函数对1d, 2sd的特殊化。只需返回0。
-   *
+   * Declaration of the specialization of above function for 1d, 2sd. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_lines(const Triangulation<1, 2> &tria) const;
 
   /**
-   * 声明上述函数对1d, 3sd的特殊化。只需返回0。
-   *
+   * Declaration of the specialization of above function for 1d, 3sd. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_lines(const Triangulation<1, 3> &tria) const;
 
   /**
-   * 声明上述函数对2d的特殊化。简单地返回0。
-   *
+   * Declaration of the specialization of above function for 2d. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_lines(const Triangulation<2, 2> &tria) const;
   /**
-   * 声明上述函数对2d, 3sd的特殊化。只需返回0。
-   *
+   * Declaration of the specialization of above function for 2d, 3sd. Simply
+   * returns zero.
    */
   unsigned int
   n_boundary_lines(const Triangulation<2, 3> &tria) const;
@@ -1795,5 +1958,3 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

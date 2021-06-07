@@ -1,3 +1,4 @@
+//include/deal.II-translator/algorithms/any_data_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2018 by the deal.II authors
@@ -30,9 +31,11 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Store any amount of any type of data accessible by an identifier string.
+ * 存储任何数量的由标识符字符串访问的任何类型的数据。
+ * @todo
+ * GK：废除了通过索引访问AnyData的做法，改为使用地图。
  *
- * @todo GK: Deprecate access to AnyData by index and change to a map.
+ *
  */
 class AnyData : public Subscriptor
 {
@@ -51,17 +54,15 @@ public:
 
   /**
    * @brief Merge the data of another AnyData to the end of this object.
+   *
    */
   void
   merge(const AnyData &other);
 
   /**
    * @brief Access to stored data object by name.
+   * 找到具有给定名称的对象，尝试将其转换为<tt>type</tt>并返回。如果名字不存在或者转换失败，这个函数会抛出一个异常。如果不希望出现这样的异常，请使用try_read()代替。
    *
-   * Find the object with given name, try to convert it to <tt>type</tt> and
-   * return it. This function throws an exception if either the name does not
-   * exist or if the conversion fails. If such an exception is not desired,
-   * use try_read() instead.
    */
   template <typename type>
   type
@@ -69,11 +70,8 @@ public:
 
   /**
    * @brief Read-only access to stored data object by name.
+   * 找到具有给定名称的对象，尝试将其转换为<tt>type</tt>并返回。如果名字不存在或者转换失败，这个函数会抛出一个异常。如果不希望出现这样的异常，请使用try_read()代替。
    *
-   * Find the object with given name, try to convert it to <tt>type</tt> and
-   * return it. This function throws an exception if either the name does not
-   * exist or if the conversion fails. If such an exception is not desired,
-   * use try_read() instead.
    */
   template <typename type>
   const type
@@ -81,14 +79,12 @@ public:
 
   /**
    * @brief Dedicated read only access by name.
+   * 对于一个常量对象，这个函数等于
+   * entry()。对于一个非常量对象，它强制对数据进行只读访问。特别是，如果没有找到该对象或无法转换类型，它会抛出一个异常。
+   * 如果不希望出现这样的异常，请使用try_read()代替。
+   * @warning  不要对作为指针的存储对象使用这个函数。
+   * 使用read_ptr()代替!
    *
-   * For a constant object, this function equals entry(). For a non-const
-   * object, it forces read only access to the data. In particular, it throws
-   * an exception if the object is not found or cannot be converted to type.
-   * If such an exception is not desired, use try_read() instead.
-   *
-   * @warning Do not use this function for stored objects which are pointers.
-   * Use read_ptr() instead!
    */
   template <typename type>
   const type
@@ -96,20 +92,18 @@ public:
 
   /**
    * @brief Dedicated read only access by name for pointer data.
+   * 如果存储的数据对象是一个指向常量对象的指针，访问的逻辑就变得相当复杂。也就是说，标准的读取函数可能会失败，这取决于它是一个常量指针还是一个普通指针。
+   * 这个函数修复了这个逻辑，并确定该对象不会因为意外而变得可变。
    *
-   * If the stored data object is a pointer to a constant object, the logic of
-   * access becomes fairly complicated. Namely, the standard read function may
-   * fail, depending on whether it was a const pointer or a regular pointer.
-   * This function fixes the logic and ascertains that the object does not
-   * become mutable by accident.
    */
   template <typename type>
   const type *
   read_ptr(const std::string &name) const;
 
   /**
-   * Perform the same action as read_ptr(), but do not throw an exception if
-   * the pointer does not exist. Return a null pointer instead.
+   * 执行与 read_ptr()
+   * 相同的操作，但如果指针不存在，则不抛出异常。而是返回一个空指针。
+   *
    */
   template <typename type>
   const type *
@@ -117,17 +111,16 @@ public:
 
   /**
    * @brief Dedicated read only access by name without exceptions.
+   * 这个函数试图在列表中找到名字并返回一个指向相关对象的指针。如果没有找到名字或者对象不能被转换为返回类型，则返回一个空指针。
    *
-   * This function tries to find the name in the list and return a pointer to
-   * the associated object. If either the name is not found or the object
-   * cannot be converted to the return type, a null pointer is returned.
    */
   template <typename type>
   const type *
   try_read(const std::string &name) const;
 
   /**
-   * Access to stored data object by index.
+   * 通过索引访问存储的数据对象。
+   *
    */
   template <typename type>
   type
@@ -164,18 +157,17 @@ public:
 
   /**
    * @brief Find index of a named object
+   * 尝试找到该对象并返回其在列表中的索引。如果没有找到该对象，则抛出一个异常。
    *
-   * Try to find the object and return its index in the list. Throw an
-   * exception if the object has not been found.
    */
   unsigned int
   find(const std::string &name) const;
 
   /**
    * @brief Try to find index of a named object
+   * 试图找到该对象并返回其在列表中的索引。如果没有找到名称，则返回
+   * numbers::invalid_unsigned_int 。
    *
-   * Try to find the object and return its index in the list. returns
-   * numbers::invalid_unsigned_int if the name was not found.
    */
   unsigned int
   try_find(const std::string &name) const;
@@ -203,8 +195,8 @@ public:
                  << arg2 << " must coincide.");
 
   /**
-   * Exception indicating that a function expected a vector to have a certain
-   * name, but we store a different name in that position.
+   * 异常，表明一个函数期望一个向量有一个特定的名字，但我们在该位置存储了一个不同的名字。
+   *
    */
   DeclException2(ExcNameMismatch,
                  int,
@@ -466,3 +458,5 @@ AnyData::list(StreamType &os) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

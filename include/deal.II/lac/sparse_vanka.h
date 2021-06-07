@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/sparse_vanka_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -44,77 +43,118 @@ template <typename number>
 class SparseBlockVanka;
 #endif
 
-/*!   @addtogroup  先决条件  @{  。
-
- 
-* */
+/*! @addtogroup Preconditioners
+ *@{
+ */
 
 /**
- * 点对点的Vanka预处理。该类在一个点-明智的基础上进行Vanka预处理。Vanka预处理用于鞍点问题，如Stokes问题或优化中出现的拉格朗日乘数和牛顿方法矩阵有一个零块的问题。对于这些矩阵，应用Jacobi或Gauss-Seidel方法是不可能的，因为在拉格朗日乘子的行中，一些对角线元素是零。Vanka的方法是为每个朗格朗日乘数变量解决一个小的（通常是不确定的）方程组（我们也将把斯托克斯方程中的压力称为朗格朗日乘数，因为它可以被解释为朗格朗日乘数）。
- * 这个类的对象是通过传递拉格朗日乘子的自由度指数的向量来构造的。在实际的预处理方法中，这些行是按照在矩阵中出现的顺序来遍历的。由于这是一个类似于Gauß-Seidel的程序，记得事先要有一个好的排序（对于传输主导的问题，如果选择流入边界上的点作为重新编号的起点，Cuthill-McKee算法是一个很好的手段）。
- * 对于每个选定的自由度，一个局部方程组由自由度本身和所有其他数值立即耦合建立，即自由度
- * @p i 的局部方程组考虑的自由度集合是 @p i 本身和所有 @p
- * j
- * ，使元素<tt>（i,j）</tt>是考虑中的稀疏矩阵的非零条目。元素<tt>(j,i)</tt>不被考虑。我们现在从刚才描述的自由度集合中的行和列中挑选出所有的矩阵条目，并将其放入一个局部矩阵中，随后将其反转。这个系统对于每个自由度可能有不同的大小，例如取决于计算网格上各个节点的局部邻域。
- * 右手边是以同样的方式建立的，即通过复制所有与目前考虑的那个耦合的条目，但它被所有与上述集合的自由度耦合的自由度所增强（即与目前那个耦合的二阶DoFs）。其原因是，要解决的局部问题在二阶耦合的自由度上有迪里希特边界条件，所以我们必须考虑到它们，但在实际求解前要消除它们；这种消除是通过修改右手边来完成的，最终这些自由度不再出现在矩阵和解矢量中。
- * 这个局部系统被解决了，其值被更新到目标向量中。
- * 备注：凡卡方法是一种非对称性的预处理方法。
+ * Point-wise Vanka preconditioning. This class does Vanka preconditioning  on
+ * a point-wise base. Vanka preconditioners are used for saddle point problems
+ * like Stokes' problem or problems arising in optimization where Lagrange
+ * multipliers occur and the Newton method matrix has a zero block. With these
+ * matrices the application of Jacobi or Gauss-Seidel methods is impossible,
+ * because some diagonal elements are zero in the rows of the Lagrange
+ * multiplier. The approach of Vanka is to solve a small (usually indefinite)
+ * system of equations for each Langrange multiplier variable (we will also
+ * call the pressure in Stokes' equation a Langrange multiplier since it can
+ * be interpreted as such).
  *
- *  <h3>Example of Use</h3>
- * 这个小例子取自一个做参数优化的程序。拉格朗日乘数是所使用的有限元的第三部分。该系统用GMRES方法求解。
+ * Objects of this class are constructed by passing a vector of indices of the
+ * degrees of freedom of the Lagrange multiplier. In the actual
+ * preconditioning method, these rows are traversed in the order in which the
+ * appear in the matrix. Since this is a Gauß-Seidel like procedure, remember
+ * to have a good ordering in advance (for transport dominated problems,
+ * Cuthill-McKee algorithms are a good means for this, if points on the inflow
+ * boundary are chosen as starting points for the renumbering).
  *
+ * For each selected degree of freedom, a local system of equations is built
+ * by the degree of freedom itself and all other values coupling immediately,
+ * i.e. the set of degrees of freedom considered for the local system of
+ * equations for degree of freedom @p i is @p i itself and all @p j such that
+ * the element <tt>(i,j)</tt> is a nonzero entry in the sparse matrix under
+ * consideration. The elements <tt>(j,i)</tt> are not considered. We now pick
+ * all matrix entries from rows and columns out of the set of degrees of
+ * freedom just described out of the global matrix and put it into a local
+ * matrix, which is subsequently inverted. This system may be of different
+ * size for each degree of freedom, depending for example on the local
+ * neighborhood of the respective node on a computational grid.
+ *
+ * The right hand side is built up in the same way, i.e. by copying all
+ * entries that coupled with the one under present consideration, but it is
+ * augmented by all degrees of freedom coupling with the degrees from the set
+ * described above (i.e. the DoFs coupling second order to the present one).
+ * The reason for this is, that the local problems to be solved shall have
+ * Dirichlet boundary conditions on the second order coupling DoFs, so we have
+ * to take them into account but eliminate them before actually solving; this
+ * elimination is done by the modification of the right hand side, and in the
+ * end these degrees of freedom do not occur in the matrix and solution vector
+ * any more at all.
+ *
+ * This local system is solved and the values are updated into the destination
+ * vector.
+ *
+ * Remark: the Vanka method is a non-symmetric preconditioning method.
+ *
+ *
+ * <h3>Example of Use</h3> This little example is taken from a program doing
+ * parameter optimization. The Lagrange multiplier is the third component of
+ * the finite element used. The system is solved by the GMRES method.
  * @code
- *  // tag the Lagrange multiplier variable
- *  vector<bool> signature(3);
- *  signature[0] = signature[1] = false;
- *  signature[2] = true;
+ *    // tag the Lagrange multiplier variable
+ *    vector<bool> signature(3);
+ *    signature[0] = signature[1] = false;
+ *    signature[2] = true;
  *
- *  // tag all dofs belonging to the Lagrange multiplier
- *  vector<bool> selected_dofs (dof.n_dofs(), false);
- *  DoFTools::extract_dofs(dof, signature, p_select);
- *  // create the Vanka object
- *  SparseVanka<double> vanka (global_matrix, selected_dofs);
+ *    // tag all dofs belonging to the Lagrange multiplier
+ *    vector<bool> selected_dofs (dof.n_dofs(), false);
+ *    DoFTools::extract_dofs(dof, signature, p_select);
+ *    // create the Vanka object
+ *    SparseVanka<double> vanka (global_matrix, selected_dofs);
  *
- *  // create the solver
- *  SolverGMRES<> gmres(control,memory,504);
+ *    // create the solver
+ *    SolverGMRES<> gmres(control,memory,504);
  *
- *  // solve
- *  gmres.solve (global_matrix, solution, right_hand_side,
- *               vanka);
+ *    // solve
+ *    gmres.solve (global_matrix, solution, right_hand_side,
+ *                 vanka);
  * @endcode
  *
- *  <h4>Implementor's remark</h4>
- * 目前，局部矩阵是这样建立的：与局部拉格朗日乘数相关的自由度是第一个。因此，通常局部矩阵的左上角条目是零。我（W.B.）不清楚这是否会给局部矩阵的反演带来一些问题。也许有人会想检查一下这个问题。
  *
+ * <h4>Implementor's remark</h4> At present, the local matrices are built up
+ * such that the degree of freedom associated with the local Lagrange
+ * multiplier is the first one. Thus, usually the upper left entry in the
+ * local matrix is zero. It is not clear to me (W.B.) whether this might pose
+ * some problems in the inversion of the local matrices. Maybe someone would
+ * like to check this.
  *
- * @note
- * 这个模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
- * 其他可以在应用程序中生成（见手册中的 @ref Instantiations
- * 部分）。
- *
- *
+ * @note Instantiations for this template are provided for <tt>@<float@> and
+ * @<double@></tt>; others can be generated in application programs (see the
+ * section on
+ * @ref Instantiations
+ * in the manual).
  */
 template <typename number>
 class SparseVanka
 {
 public:
   /**
-   * 声明容器大小的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 构造函数。什么都不做。
-   * 在使用此对象作为预处理（vmult()）之前，调用initialize()函数。
+   * Constructor. Does nothing.
    *
+   * Call the initialize() function before using this object as preconditioner
+   * (vmult()).
    */
   SparseVanka();
 
   /**
-   * 构造函数也需要两个被废弃的输入。      @deprecated
-   * 最后两个参数的使用已被废弃。它们目前被忽略。
+   * Constructor which also takes two deprecated inputs.
    *
+   * @deprecated The use of the last two parameters is deprecated. They are
+   * currently ignored.
    */
   DEAL_II_DEPRECATED
   SparseVanka(const SparseMatrix<number> &M,
@@ -123,40 +163,40 @@ public:
               const unsigned int n_threads = MultithreadInfo::n_threads());
 
   /**
-   * 构造函数。获取用于预处理的矩阵和一个比特向量，其条目
-   * @p true
-   * 为所有要更新的行。对这个向量的引用将被存储，所以它必须比Vanka对象的持续时间长。矩阵的情况也是如此。
-   * 这里传递的矩阵 @p M
-   * 可能是也可能不是这个对象应作为预处理程序的同一矩阵。特别是，可以想象预处理器只为一个矩阵建立一次，但也用于非线性过程的后续步骤，其中矩阵在每一步中都会有轻微变化。
+   * Constructor. Gets the matrix for preconditioning and a bit vector with
+   * entries @p true for all rows to be updated. A reference to this vector
+   * will be stored, so it must persist longer than the Vanka object. The same
+   * is true for the matrix.
    *
+   * The matrix @p M which is passed here may or may not be the same matrix
+   * for which this object shall act as preconditioner. In particular, it is
+   * conceivable that the preconditioner is build up for one matrix once, but
+   * is used for subsequent steps in a nonlinear process as well, where the
+   * matrix changes in each step slightly.
    */
   SparseVanka(const SparseMatrix<number> &M, const std::vector<bool> &selected);
 
   /**
-   * 解构器。删除所有分配的矩阵。
-   *
+   * Destructor. Delete all allocated matrices.
    */
   ~SparseVanka();
 
   /**
-   * SparseVanka的参数。
-   *
+   * Parameters for SparseVanka.
    */
   class AdditionalData
   {
   public:
     /**
-     * 构造函数。关于参数的描述，见下文。
-     *
+     * Constructor. For the parameters' description, see below.
      */
     explicit AdditionalData(const std::vector<bool> &selected);
 
     /**
-     * 构造函数。关于参数的描述，请见下文。
-     * @deprecated  该构造函数的使用已被废弃。
+     * Constructor. For the parameters' description, see below.
      *
-     * - 第二个和第三个参数被忽略。
-     *
+     * @deprecated The use of this constructor is deprecated - the second and
+     * third parameters are ignored.
      */
     DEAL_II_DEPRECATED
     AdditionalData(const std::vector<bool> &selected,
@@ -164,75 +204,83 @@ public:
                    const unsigned int n_threads = MultithreadInfo::n_threads());
 
     /**
-     * 我们要处理的那些自由度的索引。
-     *
+     * Indices of those degrees of freedom that we shall work on.
      */
     const std::vector<bool> &selected;
   };
 
 
   /**
-   * 如果使用默认的构造函数，那么这个函数需要在这个类的对象被用作预处理之前被调用。
-   * 关于可能的参数的更多细节，请参阅类的文档和
-   * SparseVanka::AdditionalData 类的文档。
-   * 这个函数被调用后，预处理程序就可以被使用了（使用派生类的
-   * <code>vmult</code> 函数）。
+   * If the default constructor is used then this function needs to be called
+   * before an object of this class is used as preconditioner.
    *
+   * For more detail about possible parameters, see the class documentation
+   * and the documentation of the SparseVanka::AdditionalData class.
+   *
+   * After this function is called the preconditioner is ready to be used
+   * (using the <code>vmult</code> function of derived classes).
    */
   void
   initialize(const SparseMatrix<number> &M,
              const AdditionalData &      additional_data);
 
   /**
-   * 做预处理。这个函数接收 @p src 中的残差并返回 @p dst.
-   * 中的结果更新向量。
-   *
+   * Do the preconditioning. This function takes the residual in @p src and
+   * returns the resulting update vector in @p dst.
    */
   template <typename number2>
   void
   vmult(Vector<number2> &dst, const Vector<number2> &src) const;
 
   /**
-   * 应用转置预处理。这个函数接收 @p 中的残差，并返回 @p
-   * dst. 中的结果更新向量。
-   *
+   * Apply transpose preconditioner. This function takes the residual in @p
+   * src  and returns the resulting update vector in @p dst.
    */
   template <typename number2>
   void
   Tvmult(Vector<number2> &dst, const Vector<number2> &src) const;
 
   /**
-   * 返回共域（或范围）空间的维度。注意，矩阵的维度是
-   * $m \times n$  .
-   * @note
-   * 只有在预处理程序已经被初始化的情况下才可以调用这个函数。
+   * Return the dimension of the codomain (or range) space. Note that the
+   * matrix is of dimension $m \times n$.
    *
+   * @note This function should only be called if the preconditioner has been
+   * initialized.
    */
   size_type
   m() const;
 
   /**
-   * 返回域空间的维数。请注意，矩阵的维度是 $m \times n$
-   * 。
-   * @note
-   * 只有在预处理程序被初始化的情况下才可以调用这个函数。
+   * Return the dimension of the domain space. Note that the matrix is of
+   * dimension $m \times n$.
    *
+   * @note This function should only be called if the preconditioner has been
+   * initialized.
    */
   size_type
   n() const;
 
 protected:
   /**
-   * 将那些在 @p dof_mask, 中具有 @p true
-   * 值的自由度所对应的倒数应用于 @p src
-   * 向量，并将结果移入 @p dst.
-   * 实际上，只有允许指数的值被写入 @p
-   * ]dst，所以如果给定的掩码将所有的值设置为0，那么这个函数的应用只做一般文档中所宣布的事情。提供掩码的原因是，在派生类中，我们可能只想将预处理程序应用于矩阵的一部分，以便将应用并行化。那么，为了消除线程之间的相互依赖，只写到
-   * @p dst, 的一些片断是很重要的。
-   * 如果传递一个空指针而不是指向 @p dof_mask
-   * 的指针（如默认值），那么就假定我们将在所有自由度上工作。这相当于用<tt>向量<bool>(n_dofs,true)</tt>来调用该函数。
-   * 这个类的 @p vmult 当然是用一个空指针来调用这个函数。
+   * Apply the inverses corresponding to those degrees of freedom that have a
+   * @p true value in @p dof_mask, to the @p src vector and move the result
+   * into @p dst. Actually, only values for allowed indices are written to @p
+   * dst, so the application of this function only does what is announced in
+   * the general documentation if the given mask sets all values to zero
    *
+   * The reason for providing the mask anyway is that in derived classes we
+   * may want to apply the preconditioner to parts of the matrix only, in
+   * order to parallelize the application. Then, it is important to only write
+   * to some slices of @p dst, in order to eliminate the dependencies of
+   * threads of each other.
+   *
+   * If a null pointer is passed instead of a pointer to the @p dof_mask (as
+   * is the default value), then it is assumed that we shall work on all
+   * degrees of freedom. This is then equivalent to calling the function with
+   * a <tt>vector<bool>(n_dofs,true)</tt>.
+   *
+   * The @p vmult of this class of course calls this function with a null
+   * pointer
    */
   template <typename number2>
   void
@@ -241,63 +289,61 @@ protected:
                        const std::vector<bool> *const dof_mask = nullptr) const;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * 指向矩阵的指针。
-   *
+   * Pointer to the matrix.
    */
   SmartPointer<const SparseMatrix<number>, SparseVanka<number>> matrix;
 
   /**
-   * 我们要处理的那些自由度的索引。
-   *
+   * Indices of those degrees of freedom that we shall work on.
    */
   const std::vector<bool> *selected;
 
   /**
-   * 反矩阵的数组，每个自由度有一个。只有那些在 @p
-   * selected. 中被标记的元素才会被使用。
-   *
+   * Array of inverse matrices, one for each degree of freedom. Only those
+   * elements will be used that are tagged in @p selected.
    */
   mutable std::vector<SmartPointer<FullMatrix<float>, SparseVanka<number>>>
     inverses;
 
   /**
-   * 范围空间的维度。
-   *
+   * The dimension of the range space.
    */
   size_type _m;
 
   /**
-   * 域空间的维度。
-   *
+   * The dimension of the domain space.
    */
   size_type _n;
 
   /**
-   * 计算所有选定的对角线元素的反值。
-   *
+   * Compute the inverses of all selected diagonal elements.
    */
   void
   compute_inverses();
 
   /**
-   * 计算在<tt>[begin,end)</tt>范围内的位置的反演。在非多线程模式下，<tt>compute_inverses()</tt>用整个范围来调用这个函数，但在多线程模式下，这个函数的几个副本被生成。
-   *
+   * Compute the inverses at positions in the range <tt>[begin,end)</tt>. In
+   * non-multithreaded mode, <tt>compute_inverses()</tt> calls this function
+   * with the whole range, but in multithreaded mode, several copies of this
+   * function are spawned.
    */
   void
   compute_inverses(const size_type begin, const size_type end);
 
   /**
-   * 计算位于 @p row. 位置的块的逆值
-   * 由于向量被经常使用，它只在这个函数的调用者中生成一次，并传递给这个首先清除它的函数。与本函数每次重新创建向量的情况相比，重复使用向量使整个过程明显加快。
-   *
+   * Compute the inverse of the block located at position @p row. Since the
+   * vector is used quite often, it is generated only once in the caller of
+   * this function and passed to this function which first clears it. Reusing
+   * the vector makes the process significantly faster than in the case where
+   * this function re-creates it each time.
    */
   void
   compute_inverse(const size_type row, std::vector<size_type> &local_indices);
@@ -319,87 +365,166 @@ private:
 
 
 /**
- * 稀疏Vanka预处理器的块状版本。这个类将矩阵分成块，只在对角线块上工作，这当然会降低作为预处理程序的效率，但完全可以并行。构造函数需要一个参数，将矩阵分成多少个块，然后让底层的类来做这个工作。矩阵的划分有几种方式，下面将详细介绍。
- * 如果你没有一个多处理器系统，这个类可能是无用的，因为那时每个预处理步骤的工作量与
- * @p SparseVanka
- * 类相同，但预处理特性更差。另一方面，如果你有一个多处理器系统，较差的预处理质量（导致线性求解器的更多迭代）通常会被并行化带来的应用速度的提高所平衡，从而导致解决线性系统的耗时减少。应该注意的是，作为预处理程序的质量会随着块数的增加而降低，所以块数可能有一个最佳值（就每次线性求解的壁挂时间而言）。
- * 为了方便编写可移植的代码，如果将矩阵细分的块数设置为1，那么这个类的作用就像
- * @p SparseVanka
- * 类。因此，你可能想把块的数量设置为等于你拥有的处理器的数量。
- * 请注意，如果<tt>deal.II</tt>被配置为多线程使用，并且被生成的线程数等于块的数量，那么并行化就会完成。这是合理的，因为你不会想把块的数量设置得过大，因为如前所述，这降低了预处理的特性。
+ * Block version of the sparse Vanka preconditioner. This class divides the
+ * matrix into blocks and works on the diagonal blocks only, which of course
+ * reduces the efficiency as preconditioner, but is perfectly parallelizable.
+ * The constructor takes a parameter into how many blocks the matrix shall be
+ * subdivided and then lets the underlying class do the work. Division of the
+ * matrix is done in several ways which are described in detail below.
  *
- *  <h3>Splitting the matrix into blocks</h3>
- * 将矩阵分割成块的方式总是使块的大小不一定相等，但块与块之间要解决的局部系统的选定自由度的数量是相等的。这种细分策略的原因是多线程的负载平衡。有几种可能性可以将矩阵实际分割成块，由传递给构造函数的标志
- * @p
- * blocking_strategy来选择。在下文中，我们将用块来表示自由度的索引列表；算法将在每个块上单独工作，也就是说，一个块的自由度所对应的局部系统的解将只用于更新属于同一块的自由度，而不会用于更新其他块的自由度。一个区块可以是一个连续的指数列表，如下面的第一个方案，也可以是一个不连续的指数列表。当然，我们假设每两个块的交点是空的，所有块的联合等于区间<tt>[0,N)</tt>，其中
- * @p N 是方程组的自由度数。
- * <ul>   <li>   @p index_intervals:  这里，我们选择区块为区间<tt>[a_i,a_{i+1</tt>)}，即连续的自由度通常也在同一区块内。这是一个合理的策略，如果自由度使用Cuthill-McKee算法进行重新编号，其中空间上相邻的自由度有相邻的指数。在这种情况下，矩阵中的耦合通常也被限制在对角线附近，我们可以简单地将矩阵切割成块。
- * 区间的边界，即上面的 @p a_i
- * ，是这样选择的，即我们将在其中工作的自由度数量（即通常与拉格朗日乘数对应的自由度）在每个区块中大致相同；然而，这并不意味着区块的大小相等，因为区块还包括没有解决局部系统的其他自由度。在极端情况下，考虑到所有拉格朗日乘数都被排序到自由度指数范围的末端，那么第一个区块将非常大，因为它包括所有其他自由度和一些拉格朗日乘数，而所有其他区块则相当小，只包括朗格朗日乘数。因此，这一策略不仅取决于拉格朗日做功因子的排序，也取决于其他做功因子的排序。因此有必要指出，如果自由度是按分量编号的，即所有拉格朗日乘法器都是一整块的，这几乎使作为预处理的能力失去作用。
- * <li>   @p adaptive:
- * 在拉格朗日自由度被分组的情况下，这个策略就比较聪明了，就像上面的例子。它的工作原理如下：它首先将Lagrange
- * DoFs分组为块，使用与上述相同的策略。然而，它不是将其他DoF分组到具有最接近DoF索引的Lagrange
- * DoF块中，而是决定将每个非Lagrange
- * DoF放入最经常写入该非Lagrange DoF的Lagrange
- * DoF块中。这使得它甚至可以将拉格朗日
- * DoFs排序到最后，并且仍然将空间上相邻的非拉格朗日
- * DoFs关联到各自的拉格朗日
- * DoFs所在的相同块中，因为它们相互耦合，而空间上相距遥远的
- * DoFs却不耦合。
- * 与局部系统的反演和应用预处理程序相比，对非拉格朗日DoF进行排序的额外计算量并不大，所以如果你想按分量对自由度进行排序，这种策略可能是合理的。如果自由度不按分量排序，上述两种策略的结果没有太大差别。然而，与第一种策略不同的是，如果自由度按分量重新编号，第二种策略的性能不会变差。  </ul>
+ * This class is probably useless if you don't have a multiprocessor system,
+ * since then the amount of work per preconditioning step is the same as for
+ * the @p SparseVanka class, but preconditioning properties are worse. On the
+ * other hand, if you have a multiprocessor system, the worse preconditioning
+ * quality (leading to more iterations of the linear solver) usually is well
+ * balanced by the increased speed of application due to the parallelization,
+ * leading to an overall decrease in elapsed wall-time for solving your linear
+ * system. It should be noted that the quality as preconditioner reduces with
+ * growing number of blocks, so there may be an optimal value (in terms of
+ * wall-time per linear solve) for the number of blocks.
  *
- *  <h3>Typical results</h3>
- * 作为一个典型的测试案例，我们使用了一个来自优化的非线性问题，这导致了一系列的鞍点问题，每个问题都使用GMRES和Vanka作为预处理程序来解决。该方程有大约850个自由度。使用非阻塞版本
- * @p SparseVanka （或 @p
- * SparseBlockVanka与<tt>n_blocks==1</tt>），在每个非线性步骤中，需要以下迭代次数来解决线性系统。
+ * To facilitate writing portable code, if the number of blocks into which the
+ * matrix is to be subdivided, is set to one, then this class acts just like
+ * the @p SparseVanka class. You may therefore want to set the number of
+ * blocks equal to the number of processors you have.
  *
+ * Note that the parallelization is done if <tt>deal.II</tt> was configured
+ * for multithread use and that the number of threads which is spawned equals
+ * the number of blocks. This is reasonable since you will not want to set the
+ * number of blocks unnecessarily large, since, as mentioned, this reduces the
+ * preconditioning properties.
+ *
+ *
+ * <h3>Splitting the matrix into blocks</h3>
+ *
+ * Splitting the matrix into blocks is always done in a way such that the
+ * blocks are not necessarily of equal size, but such that the number of
+ * selected degrees of freedom for which a local system is to be solved is
+ * equal between blocks. The reason for this strategy to subdivision is load-
+ * balancing for multithreading. There are several possibilities to actually
+ * split the matrix into blocks, which are selected by the flag @p
+ * blocking_strategy that is passed to the constructor. By a block, we will in
+ * the sequel denote a list of indices of degrees of freedom; the algorithm
+ * will work on each block separately, i.e. the solutions of the local systems
+ * corresponding to a degree of freedom of one block will only be used to
+ * update the degrees of freedom belonging to the same block, but never to
+ * update degrees of freedom of other blocks. A block can be a consecutive
+ * list of indices, as in the first alternative below, or a nonconsecutive
+ * list of indices. Of course, we assume that the intersection of each two
+ * blocks is empty and that the union of all blocks equals the interval
+ * <tt>[0,N)</tt>, where @p N is the number of degrees of freedom of the
+ * system of equations.
+ *
+ * <ul>
+ * <li> @p index_intervals: Here, we chose the blocks to be intervals
+ * <tt>[a_i,a_{i+1</tt>)}, i.e. consecutive degrees of freedom are usually
+ * also within the same block. This is a reasonable strategy, if the degrees
+ * of freedom have, for example, be re-numbered using the Cuthill-McKee
+ * algorithm, in which spatially neighboring degrees of freedom have
+ * neighboring indices. In that case, coupling in the matrix is usually
+ * restricted to the vicinity of the diagonal as well, and we can simply cut
+ * the matrix into blocks.
+ *
+ * The bounds of the intervals, i.e. the @p a_i above, are chosen such that
+ * the number of degrees of freedom on which we shall work (i.e. usually the
+ * degrees of freedom corresponding to Lagrange multipliers) is about the same
+ * in each block; this does not mean, however, that the sizes of the blocks
+ * are equal, since the blocks also comprise the other degrees of freedom for
+ * which no local system is solved. In the extreme case, consider that all
+ * Lagrange multipliers are sorted to the end of the range of DoF indices,
+ * then the first block would be very large, since it comprises all other DoFs
+ * and some Lagrange multipliers, while all other blocks are rather small and
+ * comprise only Langrange multipliers. This strategy therefore does not only
+ * depend on the order in which the Lagrange DoFs are sorted, but also on the
+ * order in which the other DoFs are sorted. It is therefore necessary to note
+ * that this almost renders the capability as preconditioner useless if the
+ * degrees of freedom are numbered by component, i.e. all Lagrange multipliers
+ * en bloc.
+ *
+ * <li> @p adaptive: This strategy is a bit more clever in cases where the
+ * Langrange DoFs are clustered, as in the example above. It works as follows:
+ * it first groups the Lagrange DoFs into blocks, using the same strategy as
+ * above. However, instead of grouping the other DoFs into the blocks of
+ * Lagrange DoFs with nearest DoF index, it decides for each non-Lagrange DoF
+ * to put it into the block of Lagrange DoFs which write to this non-Lagrange
+ * DoF most often. This makes it possible to even sort the Lagrange DoFs to
+ * the end and still associate spatially neighboring non-Lagrange DoFs to the
+ * same blocks where the respective Lagrange DoFs are, since they couple to
+ * each other while spatially distant DoFs don't couple.
+ *
+ * The additional computational effort to sorting the non-Lagrange DoFs is not
+ * very large compared with the inversion of the local systems and applying
+ * the preconditioner, so this strategy might be reasonable if you want to
+ * sort your degrees of freedom by component. If the degrees of freedom are
+ * not sorted by component, the results of the both strategies outlined above
+ * does not differ much. However, unlike the first strategy, the performance
+ * of the second strategy does not deteriorate if the DoFs are renumbered by
+ * component.
+ * </ul>
+ *
+ *
+ * <h3>Typical results</h3>
+ *
+ * As a prototypical test case, we use a nonlinear problem from optimization,
+ * which leads to a series of saddle point problems, each of which is solved
+ * using GMRES with Vanka as preconditioner. The equation had approx. 850
+ * degrees of freedom. With the non-blocked version @p SparseVanka (or @p
+ * SparseBlockVanka with <tt>n_blocks==1</tt>), the following numbers of
+ * iterations is needed to solver the linear system in each nonlinear step:
  * @verbatim
- * 101 68 64 53 35 21
+ *   101 68 64 53 35 21
  * @endverbatim
  *
- * 如果有四个块，我们需要以下的迭代次数
- *
+ * With four blocks, we need the following numbers of iterations
  * @verbatim
- * 124 88 83 66 44 28
+ *   124 88 83 66 44 28
  * @endverbatim
- * 可以看出，需要更多的迭代次数。然而，就计算时间而言，第一个版本需要72秒的上墙时间（和79秒的CPU时间，这比上墙时间多，因为程序的其他一些部分也被并行化了），而第二个版本在四处理器的机器上需要53秒的上墙时间（和110秒的CPU时间）。在这两种情况下，总时间都是由线性求解器主导的。在这种情况下，如果壁挂时间比CPU时间更重要，那么使用阻塞版本的预处理程序是值得的。
- * 上述阻断版的结果是用第一种阻断策略得到的，自由度没有按组件编号。使用第二种策略对迭代次数没有太大变化（每一步最多增加一次），而且当自由度按分量排序时也没有变化，而第一种策略则明显恶化了。
+ * As can be seen, more iterations are needed. However, in terms of computing
+ * time, the first version needs 72 seconds wall time (and 79 seconds CPU
+ * time, which is more than wall time since some other parts of the program
+ * were parallelized as well), while the second version needed 53 second wall
+ * time (and 110 seconds CPU time) on a four processor machine. The total time
+ * is in both cases dominated by the linear solvers. In this case, it is
+ * therefore worth while using the blocked version of the preconditioner if
+ * wall time is more important than CPU time.
  *
- *
+ * The results with the block version above were obtained with the first
+ * blocking strategy and the degrees of freedom were not numbered by
+ * component. Using the second strategy does not much change the numbers of
+ * iterations (at most by one in each step) and they also do not change when
+ * the degrees of freedom are sorted by component, while the first strategy
+ * significantly deteriorated.
  */
 template <typename number>
 class SparseBlockVanka : public SparseVanka<number>
 {
 public:
   /**
-   * 申报容器尺寸的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 枚举不同的方法，通过这些方法将自由度分配到我们要工作的区块上。
-   *
+   * Enumeration of the different methods by which the DoFs are distributed to
+   * the blocks on which we are to work.
    */
   enum BlockingStrategy
   {
     /**
-     * 按索引间隔的区块。
-     *
+     * Block by index intervals.
      */
     index_intervals,
     /**
-     * 用自适应策略的区块。
-     *
+     * Block with an adaptive strategy.
      */
     adaptive
   };
 
   /**
-   * 构造函数。将除 @p n_blocks 以外的所有参数传递给基类。
-   * @deprecated
-   * 这个构造函数已被废弃。传递给最后两个参数的值被忽略了。
+   * Constructor. Pass all arguments except for @p n_blocks to the base class.
    *
+   * @deprecated This constructor is deprecated. The values passed to the last
+   * two arguments are ignored.
    */
   DEAL_II_DEPRECATED
   SparseBlockVanka(const SparseMatrix<number> &M,
@@ -410,8 +535,7 @@ public:
                    const unsigned int n_threads = MultithreadInfo::n_threads());
 
   /**
-   * 构造函数。将除 @p n_blocks 以外的所有参数传递给基类。
-   *
+   * Constructor. Pass all arguments except for @p n_blocks to the base class.
    */
   SparseBlockVanka(const SparseMatrix<number> &M,
                    const std::vector<bool> &   selected,
@@ -419,41 +543,37 @@ public:
                    const BlockingStrategy      blocking_strategy);
 
   /**
-   * 应用预处理程序。
-   *
+   * Apply the preconditioner.
    */
   template <typename number2>
   void
   vmult(Vector<number2> &dst, const Vector<number2> &src) const;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * 存储块的数量。
-   *
+   * Store the number of blocks.
    */
   const unsigned int n_blocks;
 
   /**
-   * 在这个字段中，我们为每个块预先计算哪些自由度属于它。因此，如果<tt>dof_masks[i][j]==true</tt>，那么DoF
-   * @p j 就属于块 @p i.
-   * 当然，没有其他<tt>dof_masks[l][j]</tt>可以为<tt>l！=i</tt>的
-   * @p true
-   * 。这个计算是在构造函数中完成的，以避免每次调用预处理程序时重新计算。
-   *
+   * In this field, we precompute for each block which degrees of freedom
+   * belong to it. Thus, if <tt>dof_masks[i][j]==true</tt>, then DoF @p j
+   * belongs to block @p i. Of course, no other <tt>dof_masks[l][j]</tt> may
+   * be @p true for <tt>l!=i</tt>. This computation is done in the
+   * constructor, to avoid recomputing each time the preconditioner is called.
    */
   std::vector<std::vector<bool>> dof_masks;
 
   /**
-   * 计算字段的内容  @p dof_masks.
-   * 这个函数是在构造函数中调用的。
-   *
+   * Compute the contents of the field @p dof_masks. This function is called
+   * from the constructor.
    */
   void
   compute_dof_masks(const SparseMatrix<number> &M,
@@ -461,8 +581,8 @@ private:
                     const BlockingStrategy      blocking_strategy);
 };
 
- /*@}*/ 
- /* ---------------------------------- Inline functions ------------------- */ 
+/*@}*/
+/* ---------------------------------- Inline functions ------------------- */
 
 #ifndef DOXYGEN
 
@@ -485,8 +605,8 @@ SparseVanka<number>::n() const
 template <typename number>
 template <typename number2>
 inline void
-SparseVanka<number>::Tvmult(Vector<number2> &  /*dst*/ ,
-                            const Vector<number2> &  /*src*/ ) const
+SparseVanka<number>::Tvmult(Vector<number2> & /*dst*/,
+                            const Vector<number2> & /*src*/) const
 {
   AssertThrow(false, ExcNotImplemented());
 }
@@ -496,5 +616,3 @@ SparseVanka<number>::Tvmult(Vector<number2> &  /*dst*/ ,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

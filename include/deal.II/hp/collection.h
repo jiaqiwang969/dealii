@@ -1,4 +1,3 @@
-//include/deal.II-translator/hp/collection_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -30,60 +29,60 @@ DEAL_II_NAMESPACE_OPEN
 namespace hp
 {
   /**
-   * 这个类实现了一个对象的集合。
-   * 它实现了doxygen文档中描述的 @ref hpcollection
-   * 模块中的概念。
-   * @ingroup hp hpcollection
+   * This class implements a collection of objects.
    *
+   * It implements the concepts stated in the @ref hpcollection
+   * module described in the doxygen documentation.
+   *
+   * @ingroup hp hpcollection
    */
   template <typename T>
   class Collection : public Subscriptor
   {
   public:
     /**
-     * 默认构造函数。导致一个空的集合，以后可以用push_back()来填充。
-     *
+     * Default constructor. Leads to an empty collection that can later be
+     * filled using push_back().
      */
     Collection() = default;
 
     /**
-     * 添加一个新的对象。
-     *
+     * Add a new object.
      */
     void
     push_back(const std::shared_ptr<const T> &new_entry);
 
     /**
-     * 返回用户为活动FE索引指定的对象，该索引是作为参数提供给该方法的。
-     * @pre   @p index 必须在0和集合的元素数之间。
+     * Return the object which was specified by the user for the
+     * active FE index which is provided as a parameter to this method.
      *
+     * @pre @p index must be between zero and the number of elements of the
+     * collection.
      */
     const T &operator[](const unsigned int index) const;
 
     /**
-     * 返回存储在这个容器中的对象的数量。
-     *
+     * Return the number of objects stored in this container.
      */
     unsigned int
     size() const;
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。
-     *
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object.
      */
     std::size_t
     memory_consumption() const;
 
   private:
     /**
-     * 真正的容器，它存储了指向不同对象的指针。
-     *
+     * The real container, which stores pointers to the different objects.
      */
     std::vector<std::shared_ptr<const T>> entries;
   };
 
 
-   /* --------------- inline functions ------------------- */ 
+  /* --------------- inline functions ------------------- */
 
 
 
@@ -127,5 +126,3 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

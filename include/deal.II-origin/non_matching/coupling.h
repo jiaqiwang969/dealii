@@ -1,3 +1,4 @@
+//include/deal.II-translator/non_matching/coupling_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -35,60 +36,38 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace for functions offering tools to handle two meshes with no
- * alignment requirements.
+ * 一个函数命名空间，提供处理两个没有对齐要求的网格的工具。
+ * 通常这些函数允许对两个网格之间的实空间交点进行计算，例如表面积分和耦合矩阵的构造。
  *
- * Typically these functions allow for computations on the real-space
- * intersection between the two meshes e.g. surface integrals and
- * construction of coupling matrices.
+ *
  */
 namespace NonMatching
 {
   /**
-   * Create a coupling sparsity pattern for non-matching, overlapping grids.
-   *
-   * Given two non-matching triangulations, representing the domains $\Omega$
-   * and $B$, with $B \subseteq \Omega$, and two finite element spaces
-   * $V(\Omega) = \text{span}\{v_i\}_{i=0}^n$ and $Q(B) =
-   * \text{span}\{w_j\}_{j=0}^m$, compute the sparsity pattern that would be
-   * necessary to assemble the matrix
-   * \f[
-   * M_{ij} \dealcoloneq \int_{B} v_i(x) w_j(x) dx,
-   *                     \quad i \in [0,n), j \in [0,m),
-   * \f]
-   * where $V(\Omega)$ is the finite element space associated with the
-   * `space_dh` passed to this function (or part of it, if specified in
-   * `space_comps`), while $Q(B)$ is the finite element space associated with
-   * the `immersed_dh` passed to this function (or part of it, if specified in
-   * `immersed_comps`).
-   *
-   * The `sparsity` is filled by locating the position of quadrature points
-   * (obtained by the reference quadrature `quad`) defined on elements of $B$
-   * with respect to the embedding triangulation $\Omega$. For each overlapping
-   * cell, the entries corresponding to `space_comps` in `space_dh` and
-   * `immersed_comps` in `immersed_dh` are added to the sparsity pattern.
-   *
-   * The `space_comps` and `immersed_comps` masks are assumed to be ordered in
-   * the same way: the first component of `space_comps` will couple with the
-   * first component of `immersed_comps`, the second with the second, and so
-   * on. If one of the two masks has more non-zero than the other, then the
-   * excess components will be ignored.
-   *
-   * If the domain $B$ does not fall within $\Omega$, an exception will be
-   * thrown by the algorithm that computes the quadrature point locations. In
-   * particular, notice that this function only makes sens for `dim1` lower or
-   * equal than `dim0`. A static assert guards that this is actually the case.
-   *
-   * For both spaces, it is possible to specify a custom Mapping, which
-   * defaults to StaticMappingQ1 for both.
-   *
-   * This function will also work in parallel, provided that the immersed
-   * triangulation is of type parallel::shared::Triangulation<dim1,spacedim>.
-   * An exception is thrown if you use an immersed
+   * 为非匹配的、重叠的网格创建一个耦合稀疏模式。
+   * 给出两个非匹配三角形，代表域 $\Omega$ 和 $B$  ，与 $B
+   * \subseteq \Omega$ ，以及两个有限元空间 $V(\Omega) =
+   * \text{span}\{v_i\}_{i=0}^n$ 和 $Q(B) = \text{span}\{w_j\}_{j=0}^m$
+   * ，计算集合矩阵\f[ M_{ij} \dealcoloneq \int_{B} v_i(x) w_j(x) dx,
+   * \quad i \in [0,n), j \in [0,m), \f]所需的稀疏模式，其中
+   * $V(\Omega)$
+   * ]是与传递给该函数的`space_dh'相关的有限元空间（如果在`space_comps'中指定，则为其一部分），而
+   * $Q(B)$
+   * 是与传递给该函数的`immersed_dh'相关的有限元空间（如果在`immersed_comps'中指定，则为其一部分）。
+   * 稀疏度
+   * "是通过定位正交点（由参考正交`四边形'获得）的位置来填补的，这些正交点定义在
+   * $B$ 的元素上，相对于嵌入的三角形 $\Omega$
+   * 。对于每个重叠的单元，对应于`space_dh`中的`space_comps`和`immersed_dh`中的`immersed_comps`的条目被添加到稀疏模式。
+   * `space_comps'和`immersed_comps'掩码被假定为以同样的方式排序：`space_comps'的第一个分量将与`immersed_comps'的第一个分量耦合，第二个分量与第二个分量耦合，以此类推。如果两个掩码中的一个比另一个有更多的非零值，那么多余的成分将被忽略。
+   * 如果域 $B$ 不在 $\Omega$
+   * 之内，计算正交点位置的算法将抛出一个异常。特别要注意的是，这个函数只对`dim1`低于或等于`dim0`有感觉。一个静态断言可以保证实际情况是这样的。
+   * 对于这两个空间，可以指定一个自定义的Mapping，默认为StaticMappingQ1。
+   * 这个函数也可以并行工作，前提是浸入式三角形是
+   * parallel::shared::Triangulation<dim1,spacedim>. 如果你使用浸入式
    * parallel::distributed::Triangulation<dim1,spacedim>.
+   * ，会抛出一个异常，请看教程程序 step-60
+   * 中关于如何使用这个函数的例子。
    *
-   * See the tutorial program step-60 for an example on how to use this
-   * function.
    */
   template <int dim0,
             int dim1,
@@ -110,10 +89,10 @@ namespace NonMatching
       StaticMappingQ1<dim1, spacedim>::mapping);
 
   /**
-   * Same as above, but takes an additional GridTools::Cache object, instead of
-   * creating one internally. In this version of the function, the parameter @p
-   * space_mapping cannot be specified, since it is taken from the @p cache
-   * parameter.
+   * 与上述相同，但需要一个额外的 GridTools::Cache
+   * 对象，而不是在内部创建一个。在这个版本的函数中，不能指定参数
+   * @p space_mapping，因为它取自 @p cache 参数。
+   *
    */
   template <int dim0,
             int dim1,
@@ -135,48 +114,30 @@ namespace NonMatching
 
 
   /**
-   * Create a coupling mass matrix for non-matching, overlapping grids.
-   *
-   * Given two non-matching triangulations, representing the domains $\Omega$
-   * and $B$, with $B \subseteq \Omega$, and two finite element spaces
-   * $V(\Omega) = \text{span}\{v_i\}_{i=0}^n$ and $Q(B) =
-   * \text{span}\{w_j\}_{j=0}^m$, compute the coupling matrix
-   * \f[
-   * M_{ij} \dealcoloneq \int_{B} v_i(x) w_j(x) dx,
-   *                     \quad i \in [0,n), j \in [0,m),
-   * \f]
-   * where $V(\Omega)$ is the finite element space associated with the
-   * `space_dh` passed to this function (or part of it, if specified in
-   * `space_comps`), while $Q(B)$ is the finite element space associated with
-   * the `immersed_dh` passed to this function (or part of it, if specified in
-   * `immersed_comps`).
-   *
-   * The corresponding sparsity patterns can be computed by calling the
-   * make_coupling_sparsity_pattern function. The elements of the matrix are
-   * computed by locating the position of quadrature points defined on elements
-   * of $B$ with respect to the embedding triangulation $\Omega$.
-   *
-   * The `space_comps` and `immersed_comps` masks are assumed to be ordered in
-   * the same way: the first component of `space_comps` will couple with the
-   * first component of `immersed_comps`, the second with the second, and so
-   * on. If one of the two masks has more non-zero entries non-zero than the
-   * other, then the excess components will be ignored.
-   *
-   * If the domain $B$ does not fall within $\Omega$, an exception will be
-   * thrown by the algorithm that computes the quadrature point locations. In
-   * particular, notice that this function only makes sense for `dim1` lower or
-   * equal than `dim0`. A static assert guards that this is actually the case.
-   *
-   * For both spaces, it is possible to specify a custom Mapping, which
-   * defaults to StaticMappingQ1 for both.
-   *
-   * This function will also work in parallel, provided that the immersed
-   * triangulation is of type parallel::shared::Triangulation<dim1,spacedim>.
-   * An exception is thrown if you use an immersed
+   * 为非匹配、重叠的网格创建耦合质量矩阵。
+   * 给出两个非匹配三角形，代表域 $\Omega$ 和 $B$  ，与 $B
+   * \subseteq \Omega$ ，以及两个有限元空间 $V(\Omega) =
+   * \text{span}\{v_i\}_{i=0}^n$ 和 $Q(B) = \text{span}\{w_j\}_{j=0}^m$
+   * ，计算耦合矩阵\f[ M_{ij} \dealcoloneq \int_{B} v_i(x) w_j(x) dx,
+   * \quad i \in [0,n), j \in [0,m), \f]，其中 $V(\Omega)$
+   * ]是与传递给该函数的`space_dh'相关的有限元空间（如果在`space_comps'中指定，则为其一部分），而
+   * $Q(B)$
+   * 是与传递给该函数的`immersed_dh'相关的有限元空间（如果在`immersed_comps`中指定，则为其一部分）。
+   * 相应的稀疏性模式可以通过调用make_coupling_sparsity_pattern函数计算出来。矩阵的元素是通过定位定义在
+   * $B$ 元素上的正交点相对于嵌入三角形 $\Omega$
+   * 的位置来计算的。    假设 "space_comps "和 "immersed_comps
+   * "掩码以同样的方式排序："space_comps "的第一个分量将与
+   * "immersed_comps
+   * "的第一个分量耦合，第二个分量与第二个分量耦合，以此类推。如果两个掩码中的一个比另一个有更多的非零项非零值，那么多余的分量将被忽略掉。
+   * 如果域 $B$ 不在 $\Omega$
+   * 之内，计算正交点位置的算法将抛出一个异常。特别要注意的是，这个函数只对`dim1`低于或等于`dim0`有意义。静态断言可以保证实际情况是这样的。
+   * 对于这两个空间，可以指定一个自定义的Mapping，默认为StaticMappingQ1。
+   * 这个函数也可以并行工作，前提是浸入式三角形是
+   * parallel::shared::Triangulation<dim1,spacedim>. 如果你使用浸入式
    * parallel::distributed::Triangulation<dim1,spacedim>.
+   * ，会抛出一个异常，请看教程程序 step-60
+   * 中关于如何使用这个函数的例子。
    *
-   * See the tutorial program step-60 for an example on how to use this
-   * function.
    */
   template <int dim0, int dim1, int spacedim, typename Matrix>
   void
@@ -195,10 +156,10 @@ namespace NonMatching
       StaticMappingQ1<dim1, spacedim>::mapping);
 
   /**
-   * Same as above, but takes an additional GridTools::Cache object, instead of
-   * creating one internally. In this version of the function, the parameter @p
-   * space_mapping cannot specified, since it is taken from the @p cache
-   * parameter.
+   * 与上述相同，但需要一个额外的 GridTools::Cache
+   * 对象，而不是在内部创建一个。在这个版本的函数中，不能指定参数
+   * @p space_mapping，因为它取自 @p cache 参数。
+   *
    */
   template <int dim0, int dim1, int spacedim, typename Matrix>
   void
@@ -216,50 +177,34 @@ namespace NonMatching
       StaticMappingQ1<dim1, spacedim>::mapping);
 
   /**
-   * Create a coupling sparsity pattern for non-matching independent grids,
-   * using a convolution kernel with compact support of radius epsilon.
-   *
-   * Given two non-matching triangulations, representing the domains $\Omega^0$
-   * and $\Omega^1$, both embedded in $\mathbb{R}^d$, and two finite element
-   * spaces $V^0(\Omega^0) = \text{span}\{v_i\}_{i=0}^n$ and $V^1(\Omega^1) =
-   * \text{span}\{w_\alpha\}_{\alpha=0}^m$, compute the sparsity pattern that
-   * would be necessary to assemble the matrix
-   *
-   * \f[
-   * M_{i\alpha} \dealcoloneq \int_{\Omega^0} \int_{\Omega^1}
-   * v_i(x) K^{\epsilon}(x-y) w_\alpha(y) dx \ dy,
-   * \quad i \in [0,n), \alpha \in [0,m),
-   * \f]
-   *
-   * where $V^0(\Omega^0)$ is the finite element space associated with the
-   * @p dh0 passed to this function (or part of it, if specified in
-   * @p comps0), while $V^1(\Omega^1)$ is the finite element space associated
-   * with the @p dh1 passed to this function (or part of it, if specified
-   * in @p comps1), and $K^\epsilon$ is a function derived from
-   * CutOffFunctionBase with compact support included in a ball of radius
-   * $\epsilon$.
-   *
-   * The @p comps0 and @p comps1 masks are assumed to be ordered in
-   * the same way: the first component of @p comps0 will couple with the
-   * first component of @p comps1, the second with the second, and so
-   * on. If one of the two masks has more active components than the other, then
-   * the excess components will be ignored.
-   *
-   * For both spaces, it is possible to specify a custom Mapping, which
-   * defaults to StaticMappingQ1 for both.
-   *
-   * This function will also work in parallel, provided that at least one of the
-   * triangulations is of type parallel::shared::Triangulation<dim1,spacedim>.
-   * An exception is thrown if both triagnulations are of type
+   * 为非匹配的独立网格创建一个耦合的稀疏模式，使用半径为ε的紧凑支持的卷积核。
+   * 给出两个非匹配三角形，代表域 $\Omega^0$ 和 $\Omega^1$
+   * ，都嵌入在 $\mathbb{R}^d$ 中，以及两个有限元空间
+   * $V^0(\Omega^0) = \text{span}\{v_i\}_{i=0}^n$ 和 $V^1(\Omega^1) =
+   * \text{span}\{w_\alpha\}_{\alpha=0}^m$ ，计算组装矩阵\f[
+   * M_{i\alpha} \dealcoloneq \int_{\Omega^0} \int_{\Omega^1} v_i(x)
+   * K^{\epsilon}(x-y) w_\alpha(y) dx \ dy, \quad i \in [0,n), \alpha \in
+   * [0,m), \f]所需的稀疏模式，其中 $V^0(\Omega^0)$ 是与 @p dh0
+   * 相关的有限元空间
+   * ]传递给这个函数的有限元空间（如果在 @p comps0),
+   * 中指定，则是其中一部分），而 $V^1(\Omega^1)$
+   * 是传递给这个函数的 @p dh1 相关的有限元空间（如果在
+   * @p comps1), 中指定，则是其中一部分）， $K^\epsilon$
+   * 是一个从CutOffFunctionBase导出的函数，其紧凑支持包含在半径为
+   * $\epsilon$ 的球中。    假设 @p comps0 和 @p comps1
+   * 掩码以同样的方式排序： @p comps0 的第一个分量将与 @p
+   * comps1,
+   * 的第一个分量耦合，第二个分量与第二个分量耦合，以此类推。如果两个掩码中的一个比另一个有更多的有效成分，那么多余的成分将被忽略。
+   * 对于这两个空间，可以指定一个自定义的Mapping，这两个空间的默认值是StaticMappingQ1。
+   * 如果至少有一个三角形是
+   * parallel::shared::Triangulation<dim1,spacedim>.
+   * 类型的，这个函数也会并行工作，如果两个三角形都是
    * parallel::distributed::Triangulation<dim1,spacedim>.
+   * 类型的，就会出现异常。 ]
+   * 如果epsilon被设置为零，那么我们假定内核是狄拉克三角分布，并且调用被转发到这个名字空间中的同名方法，该方法不接受epsilon作为输入（但需要正交公式
+   * @p quad
+   * ）。在这种情况下，对两个空间需要有更多的限制条件。参见其他create_coupling_sparsity_pattern()函数的文档。
    *
-   * This function assumes that the convolution has support contained in a box
-   * of radius @p epsilon. If epsilon is set to zero, then we assume that the
-   * kernel is the Dirac delta distribution, and the call is forwarded to the
-   * method in this namespace with the same name, that does not take an epsilon
-   * as input (but a quadrature formula @p quad is required). In this case, more
-   * restrictive conditions are required on the two spaces. See the
-   * documentation of the other create_coupling_sparsity_pattern() function.
    */
   template <int dim0,
             int dim1,
@@ -280,50 +225,33 @@ namespace NonMatching
     const ComponentMask &            comps1       = ComponentMask());
 
   /**
-   * Create a coupling mass matrix for non-matching independent grids,
-   * using a convolution kernel with compact support.
-   *
-   * Given two non-matching triangulations, representing the domains
-   * $\Omega^0$ and $\Omega^1$, both embedded in $\mathbb{R}^d$, and two finite
-   * element spaces $V^0(\Omega^0) = \text{span}\{v_i\}_{i=0}^n$ and
-   * $V^1(\Omega^1) = \text{span}\{w_\alpha\}_{\alpha=0}^m$, compute the matrix
-   *
-   * \f[
-   * M_{i\alpha} \dealcoloneq \int_{\Omega^0} \int_{\Omega^1}
-   * v_i(x) K^{\epsilon}(x-y) w_\alpha(y) dx \ dy,
-   * \quad i \in [0,n), \alpha \in [0,m),
-   * \f]
-   *
-   * where $V^0(\Omega^0)$ is the finite element space associated with the
-   * @p dh0 passed to this function (or part of it, if specified in
-   * @p comps0), while $V^1(\Omega^1)$ is the finite element space associated
-   * with the @p dh1 passed to this function (or part of it, if specified
-   * in @p comps1), and $K^\epsilon$ is a function derived from
-   * CutOffFunctionBase with compact support included in a ball of radius
-   * $\epsilon$.
-   *
-   * The corresponding sparsity patterns can be computed by calling the
-   * make_coupling_sparsity_pattern() function.
-   *
-   * The @p comps0 and @p comps1 masks are assumed to be ordered in
-   * the same way: the first component of @p comps0 will couple with the
-   * first component of @p comps1, the second with the second, and so
-   * on. If one of the two masks has more active components than the other, then
-   * the excess components will be ignored.
-   *
-   * For both spaces, it is possible to specify a custom Mapping, which
-   * defaults to StaticMappingQ1 for both.
-   *
-   * This function will also work in parallel, provided that one of the two
-   * triangulations is of type parallel::shared::Triangulation<dim1,spacedim>.
-   * An exception is thrown if both triangulations are of type
+   * 为非匹配的独立网格创建一个耦合质量矩阵，使用具有紧凑支持的卷积核。
+   * 给出两个非匹配三角形，代表域 $\Omega^0$ 和 $\Omega^1$
+   * ，都嵌入在 $\mathbb{R}^d$ 中，以及两个有限元空间
+   * $V^0(\Omega^0) = \text{span}\{v_i\}_{i=0}^n$ 和 $V^1(\Omega^1) =
+   * \text{span}\{w_\alpha\}_{\alpha=0}^m$ ，计算矩阵\f[ M_{i\alpha}
+   * \dealcoloneq \int_{\Omega^0} \int_{\Omega^1} v_i(x) K^{\epsilon}(x-y)
+   * w_\alpha(y) dx \ dy, \quad i \in [0,n), \alpha \in [0,m), \f] 其中
+   * $V^0(\Omega^0)$ 是与 @p dh0  ]
+   * 传递给这个函数的有限元空间（如果在  @p comps0),
+   * 中指定，则为其中一部分），而  $V^1(\Omega^1)$
+   * 是传递给这个函数的  @p dh1  相关的有限元空间（如果在
+   * @p comps1),  中指定，则为其中一部分），而  $K^\epsilon$
+   * 是一个从 CutOffFunctionBase
+   * 派生的函数，紧凑支持包含在半径为  $\epsilon$
+   * 的球中。
+   * 相应的稀疏性模式可以通过调用make_coupling_sparsity_pattern()函数来计算。
+   * 假设 @p comps0 和 @p comps1 掩码以同样的方式排序： @p
+   * comps0 的第一个分量将与 @p comps1,
+   * 的第一个分量耦合，第二个分量与第二个分量耦合，以此类推。如果两个掩码中的一个比另一个有更多的有效成分，那么多余的成分将被忽略。
+   * 对于这两个空间，可以指定一个自定义的Mapping，这两个空间的默认值是StaticMappingQ1。
+   * 这个函数也可以并行工作，前提是两个三角形中的一个是
+   * parallel::shared::Triangulation<dim1,spacedim>.
+   * 类型，如果两个三角形都是
    * parallel::distributed::Triangulation<dim1,spacedim>.
+   * 类型，则会出现异常。 参数 @p epsilon
+   * 用于设置用于计算卷积的截断函数的大小。如果epsilon被设置为0，那么我们假定内核是狄拉克德尔塔分布，并且调用被转发到这个名字空间中的同名方法，该方法不接受epsilon作为输入。
    *
-   * The parameter @p epsilon is used to set the size of the cut-off function
-   * used to compute the convolution. If epsilon is set to zero, then we assume
-   * that the kernel is the Dirac delta distribution, and the call is forwarded
-   * to the method in this namespace with the same name, that does not take an
-   * epsilon as input.
    */
   template <int dim0, int dim1, int spacedim, typename Matrix>
   void
@@ -345,3 +273,5 @@ namespace NonMatching
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

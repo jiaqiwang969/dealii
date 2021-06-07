@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/sparse_vanka.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -45,8 +44,8 @@ SparseVanka<number>::SparseVanka()
 template <typename number>
 SparseVanka<number>::SparseVanka(const SparseMatrix<number> &M,
                                  const std::vector<bool> &   selected_dofs,
-                                 const bool  /*conserve_mem*/ ,
-                                 const unsigned int  /*n_threads*/ )
+                                 const bool /*conserve_mem*/,
+                                 const unsigned int /*n_threads*/)
   : SparseVanka(M, selected_dofs)
 {}
 
@@ -392,8 +391,8 @@ SparseVanka<number>::AdditionalData::AdditionalData(
 template <typename number>
 SparseVanka<number>::AdditionalData::AdditionalData(
   const std::vector<bool> &selected,
-  const bool  /*conserve_mem*/ ,
-  const unsigned int  /*n_threads*/ )
+  const bool /*conserve_mem*/,
+  const unsigned int /*n_threads*/)
   : AdditionalData(selected)
 {}
 
@@ -421,8 +420,8 @@ SparseBlockVanka<number>::SparseBlockVanka(
   const std::vector<bool> &   selected,
   const unsigned int          n_blocks,
   const BlockingStrategy      blocking_strategy,
-  const bool  /*conserve_memory*/ ,
-  const unsigned int  /*n_threads*/ )
+  const bool /*conserve_memory*/,
+  const unsigned int /*n_threads*/)
   : SparseBlockVanka(M, selected, n_blocks, blocking_strategy)
 {}
 
@@ -619,5 +618,3 @@ SparseBlockVanka<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

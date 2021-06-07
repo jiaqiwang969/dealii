@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_transfer_internal_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -35,10 +34,12 @@ namespace internal
   namespace MGTransfer
   {
     /**
-     * 内部函数，用于填充从全局索引到层次索引的复制索引
-     * 如果 @p skip_interface_dofs
-     * 为假，映射也将包含层次间接口的DoF。这在传输解向量而不是残差时是可取的。
+     * Internal function for filling the copy indices from global to level
+     * indices
      *
+     * If @p skip_interface_dofs is false, the mapping will also contain
+     * DoFs at the interface between levels. This is desirable when
+     * transferring solution vectors instead of residuals.
      */
     template <int dim, int spacedim>
     void
@@ -59,8 +60,9 @@ namespace internal
 
 
     /**
-     * 给出从父体看到的子体单元的集合，这个函数计算出给定子体的第一个索引
-     *
+     * Given the collection of child cells in lexicographic ordering as seen
+     * from the parent, this function computes the first index of the given
+     * child
      */
     template <int dim>
     unsigned int
@@ -69,53 +71,53 @@ namespace internal
                                   const unsigned int fe_degree);
 
     /**
-     * 一个存储与DoFHandler中包含的有限元相关的数据的结构。仅用于使用<tt>setup_transfer</tt>的初始化。
-     *
+     * A structure that stores data related to the finite element contained in
+     * the DoFHandler. Used only for the initialization using
+     * <tt>setup_transfer</tt>.
      */
     template <typename Number>
     struct ElementInfo
     {
       /**
-       * 一个存储有限元程度的变量。计算内核的选择是基于这个数字的。
-       *
+       * A variable storing the degree of the finite element. The selection of
+       * the computational kernel is based on this number.
        */
       unsigned int fe_degree;
 
       /**
-       * 一个变量，存储元素是否是连续的，在一维线的中心有一个联合自由度。
-       *
+       * A variable storing whether the element is continuous and there is a
+       * joint degree of freedom in the center of the 1D line.
        */
       bool element_is_continuous;
 
       /**
-       * 一个存储有限元中分量数量的变量。
-       *
+       * A variable storing the number of components in the finite element.
        */
       unsigned int n_components;
 
       /**
-       * 一个存储所有子单元上自由度数量的变量。
-       * 对于DG元素来说，它是<tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt>，对于连续元素来说，它略少一些。
-       *
+       * A variable storing the number of degrees of freedom on all child cells.
+       * It is <tt>2<sup>dim</sup>*fe.n_dofs_per_cell()</tt> for DG elements and
+       * somewhat less for continuous elements.
        */
       unsigned int n_child_cell_dofs;
 
       /**
-       * 一个数组，用于保存有限元中自由度的编号和张量乘积应用所需的词法编号之间的编号。
-       *
+       * An array that holds the numbering between the numbering of degrees of
+       * freedom in the finite element and the lexicographic numbering needed
+       * for the tensor product application.
        */
       std::vector<unsigned int> lexicographic_numbering;
 
       /**
-       * 这个变量持有从母元素到所有子元素的一维嵌入（延长）矩阵。
-       *
+       * This variable holds the one-dimensional embedding (prolongation) matrix
+       * from mother element to all the children.
        */
       std::vector<Number> prolongation_matrix_1d;
     };
 
     /**
-     * 设置MGTransferMatrixFree的大部分内部数据结构
-     *
+     * Set up most of the internal data structures of MGTransferMatrixFree
      */
     template <int dim, typename Number>
     void
@@ -141,5 +143,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

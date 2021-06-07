@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/polynomials_raviart_thomas_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -32,43 +33,37 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This class implements the <i>H<sup>div</sup></i>-conforming, vector-valued
- * Raviart-Thomas polynomials as described in the book by Brezzi and Fortin.
+ * 这个类实现了Brezzi和Fortin书中描述的<i>H<sup>div</sup></i>符合要求的、矢量值的Raviart-Thomas多项式。
+ * Raviart-Thomas多项式的构造是这样的：发散是在张量积多项式空间<i>Q<sub>k</sub></i>。因此，每个分量的多项式阶数必须在相应的方向上高一阶，产生二维和三维的多项式空间<i>(Q<sub>k+1,k</sub>,
+ * Q<sub>k,k+1</sub>)</i>和<i>(Q<sub>k+1,k,k</sub>, Q<sub>k,k+1,k</sub>,
+ * Q<sub>k,k,k+1</sub>)</i>，分别。
  *
- * The Raviart-Thomas polynomials are constructed such that the divergence is
- * in the tensor product polynomial space <i>Q<sub>k</sub></i>. Therefore, the
- * polynomial order of each component must be one order higher in the
- * corresponding direction, yielding the polynomial spaces
- * <i>(Q<sub>k+1,k</sub>, Q<sub>k,k+1</sub>)</i> and <i>(Q<sub>k+1,k,k</sub>,
- * Q<sub>k,k+1,k</sub>, Q<sub>k,k,k+1</sub>)</i> in 2D and 3D, resp.
  *
  * @ingroup Polynomials
+ *
+ *
  */
 template <int dim>
 class PolynomialsRaviartThomas : public TensorPolynomialsBase<dim>
 {
 public:
   /**
-   * Constructor. Creates all basis functions for Raviart-Thomas polynomials
-   * of given degree.
+   * 构造函数。创建给定度数的Raviart-Thomas多项式的所有基函数。
+   * @arg
+   * k：Raviart-Thomas-空间的度数，也就是最大张量积多项式空间的度数
+   * <i>Q<sub>k</sub></i> 包含。
    *
-   * @arg k: the degree of the Raviart-Thomas-space, which is the degree of
-   * the largest tensor product polynomial space <i>Q<sub>k</sub></i>
-   * contains.
    */
   PolynomialsRaviartThomas(const unsigned int k);
 
   /**
-   * Compute the value and the first and second derivatives of each Raviart-
-   * Thomas polynomial at @p unit_point.
+   * 计算每个Raviart-Thomas多项式在 @p unit_point.
+   * 的值和一、二次导数
+   * 向量的大小必须为零或等于<tt>n()</tt>。
+   * 在第一种情况下，该函数将不计算这些值。
+   * 如果你需要所有张量积多项式的值或导数，那么使用这个函数，而不是使用任何<tt>compute_value</tt>,
+   * <tt>compute_grad</tt>或<tt>compute_grad_grad</tt>函数，见下文，在所有张量积多项式上循环。
    *
-   * The size of the vectors must either be zero or equal <tt>n()</tt>.  In
-   * the first case, the function will not compute these values.
-   *
-   * If you need values or derivatives of all tensor product polynomials then
-   * use this function, rather than using any of the <tt>compute_value</tt>,
-   * <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,
-   * in a loop over all tensor product polynomials.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -79,35 +74,36 @@ public:
            std::vector<Tensor<5, dim>> &fourth_derivatives) const override;
 
   /**
-   * Return the name of the space, which is <tt>RaviartThomas</tt>.
+   * 返回空间的名称，即<tt>RaviartThomas</tt>。
+   *
    */
   std::string
   name() const override;
 
   /**
-   * Return the number of polynomials in the space <tt>RT(degree)</tt> without
-   * requiring to build an object of PolynomialsRaviartThomas. This is
-   * required by the FiniteElement classes.
+   * 返回空间<tt>RT(degree)</tt>中的多项式的数目，而不需要建立PolynomialsRaviartThomas的对象。这是由FiniteElement类所要求的。
+   *
    */
   static unsigned int
   n_polynomials(const unsigned int degree);
 
   /**
-   * @copydoc TensorPolynomialsBase::clone()
+   * @copydoc   TensorPolynomialsBase::clone() .
+   *
    */
   virtual std::unique_ptr<TensorPolynomialsBase<dim>>
   clone() const override;
 
 private:
   /**
-   * An object representing the polynomial space for a single component. We
-   * can re-use it by rotating the coordinates of the evaluation point.
+   * 一个代表单个组件的多项式空间的对象。我们可以通过旋转评估点的坐标来重新使用它。
+   *
    */
   const AnisotropicPolynomials<dim> polynomial_space;
 
   /**
-   * A static member function that creates the polynomial space we use to
-   * initialize the #polynomial_space member variable.
+   * 一个静态成员函数，用于创建我们用来初始化#polynomial_space成员变量的多项式空间。
+   *
    */
   static std::vector<std::vector<Polynomials::Polynomial<double>>>
   create_polynomials(const unsigned int k);
@@ -125,3 +121,5 @@ PolynomialsRaviartThomas<dim>::name() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

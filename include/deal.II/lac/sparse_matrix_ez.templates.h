@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/sparse_matrix_ez.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2019 by the deal.II authors
@@ -610,5 +609,3 @@ SparseMatrixEZ<number>::block_read(std::istream &in)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_sparse_matrix_ez_templates_h
-
-

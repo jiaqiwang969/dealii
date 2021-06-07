@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/function_bessel_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -28,17 +27,16 @@ DEAL_II_NAMESPACE_OPEN
 namespace Functions
 {
   /**
-   * 第一类或正整数阶的贝塞尔函数。
-   * @ingroup functions
+   * The Bessel functions of first kind or positive integer order.
    *
+   * @ingroup functions
    */
   template <int dim>
   class Bessel1 : public Function<dim>
   {
   public:
     /**
-     * 构造函数。  @p wave_number 必须为非负数。
-     *
+     * Constructor. @p wave_number must be nonnegative.
      */
     Bessel1(const unsigned int order,
             const double       wave_number,
@@ -72,5 +70,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

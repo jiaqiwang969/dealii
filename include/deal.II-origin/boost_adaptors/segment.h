@@ -1,3 +1,4 @@
+//include/deal.II-translator/boost_adaptors/segment_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -29,8 +30,9 @@ DEAL_II_ENABLE_EXTRA_DIAGNOSTICS
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * An alias for boost::geometry::model::segment that uses the deal.II
- * Point class.
+ * boost::geometry::model::segment 的一个别名，使用deal.II点类。
+ *
+ *
  */
 template <int dim>
 using Segment = boost::geometry::model::segment<Point<dim>>;
@@ -38,3 +40,5 @@ using Segment = boost::geometry::model::segment<Point<dim>>;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

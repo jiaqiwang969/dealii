@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/local_results_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
@@ -37,240 +36,322 @@ class BlockIndices;
 #endif
 
 /**
- * 一个用于网格循环的函数和类的集合，它是每个有限元程序中无处不在的部分。
- * 这个命名空间的主力是loop()函数，它实现了对所有网格单元的完全通用循环。由于对loop()的调用由于其通用性而容易出错，对于许多应用来说，最好从
- * MeshWorker::LocalIntegrator 派生出一个类，并使用不太通用的
- * integration_loop()。
- * loop()依赖于作为参数交给它的某些对象。这些对象有两种类型，
- * @p info 对象，如 DoFInfo 和 IntegrationInfo，以及 LocalWorker 和
- * IntegrationWorker 等工作对象。
- * 工作者对象通常做两个不同的工作：首先，他们计算一个单元或面对全局操作的本地贡献。其次，它们将这个局部贡献集合到全局结果中，无论是函数、形式还是双线性形式。第一项工作是针对被解决的问题的，而第二项工作是通用的，只取决于数据结构。因此，工人组装成全局数据的基类在命名空间Assembler中提供。
- * <h3>Template argument types</h3>
- * 函数loop()和cell_action()需要一些参数，这些参数是模板参数。让我们在这里列出这些类的最低要求并描述它们的属性。
- * <h4>ITERATOR</h4>
- * 任何具有<tt>operator++()</tt>并指向TriaAccessor或派生类的对象。
- * <h4>DOFINFO</h4>
- * 关于一个实现的例子，请参考类模板DoFInfo。为了与cell_action()和loop()协同工作，DOFINFO需要遵循以下接口。
+ * A collection of functions and classes for the mesh loops that are an
+ * ubiquitous part of each finite element program.
  *
+ * The workhorse of this namespace is the loop() function, which implements a
+ * completely generic loop over all mesh cells. Since the calls to loop() are
+ * error-prone due to its generality, for many applications it is advisable to
+ * derive a class from MeshWorker::LocalIntegrator and use the less general
+ * integration_loop() instead.
+ *
+ * The loop() depends on certain objects handed to it as arguments. These
+ * objects are of two types, @p info objects like DoFInfo and IntegrationInfo and
+ * worker objects like LocalWorker and IntegrationWorker.
+ *
+ * Worker objects usually do two different jobs: first, they compute the local
+ * contribution of a cell or face to the global operation. Second, they
+ * assemble this local contribution into the global result, whether a
+ * functional, a form or a bilinear form. While the first job is particular to
+ * the problem being solved, the second is generic and only depends on the
+ * data structures. Therefore, base classes for workers assembling into global
+ * data are provided in the namespace Assembler.
+ *
+ * <h3>Template argument types</h3>
+ *
+ * The functions loop() and cell_action() take some arguments which are
+ * template parameters. Let us list the minimum requirements for these classes
+ * here and describe their properties.
+ *
+ * <h4>ITERATOR</h4>
+ *
+ * Any object that has an <tt>operator++()</tt> and points to a
+ * TriaAccessor or derived class.
+ *
+ * <h4>DOFINFO</h4>
+ *
+ * For an example implementation, refer to the class template DoFInfo. In
+ * order to work with cell_action() and loop(), DOFINFO needs to follow the
+ * following interface.
  * @code
  * class DOFINFO
  * {
- * private:
- *   DOFINFO();
- *   DOFINFO(const DOFINFO&);
- *   DOFINFO& operator=(const DOFINFO&);
+ *   private:
+ *     DOFINFO();
+ *     DOFINFO(const DOFINFO&);
+ *     DOFINFO& operator=(const DOFINFO&);
  *
- * public:
- *   template <class CellIt>
- *   void reinit(const CellIt& c);
+ *   public:
+ *     template <class CellIt>
+ *     void reinit(const CellIt& c);
  *
- *   template <class CellIt, class FaceIt>
- *   void reinit(const CellIt& c, const FaceIt& f, const unsigned int n);
+ *     template <class CellIt, class FaceIt>
+ *     void reinit(const CellIt& c, const FaceIt& f, const unsigned int n);
  *
- *   template <class CellIt, class FaceIt>
- *   void reinit(const CellIt& c, const FaceIt& f, const unsigned int n,
- *               const unsigned int s);
+ *     template <class CellIt, class FaceIt>
+ *     void reinit(const CellIt& c, const FaceIt& f, const unsigned int n,
+ *                 const unsigned int s);
  *
- * friend template class DoFInfoBox<int dim, DOFINFO>;
+ *   friend template class DoFInfoBox<int dim, DOFINFO>;
  * };
  * @endcode
  *
- * 这三个私有函数是由DoFInfoBox调用的，其他地方应该不需要。很明显，它们可以被公开，然后末尾的friend声明可能会被遗漏。
- * 此外，你将需要至少一个公共构造函数。此外，DOFINFO还相当无用：需要与INTEGRATIONINFO和ASSEMBLER接口的函数。
- * DOFINFO对象被聚集在一个DoFInfoBox中。在这些对象中，我们存储了对每个单元及其面的局部操作的结果。一旦所有这些信息都被收集起来，一个ASSEMBLER被用来将其组装成全局数据。
- * <h4>INFOBOX</h4>
- * 这种类型在IntegrationInfoBox中得到了体现。它在INFO对象中收集单元格和面的动作的输入数据（见下文）。它为loop()和cell_action()提供以下接口。
+ * The three private functions are called by DoFInfoBox and should not be
+ * needed elsewhere. Obviously, they can be made public and then the friend
+ * declaration at the end may be missing.
  *
+ * Additionally, you will need at least one public constructor. Furthermore
+ * DOFINFO is pretty useless yet: functions to interface with INTEGRATIONINFO
+ * and ASSEMBLER are needed.
+ *
+ * DOFINFO objects are gathered in a DoFInfoBox. In those objects, we store
+ * the results of local operations on each cell and its faces. Once all this
+ * information has been gathered, an ASSEMBLER is used to assemble it into
+ * global data.
+ *
+ * <h4>INFOBOX</h4>
+ *
+ * This type is exemplified in IntegrationInfoBox. It collects the input data
+ * for actions on cells and faces in INFO objects (see below). It provides the
+ * following interface to loop() and cell_action():
  *
  * @code
  * class INFOBOX
  * {
- * public:
- *   template <int dim, class DOFINFO>
- *   void post_cell(const DoFInfoBox<dim, DOFINFO>&);
+ *   public:
+ *     template <int dim, class DOFINFO>
+ *     void post_cell(const DoFInfoBox<dim, DOFINFO>&);
  *
- *   template <int dim, class DOFINFO>
- *   void post_faces(const DoFInfoBox<dim, DOFINFO>&);
+ *     template <int dim, class DOFINFO>
+ *     void post_faces(const DoFInfoBox<dim, DOFINFO>&);
  *
- *   INFO cell;
- *   INFO boundary;
- *   INFO face;
- *   INFO subface;
- *   INFO neighbor;
+ *     INFO cell;
+ *     INFO boundary;
+ *     INFO face;
+ *     INFO subface;
+ *     INFO neighbor;
  * };
  * @endcode
  *
- * 这个类的主要目的是收集五个INFO对象，它们包含了每个单元或面所使用的临时数据。对这些对象的要求列在下面。在这里，我们只注意到需要有这5个对象的名字在上面列出。
- * 两个函数模板是在cell_action()中调用的回调函数。第一个是在工作面之前调用的，第二个是在工作面之后调用的。
+ * The main purpose of this class is gathering the five INFO objects, which
+ * contain the temporary data used on each cell or face. The requirements on
+ * these objects are listed below. Here, we only note that there need to be
+ * these 5 objects with the names listed above.
+ *
+ * The two function templates are call back functions called in cell_action().
+ * The first is called before the faces are worked on, the second after the
+ * faces.
+ *
  * <h4>INFO</h4>
- * 关于这些对象的例子，请参见IntegrationInfo。它们包含了每个单元或面所需的临时数据，以计算出结果。MeshWorker只使用接口
+ *
+ * See IntegrationInfo for an example of these objects. They contain the
+ * temporary data needed on each cell or face to compute the result. The
+ * MeshWorker only uses the interface
  *
  * @code
  * class INFO
  * {
- * public:
- *   void reinit(const DOFINFO& i);
+ *   public:
+ *     void reinit(const DOFINFO& i);
  * };
  * @endcode
  *
  * <h3>Simplified interfaces</h3>
- * 由于loop()是相当普遍的，所以有一个专门的integration_loop()，它是一个具有简化接口的loop()的包装器。
- * integration_loop()函数循环从IntegrationInfoBox对象中获取大部分需要传递给loop()的信息。它的用途在
- * step-12
- * 中作了解释，但简而言之，它需要在单元格、内部或边界面上做局部积分的函数，它还需要一个对象（称为
- * "装配器"）将这些局部贡献复制到全局矩阵和右手对象中。
- * 在我们能够运行积分循环之前，我们必须在我们的IntegrationWorker和assembler对象中初始化几个数据结构。例如，我们必须决定正交规则，或者我们可能需要比默认更新标志更多的东西。
  *
+ * Since the loop() is fairly general, a specialization integration_loop() is
+ * available, which is a wrapper around loop() with a simplified interface.
+ *
+ * The integration_loop() function loop takes most of the information that it
+ * needs to pass to loop() from an IntegrationInfoBox object. Its use is
+ * explained in step-12, but in short it requires functions that do the local
+ * integration on a cell, interior or boundary face, and it needs an object
+ * (called "assembler") that copies these local contributions into the global
+ * matrix and right hand side objects.
+ *
+ * Before we can run the integration loop, we have to initialize several data
+ * structures in our IntegrationWorker and assembler objects. For instance, we
+ * have to decide on the quadrature rule or we may need more than the default
+ * update flags.
  *
  * @ingroup MeshWorker
- *
  * @ingroup Integrators
- *
  */
 namespace MeshWorker
 {
   /**
-   * 提供剪贴簿的类，以填充局部整合的结果。根据网格工作者循环所执行的任务，局部结果可以是不同的类型。它们可以是标量，也可以是等于积分中使用的自由度数的向量，或者是同样大小的方阵。所有这些都有一个共同点，那就是它们是在一个单元或面上进行局部积分的结果。哪种对象是一个操作的结果，是由使用它们的汇编器决定的。也是装配者决定<i>how many</i>每种对象的产生（例如，一个装配者可以同时创建质量和刚度矩阵的局部贡献），以及将局部结果的数组设置为所需的大小。    该类的接口允许通过以下函数访问所有这些信息。      <ol>   <li>  标量：n_values()返回该类对象存储的标量数量，通过value()函数访问它们。      <li>  向量：n_vectors()返回该类对象存储的向量数量（每个向量的长度等于该单元上发生积分的自由度数量）。  向量是由vector()函数访问的。      <li>  矩阵：n_matrices()返回存储的矩阵数量，每个矩阵的维数等于每个单元的自由度数。矩阵由matrix()访问，第二个参数是<tt>false</tt>。这些矩阵在同一个单元中耦合自由度。对于跨面的通量，还有一组同样大小的矩阵，这些矩阵的维度与两个单元的自由度有关。这些矩阵可以通过matrix()访问，使用第二个参数<tt>true</tt>。    </ol>  本地矩阵由 @p info 对象的reinit()初始化，然后由Assembler类组装成全局系统。
-   * @ingroup MeshWorker
+   * The class providing the scrapbook to fill with results of local
+   * integration. Depending on the task the mesh worker loop is performing,
+   * local results can be of different types: They can be scalars, vectors
+   * of size equal to the number of degrees of freedom used in the integrals,
+   * or square matrices of that same size. All of these have in common that they
+   * are the result of local integration over a cell or face. Which kind of
+   * object is the result of an operation is determined by the Assembler using
+   * them. It is also the assembler that determines <i>how many</i> of each
+   * kind of object are produced (for example, an assembler may create
+   * both the local contributions to a mass and a stiffness matrix), and for
+   * setting the arrays of local results to the sizes needed.
    *
+   * The interface of this class allows accessing all of this information
+   * via the following functions:
+   *
+   * <ol>
+   * <li> Scalars: n_values() returns the number of scalars stored by
+   * an object of this class, and they are accessed via the value() function.
+   *
+   * <li> Vectors: n_vectors() returns the number of vectors stored by
+   * an object of this class (each vector has length equal to the number of
+   * degrees of freedom on this cell on which the integration happens).
+   * The vectors are accessed by the vector() function.
+   *
+   * <li> Matrices: n_matrices() returns the number of matrices stored,
+   * each of which is a square matrix of dimension equal to the number of
+   * degrees of freedom per cell. The matrices are
+   * accessed by matrix() with second argument <tt>false</tt>. These are
+   * matrices coupling degrees of freedom in
+   * the same cell. For fluxes across faces, there is an additional set of
+   * matrices of the same size, with the dimension of these matrices being
+   * according to the degrees of freedom on both cells. These are accessed
+   * with matrix(), using the second argument <tt>true</tt>.
+   * </ol>
+   *
+   * The local matrices are initialized by reinit() of the @p info object and then
+   * assembled into the global system by Assembler classes.
+   *
+   * @ingroup MeshWorker
    */
   template <typename number>
   class LocalResults
   {
   public:
     /**
-     * 当前对象所存储的标量值的数量。        这个数字被
-     * Assembler::CellsAndFaces 设置为非零值。
+     * The number of scalar values stored by the current object.
      *
+     * This number is set to a nonzero value by Assembler::CellsAndFaces
      */
     unsigned int
     n_values() const;
 
     /**
-     * 当前对象所存储的向量的数量。        这个数字被
-     * Assembler::ResidualSimple 和
-     * Assembler::ResidualLocalBlocksToGlobalBlocks. 设置为非零值。
+     * The number of vectors stored by the current object.
      *
+     * This number is set to a nonzero value by Assembler::ResidualSimple and
+     * Assembler::ResidualLocalBlocksToGlobalBlocks.
      */
     unsigned int
     n_vectors() const;
 
     /**
-     * 当前对象存储的矩阵数量。
-     *
+     * The number of matrices stored by the current object.
      */
     unsigned int
     n_matrices() const;
 
     /**
-     * quadrature_values()中正交点的数量。
-     *
+     * The number of quadrature points in quadrature_values().
      */
     unsigned int
     n_quadrature_points() const;
 
     /**
-     * quadrature_values()中每个正交点的值的数量。
-     *
+     * The number of values in each quadrature point in quadrature_values().
      */
     unsigned int
     n_quadrature_values() const;
 
     /**
-     * 对该类存储的第i个标量的读写访问。
-     *
+     * Read-write access to the `i`th scalar stored by this class.
      */
     number &
     value(const unsigned int i);
 
     /**
-     * 对该类存储的第`i`个标量的读取访问。
-     *
+     * Read access to the `i`th scalar stored by this class.
      */
     number
     value(const unsigned int i) const;
 
     /**
-     * 对该类所存储的第i个向量的读写访问。
-     *
+     * Read-write access to the `i`th vector stored by this class
      */
     BlockVector<number> &
     vector(const unsigned int i);
 
     /**
-     * 对该类存储的第`i`个向量的读写权限
-     *
+     * Read-write access to the `i`th vector stored by this class
      */
     const BlockVector<number> &
     vector(const unsigned int i) const;
 
     /**
-     * 对该类存储的第`i`个矩阵的读写访问。
-     * 关于第二个参数的解释，请看当前类本身的文档。
+     * Read-write access to the `i`th matrix stored by this class.
      *
+     * For an explanation of the second argument, see the documentation
+     * of the current class itself.
      */
     MatrixBlock<FullMatrix<number>> &
     matrix(const unsigned int i, const bool external = false);
 
     /**
-     * 读取该类所存储的第`i`个矩阵的访问权限。
-     * 关于第二个参数的解释，请看当前类本身的文档。
+     * Read access to the `i`th matrix stored by this class.
      *
+     * For an explanation of the second argument, see the documentation
+     * of the current class itself.
      */
     const MatrixBlock<FullMatrix<number>> &
     matrix(const unsigned int i, const bool external = false) const;
 
     /**
-     * 访问正交点数据的向量#quadrature_data，其组织方式是每个点都有一个向量，每个分量都包含一个条目。
-     *
+     * Access to the vector #quadrature_data of data in quadrature points,
+     * organized such that there is a vector for each point, containing one
+     * entry for each component.
      */
     Table<2, number> &
     quadrature_values();
 
     /**
-     * 访问正交点<i>i</i>的第<i>k</i>个值。
-     *
+     * Access the <i>i</i>th value at quadrature point <i>k</i>
      */
     number &
     quadrature_value(const unsigned int k, const unsigned int i);
 
     /**
-     * 读取正交点<i>k</i>的<i>i</i>的值。
-     *
+     * Read the <i>i</i>th value at quadrature point <i>k</i>
      */
     number
     quadrature_value(const unsigned int k, const unsigned int i) const;
 
     /**
-     * 用标量值初始化向量。
-     * @note 这个函数通常只由汇编程序调用。
+     * Initialize the vector with scalar values.
      *
+     * @note This function is usually only called by the assembler.
      */
     void
     initialize_numbers(const unsigned int n);
 
     /**
-     * 用向量值初始化向量。
-     * @note  这个函数通常只由汇编器调用。
+     * Initialize the vector with vector values.
      *
+     * @note This function is usually only called by the assembler.
      */
     void
     initialize_vectors(const unsigned int n);
 
     /**
-     * 分配 @p n
-     * 本地矩阵。此外，将它们的块行和列坐标设置为零。矩阵本身的大小由reinit()来调整。
-     * @note  这个函数通常只由汇编器调用。
+     * Allocate @p n local matrices. Additionally, set their block row and
+     * column coordinates to zero. The matrices themselves are resized by
+     * reinit().
      *
+     * @note This function is usually only called by the assembler.
      */
     void
     initialize_matrices(const unsigned int n, bool both);
 
     /**
-     * 为 @p matrices.
-     * 中的每个全局矩阵分配一个本地矩阵，另外，设置它们的块行和列坐标。矩阵本身的大小由reinit()来调整。
-     * @note 这个函数通常只由汇编器调用。
+     * Allocate a local matrix for each of the global ones in @p matrices.
+     * Additionally, set their block row and column coordinates. The matrices
+     * themselves are resized by reinit().
      *
+     * @note This function is usually only called by the assembler.
      */
     template <typename MatrixType>
     void
@@ -278,10 +359,11 @@ namespace MeshWorker
                         bool                                 both);
 
     /**
-     * 为 @p
-     * 矩阵中的每个全局级对象分配一个本地矩阵。另外，设置它们的块行和块列坐标。矩阵本身的大小由reinit()来调整。
-     * @note 这个函数通常只由汇编器调用。
+     * Allocate a local matrix for each of the global level objects in @p
+     * matrices. Additionally, set their block row and column coordinates. The
+     * matrices themselves are resized by reinit().
      *
+     * @note This function is usually only called by the assembler.
      */
     template <typename MatrixType>
     void
@@ -289,15 +371,16 @@ namespace MeshWorker
                         bool                                   both);
 
     /**
-     * 将正交值初始化为<tt>nv</tt>值在<tt>np</tt>正交点。
-     *
+     * Initialize quadrature values to <tt>nv</tt> values in <tt>np</tt>
+     * quadrature points.
      */
     void
     initialize_quadrature(const unsigned int np, const unsigned int nv);
 
     /**
-     * 为新单元重新初始化矩阵。不调整存储在此对象中的任何数据向量的大小，但调整#R中的向量以及#M1和#M2中的矩阵的大小为hp，并将它们设置为零。
-     *
+     * Reinitialize matrices for new cell. Does not resize any of the data
+     * vectors stored in this object, but resizes the vectors in #R and the
+     * matrices in #M1 and #M2 for hp and sets them to zero.
      */
     void
     reinit(const BlockIndices &local_sizes);
@@ -307,41 +390,39 @@ namespace MeshWorker
     print_debug(StreamType &os) const;
 
     /**
-     * 这个对象所使用的内存。
-     *
+     * The memory used by this object.
      */
     std::size_t
     memory_consumption() const;
 
   private:
     /**
-     * 本地的数字，在一个单元或一个面上计算。
-     *
+     * The local numbers, computed on a cell or on a face.
      */
     std::vector<number> J;
 
     /**
-     * 本地向量。这个字段是公开的，所以本地积分器可以写到它。
-     *
+     * The local vectors. This field is public, so that local integrators can
+     * write to it.
      */
     std::vector<BlockVector<number>> R;
 
     /**
-     * 耦合单元本身或面的第一个单元的自由度的局部矩阵。
-     *
+     * The local matrices coupling degrees of freedom in the cell itself or
+     * within the first cell on a face.
      */
     std::vector<MatrixBlock<FullMatrix<number>>> M1;
 
     /**
-     * 耦合单元上的测试函数和其他单元上的试验函数的局部矩阵。
-     * 只在内部面使用。
+     * The local matrices coupling test functions on the cell with trial
+     * functions on the other cell.
      *
+     * Only used on interior faces.
      */
     std::vector<MatrixBlock<FullMatrix<number>>> M2;
 
     /**
-     * 用于写入补丁数据的正交点的值。
-     *
+     * Values in quadrature points for writing into patch data.
      */
     Table<2, number> quadrature_data;
   };
@@ -609,5 +690,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/connectivity_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -33,18 +34,20 @@ namespace internal
   namespace TriangulationImplementation
   {
     /**
-     * Interface of geometric cell entities with the focus on creating a
-     * reduced connectivity table.
+     * 几何单元实体的界面，重点是创建一个缩小的连接表。
+     *
      */
     struct CellTypeBase
     {
       /**
-       * Default destructor.
+       * 默认的解构器。
+       *
        */
       virtual ~CellTypeBase() = default;
 
       /**
-       * Number of sub-entities of dimension @p d.
+       * 维度为 @p d. 的子实体的数量。
+       *
        */
       virtual unsigned int
       n_entities(const unsigned int d) const
@@ -56,7 +59,8 @@ namespace internal
       }
 
       /**
-       * Number of vertices of the @p e-th sub-entity of dimension @p d.
+       * 维度为 @p e-th 的子实体的顶点数量  @p d.  。
+       *
        */
       virtual dealii::ArrayView<const unsigned int>
       vertices_of_entity(const unsigned int d, const unsigned int e) const
@@ -69,7 +73,7 @@ namespace internal
       }
 
       /**
-       * Geometric entity type of the @p e-th sub-entity of dimension @p d.
+       * 维度为 @p e-th 的子实体的几何实体类型  @p d.  *
        */
       virtual dealii::ReferenceCell
       type_of_entity(const unsigned int d, const unsigned int e) const
@@ -81,8 +85,21 @@ namespace internal
         return dealii::ReferenceCells::Vertex;
       }
 
+      /*。      
+* */
+      virtual dealii::ReferenceCell
+      type_of_entity(const unsigned int d, const unsigned int e) const
+      {
+        Assert(false, ExcNotImplemented());
+        (void)d;
+        (void)e;
+
+        return dealii::ReferenceCells::Vertex;
+      }
+
       /**
-       * Number of lines of @p face-th surface.
+       * @p face-th 表面的线的数量。
+       *
        */
       virtual unsigned int
       n_lines_of_surface(const unsigned int face) const
@@ -94,7 +111,8 @@ namespace internal
       }
 
       /**
-       * Index of the @p line-th lines of @p face-th surface.
+       * @p line-th 面的 @p face-th 行的索引。
+       *
        */
       virtual unsigned int
       nth_line_of_surface(const unsigned int line,
@@ -108,7 +126,8 @@ namespace internal
       }
 
       /**
-       * Vertex indices of the @p line-th lines of @p face-th surface.
+       * @p face-th 面的 @p line-th 线的顶点指数。
+       *
        */
       virtual const std::array<unsigned int, 2> &
       vertices_of_nth_line_of_surface(const unsigned int line,
@@ -127,7 +146,8 @@ namespace internal
 
 
     /**
-     * Implementation for lines.
+     * 对线的实现。
+     *
      */
     struct CellTypeLine : public CellTypeBase
     {
@@ -175,7 +195,8 @@ namespace internal
 
 
     /**
-     * Implementation for triangles.
+     * 对三角形的实现。
+     *
      */
     struct CellTypeTri : public CellTypeBase
     {
@@ -232,7 +253,8 @@ namespace internal
 
 
     /**
-     * Implementation for quadrilaterals.
+     * 对四边形的实现。
+     *
      */
     struct CellTypeQuad : public CellTypeBase
     {
@@ -289,7 +311,8 @@ namespace internal
 
 
     /**
-     * Implementation for tetrahedrons.
+     * 对四面体的实现。
+     *
      */
     struct CellTypeTet : public CellTypeBase
     {
@@ -386,7 +409,8 @@ namespace internal
 
 
     /**
-     * Implementation for pyramids.
+     * 实现金字塔。
+     *
      */
 
     struct CellTypePyramid : public CellTypeBase
@@ -509,7 +533,8 @@ namespace internal
 
 
     /**
-     * Implementation for wedges.
+     * 楔形的实现。
+     *
      */
     struct CellTypeWedge : public CellTypeBase
     {
@@ -637,7 +662,8 @@ namespace internal
 
 
     /**
-     * Implementation for hexahedra.
+     * 六面体的实现。
+     *
      */
     struct CellTypeHex : public CellTypeBase
     {
@@ -759,22 +785,26 @@ namespace internal
 
 
     /**
-     * Compressed row storage sparse matrix. This class is similar to
-     * SparsityPattern but reduced to the bare minimum as needed here - in the
-     * context of setting up the connectivity - and allowing direct simplified
-     * access to the entries.
+     * 压缩的行存储稀疏矩阵。这个类类似于SparsityPattern，但是根据需要在这里减少到最低限度。
+     *
+     * - 在设置连接性的背景下
+     *
+     * - 并允许直接简化对条目的访问。
+     *
      */
     template <typename T = unsigned int>
     struct CRS
     {
       /**
-       * Default constructor.
+       * 默认的构造函数。
+       *
        */
       CRS()
         : ptr{0} {};
 
       /**
-       * Constructor which allows to set the internal fields directly.
+       * 允许直接设置内部字段的构造函数。
+       *
        */
       CRS(const std::vector<std::size_t> &ptr, const std::vector<T> &col)
         : ptr(ptr)
@@ -791,32 +821,49 @@ namespace internal
 
 
     /**
-     * Class for storing the reduced connectivity table.
+     * 用于存储缩小的连接表的类。
+     * 一个完整的连接表包含了维度为d的实体和维度为d'的实体的所有可能的连接性，0<=d,d'<=dim。
+     * 然而，在这个库中，我们只需要以下类型的连接性。
      *
-     * A full connectivity table contains all possible connectivities of
-     * entities of dimension d and entities of dimension d' with 0<=d,d'<=dim.
-     * However, in the library we only need the following types of
-     * connectivities:
-     *  - dim-dimensional neighbors of dim-dimensional entities (connected via
-     *    faces)
-     *  - d-dimensional entity to it's (d-1)-dimension bounding entities
-     *  - quad (2 - 3D), line (1 - 2D/3D) to vertices (0) to be able to process
-     *    the user provided SubCellData during
-     *    Triangulation::create_triangulation().
-     * We call a table, which computes the corresponding entries of a full
-     * connectivity table a reduced table.
      *
-     * The entries of the reduced table are as follows for 1D-3D:
      *
-     * 1D :    | 0 1    2D:    | 0 1 2    3D:    | 0 1 2 3
-     *      ---+-----       ---+-------       ---+--------
-     *       0 |             0 |               0 |
-     *       1 | x n         1 | x             1 | x
-     *                       2 | s x n         2 | s x
-     *                                         3 |     x n
      *
-     * with markers highlighting the reason for the entry x:=bounding entities;
-     * n:= neighboring entities; s:=sub-cell data
+     *
+     * - 二维实体的二维邻居（通过面孔连接）。
+     *
+     *
+     *
+     * - d维实体与它的(d-1)维边界实体的关系
+     *
+     *
+     *
+     *
+     * - 四个 (2
+     *
+     * - 3D），线（1
+     *
+     * - 2D/3D）到顶点（0），以便能够在 Triangulation::create_triangulation(). 期间处理用户提供的SubCellData。 我们将计算完整连接表的相应条目的表称为缩小表。        对于1D-3D来说，缩减表的条目如下： 1D :    | 0 1 2D:    | 0 1 2 3D:    | 0 1 2 3
+     *
+     *
+     *
+     *
+     *
+     * - -+-----
+     *
+     *
+     *
+     *
+     *
+     *
+     * - -+-------
+     *
+     *
+     *
+     *
+     *
+     *
+     * - -+-------- 0 | 0 | 0 | 1 | x n 1 | x 1 | x 2 | s x n 2 | s x 3 | x n，用标记突出显示条目的原因 x:=边界实体; n:=相邻实体; s:=子单元数据
+     *
      */
     template <typename T = unsigned int>
     struct Connectivity
@@ -935,11 +982,12 @@ namespace internal
 
 
     /**
-     * Determine the neighbors of all cells.
+     * 确定所有单元格的邻居。          @p con_cf
+     * 连通性细胞面  @p con_cc
+     * 连通性细胞-细胞（对于每个细胞面，它包含相邻细胞的索引或
      *
-     * @p con_cf connectivity cell-face
-     * @p con_cc connectivity cell-cell (for each cell-face it contains the
-     *   index of the neighboring cell or -1 for boundary face)
+     * - 用于边界面)
+     *
      */
     template <typename T>
     void
@@ -988,11 +1036,9 @@ namespace internal
 
 
     /**
-     * Build entities of dimension d (with 0<d<dim). Entities are described by
-     * a set of vertices.
+     * 建立尺寸为d的实体（0<d<dim）。实体是由一组顶点描述的。
+     * 此外，该函数为每个单元确定它由哪个d维实体组成，以及它相对于单元的方向。
      *
-     * Furthermore, the function determines for each cell of which d-dimensional
-     * entity it consists of and its orientation relative to the cell.
      */
     template <int key_length, typename FU>
     void
@@ -1175,8 +1221,9 @@ namespace internal
 
 
     /**
-     * Call the right templated function to be able to use std::array instead
-     * of std::vector.
+     * 调用正确的模板化函数，以便能够使用 std::array
+     * 而不是 std::vector. 。
+     *
      */
     template <typename FU>
     void
@@ -1234,11 +1281,23 @@ namespace internal
 
 
     /**
-     * Build surface lines described by:
-     *  - connectivity quad -> line
-     *  - orientation of line relative to the quad
+     * 构建由以下内容描述的表面线。
      *
-     * Furthermore, the type of the quad is determined.
+     *
+     *
+     *
+     *
+     *
+     * - 连接性四
+     *  -> 行
+     *
+     *
+     *
+     *
+     *
+     *
+     * - 线条相对于四边形的方向 此外，四边形的类型被确定。
+     *
      */
     inline void
     build_intersection(
@@ -1347,12 +1406,10 @@ namespace internal
 
 
     /**
-     * Build the reduced connectivity table for the given dimension @p dim.
+     * 为给定的维度建立缩小的连接表  @p dim.
+     * 这个函数的灵感来自于Anders
+     * Logg的出版物《计算网格的高效表示》和FEniCS的DOLFIN网格实现。它经过了强烈的调整，以有效地完全满足我们的连接需求，同时牺牲了那里的一些灵活性。
      *
-     * This function is inspired by the publication Anders Logg "Efficient
-     * Representation of Computational Meshes" and the FEniCS's DOLFIN mesh
-     * implementation. It has been strongly adjusted to efficiently solely meet
-     * our connectivity needs while sacrificing some of the flexibility there.
      */
     template <typename T>
     Connectivity<T>
@@ -1406,7 +1463,7 @@ namespace internal
                 key[l] =
                   temp1
                     .col[temp1.ptr[c] + cell_type->nth_line_of_surface(l, f)] +
-                  1 /*offset!*/;
+                  1  /*offset!*/ ;
 
               for (; l < key.size(); ++l)
                 key[l] = 0;
@@ -1438,7 +1495,8 @@ namespace internal
 
 
     /**
-     * Preprocessing step to remove the template argument dim.
+     * 预处理步骤，去除模板参数dim。
+     *
      */
     template <typename T, int dim>
     Connectivity<T>
@@ -1527,3 +1585,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

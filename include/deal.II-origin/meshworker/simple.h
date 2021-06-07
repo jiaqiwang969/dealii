@@ -1,3 +1,4 @@
+//include/deal.II-translator/meshworker/simple_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -31,11 +32,10 @@
 
 #include <deal.II/multigrid/mg_constrained_dofs.h>
 
-/*
- * The header containing the classes MeshWorker::Assembler::MatrixSimple,
- * MeshWorker::Assembler::MGMatrixSimple, MeshWorker::Assembler::ResidualSimple,
- * and MeshWorker::Assembler::SystemSimple.
- */
+/* 包含 MeshWorker::Assembler::MatrixSimple,  MeshWorker::Assembler::MGMatrixSimple,  MeshWorker::Assembler::ResidualSimple, 和 MeshWorker::Assembler::SystemSimple. 类的页眉。
+
+ 
+* */
 
 DEAL_II_NAMESPACE_OPEN
 
@@ -44,60 +44,59 @@ namespace MeshWorker
   namespace Assembler
   {
     /**
-     * Assemble residuals without block structure.
-     *
-     * The data structure for this Assembler class is a simple vector on each
-     * cell with entries from zero to FiniteElementData::dofs_per_cell and a
-     * simple global vector with entries numbered from zero to
-     * DoFHandler::n_dofs(). No BlockInfo is required and the global vector
-     * may be any type of vector having element access through <tt>operator()
-     * (unsigned int)</tt>
-     *
+     * 组装残差，没有块状结构。
+     * 这个汇编器类的数据结构是每个单元上的一个简单向量，条目从零到
+     * FiniteElementData::dofs_per_cell
+     * ，以及一个简单的全局向量，条目编号从零到
+     * DoFHandler::n_dofs().
+     * ，不需要BlockInfo，全局向量可以是任何类型的向量，通过<tt>operator()
+     * (unsigned int)</tt>有元素访问。
      * @ingroup MeshWorker
+     *
      */
     template <typename VectorType>
     class ResidualSimple
     {
     public:
       /**
-       * Initialize with an AnyData object holding the result of assembling.
+       * 用一个AnyData对象初始化，该对象保存着组装的结果。
+       * 组装目前写入<tt>results</tt>的第一个向量中。
        *
-       * Assembling currently writes into the first vector of
-       * <tt>results</tt>.
        */
       void
       initialize(AnyData &results);
 
       /**
-       * Initialize the constraints.
+       * 初始化约束。
+       *
        */
       void
       initialize(
         const AffineConstraints<typename VectorType::value_type> &constraints);
 
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化以后用于装配的DoFInfo对象中的本地数据。
+       * 如果 @p info 对象指的是一个单元格，如果
+       * <code>!face</code> ，则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
       initialize_info(DOFINFO &info, bool face) const;
 
       /**
-       * Assemble the local residuals into the global residuals.
+       * 将局部残差组合成全局残差。
+       * 数值被添加到之前的内容中。如果约束被激活，则使用
+       * AffineConstraints::distribute_local_to_global() 。
        *
-       * Values are added to the previous contents. If constraints are active,
-       * AffineConstraints::distribute_local_to_global() is used.
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble both local residuals into the global residuals.
+       * 将两个局部残差组合成全局残差。
+       *
        */
       template <class DOFINFO>
       void
@@ -105,12 +104,14 @@ namespace MeshWorker
 
     protected:
       /**
-       * The global residual vectors filled by assemble().
+       * 由assemble()填充的全局残差向量。
+       *
        */
       AnyData residuals;
 
       /**
-       * A pointer to the object containing constraints.
+       * 一个指向包含约束的对象的指针。
+       *
        */
       SmartPointer<const AffineConstraints<typename VectorType::value_type>,
                    ResidualSimple<VectorType>>
@@ -119,90 +120,77 @@ namespace MeshWorker
 
 
     /**
-     * Assemble local matrices into a single global matrix or several global
-     * matrices associated with the same DoFHandler. If these global matrix
-     * have a block structure, this structure is not used, but rather the
-     * global numbering of degrees of freedom.
-     *
-     * After being initialized with a SparseMatrix object (or another matrix
-     * offering the same functionality as SparseMatrix::add()) or a vector of
-     * such, this class can be used in a MeshWorker::loop() to assemble the
-     * cell and face matrices into the global matrix.
-     *
-     * If a AffineConstraints has been provided during initialization, this
-     * matrix will be used (AffineConstraints::distribute_local_to_global(), to
-     * be precise) to enter the local matrix into the global sparse matrix.
-     *
-     * The assembler can handle two different types of local data. First, by
-     * default, the obvious choice of taking a single local matrix with
-     * dimensions equal to the number of degrees of freedom of the cell.
-     * Alternatively, a local block structure can be initialized in DoFInfo.
-     * After this, the local data will be arranged as an array of n by n
-     * FullMatrix blocks (n being the number of blocks in the FESystem used by
-     * the DoFHandler in DoFInfo), which are ordered lexicographically with
-     * column index fastest in DoFInfo. If the matrix was initialized with a
-     * vector of several matrices and local block structure is used, then the
-     * first n<sup>2</sup> matrices in LocalResults will be used for the first
-     * matrix in this vector, the second set of n<sup>2</sup> for the second,
-     * and so on.
-     *
+     * 将本地矩阵组装成一个单一的全局矩阵或与同一DoFHandler相关的几个全局矩阵。如果这些全局矩阵有块状结构，则不使用该结构，而是使用全局自由度的编号。
+     * 在用一个SparseMatrix对象（或另一个提供相同功能的矩阵
+     * SparseMatrix::add())
+     * 或一个这样的向量）初始化后，这个类可以在
+     * MeshWorker::loop()
+     * 中使用，将单元和面的矩阵组合成全局矩阵。
+     * 如果在初始化过程中提供了一个AffineConstraints，这个矩阵将被用来
+     * (AffineConstraints::distribute_local_to_global(),
+     * 准确地说）将局部矩阵输入到全局稀疏矩阵。
+     * 汇编器可以处理两种不同类型的局部数据。首先，默认情况下，明显的选择是取一个单一的局部矩阵，其尺寸等于单元的自由度数。
+     * 或者，可以在DoFInfo中初始化一个局部块结构。
+     * 在这之后，本地数据将被排列成一个由n乘n的FullMatrix块组成的数组（n是DoFInfo中DoFHandler使用的FES系统中的块数），这些块在DoFInfo中以列索引最快的方式排序。如果矩阵被初始化为几个矩阵的向量，并且使用了本地块结构，那么LocalResults中的前n<sup>2</sup>个矩阵将被用于该向量中的第一个矩阵，第二组n<sup>2</sup>个矩阵，以此类推。
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType>
     class MatrixSimple
     {
     public:
       /**
-       * Constructor, initializing the #threshold, which limits how small
-       * numbers may be to be entered into the matrix.
+       * 构造函数，初始化#阈值，它限制了可以进入矩阵的小数字。
+       *
        */
       MatrixSimple(double threshold = 1.e-12);
 
       /**
-       * Store the result matrix for later assembling.
+       * 存储结果矩阵，以便以后进行组装。
+       *
        */
       void
       initialize(MatrixType &m);
 
       /**
-       * Store several result matrices for later assembling.
+       * 存储几个结果矩阵供以后组装。
+       *
        */
       void
       initialize(std::vector<MatrixType> &m);
 
       /**
-       * Initialize the constraints. After this function has been called with
-       * a valid AffineConstraints object, the function
-       * AffineConstraints::distribute_local_to_global() will be used by
-       * assemble() to distribute the cell and face matrices into a global
-       * sparse matrix.
+       * 初始化约束。在用一个有效的AffineConstraints对象调用此函数后，函数
+       * AffineConstraints::distribute_local_to_global()
+       * 将被assemble()用来将单元和面矩阵分配到一个全局稀疏矩阵中。
+       *
        */
       void
       initialize(
         const AffineConstraints<typename MatrixType::value_type> &constraints);
 
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化以后用于装配的DoFInfo对象中的局部数据。
+       * 如果 @p info 对象指的是一个单元格，如果
+       * <code>!face</code> ，则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
       initialize_info(DOFINFO &info, bool face) const;
 
       /**
-       * Assemble the local matrices associated with a single cell into the
-       * global matrix.
+       * 将与单个单元相关的局部矩阵组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble all local matrices associated with an interior face in the
-       * @p info1 and @p info2 objects into the global matrix.
+       * 将 @p info1 和 @p info2
+       * 对象中与一个内部面相关的所有局部矩阵组装到全局矩阵中。
+       *
        */
       template <class DOFINFO>
       void
@@ -210,21 +198,22 @@ namespace MeshWorker
 
     protected:
       /**
-       * The vector of global matrices being assembled.
+       * 正在组装的全局矩阵的向量。
+       *
        */
       std::vector<SmartPointer<MatrixType, MatrixSimple<MatrixType>>> matrix;
 
       /**
-       * The smallest positive number that will be entered into the global
-       * matrix. All smaller absolute values will be treated as zero and will
-       * not be assembled.
+       * 将被输入全局矩阵的最小正数。所有更小的绝对值将被视为零，不会被装配。
+       *
        */
       const double threshold;
 
     private:
       /**
-       * Assemble a single matrix <code>M</code> into the element at
-       * <code>index</code> in the vector #matrix.
+       * 将单个矩阵 <code>M</code> 装配到向量#matrix中
+       * <code>index</code> 处的元素。
+       *
        */
       void
       assemble(const FullMatrix<double> &                  M,
@@ -233,7 +222,8 @@ namespace MeshWorker
                const std::vector<types::global_dof_index> &i2);
 
       /**
-       * A pointer to the object containing constraints.
+       * 一个指向包含约束的对象的指针。
+       *
        */
       SmartPointer<const AffineConstraints<typename MatrixType::value_type>,
                    MatrixSimple<MatrixType>>
@@ -242,72 +232,73 @@ namespace MeshWorker
 
 
     /**
-     * Assemble local matrices into level matrices without using block
-     * structure.
-     *
-     * @todo The matrix structures needed for assembling level matrices with
-     * local refinement and continuous elements are missing.
-     *
+     * 将局部矩阵组装成水平矩阵，而不使用块结构。
+     * @todo
+     * 用局部细化和连续元素组装水平矩阵所需的矩阵结构缺失。
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType>
     class MGMatrixSimple
     {
     public:
       /**
-       * Constructor, initializing the #threshold, which limits how small
-       * numbers may be to be entered into the matrix.
+       * 构造函数，初始化#threshold，它限制了可以输入矩阵的小数字。
+       *
        */
       MGMatrixSimple(double threshold = 1.e-12);
 
       /**
-       * Store the result matrix for later assembling.
+       * 存储结果矩阵，以便以后进行组装。
+       *
        */
       void
       initialize(MGLevelObject<MatrixType> &m);
 
       /**
-       * Initialize the multilevel constraints.
+       * 初始化多级约束。
+       *
        */
       void
       initialize(const MGConstrainedDoFs &mg_constrained_dofs);
 
       /**
-       * Initialize the matrices #flux_up and #flux_down used for local
-       * refinement with discontinuous Galerkin methods.
+       * 初始化矩阵#flux_up和#flux_down，用于不连续Galerkin方法的局部细化。
+       *
        */
       void
       initialize_fluxes(MGLevelObject<MatrixType> &flux_up,
                         MGLevelObject<MatrixType> &flux_down);
 
       /**
-       * Initialize the matrices #interface_in and #interface_out used for
-       * local refinement with continuous Galerkin methods.
+       * 初始化矩阵#interface_in和#interface_out，用于连续Galerkin方法的局部细化。
+       *
        */
       void
       initialize_interfaces(MGLevelObject<MatrixType> &interface_in,
                             MGLevelObject<MatrixType> &interface_out);
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化DoFInfo对象中的局部数据，以后用于装配。
+       * 如果 @p info
+       * 对象指的是一个单元，否则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
       initialize_info(DOFINFO &info, bool face) const;
 
       /**
-       * Assemble the matrix DoFInfo::M1[0] into the global matrix.
+       * 将矩阵 DoFInfo::M1[0] 组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble both local matrices in the @p info1 and @p info2
-       * objects into the global matrices.
+       * 将 @p info1 和 @p info2
+       * 对象中的两个局部矩阵组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
@@ -315,7 +306,8 @@ namespace MeshWorker
 
     private:
       /**
-       * Assemble a single matrix into a global matrix.
+       * 将单个矩阵组装成全局矩阵。
+       *
        */
       void
       assemble(MatrixType &                                G,
@@ -324,7 +316,8 @@ namespace MeshWorker
                const std::vector<types::global_dof_index> &i2);
 
       /**
-       * Assemble a single matrix into a global matrix.
+       * 将一个单一的矩阵组装成一个全局矩阵。
+       *
        */
       void
       assemble(MatrixType &                                G,
@@ -334,7 +327,8 @@ namespace MeshWorker
                const unsigned int                          level);
 
       /**
-       * Assemble a single matrix into a global matrix.
+       * 将一个单一的矩阵组合成一个全局矩阵。
+       *
        */
 
       void
@@ -344,7 +338,8 @@ namespace MeshWorker
                   const std::vector<types::global_dof_index> &i2,
                   const unsigned int level = numbers::invalid_unsigned_int);
       /**
-       * Assemble a single matrix into a global matrix.
+       * 将一个单一的矩阵组合成一个全局矩阵。
+       *
        */
 
       void
@@ -355,7 +350,8 @@ namespace MeshWorker
                     const unsigned int level = numbers::invalid_unsigned_int);
 
       /**
-       * Assemble a single matrix into a global matrix.
+       * 将一个单一的矩阵组合成一个全局矩阵。
+       *
        */
 
       void
@@ -366,7 +362,8 @@ namespace MeshWorker
                   const unsigned int level = numbers::invalid_unsigned_int);
 
       /**
-       * Assemble a single matrix into a global matrix.
+       * 将一个单一的矩阵组合成一个全局矩阵。
+       *
        */
 
       void
@@ -377,61 +374,58 @@ namespace MeshWorker
                    const unsigned int level = numbers::invalid_unsigned_int);
 
       /**
-       * The global matrix being assembled.
+       * 正在装配的全局矩阵。
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         matrix;
 
       /**
-       * The matrix used for face flux terms across the refinement edge,
-       * coupling coarse to fine.
+       * 用于细化边缘的面通量项的矩阵，将粗的耦合到细的。
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         flux_up;
 
       /**
-       * The matrix used for face flux terms across the refinement edge,
-       * coupling fine to coarse.
+       * 用于细化边缘的面通量项的矩阵，将细化与粗化相耦合。
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         flux_down;
 
       /**
-       * The matrix used for face contributions for continuous elements across
-       * the refinement edge, coupling coarse to fine.
+       * 用于整个细化边缘的连续元素的面贡献的矩阵，耦合粗到细。
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         interface_in;
 
       /**
-       * The matrix used for face contributions for continuous elements across
-       * the refinement edge, coupling fine to coarse.
+       * 用于整个细化边缘的连续元素的面贡献的矩阵，将细化与粗化相耦合。
+       *
        */
       SmartPointer<MGLevelObject<MatrixType>, MGMatrixSimple<MatrixType>>
         interface_out;
       /**
-       * A pointer to the object containing constraints.
+       * 一个指向包含约束的对象的指针。
+       *
        */
       SmartPointer<const MGConstrainedDoFs, MGMatrixSimple<MatrixType>>
         mg_constrained_dofs;
 
       /**
-       * The smallest positive number that will be entered into the global
-       * matrix. All smaller absolute values will be treated as zero and will
-       * not be assembled.
+       * 将被输入全局矩阵的最小正数。所有更小的绝对值将被视为零，不会被集合。
+       *
        */
       const double threshold;
     };
 
 
     /**
-     * Assemble a simple matrix and a simple right hand side at once. We use a
-     * combination of MatrixSimple and ResidualSimple to achieve this. Cell
-     * and face operators should fill the matrix and vector objects in
-     * LocalResults and this class will assemble them into matrix and vector
-     * objects.
-     *
+     * 一次性组装一个简单的矩阵和一个简单的右手边。我们使用MatrixSimple和ResidualSimple的组合来实现这一点。单元和面操作者应该在LocalResults中填充矩阵和向量对象，这个类将把它们组装成矩阵和向量对象。
      * @ingroup MeshWorker
+     *
      */
     template <typename MatrixType, typename VectorType>
     class SystemSimple : private MatrixSimple<MatrixType>,
@@ -439,48 +433,50 @@ namespace MeshWorker
     {
     public:
       /**
-       * Constructor setting the threshold value in MatrixSimple.
+       * 构造函数在MatrixSimple中设置阈值。
+       *
        */
       SystemSimple(double threshold = 1.e-12);
 
       /**
-       * Store the two objects data is assembled into.
+       * 存储两个对象的数据被组装成。
+       *
        */
       void
       initialize(MatrixType &m, VectorType &rhs);
 
       /**
-       * Initialize the constraints. After this function has been called with
-       * a valid AffineConstraints object, the function
-       * AffineConstraints::distribute_local_to_global() will be used by
-       * assemble() to distribute the cell and face matrices into a global
-       * sparse matrix.
+       * 初始化约束。在用一个有效的AffineConstraints对象调用此函数后，函数
+       * AffineConstraints::distribute_local_to_global()
+       * 将被assemble()用来将单元和面矩阵分配到一个全局稀疏矩阵中。
+       *
        */
       void
       initialize(
         const AffineConstraints<typename VectorType::value_type> &constraints);
 
       /**
-       * Initialize the local data in the DoFInfo object used later for
-       * assembling.
+       * 初始化以后用于装配的DoFInfo对象中的局部数据。
+       * 如果 @p info
+       * 对象指的是一个单元，否则指的是一个内部或边界面。
        *
-       * The @p info object refers to a cell if <code>!face</code>, or else to an
-       * interior or boundary face.
        */
       template <class DOFINFO>
       void
       initialize_info(DOFINFO &info, bool face) const;
 
       /**
-       * Assemble the matrix DoFInfo::M1[0] into the global matrix.
+       * 将矩阵 DoFInfo::M1[0] 组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
       assemble(const DOFINFO &info);
 
       /**
-       * Assemble both local matrices in the @p info1 and @p info2
-       * objects into the global matrix.
+       * 将 @p info1 和 @p info2
+       * 对象中的两个局部矩阵组装成全局矩阵。
+       *
        */
       template <class DOFINFO>
       void
@@ -488,8 +484,9 @@ namespace MeshWorker
 
     private:
       /**
-       * Assemble a single matrix <code>M</code> into the element at
-       * <code>index</code> in the vector #matrix.
+       * 将单个矩阵 <code>M</code> 装配到向量#matrix中
+       * <code>index</code> 处的元素中。
+       *
        */
       void
       assemble(const FullMatrix<double> &                  M,
@@ -1453,3 +1450,5 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

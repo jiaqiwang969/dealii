@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/block_sparse_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -31,37 +30,37 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!   @addtogroup  Matrix1  @{ . 
-
-* 
-* */
+/*! @addtogroup Matrix1
+ *@{
+ */
 
 
 /**
- * 基于SparseMatrix类的阻塞式稀疏矩阵。这个类实现了SparseMatrix基对象的特定函数，用于阻塞式稀疏矩阵，并将实际工作中对各个块的大部分调用留给基类中实现的函数。关于这个类何时有用的描述，也请参见这里。
- * @see   @ref GlossBlockLA  "块（线性代数）"
+ * Blocked sparse matrix based on the SparseMatrix class. This class
+ * implements the functions that are specific to the SparseMatrix base objects
+ * for a blocked sparse matrix, and leaves the actual work relaying most of
+ * the calls to the individual blocks to the functions implemented in the base
+ * class. See there also for a description of when this class is useful.
  *
- *
+ * @see
+ * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <typename number>
 class BlockSparseMatrix : public BlockMatrixBase<SparseMatrix<number>>
 {
 public:
   /**
-   * 对基类进行类型化定义，以便更简单地访问它自己的别名。
-   *
+   * Typedef the base class for simpler access to its own alias.
    */
   using BaseClass = BlockMatrixBase<SparseMatrix<number>>;
 
   /**
-   * 对底层矩阵的类型进行类型化定义。
-   *
+   * Typedef the type of the underlying matrix.
    */
   using BlockType = typename BaseClass::BlockType;
 
   /**
-   * 从基类中导入别名。
-   *
+   * Import the alias from the base class.
    */
   using value_type      = typename BaseClass::value_type;
   using pointer         = typename BaseClass::pointer;
@@ -73,126 +72,149 @@ public:
   using const_iterator  = typename BaseClass::const_iterator;
 
   /**
-   * @name  构造函数和初始化
-   *
+   * @name Constructors and initialization
    */
   //@{
   /**
-   * 构造函数；将矩阵初始化为空，没有任何结构，也就是说，矩阵根本无法使用。因此，这个构造函数只对作为类的成员的矩阵有用。所有其他的矩阵都应该在数据流中的一个点上创建，在那里所有必要的信息都是可用的。
-   * 你必须在使用前用reinit(BlockSparsityPattern)初始化矩阵。然后每行和每列的块数由该函数决定。
+   * Constructor; initializes the matrix to be empty, without any structure,
+   * i.e.  the matrix is not usable at all. This constructor is therefore only
+   * useful for matrices which are members of a class. All other matrices
+   * should be created at a point in the data flow where all necessary
+   * information is available.
    *
+   * You have to initialize the matrix before usage with
+   * reinit(BlockSparsityPattern). The number of blocks per row and column are
+   * then determined by that function.
    */
   BlockSparseMatrix() = default;
 
   /**
-   * 构造函数。使用给定的矩阵稀疏度结构来表示该矩阵的稀疏度模式。你可以在以后通过调用reinit()函数来改变稀疏性模式。
-   * 这个构造函数用参数中的子疏密模式初始化所有子矩阵。
-   * 你必须确保稀疏结构的寿命至少和这个矩阵的寿命一样长，或者只要reinit()没有被调用，就会有新的稀疏结构。
+   * Constructor. Takes the given matrix sparsity structure to represent the
+   * sparsity pattern of this matrix. You can change the sparsity pattern
+   * later on by calling the reinit() function.
    *
+   * This constructor initializes all sub-matrices with the sub-sparsity
+   * pattern within the argument.
+   *
+   * You have to make sure that the lifetime of the sparsity structure is at
+   * least as long as that of this matrix or as long as reinit() is not called
+   * with a new sparsity structure.
    */
   BlockSparseMatrix(const BlockSparsityPattern &sparsity);
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~BlockSparseMatrix() override;
 
 
 
   /**
-   * 伪拷贝操作符只拷贝空对象。块矩阵的大小需要相同。
-   *
+   * Pseudo copy operator only copying empty objects. The sizes of the block
+   * matrices need to be the same.
    */
   BlockSparseMatrix &
   operator=(const BlockSparseMatrix &);
 
   /**
-   * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？仅仅是稀疏模式的非零条目？），这个操作只允许在实际要分配的值为零的情况下进行。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留之前使用的稀疏模式。
-   *
+   * This operator assigns a scalar to a matrix. Since this does usually not
+   * make much sense (should we set all matrix entries to this value? Only the
+   * nonzero entries of the sparsity pattern?), this operation is only allowed
+   * if the actual value to be assigned is zero. This operator only exists to
+   * allow for the obvious notation <tt>matrix=0</tt>, which sets all elements
+   * of the matrix to zero, but keep the sparsity pattern previously used.
    */
   BlockSparseMatrix &
   operator=(const double d);
 
   /**
-   * 释放所有内存并返回到与调用默认构造函数后相同的状态。它也忘记了之前所绑定的稀疏模式。
-   * 这在所有子矩阵上调用 SparseMatrix::clear
-   * ，然后将此对象重置为完全没有块。
+   * Release all memory and return to a state just like after having called
+   * the default constructor. It also forgets the sparsity pattern it was
+   * previously tied to.
    *
+   * This calls SparseMatrix::clear on all sub-matrices and then resets this
+   * object to have no blocks at all.
    */
   void
   clear();
 
   /**
-   * 用给定的稀疏模式重新初始化稀疏矩阵。后者告诉矩阵需要保留多少个非零元素。
-   * 基本上，这个函数只调用 SparseMatrix::reinit()
-   * 的子矩阵与参数的块状稀疏模式。
-   * 你必须确保稀疏结构的寿命至少和这个矩阵的寿命一样长，或者只要reinit(const
-   * SparsityPattern &)没有被调用新的稀疏结构。
-   * 矩阵的元素被这个函数设置为零。
+   * Reinitialize the sparse matrix with the given sparsity pattern. The
+   * latter tells the matrix how many nonzero elements there need to be
+   * reserved.
    *
+   * Basically, this function only calls SparseMatrix::reinit() of the sub-
+   * matrices with the block sparsity patterns of the parameter.
+   *
+   * You have to make sure that the lifetime of the sparsity structure is at
+   * least as long as that of this matrix or as long as reinit(const
+   * SparsityPattern &) is not called with a new sparsity structure.
+   *
+   * The elements of the matrix are set to zero by this function.
    */
   virtual void
   reinit(const BlockSparsityPattern &sparsity);
   //@}
 
   /**
-   * @name  矩阵的信息
-   *
+   * @name Information on the matrix
    */
   //@{
   /**
-   * 返回该对象是否为空。如果两个维度都是零或者没有关联BlockSparsityPattern，它就是空的。
-   *
+   * Return whether the object is empty. It is empty if either both dimensions
+   * are zero or no BlockSparsityPattern is associated.
    */
   bool
   empty() const;
 
   /**
-   * 返回特定行中的条目数。
-   *
+   * Return the number of entries in a specific row.
    */
   size_type
   get_row_length(const size_type row) const;
 
   /**
-   * 返回这个矩阵的非零元素的数量。实际上，它返回的是稀疏模式中的条目数；如果任何一个条目碰巧是零，无论如何都会被计算在内。
-   *
+   * Return the number of nonzero elements of this matrix. Actually, it
+   * returns the number of entries in the sparsity pattern; if any of the
+   * entries should happen to be zero, it is counted anyway.
    */
   size_type
   n_nonzero_elements() const;
 
   /**
-   * 返回实际非零元素的数量。只是计算所有块中实际非零元素的数量（绝对值大于阈值）。
-   *
+   * Return the number of actually nonzero elements. Just counts the number of
+   * actually nonzero elements (with absolute value larger than threshold) of
+   * all the blocks.
    */
   size_type
   n_actually_nonzero_elements(const double threshold = 0.0) const;
 
   /**
-   * 返回一个对该矩阵的底层稀疏模式的（常数）引用。
-   * 尽管返回值被声明为<tt>const</tt>，但你应该注意，如果你调用任何对其进行操作的对象的非常量函数，它可能会发生变化。
+   * Return a (constant) reference to the underlying sparsity pattern of this
+   * matrix.
    *
+   * Though the return value is declared <tt>const</tt>, you should be aware
+   * that it may change if you call any nonconstant function of objects which
+   * operate on it.
    */
   const BlockSparsityPattern &
   get_sparsity_pattern() const;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
   //@}
 
   /**
-   * @name  乘法运算
-   *
+   * @name Multiplications
    */
   //@{
   /**
-   * 矩阵-向量乘法：让 $dst = M*src$ 与 $M$ 为这个矩阵。
-   *
+   * Matrix-vector multiplication: let $dst = M*src$ with $M$ being this
+   * matrix.
    */
   template <typename block_number>
   void
@@ -200,8 +222,8 @@ public:
         const BlockVector<block_number> &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块列的情况。
-   *
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block column.
    */
   template <typename block_number, typename nonblock_number>
   void
@@ -209,8 +231,8 @@ public:
         const Vector<nonblock_number> &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块行的情况。
-   *
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block row.
    */
   template <typename block_number, typename nonblock_number>
   void
@@ -218,17 +240,17 @@ public:
         const BlockVector<block_number> &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块的情况。
-   *
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block.
    */
   template <typename nonblock_number>
   void
   vmult(Vector<nonblock_number> &dst, const Vector<nonblock_number> &src) const;
 
   /**
-   * 矩阵-向量乘法：让 $dst = M^T*src$ 与 $M$
-   * 为这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
-   *
+   * Matrix-vector multiplication: let $dst = M^T*src$ with $M$ being this
+   * matrix. This function does the same as vmult() but takes the transposed
+   * matrix.
    */
   template <typename block_number>
   void
@@ -236,8 +258,8 @@ public:
          const BlockVector<block_number> &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块行的情况。
-   *
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block row.
    */
   template <typename block_number, typename nonblock_number>
   void
@@ -245,8 +267,8 @@ public:
          const Vector<nonblock_number> &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块列的情况。
-   *
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block column.
    */
   template <typename block_number, typename nonblock_number>
   void
@@ -254,8 +276,8 @@ public:
          const BlockVector<block_number> &src) const;
 
   /**
-   * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块的情况。
-   *
+   * Matrix-vector multiplication. Just like the previous function, but only
+   * applicable if the matrix has only one block.
    */
   template <typename nonblock_number>
   void
@@ -264,14 +286,15 @@ public:
   //@}
 
   /**
-   * @name  预处理方法
-   *
+   * @name Preconditioning methods
    */
   //@{
   /**
-   * 应用Jacobi预处理，它将<tt>src</tt>向量的每个元素都乘以各自对角线元素的逆值，并将结果与松弛参数<tt>omega</tt>相乘。
-   * 所有的对角线块必须是方形矩阵，才能进行这个操作。
+   * Apply the Jacobi preconditioner, which multiplies every element of the
+   * <tt>src</tt> vector by the inverse of the respective diagonal element and
+   * multiplies the result with the relaxation parameter <tt>omega</tt>.
    *
+   * All diagonal blocks must be square matrices for this operation.
    */
   template <class BlockVectorType>
   void
@@ -280,9 +303,9 @@ public:
                       const number           omega = 1.) const;
 
   /**
-   * 对一个简单的向量应用雅可比预处理程序。
-   * 为此，矩阵必须是单一的正方形块。
+   * Apply the Jacobi preconditioner to a simple vector.
    *
+   * The matrix must be a single square block for this.
    */
   template <typename number2>
   void
@@ -292,21 +315,28 @@ public:
   //@}
 
   /**
-   * @name  输入/输出
-   *
+   * @name Input/Output
    */
   //@{
   /**
-   * 以通常的格式打印矩阵，即作为矩阵而不是作为非零元素的列表。为了提高可读性，不在矩阵中的元素显示为空白，而明确设置为零的矩阵元素则显示为空白。
-   * 参数允许对输出格式进行灵活设置。
-   * <tt>precision</tt>和<tt>scientific</tt>用于确定数字格式，其中<tt>scientific
-   * = false</tt>表示固定点符号。
-   * <tt>width</tt>的一个零条目使函数计算出一个宽度，但如果输出粗略的话，可以将其改为一个正值。
-   * 此外，还可以指定一个空值的字符。
-   * 最后，整个矩阵可以与一个共同的分母相乘，产生更可读的输出，甚至是整数。
-   * @attention
-   * 如果应用于一个大的矩阵，这个函数可能会产生<b>large</b>量的输出!
+   * Print the matrix in the usual format, i.e. as a matrix and not as a list
+   * of nonzero elements. For better readability, elements not in the matrix
+   * are displayed as empty space, while matrix elements which are explicitly
+   * set to zero are displayed as such.
    *
+   * The parameters allow for a flexible setting of the output format:
+   * <tt>precision</tt> and <tt>scientific</tt> are used to determine the
+   * number format, where <tt>scientific = false</tt> means fixed point
+   * notation.  A zero entry for <tt>width</tt> makes the function compute a
+   * width, but it may be changed to a positive value, if output is crude.
+   *
+   * Additionally, a character for an empty value may be specified.
+   *
+   * Finally, the whole matrix can be multiplied with a common denominator to
+   * produce more readable output, even integers.
+   *
+   * @attention This function may produce <b>large</b> amounts of output if
+   * applied to a large matrix!
    */
   void
   print_formatted(std::ostream &     out,
@@ -317,21 +347,21 @@ public:
                   const double       denominator = 1.) const;
   //@}
   /**
-   * @addtogroup  异常情况 @{ 。
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcBlockDimensionMismatch);
   //@}
 
 private:
   /**
-   * 指向用于该矩阵的块状稀疏模式的指针。为了保证它在使用中不被删除，我们使用SmartPointer类来订阅它。
-   *
+   * Pointer to the block sparsity pattern used for this matrix. In order to
+   * guarantee that it is not deleted while still in use, we subscribe to it
+   * using the SmartPointer class.
    */
   SmartPointer<const BlockSparsityPattern, BlockSparseMatrix<number>>
     sparsity_pattern;
@@ -339,8 +369,8 @@ private:
 
 
 
- /*@}*/ 
- /* ------------------------- Template functions ---------------------- */ 
+/*@}*/
+/* ------------------------- Template functions ---------------------- */
 
 
 
@@ -494,5 +524,3 @@ BlockSparseMatrix<number>::precondition_Jacobi(Vector<number2> &      dst,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_block_sparse_matrix_h
-
-

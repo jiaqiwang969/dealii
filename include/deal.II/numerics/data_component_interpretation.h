@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/data_component_interpretation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
@@ -24,41 +23,44 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个专门用于声明
- * DataComponentInterpretation::DataComponentInterpretation
- * 枚举的命名空间。
- *
- *
+ * A namespace solely for the declaration of the
+ * DataComponentInterpretation::DataComponentInterpretation enum.
  */
 namespace DataComponentInterpretation
 {
   /**
-   * 这个枚举的成员是用来描述矢量值数据集的各个组成部分的逻辑解释的。例如，如果一个人有一个2d的斯托克斯方程的有限元，代表组件
-   * $(u,v,p)$ ，我们希望表明前两个， $u$ 和 $v$
-   * ，代表一个逻辑矢量，这样以后当我们生成图形输出时，我们可以把它们交给一个可视化程序，它将自动知道把它们作为一个矢量场来渲染，而不是作为两个独立的标量场。
-   * 通过向 DataOut_DoFData::add_data_vector
-   * 函数传递一组当前种类的枚举，这可以实现。    参见
-   * step-22
-   * 教程程序中关于如何在实践中使用这一信息的例子。
+   * The members of this enum are used to describe the logical interpretation
+   * of what the various components of a vector-valued data set mean. For
+   * example, if one has a finite element for the Stokes equations in 2d,
+   * representing components $(u,v,p)$, one would like to indicate that the
+   * first two, $u$ and $v$, represent a logical vector so that later on when
+   * we generate graphical output we can hand them off to a visualization
+   * program that will automatically know to render them as a vector field,
+   * rather than as two separate and independent scalar fields.
    *
+   * By passing a set of enums of the current kind to the
+   * DataOut_DoFData::add_data_vector functions, this can be achieved.
+   *
+   * See the step-22 tutorial program for an example on how this information
+   * can be used in practice.
    */
   enum DataComponentInterpretation
   {
     /**
-     * 表示一个数据集的某个分量对应于一个独立于其他分量的标量场。
-     *
+     * Indicates that a component of a data set corresponds to a scalar field
+     * independent of the others.
      */
     component_is_scalar,
 
     /**
-     * 表示一个数据集的某个分量是一个矢量值量的一部分。
-     *
+     * Indicates that a component of a data set is part of a vector-valued
+     * quantity.
      */
     component_is_part_of_vector,
 
     /**
-     * 表示一个数据集的某个分量是张量值（二阶）数量的一部分。
-     *
+     * Indicates that a component of a data set is part of a tensor-valued
+     * (2nd order) quantity.
      */
     component_is_part_of_tensor
   };
@@ -68,5 +70,3 @@ namespace DataComponentInterpretation
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

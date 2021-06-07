@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/fe_point_evaluation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -40,8 +39,8 @@ namespace internal
   namespace FEPointEvaluation
   {
     /**
-     * 用于区分FlexibleEvaluator类所使用的不同数量组件的值和梯度类型的结构。
-     *
+     * Struct to distinguish between the value and gradient types of different
+     * numbers of components used by the FlexibleEvaluator class.
      */
     template <int dim, int n_components, typename Number>
     struct EvaluatorTypeTraits
@@ -360,19 +359,32 @@ namespace internal
 
 
 /**
- * 该类提供了一个接口，用于评估任意参考点位置上的单元格的内插解数值和梯度。这些点可以从一个单元格到另一个单元格，在数量和位置方面都可以改变。两个典型的用例是在非匹配网格上的评估和粒子模拟。
- * 该类的使用与FEValues或FEEvaluation类似。该类首先通过调用
- * `FEPointEvaluation::reinit(cell,
- * unit_points)`初始化为一个单元，与其他概念的主要区别是需要传递参考坐标的底层点。然后，在调用evaluation()或integration()时，用户可以计算给定点的信息。最终，访问函数get_value()或get_gradient()允许在一个特定的点索引上查询这些信息。
- * 该功能类似于在每个单元的`unit_points`上分别创建一个带有正交对象的FEValues对象，然后调用 FEValues::get_function_values
- * 或 FEValues::get_function_gradients,
- * ，对于一些元素和映射，这就是内部实际发生的情况。然而，对于映射和有限元素的特定组合，有一种更有效的实现方式，可以避免FEValues的内存分配和其他昂贵的启动成本。目前，该功能专门用于从MappingQGeneric派生的映射，以及与
- * @ref matrixfree
- * 模块一起工作的具有张量积结构的有限元。在这些情况下，该类所隐含的成本与使用
- * `FEValues::reinit(cell)` 和 `FEValues::get_function_gradients`.
- * 相似（有时甚至更低）。
+ * This class provides an interface to the evaluation of interpolated solution
+ * values and gradients on cells on arbitrary reference point positions. These
+ * points can change from cell to cell, both with respect to their quantity as
+ * well to the location. The two typical use cases are evaluations on
+ * non-matching grids and particle simulations.
  *
+ * The use of this class is similar to FEValues or FEEvaluation: The class is
+ * first initialized to a cell by calling `FEPointEvaluation::reinit(cell,
+ * unit_points)`, with the main difference to the other concepts that the
+ * underlying points in reference coordinates need to be passed along. Then,
+ * upon call to evaluate() or integrate(), the user can compute information at
+ * the give points. Eventually, the access functions get_value() or
+ * get_gradient() allow to query this information at a specific point index.
  *
+ * The functionality is similar to creating an FEValues object with a
+ * Quadrature object on the `unit_points` on every cell separately and then
+ * calling FEValues::get_function_values or FEValues::get_function_gradients,
+ * and for some elements and mappings this is what actually happens
+ * internally. For specific combinations of Mapping and FiniteElement
+ * realizations, however, there is a much more efficient implementation that
+ * avoids the memory allocation and other expensive start-up cost of
+ * FEValues. Currently, the functionality is specialized for mappings derived
+ * from MappingQGeneric and for finite elements with tensor product structure
+ * that work with the @ref matrixfree module. In those cases, the cost implied
+ * by this class is similar (or sometimes even somewhat lower) than using
+ * `FEValues::reinit(cell)` followed by `FEValues::get_function_gradients`.
  */
 template <int n_components,
           int dim,
@@ -387,15 +399,22 @@ public:
     EvaluatorTypeTraits<dim, n_components, Number>::gradient_type;
 
   /**
-   * 构建器。      @param  mapping
-   * 描述传递给evaluation()函数的单元格的实际几何形状的Mapping类。
-   * @param  fe
-   * 用于评估的FiniteElement对象，通常在所有要评估的单元上都是一样的。
-   * @param  update_flags
-   * 指定在调用reinit()时由映射计算的数量。在evaluation()或integration()期间，这些数据被查询以产生所需的结果（例如，有限元解的梯度）。
-   * @param  first_selected_component
-   * 对于多分量的FiniteElement对象，该参数允许从该参数开始选择`n_components`分量范围。
+   * Constructor.
    *
+   * @param mapping The Mapping class describing the actual geometry of a cell
+   * passed to the evaluate() function.
+   *
+   * @param fe The FiniteElement object that is used for the evaluation, which
+   * is typically the same on all cells to be evaluated.
+   *
+   * @param update_flags Specify the quantities to be computed by the mapping
+   * during the call of reinit(). During evaluate() or integrate(), this data
+   * is queried to produce the desired result (e.g., the gradient of a finite
+   * element solution).
+   *
+   * @param first_selected_component For multi-component FiniteElement
+   * objects, this parameter allows to select a range of `n_components`
+   * components starting from this parameter.
    */
   FEPointEvaluation(const Mapping<dim> &      mapping,
                     const FiniteElement<dim> &fe,
@@ -403,35 +422,56 @@ public:
                     const unsigned int        first_selected_component = 0);
 
   /**
-   * 设置给定单元的映射信息，例如，如果要求函数的梯度，通过计算给定点的映射的雅各布系数。
-   * @param[in]  cell 当前单元的迭代器  @param[in]  unit_points
-   * 当前单元参考位置的点的列表，在evaluate()和integration()函数中，FiniteElement对象应被评估/整合。
+   * Set up the mapping information for the given cell, e.g., by computing the
+   * Jacobian of the mapping the given points if gradients of the functions
+   * are requested.
    *
+   * @param[in] cell An iterator to the current cell
+   *
+   * @param[in] unit_points List of points in the reference locations of the
+   * current cell where the FiniteElement object should be
+   * evaluated/integrated in the evaluate() and integrate() functions.
    */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
          const ArrayView<const Point<dim>> &unit_points);
 
   /**
-   * 这个函数在传递给reinit()的单元和`unit_points`上插值有限元解，由`solution_values`表示。
-   * @param[in]  solution_values
-   * 这个数组应该包含由`cell->get_dof_values(global_vector,
-   * solution_values)'返回的元素上的未知值。      @param[in]
-   * evaluation_flags 指明哪些量应该在点上被评估的标志。
+   * This function interpolates the finite element solution, represented by
+   * `solution_values`, on the cell and `unit_points` passed to reinit().
    *
+   * @param[in] solution_values This array is supposed to contain the unknown
+   * values on the element as returned by `cell->get_dof_values(global_vector,
+   * solution_values)`.
+   *
+   * @param[in] evaluation_flags Flags specifying which quantities should be
+   * evaluated at the points.
    */
   void
   evaluate(const ArrayView<const Number> &         solution_values,
            const EvaluationFlags::EvaluationFlags &evaluation_flags);
 
   /**
-   * 这个函数将之前submit_value()或submit_gradient()调用所传递的量乘以测试函数的值或梯度，并对所有给定的点进行求和。这类似于测试函数的双线性形式的积分，不同的是这个公式不包括`JxW`因子。这就使得该类方法可以自然地将点信息（如粒子）嵌入到有限元公式中。当然，通过给submit_value()的数据乘以一个`JxW`信息，积分也可以用这个类来表示。
-   * @param[out]  solution_values
-   * 这个数组将包含积分的结果，可以用来在`cell->set_dof_values(solution_values,
-   * global_vector)`或`cell->distribute_local_to_global(solution_values,
-   * global_vector)`时使用。注意，对于多分量系统，只有部分分量被本类选择，本类未触及的条目将被清零。
-   * @param[in]  integration_flags
-   * 指明哪些量应该在点上进行积分的标志。
+   * This function multiplies the quantities passed in by previous
+   * submit_value() or submit_gradient() calls by the value or gradient of the
+   * test functions, and performs summation over all given points. This is
+   * similar to the integration of a bilinear form in terms of the test
+   * function, with the difference that this formula does not include a `JxW`
+   * factor. This allows the class to naturally embed point information
+   * (e.g. particles) into a finite element formulation. Of course, by
+   * multiplication of a `JxW` information of the data given to
+   * submit_value(), the integration can also be represented by this class.
+   *
+   * @param[out] solution_values This array will contain the result of the
+   * integral, which can be used to during
+   * `cell->set_dof_values(solution_values, global_vector)` or
+   * `cell->distribute_local_to_global(solution_values, global_vector)`. Note
+   * that for multi-component systems where only some of the components are
+   * selected by the present class, the entries not touched by this class will
+   * be zeroed out.
+   *
+   * @param[in] integration_flags Flags specifying which quantities should be
+   * integrated at the points.
    *
    */
   void
@@ -439,132 +479,139 @@ public:
             const EvaluationFlags::EvaluationFlags &integration_flags);
 
   /**
-   * 在调用 FEPointEvaluation::evaluate() 并设置了
-   * EvaluationFlags::value 后，返回正交点编号 @p point_index
-   * 的值，或者调用 FEPointEvaluation::submit_value().
-   * 后，返回已经存储在那里的值，如果该对象是矢量值的，将给出一个矢量值的返回参数。
-   *
+   * Return the value at quadrature point number @p point_index after a call to
+   * FEPointEvaluation::evaluate() with EvaluationFlags::value set, or
+   * the value that has been stored there with a call to
+   * FEPointEvaluation::submit_value(). If the object is vector-valued, a
+   * vector-valued return argument is given.
    */
   const value_type &
   get_value(const unsigned int point_index) const;
 
   /**
-   * 写一个值到包含有point_index组件的点上的值的字段。与通过get_value()访问同一字段。如果在调用设置了
-   * EvaluationFlags::values 的函数 FEPointEvaluation::integrate()
-   * 之前应用，这指定了由当前单元格上的所有基函数测试并整合的值。
-   *
+   * Write a value to the field containing the values on points
+   * with component point_index. Access to the same field as through
+   * get_value(). If applied before the function FEPointEvaluation::integrate()
+   * with EvaluationFlags::values set is called, this specifies the value
+   * which is tested by all basis function on the current cell and
+   * integrated over.
    */
   void
   submit_value(const value_type &value, const unsigned int point_index);
 
   /**
-   * 在调用 FEPointEvaluation::evaluate() 并设置
-   * EvaluationFlags::gradient
-   * 后，返回索引为`point_index`的点的实坐标梯度，或者调用
-   * FEPointEvaluation::submit_gradient(). 后存储在那里的梯度。
-   * 实坐标梯度是通过获取单位梯度（也可以通过get_unit_gradient()获取）并应用映射的逆雅各布系数获得。如果对象是矢量值的，则会给出一个矢量值的返回参数。
-   *
+   * Return the gradient in real coordinates at the point with index
+   * `point_index` after a call to FEPointEvaluation::evaluate() with
+   * EvaluationFlags::gradient set, or the gradient that has been stored there
+   * with a call to FEPointEvaluation::submit_gradient(). The gradient in real
+   * coordinates is obtained by taking the unit gradient (also accessible via
+   * get_unit_gradient()) and applying the inverse Jacobian of the mapping. If
+   * the object is vector-valued, a vector-valued return argument is given.
    */
   const gradient_type &
   get_gradient(const unsigned int point_index) const;
 
   /**
-   * 在调用 FEPointEvaluation::evaluate() 并设置
-   * EvaluationFlags::gradient
-   * 后，返回索引为`point_index`的点的单位坐标梯度，或者在调用
-   * FEPointEvaluation::submit_gradient().
-   * 后，返回已经存储在那里的梯度
-   * 如果对象是矢量值的，将给出一个矢量值的返回参数。请注意，当矢量化被启用时，来自几个点的值会被分组在一起。
-   *
+   * Return the gradient in unit coordinates at the point with index
+   * `point_index` after a call to FEPointEvaluation::evaluate() with
+   * EvaluationFlags::gradient set, or the gradient that has been stored there
+   * with a call to FEPointEvaluation::submit_gradient(). If the object is
+   * vector-valued, a vector-valued return argument is given. Note that when
+   * vectorization is enabled, values from several points are grouped
+   * together.
    */
   const gradient_type &
   get_unit_gradient(const unsigned int point_index) const;
 
   /**
-   * 写一个贡献值，这个贡献值被梯度测试到包含给定`point_index`的点上的值的区域。与通过get_gradient()访问的字段相同。如果在调用函数
-   * FEPointEvaluation::integrate(EvaluationFlags::gradients)
-   * 之前应用，这将指定由当前单元上的所有基函数梯度测试的内容，并对其进行整合。
-   *
+   * Write a contribution that is tested by the gradient to the field
+   * containing the values on points with the given `point_index`. Access to
+   * the same field as through get_gradient(). If applied before the function
+   * FEPointEvaluation::integrate(EvaluationFlags::gradients) is called, this
+   * specifies what is tested by all basis function gradients on the current
+   * cell and integrated over.
    */
   void
   submit_gradient(const gradient_type &, const unsigned int point_index);
 
   /**
-   * 返回当前单元格上给定点指数的变换的雅各布系数。前提是。这个类需要用包含`update_jacobian`的UpdateFlags构建。
-   *
+   * Return the Jacobian of the transformation on the current cell with the
+   * given point index. Prerequisite: This class needs to be constructed with
+   * UpdateFlags containing `update_jacobian`.
    */
   DerivativeForm<1, dim, spacedim>
   jacobian(const unsigned int point_index) const;
 
   /**
-   * 返回当前单元格上给定点指数的变形的雅各布系数的逆值。前提是。这个类需要用包含`update_inverse_jacobian`或`update_gradients`的UpdateFlags构建。
-   *
+   * Return the inverse of the Jacobian of the transformation on the current
+   * cell with the given point index. Prerequisite: This class needs to be
+   * constructed with UpdateFlags containing `update_inverse_jacobian` or
+   * `update_gradients`.
    */
   DerivativeForm<1, spacedim, dim>
   inverse_jacobian(const unsigned int point_index) const;
 
   /**
-   * 返回传给reinit()的点中，给定的点的实坐标位置。
-   *
+   * Return the position in real coordinates of the given point index among
+   * the points passed to reinit().
    */
   Point<spacedim>
   real_point(const unsigned int point_index) const;
 
   /**
-   * 返回给定的点索引的单位/参考坐标位置，即传递给reinit()函数的各个点。
-   *
+   * Return the position in unit/reference coordinates of the given point
+   * index, i.e., the respective point passed to the reinit() function.
    */
   Point<dim>
   unit_point(const unsigned int point_index) const;
 
 private:
   /**
-   * 指向传递给构造函数的Mapping对象的指针。
-   *
+   * Pointer to the Mapping object passed to the constructor.
    */
   SmartPointer<const Mapping<dim, spacedim>> mapping;
 
   /**
-   * 指向MappingQGeneric类的指针，使该类的快速路径。
-   *
+   * Pointer to MappingQGeneric class that enables the fast path of this
+   * class.
    */
   const MappingQGeneric<dim, spacedim> *mapping_q_generic;
 
   /**
-   * 指向传递给构造函数的FiniteElement对象的指针。
-   *
+   * Pointer to the FiniteElement object passed to the constructor.
    */
   SmartPointer<const FiniteElement<dim>> fe;
 
   /**
-   * 描述用于该类的快速路径的张量积元素的一维多项式基础，使用张量积评估器。
-   *
+   * Description of the 1D polynomial basis for tensor product elements used
+   * for the fast path of this class using tensor product evaluators.
    */
   std::vector<Polynomials::Polynomial<double>> poly;
 
   /**
-   * 存储多项式是否是线性的，节点在0和1。
-   *
+   * Store whether the polynomials are linear with nodes at 0 and 1.
    */
   bool polynomials_are_hat_functions;
 
   /**
-   * 在FiniteElement类所隐含的未知数的未知数和用于张量代码路径的词典式编号之间重新编号。
-   *
+   * Renumbering between the unknowns of unknowns implied by the FiniteElement
+   * class and a lexicographic numbering used for the tensorized code path.
    */
   std::vector<unsigned int> renumber;
 
   /**
-   * 临时数组，用于存储传递给evaluate()函数的`solution_values'，其格式与张量积评估器兼容。对于矢量值的设置，这个数组使用`张量<1,
-   * n_components>`类型来收集特定基函数的未知数。
-   *
+   * Temporary array to store the `solution_values` passed to the evaluate()
+   * function in a format compatible with the tensor product evaluators. For
+   * vector-valued setups, this array uses a `Tensor<1, n_components>` type to
+   * collect the unknowns for a particular basis function.
    */
   std::vector<value_type> solution_renumbered;
 
   /**
-   * 临时数组用于存储在`integrate()`过程中计算的`solution_values`的矢量版本，其格式与张量积评估器兼容。对于矢量值的设置，这个数组使用`Tensor<1,
-   * n_components, VectorizedArray<Number>>格式。
-   *
+   * Temporary array to store a vectorized version of the `solution_values`
+   * computed during `integrate()` in a format compatible with the tensor
+   * product evaluators. For vector-valued setups, this array uses a
+   * `Tensor<1, n_components, VectorizedArray<Number>>` format.
    */
   AlignedVector<typename internal::FEPointEvaluation::EvaluatorTypeTraits<
     dim,
@@ -573,63 +620,57 @@ private:
     solution_renumbered_vectorized;
 
   /**
-   * 临时数组来存储各点的数值。
-   *
+   * Temporary array to store the values at the points.
    */
   std::vector<value_type> values;
 
   /**
-   * 临时数组用于存储各点的单位坐标的梯度。
-   *
+   * Temporary array to store the gradients in unit coordinates at the points.
    */
   std::vector<gradient_type> unit_gradients;
 
   /**
-   * 临时数组，用于存储各点的实坐标梯度。
-   *
+   * Temporary array to store the gradients in real coordinates at the points.
    */
   std::vector<gradient_type> gradients;
 
   /**
-   * 每个组件的未知数，即唯一的基函数的数量，对于所选择的FiniteElement（或基础元素）。
-   *
+   * Number of unknowns per component, i.e., number of unique basis functions,
+   * for the chosen FiniteElement (or base element).
    */
   unsigned int dofs_per_component;
 
   /**
-   * 对于复杂的FiniteElement对象，这个变量告诉我们哪些未知数在所选组件中实际带有自由度。
-   *
+   * For complicated FiniteElement objects this variable informs us about
+   * which unknowns actually carry degrees of freedom in the selected
+   * components.
    */
   std::vector<std::array<bool, n_components>> nonzero_shape_function_component;
 
   /**
-   * 评估所需的更新标志。
-   *
+   * The desired update flags for the evaluation.
    */
   UpdateFlags update_flags;
 
   /**
-   * 快速评估路径中特定于映射的更新标志。
-   *
+   * The update flags specific for the mapping in the fast evaluation path.
    */
   UpdateFlags update_flags_mapping;
 
   /**
-   * 慢速评估路径下的FEValues对象。
-   *
+   * The FEValues object underlying the slow evaluation path.
    */
   std::shared_ptr<FEValues<dim, spacedim>> fe_values;
 
   /**
-   * 用于存储快速评估路径的映射所计算的临时数据的数组。
-   *
+   * Array to store temporary data computed by the mapping for the fast
+   * evaluation path.
    */
   internal::FEValuesImplementation::MappingRelatedData<dim, spacedim>
     mapping_data;
 
   /**
-   * 在reinit()中指定的参考点。
-   *
+   * The reference points specified at reinit().
    */
   std::vector<Point<dim>> unit_points;
 };
@@ -1161,5 +1202,3 @@ FEPointEvaluation<n_components, dim, spacedim, Number>::unit_point(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

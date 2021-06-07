@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/memory_consumption_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -31,62 +32,33 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This namespace provides functions helping to determine the amount of memory
- * used by objects. The goal is not necessarily to give the amount of memory
- * used up to the last bit (what is the memory used by a <tt>std::map</tt>
- * object?), but rather to aid in the search for memory bottlenecks.
- *
- * This namespace has a single member function memory_consumption() and a lot
- * of specializations. Depending on the argument type of the function, there
- * are several modes of operation:
- *
- * <ol>
- * <li> If the argument is a fundamental C++ data type (such as <tt>bool</tt>,
- * <tt>float</tt>, <tt>double</tt> or any of the integer types), then
- * memory_consumption() just returns <tt>sizeof</tt> of its argument. The
- * library also provides an estimate for the amount of memory occupied by a
- * <tt>std::string</tt>.
- *
- * <li> For objects, which are neither standard types, nor vectors,
- * memory_consumption() will simply call the member function of same name. It
- * is up to the implementation of the data type to provide a good estimate of
- * the amount of memory used. Inside this function, the use of
- * MemoryConsumption::memory_consumption() for compounds of the class helps to
- * obtain this estimate. Most classes in the deal.II library have such a
- * member function.
- *
- * <li> For vectors and C++ arrays of objects, memory_consumption()
- * recursively calls itself for all entries and adds the results to the size
- * of the object itself. Some optimized specializations for standard data
- * types exist.
- *
- * <li> For vectors of regular pointers, memory_consumption(T*) returns the
- * size of the vector of pointers, ignoring the size of the objects.
- *
+ * 这个命名空间提供了帮助确定对象所使用的内存量的函数。其目的不一定是要给出到最后一位的内存用量（
+ * <tt>std::map</tt>
+ * 对象使用的内存是多少？），而是要帮助寻找内存瓶颈。
+ * 这个命名空间有一个成员函数memory_consumption()和大量的特殊化。根据函数的参数类型，有几种操作模式。
+ * <ol>   <li>  如果参数是一个基本的C++数据类型（如<tt>bool</tt>, <tt>float</tt>, <tt>double</tt>或任何一个整数类型），那么 memory_consumption() 只是返回其参数的<tt>sizeof</tt>。该库还提供了对一个 <tt>std::string</tt>. * <li> 所占用的内存量的估计。
+ * <li>
+ * 对于既不是标准类型，也不是向量的对象，memory_consumption()将简单地调用同名的成员函数。这取决于数据类型的实现，以提供对所使用的内存量的良好估计。在这个函数中，对类的化合物使用
+ * MemoryConsumption::memory_consumption()
+ * 有助于获得这种估计。deal.II库中的大多数类都有这样一个成员函数。
+ * <li>
+ * 对于对象的向量和C++数组，memory_consumption()对所有条目进行递归调用，并将结果加入对象本身的大小。存在一些针对标准数据类型的优化特殊化。
+ * <li>
+ * 对于普通指针的向量，memory_consumption(T*)返回指针向量的大小，忽略对象的大小。
  * </ol>
- *
  * <h3>Extending this namespace</h3>
+ * 这个名字空间中的函数和它所提供的功能依赖于这样的假设：在这个名字空间中，有一个函数<tt>memory_consumption(T)</tt>确定<tt>T</tt>类型的对象所使用的内存量，或者<tt>T</tt>类有一个这个名字的成员函数。虽然后者对deal.II中几乎所有的类都是如此，但我们只为最常见的数据类型实现了第一类函数，如基本类型、字符串、C++向量、C-style数组和C++对。因此，这些函数并不包括，例如，C++地图、列表等。如果你需要这样的函数，请随时实现它们，并将它们发送给我们，以便纳入。
  *
- * The function in this namespace and the functionality provided by it relies
- * on the assumption that there is either a function
- * <tt>memory_consumption(T)</tt> in this namespace determining the amount of
- * memory used by objects of type <tt>T</tt> or that the class <tt>T</tt> has
- * a member function of that name. While the latter is true for almost all
- * classes in deal.II, we have only implemented the first kind of functions
- * for the most common data types, such as fundamental types, strings, C++
- * vectors, C-style arrays, and C++ pairs. These functions therefore do not
- * cover, for example, C++ maps, lists, etc. If you need such functions feel
- * free to implement them and send them to us for inclusion.
  *
- * @ingroup memory
- * Wells
+ * @ingroup memory  Wells
+ *
+ *
  */
 namespace MemoryConsumption
 {
   /**
-   * Calculate the memory consumption of a fundamental type. See
-   * EnableIfScalar for a discussion on how this restriction (SFINAE) is
-   * implemented.
+   * 计算一个基本类型的内存消耗。参见EnableIfScalar，讨论如何实现这一限制（SFINAE）。
+   *
    */
   template <typename T>
   inline
@@ -94,10 +66,8 @@ namespace MemoryConsumption
     memory_consumption(const T &t);
 
   /**
-   * Estimate the memory consumption of an object. If no further template
-   * specialization (past this one) is available for the type <tt>T</tt>, then
-   * this function returns the member function
-   * <tt>t.memory_consumption()</tt>'s value.
+   * 估计一个对象的内存消耗。如果对<tt>T</tt>类型没有进一步的模板专门化（超过这个），那么这个函数返回成员函数<tt>t.memory_consumption()</tt>的值。
+   *
    */
   template <typename T>
   inline typename std::enable_if<!(std::is_fundamental<T>::value ||
@@ -106,148 +76,114 @@ namespace MemoryConsumption
   memory_consumption(const T &t);
 
   /**
-   * Determine the amount of memory consumed by a C-style string. The returned
-   * value does not include the size of the pointer. This function only
-   * measures up to (and including) the NUL byte; the underlying buffer may be
-   * larger.
+   * 确定一个C风格的字符串所消耗的内存量。返回的值不包括指针的大小。这个函数只测量到（并包括）NUL字节；底层缓冲区可能更大。
+   *
    */
   inline std::size_t
   memory_consumption(const char *string);
 
   /**
-   * Determine the amount of memory in bytes consumed by a
-   * <tt>std::complex</tt> variable.
+   * 确定一个 <tt>std::complex</tt> 变量所消耗的内存字节数。
+   *
    */
   template <typename T>
   inline std::size_t
   memory_consumption(const std::complex<T> &);
 
   /**
-   * Determine the amount of memory in bytes consumed by a
-   * <tt>VectorizedArray</tt> variable.
+   * 确定一个<tt>VectorizedArray</tt>变量所消耗的内存字节数。
+   *
    */
   template <typename T, std::size_t width>
   inline std::size_t
   memory_consumption(const VectorizedArray<T, width> &);
 
   /**
-   * Determine an estimate of the amount of memory in bytes consumed by a
-   * <tt>std::string</tt> variable.
+   * 确定一个 <tt>std::string</tt>
+   * 变量所消耗的内存的估计字节数。
+   *
    */
   inline std::size_t
   memory_consumption(const std::string &s);
 
   /**
-   * Determine the amount of memory in bytes consumed by a
-   * <tt>std::vector</tt> of elements of type <tt>T</tt> by
-   * calling memory_consumption() for each entry.
+   * 通过调用每个条目的memory_consumption()，确定一个<tt>T</tt>类型的元素的
+   * <tt>std::vector</tt> 所消耗的内存字节量。
+   * 这个函数在向量的所有条目上循环，并对每个<tt>v[i]</tt>使用memory_consumption()确定其大小。如果条目的大小是恒定的，可能有另一个全局函数memory_consumption()用于这个数据类型，或者有一个该类的成员函数的名字返回一个恒定的值，编译器会解开这个循环，这样操作就很快了。如果数据元素的大小是可变的，例如它们自己做内存分配，那么这个操作必然会更加昂贵。
+   * 使用该算法，特别是所有元素的循环，也可以计算向量的向量、字符串的向量等的内存消耗，其中单个元素的大小可能有很大不同。
+   * 请注意，这个算法也考虑到了被这个向量分配但目前没有使用的元素的大小。
+   * 对于最常用的向量，有一些特殊的函数可以不通过循环来计算其大小。这也适用于bools向量的特殊情况。
    *
-   * This function loops over all entries of the vector and determines their
-   * sizes using memory_consumption() for each <tt>v[i]</tt>. If the entries
-   * are of constant size, there might be another global function
-   * memory_consumption() for this data type or if there is a member function
-   * of that class of that names that returns a constant value and the
-   * compiler will unroll this loop so that the operation is fast. If the size
-   * of the data elements is variable, for example if they do memory
-   * allocation themselves, then the operation will necessarily be more
-   * expensive.
-   *
-   * Using the algorithm, in particular the loop over all elements, it is
-   * possible to also compute the memory consumption of vectors of vectors,
-   * vectors of strings, etc, where the individual elements may have vastly
-   * different sizes.
-   *
-   * Note that this algorithm also takes into account the size of elements
-   * that are allocated by this vector but not currently used.
-   *
-   * For the most commonly used vectors, there are special functions that
-   * compute the size without a loop. This also applies for the special case
-   * of vectors of bools.
    */
   template <typename T>
   inline std::size_t
   memory_consumption(const std::vector<T> &v);
 
   /**
-   * Determine the amount of memory in bytes consumed by a
-   * <tt>std::array</tt> of <tt>N</tt> elements of type <tt>T</tt> by
-   * calling memory_consumption() for each entry.
+   * 通过对每个条目调用memory_consumption()，确定一个<tt>N</tt>类型<tt>元素的
+   * <tt>std::array</tt> 所消耗的内存字节数。
+   * 这个函数循环遍历数组的所有条目，并对每个<tt>v[i]</tt>使用memory_consumption()确定其大小。如果条目的大小是恒定的，可能有另一个全局函数memory_consumption()用于该数据类型，或者有一个该类的成员函数的名字返回一个恒定的值，编译器会解开这个循环，这样操作就会很快。如果数据元素的大小是可变的，例如它们自己做内存分配，那么这个操作必然会更加昂贵。
+   * 使用该算法，特别是所有元素的循环，也可以计算向量数组、字符串数组等的内存消耗，其中单个元素的大小可能有很大不同。
    *
-   * This function loops over all entries of the array and determines their
-   * sizes using memory_consumption() for each <tt>v[i]</tt>. If the entries
-   * are of constant size, there might be another global function
-   * memory_consumption() for this data type or if there is a member function
-   * of that class of that names that returns a constant value and the
-   * compiler will unroll this loop so that the operation is fast. If the size
-   * of the data elements is variable, for example if they do memory
-   * allocation themselves, then the operation will necessarily be more
-   * expensive.
-   *
-   * Using the algorithm, in particular the loop over all elements, it is
-   * possible to also compute the memory consumption of arrays of vectors,
-   * arrays of strings, etc, where the individual elements may have vastly
-   * different sizes.
    */
   template <typename T, std::size_t N>
   inline std::size_t
   memory_consumption(const std::array<T, N> &v);
 
   /**
-   * Estimate the amount of memory (in bytes) occupied by a C-style array.
-   * Since in this library we do not usually store simple data elements like
-   * <tt>double</tt>s in such arrays (but rather use <tt>std::vector</tt>s or
-   * deal.II <tt>Vector</tt> objects), we do not provide specializations like
-   * for the <tt>std::vector</tt> arrays, but always use the loop over all
-   * elements.
+   * 估计一个C型数组所占用的内存量（以字节为单位）。
+   * 由于在这个库中，我们通常不在这种数组中存储简单的数据元素，如<tt>double</tt>s（而是使用
+   * <tt>std::vector</tt>s 或deal.II
+   * <tt>Vector</tt>对象），我们不提供像 <tt>std::vector</tt>
+   * 数组的特殊化，而是始终使用所有元素的循环。
+   *
    */
   template <typename T, int N>
   inline std::size_t
   memory_consumption(const T (&v)[N]);
 
   /**
-   * Specialization of the determination of the memory consumption of a
-   * vector, here for a vector of <tt>bool</tt>s.
+   * 确定一个向量的内存消耗的特殊化，这里是针对一个<tt>bool</tt>s的向量。
+   * 这是一个特殊情况，因为bool不是一个一个地存储，而是作为一个位域。
    *
-   * This is a special case, as the bools are not stored one-by-one, but as a
-   * bit field.
    */
   inline std::size_t
   memory_consumption(const std::vector<bool> &v);
 
   /**
-   * Determine an estimate of the amount of memory in bytes consumed by a pair
-   * of values.
+   * 确定一对数值所消耗的内存字节数的估计值。
+   *
    */
   template <typename A, typename B>
   inline std::size_t
   memory_consumption(const std::pair<A, B> &p);
 
   /**
-   * Calculate the memory consumption of a pointer.
+   * 计算一个指针的内存消耗。
+   * @note
+   * 这个函数对于C风格的字符串是重载的；关于这种情况，请看该函数的文档。
+   * @note
+   * 这个函数返回指针的大小，而不是指向的对象的大小。
    *
-   * @note This function is overloaded for C-style strings; see the
-   * documentation of that function for that case.
-   *
-   * @note This returns the size of the pointer, not the size of the object
-   * pointed to.
    */
   template <typename T>
   inline std::size_t
   memory_consumption(const T *const);
 
   /**
-   * Return the amount of memory used by a shared pointer.
+   * 返回一个共享指针所使用的内存量。
+   * @note
+   * 这将返回指针的大小，而不是所指向的对象的大小。
    *
-   * @note This returns the size of the pointer, not of the object pointed to.
    */
   template <typename T>
   inline std::size_t
   memory_consumption(const std::shared_ptr<T> &);
 
   /**
-   * Return the amount of memory used by a std::unique_ptr object.
+   * 返回一个 std::unique_ptr 对象所使用的内存量。
+   * @note  这将返回指针的大小，而不是指向的对象的大小。
    *
-   * @note This returns the size of the pointer, not of the object pointed to.
    */
   template <typename T>
   inline std::size_t
@@ -279,7 +215,7 @@ namespace MemoryConsumption
       }
     else
       {
-        return sizeof(char) * (strlen(string) /*Remember the NUL*/ + 1);
+        return sizeof(char) * (strlen(string)  /*Remember the NUL*/  + 1);
       }
   }
 
@@ -423,3 +359,5 @@ namespace MemoryConsumption
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_nedelec_sz_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2020 by the deal.II authors
@@ -29,27 +28,46 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup fe */ 
- /*@{*/ 
+/*!@addtogroup fe */
+/*@{*/
 
 /**
- * 这个类代表了S.
- * Zaglmayr博士论文中描述的H<sup>curl</sup>-conforming
- * N&eacute;d&eacute;lec元素的实现，<b>High Order Finite Element Methods
- * for Electromagnetic Field Computation</b>，Johannes Kepler
- * Universit&auml;t Linz,
- * 2006。它的使用范围与FE_Nedelec类描述的顶部所述相同。
- * 这个元素克服了传统N&eacute;d&eacute;lec元素中存在的符号冲突问题，这些问题来自于基函数中使用的边缘和面的参数化。因此，这个元素应该为一般的四边形和六面体元素提供一致的结果，对于这些元素，从所有相邻单元看到的边和面的相对方向往往难以确定。
- * 该元素解决符号冲突问题的方法是为局部边和面分配一个全局定义的方向。本地边的方向总是被选择为：定义边的第一个顶点是具有最高全局顶点编号的顶点，而第二个边的顶点是具有最低全局顶点编号的顶点。
- * 同样地，面的方向总是被选择为：第一个顶点被选择为构成面的四个顶点中全局顶点编号最高的那个。然后，第三个顶点被选择为与第一个顶点相对的几何图形，第二和第四个顶点被决定为第二个顶点的全局顶点编号高于第四个顶点。
- * 请注意，这个元素目前不支持不符合要求的网格。
- * 关于这个元素的进一步细节，包括一些基准测试，可以在R.
- * Kynch, P. Ledger: <b>Resolving the sign conflict problem for hp-hexahedral
- * N&eacute;d&eacute;lec elements with application to eddy current
- * problems</b>, Computers & Structures 181, 41-54,
- * 2017（见https://doi.org/10.1016/j.compstruc.2016.05.021）。
+ * This class represents an implementation of the
+ * H<sup>curl</sup>-conforming N&eacute;d&eacute;lec element described in the
+ * PhD thesis of S. Zaglmayr, <b>High Order Finite Element Methods for
+ * Electromagnetic Field Computation</b>, Johannes Kepler Universit&auml;t Linz,
+ * 2006. It its used in the same context as described at the top of the
+ * description for the FE_Nedelec class.
  *
+ * This element overcomes the sign conflict issues present in
+ * traditional N&eacute;d&eacute;lec elements that arise from the edge
+ * and face parameterizations used in the basis functions. Therefore,
+ * this element should provide consistent results for general
+ * quadrilateral and hexahedral elements for which the relative
+ * orientations of edges and faces as seen from all adjacent cells are
+ * often difficult to establish.
  *
+ * The way this element addresses the sign conflict problem is to
+ * assign local edges and faces a globally defined orientation. The
+ * local edge orientation is always chosen such that the first vertex
+ * defining the edge is the one that has the highest global vertex
+ * numbering, with the second edge vertex being that which has the
+ * lowest global vertex numbering.
+ *
+ * Similarly, the face orientation is always chosen such that the first
+ * vertex is chosen to be that with the highest global vertex numbering of the
+ * four vertices making up the face. The third vertex is then chosen to be that
+ * which is geometrically opposite the first vertex, and the second and fourth
+ * vertices are decided such that the second has a higher global vertex
+ * numbering than the fourth.
+ *
+ * Note that this element does not support non-conforming meshes at this time.
+ *
+ * Further details on this element, including some benchmarking, can be
+ * in the paper R. Kynch, P. Ledger: <b>Resolving the sign conflict
+ * problem for hp-hexahedral N&eacute;d&eacute;lec elements with application to
+ * eddy current problems</b>, Computers & Structures 181, 41-54, 2017 (see
+ * https://doi.org/10.1016/j.compstruc.2016.05.021).
  */
 template <int dim, int spacedim = dim>
 class FE_NedelecSZ : public FiniteElement<dim, dim>
@@ -59,7 +77,16 @@ public:
                 "FE_NedelecSZ is only implemented for dim==spacedim!");
 
   /**
-   *
+   * Constructor for the NedelecSZ element of given @p order. The maximal
+   * polynomial degree of the shape functions is `order+1` (in each variable;
+   * the total polynomial degree may be higher). If `order = 0`, the element is
+   * linear and has degrees of freedom only on the edges. If `order >= 1` the
+   * element has degrees of freedom on the edges, faces and volume. For example
+   * the 3D version of FE_NedelecSZ has 12 degrees of freedom for `order = 0`
+   * and 54 for `degree = 1`. It is important to have enough quadrature points
+   * in order to perform the quadrature with sufficient accuracy.
+   * For example [QGauss<dim>(order + 2)](@ref QGauss) can be used for the
+   * quadrature formula, where `order` is the order of FE_NedelecSZ.
    */
   FE_NedelecSZ(const unsigned int order);
 
@@ -73,15 +100,14 @@ public:
   clone() const override;
 
   /**
-   * 这个元素是矢量值，所以这个函数会抛出一个异常。
-   *
+   * This element is vector-valued so this function will
+   * throw an exception.
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 没有实现。
-   *
+   * Not implemented.
    */
   virtual double
   shape_value_component(const unsigned int i,
@@ -89,15 +115,14 @@ public:
                         const unsigned int component) const override;
 
   /**
-   * 这个元素是向量值的，所以这个函数会抛出一个异常。
-   *
+   * This element is vector-valued so this function will
+   * throw an exception.
    */
   virtual Tensor<1, dim>
   shape_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 没有实现。
-   *
+   * Not implemented.
    */
   virtual Tensor<1, dim>
   shape_grad_component(const unsigned int i,
@@ -105,15 +130,14 @@ public:
                        const unsigned int component) const override;
 
   /**
-   * 这个元素是向量值的，所以这个函数会抛出一个异常。
-   *
+   * This element is vector-valued so this function will
+   * throw an exception.
    */
   virtual Tensor<2, dim>
   shape_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 没有实现。
-   *
+   * Not implemented.
    */
   virtual Tensor<2, dim>
   shape_grad_grad_component(const unsigned int i,
@@ -122,8 +146,8 @@ public:
 
 protected:
   /**
-   * 用来将形状函数从参考单元映射到网格单元的映射种类。
-   *
+   * The mapping kind to be used to map shape functions from the reference
+   * cell to the mesh cell.
    */
   MappingKind mapping_kind;
 
@@ -138,8 +162,9 @@ protected:
       &output_data) const override;
 
   /**
-   * 计算由第一个参数表示的单元上的形状函数信息。请注意，这个函数必须重新计算与单元格相关的自由度，因此目前还不是线程安全的。
-   *
+   * Compute information about the shape functions on the cell denoted by the
+   * first argument. Note that this function must recompute the cell-dependent
+   * degrees of freedom, and so is not thread-safe at this time.
    */
   virtual void
   fill_fe_values(
@@ -157,8 +182,9 @@ protected:
   using FiniteElement<dim, spacedim>::fill_fe_face_values;
 
   /**
-   * 计算由前两个参数表示的单元格和面的形状函数的信息。请注意，这个函数必须重新计算与单元格相关的自由度，因此目前不是线程安全的。
-   *
+   * Compute information about the shape functions on the cell and face denoted
+   * by the first two arguments. Note that this function must recompute the
+   * cell-dependent degrees of freedom, and so is not thread-safe at this time.
    */
   virtual void
   fill_fe_face_values(
@@ -174,8 +200,7 @@ protected:
       &data) const override;
 
   /**
-   * 没有实现。
-   *
+   * Not implemented.
    */
   virtual void
   fill_fe_subface_values(
@@ -192,163 +217,217 @@ protected:
       &data) const override;
 
   /**
-   * 衍生的内部数据，用于存储与单元无关的数据。  请注意，由于这个元素的性质，一些有用的预计算量被存储起来，用于计算与细胞相关的形状函数。    被存储的主要数量与边缘和面的参数化相关。这些是。    <ul>   <li>   $\lambda_{i}$ 。
+   * Derived Internal data which is used to store cell-independent data.
+   * Note that due to the nature of this element, a number of useful
+   * pre-computed quantities are stored for the computation of cell-dependent
+   * shape functions.
    *
-   * - 三线函数，在 $i$ 第1个顶点等于1，在所有其他顶点等于0。 </li>   <li>   $\sigma_{i}$ 。
+   * The main quantities which are stored are associated with edge and face
+   * parameterizations. These are:
+   * <ul>
+   * <li> $\lambda_{i}$ - trilinear function, equal to one at the $i$-th vertex
+   * and zero at all other vertices.</li>
+   * <li> $\sigma_{i}$ - linear functional associated with the $i$-th vertex.</li>
+   * </ul>
    *
-   * - 与第 $i$ 个顶点相关的线性函数。 </li>   </ul>  这些函数的定义，以及边和面的参数化和边和面的扩展参数，可以在Zaglmayr论文的第82页找到。全局定义的边缘和面的方向的详细定义可以在第67页找到。
-   *
+   * The definitions of these functionals, as well as the edge and face
+   * parameterizations and edge and face extension parameters, can be found on
+   * page 82 of Zaglmayr's thesis. The details of the definition of the
+   * globally-defined edge and face orientations can be found on page 67.
    */
   class InternalData : public FiniteElement<dim, dim>::InternalDataBase
   {
   public:
     /**
-     * 参考元素上的形状函数的存储。我们只预先计算基于单元的DoFs，因为基于边缘和面的DoFs取决于单元。
-     * 由于基于单元的DoFs，这个变量被声明为可变的。
+     * Storage for shape functions on the reference element. We only pre-compute
+     * cell-based DoFs, as the edge- and face-based DoFs depend on the cell.
      *
+     * Due to the cell-dependent DoFs, this variable is declared mutable.
      */
     mutable std::vector<std::vector<Tensor<1, dim>>> shape_values;
 
     /**
-     * 存储参考元素上的形状函数梯度。我们只预先计算基于单元的DoFs，因为基于边缘和面的DoFs取决于单元。
-     * 由于基于单元的DoFs，这个变量被声明为可改变的。
+     * Storage for shape function gradients on the reference element. We only
+     * pre-compute cell-based DoFs, as the edge- and face-based DoFs depend on
+     * the cell.
      *
+     * Due to the cell-dependent DoFs, this variable is declared mutable.
      */
     mutable std::vector<std::vector<DerivativeForm<1, dim, dim>>> shape_grads;
 
     /**
-     * 存储顶点之间所有可能的边缘参数化。在计算基于边和面的DoF时需要这些参数，而这些参数是依赖于单元格的。
-     * 从顶点i开始到顶点 $j$ 结束的边E的参数化由 $\sigma_{E}
-     * = \sigma_{i}
+     * Storage for all possible edge parameterization between vertices. These
+     * are required in the computation of edge- and face-based DoFs, which are
+     * cell-dependent.
      *
-     * - \sigma{j}$ 给出。 sigma_imj_values[q][i][j]存储由顶点 $i$ 和
-     * $j$ 在第q个正交点连接的边参数化值。
-     * 请注意，并非所有的 $i$ 和 $j$
-     * 组合都会在六面体单元上产生有效的边，但它们是以这种方式计算的，以便用于非标准的边和面的方向。
+     * The edge parameterization of an edge, E, starting at vertex i and ending
+     * at vertex $j$ is given by $\sigma_{E} = \sigma_{i} - \sigma{j}$.
      *
+     * sigma_imj_values[q][i][j] stores the value of the edge parameterization
+     * connected by vertices $i$ and $j$ at the q-th quadrature point.
+     *
+     * Note that not all of the $i$ and $j$ combinations result in valid edges
+     * on the hexahedral cell, but they are computed in this fashion for use
+     * with non-standard edge and face orientations.
      */
     std::vector<std::vector<std::vector<double>>> sigma_imj_values;
 
     /**
-     * 存储顶点之间所有可能的边缘参数化的梯度。在计算基于边缘和面的DoF时需要这些梯度，这些梯度与细胞有关。请注意，梯度的组成部分是恒定的。
-     * 从顶点 $i$ 开始到顶点 $j$ 结束的边的参数化由
-     * $\sigma_{E} = \sigma_{i}
+     * Storage for gradients of all possible edge parameterizations between
+     * vertices. These are required in the computation of edge- and face-based
+     * DoFs, which are cell-dependent. Note that the components of the gradient
+     * are constant.
      *
-     * - \sigma{j}$ 给出。 sigma_imj_grads[i][j][d]存储由顶点 $i$ 和
-     * $j$ 连接的边参数化的梯度在组件 $d$ 中。
-     * 请注意，边缘参数化的梯度在边缘上是恒定的，所以我们不需要在每个正交点上存储它。
+     * The edge parameterization of an edge, $E$, starting at vertex $i$ and
+     * ending at vertex $j$ is given by $\sigma_{E} = \sigma_{i} - \sigma{j}$.
      *
+     * sigma_imj_grads[i][j][d] stores the gradient of the edge parameterization
+     * connected by vertices $i$ and $j$ in component $d$.
+     *
+     * Note that the gradient of the edge parameterization is constant on an
+     * edge, so we do not need to store it at every quadrature point.
      */
     std::vector<std::vector<std::vector<double>>> sigma_imj_grads;
 
     /**
-     * 储存在正交点的边缘参数化的值。edge_sigma_values[m][q]
-     * 存储边m上第q个正交点的边参数化值。这些值随着物理单元的边的方向而变化，因此在用于计算时必须考虑到
-     * "符号"。
+     * Storage for values of edge parameterizations at quadrature points. These
+     * are stored for the 12 edges such that the global vertex numbering would
+     * follow the order defined by the "standard" deal.II cell.
      *
+     * edge_sigma_values[m][q] stores the edge parameterization value at the
+     * q-th quadrature point on edge m.
+     *
+     * These values change with the orientation of the edges of a physical cell
+     * and so must take the "sign" into account when used for computation.
      */
     std::vector<std::vector<double>> edge_sigma_values;
 
     /**
-     * 储存正交点的边缘参数化梯度。
-     * edge_sigma_grads[m][d]存储边m上组件d的边参数化梯度。这些值随物理单元的边的方向变化，因此在用于计算时必须考虑
-     * "符号"。
+     * Storage for gradients of edge parameterization at quadrature points.
+     * These are stored for the 12 edges such that the global vertex numbering
+     * would follow the order defined by the "standard" deal.II cell.
      *
+     * edge_sigma_grads[m][d] stores the gradient of the edge parameterization
+     * for component d on edge m.
+     *
+     * These values change with the orientation of the edges of a physical cell
+     * and so must take the "sign" into account when used for computation.
      */
     std::vector<std::vector<double>> edge_sigma_grads;
 
     /**
-     * 储存正交点的边缘扩展参数。这些参数是为12条边存储的，这样全局顶点编号将遵循
-     * "标准 "deal.II单元定义的顺序。        从顶点 $i$
-     * 开始到顶点 $j$ 结束的一条边的扩展参数由 $\lambda_{E} =
-     * \lambda_{i} + \lambda_{j}$ 给出。
-     * 请注意，在这个定义下， $\lambda_{E}$
-     * 的值不随边的方向变化。 edge_lambda_values[m][q]存储边 $q$
-     * 上的第1个正交点的边扩展参数值。
+     * Storage for edge extension parameters at quadrature points. These are
+     * stored for the 12 edges such that the global vertex numbering would
+     * follow the order defined by the "standard" deal.II cell.
      *
+     * The edge extension parameter of an edge, $E$, starting at vertex $i$ and
+     * ending at vertex $j$ is given by $\lambda_{E} = \lambda_{i} +
+     * \lambda_{j}$.
+     *
+     * Note that under this definition, the values of $\lambda_{E}$ do not
+     * change with the orientation of the edge.
+     *
+     * edge_lambda_values[m][q] stores the edge extension parameter value at
+     * the $q$-th quadrature point on edge $m$.
      */
     std::vector<std::vector<double>> edge_lambda_values;
 
     /**
-     * 存储2D中边缘扩展参数的梯度。在这种情况下，它们是常数。edge_lambda_grads_2d[m][d]存储边
-     * $d$ 上组件 $m$
-     * 的边延伸参数的梯度，以便全局顶点编号*遵循 "标准
-     * "deal.II单元定义的顺序。
+     * Storage for gradients of edge extension parameters in 2D. In this case
+     * they are constant. These are stored for the 12 edges such that the global
+     * vertex numbering* would follow the order defined by the "standard"
+     * deal.II cell.
      *
+     * edge_lambda_grads_2d[m][d] stores the gradient of the edge extension
+     * parameter for component $d$ on edge $m$.
      */
     std::vector<std::vector<double>> edge_lambda_grads_2d;
 
     /**
-     * 存储3D中边缘扩展参数的梯度。在这种情况下，它们是非恒定的。edge_lambda_grads_3d[m][q][d]
-     * 存储了边m上第 $q$ 个正交点的组件 $d$
-     * 的边延伸参数的梯度。
+     * Storage for gradients of edge extension parameters in 3D. In this case
+     * they are non-constant. These are stored for the 12 edges such that the
+     * global vertex numbering* would follow the order defined by the
+     * "standard" deal.II cell.
      *
+     * edge_lambda_grads_3d[m][q][d] stores the gradient of the edge extension
+     * parameter for component $d$ at the $q$-th quadrature point on edge m.
      */
     std::vector<std::vector<std::vector<double>>> edge_lambda_grads_3d;
 
     /**
-     * 存储三维边缘扩展参数的二阶导数，这些参数在整个单元中是恒定的。这些存储在12条边上，以便全局顶点编号*遵循
-     * "标准
-     * "deal.II单元定义的顺序。edge_lambda_gradgrads_3d[m][d1][d2]
-     * 存储边上的边延伸参数相对于分量d1和d2的二阶导数
-     * $m$  。
+     * Storage for 2nd derivatives of edge extension parameters in 3D, which are
+     * constant across the cell. These are stored for the 12 edges such that the
+     * global vertex numbering* would follow the order defined by the
+     * "standard" deal.II cell.
      *
+     * edge_lambda_gradgrads_3d[m][d1][d2] stores the 2nd derivatives of the
+     * edge extension parameters with respect to components d1 and d2 on edge
+     * $m$.
      */
     std::vector<std::vector<std::vector<double>>> edge_lambda_gradgrads_3d;
 
     /**
-     * 存储面的扩展参数。这些参数是为6个面而存储的，这样全局顶点编号将遵循
-     * "标准 "deal.II单元所定义的顺序。        由顶点v1, v2, v3,
-     * v4定义的面的扩展参数F由 $\lambda_{F} = \lambda_{v1} +
-     * \lambda_{v2} + \lambda_{v3} + \lambda_{v4}$ 给出。
-     * 请注意，在这个定义下， $\lambda_{F}$
-     * 的值不会随着面的方向而改变。 face_lambda_values[m][q]
-     * 存储面 $q$ 的第1个正交点的面扩展参数值。
+     * Storage for the face extension parameters. These are stored for the 6
+     * faces such that the global vertex numbering would follow the order
+     * defined by the "standard" deal.II cell.
      *
+     * The face extension parameter of a face, F, defined by the vertices
+     * v1, v2, v3, v4 is given by
+     * $\lambda_{F} = \lambda_{v1} + \lambda_{v2} + \lambda_{v3} +
+     * \lambda_{v4}$.
+     *
+     * Note that under this definition, the values of $\lambda_{F}$ do not
+     * change with the orientation of the face.
+     *
+     * face_lambda_values[m][q] stores the face extension parameter value at
+     * the $q$-th quadrature point on face $m$.
      */
     std::vector<std::vector<double>> face_lambda_values;
 
     /**
-     * 存储面扩展参数的梯度。face_lambda_grads[m][d] 存储面 $m$
-     * 上 $d$ 组件的面扩展参数的梯度。
+     * Storage for gradients of face extension parameters. These are stored for
+     * the 6 faces such that the global vertex numbering would follow the order
+     * defined by the "standard" deal.II cell.
      *
+     * face_lambda_grads[m][d] stores the gradient of the face extension
+     * parameters for component $d$ on face $m$.
      */
     std::vector<std::vector<double>> face_lambda_grads;
   };
 
 private:
   /**
-   * 内部函数返回一个 "每个对象的道夫
-   * "的向量，返回的向量的分量指的是。  0 = 顶点 1 = 边缘
-   * 2 = 面（在2D中是一个单元） 3 = 单元
-   *
+   * Internal function to return a vector of "dofs per object"
+   * where the components of the returned vector refer to:
+   * 0 = vertex
+   * 1 = edge
+   * 2 = face (which is a cell in 2D)
+   * 3 = cell
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * 内部存储所有需要的集成Legendre多项式。
-   *
+   * Internal storage for all required integrated Legendre polynomials.
    */
   std::vector<Polynomials::Polynomial<double>> IntegratedLegendrePolynomials;
 
   /**
-   * 内部函数用于填充内部的集成Legendre多项式数组。
-   *
+   * Internal function to populate the internal array of integrated Legendre
+   * polynomials.
    */
   void
   create_polynomials(const unsigned int degree);
 
   /**
-   * 返回基础集中的DoF数量。
-   *
+   * Returns the number of DoFs in the basis set.
    */
   unsigned int
   compute_num_dofs(const unsigned int degree) const;
 
   /**
-   * 在给定的InternalData对象上填充与细胞相关的基于边缘的形状函数。
-   *
+   * Populates cell-dependent edge-based shape functions on the given
+   * InternalData object.
    */
   void
   fill_edge_values(const typename Triangulation<dim, dim>::cell_iterator &cell,
@@ -356,8 +435,8 @@ private:
                    const InternalData &   fedata) const;
 
   /**
-   * 在给定的InternalData对象上填充依赖细胞的基于面的形状函数。
-   *
+   * Populates the cell-dependent face-based shape functions on the given
+   * InternalData object.
    */
   void
   fill_face_values(const typename Triangulation<dim, dim>::cell_iterator &cell,
@@ -367,10 +446,8 @@ private:
 
 
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

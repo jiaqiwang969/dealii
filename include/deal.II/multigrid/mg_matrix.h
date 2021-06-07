@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
@@ -31,50 +30,48 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup mg */ 
- /*@{*/ 
+/*!@addtogroup mg */
+/*@{*/
 
 namespace mg
 {
   /**
-   * 多层次矩阵。该矩阵存储了LinearOperator对象的MGLevelObject。它实现了MGMatrixBase中定义的接口，因此它可以作为Multigrid中的一个矩阵使用。
-   *
+   * Multilevel matrix. This matrix stores an MGLevelObject of
+   * LinearOperator objects. It implements the interface defined in
+   * MGMatrixBase, so that it can be used as a matrix in Multigrid.
    */
   template <typename VectorType = Vector<double>>
   class Matrix : public MGMatrixBase<VectorType>
   {
   public:
     /**
-     * 空对象的默认构造函数。
-     *
+     * Default constructor for an empty object.
      */
     Matrix() = default;
 
     /**
-     * 构造函数通过调用initialize()设置指向<tt>M</tt>中的矩阵的指针。
-     *
+     * Constructor setting up pointers to the matrices in <tt>M</tt> by
+     * calling initialize().
      */
     template <typename MatrixType>
     Matrix(const MGLevelObject<MatrixType> &M);
 
     /**
-     * 初始化该对象，使水平乘法使用<tt>M</tt>中的矩阵。
-     *
+     * Initialize the object such that the level multiplication uses the
+     * matrices in <tt>M</tt>
      */
     template <typename MatrixType>
     void
     initialize(const MGLevelObject<MatrixType> &M);
 
     /**
-     * 重置该对象。
-     *
+     * Reset the object.
      */
     void
     reset();
 
     /**
-     * 在一个层次上访问矩阵。
-     *
+     * Access matrix on a level.
      */
     const LinearOperator<VectorType> &operator[](unsigned int level) const;
 
@@ -100,8 +97,7 @@ namespace mg
     get_maxlevel() const override;
 
     /**
-     * 此对象所使用的内存。
-     *
+     * Memory used by this object.
      */
     std::size_t
     memory_consumption() const;
@@ -114,46 +110,40 @@ namespace mg
 
 
 /**
- * 从块状矩阵中选择多级矩阵。该类实现了MGMatrixBase定义的接口。
- * 模板参数 @p MatrixType
- * 应该是一个块状矩阵类，如BlockSparseMatrix或 @p
- * BlockSparseMatrixEZ。然后，该类存储一个指向该矩阵类的MGLevelObject的指针。在每个
- * @p vmult, 中，初始化时选择的块将与提供的向量相乘。
- *
- *
+ * Multilevel matrix selecting from block matrices. This class implements the
+ * interface defined by MGMatrixBase.  The template parameter @p MatrixType
+ * should be a block matrix class like BlockSparseMatrix or @p
+ * BlockSparseMatrixEZ. Then, this class stores a pointer to a MGLevelObject
+ * of this matrix class. In each @p vmult, the block selected on
+ * initialization will be multiplied with the vector provided.
  */
 template <typename MatrixType, typename number>
 class MGMatrixSelect : public MGMatrixBase<Vector<number>>
 {
 public:
   /**
-   * 构造函数。  @p row 和 @p col 是选择块的坐标。
-   * 另一个参数被移交给 @p SmartPointer 构造函数。
-   *
+   * Constructor. @p row and @p col are the coordinate of the selected block.
+   * The other argument is handed over to the @p SmartPointer constructor.
    */
   MGMatrixSelect(const unsigned int         row    = 0,
                  const unsigned int         col    = 0,
                  MGLevelObject<MatrixType> *matrix = 0);
 
   /**
-   * 设置要使用的矩阵对象。矩阵对象必须作为 @p
-   * MGMatrixSelect
-   * 对象存在更长时间，因为只存储了一个指针。
-   *
+   * Set the matrix object to be used. The matrix object must exist longer as
+   * the @p MGMatrixSelect object, since only a pointer is stored.
    */
   void
   set_matrix(MGLevelObject<MatrixType> *M);
 
   /**
-   * 选择用于乘法的块。
-   *
+   * Select the block for multiplication.
    */
   void
   select_block(const unsigned int row, const unsigned int col);
 
   /**
-   * 矩阵-向量-乘法的某一层次。
-   *
+   * Matrix-vector-multiplication on a certain level.
    */
   virtual void
   vmult(const unsigned int    level,
@@ -161,8 +151,7 @@ public:
         const Vector<number> &src) const;
 
   /**
-   * 在某一层次上添加矩阵-向量-乘法。
-   *
+   * Adding matrix-vector-multiplication on a certain level.
    */
   virtual void
   vmult_add(const unsigned int    level,
@@ -170,8 +159,7 @@ public:
             const Vector<number> &src) const;
 
   /**
-   * 在某一层次上进行矩阵-向量-乘法的转置。
-   *
+   * Transpose matrix-vector-multiplication on a certain level.
    */
   virtual void
   Tvmult(const unsigned int    level,
@@ -179,8 +167,7 @@ public:
          const Vector<number> &src) const;
 
   /**
-   * 在某一层次上增加转置矩阵-向量-乘法。
-   *
+   * Adding transpose matrix-vector-multiplication on a certain level.
    */
   virtual void
   Tvmult_add(const unsigned int    level,
@@ -189,26 +176,23 @@ public:
 
 private:
   /**
-   * 指向每一层的矩阵对象的指针。
-   *
+   * Pointer to the matrix objects on each level.
    */
   SmartPointer<MGLevelObject<MatrixType>, MGMatrixSelect<MatrixType, number>>
     matrix;
   /**
-   * 所选块的行坐标。
-   *
+   * Row coordinate of selected block.
    */
   unsigned int row;
   /**
-   * 所选区块的列坐标。
-   *
+   * Column coordinate of selected block.
    */
   unsigned int col;
 };
 
- /*@}*/ 
+/*@}*/
 
- /*----------------------------------------------------------------------*/ 
+/*----------------------------------------------------------------------*/
 
 namespace mg
 {
@@ -330,7 +314,7 @@ namespace mg
 } // namespace mg
 
 
- /*----------------------------------------------------------------------*/ 
+/*----------------------------------------------------------------------*/
 
 template <typename MatrixType, typename number>
 MGMatrixSelect<MatrixType, number>::MGMatrixSelect(const unsigned int row,
@@ -420,5 +404,3 @@ MGMatrixSelect<MatrixType, number>::Tvmult_add(const unsigned int    level,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

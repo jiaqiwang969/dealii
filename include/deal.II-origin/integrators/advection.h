@@ -1,3 +1,4 @@
+//include/deal.II-translator/integrators/advection_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -35,40 +36,27 @@ namespace LocalIntegrators
 {
   /**
    * @brief Local integrators related to advection along a vector field and
-   * its DG formulations
-   *
-   * All advection operators depend on an advection velocity denoted by
-   * <b>w</b> in the formulas below. It is denoted as <tt>velocity</tt> in the
-   * parameter lists.
-   *
-   * The functions cell_matrix() and both upwind_value_matrix() are taking the
-   * equation in weak form, that is, the directional derivative is on the test
-   * function.
-   *
+   * 其DG公式
+   * 所有的平流算子都依赖于一个平流速度，在下面的公式中用<b>w</b>表示。它在参数列表中被表示为<tt>velocity</tt>。
+   * 函数cell_matrix()和upwind_value_matrix()都是以弱形式取方程，也就是说，方向导数是在测试函数上。
    * @ingroup Integrators
+   *
    */
   namespace Advection
   {
     /**
-     * Advection along the direction <b>w</b> in weak form with derivative on
-     * the test function \f[ m_{ij} = \int_Z u_j\,(\mathbf w \cdot \nabla) v_i
-     * \, dx. \f]
+     * 沿着<b>w</b>方向的平流以弱形式进行，导数在测试函数\f[
+     * m_{ij} = \int_Z u_j\,(\mathbf w \cdot \nabla) v_i
+     * \, dx. \f]上。
+     * <tt>fe</tt>中的FiniteElement可以是标量或矢量值的。在后一种情况下，平移算子将分别应用于每个分量。
+     * @param  M：作为结果得到的平移矩阵  @param  fe:
+     * 描述本地试验函数空间的FEValues对象。必须设置#update_values和#update_gradients，以及#update_JxW_values。
+     * @param
+     * fetest。描述本地测试函数空间的FEValues对象。必须设置#update_values和#update_gradients。
+     * @param
+     * velocity（速度）。平流速度，一个维度为<tt>dim</tt>的矢量。每个分量可以包含一个长度为1的矢量，在这种情况下，假定速度是恒定的；如果速度不是恒定的，则包含一个与正交点一样多的条目的矢量。
+     * @param 因子是一个可选的结果的乘法因子。
      *
-     * The FiniteElement in <tt>fe</tt> may be scalar or vector valued. In the
-     * latter case, the advection operator is applied to each component
-     * separately.
-     *
-     * @param M: The advection matrix obtained as result
-     * @param fe: The FEValues object describing the local trial function
-     * space. #update_values and #update_gradients, and #update_JxW_values
-     * must be set.
-     * @param fetest: The FEValues object describing the local test function
-     * space. #update_values and #update_gradients must be set.
-     * @param velocity: The advection velocity, a vector of dimension
-     * <tt>dim</tt>. Each component may either contain a vector of length one,
-     * in which case a constant velocity is assumed, or a vector with as many
-     * entries as quadrature points if the velocity is not constant.
-     * @param factor is an optional multiplication factor for the result.
      */
     template <int dim>
     void
@@ -119,12 +107,10 @@ namespace LocalIntegrators
 
 
     /**
-     * Scalar advection residual operator in strong form
+     * Scalar advection residual operator in strong form \f[ r_i = \int_Z
+     * (\mathbf w \cdot \nabla)u\, v_i \, dx. \f]
+     * （警告）这不是与cell_matrix()一致的残差，而是与它的转置一致。
      *
-     * \f[ r_i = \int_Z  (\mathbf w \cdot \nabla)u\, v_i \, dx. \f]
-     *
-     * \warning This is not the residual consistent with cell_matrix(), but
-     * with its transpose.
      */
     template <int dim>
     inline void
@@ -160,14 +146,11 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued advection residual operator in strong form
+     * Vector-valued advection residual operator in strong form \f[ r_i =
+     * \int_Z \bigl((\mathbf w \cdot \nabla) \mathbf u\bigr) \cdot\mathbf v_i
+     * \, dx. \f] （警告
+     * 这不是与cell_matrix()一致的残差，而是与它的转置一致。
      *
-     *
-     * \f[ r_i = \int_Z \bigl((\mathbf w \cdot \nabla) \mathbf u\bigr)
-     * \cdot\mathbf v_i \, dx. \f]
-     *
-     * \warning This is not the residual consistent with cell_matrix(), but
-     * with its transpose.
      */
     template <int dim>
     inline void
@@ -207,9 +190,9 @@ namespace LocalIntegrators
 
 
     /**
-     * Scalar advection residual operator in weak form
+     * 弱形式的标量平流残差算子 \f[ r_i = \int_Z  (\mathbf w \cdot
+     * \nabla)v\, u_i \, dx. \f] 。
      *
-     * \f[ r_i = \int_Z  (\mathbf w \cdot \nabla)v\, u_i \, dx. \f]
      */
     template <int dim>
     inline void
@@ -245,11 +228,9 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued advection residual operator in weak form
+     * 弱形式的矢量值平流残差算子 \f[ r_i = \int_Z \bigl((\mathbf
+     * w \cdot \nabla) \mathbf v\bigr) \cdot\mathbf u_i \, dx. \f] 。
      *
-     *
-     * \f[ r_i = \int_Z \bigl((\mathbf w \cdot \nabla) \mathbf v\bigr)
-     * \cdot\mathbf u_i \, dx. \f]
      */
     template <int dim>
     inline void
@@ -289,21 +270,12 @@ namespace LocalIntegrators
 
 
     /**
-     * Upwind flux at the boundary for weak advection operator. This is the
-     * value of the trial function at the outflow boundary and zero else:
-     * @f[
+     * 弱平流算子的边界上风通量。这是在外流边界的试验函数值，其他为零： @f[
      * a_{ij} = \int_{\partial\Omega}
      * [\mathbf w\cdot\mathbf n]_+
      * u_i v_j \, ds
-     * @f]
+     * @f] <tt>速度</tt>以ArrayView形式提供，具有<tt>dim</tt>向量，每个速度分量一个。如果平流速度是常数，每个向量必须只有一个条目，或者每个正交点都有一个条目。        有限元可以有几个分量，在这种情况下，每个分量的平流速度是相同的。
      *
-     * The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>
-     * vectors, one for each velocity component. Each of the vectors must
-     * either have only a single entry, if the advection velocity is constant,
-     * or have an entry for each quadrature point.
-     *
-     * The finite element can have several components, in which case each
-     * component is advected by the same velocity.
      */
     template <int dim>
     void
@@ -355,28 +327,12 @@ namespace LocalIntegrators
 
 
     /**
-     * Scalar case: Residual for upwind flux at the boundary for weak
-     * advection operator. This is the value of the trial function at the
-     * outflow boundary and the value of the incoming boundary condition on
-     * the inflow boundary:
-     * @f[
+     * 标量情况。弱平流算子的边界处上风通量的残差。这是在流出边界的试验函数值和流入边界的入流边界条件值：@f[
      * a_{ij} = \int_{\partial\Omega}
      * (\mathbf w\cdot\mathbf n)
      * \widehat u v_j \, ds
-     * @f]
+     * @f]这里，数值通量 $\widehat u$ 是面的上风值，即有限元函数，其值在流出边界的参数`input`中给出。在流入边界，它是参数`data'中的非均质边界值。        <tt>速度</tt>以ArrayView形式提供，有<tt>dim</tt>向量，每个速度分量一个。如果平流速度是常数，每个向量必须只有一个条目，或者每个正交点都有一个条目。        有限元可以有多个分量，在这种情况下，每个分量的平流速度是相同的。
      *
-     * Here, the numerical flux $\widehat u$ is the upwind value at the face,
-     * namely the finite element function whose values are given in the
-     * argument `input` on the outflow boundary. On the inflow boundary, it is
-     * the inhomogeneous boundary value in the argument `data`.
-     *
-     * The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>
-     * vectors, one for each velocity component. Each of the vectors must
-     * either have only a single entry, if the advection velocity is constant,
-     * or have an entry for each quadrature point.
-     *
-     * The finite element can have several components, in which case each
-     * component is advected by the same velocity.
      */
     template <int dim>
     inline void
@@ -422,28 +378,12 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued case: Residual for upwind flux at the boundary for weak
-     * advection operator. This is the value of the trial function at the
-     * outflow boundary and the value of the incoming boundary condition on
-     * the inflow boundary:
-     * @f[
+     * 矢量值的情况。边界上的上风通量的残差，用于弱平流算子。这是在流出边界的试验函数的值和流入边界的入流边界条件的值：@f[
      * a_{ij} = \int_{\partial\Omega}
      * (\mathbf w\cdot\mathbf n)
      * \widehat u v_j \, ds
-     * @f]
+     * @f]这里，数值通量 $\widehat u$ 是面的上风值，即有限元函数，其值在流出边界的参数`input`中给出。在流入边界，它是参数`data'中的非均质边界值。        <tt>速度</tt>以ArrayView形式提供，有<tt>dim</tt>向量，每个速度分量一个。如果平流速度是常数，每个向量必须只有一个条目，或者每个正交点都有一个条目。        有限元可以有几个分量，在这种情况下，每个分量的平流速度是相同的。
      *
-     * Here, the numerical flux $\widehat u$ is the upwind value at the face,
-     * namely the finite element function whose values are given in the
-     * argument `input` on the outflow boundary. On the inflow boundary, it is
-     * the inhomogeneous boundary value in the argument `data`.
-     *
-     * The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>
-     * vectors, one for each velocity component. Each of the vectors must
-     * either have only a single entry, if the advection velocity is constant,
-     * or have an entry for each quadrature point.
-     *
-     * The finite element can have several components, in which case each
-     * component is advected by the same velocity.
      */
     template <int dim>
     inline void
@@ -493,24 +433,14 @@ namespace LocalIntegrators
 
 
     /**
-     * Upwind flux in the interior for weak advection operator. Matrix entries
-     * correspond to the upwind value of the trial function, multiplied by the
-     * jump of the test functions
-     * @f[
+     * 弱平流算子的内部上风通量。矩阵条目对应于试验函数的上风值，乘以试验函数的跳变 @f[
      * a_{ij} = \int_F \left|\mathbf w
      * \cdot \mathbf n\right|
      * u^\uparrow
      * (v^\uparrow-v^\downarrow)
      * \,ds
-     * @f]
+     * @f] <tt>速度</tt>作为ArrayView提供，具有<tt>dim</tt>向量，每个速度分量一个。如果平流速度是常数，每个向量必须只有一个条目，或者每个正交点都有一个条目。        有限元可以有几个分量，在这种情况下，每个分量的平流方式相同。
      *
-     * The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>
-     * vectors, one for each velocity component. Each of the vectors must
-     * either have only a single entry, if the advection velocity is constant,
-     * or have an entry for each quadrature point.
-     *
-     * The finite element can have several components, in which case each
-     * component is advected the same way.
      */
     template <int dim>
     void
@@ -578,24 +508,14 @@ namespace LocalIntegrators
 
 
     /**
-     * Scalar case: Upwind flux in the interior for weak advection operator.
-     * Matrix entries correspond to the upwind value of the trial function,
-     * multiplied by the jump of the test functions
-     * @f[
+     * 标量情况。在内部的上风通量为弱平流算子。    矩阵条目对应于试验函数的上风值，乘以试验函数的跳变 @f[
      * a_{ij} = \int_F \left|\mathbf w
      * \cdot \mathbf n\right|
      * u^\uparrow
      * (v^\uparrow-v^\downarrow)
      * \,ds
-     * @f]
+     * @f] <tt>速度</tt>作为ArrayView提供，具有<tt>dim</tt>向量，每个速度分量一个。如果平流速度是常数，每个向量必须只有一个条目，或者每个正交点都有一个条目。        有限元可以有几个分量，在这种情况下，每个分量的平流方式相同。
      *
-     * The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>
-     * vectors, one for each velocity component. Each of the vectors must
-     * either have only a single entry, if the advection velocity is constant,
-     * or have an entry for each quadrature point.
-     *
-     * The finite element can have several components, in which case each
-     * component is advected the same way.
      */
     template <int dim>
     void
@@ -655,24 +575,14 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued case: Upwind flux in the interior for weak advection
-     * operator. Matrix entries correspond to the upwind value of the trial
-     * function, multiplied by the jump of the test functions
-     * @f[
+     * 矢量值的情况。在内部的上风通量为弱平流算子。矩阵条目对应于试验函数的上风值，乘以试验函数的跳变 @f[
      * a_{ij} = \int_F \left|\mathbf w
      * \cdot \mathbf n\right|
      * u^\uparrow
      * (v^\uparrow-v^\downarrow)
      * \,ds
-     * @f]
+     * @f] <tt>速度</tt>作为ArrayView提供，具有<tt>dim</tt>向量，每个速度分量一个。如果平流速度是常数，每个向量必须只有一个条目，或者每个正交点都有一个条目。        有限元可以有几个分量，在这种情况下，每个分量的平流方式相同。
      *
-     * The <tt>velocity</tt> is provided as an ArrayView, having <tt>dim</tt>
-     * vectors, one for each velocity component. Each of the vectors must
-     * either have only a single entry, if the advection velocity is constant,
-     * or have an entry for each quadrature point.
-     *
-     * The finite element can have several components, in which case each
-     * component is advected the same way.
      */
     template <int dim>
     void
@@ -736,3 +646,5 @@ namespace LocalIntegrators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

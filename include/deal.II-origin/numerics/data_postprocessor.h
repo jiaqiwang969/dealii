@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/data_postprocessor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
@@ -41,188 +42,130 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * A namespace for data structures that are going to be passed from
- * DataOut to the member functions of DataPostprocessor.
+ * 一个用于数据结构的命名空间，这些数据结构将从DataOut传递给DataPostprocessor的成员函数。
+ *
+ *
  */
 namespace DataPostprocessorInputs
 {
   /**
-   * A base class containing common elements for the Scalar and Vector classes
-   * that are passed as arguments to
-   * DataPostprocessor::evaluate_scalar_field() and
-   * DataPostprocessor::evaluate_vector_field(). This common base class
-   * provides access to the points at which the solution is being evaluated,
-   * and a few other fields, as described in the following.
-   *
+   * 一个包含Scalar和Vector类共同元素的基类，这些元素被作为参数传递给
+   * DataPostprocessor::evaluate_scalar_field() 和
+   * DataPostprocessor::evaluate_vector_field().
+   * 这个共同的基类提供了对正在评估解决方案的点的访问，以及其他一些领域，如下所述。
    * <h4>Normal vector access</h4>
-   *
-   * If appropriate, i.e., if the object that is currently being processed
-   * is a face of a cell and the DataPostprocessor object is called from
-   * DataOutFaces or a similar class, then the current object also
-   * stores the normal vectors to the geometry on which output
-   * is generated, at these evaluation points.
-   *
-   * On the other hand, if the solution is being evaluated on a cell,
-   * then the @p normal_vectors member variable does not contain anything
-   * useful.
-   *
+   * 如果合适的话，也就是说，如果当前正在处理的对象是一个单元格的面，并且DataPostprocessor对象是从DataOutFaces或类似的类中调用的，那么当前对象也会在这些评价点上存储到生成输出的几何体的法向量。
+   * 另一方面，如果解决方案是在一个单元格上被评估的，那么
+   * @p normal_vectors 成员变量就不包含任何有用的东西。
    * <h4>Cell access</h4>
-   *
-   * DataPostprocessor is typically called from classes such as DataOut
-   * or DataOutFaces that evaluate solution fields on a cell-by-cell
-   * basis. As a consequence, classes derived from DataPostprocessor
-   * (or DataPostprocessorScalar, DataPostprocessorVector, or
-   * DataPostprocessorTensor) sometimes
-   * need to use which cell is currently under investigation. Consequently,
-   * DataOut and similar classes pass the cell they are currently working
-   * on to DataPostprocessor via the classes in this namespace (and
-   * specifically the current base class).
-   *
-   * However, the situation is not so simple. This is because the current
-   * class (and those derived from it) only knows the space dimension in
-   * which the output lives. But this can come from many sources. For example,
-   * if we are in 3d, this may be because we are working on a DoFHandler<3> or
-   * a DoFHandler<2,3> (i.e., either a 3d mesh, or a 2d meshes of a 2d surface
-   * embedded in 3d space). Another case is classes like DataOutRotation or
-   * DataOutStack, then @p spacedim being equal to 3 might mean that we are
-   * actually working on a DoFHandler<2>.
-   *
-   * In other words, just because we know the value of the @p spacedim
-   * template argument of the current class does not mean that the
-   * data type of the cell iterator that is currently being worked on
-   * is obvious.
-   *
-   * To make the cell iterator accessible nevertheless, this class uses
-   * an object of type boost::any to store the cell iterator. You can
-   * think of this as being a void pointer that can point to anything.
-   * To use what is being used therefore requires the user to know the
-   * data type of the thing being pointed to.
-   *
-   * To make this work, the DataOut and related classes store in objects
-   * of the current type a representation of the cell. To get it back out,
-   * you would use the get_cell() function that requires you to say,
-   * as a template parameter, the dimension of the cell that is currently
-   * being processed. This is knowledge you typically have in an
-   * application: for example, if your application runs in @p dim space
-   * dimensions and you are currently using the DataOut class, then the cells
-   * that are worked on have data type <code>DataOut<dim>::cell_iterator</code>.
-   * Consequently, in a postprocessor, you can call <code>inputs.get_cell@<dim@>
-   * </code>. For technical reasons, however, C++ will typically require you to
-   * write this as <code>inputs.template get_cell@<dim@> </code> because the
-   * member function we call here requires that we explicitly provide the
-   * template argument.
-   *
-   * Let us consider a complete example of a postprocessor that computes
-   * the fluid norm of the stress $\|\sigma\| = \|\eta \nabla u\|$ from the
-   * viscosity $\eta$ and the gradient of the fluid velocity, $\nabla u$,
-   * assuming that the viscosity is something that depends on the cell's
-   * material id. This can be done using a class we derive from
-   * DataPostprocessorScalar where we overload the
-   * DataPostprocessor::evaluate_vector_field() function that receives the
-   * values and gradients of the velocity (plus of other solution variables such
-   * as the pressure, but let's ignore those for the moment). Then we could use
-   * code such as this:
+   * DataPostprocessor通常由DataOut或DataOutFaces等类调用，这些类以单元格为基础评估解决方案字段。因此，从DataPostprocessor（或DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor）派生的类有时需要使用当前正在调查的单元。因此，DataOut和类似的类通过这个命名空间的类（特别是当前的基类）将它们当前正在处理的单元传递给DataPostprocessor。
+   * 然而，情况并不那么简单。这是因为当前类（以及从它派生的类）只知道输出所处的空间维度。但这可能来自于很多方面。例如，如果我们是在三维空间，这可能是因为我们是在DoFHandler<3>或DoFHandler<2,3>上工作（也就是说，要么是三维网格，要么是嵌入三维空间的二维表面的二维网格）。另一种情况是像DataOutRotation或DataOutStack这样的类，那么
+   * @p spacedim
+   * 等于3可能意味着我们实际上是在做一个DoFHandler<2>。
+   * 换句话说，仅仅因为我们知道当前类的 @p spacedim
+   * 模板参数的值，并不意味着当前正在处理的单元格迭代器的数据类型是明显的。
+   * 尽管如此，为了使单元格迭代器可以被访问，这个类使用一个
+   * boost::any
+   * 类型的对象来存储单元格迭代器。你可以把它看成是一个可以指向任何东西的无效指针。
+   * 因此要使用被使用的东西需要用户知道被指向的东西的数据类型。
+   * 为了使其发挥作用，DataOut和相关类在当前类型的对象中存储了一个单元格的表示。为了把它拿回来，你将使用get_cell()函数，该函数要求你说，作为一个模板参数，当前正在处理的单元格的尺寸。这是你在应用程序中通常拥有的知识：例如，如果你的应用程序在
+   * @p dim  空间维度中运行，并且你目前正在使用 DataOut
+   * 类，那么被处理的单元格具有数据类型
+   * <code>DataOut<dim>::cell_iterator</code>  。
+   * 因此，在后处理程序中，你可以调用<code>inputs.get_cell
+   * @<dim@>
+   * </code>。然而，由于技术原因，C++通常会要求你把它写成
+   * <code>inputs.template get_cell@<dim@> </code>
+   * ，因为我们在这里调用的成员函数要求我们明确提供模板参数。
+   * 让我们考虑一个完整的后处理器的例子，从粘度 $\eta$
+   * 和流体速度梯度 $\nabla u$ 计算应力 $\|\sigma\| = \|\eta \nabla
+   * u\|$
+   * 的流体规范，假设粘度是取决于单元的材料id的东西。这可以通过我们从DataPostprocessorScalar派生出来的一个类来完成，在这个类中，我们重载了
+   * DataPostprocessor::evaluate_vector_field()
+   * 函数，该函数接收速度的值和梯度（还有其他求解变量，如压力，但我们暂时忽略这些）。然后我们可以使用这样的代码。
    * @code
-   *   template <int dim>
-   *   class ComputeStress : public DataPostprocessorScalar<dim>
-   *   {
-   *     public:
-   *       ... // overload other necessary member variables
-   *       virtual
-   *       void
-   *       evaluate_vector_field
-   *       (const DataPostprocessorInputs::Vector<dim> &input_data,
-   *        std::vector<Vector<double> > &computed_quantities) const override
-   *       {
-   *         const typename DoFHandler<dim>::cell_iterator current_cell =
-   *           input_data.template get_cell<dim>();
-   *         const viscosity = look_up_viscosity (current_cell->material_id());
+   * template <int dim>
+   * class ComputeStress : public DataPostprocessorScalar<dim>
+   * {
+   *   public:
+   *     ... // overload other necessary member variables
+   *     virtual
+   *     void
+   *     evaluate_vector_field
+   *     (const DataPostprocessorInputs::Vector<dim> &input_data,
+   *      std::vector<Vector<double> > &computed_quantities) const override
+   *     {
+   *       const typename DoFHandler<dim>::cell_iterator current_cell =
+   *         input_data.template get_cell<dim>();
+   *       const viscosity = look_up_viscosity (current_cell->material_id());
    *
-   *         for (unsigned int q=0; q<input_data.solution_gradients.size(); ++q)
-   *           computed_quantities[q][0] =
-   *             (viscosity * input_data.solution_gradients[q]).norm();
-   *       }
-   *   };
+   *       for (unsigned int q=0; q<input_data.solution_gradients.size(); ++q)
+   *         computed_quantities[q][0] =
+   *           (viscosity input_data.solution_gradients[q]).norm();
+   *     }
+   * };
    * @endcode
+   *
+   *
    */
   template <int spacedim>
   struct CommonInputs
   {
     /**
-     * An array of vectors normal to the faces of cells, evaluated at the points
-     * at which we are generating graphical output. This array is only used by
-     * the DataOutFaces class, and is left empty by all other classes for
-     * which the DataPostprocessor framework can be used. In the case of
-     * DataOutFaces, the array contains the outward normal vectors to the
-     * face, seen from the interior of the cell.
+     * 在我们生成图形输出的点上，对单元格面的法向数组进行评估。这个数组只被DataOutFaces类使用，而其他所有可以使用DataPostprocessor框架的类都留空。在DataOutFaces的情况下，这个数组包含了从单元内部看到的面的外向法向量。
+     * 这个数组只有在用户派生的类重载了
+     * DataPostprocessor::get_needed_update_flags(),
+     * 并且函数返回（可能还有其他标志）
+     * UpdateFlags::update_normal_vectors.
+     * 时才会被填充。另外，从DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor派生的类可以将这个标志传递给这三个类的构造器。
      *
-     * This array is only filled if a user-derived class overloads the
-     * DataPostprocessor::get_needed_update_flags(), and the function
-     * returns (possibly among other flags)
-     * UpdateFlags::update_normal_vectors.  Alternatively, a class
-     * derived from DataPostprocessorScalar, DataPostprocessorVector,
-     * or DataPostprocessorTensor may pass this flag to the constructor of
-     * these three classes.
      */
     std::vector<Tensor<1, spacedim>> normals;
 
     /**
-     * An array of coordinates corresponding to the locations at which
-     * we are generating graphical output on one cell.
+     * 一个坐标数组，对应于我们在一个单元上生成图形输出的位置。
+     * 这个数组只有在用户派生的类重载了
+     * DataPostprocessor::get_needed_update_flags(),
+     * 并且函数返回（可能还有其他标志）
+     * UpdateFlags::update_quadrature_points.
+     * 时才会被填充。另外，从DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor派生的类可以将这个标志传递给这三个类的构造器。
      *
-     * This array is only filled if a user-derived class overloads the
-     * DataPostprocessor::get_needed_update_flags(), and the function
-     * returns (possibly among other flags)
-     * UpdateFlags::update_quadrature_points.  Alternatively, a class
-     * derived from DataPostprocessorScalar, DataPostprocessorVector,
-     * or DataPostprocessorTensor may pass this flag to the constructor of
-     * these three classes.
      */
     std::vector<Point<spacedim>> evaluation_points;
 
     /**
-     * Set the cell that is currently being used in evaluating the data
-     * for which the DataPostprocessor object is being called.
+     * 设置当前用于评估DataPostprocessor对象被调用的数据的单元。
+     * 这个函数通常不从用户空间调用，而是由DataOut和类似的类在创建对象时调用，然后传递给DataPostprocessor。
      *
-     * This function is not usually called from user space, but is instead
-     * called by DataOut and similar classes when creating the object that
-     * is then passed to DataPostprocessor.
      */
     template <int dim>
     void
     set_cell(const typename DoFHandler<dim, spacedim>::cell_iterator &cell);
 
     /**
-     * Set the cell that is currently being used in evaluating the data
-     * for which the DataPostprocessor object is being called.
+     * 设置当前用于评估DataPostprocessor对象被调用的数据的单元。
+     * 这个函数通常不从用户空间调用，而是由DataOut和类似的类在创建对象时调用，然后传递给DataPostprocessor。
+     * @deprecated  使用带有dim模板参数的等效函数来代替。
      *
-     * This function is not usually called from user space, but is instead
-     * called by DataOut and similar classes when creating the object that
-     * is then passed to DataPostprocessor.
-     *
-     * @deprecated Use the equivalent function with the dim template parameter
-     * instead.
      */
     template <typename DoFHandlerType>
     DEAL_II_DEPRECATED void
     set_cell(const typename DoFHandlerType::cell_iterator &cell);
 
     /**
-     * Query the cell on which we currently produce graphical output.
-     * See the documentation of the current class for an example on how
-     * to use this function.
+     * 查询我们当前产生图形输出的单元格。
+     * 关于如何使用这个函数的例子，请参见当前类的文档。
+     *
      */
     template <int dim>
     typename DoFHandler<dim, spacedim>::cell_iterator
     get_cell() const;
 
     /**
-     * Query the cell on which we currently produce graphical output.
-     * See the documentation of the current class for an example on how
-     * to use this function.
+     * 查询我们当前产生图形输出的单元格。
+     * 关于如何使用这个函数的例子，请参见当前类的文档。
+     * @deprecated 使用带有dim模板参数的等效函数来代替。
      *
-     * @deprecated Use the equivalent function with the dim template parameter
-     * instead.
      */
     template <typename DoFHandlerType>
     DEAL_II_DEPRECATED typename DoFHandlerType::cell_iterator
@@ -230,68 +173,49 @@ namespace DataPostprocessorInputs
 
   private:
     /**
-     * The place where set_cell() stores the cell. Since the actual data
-     * type of the cell iterator can be many different things, the
-     * interface uses boost::any here. This makes assignment in set_cell()
-     * simple, but requires knowing the data type of the stored object in
-     * get_cell().
+     * set_cell()存储单元格的地方。由于单元格迭代器的实际数据类型可以是许多不同的东西，接口在这里使用
+     * boost::any
+     * 。这使得set_cell()中的赋值很简单，但需要知道get_cell()中存储对象的数据类型。
+     *
      */
     boost::any cell;
   };
 
   /**
-   * A structure that is used to pass information to
-   * DataPostprocessor::evaluate_scalar_field(). It contains
-   * the values and (if requested) derivatives of a scalar solution
-   * variable at the evaluation points on a cell or face. (This class
-   * is not used if a scalar solution is complex-valued, however,
-   * since in that case the real and imaginary parts are treated
-   * separately -- resulting in vector-valued inputs to data
-   * postprocessors, which are then passed to
-   * DataPostprocessor::evaluate_vector_field() instead.)
+   * 一个用于向 DataPostprocessor::evaluate_scalar_field().
+   * 传递信息的结构，它包含了标量解变量在单元格或面的评估点的值和（如果要求）导数。然而，如果标量解是复值的，则不使用该类，因为在这种情况下，实部和虚部是分开处理的）。
    *
-   * Through the fields in the CommonInputs base class, this class also
-   * makes available access to the locations of evaluations points,
-   * normal vectors (if appropriate), and which cell data is currently
-   * being evaluated on (also if appropriate).
+   * - 导致数据后处理程序的矢量值输入，然后被传递到 DataPostprocessor::evaluate_vector_field() 。    通过CommonInputs基类中的字段，该类也可以访问评估点的位置、法向量（如果合适），以及当前正在评估的单元数据（同样如果合适）。
+   *
    */
   template <int spacedim>
   struct Scalar : public CommonInputs<spacedim>
   {
     /**
-     * An array of values of the (scalar) solution at each of the evaluation
-     * points used to create graphical output from one cell, face, or other
-     * object.
+     * 每个评估点的（标量）解决方案的数值数组，用于从一个单元格、面或其他对象创建图形输出。
+     *
      */
     std::vector<double> solution_values;
 
     /**
-     * An array of gradients of the (scalar) solution at each of the evaluation
-     * points used to create graphical output from one cell, face, or other
-     * object.
+     * 在每个评估点的（标量）解决方案的梯度数组，用于从一个单元格、面或其他对象创建图形输出。
+     * 这个数组只有在用户派生的类重载了
+     * DataPostprocessor::get_needed_update_flags(),
+     * 并且函数返回（可能还有其他标志）
+     * UpdateFlags::update_gradients.
+     * 时才会被填充。另外，从DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor派生的类可以将这个标志传递给这三个类的构造器。
      *
-     * This array is only filled if a user-derived class overloads the
-     * DataPostprocessor::get_needed_update_flags(), and the function
-     * returns (possibly among other flags)
-     * UpdateFlags::update_gradients.  Alternatively, a class
-     * derived from DataPostprocessorScalar, DataPostprocessorVector,
-     * or DataPostprocessorTensor may pass this flag to the constructor of
-     * these three classes.
      */
     std::vector<Tensor<1, spacedim>> solution_gradients;
 
     /**
-     * An array of second derivatives of the (scalar) solution at each of the
-     * evaluation points used to create graphical output from one cell, face, or
-     * other object.
+     * 在每个评估点的（标量）解决方案的二阶导数数组，用于从一个单元格、面或其他对象创建图形输出。
+     * 这个数组只有在用户派生的类重载了
+     * DataPostprocessor::get_needed_update_flags(),
+     * 并且函数返回（可能还有其他标志）
+     * UpdateFlags::update_hessians.
+     * 时才会被填充。另外，从DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor派生的类可以将这个标志传递给这三个类的构造器。
      *
-     * This array is only filled if a user-derived class overloads the
-     * DataPostprocessor::get_needed_update_flags(), and the function
-     * returns (possibly among other flags)
-     * UpdateFlags::update_hessians.  Alternatively, a class
-     * derived from DataPostprocessorScalar, DataPostprocessorVector,
-     * or DataPostprocessorTensor may pass this flag to the constructor of
-     * these three classes.
      */
     std::vector<Tensor<2, spacedim>> solution_hessians;
   };
@@ -299,89 +223,57 @@ namespace DataPostprocessorInputs
 
 
   /**
-   * A structure that is used to pass information to
-   * DataPostprocessor::evaluate_vector_field(). It contains
-   * the values and (if requested) derivatives of a vector-valued solution
-   * variable at the evaluation points on a cell or face.
+   * 一个用于向 DataPostprocessor::evaluate_vector_field().
+   * 传递信息的结构，它包含向量值解变量在单元格或面的评估点的值和（如果要求）导数。
+   * 如果求解向量是复数值的，也可以使用这个类（在这种情况下，它是标量值还是向量值并不重要），因为在这种情况下，DataOut和相关类将求解向量的实部和虚部分开。在实践中，这意味着如果一个解向量有
+   * $N$ 个向量分量（即，有 $N$
+   * 个函数构成你所处理的PDE的解； $N$
+   * 不是解向量的大小），那么如果解是实值的，下面的`solution_values`变量将是一个数组，有多少个条目就有多少个单元格上的评估点，每个条目是一个长度为
+   * $N$ 的向量，代表在一个点上评估的 $N$
+   * 解函数。另一方面，如果解是复值的（即传递给
+   * DataOut::build_patches()
+   * 的向量有复值的条目），那么这个类的`solution_values`成员变量将有每个评价点的
+   * $2N$ 条目。这些条目中的第一个 $N$
+   * 代表解决方案的实部，第二个 $N$
+   * 条目对应于在评估点评估的解决方案的虚部。同样的布局被用于
+   * "solution_gradients "和 "solution_hessians
+   * "字段。首先是实部的梯度/黑森数，然后是虚部的所有梯度/黑森数。在DataPostprocessor类本身的文档中有更多关于这个主题的信息。
+   * step-58
+   * 提供了一个如何在复值情况下使用这个类的例子。
+   * 通过CommonInputs基类中的字段，该类也可以访问评估点的位置、法向量（如果合适），以及当前正在评估的单元数据（同样如果合适）。
    *
-   * This class is also used if the solution vector is complex-valued
-   * (whether it is scalar- or vector-valued is immaterial in that case)
-   * since in that case, the DataOut and related classes take apart the real
-   * and imaginary parts of a solution vector. In practice, that means that
-   * if a solution vector has $N$ vector components (i.e., there are
-   * $N$ functions that form the solution of the PDE you are dealing with;
-   * $N$ is not the size of the solution vector), then if the solution is
-   * real-valued the `solution_values` variable below will be an array
-   * with as many entries as there are evaluation points on a cell,
-   * and each entry is a vector of length $N$ representing the $N$
-   * solution functions evaluated at a point. On the other hand, if
-   * the solution is complex-valued (i.e., the vector passed to
-   * DataOut::build_patches() has complex-valued entries), then the
-   * `solution_values` member variable of this class will have $2N$
-   * entries for each evaluation point. The first $N$ of these entries
-   * represent the real parts of the solution, and the second $N$ entries
-   * correspond to the imaginary parts of the solution evaluated at the
-   * evaluation point. The same layout is used for the `solution_gradients`
-   * and `solution_hessians` fields: First the gradients/Hessians of
-   * the real components, then all the gradients/Hessians of the
-   * imaginary components. There is more information about the subject in the
-   * documentation of the DataPostprocessor class itself. step-58 provides an
-   * example of how this class is used in a complex-valued situation.
-   *
-   * Through the fields in the CommonInputs base class, this class also
-   * makes available access to the locations of evaluations points,
-   * normal vectors (if appropriate), and which cell data is currently
-   * being evaluated on (also if appropriate).
    */
   template <int spacedim>
   struct Vector : public CommonInputs<spacedim>
   {
     /**
-     * An array of values of a vector-valued solution at each of the evaluation
-     * points used to create graphical output from one cell, face, or other
-     * object.
+     * 用于从一个单元格、面或其他对象创建图形输出的每个评价点的向量值解决方案的数组。
+     * 外向量在评估点上运行，而内向量在将被生成输出的有限元场的分量上运行。
      *
-     * The outer vector runs over the evaluation points, whereas the inner
-     * vector runs over the components of the finite element field for which
-     * output will be generated.
      */
     std::vector<dealii::Vector<double>> solution_values;
 
     /**
-     * An array of gradients of a vector-valued solution at each of the
-     * evaluation points used to create graphical output from one cell, face, or
-     * other object.
+     * 在每个评估点的矢量值解决方案的梯度阵列，用于从一个单元格、面或其他对象创建图形输出。
+     * 外向量在评估点上运行，而内向量在将被生成输出的有限元场的分量上运行。
+     * 这个数组只有在用户派生的类重载了
+     * DataPostprocessor::get_needed_update_flags(),
+     * 并且函数返回（可能还有其他标志）
+     * UpdateFlags::update_gradients.
+     * 时才会被填充。另外，从DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor派生的类可以将这个标志传递给这三个类的构造器。
      *
-     * The outer vector runs over the evaluation points, whereas the inner
-     * vector runs over the components of the finite element field for which
-     * output will be generated.
-     *
-     * This array is only filled if a user-derived class overloads the
-     * DataPostprocessor::get_needed_update_flags(), and the function
-     * returns (possibly among other flags)
-     * UpdateFlags::update_gradients.  Alternatively, a class
-     * derived from DataPostprocessorScalar, DataPostprocessorVector,
-     * or DataPostprocessorTensor may pass this flag to the constructor of
-     * these three classes.
      */
     std::vector<std::vector<Tensor<1, spacedim>>> solution_gradients;
 
     /**
-     * An array of second derivatives of a vector-valued solution at each of the
-     * evaluation points used to create graphical output from one cell, face, or
-     * other object.
+     * 矢量值解决方案在每个评估点的二阶导数数组，用于从一个单元格、面或其他对象创建图形输出。
+     * 外向量在评估点上运行，而内向量在将被生成输出的有限元场的分量上运行。
+     * 这个数组只有在用户派生的类重载了
+     * DataPostprocessor::get_needed_update_flags(),
+     * 并且函数返回（可能还有其他标志）
+     * UpdateFlags::update_hessians.
+     * 时才会被填充。另外，从DataPostprocessorScalar、DataPostprocessorVector或DataPostprocessorTensor派生的类可以将这个标志传递给这三个类的构造器。
      *
-     * The outer vector runs over the evaluation points, whereas the inner
-     * vector runs over the components of the finite element field for which
-     * output will be generated.
-     *
-     * This array is only filled if a user-derived class overloads the
-     * DataPostprocessor::get_needed_update_flags(), and the function
-     * returns (possibly among other flags)
-     * UpdateFlags::update_hessians.  Alternatively, a class
-     * derived from DataPostprocessorScalar, DataPostprocessorVector,
-     * or DataPostprocessorTensor may pass this flag to the constructor of
-     * these three classes.
      */
     std::vector<std::vector<Tensor<2, spacedim>>> solution_hessians;
   };
@@ -390,221 +282,123 @@ namespace DataPostprocessorInputs
 
 
 /**
- * This class provides an interface to compute derived quantities from a
- * solution that can then be output in graphical formats for visualization,
- * using facilities such as the DataOut class.
+ * 该类提供了一个接口，用于计算来自解决方案的派生量，然后可以使用诸如DataOut类的设施，以图形格式输出，用于可视化。
+ * 对于FE解决方案的（图形）输出，人们经常希望包括派生量，这些派生量是由解决方案的值和可能的解决方案的第一和第二导数计算出来的。例如，在超声速流动计算中，根据速度和密度计算马赫数，或者如
+ * step-29 和 step-58
+ * 中所示，计算复值解的幅度（实际上是幅度的平方）。其他的用途在
+ * step-32  和  step-33
+ * 中显示。这个类提供了执行这种后处理的接口。给出解的值和导数，在我们想要生成输出的那些点上，这个类的函数可以被重载以计算新的数量。
+ * 可以给 DataOut::add_data_vector()
+ * 函数提供一个数据向量和一个从当前类派生出来的对象（对DataOutRotation和DataOutFaces也是如此）。这将导致
+ * DataOut::build_patches()
+ * 计算派生量，而不是使用数据向量提供的数据（通常是解向量）。注意，DataPostprocessor对象（即实际上是你的派生类的对象）必须活到DataOut对象被销毁为止，因为后者保持着一个指向前者的指针，如果指向的对象被销毁，而后者仍有一个指向它的指针，它就会抱怨。如果数据后处理器和DataOut对象都是一个函数的局部变量（例如，在
+ * step-29
+ * 中就是如此），那么你可以通过在DataOut变量之前声明数据后处理器变量来避免这个错误，因为对象的销毁顺序是相反的。
+ * 为了不进行不必要的计算，DataPostprocessor必须提供计算派生量所需的输入数据的信息，即它是否需要所提供数据的值、一阶导数和/或二阶导数。与DataOutFaces对象结合使用的DataPostprocessor对象也可以要求提供每个点的法向量。需要哪些数据的信息必须通过虚拟函数get_need_update_flags()返回的UpdateFlags来提供。你有责任在计算派生量时只使用那些被更新的值。DataOut对象将在调用evaluate_scalar_field()或evaluate_vector_field()时提供对请求数据的引用（DataOut决定调用这两个函数中的哪一个，取决于所使用的有限元是只有一个，还是有多个矢量成分；注意，这只由所使用的有限元的成分数量决定，而不是由当前派生类计算的数据是标量还是矢量值）。
+ * 此外，派生类必须实现get_names()函数，后者函数返回的输出变量的数量必须与前者返回的向量的大小相匹配。此外，这个数字还必须与计算量的数量相匹配，当然了。
  *
- * For the (graphical) output of a FE solution one frequently wants to include
- * derived quantities, which are calculated from the values of the solution
- * and possibly the first and second derivatives of the solution. Examples are
- * the calculation of Mach numbers from velocity and density in supersonic
- * flow computations, or the computation of the magnitude of a complex-valued
- * solution as demonstrated in step-29 and step-58 (where it is actually
- * the *square* of the magnitude). Other uses are shown in
- * step-32 and step-33. This class offers the interface to perform such
- * postprocessing. Given the values and derivatives of the solution at those
- * points where we want to generated output, the functions of this class can be
- * overloaded to compute new quantities.
+ *  <h3>Use in simpler cases</h3>
+ * 从当前的类派生出来，可以实现非常普遍的后处理程序。例如，在
+ * step-32
+ * 程序中，我们实现了一个后处理器，它接收一个由速度、压力和温度（dim+2分量）组成的解决方案，并计算出各种输出量，其中一些是矢量值，一些是标量。另一方面，在
+ * step-29
+ * 中，我们实现了一个后处理器，只计算由双分量有限元给出的复数的大小。为此必须实现四个虚拟函数（evaluate_scalar_field()或evaluate_vector_field()、get_names()、get_update_flags()和get_data_component_interpretation()）似乎很愚蠢。
+ * 为此，有三个类DataPostprocessorScalar、DataPostprocessorVector和DataPostprocessorTensor，如果输出量是一个单一的标量、一个单一的向量（这里用来指正好有
+ * @p dim 个分量）或一个单一的张量（这里用来指正好有
+ * <code>dim*dim</code>
+ * 个分量），就可以使用它们。当使用这些类时，人们只需要编写一个构造函数，将输出变量的名称和更新标志传递给基类的构造函数，并重载实际计算结果的函数。
+ * DataPostprocessorVector和DataPostprocessorTensor类的文档也包含了大量关于如何使用它们的例子。
+ * step-29
+ * 教程程序包含了一个使用DataPostprocessorScalar类的例子。
  *
- * A data vector and an object of a class derived from the current one can be
- * given to the DataOut::add_data_vector() function (and similarly for
- * DataOutRotation and DataOutFaces). This will cause DataOut::build_patches()
- * to compute the derived quantities instead of using the data provided by the
- * data vector (typically the solution vector). Note that the
- * DataPostprocessor object (i.e., in reality the object of your derived
- * class) has to live until the DataOut object is destroyed as the latter
- * keeps a pointer to the former and will complain if the object pointed to is
- * destroyed while the latter still has a pointer to it. If both the data
- * postprocessor and DataOut objects are local variables of a function (as
- * they are, for example, in step-29), then you can avoid this error by
- * declaring the data postprocessor variable before the DataOut variable as
- * objects are destroyed in reverse order of declaration.
- *
- * In order not to perform needless calculations, DataPostprocessor has to
- * provide information which input data is needed for the calculation of the
- * derived quantities, i.e. whether it needs the values, the first derivative
- * and/or the second derivative of the provided data. DataPostprocessor
- * objects which are used in combination with a DataOutFaces object can also
- * ask for the normal vectors at each point. The information which data is
- * needed has to be provided via the UpdateFlags returned by the virtual
- * function get_needed_update_flags(). It is your responsibility to use only
- * those values which were updated in the calculation of derived quantities.
- * The DataOut object will provide references to the requested data in the
- * call to evaluate_scalar_field() or
- * evaluate_vector_field() (DataOut decides which of the two
- * functions to call depending on whether the finite element in use has only a
- * single, or multiple vector components; note that this is only determined by
- * the number of components in the finite element in use, and not by whether
- * the data computed by a class derived from the current one is scalar or
- * vector valued).
- *
- * Furthermore, derived classes have to implement the get_names() function,
- * where the number of output variables returned by the latter function has to
- * match the size of the vector returned by the former. Furthermore, this
- * number has to match the number of computed quantities, of course.
+ *  <h3>Complex-valued solutions</h3>
+ * 有一些PDEs的解是复值的。例如， step-58 和 step-62
+ * 解决的问题，其每一点的解都是由一个 `std::complex<double>`
+ * 变量代表的复数组成。(  step-29
+ * 也解决了这样的问题，但在那里我们选择用两个实值场来表示解。)
+ * 在这种情况下，交给 DataOut::build_patches() 的向量是
+ * `Vector<std::complex<double>>`,
+ * 类型或基本等同于此的东西。这方面的问题，在DataOut本身的文档中也讨论过，最广泛使用的可视化文件格式（特别是VTK和VTU格式）实际上不能表示复数量。在这些数据文件中唯一可以存储的是实值量。
+ * 因此，DataOut被迫将事物拆成实数和虚数部分，并将两者作为单独的量输出。这是由DataOut直接写入文件的数据的情况，但它也是首先通过DataPostprocessor对象（或其派生类的对象）的情况。这些对象所看到的都是实值的集合，即使底层的解决方案向量是复值的。
+ * 所有这些都有两个含义。
  *
  *
- * <h3>Use in simpler cases</h3>
  *
- * Deriving from the current class allows to implement very general
- * postprocessors. For example, in the step-32 program, we implement a
- * postprocessor that takes a solution that consists of velocity, pressure and
- * temperature (dim+2 components) and computes a variety of output quantities,
- * some of which are vector valued and some of which are scalar. On the other
- * hand, in step-29 we implement a postprocessor that only computes the
- * magnitude of a complex number given by a two-component finite element. It
- * seems silly to have to implement four virtual functions for this
- * (evaluate_scalar_field() or evaluate_vector_field(), get_names(),
- * get_update_flags() and get_data_component_interpretation()).
- *
- * To this end there are three classes DataPostprocessorScalar,
- * DataPostprocessorVector, and DataPostprocessorTensor that are meant to be
- * used if the output quantity is either a single scalar, a single vector
- * (here used meaning to have exactly @p dim components), or a single
- * tensor (here used meaning to have exactly <code>dim*dim</code> components).
- * When using these classes, one only has to write a
- * constructor that passes the name of the output variable and the update
- * flags to the constructor of the base class and overload the function that
- * actually computes the results.
- *
- * The DataPostprocessorVector and DataPostprocessorTensor class documentations
- * also contains a extensive examples of how they can be used. The step-29
- * tutorial program contains an example of using the DataPostprocessorScalar
- * class.
+ * - 如果一个求解向量是复值的，那么这就导致在每个评估点至少有两个输入分量。因此， DataPostprocessor::evaluate_scalar_field() 函数永远不会被调用，即使底层有限元只有一个解分量。相反，DataOut将一直*调用 DataPostprocessor::evaluate_vector_field(). 。
  *
  *
- * <h3>Complex-valued solutions</h3>
  *
- * There are PDEs whose solutions are complex-valued. For example, step-58 and
- * step-62 solve problems whose solutions at each point consists of a complex
- * number represented by a `std::complex<double>` variable. (step-29 also solves
- * such a problem, but there we choose to represent the solution by two
- * real-valued fields.) In such cases, the vector that is handed to
- * DataOut::build_patches() is of type `Vector<std::complex<double>>`, or
- * something essentially equivalent to this. The issue with this, as also
- * discussed in the documentation of DataOut itself, is that the most widely
- * used file formats for visualization (notably, the VTK and VTU formats)
- * can not actually represent complex quantities. The only thing
- * that can be stored in these data files are real-valued quantities.
+ * - 派生类中的 DataPostprocessor::evaluate_vector_field() 的实现必须理解解值是如何安排在他们作为输入收到的 DataPostprocessorInputs::Vector 对象中。  这里的规则是。如果有限元有 $N$ 矢量成分（包括 $N=1$ 的情况，即标量元素），那么复值解向量的输入将有 $2N$ 成分。这些分量首先包含所有求解分量的实部的值（或梯度，或Hessians），然后是所有求解分量的虚部的值（或梯度，或Hessians）。
+ * step-58
+ * 提供了一个例子，说明这个类（或者说，派生的DataPostprocessorScalar类）是如何在复值情况下使用。
  *
- * As a consequence, DataOut is forced to take things apart into their real
- * and imaginary parts, and both are output as separate quantities. This is the
- * case for data that is written directly to a file by DataOut, but it is also
- * the case for data that is first routed through DataPostprocessor objects
- * (or objects of their derived classes): All these objects see is a collection
- * of real values, even if the underlying solution vector was complex-valued.
- *
- * All of this has two implications:
- * - If a solution vector is complex-valued, then this results in at least
- *   two input components at each evaluation point. As a consequence, the
- *   DataPostprocessor::evaluate_scalar_field() function is never called,
- *   even if the underlying finite element had only a single solution
- *   component. Instead, DataOut will *always* call
- *   DataPostprocessor::evaluate_vector_field().
- * - Implementations of the DataPostprocessor::evaluate_vector_field() in
- *   derived classes must understand how the solution values are arranged
- *   in the DataPostprocessorInputs::Vector objects they receive as input.
- *   The rule here is: If the finite element has $N$ vector components
- *   (including the case $N=1$, i.e., a scalar element), then the inputs
- *   for complex-valued solution vectors will have $2N$ components. These
- *   first contain the values (or gradients, or Hessians) of the real
- *   parts of all solution components, and then the values (or gradients,
- *   or Hessians) of the imaginary parts of all solution components.
- *
- * step-58 provides an example of how this class (or, rather, the derived
- * DataPostprocessorScalar class) is used in a complex-valued situation.
  *
  * @ingroup output
+ *
+ *
  */
 template <int dim>
 class DataPostprocessor : public Subscriptor
 {
 public:
   /**
-   * Destructor. This function doesn't actually do anything but is marked as
-   * virtual to ensure that data postprocessors can be destroyed through
-   * pointers to the base class.
+   * 销毁器。这个函数实际上不做任何事情，但被标记为虚拟，以确保数据后处理器可以通过指向基类的指针被销毁。
+   *
    */
   virtual ~DataPostprocessor() override = default;
 
   /**
-   * This is the main function which actually performs the postprocessing. The
-   * second argument is a reference to the postprocessed data which already has
-   * correct size and must be filled by this function.
+   * 这是个主函数，实际执行后处理。第二个参数是对后处理数据的引用，它已经有了正确的大小，必须由这个函数来填充。
+   * 该函数通过第一个参数获取所有评估点的解的值、梯度和高阶导数，以及其他数据，如单元格。并非这个参数的所有成员向量都会被填充数据
    *
-   * The function takes the values, gradients, and higher derivatives of the
-   * solution at all evaluation points, as well as other data such as the
-   * cell, via the first argument. Not all of the member vectors of this
-   * argument will be filled with data -- in fact, derivatives and other
-   * quantities will only be contain valid data if the corresponding flags
-   * are returned by an overridden version of the get_needed_update_flags()
-   * function (implemented in a user's derived class).
-   * Otherwise those vectors will be in an unspecified state.
+   * - 事实上，只有当相应的标志被get_need_update_flags()函数（在用户的派生类中实现）的覆盖版本返回时，导数和其他数量才会包含有效的数据。  否则，这些向量将处于一个未指定的状态。    当被DataOut或类似类转换为图形数据的有限元字段代表标量数据时，即如果使用的有限元只有一个实值矢量分量，则调用此函数。
    *
-   * This function is called when the finite element field that is being
-   * converted into graphical data by DataOut or similar classes represents
-   * scalar data, i.e., if the finite element in use has only a single
-   * real-valued vector component.
    */
   virtual void
   evaluate_scalar_field(const DataPostprocessorInputs::Scalar<dim> &input_data,
                         std::vector<Vector<double>> &computed_quantities) const;
 
   /**
-   * Same as the evaluate_scalar_field() function, but this
-   * function is called when the original data vector represents vector data,
-   * i.e., the finite element in use has multiple vector components. This
-   * function is also called if the finite element is scalar but the solution
-   * vector is complex-valued. If the solution vector to be visualized
-   * is complex-valued (whether scalar or not), then the input data contains
-   * first all real parts of the solution vector at each evaluation point, and
-   * then all imaginary parts.
+   * 与evaluate_scalar_field()函数相同，但当原始数据矢量代表矢量数据，即使用中的有限元有多个矢量分量时，该函数被调用。如果有限元是标量的，但是解向量是复值的，也会调用这个函数。如果要可视化的解向量是复值的（无论标量与否），那么输入数据首先包含解向量在每个评估点的所有实部，然后是所有虚部。
+   *
    */
   virtual void
   evaluate_vector_field(const DataPostprocessorInputs::Vector<dim> &input_data,
                         std::vector<Vector<double>> &computed_quantities) const;
 
   /**
-   * Return the vector of strings describing the names of the computed
-   * quantities.
+   * 返回描述计算量名称的字符串向量。
+   *
    */
   virtual std::vector<std::string>
   get_names() const = 0;
 
   /**
-   * This function returns information about how the individual components of
-   * output files that consist of more than one data set are to be
-   * interpreted.
-   *
-   * For example, if one has a finite element for the Stokes equations in 2d,
-   * representing components (u,v,p), one would like to indicate that the
-   * first two, u and v, represent a logical vector so that later on when we
-   * generate graphical output we can hand them off to a visualization program
-   * that will automatically know to render them as a vector field, rather
-   * than as two separate and independent scalar fields.
-   *
-   * The default implementation of this function returns a vector of values
-   * DataComponentInterpretation::component_is_scalar, indicating that all
-   * output components are independent scalar fields. However, if a derived
-   * class produces data that represents vectors, it may return a vector that
-   * contains values DataComponentInterpretation::component_is_part_of_vector.
-   * In the example above, one would return a vector with components
+   * 这个函数返回关于如何解释由一个以上数据集组成的输出文件的各个组成部分的信息。
+   * 例如，如果一个人有一个2d的斯托克斯方程的有限元，代表分量（u,v,p），我们希望表明前两个，u和v，代表一个逻辑矢量，这样以后当我们生成图形输出时，我们可以把它们交给一个可视化程序，该程序将自动知道把它们作为一个矢量场来渲染，而不是作为两个独立的标量场。
+   * 这个函数的默认实现返回一个值的向量
+   * DataComponentInterpretation::component_is_scalar,
+   * ，表示所有的输出组件都是独立的标量场。然而，如果一个派生类产生的数据表示向量，它可以返回一个包含数值的向量
+   * DataComponentInterpretation::component_is_part_of_vector.
+   * 在上面的例子中，对于(u,v,p)，人们会返回一个包含组件
    * (DataComponentInterpretation::component_is_part_of_vector,
    * DataComponentInterpretation::component_is_part_of_vector,
-   * DataComponentInterpretation::component_is_scalar) for (u,v,p).
+   * DataComponentInterpretation::component_is_scalar) 的向量。
+   *
    */
   virtual std::vector<DataComponentInterpretation::DataComponentInterpretation>
   get_data_component_interpretation() const;
 
   /**
-   * Return, which data has to be provided to compute the derived quantities.
-   * This has to be a combination of @p update_values, @p update_gradients,
-   * @p update_hessians and @p update_quadrature_points. Note that the flag
-   * @p update_quadrature_points updates
-   * DataPostprocessorInputs::CommonInputs::evaluation_points. If the
-   * DataPostprocessor is to be used in combination with DataOutFaces, you may
-   * also ask for a update of normals via the @p update_normal_vectors flag.
-   * The description of the flags can be found at dealii::UpdateFlags.
+   * 返回，必须提供哪些数据来计算派生量。  这必须是 @p
+   * update_values,  @p update_gradients,  @p update_hessians 和 @p
+   * update_quadrature_points. 的组合。注意，标志 @p
+   * update_quadrature_points 更新
+   * DataPostprocessorInputs::CommonInputs::evaluation_points.
+   * 如果DataPostprocessor要与DataOutFaces结合使用，你也可以通过
+   * @p update_normal_vectors 标志要求更新法线。
+   * 这些标志的描述可以在 dealii::UpdateFlags. 中找到。
+   *
    */
   virtual UpdateFlags
   get_needed_update_flags() const = 0;
@@ -613,85 +407,71 @@ public:
 
 
 /**
- * This class provides a simpler interface to the functionality offered by the
- * DataPostprocessor class in case one wants to compute only a single scalar
- * quantity from the finite element field passed to the DataOut class. For
- * this particular case, it is clear what the returned value of
- * DataPostprocessor::get_data_component_interpretation() should be and we
- * pass the values returned by get_names() and get_needed_update_flags() to
- * the constructor so that derived classes do not have to implement these
- * functions by hand.
+ * 这个类为DataPostprocessor类所提供的功能提供了一个更简单的接口，如果人们想从传递给DataOut类的有限元场中只计算一个标量。对于这种特殊情况，
+ * DataPostprocessor::get_data_component_interpretation()
+ * 的返回值是很清楚的，我们将get_names()和get_need_update_flags()返回的值传递给构造函数，这样派生类就不必手工实现这些函数了。
+ * 派生类所要做的就是实现一个构造函数，并重载
+ * DataPostprocessor::evaluate_scalar_field() 或
+ * DataPostprocessor::evaluate_vector_field()
+ * ，这在DataPostprocessor类的文档中有所讨论。
+ * 如何使用这个类的例子可以在 step-29
+ * 中找到，在这种情况下，我们对计算一个复值溶液的大小（标量）感兴趣。在
+ * step-29 中，解向量由独立的实部和虚部组成，而 step-58
+ * 将解向量计算为具有复数项的向量，DataPostprocessorScalar类在那里被用来计算解的幅值和相位，那里的方式不同。
+ * 关于如何使用密切相关的DataPostprocessorVector类的例子，可以在该类的文档中找到。对于DataPostprocessorTensor类也是如此。
  *
- * All derived classes have to do is implement a constructor and overload
- * either DataPostprocessor::evaluate_scalar_field() or
- * DataPostprocessor::evaluate_vector_field() as discussed in the
- * DataPostprocessor class's documentation.
- *
- * An example of how this class can be used can be found in step-29 for the case
- * where we are interested in computing the magnitude (a scalar) of a
- * complex-valued solution. While in step-29, the solution vector consists of
- * separate real and imaginary parts of the solution, step-58 computes the
- * solution vector as a vector with complex entries and the
- * DataPostprocessorScalar class is used there to compute the magnitude and
- * phase of the solution in a different way there.
- *
- * An example of how the closely related DataPostprocessorVector
- * class can be used is found in the documentation of that class.
- * The same is true for the DataPostprocessorTensor class.
  *
  * @ingroup output
+ *
+ *
  */
 template <int dim>
 class DataPostprocessorScalar : public DataPostprocessor<dim>
 {
 public:
   /**
-   * Constructor. Take the name of the single scalar variable computed by
-   * classes derived from the current one, as well as the update flags
-   * necessary to compute this quantity.
+   * 构造函数。获取由当前类派生的单一标量变量的名称，以及计算该数量所需的更新标志。
+   * @param  name
+   * 这个类计算的标量变量的名称应该在图形输出文件中提供。
+   * @param  update_flags 这必须是 @p update_values,   @p
+   * update_gradients,   @p update_hessians  和  @p update_quadrature_points.
+   * 的组合。注意，标志 @p update_quadrature_points 更新
+   * DataPostprocessorInputs::CommonInputs::evaluation_points.
+   * 如果DataPostprocessor要与DataOutFaces结合使用，你也可以通过
+   * @p update_normal_vectors 标志要求更新法线。
+   * 这些标志的描述可以在 dealii::UpdateFlags. 中找到。
    *
-   * @param name The name by which the scalar variable computed by this class
-   * should be made available in graphical output files.
-   * @param update_flags This has to be a combination of @p update_values,
-   * @p update_gradients, @p update_hessians and @p update_quadrature_points.
-   * Note that the flag @p update_quadrature_points updates
-   * DataPostprocessorInputs::CommonInputs::evaluation_points. If the
-   * DataPostprocessor is to be used in combination with DataOutFaces, you may
-   * also ask for a update of normals via the @p update_normal_vectors flag.
-   * The description of the flags can be found at dealii::UpdateFlags.
    */
   DataPostprocessorScalar(const std::string &name,
                           const UpdateFlags  update_flags);
 
   /**
-   * Return the vector of strings describing the names of the computed
-   * quantities. Given the purpose of this class, this is a vector with a
-   * single entry equal to the name given to the constructor.
+   * 返回描述计算量名称的字符串向量。鉴于这个类的目的，这是一个单项的向量，等于给构造函数的名称。
+   *
    */
   virtual std::vector<std::string>
   get_names() const override;
 
   /**
-   * This function returns information about how the individual components of
-   * output files that consist of more than one data set are to be
-   * interpreted. Since the current class is meant to be used for a single
-   * scalar result variable, the returned value is obviously
-   * DataComponentInterpretation::component_is_scalar.
+   * 这个函数返回关于如何解释由一个以上的数据集组成的输出文件的各个组成部分的信息。由于当前的类是为了用于单个标量结果变量，所以返回值显然是
+   * DataComponentInterpretation::component_is_scalar. 。
+   *
    */
   virtual std::vector<DataComponentInterpretation::DataComponentInterpretation>
   get_data_component_interpretation() const override;
 
   /**
-   * Return, which data has to be provided to compute the derived quantities.
-   * The flags returned here are the ones passed to the constructor of this
-   * class.
+   * 返回，必须提供哪些数据来计算派生量。
+   * 这里返回的标志是传递给这个类的构造函数的标志。
+   *
    */
   virtual UpdateFlags
   get_needed_update_flags() const override;
 
 private:
   /**
-   * Copies of the two arguments given to the constructor of this class.
+   * 复制给这个类的构造函数的两个参数。
+   *
    */
   const std::string name;
   const UpdateFlags update_flags;
@@ -700,56 +480,243 @@ private:
 
 
 /**
- * This class provides a simpler interface to the functionality offered by the
- * DataPostprocessor class in case one wants to compute only a single vector
- * quantity (defined as having exactly @p dim components) from the finite element
- * field passed to the DataOut class. For this particular case, it is clear
- * what the returned value of
- * DataPostprocessor::get_data_component_interpretation() should be and we
- * pass the values returned by get_names() and get_needed_update_flags() to
- * the constructor so that derived classes do not have to implement these
- * functions by hand.
+ * 该类为DataPostprocessor类所提供的功能提供了一个更简单的接口，以防人们只想从传递给DataOut类的有限元场中计算一个单一的矢量（定义为正好有
+ * @p dim 分量）。对于这种特殊情况，
+ * DataPostprocessor::get_data_component_interpretation()
+ * 的返回值是很清楚的，我们将get_names()和get_need_update_flags()返回的值传递给构造函数，这样派生类就不必手工实现这些函数。
+ * 派生类所要做的就是实现一个构造函数，并重载
+ * DataPostprocessor::evaluate_scalar_field() 或
+ * DataPostprocessor::evaluate_vector_field()
+ * ，这在DataPostprocessor类的文档中有所讨论。
+ * 与之密切相关的类DataPostprocessorScalar的使用方法的例子可以在
+ * step-29
+ * 中找到。关于如何使用DataPostprocessorTensor类的例子可以在该类的文档中找到。
  *
- * All derived classes have to do is implement a constructor and overload
- * either DataPostprocessor::evaluate_scalar_field() or
- * DataPostprocessor::evaluate_vector_field() as discussed in the
- * DataPostprocessor class's documentation.
+ *  <h3> An example </h3>
+ * 人们想用后处理器做的一个常见的例子是，不仅要把解的值可视化，还要把梯度可视化。事实上，这正是
+ * step-19
+ * 所需要的，因此它几乎逐字逐句地使用下面的代码。为了简单起见，让我们假设你只有一个标量的解。事实上，因为它是现成的，让我们简单地使用
+ * step-6
+ * 求解器来产生这样一个标量解。梯度是一个矢量（正好有
+ * @p dim
+ * 分量），所以当前的类适合通过后处理来产生梯度。然后，下面的代码片段实现了可视化梯度所需的一切。
  *
- * An example of how the closely related class DataPostprocessorScalar is used
- * can be found in step-29. An example of how the DataPostprocessorTensor
- * class can be used is found in the documentation of that class.
- *
- *
- * <h3> An example </h3>
- *
- * A common example of what one wants to do with postprocessors is to visualize
- * not just the value of the solution, but the gradient. This is, in fact,
- * precisely what step-19 needs, and it consequently uses the code below almost
- * verbatim. Let's, for simplicity,
- * assume that you have only a scalar solution. In fact, because it's readily
- * available, let us simply take the step-6 solver to produce such a scalar
- * solution. The gradient is a vector (with exactly @p dim components), so the
- * current class fits the bill to produce the gradient through postprocessing.
- * Then, the following code snippet implements everything you need to have
- * to visualize the gradient:
  * @code
  * template <int dim>
  * class GradientPostprocessor : public DataPostprocessorVector<dim>
  * {
  * public:
+ * GradientPostprocessor ()
+ *   :
+ *   // call the constructor of the base class. call the variable to
+ *   // be output "grad_u" and make sure that DataOut provides us
+ *   // with the gradients:
+ *   DataPostprocessorVector<dim> ("grad_u",
+ *                                 update_gradients)
+ * {}
+ *
+ * virtual
+ * void
+ * evaluate_scalar_field
+ * (const DataPostprocessorInputs::Scalar<dim> &input_data,
+ *  std::vector<Vector<double> > &computed_quantities) const override
+ * {
+ *   // ensure that there really are as many output slots
+ *   // as there are points at which DataOut provides the
+ *   // gradients:
+ *   AssertDimension (input_data.solution_gradients.size(),
+ *                    computed_quantities.size());
+ *
+ *   // then loop over all of these inputs:
+ *   for (unsigned int p=0; p<input_data.solution_gradients.size(); ++p)
+ *     {
+ *       // ensure that each output slot has exactly 'dim'
+ *       // components (as should be expected, given that we
+ *       // want to create vector-valued outputs), and copy the
+ *       // gradients of the solution at the evaluation points
+ *       // into the output slots:
+ *       AssertDimension (computed_quantities[p].size(), dim);
+ *       for (unsigned int d=0; d<dim; ++d)
+ *         computed_quantities[p][d]
+ *           = input_data.solution_gradients[p][d];
+ *     }
+ * }
+ * };
+ * @endcode
+ * 唯一需要的是在该示例程序的 @p Step6 类的 @p run()
+ * 函数中，为 DataOut::add_vector()
+ * 的调用添加另一个输出。然后，相应的代码片断会是这样的（在这里我们也使用VTU作为文件格式来输出数据）。
+ *
+ * @code
+ * GradientPostprocessor<dim> gradient_postprocessor;
+ *
+ * DataOut<dim> data_out;
+ * data_out.attach_dof_handler (dof_handler);
+ * data_out.add_data_vector (solution, "solution");
+ * data_out.add_data_vector (solution, gradient_postprocessor);
+ * data_out.build_patches ();
+ *
+ * std::ofstream output ("solution.vtu");
+ * data_out.write_vtu (output);
+ * @endcode
+ *
+ * 这将导致以下解决方案和梯度的输出（你可能想与 step-6
+ * 的结果部分所示的解决方案进行比较；为了简单起见，目前的数据是在一个更粗的网格上产生的）。
+*  @image html data_postprocessor_vector_0.png   @image html data_postprocessor_vector_1.png 。
+ * 在第二张图片中，背景颜色对应于梯度矢量的大小，矢量字形对应于梯度本身。一开始，看到从每个顶点出发的多个向量，向不同的方向发展，可能会让人感到惊讶。但这是因为解决方案只是连续的：一般来说，梯度在边缘上是不连续的，所以从每个顶点出发的多个向量只是代表解决方案在每个相邻单元的不同梯度。
+ * 上面的输出
+ *
+ * - 即解决方案的梯度 $\nabla u$ 。
+ *
+ * 如果把 step-6
+ * 解释为解决一个稳态传热问题，则对应于温度梯度。它在域的中心部分非常小，因为在
+ * step-6 中，我们正在解决一个方程，其系数 $a(\mathbf x)$
+ * 在中心部分很大，在外部很小。这可以被认为是一种导热性好的材料，因此温度梯度很小。另一方面，"热通量
+ * "与数量 $a(\mathbf x) \nabla u(\mathbf x)$
+ * 相对应。对于该方程的解，通量在界面上应该是连续的。这很容易通过对后处理程序的以下修改得到验证。
+ *
+ * @code
+ * template <int dim>
+ * class HeatFluxPostprocessor : public DataPostprocessorVector<dim>
+ * {
+ * public:
+ * HeatFluxPostprocessor ()
+ *   :
+ *   // like above, but now also make sure that DataOut provides
+ *   // us with coordinates of the evaluation points:
+ *   DataPostprocessorVector<dim> ("heat_flux",
+ *                                 update_gradients | update_quadrature_points)
+ * {}
+ *
+ * virtual
+ * void
+ * evaluate_scalar_field
+ * (const DataPostprocessorInputs::Scalar<dim> &input_data,
+ *  std::vector<Vector<double> > &computed_quantities) const override
+ * {
+ *   AssertDimension (input_data.solution_gradients.size(),
+ *                    computed_quantities.size());
+ *
+ *   for (unsigned int p=0; p<input_data.solution_gradients.size(); ++p)
+ *     {
+ *       AssertDimension (computed_quantities[p].size(), dim);
+ *       for (unsigned int d=0; d<dim; ++d)
+ *         // like above, but also multiply the gradients with
+ *         // the coefficient evaluated at the current point:
+ *         computed_quantities[p][d]
+ *           = coefficient (input_data.evaluation_points[p])
+ *             input_data.solution_gradients[p][d];
+ *     }
+ * }
+ * };
+ * @endcode
+ * 通过这个后处理器，我们可以得到以下的热通量图。
+*  @image html data_postprocessor_vector_2.png
+ * 如背景颜色所示，梯度乘以系数现在是一个连续函数。在界面周围有一些（大的）矢量，在那里系数跳跃（在圆盘中心到周边的一半距离处），似乎指向错误的方向；这是一个伪命题，因为在这些点上，解决方案有一个不连续的梯度，而且当前网格上的数值解决方案不能充分解决这个界面。然而，这对目前的讨论并不重要。
+ *
+ *  <h3> Extension to the gradients of vector-valued problems </h3>
+ * 上面的例子使用了一个标量解和它的梯度作为例子。另一方面，人们可能想对一个矢量值位移场的梯度做类似的事情（比如位移场的应变或应力，像那些在
+ * step-8 ,  step-17 ,  step-18 , 或 step-44
+ * 中计算的）。在这种情况下，解决方案已经是矢量值的，应力是一个（对称的）张量。
+ * deal.II目前不支持输出张量值的数量，但它们当然可以作为张量的标量值成分的集合来输出。这可以通过使用DataPostprocessorTensor类来实现。该类的文档包含一个例子。
+ *
+ *
+ *
+ * @ingroup output
+ *
+ */
+template <int dim>
+class DataPostprocessorVector : public DataPostprocessor<dim>
+{
+public:
+  /**
+   * 构造函数。获取由当前类派生的单一向量变量的名称，以及计算该数量所需的更新标志。
+   * @param  name
+   * 这个类计算的向量变量的名称应该在图形输出文件中提供。
+   * @param  update_flags 这必须是 @p update_values,   @p
+   * update_gradients,   @p update_hessians  和  @p update_quadrature_points.
+   * 的组合。注意，标志 @p update_quadrature_points 更新
+   * DataPostprocessorInputs::CommonInputs::evaluation_points.
+   * 如果DataPostprocessor要与DataOutFaces结合使用，你也可以通过
+   * @p update_normal_vectors 标志要求更新法向。
+   * 这些标志的描述可以在 dealii::UpdateFlags. 中找到。
+   *
+   */
+  DataPostprocessorVector(const std::string &name,
+                          const UpdateFlags  update_flags);
+
+  /**
+   * 返回描述计算量名称的字符串向量。考虑到这个类的目的，这是一个有dim项的向量，都等于给构造函数的名称。
+   *
+   */
+  virtual std::vector<std::string>
+  get_names() const override;
+
+  /**
+   * 这个函数返回关于如何解释由一个以上的数据集组成的输出文件的各个组成部分的信息。由于当前的类是为了用于单个矢量结果变量，所以返回值显然是
+   * DataComponentInterpretation::component_is_part 重复dim次。
+   *
+   */
+  virtual std::vector<DataComponentInterpretation::DataComponentInterpretation>
+  get_data_component_interpretation() const override;
+
+  /**
+   * 返回必须提供哪些数据来计算派生量。
+   * 这里返回的标志是传递给这个类的构造函数的标志。
+   *
+   */
+  virtual UpdateFlags
+  get_needed_update_flags() const override;
+
+private:
+  /**
+   * 复制给这个类的构造函数的两个参数。
+   *
+   */
+  const std::string name;
+  const UpdateFlags update_flags;
+};
+
+
+
+/**
+ * 这个类为DataPostprocessor类所提供的功能提供了一个更简单的接口，如果人们想从传递给DataOut类的有限元场中只计算一个张量（定义为正好有
+ * <code>dim*dim</code> 个分量）。
+ * 对于这种情况，我们希望将所有这些分量作为张量值的一部分输出。不幸的是，以图形文件格式写入DataOut数据的各种后端（见DataOutBase命名空间，了解可以写入哪些格式）在当前不支持张量数据。事实上，提供语义信息的DataComponentInterpretation命名空间也不支持如何解释图形数据的单个组件。尽管如此，像DataPostprocessorScalar和DataPostprocessorVector一样，这个类有助于设置DataPostprocessor基类所要求的get_names()和get_need_update_flags()函数应该返回什么，因此当前类根据当前类的构造函数从进一步的派生类中收到的信息实现这些。
+ * （为了将这个标量字段的集合可视化，然后将其解释为张量，我们必须（i）使用一个能够可视化张量的可视化程序，并且（ii）教它如何将标量字段重新组合成张量。在VisIt的情况下
+ *
+ * - 见https://wci.llnl.gov/simulation/computer-codes/visit/
+ *
+ * - 这是通过创建一个新的 "表达式 "来完成的：实质上，我们创建了一个变量，比如 "grad_u"，它是张量值，其值由表达式<code>{{grad_u_xx,grad_u_xy},{grad_u_yx, grad_u_yy}}</code>给出，其中引用的变量是标量场的名称，这里是由以下例子产生。然后VisIt能够将这个 "新 "变量可视化为一个张量）。)
+ * 所有派生类要做的就是实现一个构造函数，并重载
+ * DataPostprocessor::evaluate_scalar_field() 或
+ * DataPostprocessor::evaluate_vector_field()
+ * ，在DataPostprocessor类的文档中讨论过。
+ * 与之密切相关的类DataPostprocessorScalar的使用方法的例子可以在
+ * step-29
+ * 中找到。关于如何使用DataPostprocessorVector类的例子可以在该类的文档中找到。
+ *
+ *  <h3> An example </h3>
+ * 人们想用后处理器做的一个常见的例子是，不仅要将解的值可视化，还要将梯度可视化。这个类是为了张量值的输出，所以我们将从一个矢量值的解决方案开始：
+ * step-8  的位移场。梯度是一个等级2的张量（正好有
+ * <code>dim*dim</code>
+ * 的分量），所以当前的类适合通过后处理产生梯度。然后，下面的代码片段实现了可视化梯度所需的一切。
+ *
+ * @code
+ * template <int dim>
+ * class GradientPostprocessor : public DataPostprocessorTensor<dim>
+ * {
+ * public:
  *   GradientPostprocessor ()
  *     :
- *     // call the constructor of the base class. call the variable to
- *     // be output "grad_u" and make sure that DataOut provides us
- *     // with the gradients:
- *     DataPostprocessorVector<dim> ("grad_u",
+ *     DataPostprocessorTensor<dim> ("grad_u",
  *                                   update_gradients)
  *   {}
  *
  *   virtual
  *   void
- *   evaluate_scalar_field
- *   (const DataPostprocessorInputs::Scalar<dim> &input_data,
+ *   evaluate_vector_field
+ *   (const DataPostprocessorInputs::Vector<dim> &input_data,
  *    std::vector<Vector<double> > &computed_quantities) const override
  *   {
  *     // ensure that there really are as many output slots
@@ -758,84 +725,74 @@ private:
  *     AssertDimension (input_data.solution_gradients.size(),
  *                      computed_quantities.size());
  *
- *     // then loop over all of these inputs:
  *     for (unsigned int p=0; p<input_data.solution_gradients.size(); ++p)
  *       {
- *         // ensure that each output slot has exactly 'dim'
+ *         // ensure that each output slot has exactly 'dim*dim'
  *         // components (as should be expected, given that we
- *         // want to create vector-valued outputs), and copy the
+ *         // want to create tensor-valued outputs), and copy the
  *         // gradients of the solution at the evaluation points
  *         // into the output slots:
- *         AssertDimension (computed_quantities[p].size(), dim);
+ *         AssertDimension (computed_quantities[p].size(),
+ *                          (Tensor<2,dim>::n_independent_components));
  *         for (unsigned int d=0; d<dim; ++d)
- *           computed_quantities[p][d]
- *             = input_data.solution_gradients[p][d];
+ *           for (unsigned int e=0; e<dim; ++e)
+ *             computed_quantities[p][Tensor<2,dim>::component_to_unrolled_index(TableIndices<2>(d,e))]
+ *               = input_data.solution_gradients[p][d][e];
  *       }
  *   }
  * };
  * @endcode
- * The only thing that is necessary is to add another output to the call
- * of DataOut::add_vector() in the @p run() function of the @p Step6 class
- * of that example program. The corresponding code snippet would then look
- * like this (where we also use VTU as the file format to output the data):
+ * 这段代码中唯一棘手的部分是如何将应变张量的
+ * <code>dim*dim</code> 元素排序到计算输出量的一个向量中去。
+ *
+ * - 换句话说，如何将张量的元素<i>unroll</i>放入矢量中。这由 Tensor::component_to_unrolled_index() 函数提供便利，该函数接收一对指定张量特定元素的索引，并返回一个向量索引，然后在上面的代码中用于填充 @p computed_quantities 数组。
+ * 最后一件事是在该示例程序的 @p Step8 类的 @p output_results()
+ * 函数中为 DataOut::add_vector()
+ * 的调用添加另一个输出。然后，相应的代码片断会是这样的。
+ *
  * @code
- *   GradientPostprocessor<dim> gradient_postprocessor;
+ *   GradientPostprocessor<dim> grad_u;
  *
  *   DataOut<dim> data_out;
  *   data_out.attach_dof_handler (dof_handler);
- *   data_out.add_data_vector (solution, "solution");
- *   data_out.add_data_vector (solution, gradient_postprocessor);
- *   data_out.build_patches ();
  *
- *   std::ofstream output ("solution.vtu");
- *   data_out.write_vtu (output);
+ *   std::vector<DataComponentInterpretation::DataComponentInterpretation>
+ *   data_component_interpretation
+ *   (dim, DataComponentInterpretation::component_is_part_of_vector);
+ *   data_out.add_data_vector (solution,
+ *                             std::vector<std::string>(dim,"displacement"),
+ *                             DataOut<dim>::type_dof_data,
+ *                             data_component_interpretation);
+ *   data_out.add_data_vector (solution, grad_u);
+ *   data_out.build_patches ();
+ *   data_out.write_vtk (output);
  * @endcode
  *
- * This leads to the following output for the solution and the
- * gradients (you may want to compare with the solution shown in the results
- * section of step-6; the current data is generated on a coarser mesh for
- * simplicity):
+ * 这将导致以下位移场（即解决方案）和梯度的输出（你可能想与
+ * step-8
+ * 的结果部分显示的解决方案进行比较；为简单起见，当前数据是在均匀网格上生成的）。
+*  @image html data_postprocessor_tensor_0.png   @image html data_postprocessor_tensor_1.png 。
+ * 这些图片显示了平均每十个网格点上代表梯度张量的椭圆。你可能想通过阅读VisIt可视化程序的文档（见https://wci.llnl.gov/simulation/computer-codes/visit/）来了解张量究竟是如何被可视化的。
+ * 在弹性中，人们往往对位移的梯度不感兴趣，而是对
+ * "应变 "感兴趣，即梯度的对称版本  $\varepsilon=\frac 12
+ * (\nabla u + \nabla u^T)$
+ * 。这很容易通过以下的小修改来实现。
  *
- * @image html data_postprocessor_vector_0.png
- * @image html data_postprocessor_vector_1.png
- *
- * In the second image, the background color corresponds to the magnitude of the
- * gradient vector and the vector glyphs to the gradient itself. It may be
- * surprising at first to see that from each vertex, multiple vectors originate,
- * going in different directions. But that is because the solution is only
- * continuous: in general, the gradient is discontinuous across edges, and so
- * the multiple vectors originating from each vertex simply represent the
- * differing gradients of the solution at each adjacent cell.
- *
- * The output above -- namely, the gradient $\nabla u$ of the solution --
- * corresponds to the temperature gradient if one interpreted step-6 as solving
- * a steady-state heat transfer problem.
- * It is very small in the central part of the domain because in step-6 we are
- * solving an equation that has a coefficient $a(\mathbf x)$ that is large in
- * the central part and small on the outside. This can be thought as a material
- * that conducts heat well, and consequently the temperature gradient is small.
- * On the other hand, the "heat flux" corresponds to the quantity
- * $a(\mathbf x) \nabla u(\mathbf x)$. For the
- * solution of that equation, the flux should be continuous across the
- * interface. This is easily verified by the following modification of the
- * postprocessor:
  * @code
  * template <int dim>
- * class HeatFluxPostprocessor : public DataPostprocessorVector<dim>
+ * class StrainPostprocessor : public DataPostprocessorTensor<dim>
  * {
  * public:
- *   HeatFluxPostprocessor ()
+ *   StrainPostprocessor ()
  *     :
- *     // like above, but now also make sure that DataOut provides
- *     // us with coordinates of the evaluation points:
- *     DataPostprocessorVector<dim> ("heat_flux",
- *                                   update_gradients | update_quadrature_points)
+ *     DataPostprocessorTensor<dim> ("strain",
+ *                                   update_gradients)
  *   {}
  *
  *   virtual
  *   void
- *   evaluate_scalar_field
- *   (const DataPostprocessorInputs::Scalar<dim> &input_data,
+ *   evaluate_vector_field
+ *   (const DataPostprocessorInputs::Vector<dim> &input_data,
  *    std::vector<Vector<double> > &computed_quantities) const override
  *   {
  *     AssertDimension (input_data.solution_gradients.size(),
@@ -843,347 +800,75 @@ private:
  *
  *     for (unsigned int p=0; p<input_data.solution_gradients.size(); ++p)
  *       {
- *         AssertDimension (computed_quantities[p].size(), dim);
+ *         AssertDimension (computed_quantities[p].size(),
+ *                          (Tensor<2,dim>::n_independent_components));
  *         for (unsigned int d=0; d<dim; ++d)
- *           // like above, but also multiply the gradients with
- *           // the coefficient evaluated at the current point:
- *           computed_quantities[p][d]
- *             = coefficient (input_data.evaluation_points[p]) *
- *               input_data.solution_gradients[p][d];
+ *           for (unsigned int e=0; e<dim; ++e)
+ *             computed_quantities[p][Tensor<2,dim>::component_to_unrolled_index(TableIndices<2>(d,e))]
+ *               = (input_data.solution_gradients[p][d][e]
+ *                  +
+ *                  input_data.solution_gradients[p][e][d]) / 2;
  *       }
  *   }
  * };
  * @endcode
- * With this postprocessor, we get the following picture of the heat flux:
  *
- * @image html data_postprocessor_vector_2.png
- *
- * As the background color shows, the gradient times the coefficient is now
- * a continuous function. There are (large) vectors around the interface
- * where the coefficient jumps (at half the distance between the center of the
- * disk to the perimeter) that seem to point in the wrong direction; this is
- * an artifact of the fact that the solution has a discontinuous gradient
- * at these points and that the numerical solution on the current grid
- * does not adequately resolve this interface. This, however, is not
- * important to the current discussion.
- *
- *
- * <h3> Extension to the gradients of vector-valued problems </h3>
- *
- * The example above uses a scalar solution and its gradient as an example.
- * On the other hand, one may want to do something similar for the gradient
- * of a vector-valued displacement field (such as the strain or
- * stress of a displacement field, like those computed in step-8, step-17,
- * step-18, or step-44). In that case, the solution is already vector
- * valued and the stress is a (symmetric) tensor.
- *
- * deal.II does not currently support outputting tensor-valued quantities, but
- * they can of course be output as a collection of scalar-valued components of
- * the tensor. This can be facilitated using the DataPostprocessorTensor
- * class. The documentation of that class contains an example.
+ * 在 step-8 中使用这个类导致了以下的可视化。
+*  @image html data_postprocessor_tensor_2.png
+ * 鉴于输出应变很容易，写一个后处理程序来计算解场中的<i>stress</i>也不会很复杂，因为通过与应变-应力张量或在简单情况下与Lam&eacute;常数相乘，应力很容易从应变中计算出来。
  *
  *
  * @ingroup output
- */
-template <int dim>
-class DataPostprocessorVector : public DataPostprocessor<dim>
-{
-public:
-  /**
-   * Constructor. Take the name of the single vector variable computed by
-   * classes derived from the current one, as well as the update flags
-   * necessary to compute this quantity.
-   *
-   * @param name The name by which the vector variable computed by this class
-   * should be made available in graphical output files.
-   * @param update_flags This has to be a combination of @p update_values,
-   * @p update_gradients, @p update_hessians and @p update_quadrature_points.
-   * Note that the flag @p update_quadrature_points updates
-   * DataPostprocessorInputs::CommonInputs::evaluation_points. If the
-   * DataPostprocessor is to be used in combination with DataOutFaces, you may
-   * also ask for a update of normals via the @p update_normal_vectors flag.
-   * The description of the flags can be found at dealii::UpdateFlags.
-   */
-  DataPostprocessorVector(const std::string &name,
-                          const UpdateFlags  update_flags);
-
-  /**
-   * Return the vector of strings describing the names of the computed
-   * quantities. Given the purpose of this class, this is a vector with dim
-   * entries all equal to the name given to the constructor.
-   */
-  virtual std::vector<std::string>
-  get_names() const override;
-
-  /**
-   * This function returns information about how the individual components of
-   * output files that consist of more than one data set are to be
-   * interpreted. Since the current class is meant to be used for a single
-   * vector result variable, the returned value is obviously
-   * DataComponentInterpretation::component_is_part repeated dim times.
-   */
-  virtual std::vector<DataComponentInterpretation::DataComponentInterpretation>
-  get_data_component_interpretation() const override;
-
-  /**
-   * Return which data has to be provided to compute the derived quantities.
-   * The flags returned here are the ones passed to the constructor of this
-   * class.
-   */
-  virtual UpdateFlags
-  get_needed_update_flags() const override;
-
-private:
-  /**
-   * Copies of the two arguments given to the constructor of this class.
-   */
-  const std::string name;
-  const UpdateFlags update_flags;
-};
-
-
-
-/**
- * This class provides a simpler interface to the functionality offered by the
- * DataPostprocessor class in case one wants to compute only a single tensor
- * quantity (defined as having exactly <code>dim*dim</code> components) from
- * the finite element field passed to the DataOut class.
- *
- * For this case, we would like to output all of these components as parts
- * of a tensor-valued quantity. Unfortunately, the various backends that
- * write DataOut data in graphical file formats (see the DataOutBase
- * namespace for what formats can be written) do not support tensor data
- * at the current time. In fact, neither does the DataComponentInterpretation
- * namespace that provides semantic information how individual components
- * of graphical data should be interpreted. Nevertheless, like
- * DataPostprocessorScalar and DataPostprocessorVector, this class helps
- * with setting up what the get_names() and get_needed_update_flags()
- * functions required by the DataPostprocessor base class should return,
- * and so the current class implements these based on information that
- * the constructor of the current class receives from further derived
- * classes.
- *
- * (In order to visualize this collection of scalar fields that, together,
- * are then supposed to be interpreted as a tensor, one has to (i) use a
- * visualization program that can visualize tensors, and (ii) teach it
- * how to re-combine the scalar fields into tensors. In the case of
- * VisIt -- see https://wci.llnl.gov/simulation/computer-codes/visit/ --
- * this is done by creating a new "Expression": in essence, one creates
- * a variable, say "grad_u", that is tensor-valued and whose value is
- * given by the expression <code>{{grad_u_xx,grad_u_xy},
- * {grad_u_yx, grad_u_yy}}</code>, where the referenced variables are
- * the names of scalar fields that, here, are produced by the example
- * below. VisIt is then able to visualize this "new" variable as a
- * tensor.)
- *
- * All derived classes have to do is implement a constructor and overload
- * either DataPostprocessor::evaluate_scalar_field() or
- * DataPostprocessor::evaluate_vector_field() as discussed in the
- * DataPostprocessor class's documentation.
- *
- * An example of how the closely related class DataPostprocessorScalar is used
- * can be found in step-29. An example of how the DataPostprocessorVector
- * class can be used is found in the documentation of that class.
  *
  *
- * <h3> An example </h3>
- *
- * A common example of what one wants to do with postprocessors is to visualize
- * not just the value of the solution, but the gradient. This class is meant for
- * tensor-valued outputs, so we will start with a vector-valued solution: the
- * displacement field of step-8. The gradient is a rank-2 tensor (with exactly
- * <code>dim*dim</code> components), so the
- * current class fits the bill to produce the gradient through postprocessing.
- * Then, the following code snippet implements everything you need to have
- * to visualize the gradient:
- * @code
- *   template <int dim>
- *   class GradientPostprocessor : public DataPostprocessorTensor<dim>
- *   {
- *   public:
- *     GradientPostprocessor ()
- *       :
- *       DataPostprocessorTensor<dim> ("grad_u",
- *                                     update_gradients)
- *     {}
- *
- *     virtual
- *     void
- *     evaluate_vector_field
- *     (const DataPostprocessorInputs::Vector<dim> &input_data,
- *      std::vector<Vector<double> > &computed_quantities) const override
- *     {
- *       // ensure that there really are as many output slots
- *       // as there are points at which DataOut provides the
- *       // gradients:
- *       AssertDimension (input_data.solution_gradients.size(),
- *                        computed_quantities.size());
- *
- *       for (unsigned int p=0; p<input_data.solution_gradients.size(); ++p)
- *         {
- *           // ensure that each output slot has exactly 'dim*dim'
- *           // components (as should be expected, given that we
- *           // want to create tensor-valued outputs), and copy the
- *           // gradients of the solution at the evaluation points
- *           // into the output slots:
- *           AssertDimension (computed_quantities[p].size(),
- *                            (Tensor<2,dim>::n_independent_components));
- *           for (unsigned int d=0; d<dim; ++d)
- *             for (unsigned int e=0; e<dim; ++e)
- *               computed_quantities[p][Tensor<2,dim>::component_to_unrolled_index(TableIndices<2>(d,e))]
- *                 = input_data.solution_gradients[p][d][e];
- *         }
- *     }
- *   };
- * @endcode
- * The only tricky part in this piece of code is how to sort the
- * <code>dim*dim</code> elements of the strain tensor into the one vector of
- * computed output quantities -- in other words, how to <i>unroll</i> the
- * elements of the tensor into the vector. This is facilitated by the
- * Tensor::component_to_unrolled_index() function that takes a
- * pair of indices that specify a particular element of the
- * tensor and returns a vector index that is then used in the code
- * above to fill the @p computed_quantities array.
- *
- * The last thing that is necessary is to add another output to the call
- * of DataOut::add_vector() in the @p output_results() function of the @p Step8
- * class of that example program. The corresponding code snippet would then look
- * like this:
- * @code
- *     GradientPostprocessor<dim> grad_u;
- *
- *     DataOut<dim> data_out;
- *     data_out.attach_dof_handler (dof_handler);
- *
- *     std::vector<DataComponentInterpretation::DataComponentInterpretation>
- *     data_component_interpretation
- *     (dim, DataComponentInterpretation::component_is_part_of_vector);
- *     data_out.add_data_vector (solution,
- *                               std::vector<std::string>(dim,"displacement"),
- *                               DataOut<dim>::type_dof_data,
- *                               data_component_interpretation);
- *     data_out.add_data_vector (solution, grad_u);
- *     data_out.build_patches ();
- *     data_out.write_vtk (output);
- * @endcode
- *
- * This leads to the following output for the displacement field (i.e., the
- * solution) and the gradients (you may want to compare with the solution shown
- * in the results section of step-8; the current data is generated on a uniform
- * mesh for simplicity):
- *
- * @image html data_postprocessor_tensor_0.png
- * @image html data_postprocessor_tensor_1.png
- *
- * These pictures show an ellipse representing the gradient tensor at, on
- * average, every tenth mesh point. You may want to read through the
- * documentation of the VisIt visualization program (see
- * https://wci.llnl.gov/simulation/computer-codes/visit/) for an interpretation
- * of how exactly tensors are visualizated.
- *
- * In elasticity, one is often interested not in the gradient of the
- * displacement, but in the "strain", i.e., the symmetrized version of the
- * gradient
- * $\varepsilon=\frac 12 (\nabla u + \nabla u^T)$. This is easily facilitated
- * with the following minor modification:
- * @code
- *   template <int dim>
- *   class StrainPostprocessor : public DataPostprocessorTensor<dim>
- *   {
- *   public:
- *     StrainPostprocessor ()
- *       :
- *       DataPostprocessorTensor<dim> ("strain",
- *                                     update_gradients)
- *     {}
- *
- *     virtual
- *     void
- *     evaluate_vector_field
- *     (const DataPostprocessorInputs::Vector<dim> &input_data,
- *      std::vector<Vector<double> > &computed_quantities) const override
- *     {
- *       AssertDimension (input_data.solution_gradients.size(),
- *                        computed_quantities.size());
- *
- *       for (unsigned int p=0; p<input_data.solution_gradients.size(); ++p)
- *         {
- *           AssertDimension (computed_quantities[p].size(),
- *                            (Tensor<2,dim>::n_independent_components));
- *           for (unsigned int d=0; d<dim; ++d)
- *             for (unsigned int e=0; e<dim; ++e)
- *               computed_quantities[p][Tensor<2,dim>::component_to_unrolled_index(TableIndices<2>(d,e))]
- *                 = (input_data.solution_gradients[p][d][e]
- *                    +
- *                    input_data.solution_gradients[p][e][d]) / 2;
- *         }
- *     }
- *   };
- * @endcode
- *
- * Using this class in step-8 leads to the following visualization:
- *
- * @image html data_postprocessor_tensor_2.png
- *
- * Given how easy it is to output the strain, it would also not be very
- * complicated to write a postprocessor that computes the <i>stress</i>
- * in the solution field as the stress is easily computed from the
- * strain by multiplication with either the strain-stress tensor or,
- * in simple cases, the Lam&eacute; constants.
- *
- * @ingroup output
  */
 template <int dim>
 class DataPostprocessorTensor : public DataPostprocessor<dim>
 {
 public:
   /**
-   * Constructor. Take the name of the single vector variable computed by
-   * classes derived from the current one, as well as the update flags
-   * necessary to compute this quantity.
+   * 构造函数。获取由当前类派生的单一矢量变量的名称，以及计算该数量所需的更新标志。
+   * @param  name
+   * 这个类计算的向量变量的名称应该在图形输出文件中提供。
+   * @param  update_flags 这必须是 @p update_values,   @p
+   * update_gradients,   @p update_hessians  和  @p update_quadrature_points.
+   * 的组合。注意，标志 @p update_quadrature_points 更新
+   * DataPostprocessorInputs::CommonInputs::evaluation_points.
+   * 如果DataPostprocessor要与DataOutFaces结合使用，你也可以通过
+   * @p update_normal_vectors 标志要求更新法向。
+   * 这些标志的描述可以在 dealii::UpdateFlags. 中找到。
    *
-   * @param name The name by which the vector variable computed by this class
-   * should be made available in graphical output files.
-   * @param update_flags This has to be a combination of @p update_values,
-   * @p update_gradients, @p update_hessians and @p update_quadrature_points.
-   * Note that the flag @p update_quadrature_points updates
-   * DataPostprocessorInputs::CommonInputs::evaluation_points. If the
-   * DataPostprocessor is to be used in combination with DataOutFaces, you may
-   * also ask for a update of normals via the @p update_normal_vectors flag.
-   * The description of the flags can be found at dealii::UpdateFlags.
    */
   DataPostprocessorTensor(const std::string &name,
                           const UpdateFlags  update_flags);
 
   /**
-   * Return the vector of strings describing the names of the computed
-   * quantities. Given the purpose of this class, this is a vector with dim
-   * entries all equal to the name given to the constructor.
+   * 返回描述计算量名称的字符串向量。考虑到这个类的目的，这是一个有dim项的向量，都等于给构造函数的名称。
+   *
    */
   virtual std::vector<std::string>
   get_names() const override;
 
   /**
-   * This function returns information about how the individual components of
-   * output files that consist of more than one data set are to be
-   * interpreted. Since the current class is meant to be used for a single
-   * vector result variable, the returned value is obviously
-   * DataComponentInterpretation::component_is_part repeated dim times.
+   * 这个函数返回关于如何解释由一个以上的数据集组成的输出文件的各个组成部分的信息。由于当前的类是为了用于单个矢量结果变量，所以返回值显然是
+   * DataComponentInterpretation::component_is_part 重复dim次。
+   *
    */
   virtual std::vector<DataComponentInterpretation::DataComponentInterpretation>
   get_data_component_interpretation() const override;
 
   /**
-   * Return which data has to be provided to compute the derived quantities.
-   * The flags returned here are the ones passed to the constructor of this
-   * class.
+   * 返回必须提供哪些数据来计算派生数量。
+   * 这里返回的标志是传递给这个类的构造函数的标志。
+   *
    */
   virtual UpdateFlags
   get_needed_update_flags() const override;
 
 private:
   /**
-   * Copies of the two arguments given to the constructor of this class.
+   * 复制给这个类的构造函数的两个参数。
+   *
    */
   const std::string name;
   const UpdateFlags update_flags;
@@ -1270,3 +955,5 @@ namespace DataPostprocessorInputs
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

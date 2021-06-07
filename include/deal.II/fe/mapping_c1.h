@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/mapping_c1_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2020 by the deal.II authors
@@ -24,51 +23,56 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup mapping */ 
- /*@{*/ 
+/*!@addtogroup mapping */
+/*@{*/
 
 /**
- * 使用边界的C1（连续可微）立方映射的映射类。这个类是建立在MappingQ之上的，它简单地确定了边界的立方体映射的不同插值点。MappingQ选择它们是为了对边界进行插值，而这个类选择它们是为了使离散的边界是全局连续可微的。
- *
- *
+ * Mapping class that uses C1 (continuously differentiable) cubic mappings of
+ * the boundary. This class is built atop of MappingQ by simply determining
+ * the interpolation points for a cubic mapping of the boundary differently:
+ * MappingQ chooses them such that they interpolate the boundary, while this
+ * class chooses them such that the discretized boundary is globally
+ * continuously differentiable.
  */
 template <int dim, int spacedim = dim>
 class MappingC1 : public MappingQ<dim, spacedim>
 {
 public:
   /**
-   * 构造函数。将固定度 @p 3
-   * 传给基类，因为一个立方体映射足以生成边界的连续映射。
-   *
+   * Constructor. Pass the fixed degree @p 3 down to the base class, as a
+   * cubic mapping suffices to generate a continuous mapping of the boundary.
    */
   MappingC1();
 
   /**
-   * 返回一个指向当前对象副本的指针。然后，这个副本的调用者就拥有了它的所有权。
-   *
+   * Return a pointer to a copy of the present object. The caller of this copy
+   * then assumes ownership of it.
    */
   virtual std::unique_ptr<Mapping<dim, spacedim>>
   clone() const override;
 
 protected:
   /**
-   * 一个派生自MappingQGeneric的类，它为通用映射提供了边界对象的支持点，从而使相应的Q3映射最终成为C1。
-   *
+   * A class derived from MappingQGeneric that provides the generic mapping
+   * with support points on boundary objects so that the corresponding Q3
+   * mapping ends up being C1.
    */
   class MappingC1Generic : public MappingQGeneric<dim, spacedim>
   {
   public:
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     MappingC1Generic();
 
     /**
-     * 对于<tt>dim=2,3</tt>。将所有位于边界线上的形状函数的支持点追加到向量中
-     * @p a.  位于线上但在顶点的点不包括在内。
-     * 这个函数选择各自的点不是为了插值边界（就像基类那样），而是为了使产生的立方体映射是一个连续的映射。
+     * For <tt>dim=2,3</tt>. Append the support points of all shape functions
+     * located on bounding lines to the vector @p a. Points located on the
+     * line but on vertices are not included.
      *
+     * This function chooses the respective points not such that they are
+     * interpolating the boundary (as does the base class), but rather such
+     * that the resulting cubic mapping is a continuous one.
      */
     virtual void
     add_line_support_points(
@@ -76,10 +80,13 @@ protected:
       std::vector<Point<dim>> &                         a) const override;
 
     /**
-     * 对于<tt>dim=3</tt>。将所有位于边界面（3D中的四边形）上的形状函数的支持点追加到向量中
-     * @p a.  位于线上但在顶点上的点不包括在内。
-     * 这个函数选择各自的点不是为了插值边界（就像基类那样），而是为了使产生的立方体映射是一个连续的映射。
+     * For <tt>dim=3</tt>. Append the support points of all shape functions
+     * located on bounding faces (quads in 3d) to the vector @p a. Points
+     * located on the line but on vertices are not included.
      *
+     * This function chooses the respective points not such that they are
+     * interpolating the boundary (as does the base class), but rather such
+     * that the resulting cubic mapping is a continuous one.
      */
     virtual void
     add_quad_support_points(
@@ -88,9 +95,9 @@ protected:
   };
 };
 
- /*@}*/ 
+/*@}*/
 
- /* -------------- declaration of explicit specializations ------------- */ 
+/* -------------- declaration of explicit specializations ------------- */
 
 #ifndef DOXYGEN
 
@@ -122,5 +129,3 @@ MappingC1<2>::MappingC1Generic::add_quad_support_points(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

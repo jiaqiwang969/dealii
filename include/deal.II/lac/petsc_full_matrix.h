@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/petsc_full_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -31,63 +30,70 @@ DEAL_II_NAMESPACE_OPEN
 
 namespace PETScWrappers
 {
-  /*!   @addtogroup  PETScWrappers  @{ !   
-* */
+  /*! @addtogroup PETScWrappers
+   *@{
+   */
 
   /**
-   * 实现一个基于PETSc的连续密集矩阵类。所有的功能实际上都在基类中，除了生成连续密集矩阵的调用。这是可能的，因为PETSc只在一个抽象的矩阵类型上工作，并在内部根据实际的矩阵类型分配给做实际工作的函数（很像使用虚拟函数）。只有创建特定类型矩阵的函数不同，并在这个特定的类中实现。
-   * @ingroup Matrix1
+   * Implementation of a sequential dense matrix class based on PETSc. All the
+   * functionality is actually in the base class, except for the calls to
+   * generate a sequential dense matrix. This is possible since PETSc only
+   * works on an abstract matrix type and internally distributes to functions
+   * that do the actual work depending on the actual matrix type (much like
+   * using virtual functions). Only the functions creating a matrix of
+   * specific type differ, and are implemented in this particular class.
    *
+   * @ingroup Matrix1
    */
   class FullMatrix : public MatrixBase
   {
   public:
     /**
-     * 声明容器大小的类型。
-     *
+     * Declare type for container size.
      */
     using size_type = types::global_dof_index;
 
 
     /**
-     * 默认构造函数。创建一个空矩阵。
-     *
+     * Default constructor. Create an empty matrix.
      */
     FullMatrix();
 
 
     /**
-     * 创建一个尺寸为 @p m 乘以 @p n. 的完整矩阵。
-     *
+     * Create a full matrix of dimensions @p m times @p n.
      */
     FullMatrix(const size_type m, const size_type n);
 
 
     /**
-     * 扔掉现在的矩阵，并生成一个具有相同属性的矩阵，就像它是由这个类的构造函数创建的，参数列表与现在的函数相同。
-     *
+     * Throw away the present matrix and generate one that has the same
+     * properties as if it were created by the constructor of this class with
+     * the same argument list as the present function.
      */
     void
     reinit(const size_type m, const size_type n);
 
 
     /**
-     * 返回一个对与本矩阵一起使用的MPI通信器对象的引用。由于这是一个连续的矩阵，它返回MPI_COMM_SELF通信器。
-     *
+     * Return a reference to the MPI communicator object in use with this
+     * matrix. Since this is a sequential matrix, it returns the MPI_COMM_SELF
+     * communicator.
      */
     virtual const MPI_Comm &
     get_mpi_communicator() const override;
 
   private:
     /**
-     * 为各自的reinit()函数和匹配的构造函数做实际工作，即创建一个矩阵。摆脱之前的矩阵是留给调用者的。
-     *
+     * Do the actual work for the respective reinit() function and the
+     * matching constructor, i.e. create a matrix. Getting rid of the previous
+     * matrix is left to the caller.
      */
     void
     do_reinit(const size_type m, const size_type n);
   };
 
-   /*@}*/ 
+  /*@}*/
 } // namespace PETScWrappers
 
 
@@ -96,6 +102,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
- /*---------------------------- petsc_full_matrix.h --------------------------*/ 
-
-
+/*---------------------------- petsc_full_matrix.h --------------------------*/

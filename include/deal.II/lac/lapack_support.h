@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/lapack_support_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -28,31 +27,30 @@ namespace types
 {
 #ifdef LAPACK_WITH_64BIT_BLAS_INDICES
   /**
-   * BLAS中的整数类型。
-   *
+   * Integer type in BLAS.
    */
   using blas_int = long long;
 #else
   /**
-   * BLAS中的整数类型。
-   *
+   * Integer type in BLAS.
    */
   using blas_int = int;
 #endif
 } // namespace types
 
 /**
- * 一个包含常量、异常、枚举和其他由deal.II
- * LAPACK绑定使用的效用的命名空间。
- *
- *
+ * A namespace containing constants, exceptions, enumerations, and other
+ * utilities used by the deal.II LAPACK bindings.
  */
 namespace LAPACKSupport
 {
   /**
-   * 大多数可以应用于矩阵的LAPACK函数（例如，通过调用这个类的成员函数）以某种方式改变其内容。例如，它们可以反转矩阵，或者用一个矩阵来代替它，该矩阵的列代表矩阵原始内容的特征向量。
-   * 因此，这个枚举的元素被用来跟踪这个对象目前正在存储的内容。
-   *
+   * Most of the LAPACK functions one can apply to a matrix (e.g., by calling
+   * the member functions of this class) change its content in some ways. For
+   * example, they may invert the matrix, or may replace it by a matrix whose
+   * columns represent the eigenvectors of the original content of the matrix.
+   * The elements of this enumeration are therefore used to track what is
+   * currently being stored by this object.
    */
   enum State
   {
@@ -75,8 +73,7 @@ namespace LAPACKSupport
   };
 
   /**
-   * %函数打印一个国家的名称。
-   *
+   * %Function printing the name of a State.
    */
   inline const char *
   state_name(State s)
@@ -105,8 +102,8 @@ namespace LAPACKSupport
   }
 
   /**
-   * 一个矩阵可以有某些允许优化的特征，但很难测试。这些在此列出。
-   *
+   * A matrix can have certain features allowing for optimization, but hard to
+   * test. These are listed here.
    */
   enum Property
   {
@@ -125,8 +122,7 @@ namespace LAPACKSupport
   };
 
   /**
-   * %函数打印一个属性的名称。
-   *
+   * %Function printing the name of a Property.
    */
   inline const char *
   property_name(const Property s)
@@ -152,54 +148,44 @@ namespace LAPACKSupport
   }
 
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char A = 'A';
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char N = 'N';
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char O = 'O';
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char T = 'T';
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char U = 'U';
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char L = 'L';
   /**
-   * 字符常数。
-   *
+   * Character constant.
    */
   static const char V = 'V';
   /**
-   * 整数常数。
-   *
+   * Integer constant.
    */
   static const types::blas_int zero = 0;
   /**
-   * 整数常数。
-   *
+   * Integer constant.
    */
   static const types::blas_int one = 1;
 
   /**
-   * 一个LAPACK函数返回一个错误代码。
-   *
+   * A LAPACK function returned an error code.
    */
   DeclException2(ExcErrorCode,
                  std::string,
@@ -208,8 +194,9 @@ namespace LAPACKSupport
                  << arg2);
 
   /**
-   * 当一个矩阵不在适合操作的状态下时抛出的异常。例如，一个LAPACK程序可能使矩阵处于无法使用的状态，那么vmult就没有意义了。
-   *
+   * Exception thrown when a matrix is not in a suitable state for an
+   * operation. For instance, a LAPACK routine may have left the matrix in an
+   * unusable state, then vmult does not make sense anymore.
    */
   DeclException1(
     ExcState,
@@ -218,8 +205,8 @@ namespace LAPACKSupport
     << state_name(arg1));
 
   /**
-   * 当矩阵没有合适的操作属性时抛出的异常。
-   *
+   * Exception thrown when a matrix does not have suitable properties for an
+   * operation.
    */
   DeclException1(ExcProperty,
                  Property,
@@ -227,8 +214,8 @@ namespace LAPACKSupport
                  << property_name(arg1) << " matrix.");
 
   /**
-   * 如果某个LAPACK函数不可用，因为在配置过程中没有检测到LAPACK安装，就会抛出这个异常。
-   *
+   * This exception is thrown if a certain LAPACK function is not available
+   * because no LAPACK installation was detected during configuration.
    */
   DeclException1(
     ExcMissing,
@@ -246,5 +233,3 @@ namespace LAPACKSupport
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

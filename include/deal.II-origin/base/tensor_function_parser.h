@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/tensor_function_parser_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -43,23 +44,18 @@ class Vector;
 #endif
 
 /**
- * This class implements a tensor function object that gets its value by parsing
- * a string describing this function. It is a wrapper class for the muparser
- * library (see http://muparser.beltoforion.de/). This class is essentially an
- * extension of the FunctionParser class to read in a TensorFunction. The class
- * reads in an expression of length dim<sup>rank</sup> (separated by a
- * semicolon) where the components of the tensor function are filled according
- * to the C++ convention (fastest index is the most right one).
+ * 这个类实现了一个张量函数对象，它通过解析描述这个函数的字符串来获得其值。它是muparser库的一个封装类（见http://muparser.beltoforion.de/）。这个类本质上是FunctionParser类的一个扩展，用来读入一个TensorFunction。该类读入一个长度为dim<sup>rank</sup>的表达式（用分号隔开），其中张量函数的分量按照C++惯例填充（最快的索引是最右边的那个）。
  *
- * @note In contrast to the FunctionParser class the TensorFunctionParser class does not support
- * 	 automatic differentiation.
  *
- * A minimal example for the usage of the class would be:
+ * @note
+ * 与FunctionParser类相比，TensorFunctionParser类不支持自动区分。
+ * 该类使用的一个最小的例子是。
+ *
  * @code
  * // set up time dependent tensor function:
  * const std::string variables = "x,y,t";
  * const std::string expression =
- *       "exp(-t)*cos(x+y);-sin(pi*x*y-t);sin(pi*x*y-t);exp(t)*cos(x+y)";
+ *     "exp(-t)*cos(x+y);-sin(pi*x*y-t);sin(pi*x*y-t);exp(t)*cos(x+y)";
  * std::map<std::string,double> constants;
  * constants["pi"] = numbers::PI;
  *
@@ -68,9 +64,9 @@ class Vector;
  * // to be taken into account (t).
  * TensorFunctionParser<2,2> tfp;
  * tfp.initialize(variables,
- *               expression,
- *               constants,
- *               true); // flag for time dependence
+ *             expression,
+ *             constants,
+ *             true); // flag for time dependence
  *
  * // Point at which we want to evaluate the function
  * Point<2> point(0.0, 1.0);
@@ -79,53 +75,40 @@ class Vector;
  * double result = tfp.value(point);
  *
  * deallog << "Function '" << expression << "'"
- *         << " @ " << point
- *         << " is: "
- *         << std::endl
- *         << result[0][0] << " " << result[0][1] << std::endl
- *         << result[1][0] << " " << result[1][1]
- *         << std::endl;
+ *       << " @ " << point
+ *       << " is: "
+ *       << std::endl
+ *       << result[0][0] << " " << result[0][1] << std::endl
+ *       << result[1][0] << " " << result[1][1]
+ *       << std::endl;
  * @endcode
  *
- * See also the documentation of the FunctionParser class.
+ * 也请看FunctionParser类的文档。
+ * 这个类重载了TensorFunction基类的虚拟方法value()和value_list()，其表达式的字节编译版本被赋予initialize()方法。请注意，除非你首先调用initialize()方法，该方法接受函数的文本描述作为参数（除其他外），否则该类将无法工作。
+ * 描述一个函数的语法遵循通常的编程惯例，在底层muparser库的主页上有详细的解释：http://muparser.beltoforion.de/
+ * 。
  *
- * This class overloads the virtual method value() and value_list() of the
- * TensorFunction base class with the byte compiled versions of the expressions
- * given to the initialize() methods. Note that the class will not work unless
- * you first call the initialize() method that accepts the text description of
- * the function as an argument (among other things).
+ * 矢量值函数可以使用字符串来声明，其中函数成分用分号隔开，或者使用字符串的矢量，每个定义一个矢量成分。
  *
- * The syntax to describe a function follows usual programming practice, and
- * is explained in detail at the homepage of the underlying muparser library
- * at http://muparser.beltoforion.de/ .
- *
- *
- * Vector-valued functions can either be declared using strings where the
- * function components are separated by semicolons, or using a vector of
- * strings each defining one vector component.
  *
  *
  * @ingroup functions
+ *
  */
 template <int rank, int dim, typename Number = double>
 class TensorFunctionParser : public TensorFunction<rank, dim, Number>
 {
 public:
   /**
-   * Standard constructor. Only set initial time. This object needs to be
-   * initialized with the initialize() method before you can use it. If an
-   * attempt to use this function is made before the initialize() method has
-   * been called, then an exception is thrown.
+   * 标准构造函数。只设置初始时间。这个对象在使用前需要用initialize()方法进行初始化。如果在调用initialize()方法之前试图使用这个函数，那么就会产生一个异常。
+   *
    */
   TensorFunctionParser(const double initial_time = 0.0);
 
   /**
-   * Constructor for parsed functions. This object needs to be initialized
-   * with the initialize() method before you can use it. If an attempt to
-   * use this function is made before the initialize() method has been called,
-   * then an exception is thrown.
-   * Takes a semicolon separated list of expressions (one for each component
-   * of the tensor function), an optional comma-separated list of constants.
+   * 解析函数的构造器。这个对象在使用前需要用initialize()方法进行初始化。如果在调用initialize()方法之前试图使用这个函数，那么就会抛出一个异常。
+   * 接收一个分号分隔的表达式列表（张量函数的每个分量一个），一个可选的逗号分隔的常量列表。
+   *
    */
   TensorFunctionParser(
     const std::string &expression,
@@ -133,76 +116,58 @@ public:
     const std::string &variable_names = default_variable_names() + ",t");
 
   /**
-   * Copy constructor. Objects of this type can not be copied, and
-   * consequently this constructor is deleted.
+   * 复制构造函数。这种类型的对象不能被复制，因此这个构造函数被删除。
+   *
    */
   TensorFunctionParser(const TensorFunctionParser &) = delete;
 
   /**
-   * Move constructor. Objects of this type can not be moved, and
-   * consequently this constructor is deleted.
+   * 移动构造函数。该类型的对象不能被移动，因此该构造函数被删除。
+   *
    */
   TensorFunctionParser(TensorFunctionParser &&) = delete;
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   virtual ~TensorFunctionParser() override;
 
   /**
-   * Copy operator. Objects of this type can not be copied, and
-   * consequently this operator is deleted.
+   * 复制操作符。该类型的对象不能被复制，因此该操作符被删除。
+   *
    */
   TensorFunctionParser &
   operator=(const TensorFunctionParser &) = delete;
 
   /**
-   * Move operator. Objects of this type can not be moved, and
-   * consequently this operator is deleted.
+   * 移动操作符。此类型的对象不能被移动，因此该操作符被删除。
+   *
    */
   TensorFunctionParser &
   operator=(TensorFunctionParser &&) = delete;
 
   /**
-   * Type for the constant map. Used by the initialize() method.
+   * 常量图的类型。由initialize()方法使用。
+   *
    */
   using ConstMap = std::map<std::string, double>;
 
 
   /**
-   * Initialize the tensor function.  This method accepts the following
-   * parameters:
+   * 初始化张量函数。 这个方法接受以下参数。
+   * @param[in]  vars
+   * 一个包含变量的字符串，这些变量将被待评估的表达式使用。注意，变量可以有任何名字（当然与上面定义的函数名不同！），但顺序很重要。第一个变量将对应于函数被评估的点的第一个分量，第二个变量对应于第二个分量，以此类推。如果这个函数也是依赖于时间的，那么有必要通过将
+   * <code>time_dependent</code> 参数设置为真来指定它。
+   * 如果这里指定的变量数量与dim（如果这个函数不依赖于时间）或与dim+1（如果它依赖于时间）不同，就会出现异常。
+   * @param[in]  expressions
+   * 一个字符串向量，包含将被内部解析器（TensorFunctionParser）字节编译的表达式。请注意，这个向量的大小必须与构造函数中声明的TensorFunctionParser的组件数量完全匹配。如果不是这样，就会抛出一个异常。
+   * @param[in]  常量
+   * 一个常量图，用于传递我们想在表达式中指定的任何必要常量（在上面的例子中是数字pi）。当且仅当一个表达式只包含定义的变量和定义的常量（除了上面指定的函数之外）时，它才是有效的。如果给定的常量的名称是无效的（例如：
+   * <code>constants["sin"] = 1.5;</code> ），就会抛出一个异常。
+   * @param[in]  time_dependent
+   * 如果这是一个依赖于时间的函数，那么在<b>vars</b>中声明的最后一个变量被假定为时间变量，并且在评估该函数时使用this->get_time()来初始化它。当然，在这种情况下，initialize()方法解析的变量数量是dim+1。这个参数的值默认为false，也就是说，不考虑时间。
    *
-   * @param[in] vars A string with the variables that will be used by the
-   * expressions to be evaluated. Note that the variables can have any name
-   * (of course different from the function names defined above!), but the
-   * order IS important. The first variable will correspond to the first
-   * component of the point in which the function is evaluated, the second
-   * variable to the second component and so forth. If this function is also
-   * time dependent, then it is necessary to specify it by setting the
-   * <code>time_dependent</code> parameter to true.  An exception is thrown if
-   * the number of variables specified here is different from dim (if this
-   * function is not time-dependent) or from dim+1 (if it is time-dependent).
-   *
-   * @param[in] expressions A vector of strings containing the expressions that
-   * will be byte compiled by the internal parser (TensorFunctionParser). Note
-   * that the size of this vector must match exactly the number of components of
-   * the TensorFunctionParser, as declared in the constructor. If this is not
-   * the case, an exception is thrown.
-   *
-   * @param[in] constants A map of constants used to pass any necessary constant
-   * that we want to specify in our expressions (in the example above the
-   * number pi). An expression is valid if and only if it contains only
-   * defined variables and defined constants (other than the functions
-   * specified above). If a constant is given whose name is not valid (eg:
-   * <code>constants["sin"] = 1.5;</code>) an exception is thrown.
-   *
-   * @param[in] time_dependent If this is a time dependent function, then the
-   * last variable declared in <b>vars</b> is assumed to be the time variable,
-   * and this->get_time() is used to initialize it when evaluating the
-   * function. Naturally the number of variables parsed by the initialize()
-   * method in this case is dim+1. The value of this parameter defaults to
-   * false, i.e. do not consider time.
    */
   void
   initialize(const std::string &             vars,
@@ -211,11 +176,8 @@ public:
              const bool                      time_dependent = false);
 
   /**
-   * Initialize the function. Same as above, but accepts a string rather than
-   * a vector of strings. If this is a vector valued function, its components
-   * are expected to be separated by a semicolon. An exception is thrown if
-   * this method is called and the number of components successfully parsed
-   * does not match the number of components of the base function.
+   * 初始化函数。和上面一样，但接受一个字符串，而不是一个字符串的向量。如果这是一个向量值的函数，它的组成部分应该用分号来分隔。如果这个方法被调用，而成功解析的组件数与基函数的组件数不一致，就会产生一个异常。
+   *
    */
   void
   initialize(const std::string &vars,
@@ -224,36 +186,38 @@ public:
              const bool         time_dependent = false);
 
   /**
-   * A function that returns default names for variables, to be used in the
-   * first argument of the initialize() functions: it returns "x" in 1d, "x,y"
-   * in 2d, and "x,y,z" in 3d.
+   * 一个返回变量默认名称的函数，用于initialize()函数的第一个参数：它在1d中返回
+   * "x"，在2d中返回 "x,y"，在3d中返回 "x,y,z"。
+   *
    */
   static std::string
   default_variable_names();
 
   /**
-   * Return the value of the tensor function at the given point.
+   * 返回张量函数在给定点的值。
+   *
    */
   virtual Tensor<rank, dim, Number>
   value(const Point<dim> &p) const override;
 
   /**
-   * Return the value of the tensor function at the given point.
+   * 返回张量函数在给定点的值。
+   *
    */
   virtual void
   value_list(const std::vector<Point<dim>> &         p,
              std::vector<Tensor<rank, dim, Number>> &values) const override;
 
   /**
-   * Return an array of function expressions (one per component), used to
-   * initialize this function.
+   * 返回一个函数表达式的数组（每个组件一个），用于初始化这个函数。
+   *
    */
   const std::vector<std::string> &
   get_expressions() const;
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况 @{ 。
+   *
    */
   DeclException2(ExcParseError,
                  int,
@@ -273,63 +237,60 @@ public:
 private:
 #ifdef DEAL_II_WITH_MUPARSER
   /**
-   * Place for the variables for each thread
+   * 每个线程的变量的位置
+   *
    */
   mutable Threads::ThreadLocalStorage<std::vector<double>> vars;
 
   /**
-   * The muParser objects for each thread (and one for each component). We are
-   * storing a unique_ptr so that we don't need to include the definition of
-   * mu::Parser in this header.
+   * 每个线程的muParser对象（每个组件也有一个）。我们存储的是unique_ptr，这样我们就不需要在这个头中包含
+   * mu::Parser 的定义。
+   *
    */
   mutable Threads::ThreadLocalStorage<std::vector<std::unique_ptr<mu::Parser>>>
     tfp;
 
   /**
-   * An array to keep track of all the constants, required to initialize tfp in
-   * each thread.
+   * 一个数组来记录所有的常量，需要在每个线程中初始化tfp。
+   *
    */
   std::map<std::string, double> constants;
 
   /**
-   * An array for the variable names, required to initialize tfp in each
-   * thread.
+   * 一个用于记录变量名称的数组，需要在每个线程中初始化tfp。
+   *
    */
   std::vector<std::string> var_names;
 
   /**
-   * Initialize tfp and vars on the current thread. This function may only be
-   * called once per thread. A thread can test whether the function has
-   * already been called by testing whether 'tfp.get().size()==0' (not
-   * initialized) or >0 (already initialized).
+   * 在当前线程中初始化tfp和vars。这个函数在每个线程中只能被调用一次。一个线程可以通过测试'tfp.get().size()==0'（未初始化）或>0（已初始化）来测试该函数是否已经被调用。
+   *
    */
   void
   init_muparser() const;
 #endif
 
   /**
-   * An array of function expressions (one per component), required to
-   * initialize tfp in each thread.
+   * 一个函数表达式的数组（每个组件一个），需要在每个线程中初始化tfp。
+   *
    */
   std::vector<std::string> expressions;
 
   /**
-   * State of usability. This variable is checked every time the function is
-   * called for evaluation. It's set to true in the initialize() methods.
+   * 可用性的状态。这个变量在每次函数被调用评估时被检查。它在initialize()方法中被设置为true。
+   *
    */
   bool initialized;
 
   /**
-   * Number of variables. If this is also a function of time, then the number
-   * of variables is dim+1, otherwise it is dim. In the case that this is a
-   * time dependent function, the time is supposed to be the last variable. If
-   * #n_vars is not identical to the number of the variables parsed by the
-   * initialize() method, then an exception is thrown.
+   * 变量的数量。如果这也是一个时间的函数，那么变量的数量是dim+1，否则就是dim。如果这是一个依赖于时间的函数，那么时间应该是最后一个变量。如果#n_vars与initialize()方法解析的变量数量不一致，则会抛出一个异常。
+   *
    */
   unsigned int n_vars;
 
   /**
-   * Number of components is equal dim<sup>rank</sup>.
+   * 组件的数量等于dim<sup>rank</sup>。
+   *
    */
   unsigned int n_components;
 };
@@ -358,3 +319,5 @@ TensorFunctionParser<rank, dim, Number>::default_variable_names()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/block_sparse_matrix.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2018 by the deal.II authors
@@ -209,3 +210,5 @@ BlockSparseMatrix<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // ifdef block_sparse_matrix_templates_h
+
+

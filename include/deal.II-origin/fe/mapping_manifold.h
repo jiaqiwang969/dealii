@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/mapping_manifold_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -33,38 +34,31 @@ template <int, int>
 class MappingQ;
 
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 
 /**
- * This class implements the functionality for Manifold conforming
- * mappings. This Mapping computes the transformation between the
- * reference and real cell by exploiting the geometrical information
- * coming from the underlying Manifold object.
+ * 这个类实现了符合Manifold的映射的功能。这个映射通过利用来自底层Manifold对象的几何信息来计算参考单元和真实单元之间的转换。
+ * 使用该映射计算的正交点位于准确的几何对象上，使用该类计算的正切和法向量是与底层几何体相切和相法。这与MappingQ类不同，后者使用某个阶次的多项式来逼近几何体，然后使用逼近的表面来计算法线和切线。
+ * @warning
+ * 由于数学上的原因，我们不可能在一个由SphericalManifold描述的几何体上使用这个类：更多信息见该类的注释。
  *
- * Quadrature points computed using this mapping lie on the exact
- * geometrical objects, and tangent and normal vectors computed using
- * this class are tangent and normal to the underlying geometry. This
- * is in contrast with the MappingQ class, which approximates the
- * geometry using a polynomial of some order, and then computes the
- * normals and tangents using the approximated surface.
  *
- * @warning It is not possible, for mathematical reasons, for one to use this
- * class with a geometry described by a SphericalManifold: see the note in
- * that class for more information.
  */
 template <int dim, int spacedim = dim>
 class MappingManifold : public Mapping<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   MappingManifold() = default;
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   MappingManifold(const MappingManifold<dim, spacedim> &mapping);
 
@@ -73,8 +67,9 @@ public:
   clone() const override;
 
   /**
-   * Always returns @p true because this class assumes that the
-   * vertices always lies on the underlying Manifold.
+   * 总是返回 @p true
+   * ，因为这个类假定顶点总是位于底层的漫游上。
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
@@ -83,8 +78,8 @@ public:
   is_compatible_with(const ReferenceCell &cell_type) const override;
 
   /**
-   * @name Mapping points between reference and real cells
-   * @{
+   * @name  参考单元和实数单元之间的映射点 @{  。
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -101,11 +96,12 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Functions to transform tensors from reference to real coordinates
-   * @{
+   * @name  将张量从参考坐标转换为实数坐标的函数  @{
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -145,40 +141,35 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Interface with FEValues
-   * @{
+   * @name  与FEValues的接口  @{ .
+   *
    */
 
 public:
   /**
-   * Storage for internal data of polynomial mappings. See
-   * Mapping::InternalDataBase for an extensive description.
+   * 多项式映射的内部数据的存储。见 Mapping::InternalDataBase
+   * 的广泛描述。
+   * 对于当前的类，InternalData类存储了对象创建时（在get_data()中）计算一次的数据，以及类希望从调用fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()之间存储的数据，直到以后可能从有限元调用转化()等函数。后一类的成员变量被标记为
+   * "可变"。
    *
-   * For the current class, the InternalData class stores data that is
-   * computed once when the object is created (in get_data()) as well as data
-   * the class wants to store from between the call to fill_fe_values(),
-   * fill_fe_face_values(), or fill_fe_subface_values() until possible later
-   * calls from the finite element to functions such as transform(). The
-   * latter class of member variables are marked as 'mutable'.
    */
   class InternalData : public Mapping<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     InternalData() = default;
 
     /**
-     * Initialize the object's member variables related to cell data based on
-     * the given arguments.
+     * 根据给定的参数，初始化对象中与单元格数据相关的成员变量。
+     * 该函数还调用compute_shape_function_values()来实际设置与映射形状函数的值和导数有关的成员变量。
      *
-     * The function also calls compute_shape_function_values() to actually set
-     * the member variables related to the values and derivatives of the
-     * mapping shape functions.
      */
     void
     initialize(const UpdateFlags      update_flags,
@@ -186,9 +177,8 @@ public:
                const unsigned int     n_original_q_points);
 
     /**
-     * Initialize the object's member variables related to cell and face data
-     * based on the given arguments. In order to initialize cell data, this
-     * function calls initialize().
+     * 根据给定的参数，初始化对象中与单元格和面的数据有关的成员变量。为了初始化单元格数据，本函数调用initialize()。
+     *
      */
     void
     initialize_face(const UpdateFlags      update_flags,
@@ -197,137 +187,113 @@ public:
 
 
     /**
-     * Compute the weights associated to the Manifold object, that
-     * need to be passed when computing the location of the quadrature
-     * points.
+     * 计算与Manifold对象相关的权重，在计算正交点的位置时需要传递这些权重。
+     *
      */
     void
     compute_manifold_quadrature_weights(const Quadrature<dim> &quadrature);
 
     /**
-     * Store vertices internally.
+     * 内部存储顶点。
+     *
      */
     void
     store_vertices(
       const typename Triangulation<dim, spacedim>::cell_iterator &cell) const;
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this object.
+     * 返回这个对象的内存消耗估计值（以字节为单位）。
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * The current cell vertices.
+     * 当前的单元格顶点。        计算每个。
      *
-     * Computed each.
      */
     mutable std::vector<Point<spacedim>> vertices;
 
     /**
-     * The current cell.
+     * 当前的单元格。        计算每一个。
      *
-     * Computed each.
      */
     mutable typename Triangulation<dim, spacedim>::cell_iterator cell;
 
     /**
-     * The actual quadrature on the reference cell.
+     * 参考单元上的实际正交。        计算一次。
      *
-     * Computed once.
      */
     Quadrature<dim> quad;
 
 
     /**
-     * Values of quadrature weights for manifold quadrature
-     * formulas.
+     * 用于流形正交公式的正交权重的值。
+     * 流形类有一个函数 (Manifold::get_new_point())
+     * ，根据流形上一些周围点的加权平均数返回新点。对于每个正交点，我们用一个正交公式来调用这个函数，这个公式是用当前单元格的顶点和在正交点本身评估的FE_Q(1)有限元的基函数值构建的。虽然每个单元的顶点都在变化，但每个正交点的权重可以计算一次。我们将这些信息存储在以下变量中，其中第一个索引贯穿正交点，第二个索引贯穿顶点索引。
+     * 计算一次。
      *
-     * The Manifold class has a function (Manifold::get_new_point())
-     * that returns new points according to a weighted average of some
-     * surrounding points on the Manifold. For each quadrature point,
-     * we call this function with a Quadrature formula constructed
-     * using the vertices of the current cell, and the values of the
-     * basis functions of an FE_Q(1) finite element evaluated at the
-     * quadrature point itself. While the vertices of the cell change
-     * for every cell, the weights can be computed once for each
-     * quadrature point. We store this information in the following
-     * variable, where the first index runs through the quadrature
-     * points, and the second index runs through the vertex indices.
-     *
-     * Computed once.
      */
     std::vector<std::vector<double>> cell_manifold_quadrature_weights;
 
 
     /**
-     * A vector of weights for use in Manifold::get_new_point(). For
-     * each point (interior to a cell), we compute the weight each
-     * vertex has for this point. If the point lies at a vertex, then
-     * this vertex has weight one and all others have weight zero. If
-     * the point lies interior to a cell, then the weight every vertex
-     * has is just the $d$-linear shape functions associated with each
-     * vertex evaluated at that point.
+     * 用于 Manifold::get_new_point(). 的权重向量
+     * 对于每个点（单元格的内部），我们计算每个顶点对这个点的权重。如果该点位于一个顶点，那么这个顶点的权重为1，其他所有顶点的权重为0。如果该点位于一个单元格的内部，那么每个顶点的权重只是在该点评估的与每个顶点相关的
+     * $d$ -线性形状函数。        这个数组的大小为
+     * GeometryInfo<dim>::vertices_per_cell,
+     * ，但它不能被转换成一个固定大小的数组，因为它被用作
+     * Manifold::get_new_point() 的输入，该数组希望看到一个
+     * std::vector<double> 的权重。
      *
-     * This array has size GeometryInfo<dim>::vertices_per_cell, but it
-     * can't be converted into a fixed size array because it is used
-     * as input for Manifold::get_new_point() which wants to see a
-     * std::vector<double> for the weights.
      */
     mutable std::vector<double> vertex_weights;
 
     /**
-     * Unit tangential vectors. Used for the computation of boundary forms and
-     * normal vectors.
+     * 单位切线向量。用于计算边界形式和法向量。
+     * 这个数组有`(dim-1)  GeometryInfo::faces_per_cell` 项。第一组
+     * GeometryInfo::faces_per_cell
+     * 包含每个面的第一个切向的向量；第二组
+     * GeometryInfo<dim>::faces_per_cell
+     * 条目包含第二个切向的向量（仅在三维中，因为每个面有两个切向），等等。
+     * 填充一次。
      *
-     * This array has `(dim-1) * GeometryInfo::faces_per_cell` entries. The
-     * first GeometryInfo::faces_per_cell contain the vectors in the first
-     * tangential direction for each face; the second set of
-     * GeometryInfo<dim>::faces_per_cell entries contain the vectors in the
-     * second tangential direction (only in 3d, since there we have 2 tangential
-     * directions per face), etc.
-     *
-     * Filled once.
      */
     std::array<std::vector<Tensor<1, dim>>,
                GeometryInfo<dim>::faces_per_cell *(dim - 1)>
       unit_tangentials;
 
     /**
-     * Tensors of covariant transformation at each of the quadrature points.
-     * The matrix stored is the Jacobian * G^{-1}, where G = Jacobian^{t} *
-     * Jacobian, is the first fundamental form of the map; if dim=spacedim
-     * then it reduces to the transpose of the inverse of the Jacobian matrix,
-     * which itself is stored in the @p contravariant field of this structure.
+     * 每个正交点的协方差变换的张量。
+     * 存储的矩阵是Jacobian G^{-1}，其中G=Jacobian^{t}
+     * Jacobian，是地图的第一基本形式；如果dim=spacedim，则还原为Jacobian矩阵的转置，其本身存储在该结构的
+     * @p contravariant 域。        在每个单元格上计算。
      *
-     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> covariant;
 
     /**
-     * Tensors of contravariant transformation at each of the quadrature
-     * points. The contravariant matrix is the Jacobian of the transformation,
-     * i.e. $J_{ij}=dx_i/d\hat x_j$.
+     * 每个正交点上的禁忌变换的张量。不变矩阵是变换的雅各布系数，即
+     * $J_{ij}=dx_i/d\hat x_j$  。        在每个单元上计算。
      *
-     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> contravariant;
 
     /**
-     * Auxiliary vectors for internal use.
+     * 供内部使用的辅助向量。
+     *
      */
     mutable std::vector<std::vector<Tensor<1, spacedim>>> aux;
 
     /**
-     * The determinant of the Jacobian in each quadrature point. Filled if
-     * #update_volume_elements.
+     * 在每个正交点的雅各布系数的行列式。如果#update_volume_elements就会被填满。
+     *
      */
     mutable std::vector<double> volume_elements;
 
     /**
-     * A pointer to the Manifold in use.
+     * 一个指向使用中的Manifold的指针。        每次更新。
      *
-     * Updated each.
      */
     mutable SmartPointer<const Manifold<dim, spacedim>> manifold;
   };
@@ -388,14 +354,15 @@ public:
 
   /**
    * @}
+   *
    */
 };
 
 
 
-/*@}*/
+ /*@}*/ 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -456,9 +423,11 @@ MappingManifold<dim, spacedim>::is_compatible_with(
 
 #endif // DOXYGEN
 
-/* -------------- declaration of explicit specializations ------------- */
+ /* -------------- declaration of explicit specializations ------------- */ 
 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

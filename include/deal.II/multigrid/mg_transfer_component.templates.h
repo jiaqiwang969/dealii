@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_transfer_component.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -41,7 +40,7 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /* --------------------- MGTransferSelect -------------- */ 
+/* --------------------- MGTransferSelect -------------- */
 
 
 
@@ -230,5 +229,3 @@ MGTransferSelect<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

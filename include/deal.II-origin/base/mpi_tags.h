@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/mpi_tags_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -28,25 +29,37 @@ namespace Utilities
     namespace internal
     {
       /**
-       * This enum holds all MPI tags used in point to point MPI communications
-       * inside the deal.II library.
+       * 这个枚举持有所有在deal.II库内点对点MPI通信中使用的MPI标签。
+       * 我们把这些标签放在一个中心位置，以便它们在库中是唯一的。否则，接收包的通信可能会捡到来自不同算法的数据包。如果使用MPI_ANY_SOURCE，这一点尤其正确。
+       * 使用MPI标签的MPI函数的列表是。
        *
-       * We keep these tags in a central location so that they are unique within
-       * the library. Otherwise, communication that receives packages might pick
-       * up packets from a different algorithm. This is especially true if
-       * MPI_ANY_SOURCE is used.
        *
-       * The list of MPI functions that use an MPI tag is:
+       *
+       *
+       *
+       *
        * - MPI_Send, MPI_Recv, MPI_Sendrecv
+       *
+       *
+       *
+       *
        * - MPI_Isend, MPI_Irecv
+       *
+       *
+       *
+       *
        * - MPI_Probe, MPI_Iprobe
-       * - MPI_Comm_create_group, MPI_Intercomm_create,
-       * Utilities::MPI::create_group
+       *
+       *
+       *
+       * - MPI_Comm_create_group, MPI_Intercomm_create,  Utilities::MPI::create_group  。
+       *
        */
       namespace Tags
       {
         /**
-         * The enum with the tags.
+         * 带有标签的枚举。
+         *
          */
         enum enumeration : std::uint16_t
         {
@@ -159,3 +172,5 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

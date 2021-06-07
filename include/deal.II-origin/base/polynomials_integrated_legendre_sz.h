@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/polynomials_integrated_legendre_sz_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2020 by the deal.II authors
@@ -26,42 +27,57 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Class implementing the integrated Legendre polynomials described in the PhD
- * thesis of Sabine Zaglmayr.
+ * 实现Sabine
+ * Zaglmayr博士论文中描述的集成Legendre多项式的类。
+ * 这个类是以现有的deal.II
+ * Legendre类为基础编写的，但调整了系数，使递归公式为Sabine
+ * Zaglmayr的博士论文中描述的综合Legendre多项式。该多项式可以从以下方面递归生成。
  *
- * This class was written based upon the existing deal.II Legendre class as a
- * base, but with the coefficients adjusted so that the recursive formula is for
- * the integrated Legendre polynomials described in the PhD thesis of Sabine
- * Zaglmayr. The polynomials can be generated recursively from:
  *
- * - $L_{0}(x) = -1$ (added so that it can be generated recursively from 0)
- * - $L_{1}(x) = x$
- * - $L_{2}(x) = \frac{(x^2 - 1)}{2}$
- * - $(n+1)L_{n+1} = (2n-1)L_{n} - (n-2)L_{n-1}$.
  *
- * However, it is also possible to generate them directly from the Legendre
- * polynomials:
+ * -  $L_{0}(x) =
  *
- * $L_{n} = \frac{l_{n} - l_{n-2}}{2n-1)}$
+ * -1$ (添加后可以从0开始递归生成)
+ *
+ *
+ *
+ * -  $L_{1}(x) = x$
+ *
+ * -  $L_{2}(x) = \frac{(x^2
+ *
+ * - 1)}{2}$
+ *
+ *
+ * -  $(n+1)L_{n+1} = (2n-1)L_{n}
+ *
+ * - (n-2)L_{n-1}$  .
+ * 然而，也可以直接从Legendre多项式中生成它们。 $L_{n} =
+ * \frac{l_{n}
+ *
+ * - l_{n-2}}{2n-1)}$
+ *
+ *
  */
 class IntegratedLegendreSZ : public Polynomials::Polynomial<double>
 {
 public:
   /**
-   * Constructor generating the coefficients of the polynomials at degree p.
+   * 生成p度的多项式系数的构造器。
+   *
    */
   IntegratedLegendreSZ(const unsigned int p);
 
   /**
-   * Return the complete set of Integrated Legendre polynomials up to the
-   * given degree.
+   * 返回到给定度数的集成Legendre多项式的完整集合。
+   *
    */
   static std::vector<Polynomials::Polynomial<double>>
   generate_complete_basis(const unsigned int degree);
 
 private:
   /**
-   * Main function to compute the co-efficients of the polynomial at degree p.
+   * 计算度数为p的多项式的协系数的主函数。
+   *
    */
   static const std::vector<double>
   get_coefficients(const unsigned int k);
@@ -70,3 +86,5 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

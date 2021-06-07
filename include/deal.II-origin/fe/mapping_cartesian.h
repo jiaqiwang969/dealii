@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/mapping_cartesian_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2021 by the deal.II authors
@@ -28,50 +29,41 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 /**
- * A class providing a mapping from the reference cell to cells that are
- * axiparallel, i.e., that have the shape of rectangles (in 2d) or
- * boxes (in 3d) with edges parallel to the coordinate directions. The
- * class therefore provides functionality that is equivalent to what,
- * for example, MappingQ would provide for such cells. However, knowledge
- * of the shape of cells allows this class to be substantially more
- * efficient.
+ * 一个提供从参考单元到单元的映射的类，这些单元是轴平行的，即具有矩形（在2d中）或盒子（在3d中）的形状，边缘平行于坐标方向。因此，该类提供的功能等同于例如MappingQ为这类单元格提供的功能。然而，对单元格形状的了解使得这个类的效率大大提升。
+ * 具体来说，该映射是针对那些从参考坐标到实际单元的映射是沿坐标方向的缩放的单元。每个单元上从参考坐标
+ * $\hat {\mathbf x}$ 到实数坐标 $\mathbf x$ 的变换形式为
  *
- * Specifically, the mapping is meant for cells for which the mapping from
- * the reference to the real cell is a scaling along the coordinate
- * directions: The transformation from reference coordinates $\hat {\mathbf
- * x}$ to real coordinates $\mathbf x$ on each cell is of the form
  * @f{align*}{
- *   {\mathbf x}(\hat {\mathbf x})
- *   =
- *   \begin{pmatrix}
- *     h_x & 0 \\
- *     0 & h_y
- *   \end{pmatrix}
- *   \hat{\mathbf x}
- *   + {\mathbf v}_0
+ * {\mathbf x}(\hat {\mathbf x})
+ * =
+ * \begin{pmatrix}
+ *   h_x & 0 \\
+ *   0 & h_y
+ * \end{pmatrix}
+ * \hat{\mathbf x}
+ * + {\mathbf v}_0
  * @f}
- * in 2d, and
+ * 在2d中，和
  * @f{align*}{
- *   {\mathbf x}(\hat {\mathbf x})
- *   =
- *   \begin{pmatrix}
- *     h_x & 0 & 0 \\
- *     0 & h_y & 0 \\
- *     0 & 0 & h_z
- *   \end{pmatrix}
- *   \hat{\mathbf x}
- *   + {\mathbf v}_0
+ * {\mathbf x}(\hat {\mathbf x})
+ * =
+ * \begin{pmatrix}
+ *   h_x & 0 & 0 \\
+ *   0 & h_y & 0 \\
+ *   0 & 0 & h_z
+ * \end{pmatrix}
+ * \hat{\mathbf x}
+ * + {\mathbf v}_0
  * @f}
- * in 3d, where ${\mathbf v}_0$ is the bottom left vertex and $h_x,h_y,h_z$
- * are the extents of the cell along the axes.
+ * 在3D中， ${\mathbf v}_0$ 是左下角的顶点， $h_x,h_y,h_z$
+ * 是单元格沿轴线的延伸。
+ * 这个类是为了提高效率，它没有做大量的错误检查。如果你将这种映射应用于不符合上述要求的单元格，你会得到奇怪的结果。
  *
- * The class is intended for efficiency, and it does not do a whole lot of
- * error checking. If you apply this mapping to a cell that does not conform
- * to the requirements above, you will get strange results.
+ *
  */
 template <int dim, int spacedim = dim>
 class MappingCartesian : public Mapping<dim, spacedim>
@@ -82,8 +74,8 @@ public:
   clone() const override;
 
   /**
-   * Return @p true because MappingCartesian preserves vertex
-   * locations.
+   * 返回 @p true 因为MappingCartesian保留了顶点位置。
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
@@ -92,8 +84,8 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const override;
 
   /**
-   * @name Mapping points between reference and real cells
-   * @{
+   * @name  参考单元和实数单元之间的映射点 @{  。
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -110,11 +102,12 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Functions to transform tensors from reference to real coordinates
-   * @{
+   * @name  将张量从参考坐标转换为实坐标的函数  @{
+   *
    */
 
   // for documentation, see the Mapping base class
@@ -154,53 +147,55 @@ public:
 
   /**
    * @}
+   *
    */
 
 
 private:
   /**
-   * @name Interface with FEValues
-   * @{
+   * @name  与FEValues的接口  @{ .
+   *
    */
 
   /**
-   * Storage for internal data of the mapping. See Mapping::InternalDataBase
-   * for an extensive description.
+   * 存储映射的内部数据。见 Mapping::InternalDataBase
+   * 的广泛描述。
+   * 这包括创建对象时计算一次的数据（在get_data()中），以及该类希望从调用fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()之间存储的数据，直到以后可能从有限元调用转化()等函数。后一类的成员变量被标记为
+   * "可变"。
    *
-   * This includes data that is computed once when the object is created (in
-   * get_data()) as well as data the class wants to store from between the
-   * call to fill_fe_values(), fill_fe_face_values(), or
-   * fill_fe_subface_values() until possible later calls from the finite
-   * element to functions such as transform(). The latter class of member
-   * variables are marked as 'mutable'.
    */
   class InternalData : public Mapping<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     InternalData(const Quadrature<dim> &quadrature);
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this object.
+     * 返回这个对象的内存消耗估计值（以字节为单位）。
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * Extents of the last cell we have seen in the coordinate directions,
-     * i.e., <i>h<sub>x</sub></i>, <i>h<sub>y</sub></i>, <i>h<sub>z</sub></i>.
+     * 我们在坐标方向上看到的最后一个单元的延伸，即<i>h<sub>x</sub></i>,
+     * <i>h<sub>y</sub></i>, <i>h<sub>z</sub></i>。
+     *
      */
     mutable Tensor<1, dim> cell_extents;
 
     /**
-     * The volume element
+     * 体积元素
+     *
      */
     mutable double volume_element;
 
     /**
-     * Vector of all quadrature points. Especially, all points on all faces.
+     * 所有正交点的矢量。特别是，所有面的所有点。
+     *
      */
     std::vector<Point<dim>> quadrature_points;
   };
@@ -260,11 +255,12 @@ private:
 
   /**
    * @}
+   *
    */
 
   /**
-   * Update the cell_extents field of the incoming InternalData object with the
-   * size of the incoming cell.
+   * 用传入的单元格的尺寸更新传入的InternalData对象的cell_extents字段。
+   *
    */
   void
   update_cell_extents(
@@ -273,10 +269,9 @@ private:
     const InternalData &                                        data) const;
 
   /**
-   * Compute the quadrature points if the UpdateFlags of the incoming
-   * InternalData object say that they should be updated.
+   * 如果传入的InternalData对象的UpdateFlags显示应该更新正交点，则计算这些正交点。
+   * 从fill_fe_values调用。
    *
-   * Called from fill_fe_values.
    */
   void
   maybe_update_cell_quadrature_points(
@@ -285,10 +280,9 @@ private:
     std::vector<Point<dim>> &quadrature_points) const;
 
   /**
-   * Compute the quadrature points if the UpdateFlags of the incoming
-   * InternalData object say that they should be updated.
+   * 如果传入的InternalData对象的UpdateFlags说它们应该被更新，则计算正交点。
+   * 从fill_fe_face_values调用。
    *
-   * Called from fill_fe_face_values.
    */
   void
   maybe_update_face_quadrature_points(
@@ -298,10 +292,9 @@ private:
     std::vector<Point<dim>> &quadrature_points) const;
 
   /**
-   * Compute the quadrature points if the UpdateFlags of the incoming
-   * InternalData object say that they should be updated.
+   * 计算正交点，如果传入的InternalData对象的UpdateFlags说它们应该被更新。
+   * 从fill_fe_subface_values调用。
    *
-   * Called from fill_fe_subface_values.
    */
   void
   maybe_update_subface_quadrature_points(
@@ -312,10 +305,9 @@ private:
     std::vector<Point<dim>> &quadrature_points) const;
 
   /**
-   * Transform quadrature points in InternalData to real space by scaling unit
-   * coordinates with cell_extends in each direction.
+   * 将InternalData中的正交点转换为实空间，在每个方向上用cell_extends缩放单位坐标。
+   * 从各种 maybe_update_*_quadrature_points 函数中调用。
    *
-   * Called from the various maybe_update_*_quadrature_points functions.
    */
   void
   transform_quadrature_points(
@@ -325,8 +317,8 @@ private:
     std::vector<Point<dim>> &quadrature_points) const;
 
   /**
-   * Compute the normal vectors if the UpdateFlags of the incoming InternalData
-   * object say that they should be updated.
+   * 如果传入的InternalData对象的UpdateFlags说它们应该被更新，则计算法向量。
+   *
    */
   void
   maybe_update_normal_vectors(
@@ -335,9 +327,8 @@ private:
     std::vector<Tensor<1, dim>> &normal_vectors) const;
 
   /**
-   * Since the Jacobian is constant for this mapping all derivatives of the
-   * Jacobian are identically zero. Fill these quantities with zeros if the
-   * corresponding update flags say that they should be updated.
+   * 由于这个映射的Jacobian是常数，所以Jacobian的所有导数都是相同的零。如果相应的更新标志说它们应该被更新，那么就把这些量填成零。
+   *
    */
   void
   maybe_update_jacobian_derivatives(
@@ -347,8 +338,10 @@ private:
       &output_data) const;
 };
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

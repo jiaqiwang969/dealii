@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/magic_numbers_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2018 by the deal.II authors
@@ -44,5 +43,3 @@ const unsigned int mn_persistent_tria_flags_end   = 0xa201;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

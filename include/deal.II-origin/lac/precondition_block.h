@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/precondition_block_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -29,53 +30,32 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*! @addtogroup Preconditioners
- *@{
- */
+/*!   @addtogroup  先决条件  @{  。
+
+ 
+* */
 
 
 /**
- * Base class for actual block preconditioners. This class assumes the
- * <tt>MatrixType</tt> consisting of invertible blocks of @p blocksize on the
- * diagonal and provides the inversion of the diagonal blocks of the matrix.
- * It is not necessary for this class that the matrix be block diagonal;
- * rather, it applies to matrices of arbitrary structure with the minimal
- * property of having invertible blocks on the diagonal. Still the matrix must
- * have access to single matrix entries. Therefore, BlockMatrixArray and
- * similar classes are not a possible matrix class template arguments.
+ * 实际块状预处理程序的基类。该类假设<tt>MatrixType</tt>由对角线上的
+ * @p blocksize
+ * 的可逆块组成，并提供矩阵对角线块的反转。对于这个类来说，矩阵不一定是块状对角线；相反，它适用于任意结构的矩阵，其最小属性是在对角线上有可逆块。但是，该矩阵必须能够访问单个矩阵条目。因此，BlockMatrixArray和类似的类不是一个可能的矩阵类模板参数。
+ * 这个类所使用的块状矩阵结构是给定的，例如，对于传输方程的DG方法。对于一个下游的编号，矩阵甚至已经得到了一个块状的左下角矩阵结构，也就是说，矩阵在对角线块的上方是空的。
  *
- * The block matrix structure used by this class is given, e.g., for the DG
- * method for the transport equation. For a downstream numbering the matrices
- * even have got a block lower left matrix structure, i.e. the matrices are
- * empty above the diagonal blocks.
  *
- * @note This class is intended to be used for matrices whose structure is
- * given by local contributions from disjoint cells, such as for DG methods.
- * It is not intended for problems where the block structure results from
- * different physical variables such as in the Stokes equations considered in
- * step-22.
+ * @note
+ * 该类旨在用于矩阵，其结构是由来自不相交的单元的局部贡献给出的，例如用于DG方法。它不适用于块结构由不同的物理变量产生的问题，如
+ * step-22 中考虑的斯托克斯方程。
+ * 对于所有对角线块上方和下方为空的矩阵（即所有块状对角线矩阵），
+ * @p BlockJacobi
+ * 预调节器是一个直接求解器。对于所有只在对角线块上方为空的矩阵（例如通过下游编号的DG方法得到的矩阵），
+ * @p BlockSOR 是一个直接求解器。 @p PreconditionBlock
+ * 的第一个实现是假设矩阵有相同块大小的块。如果需要的话，矩阵内不同的块大小仍然必须被实现。
+ * 第一个模板参数表示稀疏矩阵中的数字表示类型，第二个表示数字表示类型，在这个类中通过<tt>invert_diagblocks()</tt>存储倒置的对角块矩阵。如果你不想把块反转作为一个精确的求解器，而是作为一个预处理器，你可能想用比原始矩阵更低的精度来存储反转的块；例如，<tt>number==double,
+ * inverse_type=float</tt>可能是一个可行的选择。
+ * @see   @ref GlossBlockLA  "块（线性代数）"
  *
- * For all matrices that are empty above and below the diagonal blocks (i.e.
- * for all block diagonal matrices) the @p BlockJacobi preconditioner is a
- * direct solver. For all matrices that are empty only above the diagonal
- * blocks (e.g. the matrices one gets by the DG method with downstream
- * numbering) @p BlockSOR is a direct solver.
  *
- * This first implementation of the @p PreconditionBlock assumes the matrix
- * has blocks each of the same block size. Varying block sizes within the
- * matrix must still be implemented if needed.
- *
- * The first template parameter denotes the type of number representation in
- * the sparse matrix, the second denotes the type of number representation in
- * which the inverted diagonal block matrices are stored within this class by
- * <tt>invert_diagblocks()</tt>. If you don't want to use the block inversion
- * as an exact solver, but rather as a preconditioner, you may probably want
- * to store the inverted blocks with less accuracy than the original matrix;
- * for example, <tt>number==double, inverse_type=float</tt> might be a viable
- * choice.
- *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <typename MatrixType,
           typename inverse_type = typename MatrixType::value_type>
@@ -84,30 +64,34 @@ class PreconditionBlock : public virtual Subscriptor,
 {
 private:
   /**
-   * Define number type of matrix.
+   * 定义矩阵的数字类型。
+   *
    */
   using number = typename MatrixType::value_type;
 
   /**
-   * Value type for inverse matrices.
+   * 逆矩阵的数值类型。
+   *
    */
   using value_type = inverse_type;
 
 public:
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Parameters for block preconditioners.
+   * 块状预处理程序的参数。
+   *
    */
   class AdditionalData
   {
   public:
     /**
-     * Constructor. Block size must be given since there is no reasonable
-     * default parameter.
+     * 构造器。由于没有合理的默认参数，必须给出块的大小。
+     *
      */
     AdditionalData(const size_type block_size,
                    const double    relaxation      = 1.,
@@ -115,69 +99,72 @@ public:
                    const bool      same_diagonal   = false);
 
     /**
-     * Relaxation parameter.
+     * 松弛参数。
+     *
      */
     double relaxation;
 
     /**
-     * Block size.
+     * 区块大小。
+     *
      */
     size_type block_size;
 
     /**
-     * Invert diagonal during initialization.
+     * 在初始化过程中反转对角线。
+     *
      */
     bool invert_diagonal;
 
     /**
-     * Assume all diagonal blocks are equal to save memory.
+     * 假设所有的对角线块都相等以节省内存。
+     *
      */
     bool same_diagonal;
     /**
-     * Choose the inversion method for the blocks.
+     * 选择块的反转方法。
+     *
      */
     typename PreconditionBlockBase<inverse_type>::Inversion inversion;
 
     /**
-     * The if #inversion is SVD, the threshold below which a singular value
-     * will be considered zero and thus not inverted. This parameter is used
-     * in the call to LAPACKFullMatrix::compute_inverse_svd().
+     * 如果#反转是SVD，那么低于这个阈值的奇异值将被视为零，从而不被反转。这个参数在调用
+     * LAPACKFullMatrix::compute_inverse_svd(). 时使用。
+     *
      */
     double threshold;
   };
 
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   PreconditionBlock(bool store_diagonals = false);
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   ~PreconditionBlock() override = default;
 
   /**
-   * Initialize matrix and block size.  We store the matrix and the block size
-   * in the preconditioner object. In a second step, the inverses of the
-   * diagonal blocks may be computed.
+   * 初始化矩阵和块大小。
+   * 我们将矩阵和块的大小存储在预处理对象中。在第二步中，可以计算对角线块的倒数。
+   * 此外，可以提供派生类的松弛参数。
    *
-   * Additionally, a relaxation parameter for derived classes may be provided.
    */
   void
   initialize(const MatrixType &A, const AdditionalData parameters);
 
 protected:
   /**
-   * Initialize matrix and block size for permuted preconditioning.
-   * Additionally to the parameters of the other initialize() function, we
-   * hand over two index vectors with the permutation and its inverse. For the
-   * meaning of these vectors see PreconditionBlockSOR.
+   * 初始化矩阵和块的大小，以便进行渗透式预处理。
+   * 除了其他initialize()函数的参数外，我们还交出两个索引向量，其中包括包络和它的逆向。关于这些向量的含义，见PreconditionBlockSOR。
+   * 在第二步中，可以计算对角线块的倒数。
+   * 请确保你使用invert_permuted_diagblocks()来产生一致的数据。
+   * 此外，还可以为派生类提供一个放松参数。
    *
-   * In a second step, the inverses of the diagonal blocks may be computed.
-   * Make sure you use invert_permuted_diagblocks() to yield consistent data.
-   *
-   * Additionally, a relaxation parameter for derived classes may be provided.
    */
   void
   initialize(const MatrixType &            A,
@@ -186,88 +173,73 @@ protected:
              const AdditionalData          parameters);
 
   /**
-   * Set either the permutation of rows or the permutation of blocks,
-   * depending on the size of the vector.
+   * 根据向量的大小，设置行的permutation或者块的permutation。
+   * 如果置换向量的大小等于线性系统的维度，则假定行是单独置换的。在这种情况下，set_permutation()必须在initialize()之前调用，因为对角线块是由矩阵的permuted条目建立的。
+   * 如果置换向量的大小不等于系统的维度，对角线块将从未置换的条目中计算出来。
+   * 相反，松弛方法step()和Tstep()会按照排列向量给出的顺序应用这些块。如果这个向量的长度不等于块的数量，它们将抛出一个异常。
+   * @note
+   * 块的排列只能应用于松弛运算符step()和Tstep()，不能应用于预处理运算符vmult()和Tvmult()。
+   * @note
+   * 在initialize()之前调用set_permutation()是安全的，而其他顺序只允许用于块的permutation。
    *
-   * If the size of the permutation vectors is equal to the dimension of the
-   * linear system, it is assumed that rows are permuted individually. In this
-   * case, set_permutation() must be called before initialize(), since the
-   * diagonal blocks are built from the permuted entries of the matrix.
-   *
-   * If the size of the permutation vector is not equal to the dimension of
-   * the system, the diagonal blocks are computed from the unpermuted entries.
-   * Instead, the relaxation methods step() and Tstep() are executed applying
-   * the blocks in the order given by the permutation vector. They will throw
-   * an exception if length of this vector is not equal to the number of
-   * blocks.
-   *
-   * @note Permutation of blocks can only be applied to the relaxation
-   * operators step() and Tstep(), not to the preconditioning operators
-   * vmult() and Tvmult().
-   *
-   * @note It is safe to call set_permutation() before initialize(), while the
-   * other order is only admissible for block permutation.
    */
   void
   set_permutation(const std::vector<size_type> &permutation,
                   const std::vector<size_type> &inverse_permutation);
 
   /**
-   * Replacement of invert_diagblocks() for permuted preconditioning.
+   * 替换invert_diagblocks()用于包络预处理。
+   *
    */
   void
   invert_permuted_diagblocks();
 
 public:
   /**
-   * Deletes the inverse diagonal block matrices if existent, sets the
-   * blocksize to 0, hence leaves the class in the state that it had directly
-   * after calling the constructor.
+   * 如果存在的话，删除反对角线块矩阵，将块大小设置为0，从而使该类处于调用构造函数后的直接状态。
+   *
    */
   void
   clear();
 
   /**
-   * Check whether the object is empty.
+   * 检查对象是否为空。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Read-only access to entries. This function is only possible if the
-   * inverse diagonal blocks are stored.
+   * 对条目进行只读访问。这个功能只有在反对角线块被存储的情况下才能实现。
+   *
    */
   value_type
   el(size_type i, size_type j) const;
 
   /**
-   * Stores the inverse of the diagonal blocks in @p inverse. This costs some
-   * additional memory - for DG methods about 1/3 (for double inverses) or 1/6
-   * (for float inverses) of that used for the matrix - but it makes the
-   * preconditioning much faster.
+   * 在 @p inverse. 中存储对角线块的倒数
+   * 这需要花费一些额外的内存
    *
-   * It is not allowed to call this function twice (will produce an error)
-   * before a call of <tt>clear(...)</tt>  because at the second time there
-   * already exist the inverse matrices.
+   * - 对于DG方法来说，大约是用于矩阵的1/3（用于双倍反演）或1/6（用于浮点反演）。
    *
-   * After this function is called, the lock on the matrix given through the
-   * @p use_matrix function is released, i.e. you may overwrite of delete it.
-   * You may want to do this in case you use this matrix to precondition
-   * another matrix.
+   * 但它使预处理的速度大大加快。
+   * 在调用<tt>clear(...)</tt>之前，不允许两次调用这个函数（会产生一个错误），因为在第二次调用时，已经存在逆矩阵。
+   * 在这个函数被调用后，通过 @p use_matrix
+   * 函数给出的矩阵的锁被释放，也就是说，你可以覆盖或删除它。
+   * 你可能想这样做，以防你用这个矩阵作为另一个矩阵的前提条件。
+   *
    */
   void
   invert_diagblocks();
 
   /**
-   * Perform one block relaxation step in forward numbering.
+   * 在正向编号中执行一个块状松弛步骤。    根据参数 @p
+   * dst 和 @p pref,
+   * ，这将执行一个SOR步骤（都引用同一个向量）或一个Jacobi步骤（都是不同的向量）。对于雅可比步骤，调用函数必须将
+   * @p dst 复制到 @p pref 之后。
+   * @note
+   * 如果设置了一个包络，它将自动被这个函数所尊重。
    *
-   * Depending on the arguments @p dst and @p pref, this performs an SOR step
-   * (both reference the same vector) of a Jacobi step (both different
-   * vectors). For the Jacobi step, the calling function must copy @p dst to
-   * @p pref after this.
-   *
-   * @note If a permutation is set, it is automatically honored by this
-   * function.
    */
   template <typename number2>
   void
@@ -277,15 +249,13 @@ public:
                const bool             transpose_diagonal) const;
 
   /**
-   * Perform one block relaxation step in backward numbering.
+   * 在后退编号中执行一个块状放松步骤。    根据参数 @p
+   * dst 和 @p pref,
+   * ，这将执行一个SOR步骤（都引用同一个向量）的雅可比步骤（都是不同的向量）。对于雅可比步骤，调用函数必须将
+   * @p dst 复制到 @p pref 之后。
+   * @note
+   * 如果设置了一个包络，它将自动被这个函数所尊重。
    *
-   * Depending on the arguments @p dst and @p pref, this performs an SOR step
-   * (both reference the same vector) of a Jacobi step (both different
-   * vectors). For the Jacobi step, the calling function must copy @p dst to
-   * @p pref after this.
-   *
-   * @note If a permutation is set, it is automatically honored by this
-   * function.
    */
   template <typename number2>
   void
@@ -296,26 +266,27 @@ public:
 
 
   /**
-   * Return the size of the blocks.
+   * 返回块的大小。
+   *
    */
   size_type
   block_size() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况 @{ 。
+   *
    */
 
   /**
-   * For non-overlapping block preconditioners, the block size must divide the
-   * matrix size. If not, this exception gets thrown.
+   * 对于非重叠块预处理，块大小必须除以矩阵大小。如果不是，就会抛出这个异常。
+   *
    */
   DeclException2(ExcWrongBlockSize,
                  int,
@@ -324,7 +295,8 @@ public:
                  << arg2 << " do not match.");
 
   /**
-   * Exception
+   * 异常
+   *
    */
   DeclException0(ExcInverseMatricesAlreadyExist);
 
@@ -332,30 +304,34 @@ public:
 
 protected:
   /**
-   * Size of the blocks. Each diagonal block is assumed to be of the same
-   * size.
+   * 块的大小。每个对角线块都被假定为相同的大小。
+   *
    */
   size_type blocksize;
 
   /**
-   * Pointer to the matrix. Make sure that the matrix exists as long as this
-   * class needs it, i.e. until calling @p invert_diagblocks, or (if the
-   * inverse matrices should not be stored) until the last call of the
-   * preconditoining @p vmult function of the derived classes.
+   * 指向矩阵的指针。确保只要这个类需要，矩阵就一直存在，即直到调用
+   * @p invert_diagblocks,
+   * 或（如果不应该存储逆矩阵）直到最后一次调用派生类的pre-onditoining
+   * @p vmult 函数。
+   *
    */
   SmartPointer<const MatrixType, PreconditionBlock<MatrixType, inverse_type>> A;
   /**
-   * Relaxation parameter to be used by derived classes.
+   * 派生类要使用的松弛参数。
+   *
    */
   double relaxation;
 
   /**
-   * The permutation vector
+   * 包容向量
+   *
    */
   std::vector<size_type> permutation;
 
   /**
-   * The inverse permutation vector
+   * 反向的包络向量
+   *
    */
   std::vector<size_type> inverse_permutation;
 };
@@ -363,15 +339,16 @@ protected:
 
 
 /**
- * Block Jacobi preconditioning. See PreconditionBlock for requirements on the
- * matrix. This class satisfies the
- * @ref ConceptRelaxationType "relaxation concept".
+ * 块状雅可比预处理。对矩阵的要求见PreconditionBlock。该类满足 @ref ConceptRelaxationType 的 "放松概念"
+ * 。
  *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
+ *
+ * @note
+ * 这个模板的实例化提供给<tt> @<float@> 和 @<double@></tt>;
+ * 其他人可以在应用程序中生成（见手册中的 @ref
+ * Instantiations 部分）。
+ *
+ *
  */
 template <typename MatrixType,
           typename inverse_type = typename MatrixType::value_type>
@@ -381,76 +358,88 @@ class PreconditionBlockJacobi
 {
 private:
   /**
-   * Define number type of matrix.
+   * 定义矩阵的数字类型。
+   *
    */
   using number = typename MatrixType::value_type;
 
 public:
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Standard-conforming iterator.
+   * 符合标准的迭代器。
+   *
    */
   class const_iterator
   {
   private:
     /**
-     * Accessor class for iterators
+     * 迭代器的访问器类
+     *
      */
     class Accessor
     {
     public:
       /**
-       * Constructor. Since we use accessors only for read access, a const
-       * matrix pointer is sufficient.
+       * 构造器。因为我们只使用访问器进行读取访问，一个常数矩阵指针就足够了。
+       *
        */
       Accessor(const PreconditionBlockJacobi<MatrixType, inverse_type> *matrix,
                const size_type                                          row);
 
       /**
-       * Row number of the element represented by this object.
+       * 这个对象所代表的元素的行号。
+       *
        */
       size_type
       row() const;
 
       /**
-       * Column number of the element represented by this object.
+       * 这个对象所代表的元素的列号。
+       *
        */
       size_type
       column() const;
 
       /**
-       * Value of this matrix entry.
+       * 这个矩阵条目的值。
+       *
        */
       inverse_type
       value() const;
 
     protected:
       /**
-       * The matrix accessed.
+       * 访问的矩阵。
+       *
        */
       const PreconditionBlockJacobi<MatrixType, inverse_type> *matrix;
 
       /**
-       * Save block size here for further reference.
+       * 在这里保存块的大小，以便进一步参考。
+       *
        */
       size_type bs;
 
       /**
-       * Current block number.
+       * 当前的区块编号。
+       *
        */
       size_type a_block;
 
       /**
-       * Iterator inside block.
+       * 块内的迭代器。
+       *
        */
       typename FullMatrix<inverse_type>::const_iterator b_iterator;
 
       /**
-       * End of current block.
+       * 当前块的结束。
+       *
        */
       typename FullMatrix<inverse_type>::const_iterator b_end;
 
@@ -460,55 +449,63 @@ public:
 
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     const_iterator(
       const PreconditionBlockJacobi<MatrixType, inverse_type> *matrix,
       const size_type                                          row);
 
     /**
-     * Prefix increment.
+     * 前缀增量。
+     *
      */
     const_iterator &
     operator++();
 
     /**
-     * Dereferencing operator.
+     * 去引用操作符。
+     *
      */
     const Accessor &operator*() const;
 
     /**
-     * Dereferencing operator.
+     * 解除引用操作符。
+     *
      */
     const Accessor *operator->() const;
 
     /**
-     * Comparison. True, if both iterators point to the same matrix position.
+     * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+     *
      */
     bool
     operator==(const const_iterator &) const;
     /**
-     * Inverse of <tt>==</tt>.
+     * <tt>==</tt>的倒数。
+     *
      */
     bool
     operator!=(const const_iterator &) const;
 
     /**
-     * Comparison operator. Result is true if either the first row number is
-     * smaller or if the row numbers are equal and the first index is smaller.
+     * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
+     *
      */
     bool
     operator<(const const_iterator &) const;
 
   private:
     /**
-     * Store an object of the accessor class.
+     * 存储一个访问器类的对象。
+     *
      */
     Accessor accessor;
   };
 
   /**
-   * import functions from private base class
+   * 从私有基类中导入函数
+   *
    */
   using typename PreconditionBlock<MatrixType, inverse_type>::AdditionalData;
   using PreconditionBlock<MatrixType, inverse_type>::initialize;
@@ -525,74 +522,78 @@ public:
   using PreconditionBlock<MatrixType, inverse_type>::set_permutation;
 
   /**
-   * Execute block Jacobi preconditioning.
+   * 执行块状雅可比预处理。
+   * 如果存在逆矩阵，该函数将自动使用逆矩阵，如果不存在，那么BlockJacobi将需要很多时间在每个预处理步骤中反转对角线块矩阵。
    *
-   * This function will automatically use the inverse matrices if they exist,
-   * if not then BlockJacobi will need much time inverting the diagonal block
-   * matrices in each preconditioning step.
    */
   template <typename number2>
   void
   vmult(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Same as @p vmult, since Jacobi is symmetric.
+   * 与 @p vmult, 相同，因为雅可比是对称的。
+   *
    */
   template <typename number2>
   void
   Tvmult(Vector<number2> &, const Vector<number2> &) const;
   /**
-   * Execute block Jacobi preconditioning, adding to @p dst.
+   * 执行块状雅可比预处理，添加到 @p dst.
+   * 这个函数将自动使用反矩阵（如果存在），如果没有，那么BlockJacobi将需要很多时间在每个预处理步骤中反转对角块状矩阵。
    *
-   * This function will automatically use the inverse matrices if they exist,
-   * if not then BlockJacobi will need much time inverting the diagonal block
-   * matrices in each preconditioning step.
    */
   template <typename number2>
   void
   vmult_add(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Same as @p vmult_add, since Jacobi is symmetric.
+   * 与 @p vmult_add, 相同，因为雅可比是对称的。
+   *
    */
   template <typename number2>
   void
   Tvmult_add(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Perform one step of the Jacobi iteration.
+   * 执行雅可比迭代的一个步骤。
+   *
    */
   template <typename number2>
   void
   step(Vector<number2> &dst, const Vector<number2> &rhs) const;
 
   /**
-   * Perform one step of the Jacobi iteration.
+   * 执行雅可比迭代的一个步骤。
+   *
    */
   template <typename number2>
   void
   Tstep(Vector<number2> &dst, const Vector<number2> &rhs) const;
 
   /**
-   * Iterator starting at the first entry.
+   * 迭代器从第一条开始。
+   *
    */
   const_iterator
   begin() const;
 
   /**
-   * Final iterator.
+   * 最后的迭代器。
+   *
    */
   const_iterator
   end() const;
 
   /**
-   * Iterator starting at the first entry of row @p r.
+   * 从第 @p r. 行的第一个条目开始的迭代器。
+   *
    */
   const_iterator
   begin(const size_type r) const;
 
   /**
-   * Final iterator of row @p r.
+   * 行 @p r. 的最终迭代器
+   *
    */
   const_iterator
   end(const size_type r) const;
@@ -600,10 +601,9 @@ public:
 
 private:
   /**
-   * Actual implementation of the preconditioner.
+   * 预处理程序的实际实现。    根据 @p adding,
+   * ，预处理的结果被添加到目标向量中。
    *
-   * Depending on @p adding, the result of preconditioning is added to the
-   * destination vector.
    */
   template <typename number2>
   void
@@ -616,37 +616,24 @@ private:
 
 
 /**
- * Block SOR preconditioning. This class satisfies the
- * @ref ConceptRelaxationType "relaxation concept".
- *
- * The functions @p vmult and @p Tvmult execute a (transposed) block-SOR step,
- * based on the blocks in PreconditionBlock. The elements outside the diagonal
- * blocks may be distributed arbitrarily.
- *
- * See PreconditionBlock for requirements on the matrix. The blocks used in
- * this class must be contiguous and non-overlapping. An overlapping Schwarz
- * relaxation method can be found in RelaxationBlockSOR; that class does not
- * offer preconditioning, though.
- *
+ * 块状SOR预处理。该类满足了 @ref ConceptRelaxationType 的 "放松概念"
+ * 。 函数 @p vmult 和 @p Tvmult
+ * 根据PreconditionBlock中的块，执行一个（转置的）块-SOR步骤。对角线块之外的元素可以任意分布。
+ * 对矩阵的要求见PreconditionBlock。该类中使用的块必须是连续的和不重叠的。一个重叠的施瓦兹松弛方法可以在RelaxationBlockSOR中找到；不过该类不提供预处理。
  * <h3>Permutations</h3>
+ * 可选地，源向量的条目可以按照#set_permutation设置的包络向量中的索引顺序来处理（或者对于Tvmult()来说是相反顺序）。反向排列用于将元素存储回这个向量中。在调用set_permutation()的非零大小的向量后，这个功能会自动启用。
  *
- * Optionally, the entries of the source vector can be treated in the order of
- * the indices in the permutation vector set by #set_permutation (or the
- * opposite order for Tvmult()). The inverse permutation is used for storing
- * elements back into this vector. This functionality is automatically enabled
- * after a call to set_permutation() with vectors of nonzero size.
  *
- * @note The diagonal blocks, like the matrix, are not permuted! Therefore,
- * the permutation vector can only swap whole blocks. It may not change the
- * order inside blocks or swap single indices between blocks.
- *
+ * @note  对角线块，就像矩阵一样，是不被置换的!
+ * 因此，互换向量只能交换整个块。它不能改变块内部的顺序或交换块之间的单个索引。
  * <h3>Instantiations</h3>
  *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
+ * @note
+ * 该模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
+ * 其他的可以在应用程序中生成（见手册中的 @ref
+ * Instantiations 部分）。
+ *
+ *
  */
 template <typename MatrixType,
           typename inverse_type = typename MatrixType::value_type>
@@ -656,22 +643,26 @@ class PreconditionBlockSOR
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Default constructor.
+   * 默认构造函数。
+   *
    */
   PreconditionBlockSOR();
 
   /**
-   * Define number type of matrix.
+   * 定义矩阵的数字类型。
+   *
    */
   using number = typename MatrixType::value_type;
 
   /**
-   * import types and functions from protected base class.
+   * 从受保护的基类中导入类型和函数。
+   *
    */
   using typename PreconditionBlock<MatrixType, inverse_type>::AdditionalData;
   using PreconditionBlock<MatrixType, inverse_type>::initialize;
@@ -685,68 +676,56 @@ public:
   using PreconditionBlockBase<inverse_type>::log_statistics;
 
   /**
-   * Execute block SOR preconditioning.
+   * 执行块SOR预处理。
+   * 如果存在逆矩阵，该函数将自动使用逆矩阵，如果不存在，那么BlockSOR将在每个预处理步骤中浪费很多时间来反转对角线块矩阵。
+   * 对于对角线块以上为空的矩阵，BlockSOR是一个直接求解器。
    *
-   * This function will automatically use the inverse matrices if they exist,
-   * if not then BlockSOR will waste much time inverting the diagonal block
-   * matrices in each preconditioning step.
-   *
-   * For matrices which are empty above the diagonal blocks BlockSOR is a
-   * direct solver.
    */
   template <typename number2>
   void
   vmult(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Execute block SOR preconditioning.
+   * 执行块SOR预处理。    警告：这个函数执行正常的 @p vmult
+   * ，不加。它存在的原因是BlockMatrixArray默认需要添加版本。另一方面，添加需要一个额外的辅助向量，这并不可取。
+   * @see  vmult
    *
-   * Warning: this function performs normal @p vmult without adding. The
-   * reason for its existence is that BlockMatrixArray requires the adding
-   * version by default. On the other hand, adding requires an additional
-   * auxiliary vector, which is not desirable.
-   *
-   * @see vmult
    */
   template <typename number2>
   void
   vmult_add(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Backward application of vmult().
+   * 向后应用vmult()。
+   * 在目前的实现中，这不是vmult()的转置。它是一个应用于整个矩阵的转置的高斯-赛德尔算法，但是被反转的对角线块没有转置。因此，如果对角线块是对称的，它就是转置的。
    *
-   * In the current implementation, this is not the transpose of vmult(). It
-   * is a transposed Gauss-Seidel algorithm applied to the whole matrix, but
-   * the diagonal blocks being inverted are not transposed. Therefore, it is
-   * the transposed, if the diagonal blocks are symmetric.
    */
   template <typename number2>
   void
   Tvmult(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Execute backward block SOR preconditioning.
+   * 执行后向块SOR预处理。    警告：这个函数执行正常的 @p
+   * vmult
+   * ，不加。它存在的原因是BlockMatrixArray默认需要添加版本。另一方面，添加需要一个额外的辅助向量，这并不可取。
+   * @see  vmult
    *
-   * Warning: this function performs normal @p vmult without adding. The
-   * reason for its existence is that BlockMatrixArray requires the adding
-   * version by default. On the other hand, adding requires an additional
-   * auxiliary vector, which is not desirable.
-   *
-   * @see vmult
    */
   template <typename number2>
   void
   Tvmult_add(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Perform one step of the SOR iteration.
+   * 执行SOR迭代的一个步骤。
+   *
    */
   template <typename number2>
   void
   step(Vector<number2> &dst, const Vector<number2> &rhs) const;
 
   /**
-   * Perform one step of the transposed SOR iteration.
+   * 执行一步转置的SOR迭代。
+   *
    */
   template <typename number2>
   void
@@ -754,18 +733,16 @@ public:
 
 protected:
   /**
-   * Constructor to be used by PreconditionBlockSSOR.
+   * 由PreconditionBlockSSOR使用的构造函数。
+   *
    */
   PreconditionBlockSOR(bool store);
 
   /**
-   * Implementation of the forward substitution loop called by vmult() and
-   * vmult_add().
+   * 实现由vmult()和vmult_add()调用的正向置换循环。
+   * 如果#permutation是由set_permutation()设置的，它将自动被这个函数遵守。
+   * 参数 @p adding 还没有任何功能。
    *
-   * If a #permutation is set by set_permutation(), it will automatically be
-   * honored by this function.
-   *
-   * The parameter @p adding does not have any function, yet.
    */
   template <typename number2>
   void
@@ -775,13 +752,10 @@ protected:
           const bool adding) const;
 
   /**
-   * Implementation of the backward substitution loop called by Tvmult() and
-   * Tvmult_add().
+   * 实现由Tvmult()和Tvmult_add()调用的后向替换循环。
+   * 如果一个#permutation是由set_permutation()设置的，它将自动被这个函数兑现。
+   * 参数 @p adding 还没有任何功能。
    *
-   * If a #permutation is set by set_permutation(), it will automatically be
-   * honored by this function.
-   *
-   * The parameter @p adding does not have any function, yet.
    */
   template <typename number2>
   void
@@ -793,23 +767,19 @@ protected:
 
 
 /**
- * Block SSOR preconditioning. This class satisfies the
- * @ref ConceptRelaxationType "relaxation concept".
+ * 块状SSOR预处理。该类满足了 @ref ConceptRelaxationType 的 "放松概念"
+ * 。 函数 @p vmult 和 @p Tvmult
+ * 根据PreconditionBlockSOR中的实现，执行一个块-SSOR步骤。
+ * 这个类需要存储对角线块和它们的逆向值。
+ * 关于矩阵的要求见PreconditionBlock。该类中使用的块必须是连续的和不重叠的。一个重叠的施瓦兹松弛方法可以在RelaxationBlockSSOR中找到；不过该类不提供预处理。
  *
- * The functions @p vmult and @p Tvmult execute a block-SSOR step, based on
- * the implementation in PreconditionBlockSOR.  This class requires storage of
- * the diagonal blocks and their inverses.
  *
- * See PreconditionBlock for requirements on the matrix. The blocks used in
- * this class must be contiguous and non-overlapping. An overlapping Schwarz
- * relaxation method can be found in RelaxationBlockSSOR; that class does not
- * offer preconditioning, though.
+ * @note
+ * 这个模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
+ * 其他的可以在应用程序中生成（见手册中 @ref Instantiations
+ * 一节）。
  *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
+ *
  */
 template <typename MatrixType,
           typename inverse_type = typename MatrixType::value_type>
@@ -819,17 +789,20 @@ class PreconditionBlockSSOR
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Define number type of matrix.
+   * 定义矩阵的数字类型。
+   *
    */
   using number = typename MatrixType::value_type;
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   PreconditionBlockSSOR();
 
@@ -841,7 +814,8 @@ public:
   // which we want to keep
   // accessible.
   /**
-   * Make initialization function publicly available.
+   * 使初始化函数公开可用。
+   *
    */
   using PreconditionBlockSOR<MatrixType, inverse_type>::initialize;
   using PreconditionBlockSOR<MatrixType, inverse_type>::clear;
@@ -856,39 +830,40 @@ public:
   using PreconditionBlockSOR<MatrixType, inverse_type>::invert_diagblocks;
 
   /**
-   * Execute block SSOR preconditioning.
+   * 执行块SSOR预处理。
+   * 如果存在逆矩阵，该函数将自动使用逆矩阵，如果不存在，那么BlockSOR将在每个预处理步骤中浪费很多时间来反转对角线块矩阵。
    *
-   * This function will automatically use the inverse matrices if they exist,
-   * if not then BlockSOR will waste much time inverting the diagonal block
-   * matrices in each preconditioning step.
    */
   template <typename number2>
   void
   vmult(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Same as vmult()
+   * 与vmult()相同
+   *
    */
   template <typename number2>
   void
   Tvmult(Vector<number2> &, const Vector<number2> &) const;
 
   /**
-   * Perform one step of the SOR iteration.
+   * 执行SOR迭代的一个步骤。
+   *
    */
   template <typename number2>
   void
   step(Vector<number2> &dst, const Vector<number2> &rhs) const;
 
   /**
-   * Perform one step of the transposed SOR iteration.
+   * 执行一步转置的SOR迭代。
+   *
    */
   template <typename number2>
   void
   Tstep(Vector<number2> &dst, const Vector<number2> &rhs) const;
 };
 
-/*@}*/
+ /*@}*/ 
 //---------------------------------------------------------------------------
 
 #ifndef DOXYGEN
@@ -1118,3 +1093,5 @@ inline
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

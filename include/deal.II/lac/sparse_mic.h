@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/sparse_mic_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -24,74 +23,73 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup  先决条件  @{  。
-
- 
-* */
+/*! @addtogroup Preconditioners
+ *@{
+ */
 
 /**
- * 实现对称矩阵的修正不完全Cholesky（MIC(0)）预处理。该类符合SparseLUDecomposition中的状态和使用规范。
- *
- *  <h3>The decomposition</h3>
- * 让一个对称的、正不定的、稀疏的矩阵 $A$ 的形式为 $A = D
- *
+ * Implementation of the Modified Incomplete Cholesky (MIC(0)) preconditioner
+ * for symmetric matrices. This class conforms to the state and usage
+ * specification in SparseLUDecomposition.
  *
  *
- * - L
+ * <h3>The decomposition</h3>
  *
- * - L^T$ ，其中 $D$ 是 $A$ 的对角线部分， $-L$
- * 是一个严格的下三角形矩阵。矩阵 $A$ 的MIC(0)分解由 $B =
- * (X-L)X^{-1}(X-L^T)$ 定义，其中 $X$ 是一个由条件
- * $\text{rowsum}(A) = \text{rowsum}(B)$ 定义的对角线矩阵。
- *
- *
+ * Let a symmetric, positive-definite, sparse matrix $A$ be in the form $A = D
+ * - L - L^T$, where $D$ is the diagonal part of $A$ and $-L$ is a strictly
+ * lower triangular matrix. The MIC(0) decomposition of the matrix $A$ is
+ * defined by $B = (X-L)X^{-1}(X-L^T)$, where $X$ is a diagonal matrix defined
+ * by the condition $\text{rowsum}(A) = \text{rowsum}(B)$.
  */
 template <typename number>
 class SparseMIC : public SparseLUDecomposition<number>
 {
 public:
   /**
-   * 申报容器大小的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 构造函数。什么都不做，所以你必须在事后有时调用 @p
-   * decompose 。
-   *
+   * Constructor. Does nothing, so you have to call @p decompose sometimes
+   * afterwards.
    */
   SparseMIC();
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~SparseMIC() override;
 
   /**
-   * 删除所有成员变量。将类保留在调用构造函数后的直接状态。
-   *
+   * Deletes all member variables. Leaves the class in the state that it had
+   * directly after calling the constructor
    */
   virtual void
   clear() override;
 
   /**
-   * 使基类中的 @p AdditionalData 类型也能被这个类访问。
-   *
+   * Make the @p AdditionalData type in the base class accessible to this
+   * class as well.
    */
   using AdditionalData = typename SparseLUDecomposition<number>::AdditionalData;
 
   /**
-   * 对给定的矩阵进行不完全的LU因子化。
-   * 这个函数需要在这个类的对象被用作预调节器之前被调用。
-   * 关于可能的参数的更多细节，请参阅SparseLUDecomposition的类文件和
-   * @p  SparseLUDecomposition::AdditionalData 类的文件。    根据 @p
-   * parameters,
-   * ，该函数创建一个新的SparsityPattern，或保持以前的稀疏度，或采用用户给定的稀疏度，以
-   * @p data. 然后，该函数执行MIC分解。
-   * 在这个函数被调用后，预处理程序就可以使用了。
+   * Perform the incomplete LU factorization of the given matrix.
    *
+   * This function needs to be called before an object of this class is used
+   * as preconditioner.
+   *
+   * For more details about possible parameters, see the class documentation
+   * of SparseLUDecomposition and the documentation of the @p
+   * SparseLUDecomposition::AdditionalData class.
+   *
+   * According to the @p parameters, this function creates a new
+   * SparsityPattern or keeps the previous sparsity or takes the sparsity
+   * given by the user to @p data. Then, this function performs the MIC
+   * decomposition.
+   *
+   * After this function is called the preconditioner is ready to be used.
    */
   template <typename somenumber>
   void
@@ -99,54 +97,52 @@ public:
              const AdditionalData &          parameters = AdditionalData());
 
   /**
-   * 应用不完全分解，即做一个前向-后向步骤
-   * $dst=(LU)^{-1}src$  。    在调用此函数之前，先调用 @p
-   * initialize 。
+   * Apply the incomplete decomposition, i.e. do one forward-backward step
+   * $dst=(LU)^{-1}src$.
    *
+   * Call @p initialize before calling this function.
    */
   template <typename somenumber>
   void
   vmult(Vector<somenumber> &dst, const Vector<somenumber> &src) const;
 
   /**
-   * 应用不完全分解的转置，即做一个向前-向后的步骤
-   * $dst=(LU)^{-1}src$  。    在调用此函数之前调用 @p initialize
-   * 。
-   * @note  这个函数还没有被实现
+   * Apply the transpose of the incomplete decomposition, i.e. do one forward-
+   * backward step $dst=(LU)^{-1}src$.
    *
+   * Call @p initialize before calling this function.
+   *
+   * @note This function has not yet been implemented
    */
   template <typename somenumber>
   void
   Tvmult(Vector<somenumber> &dst, const Vector<somenumber> &src) const;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const override;
 
   /**
-   * @addtogroup  异常情况  @{
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcStrengthenDiagonalTooSmall);
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcInvalidStrengthening,
                  double,
                  << "The strengthening parameter " << arg1
                  << " is not greater or equal than zero!");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException2(ExcDecompositionNotStable,
                  int,
@@ -157,36 +153,30 @@ public:
   //@}
 private:
   /**
-   * 计算的对角线的值。
-   *
+   * Values of the computed diagonal.
    */
   std::vector<number> diag;
 
   /**
-   * 对角线的倒数：预先计算以加快vmult。
-   *
+   * Inverses of the diagonal: precomputed for faster vmult.
    */
   std::vector<number> inv_diag;
 
   /**
-   * 计算的 "内部和
-   * "的值，即位于对角线右侧的元素的每行之和。
-   *
+   * Values of the computed "inner sums", i.e. per-row sums of the elements
+   * laying on the right side of the diagonal.
    */
   std::vector<number> inner_sums;
 
   /**
-   * 计算每行的 "内部和"。
-   *
+   * Compute the row-th "inner sum".
    */
   number
   get_rowsum(const size_type row) const;
 };
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_
-
-

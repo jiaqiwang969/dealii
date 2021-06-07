@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/function_cspline_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -63,23 +64,20 @@ namespace Functions
     << arg1 << " is not in [" << arg2 << ";" << arg3 << "].");
 
   /**
-   * The cubic spline function using GNU Scientific Library.
-   * The resulting curve is piecewise cubic on each interval, with matching
-   * first and second derivatives at the supplied data-points. The second
-   * derivative is chosen to be zero at the first point and last point.
-   *
-   * @note This function is only implemented for dim==1 .
-   *
+   * 使用GNU科学库的立方样条曲线函数。
+   * 产生的曲线在每个区间上都是片状立体的，在提供的数据点上有匹配的第一和第二导数。第二导数在第一点和最后一点被选择为零。
+   * @note  这个函数只在dim==1时实现。
    * @ingroup functions
+   *
    */
   template <int dim>
   class CSpline : public Function<dim>
   {
   public:
     /**
-     * Constructor which should be provided with a set of points at which
-     * interpolation is to be done @p interpolation_points and a set of function
-     * values @p interpolation_values .
+     * 构造函数，应提供一组要进行插值的点  @p
+     * interpolation_points  和一组函数值  @p interpolation_values  。
+     *
      */
     CSpline(const std::vector<double> &interpolation_points,
             const std::vector<double> &interpolation_values);
@@ -101,34 +99,40 @@ namespace Functions
               const unsigned int component = 0) const override;
 
     /**
-     * Return an estimate for the memory consumption, in bytes, of this object.
+     * 返回这个对象的内存消耗估计值，以字节为单位。
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
   private:
     /**
-     * Points at which interpolation is provided
+     * 提供插值的点
+     *
      */
     const std::vector<double> interpolation_points;
 
     /**
-     * Values of the function at interpolation points
+     * 函数在插值点的值
+     *
      */
     const std::vector<double> interpolation_values;
 
     /**
-     * GSL accelerator for spline interpolation
+     * 用于花键插值的GSL加速器
+     *
      */
     std::unique_ptr<gsl_interp_accel, void (*)(gsl_interp_accel *)> acc;
 
     /**
-     * GSL cubic spline interpolator
+     * GSL三次样条插值器
+     *
      */
     std::unique_ptr<gsl_spline, void (*)(gsl_spline *)> cspline;
 
     /**
-     * A mutex for accelerator object.
+     * 一个用于加速器对象的突变器。
+     *
      */
     mutable Threads::Mutex acc_mutex;
   };
@@ -139,3 +143,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

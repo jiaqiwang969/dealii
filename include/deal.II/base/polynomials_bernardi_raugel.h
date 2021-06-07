@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/polynomials_bernardi_raugel_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -34,64 +33,84 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 这个类实现了Bernardi-Raugel多项式，类似于Christine
- * Bernardi和Geneviève Raugel在1985年发表的<i>Mathematics of
- * Computation</i>论文中的描述。
- * Bernardi-Raugel多项式最初被定义为通过增加气泡函数来丰富Stokes问题的简单网格上的
- * $(P_1)^d$ 元素，产生一个无锁定的有限元，它是 $(P_2)^d$
- * 元素的一个子集。这个实现是对 $(Q_1)^d$
- * 元素的丰富，它是 $(Q_2)^d$
- * 元素的一个子集，用于四边形和六面体网格。 $BR_1$
- * 气泡函数被定义为在面 $e_i$ 的中心有量级1和面
- * $\mathbf{n}_i$
- * 的法线方向，而在所有其他顶点和面有量级0。排序与GeometryInfo中的面的编号一致。矢量
- * $\mathbf{n}_i$
- * 指向正轴方向，不一定是元素的法线，以便在各边上保持一致的方向。
- * <dl>  <dt>二维气泡函数（按顺序）  <dd>   $x=0$  边。
- * $\mathbf{p}_1 = \mathbf{n}_1 (1-x)(y)(1-y)$ $x=1$  边缘。  $\mathbf{p}_2
- * = \mathbf{n}_2 (x)(y)(1-y)$ $y=0$  边缘。  $\mathbf{p}_3 = \mathbf{n}_3
- * (x)(1-x)(1-y)$ $y=1$  边缘。  $\mathbf{p}_4 = \mathbf{n}_4 (x)(1-x)(y)$
- * <dt>三维气泡函数（按顺序）  <dd>   $x=0$  边缘。
- * $\mathbf{p}_1 = \mathbf{n}_1 (1-x)(y)(1-y)(z)(1-z)$ $x=1$  边缘。
- * $\mathbf{p}_2 = \mathbf{n}_2 (x)(y)(1-y)(z)(1-z)$ $y=0$  边缘。
- * $\mathbf{p}_3 = \mathbf{n}_3 (x)(1-x)(1-y)(z)(1-z)$ $y=1$  边缘。
- * $\mathbf{p}_4 = \mathbf{n}_4 (x)(1-x)(y)(z)(1-z)$ $z=0$  边缘。
- * $\mathbf{p}_5 = \mathbf{n}_5 (x)(1-x)(y)(1-y)(1-z)$ $z=1$  边缘。
- * $\mathbf{p}_6 = \mathbf{n}_6 (x)(1-x)(y)(1-y)(z)$ </dl> 那么 $BR_1(E)$
- * 多项式在四边形和六面体上的定义是 $BR_1(E) = Q_1(E) \oplus
- * \mbox{span}\{\mathbf{p}_i, i=1,...,2d\}$  。
+ * This class implements the Bernardi-Raugel polynomials similarly to the
+ * description in the <i>Mathematics of Computation</i> paper from 1985 by
+ * Christine Bernardi and Geneviève Raugel.
  *
+ * The Bernardi-Raugel polynomials are originally defined as an enrichment
+ * of the $(P_1)^d$ elements on simplicial meshes for Stokes problems by the
+ * addition of bubble functions, yielding a locking-free finite element which
+ * is a subset of $(P_2)^d$ elements. This implementation is an enrichment of
+ * $(Q_1)^d$ elements which is a subset of $(Q_2)^d$ elements for
+ * quadrilateral and hexahedral meshes.
+ *
+ * The $BR_1$ bubble functions are defined to have magnitude 1 at the center
+ * of face $e_i$ and direction $\mathbf{n}_i$ normal to face $e_i$, and
+ * magnitude 0 on all other vertices and faces. Ordering is consistent with
+ * the face numbering in GeometryInfo. The vector $\mathbf{n}_i$ points in
+ * the positive axis direction and not necessarily normal to the element for
+ * consistent orientation across edges.
+ *<dl>
+ *   <dt> 2D bubble functions (in order)
+ *   <dd> $x=0$ edge: $\mathbf{p}_1 = \mathbf{n}_1 (1-x)(y)(1-y)$
+ *
+ *        $x=1$ edge: $\mathbf{p}_2 = \mathbf{n}_2 (x)(y)(1-y)$
+ *
+ *        $y=0$ edge: $\mathbf{p}_3 = \mathbf{n}_3 (x)(1-x)(1-y)$
+ *
+ *        $y=1$ edge: $\mathbf{p}_4 = \mathbf{n}_4 (x)(1-x)(y)$
+ *
+ *   <dt> 3D bubble functions (in order)
+ *   <dd> $x=0$ edge: $\mathbf{p}_1 = \mathbf{n}_1 (1-x)(y)(1-y)(z)(1-z)$
+ *
+ *        $x=1$ edge: $\mathbf{p}_2 = \mathbf{n}_2 (x)(y)(1-y)(z)(1-z)$
+ *
+ *        $y=0$ edge: $\mathbf{p}_3 = \mathbf{n}_3 (x)(1-x)(1-y)(z)(1-z)$
+ *
+ *        $y=1$ edge: $\mathbf{p}_4 = \mathbf{n}_4 (x)(1-x)(y)(z)(1-z)$
+ *
+ *        $z=0$ edge: $\mathbf{p}_5 = \mathbf{n}_5 (x)(1-x)(y)(1-y)(1-z)$
+ *
+ *        $z=1$ edge: $\mathbf{p}_6 = \mathbf{n}_6 (x)(1-x)(y)(1-y)(z)$
+ *
+ *</dl>
+ *
+ * Then the $BR_1(E)$ polynomials are defined on quadrilaterals and hexahedra
+ * by $BR_1(E) = Q_1(E) \oplus \mbox{span}\{\mathbf{p}_i, i=1,...,2d\}$.
  *
  *
  * @ingroup Polynomials
- *
  */
 template <int dim>
 class PolynomialsBernardiRaugel : public TensorPolynomialsBase<dim>
 {
 public:
   /**
-   * 构造函数。创建给定度数的Bernardi-Raugel多项式的所有基函数。
-   * @arg  k
-   * Bernardi-Raugel-空间的度数，目前只限于<tt>k=1</tt>的情况。
+   * Constructor. Creates all basis functions for Bernardi-Raugel polynomials
+   * of given degree.
    *
+   * @arg k The degree of the Bernardi-Raugel-space, which is currently
+   * limited to the case <tt>k=1</tt>.
    */
   PolynomialsBernardiRaugel(const unsigned int k);
 
   /**
-   * 返回空间的名称，即<tt>BernardiRaugel</tt>。
-   *
+   * Return the name of the space, which is <tt>BernardiRaugel</tt>.
    */
   std::string
   name() const override;
 
   /**
-   * 计算每个Bernardi-Raugel多项式在 @p unit_point.
-   * 的值和导数，向量的大小必须是零或者等于<tt>n()</tt>。
-   * 在第一种情况下，该函数将不计算这些值。
-   * 如果你需要所有张量积多项式的值或导数，那么使用这个函数，而不是使用任何<tt>compute_value</tt>,
-   * <tt>compute_grad</tt>或<tt>compute_grad_grad</tt>函数，见下文，在所有张量积多项式上循环。
+   * Compute the value and derivatives of each Bernardi-Raugel
+   * polynomial at @p unit_point.
    *
+   * The size of the vectors must either be zero or equal <tt>n()</tt>.  In
+   * the first case, the function will not compute these values.
+   *
+   * If you need values or derivatives of all tensor product polynomials then
+   * use this function, rather than using any of the <tt>compute_value</tt>,
+   * <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,
+   * in a loop over all tensor product polynomials.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -102,42 +121,45 @@ public:
            std::vector<Tensor<5, dim>> &fourth_derivatives) const override;
 
   /**
-   * 返回空间<tt>BR(degree)</tt>中的多项式的数量，而不需要建立PolynomialsBernardiRaugel的对象。这是由FiniteElement类所要求的。
-   *
+   * Return the number of polynomials in the space <tt>BR(degree)</tt> without
+   * requiring to build an object of PolynomialsBernardiRaugel. This is
+   * required by the FiniteElement classes.
    */
   static unsigned int
   n_polynomials(const unsigned int k);
 
   /**
-   * @copydoc   TensorPolynomialsBase::clone() .
-   *
+   * @copydoc TensorPolynomialsBase::clone()
    */
   virtual std::unique_ptr<TensorPolynomialsBase<dim>>
   clone() const override;
 
 private:
   /**
-   * 一个代表Q函数的多项式空间的对象，通过这些函数与相应的单位ijk向量的外积形成<tt>BR</tt>多项式。
-   *
+   * An object representing the polynomial space of Q
+   * functions which forms the <tt>BR</tt> polynomials through
+   * outer products of these with the corresponding unit ijk
+   * vectors.
    */
   const AnisotropicPolynomials<dim> polynomial_space_Q;
 
   /**
-   * 一个代表泡沫函数的多项式空间的对象，通过这些函数与相应法线的外积形成<tt>BR</tt>多项式。
-   *
+   * An object representing the polynomial space of bubble
+   * functions which forms the <tt>BR</tt> polynomials through
+   * outer products of these with the corresponding normals.
    */
   const AnisotropicPolynomials<dim> polynomial_space_bubble;
 
   /**
-   * 一个静态成员函数，用于创建我们用来初始化#polynomial_space_Q成员变量的多项式空间。
-   *
+   * A static member function that creates the polynomial space we use to
+   * initialize the #polynomial_space_Q member variable.
    */
   static std::vector<std::vector<Polynomials::Polynomial<double>>>
   create_polynomials_Q();
 
   /**
-   * 一个静态成员函数，用于创建我们用来初始化#polynomial_space_bubble成员变量的多项式空间。
-   *
+   * A static member function that creates the polynomial space we use to
+   * initialize the #polynomial_space_bubble member variable.
    */
   static std::vector<std::vector<Polynomials::Polynomial<double>>>
   create_polynomials_bubble();
@@ -155,5 +177,3 @@ PolynomialsBernardiRaugel<dim>::name() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

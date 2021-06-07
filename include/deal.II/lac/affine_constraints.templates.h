@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/affine_constraints.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -2116,10 +2115,10 @@ namespace internal
   inline void
   import_vector_with_ghost_elements(
     const TrilinosWrappers::MPI::Vector &vec,
-    const IndexSet &  /*locally_owned_elements*/ ,
+    const IndexSet & /*locally_owned_elements*/,
     const IndexSet &               needed_elements,
     TrilinosWrappers::MPI::Vector &output,
-    const std::integral_constant<bool, false>  /*is_block_vector*/ )
+    const std::integral_constant<bool, false> /*is_block_vector*/)
   {
     Assert(!vec.has_ghost_elements(), ExcGhostsPresent());
 #  ifdef DEAL_II_WITH_MPI
@@ -2142,7 +2141,7 @@ namespace internal
     const IndexSet &                  locally_owned_elements,
     const IndexSet &                  needed_elements,
     PETScWrappers::MPI::Vector &      output,
-    const std::integral_constant<bool, false>  /*is_block_vector*/ )
+    const std::integral_constant<bool, false> /*is_block_vector*/)
   {
     output.reinit(locally_owned_elements,
                   needed_elements,
@@ -2158,7 +2157,7 @@ namespace internal
     const IndexSet &                                  locally_owned_elements,
     const IndexSet &                                  needed_elements,
     LinearAlgebra::distributed::Vector<number> &      output,
-    const std::integral_constant<bool, false>  /*is_block_vector*/ )
+    const std::integral_constant<bool, false> /*is_block_vector*/)
   {
     // TODO: the in vector might already have all elements. need to find a
     // way to efficiently avoid the copy then
@@ -2176,11 +2175,11 @@ namespace internal
   template <typename Vector>
   void
   import_vector_with_ghost_elements(
-    const Vector &  /*vec*/ ,
-    const IndexSet &  /*locally_owned_elements*/ ,
-    const IndexSet &  /*needed_elements*/ ,
-    Vector &  /*output*/ ,
-    const std::integral_constant<bool, false>  /*is_block_vector*/ )
+    const Vector & /*vec*/,
+    const IndexSet & /*locally_owned_elements*/,
+    const IndexSet & /*needed_elements*/,
+    Vector & /*output*/,
+    const std::integral_constant<bool, false> /*is_block_vector*/)
   {
     Assert(false, ExcMessage("We shouldn't even get here!"));
   }
@@ -2193,7 +2192,7 @@ namespace internal
     const IndexSet &  locally_owned_elements,
     const IndexSet &  needed_elements,
     VectorType &      output,
-    const std::integral_constant<bool, true>  /*is_block_vector*/ )
+    const std::integral_constant<bool, true> /*is_block_vector*/)
   {
     output.reinit(vec.n_blocks());
 
@@ -2718,18 +2717,27 @@ namespace internal
 
 
     /**
-     * 该类是一个访问器类，用于在调用distribut_local_to_global和add_entries_local_to_global时使用的抓取数据。为了避免频繁的内存分配，我们在一个静态变量中保持数据从一次调用到下一次的活力。由于我们希望在矩阵中允许不同的数字类型，这是一个模板。
-     * 由于每个线程都从ThreadLocalStorage中获取其私有版本的scratch数据，因此不会发生冲突的访问。为了使之有效，我们需要确保在distribution_local_to_global中没有任何调用本身可以产生任务。
-     * 否则，我们可能会出现几个线程争夺数据的情况。
+     * This class is an accessor class to scratch data that is used
+     * during calls to distribute_local_to_global and
+     * add_entries_local_to_global. In order to avoid frequent memory
+     * allocation, we keep the data alive from one call to the next in
+     * a static variable. Since we want to allow for different number
+     * types in matrices, this is a template.
      *
+     * Since each thread gets its private version of scratch data out of the
+     * ThreadLocalStorage, no conflicting access can occur. For this to be
+     * valid, we need to make sure that no call within
+     * distribute_local_to_global is made that by itself can spawn tasks.
+     * Otherwise, we might end up in a situation where several threads fight for
+     * the data.
      */
     template <typename number>
     class ScratchDataAccessor
     {
     public:
       /**
-       * 构造函数。从提供的对象中取出当前线程的抓取数据对象，并将其标记为已使用。
-       *
+       * Constructor. Takes the scratch data object for the current
+       * thread out of the provided object and marks it as used.
        */
       ScratchDataAccessor(
         Threads::ThreadLocalStorage<ScratchData<number>> &tls_scratch_data)
@@ -2743,8 +2751,7 @@ namespace internal
       }
 
       /**
-       * 解构器。再次标记从头开始的数据为可用。
-       *
+       * Destructor. Mark scratch data as available again.
        */
       ~ScratchDataAccessor()
       {
@@ -2752,8 +2759,7 @@ namespace internal
       }
 
       /**
-       * 去引用操作符。
-       *
+       * Dereferencing operator.
        */
       ScratchData<number> &operator*()
       {
@@ -2761,8 +2767,7 @@ namespace internal
       }
 
       /**
-       * 解除引用操作符。
-       *
+       * Dereferencing operator.
        */
       ScratchData<number> *operator->()
       {
@@ -4181,5 +4186,3 @@ AffineConstraints<number>::add_entries_local_to_global(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

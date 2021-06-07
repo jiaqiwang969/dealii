@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/solver_richardson_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -27,82 +28,79 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
- * Implementation of the preconditioned Richardson iteration method. The
- * stopping criterion is the norm of the residual.
+ * 预设条件的Richardson迭代法的实现。停止的标准是残差的规范。
+ * 关于使用该类时对矩阵和向量的要求，请参见求解器基类的文档。
+ * 像所有其他求解器类一样，该类有一个名为 @p
+ * AdditionalData的局部结构，用于向求解器传递额外的参数，如阻尼参数或临时向量的数量。我们使用这个额外的结构，而不是直接将这些值传递给构造函数，因为这使得
+ * @p SolverSelector
+ * 和其他类的使用更加容易，并保证即使某个求解器的额外参数的数量或类型发生变化，这些也能继续工作。
+ * 对于Richardson方法，附加数据是阻尼参数，它是 @p
+ * AdditionalData
+ * 结构的唯一内容。默认情况下，该结构的构造函数将其设置为1。
  *
- * For the requirements on matrices and vectors in order to work with this
- * class, see the documentation of the Solver base class.
- *
- * Like all other solver classes, this class has a local structure called @p
- * AdditionalData which is used to pass additional parameters to the solver,
- * like damping parameters or the number of temporary vectors. We use this
- * additional structure instead of passing these values directly to the
- * constructor because this makes the use of the @p SolverSelector and other
- * classes much easier and guarantees that these will continue to work even if
- * number or type of the additional parameters for a certain solver changes.
- *
- * For the Richardson method, the additional data is the damping parameter,
- * which is the only content of the @p AdditionalData structure. By default,
- * the constructor of the structure sets it to one.
+ *  <h3>Observing the progress of linear solver iterations</h3>
+ * 该类的solve()函数使用Solver基类中描述的机制来确定收敛性。这个机制也可以用来观察迭代的进度。
  *
  *
- * <h3>Observing the progress of linear solver iterations</h3>
- *
- * The solve() function of this class uses the mechanism described in the
- * Solver base class to determine convergence. This mechanism can also be used
- * to observe the progress of the iteration.
  */
 template <class VectorType = Vector<double>>
 class SolverRichardson : public SolverBase<VectorType>
 {
 public:
   /**
-   * Standardized data struct to pipe additional data to the solver.
+   * 标准化的数据结构，用于向求解器输送额外的数据。
+   *
    */
   struct AdditionalData
   {
     /**
-     * Constructor. By default, set the damping parameter to one.
+     * 构造函数。默认情况下，将阻尼参数设置为1。
+     *
      */
     explicit AdditionalData(const double omega                       = 1,
                             const bool   use_preconditioned_residual = false);
 
     /**
-     * Relaxation parameter.
+     * 松弛参数。
+     *
      */
     double omega;
 
     /**
-     * Parameter for stopping criterion.
+     * 停止准则的参数。
+     *
      */
     bool use_preconditioned_residual;
   };
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   SolverRichardson(SolverControl &           cn,
                    VectorMemory<VectorType> &mem,
                    const AdditionalData &    data = AdditionalData());
 
   /**
-   * Constructor. Use an object of type GrowingVectorMemory as a default to
-   * allocate memory.
+   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
+   *
    */
   SolverRichardson(SolverControl &       cn,
                    const AdditionalData &data = AdditionalData());
 
   /**
-   * Virtual destructor.
+   * 虚拟解构器。
+   *
    */
   virtual ~SolverRichardson() override = default;
 
   /**
-   * Solve the linear system $Ax=b$ for x.
+   * 求解x的线性系统 $Ax=b$ 。
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -112,7 +110,8 @@ public:
         const PreconditionerType &preconditioner);
 
   /**
-   * Solve $A^Tx=b$ for $x$.
+   * 对 $x$ 求解 $A^Tx=b$  。
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -122,15 +121,15 @@ public:
          const PreconditionerType &preconditioner);
 
   /**
-   * Set the damping-coefficient. Default is 1., i.e. no damping.
+   * 设置阻尼系数。默认为1.，即没有阻尼。
+   *
    */
   void
   set_omega(const double om = 1.);
 
   /**
-   * Interface for derived class. This function gets the current iteration
-   * vector, the residual and the update vector in each step. It can be used
-   * for graphical output of the convergence history.
+   * 派生类的接口。这个函数得到当前的迭代向量，残差和每一步的更新向量。它可以用于收敛历史的图形输出。
+   *
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -140,22 +139,23 @@ public:
 
 protected:
   /**
-   * Implementation of the computation of the norm of the residual.
-   * Depending on the flags given to the solver, the default
-   * implementation of this function uses either the actual
-   * residual, @p r, or the preconditioned residual, @p d.
+   * 实现残差的常数计算。
+   * 根据给求解器的标志，该函数的默认实现使用实际残差，
+   * @p r, 或预处理残差， @p d.  。
+   *
    */
   virtual typename VectorType::value_type
   criterion(const VectorType &r, const VectorType &d) const;
 
   /**
-   * Control parameters.
+   * 控制参数。
+   *
    */
   AdditionalData additional_data;
 };
 
-/*@}*/
-/*----------------- Implementation of the Richardson Method ------------------*/
+ /*@}*/ 
+ /*----------------- Implementation of the Richardson Method ------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -332,3 +332,5 @@ SolverRichardson<VectorType>::set_omega(const double om)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/array_view_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -38,14 +37,21 @@ class LAPACKFullMatrix;
 
 
 /**
- * 一个表示 @p ElementType
- * 类型的内存位置窗口的类，并将其作为一个数组来呈现。从本质上讲，这个类只不过是一个指向第一个位置的指针和一个代表数组长度的整数元素而已。内存仍然属于分配它的人，因为这个类并没有接管所有权。
- * 使用这个类的好处是，你不需要传递成对的指针，而且
- * <code>operator[]</code>
- * 会检查你下标这个数组视图的索引是否有效。注意，只有当底层数据存储在CPU内存中时，才允许访问元素。
- * 这个类可以处理对非常量和常量内存位置的视图。如果你想表示一个常数的视图，那么这个类的模板参数类型也需要是
- * @p const 。下面的代码片断给出了一个例子。
+ * A class that represents a window of memory locations of type @p ElementType
+ * and presents it as if it was an array. In essence, this class is nothing more
+ * than just a pointer to the first location and an integer that represents the
+ * length of the array in elements. The memory remains owned by whoever
+ * allocated it, as this class does not take over ownership.
  *
+ * The advantage of using this class is that you don't have to pass around
+ * pairs of pointers and that <code>operator[]</code> checks for the validity
+ * of the index with which you subscript this array view. Note that accessing
+ * elements is only allowed if the underlying data is stored in CPU memory.
+ *
+ * This class can handle views to both non-constant and constant memory
+ * locations. If you want to represent a view of a constant array, then the
+ * template argument type of this class needs to be @p const as well. The
+ * following code snippet gives an example:
  * @code
  * std::vector<int> array = get_data(); // a writable array
  * ArrayView<int> view (&array[5], 5); // a view of elements 5..9 (inclusive)
@@ -54,274 +60,279 @@ class LAPACKFullMatrix;
  * int element_7 = const_view[2]; // set element_7 to 42
  * const_view[2] = 42; // this line won't compile; can't write into this view
  * @endcode
- * 在任何一种情况下，访问一个视图的元素都不会改变ArrayView对象本身，因此
- * ArrayView::operator[] 是一个 @p
- * 的const函数。这对应于这样一个概念：视图只是代表了一个，嗯，由别人拥有的内存的
- * "视图"。因此，访问视图中的元素会改变其他对象所管理的内存，但不会改变视图本身，这使得我们可以将
- * ArrayView::operator[] 变成 @p const 成员函数。这与 std::vector,
- * 相反， std::vector, 管理着它所指向的内存，因此改变
- * std::vector 的一个元素会改变 std::vector 对象本身
+ * In either case, accessing an element of a view does not change the
+ * ArrayView object itself, and consequently ArrayView::operator[] is a @p
+ * const function. This corresponds to the notion that a view simply
+ * represents a, well, "view" of memory that is owned by someone else. Thus,
+ * accessing elements of the view changes the memory managed by some other
+ * object, but not the view itself, allowing us to make ArrayView::operator[]
+ * a @p const member function. This is in contrast to, say, std::vector, which
+ * manages the memory it points to and changing an element of the std::vector
+ * therefore changes the std::vector object itself -- consequently, the
+ * std::vector::operator[] is non-@p const.
  *
- * - 因此， std::vector::operator[] 就不是 @p const. 。
- *
- *
- * @note  这个类与
- * [`std::span`](https://en.cppreference.com/w/cpp/container/span),
- * 类似，但后者只在C++20中开始使用。
- *
+ * @note This class is similar to
+ *   [`std::span`](https://en.cppreference.com/w/cpp/container/span), but the
+ *   latter is only available starting in C++20.
  *
  * @ingroup data
- *
  */
 template <typename ElementType, typename MemorySpaceType = MemorySpace::Host>
 class ArrayView
 {
 public:
   /**
-   * 一个别名，表示这个容器类的 "value_type"，即它 "存储
-   * "或指向的元素的类型。
-   *
+   * An alias that denotes the "value_type" of this container-like class,
+   * i.e., the type of the element it "stores" or points to.
    */
   using value_type = ElementType;
 
   /**
-   * 指向数组的迭代器的一个别名。
-   *
+   * An alias for iterators pointing into the array.
    */
   using iterator = value_type *;
 
   /**
-   * 指向数组的常数迭代器的别名。
-   *
+   * An alias for const iterators pointing into the array.
    */
   using const_iterator = const ElementType *;
 
   /**
-   * 默认的构造函数。
-   *
+   * Default constructor.
    */
   ArrayView();
 
   /**
-   * 构造函数。      @param[in]  starting_element
-   * 指向该对象所代表的数组的第一个元素的指针。
-   * @param[in]  n_elements
-   * 这个对象应该代表的内存块的长度（元素）。
-   * @note
-   * 由这些参数构建的对象不知道它所指向的对象到底有多大。因此，每当你调用
-   * ArrayView::operator[],
-   * 时，数组视图可以检查给定的索引是否在视图的范围内，但它不能检查视图是否确实是分配该范围的底层对象的有效元素范围的子集。换句话说，你需要确保这个构造函数的两个参数所指定的视图范围实际上是它所指向的数组元素的一个子集。做到这一点的适当方法是使用make_array_view()函数。
+   * Constructor.
    *
+   * @param[in] starting_element A pointer to the first element of the array
+   * this object should represent.
+   * @param[in] n_elements The length (in elements) of the chunk of memory
+   * this object should represent.
+   *
+   * @note The object that is constructed from these arguments has no
+   * knowledge how large the object into which it points really is. As a
+   * consequence, whenever you call ArrayView::operator[], the array view can
+   * check that the given index is within the range of the view, but it can't
+   * check that the view is indeed a subset of the valid range of elements of
+   * the underlying object that allocated that range. In other words, you need
+   * to ensure that the range of the view specified by the two arguments to
+   * this constructor is in fact a subset of the elements of the array into
+   * which it points. The appropriate way to do this is to use the
+   * make_array_view() functions.
    */
   ArrayView(value_type *starting_element, const std::size_t n_elements);
 
   /**
-   * 指向非 @p const
-   * 元素的数组视图的复制构造函数。如果当前对象将指向非
-   * @p const
-   * 元素，那么这就是一个直接的复制构造函数。另一方面，如果当前类型的
-   * @p ElementType 模板参数是一个 @p const
-   * 限定类型，那么当前构造函数是一个转换构造函数，将非
-   * @p const 视图转换为 @p const 视图，类似于将非 @p const
-   * 指针转换为 @p const 指针。
-   *
+   * Copy constructor from array views that point to non-@p const elements. If
+   * the current object will point to non-@p const elements, then this is a
+   * straight forward copy constructor. On the other hand, if the current
+   * type's @p ElementType template argument is a @p const qualified type,
+   * then the current constructor is a conversion constructor that converts a
+   * non-@p const view to a @p const view, akin to converting a non-@p const
+   * pointer to a @p const pointer.
    */
   ArrayView(const ArrayView<typename std::remove_cv<value_type>::type,
                             MemorySpaceType> &view);
 
   /**
-   * 一个构造函数，从一个value_type对象自动创建一个视图。这样创建的视图的长度为1。
-   *
+   * A constructor that automatically creates a view from a single value_type
+   * object. The view so created then has length one.
    */
   explicit ArrayView(value_type &element);
 
   /**
-   * 一个构造函数，从一个 std::vector
-   * 对象中自动创建一个视图。
-   * 该视图包含了给定向量的所有元素。
-   * 当调用一个以ArrayView对象为参数的函数，并传入一个
-   * std::vector. 时，这个隐式转换构造函数特别有用。
-   * @note  这个构造函数需要一个 @p const
-   * 向量的引用作为参数。    它只能用于初始化指向 @p const
-   * 内存位置的ArrayView对象，例如 <code>ArrayView@<const
-   * double@></code>  。    不能用这样的参数初始化指向非 @p
-   * const 内存的ArrayView对象，如 <code>ArrayView@<double@></code>
-   * 。
+   * A constructor that automatically creates a view from a std::vector object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::vector.
+   *
+   * @note This constructor takes a reference to a @p const vector as argument.
+   *   It can only be used to initialize ArrayView objects that point to
+   *   @p const memory locations, such as <code>ArrayView@<const double@></code>.
+   *   You cannot initialize ArrayView objects to non-@p const memory with
+   *   such arguments, such as <code>ArrayView@<double@></code>.
    */
   ArrayView(
     const std::vector<typename std::remove_cv<value_type>::type> &vector);
 
   /**
-   * 一个构造函数，从一个 std::vector
-   * 对象中自动创建一个视图。
-   * 该视图包含了给定向量的所有元素。
-   * 当调用一个以ArrayView对象为参数的函数，并传入一个
-   * std::vector. 时，这个隐式转换构造函数就特别有用。
-   * @note  这个构造函数需要一个非 @p const
-   * 向量的引用作为参数。它可以用来初始化ArrayView对象，该对象指向
-   * @p const 内存位置，例如 <code>ArrayView@<const double@></code>
-   * ，或者指向非 @p const 内存，例如
-   * <code>ArrayView@<double@></code>  。
+   * A constructor that automatically creates a view from a std::vector object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::vector.
+   *
+   * @note This constructor takes a reference to a non-@p const vector as
+   *   argument. It can be used to initialize ArrayView objects that point to
+   *   either @p const memory locations, such as
+   *   <code>ArrayView@<const double@></code>, or to non-@p const memory,
+   *   such as <code>ArrayView@<double@></code>.
    */
   ArrayView(std::vector<typename std::remove_cv<value_type>::type> &vector);
 
   /**
-   * 一个构造函数，为一个给定的C-style数组自动创建一个视图。
-   * 这个构造函数可以如下使用。
+   * A constructor that automatically creates a view for a given C-style array.
+   * This constructor can be used as follows:
    * @code
-   * ArrayView<const int>
-   * get_data_table ()
-   * {
-   *   static const int my_data[7] = { 1, 1, 2, 3, 5, 8, 13 };
-   *   return {my_data};
-   * }
+   *   ArrayView<const int>
+   *   get_data_table ()
+   *   {
+   *     static const int my_data[7] = { 1, 1, 2, 3, 5, 8, 13 };
+   *     return {my_data};
+   *   }
    * @endcode
-   * 这样返回的对象是一个数组的视图，其大小被正确推导出来。
-   *
+   * The object so returned is then a view of the array, with the size 7
+   * correctly deduced.
    */
   template <std::size_t N>
   ArrayView(value_type (&array)[N]);
 
   /**
-   * 一个构造函数可以从一个 std::array
-   * 对象中自动创建一个视图。
-   * 该视图包含了给定向量的所有元素。
-   * 当调用一个以ArrayView对象为参数的函数，并传入一个
-   * std::array. 时，这个隐式转换构造函数特别有用。
+   * A constructor that automatically creates a view from a std::array object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::array.
    */
   template <std::size_t N>
   ArrayView(
     const std::array<typename std::remove_cv<value_type>::type, N> &vector);
 
   /**
-   * 一个构造函数，可以从一个 std::array
-   * 对象自动创建一个视图。
-   * 该视图包含了给定向量的所有元素。
-   * 当调用一个以ArrayView对象为参数的函数，并传入一个
-   * std::array. 时，这个隐式转换构造函数就特别有用。
+   * A constructor that automatically creates a view from a std::array object.
+   * The view encompasses all elements of the given vector.
    *
+   * This implicit conversion constructor is particularly useful when calling
+   * a function that takes an ArrayView object as argument, and passing in
+   * a std::array.
    */
   template <std::size_t N>
   ArrayView(std::array<typename std::remove_cv<value_type>::type, N> &vector);
 
   /**
-   * 重新初始化一个视图。      @param[in]  starting_element
-   * 指向该对象所代表的数组的第一个元素的指针。
-   * @param[in]  n_elements
-   * 这个对象应该代表的内存块的长度（以元素计）。
-   * @note
-   * 由这些参数构建的对象不知道它所指向的对象到底有多大。因此，每当你调用
-   * ArrayView::operator[],
-   * 时，数组视图可以检查给定的索引是否在视图的范围内，但它不能检查视图是否确实是分配该范围的底层对象的有效元素范围的子集。换句话说，你需要确保这个构造函数的两个参数所指定的视图范围实际上是它所指向的数组元素的一个子集。做到这一点的适当方法是使用make_array_view()函数。
+   * Reinitialize a view.
    *
+   * @param[in] starting_element A pointer to the first element of the array
+   * this object should represent.
+   * @param[in] n_elements The length (in elements) of the chunk of memory
+   * this object should represent.
+   *
+   * @note The object that is constructed from these arguments has no
+   * knowledge how large the object into which it points really is. As a
+   * consequence, whenever you call ArrayView::operator[], the array view can
+   * check that the given index is within the range of the view, but it can't
+   * check that the view is indeed a subset of the valid range of elements of
+   * the underlying object that allocated that range. In other words, you need
+   * to ensure that the range of the view specified by the two arguments to
+   * this constructor is in fact a subset of the elements of the array into
+   * which it points. The appropriate way to do this is to use the
+   * make_array_view() functions.
    */
   void
   reinit(value_type *starting_element, const std::size_t n_elements);
 
   /**
-   * 比较两个相同类型的ArrayView对象。如果两个对象具有相同的大小和相同的起始指针，则认为它们是相等的。
-   * 这个版本总是与const value_type进行比较。
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the const value_type.
    */
   bool
   operator==(
     const ArrayView<const value_type, MemorySpaceType> &other_view) const;
 
   /**
-   * 比较两个相同类型的ArrayView对象。如果两个对象具有相同的大小和相同的起始指针，则认为它们是相等的。
-   * 这个版本总是与非const value_type进行比较。
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the non-const value_type.
    */
   bool
   operator==(const ArrayView<typename std::remove_cv<value_type>::type,
                              MemorySpaceType> &other_view) const;
 
   /**
-   * 比较两个相同类型的ArrayView对象。如果两个对象具有相同的大小和相同的起始指针，则认为它们是相等的。
-   * 这个版本总是与const value_type进行比较。
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the const value_type.
    */
   bool
   operator!=(
     const ArrayView<const value_type, MemorySpaceType> &other_view) const;
 
   /**
-   * 比较两个相同类型的ArrayView对象。如果两个对象具有相同的大小和相同的起始指针，则认为它们是相等的。
-   * 这个版本总是与非const value_type进行比较。
-   *
+   * Compare two ArrayView objects of the same type. Two objects are considered
+   * equal if they have the same size and the same starting pointer.
+   * This version always compares with the non-const value_type.
    */
   bool
   operator!=(const ArrayView<typename std::remove_cv<value_type>::type,
                              MemorySpaceType> &other_view) const;
 
   /**
-   * 返回这个对象所代表的内存视图的大小（以元素为单位）。
-   *
+   * Return the size (in elements) of the view of memory this object
+   * represents.
    */
   std::size_t
   size() const;
 
   /**
-   * 返回一个指向作为元素存储的底层数组的指针。
-   * 如果该容器是空的，将返回一个nullptr。
-   *
+   * Return a pointer to the underlying array serving as element storage.
+   * In case the container is empty a nullptr is returned.
    */
   value_type *
   data() const noexcept;
 
   /**
-   * 返回一个指向数组视图开头的迭代器。
-   *
+   * Return an iterator pointing to the beginning of the array view.
    */
   iterator
   begin() const;
 
   /**
-   * 返回一个指向数组视图结束后的迭代器。
-   *
+   * Return an iterator pointing to one past the end of the array view.
    */
   iterator
   end() const;
 
   /**
-   * 返回一个指向数组视图开始的常数迭代器。
-   *
+   * Return a constant iterator pointing to the beginning of the array view.
    */
   const_iterator
   cbegin() const;
 
   /**
-   * 返回一个指向数组视图结束后的常数迭代器。
-   *
+   * Return a constant iterator pointing to one past the end of the array view.
    */
   const_iterator
   cend() const;
 
   /**
-   * 返回一个指向当前对象所代表的范围内第 $i$
-   * 个元素的引用。    这个函数被标记为 @p const
-   * ，因为它不改变 <em> 视图对象  </em>
-   * 。但是它可能会返回一个非  @p const
-   * 内存位置的引用，这取决于类的模板类型是否是  @p
-   * const。
-   * 只有当底层数据确实存储在CPU内存中时，才允许调用这个函数。
+   * Return a reference to the $i$th element of the range represented by the
+   * current object.
    *
+   * This function is marked as @p const because it does not change the
+   * <em>view object</em>. It may however return a reference to a non-@p const
+   * memory location depending on whether the template type of the class is @p
+   * const or not.
+   *
+   * This function is only allowed to be called if the underlying data is indeed
+   * stored in CPU memory.
    */
   value_type &operator[](const std::size_t i) const;
 
 private:
   /**
-   * 指向该对象所代表的内存中的位置范围的第一个元素的指针。
-   *
+   * A pointer to the first element of the range of locations in memory that
+   * this object represents.
    */
   value_type *starting_element;
 
   /**
-   * 这个对象所代表的数组的长度。
-   *
+   * The length of the array this object represents.
    */
   std::size_t n_elements;
 
@@ -624,8 +635,9 @@ namespace internal
   namespace ArrayViewHelper
   {
     /**
-     * 返回在给定的迭代器范围内，通过取消迭代器得到的对象是否在内存中形成一个连续的范围。
-     *
+     * Return whether the objects one gets by dereferencing the
+     * iterators within the given iterator range form a contiguous
+     * range in memory.
      */
     template <class Iterator>
     bool
@@ -641,11 +653,14 @@ namespace internal
 
 
     /**
-     * 返回在给定的迭代器范围内通过解引用迭代器得到的对象是否在内存中形成一个连续的范围。
-     * 这种对（  @p const  或非  @p const)
-     * 指针的特殊化无条件地返回  @p true
-     * ，因为指针所指向的对象是连续的这一事实已经嵌入到C++的内存模型中。
+     * Return whether the objects one gets by dereferencing the
+     * iterators within the given iterator range form a contiguous
+     * range in memory.
      *
+     * This specialization for (@p const or non-@p const) pointers
+     * returns @p true unconditionally since the fact that objects
+     * pointed to by pointers are contiguous is embedded in the memory
+     * model of C++.
      */
     template <class T>
     constexpr bool
@@ -660,16 +675,20 @@ namespace internal
 
 
 /**
- * 创建一个ArrayView，它需要一对迭代器作为参数。ArrayView的类型是从迭代器的值类型推断出来的（例如，从两个常数迭代器创建的视图将有一个常数类型）。
- * @warning  迭代器 @p begin 和 @p end
- * 必须绑定（以通常的半开放方式）一个连续的内存范围内的值。这个函数的目的是用于像
- * <code>boost::container::small_vector</code> or <code>std::vector</code>
- * 这样的容器中的迭代器，而不会在例如
- * <code>boost::container::stable_vector</code> or <code>std::deque</code>
- * 中正确工作。在调试模式下，我们检查所提供的迭代器是否确实代表连续的内存。
- * @relatesalso  ArrayView
+ * Create an ArrayView that takes a pair of iterators as arguments. The type
+ * of the ArrayView is inferred from the value type of the iterator (e.g., the
+ * view created from two const iterators will have a const type).
  *
+ * @warning The iterators @p begin and @p end must bound (in the usual half-open
+ * way) a contiguous in memory range of values. This function is intended for
+ * use with iterators into containers like
+ * <code>boost::container::small_vector</code> or <code>std::vector</code> and
+ * will not work correctly with, e.g.,
+ * <code>boost::container::stable_vector</code> or <code>std::deque</code>.
+ * In debug mode, we check that the provided iterators represent contiguous
+ * memory indeed.
  *
+ * @relatesalso ArrayView
  */
 template <typename Iterator, typename MemorySpaceType = MemorySpace::Host>
 ArrayView<typename std::remove_reference<
@@ -695,13 +714,13 @@ make_array_view(const Iterator begin, const Iterator end)
 
 
 /**
- * 从一对指针创建一个视图。  <code>ElementType</code>
- * 可以是const-qualified的。
- * @warning  指针 @p begin 和 @p end
- * 必须绑定（以通常的半开放方式）一个连续的内存中的值范围。
- * @relatesalso  ArrayView
+ * Create a view from a pair of pointers. <code>ElementType</code> may be
+ * const-qualified.
  *
+ * @warning The pointers @p begin and @p end must bound (in the usual
+ * half-open way) a contiguous in memory range of values.
  *
+ * @relatesalso ArrayView
  */
 template <typename ElementType, typename MemorySpaceType = MemorySpace::Host>
 ArrayView<ElementType, MemorySpaceType>
@@ -716,12 +735,14 @@ make_array_view(ElementType *const begin, ElementType *const end)
 
 
 /**
- * 从一个ArrayView本身创建一个视图。 这个函数用于 @p const
- * 对ArrayView类型对象的引用。它的存在只是为了兼容的目的。
- * @param[in]  array_view 我们希望复制的ArrayView。
- * @relatesalso  ArrayView
+ * Create a view from an ArrayView itself.
  *
+ * This function is used for @p const references to objects of ArrayView type.
+ * It only exists for compatibility purposes.
  *
+ * @param[in] array_view The ArrayView that we wish to make a copy of.
+ *
+ * @relatesalso ArrayView
  */
 template <typename Number, typename MemorySpaceType>
 inline ArrayView<const Number, MemorySpaceType>
@@ -733,12 +754,14 @@ make_array_view(const ArrayView<Number, MemorySpaceType> &array_view)
 
 
 /**
- * 从ArrayView本身创建一个视图。 这个函数用于非  @p const
- * ArrayView类型的对象的引用。它的存在只是为了兼容的目的。
- * @param[in]  array_view 我们希望复制的ArrayView。
- * @relatesalso  ArrayView
+ * Create a view from an ArrayView itself.
  *
+ * This function is used for non-@p const references to objects of ArrayView
+ * type. It only exists for compatibility purposes.
  *
+ * @param[in] array_view The ArrayView that we wish to make a copy of.
+ *
+ * @relatesalso ArrayView
  */
 template <typename Number, typename MemorySpaceType>
 inline ArrayView<Number, MemorySpaceType>
@@ -750,17 +773,20 @@ make_array_view(ArrayView<Number, MemorySpaceType> &array_view)
 
 
 /**
- * 为整个Tensor对象创建一个视图。这相当于用第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于 @p const
- * 对Tensor类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对
- * @p const 对象集合的一个视图。
- * @param[in]  张量
- * 我们希望有一个数组视图对象的张量。数组视图对应于
- * <em> 整个 </em>
- * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  阵列视图
+ * Create a view to an entire Tensor object. This is equivalent to initializing
+ * an ArrayView object with a pointer to the first element and the size of the
+ * given argument.
  *
+ * This function is used for @p const references to objects of Tensor type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] tensor The Tensor for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> object but the
+ * order in which the entries are presented in the array is an implementation
+ * detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<const Number>
@@ -772,16 +798,20 @@ make_array_view(const Tensor<rank, dim, Number> &tensor)
 
 
 /**
- * 为整个Tensor对象创建一个视图。这相当于用一个指向第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于非  @p const
- * Tensor类型对象的引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  Tensor
- * 我们希望有一个数组视图对象的Tensor。数组视图对应于
- * <em> 整个 </em>
- * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  ArrayView
+ * Create a view to an entire Tensor object. This is equivalent to initializing
+ * an ArrayView object with a pointer to the first element and the size of the
+ * given argument.
  *
+ * This function is used for non-@p const references to objects of Tensor type.
+ * Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] tensor The Tensor for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> object but the
+ * order in which the entries are presented in the array is an implementation
+ * detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<Number>
@@ -793,17 +823,20 @@ make_array_view(Tensor<rank, dim, Number> &tensor)
 
 
 /**
- * 为整个SymmetricTensor对象创建一个视图。这相当于用第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于 @p const
- * 对SymmetricTensor类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对
- * @p const 对象集合的一个视图。
- * @param[in]  tensor
- * 我们希望有一个数组视图对象的SymmetricTensor。数组视图对应于
- * <em> 整个 </em>
- * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  阵列视图
+ * Create a view to an entire SymmetricTensor object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and the
+ * size of the given argument.
  *
+ * This function is used for @p const references to objects of SymmetricTensor
+ * type because they contain immutable elements. Consequently, the return type
+ * of this function is a view to a set of @p const objects.
  *
+ * @param[in] tensor The SymmetricTensor for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
+ * implementation detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<const Number>
@@ -815,16 +848,21 @@ make_array_view(const SymmetricTensor<rank, dim, Number> &tensor)
 
 
 /**
- * 为整个SymmetricTensor对象创建一个视图。这相当于用第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于对SymmetricTensor类型的对象的非 @p const
- * 引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  tensor
- * 我们希望有一个数组视图对象的SymmetricTensor。数组视图对应于
- * <em> 整个 </em>
- * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  阵列视图
+ * Create a view to an entire SymmetricTensor object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and the
+ * size of the given argument.
  *
+ * This function is used for non-@p const references to objects of
+ * SymmetricTensor type. Such objects contain elements that can be written to.
+ * Consequently, the return type of this function is a view to a set of writable
+ * objects.
  *
+ * @param[in] tensor The SymmetricTensor for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
+ * implementation detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <int rank, int dim, typename Number>
 inline ArrayView<Number>
@@ -836,14 +874,17 @@ make_array_view(SymmetricTensor<rank, dim, Number> &tensor)
 
 
 /**
- * 为整个C风格的数组创建一个视图。这相当于用一个指向第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 产生的ArrayView是否可写，取决于ElementType是否为常量类型。
- * @param[in]  array
- * 我们希望有一个ArrayView对象的C型数组。ArrayView对应的是
- * <em> 整个 </em> 向量。
- * @relatesalso  ArrayView
+ * Create a view to an entire C-style array. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and
+ * the size of the given argument.
  *
+ * Whether the resulting ArrayView is writable or not depends on the
+ * ElementType being a const type or not.
  *
+ * @param[in] array The C-style array for which we want to have an ArrayView
+ * object. The ArrayView corresponds to the <em>entire</em> vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType, int N>
 inline ArrayView<ElementType> make_array_view(ElementType (&array)[N])
@@ -854,15 +895,18 @@ inline ArrayView<ElementType> make_array_view(ElementType (&array)[N])
 
 
 /**
- * 为整个Vector对象创建一个视图。这相当于用一个指向第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于非 @p const
- * 对Vector类型对象的引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  vector
- * 我们希望有一个数组视图对象的Vector。数组视图对应于
- * <em>  整个 </em>  Vector。
- * @relatesalso  阵列视图
+ * Create a view to an entire Vector object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and
+ * the size of the given argument.
  *
+ * This function is used for non-@p const references to objects of Vector
+ * type. Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] vector The Vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> Vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -874,16 +918,18 @@ make_array_view(Vector<ElementType> &vector)
 
 
 /**
- * 创建一个视图到整个Vector对象。这相当于用一个指向第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于 @p const
- * 对Vector类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对
- * @p const 对象集合的一个视图。
- * @param[in]  vector
- * 我们希望有一个数组视图对象的Vector。该数组视图对应于
- * <em> 整个 </em> 向量。
- * @relatesalso  阵列视图
+ * Create a view to an entire Vector object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and
+ * the size of the given argument.
  *
+ * This function is used for @p const references to objects of Vector type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] vector The Vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> Vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -895,16 +941,18 @@ make_array_view(const Vector<ElementType> &vector)
 
 
 /**
- * 创建一个视图到整个 std::vector
- * 对象。这相当于用一个指向第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于非  @p const
- * 矢量类型的对象的引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  矢量
- * 我们希望有一个阵列视图对象的矢量。该数组视图对应于
- * <em> 整个 </em> 向量。
- * @relatesalso  阵列视图
+ * Create a view to an entire std::vector object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and
+ * the size of the given argument.
  *
+ * This function is used for non-@p const references to objects of vector
+ * type. Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -916,17 +964,18 @@ make_array_view(std::vector<ElementType> &vector)
 
 
 /**
- * 创建一个视图到整个 std::vector
- * 对象。这相当于用第一个元素的指针和给定参数的大小初始化一个ArrayView对象。
- * 这个函数用于 @p const
- * 对矢量类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对一组
- * @p const 对象的视图。
- * @param[in]  矢量
- * 我们希望有一个数组视图对象的矢量。该数组视图对应于
- * <em> 整个 </em> 向量。
- * @relatesalso  阵列视图
+ * Create a view to an entire std::vector object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element and
+ * the size of the given argument.
  *
+ * This function is used for @p const references to objects of vector type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object. The array view corresponds to the <em>entire</em> vector.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -938,20 +987,23 @@ make_array_view(const std::vector<ElementType> &vector)
 
 
 /**
- * 创建一个视图到 std::vector
- * 对象的一部分。这相当于用一个指向 @p starting_index-
- * 第三元素的指针和 @p size_of_view
- * 作为视图的长度初始化ArrayView对象。
- * 这个函数用于对矢量类型对象的非 @p const
- * 引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  矢量 我们希望有一个数组视图对象的矢量。
- * @param[in]  starting_index
- * 将成为该视图一部分的向量第一个元素的索引。  @param[in]
- * size_of_view 新ArrayView中的元素数量。 @pre   <code>starting_index
- * + size_of_view <= vector.size()</code>
- * @relatesalso  ArrayView
+ * Create a view to a part of a std::vector object. This is equivalent to
+ * initializing the ArrayView object with a pointer to the @p starting_index-
+ * th element and the @p size_of_view as the length of the view.
  *
+ * This function is used for non-@p const references to objects of vector
+ * type. Such objects contain elements that can be written to. Consequently,
+ * the return type of this function is a view to a set of writable objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object.
+ * @param[in] starting_index The index of the first element of the vector that
+ * will be part of this view.
+ * @param[in] size_of_view Number of elements in the new ArrayView.
+ *
+ * @pre <code>starting_index + size_of_view <= vector.size()</code>
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -969,21 +1021,23 @@ make_array_view(std::vector<ElementType> &vector,
 
 
 /**
- * 创建一个视图到 std::vector
- * 对象的一部分。这相当于用一个指向 @p starting_index-
- * 第1个元素的指针和 @p size_of_view
- * 作为视图的长度初始化ArrayView对象。 这个函数用于 @p
- * const
- * 对矢量类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对一组
- * @p const 对象的视图。
- * @param[in]  矢量 我们希望有一个数组视图对象的矢量。
- * @param[in]  starting_index
- * 将成为该视图一部分的向量的第一个元素的索引。
- * @param[in]  size_of_view 新ArrayView中的元素数量。 @pre
- * <code>starting_index + size_of_view <= vector.size()</code>
- * @relatesalso  ArrayView
+ * Create a view to a part of a std::vector object. This is equivalent to
+ * initializing the ArrayView object with a pointer to the @p starting_index-
+ * th element and the @p size_of_view as the length of the view.
  *
+ * This function is used for @p const references to objects of vector type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] vector The vector for which we want to have an array view
+ * object.
+ * @param[in] starting_index The index of the first element of the vector that
+ * will be part of this view.
+ * @param[in] size_of_view Number of elements in the new ArrayView.
+ *
+ * @pre <code>starting_index + size_of_view <= vector.size()</code>
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1001,16 +1055,20 @@ make_array_view(const std::vector<ElementType> &vector,
 
 
 /**
- * 为Table<2>对象的整个行创建一个视图。这相当于用一个指向给定行的第一个元素的指针初始化一个ArrayView对象，并将该行的长度作为视图的长度。
- * 这个函数用于非 @p const
- * 对Table类型对象的引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  table
- * 我们希望有一个数组视图对象的表。数组视图对应于  <em>
- * 整个  </em>  行。  @param[in]  row
- * 该视图所对应的表的行的索引。
- * @relatesalso  阵列视图
+ * Create a view to an entire row of a Table<2> object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element of the
+ * given row, and the length of the row as the length of the view.
  *
+ * This function is used for non-@p const references to objects of Table type.
+ * Such objects contain elements that can be written to. Consequently, the
+ * return type of this function is a view to a set of writable objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
+ * should correspond.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -1024,16 +1082,20 @@ inline ArrayView<ElementType>
 
 
 /**
- * 为整个Table<2>对象创建一个视图。这相当于用一个指向给定表的第一个元素的指针初始化一个ArrayView对象，并将表的条目数作为视图的长度。
- * 这个函数用于非 @p const
- * 的Table类型对象的引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的一个视图。
- * @param[in]  table
- * 我们希望有一个数组视图对象的表。数组视图对应于 <em>
- * 整个 </em>
- * 表，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  ArrayView
+ * Create a view to an entire Table<2> object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element of the
+ * given table, and the number of table entries as the length of the view.
  *
+ * This function is used for non-@p const references to objects of Table type.
+ * Such objects contain elements that can be written to. Consequently, the
+ * return type of this function is a view to a set of writable objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to the <em>entire</em> table but the order in
+ * which the entries are presented in the array is an implementation detail
+ * and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType> make_array_view(Table<2, ElementType> &table)
@@ -1044,17 +1106,20 @@ inline ArrayView<ElementType> make_array_view(Table<2, ElementType> &table)
 
 
 /**
- * 为整个Table<2>对象创建一个视图。这相当于用一个指向给定表的第一个元素的指针初始化一个ArrayView对象，并将表项的数量作为视图的长度。
- * 这个函数用于 @p const
- * 对Table类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对一组
- * @p const 对象的视图。
- * @param[in]  table
- * 我们希望有一个数组视图对象的表。数组视图对应于 <em>
- * 整个 </em>
- * 表，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  ArrayView
+ * Create a view to an entire Table<2> object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element of the
+ * given table, and the number of table entries as the length of the view.
  *
+ * This function is used for @p const references to objects of Table type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to the <em>entire</em> table but the order in
+ * which the entries are presented in the array is an implementation detail
+ * and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1065,17 +1130,21 @@ make_array_view(const Table<2, ElementType> &table)
 
 
 /**
- * 为整个LAPACKFullMatrix对象创建一个视图。这相当于用一个指向给定对象的第一个元素的指针初始化一个ArrayView对象，并将条目数作为视图的长度。
- * 这个函数用于 @p non-const
- * 对LAPACKFullMatrix类型对象的引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组
- * @p non-const 对象的视图。
- * @param[in]  矩阵
- * 我们希望有一个阵列视图对象的LAPACKFullMatrix。数组视图对应于
- * <em> 整个 </em>
- * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  ArrayView
+ * Create a view to an entire LAPACKFullMatrix object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element of the
+ * given object, and the number entries as the length of the view.
  *
+ * This function is used for @p non-const references to objects of
+ * LAPACKFullMatrix type. Such objects contain elements that can be written to.
+ * Consequently, the return type of this function is a view to a set of
+ * @p non-const objects.
  *
+ * @param[in] matrix The LAPACKFullMatrix for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
+ * implementation detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType>
@@ -1087,17 +1156,20 @@ make_array_view(LAPACKFullMatrix<ElementType> &matrix)
 
 
 /**
- * 为整个LAPACKFullMatrix对象创建一个视图。这相当于用一个指向给定对象的第一个元素的指针初始化一个ArrayView对象，并将条目数作为视图的长度。
- * 这个函数用于 @p const
- * 对LAPACKFullMatrix类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对
- * @p const 对象集合的一个视图。
- * @param[in]  矩阵
- * 我们希望有一个阵列视图对象的LAPACKFullMatrix。阵列视图对应于
- * <em> 整个 </em>
- * 对象，但条目在阵列中的呈现顺序是一个实现细节，不应依赖。
- * @relatesalso  阵列视图
+ * Create a view to an entire LAPACKFullMatrix object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element of the
+ * given object, and the number of entries as the length of the view.
  *
+ * This function is used for @p const references to objects of LAPACKFullMatrix
+ * type because they contain immutable elements. Consequently, the return type
+ * of this function is a view to a set of @p const objects.
  *
+ * @param[in] matrix The LAPACKFullMatrix for which we want to have an array
+ * view object. The array view corresponds to the <em>entire</em> object but
+ * the order in which the entries are presented in the array is an
+ * implementation detail and should not be relied upon.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1109,17 +1181,20 @@ make_array_view(const LAPACKFullMatrix<ElementType> &matrix)
 
 
 /**
- * 为Table<2>对象的整个行创建一个视图。这相当于用一个指向给定行的第一个元素的指针初始化一个ArrayView对象，并将该行的长度作为视图的长度。
- * 这个函数用于 @p const
- * 对Table类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对一组
- * @p const 对象的视图。
- * @param[in]  table
- * 我们希望有一个数组视图对象的表。数组视图对应于一个
- * <em> 整个 </em> 行。  @param[in]  row
- * 该视图所对应的表的行的索引。
- * @relatesalso  阵列视图
+ * Create a view to an entire row of a Table<2> object. This is equivalent to
+ * initializing an ArrayView object with a pointer to the first element of the
+ * given row, and the length of the row as the length of the view.
  *
+ * This function is used for @p const references to objects of Table type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
+ * should correspond.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1133,19 +1208,23 @@ make_array_view(const Table<2, ElementType> &                   table,
 
 
 /**
- * 为Table<2>对象的一行（部分）创建一个视图。
- * 这个函数用于对Table类型对象的非  @p const
- * 引用。这种对象包含可以被写入的元素。因此，这个函数的返回类型是对一组可写对象的视图。
- * @param[in]  table
- * 我们希望有一个数组视图对象的表。数组视图对应于  <em>
- * 整个  </em>  行。  @param[in]  row
- * 该视图所对应的表的行的索引。  @param[in]  starting_column
- * 与该视图的第一个元素相对应的表内的列的索引。
- * @param[in]  size_of_view
- * 这个视图应该有多少个元素。这对应于该视图应该对应的当前行中的列数。
- * @relatesalso  ArrayView
+ * Create a view to (a part of) a row of a Table<2> object.
  *
+ * This function is used for non-@p const references to objects of Table type.
+ * Such objects contain elements that can be written to. Consequently, the
+ * return type of this function is a view to a set of writable objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
+ * should correspond.
+ * @param[in] starting_column The index of the column into the given row of
+ * the table that corresponds to the first element of this view.
+ * @param[in] size_of_view The number of elements this view should have. This
+ * corresponds to the number of columns in the current row to which the view
+ * should correspond.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<ElementType> make_array_view(
@@ -1166,20 +1245,23 @@ inline ArrayView<ElementType> make_array_view(
 
 
 /**
- * 为Table<2>对象的某一行创建一个视图（一部分）。
- * 这个函数用于 @p const
- * 对Table类型对象的引用，因为它们包含不可变的元素。因此，这个函数的返回类型是对一组
- * @p const 对象的视图。
- * @param[in]  table
- * 我们希望有一个数组视图对象的表。数组视图对应于一个
- * <em> 整个 </em> 行。  @param[in]  row
- * 该视图所对应的表的行的索引。  @param[in]  starting_column
- * 与该视图的第一个元素相对应的表内的列的索引。
- * @param[in]  size_of_view
- * 这个视图应该有多少个元素。这对应于该视图应该对应的当前行中的列数。
- * @relatesalso  ArrayView
+ * Create a view to (a part of) a row of a Table<2> object.
  *
+ * This function is used for @p const references to objects of Table type
+ * because they contain immutable elements. Consequently, the return type of
+ * this function is a view to a set of @p const objects.
  *
+ * @param[in] table The Table for which we want to have an array view object.
+ * The array view corresponds to an <em>entire</em> row.
+ * @param[in] row The index of the row into the table to which this view
+ * should correspond.
+ * @param[in] starting_column The index of the column into the given row of
+ * the table that corresponds to the first element of this view.
+ * @param[in] size_of_view The number of elements this view should have. This
+ * corresponds to the number of columns in the current row to which the view
+ * should correspond.
+ *
+ * @relatesalso ArrayView
  */
 template <typename ElementType>
 inline ArrayView<const ElementType>
@@ -1200,12 +1282,16 @@ make_array_view(const Table<2, ElementType> &                   table,
 
 
 
-/* 创建一个不允许修改其指向的容器的视图。如果传入的对象已经不是`const'，并且一个函数在签名中要求视图为常量内存，这就很有用。
-* 这个函数返回一个`ArrayView<const T>`类型的对象，其中`T`是容器的元素类型。
-*  @relatesalso  ArrayView
-
-* 
-* */
+/*
+ * Create a view that doesn't allow the container it points to to be modified.
+ * This is useful if the object passed in is not `const` already and a function
+ * requires a view to constant memory in its signature.
+ *
+ * This function returns an object of type `ArrayView<const T>` where `T` is the
+ * element type of the container.
+ *
+ * @relatesalso ArrayView
+ */
 template <typename Container>
 inline auto
 make_const_array_view(const Container &container)
@@ -1218,5 +1304,3 @@ make_const_array_view(const Container &container)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

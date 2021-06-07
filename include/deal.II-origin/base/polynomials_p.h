@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/polynomials_p_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -30,49 +31,53 @@
 
 DEAL_II_NAMESPACE_OPEN
 /**
- * @addtogroup Polynomials
- * @{
+ * @addtogroup  多项式  @{ .
+ *
+ *
  */
 
 /**
- * This class implements the polynomial space of degree <tt>p</tt> based on
- * the monomials ${1,x,x^2,...}$. I.e. in <tt>d</tt> dimensions it constructs
- * all polynomials of the form $\prod_{i=1}^d x_i^{n_i}$, where $\sum_i
- * n_i\leq p$. The base polynomials are given a specific ordering, e.g. in 2
- * dimensions: ${1,x,y,xy,x^2,y^2,x^2y,xy^2,x^3,y^3,...}$. The ordering of the
- * monomials in $P_k1$ matches the ordering of the monomials in $P_k2$ for
- * $k2>k1$.
+ * 这个类实现了基于单项式 ${1,x,x^2,...}$
+ * 的<tt>p</tt>度的多项式空间。即在<tt>d</tt>维度上，它构建了所有形式为
+ * $\prod_{i=1}^d x_i^{n_i}$ 的多项式，其中 $\sum_i n_i\leq p$
+ * 。基数多项式有一个特定的顺序，例如，在2维中。
+ * ${1,x,y,xy,x^2,y^2,x^2y,xy^2,x^3,y^3,...}$  .  $P_k1$
+ * 中的单项式的排序与 $P_k2$ 中的单项式的排序相匹配，为
+ * $k2>k1$  。
+ *
+ *
  */
 template <int dim>
 class PolynomialsP : public PolynomialSpace<dim>
 {
 public:
   /**
-   * Access to the dimension of this object, for checking and automatic
-   * setting of dimension in other classes.
+   * 访问此对象的维度，用于检查和自动设置其他类中的维度。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Constructor. Creates all basis functions of $P_p$. @arg p: the degree of
-   * the polynomial space
+   * 构造函数。创建所有  $P_p$  的基函数。  @arg
+   * p：多项式空间的度数
+   *
    */
   PolynomialsP(const unsigned int p);
 
   /**
-   * Return the degree <tt>p</tt> of the polynomial space <tt>P_p</tt>.
+   * 返回多项式空间的度数<tt>p</tt> <tt>P_p</tt>。
+   * 注意，这个数字是 <tt>PolynomialSpace::degree()-1</tt>,
+   * 比较PolynomialSpace中的定义。
    *
-   * Note, that this number is <tt>PolynomialSpace::degree()-1</tt>, compare
-   * definition in PolynomialSpace.
    */
   virtual unsigned int
   degree() const override;
 
   /**
-   * For the <tt>n</tt>th polynomial $p_n(x,y,z)=x^i y^j z^k$ this function
-   * gives the degrees i,j,k in the x,y,z directions.
+   * 对于<tt>n</tt>次多项式 $p_n(x,y,z)=x^i y^j z^k$
+   * 这个函数给出了x,y,z方向上的度数i,j,k。
+   * 在1d和2d中，显然只有i和i,j被返回。
    *
-   * In 1d and 2d, obviously only i and i,j are returned.
    */
   std::array<unsigned int, dim>
   directional_degrees(unsigned int n) const;
@@ -85,19 +90,21 @@ public:
 
 private:
   /**
-   * Fills the <tt>index_map</tt>.
+   * 填充<tt>index_map</tt>。
+   *
    */
   void
   create_polynomial_ordering(std::vector<unsigned int> &index_map) const;
 
   /**
-   * Degree <tt>p</tt> of the polynomial space $P_p$, i.e. the number
-   * <tt>p</tt> which was given to the constructor.
+   * 多项式空间的度数<tt>p</tt>  $P_p$
+   * ，即给构造函数的数字<tt>p</tt>。
+   *
    */
   const unsigned int p;
 };
 
-/** @} */
+ /** @} */ 
 
 template <int dim>
 inline unsigned int
@@ -117,3 +124,5 @@ PolynomialsP<dim>::directional_degrees(unsigned int n) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

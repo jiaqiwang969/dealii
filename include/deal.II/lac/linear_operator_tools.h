@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/linear_operator_tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2019 by the deal.II authors
@@ -31,5 +30,3 @@
 #include <deal.II/lac/trilinos_linear_operator.h>
 
 #endif
-
-

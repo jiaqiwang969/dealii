@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/communication_pattern_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -33,21 +32,27 @@ namespace Utilities
   namespace MPI
   {
     /**
-     * 通信模式（CommunicationPattern）是一个抽象类，用于定义一个可以重复调用的通信计划，以有效地获得非处理器元素。其想法是将通信模式与需要通信的数据解耦。目标是为不同的容器重复使用相同的通信模式。这与SparseMatrix和SparsityPattern的工作方式类似。
-     *
+     * CommunicationPattern is an abstract class that is used to define a
+     * communication plan that can be called repeatedly to efficiently obtain
+     * off-processor elements. The idea is to decouple the communication pattern
+     * from the data that needs to be communicated. The goal is to reuse the
+     * same communication pattern for different containers. This is similar to
+     * the way SparseMatrix and SparsityPattern works.
      */
     class CommunicationPatternBase
     {
     public:
       /**
-       * 解构器。
-       *
+       * Destructor.
        */
       virtual ~CommunicationPatternBase() = default;
 
       /**
-       * 重新初始化通信模式。第一个参数`vector_space_vector_index_set`是与一个VectorSpaceVector对象相关的索引集。第二个参数`read_write_vector_index_set`是与一个ReadWriteVector对象相关的索引集。
-       *
+       * Reinitialize the communication pattern. The first argument
+       * `vector_space_vector_index_set` is the index set associated to a
+       * VectorSpaceVector object. The second argument
+       * `read_write_vector_index_set` is the index set associated to a
+       * ReadWriteVector object.
        */
       virtual void
       reinit(const IndexSet &vector_space_vector_index_set,
@@ -55,8 +60,7 @@ namespace Utilities
              const MPI_Comm &communicator) = 0;
 
       /**
-       * 返回一个对底层MPI通信器的常数引用。
-       *
+       * Return a constant reference to the underlying MPI communicator.
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const = 0;
@@ -69,5 +73,3 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

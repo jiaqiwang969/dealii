@@ -1,3 +1,4 @@
+//include/deal.II-translator/integrators/elasticity_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -35,16 +36,15 @@ namespace LocalIntegrators
 {
   /**
    * @brief Local integrators related to elasticity problems.
-   *
    * @ingroup Integrators
+   *
    */
   namespace Elasticity
   {
     /**
-     * The linear elasticity operator in weak form, namely double contraction
-     * of symmetric gradients.
-     *
+     * 弱形式的线性弹性算子，即对称梯度的双重收缩。
      * \f[ \int_Z \varepsilon(u): \varepsilon(v)\,dx \f]
+     *
      */
     template <int dim>
     inline void
@@ -75,9 +75,10 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued residual operator for linear elasticity in weak form
+     * 弱形式的线性弹性的矢量值残差算子 \f[
      *
-     * \f[ - \int_Z \varepsilon(u): \varepsilon(v) \,dx \f]
+     * - \int_Z \varepsilon(u): \varepsilon(v) \,dx \f] 。
+     *
      */
     template <int dim, typename number>
     inline void
@@ -111,12 +112,15 @@ namespace LocalIntegrators
 
 
     /**
-     * The matrix for the weak boundary condition of Nitsche type for linear
-     * elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma u \cdot v - n^T \epsilon(u) v - u \epsilon(v)
+     * 线性弹性的尼采类型的弱边界条件的矩阵。    @f[
+     * \int_F \Bigl(\gamma u \cdot v
+     *
+     * - n^T \epsilon(u) v
+     *
+     * - u \epsilon(v)
      * n\Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim>
     inline void
@@ -166,12 +170,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * The matrix for the weak boundary condition of Nitsche type for the
-     * tangential displacement in linear elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma u_\tau \cdot v_\tau - n^T \epsilon(u_\tau) v_\tau -
+     * 线性弹性切向位移的尼采型弱边界条件的矩阵。    @f[
+     * \int_F \Bigl(\gamma u_\tau \cdot v_\tau
+     *
+     * - n^T \epsilon(u_\tau) v_\tau
+     *
+     * -
      * u_\tau^T \epsilon(v_\tau) n\Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim>
     inline void
@@ -239,18 +246,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition for the elasticity operator by Nitsche, namely
-     * on the face <i>F</i> the vector
-     * @f[
-     * \int_F \Bigl(\gamma (u-g) \cdot v - n^T \epsilon(u) v - (u-g) \epsilon(v)
-     * n^T\Bigr)\;ds.
-     * @f]
+     * Nitsche的弹性算子的弱边界条件，即在面<i>F</i>上的向量@f[
+     * \int_F \Bigl(\gamma (u-g) \cdot v
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. <i>g</i> is the inhomogeneous boundary value in the
-     * argument <tt>data</tt>. $n$ is the outer normal vector and $\gamma$ is
-     * the usual penalty parameter.
+     * - n^T \epsilon(u) v
+     *
+     * - (u-g) \epsilon(v)
+     * n^T\Bigr)\;ds.
+     * @f] 这里，<i>u</i>是有限元函数，其值和梯度分别在参数<tt>input</tt>和<tt>Dinput</tt>中给出。<i>g</i>是参数<tt>data</tt>中的非均质边界值。  $n$ 是外法向量， $\gamma$ 是通常的惩罚参数。
+     *
      */
     template <int dim, typename number>
     void
@@ -297,12 +301,34 @@ namespace LocalIntegrators
     }
 
     /**
-     * The weak boundary condition of Nitsche type for the tangential
-     * displacement in linear elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma (u_\tau-g_\tau) \cdot v_\tau - n^T \epsilon(u_\tau) v
+     * 线性弹性中切向位移的Nitsche类型的弱边界条件。    @f[
+     * \int_F \Bigl(\gamma (u_\tau-g_\tau) \cdot v_\tau
+     *
+     * - n^T \epsilon(u_\tau) v
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      * - (u_\tau-g_\tau) \epsilon(v_\tau) n\Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim, typename number>
     inline void
@@ -370,17 +396,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Homogeneous weak boundary condition for the elasticity operator by
-     * Nitsche, namely on the face <i>F</i> the vector
-     * @f[
-     * \int_F \Bigl(\gamma u \cdot v - n^T \epsilon(u) v - u \epsilon(v)
-     * n^T\Bigr)\;ds.
-     * @f]
+     * Nitsche的弹性算子的同质弱边界条件，即在面<i>F</i>上的向量@f[
+     * \int_F \Bigl(\gamma u \cdot v
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. $n$ is the outer normal vector and $\gamma$ is the usual
-     * penalty parameter.
+     * - n^T \epsilon(u) v
+     *
+     * - u \epsilon(v)
+     * n^T\Bigr)\;ds.
+     * @f] 这里，<i>u</i>是有限元函数，其值和梯度分别在参数<tt>input</tt>和<tt>Dinput</tt>中给出。  $n$ 是外法向量， $\gamma$ 是通常的惩罚参数。
+     *
      */
     template <int dim, typename number>
     void
@@ -425,7 +449,8 @@ namespace LocalIntegrators
     }
 
     /**
-     * The interior penalty flux for symmetric gradients.
+     * 对称梯度的内部惩罚通量。
+     *
      */
     template <int dim>
     inline void
@@ -533,7 +558,8 @@ namespace LocalIntegrators
         }
     }
     /**
-     * Elasticity residual term for the symmetric interior penalty method.
+     * 对称内部惩罚方法的弹性残差项。
+     *
      */
     template <int dim, typename number>
     void
@@ -625,3 +651,5 @@ namespace LocalIntegrators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

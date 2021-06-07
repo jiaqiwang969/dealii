@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/error_estimator.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -64,98 +63,114 @@ DEAL_II_NAMESPACE_OPEN
 namespace internal
 {
   /**
-   * 误差估计器的几个函数在每个线程中需要一次的所有小型临时数据对象都聚集在这个结构中。
-   * 建立这个结构的原因主要是我们有一些对单元或面进行操作的函数，需要一些小的临时数据对象。由于这些函数可能会并行运行，我们不能让这些对象成为包围类的成员变量。另一方面，在这些函数中的每一个局部声明它们将需要在我们每次访问下一个单元格或面时重新分配，我们发现如果经常发生这种情况，即使是在单线程的情况下（在我们的测量中为10-20%）也会花费大量的时间；然而，最重要的是，内存分配需要在多线程模式下进行同步。虽然这是由C++库完成的，不需要手工编码，但它还是严重损害了有效地并行运行该类函数的能力，因为它们经常被这些同步点阻断，使一切都慢了两到三倍。
-   * 因此，每个线程都有一个这个类的实例来工作，不需要自己分配内存，也不需要与其他线程同步。
-   * 数组的大小被初始化为hp情况下所需的最大条目数。在各个单元的循环中，我们会根据需要调整数组的大小。因为对于
-   * std::vector
-   * 来说，调整大小到一个较小的尺寸并不意味着内存分配，所以这很快速。
+   * All small temporary data objects that are needed once per thread by the
+   * several functions of the error estimator are gathered in this struct.
+   * The reason for this structure is mainly that we have a number of
+   * functions that operate on cells or faces and need a number of small
+   * temporary data objects. Since these functions may run in parallel, we
+   * cannot make these objects member variables of the enclosing class. On
+   * the other hand, declaring them locally in each of these functions would
+   * require their reallocating every time we visit the next cell or face,
+   * which we found can take a significant amount of time if it happens
+   * often even in the single threaded case (10-20 per cent in our
+   * measurements); however, most importantly, memory allocation requires
+   * synchronization in multithreaded mode. While that is done by the C++
+   * library and has not to be handcoded, it nevertheless seriously damages
+   * the ability to efficiently run the functions of this class in parallel,
+   * since they are quite often blocked by these synchronization points,
+   * slowing everything down by a factor of two or three.
    *
+   * Thus, every thread gets an instance of this class to work with and
+   * needs not allocate memory itself, or synchronize with other threads.
+   *
+   * The sizes of the arrays are initialized with the maximal number of
+   * entries necessary for the hp-case. Within the loop over individual
+   * cells, we then resize the arrays as necessary. Since for std::vector
+   * resizing to a smaller size doesn't imply memory allocation, this is
+   * fast.
    */
   template <int dim, int spacedim, typename number>
   struct ParallelData
   {
     /**
-     * 要使用的有限元。
-     *
+     * The finite element to be used.
      */
     const dealii::hp::FECollection<dim, spacedim> finite_element;
 
     /**
-     * 用于面的正交公式。
-     *
+     * The quadrature formulas to be used for the faces.
      */
     const dealii::hp::QCollection<dim - 1> face_quadratures;
 
     /**
-     * FEFaceValues对象，用于对当前和可能的邻近单元的面进行积分。
-     *
+     * FEFaceValues objects to integrate over the faces of the current and
+     * potentially of neighbor cells.
      */
     dealii::hp::FEFaceValues<dim, spacedim>    fe_face_values_cell;
     dealii::hp::FEFaceValues<dim, spacedim>    fe_face_values_neighbor;
     dealii::hp::FESubfaceValues<dim, spacedim> fe_subface_values;
 
     /**
-     * 一个向量用于存储每个求解向量的正交点的法向量跳动（即一个临时值）。
-     * 这个向量不是在使用它的函数内部分配的，而是全局分配的，因为内存分配很慢，特别是在有多个线程的情况下，同步化会使事情变得更慢。
-     *
+     * A vector to store the jump of the normal vectors in the quadrature
+     * points for each of the solution vectors (i.e. a temporary value).
+     * This vector is not allocated inside the functions that use it, but
+     * rather globally, since memory allocation is slow, in particular in
+     * presence of multiple threads where synchronization makes things even
+     * slower.
      */
     std::vector<std::vector<std::vector<number>>> phi;
 
     /**
-     * 一个单元上的有限元函数梯度的向量 让psi成为<tt>a grad
-     * u_h</tt>的简称，其中第三个索引是有限元的分量，第二个索引是正交点的编号。第一个索引表示解向量的索引。
+     * A vector for the gradients of the finite element function on one cell
      *
+     * Let psi be a short name for <tt>a grad u_h</tt>, where the third
+     * index be the component of the finite element, and the second index
+     * the number of the quadrature point. The first index denotes the index
+     * of the solution vector.
      */
     std::vector<std::vector<std::vector<Tensor<1, spacedim, number>>>> psi;
 
     /**
-     * 邻近单元的相同向量
-     *
+     * The same vector for a neighbor cell
      */
     std::vector<std::vector<std::vector<Tensor<1, spacedim, number>>>>
       neighbor_psi;
 
     /**
-     * 一个面上的有限元函数的法向量
-     *
+     * The normal vectors of the finite element function on one face
      */
     std::vector<Tensor<1, spacedim>> normal_vectors;
 
     /**
-     * 对立面的法向量。
-     *
+     * Normal vectors of the opposing face.
      */
     std::vector<Tensor<1, spacedim>> neighbor_normal_vectors;
 
     /**
-     * 跳跃中的系数值所需的两个数组，如果它们被给出的话。
-     *
+     * Two arrays needed for the values of coefficients in the jumps, if
+     * they are given.
      */
     std::vector<double>                 coefficient_values1;
     std::vector<dealii::Vector<double>> coefficient_values;
 
     /**
-     * 用于雅各布行列式和四分仪点的权重的乘积的数组。
-     *
+     * Array for the products of Jacobian determinants and weights of
+     * quadraturs points.
      */
     std::vector<double> JxW_values;
 
     /**
-     * 我们要关注的子域ID。
-     *
+     * The subdomain id we are to care for.
      */
     const types::subdomain_id subdomain_id;
     /**
-     * 我们要关注的材料ID。
-     *
+     * The material id we are to care for.
      */
     const types::material_id material_id;
 
     /**
-     * 还有一些对 KellyErrorEstimator::estimate()
-     * 函数的输入数据的引用。
-     *
+     * Some more references to input data to the
+     * KellyErrorEstimator::estimate() function.
      */
     const std::map<types::boundary_id, const Function<spacedim, number> *>
       *                       neumann_bc;
@@ -163,8 +178,7 @@ namespace internal
     const Function<spacedim> *coefficients;
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     template <class FE>
     ParallelData(const FE &                              fe,
@@ -180,8 +194,9 @@ namespace internal
                  const Function<spacedim> *coefficients);
 
     /**
-     * 调整数组的大小，使其适合与给定的有限元索引相关的正交点数量的hp-集合。
-     *
+     * Resize the arrays so that they fit the number of quadrature points
+     * associated with the given finite element index into the hp-
+     * collections.
      */
     void
     resize(const unsigned int active_fe_index);
@@ -282,8 +297,9 @@ namespace internal
 
 
   /**
-   * 将单个ParallelData对象的local_face_integrals地图中的数据复制到一个全局的此类地图中。这是一个WorkStream流水线的复制器阶段。
-   *
+   * Copy data from the local_face_integrals map of a single ParallelData
+   * object into a global such map. This is the copier stage of a WorkStream
+   * pipeline.
    */
   template <int dim, int spacedim>
   void
@@ -317,8 +333,8 @@ namespace internal
 
 
   /**
-   * 实际上是根据ParallelData中评估的梯度来进行计算。
-   *
+   * Actually do the computation based on the evaluated gradients in
+   * ParallelData.
    */
   template <int dim, int spacedim, typename number>
   std::vector<double>
@@ -466,8 +482,8 @@ namespace internal
   }
 
   /**
-   * 一个用于缩放边界处面的积分的因子。用于Neumann BC。
-   *
+   * A factor to scale the integral for the face at the boundary. Used for
+   * Neumann BC.
    */
   template <int dim, int spacedim>
   double
@@ -505,8 +521,7 @@ namespace internal
 
 
   /**
-   * 一个用于缩放常规面的积分的因子。
-   *
+   * A factor to scale the integral for the regular face.
    */
   template <int dim, int spacedim>
   double
@@ -549,8 +564,7 @@ namespace internal
   }
 
   /**
-   * 对不规则面的积分进行缩放的系数。
-   *
+   * A factor to scale the integral for the irregular face.
    */
   template <int dim, int spacedim>
   double
@@ -596,15 +610,15 @@ namespace internal
   }
 
   /**
-   * 一个用于汇总每个单元中不同面的所有贡献的系数。
-   *
+   * A factor used when summing up all the contribution from different faces
+   * of each cell.
    */
   template <int dim, int spacedim>
   double
   cell_factor(
     const typename DoFHandler<dim, spacedim>::active_cell_iterator &cell,
-    const unsigned int  /*face_no*/ ,
-    const DoFHandler<dim, spacedim> &  /*dof_handler*/ ,
+    const unsigned int /*face_no*/,
+    const DoFHandler<dim, spacedim> & /*dof_handler*/,
     const typename KellyErrorEstimator<dim, spacedim>::Strategy strategy)
   {
     switch (strategy)
@@ -633,8 +647,10 @@ namespace internal
 
 
   /**
-   * 实际上是在一个没有悬挂节点的面（它是规则的）上进行计算，也就是说，要么在另一边有涅槃（面在边界），要么另一边的细化水平与这一边的细化水平相同，然后把这两种情况的积分一起处理。
-   *
+   * Actually do the computation on a face which has no hanging nodes (it is
+   * regular), i.e. either on the other side there is nirvana (face is at
+   * boundary), or the other side's refinement level is the same as that of
+   * this side, then handle the integration of these both cases together.
    */
   template <typename InputVector, int dim, int spacedim>
   void
@@ -726,9 +742,9 @@ namespace internal
 
 
   /**
-   * 和上面的函数一样，只是积分是在 @p cell, 的 @p face_no
-   * 面上，其中各自的邻居被细化，所以积分会更复杂一些。
-   *
+   * The same applies as for the function above, except that integration is
+   * over face @p face_no of @p cell, where the respective neighbor is
+   * refined, so that the integration is a bit more complex.
    */
   template <typename InputVector, int dim, int spacedim>
   void
@@ -840,10 +856,10 @@ namespace internal
 
 
   /**
-   * 计算单个单元的面的误差。
-   * 这个函数只在二维或三维中需要。
-   * 一维的误差估计器是单独实现的。
+   * Computate the error on the faces of a single cell.
    *
+   * This function is only needed in two or three dimensions.  The error
+   * estimator in one dimension is implemented separately.
    */
   template <typename InputVector, int dim, int spacedim>
   void
@@ -1405,5 +1421,3 @@ KellyErrorEstimator<dim, spacedim>::estimate(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

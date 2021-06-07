@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/matrix_block_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
@@ -53,32 +54,12 @@ namespace internal
 } // namespace internal
 
 /**
- * A wrapper around a matrix object, storing the coordinates in a block matrix
- * as well.
+ * 一个围绕矩阵对象的封装器，将坐标也存储在一个块状矩阵中。
+ * 这个类是BlockMatrixBase的一个替代品，如果你只想生成系统的一个块，而不是整个系统。使用这个类的add()函数，可以使用用于块状矩阵的标准装配函数，但只输入其中一个块，仍然可以避免涉及的索引计算。
+ * 这个类的原因是，在一个块系统中的不同块，我们可能需要不同数量的矩阵。例如，Oseen系统的预处理程序可以建立为一个块系统，其中压力块的形式为<b>M</b><sup>-1</sup><b>FA</b><sup>-1</sup>，<b>M</b>是压力质量矩阵，<b>A</b>是压力拉普拉斯，<b>F</b>是应用于压力空间的平流扩散算符。由于其他区块只需要一个矩阵，使用BlockSparseMatrix或类似的方法将是对内存的浪费。
+ * 虽然add()函数使MatrixBlock看起来像一个用于组装的块状矩阵，但vmult()、Tvmult()、vmult_add()和Tvmult_add()函数使它的行为像一个MatrixType，当它应用于一个矢量时。这种行为允许我们在向量中存储MatrixBlock对象，例如在MGLevelObject中，而不用先提取#matrix。
+ * MatrixBlock在使用BlockMatrixArray时很方便。一旦MatrixBlock被正确地初始化和填充，它就可以在最简单的情况下被用来作为。
  *
- * This class is an alternative to BlockMatrixBase, if you only want to
- * generate a single block of the system, not the whole system. Using the
- * add() functions of this class, it is possible to use the standard
- * assembling functions used for block matrices, but only enter in one of the
- * blocks and still avoiding the index computations involved.  The reason for
- * this class is, that we may need a different number of matrices for
- * different blocks in a block system. For example, a preconditioner for the
- * Oseen system can be built as a block system, where the pressure block is of
- * the form <b>M</b><sup>-1</sup><b>FA</b><sup>-1</sup> with <b>M</b> the
- * pressure mass matrix, <b>A</b> the pressure Laplacian and <b>F</b> the
- * advection diffusion operator applied to the pressure space. Since only a
- * single matrix is needed for the other blocks, using BlockSparseMatrix or
- * similar would be a waste of memory.
- *
- * While the add() functions make a MatrixBlock appear like a block matrix for
- * assembling, the functions vmult(), Tvmult(), vmult_add(), and Tvmult_add()
- * make it behave like a MatrixType, when it comes to applying it to a vector.
- * This behavior allows us to store MatrixBlock objects in vectors, for
- * instance in MGLevelObject without extracting the #matrix first.
- *
- * MatrixBlock comes handy when using BlockMatrixArray. Once the MatrixBlock
- * has been properly initialized and filled, it can be used in the simplest
- * case as:
  * @code
  * MatrixBlockVector<SparseMatrix<double> > > blocks;
  *
@@ -87,68 +68,70 @@ namespace internal
  * BlockMatrixArray matrix (n_blocks, n_blocks);
  *
  * for (size_type i=0;i<blocks.size;++i)
- *   matrix.enter(blocks.block(i).row, blocks.block(i).column,
+ * matrix.enter(blocks.block(i).row, blocks.block(i).column,
  * blocks.matrix(i));
  * @endcode
  *
- * Here, we have not gained very much, except that we do not need to set up
- * empty blocks in the block system.
+ * 在这里，我们的收获并不大，只是我们不需要在块系统中设置空块。
  *
- * @note This class expects, that the row and column BlockIndices objects for
- * the system are equal. If they are not, some functions will throw
- * ExcNotImplemented.
  *
- * @todo Example for the product preconditioner of the pressure Schur
- * complement.
+ * @note
+ * 这个类期望，系统的行和列的BlockIndices对象是相等的。如果它们不相等，一些函数会抛出ExcNotImplemented。
+ * @todo  压力舒尔补码的乘积预处理的例子。
+ *
  *
  * @ingroup Matrix2
- * @ingroup vector_valued
  *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
+ * @ingroup vector_valued
+ * @see   @ref GlossBlockLA  "块（线性代数）"
+ *
  */
 template <typename MatrixType>
 class MatrixBlock : public Subscriptor
 {
 public:
   /**
-   * Declare type for container size.
+   * 申报容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Declare a type for matrix entries.
+   * 为矩阵条目声明一个类型。
+   *
    */
   using value_type = typename MatrixType::value_type;
 
   /**
-   * Constructor rendering an uninitialized object.
+   * 构造函数渲染一个未初始化的对象。
+   *
    */
   MatrixBlock();
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   MatrixBlock(const MatrixBlock<MatrixType> &M) = default;
 
   /**
-   * Assignment operator.
+   * 赋值运算符。
+   *
    */
   MatrixBlock<MatrixType> &
   operator=(const MatrixBlock<MatrixType> &) = default;
 
   /**
-   * Constructor setting block coordinates, but not initializing the matrix.
+   * 构造函数设置块坐标，但不初始化矩阵。
+   *
    */
 
   MatrixBlock(size_type i, size_type j);
 
   /**
-   * Reinitialize the matrix for a new BlockSparsityPattern. This adjusts the
-   * #matrix as well as the #row_indices and #column_indices.
+   * 为一个新的BlockSparsityPattern重新初始化矩阵。这将调整#matrix以及#row_indices和#column_indices。
+   * @note  稀疏模式的行和列块结构必须相等。
    *
-   * @note The row and column block structure of the sparsity pattern must be
-   * equal.
    */
   void
   reinit(const BlockSparsityPattern &sparsity);
@@ -157,8 +140,8 @@ public:
   operator const MatrixType &() const;
 
   /**
-   * Add <tt>value</tt> to the element (<i>i,j</i>). Throws an error if the
-   * entry does not exist or if it is in a different block.
+   * 向元素添加<tt>value</tt>（<i>i,j</i>）。如果该条目不存在或在不同的块中，则抛出一个错误。
+   *
    */
   void
   add(const size_type                       i,
@@ -166,19 +149,11 @@ public:
       const typename MatrixType::value_type value);
 
   /**
-   * Add all elements in a FullMatrix into sparse matrix locations given by
-   * <tt>indices</tt>. This function assumes a quadratic sparse matrix and a
-   * quadratic full_matrix.  The global locations are translated into
-   * locations in this block and ExcBlockIndexMismatch is thrown, if the
-   * global index does not point into the block referred to by #row and
-   * #column.
+   * 将FullMatrix中的所有元素添加到由<tt>indices</tt>给出的稀疏矩阵位置。这个函数假设一个二次元稀疏矩阵和一个二次元full_matrix。
+   * 全局位置被转换为该块中的位置，如果全局索引没有指向#row和#column所指的块，则抛出ExcBlockIndexMismatch。
+   * @todo  <tt>elide_zero_values</tt>目前被忽略。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * @todo <tt>elide_zero_values</tt> is currently ignored.
-   *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -187,18 +162,10 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Add all elements in a FullMatrix into global locations given by
-   * <tt>row_indices</tt> and <tt>col_indices</tt>, respectively. The global
-   * locations are translated into locations in this block and
-   * ExcBlockIndexMismatch is thrown, if the global index does not point into
-   * the block referred to by #row and #column.
+   * 将FullMatrix中的所有元素添加到分别由<tt>row_indices</tt>和<tt>col_indices</tt>给出的全局位置。全局位置被转换为该块中的位置，如果全局索引没有指向#row和#column所指的块，则抛出ExcBlockIndexMismatch。
+   * @todo  <tt>elide_zero_values</tt>目前被忽略。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * @todo <tt>elide_zero_values</tt> is currently ignored.
-   *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -208,20 +175,10 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Set several elements in the specified row of the matrix with column
-   * indices as given by <tt>col_indices</tt> to the respective value. This is
-   * the function doing the actual work for the ones adding full matrices. The
-   * global locations <tt>row_index</tt> and <tt>col_indices</tt> are
-   * translated into locations in this block and ExcBlockIndexMismatch is
-   * thrown, if the global index does not point into the block referred to by
-   * #row and #column.
+   * 将矩阵指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。这是为添加完整矩阵的做实际工作的函数。全局位置<tt>row_index</tt>和<tt>col_indices</tt>被转换为该块中的位置，如果全局索引没有指向#row和#column所指的块，则抛出ExcBlockIndexMismatch。
+   * @todo  <tt>elide_zero_values</tt>目前被忽略。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * @todo <tt>elide_zero_values</tt> is currently ignored.
-   *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -231,13 +188,9 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Add an array of values given by <tt>values</tt> in the given global
-   * matrix row at columns specified by col_indices in the sparse matrix.
+   * 在给定的全局矩阵行中，在稀疏矩阵中由col_indices指定的列中添加一个由<tt>values</tt>给出的数值阵列。
+   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number>
   void
@@ -249,50 +202,47 @@ public:
       const bool       col_indices_are_sorted = false);
 
   /**
-   * Matrix-vector-multiplication, forwarding to the same function in
-   * MatrixType. No index computations are done, thus, the vectors need to
-   * have sizes matching #matrix.
+   * 矩阵-向量-乘法，转发到MatrixType中的相同函数。没有进行索引计算，因此，向量需要有与#matrix匹配的大小。
+   *
    */
   template <class VectorType>
   void
   vmult(VectorType &w, const VectorType &v) const;
 
   /**
-   * Matrix-vector-multiplication, forwarding to the same function in
-   * MatrixType. No index computations are done, thus, the vectors need to
-   * have sizes matching #matrix.
+   * 矩阵-向量-乘法，转发到MatrixType中的相同函数。没有做索引计算，因此，向量需要有与#matrix匹配的大小。
+   *
    */
   template <class VectorType>
   void
   vmult_add(VectorType &w, const VectorType &v) const;
 
   /**
-   * Matrix-vector-multiplication, forwarding to the same function in
-   * MatrixType. No index computations are done, thus, the vectors need to
-   * have sizes matching #matrix.
+   * 矩阵-向量-乘法，转发到MatrixType中的相同函数。没有进行索引计算，因此，向量需要有与#matrix匹配的大小。
+   *
    */
   template <class VectorType>
   void
   Tvmult(VectorType &w, const VectorType &v) const;
 
   /**
-   * Matrix-vector-multiplication, forwarding to the same function in
-   * MatrixType. No index computations are done, thus, the vectors need to
-   * have sizes matching #matrix.
+   * 矩阵-向量-乘法，转发到MatrixType中的相同函数。没有做索引计算，因此，向量需要有与#matrix匹配的大小。
+   *
    */
   template <class VectorType>
   void
   Tvmult_add(VectorType &w, const VectorType &v) const;
 
   /**
-   * The memory used by this object.
+   * 这个对象使用的内存。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * The block number computed from an index by using BlockIndices does not
-   * match the block coordinates stored in this object.
+   * 通过使用BlockIndices从索引中计算出的块编号与存储在此对象中的块坐标不匹配。
+   *
    */
   DeclException2(ExcBlockIndexMismatch,
                  size_type,
@@ -300,31 +250,31 @@ public:
                  << "Block index " << arg1 << " does not match " << arg2);
 
   /**
-   * Row coordinate.  This is the position of the data member matrix on the
-   * global matrix.
+   * 行坐标。 这是该数据成员矩阵在全局矩阵上的位置。
+   *
    */
   size_type row;
   /**
-   * Column coordinate.  This is the position of the data member matrix on the
-   * global matrix.
+   * 列坐标。 这是该数据成员矩阵在全局矩阵上的位置。
+   *
    */
   size_type column;
 
   /**
-   * The matrix itself
+   * 矩阵本身
+   *
    */
   MatrixType matrix;
 
 private:
   /**
-   * The row BlockIndices of the whole system. Using row(), this allows us to
-   * find the index of the first row degree of freedom for this block.
+   * 整个系统的行BlockIndices。使用row()，这可以让我们找到这个块的第一行自由度的索引。
+   *
    */
   BlockIndices row_indices;
   /**
-   * The column BlockIndices of the whole system. Using column(), this allows
-   * us to find the index of the first column degree of freedom for this
-   * block.
+   * 整个系统的列BlockIndices。使用column()，我们可以找到该块的第一个列自由度的索引。
+   *
    */
   BlockIndices column_indices;
 
@@ -341,86 +291,92 @@ private:
 
 
 /**
- * A vector of MatrixBlock, which is implemented using shared pointers, in
- * order to allow for copying and rearranging. Each matrix block can be
- * identified by name.
+ * 一个MatrixBlock的向量，使用共享指针来实现，以便于复制和重新排列。每个矩阵块都可以通过名称来识别。
+ * @relatesalso  MatrixBlock
  *
- * @relatesalso MatrixBlock
  * @ingroup vector_valued
+ *
+ *
  */
 template <typename MatrixType>
 class MatrixBlockVector : private AnyData
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * The type of object stored.
+   * 存储对象的类型。
+   *
    */
   using value_type = MatrixBlock<MatrixType>;
 
   /**
-   * The pointer type used for storing the objects. We use a shard pointer,
-   * such that they get deleted automatically when not used anymore.
+   * 用于存储对象的指针类型。我们使用一个分片的指针，这样，当不再使用时，它们会被自动删除。
+   *
    */
   using ptr_type = std::shared_ptr<value_type>;
 
   /**
-   * Add a new matrix block at the position <tt>(row,column)</tt> in the block
-   * system.
+   * 在块系统中的<tt>(row,column)</tt>位置添加一个新的矩阵块。
+   *
    */
   void
   add(size_type row, size_type column, const std::string &name);
 
   /**
-   * For matrices using a SparsityPattern, this function reinitializes each
-   * matrix in the vector with the correct pattern from the block system.
+   * 对于使用SparsityPattern的矩阵，这个函数用块系统的正确模式重新初始化向量中的每个矩阵。
+   *
    */
   void
   reinit(const BlockSparsityPattern &sparsity);
 
   /**
-   * Clear the object.
+   * 清除对象。
+   * 由于通常只需要清除单个矩阵，而不需要清除块本身，所以有一个可选的参数。如果缺少这个参数或者
+   * @p false,
+   * ，所有的矩阵将被清空，但是这个对象的大小和块的位置将不会改变。如果
+   * @p really_clean是 @p true,
+   * ，那么该对象在最后将不包含任何块。
    *
-   * Since often only clearing of the individual matrices is desired, but not
-   * removing the blocks themselves, there is an optional argument. If the
-   * argument is missing or @p false, all matrices will be empty, but the size
-   * of this object and the block positions will not change. If @p
-   * really_clean is @p true, then the object will contain no blocks at the
-   * end.
    */
   void
   clear(bool really_clean = false);
 
   /**
-   * The memory used by this object.
+   * 这个对象所使用的内存。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Access a constant reference to the block at position <i>i</i>.
+   * 访问位置<i>i</i>的块的常数引用。
+   *
    */
   const value_type &
   block(size_type i) const;
 
   /**
-   * Access a reference to the block at position <i>i</i>.
+   * 访问位置<i>i</i>的块的引用。
+   *
    */
   value_type &
   block(size_type i);
 
   /**
-   * Access the matrix at position <i>i</i> for read and write access.
+   * 访问位置<i>i</i>的矩阵，进行读和写访问。
+   *
    */
   MatrixType &
   matrix(size_type i);
 
   /**
-   * import functions from private base class
+   * 从私有基类中导入函数
+   *
    */
   using AnyData::name;
   using AnyData::size;
@@ -430,157 +386,158 @@ public:
 
 
 /**
- * A vector of MGLevelObject<MatrixBlock>, which is implemented using shared
- * pointers, in order to allow for copying and rearranging. Each matrix block
- * can be identified by name.
+ * 一个MGLevelObject<MatrixBlock>的向量，使用共享指针来实现，以便于复制和重新排列。每个矩阵块都可以通过名称来识别。
+ * @relatesalso  MatrixBlock
  *
- * @relatesalso MatrixBlock
  * @ingroup vector_valued
+ *
+ *
  */
 template <typename MatrixType>
 class MGMatrixBlockVector : public Subscriptor
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * The type of object stored.
+   * 存储对象的类型。
+   *
    */
   using value_type = MGLevelObject<MatrixBlock<MatrixType>>;
   /**
-   * Constructor, determining which matrices should be stored.
+   * 构造函数，决定哪些矩阵应该被存储。
+   * 如果<tt>edge_matrices</tt>为真，则分配面的自由度离散的边缘矩阵的对象。
+   * 如果<tt>edge_flux_matrices</tt>为真，则分配细化边上的危险通量对象。
    *
-   * If <tt>edge_matrices</tt> is true, then objects for edge matrices for
-   * discretizations with degrees of freedom on faces are allocated.
-   *
-   * If <tt>edge_flux_matrices</tt> is true, then objects for DG fluxes on the
-   * refinement edge are allocated.
    */
   MGMatrixBlockVector(const bool edge_matrices      = false,
                       const bool edge_flux_matrices = false);
 
   /**
-   * The number of blocks.
+   * 块的数量。
+   *
    */
   unsigned int
   size() const;
 
   /**
-   * Add a new matrix block at the position <tt>(row,column)</tt> in the block
-   * system. The third argument allows to give the matrix a name for later
-   * identification.
+   * 在块系统中<tt>(行,列)</tt>的位置添加一个新的矩阵块。第三个参数允许给矩阵一个名称，以便以后识别。
+   *
    */
   void
   add(size_type row, size_type column, const std::string &name);
 
   /**
-   * For matrices using a SparsityPattern, this function reinitializes each
-   * matrix in the vector with the correct pattern from the block system.
+   * 对于使用SparsityPattern的矩阵，这个函数用块系统的正确模式重新初始化向量中的每个矩阵。
+   * 这个函数重新初始化了水平矩阵。
    *
-   * This function reinitializes the level matrices.
    */
   void
   reinit_matrix(const MGLevelObject<BlockSparsityPattern> &sparsity);
   /**
-   * For matrices using a SparsityPattern, this function reinitializes each
-   * matrix in the vector with the correct pattern from the block system.
+   * 对于使用SparsityPattern的矩阵，此函数用块系统的正确模式重新初始化向量中的每个矩阵。
+   * 这个函数对细化边上的自由度的矩阵进行重新初始化。
    *
-   * This function reinitializes the matrices for degrees of freedom on the
-   * refinement edge.
    */
   void
   reinit_edge(const MGLevelObject<BlockSparsityPattern> &sparsity);
   /**
-   * For matrices using a SparsityPattern, this function reinitializes each
-   * matrix in the vector with the correct pattern from the block system.
+   * 对于使用SparsityPattern的矩阵，此函数用块系统的正确模式重新初始化向量中的每个矩阵。
+   * 这个函数在细化边上重新初始化通量矩阵。
    *
-   * This function reinitializes the flux matrices over the refinement edge.
    */
   void
   reinit_edge_flux(const MGLevelObject<BlockSparsityPattern> &sparsity);
 
   /**
-   * Clear the object.
+   * 清除对象。
+   * 因为通常只需要清除单个矩阵，而不需要清除块本身，所以有一个可选的参数。如果缺少这个参数或者
+   * @p false,
+   * ，所有的矩阵将被清空，但是这个对象的大小和块的位置将不会改变。如果
+   * @p really_clean是 @p true,
+   * ，那么该对象在最后将不包含任何块。
    *
-   * Since often only clearing of the individual matrices is desired, but not
-   * removing the blocks themselves, there is an optional argument. If the
-   * argument is missing or @p false, all matrices will be empty, but the size
-   * of this object and the block positions will not change. If @p
-   * really_clean is @p true, then the object will contain no blocks at the
-   * end.
    */
   void
   clear(bool really_clean = false);
 
   /**
-   * Access a constant reference to the matrix block at position <i>i</i>.
+   * 访问位于<i>i</i>位置的矩阵块的常量引用。
+   *
    */
   const value_type &
   block(size_type i) const;
 
   /**
-   * Access a reference to the matrix block at position <i>i</i>.
+   * 访问位置为<i>i</i>的矩阵块的引用。
+   *
    */
   value_type &
   block(size_type i);
 
   /**
-   * Access a constant reference to the edge matrix block at position
-   * <i>i</i>.
+   * 访问位置<i>i</i>的边缘矩阵块的一个常量引用。
+   *
    */
   const value_type &
   block_in(size_type i) const;
 
   /**
-   * Access a reference to the edge matrix block at position <i>i</i>.
+   * 访问位置<i>i</i>的边缘矩阵块的一个引用。
+   *
    */
   value_type &
   block_in(size_type i);
 
   /**
-   * Access a constant reference to the edge matrix block at position
-   * <i>i</i>.
+   * 访问位置<i>i</i>的边缘矩阵块的一个常量引用。
+   *
    */
   const value_type &
   block_out(size_type i) const;
 
   /**
-   * Access a reference to the edge matrix block at position <i>i</i>.
+   * 访问位置<i>i</i>的边缘矩阵块的一个引用。
+   *
    */
   value_type &
   block_out(size_type i);
 
   /**
-   * Access a constant reference to the  edge flux matrix block at position
-   * <i>i</i>.
+   * 访问位置<i>i</i>的边缘通量矩阵块的一个常数参考。
+   *
    */
   const value_type &
   block_up(size_type i) const;
 
   /**
-   * Access a reference to the  edge flux matrix block at position <i>i</i>.
+   * 访问位置<i>i</i>的边缘通量矩阵块的引用。
+   *
    */
   value_type &
   block_up(size_type i);
 
   /**
-   * Access a constant reference to the  edge flux matrix block at position
-   * <i>i</i>.
+   * 访问位置<i>i</i>的边缘通量矩阵块的一个常数参考。
+   *
    */
   const value_type &
   block_down(size_type i) const;
 
   /**
-   * Access a reference to the edge flux matrix block at position <i>i</i>.
+   * 访问位置<i>i</i>的边缘通量矩阵块的引用。
+   *
    */
   value_type &
   block_down(size_type i);
 
   /**
-   * The memory used by this object.
+   * 这个对象所使用的内存。
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -1138,3 +1095,5 @@ MGMatrixBlockVector<MatrixType>::clear(bool really_clean)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

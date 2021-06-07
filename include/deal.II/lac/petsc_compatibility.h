@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/petsc_compatibility_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -14,10 +13,10 @@
 //
 // ---------------------------------------------------------------------
 
-/* 与其到处使用ifdefs，不如尝试将PETSc的旧版本函数包裹在一个地方。
-
-* 
-* */
+/*
+ * Rather than using ifdefs everywhere, try to wrap older versions of PETSc
+ * functions in one place.
+ */
 #ifndef dealii_petsc_compatibility_h
 #define dealii_petsc_compatibility_h
 
@@ -39,10 +38,9 @@ DEAL_II_NAMESPACE_OPEN
 namespace PETScWrappers
 {
   /**
-   * 在全局PETSc数据库中设置一个选项。这个函数只是用版本检查来包装
-   * PetscOptionsSetValue（这个函数的签名在 PETSc 3.7.0
-   * 中改变了）。
-   *
+   * Set an option in the global PETSc database. This function just wraps
+   * PetscOptionsSetValue with a version check (the signature of this function
+   * changed in PETSc 3.7.0).
    */
   inline void
   set_option_value(const std::string &name, const std::string &value)
@@ -60,10 +58,13 @@ namespace PETScWrappers
 
 
   /**
-   * 销毁一个PETSc矩阵。这个函数封装了MatDestroy，并进行了版本检查（这个函数的签名在PETSc
-   * 3.2.0中改变）。      @warning
-   * 由于这个函数的主要意图是在PETSc封装器中启用RAII语义，如果发生错误，这个函数将不会抛出一个异常，而只是返回MatDestroy给出的错误代码。
+   * Destroy a PETSc matrix. This function wraps MatDestroy with a version
+   * check (the signature of this function changed in PETSc 3.2.0).
    *
+   * @warning Since the primary intent of this function is to enable RAII
+   * semantics in the PETSc wrappers, this function will not throw an
+   * exception if an error occurs, but instead just returns the error code
+   * given by MatDestroy.
    */
   inline PetscErrorCode
   destroy_matrix(Mat &matrix)
@@ -75,11 +76,14 @@ namespace PETScWrappers
 
 
   /**
-   * 销毁一个Krylov Subspace (KSP)
-   * PETSc求解器。这个函数用一个版本检查来包装KSPDestroy（这个函数的签名在PETSc
-   * 3.2.0中改变了）。      @warning
-   * 由于该函数的主要意图是在PETSc封装器中启用RAII语义，因此如果发生错误，该函数将不会抛出一个异常，而只是返回MatDestroy给出的错误代码。
+   * Destroy a Krylov Subspace (KSP) PETSc solver. This function wraps
+   * KSPDestroy with a version check (the signature of this function changed
+   * in PETSc 3.2.0).
    *
+   * @warning Since the primary intent of this function is to enable RAII
+   * semantics in the PETSc wrappers, this function will not throw an
+   * exception if an error occurs, but instead just returns the error code
+   * given by MatDestroy.
    */
   inline PetscErrorCode
   destroy_krylov_solver(KSP &krylov_solver)
@@ -91,10 +95,11 @@ namespace PETScWrappers
 
 
   /**
-   * 设置一个PETSc矩阵选项。这个函数用一个版本检查来包装MatSetOption。
-   * @warning
-   * 在3.0.0之前的PETSc版本中，参数option_value被忽略，因为相应的函数不接受这个参数。
+   * Set a PETSc matrix option. This function wraps MatSetOption with a
+   * version check.
    *
+   * @warning The argument option_value is ignored in versions of PETSc
+   * before 3.0.0 since the corresponding function did not take this argument.
    */
   inline void
   set_matrix_option(Mat &           matrix,
@@ -108,8 +113,8 @@ namespace PETScWrappers
 
 
   /**
-   * 告诉PETSc，我们不打算向矩阵添加新的条目。在调试模式下产生错误。
-   *
+   * Tell PETSc that we are not planning on adding new entries to the
+   * matrix. Generate errors in debug mode.
    */
   inline void
   close_matrix(Mat &matrix)
@@ -124,8 +129,9 @@ namespace PETScWrappers
 
 
   /**
-   * 告诉PETSc保留SparsityPattern条目，即使我们用clear_rows()删除了某行，并调用MatZeroRows()。否则，以后就不能再向该行写入数据了。
-   *
+   * Tell PETSc to keep the SparsityPattern entries even if we delete a
+   * row with clear_rows() which calls MatZeroRows(). Otherwise one can
+   * not write into that row afterwards.
    */
   inline void
   set_keep_zero_rows(Mat &matrix)
@@ -138,5 +144,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif // DEAL_II_WITH_PETSC
 #endif // dealii_petsc_compatibility_h
-
-

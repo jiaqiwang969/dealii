@@ -1,4 +1,3 @@
-//include/deal.II-translator/integrators/maxwell_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -36,112 +35,57 @@ namespace LocalIntegrators
 {
   /**
    * @brief Local integrators related to curl operators and their traces.
-   * 我们对卷积算子采用以下约定。首先，在三个空间维度上@f[
-   * \nabla\times \mathbf u = \begin{pmatrix} \partial_2 u_3
    *
-   * - \partial_3 u_2 \\ \partial_3 u_1
+   * We use the following conventions for curl operators. First, in three
+   * space dimensions
    *
-   * - \partial_1 u_3 \\ \partial_1 u_2
+   * @f[
+   * \nabla\times \mathbf u = \begin{pmatrix}
+   *   \partial_2 u_3 - \partial_3 u_2 \\
+   *   \partial_3 u_1 - \partial_1 u_3 \\
+   *   \partial_1 u_2 - \partial_2 u_1
+   * \end{pmatrix}.
+   * @f]
    *
-   * - \partial_2 u_1 \end{pmatrix}.
-   * @f] 在两个空间维度上，通过将一个向量<b>u</b>扩展到 $(u_1, u_2, 0)^T$ 和一个标量<i>p</i>扩展到 $(0,0,p)^T$ 得到curl。  计算非零分量，我们得到一个向量函数的标量卷度和一个标量函数的向量卷度。目前的实现交换了符号，我们有。  @f[
-   * \nabla \times \mathbf u = \partial_1 u_2
+   * In two space dimensions, the curl is obtained by extending a vector
+   * <b>u</b> to $(u_1, u_2, 0)^T$ and a scalar <i>p</i> to $(0,0,p)^T$.
+   * Computing the nonzero components, we obtain the scalar curl of a vector
+   * function and the vector curl of a scalar function. The current
+   * implementation exchanges the sign and we have:
+   * @f[
+   *  \nabla \times \mathbf u = \partial_1 u_2 - \partial_2 u_1,
+   *  \qquad
+   *  \nabla \times p = \begin{pmatrix}
+   *    \partial_2 p \\ -\partial_1 p
+   *  \end{pmatrix}
+   * @f]
    *
-   * - \partial_2 u_1, \qquad \nabla \times p = \begin{pmatrix} \partial_2 p
-   * \\
-   *
-   * -\partial_1 p \end{pmatrix} @f]
    * @ingroup Integrators
-   *
    */
   namespace Maxwell
   {
     /**
-     * 辅助函数。给出<tt>dim</tt>二阶导数的张量，计算向量函数的curl的curl。在二维和三维中的结果是。    @f[
+     * Auxiliary function. Given the tensors of <tt>dim</tt> second
+     * derivatives, compute the curl of the curl of a vector function. The
+     * result in two and three dimensions is:
+     * @f[
      * \nabla\times\nabla\times \mathbf u = \begin{pmatrix}
-     * \partial_1\partial_2 u_2
-     *
-     * - \partial_2^2 u_1 \\
-     * \partial_1\partial_2 u_1
-     *
-     * - \partial_1^2 u_2
+     * \partial_1\partial_2 u_2 - \partial_2^2 u_1 \\
+     * \partial_1\partial_2 u_1 - \partial_1^2 u_2
      * \end{pmatrix}
      *
      * \nabla\times\nabla\times \mathbf u = \begin{pmatrix}
      * \partial_1\partial_2 u_2 + \partial_1\partial_3 u_3
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      * - (\partial_2^2+\partial_3^2) u_1 \\
      * \partial_2\partial_3 u_3 + \partial_2\partial_1 u_1
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      * - (\partial_3^2+\partial_1^2) u_2 \\
      * \partial_3\partial_1 u_1 + \partial_3\partial_2 u_2
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
-     *
      * - (\partial_1^2+\partial_2^2) u_3
      * \end{pmatrix}
      * @f]
-     * @note
-     * 第三个张量参数在二维中不使用，例如，可以重复前面的一个。
      *
+     * @note The third tensor argument is not used in two dimensions and can
+     * for instance duplicate one of the previous.
      */
     template <int dim>
     Tensor<1, dim>
@@ -168,12 +112,14 @@ namespace LocalIntegrators
     }
 
     /**
-     * 辅助函数。给出第一导数的<tt>dim</tt>张量和法向量，计算切向卷曲 @f[
+     * Auxiliary function. Given <tt>dim</tt> tensors of first derivatives and
+     * a normal vector, compute the tangential curl
+     * @f[
      * \mathbf n \times \nabla \times u.
-     * @f] 。
-     * @note
-     * 第三个张量参数在二维中不使用，例如，可以重复前面的一个。
+     * @f]
      *
+     * @note The third tensor argument is not used in two dimensions and can
+     * for instance duplicate one of the previous.
      */
     template <int dim>
     Tensor<1, dim>
@@ -205,11 +151,12 @@ namespace LocalIntegrators
     }
 
     /**
-     * 弱形式的卷曲算子@f[
+     * The curl-curl operator
+     * @f[
      * \int_Z \nabla\times u \cdot
      * \nabla \times v \,dx
-     * @f]。
-     *
+     * @f]
+     * in weak form.
      */
     template <int dim>
     void
@@ -255,10 +202,14 @@ namespace LocalIntegrators
     }
 
     /**
-     * 卷曲算子的矩阵 @f[
+     * The matrix for the curl operator
+     * @f[
      * \int_Z \nabla \times u \cdot v \,dx.
-     * @f] 这是3D中的标准卷曲算子和2D中的标量卷曲。矢量curl算子可以通过交换测试和试用函数得到。
+     * @f]
      *
+     * This is the standard curl operator in 3D and the scalar curl in 2D. The
+     * vector curl operator can be obtained by exchanging test and trial
+     * functions.
      */
     template <int dim>
     void
@@ -297,19 +248,17 @@ namespace LocalIntegrators
     }
 
     /**
-     * 麦克斯韦系统中切向分量的尼采型弱边界条件的矩阵。        @f[
+     * The matrix for weak boundary condition of Nitsche type for the
+     * tangential component in Maxwell systems.
+     *
+     * @f[
      * \int_F \biggl( 2\gamma
-     * (u\times n) (v\times n)
-     *
-     * -
+     * (u\times n) (v\times n) -
      * (u\times n)(\nu \nabla\times
-     * v)
-     *
-     * - (v\times
+     * v) - (v\times
      * n)(\nu \nabla\times u)
      * \biggr)
      * @f]
-     *
      */
     template <int dim>
     void
@@ -368,11 +317,11 @@ namespace LocalIntegrators
         }
     }
     /**
-     * 两个切向迹线的乘积，@f[
+     * The product of two tangential traces,
+     * @f[
      * \int_F (u\times n)(v\times n)
      * \, ds.
-     * @f]。
-     *
+     * @f]
      */
     template <int dim>
     void
@@ -420,17 +369,16 @@ namespace LocalIntegrators
     }
 
     /**
-     * 麦克斯韦系统的内部惩罚通量。        @f[
-     * \int_F \biggl( \gamma
-     * \{u\times n\}\{v\times n\}
+     * The interior penalty fluxes for Maxwell systems.
      *
-     * -
+     * @f[
+     * \int_F \biggl( \gamma
+     * \{u\times n\}\{v\times n\} -
      * \{u\times n\}\{\nu \nabla\times
      * v\}- \{v\times
      * n\}\{\nu \nabla\times u\}
      * \biggr)\;dx
      * @f]
-     *
      */
     template <int dim>
     inline void
@@ -531,5 +479,3 @@ namespace LocalIntegrators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

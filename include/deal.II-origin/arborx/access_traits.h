@@ -1,3 +1,4 @@
+//include/deal.II-translator/arborx/access_traits_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -29,26 +30,29 @@ DEAL_II_NAMESPACE_OPEN
 namespace ArborXWrappers
 {
   /**
-   * Base class for Point-based predicates providing basic functionality for
-   * derived classes, not supposed to be used on its own.
+   * 基于点的谓词的基类，为派生类提供基本功能，不应该单独使用。
+   *
    */
   class PointPredicate
   {
   protected:
     /**
-     * Constructor. @p points is a list of points used by the predicate.
+     * 构造函数。  @p points 是谓词所使用的点的列表。
+     *
      */
     template <int dim, typename Number>
     PointPredicate(const std::vector<dealii::Point<dim, Number>> &points);
 
     /**
-     * Number of points stored in the structure.
+     * 存储在结构中的点的数量。
+     *
      */
     std::size_t
     size() const;
 
     /**
-     * Return the `i`th Point stored in the object.
+     * 返回存储在对象中的第`i`个点。
+     *
      */
     const dealii::Point<3, float> &
     get(unsigned int i) const;
@@ -60,17 +64,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class defines a predicate used by ArborXWrappers::BVH to determine
-   * for given points which of the bounding boxes used to build the
-   * ArborXWrappers::BVH intersect with them.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * 这个类定义了一个谓词，被 ArborXWrappers::BVH
+   * 用来确定对于给定的点，用于建立 ArborXWrappers::BVH
+   * 的边界盒与它们相交。
+   * @note 该类不应该被用于多态的环境中。
+   *
    */
   class PointIntersectPredicate : private PointPredicate
   {
   public:
     /**
-     * Constructor. @p points is a list of points which we are interested in
-     * knowing if they intersect ArborXWrappers::BVH bounding boxes.
+     * 构造函数。  @p points
+     * 是一个点的列表，我们有兴趣知道它们是否与
+     * ArborXWrappers::BVH 边界盒相交。
+     *
      */
     template <int dim, typename Number>
     PointIntersectPredicate(
@@ -84,25 +91,27 @@ namespace ArborXWrappers
 
 
   /**
-   * This class defines a predicate used by ArborXWrappers::BVH to determine
-   * for given points which are the nearest bounding boxes/points among the ones
-   * used to build the ArborXWrappers::BVH.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * 这个类定义了一个由 ArborXWrappers::BVH
+   * 使用的谓词，以确定对于给定的点，哪些是用于建立
+   * ArborXWrappers::BVH. 的最近的界线盒/点。
+   * @note  该类不应该在多态环境中使用。
+   *
    */
   class PointNearestPredicate : private PointPredicate
   {
   public:
     /**
-     * Constructor. @p points is a list of points for which we are interested in
-     * the @p n_nearest_neighbors in the ArborXWrappers::BVH bounding
-     * boxes/points.
+     * 构造器。  @p points 是我们对 @p n_nearest_neighbors 中的
+     * ArborXWrappers::BVH 边界盒/点感兴趣的点的列表。
+     *
      */
     template <int dim, typename Number>
     PointNearestPredicate(const std::vector<dealii::Point<dim, Number>> &points,
                           const unsigned int n_nearest_neighbors);
 
     /**
-     * Return the number of nearest neighbors we are looking for.
+     * 返回我们正在寻找的最近的邻居的数量。
+     *
      */
     unsigned int
     get_n_nearest_neighbors() const;
@@ -118,28 +127,31 @@ namespace ArborXWrappers
 
 
   /**
-   * Base class for BoundingBox predicates providing basic functionality for
-   * derived classes, not supposed to be used on its own.
+   * BoundingBox谓词的基类，为派生类提供基本功能，不应该单独使用。
+   *
    */
   class BoundingBoxPredicate
   {
   protected:
     /**
-     * Constructor. @p bounding_boxes is a list of bounding boxes used by the
-     * predicate.
+     * 构造函数。  @p bounding_boxes
+     * 是谓词所使用的边界盒的列表。
+     *
      */
     template <int dim, typename Number>
     BoundingBoxPredicate(
       const std::vector<dealii::BoundingBox<dim, Number>> &bounding_boxes);
 
     /**
-     * Number of bounding boxes stored in the structure.
+     * 存储在结构中的界线盒的数量。
+     *
      */
     std::size_t
     size() const;
 
     /**
-     * Return the `i`th BoundingBox stored in the object.
+     * 返回对象中存储的第`i`个BoundingBox。
+     *
      */
     const dealii::BoundingBox<3, float> &
     get(unsigned int i) const;
@@ -151,17 +163,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class is used by ArborXWrappers::BVH to determine for given bounding
-   * boxes which of the bounding boxes used to build the ArborXWrappers::BVH
-   * intersect with them.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * 这个类被 ArborXWrappers::BVH
+   * 用来确定对于给定的边界盒，哪些用于建立
+   * ArborXWrappers::BVH 的边界盒与它们相交。
+   * @note 该类不应该在多态环境中使用。
+   *
    */
   class BoundingBoxIntersectPredicate : private BoundingBoxPredicate
   {
   public:
     /**
-     * Constructor. @p bounding_boxes is a list of bounding boxes which we are interested in
-     * knowing if they intersect ArborXWrappers::BVH bounding boxes.
+     * 构造函数。  @p bounding_boxes
+     * 是一个边界盒的列表，我们有兴趣知道它们是否与
+     * ArborXWrappers::BVH  边界盒相交。
+     *
      */
     template <int dim, typename Number>
     BoundingBoxIntersectPredicate(
@@ -174,18 +189,20 @@ namespace ArborXWrappers
 
 
   /**
-   * This class is used by ArborXWrappers::BVH to determine for given bounding
-   * boxes which are the nearest bounding boxes/points among the ones used to
-   * build the ArborXWrappers::BVH.
-   * @note The class is not supposed to be used in a polymorphic context.
+   * 这个类被 ArborXWrappers::BVH
+   * 用来确定对于给定的界线盒，哪些是用于构建
+   * ArborXWrappers::BVH. 的界线盒/点中最近的。
+   * @note  该类不应该在多态环境中使用。
+   *
    */
   class BoundingBoxNearestPredicate : private BoundingBoxPredicate
   {
   public:
     /**
-     * Constructor. @p bounding_boxes is a list of bounding boxes for which are interested in
-     * knowing the @p n_nearest_neighbors nearest bounding boxes used to build the
-     * ArborXWrappers::BVH.
+     * 构造函数。  @p bounding_boxes
+     * 是一个界线盒的列表，对于这个列表，我们有兴趣知道用于建立
+     * ArborXWrappers::BVH. 的最近的界线盒。
+     *
      */
     template <int dim, typename Number>
     BoundingBoxNearestPredicate(
@@ -193,7 +210,8 @@ namespace ArborXWrappers
       const unsigned int                                   n_nearest_neighbors);
 
     /**
-     * Return the number of nearest neighbors we are looking for.
+     * 返回我们要找的最近的邻居的数量。
+     *
      */
     unsigned int
     get_n_nearest_neighbors() const;
@@ -210,13 +228,15 @@ namespace ArborXWrappers
 DEAL_II_NAMESPACE_CLOSE
 
 /**
- * This namespace contains the implementation of AccessTraits used by ArborX.
+ * 这个命名空间包含ArborX使用的AccessTraits的实现。
+ *
+ *
  */
 namespace ArborX
 {
   /**
-   * This struct allows ArborX to use std::vector<dealii::Point> as
-   * primitive.
+   * 这个结构允许ArborX使用 std::vector<dealii::Point> 作为原语。
+   *
    */
   template <int dim, typename Number>
   struct AccessTraits<std::vector<dealii::Point<dim, Number>>, PrimitivesTag>
@@ -224,13 +244,15 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Return the size of the vector @p v.
+     * 返回向量 @p v. 的大小。
+     *
      */
     static std::size_t
     size(const std::vector<dealii::Point<dim, Number>> &v);
 
     /**
-     * Return an ArborX::Point from the dealii::Point `v[i]`.
+     * 从 dealii::Point  `v[i]`中返回一个 ArborX::Point 。
+     *
      */
     static Point
     get(const std::vector<dealii::Point<dim, Number>> &v, std::size_t i);
@@ -239,8 +261,9 @@ namespace ArborX
 
 
   /**
-   * This struct allows ArborX to use std::vector<dealii::BoundingBox> as
-   * primitive.
+   * 这个结构允许ArborX使用 std::vector<dealii::BoundingBox>
+   * 作为原语。
+   *
    */
   template <int dim, typename Number>
   struct AccessTraits<std::vector<dealii::BoundingBox<dim, Number>>,
@@ -249,13 +272,15 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Return the size of the vector @p v.
+     * 返回向量的大小  @p v.  。
+     *
      */
     static std::size_t
     size(const std::vector<dealii::BoundingBox<dim, Number>> &v);
 
     /**
-     * Return an ArborX::Box from the dealii::BoundingBox `v[i]`.
+     * 从 dealii::BoundingBox 中返回一个 ArborX::Box  `v[i]`。
+     *
      */
     static Box
     get(const std::vector<dealii::BoundingBox<dim, Number>> &v, std::size_t i);
@@ -264,7 +289,8 @@ namespace ArborX
 
 
   /**
-   * This struct allows ArborX to use PointIntersectPredicate as a predicate.
+   * 这个结构允许ArborX使用PointIntersectPredicate作为谓词。
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::PointIntersectPredicate,
@@ -273,14 +299,16 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of Point stored in @p pt_intersect.
+     * 存储在 @p pt_intersect. 中的点的数量。
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::PointIntersectPredicate &pt_intersect);
 
     /**
-     * Return an Arbox::intersects(ArborX::Point) object constructed from the
-     * `i`th dealii::Point stored in @p pt_intersect.
+     * 返回一个由存储在 @p pt_intersect. 中的第`i`个 dealii::Point
+     * 构建的 Arbox::intersects(ArborX::Point) 对象。
+     *
      */
     static auto
     get(const dealii::ArborXWrappers::PointIntersectPredicate &pt_intersect,
@@ -289,7 +317,8 @@ namespace ArborX
 
 
   /**
-   * This struct allows ArborX to use PointNearestPredicate as a predicate.
+   * 这个结构允许ArborX使用PointNearestPredicate作为谓词。
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::PointNearestPredicate,
@@ -298,15 +327,17 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of Point stored in @p pt_nearest.
+     * 存储在 @p pt_nearest. 中的点的数量。
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::PointNearestPredicate &pt_nearest);
 
     /**
-     * Return an Arbox::nearest(ArborX::Point,
-     * PointNearestPredicate::get_n_nearest_neighbors) object constructed from
-     * the `i`th dealii::Point stored in @p pt_nearest.
+     * 返回一个由存储在 @p pt_nearest. 中的第`i`个 dealii::Point
+     * 构建的 Arbox::nearest(ArborX::Point,
+     * PointNearestPredicate::get_n_nearest_neighbors) 对象。
+     *
      */
     static auto
     get(const dealii::ArborXWrappers::PointNearestPredicate &pt_nearest,
@@ -315,8 +346,8 @@ namespace ArborX
 
 
   /**
-   * This struct allows ArborX to use BoundingBoxIntersectPredicate as a
-   * predicate.
+   * 这个结构允许ArborX使用BoundingBoxIntersectPredicate作为谓词。
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::BoundingBoxIntersectPredicate,
@@ -325,15 +356,17 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of BoundingBox stored in @p bb_intersect.
+     * 存储在 @p bb_intersect. 中的BoundingBox的数量。
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::BoundingBoxIntersectPredicate
            &bb_intersect);
 
     /**
-     * Return an Arbox::intersects(ArborX::Box) object constructed from the
-     * `i`th dealii::BoundingBox stored in @p bb_intersect.
+     * 返回一个由存储在 @p bb_intersect. 中的第`i`个
+     * dealii::BoundingBox 构建的 Arbox::intersects(ArborX::Box) 对象。
+     *
      */
     static auto
     get(
@@ -343,8 +376,8 @@ namespace ArborX
 
 
   /**
-   * This struct allows ArborX to use BoundingBoxNearstPredicate as a
-   * predicate.
+   * 这个结构允许ArborX使用BoundingBoxNearstPredicate作为谓词。
+   *
    */
   template <>
   struct AccessTraits<dealii::ArborXWrappers::BoundingBoxNearestPredicate,
@@ -353,17 +386,17 @@ namespace ArborX
     using memory_space = Kokkos::HostSpace;
 
     /**
-     * Number of BoundingBox stored in @p bb_nearest.
+     * 存储在 @p bb_nearest. 的BoundingBox的数量。
+     *
      */
     static std::size_t
     size(const dealii::ArborXWrappers::BoundingBoxNearestPredicate &bb_nearest);
 
     /**
-     * Return an
-     * Arbox::nearest(ArborX::Box,
-     * BoundingBoxtNearestPredicate::get_n_nearest_neighbors) object constructed
-     * from the
-     * `i`th dealii::BoundingBox stored in @p bb_nearest.
+     * 返回一个由存储在 @p bb_nearest. 中的第`i`个
+     * dealii::BoundingBox 构建的 Arbox::nearest(ArborX::Box,
+     * BoundingBoxtNearestPredicate::get_n_nearest_neighbors) 对象。
+     *
      */
     static auto
     get(const dealii::ArborXWrappers::BoundingBoxNearestPredicate &bb_nearest,
@@ -474,3 +507,5 @@ namespace ArborX
 #endif
 
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_nothing_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2021 by the deal.II authors
@@ -23,80 +24,33 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup fe */
-/*@{*/
+ /*!@addtogroup fe */ 
+ /*@{*/ 
 
 /**
- * Definition of a finite element space with zero degrees of freedom and that,
- * consequently, can only represent a single function: the zero function.
+ * 定义一个自由度为零的有限元空间，因此，只能表示一个单一的函数：零函数。
+ * 这个类很有用（在hp方法的背景下），可以代表三角结构中不应该分配自由度的空单元，或者描述一个由零扩展到域中不需要的部分的场。因此，一个三角剖分可以分为两个区域：一个是使用正常元素的活动区域，另一个是使用FE_Nothing元素的非活动区域。因此，DoFHandler将不给FE_Nothing单元分配自由度，这个子区域因此被隐式地从计算中删除。
+ * step-10 和 step-46 展示了这个元素的使用案例。在论文  @cite
+ * Cangiani2012  中也介绍了这个元素的一个有趣的应用。
  *
- * This class is useful (in the context of an hp-method) to represent empty
- * cells in the triangulation on which no degrees of freedom should be
- * allocated, or to describe a field that is extended by zero to a part of the
- * domain where we don't need it. Thus a triangulation may be divided into two
- * regions: an active region where normal elements are used, and an inactive
- * region where FE_Nothing elements are used. The DoFHandler will therefore
- * assign no degrees of freedom to the FE_Nothing cells, and this subregion is
- * therefore implicitly deleted from the computation. step-10 and step-46 show
- * use cases for this element. An interesting application for this element is
- * also presented in the paper @cite Cangiani2012.
+ *  <h3>FE_Nothing as seen as a function space</h3>
+ * 有限元通常最好被解释为形成一个[函数空间](https://en.wikipedia.org/wiki/Function_space)，即形成一个[矢量空间]的函数集合(https://en.wikipedia.org/wiki/Vector_space)。我们确实可以从这个角度来解释FE_Nothing：它对应于函数空间
+ * $V_h=\{0\}$
+ * ，即到处为零的函数集合。(构造函数可以接受一个参数，如果该参数大于1，则将空间扩展为一个有多个分量的向量值函数的空间，所有的分量都等于零)。事实上，这是一个矢量空间，因为矢量空间中元素的每一个线性组合也是矢量空间中的一个元素，正如单元素零的每一个倍数一样。很明显，函数空间没有自由度，因此该类的名称是。
  *
+ *  <h3>FE_Nothing in combination with other elements</h3> 在诸如 step-46
+ * 的情况下，人们在对解变量不感兴趣的单元上使用FE_Nothing。例如，在流体结构相互作用问题中，流体速度只定义在域的流体部分的单元上。然后在域的固体部分的单元上使用FE_Nothing来描述速度的有限元空间。换句话说，从概念上讲，速度无处不在，但在域的那些不感兴趣的部分，它是完全为零的，不会占用那里的任何自由度。
+ * 问题是，在对解感兴趣的区域（使用 "正常
+ * "有限元）和不感兴趣的区域（使用FE_Nothing）之间的界面上会发生什么。该界面上的解应该是零
  *
- * <h3>FE_Nothing as seen as a function space</h3>
+ * - 即我们考虑一个 "连续的 "有限元场，在使用FE_Nothing的那个区域刚好为零
  *
- * Finite elements are often best interpreted as forming a
- * [function space](https://en.wikipedia.org/wiki/Function_space), i.e., a
- * set of functions that form a
- * [vector space](https://en.wikipedia.org/wiki/Vector_space). One can indeed
- * interpret FE_Nothing in this light: It corresponds to the function space
- * $V_h=\{0\}$, i.e., the set of functions that are zero everywhere.
- * (The constructor can take an argument that, if greater than one, extends
- * the space to one of vector-valued functions with more than one component,
- * with all components equal to zero everywhere.) Indeed, this is a vector
- * space since every linear combination of elements in the vector space is
- * also an element in the vector space, as is every multiple of the single
- * element zero. It is obvious that the function space has no degrees of
- * freedom, thus the name of the class.
+ * - 或者说，对界面上的连续性没有要求。在deal.II语言中，这是由函数 FiniteElement::compare_for_domination() 返回的内容编码的。如果FE_Nothing "占优势"，那么解在界面上必须为零；如果没有，那么就没有要求，可以认为FE_Nothing是一个函数空间，一般来说是不连续的（即在单元界面上没有任何形式的连续性要求），但在每个单元上都等于零。
+ * 一个构造参数表示该元素是否应该被认为是支配性的。默认情况下，它不被视为主导，即FE_Nothing被视为一个不连续的元素。
  *
+ *  <h3>FE_Nothing in the context of hanging nodes</h3>
+ * 请注意，当引入FE_Nothing元素时，必须注意所得到的网格拓扑结构是否继续有意义。在处理悬挂节点约束时尤其如此，因为该库对这些约束的性质做了一些基本假设。以下的几何形状是可以接受的。
  *
- * <h3>FE_Nothing in combination with other elements</h3>
- *
- * In situations such as those of step-46, one uses FE_Nothing on cells
- * where one is not interested in a solution variable. For example, in fluid
- * structure interaction problems, the fluid velocity is only defined on
- * cells inside the fluid part of the domain. One then uses FE_Nothing
- * on cells in the solid part of the domain to describe the finite element
- * space for the velocity. In other words, the velocity lives everywhere
- * conceptually, but it is identically zero in those parts of the domain
- * where it is not of interest and doesn't use up any degrees of freedom
- * there.
- *
- * The question is what happens at the interface between areas where one
- * is interested in the solution (and uses a "normal" finite element) and
- * where one is not interested (and uses FE_Nothing): Should the solution
- * at that interface be zero -- i.e., we consider a "continuous" finite
- * element field that happens to be zero in that area where FE_Nothing
- * is used -- or is there no requirement for continuity at the interface.
- * In the deal.II language, this is encoded by what the function
- * FiniteElement::compare_for_domination() returns: If the FE_Nothing
- * "dominates", then the solution must be zero at the interface; if it
- * does not, then there is no requirement and one can think of FE_Nothing
- * as a function space that is in general discontinuous (i.e., there is
- * no requirement for any kind of continuity at cell interfaces) but on
- * every cell equal to zero.
- *
- * A constructor argument denotes whether the element should be considered
- * dominating or not. The default is for it not to dominate, i.e.,
- * FE_Nothing is treated as a discontinuous element.
- *
- *
- * <h3>FE_Nothing in the context of hanging nodes</h3>
- *
- * Note that some care must be taken that the resulting mesh topology
- * continues to make sense when FE_Nothing elements are introduced. This is
- * particularly true when dealing with hanging node constraints, because the
- * library makes some basic assumptions about the nature of those constraints.
- * The following geometries are acceptable:
  * @code
  * +---------+----+----+
  * |         | 0  |    |
@@ -104,6 +58,8 @@ DEAL_II_NAMESPACE_OPEN
  * |         | 0  |    |
  * +---------+----+----+
  * @endcode
+ *
+ *
  * @code
  * +---------+----+----+
  * |         | 1  |    |
@@ -111,10 +67,8 @@ DEAL_II_NAMESPACE_OPEN
  * |         | 1  |    |
  * +---------+----+----+
  * @endcode
- * Here, 0 denotes an FE_Nothing cell, and 1 denotes some other element type.
- * The library has no difficulty computing the necessary hanging node
- * constraints in these cases (i.e. no constraint). However, the following
- * geometry is NOT acceptable (at least in the current implementation):
+ * 这里，0表示一个FE_Nothing单元，1表示一些其他的元素类型。在这些情况下，该库不难计算出必要的悬挂节点约束（即没有约束）。然而，以下的几何形状是不能接受的（至少在目前的实现中）。
+ *
  * @code
  * +---------+----+----+
  * |         | 0  |    |
@@ -122,35 +76,33 @@ DEAL_II_NAMESPACE_OPEN
  * |         | 1  |    |
  * +---------+----+----+
  * @endcode
- * The distinction lies in the mixed nature of the child faces, a case we have
- * not implemented as of yet.
+ * 区别在于子面的混合性质，这种情况我们目前还没有实现。
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_Nothing : public FiniteElement<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构造器。      @param[in]  type 指定参考单元格的类型。
+   * @param[in]  n_components
+   * 表示赋予这个有限元的向量分量的数量。默认为1。
+   * @param[in]  dominate
+   * 决定FE_Nothing在compare_for_domination()中是否会支配任何其他FE(默认为`false')。
+   * 因此在例如 $Q_1$
+   * 与FE_Nothing相遇的界面上，我们将强制这两个函数的轨迹是相同的。因为FE_Nothing编码的空间在任何地方都是零，这意味着
+   * $Q_1$
+   * 字段在这个界面将被强制变成零。也请看这个类的一般文档中的讨论。
    *
-   * @param[in] type Specifies the reference-cell type.
-   *
-   * @param[in] n_components Denotes the number of
-   * vector components to give this finite element. The default is one.
-   *
-   * @param[in] dominate Decides whether FE_Nothing will dominate
-   * any other FE in compare_for_domination() (with the default being `false`).
-   * Therefore at interfaces where, for example, a $Q_1$ meets an FE_Nothing, we
-   * will force the traces of the two functions to be the same. Because the
-   * FE_Nothing encodes a space that is zero everywhere, this means that the
-   * $Q_1$ field will be forced to become zero at this interface. See also the
-   * discussion in the general documentation of this class.
    */
   FE_Nothing(const ReferenceCell &type,
              const unsigned int   n_components = 1,
              const bool           dominate     = false);
 
   /**
-   * Same as above but for a hypercube reference-cell type.
+   * 与上述相同，但为超立方体参考单元类型。
+   *
    */
   FE_Nothing(const unsigned int n_components = 1, const bool dominate = false);
 
@@ -158,17 +110,8 @@ public:
   clone() const override;
 
   /**
-   * Return a string that uniquely identifies a finite element. The name is
-   * <tt>FE_Nothing@<dim,spacedim@>(type, n_components, dominating)</tt> where
-   * <tt>dim</tt>, <tt>spacedim</tt>, <tt>type</tt>, and <tt>n_components</tt>
-   * are all specified by the constructor or type signature with the following
-   * exceptions:
-   * <ol>
-   *   <li>If <tt>spacedim == dim</tt> then that field is not printed.</li>
-   *   <li>If <tt>type</tt> is a hypercube then that field is not printed.</li>
-   *   <li>If <tt>n_components == 1</tt> then that field is not printed.</li>
-   *   <li>If <tt>dominate == false</tt> then that field is not printed.</li>
-   * </ol>
+   * 返回一个唯一标识有限元的字符串。名称为<tt>FE_Nothing  @<dim,spacedim@>(type,  n_components, dominating)</tt>其中<tt>dim</tt>, <tt>spacedim</tt>, <tt>type</tt>, 和<tt>n_components</tt>都是由构造函数或类型签名指定的，有以下例外。    <ol>   <li>  如果<tt>spacedim == dim</tt>，那么该字段不被打印。 </li>   <li>  如果<tt>type</tt>是一个超立方体，那么该字段不被打印。 </li>   <li>  如果<tt>n_components == 1</tt>，则该字段不被打印。 </li>   <li>  如果<tt>dominate == false</tt>那么该字段不被打印。 </li>   </ol>   </ol> .
+   *
    */
   virtual std::string
   get_name() const override;
@@ -178,11 +121,10 @@ public:
   requires_update_flags(const UpdateFlags update_flags) const override;
 
   /**
-   * Return the value of the @p ith shape function at the point @p p. @p p is
-   * a point on the reference element. Because the current element has no
-   * degrees of freedom, this function should obviously not be called in
-   * practice.  All this function really does, therefore, is trigger an
-   * exception.
+   * 返回 @p ith 形状函数在 @p p.  @p p
+   * 点的值，该点是参考元素上的一个点。因为当前元素没有自由度，这个函数在实践中显然不应该被调用。
+   * 因此，这个函数真正做的是触发一个异常。
+   *
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
@@ -236,13 +178,9 @@ public:
       &output_data) const override;
 
   /**
-   * Prepare internal data structures and fill in values independent of the
-   * cell. Returns a pointer to an object of which the caller of this function
-   * then has to assume ownership (which includes destruction when it is no
-   * more needed).
+   * 准备内部数据结构并填入独立于单元格的值。返回一个指向对象的指针，然后该函数的调用者必须承担该对象的所有权（包括在不再需要时进行销毁）。
+   * 在当前情况下，这个函数只是返回一个默认的指针，因为这个元素不存在有意义的数据。
    *
-   * In the current case, this function just returns a default pointer, since
-   * no meaningful data exists for this element.
    */
   virtual std::unique_ptr<
     typename FiniteElement<dim, spacedim>::InternalDataBase>
@@ -255,14 +193,13 @@ public:
       &output_data) const override;
 
   /**
-   * @copydoc FiniteElement::compare_for_domination()
+   * @copydoc   FiniteElement::compare_for_domination()
+   * 在当前情况下，如果构造函数 @p dominate
+   * 中的第二个参数为真，则该元素被认为是主导的。当这个参数是假的，并且
+   * @p fe_other
+   * 也是FE_Nothing()的类型，任何一个元素都可以占主导地位。否则就没有_要求了。
+   * 也请看这个类的一般文档中的讨论。
    *
-   * In the current case, this element is assumed to dominate if the second
-   * argument in the constructor @p dominate is true. When this argument is
-   * false and @p fe_other is also of type FE_Nothing(), either element can
-   * dominate. Otherwise there are no_requirements.
-   *
-   * See also the discussion in the general documentation of this class.
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim, spacedim> &fe_other,
@@ -286,9 +223,8 @@ public:
   hp_constraints_are_implemented() const override;
 
   /**
-   * Return the matrix interpolating from the given finite element to the
-   * present one. Since the current finite element has no degrees of freedom,
-   * the interpolation matrix is necessarily empty.
+   * 返回从给定的有限元到当前有限元的插值矩阵。由于当前的有限元没有自由度，插值矩阵必然是空的。
+   *
    */
   virtual void
   get_interpolation_matrix(
@@ -296,12 +232,9 @@ public:
     FullMatrix<double> &                interpolation_matrix) const override;
 
   /**
-   * Return the matrix interpolating from a face of one element to the face
-   * of the neighboring element. The size of the matrix is then
-   * <tt>source.#dofs_per_face</tt> times <tt>this->#dofs_per_face</tt>.
+   * 返回从一个元素的一个面插值到邻近元素的面的矩阵。矩阵的大小是<tt>source.#dofs_per_face</tt>乘以<tt>this->#dofs_per_face</tt>。
+   * 由于当前的有限元没有自由度，插值矩阵必然是空的。
    *
-   * Since the current finite element has no degrees of freedom, the
-   * interpolation matrix is necessarily empty.
    */
 
   virtual void
@@ -311,12 +244,9 @@ public:
 
 
   /**
-   * Return the matrix interpolating from a face of one element to the
-   * subface of the neighboring element. The size of the matrix is then
-   * <tt>source.#dofs_per_face</tt> times <tt>this->#dofs_per_face</tt>.
+   * 返回从一个元素的面插值到邻近元素的子面的矩阵。矩阵的大小是<tt>source.#dofs_per_face</tt>乘以<tt>this->#dofs_per_face</tt>。
+   * 由于当前的有限元没有自由度，插值矩阵必然是空的。
    *
-   * Since the current finite element has no degrees of freedom, the
-   * interpolation matrix is necessarily empty.
    */
 
   virtual void
@@ -327,24 +257,25 @@ public:
     const unsigned int                  face_no = 0) const override;
 
   /**
-   * @return true if the FE dominates any other.
+   * @return  如果FE支配任何其他的，则为真。
+   *
    */
   bool
   is_dominating() const;
 
 private:
   /**
-   * If true, this element will dominate any other apart from itself in
-   * compare_for_domination(). This is because a space that only contains the
-   * zero function is definitely smaller (and consequently dominant) when
-   * compared to any other finite element space.
+   * 如果为真，在compare_for_domination()中，这个元素将支配除它自己之外的任何其他元素。这是因为与其他任何有限元空间相比，只包含零函数的空间肯定更小(因而也更占优势)。
+   *
    */
   const bool dominate;
 };
 
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

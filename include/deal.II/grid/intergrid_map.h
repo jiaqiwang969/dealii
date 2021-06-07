@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/intergrid_map_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -30,193 +29,181 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 这个类提供了两个网格之间的映射，这两个网格来自于同一个粗略的网格。对于源地图的每个单元格迭代器，它通过其<tt>operator
- * []</tt>，提供了目标地图上相应的单元格迭代器。
- * 通常情况下，两个网格的细化程度是不同的。那么，源网格上的迭代器返回的值将是：。  <ul>   <li>  目标网格上的同一个单元，如果它存在的话；  <li>  目标网格上最精炼的单元，通过精炼可以得到源单元的垂线。该单元始终处于活动状态，其细化程度小于源单元的细化程度。  </ul>  这个地图的键是源网格上的所有单元，无论是否活动。
- * 例如，考虑这两个一维网格。
+ * This class provides a map between two grids which are derived from the same
+ * coarse grid. For each cell iterator of the source map, it provides the
+ * respective cell iterator on the destination map, through its <tt>operator
+ * []</tt>.
  *
+ * Usually, the two grids will be refined differently. Then, the value
+ * returned for an iterator on the source grid will be either:
+ * <ul>
+ * <li> The same cell on the destination grid, if it exists there;
+ * <li> The most refined cell of the destination grid from which the pendant
+ * of the source cell could be obtained by refinement. This cell is always
+ * active and has a refinement level less than that of the source cell.
+ * </ul>
+ * Keys for this map are all cells on the source grid, whether active or not.
+ *
+ * For example, consider these two one-dimensional grids:
  * @verbatim
  * Grid 1:
- * x--x--x-----x-----------x
- *  1  2    3        4
+ *   x--x--x-----x-----------x
+ *    1  2    3        4
  *
  * Grid 2:
- * x-----x-----x-----x-----x
- *    1     2     3     4
+ *   x-----x-----x-----x-----x
+ *      1     2     3     4
  * @endverbatim
- * （单元格编号只是作为一个例子给出，不会与真实的单元格迭代器的索引相对应）。那么从网格1到网格2的映射将如下。
- *
+ * (Cell numbers are only given as an example and will not correspond to real
+ * cell iterator's indices.) The mapping from grid 1 to grid 2 will then be as
+ * follows:
  * @verbatim
- *  Cell on grid 1         Cell on grid 2
- *        1
- *
- *
- *
- *
- *
- * ------------------>  1
- *        2
- *
- *
- *
- *
- *
- * ------------------>  1
- *        3
- *
- *
- *
- *
- *
- * ------------------>  2
- *        4
- *
- *
- *
- *
- *
- * ------------------>  mother cell of cells 3 and 4
- *                                (a non-active cell, not shown here)
+ *    Cell on grid 1         Cell on grid 2
+ *          1  ------------------>  1
+ *          2  ------------------>  1
+ *          3  ------------------>  2
+ *          4  ------------------>  mother cell of cells 3 and 4
+ *                                  (a non-active cell, not shown here)
  * @endverbatim
- * 除了这里显示的映射，网格1上的非活动单元也是有效的键。例如，第一个网格上的单元格1和2的母单元格的映射将指向第二个网格上的单元格1。
- * @tparam  MeshType 这个类可以和任何满足 @ref ConceptMeshType  "MeshType概念 "
- * 的类一起使用。对其他提供迭代器函数的类的扩展和一些小的附加要求很简单。
- * 请注意，这个类原则上可以基于C++  <tt>std::map<Key,Value></tt>
- * 数据类型。相反，它使用了另一种数据格式，在访问的计算时间和内存消耗方面都更有效。
+ * Besides the mappings shown here, the non-active cells on grid 1 are also
+ * valid keys. For example, the mapping for the mother cell of cells 1 and 2
+ * on the first grid will point to cell 1 on the second grid.
  *
- *  <h3>Usage</h3> 在实践中，该类的使用情况如下。
+ * @tparam MeshType This class may be used with any class that satisfies the
+ * @ref ConceptMeshType "MeshType concept".
+ * The extension to other classes offering iterator functions and some minor
+ * additional requirements is simple.
  *
+ * Note that this class could in principle be based on the C++
+ * <tt>std::map<Key,Value></tt> data type. Instead, it uses another data
+ * format which is more effective both in terms of computing time for access
+ * as well as with regard to memory consumption.
+ *
+ *
+ * <h3>Usage</h3>
+ *
+ * In practice, use of this class is as follows:
  * @code
- * // have two grids, which are derived from the same coarse grid
- * Triangulation<dim> tria1, tria2;
- * DoFHandler<dim> dof_handler_1 (tria1), dof_handler_2 (tria2);
- * ...
- * // do something with these objects, e.g. refine the triangulations
- * // differently, distribute degrees of freedom, etc
- * ...
- * // create the mapping
- * InterGridMap<DoFHandler<dim> > grid_1_to_2_map;
- * grid_1_to_2_map.make_mapping (dof_handler_1,
- *                               dof_handler_2);
- * ...
- * typename DoFHandler<dim>::cell_iterator cell = dof_handler_1.begin(),
- *                                         endc = dof_handler_1.end();
- * for (; cell!=endc; ++cell)
- *   // now do something with the cell of dof_handler_2 corresponding to
- *   // cell (which is one of dof_handler_1's cells)
- *   f (grid_1_to_2_map[cell]);
+ *   // have two grids, which are derived from the same coarse grid
+ *   Triangulation<dim> tria1, tria2;
+ *   DoFHandler<dim> dof_handler_1 (tria1), dof_handler_2 (tria2);
+ *   ...
+ *   // do something with these objects, e.g. refine the triangulations
+ *   // differently, distribute degrees of freedom, etc
+ *   ...
+ *   // create the mapping
+ *   InterGridMap<DoFHandler<dim> > grid_1_to_2_map;
+ *   grid_1_to_2_map.make_mapping (dof_handler_1,
+ *                                 dof_handler_2);
+ *   ...
+ *   typename DoFHandler<dim>::cell_iterator cell = dof_handler_1.begin(),
+ *                                           endc = dof_handler_1.end();
+ *   for (; cell!=endc; ++cell)
+ *     // now do something with the cell of dof_handler_2 corresponding to
+ *     // cell (which is one of dof_handler_1's cells)
+ *     f (grid_1_to_2_map[cell]);
  * @endcode
  *
- * 注意这个类的模板参数必须以<tt>InterGridMap<DoFHandler<2>></tt>的形式给出，这里是DoFHandler（也同样可以是Triangulation或PersistentTriangulation）。
- *
+ * Note that the template parameters to this class have to be given as
+ * <tt>InterGridMap<DoFHandler<2> ></tt>, which here is DoFHandler (and could
+ * equally well be Triangulation or PersistentTriangulation).
  *
  * @ingroup grid
- *
  */
 template <class MeshType>
 class InterGridMap : public Subscriptor
 {
 public:
   /**
-   * 对所考虑的网格类的迭代器类型的类型化定义。
-   *
+   * Typedef to the iterator type of the grid class under consideration.
    */
   using cell_iterator = typename MeshType::cell_iterator;
 
   /**
-   * 构造函数设置SmartPointer成员中的类名参数。
-   *
+   * Constructor setting the class name arguments in the SmartPointer members.
    */
   InterGridMap();
 
   /**
-   * 创建两个网格之间的映射。
-   *
+   * Create the mapping between the two grids.
    */
   void
   make_mapping(const MeshType &source_grid, const MeshType &destination_grid);
 
   /**
-   * 访问操作符：给出源网格上的一个单元，并接收另一个网格上相应的单元，如果不存在，则是源单元进一步细化后将创建的最细化单元。
-   *
+   * Access operator: give a cell on the source grid and receive the
+   * respective cell on the other grid, or if that does not exist, the most
+   * refined cell of which the source cell would be created if it were further
+   * refined.
    */
   cell_iterator operator[](const cell_iterator &source_cell) const;
 
   /**
-   * 删除该类的所有数据。
-   *
+   * Delete all data of this class.
    */
   void
   clear();
 
   /**
-   * 返回一个对源网格的引用。
-   *
+   * Return a reference to the source grid.
    */
   const MeshType &
   get_source_grid() const;
 
   /**
-   * 返回一个对目标网格的引用。
-   *
+   * Return a reference to the destination grid.
    */
   const MeshType &
   get_destination_grid() const;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcInvalidKey,
                  cell_iterator,
                  << "The iterator " << arg1 << " is not valid as key for "
                  << "this map.");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcIncompatibleGrids);
 
 private:
   /**
-   * 实际的数据。为每一层的每个单元格保留一个迭代器。
-   *
+   * The actual data. Hold one iterator for each cell on each level.
    */
   std::vector<std::vector<cell_iterator>> mapping;
 
   /**
-   * 存储一个指向源网格的指针。
-   *
+   * Store a pointer to the source grid.
    */
   SmartPointer<const MeshType, InterGridMap<MeshType>> source_grid;
 
   /**
-   * 同样，对于目标网格也是如此。
-   *
+   * Likewise for the destination grid.
    */
   SmartPointer<const MeshType, InterGridMap<MeshType>> destination_grid;
 
   /**
-   * 为给定的一对单元格设置映射。这些应该在细化程度和所有其他属性上匹配。
-   *
+   * Set the mapping for the pair of cells given. These shall match in level
+   * of refinement and all other properties.
    */
   void
   set_mapping(const cell_iterator &src_cell, const cell_iterator &dst_cell);
 
   /**
-   * 将键 @p src_cell 的值设置为 @p dst_cell.  对 @p src_cell.
-   * 的所有子单元和它们的子单元也是如此 这个函数用于在
-   * @p src_grid 上比在 @p dst_grid;
-   * 上更精细的单元，那么所有单元的层次及其子单元的值都指向
-   * @p dst_grid.  上的一个单元
-   *
+   * Set the value of the key @p src_cell to @p dst_cell. Do so as well for
+   * all the children and their children of @p src_cell. This function is used
+   * for cells which are more refined on @p src_grid than on @p dst_grid; then
+   * all values of the hierarchy of cells and their children point to one cell
+   * on the @p dst_grid.
    */
   void
   set_entries_to_cell(const cell_iterator &src_cell,
@@ -227,5 +214,3 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

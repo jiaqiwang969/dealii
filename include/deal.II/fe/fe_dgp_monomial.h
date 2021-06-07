@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_dgp_monomial_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -25,60 +24,89 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup fe */ 
- /*@{*/ 
+/*!@addtogroup fe */
+/*@{*/
 
 /**
- * 基于单项式的不连续有限元。
- * 这种有限元实现了完整的多项式空间，即p度的dim-维多项式。例如，在2d中，元素FE_DGP(1)将代表函数
- * $\{1,\hat x,\hat y\}$ 的跨度，这与由 $\{1,\hat x,\hat y,\hat x\hat
- * y\}$
- * 的跨度形成的元素FE_DGQ(1)相反。由于DGP空间中每个四边形只有三个未知数，因此立即可以看出这个元素不可能是连续的。
- * 这个元素的基函数被选择为上面列出的单项式。请注意，这是与FE_DGP类的主要区别，FE_DGP类使用一组完整度数
- * <code>p</code>
- * 的多项式，在单位平方上形成Legendre基。因此，在那里，如果网格单元是平行四边形，质量矩阵是对角线的。这里的基不具有这种特性；然而，它的计算更简单。另一方面，这个元素有一个额外的缺点，即局部单元矩阵通常比源自FE_DGP元素的矩阵有更差的条件数。
- * 这类元素没有在二维一的情况下实现（<tt>spacedim !=
- * dim</tt>）。 <h3>Transformation properties</h3>
- * 值得注意的是，在（双，三）线性映射下，这个元素描述的空间不包含
- * $P(k)$  ，即使我们使用度数为 $k$
- * 的多项式基。因此，例如，在具有非affine单元的网格上，线性函数不能由FE_DGP(1)或FE_DGPMonomial(1)类型的元素准确表示。
-* 这可以通过下面的二维例子来理解：考虑顶点在 $(0,0),(1,0),(0,1),(s,s)$ 的单元： @image html dgp_doesnt_contain_p.png  的单元。
- * 对于这个单元，双线性变换 $F$ 产生的关系 $x=\hat x+\hat
- * x\hat y$ 和 $y=\hat y+\hat x\hat y$ 将参考坐标 $\hat x,\hat y$
- * 和实空间坐标 $x,y$
- * 关联起来。在这种映射下，常数函数显然被映射到它自己，但
- * $P_1$ 空间的另外两个形状函数，即 $\phi_1(\hat x,\hat y)=\hat
- * x$ 和 $\phi_2(\hat x,\hat y)=\hat y$ 被映射到
- * $\phi_1(x,y)=\frac{x-t}{t(s-1)},\phi_2(x,y)=t$ ，其中
- * $t=\frac{y}{s-x+sx+y-sy}$  。 对于 $s=1$
- * 这种简单情况，即如果实心单元是单位平方，表达式可以简化为
- * $t=y$ 和 $\phi_1(x,y)=x,\phi_2(x,y)=y$
- * 。然而，对于所有其他情况，函数 $\phi_1(x,y),\phi_2(x,y)$
- * 不再是线性的，也不是它们的任何线性组合。因此，线性函数不在映射的
- * $P_1$ 多项式的范围内。
+ * Discontinuous finite elements based on monomials.
  *
- *  <h3>Visualization of shape functions</h3>
- * 在2d中，这个元素的形状函数看起来如下。 <h4>$P_0$
- * element</h4> <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0000.png
+ * This finite element implements complete polynomial spaces, that is, dim-
+ * dimensional polynomials of degree p. For example, in 2d the element
+ * FE_DGP(1) would represent the span of the functions $\{1,\hat x,\hat y\}$,
+ * which is in contrast to the element FE_DGQ(1) that is formed by the span of
+ * $\{1,\hat x,\hat y,\hat x\hat y\}$. Since the DGP space has only three
+ * unknowns for each quadrilateral, it is immediately clear that this element
+ * can not be continuous.
+ *
+ * The basis functions for this element are chosen to be the monomials listed
+ * above. Note that this is the main difference to the FE_DGP class that uses
+ * a set of polynomials of complete degree <code>p</code> that form a Legendre
+ * basis on the unit square. Thus, there, the mass matrix is diagonal, if the
+ * grid cells are parallelograms. The basis here does not have this property;
+ * however, it is simpler to compute. On the other hand, this element has the
+ * additional disadvantage that the local cell matrices usually have a worse
+ * condition number than the ones originating from the FE_DGP element.
+ *
+ * This class is not implemented for the codimension one case (<tt>spacedim !=
+ * dim</tt>).
+ *
+ * <h3>Transformation properties</h3>
+ *
+ * It is worth noting that under a (bi-, tri-)linear mapping, the space
+ * described by this element does not contain $P(k)$, even if we use a basis
+ * of polynomials of degree $k$. Consequently, for example, on meshes with
+ * non-affine cells, a linear function can not be exactly represented by
+ * elements of type FE_DGP(1) or FE_DGPMonomial(1).
+ *
+ * This can be understood by the following 2-d example: consider the cell with
+ * vertices at $(0,0),(1,0),(0,1),(s,s)$:
+ * @image html dgp_doesnt_contain_p.png
+ *
+ * For this cell, a bilinear transformation $F$ produces the relations $x=\hat
+ * x+\hat x\hat y$ and $y=\hat y+\hat x\hat y$ that correlate reference
+ * coordinates $\hat x,\hat y$ and coordinates in real space $x,y$. Under this
+ * mapping, the constant function is clearly mapped onto itself, but the two
+ * other shape functions of the $P_1$ space, namely $\phi_1(\hat x,\hat
+ * y)=\hat x$ and $\phi_2(\hat x,\hat y)=\hat y$ are mapped onto
+ * $\phi_1(x,y)=\frac{x-t}{t(s-1)},\phi_2(x,y)=t$ where
+ * $t=\frac{y}{s-x+sx+y-sy}$.
+ *
+ * For the simple case that $s=1$, i.e. if the real cell is the unit square,
+ * the expressions can be simplified to $t=y$ and
+ * $\phi_1(x,y)=x,\phi_2(x,y)=y$. However, for all other cases, the functions
+ * $\phi_1(x,y),\phi_2(x,y)$ are not linear any more, and neither is any
+ * linear combination of them. Consequently, the linear functions are not
+ * within the range of the mapped $P_1$ polynomials.
+ *
+ *
+ * <h3>Visualization of shape functions</h3> In 2d, the shape functions of
+ * this element look as follows.
+ *
+ * <h4>$P_0$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0000.png
  * </td>
  *
  * <td align="center"> </td> </tr> <tr> <td align="center"> $P_0$ element,
  * shape function 0 </td>
  *
- * <td align="center"></tr> </table> <h4>$P_1$ element</h4> <table> <tr> <td
- * align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0000.png
+ * <td align="center"></tr> </table>
+ *
+ * <h4>$P_1$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_1$ element, shape function 0 </td>
  *
  * <td align="center"> $P_1$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P1/P1_DGPMonomial_shape0002.png
  * </td>
  *
  * <td align="center"> </td> </tr> <tr> <td align="center"> $P_1$ element,
@@ -86,225 +114,249 @@ DEAL_II_NAMESPACE_OPEN
  *
  * <td align="center"></td> </tr> </table>
  *
- *  <h4>$P_2$ element</h4> <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0000.png
+ *
+ * <h4>$P_2$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_2$ element, shape function 0 </td>
  *
  * <td align="center"> $P_2$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0002.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0003.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0003.png
  * </td> </tr> <tr> <td align="center"> $P_2$ element, shape function 2 </td>
  *
  * <td align="center"> $P_2$ element, shape function 3 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0004.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0004.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0005.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P2/P2_DGPMonomial_shape0005.png
  * </td> </tr> <tr> <td align="center"> $P_2$ element, shape function 4 </td>
  *
  * <td align="center"> $P_2$ element, shape function 5 </td> </tr> </table>
- * <h4>$P_3$ element</h4> <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0000.png
+ *
+ *
+ * <h4>$P_3$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 0 </td>
  *
  * <td align="center"> $P_3$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0002.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0003.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0003.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 2 </td>
  *
  * <td align="center"> $P_3$ element, shape function 3 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0004.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0004.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0005.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0005.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 4 </td>
  *
  * <td align="center"> $P_3$ element, shape function 5 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0006.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0006.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0007.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0007.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 6 </td>
  *
  * <td align="center"> $P_3$ element, shape function 7 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0008.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0008.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0009.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P3/P3_DGPMonomial_shape0009.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 8 </td>
  *
  * <td align="center"> $P_3$ element, shape function 9 </td> </tr> </table>
- * <h4>$P_4$ element</h4>  <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0000.png
+ *
+ *
+ * <h4>$P_4$ element</h4> <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 0 </td>
  *
  * <td align="center"> $P_4$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0002.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0003.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0003.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 2 </td>
  *
  * <td align="center"> $P_4$ element, shape function 3 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0004.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0004.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0005.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0005.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 4 </td>
  *
  * <td align="center"> $P_4$ element, shape function 5 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0006.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0006.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0007.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0007.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 6 </td>
  *
  * <td align="center"> $P_4$ element, shape function 7 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0008.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0008.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0009.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0009.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 8 </td>
  *
  * <td align="center"> $P_4$ element, shape function 9 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0010.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0010.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0011.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0011.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 10 </td>
  *
  * <td align="center"> $P_4$ element, shape function 11 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0012.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0012.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0013.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0013.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 12 </td>
  *
  * <td align="center"> $P_4$ element, shape function 13 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0014.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPMonomial/P4/P4_DGPMonomial_shape0014.png
  * </td>
  *
  * <td align="center"> </td> </tr> <tr> <td align="center"> $P_4$ element,
  * shape function 14 </td>
  *
- * <td align="center"></td> </tr> </table> .
- *
+ * <td align="center"></td> </tr> </table>
  */
 template <int dim>
 class FE_DGPMonomial : public FE_Poly<dim>
 {
 public:
   /**
-   * 度数为<tt>p</tt>的多项式空间的构造函数。
-   *
+   * Constructor for the polynomial space of degree <tt>p</tt>.
    */
   FE_DGPMonomial(const unsigned int p);
 
   /**
-   * 返回一个唯一标识有限元的字符串。这个类返回<tt>FE_DGPMonomial<dim>(degree)</tt>，其中<tt>dim</tt>和<tt>p</tt>被适当的值替换。
-   *
+   * Return a string that uniquely identifies a finite element. This class
+   * returns <tt>FE_DGPMonomial<dim>(degree)</tt>, with <tt>dim</tt> and
+   * <tt>p</tt> replaced by appropriate values.
    */
   virtual std::string
   get_name() const override;
 
   /**
-   * @name  支持hp的函数  @{  。
-   *
+   * @name Functions to support hp
+   * @{
    */
 
   /**
-   * 如果在一个顶点上，有几个有限元处于活动状态，hp代码首先为这些FEs的每个自由度分配不同的全局索引。然后调用这个函数来找出其中哪些应该得到相同的值，从而可以得到相同的全局自由度指数。
-   * 因此，该函数返回当前有限元对象的自由度与 @p fe_other,
-   * 的自由度之间的相同性列表，后者是对代表在该特定顶点上活动的其他有限元之一的有限元对象的引用。该函数计算两个有限元对象的哪些自由度是等价的，两个自由度的编号都在零和两个有限元的n_dofs_per_vertex()的相应值之间。每一对的第一个索引表示本元素的一个顶点自由度，而第二个是另一个有限元素的相应索引。
-   * 作为一个不连续的元素，这种约束的集合当然是空的。
+   * If, on a vertex, several finite elements are active, the hp-code first
+   * assigns the degrees of freedom of each of these FEs different global
+   * indices. It then calls this function to find out which of them should get
+   * identical values, and consequently can receive the same global DoF index.
+   * This function therefore returns a list of identities between DoFs of the
+   * present finite element object with the DoFs of @p fe_other, which is a
+   * reference to a finite element object representing one of the other finite
+   * elements active on this particular vertex. The function computes which of
+   * the degrees of freedom of the two finite element objects are equivalent,
+   * both numbered between zero and the corresponding value of
+   * n_dofs_per_vertex() of the two finite elements. The first index of each
+   * pair denotes one of the vertex dofs of the present element, whereas the
+   * second is the corresponding index of the other finite element.
    *
+   * This being a discontinuous element, the set of such constraints is of
+   * course empty.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_vertex_dof_identities(const FiniteElement<dim> &fe_other) const override;
 
   /**
-   * 与hp_vertex_dof_indices()相同，只是该函数处理的是线上的自由度。
-   * 这是一个不连续的元素，这种约束的集合当然是空的。
+   * Same as hp_vertex_dof_indices(), except that the function treats degrees
+   * of freedom on lines.
    *
+   * This being a discontinuous element, the set of such constraints is of
+   * course empty.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_line_dof_identities(const FiniteElement<dim> &fe_other) const override;
 
   /**
-   * 与hp_vertex_dof_indices()相同，只是该函数处理的是四边形上的自由度。
-   * 这是一个不连续的元素，这种约束的集合当然是空的。
+   * Same as hp_vertex_dof_indices(), except that the function treats degrees
+   * of freedom on quads.
    *
+   * This being a discontinuous element, the set of such constraints is of
+   * course empty.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_quad_dof_identities(const FiniteElement<dim> &fe_other,
                          const unsigned int        face_no = 0) const override;
 
   /**
-   * 返回该元素是否以新的方式实现其悬挂节点约束，这必须用于使元素
-   * "hp-compatible"。
-   * 对于FE_DGPMonomial类，结果总是真（与元素的程度无关），因为它没有悬挂节点（是一个不连续的元素）。
+   * Return whether this element implements its hanging node constraints in
+   * the new way, which has to be used to make elements "hp-compatible".
    *
+   * For the FE_DGPMonomial class the result is always true (independent of
+   * the degree of the element), as it has no hanging nodes (being a
+   * discontinuous element).
    */
   virtual bool
   hp_constraints_are_implemented() const override;
 
   /**
-   * @copydoc   FiniteElement::compare_for_domination() .
-   *
+   * @copydoc FiniteElement::compare_for_domination()
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim> &fe_other,
@@ -312,27 +364,31 @@ public:
 
   /**
    * @}
-   *
    */
 
   /**
-   * 返回从给定的有限元插值到现在的矩阵。然后矩阵的大小是
-   * @p dofs_per_cell 乘以<tt>source.n_dofs_per_cell()</tt>。
-   * 这些矩阵只有在源元素也是 @p FE_Q
-   * 元素时才可用。否则，会抛出一个
-   * FiniteElement<dim>::ExcInterpolationNotImplemented 类型的异常。
+   * Return the matrix interpolating from the given finite element to the
+   * present one. The size of the matrix is then @p dofs_per_cell times
+   * <tt>source.n_dofs_per_cell()</tt>.
    *
+   * These matrices are only available if the source element is also a @p FE_Q
+   * element. Otherwise, an exception of type
+   * FiniteElement<dim>::ExcInterpolationNotImplemented is thrown.
    */
   virtual void
   get_interpolation_matrix(const FiniteElement<dim> &source,
                            FullMatrix<double> &      matrix) const override;
 
   /**
-   * 返回从一个元素的一个面插值到邻近元素的面的矩阵。矩阵的大小是
-   * @p  dofs_per_face乘以<tt>source.dofs_per_face</tt>。
-   * 衍生元素将不得不实现这个功能。他们可能只为某些源有限元提供插值矩阵，例如那些来自同一家族的有限元。如果他们不实现从一个给定元素的内插，那么他们必须抛出一个类型为
-   * FiniteElement<dim>::ExcInterpolationNotImplemented. 的异常。
+   * Return the matrix interpolating from a face of one element to the face
+   * of the neighboring element. The size of the matrix is then @p
+   * dofs_per_face times <tt>source.dofs_per_face</tt>.
    *
+   * Derived elements will have to implement this function. They may only
+   * provide interpolation matrices for certain source finite elements, for
+   * example those from the same family. If they don't implement interpolation
+   * from a given element, then they must throw an exception of type
+   * FiniteElement<dim>::ExcInterpolationNotImplemented.
    */
   virtual void
   get_face_interpolation_matrix(const FiniteElement<dim> &source,
@@ -340,11 +396,15 @@ public:
                                 const unsigned int face_no = 0) const override;
 
   /**
-   * 返回从一个元素的一个面插值到邻近元素的面的矩阵。矩阵的大小是
-   * @p  dofs_per_face乘以<tt>source.dofs_per_face</tt>。
-   * 衍生元素将不得不实现这个功能。他们可能只为某些源有限元提供插值矩阵，例如那些来自同一家族的有限元。如果他们不实现从一个给定元素的内插，那么他们必须抛出一个类型为
-   * FiniteElement<dim>::ExcInterpolationNotImplemented. 的异常。
+   * Return the matrix interpolating from a face of one element to the face
+   * of the neighboring element. The size of the matrix is then @p
+   * dofs_per_face times <tt>source.dofs_per_face</tt>.
    *
+   * Derived elements will have to implement this function. They may only
+   * provide interpolation matrices for certain source finite elements, for
+   * example those from the same family. If they don't implement interpolation
+   * from a given element, then they must throw an exception of type
+   * FiniteElement<dim>::ExcInterpolationNotImplemented.
    */
   virtual void
   get_subface_interpolation_matrix(
@@ -354,18 +414,20 @@ public:
     const unsigned int        face_no = 0) const override;
 
   /**
-   * 如果形状函数 @p shape_index 在面 @p face_index.
-   * 的某处有非零函数值，该函数返回 @p true, 。
-   *
+   * This function returns @p true, if the shape function @p shape_index has
+   * non-zero function values somewhere on the face @p face_index.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
                       const unsigned int face_index) const override;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   * 这个函数是虚拟的，因为有限元对象通常是通过指向其基类的指针来访问的，而不是类本身。
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    *
+   * This function is made virtual, since finite element objects are usually
+   * accessed through pointers to their base class, rather than the class
+   * itself.
    */
   virtual std::size_t
   memory_consumption() const override;
@@ -375,27 +437,23 @@ public:
 
 private:
   /**
-   * 仅供内部使用。其全称是 @p get_dofs_per_object_vector
-   * 函数，它创建了 @p dofs_per_object
-   * 向量，在构造函数内需要传递给 @p
-   * FiniteElementData的构造函数。
-   *
+   * Only for internal use. Its full name is @p get_dofs_per_object_vector
+   * function and it creates the @p dofs_per_object vector that is needed
+   * within the constructor to be passed to the constructor of @p
+   * FiniteElementData.
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * 初始化限制矩阵。从构造函数中调用。
-   *
+   * Initialize the restriction matrices. Called from the constructor.
    */
   void
   initialize_restriction();
 };
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

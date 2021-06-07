@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/trilinos_tpetra_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -50,44 +49,35 @@ namespace LinearAlgebra
 #  endif
 
   /**
-   * 一个命名空间，用于为Trilinos的Tpetra向量提供包装器的类。
-   * 这个命名空间为Tpetra包（https://trilinos.github.io/tpetra.html）中的
-   * Tpetra::Vector 类提供包装器，它是Trilinos的一部分。
+   * A namespace for classes that provide wrappers for Trilinos' Tpetra vectors.
    *
+   * This namespace provides wrappers for the Tpetra::Vector class from the
+   * Tpetra package (https://trilinos.github.io/tpetra.html) that is part of
+   * Trilinos.
    */
   namespace TpetraWrappers
   {
     /**
-     * 该类实现了对Trilinos分布式向量类 Tpetra::Vector.
-     * 的包装器，该类源自 LinearAlgebra::VectorSpaceVector
-     * 类，需要Trilinos在编译时支持MPI。
-     * Tpetra使用Kokkos进行线程并行，并根据Kokkos的配置自动选择执行和内存空间。优先级从高到低排列。
+     * This class implements a wrapper to the Trilinos distributed vector
+     * class Tpetra::Vector. This class is derived from the
+     * LinearAlgebra::VectorSpaceVector class and requires Trilinos to be
+     * compiled with MPI support.
      *
+     * Tpetra uses Kokkos for thread-parallelism and chooses the execution and
+     * memory space automatically depending on Kokkos configuration. The
+     * priority is ranked from highest to lowest:
+     * - Kokkos::Cuda
+     * - Kokkos::OpenMP
+     * - Kokkos::Threads
+     * - Kokkos::Serial
      *
+     * In case Kokkos was configured with CUDA support, this class stores the
+     * values in unified virtual memory space and performs its action on the
+     * GPU. In particular, there is no need for manually synchronizing memory
+     * between host and device.
      *
-     *
-     *
-     *
-     * -  Kokkos::Cuda
-     *
-     *
-     *
-     *
-     * -  Kokkos::OpenMP
-     *
-     *
-     *
-     *
-     * -  Kokkos::Threads
-     *
-     *
-     *
-     *
-     *
-     * -  Kokkos::Serial  如果Kokkos被配置为支持CUDA，该类将数值存储在统一的虚拟内存空间，并在GPU上执行其动作。特别是，不需要在主机和设备之间手动同步内存。
      * @ingroup TrilinosWrappers
      * @ingroup Vectors
-     *
      */
     template <typename Number>
     class Vector : public VectorSpaceVector<Number>, public Subscriptor
@@ -98,27 +88,30 @@ namespace LinearAlgebra
       using size_type = typename VectorSpaceVector<Number>::size_type;
 
       /**
-       * 构造函数。创建一个维度为0的向量。
-       *
+       * Constructor. Create a vector of dimension zero.
        */
       Vector();
 
       /**
-       * 复制构造函数。将维数和分区设置为给定的向量，并复制所有的元素。
-       *
+       * Copy constructor. Sets the dimension and the partitioning to that of
+       * the given vector and copies all elements.
        */
       Vector(const Vector &V);
 
       /**
-       * 这个构造函数接收一个IndexSet，它定义了如何在MPI处理器之间分配各个组件。由于它还包括关于向量大小的信息，这就是我们生成一个%并行向量所需要的全部内容。
-       *
+       * This constructor takes an IndexSet that defines how to distribute the
+       * individual components among the MPI processors. Since it also
+       * includes information about the size of the vector, this is all we
+       * need to generate a %parallel vector.
        */
       explicit Vector(const IndexSet &parallel_partitioner,
                       const MPI_Comm &communicator);
 
       /**
-       * Reinit功能。这个功能销毁了旧的向量内容，并根据输入的分区生成一个新的向量。标志<tt>omit_zeroing_entries</tt>决定了向量是否应该被填入零（false）或不被触动（true）。
-       *
+       * Reinit functionality. This function destroys the old vector content
+       * and generates a new one based on the input partitioning. The flag
+       * <tt>omit_zeroing_entries</tt> determines whether the vector should be
+       * filled with zero (false) or left untouched (true).
        */
       void
       reinit(const IndexSet &parallel_partitioner,
@@ -126,35 +119,35 @@ namespace LinearAlgebra
              const bool      omit_zeroing_entries = false);
 
       /**
-       * 将尺寸改为向量的尺寸  @p V.   @p V 的元素不被复制。
-       *
+       * Change the dimension to that of the vector @p V. The elements of @p V are not
+       * copied.
        */
       virtual void
       reinit(const VectorSpaceVector<Number> &V,
              const bool omit_zeroing_entries = false) override;
 
       /**
-       * 复制函数。这个函数接收一个Vector并复制所有的元素。该向量将具有与
-       * @p  V相同的平行分布。
-       *
+       * Copy function. This function takes a Vector and copies all the
+       * elements. The Vector will have the same parallel distribution as @p
+       * V.
        */
       Vector &
       operator=(const Vector &V);
 
       /**
-       * 将向量的所有元素设置为标量 @p s.  这个操作只有在
-       * @p s 等于零时才允许。
-       *
+       * Sets all elements of the vector to the scalar @p s. This operation is
+       * only allowed if @p s is equal to zero.
        */
       virtual Vector &
       operator=(const Number s) override;
 
       /**
-       * 从输入向量 @p V.  VectorOperation::values  @p operation
-       * 中导入向量的IndexSet中存在的所有元素，用于决定 @p
-       * V
-       * 中的元素是否应该被添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
-       *
+       * Imports all the elements present in the vector's IndexSet from the
+       * input vector @p V. VectorOperation::values @p operation is used to decide if
+       * the elements in @p V should be added to the current vector or replace the
+       * current elements. The last parameter can be used if the same
+       * communication pattern is used multiple times. This can be used to
+       * improve performance.
        */
       virtual void
       import(const ReadWriteVector<Number> &V,
@@ -163,60 +156,52 @@ namespace LinearAlgebra
                communication_pattern = {}) override;
 
       /**
-       * 将整个向量乘以一个固定系数。
-       *
+       * Multiply the entire vector by a fixed factor.
        */
       virtual Vector &
       operator*=(const Number factor) override;
 
       /**
-       * 将整个向量除以一个固定的因子。
-       *
+       * Divide the entire vector by a fixed factor.
        */
       virtual Vector &
       operator/=(const Number factor) override;
 
       /**
-       * 将向量 @p V 添加到现在的向量中。
-       *
+       * Add the vector @p V to the present one.
        */
       virtual Vector &
       operator+=(const VectorSpaceVector<Number> &V) override;
 
       /**
-       * 从现在的向量中减去向量 @p V 。
-       *
+       * Subtract the vector @p V from the present one.
        */
       virtual Vector &
       operator-=(const VectorSpaceVector<Number> &V) override;
 
       /**
-       * 返回两个向量的标量乘积。这些向量需要有相同的布局。
-       *
+       * Return the scalar product of two vectors. The vectors need to have the
+       * same layout.
        */
       virtual Number
       operator*(const VectorSpaceVector<Number> &V) const override;
 
       /**
-       * 将 @p a 添加到所有组件中。注意， @p is
-       * 是一个标量而不是一个向量。
-       *
+       * Add @p a to all components. Note that @p is a scalar not a vector.
        */
       virtual void
       add(const Number a) override;
 
       /**
-       * 一个向量的倍数的简单加法，即<tt>*this +=
-       * a*V</tt>。向量需要有相同的布局。
-       *
+       * Simple addition of a multiple of a vector, i.e. <tt>*this +=
+       * a*V</tt>. The vectors need to have the same layout.
        */
       virtual void
       add(const Number a, const VectorSpaceVector<Number> &V) override;
 
       /**
-       * 一个向量的多个加法，即：<tt>*this> +=
-       * a*V+b*W</tt>。向量需要有相同的布局。
-       *
+       * Multiple addition of multiple of a vector, i.e. <tt>*this> +=
+       * a*V+b*W</tt>. The vectors need to have the same layout.
        */
       virtual void
       add(const Number                     a,
@@ -225,8 +210,8 @@ namespace LinearAlgebra
           const VectorSpaceVector<Number> &W) override;
 
       /**
-       * 缩放和一个向量的倍数的简单相加，即<tt>*this=s*(*this)+a*V</tt>。
-       *
+       * Scaling and simple addition of a multiple of a vector, i.e. <tt>*this
+       * = s*(*this)+a*V</tt>.
        */
       virtual void
       sadd(const Number                     s,
@@ -234,131 +219,136 @@ namespace LinearAlgebra
            const VectorSpaceVector<Number> &V) override;
 
       /**
-       * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟对角线缩放矩阵的乘法（和立即重新分配）。这些向量需要有相同的布局。
-       *
+       * Scale each element of this vector by the corresponding element in the
+       * argument. This function is mostly meant to simulate multiplication
+       * (and immediate re-assignment) by a diagonal scaling matrix. The
+       * vectors need to have the same layout.
        */
       virtual void
       scale(const VectorSpaceVector<Number> &scaling_factors) override;
 
       /**
-       * 赋值 <tt>*this = a*V</tt>.
-       *
+       * Assignment <tt>*this = a*V</tt>.
        */
       virtual void
       equ(const Number a, const VectorSpaceVector<Number> &V) override;
 
       /**
-       * 返回向量是否只包含值为0的元素。
-       *
+       * Return whether the vector contains only elements with value zero.
        */
       virtual bool
       all_zero() const override;
 
       /**
-       * 返回这个向量的元素的平均值。
-       *
+       * Return the mean value of the element of this vector.
        */
       virtual Number
       mean_value() const override;
 
       /**
-       * 返回该向量的l<sub>1</sub>准则（即所有处理器中所有条目的绝对值之和）。
-       *
+       * Return the l<sub>1</sub> norm of the vector (i.e., the sum of the
+       * absolute values of all entries among all processors).
        */
       virtual typename LinearAlgebra::VectorSpaceVector<Number>::real_type
       l1_norm() const override;
 
       /**
-       * 返回向量的l<sub>2</sub>准则（即所有处理器中所有条目的平方之和的平方根）。
-       *
+       * Return the l<sub>2</sub> norm of the vector (i.e., the square root of
+       * the sum of the square of all entries among all processors).
        */
       virtual typename LinearAlgebra::VectorSpaceVector<Number>::real_type
       l2_norm() const override;
 
       /**
-       * 返回向量的最大规范（即所有条目和所有处理器之间的最大绝对值）。
-       *
+       * Return the maximum norm of the vector (i.e., the maximum absolute value
+       * among all entries and among all processors).
        */
       virtual typename LinearAlgebra::VectorSpaceVector<Number>::real_type
       linfty_norm() const override;
 
       /**
-       * 执行一个向量加法和随后的内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用的
+       * Performs a combined operation of a vector addition and a subsequent
+       * inner product, returning the value of the inner product. In other
+       * words, the result of this function is the same as if the user called
        * @code
        * this->add(a, V);
-       * return_value =this W;
+       * return_value = *this * W;
        * @endcode
-       * 这个函数存在的原因是这个操作比单独调用这两个函数涉及的内存转移要少。这个方法只需要加载三个向量，
-       * @p this,   @p V,   @p W,
-       * ，而调用单独的方法意味着要加载调用向量 @p this
-       * 两次。由于大多数向量操作都有内存传输限制，这就使时间减少了25\%（如果
-       * @p W 等于 @p this). ，则减少50\%）。
-       * 向量需要有相同的布局。
-       * 对于复值向量，第二步中的标量乘积被实现为
-       * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
        *
+       * The reason this function exists is that this operation involves less
+       * memory transfer than calling the two functions separately. This
+       * method only needs to load three vectors, @p this, @p V, @p W, whereas
+       * calling separate methods means to load the calling vector @p this
+       * twice. Since most vector operations are memory transfer limited, this
+       * reduces the time by 25\% (or 50\% if @p W equals @p this).
+       *
+       * The vectors need to have the same layout.
+       *
+       * For complex-valued vectors, the scalar product in the second step is
+       * implemented as
+       * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
        */
       virtual Number
       add_and_dot(const Number                     a,
                   const VectorSpaceVector<Number> &V,
                   const VectorSpaceVector<Number> &W) override;
       /**
-       * 这个函数总是返回false，它的存在只是为了向后兼容。
-       *
+       * This function always returns false and is present only for backward
+       * compatibility.
        */
       bool
       has_ghost_elements() const;
 
       /**
-       * 返回向量的全局大小，等于所有处理器中本地拥有的索引数之和。
-       *
+       * Return the global size of the vector, equal to the sum of the number of
+       * locally owned indices among all processors.
        */
       virtual size_type
       size() const override;
 
       /**
-       * 返回向量的本地大小，即本地拥有的索引数。
-       *
+       * Return the local size of the vector, i.e., the number of indices
+       * owned locally.
        */
       size_type
       locally_owned_size() const;
 
       /**
-       * 返回与此对象一起使用的MPI通信器对象。
-       *
+       * Return the MPI communicator object in use with this object.
        */
       MPI_Comm
       get_mpi_communicator() const;
 
       /**
-       * 返回一个索引集，描述这个向量的哪些元素是由当前处理器拥有的。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相干的集合，加起来就是完整的索引集。很明显，如果一个向量只在一个处理器上创建，那么结果将满足
+       * Return an index set that describes which elements of this vector are
+       * owned by the current processor. As a consequence, the index sets
+       * returned on different processors if this is a distributed vector will
+       * form disjoint sets that add up to the complete index set. Obviously, if
+       * a vector is created on only one processor, then the result would
+       * satisfy
        * @code
-       * vec.locally_owned_elements() == complete_index_set(vec.size())
+       *  vec.locally_owned_elements() == complete_index_set(vec.size())
        * @endcode
-       *
-       *
        */
       virtual ::dealii::IndexSet
       locally_owned_elements() const override;
 
       /**
-       * 返回一个对底层Trilinos  Tpetra::Vector 类的常量引用。
-       *
+       * Return a const reference to the underlying Trilinos
+       * Tpetra::Vector class.
        */
       const Tpetra::Vector<Number, int, types::global_dof_index> &
       trilinos_vector() const;
 
       /**
-       * 返回对底层Trilinos Tpetra::Vector
-       * 类的（可修改的）引用。
-       *
+       * Return a (modifiable) reference to the underlying Trilinos
+       * Tpetra::Vector class.
        */
       Tpetra::Vector<Number, int, types::global_dof_index> &
       trilinos_vector();
 
       /**
-       * 将向量打印到输出流 @p out. 。
-       *
+       * Prints the vector to the output stream @p out.
        */
       virtual void
       print(std::ostream &     out,
@@ -367,29 +357,28 @@ namespace LinearAlgebra
             const bool         across     = true) const override;
 
       /**
-       * 以字节为单位返回这个类的内存消耗。
-       *
+       * Return the memory consumption of this class in bytes.
        */
       virtual std::size_t
       memory_consumption() const override;
 
       /**
-       * 向量有不同的分区，即它们的IndexSet对象不代表相同的指数。
-       *
+       * The vectors have different partitioning, i.e. their IndexSet objects
+       * don't represent the same indices.
        */
       DeclException0(ExcDifferentParallelPartitioning);
 
       /**
-       * 试图在两个不兼容的向量类型之间执行操作。
-       * @ingroup Exceptions
+       * Attempt to perform an operation between two incompatible vector types.
        *
+       * @ingroup Exceptions
        */
       DeclException0(ExcVectorTypeNotCompatible);
 
       /**
-       * 在Trilinos中被错误抛出的异常。
-       * @ingroup Exceptions
+       * Exception thrown by an error in Trilinos.
        *
+       * @ingroup Exceptions
        */
       DeclException1(ExcTrilinosError,
                      int,
@@ -398,31 +387,28 @@ namespace LinearAlgebra
 
     private:
       /**
-       * 根据通信器 @p mpi_comm. 为IndexSet @p source_index_set
-       * 和当前向量之间的通信创建通信模式。
-       *
+       * Create the CommunicationPattern for the communication between the
+       * IndexSet @p source_index_set and the current vector based
+       * on the communicator @p mpi_comm.
        */
       void
       create_tpetra_comm_pattern(const IndexSet &source_index_set,
                                  const MPI_Comm &mpi_comm);
 
       /**
-       * 指向实际Tpetra向量对象的指针。
-       *
+       * Pointer to the actual Tpetra vector object.
        */
       std::unique_ptr<Tpetra::Vector<Number, int, types::global_dof_index>>
         vector;
 
       /**
-       * 最后导入的矢量元素的索引集。
-       *
+       * IndexSet of the elements of the last imported vector.
        */
       ::dealii::IndexSet source_stored_elements;
 
       /**
-       * Source_stored_elements
-       * IndexSet和当前向量之间的通信模式。
-       *
+       * CommunicationPattern for the communication between the
+       * source_stored_elements IndexSet and the current vector.
        */
       std::shared_ptr<const TpetraWrappers::CommunicationPattern>
         tpetra_comm_pattern;
@@ -440,10 +426,7 @@ namespace LinearAlgebra
 
 
 /**
- * 将 dealii::LinearAlgebra::TpetraWrappers::Vector
- * 声明为分布式向量。
- *
- *
+ * Declare dealii::LinearAlgebra::TpetraWrappers::Vector as distributed vector.
  */
 template <typename Number>
 struct is_serial_vector<LinearAlgebra::TpetraWrappers::Vector<Number>>
@@ -455,5 +438,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
-
-

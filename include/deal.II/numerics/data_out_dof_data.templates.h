@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/data_out_dof_data.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -86,8 +85,8 @@ namespace internal
 
 
     /**
-     * 在一个具有任意数量的细分的单线上生成评估点。
-     *
+     * Generate evaluation points on a simplex with arbitrary number of
+     * subdivisions.
      */
     template <int dim>
     inline std::vector<Point<dim>>
@@ -103,12 +102,24 @@ namespace internal
 
 
     /**
-     * 帮助函数，以细分=0,1,2为基本情况，递归地创建评价点。
-     * + |\+ +-+ |\|\|\+ +-+ +-+-+ |\|\|\|\|\|\+ +-+ +-+-+ +-+-+-+
-     * |\|\|\|\|\|\|\|\|\|\+ +-+ +-+-+ +-+-+-+ +-+-+-+-+ 0 1 2 3 4 ^ ^ | | | |
-     * | | +--------------------------+ | | |
-     * +--------------------------------+
+     * Helper function to create evaluation points recursively with
+     * subdivisions=0,1,2 being the base case:
+     *                                        +
+     *                                        |\
+     *                            +           +-+
+     *                            |\          |\|\
+     *                  +         +-+         +-+-+
+     *                  |\        |\|\        |\|\|\
+     *          +       +-+       +-+-+       +-+-+-+
+     *          |\      |\|\      |\|\|\      |\|\|\|\
+     *    +     +-+     +-+-+     +-+-+-+     +-+-+-+-+
      *
+     *    0      1        2          3            4
+     *    ^      ^                   |            |
+     *    |      |                   |            |
+     *    +--------------------------+            |
+     *           |                                |
+     *           +--------------------------------+
      */
     inline void
     generate_simplex_evaluation_points_recursively(
@@ -170,8 +181,7 @@ namespace internal
 
 
     /**
-     * 三角形的特殊化。
-     *
+     * Specialization for triangles.
      */
     template <>
     inline std::vector<Point<2>>
@@ -190,8 +200,9 @@ namespace internal
 
 
     /**
-     * 在ParallelDataBase内部设置所需的FEValues和FEFaceValues向量，并返回所需的最大正交点数量，以便为抓取数据分配足够的内存。
-     *
+     * Set up vectors of FEValues and FEFaceValues needed inside of
+     * ParallelDataBase and return the maximum number of quadrature points
+     * needed to allocate enough memory for the scratch data.
      */
     template <int dim, int spacedim>
     unsigned int
@@ -261,7 +272,7 @@ namespace internal
             {
               quadrature_wedge = std::make_unique<Quadrature<dim>>(
                 FE_WedgeP<dim, spacedim>(
-                  1  /*note: vtk only supports linear wedges*/ )
+                  1 /*note: vtk only supports linear wedges*/)
                   .get_unit_support_points());
             }
 
@@ -521,8 +532,8 @@ namespace internal
 
 
     /**
-     * 在WorkStream上下文中，使用此函数将并行阶段计算出的补丁追加到补丁阵列中。
-     *
+     * In a WorkStream context, use this function to append the patch computed
+     * by the parallel stage to the array of patches.
      */
     template <int dim, int spacedim>
     void
@@ -541,8 +552,9 @@ namespace internal
   namespace DataOutImplementation
   {
     /**
-     * 提取一个数字的指定分量。这个模板用于假定给定值是一个实数标量时，所以询问实数部分是第二个参数的唯一有效选择。
-     *
+     * Extract the specified component of a number. This template is used when
+     * the given value is assumed to be a real scalar, so asking for the real
+     * part is the only valid choice for the second argument.
      */
     template <typename NumberType>
     double
@@ -562,8 +574,8 @@ namespace internal
 
 
     /**
-     * 提取一个数字的指定分量。当给定值是一个复数时，该模板被使用。
-     *
+     * Extract the specified component of a number. This template is used when
+     * the given value is a complex number
      */
     template <typename NumberType>
     double
@@ -605,15 +617,14 @@ namespace internal
 
 
     /**
-     * 在向量类型上的帮助类模板，允许不同的实现方式从向量中提取信息。
-     *
+     * Helper class templated on vector type to allow different implementations
+     * to extract information from a vector.
      */
     template <typename VectorType>
     struct VectorHelper
     {
       /**
-       * 从 @p vector 中提取 @p indices 并将其放入 @p values. 中。
-       *
+       * extract the @p indices from @p vector and put them into @p values.
        */
       static void
       extract(const VectorType &                          vector,
@@ -642,10 +653,10 @@ namespace internal
     template <>
     inline void
     VectorHelper<LinearAlgebra::EpetraWrappers::Vector>::extract(
-      const LinearAlgebra::EpetraWrappers::Vector &  /*vector*/ ,
-      const std::vector<types::global_dof_index> &  /*indices*/ ,
-      const ComponentExtractor  /*extract_component*/ ,
-      std::vector<double> &  /*values*/ )
+      const LinearAlgebra::EpetraWrappers::Vector & /*vector*/,
+      const std::vector<types::global_dof_index> & /*indices*/,
+      const ComponentExtractor /*extract_component*/,
+      std::vector<double> & /*values*/)
     {
       // TODO: we don't have element access
       Assert(false, ExcNotImplemented());
@@ -658,10 +669,10 @@ namespace internal
     template <>
     inline void
     VectorHelper<LinearAlgebra::TpetraWrappers::Vector<double>>::extract(
-      const LinearAlgebra::TpetraWrappers::Vector<double> &  /*vector*/ ,
-      const std::vector<types::global_dof_index> &  /*indices*/ ,
-      const ComponentExtractor  /*extract_component*/ ,
-      std::vector<double> &  /*values*/ )
+      const LinearAlgebra::TpetraWrappers::Vector<double> & /*vector*/,
+      const std::vector<types::global_dof_index> & /*indices*/,
+      const ComponentExtractor /*extract_component*/,
+      std::vector<double> & /*values*/)
     {
       // TODO: we don't have element access
       Assert(false, ExcNotImplemented());
@@ -670,10 +681,10 @@ namespace internal
     template <>
     inline void
     VectorHelper<LinearAlgebra::TpetraWrappers::Vector<float>>::extract(
-      const LinearAlgebra::TpetraWrappers::Vector<float> &  /*vector*/ ,
-      const std::vector<types::global_dof_index> &  /*indices*/ ,
-      const ComponentExtractor  /*extract_component*/ ,
-      std::vector<double> &  /*values*/ )
+      const LinearAlgebra::TpetraWrappers::Vector<float> & /*vector*/,
+      const std::vector<types::global_dof_index> & /*indices*/,
+      const ComponentExtractor /*extract_component*/,
+      std::vector<double> & /*values*/)
     {
       // TODO: we don't have element access
       Assert(false, ExcNotImplemented());
@@ -755,16 +766,17 @@ namespace internal
 
 
     /**
-     * 类，存储一个类型等于模板参数的向量的指针，并提供从中提取数据的函数。
-     *
+     * Class that stores a pointer to a vector of type equal to the template
+     * argument, and provides the functions to extract data from it.
      */
     template <int dim, int spacedim, typename VectorType>
     class DataEntry : public DataEntryBase<dim, spacedim>
     {
     public:
       /**
-       * 构造函数。给出一个矢量的各个组成部分的名称列表，以及它们作为标量或矢量数据的解释。这个构造函数假定不使用后处理程序。
-       *
+       * Constructor. Give a list of names for the individual components of
+       * the vector and their interpretation as scalar or vector data. This
+       * constructor assumes that no postprocessor is going to be used.
        */
       DataEntry(const DoFHandler<dim, spacedim> *dofs,
                 const VectorType *               data,
@@ -774,16 +786,17 @@ namespace internal
                   &data_component_interpretation);
 
       /**
-       * 当要使用数据后处理程序时的构造函数。在这种情况下，名字和向量的声明将从后处理器中获得。
-       *
+       * Constructor when a data postprocessor is going to be used. In that
+       * case, the names and vector declarations are going to be acquired from
+       * the postprocessor.
        */
       DataEntry(const DoFHandler<dim, spacedim> *  dofs,
                 const VectorType *                 data,
                 const DataPostprocessor<spacedim> *data_postprocessor);
 
       /**
-       * 假设存储的向量是一个单元格向量，从其中提取给定的元素。
-       *
+       * Assuming that the stored vector is a cell vector, extract the given
+       * element from it.
        */
       virtual double
       get_cell_data_value(
@@ -791,8 +804,8 @@ namespace internal
         const ComponentExtractor extract_component) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的值。
-       *
+       * Given a FEValuesBase object, extract the values on the present cell
+       * from the vector we actually store.
        */
       virtual void
       get_function_values(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -800,8 +813,9 @@ namespace internal
                           std::vector<double> &patch_values) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的值。这个函数的作用与上面的函数相同，但对矢量值的有限元而言。
-       *
+       * Given a FEValuesBase object, extract the values on the present cell
+       * from the vector we actually store. This function does the same as the
+       * one above but for vector-valued finite elements.
        */
       virtual void
       get_function_values(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -810,8 +824,8 @@ namespace internal
                             &patch_values_system) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元上的梯度。
-       *
+       * Given a FEValuesBase object, extract the gradients on the present
+       * cell from the vector we actually store.
        */
       virtual void
       get_function_gradients(
@@ -820,8 +834,9 @@ namespace internal
         std::vector<Tensor<1, spacedim>> & patch_gradients) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的梯度。这个函数与上面的函数相同，但对矢量值的有限元而言。
-       *
+       * Given a FEValuesBase object, extract the gradients on the present
+       * cell from the vector we actually store. This function does the same
+       * as the one above but for vector-valued finite elements.
        */
       virtual void
       get_function_gradients(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -830,8 +845,8 @@ namespace internal
                                &patch_gradients_system) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元上的二阶导数。
-       *
+       * Given a FEValuesBase object, extract the second derivatives on the
+       * present cell from the vector we actually store.
        */
       virtual void
       get_function_hessians(
@@ -840,8 +855,9 @@ namespace internal
         std::vector<Tensor<2, spacedim>> & patch_hessians) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的二阶导数。这个函数的作用与上面的函数相同，但对矢量值的有限元而言。
-       *
+       * Given a FEValuesBase object, extract the second derivatives on the
+       * present cell from the vector we actually store. This function does
+       * the same as the one above but for vector-valued finite elements.
        */
       virtual void
       get_function_hessians(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -850,30 +866,29 @@ namespace internal
                               &patch_hessians_system) const override;
 
       /**
-       * 返回此对象（的派生类）所代表的数据是否代表复值（而不是实值）信息。
-       *
+       * Return whether the data represented by (a derived class of) this object
+       * represents a complex-valued (as opposed to real-valued) information.
        */
       virtual bool
       is_complex_valued() const override;
 
       /**
-       * 清除对向量的所有引用。
-       *
+       * Clear all references to the vectors.
        */
       virtual void
       clear() override;
 
       /**
-       * 确定这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       virtual std::size_t
       memory_consumption() const override;
 
     private:
       /**
-       * 指向数据向量的指针。注意，指向的向量的所有权仍然属于这个类的调用者。
-       *
+       * Pointer to the data vector. Note that ownership of the vector pointed
+       * to remains with the caller of this class.
        */
       const VectorType *vector;
     };
@@ -1229,9 +1244,10 @@ namespace internal
 
 
     /**
-     * 像DataEntry一样，但用于查询多网格计算的数据。
-     * 数据将使用级别-DoF指数在特定级别上给出的MGLevelObject<VectorType>中查找，而不是将数据插值到更粗的单元中。
-     *
+     * Like DataEntry, but used to look up data from multigrid computations.
+     * Data will use level-DoF indices to look up in a
+     * MGLevelObject<VectorType> given on the specific level instead of
+     * interpolating data to coarser cells.
      */
     template <int dim, int spacedim, typename VectorType>
     class MGDataEntry : public DataEntryBase<dim, spacedim>
@@ -1260,8 +1276,9 @@ namespace internal
                           std::vector<double> &patch_values) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的值。这个函数的作用与上面的函数相同，但对向量值的有限元而言。
-       *
+       * Given a FEValuesBase object, extract the values on the present cell
+       * from the vector we actually store. This function does the same as the
+       * one above but for vector-valued finite elements.
        */
       virtual void
       get_function_values(const FEValuesBase<dim, spacedim> &fe_patch_values,
@@ -1270,63 +1287,65 @@ namespace internal
                             &patch_values_system) const override;
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元上的梯度。
-       *
+       * Given a FEValuesBase object, extract the gradients on the present
+       * cell from the vector we actually store.
        */
       virtual void
       get_function_gradients(
-        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
-        const ComponentExtractor  /*extract_component*/ ,
-        std::vector<Tensor<1, spacedim>> &  /*patch_gradients*/ ) const override
+        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
+        const ComponentExtractor /*extract_component*/,
+        std::vector<Tensor<1, spacedim>> & /*patch_gradients*/) const override
       {
         Assert(false, ExcNotImplemented());
       }
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的梯度。这个函数的作用与上面的函数相同，但对矢量值的有限元而言。
-       *
+       * Given a FEValuesBase object, extract the gradients on the present
+       * cell from the vector we actually store. This function does the same
+       * as the one above but for vector-valued finite elements.
        */
       virtual void
       get_function_gradients(
-        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
-        const ComponentExtractor  /*extract_component*/ ,
+        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
+        const ComponentExtractor /*extract_component*/,
         std::vector<std::vector<Tensor<1, spacedim>>>
-          &  /*patch_gradients_system*/ ) const override
+          & /*patch_gradients_system*/) const override
       {
         Assert(false, ExcNotImplemented());
       }
 
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元上的二阶导数。
-       *
+       * Given a FEValuesBase object, extract the second derivatives on the
+       * present cell from the vector we actually store.
        */
       virtual void
       get_function_hessians(
-        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
-        const ComponentExtractor  /*extract_component*/ ,
-        std::vector<Tensor<2, spacedim>> &  /*patch_hessians*/ ) const override
+        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
+        const ComponentExtractor /*extract_component*/,
+        std::vector<Tensor<2, spacedim>> & /*patch_hessians*/) const override
       {
         Assert(false, ExcNotImplemented());
       }
 
       /**
-       * 给定一个FEValuesBase对象，从我们实际存储的向量中提取当前单元格上的二阶导数。这个函数的作用与上面的函数相同，但对矢量值的有限元而言。
-       *
+       * Given a FEValuesBase object, extract the second derivatives on the
+       * present cell from the vector we actually store. This function does
+       * the same as the one above but for vector-valued finite elements.
        */
       virtual void
       get_function_hessians(
-        const FEValuesBase<dim, spacedim> &  /*fe_patch_values*/ ,
-        const ComponentExtractor  /*extract_component*/ ,
+        const FEValuesBase<dim, spacedim> & /*fe_patch_values*/,
+        const ComponentExtractor /*extract_component*/,
         std::vector<std::vector<Tensor<2, spacedim>>>
-          &  /*patch_hessians_system*/ ) const override
+          & /*patch_hessians_system*/) const override
       {
         Assert(false, ExcNotImplemented());
       }
 
       /**
-       * 返回此对象（的派生类）所代表的数据是否代表复值（而不是实值）信息。
-       *
+       * Return whether the data represented by (a derived class of) this object
+       * represents a complex-valued (as opposed to real-valued) information.
        */
       virtual bool
       is_complex_valued() const override
@@ -1340,8 +1359,7 @@ namespace internal
       }
 
       /**
-       * 清除对向量的所有引用。
-       *
+       * Clear all references to the vectors.
        */
       virtual void
       clear() override
@@ -1350,8 +1368,8 @@ namespace internal
       }
 
       /**
-       * 确定这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       virtual std::size_t
       memory_consumption() const override
@@ -1840,7 +1858,7 @@ DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::get_dataset_names()
         // OK, so we have a complex-valued vector. We then need to go through
         // all components and order them appropriately
         for (unsigned int i = 0; i < input_data->names.size();
-              /* increment of i happens below */ )
+             /* increment of i happens below */)
           {
             switch (input_data->data_component_interpretation[i])
               {
@@ -1940,7 +1958,7 @@ DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::
   unsigned int output_component = 0;
   for (const auto &input_data : dof_data)
     for (unsigned int i = 0; i < input_data->n_output_variables;
-          /* i is updated below */ )
+         /* i is updated below */)
       // see what kind of data we have here. note that for the purpose of the
       // current function all we care about is vector data
       switch (input_data->data_component_interpretation[i])
@@ -2204,5 +2222,3 @@ DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::memory_consumption()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

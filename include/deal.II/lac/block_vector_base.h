@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/block_vector_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -39,10 +38,9 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!   @addtogroup  矢量  @{  。
-
-* 
-* */
+/*! @addtogroup Vectors
+ *@{
+ */
 
 // Forward declaration
 #ifndef DOXYGEN
@@ -51,43 +49,43 @@ class BlockVectorBase;
 #endif
 
 /**
- * 一个可以用来确定某个类型是否是块向量类型的类。比如说。
- *
+ * A class that can be used to determine whether a given type is a block
+ * vector type or not. For example,
  * @code
- * IsBlockVector<Vector<double> >::value
+ *   IsBlockVector<Vector<double> >::value
  * @endcode
- * 的值是false，而
- *
+ * has the value false, whereas
  * @code
- * IsBlockVector<BlockVector<double> >::value
+ *   IsBlockVector<BlockVector<double> >::value
  * @endcode
- * 是真。这在模板环境中有时很有用，我们可能想根据模板类型是表示普通的还是块状向量类型来做不同的事情。
- *
- *
+ * is true. This is sometimes useful in template contexts where we may want to
+ * do things differently depending on whether a template type denotes a
+ * regular or a block vector type.
  */
 template <typename VectorType>
 struct IsBlockVector
 {
 private:
   /**
-   * 如果该类派生自BlockVectorBase，重载返回true，这就是块向量的作用。
-   *
+   * Overload returning true if the class is derived from BlockVectorBase,
+   * which is what block vectors do.
    */
   template <typename T>
   static std::true_type
   check_for_block_vector(const BlockVectorBase<T> *);
 
   /**
-   * 对所有其他不是块状矩阵的潜在向量类型进行捕捉。
-   *
+   * Catch all for all other potential vector types that are not block
+   * matrices.
    */
   static std::false_type
   check_for_block_vector(...);
 
 public:
   /**
-   * 一个可静态计算的值，表示该类的模板参数是否是块向量（事实上，该类型是否来自BlockVectorBase<T>）。
-   *
+   * A statically computable value that indicates whether the template
+   * argument to this class is a block vector (in fact whether the type is
+   * derived from BlockVectorBase<T>).
    */
   static const bool value =
     std::is_same<decltype(check_for_block_vector(std::declval<VectorType *>())),
@@ -104,29 +102,38 @@ const bool IsBlockVector<VectorType>::value;
 namespace internal
 {
   /**
-   * 实现块向量中迭代器的命名空间。
-   *
+   * Namespace in which iterators in block vectors are implemented.
    */
   namespace BlockVectorIterators
   {
     /**
-     * 用于块向量的通用随机访问迭代器类。由于我们不希望有两个非常量迭代器和常量迭代器的类，我们采取第二个模板参数，表示我们指向的向量是否是常量对象。第一个模板参数总是使用中的块向量的数字类型。
-     * 这个类满足了C++标准中定义的随机访问迭代器的所有要求。对这些迭代器的操作在块向量中的元素数量上是常数。然而，它们有时与向量中的块数成线性关系，但由于这在应用程序中很少动态变化，所以这是一个常数，我们再次得到该迭代器满足了随机访问迭代器的要求。
+     * General random-access iterator class for block vectors. Since we do not
+     * want to have two classes for non-const iterator and const_iterator, we
+     * take a second template argument which denotes whether the vector we
+     * point into is a constant object or not. The first template argument is
+     * always the number type of the block vector in use.
      *
+     * This class satisfies all requirements of random access iterators
+     * defined in the C++ standard. Operations on these iterators are constant
+     * in the number of elements in the block vector. However, they are
+     * sometimes linear in the number of blocks in the vector, but since that
+     * does rarely change dynamically within an application, this is a
+     * constant and we again have that the iterator satisfies the requirements
+     * of a random access iterator.
      */
     template <class BlockVectorType, bool Constness>
     class Iterator
     {
     public:
       /**
-       * 声明容器大小的类型。
-       *
+       * Declare the type for container size.
        */
       using size_type = types::global_dof_index;
 
       /**
-       * 这个迭代器所指向的数字的类型。根据第二个模板参数的值，这要么是一个常数，要么是非常数。
-       *
+       * Type of the number this iterator points to. Depending on the value of
+       * the second template parameter, this is either a constant or non-const
+       * number.
        */
       using value_type =
         typename std::conditional<Constness,
@@ -134,8 +141,9 @@ namespace internal
                                   typename BlockVectorType::value_type>::type;
 
       /**
-       * 声明一些别名，这些别名是迭代器的标准，被算法用来查询它们所工作的迭代器的具体内容。
-       *
+       * Declare some alias which are standard for iterators and are used
+       * by algorithms to enquire about the specifics of the iterators they
+       * work on.
        */
       using iterator_category = std::random_access_iterator_tag;
       using difference_type   = std::ptrdiff_t;
@@ -148,39 +156,41 @@ namespace internal
         typename BlockVectorType::BlockType::reference>::type;
 
       /**
-       * Typedef块向量的类型（根据第二个模板参数的不同，其constness也不同）。
-       *
+       * Typedef the type of the block vector (which differs in constness,
+       * depending on the second template parameter).
        */
       using BlockVector = typename std::
         conditional<Constness, const BlockVectorType, BlockVectorType>::type;
 
       /**
-       * 从我们指向的向量和指向的元素的全局索引构造一个迭代器。
-       * 根据这个类的<tt>Constness</tt>模板参数的值，这个构造函数的第一个参数要么是一个const，要么是非const的引用。
+       * Construct an iterator from a vector to which we point and the global
+       * index of the element pointed to.
        *
+       * Depending on the value of the <tt>Constness</tt> template argument of
+       * this class, the first argument of this constructor is either is a
+       * const or non-const reference.
        */
       Iterator(BlockVector &parent, const size_type global_index);
 
       /**
-       * 从不同常量的迭代器复制构造函数。
-       * @note
-       * 从一个常数迭代器构造一个非常数迭代器是没有意义的。试图这样做将导致一个编译时错误（通过
-       * <code>static_assert</code>  ）。
+       * Copy constructor from an iterator of different constness.
        *
+       * @note Constructing a non-const iterator from a const iterator does
+       * not make sense. Attempting this will result in a compile-time error
+       * (via <code>static_assert</code>).
        */
       Iterator(const Iterator<BlockVectorType, !Constness> &c);
 
 
       /**
-       * 从具有相同常量的迭代器复制构造器。
-       *
+       * Copy constructor from an iterator with the same constness.
        */
       Iterator(const Iterator &c);
 
     private:
       /**
-       * 本类内部使用的构造函数。参数与各自成员变量的值完全匹配。
-       *
+       * Constructor used internally in this class. The arguments match
+       * exactly the values of the respective member variables.
        */
       Iterator(BlockVector &   parent,
                const size_type global_index,
@@ -191,144 +201,143 @@ namespace internal
 
     public:
       /**
-       * 复制操作符。
-       *
+       * Copy operator.
        */
       Iterator &
       operator=(const Iterator &c);
 
       /**
-       * 去引用操作符。如果模板参数<tt>Constness</tt>是<tt>true</tt>，那么就不可能向结果写入，使之成为一个const_iterator。
-       *
+       * Dereferencing operator. If the template argument <tt>Constness</tt>
+       * is <tt>true</tt>, then no writing to the result is possible, making
+       * this a const_iterator.
        */
       dereference_type operator*() const;
 
       /**
-       * 随机访问操作符，允许访问相对于当前指向的元素的任意元素。
-       *
+       * Random access operator, grant access to arbitrary elements relative
+       * to the one presently pointed to.
        */
       dereference_type operator[](const difference_type d) const;
 
       /**
-       * 前缀递增操作符。这个操作符将迭代器推进到下一个元素，并返回一个对<tt>*this</tt>的引用。
-       *
+       * Prefix increment operator. This operator advances the iterator to the
+       * next element and returns a reference to <tt>*this</tt>.
        */
       Iterator &
       operator++();
 
       /**
-       * 后缀增量操作符。这个操作符将迭代器推进到下一个元素，并返回这个迭代器的旧值的副本。
-       *
+       * Postfix increment operator. This operator advances the iterator to
+       * the next element and returns a copy of the old value of this
+       * iterator.
        */
       Iterator
       operator++(int);
 
       /**
-       * 前缀递减运算符。这个操作符将迭代器缩回到上一个元素，并返回一个对<tt>*this</tt>的引用。
-       *
+       * Prefix decrement operator. This operator retracts the iterator to the
+       * previous element and returns a reference to <tt>*this</tt>.
        */
       Iterator &
       operator--();
 
       /**
-       * 后缀递减运算符。该操作符将迭代器缩回到前一个元素，并返回该迭代器的旧值的副本。
-       *
+       * Postfix decrement operator. This operator retracts the iterator to
+       * the previous element and returns a copy of the old value of this
+       * iterator.
        */
       Iterator
       operator--(int);
 
       /**
-       * 迭代器的平等比较。该操作符检查所指向的向量是否相同，如果不相同，则抛出一个异常。
-       *
+       * Compare for equality of iterators. This operator checks whether the
+       * vectors pointed to are the same, and if not it throws an exception.
        */
       template <bool OtherConstness>
       bool
       operator==(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 比较迭代器的不平等。该操作符检查指向的向量是否相同，如果不相同，则抛出一个异常。
-       *
+       * Compare for inequality of iterators. This operator checks whether the
+       * vectors pointed to are the same, and if not it throws an exception.
        */
       template <bool OtherConstness>
       bool
       operator!=(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 检查这个迭代器是否指向给定参数所指向的元素之前的一个元素。这个操作符检查所指向的向量是否相同，如果不相同，则抛出一个异常。
-       *
+       * Check whether this iterators points to an element previous to the one
+       * pointed to by the given argument. This operator checks whether the
+       * vectors pointed to are the same, and if not it throws an exception.
        */
       template <bool OtherConstness>
       bool
       operator<(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 与上面的比较运算符相同。
-       *
+       * Comparison operator alike to the one above.
        */
       template <bool OtherConstness>
       bool
       operator<=(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 与上面的比较运算符相同。
-       *
+       * Comparison operator alike to the one above.
        */
       template <bool OtherConstness>
       bool
       operator>(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 与上面的比较运算符相同。
-       *
+       * Comparison operator alike to the one above.
        */
       template <bool OtherConstness>
       bool
       operator>=(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 返回两个迭代器之间的距离，单位是元素。
-       *
+       * Return the distance between the two iterators, in elements.
        */
       template <bool OtherConstness>
       difference_type
       operator-(const Iterator<BlockVectorType, OtherConstness> &i) const;
 
       /**
-       * 返回一个迭代器，该迭代器在当前迭代器的前面有一定数量的元素。
-       *
+       * Return an iterator which is the given number of elements in front of
+       * the present one.
        */
       Iterator
       operator+(const difference_type &d) const;
 
       /**
-       * 返回一个迭代器，该迭代器是在当前迭代器后面的给定数量的元素。
-       *
+       * Return an iterator which is the given number of elements behind the
+       * present one.
        */
       Iterator
       operator-(const difference_type &d) const;
 
       /**
-       * 一次性向前移动迭代器<tt>d</tt>元素，并返回结果。
-       *
+       * Move the iterator <tt>d</tt> elements forward at once, and return the
+       * result.
        */
       Iterator &
       operator+=(const difference_type &d);
 
       /**
-       * 一次性向后移动迭代器<tt>d</tt>元素，并返回结果。
-       *
+       * Move the iterator <tt>d</tt> elements backward at once, and return
+       * the result.
        */
       Iterator &
       operator-=(const difference_type &d);
 
       /**
-       * @addtogroup  异常情况 @{ 。
-       *
+       * @addtogroup Exceptions
+       * @{
        */
 
       /**
-       * 当人们对属于两个不同块向量的迭代器进行算术比较时产生的异常。
-       *
+       * Exception thrown when one performs arithmetical comparisons on
+       * iterators belonging to two different block vectors.
        */
       DeclExceptionMsg(ExcPointerToDifferentVectors,
                        "Your program tried to compare iterators pointing to "
@@ -338,42 +347,41 @@ namespace internal
       //@}
     private:
       /**
-       * 指向该迭代器所指向的块向量对象的指针。
-       * 根据这个类的<tt>Constness</tt>模板参数的值，这是一个<tt>const</tt>或非<tt>const</tt>的指针。
-       *
+       * Pointer to the block vector object to which this iterator points.
+       * Depending on the value of the <tt>Constness</tt> template argument of
+       * this class, this is a <tt>const</tt> or non-<tt>const</tt> pointer.
        */
       BlockVector *parent;
 
       /**
-       * 我们目前所指向的元素的全局索引。
-       *
+       * Global index of the element to which we presently point.
        */
       size_type global_index;
 
       /**
-       * 当前的块和当前指向的元素在该块中的索引。
-       *
+       * Current block and index within this block of the element presently
+       * pointed to.
        */
       unsigned int current_block;
       size_type    index_within_block;
 
       /**
-       * 全局元素地址的索引，当向前和向后移动时，我们必须转到另一个块。这些索引作为缓存保存，因为这比总是询问父对象要有效得多。
-       *
+       * Indices of the global element address at which we have to move on to
+       * another block when moving forward and backward. These indices are
+       * kept as a cache since this is much more efficient than always asking
+       * the parent object.
        */
       size_type next_break_forward;
       size_type next_break_backward;
 
       /**
-       * 向前移动一个元素。
-       *
+       * Move forward one element.
        */
       void
       move_forward();
 
       /**
-       * 向后移动一个元素。
-       *
+       * Move backward one element.
        */
       void
       move_backward();
@@ -387,39 +395,61 @@ namespace internal
 
 
 /**
- * 一个由几个块组成的向量，每个块代表它自己的一个向量。
- * BlockVector是一个给定类型的向量的集合（例如，deal.II
- * Vector对象， PETScWrappers::MPI::Vector
- * 对象，等等）。里面的每个向量都可以有不同的大小。
- * BlockVector的功能包括一个Vector所能做的一切，加上通过<tt>block(i)</tt>访问BlockVector内部的单个Vector。它也有一个完整的随机访问迭代器，就像其他Vector类或标准C++库模板
- * <tt>std::vector</tt>.
- * 一样。因此，所有在迭代器上工作的算法也能与这个类的对象工作。
- * 虽然这个基类通过将对其成员函数的调用分派给每个独立块上的相应函数来实现大部分功能，但这个类实际上并没有分配一些内存或改变向量的大小。为此，派生类的构造函数、赋值运算符和
- * reinit()
- * 函数负责。这个类只处理与块向量的实际向量类型无关的共同部分。
+ * A vector composed of several blocks each representing a vector of its own.
  *
- *  <h3>Accessing individual blocks, and resizing vectors</h3>
- * 除了将这个对象作为一个整体使用外，你还可以使用block()函数，将每个块作为一个向量单独使用。
- * 有一个注意事项：如果你改变了一个或几个块的大小，你必须调用块向量的函数
- * collect_sizes() 来更新其内部结构。
- * @attention  警告。如果你在没有调用 collect_sizes()
- * 的情况下改变单个块的大小，结果可能是不可预测的。由于性能的原因，调试版在此不检查一致性!
- * @see   @ref GlossBlockLA  "块（线性代数）"
+ * The BlockVector is a collection of vectors of a given type (e.g., deal.II
+ * Vector objects, PETScWrappers::MPI::Vector objects, etc.). Each of the
+ * vectors inside can have a different size.
+ *
+ * The functionality of BlockVector includes everything a Vector can do, plus
+ * the access to a single Vector inside the BlockVector by <tt>block(i)</tt>.
+ * It also has a complete random access iterator, just as the other Vector
+ * classes or the standard C++ library template <tt>std::vector</tt>.
+ * Therefore, all algorithms working on iterators also work with objects of
+ * this class.
+ *
+ * While this base class implements most of the functionality by dispatching
+ * calls to its member functions to the respective functions on each of the
+ * individual blocks, this class does not actually allocate some memory or
+ * change the size of vectors. For this, the constructors, assignment
+ * operators and reinit() functions of derived classes are responsible. This
+ * class only handles the common part that is independent of the actual vector
+ * type the block vector is built on.
  *
  *
+ * <h3>Accessing individual blocks, and resizing vectors</h3>
+ *
+ * Apart from using this object as a whole, you can use each block separately
+ * as a vector, using the block() function.  There is a single caveat: if you
+ * have changed the size of one or several blocks, you must call the function
+ * collect_sizes() of the block vector to update its internal structures.
+ *
+ * @attention Warning: If you change the sizes of single blocks without
+ * calling collect_sizes(), results may be unpredictable. The debug version
+ * does not check consistency here for performance reasons!
+ *
+ * @see
+ * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <class VectorType>
 class BlockVectorBase : public Subscriptor
 {
 public:
   /**
-   * Typedef底层向量的类型。
-   *
+   * Typedef the type of the underlying vector.
    */
   using BlockType = VectorType;
 
-  /* 声明所有容器中使用的标准类型。这些类型与<tt>C++</tt>标准库 <tt>std::vector<...></tt> 类中的类型平行。这包括迭代器类型。 
-* */
+  /*
+   * Declare standard types used in
+   * all containers. These types
+   * parallel those in the
+   * <tt>C++</tt> standard
+   * libraries
+   * <tt>std::vector<...></tt>
+   * class. This includes iterator
+   * types.
+   */
   using value_type    = typename BlockType::value_type;
   using pointer       = value_type *;
   using const_pointer = const value_type *;
@@ -432,167 +462,181 @@ public:
   using size_type       = types::global_dof_index;
 
   /**
-   * 声明一个类型，该类型具有持有实值数字的功能，其精度与该类的模板参数相同。如果这个类的模板参数是一个实数数据类型，那么real_type就等于模板参数。
-   * 如果模板参数是一个 std::complex
-   * 类型，那么real_type等于复数的基础类型。
-   * 这个别名被用来表示规范的返回类型。
+   * Declare a type that has holds real-valued numbers with the same precision
+   * as the template argument to this class. If the template argument of this
+   * class is a real data type, then real_type equals the template argument.
+   * If the template argument is a std::complex type then real_type equals the
+   * type underlying the complex numbers.
    *
+   * This alias is used to represent the return type of norms.
    */
   using real_type = typename BlockType::real_type;
 
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   BlockVectorBase() = default;
 
   /**
-   * 复制构造函数。
-   *
+   * Copy constructor.
    */
-  BlockVectorBase(const BlockVectorBase &  /*V*/ ) = default;
+  BlockVectorBase(const BlockVectorBase & /*V*/) = default;
 
   /**
-   * 移动构造函数。如果底层的 <code>VectorType</code>
-   * 可以移动构造，那么参数向量的每个块都被移动到当前对象中，否则它们被复制。
-   *
+   * Move constructor. Each block of the argument vector is moved into the
+   * current object if the underlying <code>VectorType</code> is
+   * move-constructible, otherwise they are copied.
    */
-  BlockVectorBase(BlockVectorBase &&  /*V*/ ) noexcept = default;
+  BlockVectorBase(BlockVectorBase && /*V*/) noexcept = default;
 
   /**
-   * 在调整向量大小后更新内部结构。每当你重新引用一个块状向量的一个块时，内部数据结构就会被破坏。
-   * 因此，你应该在所有块得到新的大小后再调用这个函数。
-   *
+   * Update internal structures after resizing vectors. Whenever you reinited
+   * a block of a block vector, the internal data structures are corrupted.
+   * Therefore, you should call this function after all blocks got their new
+   * size.
    */
   void
   collect_sizes();
 
   /**
-   * 在矩阵的所有子块上调用compress()函数。    只有在使用基于MPI的向量时才需要调用这个功能，为了兼容，在其他对象中也存在。    更多信息见 @ref GlossCompress  "压缩分布式对象"
-   * 。
+   * Call the compress() function on all the subblocks of the matrix.
    *
+   * This functionality only needs to be called if using MPI based vectors and
+   * exists in other objects for compatibility.
+   *
+   * See
+   * @ref GlossCompress "Compressing distributed objects"
+   * for more information.
    */
   void
   compress(::dealii::VectorOperation::values operation);
 
   /**
-   * 对单个块的访问。
-   *
+   * Access to a single block.
    */
   BlockType &
   block(const unsigned int i);
 
   /**
-   * 对单个区块的只读访问。
-   *
+   * Read-only access to a single block.
    */
   const BlockType &
   block(const unsigned int i) const;
 
   /**
-   * 返回一个描述块和全局索引之间映射的对象上的引用。这个函数的使用已被高度废弃，它应该在下一个版本中消失。
-   *
+   * Return a reference on the object that describes the mapping between block
+   * and global indices. The use of this function is highly deprecated and it
+   * should vanish in one of the next versions
    */
   const BlockIndices &
   get_block_indices() const;
 
   /**
-   * 块的数量。
-   *
+   * Number of blocks.
    */
   unsigned int
   n_blocks() const;
 
   /**
-   * 返回向量的尺寸。这是所有组件的尺寸之和。
-   *
+   * Return dimension of the vector. This is the sum of the dimensions of all
+   * components.
    */
   std::size_t
   size() const;
 
   /**
-   * 返回向量的局部尺寸。这是所有组件的本地尺寸（即存储在当前处理器上的值）的总和。
-   *
+   * Return local dimension of the vector. This is the sum of the local
+   * dimensions (i.e., values stored on the current processor) of all
+   * components.
    */
   std::size_t
   locally_owned_size() const;
 
   /**
-   * 返回一个索引集，描述这个向量的哪些元素是由当前处理器拥有的。请注意，这个索引集不包括这个向量可能作为鬼魂元素存储在本地，但实际上是由另一个处理器拥有的元素。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相交的集合，加起来就是完整的索引集。很明显，如果一个向量只在一个处理器上创建，那么结果将满足
+   * Return an index set that describes which elements of this vector are
+   * owned by the current processor. Note that this index set does not include
+   * elements this vector may store locally as ghost elements but that are in
+   * fact owned by another processor. As a consequence, the index sets
+   * returned on different processors if this is a distributed vector will
+   * form disjoint sets that add up to the complete index set. Obviously, if a
+   * vector is created on only one processor, then the result would satisfy
    * @code
-   * vec.locally_owned_elements() == complete_index_set (vec.size())
+   *   vec.locally_owned_elements() == complete_index_set (vec.size())
    * @endcode
-   * 对于块状向量，这个函数返回各个块的本地拥有的元素的并集，以它们各自的索引偏移量进行移位。
    *
+   * For block vectors, this function returns the union of the locally owned
+   * elements of the individual blocks, shifted by their respective index
+   * offsets.
    */
   IndexSet
   locally_owned_elements() const;
 
   /**
-   * 返回一个指向第一个元素的迭代器。
-   *
+   * Return an iterator pointing to the first element.
    */
   iterator
   begin();
 
   /**
-   * 返回一个指向恒定块向量的第一个元素的迭代器。
-   *
+   * Return an iterator pointing to the first element of a constant block
+   * vector.
    */
   const_iterator
   begin() const;
 
   /**
-   * 返回一个指向结束后的元素的迭代器。
-   *
+   * Return an iterator pointing to the element past the end.
    */
   iterator
   end();
 
   /**
-   * 返回一个迭代器，指向一个恒定块向量的结束后的元素。
-   *
+   * Return an iterator pointing to the element past the end of a constant
+   * block vector.
    */
   const_iterator
   end() const;
 
   /**
-   * 访问组件，返回U(i)。
-   *
+   * Access components, returns U(i).
    */
   value_type
   operator()(const size_type i) const;
 
   /**
-   * 访问组件，返回U(i)作为一个可写的引用。
-   *
+   * Access components, returns U(i) as a writeable reference.
    */
   reference
   operator()(const size_type i);
 
   /**
-   * 访问组件，返回U(i)。    与operator()完全相同。
+   * Access components, returns U(i).
    *
+   * Exactly the same as operator().
    */
   value_type operator[](const size_type i) const;
 
   /**
-   * 访问组件，返回U(i)作为一个可写的引用。
-   * 与operator()完全相同。
+   * Access components, returns U(i) as a writeable reference.
    *
+   * Exactly the same as operator().
    */
   reference operator[](const size_type i);
 
   /**
-   * 与通过operator()获取向量的单个元素不同，这个函数允许一次性获取整个元素集。要读取的元素的索引在第一个参数中说明，相应的值在第二个参数中返回。
-   * 如果当前的向量被称为 @p v,
-   * ，那么这个函数就等同于代码
-   * @code
-   * for (unsigned int i=0; i<indices.size(); ++i)
-   *   values[i] = v[indices[i]];
-   * @endcode
-   * @pre  @p indices 和 @p values 数组的大小必须是一致的。
+   * Instead of getting individual elements of a vector via operator(),
+   * this function allows getting a whole set of elements at once. The
+   * indices of the elements to be read are stated in the first argument, the
+   * corresponding values are returned in the second.
    *
+   * If the current vector is called @p v, then this function is the equivalent
+   * to the code
+   * @code
+   *   for (unsigned int i=0; i<indices.size(); ++i)
+   *     values[i] = v[indices[i]];
+   * @endcode
+   *
+   * @pre The sizes of the @p indices and @p values arrays must be identical.
    */
   template <typename OtherNumber>
   void
@@ -600,23 +644,31 @@ public:
                        std::vector<OtherNumber> &    values) const;
 
   /**
-   * 这个函数不是通过operator()获得向量的单个元素，而是允许一次获得整个元素集。与前一个函数不同的是，这个函数通过取消引用前两个参数提供的迭代器范围内的所有元素来获得元素的索引，并将向量的值放入通过取消引用从第三个参数指向的位置开始的迭代器范围获得的内存位置。
-   * 如果当前的向量被称为 @p v,
-   * ，那么这个函数就等同于代码
-   * @code
-   * ForwardIterator indices_p = indices_begin;
-   * OutputIterator  values_p  = values_begin;
-   * while (indices_p != indices_end)
-   * {
-   *  values_p = v[*indices_p];
-   *   ++indices_p;
-   *   ++values_p;
-   * }
-   * @endcode
-   * @pre  必须能够写进从 @p values_begin
-   * 开始的内存位置，因为在 @p indices_begin 和 @p indices_end.
-   * 之间有许多迭代器。
+   * Instead of getting individual elements of a vector via operator(),
+   * this function allows getting a whole set of elements at once. In
+   * contrast to the previous function, this function obtains the
+   * indices of the elements by dereferencing all elements of the iterator
+   * range provided by the first two arguments, and puts the vector
+   * values into memory locations obtained by dereferencing a range
+   * of iterators starting at the location pointed to by the third
+   * argument.
    *
+   * If the current vector is called @p v, then this function is the equivalent
+   * to the code
+   * @code
+   *   ForwardIterator indices_p = indices_begin;
+   *   OutputIterator  values_p  = values_begin;
+   *   while (indices_p != indices_end)
+   *   {
+   *     *values_p = v[*indices_p];
+   *     ++indices_p;
+   *     ++values_p;
+   *   }
+   * @endcode
+   *
+   * @pre It must be possible to write into as many memory locations
+   *   starting at @p values_begin as there are iterators between
+   *   @p indices_begin and @p indices_end.
    */
   template <typename ForwardIterator, typename OutputIterator>
   void
@@ -625,107 +677,105 @@ public:
                        OutputIterator        values_begin) const;
 
   /**
-   * 复制操作：用给定的标量值填充向量的所有组件。
-   *
+   * Copy operator: fill all components of the vector with the given scalar
+   * value.
    */
   BlockVectorBase &
   operator=(const value_type s);
 
   /**
-   * 对相同类型的参数进行复制操作。
-   *
+   * Copy operator for arguments of the same type.
    */
   BlockVectorBase &
   operator=(const BlockVectorBase &V);
 
   /**
-   * 移动赋值运算符。如果`VectorType`是可移动的，将给定参数向量的每个块移动到当前对象中，否则复制它们。
-   *
+   * Move assignment operator. Move each block of the given argument
+   * vector into the current object if `VectorType` is
+   * move-constructible, otherwise copy them.
    */
   BlockVectorBase &
-  operator=(BlockVectorBase &&  /*V*/ ) = default; // NOLINT
+  operator=(BlockVectorBase && /*V*/) = default; // NOLINT
 
   /**
-   * 对不同类型的模板参数进行复制操作。
-   *
+   * Copy operator for template arguments of different types.
    */
   template <class VectorType2>
   BlockVectorBase &
   operator=(const BlockVectorBase<VectorType2> &V);
 
   /**
-   * 从非块向量到块向量的复制操作。
-   *
+   * Copy operator from non-block vectors to block vectors.
    */
   BlockVectorBase &
   operator=(const VectorType &v);
 
   /**
-   * 检查两个块向量类型是否相等。只有当两个向量已经具有相同的块结构时，才允许该操作。
-   *
+   * Check for equality of two block vector types. This operation is only
+   * allowed if the two vectors already have the same block structure.
    */
   template <class VectorType2>
   bool
   operator==(const BlockVectorBase<VectorType2> &v) const;
 
   /**
-   * $U = U V$  : 标量乘积。
-   *
+   * $U = U * V$: scalar product.
    */
   value_type operator*(const BlockVectorBase &V) const;
 
   /**
-   * 返回 $l_2$ -norm的平方。
-   *
+   * Return the square of the $l_2$-norm.
    */
   real_type
   norm_sqr() const;
 
   /**
-   * 返回这个向量的元素的平均值。
-   *
+   * Return the mean value of the elements of this vector.
    */
   value_type
   mean_value() const;
 
   /**
-   * 返回该向量的 $l_1$ -norm，即绝对值之和。
-   *
+   * Return the $l_1$-norm of the vector, i.e. the sum of the absolute values.
    */
   real_type
   l1_norm() const;
 
   /**
-   * 返回向量的 $l_2$ -Norm，即元素的平方根之和。
-   *
+   * Return the $l_2$-norm of the vector, i.e. the square root of the sum of
+   * the squares of the elements.
    */
   real_type
   l2_norm() const;
 
   /**
-   * 返回该向量元素的最大绝对值，也就是向量的 $l_\infty$
-   * -norm。
-   *
+   * Return the maximum absolute value of the elements of this vector, which
+   * is the $l_\infty$-norm of a vector.
    */
   real_type
   linfty_norm() const;
 
   /**
-   * 执行一个矢量加法和随后的内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用的
+   * Performs a combined operation of a vector addition and a subsequent inner
+   * product, returning the value of the inner product. In other words, the
+   * result of this function is the same as if the user called
    * @code
    * this->add(a, V);
-   * return_value =this W;
+   * return_value = *this * W;
    * @endcode
-   * 这个函数存在的原因是这个操作比在deal.II的向量类（Vector<Number>和
-   * LinearAlgebra::distributed::Vector<double>).
-   * ）上分别调用这两个函数涉及的内存转移要少。这个方法只需要加载三个向量，
-   * @p this,   @p V,   @p W,
-   * 而调用单独的方法意味着要加载两次调用向量 @p this
-   * 。由于大多数向量操作都有内存传输限制，这就使时间减少了25\%（如果
-   * @p W 等于 @p this).
-   * ，则减少50\%）对于复值向量，第二步中的标量乘法被实现为
-   * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
    *
+   * The reason this function exists is that this operation involves less
+   * memory transfer than calling the two functions separately on deal.II's
+   * vector classes (Vector<Number> and
+   * LinearAlgebra::distributed::Vector<double>). This method only needs to load
+   * three vectors, @p this, @p V, @p W, whereas calling separate methods
+   * means to load the calling vector @p this twice. Since most vector
+   * operations are memory transfer limited, this reduces the time by 25\% (or
+   * 50\% if @p W equals @p this).
+   *
+   * For complex-valued vectors, the scalar product in the second step is
+   * implemented as
+   * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
    */
   value_type
   add_and_dot(const value_type       a,
@@ -733,63 +783,61 @@ public:
               const BlockVectorBase &W);
 
   /**
-   * 如果给定的全局索引在这个处理器的局部范围内，返回真。询问相应的块。
-   *
+   * Return true if the given global index is in the local range of this
+   * processor. Asks the corresponding block.
    */
   bool
   in_local_range(const size_type global_index) const;
 
   /**
-   * 返回向量是否只包含值为0的元素。这个函数主要用于内部一致性检查，在非调试模式下应该很少使用，因为它需要花费相当多的时间。
-   *
+   * Return whether the vector contains only elements with value zero. This
+   * function is mainly for internal consistency check and should seldom be
+   * used when not in debug mode since it uses quite some time.
    */
   bool
   all_zero() const;
 
   /**
-   * 如果向量没有负的条目，即所有条目都是零或正的，则返回
-   * @p true
-   * 。例如，这个函数用于检查细化指标是否真的都是正的（或零）。
-   *
+   * Return @p true if the vector has no negative entries, i.e. all entries
+   * are zero or positive. This function is used, for example, to check
+   * whether refinement indicators are really all positive (or zero).
    */
   bool
   is_non_negative() const;
 
   /**
-   * 加法运算符。 快速等同于<tt>U.add(1, V)</tt>。
-   *
+   * Addition operator.  Fast equivalent to <tt>U.add(1, V)</tt>.
    */
   BlockVectorBase &
   operator+=(const BlockVectorBase &V);
 
   /**
-   * 减法运算符。 快速等同于<tt>U.add(-1, V)</tt>。
-   *
+   * Subtraction operator.  Fast equivalent to <tt>U.add(-1, V)</tt>.
    */
   BlockVectorBase &
   operator-=(const BlockVectorBase &V);
 
 
   /**
-   * 一个集体添加操作。这个函数将存储在 @p values
-   * 中的一整套数值添加到 @p indices. 指定的向量成分中。
-   *
+   * A collective add operation: This function adds a whole set of values
+   * stored in @p values to the vector components specified by @p indices.
    */
   template <typename Number>
   void
   add(const std::vector<size_type> &indices, const std::vector<Number> &values);
 
   /**
-   * 这是第二次集体添加操作。作为区别，这个函数需要一个deal.II的数值向量。
-   *
+   * This is a second collective add operation. As a difference, this function
+   * takes a deal.II vector of values.
    */
   template <typename Number>
   void
   add(const std::vector<size_type> &indices, const Vector<Number> &values);
 
   /**
-   * 取一个<tt>n_elements</tt>连续存储的地址，并将其添加到向量中。处理上述其他两个<tt>add()</tt>函数未涵盖的所有情况。
-   *
+   * Take an address where <tt>n_elements</tt> are stored contiguously and add
+   * them into the vector. Handles all cases which are not covered by the
+   * other two <tt>add()</tt> functions above.
    */
   template <typename Number>
   void
@@ -798,23 +846,20 @@ public:
       const Number *   values);
 
   /**
-   * $U(0-DIM)+=s$  .
-   * 在所有组件上增加<tt>s</tt>。注意，<tt>s</tt>是一个标量而不是一个矢量。
-   *
+   * $U(0-DIM)+=s$.  Addition of <tt>s</tt> to all components. Note that
+   * <tt>s</tt> is a scalar and not a vector.
    */
   void
   add(const value_type s);
 
   /**
-   * U+=a*V。缩放向量的简单相加。
-   *
+   * U+=a*V. Simple addition of a scaled vector.
    */
   void
   add(const value_type a, const BlockVectorBase &V);
 
   /**
-   * U+=a*V+b*W。缩放向量的多次加法。
-   *
+   * U+=a*V+b*W. Multiple addition of scaled vectors.
    */
   void
   add(const value_type       a,
@@ -823,22 +868,19 @@ public:
       const BlockVectorBase &W);
 
   /**
-   * U=s*U+V。缩放和简单的向量相加。
-   *
+   * U=s*U+V. Scaling and simple vector addition.
    */
   void
   sadd(const value_type s, const BlockVectorBase &V);
 
   /**
-   * U=s*U+a*V。缩放和简单的加法。
-   *
+   * U=s*U+a*V. Scaling and simple addition.
    */
   void
   sadd(const value_type s, const value_type a, const BlockVectorBase &V);
 
   /**
-   * U=s*U+a*V+b*W。缩放和多重加法。
-   *
+   * U=s*U+a*V+b*W. Scaling and multiple addition.
    */
   void
   sadd(const value_type       s,
@@ -848,8 +890,7 @@ public:
        const BlockVectorBase &W);
 
   /**
-   * U=s*U+a*V+b*W+c*X。缩放和多重加法。
-   *
+   * U=s*U+a*V+b*W+c*X. Scaling and multiple addition.
    */
   void
   sadd(const value_type       s,
@@ -861,60 +902,55 @@ public:
        const BlockVectorBase &X);
 
   /**
-   * 将向量的每个元素按一个常数进行缩放。
-   *
+   * Scale each element of the vector by a constant value.
    */
   BlockVectorBase &
   operator*=(const value_type factor);
 
   /**
-   * 用给定值的倒数来缩放向量的每个元素。
-   *
+   * Scale each element of the vector by the inverse of the given value.
    */
   BlockVectorBase &
   operator/=(const value_type factor);
 
   /**
-   * 将该向量的每个元素乘以<tt>v</tt>的相应元素。
-   *
+   * Multiply each element of this vector by the corresponding element of
+   * <tt>v</tt>.
    */
   template <class BlockVector2>
   void
   scale(const BlockVector2 &v);
 
   /**
-   * U=a*V。赋值。
-   *
+   * U=a*V. Assignment.
    */
   template <class BlockVector2>
   void
   equ(const value_type a, const BlockVector2 &V);
 
   /**
-   * 通过调用 <code>update_ghost_values</code>
-   * 更新每个区块的鬼魂值。
-   *
+   * Update the ghost values by calling <code>update_ghost_values</code> for
+   * each block.
    */
   void
   update_ghost_values() const;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
 protected:
   /**
-   * 指向组件阵列的指针。
-   *
+   * Pointer to the array of components.
    */
   std::vector<VectorType> components;
 
   /**
-   * 管理全局索引和不同块内索引之间转换的对象。
-   *
+   * Object managing the transformation between global indices and indices
+   * within the different blocks.
    */
   BlockIndices block_indices;
 
@@ -927,9 +963,9 @@ protected:
 };
 
 
- /*@}*/ 
+/*@}*/
 
- /*----------------------- Inline functions ----------------------------------*/ 
+/*----------------------- Inline functions ----------------------------------*/
 
 
 #ifndef DOXYGEN
@@ -2122,5 +2158,3 @@ BlockVectorBase<VectorType>::extract_subvector_to(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

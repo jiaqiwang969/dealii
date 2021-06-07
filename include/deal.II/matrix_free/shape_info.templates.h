@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/shape_info.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -1090,5 +1089,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

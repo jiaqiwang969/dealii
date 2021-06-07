@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/grid_refinement_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -37,34 +36,54 @@ class Vector;
 #endif
 
 /**
- * 这个命名空间提供了一个帮助细化和粗化三角形的函数集合。尽管命名空间的名称，这些函数实际上并不<i>refine</i>三角化，而只是<i>mark
- * cells for refinement or
- * coarsening</i>。换句话说，它们执行自适应有限元循环中典型的
- * "求解-估计-标记-细化 "循环中的 "标记 "部分。
- * 这个命名空间中的函数形成两类。有辅助函数refine()和coarsen()。对用户来说更重要的是其他函数，它们实现了细化策略，在自适应有限元方法的文献中可以找到。关于这些方法的数学讨论，可以参考D&ouml;rfler,
- * Morin, Nochetto, Rannacher, Stevenson等人的作品。
+ * This namespace provides a collection of functions that aid in refinement
+ * and coarsening of triangulations. Despite the name of the namespace, the
+ * functions do not actually <i>refine</i> the triangulation, but only
+ * <i>mark cells for refinement or coarsening</i>. In other words, they
+ * perform the "mark" part of the typical "solve-estimate-mark-refine"
+ * cycle of the adaptive finite element loop.
  *
+ * The functions in this namespace form two categories. There are the
+ * auxiliary functions refine() and coarsen(). More important for users are
+ * the other functions, which implement refinement strategies, as being found
+ * in the literature on adaptive finite element methods. For mathematical
+ * discussion of these methods, consider works by D&ouml;rfler, Morin,
+ * Nochetto, Rannacher, Stevenson, and others.
  *
  * @ingroup grid
- *
  */
 namespace GridRefinement
 {
   /**
-   * 返回一对双倍值，其中第一个是调整后的细化单元分数，第二个是调整后的粗化单元分数。
-   * @param[in]  current_n_cells 当前单元格数量。      @param[in]
-   * max_n_cells 最大的细胞数。如果当前细胞数 @p current_n_cells
-   * 已经超过最大细胞数 @p
-   * max_n_cells，细胞的细化分数将被设置为零，细胞的粗化分数将被调整以减少细胞数至@
-   * max_n_cells。如果细胞数仅在精炼时才会被超过，那么精炼和粗化分数将以相同的比例调整，以试图达到最大的细胞数。但请注意，由于
-   * Triangulation::MeshSmoothing,
-   * 的细化扩散，这个数字只是一个指标。这个参数的默认值是对单元格的数量没有限制。
-   * @param[in]  top_fraction_of_cells 要求精炼的有效单元的比例。
-   * @param[in]  bottom_fraction_of_cells
-   * 要求被粗化的活动单元的比例。
-   * @note  通常情况下，你不需要明确调用这个函数。将 @p
-   * max_n_cells传递给函数refine_and_coarsen_fixed_number()或函数refine_and_coarsen_fixed_fraction()，如果有必要，它们会调用这个函数。
+   * Return a pair of double values of which the first is adjusted refinement
+   * fraction of cells and the second is adjusted coarsening fraction of
+   * cells.
    *
+   *
+   * @param[in] current_n_cells The current cell number.
+   *
+   * @param[in] max_n_cells The maximal number of cells. If current cell
+   * number @p current_n_cells is already exceeded maximal cell number @p
+   * max_n_cells, refinement fraction of cells will be set to zero and
+   * coarsening fraction of cells will be adjusted to reduce cell number to @
+   * max_n_cells. If cell number is going to be exceeded only upon refinement,
+   * then refinement and coarsening fractions are going to be adjusted with a
+   * same ratio in an attempt to reach the maximum number of cells. Be aware
+   * though that through proliferation of refinement due to
+   * Triangulation::MeshSmoothing, this number is only an indicator. The
+   * default value of this argument is to impose no limit on the number of
+   * cells.
+   *
+   * @param[in] top_fraction_of_cells The requested fraction of active
+   * cells to be refined.
+   *
+   * @param[in] bottom_fraction_of_cells The requested fraction of
+   * active cells to be coarsened.
+   *
+   * @note Usually you do not need to call this function explicitly. Pass @p
+   * max_n_cells to function refine_and_coarsen_fixed_number() or function
+   * refine_and_coarsen_fixed_fraction() and they will call this function if
+   * necessary.
    */
   template <int dim>
   std::pair<double, double>
@@ -75,26 +94,68 @@ namespace GridRefinement
     const double                   bottom_fraction_of_cells);
 
   /**
-   * 这个函数提供了一个策略来标记单元进行细化和粗化，目的是通过细化所有单元中的一个给定的分数来提供可预测的网格尺寸增长。    该函数接收一个细化向量 @p criteria 和两个介于0和1之间的值，表示要细化和粗化的单元的比例。它根据以下贪婪算法对单元进行标记，以便由 Triangulation::execute_coarsening_and_refinement() 进一步处理。      <ol>   <li>  根据 @p criteria.   <li> 的降序值对单元进行排序，将具有最大细化标准的 @p top_fraction_of_cells 倍 Triangulation::n_active_cells() 活动单元标记为细化。      <li>  将 @p bottom_fraction_of_cells 乘以 Triangulation::n_active_cells() 具有最小细化标准的活动单元标记为粗化。      </ol>  作为一个例子，在没有粗化的情况下，将 @p top_fraction_of_cells 设置为1/3将导致二维的单元数大约翻倍。这是因为这1/3的单元格将被其四个子单元格所取代，从而形成 $4\times \frac 13 N$ 单元格，而其余2/3的单元格则保持不变
+   * This function provides a strategy to mark cells for refinement and
+   * coarsening with the goal of providing predictable growth in
+   * the size of the mesh by refining a given fraction of all cells.
    *
-   * --因此产生了总共 $4\times \frac 13 N + \frac 23 N = 2N$
-   * 个单元。
-   * 在三维空间中，通过细化1/7的单元格也能达到同样的效果。因此，这些值经常被使用，因为它们确保后续网格的计算成本足够快地变得昂贵，以至于花费在粗网格上的时间部分不会太大。另一方面，这部分时间也足够小，使网格适应性在每一步中不会细化太多的单元。
-   * @note  这个函数只设置粗化和细化的标志。直到你调用
-   * Triangulation::execute_coarsening_and_refinement().   @param[in,out]
-   * triangulation
-   * 这个函数应该标记其单元格进行粗化和细化的三角形。
-   * @param[in]  criteria
-   * 每个网格单元的细化标准。输入不能是负数。
-   * @param[in]  top_fraction_of_cells
-   * 要精简的单元的比例。如果这个数字是零，没有单元会被精简。如果它等于1，结果将被标记为全局细化。
-   * @param[in]  bottom_fraction_of_cells
-   * 要被粗化的单元格的比例。如果这个数字为0，则没有单元会被粗化。
-   * @param[in]  max_n_cells
-   * 这个参数可以用来指定一个最大的细胞数。如果细化时超过这个数字，那么细化和粗化的比例将被调整，以达到最大的细胞数。但是要注意，由于
-   * Triangulation::MeshSmoothing,
-   * 的细化扩散，这个数字只是一个指标。这个参数的默认值是对单元格的数量没有限制。
+   * The function takes a vector of refinement @p criteria and two values
+   * between zero and one denoting the fractions of cells to be refined and
+   * coarsened. It flags cells for further processing by
+   * Triangulation::execute_coarsening_and_refinement() according to the
+   * following greedy algorithm:
    *
+   * <ol>
+   *
+   * <li> Sort the cells according to descending values of @p criteria.
+   *
+   * <li> Mark the @p top_fraction_of_cells times
+   * Triangulation::n_active_cells() active cells with the largest
+   * refinement criteria for refinement.
+   *
+   * <li> Mark the @p bottom_fraction_of_cells times
+   * Triangulation::n_active_cells() active cells with the smallest
+   * refinement criteria for coarsening.
+   *
+   * </ol>
+   *
+   * As an example, with no coarsening, setting @p top_fraction_of_cells to
+   * 1/3 will result in approximately doubling the number of cells in two
+   * dimensions. That is because each of these 1/3 of cells will be replaced by
+   * its four children, resulting in $4\times \frac 13 N$ cells, whereas the
+   * remaining 2/3 of cells remains untouched -- thus yielding a total of
+   * $4\times \frac 13 N + \frac 23 N = 2N$ cells.
+   * The same effect in three dimensions is achieved by refining
+   * 1/7th of the cells. These values are therefore frequently used because
+   * they ensure that the cost of computations on subsequent meshes become
+   * expensive sufficiently quickly that the fraction of time spent on
+   * the coarse meshes is not too large. On the other hand, the fractions
+   * are small enough that mesh adaptation does not refine too many cells
+   * in each step.
+   *
+   * @note This function only sets the coarsening and refinement flags. The
+   * mesh is not changed until you call
+   * Triangulation::execute_coarsening_and_refinement().
+   *
+   * @param[in,out] triangulation The triangulation whose cells this function
+   * is supposed to mark for coarsening and refinement.
+   *
+   * @param[in] criteria The refinement criterion for each mesh cell. Entries
+   * may not be negative.
+   *
+   * @param[in] top_fraction_of_cells The fraction of cells to be refined. If
+   * this number is zero, no cells will be refined. If it equals one, the
+   * result will be flagging for global refinement.
+   *
+   * @param[in] bottom_fraction_of_cells The fraction of cells to be
+   * coarsened. If this number is zero, no cells will be coarsened.
+   *
+   * @param[in] max_n_cells This argument can be used to specify a maximal
+   * number of cells. If this number is going to be exceeded upon refinement,
+   * then refinement and coarsening fractions are going to be adjusted in an
+   * attempt to reach the maximum number of cells. Be aware though that
+   * through proliferation of refinement due to Triangulation::MeshSmoothing,
+   * this number is only an indicator. The default value of this argument is
+   * to impose no limit on the number of cells.
    */
   template <int dim, typename Number, int spacedim>
   void
@@ -106,31 +167,66 @@ namespace GridRefinement
     const unsigned int max_n_cells = std::numeric_limits<unsigned int>::max());
 
   /**
-   * 这个函数提供了一种策略，用于标记细化和粗化的单元，目的是控制误差估计的减少。    也被称为<b>bulk criterion</b>或D&ouml;rfler标记，这个函数计算细化和粗化的阈值，使被标记为细化的 @p criteria 个单元占到总误差的一定比例。我们解释它的细化操作，粗化的工作原理与此类似。    让<i>c<sub>K</sub></i>成为<i>K</i>单元的标准。然后通过公式@f[
-   * E = \sum_{K\in \cal T} c_K.
-   * @f]计算总误差估计值 如果<i> 0 &lt; a &lt; 1</i>是 @p top_fraction, ，那么我们细化三角形 $\cal T$ 的最小子集 $\cal M$ ，使@f[
-   * a E \le \sum_{K\in \cal M} c_K @f]
-   * 该算法由refine_and_coarsen_fixed_number()中描述的贪婪算法执行。
-   * @note
-   * 经常使用的左右两边都有方块的公式，通过实际将<i>c<sub>K</sub></i>的方块存储在向量
-   * @p criteria. 中来恢复。
-   * 从实现的角度来看，这次我们确实需要对标准数组进行排序。
-   * 就像上面描述的其他策略一样，这个函数只计算阈值，然后传递给refine()和coarsen()。
-   * @param[in,out]  tria 三角形
-   * 这个函数应该对其单元进行粗化和细化标记。
-   * @param[in]  criteria 对每个网格单元计算的细化准则。
-   * 输入值不能为负值。      @param[in]  top_fraction
-   * 应该被细化的总估算值的分数。如果这个数字是零，没有单元会被细化。如果它等于1，结果将被标记为全局细化。
-   * @param[in]  bottom_fraction
-   * 粗化的估计值的一部分。如果这个数字是0，没有单元将被粗化。
-   * @param[in]  max_n_cells
-   * 这个参数可以用来指定一个最大的单元数。如果细化时超过这个数字，那么细化和粗化的比例将被调整，以达到最大的细胞数。但是要注意，由于
-   * Triangulation::MeshSmoothing,
-   * 的细化扩散，这个数字只是一个指标。这个参数的默认值是对单元格的数量没有限制。
-   * @param[in]  norm_type
-   * 为了确定阈值，单元格子集上的综合误差被计算为这些单元格上的准则的规范。不同类型的准则可用于此目的，目前支持其中的
-   * VectorTools::NormType::L1_norm 和 VectorTools::NormType::L2_norm 。
+   * This function provides a strategy to mark cells for refinement and
+   * coarsening with the goal of controlling the reduction of
+   * the error estimate.
    *
+   * Also known as the <b>bulk criterion</b> or D&ouml;rfler marking,
+   * this function computes the thresholds for refinement and coarsening
+   * such that the @p criteria of cells getting flagged for refinement make
+   * up for a certain fraction of the total error. We explain its operation
+   * for refinement, coarsening works analogously.
+   *
+   * Let <i>c<sub>K</sub></i> be the criterion of cell <i>K</i>. Then the
+   * total error estimate is computed by the formula
+   * @f[
+   * E = \sum_{K\in \cal T} c_K.
+   * @f]
+   *
+   * If <i> 0 &lt; a &lt; 1</i> is @p top_fraction, then we refine the
+   * smallest subset $\cal M$ of the Triangulation $\cal T$ such that
+   * @f[
+   * a E \le \sum_{K\in \cal M} c_K
+   * @f]
+   *
+   * The algorithm is performed by the greedy algorithm described in
+   * refine_and_coarsen_fixed_number().
+   *
+   * @note The often used formula with squares on the left and right is
+   * recovered by actually storing the square of <i>c<sub>K</sub></i> in the
+   * vector @p criteria.
+   *
+   * From the point of view of implementation, this time we really need to
+   * sort the array of criteria.  Just like the other strategy described
+   * above, this function only computes the threshold values and then passes
+   * over to refine() and coarsen().
+   *
+   * @param[in,out] tria The triangulation whose cells this function is
+   * supposed to mark for coarsening and refinement.
+   *
+   * @param[in] criteria The refinement criterion computed on each mesh cell.
+   * Entries may not be negative.
+   *
+   * @param[in] top_fraction The fraction of the total estimate which should
+   * be refined. If this number is zero, no cells will be refined. If it
+   * equals one, the result will be flagging for global refinement.
+   *
+   * @param[in] bottom_fraction The fraction of the estimate coarsened. If
+   * this number is zero, no cells will be coarsened.
+   *
+   * @param[in] max_n_cells This argument can be used to specify a maximal
+   * number of cells. If this number is going to be exceeded upon refinement,
+   * then refinement and coarsening fractions are going to be adjusted in an
+   * attempt to reach the maximum number of cells. Be aware though that
+   * through proliferation of refinement due to Triangulation::MeshSmoothing,
+   * this number is only an indicator. The default value of this argument is
+   * to impose no limit on the number of cells.
+   *
+   * @param[in] norm_type To determine thresholds, combined errors on
+   * subsets of cells are calculated as norms of the criteria on these
+   * cells. Different types of norms can be used for this purpose, from
+   * which VectorTools::NormType::L1_norm and
+   * VectorTools::NormType::L2_norm are currently supported.
    */
   template <int dim, typename Number, int spacedim>
   void
@@ -145,39 +241,77 @@ namespace GridRefinement
 
 
   /**
-   * 这个函数对三角网格的单元进行标记，以达到一个最佳的网格，这个目标函数试图在网格细化时平衡减少误差和增加数值成本。具体来说，这个函数的假设是，如果你细化一个单元
-   * $K$ ，其误差指标 $\eta_K$
-   * 由这个函数的第二个参数提供，那么子单元上的误差（所有子单元一起）将只是
-   * $2^{-\text{order}}\eta_K$ ，其中 <code>order</code>
-   * 是这个函数的第三个参数。这就假设了误差只是网格上的一个局部属性，可以通过局部细化来减少误差
+   * This function flags cells of a triangulation for refinement with the
+   * aim to reach a grid that
+   * is optimal with respect to an objective function that tries to balance
+   * reducing the error and increasing the numerical cost when the mesh is
+   * refined. Specifically, this function makes the assumption that if you
+   * refine a cell $K$ with error indicator $\eta_K$ provided by the second
+   * argument to this function, then the error on the children (for all
+   * children together) will only be $2^{-\text{order}}\eta_K$ where
+   * <code>order</code> is the third argument of this function. This makes the
+   * assumption that the error is only a local property on a mesh and can be
+   * reduced by local refinement -- an assumption that is true for the
+   * interpolation operator, but not for the usual Galerkin projection,
+   * although it is approximately true for elliptic problems where the Greens
+   * function decays quickly and the error here is not too much affected by a
+   * too coarse mesh somewhere else.
    *
-   * *-这个假设对插值算子来说是真实的，但对通常的Galerkin投影来说不是，尽管它对椭圆问题近似是真实的，在那里Greens函数快速衰减，这里的误差不会受到其他地方太粗的网格的影响。    有了这个，我们可以定义这个函数试图优化的目标函数。让我们假设目前的网格有 $N_0$ 个单元。那么，如果我们细化误差最大的 $m$ 单元，我们期望得到（在 $d$ 空间维度上）@f[
-   * N(m) = (N_0-m) + 2^d m = N_0 + (2^d-1)m
-   * @f]单元（ $N_0-m$ 没有被细化，而我们细化的每个 $m$ 单元产生 $2^d$ 子单元。另一方面，在精炼 $m$ 单元时，使用上面的假设，我们预计误差将是@f[
-   * \eta^\text{exp}(m) = \sum_{K, K\; \text{will not be refined}} \eta_K +
-   * \sum_{K, K\; \text{will be refined}} 2^{-\text{order}}\eta_K
-   * @f]，其中第一个和延伸到 $N_0-m$ 单元，第二个延伸到将被精炼的 $m$ 单元。请注意， $N(m)$ 是 $m$ 的增函数，而 $\eta^\text{exp}(m)$ 是减函数。    然后，该函数试图找到目标函数@f[
-   * J(m) = N(m)^{\text{order}/d} \eta^\text{exp}(m)
-   * @f]最小的单元格数量 $m$ 来标记精炼。
-   * 这个函数的原理有两个方面。首先，与refine_and_coarsen_fixed_fraction()和refine_and_coarsen_fixed_number()函数相比，这个函数的特性是：如果所有的细化指标都相同（即我们已经达到了每个单元的误差平衡的网格），那么整个网格都被细化。这是基于这样的观察：具有平衡误差指标的网格是所有具有相同单元数的网格中的最优网格（即，具有最小的整体误差）。(关于这一点的证明，见R.
-   * Becker, M. Braack, R. Rannacher: "Numerical simulation of laminar flames
-   * at low Mach number with adaptive finite elements", Combustion Theory and
-   * Modelling, Vol. 3, Nr. 3, p. 503-534 1999; and W. Bangerth, R. Rannacher:
-   * "Adaptive Finite Element Methods for Differential Equations", Birkhauser,
-   * 2003.)
-   * 其次，该函数使用了这样的观察结果：理想情况下，误差表现为
-   * $e \approx c N^{-\alpha}$ 与一些常数 $\alpha$
-   * 的关系，这些常数取决于维度和有限元程度。它应该
+   * With this, we can define the objective function this function tries to
+   * optimize. Let us assume that the mesh currently has $N_0$ cells. Then, if
+   * we refine the $m$ cells with the largest errors, we expect to get (in $d$
+   * space dimensions)
+   * @f[
+   *   N(m) = (N_0-m) + 2^d m = N_0 + (2^d-1)m
+   * @f]
+   * cells ($N_0-m$ are not refined, and each of the $m$ cells we refine yield
+   * $2^d$ child cells. On the other hand, with refining $m$ cells, and using
+   * the assumptions above, we expect that the error will be
+   * @f[
+   *   \eta^\text{exp}(m)
+   *   =
+   *   \sum_{K, K\; \text{will not be refined}} \eta_K
+   *   +
+   *   \sum_{K, K\; \text{will be refined}} 2^{-\text{order}}\eta_K
+   * @f]
+   * where the first sum extends over $N_0-m$ cells and the second over the
+   * $m$ cells that will be refined. Note that $N(m)$ is an increasing
+   * function of $m$ whereas $\eta^\text{exp}(m)$ is a decreasing function.
    *
-   * - 给出最佳的网格细化
+   * This function then tries to find that number $m$ of cells to mark for
+   * refinement for which the objective function
+   * @f[
+   *   J(m) = N(m)^{\text{order}/d} \eta^\text{exp}(m)
+   * @f]
+   * is minimal.
    *
-   * - 不太依赖于解的规则性，因为它是基于这样的想法，即所有的奇异点都可以通过细化解决。网格细化是基于我们要使 $c=e N^\alpha$ 变小的想法。这与上面的函数 $J(m)$ 相对应。
-   * @note  这个函数最初是由Thomas
-   * Richter实现的。它遵循T.Richter, "Parallel Multigrid Method for
-   * Adaptive Finite Elements with Application to 3D Flow Problems", PhD
-   * thesis, University of Heidelberg,
-   * 2005中描述的策略。特别是见第4.3节，第42-43页。
+   * The rationale for this function is two-fold. First, compared to the
+   * refine_and_coarsen_fixed_fraction() and refine_and_coarsen_fixed_number()
+   * functions, this function has the property that if all refinement
+   * indicators are the same (i.e., we have achieved a mesh where the error
+   * per cell is equilibrated), then the entire mesh is refined. This is based
+   * on the observation that a mesh with equilibrated error indicators is the
+   * optimal mesh (i.e., has the least overall error) among all meshes with
+   * the same number of cells. (For proofs of this, see R. Becker, M. Braack,
+   * R. Rannacher: "Numerical simulation of laminar flames at low Mach number
+   * with adaptive finite elements", Combustion Theory and Modelling, Vol. 3,
+   * Nr. 3, p. 503-534 1999; and W. Bangerth, R. Rannacher: "Adaptive Finite
+   * Element Methods for Differential Equations", Birkhauser, 2003.)
    *
+   * Second, the function uses the observation that ideally, the error behaves
+   * like $e \approx c N^{-\alpha}$ with some constant $\alpha$ that depends
+   * on the dimension and the finite element degree. It should - given optimal
+   * mesh refinement - not depend so much on the regularity of the solution,
+   * as it is based on the idea, that all singularities can be resolved by
+   * refinement. Mesh refinement is then based on the idea that we want to
+   * make $c=e N^\alpha$ small. This corresponds to the functional $J(m)$
+   * above.
+   *
+   * @note This function was originally implemented by Thomas Richter. It
+   * follows a strategy described in T. Richter, "Parallel Multigrid Method
+   * for Adaptive Finite Elements with Application to 3D Flow Problems", PhD
+   * thesis, University of Heidelberg, 2005. See in particular Section 4.3,
+   * pp. 42-43.
    */
   template <int dim, typename Number, int spacedim>
   void
@@ -186,16 +320,18 @@ namespace GridRefinement
                               const unsigned int            order = 2);
 
   /**
-   * 标记所有 @p criteria 中数值超过 @p
-   * 阈值的网格单元进行细化，但只标记到 @p max_to_mark
-   * 单元。    向量 @p criteria
-   * 包含每个活动单元的非负值，按照
-   * Triangulation::active_cell_iterator. 的规范顺序排序。
-   * 这些单元只被标记为细化，它们实际上没有被细化。
-   * 要做到这一点，你必须调用
-   * Triangulation::execute_coarsening_and_refinement().
-   * 这个函数不实现细化策略，它更像是实际策略的一个辅助函数。
+   * Mark all mesh cells for which the value in @p criteria exceeds @p
+   * threshold for refinement, but only flag up to @p max_to_mark cells.
    *
+   * The vector @p criteria contains a nonnegative value for each active cell,
+   * ordered in the canonical order of Triangulation::active_cell_iterator.
+   *
+   * The cells are only flagged for refinement, they are not actually refined.
+   * To do so, you have to call
+   * Triangulation::execute_coarsening_and_refinement().
+   *
+   * This function does not implement a refinement strategy, it is more a
+   * helper function for the actual strategies.
    */
   template <int dim, typename Number, int spacedim>
   void
@@ -205,14 +341,18 @@ namespace GridRefinement
          const unsigned int max_to_mark = numbers::invalid_unsigned_int);
 
   /**
-   * 标记所有 @p criteria 中的值小于 @p
-   * 阈值的网格单元进行粗化。    向量 @p criteria
-   * 包含每个活动单元的非负值，按照
-   * Triangulation::active_cell_iterator. 的规范顺序排序。
-   * 这些单元只被标记为粗化，它们实际上没有被粗化。要做到这一点，你必须调用
-   * Triangulation::execute_coarsening_and_refinement().
-   * 这个函数并不实现细化策略，它更像是实际策略的一个辅助函数。
+   * Mark all mesh cells for which the value in @p criteria is less than @p
+   * threshold for coarsening.
    *
+   * The vector @p criteria contains a nonnegative value for each active cell,
+   * ordered in the canonical order of Triangulation::active_cell_iterator.
+   *
+   * The cells are only flagged for coarsening, they are not actually
+   * coarsened. To do so, you have to call
+   * Triangulation::execute_coarsening_and_refinement().
+   *
+   * This function does not implement a refinement strategy, it is more a
+   * helper function for the actual strategies.
    */
   template <int dim, typename Number, int spacedim>
   void
@@ -221,14 +361,14 @@ namespace GridRefinement
           const double                  threshold);
 
   /**
-   * 如果带有单元格标准的向量包含负值，则抛出一个异常。
-   *
+   * An exception thrown if the vector with cell criteria contains negative
+   * values
    */
   DeclException0(ExcNegativeCriteria);
 
   /**
-   * 其中一个阈值参数引起麻烦。或者细化和粗化的阈值重叠了。
-   *
+   * One of the threshold parameters causes trouble. Or the refinement and
+   * coarsening thresholds overlap.
    */
   DeclException0(ExcInvalidParameterValue);
 } // namespace GridRefinement
@@ -238,5 +378,3 @@ namespace GridRefinement
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_grid_refinement_h
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/polynomial_space_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2021 by the deal.II authors
@@ -33,16 +32,31 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 度数最多为n的多项式的空间在高维中的表示。
- * 给定一个<i>n</i>一维多项式<i>P<sub>0</sub></i>到<i>P<sub>n</sub></i>的向量，其中<i>P<sub>i</sub></i>的度数为<i>i</i>，这个类产生所有形式为<i>
+ * Representation of the space of polynomials of degree at most n in higher
+ * dimensions.
+ *
+ * Given a vector of <i>n</i> one-dimensional polynomials <i>P<sub>0</sub></i>
+ * to <i>P<sub>n</sub></i>, where <i>P<sub>i</sub></i> has degree <i>i</i>,
+ * this class generates all dim-dimensional polynomials of the form <i>
  * P<sub>ijk</sub>(x,y,z) =
- * P<sub>i</sub>(x)P<sub>j</sub>(y)P<sub>k</sub>(z)</i>的二维多项式，其中<i>i</i>、<i>j</i>和<i>k</i>之和小于或等于<i>n</i>。
- * output_indices()函数打印了多项式的排序，即对于多项式空间中的每个dim-dimensional多项式，它给出了x、y和z方向的一维多项式的指数i,j,k。dim-dimensional多项式的排序可以通过set_numbering()函数来改变。
- * 多项式的标准排序是，第一个空间维度的指数变化最快，最后一个空间维度的指数变化最慢。特别是，如果我们为简单起见，取单项式的矢量<i>x<sup>0</sup>,
- * x<sup>1</sup>, x<sup>2</sup>,..., x<sup>n</sup></i>，我们得到 <dl>
- * <dt> 1D  <dd>  <i> x<sup>0</sup>, x<sup>1</sup>,...,x<sup>n</sup></i> <dt>
- * 2D:  <dd>  <i> x<sup>0</sup>y<sup>0</sup>, x<sup>1</sup>y<sup>0</sup>,...,
- * x<sup>n</sup>y<sup>0</sup>,
+ * P<sub>i</sub>(x)P<sub>j</sub>(y)P<sub>k</sub>(z)</i>, where the sum of
+ * <i>i</i>, <i>j</i> and <i>k</i> is less than or equal <i>n</i>.
+ *
+ * The output_indices() function prints the ordering of the polynomials, i.e.
+ * for each dim-dimensional polynomial in the polynomial space it gives the
+ * indices i,j,k of the one-dimensional polynomials in x,y and z direction.
+ * The ordering of the dim-dimensional polynomials can be changed by using the
+ * set_numbering() function.
+ *
+ * The standard ordering of polynomials is that indices for the first space
+ * dimension vary fastest and the last space dimension is slowest. In
+ * particular, if we take for simplicity the vector of monomials
+ * <i>x<sup>0</sup>, x<sup>1</sup>, x<sup>2</sup>,..., x<sup>n</sup></i>, we
+ * get
+ *
+ * <dl> <dt> 1D <dd> <i> x<sup>0</sup>, x<sup>1</sup>,...,x<sup>n</sup></i>
+ * <dt> 2D: <dd> <i> x<sup>0</sup>y<sup>0</sup>,
+ * x<sup>1</sup>y<sup>0</sup>,..., x<sup>n</sup>y<sup>0</sup>,
  * <br>
  * x<sup>0</sup>y<sup>1</sup>, x<sup>1</sup>y<sup>1</sup>,...,
  * x<sup>n-1</sup>y<sup>1</sup>,
@@ -53,7 +67,7 @@ DEAL_II_NAMESPACE_OPEN
  * <br>
  * x<sup>0</sup>y<sup>n-1</sup>, x<sup>1</sup>y<sup>n-1</sup>,
  * <br>
- * x<sup>0</sup>y<sup>n</sup> </i> <dt> 3D:  <dd>  <i>
+ * x<sup>0</sup>y<sup>n</sup> </i> <dt> 3D: <dd> <i>
  * x<sup>0</sup>y<sup>0</sup>z<sup>0</sup>,...,
  * x<sup>n</sup>y<sup>0</sup>z<sup>0</sup>,
  * <br>
@@ -76,53 +90,56 @@ DEAL_II_NAMESPACE_OPEN
  * <br>
  * ...
  * <br>
- * x<sup>0</sup>y<sup>0</sup>z<sup>n</sup> </i>  </dl>
- *
+ * x<sup>0</sup>y<sup>0</sup>z<sup>n</sup> </i> </dl>
  *
  * @ingroup Polynomials
- *
- *
  */
 template <int dim>
 class PolynomialSpace : public ScalarPolynomialsBase<dim>
 {
 public:
   /**
-   * 访问此对象的尺寸，用于检查和自动设置其他类中的尺寸。
-   *
+   * Access to the dimension of this object, for checking and automatic
+   * setting of dimension in other classes.
    */
   static const unsigned int dimension = dim;
 
   /**
-   * 构造函数。<tt>pols</tt>是一个指向一维多项式的向量，将被复制到一个私有成员变量中。模板参数<tt>pols</tt>的静态类型需要可以转换为
-   * Polynomials::Polynomial@<double@>, ，即通常应该是
-   * Polynomials::Polynomial@<double@>. 的一个派生类。
-   *
+   * Constructor. <tt>pols</tt> is a vector of pointers to one-dimensional
+   * polynomials and will be copied into a private member variable. The static
+   * type of the template argument <tt>pols</tt> needs to be convertible to
+   * Polynomials::Polynomial@<double@>, i.e. should usually be a derived class
+   * of Polynomials::Polynomial@<double@>.
    */
   template <class Pol>
   PolynomialSpace(const std::vector<Pol> &pols);
 
   /**
-   * 打印索引列表到<tt>out</tt>。
-   *
+   * Prints the list of the indices to <tt>out</tt>.
    */
   template <class StreamType>
   void
   output_indices(StreamType &out) const;
 
   /**
-   * 设置多项式的排序。要求<tt>renumber.size()==n()</tt>。存储一个<tt>renumber</tt>的副本。
-   *
+   * Set the ordering of the polynomials. Requires
+   * <tt>renumber.size()==n()</tt>. Stores a copy of <tt>renumber</tt>.
    */
   void
   set_numbering(const std::vector<unsigned int> &renumber);
 
   /**
-   * 计算每个多项式在<tt>unit_point</tt>的值和一、二次导数。
-   * 向量的大小必须等于0或等于n()。在第一种情况下，函数不会计算这些值，也就是说，你要通过调整那些你想要填充的向量的大小来表明你想要计算什么。
-   * 如果你需要所有多项式的值或导数，那么使用这个函数，而不是使用任何一个compute_value(),
-   * compute_grad()或compute_grad_grad()函数，见下文，在所有多项式上循环。
+   * Compute the value and the first and second derivatives of each
+   * polynomial at <tt>unit_point</tt>.
    *
+   * The size of the vectors must either be equal 0 or equal n(). In the first
+   * case, the function will not compute these values, i.e. you indicate what
+   * you want to have computed by resizing those vectors which you want
+   * filled.
+   *
+   * If you need values or derivatives of all polynomials then use this
+   * function, rather than using any of the compute_value(), compute_grad() or
+   * compute_grad_grad() functions, see below, in a loop over all polynomials.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -133,126 +150,124 @@ public:
            std::vector<Tensor<4, dim>> &fourth_derivatives) const override;
 
   /**
-   * 计算<tt>i</tt>第1个多项式在单位点<tt>p</tt>的值。
-   * 可以考虑用evaluate()代替。
+   * Compute the value of the <tt>i</tt>th polynomial at unit point
+   * <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
    */
   double
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 计算<tt>i</tt>次多项式在单位点<tt>p</tt>的<tt>阶</tt>次导数。
-   * 可以考虑用evaluate()代替。      @tparam  order 导数的阶数。
+   * Compute the <tt>order</tt>th derivative of the <tt>i</tt>th polynomial
+   * at unit point <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
+   *
+   * @tparam order The order of the derivative.
    */
   template <int order>
   Tensor<order, dim>
   compute_derivative(const unsigned int i, const Point<dim> &p) const;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_1st_derivative()  阶数
-   *
+   * @copydoc ScalarPolynomialsBase::compute_1st_derivative()
    */
   virtual Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_2nd_derivative()
-   * ScalarPolynomialsBase::compute_2nd_derivative() 。
-   *
+   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
    */
   virtual Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_3rd_derivative()
-   * ScalarPolynomialsBase::compute_3rd_derivative() .
-   *
+   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
    */
   virtual Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_4th_derivative()
-   * ScalarPolynomialsBase::compute_4th_derivative() .
-   *
+   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
    */
   virtual Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * 计算<tt>i</tt>第1个多项式在单位点<tt>p</tt>的梯度。
-   * 可以考虑用evaluate()代替。
+   * Compute the gradient of the <tt>i</tt>th polynomial at unit point
+   * <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 计算<tt>i</tt>次多项式在单位点<tt>p</tt>的二阶导数（grad_grad）。
-   * 可以考虑用evaluate()代替。
+   * Compute the second derivative (grad_grad) of the <tt>i</tt>th polynomial
+   * at unit point <tt>p</tt>.
    *
+   * Consider using evaluate() instead.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回跨越这个类所代表的空间的多项式的数量。这里，如果<tt>N</tt>是给出的一维多项式的数量，那么这个函数的结果是1d中的<i>N</i>，2d中的<i>N(N+1)/2</i>，以及3d中的<i>N(N+1)(N+2)/6</i>。
-   *
+   * Return the number of polynomials spanning the space represented by this
+   * class. Here, if <tt>N</tt> is the number of one-dimensional polynomials
+   * given, then the result of this function is <i>N</i> in 1d,
+   * <i>N(N+1)/2</i> in 2d, and <i>N(N+1)(N+2)/6</i> in 3d.
    */
   static unsigned int
   n_polynomials(const unsigned int n);
 
   /**
-   * 返回空间的名称，即<tt>PolynomialSpace</tt>。
-   *
+   * Return the name of the space, which is <tt>PolynomialSpace</tt>.
    */
   std::string
   name() const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::clone() .
-   *
+   * @copydoc ScalarPolynomialsBase::clone()
    */
   virtual std::unique_ptr<ScalarPolynomialsBase<dim>>
   clone() const override;
 
 protected:
   /**
-   * 计算x、y和z方向的数字。给出d维多项式空间中的一个索引<tt>n</tt>，返回索引i,j,k，以便<i>p<sub>n</sub>(x,y,z)
-   * = p<sub>i</sub>(x)p<sub>j</sub>(y)p<sub>k</sub>(z)</i>。
-   * 在1d和2d中，显然只有i和i,j被返回。
+   * Compute numbers in x, y and z direction. Given an index <tt>n</tt> in the
+   * d-dimensional polynomial space, return the indices i,j,k such that
+   * <i>p<sub>n</sub>(x,y,z) =
+   * p<sub>i</sub>(x)p<sub>j</sub>(y)p<sub>k</sub>(z)</i>.
    *
+   * In 1d and 2d, obviously only i and i,j are returned.
    */
   std::array<unsigned int, dim>
   compute_index(const unsigned int n) const;
 
 private:
   /**
-   * 复制给构造函数的多项式的向量<tt>pols</tt>。
-   *
+   * Copy of the vector <tt>pols</tt> of polynomials given to the constructor.
    */
   const std::vector<Polynomials::Polynomial<double>> polynomials;
 
   /**
-   * 用于重新排序多项式的索引图。
-   *
+   * Index map for reordering the polynomials.
    */
   std::vector<unsigned int> index_map;
 
   /**
-   * 用于重新排序多项式的索引图。
-   *
+   * Index map for reordering the polynomials.
    */
   std::vector<unsigned int> index_map_inverse;
 };
 
 
- /* -------------- declaration of explicit specializations --- */ 
+/* -------------- declaration of explicit specializations --- */
 
 template <>
 std::array<unsigned int, 1>
@@ -266,7 +281,7 @@ PolynomialSpace<3>::compute_index(const unsigned int n) const;
 
 
 
- /* -------------- inline and template functions ------------- */ 
+/* -------------- inline and template functions ------------- */
 
 template <int dim>
 template <class Pol>
@@ -479,5 +494,3 @@ PolynomialSpace<dim>::compute_4th_derivative(const unsigned int i,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

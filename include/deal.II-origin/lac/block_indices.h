@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/block_indices_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -31,118 +32,111 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * BlockIndices represents a range of indices (such as the range $[0,N)$
- * of valid indices for elements of a vector) and how this one range
- * is broken down into smaller but contiguous "blocks" (such as the velocity
- * and pressure parts of a solution vector). In particular, it provides the
- * ability to translate between global indices and the indices <i>within</i>
- * a block. This class is used, for example, in the BlockVector,
- * BlockSparsityPattern, and BlockMatrixBase classes.
+ * BlockIndices表示一个指数范围（如一个矢量元素的有效指数范围
+ * $[0,N)$ ），以及这一个范围如何被分解成更小但连续的
+ * "块"（如一个解矢量的速度和压力部分）。特别是，它提供了在全局指数和一个块的指数<i>within</i>之间转换的能力。例如，该类用于BlockVector、BlockSparsityPattern和BlockMatrixBase类中。
+ * 可以从这个类中获得的信息分为两组。首先，可以查询索引空间的全局大小（通过total_size()成员函数），以及块的数量和它们的大小（通过size()和block_size()函数）。
+ * 其次，这个类管理全局索引到这个块内的局部索引的转换，以及反过来的转换。这是必要的，例如，当你在一个块向量中寻址一个全局元素，并想知道它在哪个块中，以及它在这个块中对应的索引。如果一个矩阵是由几个块组成的，你必须把全局的行和列索引翻译成局部的，这也很有用。
  *
- * The information that can be obtained from this class falls into two groups.
- * First, it is possible to query the global size of the index space (through
- * the total_size() member function), and the number of blocks and their sizes
- * (via size() and the block_size() functions).
  *
- * Secondly, this class manages the conversion of global indices to the
- * local indices within this block, and the other way around. This is required,
- * for example, when you address a global element in a block vector and want to
- * know within which block this is, and which index within this block it
- * corresponds to. It is also useful if a matrix is composed of several
- * blocks, where you have to translate global row and column indices to local
- * ones.
+ * @ingroup data   @see   @ref GlossBlockLA  "块（线性代数）"
  *
- * @ingroup data
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
+ *
  */
 class BlockIndices : public Subscriptor
 {
 public:
   /**
-   * Declare the type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Default constructor. Initialize for zero blocks.
+   * 默认构造函数。对零块进行初始化。
+   *
    */
   BlockIndices();
 
   /**
-   * Constructor. Initialize the number of entries in each block @p i as
-   * <tt>block_sizes[i]</tt>. The number of blocks will be the size of @p
-   * block_sizes.
+   * 构造函数。初始化每个块 @p i
+   * 中的条目数为<tt>block_sizes[i]</tt>。块的数量将是 @p
+   * block_sizes的大小。
+   *
    */
   BlockIndices(const std::vector<size_type> &block_sizes);
 
   /**
-   * Move constructor. Initialize a new object by stealing the internal data of
-   * another BlockIndices object.
+   * 移动构造函数。通过窃取另一个BlockIndices对象的内部数据来初始化一个新对象。
+   *
    */
   BlockIndices(BlockIndices &&b) noexcept;
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   BlockIndices(const BlockIndices &) = default;
 
   /**
-   * Specialized constructor for a structure with blocks of equal size.
+   * 用于具有相同大小块的结构的专门构造函数。
+   *
    */
   explicit BlockIndices(const unsigned int n_blocks,
                         const size_type    block_size = 0);
 
   /**
-   * Reinitialize the number of blocks and assign each block the same number
-   * of elements.
+   * 重新初始化块的数量，并给每个块分配相同数量的元素。
+   *
    */
   void
   reinit(const unsigned int n_blocks, const size_type n_elements_per_block);
 
   /**
-   * Reinitialize the number of indices within each block from the given
-   * argument. The number of blocks will be adjusted to the size of
-   * <tt>block_sizes</tt> and the size of block @p i is set to
-   * <tt>block_sizes[i]</tt>.
+   * 根据给定的参数重新初始化每个块内的索引数。块的数量将被调整为<tt>block_sizes</tt>的大小，块
+   * @p i 的大小被设置为<tt>block_sizes[i]</tt>。
+   *
    */
   void
   reinit(const std::vector<size_type> &block_sizes);
 
   /**
-   * Add another block of given size to the end of the block structure.
+   * 在块结构的末端添加另一个给定大小的块。
+   *
    */
   void
   push_back(const size_type size);
 
   /**
-   * @name Size information
+   * @name  大小信息
+   *
    */
   //@{
 
   /**
-   * Number of blocks in index field.
+   * 索引字段中的块的数量。
+   *
    */
   unsigned int
   size() const;
 
   /**
-   * Return the total number of indices accumulated over all blocks, that is,
-   * the dimension of the vector space of the block vector.
+   * 返回所有块上累积的索引总数，也就是块向量空间的维度。
+   *
    */
   size_type
   total_size() const;
 
   /**
-   * The size of the @p ith block.
+   * @p ith 块的大小。
+   *
    */
   size_type
   block_size(const unsigned int i) const;
 
   /**
-   * String representation of the block sizes. The output is of the form
-   * `[nb->b1,b2,b3|s]`, where `nb` is n_blocks(), `s` is total_size() and
-   * `b1` etc. are the values returned by block_size() for each of the blocks.
+   * 块大小的字符串表示。输出的形式是`[nb->b1,b2,b3|s]`，其中`nb`是n_blocks()，`s`是total_size()，`b1`等是block_size()对每个块返回的值。
+   *
    */
   std::string
   to_string() const;
@@ -150,89 +144,89 @@ public:
   //@}
 
   /**
-   * @name Index conversion
+   * @name  索引转换 本组函数假定一个对象，它是在按块排序后创建的，这样，每个块在对象中形成一组连续的索引。如果应用于其他对象，从这些函数得到的数字是没有意义的。
    *
-   * Functions in this group assume an object, which was created after sorting
-   * by block, such that each block forms a set of consecutive indices in the
-   * object. If applied to other objects, the numbers obtained from these
-   * functions are meaningless.
    */
   //@{
 
   /**
-   * Return the block and the index within that block for the global index @p
-   * i. The first element of the pair is the block, the second the index
-   * within it.
+   * 返回全局索引 @p
+   * i的块和该块中的索引。这一对的第一个元素是块，第二个是其中的索引。
+   *
    */
   std::pair<unsigned int, size_type>
   global_to_local(const size_type i) const;
 
   /**
-   * Return the global index of @p index in block @p block.
+   * 返回 @p block. 块中 @p index 的全局索引。
+   *
    */
   size_type
   local_to_global(const unsigned int block, const size_type index) const;
 
   /**
-   * The start index of the ith block.
+   * 第1个区块的起始索引。
+   *
    */
   size_type
   block_start(const unsigned int i) const;
   //@}
 
   /**
-   * Copy operator.
+   * 复制操作者。
+   *
    */
   BlockIndices &
   operator=(const BlockIndices &b);
 
   /**
-   * Move assignment operator. Move another BlockIndices object onto the
-   * current one by transferring its contents.
+   * 移动赋值运算符。通过转移BlockIndices对象的内容，将另一个BlockIndices对象移到当前对象上。
+   *
    */
   BlockIndices &
   operator=(BlockIndices &&) noexcept;
 
   /**
-   * Compare whether two objects are the same, i.e. whether the number of
-   * blocks and the sizes of all blocks are equal.
+   * 比较两个对象是否相同，即块的数量和所有块的大小是否相等。
+   *
    */
   bool
   operator==(const BlockIndices &b) const;
 
   /**
-   * Swap the contents of these two objects.
+   * 交换这两个对象的内容。
+   *
    */
   void
   swap(BlockIndices &b);
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * Number of blocks. While this value could be obtained through
-   * <tt>start_indices.size()-1</tt>, we cache this value for faster access.
+   * 块的数量。虽然这个值可以通过<tt>start_indices.size()-1</tt>获得，但我们对这个值进行了缓存以加快访问速度。
+   *
    */
   unsigned int n_blocks;
 
   /**
-   * Global starting index of each vector. The last and redundant value is the
-   * total number of entries.
+   * 每个向量的全球起始索引。最后一个也是多余的值是总条目数。
+   *
    */
   std::vector<size_type> start_indices;
 };
 
 
 /**
- * Operator for logging BlockIndices. Writes the number of blocks, the size of
- * each block and the total size of the index field.
- *
+ * 记录BlockIndices的操作员。写下块的数量，每个块的大小和索引域的总大小。
  * @ref BlockIndices
+ *
+ *
  */
 inline LogStream &
 operator<<(LogStream &s, const BlockIndices &bi)
@@ -251,7 +245,7 @@ operator<<(LogStream &s, const BlockIndices &bi)
 
 
 
-/* ---------------------- template and inline functions ------------------- */
+ /* ---------------------- template and inline functions ------------------- */ 
 
 inline void
 BlockIndices::reinit(const unsigned int nb, const size_type block_size)
@@ -457,15 +451,15 @@ BlockIndices::memory_consumption() const
 
 
 
-/* ----------------- global functions ---------------------------- */
+ /* ----------------- global functions ---------------------------- */ 
 
 
 /**
- * Global function @p swap which overloads the default implementation of the
- * C++ standard library which uses a temporary object. The function simply
- * exchanges the data of the two objects.
+ * 全局函数  @p swap
+ * ，它重载了C++标准库中使用临时对象的默认实现。该函数简单地交换了两个对象的数据。
+ * @relatesalso  BlockIndices
  *
- * @relatesalso BlockIndices
+ *
  */
 inline void
 swap(BlockIndices &u, BlockIndices &v)
@@ -478,3 +472,5 @@ swap(BlockIndices &u, BlockIndices &v)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

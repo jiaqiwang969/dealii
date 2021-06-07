@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/adaptation_strategies_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -32,29 +31,36 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 当数据在适应过程中被转移时，决定如何处理从旧网格上的前单元被改变为新网格上的当前单元的数据并不简单。或者换句话说，数据应该如何存储在适应的网格上的单元中。
- * 在这个命名空间中，我们提供了一些应对这个问题的策略。这些策略可以传递给CellDataTransfer和
- * parallel::distributed::CellDataTransfer 构造函数。
+ * When data is transferred during adaptation, it is not trivial to decide
+ * how to process data from former cells on the old mesh that have been changed
+ * into current cells on the new mesh. Or in other words, how data should be
+ * stored in the cells on the adapted mesh.
  *
- *
+ * In this namespace, we offer a few strategies that cope with this
+ * problem. Such strategies can be passed to the CellDataTransfer and
+ * parallel::distributed::CellDataTransfer constructors.
  */
 namespace AdaptationStrategies
 {
   /**
-   * 对于细化，所有的策略都接受父细胞及其相关数据。它们返回一个向量，包含父单元格将被细化到的每个单独的子单元格的数据。
-   * 子女数据向量中的数值排序与调用 TriaAccessor::child_index.
-   * 时的索引相对应。
+   * For refinement, all strategies take the parent cell and its associated
+   * data. They return a vector containing data for each individual child that
+   * the parent cell will be refined to.
    *
+   * The ordering of values in the vector for children data corresponds to the
+   * index when calling TriaAccessor::child_index.
    */
   namespace Refinement
   {
     /**
-     * 返回一个包含每个子单元的父单元数据副本的向量。        @f[
-     * d_{K_c} = d_{K_p}
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f]
+     * Return a vector containing copies of data of the parent cell for each
+     * child.
      *
+     * @f[
+     *   d_{K_c} = d_{K_p}
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
      */
     template <int dim, int spacedim, typename value_type>
     std::vector<value_type>
@@ -63,12 +69,17 @@ namespace AdaptationStrategies
              const value_type parent_value);
 
     /**
-     * 返回一个包含父单元数据的向量，该向量被平均分配给所有子单元。        @f[
-     * d_{K_c} = d_{K_p} / n_\text{children}
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f] 这个策略保留了适应前后相应的全局数据向量的 $l_1$  -norm。
+     * Return a vector which contains data of the parent cell being equally
+     * divided among all children.
      *
+     * @f[
+     *   d_{K_c} = d_{K_p} / n_\text{children}
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
+     *
+     * This strategy preserves the $l_1$-norm of the corresponding global data
+     * Vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     std::vector<value_type>
@@ -77,12 +88,17 @@ namespace AdaptationStrategies
           const value_type parent_value);
 
     /**
-     * 返回一个向量，其中包含父单元的平方数据被平均分配给所有子单元的平方。        @f[
-     * d_{K_c}^2 = d_{K_p}^2 / n_\text{children}
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f]该策略保留了适应前后相应全局数据向量的 $l_2$ -norm。
+     * Return a vector which contains squared data of the parent cell being
+     * equally divided among the squares of all children.
      *
+     * @f[
+     *   d_{K_c}^2 = d_{K_p}^2 / n_\text{children}
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
+     *
+     * This strategy preserves the $l_2$-norm of the corresponding global data
+     * Vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     std::vector<value_type>
@@ -92,20 +108,23 @@ namespace AdaptationStrategies
   } // namespace Refinement
 
   /**
-   * 对于粗化，所有的策略都接受父单元和属于其前子单元的数据向量。它们返回将被分配给父单元的值。
-   * 子代数据向量中的值的排序与调用 TriaAccessor::child_index.
-   * 时的索引相对应。
+   * For coarsening, all strategies take the parent cell and a vector of data
+   * that belonged to its former children. They return the value that will be
+   * assigned to the parent cell.
    *
+   * The ordering of values in the vector for children data corresponds to the
+   * index when calling TriaAccessor::child_index.
    */
   namespace Coarsening
   {
     /**
-     * 检查所有子单元的数据是否匹配，并返回第一个子单元的值。        @f[
-     * d_{K_p} = d_{K_c}
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f]
+     * Check if data on all children match, and return value of the first child.
      *
+     * @f[
+     *   d_{K_p} = d_{K_c}
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -115,12 +134,16 @@ namespace AdaptationStrategies
       const std::vector<value_type> &children_values);
 
     /**
-     * 返回所有孩子的数据之和。        @f[
-     * d_{K_p} = \sum d_{K_c}
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f] 这个策略在适应前后都保留了相应的全局数据向量的 $l_1$  -norm。
+     * Return sum of data on all children.
      *
+     * @f[
+     *   d_{K_p} = \sum d_{K_c}
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
+     *
+     * This strategy preserves the $l_1$-norm of the corresponding global data
+     * vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -129,12 +152,16 @@ namespace AdaptationStrategies
         const std::vector<value_type> &children_values);
 
     /**
-     * 返回所有子代数据的 $ l_2 $  -norm。        @f[
-     * d_{K_p}^2 = \sum d_{K_c}^2
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f] 这个策略保留了适应前后相应全局数据向量的 $l_2$  -norm。
+     * Return $ l_2 $-norm of data on all children.
      *
+     * @f[
+     *   d_{K_p}^2 = \sum d_{K_c}^2
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
+     *
+     * This strategy preserves the $l_2$-norm of the corresponding global data
+     * vector before and after adaptation.
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -143,12 +170,13 @@ namespace AdaptationStrategies
             const std::vector<value_type> &children_values);
 
     /**
-     * 返回所有孩子上的数据的平均值。        @f[
-     * d_{K_p} = \sum d_{K_c} / n_\text{children}
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f]
+     * Return mean value of data on all children.
      *
+     * @f[
+     *   d_{K_p} = \sum d_{K_c} / n_\text{children}
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -157,12 +185,13 @@ namespace AdaptationStrategies
          const std::vector<value_type> &children_values);
 
     /**
-     * 返回所有孩子的数据的最大值。        @f[
-     * d_{K_p} = \max \left( d_{K_c} \right)
-     * \qquad
-     * \forall K_c \text{ children of } K_p
-     * @f]
+     * Return maximum value of data on all children.
      *
+     * @f[
+     *   d_{K_p} = \max \left( d_{K_c} \right)
+     *   \qquad
+     *   \forall K_c \text{ children of } K_p
+     * @f]
      */
     template <int dim, int spacedim, typename value_type>
     value_type
@@ -174,7 +203,7 @@ namespace AdaptationStrategies
 
 
 
- /* ---------------- template functions ---------------- */ 
+/* ---------------- template functions ---------------- */
 
 #ifndef DOXYGEN
 
@@ -321,6 +350,4 @@ namespace AdaptationStrategies
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif  /* dealii_adaptation_strategies_h */ 
-
-
+#endif /* dealii_adaptation_strategies_h */

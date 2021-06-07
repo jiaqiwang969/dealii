@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/filtered_iterator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -33,29 +32,34 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 在这个命名空间中，声明了一些可以作为FilteredIterator类中的过滤器的类。这些过滤器或者检查二进制信息（例如，
- * IteratorFilters::Active
- * 过滤器类检查指向的对象是否是活动的），或者通过与规定的值比较来检查有价值的信息（例如，LevelEqualTo过滤器类检查所考虑的迭代器指向的对象的级别是否等于构造时给过滤器的一个值。
- * 关于这些类的使用例子以及对过滤器的要求，请参见FilteredIterator类的一般描述。
+ * In this namespace a number of classes is declared that may be used as
+ * filters in the FilteredIterator class. The filters either check for binary
+ * information (for example, the IteratorFilters::Active filter class checks
+ * whether the object pointed to is active), or for valued information by
+ * comparison with prescribed values (for example, the LevelEqualTo filter
+ * class checks whether the level of the object pointed to by the iterator
+ * under consideration is equal to a value that was given to the filter upon
+ * construction.
  *
+ * For examples of use of these classes as well as requirements on filters see
+ * the general description of the FilteredIterator class.
  *
  * @ingroup Iterators
- *
- *
  */
 namespace IteratorFilters
 {
   /**
-   * 如果迭代器指向一个活动对象或迭代器过了终点，则评估为真的过滤器。
-   * @ingroup Iterators
+   * Filter that evaluates to true if either the iterator points to an active
+   * object or an iterator past the end.
    *
+   * @ingroup Iterators
    */
   class Active
   {
   public:
     /**
-     * 评估迭代器，如果该对象是活动的或已过终点，则返回真。
-     *
+     * Evaluate the iterator and return true if the object is active or past
+     * the end.
      */
     template <class Iterator>
     bool
@@ -63,17 +67,19 @@ namespace IteratorFilters
   };
 
   /**
-   * 如果迭代器指向一个设置了用户标志的对象或者迭代器超过了终点，则评估为真的过滤器。参见 @ref
-   * GlossUserFlags 了解关于用户标志的信息。
-   * @ingroup Iterators
+   * Filter that evaluates to true if either the iterator points to an object
+   * for which the user flag is set or an iterator past the end. See
+   * @ref GlossUserFlags
+   * for information about user flags.
    *
+   * @ingroup Iterators
    */
   class UserFlagSet
   {
   public:
     /**
-     * 评估迭代器，如果对象有设定的用户标志或过了终点，则返回true。
-     *
+     * Evaluate the iterator and return true if the object has a set user flag
+     * or past the end.
      */
     template <class Iterator>
     bool
@@ -82,16 +88,18 @@ namespace IteratorFilters
 
 
   /**
-   * 如果迭代器指向一个没有设置用户标志的对象或者迭代器超过了终点，则评估为真的过滤器。与前一个类别相反的过滤器。
-   * @ingroup Iterators
+   * Filter that evaluates to true if either the iterator points to an object
+   * for which the user flag is not set or an iterator past the end. Inverse
+   * filter to the previous class.
    *
+   * @ingroup Iterators
    */
   class UserFlagNotSet
   {
   public:
     /**
-     * 评估迭代器，如果对象有一个未设置的用户标志或超过终点，则返回真。
-     *
+     * Evaluate the iterator and return true if the object has an unset user
+     * flag or past the end.
      */
     template <class Iterator>
     bool
@@ -100,22 +108,25 @@ namespace IteratorFilters
 
 
   /**
-   * 迭代器的过滤器，如果迭代器已经过了终点，或者指向的对象的级别等于给构造函数的一个值，则评估为真。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if either the iterator is
+   * past the end or the level of the object pointed to is equal to a value
+   * given to the constructor.
    *
+   * @ingroup Iterators
    */
   class LevelEqualTo
   {
   public:
     /**
-     * 构造函数。存储迭代器应被评估为真的水平。
-     *
+     * Constructor. Store the level which iterators shall have to be evaluated
+     * to true.
      */
     LevelEqualTo(const unsigned int level);
 
     /**
-     * 评估操作符。如果指向的对象的级别等于存储的值，或者迭代器已过终点，则返回真。
-     *
+     * Evaluation operator. Returns true if either the level of the object
+     * pointed to is equal to the stored value or the iterator is past the
+     * end.
      */
     template <class Iterator>
     bool
@@ -123,8 +134,7 @@ namespace IteratorFilters
 
   protected:
     /**
-     * 要与级别进行比较的存储值。
-     *
+     * Stored value to compare the level with.
      */
     const unsigned int level;
   };
@@ -132,22 +142,26 @@ namespace IteratorFilters
 
 
   /**
-   * 迭代器的过滤器，如果迭代器已经过了终点，或者所指向的对象的子域ID等于给构造函数的一个值，假设迭代器允许查询子域ID，则评价为真。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if either the iterator is
+   * past the end or the subdomain id of the object pointed to is equal to a
+   * value given to the constructor, assuming that the iterator allows
+   * querying for a subdomain id.
    *
+   * @ingroup Iterators
    */
   class SubdomainEqualTo
   {
   public:
     /**
-     * 构造函数。存储子域，迭代器应被评估为真。
-     *
+     * Constructor. Store the subdomain which iterators shall have to be
+     * evaluated to true.
      */
     SubdomainEqualTo(const types::subdomain_id subdomain_id);
 
     /**
-     * 评估操作符。如果指向的对象的子域等于存储的值或迭代器已过终点，则返回真。
-     *
+     * Evaluation operator. Returns true if either the subdomain of the object
+     * pointed to is equal to the stored value or the iterator is past the
+     * end.
      */
     template <class Iterator>
     bool
@@ -155,8 +169,7 @@ namespace IteratorFilters
 
   protected:
     /**
-     * 用于比较子域的存储值。
-     *
+     * Stored value to compare the subdomain with.
      */
     const types::subdomain_id subdomain_id;
   };
@@ -164,18 +177,21 @@ namespace IteratorFilters
 
 
   /**
-   * 迭代器的过滤器，如果一个单元格为当前处理器所拥有，即如果它是一个 @ref GlossLocallyOwnedCell "本地拥有的单元格"
-   * ，则评估为真。    该类在  step-32  中使用，与  @ref
-   * distributed  模块的方法相关。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if a cell is owned by the
+   * current processor, i.e., if it is a
+   * @ref GlossLocallyOwnedCell "locally owned cell".
    *
+   * This class is used in step-32, in connection with the methods of the
+   * @ref distributed
+   * module.
+   *
+   * @ingroup Iterators
    */
   class LocallyOwnedCell
   {
   public:
     /**
-     * 评估运算符。如果单元格是本地拥有的，则返回true。
-     *
+     * Evaluation operator. Returns true if the cell is locally owned.
      */
     template <class Iterator>
     bool
@@ -185,16 +201,17 @@ namespace IteratorFilters
 
 
   /**
-   * 迭代器的过滤器，如果单元格的水平子域id等于当前处理器id，则评估为真。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if the level subdomain id of
+   * a cell is equal to the current processor id.
    *
+   * @ingroup Iterators
    */
   class LocallyOwnedLevelCell
   {
   public:
     /**
-     * 评价运算符。如果单元格的水平子域id等于当前处理器id，则返回真。
-     *
+     * Evaluation operator. Returns true if the level subdomain id of the cell
+     * is equal to the current processor id.
      */
     template <class Iterator>
     bool
@@ -203,30 +220,35 @@ namespace IteratorFilters
 
 
   /**
-   * 迭代器的过滤器，如果指向的对象的迭代器等于给构造器的一个值或一组值，假设迭代器允许查询材料id，则评价为真。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if the iterator of the object
+   * pointed to is equal to a value or set of values given to the constructor,
+   * assuming that the iterator allows querying for a material id.
    *
+   *
+   * @ingroup Iterators
    */
   class MaterialIdEqualTo
   {
   public:
     /**
-     * 构造器。存储迭代器应被评估为真的材料ID，并说明迭代器是否必须为本地所有。
-     *
+     * Constructor. Store the material id which iterators shall have to be
+     * evaluated to true and state if the iterator must be locally owned.
      */
     MaterialIdEqualTo(const types::material_id material_id,
                       const bool               only_locally_owned = false);
 
     /**
-     * 构造函数。存储一个材料ID的集合，其迭代器应被评估为真，并说明迭代器是否必须是本地拥有的。
-     *
+     * Constructor. Store a collection of material ids which iterators shall
+     * have to be evaluated to true and state if the iterator must be locally
+     * owned.
      */
     MaterialIdEqualTo(const std::set<types::material_id> &material_ids,
                       const bool only_locally_owned = false);
 
     /**
-     * 评价操作符。如果指向的对象的材料ID在存储的允许值集合内相等，则返回真，如果需要，如果单元格是本地拥有的。
-     *
+     * Evaluation operator. Returns true if the material id of the object
+     * pointed to is equal within the stored set of value allowable values
+     * and, if required, if the cell is locally owned.
      */
     template <class Iterator>
     bool
@@ -234,42 +256,45 @@ namespace IteratorFilters
 
   protected:
     /**
-     * 用来比较材料ID的存储值。
-     *
+     * Stored value to compare the material id with.
      */
     const std::set<types::material_id> material_ids;
     /**
-     * 标志，说明是否只有本地拥有的单元格必须返回真。
-     *
+     * Flag stating whether only locally owned cells must return true.
      */
     const bool only_locally_owned;
   };
 
   /**
-   * 迭代器的过滤器，如果指向的对象的迭代器等于给构造器的一个值或一组值，假设迭代器允许查询活动的FE索引，则评价为真。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if the iterator of the object
+   * pointed to is equal to a value or set of values given to the constructor,
+   * assuming that the iterator allows querying for an active FE index.
    *
+   *
+   * @ingroup Iterators
    */
   class ActiveFEIndexEqualTo
   {
   public:
     /**
-     * 构造函数。存储活动的FE索引，哪些迭代器应被评估为真，并说明迭代器是否必须为本地所有。
-     *
+     * Constructor. Store the active FE index which iterators shall have to be
+     * evaluated to true and state if the iterator must be locally owned.
      */
     ActiveFEIndexEqualTo(const unsigned int active_fe_index,
                          const bool         only_locally_owned = false);
 
     /**
-     * 构造函数。存储一个活动FE指数的集合，迭代器必须被评估为真，如果迭代器必须是本地拥有的，则说明。
-     *
+     * Constructor. Store a collection of active FE indices which iterators
+     * shall have to be evaluated to true and state if the iterator must be
+     * locally owned.
      */
     ActiveFEIndexEqualTo(const std::set<unsigned int> &active_fe_indices,
                          const bool only_locally_owned = false);
 
     /**
-     * 评估运算符。如果所指向的对象的活动FE索引在存储的允许值集合内相等，则返回真，如果需要的话，如果单元格是本地拥有的。
-     *
+     * Evaluation operator. Returns true if the active FE index of the object
+     * pointed to is equal within the stored set of value allowable values
+     * and, if required, if the cell is locally owned.
      */
     template <class Iterator>
     bool
@@ -277,28 +302,27 @@ namespace IteratorFilters
 
   protected:
     /**
-     * 用于比较材料ID的存储值。
-     *
+     * Stored value to compare the material id with.
      */
     const std::set<unsigned int> active_fe_indices;
     /**
-     * 标志，说明是否只有本地拥有的单元格必须返回真。
-     *
+     * Flag stating whether only locally owned cells must return true.
      */
     const bool only_locally_owned;
   };
 
   /**
-   * 迭代器的过滤器，如果指向的对象的迭代器在边界上，则评估为真。
-   * @ingroup Iterators
+   * Filter for iterators that evaluates to true if the iterator of the object
+   * pointed to is on the boundary.
    *
+   *
+   * @ingroup Iterators
    */
   class AtBoundary
   {
   public:
     /**
-     * 评估迭代器，如果对象在边界上，返回真。
-     *
+     * Evaluate the iterator and return true if the object at the boundary.
      */
     template <class Iterator>
     bool
@@ -308,296 +332,359 @@ namespace IteratorFilters
 
 
 /**
- * 这个类通过只迭代满足给定过滤器（称为 <em> 谓词 </em>
- * ，遵循C++标准库的符号）的元素，提供了对一系列三角形或DoFHandler迭代器的某种看法。一旦用谓词和迭代器的值进行初始化，如果调用操作符++或\--，过滤的迭代器会跳到满足谓词的下一个或上一个元素。位于两者之间但不满足谓词的中间迭代器值被跳过。因此，在某一类对象上写循环是非常简单的，不需要明确写出它们在每个循环迭代中必须满足的条件。如果函数被调用时有一对迭代器，表示它们将在一个范围内行动，通过选择一个过滤的迭代器而不是通常的迭代器，这尤其有帮助。
- * 该类在  step-32  中使用。
+ * This class provides a certain view on a range of triangulation or
+ * DoFHandler iterators by only iterating over elements that satisfy a given
+ * filter (called a <em>predicate</em>, following the notation of the C++
+ * standard library). Once initialized with a predicate and a value for the
+ * iterator, a filtered iterator hops to the next or previous element that
+ * satisfies the predicate if operators ++ or \-- are invoked. Intermediate
+ * iterator values that lie in between but do not satisfy the predicate are
+ * skipped. It is thus very simple to write loops over a certain class of
+ * objects without the need to explicitly write down the condition they have
+ * to satisfy in each loop iteration. This in particular is helpful if
+ * functions are called with a pair of iterators denoting a range on which
+ * they shall act, by choosing a filtered iterator instead of usual ones.
  *
- *  <h3>Predicates</h3>
- * 代表迭代器必须满足的条件的对象只需要提供一个允许调用评估操作符的接口，即
- * <code>bool operator() (const BaseIterator&)</code>
- * 。这包括函数指针以及实现<code>bool operator ()(const
- * BaseIterator&)</code>的类。然后，FilteredIterator将跳过所有该函数的返回值为
- * <code>false</code>  的对象。
+ * This class is used in step-32.
  *
- *  一个简单的有效谓词的例子如下：给定函数
  *
+ * <h3>Predicates</h3>
+ *
+ * The object that represent the condition an iterator has to satisfy only
+ * have to provide an interface that allows to call the evaluation operator,
+ * i.e. <code>bool operator() (const BaseIterator&)</code>. This includes
+ * function pointers as well as classes that implement an <code>bool operator
+ * ()(const BaseIterator&)</code>. Then, the FilteredIterator will skip all
+ * objects where the return value of this function is <code>false</code>.
+ *
+ *
+ * An example of a simple valid predicate is the following: given the function
  * @code
- * template <typename BIterator>
- * bool level_equal_to_3 (const BIterator& c)
- * {
- *   return (static_cast<unsigned int>(c->level()) == 3);
- * };
- * @endcode
- * 那么
- *
- * @code
- * &level_equal_to_3<typename Triangulation<dim>::active_cell_iterator>
- * @endcode
- * 是一个有效的谓词。 同样地，给定以下二元函数
- * @code
- * template <typename BIterator>
- * bool level_equal_to (const BIterator&     c,
- *                      const unsigned int level)
- * {
- *   return (static_cast<unsigned int>(c->level()) == level);
- * };
- * @endcode
- * 那么
- *
- * @code
- * [](const BIterator& c){ return level_equal_to<active_cell_iterator>(c, 3);}
- * @endcode
- * 是另一个有效的谓词（这里：一个函数，如果迭代器过了终点或者水平等于第二个参数，则返回真；这个第二个参数在创建lambda函数时被视为固定的）。
- * 最后，类可以是谓词。下面这个类就是一个。
- *
- * @code
- * class Active
- * {
- * public:
- *   template <class Iterator>
- *   bool operator () (const Iterator &i) const
+ *   template <typename BIterator>
+ *   bool level_equal_to_3 (const BIterator& c)
  *   {
- *     return i->is_active();
- *   }
- * };
+ *     return (static_cast<unsigned int>(c->level()) == 3);
+ *   };
  * @endcode
- * 而这种类型的对象可以作为谓词使用。同样地，这个更复杂的也可以使用。
- *
+ * then
  * @code
- * class SubdomainEqualTo
- * {
- * public:
- *   SubdomainEqualTo (const types::subdomain_id subdomain_id)
- *     : subdomain_id (subdomain_id)
- *   {};
- *
- *   template <class Iterator>
- *   bool operator () (const Iterator &i) const
- *   {
- *     return (i->subdomain_id() == subdomain_id);
- *   }
- *
- * private:
- *   const types::subdomain_id subdomain_id;
- * };
+ *   &level_equal_to_3<typename Triangulation<dim>::active_cell_iterator>
  * @endcode
- * 像 <code>SubdomainEqualTo(3)</code>
- * 这样的对象就可以作为谓词使用。
- * 因为每当一个谓词被评估时，都会检查被检查的迭代器是否真的有效（即没有超过终点），所以在谓词内部不需要对这种情况进行检查。
- * 很多过滤器类已经在IteratorFilters命名空间中实现了，但是按照上面的例子，编写不同的过滤器也很简单。
+ * is a valid predicate.
  *
- *  <h3>Initialization of filtered iterators</h3>
- * 过滤的迭代器在构造时被赋予一个谓词，这个谓词不能再被改变。如果这个谓词是作为一个模板参数给类的话，这种行为是可以预期的，但由于这将使过滤迭代器的声明成为一场噩梦，我们宁愿把谓词作为一个不可改变的实体给构造器。请注意，人们可以将一个具有一个谓词的过滤迭代器分配给另一个具有另一种类型的过滤迭代器；然而，这并不
- * <em>
- * 改变分配给迭代器的谓词，只有指示迭代器的指针被改变。
- * 如果一个被过滤的迭代器没有被分配一个底层（未被过滤的）迭代器类型的值，那么将采取默认值。然而，如果给构造函数一个值，该值必须超过终点，或者必须满足谓词。例如，如果谓词只在对象的级别等于3时才评估为真，那么
- * <code>tria.begin_active(3)</code> 将是一个有效的选择，而
- * <code>tria.begin()</code>
- * 则不是，因为后者也会返回非活动单元的迭代器，这些单元总是从级别0开始。
- * 由于人们经常只有一些迭代器，并希望将过滤后的迭代器设置为第一个满足谓词的迭代器（例如，第一个设置了用户标志的迭代器，或者第一个具有给定子域id的迭代器），因此有一些赋值函数#set_to_next_positive和#set_to_previous_positive，它们将满足谓词的下一个或上一个迭代器赋值，即。
- * 也就是说，它们沿着迭代器列表的任一方向追踪，直到找到一个匹配的迭代器（或过去的迭代器）。像
- * <code>operator=</code>
- * 一样，它们返回过滤后的迭代器的结果值。
+ * Likewise, given the following binary function
+ * @code
+ *   template <typename BIterator>
+ *   bool level_equal_to (const BIterator&     c,
+ *                        const unsigned int level)
+ *   {
+ *     return (static_cast<unsigned int>(c->level()) == level);
+ *   };
+ * @endcode
+ * then
+ * @code
+ *   [](const BIterator& c){ return level_equal_to<active_cell_iterator>(c, 3);}
+ * @endcode
+ * is another valid predicate (here: a function that returns true if either
+ * the iterator is past the end or the level is equal to the second argument;
+ * this second argument is taken considered fixed when creating the lambda
+ * function).
  *
- *  <h3>Examples</h3>
- * 下面的调用计算了有设置用户标志的活动单元的数量。
+ * Finally, classes can be predicates. The following class is one:
+ * @code
+ *   class Active
+ *   {
+ *   public:
+ *     template <class Iterator>
+ *     bool operator () (const Iterator &i) const
+ *     {
+ *       return i->is_active();
+ *     }
+ *   };
+ * @endcode
+ * and objects of this type can be used as predicates. Likewise, this more
+ * complicated one can also be used:
+ * @code
+ *   class SubdomainEqualTo
+ *   {
+ *   public:
+ *     SubdomainEqualTo (const types::subdomain_id subdomain_id)
+ *       : subdomain_id (subdomain_id)
+ *     {};
  *
+ *     template <class Iterator>
+ *     bool operator () (const Iterator &i) const
+ *     {
+ *       return (i->subdomain_id() == subdomain_id);
+ *     }
+ *
+ *   private:
+ *     const types::subdomain_id subdomain_id;
+ *   };
+ * @endcode
+ * Objects like <code>SubdomainEqualTo(3)</code> can then be used as
+ * predicates.
+ *
+ * Since whenever a predicate is evaluated it is checked that the iterator
+ * checked is actually valid (i.e. not past the end), no checks for this case
+ * have to be performed inside predicates.
+ *
+ * A number of filter classes are already implemented in the IteratorFilters
+ * namespace, but writing different ones is simple following the examples
+ * above.
+ *
+ *
+ * <h3>Initialization of filtered iterators</h3>
+ *
+ * Filtered iterators are given a predicate at construction time which cannot
+ * be changed any more. This behavior would be expected if the predicate
+ * would have been given as a template parameter to the class, but since that
+ * would make the declaration of filtered iterators a nightmare, we rather
+ * give the predicate as an unchangeable entity to the constructor. Note that
+ * one can assign a filtered iterator with one predicate to another filtered
+ * iterator with another type; yet, this does <em>not</em> change the
+ * predicate of the assigned-to iterator, only the pointer indicating the
+ * iterator is changed.
+ *
+ * If a filtered iterator is not assigned a value of the underlying
+ * (unfiltered) iterator type, the default value is taken. If, however, a
+ * value is given to the constructor, that value has either to be past the
+ * end, or has to satisfy the predicate. For example, if the predicate only
+ * evaluates to true if the level of an object is equal to three, then
+ * <code>tria.begin_active(3)</code> would be a valid choice while
+ * <code>tria.begin()</code> would not since the latter also returns iterators
+ * to non-active cells which always start at level 0.
+ *
+ * Since one often only has some iterator and wants to set a filtered iterator
+ * to the first one that satisfies a predicate (for example, the first one for
+ * which the user flag is set, or the first one with a given subdomain id),
+ * there are assignment functions #set_to_next_positive and
+ * #set_to_previous_positive that assign the next or last previous iterator
+ * that satisfies the predicate, i.e. they follow the list of iterators in
+ * either direction until they find a matching one (or the past-the-end
+ * iterator). Like the <code>operator=</code> they return the resulting value
+ * of the filtered iterator.
+ *
+ *
+ * <h3>Examples</h3>
+ *
+ * The following call counts the number of active cells that have a set user
+ * flag:
+ * @code
+ *   FilteredIterator<typename Triangulation<dim>::active_cell_iterator>
+ *     begin (IteratorFilters::UserFlagSet()),
+ *     end (IteratorFilters::UserFlagSet());
+ *   begin.set_to_next_positive(tria.begin_active());
+ *   end = tria.end();
+ *   n_flagged_cells = std::distance (begin, end);
+ * @endcode
+ * Note that by the @p set_to_next_positive call the first cell with a set
+ * user flag was assigned to the @p begin iterator. For the end iterator, no
+ * such call was necessary, since the past-the-end iterator always satisfies
+ * all predicates.
+ *
+ * The same can be achieved by the following snippet, though harder to read:
+ * @code
+ *   using FI =
+ *     FilteredIterator<typename Triangulation<dim>::active_cell_iterator>;
+ *   n_flagged_cells =
+ *     std::distance (
+ *       FI(IteratorFilters::UserFlagSet()).set_to_next_positive(
+ *         tria.begin_active()),
+ *       FI(IteratorFilters::UserFlagSet(), tria.end()));
+ * @endcode
+ * It relies on the fact that if we create an unnamed filtered iterator with a
+ * given predicate but no iterator value and assign it the next positive value
+ * with respect to this predicate, it returns itself which is then used as the
+ * first parameter to the @p std::distance function. This procedure is not
+ * necessary for the end element to this function here, since the past-the-end
+ * iterator always satisfies the predicate so that we can assign this value to
+ * the filtered iterator directly in the constructor.
+ *
+ * Finally, the following loop only assembles the matrix on cells with
+ * subdomain id equal to three:
  * @code
  * FilteredIterator<typename Triangulation<dim>::active_cell_iterator>
- *   begin (IteratorFilters::UserFlagSet()),
- *   end (IteratorFilters::UserFlagSet());
- * begin.set_to_next_positive(tria.begin_active());
- * end = tria.end();
- * n_flagged_cells = std::distance (begin, end);
- * @endcode
- * 请注意，通过 @p set_to_next_positive
- * 的调用，第一个有设置用户标志的单元被分配到 @p begin
- * 迭代器。对于结束迭代器来说，没有必要进行这样的调用，因为过去结束迭代器总是满足所有的谓词。
- * 同样的情况可以通过下面的片段来实现，虽然比较难读。
- *
- * @code
- * using FI =
- *   FilteredIterator<typename Triangulation<dim>::active_cell_iterator>;
- * n_flagged_cells =
- *   std::distance (
- *     FI(IteratorFilters::UserFlagSet()).set_to_next_positive(
- *       tria.begin_active()),
- *     FI(IteratorFilters::UserFlagSet(), tria.end()));
- * @endcode
- * 它依赖于这样一个事实：如果我们用一个给定的谓词创建一个未命名的过滤迭代器，但没有迭代器的值，并给它分配关于这个谓词的下一个正值，它就会返回自己，然后作为
- * @p std::distance
- * 函数的第一个参数。这个过程对于这里的这个函数的结束元素来说是没有必要的，因为过去的结束迭代器总是满足谓词，所以我们可以在构造函数中直接将这个值分配给过滤的迭代器。
- * 最后，下面的循环只在子域id等于3的单元格上组装矩阵。
- *
- * @code
- * FilteredIterator<typename Triangulation<dim>::active_cell_iterator>
- * cell (IteratorFilters::SubdomainEqualTo(3)),
- * endc (IteratorFilters::SubdomainEqualTo(3), tria.end());
+ *   cell (IteratorFilters::SubdomainEqualTo(3)),
+ *   endc (IteratorFilters::SubdomainEqualTo(3), tria.end());
  * cell.set_to_next_positive (tria.begin_active());
  * for (; cell!=endc; ++cell)
- * assemble_local_matrix (cell);
+ *   assemble_local_matrix (cell);
  * @endcode
  *
- * 由于定义了过滤和未过滤的迭代器之间的比较，我们也可以让最后一个例子中的
- * @p endc 变量为 Triangulation::active_cell_iterator
- * 类型，因为它是不变的，其值不取决于过滤器。
- *
+ * Since comparison between filtered and unfiltered iterators is defined, we
+ * could as well have let the @p endc variable in the last example be of type
+ * Triangulation::active_cell_iterator since it is unchanged and its value
+ * does not depend on the filter.
  *
  * @ingroup grid
- *
  * @ingroup Iterators
- *
  */
 template <typename BaseIterator>
 class FilteredIterator : public BaseIterator
 {
 public:
   /**
-   * 对底层迭代器的访问器类型的类型定义。
-   *
+   * Typedef to the accessor type of the underlying iterator.
    */
   using AccessorType = typename BaseIterator::AccessorType;
 
   /**
-   * 构造函数。将迭代器设置为默认状态并使用给定的谓词来过滤后续的赋值和迭代。
-   *
+   * Constructor. Set the iterator to the default state and use the given
+   * predicate for filtering subsequent assignment and iteration.
    */
   template <typename Predicate>
   FilteredIterator(Predicate p);
 
   /**
-   * 构造函数。使用给定的谓词进行过滤，用给定的值初始化迭代器。
-   * 如果初始值 @p bi 不满足谓词 @p p
-   * ，那么它就会被推进，直到我们碰到过去结束的迭代器，或者谓词被满足。例如，这允许写这样的代码
+   * Constructor. Use the given predicate for filtering and initialize the
+   * iterator with the given value.
+   *
+   * If the initial value @p bi does not satisfy the predicate @p p then it is
+   * advanced until we either hit the past-the-end iterator, or the
+   * predicate is satisfied. This allows, for example, to write code like
    * @code
    * FilteredIterator<typename Triangulation<dim>::active_cell_iterator>
-   * cell (IteratorFilters::SubdomainEqualTo(13),
-   *       triangulation.begin_active());
+   *   cell (IteratorFilters::SubdomainEqualTo(13),
+   *         triangulation.begin_active());
    * @endcode
-   * 如果单元格 <code>triangulation.begin_active()</code>
-   * 没有等于13的subdomain_id，那么迭代器将自动推进到第一个有的单元格。
    *
+   * If the cell <code>triangulation.begin_active()</code> does not have a
+   * subdomain_id equal to 13, then the iterator will automatically be
+   * advanced to the first cell that has.
    */
   template <typename Predicate>
   FilteredIterator(Predicate p, const BaseIterator &bi);
 
   /**
-   * 复制构造函数。复制给定参数的谓词和迭代器的值。
-   *
+   * Copy constructor. Copy the predicate and iterator value of the given
+   * argument.
    */
   FilteredIterator(const FilteredIterator &fi);
 
   /**
-   * 赋值运算符。复制参数的迭代器值，但是正如在类的文档中所讨论的，参数的谓词并没有被复制。参数的迭代器值必须满足被赋值对象的谓词，这是在其构造时给出的。
-   *
+   * Assignment operator. Copy the iterator value of the argument, but as
+   * discussed in the class documentation, the predicate of the argument is
+   * not copied. The iterator value underlying the argument has to satisfy the
+   * predicate of the object assigned to, as given at its construction time.
    */
   FilteredIterator &
   operator=(const FilteredIterator &fi);
 
   /**
-   * 赋值运算符。复制参数的迭代器值，并保留该对象的谓词。给定的迭代器值必须满足分配到的对象的谓词，如在其构造时给出的。
-   *
+   * Assignment operator. Copy the iterator value of the argument, and keep
+   * the predicate of this object. The given iterator value has to satisfy the
+   * predicate of the object assigned to, as given at its construction time.
    */
   FilteredIterator &
   operator=(const BaseIterator &fi);
 
   /**
-   * 从 @p bi
-   * 开始搜索下一个满足此对象的谓词的迭代器，并将其分配给此对象。
-   * 因为过滤后的迭代器会自动转换为底层的基本迭代器类型，所以你也可以给一个过滤后的迭代器作为这个函数的参数。
+   * Search for the next iterator from @p bi onwards that satisfies the
+   * predicate of this object and assign it to this object.
    *
+   * Since filtered iterators are automatically converted to the underlying
+   * base iterator type, you can also give a filtered iterator as argument to
+   * this function.
    */
   FilteredIterator &
   set_to_next_positive(const BaseIterator &bi);
 
   /**
-   * 如上所述，但是从 @p bi
-   * 向后搜索满足此对象谓词的前一个迭代器，并将其分配给此对象。
-   * 由于过滤后的迭代器会自动转换为底层的基本迭代器类型，你也可以给一个过滤后的迭代器作为这个函数的参数。
+   * As above, but search for the previous iterator from @p bi backwards that
+   * satisfies the predicate of this object and assign it to this object.
    *
+   * Since filtered iterators are automatically converted to the underlying
+   * base iterator type, you can also give a filtered iterator as argument to
+   * this function.
    */
   FilteredIterator &
   set_to_previous_positive(const BaseIterator &bi);
 
   /**
-   * 比较this和给定对象的基础迭代器值是否相等。
-   * 我们不对谓词的平等性进行比较。
+   * Compare for equality of the underlying iterator values of this and the
+   * given object.
    *
+   * We do not compare for equality of the predicates.
    */
   bool
   operator==(const FilteredIterator &fi) const;
 
   /**
-   * 比较这个对象和给定对象的基本迭代器值是否相等。
-   * 此对象的谓词与此操作无关。
+   * Compare for equality of the underlying iterator value of this object with
+   * the given object.
    *
+   * The predicate of this object is irrelevant for this operation.
    */
   bool
   operator==(const BaseIterator &fi) const;
 
   /**
-   * 比较此对象和给定对象的基础迭代器值的不平等。
-   * 我们不对谓词的平等性进行比较。
+   * Compare for inequality of the underlying iterator values of this and the
+   * given object.
    *
+   * We do not compare for equality of the predicates.
    */
   bool
   operator!=(const FilteredIterator &fi) const;
 
   /**
-   * 比较此对象的底层迭代器值与给定对象的不平等性。
-   * 此对象的谓词与此操作无关。
+   * Compare for inequality of the underlying iterator value of this object
+   * with the given object.
    *
+   * The predicate of this object is irrelevant for this operation.
    */
   bool
   operator!=(const BaseIterator &fi) const;
 
   /**
-   * 比较此对象和给定对象的基础迭代器值的排序。
-   * 我们不比较谓词。
+   * Compare for ordering of the underlying iterator values of this and the
+   * given object.
    *
+   * We do not compare the predicates.
    */
   bool
   operator<(const FilteredIterator &fi) const;
 
   /**
-   * 比较这个对象和给定对象的底层迭代器值的排序。
-   * 此对象的谓词与此操作无关。
+   * Compare for ordering of the underlying iterator value of this object with
+   * the given object.
    *
+   * The predicate of this object is irrelevant for this operation.
    */
   bool
   operator<(const BaseIterator &fi) const;
 
   /**
-   * 前缀推进操作：移动到满足前提条件的下一个迭代器值，并返回新的迭代器值。
-   *
+   * Prefix advancement operator: move to the next iterator value satisfying
+   * the predicate and return the new iterator value.
    */
   FilteredIterator &
   operator++();
 
   /**
-   * 后缀推进运算符：移动到满足谓词的下一个迭代器值，并返回旧的迭代器值。
-   *
+   * Postfix advancement operator: move to the next iterator value satisfying
+   * the predicate and return the old iterator value.
    */
   FilteredIterator
   operator++(int);
 
   /**
-   * 前缀递减运算符：移动到满足谓词的前一个迭代器值，并返回新的迭代器值。
-   *
+   * Prefix decrement operator: move to the previous iterator value satisfying
+   * the predicate and return the new iterator value.
    */
   FilteredIterator &
   operator--();
 
   /**
-   * 后缀进位运算符：移动到满足谓词的前一个迭代器值，并返回旧的迭代器值。
-   *
+   * Postfix advancement operator: move to the previous iterator value
+   * satisfying the predicate and return the old iterator value.
    */
   FilteredIterator
   operator--(int);
 
   /**
-   * 异常情况。
-   *
+   * Exception.
    */
   DeclException1(
     ExcInvalidElement,
@@ -608,29 +695,33 @@ public:
 
 private:
   /**
-   * 用于封装谓词对象的基类。由于谓词可以有不同的类型，而且我们不想把这些类型编码到过滤迭代器类的模板参数列表中，所以我们使用一个带有抽象函数的基类和模板化的派生类，通过虚拟函数实现对实际谓词类型的使用。
-   * @ingroup Iterators
+   * Base class to encapsulate a predicate object. Since predicates can be of
+   * different types and we do not want to code these types into the template
+   * parameter list of the filtered iterator class, we use a base class with
+   * an abstract function and templatized derived classes that implement the
+   * use of actual predicate types through the virtual function.
    *
+   * @ingroup Iterators
    */
   class PredicateBase
   {
   public:
     /**
-     * 将析构器标记为虚拟，以允许通过指向基类的指针进行破坏。
-     *
+     * Mark the destructor virtual to allow destruction through pointers to
+     * the base class.
      */
     virtual ~PredicateBase() = default;
 
     /**
-     * 抽象函数，在派生类中表示对给定迭代器的谓词的评估。
-     *
+     * Abstract function which in derived classes denotes the evaluation of
+     * the predicate on the given iterator.
      */
     virtual bool
     operator()(const BaseIterator &bi) const = 0;
 
     /**
-     * 生成这个对象的一个副本，即这个指针的实际类型。
-     *
+     * Generate a copy of this object, i.e. of the actual type of this
+     * pointer.
      */
     virtual std::unique_ptr<PredicateBase>
     clone() const = 0;
@@ -638,45 +729,45 @@ private:
 
 
   /**
-   * 上述抽象基类的实际实现。使用一个模板参数来表示谓词的实际类型，并存储它的副本。当虚拟函数被调用时，用存储的谓词副本评估给定的迭代器。
-   * @ingroup Iterators
+   * Actual implementation of the above abstract base class. Use a template
+   * parameter to denote the actual type of the predicate and store a copy of
+   * it. When the virtual function is called evaluate the given iterator with
+   * the stored copy of the predicate.
    *
+   * @ingroup Iterators
    */
   template <typename Predicate>
   class PredicateTemplate : public PredicateBase
   {
   public:
     /**
-     * 构造器。取一个谓词并存储它的一个副本。
-     *
+     * Constructor. Take a predicate and store a copy of it.
      */
     PredicateTemplate(const Predicate &predicate);
 
     /**
-     * 用存储的谓词的副本来评估迭代器。
-     *
+     * Evaluate the iterator with the stored copy of the predicate.
      */
     virtual bool
     operator()(const BaseIterator &bi) const override;
 
     /**
-     * 生成这个对象的一个副本，即这个指针的实际类型。
-     *
+     * Generate a copy of this object, i.e. of the actual type of this
+     * pointer.
      */
     virtual std::unique_ptr<PredicateBase>
     clone() const override;
 
   private:
     /**
-     * 谓词的拷贝。
-     *
+     * Copy of the predicate.
      */
     const Predicate predicate;
   };
 
   /**
-   * 指向一个对象的指针，该对象封装了给与构造函数的谓词的实际数据类型。
-   *
+   * Pointer to an object that encapsulated the actual data type of the
+   * predicate given to the constructor.
    */
   std::unique_ptr<const PredicateBase> predicate;
 };
@@ -684,13 +775,13 @@ private:
 
 
 /**
- * 给出基础迭代器和谓词，创建一个FilteredIterator类型的对象。
- * 这个函数使创建临时对象（例如作为函数参数）变得简单得多，因为人们不需要明确地用手指定基迭代器的类型。
+ * Create an object of type FilteredIterator given the base iterator and
+ * predicate.  This function makes the creation of temporary objects (for
+ * example as function arguments) a lot simpler because one does not have to
+ * explicitly specify the type of the base iterator by hand -- it is deduced
+ * automatically here.
  *
- * - 它是在这里自动推导出来的。
- * @relatesalso  过滤迭代器
- *
- *
+ * @relatesalso FilteredIterator
  */
 template <typename BaseIterator, typename Predicate>
 FilteredIterator<BaseIterator>
@@ -733,40 +824,36 @@ namespace internal
 
 
 /**
- * 使用一个Predicate对给定的迭代器范围进行过滤。这允许替换。
- *
+ * Filter the  given range of iterators using a Predicate. This allows to
+ * replace:
  * @code
- * DoFHandler<dim> dof_handler;
- * ...
- * for (const auto &cell : dof_handler.active_cell_iterators())
- *   {
- *     if (cell->is_locally_owned())
- *       {
- *         fe_values.reinit (cell);
- *         ...do the local integration on 'cell'...;
- *       }
- *   }
+ *   DoFHandler<dim> dof_handler;
+ *   ...
+ *   for (const auto &cell : dof_handler.active_cell_iterators())
+ *     {
+ *       if (cell->is_locally_owned())
+ *         {
+ *           fe_values.reinit (cell);
+ *           ...do the local integration on 'cell'...;
+ *         }
+ *     }
  * @endcode
- * 由:
- *
+ * by:
  * @code
- * DoFHandler<dim> dof_handler;
- * ...
- * const auto filtered_iterators_range =
- *   filter_iterators(dof_handler.active_cell_iterators(),
- *                    IteratorFilters::LocallyOwnedCell());
- * for (const auto &cell : filtered_iterators_range)
- *   {
- *     fe_values.reinit (cell);
- *     ...do the local integration on 'cell'...;
- *   }
+ *   DoFHandler<dim> dof_handler;
+ *   ...
+ *   const auto filtered_iterators_range =
+ *     filter_iterators(dof_handler.active_cell_iterators(),
+ *                      IteratorFilters::LocallyOwnedCell());
+ *   for (const auto &cell : filtered_iterators_range)
+ *     {
+ *       fe_values.reinit (cell);
+ *       ...do the local integration on 'cell'...;
+ *     }
  * @endcode
  *
- * @relatesalso  过滤的迭代器
- *
+ * @relatesalso FilteredIterator
  * @ingroup CPP11
- *
- *
  */
 template <typename BaseIterator, typename Predicate>
 IteratorRange<FilteredIterator<BaseIterator>>
@@ -781,44 +868,40 @@ filter_iterators(IteratorRange<BaseIterator> i, const Predicate &p)
 
 
 /**
- * 通过任意数量的Predicates过滤给定范围的迭代器。这允许替换。
- *
+ * Filter the given range of iterators through an arbitrary number of
+ * Predicates. This allows to replace:
  * @code
- * DoFHandler<dim> dof_handler;
- * ...
- * for (const auto &cell : dof_handler.active_cell_iterators())
- *   {
- *     if (cell->is_locally_owned())
- *       {
- *         if (cell->at_boundary())
- *           {
- *             fe_values.reinit (cell);
- *             ...do the local integration on 'cell'...;
- *           }
- *       }
- *   }
+ *   DoFHandler<dim> dof_handler;
+ *   ...
+ *   for (const auto &cell : dof_handler.active_cell_iterators())
+ *     {
+ *       if (cell->is_locally_owned())
+ *         {
+ *           if (cell->at_boundary())
+ *             {
+ *               fe_values.reinit (cell);
+ *               ...do the local integration on 'cell'...;
+ *             }
+ *         }
+ *     }
  * @endcode
- * 由。
- *
+ * by:
  * @code
- * DoFHandler<dim> dof_handler;
- * ...
- * const auto filtered_iterators_range =
- *   filter_iterators(dof_handler.active_cell_iterators(),
- *                    IteratorFilters::LocallyOwnedCell(),
- *                    IteratorFilters::AtBoundary());
- * for (const auto &cell : filter_iterators_range)
- *   {
- *     fe_values.reinit (cell);
- *     ...do the local integration on 'cell'...;
- *   }
+ *   DoFHandler<dim> dof_handler;
+ *   ...
+ *   const auto filtered_iterators_range =
+ *     filter_iterators(dof_handler.active_cell_iterators(),
+ *                      IteratorFilters::LocallyOwnedCell(),
+ *                      IteratorFilters::AtBoundary());
+ *   for (const auto &cell : filter_iterators_range)
+ *     {
+ *       fe_values.reinit (cell);
+ *       ...do the local integration on 'cell'...;
+ *     }
  * @endcode
  *
- * @relatesalso  过滤的迭代器
- *
+ * @relatesalso FilteredIterator
  * @ingroup CPP11
- *
- *
  */
 template <typename BaseIterator, typename Predicate, typename... Targs>
 IteratorRange<
@@ -834,7 +917,7 @@ filter_iterators(IteratorRange<BaseIterator> i,
 }
 
 
- /* ------------------ Inline functions and templates ------------ */ 
+/* ------------------ Inline functions and templates ------------ */
 
 
 template <typename BaseIterator>
@@ -1229,8 +1312,6 @@ namespace IteratorFilters
 
 DEAL_II_NAMESPACE_CLOSE
 
- /*------------------------- filtered_iterator.h ------------------------*/ 
+/*------------------------- filtered_iterator.h ------------------------*/
 #endif
- /*------------------------- filtered_iterator.h ------------------------*/ 
-
-
+/*------------------------- filtered_iterator.h ------------------------*/

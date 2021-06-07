@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/ndarray_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -32,28 +31,24 @@ namespace internal
   {
     // clang-format off
     /**
-     * 一个变量模板辅助类，用于递归地 "展开
-     * "ndarray的大小信息。这在一个例子中得到了最好的解释。
+     * A variadic template helper class to recursively "unroll" the size
+     * information of the ndarray. This is best explained on an example:
      * @code
-     *  HelperArray<double, 1, 2, 3, 4>::type
+     *    HelperArray<double, 1, 2, 3, 4>::type
      * == std::array<HelperArray<double, 2, 3, 4>::type, 1>
      * == std::array<std::array<HelperArray<double, 3, 4>::type, 2>, 1>
      * == std::array<std::array<std::array<HelperArray<double, 4>::type, 3>, 2>, 1>
      * == std::array<std::array<std::array<std::array<HelperArray<double>::type, 4>, 3>, 2>, 1>
      * == std::array<std::array<std::array<std::array<double, 4>, 3>, 2>, 1>
      * @endcode
-     *
-     *
      */
     template <typename T, std::size_t... Ns>
     struct HelperArray;
     // clang-format on
 
     /**
-     * 递归地定义HelperArray<T, N, ...Ns>的类型别名
-     * "type"，在HelperArray<T,  Ns...>::type 周围包裹一个 std::array
-     * 。
-     *
+     * Recursively define the type alias "type" of HelperArray<T, N, ...Ns>
+     * by wrapping a std::array around HelperArray<T, Ns...>::type
      */
     template <typename T, std::size_t N, std::size_t... Ns>
     struct HelperArray<T, N, Ns...>
@@ -62,9 +57,8 @@ namespace internal
     };
 
     /**
-     * 一旦没有 std::size_t
-     * 模板参数，就结束递归，并简单地将类型别名设置为T类型。
-     *
+     * End recursion once no std::size_t template parameters are left and
+     * simply set the type alias to type T
      */
     template <typename T>
     struct HelperArray<T>
@@ -76,36 +70,39 @@ namespace internal
 #endif // DOXYGEN
 
 /**
- * 用于方便地定义多维<a
- * href="https://en.cppreference.com/w/cpp/container/array">std::array</a>的（变量模板）类型别名
- * 我们试图用类型别名解决的问题如下。假设你想创建一个多维的双数数组，例如，等级为3，大小为2，3，4的第一，中间和最后的索引。那么使用C风格的数组，你可以简单地写道
+ * A (variadic template) type alias for conveniently defining multidimensional
+ * <a href="https://en.cppreference.com/w/cpp/container/array">std::array</a>s
  *
+ * The problem we try to address with the type alias is the following.
+ * Suppose you want to create a multdimensional array of doubles of, for
+ * example, rank 3, with sizes 2, 3, 4 for the first, middle, and last
+ * index. Then using C-style arrays you could simply write
  * @code
- * double my_array[2][3][4] = { ... };
+ *   double my_array[2][3][4] = { ... };
  * @endcode
- * 现在，有很多很好的理由可以说明为什么不鼓励使用C风格的数组（从与STL函数的不兼容到需要笨拙的包装器，以及在比较相等时的意外，等等），如果你想做同样的事情，使用更现代（和鼓励）的
- * `std::array` 类，那么你必须声明
- *
+ * Nowadays, there are a number of good reasons why using C-style arrays is
+ * usually discouraged (ranging from incompatibilities with STL functions
+ * requiring awkward wrappers, surprises when comparing for equality, etc.)
+ * If you want to do the same, however, using the more modern (and
+ * encouraged) `std::array` class, then you would have to declare
  * @code
- * std::array<std::array<std::array<double, 4>, 3>, 2> = { ... };
+ *   std::array<std::array<std::array<double, 4>, 3>, 2> = { ... };
  * @endcode
- * `std::array`
- * 的重复看起来很别扭，更糟糕的是，索引范围已经颠倒了：最左边的索引范围是[0,2]，中间的索引范围是[0,3]，最右边的索引范围是[0,4)。我们通过提供一个ndarray类来解决这个问题，它允许你通过简单的书写来声明上述堆叠的
- * `std::array` 类型。
- *
+ * The repetitions of `std::array` look awkward and, worse, the index
+ * ranges have reversed: the leftmost index has range [0,2), the middle
+ * index has range [0,3) and the rightmost index has range [0,4).
+ * We address this issue by providing a class ndarray that allows to you
+ * declare the above stacked `std::array` type by simply writing:
  * @code
- * dealii::ndarray<double, 2, 3, 4> my_array = { ... };
+ *   dealii::ndarray<double, 2, 3, 4> my_array = { ... };
  * @endcode
  *
- *
- *
- * @note   dealii::ndarray 只是以<a
- * href="https://en.cppreference.com/w/cpp/language/type_alias">type
- * alias</a>（"使用
- * "声明）为形式的语法糖。它不是一个deal.II特定的类，而只是一个帮助工具，用于干净地定义由
- * "堆叠" `std::array` 类实现的多维数组。
- *
- *
+ * @note dealii::ndarray is merely syntactic sugar in form of a
+ * <a href="https://en.cppreference.com/w/cpp/language/type_alias">type
+ * alias</a>
+ * (`using` declaration). It is not a deal.II specific class, but merely a
+ * helper to cleanly define multidimensional arrays realized by "stacked"
+ * `std::array` classes.
  */
 template <typename T, std::size_t... Ns>
 using ndarray = typename internal::ndarray::HelperArray<T, Ns...>::type;
@@ -113,5 +110,3 @@ using ndarray = typename internal::ndarray::HelperArray<T, Ns...>::type;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

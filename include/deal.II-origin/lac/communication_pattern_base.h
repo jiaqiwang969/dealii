@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/communication_pattern_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -26,9 +27,9 @@ DEAL_II_WARNING(
 namespace LinearAlgebra
 {
   /**
-   * Alias for Utilities::MPI::CommunicationPatternBase. This class was
-   * originally defined in the LinearAlgebra namespace but is now used for more
-   * general purposes.
+   * Utilities::MPI::CommunicationPatternBase. 的别名
+   * 该类最初是在LinearAlgebra命名空间中定义的，但现在被用于更普遍的目的。
+   *
    */
   using CommunicationPatternBase DEAL_II_DEPRECATED =
     Utilities::MPI::CommunicationPatternBase;
@@ -37,3 +38,5 @@ namespace LinearAlgebra
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

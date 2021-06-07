@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/dof_print_solver_step_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -34,26 +33,34 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 打印求解器中的中间解。
- * 这是从作为模板参数提供的求解器类中派生出来的。
- * 它使用DoFHandler实现了求解器的 @p print_vector
- * 功能。这样一来，中间向量可以被看作是有限元函数。这个类首先可以用来理解求解器是如何工作的（例如，可视化各种求解器的平滑特性，例如在多网格背景下），其次可以研究为什么和如何求解器不能解决某些类别的问题。
- * 这个类的对象通过模板参数提供一个求解器类，并提供一个文件名（作为一个字符串），在每次迭代中用这个文件构建一个新的文件（命名为<tt>basename.[step].[senix]</tt>），并使用DataOut类将解决方案作为一个有限元场写入其中。请注意，这个类可能会产生巨大的数据量!
+ * Print intermediate solutions in solvers.  This is derived from a solver
+ * class provided as template argument.  It implements the @p print_vector
+ * function of the solver using a DoFHandler. This way, the intermediate
+ * vectors can be viewed as finite element functions. This class might be used
+ * first to understand how solvers work (for example to visualize the
+ * smoothing properties of various solvers, e.g. in a multigrid context), and
+ * second to investigate why and how a solver fails to solve certain classes
+ * of problems.
  *
+ * Objects of this class are provided with a solver class through a template
+ * argument, and with a file name (as a string), with which a new file is
+ * constructed in each iteration (named <tt>basename.[step].[suffix]</tt>) and
+ * into which the solution is written as a finite element field using the
+ * DataOut class. Please note that this class may produce enormous amounts of
+ * data!
  *
  * @ingroup output
- *
- *
  */
 template <int dim, typename SolverType, class VectorType = Vector<double>>
 class DoFPrintSolverStep : public SolverType
 {
 public:
   /**
-   * 构造函数。 首先，我们接受求解器所需的参数。  @p
-   * data_out是作为有限元函数做输出的对象。
-   * 每个迭代步骤将产生一个名称为<tt>basename.[step].[senix]</tt>的输出文件。
+   * Constructor.  First, we take the arguments needed for the solver. @p
+   * data_out is the object doing the output as a finite element function.
    *
+   * One output file with the name <tt>basename.[step].[suffix]</tt> will be
+   * produced for each iteration step.
    */
   DoFPrintSolverStep(SolverControl &           control,
                      VectorMemory<VectorType> &mem,
@@ -61,8 +68,7 @@ public:
                      const std::string &       basename);
 
   /**
-   * 迭代方法的回调函数。
-   *
+   * Call-back function for the iterative method.
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -72,20 +78,18 @@ public:
 
 private:
   /**
-   * 输出对象。
-   *
+   * Output object.
    */
   DataOut<dim> &out;
 
   /**
-   * 文件名的基础。
-   *
+   * Base of filenames.
    */
   const std::string basename;
 };
 
 
- /* ----------------------- template functions --------------- */ 
+/* ----------------------- template functions --------------- */
 
 template <int dim, typename SolverType, class VectorType>
 DoFPrintSolverStep<dim, SolverType, VectorType>::DoFPrintSolverStep(
@@ -128,5 +132,3 @@ DoFPrintSolverStep<dim, SolverType, VectorType>::print_vectors(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

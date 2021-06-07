@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/qr_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -31,74 +30,67 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 用于薄型QR实现的基类。
- * 这个类和从它派生出来的类是为了一次建立 $Q$ 和 $R$
- * 矩阵的行/列，即通过从一个空的 $0\times 0$ 矩阵增长到
- * $N\times N$ ，其中 $N$ 是增加的列向量数量。
- * 因此，与每个向量有相同行数的矩阵（即 $Q$
- * 矩阵）被存储为`VectorType`的向量集合。
+ * A base class for thin QR implementations.
  *
+ * This class and classes derived from it are meant to build $Q$ and $R$
+ * matrices one row/column at a time, i.e., by growing $R$ matrix from an empty
+ * $0\times 0$ matrix to $N\times N$, where $N$ is the number of added column
+ * vectors.
  *
+ * As a consequence, matrices which have the same number of rows as each vector
+ * (i.e. $Q$ matrix) is stored as a collection of vectors of `VectorType`.
  */
 template <typename VectorType>
 class BaseQR
 {
   /**
-   * R矩阵的数字类型。
-   *
+   * Number type for R matrix.
    */
   using Number = typename VectorType::value_type;
 
 protected:
   /**
-   * 默认的私有构造函数。
-   *
+   * Default private constructor.
    */
   BaseQR();
 
 public:
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~BaseQR() = default;
 
   /**
-   * 将 @p column 追加到QR因式分解中。
-   * 如果结果是成功的，即列是线性独立的，则返回
-   * <code>true</code> 。否则 @p column 被拒绝，返回值为
-   * <code>false</code>  。
-   *
+   * Append @p column to the QR factorization.
+   * Returns <code>true</code> if the result is successful, i.e.
+   * the columns are linearly independent. Otherwise the @p column
+   * is rejected and the return value is <code>false</code>.
    */
   virtual bool
   append_column(const VectorType &column) = 0;
 
   /**
-   * 删除一列 @p k 并更新QR分解。
-   *
+   * Remove a column @p k and update QR factorization.
    */
   virtual void
   remove_column(const unsigned int k = 0) = 0;
 
   /**
-   * 返回子空间的大小。
-   *
+   * Return size of the subspace.
    */
   unsigned int
   size() const;
 
   /**
-   * 返回当前的上三角矩阵R。
-   *
+   * Return the current upper triangular matrix R.
    */
   const LAPACKFullMatrix<Number> &
   get_R() const;
 
   /**
-   * 解决  $Rx=y$  . 矢量 @p x 和 @p y
-   * 应该与子空间的当前大小一致。  如果 @p transpose 是
-   * <code>true</code> ，则 $R^Tx=y$ 被解决。
-   *
+   * Solve $Rx=y$. Vectors @p x and @p y should be consistent
+   * with the current size of the subspace.
+   * If @p transpose is <code>true</code>, $R^Tx=y$ is solved instead.
    */
   void
   solve(Vector<Number> &      x,
@@ -106,41 +98,41 @@ public:
         const bool            transpose = false) const;
 
   /**
-   * 设置  $y = Qx$  。 $x$ 的大小应与R矩阵的大小一致。
-   *
+   * Set $y = Qx$. The size of $x$ should be consistent with the
+   * size of the R matrix.
    */
   virtual void
   multiply_with_Q(VectorType &y, const Vector<Number> &x) const = 0;
 
   /**
-   * 设置  $y = Q^Tx$  .  $x$  的大小应与列向量的大小一致。
-   *
+   * Set $y = Q^Tx$. The size of $x$ should be consistent with the
+   * size of column vectors.
    */
   virtual void
   multiply_with_QT(Vector<Number> &y, const VectorType &x) const = 0;
 
   /**
-   * 设置  $y = QRx$  .  $x$ 的大小应与R矩阵的大小一致。
-   *
+   * Set $y = QRx$. The size of $x$ should be consistent with the
+   * size of the R matrix.
    */
   virtual void
   multiply_with_A(VectorType &y, const Vector<Number> &x) const = 0;
 
   /**
-   * 设置  $y = R^T Q^Tx$  .  $x$
-   * 的大小应与列向量的大小一致。
-   *
+   * Set $y = R^T Q^Tx$. The size of $x$ should be consistent with the
+   * size of column vectors.
    */
   virtual void
   multiply_with_AT(Vector<Number> &y, const VectorType &x) const = 0;
 
   /**
-   * 连接一个槽，以便在进行吉文斯旋转时检索到一个通知。
-   * 该函数需要两个指数， @p i 和 @p j,
-   * 描述旋转的平面，以及三组数字 @p csr
-   * （余弦、正弦和半径，见
-   * Utilities::LinearAlgebra::givens_rotation()) ，代表旋转矩阵。
+   * Connect a slot to retrieve a notification when the Givens rotations
+   * are performed.
    *
+   * The function takes two indices, @p i and @p j, describing the plane of
+   * rotation, and a triplet of numbers @p csr (cosine, sine and radius, see
+   * Utilities::LinearAlgebra::givens_rotation()) which represents the rotation
+   * matrix.
    */
   boost::signals2::connection
   connect_givens_slot(
@@ -150,41 +142,36 @@ public:
 
 protected:
   /**
-   * 计算 $y=Hx$ ，其中 $H$
-   * 是由该对象存储的列向量形成的矩阵。
-   *
+   * Compute $y=Hx$ where $H$ is the matrix formed by the column vectors stored
+   * by this object.
    */
   void
   multiply_with_cols(VectorType &y, const Vector<Number> &x) const;
 
   /**
-   * 与存储在该对象中的转置列相乘。
-   *
+   * Multiply with transpose columns stored in the object.
    */
   void
   multiply_with_colsT(Vector<Number> &y, const VectorType &x) const;
 
   /**
-   * 存储列的唯一指针的向量。
-   *
+   * A vector of unique pointers to store columns.
    */
   std::vector<std::unique_ptr<VectorType>> columns;
 
   /**
-   * 用于存储R的矩阵。
-   *
+   * Matrix to store R.
    */
   LAPACKFullMatrix<Number> R;
 
   /**
-   * 当前大小（Q中的列数）。
-   *
+   * Current size (number of columns in Q).
    */
   unsigned int current_size;
 
   /**
-   * 当吉文斯旋转在`(i,j)`面进行时，用于检索通知的信号。
-   *
+   * Signal used to retrieve a notification
+   * when Givens rotations are performed in the `(i,j)`-plane.
    */
   boost::signals2::signal<void(const unsigned int i,
                                const unsigned int j,
@@ -194,56 +181,59 @@ protected:
 
 // clang-format off
 /**
- * 一个用于计算和存储由一组列向量代表的矩阵的QR分解的类。
- * 该类被设计用来更新矩阵 $A$
- * 的给定（可能是空的）QR因式分解（通过提供其列而逐步构建），由于向
- * $A$
- * 添加了一个新的列向量。这相当于通过Gram-Schmidt程序构建一个正态基。该类还提供了当第一列被移除时的更新功能。
- * `VectorType`模板参数可以是并行和串行矢量，只需要有基本操作，如加法、标量乘积等。它还需要有一个复制构造器。
- * 见第335-338页的6.5.2-6.5.3节。
+ * A class to compute and store the QR factorization of a matrix represented by a set of column vectors.
  *
+ * The class is design to update a given (possibly empty) QR factorization
+ * of a matrix $A$ (constructed incrementally by providing its columns)
+ * due to the addition of a new column vector to $A$. This is equivalent to
+ * constructing an orthonormal basis by the Gram-Schmidt procedure.
+ * The class also provides update functionality when the first column
+ * is removed.
+ *
+ * The `VectorType` template argument may either be a parallel and serial vector, and only need
+ * to have basic operations such as additions, scalar product, etc.
+ * It also needs to have a copy-constructor.
+ *
+ * See sections 6.5.2-6.5.3 on pp. 335-338 in
  * @code{.bib}
  * @Book{Golub2013,
- * title     = {Matrix computations},
- * publisher = {Johns Hopkins University Press},
- * year      = {2013},
- * author    = {Golub, Gene H and Van Loan, Charles F},
- * edition   = {4},
- * }
+ *   title     = {Matrix computations},
+ *   publisher = {Johns Hopkins University Press},
+ *   year      = {2013},
+ *   author    = {Golub, Gene H and Van Loan, Charles F},
+ *   edition   = {4},
+ *  }
  * @endcode
- * 以及
- *
+ * as well as
  * @code{.bib}
  * @article{Daniel1976,
- * author   = {Daniel, James W and Gragg, Walter Bill and Kaufman, Linda and Stewart, Gilbert W},
- * title    = {{Reorthogonalization and stable algorithms for updating the Gram-Schmidt QR factorization}},
- * journal  = {Mathematics of Computation},
- * year     = {1976},
- * volume   = {30},
- * number   = {136},
- * pages    = {772--795},
+ *   author   = {Daniel, James W and Gragg, Walter Bill and Kaufman, Linda and Stewart, Gilbert W},
+ *   title    = {{Reorthogonalization and stable algorithms for updating the Gram-Schmidt QR factorization}},
+ *   journal  = {Mathematics of Computation},
+ *   year     = {1976},
+ *   volume   = {30},
+ *   number   = {136},
+ *   pages    = {772--795},
  * }
  * @Article{Reichel1990,
- * author     = {Reichel, L. and Gragg, W. B.},
- * title      = {{Algorithm 686: FORTRAN Subroutines for Updating the QR Decomposition}},
- * journal    = {ACM Trans. Math. Softw.},
- * year       = {1990},
- * volume     = {16},
- * number     = {4},
- * pages      = {369--377},
- * month      = dec,
- * issn       = {0098-3500},
- * acmid      = {98291},
- * address    = {New York, NY, USA},
- * doi        = {10.1145/98267.98291},
- * issue_date = {Dec. 1990},
- * numpages   = {9},
- * publisher  = {ACM},
- * url        = {http://doi.acm.org/10.1145/98267.98291},
- * }
+ *   author     = {Reichel, L. and Gragg, W. B.},
+ *   title      = {{Algorithm 686: FORTRAN Subroutines for Updating the QR Decomposition}},
+ *   journal    = {ACM Trans. Math. Softw.},
+ *   year       = {1990},
+ *   volume     = {16},
+ *   number     = {4},
+ *   pages      = {369--377},
+ *   month      = dec,
+ *   issn       = {0098-3500},
+ *   acmid      = {98291},
+ *   address    = {New York, NY, USA},
+ *   doi        = {10.1145/98267.98291},
+ *   issue_date = {Dec. 1990},
+ *   numpages   = {9},
+ *   publisher  = {ACM},
+ *   url        = {http://doi.acm.org/10.1145/98267.98291},
+ *  }
  * @endcode
- *
- *
  */
 // clang-format on
 template <typename VectorType>
@@ -251,44 +241,59 @@ class QR : public BaseQR<VectorType>
 {
 public:
   /**
-   * R矩阵的数字类型。
-   *
+   * Number type for R matrix.
    */
   using Number = typename VectorType::value_type;
 
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   QR();
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~QR() = default;
 
   /**
-   * @copydoc   BaseQR::append_column
-   * @note  目前这个函数总是返回  <code>true</code>  。
+   * @copydoc BaseQR::append_column
    *
+   * @note Currently this function always returns <code>true</code>.
    */
   virtual bool
   append_column(const VectorType &column);
 
   /**
-   * 删除第一列并更新QR分解。    从给定的QR分解 $QR= A =
-   * [a_1\,\dots a_n], \quad a_i \in {\mathbb R}^m$
-   * 开始，我们的目标是计算 $\tilde Q \tilde R= \tilde A =
-   * [a_2\,\dots a_n], \quad a_i \in {\mathbb R}^m$ 的因式分解。
-   * 标准方法是将 $R$ 划分为\f[ R = \begin{bmatrix} r_{11} & w^T \\ 0
-   * & R_{33} \end{bmatrix} \f]，然后得出\f[ Q^T \tilde A =
-   * \begin{bmatrix} 0 & w^T \\ 0 & R_{33} \end{bmatrix}
-   * \f]是上海森堡，其中不需要的对角线元素可以通过一连串的吉文斯旋转来归零。
-   * 请注意， $\tilde R^T \tilde R = \tilde A^T \tilde A$
-   * ，其中RHS包括在 $A^T A = R^T R$  中。因此 $\tilde R$
-   * 可以通过Cholesky分解得到。
+   * Remove first column and update QR factorization.
    *
+   * Starting from the given QR decomposition
+   * $QR= A = [a_1\,\dots a_n], \quad a_i \in {\mathbb R}^m$
+   * we aim at computing factorization of
+   * $\tilde Q \tilde R= \tilde A = [a_2\,\dots a_n], \quad a_i \in {\mathbb
+   * R}^m$.
+   *
+   * The standard approach is to partition $R$ as
+   * \f[
+   * R =
+   * \begin{bmatrix}
+   * r_{11} & w^T \\
+   * 0      & R_{33}
+   * \end{bmatrix}
+   * \f]
+   * It then follows that
+   * \f[
+   * Q^T \tilde A =
+   * \begin{bmatrix}
+   * 0 & w^T \\
+   * 0 & R_{33}
+   * \end{bmatrix}
+   * \f]
+   * is upper Hessenberg where unwanted sub-diagonal elements can be
+   * zeroed by a sequence of Givens rotations.
+   *
+   * Note that $\tilde R^T \tilde R = \tilde A^T \tilde A$,
+   * where the RHS is included in $A^T A = R^T R$. Therefore
+   * $\tilde R$ can be obtained by Cholesky decomposition.
    */
   virtual void
   remove_column(const unsigned int k = 0);
@@ -307,17 +312,16 @@ public:
 
 private:
   /**
-   * 对 @p Q 和 @p R 进行`(i,j)`面的基文旋转，使
-   * <code>R(k,k)</code> 被归零。    见Golub
-   * 2013的第5.1.9章，矩阵计算。
+   * Apply givens rotation in the `(i,j)`-plane to @p Q and @p R so that
+   * <code>R(k,k)</code> is zeroed.
    *
+   * See Chapter 5.1.9 of Golub 2013, Matrix computations.
    */
   void
   apply_givens_rotation(const unsigned int i, const unsigned int k);
 
   /**
-   * 对Q进行吉文斯旋转所需的临时向量。
-   *
+   * Temporary vector needed to do Givens rotation of Q.
    */
   VectorType tmp;
 };
@@ -325,34 +329,38 @@ private:
 
 
 /**
- * 获得 $R$ 因式分解的三角 $A=QR$ 矩阵以及矩阵 $A$
- * 本身的一个类。正交矩阵 $Q$
- * 没有被明确存储，该类的名称。与 $Q$ 的乘法可以表示为
- * $Q=A R^{-1}$ ，而与 $Q^T$ 的乘法则由 $Q^T=R^{-T}A^T$ 给出。
- * 该类旨在更新一个给定的（可能是空的）QR因式分解，由于增加了一个新的列向量。这相当于通过Gram-Schmidt程序构建一个正态基础。当列被移除时，该类也提供更新功能。
- * `VectorType`模板参数可以是并行和串行矢量，只需要有基本的操作，如加法、标量积等。它还需要有一个复制构造器。
+ * A class to obtain the triangular $R$ matrix of the $A=QR$ factorization
+ * together with the matrix $A$ itself. The orthonormal matrix $Q$ is not stored
+ * explicitly, the name of the class.
+ * The multiplication with $Q$ can be represented as $Q=A R^{-1}$, whereas the
+ * multiplication with $Q^T$ is given by $Q^T=R^{-T}A^T$.
  *
+ * The class is designed to update a given (possibly empty) QR factorization
+ * due to the addition of a new column vector. This is equivalent to
+ * constructing an orthonormal basis by the Gram-Schmidt procedure.
+ * The class also provides update functionality when the column
+ * is removed.
  *
+ * The `VectorType` template argument may either be a parallel and serial
+ * vector, and only need to have basic operations such as additions, scalar
+ * product, etc. It also needs to have a copy-constructor.
  */
 template <typename VectorType>
 class ImplicitQR : public BaseQR<VectorType>
 {
 public:
   /**
-   * R矩阵的数字类型。
-   *
+   * Number type for R matrix.
    */
   using Number = typename VectorType::value_type;
 
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   ImplicitQR();
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~ImplicitQR() = default;
 
@@ -360,13 +368,16 @@ public:
   append_column(const VectorType &column);
 
   /**
-   * 删除列并更新QR分解。    从给定的QR分解 $QR= A =
-   * [a_1\,\dots a_n], \quad a_i \in R^m$ 开始，我们旨在计算 $\tilde
-   * Q \tilde R= \tilde A = [a_2\,\dots a_n], \quad a_i \in R^m$
-   * 的因式分解。    请注意， $\tilde R^T \tilde R = \tilde A^T
-   * \tilde A$  ，其中RHS包括在 $A^T A = R^T R$  中。因此 $\tilde R$
-   * 可以通过Cholesky分解得到。
+   * Remove column and update QR factorization.
    *
+   * Starting from the given QR decomposition
+   * $QR= A = [a_1\,\dots a_n], \quad a_i \in R^m$
+   * we aim at computing factorization of
+   * $\tilde Q \tilde R= \tilde A = [a_2\,\dots a_n], \quad a_i \in R^m$.
+   *
+   * Note that $\tilde R^T \tilde R = \tilde A^T \tilde A$,
+   * where the RHS is included in $A^T A = R^T R$. Therefore
+   * $\tilde R$ can be obtained by Cholesky decomposition.
    */
   virtual void
   remove_column(const unsigned int k = 0);
@@ -384,12 +395,13 @@ public:
   multiply_with_AT(Vector<Number> &y, const VectorType &x) const;
 
   /**
-   * 连接一个槽，以实现在添加一列时对线性依赖的自定义检查。
-   * 这里， @p u 是待R矩阵的最后一列， @p rho 是其对角线，
-   * @p col_norm_sqr 是该列的 $l2$ 准则的平方。
-   * 如果新列是线性独立的，该函数应该返回 <code>true</code>
-   * 。
+   * Connect a slot to implement a custom check of linear dependency
+   * during addition of a column.
    *
+   * Here, @p u is the last column of the to-be R matrix, @p rho
+   * is its diagonal and @p col_norm_sqr is the square of the $l2$ norm of the column.
+   * The function should return <code>true</code> if the new column is
+   * linearly independent.
    */
   boost::signals2::connection
   connect_append_column_slot(
@@ -399,19 +411,18 @@ public:
 
 private:
   /**
-   * 在"(i,k) "平面上应用给定的旋转，将 $R(k,k)$ 归零。
-   *
+   * Apply givens rotation in the `(i,k)`-plane to zero out $R(k,k)$.
    */
   void
   apply_givens_rotation(const unsigned int i, const unsigned int k);
 
   /**
-   * 用来决定新列是否是线性依赖的信号。    这里， @p u
-   * 是要成为R矩阵的最后一列， @p rho 是其对角线， @p
-   * col_norm_sqr 是该列的 $l2$ 准则的平方。
-   * 如果新列是线性独立的，该函数应该返回 <code>true</code>
-   * 。
+   * Signal used to decide if the new column is linear dependent.
    *
+   * Here, @p u is the last column of the to-be R matrix, @p rho
+   * is its diagonal and @p col_norm_sqr is the square of the $l2$ norm of the column.
+   * The function should return <code>true</code> if the new column is
+   * linearly independent.
    */
   boost::signals2::signal<bool(const Vector<Number> &u,
                                const Number &        rho,
@@ -902,5 +913,3 @@ QR<VectorType>::multiply_with_AT(Vector<Number> &y, const VectorType &x) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

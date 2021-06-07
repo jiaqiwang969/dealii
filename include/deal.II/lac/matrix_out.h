@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/matrix_out_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2021 by the deal.II authors
@@ -33,69 +32,81 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 使用基类的通用格式独立输出例程以图形形式输出一个矩阵。矩阵被转换为一个二维领域上的补丁列表，其中高度由矩阵的元素给出。基准类的函数可以将这个矩阵的
- * "山形表示法
- * "写成各种图形输出格式。矩阵输出的坐标是：像往常一样，列从零开始随着X轴的增加而运行，而行则从零开始进入负Y轴。注意，由于一些内部限制，这个类一次只能输出一个矩阵，也就是说，它不能利用基类的多数据集功能。
- * 这个类的一个典型用法如下。
+ * Output a matrix in graphical form using the generic format independent
+ * output routines of the base class. The matrix is converted into a list of
+ * patches on a 2d domain where the height is given by the elements of the
+ * matrix. The functions of the base class can then write this "mountain
+ * representation" of the matrix in a variety of graphical output formats. The
+ * coordinates of the matrix output are that the columns run with increasing
+ * x-axis, as usual, starting from zero, while the rows run into the negative
+ * y-axis, also starting from zero. Note that due to some internal
+ * restrictions, this class can only output one matrix at a time, i.e. it can
+ * not take advantage of the multiple dataset capabilities of the base class.
  *
+ * A typical usage of this class would be as follows:
  * @code
- * FullMatrix<double> M;
- * // fill matrix M with some values
- * ...
+ *   FullMatrix<double> M;
+ *   // fill matrix M with some values
+ *   ...
  *
- * // now write out M:
- * MatrixOut matrix_out;
- * std::ofstream out ("M.gnuplot");
- * matrix_out.build_patches (M, "M");
- * matrix_out.write_gnuplot (out);
+ *   // now write out M:
+ *   MatrixOut matrix_out;
+ *   std::ofstream out ("M.gnuplot");
+ *   matrix_out.build_patches (M, "M");
+ *   matrix_out.write_gnuplot (out);
  * @endcode
- * 当然，你也可以选择不同的图形输出格式。另外，这个类支持任何矩阵，不仅仅是FullMatrix类型的，只要它满足一些要求，用这个类的成员函数说明。
- * 通过build_patches()函数生成的补丁可以通过给它一个持有某些标志的对象来修改。关于这些标志的描述，请参见Options类成员的文档。
+ * Of course, you can as well choose a different graphical output format.
+ * Also, this class supports any matrix, not only of type FullMatrix, as long
+ * as it satisfies a number of requirements, stated with the member functions
+ * of this class.
  *
+ * The generation of patches through the build_patches() function can be
+ * modified by giving it an object holding certain flags. See the
+ * documentation of the members of the Options class for a description of
+ * these flags.
  *
  *
  * @ingroup output
- *
  */
 class MatrixOut : public DataOutInterface<2, 2>
 {
 public:
   /**
-   * 声明容器尺寸的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 持有各种变量的类，这些变量用于修改MatrixOut类的输出。
-   *
+   * Class holding various variables which are used to modify the output of
+   * the MatrixOut class.
    */
   struct Options
   {
     /**
-     * 如果 @p true,
-     * 只显示矩阵项的绝对值，而不是包括符号的真实值。默认值为
-     * @p false. 。
-     *
+     * If @p true, only show the absolute values of the matrix entries, rather
+     * than their true values including the sign. Default value is @p false.
      */
     bool show_absolute_values;
 
     /**
-     * 如果大于1，则不显示矩阵的每个元素，而是显示若干条目的平均值。输出补丁的数量也相应变小。这个标志决定了每个显示的区块应该有多大（以行/列为单位）。例如，如果它是两个，那么总是四个条目被整理成一个。
-     * 默认值是1。
+     * If larger than one, do not show each element of the matrix, but rather
+     * an average over a number of entries. The number of output patches is
+     * accordingly smaller. This flag determines how large each shown block
+     * shall be (in rows/columns). For example, if it is two, then always four
+     * entries are collated into one.
      *
+     * Default value is one.
      */
     unsigned int block_size;
 
     /**
-     * 如果为真，绘制不连续的斑块，每个条目一个。
-     *
+     * If true, plot discontinuous patches, one for each entry.
      */
     bool discontinuous;
 
     /**
-     * 默认构造函数。将此结构的所有元素设置为其默认值。
-     *
+     * Default constructor. Set all elements of this structure to their
+     * default values.
      */
     Options(const bool         show_absolute_values = false,
             const unsigned int block_size           = 1,
@@ -103,16 +114,26 @@ public:
   };
 
   /**
-   * 解构器。为了使它成为虚拟的而声明的。
-   *
+   * Destructor. Declared in order to make it virtual.
    */
   virtual ~MatrixOut() override = default;
 
   /**
-   * 从给定的矩阵生成一个补丁列表，并在写入文件时使用给定的字符串作为数据集的名称。一旦补丁被建立，你可以使用基类的函数将数据写入文件，使用支持的输出格式之一。
-   * 你可以给一个持有各种选项的结构。更多信息请看这个结构的字段描述。
-   * 注意，这个函数要求我们能够提取矩阵的元素，这可以通过内部命名空间中声明的get_element()函数来完成。通过添加特殊化，你可以将这个类扩展到目前不支持的其他矩阵类。此外，我们需要能够提取矩阵的大小，为此我们假设矩阵类型提供了成员函数<tt>m()</tt>和<tt>n()</tt>，它们分别返回行和列的数量。
+   * Generate a list of patches from the given matrix and use the given string
+   * as the name of the data set upon writing to a file. Once patches have
+   * been built, you can use the functions of the base class to write the data
+   * into a files, using one of the supported output formats.
    *
+   * You may give a structure holding various options. See the description of
+   * the fields of this structure for more information.
+   *
+   * Note that this function requires that we can extract elements of the
+   * matrix, which is done using the get_element() function declared in an
+   * internal namespace. By adding specializations, you can extend this class
+   * to other matrix classes which are not presently supported. Furthermore,
+   * we need to be able to extract the size of the matrix, for which we assume
+   * that the matrix type offers member functions <tt>m()</tt> and
+   * <tt>n()</tt>, which return the number of rows and columns, respectively.
    */
   template <class Matrix>
   void
@@ -122,40 +143,43 @@ public:
 
 private:
   /**
-   * 缩写 dealii::DataOutBase::Patch 类的有点冗长的名字。
-   *
+   * Abbreviate the somewhat lengthy name for the dealii::DataOutBase::Patch
+   * class.
    */
   using Patch = DataOutBase::Patch<2, 2>;
 
   /**
-   * 这是一个补丁列表，每次build_patches()被调用时都会创建一个补丁。这些补丁在基类的输出例程中使用。
-   *
+   * This is a list of patches that is created each time build_patches() is
+   * called. These patches are used in the output routines of the base
+   * classes.
    */
   std::vector<Patch> patches;
 
   /**
-   * 要写入的矩阵的名称。
-   *
+   * Name of the matrix to be written.
    */
   std::string name;
 
   /**
-   * %函数，基类的函数通过这个函数知道他们应该写什么补丁到文件中。
-   *
+   * %Function by which the base class's functions get to know what patches
+   * they shall write to a file.
    */
   virtual const std::vector<Patch> &
   get_patches() const override;
 
   /**
-   * 虚拟函数，基类的输出函数通过它获得数据集的名称。
-   *
+   * Virtual function through which the names of data sets are obtained by the
+   * output functions of the base class.
    */
   virtual std::vector<std::string>
   get_dataset_names() const override;
 
   /**
-   * 获取网格点<tt>(i,j)</tt>处的矩阵值。根据给定的标志，这可能意味着不同的事情，例如，如果只应显示绝对值，则取矩阵条目的绝对值。如果块的大小大于1，那么就取几个矩阵项的平均值。
-   *
+   * Get the value of the matrix at gridpoint <tt>(i,j)</tt>. Depending on the
+   * given flags, this can mean different things, for example if only absolute
+   * values shall be shown then the absolute value of the matrix entry is
+   * taken. If the block size is larger than one, then an average of several
+   * matrix entries is taken.
    */
   template <class Matrix>
   static double
@@ -166,7 +190,7 @@ private:
 };
 
 
- /* ---------------------- Template and inline functions ------------- */ 
+/* ---------------------- Template and inline functions ------------- */
 
 
 namespace internal
@@ -174,8 +198,7 @@ namespace internal
   namespace MatrixOutImplementation
   {
     /**
-     * 返回稀疏矩阵中具有给定索引的元素。
-     *
+     * Return the element with given indices of a sparse matrix.
      */
     template <typename number>
     double
@@ -189,8 +212,7 @@ namespace internal
 
 
     /**
-     * 返回一个块状稀疏矩阵的给定指数的元素。
-     *
+     * Return the element with given indices of a block sparse matrix.
      */
     template <typename number>
     double
@@ -204,8 +226,7 @@ namespace internal
 
 #  ifdef DEAL_II_WITH_TRILINOS
     /**
-     * 以给定的指数返回一个特里诺斯稀疏矩阵的元素。
-     *
+     * Return the element with given indices of a Trilinos sparse matrix.
      */
     inline double
     get_element(const TrilinosWrappers::SparseMatrix &matrix,
@@ -218,8 +239,8 @@ namespace internal
 
 
     /**
-     * 以给定的指数返回一个特里诺斯块状稀疏矩阵的元素。
-     *
+     * Return the element with given indices of a Trilinos block sparse
+     * matrix.
      */
     inline double
     get_element(const TrilinosWrappers::BlockSparseMatrix &matrix,
@@ -239,8 +260,9 @@ namespace internal
 
 
     /**
-     * 从上面没有声明此函数特殊化的任何矩阵类型中，返回具有给定指数的元素。这将在矩阵上调用<tt>operator()</tt>。
-     *
+     * Return the element with given indices from any matrix type for which
+     * no specialization of this function was declared above. This will call
+     * <tt>operator()</tt> on the matrix.
      */
     template <class Matrix>
     double
@@ -382,11 +404,9 @@ MatrixOut::build_patches(const Matrix &     matrix,
 
 
 
- /*----------------------------   matrix_out.h     ---------------------------*/ 
+/*----------------------------   matrix_out.h     ---------------------------*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
- /*----------------------------   matrix_out.h     ---------------------------*/ 
-
-
+/*----------------------------   matrix_out.h     ---------------------------*/

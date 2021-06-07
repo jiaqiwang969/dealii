@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/petsc_parallel_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2018 by the deal.II authors
@@ -24,4 +25,6 @@ DEAL_II_WARNING(
   "This file is deprecated. Use deal.II/lac/petsc_vector.h instead!")
 
 #endif
-/*------------------------- petsc_parallel_vector.h -------------------------*/
+ /*------------------------- petsc_parallel_vector.h -------------------------*/ 
+
+

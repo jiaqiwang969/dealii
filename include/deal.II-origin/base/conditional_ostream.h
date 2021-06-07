@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/conditional_ostream_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -24,34 +25,21 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * A class that allows printing to an output stream, e.g. @p std::cout,
- * depending on the ConditionalOStream object being active (default) or not.
- * The condition of this object can be changed by set_condition() and in the
- * constructor. This class is used in the step-17, step-18, step-32, step-33,
- * and step-35 tutorial programs.
+ * 一个允许打印到输出流的类，例如 @p std::cout,
+ * ，取决于ConditionalOStream对象是否被激活（默认）。这个对象的条件可以通过set_condition()和构造函数来改变。这个类在
+ * step-17 、 step-18 、 step-32 、 step-33 和 step-35
+ * 的教程程序中使用。
+ * 这个类主要在并行计算中有用。通常，你会用 @p std::cout
+ * 来打印信息，比如程序目前正在做什么，或者每一步的自由度数量。然而，在并行程序中，这意味着每个MPI进程都要写到屏幕上，这就产生了许多重复的相同文本。为了避免这种情况，我们必须有一个指定的进程，例如MPI进程编号为0的进程，进行输出，并且用一个if-条件来保护每个写入语句。这就变得很麻烦，而且使代码变得很混乱。与其这样做，不如使用本类：其类型的对象就像标准输出流一样，但它们只根据一个条件来打印东西，这个条件可以设置为，例如，<tt>mpi_process==0</tt>，这样，只有一个进程有一个真实的条件，在所有其他进程中，对这个对象的写入只是涅槃消失。
+ * 这个类的通常用法是这样的。
  *
- * This class is mostly useful in parallel computations. Ordinarily, you would
- * use @p std::cout to print messages like what the program is presently
- * doing, or the number of degrees of freedom in each step. However, in
- * parallel programs, this means that each of the MPI processes write to the
- * screen, which yields many repetitions of the same text. To avoid it, one
- * would have to have a designated process, say the one with MPI process
- * number zero, do the output, and guard each write statement with an if-
- * condition. This becomes cumbersome and clutters up the code. Rather than
- * doing so, the present class can be used: objects of its type act just like
- * a standard output stream, but they only print something based on a
- * condition that can be set to, for example, <tt>mpi_process==0</tt>, so that
- * only one process has a true condition and in all other processes writes to
- * this object just disappear in nirvana.
- *
- * The usual usage of this class is as follows:
  *
  * @code
  * ConditionalOStream pout(std::cout, this_mpi_process==0);
  *
  * // all processes print the following information to standard output
  * std::cout << "Reading parameter file on process "
- *           << this_mpi_process << std::endl;
+ *         << this_mpi_process << std::endl;
  *
  * // following is printed by process 0 only
  * pout << "Solving ..." << std::endl;
@@ -59,83 +47,88 @@ DEAL_II_NAMESPACE_OPEN
  * pout << "done" << std::endl;
  * @endcode
  *
- * Here, `Reading parameter file on process xy' is printed by each process
- * separately. In contrast to that, `Solving ...' and `done' is printed to
- * standard output only once, namely by process 0.
+ * 这里，"在进程xy上读取参数文件
+ * "是由每个进程单独打印的。与此相反，`解决...'和`完成'只打印到标准输出一次，即由进程0打印。
+ * 这个类不是从ostream派生的。因此
  *
- * This class is not derived from ostream. Therefore
  * @code
  * system_matrix.print_formatted(pout);
  * @endcode
- * is <em>not</em> possible. Instead use the is_active() function for a work-
- * around:
+ * 是 <em> 不是 </em>
+ * 的可能。相反，使用is_active()函数来解决这个问题。
+ *
  *
  * @code
  * if (pout.is_active())
- *   system_matrix.print_formatted(cout);
+ * system_matrix.print_formatted(cout);
  * @endcode
  *
+ *
  * @ingroup textoutput
+ *
  */
 class ConditionalOStream
 {
 public:
   /**
-   * Constructor. Set the stream to which we want to write, and the condition
-   * based on which writes are actually forwarded. Per default the condition
-   * of an object is active.
+   * 构造函数。设置我们要写入的流，以及实际转发写入的基础条件。默认情况下，一个对象的条件是活动的。
+   *
    */
   ConditionalOStream(std::ostream &stream, const bool active = true);
 
   /**
-   * Depending on the <tt>active</tt> flag set the condition of this stream to
-   * active (true) or non-active (false). An object of this class prints to
-   * <tt>cout</tt> if and only if its condition is active.
+   * 根据<tt>active</tt>标志将该流的条件设置为active（真）或非active（假）。当且仅当它的条件是激活的，这个类的一个对象就会打印到<tt>cout</tt>。
+   *
    */
   void
   set_condition(const bool active);
 
   /**
-   * Return the condition of the object.
+   * 返回该对象的条件。
+   *
    */
   bool
   is_active() const;
 
   /**
-   * Return a reference to the stream currently in use.
+   * 返回对当前使用的流的引用。
+   *
    */
   std::ostream &
   get_stream() const;
 
   /**
-   * Output a constant something through this stream. This function must be @p
-   * const so that member objects of this type can also be used from @p const
-   * member functions of the surrounding class.
+   * 通过这个流输出一个常量的东西。这个函数必须是 @p
+   * 常数，这样，这个类型的成员对象也可以从周围类的 @p
+   * const 成员函数中使用。
+   *
    */
   template <typename T>
   const ConditionalOStream &
   operator<<(const T &t) const;
 
   /**
-   * Treat ostream manipulators. This function must be @p const so that member
-   * objects of this type can also be used from @p const member functions of
-   * the surrounding class.
+   * 处理ostream操纵器。这个函数必须是 @p const
+   * ，这样，这个类型的成员对象也可以从周围类的 @p const
+   * 成员函数中使用。
+   * 注意，编译器希望看到这与上面的一般模板不同的处理方式，因为像
+   * @p std::endl
+   * 这样的函数实际上是重载的，不能直接绑定到模板类型。
    *
-   * Note that compilers want to see this treated differently from the general
-   * template above since functions like @p std::endl are actually overloaded
-   * and can't be bound directly to a template type.
    */
   const ConditionalOStream &
   operator<<(std::ostream &(*p)(std::ostream &)) const;
 
 private:
   /**
-   * Reference to the stream we want to write to.
+   * 对我们要写入的流的引用。
+   *
    */
   std::ostream &output_stream;
 
   /**
-   * Stores the actual condition the object is in.
+   * 存储对象所处的实际条件。
+   *
    */
   bool active_flag;
 };
@@ -174,3 +167,5 @@ ConditionalOStream::get_stream() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

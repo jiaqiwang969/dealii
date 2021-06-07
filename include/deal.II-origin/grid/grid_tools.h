@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/grid_tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2021 by the deal.II authors
@@ -115,12 +116,12 @@ namespace internal
 } // namespace internal
 
 /**
- * This namespace is a collection of algorithms working on triangulations,
- * such as shifting or rotating triangulations, but also finding a cell that
- * contains a given point. See the descriptions of the individual functions
- * for more information.
+ * 这个命名空间是工作在三角形上的算法的集合，比如移动或旋转三角形，但也可以找到包含给定点的单元。更多信息请参见各个函数的描述。
+ *
  *
  * @ingroup grid
+ *
+ *
  */
 namespace GridTools
 {
@@ -128,45 +129,34 @@ namespace GridTools
   class Cache;
 
   /**
-   * @name Information about meshes and cells
+   * @name  关于网格和单元的信息
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Return the diameter of a triangulation. The diameter is computed using
-   * only the vertices, i.e. if the diameter should be larger than the maximal
-   * distance between boundary vertices due to a higher order mapping, then
-   * this function will not catch this.
+   * 返回一个三角结构的直径。直径的计算只使用顶点，也就是说，如果由于高阶映射的原因，直径应该大于边界顶点之间的最大距离，那么这个函数将不会捕捉到这个。
+   *
    */
   template <int dim, int spacedim>
   double
   diameter(const Triangulation<dim, spacedim> &tria);
 
   /**
-   * Compute the volume (i.e. the dim-dimensional measure) of the
-   * triangulation. We compute the measure using the integral $\sum_K \int_K 1
-   * \; dx$ where $K$ are the cells of the given triangulation. The integral
-   * is approximated via quadrature for which we need the mapping argument.
+   * 计算三角形的体积（即二维度量）。我们使用积分
+   * $\sum_K \int_K 1
+   * \; dx$ 来计算这个度量，其中 $K$
+   * 是给定三角结构的单元。该积分通过正交来逼近，为此我们需要映射参数。
+   * 如果三角形是一个嵌入到高维空间中的二维空间，那么返回的值就是二维度量。例如，对于三维空间中的二维三角形，返回的值是所描述的曲面的面积。这显然是有意义的，因为如果dim
+   * @<  spacedim，那么dim-dimensional triangulation的spacedim-dimensional
+   * measure将总是零。    这个函数也适用于
+   * parallel::distributed::Triangulation,
+   * 类型的对象，在这种情况下，这个函数是一个集体操作。
+   * @param  tria 三角化。    @param  mapping
+   * 一个可选的参数，用于表示在描述单元格是由直线还是曲线面所包围时应该使用的映射。默认情况下使用
+   * $Q_1$ 映射，它对应于单元格的直线边界。    @return
+   * 三角形所描述的域的dim-dimensional度量，如上所述。
    *
-   * If the triangulation is a dim-dimensional one embedded in a higher
-   * dimensional space of dimension spacedim, then the value returned is the
-   * dim-dimensional measure. For example, for a two-dimensional triangulation
-   * in three-dimensional space, the value returned is the area of the surface
-   * so described. (This obviously makes sense since the spacedim-dimensional
-   * measure of a dim-dimensional triangulation would always be zero if dim @<
-   * spacedim.
-   *
-   * This function also works for objects of type
-   * parallel::distributed::Triangulation, in which case the function is a
-   * collective operation.
-   *
-   * @param tria The triangulation.
-   * @param mapping An optional argument used to denote the mapping that
-   * should be used when describing whether cells are bounded by straight or
-   * curved faces. The default is to use a $Q_1$ mapping, which corresponds to
-   * straight lines bounding the cells.
-   * @return The dim-dimensional measure of the domain described by the
-   * triangulation, as discussed above.
    */
   template <int dim, int spacedim>
   double
@@ -176,14 +166,10 @@ namespace GridTools
               .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * Return an approximation of the diameter of the smallest active cell of a
-   * triangulation. See step-24 for an example of use of this function.
+   * 返回一个三角形的最小活动单元的直径近似值。参见
+   * step-24 中关于这个函数的使用实例。
+   * 请注意，即使你传递了一个非琐碎的映射，返回的值也只是使用三角结构的顶点信息来计算的，可能是通过映射来转换的。虽然这在大多数情况下是准确的，但当三角结构包含非常扭曲的单元时，它可能无法给出正确的结果。
    *
-   * Notice that, even if you pass a non-trivial mapping, the returned value is
-   * computed only using information on the vertices of the triangulation,
-   * possibly transformed by the mapping. While this is accurate most of the
-   * times, it may fail to give the correct result when the triangulation
-   * contains very distorted cells.
    */
   template <int dim, int spacedim>
   double
@@ -194,14 +180,9 @@ namespace GridTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * Return an approximation of the diameter of the largest active cell of a
-   * triangulation.
+   * 返回一个三角形的最大活动单元的直径近似值。
+   * 请注意，即使你向这个函数传递了一个非琐碎的映射，返回的值也只是使用三角结构的顶点信息来计算的，可能会被映射转化。虽然这在大多数情况下是准确的，但当三角结构包含非常扭曲的单元时，它可能无法给出正确的结果。
    *
-   * Notice that, even if you pass a non-trivial mapping to this function, the
-   * returned value is computed only using information on the vertices of the
-   * triangulation, possibly transformed by the mapping. While this is accurate
-   * most of the times, it may fail to give the correct result when the
-   * triangulation contains very distorted cells.
    */
   template <int dim, int spacedim>
   double
@@ -212,15 +193,13 @@ namespace GridTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * Given a list of vertices (typically obtained using
-   * Triangulation::get_vertices) as the first, and a list of vertex indices
-   * that characterize a single cell as the second argument, return the
-   * measure (area, volume) of this cell. If this is a real cell, then you can
-   * get the same result using <code>cell-@>measure()</code>, but this
-   * function also works for cells that do not exist except that you make it
-   * up by naming its vertices from the list.
+   * 给出一个顶点列表（通常使用 Triangulation::get_vertices)
+   * 获得）作为第一个参数，以及一个表征单个单元的顶点索引列表作为第二个参数，返回这个单元的度量（面积、体积）。如果这是一个真实的单元格，那么你可以使用
+   * <code>cell-@>measure()</code>
+   * 得到同样的结果，但这个函数也适用于不存在的单元格，只是你通过从列表中命名它的顶点来编造它。
+   * @deprecated
+   * 使用更通用的函数，该函数需要一个ArrayView来代替。
    *
-   * @deprecated Use the more general function which takes an ArrayView instead.
    */
   template <int dim>
   DEAL_II_DEPRECATED double
@@ -229,20 +208,15 @@ namespace GridTools
     const unsigned int (&vertex_indices)[GeometryInfo<dim>::vertices_per_cell]);
 
   /**
-   * Given a list of vertices (typically obtained using
-   * Triangulation::get_vertices()) as the first, and a list of vertex indices
-   * that characterize a single cell as the second argument, return the
-   * measure (area, volume) of this cell. If this is a real cell, then you can
-   * get the same result using <code>cell-@>measure()</code>, but this
-   * function also works for cells that do not exist except that you make it
-   * up by naming its vertices from the list.
+   * 给出一个顶点列表（通常使用 Triangulation::get_vertices())
+   * 获得）作为第一个参数，以及一个表征单个单元的顶点索引列表作为第二个参数，返回该单元的度量（面积、体积）。如果这是一个真实的单元格，那么你可以用
+   * <code>cell-@>measure()</code>
+   * 得到同样的结果，但这个函数也适用于不存在的单元格，只是你通过从列表中命名它的顶点来编造它。
+   * 参数 @p vertex_indices 被期望有
+   * GeometryInfo<dim>::vertices_per_cell 项。一个 std::vector
+   * 可以隐式转换为ArrayView，所以它可以直接传递。更多信息请参见ArrayView类。
+   * @note  这个函数只对二维度为零的对象实现。
    *
-   * The parameter @p vertex_indices is expected to have
-   * GeometryInfo<dim>::vertices_per_cell entries. A std::vector is implicitly
-   * convertible to an ArrayView, so it can be passed directly. See the
-   * ArrayView class for more information.
-   *
-   * @note This function is only implemented for codimension zero objects.
    */
   template <int dim>
   double
@@ -250,56 +224,39 @@ namespace GridTools
                const ArrayView<const unsigned int> &vertex_indices);
 
   /**
-   * This function computes an affine approximation of the map from the unit
-   * coordinates to the real coordinates of the form $p_\text{real} = A
-   * p_\text{unit} + b $ by a least squares fit of this affine function to the
-   * $2^\text{dim}$ vertices representing a quadrilateral or hexahedral cell
-   * in `spacedim` dimensions. The result is returned as a pair with the
-   * matrix <i>A</i> as the first argument and the vector <i>b</i> describing
-   * distance of the plane to the origin.
+   * 这个函数通过对代表四边形或六面体单元的 $p_\text{real}
+   * = A p_\text{unit} + b $
+   * 顶点进行最小二乘法拟合，计算出从单位坐标到实坐标形式的仿生近似图，其维度为`spacedim`。结果是以矩阵<i>A</i>作为第一个参数，向量<i>b</i>描述平面到原点的距离，以一对方式返回。
+   * 对于任何有效的网格单元，其几何形状不是退化的，这个操作的结果是唯一的仿生映射，即使在双/三线或高阶映射的实际转换可能是单数的情况下。如果从单元到实际单元的转换确实是仿生的，例如在一维或二维/三维的笛卡尔和仿生（平行四边形）网格中，其结果是精确的。
+   * 这种近似是函数
+   * TriaAccessor::real_to_unit_cell_affine_approximation() 功能的基础。
+   * 对于单元格的精确变换，使用
+   * Mapping::transform_real_to_unit_cell(). 。
    *
-   * For any valid mesh cell whose geometry is not degenerate, this operation
-   * results in a unique affine mapping, even in cases where the actual
-   * transformation by a bi-/trilinear or higher order mapping might be
-   * singular. The result is exact in case the transformation from the unit to
-   * the real cell is indeed affine, such as in one dimension or for Cartesian
-   * and affine (parallelogram) meshes in 2D/3D.
-   *
-   * This approximation is underlying the function
-   * TriaAccessor::real_to_unit_cell_affine_approximation() function.
-   *
-   * For exact transformations to the unit cell, use
-   * Mapping::transform_real_to_unit_cell().
    */
   template <int dim, int spacedim>
   std::pair<DerivativeForm<1, dim, spacedim>, Tensor<1, spacedim>>
   affine_cell_approximation(const ArrayView<const Point<spacedim>> &vertices);
 
   /**
-   * Computes an aspect ratio measure for all locally-owned active cells and
-   * fills a vector with one entry per cell, given a @p triangulation and
-   * @p mapping. The size of the vector that is returned equals the number of
-   * active cells. The vector contains zero for non locally-owned cells. The
-   * aspect ratio of a cell is defined as the ratio of the maximum to minimum
-   * singular value of the Jacobian, taking the maximum over all quadrature
-   * points of a quadrature rule specified via @p quadrature. For example, for
-   * the special case of rectangular elements in 2d with dimensions $a$ and $b$
-   * ($a \geq b$), this function returns the usual aspect ratio definition
-   * $a/b$. The above definition using singular values is a generalization to
-   * arbitrarily deformed elements. This function is intended to be used for
-   * $d=2,3$ space dimensions, but it can also be used for $d=1$ returning a
-   * value of 1.
+   * 计算所有本地拥有的活动单元的长宽比度量，并填充一个每个单元有一个条目的向量，给定一个
+   * @p triangulation 和 @p mapping.
+   * ，返回的向量的大小等于活动单元的数量。对于非本地拥有的单元，该向量包含零。单元的长宽比定义为Jacobian的最大奇异值与最小奇异值之比，取通过
+   * @p quadrature.  指定的正交规则的所有正交点的最大值。
+   * 例如，对于尺寸为  $a$  和  $b$
+   * 的2D矩形元素的特殊情况（  $a \geq b$
+   * ），这个函数返回通常的长宽比定义  $a/b$
+   * 。上述使用奇异值的定义是对任意变形元素的一种概括。这个函数旨在用于
+   * $d=2,3$ 空间维度，但它也可以用于 $d=1$ 返回值为1。
+   * @note
+   * 颠倒的元素不会抛出一个异常。相反，在倒置元素的情况下，一个inf的值被写入向量。
+   * @note
+   * 确保使用足够的正交点，以便在变形元素的情况下精确计算纵横比。
+   * @note
+   * 在并行计算中，返回值将有n_active_cells的长度，但长宽比只计算本地拥有的、分别放置在索引
+   * CellAccessor::active_cell_index(),
+   * 的单元。所有其他的值都被设置为0。
    *
-   * @note Inverted elements do not throw an exception. Instead, a value of inf
-   * is written into the vector in case of inverted elements.
-   *
-   * @note Make sure to use enough quadrature points for a precise calculation
-   * of the aspect ratio in case of deformed elements.
-   *
-   * @note In parallel computations the return value will have the length
-   * n_active_cells but the aspect ratio is only computed for the cells that
-   * are locally owned and placed at index CellAccessor::active_cell_index(),
-   * respectively. All other values are set to 0.
    */
   template <int dim>
   Vector<double>
@@ -308,11 +265,10 @@ namespace GridTools
                                 const Quadrature<dim> &   quadrature);
 
   /**
-   * Computes the maximum aspect ratio by taking the maximum over all cells.
+   * 通过取所有单元的最大值来计算最大长宽比。
+   * @note
+   * 当与支持MPI的Triangulation并行运行时，这是一个集体调用，其返回值是所有处理器的最大值。
    *
-   * @note When running in parallel with a Triangulation that supports MPI,
-   * this is a collective call and the return value is the maximum over all
-   * processors.
    */
   template <int dim>
   double
@@ -321,38 +277,27 @@ namespace GridTools
                                const Quadrature<dim> &   quadrature);
 
   /**
-   * Compute the smallest box containing the entire triangulation.
+   * 计算包含整个三角形的最小的盒子。
+   * 如果输入的三角形是一个 `parallel::distributed::Triangulation`,
+   * ，那么每个处理器将计算一个包围所有本地拥有的、幽灵的和人工的单元的包围盒。在一个没有弯曲边界的域的情况下，这些边界盒在处理器之间都是一致的，因为人工和鬼魂单元所占据的区域的联合等于其他处理器拥有的单元所占据的区域的联合。
+   * 然而，如果域有弯曲的边界，情况就不再是这样了。
+   * 返回的边界盒可能适合于当前的处理器，但与其他处理器上计算的边界盒不同。
    *
-   * If the input triangulation is a `parallel::distributed::Triangulation`,
-   * then each processor will compute a bounding box enclosing all locally
-   * owned, ghost, and artificial cells. In the case of a domain without curved
-   * boundaries, these bounding boxes will all agree between processors because
-   * the union of the areas occupied by artificial and ghost cells equals the
-   * union of the areas occupied by the cells that other processors own.
-   * However, if the domain has curved boundaries, this is no longer the case.
-   * The bounding box returned may be appropriate for the current processor,
-   * but different from the bounding boxes computed on other processors.
    */
   template <int dim, int spacedim>
   BoundingBox<spacedim>
   compute_bounding_box(const Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * Return the point on the geometrical object @p object closest to the given
-   * point @p trial_point. For example, if @p object is a one-dimensional line
-   * or edge, then the returned point will be a point on the geodesic that
-   * connects the vertices as the manifold associated with the object sees it
-   * (i.e., the geometric line may be curved if it lives in a higher
-   * dimensional space). If the iterator points to a quadrilateral in a higher
-   * dimensional space, then the returned point lies within the convex hull of
-   * the vertices of the quad as seen by the associated manifold.
+   * 返回几何对象 @p object 上最接近给定点 @p trial_point.
+   * 的点。例如，如果 @p object
+   * 是一条一维线或边，那么返回的点将是连接顶点的几何线上的一个点，因为与该对象相关的流形看到它（即，如果该几何线生活在高维空间，它可能是弯曲的）。如果迭代器指向高维空间中的四边形，那么返回的点位于相关流形所看到的四边形顶点的凸壳内。
+   * @note
+   * 这种投影通常不是很好解决，因为对象上可能有多个点使距离最小化。这个函数中使用的算法是稳健的（而且输出保证在给定的
+   * @p object)
+   * 上，但如果物体具有高曲率，可能只提供几个正确的数字。如果你的流形支持它，那么专门的函数
+   * Manifold::project_to_manifold() 可能表现得更好。
    *
-   * @note This projection is usually not well-posed since there may be
-   * multiple points on the object that minimize the distance. The algorithm
-   * used in this function is robust (and the output is guaranteed to be on
-   * the given @p object) but may only provide a few correct digits if the
-   * object has high curvature. If your manifold supports it then the
-   * specialized function Manifold::project_to_manifold() may perform better.
    */
   template <typename Iterator>
   Point<Iterator::AccessorType::space_dimension>
@@ -361,43 +306,34 @@ namespace GridTools
     const Point<Iterator::AccessorType::space_dimension> &trial_point);
 
   /**
-   * Return the arrays that define the coarse mesh of a Triangulation. This
-   * function is the inverse of Triangulation::create_triangulation().
+   * 返回定义三角网格的粗略网格的数组。这个函数是
+   * Triangulation::create_triangulation().
+   * 的逆函数，返回值是一个包含顶点向量、单元向量和SubCellData结构的元组。后者包含关于面和线的额外信息。
+   * 这个函数在需要解构三角图或以某种方式操作顶点编号的情况下非常有用：一个例子是
+   * GridGenerator::merge_triangulations().  。
    *
-   * The return value is a tuple with the vector of vertices, the vector of
-   * cells, and a SubCellData structure. The latter contains additional
-   * information about faces and lines.
-   *
-   * This function is useful in cases where one needs to deconstruct a
-   * Triangulation or manipulate the numbering of the vertices in some way: an
-   * example is GridGenerator::merge_triangulations().
    */
   template <int dim, int spacedim>
   std::
     tuple<std::vector<Point<spacedim>>, std::vector<CellData<dim>>, SubCellData>
     get_coarse_mesh_description(const Triangulation<dim, spacedim> &tria);
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Functions supporting the creation of meshes
+   * @name  支持创建网格的函数
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Remove vertices that are not referenced by any of the cells. This
-   * function is called by all <tt>GridIn::read_*</tt> functions to eliminate
-   * vertices that are listed in the input files but are not used by the cells
-   * in the input file. While these vertices should not be in the input from
-   * the beginning, they sometimes are, most often when some cells have been
-   * removed by hand without wanting to update the vertex lists, as they might
-   * be lengthy.
+   * 删除不被任何单元格引用的顶点。这个函数被所有
+   * <tt>GridIn::read_*</tt>
+   * 函数调用，以消除输入文件中列出的但不被输入文件中的单元所使用的顶点。虽然这些顶点从一开始就不应该出现在输入文件中，但有时会出现，最常见的是当一些单元格被手工删除而不想更新顶点列表时，因为它们可能很冗长。
+   * 这个函数被所有 <tt>GridIn::read_*</tt>
+   * 函数调用，因为三角形类要求它们只用已使用的顶点来调用。
+   * 因为顶点是由该类逐字复制的，所以我们必须事先消除未使用的顶点。
+   * 在维度为1的情况下没有实现。
    *
-   * This function is called by all <tt>GridIn::read_*</tt> functions as the
-   * triangulation class requires them to be called with used vertices only.
-   * This is so, since the vertices are copied verbatim by that class, so we
-   * have to eliminate unused vertices beforehand.
-   *
-   * Not implemented for the codimension one case.
    */
   template <int dim, int spacedim>
   void
@@ -406,21 +342,17 @@ namespace GridTools
                          SubCellData &                 subcelldata);
 
   /**
-   * Remove vertices that are duplicated, due to the input of a structured
-   * grid, for example. If these vertices are not removed, the faces bounded
-   * by these vertices become part of the boundary, even if they are in the
-   * interior of the mesh.
+   * 移除重复的顶点，例如由于输入了结构化的网格而导致的。如果这些顶点没有被移除，这些顶点所包围的面会成为边界的一部分，即使它们在网格的内部。
+   * 这个函数被一些 <tt>GridIn::read_*</tt>
+   * 函数所调用。只有索引在 @p considered_vertices
+   * 中的顶点才会被测试是否相等。这加快了算法的速度，对于最坏的超立方体几何形状
+   * $O(N^{3/2})$ 的二维和 $O(N^{5/3})$
+   * 的三维，算法是相当慢的。
+   * 然而，如果你希望考虑所有顶点，只需传递一个空矢量。在这种情况下，该函数会将所有顶点填入
+   * @p considered_vertices 。
+   * 如果两个顶点在每个坐标方向上的差异小于 @p tol.
+   * ，则认为它们是相等的。
    *
-   * This function is called by some <tt>GridIn::read_*</tt> functions. Only
-   * the vertices with indices in @p considered_vertices are tested for
-   * equality. This speeds up the algorithm, which is, for worst-case hyper
-   * cube geometries $O(N^{3/2})$ in 2D and $O(N^{5/3})$ in 3D: quite slow.
-   * However, if you wish to consider all vertices, simply pass an empty
-   * vector. In that case, the function fills @p considered_vertices with all
-   * vertices.
-   *
-   * Two vertices are considered equal if their difference in each coordinate
-   * direction is less than @p tol.
    */
   template <int dim, int spacedim>
   void
@@ -431,22 +363,13 @@ namespace GridTools
                              const double                  tol = 1e-12);
 
   /**
-   * Grids generated by grid generators may have an orientation of cells which
-   * is the inverse of the orientation required by deal.II.
+   * 由网格生成器生成的网格可能有一个单元的方向，这个方向是deal.II要求的方向的倒数。
+   * 在2D和3D中，这个函数检查所有单元是否有负的或正的量度/体积。在前一种情况下，所有的单元格都是倒置的。在1d中，它没有任何作用。
+   * 当所有单元格中只有一个子集的体积为负时，单元格的反转也可能起作用。然而，由负向和正向单元混合组成的网格很可能被打破。因此，如果单元格的方向不一致，就会抛出一个异常。
+   * @note  这个函数应该在  GridTools::consistently_order_cells().
+   * @param  all_vertices 网格的顶点前调用。    @param  cells
+   * 描述网格拓扑结构的CellData对象的阵列。
    *
-   * In 2d and 3d this function checks whether all cells have negative or
-   * positive measure/volume. In the former case, all cells are inverted. It
-   * does nothing in 1d.
-   *
-   * The inversion of cells might also work when only a subset of all cells
-   * have negative volume. However, grids consisting of a mixture of negative
-   * and positively oriented cells are very likely to be broken. Therefore, an
-   * exception is thrown, in case cells are not uniformly oriented.
-   *
-   * @note This function should be called before GridTools::consistently_order_cells().
-   *
-   * @param all_vertices The vertices of the mesh.
-   * @param cells The array of CellData objects that describe the mesh's topology.
    */
   template <int dim, int spacedim>
   void
@@ -455,65 +378,35 @@ namespace GridTools
     std::vector<CellData<dim>> &        cells);
 
   /**
-   * Given a vector of CellData objects describing a mesh, reorder their
-   * vertices so that all lines are consistently oriented.
+   * 给出一个描述网格的CellData对象的向量，重新排列其顶点，使所有线条的方向一致。    关于方向的期望和这个函数的讨论可以在 @ref reordering "重新排序模块 "
+   * 中找到。      @param  cells
+   * 描述网格拓扑结构的CellData对象的数组。
    *
-   * The expectations on orientation and a discussion of this function are
-   * available in the @ref reordering "reordering module".
-   *
-   * @param cells The array of CellData objects that describe the mesh's topology.
    */
   template <int dim>
   void
   consistently_order_cells(std::vector<CellData<dim>> &cells);
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Rotating, stretching and otherwise transforming meshes
+   * @name  旋转、拉伸和其他变换网格的方法
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Transform the vertices of the given triangulation by applying the
-   * function object provided as first argument to all its vertices.
-   *
-   * The transformation given as argument is used to transform each vertex.
-   * Its respective type has to offer a function-like syntax, i.e. the
-   * predicate is either an object of a type that has an <tt>operator()</tt>,
-   * or it is a pointer to the function. In either case, argument and return
-   * value have to be of type <tt>Point@<spacedim@></tt>.
-   *
-   * @note The transformations that make sense to use with this function
-   *   should have a Jacobian with a positive determinant. For example,
-   *   rotation, shearing, stretching, or scaling all satisfy this (though
-   *   there is no requirement that the transformation used actually is
-   *   linear, as all of these examples are). On the other hand, reflections
-   *   or inversions have a negative determinant of the Jacobian. The
-   *   current function has no way of asserting a positive determinant
-   *   of the Jacobian, but if you happen to use such a transformation,
-   *   the result will be a triangulation in which cells have a negative
-   *   volume.
-   *
-   * @note If you are using a parallel::distributed::Triangulation you will
-   * have hanging nodes in your local Triangulation even if your "global" mesh
-   * has no hanging nodes. This will cause issues with wrong positioning of
-   * hanging nodes in ghost cells if you call the current functions: The
-   * vertices of all locally owned cells will be correct, but the vertices of
-   * some ghost cells may not. This means that computations like
-   * KellyErrorEstimator may give wrong answers.
-   *
-   * @note This function is in general not compatible with manifolds attached
-   * to the triangulation. For example, in order to refine the grid (using
-   * manifolds) after the grid transformation, you have to make sure that
-   * the original manifold is still valid for the transformed geometry. This
-   * does not hold in general, and it is necessary to clear the manifold and
-   * attach a new one for the transformed geometry in these cases.
-   * If you want to perform refinements according to the original
-   * manifold description attached to the triangulation, you should first do
-   * the refinements, subsequently deactivate all manifolds, and finally call
-   * the transform() function. The result is a triangulation with correctly
-   * transformed vertices, but otherwise straight-sided elements. The
-   * following procedure is recommended
+   * 通过对所有顶点应用作为第一个参数提供的函数对象来变换给定的三角网格的顶点。
+   * 作为参数给出的变换被用于变换每个顶点。
+   * 其各自的类型必须提供类似函数的语法，即谓词要么是一个具有<tt>operator()</tt>类型的对象，要么是一个指向函数的指针。在这两种情况下，参数和返回值都必须是<tt>Point
+   * @<spacedim@></tt>.  类型。
+   * @note
+   * 与该函数一起使用的有意义的变换应该有一个具有正行列式的雅各布系数。例如，旋转、剪切、拉伸或缩放都满足这一点（尽管没有要求使用的变换实际上是线性的，因为所有这些例子都是）。另一方面，反射或反转有一个雅各布式的负行列式。目前的函数没有办法断定雅各布的正行列式，但是如果你碰巧使用了这样的变换，其结果将是一个单元格体积为负的三角结构。
+   * @note  如果你使用的是 parallel::distributed::Triangulation
+   * ，即使你的 "全局
+   * "网格没有悬空节点，你的局部三角结构也会有悬空节点。如果你调用当前的函数，这将导致悬空节点在幽灵单元中的错误定位问题。所有本地拥有的单元的顶点将是正确的，但一些幽灵单元的顶点可能不是。这意味着像KellyErrorEstimator这样的计算可能会给出错误的答案。
+   * @note
+   * 这个函数一般来说与附加在三角形上的流形不兼容。例如，为了在网格转换后细化网格（使用流形），你必须确保原始流形对转换后的几何体仍然有效。这在一般情况下是不成立的，在这种情况下，有必要清除流形，并为转换后的几何体附加一个新的流形。
+   * 如果你想根据附加到三角形上的原始流形描述进行细化，你应该先进行细化，随后停用所有流形，最后再调用transform()函数。其结果是一个具有正确转换顶点的三角形，但在其他方面是直边元素。建议采用以下程序
    * @code
    * ...
    * triangulation.refine_global(n_refinements);
@@ -522,9 +415,9 @@ namespace GridTools
    * GridTools::transform(transformation, triangulation);
    * ...
    * @endcode
+   * 这个函数在  step-38  的 "扩展的可能性
+   * "部分中使用。它也在  step-49  和  step-53  中使用。
    *
-   * This function is used in the "Possibilities for extensions" section of
-   * step-38. It is also used in step-49 and step-53.
    */
   template <int dim, typename Transformation, int spacedim>
   void
@@ -532,9 +425,8 @@ namespace GridTools
             Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * Shift each vertex of the triangulation by the given shift vector. This
-   * function uses the transform() function above, so the requirements on the
-   * triangulation stated there hold for this function as well.
+   * 通过给定的移位矢量对三角形的每个顶点进行移位。这个函数使用了上面的transform()函数，所以那里所说的对三角形的要求也适用于这个函数。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -543,29 +435,23 @@ namespace GridTools
 
 
   /**
-   * Rotate all vertices of the given two-dimensional triangulation in
-   * counter-clockwise sense around the origin of the coordinate system by the
-   * given angle (given in radians, rather than degrees). This function uses
-   * the transform() function above, so the requirements on the triangulation
-   * stated there hold for this function as well.
+   * 将给定的二维三角结构的所有顶点围绕坐标系的原点逆时针旋转给定的角度（用弧度而不是度数给定）。这个函数使用了上面的transform()函数，所以那里所说的对三角形的要求也适用于这个函数。
+   * @note 这个函数只支持dim=2的情况。
    *
-   * @note This function is only supported for dim=2.
    */
   template <int dim>
   void
   rotate(const double angle, Triangulation<dim> &triangulation);
 
   /**
-   * Rotate all vertices of the given @p triangulation in counter-clockwise
-   * direction around the axis with the given index. Otherwise like the
-   * function above.
+   * 将给定 @p triangulation
+   * 的所有顶点以逆时针方向围绕给定索引的轴旋转。否则就像上面的函数一样。
+   * @param[in]  angle 以弧度为单位，将三角函数旋转的角度。
+   * @param[in]  axis
+   * 围绕坐标轴的索引，保持该坐标的固定（0=x轴，1=y轴，2=z轴）。
+   * @param[in,out]  triangulation 要旋转的三角测量对象。
+   * @note 对dim=1、2和3实施。
    *
-   * @param[in] angle Angle in radians to rotate the Triangulation by.
-   * @param[in] axis Index of the coordinate axis to rotate around, keeping
-   * that coordinate fixed (0=x axis, 1=y axis, 2=z axis).
-   * @param[in,out] triangulation The Triangulation object to rotate.
-   *
-   * @note Implemented for dim=1, 2, and 3.
    */
   template <int dim>
   void
@@ -574,61 +460,33 @@ namespace GridTools
          Triangulation<dim, 3> &triangulation);
 
   /**
-   * Transform the given triangulation smoothly to a different domain where,
-   * typically, each of the vertices at the boundary of the triangulation is
-   * mapped to the corresponding points in the @p new_points map.
+   * 将给定的三角剖分平滑地转换到一个不同的域，通常，三角剖分边界的每个顶点都被映射到
+   * @p new_points 地图中的相应点。    方向 $u_d(\mathbf x)$
+   * 的未知位移场 $d$ 由受规定约束的最小化问题\f[ \min\,
+   * \int \frac{1}{2} c(\mathbf x) \mathbf \nabla u_d(\mathbf x) \cdot \mathbf
+   * \nabla u_d(\mathbf x) \,\rm d x
+   * \f]获得。最小化器是通过解决位移场的dim分量的拉普拉斯方程得到的，该位移场将当前域映射成由
+   * @p new_points
+   * 描述的域。使用线性有限元，每个方向上有四个高斯正交点。因此，
+   * @p new_points 中指定的顶点位置与 @p tria
+   * 中的当前值之间的差值代表该位移场在域边界的规定值，或者更准确地说，在
+   * @p new_points
+   * 提供的所有位置（可能是在边界的一部分，甚至在域的内部）。然后，该函数在每个无约束的顶点上评估这个位移场，并使用它将映射的顶点放在位移场定位的地方。因为拉普拉斯方程的解是平滑的，这保证了从旧域到新域的平滑映射。
+   * @param[in]  new_points
+   * 要放置现有顶点的子集的位置。通常，这将是一个从边界上所有节点的顶点指数到其新位置的映射，从而完全指定了映射域的几何形状。然而，如果有必要，它也可以包括内部的点，而且它不需要包括所有的边界顶点（尽管你会失去对映射域的确切形状的控制）。
+   * @param[in,out]  tria
+   * Triangulation对象。这个对象被就地改变，即之前的顶点位置被覆盖。
+   * @param[in]  coefficient 拉普拉斯问题的可选系数。
+   * 较大的值使单元格不容易变形（有效地增加其刚度）。该系数是在三角形的旧的、未变形的配置的坐标系中作为输入进行评估的，也就是说，在应用变换之前。
+   * 如果提供这个函数，只有在所有的系数都是正数的情况下才能期望得到合理的结果。
+   * @param[in]  solve_for_absolute_positions 如果设置为
+   * <code>true</code>
+   * ，则最小化问题是针对最终顶点位置而非其位移制定的。这两个公式对于同质问题是等价的（默认值为
+   * @p coefficient),
+   * ），但在其他情况下，它们会导致非常不同的网格运动。由于在大多数情况下，我们会在位移公式中使用一个非恒定系数，这个参数的默认值是
+   * <code>false</code>  。
+   * @note 这个功能目前还没有在1d情况下实现。
    *
-   * The unknown displacement field $u_d(\mathbf x)$ in direction $d$ is
-   * obtained from the minimization problem \f[ \min\, \int \frac{1}{2}
-   *   c(\mathbf x)
-   *   \mathbf \nabla u_d(\mathbf x) \cdot
-   *   \mathbf \nabla u_d(\mathbf x)
-   *   \,\rm d x
-   * \f]
-   * subject to prescribed constraints. The minimizer is obtained by solving the
-   * Laplace equation of the dim components of a displacement field that maps
-   * the current
-   * domain into one described by @p new_points . Linear finite elements with
-   * four Gaussian quadrature points in each direction are used. The difference
-   * between the vertex positions specified in @p new_points and their current
-   * value in @p tria therefore represents the prescribed values of this
-   * displacement field at the boundary of the domain, or more precisely at all
-   * of those locations for which @p new_points provides values (which may be
-   * at part of the boundary, or even in the interior of the domain). The
-   * function then evaluates this displacement field at each unconstrained
-   * vertex and uses it to place the mapped vertex where the displacement
-   * field locates it. Because the solution of the Laplace equation is smooth,
-   * this guarantees a smooth mapping from the old domain to the new one.
-   *
-   * @param[in] new_points The locations where a subset of the existing
-   * vertices are to be placed. Typically, this would be a map from the vertex
-   * indices of all nodes on the boundary to their new locations, thus
-   * completely specifying the geometry of the mapped domain. However, it may
-   * also include interior points if necessary and it does not need to include
-   * all boundary vertices (although you then lose control over the exact
-   * shape of the mapped domain).
-   *
-   * @param[in,out] tria The Triangulation object. This object is changed in-
-   * place, i.e., the previous locations of vertices are overwritten.
-   *
-   * @param[in] coefficient An optional coefficient for the Laplace problem.
-   * Larger values make cells less prone to deformation (effectively
-   * increasing their stiffness). The coefficient is evaluated in the
-   * coordinate system of the old, undeformed configuration of the
-   * triangulation as input, i.e., before the transformation is applied.
-   * Should this function be provided, sensible results can only be expected
-   * if all coefficients are positive.
-   *
-   * @param[in] solve_for_absolute_positions If set to <code>true</code>, the
-   * minimization problem is formulated with respect to the final vertex
-   * positions as opposed to their displacement. The two formulations are
-   * equivalent for
-   * the homogeneous problem (default value of @p coefficient), but they
-   * result in very different mesh motion otherwise. Since in most cases one
-   * will be using a non-constant coefficient in displacement formulation, the
-   * default value of this parameter is <code>false</code>.
-   *
-   * @note This function is not currently implemented for the 1d case.
    */
   template <int dim>
   void
@@ -638,20 +496,18 @@ namespace GridTools
                     const bool solve_for_absolute_positions  = false);
 
   /**
-   * Return a std::map with all vertices of faces located in the boundary
+   * 返回一个  std::map  具有位于边界的所有顶点的面
+   * @param[in]  Triangulation 对象。
    *
-   * @param[in] tria The Triangulation object.
    */
   template <int dim, int spacedim>
   std::map<unsigned int, Point<spacedim>>
   get_all_vertices_at_boundary(const Triangulation<dim, spacedim> &tria);
 
   /**
-   * Scale the entire triangulation by the given factor. To preserve the
-   * orientation of the triangulation, the factor must be positive.
+   * 按给定的系数缩放整个三角图。为了保持三角形的方向，该因子必须是正的。
+   * 这个函数使用了上面的transform()函数，所以对三角形的要求也适用于这个函数。
    *
-   * This function uses the transform() function above, so the requirements on
-   * the triangulation stated there hold for this function as well.
    */
   template <int dim, int spacedim>
   void
@@ -659,18 +515,14 @@ namespace GridTools
         Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * Distort the given triangulation by randomly moving around all the
-   * vertices of the grid.  The direction of movement of each vertex is
-   * random, while the length of the shift vector has a value of @p factor
-   * times the minimal length of the active edges adjacent to this vertex.
-   * Note that @p factor should obviously be well below <tt>0.5</tt>.
+   * 通过随机移动网格中的所有顶点来扭曲给定的三角结构。
+   * 每个顶点的移动方向是随机的，而移位矢量的长度为 @p
+   * factor 乘以与此顶点相邻的活动边的最小长度。  注意，
+   * @p factor 显然应该远低于<tt>0.5</tt>。    如果 @p keep_boundary
+   * 被设置为 @p true
+   * （这是默认的），那么边界顶点不会被移动。      @p seed
+   * 用于随机引擎的初始化。它的默认值用以前版本的deal.II中的相同状态来初始化引擎。
    *
-   * If @p keep_boundary is set to @p true (which is the default), then
-   * boundary vertices are not moved.
-   *
-   * @p seed is used for the initialization of the random engine. Its
-   * default value initializes the engine with the same state as in
-   * previous versions of deal.II.
    */
   template <int dim, int spacedim>
   void
@@ -681,37 +533,10 @@ namespace GridTools
     const unsigned int            seed = boost::random::mt19937::default_seed);
 
   /**
-   * Remove hanging nodes from a grid. If the @p isotropic parameter is set
-   * to @p false (default) this function detects cells with hanging nodes and
-   * refines the neighbours in the direction that removes hanging nodes.
-   * If the @p isotropic parameter is set
-   * to @p true, the neighbours refinement is made in each directions.
-   * In order to remove all hanging nodes this procedure has to be repeated:
-   * this could require a large number of iterations.
-   * To avoid this a max number (@p max_iterations) of iteration is provided.
+   从网格中移除悬挂的节点。如果 @p isotropic 参数设置为 @p false （默认值），该函数会检测到有悬空节点的单元格，并在去除悬空节点的方向上细化邻域。  如果 @p isotropic 参数设置为 @p true, ，则在每个方向上进行邻居细化。  为了去除所有悬空节点，这个过程必须重复进行：这可能需要大量的迭代。  为了避免这种情况，我们提供了一个最大的迭代数（ @p max_iterations) ）。    考虑以下网格。    @image html remove_hanging_nodes-hanging.png   @p isotropic  ==  @p false  将返回。    @image html remove_hanging_nodes-aniso.png   @p isotropic  ==  @p true  会返回。    @image html remove_hanging_nodes-isotro.png   @param[in,out]  tria Triangulation来细化。      @param[in]  isotropic 如果为真，则在每个方向上细化单元，否则（默认值）则在删除悬挂节点的方向上细化单元。      @param[in]  max_iterations 在每一步中，只有最接近悬挂节点的单元被精炼。该代码可能需要大量的迭代来移除所有悬空节点。  @p max_iterations  是允许的最大迭代数。如果  @p max_iterations  ==  numbers::invalid_unsigned_int  这个函数继续精炼，直到没有悬空节点。
+   * @note  在并行代码的情况下，该函数应与
+   * GridGenerator::flatten_triangulation. 相结合。
    *
-   * Consider the following grid:
-   * @image html remove_hanging_nodes-hanging.png
-   *
-   * @p isotropic == @p false would return:
-   * @image html remove_hanging_nodes-aniso.png
-   *
-   * @p isotropic == @p true would return:
-   * @image html remove_hanging_nodes-isotro.png
-   *
-   * @param[in,out] tria Triangulation to refine.
-   *
-   * @param[in] isotropic If true refine cells in each directions, otherwise
-   * (default value) refine the cell in the direction that removes hanging node.
-   *
-   * @param[in] max_iterations At each step only closest cells to hanging nodes
-   * are refined. The code may require a lot of iterations to remove all
-   * hanging nodes. @p max_iterations is the maximum number of iteration
-   * allowed. If @p max_iterations == numbers::invalid_unsigned_int this
-   * function continues refining until there are no hanging nodes.
-   *
-   * @note In the case of parallel codes, this function should be combined
-   * with GridGenerator::flatten_triangulation.
    */
   template <int dim, int spacedim>
   void
@@ -720,28 +545,11 @@ namespace GridTools
                        const unsigned int            max_iterations = 100);
 
   /**
-   * Refine a mesh anisotropically such that the resulting mesh is composed by
-   * cells with maximum ratio between dimensions less than @p max_ratio.
-   * This procedure requires an algorithm that may not terminate. Consequently,
-   * it is possible to set a maximum number of iterations through the
-   * @p max_iterations parameter.
+   各向异性地细化一个网格，使得到的网格由尺寸间最大比率小于 @p max_ratio. 的单元组成，这个过程需要一个可能不会终止的算法。因此，可以通过 @p max_iterations 参数设置一个最大的迭代次数。    从这样的一个单元格开始。    @image html remove_anisotropy-coarse.png  这个函数将返回。    @image html remove_anisotropy-refined.png   @param[in,out]  tria 要细化的三角图。      @param[in]  max_ratio 每个单元的尺寸之间的比率允许的最大值。      @param[in]  max_iterations 允许的最大迭代次数。
+   * @note  如果是并行代码，该函数应与
+   * GridGenerator::flatten_triangulation 和 GridTools::remove_hanging_nodes.
+   * 相结合。
    *
-   * Starting from a cell like this:
-   * @image html remove_anisotropy-coarse.png
-   *
-   * This function would return:
-   * @image html remove_anisotropy-refined.png
-   *
-   * @param[in,out] tria Triangulation to refine.
-   *
-   * @param[in] max_ratio Maximum value allowed among the ratio between
-   * the dimensions of each cell.
-   *
-   * @param[in] max_iterations Maximum number of iterations allowed.
-   *
-   * @note In the case of parallel codes, this function should be combined
-   * with GridGenerator::flatten_triangulation and
-   * GridTools::remove_hanging_nodes.
    */
   template <int dim, int spacedim>
   void
@@ -750,26 +558,15 @@ namespace GridTools
                     const unsigned int            max_iterations = 5);
 
   /**
-   * Analyze the boundary cells of a mesh, and if one cell is found at
-   * a corner position (with dim adjacent faces on the boundary), and its
-   * dim-dimensional angle fraction exceeds @p limit_angle_fraction,
-   * refine globally once, and replace the children of such cell
-   * with children where the corner is no longer offending the given angle
-   * fraction.
-   *
-   * If no boundary cells exist with two adjacent faces on the boundary, then
-   * the triangulation is left untouched. If instead we do have cells with dim
-   * adjacent faces on the boundary, then the fraction between the
-   * dim-dimensional
-   * solid angle and dim*pi/2 is checked against the parameter @p limit_angle_fraction.
-   * If it is higher, the grid is refined once, and the children of the
-   * offending cell are replaced with some cells that instead respect the limit.
-   * After this process the triangulation is flattened, and all Manifold objects
-   * are restored as they were in the original triangulation.
-   *
-   * An example is given by the following mesh, obtained by attaching a
-   * SphericalManifold to a mesh generated using GridGenerator::hyper_cube:
-   *
+   * 分析网格的边界单元，如果发现有一个单元位于角的位置（边界上有昏暗的相邻面），并且其二维角度分数超过
+   * @p limit_angle_fraction,
+   * ，则全局细化一次，并且用角不再违反给定角度分数的子单元替换该单元的子单元。
+   * 如果不存在边界上有两个相邻面的边界单元，那么三角形就不会被触动。如果我们确实有边界上有dim相邻面的单元，那么将根据参数
+   * @p limit_angle_fraction.
+   * 检查dim-dimensional实体角和dim*pi/2之间的分数，如果它更高，网格将被细化一次，并且违规单元的子单元将被替换成一些尊重极限的单元。
+   * 在这个过程之后，三角形被压平，所有的Manifold对象都被恢复到原来的三角形中。
+   * 以下的网格就是一个例子，它是将一个SphericalManifold附加到使用
+   * GridGenerator::hyper_cube: 生成的网格上而得到的。
    * @code
    * const SphericalManifold<dim> m0;
    * Triangulation<dim> tria;
@@ -778,20 +575,12 @@ namespace GridTools
    * tria.set_manifold(0, m0);
    * tria.refine_global(4);
    * @endcode
-   *
    * <p ALIGN="center">
-   * @image html regularize_mesh_01.png
+   @image html regularize_mesh_01.png
    * </p>
-   *
-   * The four cells that were originally the corners of a square will give you
-   * some troubles during computations, as the jacobian of the transformation
-   * from the reference cell to those cells will go to zero, affecting the error
-   * constants of the finite element estimates.
-   *
-   * Those cells have a corner with an angle that is very close to 180 degrees,
-   * i.e., an angle fraction very close to one.
-   *
-   * The same code, adding a call to regularize_corner_cells:
+   * 四个原本是正方形的角的单元在计算过程中会给你带来一些麻烦，因为从参考单元到这些单元的变换的贾可宾会归零，影响有限元估计的误差常数。
+   * 那些单元格的角非常接近180度，也就是说，角分值非常接近1。
+   * 同样的代码，加入对regularize_corner_cells的调用。
    * @code
    * const SphericalManifold<dim> m0;
    * Triangulation<dim> tria;
@@ -801,18 +590,13 @@ namespace GridTools
    * GridTools::regularize_corner_cells(tria);
    * tria.refine_global(2);
    * @endcode
-   * generates a mesh that has a much better behavior w.r.t. the jacobian of
-   * the Mapping:
-   *
-   * <p ALIGN="center">
-   * @image html regularize_mesh_02.png
-   * </p>
-   *
-   * This mesh is very similar to the one obtained by GridGenerator::hyper_ball.
-   * However, using GridTools::regularize_corner_cells one has the freedom to
-   * choose when to apply the regularization, i.e., one could in principle first
-   * refine a few times, and then call the regularize_corner_cells function:
-   *
+   * 生成的网格在Mapping的jacobian方面有更好的表现。      <p
+   * ALIGN="center">
+   @image html regularize_mesh_02.png
+   * </p>  这个网格与 GridGenerator::hyper_ball.
+   * 得到的网格非常相似。然而，使用
+   * GridTools::regularize_corner_cells
+   * 可以自由选择何时应用正则化，也就是说，原则上可以先细化几次，然后再调用regularize_corner_cells函数。
    * @code
    * const SphericalManifold<dim> m0;
    * Triangulation<dim> tria;
@@ -823,85 +607,73 @@ namespace GridTools
    * GridTools::regularize_corner_cells(tria);
    * tria.refine_global(1);
    * @endcode
+   * 这就产生了下面的网格。      <p ALIGN="center">
+   @image html regularize_mesh_03.png
+   * </p>  这个函数目前只在dim = 2的情况下实现，如果在dim =
+   * 3的情况下调用，会产生一个异常。      @param[in,out]  tria
+   * 正则化的三角图。      @param[in]  limit_angle_fraction
+   * 网格中的角元素允许的最大角度或实体角度的比率。
    *
-   * This generates the following mesh:
-   *
-   * <p ALIGN="center">
-   * @image html regularize_mesh_03.png
-   * </p>
-   *
-   * The function is currently implemented only for dim = 2 and
-   * will throw an exception if called with dim = 3.
-   *
-   * @param[in,out] tria Triangulation to regularize.
-   *
-   * @param[in] limit_angle_fraction Maximum ratio of angle or solid
-   * angle that is allowed for a corner element in the mesh.
    */
   template <int dim, int spacedim>
   void
   regularize_corner_cells(Triangulation<dim, spacedim> &tria,
                           const double limit_angle_fraction = .75);
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Finding cells and vertices of a triangulation
+   * @name  寻找三角形的单元和顶点
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Given a Triangulation's @p cache and a list of @p points, call
-   * find_active_cell_around_point() on each element of @p points, and return
-   * @p cells, reference positions @p qpoints, and a mapping @p maps from local
-   * to global indices into @p points .
+   * 给定一个三角形的  @p cache  和一个  @p points,
+   * 的列表，在  @p points,  的每个元素上调用
+   * find_active_cell_around_point() 并返回  @p cells,  参考位置  @p
+   * qpoints,  和一个从局部到全局索引的映射  @p maps  到  @p
+   * points  。      @param[in]  缓存 三角形的 GridTools::Cache  .
+   * @param[in]  点 点的向量。    @param[in]  cell_hint (可选)
+   * 可能包含  @p points.   @return  的第一个点的单元格迭代器
+   * 包含以下信息。
    *
-   * @param[in] cache The triangulation's GridTools::Cache .
-   * @param[in] points The point's vector.
-   * @param[in] cell_hint (optional) A cell iterator for a cell which likely
-   * contains the first point of @p points.
    *
-   * @return A tuple containing the following information:
-   *  - @p cells : A vector of all the cells containing at least one of
-   *   the @p points .
-   *  - @p qpoints : A vector of vectors of points. @p qpoints[i] contains
-   *   the reference positions of all points that fall within the cell @p cells[i] .
-   *  - @p indices : A vector of vectors of integers, containing the mapping between
-   *   local numbering in @p qpoints , and global index in @p points .
    *
-   * If @p points[a] and @p points[b] are the only two points that fall in @p cells[c],
-   * then @p qpoints[c][0] and @p qpoints[c][1] are the reference positions of
-   * @p points[a] and @p points[b] in @p cells[c], and @p indices[c][0] = a,
-   * @p indices[c][1] = b. The function
-   * Mapping::transform_unit_to_real(qpoints[c][0])
-   * returns @p points[a].
    *
-   * The algorithm builds an rtree of @p points to sort them spatially, before
-   * attempting to call find_active_cell_around_point().
    *
-   * @note This function is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+   * -  @p cells  : 所有包含至少一个 @p points  的单元格的向量。
    *
-   * @note If a point is not found inside the mesh, or is lying inside an
-   * artificial cell of a parallel::TriangulationBase, the point is silently
-   * ignored. If you want to infer for which points the search failed, use the
-   * function compute_point_locations_try_all() that also returns a vector of
-   * indices indicating the points for which the search failed.
    *
-   * @note The actual return type of this function, i.e., the type referenced
-   * above as @p return_type, is
+   *
+   *
+   *
+   *
+   * -  @p qpoints  : 一个点的向量。  @p qpoints[i]  包含落在单元格内的所有点的参考位置  @p cells[i]  。
+   *
+   *
+   *
+   *
+   *
+   * -  @p indices  : 一个整数向量，包含  @p qpoints  中的局部编号，和  @p points  中的全局索引之间的映射。    如果 @p points[a] 和 @p points[b] 是落在 @p cells[c], 中的唯一两个点，那么 @p qpoints[c][0] 和 @p qpoints[c][1] 是 @p points[a] 和 @p points[b] 在 @p cells[c], 和 @p indices[c][0] 的参考位置。 ]=a， @p indices[c][1] =b。函数 Mapping::transform_unit_to_real(qpoints[c][0]) 返回 @p points[a]. 。算法建立了一个 @p points 的rtree，对它们进行空间排序，然后尝试调用find_active_cell_around_point（）。
+   * @note  这个函数没有在二维一的情况下实现（<tt>spacedim !=
+   * dim</tt>）。
+   * @note  如果一个点在网格内没有找到，或者位于一个
+   * parallel::TriangulationBase,
+   * 的人工单元内，这个点会被默默地忽略掉。如果你想推断哪些点的搜索失败了，请使用函数compute_point_locations_try_all()，该函数也会返回一个索引的向量，表示搜索失败的点。
+   * @note  这个函数的实际返回类型，即上面提到的 @p
+   * return_type, 的类型是
    * @code
    * std::tuple<
-   *   std::vector<
-   *     typename Triangulation<dim, spacedim>::active_cell_iterator>,
-   *   std::vector<std::vector<Point<dim>>>,
-   *   std::vector<std::vector<unsigned int>>>
+   * std::vector<
+   *   typename Triangulation<dim, spacedim>::active_cell_iterator>,
+   * std::vector<std::vector<Point<dim>>>,
+   * std::vector<std::vector<unsigned int>>>
    * @endcode
-   * The type is abbreviated in the online documentation to improve readability
-   * of this page.
+   * 在线文档中对该类型进行了缩写，以提高本页面的可读性。
+   * @note  这个函数通过利用
+   * GridTools::Cache::get_cell_bounding_boxes_rtree(),
+   * 来优化搜索，该函数要么返回一个缓存的rtree，要么建立并存储一个。如果该函数只在少数几个点上调用一次，建立一个rtree可能会妨碍性能。
    *
-   * @note This function optimizes the search by making use of
-   * GridTools::Cache::get_cell_bounding_boxes_rtree(), which either returns
-   * a cached rtree or builds and stores one. Building an rtree might hinder
-   * the performance if the function is called only once on few points.
    */
   template <int dim, int spacedim>
 #  ifndef DOXYGEN
@@ -920,37 +692,29 @@ namespace GridTools
         typename Triangulation<dim, spacedim>::active_cell_iterator());
 
   /**
-   * This function is similar to GridTools::compute_point_locations(),
-   * but while compute_point_locations() silently ignores all points for which
-   * find_active_cell_around_point() fails, this function also returns a
-   * vector containing the indices of the points for which
-   * find_active_cell_around_point() failed.
-   *
-   * @return A tuple containing four elements; the first three
-   * are documented in GridTools::compute_point_locations().
-   * The last element of the @p return_type contains the
-   * indices of points which are neither found inside the mesh
-   * nor lie in artificial cells. The @p return_type equals the
-   * following tuple type:
+   * 这个函数与 GridTools::compute_point_locations(),
+   * 类似，但是compute_point_locations()默默地忽略了所有find_active_cell_around_point()失败的点，这个函数也返回一个包含find_active_cell_around_point()失败的点的索引的向量。
+   * @return  一个包含四个元素的元组；前三个元素在
+   * GridTools::compute_point_locations().  中有记录。  @p return_type
+   * 的最后一个元素包含了既没有在网格内发现也没有位于人工单元内的点的索引。
+   * @p return_type  等于以下元组类型。
    * @code
-   *   std::tuple<
-   *     std::vector<
-   *        typename Triangulation<dim,spacedim>::active_cell_iterator>,
-   *     std::vector<std::vector<Point<dim>>>,
-   *     std::vector<std::vector<unsigned int>>,
-   *     std::vector<unsigned int>
-   *   >
+   * std::tuple<
+   *   std::vector<
+   *      typename Triangulation<dim,spacedim>::active_cell_iterator>,
+   *   std::vector<std::vector<Point<dim>>>,
+   *   std::vector<std::vector<unsigned int>>,
+   *   std::vector<unsigned int>
+   * >
    * @endcode
    *
-   * @note This function is not implemented for the codimension one case (<tt>spacedim != dim</tt>).
+   * @note  这个函数在二维一的情况下没有实现（<tt>spacedim !=
+   * dim</tt>）。
+   * @note  这个函数通过使用
+   * GridTools::Cache::get_cell_bounding_boxes_rtree(),
+   * 来优化搜索，该函数要么返回一个缓存的rtree，要么建立并存储一个。如果该函数只在少数几个点上调用一次，建立一个rtree可能会妨碍性能。
+   * 更详细的文档见 GridTools::compute_point_locations(). 。
    *
-   * @note This function optimizes the search by making use of
-   * GridTools::Cache::get_cell_bounding_boxes_rtree(), which either returns
-   * a cached rtree or builds and stores one. Building an rtree might hinder
-   * the performance if the function is called only once on few points.
-   *
-   * For a more detailed documentation see
-   * GridTools::compute_point_locations().
    */
   template <int dim, int spacedim>
 #  ifndef DOXYGEN
@@ -970,73 +734,72 @@ namespace GridTools
         typename Triangulation<dim, spacedim>::active_cell_iterator());
 
   /**
-   * Given a @p cache and a list of
-   * @p local_points for each process, find the points lying on the locally
-   * owned part of the mesh and compute the quadrature rules for them.
-   * Distributed compute point locations is a function similar to
-   * GridTools::compute_point_locations but working for
-   * parallel::TriangulationBase objects and, unlike its serial version, also
-   * for a distributed triangulation (see parallel::distributed::Triangulation).
+   * 给出一个 @p cache 和每个进程的 @p local_points
+   * 列表，找到位于网格本地拥有部分的点并计算它们的正交规则。
+   * 分布式计算点位置是一个类似于
+   * GridTools::compute_point_locations 的函数，但对
+   * parallel::TriangulationBase
+   * 对象起作用，而且，与它的序列版本不同，也适用于分布式三角测量（见
+   * parallel::distributed::Triangulation).   @param[in] 缓存一个
+   * GridTools::Cache 对象 @param[in]
+   * local_points是当前进程拥有的点的阵列。
+   * 每个进程可以有一个不同的点阵列，这个阵列可以是空的，不包含在三角形的本地拥有的部分内
+   * @param[in]  global_bboxes
+   * 一个边界盒的向量；它描述了每个进程的网格的本地拥有部分。global_boxes[rk]中包含了描述网格的哪一部分被等级为rk的进程局部拥有的界线盒。局部描述可以从
+   * GridTools::compute_mesh_predicate_bounding_box;
+   * 中获得，然后全局描述可以通过
+   * GridTools::exchange_local_bounding_boxes 或 Utilities::MPI::all_gather
+   * 获得  @param[in]  容差
+   * 以单元格坐标计算的容差。根据问题的不同，可能需要调整公差，以便能够确定一个单元。浮点运算意味着，一般来说，一个点不会完全位于一个顶点、边缘或面。在任何一种情况下，都无法预测这个函数会返回哪个与顶点或边/面相邻的单元。
+   * 因此，调用这个函数的算法需要考虑到，返回的单元格将只包含近似的点。
+   * @return  一个包含正交信息的元组 输出元组的元素是。
    *
-   * @param[in] cache a GridTools::Cache object
-   * @param[in] local_points the array of points owned by the current process.
-   * Every process can have a different array of points which can be empty and
-   * not contained within the locally owned part of the triangulation
-   * @param[in] global_bboxes a vector of vectors of bounding boxes; it
-   * describes the locally owned part of the mesh for each process. The bounding
-   * boxes describing which part of the mesh is locally owned by process with
-   * rank rk are contained in global_bboxes[rk]. The local description can be
-   * obtained from GridTools::compute_mesh_predicate_bounding_box; then the
-   * global one can be obtained using either
-   * GridTools::exchange_local_bounding_boxes or Utilities::MPI::all_gather
-   * @param[in] tolerance Tolerance in terms of unit cell coordinates. Depending
-   *   on the problem, it might be necessary to adjust the tolerance in order
-   *   to be able to identify a cell. Floating
-   *   point arithmetic implies that a point will, in general, not lie exactly
-   *   on a vertex, edge, or face. In either case, it is not predictable which
-   *   of the cells adjacent to a vertex or an edge/face this function returns.
-   *   Consequently, algorithms that call this function need to take into
-   *   account that the returned cell will only contain the point approximately.
-   * @return A tuple containing the quadrature information
    *
-   * The elements of the output tuple are:
-   * - cells : a vector of all cells containing at least one point.
-   * - qpoints : a vector of vector of points; containing in @p qpoints[i]
-   *   the reference positions of all points that fall within the cell @p cells[i] .
-   * - maps : a vector of vector of integers, containing the mapping between
-   *  the numbering in qpoints (previous element of the tuple), and the vector
-   *  of local points of the process owning the points.
-   * - points : a vector of vector of points. @p points[i][j] is the point in the
-   *  real space corresponding.
-   *  to @p qpoints[i][j] . Notice @p points are the points lying on the locally
-   *  owned part of the mesh; thus these can be either copies of @p local_points
-   *  or points received from other processes i.e. local_points for other
-   * processes
-   * - owners : a vector of vectors; @p owners[i][j] contains the rank of
-   *  the process owning the point[i][j] (previous element of the tuple).
    *
-   * The function uses the triangulation's mpi communicator: for this reason it
-   * throws an assert error if the Triangulation is not derived from
-   * parallel::TriangulationBase .
    *
-   * In a serial execution the first three elements of the tuple are the same
-   * as in GridTools::compute_point_locations .
    *
-   * Note: this function is a collective operation.
+   * - cells : 所有包含至少一个点的单元格的向量。
    *
-   * @note The actual return type of this function, i.e., the type referenced
-   * above as @p return_type, is
+   *
+   *
+   *
+   *
+   *
+   * - qpoints : 一个点的向量；包含在 @p qpoints[i] 中的所有点的参考位置，这些点位于单元格 @p cells[i] 中。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - maps : 一个整数向量，包含qpoints中的编号（元组的前一个元素）与拥有这些点的过程的局部点向量之间的映射。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - points : 一个点的向量。  @p points[i][j]  是实空间中对应于  @p qpoints[i][j]  的点。注意 @p points 是位于网格本地所有部分的点；因此这些可以是 @p local_points 的副本或从其他进程收到的点，即其他进程的本地_点
+   *
+   *
+   *
+   *
+   *
+   *
+   * - owners : 一个向量的向量； @p owners[i][j]  包含拥有point[i][j]的进程的等级（元组的前一个元素）。    该函数使用三角形的mpi通信器：由于这个原因，如果三角形不是从 parallel::TriangulationBase 派生的，它会抛出一个断言错误。    在一个串行执行中，元组的前三个元素与  GridTools::compute_point_locations  中的相同。    注意：这个函数是一个集体操作。
+   * @note  这个函数的实际返回类型，即上面提到的  @p
+   * return_type,  的类型是
    * @code
    * std::tuple<
-   *   std::vector<
-   *     typename Triangulation<dim, spacedim>::active_cell_iterator>,
-   *   std::vector<std::vector<Point<dim>>>,
-   *   std::vector<std::vector<unsigned int>>,
-   *   std::vector<std::vector<Point<spacedim>>>,
-   *   std::vector<std::vector<unsigned int>>>
+   * std::vector<
+   *   typename Triangulation<dim, spacedim>::active_cell_iterator>,
+   * std::vector<std::vector<Point<dim>>>,
+   * std::vector<std::vector<unsigned int>>,
+   * std::vector<std::vector<Point<spacedim>>>,
+   * std::vector<std::vector<unsigned int>>>
    * @endcode
-   * The type is abbreviated in the online documentation to improve readability
-   * of this page.
+   * 在线文档中对该类型进行了缩写，以提高本页面的可读性。
+   *
    */
   template <int dim, int spacedim>
 #  ifndef DOXYGEN
@@ -1058,27 +821,22 @@ namespace GridTools
   namespace internal
   {
     /**
-     * Data structure returned by
-     * GridTools::internal::distributed_compute_point_locations(). It provides
-     * information to perform GridTools::distributed_compute_point_locations()
-     * and to set up the communication pattern within
+     * 由 GridTools::internal::distributed_compute_point_locations().
+     * 返回的数据结构 它提供信息以执行
+     * GridTools::distributed_compute_point_locations() 并在
      * Utilities::MPI::RemotePointEvaluation::reinit().
+     * 内设置通信模式。
+     * @note  字段的名称是在考虑到
+     * Utilities::MPI::RemotePointEvaluation
+     * 的情况下选择的。在这里，数量在指定的任意定位点（甚至在MPI宇宙中的远程进程上）被逐个计算，这些值被发送给请求进程，请求进程接收结果，并根据点的情况诉诸结果。
      *
-     * @note The name of the fields are chosen with
-     *   Utilities::MPI::RemotePointEvaluation in mind. Here, quantities are
-     *   computed at specified arbitrary positioned points (and even on remote
-     *   processes in the MPI universe) cell by cell and these values are sent
-     *   to requesting processes, which receive the result and resort the
-     *   result according to the points.
      */
     template <int dim, int spacedim>
     struct DistributedComputePointLocationsInternal
     {
       /**
-       * Information of each point on sending/evaluation side. The elements of
-       * the tuple are as follows: 0) cell level and index, 1) rank of the
-       * owning process, 2) local index of the owning process, 3) reference
-       * position, 4) real position, 5) permutation index within a send buffer.
+       * 发送/评估方的每个点的信息。该元组的元素如下。0）单元水平和索引，1）拥有进程的等级，2）拥有进程的本地索引，3）参考位置，4）实际位置，5）发送缓冲区内的包络索引。
+       *
        */
       std::vector<std::tuple<std::pair<int, int>,
                              unsigned int,
@@ -1089,51 +847,49 @@ namespace GridTools
         send_components;
 
       /**
-       * Ranks to send to.
+       * 要发送的等级。
+       *
        */
       std::vector<unsigned int> send_ranks;
 
       /**
-       * Pointers of ranges within a send buffer to be sent to the ranks
-       * specified by send_ranks. The size of the send buffer is given
-       * by send_ptrs.back().
+       * 发送缓冲区内的范围指针，将被发送至send_ranks指定的等级。发送缓冲区的大小由send_ptrs.back()给出。
+       *
        */
       std::vector<unsigned int> send_ptrs;
 
       /**
-       * Information of each received data value. The elements of the tuple are
-       * as follows: 0) rank of sender, 1) local index, 2) enumeration index.
+       * 每个收到的数据值的信息。该元组的元素如下。0）发送者的等级，1）本地索引，2）枚举索引。
+       * @note  向量按照1）、0）、2）进行排序。)
+       * @note
+       * 每个点都可能有多个数据值与之相关。如果一个点与一个由多个单元共享的几何实体（例如，顶点）重合，就可能是这种情况。
        *
-       * @note The vector is sorted according to 1), 0), 2).
-       *
-       * @note To each point multiple data values might be associated to. This
-       *   might be the case if a point coincides with a geometric entity (e.g.,
-       *   vertex) that is shared by multiple cells.
        */
       std::vector<std::tuple<unsigned int, unsigned int, unsigned int>>
         recv_components;
 
       /**
-       * Ranks from where data is received.
+       * 从哪里接收数据的等级。
+       *
        */
       std::vector<unsigned int> recv_ranks;
 
       /**
-       * Pointers of ranges within a receive buffer that are filled by ranks
-       * specified by recv_ranks. The size of the receive buffer is given by
-       * recv_ptrs.back().
+       * 接收缓冲区内的范围指针，由recv_ranks指定的等级来填充。接收缓冲区的大小由recv_ptrs.back()给出。
+       *
        */
       std::vector<unsigned int> recv_ptrs;
     };
 
     /**
-     * A function that fills DistributedComputePointLocationsInternal.
-     * If the input argument @p perform_handshake is set to false only
-     * the fields needed by
-     * GridTools::internal::distributed_compute_point_locations() are filled.
-     * If the input argument is set to true additional data structures are
-     * set up to be able to setup the communication pattern within
+     * 一个填充DistributedComputePointLocationsInternal的函数。
+     * 如果输入参数 @p perform_handshake 被设置为false，只有
+     * GridTools::internal::distributed_compute_point_locations()
+     * 需要的字段被填充。    如果输入参数被设置为
+     * "true"，则会设置额外的数据结构，以便能够在
      * Utilities::MPI::RemotePointEvaluation::reinit().
+     * 中设置通信模式。
+     *
      */
     template <int dim, int spacedim>
     DistributedComputePointLocationsInternal<dim, spacedim>
@@ -1148,40 +904,27 @@ namespace GridTools
   } // namespace internal
 
   /**
-   * Return a map `vertex index -> Point<spacedim>` containing the used
-   * vertices of the given `container`. The key of the returned map (i.e.,
-   * the first element of the pair above) is the global index in the
-   * triangulation, whereas the value of each pair is the physical
-   * location of the corresponding vertex. The used vertices are obtained by
-   * looping over all cells,
-   * and querying for each cell where its vertices are through the (optional)
-   * `mapping` argument.
+   * 返回一个地图`顶点索引
    *
-   * In serial Triangulation objects and parallel::shared::Triangulation
-   * objects, the size of the returned map
-   * equals Triangulation::n_used_vertices() (not Triangulation::n_vertices()).
-   * Note that in parallel::distributed::Triangulation objects, only vertices in
-   * locally owned cells and ghost cells are returned, as for all other vertices
-   * their real location might not be known (e.g. for distributed computations
-   * using MappingQEulerian).
-   *
-   * If you use the default `mapping`, the returned map satisfies the following
-   * equality:
-   *
+   * ->
+   * Point<spacedim>`，包含给定的`容器'的使用顶点。返回的地图的键（即上面一对的第一个元素）是三角形中的全局索引，而每一对的值是对应顶点的物理位置。使用的顶点是通过在所有单元中循环得到的，并通过（可选）`mapping`参数查询每个单元的顶点在哪里。
+   * 在序列Triangulation对象和 parallel::shared::Triangulation
+   * 对象中，返回的地图大小等于 Triangulation::n_used_vertices()
+   * （而不是 Triangulation::n_vertices()).  注意，在
+   * parallel::distributed::Triangulation
+   * 对象中，只返回本地拥有的单元和幽灵单元中的顶点，因为所有其他顶点的真实位置可能不知道（例如，对于使用MappingQEulerian的分布计算）。
+   * 如果你使用默认的`mapping'，返回的地图满足以下等价关系。
    * @code
    * const auto used_vertices = extract_used_vertices(tria);
    * auto all_vertices = tria.get_vertices();
    *
    * for(const auto &id_and_v : used_vertices)
-   *   all_vertices[id_and_v.first] == id_and_v.second; // true
+   * all_vertices[id_and_v.first] == id_and_v.second; // true
    * @endcode
+   * 注意，对于改变顶点位置的映射，如MappingQEulerian，则不满足上述规定。      @ref ConceptMeshType  "MeshType概念"
+   * 。    @param  container 要提取顶点的容器。    @param  mapping
+   * 用来计算点的位置的映射。
    *
-   * Notice that the above is not satisfied for mappings that change the
-   * location of vertices, like MappingQEulerian.
-   *
-   * @ref ConceptMeshType "MeshType concept".
-   * @param container The container to extract vertices from.
-   * @param mapping The mapping to use to compute the points locations.
    */
   template <int dim, int spacedim>
   std::map<unsigned int, Point<spacedim>>
@@ -1192,13 +935,11 @@ namespace GridTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * Find and return the index of the closest vertex to a given point in the
-   * map of vertices passed as the first argument.
+   * 在作为第一个参数传递的顶点映射中，查找并返回离给定点最近的顶点的索引。
+   * @param  vertices 索引->顶点的地图，如
+   * GridTools::extract_used_vertices().   @param  p 目标点。    @return
+   * 最接近目标点`p`的顶点的索引。
    *
-   * @param vertices A map of index->vertex, as returned by
-   *        GridTools::extract_used_vertices().
-   * @param p The target point.
-   * @return The index of the vertex that is closest to the target point `p`.
    */
   template <int spacedim>
   unsigned int
@@ -1206,27 +947,18 @@ namespace GridTools
                       const Point<spacedim> &                        p);
 
   /**
-   * Find and return the index of the used vertex (or marked vertex) in a
-   * given mesh that is located closest to a given point.
+   * 查找并返回给定网格中最接近给定点的已使用顶点（或标记顶点）的索引。    这个函数使用存储在三角结构中的顶点位置。这通常是足够的，除非你使用一个移动顶点的Mapping（例如，MappingQEulerian）。在这种情况下，你应该用相同的名字和额外的Mapping参数来调用这个函数。      @param  mesh 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型的变量。    @param  p
+   * 我们想找到最接近的顶点的点。    @param  marked_vertices
+   * 表示 @p mesh
+   * 的哪些顶点将在搜索中被视为潜在的最近顶点的一个布尔数组。当收到一个非空的
+   * @p marked_vertices, 时，该函数将只在 @p marked_vertices
+   * 中搜索最接近的顶点。  这个数组的大小应该等于
+   * Triangulation::n_vertices()
+   * 对给定网格的三角结构返回的值（而不是
+   * Triangulation::n_used_vertices()). 返回的值）  @return
+   * 找到的最接近顶点的索引。
    *
-   * This function uses the locations of vertices as stored in the
-   * triangulation. This is usually sufficient, unless you are using a Mapping
-   * that moves the vertices around (for example, MappingQEulerian). In this
-   * case, you should call the function with the same name and with an
-   * additional Mapping argument.
-   *
-   * @param mesh A variable of a type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param p The point for which we want to find the closest vertex.
-   * @param marked_vertices An array of bools indicating which
-   * vertices of @p mesh will be considered within the search
-   * as the potentially closest vertex. On receiving a non-empty
-   * @p marked_vertices, the function will
-   * only search among @p marked_vertices for the closest vertex.
-   * The size of this array should be equal to the value returned by
-   * Triangulation::n_vertices() for the triangulation underlying the given mesh
-   * (as opposed to the value returned by Triangulation::n_used_vertices()).
-   * @return The index of the closest vertex found.
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
   unsigned int
@@ -1235,27 +967,18 @@ namespace GridTools
                       const std::vector<bool> &      marked_vertices = {});
 
   /**
-   * Find and return the index of the used vertex (or marked vertex) in a
-   * given mesh that is located closest to a given point. Use the given
-   * mapping to compute the actual location of the vertices.
+   * 在给定的网格中找到并返回最接近给定点的已使用顶点（或标记顶点）的索引。使用给定的映射来计算顶点的实际位置。    如果Mapping不修改网格顶点的位置（例如，MappingQEulerian），那么这个函数等同于同名的函数，并且没有`mapping`参数。      @param  mapping 用于计算顶点位置的映射  @param  mesh 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型的变量。    @param  p
+   * 我们想找到最近的顶点的点。    @param  marked_vertices 表示
+   * @p mesh
+   * 的哪些顶点将在搜索中被视为潜在的最近顶点的一个布尔数组。当收到一个非空的
+   * @p marked_vertices, 时，该函数将只在 @p marked_vertices
+   * 中搜索最接近的顶点。  这个数组的大小应该等于
+   * Triangulation::n_vertices()
+   * 对给定网格的三角结构返回的值（而不是
+   * Triangulation::n_used_vertices()). 返回的值）  @return
+   * 找到的最接近顶点的索引。
    *
-   * If the Mapping does not modify the position of the mesh vertices (like,
-   * for example, MappingQEulerian does), then this function is equivalent to
-   * the one with the same name, and without the `mapping` argument.
-   *
-   * @param mapping A mapping used to compute the vertex locations
-   * @param mesh A variable of a type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param p The point for which we want to find the closest vertex.
-   * @param marked_vertices An array of bools indicating which
-   * vertices of @p mesh will be considered within the search
-   * as the potentially closest vertex. On receiving a non-empty
-   * @p marked_vertices, the function will
-   * only search among @p marked_vertices for the closest vertex.
-   * The size of this array should be equal to the value returned by
-   * Triangulation::n_vertices() for the triangulation underlying the given mesh
-   * (as opposed to the value returned by Triangulation::n_used_vertices()).
-   * @return The index of the closest vertex found.
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
   unsigned int
@@ -1266,23 +989,13 @@ namespace GridTools
 
 
   /**
-   * Find and return a vector of iterators to active cells that surround a
-   * given vertex with index @p vertex_index.
+   * 找到并返回一个迭代器的向量，这些迭代器围绕着给定顶点的索引  @p vertex_index.  对于局部细化网格，顶点本身可能不是返回的所有相邻单元的顶点。然而，它将始终是一个单元的顶点，或者是位于面或边上的一个悬挂节点。      @param  容器 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型的变量。    @param  vertex_index
+   * 我们试图找到相邻单元的顶点的索引。    @return
+   * 与给定顶点相邻的单元格的一个向量。
+   * @note
+   * 目前还不完全清楚该函数是否对各向异性的细化网格做出正确的处理。它需要对这种情况进行检查。
    *
-   * For locally refined grids, the vertex itself might not be a vertex of all
-   * adjacent cells that are returned. However, it will always be either a
-   * vertex of a cell or be a hanging node located on a face or an edge of it.
-   *
-   * @param container A variable of a type that satisfies the requirements of
-   * the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param vertex_index The index of the vertex for which we try to find
-   * adjacent cells.
-   * @return A vector of cells that lie adjacent to the given vertex.
-   *
-   * @note It isn't entirely clear at this time whether the function does the
-   * right thing with anisotropically refined meshes. It needs to be checked
-   * for this case.
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
 #  ifndef _MSC_VER
@@ -1296,66 +1009,24 @@ namespace GridTools
                                 const unsigned int             vertex_index);
 
   /**
-   * Find an active non-artificial cell that surrounds a given point @p p. The return type
-   * is a pair of an iterator to the active cell along with the unit cell
-   * coordinates of the point.
+   * 查找围绕给定点的活动非人工单元  @p p.  返回类型是一对活动单元的迭代器以及该点的单元坐标。    这个函数使用的算法是首先寻找最接近给定点的顶点，见 GridTools::find_closest_vertex().  其次，在网格中找到这个顶点的所有相邻单元，见 GridTools::find_cells_adjacent_to_vertex().  最后，对于每个单元，函数测试点是否在里面。这个检查是使用给定的 @p mapping 参数来确定单元的边界是直的还是弯的。    如果一个点位于两个或多个单元的边界上，那么该算法将试图确定细化程度最高的那个单元。    如果请求的点不在本地拥有的单元或幽灵单元中，那么这个函数将返回（无效的）MeshType<dim,  spacedim>::end()  迭代器。这种情况可以类似于各种 `std::find()` 和 `std::lower_bound()` 函数的处理方式。      @param  映射 用于确定给定点是否在给定单元内的映射。    @param  mesh 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型的变量。    @param  p
+   * 我们想找到周围单元的点。    @param  marked_vertices
+   * 一个`bool'数组，表示顶点数组中的某个条目是否应该被视为（而其他的必须被忽略）可能是离指定点最近的顶点。在指定一个非默认的
+   * @p marked_vertices, 时，find_closest_vertex()只会在 @p
+   * marked_vertices 中搜索最近的顶点。
+   * 这个数组的大小应该等于三角形的n_vertices()（而不是n_used_vertices()）。使用
+   * @p marked_vertices
+   * 的动机是为了减少顶点的搜索空间，如果人们对感兴趣的点可能接近的顶点集合有先验的了解。
+   * @param  容差
+   * 以单元格坐标为单位的容差。根据问题的不同，可能有必要调整公差，以便能够识别一个单元。浮点运算意味着，一般来说，一个点不会完全位于一个顶点、边缘或面。在任何一种情况下，都无法预测这个函数会返回哪个与顶点或边/面相邻的单元。
+   * 因此，调用这个函数的算法需要考虑到，返回的单元格将只包含点的近似值。
+   * @return
+   * 一对进入网格的迭代器，指向周围的单元格，以及该点的单元格坐标。由于数字上的舍入，这个局部位置可能位于实际单元格之外。因此，这个函数返回的点应该被投影到单元格上，使用
+   * GeometryInfo::project_to_unit_cell().
+   * 这不是由算法自动执行的。返回的单元格可以是本地拥有的单元格或幽灵单元格（但不是人造单元格）。即使给定的点是本地拥有的单元格的一个顶点，返回的单元格也可能是一个幽灵单元。
+   * 背后的原因是，这是保证所有参与平行三角形计算的处理器都同意哪个单元包含一个点的唯一方法。例如，如果两个处理器聚集在一个顶点，并且用这个顶点调用该函数，那么一个处理器将返回一个本地拥有的单元，另一个则返回一个幽灵单元。
    *
-   * The algorithm used in this function proceeds by first looking for the
-   * vertex located closest to the given point, see
-   * GridTools::find_closest_vertex(). Secondly, all adjacent cells to this
-   * vertex are found in the mesh, see
-   * GridTools::find_cells_adjacent_to_vertex(). Lastly, for each of these
-   * cells, the function tests whether the point is inside. This check is
-   * performed using the given @p mapping argument to determine whether cells
-   * have straight or curved boundaries.
-   *
-   * If a point lies on the boundary of two or more cells, then the algorithm
-   * tries to identify the cell that is of highest refinement level.
-   *
-   * If the point requested does not lie in a locally-owned or ghost cell,
-   * then this function will return the (invalid) MeshType<dim, spacedim>::end()
-   * iterator. This case can be handled similarly to the various `std::find()`
-   * and `std::lower_bound()` functions.
-   *
-   * @param mapping The mapping used to determine whether the given point is
-   *   inside a given cell.
-   * @param mesh A variable of a type that satisfies the requirements of the
-   *   @ref ConceptMeshType "MeshType concept".
-   * @param p The point for which we want to find the surrounding cell.
-   * @param marked_vertices An array of `bool`s indicating whether an
-   *   entry in the vertex array should be considered
-   *   (and the others must be ignored) as the potentially
-   *   closest vertex to the specified point. On specifying a non-default
-   *   @p marked_vertices, find_closest_vertex() would
-   *   only search among @p marked_vertices for the closest vertex.
-   *   The size of this array should be equal to n_vertices() of the
-   *   triangulation (as opposed to n_used_vertices() ). The motivation of using
-   *   @p marked_vertices is to cut down the search space of vertices if one has
-   *   a priori knowledge of a collection of vertices that the point of interest
-   *   may be close to.
-   * @param tolerance Tolerance in terms of unit cell coordinates. Depending
-   *   on the problem, it might be necessary to adjust the tolerance in order
-   *   to be able to identify a cell. Floating
-   *   point arithmetic implies that a point will, in general, not lie exactly
-   *   on a vertex, edge, or face. In either case, it is not predictable which
-   *   of the cells adjacent to a vertex or an edge/face this function returns.
-   *   Consequently, algorithms that call this function need to take into
-   *   account that the returned cell will only contain the point approximately.
-   *
-   * @return A pair of an iterators into the mesh that points to the
-   * surrounding cell, and of the unit cell coordinates of that point. This
-   * local position might be located slightly outside an actual unit cell,
-   * due to numerical roundoff. Therefore, the point returned by this function
-   * should be projected onto the unit cell, using
-   * GeometryInfo::project_to_unit_cell().  This is not automatically performed
-   * by the algorithm. The returned cell can be a locally-owned cell or a
-   * ghost cell (but not an artificial cell). The returned cell might be a
-   * ghost cell even if the given point is a vertex of a locally owned cell.
-   * The reason behind is that this is the only way to guarantee that all
-   * processors that participate in a parallel triangulation will agree which
-   * cell contains a point. For example, if two processors come together
-   * at one vertex and the function is called with this vertex, then one
-   * processor will return a locally owned cell and the other one a ghost cell.
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
 #  ifndef _MSC_VER
@@ -1372,11 +1043,9 @@ namespace GridTools
                                 const double             tolerance = 1.e-10);
 
   /**
-   * A version of the above function that assumes straight boundaries and
-   * as a consequence simply calls the above function using MappingQ1 for
-   * the mapping argument.
+   * 上述函数的一个版本，假定边界是直的，因此只是用MappingQ1作为映射参数调用上述函数。
+   * @return 一个进入网格的迭代器，指向周围的单元。
    *
-   * @return An iterator into the mesh that points to the surrounding cell.
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
 #  ifndef _MSC_VER
@@ -1391,10 +1060,9 @@ namespace GridTools
                                 const double             tolerance = 1.e-10);
 
   /**
-   * Another version where we use that mapping on a given
-   * cell that corresponds to the active finite element index of that cell.
-   * This is obviously only useful for hp-problems, since the active finite
-   * element index for all other DoF handlers is always zero.
+   * 另一个版本，我们在一个给定的单元上使用该映射，该映射对应于该单元的活动有限元索引。
+   * 这显然只对hp-problems有用，因为所有其他DoF处理程序的活动有限元索引总是零。
+   *
    */
   template <int dim, int spacedim>
   std::pair<typename DoFHandler<dim, spacedim>::active_cell_iterator,
@@ -1406,26 +1074,13 @@ namespace GridTools
     const double                                tolerance = 1.e-10);
 
   /**
-   * Finding an active non-artificial cell around a point can be very expensive
-   * in terms of computational costs. This function aims at providing a fast
-   * version of the above functions by using a space-tree to speed up the
-   * geometry search.
-   *
-   * @param cache Object with information about the space-tree of a triangulation,
-   * see GridTools::Cache.
-   * @param p The point for which we want to find the surrounding cell.
-   * @param cell_hint Gives a hint for the geometry search, which is beneficial
-   * if a-priori knowledge is available regarding the cell on which the point
-   * may likely be located. A typical use case would be that this search has
-   * to be done for an array of points that are close to each other and where
-   * the adjacent cell of the previous point is a good hint for the next point
-   * in the array.
-   * @param marked_vertices See above.
-   * @param tolerance See above.
-   *
-   *
-   * The following code example shows how to use this function:
-   *
+   * 在一个点周围寻找一个活跃的非人工单元在计算成本上可能是非常昂贵的。这个函数旨在通过使用空间树来加速几何体的搜索，提供上述函数的快速版本。
+   * @param  cache 包含三角形空间树信息的对象，见
+   * GridTools::Cache.   @param  p 我们要为其寻找周围的单元。
+   * @param  cell_hint
+   * 给出几何搜索的提示，如果有关于该点可能位于哪个单元的先验知识，这将是有益的。一个典型的用例是，这个搜索必须针对一个相互靠近的点的阵列，并且前一个点的相邻单元是阵列中下一个点的良好提示。
+   * @param  marked_vertices 见上文。    @param  tolerance 见上文。
+   * 下面的代码示例显示了如何使用这个函数。
    * @code
    * GridTools::Cache<dim, dim> cache(triangulation, mapping);
    * auto cell_hint = typename Triangulation<dim, dim>::active_cell_iterator();
@@ -1437,24 +1092,26 @@ namespace GridTools
    *
    * for(auto p : points)
    * {
-   *   auto cell_and_ref_point = GridTools::find_active_cell_around_point(
-   *     cache, p, cell_hint, marked_vertices, tolerance);
+   * auto cell_and_ref_point = GridTools::find_active_cell_around_point(
+   *   cache, p, cell_hint, marked_vertices, tolerance);
    *
-   *   if (cell_and_ref_point.first != triangulation.end())
-   *     {
-   *      // use current cell as hint for the next point
-   *      cell_hint = cell_and_ref_point.first;
-   *      // do something with cell_and_ref_point
-   *      ...
-   *   }
-   *  else
-   *    {
-   *       // The function did not find a locally owned or ghost cell in which
-   *       // the point is located. We ought to handle this somehow here.
-   *    }
-   *   ...
+   * if (cell_and_ref_point.first != triangulation.end())
+   *   {
+   *    // use current cell as hint for the next point
+   *    cell_hint = cell_and_ref_point.first;
+   *    // do something with cell_and_ref_point
+   *    ...
+   * }
+   * else
+   *  {
+   *     // The function did not find a locally owned or ghost cell in which
+   *     // the point is located. We ought to handle this somehow here.
+   *  }
+   * ...
    * }
    * @endcode
+   *
+   *
    */
   template <int dim, int spacedim>
   std::pair<typename Triangulation<dim, spacedim>::active_cell_iterator,
@@ -1468,17 +1125,14 @@ namespace GridTools
     const double             tolerance       = 1.e-10);
 
   /**
-   * A version of the previous function that exploits an already existing
-   * map between vertices and cells (constructed using the function
-   * GridTools::vertex_to_cell_map()), a map of vertex_to_cell_centers (obtained
-   * through GridTools::vertex_to_cell_centers_directions()), and
-   * optionally an RTree constructed from the used vertices of the
-   * Triangulation.
+   * 前一个函数的一个版本，利用顶点和单元格之间已经存在的映射（使用函数
+   * GridTools::vertex_to_cell_map()),
+   * 构建一个顶点_到单元格_中心的映射（通过
+   * GridTools::vertex_to_cell_centers_directions()),
+   * 获得，也可以选择从三角结构的使用顶点构建的RTree。
+   * @note  所有这些结构都可以从一个 GridTools::Cache
+   * 对象中查询到。但是请注意，在这种情况下，MeshType必须是Triangulation，所以在这种情况下，直接调用上面的函数，参数为`cache'可能更合适。
    *
-   * @note All of these structures can be queried from a
-   * GridTools::Cache object. Note, however, that in this case MeshType
-   * has to be Triangulation, so that it might be more appropriate to directly
-   * call the function above with argument `cache` in this case.
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
 #  ifndef _MSC_VER
@@ -1508,25 +1162,17 @@ namespace GridTools
       *relevant_cell_bounding_boxes_rtree = nullptr);
 
   /**
-   * As compared to the functions above, this function identifies all active
-   * non-artificial cells around a point for a given tolerance level `tolerance`
-   * in terms of unit coordinates. Given a first cell with reference coordinates
-   * as parameter
-   * @p first_cell, e.g. obtained by one of the functions above, all
-   * corresponding neighboring cells with points in unit coordinates are also
-   * identified.
-   *
-   * This function is useful e.g. for discontinuous function spaces where, for
-   * the case the given point `p` lies on a vertex, edge or face, several
-   * cells might hold independent values of the solution that get combined in
-   * some way in a user code.
-   *
-   * This function is used as follows
+   * 与上面的函数相比，这个函数以单位坐标的方式识别一个给定的容忍度`tolerance`的点周围所有活跃的非人工单元。给定一个参考坐标为参数
+   * @p first_cell,
+   * 的第一个单元，例如通过上面的一个函数得到的，所有相应的具有单位坐标点的邻近单元也被确定。
+   * 这个函数对不连续函数空间很有用，例如，对于给定的点`p`位于一个顶点、边缘或面的情况，几个单元可能持有独立的解的值，在用户代码中以某种方式组合。
+   * 这个函数的使用方法如下
    * @code
-   *   auto first_pair = GridTools::find_active_cell_around_point(...);
-   *   auto all_cells  = GridTools::find_all_active_cells_around_point(
-   *   			   mapping, mesh, p, tolerance, first_pair);
+   * auto first_pair = GridTools::find_active_cell_around_point(...);
+   * auto all_cells  = GridTools::find_all_active_cells_around_point(
+   * 			   mapping, mesh, p, tolerance, first_pair);
    * @endcode
+   *
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
 #  ifndef _MSC_VER
@@ -1547,10 +1193,8 @@ namespace GridTools
                     Point<dim>> &  first_cell);
 
   /**
-   * A variant of the previous function that internally calls one of the
-   * functions find_active_cell_around_point() to obtain a first cell, and
-   * subsequently adds all other active non-artificial cells by calling the
-   * function find_all_active_cells_around_point() above.
+   * 前一个函数的变体，在内部调用其中一个函数find_active_cell_around_point()来获得第一个单元，随后通过调用上面的函数find_all_active_cells_around_point()来增加所有其他活跃的非人工单元。
+   *
    */
   template <int dim, template <int, int> class MeshType, int spacedim>
 #  ifndef _MSC_VER
@@ -1570,53 +1214,34 @@ namespace GridTools
     const std::vector<bool> &      marked_vertices = {});
 
   /**
-   * Return a list of all descendants of the given cell that are active. For
-   * example, if the current cell is once refined but none of its children are
-   * any further refined, then the returned list will contain all its
-   * children.
-   *
-   * If the current cell is already active, then the returned list is empty
-   * (because the cell has no children that may be active).
-   *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param cell An iterator pointing to a cell of the mesh.
-   * @return A list of active descendants of the given cell
-   *
-   * @note Since in C++ the MeshType template argument can not be deduced from
-   * a function call, you will have to specify it after the function name, as
-   * for example in
+   * 返回给定单元格的所有活跃的后代的列表。例如，如果当前单元格曾经被精炼过，但是它的子代没有任何进一步的精炼，那么返回的列表将包含它的所有子代。    如果当前单元格已经被激活，那么返回的列表是空的（因为该单元格没有可能被激活的子代）。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。    @param  cell
+   * 指向Mesh的一个单元的迭代器。    @return
+   * 给定单元格的活动子孙列表。
+   * @note
+   * 因为在C++中MeshType模板参数不能从函数调用中推导出来，所以你必须在函数名称后面指定它，例如
    * @code
-   *   GridTools::get_active_child_cells<DoFHandler<dim> > (cell)
+   * GridTools::get_active_child_cells<DoFHandler<dim> > (cell)
    * @endcode
+   *
+   *
    */
   template <class MeshType>
   std::vector<typename MeshType::active_cell_iterator>
   get_active_child_cells(const typename MeshType::cell_iterator &cell);
 
   /**
-   * Extract the active cells around a given cell @p cell and return them in
-   * the vector @p active_neighbors. These neighbors are specifically the
-   * <i>face</i> neighbors of a cell or, if that neighbor is further
-   * refined, its active children that border on that face. On the other
-   * hand, the neighbors returned do not include cells that lie, for
-   * example, diagonally opposite to a vertex but are not face neighbors
-   * themselves. (In 3d, it also does not include cells that are
-   * adjacent to one of the edges of the current cell, but are not
-   * face neighbors.)
-   *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param[in] cell An iterator pointing to a cell of the mesh.
-   * @param[out] active_neighbors A list of active descendants of the given
-   * cell
-   *
-   * @note Since in C++ the MeshType template argument can not be deduced from
-   * a function call, you will have to specify it after the function name, as
-   * for example in
+   * 提取给定单元格 @p cell 周围的活动单元，并在向量 @p active_neighbors. 中返回这些邻居，这些邻居具体是指单元格的<i>face</i>邻居，如果该邻居被进一步细化，则是其与该面交界的活动子女。另一方面，返回的邻居不包括那些位于，例如，与一个顶点对角线相对但本身不是面的邻居的单元。在3D中，它也不包括与当前单元格的一条边相邻，但不是面的邻居的单元格）。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。    @param[in]  cell
+   * 一个指向Mesh中某一单元的迭代器。    @param[out]
+   * active_neighbors 指向给定单元格的活跃子孙的列表。
+   * @note
+   * 因为在C++中，MeshType模板参数不能从函数调用中推导出来，你必须在函数名称后指定它，例如
    * @code
-   *   GridTools::get_active_neighbors<DoFHandler<dim>>(cell, active_neighbors)
+   * GridTools::get_active_neighbors<DoFHandler<dim>>(cell, active_neighbors)
    * @endcode
+   *
+   *
    */
   template <class MeshType>
   void
@@ -1625,53 +1250,40 @@ namespace GridTools
     std::vector<typename MeshType::active_cell_iterator> &active_neighbors);
 
   /**
-   * Extract and return the active cell layer around a subdomain (set of
-   * active cells) in the @p mesh (i.e. those that share a common set of
-   * vertices with the subdomain but are not a part of it). Here, the
-   * "subdomain" consists of exactly all of those cells for which the @p
-   * predicate returns @p true.
-   *
-   * An example of a custom predicate is one that checks for a given material
-   * id
+   * 提取并返回 @p mesh
+   * 中的子域（活动单元的集合）周围的活动单元层（即那些与子域共享一组顶点但不属于子域的单元）。在这里，"子域
+   * "恰好包括 @p 谓词返回 @p true. 的所有单元。
+   * 一个自定义谓词的例子是检查一个给定的材料id
    * @code
    * template <int dim>
    * bool
    * pred_mat_id(const typename Triangulation<dim>::active_cell_iterator & cell)
    * {
-   *   return cell->material_id() ==  1;
+   * return cell->material_id() ==  1;
    * }
    * @endcode
-   * and we can then extract the layer of cells around this material with the
-   * following call:
+   * 然后我们可以通过以下调用提取这个材料周围的细胞层。
    * @code
    * GridTools::compute_active_cell_halo_layer(tria, pred_mat_id<dim>);
    * @endcode
-   *
-   * Predicates that are frequently useful can be found in namespace
-   * IteratorFilters. For example, it is possible to extract a layer
-   * of cells around all of those cells with a given material id,
+   * 经常有用的谓词可以在命名空间IteratorFilters中找到。例如，可以提取所有具有给定材料ID的细胞周围的细胞层。
    * @code
    * GridTools::compute_active_cell_halo_layer(
-   *   tria, IteratorFilters::MaterialIdEqualTo(1, true));
+   * tria, IteratorFilters::MaterialIdEqualTo(1, true));
    * @endcode
-   * or around all cells with one of a set of active FE indices for a DoFHandler
-   * with hp-capabilities
+   * 或者在具有hp-capabilities的DoFHandler的一组活动FE指数的所有单元周围提取一层单元。
    * @code
    * GridTools::compute_active_cell_halo_layer(
-   *   hp_dof_handler, IteratorFilters::ActiveFEIndexEqualTo({1,2}, true));
+   * hp_dof_handler, IteratorFilters::ActiveFEIndexEqualTo({1,2}, true));
    * @endcode
-   * Note that in the last two examples we ensure that the predicate returns
-   * true only for locally owned cells. This means that the halo layer will
-   * not contain any artificial cells.
+   * 注意，在最后两个例子中，我们确保谓词只对本地拥有的单元返回真。这意味着光环层将不包含任何人工单元。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。    @param[in]  mesh
+   * 一个网格（即Triangulation或DoFHandler类型的对象）。
+   * @param[in]  谓词
+   * 一个函数（或带有operator()的类型对象），定义要提取晕层的子域。它是一个接收活动单元并返回一个布尔值的函数。
+   * @return
+   * 一个与所指子域至少有一个共同顶点的活动单元的列表。
    *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param[in] mesh A mesh (i.e. objects of type Triangulation or DoFHandler).
-   * @param[in] predicate A function  (or object of a type with an operator())
-   * defining the subdomain around which the halo layer is to be extracted. It
-   * is a function that takes in an active cell and returns a boolean.
-   * @return A list of active cells sharing at least one common vertex with
-   * the predicated subdomain.
    */
   template <class MeshType>
   std::vector<typename MeshType::active_cell_iterator>
@@ -1682,11 +1294,10 @@ namespace GridTools
 
 
   /**
-   * Extract and return the cell layer around a subdomain (set of
-   * cells) on a specified level of the @p mesh (i.e. those cells on
-   * that level that share a common set of vertices with the subdomain
-   * but are not a part of it). Here, the "subdomain" consists of exactly
-   * all of those cells for which the @p predicate returns @p true.
+   * 提取并返回 @p mesh
+   * 指定层次上的子域（单元格集合）周围的单元格层（即该层次上与子域共享一组共同顶点但不属于子域的那些单元格）。在这里，"子域
+   * "恰好由 @p predicate 返回 @p true. 的所有单元组成。
+   *
    */
   template <class MeshType>
   std::vector<typename MeshType::cell_iterator>
@@ -1698,68 +1309,18 @@ namespace GridTools
 
 
   /**
-   * Extract and return ghost cells which are the active cell layer around all
-   * locally owned cells. This is most relevant for
-   * parallel::shared::Triangulation where it will return a subset of all
-   * ghost cells on a processor, but for parallel::distributed::Triangulation
-   * this will return all the ghost cells.
+   * 提取并返回幽灵单元，这些单元是所有本地拥有的单元周围的活动单元层。这与 parallel::shared::Triangulation 最为相关，它将返回一个处理器上所有幽灵单元的子集，但对于 parallel::distributed::Triangulation 来说，这将返回所有的幽灵单元。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。    @param[in]  mesh
+   * 一个网格（即Triangulation或DoFHandler类型的对象）。
+   * @return  一个幽灵单元的列表。
    *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param[in] mesh A mesh (i.e. objects of type Triangulation or DoFHandler).
-   * @return A list of ghost cells
    */
   template <class MeshType>
   std::vector<typename MeshType::active_cell_iterator>
   compute_ghost_cell_halo_layer(const MeshType &mesh);
 
   /**
-   * Extract and return the set of active cells within a geometric distance of
-   * @p layer_thickness around a subdomain (set of active cells) in the @p mesh.
-   * Here, the "subdomain" consists of exactly all of
-   * those cells for which the @p predicate returns @p true.
    *
-   * The function first computes the cells that form the 'surface' of the
-   * subdomain that consists of all of the active cells for which the predicate
-   * is true. Using compute_bounding_box(), a bounding box is
-   * computed for this subdomain and extended by @p layer_thickness. These
-   * cells are called interior subdomain boundary cells.
-   * The active cells with all of their vertices outside the extended
-   * bounding box are ignored.
-   * The cells that are inside the extended bounding box are then checked for
-   * their proximity to the interior subdomain boundary cells. This implies
-   * checking the distance between a pair of arbitrarily oriented cells,
-   * which is not trivial in general. To simplify this, the algorithm checks
-   * the distance between the two enclosing spheres of the cells.
-   * This will definitely result in slightly more cells being marked but
-   * also greatly simplifies the arithmetic complexity of the algorithm.
-   *
-   * @image html active_cell_layer_within_distance.png
-   * The image shows a mesh generated by subdivided_hyper_rectangle(). The cells
-   * are marked using three different colors. If the grey colored cells in the
-   * image are the cells for which the predicate is true, then the function
-   * compute_active_cell_layer_within_distance() will return a set of cell
-   * iterators corresponding to the cells colored in red.
-   * The red colored cells are the active cells that are within a given
-   * distance to the grey colored cells.
-   *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param mesh A mesh (i.e. objects of type Triangulation or DoFHandler).
-   * @param predicate A function  (or object of a type with an operator())
-   * defining the subdomain around which the halo layer is to be extracted. It
-   * is a function that takes in an active cell and returns a boolean.
-   * @param layer_thickness specifies the geometric distance within
-   * which the function searches for active cells from the predicate domain.
-   * If the minimal distance between the enclosing sphere of the an
-   * active cell and the enclosing sphere of any of the cells for which
-   * the @p predicate returns @p true is less than @p layer_thickness,
-   * then the active cell is an \a active_cell_within_distance.
-   * @return A list of active cells within a given geometric distance
-   * @p layer_thickness from the set of active cells for which the @p predicate
-   * returns @p true.
-   *
-   * See compute_active_cell_halo_layer().
    */
   template <class MeshType>
   std::vector<typename MeshType::active_cell_iterator>
@@ -1770,26 +1331,16 @@ namespace GridTools
     const double layer_thickness);
 
   /**
-   * Extract and return a set of ghost cells which are within a
-   * @p layer_thickness around all locally owned cells.
-   * This is most relevant for parallel::shared::Triangulation
-   * where it will return a subset of all ghost cells on a process, but for
-   * parallel::distributed::Triangulation this will return all the ghost cells.
-   * All the cells for the parallel::shared::Triangulation class that
-   * are not owned by the current processor can be considered as ghost cells;
-   * in particular, they do not only form a single layer of cells around the
-   * locally owned ones.
+   * 提取并返回一组幽灵单元，这些单元在所有本地拥有的单元周围的 @p layer_thickness 内。  这与 parallel::shared::Triangulation 最相关，它将返回一个进程中所有幽灵单元的子集，但对于 parallel::distributed::Triangulation 这将返回所有的幽灵单元。  对于 parallel::shared::Triangulation 类来说，所有不属于当前处理器的单元格都可以被认为是幽灵单元格；特别是，它们不仅仅是在本地拥有的单元格周围形成一个单层。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。    @param  mesh
+   * 一个网格（即Triangulation或DoFHandler类型的对象）。
+   * @param  layer_thickness
+   * 指定函数从本地拥有的单元中搜索活动单元的几何距离。
+   * @return  在给定的几何距离 @p
+   * layer_thickness内的鬼魂单元子集与当前进程的本地拥有的单元。
+   * 参见compute_ghost_cell_halo_layer() 和
+   * compute_active_cell_layer_within_distance()。
    *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param mesh A mesh (i.e. objects of type Triangulation or DoFHandler).
-   * @param layer_thickness specifies the geometric distance within
-   * which the function searches for active cells from the locally owned cells.
-   * @return A subset of ghost cells within a given geometric distance of @p
-   * layer_thickness from the locally owned cells of a current process.
-   *
-   * Also see compute_ghost_cell_halo_layer() and
-   * compute_active_cell_layer_within_distance().
    */
   template <class MeshType>
   std::vector<typename MeshType::active_cell_iterator>
@@ -1797,19 +1348,13 @@ namespace GridTools
                                            const double    layer_thickness);
 
   /**
-   * Compute and return a bounding box, defined through a pair of points
-   * bottom left and top right, that surrounds a subdomain of the @p mesh.
-   * Here, the "subdomain" consists of exactly all of those
-   * active cells for which the @p predicate returns @p true.
+   * 计算并返回一个通过左下角和右上角的一对点定义的包围盒，该包围盒围绕着
+   * @p mesh. 的一个子域。这里，"子域 "恰好由 @p predicate
+   * 返回 @p true. 的所有活动单元组成。 关于 @p predicate
+   * 如何工作的描述，见compute_active_cell_halo_layer（）。
+   * @note  这个函数是在BoundingBox类被发明之前写的。
+   * 因此，它返回一对点，而不是人们期望的BoundingBox对象。然而，BoundingBox有一个从点对转换的构造函数，所以这个函数的结果仍然可以被分配给一个BoundingBox对象。
    *
-   * For a description of how @p predicate works,
-   * see compute_active_cell_halo_layer().
-   *
-   * @note This function was written before the BoundingBox class was invented.
-   *   Consequently, it returns a pair of points, rather than a BoundingBox
-   * object as one may expect. However, BoundingBox has a conversion constructor
-   * from pairs of points, so the result of this function can still be assigned
-   * to a BoundingBox object.
    */
   template <class MeshType>
   std::pair<Point<MeshType::space_dimension>, Point<MeshType::space_dimension>>
@@ -1819,56 +1364,74 @@ namespace GridTools
       &predicate);
 
   /**
-   * Compute a collection of bounding boxes so that all active cells for which
-   * the given predicate is true, are completely enclosed in at least one of the
-   * bounding boxes. Notice the cover is only guaranteed to contain all these
-   * active cells but it's not necessarily exact i.e. it can include a bigger
-   * area than their union.
+   * 计算一个边界框的集合，使所有给定谓词为真的活动单元都完全被包围在至少一个边界框中。请注意，这个包围只保证包含所有这些活动单元，但它不一定是精确的，也就是说，它可以包括比它们的联合体更大的区域。
+   * 对于一个给定的细化级别中包含 @p predicate
+   * 为真的活动单元的每个单元，该函数创建一个 @p predicate
+   * 为真的子单元的边界盒。    这导致了对 @p predicate
+   * 为真的所有活动单元的覆盖；参数 @p allow_merge 和 @p
+   * max_boxes
+   * 用于减少计算成本的单元数量，覆盖更大的n维体积。
+   * 控制该算法的参数是。
    *
-   * For each cell at a given refinement level containing active cells for which @p predicate is true,
-   * the function creates a bounding box of its children for which @p predicate is true.
    *
-   * This results in a cover of all active cells for which @p predicate is true; the parameters
-   * @p allow_merge and @p max_boxes are used to reduce the number of cells at a computational cost and
-   * covering a bigger n-dimensional volume.
    *
-   * The parameters to control the algorithm are:
-   * - @p predicate : the property of the cells to enclose e.g. IteratorFilters::LocallyOwnedCell .
-   *  The predicate is tested only on active cells.
-   * - @p refinement_level : it defines the level at which the initial bounding box are created. The refinement
-   *  should be set to a coarse refinement level. A bounding box is created for
-   * each active cell at coarser
-   *  level than @p refinement_level; if @p refinement_level is higher than the number of levels of the
-   *  triangulation an exception is thrown.
-   * - @p allow_merge : This flag allows for box merging and, by default, is false. The algorithm has a cost of
-   *  O(N^2) where N is the number of the bounding boxes created from the
-   * refinement level; for this reason, if
-   *  the flag is set to true, make sure to choose wisely a coarse enough @p refinement_level.
-   * - @p max_boxes : the maximum number of bounding boxes to compute. If more are created the smaller ones are
-   *  merged with neighbors. By default after merging the boxes which can be
-   * expressed as a single one no more boxes are merged. See the
-   * BoundingBox::get_neighbor_type () function for details.
-   *  Notice only neighboring cells are merged (see the @p get_neighbor_type  function in bounding box class): if
-   *  the target number of bounding boxes max_boxes can't be reached by merging
-   * neighbors an exception is thrown
    *
-   * The following image describes an example of the algorithm with @p refinement_level = 2, @p allow_merge = true
-   * and @p max_boxes = 1. The cells with the property predicate are in red, the area of a bounding box is
-   * slightly orange.
-   * @image html bounding_box_predicate.png
-   * - 1. In black we can see the cells of the current level.
-   * - 2. For each cell containing the red area a bounding box is created: by
-   * default these are returned.
-   * - 3. Because @p allow_merge = true the number of bounding boxes is reduced while not changing the cover.
-   *  If @p max_boxes was left as default or bigger than 1 these two boxes would be returned.
-   * - 4. Because @p max_boxes = 1 the smallest bounding box is merged to the bigger one.
-   * Notice it is important to choose the parameters wisely. For instance, @p allow_merge = false and
-   * @p refinement_level = 1 returns the very same bounding box but with a
-   * fraction of the computational cost.
    *
-   * This function does not take into account the curvature of cells and thus it
-   * is not suited for handling curved geometry: the mapping is assumed to be
-   * linear.
+   *
+   * -  @p predicate  : 要包围的单元格的属性，例如  IteratorFilters::LocallyOwnedCell  。   该谓词仅在活动单元格上进行测试。
+   *
+   *
+   *
+   *
+   *
+   * -  @p refinement_level  : 它定义了创建初始边界盒的级别。细化应该被设置为粗略的细化级别。如果 @p refinement_level 高于三角形的层数，将为每个活动单元创建一个比 @p refinement_level; 更粗的包围盒，将产生一个异常。
+   *
+   *
+   *
+   *
+   *
+   *
+   * -  @p allow_merge  : 这个标志允许盒子合并，默认为假。该算法的成本为O(N^2)，其中N是由细化级别创建的边界盒的数量；由于这个原因，如果该标志被设置为真，请确保明智地选择一个足够粗的  @p refinement_level.
+   *
+   *
+   *
+   *
+   *
+   *
+   * -  @p max_boxes  : 要计算的边界盒的最大数量。如果创建了更多的盒子，那么小的盒子就会与相邻的盒子合并。默认情况下，在合并了可以表示为一个的盒子后，不再合并更多的盒子。详见 BoundingBox::get_neighbor_type （）函数。   注意只有相邻的单元格会被合并（见边界盒类中的 @p get_neighbor_type 函数）：如果边界盒的目标数量max_boxes不能通过合并相邻的单元格来达到，则会抛出一个异常。 下面的图片描述了一个算法的例子， @p refinement_level  = 2,  @p allow_merge  = true and  @p max_boxes  = 1。带有属性谓词的单元格是红色的，包围盒的区域略带橙色。    @image html bounding_box_predicate.png
+   *
+   *
+   *
+   *
+   *
+   * - 1.在黑色中我们可以看到当前级别的单元格。
+   *
+   *
+   *
+   *
+   *
+   * - 2. 对于每个包含红色区域的单元格，都会创建一个边界框：默认情况下，这些框会被返回。
+   *
+   *
+   *
+   *
+   * 因为 @p allow_merge  =
+   * true，所以在不改变封面的情况下减少了包围盒的数量。
+   * 如果 @p max_boxes
+   * 被保留为默认值或大于1，这两个盒子将被返回。
+   *
+   *
+   *
+   *
+   *
+   *
+   * 因为 @p max_boxes
+   * =1，最小的边界盒被合并到较大的边界盒。
+   * 注意，明智地选择参数是很重要的。例如， @p allow_merge
+   * =false和 @p refinement_level
+   * =1会返回非常相同的边界框，但计算成本只有一小部分。
+   * 这个函数没有考虑到单元格的曲率，因此它不适合处理弯曲的几何图形：映射被假定为线性。
+   *
    */
   template <class MeshType>
   std::vector<BoundingBox<MeshType::space_dimension>>
@@ -1881,31 +1444,42 @@ namespace GridTools
     const unsigned int max_boxes        = numbers::invalid_unsigned_int);
 
   /**
-   * Given an array of points, use the global bounding box description obtained
-   * using GridTools::compute_mesh_predicate_bounding_box to guess, for each of
-   * them, which process might own it.
+   * 给定一个点阵列，使用使用
+   * GridTools::compute_mesh_predicate_bounding_box
+   * 获得的全局边界盒描述来猜测，对于每个点，哪个进程可能拥有它。
+   * @param[in]  global_bboxes
+   * 描述每个进程拥有属性的网格部分的边界盒的矢量。
+   * @param[in]  points 要测试的点的阵列。      @return
+   * 一个包含以下信息的元组。
    *
-   * @param[in] global_bboxes Vector of bounding boxes describing the portion of
-   *  mesh with a property for each process.
-   * @param[in] points Array of points to test.
    *
-   * @return A tuple containing the following information:
-   *  - A vector indicized with ranks of processes. For each rank it contains
-   *   a vector of the indices of points it might own.
-   *  - A map from the index <code>unsigned int</code> of the point in @p points
-   *   to the rank of the owner.
-   *  - A map from the index <code>unsigned int</code> of the point in @p points
-   *   to the ranks of the guessed owners.
    *
-   * @note The actual return type of this function, i.e., the type referenced
-   * above as @p return_type, is
+   *
+   *
+   *
+   * - 一个以进程的等级为标志的向量。对于每个等级，它包含一个它可能拥有的点的索引的向量。
+   *
+   *
+   *
+   *
+   *
+   * - 从 <code>unsigned int</code> 中的点的索引 @p points 到所有者的等级的地图。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 从 @p points 中的点的索引 <code>unsigned int</code> 到被猜测的所有者的行列的地图。
+   * @note  这个函数的实际返回类型，即上面提到的 @p
+   * return_type, 的类型是
    * @code
    * std::tuple<std::vector<std::vector<unsigned int>>,
-   *            std::map< unsigned int, unsigned int>,
-   *            std::map< unsigned int, std::vector<unsigned int>>>
+   *          std::map< unsigned int, unsigned int>,
+   *          std::map< unsigned int, std::vector<unsigned int>>>
    * @endcode
-   * The type is abbreviated in the online documentation to improve readability
-   * of this page.
+   * 在线文档中对该类型进行了缩写，以提高本页面的可读性。
+   *
    */
   template <int spacedim>
 #  ifndef DOXYGEN
@@ -1921,38 +1495,44 @@ namespace GridTools
 
 
   /**
-   * Given a covering rtree (see GridTools::Cache::get_covering_rtree()), and an
-   * array of points, find a superset of processes which, individually,
-   * may own the cell containing the points.
+   * 给定一个覆盖的rtree（见 GridTools::Cache::get_covering_rtree()),
+   * ）和一个点的数组，找到一个进程的超集，这个超集可以单独拥有包含这些点的单元。
+   * 进一步的细节见 GridTools::guess_point_owner;
+   * 这里只报告不同的输入/输出类型。      @param[in]
+   * covering_rtree
+   * RTRee，它使我们能够识别并行计算中哪些进程可能拥有围绕给定点的单元。
+   * @param[in]  points 要考虑的点的一个向量。      @return
+   * 一个包含以下信息的元组。
    *
-   * For further details see GridTools::guess_point_owner; here only
-   * different input/output types are reported:
    *
-   * @param[in] covering_rtree RTRee which enables us to identify which
-   * process(es) in a parallel computation may own the cell that
-   * surrounds a given point.
    *
-   * @param[in] points A vector of points to consider.
    *
-   * @return A tuple containing the following information:
-   *  - A map indexed by processor ranks. For each rank it contains
-   *   a vector of the indices of points it might own.
-   *  - A map from the index <code>unsigned int</code> of the point in @p points
-   *   to the rank of the owner; these are points for which a single possible
-   *   owner was found.
-   *  - A map from the index <code>unsigned int</code> of the point in @p points
-   *   to the ranks of the guessed owners; these are points for which multiple
-   *   possible owners were found.
    *
-   * @note The actual return type of this function, i.e., the type referenced
-   * above as @p return_type, is
+   *
+   * - 一个以处理器等级为索引的地图。对于每个等级，它包含一个它可能拥有的点的索引向量。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 从 <code>unsigned int</code> 中的点的索引 @p points 到所有者的等级的地图；这些是找到单一可能所有者的点。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 从 <code>unsigned int</code> 中的点的索引 @p points 到猜测的所有者行列的地图；这些是发现有多个可能的所有者的点。
+   * @note  这个函数的实际返回类型，即上面提到的 @p
+   * return_type, 的类型是
    * @code
    * std::tuple<std::map<unsigned int, std::vector<unsigned int>>,
-   *            std::map<unsigned int, unsigned int>,
-   *            std::map<unsigned int, std::vector<unsigned int>>>
+   *          std::map<unsigned int, unsigned int>,
+   *          std::map<unsigned int, std::vector<unsigned int>>>
    * @endcode
-   * The type is abbreviated in the online documentation to improve readability
-   * of this page.
+   * 在线文档中对该类型进行了缩写，以提高本页面的可读性。
+   *
    */
   template <int spacedim>
 #  ifndef DOXYGEN
@@ -1968,12 +1548,12 @@ namespace GridTools
 
 
   /**
-   * Return the adjacent cells of all the vertices. If a vertex is also a
-   * hanging node, the associated coarse cell is also returned. The vertices
-   * are ordered by the vertex index. This is the number returned by the
-   * function <code>cell-@>vertex_index()</code>. Notice that only the indices
-   * marked in the array returned by
-   * Triangulation<dim,spacedim>::get_used_vertices() are used.
+   * 返回所有顶点的相邻单元。如果一个顶点也是一个悬空的节点，也会返回相关的粗略单元。顶点是按顶点索引排序的。这是由函数
+   * <code>cell-@>vertex_index()</code>
+   * 返回的数字。注意，只使用由
+   * Triangulation<dim,spacedim>::get_used_vertices()
+   * 返回的数组中标记的索引。
+   *
    */
   template <int dim, int spacedim>
   std::vector<
@@ -1981,16 +1561,11 @@ namespace GridTools
   vertex_to_cell_map(const Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * Return a vector of normalized tensors for each vertex-cell combination of
-   * the output of GridTools::vertex_to_cell_map() (which is expected as input
-   * parameter for this function). Each tensor represents a geometric vector
-   * from the vertex to the respective cell center.
+   * 为 GridTools::vertex_to_cell_map()
+   * 输出的每个顶点-单元组合返回一个归一化张量的向量（期望作为此函数的输入参数）。每个张量代表一个从顶点到各自单元中心的几何向量。
+   * 如果输入向量的大小不等于三角形的顶点数量，将抛出一个断言。
+   * result[v][c]是顶点索引v的单位张量，表示第c个单元的中心相对于顶点v的方向。
    *
-   * An assertion will be thrown if the size of the input vector is not equal to
-   * the number of vertices of the triangulation.
-   *
-   * result[v][c] is a unit Tensor for vertex index v, indicating the direction
-   * of the center of the c-th cell with respect to the vertex v.
    */
   template <int dim, int spacedim>
   std::vector<std::vector<Tensor<1, spacedim>>>
@@ -2002,11 +1577,10 @@ namespace GridTools
 
 
   /**
-   * Return the local vertex index of cell @p cell that is closest to
-   * the given location @p position. The location of the vertices is extracted
-   * from the (optional) @p mapping argument, to guarantee that the correct
-   * answer is returned when the underlying mapping modifies the position of the
-   * vertices.
+   * 返回最接近给定位置的单元格 @p cell 的局部顶点索引  @p
+   * position.  顶点的位置从（可选） @p mapping
+   * 参数中提取，以保证在底层映射修改顶点位置时返回正确答案。
+   *
    */
   template <int dim, int spacedim>
   unsigned int
@@ -2018,15 +1592,10 @@ namespace GridTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * Compute a globally unique index for each vertex and hanging node
-   * associated with a locally owned active cell. The vertices of a ghost cell
-   * that are hanging nodes of a locally owned cells have a global index.
-   * However, the other vertices of the cells that do not <i>touch</i> an
-   * active cell do not have a global index on this processor.
+   * 为与本地拥有的活动单元相关的每个顶点和悬挂节点计算一个全局唯一的索引。作为本地拥有的单元格的悬挂节点的幽灵单元格的顶点有一个全局索引。
+   * 然而，不<i>touch</i>一个活动单元的其他顶点在这个处理器上没有全局索引。
+   * 地图的键是顶点的本地索引，值是全局索引。这些索引在细化或粗化后需要重新计算，并且可能是不同的。
    *
-   * The key of the map is the local index of the vertex and the value is the
-   * global index. The indices need to be recomputed after refinement or
-   * coarsening and may be different.
    */
   template <int dim, int spacedim>
   std::map<unsigned int, types::global_vertex_index>
@@ -2034,34 +1603,31 @@ namespace GridTools
     const parallel::distributed::Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * Return the highest value among ratios between extents in each of the
-   * coordinate directions of a @p cell. Moreover, return the dimension
-   * relative to the highest elongation.
+   * 返回一个 @p cell.
+   * 的每个坐标方向上的外延之间的比率中的最高值
+   * 此外，返回相对于最高伸长率的尺寸。      @param[in]
+   * cell一个指向单元格的迭代器。      @return  一个
+   * std::pair<unsigned  int, double>，这样 @p first
+   * 值是最高伸长率的尺寸， @p second 值是 @p cell.
+   * 尺寸中的比率。
    *
-   * @param[in] cell an iterator pointing to the cell.
-   *
-   * @return  A std::pair<unsigned int, double> such that the @p first value
-   * is the dimension of the highest elongation and the @p second value is the
-   * ratio among the dimensions of the @p cell.
    */
   template <int dim, int spacedim>
   std::pair<unsigned int, double>
   get_longest_direction(
     typename Triangulation<dim, spacedim>::active_cell_iterator cell);
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Partitions and subdomains of triangulations
+   * @name  三角形的分区和子域
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Produce a sparsity pattern in which nonzero entries indicate that two
-   * cells are connected via a common face. The diagonal entries of the
-   * sparsity pattern are also set.
+   * 产生一个稀疏模式，其中非零条目表示两个单元格通过一个共同的面连接。稀疏模式的对角线条目也被设定。
+   * 行和列指的是使用单元格迭代器按自然顺序遍历的单元格。
    *
-   * The rows and columns refer to the cells as they are traversed in their
-   * natural order using cell iterators.
    */
   template <int dim, int spacedim>
   void
@@ -2070,12 +1636,9 @@ namespace GridTools
     DynamicSparsityPattern &            connectivity);
 
   /**
-   * Produce a sparsity pattern in which nonzero entries indicate that two
-   * cells are connected via a common vertex. The diagonal entries of the
-   * sparsity pattern are also set.
+   * 产生一个稀疏度模式，其中非零条目表示两个单元格通过一个共同的顶点连接。稀疏模式的对角线条目也被设定。
+   * 行和列指的是使用单元格迭代器按自然顺序遍历的单元格。
    *
-   * The rows and columns refer to the cells as they are traversed in their
-   * natural order using cell iterators.
    */
   template <int dim, int spacedim>
   void
@@ -2084,12 +1647,9 @@ namespace GridTools
     DynamicSparsityPattern &            connectivity);
 
   /**
-   * Produce a sparsity pattern for a given level mesh in which nonzero entries
-   * indicate that two cells are connected via a common vertex. The diagonal
-   * entries of the sparsity pattern are also set.
+   * 为一个给定的水平网格产生一个稀疏模式，其中非零条目表示两个单元通过一个共同的顶点连接。稀疏模式的对角线条目也被设置。
+   * 行和列指的是使用单元格迭代器按自然顺序遍历的单元格。
    *
-   * The rows and columns refer to the cells as they are traversed in their
-   * natural order using cell iterators.
    */
   template <int dim, int spacedim>
   void
@@ -2099,24 +1659,16 @@ namespace GridTools
     DynamicSparsityPattern &            connectivity);
 
   /**
-   * Use graph partitioner to partition the active cells making up the entire
-   * domain. After calling this function, the subdomain ids of all active cells
-   * will have values
-   * between zero and @p n_partitions-1. You can access the subdomain id of a cell by using
-   * <tt>cell-@>subdomain_id()</tt>.
+   * 使用图形分割器来分割构成整个域的活动单元。调用此函数后，所有活动单元的子域id的值将在0和
+   * @p n_partitions-1. 之间，你可以通过使用<tt>cell-
+   * @>subdomain_id()</tt>.
+   * 使用第三个参数来选择METIS或ZOLTAN提供的分区算法。METIS是默认的分区器。
+   * 如果deal.II没有与ZOLTAN或METIS一起安装，当选择相应的分区方法时，这个函数将产生一个错误，除非
+   * @p n_partitions 是一个。
+   * 即，你可以写一个程序，使其在单处理器单分区的情况下运行，而不安装软件包，只有在需要多分区时才需要安装。
+   * @note 如果 @p cell_weight 信号已被附加到 @p triangulation,
+   * ，那么这将被使用并传递给分区器。
    *
-   * Use the third argument to select between partitioning algorithms provided
-   * by METIS or ZOLTAN. METIS is the default partitioner.
-   *
-   * If deal.II was not installed with ZOLTAN or METIS, this function will
-   * generate an error
-   * when corresponding partition method is chosen, unless @p n_partitions is one.
-   * I.e., you can write a program so that it runs in the single-processor
-   * single-partition case without packages installed, and only requires them
-   * installed when multiple partitions are required.
-   *
-   * @note If the @p cell_weight signal has been attached to the @p triangulation,
-   * then this will be used and passed to the partitioner.
    */
   template <int dim, int spacedim>
   void
@@ -2126,14 +1678,12 @@ namespace GridTools
                             SparsityTools::Partitioner::metis);
 
   /**
-   * This function performs the same operation as the one above, except that
-   * it takes into consideration a specific set of @p cell_weights, which allow the
-   * partitioner to balance the graph while taking into consideration the
-   * computational effort expended on each cell.
+   * 这个函数执行的操作与上面的函数相同，只是它考虑到了一组特定的
+   * @p cell_weights,
+   * ，它允许分区器平衡图形，同时考虑到每个单元所花费的计算努力。
+   * @note  如果 @p cell_weights
+   * 向量为空，则不考虑加权。如果不是，那么这个向量的大小必须等于三角形中有效单元的数量。
    *
-   * @note If the @p cell_weights vector is empty, then no weighting is taken
-   * into consideration. If not then the size of this vector must equal to the
-   * number of active cells in the triangulation.
    */
   template <int dim, int spacedim>
   void
@@ -2144,49 +1694,19 @@ namespace GridTools
                             SparsityTools::Partitioner::metis);
 
   /**
-   * This function does the same as the previous one, i.e. it partitions a
-   * triangulation using a partitioning algorithm into a number of subdomains
-   * identified by the <code>cell-@>subdomain_id()</code> flag.
+   * 这个函数与前一个函数的作用相同，即使用分区算法将一个三角形划分为由
+   * <code>cell-@>subdomain_id()</code> 标志确定的若干子域。
+   * 与前一个函数不同的是第二个参数，一个代表单元格之间连接模式的稀疏模式。
+   * 虽然上面的函数通过考虑哪些单元彼此相邻而直接从三角图中建立，但这个函数可以采用更精细的连接图。稀疏模式的大小需要是
+   * $N\times N$ ，其中 $N$
+   * 是三角形中活动单元的数量。如果稀疏模式在位置
+   * $(i,j)$ 处包含一个条目，那么这意味着单元格 $i$ 和 $j$
+   * （按照主动单元格迭代器遍历的顺序）将被视为连接；然后分区算法将尝试以这样的方式划分域：（i）子域的大小大致相等，以及（ii）最小数量的连接被破坏。
+   * 这个函数主要适用于单元格之间存在仅在三角形中不存在的连接的情况（否则前面的函数将是更简单的用法）。这种连接可能包括域的边界的某些部分通过对称边界条件或积分进行耦合（例如，域中裂缝两边的摩擦接触），或者如果使用的数值方案不仅连接紧邻的单元，而且连接更大的邻近单元（例如，在求解积分方程时）。
+   * 此外，在默认的稀疏模式不完全足够的情况下，这个函数可能是有用的。这种情况可能会发生，因为默认情况下只是考虑面的邻居，而不是由边或顶点连接的相邻单元。虽然在使用连续有限元时，后者夫妇在邻接图中通常仍是紧密相连的，分区算法在这种情况下通常不会切断重要的连接。然而，如果网格中存在许多单元的顶点（分别比2D和3D中常见的4个或6个多得多）聚集在一起，那么就会有大量的单元跨顶点连接，但在仅使用面邻关系构建的连接图中却有几度的距离。在这样的情况下，分区算法有时可能会做出错误的决定，你可能想建立自己的连接图。
+   * @note 如果 @p cell_weight 信号已被附加到 @p triangulation,
+   * ，那么这将被使用并传递给分区器。
    *
-   * The difference to the previous function is the second argument, a
-   * sparsity pattern that represents the connectivity pattern between cells.
-   *
-   * While the function above builds it directly from the triangulation by
-   * considering which cells neighbor each other, this function can take a
-   * more refined connectivity graph. The sparsity pattern needs to be of size
-   * $N\times N$, where $N$ is the number of active cells in the
-   * triangulation. If the sparsity pattern contains an entry at position
-   * $(i,j)$, then this means that cells $i$ and $j$ (in the order in which
-   * they are traversed by active cell iterators) are to be considered
-   * connected; partitioning algorithm will then try to partition the domain in
-   * such a way that (i) the subdomains are of roughly equal size, and (ii) a
-   * minimal number of connections are broken.
-   *
-   * This function is mainly useful in cases where connections between cells
-   * exist that are not present in the triangulation alone (otherwise the
-   * previous function would be the simpler one to use). Such connections may
-   * include that certain parts of the boundary of a domain are coupled
-   * through symmetric boundary conditions or integrals (e.g. friction contact
-   * between the two sides of a crack in the domain), or if a numerical scheme
-   * is used that not only connects immediate neighbors but a larger
-   * neighborhood of cells (e.g. when solving integral equations).
-   *
-   * In addition, this function may be useful in cases where the default
-   * sparsity pattern is not entirely sufficient. This can happen because the
-   * default is to just consider face neighbors, not neighboring cells that
-   * are connected by edges or vertices. While the latter couple when using
-   * continuous finite elements, they are typically still closely connected in
-   * the neighborship graph, and partitioning algorithm
-   * will not usually cut important connections in this case. However, if there
-   * are vertices in the mesh where many cells (many more than the common 4 or 6
-   * in 2d and 3d, respectively) come together, then there will be a significant
-   * number of cells that are connected across a vertex, but several degrees
-   * removed in the connectivity graph built only using face neighbors. In a
-   * case like this, partitioning algorithm may sometimes make bad decisions and
-   * you may want to build your own connectivity graph.
-   *
-   * @note If the @p cell_weight signal has been attached to the @p triangulation,
-   * then this will be used and passed to the partitioner.
    */
   template <int dim, int spacedim>
   void
@@ -2197,14 +1717,12 @@ namespace GridTools
                             SparsityTools::Partitioner::metis);
 
   /**
-   * This function performs the same operation as the one above, except that
-   * it takes into consideration a specific set of @p cell_weights, which allow the
-   * partitioner to balance the graph while taking into consideration the
-   * computational effort expended on each cell.
+   * 这个函数执行的操作与上面的函数相同，只是它考虑到了一组特定的
+   * @p cell_weights,
+   * ，它允许分区器平衡图形，同时考虑到每个单元上所花费的计算努力。
+   * @note  如果 @p cell_weights
+   * 向量为空，则不考虑加权。如果不是，那么这个向量的大小必须等于三角形中有效单元的数量。
    *
-   * @note If the @p cell_weights vector is empty, then no weighting is taken
-   * into consideration. If not then the size of this vector must equal to the
-   * number of active cells in the triangulation.
    */
   template <int dim, int spacedim>
   void
@@ -2216,18 +1734,14 @@ namespace GridTools
                             SparsityTools::Partitioner::metis);
 
   /**
-   * Generates a partitioning of the active cells making up the entire domain
-   * using the same partitioning scheme as in the p4est library if the flag
-   * @p group_siblings is set to true (default behavior of this function).
-   * After calling this function, the subdomain ids of all active cells will
-   * have values between zero and @p n_partitions-1. You can access the
-   * subdomain id of a cell by using <tt>cell-@>subdomain_id()</tt>.
+   * 如果标志 @p group_siblings 被设置为
+   * "true"（此函数的默认行为），则使用与p4est库中相同的分区方案生成构成整个域的活动单元的分区。
+   * 调用此函数后，所有活动单元的子域id的值将在0和 @p
+   * n_partitions-1. 之间。你可以通过使用<tt>cell-
+   * @>subdomain_id()</tt>. 来访问一个单元的子域id。
+   * @note  如果标志 @p group_siblings
+   * 被设置为false，一个单元的子域可能会被放在不同的处理器上，即使它们都处于活动状态，这是p4est的一个假设。通过放宽这一点，我们可以创建拥有单个单元的分区（也适用于精炼网格）。
    *
-   * @note If the flag @p group_siblings is set to false, children of a
-   *       cell might be placed on different processors even though they are all
-   *       active, which is an assumption made by p4est. By relaxing this, we
-   *       can create partitions owning a single cell (also for refined
-   *       meshes).
    */
   template <int dim, int spacedim>
   void
@@ -2236,26 +1750,21 @@ namespace GridTools
                                  const bool group_siblings = true);
 
   /**
-   * Partitions the cells of a multigrid hierarchy by assigning level subdomain
-   * ids using the "youngest child" rule, that is, each cell in the hierarchy is
-   * owned by the processor who owns its left most child in the forest, and
-   * active cells have the same subdomain id and level subdomain id. You can
-   * access the level subdomain id of a cell by using
-   * <tt>cell-@>level_subdomain_id()</tt>.
+   * 通过使用 "最年轻的孩子
+   * "规则分配级别子域id来划分多网格层次结构的单元，也就是说，层次结构中的每个单元都由在森林中拥有其最左边孩子的处理器拥有，活跃的单元具有相同的子域id和级别子域id。你可以通过使用<tt>cell-
+   * @>level_subdomain_id()</tt>.
+   * 注意：这个函数假定活动单元已经被分区。
    *
-   * Note: This function assumes that the active cells have already been
-   * partitioned.
    */
   template <int dim, int spacedim>
   void
   partition_multigrid_levels(Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * This function allows to ask for the owning subdomain of cells identified by
-   * CellId objects that do not have to exist on the current process.
+   * 该函数允许询问由CellId对象识别的单元格的所属子域，该对象在当前进程中不一定存在。
+   * @note 这个函数还没有为 parallel::fullydistributed::Triangulation.
+   * 实现。
    *
-   * @note This function has not been implemented yet for
-   *   parallel::fullydistributed::Triangulation.
    */
   template <int dim, int spacedim>
   std::vector<types::subdomain_id>
@@ -2263,14 +1772,11 @@ namespace GridTools
                             const std::vector<CellId> &         cell_ids);
 
   /**
-   * For each active cell, return in the output array to which subdomain (as
-   * given by the <tt>cell->subdomain_id()</tt> function) it belongs. The
-   * output array is supposed to have the right size already when calling this
-   * function.
+   * 对于每个活动单元，在输出数组中返回它属于哪个子域（由<tt>cell->subdomain_id()</tt>函数给出）。在调用此函数时，输出数组应该已经有了合适的大小。
+   * 这个函数返回每个单元格与一个子域的关联。如果你要寻找每个
+   * @em DoF与一个子域的关联，请使用
+   * <tt>DoFTools::get_subdomain_association</tt> 函数。
    *
-   * This function returns the association of each cell with one subdomain. If
-   * you are looking for the association of each @em DoF with a subdomain, use
-   * the <tt>DoFTools::get_subdomain_association</tt> function.
    */
   template <int dim, int spacedim>
   void
@@ -2278,18 +1784,13 @@ namespace GridTools
                             std::vector<types::subdomain_id> &  subdomain);
 
   /**
-   * Count how many cells are uniquely associated with the given @p subdomain
-   * index.
+   * 计算有多少个单元与给定的 @p subdomain 索引唯一相关。
+   * 如果没有具有给定 @p
+   * 子域索引的单元格，该函数可能返回0。这种情况可能发生，例如，如果你试图将一个粗略的网格划分为更多的分区（每个处理器一个），而不是网格中的单元。
+   * 这个函数返回与一个子域相关的单元数。
+   * 如果你正在寻找 @em DoF与这个子域的关联，请使用
+   * <tt>DoFTools::count_dofs_with_subdomain_association</tt> 函数。
    *
-   * This function may return zero if there are no cells with the given @p
-   * subdomain index. This can happen, for example, if you try to partition a
-   * coarse mesh into more partitions (one for each processor) than there are
-   * cells in the mesh.
-   *
-   * This function returns the number of cells associated with one subdomain.
-   * If you are looking for the association of @em DoFs with this subdomain,
-   * use the <tt>DoFTools::count_dofs_with_subdomain_association</tt>
-   * function.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -2298,76 +1799,39 @@ namespace GridTools
     const types::subdomain_id           subdomain);
 
   /**
-   * For a triangulation, return a mask that represents which of its vertices
-   * are "owned" by the current process in the same way as we talk about
-   * locally owned cells or degrees of freedom (see
-   * @ref GlossLocallyOwnedCell
-   * and
-   * @ref GlossLocallyOwnedDof).
-   * For the purpose of this function, we define a locally owned vertex as
-   * follows: a vertex is owned by that processor with the smallest subdomain
-   * id (which equals the MPI rank of that processor) among all owners of
-   * cells adjacent to this vertex. In other words, vertices that are in the
-   * interior of a partition of the triangulation are owned by the owner of
-   * this partition; for vertices that lie on the boundary between two or more
-   * partitions, the owner is the processor with the least subdomain_id among
-   * all adjacent subdomains.
+   * 对于一个三角形，返回一个掩码，代表哪些顶点被当前进程 "拥有"
+   * ，就像我们谈论本地拥有的单元或自由度一样（见 @ref
+   * GlossLocallyOwnedCell 和 @ref GlossLocallyOwnedDof  ）。
+   * 为了这个函数的目的，我们对本地拥有的顶点定义如下：一个顶点是由与该顶点相邻的所有单元的所有者中具有最小的子域id（相当于该处理器的MPI等级）的那个处理器所拥有。换句话说，位于三角形分区内部的顶点由这个分区的所有者拥有；对于位于两个或多个分区之间边界的顶点，所有者是所有相邻子域中拥有最小子域id的处理器。
+   * 对于顺序三角计算（相对于，例如
+   * parallel::distributed::Triangulation),
+   * 每个用户顶点当然是由当前处理器拥有的，即函数返回
+   * Triangulation::get_used_vertices().
+   * 对于并行三角计算，返回的掩码是
+   * Triangulation::get_used_vertices() 返回的一个子集。      @param
+   * triangulation
+   * 该函数评估哪些顶点是本地拥有的三角结构。    @return
+   * 顶点的子集，如上所述。返回的数组长度等于Triangulation.n_vertices()，因此，可能大于
+   * Triangulation::n_used_vertices(). 。
    *
-   * For sequential triangulations (as opposed to, for example,
-   * parallel::distributed::Triangulation), every user vertex is of course
-   * owned by the current processor, i.e., the function returns
-   * Triangulation::get_used_vertices(). For parallel triangulations, the
-   * returned mask is a subset of what Triangulation::get_used_vertices()
-   * returns.
-   *
-   * @param triangulation The triangulation of which the function evaluates
-   * which vertices are locally owned.
-   * @return The subset of vertices, as described above. The length of the
-   * returned array equals Triangulation.n_vertices() and may, consequently,
-   * be larger than Triangulation::n_used_vertices().
    */
   template <int dim, int spacedim>
   std::vector<bool>
   get_locally_owned_vertices(const Triangulation<dim, spacedim> &triangulation);
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Comparing different meshes
+   * @name  比较不同的网格
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Given two meshes (i.e. objects of type Triangulation or DoFHandler) that
-   * are based on the same coarse mesh, this function figures out a set of cells
-   * that are matched between the two meshes and where at most one of the meshes
-   * is more refined on this cell. In other words, it finds the smallest cells
-   * that are common to both meshes, and that together completely cover the
-   * domain.
+   * 给出两个基于相同粗略网格的网格（即Triangulation或DoFHandler类型的对象），这个函数找出一组在这两个网格之间匹配的单元，其中最多只有一个网格在这个单元上更精细。换句话说，它找到了两个网格共同的最小单元，并且这些单元一起完全覆盖了该领域。    这个函数很有用，例如，在随时间变化的或非线性的应用中，我们必须对一个网格（例如，前一个时间步骤或非线性迭代的网格）上定义的解决方案与另一个网格（下一个时间步骤，下一个非线性迭代）的形状函数进行积分。例如，如果新的网格更细，那么就必须在粗的网格（Mesh_1）上获得解决方案，并将其内插到Mesh_2的相应单元中。反之，如果新的网格更粗，我们就必须用细网格形状函数的线性组合来表达粗网格的形状函数。无论哪种情况，我们都需要循环计算两个三角形中共同的最细的单元。这个函数返回一个与两个网格中的单元匹配的迭代器对的列表，可以用来达到这个目的。    请注意，这些迭代器的列表不一定是有序的，也不一定与作为参数的一个或两个网格中的单元格被遍历的顺序相一致。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。
+   * @note  这个函数只能与 parallel::distributed::Triangulation
+   * 一起使用，当两个网格都使用相同的三角法时，因为在分布式三角法中，并非所有的单元都存储在本地，所以产生的列表可能不会覆盖整个域。
    *
-   * This function is useful, for example, in time-dependent or nonlinear
-   * application, where one has to integrate a solution defined on one mesh
-   * (e.g., the one from the previous time step or nonlinear iteration)
-   * against the shape functions of another mesh (the next time step, the next
-   * nonlinear iteration). If, for example, the new mesh is finer, then one
-   * has to obtain the solution on the coarse mesh (mesh_1) and interpolate it
-   * to the children of the corresponding cell of mesh_2. Conversely, if the
-   * new mesh is coarser, one has to express the coarse cell shape function by
-   * a linear combination of fine cell shape functions. In either case, one
-   * needs to loop over the finest cells that are common to both
-   * triangulations. This function returns a list of pairs of matching
-   * iterators to cells in the two meshes that can be used to this end.
-   *
-   * Note that the list of these iterators is not necessarily ordered, and
-   * does also not necessarily coincide with the order in which cells are
-   * traversed in one, or both, of the meshes given as arguments.
-   *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   *
-   * @note This function can only be used with
-   * parallel::distributed::Triangulation when both meshes use the same
-   * Triangulation since, with a distributed Triangulation, not all cells are
-   * stored locally, so the resulting list may not cover the entire domain.
    */
   template <typename MeshType>
   std::list<std::pair<typename MeshType::cell_iterator,
@@ -2375,13 +1839,10 @@ namespace GridTools
   get_finest_common_cells(const MeshType &mesh_1, const MeshType &mesh_2);
 
   /**
-   * Return true if the two triangulations are based on the same coarse mesh.
-   * This is determined by checking whether they have the same number of cells
-   * on the coarsest level, and then checking that they have the same
-   * vertices.
+   * 如果两个三角形是基于相同的粗略网格，则返回true。
+   * 这是通过检查它们在最粗层次上是否有相同数量的单元来确定的，然后再检查它们是否有相同的顶点。
+   * 这两个网格可能有不同的细化历史，超出了粗略的网格。
    *
-   * The two meshes may have different refinement histories beyond the coarse
-   * mesh.
    */
   template <int dim, int spacedim>
   bool
@@ -2389,38 +1850,26 @@ namespace GridTools
                         const Triangulation<dim, spacedim> &mesh_2);
 
   /**
-   * The same function as above, but working on arguments of type DoFHandler.
-   * This function is provided to allow calling have_same_coarse_mesh for all
-   * types of containers representing triangulations or the classes built on
-   * triangulations.
+   * 与上面的函数相同，但对DoFHandler类型的参数工作。  提供这个函数是为了允许对所有类型的代表三角形的容器或建立在三角形上的类调用have_same_coarse_mesh。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。
    *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
    */
   template <typename MeshType>
   bool
   have_same_coarse_mesh(const MeshType &mesh_1, const MeshType &mesh_2);
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Dealing with distorted cells
+   * @name  处理扭曲的单元格
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Given a triangulation and a list of cells whose children have become
-   * distorted as a result of mesh refinement, try to fix these cells up by
-   * moving the center node around.
+   * 给出一个三角网格和一个单元格的列表，这些单元格的子节点由于网格细化而变得扭曲，尝试通过移动中心节点来修复这些单元格。    该函数返回一个子节点变形的单元格列表，这些单元格由于某种原因不能被修复。因此，返回的列表是输入参数的一个子集。    关于扭曲的单元格的概念的定义，见 @ref GlossDistorted "词汇表条目"
+   * 。  传递给当前函数的第一个参数通常是
+   * Triangulation::execute_coarsening_and_refinement 函数抛出的异常。
    *
-   * The function returns a list of cells with distorted children that
-   * couldn't be fixed up for whatever reason. The returned list is therefore
-   * a subset of the input argument.
-   *
-   * For a definition of the concept of distorted cells, see the
-   * @ref GlossDistorted "glossary entry".
-   * The first argument passed to the current function is typically the
-   * exception thrown by the Triangulation::execute_coarsening_and_refinement
-   * function.
    */
   template <int dim, int spacedim>
   typename Triangulation<dim, spacedim>::DistortedCellList
@@ -2431,52 +1880,26 @@ namespace GridTools
 
 
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Extracting and creating patches of cells
+   * @name  提取和创建单元格斑块 这些函数提取和创建围绕单个单元格的单元格斑块，并从中创建三角图。
    *
-   * These functions extract and create patches of cells surrounding a single
-   * cell, and creating triangulation out of them.
    */
-  /*@{*/
+   /*@{*/ 
 
 
   /**
-   * This function returns a list of all the active neighbor cells of the
-   * given, active cell.  Here, a neighbor is defined as one having at least
-   * part of a face in common with the given cell, but not edge (in 3d) or
-   * vertex neighbors (in 2d and 3d).
+   * 该函数返回给定活动单元的所有活动邻居单元的列表。 这里，邻居被定义为与给定的单元至少有一部分共同的面，但不是边缘（在3D）或顶点邻居（在2D和3D）。    返回列表中的第一个元素是作为参数提供的单元格。  其余的是邻居。该函数在给定的单元格的所有面上循环，并检查该面是否不在域的边界上。然后，如果邻居单元没有任何子单元（也就是说，它与当前单元处于相同的细化水平，或者更粗），那么这个邻居单元将被添加到单元列表中。否则，如果邻接单元是细化的，因此有孩子，那么这个函数就会在当前面的所有子面中循环，将这些子面后面的邻接单元添加到要返回的列表中。      @tparam  MeshType 一个满足 @ref ConceptMeshType  "MeshType概念 "
+   * 要求的类型。  在C++中，编译器不能从函数调用中确定
+   * <code>MeshType</code>
+   * 。你需要把它作为一个明确的模板参数跟在函数名后面指定。
+   * @param[in]  cell 指向网格中某一单元的迭代器。    @return
+   * 构成给定单元周围补丁的活动单元的列表
+   * @note
+   * 补丁通常用于定义误差估计器，需要解决网格中每个单元周围的补丁上的局部问题。这也需要操作与补丁的单元相关的自由度。为此，在命名空间DoFTools中有更多的函数在处理补丁。
+   * @note
+   * 在并行分布式计算的背景下，只有在本地拥有的单元上调用这个函数才有意义。这是因为本地拥有的单元的邻居要么是本地拥有的单元，要么是幽灵单元。对于这两种情况，我们知道这些单元实际上是完整的、平行的三角形的真实单元。我们还可以查询这些单元的自由度。
    *
-   * The first element of the returned list is the cell provided as argument.
-   * The remaining ones are neighbors: The function loops over all faces of
-   * that given cell and checks if that face is not on the boundary of the
-   * domain. Then, if the neighbor cell does not have any children (i.e., it
-   * is either at the same refinement level as the current cell, or coarser)
-   * then this neighbor cell is added to the list of cells. Otherwise, if the
-   * neighbor cell is refined and therefore has children, then this function
-   * loops over all subfaces of current face adds the neighbors behind these
-   * sub-faces to the list to be returned.
-   *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * In C++, the compiler can not determine <code>MeshType</code> from the
-   * function call. You need to specify it as an explicit template argument
-   * following the function name.
-   * @param[in] cell An iterator pointing to a cell of the mesh.
-   * @return A list of active cells that form the patch around the given cell
-   *
-   * @note Patches are often used in defining error estimators that require
-   * the solution of a local problem on the patch surrounding each of the
-   * cells of the mesh. This also requires manipulating the degrees of freedom
-   * associated with the cells of a patch. To this end, there are further
-   * functions working on patches in namespace DoFTools.
-   *
-   * @note In the context of a parallel distributed computation, it only makes
-   * sense to call this function on locally owned cells. This is because the
-   * neighbors of locally owned cells are either locally owned themselves, or
-   * ghost cells. For both, we know that these are in fact the real cells of
-   * the complete, parallel triangulation. We can also query the degrees of
-   * freedom on these.
    */
   template <class MeshType>
   std::vector<typename MeshType::active_cell_iterator>
@@ -2484,25 +1907,16 @@ namespace GridTools
 
 
   /**
-   * This function takes a vector of active cells (hereafter named @p
-   * patch_cells) as input argument, and returns a vector of their parent
-   * cells with the coarsest common level of refinement. In other words, find
-   * that set of cells living at the same refinement level so that all cells
-   * in the input vector are children of the cells in the set, or are in the
-   * set itself.
+   * 这个函数接收一个活动单元的向量（以下命名为 @p
+   * patch_cells）作为输入参数，并返回一个它们的父单元的向量，其细化程度为最粗的公共水平。换句话说，找到那个生活在同一细化水平的细胞集合，使输入向量中的所有细胞都是该集合中的细胞的子代，或者本身就在该集合中。
+   * @tparam  容器 在C++中，编译器不能从函数调用中确定
+   * <code>Container</code>
+   * 的类型。你需要把它作为一个明确的模板参数在函数名后面指定。这个类型必须满足网状容器的要求（见
+   * @ref ConceptMeshType  ）。      @param[in]  patch_cells
+   * 一个活动单元的向量，本函数为其找到最粗的公共层的父单元。这个单元格向量通常是调用函数的结果
+   * GridTools::get_patch_around_cell().   @return
+   * 具有输入单元格的最粗共同细化水平的单元格列表。
    *
-   * @tparam Container In C++, the compiler can not determine the type of
-   * <code>Container</code> from the function call. You need to specify it as
-   * an explicit template argument following the function name. This type has
-   * to satisfy the requirements of a mesh container (see
-   * @ref ConceptMeshType).
-   *
-   * @param[in] patch_cells A vector of active cells for which this function
-   * finds the parents at the coarsest common level. This vector of cells
-   * typically results from calling the function
-   * GridTools::get_patch_around_cell().
-   * @return A list of cells with the coarsest common level of refinement of
-   * the input cells.
    */
   template <class Container>
   std::vector<typename Container::cell_iterator>
@@ -2510,70 +1924,7 @@ namespace GridTools
     const std::vector<typename Container::active_cell_iterator> &patch_cells);
 
   /**
-   * This function constructs a Triangulation (named @p local_triangulation)
-   * from a given vector of active cells. This vector (which we think of the
-   * cells corresponding to a "patch") contains active cells that are part of
-   * an existing global Triangulation. The goal of this function is to build a
-   * local Triangulation that contains only the active cells given in @p patch
-   * (and potentially a minimum number of additional cells required to form a
-   * valid Triangulation). The function also returns a map that allows to
-   * identify the cells in the output Triangulation and corresponding cells in
-   * the input list.
    *
-   * The function copies the location of vertices of cells from the cells of the
-   * source triangulation to the triangulation that is built from the list of
-   * patch cells.  This adds support for triangulations which have been
-   * perturbed or smoothed in some manner which makes the triangulation
-   * deviate from the standard deal.II refinement strategy of placing new
-   * vertices at midpoints of faces or edges.
-   *
-   * The operation implemented by this function is frequently used in the
-   * definition of error estimators that need to solve "local" problems on
-   * each cell and its neighbors. A similar construction is necessary in the
-   * definition of the Clement interpolation operator in which one needs to
-   * solve a local problem on all cells within the support of a shape
-   * function. This function then builds a complete Triangulation from a list
-   * of cells that make up such a patch; one can then later attach a
-   * DoFHandler to such a Triangulation.
-   *
-   * If the list of input cells contains only cells at the same refinement
-   * level, then the output Triangulation simply consists of a Triangulation
-   * containing only exactly these patch cells. On the other hand, if the
-   * input cells live on different refinement levels, i.e., the Triangulation
-   * of which they are part is adaptively refined, then the construction of
-   * the output Triangulation is not so simple because the coarsest level of a
-   * Triangulation can not contain hanging nodes. Rather, we first have to
-   * find the common refinement level of all input cells, along with their
-   * common parents (see GridTools::get_cells_at_coarsest_common_level()),
-   * build a Triangulation from those, and then adaptively refine it so that
-   * the input cells all also exist in the output Triangulation.
-   *
-   * A consequence of this procedure is that the output Triangulation may
-   * contain more active cells than the ones that exist in the input vector.
-   * On the other hand, one typically wants to solve the local problem not on
-   * the entire output Triangulation, but only on those cells of it that
-   * correspond to cells in the input list.  In this case, a user typically
-   * wants to assign degrees of freedom only on cells that are part of the
-   * "patch", and somehow ignore those excessive cells. The current function
-   * supports this common requirement by setting the user flag for the cells
-   * in the output Triangulation that match with cells in the input list.
-   * Cells which are not part of the original patch will not have their @p
-   * user_flag set; we can then avoid assigning degrees of freedom using the
-   * FE_Nothing<dim> element.
-   *
-   * @tparam Container In C++, the compiler can not determine the type of
-   * <code>Container</code> from the function call. You need to specify it as
-   * an explicit template argument following the function name. This type that
-   * satisfies the requirements of a mesh container (see
-   * @ref ConceptMeshType).
-   *
-   * @param[in] patch A vector of active cells from a common triangulation.
-   * These cells may or may not all be at the same refinement level.
-   * @param[out] local_triangulation A triangulation whose active cells
-   * correspond to the given vector of active cells in @p patch.
-   * @param[out] patch_to_global_tria_map A map between the local
-   * triangulation which is built as explained above, and the cell iterators
-   * in the input list.
    */
   template <class Container>
   void
@@ -2587,35 +1938,21 @@ namespace GridTools
       typename Container::active_cell_iterator> &patch_to_global_tria_map);
 
   /**
-   * This function runs through the degrees of freedom defined by the
-   * DoFHandler and for each dof constructs a vector of
-   * active_cell_iterators representing the cells of support of the associated
-   * basis element at that degree of freedom. This function was originally
-   * designed for the implementation of local projections, for instance the
-   * Clement interpolant, in conjunction with other local patch functions like
+   * 这个函数通过DoFHandler定义的自由度运行，并为每个自由度构建一个active_cell_iterators的向量，代表该自由度下相关基元的支持单元。这个函数最初是为实现局部投影而设计的，例如Clement插值，结合其他局部修补函数，如
    * GridTools::build_triangulation_from_patch.
+   * DoFHandler的建立在Triangulation之上或
+   * parallel:distributed::Triangulation ，都得到支持和适当处理。
+   * 其结果是代表与自由度相关的基元支持的单元补丁。
+   * 例如，使用FE_Q有限元，我们得到了接触自由度的标准单元补丁，然后添加其他单元来处理可能的悬挂节点约束。
+   * 使用FE_DGQ有限元，自由度在逻辑上被认为是单元的
+   * "内部"，所以补丁将只由自由度所在的单个单元组成。
+   * @param[in]  dof_handler DoFHandler可以建立在三角或
+   * parallel::distributed::Triangulation
+   * 有限元上，其自由度在逻辑上与顶点、直线、四边形或六边形相关。
+   * @return 从局部相关单元上的自由度的global_dof_index到包含
+   * DoFHandler::active_cell_iterators
+   * 在该自由度的基函数支持中的单元的向量的映射。
    *
-   * DoFHandler's built on top of Triangulation or
-   * parallel:distributed::Triangulation are supported and handled
-   * appropriately.
-   *
-   * The result is the patch of cells representing the support of the basis
-   * element associated to the degree of freedom.  For instance using an FE_Q
-   * finite element, we obtain the standard patch of cells touching the degree
-   * of freedom and then add other cells that take care of possible hanging node
-   * constraints.  Using a FE_DGQ finite element, the degrees of freedom are
-   * logically considered to be "interior" to the cells so the patch would
-   * consist exclusively of the single cell on which the degree of freedom is
-   * located.
-   *
-   * @param[in] dof_handler The DoFHandler which could be built on a
-   * Triangulation or a parallel::distributed::Triangulation with a finite
-   * element that has degrees of freedom that are logically associated to a
-   * vertex, line, quad, or hex.
-   * @return A map from the global_dof_index of
-   * degrees of freedom on locally relevant cells to vectors containing
-   * DoFHandler::active_cell_iterators of cells in the support of the basis
-   * function at that degree of freedom.
    */
   template <int dim, int spacedim>
   std::map<
@@ -2624,117 +1961,127 @@ namespace GridTools
   get_dof_to_support_patch_map(DoFHandler<dim, spacedim> &dof_handler);
 
 
-  /*@}*/
+   /*@}*/ 
 
   /**
-   * @name Dealing with periodic domains
+   * @name  处理周期性域的问题
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Data type that provides all information necessary to create periodicity
-   * constraints and a periodic p4est forest with respect to two 'periodic'
-   * cell faces.
+   * 提供所有必要信息的数据类型，以创建周期性约束和相对于两个
+   * "周期性 "单元面的周期性p4est森林。
+   *
    */
   template <typename CellIterator>
   struct PeriodicFacePair
   {
     /**
-     * The cells associated with the two 'periodic' faces.
+     * 与两个'周期性'面相关的单元格。
+     *
      */
     CellIterator cell[2];
 
     /**
-     * The local face indices (with respect to the specified cells) of the two
-     * 'periodic' faces.
+     * 两个 "周期性 "面的局部面指数（相对于指定单元）。
+     *
      */
     unsigned int face_idx[2];
 
     /**
-     * The relative orientation of the first face with respect to the second
-     * face as described in orthogonal_equality() and
-     * DoFTools::make_periodicity_constraints() (and stored as a bitset).
+     * 在orthogonal_equality()和 DoFTools::make_periodicity_constraints()
+     * 中描述的第一个面相对于第二个面的相对方向（并存储为比特集）。
+     *
      */
     std::bitset<3> orientation;
 
     /**
-     * A @p dim $\times$ @p dim rotation matrix that describes how vector
-     * valued DoFs of the first face should be modified prior to constraining
-     * to the DoFs of the second face.
+     * 一个 @p dim   $\times$   @p dim 旋转矩阵，描述了在约束到第二个面的DoF之前，应该如何修改第一个面的矢量值DoF。        旋转矩阵在 DoFTools::make_periodicity_constraints() 中使用，对有限元空间的参数 @p first_vector_components 中列出的所有矢量值块进行旋转。更多细节见 DoFTools::make_periodicity_constraints() 和词汇表 @ref GlossPeriodicConstraints "关于周期性条件的词汇表条目"
+     * 。
      *
-     * The rotation matrix is used in DoFTools::make_periodicity_constraints()
-     * by applying the rotation to all vector valued blocks listed in the
-     * parameter @p first_vector_components of the finite element space. For
-     * more details see DoFTools::make_periodicity_constraints() and the
-     * glossary
-     * @ref GlossPeriodicConstraints "glossary entry on periodic conditions".
      */
     FullMatrix<double> matrix;
   };
 
 
   /**
-   * An orthogonal equality test for faces.
+   * 对面的正交平等测试。      @p face1 和 @p face2
+   * 被认为是相等的，如果其顶点之间可以通过正交平等关系实现一对一的匹配。
+   * 这里，两个顶点<tt>v_1</tt>和<tt>v_2</tt>被认为是相等的，如果
+   * $M\cdot v_1 + offset
    *
-   * @p face1 and @p face2 are considered equal, if a one to one matching
-   * between its vertices can be achieved via an orthogonal equality relation.
-   *
-   * Here, two vertices <tt>v_1</tt> and <tt>v_2</tt> are considered equal, if
-   * $M\cdot v_1 + offset - v_2$ is parallel to the unit vector in unit
-   * direction @p direction. If the parameter @p matrix is a reference to a
-   * spacedim x spacedim matrix, $M$ is set to @p matrix, otherwise $M$ is the
-   * identity matrix.
-   *
-   * If the matching was successful, the _relative_ orientation of @p face1
-   * with respect to @p face2 is returned in the bitset @p orientation, where
+   * - v_2$ 与单位方向的单位向量 @p direction. 平行，如果参数
+   * @p matrix 是对spacedim x spacedim矩阵的引用， $M$ 被设置为 @p
+   * matrix, ，否则 $M$ 为身份矩阵。    如果匹配成功， @p
+   * face1 相对于 @p face2 的_相对方向被返回到比特集 @p
+   * orientation, 中，其中
    * @code
-   * orientation[0] -> face_orientation
-   * orientation[1] -> face_flip
-   * orientation[2] -> face_rotation
+   * orientation[0]
+   *
+   * -> face_orientation
+   * orientation[1]
+   *
+   * -> face_flip
+   * orientation[2]
+   *
+   * -> face_rotation
    * @endcode
-   *
-   * In 2D <tt>face_orientation</tt> is always <tt>true</tt>,
-   * <tt>face_rotation</tt> is always <tt>false</tt>, and face_flip has the
-   * meaning of <tt>line_flip</tt>. More precisely in 3d:
-   *
-   * <tt>face_orientation</tt>: <tt>true</tt> if @p face1 and @p face2 have
-   * the same orientation. Otherwise, the vertex indices of @p face1 match the
-   * vertex indices of @p face2 in the following manner:
-   *
+   * 在2D中，<tt>face_orientation</tt>总是<tt>true</tt>，<tt>face_rotation</tt>总是<tt>false</tt>，而face_flip具有<tt>line_flip</tt>的含义。更确切地说，在3D中。
+   * <tt>face_orientation</tt>: <tt>真</tt>如果 @p face1 和 @p face2
+   * 有相同的方向。否则， @p face1 的顶点指数与 @p face2
+   * 的顶点指数以下列方式匹配。
    * @code
    * face1:           face2:
    *
-   * 1 - 3            2 - 3
+   * 1
+   *
+   * - 3            2
+   *
+   * - 3
    * |   |    <-->    |   |
-   * 0 - 2            0 - 1
+   * 0
+   *
+   * - 2            0
+   *
+   * - 1
    * @endcode
-   *
-   * <tt>face_flip</tt>: <tt>true</tt> if the matched vertices are rotated by
-   * 180 degrees:
-   *
+   * <tt>face_flip</tt>: <tt>真</tt>如果匹配的顶点旋转了180度。
    * @code
    * face1:           face2:
    *
-   * 1 - 0            2 - 3
+   * 1
+   *
+   * - 0            2
+   *
+   * - 3
    * |   |    <-->    |   |
-   * 3 - 2            0 - 1
+   * 3
+   *
+   * - 2            0
+   *
+   * - 1
    * @endcode
-   *
-   * <tt>face_rotation</tt>: <tt>true</tt> if the matched vertices are rotated
-   * by 90 degrees counterclockwise:
-   *
+   * <tt>face_rotation</tt>:
+   * <tt>真</tt>如果匹配的顶点逆时针旋转90度。
    * @code
    * face1:           face2:
    *
-   * 0 - 2            2 - 3
-   * |   |    <-->    |   |
-   * 1 - 3            0 - 1
-   * @endcode
+   * 0
    *
-   * and any combination of that... More information on the topic can be found
-   * in the
-   * @ref GlossFaceOrientation "glossary"
-   * article.
+   * - 2            2
+   *
+   * - 3
+   * |   |    <-->    |   |
+   * 1
+   *
+   * - 3            0
+   *
+   * - 1
+   * @endcode
+   * 以及任何的组合... 关于该主题的更多信息可以在 @ref GlossFaceOrientation "词汇表 "
+   * 文章中找到。
+   *
    */
   template <typename FaceIterator>
   bool orthogonal_equality(
@@ -2748,7 +2095,8 @@ namespace GridTools
 
 
   /**
-   * Same function as above, but doesn't return the actual orientation
+   * 与上述函数相同，但不返回实际方向
+   *
    */
   template <typename FaceIterator>
   bool
@@ -2762,60 +2110,34 @@ namespace GridTools
 
 
   /**
-   * This function will collect periodic face pairs on the coarsest mesh level
-   * of the given @p mesh (a Triangulation or DoFHandler) and add them to the
-   * vector @p matched_pairs leaving the original contents intact.
+   * 这个函数将在给定的 @p mesh
+   * （一个三角形或DoFHandler）的最粗的网格层次上收集周期性的面对，并将它们添加到矢量
+   * @p matched_pairs 中，而不改变原来的内容。    定义 "第一
+   * "边界为所有边界面，其边界ID为 @p  b_id1，"第二
+   * "边界由所有属于 @p  b_id2的面组成。
+   * 这个函数试图在orthogonal_equality()的帮助下将所有属于第一个边界的面与属于第二个边界的面进行匹配。
+   * 在PeriodicFacePair中返回的比特集编码了第一个面相对于第二个面的_相对_方向，更多细节请参见orthogonal_equality()的文档。
+   * @p direction
+   * 指的是周期性被强制执行的空间方向。当匹配周期性面时，这个向量分量被忽略。
+   * @p offset 是一个与面相切的矢量，当试图将 "第一
+   * "边界的顶点与 "第二
+   * "边界的相应顶点匹配时，该矢量将被添加到 "第一
+   * "边界的顶点位置。这可以用来实现诸如 $u(0,y)=u(1,y+1)$
+   * 等条件。    可以选择指定一个 $dim\times dim$ 旋转 @p matrix
+   * ，描述在约束到第二个面的DoF之前，应该如何修改第一个面的矢量值DoF。
+   * @p matrix 在两个地方使用。首先， @p matrix
+   * 将被提供给orthogonal_equality()并用于匹配面。如果
+   * $\text{matrix}\cdot v_1 + \text{offset}
    *
-   * Define a 'first' boundary as all boundary faces having boundary_id @p
-   * b_id1 and a 'second' boundary consisting of all faces belonging to @p
-   * b_id2.
+   * @note  创建的 std::vector 可以在
+   * DoFTools::make_periodicity_constraints() 和
+   * parallel::distributed::Triangulation::add_periodicity()
+   * 中使用，以代数方式强制实现周期性。
+   * @note  因为元素将被添加到 @p matched_pairs
+   * 中（而现有的条目将被保留），所以可以用不同的边界ID多次调用这个函数来生成一个具有所有周期对的向量。
+   * @note
+   * 由于周期性面对是在最粗的网格层次上找到的，因此有必要确保最粗层次的面有正确的边界指标设置。一般来说，这意味着在进行任何全局或局部网格细化之前，必须首先在粗大的网格上设置所有的边界指标。
    *
-   * This function tries to match all faces belonging to the first boundary
-   * with faces belonging to the second boundary with the help of
-   * orthogonal_equality().
-   *
-   * The bitset that is returned inside of PeriodicFacePair encodes the
-   * _relative_ orientation of the first face with respect to the second face,
-   * see the documentation of orthogonal_equality() for further details.
-   *
-   * The @p direction refers to the space direction in which periodicity is
-   * enforced. When matching periodic faces this vector component is ignored.
-   *
-   * The @p offset is a vector tangential to the faces that is added to the
-   * location of vertices of the 'first' boundary when attempting to match
-   * them to the corresponding vertices of the 'second' boundary. This can be
-   * used to implement conditions such as $u(0,y)=u(1,y+1)$.
-   *
-   * Optionally, a $dim\times dim$ rotation @p matrix can be specified that
-   * describes how vector valued DoFs of the first face should be modified
-   * prior to constraining to the DoFs of the second face. The @p matrix is
-   * used in two places. First, @p matrix will be supplied to
-   * orthogonal_equality() and used for matching faces: Two vertices $v_1$ and
-   * $v_2$ match if $\text{matrix}\cdot v_1 + \text{offset} - v_2$ is parallel
-   * to the unit vector in unit direction @p direction. (For more details see
-   * DoFTools::make_periodicity_constraints(), the glossary
-   * @ref GlossPeriodicConstraints "glossary entry on periodic conditions"
-   * and step-45). Second, @p matrix will be stored in the PeriodicFacePair
-   * collection @p matched_pairs for further use.
-   *
-   * @tparam MeshType A type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   *
-   * @note The created std::vector can be used in
-   * DoFTools::make_periodicity_constraints() and in
-   * parallel::distributed::Triangulation::add_periodicity() to enforce
-   * periodicity algebraically.
-   *
-   * @note Because elements will be added to @p matched_pairs (and existing
-   * entries will be preserved), it is possible to call this function several
-   * times with different boundary ids to generate a vector with all periodic
-   * pairs.
-   *
-   * @note Since the periodic face pairs are found on the coarsest mesh level,
-   * it is necessary to ensure that the coarsest level faces have the correct
-   * boundary indicators set. In general, this means that one must first set
-   * all boundary indicators on the coarse grid before performing any global
-   * or local grid refinement.
    */
   template <typename MeshType>
   void
@@ -2832,26 +2154,9 @@ namespace GridTools
 
 
   /**
-   * This compatibility version of collect_periodic_faces() only works on
-   * grids with cells in
-   * @ref GlossFaceOrientation "standard orientation".
+   * @note 这个版本的collect_periodic_faces()将不会在单元格不在 @ref GlossFaceOrientation "标准方向 "
+   * 的网格上工作。
    *
-   * Instead of defining a 'first' and 'second' boundary with the help of two
-   * boundary_ids this function defines a 'left' boundary as all faces with
-   * local face index <code>2*direction</code> and boundary indicator @p b_id
-   * and, similarly, a 'right' boundary consisting of all face with local face
-   * index <code>2*direction+1</code> and boundary indicator @p b_id. Faces
-   * with coordinates only differing in the @p direction component are
-   * identified.
-   *
-   * This function will collect periodic face pairs on the coarsest mesh level
-   * and add them to @p matched_pairs leaving the original contents intact.
-   *
-   * See above function for further details.
-   *
-   * @note This version of collect_periodic_faces() will not work on
-   * meshes with cells not in
-   * @ref GlossFaceOrientation "standard orientation".
    */
   template <typename MeshType>
   void
@@ -2865,31 +2170,21 @@ namespace GridTools
       dealii::Tensor<1, MeshType::space_dimension>(),
     const FullMatrix<double> &matrix = FullMatrix<double>());
 
-  /*@}*/
+   /*@}*/ 
   /**
-   * @name Dealing with boundary and manifold ids
+   * @name  处理边界和流形ID的问题
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Copy boundary ids to manifold ids on faces and edges at the boundary. The
-   * default manifold_id for new Triangulation objects is
-   * numbers::flat_manifold_id. This function copies the boundary_ids of
-   * the boundary faces and edges to the manifold_ids of the same faces and
-   * edges, allowing the user to change the boundary_ids and use them for
-   * boundary conditions regardless of the geometry, which will use
-   * manifold_ids to create new points. Only active cells will be iterated
-   * over. This is a function you'd typically call when there is only one
-   * active level on your Triangulation. Mesh refinement will then inherit
-   * these indicators to child cells, faces, and edges.
+   * 将边界ID复制到边界上的面和边的流形ID。新的三角测量对象的默认manifold_id是
+   * numbers::flat_manifold_id.
+   * 这个函数将边界面和边的边界_id复制到相同面和边的manifold_id上，允许用户改变边界_id并将其用于边界条件，而不考虑几何形状，这将使用manifold_id来创建新点。只有活动单元会被迭代。当你的三角网格上只有一个活动层时，通常会调用这个函数。然后，网格细化会将这些指标继承到子单元、面和边上。
+   * 可选参数 @p reset_boundary_ids,
+   * 表示该函数在将边界面和边的值复制到manifold_id后，是否应将其重置为默认值0。默认情况下，boundary_ids不做任何改动。
+   * @ingroup manifold   @relatesalso  边界
    *
-   * The optional parameter @p reset_boundary_ids, indicates whether this
-   * function should reset the boundary_ids of boundary faces and edges to its
-   * default value 0 after copying its value to the manifold_id. By default,
-   * boundary_ids are left untouched.
-   *
-   * @ingroup manifold
-   * @relatesalso boundary
    */
   template <int dim, int spacedim>
   void
@@ -2897,25 +2192,18 @@ namespace GridTools
                                const bool reset_boundary_ids = false);
 
   /**
-   * Map the given boundary ids to the given manifold ids on faces and
-   * edges at the boundary.
+   * 将给定的边界id映射到边界上的面和边上的给定流形id。
+   * 该函数将参数 @p src_boundary_ids
+   * 中存在的边界面和边的边界id复制到 @p dst_manifold_ids,
+   * 中相同面和边的相应流形id。    如果可选的参数 @p
+   * reset_boundary_ids 非空， @p src_boundary_ids,
+   * 中的每个边界id将被替换为 @p reset_boundary_ids.
+   * 中的相应边界id。
+   * 如果输入向量的大小不匹配，将抛出异常。如果 @p
+   * src_boundary_ids
+   * 中指出的边界ID不存在于三角形中，在这个过程中会被简单地忽略。
+   * @ingroup manifold   @relatesalso  边界
    *
-   * This function copies the boundary ids of the boundary faces and
-   * edges that are present in the parameter @p src_boundary_ids to
-   * the corresponding manifold id in @p dst_manifold_ids, of the same
-   * faces and edges.
-   *
-   * If the optional parameter @p reset_boundary_ids is non empty,
-   * each boundary id in @p src_boundary_ids, is replaced with the
-   * corresponding boundary id in @p reset_boundary_ids.
-   *
-   * An exception is thrown if the size of the input vectors do not
-   * match. If a boundary id indicated in @p src_boundary_ids is not
-   * present in the triangulation, it is simply ignored during the
-   * process.
-   *
-   * @ingroup manifold
-   * @relatesalso boundary
    */
   template <int dim, int spacedim>
   void
@@ -2926,33 +2214,21 @@ namespace GridTools
     const std::vector<types::boundary_id> &reset_boundary_ids = {});
 
   /**
-   * Copy material ids to manifold ids. The default manifold_id for new
-   * Triangulation objects is numbers::flat_manifold_id. When refinements
-   * occurs, the Triangulation asks where to locate new points to the
-   * underlying manifold.
-   *
-   * When reading a Triangulation from a supported input format, typical
-   * information that can be stored in a file are boundary conditions for
-   * boundary faces (which we store in the boundary_id of the faces), material
-   * types for cells (which we store in the material_id of the cells) and in
-   * some cases subdomain ids for cells (which we store in the subdomain_id of
-   * the cell).
-   *
-   * If you read one of these grids into a Triangulation, you might still want
-   * to use the material_id specified in the input file as a manifold_id
-   * description. In this case you can associate a Manifold object to internal
-   * cells, and this object will be used by the Triangulation to query
-   * Manifold objects for new points. This function iterates over active cells
-   * and copies the material_ids to the manifold_ids.
-   *
-   * The optional parameter @p compute_face_ids, indicates whether this
-   * function should also set the manifold_ids of the faces (both for internal
-   * faces and for faces on the boundary). If set to true, then each face will
-   * get a manifold_id equal to the minimum of the surrounding manifold_ids,
-   * ensuring that a unique manifold id is selected for each face of the
-   * Triangulation. By default, face manifold_ids are not computed.
-   *
+   * 将材料id复制到流形id。新Triangulation对象的默认manifold_id为
+   * numbers::flat_manifold_id.
+   * 当细化发生时，Triangulation会询问在何处将新点定位到底层流形。
+   * 当从支持的输入格式中读取Triangulation时，可以存储在文件中的典型信息是边界面的边界条件（我们将其存储在面的边界_id中）、单元的材料类型（我们将其存储在单元的材料_id中）以及在某些情况下单元的子域ID（我们将其存储在单元的子域_id中）。
+   * 如果您将这些网格之一读入
+   * Triangulation，您可能仍然希望使用输入文件中指定的
+   * material_id 作为 manifold_id
+   * 描述。在这种情况下，您可以将一个Manifold对象与内部单元格相关联，该对象将被Triangulation用于查询Manifold对象的新点。该函数对活动单元进行迭代，并将
+   * material_ids 复制到 manifold_ids 中。    可选参数 @p
+   * compute_face_ids,
+   * 表示该函数是否也应设置面的manifold_ids（包括内部面和边界上的面）。如果设置为
+   * "true"，那么每个面的manifold_id将等于周围manifold_ids的最小值，确保为三角结构的每个面选择一个唯一的manifold
+   * id。默认情况下，不计算面的manifold_id。
    * @ingroup manifold
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2960,28 +2236,22 @@ namespace GridTools
                                const bool compute_face_ids = false);
 
   /**
-   * Propagate manifold indicators associated with the cells of the
-   * Triangulation @p tria to their co-dimension one and two objects.
+   * 将与三角形 @p tria
+   * 的单元格相关的流形指标传播到其同维度的一和二对象。
+   * 这个函数将面和边（包括内部和边界）的 @p manifold_id
+   * 设置为 @p disambiguation_function
+   * 方法返回的值，该方法与共享相同面或边的单元格的流形指标集合一起调用。
+   * 默认情况下， @p disambiguation_function
+   * 在集合尺寸大于1时（即无法根据相邻单元格的流形指标来决定一个面或边应该有什么流形指标时）返回
+   * numbers::flat_manifold_id
+   * ，在集合尺寸为1时（即所有相邻单元格和面有相同的流形指标时）返回集合中包含的流形指标。
+   * 参数 @p overwrite_only_flat_manifold_ids
+   * 允许您指定当一个面或一个边已经具有不同于
+   * numbers::flat_manifold_id. 的流形指标时该如何处理。
+   * 如果标志是 @p true, ，该边或面将保持其原始流形指标。
+   * 如果是 @p false, ，那么这些面和边的流形指标也将根据
+   * @p disambiguation_function. 的返回值进行设置。
    *
-   * This function sets the @p manifold_id of faces and edges (both on the
-   * interior and on the boundary) to the value returned by the
-   * @p disambiguation_function method, called with the set of
-   * manifold indicators of the cells that share the same face or edge.
-   *
-   * By default, the @p disambiguation_function returns
-   * numbers::flat_manifold_id when the set has size greater than one (i.e.,
-   * when it is not possible to decide what manifold indicator a face or edge
-   * should have according to the manifold indicators of the adjacent cells)
-   * and it returns the manifold indicator contained in the set when it has
-   * dimension one (i.e., when all adjacent cells and faces have the same
-   * manifold indicator).
-   *
-   * The parameter @p overwrite_only_flat_manifold_ids allows you to specify
-   * what to do when a face or an edge already has a manifold indicator
-   * different from numbers::flat_manifold_id. If the flag is @p true, the edge
-   * or face will maintain its original manifold indicator.
-   * If it is @p false, then also the manifold indicator of these faces and edges
-   * is set according to the return value of the @p disambiguation_function.
    */
   template <int dim, int spacedim>
   void
@@ -2996,91 +2266,60 @@ namespace GridTools
           return numbers::flat_manifold_id;
       },
     bool overwrite_only_flat_manifold_ids = true);
-  /*@}*/
+   /*@}*/ 
 
   /**
-   * Exchange arbitrary data of type @p DataType provided by the function
-   * objects from locally owned cells to ghost cells on other processors.
-   *
-   * After this call, you typically will have received data from @p unpack on
-   * every ghost cell as it was given by @p pack on the owning processor.
-   * Whether you do or do not receive information to @p unpack on a given
-   * ghost cell depends on whether the @p pack function decided that
-   * something needs to be sent. It does so using the std_cxx17::optional
-   * mechanism: if the std_cxx17::optional return object of the @p pack
-   * function is empty, then this implies that no data has to be sent for
-   * the locally owned cell it was called on. In that case, @p unpack will
-   * also not be called on the ghost cell that corresponds to it on the
-   * receiving side. On the other hand, if the std_cxx17::optional object is
-   * not empty, then the data stored within it will be sent to the received
-   * and the @p unpack function called with it.
-   *
-   * @tparam DataType The type of the data to be communicated. It is assumed
-   *   to be serializable by boost::serialization. In many cases, this
-   *   data type can not be deduced by the compiler, e.g., if you provide
-   *   lambda functions for the second and third argument
-   *   to this function. In this case, you have to explicitly specify
-   *   the @p DataType as a template argument to the function call.
-   * @tparam MeshType The type of @p mesh.
-   *
-   * @param mesh A variable of a type that satisfies the requirements of the
-   * @ref ConceptMeshType "MeshType concept".
-   * @param pack The function that will be called on each locally owned cell
-   *   that is a ghost cell somewhere else. As mentioned above, the function
-   *   may return a regular data object of type @p DataType to indicate
-   *   that data should be sent, or an empty
-   *   <code>std_cxx17::optional@<DataType@></code> to indicate that nothing has
-   *   to be sent for this cell.
-   * @param unpack The function that will be called for each ghost cell
-   *   for which data was sent, i.e., for which the @p pack function
-   *   on the sending side returned a non-empty std_cxx17::optional object.
-   *   The @p unpack function is then called with the data sent by the
-   *   processor that owns that cell.
-   * @param cell_filter Only cells are communicated where this filter function returns
-   *   the value `true`. In the default case, the function returns true on all
-   * cells and thus, all relevant cells are communicated.
-   *
+   * 将函数对象提供的 @p DataType 类型的任意数据从本地拥有的单元交换到其他处理器上的幽灵单元。    在这个调用之后，你通常会从每个幽灵单元上收到 @p unpack 的数据，因为它是由拥有处理器上的 @p pack 提供的。  你是否收到某个鬼魂单元上的 @p unpack 的信息，取决于 @p pack 函数是否决定需要发送什么。它使用 std_cxx17::optional 机制来做：如果 std_cxx17::optional 函数的 @p pack 返回对象是空的，那么这意味着它所调用的本地所有单元不需要发送数据。在这种情况下， @p unpack 也不会在接收方与之对应的幽灵单元上被调用。另一方面，如果 std_cxx17::optional 对象不是空的，那么存储在它里面的数据将被发送到接收方，并通过它调用 @p unpack 函数。      @tparam  DataType 要通信的数据的类型。在许多情况下，这个数据类型不能被编译器推断出来，例如，如果你为这个函数的第二个和第三个参数提供lambda函数。在这种情况下，你必须明确指定 @p DataType 作为函数调用的一个模板参数。    @tparam  MeshType  @p mesh.   @param  mesh 类型的变量，满足 @ref ConceptMeshType  "MeshType概念 "
+   * 的要求。    @param  pack
+   * 对每个本地拥有的、在其他地方是幽灵单元的单元，将被调用的函数。如上所述，该函数可以返回一个类型为
+   * @p DataType
+   * 的常规数据对象，表示应该发送数据，或者返回一个空的
+   * <code>std_cxx17::optional@<DataType@></code>
+   * ，表示这个单元不需要发送任何东西。    @param  unpack
+   * 对于每个发送了数据的ghost单元，即发送方的 @p pack
+   * 函数返回一个非空的 std_cxx17::optional
+   * 对象，将调用该函数。    然后， @p unpack
+   * 函数会被拥有该单元的处理器所发送的数据调用。
+   * @param  cell_filter
+   * 只有在这个过滤函数返回值为`true'的单元才会被通信。在默认情况下，该函数对所有单元都返回true，因此，所有相关的单元都被传送。
    * <h4> An example </h4>
-   *
-   * Here is an example that shows how this function is to be used
-   * in a concrete context. It is taken from the code that makes
-   * sure that the @p active_fe_index (a single unsigned integer) is
-   * transported from locally owned cells where one can set it in
-   * DoFHandler objects with hp-capabilities, to the corresponding ghost cells
-   * on other processors to ensure that one can query the right value also on
-   * those processors:
+   * 下面是一个例子，显示了这个函数在具体环境中的使用。它取自于确保
+   * @p active_fe_index
+   * （一个无符号整数）从本地拥有的单元（人们可以在具有hp-capabilities的DoFHandler对象中设置它）传送到其他处理器上相应的ghost单元的代码，以确保人们也能在这些处理器上查询到正确的值。
    * @code
    * using active_cell_iterator =
-   *   typename dealii::DoFHandler<dim,spacedim>::active_cell_iterator;
-   * auto pack = [] (const active_cell_iterator &cell) -> unsigned int
-   *             {
-   *               return cell->active_fe_index();
-   *             };
+   * typename dealii::DoFHandler<dim,spacedim>::active_cell_iterator;
+   * auto pack = [] (const active_cell_iterator &cell)
+   *
+   * -> unsigned int
+   *           {
+   *             return cell->active_fe_index();
+   *           };
    *
    * auto unpack = [] (const active_cell_iterator &cell,
-   *                   const unsigned int active_fe_index) -> void
-   *               {
-   *                 cell->set_active_fe_index(active_fe_index);
-   *               };
+   *                 const unsigned int active_fe_index)
+   *
+   * -> void
+   *             {
+   *               cell->set_active_fe_index(active_fe_index);
+   *             };
    *
    * GridTools::exchange_cell_data_to_ghosts<
-   *   unsigned int, dealii::DoFHandler<dim,spacedim>> (dof_handler,
-   *                                                    pack,
-   *                                                    unpack);
+   * unsigned int, dealii::DoFHandler<dim,spacedim>> (dof_handler,
+   *                                                  pack,
+   *                                                  unpack);
    * @endcode
+   * 你会注意到 @p pack
+   * lambda函数返回一个`无符号的int`，而不是
+   * `std_cxx17::optional<unsigned
+   * int>`。前者会自动转换为后者，意味着数据将总是被传送到另一个处理器。
+   * (实际上， @p unpack
+   * 函数需要更复杂一些，因为它不允许在幽灵单元上调用
+   * DoFAccessor::set_active_fe_index() 。相反， @p unpack
+   * 函数直接访问内部数据结构。但你会明白的
    *
-   * You will notice that the @p pack lambda function returns an `unsigned int`,
-   * not a `std_cxx17::optional<unsigned int>`. The former converts
-   * automatically to the latter, implying that data will always be transported
-   * to the other processor.
+   * - 该代码也可以通过与上述类似的调用来交换材料ID、用户索引、边界指示器或任何种类的其他数据）。)
    *
-   * (In reality, the @p unpack function needs to be a bit more
-   * complicated because it is not allowed to call
-   * DoFAccessor::set_active_fe_index() on ghost cells. Rather, the
-   * @p unpack function directly accesses internal data structures. But
-   * you get the idea -- the code could, just as well, have exchanged
-   * material ids, user indices, boundary indicators, or any kind of other
-   * data with similar calls as the ones above.)
    */
   template <typename DataType, typename MeshType>
   void
@@ -3095,14 +2334,12 @@ namespace GridTools
         always_return<typename MeshType::active_cell_iterator, bool>{true});
 
   /**
-   * Exchange arbitrary data of type @p DataType provided by the function
-   * objects from locally owned level cells to ghost level cells on other
-   * processes.
+   * 交换由函数对象提供的 @p DataType
+   * 类型的任意数据，从本地拥有的水平单元到其他进程上的幽灵水平单元。
+   * 除了 exchange_cell_data_to_ghosts()
+   * 的参数外，这个函数允许提供一个  @p cell_filter
+   * 函数，它可以用来只交流有标记的单元。在默认情况下，所有相关单元都会被通信。
    *
-   * In addition to the parameters of exchange_cell_data_to_ghosts(), this
-   * function allows to provide a @p cell_filter function, which can be used to only
-   * communicate marked cells. In the default case, all relevant cells are
-   * communicated.
    */
   template <typename DataType, typename MeshType>
   void
@@ -3116,17 +2353,8 @@ namespace GridTools
       cell_filter = always_return<typename MeshType::level_cell_iterator, bool>{
         true});
 
-  /* Exchange with all processors of the MPI communicator @p mpi_communicator the vector of bounding
-   * boxes @p local_bboxes.
-   *
-   * This function is meant to exchange bounding boxes describing the locally
-   * owned cells in a distributed triangulation obtained with the function
-   * GridTools::compute_mesh_predicate_bounding_box .
-   *
-   * The output vector's size is the number of processes of the MPI
-   * communicator:
-   * its i-th entry contains the vector @p local_bboxes of the i-th process.
-   */
+  /* 与MPI通信器的所有处理器交换边界框的向量  @p local_bboxes.  这个函数的目的是交换边界框，描述用函数  GridTools::compute_mesh_predicate_bounding_box  获得的分布式三角形中本地拥有的单元。    输出向量的大小是MPI通信器的进程数：其第i个条目包含第i个进程的向量 @p local_bboxes 。 
+* */
   template <int spacedim>
   std::vector<std::vector<BoundingBox<spacedim>>>
   exchange_local_bounding_boxes(
@@ -3134,36 +2362,17 @@ namespace GridTools
     const MPI_Comm &                          mpi_communicator);
 
   /**
-   * In this collective operation each process provides a vector
-   * of bounding boxes and a communicator.
-   * All these vectors are gathered on each of the processes,
-   * organized in a search tree which, and then returned.
+   * 在这个集体操作中，每个进程提供一个边界框的向量和一个通信器。
+   * 所有这些向量被收集在每个进程中，组织在一个搜索树中，然后返回。
+   * 我们的想法是，边界框的向量描述了每个进程上计算的相关属性，这也可能对其他进程有用。一个例子是，如果输入的边界盒向量对应于一个
+   * @ref GlossLocallyOwnedCell
+   * 对象的局部拥有的网格分区的覆盖（见
+   * parallel::distributed::Triangulation
+   * ）。虽然这些边界盒可能与其他进程的边界盒重叠，但如果试图找出这一点的进程有一个其他进程的边界盒列表，那么找到哪个进程拥有包围给定点的单元格就容易得多。
+   * 返回的搜索树对象是一个带有打包算法的r-tree，由boost库提供。更多信息见https://www.boost.org/doc/libs/1_67_0/libs/geometry/doc/html/geometry/spatial_indexes/introduction.html。
+   * 在返回的树中，每个节点都包含一对元素：第一个是一个边界框，第二个是其本地描述包含边界框的进程的等级。
+   * @note  这个函数是一个集体操作。
    *
-   * The idea is that the vector of bounding boxes describes a
-   * relevant property of the computations on each process
-   * individually, which could also be of use to other processes. An
-   * example would be if the input vector of bounding boxes
-   * corresponded to a covering of the locally owned partition of a
-   * mesh (see
-   * @ref GlossLocallyOwnedCell)
-   * of a
-   * parallel::distributed::Triangulation object. While these may
-   * overlap the bounding boxes of other processes, finding which
-   * process owns the cell that encloses a given point is vastly
-   * easier if the process trying to figure this out has a list of
-   * bounding boxes for each of the other processes at hand.
-   *
-   * The returned search tree object is an r-tree with packing
-   * algorithm, which is provided by boost library. See
-   * https://www.boost.org/doc/libs/1_67_0/libs/geometry/doc/html/geometry/spatial_indexes/introduction.html
-   * for more information.
-   *
-   * In the returned tree, each node contains a pair of elements:
-   * the first being a bounding box,
-   * the second being the rank of the process whose local description
-   * contains the bounding box.
-   *
-   * @note This function is a collective operation.
    */
   template <int spacedim>
   RTree<std::pair<BoundingBox<spacedim>, unsigned int>>
@@ -3172,21 +2381,20 @@ namespace GridTools
     const MPI_Comm &                          mpi_communicator);
 
   /**
-   * Collect for a given triangulation all locally relevant vertices that
-   * coincide due to periodicity.
+   * 对于一个给定的三角形，收集所有由于周期性而重合的本地相关顶点。
+   * 重合的顶点被放入一个组，例如。[1, 25,
+   * 51]，用其中的一个任意元素来标记，例如。"1".
+   * 所有重合顶点都将标签存储到它的组中，这样它们就可以快速访问该组中的所有重合顶点：例如。51
    *
-   * Coinciding vertices are put into a group, e.g.: [1, 25, 51], which is
-   * labeled by an arbitrary element from it, e.g.: "1". All coinciding vertices
-   * store the label to its group, so that they can quickly access all the
-   * coinciding vertices in that group: e.g.: 51 ->  "1" -> [1, 25, 51]
+   * -> "1"
    *
-   * @param[in] tria Triangulation.
-   * @param[out] coinciding_vertex_groups A map of equivalence classes (of
-   *             coinciding vertices) labeled by an arbitrary element from them.
-   *             Vertices not coinciding are ignored.
-   * @param[out] vertex_to_coinciding_vertex_group Map of a vertex to the label
-   *             of a group of coinciding vertices. Vertices not contained in
-   *             this vector are not coinciding with any other vertex.
+   * --> [1, 25, 51]  @param[in]  tria Triangulation.     @param[out]
+   * 重合顶点组（coinciding_vertex_groups）
+   * 用其中的任意元素标注的等价类（重合顶点）的映射。
+   * 不重合的顶点被忽略。    @param[out]
+   * vertex_to_coinciding_vertex_group
+   * 一个顶点到一组重合顶点的标签的映射。不包含在这个向量中的顶点不与任何其他顶点重合。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -3196,10 +2404,9 @@ namespace GridTools
     std::map<unsigned int, unsigned int> &vertex_to_coinciding_vertex_group);
 
   /**
-   * Return a map that, for each vertex, lists all the processes whose
-   * subdomains are adjacent to that vertex.
+   * 返回一个地图，对于每个顶点，列出其子域与该顶点相邻的所有进程。
+   * @param[in]  tria Triangulation。
    *
-   * @param[in] tria Triangulation.
    */
   template <int dim, int spacedim>
   std::map<unsigned int, std::set<dealii::types::subdomain_id>>
@@ -3207,47 +2414,46 @@ namespace GridTools
     const Triangulation<dim, spacedim> &tria);
 
   /**
-   * A structure that allows the transfer of cell data of type @p T from one processor
-   * to another. It corresponds to a packed buffer that stores a vector of
-   * CellId and a vector of type @p T.
+   * 一种结构，允许将 @p T
+   * 类型的单元数据从一个处理器传输到另一个处理器。它相当于一个打包的缓冲区，存储了一个CellId的向量和一个
+   * @p T.
+   * 类型的向量。这个类通过提供保存/加载函数，能够把CellId的向量和
+   * @p T 类型的相关数据打包成一个流，从而促进了传输。
+   * 类型 @p T 被假定为可被 <code>boost::serialization</code>
+   * 序列化（例如 <code>unsigned int</code> or
+   * <code>std::vector@<double@></code>  ）。
    *
-   * This class facilitates the transfer by providing the save/load functions
-   * that are able to pack up the vector of CellId's and the associated
-   * data of type @p T into a stream.
-   *
-   * Type @p T is assumed to be serializable by <code>boost::serialization</code> (for
-   * example <code>unsigned int</code> or <code>std::vector@<double@></code>).
    */
   template <int dim, typename T>
   struct CellDataTransferBuffer
   {
     /**
-     * A vector to store IDs of cells to be transferred.
+     * 一个向量，用于存储要转移的单元格的ID。
+     *
      */
     std::vector<CellId> cell_ids;
 
     /**
-     * A vector of cell data to be transferred.
+     * 一个要传输的单元格数据的向量。
+     *
      */
     std::vector<T> data;
 
     /**
-     * Write the data of this object to a stream for the purpose of
-     * serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)
+     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)
+     * @pre
+     * 将此对象的数据写入一个流，以便进行序列化。用户有责任保持
+     * @p data 的大小与 @p cell_ids 的大小相等。
      *
-     * @pre The user is responsible to keep the size of @p data
-     * equal to the size as @p cell_ids .
      */
     template <class Archive>
     void
     save(Archive &ar, const unsigned int version) const;
 
     /**
-     * Read the data of this object from a stream for the purpose of
-     * serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-     * Throw away the previous content.
+     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从一个流中读取此对象的数据，以便进行序列化。
+     * 扔掉之前的内容。
+     *
      */
     template <class Archive>
     void
@@ -3255,9 +2461,8 @@ namespace GridTools
 
 #  ifdef DOXYGEN
     /**
-     * Read or write the data of this object to or from a stream for the
-     * purpose of serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * 为了序列化的目的，使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中。
+     *
      */
     template <class Archive>
     void
@@ -3272,33 +2477,26 @@ namespace GridTools
 
 
   /**
-   * An implementation of the marching-square (2D) and marching-cube algorithm
-   * for creating data structures (vectors of Point and CellData) to
-   * create a linear/bilinear surface mesh on the iso line/contour of a
-   * scalar field.
+   * 行进方程（2D）和行进立方程算法的实现，用于创建数据结构（Point和CellData的向量），在标量场的等高线/轮廓上创建线性/双线性表面网格。
+   * 为了提高等值线/轮廓的近似度和产生的线性表面网格，可以增加细分的数量，使算法不是在一个单元上运行，而是在子单元上运行，顶点值由单元值插值而成。
+   * @note  得到的网格将包含二维的线和三维的三角形。
+   * @note
+   * 生成的网格将不是高质量的，因为如果网格在靠近顶点处被切割，可能会包含直径非常小的单元。
    *
-   * To improve the approximation of the iso line/contour and the resulting
-   * linear surface mesh, one increases the number of subdivision so that the
-   * algorithm is not run on a cell but on subcells with vertex values having
-   * been interpolated from the cell values.
-   *
-   * @note The resulting mesh will contain lines in 2D and triangles in 3D.
-   *
-   * @note The resulting mesh will not be of high quality, since it might
-   *   contain cells with very small diameters if the mesh is cut close to a
-   *   vertex.
    */
   template <int dim, typename VectorType>
   class MarchingCubeAlgorithm
   {
   public:
     /**
-     * Value type of vector.
+     * 矢量的数值类型。
+     *
      */
     using value_type = typename VectorType::value_type;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     MarchingCubeAlgorithm(const Mapping<dim, dim> &      mapping,
                           const FiniteElement<dim, dim> &fe,
@@ -3306,8 +2504,9 @@ namespace GridTools
                           const double                   tolerance = 1e-10);
 
     /**
-     * Process all locally-owned cells and fill @p vertices and @p cells for all
-     * cells that are cut.
+     * 处理所有本地拥有的单元格并为所有被切割的单元格填充
+     * @p vertices 和 @p cells 。
+     *
      */
     void
     process(const DoFHandler<dim> &         background_dof_handler,
@@ -3317,10 +2516,10 @@ namespace GridTools
             std::vector<CellData<dim - 1>> &cells) const;
 
     /**
-     * Process the provided cell and fill @p vertices and @p cells for all cells
-     * that are cut.
+     * 处理所提供的单元格并为所有被切割的单元格填充 @p
+     * vertices 和 @p cells 。
+     * @note 如果单元格没有被切割，产生的向量为空。
      *
-     * @note The resulting vectors are empty if the cell is not cut.
      */
     void
     process_cell(const typename DoFHandler<dim>::active_cell_iterator &cell,
@@ -3331,14 +2530,15 @@ namespace GridTools
 
   private:
     /**
-     * Internal function to create a quadrature rule with n_subdivisions+1
-     * equally-positioned quadrature points.
+     * 内部函数创建一个具有n_subdivisions+1同等位置正交点的正交规则。
+     *
      */
     static Quadrature<dim>
     create_quadrature_rule(const unsigned int n_subdivisions);
 
     /**
-     * Process a cell.
+     * 处理一个单元。
+     *
      */
     void
     process_cell(std::vector<value_type> &       ls_values,
@@ -3348,10 +2548,10 @@ namespace GridTools
                  std::vector<CellData<dim - 1>> &cells) const;
 
     /**
-     * Process a sub-cell (2D).
+     * 处理一个子单元（2D）。
+     * @note
+     * 带有鞍状点的子单元被忽略。在这种情况下，请增加子单元的数量。
      *
-     * @note Subcells with saddle points are ignored. Please increase the number
-     *   of subdivisions in this case.
      */
     void
     process_sub_cell(const std::vector<value_type> & ls_values,
@@ -3362,7 +2562,8 @@ namespace GridTools
                      std::vector<CellData<1>> &      cells) const;
 
     /**
-     * Process a sub-cell (3D).
+     * 处理一个子单元（3D）。
+     *
      */
     void
     process_sub_cell(const std::vector<value_type> & ls_values,
@@ -3373,20 +2574,20 @@ namespace GridTools
                      std::vector<CellData<2>> &      cells) const;
 
     /**
-     * Number of subdivisions each cell is subdivided into in each direction to
-     * improve the approximation.
+     * 每个单元在每个方向上被细分的数量，以提高近似度。
+     *
      */
     const unsigned int n_subdivisions;
 
     /**
-     * Absolute tolerance specifying the minimum distance between a vertex and
-     * the cut point so that a line is considered cut.
+     * 绝对公差，指定顶点和切割点之间的最小距离，从而使一条线被认为是被切割的。
+     *
      */
     const double tolerance;
 
     /**
-     * FEValues used internally and set up with a quadrature rule with the
-     * correct number of subdivisions.
+     * 内部使用的FEValues，并以正确的细分数设置正交规则。
+     *
      */
     mutable FEValues<dim> fe_values;
   };
@@ -3394,31 +2595,36 @@ namespace GridTools
 
 
   /**
-   * @name Exceptions
+   * @name  异常情况
+   *
    */
-  /*@{*/
+   /*@{*/ 
 
   /**
-   * Exception
+   * 例外情况
+   *
    */
   DeclException1(ExcInvalidNumberOfPartitions,
                  int,
                  << "The number of partitions you gave is " << arg1
                  << ", but must be greater than zero.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException1(ExcNonExistentSubdomain,
                  int,
                  << "The subdomain id " << arg1
                  << " has no cells associated with it.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcTriangulationHasBeenRefined);
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException1(ExcScalingFactorNotPositive,
                  double,
@@ -3426,33 +2632,36 @@ namespace GridTools
                  << ".");
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException1(ExcVertexNotUsed,
                  unsigned int,
                  << "The given vertex with index " << arg1
                  << " is not used in the given triangulation.");
 
-  /*@}*/
+   /*@}*/ 
 
-} /*namespace GridTools*/
+}  /*namespace GridTools*/ 
 
 
 /**
- * An exception that is thrown whenever the edges of a mesh are not
- * orientable.
+ * 当一个网格的边缘不能被定向时，就会抛出一个异常。
  *
- * @note for backwards compatibility with the old GridReordering class this
- * exception is not in the GridTools namespace.
+ *
+ * @note
+ * 为了向后兼容旧的GridReordering类，这个异常不在GridTools命名空间。
+ *
  *
  * @ingroup Exceptions
+ *
  */
 DeclExceptionMsg(ExcMeshNotOrientable,
                  "The edges of the mesh are not consistently orientable.");
 
 
 
-/* ----------------- Template function --------------- */
+ /* ----------------- Template function --------------- */ 
 
 #  ifndef DOXYGEN
 
@@ -3659,16 +2868,11 @@ namespace GridTools
     namespace ProjectToObject
     {
       /**
-       * The method GridTools::project_to_object requires taking derivatives
-       * along the surface of a simplex. In general these cannot be
-       * approximated with finite differences but special differences of the
-       * form
+       * 方法 GridTools::project_to_object
+       * 需要沿着单线的表面求导数。一般来说，这些导数不能用有限差分来近似，而是用df/dx_i形式的特殊差分。
        *
-       *     df/dx_i - df/dx_j
+       * - df/dx_j  <em> 可以 </em> 被逼近。这 <code>struct</code> 只是存储了由模版近似的两个导数（在上面的例子中 <code>i</code> and <code>j</code> ）。
        *
-       * <em>can</em> be approximated. This <code>struct</code> just stores
-       * the two derivatives approximated by the stencil (in the case of the
-       * example above <code>i</code> and <code>j</code>).
        */
       struct CrossDerivative
       {
@@ -3687,8 +2891,8 @@ namespace GridTools
 
 
       /**
-       * Standard second-order approximation to the first derivative with a
-       * two-point centered scheme. This is used below in a 1D Newton method.
+       * 用两点居中的方案对一阶导数进行标准的二阶逼近。这在下面的一维牛顿方法中使用。
+       *
        */
       template <typename F>
       inline auto
@@ -3702,8 +2906,8 @@ namespace GridTools
 
 
       /**
-       * Standard second-order approximation to the second derivative with a
-       * three-point centered scheme. This is used below in a 1D Newton method.
+       * 二阶导数的标准二阶近似，采用三点为中心的方案。这在下面的一维牛顿方法中使用。
+       *
        */
       template <typename F>
       inline auto
@@ -3718,13 +2922,10 @@ namespace GridTools
 
 
       /**
-       * Fourth order approximation of the derivative
+       * 导数的四阶近似 df/dx_i
        *
-       *     df/dx_i - df/dx_j
+       * - df/dx_j 其中 <code>i</code> and <code>j</code> 是由 @p cross_derivative指定。导数近似在 @p center ，步长为 @p step ，函数为 @p f.  。
        *
-       * where <code>i</code> and <code>j</code> are specified by @p
-       * cross_derivative. The derivative approximation is at @p center with a
-       * step size of @p step and function @p f.
        */
       template <int structdim, typename F>
       inline auto
@@ -3746,10 +2947,10 @@ namespace GridTools
 
 
       /**
-       * The optimization algorithm used in GridTools::project_to_object is
-       * essentially a gradient descent method. This function computes entries
-       * in the gradient of the objective function; see the description in the
-       * comments inside GridTools::project_to_object for more information.
+       * 在 GridTools::project_to_object
+       * 中使用的优化算法本质上是一种梯度下降法。这个函数计算目标函数梯度的条目；更多信息请参见
+       * GridTools::project_to_object 里面的注释描述。
+       *
        */
       template <int spacedim, int structdim, typename F>
       inline double
@@ -3783,9 +2984,8 @@ namespace GridTools
       }
 
       /**
-       * Project onto a d-linear object. This is more accurate than the
-       * general algorithm in project_to_object but only works for geometries
-       * described by linear, bilinear, or trilinear mappings.
+       * 投射到一个d-线性对象上。这比project_to_object中的一般算法更精确，但只适用于由线性、双线性或三线性映射描述的几何图形。
+       *
        */
       template <typename Iterator, int spacedim, int structdim>
       Point<spacedim>
@@ -4200,7 +3400,7 @@ namespace GridTools
   template <class Archive>
   void
   CellDataTransferBuffer<dim, T>::save(Archive &ar,
-                                       const unsigned int /*version*/) const
+                                       const unsigned int  /*version*/ ) const
   {
     Assert(cell_ids.size() == data.size(),
            ExcDimensionMismatch(cell_ids.size(), data.size()));
@@ -4222,7 +3422,7 @@ namespace GridTools
   template <class Archive>
   void
   CellDataTransferBuffer<dim, T>::load(Archive &ar,
-                                       const unsigned int /*version*/)
+                                       const unsigned int  /*version*/ )
   {
     std::size_t n_cells;
     ar &        n_cells;
@@ -4415,7 +3615,7 @@ namespace GridTools
             destination_to_data_buffer_map[idx];
 
           sendbuffers[idx] =
-            Utilities::pack(data, /*enable_compression*/ false);
+            Utilities::pack(data,  /*enable_compression*/  false);
           ierr = MPI_Isend(sendbuffers[idx].data(),
                            sendbuffers[idx].size(),
                            MPI_BYTE,
@@ -4455,7 +3655,7 @@ namespace GridTools
 
           auto cellinfo =
             Utilities::unpack<CellDataTransferBuffer<dim, DataType>>(
-              receive, /*enable_compression*/ false);
+              receive,  /*enable_compression*/  false);
 
           DataType *data = cellinfo.data.data();
           for (unsigned int c = 0; c < cellinfo.cell_ids.size(); ++c, ++data)
@@ -4571,7 +3771,9 @@ namespace GridTools
 
 DEAL_II_NAMESPACE_CLOSE
 
-/*----------------------------   grid_tools.h     ---------------------------*/
-/* end of #ifndef dealii_grid_tools_h */
+ /*----------------------------   grid_tools.h     ---------------------------*/ 
+ /* end of #ifndef dealii_grid_tools_h */ 
 #endif
-/*----------------------------   grid_tools.h     ---------------------------*/
+ /*----------------------------   grid_tools.h     ---------------------------*/ 
+
+

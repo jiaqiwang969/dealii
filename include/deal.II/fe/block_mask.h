@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/block_mask_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
@@ -31,155 +30,185 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 该类代表一个掩码，可用于选择有限元的单个矢量块（另见 @ref GlossBlockMask "该术语条目"
- * ）。它通常有和有限元块一样多的元素，人们可以使用
- * <code>operator[]</code> 来查询某个特定块是否被选中。
- * 该类的语义与相关的ComponentMask类相同，即一个默认构造的掩码代表所有可能的块。关于这些语义的更多信息见那里。
- * 这类对象在很多地方被使用，人们希望将操作限制在某个块的子集上，例如在 DoFTools::extract_dofs.
- * 中，这些对象可以手工创建，或者更简单，要求有限元从某些选定的块中生成一个块掩码，使用这样的代码，我们创建一个掩码，只表示一个斯托克斯元的速度块（见
- * @ref vector_valued  ）。
+ * This class represents a mask that can be used to select individual vector
+ * blocks of a finite element (see also
+ * @ref GlossBlockMask "this glossary entry").
+ * It will typically have as many elements as the finite element has blocks,
+ * and one can use <code>operator[]</code> to query whether a particular block
+ * has been selected.
  *
+ * The semantics of this class are the same as the related ComponentMask
+ * class, i.e., a default constructed mask represents all possible blocks. See
+ * there for more information about these semantics.
+ *
+ * Objects of this kind are used in many places where one wants to restrict
+ * operations to a certain subset of blocks, e.g. in DoFTools::extract_dofs.
+ * These objects can either be created by hand, or, simpler, by asking the
+ * finite element to generate a block mask from certain selected blocks using
+ * code such as this where we create a mask that only denotes the velocity
+ * block of a Stokes element (see
+ * @ref vector_valued):
  * @code
- * // Q2 element for the velocities, Q1 element for the pressure
- * FESystem<dim> stokes_fe (FESystem<dim>(FE_Q<dim>(2), dim), 1,
- *                          FE_Q<dim>(1),                     1);
- * FEValuesExtractors::Scalar pressure(dim);
- * BlockMask pressure_mask = stokes_fe.block_mask (pressure);
+ *   // Q2 element for the velocities, Q1 element for the pressure
+ *   FESystem<dim> stokes_fe (FESystem<dim>(FE_Q<dim>(2), dim), 1,
+ *                            FE_Q<dim>(1),                     1);
+ *   FEValuesExtractors::Scalar pressure(dim);
+ *   BlockMask pressure_mask = stokes_fe.block_mask (pressure);
  * @endcode
- * 注意，通过将速度元素包装成一个FESystem对象，我们确保整个元素只有两个块。其结果是一个块掩码，在2D和3D中都有<code>[false,
- * true]</code>的值。(将其与ComponentMask文档中讨论的相应组件掩码进行比较)。同样地，使用
- *
+ * Note that by wrapping the velocity elements into a single FESystem object
+ * we make sure that the overall element has only 2 blocks. The result is a
+ * block mask that, in both 2d and 3d, would have values <code>[false,
+ * true]</code>. (Compare this to the corresponding component mask discussed
+ * in the ComponentMask documentation.) Similarly, using
  * @code
- * FEValuesExtractors::Vector velocities(0);
- * BlockMask velocity_mask = stokes_fe.block_mask (velocities);
+ *   FEValuesExtractors::Vector velocities(0);
+ *   BlockMask velocity_mask = stokes_fe.block_mask (velocities);
  * @endcode
- * 将导致2d和3d中的掩码 <code>[true, false]</code> 。
- *
+ * would result in a mask <code>[true, false]</code> in both 2d and 3d.
  *
  * @ingroup fe
- *
  * @ingroup vector_valued
- *
  */
 class BlockMask
 {
 public:
   /**
-   * 初始化一个区块屏蔽。默认情况下，一个区块掩码代表一组被<i>all</i>选中的区块，也就是说，调用这个构造函数的结果是一个区块掩码，每当询问一个区块是否被选中时，总是返回
-   * <code>true</code> 。
-   *
+   * Initialize a block mask. The default is that a block mask represents a
+   * set of blocks that are <i>all</i> selected, i.e., calling this
+   * constructor results in a block mask that always returns <code>true</code>
+   * whenever asked whether a block is selected.
    */
   BlockMask() = default;
 
   /**
-   * 用参数指定的一组选定的块来初始化这个类型的对象。
-   * @param  block_mask 一个 <code>true/false</code>
-   * 项的向量，决定有限元的哪些块被选择。如果给定向量的长度为零，则解释为<i>every</i>块被选中的情况。
+   * Initialize an object of this type with a set of selected blocks specified
+   * by the argument.
    *
+   * @param block_mask A vector of <code>true/false</code> entries that
+   * determine which blocks of a finite element are selected. If the length of
+   * the given vector is zero, then this interpreted as the case where
+   * <i>every</i> block is selected.
    */
   BlockMask(const std::vector<bool> &block_mask);
 
   /**
-   * 用一些全部为真或假的元素来初始化块掩码。      @param
-   * n_blocks 这个掩码的元素数量  @param  initializer
-   * 这些元素中的每一个应该具有的值：要么是真要么是假。
+   * Initialize the block mask with a number of elements that are either all
+   * true or false.
    *
+   * @param n_blocks The number of elements of this mask
+   * @param initializer The value each of these elements is supposed to have:
+   * either true or false.
    */
   BlockMask(const unsigned int n_blocks, const bool initializer);
 
   /**
-   * 如果此块掩码已被初始化为大小大于0的掩码，那么返回此对象所代表的掩码的大小。另一方面，如果这个掩码已被初始化为一个空对象，代表一个对每个元素都是真的掩码（即，如果这个对象在调用
-   * represents_the_all_selected_mask()时将返回true），那么返回0，因为没有明确的大小。
-   *
+   * If this block mask has been initialized with a mask of size greater than
+   * zero, then return the size of the mask represented by this object. On the
+   * other hand, if this mask has been initialized as an empty object that
+   * represents a mask that is true for every element (i.e., if this object
+   * would return true when calling represents_the_all_selected_mask()) then
+   * return zero since no definite size is known.
    */
   unsigned int
   size() const;
 
   /**
-   * 返回一个特定的块是否被这个掩码所选择。如果这个掩码代表了选择<i>all
-   * blocks</i>的对象的情况（例如，如果它是使用默认的构造函数创建的，或者是从bool类型的空向量转换而来的），那么无论给定的参数是什么，这个函数都返回true。
-   * @param  block_index
-   * 该函数应返回是否选择该块的索引。如果这个对象代表一个掩码，其中所有的块总是被选中，那么这里允许任何索引。否则，给定的索引需要在零和这个掩码所代表的块数之间。
+   * Return whether a particular block is selected by this mask. If this mask
+   * represents the case of an object that selects <i>all blocks</i> (e.g. if
+   * it is created using the default constructor or is converted from an empty
+   * vector of type bool) then this function returns true regardless of the
+   * given argument.
    *
+   * @param block_index The index for which the function should return whether
+   * the block is selected. If this object represents a mask in which all
+   * blocks are always selected then any index is allowed here. Otherwise, the
+   * given index needs to be between zero and the number of blocks that this
+   * mask represents.
    */
   bool operator[](const unsigned int block_index) const;
 
   /**
-   * 返回此块掩码是否正好代表 <code>n</code>
-   * 块的掩码。如果它被初始化为一个正好有 <code>n</code>
-   * entries of type <code>bool</code> 的向量（在这种情况下， @p n
-   * 必须等于size()的结果），或者它被初始化为一个空向量（或使用默认构造函数），在这种情况下，它可以代表一个有任意数量块的掩码，并且将总是说一个块被选中，这就是真的。
-   *
+   * Return whether this block mask represents a mask with exactly
+   * <code>n</code> blocks. This is true if either it was initialized with a
+   * vector with exactly <code>n</code> entries of type <code>bool</code> (in
+   * this case, @p n must equal the result of size()) or if it was initialized
+   * with an empty vector (or using the default constructor) in which case it
+   * can represent a mask with an arbitrary number of blocks and will always
+   * say that a block is selected.
    */
   bool
   represents_n_blocks(const unsigned int n) const;
 
   /**
-   * 返回这个掩码所选择的区块的数量。
-   * 由于空的区块掩码代表一个区块掩码，每个区块都会返回
-   * <code>true</code>
-   * ，这个函数可能不知道区块掩码的真实大小，因此它需要一个参数来表示区块的总数量。
-   * 如果该对象已被初始化为一个非空的掩码（即，如果size()函数返回大于0的东西，或者等价地，如果respresent_the_all_selected_mask()返回false），那么该参数可以被省略，而size()的结果被取。
+   * Return the number of blocks that are selected by this mask.
    *
+   * Since empty block masks represent a block mask that would return
+   * <code>true</code> for every block, this function may not know the true
+   * size of the block mask and it therefore requires an argument that denotes
+   * the overall number of blocks.
+   *
+   * If the object has been initialized with a non-empty mask (i.e., if the
+   * size() function returns something greater than zero, or equivalently if
+   * represents_the_all_selected_mask() returns false) then the argument can
+   * be omitted and the result of size() is taken.
    */
   unsigned int
   n_selected_blocks(const unsigned int overall_number_of_blocks =
                       numbers::invalid_unsigned_int) const;
 
   /**
-   * 返回第一个被选中的块的索引。该参数存在的原因与n_selected_blocks()函数存在的原因相同。
-   * 如果根本没有选择任何块，该函数会抛出一个异常。
+   * Return the index of the first selected block. The argument is there for
+   * the same reason it exists with the n_selected_blocks() function.
    *
+   * The function throws an exception if no block is selected at all.
    */
   unsigned int
   first_selected_block(const unsigned int overall_number_of_blocks =
                          numbers::invalid_unsigned_int) const;
 
   /**
-   * 如果这个掩码代表一个默认构造的掩码，对应于所有块都被选中的掩码，则返回true。如果为真，那么size()函数将返回0。
-   *
+   * Return true if this mask represents a default constructed mask that
+   * corresponds to one in which all blocks are selected. If true, then the
+   * size() function will return zero.
    */
   bool
   represents_the_all_selected_mask() const;
 
   /**
-   * 返回一个包含由当前对象选择的块和作为参数传递的块的联合体的块掩码。
-   *
+   * Return a block mask that contains the union of the blocks selected by the
+   * current object and the one passed as an argument.
    */
   BlockMask
   operator|(const BlockMask &mask) const;
 
   /**
-   * 返回一个块掩码，它只包含那些在当前对象和作为参数传递的对象中都被设置的元素。
-   *
+   * Return a block mask that has only those elements set that are set both in
+   * the current object as well as the one passed as an argument.
    */
   BlockMask operator&(const BlockMask &mask) const;
 
   /**
-   * 返回这个对象和参数是否相同。
-   *
+   * Return whether this object and the argument are identical.
    */
   bool
   operator==(const BlockMask &mask) const;
 
   /**
-   * 返回这个对象和参数是否不相同。
-   *
+   * Return whether this object and the argument are not identical.
    */
   bool
   operator!=(const BlockMask &mask) const;
 
   /**
-   * 确定此对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * 实际的块掩码。
-   *
+   * The actual block mask.
    */
   std::vector<bool> block_mask;
 
@@ -191,13 +220,14 @@ private:
 
 
 /**
- * 将块掩码写到输出流中。如果该块掩码代表一个所有块都被选中而没有指定掩码的特定大小，那么它将把字符串
- * <code>[all blocks selected]</code> 写到流中。否则，它将以
- * <code>[true,true,true,false]</code> 的形式打印块掩码。
- * @param  out 要写入的流。  @param  mask 要写入的掩码。  @return
- * 对第一个参数的引用。
+ * Write a block mask to an output stream. If the block mask represents one
+ * where all blocks are selected without specifying a particular size of the
+ * mask, then it writes the string <code>[all blocks selected]</code> to the
+ * stream. Otherwise, it prints the block mask in a form like
+ * <code>[true,true,true,false]</code>.
  *
- *
+ * @param out The stream to write to.
+ * @param mask The mask to write. @return A reference to the first argument.
  */
 std::ostream &
 operator<<(std::ostream &out, const BlockMask &mask);
@@ -356,5 +386,3 @@ BlockMask::operator!=(const BlockMask &mask) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

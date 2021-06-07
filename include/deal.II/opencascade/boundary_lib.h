@@ -1,4 +1,3 @@
-//include/deal.II-translator/opencascade/boundary_lib_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
@@ -26,5 +25,3 @@ DEAL_II_WARNING(
   "This file is deprecated. Use deal.II/opencascade/manifold_lib.h and the classes therein instead.")
 
 #endif // dealii_occ_boundary_lib_h
-
-

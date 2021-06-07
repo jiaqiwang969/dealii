@@ -1,4 +1,3 @@
-//include/deal.II-translator/hp/fe_values_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -46,23 +45,33 @@ class FiniteElement;
 namespace hp
 {
   /**
-   * <tt>hp::FE*Values</tt>
-   * 类的基类，存储它们的共同数据。这个类的主要任务是提供一个表格，对于来自其相应集合对象的每一个有限元、映射和正交对象的组合，都有一个匹配的::FEValues,
-   * ::FEFaceValues, 或::FESubfaceValues对象。
-   * 然而，为了使事情更有效率，这些FE*Values对象只在请求时才被创建（懒惰分配）。如果需要的话，也可以通过相应的precalculate_fe_values()函数提前计算所有对象来绕过这一点。
-   * 第一个模板参数表示我们所处的空间维度，第二个是我们所整合的对象的维度，即对于通常的
-   * @p hp::FEValues
-   * 来说，它等于第一个维度，而对于面部整合来说，它要少一个。第三个模板参数表示底层非hp-FE*Values的基础类型，即它可以是::FEValues，:FEFaceValues，或::FESubfaceValues。
-   * @ingroup hp
+   * Base class for the <tt>hp::FE*Values</tt> classes, storing the data
+   * that is common to them. The main task of this class is to provide a
+   * table where for every combination of finite element, mapping, and
+   * quadrature object from their corresponding collection objects there is
+   * a matching ::FEValues, ::FEFaceValues, or ::FESubfaceValues object.
    *
+   * To make things more efficient, however, these FE*Values objects are only
+   * created once requested (lazy allocation). Alternatively if desired, this
+   * can be bypassed by computing all objects in advance with the corresponding
+   * precalculate_fe_values() function.
+   *
+   * The first template parameter denotes the space dimension we are in, the
+   * second the dimensionality of the object that we integrate on, i.e. for
+   * usual @p hp::FEValues it is equal to the first one, while for face
+   * integration it is one less. The third template parameter indicates the
+   * type of underlying non-hp-FE*Values base type, i.e. it could either be
+   * ::FEValues, ::FEFaceValues, or ::FESubfaceValues.
+   *
+   * @ingroup hp
    */
   template <int dim, int q_dim, class FEValuesType>
   class FEValuesBase
   {
   public:
     /**
-     * 构造函数。将这个类的字段设置为构造函数的参数所指示的值。
-     *
+     * Constructor. Set the fields of this class to the values indicated by
+     * the parameters to the constructor.
      */
     FEValuesBase(
       const MappingCollection<dim, FEValuesType::space_dimension>
@@ -72,10 +81,9 @@ namespace hp
       const UpdateFlags                                       update_flags);
 
     /**
-     * 像上面的函数一样，但取一个正交集合的向量。
-     * 对于 hp::FEFaceValues,
-     * ，正交集合的第1项被解释为应用于第1个面的正交规则。
-     *
+     * Like the above function but taking a vector of quadrature collections.
+     * For hp::FEFaceValues, the ith entry of the quadrature collections are
+     * interpreted as the face quadrature rules to be applied the ith face.
      */
     FEValuesBase(
       const MappingCollection<dim, FEValuesType::space_dimension>
@@ -85,9 +93,9 @@ namespace hp
       const UpdateFlags                                       update_flags);
 
     /**
-     * 构造函数。这个构造函数与另一个构造函数相当，只是它使对象隐含地使用
-     * $Q_1$ 映射（即MappingQGeneric（1）类型的对象）。
-     *
+     * Constructor. This constructor is equivalent to the other one except
+     * that it makes the object use a $Q_1$ mapping (i.e., an object of type
+     * MappingQGeneric(1)) implicitly.
      */
     FEValuesBase(
       const FECollection<dim, FEValuesType::space_dimension> &fe_collection,
@@ -95,10 +103,9 @@ namespace hp
       const UpdateFlags                                       update_flags);
 
     /**
-     * 像上面的函数一样，但取一个矢量正交集合。    对于
-     * hp::FEFaceValues,
-     * ，正交集合的第i个条目被解释为应用于第i个面的面的正交规则。
-     *
+     * Like the above function but taking a vector quadrature collections.
+     * For hp::FEFaceValues, the ith entry of the quadrature collections are
+     * interpreted as the face quadrature rules to be applied the ith face.
      */
     FEValuesBase(
       const FECollection<dim, FEValuesType::space_dimension> &fe_collection,
@@ -106,22 +113,25 @@ namespace hp
       const UpdateFlags                                       update_flags);
 
     /**
-     * 复制构造器。
-     *
+     * Copy constructor.
      */
     FEValuesBase(const FEValuesBase<dim, q_dim, FEValuesType> &other);
 
     /**
-     * 复制操作符。虽然这种类型的对象可以被复制构建，但它们不能被复制，因此这个运算符被禁用。
-     *
+     * Copy operator. While objects of this type can be copy-constructed,
+     * they cannot be copied and consequently this operator is disabled.
      */
     FEValuesBase &
     operator=(const FEValuesBase &) = delete;
 
     /**
-     * 出于时间上的考虑，提前创建所有需要的FE*Values对象可能是有用的，而不是像本类中通常那样通过懒惰分配来计算它们。
-     * 这个函数预先计算了与所提供的参数相对应的FE*Values对象。与同一索引相对应的所有向量条目的总和描述了一个FE*Values对象，与select_fe_values()类似。
+     * For timing purposes it may be useful to create all required FE*Values
+     * objects in advance, rather than computing them on request via lazy
+     * allocation as usual in this class.
      *
+     * This function precalculates the FE*Values objects corresponding to the
+     * provided parameters: The total of all vector entries corresponding to the
+     * same index describes an FE*Values object similarly to select_fe_values().
      */
     void
     precalculate_fe_values(const std::vector<unsigned int> &fe_indices,
@@ -129,57 +139,61 @@ namespace hp
                            const std::vector<unsigned int> &q_indices);
 
     /**
-     * 同上，面向最常用的 hp::FEValues
-     * 对象，其中FE、正交和映射指数在每个单独的单元上都是相似的。
-     * 为FECollection中的每个FE创建FE*Values对象，正交和映射分别对应于QuadratureCollection和MappingCollection中的相同索引。
-     * 如果QuadratureCollection或MappingCollection只包含一个对象，它将用于所有FE*Values对象。
+     * Same as above, geared to the most common use of hp::FEValues objects in
+     * which FE, quadrature and mapping indices are similar on each individual
+     * cell.
      *
+     * FE*Values objects are created for every FE in the FECollection, with
+     * quadrature and mapping corresponding to the same index from the
+     * QuadratureCollection and MappingCollection, respectively.
+     *
+     * If QuadratureCollection or MappingCollection contains only one object, it
+     * is used for all FE*Values objects.
      */
     void
     precalculate_fe_values();
 
     /**
-     * 获取此处使用的有限元对象集合的引用。
-     *
+     * Get a reference to the collection of finite element objects used
+     * here.
      */
     const FECollection<dim, FEValuesType::space_dimension> &
     get_fe_collection() const;
 
     /**
-     * 获取此处使用的映射对象集合的引用。
-     *
+     * Get a reference to the collection of mapping objects used here.
      */
     const MappingCollection<dim, FEValuesType::space_dimension> &
     get_mapping_collection() const;
 
     /**
-     * 获取此处使用的正交对象集合的引用。
-     *
+     * Get a reference to the collection of quadrature objects used here.
      */
     const QCollection<q_dim> &
     get_quadrature_collection() const;
 
     /**
-     * 获取底层更新标志。
-     *
+     * Get the underlying update flags.
      */
     UpdateFlags
     get_update_flags() const;
 
     /**
-     * 返回最后一次调用select_fe_values()所选择的 @p FEValues
-     * 对象的引用。当你最后一次调用 <tt>hp::FE*Values</tt>
-     * 类的 @p reinit 函数时，依次调用select_fe_values()。
-     *
+     * Return a reference to the @p FEValues object selected by the last
+     * call to select_fe_values(). select_fe_values() in turn is called when
+     * you called the @p reinit function of the <tt>hp::FE*Values</tt> class
+     * the last time.
      */
     const FEValuesType &
     get_present_fe_values() const;
 
   protected:
     /**
-     * 选择一个适合给定FE、正交和映射指数的FEValues对象。如果这样的对象还不存在，就创建一个。
-     * 该函数返回一个可写的引用，这样派生类也可以重新引用()所选择的FEValues对象。
+     * Select a FEValues object suitable for the given FE, quadrature, and
+     * mapping indices. If such an object doesn't yet exist, create one.
      *
+     * The function returns a writable reference so that derived classes can
+     * also reinit() the selected FEValues object.
      */
     FEValuesType &
     select_fe_values(const unsigned int fe_index,
@@ -188,16 +202,14 @@ namespace hp
 
   protected:
     /**
-     * 一个指向要使用的有限元集合的指针。
-     *
+     * A pointer to the collection of finite elements to be used.
      */
     const SmartPointer<const FECollection<dim, FEValuesType::space_dimension>,
                        FEValuesBase<dim, q_dim, FEValuesType>>
       fe_collection;
 
     /**
-     * 一个指向要使用的映射集合的指针。
-     *
+     * A pointer to the collection of mappings to be used.
      */
     const SmartPointer<
       const MappingCollection<dim, FEValuesType::space_dimension>,
@@ -205,37 +217,42 @@ namespace hp
       mapping_collection;
 
     /**
-     * 提供给构造函数的正交集合对象的副本。
-     *
+     * Copy of the quadrature collection object provided to the constructor.
      */
     const QCollection<q_dim> q_collection;
 
     /**
-     * 正交集合的矢量。对于 hp::FEFaceValues,
-     * ，正交集的第1条被解释为应用于第1个面的正交规则。
-     * 变量q_collection收集了每个正交集合的第一个正交规则。
+     * Vector of quadrature collections. For hp::FEFaceValues, the ith entry of
+     * the quadrature collections are interpreted as the face quadrature rules
+     * to be applied the ith face.
      *
+     * The variable q_collection collects the first quadrature rule of each
+     * quadrature collection of the vector.
      */
     const std::vector<QCollection<q_dim>> q_collections;
 
   private:
     /**
-     * 一个表格，我们在其中存储指向不同的有限元、映射和正交对象集合的fe_values对象的指针。
-     * 第一个索引表示fe_collection中有限元的索引，第二个索引表示mapping集合中映射的索引，最后一个索引表示q_collection中正交公式的索引。
-     * 最初，所有条目都是零指针，我们将在select_fe_values()或precalculate_fe_values()中根据需要懒散地分配它们。
+     * A table in which we store pointers to fe_values objects for different
+     * finite element, mapping, and quadrature objects from our collection.
+     * The first index indicates the index of the finite element within the
+     * fe_collection, the second the index of the mapping within the mapping
+     * collection, and the last one the index of the quadrature formula
+     * within the q_collection.
      *
+     * Initially, all entries have zero pointers, and we will allocate them
+     * lazily as needed in select_fe_values() or precalculate_fe_values().
      */
     Table<3, std::unique_ptr<FEValuesType>> fe_values_table;
 
     /**
-     * 指向上次调用select_fe_value()函数时选择的fe_values对象的一组索引。
-     *
+     * Set of indices pointing at the fe_values object selected last time
+     * the select_fe_value() function was called.
      */
     TableIndices<3> present_fe_values_index;
 
     /**
-     * 给予构造函数的更新标志的值。
-     *
+     * Values of the update flags as given to the constructor.
      */
     const UpdateFlags update_flags;
   };
@@ -246,29 +263,53 @@ namespace hp
 namespace hp
 {
   /**
-   * 相当于::FEValues类的一个hp值。参见 step-27
-   * 教程程序中的使用实例。
-   * 这个类的想法如下：当人们在hp-finite
-   * element方法中装配矩阵时，不同的单元上可能有不同的有限元，因此人们也可能希望对不同的单元使用不同的正交公式。另一方面，::FEValues有效地处理了对单一有限元和正交对象所需的任何信息的预评估。这个类将这些概念结合起来：它提供了一个::FEValues对象的
-   * "集合"。
-   * 在构造时，人们传递的不是一个有限元和正交对象（以及可能的映射），而是整个类型
-   * hp::FECollection 和 hp::QCollection. 的集合。
-   * 后来，当人们坐在一个具体的单元上时，就会为这个特定的单元调用
-   * reinit() 函数，就像对普通的 ::FEValues
-   * 对象那样。不同的是，这一次，reinit()函数会查找该单元的活动FE索引，如果有必要的话，会创建一个::FEValues对象，在其集合中匹配具有该特定索引的有限元和正交公式，然后为当前单元重新初始化。然后可以使用get_present_fe_values()函数访问适合当前单元格的有限元和正交公式的::FEValues对象，人们可以像对待非hp-DoFHandler对象的任何::FEValues对象一样处理它。
-   * reinit()函数有额外的参数，有默认值。如果没有指定，函数会从单元格的活动
-   * FE 索引中获取进入  hp::FECollection,   hp::QCollection,  和
-   * hp::MappingCollection
-   * 对象的索引，如上所述。然而，人们也可以为当前单元格选择不同的索引。例如，通过指定不同的索引进入
-   * hp::QCollection
-   * 类，就不需要对正交集合中的正交对象进行排序，使其与FE集合中的有限元对象的顺序一一对应（尽管选择这样的顺序肯定很方便）。
-   * 请注意::FEValues对象是即时创建的，也就是说，只有在需要时才创建。这确保了我们不会为每一个有限元、正交公式和映射的组合创建对象，而只是创建那些实际需要的对象。如果需要的话，也可以通过相应的
-   * hp::FEValuesBase::precalculate_fe_values()
-   * 函数提前计算所有对象来绕过这一点。
-   * 这个类还没有实现在一维情况下的使用（<tt>spacedim != dim
-   * </tt>）。
-   * @ingroup hp hpcollection
+   * An hp-equivalent of the ::FEValues class. See the step-27 tutorial
+   * program for examples of use.
    *
+   * The idea of this class is as follows: when one assembled matrices in the
+   * hp-finite element method, there may be different finite elements on
+   * different cells, and consequently one may also want to use different
+   * quadrature formulas for different cells. On the other hand, the
+   * ::FEValues efficiently handles pre-evaluating whatever information is
+   * necessary for a single finite element and quadrature object. This class
+   * brings these concepts together: it provides a "collection" of ::FEValues
+   * objects.
+   *
+   * Upon construction, one passes not one finite element and quadrature
+   * object (and possible a mapping), but a whole collection of type
+   * hp::FECollection and hp::QCollection. Later on, when one sits on a
+   * concrete cell, one would call the reinit() function for this particular
+   * cell, just as one does for a regular ::FEValues object. The difference is
+   * that this time, the reinit() function looks up the active FE index of
+   * that cell, if necessary creates a ::FEValues object that matches the
+   * finite element and quadrature formulas with that particular index in
+   * their collections, and then re-initializes it for the current cell. The
+   * ::FEValues object that then fits the finite element and quadrature
+   * formula for the current cell can then be accessed using the
+   * get_present_fe_values() function, and one would work with it just like
+   * with any ::FEValues object for non-hp-DoFHandler objects.
+   *
+   * The reinit() functions have additional arguments with default values. If
+   * not specified, the function takes the index into the hp::FECollection,
+   * hp::QCollection, and hp::MappingCollection objects from the
+   * active FE index of the cell, as explained above. However, one can also
+   * select different indices for a current cell. For example, by specifying a
+   * different index into the hp::QCollection class, one does not need to sort
+   * the quadrature objects in the quadrature collection so that they match
+   * one-to-one the order of finite element objects in the FE collection (even
+   * though choosing such an order is certainly convenient).
+   *
+   * Note that ::FEValues objects are created on the fly, i.e. only as they
+   * are needed. This ensures that we do not create objects for every
+   * combination of finite element, quadrature formula and mapping, but only
+   * those that will actually be needed. Alternatively if desired, this
+   * can be bypassed by computing all objects in advance with the corresponding
+   * hp::FEValuesBase::precalculate_fe_values() function.
+   *
+   * This class has not yet been implemented for the use in the codimension
+   * one case (<tt>spacedim != dim </tt>).
+   *
+   * @ingroup hp hpcollection
    */
   template <int dim, int spacedim = dim>
   class FEValues
@@ -280,8 +321,7 @@ namespace hp
     static const unsigned int space_dimension = spacedim;
 
     /**
-     * 构造函数。用给定的参数初始化这个对象。
-     *
+     * Constructor. Initialize this object with the given parameters.
      */
     FEValues(const MappingCollection<dim, spacedim> &mapping_collection,
              const FECollection<dim, spacedim> &     fe_collection,
@@ -290,9 +330,9 @@ namespace hp
 
 
     /**
-     * 构造函数。这个构造函数等同于另一个构造函数，除了它使对象隐含地使用
-     * $Q_1$ 映射（即MappingQGeneric(1)类型的对象）。
-     *
+     * Constructor. This constructor is equivalent to the other one except
+     * that it makes the object use a $Q_1$ mapping (i.e., an object of type
+     * MappingQGeneric(1)) implicitly.
      */
     FEValues(const FECollection<dim, spacedim> &fe_collection,
              const QCollection<dim> &           q_collection,
@@ -300,33 +340,49 @@ namespace hp
 
 
     /**
-     * 重新初始化给定单元格的对象。
-     * 调用后，你可以使用get_present_fe_values()函数得到一个与当前单元格对应的FEValues对象。
-     * 对于这个FEValues对象，我们使用下面描述的附加参数来决定使用哪个有限元、映射和正交公式。它们的顺序是这样的：人们可能最想改变的参数排在前面。这些参数的规则如下。
-     * 如果这个函数的 @p fe_index
-     * 参数保持默认值，那么我们在传递给这个类的构造函数的
-     * hp::FECollection 中使用该有限元，其索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出。因此，给这个对象的 hp::FECollection
-     * 参数实际上应该与构建与本单元相关的DoFHandler所用的参数相同。另一方面，如果给这个参数一个值，它将覆盖
-     * <code>cell-@>active_fe_index()</code>  的选择。        如果 @p
-     * q_index
-     * 参数被保留为默认值，那么我们使用传递给该类构造函数的
-     * hp::QCollection 中的正交公式，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出，即与有限元的索引相同。在这种情况下，
-     * hp::FECollection.
-     * 中的每个有限元都应该有一个相应的正交公式。
-     * 作为一种特殊情况，如果正交集合只包含一个元素（如果想在hp-discretization中对所有有限元使用同一个正交对象，即使这可能不是最有效的），那么这个单一的正交将被使用，除非为这个参数指定一个不同的值。另一方面，如果给这个参数一个值，它将覆盖
-     * <code>cell-@>active_fe_index()</code>
-     * 的选择或对单一正交的选择。        如果 @p mapping_index
-     * 参数保持默认值，那么我们使用传递给该类构造函数的
-     * hp::MappingCollection 中的映射对象，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出，即与有限元的索引相同。如上所述，如果映射集合只包含一个元素（如果想对hp-discretization中的所有有限元素使用
-     * $Q_1$
-     * 映射，这是一个常见的情况），那么这个单一的映射将被使用，除非为这个参数指定一个不同的值。
+     * Reinitialize the object for the given cell.
      *
+     * After the call, you can get an FEValues object using the
+     * get_present_fe_values() function that corresponds to the present cell.
+     * For this FEValues object, we use the additional arguments described
+     * below to determine which finite element, mapping, and quadrature
+     * formula to use. They are order in such a way that the arguments one may
+     * want to change most frequently come first. The rules for these
+     * arguments are as follows:
+     *
+     * If the @p fe_index argument to this function is left at its default
+     * value, then we use that finite element within the hp::FECollection
+     * passed to the constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>. Consequently, the
+     * hp::FECollection argument given to this object should really be the
+     * same as that used in the construction of the DoFHandler associated
+     * with the present cell. On the other hand, if a value is given for this
+     * argument, it overrides the choice of
+     * <code>cell-@>active_fe_index()</code>.
+     *
+     * If the @p q_index argument is left at its default value, then we use
+     * that quadrature formula within the hp::QCollection passed to the
+     * constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>, i.e. the same index as that of
+     * the finite element. In this case, there should be a corresponding
+     * quadrature formula for each finite element in the hp::FECollection. As
+     * a special case, if the quadrature collection contains only a single
+     * element (a frequent case if one wants to use the same quadrature object
+     * for all finite elements in an hp-discretization, even if that may not
+     * be the most efficient), then this single quadrature is used unless a
+     * different value for this argument is specified. On the other hand, if a
+     * value is given for this argument, it overrides the choice of
+     * <code>cell-@>active_fe_index()</code> or the choice for the single
+     * quadrature.
+     *
+     * If the @p mapping_index argument is left at its default value, then we
+     * use that mapping object within the hp::MappingCollection passed to the
+     * constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>, i.e. the same index as that of
+     * the finite element. As above, if the mapping collection contains only a
+     * single element (a frequent case if one wants to use a $Q_1$ mapping for
+     * all finite elements in an hp-discretization), then this single mapping
+     * is used unless a different value for this argument is specified.
      */
     template <bool lda>
     void
@@ -336,10 +392,16 @@ namespace hp
            const unsigned int fe_index      = numbers::invalid_unsigned_int);
 
     /**
-     * 像前面的函数一样，但是对于非DoFHandler迭代器。这个函数存在的原因是，人们也可以对Triangulation对象使用
-     * hp::FEValues 。        由于 <code>cell-@>active_fe_index()</code>
-     * 对三角迭代器没有意义，这个函数从传递给这个对象构造器的相关构造中选择第零个有限元、映射和正交对象。唯一的例外是，如果你为这最后三个参数中的任何一个指定了一个不同于默认值的值。
+     * Like the previous function, but for non-DoFHandler iterators. The reason
+     * this function exists is so that one can use hp::FEValues for
+     * Triangulation objects too.
      *
+     * Since <code>cell-@>active_fe_index()</code> doesn't make sense for
+     * triangulation iterators, this function chooses the zero-th finite
+     * element, mapping, and quadrature object from the relevant constructions
+     * passed to the constructor of this object. The only exception is if you
+     * specify a value different from the default value for any of these last
+     * three arguments.
      */
     void
     reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -351,21 +413,27 @@ namespace hp
 
 
   /**
-   * 这相当于 hp::FEValues
-   * 类，但用于脸部整合，也就是说，它对 hp::FEValues
-   * 来说就像:FEFaceValues对:FEValues一样。
-   * 同样的评论适用于 hp::FEValues
-   * 类的文档。然而，需要注意的是，在这里更常见的是，人们希望在reinit()函数中明确指定一个特定正交公式的索引。这是因为默认索引与当前函数上的有限元索引相对应。另一方面，在面的积分通常要用一个正交公式来进行，这个正交公式要根据面的两边使用的有限元来调整。如果我们将
-   * hp::FECollection
-   * 中的元素按多项式程度升序排列，并将这些有限元素与
-   * hp::QCollection 中相应的正交公式相匹配，则 ]
-   * 传递给构造函数，那么传递给
-   * reinit()函数的正交指数通常应该是  <code>std::max
-   * （单元格-  @>active_fe_index(),  邻居-  @>active_fe_index()</code>
-   * 以确保选择的正交公式对  <em>  和  </em>
-   * 有限元都足够精确。
-   * @ingroup hp hpcollection
+   * This is the equivalent of the hp::FEValues class but for face
+   * integrations, i.e. it is to hp::FEValues what ::FEFaceValues is to
+   * ::FEValues.
    *
+   * The same comments apply as in the documentation of the hp::FEValues
+   * class. However, it is important to note that it is here more common that
+   * one would want to explicitly specify an index to a particular quadrature
+   * formula in the reinit() functions. This is because the default index
+   * corresponds to the finite element index on the current function. On the
+   * other hand, integration on faces will typically have to happen with a
+   * quadrature formula that is adjusted to the finite elements used on both
+   * sides of a face. If one sorts the elements of the hp::FECollection with
+   * ascending polynomial degree, and matches these finite elements with
+   * corresponding quadrature formulas in the hp::QCollection passed to the
+   * constructor, then the quadrature index passed to the reinit() function
+   * should typically be something like <code>std::max
+   * (cell-@>active_fe_index(), neighbor-@>active_fe_index()</code> to ensure
+   * that a quadrature formula is chosen that is sufficiently accurate for
+   * <em>both</em> finite elements.
+   *
+   * @ingroup hp hpcollection
    */
   template <int dim, int spacedim = dim>
   class FEFaceValues
@@ -373,8 +441,7 @@ namespace hp
   {
   public:
     /**
-     * 构造函数。用给定的参数初始化这个对象。
-     *
+     * Constructor. Initialize this object with the given parameters.
      */
     FEFaceValues(const hp::MappingCollection<dim, spacedim> &mapping_collection,
                  const hp::FECollection<dim, spacedim> &     fe_collection,
@@ -382,9 +449,13 @@ namespace hp
                  const UpdateFlags                           update_flags);
 
     /**
-     * 像上面的函数一样，但取一个正交规则集合的向量。这允许为每个面分配一个不同的正交规则：集合的第1个条目被用作第1个面的正交规则。
-     * 在集合只包含一个面的正交规则的情况下，这个正交规则被用于所有面。
+     * Like the function above, but taking a vector of collection of quadrature
+     * rules. This allows to assign each face a different quadrature rule: the
+     * ith entry of a collection is used as the face quadrature rule on the ith
+     * face.
      *
+     * In the case that the collections only contains a single face quadrature,
+     * this quadrature rule is use on all faces.
      */
     FEFaceValues(const hp::MappingCollection<dim, spacedim> &mapping_collection,
                  const hp::FECollection<dim, spacedim> &     fe_collection,
@@ -393,51 +464,71 @@ namespace hp
 
 
     /**
-     * 构造函数。这个构造函数等同于其他的构造函数，只是它使对象隐含地使用
-     * $Q_1$ 映射（即MappingQGeneric(1)类型的对象）。
-     *
+     * Constructor. This constructor is equivalent to the other one except
+     * that it makes the object use a $Q_1$ mapping (i.e., an object of type
+     * MappingQGeneric(1)) implicitly.
      */
     FEFaceValues(const hp::FECollection<dim, spacedim> &fe_collection,
                  const hp::QCollection<dim - 1> &       q_collection,
                  const UpdateFlags                      update_flags);
 
     /**
-     * 像上面的函数一样，但取一个正交规则集合的向量。这允许为每个面分配一个不同的正交规则：集合的第1个条目被用作第1个面的正交规则。
-     * 在集合只包含一个面的正交规则的情况下，这个正交规则被用于所有面。
+     * Like the function above, but taking a vector of collection of quadrature
+     * rules. This allows to assign each face a different quadrature rule: the
+     * ith entry of a collection is used as the face quadrature rule on the ith
+     * face.
      *
+     * In the case that the collections only contains a single face quadrature,
+     * this quadrature rule is use on all faces.
      */
     FEFaceValues(const hp::FECollection<dim, spacedim> &      fe_collection,
                  const std::vector<hp::QCollection<dim - 1>> &q_collections,
                  const UpdateFlags                            update_flags);
 
     /**
-     * 重新初始化给定单元和面的对象。
-     * 调用后，你可以使用get_present_fe_values()函数得到一个与当前单元格对应的FEFaceValues对象。
-     * 对于这个FEFaceValues对象，我们使用下面描述的附加参数来决定使用哪个有限元、映射和正交公式。它们的顺序是，人们可能最想改变的参数排在前面。这些参数的规则如下。
-     * 如果这个函数的 @p fe_index
-     * 参数被保留为默认值，那么我们在传递给这个类的构造函数的
-     * hp::FECollection 中使用该有限元，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出。因此，给这个对象的 hp::FECollection
-     * 参数实际上应该与构建与本单元相关的DoFHandler所用的参数相同。另一方面，如果给这个参数一个值，它将覆盖
-     * <code>cell-@>active_fe_index()</code> 的选择。        如果 @p
-     * q_index
-     * 参数被保留为默认值，那么我们使用传递给该类构造函数的
-     * hp::QCollection 中的正交公式，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出，即与有限元的索引相同。在这种情况下，
-     * hp::FECollection.
-     * 中的每个有限元都应该有一个相应的正交公式。
-     * 作为一种特殊情况，如果正交集合只包含一个元素（如果想在hp-discretization中对所有有限元使用同一个正交对象，即使这可能不是最有效的），那么这个单一的正交被使用，除非为这个参数指定一个不同的值。另一方面，如果给了这个参数一个值，它将覆盖
-     * <code>cell-@>active_fe_index()</code>
-     * 的选择或对单一正交的选择。        如果 @p mapping_index
-     * 参数保持默认值，那么我们使用传递给该类构造函数的
-     * hp::MappingCollection 中的映射对象，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出，即与有限元的索引相同。如上所述，如果映射集合只包含一个元素（如果想对hp-discretization中的所有有限元素使用
-     * $Q_1$
-     * 映射，这是一个常见的情况），那么这个单一的映射将被使用，除非为这个参数指定一个不同的值。
+     * Reinitialize the object for the given cell and face.
      *
+     * After the call, you can get an FEFaceValues object using the
+     * get_present_fe_values() function that corresponds to the present cell.
+     * For this FEFaceValues object, we use the additional arguments described
+     * below to determine which finite element, mapping, and quadrature
+     * formula to use. They are order in such a way that the arguments one may
+     * want to change most frequently come first. The rules for these
+     * arguments are as follows:
+     *
+     * If the @p fe_index argument to this function is left at its default
+     * value, then we use that finite element within the hp::FECollection
+     * passed to the constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>. Consequently, the
+     * hp::FECollection argument given to this object should really be the
+     * same as that used in the construction of the DoFHandler associated
+     * with the present cell. On the other hand, if a value is given for this
+     * argument, it overrides the choice of
+     * <code>cell-@>active_fe_index()</code>.
+     *
+     * If the @p q_index argument is left at its default value, then we use
+     * that quadrature formula within the hp::QCollection passed to the
+     * constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>, i.e. the same index as that of
+     * the finite element. In this case, there should be a corresponding
+     * quadrature formula for each finite element in the hp::FECollection. As
+     * a special case, if the quadrature collection contains only a single
+     * element (a frequent case if one wants to use the same quadrature object
+     * for all finite elements in an hp-discretization, even if that may not
+     * be the most efficient), then this single quadrature is used unless a
+     * different value for this argument is specified. On the other hand, if a
+     * value is given for this argument, it overrides the choice of
+     * <code>cell-@>active_fe_index()</code> or the choice for the single
+     * quadrature.
+     *
+     * If the @p mapping_index argument is left at its default value, then we
+     * use that mapping object within the hp::MappingCollection passed to the
+     * constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>, i.e. the same index as that of
+     * the finite element. As above, if the mapping collection contains only a
+     * single element (a frequent case if one wants to use a $Q_1$ mapping for
+     * all finite elements in an hp-discretization), then this single mapping
+     * is used unless a different value for this argument is specified.
      */
     template <bool lda>
     void
@@ -448,9 +539,9 @@ namespace hp
            const unsigned int fe_index      = numbers::invalid_unsigned_int);
 
     /**
-     * 重新初始化给定单元和面的对象。
-     * @note   @p face  必须是 @p cell's 面的迭代器之一。
+     * Reinitialize the object for the given cell and face.
      *
+     * @note @p face must be one of @p cell's face iterators.
      */
     template <bool lda>
     void
@@ -461,10 +552,16 @@ namespace hp
            const unsigned int fe_index      = numbers::invalid_unsigned_int);
 
     /**
-     * 和前面的函数一样，但是对于非DoFHandler迭代器。这个函数存在的原因是，人们也可以对Triangulation对象使用这个类。
-     * 由于 <code>cell-@>active_fe_index()</code>
-     * 对三角迭代器没有意义，这个函数从传递给这个对象的构造器的相关构造中选择第零个有限元、映射和正交对象。唯一的例外是，如果你为这最后三个参数中的任何一个指定了一个不同于默认值的值。
+     * Like the previous function, but for non-DoFHandler iterators. The reason
+     * this function exists is so that one can use this class for
+     * Triangulation objects too.
      *
+     * Since <code>cell-@>active_fe_index()</code> doesn't make sense for
+     * triangulation iterators, this function chooses the zero-th finite
+     * element, mapping, and quadrature object from the relevant constructions
+     * passed to the constructor of this object. The only exception is if you
+     * specify a value different from the default value for any of these last
+     * three arguments.
      */
     void
     reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -474,9 +571,9 @@ namespace hp
            const unsigned int fe_index      = numbers::invalid_unsigned_int);
 
     /**
-     * 为给定的单元格和面重新初始化该对象。
-     * @note   @p face  必须是 @p cell's 面的迭代器之一。
+     * Reinitialize the object for the given cell and face.
      *
+     * @note @p face must be one of @p cell's face iterators.
      */
     void
     reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -489,10 +586,10 @@ namespace hp
 
 
   /**
-   * 这个类对子表面实现了 hp::FEFaceValues 对面的作用。
-   * 进一步的文档请见那里。
-   * @ingroup hp hpcollection
+   * This class implements for subfaces what hp::FEFaceValues does for faces.
+   * See there for further documentation.
    *
+   * @ingroup hp hpcollection
    */
   template <int dim, int spacedim = dim>
   class FESubfaceValues
@@ -501,8 +598,7 @@ namespace hp
   {
   public:
     /**
-     * 构造函数。用给定的参数初始化这个对象。
-     *
+     * Constructor. Initialize this object with the given parameters.
      */
     FESubfaceValues(
       const hp::MappingCollection<dim, spacedim> &mapping_collection,
@@ -512,35 +608,48 @@ namespace hp
 
 
     /**
-     * 构造函数。这个构造函数等同于另一个构造函数，只是它使对象隐含地使用
-     * $Q_1$ 映射（即MappingQGeneric(1)类型的对象）。
-     *
+     * Constructor. This constructor is equivalent to the other one except
+     * that it makes the object use a $Q_1$ mapping (i.e., an object of type
+     * MappingQGeneric(1)) implicitly.
      */
     FESubfaceValues(const hp::FECollection<dim, spacedim> &fe_collection,
                     const hp::QCollection<dim - 1> &       q_collection,
                     const UpdateFlags                      update_flags);
 
     /**
-     * 为给定的单元、面和子面重新初始化对象。
-     * 调用后，你可以使用get_present_fe_values()函数得到一个与当前单元格对应的FESubfaceValues对象。
-     * 对于这个FESubfaceValues对象，我们使用下面描述的附加参数来决定使用哪个有限元、映射和正交公式。它们的顺序是这样的：人们可能最想改变的参数排在前面。这些参数的规则如下。
-     * 如果 @p q_index
-     * 参数保持默认值，那么我们使用传递给这个类的构造函数的
-     * hp::QCollection 中的正交公式，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出，即与有限元的索引相同。在这种情况下，
-     * hp::FECollection.
-     * 中的每个有限元都应该有一个相应的正交公式。
-     * 作为一种特殊情况，如果正交集合只包含一个元素（如果想在hp-discretization中对所有有限元使用同一个正交对象，即使这可能不是最有效的），那么这个单一的正交将被使用，除非为这个参数指定一个不同的值。另一方面，如果给了这个参数一个值，它将覆盖
-     * <code>cell-@>active_fe_index()</code>
-     * 的选择或对单一正交的选择。        如果 @p mapping_index
-     * 参数保持默认值，那么我们使用传递给该类构造函数的
-     * hp::MappingCollection 中的映射对象，索引由
-     * <code>cell-@>active_fe_index()</code>
-     * 给出，即与有限元的索引相同。如上所述，如果映射集合只包含一个元素（如果想对hp-discretization中的所有有限元素使用
-     * $Q_1$
-     * 映射，这种情况很常见），那么这个单一的映射将被使用，除非为这个参数指定一个不同的值。
+     * Reinitialize the object for the given cell, face, and subface.
      *
+     * After the call, you can get an FESubfaceValues object using the
+     * get_present_fe_values() function that corresponds to the present cell.
+     * For this FESubfaceValues object, we use the additional arguments
+     * described below to determine which finite element, mapping, and
+     * quadrature formula to use. They are order in such a way that the
+     * arguments one may want to change most frequently come first. The rules
+     * for these arguments are as follows:
+     *
+     * If the @p q_index argument is left at its default value, then we use
+     * that quadrature formula within the hp::QCollection passed to the
+     * constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>, i.e. the same index as that of
+     * the finite element. In this case, there should be a corresponding
+     * quadrature formula for each finite element in the hp::FECollection. As
+     * a special case, if the quadrature collection contains only a single
+     * element (a frequent case if one wants to use the same quadrature object
+     * for all finite elements in an hp-discretization, even if that may not
+     * be the most efficient), then this single quadrature is used unless a
+     * different value for this argument is specified. On the other hand, if a
+     * value is given for this argument, it overrides the choice of
+     * <code>cell-@>active_fe_index()</code> or the choice for the single
+     * quadrature.
+     *
+     * If the @p mapping_index argument is left at its default value, then we
+     * use that mapping object within the hp::MappingCollection passed to the
+     * constructor of this class with index given by
+     * <code>cell-@>active_fe_index()</code>, i.e. the same index as that of
+     * the finite element. As above, if the mapping collection contains only a
+     * single element (a frequent case if one wants to use a $Q_1$ mapping for
+     * all finite elements in an hp-discretization), then this single mapping
+     * is used unless a different value for this argument is specified.
      */
     template <bool lda>
     void
@@ -552,10 +661,16 @@ namespace hp
            const unsigned int fe_index      = numbers::invalid_unsigned_int);
 
     /**
-     * 像前面的函数一样，但是对于非DoFHandler迭代器。这个函数存在的原因是，人们也可以将这个类用于Triangulation对象。
-     * 由于 <code>cell-@>active_fe_index()</code>
-     * 对Triangulation迭代器没有意义，这个函数从传递给这个对象的构造器的相关构造中选择第零个有限元、映射和正交对象。唯一的例外是，如果你为这最后三个参数中的任何一个指定了一个不同于默认值的值。
+     * Like the previous function, but for non-DoFHandler iterators. The reason
+     * this function exists is so that one can use this class for
+     * Triangulation objects too.
      *
+     * Since <code>cell-@>active_fe_index()</code> doesn't make sense for
+     * Triangulation iterators, this function chooses the zero-th finite
+     * element, mapping, and quadrature object from the relevant constructions
+     * passed to the constructor of this object. The only exception is if you
+     * specify a value different from the default value for any of these last
+     * three arguments.
      */
     void
     reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -620,5 +735,3 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/dof_handler_policy_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -45,62 +46,55 @@ namespace internal
     struct NumberCache;
 
     /**
-     * A namespace in which we define classes that describe how to distribute
-     * and renumber degrees of freedom.
+     * 一个命名空间，我们在其中定义描述如何分配和重新编号自由度的类。
+     *
      */
     namespace Policy
     {
       struct Implementation;
 
       /**
-       * A class that implements policies for how the
-       * DoFHandler::distribute_dofs and DoFHandler::renumber_dofs functions
-       * should work.
+       * 一个实现 DoFHandler::distribute_dofs 和
+       * DoFHandler::renumber_dofs 函数应如何工作的策略的类。
+       *
        */
       template <int dim, int spacedim>
       class PolicyBase
       {
       public:
         /**
-         * Destructor.
+         * 解构器。
+         *
          */
         virtual ~PolicyBase() = default;
 
         /**
-         * Distribute degrees of freedom on the DoFHandler object associated
-         * with this policy object. The argument is a reference to the
-         * NumberCache of the DoFHandler object. The function may modify it to
-         * make DoFHandler related functions work properly when called within
-         * the policies classes. The updated NumberCache is written to that
-         * argument.
+         * 在与该策略对象相关的DoFHandler对象上分配自由度。参数是对DoFHandler对象的NumberCache的引用。该函数可以修改它以使DoFHandler相关的函数在政策类中调用时正常工作。更新后的NumberCache被写入该参数中。
+         *
          */
         virtual NumberCache
         distribute_dofs() const = 0;
 
         /**
-         * Distribute the multigrid dofs on each level of the DoFHandler
-         * associated with this policy object. Return a vector of number
-         * caches for all of the levels.
+         * 在与此策略对象相关的DoFHandler的每一层上分布多网格Dofs。返回所有层次的数字缓存的向量。
+         *
          */
         virtual std::vector<NumberCache>
         distribute_mg_dofs() const = 0;
 
         /**
-         * Renumber degrees of freedom as specified by the first argument.
+         * 按照第一个参数指定的自由度重新编号。
+         * 在重新编号后，为DoFHandler返回一个更新的NumberCache。
          *
-         * Return an updated NumberCache for the DoFHandler after renumbering.
          */
         virtual NumberCache
         renumber_dofs(
           const std::vector<types::global_dof_index> &new_numbers) const = 0;
 
         /**
-         * Renumber multilevel degrees of freedom on one level of a multigrid
-         * hierarchy. The second argument specifies the set of new DoF
-         * indices.
+         * 对多网格层次结构中的一个层次的多级自由度进行重新编号。第二个参数指定新的DoF索引集。
+         * 在重新编号后，为DoFHandler的指定层次返回一个更新的NumberCache。
          *
-         * Return an updated NumberCache for the specified level of the
-         * DoFHandler after renumbering.
          */
         virtual NumberCache
         renumber_mg_dofs(
@@ -110,17 +104,17 @@ namespace internal
 
 
       /**
-       * This class implements the default policy for sequential operations,
-       * i.e. for the case where all cells get degrees of freedom.
+       * 该类实现了顺序操作的默认策略，即针对所有单元都得到自由度的情况。
+       *
        */
       template <int dim, int spacedim>
       class Sequential : public PolicyBase<dim, spacedim>
       {
       public:
         /**
-         * Constructor.
-         * @param dof_handler The DoFHandler object upon which this
-         *   policy class is supposed to work.
+         * 构造函数。          @param  dof_handler
+         * 这个策略类应该在其上工作的DoFHandler对象。
+         *
          */
         Sequential(DoFHandler<dim, spacedim> &dof_handler);
 
@@ -145,7 +139,8 @@ namespace internal
 
       protected:
         /**
-         * The DoFHandler object on which this policy object works.
+         * 这个策略对象赖以工作的DoFHandler对象。
+         *
          */
         SmartPointer<DoFHandler<dim, spacedim>> dof_handler;
       };
@@ -153,45 +148,42 @@ namespace internal
 
 
       /**
-       * This class implements the policy for operations when we use a
-       * parallel::shared::Triangulation object.
+       * 当我们使用 parallel::shared::Triangulation
+       * 对象时，这个类实现了操作的策略。
+       *
        */
       template <int dim, int spacedim>
       class ParallelShared : public PolicyBase<dim, spacedim>
       {
       public:
         /**
-         * Constructor.
-         * @param dof_handler The DoFHandler object upon which this
-         *   policy class is supposed to work.
+         * 构造函数。          @param  dof_handler
+         * 这个策略类应该在其上工作的DoFHandler对象。
+         *
          */
         ParallelShared(DoFHandler<dim, spacedim> &dof_handler);
 
         /**
-         * Distribute degrees of freedom on the object given as first
-         * argument.
+         * 在作为第一个参数的对象上分配自由度。
+         * 在分配时，自由度按子域重新编号，number_cache.n_locally_owned_dofs_per_processor[i]和number_cache.locally_owned_dofs被一致更新。
          *
-         * On distribution, DoFs are renumbered subdomain-wise and
-         * number_cache.n_locally_owned_dofs_per_processor[i] and
-         * number_cache.locally_owned_dofs are updated consistently.
          */
         virtual NumberCache
         distribute_dofs() const override;
 
         /**
-         * This function is not yet implemented.
+         * 这个函数还没有实现。
+         *
          */
         virtual std::vector<NumberCache>
         distribute_mg_dofs() const override;
 
         /**
-         * Renumber degrees of freedom as specified by the first argument.
+         * 按照第一个参数指定的自由度重新编号。
+         * 输入参数 @p new_numbers
+         * 可以有和全局自由度一样多的条目（即dof_handler.n_dofs()）或者dof_handler.local_owned_dofs().n_elements()。因此，它可以利用为
+         * parallel::distributed 情况下实施的重新编号函数。
          *
-         * The input argument @p new_numbers may either have as many entries
-         * as there are global degrees of freedom (i.e. dof_handler.n_dofs() )
-         * or dof_handler.locally_owned_dofs().n_elements(). Therefore it can
-         * be utilized with renumbering functions implemented for the
-         * parallel::distributed case.
          */
         virtual NumberCache
         renumber_dofs(const std::vector<types::global_dof_index> &new_numbers)
@@ -205,24 +197,26 @@ namespace internal
 
       private:
         /**
-         * The DoFHandler object on which this policy object works.
+         * 这个策略对象所工作的DoFHandler对象。
+         *
          */
         SmartPointer<DoFHandler<dim, spacedim>> dof_handler;
       };
 
 
       /**
-       * This class implements the policy for operations when we use a
-       * parallel::DistributedTriangulationBase object.
+       * 这个类实现了我们使用 parallel::DistributedTriangulationBase
+       * 对象时的操作策略。
+       *
        */
       template <int dim, int spacedim>
       class ParallelDistributed : public PolicyBase<dim, spacedim>
       {
       public:
         /**
-         * Constructor.
-         * @param dof_handler The DoFHandler object upon which this
-         *   policy class is supposed to work.
+         * 构造函数。          @param  dof_handler
+         * 这个策略类应该在其上工作的DoFHandler对象。
+         *
          */
         ParallelDistributed(DoFHandler<dim, spacedim> &dof_handler);
 
@@ -247,7 +241,8 @@ namespace internal
 
       private:
         /**
-         * The DoFHandler object on which this policy object works.
+         * 这个策略对象赖以工作的DoFHandler对象。
+         *
          */
         SmartPointer<DoFHandler<dim, spacedim>> dof_handler;
       };
@@ -260,4 +255,6 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-/*--------------------------   dof_handler_policy.h -------------------------*/
+ /*--------------------------   dof_handler_policy.h -------------------------*/ 
+
+

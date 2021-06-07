@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_wedge_p_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -25,18 +26,23 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Base class of FE_WedgeP and FE_WedgeDGP.
+ * FE_WedgeP 和 FE_WedgeDGP 的基类。
  *
- * @note Only implemented for 3D.
+ *
+ * @note 只为3D实现。
+ *
  *
  * @ingroup simplex
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_WedgePoly : public dealii::FE_Poly<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构建器。
+   *
    */
   FE_WedgePoly(const unsigned int                                degree,
                const internal::GenericDoFsPerObject &            dpos,
@@ -44,58 +50,67 @@ public:
 };
 
 /**
- * Implementation of a scalar Lagrange finite element on a wedge that yields
- * the finite element space of continuous, piecewise polynomials of
- * degree $k$.
+ * 实现楔形上的标量拉格朗日有限元，得到连续的、程度为
+ * $k$ 的分片多项式的有限元空间。
+ *
  *
  * @ingroup simplex
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_WedgeP : public FE_WedgePoly<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构建器。
+   *
    */
   FE_WedgeP(const unsigned int degree);
 
   /**
-   * @copydoc dealii::FiniteElement::clone()
+   * @copydoc   dealii::FiniteElement::clone()
+   * dealii::FiniteElement::clone() .
+   *
    */
   std::unique_ptr<FiniteElement<dim, spacedim>>
   clone() const override;
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_WedgeP<dim>(degree)</tt>, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_WedgeP<dim>(degree)</tt>，
+   * @p dim 和 @p degree 用适当的值替换。
+   *
    */
   std::string
   get_name() const override;
 
   /**
-   * @copydoc dealii::FiniteElement::compare_for_domination()
+   * @copydoc   dealii::FiniteElement::compare_for_domination() 。
+   *
    */
   FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim, spacedim> &fe_other,
                          const unsigned int codim) const override;
 
   /**
-   * @copydoc dealii::FiniteElement::hp_vertex_dof_identities()
+   * @copydoc   dealii::FiniteElement::hp_vertex_dof_identities()
+   *
    */
   std::vector<std::pair<unsigned int, unsigned int>>
   hp_vertex_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * @copydoc dealii::FiniteElement::hp_line_dof_identities()
+   * @copydoc   dealii::FiniteElement::hp_line_dof_identities()
+   *
    */
   std::vector<std::pair<unsigned int, unsigned int>>
   hp_line_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * @copydoc dealii::FiniteElement::hp_quad_dof_identities()
+   * @copydoc   dealii::FiniteElement::hp_quad_dof_identities()
+   *
    */
   std::vector<std::pair<unsigned int, unsigned int>>
   hp_quad_dof_identities(const FiniteElement<dim, spacedim> &fe_other,
@@ -103,31 +118,35 @@ public:
 };
 
 /**
- * Implementation of a scalar Lagrange finite element on a wedge that yields
- * the finite element space of discontinuous, piecewise polynomials of
- * degree $k$.
+ * 在楔形上实现标量拉格朗日有限元，得到不连续的、程度为
+ * $k$ 的分片多项式的有限元空间。
+ *
  *
  * @ingroup simplex
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_WedgeDGP : public FE_WedgePoly<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构建器。
+   *
    */
   FE_WedgeDGP(const unsigned int degree);
 
   /**
-   * @copydoc dealii::FiniteElement::clone()
+   * @copydoc   dealii::FiniteElement::clone()  构建函数。
+   *
    */
   std::unique_ptr<FiniteElement<dim, spacedim>>
   clone() const override;
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_WedgeDGP<dim>(degree)</tt>, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_WedgeDGP<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 由适当的值代替。
+   *
    */
   std::string
   get_name() const override;
@@ -136,3 +155,5 @@ public:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

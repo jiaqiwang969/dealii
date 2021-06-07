@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_poly_face_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2021 by the deal.II authors
@@ -28,23 +27,31 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup febase */ 
- /*@{*/ 
+/*!@addtogroup febase */
+/*@{*/
 
 /**
- * @warning  这个类还没有得到充分的测试!
- * 这个类给出了一个统一的框架来实现只位于网格面上的FiniteElement类。它们是基于多项式空间，如TensorProductPolynomials或PolynomialSpace类。
- * 每个实现以下功能的类都可以作为模板参数PolynomialType。
+ * @warning This class is not sufficiently tested yet!
  *
+ * This class gives a unified framework for the implementation of
+ * FiniteElement classes only located on faces of the mesh. They are based on
+ * polynomial spaces like the TensorProductPolynomials or a PolynomialSpace
+ * classes.
+ *
+ * Every class that implements the following functions can be used as template
+ * parameter PolynomialType.
  *
  * @code
  * double compute_value (const unsigned int i,
- *                     const Point<dim> &p) const;
+ *                       const Point<dim> &p) const;
  * @endcode
- * 示例类是TensorProductPolynomials、PolynomialSpace或PolynomialsP。
- * 这个类不是一个完全实现的FiniteElement类。相反，有几个在FiniteElement类中声明的纯虚拟函数不能由这个类来实现，而是留给派生类来实现。
+ * Example classes are TensorProductPolynomials, PolynomialSpace or
+ * PolynomialsP.
  *
- *
+ * This class is not a fully implemented FiniteElement class. Instead there
+ * are several pure virtual functions declared in the FiniteElement class
+ * which cannot be implemented by this class but are left for implementation
+ * in derived classes.
  */
 template <class PolynomialType,
           int dim      = PolynomialType::dimension + 1,
@@ -53,16 +60,15 @@ class FE_PolyFace : public FiniteElement<dim, spacedim>
 {
 public:
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   FE_PolyFace(const PolynomialType &        poly_space,
               const FiniteElementData<dim> &fe_data,
               const std::vector<bool> &     restriction_is_additive_flags);
 
   /**
-   * 返回该有限元的多项式程度，即传递给构造函数的值。
-   *
+   * Return the polynomial degree of this finite element, i.e. the value
+   * passed to the constructor.
    */
   unsigned int
   get_degree() const;
@@ -72,8 +78,11 @@ public:
   requires_update_flags(const UpdateFlags update_flags) const override;
 
 protected:
-  /*注意：以下函数的定义被内联到类的声明中，因为我们在MS Visual Studio中否则会遇到编译器错误。 
-* */
+  /*
+   * NOTE: The following functions have their definitions inlined into the class
+   * declaration because we otherwise run into a compiler error with MS Visual
+   * Studio.
+   */
 
 
   virtual std::unique_ptr<
@@ -222,34 +231,39 @@ protected:
       &output_data) const override;
 
   /**
-   * 独立于细胞的数据字段。
-   * 关于这个类的一般用途的信息，请看基类的文档。
+   * Fields of cell-independent data.
    *
+   * For information about the general purpose of this class, see the
+   * documentation of the base class.
    */
   class InternalData : public FiniteElement<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * 包含一个面上的正交点的形状函数值的数组。
-     * 每个形状函数都有一行，包含每个正交点的值。
-     * 在这个数组中，我们将形状函数的值存储在单元格一个面上的正交点。由于这些值在转换到实际单元时不会改变，我们只需要在访问具体单元时将它们复制过来。
-     * 特别是，我们可以简单地将同一组数值复制到每个面。
+     * Array with shape function values in quadrature points on one face.
+     * There is one row for each shape function, containing values for each
+     * quadrature point.
      *
+     * In this array, we store the values of the shape function in the
+     * quadrature points on one face of the unit cell. Since these values do
+     * not change under transformation to the real cell, we only need to copy
+     * them over when visiting a concrete cell.
+     *
+     * In particular, we can simply copy the same set of values to each of the
+     * faces.
      */
     std::vector<std::vector<double>> shape_values;
   };
 
   /**
-   * 多项式空间。其类型由模板参数PolynomialType给出。
-   *
+   * The polynomial space. Its type is given by the template parameter
+   * PolynomialType.
    */
   PolynomialType poly_space;
 };
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

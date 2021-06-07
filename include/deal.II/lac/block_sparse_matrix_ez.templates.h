@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/block_sparse_matrix_ez.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2018 by the deal.II authors
@@ -172,5 +171,3 @@ BlockSparseMatrixEZ<number>::collect_sizes()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // ifdef block_sparse_matrix_templates_h
-
-

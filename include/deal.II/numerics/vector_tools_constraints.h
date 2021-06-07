@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/vector_tools_constraints_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -40,99 +39,236 @@ class Mapping;
 namespace VectorTools
 {
   /**
-   * @name  内插和投影
-   *
+   * @name Interpolation and projection
    */
   //@{
 
   /**
-   * 这个函数计算对应于 $\vec u \cdot \vec n=\vec u_\Gamma \cdot \vec
-   * n$ 形式的边界条件的约束，即法向通量约束，其中 $\vec
-   * u$ 是一个矢量值的解变量， $\vec u_\Gamma$
-   * 是一个规定的矢量场，我们希望其法向分量等于解的法向分量。
-   * 这些条件完全具有AffineConstraints类所处理的形式，即它们将边界自由度的<i>linear
-   * combination</i>与相应的值（约束的不均匀性）联系起来。因此，当前函数创建了一个写进AffineConstraints容器的约束列表。这个对象可能已经有了一些内容，例如来自悬挂节点的约束，但仍未触及。这些约束条件必须像其他此类约束条件一样应用于线性系统，也就是说，你必须在求解前用约束条件浓缩线性系统，而且你必须在求解后分配解向量。
-   * 这个函数处理的情况比
-   * VectorTools::compute_no_normal_flux_constraints()
-   * 更普遍（它只能处理 $\vec u_\Gamma \cdot \vec n = 0$
-   * 的情况，并在 step-31 和 step-32
-   * 中使用）。然而，由于适用于该函数的所有内容也作为特例适用于当前的函数，所以下面的讨论与两者都有关。
-   * @note  这个函数在1d中没有什么意义，所以如果 @p dim
-   * 等于1，它会抛出一个异常。      <h4>Arguments to this
-   * function</h4>
-   * 这个函数的第二个参数表示有限元中的第一个矢量分量，对应于你要约束的矢量函数。例如，如果我们正在求解2d中的斯托克斯方程，有限元有分量
-   * $(u,v,p)$  ，那么如果你打算约束矢量 $(u,v)^T \cdot \vec n =
-   * \vec u_\Gamma \cdot \vec n$ ， @p  first_vector_component需要为0。
-   * 另一方面，如果我们在三维中求解麦克斯韦方程，有限元有分量
-   * $(E_x,E_y,E_z,B_x,B_y,B_z)$ ，我们想要边界条件 $\vec B\cdot \vec
-   * n=\vec B_\Gamma\cdot \vec n$ ，那么 @p first_vector_component
-   * 将是3。隐含地假设矢量正好有 <code>dim</code>
-   * 个分量，这些分量的排序方式与我们通常对坐标方向的排序方式相同，即
-   * $x$  -， $y$  -，最后是 $z$
-   * -分量。该函数假设，但不能检查，
-   * <code>[first_vector_component,first_vector_component+dim)</code>
-   * 范围内的矢量分量来自同一个基础有限元。例如，在上面的Stokes例子中，使用
-   * <code>FESystem@<dim@>(FE_Q@<dim@>(2), 1, FE_Q@<dim@>(1), dim)</code>
-   * 是没有意义的（注意第一个速度矢量分量是 $Q_2$
-   * 元素，而其他的都是 $Q_1$
-   * 元素），因为在边界上会有定义了 $x$
-   * -速度的点，但没有相应的 $y$ -或 $z$ -velocities。
-   * 第三个参数表示要强制执行边界条件的边界指标集。请注意，正如下面所解释的，这是少数几个函数之一，在这些函数中，我们只用一个边界指标多次调用该函数，还是用整个边界指标一次调用该函数，是有区别的。
-   * 参数四（  @p function_map)  描述了每个边界id的边界函数
-   * $\vec u_\Gamma$ 。函数 <code>function_map[id]</code> 用于id为 @p id
-   * 的边界，取自集合 @p boundary_ids. 中的每个函数预计都有
-   * @p dim 成分，这些成分的使用与 @p first_vector_component.
-   * 无关
-   * 映射参数用于计算边界点，在边界点上，函数需要从边界描述中请求法向量
-   * $\vec n$ 。
-   * @note  当在一个AffineConstraints对象中结合具有悬挂节点约束和边界条件的自适应细化网格时，悬挂节点约束应该总是首先被设置，然后是边界条件，因为边界条件不会在已经被约束的自由度的第二次操作中被设置。这可以确保离散化保持所需的一致性。参见  @ref constraints  模块中关于冲突约束的讨论。      <h4>Computing constraints in 2d</h4> 计算这些约束需要一些智慧。主要问题是围绕着法向量是什么这个问题。考虑一下下面的情况。      <p ALIGN="center"
-   * >
-   @image html no_normal_flux_1.png
-   * </p>
-   * 这里，我们有两个使用双线性映射（即MappingQGeneric(1)）的单元格。因此，对于每一个单元格来说，法向量都是垂直于直边的。如果顶部和右侧的两条边是为了近似弯曲的边界（如虚线所示），那么两个计算出来的法向量都不等于准确的法向量（尽管随着网格的进一步细化，它们近似于法向量）。更糟糕的是，如果我们用两个单元的法线向量来约束公共顶点的
-   * $\vec u \cdot \vec n= \vec u_\Gamma \cdot \vec n$
-   * ，那么我们就用两个线性独立的向量来约束向量 $\vec u$
-   * ；因此，在这一点上的约束将是 $\vec u=\vec u_\Gamma$
-   * （即向量的<i>all</i>分量），这并不是我们想要的结果。
-   * 为了处理这种情况，算法的工作方式如下：在我们想要约束
-   * $\vec u$
-   * 的每一点，我们首先收集相邻单元在这一点可能计算的所有法向量。然后我们不对这些法向量中的<i>each</i>进行约束
-   * $\vec u \cdot \vec n=\vec u_\Gamma \cdot \vec n$
-   * ，而只对法向量中的<i>average</i>进行约束。在上面的例子中，我们因此只记录了一个单一的约束
-   * $\vec u \cdot \vec {\bar n}=\vec u_\Gamma \cdot \vec {\bar n}$  ，其中
-   * $\vec {\bar n}$ 是两个指定法向量的平均值。
-   * 不幸的是，这还远远不够。考虑一下这里的情况。
-   * <p ALIGN="center">
-   @image html no_normal_flux_2.png
-   * </p>
-   * 如果顶边和右边又近似于一个弯曲的边界，而左边的边界是一个单独的边界（例如直的），所以确切的边界在左顶点确实有一个角，那么上面的构造就不起作用了：在这里，我们确实希望在这一点上的约束是
-   * $\vec u$
-   * （因为相对于左边的法线以及上面的法线矢量的法线速度应该是零），而不是说平均法线矢量方向的速度是零。
-   * 因此，我们使用以下启发式方法来确定在某一点计算的所有法向量是否要被平均化：如果同一点的两个法向量是在<i>different</i>单元上计算的，那么它们就要被平均化。这包括上面的第一个例子。如果它们是从同一个单元计算出来的，那么它们不同的事实被认为是表明它们来自边界的不同部分，可能被一个真正的角所连接，因此必须不被平均化。
-   * 这个方案有一个问题。例如，如果我们在上面考虑的同一个域，用下面的网格进行离散，那么我们就会陷入麻烦。
-   * <p ALIGN="center">
-   @image html no_normal_flux_3.png
-   * </p> 这里，算法假设边界在面 $F1$ 和 $F2$
-   * 连接处没有角，因为在这一点上有两个不同的法向量从不同的单元计算出来。如果你想在这一点上有一个确切的边界角，处理这个问题的唯一方法是给边界的两个部分分配不同的边界指标，并调用这个函数两次，一次针对每个边界指标；这样做每次调用只能得到一个法向量（因为我们一次只考虑一个边界部分），结果是法向量不会被平均化。在笛卡尔网格上的重心角周围使用该函数时，也需要考虑到这种情况。如果法向流边界条件要在非直角坐标系网格上的重心角处执行，我们甚至可能在约束中得到循环，因为一般来说，我们会约束来自两边的不同分量。在这种情况下，首先在重心顶点上设置一个无滑移约束。
-   * <h4>Computing constraints in 3d</h4>
-   * 在三维中，情况更为复杂。考虑以下情况，我们要在被标记的顶点计算约束。
-   * <p ALIGN="center">
-   @image html no_normal_flux_4.png
-   * </p>
-   * 在这里，我们得到四个不同的法向量，其中一个来自在顶点相遇的四个面。尽管它们可能形成一个完整的向量集，但我们的目的不是在这一点上约束向量场的所有成分。相反，我们希望仍然允许切向流动，其中
-   * "切向 "一词必须得到适当的定义。
-   * 在这种情况下，算法进行如下：对于在这一点上计算了两个切向矢量的每个单元，我们计算不受约束的方向，作为两个切向矢量的外积（如果有必要，乘以减一）。然后我们对这些切向矢量进行平均。最后，我们计算垂直于这个平均切线方向的两个方向的约束。
-   * 有些情况下，一个单元贡献了两个切向，而另一个单元只贡献了一个切向；例如，如果左边单元的顶面和正面都属于选定的边界，而只有右边单元的顶面属于边界，就会发生这种情况，也许这表明域的整个正面部分是一个平滑流形，而顶部确实形成了两个独立的流形，在一个山脊上相遇，而且只希望在正面流形和顶部的右边流形上设置法向流动边界条件。在这样的情况下，很难定义应该发生什么。目前的实现只是忽略了只贡献了一个法向的单元的贡献。在所示的例子中，这是可以接受的，因为左边单元的正面的法向量与右边单元的正面提供的法向量是一样的（表面是平面的），但是如果前面的流形是弯曲的，这将是一个问题。无论如何，不清楚在这种情况下该如何进行，忽略单细胞可能是最好的办法了。
-   * <h4>Results</h4>因为它能产生很好的图片，这里有两张圆和球体上的矢量场的图片，这个函数计算的约束被应用于此（为了说明问题，我们强制执行零法线通量，这可以更容易地使用
-   * VectorTools::compute_no_normal_flux_constraints(),
-   * 计算，因为这必须导致<i>tangential</i>矢量场）。      <p
-   * ALIGN="center">
-   @image html no_normal_flux_5.png
-   @image html no_normal_flux_6.png
-   * </p>
-   * 矢量场在物理上是不合理的，但切向性约束显然是被执行的。事实上，向量场在边界上的某些点是零的，这是创建方式的一个伪命题，它没有被约束在这些点上为零。
-   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * This function computes the constraints that correspond to boundary
+   * conditions of the form $\vec u \cdot \vec n=\vec u_\Gamma \cdot \vec n$,
+   * i.e., normal flux constraints where $\vec u$ is a vector-valued solution
+   * variable and $\vec u_\Gamma$ is a prescribed vector field whose normal
+   * component we want to be equal to the normal component of the solution.
+   * These conditions have exactly the form handled by the
+   * AffineConstraints class, in that they relate a <i>linear
+   * combination</i> of boundary degrees of freedom to a corresponding
+   * value (the inhomogeneity of the constraint). Consequently, the current
+   * function creates a list of constraints that are written into an
+   * AffineConstraints container. This object may already have some
+   * content, for example from hanging node constraints, that remains
+   * untouched. These constraints have to be applied to the linear system
+   * like any other such constraints, i.e., you have to condense the linear
+   * system with the constraints before solving, and you have to distribute
+   * the solution vector afterwards.
    *
+   * This function treats a more general case than
+   * VectorTools::compute_no_normal_flux_constraints() (which can only handle
+   * the case where $\vec u_\Gamma \cdot \vec n = 0$, and is used in
+   * step-31 and step-32). However, because everything that would apply
+   * to that function also applies as a special case to the current
+   * function, the following discussion is relevant to both.
+   *
+   * @note This function doesn't make much sense in 1d, so it throws an
+   *   exception if @p dim equals one.
+   *
+   *
+   * <h4>Arguments to this function</h4>
+   *
+   * The second argument of this function denotes the first vector component
+   * in the finite element that corresponds to the vector function that you
+   * want to constrain. For example, if we were solving a Stokes equation in
+   * 2d and the finite element had components $(u,v,p)$, then @p
+   * first_vector_component needs to be zero if you intend to constraint
+   * the vector $(u,v)^T \cdot \vec n = \vec u_\Gamma \cdot \vec n$.
+   * On the other hand, if we solved the
+   * Maxwell equations in 3d and the finite element has components
+   * $(E_x,E_y,E_z,B_x,B_y,B_z)$ and we want the boundary condition $\vec
+   * B\cdot \vec n=\vec B_\Gamma\cdot \vec n$, then @p first_vector_component
+   * would be 3. Vectors are implicitly assumed to have exactly
+   * <code>dim</code> components that are ordered in the same way as we
+   * usually order the coordinate directions, i.e. $x$-, $y$-, and finally
+   * $z$-component. The function assumes, but can't check, that the vector
+   * components in the range
+   * <code>[first_vector_component,first_vector_component+dim)</code> come
+   * from the same base finite element. For example, in the Stokes example
+   * above, it would not make sense to use a
+   * <code>FESystem@<dim@>(FE_Q@<dim@>(2), 1, FE_Q@<dim@>(1), dim)</code>
+   * (note that the first velocity vector component is a $Q_2$ element,
+   * whereas all the other ones are $Q_1$ elements) as there would be points
+   * on the boundary where the $x$-velocity is defined but no corresponding
+   * $y$- or $z$-velocities.
+   *
+   * The third argument denotes the set of boundary indicators on which the
+   * boundary condition is to be enforced. Note that, as explained below, this
+   * is one of the few functions where it makes a difference where we call the
+   * function multiple times with only one boundary indicator, or whether we
+   * call the function once with the whole set of boundary indicators at once.
+   *
+   * Argument four (@p function_map) describes the boundary function $\vec
+   * u_\Gamma$ for each boundary id. The function <code>function_map[id]</code>
+   * is used on boundary with id @p id taken from the set @p boundary_ids.
+   * Each function in @p function_map is expected to have @p dim
+   * components, which are used independent of @p first_vector_component.
+   *
+   * The mapping argument is used to compute the boundary points at which the
+   * function needs to request the normal vector $\vec n$ from the boundary
+   * description.
+   *
+   * @note When combining adaptively refined meshes with hanging node
+   * constraints and boundary conditions like from the current function within
+   * one AffineConstraints object, the hanging node constraints should always
+   * be set first, and then the boundary conditions since boundary conditions
+   * are not set in the second operation on degrees of freedom that are
+   * already constrained. This makes sure that the discretization remains
+   * conforming as is needed. See the discussion on conflicting constraints in
+   * the module on
+   * @ref constraints.
+   *
+   *
+   * <h4>Computing constraints in 2d</h4>
+   *
+   * Computing these constraints requires some smarts. The main question
+   * revolves around the question what the normal vector is. Consider the
+   * following situation:
+   *
+   * <p ALIGN="center">
+   * @image html no_normal_flux_1.png
+   * </p>
+   *
+   * Here, we have two cells that use a bilinear mapping (i.e.,
+   * MappingQGeneric(1)). Consequently, for each of the cells, the normal
+   * vector is perpendicular to the straight edge. If the two edges at the top
+   * and right are meant to approximate a curved boundary (as indicated by the
+   * dashed line), then neither of the two computed normal vectors are equal
+   * to the exact normal vector (though they approximate it as the mesh is
+   * refined further). What is worse, if we constrain $\vec u \cdot \vec n=
+   * \vec u_\Gamma \cdot \vec n$ at the common vertex with the normal vector
+   * from both cells, then we constrain the vector $\vec u$ with respect to
+   * two linearly independent vectors; consequently, the constraint would be
+   * $\vec u=\vec u_\Gamma$ at this point (i.e. <i>all</i> components of the
+   * vector), which is not what we wanted.
+   *
+   * To deal with this situation, the algorithm works in the following way: at
+   * each point where we want to constrain $\vec u$, we first collect all
+   * normal vectors that adjacent cells might compute at this point. We then
+   * do not constrain $\vec u \cdot \vec n=\vec u_\Gamma \cdot \vec n$ for
+   * <i>each</i> of these normal vectors but only for the <i>average</i> of
+   * the normal vectors. In the example above, we therefore record only a
+   * single constraint $\vec u \cdot \vec {\bar n}=\vec u_\Gamma \cdot \vec
+   * {\bar n}$, where $\vec {\bar n}$ is the average of the two indicated
+   * normal vectors.
+   *
+   * Unfortunately, this is not quite enough. Consider the situation here:
+   *
+   * <p ALIGN="center">
+   * @image html no_normal_flux_2.png
+   * </p>
+   *
+   * If again the top and right edges approximate a curved boundary, and the
+   * left boundary a separate boundary (for example straight) so that the
+   * exact boundary has indeed a corner at the top left vertex, then the above
+   * construction would not work: here, we indeed want the constraint that
+   * $\vec u$ at this point (because the normal velocities with respect to
+   * both the left normal as well as the top normal vector should be zero),
+   * not that the velocity in the direction of the average normal vector is
+   * zero.
+   *
+   * Consequently, we use the following heuristic to determine whether all
+   * normal vectors computed at one point are to be averaged: if two normal
+   * vectors for the same point are computed on <i>different</i> cells, then
+   * they are to be averaged. This covers the first example above. If they are
+   * computed from the same cell, then the fact that they are different is
+   * considered indication that they come from different parts of the boundary
+   * that might be joined by a real corner, and must not be averaged.
+   *
+   * There is one problem with this scheme. If, for example, the same domain
+   * we have considered above, is discretized with the following mesh, then we
+   * get into trouble:
+   *
+   * <p ALIGN="center">
+   * @image html no_normal_flux_3.png
+   * </p>
+   *
+   * Here, the algorithm assumes that the boundary does not have a corner at
+   * the point where faces $F1$ and $F2$ join because at that point there are
+   * two different normal vectors computed from different cells. If you intend
+   * for there to be a corner of the exact boundary at this point, the only
+   * way to deal with this is to assign the two parts of the boundary
+   * different boundary indicators and call this function twice, once for each
+   * boundary indicators; doing so will yield only one normal vector at this
+   * point per invocation (because we consider only one boundary part at a
+   * time), with the result that the normal vectors will not be averaged. This
+   * situation also needs to be taken into account when using this function
+   * around reentrant corners on Cartesian meshes. If normal-flux boundary
+   * conditions are to be enforced on non-Cartesian meshes around reentrant
+   * corners, one may even get cycles in the constraints as one will in
+   * general constrain different components from the two sides. In that case,
+   * set a no-slip constraint on the reentrant vertex first.
+   *
+   *
+   * <h4>Computing constraints in 3d</h4>
+   *
+   * The situation is more complicated in 3d. Consider the following case
+   * where we want to compute the constraints at the marked vertex:
+   *
+   * <p ALIGN="center">
+   * @image html no_normal_flux_4.png
+   * </p>
+   *
+   * Here, we get four different normal vectors, one from each of the four
+   * faces that meet at the vertex. Even though they may form a complete set
+   * of vectors, it is not our intent to constrain all components of the
+   * vector field at this point. Rather, we would like to still allow
+   * tangential flow, where the term "tangential" has to be suitably defined.
+   *
+   * In a case like this, the algorithm proceeds as follows: for each cell
+   * that has computed two tangential vectors at this point, we compute the
+   * unconstrained direction as the outer product of the two tangential
+   * vectors (if necessary multiplied by minus one). We then average these
+   * tangential vectors. Finally, we compute constraints for the two
+   * directions perpendicular to this averaged tangential direction.
+   *
+   * There are cases where one cell contributes two tangential directions and
+   * another one only one; for example, this would happen if both top and
+   * front faces of the left cell belong to the boundary selected whereas only
+   * the top face of the right cell belongs to it, maybe indicating that the
+   * entire front part of the domain is a smooth manifold whereas the top
+   * really forms two separate manifolds that meet in a ridge, and that
+   * normal-flux boundary conditions are only desired on the front manifold
+   * and the right one on top. In cases like these, it's difficult to define
+   * what should happen. The current implementation simply ignores the one
+   * contribution from the cell that only contributes one normal vector. In
+   * the example shown, this is acceptable because the normal vector for the
+   * front face of the left cell is the same as the normal vector provided by
+   * the front face of the right cell (the surface is planar) but it would be
+   * a problem if the front manifold would be curved. Regardless, it is
+   * unclear how one would proceed in this case and ignoring the single cell
+   * is likely the best one can do.
+   *
+   *
+   * <h4>Results</h4>
+   *
+   * Because it makes for good pictures, here are two images of vector fields
+   * on a circle and on a sphere to which the constraints computed by this
+   * function have been applied (for illustration purposes, we enforce zero
+   * normal flux, which can more easily be computed using
+   * VectorTools::compute_no_normal_flux_constraints(), as this must
+   * lead to a <i>tangential</i> vector field):
+   *
+   * <p ALIGN="center">
+   * @image html no_normal_flux_5.png
+   * @image html no_normal_flux_6.png
+   * </p>
+   *
+   * The vectors fields are not physically reasonable but the tangentiality
+   * constraint is clearly enforced. The fact that the vector fields are zero
+   * at some points on the boundary is an artifact of the way it is created,
+   * it is not constrained to be zero at these points.
+   *
+   * @ingroup constraints
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   void
@@ -148,11 +284,16 @@ namespace VectorTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * 这个函数与compute_nonzero_normal_flux_constraints()函数的作用相同（更多信息见那里），但用于同质法向流约束的更简单情况，即用于施加条件
-   * $\vec u \cdot \vec n= 0$  。这个函数在  step-31  和  step-32
-   * 中使用。
-   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * This function does the same as the
+   * compute_nonzero_normal_flux_constraints() function (see there for more
+   * information), but for the simpler case of homogeneous normal-flux
+   * constraints, i.e., for imposing the condition
+   * $\vec u \cdot \vec n= 0$. This function is used in step-31 and step-32.
    *
+   * @ingroup constraints
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   void
@@ -166,14 +307,20 @@ namespace VectorTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * 计算对应于 $\vec u \times \vec n=\vec u_\Gamma \times \vec n$
-   * 形式的边界条件的约束，即切向流约束，其中 $\vec u$
-   * 是一个矢量值的解变量， $\vec u_\Gamma$
-   * 是规定的矢量场，我们希望其切向分量与解的切向分量相等。这个函数正好约束那些不受
-   * VectorTools::compute_no_normal_flux_constraints(),
-   * 约束的dim-1矢量值分量，并留下一个不受约束的分量，这个分量受到该函数的约束。
-   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Compute the constraints that correspond to boundary conditions of the
+   * form $\vec u \times \vec n=\vec u_\Gamma \times \vec n$, i.e., tangential
+   * flow constraints where $\vec u$ is a vector-valued solution
+   * variable and $\vec u_\Gamma$ is prescribed vector field whose tangential
+   * component(s) we want to be equal to the tangential component(s) of the
+   * solution. This function constrains exactly those dim-1 vector-valued
+   * components that are left unconstrained by
+   * VectorTools::compute_no_normal_flux_constraints(), and leaves the one
+   * component unconstrained that is constrained by that function.
    *
+   * @ingroup constraints
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   void
@@ -189,9 +336,12 @@ namespace VectorTools
          .template get_default_linear_mapping<dim, spacedim>()));
 
   /**
-   * 与上述同质切向流约束相同。
-   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Same as above for homogeneous tangential-flux constraints.
    *
+   * @ingroup constraints
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   void
@@ -210,5 +360,3 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_constraints_h
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/function.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -478,7 +479,7 @@ namespace Functions
   ConstantFunction<dim, RangeNumberType>::gradient_list(
     const std::vector<Point<dim>> &               points,
     std::vector<Tensor<1, dim, RangeNumberType>> &gradients,
-    const unsigned int /*component*/) const
+    const unsigned int  /*component*/ ) const
   {
     Assert(gradients.size() == points.size(),
            ExcDimensionMismatch(gradients.size(), points.size()));
@@ -761,8 +762,9 @@ VectorFunctionFromScalarFunctionObject<dim, RangeNumberType>::vector_value(
 
 
 /**
- * The constructor for <tt>VectorFunctionFromTensorFunction</tt> which
- * initiates the return vector to be size <tt>n_components</tt>.
+ * <tt>VectorFunctionFromTensorFunction</tt>的构造函数，启动返回的向量大小为<tt>n_components</tt>。
+ *
+ *
  */
 template <int dim, typename RangeNumberType>
 VectorFunctionFromTensorFunction<dim, RangeNumberType>::
@@ -831,11 +833,13 @@ VectorFunctionFromTensorFunction<dim, RangeNumberType>::vector_value(
 
 
 /**
- * Member function <tt>vector_value_list </tt> is the interface for giving a
- * list of points (<code>vector<Point<dim> ></code>) of which to evaluate
- * using the <tt>vector_value</tt> member function.  Again, this function is
- * written so as to not replicate the function definition but passes each
- * point on to <tt>vector_value</tt> to be evaluated.
+ * 成员函数<tt>vector_value_list
+ * </tt>是一个接口，用于给出一个点的列表（
+ * <code>vector<Point<dim> ></code>
+ * ），使用<tt>vector_value</tt>成员函数来评估。
+ * 同样，这个函数的写法是为了不重复函数的定义，而是将每个点传递给<tt>vector_value</tt>来进行评估。
+ *
+ *
  */
 template <int dim, typename RangeNumberType>
 void
@@ -946,4 +950,6 @@ FunctionFromFunctionObjects<dim, RangeNumberType>::set_function_gradients(
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_function_templates_h */
+#endif  /* dealii_function_templates_h */ 
+
+

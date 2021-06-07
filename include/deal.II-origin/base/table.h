@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/table_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2021 by the deal.II authors
@@ -57,36 +58,27 @@ class Table<6, T>;
 namespace internal
 {
   /**
-   * @internal Have a namespace in which we declare some classes that are used
-   * to access the elements of tables using the <tt>operator[]</tt>. These are
-   * quite technical, since they have to do their work recursively (due to the
-   * fact that the number of indices is not known, we have to return an
-   * iterator into the next lower dimension object if we access one object,
-   * until we are on the lowest level and can actually return a reference to
-   * the stored data type itself).  This is so technical that you will not
-   * usually want to look at these classes at all, except possibly for
-   * educational reasons.  None of the classes herein has a interface that you
-   * should use explicitly in your programs (except, of course, through access
-   * to the elements of tables with <tt>operator[]</tt>, which generates
-   * temporary objects of the types of this namespace).
+   * @internal
+   * 有一个命名空间，我们在其中声明一些类，用于使用<tt>operator[]<tt>访问表的元素。这些是相当有技术含量的，因为它们必须以递归的方式进行工作（由于索引的数量不知道，如果我们访问一个对象，我们必须返回一个迭代器到下一个较低维度的对象，直到我们在最低层，实际上可以返回一个对存储数据类型本身的引用）。
+   * 这是非常技术性的，你通常根本不会想看这些类，除了可能出于教育的原因。
+   * 这里的任何一个类都没有你应该在你的程序中明确使用的接口（当然，除了通过用<tt>operator[]</tt>访问表的元素，生成这个命名空间的类型的临时对象）。
+   *
    */
   namespace TableBaseAccessors
   {
     /**
-     * @internal Have a class which declares some nested alias, depending
-     * on its template parameters. The general template declares nothing, but
-     * there are more useful specializations regarding the last parameter
-     * indicating constness of the table for which accessor objects are to be
-     * generated in this namespace.
+     * @internal
+     * 有一个类，根据其模板参数，声明一些嵌套的别名。一般的模板什么都不声明，但有更多有用的特殊化，关于最后一个参数表示表的常数，访问器对象将在这个命名空间中生成。
+     *
      */
     template <int N, typename T, bool Constness>
     struct Types
     {};
 
     /**
-     * @internal Have a class which declares some nested alias, depending
-     * on its template parameters. Specialization for accessors to constant
-     * objects.
+     * @internal
+     * 拥有一个声明一些嵌套别名的类，这取决于它的模板参数。对常量对象的访问器进行专业化处理。
+     *
      */
     template <int N, typename T>
     struct Types<N, T, true>
@@ -102,9 +94,9 @@ namespace internal
     };
 
     /**
-     * @internal Have a class which declares some nested alias, depending
-     * on its template parameters. Specialization for accessors to non-
-     * constant objects.
+     * @internal
+     * 拥有一个宣布一些嵌套别名的类，这取决于它的模板参数。对非常量对象的访问器的特殊化。
+     *
      */
     template <int N, typename T>
     struct Types<N, T, false>
@@ -121,40 +113,12 @@ namespace internal
 
 
     /**
-     * @internal Class that acts as accessor to subobjects of tables of type
-     * <tt>Table<N,T></tt>. The template parameter <tt>C</tt> may be either
-     * true or false, and indicates whether the objects worked on are constant
-     * or not (i.e. write access is only allowed if the value is false).
+     * @internal
+     * 作为<tt>Table<N,T></tt>类型表的子对象访问器的类。模板参数<tt>C</tt>可以是true或false，并表示所处理的对象是否是常量（即只有当值为false时才允许写访问）。
+     * 因为对于<tt>N</tt>索引，应用<tt>operator[]</tt>的效果是获得对<tt>N-1</tt>索引的访问，我们必须递归地实现这些访问器类，当我们只剩下一个索引时就停止。对于后一种情况，下面声明了这个类的特殊化，在这里调用<tt>operator[]</tt>可以访问表实际存储的对象。在给索引运算符的值中，需要检查它是否在其范围内，为此我们需要知道我们目前实际访问的是表的哪个索引。这是通过模板参数<tt>P</tt>来实现的：它表明还有多少个索引。对于一个向量，<tt>P</tt>可能只有一个（然后使用下面的特殊化）。对于一个表来说，这个值可能是两个，当使用<tt>operator[]</tt>时，会出现一个<tt>P=1</tt>的对象。
+     * <tt>P</tt>的值也被用来确定stride：这个对象存储了一个指针，表示它可能访问的对象范围的开始。当我们在这个对象上应用<tt>operator[]</tt>时，产生的新访问器只能访问这些元素的一个子集，为了知道哪个子集，我们需要知道表的尺寸和现在的索引，这个索引由<tt>P</tt>表示。
+     * 正如对整个命名空间所说的那样，你通常不需要直接处理这些类，也不应该试图直接使用它们的接口，因为它可能在没有通知的情况下发生变化。事实上，由于构造函数是私有的，你甚至不能生成这个类的对象，因为它们只被认为是访问表类元素的临时性的，而不是作为函数的参数来传递的，等等。
      *
-     * Since with <tt>N</tt> indices, the effect of applying
-     * <tt>operator[]</tt> is getting access to something with <tt>N-1</tt>
-     * indices, we have to implement these accessor classes recursively, with
-     * stopping when we have only one index left. For the latter case, a
-     * specialization of this class is declared below, where calling
-     * <tt>operator[]</tt> gives you access to the objects actually stored by
-     * the table. In the value given to the index operator needs to be checked
-     * whether it is inside its bounds, for which we need to know which index
-     * of the table we are actually accessing presently. This is done through
-     * the template parameter <tt>P</tt>: it indicates, how many remaining
-     * indices there are. For a vector, <tt>P</tt> may only be one (and then
-     * the specialization below is used). For a table this value may be two,
-     * and when using <tt>operator[]</tt>, an object with <tt>P=1</tt>
-     * emerges.
-     *
-     * The value of <tt>P</tt> is also used to determine the stride: this
-     * object stores a pointer indicating the beginning of the range of
-     * objects that it may access. When we apply <tt>operator[]</tt> on this
-     * object, the resulting new accessor may only access a subset of these
-     * elements, and to know which subset we need to know the dimensions of
-     * the table and the present index, which is indicated by <tt>P</tt>.
-     *
-     * As stated for the entire namespace, you will not usually have to deal
-     * with these classes directly, and should not try to use their interface
-     * directly as it may change without notice. In fact, since the
-     * constructors are made private, you will not even be able to generate
-     * objects of this class, as they are only thought as temporaries for
-     * access to elements of the table class, not for passing them around as
-     * arguments of functions, etc.
      */
     template <int N, typename T, bool C, unsigned int P>
     class Accessor
@@ -170,30 +134,29 @@ namespace internal
 
     private:
       /**
-       * Constructor. Take a pointer to the table object to know about the
-       * sizes of the various dimensions, and a pointer to the subset of data
-       * we may access.
+       * 构造函数。取一个指向表对象的指针来了解各个维度的大小，以及一个指向我们可能访问的数据子集的指针。
+       *
        */
       Accessor(const TableType &table, const iterator data);
 
     public:
       /**
-       * Copy constructor. This constructor is public so that one can pass
-       * sub-tables to functions as arguments, as in <code>f(table[i])</code>.
+       * 复制构造函数。这个构造函数是公开的，这样就可以把子表作为参数传递给函数，就像
+       * <code>f(table[i])</code>  中的那样。
+       * 如果访问器的存储时间比它所指向的表长，使用这个构造函数是有风险的。不要这样做。
        *
-       * Using this constructor is risky if accessors are stored longer than
-       * the table it points to. Don't do this.
        */
       Accessor(const Accessor &a);
 
       /**
-       * Index operator. Performs a range check.
+       * 索引操作符。执行一个范围检查。
+       *
        */
       Accessor<N, T, C, P - 1> operator[](const size_type i) const;
 
       /**
-       * Exception for range check. Do not use global exception since this way
-       * we can output which index is the wrong one.
+       * 范围检查的异常。不要使用全局异常，因为这样我们可以输出哪个索引是错误的。
+       *
        */
       DeclException3(ExcIndexRange,
                      size_type,
@@ -205,9 +168,8 @@ namespace internal
 
     private:
       /**
-       * Store the data given to the constructor. There are no non-const
-       * member functions of this class, so there is no reason not to make
-       * these elements constant.
+       * 存储给构造函数的数据。这个类没有非常量的成员函数，所以没有理由不把这些元素变成常量。
+       *
        */
       const TableType &table;
       const iterator   data;
@@ -227,20 +189,18 @@ namespace internal
 
 
     /**
-     * @internal Accessor class for tables. This is the specialization for the
-     * last index, which actually allows access to the elements of the table,
-     * rather than recursively returning access objects for further subsets.
-     * The same holds for this specialization as for the general template; see
-     * there for more information.
+     * @internal
+     * 表格的访问器类。这是最后一个索引的特殊化，它实际上允许对表的元素进行访问，而不是递归地返回进一步子集的访问对象。
+     * 这个特殊化与一般模板的情况相同；更多信息请看那里。
+     *
      */
     template <int N, typename T, bool C>
     class Accessor<N, T, C, 1>
     {
     public:
       /**
-       * Typedef constant and non-constant iterator types to the elements of
-       * this row, as well as all the other types usually required for the
-       * standard library algorithms.
+       * 对这一行的元素进行常量和非常量迭代器类型的类型化，以及标准库算法通常需要的所有其他类型。
+       *
        */
       using value_type = typename Types<N, T, C>::value_type;
 
@@ -254,63 +214,61 @@ namespace internal
       using difference_type = ptrdiff_t;
 
       /**
-       * Import an alias from the switch class above.
+       * 从上面的switch类中导入一个别名。
+       *
        */
       using TableType = typename Types<N, T, C>::TableType;
 
     private:
       /**
-       * Constructor. Take an iterator to the table object to know about the
-       * sizes of the various dimensions, and a iterator to the subset of data
-       * we may access (which in this particular case is only one row).
+       * 构造函数。取一个迭代器到表对象，以了解各个维度的大小，以及一个迭代器到我们可能访问的数据子集（在这个特殊的例子中，只有一行）。
+       * 构造函数是私有的，以防止你身边有这样的对象。创建这种对象的唯一方法是通过<tt>Table</tt>类，它只生成临时对象。
+       * 这保证了访问器对象比母对象更早退出范围，避免了数据一致性的问题。
        *
-       * The constructor is made private in order to prevent you having such
-       * objects around. The only way to create such objects is via the
-       * <tt>Table</tt> class, which only generates them as temporary objects.
-       * This guarantees that the accessor objects go out of scope earlier
-       * than the mother object, avoid problems with data consistency.
        */
       Accessor(const TableType &table, const iterator data);
 
     public:
       /**
-       * Copy constructor. This constructor is public so that one can pass
-       * sub-tables to functions as arguments, as in <code>f(table[i])</code>.
+       * 复制构造函数。这个构造函数是公开的，这样就可以像
+       * <code>f(table[i])</code>
+       * 中那样，将子表作为参数传递给函数。
+       * 如果访问器的存储时间比它所指向的表长，使用这个构造函数是有风险的。不要这样做。
        *
-       * Using this constructor is risky if accessors are stored longer than
-       * the table it points to. Don't do this.
        */
       Accessor(const Accessor &a);
 
       /**
-       * Index operator. Performs a range check.
+       * 索引操作符。执行一个范围检查。
+       *
        */
       reference operator[](const size_type) const;
 
       /**
-       * Return the length of one row, i.e. the number of elements
-       * corresponding to the last index of the table object.
+       * 返回一行的长度，即表对象的最后一个索引所对应的元素数。
+       *
        */
       size_type
       size() const;
 
       /**
-       * Return an iterator to the first element of this row.
+       * 返回该行的第一个元素的迭代器。
+       *
        */
       iterator
       begin() const;
 
       /**
-       * Return an iterator to the element past the end of this row.
+       * 返回一个迭代器到超过此行终点的元素。
+       *
        */
       iterator
       end() const;
 
     private:
       /**
-       * Store the data given to the constructor. There are no non-const
-       * member functions of this class, so there is no reason not to make
-       * these elements constant.
+       * 存储给构造函数的数据。这个类没有非常量的成员函数，所以没有理由不使这些元素成为常量。
+       *
        */
       const TableType &table;
       const iterator   data;
@@ -333,106 +291,57 @@ namespace internal
 
 
 /**
- * A class holding a multi-dimensional array of objects of templated type.
- * If the template parameter indicating the number of dimensions
- * is one, then this class more or less represents a vector; if it is two then
- * it is a matrix; and so on.
+ * 一个持有多维数组的模板类型的对象的类。如果表示维数的模板参数是一个，那么这个类或多或少代表了一个向量；如果是两个，那么它就是一个矩阵；以此类推。
+ * 这个类特别取代了对高维数组的尝试，如
+ * <tt>std::vector<std::vector<T>></tt>,
+ * 或甚至更高的嵌套结构。这些结构体的缺点是很难初始化，最重要的是，如果一个矩阵或高维表的所有行都有相同的大小（这是通常的情况），那么它们的效率就非常低，因为此时每一行的内存都是独立分配的，既浪费时间又浪费内存。这可以通过为整个对象只分配一大块内存而变得更有效率，这就是当前类的做法。
  *
- * This class specifically replaces attempts at higher-dimensional arrays like
- * <tt>std::vector<std::vector<T>></tt>, or even higher nested constructs.
- * These constructs have the disadvantage that they are hard to initialize, and
- * most importantly that they are very inefficient if all rows of a matrix or
- * higher-dimensional table have the same size
- * (which is the usual case), since then the memory for each row is allocated
- * independently, both wasting time and memory. This can be made more
- * efficient by allocating only one chunk of memory for the entire object, which
- * is what the current class does.
+ *  <h3>Comparison with the Tensor class</h3>
+ * 在某种程度上，这个类类似于张量类，因为它对维数进行模板化。然而，有两个主要区别。第一是Tensor类只存储数值（如<tt>double</tt>s），而Table类存储任意的对象。第二是张量类在每个维度都有固定的尺寸，也是作为模板参数给出的，而这个类可以在每个维度处理任意的、不同的尺寸。
+ * 这有两个后果。首先，由于在编译时不知道大小，它必须进行显式内存分配。其次，各个元素的布局在编译时并不知道，所以访问速度比张量类慢，在张量类中，元素的数量和它们的位置在编译时就已经知道了，而且编译器可以利用这些知识进行优化（例如在展开循环的时候）。另一方面，这个类当然更灵活，例如，当你想要一个二维表，其行数等于单元格的自由度数，列数等于正交点的数量。这两个数字可能只有在运行时才知道，所以这里需要一个灵活的表格。此外，你可能想存储，例如，形状函数的梯度，所以数据类型不是单一的标量值，而是张量本身。
  *
- *
- * <h3>Comparison with the Tensor class</h3>
- *
- * In some way, this class is similar to the Tensor class, in that it
- * templatizes on the number of dimensions. However, there are two major
- * differences. The first is that the Tensor class stores only numeric values
- * (as <tt>double</tt>s), while the Table class stores arbitrary objects. The
- * second is that the Tensor class has fixed sizes in each dimension, also given
- * as a template argument, while this class can handle arbitrary and different
- * sizes in each dimension.
- *
- * This has two consequences. First, since the size is not known at compile
- * time, it has to do explicit memory allocation. Second, the layout of
- * individual elements is not known at compile time, so access is slower than
- * for the Tensor class where the number of elements are their location is
- * known at compile time and the compiler can optimize with this knowledge
- * (for example when unrolling loops). On the other hand, this class is of
- * course more flexible, for example when you want a two-dimensional table
- * with the number of rows equal to the number of degrees of freedom on a
- * cell, and the number of columns equal to the number of quadrature points.
- * Both numbers may only be known at run-time, so a flexible table is needed
- * here. Furthermore, you may want to store, say, the gradients of shape
- * functions, so the data type is not a single scalar value, but a tensor
- * itself.
+ *  <h3>Dealing with large data sets</h3>
+ * 表类（派生自该类）经常被用来存储大型数据表。在
+ * step-53 中给出了一个适度的例子，我们存储了一个 $380
+ * \times 220$
+ * 非洲地区的地理海拔数据的表，这个数据需要大约670
+ * kB，如果内存；然而，存储三维或更多维度数据的表（例如，关于地球内部的密度、压力和温度的信息，在`（纬度、经度、深度）`点的规则网格上）可以轻松达到数百兆字节或更多。这些表格通常被提供给诸如InterpolatedTensorProductGridData或InterpolatedUniformGridData等类。
+ * 如果你需要在单处理器（或多线程）作业中加载这样的表，那么你对这些表的大小无能为力。该表只需适合内存即可。但是，如果你的程序是通过MPI并行化的，那么典型的第一种实现方式是在每个进程上创建一个表对象，并通过从文件中读取数据在每个MPI进程上填充它。这从两个方面来说是低效的。
  *
  *
- * <h3>Dealing with large data sets</h3>
  *
- * The Table classes (derived from this class) are frequently used to store
- * large data tables. A modest example is given in step-53 where we store a
- * $380 \times 220$ table of geographic elevation data for a region of
- * Africa, and this data requires about 670 kB if memory; however,
- * tables that store three- or more-dimensional data (say, information about
- * the density, pressure, and temperature in the earth interior on a regular
- * grid of `(latitude, longitude, depth)` points) can easily run into hundreds
- * of megabytes or more. These tables are then often provided to classes
- * such as InterpolatedTensorProductGridData or InterpolatedUniformGridData.
+ * - 你会有很多进程同时试图从同一个文件中读取数据。
  *
- * If you need to load such tables on single-processor (or multi-threaded)
- * jobs, then there is nothing you can do about the size of these tables: The
- * table just has to fit into memory. But, if your program is parallelized
- * via MPI, then a typical first implementation would create a table object
- * on every process and fill it on every MPI process by reading the data
- * from a file. This is inefficient from two perspectives:
- * - You will have a lot of processes that are all trying to read from
- *   the same file at the same time.
- * - In most cases, the data stored on every process is the same, and
- *   while every process needs to be able to read from a table, it is not
- *   necessary that every process stores its own table: All MPI processes
- *   that happen to be located on the same machine might as well store
- *   only one copy and make it available to each other via
- *   [shared memory](https://en.wikipedia.org/wiki/Shared_memory); in
- *   this model, only one MPI process per machine needs to store the data, and
- *   all other processes could then access it.
  *
- * Both of these use cases are enabled by the
- * TableBase::replicate_across_communicator() function that is internally based
- * on AlignedVector::replicate_across_communicator(). This function allows for
- * workflows like the following where we put that MPI process with rank zero in
- * charge of reading the data (but it could have been any other "root rank" as
- * well):
+ * - 在大多数情况下，每个进程上存储的数据都是一样的，虽然每个进程都需要能够从表中读取数据，但没有必要每个进程都存储自己的表。碰巧位于同一台机器上的所有MPI进程不妨只存储一个副本，并通过[共享内存](https://en.wikipedia.org/wiki/Shared_memory)使其彼此可用；在这种模式下，每台机器只有一个MPI进程需要存储数据，然后所有其他进程可以访问它。
+ * 这两种用例都是由内部基于
+ * AlignedVector::replicate_across_communicator(). 的
+ * TableBase::replicate_across_communicator()
+ * 函数实现的，该函数允许像下面这样的工作流程，我们让那个等级为0的MPI进程负责读取数据（但它也可以是任何其他
+ * "根等级"）。
+ *
  * @code
- *    const unsigned int N=..., M=...;     // table sizes, assumed known
- *    Table<2,double>    data_table;
- *    const unsigned int root_rank = 0;
+ *  const unsigned int N=..., M=...;     // table sizes, assumed known
+ *  Table<2,double>    data_table;
+ *  const unsigned int root_rank = 0;
  *
- *    if (Utilities::MPI::this_mpi_process(mpi_communicator) == root_rank)
- *    {
- *      data_table.resize (N,M);
+ *  if (Utilities::MPI::this_mpi_process(mpi_communicator) == root_rank)
+ *  {
+ *    data_table.resize (N,M);
  *
- *      std::ifstream input_file ("data_file.dat");
- *      ...;                               // read the data from the file
- *    }
+ *    std::ifstream input_file ("data_file.dat");
+ *    ...;                               // read the data from the file
+ *  }
  *
- *    // Now distribute to all processes
- *    data_table.replicate_across_communicator (mpi_communicator, root_rank);
+ *  // Now distribute to all processes
+ *  data_table.replicate_across_communicator (mpi_communicator, root_rank);
  * @endcode
  *
- * The last call in this code snippet makes sure that the data is made
- * available on all non-root processes, either by re-creating a copy of
- * the table in the other processes' memory space or, if possible,
- * by creating copies in shared memory once for all processes located
- * on each of the machines used by the MPI job.
+ * 这段代码中的最后一个调用确保数据在所有非根进程中可用，方法是在其他进程的内存空间中重新创建一个表的副本，或者，如果可能的话，在共享内存中为位于MPI作业使用的每台机器上的所有进程创建一次副本。
+ *
  *
  * @ingroup data
+ *
  */
 template <int N, typename T>
 class TableBase : public Subscriptor
@@ -441,26 +350,28 @@ public:
   using value_type = T;
 
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename AlignedVector<T>::size_type;
 
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   TableBase() = default;
 
   /**
-   * Constructor. Initialize the array with the given dimensions in each index
-   * component.
+   * 构造函数。用每个索引组件中的给定尺寸初始化数组。
+   *
    */
   explicit TableBase(const TableIndices<N> &sizes);
 
   /**
-   * Constructor. Initialize the array with the given dimensions in each index
-   * component, and then initialize the elements of the table using the second
-   * and third argument by calling fill(entries,C_style_indexing).
+   * 构造函数。在每个索引组件中用给定的尺寸初始化数组，然后通过调用fill(
+   * entries,C_style_indexing)，用第二个和第三个参数初始化表格中的元素。
+   *
    */
   template <typename InputIterator>
   TableBase(const TableIndices<N> &sizes,
@@ -468,283 +379,214 @@ public:
             const bool             C_style_indexing = true);
 
   /**
-   * Copy constructor. Performs a deep copy.
+   * 拷贝构造函数。执行一个深度拷贝。
+   *
    */
   TableBase(const TableBase<N, T> &src);
 
   /**
-   * Copy constructor. Performs a deep copy from a table object storing some
-   * other data type.
+   * 拷贝构造函数。从存储其他数据类型的表对象中执行深度拷贝。
+   *
    */
   template <typename T2>
   TableBase(const TableBase<N, T2> &src);
 
   /**
-   * Move constructor. Transfers the contents of another Table.
+   * 移动构造函数。转移另一个表的内容。
+   *
    */
   TableBase(TableBase<N, T> &&src) noexcept;
 
   /**
-   * Destructor. Free allocated memory.
+   * 解除构造函数。释放分配的内存。
+   *
    */
   ~TableBase() override = default;
 
   /**
-   * Assignment operator. Copy all elements of <tt>src</tt> into the matrix.
-   * The size is adjusted if needed.
+   * 赋值运算符。将<tt>src</tt>的所有元素复制到矩阵中。
+   * 如果需要，大小会被调整。
+   * 我们不能使用其他的、模板化的版本，因为如果我们不声明这个版本，编译器会很高兴地生成一个预定义的复制操作符，这不是我们想要的。
    *
-   * We can't use the other, templatized version since if we don't declare
-   * this one, the compiler will happily generate a predefined copy operator
-   * which is not what we want.
    */
   TableBase<N, T> &
   operator=(const TableBase<N, T> &src);
 
   /**
-   * Copy operator. Copy all elements of <tt>src</tt> into the array. The size
-   * is adjusted if needed.
+   * 拷贝操作符。将<tt>src</tt>的所有元素复制到数组中。如果需要的话，大小会被调整。
+   * 这个函数要求<tt>T2</tt>的类型可以转换为<tt>T</tt>。
    *
-   * This function requires that the type <tt>T2</tt> is convertible to
-   * <tt>T</tt>.
    */
   template <typename T2>
   TableBase<N, T> &
   operator=(const TableBase<N, T2> &src);
 
   /**
-   * Move assignment operator. Transfer all elements of <tt>src</tt> into the
-   * table.
+   * 移动赋值运算符。将<tt>src</tt>的所有元素转移到表中。
+   *
    */
   TableBase<N, T> &
   operator=(TableBase<N, T> &&src) noexcept;
 
   /**
-   * Test for equality of two tables.
+   * 测试两个表的相等。
+   *
    */
   bool
   operator==(const TableBase<N, T> &T2) const;
 
   /**
-   * Set all entries to their default value (i.e. copy them over with default
-   * constructed objects). Do not change the size of the table, though.
+   * 将所有条目设置为默认值（即用默认构造的对象将它们复制过来）。但不要改变表的大小。
+   *
    */
   void
   reset_values();
 
   /**
-   * Set the dimensions of this object to the sizes given in the first
-   * argument, and allocate the required memory for table entries to
-   * accommodate these sizes. If @p omit_default_initialization
-   * is set to @p false, all elements of the table are set to a
-   * default constructed object for the element type. Otherwise the
-   * memory is left in an uninitialized or otherwise undefined state.
+   * 将此对象的尺寸设置为第一个参数中给出的尺寸，并为表项分配所需的内存以适应这些尺寸。如果
+   * @p omit_default_initialization 被设置为 @p false,
+   * ，表的所有元素都被设置为元素类型的默认构造对象。否则，内存将处于未初始化或其他未定义的状态。
+   *
    */
   void
   reinit(const TableIndices<N> &new_size,
          const bool             omit_default_initialization = false);
 
   /**
-   * Size of the table in direction <tt>i</tt>.
+   * 表的大小在<tt>i</tt>方向。
+   *
    */
   size_type
   size(const unsigned int i) const;
 
   /**
-   * Return the sizes of this object in each direction.
+   * 返回这个对象在每个方向上的大小。
+   *
    */
   const TableIndices<N> &
   size() const;
 
   /**
-   * Return the number of elements stored in this object, which is the product
-   * of the extensions in each dimension.
+   * 返回存储在此对象中的元素数量，它是每个维度上的扩展量的乘积。
+   *
    */
   size_type
   n_elements() const;
 
   /**
-   * Return whether the object is empty, i.e. one of the directions is zero.
-   * This is equivalent to <tt>n_elements()==0</tt>.
+   * 返回该对象是否为空，即其中一个方向为零。
+   * 这等同于<tt>n_elements()==0</tt>。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Fill this table (which is assumed to already have the correct size) from
-   * a source given by dereferencing the given forward iterator (which could,
-   * for example, be a pointer to the first element of an array, or an
-   * inserting std::istream_iterator). The second argument denotes whether the
-   * elements pointed to are arranged in a way that corresponds to the last
-   * index running fastest or slowest. The default is to use C-style indexing
-   * where the last index runs fastest (as opposed to Fortran-style where the
-   * first index runs fastest when traversing multidimensional arrays. For
-   * example, if you try to fill an object of type Table<2,T>, then calling
-   * this function with the default value for the second argument will result
-   * in the equivalent of doing
+   * 通过解引用给定的前向迭代器（例如，可以是一个指向数组第一个元素的指针，或者一个插入
+   * std::istream_iterator).
+   * 第二个参数表示所指向的元素的排列方式是对应于最后一个索引运行最快还是最慢。默认情况下，使用C风格的索引，即最后一个索引运行最快（与Fortran风格相反，当遍历多维数组时，第一个索引运行最快。例如，如果你试图填充一个Table<2,T>类型的对象，那么用第二个参数的默认值来调用这个函数将导致等同于做
    * @code
-   *   Table<2,T> t;
-   *   for (unsigned int i=0; i<t.size(0); ++i)
-   *     for (unsigned int j=0; j<t.size(1); ++j)
-   *       t[i][j] = *entries++;
-   * @endcode
-   * On the other hand, if the second argument to this function is false, then
-   * this would result in code of the following form:
-   * @code
-   *   Table<2,T> t;
+   * Table<2,T> t;
+   * for (unsigned int i=0; i<t.size(0); ++i)
    *   for (unsigned int j=0; j<t.size(1); ++j)
-   *     for (unsigned int i=0; i<t.size(0); ++i)
-   *       t[i][j] = *entries++;
+   *     t[i][j] =entries++;
    * @endcode
-   * Note the switched order in which we fill the table elements by traversing
-   * the given set of iterators.
+   * 另一方面，如果这个函数的第二个参数是假的，那么这将导致以下形式的代码。
+   * @code
+   * Table<2,T> t;
+   * for (unsigned int j=0; j<t.size(1); ++j)
+   *   for (unsigned int i=0; i<t.size(0); ++i)
+   *     t[i][j] =entries++;
+   * @endcode
+   * 注意我们通过遍历给定的迭代器集合来填充表元素的转换顺序。
+   * @param  entries
+   * 一个迭代器，用于初始化这个表的元素集。假设迭代器可以被递增和取消引用足够多的次数来填充这个表。
+   * @param  C_style_indexing
+   * 如果是true，当我们解指输入范围的后续元素时，以最后一个索引最快的速度运行该表的元素。如果为假，则最快改变第一个索引。
    *
-   * @param entries An iterator to a set of elements from which to initialize
-   * this table. It is assumed that iterator can be incremented and
-   * dereferenced a sufficient number of times to fill this table.
-   * @param C_style_indexing If true, run over elements of the table with the
-   * last index changing fastest as we dereference subsequent elements of the
-   * input range. If false, change the first index fastest.
    */
   template <typename InputIterator>
   void
   fill(InputIterator entries, const bool C_style_indexing = true);
 
   /**
-   * Fill all table entries with the same value.
+   * 用相同的值填充所有的表项。
+   *
    */
   void
   fill(const T &value);
 
   /**
-   * Return a read-write reference to the indicated element.
+   * 返回一个对指定元素的读写引用。
+   *
    */
   typename AlignedVector<T>::reference
   operator()(const TableIndices<N> &indices);
 
   /**
-   * Return the value of the indicated element as a read-only reference.
+   * 返回指定元素的值作为只读引用。
+   * 我们将请求的值作为一个常量引用而不是按值返回，因为这个对象可能持有的数据类型可能很大，而且我们在这里不知道复制是否昂贵。
    *
-   * We return the requested value as a constant reference rather than by
-   * value since this object may hold data types that may be large, and we
-   * don't know here whether copying is expensive or not.
    */
   typename AlignedVector<T>::const_reference
   operator()(const TableIndices<N> &indices) const;
 
   /**
-   * This function replicates the state found on the process indicated by
-   * @p root_process across all processes of the MPI communicator. The current
-   * state found on any of the processes other than @p root_process is lost
-   * in this process. One can imagine this operation to act like a call to
-   * Utilities::MPI::broadcast() from the root process to all other processes,
-   * though in practice the function may try to move the data into shared
-   * memory regions on each of the machines that host MPI processes and
-   * let all MPI processes on this machine then access this shared memory
-   * region instead of keeping their own copy. See the general documentation
-   * of this class for a code example.
+   * 这个函数在MPI通信器的所有进程中复制由 @p root_process
+   * 指示的进程上发现的状态。在 @p root_process
+   * 以外的任何进程中发现的当前状态都会在这个进程中丢失。我们可以想象这个操作就像从根进程到所有其他进程对
+   * Utilities::MPI::broadcast()
+   * 的调用，尽管在实践中这个函数可能试图将数据移动到每个承载MPI进程的机器上的共享内存区域，然后让这个机器上的所有MPI进程访问这个共享内存区域，而不是保留自己的副本。请看这个类的一般文档中的代码例子。
+   * 这个函数的意图是将大的数组从一个进程快速交换给其他进程，而不是在所有进程上计算或创建它。这特别适用于从磁盘加载的数据
    *
-   * The intent of this function is to quickly exchange large arrays from
-   * one process to others, rather than having to compute or create it on
-   * all processes. This is specifically the case for data loaded from
-   * disk -- say, large data tables -- that are more easily dealt with by
-   * reading once and then distributing across all processes in an MPI
-   * universe, than letting each process read the data from disk itself.
-   * Specifically, the use of shared memory regions allows for replicating
-   * the data only once per multicore machine in the MPI universe, rather
-   * than replicating data once for each MPI process. This results in
-   * large memory savings if the data is large on today's machines that
-   * can easily house several dozen MPI processes per shared memory
-   * space.
+   * - 说，大的数据表
    *
-   * This function does not imply a model of keeping data on different processes
-   * in sync, as parallel::distributed::Vector and other vector classes do where
-   * there exists a notion of certain elements of the vector owned by each
-   * process and possibly ghost elements that are mirrored from its owning
-   * process to other processes. Rather, the elements of the current object are
-   * simply copied to the other processes, and it is useful to think of this
-   * operation as creating a set of `const` AlignedVector objects on all
-   * processes that should not be changed any more after the replication
-   * operation, as this is the only way to ensure that the vectors remain the
-   * same on all processes. This is particularly true because of the use of
-   * shared memory regions where any modification of a vector element on one MPI
-   * process may also result in a modification of elements visible on other
-   * processes, assuming they are located within one shared memory node.
+   * 比起让每个进程自己从磁盘上读取数据，通过读取一次，然后在MPI宇宙中的所有进程中分发，更容易处理。
+   * 具体来说，共享内存区域的使用允许在MPI宇宙中每个多核机器上只复制一次数据，而不是为每个MPI进程复制一次数据。如果今天的机器上的数据很大，每个共享内存空间可以很容易地容纳几十个MPI进程，这就可以节省大量内存。
+   * 这个功能并不意味着保持不同进程的数据同步，就像
+   * parallel::distributed::Vector
+   * 和其他矢量类所做的那样，存在一个由每个进程拥有的矢量的某些元素的概念，可能还有从其拥有的进程镜像到其他进程的幽灵元素。相反，当前对象的元素被简单地复制到其他进程中，把这个操作看作是在所有进程中创建一组`const`AlignedVector对象，在复制操作之后不应该再被改变，这是确保向量在所有进程中保持一致的唯一方法。这尤其是因为共享内存区域的使用，在一个MPI进程上对一个向量元素的任何修改也可能导致对其他进程上可见元素的修改，假设它们位于一个共享内存节点内。
+   * @note
+   * 在MPI进程之间使用共享内存需要检测的MPI安装支持必要的操作。
+   * 这对于MPI 3.0和更高版本来说是这样的。
+   * @note  这个功能并不便宜。它需要创建所提供 @p
+   * communicator
+   * 对象的子通信器，这通常是一个昂贵的操作。同样地，共享内存空间的生成也不是一个便宜的操作。因此，当目标是在进程之间共享大的只读数据表时，这个功能主要是有意义的；例子是在启动时加载数据表，然后在程序的运行时间内使用。
+   * 在这种情况下，运行这个函数的启动成本可以随着时间的推移而摊销，而且在具有大核心数的机器上，许多MPI进程在同一台机器上运行时，不必在每个进程上存储表所带来的潜在内存节省可能是相当大的。
+   * @note  这个函数只有在数据类型`T`是 "自足
+   * "的情况下才有意义，也就是说，它的所有信息都存储在其成员变量中，并且没有一个成员变量是指向内存的其他部分的指针。这是因为如果一个类型`T`确实有指向内存其他部分的指针，那么将`T`移到共享内存空间不会导致其他进程访问该对象用其成员变量指针指向的数据。这些数据仍然只存在于一个进程中，并且通常在其他进程无法访问的内存区域。
+   * 因此，这个函数的通常使用情况是共享简单对象的数组，如`double's或`int's。
+   * @note
+   * 调用该函数后，不同MPI进程的对象共享一个共同的状态。这意味着某些操作变得
+   * "集体"，即必须在所有参与的处理器上同时调用。特别是，你不能再在一个MPI进程上调用resize()、reserve()或clear()。
    *
-   * @note The use of shared memory between MPI processes requires
-   *   that the detected MPI installation supports the necessary operations.
-   *   This is the case for MPI 3.0 and higher.
+   * - 你必须在所有进程上同时这样做，因为它们必须为这些操作进行通信。如果你不这样做，你很可能会得到一个死锁，可能很难调试。推而广之，这个只集体调整大小的规则也延伸到这个函数本身。你不能连续调用它两次，因为这意味着首先除了`root_process'以外的所有进程都要扔掉他们的数据，这不是一个集体操作。一般来说，这些关于可以做什么和不可以做什么的限制，暗示了上面评论的正确性。你应该把一个当前函数被调用的AlignedVector视为`const'，在调用析构器之前，不能对其进行进一步的操作。
    *
-   * @note This function is not cheap. It needs to create sub-communicators
-   *   of the provided @p communicator object, which is generally an expensive
-   *   operation. Likewise, the generation of shared memory spaces is not
-   *   a cheap operation. As a consequence, this function primarily makes
-   *   sense when the goal is to share large read-only data tables among
-   *   processes; examples are data tables that are loaded at start-up
-   *   time and then used over the course of the run time of the program.
-   *   In such cases, the start-up cost of running this function can be
-   *   amortized over time, and the potential memory savings from not having to
-   *   store the table on each process may be substantial on machines with
-   *   large core counts on which many MPI processes run on the same machine.
-   *
-   * @note This function only makes sense if the data type `T` is
-   *   "self-contained", i.e., all of its information is stored in its
-   *   member variables, and if none of the member variables are pointers
-   *   to other parts of the memory. This is because if a type `T` does
-   *   have pointers to other parts of memory, then moving `T` into
-   *   a shared memory space does not result in the other processes having
-   *   access to data that the object points to with its member variable
-   *   pointers: These continue to live only on one process, and are
-   *   typically in memory areas not accessible to the other processes.
-   *   As a consequence, the usual use case for this function is to share
-   *   arrays of simple objects such as `double`s or `int`s.
-   *
-   * @note After calling this function, objects on different MPI processes
-   *   share a common state. That means that certain operations become
-   *   "collective", i.e., they must be called on all participating
-   *   processors at the same time. In particular, you can no longer call
-   *   resize(), reserve(), or clear() on one MPI process -- you have to do
-   *   so on all processes at the same time, because they have to communicate
-   *   for these operations. If you do not do so, you will likely get
-   *   a deadlock that may be difficult to debug. By extension, this rule of
-   *   only collectively resizing extends to this function itself: You can
-   *   not call it twice in a row because that implies that first all but the
-   *   `root_process` throw away their data, which is not a collective
-   *   operation. Generally, these restrictions on what can and can not be
-   *   done hint at the correctness of the comments above: You should treat
-   *   an AlignedVector on which the current function has been called as
-   *   `const`, on which no further operations can be performed until
-   *   the destructor is called.
    */
   void
   replicate_across_communicator(const MPI_Comm &   communicator,
                                 const unsigned int root_process);
 
   /**
-   * Swap the contents of this table and the other table @p v. One could do
-   * this operation with a temporary variable and copying over the data
-   * elements, but this function is significantly more efficient since it only
-   * swaps the pointers to the data of the two vectors and therefore does not
-   * need to allocate temporary storage and move data around.
+   * 交换这个表和另一个表的内容  @p v.
+   * 人们可以用一个临时变量和复制过来的数据元素来完成这个操作，但是这个函数明显更有效率，因为它只交换了两个向量的数据指针，因此不需要分配临时存储和移动数据。
+   * 这个函数类似于所有C++标准容器的 @p swap
+   * 函数。此外，还有一个全局函数<tt>swap(u,v)</tt>，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数相类似。
    *
-   * This function is analogous to the @p swap function of all C++
-   * standard containers. Also, there is a global function <tt>swap(u,v)</tt>
-   * that simply calls <tt>u.swap(v)</tt>, again in analogy to standard
-   * functions.
    */
   void
   swap(TableBase<N, T> &v);
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Write or read the data of this object to or from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
@@ -752,42 +594,39 @@ public:
 
 protected:
   /**
-   * Return the position of the indicated element within the array of elements
-   * stored one after the other. This function does no index checking.
+   * 返回指定元素在一个接一个存储的元素阵列中的位置。这个函数不做索引检查。
+   *
    */
   size_type
   position(const TableIndices<N> &indices) const;
 
   /**
-   * Return a read-write reference to the indicated element.
+   * 返回一个对指定元素的读写引用。
+   * 这个函数不做边界检查，只在内部和已经检查过的函数中使用。
    *
-   * This function does no bounds checking and is only to be used internally
-   * and in functions already checked.
    */
   typename AlignedVector<T>::reference
   el(const TableIndices<N> &indices);
 
   /**
-   * Return the value of the indicated element as a read-only reference.
+   * 返回指定元素的值，作为一个只读引用。
+   * 这个函数不做边界检查，只在内部和已经检查过的函数中使用。
+   * 我们将请求的值作为一个常数引用而不是按值返回，因为这个对象可能持有的数据类型可能很大，而且我们在这里不知道复制是否昂贵。
    *
-   * This function does no bounds checking and is only to be used internally
-   * and in functions already checked.
-   *
-   * We return the requested value as a constant reference rather than by
-   * value since this object may hold data types that may be large, and we
-   * don't know here whether copying is expensive or not.
    */
   typename AlignedVector<T>::const_reference
   el(const TableIndices<N> &indices) const;
 
 protected:
   /**
-   * Component-array.
+   * 组件-数组。
+   *
    */
   AlignedVector<T> values;
 
   /**
-   * Size in each direction of the table.
+   * 表的每个方向上的大小。
+   *
    */
   TableIndices<N> table_size;
 
@@ -798,84 +637,74 @@ protected:
 
 
 /**
- * A class representing a table with arbitrary but fixed number of indices.
- * This general template implements some additional functions over those
- * provided by the TableBase class, such as indexing functions taking the
- * correct number of arguments, etc.
+ * 一个代表具有任意但固定索引数的表的类。这个一般的模板在TableBase类提供的功能之外，还实现了一些额外的功能，例如索引函数采取正确的参数数量，等等。
+ * 与其说是这个通用模板，不如说是在这个类的部分特殊化中实现了这些功能，有固定数量的维数。更多信息请见那里，以及基类的文档中。
  *
- * Rather than this general template, these functions are implemented in
- * partial specializations of this class, with fixed numbers of dimensions.
- * See there, and in the documentation of the base class for more information.
  *
  * @ingroup data
+ *
+ *
  */
 template <int N, typename T>
 class Table;
 
 
 /**
- * A class representing a one-dimensional table, i.e. a vector-like class.
- * The majority of the interface of this class is implemented in the
- * TableBase base class. See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表一维表的类，也就是一个类似矢量的类。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，见那里。
+ *
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<1, T> : public TableBase<1, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<1, T>::size_type;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimension to the base class.
+   * 构造函数。将给定的维度传给基类。
+   *
    */
   explicit Table(const size_type size);
 
   /**
-   * Constructor. Create a table with a given size and initialize it from a
-   * set of iterators.
-   *
-   * This function is entirely equivalent to creating a table <code>t</code>
-   * of the given size and then calling
+   * 构造函数。创建一个具有给定尺寸的表，并从一组迭代器中初始化它。
+   * 这个函数完全等同于创建一个给定尺寸的表 <code>t</code>
+   * ，然后调用
    * @code
-   *   t.fill (entries, C_style_indexing);
+   * t.fill (entries, C_style_indexing);
    * @endcode
-   * on it, using the TableBase::fill() function where the arguments are
-   * explained in more detail. The point, however, is that that is only
-   * possible if the table can be changed after running the constructor,
-   * whereas calling the current constructor allows sizing and initializing an
-   * object right away so that it can be marked const.
-   *
-   * Using this constructor, you can do things like this:
+   * 上，使用 TableBase::fill()
+   * 函数，其中的参数会有更详细的解释。但问题是，这只有在运行构造函数后可以改变表的情况下才有可能，而调用当前的构造函数可以立即确定对象的大小和初始化，这样就可以将其标记为常量。
+   * 使用这个构造函数，你可以做这样的事情。
    * @code
-   *   const double values[] = { 1, 2, 3 };
-   *   const Table<1,double> t(3, entries, true);
+   * const double values[] = { 1, 2, 3 };
+   * const Table<1,double> t(3, entries, true);
    * @endcode
-   * You can also initialize a table right from a file, using input iterators:
+   * 你也可以使用输入迭代器，从文件中直接初始化一个表。
    * @code
-   *   std::ifstream input ("myfile");
-   *   const Table<1,double> t(3,
-   *                           std::istream_iterator<double>(input),
-   *                           true);
+   * std::ifstream input ("myfile");
+   * const Table<1,double> t(3,
+   *                         std::istream_iterator<double>(input),
+   *                         true);
    * @endcode
+   * @param  size 这个一维表的大小。    @param  entries
+   * 一组元素的迭代器，用于初始化这个表。假设迭代器可以被递增和取消引用足够多的次数来填充这个表。
+   * @param  C_style_indexing
+   * 如果是true，当我们解指输入范围的后续元素时，以最后一个索引变化最快的方式运行该表的元素。如果为假，则最快改变第一个索引。
    *
-   *
-   * @param size The size of this one-dimensional table.
-   * @param entries An iterator to a set of elements from which to initialize
-   * this table. It is assumed that iterator can be incremented and
-   * dereferenced a sufficient number of times to fill this table.
-   * @param C_style_indexing If true, run over elements of the table with the
-   * last index changing fastest as we dereference subsequent elements of the
-   * input range. If false, change the first index fastest.
    */
   template <typename InputIterator>
   Table(const size_type size,
@@ -883,34 +712,35 @@ public:
         const bool      C_style_indexing = true);
 
   /**
-   * Access operator. Since this is a one-dimensional object, this simply
-   * accesses the requested data element. Returns a read-only reference.
+   * 访问操作符。由于这是一个一维对象，这只是访问所请求的数据元素。返回一个只读的引用。
+   *
    */
   typename AlignedVector<T>::const_reference
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Since this is a one-dimensional object, this simply
-   * accesses the requested data element. Returns a read-write reference.
+   * 访问操作符。由于这是一个一维的对象，这只是访问所请求的数据元素。返回一个读-写引用。
+   *
    */
   typename AlignedVector<T>::reference operator[](const size_type i);
 
   /**
-   * Access operator. Since this is a one-dimensional object, this simply
-   * accesses the requested data element. Returns a read-only reference.
+   * 访问操作符。由于这是一个一维的对象，这只是访问所请求的数据元素。返回一个只读的引用。
+   *
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i) const;
 
   /**
-   * Access operator. Since this is a one-dimensional object, this simply
-   * accesses the requested data element. Returns a read-write reference.
+   * 访问操作符。由于这是一个一维的对象，这只是访问所请求的数据元素。返回一个读-写引用。
+   *
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<1, T>::operator();
 };
@@ -918,27 +748,30 @@ public:
 
 
 /**
- * A namespace for iterators and accessors for Table<2, T> and
- * TransposeTable. These classes have special accessors (that is, compared to
- * Table<3, T>) since they have a matrix-like structure; i.e., the accessors
- * also provide row and column information and are designed to be compatible
- * with the SparseMatrix and SparsityPattern iterator classes.
+ * 一个用于Table<2,
+ * T>和TransposeTable的迭代器和访问器的命名空间。这些类有特殊的访问器（也就是说，与Table<3,
+ * T>相比），因为它们有一个类似矩阵的结构；也就是说，访问器也提供行和列的信息，并被设计为与SparseMatrix和SparsityPattern迭代器类兼容。
+ *
+ *
  */
 namespace MatrixTableIterators
 {
   /**
    * @brief Enumeration describing the storage order (i.e., the in-memory
-   * layout) of a table class.
+   * 表类的布局）。
+   *
    */
   enum class Storage
   {
     /**
-     * The data are organized in row-major (i.e., C-style) order.
+     * 数据以行为主（即C风格）的顺序组织。
+     *
      */
     row_major,
 
     /**
-     * The data are organized in column-major (i.e., Fortran-style) order.
+     * 数据以列为主（即Fortran风格）的顺序组织。
+     *
      */
     column_major
   };
@@ -949,70 +782,73 @@ namespace MatrixTableIterators
 
   /**
    * @brief %Accessor class template. This class is partially specialized for
-   * both values of <code>Constness</code>.
+   * <code>Constness</code> 的两个值。
+   *
    */
   template <typename TableType, bool Constness, Storage storage_order>
   class Accessor;
 
   /**
    * @brief %Accessor base class for Table<2, T> and TransposeTable.
+   * 该类与LinearIndexIterator中描述的对%Accessor的要求兼容。关于迭代器和访问器之间的分割描述，请参见该类的文档。
+   * @tparam  TableType %Table的类型，例如，Table<2,
+   * T>或TransposeTable。      @tparam  Constness
+   * 这个对象是否存储一个常量指针，并可以修改所提供的表对象。
+   * @tparam  storage_order 底层表的存储方案，例如，
+   * Storage::row_major  为Table<2, T>。
    *
-   * This class is compatible with the requirements for an %Accessor described
-   * in LinearIndexIterator: See the documentation of that class for a
-   * description of the split between iterators and accessors.
-   *
-   * @tparam TableType the type of the %Table, e.g., Table<2, T> or
-   * TransposeTable.
-   *
-   * @tparam Constness whether or not this object stores a constant pointer
-   * and can modify the provided table object.
-   *
-   * @tparam storage_order The storage scheme of the underlying table, e.g.,
-   * Storage::row_major for Table<2, T>.
    */
   template <typename TableType, bool Constness, Storage storage_order>
   class AccessorBase
   {
   public:
     /**
-     * Type of the stored pointer to the table.
+     * 存储指向表的指针的类型。
+     *
      */
     using container_pointer_type = typename std::
       conditional<Constness, const TableType *, TableType *>::type;
 
     /**
-     * Value type of the underlying container.
+     * 底层容器的值类型。
+     *
      */
     using value_type = typename TableType::value_type;
 
     /**
-     * Numerical type of the row and column indices of the table.
+     * 表的行和列索引的数字类型。
+     *
      */
     using size_type = typename TableType::size_type;
 
     /**
-     * Default constructor.
+     * 默认构造函数。
+     *
      */
     AccessorBase();
 
     /**
-     * Constructor setting up the end iterator.
+     * 设置终端迭代器的构造函数。
+     *
      */
     AccessorBase(const container_pointer_type table);
 
     /**
-     * Copy constructor from a non-const Accessor.
+     * 从非const Accessor复制构造函数。
+     *
      */
     AccessorBase(const AccessorBase<TableType, false, storage_order> &);
 
     /**
-     * Constructor taking an array index.
+     * 接受数组索引的构造函数。
+     *
      */
     AccessorBase(const container_pointer_type table,
                  const std::ptrdiff_t         linear_index);
 
     /**
-     * Comparison operator.
+     * 比较运算符。
+     *
      */
     template <bool OtherConstness>
     friend bool
@@ -1025,45 +861,51 @@ namespace MatrixTableIterators
     }
 
     /**
-     * Get a constant reference to the value of the element represented by
-     * this accessor.
+     * 获取该访问器所代表的元素的值的常数引用。
+     *
      */
     const value_type &
     value() const;
 
     /**
-     * Conversion operator that returns a constant reference to the element.
+     * 转换操作符，返回元素的常数引用。
+     *
      */
     operator const value_type &() const;
 
     /**
-     * Return the row of the current entry.
+     * 返回当前条目的行。
+     *
      */
     size_type
     row() const;
 
     /**
-     * Return the column of the current entry.
+     * 返回当前条目的列。
+     *
      */
     size_type
     column() const;
 
   protected:
     /**
-     * Pointer to the table.
+     * 指向表格的指针。
+     *
      */
     container_pointer_type container;
 
     /**
-     * Current index.
+     * 当前的索引。
+     *
      */
     std::ptrdiff_t linear_index;
 
     /**
-     * Check that <code>linear_index</code> corresponds to an entry that is
-     * actually stored by the table (i.e., assert that
-     * <code>linear_index</code> is nonnegative and less than
-     * <code>container->size()</code>).
+     * 检查 <code>linear_index</code>
+     * 是否对应于表实际存储的条目（即断言
+     * <code>linear_index</code> 为非负数且小于
+     * <code>container->size()</code> ）。
+     *
      */
     void
     assert_valid_linear_index() const;
@@ -1079,7 +921,8 @@ namespace MatrixTableIterators
 
   /**
    * @brief %Accessor class offering read-only access to elements of a
-   * table. This is the same as the base class.
+   * 表。这与基类相同。
+   *
    */
   template <typename TableType, Storage storage_order>
   class Accessor<TableType, true, storage_order>
@@ -1087,26 +930,30 @@ namespace MatrixTableIterators
   {
   public:
     /**
-     * Use the base class value type.
+     * 使用基类的价值类型。
+     *
      */
     using value_type =
       typename AccessorBase<TableType, true, storage_order>::value_type;
 
     /**
-     * Use the base class size type.
+     * 使用基类的大小类型。
+     *
      */
     using size_type =
       typename AccessorBase<TableType, true, storage_order>::size_type;
 
     /**
-     * Inherit the base class constructors.
+     * 继承基类的构造函数。
+     *
      */
     using AccessorBase<TableType, true, storage_order>::AccessorBase;
   };
 
   /**
    * @brief %Accessor class offering read and write access to the elements of
-   * a table.
+   * 一个表格。
+   *
    */
   template <typename TableType, Storage storage_order>
   class Accessor<TableType, false, storage_order>
@@ -1114,66 +961,67 @@ namespace MatrixTableIterators
   {
   public:
     /**
-     * Use the base class value type.
+     * 使用基类的值类型。
+     *
      */
     using value_type =
       typename AccessorBase<TableType, true, storage_order>::value_type;
 
     /**
-     * Use the base class size type.
+     * 使用基类大小类型。
+     *
      */
     using size_type =
       typename AccessorBase<TableType, true, storage_order>::size_type;
 
     /**
-     * Inherit the base class constructors.
+     * 继承基类的构造函数。
+     *
      */
     using AccessorBase<TableType, false, storage_order>::AccessorBase;
 
     /**
-     * Assignment operator. This assigns a new value to the table entry at the
-     * current row and column coordinates.
+     * 赋值运算符。这将给当前行和列坐标的表项分配一个新值。
+     *
      */
     const Accessor<TableType, false, storage_order> &
     operator=(const value_type &) const;
 
     /**
-     * Move assignment operator. This assigns a new value to the table entry at
-     * the current row and column coordinates.
+     * 移动赋值运算符。在当前的行和列坐标上为表项分配一个新的值。
+     *
      */
     const Accessor<TableType, false, storage_order> &
     operator=(value_type &&) const;
 
     /**
-     * Since we overload value() we have to explicitly use the base class
-     * version.
+     * 由于我们重载了value()，我们必须明确地使用基类的版本。
+     *
      */
     using AccessorBase<TableType, false, storage_order>::value;
 
     /**
-     * Get a reference to the value of the element represented by
-     * this accessor.
+     * 获取该访问器所代表的元素的值的引用。
+     *
      */
     value_type &
     value() const;
 
     /**
-     * Conversion operator that returns a reference to the element.
+     * 返回该元素的引用的转换操作符。
+     *
      */
     operator value_type &();
   };
 
   /**
    * @brief %Iterator class for both matrix-like tables, i.e., Table<2, T> and
-   * TransposeTable.
+   * TransposeTable.       @tparam  TableType
+   * %Table的类型，例如，Table<2, T>或TransposeTable。      @tparam
+   * Constness 这是否是一个常量迭代器。      @tparam
+   * storage_order 底层表的存储方案，例如， Storage::row_major
+   * 为Table<2, T>。
    *
-   * @tparam TableType the type of the %Table, e.g., Table<2, T> or
-   * TransposeTable.
-   *
-   * @tparam Constness whether or not this is a constant iterator.
-   *
-   * @tparam storage_order The storage scheme of the underlying table, e.g.,
-   * Storage::row_major for Table<2, T>.
    */
   template <typename TableType, bool Constness, Storage storage_order>
   class Iterator
@@ -1182,40 +1030,47 @@ namespace MatrixTableIterators
   {
   public:
     /**
-     * Size type used by the underlying table.
+     * 底层表使用的大小类型。
+     *
      */
     using size_type = typename TableType::size_type;
 
     /**
-     * Type of the stored pointer to the table.
+     * 存储到表的指针的类型。
+     *
      */
     using container_pointer_type = typename std::
       conditional<Constness, const TableType *, TableType *>::type;
 
     /**
-     * Constructor from an accessor.
+     * 来自访问器的构造函数。
+     *
      */
     Iterator(const Accessor<TableType, Constness, storage_order> &accessor);
 
     /**
-     * Constructor. Create the end iterator for a table.
+     * 构造函数。创建一个表的终端迭代器。
+     *
      */
     Iterator(const container_pointer_type object);
 
     /**
-     * Constructor for a particular table entry.
+     * 为一个特定的表项的构造函数。
+     *
      */
     Iterator(const container_pointer_type object,
              const size_type              row,
              const size_type              column);
 
     /**
-     * Copy constructor from a non-const iterator.
+     * 从一个非const迭代器复制构造器。
+     *
      */
     Iterator(const Iterator<TableType, false, storage_order> &i);
 
     /**
-     * Constructor for an entry with a particular linear index.
+     * 具有特定线性索引的条目的构造函数。
+     *
      */
     Iterator(const container_pointer_type container,
              const std::ptrdiff_t         linear_index);
@@ -1225,102 +1080,95 @@ namespace MatrixTableIterators
 
 
 /**
- * A class representing a two-dimensional table, i.e. a matrix of objects (not
- * necessarily only numbers).
- * The majority of the interface of this class is implemented in the
- * TableBase base class. See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表二维表的类，即一个对象的矩阵（不一定只有数字）。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，请看那里。
+ * 这个类也是FullMatrix类的基类，因此它有一些专门针对矩阵及其需求的功能。
  *
- * This class also serves as the base class for the FullMatrix class
- * and consequently has a number of functions that are specific to
- * matrices and their needs.
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<2, T> : public TableBase<2, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<2, T>::size_type;
 
   /**
-   * Typedef for the values in the table.
+   * 用于表内数值的类型定义。
+   *
    */
   using value_type = typename AlignedVector<T>::value_type;
 
   /**
-   * Typedef for the references in the table.
+   * 表中引用的类型定义。
+   *
    */
   using reference = typename AlignedVector<T>::reference;
 
   /**
-   * Typedef for the constant references in the table.
+   * 为表中的常数引用提供类型定义。
+   *
    */
   using const_reference = typename AlignedVector<T>::const_reference;
 
   /**
-   * Typedef for a constant iterator that traverses the table in column-major
-   * order.
+   * 为一个常数迭代器提供类型定义，该迭代器以列为主的顺序遍历表。
+   *
    */
   using const_iterator = MatrixTableIterators::
     Iterator<Table<2, T>, true, MatrixTableIterators::Storage::row_major>;
 
   /**
-   * Typedef for an iterator that traverses the table in column-major order.
+   * 一个迭代器的类型定义，该迭代器以列的主次顺序遍历表。
+   *
    */
   using iterator = MatrixTableIterators::
     Iterator<Table<2, T>, false, MatrixTableIterators::Storage::row_major>;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有的尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   Table(const size_type size1, const size_type size2);
 
   /**
-   * Constructor. Create a table with a given size and initialize it from a
-   * set of iterators.
-   *
-   * This function is entirely equivalent to creating a table <code>t</code>
-   * of the given size and then calling
+   * 构造函数。创建一个具有给定尺寸的表，并从一组迭代器中初始化它。
+   * 这个函数完全等同于创建一个给定尺寸的表 <code>t</code>
+   * ，然后调用
    * @code
-   *   t.fill (entries, C_style_indexing);
+   * t.fill (entries, C_style_indexing);
    * @endcode
-   * on it, using the TableBase::fill() function where the arguments are
-   * explained in more detail. The point, however, is that that is only
-   * possible if the table can be changed after running the constructor,
-   * whereas calling the current constructor allows sizing and initializing an
-   * object right away so that it can be marked const.
-   *
-   * Using this constructor, you can do things like this:
+   * 上，使用 TableBase::fill()
+   * 函数，其中的参数会有更详细的解释。但问题是，这只有在运行构造函数后可以改变表的情况下才有可能，而调用当前的构造函数可以立即确定对象的大小和初始化，这样就可以将其标记为常量。
+   * 使用这个构造函数，你可以做这样的事情。
    * @code
-   *   const double values[] = { 1, 2, 3, 4, 5, 6 };
-   *   const Table<2,double> t(2, 3, entries, true);
+   * const double values[] = { 1, 2, 3, 4, 5, 6 };
+   * const Table<2,double> t(2, 3, entries, true);
    * @endcode
-   * You can also initialize a table right from a file, using input iterators:
+   * 你也可以使用输入迭代器，从文件中直接初始化一个表。
    * @code
-   *   std::ifstream input ("myfile");
-   *   const Table<2,double> t(2, 3,
-   *                           std::istream_iterator<double>(input),
-   *                           true);
+   * std::ifstream input ("myfile");
+   * const Table<2,double> t(2, 3,
+   *                         std::istream_iterator<double>(input),
+   *                         true);
    * @endcode
+   * @param  size1 这个表的第一维的大小。    @param  size2
+   * 这个表在第二维中的大小。    @param  entries
+   * 一个迭代器，用于初始化该表的元素集。假设迭代器可以被递增和取消引用足够多的次数来填充这个表。
+   * @param  C_style_indexing
+   * 如果是true，当我们解指输入范围的后续元素时，以最后一个索引变化最快的方式运行该表的元素。如果为假，则最快改变第一个索引。
    *
-   *
-   * @param size1 The size of this table in the first dimension.
-   * @param size2 The size of this table in the second dimension.
-   * @param entries An iterator to a set of elements from which to initialize
-   * this table. It is assumed that iterator can be incremented and
-   * dereferenced a sufficient number of times to fill this table.
-   * @param C_style_indexing If true, run over elements of the table with the
-   * last index changing fastest as we dereference subsequent elements of the
-   * input range. If false, change the first index fastest.
    */
   template <typename InputIterator>
   Table(const size_type size1,
@@ -1329,9 +1177,8 @@ public:
         const bool      C_style_indexing = true);
 
   /**
-   * Reinitialize the object. This function is mostly here for compatibility
-   * with the earlier <tt>vector2d</tt> class. Passes down to the base class
-   * by converting the arguments to the data type requested by the base class.
+   * 重新初始化该对象。这个函数在这里主要是为了与早期的<tt>vector2d</tt>类兼容。通过将参数转换为基类所要求的数据类型而向下传递给基类。
+   *
    */
   void
   reinit(const size_type size1,
@@ -1341,111 +1188,101 @@ public:
   using TableBase<2, T>::reinit;
 
   /**
-   * Access operator. Generate an object that accesses the requested row of
-   * this two-dimensional table. Range checks are performed.
+   * 访问操作符。生成一个对象，访问这个二维表的请求行。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   dealii::internal::TableBaseAccessors::Accessor<2, T, true, 1>
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Generate an object that accesses the requested row of
-   * this two-dimensional table. Range checks are performed.
+   * 访问操作符。生成一个对象，访问这个二维表的请求行。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   dealii::internal::TableBaseAccessors::Accessor<2, T, false, 1>
   operator[](const size_type i);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读访问。
    *
-   * This version of the function only allows read access.
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i, const size_type j) const;
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i, const size_type j);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<2, T>::operator();
 
   /**
-   * Number of rows. This function really makes only sense since we have a
-   * two-dimensional object here.
+   * 行的数量。由于我们这里有一个二维的对象，所以这个函数真的只有意义。
+   *
    */
   size_type
   n_rows() const;
 
   /**
-   * Number of columns. This function really makes only sense since we have a
-   * two-dimensional object here.
+   * 列的数量。这个函数真的很有意义，因为我们在这里有一个二维的对象。
+   *
    */
   size_type
   n_cols() const;
 
   /**
-   * Return an iterator pointing to the first entry.
+   * 返回一个指向第一个条目的迭代器。
+   *
    */
   iterator
   begin();
 
   /**
-   * Return a constant iterator pointing to the first entry.
+   * 返回一个指向第一个条目的常数迭代器。
+   *
    */
   const_iterator
   begin() const;
 
   /**
-   * Return an iterator pointing to one past the last entry.
+   * 返回一个指向超过最后一个条目的迭代器。
+   *
    */
   iterator
   end();
 
   /**
-   * Return a constant iterator pointing to one past the last entry.
+   * 返回一个常数迭代器，指向最后一个条目之后的一个条目。
+   *
    */
   const_iterator
   end() const;
 
 protected:
   /**
-   * Return a read-write reference to the element <tt>(i,j)</tt>.
+   * 返回一个对元素<tt>(i,j)</tt>的读写引用。
+   * 这个函数不做边界检查，只在内部和已经检查过的函数中使用。
+   * 这些函数在这里主要是为了与这些表类以前对2D数组的实现兼容，当时称为<tt>vector2d</tt>。
    *
-   * This function does no bounds checking and is only to be used internally
-   * and in functions already checked.
-   *
-   * These functions are mainly here for compatibility with a former
-   * implementation of these table classes for 2d arrays, then called
-   * <tt>vector2d</tt>.
    */
   typename AlignedVector<T>::reference
   el(const size_type i, const size_type j);
 
   /**
-   * Return the value of the element <tt>(i,j)</tt> as a read-only reference.
+   * 返回元素<tt>(i,j)</tt>的值，作为一个只读的引用。
+   * 这个函数不做边界检查，只在内部和已经检查过的函数中使用。
+   * 我们将请求的值作为常量引用而不是按值返回，因为这个对象可能持有的数据类型可能很大，而我们在这里不知道复制是否昂贵。
+   * 这些函数在这里主要是为了与这些表类以前对2D数组的实现兼容，当时称为<tt>vector2d</tt>。
    *
-   * This function does no bounds checking and is only to be used internally
-   * and in functions already checked.
-   *
-   * We return the requested value as a constant reference rather than by
-   * value since this object may hold data types that may be large, and we
-   * don't know here whether copying is expensive or not.
-   *
-   * These functions are mainly here for compatibility with a former
-   * implementation of these table classes for 2d arrays, then called
-   * <tt>vector2d</tt>.
    */
   typename AlignedVector<T>::const_reference
   el(const size_type i, const size_type j) const;
@@ -1466,72 +1303,63 @@ protected:
 
 
 /**
- * A class representing a three-dimensional table of objects (not necessarily
- * only numbers).
- * The majority of the interface of this class is implemented in the
- * TableBase base class.See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表对象（不一定只有数字）的三维表的类。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，见那里。
+ *
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<3, T> : public TableBase<3, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<3, T>::size_type;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   Table(const size_type size1, const size_type size2, const size_type size3);
 
   /**
-   * Constructor. Create a table with a given size and initialize it from a
-   * set of iterators.
-   *
-   * This function is entirely equivalent to creating a table <code>t</code>
-   * of the given size and then calling
+   * 构造函数。创建一个具有给定尺寸的表，并从一组迭代器中初始化它。
+   * 这个函数完全等同于创建一个给定尺寸的表 <code>t</code>
+   * ，然后调用
    * @code
-   *   t.fill (entries, C_style_indexing);
+   * t.fill (entries, C_style_indexing);
    * @endcode
-   * on it, using the TableBase::fill() function where the arguments are
-   * explained in more detail. The point, however, is that that is only
-   * possible if the table can be changed after running the constructor,
-   * whereas calling the current constructor allows sizing and initializing an
-   * object right away so that it can be marked const.
-   *
-   * Using this constructor, you can do things like this (shown here for a
-   * two-dimensional table, but the same works for the current class):
+   * 上，使用 TableBase::fill()
+   * 函数，其中的参数会有更详细的解释。但问题是，这只有在运行构造函数后可以改变表的情况下才有可能，而调用当前的构造函数可以立即确定对象的大小和初始化，这样就可以将其标记为常量。
+   * 使用这个构造函数，你可以做这样的事情（这里显示的是一个二维表，但同样适用于当前类）。
    * @code
-   *   const double values[] = { 1, 2, 3, 4, 5, 6 };
-   *   const Table<2,double> t(2, 3, entries, true);
+   * const double values[] = { 1, 2, 3, 4, 5, 6 };
+   * const Table<2,double> t(2, 3, entries, true);
    * @endcode
-   * You can also initialize a table right from a file, using input iterators:
+   * 你也可以使用输入迭代器，从文件中直接初始化一个表。
    * @code
-   *   std::ifstream input ("myfile");
-   *   const Table<2,double> t(2, 3,
-   *                           std::istream_iterator<double>(input),
-   *                           true);
+   * std::ifstream input ("myfile");
+   * const Table<2,double> t(2, 3,
+   *                         std::istream_iterator<double>(input),
+   *                         true);
    * @endcode
+   * @param  size1 这个表在第一维的大小。    @param  size2
+   * 该表在第二维中的大小。    @param  size3
+   * 此表在第三维中的大小。    @param  entries
+   * 一个迭代器，用于初始化这个表的元素集。假设迭代器可以被递增和取消引用足够多的次数来填充这个表。
+   * @param  C_style_indexing
+   * 如果是true，当我们解指输入范围的后续元素时，以最后一个索引变化最快的方式运行该表的元素。如果为假，则最快改变第一个索引。
    *
-   *
-   * @param size1 The size of this table in the first dimension.
-   * @param size2 The size of this table in the second dimension.
-   * @param size3 The size of this table in the third dimension.
-   * @param entries An iterator to a set of elements from which to initialize
-   * this table. It is assumed that iterator can be incremented and
-   * dereferenced a sufficient number of times to fill this table.
-   * @param C_style_indexing If true, run over elements of the table with the
-   * last index changing fastest as we dereference subsequent elements of the
-   * input range. If false, change the first index fastest.
    */
   template <typename InputIterator>
   Table(const size_type size1,
@@ -1541,46 +1369,41 @@ public:
         const bool      C_style_indexing = true);
 
   /**
-   * Access operator. Generate an object that accesses the requested two-
-   * dimensional subobject of this three-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个三维表的请求的二维子对象。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   dealii::internal::TableBaseAccessors::Accessor<3, T, true, 2>
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Generate an object that accesses the requested two-
-   * dimensional subobject of this three-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个三维表的请求的二维子对象。会进行范围检查。
+   * 这个版本的函数允许读写访问。
    *
-   * This version of the function allows read-write access.
    */
   dealii::internal::TableBaseAccessors::Accessor<3, T, false, 2>
   operator[](const size_type i);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读访问。
    *
-   * This version of the function only allows read access.
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i, const size_type j, const size_type k) const;
 
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i, const size_type j, const size_type k);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<3, T>::operator();
 };
@@ -1588,30 +1411,32 @@ public:
 
 
 /**
- * A class representing a four-dimensional table of objects (not necessarily
- * only numbers).
- * The majority of the interface of this class is implemented in the
- * TableBase base class. See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表对象的四维表（不一定只有数字）的类。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，见那里。
+ *
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<4, T> : public TableBase<4, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<4, T>::size_type;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   Table(const size_type size1,
         const size_type size2,
@@ -1619,30 +1444,25 @@ public:
         const size_type size4);
 
   /**
-   * Access operator. Generate an object that accesses the requested three-
-   * dimensional subobject of this four-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个四维表的请求的三维子对象。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   dealii::internal::TableBaseAccessors::Accessor<4, T, true, 3>
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Generate an object that accesses the requested three-
-   * dimensional subobject of this four-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个四维表的所要求的三维子对象。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   dealii::internal::TableBaseAccessors::Accessor<4, T, false, 3>
   operator[](const size_type i);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读访问。
    *
-   * This version of the function only allows read access.
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i,
@@ -1652,10 +1472,9 @@ public:
 
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i,
@@ -1664,7 +1483,8 @@ public:
              const size_type l);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<4, T>::operator();
 };
@@ -1672,31 +1492,33 @@ public:
 
 
 /**
- * A class representing a five-dimensional table of objects (not necessarily
- * only numbers).
- * The majority of the interface of this class is implemented in the
- * TableBase base class. See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表对象的五维表（不一定只有数字）的类。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，见那里。
+ *
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<5, T> : public TableBase<5, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<5, T>::size_type;
 
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   Table(const size_type size1,
         const size_type size2,
@@ -1705,30 +1527,25 @@ public:
         const size_type size5);
 
   /**
-   * Access operator. Generate an object that accesses the requested four-
-   * dimensional subobject of this five-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个五维表的请求的四维子对象。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   dealii::internal::TableBaseAccessors::Accessor<5, T, true, 4>
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Generate an object that accesses the requested four-
-   * dimensional subobject of this five-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个五维表的四维子对象。会进行范围检查。
+   * 这个版本的函数允许读写访问。
    *
-   * This version of the function allows read-write access.
    */
   dealii::internal::TableBaseAccessors::Accessor<5, T, false, 4>
   operator[](const size_type i);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读访问。
    *
-   * This version of the function only allows read access.
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i,
@@ -1738,10 +1555,9 @@ public:
              const size_type m) const;
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i,
@@ -1751,7 +1567,8 @@ public:
              const size_type m);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<5, T>::operator();
 };
@@ -1759,30 +1576,32 @@ public:
 
 
 /**
- * A class representing a six-dimensional table of objects (not necessarily
- * only numbers).
- * The majority of the interface of this class is implemented in the
- * TableBase base class. See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表对象的六维表（不一定只有数字）的类。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，见那里。
+ *
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<6, T> : public TableBase<6, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<6, T>::size_type;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   Table(const size_type size1,
         const size_type size2,
@@ -1792,30 +1611,25 @@ public:
         const size_type size6);
 
   /**
-   * Access operator. Generate an object that accesses the requested five-
-   * dimensional subobject of this six-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个六维表的五维子对象的请求。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   dealii::internal::TableBaseAccessors::Accessor<6, T, true, 5>
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Generate an object that accesses the requested five-
-   * dimensional subobject of this six-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个六维表的五维子对象的请求。会进行范围检查。
+   * 这个版本的函数允许读写访问。
    *
-   * This version of the function allows read-write access.
    */
   dealii::internal::TableBaseAccessors::Accessor<6, T, false, 5>
   operator[](const size_type i);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读访问。
    *
-   * This version of the function only allows read access.
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i,
@@ -1826,10 +1640,9 @@ public:
              const size_type n) const;
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i,
@@ -1840,37 +1653,40 @@ public:
              const size_type n);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<6, T>::operator();
 };
 
 
 /**
- * A class representing a seven-dimensional table of objects (not necessarily
- * only numbers).
- * The majority of the interface of this class is implemented in the
- * TableBase base class. See there for an outline of the rationale for and
- * interface of this class.
+ * 一个代表对象的七维表（不一定只有数字）的类。这个类的大部分接口是在TableBase基类中实现的。关于这个类的原理和接口的概要，见那里。
+ *
  *
  * @ingroup data
+ *
+ *
  */
 template <typename T>
 class Table<7, T> : public TableBase<7, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<7, T>::size_type;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有尺寸设置为零。
+   *
    */
   Table() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   Table(const size_type size1,
         const size_type size2,
@@ -1881,30 +1697,25 @@ public:
         const size_type size7);
 
   /**
-   * Access operator. Generate an object that accesses the requested six-
-   * dimensional subobject of this seven-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个七维表的六维子对象的请求。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   dealii::internal::TableBaseAccessors::Accessor<7, T, true, 6>
   operator[](const size_type i) const;
 
   /**
-   * Access operator. Generate an object that accesses the requested six-
-   * dimensional subobject of this seven-dimensional table. Range checks are
-   * performed.
+   * 访问操作符。生成一个对象，访问这个七维表的六维子对象的请求。会进行范围检查。
+   * 这个版本的函数允许读写访问。
    *
-   * This version of the function allows read-write access.
    */
   dealii::internal::TableBaseAccessors::Accessor<7, T, false, 6>
   operator[](const size_type i);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读访问。
    *
-   * This version of the function only allows read access.
    */
   typename AlignedVector<T>::const_reference
   operator()(const size_type i,
@@ -1916,10 +1727,9 @@ public:
              const size_type o) const;
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   typename AlignedVector<T>::reference
   operator()(const size_type i,
@@ -1931,51 +1741,52 @@ public:
              const size_type o);
 
   /**
-   * Make the variations of `operator()` from the base class available.
+   * 使基类中的`operator()`的变化可用。
+   *
    */
   using TableBase<7, T>::operator();
 };
 
 
 /**
- * A class representing a transpose two-dimensional table, i.e. a matrix of
- * objects (not necessarily only numbers) in column first numbering (FORTRAN
- * convention). The only real difference is therefore really in the storage
- * format.
+ * 一个代表转置二维表的类，即一个对象（不一定只有数字）的矩阵，采用列首编号（FORTRAN惯例）。因此，唯一真正的区别其实是在存储格式上。
+ * 这个类复制了Table<2,T>的功能，但是元素访问和尺寸将用于TableBase中的数据字段的转置排序。
  *
- * This class copies the functions of Table<2,T>, but the element access and
- * the dimensions will be for the transpose ordering of the data field in
- * TableBase.
  *
  * @ingroup data
+ *
  */
 template <typename T>
 class TransposeTable : public TableBase<2, T>
 {
 public:
   /**
-   * Integer type used to count the number of elements in this container.
+   * 用来计算这个容器中的元素数量的整数类型。
+   *
    */
   using size_type = typename TableBase<2, T>::size_type;
 
   /**
-   * Typedef for the values in the table.
+   * 用于表内数值的类型化定义。
+   *
    */
   using value_type = typename AlignedVector<T>::value_type;
 
   /**
-   * Typedef for the references in the table.
+   * 表中引用的类型定义。
+   *
    */
   using reference = typename AlignedVector<T>::reference;
 
   /**
-   * Typedef for the constant references in the table.
+   * 为表中的常数引用提供类型定义。
+   *
    */
   using const_reference = typename AlignedVector<T>::const_reference;
 
   /**
-   * Typedef for a constant iterator that traverses the table in column-major
-   * order.
+   * 为一个常数迭代器提供类型定义，该迭代器以列为主的顺序遍历表。
+   *
    */
   using const_iterator =
     MatrixTableIterators::Iterator<TransposeTable<T>,
@@ -1983,7 +1794,8 @@ public:
                                    MatrixTableIterators::Storage::column_major>;
 
   /**
-   * Typedef for an iterator that traverses the table in column-major order.
+   * 一个迭代器的类型定义，该迭代器以列的主次顺序遍历表。
+   *
    */
   using iterator =
     MatrixTableIterators::Iterator<TransposeTable<T>,
@@ -1991,19 +1803,20 @@ public:
                                    MatrixTableIterators::Storage::column_major>;
 
   /**
-   * Default constructor. Set all dimensions to zero.
+   * 默认构造函数。将所有的尺寸设置为零。
+   *
    */
   TransposeTable() = default;
 
   /**
-   * Constructor. Pass down the given dimensions to the base class.
+   * 构造函数。将给定的尺寸传递给基类。
+   *
    */
   TransposeTable(const size_type size1, const size_type size2);
 
   /**
-   * Reinitialize the object. This function is mostly here for compatibility
-   * with the earlier <tt>vector2d</tt> class. Passes down to the base class
-   * by converting the arguments to the data type requested by the base class.
+   * 重新初始化该对象。这个函数在这里主要是为了与早期的<tt>vector2d</tt>类兼容。通过将参数转换为基类所要求的数据类型而向下传递给基类。
+   *
    */
   void
   reinit(const size_type size1,
@@ -2011,88 +1824,79 @@ public:
          const bool      omit_default_initialization = false);
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数只允许读取访问。
    *
-   * This version of the function only allows read access.
    */
   const_reference
   operator()(const size_type i, const size_type j) const;
 
   /**
-   * Direct access to one element of the table by specifying all indices at
-   * the same time. Range checks are performed.
+   * 通过同时指定所有索引，直接访问表中的一个元素。会进行范围检查。
+   * 这个版本的函数允许读-写访问。
    *
-   * This version of the function allows read-write access.
    */
   reference
   operator()(const size_type i, const size_type j);
 
   /**
-   * Number of rows. This function really makes only sense since we have a
-   * two-dimensional object here.
+   * 行的数量。由于我们这里有一个二维对象，所以这个函数真的只有意义。
+   *
    */
   size_type
   n_rows() const;
 
   /**
-   * Number of columns. This function really makes only sense since we have a
-   * two-dimensional object here.
+   * 列的数量。这个函数真的很有意义，因为我们在这里有一个二维的对象。
+   *
    */
   size_type
   n_cols() const;
 
   /**
-   * Return an iterator pointing to the first entry.
+   * 返回一个指向第一个条目的迭代器。
+   *
    */
   iterator
   begin();
 
   /**
-   * Return a constant iterator pointing to the first entry.
+   * 返回一个指向第一个条目的常数迭代器。
+   *
    */
   const_iterator
   begin() const;
 
   /**
-   * Return an iterator pointing to one past the last entry.
+   * 返回一个指向超过最后一个条目的迭代器。
+   *
    */
   iterator
   end();
 
   /**
-   * Return a constant iterator pointing to one past the last entry.
+   * 返回一个常数迭代器，指向最后一个条目之后的一个条目。
+   *
    */
   const_iterator
   end() const;
 
 protected:
   /**
-   * Return a read-write reference to the element <tt>(i,j)</tt>.
+   * 返回一个对元素<tt>(i,j)</tt>的读写引用。
+   * 这个函数不做边界检查，只在内部和已经检查过的函数中使用。
+   * 这些函数在这里主要是为了与这些表类以前对2D数组的实现兼容，当时称为<tt>vector2d</tt>。
    *
-   * This function does no bounds checking and is only to be used internally
-   * and in functions already checked.
-   *
-   * These functions are mainly here for compatibility with a former
-   * implementation of these table classes for 2d arrays, then called
-   * <tt>vector2d</tt>.
    */
   reference
   el(const size_type i, const size_type j);
 
   /**
-   * Return the value of the element <tt>(i,j)</tt> as a read-only reference.
+   * 返回元素<tt>(i,j)</tt>的值，作为一个只读的引用。
+   * 这个函数不做边界检查，只在内部和已经检查过的函数中使用。
+   * 我们将请求的值作为常量引用而不是按值返回，因为这个对象可能持有的数据类型可能很大，而我们在这里不知道复制是否昂贵。
+   * 这些函数在这里主要是为了与这些表类以前对2D数组的实现兼容，当时称为<tt>vector2d</tt>。
    *
-   * This function does no bounds checking and is only to be used internally
-   * and in functions already checked.
-   *
-   * We return the requested value as a constant reference rather than by
-   * value since this object may hold data types that may be large, and we
-   * don't know here whether copying is expensive or not.
-   *
-   * These functions are mainly here for compatibility with a former
-   * implementation of these table classes for 2d arrays, then called
-   * <tt>vector2d</tt>.
    */
   const_reference
   el(const size_type i, const size_type j) const;
@@ -2118,7 +1922,7 @@ protected:
 
 
 
-/* --------------------- Template and inline functions ---------------- */
+ /* --------------------- Template and inline functions ---------------- */ 
 
 #ifndef DOXYGEN
 
@@ -3662,9 +3466,10 @@ Table<7, T>::operator()(const size_type i,
 
 
 /**
- * Global function @p swap which overloads the default implementation of the
- * C++ standard library which uses a temporary object. The function simply
- * exchanges the data of the two tables.
+ * 全局函数 @p swap
+ * ，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个表的数据。
+ *
+ *
  */
 template <int N, typename T>
 inline void
@@ -3676,3 +3481,5 @@ swap(TableBase<N, T> &u, TableBase<N, T> &v)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/tria_accessor.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -44,8 +43,9 @@ namespace internal
   namespace TriaAccessorImplementation
   {
     /**
-     * 计算给定顶点集的直径。这些顶点根据其数量被解释为特定参考单元的顶点。
-     *
+     * Compute the diameter for a given set of vertices. The vertices are
+     * interpreted, depending on their count, as the vertices of a particular
+     * reference cell.
      */
     template <int dim, int spacedim>
     inline double
@@ -121,7 +121,7 @@ namespace internal
 } // namespace internal
 
 
- /*--------------------- Functions: TriaAccessorBase -------------------------*/ 
+/*--------------------- Functions: TriaAccessorBase -------------------------*/
 
 template <int structdim, int dim, int spacedim>
 inline TriaAccessorBase<structdim, dim, spacedim>::TriaAccessorBase(
@@ -373,7 +373,7 @@ TriaAccessorBase<structdim, dim, spacedim>::objects() const
 
 
 
- /*---------------------- Functions: InvalidAccessor -------------------------*/ 
+/*---------------------- Functions: InvalidAccessor -------------------------*/
 
 template <int structdim, int dim, int spacedim>
 InvalidAccessor<structdim, dim, spacedim>::InvalidAccessor(
@@ -571,7 +571,7 @@ inline typename dealii::internal::TriangulationImplementation::
 }
 
 
- /*------------------------ Functions: TriaAccessor ---------------------------*/ 
+/*------------------------ Functions: TriaAccessor ---------------------------*/
 
 
 namespace internal
@@ -587,14 +587,13 @@ namespace internal
     using dealii::TriaAccessor;
 
     /**
-     * 一个与Triangulation类的类似命名的类具有相同目的的类。更多信息见那里。
-     *
+     * A class with the same purpose as the similarly named class of the
+     * Triangulation class. See there for more information.
      */
     struct Implementation
     {
       /**
-       * 母类中某个名称的函数的实现。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int dim, int spacedim>
       inline static unsigned int
@@ -634,8 +633,7 @@ namespace internal
 
 
       /**
-       * 在母类中实现某个名称的函数。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int structdim, int dim, int spacedim>
       inline static unsigned int
@@ -660,16 +658,18 @@ namespace internal
 
 
       /**
-       * 在母类中实现某个名字的函数
-       *
+       * Implementation of the function of some name in the mother class
        */
       template <int structdim, int dim, int spacedim>
       inline static bool
       face_orientation(const TriaAccessor<structdim, dim, spacedim> &,
                        const unsigned int)
       {
-        /*在1d中使用的默认实现 在1d中，face_orientation始终为true        
-* */
+        /*
+         * Default implementation used in 1d
+         *
+         * In 1d, face_orientation is always true
+         */
 
         return true;
       }
@@ -691,7 +691,7 @@ namespace internal
         return Utilities::get_bit(
           accessor.tria->levels[accessor.present_level]->face_orientations
             [accessor.present_index * GeometryInfo<3>::faces_per_cell + face],
-          0  /*=orientation_bit*/ );
+          0 /*=orientation_bit*/);
       }
 
 
@@ -706,16 +706,24 @@ namespace internal
 
 
       /**
-       * 母类中某个名称的函数的实现。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int structdim, int dim, int spacedim>
       inline static bool
       face_flip(const TriaAccessor<structdim, dim, spacedim> &,
                 const unsigned int)
       {
-        /* 1d和2d中使用的默认实现 在1d中，face_flip总是假的，因为在1d中没有 "翻转 "面的概念。                在2D中，我们目前只支持所有面都在标准方向的网格，所以结果也是假的。这也符合一个事实，即在2D中，人们可以*将面的方向定为不需要翻转的方式。       
-* */
+        /*
+         * Default implementation used in 1d and 2d
+         *
+         * In 1d, face_flip is always false as there is no such concept as
+         * "flipped" faces in 1d.
+         *
+         * In 2d, we currently only support meshes where all faces are in
+         * standard orientation, so the result is also false. This also
+         * matches the fact that one can *always* orient faces in 2d in such a
+         * way that the don't need to be flipped
+         */
         return false;
       }
 
@@ -733,22 +741,25 @@ namespace internal
         return Utilities::get_bit(
           accessor.tria->levels[accessor.present_level]->face_orientations
             [accessor.present_index * GeometryInfo<3>::faces_per_cell + face],
-          2  /*=flip_bit*/ );
+          2 /*=flip_bit*/);
       }
 
 
 
       /**
-       * 在母类中实现某个名称的函数。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int structdim, int dim, int spacedim>
       inline static bool
       face_rotation(const TriaAccessor<structdim, dim, spacedim> &,
                     const unsigned int)
       {
-        /*在1d和2d中使用的默认实现 在1d和2d中，face_rotation总是假的，因为在1d和2d中不存在 "旋转 "面的概念。       
-* */
+        /*
+         * Default implementation used in 1d and 2d
+         *
+         * In 1d and 2d, face_rotation is always false as there is no such
+         * concept as "rotated" faces in 1d and 2d.
+         */
         return false;
       }
 
@@ -766,12 +777,11 @@ namespace internal
         return Utilities::get_bit(
           accessor.tria->levels[accessor.present_level]->face_orientations
             [accessor.present_index * GeometryInfo<3>::faces_per_cell + face],
-          1  /*=rotation_bit*/ );
+          1 /*=rotation_bit*/);
       }
 
       /**
-       * 在母类中实现某个名称的函数。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int dim, int spacedim>
       inline static bool
@@ -841,8 +851,7 @@ namespace internal
 
 
       /**
-       * 在母类中实现某个名称的功能。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int structdim, int dim, int spacedim>
       inline static void
@@ -868,15 +877,14 @@ namespace internal
         Utilities::set_bit(
           accessor.tria->levels[accessor.present_level]->face_orientations
             [accessor.present_index * GeometryInfo<3>::faces_per_cell + face],
-          0  /*=orientation_bit*/ ,
+          0 /*=orientation_bit*/,
           value);
       }
 
 
 
       /**
-       * 在母类中实现某个名字的功能。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int structdim, int dim, int spacedim>
       inline static void
@@ -902,15 +910,14 @@ namespace internal
         Utilities::set_bit(
           accessor.tria->levels[accessor.present_level]->face_orientations
             [accessor.present_index * GeometryInfo<3>::faces_per_cell + face],
-          2  /*=flip_bit*/ ,
+          2 /*=flip_bit*/,
           value);
       }
 
 
 
       /**
-       * 在母类中实现某个名字的功能。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int structdim, int dim, int spacedim>
       inline static void
@@ -936,13 +943,12 @@ namespace internal
         Utilities::set_bit(
           accessor.tria->levels[accessor.present_level]->face_orientations
             [accessor.present_index * GeometryInfo<3>::faces_per_cell + face],
-          1  /*=rotation_bit*/ ,
+          1 /*=rotation_bit*/,
           value);
       }
 
       /**
-       * 在母类中实现某个名字的功能。
-       *
+       * Implementation of the function of some name in the mother class.
        */
       template <int dim, int spacedim>
       inline static void
@@ -997,8 +1003,7 @@ namespace internal
 
 
       /**
-       * 在包围类中实现同名函数。
-       *
+       * Implementation of the function of same name in the enclosing class.
        */
       template <int dim, int spacedim>
       inline static unsigned int
@@ -2269,7 +2274,7 @@ TriaAccessor<structdim, dim, spacedim>::face_indices() const
 
 
 
- /*----------------- Functions: TriaAccessor<0,dim,spacedim> -----------------*/ 
+/*----------------- Functions: TriaAccessor<0,dim,spacedim> -----------------*/
 
 template <int dim, int spacedim>
 inline TriaAccessor<0, dim, spacedim>::TriaAccessor(
@@ -2284,7 +2289,7 @@ inline TriaAccessor<0, dim, spacedim>::TriaAccessor(
 template <int dim, int spacedim>
 inline TriaAccessor<0, dim, spacedim>::TriaAccessor(
   const Triangulation<dim, spacedim> *tria,
-  const int  /*level*/ ,
+  const int /*level*/,
   const int index,
   const AccessorData *)
   : tria(tria)
@@ -2524,7 +2529,7 @@ TriaAccessor<0, dim, spacedim>::measure() const
 
 template <int dim, int spacedim>
 inline bool
-TriaAccessor<0, dim, spacedim>::face_orientation(const unsigned int  /*face*/ )
+TriaAccessor<0, dim, spacedim>::face_orientation(const unsigned int /*face*/)
 {
   return false;
 }
@@ -2533,7 +2538,7 @@ TriaAccessor<0, dim, spacedim>::face_orientation(const unsigned int  /*face*/ )
 
 template <int dim, int spacedim>
 inline bool
-TriaAccessor<0, dim, spacedim>::face_flip(const unsigned int  /*face*/ )
+TriaAccessor<0, dim, spacedim>::face_flip(const unsigned int /*face*/)
 {
   return false;
 }
@@ -2542,7 +2547,7 @@ TriaAccessor<0, dim, spacedim>::face_flip(const unsigned int  /*face*/ )
 
 template <int dim, int spacedim>
 inline bool
-TriaAccessor<0, dim, spacedim>::face_rotation(const unsigned int  /*face*/ )
+TriaAccessor<0, dim, spacedim>::face_rotation(const unsigned int /*face*/)
 {
   return false;
 }
@@ -2551,7 +2556,7 @@ TriaAccessor<0, dim, spacedim>::face_rotation(const unsigned int  /*face*/ )
 
 template <int dim, int spacedim>
 inline bool
-TriaAccessor<0, dim, spacedim>::line_orientation(const unsigned int  /*line*/ )
+TriaAccessor<0, dim, spacedim>::line_orientation(const unsigned int /*line*/)
 {
   return false;
 }
@@ -2667,7 +2672,7 @@ TriaAccessor<0, dim, spacedim>::used() const
 
 
 
- /*------------------- Functions: TriaAccessor<0,1,spacedim> -----------------*/ 
+/*------------------- Functions: TriaAccessor<0,1,spacedim> -----------------*/
 
 template <int spacedim>
 inline TriaAccessor<0, 1, spacedim>::TriaAccessor(
@@ -2956,7 +2961,7 @@ TriaAccessor<0, 1, spacedim>::manifold_id() const
 
 template <int spacedim>
 inline bool
-TriaAccessor<0, 1, spacedim>::face_orientation(const unsigned int  /*face*/ )
+TriaAccessor<0, 1, spacedim>::face_orientation(const unsigned int /*face*/)
 {
   return false;
 }
@@ -2965,7 +2970,7 @@ TriaAccessor<0, 1, spacedim>::face_orientation(const unsigned int  /*face*/ )
 
 template <int spacedim>
 inline bool
-TriaAccessor<0, 1, spacedim>::face_flip(const unsigned int  /*face*/ )
+TriaAccessor<0, 1, spacedim>::face_flip(const unsigned int /*face*/)
 {
   return false;
 }
@@ -2974,7 +2979,7 @@ TriaAccessor<0, 1, spacedim>::face_flip(const unsigned int  /*face*/ )
 
 template <int spacedim>
 inline bool
-TriaAccessor<0, 1, spacedim>::face_rotation(const unsigned int  /*face*/ )
+TriaAccessor<0, 1, spacedim>::face_rotation(const unsigned int /*face*/)
 {
   return false;
 }
@@ -2983,7 +2988,7 @@ TriaAccessor<0, 1, spacedim>::face_rotation(const unsigned int  /*face*/ )
 
 template <int spacedim>
 inline bool
-TriaAccessor<0, 1, spacedim>::line_orientation(const unsigned int  /*line*/ )
+TriaAccessor<0, 1, spacedim>::line_orientation(const unsigned int /*line*/)
 {
   return false;
 }
@@ -3177,7 +3182,7 @@ TriaAccessor<0, 1, spacedim>::line_indices() const
   return {0U, n_lines()};
 }
 
- /*------------------ Functions: CellAccessor<dim,spacedim> ------------------*/ 
+/*------------------ Functions: CellAccessor<dim,spacedim> ------------------*/
 
 
 template <int dim, int spacedim>
@@ -3795,5 +3800,3 @@ CellAccessor<dim, spacedim>::is_level_cell()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

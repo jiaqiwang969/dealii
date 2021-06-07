@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/mg_level_object_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -28,33 +27,48 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 这个类代表了一个数组，在多级层次结构中，每个使用的层次都有一个对象，例如用于多栅格算法。与一般的
- * <code>std::vector</code>
- * 相比，这个类只允许存储一些最小和最大索引（=level）之间的对象，因为人们经常希望只在网格的一个子集上运行多层次算法（例如，因为第二或第三层最粗的层次已经足够小，在那里运行直接求解器比递归到更粗的层次要便宜）。尽管只为这些
- * "有趣的
- * "层次存储对象，该类允许简单地按层次进行索引。在内部，这当然是通过简单地将给定的索引移到我们所存储的最小级别来实现的。
- * 在这个类的一个典型的使用案例中，每个层次上存储的对象都是矩阵或向量。
+ * This class represents an array with one object for each used level of a
+ * multilevel hierarchy, for example for use in the multigrid algorithms.
+ * In contrast to just a generic <code>std::vector</code>, this class allows
+ * to store objects only between some minimal and maximal index (=level),
+ * as one often wants to run a multilevel algorithm only on a subset of
+ * the levels of a mesh (e.g., because the second or third coarsest level is
+ * already small enough that it is cheaper to run a direct solver there,
+ * rather than recurse to even coarser levels). Despite storing objects only
+ * for these "interesting" levels, the class allows indexing simply by
+ * level. Internally, this is of course done by
+ * simply shifting the given index by the minimum level we have stored.
  *
+ * In a typical use case for this class, the objects stored on each level
+ * are either matrices or vectors.
  *
  * @ingroup mg
- *
  * @ingroup data
- *
  */
 template <class Object>
 class MGLevelObject : public Subscriptor
 {
 public:
   /**
-   * 构造函数。创建一个具有给定最小和最大级别的多级对象，并为
-   * <code>maxlevel-minlevel+1</code> 级别的对象分配存储空间。
-   * @note
-   * 与库中的许多其他地方不同，这里的两个参数并不表示第一级和最后加一级的级别，而是实际上是一个<i>inclusive</i>的级别范围，为级别对象分配存储器。因此，这两个参数的默认值将创建一个有一个级别对象的数组，而不是一个空数组。
-   * @param[in]  minlevel 为级别对象提供内存的最低级别。
-   * @param[in]  maxlevel 为级别对象提供内存的最高级别。
-   * @param[in]  args 传递给底层对象构造器的可选参数。
-   * @pre  minlevel <= maxlevel
+   * Constructor. Create a multilevel object with given minimal and
+   * maximal level, and allocate storage for objects on
+   * <code>maxlevel-minlevel+1</code> levels.
    *
+   * @note Unlike in many other places of the library, the two arguments
+   * here do not denote the first level and last-plus-one level, but indeed
+   * an <i>inclusive</i> range of levels for which to allocate storage
+   * for level objects. Consequently, the defaults for the two arguments
+   * will create an array with one level object, rather than an empty
+   * array.
+   *
+   * @param[in] minlevel The lowest level for which to provision memory
+   *   for level objects.
+   * @param[in] maxlevel The highest level for which to provision memory
+   *   for level objects.
+   * @param[in] args Optional arguments passed to the constructor of the
+   *   underlying object.
+   *
+   * @pre minlevel <= maxlevel
    */
   template <class... Args>
   MGLevelObject(const unsigned int minlevel,
@@ -62,33 +76,37 @@ public:
                 Args &&... args);
 
   /**
-   * 构造函数。与上述相同，但没有转给底层对象构造器的参数。
-   *
+   * Constructor. Same as above but without arguments to be forwarded to the
+   * constructor of the underlying object.
    */
   MGLevelObject(const unsigned int minlevel = 0,
                 const unsigned int maxlevel = 0);
 
   /**
-   * 访问级别为 @p level. 的对象。
-   *
+   * Access object on level @p level.
    */
   Object &operator[](const unsigned int level);
 
   /**
-   * 访问 @p level. 级别的对象 这个函数可以在 @p const
-   * 对象上调用，并因此返回一个 @p const 引用。
+   * Access object on level @p level.
    *
+   * This function can be called on a @p const object, and
+   * consequently returns a @p const reference.
    */
   const Object &operator[](const unsigned int level) const;
 
   /**
-   * 删除此对象以前的所有内容，并根据 @p new_minlevel 和 @p
-   * new_maxlevel. 的值重置其大小  @param[in]  new_minlevel
-   * 为级别对象提供内存的最低级别。    @param[in]  new_maxlevel
-   * 为级别对象提供内存的最高级别。    @param[in]  args
-   * 传递给底层对象构造器的可选参数。      @pre  minlevel <=
-   * maxlevel
+   * Delete all previous contents of this object and reset its size according
+   * to the values of @p new_minlevel and @p new_maxlevel.
    *
+   * @param[in] new_minlevel The lowest level for which to provision memory
+   *   for level objects.
+   * @param[in] new_maxlevel The highest level for which to provision memory
+   *   for level objects.
+   * @param[in] args Optional arguments passed to the constructor of the
+   *   underlying object.
+   *
+   * @pre minlevel <= maxlevel
    */
   template <class... Args>
   void
@@ -97,75 +115,71 @@ public:
          Args &&... args);
 
   /**
-   * 对这个对象存储的所有对象调用<tt>operator = (s)</tt>。
-   * 这显然要求存储在每个级别上的对象允许这个操作。特别是对于向量和矩阵来说，如果
-   * @p d
-   * 为零，从而将所有向量或矩阵条目清零，这一点是正确的。
-   *
+   * Call <tt>operator = (s)</tt> on all objects stored by this object.
+   * This clearly requires that the objects stored on each level allow for
+   * this operation. This is, in particular, true for vectors and matrices
+   * if @p d is zero, thereby zeroing out all vector or matrix entries.
    */
   MGLevelObject<Object> &
   operator=(const double d);
 
   /**
-   * 对这个对象存储的所有对象调用 @p clear
-   * 。这个函数只对一些 @p Object
-   * 类实现，例如，矩阵类型或PreconditionBlockSOR和类似的类。如果这个类的
-   * @p Object 模板类型没有提供 <code>clear()</code>
-   * 的成员函数，使用这个函数会出现编译器错误。
-   *
+   * Call @p clear on all objects stored by this object. This function
+   * is only implemented for some @p Object classes, e.g., matrix
+   * types or the PreconditionBlockSOR and similar classes. Using this
+   * function will fail with a compiler error if the @p Object
+   * template type to this class does not provide a
+   * <code>clear()</code> member function.
    */
   void
   clear_elements();
 
   /**
-   * 该类存储水平对象的最粗略的水平。
-   *
+   * The coarsest level for which this class stores a level object.
    */
   unsigned int
   min_level() const;
 
   /**
-   * 该类存储水平对象的最高水平。
-   *
+   * The highest level for which this class stores a level object.
    */
   unsigned int
   max_level() const;
 
   /**
-   * 对存储在这里的每个对象应用 @p action 的动作。参数 @p
-   * action 应该是一个接受<code> action(const unsigned int level,
-   * Object &object); </code>
-   * 语法的函数对象，这意味着这个函数可以接受一个lambda，一个
-   * std::function, 或一个普通函数指针。
-   *
+   * Apply the action @p action to every object stored in here. The
+   * parameter @p action is expected to be a function object that accepts
+   * the syntax
+   * <code>
+   *   action(const unsigned int level, Object &object);
+   * </code>
+   * This means this function can accept a lambda, a std::function, or a plain
+   * function pointer.
    */
   template <typename ActionFunctionObjectType>
   void
   apply(ActionFunctionObjectType action);
 
   /**
-   * 这个对象所使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * 第一个组件的级别。
-   *
+   * Level of first component.
    */
   unsigned int minlevel;
 
   /**
-   * 要保存的对象的数组。
-   *
+   * Array of the objects to be held.
    */
   std::vector<std::shared_ptr<Object>> objects;
 };
 
 
- /* ------------------------------------------------------------------- */ 
+/* ------------------------------------------------------------------- */
 
 
 template <class Object>
@@ -290,5 +304,3 @@ MGLevelObject<Object>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

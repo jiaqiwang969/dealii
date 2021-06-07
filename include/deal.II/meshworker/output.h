@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/output_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -36,59 +35,72 @@ namespace MeshWorker
   namespace Assembler
   {
     /**
-     * 一个类，它不是组装成一个矩阵或向量，而是在一个单元格上输出结果到gnuplot补丁。
-     * 这个汇编器期望LocalResults包含用
-     * LocalResults::quadrature_value().
-     * 设置的正交值，当它被初始化为单一（！）空间方向的正交点数量和要显示的数据字段数量时，它会自动初始化LocalResults。为了适应数据点的坐标，本地结果中的数据字段数量将被增加dim。
-     * 虽然空间坐标的数据槽被自动分配，但这些坐标并没有被输入。这取决于用户在每个点的第一个dim数据项中输入坐标。这增加了输出转换后的坐标或甚至完全不同的东西的灵活性。
-     * @note 在目前的实现中，只有单元格数据可以被写入。
+     * A class that, instead of assembling into a matrix or vector, outputs
+     * the results on a cell to a gnuplot patch.
      *
+     * This assembler expects that LocalResults contains quadrature values set
+     * with LocalResults::quadrature_value(). When it is initialized with the
+     * number of quadrature points in a single (!) space direction and the
+     * number of data fields to be displayed, it initializes LocalResults
+     * automatically. The number of data fields in local results will be
+     * increased by dim in order to accommodate for the coordinates of the
+     * data points.
+     *
+     * While data slots for the space coordinates are allocated automatically,
+     * these coordinates are not entered. It is up to the user to enter the
+     * coordinates in the first dim data entries at every point. This adds the
+     * flexibility to output transformed coordinates or even something
+     * completely different.
+     *
+     * @note In the current implementation, only cell data can be written.
      */
     class GnuplotPatch
     {
     public:
       /**
-       * 构造函数。
-       *
+       * Constructor.
        */
       GnuplotPatch();
 
       /**
-       * 初始化用于写入<i>n</i>数据向量。点数是指张量积公式中单个方向的正交点的数量。它必须与用于创建补丁的实际正交点中的数量一致。产生的数据向量总数为<tt>n+dim</tt>，第一个dim应该是点的空间坐标。尽管如此，还是要由用户来设置这些值，以满足其需要。
-       *
+       * Initialize for writing <i>n</i> data vectors. The number of points is
+       * the number of quadrature points in a single direction in a tensor
+       * product formula. It must match the number in the actual Quadrature
+       * used to create the patches. The total number of data vectors produced
+       * is <tt>n+dim</tt> and the first dim should be the space coordinates
+       * of the points. Nevertheless, it is up to the user to set these values
+       * to whatever is desired.
        */
       void
       initialize(const unsigned int n_points, const unsigned int n_vectors);
 
       /**
-       * 设置数据被写入的流#os。如果没有用这个函数选择流，数据就会进入
-       * @p deallog. 。
-       *
+       * Set the stream #os to which data is written. If no stream is selected
+       * with this function, data goes to @p deallog.
        */
       void
       initialize_stream(std::ostream &stream);
 
       /**
-       * 初始化DoFInfo对象中的本地数据，以后用于组装。
-       * 如果 <code>!face</code> ， @p info
-       * 对象指的是一个单元，否则指的是一个内部或边界面。
+       * Initialize the local data in the DoFInfo object used later for
+       * assembling.
        *
+       * The @p info object refers to a cell if <code>!face</code>, or else to an
+       * interior or boundary face.
        */
       template <int dim>
       void
       initialize_info(DoFInfo<dim> &info, bool face);
 
       /**
-       * 将补丁写到输出流中。
-       *
+       * Write the patch to the output stream.
        */
       template <int dim>
       void
       assemble(const DoFInfo<dim> &info);
 
       /**
-       * @warning  还没有实现
-       *
+       * @warning Not implemented yet
        */
       template <int dim>
       void
@@ -96,36 +108,32 @@ namespace MeshWorker
 
     private:
       /**
-       * 如果调用了initialize_stream()，则将对象T写到流#os，如果没有设置指针，则写到
-       * @p deallog 。
-       *
+       * Write the object T either to the stream #os, if initialize_stream()
+       * has been called, or to @p deallog if no pointer has been set.
        */
       template <typename T>
       void
       write(const T &t) const;
 
       /**
-       * 如果调用了initialize_stream，则向流#os写一个行结束标记，如果没有设置指针，则向
-       * @p deallog 写。
-       *
+       * Write an end-of-line marker either to the stream #os, if
+       * initialize_stream has been called, or to @p deallog if no pointer has
+       * been set.
        */
       void
       write_endl() const;
 
       /**
-       * 每个点的输出组件的数量。
-       *
+       * The number of output components in each point.
        */
       unsigned int n_vectors;
       /**
-       * 一个方向上的点的数量。
-       *
+       * The number of points in one direction.
        */
       unsigned int n_points;
 
       /**
-       * 输出要写入的流。由initialize_stream()设置。
-       *
+       * Stream to which output is to be written. Set by initialize_stream().
        */
       std::ostream *os;
     };
@@ -237,5 +245,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/tria_iterator_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2018 by the deal.II authors
@@ -23,17 +22,15 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 名称空间，其中声明了一个枚举，表示迭代器可以处于的状态。
- *
+ * Namespace in which an enumeration is declared that denotes the states in
+ * which an iterator can be in.
  *
  * @ingroup Iterators
- *
  */
 namespace IteratorState
 {
   /**
-   * 迭代器可以处于的三种状态：有效、过期和无效。
-   *
+   * The three states an iterator can be in: valid, past-the-end and invalid.
    */
   enum IteratorStates
   {
@@ -51,5 +48,3 @@ namespace IteratorState
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-
