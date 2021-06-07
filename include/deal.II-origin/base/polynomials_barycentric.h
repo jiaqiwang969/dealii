@@ -290,12 +290,6 @@ public:
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
-  /**
-   * @copydoc   ScalarPolynomialsBase::compute_2nd_derivative() *
-   */
-  Tensor<1, dim>
-  compute_1st_derivative(const unsigned int i,
-                         const Point<dim> & p) const override;
 
   /**
    *
