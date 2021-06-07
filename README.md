@@ -33,4 +33,29 @@ grep -rl 'aaaModule' ./  | xargs sed -i "" "s/aaaModule/bbbName/g"
 - step4: 最后进行整理，替换。 其中，tutorial有一些文件在修复wrapcomments过程中，出错为空，暂且替换为未修复版本。
 
 # bug
-- bug01: base/polunomials_p.h,fe/fe_simple_p.h 文件的代码块曾出现重复现象，，暂未解决，通过报错找到，并人工修复。 具体位置见commit。2021-06-07
+- bug01: base/polunomials_p.h,fe/fe_simple_p.h 文件的代码块曾出现重复现象，，暂未解决，通过报错找到，并人工修复。 具体位置见commit。2021-06-07 
+  找到原因: [,x,]在翻译的时候，deepl在短句上面，会重复翻译一次，导致的！
+include/deal.II-translator/base/mpi_compute_index_owner_internal_0.txt     
+  ` 
+        /**
+        * Implementation of
+        * Utilities::MPI::ConsensusAlgorithms::Process::answer_request().
+        */  
+  `
+  `
+  * [0.x.4]*
+           [2.x.5]的实现           
+  * [0.x.5]*
+           实现[2.x.6]* [0.x.6]*           
+  * [0.x.6]*
+         具有基本分区的字典类，以所有MPI等级都知道的固定大小的单一区间为单位，用于两阶段索引查找。       
+  `
+  `
+  * [0.x.4]*
+           Implementation of            [2.x.5]           
+  * [0.x.5]*
+           Implementation of            [2.x.6]           
+  * [0.x.6]*
+         Dictionary class with basic partitioning in terms of a single         interval of fixed size known to all MPI ranks for two-stage index         lookup.       
+  `
+  解决办法: 暂时只能手动解决，是deepl的问题。

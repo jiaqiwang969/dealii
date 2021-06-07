@@ -100,7 +100,7 @@ namespace Utilities
 
           /**
            * 实现
-           * Utilities::MPI::ConsensusAlgorithms::Process::answer_request(). *
+           * Utilities::MPI::ConsensusAlgorithms::Process::answer_request(). 
            */
           virtual void
           answer_request(
@@ -153,59 +153,6 @@ namespace Utilities
         };
 
 
-
-        /**
-         *
-         */
-          virtual void
-          answer_request(
-            const unsigned int                                     other_rank,
-            const std::vector<std::pair<types::global_dof_index,
-                                        types::global_dof_index>> &buffer_recv,
-            std::vector<unsigned int> &request_buffer) override
-          {
-            (void)request_buffer; // not needed
-
-
-            // process message: loop over all intervals
-            for (auto interval : buffer_recv)
-              {
-#ifdef DEBUG
-                for (types::global_dof_index i = interval.first;
-                     i < interval.second;
-                     i++)
-                  Assert(actually_owning_ranks[i - local_range.first] ==
-                           numbers::invalid_unsigned_int,
-                         ExcInternalError());
-                Assert(interval.first >= local_range.first &&
-                         interval.first < local_range.second,
-                       ExcInternalError());
-                Assert(interval.second > local_range.first &&
-                         interval.second <= local_range.second,
-                       ExcInternalError());
-#endif
-                std::fill(actually_owning_ranks.data() + interval.first -
-                            local_range.first,
-                          actually_owning_ranks.data() + interval.second -
-                            local_range.first,
-                          other_rank);
-              }
-            actually_owning_rank_list.push_back(other_rank);
-          }
-
-        private:
-          const std::map<unsigned int,
-                         std::vector<std::pair<types::global_dof_index,
-                                               types::global_dof_index>>>
-            &buffers;
-
-          std::vector<unsigned int> &actually_owning_ranks;
-
-          const std::pair<types::global_dof_index, types::global_dof_index>
-            &local_range;
-
-          std::vector<unsigned int> &actually_owning_rank_list;
-        };
 
 
 
