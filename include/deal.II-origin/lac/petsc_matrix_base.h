@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/petsc_matrix_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -53,71 +52,70 @@ namespace PETScWrappers
   namespace MatrixIterators
   {
     /**
-     * 这个类作为一个迭代器，在PETSc矩阵的元素上行走。由于PETSc为所有类型的矩阵提供了一个统一的接口，这个迭代器可以用来访问稀疏和完整的矩阵。
-     * 请注意，PETSc并不保证每一行中元素的顺序。还要注意的是，访问全矩阵的元素，竟然只显示矩阵的非零元素，而不是所有元素。
-     * @ingroup PETScWrappers
+     * This class acts as an iterator walking over the elements of PETSc
+     * matrices. Since PETSc offers a uniform interface for all types of
+     * matrices, this iterator can be used to access both sparse and full
+     * matrices.
      *
+     * Note that PETSc does not give any guarantees as to the order of
+     * elements within each row. Note also that accessing the elements of a
+     * full matrix surprisingly only shows the nonzero elements of the matrix,
+     * not all elements.
+     *
+     * @ingroup PETScWrappers
      */
     class const_iterator
     {
     private:
       /**
-       * 迭代器的访问器类
-       *
+       * Accessor class for iterators
        */
       class Accessor
       {
       public:
         /**
-         * 声明容器大小的类型。
-         *
+         * Declare type for container size.
          */
         using size_type = types::global_dof_index;
 
         /**
-         * 构造器。因为我们只使用访问器进行读取访问，所以一个常量矩阵指针就足够了。
-         *
+         * Constructor. Since we use accessors only for read access, a const
+         * matrix pointer is sufficient.
          */
         Accessor(const MatrixBase *matrix,
                  const size_type   row,
                  const size_type   index);
 
         /**
-         * 这个对象所代表的元素的行号。
-         *
+         * Row number of the element represented by this object.
          */
         size_type
         row() const;
 
         /**
-         * 这个对象所代表的元素在行中的索引。
-         *
+         * Index in row of the element represented by this object.
          */
         size_type
         index() const;
 
         /**
-         * 这个对象所代表的元素的列号。
-         *
+         * Column number of the element represented by this object.
          */
         size_type
         column() const;
 
         /**
-         * 这个矩阵条目的值。
-         *
+         * Value of this matrix entry.
          */
         PetscScalar
         value() const;
 
         /**
-         * 异常情况
-         *
+         * Exception
          */
         DeclException0(ExcBeyondEndOfMatrix);
         /**
-         * 异常情况
-         *
+         * Exception
          */
         DeclException3(ExcAccessToNonlocalRow,
                        int,
@@ -130,39 +128,43 @@ namespace PETScWrappers
 
       private:
         /**
-         * 访问的矩阵。
-         *
+         * The matrix accessed.
          */
         mutable MatrixBase *matrix;
 
         /**
-         * 当前行数。
-         *
+         * Current row number.
          */
         size_type a_row;
 
         /**
-         * 当前行的索引。
-         *
+         * Current index in row.
          */
         size_type a_index;
 
         /**
-         * 缓存，我们在这里存储当前行的列索引。这是必要的，因为PETSc对其矩阵元素的访问是相当困难的，当我们进入某一行时，一次性复制该行的所有列项，要比反复向PETSc索取单个列项更有效率。这也有一定道理，因为我们很可能会按顺序访问它们。
-         * 为了使迭代器/存取器的复制具有可接受的性能，我们为这些条目保留一个共享指针，以便在必要时有多个存取器可以访问这些数据。
+         * Cache where we store the column indices of the present row. This is
+         * necessary, since PETSc makes access to the elements of its matrices
+         * rather hard, and it is much more efficient to copy all column
+         * entries of a row once when we enter it than repeatedly asking PETSc
+         * for individual ones. This also makes some sense since it is likely
+         * that we will access them sequentially anyway.
          *
+         * In order to make copying of iterators/accessor of acceptable
+         * performance, we keep a shared pointer to these entries so that more
+         * than one accessor can access this data if necessary.
          */
         std::shared_ptr<const std::vector<size_type>> colnum_cache;
 
         /**
-         * 这个行的值的类似缓存。
-         *
+         * Similar cache for the values of this row.
          */
         std::shared_ptr<const std::vector<PetscScalar>> value_cache;
 
         /**
-         * 丢弃旧的行缓存（它们可能仍然被其他访问器使用），并为这个访问器目前所指向的行生成新的行缓存。
-         *
+         * Discard the old row caches (they may still be used by other
+         * accessors) and generate new ones for the row pointed to presently
+         * by this accessor.
          */
         void
         visit_present_row();
@@ -173,69 +175,62 @@ namespace PETScWrappers
 
     public:
       /**
-       * 声明容器大小的类型。
-       *
+       * Declare type for container size.
        */
       using size_type = types::global_dof_index;
 
       /**
-       * 构造函数。在矩阵 @p matrix
-       * 中为给定的行和其中的索引创建一个迭代器。
-       *
+       * Constructor. Create an iterator into the matrix @p matrix for the
+       * given row and the index within it.
        */
       const_iterator(const MatrixBase *matrix,
                      const size_type   row,
                      const size_type   index);
 
       /**
-       * 前缀增量。
-       *
+       * Prefix increment.
        */
       const_iterator &
       operator++();
 
       /**
-       * 后缀增量。
-       *
+       * Postfix increment.
        */
       const_iterator
       operator++(int);
 
       /**
-       * 撤消运算符。
-       *
+       * Dereferencing operator.
        */
       const Accessor &operator*() const;
 
       /**
-       * 解除引用操作符。
-       *
+       * Dereferencing operator.
        */
       const Accessor *operator->() const;
 
       /**
-       * 比较。真，如果两个迭代器都指向同一个矩阵位置。
-       *
+       * Comparison. True, if both iterators point to the same matrix
+       * position.
        */
       bool
       operator==(const const_iterator &) const;
       /**
-       * <tt>==</tt>的倒数。
-       *
+       * Inverse of <tt>==</tt>.
        */
       bool
       operator!=(const const_iterator &) const;
 
       /**
-       * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
-       *
+       * Comparison operator. Result is true if either the first row number is
+       * smaller or if the row numbers are equal and the first index is
+       * smaller.
        */
       bool
       operator<(const const_iterator &) const;
 
       /**
-       * 异常情况
-       *
+       * Exception
        */
       DeclException2(ExcInvalidIndexWithinRow,
                      int,
@@ -245,8 +240,7 @@ namespace PETScWrappers
 
     private:
       /**
-       * 存储一个访问器类的对象。
-       *
+       * Store an object of the accessor class.
        */
       Accessor accessor;
     };
@@ -255,90 +249,127 @@ namespace PETScWrappers
 
 
   /**
-   * 所有在PETSc矩阵类型之上实现的矩阵类的基类。由于在PETSc中，所有的矩阵类型（即顺序和平行，稀疏，阻塞等）都是通过填充一个抽象对象的内容来建立的，而这个抽象对象只能通过一个独立于实际矩阵类型的指针来引用，所以我们可以在这个基类中实现几乎所有的矩阵功能。然后，派生类将只需要提供创建一种或另一种矩阵的功能。
-   * 这个类的接口是以deal.II中现有的SparseMatrix类为模型的。它有几乎相同的成员函数，而且通常是可以交换的。然而，由于PETSc只支持单一的标量类型（要么是双数、浮点数，要么是复杂的数据类型），所以它没有模板化，只能与你的PETSc安装中定义的数据类型PetscScalar一起工作。
-   * 请注意，只有在矩阵装配后调用了函数 @p MatAssemblyBegin
-   * 和 @p MatAssemblyEnd
-   * 的情况下，PETSc才能保证操作符合你的期望。因此，你需要在实际使用矩阵之前调用
-   * SparseMatrix::compress()  。这也会调用 @p MatCompress
-   * ，通过丢弃未使用的元素来压缩稀疏矩阵的存储格式。PETSc允许在调用这些函数后继续装配矩阵，但由于此后不再有可用的条目，所以最好在装配阶段结束后，在主动使用矩阵之前，只调用一次
-   * SparseMatrix::compress() 。
+   * Base class for all matrix classes that are implemented on top of the
+   * PETSc matrix types. Since in PETSc all matrix types (i.e. sequential and
+   * parallel, sparse, blocked, etc.)  are built by filling the contents of an
+   * abstract object that is only referenced through a pointer of a type that
+   * is independent of the actual matrix type, we can implement almost all
+   * functionality of matrices in this base class. Derived classes will then
+   * only have to provide the functionality to create one or the other kind of
+   * matrix.
+   *
+   * The interface of this class is modeled after the existing SparseMatrix
+   * class in deal.II. It has almost the same member functions, and is often
+   * exchangeable. However, since PETSc only supports a single scalar type
+   * (either double, float, or a complex data type), it is not templated, and
+   * only works with whatever your PETSc installation has defined the data
+   * type PetscScalar to.
+   *
+   * Note that PETSc only guarantees that operations do what you expect if the
+   * functions @p MatAssemblyBegin and @p MatAssemblyEnd have been called
+   * after matrix assembly. Therefore, you need to call
+   * SparseMatrix::compress() before you actually use the matrix. This also
+   * calls @p MatCompress that compresses the storage format for sparse
+   * matrices by discarding unused elements. PETSc allows to continue with
+   * assembling the matrix after calls to these functions, but since there are
+   * no more free entries available after that any more, it is better to only
+   * call SparseMatrix::compress() once at the end of the assembly stage and
+   * before the matrix is actively used.
+   *
    * @ingroup PETScWrappers
    * @ingroup Matrix1
-   *
    */
   class MatrixBase : public Subscriptor
   {
   public:
     /**
-     * 为迭代器类声明一个别名。
-     *
+     * Declare an alias for the iterator class.
      */
     using const_iterator = MatrixIterators::const_iterator;
 
     /**
-     * 声明容器大小的类型。
-     *
+     * Declare type for container size.
      */
     using size_type = types::global_dof_index;
 
     /**
-     * 声明一个类似于所有其他容器类的别名。
-     *
+     * Declare an alias in analogy to all the other container classes.
      */
     using value_type = PetscScalar;
 
     /**
-     * 默认的构造函数。
-     *
+     * Default constructor.
      */
     MatrixBase();
 
     /**
-     * 复制构造函数。它被删除了，因为在不知道所存储的矩阵的具体种类的情况下复制这个基类，可能会错过重要的细节，而且如果矩阵很大的话，也会很昂贵。
-     *
+     * Copy constructor. It is deleted as copying this base class
+     * without knowing the concrete kind of matrix stored may both
+     * miss important details and be expensive if the matrix is large.
      */
     MatrixBase(const MatrixBase &) = delete;
 
     /**
-     * 复制操作符。它被删除了，因为在不知道所存储的矩阵的具体种类的情况下复制这个基类可能会错过重要的细节，而且如果矩阵很大的话，费用也很高。
-     *
+     * Copy operator. It is deleted as copying this base class
+     * without knowing the concrete kind of matrix stored may both
+     * miss important details and be expensive if the matrix is large.
      */
     MatrixBase &
     operator=(const MatrixBase &) = delete;
 
     /**
-     * 销毁器。虚化，以便人们可以使用指向这个类的指针。
-     *
+     * Destructor. Made virtual so that one can use pointers to this class.
      */
     virtual ~MatrixBase() override;
 
     /**
-     * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？仅仅是稀疏模式的非零条目？），这个操作只允许在实际要分配的值为零时进行。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留了之前使用的稀疏模式。
-     *
+     * This operator assigns a scalar to a matrix. Since this does usually not
+     * make much sense (should we set all matrix entries to this value? Only
+     * the nonzero entries of the sparsity pattern?), this operation is only
+     * allowed if the actual value to be assigned is zero. This operator only
+     * exists to allow for the obvious notation <tt>matrix=0</tt>, which sets
+     * all elements of the matrix to zero, but keeps the sparsity pattern
+     * previously used.
      */
     MatrixBase &
     operator=(const value_type d);
     /**
-     * 释放所有内存并返回到与调用默认构造函数后相同的状态。
-     *
+     * Release all memory and return to a state just like after having called
+     * the default constructor.
      */
     void
     clear();
 
     /**
-     * 将元素(<i>i,j</i>)设置为 @p value.
-     * 如果现在的对象(来自这个对象的派生类)恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一个新的条目，如果该条目之前不存在的话，这与SparseMatrix类形成了很大的反差，如果该条目不存在则会抛出错误。如果<tt>value</tt>不是一个有限的数字，就会抛出一个异常。
+     * Set the element (<i>i,j</i>) to @p value.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds a new entry to the matrix if
+     * it didn't exist before, very much in contrast to the SparseMatrix class
+     * which throws an error if the entry does not exist. If <tt>value</tt> is
+     * not a finite number an exception is thrown.
      */
     void
     set(const size_type i, const size_type j, const PetscScalar value);
 
     /**
-     * 将FullMatrix<double>中给出的所有元素设置为<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素写入调用的矩阵中，对矩阵的行和列都使用<tt>indices</tt>指定的本地到全球索引。这个函数假设一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中的通常情况。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一些新的条目，如果这些条目之前不存在的话，这与SparseMatrix类非常不同，后者在条目不存在的时候会抛出一个错误。
-     * 可选的参数<tt>elide_zero_values</tt>可以用来指定零值是否应该被插入，还是应该被过滤掉。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+     * Set all elements given in a FullMatrix<double> into the sparse matrix
+     * locations given by <tt>indices</tt>. In other words, this function
+     * writes the elements in <tt>full_matrix</tt> into the calling matrix,
+     * using the local-to-global indexing specified by <tt>indices</tt> for
+     * both the rows and the columns of the matrix. This function assumes a
+     * quadratic sparse matrix and a quadratic full_matrix, the usual
+     * situation in FE calculations.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds some new entries to the matrix
+     * if they didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.
+     *
+     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * specify whether zero values should be inserted anyway or they should be
+     * filtered away. The default value is <tt>false</tt>, i.e., even zero
+     * values are inserted/replaced.
      */
     void
     set(const std::vector<size_type> & indices,
@@ -346,8 +377,9 @@ namespace PETScWrappers
         const bool                     elide_zero_values = false);
 
     /**
-     * 与之前的功能相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的局部到全局的索引。
-     *
+     * Same function as before, but now including the possibility to use
+     * rectangular full_matrices and different local-to-global indexing on
+     * rows and columns, respectively.
      */
     void
     set(const std::vector<size_type> & row_indices,
@@ -356,10 +388,18 @@ namespace PETScWrappers
         const bool                     elide_zero_values = false);
 
     /**
-     * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一些新的条目，如果这些条目之前不存在的话，这与SparseMatrix类非常不同，后者在条目不存在的时候会抛出一个错误。
-     * 可选的参数<tt>elide_zero_values</tt>可以用来指定零值是否应该被插入，还是应该被过滤掉。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+     * Set several elements in the specified row of the matrix with column
+     * indices as given by <tt>col_indices</tt> to the respective value.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds some new entries to the matrix
+     * if they didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.
+     *
+     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * specify whether zero values should be inserted anyway or they should be
+     * filtered away. The default value is <tt>false</tt>, i.e., even zero
+     * values are inserted/replaced.
      */
     void
     set(const size_type                 row,
@@ -368,10 +408,18 @@ namespace PETScWrappers
         const bool                      elide_zero_values = false);
 
     /**
-     * 将几个元素设置为由<tt>values</tt>给定的值，在由col_indices给定的列中设置为稀疏矩阵的行。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一些新的条目，如果这些条目之前不存在的话，这与SparseMatrix类非常不同，后者在条目不存在的时候会抛出一个错误。
-     * 可选的参数<tt>elide_zero_values</tt>可以用来指定零值是否应该被插入，还是应该被过滤掉。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+     * Set several elements to values given by <tt>values</tt> in a given row
+     * in columns given by col_indices into the sparse matrix.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds some new entries to the matrix
+     * if they didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.
+     *
+     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * specify whether zero values should be inserted anyway or they should be
+     * filtered away. The default value is <tt>false</tt>, i.e., even zero
+     * values are inserted/replaced.
      */
     void
     set(const size_type    row,
@@ -381,18 +429,35 @@ namespace PETScWrappers
         const bool         elide_zero_values = false);
 
     /**
-     * 将 @p value 添加到元素（<i>i,j</i>）。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一个新的条目，如果该条目之前不存在的话，这与SparseMatrix类非常不同，后者在该条目不存在的情况下会抛出一个错误。如果<tt>value</tt>不是一个有限的数字，就会抛出一个异常。
+     * Add @p value to the element (<i>i,j</i>).
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds a new entry to the matrix if
+     * it didn't exist before, very much in contrast to the SparseMatrix class
+     * which throws an error if the entry does not exist. If <tt>value</tt> is
+     * not a finite number an exception is thrown.
      */
     void
     add(const size_type i, const size_type j, const PetscScalar value);
 
     /**
-     * 将FullMatrix<double>中给出的所有元素添加到由<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素添加到调用矩阵的相应条目中，使用<tt>indices</tt>为矩阵的行和列指定的本地到全球索引。这个函数假设一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中的通常情况。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一些新的条目，如果这些条目之前不存在的话，这与SparseMatrix类非常不同，后者在条目不存在的时候会抛出一个错误。
-     * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+     * Add all elements given in a FullMatrix<double> into sparse matrix
+     * locations given by <tt>indices</tt>. In other words, this function adds
+     * the elements in <tt>full_matrix</tt> to the respective entries in
+     * calling matrix, using the local-to-global indexing specified by
+     * <tt>indices</tt> for both the rows and the columns of the matrix. This
+     * function assumes a quadratic sparse matrix and a quadratic full_matrix,
+     * the usual situation in FE calculations.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds some new entries to the matrix
+     * if they didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.
+     *
+     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * specify whether zero values should be added anyway or these should be
+     * filtered away and only non-zero data is added. The default value is
+     * <tt>true</tt>, i.e., zero values won't be added into the matrix.
      */
     void
     add(const std::vector<size_type> & indices,
@@ -400,8 +465,9 @@ namespace PETScWrappers
         const bool                     elide_zero_values = true);
 
     /**
-     * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
-     *
+     * Same function as before, but now including the possibility to use
+     * rectangular full_matrices and different local-to-global indexing on
+     * rows and columns, respectively.
      */
     void
     add(const std::vector<size_type> & row_indices,
@@ -410,10 +476,18 @@ namespace PETScWrappers
         const bool                     elide_zero_values = true);
 
     /**
-     * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一些新的条目，如果这些条目之前不存在的话，这与SparseMatrix类非常不同，后者在条目不存在的时候会抛出一个错误。
-     * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+     * Set several elements in the specified row of the matrix with column
+     * indices as given by <tt>col_indices</tt> to the respective value.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds some new entries to the matrix
+     * if they didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.
+     *
+     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * specify whether zero values should be added anyway or these should be
+     * filtered away and only non-zero data is added. The default value is
+     * <tt>true</tt>, i.e., zero values won't be added into the matrix.
      */
     void
     add(const size_type                 row,
@@ -422,10 +496,18 @@ namespace PETScWrappers
         const bool                      elide_zero_values = true);
 
     /**
-     * 在给定的全局矩阵行中，在稀疏矩阵中由col_indices指定的列中添加一个由<tt>values</tt>给出的数值阵列。
-     * 如果现在的对象（来自这个对象的派生类）恰好是一个稀疏矩阵，那么这个函数就会向矩阵添加一些新的条目，如果这些条目之前不存在的话，这与SparseMatrix类形成鲜明对比，后者在条目不存在的时候会抛出一个错误。
-     * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+     * Add an array of values given by <tt>values</tt> in the given global
+     * matrix row at columns specified by col_indices in the sparse matrix.
      *
+     * If the present object (from a derived class of this one) happens to be
+     * a sparse matrix, then this function adds some new entries to the matrix
+     * if they didn't exist before, very much in contrast to the SparseMatrix
+     * class which throws an error if the entry does not exist.
+     *
+     * The optional parameter <tt>elide_zero_values</tt> can be used to
+     * specify whether zero values should be added anyway or these should be
+     * filtered away and only non-zero data is added. The default value is
+     * <tt>true</tt>, i.e., zero values won't be added into the matrix.
      */
     void
     add(const size_type    row,
@@ -436,360 +518,418 @@ namespace PETScWrappers
         const bool         col_indices_are_sorted = false);
 
     /**
-     * 将此<tt>行</tt>中的所有元素设置为零，将其删除。这个函数并不修改分配的非零条目的数量，它只是将一些条目设置为零。不过，它可能会将它们从稀疏模式中删除（但会保留分配的内存，以备以后再次添加新的条目）。
-     * 这个操作用于消除约束（例如由于挂起的节点），并确保我们可以将这个修改写入矩阵，而不需要从矩阵中读取条目（例如非零元素的位置）。
+     * Remove all elements from this <tt>row</tt> by setting them to zero. The
+     * function does not modify the number of allocated nonzero entries, it
+     * only sets some entries to zero. It may drop them from the sparsity
+     * pattern, though (but retains the allocated memory in case new entries
+     * are again added later).
      *
-     * - 如果没有这个操作，消除平行矩阵的约束是一个相当复杂的过程。        第二个参数可以用来将该行的对角线条目设置为一个不同于零的值。默认是将其设置为零。
+     * This operation is used in eliminating constraints (e.g. due to hanging
+     * nodes) and makes sure that we can write this modification to the matrix
+     * without having to read entries (such as the locations of non-zero
+     * elements) from it -- without this operation, removing constraints on
+     * parallel matrices is a rather complicated procedure.
      *
+     * The second parameter can be used to set the diagonal entry of this row
+     * to a value different from zero. The default is to set it to zero.
      */
     void
     clear_row(const size_type row, const PetscScalar new_diag_value = 0);
 
     /**
-     * 与clear_row()相同，只是它同时作用于若干行。
-     * 第二个参数可以用来将所有被清除的行的对角线条目设置为不同于0的内容。请注意，所有这些对角线项都得到相同的值
+     * Same as clear_row(), except that it works on a number of rows at once.
      *
-     * - 如果你想要不同的对角线条目的值，你必须手动设置它们。
-     *
+     * The second parameter can be used to set the diagonal entries of all
+     * cleared rows to something different from zero. Note that all of these
+     * diagonal entries get the same value -- if you want different values for
+     * the diagonal entries, you have to set them by hand.
      */
     void
     clear_rows(const std::vector<size_type> &rows,
                const PetscScalar             new_diag_value = 0);
 
     /**
-     * PETSc矩阵存储了它们自己的稀疏性模式。因此，与我们自己的SparsityPattern类相类似，这个函数压缩了稀疏模式，并允许将得到的矩阵用于所有其他操作，而以前只允许使用汇编函数。因此，一旦你组装了矩阵，就必须调用这个函数。        更多信息请参见  @ref GlossCompress  "压缩分布式对象"
-     * 。
+     * PETSc matrices store their own sparsity patterns. So, in analogy to our
+     * own SparsityPattern class, this function compresses the sparsity
+     * pattern and allows the resulting matrix to be used in all other
+     * operations where before only assembly functions were allowed. This
+     * function must therefore be called once you have assembled the matrix.
      *
+     * See
+     * @ref GlossCompress "Compressing distributed objects"
+     * for more information.
      */
     void
     compress(const VectorOperation::values operation);
 
     /**
-     * 返回条目的值（<i>i,j</i>）。
-     * 这可能是一个昂贵的操作，你应该始终注意在哪里调用这个函数。
-     * 与 @p MatrixBase
-     * 类中的相应函数相比，如果相应的条目不存在于该类的稀疏模式中，我们不会抛出一个异常，因为PETSc并不传输这一信息。
-     * 因此这个函数完全等同于<tt>el()</tt>函数。
+     * Return the value of the entry (<i>i,j</i>).  This may be an expensive
+     * operation and you should always take care where to call this function.
+     * In contrast to the respective function in the @p MatrixBase class, we
+     * don't throw an exception if the respective entry doesn't exist in the
+     * sparsity pattern of this class, since PETSc does not transmit this
+     * information.
      *
+     * This function is therefore exactly equivalent to the <tt>el()</tt>
+     * function.
      */
     PetscScalar
     operator()(const size_type i, const size_type j) const;
 
     /**
-     * 返回矩阵条目的值（<i>i,j</i>）。如果这个条目不存在于稀疏模式中，那么就返回0。虽然这在某些情况下可能很方便，但请注意，由于没有使用矩阵的稀疏性，写出的算法与最优解相比很简单，很慢。
-     *
+     * Return the value of the matrix entry (<i>i,j</i>). If this entry does
+     * not exist in the sparsity pattern, then zero is returned. While this
+     * may be convenient in some cases, note that it is simple to write
+     * algorithms that are slow compared to an optimal solution, since the
+     * sparsity of the matrix is not used.
      */
     PetscScalar
     el(const size_type i, const size_type j) const;
 
     /**
-     * 返回第<i>i</i>行中的主对角线元素。如果矩阵不是二次的，这个函数会抛出一个错误。
-     * 由于我们不能直接访问底层数据结构，这个函数并不比使用el()函数的元素访问快。然而，我们提供这个函数是为了与SparseMatrix类兼容。
+     * Return the main diagonal element in the <i>i</i>th row. This function
+     * throws an error if the matrix is not quadratic.
      *
+     * Since we do not have direct access to the underlying data structure,
+     * this function is no faster than the elementwise access using the el()
+     * function. However, we provide this function for compatibility with the
+     * SparseMatrix class.
      */
     PetscScalar
     diag_element(const size_type i) const;
 
     /**
-     * 返回这个矩阵的行数。
-     *
+     * Return the number of rows in this matrix.
      */
     size_type
     m() const;
 
     /**
-     * 返回这个矩阵中的列数。
-     *
+     * Return the number of columns in this matrix.
      */
     size_type
     n() const;
 
     /**
-     * 返回矩阵的本地维度，即存储在当前MPI进程中的行数。对于顺序矩阵，这个数字与m()相同，但对于并行矩阵，这个数字可能更小。
-     * 要想知道到底哪些元素被存储在本地，可以使用local_range()。
+     * Return the local dimension of the matrix, i.e. the number of rows
+     * stored on the present MPI process. For sequential matrices, this number
+     * is the same as m(), but for parallel matrices it may be smaller.
      *
+     * To figure out which elements exactly are stored locally, use
+     * local_range().
      */
     size_type
     local_size() const;
 
     /**
-     * 返回一对指数，表明该矩阵的哪些行是本地存储的。第一个数字是存储的第一行的索引，第二个数字是本地存储的最后一行之后的那一行的索引。如果这是一个连续的矩阵，那么结果将是一对(0,m())，否则将是一对(i,i+n)，其中<tt>n=local_size()</tt>。
-     *
+     * Return a pair of indices indicating which rows of this matrix are
+     * stored locally. The first number is the index of the first row stored,
+     * the second the index of the one past the last one that is stored
+     * locally. If this is a sequential matrix, then the result will be the
+     * pair (0,m()), otherwise it will be a pair (i,i+n), where
+     * <tt>n=local_size()</tt>.
      */
     std::pair<size_type, size_type>
     local_range() const;
 
     /**
-     * 返回 @p index 是否在本地范围内，另见local_range()。
-     *
+     * Return whether @p index is in the local range or not, see also
+     * local_range().
      */
     bool
     in_local_range(const size_type index) const;
 
     /**
-     * 返回对与该矩阵一起使用的MPI通信器对象的引用。这个函数必须在派生类中实现。
-     *
+     * Return a reference to the MPI communicator object in use with this
+     * matrix. This function has to be implemented in derived classes.
      */
     virtual const MPI_Comm &
     get_mpi_communicator() const = 0;
 
     /**
-     * 返回这个矩阵的非零元素的数量。实际上，它返回的是稀疏模式中的条目数；如果任何一个条目碰巧是零，无论如何都会被计算在内。
-     *
+     * Return the number of nonzero elements of this matrix. Actually, it
+     * returns the number of entries in the sparsity pattern; if any of the
+     * entries should happen to be zero, it is counted anyway.
      */
     size_type
     n_nonzero_elements() const;
 
     /**
-     * 特定行中的条目数。
-     *
+     * Number of entries in a specific row.
      */
     size_type
     row_length(const size_type row) const;
 
     /**
-     * 返回矩阵的l1准则，即 $|M|_1=max_{all columns j}\sum_{all rows
-     * i} |M_ij|$
-     * ，（最大列数之和）。这是一个自然的矩阵准则，与向量的l1准则兼容，即
-     * $|Mv|_1\leq |M|_1 |v|_1$  。(参看Haemmerlin-Hoffmann: Numerische
+     * Return the l1-norm of the matrix, that is $|M|_1=max_{all columns
+     * j}\sum_{all rows i} |M_ij|$, (max. sum of columns). This is the natural
+     * matrix norm that is compatible to the l1-norm for vectors, i.e.
+     * $|Mv|_1\leq |M|_1 |v|_1$. (cf. Haemmerlin-Hoffmann: Numerische
      * Mathematik)
-     *
      */
     PetscReal
     l1_norm() const;
 
     /**
-     * 返回矩阵的linfty-norm，即 $|M|_infty=max_{all rows i}\sum_{all
-     * columns j} |M_ij|$
-     * ，（最大行数之和）。这是一个自然的矩阵规范，与向量的linfty-norm兼容，即
-     * $|Mv|_infty \leq |M|_infty |v|_infty$  。(参看Haemmerlin-Hoffmann:
+     * Return the linfty-norm of the matrix, that is $|M|_infty=max_{all rows
+     * i}\sum_{all columns j} |M_ij|$, (max. sum of rows). This is the natural
+     * matrix norm that is compatible to the linfty-norm of vectors, i.e.
+     * $|Mv|_infty \leq |M|_infty |v|_infty$. (cf. Haemmerlin-Hoffmann:
      * Numerische Mathematik)
-     *
      */
     PetscReal
     linfty_norm() const;
 
     /**
-     * 返回矩阵的frobenius
-     * norm，即矩阵中所有条目的平方之和的平方根。
-     *
+     * Return the frobenius norm of the matrix, i.e. the square root of the
+     * sum of squares of all entries in the matrix.
      */
     PetscReal
     frobenius_norm() const;
 
 
     /**
-     * 返回向量 $v$ 相对于该矩阵诱导的准则的平方，即
-     * $\left(v,Mv\right)$
-     * 。这很有用，例如在有限元背景下，一个函数的 $L_2$
-     * 规范等于相对于代表有限元函数节点值的向量的质量矩阵的矩阵规范。
-     * 很明显，对于这个操作，矩阵需要是二次的。
-     * 这个函数的实现没有deal.II中使用的 @p MatrixBase
-     * 类（即原始的，而不是PETSc封装类）的效率高，因为PETSc不支持这个操作，需要一个临时向量。
-     * 注意，如果当前对象代表一个并行的分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么给出的向量也必须是一个分布式向量。反之，如果矩阵不是分布式的，那么向量也不可能是。
+     * Return the square of the norm of the vector $v$ with respect to the
+     * norm induced by this matrix, i.e. $\left(v,Mv\right)$. This is useful,
+     * e.g. in the finite element context, where the $L_2$ norm of a function
+     * equals the matrix norm with respect to the mass matrix of the vector
+     * representing the nodal values of the finite element function.
      *
+     * Obviously, the matrix needs to be quadratic for this operation.
+     *
+     * The implementation of this function is not as efficient as the one in
+     * the @p MatrixBase class used in deal.II (i.e. the original one, not the
+     * PETSc wrapper class) since PETSc doesn't support this operation and
+     * needs a temporary vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then the given
+     * vector has to be a distributed vector as well. Conversely, if the
+     * matrix is not distributed, then neither may the vector be.
      */
     PetscScalar
     matrix_norm_square(const VectorBase &v) const;
 
 
     /**
-     * 计算矩阵标量乘积  $\left(u,Mv\right)$  。
-     * 这个函数的实现不如deal.II中使用的 @p MatrixBase
-     * 类（即原始函数，而不是PETSc封装类）的效率高，因为PETSc不支持这个操作，需要一个临时矢量。
-     * 注意，如果当前对象代表一个平行分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么两个向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不可能是。
+     * Compute the matrix scalar product $\left(u,Mv\right)$.
      *
+     * The implementation of this function is not as efficient as the one in
+     * the @p MatrixBase class used in deal.II (i.e. the original one, not the
+     * PETSc wrapper class) since PETSc doesn't support this operation and
+     * needs a temporary vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
+     * have to be distributed vectors as well. Conversely, if the matrix is
+     * not distributed, then neither of the vectors may be.
      */
     PetscScalar
     matrix_scalar_product(const VectorBase &u, const VectorBase &v) const;
 
     /**
-     * 返回矩阵的轨迹，即矩阵中所有对角线项的总和。
-     *
+     * Return the trace of the matrix, i.e. the sum of all diagonal entries in
+     * the matrix.
      */
     PetscScalar
     trace() const;
 
     /**
-     * 将整个矩阵乘以一个固定系数。
-     *
+     * Multiply the entire matrix by a fixed factor.
      */
     MatrixBase &
     operator*=(const PetscScalar factor);
 
     /**
-     * 用整个矩阵除以一个固定系数。
-     *
+     * Divide the entire matrix by a fixed factor.
      */
     MatrixBase &
     operator/=(const PetscScalar factor);
 
 
     /**
-     * 将矩阵 @p other 按系数 @p factor
-     * 的比例添加到当前矩阵中。
-     *
+     * Add the matrix @p other scaled by the factor @p factor to the current
+     * matrix.
      */
     MatrixBase &
     add(const PetscScalar factor, const MatrixBase &other);
 
     /**
-     * 矩阵-向量乘法：让<i>dst =
-     * M*src</i>与<i>M</i>是这个矩阵。
-     * 源和目的不能是同一个向量。
-     * 注意，如果当前对象代表一个平行分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么两个向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不可以是。
+     * Matrix-vector multiplication: let <i>dst = M*src</i> with <i>M</i>
+     * being this matrix.
      *
+     * Source and destination must not be the same vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
+     * have to be distributed vectors as well. Conversely, if the matrix is
+     * not distributed, then neither of the vectors may be.
      */
     void
     vmult(VectorBase &dst, const VectorBase &src) const;
 
     /**
-     * 矩阵-向量乘法：让<i>dst =
-     * M<sup>T</sup>*src</i>与<i>M</i>为这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
-     * 源和目的不能是同一个向量。
-     * 注意，如果当前对象代表一个并行分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么两个向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不可以是。
+     * Matrix-vector multiplication: let <i>dst = M<sup>T</sup>*src</i> with
+     * <i>M</i> being this matrix. This function does the same as vmult() but
+     * takes the transposed matrix.
      *
+     * Source and destination must not be the same vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
+     * have to be distributed vectors as well. Conversely, if the matrix is
+     * not distributed, then neither of the vectors may be.
      */
     void
     Tvmult(VectorBase &dst, const VectorBase &src) const;
 
     /**
-     * 加法
-     * 矩阵-向量乘法。在<i>dst</i>上添加<i>M*src</i>，<i>M</i>为该矩阵。
-     * 源和目的不能是同一个向量。
-     * 注意，如果当前对象代表一个平行分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么两个向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不可以是。
+     * Adding Matrix-vector multiplication. Add <i>M*src</i> on <i>dst</i>
+     * with <i>M</i> being this matrix.
      *
+     * Source and destination must not be the same vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
+     * have to be distributed vectors as well. Conversely, if the matrix is
+     * not distributed, then neither of the vectors may be.
      */
     void
     vmult_add(VectorBase &dst, const VectorBase &src) const;
 
     /**
-     * 加法
-     * 矩阵-向量乘法。将<i>M<sup>T</sup>*src</i>加到<i>dst</i>，<i>M</i>是这个矩阵。这个函数与vmult_add()的作用相同，但需要转置的矩阵。
-     * 来源和目的地不能是同一个向量。
-     * 注意，如果当前对象代表一个并行分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么两个向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不可以是。
+     * Adding Matrix-vector multiplication. Add <i>M<sup>T</sup>*src</i> to
+     * <i>dst</i> with <i>M</i> being this matrix. This function does the same
+     * as vmult_add() but takes the transposed matrix.
      *
+     * Source and destination must not be the same vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
+     * have to be distributed vectors as well. Conversely, if the matrix is
+     * not distributed, then neither of the vectors may be.
      */
     void
     Tvmult_add(VectorBase &dst, const VectorBase &src) const;
 
     /**
-     * 计算一个方程<i>Mx=b</i>的残差，其中残差被定义为<i>r=b-Mx</i>。将残差写入
-     * @p dst.  返回残差向量的<i>l<sub>2</sub></i>准则。
-     * 源<i>x</i>和目的<i>dst</i>不能是同一个向量。
-     * 注意，如果当前对象代表一个平行分布式矩阵（类型为
-     * PETScWrappers::MPI::SparseMatrix),
-     * ，那么所有的向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不能是。
+     * Compute the residual of an equation <i>Mx=b</i>, where the residual is
+     * defined to be <i>r=b-Mx</i>. Write the residual into @p dst. The
+     * <i>l<sub>2</sub></i> norm of the residual vector is returned.
      *
+     * Source <i>x</i> and destination <i>dst</i> must not be the same vector.
+     *
+     * Note that if the current object represents a parallel distributed
+     * matrix (of type PETScWrappers::MPI::SparseMatrix), then all vectors
+     * have to be distributed vectors as well. Conversely, if the matrix is
+     * not distributed, then neither of the vectors may be.
      */
     PetscScalar
     residual(VectorBase &dst, const VectorBase &x, const VectorBase &b) const;
 
     /**
-     * 迭代器从第一个条目开始。这只能在拥有整个矩阵的处理器上调用。在所有其他情况下，请参考以行号为参数的begin()的版本。
-     *
+     * Iterator starting at the first entry. This can only be called on a
+     * processor owning the entire matrix. In all other cases refer to the
+     * version of begin() taking a row number as an argument.
      */
     const_iterator
     begin() const;
 
     /**
-     * 最后的迭代器。这只能在拥有整个矩阵的处理器上调用。在所有其他情况下，请参考end()的版本，以一个行号作为参数。
-     *
+     * Final iterator. This can only be called on a processor owning the entire
+     * matrix. In all other cases refer to the version of end() taking a row
+     * number as an argument.
      */
     const_iterator
     end() const;
 
     /**
-     * 迭代器从第 @p r. 行的第一个条目开始
-     * 注意，如果给定的行是空的，即不包含任何非零条目，那么这个函数返回的迭代器就等于<tt>end(r)</tt>。还要注意的是，在这种情况下，迭代器可能不能被解除引用。
+     * Iterator starting at the first entry of row @p r.
      *
+     * Note that if the given row is empty, i.e. does not contain any nonzero
+     * entries, then the iterator returned by this function equals
+     * <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable
+     * in that case.
      */
     const_iterator
     begin(const size_type r) const;
 
     /**
-     * 行<tt>r</tt>的最终迭代器。它指向超过行 @p r,
-     * 末尾的第一个元素，或者超过整个稀疏模式的末尾。
-     * 请注意，结束迭代器不一定是可被解除引用的。特别是如果它是一个矩阵的最后一行的结束迭代器，情况更是如此。
+     * Final iterator of row <tt>r</tt>. It points to the first element past
+     * the end of line @p r, or past the end of the entire sparsity pattern.
      *
+     * Note that the end iterator is not necessarily dereferenceable. This is
+     * in particular the case if it is the end iterator for the last row of a
+     * matrix.
      */
     const_iterator
     end(const size_type r) const;
 
     /**
-     * 转换操作符，以获得对底层PETSc类型的访问。如果你这样做，你就切断了这个类可能需要的一些信息，所以这个转换操作符应该只在你知道你要做什么的时候使用。特别是，它应该只用于对矩阵的只读操作。
-     *
+     * Conversion operator to gain access to the underlying PETSc type. If you
+     * do this, you cut this class off some information it may need, so this
+     * conversion operator should only be used if you know what you do. In
+     * particular, it should only be used for read-only operations into the
+     * matrix.
      */
     operator Mat() const;
 
     /**
-     * 返回一个对底层PETSc类型的引用。它可以用来修改底层数据，所以只有在你知道你在做什么的时候才使用它。
-     *
+     * Return a reference to the underlying PETSc type. It can be used to
+     * modify the underlying data, so use it only when you know what you
+     * are doing.
      */
     Mat &
     petsc_matrix();
 
     /**
-     * 对一个矩阵进行原地转置。
-     *
+     * Make an in-place transpose of a matrix.
      */
     void
     transpose();
 
     /**
-     * 测试矩阵是否是对称的。 默认公差为 $1000\times32$
-     * -位机器精度。
-     *
+     * Test whether a matrix is symmetric.  Default tolerance is
+     * $1000\times32$-bit machine precision.
      */
     PetscBool
     is_symmetric(const double tolerance = 1.e-12);
 
     /**
-     * 测试一个矩阵是否是赫米特的，即它是其转置的复共轭。默认公差为
-     * $1000\times32$  -位机器精度。
-     *
+     * Test whether a matrix is Hermitian, i.e. it is the complex conjugate of
+     * its transpose. Default tolerance is $1000\times32$-bit machine
+     * precision.
      */
     PetscBool
     is_hermitian(const double tolerance = 1.e-12);
 
     /**
-     * 使用PETSc内部矩阵查看器功能<tt>MatView</tt>打印PETSc矩阵对象的值。默认格式是打印非零矩阵元素。对于其他有效的查看格式，请参考http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MatView.html
-     *
+     * Print the PETSc matrix object values using PETSc internal matrix viewer
+     * function <tt>MatView</tt>. The default format prints the non- zero
+     * matrix elements. For other valid view formats, consult
+     * http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MatView.html
      */
     void
     write_ascii(const PetscViewerFormat format = PETSC_VIEWER_DEFAULT);
 
     /**
-     * 打印矩阵的元素到给定的输出流。          @param[in,out]
-     * out 要写入的输出流。      @param[in]  alternative_output
-     * 这个参数被忽略。它的存在是为了与其他矩阵类中的类似函数兼容。
+     * Print the elements of a matrix to the given output stream.
      *
+     * @param[in,out] out The output stream to which to write.
+     * @param[in] alternative_output This argument is ignored. It exists for
+     * compatibility with similar functions in other matrix classes.
      */
     void
     print(std::ostream &out, const bool alternative_output = false) const;
 
     /**
-     * 返回该矩阵在该CPU上所消耗的字节数。
-     *
+     * Return the number bytes consumed by this matrix on this CPU.
      */
     std::size_t
     memory_consumption() const;
 
     /**
-     * 异常情况
-     *
+     * Exception
      */
     DeclExceptionMsg(ExcSourceEqualsDestination,
                      "You are attempting an operation on two matrices that "
@@ -797,8 +937,7 @@ namespace PETScWrappers
                      "two objects are in fact different.");
 
     /**
-     * 异常情况。
-     *
+     * Exception.
      */
     DeclException2(ExcWrongMode,
                    int,
@@ -811,86 +950,113 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 一个PETSc中的通用矩阵对象。实际的类型是稀疏矩阵，在构造函数中设置。
-     *
+     * A generic matrix object in PETSc. The actual type, a sparse matrix, is
+     * set in the constructor.
      */
     Mat matrix;
 
     /**
-     * 存储最后一个动作是写还是加操作。
-     *
+     * Store whether the last action was a write or add operation.
      */
     VectorOperation::values last_action;
 
     /**
-     * 确保此调用后的动作所需的添加/设置模式与当前模式兼容。应该从所有访问矩阵元素的内部函数中调用。
-     *
+     * Ensure that the add/set mode that is required for actions following
+     * this call is compatible with the current mode. Should be called from
+     * all internal functions accessing matrix elements.
      */
     void
     prepare_action(const VectorOperation::values new_action);
 
     /**
-     * 内部函数，检查是否有未决的插入/添加操作。否则会抛出一个异常。在调用任何修改矩阵的PETSc内部函数之前，都是有用的。
-     *
+     * Internal function that checks that there are no pending insert/add
+     * operations. Throws an exception otherwise. Useful before calling any
+     * PETSc internal functions modifying the matrix.
      */
     void
     assert_is_compressed();
 
     /**
-     * 对于某些矩阵存储格式，特别是PETSc分布式块状矩阵，单个元素的设置和添加操作不能自由混合。相反，当我们想从设置元素切换到添加元素时，我们必须同步操作。BlockMatrixBase通过为每个块调用这个辅助函数来自动同步访问。这个函数确保矩阵处于允许添加元素的状态；如果它之前已经处于这种状态，那么这个函数什么也不做。
-     *
+     * For some matrix storage formats, in particular for the PETSc
+     * distributed blockmatrices, set and add operations on individual
+     * elements can not be freely mixed. Rather, one has to synchronize
+     * operations when one wants to switch from setting elements to adding to
+     * elements. BlockMatrixBase automatically synchronizes the access by
+     * calling this helper function for each block. This function ensures that
+     * the matrix is in a state that allows adding elements; if it previously
+     * already was in this state, the function does nothing.
      */
     void
     prepare_add();
     /**
-     * 与prepare_add()相同，但如果该类中的元素表示法需要这样的操作，则为设置元素准备矩阵。
-     *
+     * Same as prepare_add() but prepare the matrix for setting elements if
+     * the representation of elements in this class requires such an
+     * operation.
      */
     void
     prepare_set();
 
     /**
-     * 执行矩阵-矩阵乘法 $C = AB$
-     * 的基础函数，或者，如果给出一个大小与B兼容的向量
-     * $V$ ，则为 $C = A \text{diag}(V) B$ ，其中 $\text{diag}(V)$
-     * 定义了一个带有向量项的对角矩阵。
-     * 这个函数假定调用矩阵 $A$ 和 $B$ 的大小兼容。 $C$
-     * 的大小将在本函数中设置。        矩阵 $C$
-     * 的内容和稀疏模式将被这个函数重置，所以要确保稀疏模式没有在你的程序中其他地方使用。这是一个昂贵的操作，所以在使用这个函数之前请三思。
+     * Base function to perform the matrix-matrix multiplication $C = AB$,
+     * or, if a vector $V$ whose size is compatible with B is given,
+     * $C = A \text{diag}(V) B$, where $\text{diag}(V)$ defines a
+     * diagonal matrix with the vector entries.
      *
+     * This function assumes that the calling matrix $A$ and $B$
+     * have compatible sizes. The size of $C$ will be set within this
+     * function.
+     *
+     * The content as well as the sparsity pattern of the matrix $C$ will be
+     * reset by this function, so make sure that the sparsity pattern is not
+     * used somewhere else in your program. This is an expensive operation, so
+     * think twice before you use this function.
      */
     void
     mmult(MatrixBase &C, const MatrixBase &B, const VectorBase &V) const;
 
     /**
-     * 基准函数，用于执行矩阵与<tt>this</tt>的转置相乘，即
-     * $C = A^T B$ ，或者，如果给出一个可选矢量 $V$
-     * ，其大小与 $B$ 兼容，则为 $C = A^T \text{diag}(V) B$
-     * ，其中 $\text{diag}(V)$
-     * 定义了一个带有矢量项的对角矩阵。
-     * 这个函数假设调用矩阵 $A$ 和 $B$ 的大小兼容。 $C$
-     * 的大小将在本函数中设置。        矩阵 $C$
-     * 的内容和稀疏模式将被这个函数改变，所以要确保稀疏模式没有在你的程序中其他地方使用。这是一个昂贵的操作，所以在使用这个函数之前请三思。
+     * Base function to perform the matrix-matrix multiplication with
+     * the transpose of <tt>this</tt>, i.e., $C = A^T B$, or,
+     * if an optional vector $V$ whose size is compatible with $B$ is given,
+     * $C = A^T \text{diag}(V) B$, where $\text{diag}(V)$ defines a
+     * diagonal matrix with the vector entries.
      *
+     * This function assumes that the calling matrix $A$ and $B$
+     * have compatible sizes. The size of $C$ will be set within this
+     * function.
+     *
+     * The content as well as the sparsity pattern of the matrix $C$ will be
+     * changed by this function, so make sure that the sparsity pattern is not
+     * used somewhere else in your program. This is an expensive operation, so
+     * think twice before you use this function.
      */
     void
     Tmmult(MatrixBase &C, const MatrixBase &B, const VectorBase &V) const;
 
   private:
     /**
-     * 一个内部的整数数组，当向（大的）稀疏矩阵添加/插入本地数据时，用于存储列索引。
-     * 这个变量并不存储矩阵对象的任何
-     * "状态"。相反，它只是被这个类的一些成员函数用作临时缓冲区。与所有的
-     * @p mutable
-     * 成员变量一样，除非有突变器的保护，否则对这个变量的使用不是线程安全的。然而，由于PETSc矩阵操作无论如何都不是线程安全的，所以没有必要试图使事情变得线程安全，所以没有与这个变量相关的突变。
+     * An internal array of integer values that is used to store the column
+     * indices when adding/inserting local data into the (large) sparse
+     * matrix.
      *
+     * This variable does not store any "state" of the matrix
+     * object. Rather, it is only used as a temporary buffer by some
+     * of the member functions of this class. As with all @p mutable
+     * member variables, the use of this variable is not thread-safe
+     * unless guarded by a mutex. However, since PETSc matrix
+     * operations are not thread-safe anyway, there is no need to
+     * attempt to make things thread-safe, and so there is no mutex
+     * associated with this variable.
      */
     mutable std::vector<PetscInt> column_indices;
 
     /**
-     * 一个内部的双值数组，在向（大的）稀疏矩阵添加/插入本地数据时，用于存储列索引。
-     * 与上面 @p column_indices 变量的注释相同。
+     * An internal array of double values that is used to store the column
+     * indices when adding/inserting local data into the (large) sparse
+     * matrix.
      *
+     * The same comment as for the @p column_indices variable above
+     * applies.
      */
     mutable std::vector<PetscScalar> column_values;
 
@@ -1255,7 +1421,7 @@ namespace PETScWrappers
                   const size_type *  col_indices,
                   const PetscScalar *values,
                   const bool         elide_zero_values,
-                  const bool  /*col_indices_are_sorted*/ )
+                  const bool /*col_indices_are_sorted*/)
   {
     (void)elide_zero_values;
 
@@ -1450,6 +1616,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
- /*---------------------------- petsc_matrix_base.h --------------------------*/ 
-
-
+/*---------------------------- petsc_matrix_base.h --------------------------*/

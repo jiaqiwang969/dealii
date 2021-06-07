@@ -1,3 +1,4 @@
+//include/deal.II-translator/meshworker/local_integrator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
@@ -38,57 +39,51 @@ namespace MeshWorker
 #endif
 
   /**
-   * A local integrator object, which can be used to simplify the call of
-   * loop(). Instead of providing the three local integration functions
-   * separately, we bundle them as virtual functions in this class.
-   *
-   * Additionally, since we cannot have a virtual null function, we provide
-   * flags, which allow us to indicate, whether we want to integrate on
-   * boundary and interior faces. These flags are true by default, but can be
-   * modified by applications to speed up the loop.
-   *
-   * If a function is not overloaded in a derived class, but its usage flag is
-   * true, the function will cause an exception ExcPureFunction.
-   *
+   * 一个局部积分器对象，它可以用来简化loop()的调用。我们没有单独提供这三个局部积分函数，而是在这个类中把它们捆绑成虚拟函数。
+   * 此外，由于我们不能有一个虚拟的空函数，我们提供了标志，允许我们指示是否要在边界和内部面进行积分。这些标志在默认情况下为真，但可以由应用程序修改，以加快循环速度。
+   * 如果一个函数在派生类中没有被重载，但它的使用标志是真的，那么这个函数将导致一个异常ExcPureFunction。
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim, typename number = double>
   class LocalIntegrator : public Subscriptor
   {
   public:
     /**
-     * The constructor setting default values, namely all integration flags to
-     * true.
+     * 构造函数设置默认值，即所有集成标志为真。
+     *
      */
     LocalIntegrator();
 
     /**
-     * The constructor setting integration flags to specified values.
+     * 构造函数将集成标志设置为指定值。
+     *
      */
     LocalIntegrator(bool use_cell, bool use_boundary, bool use_face);
 
     /**
-     * The empty virtual destructor.
+     * 空的虚拟析构器。
+     *
      */
     virtual ~LocalIntegrator() override = default;
 
     /**
-     * Virtual function for integrating on cells. Throws exception
-     * PureFunctionCalled if not overloaded by a derived class.
+     * 用于在单元格上集成的虚拟函数。如果没有被派生类重载，则抛出PureFunctionCalled异常。
+     *
      */
     virtual void
     cell(DoFInfo<dim, spacedim, number> &dinfo,
          IntegrationInfo<dim, spacedim> &info) const;
     /**
-     * Virtual function for integrating on boundary faces. Throws exception
-     * PureFunctionCalled if not overloaded by a derived class.
+     * 用于边界面积分的虚拟函数。如果没有被派生类重载，则抛出PureFunctionCalled异常。
+     *
      */
     virtual void
     boundary(DoFInfo<dim, spacedim, number> &dinfo,
              IntegrationInfo<dim, spacedim> &info) const;
     /**
-     * Virtual function for integrating on interior faces. Throws exception
-     * PureFunctionCalled if not overloaded by a derived class.
+     * 用于对内部面进行积分的虚拟函数。如果没有被派生类重载，则抛出PureFunctionCalled异常。
+     *
      */
     virtual void
     face(DoFInfo<dim, spacedim, number> &dinfo1,
@@ -97,50 +92,43 @@ namespace MeshWorker
          IntegrationInfo<dim, spacedim> &info2) const;
 
     /**
-     * The flag indicating whether the cell integrator cell() is to be used in
-     * the loop. Defaults to <tt>true</tt>.
+     * 指示单元格积分器cell()是否要在循环中使用的标志。默认为<tt>true</tt>。
+     *
      */
     bool use_cell;
 
     /**
-     * The flag indicating whether the boundary integrator boundary() is to be
-     * used in the loop. Defaults to <tt>true</tt>.
+     * 表示是否在循环中使用边界积分器boundary()的标志。默认为<tt>true</tt>。
+     *
      */
     bool use_boundary;
 
     /**
-     * The flag indicating whether the interior face integrator face() is to
-     * be used in the loop. Defaults to <tt>true</tt>.
+     * 表示是否在循环中使用内部面积分器face()的标志。默认为<tt>true</tt>。
+     *
      */
     bool use_face;
 
     /**
-     * The names of the input vectors. If this vector is nonempty, it can be
-     * used by application programs to automatically select and verify the
-     * input vectors used for integration.
+     * 输入向量的名称。如果这个向量不是空的，它可以被应用程序用来自动选择和验证用于积分的输入向量。
+     * @note
+     * 这个变量目前不被库使用，但提供它是为了帮助开发应用程序。
      *
-     * @note This variable is currently not used by the library, but it is
-     * provided to help develop application programs.
      */
     std::vector<std::string> input_vector_names;
 
     /**
-     * The names of the results produced. If this vector is nonempty, it can
-     * be used by application programs to automatically assign names to output
-     * values and/or verify the names of vectors.
+     * 产生的结果的名称。如果这个向量是非空的，它可以被应用程序用来为输出值自动分配名称和/或验证向量的名称。
+     * @note
+     * 这个变量目前不被库使用，但提供它是为了帮助开发应用程序。
      *
-     * @note This variable is currently not used by the library, but it is
-     * provided to help develop application programs.
      */
     std::vector<std::string> output_names;
 
     /**
-     * This error is thrown if one of the virtual functions cell(),
-     * boundary(), or face() is called without being overloaded in a derived
-     * class. Consider setting #use_cell, #use_boundary, and #use_face to
-     * false, respectively.
-     *
+     * 如果虚拟函数cell()、boundary()或face()之一在派生类中没有被重载就被调用，就会产生这个错误。可以考虑将#use_cell、#use_boundary和#use_face分别设置为假。
      * @ingroup Exceptions
+     *
      */
     DeclException0(ExcPureFunction);
   };
@@ -151,3 +139,5 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/algorithms/theta_timestepping.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2019 by the deal.II authors
@@ -152,5 +151,3 @@ namespace Algorithms
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

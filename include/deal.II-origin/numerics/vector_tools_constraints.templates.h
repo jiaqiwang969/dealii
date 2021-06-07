@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/vector_tools_constraints.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -31,9 +30,8 @@ namespace VectorTools
   namespace internal
   {
     /**
-     * 一个结构，用于存储在单个支持点上对应于矢量值量的dim
-     * DoF指数。
-     *
+     * A structure that stores the dim DoF indices that correspond to a
+     * vector-valued quantity at a single support point.
      */
     template <int dim>
     struct VectorDoFTuple
@@ -88,12 +86,14 @@ namespace VectorTools
 
 
     /**
-     * 将约束条件 $\vec n \cdot \vec u = inhom$
-     * 添加到约束条件列表中。        这里， $\vec u$
-     * 由给定的DoF指数集表示， $\vec n$
-     * 由作为第二个参数指定的向量表示。
-     * 如果一个自由度已经在约束对象中被约束了，该函数就不会添加约束。
+     * Add the constraint $\vec n \cdot \vec u = inhom$ to the list of
+     * constraints.
      *
+     * Here, $\vec u$ is represented by the set of given DoF indices, and
+     * $\vec n$ by the vector specified as the second argument.
+     *
+     * The function does not add constraints if a degree of freedom is already
+     * constrained in the constraints object.
      */
     template <int dim>
     void
@@ -297,12 +297,15 @@ namespace VectorTools
 
 
     /**
-     * 将约束 $(\vec u-\vec u_\Gamma) \| \vec t$
-     * 添加到约束列表中。在2D中，这是一个单一的约束，在3D中这是两个约束。
-     * 这里， $\vec u$ 由给定的DoF指数集表示， $\vec t$
-     * 由作为第二个参数指定的向量表示。
-     * 如果一个自由度已经在约束对象中被约束，该函数不会添加约束。
+     * Add the constraint $(\vec u-\vec u_\Gamma) \| \vec t$ to the list of
+     * constraints. In 2d, this is a single constraint, in 3d these are two
+     * constraints.
      *
+     * Here, $\vec u$ is represented by the set of given DoF indices, and
+     * $\vec t$ by the vector specified as the second argument.
+     *
+     * The function does not add constraints if a degree of freedom is already
+     * constrained in the constraints object.
      */
     template <int dim>
     void
@@ -361,8 +364,8 @@ namespace VectorTools
 
 
     /**
-     * 给定一个向量，计算一组dim-1向量，这些向量与第一个向量正交，也是相互正交的。
-     *
+     * Given a vector, compute a set of dim-1 vectors that are orthogonal to
+     * the first one and mutually orthonormal as well.
      */
     template <int dim>
     void
@@ -1315,5 +1318,3 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_constraints_templates_h
-
-

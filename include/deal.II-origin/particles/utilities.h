@@ -1,4 +1,3 @@
-//include/deal.II-translator/particles/utilities_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -43,35 +42,54 @@ DEAL_II_NAMESPACE_OPEN
 namespace Particles
 {
   /**
-   * 一个命名空间，用于提供处理ParticleHandler对象及其与DoFHandler对象耦合的工具的函数。
-   *
+   * A namespace for functions offering tools to handle ParticleHandler objects
+   * and their coupling with DoFHandler objects.
    */
   namespace Utilities
   {
     /**
-     * 为粒子创建一个插值稀疏模式。        给出一个代表域
-     * $\Omega$ 的三角形，一个 $\Omega$
-     * 中的粒子处理程序，以及一个标量有限元空间 $V(\Omega)
-     * = \text{span}\{v_j\}_{j=0}^n$ ，计算组装矩阵\f[ M_{i,j}
-     * \dealcoloneq v_j(x_i) , \f]所需的稀疏模式，其中 $V(\Omega)$
-     * 是与`空间_dh`相关的有限元空间，索引`i`是由位置为`x_i`的粒子id给出的。
-     * 在矢量值有限元空间的情况下，必须进行插值的分量可以用分量掩码来选择。只支持原始的有限元空间。
-     * 当选择一个以上的分量时，产生的稀疏度将等于`particle_handler.n_global_particles()
-     * mask.n_selected_components()`乘以`space_dh.n_dofs()`，而相应的矩阵条目由\f[
-     * M_{(i*n_comps+k),j} \dealcoloneq v_j(x_i) \cdot e_{comp_j}, \f] ]
-     * 其中`comp_j`是矢量值基函数`v_j`的唯一非零分量（等于`fe.system_to_component_index(j).first`），`k`对应于其在掩码选定分量中的索引，而
-     * $e_{comp_j}$ 是`comp_j`方向上的单位矢量。        稀疏度
-     * "是通过定位粒子处理程序中索引为`i'的粒子相对于嵌入三角形的位置来填充的
-     * $\Omega$
-     * ，并按照在掩码中选择的顺序，将其与组件掩码 @p
-     * space_comps, 中指定的所有局部自由度耦合 @p space_comps.
-     * ，如果一个粒子不在 $\Omega$
-     * 内，它将被忽略，稀疏度的相应行将为空。
-     * 可以用 @p constraints
-     * 参数提供AffineConstraints类所支持的形式的约束。方法
-     * AffineConstraints::add_entries_local_to_global()
-     * 被用来填充最终的稀疏度模式。
+     * Create an interpolation sparsity pattern for particles.
      *
+     * Given a triangulation representing the domain $\Omega$, a particle
+     * handler of particles in $\Omega$, and a scalar finite element space
+     * $V(\Omega) = \text{span}\{v_j\}_{j=0}^n$, compute the sparsity pattern
+     * that would be necessary to assemble the matrix
+     * \f[
+     * M_{i,j} \dealcoloneq v_j(x_i) ,
+     * \f]
+     * where $V(\Omega)$ is the finite element space associated with the
+     * `space_dh`, and the index `i` is given by the particle id whose position
+     * is `x_i`.
+     *
+     * In the case of vector valued finite element spaces, the components on
+     * which interpolation must be performed can be selected using a component
+     * mask. Only primitive finite element spaces are supported.
+     *
+     * When selecting more than one component, the resulting sparsity will have
+     * dimension equal to `particle_handler.n_global_particles() *
+     * mask.n_selected_components()` times `space_dh.n_dofs()`, and the
+     * corresponding matrix entries are given by
+     * \f[
+     *  M_{(i*n_comps+k),j} \dealcoloneq v_j(x_i) \cdot e_{comp_j},
+     * \f]
+     * where `comp_j` is the only non zero component of the vector valued basis
+     * function `v_j` (equal to `fe.system_to_component_index(j).first`),
+     * `k` corresponds to its index within the selected components of the mask,
+     * and $e_{comp_j}$ is the unit vector in the direction `comp_j`.
+     *
+     * The `sparsity` is filled by locating the position of the particle with
+     * index `i` within the particle handler with respect to the embedding
+     * triangulation $\Omega$, and coupling it with all the local degrees of
+     * freedom specified in the component mask @p space_comps, following the
+     * ordering in which they are selected in the mask @p space_comps.
+     *
+     * If a particle does not fall within $\Omega$, it is ignored, and the
+     * corresponding rows of the sparsity will be empty.
+     *
+     * Constraints of the form supported by the AffineConstraints class may be
+     * supplied with the @p constraints argument. The method
+     * AffineConstraints::add_entries_local_to_global() is used to fill the
+     * final sparsity pattern.
      */
     template <int dim,
               int spacedim,
@@ -87,28 +105,47 @@ namespace Particles
       const ComponentMask &space_comps = ComponentMask());
 
     /**
-     * 为粒子创建一个插值矩阵。
-     * 给出一个代表域的三角形 $\Omega$ ，一个 $\Omega$
-     * 中的粒子处理程序，和一个标量有限元空间 $V(\Omega) =
-     * \text{span}\{v_j\}_{j=0}^n$ ，计算矩阵\f[ M_{ij} \dealcoloneq
-     * v_j(x_i) , \f]，其中 $V(\Omega)$
-     * 是与`空间_dh`相关的有限元空间，索引`i`是由位置为`x_i`的粒子id给出。
-     * 在矢量值有限元空间的情况下，必须进行插值的分量可以用分量掩码来选择。只支持原始的有限元空间。
-     * 当选择一个以上的分量时，产生的稀疏度将等于`particle_handler.n_global_particles()
-     * mask.n_selected_components()`乘以`space_dh.n_dofs()`，而相应的矩阵条目由\f[
-     * M_{(i*n_comps+k),j} \dealcoloneq v_j(x_i) \cdot e_{comp_j}, \f] ]
-     * 其中`comp_j`是矢量值基函数`v_j`的唯一非零分量（等于`fe.system_to_component_index(j).first`），`k`对应于它在掩码选定分量中的索引，
-     * $e_{comp_j}$ 是`comp_j`方向上的单位矢量。
-     * 矩阵通过定位粒子处理程序中索引为`i`的粒子相对于嵌入三角的位置来填充
-     * $\Omega$ ，并按照在掩码中选择的顺序将其与组件掩码
-     * @p space_comps, 中指定的所有局部自由度耦合 @p space_comps.
-     * 。 如果一个粒子不在 $\Omega$
-     * 内，它将被忽略，矩阵的相应行将为零。        可以用
-     * @p constraints
-     * 参数提供AffineConstraints类所支持的形式的约束。方法
-     * AffineConstraints::distribute_local_to_global()
-     * 用于分配矩阵的条目以尊重给定的约束。
+     * Create an interpolation matrix for particles.
      *
+     * Given a triangulation representing the domains $\Omega$, a particle
+     * handler of particles in $\Omega$, and a scalar finite element space
+     * $V(\Omega) = \text{span}\{v_j\}_{j=0}^n$, compute the matrix
+     * \f[
+     * M_{ij} \dealcoloneq v_j(x_i) ,
+     * \f]
+     * where $V(\Omega)$ is the finite element space associated with the
+     * `space_dh`, and the index `i` is given by the particle id whose position
+     * is `x_i`.
+     *
+     * In the case of vector valued finite element spaces, the components on
+     * which interpolation must be performed can be selected using a component
+     * mask. Only primitive finite element spaces are supported.
+     *
+     * When selecting more than one component, the resulting sparsity will have
+     * dimension equal to `particle_handler.n_global_particles() *
+     * mask.n_selected_components()` times `space_dh.n_dofs()`, and the
+     * corresponding matrix entries are given by
+     * \f[
+     *  M_{(i*n_comps+k),j} \dealcoloneq v_j(x_i) \cdot e_{comp_j},
+     * \f]
+     * where `comp_j` is the only non zero component of the vector valued basis
+     * function `v_j` (equal to `fe.system_to_component_index(j).first`),
+     * `k` corresponds to its index within the selected components of the mask,
+     * and $e_{comp_j}$ is the unit vector in the direction `comp_j`.
+     *
+     * The matrix is filled by locating the position of the particle with
+     * index `i` within the particle handler with respect to the embedding
+     * triangulation $\Omega$, and coupling it with all the local degrees of
+     * freedom specified in the component mask @p space_comps, following the
+     * ordering in which they are selected in the mask @p space_comps.
+     *
+     * If a particle does not fall within $\Omega$, it is ignored, and the
+     * corresponding rows of the matrix will be zero.
+     *
+     * Constraints of the form supported by the AffineConstraints class may be
+     * supplied with the @p constraints argument. The method
+     * AffineConstraints::distribute_local_to_global() is used to distribute
+     * the entries of the matrix to respect the given constraints.
      */
     template <int dim, int spacedim, typename MatrixType>
     void
@@ -121,16 +158,26 @@ namespace Particles
       const ComponentMask &space_comps = ComponentMask());
 
     /**
-     * 给定一个DoFHandler和一个ParticleHandler，在粒子的位置插值一个矢量场。结果存储在一个输出向量中，其大小与本地拥有的粒子数和活动部件数相对应。
-     * @param[in]  particle_handler
-     * 粒子处理程序，其粒子作为插值点。          @param[in]
-     * field_vector
-     * 要插值的场的矢量。这个向量必须与提供的dof_handler相一致。
-     * @param[in,out]  interpolated_field
-     * 在粒子位置的场的内插值。矢量的大小必须是n_locally_owned_particles乘以n_components
-     * @param[in]  field_comps
-     * 一个可选的组件掩码，决定哪一个矢量场的子集被插值。
+     * Given a DoFHandler and a ParticleHandler, interpolate a vector field
+     * at the position of the particles. The result is stored in an output
+     * vector whose size corresponds to the number of locally owned particles *
+     * number of active components
      *
+     * @param[in] field_dh The DOF Handler which was used to generate the
+     * field vector that is to be interpolated.
+     *
+     * @param[in] particle_handler The particle handler whose particle serve as
+     * the interpolation points.
+     *
+     * @param[in] field_vector The vector of the field to be interpolated. This
+     * vector must be coherent with the dof_handler provided
+     *
+     * @param[in,out] interpolated_field The interpolated value of the field at
+     * the position of the particles. The size of the vector must be
+     * n_locally_owned_particles times the n_components
+     *
+     * @param[in] field_comps An optional component mask that decides which
+     * subset of the vector fields are interpolated
      */
     template <int dim,
               int spacedim,
@@ -210,5 +257,3 @@ namespace Particles
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

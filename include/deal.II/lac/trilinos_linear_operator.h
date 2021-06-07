@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/trilinos_linear_operator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -49,24 +50,20 @@ namespace TrilinosWrappers
 #  endif
 
   /**
-   * @name Creation of a LinearOperator
+   * @name  创建一个LinearOperator
+   *
    */
   //@{
 
 
   /**
-   * @relatesalso LinearOperator
-   *
-   * A function that encapsulates generic @p matrix objects, based on an
-   * @p operator_exemplar, that act on a compatible Vector type into a
-   * LinearOperator.
-   *
-   * This function is the equivalent of the dealii::linear_operator, but
-   * ensures full compatibility with Trilinos operations by preselecting the
-   * appropriate template parameters.
-   *
-   *
+   * @relatesalso  LinearOperator 一个封装通用 @p matrix
+   * 对象的函数，基于一个 @p operator_exemplar,
+   * ，作用于一个兼容的Vector类型，变成一个LinearOperator。
+   * 这个函数等同于 dealii::linear_operator,
+   * ，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。
    * @ingroup TrilinosWrappers
+   *
    */
   template <typename Range, typename Domain = Range, typename Matrix>
   inline LinearOperator<
@@ -86,17 +83,13 @@ namespace TrilinosWrappers
 
 
   /**
-   * @relatesalso LinearOperator
-   *
-   * A function that encapsulates generic @p matrix objects that act on a
-   * compatible Vector type into a LinearOperator.
-   *
-   * This function is the equivalent of the dealii::linear_operator, but
-   * ensures full compatibility with Trilinos operations by preselecting the
-   * appropriate template parameters.
-   *
-   *
+   * @relatesalso  LinearOperator
+   * 一个将作用于兼容矢量类型的通用 @p matrix
+   * 对象封装为LinearOperator的函数。    这个函数等同于
+   * dealii::linear_operator,
+   * ，但通过预先选择适当的模板参数，确保与Trilinos操作完全兼容。
    * @ingroup TrilinosWrappers
+   *
    */
   template <typename Range, typename Domain = Range>
   inline LinearOperator<
@@ -115,22 +108,19 @@ namespace TrilinosWrappers
 
   //@}
   /**
-   * @name Creation of a BlockLinearOperator
+   * @name  创建一个BlockLinearOperator
+   *
    */
   //@{
 
 
   /**
-   * @relatesalso BlockLinearOperator
-   *
-   * A function that encapsulates a @p block_matrix into a BlockLinearOperator.
-   *
-   * This function is the equivalent of the dealii::block_operator, but
-   * ensures full compatibility with Trilinos operations by preselecting the
-   * appropriate template parameters.
-   *
-   *
+   * @relatesalso  BlockLinearOperator 一个将 @p block_matrix
+   * 封装为BlockLinearOperator的函数。    这个函数等同于
+   * dealii::block_operator,
+   * ，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。
    * @ingroup TrilinosWrappers
+   *
    */
   template <typename Range, typename Domain = Range>
   inline BlockLinearOperator<
@@ -152,18 +142,13 @@ namespace TrilinosWrappers
 
 
   /**
-   * @relatesalso BlockLinearOperator
-   *
-   * A variant of above function that builds up a block diagonal linear operator
-   * from an array @p ops of diagonal elements (off-diagonal blocks are assumed
-   * to be 0).
-   *
-   * This function is the equivalent of the dealii::block_operator, but
-   * ensures full compatibility with Trilinos operations by preselecting the
-   * appropriate template parameters.
-   *
-   *
+   * @relatesalso  BlockLinearOperator
+   * 上述函数的一个变体，从对角线元素的数组 @p ops
+   * 中建立一个块状对角线线性算子（非对角线块被假设为0）。
+   * 这个函数等同于 dealii::block_operator,
+   * ，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。
    * @ingroup TrilinosWrappers
+   *
    */
   template <std::size_t m,
             std::size_t n,
@@ -194,20 +179,13 @@ namespace TrilinosWrappers
 
 
   /**
-   * @relatesalso BlockLinearOperator
-   *
-   * This function extracts the diagonal blocks of @p block_matrix (either a
-   * block matrix type or a BlockLinearOperator) and creates a
-   * BlockLinearOperator with the diagonal. Off-diagonal elements are
-   * initialized as null_operator (with correct reinit_range_vector and
-   * reinit_domain_vector methods).
-   *
-   * This function is the equivalent of the dealii::block_diagonal_operator, but
-   * ensures full compatibility with Trilinos operations by preselecting the
-   * appropriate template parameters.
-   *
-   *
+   * @relatesalso  BlockLinearOperator 这个函数提取 @p block_matrix
+   * 的对角线块（可以是块状矩阵类型或BlockLinearOperator），并以对角线创建BlockLinearOperator。对角线外的元素被初始化为null_operator（有正确的
+   * reinit_range_vector 和 reinit_domain_vector 方法）。
+   * 这个函数等同于 dealii::block_diagonal_operator,
+   * ，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。
    * @ingroup TrilinosWrappers
+   *
    */
   template <typename Range, typename Domain = Range>
   inline BlockLinearOperator<
@@ -231,18 +209,13 @@ namespace TrilinosWrappers
 
 
   /**
-   * @relatesalso BlockLinearOperator
-   *
-   * A variant of above function that builds up a block diagonal linear operator
-   * from an array @p ops of diagonal elements (off-diagonal blocks are assumed
-   * to be 0).
-   *
-   * This function is the equivalent of the dealii::block_diagonal_operator, but
-   * ensures full compatibility with Trilinos operations by preselecting the
-   * appropriate template parameters.
-   *
-   *
+   * @relatesalso  BlockLinearOperator
+   * 上述函数的一个变体，从对角线元素的数组 @p ops
+   * 中建立一个块状对角线线性算子（非对角线块被假设为0）。
+   * 这个函数等同于 dealii::block_diagonal_operator,
+   * ，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。
    * @ingroup TrilinosWrappers
+   *
    */
   template <std::size_t m, typename Range, typename Domain = Range>
   inline BlockLinearOperator<
@@ -274,3 +247,5 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif // DEAL_II_WITH_TRILINOS
 #endif
+
+

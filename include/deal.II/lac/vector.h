@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -75,35 +76,44 @@ namespace parallel
 #endif
 
 
-/*! @addtogroup Vectors
- *@{
- */
+/*!   @addtogroup  矢量  @{  。
+
+ 
+* */
 
 /**
- * A class that represents a vector of numerical elements. As for the
- * other classes, in the
- * @ref Vectors
- * group, this class has a substantial
- * number of member functions. These include:
- * - functions that initialize the vector or change its size;
- * - functions that compute properties of the vector, such as a variety of
- *   norms;
- * - functions that allow reading from or writing to individual elements of the
- *   vector;
- * - functions that implement algebraic operations for vectors, such as
- *   addition of vectors; and
- * - functions that allow inputting and outputting the data stored by vectors.
+ * 一个表示数字元素向量的类。至于其他类，在 @ref
+ * Vectors 组中，这个类有大量的成员函数。这些包括
  *
- * In contrast to the C++ standard library class `std::vector`, this class
- * intends to implement not simply an array that allows access to its elements,
- * but indeed a vector that is a member of the mathematical concept of a
- * "vector space" suitable for numerical computations.
  *
- * @note Instantiations for this template are provided for <tt>@<float@>,
- * @<double@>, @<std::complex@<float@>@>, @<std::complex@<double@>@></tt>;
- * others can be generated in application programs (see the section on
- * @ref Instantiations
- * in the manual).
+ *
+ * - 用于初始化向量或改变其大小的函数。
+ *
+ *
+ *
+ * - 计算向量属性的函数，如各种规范。
+ *
+ *
+ * - 允许从向量的单个元素中读取或写入的函数。
+ *
+ *
+ * - 实现向量代数运算的函数，例如向量的加法；以及
+ *
+ *
+ *
+ * - 允许输入和输出向量存储的数据的函数。
+ * 与C++标准库类 `std::vector`,
+ * 相比，该类打算实现的不是简单的允许访问其元素的数组，而实际上是一个矢量，是适合数值计算的
+ * "矢量空间 "这一数学概念的成员。
+ *
+ *
+ * @note
+ * 这个模板的实例提供给<tt>  @<float@>,   @<double@>,
+ * @<std::complex@<float@>@>,   @<std::complex@<double@>@></tt>;
+ * 其他的可以在应用程序中生成（见手册中 @ref Instantiations
+ * 部分）。
+ *
+ *
  */
 template <typename Number>
 class Vector : public Subscriptor
@@ -116,8 +126,8 @@ public:
     "The Vector class does not support auto-differentiable numbers.");
 
   /**
-   * Declare standard types used in all containers. These types parallel those
-   * in the <tt>C++</tt> standard libraries <tt>vector<...></tt> class.
+   * 声明所有容器中使用的标准类型。这些类型与<tt>C++</tt>标准库中的<tt>vector<...></tt>类相似。
+   *
    */
   using value_type      = Number;
   using pointer         = value_type *;
@@ -129,195 +139,155 @@ public:
   using size_type       = types::global_dof_index;
 
   /**
-   * Declare a type that has holds real-valued numbers with the same precision
-   * as the template argument to this class. If the template argument of this
-   * class is a real data type, then real_type equals the template argument.
-   * If the template argument is a std::complex type then real_type equals the
-   * type underlying the complex numbers.
+   * 声明一个类型，该类型持有与该类的模板参数相同精度的实值数。如果这个类的模板参数是一个实数数据类型，那么real_type就等于模板参数。
+   * 如果模板参数是一个 std::complex
+   * 类型，那么real_type等于复数的基础类型。
+   * 这个别名被用来表示规范的返回类型。
    *
-   * This alias is used to represent the return type of norms.
    */
   using real_type = typename numbers::NumberTraits<Number>::real_type;
 
   /**
-   * @name Basic object handling
+   * @name  基本对象处理
+   *
    */
   //@{
   /**
-   * Constructor. Create a vector of dimension zero.
+   * 构造函数。创建一个维数为0的向量。
+   *
    */
   Vector();
 
   /**
-   * Copy constructor. Sets the dimension to that of the given vector, and
-   * copies all elements.
-   *
-   * We would like to make this constructor explicit, but standard containers
-   * insist on using it implicitly.
-   *
+   * 复制构造函数。将维数设置为给定的向量的维数，并复制所有元素。
+   * 我们希望这个构造函数是显式的，但是标准的容器坚持隐式使用它。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector(const Vector<Number> &v);
 
   /**
-   * Move constructor. Creates a new vector by stealing the internal data of
-   * the vector @p v.
+   * 移动构造函数。通过窃取向量的内部数据创建一个新的向量
+   * @p v.  。
+   *
    */
   Vector(Vector<Number> &&v) noexcept = default;
 
   /**
-   * Copy constructor taking a vector of another data type.
+   * 复制构造函数获取另一种数据类型的向量。
+   * 如果没有从 @p OtherNumber 到 @p Number.
+   * 的转换路径，这个构造函数将无法编译。
+   * 当复制到一个数据元素精度较低的向量时，你可能会失去精度。
    *
-   * This constructor will fail to compile if
-   * there is no conversion path from @p OtherNumber to @p Number. You may
-   * lose accuracy when copying to a vector with data elements with
-   * less accuracy.
    */
   template <typename OtherNumber>
   explicit Vector(const Vector<OtherNumber> &v);
 
   /**
-   * Copy constructor taking an object of type `std::initializer_list`. This
-   * constructor can be used to initialize a vector using a brace-enclosed
-   * list of numbers, such as in the following example:
+   * 拷贝构造函数取一个 `std::initializer_list`.
+   * 类型的对象，该构造函数可用于使用大括号封闭的数字列表来初始化向量，如下面的例子。
    * @code
-   *   Vector<double> v({1,2,3});
+   * Vector<double> v({1,2,3});
    * @endcode
-   * This creates a vector of size 3, whose (double precision) elements have
-   * values 1.0, 2.0, and 3.0.
+   * 这将创建一个大小为3的向量，其（双精度）元素的值为1.0、2.0和3.0。
+   * 如果没有从 @p OtherNumber 到 @p Number.
+   * 的转换路径，这个构造函数将无法编译。
+   * 当复制到一个数据元素精度较低的向量时，可能会失去精度。
    *
-   * This constructor will fail to compile if
-   * there is no conversion path from @p OtherNumber to @p Number. You may
-   * lose accuracy when copying to a vector with data elements with
-   * less accuracy.
    */
   template <typename OtherNumber>
   explicit Vector(const std::initializer_list<OtherNumber> &v);
 
 #ifdef DEAL_II_WITH_PETSC
   /**
-   * Another copy constructor: copy the values from a PETSc vector class. This
-   * copy constructor is only available if PETSc was detected during
-   * configuration time.
+   * 另一个复制构造函数：从一个PETSc向量类中复制数值。这个复制构造函数只有在配置时检测到PETSc时才可用。
+   * 请注意，由于MPI中使用的通信模型，当 <code>v</code>
+   * 是一个分布式向量时，只有当所有进程同时进行这一操作时才能成功。不可能只有一个进程获得一个并行向量的副本，而其他作业做其他事情。
    *
-   * Note that due to the communication model used in MPI, this operation can
-   * only succeed if all processes do it at the same time when <code>v</code>
-   * is a distributed vector: It is not possible for only one process to
-   * obtain a copy of a parallel vector while the other jobs do something
-   * else.
    */
   explicit Vector(const PETScWrappers::VectorBase &v);
 #endif
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * Another copy constructor: copy the values from a Trilinos wrapper vector.
-   * This copy constructor is only available if Trilinos was detected during
-   * configuration time.
+   * 另一个拷贝构造函数：从一个Trilinos包装向量中拷贝数值。
+   * 这个拷贝构造函数只有在配置时检测到Trilinos时才可用。
+   * @note
+   * 由于MPI中使用的通信模型，这个操作只有在所有知道 @p
+   * v 的进程（即 <code>v.get_mpi_communicator()</code>
+   * 给出的进程）同时进行时才能成功。这意味着，除非你使用一个分裂的MPI通信器，那么通常不可能只有一个或一个子集的进程获得一个并行向量的副本，而其他工作则做其他事情。换句话说，调用这个函数是一个
+   * "集体操作"，需要由所有共同分享 @p v.
+   * 的MPI进程来执行。
    *
-   * @note Due to the communication model used in MPI, this operation can
-   * only succeed if all processes that have knowledge of @p v
-   * (i.e. those given by <code>v.get_mpi_communicator()</code>) do it at
-   * the same time. This means that unless you use a split MPI communicator
-   * then it is not normally possible for only one or a subset of processes
-   * to obtain a copy of a parallel vector while the other jobs do something
-   * else. In other words, calling this function is a 'collective operation'
-   * that needs to be executed by all MPI processes that jointly share @p v.
    */
   explicit Vector(const TrilinosWrappers::MPI::Vector &v);
 #endif
 
   /**
-   * Constructor. Set dimension to @p n and initialize all elements with zero.
+   * 构造函数。设置维度为 @p n ，并将所有元素初始化为0。
+   * 构造函数是明确的，以避免像这样的意外。
+   * <tt>v=0;</tt>。据推测，用户希望将向量的每一个元素都设置为零，但相反，发生的是这样的调用。
+   * <tt>v=向量 @<number@>(0);</tt>,
+   * 即向量被一个长度为零的向量所取代。
    *
-   * The constructor is made explicit to avoid accidents like this:
-   * <tt>v=0;</tt>. Presumably, the user wants to set every element of the
-   * vector to zero, but instead, what happens is this call:
-   * <tt>v=Vector@<number@>(0);</tt>, i.e. the vector is replaced by one of
-   * length zero.
    */
   explicit Vector(const size_type n);
 
   /**
-   * Initialize the vector with a given range of values pointed to by the
-   * iterators. This function is there in analogy to the @p std::vector class.
+   * 用迭代器指向的给定范围的值初始化向量。这个函数是为了类似于
+   * @p std::vector 类而存在的。
+   *
    */
   template <typename InputIterator>
   Vector(const InputIterator first, const InputIterator last);
 
   /**
-   * Destructor, deallocates memory. Made virtual to allow for derived classes
-   * to behave properly.
+   * 销毁器，去分配内存。虚化，以使派生类的行为正确。
+   *
    */
   virtual ~Vector() override = default;
 
   /**
-   * This function does nothing but exists for compatibility with the parallel
-   * vector classes.
+   * 这个函数什么也不做，只是为了与并行向量类兼容而存在。
+   * 对于并行向量封装类来说，这个函数压缩了向量的底层表示，即刷新了向量对象的缓冲区（如果它有的话）。这个函数在逐一写入向量元素之后，在对其进行其他操作之前是必要的。
+   * 然而，对于这个类的实现，它是不重要的，因此是一个空函数。
    *
-   * For the parallel vector wrapper class, this function compresses the
-   * underlying representation of the vector, i.e. flushes the buffers of the
-   * vector object if it has any. This function is necessary after writing
-   * into a vector element-by-element and before anything else can be done on
-   * it.
-   *
-   * However, for the implementation of this class, it is immaterial and thus
-   * an empty function.
    */
   void
   compress(::dealii::VectorOperation::values operation =
              ::dealii::VectorOperation::unknown) const;
 
   /**
-   * Change the dimension of the vector to @p N. The reserved memory for this
-   * vector remains unchanged if possible, to make things faster; this may
-   * waste some memory, so keep this in mind.  However, if <tt>N==0</tt> all
-   * memory is freed, i.e. if you want to resize the vector and release the
-   * memory not needed, you have to first call <tt>reinit(0)</tt> and then
-   * <tt>reinit(N)</tt>. This cited behavior is analogous to that of the
-   * standard library containers.
+   * 将向量的维度改为 @p N.
+   * 如果可能的话，这个向量的保留内存保持不变，以使事情更快；这可能会浪费一些内存，所以要记住这一点。
+   * 然而，如果<tt>N==0</tt>所有的内存都被释放了，也就是说，如果你想调整向量的大小并释放不需要的内存，你必须先调用<tt>reinit(0)</tt>，然后再调用<tt>reinit(N)</tt>。这种引用的行为与标准库容器的行为类似。
+   * 如果 @p omit_zeroing_entries
+   * 是假的，那么向量就会被零所填充。
+   * 否则，元素就会留下一个未指定的状态。
+   * 这个函数是虚拟的，以便允许派生类单独处理内存。
    *
-   * If @p omit_zeroing_entries is false, the vector is filled by zeros.
-   * Otherwise, the elements are left an unspecified state.
-   *
-   * This function is virtual in order to allow for derived classes to handle
-   * memory separately.
    */
   virtual void
   reinit(const size_type N, const bool omit_zeroing_entries = false);
 
   /**
-   * Same as above, but will preserve the values of vector upon resizing.
-   * If we new size is bigger, we will have
-   * \f[
-   * \mathbf V \rightarrow
-   * \left(
-   * \begin{array}{c}
-   * \mathbf V   \\
-   * \mathbf 0
-   * \end{array}
-   * \right)
-   * \f]
-   * whereas if the desired size is smaller, then
-   * \f[
-   * \left(
-   * \begin{array}{c}
-   * \mathbf V_1   \\
-   * \mathbf V_2
-   * \end{array}
-   * \right)
-   * \rightarrow \mathbf V_1
-   * \f]
+   * 和上面一样，但在调整大小时将保留向量的值。
+   * 如果我们的新尺寸更大，我们将有\f[ \mathbf V \rightarrow
+   * \left( \begin{array}{c} \mathbf V   \\ \mathbf 0 \end{array} \right)
+   * \f]，而如果想要的尺寸更小，则有\f[ \left( \begin{array}{c}
+   * \mathbf V_1   \\ \mathbf V_2 \end{array} \right) \rightarrow \mathbf V_1
+   * \f]。
+   *
    */
   void
   grow_or_shrink(const size_type N);
 
   /**
-   * Apply <a href="https://en.wikipedia.org/wiki/Givens_rotation">Givens
-   * rotation</a>
-   * @p csr (a triplet of cosine, sine and radius, see
-   * Utilities::LinearAlgebra::givens_rotation())
-   * to the vector in the plane spanned by the @p i'th and @p k'th unit vectors.
+   * 将<a href="https://en.wikipedia.org/wiki/Givens_rotation">Givens
+   * rotation</a> @p csr （余弦、正弦和半径的三要素，见
+   * Utilities::LinearAlgebra::givens_rotation()) ）应用于 @p i'th 和 @p
+   * k'th 单位向量跨越的平面内的向量。
+   *
    */
   void
   apply_givens_rotation(const std::array<Number, 3> &csr,
@@ -325,89 +295,76 @@ public:
                         const size_type              k);
 
   /**
-   * Change the dimension to that of the vector @p V. The same applies as for
-   * the other @p reinit function.
+   * 将维度改为向量 @p V. 的维度，与其他 @p reinit
+   * 函数的情况相同。     @p V
+   * 的元素不会被复制，也就是说，这个函数与调用<tt>reinit
+   * (V.size(), omit_zeroing_entries)</tt>相同。
    *
-   * The elements of @p V are not copied, i.e.  this function is the same as
-   * calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.
    */
   template <typename Number2>
   void
   reinit(const Vector<Number2> &V, const bool omit_zeroing_entries = false);
 
   /**
-   * Swap the contents of this vector and the other vector @p v. One could do
-   * this operation with a temporary variable and copying over the data
-   * elements, but this function is significantly more efficient since it only
-   * swaps the pointers to the data of the two vectors and therefore does not
-   * need to allocate temporary storage and move data around.
+   * 交换这个向量和另一个向量的内容  @p v.
+   * 人们可以用一个临时变量和复制数据元素来做这个操作，但是这个函数明显更有效率，因为它只交换了两个向量的数据指针，因此不需要分配临时存储和移动数据。
+   * 这个函数类似于所有C++标准容器的 @p swap
+   * 函数。另外，还有一个全局函数<tt>swap(u,v)</tt>，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数相类似。
+   * 这个函数是虚拟的，以便允许派生类单独处理内存。
    *
-   * This function is analogous to the @p swap function of all C++
-   * standard containers. Also, there is a global function <tt>swap(u,v)</tt>
-   * that simply calls <tt>u.swap(v)</tt>, again in analogy to standard
-   * functions.
-   *
-   * This function is virtual in order to allow for derived classes to handle
-   * memory separately.
    */
   virtual void
   swap(Vector<Number> &v);
 
   /**
-   * Set all components of the vector to the given number @p s.
-   *
-   * Since the semantics of assigning a scalar to a vector are not immediately
-   * clear, this operator should really only be used if you want to set the
-   * entire vector to zero. This allows the intuitive notation <tt>v=0</tt>.
-   * Assigning other values is deprecated and may be disallowed in the future.
-   *
+   * 将向量的所有分量设置为给定的数字  @p s.
+   * 由于将标量分配给向量的语义不是很明确，这个操作符实际上只应该在你想将整个向量设置为0时使用。这允许使用直观的符号<tt>v=0</tt>。
+   * 赋值其他值是不允许的，将来可能会被禁止。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector<Number> &
   operator=(const Number s);
 
   /**
-   * Copy the given vector. Resize the present vector if necessary.
-   *
+   * 复制给定的向量。如果有必要，可以调整当前向量的大小。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector<Number> &
   operator=(const Vector<Number> &v);
 
   /**
-   * Move the given vector. This operator replaces the present vector with
-   * the internal data of the vector @p v and resets @p v to the state it would
-   * have after being newly default-constructed.
+   * 移动给定的向量。该操作符用向量 @p v
+   * 的内部数据替换当前向量，并将 @p v
+   * 重置为新的默认构建后的状态。
+   *
    */
   Vector<Number> &
   operator=(Vector<Number> &&v) noexcept = default;
 
   /**
-   * Copy the given vector. Resize the present vector if necessary.
-   *
+   * 复制给定的向量。如果有必要的话，调整当前向量的大小。
    * @dealiiOperationIsMultithreaded
+   *
    */
   template <typename Number2>
   Vector<Number> &
   operator=(const Vector<Number2> &v);
 
   /**
-   * Copy operator for assigning a block vector to a regular vector.
+   * 用于将块状向量分配给普通向量的复制操作。
+   *
    */
   Vector<Number> &
   operator=(const BlockVector<Number> &v);
 
 #ifdef DEAL_II_WITH_PETSC
   /**
-   * Another copy operator: copy the values from a PETSc wrapper vector
-   * class. This operator is only available if PETSc was detected during
-   * configuration time.
+   * 另一个复制操作符：从PETSc包装的向量类中复制数值。这个操作符只有在配置时检测到PETSc时才可用。
+   * 请注意，由于MPI中使用的通信模型，当 <code>v</code>
+   * 是一个分布式向量时，只有当所有进程同时进行该操作时，该操作才能成功。不可能只有一个进程获得一个并行向量的副本，而其他作业做其他事情。
    *
-   * Note that due to the communication model used in MPI, this operation can
-   * only succeed if all processes do it at the same time when <code>v</code>
-   * is a distributed vector: It is not possible for only one process to
-   * obtain a copy of a parallel vector while the other jobs do something
-   * else.
    */
   Vector<Number> &
   operator=(const PETScWrappers::VectorBase &v);
@@ -416,37 +373,29 @@ public:
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * Another copy operator: copy the values from a (sequential or parallel,
-   * depending on the underlying compiler) Trilinos wrapper vector class. This
-   * operator is only available if Trilinos was detected during configuration
-   * time.
+   * 另一个拷贝操作符：从一个（顺序的或平行的，取决于底层编译器）Trilinos包装向量类中拷贝数值。这个操作符只有在配置时检测到Trilinos时才可用。
+   * @note  由于MPI中使用的通信模型，该操作只有在所有了解
+   * @p v 的进程（即 <code>v.get_mpi_communicator()</code>
+   * 给出的进程）同时进行时才能成功。这意味着，除非你使用一个分裂的MPI通信器，那么通常不可能只有一个或一个子集的进程获得一个并行向量的副本，而其他工作做其他事情。换句话说，调用这个函数是一个
+   * "集体操作"，需要由所有共同分享 @p v.
+   * 的MPI进程来执行。
    *
-   * @note Due to the communication model used in MPI, this operation can
-   * only succeed if all processes that have knowledge of @p v
-   * (i.e. those given by <code>v.get_mpi_communicator()</code>) do it at
-   * the same time. This means that unless you use a split MPI communicator
-   * then it is not normally possible for only one or a subset of processes
-   * to obtain a copy of a parallel vector while the other jobs do something
-   * else. In other words, calling this function is a 'collective operation'
-   * that needs to be executed by all MPI processes that jointly share @p v.
    */
   Vector<Number> &
   operator=(const TrilinosWrappers::MPI::Vector &v);
 #endif
 
   /**
-   * Test for equality. This function assumes that the present vector and the
-   * one to compare with have the same size already, since comparing vectors
-   * of different sizes makes not much sense anyway.
+   * 检验是否相等。这个函数假设现在的向量和要比较的向量已经有相同的大小，因为比较不同大小的向量反正没有什么意义。
+   *
    */
   template <typename Number2>
   bool
   operator==(const Vector<Number2> &v) const;
 
   /**
-   * Test for inequality. This function assumes that the present vector and
-   * the one to compare with have the same size already, since comparing
-   * vectors of different sizes makes not much sense anyway.
+   * 测试不平等。这个函数假定现在的向量和要比较的向量已经有相同的大小，因为比较不同大小的向量反正没有什么意义。
+   *
    */
   template <typename Number2>
   bool
@@ -456,107 +405,89 @@ public:
 
 
   /**
-   * @name Scalar products, norms and related operations
+   * @name  标量积、规范和相关操作
+   *
    */
   //@{
 
   /**
-   * Return the scalar product of two vectors.  The return type is the
-   * underlying type of @p this vector, so the return type and the accuracy
-   * with which it the result is computed depend on the order of the arguments
-   * of this vector.
+   * 返回两个向量的标量乘积。 返回类型是 @p this
+   * 向量的基本类型，所以返回类型和计算结果的准确性取决于这个向量的参数顺序。
+   * 对于复数向量，标量积的实现方式为
+   * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
+   * @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和，每次运行的求和顺序相同，这使得每次运行的结果完全可重复。
    *
-   * For complex vectors, the scalar product is implemented as
-   * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
-   *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   template <typename Number2>
   Number operator*(const Vector<Number2> &V) const;
 
   /**
-   * Return the square of the $l_2$-norm.
+   * 返回 $l_2$ -norm的平方。      @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和法，每次运行的求和顺序相同，这使得每次运行的结果完全可重复。
    *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   real_type
   norm_sqr() const;
 
   /**
-   * Mean value of the elements of this vector.
+   * 这个向量的元素的平均值。      @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和法，每次运行的求和顺序相同，这使得每次运行的结果完全可重复。
    *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   Number
   mean_value() const;
 
   /**
-   * $l_1$-norm of the vector. The sum of the absolute values.
+   * $l_1$  - 矢量的规范。绝对值的总和。
+   * @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和，每次运行中的求和顺序相同，这使得每次运行的结果完全可以重复。
    *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   real_type
   l1_norm() const;
 
   /**
-   * $l_2$-norm of the vector. The square root of the sum of the squares of
-   * the elements.
+   * $l_2$  - 矢量的规范。元素平方之和的平方根。
+   * @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和，每次运行的求和顺序相同，这使得每次运行的结果完全可重复。
    *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   real_type
   l2_norm() const;
 
   /**
-   * $l_p$-norm of the vector. The pth root of the sum of the pth powers of
-   * the absolute values of the elements.
+   * $l_p$  - 矢量的规范。元素绝对值的p次方之和的p次根。
+   * @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和，每次运行的求和顺序相同，这使得每次运行的结果完全可重复。
    *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   real_type
   lp_norm(const real_type p) const;
 
   /**
-   * Maximum absolute value of the elements.
+   * 元素的最大绝对值。
+   *
    */
   real_type
   linfty_norm() const;
 
   /**
-   * Performs a combined operation of a vector addition and a subsequent inner
-   * product, returning the value of the inner product. In other words, the
-   * result of this function is the same as if the user called
+   * 执行一个矢量加法和随后的内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用的
    * @code
    * this->add(a, V);
-   * return_value = *this * W;
+   * return_value =this W;
    * @endcode
+   * 这个函数存在的原因是这个操作比单独调用这两个函数涉及的内存转移要少。这个方法只需要加载三个向量，
+   * @p this,   @p V,   @p W,
+   * ，而调用单独的方法意味着要加载调用向量 @p this
+   * 两次。由于大多数向量操作都有内存传输限制，这就使时间减少了25\%（如果
+   * @p W 等于 @p this).
+   * ，则减少50\%）对于复值向量，第二步的标量乘法被实现为
+   * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
+   * @dealiiOperationIsMultithreaded
+   * 该算法使用成对求和，每次运行的求和顺序相同，这使得每次运行的结果完全可重复。
    *
-   * The reason this function exists is that this operation involves less
-   * memory transfer than calling the two functions separately. This method
-   * only needs to load three vectors, @p this, @p V, @p W, whereas calling
-   * separate methods means to load the calling vector @p this twice. Since
-   * most vector operations are memory transfer limited, this reduces the time
-   * by 25\% (or 50\% if @p W equals @p this).
-   *
-   * For complex-valued vectors, the scalar product in the second step is
-   * implemented as
-   * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
-   *
-   * @dealiiOperationIsMultithreaded The algorithm uses pairwise summation
-   * with the same order of summation in every run, which gives fully
-   * repeatable results from one run to another.
    */
   Number
   add_and_dot(const Number a, const Vector<Number> &V, const Vector<Number> &W);
@@ -565,89 +496,90 @@ public:
 
 
   /**
-   * @name Data access
+   * @name  数据访问
+   *
    */
   //@{
 
   /**
-   * Return a pointer to the underlying data buffer.
+   * 返回一个指向底层数据缓冲区的指针。
+   *
    */
   pointer
   data();
 
   /**
-   * Return a const pointer to the underlying data buffer.
+   * 返回一个指向底层数据缓冲区的常量指针。
+   *
    */
   const_pointer
   data() const;
 
   /**
-   * Make the @p Vector class a bit like the <tt>vector<></tt> class of the
-   * C++ standard library by returning iterators to the start and end of the
-   * elements of this vector.
+   * 使 @p Vector
+   * 类有点像C++标准库中的<tt>vector<>/tt>类，返回该向量元素的起点和终点的迭代器。
+   *
    */
   iterator
   begin();
 
   /**
-   * Return constant iterator to the start of the vectors.
+   * 返回到向量开始的常数迭代器。
+   *
    */
   const_iterator
   begin() const;
 
   /**
-   * Return an iterator pointing to the element past the end of the array.
+   * 返回一个迭代器，指向超过数组末端的元素。
+   *
    */
   iterator
   end();
 
   /**
-   * Return a constant iterator pointing to the element past the end of the
-   * array.
+   * 返回一个恒定的迭代器，指向超过数组末端的元素。
+   *
    */
   const_iterator
   end() const;
 
   /**
-   * Access the value of the @p ith component.
+   * 访问 @p ith 组件的值。
+   *
    */
   Number
   operator()(const size_type i) const;
 
   /**
-   * Access the @p ith component as a writeable reference.
+   * 访问 @p ith 组件作为一个可写的引用。
+   *
    */
   Number &
   operator()(const size_type i);
 
   /**
-   * Access the value of the @p ith component.
+   * 访问 @p ith 组件的值。    与operator()完全相同。
    *
-   * Exactly the same as operator().
    */
   Number operator[](const size_type i) const;
 
   /**
-   * Access the @p ith component as a writeable reference.
+   * 访问 @p ith 组件作为可写引用。    与operator()完全相同。
    *
-   * Exactly the same as operator().
    */
   Number &operator[](const size_type i);
 
   /**
-   * Instead of getting individual elements of a vector via operator(),
-   * this function allows getting a whole set of elements at once. The
-   * indices of the elements to be read are stated in the first argument, the
-   * corresponding values are returned in the second.
-   *
-   * If the current vector is called @p v, then this function is the equivalent
-   * to the code
+   * 与通过operator()获取向量的单个元素不同，这个函数允许一次性获取整个元素集。要读取的元素的索引在第一个参数中说明，相应的值在第二个参数中返回。
+   * 如果当前的向量被称为 @p v,
+   * ，那么这个函数就等同于代码
    * @code
-   *   for (unsigned int i = 0; i < indices.size(); ++i)
-   *     values[i] = v[indices[i]];
+   * for (unsigned int i = 0; i < indices.size(); ++i)
+   *   values[i] = v[indices[i]];
    * @endcode
+   * @pre  @p indices 和 @p values 数组的大小必须是一致的。
    *
-   * @pre The sizes of the @p indices and @p values arrays must be identical.
    */
   template <typename OtherNumber>
   void
@@ -655,31 +587,23 @@ public:
                        std::vector<OtherNumber> &    values) const;
 
   /**
-   * Instead of getting individual elements of a vector via operator(),
-   * this function allows getting a whole set of elements at once. In
-   * contrast to the previous function, this function obtains the
-   * indices of the elements by dereferencing all elements of the iterator
-   * range provided by the first two arguments, and puts the vector
-   * values into memory locations obtained by dereferencing a range
-   * of iterators starting at the location pointed to by the third
-   * argument.
-   *
-   * If the current vector is called @p v, then this function is the equivalent
-   * to the code
+   * 这个函数不是通过operator()获得向量的单个元素，而是允许一次获得整个元素集。与前一个函数不同的是，这个函数通过取消引用前两个参数提供的迭代器范围内的所有元素来获得元素的索引，并将向量的值放入通过取消引用从第三个参数指向的位置开始的迭代器范围获得的内存位置。
+   * 如果当前的向量被称为 @p v,
+   * ，那么这个函数就等同于代码
    * @code
-   *   ForwardIterator indices_p = indices_begin;
-   *   OutputIterator  values_p  = values_begin;
-   *   while (indices_p != indices_end)
-   *     {
-   *       *values_p = v[*indices_p];
-   *       ++indices_p;
-   *       ++values_p;
-   *     }
+   * ForwardIterator indices_p = indices_begin;
+   * OutputIterator  values_p  = values_begin;
+   * while (indices_p != indices_end)
+   *   {
+   *    values_p = v[*indices_p];
+   *     ++indices_p;
+   *     ++values_p;
+   *   }
    * @endcode
+   * @pre  必须能够写进从 @p values_begin
+   * 开始的尽可能多的内存位置，因为有 @p indices_begin 和 @p
+   * indices_end. 之间的迭代器。
    *
-   * @pre It must be possible to write into as many memory locations
-   *   starting at @p values_begin as there are iterators between
-   *   @p indices_begin and @p indices_end.
    */
   template <typename ForwardIterator, typename OutputIterator>
   void
@@ -690,29 +614,31 @@ public:
 
 
   /**
-   * @name Modification of vectors
+   * @name  修改向量
+   *
    */
   //@{
 
   /**
-   * Add the given vector to the present one.
-   *
+   * 将给定的向量添加到当前的向量中。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector<Number> &
   operator+=(const Vector<Number> &V);
 
   /**
-   * Subtract the given vector from the present one.
-   *
+   * 从现在的向量中减去给定的向量。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector<Number> &
   operator-=(const Vector<Number> &V);
 
   /**
-   * A collective add operation: This function adds a whole set of values
-   * stored in @p values to the vector components specified by @p indices.
+   * 一个集体加法操作。这个函数将存储在 @p values
+   * 中的一整套数值添加到 @p indices. 指定的向量成分中。
+   *
    */
   template <typename OtherNumber>
   void
@@ -720,17 +646,16 @@ public:
       const std::vector<OtherNumber> &values);
 
   /**
-   * This is a second collective add operation. As a difference, this function
-   * takes a deal.II vector of values.
+   * 这是第二次集体添加操作。作为区别，这个函数需要一个deal.II的数值向量。
+   *
    */
   template <typename OtherNumber>
   void
   add(const std::vector<size_type> &indices, const Vector<OtherNumber> &values);
 
   /**
-   * Take an address where <tt>n_elements</tt> are stored contiguously and add
-   * them into the vector. Handles all cases which are not covered by the
-   * other two <tt>add()</tt> functions above.
+   * 取一个<tt>n_elements</tt>连续存储的地址，并将其添加到向量中。处理上述其他两个<tt>add()</tt>函数未涵盖的所有情况。
+   *
    */
   template <typename OtherNumber>
   void
@@ -739,18 +664,18 @@ public:
       const OtherNumber *values);
 
   /**
-   * Addition of @p s to all components. Note that @p s is a scalar and not a
-   * vector.
-   *
+   * 将 @p s 添加到所有组件中。注意， @p s
+   * 是一个标量，而不是一个矢量。
    * @dealiiOperationIsMultithreaded
+   *
    */
   void
   add(const Number s);
 
   /**
-   * Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.
-   *
+   * 缩放向量的多重加法，即<tt>*this += a*V+b*W</tt>。
    * @dealiiOperationIsMultithreaded
+   *
    */
   void
   add(const Number          a,
@@ -759,82 +684,80 @@ public:
       const Vector<Number> &W);
 
   /**
-   * Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.
-   *
+   * 矢量的倍数的简单加法，即<tt>*this += a*V</tt>。
    * @dealiiOperationIsMultithreaded
+   *
    */
   void
   add(const Number a, const Vector<Number> &V);
 
   /**
-   * Scaling and simple vector addition, i.e.  <tt>*this = s*(*this)+V</tt>.
-   *
+   * 缩放和简单的向量相加，即<tt>*this = s*(*this)+V</tt>。
    * @dealiiOperationIsMultithreaded
+   *
    */
   void
   sadd(const Number s, const Vector<Number> &V);
 
   /**
-   * Scaling and simple addition, i.e.  <tt>*this = s*(*this)+a*V</tt>.
-   *
+   * 缩放和简单加法，即<tt>*this = s*(*this)+a*V</tt>。
    * @dealiiOperationIsMultithreaded
+   *
    */
   void
   sadd(const Number s, const Number a, const Vector<Number> &V);
 
   /**
-   * Scale each element of the vector by a constant value.
-   *
+   * 将向量的每个元素按一个常数缩放。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector<Number> &
   operator*=(const Number factor);
 
   /**
-   * Scale each element of the vector by the inverse of the given value.
-   *
+   * 用给定值的倒数来缩放向量的每个元素。
    * @dealiiOperationIsMultithreaded
+   *
    */
   Vector<Number> &
   operator/=(const Number factor);
 
   /**
-   * Scale each element of this vector by the corresponding element in the
-   * argument. This function is mostly meant to simulate multiplication (and
-   * immediate re-assignment) by a diagonal scaling matrix.
-   *
+   * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟对角线缩放矩阵的乘法（和立即重新赋值）。
    * @dealiiOperationIsMultithreaded
+   *
    */
   void
   scale(const Vector<Number> &scaling_factors);
 
   /**
-   * Scale each element of this vector by the corresponding element in the
-   * argument. This function is mostly meant to simulate multiplication (and
-   * immediate re-assignment) by a diagonal scaling matrix.
+   * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟用对角线缩放矩阵进行乘法（和立即重新分配）。
+   *
    */
   template <typename Number2>
   void
   scale(const Vector<Number2> &scaling_factors);
 
   /**
-   * Assignment <tt>*this = a*u</tt>.
+   * 赋值 <tt>*this = a*u</tt>.       @dealiiOperationIsMultithreaded
    *
-   * @dealiiOperationIsMultithreaded
    */
   void
   equ(const Number a, const Vector<Number> &u);
 
   /**
-   * Assignment <tt>*this = a*u</tt>.
+   * 赋值 <tt>*this = a*u</tt>.
+   *
    */
   template <typename Number2>
   void
   equ(const Number a, const Vector<Number2> &u);
 
   /**
-   * This function does nothing but exists for compatibility with the @p
-   * parallel vector classes (e.g., LinearAlgebra::distributed::Vector class).
+   * 这个函数什么也不做，只是为了与 @p 并行向量类（如
+   * LinearAlgebra::distributed::Vector 类）兼容而存在。
+   *
    */
   void
   update_ghost_values() const;
@@ -842,14 +765,16 @@ public:
 
 
   /**
-   * @name Input and output
+   * @name  输入和输出
+   *
    */
   //@{
   /**
-   * Print to a stream. @p precision denotes the desired precision with which
-   * values shall be printed, @p scientific whether scientific notation shall
-   * be used. If @p across is @p true then the vector is printed in a line,
-   * while if @p false then the elements are printed on a separate line each.
+   * 打印到一个流。  @p precision 表示打印数值所需的精度，
+   * @p scientific 是否应使用科学符号。如果 @p across 是 @p true
+   * ，那么向量将被打印在一行中，而如果 @p false
+   * 则元素被打印在单独的一行中。
+   *
    */
   void
   print(std::ostream &     out,
@@ -858,40 +783,32 @@ public:
         const bool         across     = true) const;
 
   /**
-   * Write the vector en bloc to a file. This is done in a binary mode, so the
-   * output is neither readable by humans nor (probably) by other computers
-   * using a different operating system or number format.
+   * 将整个向量写到文件中。这是以二进制模式进行的，所以输出结果既不能被人类阅读，也不能（可能）被其他使用不同操作系统或数字格式的计算机阅读。
+   *
    */
   void
   block_write(std::ostream &out) const;
 
   /**
-   * Read a vector en block from a file. This is done using the inverse
-   * operations to the above function, so it is reasonably fast because the
-   * bitstream is not interpreted.
+   * 从一个文件中读取一个矢量en块。这是用上述函数的逆运算来完成的，所以它的速度相当快，因为位流没有被解释。
+   * 如果有必要，矢量会被调整大小。
+   * 一个原始形式的错误检查被执行，它将识别最直截了当的尝试，将一些数据解释为存储在文件中的位流向量，但不会超过。
    *
-   * The vector is resized if necessary.
-   *
-   * A primitive form of error checking is performed which will recognize the
-   * bluntest attempts to interpret some data as a vector stored bitwise to a
-   * file, but not more.
    */
   void
   block_read(std::istream &in);
 
   /**
-   * Write the data of this object to a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
   save(Archive &ar, const unsigned int version) const;
 
   /**
-   * Read the data of this object from a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从一个流中读取此对象的数据，以达到序列化的目的。
+   *
    */
   template <class Archive>
   void
@@ -899,9 +816,8 @@ public:
 
 #ifdef DOXYGEN
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从流中写入和读取此对象的数据，以达到序列化的目的。
+   *
    */
   template <class Archive>
   void
@@ -914,86 +830,79 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Information about the object
+   * @name  对象的信息
+   *
    */
   //@{
 
   /**
-   * Return true if the given global index is in the local range of this
-   * processor.  Since this is not a distributed vector the method always
-   * returns true.
+   * 如果给定的全局索引在这个处理器的本地范围内，返回真。
+   * 由于这不是一个分布式矢量，该方法总是返回真。
+   *
    */
   bool
   in_local_range(const size_type global_index) const;
 
   /**
-   * Return an index set that describes which elements of this vector are
-   * owned by the current processor. Note that this index set does not include
-   * elements this vector may store locally as ghost elements but that are in
-   * fact owned by another processor. As a consequence, the index sets
-   * returned on different processors if this is a distributed vector will
-   * form disjoint sets that add up to the complete index set. Obviously, if a
-   * vector is created on only one processor, then the result would satisfy
+   * 返回一个索引集，描述这个向量的哪些元素是由当前处理器拥有的。请注意，这个索引集不包括这个向量可能作为鬼魂元素存储在本地，但实际上是由另一个处理器拥有的元素。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相交的集合，加起来就是完整的索引集。很明显，如果一个向量只在一个处理器上创建，那么结果将满足
    * @code
-   *   vec.locally_owned_elements() == complete_index_set (vec.size())
+   * vec.locally_owned_elements() == complete_index_set (vec.size())
    * @endcode
+   * 由于当前的数据类型不支持跨不同处理器的并行数据存储，所以返回的索引集是完整的索引集。
    *
-   * Since the current data type does not support parallel data storage across
-   * different processors, the returned index set is the complete index set.
    */
   IndexSet
   locally_owned_elements() const;
 
   /**
-   * Return dimension of the vector.
+   * 返回向量的尺寸。
+   *
    */
   size_type
   size() const;
 
   /**
-   * Return local dimension of the vector. Since this vector does not support
-   * distributed data this is always the same value as size().
+   * 返回向量的局部维度。因为这个向量不支持分布式数据，所以这个值总是与size()相同。
+   * @note  这个函数的存在是为了与 LinearAlgebra::ReadWriteVector.
+   * 兼容。
    *
-   * @note This function exists for compatibility with
-   * LinearAlgebra::ReadWriteVector.
    */
   size_type
   locally_owned_size() const;
 
   /**
-   * Return whether the vector contains only elements with value zero. This
-   * function is mainly for internal consistency checks and should seldom be
-   * used when not in debug mode since it uses quite some time.
+   * 返回向量是否只包含值为0的元素。这个函数主要用于内部一致性检查，在非调试模式下应该很少使用，因为它使用了相当多的时间。
+   *
    */
   bool
   all_zero() const;
 
   /**
-   * Return @p true if the vector has no negative entries, i.e. all entries
-   * are zero or positive. This function is used, for example, to check
-   * whether refinement indicators are really all positive (or zero).
+   * 如果向量没有负条目，即所有条目都是零或正，则返回
+   * @p true
+   * 。例如，这个函数被用来检查细化指标是否真的都是正的（或零）。
+   * 这个函数显然只有在这个类的模板参数是一个实数类型时才有意义。如果它是一个复杂的类型，那么就会抛出一个异常。
    *
-   * The function obviously only makes sense if the template argument of this
-   * class is a real type. If it is a complex type, then an exception is
-   * thrown.
    */
   bool
   is_non_negative() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * This function exists for compatibility with the @p
-   * parallel vector classes (e.g., LinearAlgebra::distributed::Vector class).
-   * Always returns false since this implementation is serial.
+   * 这个函数的存在是为了与 @p 并行向量类（例如，
+   * LinearAlgebra::distributed::Vector 类）兼容。
+   * 总是返回false，因为这个实现是串行的。
+   *
    */
   bool
   has_ghost_elements() const;
@@ -1001,20 +910,21 @@ public:
 
 private:
   /**
-   * Array of elements owned by this vector.
+   * 这个向量所拥有的元素的数组。
+   *
    */
   AlignedVector<Number> values;
 
   /**
-   * Convenience function used at the end of initialization or
-   * reinitialization. Resets (if necessary) the loop partitioner to the
-   * correct state, based on its current state and the length of the vector.
+   * 在初始化或重新初始化结束时使用的便利函数。根据循环分区器的当前状态和向量的长度，将其重置（如果需要）到正确的状态。
+   *
    */
   void
   maybe_reset_thread_partitioner();
 
   /**
-   * Actual implementation of the reinit functions.
+   * reinit函数的实际实现。
+   *
    */
   void
   do_reinit(const size_type new_size,
@@ -1022,8 +932,8 @@ private:
             const bool      reset_partitioner);
 
   /**
-   * For parallel loops with TBB, this member variable stores the affinity
-   * information of loops.
+   * 对于带有TBB的并行循环，该成员变量存储循环的亲和力信息。
+   *
    */
   mutable std::shared_ptr<parallel::internal::TBBPartitioner>
     thread_loop_partitioner;
@@ -1033,8 +943,8 @@ private:
   friend class Vector;
 };
 
-/*@}*/
-/*----------------------- Inline functions ----------------------------------*/
+ /*@}*/ 
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 
 #ifndef DOXYGEN
@@ -1364,17 +1274,18 @@ Vector<Number>::load(Archive &ar, const unsigned int)
 #endif
 
 
-/*! @addtogroup Vectors
- *@{
- */
+/*!   @addtogroup  矢量  @{ ! 
+
+* 
+* */
 
 
 /**
- * Global function @p swap which overloads the default implementation of the
- * C++ standard library which uses a temporary object. The function simply
- * exchanges the data of the two vectors.
+ * 全局函数 @p swap
+ * ，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
+ * @relatesalso  向量
  *
- * @relatesalso Vector
+ *
  */
 template <typename Number>
 inline void
@@ -1385,11 +1296,10 @@ swap(Vector<Number> &u, Vector<Number> &v)
 
 
 /**
- * Output operator writing a vector to a stream. This operator outputs the
- * elements of the vector one by one, with a space between entries. Each entry
- * is formatted according to the flags set on the output stream.
+ * 输出操作符将一个向量写入流中。该操作符逐一输出向量的元素，条目之间有一个空格。每个条目都会根据输出流上设置的标志进行格式化。
+ * @relatesalso  矢量
  *
- * @relatesalso Vector
+ *
  */
 template <typename number>
 inline std::ostream &
@@ -1407,13 +1317,14 @@ operator<<(std::ostream &out, const Vector<number> &v)
   return out;
 }
 
-/*@}*/
+ /*@}*/ 
 
 
 /**
- * Declare dealii::Vector< Number > as serial vector.
+ * 声明  dealii::Vector<  数字 > 作为串行矢量。
+ * @relatesalso  矢量
  *
- * @relatesalso Vector
+ *
  */
 template <typename Number>
 struct is_serial_vector<Vector<Number>> : std::true_type
@@ -1423,3 +1334,5 @@ struct is_serial_vector<Vector<Number>> : std::true_type
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

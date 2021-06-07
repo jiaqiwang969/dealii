@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/symbolic_function.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -300,5 +299,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/distributed/tria_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2021 by the deal.II authors
@@ -40,32 +39,47 @@ DEAL_II_NAMESPACE_OPEN
 namespace parallel
 {
   /**
-   * 这个类描述了所有并行工作的三角化类的接口，即
-   * parallel::distributed::Triangulation,
-   * parallel::fullydistributed::Triangulation, 和
+   * This class describes the interface for all triangulation classes that
+   * work in parallel, namely parallel::distributed::Triangulation,
+   * parallel::fullydistributed::Triangulation, and
    * parallel::shared::Triangulation.
-   * 因此，它是一个可以用来测试三角化对象的引用指针是否指的是顺序三角化，或者三角化是否真的是并行的类。换句话说，人们可以写一个这样的函数。
+   *
+   * It is, consequently, a class that can be used to test whether a
+   * pointer of reference to a triangulation object refers to a
+   * sequential triangulation, or whether the triangulation is in fact
+   * parallel. In other words, one could write a function like this:
    * @code
-   * template <int dim, int spacedim>
-   * bool is_parallel (const dealii::Triangulation<dim,spacedim> &tria)
-   * {
-   *   if (dynamic_cast<const parallel::TriangulationBase<dim,spacedim>*>
-   *                   (&tria)
-   *       != nullptr)
-   *     return true;
-   *   else
-   *     return false;
-   * }
+   *   template <int dim, int spacedim>
+   *   bool is_parallel (const dealii::Triangulation<dim,spacedim> &tria)
+   *   {
+   *     if (dynamic_cast<const parallel::TriangulationBase<dim,spacedim>*>
+   *                     (&tria)
+   *         != nullptr)
+   *       return true;
+   *     else
+   *       return false;
+   *   }
    * @endcode
    *
+   * All parallel triangulations share certain traits, such as the fact that
+   * they communicate via
+   * @ref GlossMPICommunicator "MPI communicators"
+   * or that they have
+   * @ref GlossLocallyOwnedCell "locally owned",
+   * @ref GlossGhostCell "ghost", and possibly
+   * @ref GlossArtificialCell "artificial cells".
+   * This class provides
+   * a number of member functions that allows querying some information
+   * about the triangulation that is independent of how exactly a
+   * parallel triangulation is implemented (i.e., which of the various
+   * classes derived from the current one it actually is).
    */
   template <int dim, int spacedim = dim>
   class TriangulationBase : public dealii::Triangulation<dim, spacedim>
   {
   public:
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     TriangulationBase(
       const MPI_Comm &mpi_communicator,
@@ -74,172 +88,214 @@ namespace parallel
       const bool check_for_distorted_cells = false);
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~TriangulationBase() override;
 
     /**
-     * 返回该三角化所使用的MPI通信器。
-     *
+     * Return MPI communicator used by this triangulation.
      */
     virtual MPI_Comm
     get_communicator() const override;
 
     /**
-     * 如果支持多级层次结构并且已经构建完成，则返回。
-     *
+     * Return if multilevel hierarchy is supported and has been constructed.
      */
     virtual bool
     is_multilevel_hierarchy_constructed() const = 0;
 
     /**
-     * 实现与基类中相同的函数。
-     * @note
-     * 这个函数复制了源三角结构的单元，但没有复制通讯器。换句话说，产生的三角形将在它所构建的通信器上操作。
+     * Implementation of the same function as in the base class.
      *
+     * @note This function copies the cells, but not the communicator,
+     * of the source triangulation. In other words, the resulting
+     * triangulation will operate on the communicator it was constructed
+     * with.
      */
     virtual void
     copy_triangulation(
       const dealii::Triangulation<dim, spacedim> &old_tria) override;
 
     /**
-     * 返回三角形中本地拥有的活动单元的数量，即这些单元的subdomain_id等于local_owned_subdomain()。请注意，在目前的处理器上存储的三角形中可能有更多的活动单元，例如幽灵单元，或者离本地拥有的单元块更远的单元，但这是为了确保存储这个处理器的活动单元集的三角形仍然保持相邻单元的2:1的大小比例而需要的。
-     * 由于上面的备注，这个函数的结果总是小于或等于::三角形基类中同名函数的结果，其中包括活动的幽灵和人工单元（也见
-     * @ref GlossArtificialCell 和 @ref GlossGhostCell  ）。
+     * Return the number of active cells in the triangulation that are locally
+     * owned, i.e. that have a subdomain_id equal to
+     * locally_owned_subdomain(). Note that there may be more active cells in
+     * the triangulation stored on the present processor, such as for example
+     * ghost cells, or cells further away from the locally owned block of
+     * cells but that are needed to ensure that the triangulation that stores
+     * this processor's set of active cells still remains balanced with
+     * respect to the 2:1 size ratio of adjacent cells.
      *
+     * As a consequence of the remark above, the result of this function is
+     * always smaller or equal to the result of the function with the same
+     * name in the ::Triangulation base class, which includes the active ghost
+     * and artificial cells (see also
+     * @ref GlossArtificialCell
+     * and
+     * @ref GlossGhostCell).
      */
     unsigned int
     n_locally_owned_active_cells() const;
 
     /**
-     * 返回所有处理器中每个处理器所拥有的活动单元的数量之和。这等于三角形中活动单元的总数量。
-     *
+     * Return the sum over all processors of the number of active cells owned
+     * by each processor. This equals the overall number of active cells in
+     * the triangulation.
      */
     virtual types::global_cell_index
     n_global_active_cells() const override;
 
     /**
-     * 返回以字节为单位的本地内存消耗。
-     *
+     * Return the local memory consumption in bytes.
      */
     virtual std::size_t
     memory_consumption() const override;
 
 
     /**
-     * 返回全局最大水平。如果当前处理器只将单元存储在域中不是很细的部分，但如果其他处理器将单元存储在域中更深的细化部分，这个数字可能大于
-     * dealii::Triangulation::n_levels()
-     * （这个类的基类中的一个函数）的返回值。
-     *
+     * Return the global maximum level. This may be bigger than the number
+     * dealii::Triangulation::n_levels() (a function in this class's base
+     * class) returns if the current processor only stores cells in parts of
+     * the domain that are not very refined, but if other processors store
+     * cells in more deeply refined parts of the domain.
      */
     virtual unsigned int
     n_global_levels() const override;
 
     /**
-     * 返回那些由当前处理器拥有的单元格的子域ID。三角形中所有没有这个子域ID的单元格要么被其他处理器拥有，要么有只存在于其他处理器的子域。
-     *
+     * Return the subdomain id of those cells that are owned by the current
+     * processor. All cells in the triangulation that do not have this
+     * subdomain id are either owned by another processor or have children
+     * that only exist on other processors.
      */
     types::subdomain_id
     locally_owned_subdomain() const override;
 
     /**
-     * 返回一组处理器的MPI行列，这些处理器至少有一个与本地处理器的单元格相邻的幽灵单元。换句话说，这是所有幽灵单元的subdomain_id()的集合。
-     * 返回的集合是对称的，即如果 @p i 包含在处理器 @p j,
-     * 的列表中，那么 @p j 也将包含在处理器 @p i.
-     * 的列表中。
+     * Return a set of MPI ranks of the processors that have at least one
+     * ghost cell adjacent to the cells of the local processor. In other
+     * words, this is the set of subdomain_id() for all ghost cells.
      *
+     * The returned sets are symmetric, that is if @p i is contained in the
+     * list of processor @p j, then @p j will also be contained in the list of
+     * processor @p i.
      */
     const std::set<types::subdomain_id> &
     ghost_owners() const;
 
     /**
-     * 返回一组MPI等级的处理器，这些处理器至少有一个与我们在几何多网格中使用的单元相邻的水平重影单元。换句话说，这是所有层面鬼单元的level_subdomain_id()的集合。
-     * 返回的集合是对称的，即如果 @p i 包含在处理器 @p j,
-     * 的列表中，那么 @p j 也将包含在处理器 @p i.
-     * 的列表中。
-     * @note
-     * 只有在多网格所有权被分配的情况下（通过在构造时设置construct_multigrid_hierarchy标志），才能确定级别ghost所有者，否则返回的集合将为空。
+     * Return a set of MPI ranks of the processors that have at least one
+     * level ghost cell adjacent to our cells used in geometric multigrid. In
+     * other words, this is the set of level_subdomain_id() for all level
+     * ghost cells.
      *
+     * The returned sets are symmetric, that is if @p i is contained in the
+     * list of processor @p j, then @p j will also be contained in the list of
+     * processor @p i.
+     *
+     * @note The level ghost owners can only be determined if the multigrid
+     * ownership has been assigned (by setting the
+     * construct_multigrid_hierarchy flag at construction time), otherwise the
+     * returned set will be empty.
      */
     const std::set<types::subdomain_id> &
     level_ghost_owners() const;
 
     /**
-     * 返回三角形活动层上的单元格的全局索引的分区器。
-     *
+     * Return partitioner for the global indices of the cells on the active
+     * level of the triangulation.
      */
     const std::weak_ptr<const Utilities::MPI::Partitioner>
     global_active_cell_index_partitioner() const;
 
     /**
-     * 返回三角形给定 @p
-     * 层上的单元格的全局索引的分区器。
-     *
+     * Return partitioner for the global indices of the cells on the given @p
+     * level of the triangulation.
      */
     const std::weak_ptr<const Utilities::MPI::Partitioner>
     global_level_cell_index_partitioner(const unsigned int level) const;
 
     /**
-     * 返回一个地图，对于每个顶点，列出其子域与该顶点相邻的所有处理器。
-     * @deprecated  用 GridTools::compute_vertices_with_ghost_neighbors()
-     * 代替
-     * parallel::TriangulationBase::compute_vertices_with_ghost_neighbors().
-     * 。
+     * Return a map that, for each vertex, lists all the processors whose
+     * subdomains are adjacent to that vertex.
      *
+     * @deprecated Use GridTools::compute_vertices_with_ghost_neighbors()
+     * instead of
+     * parallel::TriangulationBase::compute_vertices_with_ghost_neighbors().
      */
     DEAL_II_DEPRECATED virtual std::map<unsigned int,
                                         std::set<dealii::types::subdomain_id>>
     compute_vertices_with_ghost_neighbors() const;
 
     /**
-     * @copydoc   dealii::Triangulation::get_boundary_ids()  *
-     * dealii::Triangulation::get_boundary_ids() 。
-     * @note
-     * 这个函数涉及到一个全局通信，收集所有进程的当前ID。
+     * @copydoc dealii::Triangulation::get_boundary_ids()
      *
+     * @note This function involves a global communication gathering all current
+     *   IDs from all processes.
      */
     virtual std::vector<types::boundary_id>
     get_boundary_ids() const override;
 
     /**
-     * @copydoc   dealii::Triangulation::get_manifold_ids() .
-     * @note
-     * 这个函数涉及一个全局通信，收集所有进程的所有当前ID。
+     * @copydoc dealii::Triangulation::get_manifold_ids()
      *
+     * @note This function involves a global communication gathering all current
+     *   IDs from all processes.
      */
     virtual std::vector<types::manifold_id>
     get_manifold_ids() const override;
 
     /**
-     * 当顶点在本地被移动时，例如使用如下代码
+     * When vertices have been moved locally, for example using code like
      * @code
-     * cell->vertex(0) = new_location;
+     *   cell->vertex(0) = new_location;
      * @endcode
-     * 那么这个函数可以用来更新MPI进程之间顶点的位置。
-     * 所有已经被移动的顶点和可能在进程的幽灵层中的顶点都必须在
-     * @p vertex_locally_moved
-     * 参数中报告。这确保了必须在进程之间发送的那部分信息被实际发送。此外，很重要的一点是，在进程之间的边界上的顶点正好在一个进程中被报告（例如，具有最高id的那个）。
-     * 否则，如果多个进程以不同的方式移动一个顶点，我们可以期待不理想的结果。一个典型的策略是让处理器
-     * $i$
-     * 移动那些与单元相邻的顶点，这些单元的所有者包括处理器
-     * $i$ ，但没有其他处理器 $j$ 与 $j<i$
-     * ；换句话说，对于子域边界的顶点，子域id最低的处理器
-     * "拥有 "一个顶点。
-     * @note
-     * 只有移动位于本地拥有的单元上的顶点或位于幽灵层上的单元才有意义。这是因为你可以确定这些顶点确实存在于所有处理器汇总的最精细的网格上，而位于人工单元但至少不在幽灵层的顶点可能存在于全局最精细的网格上，也可能不存在。因此，
-     * @p vertex_locally_moved
-     * 参数可能不包含至少不在幽灵单元上的顶点。
-     * @note
-     * 这个函数移动顶点的方式是，在每个处理器上，每个本地拥有的和鬼魂单元的顶点与其他处理器上这些单元的相应位置是一致的。另一方面，人工单元的位置一般会是错误的，因为人工单元在其他处理器上可能存在也可能不存在，因此不可能以任何方式确定它们的位置。这通常不是一个问题，因为人们从不在人工单元上做任何事情。但是，如果在以后的步骤中对移动顶点的网格进行细化，可能会导致问题。
-     * 如果你想这样做，正确的方法是保存应用于每个顶点的偏移量，调用这个函数，并在细化或粗化网格之前应用相反的偏移量，并再次调用这个函数。
-     * @param  vertex_locally_moved
-     * 表示哪些顶点被移动的位图。这个数组的大小必须等于
-     * Triangulation::n_vertices()  并且必须是
-     * GridTools::get_locally_owned_vertices().   @see
-     * 标记的顶点的一个子集。这个函数用于，例如，在
-     * GridTools::distort_random().  中。
+     * then this function can be used to update the location of vertices
+     * between MPI processes.
      *
+     * All the vertices that have been moved and might be in the ghost layer
+     * of a process have to be reported in the @p vertex_locally_moved
+     * argument. This ensures that that part of the information that has to
+     * be send between processes is actually sent. Additionally, it is quite
+     * important that vertices on the boundary between processes are
+     * reported on exactly one process (e.g. the one with the highest id).
+     * Otherwise we could expect undesirable results if multiple processes
+     * move a vertex differently. A typical strategy is to let processor $i$
+     * move those vertices that are adjacent to cells whose owners include
+     * processor $i$ but no other processor $j$ with $j<i$; in other words,
+     * for vertices at the boundary of a subdomain, the processor with the
+     * lowest subdomain id "owns" a vertex.
+     *
+     * @note It only makes sense to move vertices that are either located on
+     * locally owned cells or on cells in the ghost layer. This is because
+     * you can be sure that these vertices indeed exist on the finest mesh
+     * aggregated over all processors, whereas vertices on artificial cells
+     * but not at least in the ghost layer may or may not exist on the
+     * globally finest mesh. Consequently, the @p vertex_locally_moved
+     * argument may not contain vertices that aren't at least on ghost
+     * cells.
+     *
+     * @note This function moves vertices in such a way that on every
+     * processor, the vertices of every locally owned and ghost cell is
+     * consistent with the corresponding location of these cells on other
+     * processors. On the other hand, the locations of artificial cells will
+     * in general be wrong since artificial cells may or may not exist on
+     * other processors and consequently it is not possible to determine
+     * their location in any way. This is not usually a problem since one
+     * never does anything on artificial cells. However, it may lead to
+     * problems if the mesh with moved vertices is refined in a later step.
+     * If that's what you want to do, the right way to do it is to save the
+     * offset applied to every vertex, call this function, and before
+     * refining or coarsening the mesh apply the opposite offset and call
+     * this function again.
+     *
+     * @param vertex_locally_moved A bitmap indicating which vertices have
+     * been moved. The size of this array must be equal to
+     * Triangulation::n_vertices() and must be a subset of those vertices
+     * flagged by GridTools::get_locally_owned_vertices().
+     *
+     * @see This function is used, for example, in
+     * GridTools::distort_random().
      */
     void
     communicate_locally_moved_vertices(
@@ -247,66 +303,63 @@ namespace parallel
 
   protected:
     /**
-     * 将用于三角测量的MPI通信器。我们为这个类创建一个唯一的通信器，它是传递给构造函数的通信器的复制品。
-     *
+     * MPI communicator to be used for the triangulation. We create a unique
+     * communicator for this class, which is a duplicate of the one passed to
+     * the constructor.
      */
     const MPI_Comm mpi_communicator;
 
     /**
-     * 将用于当前处理器的子域ID。这就是MPI等级。
-     *
+     * The subdomain id to be used for the current processor. This is the MPI
+     * rank.
      */
     types::subdomain_id my_subdomain;
 
     /**
-     * 子域的总数（或MPI通信器的大小）。
-     *
+     * The total number of subdomains (or the size of the MPI communicator).
      */
     types::subdomain_id n_subdomains;
 
     /**
-     * 一个包含分布式三角测量信息的结构。
-     *
+     * A structure that contains information about the distributed
+     * triangulation.
      */
     struct NumberCache
     {
       /**
-       * 这个MPI等级的本地拥有的活动单元的数量。
-       *
+       * Number of locally owned active cells of this MPI rank.
        */
       unsigned int n_locally_owned_active_cells;
       /**
-       * 活动单元的总数（ @p  n_locally_owned_active_cells之和）。
-       *
+       * The total number of active cells (sum of @p
+       * n_locally_owned_active_cells).
        */
       types::global_cell_index n_global_active_cells;
       /**
-       * 全局级别数，计算为所有MPI级别的最大级别数，所以<tt>n_levels()<=n_global_levels
-       * = max(n_levels() on proc i)</tt>。
-       *
+       * The global number of levels computed as the maximum number of levels
+       * taken over all MPI ranks, so <tt>n_levels()<=n_global_levels =
+       * max(n_levels() on proc i)</tt>.
        */
       unsigned int n_global_levels;
       /**
-       * 一个包含该处理器上幽灵单元所有者的子域_id（MPI等级）的集合。
-       *
+       * A set containing the subdomain_id (MPI rank) of the owners of the
+       * ghost cells on this processor.
        */
       std::set<types::subdomain_id> ghost_owners;
       /**
-       * 一个包含此处理器上的级别幽灵单元所有者的MPI等级的集合（对于所有级别）。
-       *
+       * A set containing the MPI ranks of the owners of the level ghost cells
+       * on this processor (for all levels).
        */
       std::set<types::subdomain_id> level_ghost_owners;
 
       /**
-       * 全局活动单元索引的分区器。
-       *
+       * Partitioner for the global active cell indices.
        */
       std::shared_ptr<const Utilities::MPI::Partitioner>
         active_cell_index_partitioner;
 
       /**
-       * 每个级别的全局级别单元索引的分区器。
-       *
+       * Partitioner for the global level cell indices for each level.
        */
       std::vector<std::shared_ptr<const Utilities::MPI::Partitioner>>
         level_cell_index_partitioners;
@@ -317,22 +370,19 @@ namespace parallel
     NumberCache number_cache;
 
     /**
-     * 在网格创建或细化后更新number_cache变量。
-     *
+     * Update the number_cache variable after mesh creation or refinement.
      */
     virtual void
     update_number_cache();
 
     /**
-     * @copydoc   dealii::Triangulation::update_reference_cells() .
-     *
+     * @copydoc dealii::Triangulation::update_reference_cells()
      */
     void
     update_reference_cells() override;
 
     /**
-     * 重置全局活动单元索引和全局水平单元索引。
-     *
+     * Reset global active cell indices and global level cell indices.
      */
     void
     reset_global_cell_indices();
@@ -341,22 +391,49 @@ namespace parallel
 
 
   /**
+   * A base class for distributed triangulations, i.e., triangulations that
+   * do not store all cells on all processors. This implies that not
+   * every detail of a triangulation may be known on each processor.
+   * In particular, you have to expect that triangulations of classes
+   * derived from this one only store some of the active cells (namely,
+   * the
+   * @ref GlossLocallyOwnedCell "locally owned cells"),
+   * along with
+   * @ref GlossGhostCell "ghost cells"
+   * and possibly
+   * @ref GlossArtificialCell "artificial cells".
+   * In contrast to the classes
+   * derived from parallel::TriangulationBase, it is certain that the
+   * classes derived from the current class will not store the entire
+   * triangulation as long as it has a large enough number of cells. (The
+   * difference to parallel::TriangulationBase is that the
+   * parallel::shared::Triangulation is derived from
+   * parallel::TriangulationBase, but not from the current class.) The
+   * distinction is not large in practice: Everything that is difficult for
+   * parallel distributed triangulation is generally also difficult for any
+   * other kind of parallel triangulation classes; however, this intermediate
+   * base class allows to further differentiate between the different kinds of
+   * classes providing parallel mesh functionality.
+   *
+   * This class can, then, be used to test whether a
+   * pointer or reference to a triangulation object refers to any kind of
+   * parallel triangulation, or whether the triangulation is in fact
+   * parallel distributed. In other words, one could write a function like
+   * this:
    * @code
-   * template <int dim, int spacedim>
-   * bool
-   * is_parallel_distributed(const dealii::Triangulation<dim,spacedim> &tria)
-   * {
-   *   if(dynamic_cast<const
-   *                   parallel::DistributedTriangulationBase<dim,spacedim>*>
-   *                  (&tria)
-   *      != nullptr)
-   *     return true;
-   *   else
-   *     return false;
-   * }
+   *   template <int dim, int spacedim>
+   *   bool
+   *   is_parallel_distributed(const dealii::Triangulation<dim,spacedim> &tria)
+   *   {
+   *     if(dynamic_cast<const
+   *                     parallel::DistributedTriangulationBase<dim,spacedim>*>
+   *                    (&tria)
+   *        != nullptr)
+   *       return true;
+   *     else
+   *       return false;
+   *   }
    * @endcode
-   *
-   *
    */
   template <int dim, int spacedim = dim>
   class DistributedTriangulationBase
@@ -364,8 +441,7 @@ namespace parallel
   {
   public:
     /**
-     * 构造器。
-     *
+     * Constructor.
      */
     DistributedTriangulationBase(
       const MPI_Comm &mpi_communicator,
@@ -374,9 +450,10 @@ namespace parallel
       const bool check_for_distorted_cells = false);
 
     /**
-     * 通过删除所有的数据，将这个三角剖面重设为处女状态。
-     * 请注意，只有当这个对象的订阅不再存在时，才允许这个操作，比如使用它的DoFHandler对象。
+     * Reset this triangulation into a virgin state by deleting all data.
      *
+     * Note that this operation is only allowed if no subscriptions to this
+     * object exist any more, such as DoFHandler objects using it.
      */
     virtual void
     clear() override;
@@ -388,80 +465,130 @@ namespace parallel
       typename dealii::Triangulation<dim, spacedim>::CellStatus;
 
     /**
-     * 将三角图保存到给定的文件中。这个文件需要在共享的网络文件系统上，从计算中的所有节点都可以到达。参见SolutionTransfer类，了解如何将解决方案向量存储到这个文件中。其他基于单元的数据可以用register_data_attach()来保存。
-     *
+     * Save the triangulation into the given file. This file needs to be
+     * reachable from all nodes in the computation on a shared network file
+     * system. See the SolutionTransfer class on how to store solution vectors
+     * into this file. Additional cell-based data can be saved using
+     * register_data_attach().
      */
     virtual void
     save(const std::string &filename) const = 0;
 
     /**
-     * 将用save()保存的三角图装回去。用register_data_attach()保存的基于单元的数据可以在调用load()后用notify_ready_to_unpack()读入。
-     *
+     * Load the triangulation saved with save() back in. Cell-based data that
+     * was saved with register_data_attach() can be read in with
+     * notify_ready_to_unpack() after calling load().
      */
     virtual void
     load(const std::string &filename, const bool autopartition = true) = 0;
 
     /**
-     * 注册一个函数，可以用来将固定大小的数据附加到单元格上。这在两个方面是有用的。(i)
-     * 在细化和粗化三角形时（ @a  例如在
+     * Register a function that can be used to attach data of fixed size
+     * to cells. This is useful for two purposes: (i) Upon refinement and
+     * coarsening of a triangulation (@a e.g. in
      * parallel::distributed::Triangulation::execute_coarsening_and_refinement()),
-     * 中，需要能够为每个单元存储一个或多个数据向量，以描述该单元上的求解值，这样当网格被重新划分时，这些数据可以被转移到该单元（或其父/子）的新拥有者处理器；(ii)
-     * 当将计算序列化到一个文件时，有必要将数据附加到单元，以便能够被保存（
-     * @a  ]，例如在 parallel::distributed::Triangulation::save())
-     * 中，与单元的其他信息一起，如果有必要，以后可以从磁盘上重新加载，在处理器中对单元进行不同的细分。
-     * 这个功能的工作方式是，它允许任何数量的利益方注册他们的意图，将数据附加到单元中。做到这一点的类的一个例子是
-     * parallel::distributed::SolutionTransfer ，每个
-     * parallel::distributed::SolutionTransfer
-     * 对象在当前Triangulation对象上工作，然后需要注册其意图。
-     * 每一方都注册了一个回调函数（这里的第一个参数，
-     * @p pack_callback)
-     * ，每当三角化的execute_coarsening_and_refinement()或save()函数被调用时，都会被调用。
-     * 然后，当前函数返回一个整数句柄，对应于这里提供的回调将附加的数据集的数量。
-     * 虽然这个数字可以被赋予精确的含义，但这并不重要：除了把它返回给notify_ready_to_unpack()函数外，你实际上永远不必对这个数字做任何事情。
-     * 换句话说，每个感兴趣的人（即当前函数的调用者）需要在提供给notify_ready_to_unpack()的回调中存储他们各自返回的句柄，以便以后在解包数据时使用。
-     * 每当 @p pack_callback
-     * 再被execute_coarsening_and_refinement()或load()在给定的单元上调用时，它都会收到一些参数。特别是，传递给回调的第一个参数表示它应该附加数据的单元。这始终是一个活动单元。
-     * 第二个参数，即CellStatus，提供给回调函数的参数将告诉你给定的单元是否会被粗化、细化，或保持原样。这个状态可能与设置在该单元上的细化或粗化标志不同，以适应诸如
-     * "每条边一个悬空节点
-     * "的规则）。这些标志需要在它们所属的p4est象限的背景下阅读，因为它们的关系被收集在local_cell_relations。
-     * 具体来说，这个参数的值意味着以下几点。
+     * one needs to be able to store one or more data vectors per cell that
+     * characterizes the solution values on the cell so that this data can
+     * then be transferred to the new owning processor of the cell (or
+     * its parent/children) when the mesh is re-partitioned; (ii) when
+     * serializing a computation to a file, it is necessary to attach
+     * data to cells so that it can be saved (@a e.g. in
+     * parallel::distributed::Triangulation::save()) along with the cell's
+     * other information and, if necessary, later be reloaded from disk
+     * with a different subdivision of cells among the processors.
      *
+     * The way this function works is that it allows any number of interest
+     * parties to register their intent to attach data to cells. One example
+     * of classes that do this is parallel::distributed::SolutionTransfer
+     * where each parallel::distributed::SolutionTransfer object that works
+     * on the current Triangulation object then needs to register its intent.
+     * Each of these parties registers a callback function (the first
+     * argument here, @p pack_callback) that will be called whenever the
+     * triangulation's execute_coarsening_and_refinement() or save()
+     * functions are called.
      *
+     * The current function then returns an integer handle that corresponds
+     * to the number of data set that the callback provided here will attach.
+     * While this number could be given a precise meaning, this is
+     * not important: You will never actually have to do anything with
+     * this number except return it to the notify_ready_to_unpack() function.
+     * In other words, each interested party (i.e., the caller of the current
+     * function) needs to store their respective returned handle for later use
+     * when unpacking data in the callback provided to
+     * notify_ready_to_unpack().
      *
+     * Whenever @p pack_callback is then called by
+     * execute_coarsening_and_refinement() or load() on a given cell, it
+     * receives a number of arguments. In particular, the first
+     * argument passed to the callback indicates the cell for which
+     * it is supposed to attach data. This is always an active cell.
      *
+     * The second, CellStatus, argument provided to the callback function
+     * will tell you if the given cell will be coarsened, refined, or will
+     * persist as is. (This status may be different than the refinement
+     * or coarsening flags set on that cell, to accommodate things such as
+     * the "one hanging node per edge" rule.). These flags need to be
+     * read in context with the p4est quadrant they belong to, as their
+     * relations are gathered in local_cell_relations.
      *
+     * Specifically, the values for this argument mean the following:
      *
-     * - `cell_persist`: 单元不会被细化/粗化，但可能被转移到不同的处理器。如果是这种情况，回调将希望把这个单元的数据打包成一个数组，并存储在所提供的地址上，以便以后在这个单元可能出现的地方进行解包。
+     * - `CELL_PERSIST`: The cell won't be refined/coarsened, but might be
+     * moved to a different processor. If this is the case, the callback
+     * will want to pack up the data on this cell into an array and store
+     * it at the provided address for later unpacking wherever this cell
+     * may land.
+     * - `CELL_REFINE`: This cell will be refined into 4 or 8 cells (in 2d
+     * and 3d, respectively). However, because these children don't exist
+     * yet, you cannot access them at the time when the callback is
+     * called. Thus, in local_cell_relations, the corresponding
+     * p4est quadrants of the children cells are linked to the deal.II
+     * cell which is going to be refined. To be specific, only the very
+     * first child is marked with `CELL_REFINE`, whereas the others will be
+     * marked with `CELL_INVALID`, which indicates that these cells will be
+     * ignored by default during the packing or unpacking process. This
+     * ensures that data is only transferred once onto or from the parent
+     * cell. If the callback is called with `CELL_REFINE`, the callback
+     * will want to pack up the data on this cell into an array and store
+     * it at the provided address for later unpacking in a way so that
+     * it can then be transferred to the children of the cell that will
+     * then be available. In other words, if the data the callback
+     * will want to pack up corresponds to a finite element field, then
+     * the prolongation from parent to (new) children will have to happen
+     * during unpacking.
+     * - `CELL_COARSEN`: The children of this cell will be coarsened into the
+     * given cell. These children still exist, so if this is the value
+     * given to the callback as second argument, the callback will want
+     * to transfer data from the children to the current parent cell and
+     * pack it up so that it can later be unpacked again on a cell that
+     * then no longer has any children (and may also be located on a
+     * different processor). In other words, if the data the callback
+     * will want to pack up corresponds to a finite element field, then
+     * it will need to do the restriction from children to parent at
+     * this point.
+     * - `CELL_INVALID`: See `CELL_REFINE`.
      *
+     * @note If this function is used for serialization of data
+     *   using save() and load(), then the cell status argument with which
+     *   the callback is called will always be `CELL_PERSIST`.
      *
+     * The callback function is expected to return a memory chunk of the
+     * format `std::vector<char>`, representing the packed data on a
+     * certain cell.
      *
+     * The second parameter @p returns_variable_size_data indicates whether
+     * the returned size of the memory region from the callback function
+     * varies by cell (<tt>=true</tt>) or stays constant on each one
+     * throughout the whole domain (<tt>=false</tt>).
      *
-     *
-     *
-     * - `cell_refine`: 这个单元格将被细化为4个或8个单元格（分别在2d和3d中）。然而，由于这些子单元还不存在，所以在调用回调的时候，你无法访问它们。因此，在local_cell_relations中，相应的子单元的p4est象限被链接到将被精炼的deal.II单元。具体来说，只有第一个子单元被标记为 "CELL_REFINE"，而其他单元将被标记为 "CELL_INVALID"，这表明这些单元在打包或拆包过程中会被默认忽略。这确保了数据只被传输到父单元或从父单元传输一次。如果回调是以`CELL_REFINE`调用的，回调将希望把这个单元格上的数据打包成一个数组，并存储在提供的地址上，以便以后解包的方式，这样就可以把数据传输到该单元格的子单元，然后就可以使用了。换句话说，如果回调想要打包的数据对应于一个有限元字段，那么从父单元到（新）子单元的延长必须在解包时发生。
-     *
-     *
-     *
-     *
-     *
-     *
-     * - `cell_coarsen`: 这个单元格的子代将被粗化为给定的单元格。这些子单元仍然存在，所以如果这是给回调的第二个参数的值，回调将想把数据从子单元转移到当前的父单元，并将其打包，以便以后可以在一个不再有任何子单元（也可能位于不同的处理器上）上再次解包。换句话说，如果回调想要打包的数据对应于一个有限元字段，那么它就需要在这一点上做从子单元到父单元的限制。
-     *
-     *
-     *
-     *
-     *
-     *
-     * - `cell_invalid`: 参见 `CELL_REFINE`.
-     * @note
-     * 如果这个函数用于使用save()和load()的数据序列化，那么调用回调函数的单元状态参数将总是`CELL_PERSIST`。
-     * 回调函数预计将返回一个格式为 `std::vector<char>`,
-     * 的内存块，代表某个单元上的打包数据。
-     * 第二个参数 @p returns_variable_size_data
-     * 表示回调函数返回的内存区域大小是否因单元而异（<tt>=true</tt>）或在整个域中每个单元保持不变（<tt>=false</tt>）。
-     * @note
-     * 这个函数的目的是为了注册附加数据的意图，以便随后调用execute_coarsening_and_refinement()和notify_ready_to_unpack()、save()、load()。因此，一旦这些回调被调用，notify_ready_to_unpack()、save()和load()都会忘记已注册的回调，如果你想让它们在再次调用这些函数时被激活，你必须用三角法重新注册它们。
-     *
+     * @note The purpose of this function is to register intent to
+     *   attach data for a single, subsequent call to
+     *   execute_coarsening_and_refinement() and notify_ready_to_unpack(),
+     *   save(), load(). Consequently, notify_ready_to_unpack(), save(),
+     *   and load() all forget the registered callbacks once these
+     *   callbacks have been called, and you will have to re-register
+     *   them with a triangulation if you want them to be active for
+     *   another call to these functions.
      */
     unsigned int
     register_data_attach(
@@ -470,22 +597,52 @@ namespace parallel
       const bool returns_variable_size_data);
 
     /**
-     * 这个函数与register_data_attach()相反。它被称为 <i>after</i>
-     * execute_coarsening_and_refinement() 或 save()/load()
-     * 函数，当之前将数据附加到三角结构上的类和函数准备好接收这些数据时，这些数据将被传送到其他处理器，跨越网格细化，或将数据序列化到文件。这个过程的重要部分是三角形不能在execute_coarsening_and_refinement()或load()结束后，通过先前附加的回调函数（如register_data_attach()函数）立即完成这个过程，因为最终想要回数据的类可能需要在重新创建网格的时间点和实际接收数据的时间点之间做一些设置。
-     * 一个例子是 parallel::distributed::SolutionTransfer
-     * 类，它只能在网格在当前处理器上完全可用后才能接收数据，而且只能在DoFHandler被重新初始化和分配自由度后才能接收。换句话说，在可以接收附加在单元上的数据的类准备好这样做之前，通常需要在用户空间进行大量的设置。
-     * 当他们准备好时，他们会使用当前函数告诉三角测量对象现在是他们准备好的时候，调用当前函数。
-     * 然后为每个新的本地拥有的单元调用所提供的回调函数。回调的第一个参数是一个指定单元的迭代器；第二个参数表示有关单元的状态；第三个参数通过两个迭代器定位一个内存区域，其中包含之前从提供给
-     * register_data_attach() 的回调中保存的数据。
-     * CellStatus将指示该单元是否被细化、粗化或持久化而未被改变。然后，回调的
-     * @p cell_iterator
-     * 参数将是一个活跃的、本地拥有的单元（如果该单元没有被精炼），或者是直接的父单元，如果它在execute_coarsening_and_refinement()期间被精炼。
-     * 因此，与register_data_attach()期间相反，如果状态为`CELL_REFINE`，你现在可以访问子单元，但对于状态为`CELL_COARSEN`的回调，就不能再访问了。
-     * 这个函数的第一个参数 "handle "对应于
-     * register_data_attach()
-     * 的返回值。(这个句柄的数字值应该代表什么的确切含义并不重要，你也不应该试图用它来做任何事情，除了在调用register_data_attach()和相应的调用notify_ready_to_unpack()之间传输信息。)
+     * This function is the opposite of register_data_attach(). It is called
+     * <i>after</i> the execute_coarsening_and_refinement() or save()/load()
+     * functions are done when classes and functions that have previously
+     * attached data to a triangulation for either transfer to other
+     * processors, across mesh refinement, or serialization of data to
+     * a file are ready to receive that data back. The important part about
+     * this process is that the triangulation cannot do this right away from
+     * the end of execute_coarsening_and_refinement() or load() via a
+     * previously attached callback function (as the register_data_attach()
+     * function does) because the classes that eventually want the data
+     * back may need to do some setup between the point in time where the
+     * mesh has been recreated and when the data can actually be received.
+     * An example is the parallel::distributed::SolutionTransfer class
+     * that can really only receive the data once not only the mesh is
+     * completely available again on the current processor, but only
+     * after a DoFHandler has been reinitialized and distributed
+     * degrees of freedom. In other words, there is typically a significant
+     * amount of set up that needs to happen in user space before the classes
+     * that can receive data attached to cell are ready to actually do so.
+     * When they are, they use the current function to tell the triangulation
+     * object that now is the time when they are ready by calling the
+     * current function.
      *
+     * The supplied callback function is then called for each newly locally
+     * owned cell. The first argument to the callback is an iterator that
+     * designates the cell; the second argument indicates the status of the
+     * cell in question; and the third argument localizes a memory area by
+     * two iterators that contains the data that was previously saved from
+     * the callback provided to register_data_attach().
+     *
+     * The CellStatus will indicate if the cell was refined, coarsened, or
+     * persisted unchanged. The @p cell_iterator argument to the callback
+     * will then either be an active,
+     * locally owned cell (if the cell was not refined), or the immediate
+     * parent if it was refined during execute_coarsening_and_refinement().
+     * Therefore, contrary to during register_data_attach(), you can now
+     * access the children if the status is `CELL_REFINE` but no longer for
+     * callbacks with status `CELL_COARSEN`.
+     *
+     * The first argument to this function, `handle`, corresponds to
+     * the return value of register_data_attach(). (The precise
+     * meaning of what the numeric value of this handle is supposed
+     * to represent is neither important, nor should you try to use
+     * it for anything other than transmit information between a
+     * call to register_data_attach() to the corresponding call to
+     * notify_ready_to_unpack().)
      */
     void
     notify_ready_to_unpack(
@@ -498,9 +655,10 @@ namespace parallel
 
   protected:
     /**
-     * 将额外的细胞附加数据保存到给定的文件中。第一个参数用于确定将缓冲区写入何处的偏移量。
-     * 由  @ref save  调用。
+     * Save additional cell-attached data into the given file. The first
+     * arguments are used to determine the offsets where to write buffers to.
      *
+     * Called by @ref save.
      */
     void
     save_attached_data(const unsigned int global_first_cell,
@@ -508,10 +666,11 @@ namespace parallel
                        const std::string &filename) const;
 
     /**
-     * 从给定的文件中加载额外的细胞附加数据，如果有任何保存的话。
-     * 第一个参数用于确定从哪里读取缓冲区的偏移量。
-     * 由  @ref load  调用。
+     * Load additional cell-attached data from the given file, if any was saved.
+     * The first arguments are used to determine the offsets where to read
+     * buffers from.
      *
+     * Called by @ref load.
      */
     void
     load_attached_data(const unsigned int global_first_cell,
@@ -522,42 +681,48 @@ namespace parallel
                        const unsigned int n_attached_deserialize_variable);
 
     /**
-     * 一个记录当前活动单元的CellStatus的函数，这些单元为本地所有。这个信息对于在适应或序列化过程中在网格之间传输数据是必须的，例如，使用
+     * A function to record the CellStatus of currently active cells that
+     * are locally owned. This information is mandatory to transfer data
+     * between meshes during adaptation or serialization, e.g., using
      * parallel::distributed::SolutionTransfer.
-     * 关系将被存储在私有成员local_cell_relations。关于CellStatus的广泛描述，请参见成员函数register_data_attach()的文档。
      *
+     * Relations will be stored in the private member local_cell_relations. For
+     * an extensive description of CellStatus, see the documentation for the
+     * member function register_data_attach().
      */
     virtual void
     update_cell_relations() = 0;
 
     /**
-     * 用于将CellStatus分配给deal.II单元格迭代器的辅助数据结构。关于前者的广泛描述，请参见成员函数register_data_attach()的文档。
-     *
+     * Auxiliary data structure for assigning a CellStatus to a deal.II cell
+     * iterator. For an extensive description of the former, see the
+     * documentation for the member function register_data_attach().
      */
     using cell_relation_t = typename std::pair<cell_iterator, CellStatus>;
 
     /**
-     * 对的向量，每个都包含一个deal.II单元格迭代器和其各自的CellStatus。要更新其内容，请使用
-     * update_cell_relations() 成员函数。
-     *
+     * Vector of pairs, each containing a deal.II cell iterator and its
+     * respective CellStatus. To update its contents, use the
+     * update_cell_relations() member function.
      */
     std::vector<cell_relation_t> local_cell_relations;
 
     /**
-     * 一个结构，用于存储已经或将要通过register_data_attach()函数附加到单元格上的数据信息，以后通过notify_ready_to_unpack()检索。
-     *
+     * A structure that stores information about the data that has been, or
+     * will be, attached to cells via the register_data_attach() function
+     * and later retrieved via notify_ready_to_unpack().
      */
     struct CellAttachedData
     {
       /**
-       * 通过register_data_attach()函数附加到三角结构上的函数数量，例如SolutionTransfer。
-       *
+       * number of functions that get attached to the Triangulation through
+       * register_data_attach() for example SolutionTransfer.
        */
       unsigned int n_attached_data_sets;
 
       /**
-       * 从load()调用后需要解开数据的函数的数量
-       *
+       * number of functions that need to unpack their data after a call from
+       * load()
        */
       unsigned int n_attached_deserialize;
 
@@ -566,8 +731,8 @@ namespace parallel
         typename dealii::Triangulation<dim, spacedim>::CellStatus)>;
 
       /**
-       * 这些回调函数将按照它们在register_data_attach()函数中注册的顺序来存储。
-       *
+       * These callback functions will be stored in the order in which they
+       * have been registered with the register_data_attach() function.
        */
       std::vector<pack_callback_t> pack_callbacks_fixed;
       std::vector<pack_callback_t> pack_callbacks_variable;
@@ -576,10 +741,11 @@ namespace parallel
     CellAttachedData cell_attached_data;
 
     /**
-     * 这个在 parallel::DistributedTriangulationBase
-     * 的私有范围内的类专门用于跨重新分区的网格和向/从文件系统的数据传输。
-     * 它被设计用来存储所有用于传输的数据缓冲区。
+     * This class in the private scope of parallel::DistributedTriangulationBase
+     * is dedicated to the data transfer across repartitioned meshes
+     * and to/from the file system.
      *
+     * It is designed to store all data buffers intended for transfer.
      */
     class DataTransfer
     {
@@ -587,13 +753,13 @@ namespace parallel
       DataTransfer(const MPI_Comm &mpi_communicator);
 
       /**
-       * 通过调用 @p cell_relations.
-       * 中每个单元的打包回调函数来准备数据传输。 @p
-       * pack_callbacks_fixed
-       * 中所有注册的回调函数将写入固定大小的缓冲区，而
-       * @p pack_callbacks_variable
-       * 的每个条目将把其数据写入可变大小的缓冲区。
+       * Prepare data transfer by calling the pack callback functions on each
+       * cell
+       * in @p cell_relations.
        *
+       * All registered callback functions in @p pack_callbacks_fixed will write
+       * into the fixed size buffer, whereas each entry of @p pack_callbacks_variable
+       * will write its data into the variable size buffer.
        */
       void
       pack_data(const std::vector<cell_relation_t> &cell_relations,
@@ -605,20 +771,26 @@ namespace parallel
 
 
       /**
-       * 解除 @p cell_relations.
-       * 的每个条目上的CellStatus信息，数据必须事先用execute_transfer()传输或通过load()从文件系统读取。
+       * Unpack the CellStatus information on each entry of
+       * @p cell_relations.
        *
+       * Data has to be previously transferred with execute_transfer()
+       * or read from the file system via load().
        */
       void
       unpack_cell_status(std::vector<cell_relation_t> &cell_relations) const;
 
       /**
-       * 用提供的 @p unpack_callback 函数在 @p cell_relations
-       * 中注册的每个单元上解压先前传输的数据。
-       * 参数 @p handle 对应于允许 @p unpack_callback
-       * 函数从存储器中读取的位置。它的值需要与之前注册的相应的pack_callback函数一致。
-       * 数据必须事先用execute_transfer()传输，或通过load()从文件系统中读取。
+       * Unpack previously transferred data on each cell registered in
+       * @p cell_relations with the provided @p unpack_callback function.
        *
+       * The parameter @p handle corresponds to the position where the
+       * @p unpack_callback function is allowed to read from the memory. Its
+       * value needs to be in accordance with the corresponding pack_callback
+       * function that has been registered previously.
+       *
+       * Data has to be previously transferred with execute_transfer()
+       * or read from the file system via load().
        */
       void
       unpack_data(
@@ -631,14 +803,18 @@ namespace parallel
           &unpack_callback) const;
 
       /**
-       * 向文件系统传输数据。
-       * 数据将被写入一个单独的文件，该文件的名称由 @p
-       * filename
-       * 和一个附加的标识符<tt>_fixed.data</tt>，用于固定大小的数据，<tt>_variable.data</tt>用于可变大小的数据。
-       * 所有处理器通过MPIIO同时向这些文件写入。
-       * 每个处理器要写入的位置将由提供的输入参数决定。
-       * 数据必须事先用pack_data()打包。
+       * Transfer data to file system.
        *
+       * The data will be written in a separate file, whose name
+       * consists of the stem @p filename and an attached identifier
+       * <tt>_fixed.data</tt> for fixed size data and <tt>_variable.data</tt>
+       * for variable size data.
+       *
+       * All processors write into these files simultaneously via MPIIO.
+       * Each processor's position to write to will be determined
+       * from the provided input parameters.
+       *
+       * Data has to be previously packed with pack_data().
        */
       void
       save(const unsigned int global_first_cell,
@@ -646,17 +822,22 @@ namespace parallel
            const std::string &filename) const;
 
       /**
-       * 从文件系统传输数据。
-       * 数据将从单独的文件中读取，该文件的名称由 @p
-       * filename
-       * 和一个附加的标识符<tt>_fixed.data</tt>组成，用于固定大小的数据，<tt>_variable.data</tt>用于可变大小数据。
-       * 需要 @p n_attached_deserialize_fixed 和 @p
-       * n_attached_deserialize_variable
-       * 参数来收集每个回调的内存偏移量。
-       * 所有处理器通过MPIIO同时从这些文件中读取。
-       * 每个处理器要读取的位置将由提供的输入参数决定。
-       * 在加载之后，需要调用unpack_data()来最终将数据分配到相关的三角地带。
+       * Transfer data from file system.
        *
+       * The data will be read from separate file, whose name
+       * consists of the stem @p filename and an attached identifier
+       * <tt>_fixed.data</tt> for fixed size data and <tt>_variable.data</tt>
+       * for variable size data.
+       * The @p n_attached_deserialize_fixed and @p n_attached_deserialize_variable
+       * parameters are required to gather the memory offsets for each
+       * callback.
+       *
+       * All processors read from these files simultaneously via MPIIO.
+       * Each processor's position to read from will be determined
+       * from the provided input arguments.
+       *
+       * After loading, unpack_data() needs to be called to finally
+       * distribute data across the associated triangulation.
        */
       void
       load(const unsigned int global_first_cell,
@@ -667,36 +848,41 @@ namespace parallel
            const unsigned int n_attached_deserialize_variable);
 
       /**
-       * 清除所有容器和相关数据，并将成员值重置为默认状态。
-       * 完全释放了内存。
+       * Clears all containers and associated data, and resets member
+       * values to their default state.
        *
+       * Frees memory completely.
        */
       void
       clear();
 
       /**
-       * 表示可变大小的数据是否被打包的标志。
-       *
+       * Flag that denotes if variable size data has been packed.
        */
       bool variable_size_data_stored;
 
       /**
-       * 那些调用register_data_attach()的函数想要附加到每个单元的累计大小，以字节为单位。这个数字只与固定大小的缓冲区有关，其中附加到每个单元的数据具有完全相同的大小。
-       * 这个容器的最后一个条目对应于固定大小的缓冲区中每个单元打包的数据大小（可以调用<tt>sizes_fixed_cumulative.back()</tt>来访问）。
+       * Cumulative size in bytes that those functions that have called
+       * register_data_attach() want to attach to each cell. This number
+       * only pertains to fixed-sized buffers where the data attached to
+       * each cell has exactly the same size.
        *
+       * The last entry of this container corresponds to the data size
+       * packed per cell in the fixed size buffer (which can be accessed
+       * calling <tt>sizes_fixed_cumulative.back()</tt>).
        */
       std::vector<unsigned int> sizes_fixed_cumulative;
 
       /**
-       * 为p4est的固定尺寸传输函数设计的连续缓冲区。
-       *
+       * Consecutive buffers designed for the fixed size transfer
+       * functions of p4est.
        */
       std::vector<char> src_data_fixed;
       std::vector<char> dest_data_fixed;
 
       /**
-       * 为p4est的可变大小传输函数设计的连续缓冲区。
-       *
+       * Consecutive buffers designed for the variable size transfer
+       * functions of p4est.
        */
       std::vector<int>  src_sizes_variable;
       std::vector<int>  dest_sizes_variable;
@@ -715,5 +901,3 @@ namespace parallel
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

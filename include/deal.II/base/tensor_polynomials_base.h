@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/tensor_polynomials_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2020 by the deal.II authors
@@ -28,72 +29,51 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This class provides a framework for the finite element polynomial
- * classes for use with finite element classes that are derived from
- * FE_PolyTensor. An object of this type (or rather of a type derived
- * from this class) is stored as a member variable in each object of
- * type FE_PolyTensor.
- *
+ * 该类为有限元多项式类提供了一个框架，用于从FE_PolyTensor派生的有限元类。这个类型的对象（或者说是从这个类派生出来的类型）被作为成员变量存储在每个FE_PolyTensor类型的对象中。
  * <h3>Deriving classes</h3>
- *
- * Any derived class must provide the most basic properties for shape
- * functions evaluated on the reference cell. This includes, but is not
- * limited to, implementing the evaluate(), name(), and
- * clone() member functions. These functions are necessary to store the
- * most basic information of how the polynomials in the derived class evaluate
- * at a given point on the reference cell. More information on each function can
- * be found in the corresponding function's documentation.
- *
- * Some classes that derive from this class include
- * <ul>
- *   <li> <tt>PolynomialsABF</tt>
- *   <li> <tt>PolynomialsBDM</tt>
- *   <li> <tt>PolynomialsBernardiRaugel</tt>
- *   <li> <tt>PolynomialsNedelec</tt>
- *   <li> <tt>PolynomialsRaviartThomas</tt>
- *   <li> <tt>PolynomialsRT_Bubbles</tt>
- * </ul>
- *
+ * 任何派生类必须为在参考单元上评估的形状函数提供最基本的属性。这包括但不限于实现evaluation()、name()和clone()成员函数。这些函数对于存储派生类中的多项式如何在参考单元上的给定点进行评估的最基本信息是必要的。关于每个函数的更多信息可以在相应函数的文档中找到。
+ * 从这个类派生的一些类包括  <ul>   <li>  <tt>PolynomialsABF</tt>  <li>  <tt>PolynomialsBDM</tt>  <li>  ] <tt>PolynomialsBernardiRaugel</tt>  <li>  <tt>PolynomialsNedelec</tt>  <li>  <tt>PolynomialsRaviartThomas</tt>  <li>  <tt>PolynomialsRT_Bubbles</tt>  </ul>
  * @ingroup Polynomials
+ *
  */
 template <int dim>
 class TensorPolynomialsBase
 {
 public:
   /**
-   * Constructor. This takes the degree of the space, @p deg from the finite element
-   * class, and @p n, the number of polynomials for the space.
+   * 构造函数。这需要空间的度数， @p deg 来自有限元类，
+   * @p n, 是空间的多项式数目。
+   *
    */
   TensorPolynomialsBase(const unsigned int deg,
                         const unsigned int n_polynomials);
 
   /**
-   * Move constructor.
+   * 移动构造器。
+   *
    */
   TensorPolynomialsBase(TensorPolynomialsBase<dim> &&) = default; // NOLINT
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   TensorPolynomialsBase(const TensorPolynomialsBase<dim> &) = default;
 
   /**
-   * Virtual destructor. Makes sure that pointers to this class are deleted
-   * properly.
+   * 虚拟解构器。确保这个类的指针被正确删除。
+   *
    */
   virtual ~TensorPolynomialsBase() = default;
 
   /**
-   * Compute the value and the derivatives of the polynomials at
-   * @p unit_point.
+   * 计算 @p unit_point.
+   * 的多项式的值和导数，向量的大小必须是零或等于<tt>n()</tt>。
+   * 在第一种情况下，函数将不计算这些值。
+   * 如果你需要所有多项式的值或导数，那么使用这个函数，而不是使用任何<tt>compute_value</tt>,
+   * <tt>compute_grad</tt> 或 <tt>compute_grad_grad</tt>
+   * 函数，见下文，在所有张量积多项式上循环。
    *
-   * The size of the vectors must either be zero or equal <tt>n()</tt>.  In
-   * the first case, the function will not compute these values.
-   *
-   * If you need values or derivatives of all polynomials then use this
-   * function, rather than using any of the <tt>compute_value</tt>,
-   * <tt>compute_grad</tt> or <tt>compute_grad_grad</tt> functions, see below,
-   * in a loop over all tensor product polynomials.
    */
   virtual void
   evaluate(const Point<dim> &           unit_point,
@@ -104,46 +84,46 @@ public:
            std::vector<Tensor<5, dim>> &fourth_derivatives) const = 0;
 
   /**
-   * Return the number of polynomials.
+   * 返回多项式的数量。
+   *
    */
   unsigned int
   n() const;
 
   /**
-   * Return the highest polynomial degree of polynomials represented by this
-   * class. A derived class may override this if its value is different from
-   * @p my_degree.
+   * 返回这个类所代表的多项式的最高阶数。如果派生类的值与
+   * @p my_degree. 不同，可以重写这个。
+   *
    */
   unsigned int
   degree() const;
 
   /**
-   * A sort of virtual copy constructor, this function returns a copy of
-   * the polynomial space object. Derived classes need to override the function
-   * here in this base class and return an object of the same type as the
-   * derived class.
+   * 一个虚拟的拷贝构造函数，这个函数返回多项式空间对象的一个拷贝。派生类需要在这个基类中覆盖这里的函数，并返回一个与派生类相同类型的对象。
+   * 库中的一些地方，例如FE_PolyTensor的构造函数，需要在不知道其确切类型的情况下制作多项式空间的副本。
+   * 他们通过这个函数来实现。
    *
-   * Some places in the library, for example the constructors of FE_PolyTensor,
-   * need to make copies of polynomial spaces without knowing their exact type.
-   * They do so through this function.
    */
   virtual std::unique_ptr<TensorPolynomialsBase<dim>>
   clone() const = 0;
 
   /**
-   * Return the name of the space.
+   * 返回空间的名称。
+   *
    */
   virtual std::string
   name() const = 0;
 
 private:
   /**
-   * The highest polynomial degree of this functions represented by this object.
+   * 这个对象所代表的这个函数的最高多项式程度。
+   *
    */
   const unsigned int polynomial_degree;
 
   /**
-   * The number of polynomials represented by this object.
+   * 此对象所代表的多项式的数量。
+   *
    */
   const unsigned int n_pols;
 };
@@ -171,3 +151,5 @@ TensorPolynomialsBase<dim>::degree() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

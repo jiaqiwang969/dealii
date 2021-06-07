@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/petsc_block_sparse_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2020 by the deal.II authors
@@ -37,47 +38,38 @@ namespace PETScWrappers
 {
   namespace MPI
   {
-    /*! @addtogroup PETScWrappers
-     *@{
-     */
+    /*!   @addtogroup  PETScWrappers  @{ !     
+* */
 
     /**
-     * Blocked sparse matrix based on the PETScWrappers::MPI::SparseMatrix
-     * class. This class implements the functions that are specific to the
-     * PETSc SparseMatrix base objects for a blocked sparse matrix, and leaves
-     * the actual work relaying most of the calls to the individual blocks to
-     * the functions implemented in the base class. See there also for a
-     * description of when this class is useful.
+     * 基于 PETScWrappers::MPI::SparseMatrix
+     * 类的阻塞式稀疏矩阵。这个类实现了封锁稀疏矩阵的PETSc
+     * SparseMatrix基对象所特有的函数，并将实际工作中对各个块的大部分调用留给基类中实现的函数。关于这个类何时有用的描述，也请参见这里。
+     * 与deal.II-type
+     * SparseMatrix类相比，PETSc矩阵没有外部对象来表示稀疏性模式。因此，我们不能通过附加一个块状稀疏模式来确定这种类型的块状矩阵的各个块的大小，而是通过调用
+     * reinit()
+     * 来设置块的数量，然后分别设置每个块的大小。为了固定块矩阵的数据结构，有必要让它知道我们已经改变了基础矩阵的大小。为此，我们必须调用collect_sizes()函数，其原因与BlockSparsityPattern类所记载的大致相同。
+     * @ingroup Matrix1 @see   @ref GlossBlockLA  "块（线性代数）"
      *
-     * In contrast to the deal.II-type SparseMatrix class, the PETSc matrices
-     * do not have external objects for the sparsity patterns. Thus, one does
-     * not determine the size of the individual blocks of a block matrix of
-     * this type by attaching a block sparsity pattern, but by calling
-     * reinit() to set the number of blocks and then by setting the size of
-     * each block separately. In order to fix the data structures of the block
-     * matrix, it is then necessary to let it know that we have changed the
-     * sizes of the underlying matrices. For this, one has to call the
-     * collect_sizes() function, for much the same reason as is documented
-     * with the BlockSparsityPattern class.
-     *
-     * @ingroup Matrix1 @see
-     * @ref GlossBlockLA "Block (linear algebra)"
      */
     class BlockSparseMatrix : public BlockMatrixBase<SparseMatrix>
     {
     public:
       /**
-       * Typedef the base class for simpler access to its own alias.
+       * 对基类进行类型化定义，以便更简单地访问它自己的别名。
+       *
        */
       using BaseClass = BlockMatrixBase<SparseMatrix>;
 
       /**
-       * Typedef the type of the underlying matrix.
+       * 对底层矩阵的类型进行类型化定义。
+       *
        */
       using BlockType = BaseClass::BlockType;
 
       /**
-       * Import the alias from the base class.
+       * 从基类中导入别名。
+       *
        */
       using value_type      = BaseClass::value_type;
       using pointer         = BaseClass::pointer;
@@ -89,67 +81,49 @@ namespace PETScWrappers
       using const_iterator  = BaseClass::const_iterator;
 
       /**
-       * Constructor; initializes the matrix to be empty, without any
-       * structure, i.e.  the matrix is not usable at all. This constructor is
-       * therefore only useful for matrices which are members of a class. All
-       * other matrices should be created at a point in the data flow where
-       * all necessary information is available.
+       * 构造函数；将矩阵初始化为空，没有任何结构，也就是说，矩阵根本无法使用。因此，这个构造函数只对作为类的成员的矩阵有用。所有其他的矩阵都应该在数据流中的一个点上创建，在那里所有必要的信息都是可用的。
+       * 你必须在使用前用reinit(BlockSparsityPattern)初始化矩阵。然后每行和每列的块数由该函数决定。
        *
-       * You have to initialize the matrix before usage with
-       * reinit(BlockSparsityPattern). The number of blocks per row and column
-       * are then determined by that function.
        */
       BlockSparseMatrix() = default;
 
       /**
-       * Destructor.
+       * 解构器。
+       *
        */
       ~BlockSparseMatrix() override = default;
 
       /**
-       * Pseudo copy operator only copying empty objects. The sizes of the
-       * block matrices need to be the same.
+       * 伪拷贝操作符只拷贝空对象。块状矩阵的大小需要相同。
+       *
        */
       BlockSparseMatrix &
       operator=(const BlockSparseMatrix &);
 
       /**
-       * This operator assigns a scalar to a matrix. Since this does usually
-       * not make much sense (should we set all matrix entries to this value?
-       * Only the nonzero entries of the sparsity pattern?), this operation is
-       * only allowed if the actual value to be assigned is zero. This
-       * operator only exists to allow for the obvious notation
-       * <tt>matrix=0</tt>, which sets all elements of the matrix to zero, but
-       * keep the sparsity pattern previously used.
+       * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？
+       * 仅仅是稀疏模式的非零条目？），这个操作只允许在实际要分配的值为零的情况下进行。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留之前使用的稀疏模式。
+       *
        */
       BlockSparseMatrix &
       operator=(const double d);
 
       /**
-       * Resize the matrix, by setting the number of block rows and columns.
-       * This deletes all blocks and replaces them with uninitialized ones,
-       * i.e.  ones for which also the sizes are not yet set. You have to do
-       * that by calling the @p reinit functions of the blocks themselves. Do
-       * not forget to call collect_sizes() after that on this object.
+       * 调整矩阵的大小，通过设置块的行数和列数。
+       * 这将删除所有的块，并用未初始化的块代替，也就是那些尚未设置大小的块。你必须通过调用块本身的
+       * @p reinit
+       * 函数来做到这一点。不要忘了之后在这个对象上调用collect_sizes()。
+       * 你必须自己设置块的大小的原因是，大小可能是变化的，每行的最大元素数可能是变化的，等等。在这里不复制SparsityPattern类的接口是比较简单的，而是让用户调用他们想要的任何函数。
        *
-       * The reason that you have to set sizes of the blocks yourself is that
-       * the sizes may be varying, the maximum number of elements per row may
-       * be varying, etc. It is simpler not to reproduce the interface of the
-       * SparsityPattern class here but rather let the user call whatever
-       * function they desire.
        */
       void
       reinit(const size_type n_block_rows, const size_type n_block_columns);
 
 
       /**
-       * Efficiently reinit the block matrix for a parallel computation. Only
-       * the BlockSparsityPattern of the Simple type can efficiently store
-       * large sparsity patterns in parallel, so this is the only supported
-       * argument. The IndexSets describe the locally owned range of DoFs for
-       * each block. Note that the IndexSets needs to be ascending and 1:1.
-       * For a symmetric structure hand in the same vector for the first two
-       * arguments.
+       * 有效地重新引用块状矩阵进行并行计算。只有简单类型的BlockSparsityPattern可以有效地并行存储大型稀疏模式，所以这是唯一支持的参数。IndexSets描述了每个块的本地拥有的DoF的范围。注意，IndexSets需要升序和1:1。
+       * 对于一个对称的结构，前两个参数使用同一个向量。
+       *
        */
       void
       reinit(const std::vector<IndexSet> &      rows,
@@ -159,7 +133,8 @@ namespace PETScWrappers
 
 
       /**
-       * Same as above but for a symmetric structure only.
+       * 与上述相同，但只针对对称结构。
+       *
        */
       void
       reinit(const std::vector<IndexSet> &      sizes,
@@ -169,104 +144,100 @@ namespace PETScWrappers
 
 
       /**
-       * Matrix-vector multiplication: let $dst = M*src$ with $M$ being this
-       * matrix.
+       * 矩阵-向量乘法：让 $dst = M*src$ 与 $M$ 为该矩阵。
+       *
        */
       void
       vmult(BlockVector &dst, const BlockVector &src) const;
 
       /**
-       * Matrix-vector multiplication. Just like the previous function, but
-       * only applicable if the matrix has only one block column.
+       * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块列的情况。
+       *
        */
       void
       vmult(BlockVector &dst, const Vector &src) const;
 
       /**
-       * Matrix-vector multiplication. Just like the previous function, but
-       * only applicable if the matrix has only one block row.
+       * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块行的情况。
+       *
        */
       void
       vmult(Vector &dst, const BlockVector &src) const;
 
       /**
-       * Matrix-vector multiplication. Just like the previous function, but
-       * only applicable if the matrix has only one block.
+       * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块的情况。
+       *
        */
       void
       vmult(Vector &dst, const Vector &src) const;
 
       /**
-       * Matrix-vector multiplication: let $dst = M^T*src$ with $M$ being this
-       * matrix. This function does the same as vmult() but takes the
-       * transposed matrix.
+       * 矩阵-向量乘法：让 $dst = M^T*src$ 与 $M$
+       * 为这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
+       *
        */
       void
       Tvmult(BlockVector &dst, const BlockVector &src) const;
 
       /**
-       * Matrix-vector multiplication. Just like the previous function, but
-       * only applicable if the matrix has only one block row.
+       * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块行的情况。
+       *
        */
       void
       Tvmult(BlockVector &dst, const Vector &src) const;
 
       /**
-       * Matrix-vector multiplication. Just like the previous function, but
-       * only applicable if the matrix has only one block column.
+       * 矩阵-向量乘法。就像前面的函数一样，但只适用于矩阵只有一个块列的情况。
+       *
        */
       void
       Tvmult(Vector &dst, const BlockVector &src) const;
 
       /**
-       * Matrix-vector multiplication. Just like the previous function, but
-       * only applicable if the matrix has only one block.
+       * 矩阵-向量乘法。就像前面的函数，但只适用于矩阵只有一个块的情况。
+       *
        */
       void
       Tvmult(Vector &dst, const Vector &src) const;
 
       /**
-       * This function collects the sizes of the sub-objects and stores them
-       * in internal arrays, in order to be able to relay global indices into
-       * the matrix to indices into the subobjects. You *must* call this
-       * function each time after you have changed the size of the sub-
-       * objects.
+       * 这个函数收集了子对象的大小，并将其存储在内部数组中，以便能够将矩阵的全局索引转为子对象的索引。在你改变子对象的大小后，你必须*每次都调用这个函数。
+       *
        */
       void
       collect_sizes();
 
       /**
-       * Return the partitioning of the domain space of this matrix, i.e., the
-       * partitioning of the vectors this matrix has to be multiplied with.
+       * 返回该矩阵的域空间的划分，即该矩阵必须与之相乘的向量的划分。
+       *
        */
       std::vector<IndexSet>
       locally_owned_domain_indices() const;
 
       /**
-       * Return the partitioning of the range space of this matrix, i.e., the
-       * partitioning of the vectors that are result from matrix-vector
-       * products.
+       * 返回该矩阵的范围空间的划分，即由矩阵-向量乘积产生的向量的划分。
+       *
        */
       std::vector<IndexSet>
       locally_owned_range_indices() const;
 
       /**
-       * Return a reference to the MPI communicator object in use with this
-       * matrix.
+       * 返回对与该矩阵一起使用的MPI通信器对象的一个引用。
+       *
        */
       const MPI_Comm &
       get_mpi_communicator() const;
 
       /**
-       * Make the clear() function in the base class visible, though it is
-       * protected.
+       * 使基类中的clear()函数可见，尽管它是受保护的。
+       *
        */
       using BlockMatrixBase<SparseMatrix>::clear;
     };
 
 
 
-    /*@}*/
+     /*@}*/ 
 
     // ------------- inline and template functions -----------------
 
@@ -356,3 +327,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_PETSC
 
 #endif // dealii_petsc_block_sparse_matrix_h
+
+

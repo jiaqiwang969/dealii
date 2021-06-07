@@ -1,3 +1,4 @@
+//include/deal.II-translator/optimization/line_minimization_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2018 - 2020 by the deal.II authors
@@ -33,17 +34,18 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace for various algorithms related to minimization a over line.
+ * 一个命名空间，用于与线上最小化有关的各种算法。
+ *
+ *
  */
 namespace LineMinimization
 {
   /**
-   * Given $x\_low$ and $x\_hi$ together with values of function
-   * $f(x\_low)$ and $f(x\_hi)$ and the gradient $g(x\_low)$, return the local
-   * minimizer of the quadratic interpolation function.
+   * 给出  $x\_low$  和  $x\_hi$  连同函数值  $f(x\_low)$  和
+   * $f(x\_hi)$  以及梯度  $g(x\_low)$
+   * ，返回二次插值函数的局部最小化器。
+   * 返回类型是可选的，以便与可能没有给定参数的解的类似函数相适应。
    *
-   * The return type is optional to fit with similar functions that may
-   * not have a solution for given parameters.
    */
   template <typename NumberType>
   std_cxx17::optional<NumberType>
@@ -54,13 +56,11 @@ namespace LineMinimization
                 const NumberType f_hi);
 
   /**
-   * Given $x\_low$ and $x\_hi$ together with values of function
-   * $f(x\_low)$ and $f(x\_hi)$ and its gradients ($g(x\_low)*g(x\_hi) < 0$) at
-   * those points, return the local minimizer of the cubic interpolation
-   * function (that is, the location where the cubic interpolation function
-   * attains its minimum value).
+   * 给出  $x\_low$  和  $x\_hi$  以及这些点的函数值  $f(x\_low)$
+   * 和  $f(x\_hi)$  及其梯度 (  $g(x\_low)*g(x\_hi) < 0$  )
+   * ，返回三次插值函数的局部最小值（即三次插值函数达到其最小值的位置）。
+   * 返回类型是可选的，因为实值解可能不存在。
    *
-   * The return type is optional as the real-valued solution might not exist.
    */
   template <typename NumberType>
   std_cxx17::optional<NumberType>
@@ -72,11 +72,11 @@ namespace LineMinimization
             const NumberType g_hi);
 
   /**
-   * Find the minimizer of a cubic polynomial that goes through the
-   * points $f\_low=f(x\_low)$, $f\_hi=f(x\_hi)$ and $f\_rec(x\_rec)$
-   * and has derivatve $g\_low$ at $x\_low$.
+   * 找出经过  $f\_low=f(x\_low)$  ,  $f\_hi=f(x\_hi)$  和
+   * $f\_rec(x\_rec)$  等点，并在  $x\_low$  处有导数  $g\_low$
+   * 的三次方多项式的最小化。
+   * 返回类型是可选的，因为实值的解决方案可能不存在。
    *
-   * The return type is optional as the real-valued solution might not exist.
    */
   template <typename NumberType>
   std_cxx17::optional<NumberType>
@@ -89,15 +89,14 @@ namespace LineMinimization
                          const NumberType f_rec);
 
   /**
-   * Return the minimizer of a polynomial using function values @p f_low ,
-   * @p f_hi , and @p f_rec[0] at three points @p x_low , @p x_hi , and
-   * @p x_rec[0] as well as the derivatives at two points @p g_low and @p g_hi.
-   * The returned point should be within the bounds @p bounds .
+   * 返回使用函数值  @p f_low  ,  @p f_hi  , 和  @p f_rec[0]
+   * 在三个点  @p x_low  ,  @p x_hi  , 和  @p x_rec[0]
+   * 上的多项式的最小化，以及在两个点  @p g_low  和  @p g_hi.
+   * 上的导数。
+   * 这个函数将首先尝试执行cubic_fit()。如果它不成功，或者如果最小值不在提供的
+   * @p bounds,
+   * 范围内，将执行二次拟合（）。如果quadratic_fit()失败，该函数将退回到一个二分法。
    *
-   * This function will first try to perform a cubic_fit(). If its unsuccessful,
-   * or if the minimum is not within the provided @p bounds, a quadratic_fit()
-   * will be performed. The function will fallback to a bisection method if
-   * quadratic_fit() fails as well.
    */
   template <typename NumberType>
   NumberType
@@ -113,8 +112,9 @@ namespace LineMinimization
            const std::pair<NumberType, NumberType> bounds);
 
   /**
-   * Same as poly_fit(), but performing a cubic fit with three points (see
-   * cubic_fit_three_points() ).
+   * 与poly_fit()相同，但是进行三点的三次拟合（见cubic_fit_three_points()
+   * ）。
+   *
    */
   template <typename NumberType>
   NumberType
@@ -131,190 +131,189 @@ namespace LineMinimization
 
 
   /**
-   * Perform a line search in $(0,max]$ with strong Wolfe conditions
-   * \f[
-   * f(\alpha) \le f(0) + \alpha \mu f'(0) \\
-   * |f'(\alpha)| \le \eta |f'(0)|
-   * \f]
-   * using the one dimensional function @p func in conjunction with a function @p interpolate
-   * to choose a new point from the interval based on the function values and
-   * derivatives at its ends.
-   * The parameter @p a1 is a trial estimate of the first step.
-   * Interpolation can be done using either poly_fit() or
-   * poly_fit_three_points(), or any other function that has a similar
-   * signature.
-   *
-   * The function implements Algorithms 2.6.2 and 2.6.4 on pages 34-35 in
+   * 在 $(0,max]$ 中进行具有强沃尔夫条件\f[ f(\alpha) \le f(0) +
+   * \alpha \mu f'(0) \\ |f'(\alpha)| \le \eta |f'(0)|
+   * \f]的线搜索，使用一维函数 @p func 与函数 @p interpolate
+   * 结合，根据其两端的函数值和导数从区间中选择一个新点。
+   * 参数 @p a1 是对第一步的试估计。
+   * 插值可以使用poly_fit()或poly_fit_three_points()，或任何其他具有类似签名的函数来完成。
+   * 该函数实现了第34-35页中的算法2.6.2和2.6.4。
    * @code{.bib}
-   *   @book{Fletcher2013,
-   *   title     = {Practical methods of optimization},
-   *   publisher = {John Wiley \& Sons},
-   *   year      = {2013},
-   *   author    = {Fletcher, Roger},
-   *   isbn      = {978-0-471-49463-8},
-   *   doi       = {10.1002/9781118723203},
-   *   }
+   * @book{Fletcher2013,
+   * title     = {Practical methods of optimization},
+   * publisher = {John Wiley \& Sons},
+   * year      = {2013},
+   * author    = {Fletcher, Roger},
+   * isbn      = {978-0-471-49463-8},
+   * doi       = {10.1002/9781118723203},
+   * }
    * @endcode
-   * These are minor variations of  Algorithms 3.5 and 3.6 on pages 60-61 in
+   * 这些都是*@code{.bib}
+   * @book{Fletcher2013,
+   * title     = {Practical methods of optimization},
+   * publisher = {John Wiley \& Sons},
+   * year      = {2013},
+   * author    = {Fletcher, Roger},
+   * isbn      = {978-0-471-49463-8},
+   * doi       = {10.1002/9781118723203},
+   * }
+   * @endcode中第60-61页的算法3.5和3.6的微小变化。
    * @code{.bib}
-   *   @book{Nocedal2006,
-   *   title     = {Numerical Optimization},
-   *   publisher = {Springer New York},
-   *   year      = {2006},
-   *   author    = {Jorge Nocedal and S. Wright},
-   *   address   = {233 Spring Street, New York, NY 10013, USA},
-   *   doi       = {10.1007/978-0-387-40065-5},
-   *   }
+   * @book{Nocedal2006,
+   * title     = {Numerical Optimization},
+   * publisher = {Springer New York},
+   * year      = {2006},
+   * author    = {Jorge Nocedal and S. Wright},
+   * address   = {233 Spring Street, New York, NY 10013, USA},
+   * doi       = {10.1007/978-0-387-40065-5},
+   * }
    * @endcode
-   * It consists of a bracketing phase and a zoom phase, where @p interpolate is used.
-   *
-   * Two examples of use might be as follows:
-   * In the first example, we wish to find the minimum of the function
-   * $100 * x^4 + (1-x)^2$. To find the approximate solution using line search
-   * with a polynomial fit to the curve one would perform the following steps:
-   *
+   * 它包括一个包围阶段和一个缩放阶段，其中使用了 @p
+   * interpolate 。    两个使用的例子可能如下。
+   * 在第一个例子中，我们希望找到函数  $100 x^4 + (1-x)^2$
+   * 的最小值。为了找到近似的解决方案，我们可以使用直线搜索和多项式拟合曲线的方法来执行以下步骤。
    * @code
-   *   auto func = [](const double x)
-   *   {
-   *     const double f = 100. * std::pow(x, 4) + std::pow(1. - x, 2); // Value
-   *     const double g = 400. * std::pow(x, 3) - 2. * (1. - x); // Gradient
-   *     return std::make_pair(f, g);
-   *   };
+   * auto func = [](const double x)
+   * {
+   *   const double f = 100. std::pow(x, 4) + std::pow(1.
    *
-   *   const auto fg0 = func(0);
-   *   const auto res = LineMinimization::line_search<double>(
-   *     func,
-   *     fg0.first, fg0.second,
+   * - x, 2); // Value
+   *   const double g = 400. std::pow(x, 3)
+   *
+   * - 2. (1.
+   *
+   * - x); // Gradient
+   *   return std::make_pair(f, g);
+   * };
+   *
+   * const auto fg0 = func(0);
+   * const auto res = LineMinimization::line_search<double>(
+   *   func,
+   *   fg0.first, fg0.second,
+   *   LineMinimization::poly_fit<double>,
+   *   0.1, 0.1, 0.01, 100, 20);
+   *
+   * const double approx_solution = res.first;
+   * @endcode
+   * 在第二个例子中，我们希望在一个非线性有限元问题的背景下进行直线搜索。下面是一个非优化的反向跟踪算法的实现，当负载步长过大时，它可能是有用的。下面说明了在全局非线性求解器范围内利用该方案的必要基本步骤。
+   * @code
+   * // Solve some incremental linear system
+   * const Vector<double> newton_update = solver_linear_system(...);
+   *
+   * // Now we check to see if the suggested Newton update is a good one.
+   * // First we define what it means to perform linesearch in the context of
+   * // this incremental nonlinear finite element problem.
+   * auto ls_minimization_function = [&](const double step_size)
+   * {
+   *   // Scale the full Newton update by the proposed line search step size.
+   *   Vector<double> newton_update_trial(newton_update);
+   *   newton_update_trial= step_size;
+   *   // Ensure that the Dirichlet constraints are correctly applied,
+   *   // irrespective of the step size
+   *   constraints.distribute(newton_update_trial);
+   *   // Now add the constribution from the previously accepted solution
+   *   // history.
+   *   const Vector<double> solution_total_trial =
+   *     get_solution_total(newton_update_trial);
+   *
+   *   // Recompute the linear system based on the trial newton update
+   *   Vector<double> system_rhs (...);
+   *   SparseMatrix<double> tangent_matrix (...);
+   *   assemble_linear_system(
+   *     tangent_matrix, system_rhs, solution_total_trial);
+   *   Vector<double> residual_trial (system_rhs);
+   *   residual_trial=
+   *
+   * -1.0; // Residual =
+   *
+   * -RHS
+   *
+   *   // Negelect the constrained entries in the consideration
+   *   // of the function (value and gradient) to be minimized.
+   *   constraints.set_zero(residual_trial);
+   *
+   *   // Here we compute the function value according to the text given in
+   *   // section 5.1.4 of Wriggers, P., "Nonlinear finite element methods",
+   *   // 2008.
+   *   // The function value correspeonds to equ. 5.11 on p159.
+   *   const double f = 0.5 (residual_trial residual_trial); // Value
+   *
+   *   // However, the corresponding gradient given in eq 5.14 is wrong. The
+   *   // suggested result
+   *   // const double g =
+   *
+   * -(residual_0*residual_trial);
+   *   // should actually be
+   *   // g = G(V + alpha*delta)*[ K(V + alpha*delta)*delta.
+   *   Vector<double> tmp;
+   *   tmp.reinit(newton_update);
+   *   tangent_matrix.vmult(tmp, newton_update);
+   *   const double g = tmp residual_trial; // Gradient
+   *
+   *   return std::make_pair(f, g);
+   * };
+   *
+   * // Next we can write a function to determine if taking the full Newton
+   * // step is a good idea or not (i.e. if it offers good convergence
+   * // characterisics). This function calls the one we defined above,
+   * // and actually only performs the line search if an early exit
+   * // criterion is not met.
+   * auto perform_linesearch = [&]()
+   * {
+   *   const auto res_0 = ls_minimization_function(0.0);
+   *   Assert(res_0.second < 0.0,
+   *          ExcMessage("Gradient should be negative. Current value: " +
+   *                      std::to_string(res_0.second)));
+   *   const auto res_1 = ls_minimization_function(1.0);
+   *
+   *   // Check to see if the minimum lies in the interval [0,1] through the
+   *   // values of the gradients at the limit points.
+   *   // If it does not, then the full step is accepted. This is discussed by
+   *   // Wriggers in the paragraph after equ. 5.14.
+   *   if (res_0.second res_1.second > 0.0)
+   *     return 1.0;
+   *
+   *   // The values for eta, mu are chosen such that more strict convergence
+   *   // conditions are enforced.
+   *   // They should be adjusted according to the problem requirements.
+   *   const double a1        = 1.0;
+   *   const double eta       = 0.5;
+   *   const double mu        = 0.49;
+   *   const double a_max     = 1.25;
+   *   const double max_evals = 20;
+   *   const auto   res = LineMinimization::line_search<double>(
+   *     ls_minimization_function,
+   *     res_0.first, res_0.second,
    *     LineMinimization::poly_fit<double>,
-   *     0.1, 0.1, 0.01, 100, 20);
+   *     a1, eta, mu, a_max, max_evals));
    *
-   *   const double approx_solution = res.first;
+   *   return res.first; // Final stepsize
+   * };
+   *
+   * // Finally, we can perform the line search and adjust the Newton update
+   * // accordingly.
+   * const double linesearch_step_size = perform_linesearch();
+   * if (linesearch_step_size != 1.0)
+   * {
+   *   newton_update= linesearch_step_size;
+   *   constraints.distribute(newton_update);
+   * }
    * @endcode
+   * @param  func 一个一维函数，返回给定点的值和导数。
+   * @param  f0 原点的函数值。    @param  g0
+   * 在原点的函数导数。    @param  interpolate
+   * 一个决定在缩放阶段如何进行内插的函数。它接受当前区间/括号（
+   * $f\_low$  ,  $f\_hi$
+   * ）的值和导数，以及最多五个先前步骤的值和导数。返回的值应在给定的范围内提供。
+   * @param  a1 包围阶段的初始试验步骤。    @param  eta
+   * 第二个沃尔夫条件（曲率条件）的一个参数。    @param
+   * mu 第一个沃尔夫条件中的一个参数（充分减少）。
+   * @param  a_max 允许的最大步长。    @param  max_evaluations
+   * 允许的最大函数求值数。    @param  debug_output
+   * 将额外的调试信息输出到 <code>deallog</code>
+   * 静态对象的标志。    @return  该函数返回步长和函数 @p
+   * func 被调用的次数。
    *
-   * In the second example, we wish to perform line search in the context of a
-   * non-linear finite element problem. What follows below is a non-optimized
-   * implementation of the back-tracking algorithm, which may be useful when
-   * the load-step size is too large. The following illustrates the basic steps
-   * necessary to utilize the scheme within the context of a global nonlinear
-   * solver:
-   *
-   * @code
-   *   // Solve some incremental linear system
-   *   const Vector<double> newton_update = solver_linear_system(...);
-   *
-   *   // Now we check to see if the suggested Newton update is a good one.
-   *   // First we define what it means to perform linesearch in the context of
-   *   // this incremental nonlinear finite element problem.
-   *   auto ls_minimization_function = [&](const double step_size)
-   *   {
-   *     // Scale the full Newton update by the proposed line search step size.
-   *     Vector<double> newton_update_trial(newton_update);
-   *     newton_update_trial *= step_size;
-   *     // Ensure that the Dirichlet constraints are correctly applied,
-   *     // irrespective of the step size
-   *     constraints.distribute(newton_update_trial);
-   *     // Now add the constribution from the previously accepted solution
-   *     // history.
-   *     const Vector<double> solution_total_trial =
-   *       get_solution_total(newton_update_trial);
-   *
-   *     // Recompute the linear system based on the trial newton update
-   *     Vector<double> system_rhs (...);
-   *     SparseMatrix<double> tangent_matrix (...);
-   *     assemble_linear_system(
-   *       tangent_matrix, system_rhs, solution_total_trial);
-   *     Vector<double> residual_trial (system_rhs);
-   *     residual_trial *= -1.0; // Residual = -RHS
-   *
-   *     // Negelect the constrained entries in the consideration
-   *     // of the function (value and gradient) to be minimized.
-   *     constraints.set_zero(residual_trial);
-   *
-   *     // Here we compute the function value according to the text given in
-   *     // section 5.1.4 of Wriggers, P., "Nonlinear finite element methods",
-   *     // 2008.
-   *     // The function value correspeonds to equ. 5.11 on p159.
-   *     const double f = 0.5 * (residual_trial * residual_trial); // Value
-   *
-   *     // However, the corresponding gradient given in eq 5.14 is wrong. The
-   *     // suggested result
-   *     // const double g = -(residual_0*residual_trial);
-   *     // should actually be
-   *     // g = G(V + alpha*delta)*[ K(V + alpha*delta)*delta.
-   *     Vector<double> tmp;
-   *     tmp.reinit(newton_update);
-   *     tangent_matrix.vmult(tmp, newton_update);
-   *     const double g = tmp * residual_trial; // Gradient
-   *
-   *     return std::make_pair(f, g);
-   *   };
-   *
-   *   // Next we can write a function to determine if taking the full Newton
-   *   // step is a good idea or not (i.e. if it offers good convergence
-   *   // characterisics). This function calls the one we defined above,
-   *   // and actually only performs the line search if an early exit
-   *   // criterion is not met.
-   *   auto perform_linesearch = [&]()
-   *   {
-   *     const auto res_0 = ls_minimization_function(0.0);
-   *     Assert(res_0.second < 0.0,
-   *            ExcMessage("Gradient should be negative. Current value: " +
-   *                        std::to_string(res_0.second)));
-   *     const auto res_1 = ls_minimization_function(1.0);
-   *
-   *     // Check to see if the minimum lies in the interval [0,1] through the
-   *     // values of the gradients at the limit points.
-   *     // If it does not, then the full step is accepted. This is discussed by
-   *     // Wriggers in the paragraph after equ. 5.14.
-   *     if (res_0.second * res_1.second > 0.0)
-   *       return 1.0;
-   *
-   *     // The values for eta, mu are chosen such that more strict convergence
-   *     // conditions are enforced.
-   *     // They should be adjusted according to the problem requirements.
-   *     const double a1        = 1.0;
-   *     const double eta       = 0.5;
-   *     const double mu        = 0.49;
-   *     const double a_max     = 1.25;
-   *     const double max_evals = 20;
-   *     const auto   res = LineMinimization::line_search<double>(
-   *       ls_minimization_function,
-   *       res_0.first, res_0.second,
-   *       LineMinimization::poly_fit<double>,
-   *       a1, eta, mu, a_max, max_evals));
-   *
-   *     return res.first; // Final stepsize
-   *   };
-   *
-   *   // Finally, we can perform the line search and adjust the Newton update
-   *   // accordingly.
-   *   const double linesearch_step_size = perform_linesearch();
-   *   if (linesearch_step_size != 1.0)
-   *   {
-   *     newton_update *= linesearch_step_size;
-   *     constraints.distribute(newton_update);
-   *   }
-   * @endcode
-   *
-   *
-   * @param func A one dimensional function which returns value and derivative
-   * at the given point.
-   * @param f0 The function value at the origin.
-   * @param g0 The function derivative at the origin.
-   * @param interpolate A function which determines how interpolation is done
-   * during the zoom phase. It takes values and derivatives at the current
-   * interval/bracket ($f\_low$, $f\_hi$) as well as up to 5 values and
-   * derivatives at previous steps. The returned value is to be provided within
-   * the given bounds.
-   * @param a1 Initial trial step for the bracketing phase.
-   * @param eta A parameter in the second Wolfe condition (curvature condition).
-   * @param mu A parameter in the first Wolfe condition (sufficient decrease).
-   * @param a_max The maximum allowed step size.
-   * @param max_evaluations The maximum allowed number of function evaluations.
-   * @param debug_output A flag to output extra debug information into the
-   * <code>deallog</code> static object.
-   * @return The function returns the step size and the number of times function
-   * @p func was called.
    */
   template <typename NumberType>
   std::pair<NumberType, unsigned int>
@@ -483,7 +482,7 @@ namespace LineMinimization
                         const NumberType                     g2,
                         const FiniteSizeHistory<NumberType> &x_rec,
                         const FiniteSizeHistory<NumberType> &f_rec,
-                        const FiniteSizeHistory<NumberType> & /*g_rec*/,
+                        const FiniteSizeHistory<NumberType> &  /*g_rec*/ ,
                         const std::pair<NumberType, NumberType> bounds)
   {
     Assert(bounds.first < bounds.second, ExcMessage("Incorrect bounds"));
@@ -669,11 +668,10 @@ namespace LineMinimization
     // FIXME: these conditions are actually violated for Fig3 and a1=10^3 in
     // More and Thorenton, 94.
 
-    /*
-    Assert((f_lo < f_hi) && w1(a_lo, f_lo), ExcInternalError());
-    Assert(((a_hi - a_lo) * g_lo < 0) && !w2(g_lo), ExcInternalError());
-    Assert((w1(a_hi, f_hi) || f_hi >= f_lo), ExcInternalError());
-    */
+    /* Assert((f_lo < f_hi) && w1(a_lo, f_lo), ExcInternalError()) ; Assert((a_hi
+* 
+* - a_lo) g_lo < 0) && !w2(g_lo), ExcInternalError()); Assert((w1(a_hi, f_hi) || f_hi >= f_lo), ExcInternalError()。  
+* */
 
     // keep short history of last points to improve interpolation
     FiniteSizeHistory<NumberType> a_rec(5), f_rec(5), g_rec(5);
@@ -771,3 +769,5 @@ namespace LineMinimization
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_line_minimization_h
+
+

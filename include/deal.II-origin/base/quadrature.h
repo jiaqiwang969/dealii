@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/quadrature_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -29,205 +28,243 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup Quadrature */ 
- /*@{*/ 
+/*!@addtogroup Quadrature */
+/*@{*/
 
 /**
- * 用于任意维度的正交公式的基类。该类存储单位线[0,1]、单位方格[0,1]x[0,1]等上的正交点和权重。
- * 有许多派生类，表示具体的积分公式。它们的名字以<tt>Q</tt>为前缀。更多细节请参考派生类的列表。
- * 更高维度的方案通常是一维公式的张量乘积，但请参考下面关于实现细节的部分。
- * 为了允许独立维度的编程，存在一个零维的正交公式。由于零维上的积分是在单点上的求值，这样一个公式的任何构造函数都初始化为一个权重为1的单点正交。对权重的访问是可能的，而对正交点的访问是不允许的，因为零维的点不包含任何信息。这些公式的主要目的是在QProjector中使用，它将从这些公式中创建一个有用的一维公式。
+ * Base class for quadrature formulae in arbitrary dimensions. This class
+ * stores quadrature points and weights on the unit line [0,1], unit square
+ * [0,1]x[0,1], etc.
+ *
+ * There are a number of derived classes, denoting concrete integration
+ * formulae. Their names are prefixed by <tt>Q</tt>. Refer to the list of
+ * derived classes for more details.
+ *
+ * The schemes for higher dimensions are typically tensor products of the one-
+ * dimensional formulae, but refer to the section on implementation detail
+ * below.
+ *
+ * In order to allow for dimension independent programming, a quadrature
+ * formula of dimension zero exists. Since an integral over zero dimensions is
+ * the evaluation at a single point, any constructor of such a formula
+ * initializes to a single quadrature point with weight one. Access to the
+ * weight is possible, while access to the quadrature point is not permitted,
+ * since a Point of dimension zero contains no information. The main purpose
+ * of these formulae is their use in QProjector, which will create a useful
+ * formula of dimension one out of them.
+ *
  * <h3>Mathematical background</h3>
- * 对于每个正交公式，我们用<tt>m</tt>表示，确切集成的多项式的最大程度。这个数字在每个公式的文档中给出。积分误差的阶数是<tt>m+1</tt>，也就是说，根据Bramble-
- * Hilbert定理，误差是到<tt>m+1</tt>的单元的大小。这个数字<tt>m</tt>可以在每个具体公式的文件中找到。对于最优公式QGauss，我们有
- * $m = 2N-1$
- * ，其中N是QGauss的构造器参数。张量积公式在每个空间方向上对度数为<tt>m</tt>的张量积多项式是精确的，但它们仍然只有<tt>m+1</tt>st
- * order。 <h3>Implementation details</h3>
- * 大多数在一个以上空间维度的积分公式是一个空间维度的正交公式的张量乘积，或者更普遍的是<tt>(dim-1)</tt>维度的公式与一个维度的公式的张量乘积。有一个特殊的构造函数可以从其他两个公式中生成一个正交公式。
- * 例如，QGauss  @<dim@>
- * 公式包括<tt>dim</tt>维度上的<i>N<sup>dim</sup></i>正交点，其中N是QGauss的构造参数。
  *
+ * For each quadrature formula we denote by <tt>m</tt>, the maximal degree of
+ * polynomials integrated exactly. This number is given in the documentation
+ * of each formula. The order of the integration error is <tt>m+1</tt>, that
+ * is, the error is the size of the cell to the <tt>m+1</tt> by the Bramble-
+ * Hilbert Lemma. The number <tt>m</tt> is to be found in the documentation of
+ * each concrete formula. For the optimal formulae QGauss we have $m = 2N-1$,
+ * where N is the constructor parameter to QGauss. The tensor product formulae
+ * are exact on tensor product polynomials of degree <tt>m</tt> in each space
+ * direction, but they are still only of <tt>m+1</tt>st order.
  *
- * @note
- * 这个模板的实例化提供给维度0、1、2和3（见 @ref
- * Instantiations 部分）。
+ * <h3>Implementation details</h3>
  *
+ * Most integration formulae in more than one space dimension are tensor
+ * products of quadrature formulae in one space dimension, or more generally
+ * the tensor product of a formula in <tt>(dim-1)</tt> dimensions and one in
+ * one dimension. There is a special constructor to generate a quadrature
+ * formula from two others.  For example, the QGauss@<dim@> formulae include
+ * <i>N<sup>dim</sup></i> quadrature points in <tt>dim</tt> dimensions, where
+ * N is the constructor parameter of QGauss.
  *
+ * @note Instantiations for this template are provided for dimensions 0, 1, 2,
+ * and 3 (see the section on
+ * @ref Instantiations).
  */
 template <int dim>
 class Quadrature : public Subscriptor
 {
 public:
   /**
-   * 为作用于少一维的对象的正交定义一个别名。对于单元格来说，这将是一个面的四分法。
-   *
+   * Define an alias for a quadrature that acts on an object of one dimension
+   * less. For cells, this would then be a face quadrature.
    */
   using SubQuadrature = Quadrature<dim - 1>;
 
   /**
-   * 构造函数。    这个构造函数被标记为显式，以避免像
-   * <code>hp::QCollection@<dim@> q_collection(3)</code> 中的
-   * <code>hp::QCollection@<dim@> q_collection(QGauss@<dim@>(3))</code>
-   * 那样的非自愿事故。
+   * Constructor.
    *
+   * This constructor is marked as explicit to avoid involuntary accidents
+   * like in <code>hp::QCollection@<dim@> q_collection(3)</code> where
+   * <code>hp::QCollection@<dim@> q_collection(QGauss@<dim@>(3))</code> was
+   * meant.
    */
   explicit Quadrature(const unsigned int n_quadrature_points = 0);
 
   /**
-   * 将此正交公式构建为比现在少一维的公式与一维的公式的张量乘积。
-   * 这个构造函数假设（并测试）常数函数被精确整合，即正交权重之和为1。
-   * <tt>SubQuadrature<dim>::type</tt> 扩展为<tt>正交<dim-1></tt>。
+   * Build this quadrature formula as the tensor product of a formula in a
+   * dimension one less than the present and a formula in one dimension.
+   * This constructor assumes (and tests) that constant functions are integrated
+   * exactly, i.e. the sum of the quadrature weights is one.
    *
+   * <tt>SubQuadrature<dim>::type</tt> expands to <tt>Quadrature<dim-1></tt>.
    */
   Quadrature(const SubQuadrature &, const Quadrature<1> &);
 
   /**
-   * 将这个正交公式构建为一维公式的<tt>dim</tt>折张量积。
-   * 假设一维规则中的点是按升序排列的，那么所产生的规则的点是按词典排序的，其中<i>x</i>运行最快。
-   * 为了避免与1d中的复制构造器冲突，我们让参数在dim==1时为0d正交公式，在所有其他空间维度上为1d正交公式。
-   * 这个构造函数并不要求常数函数被精确地整合。因此，如果一维公式是相对于一个加权函数定义的，它是合适的。
+   * Build this quadrature formula as the <tt>dim</tt>-fold tensor product of
+   * a formula in one dimension.
    *
+   * Assuming that the points in the one-dimensional rule are in ascending
+   * order, the points of the resulting rule are ordered lexicographically
+   * with <i>x</i> running fastest.
+   *
+   * In order to avoid a conflict with the copy constructor in 1d, we let the
+   * argument be a 0d quadrature formula for dim==1, and a 1d quadrature
+   * formula for all other space dimensions.
+   *
+   * This constructor does not require that constant functions are integrated
+   * exactly. Therefore, it is appropriate if the one-dimensional formula
+   * is defined with respect to a weighting function.
    */
   explicit Quadrature(const Quadrature<dim != 1 ? 1 : 0> &quadrature_1d);
 
   /**
-   * 复制构造函数。
-   *
+   * Copy constructor.
    */
   Quadrature(const Quadrature<dim> &q);
 
   /**
-   * 移动构造函数。通过转移另一个正交对象的内部数据来构造一个新的正交对象。
-   *
+   * Move constructor. Construct a new quadrature object by transferring the
+   * internal data of another quadrature object.
    */
   Quadrature(Quadrature<dim> &&) noexcept = default;
 
   /**
-   * 从给定的正交点向量（实际上应该在单元格中）和相应的权重构造一个正交公式。
-   * 你会希望权重之和为1，但这并不被检查。
-   *
+   * Construct a quadrature formula from given vectors of quadrature points
+   * (which should really be in the unit cell) and the corresponding weights.
+   * You will want to have the weights sum up to one, but this is not checked.
    */
   Quadrature(const std::vector<Point<dim>> &points,
              const std::vector<double> &    weights);
 
   /**
-   * 从一个点的列表中构建一个假正交公式，权重设置为无穷大。因此，产生的对象并不是为了实际进行积分，而是与FEValues对象一起使用，以便找到一些点（此对象中的正交点）在实空间中转换后的单元上的位置。
-   *
+   * Construct a dummy quadrature formula from a list of points, with weights
+   * set to infinity. The resulting object is therefore not meant to actually
+   * perform integrations, but rather to be used with FEValues objects in
+   * order to find the position of some points (the quadrature points in this
+   * object) on the transformed cell in real space.
    */
   Quadrature(const std::vector<Point<dim>> &points);
 
   /**
-   * 一个单点正交的构造函数。设置这个点的权重为1。
-   *
+   * Constructor for a one-point quadrature. Sets the weight of this point to
+   * one.
    */
   Quadrature(const Point<dim> &point);
 
   /**
-   * 虚拟解构器。
-   *
+   * Virtual destructor.
    */
   virtual ~Quadrature() override = default;
 
   /**
-   * 赋值运算符。复制#weights和#quadrature_points的内容以及大小。
-   *
+   * Assignment operator. Copies contents of #weights and #quadrature_points
+   * as well as size.
    */
   Quadrature &
   operator=(const Quadrature<dim> &);
 
   /**
-   * 移动赋值运算符。将所有数据从另一个正交对象移动到这个对象。
-   *
+   * Move assignment operator. Moves all data from another quadrature object
+   * to this object.
    */
   Quadrature &
   operator=(Quadrature<dim> &&) = default; // NOLINT
 
   /**
-   * 测试两个正交点的相等性。
-   *
+   * Test for equality of two quadratures.
    */
   bool
   operator==(const Quadrature<dim> &p) const;
 
   /**
-   * 设置正交点和权重为参数中提供的值。
-   *
+   * Set the quadrature points and weights to the values provided in the
+   * arguments.
    */
   void
   initialize(const std::vector<Point<dim>> &points,
              const std::vector<double> &    weights);
 
   /**
-   * 正交点的数量。
-   *
+   * Number of quadrature points.
    */
   unsigned int
   size() const;
 
   /**
-   * 返回<tt>i</tt>第1个正交点。
-   *
+   * Return the <tt>i</tt>th quadrature point.
    */
   const Point<dim> &
   point(const unsigned int i) const;
 
   /**
-   * 返回对整个正交点数组的引用。
-   *
+   * Return a reference to the whole array of quadrature points.
    */
   const std::vector<Point<dim>> &
   get_points() const;
 
   /**
-   * 返回<tt>i</tt>个正交点的权重。
-   *
+   * Return the weight of the <tt>i</tt>th quadrature point.
    */
   double
   weight(const unsigned int i) const;
 
   /**
-   * 返回对整个权重数组的引用。
-   *
+   * Return a reference to the whole array of weights.
    */
   const std::vector<double> &
   get_weights() const;
 
   /**
-   * 确定此对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
-   *
+   * Write or read the data of this object to or from a stream for the purpose
+   * of serialization using the [BOOST serialization
+   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
    */
   template <class Archive>
   void
   serialize(Archive &ar, const unsigned int version);
 
   /**
-   * 如果正交对象是一维公式的张量乘积，并且正交点是按字母顺序排序的，则该函数返回真。
-   *
+   * This function returns true if the quadrature object is a tensor product
+   * of one-dimensional formulas and the quadrature points are sorted
+   * lexicographically.
    */
   bool
   is_tensor_product() const;
 
   /**
-   * 如果正交公式是张量积，此函数返回 @p dim
-   * 一维基础对象。  否则，不允许调用此函数。    对于 @p
-   * dim 等于1的情况，我们不能将 std::array
-   * 作为常量引用返回，必须通过值来返回。在这种情况下，数组将总是包含一个元素（
-   * @p this).  ）。
-   * @note  这个函数的实际返回类型是
+   * In case the quadrature formula is a tensor product, this function
+   * returns the @p dim one-dimensional basis objects.
+   * Otherwise, calling this function is not allowed.
+   *
+   * For @p dim equal to one, we can not return the std::array as a const
+   * reference and have to return it by value. In this case, the array
+   * will always contain a single element (@p this).
+   *
+   * @note The actual return type of this function is
    * @code
    * std::conditional<dim == 1,
-   *                std::array<Quadrature<1>, dim>,
-   *                const std::array<Quadrature<1>, dim> &>::type
+   *                  std::array<Quadrature<1>, dim>,
+   *                  const std::array<Quadrature<1>, dim> &>::type
    * @endcode
-   * 在线文档中对该类型进行了缩写，以提高本页面的可读性。
-   *
+   * The type is abbreviated in the online documentation to improve
+   * readability of this page.
    */
 #ifndef DOXYGEN
   typename std::conditional<dim == 1,
@@ -240,60 +277,59 @@ public:
 
 protected:
   /**
-   * 正交点的列表。要由派生类的构造函数来填充。
-   *
+   * List of quadrature points. To be filled by the constructors of derived
+   * classes.
    */
   std::vector<Point<dim>> quadrature_points;
 
   /**
-   * 正交点的权重列表。 将由派生类的构造函数填写。
-   *
+   * List of weights of the quadrature points.  To be filled by the
+   * constructors of derived classes.
    */
   std::vector<double> weights;
 
   /**
-   * 指示此对象是否代表正交公式是一维公式的张量乘积。
-   * 如果dim==1或者调用了取自Quadrature<1>（可能还有Quadrature<dim-1>对象）的构造函数，则该标志被设置。这意味着正交点是按字母顺序排序的。
-   *
+   * Indicates if this object represents quadrature formula that is a tensor
+   * product of one-dimensional formulas.
+   * This flag is set if dim==1 or the constructors taking a Quadrature<1>
+   * (and possibly a Quadrature<dim-1> object) is called. This implies
+   * that the quadrature points are sorted lexicographically.
    */
   bool is_tensor_product_flag;
 
   /**
-   * 存储一维张量基础对象，以备此对象可由张量积表示。
-   *
+   * Stores the one-dimensional tensor basis objects in case this object
+   * can be represented by a tensor product.
    */
   std::unique_ptr<std::array<Quadrature<1>, dim>> tensor_basis;
 };
 
 
 /**
- * 正交公式，实现参考单元上正交点的各向异性分布。为此，生成<tt>dim</tt>一维正交公式的张量积。
+ * Quadrature formula implementing anisotropic distributions of quadrature
+ * points on the reference cell. To this end, the tensor product of
+ * <tt>dim</tt> one-dimensional quadrature formulas is generated.
  *
- *
- * @note
- * 每个构造函数只能在与参数数相匹配的维度上使用。
- *
- *
+ * @note Each constructor can only be used in the dimension matching the
+ * number of arguments.
  */
 template <int dim>
 class QAnisotropic : public Quadrature<dim>
 {
 public:
   /**
-   * 一个一维公式的构造函数。这个构造函数只是复制给定的正交规则。
-   *
+   * Constructor for a one-dimensional formula. This one just copies the given
+   * quadrature rule.
    */
   QAnisotropic(const Quadrature<1> &qx);
 
   /**
-   * 二维公式的构造函数。
-   *
+   * Constructor for a two-dimensional formula.
    */
   QAnisotropic(const Quadrature<1> &qx, const Quadrature<1> &qy);
 
   /**
-   * 三维公式的构造函数。
-   *
+   * Constructor for a three-dimensional formula.
    */
   QAnisotropic(const Quadrature<1> &qx,
                const Quadrature<1> &qy,
@@ -302,26 +338,40 @@ public:
 
 
 /**
- * 通过在每个方向上迭代另一个正交公式构建的正交公式。在一个以上的空间维度中，所得到的正交公式是通过在一个空间维度中建立各自迭代的正交公式的张量积而以通常的方式构建的。
- * 在一个空间维度上，给定的基础公式被复制和缩放到给定数量的长度为<tt>1/n_copies</tt>的子区间上。如果正交公式使用了单位区间的两个端点，那么在迭代后的正交公式内部会有两次使用的正交点；我们将它们合并为一个，其权重为最左和最右的正交点的权重之和。
- * 由于所有高于一维的维度都是由一维和<tt>dim-1</tt>维的正交公式的张量积建立起来的，所以给构造函数的参数需要是一个空间维度的正交公式，而不是<tt>dim</tt>维。
- * 本类的目的是提供一个低阶公式，其中误差常数可以通过增加正交点的数量来调整。这在整合单元格上的非微分函数时很有用。
+ * Quadrature formula constructed by iteration of another quadrature formula
+ * in each direction. In more than one space dimension, the resulting
+ * quadrature formula is constructed in the usual way by building the tensor
+ * product of the respective iterated quadrature formula in one space
+ * dimension.
  *
+ * In one space dimension, the given base formula is copied and scaled onto a
+ * given number of subintervals of length <tt>1/n_copies</tt>. If the
+ * quadrature formula uses both end points of the unit interval, then in the
+ * interior of the iterated quadrature formula there would be quadrature
+ * points which are used twice; we merge them into one with a weight which is
+ * the sum of the weights of the left- and the rightmost quadrature point.
  *
+ * Since all dimensions higher than one are built up by tensor products of one
+ * dimensional and <tt>dim-1</tt> dimensional quadrature formulae, the
+ * argument given to the constructor needs to be a quadrature formula in one
+ * space dimension, rather than in <tt>dim</tt> dimensions.
+ *
+ * The aim of this class is to provide a low order formula, where the error
+ * constant can be tuned by increasing the number of quadrature points. This
+ * is useful in integrating non-differentiable functions on cells.
  */
 template <int dim>
 class QIterated : public Quadrature<dim>
 {
 public:
   /**
-   * 构造函数。在每个方向上迭代给定的正交公式<tt>n_copies</tt>次。
-   *
+   * Constructor. Iterate the given quadrature formula <tt>n_copies</tt> times
+   * in each direction.
    */
   QIterated(const Quadrature<1> &base_quadrature, const unsigned int n_copies);
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclExceptionMsg(ExcInvalidQuadratureFormula,
                    "The quadrature formula you provided cannot be used "
@@ -330,7 +380,7 @@ public:
 
 
 
- /*@}*/ 
+/*@}*/
 
 #ifndef DOXYGEN
 
@@ -406,7 +456,7 @@ Quadrature<dim>::serialize(Archive &ar, const unsigned int)
 
 
 
- /* -------------- declaration of explicit specializations ------------- */ 
+/* -------------- declaration of explicit specializations ------------- */
 
 template <>
 Quadrature<0>::Quadrature(const unsigned int);
@@ -431,5 +481,3 @@ QIterated<1>::QIterated(const Quadrature<1> &base_quadrature,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

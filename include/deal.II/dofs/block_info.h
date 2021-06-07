@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/block_info_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2021 by the deal.II authors
@@ -35,35 +36,27 @@ class DoFHandler;
 
 
 /**
+ *
  * @brief A small class collecting the different BlockIndices involved in
- * global, multilevel and local computations.
- *
- * Once a DoFHandler has been initialized with an FESystem, a data object of
- * type BlockInfo (accessed by DoFHandler::block_info() ) is filled, which
- * reflects the block structure of the degrees of freedom.
- *
- * BlockInfo consists of several BlockIndices objects. The member global()
- * reflects the block structure of the system on the active cell level,
- * usually referred to as the global system. As soon as
- * DoFHandler::distribute_dofs() has been called, the function
- * BlockIndices::block_size() in global() will return the correct sizes of
- * each block. After DoFRenumbering::block_wise(), BlockIndices::block_start()
- * will return the start index for each of the blocks.
- *
- * When a DoFHandler with levels is used, the same structure is automatically
- * generated for each level. The level blocks can be accessed through level().
- *
- * Finally, there are local() BlockIndices, which describe the block structure
- * on a single cell. This is used for instance by
- * MeshWorker::Assembler::MatrixLocalBlocksToGlobalBlocks. The local indices
- * are not filled automatically, since they change the behavior of the
- * MeshWorker::Assembler classes relying on BlockInfo. They must be
- * initialized by hand through initialize_local().
- *
+ * 全局、多层次和局部计算。
+ * 一旦DoFHandler被初始化为FESystem，一个BlockInfo类型的数据对象（通过
+ * DoFHandler::block_info()
+ * 访问）就被填充，它反映了自由度的块结构。
+ * BlockInfo由几个BlockIndices对象组成。成员global()反映了活动单元层面上的系统块结构，通常被称为全局系统。一旦
+ * DoFHandler::distribute_dofs() 被调用，global()中的函数
+ * BlockIndices::block_size() 将返回每个块的正确尺寸。在
+ * DoFRenumbering::block_wise(), 之后， BlockIndices::block_start()
+ * 将返回每个块的起始索引。
+ * 当使用带有级别的DoFHandler时，每个级别都会自动生成相同的结构。级别块可以通过level()访问。
+ * 最后，还有local()
+ * BlockIndices，它描述了单个单元上的块结构。例如，这被
+ * MeshWorker::Assembler::MatrixLocalBlocksToGlobalBlocks.
+ * 所使用。本地索引不是自动填充的，因为它们改变了依赖BlockInfo的
+ * MeshWorker::Assembler
+ * 类的行为。它们必须通过initialize_local()手工初始化。
  * <h3>Usage</h3>
+ * 这个对象最常见的用法是初始化向量，如下面的代码。
  *
- * The most common usage for this object is initializing vectors as in the
- * following code:
  *
  * @code
  * DoFHandler<dim> dof_handler(triangulation);
@@ -75,36 +68,29 @@ class DoFHandler;
  *
  * MGLevelObject<BlockVector<double> > mg_vector(0, triangulation.n_levels()-1);
  * for (unsigned int i = 0; i < triangulation.n_levels(); ++i)
- *   {
- *     mg_vector[i].reinit(dof_handler.block_info().level(i));
- *   }
+ * {
+ *   mg_vector[i].reinit(dof_handler.block_info().level(i));
+ * }
  * @endcode
  *
- * In this example, <tt>solution</tt> obtains the block structure needed to
- * represent a finite element function on the DoFHandler. Similarly, all
- * levels of <tt>mg_vector</tt> will have the block structure needed on that
- * level.
+ * 在这个例子中，<tt>solution</tt>获得了在DoFHandler上表示一个有限元函数所需的块结构。同样地，<tt>mg_vector</tt>的所有层次都会有该层次所需的块结构。
+ * @todo  扩展函数local()和renumber()以允许hp-capablilites。
  *
- * @todo Extend the functions local() and renumber() to allow for
- * hp-capablilites.
  *
  * @ingroup dofs
+ *
+ *
  */
 class BlockInfo : public Subscriptor
 {
 public:
   /**
    * @brief Fill the object with values describing block structure of the
-   * DoFHandler.
+   * DoFHandler。
+   * 默认情况下，这个函数将尝试初始化任何可能的东西。如果在DoFHandler参数中已经分配了活动的Dofs，它们的BlockIndices将被生成。对水平方向也是如此。
+   * 这个默认行为可以被两个参数覆盖，这两个参数可以关闭活动道夫或水平道夫。
+   * 这个函数也将清除local()指数。
    *
-   * By default, this function will attempt to initialize whatever is
-   * possible. If active dofs have been assigned int the DoFHandler argument,
-   * they BlockIndices for those will be generated. The same for level dofs.
-   *
-   * This default behavior can be overridden by the two parameters, which can
-   * switch off active dofs or level dofs.
-   *
-   * This function will also clear the local() indices.
    */
   template <int dim, int spacedim>
   void
@@ -114,100 +100,106 @@ public:
 
   /**
    * @brief Initialize block structure on cells and compute renumbering
-   * between cell dofs and block cell dofs.
+   * 在单元格道夫和块单元格道夫之间。
+   *
    */
   template <int dim, int spacedim>
   void
   initialize_local(const DoFHandler<dim, spacedim> &);
 
   /**
-   * Access the BlockIndices structure of the global system.
+   * 访问全局系统的BlockIndices结构。
+   *
    */
   const BlockIndices &
   global() const;
 
   /**
-   * Access BlockIndices for the local system on a cell.
+   * 访问一个单元上的本地系统的BlockIndices。
+   *
    */
   const BlockIndices &
   local() const;
 
   /**
-   * Access the BlockIndices structure of a level in the multilevel hierarchy.
+   * 访问多级层次结构中某一级的BlockIndices结构。
+   *
    */
   const BlockIndices &
   level(unsigned int level) const;
 
   /**
-   * Return the index after local renumbering.
+   * 返回局部重新编号后的索引。
+   * 这个函数的输入是一个介于零和每个单元的道夫数之间的索引，按本地块的顺序编号，即首先是第一个系统块的所有索引，然后是第二个块的所有索引，依此类推。然后该函数以DoFAccessor的标准本地编号输出该索引。
    *
-   * The input of this function is an index between zero and the number of
-   * dofs per cell, numbered in local block ordering, that is first all
-   * indices of the first system block, then all of the second block and so
-   * forth. The function then outputs the index in the standard local
-   * numbering of DoFAccessor.
    */
   types::global_dof_index
   renumber(const unsigned int i) const;
 
   /**
-   * The number of base elements.
+   * 基础元素的数量。
+   *
    */
   unsigned int
   n_base_elements() const;
 
   /**
-   * Return the base element of this index.
+   * 返回这个索引的基数元素。
+   *
    */
   unsigned int
   base_element(const unsigned int i) const;
 
   /**
-   * Write a summary of the block structure to the stream.
+   * 将块结构的摘要写到流中。
+   *
    */
   template <class OS>
   void
   print(OS &stream) const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Read or write the data of this object to or from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
-  serialize(Archive &ar, const unsigned int /*version*/);
+  serialize(Archive &ar, const unsigned int  /*version*/ );
 
 private:
   /**
    * @brief The block structure of the global system.
+   *
    */
   BlockIndices bi_global;
   /**
    * @brief The multilevel block structure.
+   *
    */
   std::vector<BlockIndices> levels;
 
   /**
    * @brief The block structure of the cell systems.
+   *
    */
   BlockIndices bi_local;
 
   /**
-   * The base element associated with each block.
+   * 与每个区块相关的基本元素。
+   *
    */
   std::vector<unsigned int> base_elements;
 
   /**
-   * A vector containing the renumbering from the standard order of degrees of
-   * freedom on a cell to a component wise ordering. Filled by initialize().
+   * 一个向量，包含从单元上的标准自由度顺序到组件明智顺序的重新编号。由initialize()填充。
+   *
    */
   std::vector<types::global_dof_index> local_renumbering;
 };
@@ -308,7 +300,7 @@ BlockInfo::memory_consumption() const
 
 template <class Archive>
 void
-BlockInfo::serialize(Archive &ar, const unsigned int /*version*/)
+BlockInfo::serialize(Archive &ar, const unsigned int  /*version*/ )
 {
   ar &bi_global;
   ar &levels;
@@ -321,3 +313,5 @@ BlockInfo::serialize(Archive &ar, const unsigned int /*version*/)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

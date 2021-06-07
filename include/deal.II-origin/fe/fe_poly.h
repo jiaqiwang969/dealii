@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_poly_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -29,38 +28,46 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup febase */ 
- /*@{*/ 
+/*!@addtogroup febase */
+/*@{*/
 
 /**
- * 这个类给出了一个统一的框架，用于实现基于标量多项式空间的FiniteElement类，如TensorProductPolynomials或PolynomialSpace类。这个类在FE_PolyTensor类中有一个对应的张量值有限元的类。
- * 每一个拥有以下公共成员变量和函数的类都可以作为模板参数
- * @p PolynomialType.
+ * This class gives a unified framework for the implementation of
+ * FiniteElement classes based on scalar polynomial spaces like the
+ * TensorProductPolynomials or PolynomialSpace classes. This
+ * class has a corresponding class for tensor-valued finite
+ * elements in the FE_PolyTensor class.
  *
+ * Every class that has the following public member variables and
+ * functions can be used as template parameter @p PolynomialType.
  *
  * @code
- * static const unsigned int dimension;
+ *  static const unsigned int dimension;
  *
- * void evaluate (const Point<dim>            &unit_point,
- *               std::vector<double>         &values,
- *               std::vector<Tensor<1,dim> > &grads,
- *               std::vector<Tensor<2,dim> > &grad_grads,
- *               std::vector<Tensor<3,dim> > &third_derivatives,
- *               std::vector<Tensor<4,dim> > &fourth_derivatives) const;
+ *  void evaluate (const Point<dim>            &unit_point,
+ *                 std::vector<double>         &values,
+ *                 std::vector<Tensor<1,dim> > &grads,
+ *                 std::vector<Tensor<2,dim> > &grad_grads,
+ *                 std::vector<Tensor<3,dim> > &third_derivatives,
+ *                 std::vector<Tensor<4,dim> > &fourth_derivatives) const;
  *
- * double compute_value (const unsigned int i,
- *                      const Point<dim> &p) const;
+ *  double compute_value (const unsigned int i,
+ *                        const Point<dim> &p) const;
  *
- * template <int order>
- * Tensor<order,dim> compute_derivative (const unsigned int i,
- *                                      const Point<dim> &p) const;
+ *  template <int order>
+ *  Tensor<order,dim> compute_derivative (const unsigned int i,
+ *                                        const Point<dim> &p) const;
  * @endcode
- * 示例类是TensorProductPolynomials、PolynomialSpace或PolynomialsP。
- * 这个类不是一个完全实现的FiniteElement类。相反，有几个在FiniteElement和FiniteElement类中声明的纯虚拟函数不能被这个类实现，而是留待派生类实现。
- * @todo  由于spacedim !=
- * dim的几乎所有函数都是专用的，这个类需要清理。
+ * Example classes are TensorProductPolynomials, PolynomialSpace or
+ * PolynomialsP.
  *
+ * This class is not a fully implemented FiniteElement class. Instead there
+ * are several pure virtual functions declared in the FiniteElement and
+ * FiniteElement classes which cannot be implemented by this class but are
+ * left for implementation in derived classes.
  *
+ * @todo Since nearly all functions for spacedim != dim are specialized, this
+ * class needs cleaning up.
  */
 
 template <int dim, int spacedim = dim>
@@ -68,8 +75,7 @@ class FE_Poly : public FiniteElement<dim, spacedim>
 {
 public:
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   FE_Poly(const ScalarPolynomialsBase<dim> &poly_space,
           const FiniteElementData<dim> &    fe_data,
@@ -77,14 +83,13 @@ public:
           const std::vector<ComponentMask> &nonzero_components);
 
   /**
-   * 复制构造函数。
-   *
+   * Copy constructor.
    */
   FE_Poly(const FE_Poly &fe);
 
   /**
-   * 返回该有限元的多项式程度，即传递给构造函数的值。
-   *
+   * Return the polynomial degree of this finite element, i.e. the value
+   * passed to the constructor.
    */
   unsigned int
   get_degree() const;
@@ -94,43 +99,49 @@ public:
   requires_update_flags(const UpdateFlags update_flags) const override;
 
   /**
-   * 返回底层多项式空间。
-   *
+   * Return the underlying polynomial space.
    */
   const ScalarPolynomialsBase<dim> &
   get_poly_space() const;
 
   /**
-   * 返回底层多项式空间的编号与基函数的lexicographic排序相比。返回
-   * PolynomialType::get_numbering(). 。
-   * @note
-   * 这个类的一些实现不支持这个函数，因为对它们来说，基函数的lexicographic排序是不可能的。这方面的例子有。FE_SimplexP,
-   * FE_WedgeP, 和 FE_PyramidP.
+   * Return the numbering of the underlying polynomial space compared to
+   * lexicographic ordering of the basis functions. Returns
+   * PolynomialType::get_numbering().
    *
+   * @note Some implementations of this class do not support this function,
+   *   since no lexicographic ordering of the basis functions is possible
+   *   for them. Examples are: FE_SimplexP, FE_WedgeP, and FE_PyramidP.
    */
   std::vector<unsigned int>
   get_poly_space_numbering() const;
 
   /**
-   * 返回底层多项式空间的反编号。返回
+   * Return the inverse numbering of the underlying polynomial space. Returns
    * PolynomialType::get_numbering_inverse().
-   * @note  参见get_poly_space_numbering()的说明。
    *
+   * @note See note of get_poly_space_numbering().
    */
   std::vector<unsigned int>
   get_poly_space_numbering_inverse() const;
 
   /**
-   * 返回在点<tt>p</tt>处的<tt>i</tt>的形状函数的值。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   *
+   * Return the value of the <tt>i</tt>th shape function at the point
+   * <tt>p</tt>. See the FiniteElement base class for more information about
+   * the semantics of this function.
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回<tt>i</tt>第1个形状函数在点<tt>p</tt>处的<tt>分量</tt>的值。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素是标量，返回值与调用不带<tt>_component</tt>后缀的函数相同，前提是指定的分量为零。
+   * Return the value of the <tt>component</tt>th vector component of the
+   * <tt>i</tt>th shape function at the point <tt>p</tt>. See the
+   * FiniteElement base class for more information about the semantics of this
+   * function.
    *
+   * Since this element is scalar, the returned value is the same as if the
+   * function without the <tt>_component</tt> suffix were called, provided
+   * that the specified component is zero.
    */
   virtual double
   shape_value_component(const unsigned int i,
@@ -138,16 +149,22 @@ public:
                         const unsigned int component) const override;
 
   /**
-   * 返回<tt>i</tt>第1个形状函数在点<tt>p</tt>的梯度。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   *
+   * Return the gradient of the <tt>i</tt>th shape function at the point
+   * <tt>p</tt>. See the FiniteElement base class for more information about
+   * the semantics of this function.
    */
   virtual Tensor<1, dim>
   shape_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回<tt>i</tt>第1个形状函数在点<tt>p</tt>处的<tt>分量</tt>向量分量的梯度。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素是标量，返回值与调用不带<tt>_component</tt>后缀的函数相同，前提是指定的分量为零。
+   * Return the gradient of the <tt>component</tt>th vector component of the
+   * <tt>i</tt>th shape function at the point <tt>p</tt>. See the
+   * FiniteElement base class for more information about the semantics of this
+   * function.
    *
+   * Since this element is scalar, the returned value is the same as if the
+   * function without the <tt>_component</tt> suffix were called, provided
+   * that the specified component is zero.
    */
   virtual Tensor<1, dim>
   shape_grad_component(const unsigned int i,
@@ -155,16 +172,22 @@ public:
                        const unsigned int component) const override;
 
   /**
-   * 返回单元格上<tt>p</tt>点的<tt>i</tt>th形状函数的二阶导数张量。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   *
+   * Return the tensor of second derivatives of the <tt>i</tt>th shape
+   * function at point <tt>p</tt> on the unit cell. See the FiniteElement base
+   * class for more information about the semantics of this function.
    */
   virtual Tensor<2, dim>
   shape_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回<tt>i</tt>第1个形状函数的<tt>分量</tt>在<tt>p</tt>点的二阶导数。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素是标量，返回值与调用不带<tt>_component</tt>后缀的函数相同，前提是指定的分量为零。
+   * Return the second derivative of the <tt>component</tt>th vector component
+   * of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the
+   * FiniteElement base class for more information about the semantics of this
+   * function.
    *
+   * Since this element is scalar, the returned value is the same as if the
+   * function without the <tt>_component</tt> suffix were called, provided
+   * that the specified component is zero.
    */
   virtual Tensor<2, dim>
   shape_grad_grad_component(const unsigned int i,
@@ -172,17 +195,23 @@ public:
                             const unsigned int component) const override;
 
   /**
-   * 返回单元格上<tt>p</tt>点的<tt>i</tt>th形状函数的三阶导数的张量。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   *
+   * Return the tensor of third derivatives of the <tt>i</tt>th shape function
+   * at point <tt>p</tt> on the unit cell. See the FiniteElement base class
+   * for more information about the semantics of this function.
    */
   virtual Tensor<3, dim>
   shape_3rd_derivative(const unsigned int i,
                        const Point<dim> & p) const override;
 
   /**
-   * 返回<tt>i</tt>第1个形状函数在<tt>p</tt>点的<tt>分量</tt>的3次导数。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素是标量，返回值与调用不带<tt>_component</tt>后缀的函数相同，前提是指定的分量为零。
+   * Return the third derivative of the <tt>component</tt>th vector component
+   * of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the
+   * FiniteElement base class for more information about the semantics of this
+   * function.
    *
+   * Since this element is scalar, the returned value is the same as if the
+   * function without the <tt>_component</tt> suffix were called, provided
+   * that the specified component is zero.
    */
   virtual Tensor<3, dim>
   shape_3rd_derivative_component(const unsigned int i,
@@ -190,17 +219,23 @@ public:
                                  const unsigned int component) const override;
 
   /**
-   * 返回单元格上<tt>p</tt>点的<tt>i</tt>第4个形状函数的四阶导数的张量。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   *
+   * Return the tensor of fourth derivatives of the <tt>i</tt>th shape
+   * function at point <tt>p</tt> on the unit cell. See the FiniteElement base
+   * class for more information about the semantics of this function.
    */
   virtual Tensor<4, dim>
   shape_4th_derivative(const unsigned int i,
                        const Point<dim> & p) const override;
 
   /**
-   * 返回<tt>i</tt>第1个形状函数在<tt>p</tt>点的<tt>分量</tt>向量分量的四阶导数。关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素是标量，返回值与调用不带<tt>_component</tt>后缀的函数相同，前提是指定的分量为零。
+   * Return the fourth derivative of the <tt>component</tt>th vector component
+   * of the <tt>i</tt>th shape function at the point <tt>p</tt>. See the
+   * FiniteElement base class for more information about the semantics of this
+   * function.
    *
+   * Since this element is scalar, the returned value is the same as if the
+   * function without the <tt>_component</tt> suffix were called, provided
+   * that the specified component is zero.
    */
   virtual Tensor<4, dim>
   shape_4th_derivative_component(const unsigned int i,
@@ -208,15 +243,17 @@ public:
                                  const unsigned int component) const override;
 
   /**
-   * 返回这个对象的内存消耗估计值（以字节为单位）。
-   *
+   * Return an estimate (in bytes) for the memory consumption of this object.
    */
   virtual std::size_t
   memory_consumption() const override;
 
 protected:
-  /*注意：以下函数的定义被内联到类声明中，因为我们在MS Visual Studio中会遇到编译器错误。 
-* */
+  /*
+   * NOTE: The following function has its definition inlined into the class
+   * declaration because we otherwise run into a compiler error with MS Visual
+   * Studio.
+   */
 
 
   virtual std::unique_ptr<
@@ -383,52 +420,74 @@ protected:
       &output_data) const override;
 
   /**
-   * 独立于细胞的数据字段。
-   * 关于这个类的一般用途的信息，请看基类的文档。
+   * Fields of cell-independent data.
    *
+   * For information about the general purpose of this class, see the
+   * documentation of the base class.
    */
   class InternalData : public FiniteElement<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * 带有正交点的形状函数值的数组。每个形状函数都有一行，包含每个正交点的值。
-     * 在这个数组中，我们将形状函数的值存储在单元格的正交点上。由于这些值在转换到实际单元时不会改变，我们只需要在访问具体单元时将它们复制过来。
+     * Array with shape function values in quadrature points. There is one row
+     * for each shape function, containing values for each quadrature point.
      *
+     * In this array, we store the values of the shape function in the
+     * quadrature points on the unit cell. Since these values do not change
+     * under transformation to the real cell, we only need to copy them over
+     * when visiting a concrete cell.
      */
     Table<2, double> shape_values;
 
     /**
-     * 包含正交点的形状函数梯度的数组。每个形状函数都有一行，包含每个正交点的值。
-     * 我们将梯度存储在单元格的正交点上。然后我们只需要在访问实际单元格时应用转换（这是一个矩阵-向量乘法）。
+     * Array with shape function gradients in quadrature points. There is one
+     * row for each shape function, containing values for each quadrature
+     * point.
      *
+     * We store the gradients in the quadrature points on the unit cell. We
+     * then only have to apply the transformation (which is a matrix-vector
+     * multiplication) when visiting an actual cell.
      */
     Table<2, Tensor<1, dim>> shape_gradients;
 
     /**
-     * 包含正交点的形状函数豫备数的数组。每个形状函数都有一行，包含每个正交点的值。
-     * 我们在单元格的正交点上存储豫备值。然后，我们只需要在访问实际单元格时应用转换。
+     * Array with shape function hessians in quadrature points. There is one
+     * row for each shape function, containing values for each quadrature
+     * point.
      *
+     * We store the hessians in the quadrature points on the unit cell. We
+     * then only have to apply the transformation when visiting an actual
+     * cell.
      */
     Table<2, Tensor<2, dim>> shape_hessians;
 
     /**
-     * 包含正交点的形状函数三阶导数的数组。每个形状函数都有一行，包含每个正交点的值。
-     * 我们将三阶导数存储在单元格的正交点上。然后，我们只需要在访问实际单元格时应用转换。
+     * Array with shape function third derivatives in quadrature points. There
+     * is one row for each shape function, containing values for each
+     * quadrature point.
      *
+     * We store the third derivatives in the quadrature points on the unit
+     * cell. We then only have to apply the transformation when visiting an
+     * actual cell.
      */
     Table<2, Tensor<3, dim>> shape_3rd_derivatives;
   };
 
   /**
-   * 通过减去对应于Jacobian推动的前向梯度的项来修正形状Hessians。    在修正之前，Hessians将由@f[
+   * Correct the shape Hessians by subtracting the terms corresponding to the
+   * Jacobian pushed forward gradient.
+   *
+   * Before the correction, the Hessians would be given by
+   * @f[
    * D_{ijk} = \frac{d^2\phi_i}{d \hat x_J d \hat x_K} (J_{jJ})^{-1}
    * (J_{kK})^{-1},
-   * @f]给出，其中 $J_{iI}=\frac{d x_i}{d \hat x_I}$  。在校正之后，正确的黑森斯将由@f[
-   * \frac{d^2 \phi_i}{d x_j d x_k} = D_{ijk}
-   *
-   * - H_{mjk} \frac{d \phi_i}{d x_m}, @f]给出，其中 $H_{ijk}$
-   * 是雅各布式推前导数。
-   *
+   * @f]
+   * where $J_{iI}=\frac{d x_i}{d \hat x_I}$. After the correction, the
+   * correct Hessians would be given by
+   * @f[
+   * \frac{d^2 \phi_i}{d x_j d x_k} = D_{ijk} - H_{mjk} \frac{d \phi_i}{d x_m},
+   * @f]
+   * where $H_{ijk}$ is the Jacobian pushed-forward derivative.
    */
   void
   correct_hessians(
@@ -439,34 +498,26 @@ protected:
     const unsigned int n_q_points) const;
 
   /**
-   * 通过减去对应于Jacobian推前梯度和第二导数的项来修正形状的第三导数。    在修正之前，第三导数将由@f[
+   * Correct the shape third derivatives by subtracting the terms
+   * corresponding to the Jacobian pushed forward gradient and second
+   * derivative.
+   *
+   * Before the correction, the third derivatives would be given by
+   * @f[
    * D_{ijkl} = \frac{d^3\phi_i}{d \hat x_J d \hat x_K d \hat x_L} (J_{jJ})^{-1}
    * (J_{kK})^{-1} (J_{lL})^{-1},
-   * @f]给出，其中 $J_{iI}=\frac{d x_i}{d \hat x_I}$  。修正后，正确的第三导数将由@f[
-   * \frac{d^3\phi_i}{d x_j d x_k d x_l} = D_{ijkl}
-   *
-   * - H_{mjl} \frac{d^2 \phi_i}{d x_k d x_m}
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   * - H_{mkl} \frac{d^2 \phi_i}{d x_j d x_m}
-   *
-   * - H_{mjk} \frac{d^2 \phi_i}{d x_l d x_m}
-   *
-   *
-   *
-   *
-   *
-   *
-   *
-   * - K_{mjkl} \frac{d \phi_i}{d x_m}, @f]给出，其中 $H_{ijk}$
-   * 是雅各布式推前导数， $K_{ijkl}$
-   * 是雅各布式推前二导数。
-   *
+   * @f]
+   * where $J_{iI}=\frac{d x_i}{d \hat x_I}$. After the correction, the
+   * correct third derivative would be given by
+   * @f[
+   * \frac{d^3\phi_i}{d x_j d x_k d x_l} = D_{ijkl} - H_{mjl} \frac{d^2
+   * \phi_i}{d x_k d x_m}
+   * - H_{mkl} \frac{d^2 \phi_i}{d x_j d x_m} - H_{mjk} \frac{d^2 \phi_i}{d x_l
+   * d x_m}
+   * - K_{mjkl} \frac{d \phi_i}{d x_m},
+   * @f]
+   * where $H_{ijk}$ is the Jacobian pushed-forward derivative and $K_{ijkl}$
+   * is the Jacobian pushed-forward second derivative.
    */
   void
   correct_third_derivatives(
@@ -478,16 +529,13 @@ protected:
 
 
   /**
-   * 多项式空间。
-   *
+   * The polynomial space.
    */
   const std::unique_ptr<ScalarPolynomialsBase<dim>> poly_space;
 };
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/reference_cell_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -44,17 +45,11 @@ namespace internal
   namespace ReferenceCell
   {
     /**
-     * A helper function to create a ReferenceCell object from an
-     * integer. ReferenceCell objects are "singletons" (actually,
-     * "multitons" -- there are multiple, but they are only a handful and
-     * these are all that can be used). What is then necessary is to
-     * have a way to create these with their internal id to distinguish
-     * the few possible ones in existence. We could do this via a public
-     * constructor of ReferenceCell, but that would allow users
-     * to create ones outside the range we envision, and we don't want to do
-     * that. Rather, the constructor that takes an integer is made `private`
-     * but we have this one function in an internal namespace that is a friend
-     * of the class and can be used to create the objects.
+     * 一个辅助函数，用于从一个整数中创建一个ReferenceCell对象。ReferenceCell对象是
+     * "单子"（实际上是 "多子"
+     *
+     * - 有多个，但它们只是少数，这些是所有可以使用的）。) 那么需要的是有一种方法来创建这些对象，用它们的内部id来区分存在的少数可能的对象。我们可以通过ReferenceCell的公共构造函数来做到这一点，但这将允许用户在我们设想的范围之外创建这些单元，而我们不想这样做。相反，接受一个整数的构造函数是 "私有 "的，但我们在内部命名空间中有这样一个函数，它是这个类的朋友，可以用来创建对象。
+     *
      */
     DEAL_II_CONSTEXPR dealii::ReferenceCell
                       make_reference_cell_from_int(const std::uint8_t kind);
@@ -65,95 +60,90 @@ namespace internal
 
 
 /**
- * A type that describes the kinds of reference cells that can be used.
- * This includes quadrilaterals and hexahedra (i.e., "hypercubes"),
- * triangles and tetrahedra (simplices), and the pyramids and wedges
- * necessary when using mixed 3d meshes.
+ * 一个描述可以使用的参考单元的种类的类型。这包括四边形和六面体（即
+ * "超立方体"）、三角形和四面体（单纯体），以及使用混合三维网格时必须的金字塔和楔形。
+ * 这种类型的对象不应该在用户代码中创建，因此，除了默认的构造函数（会创建一个无效的对象），该类没有一个用户可以访问的构造函数。相反，在ReferenceCells命名空间中定义了有限数量的特定参考单元对象，完全列举了所有可能的值。因此，用户代码应该完全依赖于从这些特殊对象中分配ReferenceCell对象，并与这些特殊对象进行比较。
+ * 该类的目的和意图在 @ref GlossReferenceCell "参考单元 "
+ * 词汇表条目中描述。
  *
- * Objects of this type should not be created in user code, and as a
- * consequence the class does not have a user-accessible constructor
- * other than the default constructor (which creates an invalid object).
- * Rather, there is a finite number of specific reference cell objects
- * defined in the ReferenceCells namespace that completely enumerate
- * all of the possible values. User codes should therefore rely
- * exclusively on assigning ReferenceCell objects from these special
- * objects, and comparing against those special objects.
- *
- * The purposes and intents of this class are described in the
- * @ref GlossReferenceCell "reference cell" glossary entry.
  *
  * @ingroup grid geomprimitives aniso
+ *
+ *
  */
 class ReferenceCell
 {
 public:
   /**
-   * Return the correct ReferenceCell for a given structural
-   * dimension and number of vertices. For example, if `dim==2` and
-   * `n_vertices==4`, this function will return ReferenceCells::Quadrilateral.
-   * But if `dim==3` and `n_vertices==4`, it will return
-   * ReferenceCells::Tetrahedron.
+   * 对于给定的结构尺寸和顶点数量，返回正确的ReferenceCell。例如，如果`dim==2`和`n_vertices==4`，这个函数将返回
+   * ReferenceCells::Quadrilateral.
+   * 但如果`dim==3`和`n_vertices==4`，它将返回
+   * ReferenceCells::Tetrahedron.  。
+   *
    */
   static ReferenceCell
   n_vertices_to_type(const int dim, const unsigned int n_vertices);
 
   /**
-   * Default constructor. Initialize this object as an invalid object. The
-   * end result is that the current object equals ReferenceCells::Invalid.
+   * 默认构造函数。将此对象初始化为一个无效的对象。最终的结果是当前对象等于
+   * ReferenceCells::Invalid.
+   * 一般来说，ReferenceCell对象是通过从命名空间ReferenceCells中的特殊对象赋值创建的，这是获得有效对象的唯一方法。
    *
-   * Generally, ReferenceCell objects are created by assignment from
-   * the special objects in namespace ReferenceCells, which is the only
-   * way to obtain a valid object.
    */
   DEAL_II_CONSTEXPR
   ReferenceCell();
 
   /**
-   * @name Querying information about the kind of reference cells
-   * @{
+   * @name  查询有关参考单元格种类的信息  @{  。
+   *
    */
 
   /**
-   * Return `true` if the object is a ReferenceCells::Vertex,
-   * ReferenceCells::Line, ReferenceCells::Quadrilateral, or
-   * ReferenceCells::Hexahedron.
+   * 如果对象是 ReferenceCells::Vertex,   ReferenceCells::Line,
+   * ReferenceCells::Quadrilateral, 或 ReferenceCells::Hexahedron.
+   * ，返回`true`。
+   *
    */
   bool
   is_hyper_cube() const;
 
   /**
-   * Return true if the object is a Vertex, Line, Triangle, or Tetrahedron.
+   * 如果对象是一个顶点、直线、三角形或四面体，则返回真。
+   *
    */
   bool
   is_simplex() const;
 
   /**
-   * Return the dimension of the reference cell represented by the current
-   * object.
+   * 返回当前对象所代表的参考单元的尺寸。
+   *
    */
   unsigned int
   get_dimension() const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Shape functions, mappings, quadratures defined on a reference cell
-   * @{
+   * @name  在参考单元上定义的形状函数、映射、四边形 @{  。
+   *
    */
 
   /**
-   * Compute the value of the $i$-th linear shape function at location $\xi$
-   * for the current reference-cell type.
+   * 计算当前参考单元类型在位置 $\xi$ 的第 $i$
+   * 个线性形状函数的值。
+   *
    */
   template <int dim>
   double
   d_linear_shape_function(const Point<dim> &xi, const unsigned int i) const;
 
   /**
-   * Compute the gradient of the $i$-th linear shape function at location
-   * $\xi$ for the current reference-cell type.
+   * 计算当前参考单元类型在位置 $\xi$ 的 $i$
+   * -th线性形状函数的梯度。
+   *
    */
   template <int dim>
   Tensor<1, dim>
@@ -161,50 +151,41 @@ public:
                                    const unsigned int i) const;
 
   /**
-   * Return a default mapping of degree @p degree matching the current
-   * reference cell. If this reference cell is a hypercube, then the returned
-   * mapping is a MappingQGeneric; otherwise, it is an object of type
-   * MappingFE initialized with FE_SimplexP (if the reference cell is a
-   * triangle or tetrahedron), with FE_PyramidP (if the reference
-   * cell is a pyramid), or with FE_WedgeP (if the reference cell is
-   * a wedge).
+   * 返回一个与当前参考单元相匹配的默认映射度 @p degree
+   * 。如果这个参考单元是一个超立方体，那么返回的映射是一个MappingQGeneric；否则，它是一个用FE_SimplexP（如果参考单元是一个三角形或四面体）、用FE_PyramidP（如果参考单元是一个金字塔）或用FE_WedgeP（如果参考单元是一个楔子）初始化的MappingFE类型对象。
+   *
    */
   template <int dim, int spacedim = dim>
   std::unique_ptr<Mapping<dim, spacedim>>
   get_default_mapping(const unsigned int degree) const;
 
   /**
-   * Return a default linear mapping matching the current reference cell.
-   * If this reference cell is a hypercube, then the returned mapping
-   * is a MappingQ1; otherwise, it is an object of type MappingFE
-   * initialized with FE_SimplexP (if the reference cell is a triangle or
-   * tetrahedron), with FE_PyramidP (if the reference cell is a
-   * pyramid), or with FE_WedgeP (if the reference cell is a wedge).
-   * In other words, the term "linear" in the name of the function has to be
-   * understood as $d$-linear (i.e., bilinear or trilinear) for some of the
-   * coordinate directions.
+   * 返回一个与当前参考单元相匹配的默认线性映射。
+   * 如果这个参考单元是一个超立方体，那么返回的映射是一个MappingQ1；否则，它是一个用FE_SimplexP（如果参考单元是一个三角形或四面体）、FE_PyramidP（如果参考单元是一个金字塔）或FE_WedgeP（如果参考单元是一个楔子）初始化的MappingFE类型对象。
+   * 换句话说，函数名称中的 "线性
+   * "一词必须理解为对某些坐标方向的 $d$
+   * -线性（即双线性或三线性）。
+   *
    */
   template <int dim, int spacedim = dim>
   const Mapping<dim, spacedim> &
   get_default_linear_mapping() const;
 
   /**
-   * Return a Gauss-type quadrature matching the given reference cell (QGauss,
-   * QGaussSimplex, QGaussPyramid, QGaussWedge).
+   * 返回一个与给定参考单元相匹配的高斯型正交（QGauss,
+   * QGaussSimplex, QGaussPyramid, QGaussWedge）。      @param[in]
+   * n_points_1D
+   * 每个方向上的正交点的数量（QGauss），或者对于其他类型的正交点，需要准确地集成什么多项式的指示。
    *
-   * @param[in] n_points_1D The number of quadrature points in each direction
-   * (QGauss) or an indication of what polynomial degree needs to be
-   * integrated exactly for the other types.
    */
   template <int dim>
   Quadrature<dim>
   get_gauss_type_quadrature(const unsigned n_points_1D) const;
 
   /**
-   * Return a quadrature rule with the support points of the given reference
-   * cell.
+   * 返回一个具有给定参考单元的支持点的正交规则。
+   * @note 正交对象的权重是不填的。
    *
-   * @note The weights of the quadrature object are left unfilled.
    */
   template <int dim>
   const Quadrature<dim> &
@@ -212,122 +193,135 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Querying the number of building blocks of a reference cell
-   * @{
+   * @name  查询参考单元的构件数量 @{  。
+   *
    */
 
   /**
-   * Return the number of vertices that make up the reference
-   * cell in question. A vertex is a "corner" (a zero-dimensional
-   * object) of the reference cell.
+   * 返回构成有关参考单元的顶点的数量。一个顶点是参考单元的一个
+   * "角"（一个零维物体）。
+   *
    */
   unsigned int
   n_vertices() const;
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from zero to n_vertices().
+   * 返回一个对象，可以看作是一个包含从零到n_vertices()所有索引的数组。
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   vertex_indices() const;
 
   /**
-   * Return the number of lines that make up the reference
-   * cell in question. A line is an "edge" (a one-dimensional
-   * object) of the reference cell.
+   * 返回构成有关参考单元格的线的数量。一条线是参考单元格的一个
+   * "边"（一个一维对象）。
+   *
    */
   unsigned int
   n_lines() const;
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from zero to n_lines().
+   * 返回一个对象，可以看作是一个包含从零到n_lines()所有索引的数组。
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   line_indices() const;
 
   /**
-   * Return the number of faces that make up the reference
-   * cell in question. A face is a `(dim-1)`-dimensional
-   * object bounding the reference cell.
+   * 返回构成相关参考单元的面的数量。一个面是包围参考单元的`(dim-1)`维对象。
+   *
    */
   unsigned int
   n_faces() const;
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from zero to n_faces().
+   * 返回一个对象，它可以被认为是一个包含从零到n_faces()所有索引的数组。
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   face_indices() const;
 
   /**
-   * Return the reference-cell type of face @p face_no of the current
-   * object. For example, if the current object is
-   * ReferenceCells::Tetrahedron, then `face_no` must be between
-   * in the interval $[0,4)$ and the function will always return
-   * ReferenceCells::Triangle. If the current object is
-   * ReferenceCells::Hexahedron, then `face_no` must be between
-   * in the interval $[0,6)$ and the function will always return
-   * ReferenceCells::Quadrilateral. For wedges and pyramids, the
-   * returned object may be either ReferenceCells::Triangle or
-   * ReferenceCells::Quadrilateral, depending on the given index.
+   * 返回当前对象的面 @p face_no
+   * 的参考单元格类型。例如，如果当前对象是
+   * ReferenceCells::Tetrahedron, ，那么`face_no`必须介于 $[0,4)$
+   * 之间，函数将总是返回 ReferenceCells::Triangle.
+   * 如果当前对象是 ReferenceCells::Hexahedron,
+   * ，那么`face_no`必须介于 $[0,6)$ 之间，函数将总是返回
+   * ReferenceCells::Quadrilateral.
+   * 对于楔形和金字塔，返回的对象可能是
+   * ReferenceCells::Triangle  或 ReferenceCells::Quadrilateral,
+   * ，取决于给定的索引。
+   *
    */
   ReferenceCell
   face_reference_cell(const unsigned int face_no) const;
 
   /**
    * @}
-   */
-
-  /**
-   * @name Relationships between objects in the cell and on faces
-   * @{
-   */
-
-  /**
-   * Return which child cells are adjacent to a certain face of the
-   * mother cell.
    *
-   * For example, in 2D the layout of a quadrilateral cell is as follows:
+   */
+
+  /**
+   * @name  单元内和面上的对象之间的关系  @{  。
+   *
+   */
+
+  /**
+   * 返回哪些子单元与母单元的某个面相邻。
+   * 例如，在2D中，一个四边形单元的布局如下。
    * @verbatim
-   *      3
-   *   2-->--3
-   *   |     |
+   *    3
+   * 2-->--3
+   * |     |
    * 0 ^     ^ 1
-   *   |     |
-   *   0-->--1
-   *      2
+   * |     |
+   * 0-->--1
+   *    2
    * @endverbatim
-   * Vertices and faces are indicated with their numbers, faces also with
-   * their directions.
-   *
-   * Now, when refined, the layout is like this:
+   * 顶点和面用其数字表示，面也用其方向表示。
+   * 现在，在细化时，布局是这样的。
    * @verbatim
-   * *---*---*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * ---*---*
    * | 2 | 3 |
-   * *---*---*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * ---*---*
    * | 0 | 1 |
-   * *---*---*
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * ---*---*
    * @endverbatim
+   * 因此，面0上的子单元是（按面的方向排序）0和2，面3上是2和3，等等。    对于三个空间维度，子单元的确切顺序在这个类的一般文档中规定。    <tt>面的方向</tt>参数目前只针对四边形和六面体。它决定了这个函数如何处理以标准和非标准方向为导向的面。它代表了整个<tt>面的方向</tt>、<tt>面的翻转</tt>和<tt>面的旋转</tt>的位代码，并默认为标准方向。面部方向的概念在这个 @ref GlossFaceOrientation "词汇表 "
+   * 条目中得到了解释。
    *
-   * Thus, the child cells on face 0 are (ordered in the direction of the
-   * face) 0 and 2, on face 3 they are 2 and 3, etc.
-   *
-   * For three spatial dimensions, the exact order of the children is laid
-   * down in the general documentation of this class.
-   *
-   * The <tt>face_orientation</tt> argument is meant exclusively for
-   * quadrilaterals and hexahedra at the moment. It determines how this function
-   * handles faces oriented in the standard and non-standard orientation. It
-   * represents a bit-code for the overall <tt>face_orientation</tt>,
-   * <tt>face_flip</tt> and <tt>face_rotation</tt> and defaults to the standard
-   * orientation. The concept of face orientations is explained in this
-   * @ref GlossFaceOrientation "glossary"
-   * entry.
    */
   unsigned int
   child_cell_on_face(const unsigned int  face_n,
@@ -335,31 +329,26 @@ public:
                      const unsigned char face_orientation = 1) const;
 
   /**
-   * For a given vertex in a cell, return a pair of a face index and a
-   * vertex index within this face.
+   * 对于一个单元格中的给定顶点，返回一对面的索引和该面的顶点索引。
+   * @note
+   * 在实践中，一个顶点当然通常属于一个以上的面，我们可以返回不同的面和其中相应的索引。这个函数选择哪个面通常并不重要（这个函数也不会故意暴露）。
    *
-   * @note In practice, a vertex is of course generally part of more than one
-   *   face, and one could return different faces and the corresponding
-   *   index within. Which face this function chooses is often not of
-   *   importance (and not exposed by this function on purpose).
    */
   std::array<unsigned int, 2>
   standard_vertex_to_face_and_vertex_index(const unsigned int vertex) const;
 
   /**
-   * For a given line in a cell, return a pair of a face index and a
-   * line index within this face.
+   * 对于一个单元格中的某一行，返回一对面的索引和该面中的行的索引。
+   * @note
+   * 在实践中，一条线通常是一个以上的面的一部分，我们可以返回不同的面和其中相应的索引。这个函数选择哪个面通常并不重要（这个函数也不会故意暴露）。
    *
-   * @note In practice, a line is of course generally part of more than one
-   *   face, and one could return different faces and the corresponding
-   *   index within. Which face this function chooses is often not of
-   *   importance (and not exposed by this function on purpose).
    */
   std::array<unsigned int, 2>
   standard_line_to_face_and_line_index(const unsigned int line) const;
 
   /**
-   * Map face line number to cell line number.
+   * 将面的行数映射到单元格的行数。
+   *
    */
   unsigned int
   face_to_cell_lines(const unsigned int  face,
@@ -367,7 +356,8 @@ public:
                      const unsigned char face_orientation) const;
 
   /**
-   * Map face vertex number to cell vertex number.
+   * 将面的顶点编号映射到单元的顶点编号。
+   *
    */
   unsigned int
   face_to_cell_vertices(const unsigned int  face,
@@ -375,7 +365,8 @@ public:
                         const unsigned char face_orientation) const;
 
   /**
-   * Correct vertex index depending on face orientation.
+   * 根据面的方向，纠正顶点索引。
+   *
    */
   unsigned int
   standard_to_real_face_vertex(const unsigned int  vertex,
@@ -383,7 +374,8 @@ public:
                                const unsigned char face_orientation) const;
 
   /**
-   * Correct line index depending on face orientation.
+   * 根据面的方向，纠正线的索引。
+   *
    */
   unsigned int
   standard_to_real_face_line(const unsigned int  line,
@@ -391,14 +383,14 @@ public:
                              const unsigned char face_orientation) const;
 
   /**
-   * Return whether the line with index @p line is oriented in
-   * standard direction within a cell, given the @p face_orientation of
-   * the face within the current cell, and @p line_orientation flag
-   * for the line within that face. @p true indicates that the line is
-   * oriented from vertex 0 to vertex 1, whereas it is the other way
-   * around otherwise. In 1d and 2d, this is always @p true, but in 3d
-   * it may be different, see the respective discussion in the
-   * documentation of the GeometryInfo class.
+   * 返回索引为 @p line
+   * 的线在单元格内是否为标准方向，给定当前单元格内面的
+   * @p face_orientation ，以及该面内线的 @p line_orientation
+   * 标志。  @p true
+   * 表示线的方向是从顶点0到顶点1，否则就是相反的方向。在1d和2d中，这总是
+   * @p true,
+   * ，但在3d中，它可能是不同的，见GeometryInfo类的文档中的相应讨论。
+   *
    */
   bool
   standard_vs_true_line_orientation(const unsigned int  line,
@@ -407,36 +399,33 @@ public:
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Geometric properties of reference cells
-   * @name Querying the number of building blocks of a reference cell
-   * @{
+   * @name  参考单元的几何属性  @name  查询一个参考单元的构件数量  @{
+   *
    */
 
-  /*
-   * Return $i$-th unit tangential vector of a face of the reference cell.
-   * The vectors are arranged such that the
-   * cross product between the two vectors returns the unit normal vector.
-   *
-   * @pre $i$ must be between zero and `dim-1`.
-   */
+  /* 返回  $i$  参考单元的一个面的第-个单位切向量。  这些矢量的排列方式是，两个矢量之间的交积返回单位法向量。      @pre   $i$  必须在零和`dim-1`之间。 
+* */
   template <int dim>
   Tensor<1, dim>
   unit_tangential_vectors(const unsigned int face_no,
                           const unsigned int i) const;
 
   /**
-   * Return the unit normal vector of a face of the reference cell.
+   * 返回参考单元格的一个面的单位法向量。
+   *
    */
   template <int dim>
   Tensor<1, dim>
   unit_normal_vectors(const unsigned int face_no) const;
 
   /**
-   * Determine the orientation of the current entity described by its
-   * vertices @p var_1 relative to an entity described by @p var_0.
+   * 确定由其顶点 @p var_1 描述的当前实体相对于由 @p var_0.
+   * 描述的实体的方向。
+   *
    */
   template <typename T, std::size_t N>
   unsigned char
@@ -444,7 +433,8 @@ public:
                       const std::array<T, N> &vertices_1) const;
 
   /**
-   * Inverse function of compute_orientation().
+   * compute_orientation()的逆向函数。
+   *
    */
   template <typename T, std::size_t N>
   std::array<T, N>
@@ -452,121 +442,134 @@ public:
                                 const unsigned int      orientation) const;
 
   /**
-   * Return a vector of faces a given @p vertex_index belongs to.
+   * 返回一个给定的 @p vertex_index 所属的面的向量。
+   *
    */
   ArrayView<const unsigned int>
   faces_for_given_vertex(const unsigned int vertex_index) const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Translating between deal.II indexing and formats used by other programs
-   * @{
+   * @name  在deal.II索引和其他程序使用的格式之间进行转换  @{  。
+   *
    */
 
   /**
-   * Map an ExodusII vertex number to a deal.II vertex number.
+   * 将ExodusII的顶点编号映射到deal.II的顶点编号。
+   *
    */
   unsigned int
   exodusii_vertex_to_deal_vertex(const unsigned int vertex_n) const;
 
   /**
-   * Map an ExodusII face number to a deal.II face number.
+   * 将一个ExodusII的面数映射到一个deal.II的面数。
+   *
    */
   unsigned int
   exodusii_face_to_deal_face(const unsigned int face_n) const;
 
   /**
-   * Map a UNV vertex number to a deal.II vertex number.
+   * 将一个UNV顶点编号映射到一个deal.II顶点编号。
+   *
    */
   unsigned int
   unv_vertex_to_deal_vertex(const unsigned int vertex_n) const;
 
   /**
-   * Return a VTK linear shape constant that corresponds to the reference cell.
+   * 返回一个VTK线性形状常数，与参考单元对应。
+   *
    */
   unsigned int
   vtk_linear_type() const;
 
   /**
-   * Return a VTK quadratic shape constant that corresponds to the reference
-   * cell.
+   * 返回对应于参考单元的VTK二次方形状常数。
+   *
    */
   unsigned int
   vtk_quadratic_type() const;
 
   /**
-   * Return a VTK Lagrange shape constant that corresponds to the reference
-   * cell.
+   * 返回对应于参考单元格的VTK拉格朗日形状常数。
+   *
    */
   unsigned int
   vtk_lagrange_type() const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Other functions
-   * @{
+   * @name  其他函数  @{
+   *
    */
 
   /**
-   * Return a text representation of the reference cell represented by the
-   * current object.
+   * 返回当前对象所代表的参考单元格的文本表示。
+   *
    */
   std::string
   to_string() const;
 
   /**
-   * Conversion operator to an integer.
+   * 对整数的转换操作。
+   *
    */
   constexpr operator std::uint8_t() const;
 
   /**
-   * Operator for equality comparison.
+   * 用于平等比较的运算符。
+   *
    */
   constexpr bool
   operator==(const ReferenceCell &type) const;
 
   /**
-   * Operator for inequality comparison.
+   * 用于不等式比较的运算符。
+   *
    */
   constexpr bool
   operator!=(const ReferenceCell &type) const;
 
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，从一个流中写入和读取此对象的数据。
+   *
    */
   template <class Archive>
   void
-  serialize(Archive &archive, const unsigned int /*version*/);
+  serialize(Archive &archive, const unsigned int  /*version*/ );
 
   /**
    * @}
+   *
    */
 
 private:
   /**
-   * The variable that stores what this object actually corresponds to.
+   * 存储这个对象实际对应的变量。
+   *
    */
   std::uint8_t kind;
 
   /**
-   * Constructor. This is the constructor used to create the different
-   * `static` member variables of this class. It is `private` but can
-   * be called by a function in an internal namespace that is a `friend`
-   * of this class.
+   * 构造函数。这是用来创建这个类的不同的`静态`成员变量的构造函数。它是
+   * "私有 "的，但是可以被作为该类 "朋友
+   * "的内部命名空间中的函数调用。
+   *
    */
   constexpr ReferenceCell(const std::uint8_t kind);
 
   /**
-   * A kind of constructor -- not quite private because it can be
-   * called by anyone, but at least hidden in an internal namespace.
+   * 一种构造函数
+   *
+   * - 不完全是私有的，因为它可以被任何人调用，但至少是隐藏在一个内部命名空间中。
+   *
    */
   friend DEAL_II_CONSTEXPR ReferenceCell
                            internal::ReferenceCell::make_reference_cell_from_int(const std::uint8_t);
@@ -625,11 +628,10 @@ namespace internal
 
 
 /**
- * A namespace in which we define objects that correspond to specific
- * reference cells. The objects defined here are a complete enumeration
- * of all possible reference cells that can be used in deal.II.
+ * 一个命名空间，我们在其中定义对应于特定参考单元的对象。这里定义的对象是对所有可能的参考单元的完整列举，可以在deal.II中使用。
+ * @relates  ReferenceCell
  *
- * @relates ReferenceCell
+ *
  */
 namespace ReferenceCells
 {
@@ -654,18 +656,16 @@ namespace ReferenceCells
       static_cast<std::uint8_t>(-1));
 
   /**
-   * Return the correct simplex reference cell type for the given dimension
-   * `dim`. Depending on the template argument `dim`, this function returns a
-   * reference to either Vertex, Triangle, or Tetrahedron.
+   * 返回给定维度`dim`的正确单线参考单元类型。根据模板参数`dim`，该函数返回对Vertex、Triangle或Tetrahedron的引用。
+   *
    */
   template <int dim>
   constexpr const ReferenceCell &
   get_simplex();
 
   /**
-   * Return the correct hypercube reference cell type for the given dimension
-   * `dim`. Depending on the template argument `dim`, this function returns a
-   * reference to either Vertex, Quadrilateral, or Hexahedron.
+   * 返回给定维度`dim`的正确超立方体参考单元类型。根据模板参数`dim`，该函数返回对顶点、四边形或六面体的引用。
+   *
    */
   template <int dim>
   constexpr const ReferenceCell &
@@ -683,7 +683,7 @@ ReferenceCell::ReferenceCell()
 
 template <class Archive>
 inline void
-ReferenceCell::serialize(Archive &archive, const unsigned int /*version*/)
+ReferenceCell::serialize(Archive &archive, const unsigned int  /*version*/ )
 {
   archive &kind;
 }
@@ -1838,7 +1838,8 @@ namespace internal
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     NoPermutation(const dealii::ReferenceCell &entity_type,
                   const std::array<T, N> &     vertices_0,
@@ -1849,12 +1850,14 @@ namespace internal
     {}
 
     /**
-     * Destructor.
+     * 解除函数。
+     *
      */
     virtual ~NoPermutation() noexcept override = default;
 
     /**
-     * Print error message to @p out.
+     * 打印错误信息到 @p out. 。
+     *
      */
     virtual void
     print_info(std::ostream &out) const override
@@ -1883,17 +1886,20 @@ namespace internal
     }
 
     /**
-     * Entity type.
+     * 实体类型。
+     *
      */
     const dealii::ReferenceCell entity_type;
 
     /**
-     * First set of values.
+     * 第一组数值。
+     *
      */
     const std::array<T, N> vertices_0;
 
     /**
-     * Second set of values.
+     * 第二组数值。
+     *
      */
     const std::array<T, N> vertices_1;
   };
@@ -2091,3 +2097,5 @@ ReferenceCell::permute_according_orientation(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

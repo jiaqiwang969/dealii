@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/block_sparse_matrix_ez_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -41,163 +40,175 @@ template <typename Number>
 class BlockVector;
 #endif
 
-/*!   @addtogroup  Matrix1  @{ . 
-
-* 
-* */
+/*! @addtogroup Matrix1
+ *@{
+ */
 
 
 /**
- * 一个由SparseMatrixEZ类型的块组成的块矩阵。
- * 与其他块对象一样，这个矩阵可以像SparseMatrixEZ一样使用，当涉及到对条目的访问时。然后，还有一些函数用于与BlockVector相乘，以及对单个块的访问。
- * @see   @ref GlossBlockLA  "块（线性代数）"
+ * A block matrix consisting of blocks of type SparseMatrixEZ.
  *
+ * Like the other Block-objects, this matrix can be used like a
+ * SparseMatrixEZ, when it comes to access to entries. Then, there are
+ * functions for the multiplication with BlockVector and access to the
+ * individual blocks.
  *
+ * @see
+ * @ref GlossBlockLA "Block (linear algebra)"
  */
 template <typename Number>
 class BlockSparseMatrixEZ : public Subscriptor
 {
 public:
   /**
-   * 声明容器大小的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 默认构造函数。其结果是一个尺寸为零的空对象。
-   *
+   * Default constructor. The result is an empty object with zero dimensions.
    */
   BlockSparseMatrixEZ() = default;
 
   /**
-   * 构造函数以给定的块的行和列的数量设置一个对象。块本身仍有零维度。
-   *
+   * Constructor setting up an object with given number of block rows and
+   * columns. The blocks themselves still have zero dimension.
    */
   BlockSparseMatrixEZ(const unsigned int block_rows,
                       const unsigned int block_cols);
 
   /**
-   * 复制构造函数。这对于一些容器类来说是需要的。它创建一个具有相同数量的块行和块列的对象。因为它调用了SparseMatrixEZ的复制构造函数，所以块s必须是空的。
-   *
+   * Copy constructor. This is needed for some container classes. It creates
+   * an object of the same number of block rows and columns. Since it calls
+   * the copy constructor of SparseMatrixEZ, the block s must be empty.
    */
   BlockSparseMatrixEZ(const BlockSparseMatrixEZ<Number> &);
 
   /**
-   * 拷贝操作符。和复制构造函数一样，它只能被调用于空块的对象。
-   *
+   * Copy operator. Like the copy constructor, this may be called for objects
+   * with empty blocks only.
    */
   BlockSparseMatrixEZ &
   operator=(const BlockSparseMatrixEZ<Number> &);
 
   /**
-   * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？仅仅是稀疏模式的非零条目？），这个操作只允许在实际要分配的值为零时进行。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留之前使用的稀疏模式。
-   *
+   * This operator assigns a scalar to a matrix. Since this does usually not
+   * make much sense (should we set all matrix entries to this value? Only the
+   * nonzero entries of the sparsity pattern?), this operation is only allowed
+   * if the actual value to be assigned is zero. This operator only exists to
+   * allow for the obvious notation <tt>matrix=0</tt>, which sets all elements
+   * of the matrix to zero, but keep the sparsity pattern previously used.
    */
   BlockSparseMatrixEZ &
   operator=(const double d);
 
 
   /**
-   * 将矩阵设置为零维，并释放内存。
-   *
+   * Set matrix to zero dimensions and release memory.
    */
   void
   clear();
 
   /**
-   * 初始化为给定的块数。
-   * 在此操作之后，矩阵将具有所提供的块的尺寸。每个区块的尺寸都是零，必须随后进行初始化。在设置块的尺寸后，必须调用collect_sizes()来更新内部数据结构。
-   *
+   * Initialize to given block numbers.  After this operation, the matrix will
+   * have the block dimensions provided. Each block will have zero dimensions
+   * and must be initialized subsequently. After setting the sizes of the
+   * blocks, collect_sizes() must be called to update internal data
+   * structures.
    */
   void
   reinit(const unsigned int n_block_rows, const unsigned int n_block_cols);
   /**
-   * 这个函数收集了子对象的尺寸，并将其存储在内部数组中，以便能够将矩阵的全局索引转为子对象的索引。在你改变了子对象的大小之后，你必须*每次都调用这个函数。
-   *
+   * This function collects the sizes of the sub-objects and stores them in
+   * internal arrays, in order to be able to relay global indices into the
+   * matrix to indices into the subobjects. You *must* call this function each
+   * time after you have changed the size of the sub-objects.
    */
   void
   collect_sizes();
 
   /**
-   * 访问具有给定坐标的块。
-   *
+   * Access the block with the given coordinates.
    */
   SparseMatrixEZ<Number> &
   block(const unsigned int row, const unsigned int column);
 
 
   /**
-   * 访问具有给定坐标的块。对于常量对象的版本。
-   *
+   * Access the block with the given coordinates. Version for constant
+   * objects.
    */
   const SparseMatrixEZ<Number> &
   block(const unsigned int row, const unsigned int column) const;
 
   /**
-   * 返回一列中的块的数量。
-   *
+   * Return the number of blocks in a column.
    */
   unsigned int
   n_block_rows() const;
 
   /**
-   * 返回一行中的块数。
-   *
+   * Return the number of blocks in a row.
    */
   unsigned int
   n_block_cols() const;
 
   /**
-   * 返回该对象是否为空。如果没有分配内存，它就是空的，这与两个维度都是零是一样的。这个函数只是对所有子矩阵的各自调用的串联。
-   *
+   * Return whether the object is empty. It is empty if no memory is
+   * allocated, which is the same as that both dimensions are zero. This
+   * function is just the concatenation of the respective call to all sub-
+   * matrices.
    */
   bool
   empty() const;
 
   /**
-   * 返回该矩阵的行数，相当于共域（或范围）空间的维数。它是这个矩阵的子矩阵块上的行数之和。回顾一下，该矩阵的大小为m()乘以n()。
-   *
+   * Return number of rows of this matrix, which equals the dimension of the
+   * codomain (or range) space. It is the sum of the number of rows over the
+   * sub-matrix blocks of this matrix. Recall that the matrix is of size m()
+   * times n().
    */
   size_type
   m() const;
 
   /**
-   * 返回该矩阵的列数，等于域空间的维度。它是该矩阵的子矩阵块的列数之和。回顾一下，该矩阵的大小为m()乘以n()。
-   *
+   * Return number of columns of this matrix, which equals the dimension of
+   * the domain space. It is the sum of the number of columns over the sub-
+   * matrix blocks of this matrix. Recall that the matrix is of size m() times
+   * n().
    */
   size_type
   n() const;
 
   /**
-   * 将元素<tt>(i,j)</tt>设为 @p value.
-   * 如果该条目不存在或<tt>值</tt>不是有限数，则抛出一个错误。尽管如此，它仍然允许在不存在的字段中存储零值。
-   *
+   * Set the element <tt>(i,j)</tt> to @p value.  Throws an error if the entry
+   * does not exist or if <tt>value</tt> is not a finite number. Still, it is
+   * allowed to store zero values in non-existent fields.
    */
   void
   set(const size_type i, const size_type j, const Number value);
 
   /**
-   * 在元素<tt>(i,j)</tt>上添加 @p value 。
-   * 如果该条目不存在或者<tt>value</tt>不是一个有限的数字，则抛出一个错误。尽管如此，它仍然允许在不存在的字段中存储零值。
-   *
+   * Add @p value to the element <tt>(i,j)</tt>.  Throws an error if the entry
+   * does not exist or if <tt>value</tt> is not a finite number. Still, it is
+   * allowed to store zero values in non-existent fields.
    */
   void
   add(const size_type i, const size_type j, const Number value);
 
 
   /**
-   * 矩阵-向量乘法：让 $dst = M*src$ 与 $M$ 是这个矩阵。
-   *
+   * Matrix-vector multiplication: let $dst = M*src$ with $M$ being this
+   * matrix.
    */
   template <typename somenumber>
   void
   vmult(BlockVector<somenumber> &dst, const BlockVector<somenumber> &src) const;
 
   /**
-   * 矩阵-向量乘法：让 $dst = M^T*src$ 与 $M$
-   * 为这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
-   *
+   * Matrix-vector multiplication: let $dst = M^T*src$ with $M$ being this
+   * matrix. This function does the same as vmult() but takes the transposed
+   * matrix.
    */
   template <typename somenumber>
   void
@@ -205,9 +216,8 @@ public:
          const BlockVector<somenumber> &src) const;
 
   /**
-   * 加法 矩阵-向量乘法。在 $dst$ 上添加 $M*src$ ， $M$
-   * 为该矩阵。
-   *
+   * Adding Matrix-vector multiplication. Add $M*src$ on $dst$ with $M$ being
+   * this matrix.
    */
   template <typename somenumber>
   void
@@ -215,9 +225,9 @@ public:
             const BlockVector<somenumber> &src) const;
 
   /**
-   * 添加矩阵-向量乘法。将 $M^T*src$ 加到 $dst$ ， $M$
-   * 是这个矩阵。这个函数与vmult_add()的作用相同，但需要转置的矩阵。
-   *
+   * Adding Matrix-vector multiplication. Add $M^T*src$ to $dst$ with $M$
+   * being this matrix. This function does the same as vmult_add() but takes
+   * the transposed matrix.
    */
   template <typename somenumber>
   void
@@ -226,9 +236,9 @@ public:
 
 
   /**
-   * 打印统计数据。如果 @p full 是 @p true,
-   * ，则打印所有现有行长和分配行长的直方图。否则，只显示已分配和已使用条目的关系。
-   *
+   * Print statistics. If @p full is @p true, prints a histogram of all
+   * existing row lengths and allocated row lengths. Otherwise, just the
+   * relation of allocated and used entries is shown.
    */
   template <class StreamType>
   void
@@ -236,26 +246,25 @@ public:
 
 private:
   /**
-   * 对象存储和管理行索引到子对象索引的转换。
-   *
+   * Object storing and managing the transformation of row indices to indices
+   * of the sub-objects.
    */
   BlockIndices row_indices;
 
   /**
-   * 储存和管理列索引到子对象索引的转换的对象。
-   *
+   * Object storing and managing the transformation of column indices to
+   * indices of the sub-objects.
    */
   BlockIndices column_indices;
 
   /**
-   * 实际的矩阵
-   *
+   * The actual matrices
    */
   Table<2, SparseMatrixEZ<Number>> blocks;
 };
 
- /*@}*/ 
- /*----------------------------------------------------------------------*/ 
+/*@}*/
+/*----------------------------------------------------------------------*/
 
 
 template <typename Number>
@@ -490,5 +499,3 @@ BlockSparseMatrixEZ<number>::print_statistics(StreamType &out, bool full)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_block_sparse_matrix_ez_h
-
-

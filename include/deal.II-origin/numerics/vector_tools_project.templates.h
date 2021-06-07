@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/vector_tools_project.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -45,8 +44,9 @@ namespace VectorTools
   namespace internal
   {
     /**
-     * 插值零边界值。我们不需要担心这里的映射，因为我们为DoFs评估的函数在映射的位置以及在原始的、未映射的位置都是零。
-     *
+     * Interpolate zero boundary values. We don't need to worry about a
+     * mapping here because the function we evaluate for the DoFs is zero in
+     * the mapped locations as well as in the original, unmapped locations
      */
     template <int dim, int spacedim, typename number>
     void
@@ -99,8 +99,7 @@ namespace VectorTools
     }
 
     /**
-     * 计算将在project()函数中使用的边界值。
-     *
+     * Compute the boundary values to be used in the project() functions.
      */
     template <int dim,
               int spacedim,
@@ -148,8 +147,10 @@ namespace VectorTools
     }
 
 
-    /*对FiniteElement的任意数量的组件进行project()的无矩阵实现。   
-* */
+    /*
+     * MatrixFree implementation of project() for an arbitrary number of
+     * components of the FiniteElement.
+     */
     template <int components, int dim, typename Number, int spacedim>
     void
     project_matrix_free(
@@ -334,10 +335,9 @@ namespace VectorTools
 
 
     /**
-     * project()的无矩阵实现的辅助接口：避免通过从
-     * LinearAlgebra::distributed::Vector.
-     * 复制来为一个以上的VectorType实例化其他辅助函数。
-     *
+     * Helper interface for the matrix-free implementation of project(): avoid
+     * instantiating the other helper functions for more than one VectorType
+     * by copying from a LinearAlgebra::distributed::Vector.
      */
     template <int dim, typename VectorType, int spacedim>
     void
@@ -377,8 +377,8 @@ namespace VectorTools
     }
 
     /**
-     * 返回边界值是否试图约束一个已经被约束到其他东西的自由度
-     *
+     * Return whether the boundary values try to constrain a degree of freedom
+     * that is already constrained to something else
      */
     template <typename number>
     bool
@@ -402,8 +402,7 @@ namespace VectorTools
 
 
     /**
-     * project()函数的通用实现
-     *
+     * Generic implementation of the project() function
      */
     template <int dim,
               int spacedim,
@@ -699,9 +698,9 @@ namespace VectorTools
     }
 
     /**
-     * 在dim==spacedim的情况下，project()的特殊化。
-     * 检查我们是否可以使用MatrixFree实现或者需要使用基于矩阵的实现。
-     *
+     * Specialization of project() for the case dim==spacedim.
+     * Check if we can use the MatrixFree implementation or need
+     * to use the matrix based one.
      */
     template <typename VectorType, int dim>
     void
@@ -956,5 +955,3 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_project_templates_h
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/vector_memory.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
@@ -198,3 +199,5 @@ GrowingVectorMemory<VectorType>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

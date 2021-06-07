@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/parsed_convergence_table_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -40,12 +39,15 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- *
  * @brief The ParsedConvergenceTable class
- * 这个类简化了收敛表的构造，从参数文件中读取生成表格的选项。它提供了一系列的方法，可以用来计算给定参考精确解的误差，或者两个数值解之间的差异，或者任何其他自定义的误差计算，通过
- * std::function 对象给出。
- * 这个类的一个使用例子是这样给出的
  *
+ * This class simplifies the construction of convergence tables, reading the
+ * options for the generation of the table from a parameter file. It provides a
+ * series of methods that can be used to compute the error given a reference
+ * exact solution, or the difference between two numerical solutions, or any
+ * other custom computation of the error, given via std::function objects.
+ *
+ * An example usage of this class is given by
  * @code
  * ParsedConvergenceTable table;
  *
@@ -53,18 +55,29 @@ DEAL_II_NAMESPACE_OPEN
  * table.add_parameters(prm);
  *
  * for (unsigned int i = 0; i < n_cycles; ++i)
- * {
- *   ... // do some computations
- *   table.error_from_exact(dof_handler, solution, exact_solution);
- * }
+ *   {
+ *     ... // do some computations
+ *     table.error_from_exact(dof_handler, solution, exact_solution);
+ *   }
  * table.output_table(std::cout);
  * @endcode
  *
- * 上面的代码构造了一个ParsedConvergenceTable，它适用于标量问题，并将产生一个包含误差的`H1_norm`、`L2_norm`和`Linfty_norm`规范的误差表。
- * 每当调用error_from_exact()或difference()方法时，这个类的实例会检查其参数，计算构造时给出的参数所指定的所有规范，可能通过参数文件修改，计算所有使用add_extra_column()方法指定的额外列条目，并写入收敛表的一行。
- * 一旦你完成了计算，对output_table()的调用将在提供的流上生成一个格式化的收敛表，并将其发送到参数文件中指定的文件（如果有的话）。
- * 只要稍加修改，同样的代码就可以用来估计混合或多物理场问题的误差，例如。
+ * The above code constructs a ParsedConvergenceTable that works for
+ * scalar problems, and will produce an error table with `H1_norm`, `L2_norm`,
+ * and `Linfty_norm` norms of the error.
  *
+ * Whenever a call to the methods error_from_exact() or difference() is made,
+ * the instance of this class inspects its parameters, computes all norms
+ * specified by the parameter given at construction time, possibly modified
+ * via a parameter file, computes all extra column entries specified using the
+ * method add_extra_column(), and writes one row of the convergence table.
+ *
+ * Once you have finished with the computations, a call to output_table() will
+ * generate a formatted convergence table on the provided stream, and to the
+ * file (if any) specified in the parameter file.
+ *
+ * With a small modification, the same code can be used to estimate the errors
+ * of mixed or multi-physics problems, e.g.:
  * @code
  * using namespace VectorTools;
  * ParsedConvergenceTable table({"u,u,p"},{{H1_norm, L2_norm}, {L2_norm}});
@@ -73,19 +86,27 @@ DEAL_II_NAMESPACE_OPEN
  * table.add_parameters(prm);
  *
  * for (unsigned int i = 0; i < n_cycles; ++i)
- * {
- *   ... // do some computations
- *   table.error_from_exact(dof_handler, solution, exact_solution);
- * }
+ *   {
+ *     ... // do some computations
+ *     table.error_from_exact(dof_handler, solution, exact_solution);
+ *   }
  * table.output_table(std::cout);
  * @endcode
  *
- * 上面的代码假设你正在解决一个有三个分量的斯托克斯问题。两个分量为矢量速度场`u`，一个分量为压力场`p`，并将产生一个误差表，其中包括速度场（前两个分量）的误差`H1`和`L2`规范以及压力场的`L2`误差。
- * 你也可以调用`table.output_table()`，不加参数，只把表写到参数文件中指定的文件。
- * 通过调用方法add_parameters()传递一个ParameterHandler对象，以下选项将被定义在给定的ParameterHandler对象中（在ParameterHandler对象的当前级别，即你用
- * ParamterHandler::enter_subsection()
- * 方法输入的任何级别），并可以在运行时通过参数文件进行修改。
+ * The above code assumes that you are solving a Stokes problem with three
+ * components. Two components for the vector velocity field `u`, and one
+ * component for the pressure field `p`, and will produce an error
+ * table with `H1` and `L2` norm of the error in the velocity field (first two,
+ * components) and `L2` error in the pressure field.
  *
+ * You may also call `table.output_table()` without arguments, to write the
+ * table only to the file specified in the parameter file.
+ *
+ * By calling the method add_parameters() passing a ParameterHandler object,
+ * the following options will be defined in the given ParameterHandler object
+ * (in the current level of the ParameterHandler object, i.e., whatever level
+ * you have entered with the ParamterHandler::enter_subsection() method),
+ * and can be modified at run time through a parameter file:
  * @code
  * set Enable computation of the errors = true
  * set Error file name                  =
@@ -96,58 +117,59 @@ DEAL_II_NAMESPACE_OPEN
  * set Rate key                         = dofs
  * set Rate mode                        = reduction_rate_log2
  * @endcode
- *  在使用这个类时，请引证
  *
+ * When using this class, please cite
  * @code{.bib}
  * @article{SartoriGiulianiBardelloni-2018-a,
- * Author = {Sartori, Alberto and Giuliani, Nicola and
- *          Bardelloni, Mauro and Heltai, Luca},
- * Journal = {SoftwareX},
- * Pages = {318--327},
- * Title = {{deal2lkit: A toolkit library for high performance
- *          programming in deal.II}},
- * Doi = {10.1016/j.softx.2018.09.004},
- * Volume = {7},
- * Year = {2018}}
+ *  Author = {Sartori, Alberto and Giuliani, Nicola and
+ *            Bardelloni, Mauro and Heltai, Luca},
+ *  Journal = {SoftwareX},
+ *  Pages = {318--327},
+ *  Title = {{deal2lkit: A toolkit library for high performance
+ *            programming in deal.II}},
+ *  Doi = {10.1016/j.softx.2018.09.004},
+ *  Volume = {7},
+ *  Year = {2018}}
  * @endcode
- *
- *
- *
  */
 class ParsedConvergenceTable
 {
 public:
   /**
-   * ParsedConvergenceTable对象的最小构造函数。
-   * 组件的数量必须与用于计算误差的有限元空间的组件数量一致。如果一个分量的名称重复，那么它将被解释为一个矢量场，重复的分量的误差将被归为一组。
-   * 矢量 @p list_of_error_norms
-   * 的大小必须与唯一分量名称的数量相匹配，并且可以包含零个或多个逗号分隔的标识符，用于计算每个分量的规范（关于可用的选项，请参见
-   * VectorTools::NormType 的文档）。    例如，下面的构造函数
+   * Minimal constructor for ParsedConvergenceTable objects.
+   *
+   * The number of components must match the number of components of the
+   * finite element space that is used to compute the errors. If
+   * a component name is repeated, than it is interpreted as a vector field,
+   * and the errors of the repeated components are grouped together.
+   *
+   * The size of the vector @p list_of_error_norms must match the number of
+   * unique component names, and may contain zero or more comma separated
+   * identifiers for the norm to compute for each component (see the
+   * documentation of VectorTools::NormType for the available options).
+   *
+   * For example, the following constructor
    * @code
    * using namespace VectorTools;
    * ParsedConvergenceTable table({"u", "v", "v"},
-   *                            {{Linfty_norm}, {L2_norm, H1_norm}});
+   *                              {{Linfty_norm}, {L2_norm, H1_norm}});
    * @endcode
-   * 将产生（如果参数文件未被触动）一个类似于以下的表格
+   * would produce (if the parameter file is left untouched) a table similar to
    * @code
    * cells dofs u_Linfty_norm    v_L2_norm      v_H1_norm
-   * 4     9    1.183e-01
-   *
-   * -    5.156e-02
-   *
-   * -    2.615e-01
-   *
-   * -
+   * 4     9    1.183e-01 -    5.156e-02 -    2.615e-01 -
    * 16    25   3.291e-02 2.50 1.333e-02 2.65 1.272e-01 1.41
    * 64    81   8.449e-03 2.31 3.360e-03 2.34 6.313e-02 1.19
    * 256   289  2.126e-03 2.17 8.418e-04 2.18 3.150e-02 1.09
    * 1024  1089 5.325e-04 2.09 2.106e-04 2.09 1.574e-02 1.05
    * @endcode
-   * 请参阅其他构造函数，了解你可以改变的所有参数的文件。
-   * @param  component_names 指定组件的名称；  @param
-   * list_of_error_norms
-   * 指定为每个独特的组件名称计算什么错误规范。
    *
+   * See the other constructor for a documentation of all the parameters you can
+   * change.
+   *
+   * @param component_names Specify the names of the components;
+   * @param list_of_error_norms Specify what error norms to compute for each
+   * unique component name.
    */
   ParsedConvergenceTable(
     const std::vector<std::string> &                    component_names = {"u"},
@@ -155,31 +177,39 @@ public:
       {VectorTools::H1_norm, VectorTools::L2_norm, VectorTools::Linfty_norm}});
 
   /**
-   * ParsedConvergenceTable的完整构造函数。      @param
-   * component_names
-   * 组件的名称。重复的连续名称被解释为矢量值域的组件；
-   * @param  list_of_error_norms
-   * 为每个独特的组件名称指定要计算的误差准则；  @param
-   * exponent 在p-norms中使用的指数；  @param  extra_columns
-   * 要添加的额外列。这些可以是 "单元格 "或 "道夫"；
-   * @param  rate_key
-   * 指定额外的列，我们将通过它来计算错误率。这个键可以是
-   * "cell "或 "dofs
-   * "中的一个，或者，如果你通过add_extra_column()方法向表中添加额外的列，它可以是你添加的额外列之一；
-   * @param  rate_mode 指定计算错误率时要使用的比率模式。
-   * 这可能是 "reduction_rate"，"reduction_rate_log2"，或者
-   * "none"。参见 ConvergenceTable::RateMode
-   * 的文档，了解每种模式的行为方式；  @param  error_file_name
-   * 错误输出文件的名称（扩展名为txt, gpl, tex, 或
-   * org）。如果与空字符串不同，比output_table()也会以从其扩展名推断出的格式写入该文件；
-   * @param  precision 写入错误时要使用多少位数；  @param
-   * compute_error
-   * 控制是否启用填充表。这个标志可以用来在运行时禁用任何错误计算；你用这个构造函数指定的参数可以通过调用add_parameters()方法写入ParameterHandler对象中。一旦你调用add_parameters()方法，以下选项将被定义在给定的ParameterHandler对象中，并且这个类的实例的参数将跟随你在运行时对ParameterHandler对象的修改。
+   * Full constructor for ParsedConvergenceTable.
+   *
+   * @param component_names Names of the components. Repeated consecutive
+   * names are interpreted as components of a vector valued field;
+   * @param list_of_error_norms Specify what error norms to compute for each
+   * unique component name;
+   * @param exponent The exponent to use in p-norms;
+   * @param extra_columns Extra columns to add. These may be "cells" or "dofs";
+   * @param rate_key Specify the extra column by which we will compute the
+   * error rates. This key can either be one of "cells" or "dofs", or, if you
+   * add extra columns to the table via the method add_extra_column(), it may
+   * be one of the extra columns you added;
+   * @param rate_mode Specify the rate mode to use when computing error rates.
+   * This maybe either "reduction_rate", "reduction_rate_log2", or "none". See
+   * the documentation of ConvergenceTable::RateMode for an explanation of how
+   * each of this mode behaves;
+   * @param error_file_name Name of error output file (with extension txt,
+   * gpl, tex, or org). If different from the empty string, than
+   * output_table() also writes in this file in the format deduced from its
+   * extension;
+   * @param precision How many digits to use when writing the error;
+   * @param compute_error Control whether the filling of the table is enabled
+   * or not. This flag may be used to disable at run time any error computation;
+   *
+   * The parameters you specify with this constructor can be written to a
+   * ParameterHandler object by calling the add_parameters() method. Once you
+   * call the add_parameters() method, the following options will be defined in
+   * the given ParameterHandler object, and the parameters of the instance of
+   * this class will follow the modification you make to the ParameterHandler
+   * object at run time:
    * @code
    * # Listing of Parameters
-   * #
-   *
-   * ---------------------
+   * # ---------------------
    * # When set to false, no computations are performed.
    * set Enable computation of the errors = true
    *
@@ -209,7 +239,6 @@ public:
    * # reduction_rate_log2, reduction_rate, and none.
    * set Rate mode                        = reduction_rate_log2
    * @endcode
-   *
    */
   ParsedConvergenceTable(
     const std::vector<std::string> &                    component_names,
@@ -223,21 +252,23 @@ public:
     const bool                                          compute_error);
 
   /**
-   * 将这个类中的所有参数附加到参数处理程序的条目上  @p
-   * prm.  每当 @p prm
-   * 的内容发生变化，这个类的参数就会被更新。
-   *
+   * Attach all the parameters in this class to entries of the parameter
+   * handler @p prm. Whenever the content of @p prm changes, the parameters
+   * of this class will be updated.
    */
   void
   add_parameters(ParameterHandler &prm);
 
   /**
-   * 在错误表中添加一行，包含 @p solution 和 @p exact
-   * 函数之间的错误，在参数文件中指定的规范（s）。
-   * 如果你在这个调用中指定了一个 @p weight
-   * 函数，那么这将用于计算加权误差。权重函数可以是一个标量函数（将用于所有组件），也可以是一个向量函数。
-   * 当它是一个矢量函数时，如果分量的数量与底层有限元空间的分量数量不一致，将触发一个断言。
+   * Add a row to the error table, containing the error between @p solution and
+   * the @p exact function, in the norm(s) specified in the parameter file.
    *
+   * If you specify a @p weight function during this call, then this is used
+   * to compute weighted errors. The weight function can be either a scalar
+   * function (which will be used for all components), or a vector function.
+   * When it is a vector function, an assertion is triggered if the number of
+   * components does not coincide with the number of components of the
+   * underlying finite element space.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -247,8 +278,7 @@ public:
                    const Function<spacedim> *       weight = nullptr);
 
   /**
-   * 和上面一样，有不同的映射。
-   *
+   * Same as above, with a different mapping.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -259,56 +289,70 @@ public:
                    const Function<spacedim> *       weight = nullptr);
 
   /**
-   * 通过在调用error_from_exact()或difference()时调用函数 @p
-   * custom_function, ，在表中添加一个额外的列（名称为 @p
-   * column_name) ）。
-   * 你可以根据你的需要多次调用这个方法。如果 @p
-   * column_name
-   * 已经在之前的调用中使用过，那么以相同的名字调用这个方法将覆盖你之前指定的任何函数。如果你在这个调用中使用了一个lambda函数，请确保在lambda函数内部使用的变量在调用error_from_exact()或difference()之前一直有效。
-   * 确保在第一次调用error_from_exact()或difference()之前添加所有额外列。在你已经开始填充收敛表之后再向收敛表添加额外的列将会触发一个异常。
-   * 例如，这个方法可以用来计算时间步长的误差，例如。
+   * Add an additional column (with name @p column_name) to the table, by invoking
+   * the function @p custom_function, when calling error_from_exact() or
+   * difference().
+   *
+   * You can call this method as many times as you want. If @p column_name was
+   * already used in a previous call, then calling this method with the same
+   * name will overwrite whatever function you had previously specified. If
+   * you use a lambda function for this call, make sure that the variables used
+   * internally in the lambda function remain valid until the call to
+   * error_from_exact() or difference().
+   *
+   * Make sure you add all extra columns before the first call to
+   * error_from_exact() or difference(). Adding additional columns to the
+   * convergence table after you already started filling the table will trigger
+   * an exception.
+   *
+   * This method may be used, for example, to compute the error w.r.t. to
+   * time step increments in time, for example:
    * @code
    * using namespace VectorTools;
    * ParsedConvergenceTable table({"u"}, {{L2_norm}});
    *
    * double dt = .5;
    * auto dt_function = [&]() {
-   *      return dt;
+   *        return dt;
    * };
    *
    * table.add_extra_column("dt", dt_function, false);
    *
    * for (unsigned int i = 0; i < n_cycles; ++i)
-   * {
-   *   // ... compute solution at the current dt
+   *   {
+   *     // ... compute solution at the current dt
    *
-   *   table.error_from_exact(dof_handler, solution, exact_solution);
-   *   dt /= 2.0;
-   * }
+   *     table.error_from_exact(dof_handler, solution, exact_solution);
+   *     dt /= 2.0;
+   *   }
    * table.output_table(std::cout);
    * @endcode
-   * 将产生一个类似于以下的表格
+   * will produce a table similar to
    * @code
-   *  dt        u_L2_norm
-   * 5.000e-1    5.156e-02
-   *
-   * -
+   *    dt        u_L2_norm
+   * 5.000e-1    5.156e-02 -
    * 2.500e-2    1.333e-02 2.65
    * 1.250e-2    3.360e-03 2.34
    * 6.250e-3    8.418e-04 2.18
    * @endcode
-   * 只要你使用以下参数文件（这里只显示非默认条目）。
+   * provided that you use the following parameter file (only non default
+   * entries are shown here):
    * @code
    * set Extra columns                  =
    * set List of error norms to compute = L2_norm
    * set Rate key                       = dt
    * @endcode
-   * @param  column_name 要添加的列的名称；  @param  custom_function
-   * %将被调用以填充给定条目的函数。你需要确保这个函数的范围在调用error_from_exact()或difference()之前是有效的；
-   * @param  compute_rate
-   * 如果设置为true，那么这个列将被包含在计算错误率的列的列表中。如果你想计算与这一列有关的错误率，你可能想把它设置为false。在这种情况下，你还应该在参数文件中指定
-   * @p column_name 作为比率键。
    *
+   *
+   * @param column_name Name of the column to add;
+   * @param custom_function %Function that will be called to fill the given
+   * entry. You need to make sure that the scope of this function is valid
+   * up to the call to error_from_exact() or difference();
+   * @param compute_rate If set to true, then this column will be included in
+   * the list of columns for which error rates are computed. You may want to set
+   * this to false if you want to compute error rates with respect to this
+   * column. In this case, you should also specify @p column_name as the rate
+   * key in the parameter file.
    */
   void
   add_extra_column(const std::string &            column_name,
@@ -316,8 +360,7 @@ public:
                    const bool                     compute_rate = true);
 
   /**
-   * 同一矢量空间中两个解决方案之间的差异。
-   *
+   * Difference between two solutions in the same vector space.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -327,8 +370,7 @@ public:
              const Function<spacedim> *weight = nullptr);
 
   /**
-   * 与上述相同，有一个非默认的映射。
-   *
+   * Same as above, with a non default mapping.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -339,106 +381,93 @@ public:
              const Function<spacedim> *weight = nullptr);
 
   /**
-   * 将错误表写入 @p out
-   * 流（文本格式），以及（可能）写入参数中指定的文件流（格式由文件名扩展名推断）。
-   *
+   * Write the error table to the @p out stream (in text format), and
+   * (possibly) to the file stream specified in the parameters (with the format
+   * deduced from the file name extension).
    */
   void
   output_table(std::ostream &out);
 
   /**
-   * 将错误表写到参数中指定的文件流中。
-   * 如果参数文件中的 "错误文件名
-   * "选项被设置为空字符串，则不写输出。
+   * Write the error table to the file stream specified in the parameters.
    *
+   * If the "Error file name" option in the parameter file is set to the empty
+   * string, no output is written.
    */
   void
   output_table();
 
 private:
   /**
-   * 向输出表添加速率。
-   *
+   * Add rates to the output table.
    */
   void
   prepare_table_for_output();
 
   /**
-   * 解决方案组件的名称。
-   *
+   * Names of the solution components.
    */
   const std::vector<std::string> component_names;
 
   /**
-   * 与上述相同，但只包含一次重复的成分名称。
-   *
+   * Same as above, but containing repeated component names only once.
    */
   const std::vector<std::string> unique_component_names;
 
   /**
-   * 每个独特组件名称的掩码。
-   *
+   * Masks for each unique component name.
    */
   const std::vector<ComponentMask> unique_component_masks;
 
   /**
-   * 向表中添加行时要调用的额外方法。
-   *
+   * Additional methods to call when adding rows to the table.
    */
   std::map<std::string, std::pair<std::function<double()>, bool>>
     extra_column_functions;
 
   /**
-   * 计算每个组件的错误类型。
-   *
+   * Type of error to compute per components.
    */
   std::vector<std::set<VectorTools::NormType>> norms_per_unique_component;
 
   /**
-   * 在p-norm类型中使用的指数。
-   *
+   * Exponent to use in p-norm types.
    */
   double exponent;
 
   /**
-   * 实际的表格
-   *
+   * The actual table
    */
   ConvergenceTable table;
 
   /**
-   * 要添加到表中的额外列。
-   *
+   * Extra columns to add to the table.
    */
   std::set<std::string> extra_columns;
 
   /**
-   * 我们计算收敛率所涉及的列的名称。
-   *
+   * The name of column with respect to which we compute convergence rates.
    */
   std::string rate_key;
 
   /**
-   * 收敛率模式。参见 ConvergenceTable::RateMode 的文件。
-   *
+   * Reduction rate mode. See ConvergenceTable::RateMode for a documentation.
    */
   std::string rate_mode;
 
   /**
-   * 用于输出表格的精度。
-   *
+   * The precision used to output the table.
    */
   unsigned int precision;
 
   /**
-   * 写入文件时要使用的文件名。
-   *
+   * Filename to use when writing to file.
    */
   std::string error_file_name;
 
   /**
-   * 计算错误。如果这是错误的，所有进行错误计算的方法都被禁用，不做任何事情。
-   *
+   * Compute the error. If this is false, all methods that perform the
+   * computation of the error are disabled and don't do anything.
    */
   bool compute_error;
 };
@@ -638,5 +667,3 @@ ParsedConvergenceTable::error_from_exact(const Mapping<dim, spacedim> &mapping,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

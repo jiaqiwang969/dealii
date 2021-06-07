@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/mapping_q_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2021 by the deal.II authors
@@ -23,98 +24,76 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 /**
- * A class that implements a polynomial mapping $Q_p$ of degree $p$ on cells
- * at the boundary of the domain (or, if requested in the constructor, for all
- * cells) and linear mappings for interior cells.
+ * 一个在域的边界单元（或者，如果在构造函数中要求，对所有单元）上实现度数为
+ * $p$ 的多项式映射的类，以及对内部单元的线性映射。
+ * 该类实际上命名不当，因为（除非在构造对象时明确指定，见下文），它实际上不使用度数为
+ * $p$
+ * <i>everywhere</i>的映射，而只在边界的单元上使用。这与MappingQGeneric类形成对比，后者确实在任何地方都使用度数为
+ * $Q_p$ 的多项式映射 $p$
+ * 。当前类的重点是，在很多情况下，曲线域只提供了关于边界处的边缘到底是如何形成的信息，但我们对内部的边缘一无所知。因此，在没有其他信息的情况下，我们只能假设内部边缘是直线，在这种情况下，内部单元也可以被视为双线性四边形或三线性六面体。(在
+ * step-1 中已经展示了这样的网格的例子，但在 step-6 的
+ * "结果 "部分也有讨论)
+ * 。因为双线/三线映射的计算成本明显低于高阶映射，在这种情况下，只在域的边界单元上使用高阶映射是有利的。这个类正好实现了这种行为。
+ * 有一些特殊情况值得考虑。
  *
- * The class is in fact poorly named since (unless explicitly specified during
- * the construction of the object, see below), it does not actually use
- * mappings of degree $p$ <i>everywhere</i>, but only on cells at the
- * boundary. This is in contrast to the MappingQGeneric class which indeed
- * does use a polynomial mapping $Q_p$ of degree $p$ everywhere. The point of
- * the current class is that in many situations, curved domains are only
- * provided with information about how exactly edges at the boundary are
- * shaped, but we do not know anything about internal edges. Thus, in the
- * absence of other information, we can only assume that internal edges are
- * straight lines, and in that case internal cells may as well be treated is
- * bilinear quadrilaterals or trilinear hexahedra. (An example of how such
- * meshes look is shown in step-1 already, but it is also discussed in the
- * "Results" section of step-6.) Because bi-/trilinear mappings are
- * significantly cheaper to compute than higher order mappings, it is
- * advantageous in such situations to use the higher order mapping only on
- * cells at the boundary of the domain. This class implements exactly this
- * behavior.
  *
- * There are a number of special cases worth considering:
- * - If you want to use a higher order mapping for all cells, you can
- * achieve this by setting the second argument to the constructor to true.
- * This only makes sense if you can actually provide information about how
- * interior edges and faces of the mesh should be curved. This is typically
- * done by associating a Manifold with interior cells and edges. A simple
- * example of this is discussed in the "Results" section of step-6; a full
- * discussion of manifolds is provided in step-53.
- * - If you pass true as the second argument to this class, then it
- * is in fact completely equivalent to generating a MappingQGeneric object
- * right away.
- * - This class is also entirely equivalent to MappingQGeneric if the
- * polynomial degree provided is one. This is because in that case, no
- * distinction between the mapping used on cells in the interior and on the
- * boundary of the domain can be made.
- * - If you are working on meshes embedded in higher space dimensions,
- * i.e., if dim!=spacedim, then every cell is considered to be at the boundary
- * of the domain and consequently a higher order mapping is used for all
- * cells; again this class is then equivalent to using MappingQGeneric right
- * away.
  *
+ * - 如果你想对所有单元使用高阶映射，你可以通过设置构造函数的第二个参数为true来实现。这只有在你能实际提供关于网格内部边缘和面应该如何弯曲的信息时才有意义。这通常是通过将Manifold与内部单元格和边缘关联来实现的。一个简单的例子在 step-6 的 "结果 "部分讨论；关于流形的完整讨论在 step-53 中提供。
+ *
+ *
+ *
+ * - 如果你将true作为该类的第二个参数，那么实际上完全等同于立即生成一个MappingQGeneric对象。
+ *
+ *
+ *
+ * - 如果提供的多项式程度是1，这个类也完全等同于MappingQGeneric。这是因为在这种情况下，在域的内部和边界的单元上使用的映射不能被区分。
+ *
+ *
+ *
+ * - 如果你正在处理嵌入更高空间维度的网格，也就是说，如果dim!=spacedim，那么每个单元都被认为是在域的边界，因此对所有单元都使用高阶映射；同样，这个类也相当于立即使用MappingQGeneric。
  * <h4>Behavior along curved boundaries and with different manifolds</h4>
+ * 关于不同流形混合情况下的映射行为和收敛率，请参考MappingQGeneric的相关章节。
  *
- * For the behavior of the mapping and convergence rates in case of mixing
- * different manifolds, please consult the respective section of
- * MappingQGeneric.
+ *
  */
 template <int dim, int spacedim = dim>
 class MappingQ : public Mapping<dim, spacedim>
 {
 public:
   /**
-   * Constructor.  @p polynomial_degree denotes the polynomial degree of the
-   * polynomials that are used to map cells boundary.
+   * 构造函数。   @p polynomial_degree
+   * 表示用于映射单元格边界的多项式的程度。
+   * 第二个参数决定了高阶映射是否也应该用于内部单元。如果它的值是
+   * <code>false</code>
+   * （默认值），那么在内部就使用低阶映射。这对大多数情况来说是足够的，因为高阶映射只是用来更好地接近边界。在这种情况下，内部以直线为界的单元是可以接受的。然而，在有些情况下，人们也希望在内部使用高阶映射。MappingQEulerian类就是这样一种情况。
+   * 如果 @p dim 不等于 @p spacedim, ， @p use_mapping_q_on_all_cells
+   * 的值就会被忽略，也就是说，如果我们考虑的是嵌入高维空间的表面的网格。
    *
-   * The second argument determines whether the higher order mapping should
-   * also be used on interior cells. If its value is <code>false</code> (the
-   * default), then a lower order mapping is used in the interior. This is
-   * sufficient for most cases where higher order mappings are only used to
-   * better approximate the boundary. In that case, cells bounded by straight
-   * lines are acceptable in the interior. However, there are cases where one
-   * would also like to use a higher order mapping in the interior. The
-   * MappingQEulerian class is one such case.
-   *
-   * The value of @p use_mapping_q_on_all_cells is ignored if @p dim is not
-   * equal to @p spacedim, i.e., if we are considering meshes on surfaces
-   * embedded into higher dimensional spaces.
    */
   MappingQ(const unsigned int polynomial_degree,
            const bool         use_mapping_q_on_all_cells = false);
 
   /**
-   * Copy constructor.
+   * 复制构造器。
+   *
    */
   MappingQ(const MappingQ<dim, spacedim> &mapping);
 
   /**
-   * Return the degree of the mapping, i.e. the value which was passed to the
-   * constructor.
+   * 返回映射的程度，即传递给构造函数的值。
+   *
    */
   unsigned int
   get_degree() const;
 
   /**
-   * Always returns @p true because the default implementation of functions in
-   * this class preserves vertex locations.
+   * 总是返回 @p true
+   * ，因为这个类中函数的默认实现保留了顶点位置。
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
@@ -128,8 +107,9 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const override;
 
   /**
-   * Transform the point @p p on the unit cell to the point @p p_real on the
-   * real cell @p cell and returns @p p_real.
+   * 将单元格上的点 @p p 转换为实单元格 @p cell 上的点 @p
+   * p_real ，并返回 @p p_real.  。
+   *
    */
   virtual Point<spacedim>
   transform_unit_to_real_cell(
@@ -137,25 +117,20 @@ public:
     const Point<dim> &p) const override;
 
   /**
-   * Transform the point @p p on the real cell to the point @p p_unit on the
-   * unit cell @p cell and returns @p p_unit.
+   * 将实细胞上的点 @p p 转换到单元格 @p cell 上的点 @p p_unit
+   * ，并返回 @p p_unit.  使用牛顿迭代和 @p
+   * transform_unit_to_real_cell 函数。
+   * 在一维情况下，该函数返回实点 @p p 在 @p cell.
+   * 标识的曲线或曲面上的法线投影。
+   * @note
+   * 如果要计算反映射的点位于单元格边界之外，从参考（单位）单元格坐标到实数单元格坐标系的多项式映射并不总是可逆的。
+   * 在这种情况下，当前函数可能无法计算出参考单元上的一个点，该点在映射下的图像等于给定的点
+   * @p p.  如果是这种情况，那么这个函数会抛出一个
+   * Mapping::ExcTransformationFailed  类型的异常。
+   * 因此，给定的点 @p p
+   * 是否位于单元格之外，可以通过检查返回的参考坐标是否位于参考单元格之内或之外来确定（例如，使用
+   * GeometryInfo::is_inside_unit_cell) 或是否抛出了上述的异常。
    *
-   * Uses Newton iteration and the @p transform_unit_to_real_cell function.
-   *
-   * In the codimension one case, this function returns the normal projection
-   * of the real point @p p on the curve or surface identified by the @p cell.
-   *
-   * @note Polynomial mappings from the reference (unit) cell coordinates to
-   * the coordinate system of a real cell are not always invertible if the
-   * point for which the inverse mapping is to be computed lies outside the
-   * cell's boundaries.  In such cases, the current function may fail to
-   * compute a point on the reference cell whose image under the mapping
-   * equals the given point @p p.  If this is the case then this function
-   * throws an exception of type Mapping::ExcTransformationFailed .  Whether
-   * the given point @p p lies outside the cell can therefore be determined by
-   * checking whether the return reference coordinates lie inside of outside
-   * the reference cell (e.g., using GeometryInfo::is_inside_unit_cell) or
-   * whether the exception mentioned above has been thrown.
    */
   virtual Point<dim>
   transform_real_to_unit_cell(
@@ -198,8 +173,8 @@ public:
             const ArrayView<Tensor<3, spacedim>> &output) const override;
 
   /**
-   * Return a pointer to a copy of the present object. The caller of this copy
-   * then assumes ownership of it.
+   * 返回一个指向当前对象副本的指针。然后，这个副本的调用者就拥有了它的所有权。
+   *
    */
 
   virtual std::unique_ptr<Mapping<dim, spacedim>>
@@ -207,64 +182,63 @@ public:
 
 
   /**
-   * @name Interface with FEValues
-   * @{
+   * @name  与FEValues的接口 @{  。
+   *
    */
 
 protected:
   /**
-   * Storage for internal data of this mapping. See Mapping::InternalDataBase
-   * for an extensive description.
+   * 该映射的内部数据的存储。见 Mapping::InternalDataBase
+   * 的广泛描述。
+   * 这包括在创建对象时（在get_data()中）计算一次的数据，以及该类希望从调用fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()之间存储的数据，直到以后可能从有限元调用转化()等函数。后一类的成员变量被标记为
+   * "可变"。
+   * 当前的类使用了与MappingQGeneric类基本相同的字段进行存储。因此，它继承自
+   * MappingQGeneric::InternalData, 而不是 Mapping::InternalDataBase.
+   * 。与 MappingQGeneric::InternalData
+   * 的主要区别是，MappingQ会根据我们所在的单元格在 $Q_1$
+   * 和 $Q_p$
+   * 映射之间切换，所以内部数据对象也需要存储一个指向与
+   * $Q_1$ 映射有关的InternalData对象的指针。
    *
-   * This includes data that is computed once when the object is created (in
-   * get_data()) as well as data the class wants to store from between the
-   * call to fill_fe_values(), fill_fe_face_values(), or
-   * fill_fe_subface_values() until possible later calls from the finite
-   * element to functions such as transform(). The latter class of member
-   * variables are marked as 'mutable'.
-   *
-   * The current class uses essentially the same fields for storage as the
-   * MappingQGeneric class. Consequently, it inherits from
-   * MappingQGeneric::InternalData, rather than from
-   * Mapping::InternalDataBase. The principal difference to
-   * MappingQGeneric::InternalData is that MappingQ switches between $Q_1$ and
-   * $Q_p$ mappings depending on the cell we are on, so the internal data
-   * object needs to also store a pointer to an InternalData object that
-   * pertains to a $Q_1$ mapping.
    */
   class InternalData : public Mapping<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     InternalData();
 
 
     /**
-     * Return an estimate (in bytes) for the memory consumption of this object.
+     * 返回这个对象的内存消耗估计值（以字节为单位）。
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * Flag that is set by the <tt>fill_fe_[[sub]face]_values</tt> function.
+     * 由<tt>fill_fe_[[sub]face]_values</tt>函数设置的标志。
+     * 如果这个标志是 @p true
+     * ，我们就在一个内部单元上，并且使用 @p
+     * mapping_q1_data。
      *
-     * If this flag is @p true we are on an interior cell and the @p
-     * mapping_q1_data is used.
      */
     mutable bool use_mapping_q1_on_current_cell;
 
     /**
-     * A pointer to a structure to store the information for the pure $Q_1$
-     * mapping that is, by default, used on all interior cells.
+     * 一个指向结构的指针，用于存储纯 $Q_1$
+     * 映射的信息，默认情况下，在所有内部单元上使用。
+     *
      */
     std::unique_ptr<typename MappingQGeneric<dim, spacedim>::InternalData>
       mapping_q1_data;
 
     /**
-     * A pointer to a structure to store the information for the full $Q_p$
-     * mapping that is, by default, used on all boundary cells.
+     * 一个指针，用于存储完整的 $Q_p$
+     * 映射的信息，默认情况下，该映射用于所有边界单元。
+     *
      */
     std::unique_ptr<typename MappingQGeneric<dim, spacedim>::InternalData>
       mapping_qp_data;
@@ -326,59 +300,49 @@ protected:
 
   /**
    * @}
+   *
    */
 
 protected:
   /**
-   * The polynomial degree of the cells to be used on all cells at the
-   * boundary of the domain, or everywhere if so specified.
+   * 将在域的边界的所有单元上使用的单元的多项式程度，如果指定的话，也可以在任何地方使用。
+   *
    */
   const unsigned int polynomial_degree;
 
   /**
-   * If this flag is set @p true then @p MappingQ is used on all cells, not
-   * only on boundary cells.
+   * 如果这个标志设置为 @p true ，那么 @p MappingQ
+   * 将用于所有单元，而不仅仅是用于边界单元。
+   *
    */
   const bool use_mapping_q_on_all_cells;
 
   /**
-   * Pointer to a Q1 mapping. This mapping is used on interior cells unless
-   * use_mapping_q_on_all_cells was set in the call to the constructor. The
-   * mapping is also used on any cell in the transform_real_to_unit_cell() to
-   * compute a cheap initial guess for the position of the point before we
-   * employ the more expensive Newton iteration using the full mapping.
+   * 指向一个Q1映射的指针。除非在调用构造函数时设置了use_mapping_q_on_all_cells，否则该映射将用于内部单元。该映射也用于transform_real_to_unit_cell()中的任何单元，以便在我们使用完整的映射进行更昂贵的牛顿迭代之前，对点的位置进行一个廉价的初始猜测。
+   * @note
+   * MappingQEulerian将这个指针重设为MappingQ1Eulerian类型的对象，以确保Q1映射也知道欧拉位移的适当移位和变换。这也意味着我们确实需要在这里存储我们自己的Q1映射，而不是简单地求助于
+   * StaticMappingQ1::mapping.  。
+   * @note
+   * 如果当前对象使用的多项式程度是1，那么qp_mapping和q1_mapping变量就会指向同一个底层对象。
    *
-   * @note MappingQEulerian resets this pointer to an object of type
-   * MappingQ1Eulerian to ensure that the Q1 mapping also knows about the
-   * proper shifts and transformations of the Eulerian displacements. This
-   * also means that we really need to store our own Q1 mapping here, rather
-   * than simply resorting to StaticMappingQ1::mapping.
-   *
-   * @note If the polynomial degree used for the current object is one, then
-   * the qp_mapping and q1_mapping variables point to the same underlying
-   * object.
    */
   std::shared_ptr<const MappingQGeneric<dim, spacedim>> q1_mapping;
 
   /**
-   * Pointer to a Q_p mapping. This mapping is used on boundary cells unless
-   * use_mapping_q_on_all_cells was set in the call to the constructor (in
-   * which case it is used for all cells).
+   * 指向一个Q_p映射的指针。除非在调用构造函数时设置了use_mapping_q_on_all_cells（在这种情况下，它用于所有单元），否则该映射将用于边界单元。
+   * @note
+   * MappingQEulerian和MappingC1将这个指针重置为他们自己实现的对象，以确保Q_p映射也知道欧拉位移的适当移动和转换（欧拉情况）和支持点的适当选择（C1情况）。
+   * @note
+   * 如果用于当前对象的多项式程度为1，那么qp_mapping和q1_mapping变量就会指向同一个底层对象。
    *
-   * @note MappingQEulerian and MappingC1 reset this pointer to an object of
-   * their own implementation to ensure that the Q_p mapping also knows about
-   * the proper shifts and transformations of the Eulerian displacements
-   * (Eulerian case) and proper choice of support points (C1 case).
-   *
-   * @note If the polynomial degree used for the current object is one, then
-   * the qp_mapping and q1_mapping variables point to the same underlying
-   * object.
    */
   std::shared_ptr<const MappingQGeneric<dim, spacedim>> qp_mapping;
 };
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

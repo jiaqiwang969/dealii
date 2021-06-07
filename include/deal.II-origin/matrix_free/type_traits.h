@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/type_traits_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2020 by the deal.II authors
@@ -351,5 +350,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

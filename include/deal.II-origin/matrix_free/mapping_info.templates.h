@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/mapping_info.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -40,7 +39,7 @@ namespace internal
 {
   namespace MatrixFreeFunctions
   {
-     /* ------------------------ MappingInfoStorage implementation ---------- */ 
+    /* ------------------------ MappingInfoStorage implementation ---------- */
 
     template <int structdim,
               int spacedim,
@@ -263,7 +262,7 @@ namespace internal
 
 
 
-     /* ------------------------ MappingInfo implementation ----------------- */ 
+    /* ------------------------ MappingInfo implementation ----------------- */
 
     template <int dim, typename Number, typename VectorizedArrayType>
     void
@@ -497,7 +496,7 @@ namespace internal
 
 
 
-     /* ------------------------- initialization of cells ------------------- */ 
+    /* ------------------------- initialization of cells ------------------- */
 
     // Copy a vectorized array of one type to another type
     template <typename VectorizedArrayType1, typename VectorizedArrayType2>
@@ -547,8 +546,7 @@ namespace internal
       };
 
       /**
-       * 用于初始化的内部临时数据。
-       *
+       * Internal temporary data used for the initialization.
        */
       template <int dim, typename Number, typename VectorizedArrayType>
       struct LocalData
@@ -655,8 +653,7 @@ namespace internal
       }
 
       /**
-       * 在初始化函数中内部调用的帮助函数。
-       *
+       * Helper function called internally during the initialize function.
        */
       template <int dim, typename VectorizedArrayType>
       void
@@ -1207,8 +1204,9 @@ namespace internal
 
 
       /**
-       * 这调用了MappingQ初始化的FEValues部分，将得到的正交点和雅各布的初始表示存储在两个数组中。
-       *
+       * This invokes the FEValues part of the initialization of MappingQ,
+       * storing the resulting quadrature points and an initial representation
+       * of Jacobians in two arrays.
        */
       template <int dim>
       void
@@ -1357,8 +1355,10 @@ namespace internal
 
 
       /**
-       * 这将评估调用到无矩阵框架的张量积插值器的单元格范围的映射信息，使用MappingQ方面的单元格几何的多项式展开。
-       *
+       * This evaluates the mapping information on a range of cells calling
+       * into the tensor product interpolators of the matrix-free framework,
+       * using a polynomial expansion of the cell geometry in terms of
+       * MappingQ.
        */
       template <int dim,
                 typename Number,
@@ -1683,7 +1683,7 @@ namespace internal
 
 
 
-     /* ------------------------- initialization of faces ------------------- */ 
+    /* ------------------------- initialization of faces ------------------- */
 
     // Namespace with implementation of extraction of values on face
     // range
@@ -2264,8 +2264,10 @@ namespace internal
 
 
       /**
-       * 这将评估一系列单元的映射信息，调用无矩阵框架的张量积插值器，使用MappingQ的单元几何的多项式扩展。
-       *
+       * This evaluates the mapping information on a range of cells calling
+       * into the tensor product interpolators of the matrix-free framework,
+       * using a polynomial expansion of the cell geometry in terms of
+       * MappingQ.
        */
       template <int dim,
                 typename Number,
@@ -3355,7 +3357,7 @@ namespace internal
 
 
 
-     /* ------------------------------------------------------------------ */ 
+    /* ------------------------------------------------------------------ */
 
     template <typename Number, typename VectorizedArrayType>
     FPArrayComparator<Number, VectorizedArrayType>::FPArrayComparator(
@@ -3465,5 +3467,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

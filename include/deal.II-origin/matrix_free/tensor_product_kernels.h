@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/tensor_product_kernels_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -32,29 +31,37 @@ DEAL_II_NAMESPACE_OPEN
 namespace internal
 {
   /**
-   * 在这个命名空间中，实现了评估张量产品的评估器例程。
-   *
+   * In this namespace, the evaluator routines that evaluate the tensor
+   * products are implemented.
    */
   enum EvaluatorVariant
   {
     /**
-     * 不要使用比有限元的张量积结构更多的东西。
-     *
+     * Do not use anything more than the tensor product structure of the
+     * finite element.
      */
     evaluate_general,
     /**
-     * 通过利用有限元的对称性进行评估：即通过利用形状函数和正交点的对称性跳过一些计算。
-     *
+     * Perform evaluation by exploiting symmetry in the finite element: i.e.,
+     * skip some computations by utilizing the symmetry in the shape functions
+     * and quadrature points.
      */
     evaluate_symmetric,
     /**
-     * 利用对称性将算子分别应用于输入矢量的偶数和奇数部分：更多信息见EvaluatorTensorProduct专业化的文档。
-     *
+     * Use symmetry to apply the operator to even and odd parts of the input
+     * vector separately: see the documentation of the EvaluatorTensorProduct
+     * specialization for more information.
      */
     evaluate_evenodd,
     /**
-     * 在Legendre和类似的多项式空间中使用对称性，其中偶数的形状函数围绕正交点的中心对称（考虑偶数多项式度数），奇数的形状函数围绕正交点的中心反对称（考虑奇数多项式度数）。这允许使用类似于偶数技术的策略，但不需要单独的系数数组。更多信息请参见EvaluatorTensorProduct专业化的文档。
-     *
+     * Use symmetry in Legendre and similar polynomial spaces where the shape
+     * functions with even number are symmetric about the center of the
+     * quadrature points (think about even polynomial degrees) and the shape
+     * functions with odd number are anti-symmetric about the center of the
+     * quadrature points (think about odd polynomial degrees). This allows to
+     * use a strategy similar to the even-odd technique but without separate
+     * coefficient arrays. See the documentation of the EvaluatorTensorProduct
+     * specialization for more information.
      */
     evaluate_symmetric_hierarchical
   };
@@ -62,24 +69,20 @@ namespace internal
 
 
   /**
-   * 决定哪个数量应该通过张量积核计算。
-   *
+   * Determine which quantity should be computed via the tensor product kernels.
    */
   enum class EvaluatorQuantity
   {
     /**
-     * 通过形状函数进行评估/积分。
-     *
+     * Evaluate/integrate by shape functions.
      */
     value,
     /**
-     * 通过形状函数的梯度进行评估/积分。
-     *
+     * Evaluate/integrate by gradients of the shape functions.
      */
     gradient,
     /**
-     * 通过形状函数的Hessians进行评估/积分。
-     *
+     * Evaluate/integrate by hessians of the shape functions.
      */
     hessian
   };
@@ -87,16 +90,24 @@ namespace internal
 
 
   /**
-   * 通用的评估器框架，使用张量积形式对一般维度的给定形状数据进行估值。根据矩阵条目中的特定布局，这对应于通常的矩阵-矩阵乘积或包括一些对称性的矩阵-矩阵乘积。
-   * @tparam  variant 用于创建模板特化的评估变量  @tparam  dim
-   * 函数的尺寸  @tparam  n_rows
-   * 变换矩阵中的行数，相当于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  ] n_columns
-   * 变换矩阵中的列数，相当于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  Number 输入和输出数组的抽象数字类型  @tparam
-   * Number2
-   * 系数数组的抽象数字类型（默认为与输入/输出数组的类型相同）；必须用Number实现operator*才能有效
+   * Generic evaluator framework that valuates the given shape data in general
+   * dimensions using the tensor product form. Depending on the particular
+   * layout in the matrix entries, this corresponds to a usual matrix-matrix
+   * product or a matrix-matrix product including some symmetries.
    *
+   * @tparam variant Variant of evaluation used for creating template
+   *                 specializations
+   * @tparam dim Dimension of the function
+   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
+   *                to the number of 1d shape functions in the usual tensor
+   *                contraction setting
+   * @tparam n_columns Number of columns in the transformation matrix, which
+   *                   corresponds to the number of 1d shape functions in the
+   *                   usual tensor contraction setting
+   * @tparam Number Abstract number type for input and output arrays
+   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
+   *                 same type as the input/output arrays); must implement
+   *                 operator* with Number to be valid
    */
   template <EvaluatorVariant variant,
             int              dim,
@@ -110,15 +121,21 @@ namespace internal
 
 
   /**
-   * 使用基函数的张量积形式的任意维度的形状函数的内部评估器。
-   * @tparam  dim 应用该类的空间维度  @tparam  n_rows
-   * 变换矩阵中的行数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  n_columns
-   * 变换矩阵中的列数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  ] Number 用于输入和输出数组的抽象数字类型
-   * @tparam  Number2
-   * 用于系数数组的抽象数字类型（默认为与输入/输出数组相同的类型）；必须用Number实现操作符*，并产生Number作为输出，才能成为有效类型。
+   * Internal evaluator for shape function in arbitrary dimension using the
+   * tensor product form of the basis functions.
    *
+   * @tparam dim Space dimension in which this class is applied
+   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
+   *                to the number of 1d shape functions in the usual tensor
+   *                contraction setting
+   * @tparam n_columns Number of columns in the transformation matrix, which
+   *                   corresponds to the number of 1d shape functions in the
+   *                   usual tensor contraction setting
+   * @tparam Number Abstract number type for input and output arrays
+   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
+   *                 same type as the input/output arrays); must implement
+   *                 operator* with Number and produce Number as an output to
+   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -138,8 +155,8 @@ namespace internal
       Utilities::pow(n_columns, dim);
 
     /**
-     * 空的构造函数。什么都不做。在使用'value'和相关方法时要小心，因为它们需要用其他指针来填充。
-     *
+     * Empty constructor. Does nothing. Be careful when using 'values' and
+     * related methods because they need to be filled with the other pointer
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -148,8 +165,7 @@ namespace internal
     {}
 
     /**
-     * 构造函数，从ShapeInfo中获取数据
-     *
+     * Constructor, taking the data from ShapeInfo
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -224,24 +240,28 @@ namespace internal
     }
 
     /**
-     * 这个函数沿着输入数组中张量数据的给定 @p direction
-     * 应用张量积核，对应于一维条纹的乘法。这个函数允许
-     * @p in 和 @p out 数组在n_rows ==
-     * n_columns的情况下别名，也就是说，在 @p in 和 @p out
-     * 指向相同地址的地方执行收缩是安全的。对于n_rows !=
-     * n_columns的情况，一般来说输出是不正确的。
-     * @tparam  被评估的方向  @tparam  contract_over_rows
-     * 如果为真，张量收缩对给定的 @p shape_data
-     * 数组中的行求和，否则对列求和  @tparam  ] add
-     * 如果为真，结果将被添加到输出向量中，否则计算值将覆盖输出中的内容
-     * @tparam  one_line
-     * 如果为真，内核只沿着二维张量中的单一一维条纹应用，而不是像
-     * @p false 情况下的全部n_rows^dim点。          @param  shape_data
-     * 具有 @p n_rows 行和 @p n_columns
-     * 列的变换矩阵，以行为主的格式存储  @param  in
-     * 指向输入数据向量的起点  @param  out
-     * 指向输出数据向量的起点
+     * This function applies the tensor product kernel, corresponding to a
+     * multiplication of 1D stripes, along the given @p direction of the tensor
+     * data in the input array. This function allows the @p in and @p out
+     * arrays to alias for the case n_rows == n_columns, i.e., it is safe to
+     * perform the contraction in place where @p in and @p out point to the
+     * same address. For the case n_rows != n_columns, the output is in general
+     * not correct.
      *
+     * @tparam direction Direction that is evaluated
+     * @tparam contract_over_rows If true, the tensor contraction sums
+     *                            over the rows in the given @p shape_data
+     *                            array, otherwise it sums over the columns
+     * @tparam add If true, the result is added to the output vector, else
+     *             the computed values overwrite the content in the output
+     * @tparam one_line If true, the kernel is only applied along a single 1D
+     *                  stripe within a dim-dimensional tensor, not the full
+     *                  n_rows^dim points as in the @p false case.
+     *
+     * @param shape_data Transformation matrix with @p n_rows rows and
+     *                   @p n_columns columns, stored in row-major format
+     * @param in Pointer to the start of the input data vector
+     * @param out Pointer to the start of the output data vector
      */
     template <int  direction,
               bool contract_over_rows,
@@ -253,21 +273,38 @@ namespace internal
           Number *                        out);
 
     /**
-     * 这个函数应用张量积操作，从单元格值中产生面值。与apply方法相反，这个方法假设与面的正交方向每个方向有n_rows自由度，而不是那些比当前应用的方向低的n_columns。换句话说，apply_face()必须在调用面内的任何插值之前被调用。
-     * @tparam  face_direction 法向量的方向（0=x，1=y，等等）
-     * @tparam  contract_onto_face
-     * 如果为真，输入向量的大小为n_rows^dim，插值将被执行到n_rows^(dim-1)点。这是
-     * FEFaceEvaluation::evaluate()
-     * 调用中的一个典型场景。如果是假的，来自n_rows^(dim-1)点的数据被扩展到高维数据阵列的n_rows^dim点。在contract_onto_face==false的情况下，导数被加在一起
-     * @tparam  add
-     * 如果是true，结果被加到输出向量中，否则计算出的值会覆盖输出中的内容
-     * @tparam  max_derivative
-     * 设置应该被计算的导数的数量。0表示只有数值，1表示数值和第一导数，2表示第二导数。注意，所有的导数都要访问传递给类的构造函数的
-     * @p shape_values 中的数据  @tparam  lex_faces
-     * 设置面的评估点应该如何排序：按词典排序或按右手系统号排序（在三维中对方位1进行特殊处理）。默认情况下，右键系统号被启用，这只适用于3以内的尺寸。
-     * @param  输入数据向量的地址  @param
-     * 输出数据向量的地址
+     * This function applies the tensor product operation to produce face values
+     * from cell values. As opposed to the apply method, this method assumes
+     * that the directions orthogonal to the face have n_rows degrees of
+     * freedom per direction and not n_columns for those directions lower than
+     * the one currently applied. In other words, apply_face() must be called
+     * before calling any interpolation within the face.
      *
+     * @tparam face_direction Direction of the normal vector (0=x, 1=y, etc)
+     * @tparam contract_onto_face If true, the input vector is of size n_rows^dim
+     *                            and interpolation into n_rows^(dim-1) points
+     *                            is performed. This is a typical scenario in
+     *                            FEFaceEvaluation::evaluate() calls. If false,
+     *                            data from n_rows^(dim-1) points is expanded
+     *                            into the n_rows^dim points of the higher-
+     *                            dimensional data array. Derivatives in the
+     *                            case contract_onto_face==false are summed
+     *                            together
+     * @tparam add If true, the result is added to the output vector, else
+     *             the computed values overwrite the content in the output
+     * @tparam max_derivative Sets the number of derivatives that should be
+     *             computed. 0 means only values, 1 means values and first
+     *             derivatives, 2 second derivates. Note that all the
+     *             derivatives access the data in @p shape_values passed to
+     *             the constructor of the class
+     * @tparam lex_faces Sets how the evaluation points on the faces should be
+     *                   sorted: lexicographically or right-hand-system number
+     *                   (special treatment of orientation 1 in 3D). Per default
+     *                   right-hand-system number is enabled, which is only
+     *                   working for dimensions up to 3.
+     *
+     * @param in address of the input data vector
+     * @param out address of the output data vector
      */
     template <int  face_direction,
               bool contract_onto_face,
@@ -526,11 +563,17 @@ namespace internal
 
 
   /**
-   * 形状函数的内部评估器，使用基函数的张量积形式。与其他模板类相同，但没有利用模板参数和变量循环边界来代替。
-   * @tparam  dim 应用该类的空间维度  @tparam  Number
-   * 用于输入和输出数组的抽象数字类型  @tparam  Number2
-   * 用于系数数组的抽象数字类型（默认为与输入/输出数组的类型相同）；必须用Number实现操作符*，并产生Number作为输出，才能成为有效类型
+   * Internal evaluator for shape function using the tensor product form
+   * of the basis functions. The same as the other templated class but
+   * without making use of template arguments and variable loop bounds
+   * instead.
    *
+   * @tparam dim Space dimension in which this class is applied
+   * @tparam Number Abstract number type for input and output arrays
+   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
+   *                 same type as the input/output arrays); must implement
+   *                 operator* with Number and produce Number as an output to
+   *                 be a valid type
    */
   template <int dim, typename Number, typename Number2>
   struct EvaluatorTensorProduct<evaluate_general, dim, 0, 0, Number, Number2>
@@ -541,8 +584,8 @@ namespace internal
       numbers::invalid_unsigned_int;
 
     /**
-     * 空的构造函数。什么都不做。在使用'values'和相关方法时要小心，因为它们需要用其他构造函数来填充。
-     *
+     * Empty constructor. Does nothing. Be careful when using 'values' and
+     * related methods because they need to be filled with the other constructor
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -553,8 +596,7 @@ namespace internal
     {}
 
     /**
-     * 构造函数，从ShapeInfo中获取数据
-     *
+     * Constructor, taking the data from ShapeInfo
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -584,8 +626,7 @@ namespace internal
     }
 
     /**
-     * 构造函数，从ShapeInfo中获取数据
-     *
+     * Constructor, taking the data from ShapeInfo
      */
     EvaluatorTensorProduct(const Number2 *    shape_values,
                            const Number2 *    shape_gradients,
@@ -948,17 +989,24 @@ namespace internal
 
 
   /**
-   * 使用基函数的张量积形式的1d-3d形状函数的内部评估器。该类专门针对
-   * "对称
-   * "有限元的基于张量积的元素的一般应用，即当形状函数关于0.5的对称性和正交点也是如此。
-   * @tparam  dim 应用该类的空间维度  @tparam  n_rows
-   * 变换矩阵中的行数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  n_columns
-   * 变换矩阵中的列数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  ] Number 用于输入和输出数组的抽象数字类型
-   * @tparam  Number2
-   * 用于系数数组的抽象数字类型（默认为与输入/输出数组相同的类型）；必须用Number实现操作符*，并产生Number作为输出，才能成为有效类型。
+   * Internal evaluator for 1d-3d shape function using the tensor product form
+   * of the basis functions. This class specializes the general application of
+   * tensor-product based elements for "symmetric" finite elements, i.e., when
+   * the shape functions are symmetric about 0.5 and the quadrature points
+   * are, too.
    *
+   * @tparam dim Space dimension in which this class is applied
+   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
+   *                to the number of 1d shape functions in the usual tensor
+   *                contraction setting
+   * @tparam n_columns Number of columns in the transformation matrix, which
+   *                   corresponds to the number of 1d shape functions in the
+   *                   usual tensor contraction setting
+   * @tparam Number Abstract number type for input and output arrays
+   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
+   *                 same type as the input/output arrays); must implement
+   *                 operator* with Number and produce Number as an output to
+   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -978,8 +1026,7 @@ namespace internal
       Utilities::pow(n_columns, dim);
 
     /**
-     * 构造函数，从ShapeInfo获取数据。
-     *
+     * Constructor, taking the data from ShapeInfo
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -1511,19 +1558,35 @@ namespace internal
 
 
   /**
-   * 1d-3d形状函数的内部评估器，使用基函数的张量积形式。
-   * 这个类对对称情况下的值、梯度和Hessians也用上述函数处理，实现了一种不同的方法。有可能将每个维度的成本从N^2降低到N^2/2，其中N是一维度的数量（形状矩阵中只有N^2/2个不同的条目，所以这是很合理的）。该方法是基于对输入向量的偶数和奇数部分分别应用算子的想法，因为在正交点上评估的形状函数是对称的。例如，在David
-   * A.
-   * Kopriva的《实施偏微分方程的频谱方法》一书中介绍了这种方法，Springer,
-   * 2009，第3.5.3节（偶数-奇数分解）。尽管书中的实验说该方法在N<20的情况下效率不高，但在循环边界为编译时常量（模板）的情况下，它的效率更高。
-   * @tparam  dim 应用该类的空间维度  @tparam  n_rows
-   * 变换矩阵中的行数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  n_columns
-   * 变换矩阵中的列数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  ] Number 用于输入和输出数组的抽象数字类型
-   * @tparam  Number2
-   * 用于系数数组的抽象数字类型（默认为与输入/输出数组相同的类型）；必须用Number实现操作符*，并产生Number作为输出，才能成为有效类型。
+   * Internal evaluator for 1d-3d shape function using the tensor product form
+   * of the basis functions.
    *
+   * This class implements a different approach to the symmetric case for
+   * values, gradients, and Hessians also treated with the above functions: It
+   * is possible to reduce the cost per dimension from N^2 to N^2/2, where N
+   * is the number of 1D dofs (there are only N^2/2 different entries in the
+   * shape matrix, so this is plausible). The approach is based on the idea of
+   * applying the operator on the even and odd part of the input vectors
+   * separately, given that the shape functions evaluated on quadrature points
+   * are symmetric. This method is presented e.g. in the book "Implementing
+   * Spectral Methods for Partial Differential Equations" by David A. Kopriva,
+   * Springer, 2009, section 3.5.3 (Even-Odd-Decomposition). Even though the
+   * experiments in the book say that the method is not efficient for N<20, it
+   * is more efficient in the context where the loop bounds are compile-time
+   * constants (templates).
+   *
+   * @tparam dim Space dimension in which this class is applied
+   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
+   *                to the number of 1d shape functions in the usual tensor
+   *                contraction setting
+   * @tparam n_columns Number of columns in the transformation matrix, which
+   *                   corresponds to the number of 1d shape functions in the
+   *                   usual tensor contraction setting
+   * @tparam Number Abstract number type for input and output arrays
+   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
+   *                 same type as the input/output arrays); must implement
+   *                 operator* with Number and produce Number as an output to
+   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -1543,8 +1606,9 @@ namespace internal
       Utilities::pow(n_columns, dim);
 
     /**
-     * 空的构造函数。什么都不做。在使用'values'和相关的方法时要小心，因为它们需要用另一个构造函数来填充，至少传入一个数组的值。
-     *
+     * Empty constructor. Does nothing. Be careful when using 'values' and
+     * related methods because they need to be filled with the other
+     * constructor passing in at least an array for the values.
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -1553,8 +1617,8 @@ namespace internal
     {}
 
     /**
-     * 构造函数，从ShapeInfo中获取数据（使用存储在那里的偶数变体）。
-     *
+     * Constructor, taking the data from ShapeInfo (using the even-odd
+     * variants stored there)
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values)
       : shape_values(shape_values.begin())
@@ -1565,8 +1629,8 @@ namespace internal
     }
 
     /**
-     * 构造函数，从ShapeInfo中获取数据（使用存储在那里的偶数变体）。
-     *
+     * Constructor, taking the data from ShapeInfo (using the even-odd
+     * variants stored there)
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -1642,28 +1706,32 @@ namespace internal
     }
 
     /**
-     * 这个函数沿着输入数组中张量数据的给定 @p direction
-     * 应用张量积核，对应于一维条纹的乘法。这个函数允许
-     * @p in 和 @p out 数组在n_rows ==
-     * n_columns的情况下别名，也就是说，在 @p in 和 @p out
-     * 指向相同地址的地方执行收缩是安全的。对于n_rows !=
-     * n_columns的情况，只有当 @p one_line
-     * 被设置为真时，输出才是正确的。          @tparam  方向
-     * 被评估的方向  @tparam  contract_over_rows
-     * 如果为真，张量收缩对给定的 @p shape_data
-     * 数组中的行求和，否则对列求和  @tparam  add
-     * 如果为真，结果被添加到输出向量中，否则计算值将覆盖输出中的内容
-     * @tparam  ] type
-     * 决定是否使用形状值（type=0）、形状梯度（type=1）或二阶导数（type=2，类似于type
-     * 0，但没有两个额外的0条目）中出现的对称性  @tparam
-     * one_line 如果为真，内核只沿着dim-dimensional
-     * tensor中的单个1D条纹应用，而不是像 @p false
-     * 情况中的全部n_rows^dim点。          @param  shape_data 具有
-     * @p n_rows 行和 @p n_columns
-     * 列的变换矩阵，以行为主的格式存储  @param  in
-     * 指向输入数据向量的起点  @param  out
-     * 指向输出数据向量的起点
+     * This function applies the tensor product kernel, corresponding to a
+     * multiplication of 1D stripes, along the given @p direction of the tensor
+     * data in the input array. This function allows the @p in and @p out
+     * arrays to alias for the case n_rows == n_columns, i.e., it is safe to
+     * perform the contraction in place where @p in and @p out point to the
+     * same address. For the case n_rows != n_columns, the output is only
+     * correct if @p one_line is set to true.
      *
+     * @tparam direction Direction that is evaluated
+     * @tparam contract_over_rows If true, the tensor contraction sums
+     *                            over the rows in the given @p shape_data
+     *                            array, otherwise it sums over the columns
+     * @tparam add If true, the result is added to the output vector, else
+     *             the computed values overwrite the content in the output
+     * @tparam type Determines whether to use the symmetries appearing in
+     *              shape values (type=0), shape gradients (type=1) or
+     *              second derivatives (type=2, similar to type 0 but
+     *              without two additional zero entries)
+     * @tparam one_line If true, the kernel is only applied along a single 1D
+     *                  stripe within a dim-dimensional tensor, not the full
+     *                  n_rows^dim points as in the @p false case.
+     *
+     * @param shape_data Transformation matrix with @p n_rows rows and
+     *                   @p n_columns columns, stored in row-major format
+     * @param in Pointer to the start of the input data vector
+     * @param out Pointer to the start of the output data vector
      */
     template <int  direction,
               bool contract_over_rows,
@@ -1882,17 +1950,32 @@ namespace internal
 
 
   /**
-   * 使用基函数的张量积形式的1d-3d形状函数的内部评估器。
-   * 这个类实现了一种类似于偶数分解的方法，但具有不同类型的对称性。在这种情况下，我们假设单个形状函数已经显示了在正交点上的对称性，而不是在偶数情况下考虑的完整基础。特别是，我们假设形状函数的排序与Legendre基一样，偶数槽（数值阵列的行）中的形状函数是对称的，奇数槽是点对称的。与偶数分解一样，操作的数量是N^2/2，而不是N^2
-   * FMAs（融合乘加），其中N是一维度数。区别在于输入和输出量的对称方式。
-   * @tparam  dim 应用该类的空间维度  @tparam  n_rows
-   * 变换矩阵中的行数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  n_columns
-   * 变换矩阵中的列数，对应于通常张量收缩设置中的1d形状函数的数量
-   * @tparam  ] Number 用于输入和输出数组的抽象数字类型
-   * @tparam  Number2
-   * 用于系数数组的抽象数字类型（默认为与输入/输出数组相同的类型）；必须用Number实现操作符*，并产生Number作为输出，才能成为有效类型。
+   * Internal evaluator for 1d-3d shape function using the tensor product form
+   * of the basis functions.
    *
+   * This class implements an approach similar to the even-odd decomposition
+   * but with a different type of symmetry. In this case, we assume that a
+   * single shape function already shows the symmetry over the quadrature
+   * points, rather than the complete basis that is considered in the even-odd
+   * case. In particular, we assume that the shape functions are ordered as in
+   * the Legendre basis, with symmetric shape functions in the even slots
+   * (rows of the values array) and point-symmetric in the odd slots. Like the
+   * even-odd decomposition, the number of operations are N^2/2 rather than
+   * N^2 FMAs (fused multiply-add), where N is the number of 1D dofs. The
+   * difference is in the way the input and output quantities are symmetrized.
+   *
+   * @tparam dim Space dimension in which this class is applied
+   * @tparam n_rows Number of rows in the transformation matrix, which corresponds
+   *                to the number of 1d shape functions in the usual tensor
+   *                contraction setting
+   * @tparam n_columns Number of columns in the transformation matrix, which
+   *                   corresponds to the number of 1d shape functions in the
+   *                   usual tensor contraction setting
+   * @tparam Number Abstract number type for input and output arrays
+   * @tparam Number2 Abstract number type for coefficient arrays (defaults to
+   *                 same type as the input/output arrays); must implement
+   *                 operator* with Number and produce Number as an output to
+   *                 be a valid type
    */
   template <int dim,
             int n_rows,
@@ -1912,8 +1995,9 @@ namespace internal
       Utilities::pow(n_columns, dim);
 
     /**
-     * 空的构造函数。什么都不做。在使用'values'和相关的方法时要小心，因为它们需要用另一个构造函数来填充，至少要传入一个数组的值。
-     *
+     * Empty constructor. Does nothing. Be careful when using 'values' and
+     * related methods because they need to be filled with the other
+     * constructor passing in at least an array for the values.
      */
     EvaluatorTensorProduct()
       : shape_values(nullptr)
@@ -1922,8 +2006,8 @@ namespace internal
     {}
 
     /**
-     * 构造函数，从ShapeInfo中获取数据（使用存储在那里的偶数变体）。
-     *
+     * Constructor, taking the data from ShapeInfo (using the even-odd
+     * variants stored there)
      */
     EvaluatorTensorProduct(const AlignedVector<Number> &shape_values)
       : shape_values(shape_values.begin())
@@ -1932,8 +2016,8 @@ namespace internal
     {}
 
     /**
-     * 构造函数，从ShapeInfo中获取数据（使用存储在那里的偶数变体）。
-     *
+     * Constructor, taking the data from ShapeInfo (using the even-odd
+     * variants stored there)
      */
     EvaluatorTensorProduct(const AlignedVector<Number2> &shape_values,
                            const AlignedVector<Number2> &shape_gradients,
@@ -2001,27 +2085,31 @@ namespace internal
     }
 
     /**
-     * 这个函数沿着输入数组中张量数据的给定 @p direction
-     * 应用张量积核，对应于一维条纹的乘法。这个函数允许
-     * @p in 和 @p out 数组在n_rows ==
-     * n_columns的情况下别名，也就是说，在 @p in 和 @p out
-     * 指向相同地址的地方执行收缩是安全的。对于n_rows !=
-     * n_columns的情况，只有当 @p one_line
-     * 被设置为真时，输出才是正确的。          @tparam  方向
-     * 被评估的方向  @tparam  contract_over_rows
-     * 如果为真，张量收缩对给定的 @p shape_data
-     * 数组中的行求和，否则对列求和  @tparam  add
-     * 如果为真，结果被添加到输出向量中，否则计算值覆盖输出的内容
-     * @tparam  ] type 决定评估是在 @p shape_data
-     * 的偶数行（type=0）还是奇数行（type=1）中对称，以及在奇数行（type=0）或偶数行（type=1）中偏斜对称
-     * @tparam  one_line
-     * 如果为真，内核只沿着dim-dimensional张量中的单个1D条纹应用，而不是像
-     * @p false 情况中的全部n_rows^dim点。          @param  shape_data
-     * 具有 @p n_rows 行和 @p n_columns
-     * 列的变换矩阵，以行为主的格式存储  @param  in
-     * 指向输入数据向量的起点  @param  out
-     * 指向输出数据向量的起点
+     * This function applies the tensor product kernel, corresponding to a
+     * multiplication of 1D stripes, along the given @p direction of the tensor
+     * data in the input array. This function allows the @p in and @p out
+     * arrays to alias for the case n_rows == n_columns, i.e., it is safe to
+     * perform the contraction in place where @p in and @p out point to the
+     * same address. For the case n_rows != n_columns, the output is only
+     * correct if @p one_line is set to true.
      *
+     * @tparam direction Direction that is evaluated
+     * @tparam contract_over_rows If true, the tensor contraction sums
+     *                            over the rows in the given @p shape_data
+     *                            array, otherwise it sums over the columns
+     * @tparam add If true, the result is added to the output vector, else
+     *             the computed values overwrite the content in the output
+     * @tparam type Determines whether the evaluation is symmetric in even
+     *              rows (type=0) or odd rows (type=1) of @p shape_data and
+     *              skew-symmetric in odd rows (type=0) or even rows (type=1)
+     * @tparam one_line If true, the kernel is only applied along a single 1D
+     *                  stripe within a dim-dimensional tensor, not the full
+     *                  n_rows^dim points as in the @p false case.
+     *
+     * @param shape_data Transformation matrix with @p n_rows rows and
+     *                   @p n_columns columns, stored in row-major format
+     * @param in Pointer to the start of the input data vector
+     * @param out Pointer to the start of the output data vector
      */
     template <int  direction,
               bool contract_over_rows,
@@ -2241,10 +2329,10 @@ namespace internal
 
 
   /**
-   * 在 evaluate_tensor_product_value_and_gradient 中避免使用 Tensor<1,
-   * dim, Point<dim2> 的结构，因为点不能在 Tensor
-   * 中使用。相反，这个结构的特殊化将点上传到一个Tensor<1,dim>。
-   *
+   * Struct to avoid using Tensor<1, dim, Point<dim2>> in
+   * evaluate_tensor_product_value_and_gradient because a Point cannot be used
+   * within Tensor. Instead, a specialization of this struct upcasts the point
+   * to a Tensor<1,dim>.
    */
   template <typename Number, typename Number2>
   struct ProductTypeNoPoint
@@ -2261,25 +2349,38 @@ namespace internal
 
 
   /**
-   * 计算张量积形状函数  $\varphi_i$
-   * 的多项式插值，给定系数向量  $u_i$  的形式
-   * $u_h(\mathbf{x}) = \sum_{i=1}^{k^d} \varphi_i(\mathbf{x}) u_i$
-   * 。形状函数 $\varphi_i(\mathbf{x}) =
-   * \prod_{d=1}^{\text{dim}}\varphi_{i_d}^\text{1D}(x_d)$
-   * 代表张量积。该函数返回一对，内插值为第一分量，参考坐标中的梯度为第二分量。注意，对于复合类型（例如，`values`字段开始一个Point<spacedim>参数），梯度的分量被排序为Tensor<1,
-   * dim, Tensor<1,
-   * spacedim>，导数为第一个索引；这是函数中通用参数的结果。
-   * @param  poly 基础的一维多项式基  $\{\varphi^{1D}_{i_1}\}$
-   * 以多项式的矢量形式给出。      @param  values
-   * 多项式插值中类型为`Number`的扩展系数  $u_i$
-   * 。这些系数可以是简单的 "双
-   * "变量，但也可以是Point<spacedim>，如果它们定义了类型为
-   * "Number2 "的算术运算。      @param  p
-   * 在参考坐标中应该评估插值的位置。      @param  d_linear
-   * 指定是否应该进行d-线性（一维的线性，二维的双线性，三维的三线性）插值，这允许解开循环并大大加快评估。
-   * @param  renumber
-   * 可选参数，用于指定系数向量中的重新编号，假设`values[renumber[i]]返回系数的lexicographic（张量积）条目。如果该向量为条目，则假设数值按词典排序。
+   * Compute the polynomial interpolation of a tensor product shape function
+   * $\varphi_i$ given a vector of coefficients $u_i$ in the form
+   * $u_h(\mathbf{x}) = \sum_{i=1}^{k^d} \varphi_i(\mathbf{x}) u_i$. The shape
+   * functions $\varphi_i(\mathbf{x}) =
+   * \prod_{d=1}^{\text{dim}}\varphi_{i_d}^\text{1D}(x_d)$ represent a tensor
+   * product. The function returns a pair with the value of the interpolation
+   * as the first component and the gradient in reference coordinates as the
+   * second component. Note that for compound types (e.g. the `values` field
+   * begin a Point<spacedim> argument), the components of the gradient are
+   * sorted as Tensor<1, dim, Tensor<1, spacedim>> with the derivatives
+   * as the first index; this is a consequence of the generic arguments in the
+   * function.
    *
+   * @param poly The underlying one-dimensional polynomial basis
+   * $\{\varphi^{1D}_{i_1}\}$ given as a vector of polynomials.
+   *
+   * @param values The expansion coefficients $u_i$ of type `Number` in
+   * the polynomial interpolation. The coefficients can be simply `double`
+   * variables but e.g. also Point<spacedim> in case they define arithmetic
+   * operations with the type `Number2`.
+   *
+   * @param p The position in reference coordinates where the interpolation
+   * should be evaluated.
+   *
+   * @param d_linear Flag to specify whether a d-linear (linear in 1D,
+   * bi-linear in 2D, tri-linear in 3D) interpolation should be made, which
+   * allows to unroll loops and considerably speed up evaluation.
+   *
+   * @param renumber Optional parameter to specify a renumbering in the
+   * coefficient vector, assuming that `values[renumber[i]]` returns
+   * the lexicographic (tensor product) entry of the coefficients. If the
+   * vector is entry, the values are assumed to be sorted lexicographically.
    */
   template <int dim, typename Number, typename Number2>
   inline std::pair<
@@ -2423,8 +2524,7 @@ namespace internal
 
 
   /**
-   * 与evaluate_tensor_product_value_and_gradient()相同，但用于积分。
-   *
+   * Same as evaluate_tensor_product_value_and_gradient() but for integration.
    */
   template <int dim, typename Number, typename Number2>
   inline void
@@ -2492,5 +2592,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

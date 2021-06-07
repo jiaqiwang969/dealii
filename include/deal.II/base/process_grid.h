@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/process_grid_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -37,26 +38,66 @@ namespace Utilities
   namespace MPI
   {
     /**
-     * A class taking care of setting up a two-dimensional processor grid.
-     * For example an MPI communicator with 5 processes can be arranged into a
-     * 2x2 grid with the 5-th processor being inactive:
+     * 一个负责设置二维处理器网格的类。
+     * 例如，一个有5个进程的MPI通信器可以被安排成一个2x2的网格，其中第5个处理器是不活动的。
      * @code
-     *      |   0     |   1
-     * -----| ------- |-----
+     *    |   0     |   1
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * -----|
+     *
+     * ------- |-----
      * 0    |   P0    |  P1
-     *      |         |
-     * -----| ------- |-----
+     *    |         |
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * -----|
+     *
+     * ------- |-----
      * 1    |   P2    |  P3
      * @endcode
+     * 这个类的共享指针被提供给ScaLAPACKMatrix矩阵，以执行块循环分布。
+     * 请注意，这个类允许设置一个进程网格，它的MPI核数比通信器中的总核数少。
+     * 目前，唯一可以使用ProcessGrid对象的地方是与ScaLAPACKMatrix对象相连接。
      *
-     * A shared pointer to this class is provided to ScaLAPACKMatrix matrices to
-     * perform block-cyclic distribution.
-     *
-     * Note that this class allows to setup a process grid which has fewer
-     * MPI cores than the total number of cores in the communicator.
-     *
-     * Currently the only place where one would use a ProcessGrid object is
-     * in connection with a ScaLAPACKMatrix object.
      */
     class ProcessGrid
     {
@@ -66,31 +107,28 @@ namespace Utilities
       friend class dealii::ScaLAPACKMatrix;
 
       /**
-       * Constructor for a process grid with @p n_rows and @p n_columns for a given @p mpi_communicator.
-       * The product of rows and columns should be less or equal to the total
-       * number of cores
-       * in the @p mpi_communicator.
+       * 给定 @p mpi_communicator. 的具有 @p n_rows 和 @p n_columns
+       * 的进程网格的构造函数，行和列的乘积应该小于或等于
+       * @p mpi_communicator. 中的总核数。
+       *
        */
       ProcessGrid(const MPI_Comm &   mpi_communicator,
                   const unsigned int n_rows,
                   const unsigned int n_columns);
 
       /**
-       * Constructor for a process grid for a given @p mpi_communicator.
-       * In this case the process grid is heuristically chosen based on the
-       * dimensions and block-cyclic distribution of a target matrix provided
-       * in @p n_rows_matrix, @p n_columns_matrix, @p row_block_size and @p column_block_size.
+       * 在这种情况下，根据 @p n_rows_matrix,   @p n_columns_matrix,
+       * @p row_block_size 和 @p column_block_size.
+       * 中提供的目标矩阵的尺寸和块循环分布，启发式地选择进程网格，可以利用的最大MPI核心数是
+       * $\min\{\frac{M}{MB}\frac{N}{NB}, Np\}$  ，其中 $M,N$
+       * ]是矩阵尺寸， $MB,NB$ 是块大小， $Np$ 是 @p
+       * mpi_communicator. 中的进程数。
+       * 这个函数然后创建一个二维处理器网格，假设进程行
+       * $p$ 和列 $q$ 的数量比例等于矩阵尺寸 $M$ 和 $N$
+       * 的比例。            例如，一个方形矩阵 $640x640$
+       * 的块大小为 $32$ ， @p mpi_communicator
+       * 有11个核心，将导致 $3x3$ 的过程网格。
        *
-       * The maximum number of MPI cores one can utilize is
-       * $\min\{\frac{M}{MB}\frac{N}{NB}, Np\}$, where $M,N$ are the matrix
-       * dimension and $MB,NB$ are the block sizes and $Np$ is the number of
-       * processes in the @p mpi_communicator. This function then creates a 2D processor grid
-       * assuming the ratio between number of process row $p$ and columns $q$ to
-       * be equal the ratio between matrix dimensions $M$ and $N$.
-       *
-       * For example, a square matrix $640x640$ with the block size $32$
-       * and the @p mpi_communicator with 11 cores will result in the $3x3$
-       * process grid.
        */
       ProcessGrid(const MPI_Comm &   mpi_communicator,
                   const unsigned int n_rows_matrix,
@@ -99,119 +137,130 @@ namespace Utilities
                   const unsigned int column_block_size);
 
       /**
-       * Destructor.
+       * 销毁器。
+       *
        */
       ~ProcessGrid();
 
       /**
-       * Return the number of rows in the processes grid.
+       * 返回进程网格中的行数。
+       *
        */
       unsigned int
       get_process_grid_rows() const;
 
       /**
-       * Return the number of columns in the processes grid.
+       * 返回进程网格中的列数。
+       *
        */
       unsigned int
       get_process_grid_columns() const;
 
       /**
-       * Return row of this process in the process grid.
+       * 返回该进程在进程网格中的行数。
+       * 对于不活动的进程，它是负数。
        *
-       * It's negative for inactive processes.
        */
       int
       get_this_process_row() const;
 
       /**
-       * Return column of this process in the process grid.
+       * 返回该进程在进程网格中的列。
+       * 对于不活动的进程是负数。
        *
-       * It's negative for inactive processes.
        */
       int
       get_this_process_column() const;
 
       /**
-       * Send @p count values stored consequently starting at @p value from
-       * the process with rank zero to processes which
-       * are not in the process grid.
+       * 将 @p count 的值从等级为0的进程的 @p value
+       * 处开始存储，然后发送给不在进程网格内的进程。
+       *
        */
       template <typename NumberType>
       void
       send_to_inactive(NumberType *value, const int count = 1) const;
 
       /**
-       * Return <code>true</code> if the process is active within the grid.
+       * 如果进程在网格内活动，则返回 <code>true</code> 。
+       *
        */
       bool
       is_process_active() const;
 
     private:
       /**
-       * A private constructor which takes grid dimensions as an
-       * <code>std::pair</code>.
+       * 一个私有的构造函数，它将网格尺寸作为一个
+       * <code>std::pair</code> 。
+       *
        */
       ProcessGrid(const MPI_Comm &                             mpi_communicator,
                   const std::pair<unsigned int, unsigned int> &grid_dimensions);
 
       /**
-       * An MPI communicator with all processes (active and inactive).
+       * 一个与所有进程（活动和非活动）的MPI通信器。
+       *
        */
       MPI_Comm mpi_communicator;
 
       /**
-       * An MPI communicator with inactive processes and the process with rank
-       * zero.
+       * 一个带有不活动进程和等级为零的进程的MPI通信器。
+       *
        */
       MPI_Comm mpi_communicator_inactive_with_root;
 
       /**
-       * BLACS context. This is equivalent to MPI communicators and is
-       * used by ScaLAPACK.
+       * BLACS上下文。这等同于MPI通信器，被ScaLAPACK使用。
+       *
        */
       int blacs_context;
 
       /**
-       * Rank of this MPI process.
+       * 这个MPI进程的等级。
+       *
        */
       const unsigned int this_mpi_process;
 
       /**
-       * Total number of MPI processes.
+       * MPI进程的总数量。
+       *
        */
       const unsigned int n_mpi_processes;
 
       /**
-       * Number of rows in the processes grid.
+       * 进程网格中的行数。
+       *
        */
       int n_process_rows;
 
       /**
-       * Number of columns in the processes grid.
+       * 进程网格中的列数。
+       *
        */
       int n_process_columns;
 
       /**
-       * Row of this process in the grid.
+       * 这个进程在网格中的行。
+       * 对于不活动的进程，它是负数。
        *
-       * It's negative for in-active processes.
        */
       int this_process_row;
 
       /**
-       * Column of this process in the grid.
+       * 这个进程在网格中的列。
+       * 对于不活动的过程，它是负数。
        *
-       * It's negative for in-active processes.
        */
       int this_process_column;
 
       /**
-       * A flag which is true for processes within the 2D process grid.
+       * 一个标志，对于2D进程网格中的进程来说是真的。
+       *
        */
       bool mpi_process_is_active;
     };
 
-    /*--------------------- Inline functions --------------------------------*/
+     /*--------------------- Inline functions --------------------------------*/ 
 
 #  ifndef DOXYGEN
 
@@ -266,3 +315,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_SCALAPACK
 
 #endif
+
+

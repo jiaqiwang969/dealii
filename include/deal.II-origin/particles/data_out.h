@@ -1,4 +1,3 @@
-//include/deal.II-translator/particles/data_out_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -33,37 +32,43 @@ namespace Particles
   class ParticleHandler;
 
   /**
-   * 该类为ParticleHandler对象所存储的粒子生成图形输出。从一个粒子处理程序中，它生成的补丁可以用来编写传统的输出文件。这个类目前只支持写出粒子的位置和它们的ID，不允许写出粒子的附加属性。
-   * @ingroup Particle
+   * This class generates graphical output for the particles stored by a
+   * ParticleHandler object. From a particle handler, it generates patches which
+   * can then be used to write traditional output files. This class currently
+   * only supports witing the particle position and their ID and does not allow
+   * to write the properties attached to the particles
    *
+   * @ingroup Particle
    */
   template <int dim, int spacedim = dim>
   class DataOut : public dealii::DataOutInterface<0, spacedim>
   {
   public:
     /**
-     * Particles::DataOut 类的默认构造函数。
-     *
+     * Default constructor for the Particles::DataOut class.
      */
     DataOut() = default;
 
     /**
-     * Particles::DataOut 类的解构器。
-     *
+     * Destructor for the Particles::DataOut class.
      */
     ~DataOut() = default;
 
 
     /**
-     * 为一个给定的粒子处理程序建立补丁。          @param
-     * [in] particles 一个粒子处理程序，将为其建立补丁。
-     * 为每个粒子建立一个dim=0的补丁。粒子的位置被用来建立节点位置，粒子的ID被添加为一个数据元素。
-     * @param  [in] data_component_names
-     * 一个可选的字符串向量，描述每个粒子的属性。只有提供了这个向量，粒子的属性才会被写入。
-     * @param  [in] data_component_interpretations
-     * 一个可选的向量，控制粒子属性是否被解释为标量、向量或张量。必须与
-     * @p data_component_names. 的长度相同。
+     * Build the patches for a given particle handler.
      *
+     * @param [in] particles A particle handler for which the patches will be built.
+     * A dim=0 patch is built for each particle. The position of the particle is
+     * used to build the node position and the ID of the particle is added as a
+     * single data element.
+     * @param [in] data_component_names An optional vector of strings that
+     * describe the properties of each particle. Particle properties will only
+     * be written if this vector
+     * is provided.
+     * @param [in] data_component_interpretations An optional vector that
+     * controls if the particle properties are interpreted as scalars, vectors,
+     * or tensors. Has to be of the same length as @p data_component_names.
      */
     void
     build_patches(const Particles::ParticleHandler<dim, spacedim> &particles,
@@ -74,26 +79,25 @@ namespace Particles
 
   protected:
     /**
-     * 返回由data_out类构建的补丁，该补丁是之前使用粒子处理程序构建的。
-     *
+     * Returns the patches built by the data_out class which was previously
+     * built using a particle handler
      */
     virtual const std::vector<DataOutBase::Patch<0, spacedim>> &
     get_patches() const override;
 
     /**
-     * 虚拟函数，通过该函数从该类中获得数据集的名称
-     *
+     * Virtual function through which the names of data sets are obtained from
+     * this class
      */
     virtual std::vector<std::string>
     get_dataset_names() const override;
 
 
     /**
-     * 各自 DataOutInterface::get_nonscalar_data_ranges()
-     * 函数的重载。请看那里有更多的文档。
-     * 这个函数是对函数 DataOut_DoFData::get_nonscalar_data_ranges().
-     * 的重新实现。
-     *
+     * Overload of the respective DataOutInterface::get_nonscalar_data_ranges()
+     * function. See there for a more extensive documentation.
+     * This function is a reimplementation of the function
+     * DataOut_DoFData::get_nonscalar_data_ranges().
      */
     virtual std::vector<
       std::tuple<unsigned int,
@@ -104,21 +108,21 @@ namespace Particles
 
   private:
     /**
-     * 这是一个补丁的向量，在每次调用 build_patches()
-     * 时都会创建。这些补丁在基类的输出例程中使用。
-     *
+     * This is a vector of patches that is created each time build_patches() is
+     * called. These patches are used in the output routines of the base
+     * classes.
      */
     std::vector<DataOutBase::Patch<0, spacedim>> patches;
 
     /**
-     * 储存在补丁中的所有数据组件的字段名的向量。
-     *
+     * A vector of field names for all data components stored in patches.
      */
     std::vector<std::string> dataset_names;
 
     /**
-     * 一个向量，对于当前数据集的每个数据成分，表明它们是标量字段、向量字段的一部分，还是其他任何支持的数据种类。
-     *
+     * A vector that for each of the data components of the
+     * current data set indicates whether they are scalar fields, parts of a
+     * vector-field, or any of the other supported kinds of data.
      */
     std::vector<DataComponentInterpretation::DataComponentInterpretation>
       data_component_interpretations;
@@ -129,5 +133,3 @@ namespace Particles
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/manifold_lib_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -38,87 +39,67 @@ namespace internal
 
 
 /**
- * Manifold description for a polar coordinate system.
+ * 极坐标系统的歧管描述。
+ * 你可以使用这个Manifold对象来描述二维或三维的任何球体、圆、超球体或超盘，既可以作为共维一的流形描述符，也可以作为共维零的流形描述符，前提是南北两极（三维）和中心（二维和三维）不在Manifold中（因为它们是极坐标变化的奇点）。
+ * 两个模板参数与Triangulation<dim,
+ * spacedim>中的两个模板参数的含义一致，然而这个Manifold可以用来描述薄的和厚的物体，当dim
+ * <=
+ * spacedim时，行为是相同的，也就是说，PolarManifold<2,3>的功能与PolarManifold<3,3>相同。
+ * 这个类的工作原理是将点转换为极坐标（包括二维和三维），在该坐标系中取平均值，然后再将点转换回笛卡尔坐标。为了使这个流形能够正常工作，它不能连接到包含坐标系中心或三维中的南北极的单元。这些点是坐标转换的奇异点，围绕这些点取平均值没有任何意义。
  *
- * You can use this Manifold object to describe any sphere, circle,
- * hypersphere or hyperdisc in two or three dimensions, both as a
- * co-dimension one manifold descriptor or as co-dimension zero
- * manifold descriptor, provided that the north and south poles (in
- * three dimensions) and the center (in both two and three dimensions)
- * are excluded from the Manifold (as they are singular points of the
- * polar change of coordinates).
- *
- * The two template arguments match the meaning of the two template arguments
- * in Triangulation<dim, spacedim>, however this Manifold can be used to
- * describe both thin and thick objects, and the behavior is identical when
- * dim <= spacedim, i.e., the functionality of PolarManifold<2,3> is
- * identical to PolarManifold<3,3>.
- *
- * This class works by transforming points to polar coordinates (in
- * both two and three dimensions), taking the average in that
- * coordinate system, and then transforming the point back to
- * Cartesian coordinates. In order for this manifold to work
- * correctly, it cannot be attached to cells containing the center of
- * the coordinate system or the north and south poles in three
- * dimensions. These points are singular points of the coordinate
- * transformation, and taking averages around these points does not
- * make any sense.
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class PolarManifold : public ChartManifold<dim, spacedim, spacedim>
 {
 public:
   /**
-   * The Constructor takes the center of the spherical coordinates system.
-   * This class uses the pull_back and push_forward mechanism to transform
-   * from Cartesian to spherical coordinate systems, taking into account the
-   * periodicity of base Manifold in two dimensions, while in three dimensions
-   * it takes the middle point, and project it along the radius using the
-   * average radius of the surrounding points.
+   * 构造函数获取球面坐标系的中心。
+   * 该类使用pull_back和push_forward机制从笛卡尔坐标系转换到球面坐标系，考虑到二维中基数Manifold的周期性，而在三维中，它取中间点，并使用周围点的平均半径沿半径投影。
+   *
    */
   PolarManifold(const Point<spacedim> center = Point<spacedim>());
 
   /**
-   * Make a clone of this Manifold object.
+   * 对这个Manifold对象进行克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
-   * Pull back the given point from the Euclidean space. Will return the polar
-   * coordinates associated with the point @p space_point. Only used when
-   * spacedim = 2.
+   * 从欧几里得空间拉回给定的点。将返回与该点相关的极坐标
+   * @p space_point.  只在spacedim = 2时使用。
+   *
    */
   virtual Point<spacedim>
   pull_back(const Point<spacedim> &space_point) const override;
 
   /**
-   * Given a point in the spherical coordinate system, this method returns the
-   * Euclidean coordinates associated to the polar coordinates @p chart_point.
-   * Only used when spacedim = 3.
+   * 给定球面坐标系中的一个点，该方法返回与极坐标相关的欧几里得坐标
+   * @p chart_point.  只在spacedim = 3时使用。
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<spacedim> &chart_point) const override;
 
   /**
-   * Given a point in the spacedim dimensional Euclidean space, this
-   * method returns the derivatives of the function $F$ that maps from
-   * the polar coordinate system to the Euclidean coordinate
-   * system. In other words, it is a matrix of size
-   * $\text{spacedim}\times\text{spacedim}$.
+   * 给定spacedim维欧氏空间中的一个点，该方法返回从极坐标系映射到欧氏坐标系的函数
+   * $F$ 的导数。换句话说，它是一个大小为
+   * $\text{spacedim}\times\text{spacedim}$ 的矩阵。
+   * 这个函数被用于get_tangent_vector()函数所要求的计算中。
+   * 更多信息请参考该类的一般文档。
    *
-   * This function is used in the computations required by the
-   * get_tangent_vector() function.
-   *
-   * Refer to the general documentation of this class for more information.
    */
   virtual DerivativeForm<1, spacedim, spacedim>
   push_forward_gradient(const Point<spacedim> &chart_point) const override;
 
   /**
-   * @copydoc Manifold::normal_vector()
+   * @copydoc   Manifold::normal_vector() .
+   *
    */
   virtual Tensor<1, spacedim>
   normal_vector(
@@ -126,14 +107,15 @@ public:
     const Point<spacedim> &p) const override;
 
   /**
-   * The center of the spherical coordinate system.
+   * 球形坐标系的中心。
+   *
    */
   const Point<spacedim> center;
 
 private:
   /**
-   * Helper function which returns the periodicity associated with this
-   * coordinate system, according to dim, chartdim, and spacedim.
+   * 辅助函数，根据dim、chartdim和spacedim，返回与该坐标系相关的周期。
+   *
    */
   static Tensor<1, spacedim>
   get_periodicity();
@@ -142,117 +124,63 @@ private:
 
 
 /**
- * Manifold description for a spherical space coordinate system.
+ * 球形空间坐标系的流形描述。
+ * 你可以使用这个流形对象来描述二维或三维的任何球体、圆、超球体或超盘。该流形可以作为嵌入高维空间的球面的同维度流形描述符，也可以作为具有正体积的体的同维度零流形描述符，前提是球面空间的中心不在该域中。使用这个函数的一个例子是在描述一个超壳或超球的几何形状时，例如在使用
+ * GridGenerator::hyper_ball().
+ * 创建一个粗略的网格后（然而，值得一提的是，为一个盘或球生成一个好的网格是复杂的，需要增加步骤。参见
+ * step-6 中的 "扩展的可能性
+ * "一节，对如何构建这样的网格以及需要做什么进行了广泛的讨论）。)
+ * 两个模板参数与Triangulation<dim,
+ * spacedim>中的两个模板参数的含义一致，然而这个Manifold可以用来描述薄的和厚的对象，当dim
+ * <=
+ * spacedim时，行为是相同的，也就是说，SphericalManifold<2,3>的功能与SphericalManifold<3,3>相同。
+ * 虽然PolarManifold反映了通常的极坐标概念，但它可能不适合于包含南北两极的域。
+ * 例如，考虑极坐标中的一对点 $x_1=(1,\pi/3,0)$ 和
+ * $x_2=(1,\pi/3,\pi)$ （位于半径为1的球体表面，高度为 $\pi/3$
+ * 的平行线上）。在这种情况下，用极地坐标的直线连接这两个点，将需要绕地球一圈的长路，而不经过北极。
+ * 这两个点将通过曲线连接（使用PolarManifold）。
  *
- * You can use this Manifold object to describe any sphere, circle,
- * hypersphere or hyperdisc in two or three dimensions. This manifold
- * can be used as a co-dimension one manifold descriptor of a
- * spherical surface embedded in a higher dimensional space, or as a
- * co-dimension zero manifold descriptor for a body with positive
- * volume, provided that the center of the spherical space is excluded
- * from the domain. An example for the use of this function would be
- * in the description of a hyper-shell or hyper-ball geometry, for
- * example after creating a coarse mesh using GridGenerator::hyper_ball().
- * (However, it is worth mentioning that generating a good mesh for
- * a disk or ball is complicated and requires addition steps. See the
- * "Possibilities for extensions" section of step-6 for an extensive
- * discussion of how one would construct such meshes and what one
- * needs to do for it.)
- *
- * The two template arguments match the meaning of the two template arguments
- * in Triangulation<dim, spacedim>, however this Manifold can be used to
- * describe both thin and thick objects, and the behavior is identical when
- * dim <= spacedim, i.e., the functionality of SphericalManifold<2,3> is
- * identical to SphericalManifold<3,3>.
- *
- * While PolarManifold reflects the usual notion of polar coordinates,
- * it may not be suitable for domains that contain either the north or
- * south poles.  Consider for instance the pair of points
- * $x_1=(1,\pi/3,0)$ and $x_2=(1,\pi/3,\pi)$ in polar
- * coordinates (lying on the surface of a sphere with radius one, on
- * a parallel at height $\pi/3$). In this case connecting the points
- * with a straight line in polar coordinates would take the long road
- * around the globe, without passing through the north pole.
- *
- * These two points would be connected (using a PolarManifold) by the curve
  * @f{align*}{
- *   s: [0,1]  & \rightarrow &  \mathbb S^3 \\
- *           t & \mapsto     &  (1,\pi/3,0) + (0,0,t\pi)
+ * s: [0,1]  & \rightarrow &  \mathbb S^3 \\
+ *         t & \mapsto     &  (1,\pi/3,0) + (0,0,t\pi)
  * @f}
- * This curve is not a geodesic on the sphere, and it is not how we
- * would connect those two points. A better curve, would be the one
- * passing through the North pole:
- * @f[
- *  s(t) = x_1 \cos(\alpha(t)) + \kappa \times x_1 \sin(\alpha(t)) +
- *  \kappa ( \kappa \cdot x_1) (1-\cos(\alpha(t))).
- * @f]
- * where $\kappa = \frac{x_1 \times x_2}{\Vert x_1 \times x_2 \Vert}$
- * and $\alpha(t) = t \cdot \arccos(x_1 \cdot x_2)$ for $t\in[0,1]$.
- * Indeed, this is a geodesic, and it is the natural choice when
- * connecting points on the surface of the sphere. In the examples above,
- * the PolarManifold class implements the first way of connecting two
- * points on the surface of a sphere, while SphericalManifold implements
- * the second way, i.e., this Manifold connects points using geodesics.
- * If more than two points are involved through a
- * SphericalManifold::get_new_points() call, a so-called spherical average is
- * used where the final point minimizes the weighted distance to all other
- * points via geodesics.
+ * 这条曲线不是球体上的测地线，也不是我们连接这两点的方式。更好的曲线是通过北极的那条。@f[
+ * s(t) = x_1 \cos(\alpha(t)) + \kappa \times x_1 \sin(\alpha(t)) +
+ * \kappa ( \kappa \cdot x_1) (1-\cos(\alpha(t))).
+ * @f] 其中 $\kappa = \frac{x_1 \times x_2}{\Vert x_1 \times x_2 \Vert}$ 和 $\alpha(t) = t \cdot \arccos(x_1 \cdot x_2)$ 为 $t\in[0,1]$  。事实上，这是一个测地线，在连接球面上的点时，它是自然的选择。在上面的例子中，PolarManifold类实现了连接球体表面两点的第一种方式，而SphericalManifold则实现了第二种方式，也就是说，这个Manifold使用测地线连接点。如果通过 SphericalManifold::get_new_points() 调用涉及两个以上的点，则使用所谓的球形平均，其中最终的点通过测地线最小化到所有其他点的加权距离。
+ * 特别是，这个类实现了一个Manifold，它连接空间中的任何两点，首先将它们投射到具有单位半径的球面上，然后用一个测地线将它们连接起来，最后重新调整最终半径，使之成为起始半径的加权平均值。这个Manifold与二维的PolarManifold相同，而对于三维，它返回的点在球面上的分布更加均匀，而且它对于坐标系的旋转是不变的，因此避免了PolarManifold在两极出现的问题。请注意，特别是用PolarManifold计算两极的切向量是不好定义的，而用这个类是完全可以的。
+ * 由于数学上的原因，不可能只用测地曲线来构造球体的唯一地图，因此不鼓励将这个类与MappingManifold一起使用。如果你使用此
+ * Manifold 来描述球体的几何结构，你应该使用 MappingQ
+ * 作为底层映射，而不是 MappingManifold。
+ * 这个Manifold只能用于*从中心移出一个有限半径的球的几何体。事实上，中心是这个流形的一个奇异点，如果你试图将两个点穿过中心连接起来，它们会在球面坐标上移动，避开中心。
+ * 这个流形的理想几何结构是一个超壳。如果你打算在一个HyperBall上使用这个Manifold，你必须确保不把这个Manifold连接到包含中心的单元。建议将该类与TransfiniteInterpolationManifold相结合，以确保从曲线形状平滑过渡到球中心的直线坐标系。(也可参见
+ * step-65  中的广泛讨论) 。
  *
- * In particular, this class implements a Manifold that joins any two
- * points in space by first projecting them onto the surface of a
- * sphere with unit radius, then connecting them with a geodesic, and
- * finally rescaling the final radius so that the resulting one is the
- * weighted average of the starting radii. This Manifold is identical
- * to PolarManifold in dimension two, while for dimension three it
- * returns points that are more uniformly distributed on the sphere,
- * and it is invariant with respect to rotations of the coordinate
- * system, therefore avoiding the problems that PolarManifold has at
- * the poles. Notice, in particular, that computing tangent vectors at
- * the poles with a PolarManifold is not well defined, while it is
- * perfectly fine with this class.
- *
- * For mathematical reasons, it is impossible to construct a unique
- * map of a sphere using only geodesic curves, and therefore, using
- * this class with MappingManifold is discouraged. If you use this
- * Manifold to describe the geometry of a sphere, you should use
- * MappingQ as the underlying mapping, and not MappingManifold.
- *
- * This Manifold can be used *only* on geometries where a ball with
- * finite radius is removed from the center. Indeed, the center is a
- * singular point for this manifold, and if you try to connect two
- * points across the center, they would travel on spherical
- * coordinates, avoiding the center.
- *
- * The ideal geometry for this Manifold is an HyperShell. If you plan to use
- * this Manifold on a HyperBall, you have to make sure you do not attach this
- * Manifold to the cell containing the center. It is advisable to combine this
- * class with TransfiniteInterpolationManifold to ensure a smooth transition
- * from a curved shape to the straight coordinate system in the center of the
- * ball. (See also the extensive discussion in step-65.)
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class SphericalManifold : public Manifold<dim, spacedim>
 {
 public:
   /**
-   * The Constructor takes the center of the spherical coordinates.
+   * 构造函数获取球面坐标的中心。
+   *
    */
   SphericalManifold(const Point<spacedim> center = Point<spacedim>());
 
   /**
-   * Make a clone of this Manifold object.
+   * 制作此Manifold对象的一个克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
-   * Given any two points in space, first project them on the surface
-   * of a sphere with unit radius, then connect them with a geodesic
-   * and find the intermediate point, and finally rescale the final
-   * radius so that the resulting one is the convex combination of the
-   * starting radii.
+   * 给出空间中的任意两点，首先将它们投影在具有单位半径的球面上，然后用测地线连接它们并找到中间点，最后重新调整最终半径，使得到的半径是起始半径的凸组合。
+   *
    */
   virtual Point<spacedim>
   get_intermediate_point(const Point<spacedim> &p1,
@@ -260,15 +188,16 @@ public:
                          const double           w) const override;
 
   /**
-   * Compute the derivative of the get_intermediate_point() function
-   * with parameter w equal to zero.
+   * 计算参数w等于零的get_intermediate_point()函数的导数。
+   *
    */
   virtual Tensor<1, spacedim>
   get_tangent_vector(const Point<spacedim> &x1,
                      const Point<spacedim> &x2) const override;
 
   /**
-   * @copydoc Manifold::normal_vector()
+   * @copydoc   Manifold::normal_vector() .
+   *
    */
   virtual Tensor<1, spacedim>
   normal_vector(
@@ -276,7 +205,8 @@ public:
     const Point<spacedim> &p) const override;
 
   /**
-   * Compute the normal vectors to the boundary at each vertex.
+   * 计算每个顶点到边界的法向量。
+   *
    */
   virtual void
   get_normals_at_vertices(
@@ -285,18 +215,14 @@ public:
     const override;
 
   /**
-   * Compute a new set of points that interpolate between the given points @p
-   * surrounding_points. @p weights is a table with as many columns as @p
-   * surrounding_points.size(). The number of rows in @p weights must match
-   * the length of @p new_points.
+   * 计算一组新的点，在给定的点之间进行插值  @p
+   * surrounding_points。  @p weights 是一个表格，其列数与 @p
+   * surrounding_points.size()相同。 @p weights 中的行数必须与 @p
+   * new_points.
+   * 的长度相匹配。这个函数被优化为在新点的集合上执行，通过在所有新点的循环之外收集不依赖于权重的操作。
+   * 该实现不允许 @p surrounding_points 和 @p new_points
+   * 指向同一个数组，所以要确保将不同的对象传入该函数。
    *
-   * This function is optimized to perform on a collection
-   * of new points, by collecting operations that are not dependent on the
-   * weights outside of the loop over all new points.
-   *
-   * The implementation does not allow for @p surrounding_points and
-   * @p new_points to point to the same array, so make sure to pass different
-   * objects into the function.
    */
   virtual void
   get_new_points(const ArrayView<const Point<spacedim>> &surrounding_points,
@@ -304,24 +230,23 @@ public:
                  ArrayView<Point<spacedim>> new_points) const override;
 
   /**
-   * Return a point on the spherical manifold which is intermediate
-   * with respect to the surrounding points.
+   * 返回球面流形上的一个点，该点相对于周围的点来说是中间点。
+   *
    */
   virtual Point<spacedim>
   get_new_point(const ArrayView<const Point<spacedim>> &vertices,
                 const ArrayView<const double> &         weights) const override;
 
   /**
-   * The center of the spherical coordinate system.
+   * 球面坐标系的中心。
+   *
    */
   const Point<spacedim> center;
 
 private:
   /**
-   * Return a point on the spherical manifold which is intermediate
-   * with respect to the surrounding points. This function uses a linear
-   * average of the directions to find an estimated point. It returns a pair
-   * of radius and direction from the center point to the candidate point.
+   * 返回球面流形上的一个点，该点相对于周围的点而言是中间点。这个函数使用方向的线性平均值来寻找一个估计的点。它返回一对从中心点到候选点的半径和方向。
+   *
    */
   std::pair<double, Tensor<1, spacedim>>
   guess_new_point(const ArrayView<const Tensor<1, spacedim>> &directions,
@@ -329,19 +254,13 @@ private:
                   const ArrayView<const double> &             weights) const;
 
   /**
-   * Return a point on the spherical manifold which is intermediate
-   * with respect to the surrounding points. This function uses a candidate
-   * point as guess, and performs a Newton-style iteration to compute the
-   * correct point.
+   * 返回球面流形上的一个点，该点相对于周围的点来说是中间的。这个函数使用一个候选点作为猜测，并执行牛顿式迭代来计算正确的点。
+   * 实现的主要部分使用了出版物Buss, Samuel R.和Jay P.
+   * Fillmore中的观点。
+   * "球面平均数和球面样条和插值的应用"。ACM Transactions on
+   * Graphics (TOG) 20.2 (2001):
+   * 95-126.特别是在http://math.ucsd.edu/~sbuss/ResearchWeb/spheremean/提供的实现。
    *
-   * The main part of the implementation uses the ideas in the publication
-   *
-   * Buss, Samuel R., and Jay P. Fillmore.
-   * "Spherical averages and applications to spherical splines and
-   * interpolation." ACM Transactions on Graphics (TOG) 20.2 (2001): 95-126.
-   *
-   * and in particular the implementation provided at
-   * http://math.ucsd.edu/~sbuss/ResearchWeb/spheremean/
    */
   Point<spacedim>
   get_new_point(const ArrayView<const Tensor<1, spacedim>> &directions,
@@ -350,17 +269,14 @@ private:
                 const Point<spacedim> &candidate_point) const;
 
   /**
-   * Compute a new set of points that interpolate between the given points @p
-   * surrounding_points. @p weights is an array view with as many entries as @p
-   * surrounding_points.size() times @p new_points.size().
+   * 计算一组新的点，在给定的点之间进行插值  @p
+   * surrounding_points。  @p weights
+   * 是一个数组视图，其条目数为 @p
+   * surrounding_points.size()乘以 @p new_points.size().
+   * 这个函数被优化为对新点的集合执行，通过收集所有新点上的循环之外的不依赖于权重的操作。
+   * 该实现不允许 @p surrounding_points 和 @p new_points
+   * 指向同一个数组，所以要确保将不同的对象传入该函数。
    *
-   * This function is optimized to perform on a collection
-   * of new points, by collecting operations that are not dependent on the
-   * weights outside of the loop over all new points.
-   *
-   * The implementation does not allow for @p surrounding_points and
-   * @p new_points to point to the same array, so make sure to pass different
-   * objects into the function.
    */
   virtual void
   get_new_points(const ArrayView<const Point<spacedim>> &surrounding_points,
@@ -368,84 +284,85 @@ private:
                  ArrayView<Point<spacedim>>              new_points) const;
 
   /**
-   * A manifold description to be used for get_new_point in 2D.
+   * 一个流形描述，用于二维的get_new_point。
+   *
    */
   const PolarManifold<spacedim> polar_manifold;
 };
 
 /**
- * Cylindrical Manifold description.  In three dimensions, points are
- * transformed using a cylindrical coordinate system along the <tt>x-</tt>,
- * <tt>y-</tt> or <tt>z</tt>-axis (when using the first constructor of this
- * class), or an arbitrarily oriented cylinder described by the direction of
- * its axis and a point located on the axis.
+ * 圆柱形流形描述。
+ * 在三维空间中，点使用圆柱坐标系沿<tt>x-</tt>,
+ * <tt>y-</tt>或<tt>z</tt>轴进行转换（当使用该类的第一个构造函数时），或者使用一个由其轴线方向和位于轴线上的点描述的任意方向的圆柱。
+ * 这个类的开发是为了与GridGenerator的 @p cylinder 或 @p
+ * cylinder_shell
+ * 函数结合使用。只要spacedim不等于3，这个函数就会抛出一个运行时异常。
  *
- * This class was developed to be used in conjunction with the @p cylinder or
- * @p cylinder_shell functions of GridGenerator. This function will throw a
- * run time exception whenever spacedim is not equal to three.
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class CylindricalManifold : public ChartManifold<dim, spacedim, 3>
 {
 public:
   /**
-   * Constructor. Using default values for the constructor arguments yields a
-   * cylinder along the x-axis (<tt>axis=0</tt>). Choose <tt>axis=1</tt> or
-   * <tt>axis=2</tt> for a tube along the y- or z-axis, respectively. The
-   * tolerance value is used to determine if a point is on the axis.
+   * 构造函数。使用构造函数参数的默认值可以得到一个沿x轴的圆柱体（<tt>axis=0</tt>）。选择<tt>axis=1</tt>或<tt>axis=2</tt>，分别得到一个沿y轴或z轴的管。公差值是用来确定一个点是否在轴上的。
+   *
    */
   CylindricalManifold(const unsigned int axis      = 0,
                       const double       tolerance = 1e-10);
 
   /**
-   * Constructor. If constructed with this constructor, the manifold described
-   * is a cylinder with an axis that points in direction #direction and goes
-   * through the given #point_on_axis. The direction may be arbitrarily
-   * scaled, and the given point may be any point on the axis. The tolerance
-   * value is used to determine if a point is on the axis.
+   * 构造函数。如果用这个构造函数构造，描述的流形是一个圆柱体，其轴线指向#方向，并穿过给定的#点_在轴上。方向可以任意缩放，而给定的点可以是轴上的任何一点。公差值用于确定一个点是否在轴上。
+   *
    */
   CylindricalManifold(const Tensor<1, spacedim> &direction,
                       const Point<spacedim> &    point_on_axis,
                       const double               tolerance = 1e-10);
 
   /**
-   * Make a clone of this Manifold object.
+   * 对这个Manifold对象进行克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
-   * Compute the cylindrical coordinates $(r, \phi, \lambda)$ for the given
-   * space point where $r$ denotes the distance from the axis,
-   * $\phi$ the angle between the given point and the computed normal
-   * direction, and $\lambda$ the axial position.
+   * 计算给定空间点的圆柱坐标 $(r, \phi, \lambda)$ ，其中 $r$
+   * 表示与轴线的距离， $\phi$
+   * 给定点与计算出的法线方向的角度，以及 $\lambda$
+   * 轴向位置。
+   *
    */
   virtual Point<3>
   pull_back(const Point<spacedim> &space_point) const override;
 
   /**
-   * Compute the Cartesian coordinates for a chart point given in cylindrical
-   * coordinates $(r, \phi, \lambda)$, where $r$ denotes the distance from the
-   * axis, $\phi$ the angle between the given point and the computed normal
-   * direction, and $\lambda$ the axial position.
+   * 计算以圆柱坐标 $(r, \phi, \lambda)$
+   * 给出的图表点的直角坐标，其中 $r$
+   * 表示与轴线的距离， $\phi$
+   * 给出的点与计算的法线方向之间的角度，以及 $\lambda$
+   * 的轴向位置。
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<3> &chart_point) const override;
 
   /**
-   * Compute the derivatives of the mapping from cylindrical coordinates
-   * $(r, \phi, \lambda)$ to cartesian coordinates where $r$ denotes the
-   * distance from the axis, $\phi$ the angle between the given point and the
-   * computed normal direction, and $\lambda$ the axial position.
+   * 计算从圆柱坐标 $(r, \phi, \lambda)$
+   * 到车轴坐标的映射的导数，其中 $r$ 表示与轴的距离，
+   * $\phi$ 表示给定点与计算的法线方向之间的角度，以及
+   * $\lambda$ 表示轴向位置。
+   *
    */
   virtual DerivativeForm<1, 3, spacedim>
   push_forward_gradient(const Point<3> &chart_point) const override;
 
   /**
-   * Compute new points on the CylindricalManifold. See the documentation of
-   * the base class for a detailed description of what this function does.
+   * 计算CylindricalManifold上的新点。关于这个函数的详细描述，请参见基类的文档。
+   *
    */
   virtual Point<spacedim>
   get_new_point(const ArrayView<const Point<spacedim>> &surrounding_points,
@@ -453,72 +370,64 @@ public:
 
 protected:
   /**
-   * A vector orthogonal to the normal direction.
+   * 一个与法线方向正交的矢量。
+   *
    */
   const Tensor<1, spacedim> normal_direction;
 
   /**
-   * The direction vector of the axis.
+   * 轴的方向向量。
+   *
    */
   const Tensor<1, spacedim> direction;
 
   /**
-   * An arbitrary point on the axis.
+   * 轴上的一个任意点。
+   *
    */
   const Point<spacedim> point_on_axis;
 
 private:
   /**
-   * Relative tolerance to measure zero distances.
+   * 用于测量零距离的相对公差。
+   *
    */
   double tolerance;
 };
 
 /**
- * Elliptical manifold description derived from ChartManifold.
- * More information on the elliptical coordinate system can be found
- * at <a
+ * 椭圆流形描述，源自ChartManifold。关于椭圆坐标系的更多信息可以在<a
  * href="https://en.wikipedia.org/wiki/Elliptic_coordinate_system">Wikipedia
- * </a>.
+ * </a>找到。
+ * 这是基于椭圆坐标的定义 $(u,v)$ @f[
+ * \left\lbrace\begin{aligned}
+ * x &=  x_0 + c \cosh(u) \cos(v) \\
+ * y &=  y_0 + c \sinh(u) \sin(v)
+ * \end{aligned}\right.
+ * @f]，其中 $(x_0,y_0)$ 是笛卡尔系统的中心坐标。
+ * 目前的实现使用坐标 $(c,v)$ ，而不是 $(u,v)$
+ * ，并根据给定的偏心率来固定 $u$
+ * 。因此，这种坐标的选择产生了一个椭圆流形，其特点是偏心率不变。
+ * $e=\frac{1}{\cosh(u)}$  ，其中 $e\in\left]0,1\right[$  。
+ * 如果dim和spacedim都不同于2，这个类的构造函数将抛出一个异常。
+* 这个流形可以用来产生具有椭圆曲率的超壳。作为一个例子，测试<B>elliptical_manifold_01</B>产生了以下三角结构。  @image html elliptical_hyper_shell.png
  *
- * This is based on the definition of elliptic coordinates $(u,v)$
- * @f[
- *  \left\lbrace\begin{aligned}
- *  x &=  x_0 + c \cosh(u) \cos(v) \\
- *  y &=  y_0 + c \sinh(u) \sin(v)
- *  \end{aligned}\right.
- * @f]
- * in which $(x_0,y_0)$ are coordinates of the center of the cartesian system.
- *
- * The current implementation uses coordinates $(c,v)$, instead of $(u,v)$, and
- * fixes $u$ according to a given eccentricity. Therefore, this choice
- * of coordinates generates an elliptical manifold characterized by a constant
- * eccentricity: $e=\frac{1}{\cosh(u)}$, with $e\in\left]0,1\right[$.
- *
- * The constructor of this class will throw an exception if both dim and
- * spacedim are different from two.
- *
- * This manifold can be used to produce hyper_shells with elliptical curvature.
- * As an example, the test <B>elliptical_manifold_01</B> produces the following
- * triangulation:
- * @image html elliptical_hyper_shell.png
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class EllipticalManifold : public ChartManifold<dim, spacedim, spacedim>
 {
 public:
   /**
-   * Constructor that takes the center of the manifold system, the direction of
-   * the major axis, and the manifold eccentricity.
-   * The default major axis is the <tt>x</tt>-axis. The manifold is rotated in
-   * order to align the major axis to the direction specified in input.
-   * @param center Center of the manifold.
-   * @param major_axis_direction Direction of the major axis of the
-   * manifold.
-   * @param eccentricity Eccentricity of the
-   * manifold $e\in\left]0,1\right[$.
+   * 构造函数，接收流形系统的中心、主轴方向和流形偏心率。
+   * 默认的主轴是<tt>x</tt>-轴。流形系统会被旋转，以使主轴与输入中指定的方向一致。
+   * @param  中心 分流板的中心。    @param  major_axis_direction
+   * 分流板的主轴方向。    @param  偏心率 分流板的偏心率
+   * $e\in\left]0,1\right[$  。
+   *
    */
   EllipticalManifold(const Point<spacedim> &    center,
                      const Tensor<1, spacedim> &major_axis_direction,
@@ -528,19 +437,22 @@ public:
   clone() const override;
 
   /**
-   * @copydoc ChartManifold::pull_back()
+   * @copydoc   ChartManifold::pull_back()  。
+   *
    */
   virtual Point<spacedim>
   pull_back(const Point<spacedim> &space_point) const override;
 
   /**
-   * @copydoc ChartManifold::push_forward()
+   * @copydoc   ChartManifold::push_forward()  。
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<spacedim> &chart_point) const override;
 
   /**
-   * @copydoc ChartManifold::push_forward_gradient()
+   * @copydoc   ChartManifold::push_forward_gradient()
+   *
    */
   virtual DerivativeForm<1, spacedim, spacedim>
   push_forward_gradient(const Point<spacedim> &chart_point) const override;
@@ -548,25 +460,29 @@ public:
 
 protected:
   /**
-   * The direction vector of the major axis.
+   * 主轴的方向矢量。
+   *
    */
   Tensor<1, spacedim> direction;
   /**
-   * The center of the manifold.
+   * 流形的中心。
+   *
    */
   const Point<spacedim> center;
   /**
-   * Parameters deriving from the eccentricity of the manifold.
+   * 从流形体的偏心率得出的参数。
+   *
    */
   const double cosh_u;
   const double sinh_u;
 
 private:
   /**
-   * @copydoc ChartManifold::get_periodicity()
+   * @copydoc   ChartManifold::get_periodicity()  对于 $\text{dim}=2$ 和
+   * $\text{spacedim}=2$
+   * ，第一个坐标是非周期性的，而第二个坐标的周期性为
+   * $2\pi$  。
    *
-   * For $\text{dim}=2$ and $\text{spacedim}=2$, the first coordinate is
-   * non-periodic, while the second coordinate has a periodicity of $2\pi$.
    */
   static Tensor<1, spacedim>
   get_periodicity();
@@ -574,35 +490,25 @@ private:
 
 
 /**
- * Manifold description derived from ChartManifold, based on explicit
- * Function<spacedim> and Function<chartdim> objects describing the
- * push_forward() and pull_back() functions.
+ * 从ChartManifold派生的Manifold描述，基于明确的Function<spacedim>和Function<chartdim>对象，描述push_forward（）和pull_back（）函数。
+ * 你可以使用这个Manifold对象来描述任何任意的形状域，只要你能用可逆映射来表达，你可以提供正向表达式和逆向表达式。
+ * 在调试模式下，会进行一个检查，以验证这些变换实际上是一个反的变换。
  *
- * You can use this Manifold object to describe any arbitrary shape domain, as
- * long as you can express it in terms of an invertible map, for which you
- * provide both the forward expression, and the inverse expression.
- *
- * In debug mode, a check is performed to verify that the transformations are
- * actually one the inverse of the other.
  *
  * @ingroup manifold
+ *
  */
 template <int dim, int spacedim = dim, int chartdim = dim>
 class FunctionManifold : public ChartManifold<dim, spacedim, chartdim>
 {
 public:
   /**
-   * Explicit functions constructor. Takes a push_forward function of spacedim
-   * components, and a pull_back function of @p chartdim components. See the
-   * documentation of the base class ChartManifold for the meaning of the
-   * optional @p periodicity argument.
+   * 明确的函数构造器。接受一个spacedim组件的push_forward函数，以及一个
+   * @p chartdim 组件的pull_back函数。关于可选的 @p periodicity
+   * 参数的含义，请参阅基类ChartManifold的文档。
+   * 容许参数在调试模式下被用来实际检查这两个函数是否是一个反义词。
+   * 注意：以这种方式构造的对象存储了指向push_forward和pull_back函数的指针。因此，必须保证这些函数对象只在构造的流形之后被销毁。
    *
-   * The tolerance argument is used in debug mode to actually check that the
-   * two functions are one the inverse of the other.
-   *
-   * Note: the object constructed in this way stores pointers to the
-   * push_forward and  pull_back functions. Therefore, one must guarantee that
-   * the function objects are destroyed only after the constructed manifold.
    */
   FunctionManifold(
     const Function<chartdim> & push_forward_function,
@@ -611,15 +517,11 @@ public:
     const double               tolerance   = 1e-10);
 
   /**
-   * Same as previous, except this constructor takes ownership of the Function
-   * objects passed as first and second argument, and is ultimately in charge
-   * of deleting the pointers when the FunctionManifold object is destroyed.
+   * 和前面一样，只是这个构造函数对作为第一和第二个参数传递的Function对象拥有所有权，并在FunctionManifold对象被销毁时最终负责删除这些指针。
+   * 这个构造函数很有用，因为它允许在调用构造函数的地方创建函数对象，而不需要命名和随后删除这些对象。这允许以下的成语。
+   * FunctionManifold<dim>  manifold(std::make_unique<MyPushForward>(...),
+   * std::make_unique<MyPullBack>(...)); 。
    *
-   * This constructor is useful because it allows creating function objects at
-   * the place of calling the constructor without having to name and later
-   * delete these objects. This allows the following idiom:
-   * FunctionManifold<dim> manifold(std::make_unique<MyPushForward>(...),
-   *                                std::make_unique<MyPullBack>(...));
    */
   FunctionManifold(
     std::unique_ptr<Function<chartdim>> push_forward,
@@ -628,18 +530,13 @@ public:
     const double                        tolerance   = 1e-10);
 
   /**
-   * Expressions constructor. Takes the expressions of the push_forward
-   * function of spacedim components, and of the pull_back function of @p
-   * chartdim components. See the documentation of the base class
-   * ChartManifold for the meaning of the optional @p periodicity argument.
+   * 表达式构造器。接受spacedim组件的push_forward函数和 @p
+   * chartdim组件的pull_back函数的表达。关于可选的 @p
+   * periodicity 参数的含义，请参阅基类ChartManifold的文档。
+   * 字符串应该是FunctionParser类的默认构造函数所能读取的。你可以用最后两个可选参数指定自定义的变量表达式。如果你不这样做，就会使用默认的名称，即
+   * "x,y,z"。
+   * 容许参数在调试模式下用于实际检查这两个函数是否是一个反义词。
    *
-   * The strings should be the readable by the default constructor of the
-   * FunctionParser classes. You can specify custom variable expressions with
-   * the last two optional arguments. If you don't, the default names are
-   * used, i.e., "x,y,z".
-   *
-   * The tolerance argument is used in debug mode to actually check that the
-   * two functions are one the inverse of the other.
    */
   FunctionManifold(
     const std::string          push_forward_expression,
@@ -655,113 +552,115 @@ public:
     const double h         = 1e-8);
 
   /**
-   * If needed, we delete the pointers we own.
+   * 如果需要，我们会删除我们拥有的指针。
+   *
    */
   virtual ~FunctionManifold() override;
 
   /**
-   * Make a clone of this Manifold object.
+   * 对这个Manifold对象做一个克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
-   * Given a point in the @p chartdim coordinate system, uses the
-   * push_forward_function to compute the push_forward of points in @p
-   * chartdim space dimensions to @p spacedim space dimensions.
+   * 给定 @p chartdim
+   * 坐标系中的一个点，使用push_forward_函数来计算 @p
+   * chartdim空间维度中的点到 @p spacedim
+   * 空间维度的push_forward。
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<chartdim> &chart_point) const override;
 
   /**
-   * Given a point in the chartdim dimensional Euclidean space, this
-   * method returns the derivatives of the function $F$ that maps from
-   * the sub_manifold coordinate system to the Euclidean coordinate
-   * system. In other words, it is a matrix of size
-   * $\text{spacedim}\times\text{chartdim}$.
+   * 给定chartdim维度欧几里得空间中的一个点，该方法返回从sub_manifold坐标系映射到欧几里得坐标系的函数
+   * $F$ 的导数。换句话说，它是一个大小为
+   * $\text{spacedim}\times\text{chartdim}$ 的矩阵。
+   * 这个函数被用于get_tangent_vector()函数所要求的计算中。默认实现是调用
+   * FunctionManifold::push_forward_function()
+   * 成员类的get_gradient()方法。如果你使用接受两个字符串表达式的构造函数来构造这个对象，那么这个方法的默认实现使用有限差分方案来计算梯度（详见AutoDerivativeFunction()类），你可以在构造时用
+   * @p h 参数指定空间步长的大小。
+   * 更多信息请参考该类的一般文档。
    *
-   * This function is used in the computations required by the
-   * get_tangent_vector() function. The default implementation calls
-   * the get_gradient() method of the
-   * FunctionManifold::push_forward_function() member class. If you
-   * construct this object using the constructor that takes two string
-   * expression, then the default implementation of this method uses a
-   * finite difference scheme to compute the gradients(see the
-   * AutoDerivativeFunction() class for details), and you can specify
-   * the size of the spatial step size at construction time with the
-   * @p h parameter.
-   *
-   * Refer to the general documentation of this class for more information.
    */
   virtual DerivativeForm<1, chartdim, spacedim>
   push_forward_gradient(const Point<chartdim> &chart_point) const override;
 
   /**
-   * Given a point in the spacedim coordinate system, uses the
-   * pull_back_function to compute the pull_back of points in @p spacedim
-   * space dimensions to @p chartdim space dimensions.
+   * 给定spacedim坐标系中的一个点，使用pull_back_函数来计算
+   * @p spacedim 空间维度中的点对 @p chartdim 空间维度的回撤。
+   *
    */
   virtual Point<chartdim>
   pull_back(const Point<spacedim> &space_point) const override;
 
 private:
   /**
-   * Constants for the FunctionParser classes.
+   * FunctionParser类的常量。
+   *
    */
   const typename FunctionParser<spacedim>::ConstMap const_map;
 
   /**
-   * Pointer to the push_forward function.
+   * 指向push_forward函数的指针。
+   *
    */
   SmartPointer<const Function<chartdim>,
                FunctionManifold<dim, spacedim, chartdim>>
     push_forward_function;
 
   /**
-   * Pointer to the pull_back function.
+   * 指向pull_back函数的指针。
+   *
    */
   SmartPointer<const Function<spacedim>,
                FunctionManifold<dim, spacedim, chartdim>>
     pull_back_function;
 
   /**
-   * Relative tolerance. In debug mode, we check that the two functions
-   * provided at construction time are actually one the inverse of the other.
-   * This value is used as relative tolerance in this check.
+   * 相对公差。在调试模式下，我们检查在构造时提供的两个函数实际上是另一个函数的逆向。
+   * 在这个检查中，这个值被用来作为相对公差。
+   *
    */
   const double tolerance;
 
   /**
-   * Check ownership of the smart pointers. Indicates whether this class is
-   * the owner of the objects pointed to by the previous two member variables.
-   * This value is set in the constructor of the class. If @p true, then the
-   * destructor will delete the function objects pointed to be the two
-   * pointers.
+   * 检查智能指针的所有权。表示这个类是否是前两个成员变量所指向的对象的所有者。
+   * 这个值是在类的构造函数中设置的。如果 @p true,
+   * ，那么析构器将删除这两个指针指向的函数对象。
+   *
    */
   bool owns_pointers;
 
   /**
-   * The expression used to construct the push_forward function.
+   * 用来构造push_forward函数的表达式。
+   *
    */
   const std::string push_forward_expression;
 
   /**
-   * The expression used to construct the pull_back function.
+   * 用于构造pull_back函数的表达式。
+   *
    */
   const std::string pull_back_expression;
 
   /**
-   * Variable names in the chart domain.
+   * 图表域中的变量名称。
+   *
    */
   const std::string chart_vars;
 
   /**
-   * Variable names in the space domain.
+   * 空间域中的变量名称。
+   *
    */
   const std::string space_vars;
 
   /**
-   * The finite difference step to use internally.
+   * 内部使用的有限差分步骤。
+   *
    */
   const double finite_difference_step;
 };
@@ -769,16 +668,15 @@ private:
 
 
 /**
- * Manifold description for the surface of a Torus in three dimensions. The
- * Torus is assumed to be in the x-z plane. The reference coordinate system
- * is given by the angle $phi$ around the y axis, the angle $theta$ around
- * the centerline of the torus, and the distance to the centerline $w$
- * (between 0 and 1).
+ * 三维环状体表面的流形描述。环状体被假定为在x-z平面内。参考坐标系由围绕Y轴的角度
+ * $phi$ 、围绕环状体中心线的角度 $theta$ 和到中心线的距离
+ * $w$ （在0和1之间）给出。 这个类的开发是为了与
+ * GridGenerator::torus. 一起使用。
  *
- * This class was developed to be used in conjunction with
- * GridGenerator::torus.
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim>
 class TorusManifold : public ChartManifold<dim, 3, 3>
@@ -788,32 +686,36 @@ public:
   static const int spacedim = 3;
 
   /**
-   * Constructor. Specify the radius of the centerline @p R and the radius
-   * of the torus itself (@p r). The variables have the same meaning as
-   * the parameters in GridGenerator::torus().
+   * 构造函数。指定中心线的半径 @p R 和环本身的半径(  @p
+   * r).  变量的含义与 GridGenerator::torus(). 中的参数相同。
+   *
    */
   TorusManifold(const double R, const double r);
 
   /**
-   * Make a clone of this Manifold object.
+   * 对这个Manifold对象做一个克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, 3>>
   clone() const override;
 
   /**
-   * Pull back operation.
+   * 拉回操作。
+   *
    */
   virtual Point<3>
   pull_back(const Point<3> &p) const override;
 
   /**
-   * Push forward operation.
+   * 前推操作。
+   *
    */
   virtual Point<3>
   push_forward(const Point<3> &chart_point) const override;
 
   /**
-   * Gradient.
+   * 梯度。
+   *
    */
   virtual DerivativeForm<1, 3, 3>
   push_forward_gradient(const Point<3> &chart_point) const override;
@@ -825,54 +727,33 @@ private:
 
 
 /**
- * A mapping class that extends curved boundary descriptions into the interior
- * of the computational domain. The outer curved boundary description is
- * assumed to be given by another manifold (e.g. a polar manifold on a circle).
- * The mechanism to extend the boundary information is a so-called transfinite
- * interpolation.
- * The use of this class is discussed extensively in step-65.
+ * 一个映射类，它将曲线边界描述扩展到计算域的内部。外侧的弯曲边界描述被假定为由另一个流形（例如圆上的极地流形）给出。扩展边界信息的机制是一个所谓的转折性插值。该类方法的使用在
+ * step-65 中得到了广泛的讨论。
+ * 在二维中扩展这种描述的公式，例如，在<a
+ * href="https://en.wikipedia.org/wiki/Transfinite_interpolation">
+ * Wikipedia</a>上有描述。 给定图表上的一个点 $(u,v)$
+ * ，这个点在实空间中的图像由以下公式给出
  *
- * The formula for extending such a description in 2D is, for example,
- * described on
- * <a href="https://en.wikipedia.org/wiki/Transfinite_interpolation">
- * Wikipedia</a>.  Given a point $(u,v)$ on the chart, the image of this point
- * in real space is given by
  * @f{align*}{
  * \mathbf S(u,v) &= (1-v)\mathbf c_0(u)+v \mathbf c_1(u) + (1-u)\mathbf c_2(v)
  * + u \mathbf c_3(v) \\
- * &\quad - \left[(1-u)(1-v) \mathbf x_0 + u(1-v) \mathbf x_1 + (1-u)v \mathbf
+ * &\quad
+ *
+ * - \left[(1-u)(1-v) \mathbf x_0 + u(1-v) \mathbf x_1 + (1-u)v \mathbf
  * x_2 + uv \mathbf x_3 \right]
  * @f}
- * where $\bf x_0, \bf x_1, \bf x_2, \bf x_3$ denote the four bounding vertices
- * bounding the image space and $\bf c_0, \bf c_1, \bf c_2, \bf c_3$ are the
- * four curves describing the lines of the cell. If a curved manifold is
- * attached to any of these lines, the evaluation is done according to
- * Manifold::get_new_point() with the two end points of the line and
- * appropriate weight. In 3D, the generalization of this formula is
- * implemented, creating a weighted sum of the vertices (positive
- * contribution), the lines (negative), and the faces (positive contribution).
+ * 其中 $\bf x_0, \bf x_1, \bf x_2, \bf x_3$
+ * 表示限定图像空间的四个边界顶点， $\bf c_0, \bf c_1, \bf
+ * c_2, \bf c_3$
+ * 是描述单元格线条的四条曲线。如果弯曲的流形连接到这些线条中的任何一条，则根据
+ * Manifold::get_new_point()
+ * 的规定，用线条的两个端点和适当的权重进行评估。在三维中，这个公式的一般化被实施，创建一个顶点（正贡献）、线（负贡献）和面（正贡献）的加权和。
+ * 这个流形通常被附加到一个粗略的网格上，然后将新的点作为边界上的描述的组合，根据点在原图坐标中的位置进行适当的加权
+ * $(u,v)$
+ * 。在大多数情况下，这种流形应该比只在网格的边界上设置一个弯曲的流形要好，因为随着网格的细化，它可以产生更均匀的网格分布，因为它在这个流形所连接的初始粗单元的所有子节点上从弯曲的描述转换为直线描述。这样一来，一旦网格被细化，原本包含在一个<i>coarse</i>网格层中的流形的弯曲性质将被应用到多个<i>fine</i>网格层。请注意，当只有一个单元的表面受到曲面描述时，TransfiniteInterpolationManifold的机制也被内置于MappingQGeneric类中，确保在应用曲面边界描述时，即使没有这个流形的默认情况也能获得最佳收敛率。
+ * 如果没有弯曲的边界围绕着一个粗大的单元，这个类就会还原成一个平面流形描述。
+ * 为了举一个使用这个类的例子，下面的代码将一个转折流形附加到一个圆上。
  *
- * This manifold is usually attached to a coarse mesh and then places new
- * points as a combination of the descriptions on the boundaries, weighted
- * appropriately according to the position of the point in the original chart
- * coordinates $(u,v)$. This manifold should be preferred over setting only a
- * curved manifold on the boundary of a mesh in most situations as it yields
- * more uniform mesh distributions as the mesh is refined because it switches
- * from a curved description to a straight description over all children of
- * the initial coarse cell this manifold was attached to. This way, the curved
- * nature of the manifold that is originally contained in one <i>coarse</i>
- * mesh layer will be applied to more than one <i>fine</i> mesh layer once the
- * mesh gets refined. Note that the mechanisms of
- * TransfiniteInterpolationManifold are also built into the MappingQGeneric
- * class when only a surface of a cell is subject to a curved description,
- * ensuring that even the default case without this manifold gets optimal
- * convergence rates when applying curved boundary descriptions.
- *
- * If no curved boundaries surround a coarse cell, this class reduces to a flat
- * manifold description.
- *
- * To give an example of using this class, the following code attaches a
- * transfinite manifold to a circle:
  *
  * @code
  * PolarManifold<dim> polar_manifold;
@@ -889,42 +770,18 @@ private:
  * triangulation.refine_global(4);
  * @endcode
  *
- * In this code, we first set all manifold ids to the id of the transfinite
- * interpolation, and then re-set the manifold ids on the boundary to identify
- * the curved boundary described by the polar manifold. With this code, one
- * gets a really nice mesh:
- *
+ * 在这段代码中，我们首先将所有流形的id设置为转折性插值的id，然后重新设置边界上的流形id，以确定极地流形所描述的弯曲边界。使用这段代码，我们可以得到一个非常漂亮的网格。
  * <p ALIGN="center">
- * @image html circular_mesh_transfinite_interpolation.png
- * </p>
+ @image html circular_mesh_transfinite_interpolation.png
+ * </p> 这显然比只应用于边界的极地流形要好得多。 <p
+ * ALIGN="center">
+ @image html circular_mesh_only_boundary_manifold.png
+ * </p> 这个流形被用于一些GridGenerator函数中，包括
+ * GridGenerator::channel_with_cylinder. 。 <h3>Implementation details</h3>
+ * 在这个类的实现中，围绕一个粗略单元的流形被反复查询，以计算其内部的点。为了获得最佳的网格质量，这些流形应该与一个图表概念兼容。例如，使用两个顶点的权重0.25和0.75来计算两个顶点之间沿线的0.25的点，应该得到与首先计算0.5的中点，然后再次计算第一个顶点和粗略的中点相同的结果。deal.II提供的大多数流形类都是如此，如SphericalManifold或PolarManifold，但天真的实现可能会违反这一规定。如果流形的质量不够好，在网格细化时，可能会发生get_new_point()或get_new_points()方法中的图表转换产生的点在单元格外。那么这个类就会抛出一个类型为
+ * Mapping::ExcTransformationFailed.
+ * 的异常。在这种情况下，应该在附加这个类之前对网格进行细化，就像下面的例子那样。
  *
- * which is obviously much nicer than the polar manifold applied to just the
- * boundary:
- *
- * <p ALIGN="center">
- * @image html circular_mesh_only_boundary_manifold.png
- * </p>
- *
- * This manifold is used in a few GridGenerator functions, including
- * GridGenerator::channel_with_cylinder.
- *
- * <h3>Implementation details</h3>
- *
- * In the implementation of this class, the manifolds surrounding a coarse
- * cell are queried repeatedly to compute points on their interior. For
- * optimal mesh quality, those manifolds should be compatible with a chart
- * notion. For example, computing a point that is 0.25 along the line between
- * two vertices using the weights 0.25 and 0.75 for the two vertices should
- * give the same result as first computing the mid point at 0.5 and then again
- * compute the midpoint between the first vertex and coarse mid point. This is
- * the case for most of the manifold classes provided by deal.II, such as
- * SphericalManifold or PolarManifold, but it might be violated by naive
- * implementations. In case the quality of the manifold is not good enough,
- * upon mesh refinement it may happen that the transformation to a chart
- * inside the get_new_point() or get_new_points() methods produces points that
- * are outside the unit cell. Then this class throws an exception of type
- * Mapping::ExcTransformationFailed. In that case, the mesh should be refined
- * before attaching this class, as done in the following example:
  *
  * @code
  * SphericalManifold<dim> spherical_manifold;
@@ -944,95 +801,69 @@ private:
  * triangulation.refine_global(4);
  * @endcode
  *
- * @note For performance and accuracy reasons, it is recommended to apply the
- * transfinite manifold to as coarse a mesh as possible. Regarding accuracy,
- * the curved description can only be applied to new points created from a
- * given neighborhood, and the grid quality is typically higher when extending
- * the curved description over as large a domain as possible. Regarding
- * performance, the identification of the correct coarse cell in the
- * get_new_point() method needs to pass all coarse cells, so expect a linear
- * complexity in the number of coarse cells for each single mapping operation,
- * i.e., at least quadratic in the number of coarse mesh cells for any global
- * operation on the whole mesh. Thus, the current implementation is only
- * economical when there are not more than a few hundreds of coarse cells. To
- * make performance better for larger numbers of cells, one could extend the
- * current implementation by a pre-identification of relevant cells with
- * axis-aligned bounding boxes.
+ *
+ *
+ * @note
+ * 出于性能和精度的考虑，建议将转义流形应用于尽可能粗的网格。关于精度，曲面描述只能应用于从给定邻域创建的新点，在尽可能大的域上扩展曲面描述时，网格质量通常会更高。关于性能，get_new_point()方法中正确的粗单元的识别需要通过所有的粗单元，因此预计每个单一的映射操作的粗单元数量的线性复杂性，也就是说，对于整个网格的任何全局操作，至少是粗网格单元数量的二次方。因此，目前的实现只有在粗单元数量不超过几百个的情况下才是经济的。为了使更多单元的性能得到提高，我们可以通过预先识别具有轴对齐边界盒的相关单元来扩展当前的实现。
+ *
  *
  * @ingroup manifold
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class TransfiniteInterpolationManifold : public Manifold<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构建器。
+   *
    */
   TransfiniteInterpolationManifold();
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   virtual ~TransfiniteInterpolationManifold() override;
 
   /**
-   * Make a clone of this Manifold object.
+   * 对这个Manifold对象进行克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
-   * Initializes the manifold with a coarse mesh. The prerequisite for using
-   * this class is that the input triangulation is uniformly refined and the
-   * manifold is later attached to the same triangulation.
+   * 用一个粗略的网格来初始化流形。使用该类的前提条件是，输入的三角形是均匀细化的，并且流形后来被附加到同一三角形上。
+   * 每当流形ID的分配在初始化该类的三角形上发生变化时，必须再次调用initialize()，以更新连接到粗大单元的流形ID。
+   * @note
+   * 在使用此对象的过程中，不得销毁用于构建流形的三角图。
    *
-   * Whenever the assignment of manifold ids changes on the level of the
-   * triangulation which this class was initialized with, initialize() must be
-   * called again to update the manifold ids connected to the coarse cells.
-   *
-   * @note The triangulation used to construct the manifold must not be
-   * destroyed during the usage of this object.
    */
   void
   initialize(const Triangulation<dim, spacedim> &triangulation);
 
   /**
-   * Return the point which shall become the new vertex surrounded by the
-   * given points @p surrounding_points. @p weights contains appropriate
-   * weights for the surrounding points according to which the manifold
-   * determines the new point's position.
+   * 返回将成为新顶点的点，该点被给定的点所包围  @p
+   * surrounding_points.   @p weights
+   * 包含周围点的适当权重，流形根据该权重决定新点的位置。
+   * 这个类的实现覆盖了基类中的方法，并通过转折插值计算新点。实现的第一步是确定周围点所处的粗略单元。然后，通过牛顿迭代将坐标转换为粗单元上的单位坐标，然后根据权重计算出新的点。最后，根据无限插值将其向前推至实空间。
    *
-   * The implementation in this class overrides the method in the base class
-   * and computes the new point by a transfinite interpolation. The first step
-   * in the implementation is to identify the coarse cell on which the
-   * surrounding points are located. Then, the coordinates are transformed to
-   * the unit coordinates on the coarse cell by a Newton iteration, where the
-   * new point is then computed according to the weights. Finally, it is
-   * pushed forward to the real space according to the transfinite
-   * interpolation.
    */
   virtual Point<spacedim>
   get_new_point(const ArrayView<const Point<spacedim>> &surrounding_points,
                 const ArrayView<const double> &         weights) const override;
 
   /**
-   * Compute a new set of points that interpolate between the given points @p
-   * surrounding_points. @p weights is a table with as many columns as @p
-   * surrounding_points.size(). The number of columns in @p weights must match
-   * the length of @p new_points.
+   * 计算一组新的点，在给定的点之间进行插值  @p
+   * surrounding_points。  @p weights 是一个表，其列数与 @p
+   * surrounding_points.size()相同。 @p weights 中的列数必须与 @p
+   * new_points.
+   * 的长度相匹配。这个类中的实现覆盖了基类中的方法，并通过一个转折性的插值计算新点。实现的第一步是确定周围点所处的粗略单元。然后，通过牛顿迭代将坐标转换为粗单元上的单位坐标，然后根据权重计算出新的点。最后，根据转折内插法将其向前推到实空间。
+   * 实现不允许 @p surrounding_points 和 @p new_points
+   * 指向同一个向量，所以要确保将不同的对象传入该函数。
    *
-   * The implementation in this class overrides the method in the base class
-   * and computes the new point by a transfinite interpolation. The first step
-   * in the implementation is to identify the coarse cell on which the
-   * surrounding points are located. Then, the coordinates are transformed to
-   * the unit coordinates on the coarse cell by a Newton iteration, where the
-   * new points are then computed according to the weights. Finally, the is
-   * pushed forward to the real space according to the transfinite
-   * interpolation.
-   *
-   * The implementation does not allow for @p surrounding_points and
-   * @p new_points to point to the same vector, so make sure to pass different
-   * objects into the function.
    */
   virtual void
   get_new_points(const ArrayView<const Point<spacedim>> &surrounding_points,
@@ -1041,26 +872,19 @@ public:
 
 private:
   /**
-   * Internal function to identify the most suitable cells (=charts) where the
-   * given surrounding points are located. We use a cheap algorithm to
-   * identify the cells and rank the cells by probability before we actually
-   * do the search inside the relevant cells. The cells are sorted by the
-   * distance of a Q1 approximation of the inverse mapping to the unit cell of
-   * the surrounding points. We expect at most 20 cells (it should be up to 8
-   * candidates on a 3D structured mesh and a bit more on unstructured ones,
-   * typically we only get two or three), so get an array with 20 entries of a
-   * the indices <tt>cell->index()</tt>.
+   * 内部函数，用于识别给定的周围点所在的最合适的单元（=图表）。我们使用一种廉价的算法来识别单元格，并在实际进行相关单元格内的搜索之前按概率对单元格进行排序。这些单元是按照逆映射的Q1近似值与周围点的单元格的距离来排序的。我们期望最多有20个单元（在三维结构的网格上最多有8个候选单元，在非结构的网格上会更多一些，通常我们只得到两到三个），所以得到一个有20个条目的数组，其索引为<tt>cell->index()</tt>。
+   *
    */
   std::array<unsigned int, 20>
   get_possible_cells_around_points(
     const ArrayView<const Point<spacedim>> &surrounding_points) const;
 
   /**
-   * Finalizes the identification of the correct chart and populates @p
-   * chart_points with the pullbacks of the surrounding points. This method
-   * internally calls @p get_possible_cells_around_points().
+   * 最终确定正确的图表，并用周围点的回撤来填充 @p
+   * chart_points。这个方法在内部调用 @p
+   * get_possible_cells_around_points().
+   * 返回一个迭代器到定义了图表的单元格。
    *
-   * Return an iterator to the cell on which the chart is defined.
    */
   typename Triangulation<dim, spacedim>::cell_iterator
   compute_chart_points(
@@ -1068,20 +892,11 @@ private:
     ArrayView<Point<dim>>                   chart_points) const;
 
   /**
-   * Pull back operation into the unit coordinates on the given coarse cell.
+   * 在给定的粗略单元上对单位坐标进行回拉操作。
+   * 这个方法目前是基于一个类似牛顿的迭代来寻找原点的。我们可以通过提供一个好的初始猜测作为第三个参数来加快迭代速度。如果没有更好的点，可以使用cell->real_to_unit_cell_affine_approximation(p)
+   * @note  这个内部函数目前与 ChartManifold::pull_back()
+   * 函数不兼容，因为给定的类代表一个图表图集，而不是一个单一的图表。因此，pull_back()操作只对图表的附加信息有效，这些信息由粗略网格上的单元格给出。另一种实现方式可以根据粗网格的单元来转移索引，在图表空间和图像空间之间形成1对1的关系。
    *
-   * This method is currently based on a Newton-like iteration to find the
-   * point in the origin. One may speed up the iteration by providing a good
-   * initial guess as the third argument. If no better point is known, use
-   * cell->real_to_unit_cell_affine_approximation(p)
-   *
-   * @note This internal function is currently not compatible with the
-   * ChartManifold::pull_back() function because the given class represents an
-   * atlas of charts, not a single chart. Thus, the pull_back() operation is
-   * only valid with the additional information of the chart, given by a cell
-   * on the coarse grid. An alternative implementation could shift the index
-   * depending on the coarse cell for a 1-to-1 relation between the chart space
-   * and the image space.
    */
   Point<dim>
   pull_back(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -1089,30 +904,20 @@ private:
             const Point<dim> &initial_guess) const;
 
   /**
-   * Push forward operation.
+   * 前推操作。
+   * @note  这个内部函数目前与 ChartManifold::push_forward()
+   * 函数不兼容，因为给定的类代表一个图表图集，而不是一个单一的图表。因此，push_forward()操作只对图表的额外信息有效，这些信息由粗略网格上的单元格给出。另一种实现方式可以根据粗网格的单元来转移索引，在图表空间和图像空间之间形成1比1的关系。
    *
-   * @note This internal function is currently not compatible with the
-   * ChartManifold::push_forward() function because the given class represents
-   * an atlas of charts, not a single chart. Thus, the push_forward()
-   * operation is only valid with the additional information of the chart,
-   * given by a cell on the coarse grid. An alternative implementation could
-   * shift the index depending on the coarse cell for a 1-to-1 relation
-   * between the chart space and the image space.
    */
   Point<spacedim>
   push_forward(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
                const Point<dim> &chart_point) const;
 
   /**
-   * Gradient of the push_forward method.
+   * push_forward方法的梯度。
+   * @note 这个内部函数与 ChartManifold::push_forward_gradient()
+   * 函数不兼容，因为给定的类代表一个图表图集，而不是一个单一的图表。此外，这个私有函数还要求用户为这个函数的单一使用情况提供对图表点的push_forward()调用的结果，即在牛顿迭代内部，梯度是通过有限差分计算的。
    *
-   * @note This internal function is not compatible with the
-   * ChartManifold::push_forward_gradient() function because the given class
-   * represents an atlas of charts, not a single chart. Furthermore, this
-   * private function also requires the user to provide the result of the
-   * push_forward() call on the chart point for the single use case of this
-   * function, namely inside a Newton iteration where the gradient is computed
-   * by finite differences.
    */
   DerivativeForm<1, dim, spacedim>
   push_forward_gradient(
@@ -1121,40 +926,41 @@ private:
     const Point<spacedim> &pushed_forward_chart_point) const;
 
   /**
-   * The underlying triangulation.
+   * 底层的三角结构。
+   *
    */
   const Triangulation<dim, spacedim> *triangulation;
 
   /**
-   * The level of the mesh cells where the transfinite approximation is
-   * applied, usually level 0.
+   * 应用转折性近似的网格单元的级别，通常为0级。
+   *
    */
   int level_coarse;
 
   /**
-   * In case there all surrounding manifolds are the transfinite manifold or
-   * have default (invalid) manifold id, the manifold degenerates to a flat
-   * manifold and we can choose cheaper algorithms for the push_forward method.
+   * 如果周围的流形都是转折流形或者有默认的（无效的）流形ID，流形就会退化为平流形，我们可以为push_forward方法选择便宜的算法。
+   *
    */
   std::vector<bool> coarse_cell_is_flat;
 
   /**
-   * A flat manifold used to compute new points in the chart space where we
-   * use a FlatManifold description.
+   * 用于计算图表空间中的新点的平坦流形，我们使用FlatManifold描述。
+   *
    */
   FlatManifold<dim> chart_manifold;
 
   /**
-   * A vector of quadratic approximations to the inverse map from real points
-   * to chart points for each of the coarse mesh cells.
+   * 对每个粗网格单元来说，从实数点到图表点的逆向映射的四次方近似的向量。
+   *
    */
   std::vector<internal::MappingQGenericImplementation::
                 InverseQuadraticApproximation<dim, spacedim>>
     quadratic_approximation;
 
   /**
-   * The connection to Triangulation::signals::clear that must be reset once
-   * this class goes out of scope.
+   * 与 Triangulation::signals::clear
+   * 的连接，一旦这个类出了范围，必须重新设置。
+   *
    */
   boost::signals2::connection clear_signal;
 };
@@ -1162,3 +968,5 @@ private:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

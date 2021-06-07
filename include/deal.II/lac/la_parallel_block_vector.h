@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/la_parallel_block_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -60,25 +61,14 @@ namespace LinearAlgebra
 {
   namespace distributed
   {
-    /*! @addtogroup Vectors
-     *@{
-     */
+    /*!   @addtogroup 矢量  @{ !     
+* */
 
 
     /**
-     * An implementation of block vectors based on distributed deal.II
-     * vectors. While the base class provides for most of the interface, this
-     * class handles the actual allocation of vectors and provides functions
-     * that are specific to the underlying vector type.
+     * 一个基于分布式deal.II向量的块向量的实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型的特定函数。
+     * @note  这个模板的实例提供给<tt>  @<float@>  和  @<double@></tt>;  其他可以在应用程序中生成（见手册中的 @ref Instantiations 部分）。          @see   @ref GlossBlockLA  "块（线性代数）"
      *
-     * @note Instantiations for this template are provided for <tt>@<float@>
-     * and @<double@></tt>; others can be generated in application programs
-     * (see the section on
-     * @ref Instantiations
-     * in the manual).
-     *
-     * @see
-     * @ref GlossBlockLA "Block (linear algebra)"
      */
     template <typename Number>
     class BlockVector : public BlockVectorBase<Vector<Number>>,
@@ -86,31 +76,30 @@ namespace LinearAlgebra
     {
     public:
       /**
-       * The chunks size to split communication in update_ghost_values()
-       * and compress() calls.
+       * 在update_ghost_values()和compress()调用中分割通信的块大小。
+       * 当有太多的消息/请求未完成时，大多数常见的MPI实现会变得很慢。即使消息很小，比如只有1
+       * kB，我们也应该用 @p communication_block_size
+       * 收集足够的数据，以覆盖典型的infiniband延迟，这些延迟大约是几微秒。在5GB/s的吞吐量下发送20
+       * kB需要4微秒，所以我们应该达到带宽主导的制度，这已经很好了。
        *
-       * Most common MPI implementations will get slow when too many
-       * messages/requests are outstanding. Even when messages are small,
-       * say 1 kB only, we should collect enough data with @p communication_block_size
-       * to cover typical infiniband latencies which are around a few
-       * microseconds. Sending 20 kB at a throughput of 5 GB/s takes 4
-       * microseconds, so we should arrive at the bandwidth dominated regime
-       * then which is good enough.
        */
       static constexpr unsigned int communication_block_size = 20;
 
       /**
-       * Typedef the base class for simpler access to its own alias.
+       * 对基类进行类型化定义，以便更简单地访问它自己的别名。
+       *
        */
       using BaseClass = BlockVectorBase<Vector<Number>>;
 
       /**
-       * Typedef the type of the underlying vector.
+       * 类型化底层向量的类型。
+       *
        */
       using BlockType = typename BaseClass::BlockType;
 
       /**
-       * Import the alias from the base class.
+       * 从基类中导入别名。
+       *
        */
       using value_type      = typename BaseClass::value_type;
       using real_type       = typename BaseClass::real_type;
@@ -123,109 +112,97 @@ namespace LinearAlgebra
       using const_iterator  = typename BaseClass::const_iterator;
 
       /**
-       * @name 1: Basic operations
+       * @name  1: 基本操作
+       *
        */
       //@{
 
       /**
-       * Constructor. There are three ways to use this constructor. First,
-       * without any arguments, it generates an object with no blocks. Given
-       * one argument, it initializes <tt>num_blocks</tt> blocks, but these
-       * blocks have size zero. The third variant finally initializes all
-       * blocks to the same size <tt>block_size</tt>.
+       * 构造函数。有三种方法来使用这个构造函数。首先，没有任何参数，它生成一个没有块的对象。给定一个参数，它初始化<tt>num_blocks</tt>块，但这些块的大小为零。第三种变体最后将所有块初始化为相同的大小<tt>block_size</tt>。
+       * 如果你打算使用不同大小的块，请参考下面的其他构造函数。
        *
-       * Confer the other constructor further down if you intend to use blocks
-       * of different sizes.
        */
       explicit BlockVector(const size_type num_blocks = 0,
                            const size_type block_size = 0);
 
       /**
-       * Copy-Constructor. Dimension set to that of V, all components are
-       * copied from V
+       * 复制-构造器。尺寸设置为V的尺寸，所有的组件都是从V中复制的。
+       *
        */
       BlockVector(const BlockVector<Number> &V);
 
       /**
-       * Copy constructor taking a BlockVector of another data type. This will
-       * fail if there is no conversion path from <tt>OtherNumber</tt> to
-       * <tt>Number</tt>. Note that you may lose accuracy when copying to a
-       * BlockVector with data elements with less accuracy.
+       * 拷贝构造函数获取另一种数据类型的BlockVector。如果没有从<tt>OtherNumber</tt>到<tt>Number</tt>的转换路径，这将失败。注意，当你复制到一个数据元素精度较低的BlockVector时，可能会失去精度。
+       * 旧版本的gcc不尊重模板构造函数上的 @p explicit
+       * 关键字。在这种情况下，很容易不小心写出效率很低的代码，因为编译器开始执行隐藏的转换。为了避免这种情况，如果我们在配置过程中检测到有损坏的编译器，这个功能就会被禁用。
        *
-       * Older versions of gcc did not honor the @p explicit keyword on
-       * template constructors. In such cases, it is easy to accidentally
-       * write code that can be very inefficient, since the compiler starts
-       * performing hidden conversions. To avoid this, this function is
-       * disabled if we have detected a broken compiler during configuration.
        */
       template <typename OtherNumber>
       explicit BlockVector(const BlockVector<OtherNumber> &v);
 
       /**
-       * Constructor. Set the number of blocks to <tt>block_sizes.size()</tt>
-       * and initialize each block with <tt>block_sizes[i]</tt> zero elements.
+       * 构造函数。设置块的数量为<tt>block_sizes.size()</tt>，并以<tt>block_sizes[i]</tt>零元素初始化每个块。
+       *
        */
       BlockVector(const std::vector<size_type> &block_sizes);
 
       /**
-       * Construct a block vector with an IndexSet for the local range and
-       * ghost entries for each block.
+       * 构建一个块向量，用IndexSet来表示本地范围，并为每个块建立ghost条目。
+       *
        */
       BlockVector(const std::vector<IndexSet> &local_ranges,
                   const std::vector<IndexSet> &ghost_indices,
                   const MPI_Comm &             communicator);
 
       /**
-       * Same as above but the ghost indices are assumed to be empty.
+       * 与上述相同，但假设鬼魂索引为空。
+       *
        */
       BlockVector(const std::vector<IndexSet> &local_ranges,
                   const MPI_Comm &             communicator);
 
       /**
-       * Destructor.
+       * 解构器。
+       * @note
+       * 我们需要明确地提供一个析构器，否则链接器可能会认为它是未使用的而丢弃它，尽管在不同的部分需要。英特尔的编译器很容易出现这种行为。
        *
-       * @note We need to explicitly provide a destructor, otherwise the
-       *   linker may think it is unused and discards it, although required
-       *   in a different section. The Intel compiler is prone to this
-       *   behavior.
        */
       virtual ~BlockVector() override = default;
 
       /**
-       * Copy operator: fill all components of the vector with the given
-       * scalar value.
+       * 复制操作符：用给定的标量值填充向量的所有分量。
+       *
        */
       virtual BlockVector &
       operator=(const value_type s) override;
 
       /**
-       * Copy operator for arguments of the same type. Resize the present
-       * vector if necessary.
+       * 对于相同类型的参数的复制操作符。如果有必要，可以调整现在的向量的大小。
+       *
        */
       BlockVector &
       operator=(const BlockVector &V);
 
       /**
-       * Copy operator for template arguments of different types. Resize the
-       * present vector if necessary.
+       * 不同类型的模板参数的复制操作。如果有必要的话，调整当前向量的大小。
+       *
        */
       template <class Number2>
       BlockVector &
       operator=(const BlockVector<Number2> &V);
 
       /**
-       * Copy a regular vector into a block vector.
+       * 将一个普通向量复制到一个块向量中。
+       *
        */
       BlockVector &
       operator=(const Vector<Number> &V);
 
 #ifdef DEAL_II_WITH_PETSC
       /**
-       * Copy the content of a PETSc vector into the calling vector. This
-       * function assumes that the vectors layouts have already been
-       * initialized to match.
+       * 将一个PETSc向量的内容复制到调用向量中。这个函数假定向量的布局已经被初始化为匹配。
+       * 这个运算符只有在deal.II被配置为PETSc时才可用。
        *
-       * This operator is only available if deal.II was configured with PETSc.
        */
       BlockVector<Number> &
       operator=(const PETScWrappers::MPI::BlockVector &petsc_vec);
@@ -233,29 +210,19 @@ namespace LinearAlgebra
 
 #ifdef DEAL_II_WITH_TRILINOS
       /**
-       * Copy the content of a Trilinos vector into the calling vector. This
-       * function assumes that the vectors layouts have already been
-       * initialized to match.
+       * 将一个Trilinos向量的内容复制到调用向量中。这个函数假定向量的布局已经被初始化为匹配。
+       * 这个运算符只有在deal.II被配置为Trilinos时才可用。
        *
-       * This operator is only available if deal.II was configured with
-       * Trilinos.
        */
       BlockVector<Number> &
       operator=(const TrilinosWrappers::MPI::BlockVector &trilinos_vec);
 #endif
 
       /**
-       * Reinitialize the BlockVector to contain <tt>num_blocks</tt> blocks of
-       * size <tt>block_size</tt> each.
+       * 重新初始化BlockVector，使其包含<tt>num_blocks</tt>每个大小为<tt>block_size</tt>的块。
+       * 如果第二个参数是默认值，那么块向量就会分配指定数量的块，但让它们的大小为零。然后你需要重新初始化各个区块，并调用collect_sizes()来更新区块系统对其各个区块大小的认识。
+       * 如果<tt>omit_zeroing_entries==false</tt>，则向量被填充为零。
        *
-       * If the second argument is left at its default value, then the block
-       * vector allocates the specified number of blocks but leaves them at
-       * zero size. You then need to later reinitialize the individual blocks,
-       * and call collect_sizes() to update the block system's knowledge of
-       * its individual block's sizes.
-       *
-       * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with
-       * zeros.
        */
       void
       reinit(const size_type num_blocks,
@@ -263,41 +230,23 @@ namespace LinearAlgebra
              const bool      omit_zeroing_entries = false);
 
       /**
-       * Reinitialize the BlockVector such that it contains
-       * <tt>block_sizes.size()</tt> blocks. Each block is reinitialized to
-       * dimension <tt>block_sizes[i]</tt>.
+       * 重新初始化BlockVector，使其包含<tt>block_sizes.size()</tt>块。每个块都被重新初始化为<tt>block_sizes[i]</tt>的尺寸。
+       * 如果块的数量与调用此函数前相同，所有的向量都保持不变，并且为每个向量调用
+       * reinit()。
+       * 如果<tt>omit_zeroing_entries==false</tt>，则向量被填充为零。
+       * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新其缓存的向量大小。如果你在其中一个块上调用reinit()，那么对这个对象的后续操作可能会产生不可预测的结果，因为它们可能会被路由到错误的块上。
        *
-       * If the number of blocks is the same as before this function was
-       * called, all vectors remain the same and reinit() is called for each
-       * vector.
-       *
-       * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with
-       * zeros.
-       *
-       * Note that you must call this (or the other reinit() functions)
-       * function, rather than calling the reinit() functions of an individual
-       * block, to allow the block vector to update its caches of vector
-       * sizes. If you call reinit() on one of the blocks, then subsequent
-       * actions on this object may yield unpredictable results since they may
-       * be routed to the wrong block.
        */
       void
       reinit(const std::vector<size_type> &N,
              const bool                    omit_zeroing_entries = false);
 
       /**
-       * Change the dimension to that of the vector <tt>V</tt>. The same
-       * applies as for the other reinit() function.
+       * 将尺寸改为向量<tt>V</tt>的尺寸。这与其他reinit()函数的情况相同。
+       * <tt>V</tt>的元素不会被复制，也就是说，这个函数与调用<tt>reinit
+       * (V.size(), omit_zeroing_entries)</tt>相同。
+       * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新它的向量大小缓存。如果你调用其中一个块的reinit()，那么这个对象的后续操作可能会产生不可预测的结果，因为它们可能被路由到错误的块。
        *
-       * The elements of <tt>V</tt> are not copied, i.e.  this function is the
-       * same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.
-       *
-       * Note that you must call this (or the other reinit() functions)
-       * function, rather than calling the reinit() functions of an individual
-       * block, to allow the block vector to update its caches of vector
-       * sizes. If you call reinit() of one of the blocks, then subsequent
-       * actions of this object may yield unpredictable results since they may
-       * be routed to the wrong block.
        */
       template <typename Number2>
       void
@@ -305,76 +254,60 @@ namespace LinearAlgebra
              const bool                  omit_zeroing_entries = false);
 
       /**
-       * This function copies the data that has accumulated in the data buffer
-       * for ghost indices to the owning processor. For the meaning of the
-       * argument @p operation, see the entry on
-       * @ref GlossCompress "Compressing distributed vectors and matrices"
-       * in the glossary.
+       * 这个函数将积累在数据缓冲区中的鬼魂索引的数据复制到拥有的处理器中。关于参数 @p operation, 的含义，见术语表中的 @ref GlossCompress "压缩分布式向量和矩阵 "
+       * 条目。            这个函数有两个变体。如果用参数 @p
+       * 调用 VectorOperation::add
+       * ，则将所有积累在幽灵元素中的数据添加到拥有处理器的相应元素中，并在之后清除幽灵阵列。如果用参数
+       * @p   VectorOperation::insert,
+       * 调用，则执行设置操作。因为在一个有鬼魂元素的向量中设置元素是不明确的（因为可以同时设置鬼魂位置和拥有位置上的元素），这个操作假设所有的数据都在拥有处理器上正确设置。因此在调用
+       * compress(VectorOperation::insert),
+       * 时，所有的ghost条目都被简单地清零（使用zero_ghost_values()）。在调试模式下，会进行一个检查，确保数据集在处理器之间实际上是一致的，也就是说，每当发现一个非零的鬼魂元素，就会与拥有处理器上的值进行比较，如果这些元素不一致就会抛出一个异常。
        *
-       * There are two variants for this function. If called with argument @p
-       * VectorOperation::add adds all the data accumulated in ghost elements
-       * to the respective elements on the owning processor and clears the
-       * ghost array afterwards. If called with argument @p
-       * VectorOperation::insert, a set operation is performed. Since setting
-       * elements in a vector with ghost elements is ambiguous (as one can set
-       * both the element on the ghost site as well as the owning site), this
-       * operation makes the assumption that all data is set correctly on the
-       * owning processor. Upon call of compress(VectorOperation::insert), all
-       * ghost entries are therefore simply zeroed out (using
-       * zero_ghost_values()). In debug mode, a check is performed that makes
-       * sure that the data set is actually consistent between processors,
-       * i.e., whenever a non-zero ghost element is found, it is compared to
-       * the value on the owning processor and an exception is thrown if these
-       * elements do not agree.
        */
       virtual void
       compress(::dealii::VectorOperation::values operation) override;
 
       /**
-       * Fills the data field for ghost indices with the values stored in the
-       * respective positions of the owning processor. This function is needed
-       * before reading from ghosts. The function is @p const even though
-       * ghost data is changed. This is needed to allow functions with a @p
-       * const vector to perform the data exchange without creating
-       * temporaries.
+       * 用存储在拥有处理器各自位置上的值来填充ghost索引的数据域。在从ghost中读取数据之前需要这个函数。该函数是
+       * @p const
+       * ，即使ghost数据被改变。需要这样做是为了让具有 @p
+       * 常量向量的函数在不创建暂存器的情况下进行数据交换。
+       *
        */
       void
       update_ghost_values() const;
 
       /**
-       * This method zeros the entries on ghost dofs, but does not touch
-       * locally owned DoFs.
+       * 这个方法将ghost
+       * dofs上的条目清零，但不触及本地拥有的DoF。
+       * 调用这个方法后，禁止对向量中的鬼魂元素进行读取访问，并且会抛出一个异常。在这种状态下，只允许对鬼魂元素进行写入访问。
+       * @deprecated  使用zero_out_ghost_values()代替。
        *
-       * After calling this method, read access to ghost elements of the
-       * vector is forbidden and an exception is thrown. Only write access to
-       * ghost elements is allowed in this state.
-       *
-       * @deprecated Use zero_out_ghost_values() instead.
        */
       DEAL_II_DEPRECATED void
       zero_out_ghosts() const;
 
 
       /**
-       * This method zeros the entries on ghost dofs, but does not touch
-       * locally owned DoFs.
+       * 这个方法将ghost
+       * dofs上的条目清零，但不涉及本地拥有的DoF。
+       * 调用该方法后，禁止对向量中的ghost元素进行读取访问，并且会抛出一个异常。在这种状态下，只允许对鬼魂元素进行写入访问。
        *
-       * After calling this method, read access to ghost elements of the
-       * vector is forbidden and an exception is thrown. Only write access to
-       * ghost elements is allowed in this state.
        */
       void
       zero_out_ghost_values() const;
 
       /**
-       * Return if this Vector contains ghost elements.
+       * 返回这个向量是否包含鬼魂元素。
+       *
        */
       bool
       has_ghost_elements() const;
 
       /**
-       * This is a collective add operation that adds a whole set of values
-       * stored in @p values to the vector components specified by @p indices.
+       * 这是一个集体添加操作，将存储在 @p values
+       * 中的一整组值添加到 @p indices. 指定的向量成分中。
+       *
        */
       template <typename OtherNumber>
       void
@@ -382,98 +315,93 @@ namespace LinearAlgebra
           const ::dealii::Vector<OtherNumber> &values);
 
       /**
-       * Scaling and simple vector addition, i.e.  <tt>*this =
-       * s*(*this)+V</tt>.
+       * 缩放和简单的向量加法，即<tt>*this = s*(*this)+V</tt>。
+       *
        */
       void
       sadd(const Number s, const BlockVector<Number> &V);
 
       /**
-       * Return whether the vector contains only elements with value zero.
-       * This function is mainly for internal consistency checks and should
-       * seldom be used when not in debug mode since it uses quite some time.
+       * 返回向量是否只包含数值为0的元素。
+       * 这个函数主要是用于内部一致性检查，在非调试模式下应该很少使用，因为它耗费了不少时间。
+       *
        */
       virtual bool
       all_zero() const override;
 
       /**
-       * Compute the mean value of all the entries in the vector.
+       * 计算向量中所有条目的平均值。
+       *
        */
       virtual Number
       mean_value() const override;
 
       /**
-       * $l_p$-norm of the vector. The pth root of the sum of the pth powers
-       * of the absolute values of the elements.
+       * $l_p$
+       * -向量的正负值。元素绝对值的p次方之和的p次根。
+       *
        */
       real_type
       lp_norm(const real_type p) const;
 
       /**
-       * Swap the contents of this vector and the other vector <tt>v</tt>. One
-       * could do this operation with a temporary variable and copying over
-       * the data elements, but this function is significantly more efficient
-       * since it only swaps the pointers to the data of the two vectors and
-       * therefore does not need to allocate temporary storage and move data
-       * around.
+       * 把这个向量的内容和另一个向量<tt>v</tt>交换。我们可以用一个临时变量和复制数据元素来完成这个操作，但是这个函数明显更有效率，因为它只交换两个向量的数据指针，因此不需要分配临时存储和移动数据。
+       * 限制：现在这个函数只在两个向量有相同数量的块的情况下工作。如果需要，也应该交换块的数量。
+       * 这个函数类似于所有C++标准容器的swap()函数。此外，还有一个全局函数swap(u,v)，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数类比。
        *
-       * Limitation: right now this function only works if both vectors have
-       * the same number of blocks. If needed, the numbers of blocks should be
-       * exchanged, too.
-       *
-       * This function is analogous to the swap() function of all C++
-       * standard containers. Also, there is a global function swap(u,v) that
-       * simply calls <tt>u.swap(v)</tt>, again in analogy to standard
-       * functions.
        */
       void
       swap(BlockVector<Number> &v);
       //@}
 
       /**
-       * @name 2: Implementation of VectorSpaceVector
+       * @name  2：VectorSpaceVector的实现
+       *
        */
       //@{
 
       /**
-       * Change the dimension to that of the vector V. The elements of V are not
-       * copied.
+       * 将维度改为向量V的维度，V的元素不会被复制。
+       *
        */
       virtual void
       reinit(const VectorSpaceVector<Number> &V,
              const bool omit_zeroing_entries = false) override;
 
       /**
-       * Multiply the entire vector by a fixed factor.
+       * 将整个向量乘以一个固定的因子。
+       *
        */
       virtual BlockVector<Number> &
       operator*=(const Number factor) override;
 
       /**
-       * Divide the entire vector by a fixed factor.
+       * 用整个向量除以一个固定的因子。
+       *
        */
       virtual BlockVector<Number> &
       operator/=(const Number factor) override;
 
       /**
-       * Add the vector @p V to the present one.
+       * 将向量 @p V 添加到现在的向量中。
+       *
        */
       virtual BlockVector<Number> &
       operator+=(const VectorSpaceVector<Number> &V) override;
 
       /**
-       * Subtract the vector @p V from the present one.
+       * 从现在的向量中减去向量 @p V 。
+       *
        */
       virtual BlockVector<Number> &
       operator-=(const VectorSpaceVector<Number> &V) override;
 
       /**
-       * Import all the elements present in the vector's IndexSet from the input
-       * vector @p V. VectorOperation::values @p operation is used to decide if
-       * the elements in @p V should be added to the current vector or replace the
-       * current elements. The last parameter can be used if the same
-       * communication pattern is used multiple times. This can be used to
-       * improve performance.
+       * 从输入向量 @p V.  VectorOperation::values  @p operation
+       * 中导入向量的IndexSet中存在的所有元素，用于决定 @p
+       * V
+       * 中的元素是否应该添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
+       *
        */
       virtual void
       import(const LinearAlgebra::ReadWriteVector<Number> &V,
@@ -482,26 +410,24 @@ namespace LinearAlgebra
                communication_pattern = {}) override;
 
       /**
-       * Return the scalar product of two vectors.
+       * 返回两个向量的标量乘积。
+       *
        */
       virtual Number
       operator*(const VectorSpaceVector<Number> &V) const override;
 
       /**
-       * Calculate the scalar product between each block of this vector and @p V
-       * and store the result in a full matrix @p matrix. This function
-       * computes the result by forming $A_{ij}=U_i \cdot V_j$ where $U_i$
-       * and $V_j$ indicate the $i$th block (not element!) of $U$ and the
-       * $j$th block of $V$, respectively. If @p symmetric is
-       * <code>true</code>, it is assumed that inner product results in a
-       * square symmetric matrix and almost half of the scalar products can be
-       * avoided.
+       * 计算这个向量的每个块和 @p V
+       * 之间的标量积，并将结果存储在一个完整的矩阵 @p
+       * matrix. 中。这个函数通过形成 $A_{ij}=U_i \cdot V_j$
+       * 来计算结果，其中 $U_i$ 和 $V_j$ 分别表示 $i$
+       * 的第1个块（不是元素！）以及 $j$ 的第1个块 $V$
+       * ，。如果 @p symmetric 是 <code>true</code>
+       * ，假定内积的结果是一个方形对称矩阵，几乎一半的标量积可以避免。
+       * 显然，这个函数只有在两个向量的所有块都是相同大小的情况下才能使用。
+       * @note
+       * 在内部，将调用一个全局还原来累积本地拥有的自由度之间的标量积。
        *
-       * Obviously, this function can only be used if all blocks of both vectors
-       * are of the same size.
-       *
-       * @note Internally, a single global reduction will be called to
-       * accumulate scalar product between locally owned degrees of freedom.
        */
       template <typename FullMatrixType>
       void
@@ -510,20 +436,16 @@ namespace LinearAlgebra
                                 const bool symmetric = false) const;
 
       /**
-       * Calculate the scalar product between each block of this vector and @p V
-       * using a metric tensor @p matrix. This function
-       * computes the result of $ \sum_{ij} A^{ij} U_i \cdot V_j$ where $U_i$
-       * and $V_j$ indicate the $i$th block (not element) of $U$ and the
-       * $j$th block of $V$, respectively. If @p symmetric is
-       * <code>true</code>, it is assumed that $U_i \cdot V_j$ and $A^{ij}$ are
-       * symmetric matrices and almost half of the scalar products can be
-       * avoided.
+       * 使用度量张量 @p matrix. 计算这个向量的每个块和 @p V
+       * 之间的标量积，这个函数计算 $ \sum_{ij} A^{ij} U_i \cdot
+       * V_j$ 的结果，其中 $U_i$ 和 $V_j$ 分别表示 $U$
+       * 的第1个块（不是元素）和 $j$ 的第2个块。如果 @p
+       * symmetric 是 <code>true</code> ，则假定 $U_i \cdot V_j$ 和
+       * $A^{ij}$ 是对称矩阵，几乎一半的标量积可以避免。
+       * 显然，只有当两个向量的所有块都是相同大小时才能使用这个函数。
+       * @note
+       * 在内部，将调用一个全局还原来累积本地拥有的自由度之间的标量积。
        *
-       * Obviously, this function can only be used if all blocks of both vectors
-       * are of the same size.
-       *
-       * @note Internally, a single global reduction will be called to
-       * accumulate the scalar product between locally owned degrees of freedom.
        */
       template <typename FullMatrixType>
       Number
@@ -532,13 +454,11 @@ namespace LinearAlgebra
                                             const bool symmetric = false) const;
 
       /**
-       * Set each block of this vector as follows:
-       * $V^i = s V^i + b \sum_{j} U_j A^{ji}$ where $V^i$
-       * and $U_j$ indicate the $i$th block (not element) of $V$ and the
-       * $j$th block of $U$, respectively.
+       * 设置该向量的每个块，如下所示。        $V^i = s V^i + b
+       * \sum_{j} U_j A^{ji}$  其中 $V^i$ 和 $U_j$ 分别表示 $V$ 的第
+       * $i$ 块（非元素）和 $j$ 的第 $U$ 块，。
+       * 显然，这个函数只有在两个向量的所有块都是相同大小时才能使用。
        *
-       * Obviously, this function can only be used if all blocks of both vectors
-       * are of the same size.
        */
       template <typename FullMatrixType>
       void
@@ -548,19 +468,23 @@ namespace LinearAlgebra
             const Number          b = Number(1.)) const;
 
       /**
-       * Add @p a to all components. Note that @p a is a scalar not a vector.
+       * 将 @p a 添加到所有组件中。注意， @p a
+       * 是一个标量，而不是一个向量。
+       *
        */
       virtual void
       add(const Number a) override;
 
       /**
-       * Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.
+       * 向量的倍数的简单加法，即<tt>*this += a*V</tt>。
+       *
        */
       virtual void
       add(const Number a, const VectorSpaceVector<Number> &V) override;
 
       /**
-       * Multiple addition of scaled vectors, i.e. <tt>*this += a*V+b*W</tt>.
+       * 缩放向量的多重加法，即：<tt>*this += a*V+b*W</tt>。
+       *
        */
       virtual void
       add(const Number                     a,
@@ -569,16 +493,19 @@ namespace LinearAlgebra
           const VectorSpaceVector<Number> &W) override;
 
       /**
-       * A collective add operation: This function adds a whole set of values
-       * stored in @p values to the vector components specified by @p indices.
+       * 一个集体加法操作。这个函数将存储在 @p values
+       * 中的一整套数值添加到 @p indices.
+       * 指定的向量成分中。
+       *
        */
       virtual void
       add(const std::vector<size_type> &indices,
           const std::vector<Number> &   values);
 
       /**
-       * Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =
-       * s*(*this)+a*V</tt>.
+       * 缩放和简单的向量倍数相加，即<tt>*this =
+       * s*(*this)+a*V</tt>。
+       *
        */
       virtual void
       sadd(const Number                     s,
@@ -586,65 +513,62 @@ namespace LinearAlgebra
            const VectorSpaceVector<Number> &V) override;
 
       /**
-       * Scale each element of this vector by the corresponding element in the
-       * argument. This function is mostly meant to simulate multiplication (and
-       * immediate re-assignment) by a diagonal scaling matrix.
+       * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟对角线缩放矩阵的乘法（和立即重新分配）。
+       *
        */
       virtual void
       scale(const VectorSpaceVector<Number> &scaling_factors) override;
 
       /**
-       * Assignment <tt>*this = a*V</tt>.
+       * 赋值 <tt>*this = a*V</tt>.
+       *
        */
       virtual void
       equ(const Number a, const VectorSpaceVector<Number> &V) override;
 
       /**
-       * Return the l<sub>1</sub> norm of the vector (i.e., the sum of the
-       * absolute values of all entries among all processors).
+       * 返回向量的l<sub>1</sub>规范（即所有处理器中所有条目的绝对值之和）。
+       *
        */
       virtual real_type
       l1_norm() const override;
 
       /**
-       * Return the $l_2$ norm of the vector (i.e., the square root of
-       * the sum of the square of all entries among all processors).
+       * 返回向量的 $l_2$
+       * 准则（即所有处理器中所有条目的平方之和的平方根）。
+       *
        */
       virtual real_type
       l2_norm() const override;
 
       /**
-       * Return the square of the $l_2$ norm of the vector.
+       * 返回向量的 $l_2$ 规范的平方。
+       *
        */
       real_type
       norm_sqr() const;
 
       /**
-       * Return the maximum norm of the vector (i.e., the maximum absolute value
-       * among all entries and among all processors).
+       * 返回向量的最大规范（即所有条目和所有处理器中的最大绝对值）。
+       *
        */
       virtual real_type
       linfty_norm() const override;
 
       /**
-       * Perform a combined operation of a vector addition and a subsequent
-       * inner product, returning the value of the inner product. In other
-       * words, the result of this function is the same as if the user called
+       * 执行一个向量加法和后续内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用的
        * @code
        * this->add(a, V);
-       * return_value = *this * W;
+       * return_value =this W;
        * @endcode
+       * 这个函数存在的原因是这个操作比单独调用这两个函数涉及的内存转移要少。这个方法只需要加载三个向量，
+       * @p this,   @p V,   @p W,
+       * ，而调用单独的方法意味着要加载调用向量 @p this
+       * 两次。由于大多数向量操作都有内存传输限制，这就使时间减少了25\%（如果
+       * @p W 等于 @p this).
+       * ，则减少50\%）对于复值向量，第二步中的标量乘法被实现为
+       * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
        *
-       * The reason this function exists is that this operation involves less
-       * memory transfer than calling the two functions separately. This method
-       * only needs to load three vectors, @p this, @p V, @p W, whereas calling
-       * separate methods means to load the calling vector @p this twice. Since
-       * most vector operations are memory transfer limited, this reduces the
-       * time by 25\% (or 50\% if @p W equals @p this).
-       *
-       * For complex-valued vectors, the scalar product in the second step is
-       * implemented as
-       * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
        */
       virtual Number
       add_and_dot(const Number                     a,
@@ -652,28 +576,26 @@ namespace LinearAlgebra
                   const VectorSpaceVector<Number> &W) override;
 
       /**
-       * Return the global size of the vector, equal to the sum of the number of
-       * locally owned indices among all processors.
+       * 返回向量的全局大小，等于所有处理器中本地拥有的索引数之和。
+       *
        */
       virtual size_type
       size() const override;
 
       /**
-       * Return an index set that describes which elements of this vector are
-       * owned by the current processor. As a consequence, the index sets
-       * returned on different processors if this is a distributed vector will
-       * form disjoint sets that add up to the complete index set. Obviously, if
-       * a vector is created on only one processor, then the result would
-       * satisfy
+       * 返回一个索引集，描述这个向量的哪些元素为当前处理器所拥有。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相交的集合，加起来就是完整的索引集。很明显，如果一个向量只在一个处理器上创建，那么结果将满足
        * @code
-       *  vec.locally_owned_elements() == complete_index_set(vec.size())
+       * vec.locally_owned_elements() == complete_index_set(vec.size())
        * @endcode
+       *
+       *
        */
       virtual dealii::IndexSet
       locally_owned_elements() const override;
 
       /**
-       * Print the vector to the output stream @p out.
+       * 将向量打印到输出流  @p out.  。
+       *
        */
       virtual void
       print(std::ostream &     out,
@@ -682,32 +604,34 @@ namespace LinearAlgebra
             const bool         across     = true) const override;
 
       /**
-       * Return the memory consumption of this class in bytes.
+       * 返回该类的内存消耗，单位是字节。
+       *
        */
       virtual std::size_t
       memory_consumption() const override;
       //@}
 
       /**
-       * @addtogroup Exceptions
-       * @{
+       * @addtogroup  异常情况  @{
+       *
        */
 
       /**
-       * Attempt to perform an operation between two incompatible vector types.
-       *
+       * 试图在两个不兼容的向量类型之间执行操作。
        * @ingroup Exceptions
+       *
        */
       DeclException0(ExcVectorTypeNotCompatible);
 
       /**
-       * Exception
+       * 异常情况
+       *
        */
       DeclException0(ExcIteratorRangeDoesNotMatchVectorSize);
       //@}
     };
 
-    /*@}*/
+     /*@}*/ 
 
   } // end of namespace distributed
 
@@ -715,11 +639,10 @@ namespace LinearAlgebra
 
 
 /**
- * Global function which overloads the default implementation of the C++
- * standard library which uses a temporary object. The function simply
- * exchanges the data of the two vectors.
+ * 全局函数，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
+ * @relatesalso  BlockVector
  *
- * @relatesalso BlockVector
+ *
  */
 template <typename Number>
 inline void
@@ -731,8 +654,10 @@ swap(LinearAlgebra::distributed::BlockVector<Number> &u,
 
 
 /**
- * Declare dealii::LinearAlgebra::distributed::BlockVector as distributed
- * vector.
+ * 将 dealii::LinearAlgebra::distributed::BlockVector
+ * 声明为分布式向量。
+ *
+ *
  */
 template <typename Number>
 struct is_serial_vector<LinearAlgebra::distributed::BlockVector<Number>>
@@ -747,3 +672,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

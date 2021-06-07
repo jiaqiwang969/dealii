@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/function_level_set_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -27,27 +28,38 @@ namespace Functions
   namespace LevelSet
   {
     /**
-     * Signed-distance level set function of a sphere:
-     * $\psi(x) = \| x - x^c \| - R$.
-     * Here, $x^c$ is the center of the sphere and $R$ is its radius. This
-     * function is thus zero on the sphere, negative "inside" the ball having
-     * the sphere as its boundary, and positive in the rest of
-     * $\mathbb{R}^{dim}$.
+     * 球体的有符号距离水平集函数。      $\psi(x) = \| x
      *
-     * This function has gradient and Hessian equal to
-     * $\partial_i \psi(x) = (x - x^c)/\| x - x^c \|$,
-     * $\partial_i \partial_j \psi =
-     * \delta_{ij}/\| x - x^c \| - (x_i - x_i^c)(x_j - x_j^c)/\| x - x^c \|^3$,
-     * where $\delta_{ij}$ is the Kronecker delta function.
+     * - x^c \|
      *
+     * - R$  .     这里， $x^c$ 是球体的中心， $R$
+     * 是其半径。因此，这个函数在球体上为零，在以球体为边界的球体内为负数，在
+     * $\mathbb{R}^{dim}$ 的其余部分为正数。
+     * 这个函数的梯度和Hessian等于  $\partial_i \psi(x) = (x
+     *
+     * - x^c)/\| x
+     *
+     * - x^c \|$  ,  $\partial_i \partial_j \psi = \delta_{ij}/\| x
+     *
+     * - x^c \|
+     *
+     * - (x_i
+     *
+     * - x_i^c)(x_j
+     *
+     * - x_j^c)/\| x
+     *
+     * - x^c \|^3$  , 其中  $\delta_{ij}$  是Kronecker delta函数。
      * @ingroup functions
+     *
      */
     template <int dim>
     class Sphere : public Function<dim>
     {
     public:
       /**
-       * Constructor, takes the center and radius of the sphere.
+       * 构造函数，获取球体的中心和半径。
+       *
        */
       Sphere(const Point<dim> &center = Point<dim>(), const double radius = 1);
 
@@ -56,26 +68,20 @@ namespace Functions
             const unsigned int component = 0) const override;
 
       /**
-       * @copydoc Function::gradient()
+       * @copydoc   Function::gradient()  *  Function::gradient() .
+       * @note  梯度在球体的中心是单数。如果输入的 @p point
+       * 离中心太近，可能会出现浮点异常，或者梯度中的条目可能是+inf/-inf或+nan/-nan，这取决于该点相对于奇异点的位置。
        *
-       * @note The gradient is singular at the center of the sphere. If the
-       * incoming @p point is too close to the center, a floating-point
-       * exception may be thrown or entries in the gradient may be +inf/-inf
-       * or +nan/-nan, depending on how the point is located relative to the
-       * singularity.
        */
       Tensor<1, dim>
       gradient(const Point<dim> & point,
                const unsigned int component = 0) const override;
 
       /**
-       * @copydoc Function::hessian()
+       * @copydoc   Function::hessian() .
+       * @note  Hessian在球体中心是奇点。如果输入的 @p point
+       * 离中心太近，可能会出现浮点异常，或者Hessian中的条目可能是+inf/inf或+nan/nan，这取决于该点相对于奇异点的位置。
        *
-       * @note The Hessian is singular at the center of the sphere. If the
-       * incoming @p point is too close to the center, a floating-point
-       * exception may be thrown or entries in the Hessian may be +inf/-inf
-       * or +nan/-nan, depending on how the point is located relative to the
-       * singularity.
        */
       SymmetricTensor<2, dim>
       hessian(const Point<dim> & point,
@@ -88,22 +94,23 @@ namespace Functions
 
 
     /**
-     * Signed level set function of a plane in $\mathbb{R}^{dim}$:
-     * $\psi(x) = n \cdot (x - x_p)$.
-     * Here, $n$ is the plane normal and $x_p$ is a point in the plane.
-     * Thus, with respect to the direction of the normal, this function is
-     * positive above the plane, zero in the plane, and negative below the
-     * plane. If the normal is normalized, $\psi$ will be the signed distance to
-     * the closest point in the plane.
+     * 在 $\mathbb{R}^{dim}$ 中的平面的有符号水平集函数：
+     * $\psi(x) = n \cdot (x
      *
+     * - x_p)$  。    这里， $n$ 是平面法线， $x_p$
+     * 是平面上的一个点。
+     * 因此，关于法线的方向，这个函数在平面上是正的，在平面上是零，在平面下是负的。如果法线被归一化，
+     * $\psi$ 将是到平面内最近点的有符号距离。
      * @ingroup functions
+     *
      */
     template <int dim>
     class Plane : public Function<dim>
     {
     public:
       /**
-       * Constructor, takes a point in the plane and the plane normal.
+       * 构造函数，接收平面内的一个点和平面法线。
+       *
        */
       Plane(const Point<dim> &point, const Tensor<1, dim> &normal);
 
@@ -129,4 +136,6 @@ namespace Functions
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* CE8BBB3E_B726_40A7_B963_561AE7B84973 */
+#endif  /* CE8BBB3E_B726_40A7_B963_561AE7B84973 */ 
+
+

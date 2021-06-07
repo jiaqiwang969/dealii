@@ -1,3 +1,4 @@
+//include/deal.II-translator/meshworker/mesh_loop_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -48,30 +49,30 @@ namespace MeshWorker
   namespace internal
   {
     /**
-     * A helper class to provide a type definition for the underlying cell
-     * iterator type.
+     * 一个帮助类，为底层单元格迭代器类型提供类型定义。
+     *
      */
     template <class CellIteratorType>
     struct CellIteratorBaseType
     {
       /**
-       * Type definition for the cell iterator type.
+       * 用于单元格迭代器类型的类型定义。
+       *
        */
       using type = CellIteratorType;
     };
 
     /**
-     * A helper class to provide a type definition for the underlying cell
-     * iterator type.
+     * 一个辅助类，为底层单元格迭代器类型提供类型定义。
+     * 这个特殊化是针对IteratorRange的，它可以有TriaActiveIterator或FilteredIterator作为其基础类型。
      *
-     * This specialization is for IteratorRange, which may have either a
-     * TriaActiveIterator or a FilteredIterator as its base type.
      */
     template <class CellIteratorType>
     struct CellIteratorBaseType<IteratorOverIterators<CellIteratorType>>
     {
       /**
-       * Type definition for the cell iterator type.
+       * 单元迭代器类型的类型定义。
+       *
        */
       // Since we can have filtered iterators and the like as template
       // arguments, we recursivelyremove the template layers to retrieve the
@@ -80,18 +81,16 @@ namespace MeshWorker
     };
 
     /**
-     * A helper class to provide a type definition for the underlying cell
-     * iterator type.
+     * 一个帮助类，为底层单元格迭代器类型提供类型定义。
+     * 这个特殊化是针对FilteredIterator的，它可以有一个TriaActiveIterator作为它的基础类型，或者可以与另一个FilteredIterator嵌套作为迭代的类型。
      *
-     * This specialization is for FilteredIterator, which may have either a
-     * TriaActiveIterator as its base type, or may be nested with another
-     * FilteredIterator as the type to iterate over.
      */
     template <class CellIteratorType>
     struct CellIteratorBaseType<FilteredIterator<CellIteratorType>>
     {
       /**
-       * Type definition for the cell iterator type.
+       * 单元格迭代器类型的定义。
+       *
        */
       // Since we can have nested filtered iterators, we recursively
       // remove the template layers to retrieve the underlying iterator type.
@@ -101,21 +100,21 @@ namespace MeshWorker
 
 #ifdef DOXYGEN
   /**
-   * This alias introduces a friendly and short name for the function type
-   * for the cell worker used in mesh_loop().
+   * 这个别名为Mesh_loop()中使用的单元格工作者的函数类型引入了一个友好而简短的名称。
+   *
    */
   using CellWorkerFunctionType = std::function<
     void(const CellIteratorBaseType &, ScratchData &, CopyData &)>;
 
   /**
-   * This alias introduces a friendly and short name for the function type
-   * for the cell worker used in mesh_loop().
+   * 这个别名为Mesh_loop()中使用的单元格工作者的函数类型引入了一个友好而简短的名字。
+   *
    */
   using CopierFunctionType = std::function<void(const CopyData &)>;
 
   /**
-   * This alias introduces a friendly and short name for the function type
-   * for the boundary worker used in mesh_loop().
+   * 这个别名为Mesh_loop()中使用的边界工作者的函数类型引入了一个友好而简短的名字。
+   *
    */
   using BoundaryWorkerFunctionType =
     std::function<void(const CellIteratorBaseType &,
@@ -124,8 +123,8 @@ namespace MeshWorker
                        CopyData &)>;
 
   /**
-   * This alias introduces a friendly and short name for the function type
-   * for the face worker used in mesh_loop().
+   * 这个别名为Mesh_loop()中使用的面片工作者的函数类型引入了一个友好而简短的名称。
+   *
    */
   using FaceWorkerFunctionType =
     std::function<void(const CellIteratorBaseType &,
@@ -139,76 +138,35 @@ namespace MeshWorker
 #endif
 
   /**
-   * This function extends the WorkStream concept to work on meshes
-   * (cells and/or faces) and handles the complicated logic for
-   * work on adaptively refined faces
-   * and parallel computation (work on faces to ghost neighbors for example).
-   * The @p mesh_loop can be used to simplify operations on cells (for example
-   * assembly), on boundaries (Neumann type boundary conditions), or on
-   * interior faces (for example in discontinuous Galerkin methods). The
-   * function is used in a number of tutorials, including step-12, step-16,
-   * and step-47, to name just a few.
-   *
-   * For uniformly refined meshes, it would be relatively easy to use
-   * WorkStream::run() with a @p cell_worker that also loops over faces, and
-   * takes care of assembling face terms depending on the current and neighbor
-   * cell. All user codes that do these loops would then need to insert
-   * manually the logic that identifies, for every face of the current cell,
-   * the neighboring cell, and the face index on the neighboring cell that
-   * corresponds to the current face.
-   *
-   * This is more complicated if local refinement is enabled and the current or
-   * neighbor cells have hanging nodes. In this case it is also necessary to
-   * identify the corresponding subface on either the current or the neighbor
-   * faces.
-   *
-   * This method externalizes that logic (which is independent from user codes)
-   * and separates the assembly of face terms (internal faces, boundary faces,
-   * or faces between different subdomain ids on parallel computations) from
-   * the assembling on cells, allowing the user to specify two additional
-   * workers (a @p cell_worker, a @p boundary_worker, and a @p face_worker) that
-   * are called automatically in each @p cell, according to the specific
-   * AssembleFlags @p flags that are passed. The @p cell_worker is passed the
-   * cell identifier, a ScratchData object, and a CopyData object, following
-   * the same principles of WorkStream::run(). Internally the function passes to
-   * @p boundary_worker, in addition to the above, also a @p face_no parameter
-   * that identifies the face on which the integration should be performed. The
-   * @p face_worker instead needs to identify the current face unambiguously
-   * both on the cell and on the neighboring cell, and it is therefore called
-   * with six arguments (three for each cell: the actual cell, the face index,
-   * and the subface_index. If no subface integration is needed, then the
-   * subface_index is numbers::invalid_unsigned_int) in addition to the usual
-   * ScratchData and CopyData objects.
-   *
-   * If the flag AssembleFlags::assemble_own_cells is passed, then the default
-   * behavior is to first loop over faces and do the work there, and then
-   * compute the actual work on the cell. It is possible to perform the
-   * integration on the cells after working on faces, by adding the flag
-   * AssembleFlags::cells_after_faces.
-   *
-   * If the flag AssembleFlags::assemble_own_interior_faces_once is specified,
-   * then each interior face is visited only once, and the @p face_worker is
-   * assumed to integrate all face terms at once (and add contributions to both
-   * sides of the face in a discontinuous Galerkin setting).
-   *
-   * This method is equivalent to the WorkStream::run() method when
-   * AssembleFlags contains only @p assemble_own_cells, and can be used as a
-   * drop-in replacement for that method.
-   *
-   * The two data types ScratchData and CopyData need to have a working copy
-   * constructor. ScratchData is only used in the worker function, while
-   * CopyData is the object passed from the worker to the copier. The CopyData
-   * object is reset to the value provided to this function every time this
-   * function visits a new cell (where it then calls the cell and face
-   * workers). In other words, no state carries over between calling the
-   * `copier` on one cell and the `cell_worker`/`face_worker`/`boundary_worker`
-   * functions on the next cell, and user code needs not reset the copy
-   * object either at the beginning of the cell integration or end of the
-   * copy operation. Resetting the state of the `copier ` inside of a
-   * `face_worker` or `boundary_worker` constitutes a bug, and may lead to
-   * some unexpected results. The following example shows what is not
-   * permissible, as the copier is potentially shared among numerous faces
-   * on a cell:
+   * 这个函数扩展了WorkStream的概念，可以在网格（单元和/或面）上工作，并处理自适应细化面的工作和并行计算的复杂逻辑（例如，对面的工作到幽灵邻居）。
+   * @p mesh_loop
+   * 可用于简化对单元（例如装配）、边界（诺伊曼型边界条件）或内部面（例如在非连续加尔金方法中）的操作。该函数在许多教程中使用，包括
+   * step-12 ,  step-16 , 和 step-47 ，仅举几例。
+   * 对于均匀细化的网格，使用 WorkStream::run() 和 @p cell_worker
+   * 会比较容易， @p cell_worker
+   * 也会在面上循环，并根据当前和相邻单元的情况来处理面的组合条件。所有进行这些循环的用户代码都需要手动插入逻辑，为当前单元的每个面确定相邻的单元，以及相邻单元上与当前面相对应的面的索引。
+   * 如果启用了局部细化，并且当前或相邻单元有悬挂的节点，这就更复杂了。在这种情况下，还需要确定当前或邻近面的相应子面。
+   * 这个方法将该逻辑外部化（独立于用户代码），并将面的装配条款（内部面、边界面或平行计算中不同子域ID之间的面）与单元上的装配分开，允许用户指定两个额外的工作者（一个
+   * @p cell_worker, 一个 @p boundary_worker, 和一个 @p face_worker)
+   * ，根据传递的特定AssembleFlags @p flags 在每个 @p cell,
+   * 中自动调用。 @p cell_worker
+   * 被传递给单元格标识符、ScratchData对象和CopyData对象，遵循与
+   * WorkStream::run(). 相同的原则。
+   * 在内部，该函数除了传递给 @p boundary_worker,
+   * 之外，还传递了一个 @p face_no
+   * 参数，用于识别应该被执行集成的面。而 @p face_worker
+   * 则需要在单元格和相邻单元格上明确识别当前面，因此它被调用时有六个参数（每个单元格有三个参数：实际单元格、面的索引和子面_索引。如果不需要子面集成，那么除了通常的ScratchData和CopyData对象外，子面_索引为
+   * numbers::invalid_unsigned_int) 。    如果传递了标志
+   * AssembleFlags::assemble_own_cells
+   * ，那么默认的行为是先在面上循环并在那里做功，然后再计算单元上的实际功。如果指定了标志
+   * AssembleFlags::assemble_own_interior_faces_once
+   * ，那么每个内部面只被访问一次， @p face_worker
+   * 被假定为一次集成所有面的条款（并在不连续Galerkin设置中增加面的两边贡献）。
+   * 当AssembleFlags只包含 @p assemble_own_cells, 时，该方法等同于
+   * WorkStream::run() 方法，可以作为该方法的替代品使用。
+   * 两个数据类型ScratchData和CopyData需要有一个工作拷贝构造函数。ScratchData只在worker函数中使用，而CopyData是由worker传递给copyer的对象。每次这个函数访问一个新的单元时，CopyData对象就会被重置为提供给这个函数的值（在这里它就会调用单元和面对工作者）。换句话说，在一个单元格上调用`copier`和在下一个单元格上调用`cell_worker`/`face_worker`/`boundary_worker`函数之间，没有任何状态的延续，用户代码不需要在单元格整合的开始或拷贝操作的结束时重置拷贝对象。在
+   * "face_worker "或 "boundary_worker "内部重置 "copier
+   * "的状态构成一个bug，并可能导致一些意外的结果。下面的例子显示了什么是不允许的，因为复印机有可能在一个单元上的许多面之间共享。
    * @code
    *
    * using ScratchData      = MeshWorker::ScratchData<dim, spacedim>;
@@ -219,59 +177,49 @@ namespace MeshWorker
    * CopyData               copy(...);
    *
    * std::function<void(const CellIteratorType &, ScratchData &, CopyData &)>
-   *   empty_cell_worker;
+   * empty_cell_worker;
    *
    * auto boundary_worker = [...] (
-   *   const CellIteratorType &cell,
-   *   const unsigned int      face,
-   *   ScratchData            &scratch_data,
-   *   CopyData               &copy_data)
+   * const CellIteratorType &cell,
+   * const unsigned int      face,
+   * ScratchData            &scratch_data,
+   * CopyData               &copy_data)
    * {
-   *  const auto &fe_face_values = scratch_data.reinit(cell, face);
-   *  copy_data = CopyData(...); // This is an error, as we lose the
-   *                             // accumulation that has been performed on
-   *                             // other boundary faces of the same cell.
+   * const auto &fe_face_values = scratch_data.reinit(cell, face);
+   * copy_data = CopyData(...); // This is an error, as we lose the
+   *                           // accumulation that has been performed on
+   *                           // other boundary faces of the same cell.
    *
-   *  for (unsigned int q_point = 0;
-   *       q_point < fe_face_values.n_quadrature_points;
-   *       ++q_point)
-   *    {
-   *      copy_data.vectors[0][0] += 1.0 * fe_face_values.JxW(q_point);
-   *    }
+   * for (unsigned int q_point = 0;
+   *     q_point < fe_face_values.n_quadrature_points;
+   *     ++q_point)
+   *  {
+   *    copy_data.vectors[0][0] += 1.0 fe_face_values.JxW(q_point);
+   *  }
    * };
    *
    * double value = 0;
    * auto copier = [...](const CopyData &copy_data)
    * {
-   *   value += copy_data.vectors[0][0]; // Contributions from some faces may
-   *                                     // be missing.
+   * value += copy_data.vectors[0][0]; // Contributions from some faces may
+   *                                   // be missing.
    * };
    *
    * MeshWorker::mesh_loop(dof_handler.active_cell_iterators(),
-   *                       empty_cell_worker, copier,
-   *                       scratch, copy,
-   *                       MeshWorker::assemble_boundary_faces,
-   *                       boundary_worker);
+   *                     empty_cell_worker, copier,
+   *                     scratch, copy,
+   *                     MeshWorker::assemble_boundary_faces,
+   *                     boundary_worker);
    * @endcode
-   *
-   * The queue_length argument indicates the number of items that can be live at
-   * any given time. Each item consists of chunk_size elements of the input
-   * stream that will be worked on by the worker and copier functions one after
-   * the other on the same thread.
-   *
-   * If your data objects are large, or their constructors are expensive, it is
-   * helpful to keep in mind that queue_length copies of the ScratchData object
-   * and `queue_length*chunk_size` copies of the CopyData object are generated.
-   *
-   * @note The types of the function arguments and the default values (empty worker functions)
-   * displayed in the Doxygen documentation here are slightly simplified
-   * compared to the real types.
-   *
-   * @note More information about requirements on template types and meaning
-   * of @p queue_length and @p chunk_size can be found in the documentation of the
-   * WorkStream namespace and its members.
-   *
+   * queue_length参数表示在任何给定时间内可以活用的项目的数量。每个项目由输入流的chunk_size元素组成，这些元素将被worker和copyer函数在同一个线程上一个接一个地处理。
+   * 如果你的数据对象很大，或者它们的构造函数很昂贵，记住ScratchData对象的queue_length副本和CopyData对象的`queue_length*chunk_size`副本是有帮助的。
+   * @note
+   * 这里的Doxygen文档中显示的函数参数类型和默认值（空工作者函数）与实际类型相比略有简化。
+   * @note  关于模板类型的要求以及 @p queue_length 和 @p
+   * chunk_size
+   * 的含义的更多信息可以在WorkStream命名空间及其成员的文档中找到。
    * @ingroup MeshWorker
+   *
    */
   template <class CellIteratorType,
             class ScratchData,
@@ -634,10 +582,8 @@ namespace MeshWorker
   }
 
   /**
-   * Same as the function above, but for iterator ranges (and, therefore,
-   * filtered iterators).
-   *
-   * An example usage of the function for the serial case is given by
+   * 与上面的函数相同，但适用于迭代器范围（因此也适用于过滤的迭代器）。
+   * 在串行情况下，该函数的一个使用实例是这样给出的
    * @code
    *
    * using ScratchData      = MeshWorker::ScratchData<dim, spacedim>;
@@ -648,26 +594,24 @@ namespace MeshWorker
    * CopyData               copy(...);
    *
    * auto cell_worker = [...] (
-   *   const CellIteratorType &cell,
-   *   ScratchData            &scratch_data,
-   *   CopyData               &copy_data)
+   * const CellIteratorType &cell,
+   * ScratchData            &scratch_data,
+   * CopyData               &copy_data)
    * {
-   *   ...
+   * ...
    * };
    *
    * auto copier = [...](const CopyData &copy_data)
    * {
-   *   ...
+   * ...
    * };
    *
    * MeshWorker::mesh_loop(dof_handler.active_cell_iterators(),
-   *                       cell_worker, copier,
-   *                       scratch, copy,
-   *                       MeshWorker::assemble_own_cells);
+   *                     cell_worker, copier,
+   *                     scratch, copy,
+   *                     MeshWorker::assemble_own_cells);
    * @endcode
-   *
-   * and an example usage of the function for the parallel distributed case,
-   * where the copier is only to be called on locally owned cells, is given by
+   * 该函数在并行分布式情况下的使用示例，其中复制器只在本地拥有的单元上调用，由以下内容给出
    * @code
    *
    * using ScratchData      = MeshWorker::ScratchData<dim, spacedim>;
@@ -678,29 +622,30 @@ namespace MeshWorker
    * CopyData               copy(...);
    *
    * auto cell_worker = [...] (
-   *   const CellIteratorType &cell,
-   *   ScratchData            &scratch_data,
-   *   CopyData               &copy_data)
+   * const CellIteratorType &cell,
+   * ScratchData            &scratch_data,
+   * CopyData               &copy_data)
    * {
-   *   ...
+   * ...
    * };
    *
    * auto copier = [...](const CopyData &copy_data)
    * {
-   *   ...
+   * ...
    * };
    *
    * const auto filtered_iterator_range =
-   *   filter_iterators(dof_handler.active_cell_iterators(),
-   *                    IteratorFilters::LocallyOwnedCell());
+   * filter_iterators(dof_handler.active_cell_iterators(),
+   *                  IteratorFilters::LocallyOwnedCell());
    *
    * MeshWorker::mesh_loop(filtered_iterator_range,
-   *                       cell_worker, copier,
-   *                       scratch, copy,
-   *                       MeshWorker::assemble_own_cells);
+   *                     cell_worker, copier,
+   *                     scratch, copy,
+   *                     MeshWorker::assemble_own_cells);
    * @endcode
    *
    * @ingroup MeshWorker
+   *
    */
   template <class CellIteratorType,
             class ScratchData,
@@ -768,28 +713,18 @@ namespace MeshWorker
   }
 
   /**
-   * This is a variant of the mesh_loop() function that can be used for worker
-   * and copier functions that are member functions of a class.
-   *
-   * The argument passed as @p end must be convertible to the same type as @p
-   * begin, but doesn't have to be of the same type itself. This allows to
-   * write code like <code>mesh_loop(dof_handler.begin_active(),
-   * dof_handler.end(), ...)</code> where the first is of type
-   * DoFHandler::active_cell_iterator whereas the second is of type
-   * DoFHandler::raw_cell_iterator.
-   *
-   * The @p queue_length argument indicates the number of items that can be
-   * live at any given time. Each item consists of @p chunk_size elements of
-   * the input stream that will be worked on by the worker and copier
-   * functions one after the other on the same thread.
-   *
-   * @note If your data objects are large, or their constructors are
-   * expensive, it is helpful to keep in mind that <tt>queue_length</tt>
-   * copies of the <tt>ScratchData</tt> object and
-   * <tt>queue_length*chunk_size</tt> copies of the <tt>CopyData</tt> object
-   * are generated.
-   *
-   * An example usage of the function is given by
+   * 这是Mesh_loop()函数的一个变体，可用于作为类成员函数的worker和copier函数。
+   * 作为 @p end 传递的参数必须可以转换为与 @p
+   * 开始相同的类型，但本身不一定是同一类型。这允许编写类似<code>mesh_loop(dof_handler.begin_active(),
+   * dof_handler.end(), ...)</code>的代码，其中第一个是
+   * DoFHandler::active_cell_iterator 类型，而第二个是
+   * DoFHandler::raw_cell_iterator. 类型。  @p queue_length
+   * 参数表示在任何特定时间可以活着的项目数量。每个项目由输入流的
+   * @p chunk_size
+   * 个元素组成，这些元素将由工作者和复制者函数在同一线程上一个接一个地处理。
+   * @note
+   * 如果你的数据对象很大，或者它们的构造函数很昂贵，记住<tt>queue_length</tt>拷贝的<tt>ScratchData</tt>对象和<tt>queue_length*chunk_size</tt>拷贝的<tt>CopyData</tt>对象是很有用的。
+   * 该函数的一个使用例子是这样给出的
    * @code
    *
    * struct ScratchData;
@@ -799,13 +734,13 @@ namespace MeshWorker
    * class MyClass
    * {
    * public:
-   *   void
-   *   cell_worker(const CellIteratorType &cell, ScratchData &, CopyData &);
+   * void
+   * cell_worker(const CellIteratorType &cell, ScratchData &, CopyData &);
    *
-   *   void
-   *   copier(const CopyData &);
+   * void
+   * copier(const CopyData &);
    *
-   *   ...
+   * ...
    * };
    *
    * ...
@@ -815,16 +750,16 @@ namespace MeshWorker
    * CopyData               copy;
    *
    * mesh_loop(tria.begin_active(),
-   *           tria.end(),
-   *           my_class,
-   *           &MyClass<dim, spacedim>::cell_worker,
-   *           &MyClass<dim, spacedim>::copier,
-   *           scratch,
-   *           copy,
-   *           assemble_own_cells);
+   *         tria.end(),
+   *         my_class,
+   *         &MyClass<dim, spacedim>::cell_worker,
+   *         &MyClass<dim, spacedim>::copier,
+   *         scratch,
+   *         copy,
+   *         assemble_own_cells);
    * @endcode
-   *
    * @ingroup MeshWorker
+   *
    */
   template <class CellIteratorType,
             class ScratchData,
@@ -927,10 +862,8 @@ namespace MeshWorker
   }
 
   /**
-   * Same as the function above, but for iterator ranges (and, therefore,
-   * filtered iterators).
-   *
-   * An example usage of the function for the serial case is given by
+   * 和上面的函数一样，但是对于迭代器的范围（以及，因此，过滤的迭代器）。
+   * 在串行情况下，该函数的一个使用实例是这样给出的
    * @code
    *
    * struct ScratchData;
@@ -940,13 +873,13 @@ namespace MeshWorker
    * class MyClass
    * {
    * public:
-   *   void
-   *   cell_worker(const CellIteratorType &cell, ScratchData &, CopyData &);
+   * void
+   * cell_worker(const CellIteratorType &cell, ScratchData &, CopyData &);
    *
-   *   void
-   *   copier(const CopyData &);
+   * void
+   * copier(const CopyData &);
    *
-   *   ...
+   * ...
    * };
    *
    * ...
@@ -956,16 +889,14 @@ namespace MeshWorker
    * CopyData               copy;
    *
    * mesh_loop(tria.active_cell_iterators(),
-   *           my_class,
-   *           &MyClass<dim, spacedim>::cell_worker,
-   *           &MyClass<dim, spacedim>::copier,
-   *           scratch,
-   *           copy,
-   *           assemble_own_cells);
+   *         my_class,
+   *         &MyClass<dim, spacedim>::cell_worker,
+   *         &MyClass<dim, spacedim>::copier,
+   *         scratch,
+   *         copy,
+   *         assemble_own_cells);
    * @endcode
-   *
-   * and an example usage of the function for the parallel distributed case,
-   * where the copier is only to be called on locally owned cells, is given by
+   * 该函数在并行分布式情况下的使用示例，其中复制器只在本地拥有的单元上调用，由以下内容给出
    * @code
    *
    * struct ScratchData;
@@ -975,13 +906,13 @@ namespace MeshWorker
    * class MyClass
    * {
    * public:
-   *   void
-   *   cell_worker(const CellIteratorType &cell, ScratchData &, CopyData &);
+   * void
+   * cell_worker(const CellIteratorType &cell, ScratchData &, CopyData &);
    *
-   *   void
-   *   copier(const CopyData &);
+   * void
+   * copier(const CopyData &);
    *
-   *   ...
+   * ...
    * };
    *
    * ...
@@ -991,19 +922,20 @@ namespace MeshWorker
    * CopyData               copy;
    *
    * const auto filtered_iterator_range =
-   *   filter_iterators(distributed_tria.active_cell_iterators(),
-   *                    IteratorFilters::LocallyOwnedCell());
+   * filter_iterators(distributed_tria.active_cell_iterators(),
+   *                  IteratorFilters::LocallyOwnedCell());
    *
    * mesh_loop(filtered_iterator_range,
-   *           my_class,
-   *           &MyClass<dim, spacedim>::cell_worker,
-   *           &MyClass<dim, spacedim>::copier,
-   *           scratch,
-   *           copy,
-   *           assemble_own_cells);
+   *         my_class,
+   *         &MyClass<dim, spacedim>::cell_worker,
+   *         &MyClass<dim, spacedim>::copier,
+   *         scratch,
+   *         copy,
+   *         assemble_own_cells);
    * @endcode
    *
    * @ingroup MeshWorker
+   *
    */
   template <class CellIteratorType,
             class ScratchData,
@@ -1059,3 +991,5 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

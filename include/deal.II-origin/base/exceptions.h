@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/exceptions_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -34,47 +33,47 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 这个类是所有异常类的基类。不要直接使用它的方法和变量，因为它的接口和机制可能会被改变。而是使用<tt>DeclException</tt>宏系列创建新的异常类。
- * 参见
- * @ref Exceptions
- * 模块以了解关于这个类的更多细节，以及从它派生的类可以做什么。
+ * This class is the base class for all exception classes. Do not use its
+ * methods and variables directly since the interface and mechanism may be
+ * subject to change. Rather create new exception classes using the
+ * <tt>DeclException</tt> macro family.
  *
+ * See the
+ * @ref Exceptions
+ * module for more details on this class and what can be done with classes
+ * derived from it.
  *
  * @ingroup Exceptions
- *
- *
  */
 class ExceptionBase : public std::exception
 {
 public:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   ExceptionBase();
 
   /**
-   * 复制构造函数。
-   *
+   * Copy constructor.
    */
   ExceptionBase(const ExceptionBase &exc);
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~ExceptionBase() noexcept override;
 
   /**
-   * 拷贝操作符。这个操作符被删除，因为异常对象是不可复制的。
-   *
+   * Copy operator. This operator is deleted since exception objects
+   * are not copyable.
    */
   ExceptionBase
   operator=(const ExceptionBase &) = delete;
 
   /**
-   * 设置异常出现的文件名和行，以及被违反的条件和作为char指针的异常名称。这个函数还可以填充堆栈跟踪。
-   *
+   * Set the file name and line of where the exception appeared as well as the
+   * violated condition and the name of the exception as a char pointer. This
+   * function also populates the stacktrace.
    */
   void
   set_fields(const char *file,
@@ -85,104 +84,92 @@ public:
 
 
   /**
-   * 覆盖标准函数，返回错误的描述。
-   *
+   * Override the standard function that returns the description of the error.
    */
   virtual const char *
   what() const noexcept override;
 
   /**
-   * 获取异常名称。
-   *
+   * Get exception name.
    */
   const char *
   get_exc_name() const;
 
   /**
-   * 打印出错误信息的一般部分。
-   *
+   * Print out the general part of the error information.
    */
   void
   print_exc_data(std::ostream &out) const;
 
   /**
-   * 打印关于发生的异常的更具体的信息。
-   * 在你自己的异常类中重载这个函数。
-   *
+   * Print more specific information about the exception which occurred.
+   * Overload this function in your own exception classes.
    */
   virtual void
   print_info(std::ostream &out) const;
 
   /**
-   * 打印一个堆栈跟踪，如果之前有记录的话，到给定的流中。
-   *
+   * Print a stacktrace, if one has been recorded previously, to the given
+   * stream.
    */
   void
   print_stack_trace(std::ostream &out) const;
 
 protected:
   /**
-   * 这个异常所发生的文件的名称。
-   *
+   * Name of the file this exception happens in.
    */
   const char *file;
 
   /**
-   * 该文件中的行号。
-   *
+   * Line number in this file.
    */
   unsigned int line;
 
   /**
-   * 函数的名称，漂亮的打印。
-   *
+   * Name of the function, pretty printed.
    */
   const char *function;
 
   /**
-   * 被违反的条件，作为一个字符串。
-   *
+   * The violated condition, as a string.
    */
   const char *cond;
 
   /**
-   * 异常的名称和调用序列。
-   *
+   * Name of the exception and call sequence.
    */
   const char *exc;
 
   /**
-   * 回溯到问题发生的位置，如果系统支持的话。
-   *
+   * A backtrace to the position where the problem happened, if the system
+   * supports this.
    */
   mutable char **stacktrace;
 
   /**
-   * 存储在前一个变量中的堆栈跟踪帧的数量。
-   * 如果系统不支持堆栈跟踪，则为零。
-   *
+   * The number of stacktrace frames that are stored in the previous variable.
+   * Zero if the system does not support stack traces.
    */
   int n_stacktrace_frames;
 
 #ifdef DEAL_II_HAVE_GLIBC_STACKTRACE
   /**
-   * 包含原始堆栈跟踪的指针数组
-   *
+   * array of pointers that contains the raw stack trace
    */
   void *raw_stacktrace[25];
 #endif
 
 private:
   /**
-   * 产生c_string的内部函数。由what()调用。
-   *
+   * Internal function that generates the c_string. Called by what().
    */
   void
   generate_message() const;
 
   /**
-   * 一个指向将被what()打印的c_string的指针。它是由generate_message()填充的。
-   *
+   * A pointer to the c_string that will be printed by what(). It is populated
+   * by generate_message()
    */
   mutable std::string what_str;
 };
@@ -190,21 +177,20 @@ private:
 #ifndef DOXYGEN
 
 /**
- * 声明一个从ExceptionBase派生出来的没有参数的异常类。
+ * Declare an exception class derived from ExceptionBase without parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，它们没有用一个字符串作为前缀，这很可能使它们成为deal.II独有的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException0(Exception0)                \
     class Exception0 : public dealii::ExceptionBase \
@@ -212,22 +198,23 @@ private:
 
 
 /**
- * 声明一个从 ExceptionBase
- * 派生的异常类，它可以接受一个运行时参数，但如果在你想抛出异常的地方没有给出参数，它就会简单地恢复到通过这个宏声明异常类时提供的默认文本。
+ * Declare an exception class derived from ExceptionBase that can take one
+ * runtime argument, but if none is given in the place where you want to throw
+ * the exception, it simply reverts to the default text provided when
+ * declaring the exception class through this macro.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它们没有用一个字符串作为前缀，这可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclExceptionMsg(Exception, defaulttext)    \
     class Exception : public dealii::ExceptionBase    \
@@ -249,21 +236,21 @@ private:
     }
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，并增加一个参数。
+ * Declare an exception class derived from ExceptionBase with one additional
+ * parameter.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException1(Exception1, type1, outsequence) \
     class Exception1 : public dealii::ExceptionBase      \
@@ -286,21 +273,21 @@ private:
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有两个额外的参数。
+ * Declare an exception class derived from ExceptionBase with two additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException2(Exception2, type1, type2, outsequence) \
     class Exception2 : public dealii::ExceptionBase             \
@@ -325,21 +312,21 @@ private:
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有三个附加参数。
+ * Declare an exception class derived from ExceptionBase with three additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中独一无二。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException3(Exception3, type1, type2, type3, outsequence) \
     class Exception3 : public dealii::ExceptionBase                    \
@@ -366,21 +353,21 @@ private:
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有四个附加参数。
+ * Declare an exception class derived from ExceptionBase with four additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException4(Exception4, type1, type2, type3, type4, outsequence) \
     class Exception4 : public dealii::ExceptionBase                           \
@@ -412,21 +399,21 @@ private:
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有五个额外的参数。
+ * Declare an exception class derived from ExceptionBase with five additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中独一无二。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有用
- * <code>DEAL</code> or <code>deal</code>
- * 作为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException5(                                       \
     Exception5, type1, type2, type3, type4, type5, outsequence) \
@@ -460,143 +447,143 @@ private:
       type5 const arg5;                                         \
     }
 
-#else  /*ifndef DOXYGEN*/ 
+#else /*ifndef DOXYGEN*/
 
 // Dummy definitions for doxygen:
 
 /**
- * 声明一个从ExceptionBase派生出来的没有参数的异常类。
+ * Declare an exception class derived from ExceptionBase without parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有用
- * <code>DEAL</code> or <code>deal</code>
- * 作为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException0(Exception0) \
-     /** @ingroup Exceptions */        \
+    /** @ingroup Exceptions */       \
     static dealii::ExceptionBase &Exception0()
 
 /**
- * 声明一个从 ExceptionBase
- * 派生的异常类，它可以接受一个运行时参数，但如果在你想抛出异常的地方没有给出参数，它就会简单地恢复到通过这个宏声明异常类时提供的默认文本。
+ * Declare an exception class derived from ExceptionBase that can take one
+ * runtime argument, but if none is given in the place where you want to throw
+ * the exception, it simply reverts to the default text provided when
+ * declaring the exception class through this macro.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它们没有用一个字符串作为前缀，这可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclExceptionMsg(Exception, defaulttext) \
-     /** @ingroup Exceptions */                      \
-     /** @dealiiExceptionMessage{defaulttext} */     \
+    /** @ingroup Exceptions */                     \
+    /** @dealiiExceptionMessage{defaulttext} */    \
     static dealii::ExceptionBase &Exception()
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，并增加一个参数。
+ * Declare an exception class derived from ExceptionBase with one additional
+ * parameter.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中独一无二。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有用
- * <code>DEAL</code> or <code>deal</code>
- * 作为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException1(Exception1, type1, outsequence) \
-     /** @ingroup Exceptions */                            \
-     /** @dealiiExceptionMessage{outsequence} */           \
+    /** @ingroup Exceptions */                           \
+    /** @dealiiExceptionMessage{outsequence} */          \
     static dealii::ExceptionBase &Exception1(type1 arg1)
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有两个额外的参数。
+ * Declare an exception class derived from ExceptionBase with two additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果它们的前缀不是
- * <code>DEAL</code> or <code>deal</code>
- * ，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException2(Exception2, type1, type2, outsequence) \
-     /** @ingroup Exceptions */                                   \
-     /** @dealiiExceptionMessage{outsequence} */                  \
+    /** @ingroup Exceptions */                                  \
+    /** @dealiiExceptionMessage{outsequence} */                 \
     static dealii::ExceptionBase &Exception2(type1 arg1, type2 arg2)
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有三个额外的参数。
+ * Declare an exception class derived from ExceptionBase with three additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中独一无二。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException3(Exception3, type1, type2, type3, outsequence) \
-     /** @ingroup Exceptions */                                          \
-     /** @dealiiExceptionMessage{outsequence} */                         \
+    /** @ingroup Exceptions */                                         \
+    /** @dealiiExceptionMessage{outsequence} */                        \
     static dealii::ExceptionBase &Exception3(type1 arg1, type2 arg2, type3 arg3)
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有四个附加参数。
+ * Declare an exception class derived from ExceptionBase with four additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果它们的前缀不是
- * <code>DEAL</code> or <code>deal</code>
- * ，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException4(Exception4, type1, type2, type3, type4, outsequence) \
-     /** @ingroup Exceptions */                                                 \
-     /** @dealiiExceptionMessage{outsequence} */                                \
+    /** @ingroup Exceptions */                                                \
+    /** @dealiiExceptionMessage{outsequence} */                               \
     static dealii::ExceptionBase &Exception4(type1 arg1,                      \
                                              type2 arg2,                      \
                                              type3 arg3,                      \
@@ -604,67 +591,66 @@ private:
 
 
 /**
- * 声明一个从ExceptionBase派生出来的异常类，有五个额外的参数。
+ * Declare an exception class derived from ExceptionBase with five additional
+ * parameters.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，这很可能使它们在deal.II中独一无二。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define DeclException5(                                       \
     Exception5, type1, type2, type3, type4, type5, outsequence) \
-     /** @ingroup Exceptions */                                   \
-     /** @dealiiExceptionMessage{outsequence} */                  \
+    /** @ingroup Exceptions */                                  \
+    /** @dealiiExceptionMessage{outsequence} */                 \
     static dealii::ExceptionBase &Exception5(                   \
       type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5)
 
-#endif  /*ifndef DOXYGEN*/ 
+#endif /*ifndef DOXYGEN*/
 
 
 /**
- * 声明一些重复出现的异常。这样，你就可以简单地使用这些异常，而不必在你的类中本地声明它们。声明这些异常的名字空间后来被包含在全局名字空间中，由
- *
+ * Declare some exceptions that occur over and over. This way, you can simply
+ * use these exceptions, instead of having to declare them locally in your
+ * class. The namespace in which these exceptions are declared is later
+ * included into the global namespace by
  * @code
  * using namespace StandardExceptions;
  * @endcode
  *
- *
- *
  * @ingroup Exceptions
- *
- *
  */
 namespace StandardExceptions
 {
   /**
-   * @addtogroup  异常情况
-   *
+   * @addtogroup Exceptions
    */
   //@{
 
   /**
-   * 表示除以0的异常情况。
-   *
+   * Exception denoting a division by zero.
    */
   DeclExceptionMsg(ExcDivideByZero,
                    "A piece of code is attempting a division by zero. This is "
                    "likely going to lead to results that make no sense.");
 
   /**
-   * 如果一个数字不是有限的，就会产生异常。
-   * 这个异常应该被用来捕获不是除以零的算术运算所产生的无限数或非数的结果（使用ExcDivideByZero来处理这些结果）。
-   * 这个异常使用 std::complex
-   * 作为它的参数，以确保我们可以对所有标量参数（实数或复数）使用它。
+   * Exception raised if a number is not finite.
    *
+   * This exception should be used to catch infinite or not a number results
+   * of arithmetic operations that do not result from a division by zero (use
+   * ExcDivideByZero for those).
+   *
+   * The exception uses std::complex as its argument to ensure that we can use
+   * it for all scalar arguments (real or complex-valued).
    */
   DeclException1(
     ExcNumberNotFinite,
@@ -699,8 +685,7 @@ namespace StandardExceptions
     << "macro.");
 
   /**
-   * 试图分配一个新的对象，由于缺乏可用的内存而失败。
-   *
+   * Trying to allocate a new object failed due to lack of free memory.
    */
   DeclException1(ExcOutOfMemory,
                  std::size_t,
@@ -716,8 +701,8 @@ namespace StandardExceptions
                    << arg1 << " bytes.");
 
   /**
-   * 一个内存处理程序到达一个点，所有分配的对象都应该被释放。由于这个异常被抛出，一些对象仍然被分配。
-   *
+   * A memory handler reached a point where all allocated objects should have
+   * been released. Since this exception is thrown, some were still allocated.
    */
   DeclException1(ExcMemoryLeak,
                  int,
@@ -725,8 +710,7 @@ namespace StandardExceptions
                  << " objects are still allocated.");
 
   /**
-   * 读取或写入一个文件时发生错误。
-   *
+   * An error occurred reading or writing a file.
    */
   DeclExceptionMsg(ExcIO,
                    "An input/output error has occurred. There are a number of "
@@ -752,10 +736,10 @@ namespace StandardExceptions
                    "a directory that does not exist.");
 
   /**
-   * 发生了一个打开命名文件的错误。
-   * 构造函数需要一个类型为 <tt>std::string</tt>
-   * 的单一参数来命名文件。
+   * An error occurred opening the named file.
    *
+   * The constructor takes a single argument of type <tt>std::string</tt> naming
+   * the file.
    */
   DeclException1(ExcFileNotOpen,
                  std::string,
@@ -774,8 +758,12 @@ namespace StandardExceptions
                     "a directory that does not exist.");
 
   /**
-   * 表示库或应用程序的一部分尚未实现的异常。在许多情况下，这只表明还没有太多需要的东西，而不是说这很难实现。因此，相当值得去看一看相应的地方，看看是否可以不费吹灰之力就能实现它。
-   *
+   * Exception denoting a part of the library or application program that has
+   * not yet been implemented. In many cases, this only indicates that there
+   * wasn't much need for something yet, not that this is difficult to
+   * implement. It is therefore quite worth the effort to take a look at the
+   * corresponding place and see whether it can be implemented without too
+   * much effort.
    */
   DeclExceptionMsg(ExcNotImplemented,
                    "You are trying to use functionality in deal.II that is "
@@ -790,9 +778,24 @@ namespace StandardExceptions
                    "sources (see the deal.II website on how to contribute).");
 
   /**
-   * 这种异常通常表明，程序员认为在算法的某一点上必须满足的某些条件没有得到满足。这可能是由于上面的一些编程错误，由于对算法的修改没有保留这个断言，或者由于程序员所做的假设根本就不成立（也就是说，虽然这里没有错误，但却抛出了这个异常）。在库中，当我们写了某种复杂的算法，并且还不确定我们是否得到了正确的算法时，这种异常是最常用的；然后我们在算法的每个部分之后加入断言，检查一些应该成立的条件，如果不成立就抛出一个异常。
-   * 即使我们确信实现是正确的，我们通常也会留下这些断言，因为如果后来有人改变或扩展了算法，这些异常会向他们表明他们是否违反了算法中后面使用的假设。此外，有时会发生这样的情况，即算法在非常罕见的角落情况下不工作。那么这些情况迟早会被异常所困住，这样一来，算法也可以针对这些情况进行修正。
+   * This exception usually indicates that some condition which the programmer
+   * thinks must be satisfied at a certain point in an algorithm, is not
+   * fulfilled. This might be due to some programming error above, due to
+   * changes to the algorithm that did not preserve this assertion, or due to
+   * assumptions the programmer made that are not valid at all (i.e. the
+   * exception is thrown although there is no error here). Within the library,
+   * this exception is most often used when we write some kind of complicated
+   * algorithm and are not yet sure whether we got it right; we then put in
+   * assertions after each part of the algorithm that check for some
+   * conditions that should hold there, and throw an exception if they do not.
    *
+   * We usually leave in these assertions even after we are confident that the
+   * implementation is correct, since if someone later changes or extends the
+   * algorithm, these exceptions will indicate to them if they violate
+   * assumptions that are used later in the algorithm. Furthermore, it
+   * sometimes happens that an algorithm does not work in very rare corner
+   * cases. These cases will then be trapped sooner or later by the exception,
+   * so that the algorithm can then be fixed for these cases as well.
    */
   DeclExceptionMsg(ExcInternalError,
                    "This exception -- which is used in many places in the "
@@ -812,8 +815,10 @@ namespace StandardExceptions
                    "to obtain help.");
 
   /**
-   * 这个异常用于可能不被调用的函数（即在纯函数中），但不能被声明为纯函数，因为无论如何都要使用该类，尽管只有在使用派生类时才可能调用相应的函数。
-   *
+   * This exception is used in functions that may not be called (i.e. in pure
+   * functions) but could not be declared pure since the class is intended to
+   * be used anyway, even though the respective function may only be called if
+   * a derived class is used.
    */
   DeclExceptionMsg(
     ExcPureFunctionCalled,
@@ -853,21 +858,20 @@ namespace StandardExceptions
     "implement the missing override in your class.");
 
   /**
-   * 如果发现某些对象未被初始化，就会使用这个异常。
-   *
+   * This exception is used if some object is found uninitialized.
    */
   DeclException0(ExcNotInitialized);
 
   /**
-   * 该对象处于一个不适合该操作的状态。
-   *
+   * The object is in a state not suitable for this operation.
    */
   DeclException0(ExcInvalidState);
 
   /**
-   * 如果一个功能在给定的维度上不可能实现，就会引发这个异常。主要用于抛出1D中的函数调用。
-   * 构造函数接收一个<tt>int</tt>，表示维度。
+   * This exception is raised if a functionality is not possible in the given
+   * dimension. Mostly used to throw function calls in 1d.
    *
+   * The constructor takes a single <tt>int</tt>, denoting the dimension.
    */
   DeclException1(ExcImpossibleInDim,
                  int,
@@ -876,9 +880,11 @@ namespace StandardExceptions
                  << "d or simply does not make any sense.");
 
   /**
-   * 如果一个功能在给定的维度和空间维度的组合中是不可能的，就会引发这个异常。
-   * 构造函数接收两个<tt>int</tt>，表示维度和空间维度。
+   * This exception is raised if a functionality is not possible in the given
+   * combination of dimension and space-dimension.
    *
+   * The constructor takes two <tt>int</tt>, denoting the dimension and the
+   * space dimension.
    */
   DeclException2(ExcImpossibleInDimSpacedim,
                  int,
@@ -889,8 +895,7 @@ namespace StandardExceptions
 
 
   /**
-   * 一个数字是零，但它不应该在这里出现。
-   *
+   * A number is zero, but it should not be here.
    */
   DeclExceptionMsg(ExcZero,
                    "In a check in the code, deal.II encountered a zero in "
@@ -900,8 +905,8 @@ namespace StandardExceptions
                    "the erroneous zero corresponds to.");
 
   /**
-   * 在这个成员函数被调用之前，对象应该已经被填满了东西。
-   *
+   * The object should have been filled with something before this member
+   * function is called.
    */
   DeclExceptionMsg(ExcEmptyObject,
                    "The object you are trying to access is empty but it makes "
@@ -909,9 +914,11 @@ namespace StandardExceptions
                    "empty object.");
 
   /**
-   * 当两个对象的大小被认为是相等的，但却不相等时，就会引发这个异常。
-   * 构造函数的参数是第一个和第二个大小，都是<tt>int</tt>类型。
+   * This exception is raised whenever the sizes of two objects were assumed
+   * to be equal, but were not.
    *
+   * Parameters to the constructor are the first and second size, both of type
+   * <tt>int</tt>.
    */
   DeclException2(ExcDimensionMismatch,
                  std::size_t,
@@ -919,8 +926,8 @@ namespace StandardExceptions
                  << "Dimension " << arg1 << " not equal to " << arg2 << ".");
 
   /**
-   * 第一尺寸应该等于第二尺寸或第三尺寸，但它都不是。
-   *
+   * The first dimension should be either equal to the second or the third,
+   * but it is neither.
    */
   DeclException3(ExcDimensionMismatch2,
                  int,
@@ -930,8 +937,16 @@ namespace StandardExceptions
                  << " nor to " << arg3 << ".");
 
   /**
-   * 这个异常表示一个索引不在预期范围内。  例如，可能是你试图访问一个不存在的向量的一个元素。    构造函数需要三个<tt>int</tt>参数，即  <ol>   <li>  违规索引  <li>  下限  <li>  上限加一  </ol>  。
+   * This exception indicates that an index is not within the expected range.
+   * For example, it may be that you are trying to access an element of a
+   * vector which does not exist.
    *
+   * The constructor takes three <tt>int</tt> arguments, namely
+   * <ol>
+   * <li> the violating index
+   * <li> the lower bound
+   * <li> the upper bound plus one
+   * </ol>
    */
   DeclException3(
     ExcIndexRange,
@@ -948,8 +963,19 @@ namespace StandardExceptions
           ""));
 
   /**
-   * 这个异常表示某个指数不在预期范围内。  例如，可能是你试图访问一个不存在的向量的一个元素。    构造函数需要三个参数，即  <ol>   <li>  违规索引  <li>  下限  <li>  上限加一  </ol>  这个通用异常与ExcIndexRange不同，允许指定索引的类型。
+   * This exception indicates that an index is not within the expected range.
+   * For example, it may be that you are trying to access an element of a
+   * vector which does not exist.
    *
+   * The constructor takes three arguments, namely
+   * <ol>
+   * <li> the violating index
+   * <li> the lower bound
+   * <li> the upper bound plus one
+   * </ol>
+   *
+   * This generic exception differs from ExcIndexRange by allowing to specify
+   * the type of indices.
    */
   template <typename T>
   DeclException3(
@@ -967,8 +993,7 @@ namespace StandardExceptions
           ""));
 
   /**
-   * 一个数字太小。
-   *
+   * A number is too small.
    */
   DeclException2(ExcLowerRange,
                  int,
@@ -977,8 +1002,7 @@ namespace StandardExceptions
                  << arg2 << ".");
 
   /**
-   * 上述ExcLowerRange的通用异常定义。
-   *
+   * A generic exception definition for the ExcLowerRange above.
    */
   template <typename T>
   DeclException2(ExcLowerRangeType,
@@ -988,8 +1012,8 @@ namespace StandardExceptions
                  << arg2 << ".");
 
   /**
-   * 这个异常表示第一个参数应该是第二个参数的整数倍，但却不是。
-   *
+   * This exception indicates that the first argument should be an integer
+   * multiple of the second, but is not.
    */
   DeclException2(ExcNotMultiple,
                  int,
@@ -998,10 +1022,12 @@ namespace StandardExceptions
                  << " has remainder different from zero.");
 
   /**
-   * 如果你访问的迭代器有损坏的数据，就会抛出这个异常。
-   * 例如，可能是它所指的容器在迭代器所指的位置上没有一个入口。
-   * 通常情况下，这将是deal.II的一个内部错误，因为增量和减量运算符不应该产生一个无效的迭代器。
+   * This exception is thrown if the iterator you access has corrupted data.
+   * It might for instance be, that the container it refers does not have an
+   * entry at the point the iterator refers.
    *
+   * Typically, this will be an internal error of deal.II, because the
+   * increment and decrement operators should never yield an invalid iterator.
    */
   DeclExceptionMsg(ExcInvalidIterator,
                    "You are trying to use an iterator, but the iterator is "
@@ -1010,8 +1036,8 @@ namespace StandardExceptions
                    "moved beyond the end of the range of valid elements.");
 
   /**
-   * 如果你递增或递减的迭代器已经处于最终状态，就会抛出这个异常。
-   *
+   * This exception is thrown if the iterator you incremented or decremented
+   * was already at its final state.
    */
   DeclExceptionMsg(ExcIteratorPastEnd,
                    "You are trying to use an iterator, but the iterator is "
@@ -1020,17 +1046,22 @@ namespace StandardExceptions
                    "case.");
 
   /**
-   * 这个异常是围绕<tt>DeclException0</tt>宏中的一个设计缺陷进行的：通过DeclException0声明的异常不允许指定异常发生时显示的信息，而其他异常则允许与给定参数一起显示一个文本。
-   * 当抛出这个异常时，你可以给一个消息作为
-   * <tt>std::string</tt> 作为异常的参数，然后显示出来。
-   * 当然，这个参数可以在运行时构建，例如包括一个无法打开的文件的名称，或者任何其他你可能想从不同的部分组合起来的文本。
+   * This exception works around a design flaw in the <tt>DeclException0</tt>
+   * macro: exceptions declared through DeclException0 do not allow one to
+   * specify a message that is displayed when the exception is raised, as
+   * opposed to the other exceptions which allow to show a text along with the
+   * given parameters.
    *
+   * When throwing this exception, you can give a message as a
+   * <tt>std::string</tt> as argument to the exception that is then displayed.
+   * The argument can, of course, be constructed at run-time, for example
+   * including the name of a file that can't be opened, or any other text you
+   * may want to assemble from different pieces.
    */
   DeclException1(ExcMessage, std::string, << arg1);
 
   /**
-   * 带有鬼魂元素的平行向量是只读向量。
-   *
+   * Parallel vectors with ghost elements are read-only vectors.
    */
   DeclExceptionMsg(ExcGhostsPresent,
                    "You are trying an operation on a vector that is only "
@@ -1044,9 +1075,11 @@ namespace StandardExceptions
                    "information.");
 
   /**
-   * 我们的一些数值类允许使用赋值运算符<tt>=</tt>将所有条目设置为零。
-   * 在许多情况下，这个赋值运算符对参数0是有意义的<b>only</b>。在其他情况下，会抛出这种异常。
+   * Some of our numerical classes allow for setting all entries to zero using
+   * the assignment operator <tt>=</tt>.
    *
+   * In many cases, this assignment operator makes sense <b>only</b> for the
+   * argument zero. In other cases, this exception is thrown.
    */
   DeclExceptionMsg(ExcScalarAssignmentOnlyForZeroValue,
                    "You are trying an operation of the form 'vector = C', "
@@ -1061,8 +1094,7 @@ namespace StandardExceptions
                    "assignments are not permitted.");
 
   /**
-   * 这个函数需要对LAPACK库的支持。
-   *
+   * This function requires support for the LAPACK library.
    */
   DeclExceptionMsg(
     ExcNeedsLAPACK,
@@ -1071,8 +1103,7 @@ namespace StandardExceptions
     "find a valid LAPACK library.");
 
   /**
-   * 这个函数需要对MPI库的支持。
-   *
+   * This function requires support for the MPI library.
    */
   DeclExceptionMsg(
     ExcNeedsMPI,
@@ -1080,8 +1111,7 @@ namespace StandardExceptions
     "if deal.II was configured to use MPI.");
 
   /**
-   * 该函数需要对FunctionParser库的支持。
-   *
+   * This function requires support for the FunctionParser library.
    */
   DeclExceptionMsg(
     ExcNeedsFunctionparser,
@@ -1092,8 +1122,7 @@ namespace StandardExceptions
     "not choose the one that comes bundled with deal.II.");
 
   /**
-   * 该函数需要对Assimp库的支持。
-   *
+   * This function requires support for the Assimp library.
    */
   DeclExceptionMsg(
     ExcNeedsAssimp,
@@ -1103,14 +1132,14 @@ namespace StandardExceptions
 
 #ifdef DEAL_II_WITH_CUDA
   /**
-   * 如果在CUDA内核中发生错误，会引发这个异常。
-   * 构造函数接收一个<tt>char*</tt>，即cudaGetErrorString的输出。
+   * This exception is raised if an error happened in a CUDA kernel.
    *
+   * The constructor takes a single <tt>char*</tt>, the output of
+   * cudaGetErrorString.
    */
   DeclException1(ExcCudaError, const char *, << arg1);
   /**
-   * 如果在cuSPARSE函数中发生错误，就会引发这个异常。
-   *
+   * This exception is raised if an error happened in a cuSPARSE function.
    */
   DeclException1(ExcCusparseError,
                  std::string,
@@ -1119,8 +1148,7 @@ namespace StandardExceptions
   //@}
 
   /**
-   * 这个函数需要对Exodus II库的支持。
-   *
+   * This function requires support for the Exodus II library.
    */
   DeclExceptionMsg(
     ExcNeedsExodusII,
@@ -1130,24 +1158,25 @@ namespace StandardExceptions
 
 #ifdef DEAL_II_WITH_MPI
   /**
-   * MPI错误的异常。这个异常只有在 <code>deal.II</code>
-   * 编译时支持MPI时才会被定义。这个异常应该和
-   * <code>AssertThrow</code>
-   * 一起使用，以检查MPI函数的错误代码。比如说。
+   * Exception for MPI errors. This exception is only defined if
+   * <code>deal.II</code> is compiled with MPI support. This exception should
+   * be used with <code>AssertThrow</code> to check error codes of MPI
+   * functions. For example:
    * @code
    * const int ierr = MPI_Isend(...);
    * AssertThrow(ierr == MPI_SUCCESS, ExcMPI(ierr));
    * @endcode
-   * 或者，使用方便的宏  <code>AssertThrowMPI</code>  。
+   * or, using the convenience macro <code>AssertThrowMPI</code>,
    * @code
    * const int ierr = MPI_Irecv(...);
    * AssertThrowMPI(ierr);
    * @endcode
-   * 如果断言失败，那么错误代码将被用于利用
-   * <code>MPI_Error_string</code>
-   * 函数向屏幕打印一个有用的信息。
-   * @ingroup Exceptions
    *
+   * If the assertion fails then the error code will be used to print a helpful
+   * message to the screen by utilizing the <code>MPI_Error_string</code>
+   * function.
+   *
+   * @ingroup Exceptions
    */
   class ExcMPI : public dealii::ExceptionBase
   {
@@ -1165,141 +1194,158 @@ namespace StandardExceptions
 
 #ifdef DEAL_II_TRILINOS_WITH_SEACAS
   /**
-   * 用于ExodusII错误的例外。只有在 <code>deal.II</code>
-   * 编译时支持SEACAS的情况下才会定义这个异常，SEACAS可以通过Trilinos获得。这个函数应该和便利宏AssertThrowExodusII一起使用。
-   * @ingroup Exceptions
+   * Exception for ExodusII errors. This exception is only defined if
+   * <code>deal.II</code> is compiled with SEACAS support, which is available
+   * through Trilinos. This function should be used with the convenience macro
+   * AssertThrowExodusII.
    *
+   * @ingroup Exceptions
    */
   class ExcExodusII : public ExceptionBase
   {
   public:
     /**
-     * 构造器。          @param  error_code
-     * 由ExodusII函数返回的错误代码。
+     * Constructor.
      *
+     * @param error_code The error code returned by an ExodusII function.
      */
     ExcExodusII(const int error_code);
 
     /**
-     * 打印错误的描述到给定的流中。
-     *
+     * Print a description of the error to the given stream.
      */
     virtual void
     print_info(std::ostream &out) const override;
 
     /**
-     * 存储错误代码。
-     *
+     * Store the error code.
      */
     const int error_code;
   };
 #endif // DEAL_II_TRILINOS_WITH_SEACAS
-}  /*namespace StandardExceptions*/ 
+} /*namespace StandardExceptions*/
 
 
 
 /**
- * 在这个命名空间中，与Assert和AssertThrow机制有关的函数被声明。
- *
+ * In this namespace, functions in connection with the Assert and AssertThrow
+ * mechanism are declared.
  *
  * @ingroup Exceptions
- *
- *
  */
 namespace deal_II_exceptions
 {
   namespace internals
   {
     /**
-     * 将这个变量设置为false将禁用deal.II的异常机制来中止问题。Assert()宏将抛出异常，而AssertNothrow()宏将只打印错误信息。这个变量不应该被直接改变。使用
-     * disable_abort_on_exception() 来代替。
-     *
+     * Setting this variable to false will disable deal.II's exception mechanism
+     * to abort the problem. The Assert() macro will throw the exception instead
+     * and the AssertNothrow() macro will just print the error message. This
+     * variable should not be changed directly. Use disable_abort_on_exception()
+     * instead.
      */
     extern bool allow_abort_on_exception;
   } // namespace internals
 
   /**
-   * 设置一个字符串，在表示触发<tt>Assert</tt>语句的信息输出时打印。这个字符串在通常的输出之外被打印出来，可能会指示出一些除非我们使用调试器否则不容易得到的信息。例如，对于集群计算机上的分布式程序，所有进程的输出都被重定向到同一个控制台窗口。在这种情况下，将程序运行的主机名称作为额外的名称是很方便的，这样就可以看到异常发生在程序的哪个实例中。
-   * 参数所指向的字符串是复制的，所以在调用这个函数后不需要再存储。
-   * 以前设置的附加输出被给这个函数的参数所取代。
-   * @see  异常情况
+   * Set a string that is printed upon output of the message indicating a
+   * triggered <tt>Assert</tt> statement. This string, which is printed in
+   * addition to the usual output may indicate information that is otherwise
+   * not readily available unless we are using a debugger. For example, with
+   * distributed programs on cluster computers, the output of all processes is
+   * redirected to the same console window. In this case, it is convenient to
+   * set as additional name the name of the host on which the program runs, so
+   * that one can see in which instance of the program the exception occurred.
    *
+   * The string pointed to by the argument is copied, so doesn't need to be
+   * stored after the call to this function.
+   *
+   * Previously set additional output is replaced by the argument given to
+   * this function.
+   *
+   * @see Exceptions
    */
   void
   set_additional_assert_output(const char *const p);
 
   /**
-   * 当异常发生时，调用此函数可以禁止与其他输出一起打印堆栈跟踪记录。大多数时候，你会想看到这样的堆栈跟踪；然而，如果想在不同的机器和系统中比较程序的输出，抑制它是很有用的，因为堆栈跟踪显示的内存地址和库名/路径取决于机器的确切设置。
-   * @see  异常情况
+   * Calling this function disables printing a stacktrace along with the other
+   * output printed when an exception occurs. Most of the time, you will want
+   * to see such a stacktrace; suppressing it, however, is useful if one wants
+   * to compare the output of a program across different machines and systems,
+   * since the stacktrace shows memory addresses and library names/paths that
+   * depend on the exact setup of a machine.
    *
+   * @see Exceptions
    */
   void
   suppress_stacktrace_in_exceptions();
 
   /**
-   * 当使用Assert()宏创建一个异常时，调用这个函数可以关闭对
-   * <tt>std::abort()</tt>
-   * 的使用。取而代之的是，异常将使用'throw'抛出，因此如果需要的话，它可以被捕获。一般来说，当Assert()被调用时，你想中止程序的执行，但如果你想记录所有创建的异常，或者你想测试一个断言是否正常工作，则需要关闭它。例如，在回归测试中就是这样做的。请注意，一些致命的错误仍然会调用abort()，例如，在异常处理过程中捕获的异常。
-   * @see  异常现象
+   * Calling this function switches off the use of <tt>std::abort()</tt> when
+   * an exception is created using the Assert() macro. Instead, the Exception
+   * will be thrown using 'throw', so it can be caught if desired. Generally,
+   * you want to abort the execution of a program when Assert() is called, but
+   * it needs to be switched off if you want to log all exceptions created, or
+   * if you want to test if an assertion is working correctly. This is done
+   * for example in regression tests. Please note that some fatal errors will
+   * still call abort(), e.g. when an exception is caught during exception
+   * handling.
    *
+   * @see Exceptions
    */
   void
   disable_abort_on_exception();
 
   /**
-   * 这个命名空间中的函数与Assert和AssertThrow机制有关，但仅用于内部目的，不能在异常处理和抛出机制之外使用。
-   * @ingroup Exceptions
+   * The functions in this namespace are in connection with the Assert and
+   * AssertThrow mechanism but are solely for internal purposes and are not
+   * for use outside the exception handling and throwing mechanism.
    *
+   * @ingroup Exceptions
    */
   namespace internals
   {
     /**
-     * 通过打印 @p exc 提供的错误信息并调用
-     * <tt>std::abort()</tt>. 中止程序。
-     *
+     * Abort the program by printing the
+     * error message provided by @p exc and calling <tt>std::abort()</tt>.
      */
     [[noreturn]] void
     abort(const ExceptionBase &exc) noexcept;
 
     /**
-     * 一个描述如何处理issue_error_noreturn中的异常的枚举。
-     *
+     * An enum describing how to treat an exception in issue_error_noreturn.
      */
     enum ExceptionHandling
     {
       /**
-       * 通过调用 <code>std::abort</code> 中止程序，除非
-       * deal_II_exceptions::disable_abort_on_exception
-       * 已经被调用：在这种情况下，程序将抛出一个异常。
-       *
+       * Abort the program by calling <code>std::abort</code> unless
+       * deal_II_exceptions::disable_abort_on_exception has been called: in
+       * that case the program will throw an exception.
        */
       abort_or_throw_on_exception,
       /**
-       * 正常抛出异常。
-       *
+       * Throw the exception normally.
        */
       throw_on_exception
     };
 
     /**
-     * 这个例程为<tt>Assert</tt>和<tt>AssertThrow</tt>宏中使用的异常生成机制做主要工作：正如其名称所暗示的，这个函数要么以抛出一个异常结束（如果
-     * @p handling  ]是throw_on_exception，或者 @p handling
-     * 是try_abort_exception且
-     * deal_II_exceptions::disable_abort_on_exception
-     * 是false），或者调用<tt>abort</tt>（如果 @p handling
-     * 是try_abort_exception且
-     * deal_II_exceptions::disable_abort_on_exception 是true）。
-     * 实际的异常对象（最后一个参数）通常是一个在原地创建的未命名的对象；因为我们修改了它，所以我们不能通过常量引用来获取它，而且临时变量不会与非常量引用绑定。
-     * 所以要用一个模板化的类型来取它的值（=copy
-     * it），以避免切分
+     * This routine does the main work for the exception generation mechanism
+     * used in the <tt>Assert</tt> and <tt>AssertThrow</tt> macros: as the
+     * name implies, this function either ends by throwing an exception (if
+     * @p handling is throw_on_exception, or @p handling is try_abort_exception
+     * and deal_II_exceptions::disable_abort_on_exception is false) or with a
+     * call to <tt>abort</tt> (if @p handling is try_abort_exception and
+     * deal_II_exceptions::disable_abort_on_exception is true).
      *
+     * The actual exception object (the last argument) is typically an unnamed
+     * object created in place; because we modify it, we can't take it by
+     * const reference, and temporaries don't bind to non-const references.
+     * So take it by value (=copy it) with a templated type to avoid slicing
+     * -- the performance implications are pretty minimal anyway.
      *
-     *
-     *
-     *
-     *
-     * - 反正对性能的影响是相当小的。          @ref ExceptionBase
-     *
+     * @ref ExceptionBase
      */
     template <class ExceptionType>
     [[noreturn]] void
@@ -1337,17 +1383,17 @@ namespace deal_II_exceptions
     }
 
     /**
-     * 内部函数，完成issue_error_nothrow的工作。
-     *
+     * Internal function that does the work of issue_error_nothrow.
      */
     void do_issue_error_nothrow(const ExceptionBase &e) noexcept;
 
     /**
-     * 异常生成机制，以防我们必须不抛出。
-     * @ref ExceptionBase
-     * @note
-     * 这个函数是用一个模板定义的，原因与issue_error_noreturn()相同。
+     * Exception generation mechanism in case we must not throw.
      *
+     * @ref ExceptionBase
+     *
+     * @note This function is defined with a template for the same reasons as
+     * issue_error_noreturn().
      */
     template <class ExceptionType>
     void
@@ -1368,47 +1414,51 @@ namespace deal_II_exceptions
     }
 #ifdef DEAL_II_WITH_CUDA
     /**
-     * 返回一个给定错误代码的字符串。这类似于cudaGetErrorString函数，但在cuSPARSE中没有相应的函数。
-     *
+     * Return a string given an error code. This is similar to the
+     * cudaGetErrorString function but there is no equivalent function for
+     * cuSPARSE.
      */
     std::string
     get_cusparse_error_string(const cusparseStatus_t error_code);
 
     /**
-     * 返回一个给定错误代码的字符串。这类似于cudaGetErrorString函数，但在cuSOLVER中没有相应的函数。
-     *
+     * Return a string given an error code. This is similar to the
+     * cudaGetErrorString function but there is no equivalent function for
+     * cuSOLVER.
      */
     std::string
     get_cusolver_error_string(const cusolverStatus_t error_code);
 #endif
-  }  /*namespace internals*/ 
+  } /*namespace internals*/
 
-}  /*namespace deal_II_exceptions*/ 
+} /*namespace deal_II_exceptions*/
 
 
 
 /**
- * 一个宏，作为调试模式错误检查的异常机制的主要程序。它断言某个条件得到满足，否则会发出错误并中止程序。
- * 更详细的描述可以在 @ref
- * Exceptions 模块中找到。它在  step-5  和  step-6
- * 中首次使用。更多信息也请参见<tt>ExceptionBase</tt>类。
+ * A macro that serves as the main routine in the exception mechanism for debug
+ * mode error checking. It asserts that a certain condition is fulfilled,
+ * otherwise issues an error and aborts the program.
  *
+ * A more detailed description can be found in the
+ * @ref Exceptions
+ * module. It is first used in step-5 and step-6.
+ * See also the <tt>ExceptionBase</tt> class for more information.
  *
- * @note  仅在DEBUG模式下活动
+ * @note Active in DEBUG mode only
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，它们没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中包括
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #ifdef DEBUG
 #  ifdef DEAL_II_HAVE_BUILTIN_EXPECT
@@ -1425,7 +1475,7 @@ namespace deal_II_exceptions
             #exc,                                                        \
             exc);                                                        \
       }
-#  else  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  else /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #    define Assert(cond, exc)                                            \
       {                                                                  \
         if (!(cond))                                                     \
@@ -1439,7 +1489,7 @@ namespace deal_II_exceptions
             #exc,                                                        \
             exc);                                                        \
       }
-#  endif  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  endif /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #else
 #  define Assert(cond, exc) \
     {}
@@ -1448,27 +1498,30 @@ namespace deal_II_exceptions
 
 
 /**
- * 上面的<tt>Assert</tt>宏的一个变种，只要不调用disable_abort_on_exception，就会表现出相同的运行时行为。
- * 然而，如果disable_abort_on_exception被调用，这个宏只是打印出将被抛出的异常到deallog，并继续正常运行而不抛出异常。
- * 更详细的描述可以在 @ref
- * Exceptions
- * 模块中找到，在页面底部关于角落案例的讨论中。
+ * A variant of the <tt>Assert</tt> macro above that exhibits the same runtime
+ * behavior as long as disable_abort_on_exception was not called.
  *
+ * However, if disable_abort_on_exception was called, this macro merely prints
+ * the exception that would be thrown to deallog and continues normally
+ * without throwing an exception.
  *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义的前缀不是一个可能使它们对deal.II独一无二的字符串。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
+ * A more detailed description can be found in the
+ * @ref Exceptions
+ * module, in the discussion about the corner case at the bottom of the page.
  *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
- * @note  仅在DEBUG模式下有效。
- *
+ * @note Active in DEBUG mode only
  * @ingroup Exceptions
- *
- *
  */
 #ifdef DEBUG
 #  ifdef DEAL_II_HAVE_BUILTIN_EXPECT
@@ -1478,42 +1531,45 @@ namespace deal_II_exceptions
           ::dealii::deal_II_exceptions::internals::issue_error_nothrow( \
             __FILE__, __LINE__, __PRETTY_FUNCTION__, #cond, #exc, exc); \
       }
-#  else  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  else /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #    define AssertNothrow(cond, exc)                                    \
       {                                                                 \
         if (!(cond))                                                    \
           ::dealii::deal_II_exceptions::internals::issue_error_nothrow( \
             __FILE__, __LINE__, __PRETTY_FUNCTION__, #cond, #exc, exc); \
       }
-#  endif  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#  endif /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #else
 #  define AssertNothrow(cond, exc) \
     {}
 #endif
 
 /**
- * 一个宏，作为动态错误检查的异常机制的主要程序。它断言某个条件得到满足，否则通过C++
- * @p throw  机制抛出一个异常。这个异常可以通过 @p catch
- * 子句来捕获，如 step-6 和以下所有教程程序所示。
- * 更详细的描述可以在 @ref
- * Exceptions 模块中找到。它在  step-9  和  step-13
- * 中首次使用。更多信息也请参见<tt>ExceptionBase</tt>类。
+ * A macro that serves as the main routine in the exception mechanism for
+ * dynamic error checking. It asserts that a certain condition is fulfilled,
+ * otherwise
+ * throws an exception via the C++ @p throw mechanism. This exception can
+ * be caught via a @p catch clause, as is shown in step-6 and all following
+ * tutorial programs.
  *
+ * A more detailed description can be found in the
+ * @ref Exceptions
+ * module. It is first used in step-9 and step-13.
+ * See also the <tt>ExceptionBase</tt> class for more information.
  *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义没有用一个可能使它们对deal.II唯一的字符串作为前缀。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有用
- * <code>DEAL</code> or <code>deal</code>
- * 作为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
- *
- * @note  在DEBUG和RELEASE模式下都有效。
- *
+ * @note Active in both DEBUG and RELEASE modes
  * @ingroup Exceptions
- *
- *
  */
 #ifdef DEAL_II_HAVE_BUILTIN_EXPECT
 #  define AssertThrow(cond, exc)                                       \
@@ -1528,7 +1584,7 @@ namespace deal_II_exceptions
           #exc,                                                        \
           exc);                                                        \
     }
-#else  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#else /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 #  define AssertThrow(cond, exc)                                       \
     {                                                                  \
       if (!(cond))                                                     \
@@ -1541,23 +1597,27 @@ namespace deal_II_exceptions
           #exc,                                                        \
           exc);                                                        \
     }
-#endif  /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/ 
+#endif /*ifdef DEAL_II_HAVE_BUILTIN_EXPECT*/
 
 /**
- * 尺寸不匹配的特殊断言。
- * 因为这被经常使用，并且总是重复参数，所以我们为ExcDimensionMismatch引入了这个特殊的断言，以保持用户代码的简短。
+ * Special assertion for dimension mismatch.
  *
+ * Since this is used very often and always repeats the arguments, we
+ * introduce this special assertion for ExcDimensionMismatch in order to keep
+ * the user codes shorter.
  *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义没有用一个可能使它们对deal.II唯一的字符串作前缀。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，只要在所有其他deal.II的头文件中包含
- * <code>deal.II/base/undefine_macros.h</code> ，就可以不以
- * <code>DEAL</code> or <code>deal</code> 为前缀了。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
  */
 #define AssertDimension(dim1, dim2)                                            \
   Assert(static_cast<typename ::dealii::internal::argument_type<void(          \
@@ -1570,21 +1630,21 @@ namespace deal_II_exceptions
 
 
 /**
- * 一个测试<tt>vec</tt>是否有大小<tt>dim1</tt>的断言，并且向量的每个条目本身是一个大小为<tt>dim2</tt>的数组。
+ * An assertion that tests whether <tt>vec</tt> has size <tt>dim1</tt>, and
+ * each entry of the vector is itself an array that has the size <tt>dim2</tt>.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，这些定义的前缀不是一个字符串，而这个字符串很可能使它们成为deal.II的唯一。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有前缀
- * <code>DEAL</code> or <code>deal</code>
- * ，可以在所有其他deal.II的头文件中加入头文件
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #define AssertVectorVectorDimension(VEC, DIM1, DIM2) \
   AssertDimension(VEC.size(), DIM1);                 \
@@ -1609,23 +1669,23 @@ namespace internal
 } // namespace internal
 
 /**
- * 一个测试给定索引是否在半开范围内的断言
- * <code>[0,range)</code>
- * 。如果断言失败，它会抛出一个异常对象
- * <code>ExcIndexRange(index,0,range)</code>  。
+ * An assertion that tests that a given index is within the half-open
+ * range <code>[0,range)</code>. It throws an exception object
+ * <code>ExcIndexRange(index,0,range)</code> if the assertion
+ * fails.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义的前缀不是一个可能使它们在deal.II中独一无二的字符串。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
  */
 #define AssertIndexRange(index, range)                                         \
   Assert(                                                                      \
@@ -1640,24 +1700,23 @@ namespace internal
                                 type>((index), 0, (range)))
 
 /**
- * 一个检查一个数字是否是有限的断言。我们明确地将这个数投到
- * std::complex 中，以匹配异常的签名（关于为什么使用
- * std::complex 的解释，见那里），并满足 std::complex
- * 没有隐含转换的事实。
+ * An assertion that checks whether a number is finite or not. We explicitly
+ * cast the number to std::complex to match the signature of the exception
+ * (see there for an explanation of why we use std::complex at all) and to
+ * satisfy the fact that std::complex has no implicit conversions.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，这些定义的前缀不是一个可能使它们对deal.II唯一的字符串。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #define AssertIsFinite(number)               \
   Assert(dealii::numbers::is_finite(number), \
@@ -1665,24 +1724,24 @@ namespace internal
 
 #ifdef DEAL_II_WITH_MPI
 /**
- * 一个断言，检查MPI函数返回的错误代码是否等于
- * <code>MPI_SUCCESS</code>
- * 。如果检查失败，那么就会抛出一个ExcMPI类型的异常，给定的错误代码作为参数。
+ * An assertion that checks whether or not an error code returned by an MPI
+ * function is equal to <code>MPI_SUCCESS</code>. If the check fails then an
+ * exception of type ExcMPI is thrown with the given error code as an
+ * argument.
  *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义的前缀不是一个可能使它们对deal.II独一无二的字符串。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有
- * <code>DEAL</code> or <code>deal</code>
- * 的前缀，可以在所有其他deal.II的头文件中包括
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
- *
- * @note  只有在deal.II被编译为MPI时才有效。
- *
+ * @note Active only if deal.II is compiled with MPI
  * @ingroup Exceptions
- *
  */
 #  define AssertThrowMPI(error_code) \
     AssertThrow(error_code == MPI_SUCCESS, dealii::ExcMPI(error_code))
@@ -1693,21 +1752,21 @@ namespace internal
 
 #ifdef DEAL_II_WITH_CUDA
 /**
- * 一个断言，检查调用CUDA例程产生的错误代码是否等于cudaSuccess。
+ * An assertion that checks that the error code produced by calling a CUDA
+ * routine is equal to cudaSuccess.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，这些定义没有用一个字符串作为前缀，而这个字符串很可能使它们成为deal.II的唯一。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCuda(error_code)      \
@@ -1721,20 +1780,20 @@ namespace internal
 #  endif
 
 /**
- * AssertCuda的非抛出式等价物。
+ * The non-throwing equivalent of AssertCuda.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，这些定义没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果不以
- * <code>DEAL</code> or <code>deal</code>
- * 为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
  */
 #  ifdef DEBUG
 #    define AssertNothrowCuda(error_code)      \
@@ -1748,21 +1807,21 @@ namespace internal
 #  endif
 
 /**
- * 一个断言，检查内核是否被成功启动和执行。
+ * An assertion that checks that the kernel was launched and executed
+ * successfully.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，这些定义没有用一个字符串作为前缀，这很可能使它们对deal.II来说是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有
- * <code>DEAL</code> or <code>deal</code>
- * 的前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCudaKernel()                                \
@@ -1778,21 +1837,21 @@ namespace internal
 #  endif
 
 /**
- * 一个断言，检查调用cuSPARSE例程产生的错误代码是否等于CUSPARSE_STATUS_SUCCESS。
+ * An assertion that checks that the error code produced by calling a cuSPARSE
+ * routine is equal to CUSPARSE_STATUS_SUCCESS.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义的前缀不是一个可能使它们对deal.II唯一的字符串。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果它们的前缀不是
- * <code>DEAL</code> or <code>deal</code>
- * ，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCusparse(error_code)                                      \
@@ -1809,21 +1868,20 @@ namespace internal
 #  endif
 
 /**
- * AssertCusparse的非抛出式等价物。
+ * The non-throwing equivalent of AssertCusparse.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理程序定义的例子，这些定义没有用一个字符串作为前缀，这很可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有用
- * <code>DEAL</code> or <code>deal</code>
- * 作为前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertNothrowCusparse(error_code)                               \
@@ -1840,21 +1898,21 @@ namespace internal
 #  endif
 
 /**
- * 一个断言，检查调用cuSOLVER例程产生的错误代码是否等于CUSOLVER_STATUS_SUCCESS。
+ * An assertion that checks that the error code produced by calling a cuSOLVER
+ * routine is equal to CUSOLVER_STATUS_SUCCESS.
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，它没有用一个字符串作为前缀，而这个字符串可能使它们在deal.II中是独一无二的。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有
- * <code>DEAL</code> or <code>deal</code>
- * 的前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  ifdef DEBUG
 #    define AssertCusolver(error_code)                                      \
@@ -1874,21 +1932,21 @@ namespace internal
 
 #ifdef DEAL_II_TRILINOS_WITH_SEACAS
 /**
- * 断言，检查调用ExodusII例程产生的错误代码是否等于EX_NOERR（为零）。
+ * Assertion that checks that the error code produced by calling an ExodusII
+ * routine is equal to EX_NOERR (which is zero).
  *
- *
- * @note
- * 这个和类似的宏名称是deal.II库中预处理器定义的例子，这些定义没有用一个可能使它们对deal.II唯一的字符串作前缀。因此，你的代码与其他库的接口有可能定义相同的名称，其结果将是名称冲突（见https://en.wikipedia.org/wiki/Name_collision）。我们可以
- * <code>\#undef</code>
- * 这个宏，以及所有其他由deal.II定义的宏，如果没有
- * <code>DEAL</code> or <code>deal</code>
- * 的前缀，可以在所有其他deal.II的头文件中加入
- * <code>deal.II/base/undefine_macros.h</code> 。
- *
+ * @note This and similar macro names are examples of preprocessor definitions
+ * in the deal.II library that are not prefixed by a string that likely makes
+ * them unique to deal.II. As a consequence, it is possible that other
+ * libraries your code interfaces with define the same name, and the result
+ * will be name collisions (see
+ * https://en.wikipedia.org/wiki/Name_collision). One can <code>\#undef</code>
+ * this macro, as well as all other macros defined by deal.II that are not
+ * prefixed with either <code>DEAL</code> or <code>deal</code>, by including
+ * the header <code>deal.II/base/undefine_macros.h</code> after all other
+ * deal.II headers have been included.
  *
  * @ingroup Exceptions
- *
- *
  */
 #  define AssertThrowExodusII(error_code) \
     AssertThrow(error_code == 0, ExcExodusII(error_code));
@@ -1899,5 +1957,3 @@ using namespace StandardExceptions;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

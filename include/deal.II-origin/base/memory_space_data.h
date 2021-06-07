@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/memory_space_data_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 by the deal.II authors
@@ -28,13 +27,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /**
-  */
+/**
+ */
 namespace MemorySpace
 {
   /**
-   * 数据结构
-   *
+   * Data structure
    */
   template <typename Number, typename MemorySpace>
   struct MemorySpaceData
@@ -47,9 +45,8 @@ namespace MemorySpace
     }
 
     /**
-     * 将活动数据（对于Host来说是values，对于CUDA来说是values_dev）复制到
-     * @p begin.  如果数据在设备上，它将被移到主机上。
-     *
+     * Copy the active data (values for Host and values_dev for CUDA) to @p begin.
+     * If the data is on the device it is moved to the host.
      */
     void
     copy_to(Number *begin, std::size_t n_elements)
@@ -59,10 +56,8 @@ namespace MemorySpace
     }
 
     /**
-     * 将 @p begin
-     * 中的数据复制到结构的活动数据中（对于Host来说是数值，对于CUDA来说是数值_dev）。指针
-     * @p begin 必须在主机上。
-     *
+     * Copy the data in @p begin to the active data of the structure (values for
+     * Host and values_dev for CUDA). The pointer @p begin must be on the host.
      */
     void
     copy_from(Number *begin, std::size_t n_elements)
@@ -72,20 +67,17 @@ namespace MemorySpace
     }
 
     /**
-     * 指向主机上的数据的指针。
-     *
+     * Pointer to data on the host.
      */
     std::unique_ptr<Number[], std::function<void(Number *)>> values;
 
     /**
-     * 指向设备上的数据的指针。
-     *
+     * Pointer to data on the device.
      */
     std::unique_ptr<Number[]> values_dev;
 
     /**
-     * 指向共享同一内存的进程的数据的指针。
-     *
+     * Pointers to the data of the processes sharing the same memory.
      */
     std::vector<ArrayView<const Number>> values_sm;
   };
@@ -93,8 +85,7 @@ namespace MemorySpace
 
 
   /**
-   * 类似于 std::swap. 的互换功能。
-   *
+   * Swap function similar to std::swap.
    */
   template <typename Number, typename MemorySpace>
   inline void
@@ -183,8 +174,7 @@ namespace MemorySpace
     std::unique_ptr<Number[], void (*)(Number *)>            values_dev;
 
     /**
-     * 目前没有使用这个功能。
-     *
+     * This is currently not used.
      */
     std::vector<ArrayView<const Number>> values_sm;
   };
@@ -208,5 +198,3 @@ namespace MemorySpace
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

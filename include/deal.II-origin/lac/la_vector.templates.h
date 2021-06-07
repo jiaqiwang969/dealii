@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/la_vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -634,5 +633,3 @@ namespace LinearAlgebra
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

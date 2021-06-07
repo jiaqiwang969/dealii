@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/cuda_kernels_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2019 by the deal.II authors
@@ -35,7 +36,8 @@ namespace LinearAlgebra
   namespace CUDAWrappers
   {
     /**
-     * Namespace containing the CUDA kernels.
+     * 包含CUDA内核的命名空间。
+     *
      */
     namespace kernel
     {
@@ -45,9 +47,9 @@ namespace LinearAlgebra
       using size_type = types::global_dof_index;
 
       /**
-       * Multiply each entry of @p val of size @p N by @p a.
-       *
+       * 将大小为 @p N 的 @p val 的每个条目乘以 @p a.  。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -56,9 +58,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Functor defining the addition of two Numbers.
-       *
+       * 定义两个数字的加法的向量。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct Binop_Addition
@@ -85,9 +87,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Functor defining the subtraction of two Numbers.
-       *
+       * 定义两个数字的减法的向量。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct Binop_Subtraction
@@ -114,9 +116,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Functor defining the maximum of two Numbers.
-       *
+       * 定义两个数的最大值的向量。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct Binop_Max
@@ -143,9 +145,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Functor defining the maximum of two Numbers.
-       *
+       * 定义两个数字的最大值的向量。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct Binop_Min
@@ -172,9 +174,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Apply the functor @p Binop to each element of @p v1 and @p v2.
-       *
+       * 对 @p v1 和 @p v2. 中的每个元素应用向量 @p Binop 。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number, template <typename> class Binop>
       __global__ void
@@ -183,12 +185,11 @@ namespace LinearAlgebra
 
 
       /**
-       * Apply the functor @p Binop to the elements of @p v1 that have
-       * indices in @p mask and @p v2. The size of @p mask should be greater
-       * than the size of @p v1. @p mask and @p v2 should have the same size @p
-       * N.
-       *
+       * 对指数在 @p mask 和 @p v2. 中的 @p v1 的元素应用漏斗 @p
+       * Binop ， @p mask 的大小应该大于 @p v1. 的大小 @p mask 和
+       * @p v2 的大小应该相同 @p  N。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number, template <typename> class Binop>
       __global__ void
@@ -200,10 +201,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Structure implementing the functions used to add elements when
-       * using a reduction.
-       *
+       * 实现在使用缩减时用于添加元素的函数的结构。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct ElemSum
@@ -224,10 +224,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Structure implementing the functions used to compute the L1 norm
-       * when using a reduction.
-       *
+       * 实现在使用还原时计算L1准则的函数的结构。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct L1Norm
@@ -248,10 +247,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Structure implementing the functions used to compute the L-infinity
-       * norm when using a reduction.
-       *
+       * 实现在使用还原法时用于计算L-无穷大规范的函数的结构。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct LInfty
@@ -272,9 +270,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Perform a reduction on @p v using @p Operation.
-       *
+       * 使用 @p Operation. 对 @p v 进行还原。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number, typename Operation>
       __global__ void
@@ -283,10 +281,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Structure implementing the functions used to compute the dot
-       * product norm when using a double vector reduction.
-       *
+       * 在使用双向量还原时，实现用于计算点乘法线的函数的结构。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       struct DotProduct
@@ -307,10 +304,10 @@ namespace LinearAlgebra
 
 
       /**
-       * Perform a binary operation on each element of @p v1 and @p v2 followed
-       * by reduction on the resulting array.
-       *
+       * 对 @p v1 和 @p v2
+       * 中的每个元素进行二进制运算，然后对所得数组进行还原。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number, typename Operation>
       __global__ void
@@ -322,9 +319,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Add @p a to each element of @p val.
-       *
+       * 将 @p a 添加到 @p val. 的每个元素中。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -333,9 +330,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Addition of a multiple of a vector, i.e., <tt>val += a*V_val</tt>.
-       *
+       * 矢量的倍数相加，即：<tt>val += a*V_val</tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -347,10 +344,10 @@ namespace LinearAlgebra
 
 
       /**
-       * Addition of multiple scaled vector, i.e., <tt>val += a*V_val +
-       * b*W_val</tt>.
-       *
+       * 多重缩放向量的加法，即：<tt>val += a*V_val +
+       * b*W_val</tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -364,10 +361,10 @@ namespace LinearAlgebra
 
 
       /**
-       * Scaling and simple addition of a multiple of a vector, i.e. <tt>val
-       * = = s*val + a*V_val</tt>
-       *
+       * 缩放和简单添加一个向量的倍数，即<tt>val = = s*val +
+       * a*V_val</tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -380,10 +377,10 @@ namespace LinearAlgebra
 
 
       /**
-       * Scaling and multiple additions of scaled vectors, i.e. <tt>val =
-       * = s*val + a*V_val + b*W_val</tt>
-       *
+       * 缩放和多次添加缩放的向量，即<tt>val = = s*val + a*V_val
+       * + b*W_val</tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -398,10 +395,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Scale each element of this vector by the corresponding element in
-       * the argument.
-       *
+       * 用参数中的相应元素来缩放这个向量的每个元素。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -410,9 +406,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Assignment <tt>val = a*V_val</tt>.
-       *
+       * 赋值 <tt>val = a*V_val</tt>.
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -421,9 +417,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Assignment <tt>val = a*V_val + b*W_val</tt>.
-       *
+       * 赋值 <tt>val = a*V_val + b*W_val</tt>.
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -437,10 +433,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Perform a combined operation of a vector addition and a subsequent
-       * inner product, returning the value of the inner product.
-       *
+       * 执行一个向量加法和后续内积的组合操作，返回内积的值。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -454,9 +449,9 @@ namespace LinearAlgebra
 
 
       /**
-       * Set each element of @p val to @p s.
-       *
+       * 将 @p val 的每个元素设置为 @p s. 。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -464,10 +459,10 @@ namespace LinearAlgebra
 
 
       /**
-       * Set each element in @p val to @p v using @p indices as permutation, i.e.,
-       * <tt>val[indices[i]] = v[i]</tt>.
-       *
+       * 将 @p val 中的每个元素设置为 @p v ，使用 @p indices
+       * 作为permutation，即：<tt>val[indices[i]] = v[i]</tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number, typename IndexType>
       __global__ void
@@ -479,10 +474,10 @@ namespace LinearAlgebra
 
 
       /**
-       * Set each element in @p val to @p v using @p indices as permutation, i.e.,
-       * <tt>val[i] = v[indices[i]]</tt>.
-       *
+       * 将 @p val 中的每个元素设置为 @p v ，使用 @p indices
+       * 作为permutation，即，<tt>val[i]=v[indices[i]]</tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number, typename IndexType>
       __global__ void
@@ -494,10 +489,11 @@ namespace LinearAlgebra
 
 
       /**
-       * Add each element in @p val to @p v using @p indices as permutation, i.e.,
-       * <tt>val[indices[i]] += v[i]</tt>.
-       *
+       * 将 @p val 中的每个元素添加到 @p v 中，使用 @p indices
+       * 作为permutation，即：<tt>val[indices[i]] += v[i]</tt>。+=
+       * v[i]/tt>。
        * @ingroup CUDAWrappers
+       *
        */
       template <typename Number>
       __global__ void
@@ -514,3 +510,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

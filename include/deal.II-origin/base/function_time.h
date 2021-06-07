@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/function_time_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -24,77 +23,99 @@
 
 DEAL_II_NAMESPACE_OPEN
 /**
- * 支持与时间有关的函数。该库也是为时间相关问题设计的。为此，函数对象也包含一个存储时间的字段，以及操作它们的函数。与时间无关的问题不应该为其他目的而访问甚至滥用它们，但由于人们通常不会创建数以千计的函数对象，通用性的收益权衡了我们不需要为不与时间有关的问题存储时间值的事实。第二个好处是，派生的标准类如<tt>ZeroFunction</tt>,
- * <tt>ConstantFunction</tt>等也适用于时间相关问题。
- * 对时间的访问通过以下函数进行。  <ul>   <li>  <tt>get_time</tt>: 返回时间变量的现值。   <li>  <tt>set_time</tt>：设置时间值为一个特定的值。   <li>  <tt>advance_time</tt>：将时间增加一定的时间步长。  </ul>  后面两个函数是虚拟的，因此派生类可以执行只需要为每个新时间做一次的计算。例如，如果一个依赖时间的函数有一个因子<tt>sin(t)</tt>，那么在set_time()的派生版本中计算这个因子，将其存储在一个成员变量中并使用该变量，而不是在每次调用<tt>value()</tt>、<tt>value_list</tt>或Function类的其他函数时计算它，可能是个合理的选择。
- * 默认情况下，advance_time()函数会用新的时间调用set_time()函数，所以在大多数情况下，只重载set_time()进行计算就足够了，如上图所示。
- * 这个类的构造函数需要一个时间变量的初始值，默认为零。因为给出了一个默认值，所以如果不需要的话，所有的派生类都不需要为时间变量取一个初始值。
- * @tparam  Number
- * 用于存储时间值的数据类型。几乎在所有情况下，这都是默认的
- * @p double,
- * ，但在某些情况下，人们可能希望将时间存储在不同的（而且总是标量）类型中。一个例子是一个可以存储一个值以及它的不确定性的区间类型。另一个例子是一个允许自动微分的类型（例如，见
- * step-33
- * 中使用的Sacado类型），从而可以生成一个函数的分析性（时间性）导数。
+ * Support for time dependent functions. The library was also designed for
+ * time dependent problems. For this purpose, the function objects also
+ * contain a field which stores the time, as well as functions manipulating
+ * them. Time independent problems should not access or even abuse them for
+ * other purposes, but since one normally does not create thousands of
+ * function objects, the gain in generality weighs out the fact that we need
+ * not store the time value for not time dependent problems. The second
+ * advantage is that the derived standard classes like <tt>ZeroFunction</tt>,
+ * <tt>ConstantFunction</tt> etc also work for time dependent problems.
  *
+ * Access to the time goes through the following functions:
+ * <ul>
+ *  <li> <tt>get_time</tt>: return the present value of the time variable.
+ *  <li> <tt>set_time</tt>: set the time value to a specific value.
+ *  <li> <tt>advance_time</tt>: increase the time by a certain time step.
+ * </ul>
+ * The latter two functions are virtual, so that derived classes can perform
+ * computations which need only be done once for every new time. For example,
+ * if a time dependent function had a factor <tt>sin(t)</tt>, then it may be a
+ * reasonable choice to calculate this factor in a derived version of
+ * set_time(), store it in a member variable and use that one rather than
+ * computing it every time <tt>value()</tt>, <tt>value_list</tt> or one of the
+ * other functions of class Function is called.
+ *
+ * By default, the advance_time() function calls the set_time() function with
+ * the new time, so it is sufficient in most cases to overload only set_time()
+ * for computations as sketched out above.
+ *
+ * The constructor of this class takes an initial value for the time variable,
+ * which defaults to zero. Because a default value is given, none of the
+ * derived classes needs to take an initial value for the time variable if not
+ * needed.
+ *
+ * @tparam Number The data type in which time values are to be stored. This
+ * will, in almost all cases, simply be the default @p double, but there are
+ * cases where one may want to store the time in a different (and always
+ * scalar) type. An example would be an interval type that can store a value
+ * as well as its uncertainty. Another example would be a type that allows for
+ * Automatic Differentiation (see, for example, the Sacado type used in
+ * step-33) and thereby can generate analytic (temporal) derivatives of a
+ * function.
  *
  *
  * @ingroup functions
- *
  */
 template <typename Number = double>
 class FunctionTime
 {
 public:
   /**
-   * 构造函数。可以为时间变量取一个初始值，默认为零。
-   *
+   * Constructor. May take an initial value for the time variable, which
+   * defaults to zero.
    */
   FunctionTime(const Number initial_time = Number(0.0));
 
   /**
-   * 虚拟解构器。
-   *
+   * Virtual destructor.
    */
   virtual ~FunctionTime() = default;
 
   /**
-   * 返回时间变量的值。
-   *
+   * Return the value of the time variable.
    */
   Number
   get_time() const;
 
   /**
-   * 设置时间为<tt>new_time</tt>，覆盖旧值。
-   *
+   * Set the time to <tt>new_time</tt>, overwriting the old value.
    */
   virtual void
   set_time(const Number new_time);
 
   /**
-   * 将时间按给定的时间步长<tt>delta_t</tt>推进。
-   *
+   * Advance the time by the given time step <tt>delta_t</tt>.
    */
   virtual void
   advance_time(const Number delta_t);
 
   /**
-   * 这个类被初始化的类型，它被用来表示时间。
-   *
+   * The type this class is initialized with and that is used to represent time.
    */
   using time_type = Number;
 
 private:
   /**
-   * 存储现在的时间。
-   *
+   * Store the present time.
    */
   Number time;
 };
 
 
 
- /*----------------------------- Inline functions ----------------------------*/ 
+/*----------------------------- Inline functions ----------------------------*/
 
 #ifndef DOXYGEN
 
@@ -109,5 +130,3 @@ FunctionTime<Number>::get_time() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

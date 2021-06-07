@@ -1,3 +1,4 @@
+//include/deal.II-translator/particles/property_pool_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2021 by the deal.II authors
@@ -26,48 +27,38 @@ DEAL_II_NAMESPACE_OPEN
 
 namespace types
 {
-  /* Type definitions */
+   /* Type definitions */ 
 
 #ifdef DEAL_II_WITH_64BIT_INDICES
   /**
-   * The type used for indices of particles. While in
-   * sequential computations the 4 billion indices of 32-bit unsigned integers
-   * is plenty, parallel computations using hundreds of processes can overflow
-   * this number and we need a bigger index space. We here utilize the same
-   * build variable that controls the dof indices because the number
-   * of degrees of freedom and the number of particles are typically on the same
-   * order of magnitude.
+   * 用于粒子的索引的类型。虽然在顺序计算中，40亿个32位无符号整数的索引已经足够了，但使用数百个进程的并行计算会溢出这个数字，我们需要一个更大的索引空间。我们在这里利用了控制自由度指数的同一个构建变量，因为自由度的数量和粒子的数量通常在同一个数量级上。
+   * 数据类型总是表示无符号整数类型。
    *
-   * The data type always indicates an unsigned integer type.
    */
   using particle_index = uint64_t;
 
 #  ifdef DEAL_II_WITH_MPI
   /**
-   * An identifier that denotes the MPI type associated with
-   * types::global_dof_index.
+   * 一个标识符，表示与 types::global_dof_index.
+   * 相关的MPI类型。
+   *
    */
 #    define DEAL_II_PARTICLE_INDEX_MPI_TYPE MPI_UINT64_T
 #  endif
 
 #else
   /**
-   * The type used for indices of particles. While in
-   * sequential computations the 4 billion indices of 32-bit unsigned integers
-   * is plenty, parallel computations using hundreds of processes can overflow
-   * this number and we need a bigger index space. We here utilize the same
-   * build variable that controls the dof indices because the number
-   * of degrees of freedom and the number of particles are typically on the same
-   * order of magnitude.
+   * 用于粒子的索引的类型。虽然在顺序计算中，40亿个32位无符号整数的索引已经足够了，但使用数百个进程的并行计算会溢出这个数字，我们需要一个更大的索引空间。我们在这里利用了控制自由度指数的同一个构建变量，因为自由度的数量和粒子的数量通常在同一个数量级上。
+   * 数据类型总是表示无符号整数类型。
    *
-   * The data type always indicates an unsigned integer type.
    */
   using particle_index = unsigned int;
 
 #  ifdef DEAL_II_WITH_MPI
   /**
-   * An identifier that denotes the MPI type associated with
-   * types::global_dof_index.
+   * 一个标识符，表示与 types::global_dof_index.
+   * 相关的MPI类型。
+   *
    */
 #    define DEAL_II_PARTICLE_INDEX_MPI_TYPE MPI_UNSIGNED
 #  endif
@@ -77,187 +68,167 @@ namespace types
 namespace Particles
 {
   /**
-   * This class manages a memory space in which all particles associated with
-   * a ParticleHandler store their properties. It also stores the locations
-   * and reference locations of particles.
+   * 这个类管理着一个内存空间，与ParticleHandler相关的所有粒子都在其中存储它们的属性。它还存储粒子的位置和参考位置。
+   * 这个类的基本原理是，因为通常每个粒子都存储相同数量的属性，并且因为算法通常会遍历所有的粒子，对所有粒子的属性进行相同的操作，所以让用于属性的内存由一个中央管理器来处理会更有效率。
+   * 这样，粒子就不会存储一个指向它们存储属性的内存区域的指针，而是一个
+   * "句柄"，然后PropertyPool类将其转化为指向具体内存的指针。
+   * 综上所述，目前的实现只提供了这种接口，但仍然对粒子所要求的每一组属性使用简单的新建/删除分配。此外，目前的实现假设每个粒子的属性数量相同，但当然PropertyType可以包含一个指向动态分配的内存的指针，每个粒子的大小不同（这个内存不会被这个类所管理）。
    *
-   * The rationale for this class is
-   * that because typically every particle stores the same number of
-   * properties, and because algorithms generally traverse over all particles
-   * doing the same operation on all particles' properties, it is more efficient
-   * to let the memory used for properties be handled by a central manager.
-   * Particles then do not store a pointer to a memory area in which they store
-   * their properties, but instead a "handle" that the PropertyPool class then
-   * translates into a pointer to concrete memory.
-   *
-   * All this said, the current implementation only provides this kind of
-   * interface, but still uses simple new/delete allocation for every
-   * set of properties requested by a particle. Additionally, the current
-   * implementation assumes the same number of properties per particle, but of
-   * course the PropertyType could contain a pointer to dynamically allocated
-   * memory with varying sizes per particle (this memory would not be managed by
-   * this class).
    */
   template <int dim, int spacedim = dim>
   class PropertyPool
   {
   public:
     /**
-     * Typedef for the handle that is returned to the particles, and that
-     * uniquely identifies the slot of memory that is reserved for this
-     * particle.
+     * 返回给粒子的句柄的类型定义，该句柄唯一地标识了为该粒子保留的内存槽。
+     *
      */
     using Handle = unsigned int;
 
     /**
-     * Define a default (invalid) value for handles.
+     * 为句柄定义一个默认（无效）值。
+     *
      */
     static const Handle invalid_handle;
 
     /**
-     * Constructor. Stores the number of properties per reserved slot.
+     * 构造器。存储每个保留槽的属性数量。
+     *
      */
     PropertyPool(const unsigned int n_properties_per_slot);
 
     /**
-     * Destructor. This function ensures that all memory that had
-     * previously been allocated using allocate_properties_array()
-     * has also been returned via deallocate_properties_array().
+     * 解构器。这个函数确保之前使用allocate_properties_array()分配的所有内存也已经通过deallocate_properties_array()返回。
+     *
      */
     ~PropertyPool();
 
     /**
-     * Clear the dynamic memory allocated by this class. This function
-     * ensures that all memory that had previously been allocated using
-     * allocate_properties_array() has also been returned via
-     * deallocate_properties_array().
+     * 清除这个类所分配的动态内存。这个函数确保之前使用allocate_properties_array()分配的所有内存也已经通过deallocate_properties_array()返回。
+     *
      */
     void
     clear();
 
     /**
-     * Return a new handle that allows a particle to store information such as
-     * properties and locations. This also allocated memory in this PropertyPool
-     * variable.
+     * 返回一个新的句柄，允许粒子存储诸如属性和位置等信息。这也是在这个PropertyPool变量中分配内存。
+     *
      */
     Handle
     register_particle();
 
     /**
-     * Return a handle obtained by register_particle() and mark the memory
-     * allocated for storing the particle's data as free for re-use.
+     * 返回一个通过register_particle()获得的句柄，并将分配给存储粒子数据的内存标记为空闲，以便重新使用。
+     *
      */
     void
     deregister_particle(Handle &handle);
 
     /**
-     * Return the location of a particle identified by the given `handle`.
+     * 返回由给定的`handle'标识的粒子的位置。
+     *
      */
     const Point<spacedim> &
     get_location(const Handle handle) const;
 
     /**
-     * Set the location of a particle identified by the given `handle`.
+     * 设置由给定的`handle'标识的粒子的位置。
+     *
      */
     void
     set_location(const Handle handle, const Point<spacedim> &new_location);
 
     /**
-     * Return the reference_location of a particle identified by the given
-     * `handle`.
+     * 返回由给定的 "handle "标识的粒子的参考位置。
+     *
      */
     const Point<dim> &
     get_reference_location(const Handle handle) const;
 
     /**
-     * Set the reference location of a particle identified by the given
-     * `handle`.
+     * 设置由给定的 "handle "标识的粒子的参考位置。
+     *
      */
     void
     set_reference_location(const Handle      handle,
                            const Point<dim> &new_reference_location);
 
     /**
-     * Return the ID number of this particle identified by the given
-     * `handle`.
+     * 返回由给定的`handle'标识的这个粒子的ID号。
+     *
      */
     types::particle_index
     get_id(const Handle handle) const;
 
     /**
-     * Set the ID number of this particle identified by the given
-     * `handle`.
+     * 设置由给定的 "handle "标识的这个粒子的ID号。
+     *
      */
     void
     set_id(const Handle handle, const types::particle_index &new_id);
 
     /**
-     * Return an ArrayView to the properties that correspond to the given
-     * handle @p handle.
+     * 返回一个ArrayView给定句柄所对应的属性  @p handle.
+     *
      */
     ArrayView<double>
     get_properties(const Handle handle);
 
     /**
-     * Reserve the dynamic memory needed for storing the properties of
-     * @p size particles.
+     * 预留储存 @p size 粒子的属性所需的动态内存。
+     *
      */
     void
     reserve(const std::size_t size);
 
     /**
-     * Return how many properties are stored per slot in the pool.
+     * 返回池中每个槽位存储的属性数量。
+     *
      */
     unsigned int
     n_properties_per_slot() const;
 
   private:
     /**
-     * The number of properties that are reserved per particle.
+     * 每个粒子保留的属性数量。
+     *
      */
     const unsigned int n_properties;
 
     /**
-     * A vector that stores the locations of particles. It is indexed in the
-     * same way as the `reference_locations` and `properties` arrays, i.e., via
-     * handles.
+     * 一个存储粒子位置的向量。它的索引方式与`reference_locations`和`properties`数组相同，也就是通过句柄。
+     *
      */
     std::vector<Point<spacedim>> locations;
 
     /**
-     * A vector that stores the reference locations of particles. It is indexed
-     * in the same way as the `locations` and `properties` arrays, i.e., via
-     * handles.
+     * 一个存储粒子参考位置的向量。它的索引方式与`locations`和`properties`数组相同，即通过句柄。
+     *
      */
     std::vector<Point<dim>> reference_locations;
 
     /**
-     * A vector that stores the unique identifiers of particles. It is indexed
-     * in the same way as the `locations` and `properties` arrays, i.e., via
-     * handles.
+     * 一个存储粒子的唯一标识符的向量。它的索引方式与`位置`和`属性`数组的索引方式相同，即通过句柄。
+     *
      */
     std::vector<types::particle_index> ids;
 
     /**
-     * The currently allocated properties (whether assigned to
-     * a particle or available for assignment). It is indexed the same way as
-     * the `locations` and `reference_locations` arrays via handles.
+     * 当前分配的属性（无论是分配给粒子的还是可分配的）。它的索引方式与`locations`和`reference_locations`数组相同，通过句柄。
+     *
      */
     std::vector<double> properties;
 
     /**
-     * A collection of handles that have been created by
-     * allocate_properties_array() and have been destroyed by
-     * deallocate_properties_array(). Since the memory is still
-     * allocated these handles can be reused for new particles
-     * to avoid memory allocation.
+     * 由allocate_properties_array()创建并由deallocate_properties_array()销毁的句柄的集合。由于内存仍然被分配，这些句柄可以被重新用于新的粒子以避免内存分配。
+     *
      */
     std::vector<Handle> currently_available_handles;
   };
 
 
 
-  /* ---------------------- inline and template functions ------------------ */
+   /* ---------------------- inline and template functions ------------------ */ 
 
   template <int dim, int spacedim>
   inline const Point<spacedim> &
@@ -428,3 +399,5 @@ namespace Particles
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

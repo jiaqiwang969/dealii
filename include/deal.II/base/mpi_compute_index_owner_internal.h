@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/mpi_compute_index_owner_internal_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -30,17 +31,18 @@ namespace Utilities
     namespace internal
     {
       /**
-       * An internal namespace used for Utilities::MPI::compute_index_owner()
-       * and for Utilities::MPI::Partitioner::set_ghost_indices().
+       * 一个用于 Utilities::MPI::compute_index_owner() 和
+       * Utilities::MPI::Partitioner::set_ghost_indices().
+       * 的内部命名空间。
+       *
        */
       namespace ComputeIndexOwner
       {
         /**
-         * Specialization of ConsensusAlgorithms::Process for setting up the
-         * Dictionary even if there are ranges in the IndexSet space not owned
-         * by any processes.
+         * ConsensusAlgorithms::Process
+         * 的特殊化，用于设置字典，即使在IndexSet空间中有不属于任何进程的范围。
+         * @note  仅供内部使用。
          *
-         * @note Only for internal usage.
          */
         class DictionaryPayLoad
           : public ConsensusAlgorithms::Process<
@@ -49,7 +51,8 @@ namespace Utilities
         {
         public:
           /**
-           * Constructor.
+           * 构造函数。
+           *
            */
           DictionaryPayLoad(
             const std::map<unsigned int,
@@ -67,8 +70,9 @@ namespace Utilities
           {}
 
           /**
-           * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::compute_targets().
+           * 的实现
+           *
            */
           virtual std::vector<unsigned int>
           compute_targets() override
@@ -81,8 +85,9 @@ namespace Utilities
           }
 
           /**
-           * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::create_request().
+           * 的实现
+           *
            */
           virtual void
           create_request(const unsigned int other_rank,
@@ -94,8 +99,8 @@ namespace Utilities
           }
 
           /**
-           * Implementation of
-           * Utilities::MPI::ConsensusAlgorithms::Process::answer_request().
+           * 实现
+           * Utilities::MPI::ConsensusAlgorithms::Process::answer_request(). *
            */
           virtual void
           answer_request(
@@ -150,94 +155,134 @@ namespace Utilities
 
 
         /**
-         * Dictionary class with basic partitioning in terms of a single
-         * interval of fixed size known to all MPI ranks for two-stage index
-         * lookup.
+         *
+         */
+          virtual void
+          answer_request(
+            const unsigned int                                     other_rank,
+            const std::vector<std::pair<types::global_dof_index,
+                                        types::global_dof_index>> &buffer_recv,
+            std::vector<unsigned int> &request_buffer) override
+          {
+            (void)request_buffer; // not needed
+
+
+            // process message: loop over all intervals
+            for (auto interval : buffer_recv)
+              {
+#ifdef DEBUG
+                for (types::global_dof_index i = interval.first;
+                     i < interval.second;
+                     i++)
+                  Assert(actually_owning_ranks[i - local_range.first] ==
+                           numbers::invalid_unsigned_int,
+                         ExcInternalError());
+                Assert(interval.first >= local_range.first &&
+                         interval.first < local_range.second,
+                       ExcInternalError());
+                Assert(interval.second > local_range.first &&
+                         interval.second <= local_range.second,
+                       ExcInternalError());
+#endif
+                std::fill(actually_owning_ranks.data() + interval.first -
+                            local_range.first,
+                          actually_owning_ranks.data() + interval.second -
+                            local_range.first,
+                          other_rank);
+              }
+            actually_owning_rank_list.push_back(other_rank);
+          }
+
+        private:
+          const std::map<unsigned int,
+                         std::vector<std::pair<types::global_dof_index,
+                                               types::global_dof_index>>>
+            &buffers;
+
+          std::vector<unsigned int> &actually_owning_ranks;
+
+          const std::pair<types::global_dof_index, types::global_dof_index>
+            &local_range;
+
+          std::vector<unsigned int> &actually_owning_rank_list;
+        };
+
+
+
+        /**
+         * 具有基本分区的字典类，以所有MPI等级都知道的固定大小的单一区间为单位，用于两阶段索引查找。
+         *
          */
         struct Dictionary
         {
           /**
-           * The minimum grain size for the intervals.
+           * 区间的最小颗粒大小。
+           * 我们选择限制两阶段查找的区间的最小尺寸是考虑到以下两个相互冲突的目标。一方面，我们不希望字典中的区间变得太短。对于不均匀的未知数分布（有些等级有几千个未知数，有些则没有），查询的DoFs为
            *
-           * We choose to limit the smallest size an interval for the
-           * two-stage lookup can have with the following two conflicting
-           * goals in mind: On the one hand, we do not want intervals in the
-           * dictionary to become too short. For uneven distributions of
-           * unknowns (some ranks with several thousands of unknowns, others
-           * with none), the lookup DoFs -> dictionary then involves sending
-           * from one MPI rank to many other MPI ranks holding dictionary
-           * intervals, leading to an exceedingly high number of messages some
-           * ranks have to send. Also, fewer longer intervals are generally
-           * more efficient to look up. On the other hand, a range size too
-           * large leads to opposite effect of many messages that come into a
-           * particular dictionary owner in the lookup DoFs ->
-           * dictionary. With the current setting, we get at most 64 messages
-           * coming to a single MPI rank in case there is 1 dof per MPI rank,
-           * which is reasonably low. At the same time, uneven distributions
-           * up to factors of 4096 can be handled with at most 64 messages as
-           * well.
+           * ->
+           * 字典就涉及到从一个MPI行列向许多其他持有字典间隔的MPI行列发送，导致一些行列必须发送的消息数量过高。另外，较少的较长的区间通常在查找时更有效率。另一方面，范围大小过大会导致相反的效果，即在查找DoFs中，许多消息会进入一个特定的字典所有者中
+           *
+           * ->
+           * 字典。在目前的设置下，在每个MPI等级有1个DoF的情况下，我们最多得到64条消息进入一个MPI等级，这是很合理的低。同时，不均匀的分布可以用最多64条信息来处理，最高可达4096的系数。
+           *
            */
           static const unsigned int range_minimum_grain_size = 64;
 
           /**
-           * A vector with as many entries as there are dofs in the dictionary
-           * of the current process, and each entry containing the rank of the
-           * owner of that dof in the IndexSet `owned_indices`. This is
-           * queried in the index lookup, so we keep an expanded list.
+           * 一个向量，其条目数与当前进程的字典中的道夫一样多，每个条目包含该道夫的所有者在IndexSet
+           * `owned_indices`中的等级。这在索引查找中被查询到，所以我们保留一个扩展的列表。
+           *
            */
           std::vector<unsigned int> actually_owning_ranks;
 
           /**
-           * A sorted vector containing the MPI ranks appearing in
-           * `actually_owning_ranks`.
+           * 一个排序的向量，包含出现在`actually_owning_ranks`中的MPI等级。
+           *
            */
           std::vector<unsigned int> actually_owning_rank_list;
 
           /**
-           * The number of unknowns in the dictionary for on each MPI rank
-           * used for the index space splitting. For simplicity of index
-           * lookup without additional communication, this number is the same
-           * on all MPI ranks.
+           * 用于索引空间分割的每个MPI等级上的字典中的未知数。为了简化索引查询，不需要额外的通信，这个数字在所有MPI等级上都是一样的。
+           *
            */
           types::global_dof_index dofs_per_process;
 
           /**
-           * The local range of the global index space that is represented in
-           * the dictionary, computed from `dofs_per_process`, the current
-           * MPI rank, and range_minimum_grain_size.
+           * 在字典中表示的全局索引空间的局部范围，由`dofs_per_process`、当前MPI等级和range_minimum_grain_size计算得出。
+           *
            */
           std::pair<types::global_dof_index, types::global_dof_index>
             local_range;
 
           /**
-           * The actual size, computed as the minimum of dofs_per_process and
-           * the possible end of the index space. Equivalent to
-           * `local_range.second - local_range.first`.
+           * 实际大小，计算为dofs_per_process的最小值和索引空间的可能终点。相当于`local_range.second
+           *
+           * - local_range.first`.
+           *
            */
           types::global_dof_index locally_owned_size;
 
           /**
-           * The global size of the index space.
+           * 索引空间的全局大小。
+           *
            */
           types::global_dof_index size;
 
           /**
-           * The number of ranks the `owned_indices` IndexSet is distributed
-           * among.
+           * `owned_indices`索引集分布的等级数量。
+           *
            */
           unsigned int n_dict_procs_in_owned_indices;
 
           /**
-           * A stride to distribute the work more evenly over MPI ranks in
-           * case the grain size forces us to have fewer ranges than we have
-           * processors.
+           * 一个stride，用于在MPI行列中更均匀地分配工作，以防止颗粒大小迫使我们的范围少于我们的处理器。
+           *
            */
           unsigned int stride_small_size;
 
           /**
-           * Set up the dictionary by computing the partitioning from the
-           * global size and sending the rank information on locally owned
-           * ranges to the owner of the dictionary part.
+           * 通过计算全局大小的分区来设置字典，并将本地拥有的范围的等级信息发送给字典部分的所有者。
+           *
            */
           void
           reinit(const IndexSet &owned_indices, const MPI_Comm &comm)
@@ -456,9 +501,8 @@ namespace Utilities
           }
 
           /**
-           * Translate a global dof index to the MPI rank in the dictionary
-           * using `dofs_per_process`. We multiply by `stride_small_size` to
-           * ensure a balance over the MPI ranks due to the grain size.
+           * 使用`dofs_per_process`将全局dof索引转换为字典中的MPI等级。我们乘以`stride_small_size`，以确保在MPI等级上的平衡，由于晶粒大小。
+           *
            */
           unsigned int
           dof_to_dict_rank(const types::global_dof_index i)
@@ -469,8 +513,8 @@ namespace Utilities
           }
 
           /**
-           * Given an MPI rank id of an arbitrary processor, return the index
-           * offset where the local range of that processor begins.
+           * 给出一个任意处理器的MPI等级ID，返回该处理器的本地范围开始的索引偏移。
+           *
            */
           types::global_dof_index
           get_index_offset(const unsigned int rank)
@@ -483,9 +527,8 @@ namespace Utilities
           }
 
           /**
-           * Given the rank in the owned indices from `actually_owning_ranks`,
-           * this returns the index of the rank in the
-           * `actually_owning_rank_list`.
+           * 给出来自`actually_owning_ranks`的自有索引中的等级，这将返回`actually_owning_rank_list`中的等级索引。
+           *
            */
           unsigned int
           get_owning_rank_index(const unsigned int rank_in_owned_indices,
@@ -508,8 +551,8 @@ namespace Utilities
 
         private:
           /**
-           * Compute the partition from the global size of the index space and
-           * the number of ranks.
+           * 从索引空间的全局大小和等级的数量计算分区。
+           *
            */
           void
           partition(const IndexSet &owned_indices, const MPI_Comm &comm)
@@ -548,10 +591,11 @@ namespace Utilities
 
 
         /**
-         * Specialization of ConsensusAlgorithms::Process for the context of
-         * Utilities::MPI::compute_index_owner() and
-         * Utilities::MPI::Partitioner::set_ghost_indices() with additional
-         * payload.
+         * 在 Utilities::MPI::compute_index_owner() 和
+         * Utilities::MPI::Partitioner::set_ghost_indices() 的背景下，对
+         * ConsensusAlgorithms::Process
+         * 进行专业化处理，并增加有效载荷。
+         *
          */
         class ConsensusAlgorithmsPayload
           : public ConsensusAlgorithms::Process<
@@ -560,7 +604,8 @@ namespace Utilities
         {
         public:
           /**
-           * Constructor.
+           * 构造函数。
+           *
            */
           ConsensusAlgorithmsPayload(const IndexSet &owned_indices,
                                      const IndexSet &indices_to_look_up,
@@ -580,54 +625,53 @@ namespace Utilities
           }
 
           /**
-           * The index space which describes the locally owned space.
+           * 描述本地拥有的空间的索引空间。
+           *
            */
           const IndexSet &owned_indices;
 
           /**
-           * The indices which are "ghosts" on a given rank and should be
-           * looked up in terms of their owner rank from owned_indices.
+           * 在一个给定等级上是 "幽灵 "的指数，应该从
+           * owned_indices中根据其所有者等级来查找。
+           *
            */
           const IndexSet &indices_to_look_up;
 
           /**
-           * The underlying MPI communicator.
+           * 底层的MPI通信器。
+           *
            */
           const MPI_Comm comm;
 
           /**
-           * The present MPI rank.
+           * 目前的MPI等级。
+           *
            */
           const unsigned int my_rank;
 
           /**
-           * The total number of ranks participating in the MPI communicator
-           * `comm`.
+           * 参与MPI通信器 "comm "的行列总数。
+           *
            */
           const unsigned int n_procs;
 
           /**
-           * Controls whether the origin of ghost owner should also be
-           * stored. If true, it will be added into `requesters` and can be
-           * queried by `get_requesters()`.
+           * 控制鬼魂所有者的起源是否也应该被存储。如果是，它将被添加到`requesters`中，并可以通过`get_requesters()`查询。
+           *
            */
           const bool track_index_requests;
 
           /**
-           * The result of the index owner computation: To each index
-           * contained in `indices_to_look_up`, this vector contains the MPI
-           * rank of the owner in `owned_indices`.
+           * 索引所有者计算的结果。对`indices_to_look_up`中包含的每个索引，这个向量包含`owned_indices`中所有者的MPI等级。
+           *
            */
           std::vector<unsigned int> &owning_ranks;
 
           /**
-           * Keeps track of the origin of the requests. The layout of the data
-           * structure is as follows: The outermost vector has as many entries
-           * as Dictionary::actually_owning_rank_list and represents the
-           * information we should send back to the owners from the present
-           * dictionary entry. The second vector then collects a list of MPI
-           * ranks that have requested data, using the rank in the first pair
-           * entry and a list of index ranges as the second entry.
+           * 追踪请求的来源。该数据结构的布局如下。最外层的向量有与
+           * Dictionary::actually_owning_rank_list
+           * 一样多的条目，代表我们应该从现在的字典条目中送回给所有者的信息。然后，第二个向量收集了一个已请求数据的MPI等级列表，使用第一对条目中的等级和索引范围的列表作为第二条目。
+           *
            */
           std::vector<std::vector<
             std::pair<unsigned int,
@@ -635,29 +679,29 @@ namespace Utilities
             requesters;
 
           /**
-           * The dictionary handling the requests.
+           * 处理请求的字典。
+           *
            */
           Dictionary dict;
 
           /**
-           * Array to collect the indices to look up, sorted by the rank in
-           * the dictionary.
+           * 用于收集要查询的索引的数组，按字典中的等级排序。
+           *
            */
           std::map<unsigned int, std::vector<types::global_dof_index>>
             indices_to_look_up_by_dict_rank;
 
           /**
-           * The field where the indices for incoming data from the process
-           * are stored.
+           * 存储从进程中传入数据的索引的字段。
+           *
            */
           std::map<unsigned int, std::vector<unsigned int>> recv_indices;
 
           /**
-           * Implementation of
+           * 实现
            * Utilities::MPI::ConsensusAlgorithms::Process::answer_request(),
-           * adding the owner of a particular index in request_buffer (and
-           * keeping track of who requested a particular index in case that
-           * information is also desired).
+           * 在request_buffer中添加特定索引的所有者（并跟踪谁请求了一个特定的索引，以防该信息也被需要）。
+           *
            */
           virtual void
           answer_request(
@@ -680,8 +724,9 @@ namespace Utilities
           }
 
           /**
-           * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::compute_targets().
+           * 的实现
+           *
            */
           virtual std::vector<unsigned int>
           compute_targets() override
@@ -738,8 +783,9 @@ namespace Utilities
           }
 
           /**
-           * Implementation of
            * Utilities::MPI::ConsensusAlgorithms::Process::create_request().
+           * 的实施
+           *
            */
           virtual void
           create_request(const unsigned int other_rank,
@@ -761,8 +807,10 @@ namespace Utilities
           }
 
           /**
-           * Implementation of
+           * 执行
            * Utilities::MPI::ConsensusAlgorithms::Process::prepare_buffer_for_answer().
+           * 。
+           *
            */
           virtual void
           prepare_buffer_for_answer(
@@ -773,8 +821,9 @@ namespace Utilities
           }
 
           /**
-           * Implementation of
-           * Utilities::MPI::ConsensusAlgorithms::Process::read_answer().
+           * 执行
+           * Utilities::MPI::ConsensusAlgorithms::Process::read_answer(). 。
+           *
            */
           virtual void
           read_answer(const unsigned int               other_rank,
@@ -788,13 +837,10 @@ namespace Utilities
           }
 
           /**
-           * Resolve the origin of the requests by sending the information
-           * accumulated in terms of the dictionary owners during the run of
-           * the consensus algorithm back to the owner in the original
-           * IndexSet. This requires some point-to-point communication.
+           * 通过将共识算法运行期间积累的字典所有者方面的信息送回原始IndexSet中的所有者，来解决请求的来源。这需要一些点对点的通信。
+           * @return
+           * 从当前等级请求的处理器和相关指数范围的地图
            *
-           * @return Map of processors and associated ranges of indices that
-           *         are requested from the current rank
            */
           std::map<unsigned int, IndexSet>
           get_requesters()
@@ -957,17 +1003,11 @@ namespace Utilities
 
         private:
           /**
-           * Stores the index request in the `requesters` field. We first find
-           * out the owner of the index that was requested (using the guess in
-           * `owner_index`, as we typically might look up on the same rank
-           * several times in a row, which avoids the binary search in
-           * Dictionary::get_owning_rank_index(). Once we know the rank of the
-           * owner, we the vector entry with the rank of the request. Here, we
-           * utilize the fact that requests are processed rank-by-rank, so we
-           * can simply look at the end of the vector if there is already some
-           * data stored or not. Finally, we build ranges, again using that
-           * the index list is sorted and we therefore only need to append at
-           * the end.
+           * 在 "requesters
+           * "字段中存储索引请求。我们首先找出被请求的索引的所有者（使用`owner_index`中的猜测，因为我们通常可能在同一等级上连续查找几次，这避免了
+           * Dictionary::get_owning_rank_index(). 中的二进制搜索
+           * 一旦我们知道所有者的等级，我们就用请求的等级的向量条目。在这里，我们利用了请求被逐级处理的事实，所以我们可以简单地在向量的末尾看看是否已经有一些数据被存储。最后，我们建立范围，再次利用索引列表被排序的特点，因此我们只需要在最后追加。
+           *
            */
           void
           append_index_origin(const types::global_dof_index index,
@@ -1006,3 +1046,5 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/tensor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -61,28 +60,33 @@ namespace Differentiation
 
 
 /**
- * 这个类是<tt>Tensor<rank,dim,Number></tt>类的一个专门版本。它处理等级为零的张量，即标量。第二个模板参数
- * @p dim 被忽略了。
- * 这个类的存在是因为在某些情况下，我们想构造张量
- * @<spacedim-dim,dim,Number@>,
- * 类型的对象，它应该扩展为标量、向量、矩阵等，这取决于模板参数
- * @p dim 和 @p spacedim.
- * 的值，因此我们需要一个充当标量的类（即 @p Number)
- * 用于所有目的，但属于Tensor模板家族。
- * @tparam  dim
- * 一个整数，表示该张量所处空间的维度。当然，这等于识别一个点和秩-1张量的坐标数。由于当前对象是一个秩0张量（标量），这个模板参数对这个类没有意义。
- * @tparam  Number
- * 要存储张量元素的数据类型。几乎在所有情况下，这只是默认的
- * @p double,
- * ，但在某些情况下，人们可能希望以不同的（而且总是标量）类型来存储元素。它可以用来将张量建立在
- * @p float 或 @p complex
- * 数字或任何其他实现基本算术运算的数据类型上。另一个例子是允许自动微分的类型（例如，见
- * step-33
- * 中使用的Sacado类型），从而可以生成一个以张量为参数的函数的分析（空间）导数。
+ * This class is a specialized version of the <tt>Tensor<rank,dim,Number></tt>
+ * class. It handles tensors of rank zero, i.e. scalars. The second template
+ * argument @p dim is ignored.
  *
+ * This class exists because in some cases we want to construct objects of
+ * type Tensor@<spacedim-dim,dim,Number@>, which should expand to scalars,
+ * vectors, matrices, etc, depending on the values of the template arguments
+ * @p dim and @p spacedim. We therefore need a class that acts as a scalar
+ * (i.e. @p Number) for all purposes but is part of the Tensor template
+ * family.
+ *
+ * @tparam dim An integer that denotes the dimension of the space in which
+ * this tensor operates. This of course equals the number of coordinates that
+ * identify a point and rank-1 tensor. Since the current object is a rank-0
+ * tensor (a scalar), this template argument has no meaning for this class.
+ *
+ * @tparam Number The data type in which the tensor elements are to be stored.
+ * This will, in almost all cases, simply be the default @p double, but there
+ * are cases where one may want to store elements in a different (and always
+ * scalar) type. It can be used to base tensors on @p float or @p complex
+ * numbers or any other data type that implements basic arithmetic operations.
+ * Another example would be a type that allows for Automatic Differentiation
+ * (see, for example, the Sacado type used in step-33) and thereby can
+ * generate analytic (spatial) derivatives of a function that takes a tensor
+ * as argument.
  *
  * @ingroup geomprimitives
- *
  */
 template <int dim, typename Number>
 class Tensor<0, dim, Number>
@@ -92,66 +96,71 @@ public:
                 "Tensors must have a dimension greater than or equal to one.");
 
   /**
-   * 提供一种方法来获取一个对象的尺寸，而不需要明确知道它的数据类型。实现这种方式而不是提供一个函数<tt>dimension()</tt>，因为现在有可能在编译时获得尺寸，而不需要内联函数的扩展和预评估；因此编译器可能产生更有效的代码，你可以使用这个值来声明其他数据类型。
-   *
+   * Provide a way to get the dimension of an object without explicit
+   * knowledge of it's data type. Implementation is this way instead of
+   * providing a function <tt>dimension()</tt> because now it is possible to
+   * get the dimension at compile time without the expansion and preevaluation
+   * of an inlined function; the compiler may therefore produce more efficient
+   * code and you may use this value to declare other data types.
    */
   static constexpr unsigned int dimension = dim;
 
   /**
-   * 向外界公布这个张量的等级。
-   *
+   * Publish the rank of this tensor to the outside world.
    */
   static constexpr unsigned int rank = 0;
 
   /**
-   * 秩为0的张量的独立成分的数量。
-   *
+   * Number of independent components of a tensor of rank 0.
    */
   static constexpr unsigned int n_independent_components = 1;
 
   /**
-   * 声明一个类型，该类型持有与该类的模板参数相同精度的实值数。对于
-   * std::complex<number>,
-   * ，这对应于类型number，对于所有其他情况，它等于Number。也请参见Vector<Number>中的相应字段。
-   * 这个别名是用来表示规范的返回类型的。
+   * Declare a type that has holds real-valued numbers with the same precision
+   * as the template argument to this class. For std::complex<number>, this
+   * corresponds to type number, and it is equal to Number for all other
+   * cases. See also the respective field in Vector<Number>.
    *
+   * This alias is used to represent the return type of norms.
    */
   using real_type = typename numbers::NumberTraits<Number>::real_type;
 
   /**
-   * 由这个容器封装并由operator[]()返回的对象的类型。这是一个等级为0的张量的标量数字类型。
-   *
+   * Type of objects encapsulated by this container and returned by
+   * operator[](). This is a scalar number type for a rank 0 tensor.
    */
   using value_type = Number;
 
   /**
-   * 声明一个数组类型，可以用来静态地初始化这个类型的对象。如果是一个等级为0的张量，这只是标量数字类型Number。
-   *
+   * Declare an array type which can be used to initialize an object of this
+   * type statically. In case of a tensor of rank 0 this is just the scalar
+   * number type Number.
    */
   using array_type = Number;
 
   /**
-   * 构造函数。设置为零。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Constructor. Set to zero.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV
   Tensor();
 
   /**
-   * 来自不同底层标量类型的张量的构造器。这显然要求 @p
-   * OtherNumber 类型可转换为 @p 数字。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Constructor from tensors with different underlying scalar type. This
+   * obviously requires that the @p OtherNumber type is convertible to @p
+   * Number.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV
   Tensor(const Tensor<0, dim, OtherNumber> &initializer);
 
   /**
-   * 构造函数，数据从一个C风格的数组中复制出来。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Constructor, where the data is copied from a C-style array.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV
@@ -159,205 +168,210 @@ public:
 
 #if __GNUC__ >= 11 || defined __INTEL_COMPILER
   /**
-   * 拷贝构造函数
-   *
+   * Copy constructor
    */
   constexpr DEAL_II_CUDA_HOST_DEV
   Tensor(const Tensor<0, dim, Number> &other);
 
   /**
-   * 拷贝赋值操作符
-   *
+   * Copy assignment operator
    */
   constexpr DEAL_II_CUDA_HOST_DEV Tensor<0, dim, Number> &
                                   operator=(const Tensor<0, dim, Number> &other);
 
   /**
-   * 移动构造函数
-   *
+   * Move constructor
    */
   constexpr DEAL_II_CUDA_HOST_DEV
     Tensor(Tensor<0, dim, Number> &&other) noexcept;
 
   /**
-   * 移动赋值运算符
-   *
+   * Move assignment operator
    */
   constexpr DEAL_II_CUDA_HOST_DEV Tensor<0, dim, Number> &
                                   operator=(Tensor<0, dim, Number> &&other) noexcept;
 #endif
 
   /**
-   * 返回一个指向底层存储的第一个元素的指针。
-   *
+   * Return a pointer to the first element of the underlying storage.
    */
   Number *
   begin_raw();
 
   /**
-   * 返回一个指向底层存储的第一个元素的常量指针。
-   *
+   * Return a const pointer to the first element of the underlying storage.
    */
   const Number *
   begin_raw() const;
 
   /**
-   * 返回一个指向底层存储结束后的元素的指针。
-   *
+   * Return a pointer to the element past the end of the underlying storage.
    */
   Number *
   end_raw();
 
   /**
-   * 返回一个超过底层存储结束的元素的常量指针。
-   *
+   * Return a const pointer to the element past the end of the underlying
+   * storage.
    */
   const Number *
   end_raw() const;
 
   /**
-   * 返回一个对封装的Number对象的引用。由于秩0张量是标量，这是一个自然的操作。
-   * 这是返回一个可写引用的非const转换操作。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Return a reference to the encapsulated Number object. Since rank-0
+   * tensors are scalars, this is a natural operation.
    *
+   * This is the non-const conversion operator that returns a writable
+   * reference.
+   *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV operator Number &();
 
   /**
-   * 返回一个对封装的Number对象的引用。由于秩0张量是标量，这是一个自然的操作。
-   * 这是一个const转换操作，返回一个只读的引用。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Return a reference to the encapsulated Number object. Since rank-0
+   * tensors are scalars, this is a natural operation.
    *
+   * This is the const conversion operator that returns a read-only reference.
+   *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV operator const Number &() const;
 
   /**
-   * 从具有不同底层标量类型的张量进行赋值。这显然要求
-   * @p OtherNumber 类型可以转换为 @p 数。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Assignment from tensors with different underlying scalar type. This
+   * obviously requires that the @p OtherNumber type is convertible to @p
+   * Number.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator=(const Tensor<0, dim, OtherNumber> &rhs);
 
   /**
-   * 这个操作符将一个标量分配给一个张量。这显然要求 @p
-   * OtherNumber 类型可以转换为 @p Number. 。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * This operator assigns a scalar to a tensor. This obviously requires
+   * that the @p OtherNumber type is convertible to @p Number.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator=(const OtherNumber &d);
 
   /**
-   * 测试两个张量的相等。
-   *
+   * Test for equality of two tensors.
    */
   template <typename OtherNumber>
   constexpr bool
   operator==(const Tensor<0, dim, OtherNumber> &rhs) const;
 
   /**
-   * 测试两个张量的不等式。
-   *
+   * Test for inequality of two tensors.
    */
   template <typename OtherNumber>
   constexpr bool
   operator!=(const Tensor<0, dim, OtherNumber> &rhs) const;
 
   /**
-   * 添加另一个标量。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Add another scalar.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator+=(const Tensor<0, dim, OtherNumber> &rhs);
 
   /**
-   * 减去另一个标量。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Subtract another scalar.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator-=(const Tensor<0, dim, OtherNumber> &rhs);
 
   /**
-   * 将标量乘以一个<tt>因子</tt>。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Multiply the scalar with a <tt>factor</tt>.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator*=(const OtherNumber &factor);
 
   /**
-   * 将标量除以<tt>因子</tt>。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Divide the scalar by <tt>factor</tt>.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator/=(const OtherNumber &factor);
 
   /**
-   * 带有反转项的张量。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Tensor with inverted entries.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV Tensor
                                   operator-() const;
 
   /**
-   * 将所有数值重置为零。    请注意，这与标准库容器的 @p
-   * clear()成员函数和deal.II内的其他几个类的语义部分不一致，它们不仅将存储元素的值重置为零，而且释放所有内存并将对象返回到处女状态。然而，由于本类型的对象的大小是由其模板参数决定的，所以调整大小是不可能的，事实上，所有元素的值都为零的状态就是这样一个对象构造后的状态。
+   * Reset all values to zero.
    *
+   * Note that this is partly inconsistent with the semantics of the @p
+   * clear() member functions of the standard library containers and of
+   * several other classes within deal.II, which not only reset the values of
+   * stored elements to zero, but release all memory and return the object
+   * into a virginial state. However, since the size of objects of the present
+   * type is determined by its template parameters, resizing is not an option,
+   * and indeed the state where all elements have a zero value is the state
+   * right after construction of such an object.
    */
   constexpr void
   clear();
 
   /**
-   * 返回张量的Frobenius-norm，即所有条目的绝对平方之和的平方根。对于目前秩-1张量的情况，这等于通常的<tt>l<sub>2</sub></tt>向量的规范。
-   *
+   * Return the Frobenius-norm of a tensor, i.e. the square root of the sum of
+   * the absolute squares of all entries. For the present case of rank-1
+   * tensors, this equals the usual <tt>l<sub>2</sub></tt> norm of the vector.
    */
   real_type
   norm() const;
 
   /**
-   * 返回张量的Frobenius-norm的平方，即所有条目的绝对平方之和。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Return the square of the Frobenius-norm of a tensor, i.e. the sum of the
+   * absolute squares of all entries.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV real_type
                                   norm_square() const;
 
   /**
-   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-   *
+   * Read or write the data of this object to or from a stream for the purpose
+   * of serialization using the [BOOST serialization
+   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
    */
   template <class Archive>
   void
   serialize(Archive &ar, const unsigned int version);
 
   /**
-   * 内部类型声明，用于对Tensor<1,dim,Number>的operator[]()的返回类型进行专业化。
-   *
+   * Internal type declaration that is used to specialize the return type of
+   * operator[]() for Tensor<1,dim,Number>
    */
   using tensor_type = Number;
 
 private:
   /**
-   * 这个标量对象的值。
-   *
+   * The value of this scalar object.
    */
   Number value;
 
   /**
-   * 用于unroll的内部辅助函数。
-   *
+   * Internal helper function for unroll.
    */
   template <typename OtherNumber>
   void
@@ -372,25 +386,77 @@ private:
 
 
 /**
- * 一个具有任意等级的一般张量类，即具有任意数量的索引。张量类提供了一个索引操作符和一些基础结构，但大多数功能是递归到等级为1的张量中，或者放到外部模板函数中，例如<tt>contract</tt>族。
- * 张量的等级规定了它可以代表哪些类型的物理量。  <ul>   <li>  一个等级为0的张量是一个标量，可以存储诸如温度或压力等量。这些标量在本文档中显示为简单的小写拉丁字母，例如：  $a, b, c, \dots$  。    </li>   <li>  等级1张量是一个有 @p dim 分量的矢量，它可以表示矢量，如速度、位移、电场等。它们也可以描述一个标量场的梯度。    秩-1张量使用的符号是粗体小写拉丁字母，例如  $\mathbf a, \mathbf b, \mathbf c, \dots$  。    一个秩-1张量的成分，如 $\mathbf a$ ，表示为 $a_i$ ，其中 $i$ 是0和<tt>dim-1</tt>之间的一个索引。    </li>   <li>  等级2张量是一种线性算子，可以将一个向量转化为另一个向量。这些张量类似于具有 $\text{dim} \times \text{dim}$ 成分的矩阵。有一个相关的类SymmetricTensor<2,dim>，用于等级2的张量，其元素是对称的。等级2张量通常用粗体的大写拉丁字母表示，如 $\mathbf A, \mathbf B, \dots$ 或粗体的希腊字母，如 $\boldsymbol{\varepsilon}, \boldsymbol{\sigma}$  。    等级2张量的组成部分如 $\mathbf A$ 用两个指数 $(i,j)$ 表示为 $A_{ij}$  。这些张量通常描述矢量场的梯度（变形梯度、速度梯度等）或标量场的Hessians。此外，机械应力张量是秩-2张量，将内部表面的单位法向量映射为局部牵引力（单位面积的力）向量。    </li>   <li>  等级大于2的张量也是以一致的方式定义的。它们有 $\text{dim}^{\text{rank}}$ 个分量，识别一个分量所需的指数数等于<tt>秩</tt>。对于等级为4的张量，存在一个称为SymmetricTensor<4,dim>的对称变体。    </li>   </ul> 。
- * 对秩为2的对象使用这个张量类，在许多情况下比矩阵更有优势，因为编译器知道维度以及数据的位置。因此有可能产生比具有与运行时间相关的维度的矩阵更有效的代码。这也使得代码更容易阅读，因为张量（一个与坐标系相关的对象，并且在坐标旋转和变换方面具有变换属性）和矩阵（我们认为它是与线性代数事物相关的任意向量空间上的运算符）之间存在语义上的差异。
- * @tparam  rank_
- * 一个整数，表示这个张量的等级。对于秩0张量，该类存在一个特殊化。
- * @tparam  dim
- * 一个整数，表示该张量所处空间的维度。当然，这等于识别一个点和秩-1张量的坐标数。
- * @tparam  Number
- * 用来存储张量元素的数据类型。在几乎所有的情况下，这只是默认的
- * @p double,
- * ，但在有些情况下，人们可能希望以不同的（而且总是标量的）类型存储元素。它可以用来将张量建立在
- * @p float 或 @p complex
- * 数字或任何其他实现基本算术操作的数据类型上。另一个例子是允许自动微分的类型（例如，见
- * step-33
- * 中使用的Sacado类型），从而可以生成一个以张量为参数的函数的分析（空间）导数。
+ * A general tensor class with an arbitrary rank, i.e. with an arbitrary
+ * number of indices. The Tensor class provides an indexing operator and a bit
+ * of infrastructure, but most functionality is recursively handed down to
+ * tensors of rank 1 or put into external templated functions, e.g. the
+ * <tt>contract</tt> family.
  *
+ * The rank of a tensor specifies which types of physical quantities it can
+ * represent:
+ * <ul>
+ *   <li> A rank-0 tensor is a scalar that can store quantities such as
+ *     temperature or pressure. These scalar quantities are shown in this
+ *     documentation as simple lower-case Latin letters e.g. $a, b, c, \dots$.
+ *   </li>
+ *   <li> A rank-1 tensor is a vector with @p dim components and it can
+ *     represent vector quantities such as velocity, displacement, electric
+ *     field, etc. They can also describe the gradient of a scalar field.
+ *     The notation used for rank-1 tensors is bold-faced lower-case Latin
+ *     letters e.g. $\mathbf a, \mathbf b, \mathbf c, \dots$.
+ *     The components of a rank-1 tensor such as $\mathbf a$ are represented
+ *     as $a_i$ where $i$ is an index between 0 and <tt>dim-1</tt>.
+ *   </li>
+ *   <li> A rank-2 tensor is a linear operator that can transform a vector
+ *     into another vector. These tensors are similar to matrices with
+ *     $\text{dim} \times \text{dim}$ components. There is a related class
+ *     SymmetricTensor<2,dim> for tensors of rank 2 whose elements are
+ *     symmetric. Rank-2 tensors are usually denoted by bold-faced upper-case
+ *     Latin letters such as $\mathbf A, \mathbf B, \dots$ or bold-faced Greek
+ *     letters for example $\boldsymbol{\varepsilon}, \boldsymbol{\sigma}$.
+ *     The components of a rank 2 tensor such as $\mathbf A$ are shown with
+ *     two indices $(i,j)$ as $A_{ij}$. These tensors usually describe the
+ *     gradients of vector fields (deformation gradient, velocity gradient,
+ *     etc.) or Hessians of scalar fields. Additionally, mechanical stress
+ *     tensors are rank-2 tensors that map the unit normal vectors of internal
+ *     surfaces into local traction (force per unit area) vectors.
+ *   </li>
+ *   <li> Tensors with ranks higher than 2 are similarly defined in a
+ *     consistent manner. They have $\text{dim}^{\text{rank}}$ components and
+ *     the number of indices required to identify a component equals
+ *     <tt>rank</tt>. For rank-4 tensors, a symmetric variant called
+ *     SymmetricTensor<4,dim> exists.
+ *   </li>
+ * </ul>
+ *
+ * Using this tensor class for objects of rank 2 has advantages over matrices
+ * in many cases since the dimension is known to the compiler as well as the
+ * location of the data. It is therefore possible to produce far more
+ * efficient code than for matrices with runtime-dependent dimension. It also
+ * makes the code easier to read because of the semantic difference between a
+ * tensor (an object that relates to a coordinate system and has
+ * transformation properties with regard to coordinate rotations and
+ * transforms) and matrices (which we consider as operators on arbitrary
+ * vector spaces related to linear algebra things).
+ *
+ * @tparam rank_ An integer that denotes the rank of this tensor. A
+ * specialization of this class exists for rank-0 tensors.
+ *
+ * @tparam dim An integer that denotes the dimension of the space in which
+ * this tensor operates. This of course equals the number of coordinates that
+ * identify a point and rank-1 tensor.
+ *
+ * @tparam Number The data type in which the tensor elements are to be stored.
+ * This will, in almost all cases, simply be the default @p double, but there
+ * are cases where one may want to store elements in a different (and always
+ * scalar) type. It can be used to base tensors on @p float or @p complex
+ * numbers or any other data type that implements basic arithmetic operations.
+ * Another example would be a type that allows for Automatic Differentiation
+ * (see, for example, the Sacado type used in step-33) and thereby can
+ * generate analytic (spatial) derivatives of a function that takes a tensor
+ * as argument.
  *
  * @ingroup geomprimitives
- *
  */
 template <int rank_, int dim, typename Number>
 class Tensor
@@ -401,87 +467,94 @@ public:
   static_assert(dim >= 0,
                 "Tensors must have a dimension greater than or equal to one.");
   /**
-   * 提供一种方法来获取一个对象的尺寸，而不需要明确知道它的数据类型。实现这种方式而不是提供一个函数<tt>dimension()</tt>，因为现在有可能在编译时获得尺寸，而不需要内联函数的扩展和预评估；因此编译器可能产生更有效的代码，你可以使用这个值来声明其他数据类型。
-   *
+   * Provide a way to get the dimension of an object without explicit
+   * knowledge of it's data type. Implementation is this way instead of
+   * providing a function <tt>dimension()</tt> because now it is possible to
+   * get the dimension at compile time without the expansion and preevaluation
+   * of an inlined function; the compiler may therefore produce more efficient
+   * code and you may use this value to declare other data types.
    */
   static constexpr unsigned int dimension = dim;
 
   /**
-   * 向外界公布这个张量的等级。
-   *
+   * Publish the rank of this tensor to the outside world.
    */
   static constexpr unsigned int rank = rank_;
 
   /**
-   * 当前等级的张量的独立成分的数量。这是dim乘以每个子张量的独立分量的数量。
-   *
+   * Number of independent components of a tensor of current rank. This is dim
+   * times the number of independent components of each sub-tensor.
    */
   static constexpr unsigned int n_independent_components =
     Tensor<rank_ - 1, dim>::n_independent_components * dim;
 
   /**
-   * 由这个容器封装的、由operator[]()返回的对象的类型。对于一般的张量来说，这是一个低等级的张量，对于Tensor<1,dim,Number>来说，这是一个标量数字类型。
-   *
+   * Type of objects encapsulated by this container and returned by
+   * operator[](). This is a tensor of lower rank for a general tensor, and a
+   * scalar number type for Tensor<1,dim,Number>.
    */
   using value_type = typename Tensor<rank_ - 1, dim, Number>::tensor_type;
 
   /**
-   * 声明一个数组类型，可以用来静态地初始化这个类型的对象。对于`dim
-   * == 0`，它的大小是1，否则，它是`dim`。
-   *
+   * Declare an array type which can be used to initialize an object of this
+   * type statically. For `dim == 0`, its size is 1. Otherwise, it is `dim`.
    */
   using array_type =
     typename Tensor<rank_ - 1, dim, Number>::array_type[(dim != 0) ? dim : 1];
 
   /**
-   * 构造函数。将所有条目初始化为零。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Constructor. Initialize all entries to zero.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
                                   Tensor();
 
   /**
-   * 一个构造函数，数据从一个C风格的数组中复制出来。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * A constructor where the data is copied from a C-style array.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV explicit Tensor(
     const array_type &initializer);
 
   /**
-   * 一个构造函数，数据从一个ArrayView对象中复制。
-   * 显然，ArrayView对象必须代表一个大小为`dim`<sup>`rank`</sup>的数据延伸。参数`initializer`的顺序排列的元素被解释为unrolled_to_component_index()所描述的那样。
-   * 这个构造函数显然要求 @p ElementType 类型等于 @p Number,
-   * 或可转换为 @p Number. 数。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * A constructor where the data is copied from an ArrayView object.
+   * Obviously, the ArrayView object must represent a stretch of
+   * data of size `dim`<sup>`rank`</sup>. The sequentially ordered elements
+   * of the argument `initializer` are interpreted as described by
+   * unrolled_to_component_index().
    *
+   * This constructor obviously requires that the @p ElementType type is
+   * either equal to @p Number, or is convertible to @p Number.
+   * Number.
+   *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename ElementType, typename MemorySpace>
   constexpr DEAL_II_CUDA_HOST_DEV explicit Tensor(
     const ArrayView<ElementType, MemorySpace> &initializer);
 
   /**
-   * 来自不同底层标量类型的张量的构造函数。这显然要求
-   * @p OtherNumber 类型可转换为 @p 数字。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Constructor from tensors with different underlying scalar type. This
+   * obviously requires that the @p OtherNumber type is convertible to @p
+   * Number.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV
   Tensor(const Tensor<rank_, dim, OtherNumber> &initializer);
 
   /**
-   * 可以从 "张量的张量 "转换的构造函数。
-   *
+   * Constructor that converts from a "tensor of tensors".
    */
   template <typename OtherNumber>
   constexpr Tensor(
     const Tensor<1, dim, Tensor<rank_ - 1, dim, OtherNumber>> &initializer);
 
   /**
-   * 到张量的张量的转换操作符。
-   *
+   * Conversion operator to tensor of tensors.
    */
   template <typename OtherNumber>
   constexpr
@@ -489,249 +562,250 @@ public:
 
 #if __GNUC__ >= 11 || defined __INTEL_COMPILER
   /**
-   * 复制构造函数
-   *
+   * Copy constructor
    */
   constexpr Tensor(const Tensor<rank_, dim, Number> &);
 
   /**
-   * 拷贝赋值运算符
-   *
+   * Copy assignment operator
    */
   constexpr Tensor<rank_, dim, Number> &
   operator=(const Tensor<rank_, dim, Number> &);
 
   /**
-   * 移动构造函数
-   *
+   * Move constructor
    */
   constexpr Tensor(Tensor<rank_, dim, Number> &&) noexcept;
 
   /**
-   * 移动赋值运算符
-   *
+   * Move assignment operator
    */
   constexpr Tensor<rank_, dim, Number> &
   operator=(Tensor<rank_, dim, Number> &&) noexcept;
 #endif
 
   /**
-   * 读写访问操作符。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Read-Write access operator.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV value_type &operator[](const unsigned int i);
 
   /**
-   * 只读访问操作符。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Read-only access operator.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV const value_type &
                                         operator[](const unsigned int i) const;
 
   /**
-   * 使用TableIndices <tt>indices</tt>进行读取访问
-   *
+   * Read access using TableIndices <tt>indices</tt>
    */
   constexpr const Number &operator[](const TableIndices<rank_> &indices) const;
 
   /**
-   * 使用TableIndices<tt>indices</tt>进行读写访问
-   *
+   * Read and write access using TableIndices <tt>indices</tt>
    */
   constexpr Number &operator[](const TableIndices<rank_> &indices);
 
   /**
-   * 返回一个指向底层存储的第一个元素的指针。
-   *
+   * Return a pointer to the first element of the underlying storage.
    */
   Number *
   begin_raw();
 
   /**
-   * 返回一个指向底层存储的第一个元素的常量指针。
-   *
+   * Return a const pointer to the first element of the underlying storage.
    */
   const Number *
   begin_raw() const;
 
   /**
-   * 返回一个指向底层存储结束后的元素的指针。
-   *
+   * Return a pointer to the element past the end of the underlying storage.
    */
   Number *
   end_raw();
 
   /**
-   * 返回一个指向超过底层存储结束的元素的指针。
-   *
+   * Return a pointer to the element past the end of the underlying storage.
    */
   const Number *
   end_raw() const;
 
   /**
-   * 来自具有不同底层标量类型的张量的赋值运算符。
-   * 这显然要求 @p OtherNumber 类型可以转换为 @p 数。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Assignment operator from tensors with different underlying scalar type.
+   * This obviously requires that the @p OtherNumber type is convertible to @p
+   * Number.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator=(const Tensor<rank_, dim, OtherNumber> &rhs);
 
   /**
-   * 这个操作符将一个标量分配给一个张量。为了避免混淆向张量分配标量值的确切含义，零是<tt>d</tt>唯一允许的值，允许用直观的符号<tt>t=0</tt>将张量的所有元素重置为零。
-   *
+   * This operator assigns a scalar to a tensor. To avoid confusion with what
+   * exactly it means to assign a scalar value to a tensor, zero is the only
+   * value allowed for <tt>d</tt>, allowing the intuitive notation
+   * <tt>t=0</tt> to reset all elements of the tensor to zero.
    */
   constexpr Tensor &
   operator=(const Number &d);
 
   /**
-   * 测试两个张量的相等。
-   *
+   * Test for equality of two tensors.
    */
   template <typename OtherNumber>
   constexpr bool
   operator==(const Tensor<rank_, dim, OtherNumber> &) const;
 
   /**
-   * 测试两个张量的不平等。
-   *
+   * Test for inequality of two tensors.
    */
   template <typename OtherNumber>
   constexpr bool
   operator!=(const Tensor<rank_, dim, OtherNumber> &) const;
 
   /**
-   * 添加另一个张量。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Add another tensor.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator+=(const Tensor<rank_, dim, OtherNumber> &);
 
   /**
-   * 减去另一个张量。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Subtract another tensor.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator-=(const Tensor<rank_, dim, OtherNumber> &);
 
   /**
-   * 用<tt>因子</tt>缩放张量，即用<tt>因子</tt>乘以所有组件。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * Scale the tensor by <tt>factor</tt>, i.e. multiply all components by
+   * <tt>factor</tt>.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator*=(const OtherNumber &factor);
 
   /**
-   * 用<tt>1/factor</tt>缩放向量。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Scale the vector by <tt>1/factor</tt>.
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename OtherNumber>
   constexpr DEAL_II_CUDA_HOST_DEV Tensor &
                                   operator/=(const OtherNumber &factor);
 
   /**
-   * 单元减法运算符。负掉张量的所有条目。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Unary minus operator. Negate all entries of a tensor.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV Tensor
                                   operator-() const;
 
   /**
-   * 将所有值重置为零。    请注意，这与标准库容器的 @p
-   * clear()成员函数以及deal.II中的其他几个类的语义部分不一致，它们不仅将存储元素的值重置为零，而且释放所有内存并将对象返回到处女状态。然而，由于本类型的对象的大小是由其模板参数决定的，所以调整大小是不可能的，事实上，所有元素的值都为零的状态就是这样一个对象构建后的状态。
+   * Reset all values to zero.
    *
+   * Note that this is partly inconsistent with the semantics of the @p
+   * clear() member functions of the standard library containers and of
+   * several other classes within deal.II, which not only reset the values of
+   * stored elements to zero, but release all memory and return the object
+   * into a virginial state. However, since the size of objects of the present
+   * type is determined by its template parameters, resizing is not an option,
+   * and indeed the state where all elements have a zero value is the state
+   * right after construction of such an object.
    */
   constexpr void
   clear();
 
   /**
-   * 返回张量的Frobenius-norm，即所有条目的绝对平方之和的平方根。对于目前秩-1张量的情况，这等于通常的<tt>l<sub>2</sub></tt>向量的规范。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Return the Frobenius-norm of a tensor, i.e. the square root of the sum of
+   * the absolute squares of all entries. For the present case of rank-1
+   * tensors, this equals the usual <tt>l<sub>2</sub></tt> norm of the vector.
    *
+   * @note This function can also be used in CUDA device code.
    */
   DEAL_II_CUDA_HOST_DEV
   typename numbers::NumberTraits<Number>::real_type
   norm() const;
 
   /**
-   * 返回张量的Frobenius-norm的平方，即所有条目的绝对平方之和。
-   * @note  这个函数也可以在CUDA设备代码中使用。
+   * Return the square of the Frobenius-norm of a tensor, i.e. the sum of the
+   * absolute squares of all entries.
    *
+   * @note This function can also be used in CUDA device code.
    */
   constexpr DEAL_II_CUDA_HOST_DEV
     typename numbers::NumberTraits<Number>::real_type
     norm_square() const;
 
   /**
-   * 用所有张量元素填充一个向量。
-   * 这个函数将所有的张量条目展开为一个单一的、线性编号的向量。正如C++中的惯例，张量的最右边的索引行进得最快。
+   * Fill a vector with all tensor elements.
    *
+   * This function unrolls all tensor entries into a single, linearly numbered
+   * vector. As usual in C++, the rightmost index of the tensor marches
+   * fastest.
    */
   template <typename OtherNumber>
   void
   unroll(Vector<OtherNumber> &result) const;
 
   /**
-   * 为函数的参数所索引的张量元素返回一个范围为
-   * $[0,\text{dim}^{\text{rank}}-1]$ 的未滚动索引。
-   *
+   * Return an unrolled index in the range $[0,\text{dim}^{\text{rank}}-1]$
+   * for the element of the tensor indexed by the argument to the function.
    */
   static constexpr unsigned int
   component_to_unrolled_index(const TableIndices<rank_> &indices);
 
   /**
-   * 与 component_to_unrolled_index 相反。对于 $[0,
-   * \text{dim}^{\text{rank}}-1]$
-   * 范围内的一个索引，返回它所对应的索引集。
-   *
+   * Opposite of  component_to_unrolled_index: For an index in the range
+   * $[0, \text{dim}^{\text{rank}}-1]$, return which set of indices it would
+   * correspond to.
    */
   static constexpr TableIndices<rank_>
   unrolled_to_component_indices(const unsigned int i);
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   static constexpr std::size_t
   memory_consumption();
 
   /**
-   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-   *
+   * Read or write the data of this object to or from a stream for the purpose
+   * of serialization using the [BOOST serialization
+   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
    */
   template <class Archive>
   void
   serialize(Archive &ar, const unsigned int version);
 
   /**
-   * 内部类型声明，用于对Tensor<1,dim,Number>的operator[]()的返回类型进行专业化。
-   *
+   * Internal type declaration that is used to specialize the return type of
+   * operator[]() for Tensor<1,dim,Number>
    */
   using tensor_type = Tensor<rank_, dim, Number>;
 
 private:
   /**
-   * 持有子元素的张量数组。
-   *
+   * Array of tensors holding the subelements.
    */
   Tensor<rank_ - 1, dim, Number> values[(dim != 0) ? dim : 1];
   // ... avoid a compiler warning in case of dim == 0 and ensure that the
   // array always has positive size.
 
   /**
-   * 用于unroll的内部辅助函数。
-   *
+   * Internal helper function for unroll.
    */
   template <typename OtherNumber>
   void
@@ -739,10 +813,10 @@ private:
                    unsigned int &       start_index) const;
 
   /**
-   * 这个构造函数是供内部使用的。它提供了一种方法来创建Tensor<rank,
-   * dim, Number>的constexpr构造函数。
-   * @note 这个函数也可以在CUDA设备代码中使用。
+   * This constructor is for internal use. It provides a way
+   * to create constexpr constructors for Tensor<rank, dim, Number>
    *
+   * @note This function can also be used in CUDA device code.
    */
   template <typename ArrayLike, std::size_t... Indices>
   constexpr DEAL_II_CUDA_HOST_DEV
@@ -795,9 +869,8 @@ namespace internal
   // end workaround
 
   /**
-   * 下面的结构需要用来初始化嵌套的Tensor对象。
-   * 另外请看numbers.h中的另一个特殊化。
-   *
+   * The structs below are needed to initialize nested Tensor objects.
+   * Also see numbers.h for another specialization.
    */
   template <int rank, int dim, typename T>
   struct NumberType<Tensor<rank, dim, T>>
@@ -819,7 +892,7 @@ namespace internal
 } // namespace internal
 
 
- /*---------------------- Inline functions: Tensor<0,dim> ---------------------*/ 
+/*---------------------- Inline functions: Tensor<0,dim> ---------------------*/
 
 
 template <int dim, typename Number>
@@ -1135,7 +1208,7 @@ template <int dim, typename Number>
 constexpr unsigned int Tensor<0, dim, Number>::n_independent_components;
 
 
- /*-------------------- Inline functions: Tensor<rank,dim> --------------------*/ 
+/*-------------------- Inline functions: Tensor<rank,dim> --------------------*/
 
 template <int rank_, int dim, typename Number>
 template <typename ArrayLike, std::size_t... indices>
@@ -1713,20 +1786,19 @@ constexpr unsigned int Tensor<rank_, dim, Number>::n_independent_components;
 
 #endif // DOXYGEN
 
- /* ----------------- Non-member functions operating on tensors. ------------ */ 
+/* ----------------- Non-member functions operating on tensors. ------------ */
 
 /**
- * @name  Tensor对象的输出函数
- *
- *
+ * @name Output functions for Tensor objects
  */
 //@{
 
 /**
- * 张量的输出运算符。连续打印元素，中间有一个空格，等级1的子张量之间有两个空格，等级2之间有三个空格，以此类推。
- * @relatesalso  张量
+ * Output operator for tensors. Print the elements consecutively, with a space
+ * in between, two spaces between rank 1 subtensors, three between rank 2 and
+ * so on.
  *
- *
+ * @relatesalso Tensor
  */
 template <int rank_, int dim, typename Number>
 inline std::ostream &
@@ -1744,10 +1816,10 @@ operator<<(std::ostream &out, const Tensor<rank_, dim, Number> &p)
 
 
 /**
- * 秩为0的张量的输出算子。由于这种张量是标量，我们只需打印这一个值。
- * @relatesalso  张量
+ * Output operator for tensors of rank 0. Since such tensors are scalars, we
+ * simply print this one value.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 inline std::ostream &
@@ -1760,23 +1832,20 @@ operator<<(std::ostream &out, const Tensor<0, dim, Number> &p)
 
 //@}
 /**
- * @name  张量对象的矢量空间操作。
- *
- *
+ * @name Vector space operations on Tensor objects:
  */
 //@{
 
 
 /**
- * 秩为0的张量与左边的对象进行标量乘法。
- * 这个函数将存储在张量中的底层 @p Number
- * 解开，并与之相乘 @p object 。
+ * Scalar multiplication of a tensor of rank 0 with an object from the left.
  *
+ * This function unwraps the underlying @p Number stored in the Tensor and
+ * multiplies @p object with it.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename Other>
 constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
@@ -1789,15 +1858,14 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 秩为0的张量与来自右边的对象进行标量乘法。
- * 这个函数将存储在张量中的底层 @p Number
- * 解开，并与之相乘 @p object 。
+ * Scalar multiplication of a tensor of rank 0 with an object from the right.
  *
+ * This function unwraps the underlying @p Number stored in the Tensor and
+ * multiplies @p object with it.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename Other>
 constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
@@ -1809,15 +1877,15 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 两个等级为0的张量的标量乘法。
- * 这个函数将存储在张量中的 @p Number 和 @p
- * OtherNumber类型的底层对象解包，并将它们相乘。它返回一个解包的乘积类型的数字。
+ * Scalar multiplication of two tensors of rank 0.
  *
+ * This function unwraps the underlying objects of type @p Number and @p
+ * OtherNumber that are stored within the Tensor and multiplies them. It
+ * returns an unwrapped number of product type.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  Tensor
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename OtherNumber>
 DEAL_II_CUDA_HOST_DEV constexpr DEAL_II_ALWAYS_INLINE
@@ -1831,13 +1899,11 @@ DEAL_II_CUDA_HOST_DEV constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 等级为0的张量除以一个标量数字。
+ * Division of a tensor of rank 0 by a scalar number.
  *
+ * @note This function can also be used in CUDA device code.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename OtherNumber>
 DEAL_II_CUDA_HOST_DEV constexpr DEAL_II_ALWAYS_INLINE
@@ -1852,13 +1918,11 @@ DEAL_II_CUDA_HOST_DEV constexpr DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 添加两个等级为0的张量。
+ * Add two tensors of rank 0.
  *
+ * @note This function can also be used in CUDA device code.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
@@ -1871,13 +1935,11 @@ constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
 
 
 /**
- * 减去两个等级为0的张量。
+ * Subtract two tensors of rank 0.
  *
+ * @note This function can also be used in CUDA device code.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
@@ -1890,14 +1952,16 @@ constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
 
 
 /**
- * 一般等级的张量与来自右边的标量的乘法。
- * 只允许与标量数类型（即浮点数、复数浮点数等）的乘法，详情请参见EnableIfScalar的文档。
+ * Multiplication of a tensor of general rank with a scalar number from the
+ * right.
  *
+ * Only multiplication with a scalar number type (i.e., a floating point
+ * number, a complex floating point number, etc.) is allowed, see the
+ * documentation of EnableIfScalar for details.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
@@ -1916,14 +1980,16 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 一般等级的张量与左边的标量数字的乘法。
- * 只允许与标量数类型（即浮点数、复数浮点数等）的乘法，详情请参见EnableIfScalar的文档。
+ * Multiplication of a tensor of general rank with a scalar number from the
+ * left.
  *
+ * Only multiplication with a scalar number type (i.e., a floating point
+ * number, a complex floating point number, etc.) is allowed, see the
+ * documentation of EnableIfScalar for details.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 DEAL_II_CUDA_HOST_DEV constexpr inline DEAL_II_ALWAYS_INLINE
@@ -1988,13 +2054,13 @@ namespace internal
 
 
 /**
- * 一般等级的张量与标量数字的除法。关于模板参数和返回类型的更多信息，请参见上面关于operator*()的讨论。
+ * Division of a tensor of general rank with a scalar number. See the
+ * discussion on operator*() above for more information about template
+ * arguments and the return type.
  *
+ * @note This function can also be used in CUDA device code.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
@@ -2009,14 +2075,13 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 两个一般等级的张量的相加。
- * @tparam  rank 两个张量的等级。
+ * Addition of two tensors of general rank.
  *
+ * @tparam rank The rank of both tensors.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
@@ -2034,14 +2099,13 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 两个一般等级的张量的减法。
- * @tparam  rank 两个张量的等级。
+ * Subtraction of two tensors of general rank.
  *
+ * @tparam rank The rank of both tensors.
  *
- * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @note This function can also be used in CUDA device code.
  *
- *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
@@ -2058,10 +2122,10 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 }
 
 /**
- * 两个等级为0的张量对象的进位乘法（即两个标量值的乘法）。
- * @relatesalso 张量
+ * Entrywise multiplication of two tensor objects of rank 0 (i.e. the
+ * multiplication of two scalar values).
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number, typename OtherNumber>
 inline constexpr DEAL_II_ALWAYS_INLINE
@@ -2077,16 +2141,20 @@ inline constexpr DEAL_II_ALWAYS_INLINE
 }
 
 /**
- * 两个一般等级的张量对象的入境乘法。
- * 这种乘法也被称为 "Hadamard-product"（参看https://en.wikipedia.org/wiki/Hadamard_product_(matrices)），并产生一个大小为<rank, dim>的新张量。@f[
- * \text{result}_{i, j}
- * = \text{left}_{i, j}\circ
- *   \text{right}_{i, j}
+ * Entrywise multiplication of two tensor objects of general rank.
+ *
+ * This multiplication is also called "Hadamard-product" (c.f.
+ * https://en.wikipedia.org/wiki/Hadamard_product_(matrices)), and generates a
+ * new tensor of size <rank, dim>:
+ * @f[
+ *   \text{result}_{i, j}
+ *   = \text{left}_{i, j}\circ
+ *     \text{right}_{i, j}
  * @f]
- * @tparam  rank 两个张量的等级。
- * @relatesalso  张量
  *
+ * @tparam rank The rank of both tensors.
  *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 inline constexpr DEAL_II_ALWAYS_INLINE
@@ -2105,33 +2173,32 @@ inline constexpr DEAL_II_ALWAYS_INLINE
 
 //@}
 /**
- * @name  张量对象的收缩操作和外积
- *
+ * @name Contraction operations and the outer product for tensor objects
  */
 //@{
 
 
 /**
- * 张量的点积（单一收缩）。返回一个等级为 $(\text{rank}_1 +
- * \text{rank}_2
+ * The dot product (single contraction) for tensors: Return a tensor of rank
+ * $(\text{rank}_1 + \text{rank}_2 - 2)$ that is the contraction of the last
+ * index of a tensor @p src1 of rank @p rank_1 with the first index of a
+ * tensor @p src2 of rank @p rank_2:
+ * @f[
+ *   \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ *   = \sum_{k}
+ *     \text{left}_{i_1,\ldots,i_{r1}, k}
+ *     \text{right}_{k, j_1,\ldots,j_{r2}}
+ * @f]
  *
- * - 2)$ 的张量，它是等级为 @p rank_1 的张量 @p src1 的最后一个索引与等级为 @p rank_2: 的张量@f[
- * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- * = \sum_{k}
- *   \text{left}_{i_1,\ldots,i_{r1}, k}
- *   \text{right}_{k, j_1,\ldots,j_{r2}}
- * @f]的第一个索引的收缩。
+ * @note For the Tensor class, the multiplication operator only performs a
+ * contraction over a single pair of indices. This is in contrast to the
+ * multiplication operator for SymmetricTensor, which does the double
+ * contraction.
  *
+ * @note In case the contraction yields a tensor of rank 0 the scalar number
+ * is returned as an unwrapped number type.
  *
- * @note
- * 对于张量类，乘法运算符只对一对指数进行收缩。这与SymmetricTensor的乘法运算符相反，后者做的是双重收缩。
- *
- *
- * @note
- * 如果收缩产生一个等级为0的张量，那么标量数将作为一个未包装的数字类型返回。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int rank_1,
           int rank_2,
@@ -2161,35 +2228,32 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 对任意等级的两个张量的一对索引进行通用收缩。返回一个等级为
- * $(\text{rank}_1 + \text{rank}_2
+ * Generic contraction of a pair of indices of two tensors of arbitrary rank:
+ * Return a tensor of rank $(\text{rank}_1 + \text{rank}_2 - 2)$ that is the
+ * contraction of index @p index_1 of a tensor @p src1 of rank @p rank_1 with
+ * the index @p index_2 of a tensor @p src2 of rank @p rank_2:
+ * @f[
+ *   \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ *   = \sum_{k}
+ *     \text{left}_{i_1,\ldots,k,\ldots,i_{r1}}
+ *     \text{right}_{j_1,\ldots,k,\ldots,j_{r2}}
+ * @f]
  *
- * - 2)$ 的张量，它是等级为 @p rank_1 的张量 @p src1 的索引 @p index_2 与等级为 @p rank_2: 的张量@f[
- * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- * = \sum_{k}
- *   \text{left}_{i_1,\ldots,k,\ldots,i_{r1}}
- *   \text{right}_{j_1,\ldots,k,\ldots,j_{r2}}
- * @f]之间的收缩。
- * 例如，如果张量 <code>index_1==0</code> 的第一个索引（
- * <code>index_1==0</code> ）应与第三个索引（
- * <code>index_2==2</code>) of a tensor <code>t2</code>
- * ）收缩，该函数应被调用为
- *
+ * If for example the first index (<code>index_1==0</code>) of a tensor
+ * <code>t1</code> shall be contracted with the third index
+ * (<code>index_2==2</code>) of a tensor <code>t2</code>, this function should
+ * be invoked as
  * @code
- * contract<0, 2>(t1, t2);
+ *   contract<0, 2>(t1, t2);
  * @endcode
  *
+ * @note The position of the index is counted from 0, i.e.,
+ * $0\le\text{index}_i<\text{range}_i$.
  *
+ * @note In case the contraction yields a tensor of rank 0 the scalar number
+ * is returned as an unwrapped number type.
  *
- * @note  索引的位置是从0开始计算的，即
- * $0\le\text{index}_i<\text{range}_i$  。
- *
- *
- * @note
- * 如果收缩产生一个等级为0的张量，那么标量数将作为一个未包装的数字类型返回。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int index_1,
           int index_2,
@@ -2235,35 +2299,34 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 对任意等级的两个张量的两对索引进行通用收缩。返回一个等级为
- * $(\text{rank}_1 + \text{rank}_2
- *
- * - 4)$ 的张量，它是索引 @p index_1 与索引 @p index_2, 和索引 @p index_3与索引 @p index_4 的等级为 @p rank_1 的张量 @p src2 的收缩@f[
- * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- * = \sum_{k, l}
- *   \text{left}_{i_1,\ldots,k,\ldots,l,\ldots,i_{r1}}
- *   \text{right}_{j_1,\ldots,k,\ldots,l\ldots,j_{r2}}
+ * Generic contraction of two pairs of indices of two tensors of arbitrary
+ * rank: Return a tensor of rank $(\text{rank}_1 + \text{rank}_2 - 4)$ that is
+ * the contraction of index @p index_1 with index @p index_2, and index @p
+ * index_3 with index @p index_4 of a tensor @p src1 of rank @p rank_1 and a
+ * tensor @p src2 of rank @p rank_2:
+ * @f[
+ *   \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ *   = \sum_{k, l}
+ *     \text{left}_{i_1,\ldots,k,\ldots,l,\ldots,i_{r1}}
+ *     \text{right}_{j_1,\ldots,k,\ldots,l\ldots,j_{r2}}
  * @f]
- * 例如，如果第一个索引（ <code>index_1==0</code>
- * ）应与第三个索引（ <code>index_2==2</code>
- * ）收缩，第二个索引（ <code>index_3==1</code>
- * ）与第一个索引（ <code>index_4==0</code>) of a tensor
- * <code>t2</code> ）收缩，这个函数应被调用为
  *
+ * If for example the first index (<code>index_1==0</code>) shall be
+ * contracted with the third index (<code>index_2==2</code>), and the second
+ * index (<code>index_3==1</code>) with the first index
+ * (<code>index_4==0</code>) of a tensor <code>t2</code>, this function should
+ * be invoked as
  * @code
- * double_contract<0, 2, 1, 0>(t1, t2);
+ *   double_contract<0, 2, 1, 0>(t1, t2);
  * @endcode
  *
+ * @note The position of the index is counted from 0, i.e.,
+ * $0\le\text{index}_i<\text{range}_i$.
  *
- * @note  索引的位置是从0开始计算的，即
- * $0\le\text{index}_i<\text{range}_i$  。
+ * @note In case the contraction yields a tensor of rank 0 the scalar number
+ * is returned as an unwrapped number type.
  *
- *
- * @note
- * 如果收缩产生一个等级为0的张量，那么标量数将作为一个未包装的数字类型返回。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int index_1,
           int index_2,
@@ -2343,14 +2406,16 @@ constexpr inline
 
 
 /**
- * 标量积，或者两个等阶的张量的（广义）Frobenius内积。返回一个标量，它是张量 @p left 和 @p right:  @f[
- * \sum_{i_1,\ldots,i_r}
- * \text{left}_{i_1,\ldots,i_r}
- * \text{right}_{i_1,\ldots,i_r}
- * @f]完全收缩的结果。
- * @relatesalso  张量
+ * The scalar product, or (generalized) Frobenius inner product of two tensors
+ * of equal rank: Return a scalar number that is the result of a full
+ * contraction of a tensor @p left and @p right:
+ * @f[
+ *   \sum_{i_1,\ldots,i_r}
+ *   \text{left}_{i_1,\ldots,i_r}
+ *   \text{right}_{i_1,\ldots,i_r}
+ * @f]
  *
- *
+ * @relatesalso Tensor
  */
 template <int rank, int dim, typename Number, typename OtherNumber>
 constexpr inline DEAL_II_ALWAYS_INLINE
@@ -2365,18 +2430,21 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * 对三个张量进行完全收缩。返回一个标量，它是等级为 @p rank_1, 的张量 @p left 、等级为 $(\text{rank}_1+\text{rank}_2)$ 的张量 @p middle 和等级为 @p rank_2: 的张量 @p 完全缩减的结果 @f[
- * \sum_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- * \text{left}_{i_1,\ldots,i_{r1}}
- * \text{middle}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- * \text{right}_{j_1,\ldots,j_{r2}}
+ * Full contraction of three tensors: Return a scalar number that is the
+ * result of a full contraction of a tensor @p left of rank @p rank_1, a
+ * tensor @p middle of rank $(\text{rank}_1+\text{rank}_2)$ and a tensor @p
+ * right of rank @p rank_2:
+ * @f[
+ *   \sum_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ *   \text{left}_{i_1,\ldots,i_{r1}}
+ *   \text{middle}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ *   \text{right}_{j_1,\ldots,j_{r2}}
  * @f]
  *
- * @note
- * 三个输入张量中的每一个都可以是Tensor或SymmetricTensor。
- * @relatesalso  张量
+ * @note Each of the three input tensors can be either a Tensor or
+ * SymmetricTensor.
  *
- *
+ * @relatesalso Tensor
  */
 template <template <int, int, typename> class TensorT1,
           template <int, int, typename> class TensorT2,
@@ -2402,12 +2470,14 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 
 /**
- * @p rank_1 和 @p rank_2: 两个张量的外积 返回一个等级为 $(\text{rank}_1 + \text{rank}_2)$ 的张量：@f[
- * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
- * = \text{left}_{i_1,\ldots,i_{r1}}\,\text{right}_{j_1,\ldots,j_{r2}.}
+ * The outer product of two tensors of @p rank_1 and @p rank_2: Returns a
+ * tensor of rank $(\text{rank}_1 + \text{rank}_2)$:
+ * @f[
+ *   \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
+ *   = \text{left}_{i_1,\ldots,i_{r1}}\,\text{right}_{j_1,\ldots,j_{r2}.}
  * @f]
- * @relatesalso  张量
  *
+ * @relatesalso Tensor
  */
 template <int rank_1,
           int rank_2,
@@ -2430,17 +2500,20 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 //@}
 /**
- * @name  对等级为1的张量的特殊操作
- *
+ * @name Special operations on tensors of rank 1
  */
 //@{
 
 
 /**
- * 返回2d中的交叉积。这只是顺时针旋转90度来计算切向矢量的外法线。这个函数是为所有空间维度定义的，以允许独立于维度的编程（例如在空间维度的开关内），但只有当参数的实际维度为2时才可以调用（例如来自开关中的<tt>dim==2</tt>情况）。
- * @relatesalso  张量
+ * Return the cross product in 2d. This is just a rotation by 90 degrees
+ * clockwise to compute the outer normal from a tangential vector. This
+ * function is defined for all space dimensions to allow for dimension
+ * independent programming (e.g. within switches over the space dimension),
+ * but may only be called if the actual dimension of the arguments is two
+ * (e.g. from the <tt>dim==2</tt> case in the switch).
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE Tensor<1, dim, Number>
@@ -2458,10 +2531,13 @@ constexpr inline DEAL_II_ALWAYS_INLINE Tensor<1, dim, Number>
 
 
 /**
- * 返回2个向量在3D中的交叉积。这个函数是为所有空间维度定义的，以允许独立于维度的编程（例如在空间维度的开关内），但只有当参数的实际维度是3时才可以调用（例如来自开关中的<tt>dim==3</tt>情况）。
- * @relatesalso  张量
+ * Return the cross product of 2 vectors in 3d. This function is defined for
+ * all space dimensions to allow for dimension independent programming (e.g.
+ * within switches over the space dimension), but may only be called if the
+ * actual dimension of the arguments is three (e.g. from the <tt>dim==3</tt>
+ * case in the switch).
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number1, typename Number2>
 constexpr inline DEAL_II_ALWAYS_INLINE
@@ -2488,18 +2564,15 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 //@}
 /**
- * @name  对等级2的张量的特殊操作
- *
- *
+ * @name Special operations on tensors of rank 2
  */
 //@{
 
 
 /**
- * 计算一个张量或等级2的行列式。
- * @relatesalso  张量
+ * Compute the determinant of a tensor or rank 2.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE Number
@@ -2525,9 +2598,9 @@ constexpr inline DEAL_II_ALWAYS_INLINE Number
 }
 
 /**
- * dim==1的特殊化。
- * @relatesalso  张量
+ * Specialization for dim==1.
  *
+ * @relatesalso Tensor
  */
 template <typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2537,9 +2610,9 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 }
 
 /**
- * 对dim==2的特化。
- * @relatesalso  张量
+ * Specialization for dim==2.
  *
+ * @relatesalso Tensor
  */
 template <typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2550,9 +2623,9 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 }
 
 /**
- * 对dim的特殊化==3。
- * @relatesalso  张量
+ * Specialization for dim==3.
  *
+ * @relatesalso Tensor
  */
 template <typename Number>
 constexpr DEAL_II_ALWAYS_INLINE Number
@@ -2570,10 +2643,10 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * 计算并返回等级为2的张量的轨迹，即其对角线项的总和。
- * @relatesalso  张量
+ * Compute and return the trace of a tensor of rank 2, i.e. the sum of its
+ * diagonal entries.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE Number
@@ -2587,10 +2660,12 @@ constexpr inline DEAL_II_ALWAYS_INLINE Number
 
 
 /**
- * 计算并返回给定张量的逆值。由于编译器可以进行返回值的优化，并且由于返回对象的大小是已知的，所以可以接受通过值来返回结果，而不是通过引用作为一个参数。
- * @relatesalso  张量
+ * Compute and return the inverse of the given tensor. Since the compiler can
+ * perform the return value optimization, and since the size of the return
+ * object is known, it is acceptable to return the result by value, rather
+ * than by reference as a parameter.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr inline Tensor<2, dim, Number>
@@ -2671,14 +2746,13 @@ constexpr inline DEAL_II_ALWAYS_INLINE Tensor<2, 3, Number>
   return return_tensor;
 }
 
-#endif  /* DOXYGEN */ 
+#endif /* DOXYGEN */
 
 
 /**
- * 返回给定张量的转置。
- * @relatesalso  张量
+ * Return the transpose of the given tensor.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr inline DEAL_II_ALWAYS_INLINE Tensor<2, dim, Number>
@@ -2699,16 +2773,17 @@ constexpr inline DEAL_II_ALWAYS_INLINE Tensor<2, dim, Number>
 
 
 /**
- * 返回等级为2的给定张量的邻接值。张量的邻接 $\mathbf A$ 被定义为@f[
- * \textrm{adj}\mathbf A
- * \dealcoloneq \textrm{det}\mathbf A \; \mathbf{A}^{-1}
+ * Return the adjugate of the given tensor of rank 2.
+ * The adjugate of a tensor $\mathbf A$ is defined as
+ * @f[
+ *  \textrm{adj}\mathbf A
+ *   \dealcoloneq \textrm{det}\mathbf A \; \mathbf{A}^{-1}
  * \; .
- * @f]。
+ * @f]
  *
- * @note  这要求张量是可逆的。
- * @relatesalso  张量
+ * @note This requires that the tensor is invertible.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr Tensor<2, dim, Number>
@@ -2719,16 +2794,17 @@ adjugate(const Tensor<2, dim, Number> &t)
 
 
 /**
- * 返回给定等级为2的张量的协因子。张量的协因子 $\mathbf A$ 定义为@f[
- * \textrm{cof}\mathbf A
- * \dealcoloneq \textrm{det}\mathbf A \; \mathbf{A}^{-T}
- *  = \left[ \textrm{adj}\mathbf A \right]^{T} \; .
- * @f] 。
+ * Return the cofactor of the given tensor of rank 2.
+ * The cofactor of a tensor $\mathbf A$ is defined as
+ * @f[
+ *  \textrm{cof}\mathbf A
+ *   \dealcoloneq \textrm{det}\mathbf A \; \mathbf{A}^{-T}
+ *    = \left[ \textrm{adj}\mathbf A \right]^{T} \; .
+ * @f]
  *
- * @note  这要求该张量是可逆的。
- * @relatesalso  张量
+ * @note This requires that the tensor is invertible.
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 constexpr Tensor<2, dim, Number>
@@ -2739,63 +2815,67 @@ cofactor(const Tensor<2, dim, Number> &t)
 
 
 /**
- * 通过结合给定输入 ${\mathbf A}$ 的奇异值分解（SVD）
- * ${\mathbf A}=\mathbf U  \mathbf S \mathbf V^T$
- * 的产物，返回最近的正交矩阵 $\hat {\mathbf A}=\mathbf U
- * \mathbf{V}^T$ ，有效地用身份矩阵代替 $\mathbf S$ 。
- * 这是一个（非线性）[投影操作](https://en.wikipedia.org/wiki/Projection_(mathematics))，因为当应用两次时，我们有
- * $\hat{\hat{\mathbf A}}=\hat{\mathbf A}$
- * ，这很容易看到。(这是因为 $\hat {\mathbf A}$ 的SVD仅仅是
- * $\mathbf U \mathbf I \mathbf{V}^T$ 。) 此外， $\hat {\mathbf A}$
- * 实际上是一个正交矩阵，因为正交矩阵必须满足 ${\hat
- * {\mathbf A}}^T \hat {\mathbf A}={\mathbf I}$ ，这里意味着
+ * Return the nearest orthogonal matrix
+ * $\hat {\mathbf A}=\mathbf U \mathbf{V}^T$ by
+ * combining the products of the singular value decomposition (SVD)
+ * ${\mathbf A}=\mathbf U  \mathbf S \mathbf V^T$ for a given input
+ * ${\mathbf A}$, effectively replacing $\mathbf S$ with the identity matrix.
  *
+ * This is a (nonlinear)
+ * [projection
+ * operation](https://en.wikipedia.org/wiki/Projection_(mathematics)) since when
+ * applied twice, we have $\hat{\hat{\mathbf A}}=\hat{\mathbf A}$ as is easy to
+ * see. (That is because the SVD of $\hat {\mathbf A}$ is simply
+ * $\mathbf U \mathbf I \mathbf{V}^T$.) Furthermore, $\hat {\mathbf A}$ is
+ * really an orthogonal matrix because orthogonal matrices have to satisfy
+ * ${\hat {\mathbf A}}^T \hat {\mathbf A}={\mathbf I}$, which here implies
+ * that
  * @f{align*}{
- * {\hat {\mathbf A}}^T \hat {\mathbf A}
- * &=
- * \left(\mathbf U \mathbf{V}^T\right)^T\left(\mathbf U \mathbf{V}^T\right)
- * \\
- * &=
- * \mathbf V \mathbf{U}^T
- * \mathbf U \mathbf{V}^T
- * \\
- * &=
- * \mathbf V \left(\mathbf{U}^T
- * \mathbf U\right) \mathbf{V}^T
- * \\
- * &=
- * \mathbf V \mathbf I \mathbf{V}^T
- * \\
- * &=
- * \mathbf V \mathbf{V}^T
- * \\
- * &=
- * \mathbf I
+ *   {\hat {\mathbf A}}^T \hat {\mathbf A}
+ *   &=
+ *   \left(\mathbf U \mathbf{V}^T\right)^T\left(\mathbf U \mathbf{V}^T\right)
+ *   \\
+ *   &=
+ *   \mathbf V \mathbf{U}^T
+ *   \mathbf U \mathbf{V}^T
+ *   \\
+ *   &=
+ *   \mathbf V \left(\mathbf{U}^T
+ *   \mathbf U\right) \mathbf{V}^T
+ *   \\
+ *   &=
+ *   \mathbf V \mathbf I \mathbf{V}^T
+ *   \\
+ *   &=
+ *   \mathbf V \mathbf{V}^T
+ *   \\
+ *   &=
+ *   \mathbf I
  * @f}
- * 由于从SVD出来的 $\mathbf U$ 和 $\mathbf V$
- * 因子本身就是正交矩阵。
- * @param  A 要为其寻找最接近的正交张量。  @tparam  Number
- * 用来存储张量的条目的类型。  必须是`float`或`double`。
- * @pre  为了使用这个函数，这个程序必须与LAPACK库相连。
- * @pre   @p A
- * 不得为单数。这是因为，从概念上讲，这里要解决的问题是试图找到一个矩阵
- * $\hat{\mathbf A}$ ，使其与 $\mathbf A$
- * 的某种距离最小，同时满足二次约束 ${\hat {\mathbf A}}^T \hat
- * {\mathbf A}={\mathbf I}$  。这与想要找到一个矢量 $\hat{\mathbf
- * x}\in{\mathbb R}^n$ 的问题没有什么不同，该矢量对于给定的
- * $\mathbf x$ 来说，在约束条件 $\|\mathbf x\|^2=1$
- * 下最小化二次目标函数 $\|\hat {\mathbf x}
+ * due to the fact that the $\mathbf U$ and $\mathbf V$ factors that come out
+ * of the SVD are themselves orthogonal matrices.
  *
- * - \mathbf x\|^2$  。
+ * @param A The tensor for which to find the closest orthogonal tensor.
+ * @tparam Number The type used to store the entries of the tensor.
+ *   Must be either `float` or `double`.
+ * @pre In order to use this function, this program must be linked with the
+ *   LAPACK library.
+ * @pre @p A must not be singular. This is because, conceptually, the problem
+ *   to be solved here is trying to find a matrix $\hat{\mathbf A}$ that
+ *   minimizes some kind of distance from $\mathbf A$ while satisfying the
+ *   quadratic constraint
+ *   ${\hat {\mathbf A}}^T \hat {\mathbf A}={\mathbf I}$. This is not so
+ *   dissimilar to the kind of problem where one wants to find a vector
+ *   $\hat{\mathbf x}\in{\mathbb R}^n$ that minimizes the quadratic objective
+ *   function $\|\hat {\mathbf x} - \mathbf x\|^2$ for a given $\mathbf x$
+ *   subject to the constraint $\|\mathbf x\|^2=1$ -- in other
+ *   words, we are seeking the point $\hat{\mathbf x}$ on the unit sphere
+ *   that is closest to $\mathbf x$. This problem has a solution for all
+ *   $\mathbf x$ except if $\mathbf x=0$. The corresponding condition
+ *   for the problem we are considering here is that $\mathbf A$ must not
+ *   have a zero eigenvalue.
  *
- * --换句话说，我们正在寻找单位球面上最接近 $\mathbf x$
- * 的点 $\hat{\mathbf x}$ 。这个问题对所有的 $\mathbf x$
- * 都有解，除了 $\mathbf x=0$
- * 。我们在这里考虑的问题的相应条件是， $\mathbf A$
- * 不能有零特征值。
- * @relatesalso  张量
- *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 Tensor<2, dim, Number>
@@ -2803,11 +2883,11 @@ project_onto_orthogonal_tensors(const Tensor<2, dim, Number> &A);
 
 
 /**
- * 返回给定等级2张量的 $l_1$ 规范，其中 $\|\mathbf T\|_1 =
- * \max_j \sum_i |T_{ij}|$ （列上之和的最大值）。
- * @relatesalso 张量
+ * Return the $l_1$ norm of the given rank-2 tensor, where
+ * $\|\mathbf T\|_1 = \max_j \sum_i |T_{ij}|$
+ * (maximum of the sums over columns).
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 inline Number
@@ -2829,11 +2909,11 @@ l1_norm(const Tensor<2, dim, Number> &t)
 
 
 /**
- * 返回给定的2级张量的 $l_\infty$ 规范，其中 $\|\mathbf
- * T\|_\infty = \max_i \sum_j |T_{ij}|$ （行上和的最大值）。
- * @relatesalso  张量
+ * Return the $l_\infty$ norm of the given rank-2 tensor, where
+ * $\|\mathbf T\|_\infty = \max_i \sum_j |T_{ij}|$
+ * (maximum of the sums over rows).
  *
- *
+ * @relatesalso Tensor
  */
 template <int dim, typename Number>
 inline Number
@@ -2906,5 +2986,3 @@ linfty_norm(const Tensor<2, dim, adouble> &t)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

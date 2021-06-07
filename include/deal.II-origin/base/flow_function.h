@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/flow_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2007 - 2020 by the deal.II authors
@@ -29,58 +28,67 @@ DEAL_II_NAMESPACE_OPEN
 namespace Functions
 {
   /**
-   * 用于分析解决不可压缩的流动问题的基类。
-   * 除了Function接口之外，这个函数还提供了压力的偏移：如果计算出的解决方案的压力有一个不同于零的积分平均值，这个值可以给pressure_adjustment()，以便计算出正确的压力误差。
-   * @note  派生类应该始终实现压力的积分平均值为零。
-   * @note
-   * 线程安全。一些函数利用内部数据来计算数值。因此，每个线程都应该获得自己的派生类对象。
-   * @ingroup functions
+   * Base class for analytic solutions to incompressible flow problems.
    *
+   * Additional to the Function interface, this function provides for an
+   * offset of the pressure: if the pressure of the computed solution has an
+   * integral mean value different from zero, this value can be given to
+   * pressure_adjustment() in order to compute correct pressure errors.
+   *
+   * @note Derived classes should implement pressures with integral mean value
+   * zero always.
+   *
+   * @note Thread safety: Some of the functions make use of internal data to
+   * compute values. Therefore, every thread should obtain its own object of
+   * derived classes.
+   *
+   * @ingroup functions
    */
   template <int dim>
   class FlowFunction : public Function<dim>
   {
   public:
     /**
-     * 构造函数，设置一些内部数据结构。
-     *
+     * Constructor, setting up some internal data structures.
      */
     FlowFunction();
 
     /**
-     * 虚拟解构器。
-     *
+     * Virtual destructor.
      */
     virtual ~FlowFunction() override = default;
 
     /**
-     * 存储压力函数的调整值，使其平均值为<tt>p</tt>。
-     *
+     * Store an adjustment for the pressure function, such that its mean value
+     * is <tt>p</tt>.
      */
     void
     pressure_adjustment(double p);
 
     /**
-     * 在一个更适合于矢量值函数的结构中的值。外层向量以解分量为索引，内层以正交点为索引。
-     *
+     * Values in a structure more suitable for vector valued functions. The
+     * outer vector is indexed by solution component, the inner by quadrature
+     * point.
      */
     virtual void
     vector_values(const std::vector<Point<dim>> &   points,
                   std::vector<std::vector<double>> &values) const override = 0;
     /**
-     * 在一个更适合于矢量值函数的结构中的梯度。外侧矢量以解分量为索引，内部以正交点为索引。
-     *
+     * Gradients in a structure more suitable for vector valued functions. The
+     * outer vector is indexed by solution component, the inner by quadrature
+     * point.
      */
     virtual void
     vector_gradients(
       const std::vector<Point<dim>> &           points,
       std::vector<std::vector<Tensor<1, dim>>> &gradients) const override = 0;
     /**
-     * 更适合于矢量值函数的结构中的力项。
-     * 外侧向量以解分量为索引，内部以正交点为索引。
-     * @warning
-     * 这不是真正的拉普拉斯，而是斯托克斯方程中作为右手边的力项。
+     * Force terms in a structure more suitable for vector valued functions.
+     * The outer vector is indexed by solution component, the inner by
+     * quadrature point.
      *
+     * @warning This is not the true Laplacian, but the force term to be used
+     * as right hand side in Stokes' equations
      */
     virtual void
     vector_laplacians(const std::vector<Point<dim>> &   points,
@@ -100,61 +108,55 @@ namespace Functions
       const std::vector<Point<dim>> &           points,
       std::vector<std::vector<Tensor<1, dim>>> &gradients) const override;
     /**
-     * 动量方程中的力项。
-     *
+     * The force term in the momentum equation.
      */
     virtual void
     vector_laplacian_list(const std::vector<Point<dim>> &points,
                           std::vector<Vector<double>> &  values) const override;
 
     /**
-     * 返回这个对象的内存消耗估计值，以字节为单位。
-     *
+     * Return an estimate for the memory consumption, in bytes, of this object.
      */
     virtual std::size_t
     memory_consumption() const override;
 
   protected:
     /**
-     * 派生类要增加的压力的平均值。
-     *
+     * Mean value of the pressure to be added by derived classes.
      */
     double mean_pressure;
 
   private:
     /**
-     * 一个突扰器，可以守护以下的抓取数组。
-     *
+     * A mutex that guards the following scratch arrays.
      */
     mutable Threads::Mutex mutex;
 
     /**
-     * 通常Function接口的辅助值。
-     *
+     * Auxiliary values for the usual Function interface.
      */
     mutable std::vector<std::vector<double>> aux_values;
 
     /**
-     * 通常Function接口的辅助值。
-     *
+     * Auxiliary values for the usual Function interface.
      */
     mutable std::vector<std::vector<Tensor<1, dim>>> aux_gradients;
   };
 
   /**
-   * 二维和三维的层流管道流动。通道沿<i>x</i>轴延伸，半径为
-   * @p radius. 。 @p Reynolds
-   * 数字用于适当缩放纳维-斯托克斯问题的压力。
-   * @ingroup functions
+   * Laminar pipe flow in two and three dimensions. The channel stretches
+   * along the <i>x</i>-axis and has radius @p radius. The @p Reynolds number
+   * is used to scale the pressure properly for a Navier-Stokes problem.
    *
+   * @ingroup functions
    */
   template <int dim>
   class PoisseuilleFlow : public FlowFunction<dim>
   {
   public:
     /**
-     * 为给定的通道半径<tt>r</tt>和雷诺数<tt>Re</tt>构建一个对象。
-     *
+     * Construct an object for the given channel radius <tt>r</tt> and the
+     * Reynolds number <tt>Re</tt>.
      */
     PoisseuilleFlow<dim>(const double r, const double Re);
 
@@ -178,26 +180,28 @@ namespace Functions
 
 
   /**
-   * 在立方体[-1,1]<sup>dim</sup>上具有同质边界条件的人工无发散函数。    该函数在二维中是@f[
+   * Artificial divergence free function with homogeneous boundary conditions
+   * on the cube [-1,1]<sup>dim</sup>.
+   *
+   * The function in 2D is
+   * @f[
    * \left(\begin{array}{c}u\\v\\p\end{array}\right)
    * \left(\begin{array}{c}\cos^2x \sin y\cos y\\-\sin x\cos x\cos^2y\\
    * \sin x\cos x\sin y\cos y\end{array}\right)
-   * @f]。
+   * @f]
    * @ingroup functions
-   *
    */
   template <int dim>
   class StokesCosine : public FlowFunction<dim>
   {
   public:
     /**
-     * 构造函数设置压力计算所需的雷诺数和右手边的缩放比例。
-     *
+     * Constructor setting the Reynolds number required for pressure
+     * computation and scaling of the right hand side.
      */
     StokesCosine(const double viscosity = 1., const double reaction = 0.);
     /**
-     * 改变粘度和反应参数。
-     *
+     * Change the viscosity and the reaction parameter.
      */
     void
     set_parameters(const double viscosity, const double reaction);
@@ -224,18 +228,20 @@ namespace Functions
 
 
   /**
-   * 斯托克斯方程在2d L形域上的奇异解。    该函数满足
-   * $-\triangle \mathbf{u} + \nabla p = 0$
-   * ，代表L形域的重入角周围的典型奇异解，可以用
-   * GridGenerator::hyper_L().
-   * 创建，速度在重入角的两个面上消失， $\nabla\mathbf{u}$
-   * ]和 $p$
-   * 在原点是奇异的，而在域的其余部分是光滑的，因为它们可以写成一个光滑函数与项
-   * $r^{\lambda-1}$ 的乘积，其中 $r$ 是半径， $\lambda \approx
-   * 0.54448$ 是一个固定参数。    摘自Houston, Sch&ouml;tzau,
-   * Wihler, 着手ENUMATH 2003。
-   * @ingroup functions
+   * A singular solution to Stokes' equations on a 2d L-shaped domain.
    *
+   * This function satisfies $-\triangle \mathbf{u} + \nabla p = 0$ and
+   * represents a typical singular solution around a reentrant corner of an
+   * L-shaped domain that can be created using GridGenerator::hyper_L(). The
+   * velocity vanishes on the two faces of the re-entrant corner and
+   * $\nabla\mathbf{u}$ and $p$ are singular at the origin while they are
+   * smooth in the rest of the domain because they can be written as a product
+   * of a smooth function and the term $r^{\lambda-1}$ where $r$ is the radius
+   * and $\lambda \approx 0.54448$ is a fixed parameter.
+   *
+   * Taken from Houston, Sch&ouml;tzau, Wihler, proceeding ENUMATH 2003.
+   *
+   * @ingroup functions
    */
   class StokesLSingularity : public FlowFunction<2>
   {
@@ -284,17 +290,21 @@ namespace Functions
   };
 
   /**
-   * Kovasznay(1947)的二维流解。
-   * 该函数在直线<i>x=1/2</i>右侧的半平面上有效。
-   * @ingroup functions
+   * Flow solution in 2D by Kovasznay (1947).
    *
+   * This function is valid on the half plane right of the line <i>x=1/2</i>.
+   *
+   * @ingroup functions
    */
   class Kovasznay : public FlowFunction<2>
   {
   public:
     /**
-     * 构建一个给定雷诺数<tt>Re</tt>的对象。如果参数<tt>Stokes</tt>为真，由vector_laplacians()返回的动量方程的右侧包含非线性，这样就可以得到Kovasznay解作为Stokes问题的解。
-     *
+     * Construct an object for the give Reynolds number <tt>Re</tt>. If the
+     * parameter <tt>Stokes</tt> is true, the right hand side of the momentum
+     * equation returned by vector_laplacians() contains the nonlinearity,
+     * such that the Kovasznay solution can be obtained as the solution to a
+     * Stokes problem.
      */
     Kovasznay(const double Re, bool Stokes = false);
 
@@ -327,5 +337,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

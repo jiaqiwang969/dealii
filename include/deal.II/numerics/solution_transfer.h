@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/solution_transfer_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -17,7 +18,7 @@
 #  define dealii_solution_transfer_h
 
 
-/*----------------------------   solutiontransfer.h     ----------------------*/
+ /*----------------------------   solutiontransfer.h     ----------------------*/ 
 
 
 #  include <deal.II/base/config.h>
@@ -34,28 +35,20 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This class implements the transfer of a discrete FE function (e.g. a
- * solution vector) from one mesh to another that is obtained from the first
- * by a single refinement and/or coarsening step. During interpolation the
- * vector is reinitialized to the new size and filled with the interpolated
- * values. This class is used in the step-15, step-26, step-31, and step-33
- * tutorial programs. A version of this class that works on parallel
- * triangulations is available as parallel::distributed::SolutionTransfer.
+ * 该类实现了离散FE函数（例如：一个求解向量）从一个网格到另一个网格的转移，该网格是通过一个细化和/或粗化步骤从第一个网格得到的。在插值过程中，向量被重新初始化为新的大小，并填充了插值的数值。这个类在
+ * step-15 、 step-26 、 step-31 和 step-33
+ * 的教程程序中使用。这个类的一个版本可以在平行三角形上工作，可作为
+ * parallel::distributed::SolutionTransfer. 。 <h3>Usage</h3>
+ * 该类以两种不同的方式实现算法。  <ul>   <li>  如果网格只被细化（即没有单元格被粗化），那么使用 @p SolutionTransfer 如下。
  *
- * <h3>Usage</h3>
- *
- * This class implements the algorithms in two different ways:
- * <ul>
- * <li> If the grid will only be refined (i.e. no cells are coarsened) then
- * use @p SolutionTransfer as follows:
  * @code
  * SolutionTransfer<dim, Vector<double> > soltrans(*dof_handler);
  *
  * // flag some cells for refinement, e.g.
  * GridRefinement::refine_and_coarsen_fixed_fraction(*tria,
- *                                                   error_indicators,
- *                                                   0.3,
- *                                                   0);
+ *                                                 error_indicators,
+ *                                                 0.3,
+ *                                                 0);
  * // prepare the triangulation for refinement,
  * tria->prepare_coarsening_and_refinement();
  *
@@ -69,7 +62,8 @@ DEAL_II_NAMESPACE_OPEN
  * dof_handler->distribute_dofs (fe);
  * @endcode
  *
- * Then to proceed do
+ * 然后继续做
+ *
  * @code
  * // take a copy of the solution vector
  * Vector<double> solution_old(solution);
@@ -82,27 +76,27 @@ DEAL_II_NAMESPACE_OPEN
  * soltrans.refine_interpolate(solution_old, solution);
  * @endcode
  *
- * Although the @p refine_interpolate functions are allowed to be called
- * multiple times, e.g. for interpolating several solution vectors, there is
- * the following possibility of interpolating several functions simultaneously.
+ * 尽管允许多次调用 @p refine_interpolate
+ * 函数，例如用于插值几个解向量，但存在以下同时插值几个函数的可能性。
+ *
  * @code
  * std::vector<Vector<double> > solutions_old(n_vectors, Vector<double> (n));
  * ...
  * std::vector<Vector<double> > solutions(n_vectors, Vector<double> (n));
  * soltrans.refine_interpolate(solutions_old, solutions);
  * @endcode
- * This is used in several of the tutorial programs, for example step-31.
+ * 这在几个教程程序中使用，例如  step-31  。
+ * <li>  如果网格中的单元格将被粗化，那么使用 @p
+ * SolutionTransfer，如下。
  *
- * <li> If the grid has cells that will be coarsened, then use @p
- * SolutionTransfer as follows:
  * @code
  * SolutionTransfer<dim, Vector<double> > soltrans(*dof_handler);
  *
  * // flag some cells for refinement and coarsening, e.g.
  * GridRefinement::refine_and_coarsen_fixed_fraction(*tria,
- *                                                   error_indicators,
- *                                                   0.3,
- *                                                   0.05);
+ *                                                 error_indicators,
+ *                                                 0.3,
+ *                                                 0.05);
  *
  * // prepare the triangulation,
  * tria->prepare_coarsening_and_refinement();
@@ -122,10 +116,8 @@ DEAL_II_NAMESPACE_OPEN
  * soltrans.interpolate(solution, interpolated_solution);
  * @endcode
  *
- * If the grid is partitioned across several MPI processes, then it is
- * important to note that the old solution(s) must be copied to one that
- * also provides access to the locally relevant DoF values (these values
- * required for the interpolation process):
+ * 如果网格被划分到几个MPI进程中，那么需要注意的是，旧的解决方案必须被复制到一个也能提供对本地相关DoF值（插值过程所需的这些值）的访问。
+ *
  * @code
  * // Create initial indexsets pertaining to the grid before refinement
  * IndexSet locally_owned_dofs, locally_relevant_dofs;
@@ -135,13 +127,13 @@ DEAL_II_NAMESPACE_OPEN
  * // The solution vector only knows about locally owned DoFs
  * TrilinosWrappers::MPI::Vector solution;
  * solution.reinit(locally_owned_dofs,
- *                 mpi_communicator);
+ *               mpi_communicator);
  * ...
  * // Transfer solution to vector that provides access to locally relevant DoFs
  * TrilinosWrappers::MPI::Vector old_solution;
  * old_solution.reinit(locally_owned_dofs,
- *                     locally_relevant_dofs,
- *                     mpi_communicator);
+ *                   locally_relevant_dofs,
+ *                   mpi_communicator);
  * old_solution = solution;
  * ...
  * // Refine grid
@@ -151,291 +143,188 @@ DEAL_II_NAMESPACE_OPEN
  * soltrans.refine_interpolate(old_solution, solution);
  * @endcode
  *
- * Multiple calls to the function <code>interpolate (const VectorType &in,
- * VectorType &out)</code> are NOT allowed. Interpolating several
- * functions can be performed in one step by using <tt>void interpolate (const
- * vector<VectorType> &all_in, vector<VectorType> &all_out)
- * const</tt>, and using the respective @p
- * prepare_for_coarsening_and_refinement function taking several vectors as
- * input before actually refining and coarsening the triangulation (see
- * there).
- * </ul>
+ * 对函数<code>interpolate (const VectorType &in, VectorType &out)</code>的多次调用是不允许的。通过使用<tt>void interpolate (const vector<VectorType> &all_in, vector<VectorType> &all_out) const</tt>，并使用各自的 @p  prepare_for_coarsening_and_refinement函数，在实际细化和粗化三角测量之前，将几个矢量作为输入，可以一步完成几个函数的插值（见这里）。  </ul>
+ * 对于删除 @p SolutionTransfer
+ * 中所有存储的数据并重新初始化，使用<tt>clear()</tt>函数。
+ * 模板参数 @p VectorType 表示你要传输的数据容器的类型。
  *
- * For deleting all stored data in @p SolutionTransfer and reinitializing it
- * use the <tt>clear()</tt> function.
+ *  <h3>Interpolating in the presence of hanging nodes and boundary
+ * values</h3>
+ * 插值到新的网格是一个局部操作，也就是说，它只插值到新的网格。如果新的网格有悬空节点，你将得到一个不满足悬空节点约束的解。边界值也是如此：内插后的解将只是旧解在边界上的内插，而这可能满足也可能不满足新引入的边界节点的边界值。
+ * 因此，你可能不得不在插值后应用悬挂节点或边界值约束。
+ * step-15 和 step-26 有处理这个问题的例子。
  *
- * The template argument @p VectorType denotes the type of data container you
- * want to transfer.
+ *  <h3>Implementation</h3>
+ * <ul>   <li>  只用细化的解转移。假设我们在当前（原始）网格上得到了一个解向量。这个向量的每个条目都属于离散化的一个DoF。如果我们现在细化网格，那么对 DoFHandler::distribute_dofs() 的调用将至少改变一些DoF指数。因此，我们需要在细化前存储所有活动单元的DoF指数。每个活动单元的指针被用来指向该单元的这些DoF指数的向量。这是由prepare_for_pure_refinement()完成的。
+ * 在函数<tt>refine_interpolate(in,out)</tt>中，在每个设置了指针的单元上（即在原始网格中处于活动状态的单元），我们现在可以通过使用存储的DoF指数访问该单元上的解向量
+ * @p in 的局部值。这些局部值被内插并设置到向量 @p out
+ * 中，该向量是在细化网格上内插的离散函数 @p 的末端。
+ * <tt>refine_interpolate(in,out)</tt>函数可以为原始网格上任意多的离散函数（解向量）多次调用。
+ * <li>  带有粗化和细化的解转移。在调用
+ * Triangulation::prepare_coarsening_and_refinement
+ * 后，一个（父）单元的所有子单元的粗化标志或者没有被设置。在粗化
+ * (Triangulation::execute_coarsening_and_refinement)
+ * 时，不再需要的单元将从三角图中删除。
+ * 对于从（将要粗化的）子单元到其父单元的插值，需要子单元。因此，在这些子单元被粗化（和删除！）之前，需要进行这种内插和存储我们想要内插的每个离散函数的内插值的工作。同样，每个相关单元的指针被设置为指向这些值（见下文）。此外，不被粗化的单元的DoF指数需要根据纯细化的解决方案转移来存储（参见这里）。所有这些都由<tt>prepare_for_coarsening_and_refinement(all_in)</tt>执行，其中<tt>vector<VectorType>
+ * all_in</tt>包括所有要插值到新网格的离散函数。
+ * 由于我们需要两种不同的指针（<tt>vector<unsigned
+ * int></tt>用于Dof指数，<tt>vector<VectorType></tt>用于内插的DoF值），我们使用包括这两个指针的
+ * @p Pointerstruct ，每个单元的指针指向这些 @p
+ * 指针结构。在每个单元中，每次只使用两个不同的指针中的一个，因此我们可以在一个时候将<tt>void指针</tt>作为<tt>vector<unsigned
+ * int></tt>使用，在另一个时候作为<tt>vector<VectorType></tt>使用，但是在两者之间使用这个
+ * @p
+ * Pointerstruct使得这些指针的使用更加安全，并提供更好的可能性来扩展它们的使用。
+ * 在<tt>interpolate(all_in, all_out)</tt>中，细化的单元是根据纯细化时的解决方案转移来处理的。此外，在每个被粗化的单元上（因此以前是父单元）， @p all_out 中离散函数的值被设置为存储的局部插值，由于 @p Pointerstruct 中的'vector<VectorType>'指针被该单元的指针所指向，所以可以访问这些值。很明显，<tt>interpolate(all_in, all_out)</tt>只能用之前作为<tt>prepare_for_coarsening_and_refinement(all_in)</tt>函数参数的<tt>向量<VectorType> all_in</tt>来调用。因此，<tt>interpolate(all_in, all_out)</tt>可以（与<tt>refine_interpolate(in, out)</tt>相反）只被调用一次。  </ul>
  *
- *
- * <h3>Interpolating in the presence of hanging nodes and boundary values</h3>
- *
- * The interpolation onto the new mesh is a local operation, i.e., it
- * interpolates onto the new mesh only. If that new mesh has hanging nodes,
- * you will therefore get a solution that does not satisfy hanging node
- * constraints. The same is true with boundary values: the interpolated
- * solution will just be the interpolation of the old solution at the
- * boundary, and this may or may not satisfy boundary values at newly
- * introduced boundary nodes.
- *
- * Consequently, you may have to apply hanging node or boundary value
- * constraints after interpolation. step-15 and step-26 have examples of
- * dealing with this.
- *
- *
- * <h3>Implementation</h3>
- *
- * <ul>
- * <li> Solution transfer with only refinement. Assume that we have got a
- * solution vector on the current (original) grid. Each entry of this vector
- * belongs to one of the DoFs of the discretization. If we now refine the grid
- * then the calling of DoFHandler::distribute_dofs() will change at least some
- * of the DoF indices. Hence we need to store the DoF indices of all active
- * cells before the refinement. A pointer for each active cell is used to
- * point to the vector of these DoF indices of that cell. This is done by
- * prepare_for_pure_refinement().
- *
- * In the function <tt>refine_interpolate(in,out)</tt> and on each cell where
- * the pointer is set (i.e. the cells that were active in the original grid)
- * we can now access the local values of the solution vector @p in on that
- * cell by using the stored DoF indices. These local values are interpolated
- * and set into the vector @p out that is at the end the discrete function @p
- * in interpolated on the refined mesh.
- *
- * The <tt>refine_interpolate(in,out)</tt> function can be called multiple
- * times for arbitrary many discrete functions (solution vectors) on the
- * original grid.
- *
- * <li> Solution transfer with coarsening and refinement. After calling
- * Triangulation::prepare_coarsening_and_refinement the coarsen flags of
- * either all or none of the children of a (father-)cell are set. While
- * coarsening (Triangulation::execute_coarsening_and_refinement) the cells
- * that are not needed any more will be deleted from the Triangulation.
- *
- * For the interpolation from the (to be coarsenend) children to their father
- * the children cells are needed. Hence this interpolation and the storing of
- * the interpolated values of each of the discrete functions that we want to
- * interpolate needs to take place before these children cells are coarsened
- * (and deleted!!). Again a pointer for each relevant cell is set to point to
- * these values (see below). Additionally the DoF indices of the cells that
- * will not be coarsened need to be stored according to the solution transfer
- * with pure refinement (cf there). All this is performed by
- * <tt>prepare_for_coarsening_and_refinement(all_in)</tt> where the
- * <tt>vector<VectorType> all_in</tt> includes all discrete
- * functions to be interpolated onto the new grid.
- *
- * As we need two different kinds of pointers (<tt>vector<unsigned int> *</tt>
- * for the Dof indices and <tt>vector<VectorType> *</tt> for the
- * interpolated DoF values) we use the @p Pointerstruct that includes both of
- * these pointers and the pointer for each cell points to these @p
- * Pointerstructs. On each cell only one of the two different pointers is used
- * at one time hence we could use a <tt>void * pointer</tt> as
- * <tt>vector<unsigned int> *</tt> at one time and as
- * <tt>vector<VectorType> *</tt> at the other but using this @p
- * Pointerstruct in between makes the use of these pointers more safe and
- * gives better possibility to expand their usage.
- *
- * In <tt>interpolate(all_in, all_out)</tt> the refined cells are treated
- * according to the solution transfer while pure refinement. Additionally, on
- * each cell that is coarsened (hence previously was a father cell), the
- * values of the discrete functions in @p all_out are set to the stored local
- * interpolated values that are accessible due to the 'vector<VectorType>
- * *' pointer in @p Pointerstruct that is pointed to by the pointer of that
- * cell. It is clear that <tt>interpolate(all_in, all_out)</tt> only can be
- * called with the <tt>vector<VectorType> all_in</tt> that previously was
- * the parameter of the <tt>prepare_for_coarsening_and_refinement(all_in)</tt>
- * function. Hence <tt>interpolate(all_in, all_out)</tt> can (in contrast to
- * <tt>refine_interpolate(in, out)</tt>) only be called once.
- * </ul>
+ *  <h3>Interaction with hanging nodes</h3>
+ * 这个类尽力在新网格上表示旧网格上存在的有限元函数，但这可能导致新网格上的函数在悬挂节点处不再符合要求的情况。为此，考虑一个两次细化的网格的情况，开始时只有一个方形单元（即我们现在有16个单元）。再考虑到我们将其中的4个单元粗化到第一个细化水平。在这种情况下，如果我们使用
+ * $Q_1$ 元素，我们最终得到的网格将如下所示。
+*  @image html hanging_nodes.png ""
+ * 从旧网格插值到新网格的过程将意味着有限元函数的值在所有保持原样的单元（即精细单元）上不会改变，但在右上方的粗单元上，顶点上的四个值是通过从其以前的子单元向下插值而得到。
+ * 如果原始函数不是线性的，这意味着被标记的悬空节点将保留它们的旧值，一般来说，这不会导致沿相应边缘的连续函数。换句话说，在
+ * SolutionTransfer::interpolate()
+ * 之后得到的解向量不满足悬空节点约束：它对应于点式插值，但不对应于插值<i>onto
+ * the new finite element space that contains constraints from hanging
+ * nodes</i>。
+ * 这是否是一个你需要担心的问题，取决于你的应用。当然，这种情况很容易纠正，在转移后将
+ * AffineConstraints::distribute()
+ * 应用于你的解决方案向量，使用在新的DoFHandler对象上计算的约束对象（如果你有悬挂节点，你可能需要创建这个对象）。例如，这也是在
+ * step-15 中所做的。
  *
  *
- * <h3>Interaction with hanging nodes</h3>
+ * @note
+ * 这种情况只有在你做粗加工时才会发生。如果所有单元保持原样或被细化，那么
+ * SolutionTransfer::interpolate()
+ * 就会计算出一个新的节点值矢量，但所代表的函数当然是完全相同的，因为旧的有限元空间是新的有限元空间的一个子空间。因此，如果旧函数是符合要求的（即满足悬挂节点约束），那么新函数也是符合要求的，没有必要调用
+ * AffineConstraints::distribute().  。
  *
- * This class does its best to represent on the new mesh the finite element
- * function that existed on the old mesh, but this may lead to situations
- * where the function on the new mesh is no longer conforming at hanging
- * nodes. To this end, consider a situation of a twice refined mesh that
- * started with a single square cell (i.e., we now have 16 cells). Consider
- * also that we coarsen 4 of the cells back to the first refinement level. In
- * this case, we end up with a mesh that will look as follows if we were to
- * use a $Q_1$ element:
- *
- * @image html hanging_nodes.png ""
- *
- * The process of interpolating from the old to the new mesh would imply that
- * the values of the finite element function will not change on all of the
- * cells that remained as they are (i.e., the fine cells) but that on the
- * coarse cell at the top right, the four values at the vertices are obtained
- * by interpolating down from its former children.  If the original function
- * was not linear, this implies that the marked hanging nodes will retain
- * their old values which, in general, will not lead to a continuous function
- * along the corresponding edges. In other words, the solution vector obtained
- * after SolutionTransfer::interpolate() does not satisfy hanging node
- * constraints: it corresponds to the pointwise interpolation, but not to the
- * interpolation <i>onto the new finite element space that contains
- * constraints from hanging nodes</i>.
- *
- * Whether this is a problem you need to worry about or not depends on your
- * application. The situation is easily corrected, of course, by applying
- * AffineConstraints::distribute() to your solution vector after transfer,
- * using a constraints object computed on the new DoFHandler object (you
- * probably need to create this object anyway if you have hanging nodes). This
- * is also what is done, for example, in step-15.
- *
- * @note This situation can only happen if you do coarsening. If all cells
- * remain as they are or are refined, then SolutionTransfer::interpolate()
- * computes a new vector of nodal values, but the function represented is of
- * course exactly the same because the old finite element space is a subspace
- * of the new one. Thus, if the old function was conforming (i.e., satisfied
- * hanging node constraints), then so does the new one, and it is not
- * necessary to call AffineConstraints::distribute().
+ *  <h3>Implementation in the context of hp-finite elements</h3>
+ * 在具有hp-capabilities的DoFHandler的情况下，没有任何东西定义哪些属于与DoFHandler相关的
+ * hp::FECollection
+ * 的有限元，应该被考虑在不活动的单元上（即，有子单元）。这是因为自由度只分配给活动单元，事实上，不允许使用
+ * DoFAccessor::set_active_fe_index().
+ * 在非活动单元上设置活动FE索引。
+ * 因此，如果，例如，几个单元被粗化掉，应该发生什么是不完全自然的。然后这个类实现了以下算法。
  *
  *
- * <h3>Implementation in the context of hp-finite elements</h3>
  *
- * In the case of DoFHandlers with hp-capabilities, nothing defines which of the
- * finite elements that are part of the hp::FECollection associated with the
- * DoFHandler, should be considered on cells that are not active (i.e., that
- * have children). This is because degrees of freedom are only allocated for
- * active cells and, in fact, it is not allowed to set an active FE index on
- * non- active cells using DoFAccessor::set_active_fe_index().
+ * 如果一个单元被细化，那么在细化之前，解向量的值将从活动有限元的空间内插到未来有限元的空间内。然后，这些值被分配到细化后的子单元的有限元空间。如果旧单元使用Q2空间，而子单元使用Q1空间，这可能会丢失信息；如果母单元使用Q1空间，而子单元是Q2空间，信息可能会被延长。
  *
- * It is, thus, not entirely natural what should happen if, for example, a few
- * cells are coarsened away. This class then implements the following
- * algorithm:
- * - If a cell is refined, then the values of the solution vector(s) are
- *   interpolated before refinement on the to-be-refined cell from the space of
- *   the active finite element to the one of the future finite element. These
- *   values are then distributed on the finite element spaces of the children
- *   post-refinement. This may lose information if, for example, the old cell
- *   used a Q2 space and the children use Q1 spaces, or the information may be
- *   prolonged if the mother cell used a Q1 space and the children are Q2s.
- * - If cells are to be coarsened, then the values from the child cells are
- *   interpolated to the mother cell using the largest of the child cell future
- *   finite element spaces, which will be identified as the least dominant
- *   element following the FiniteElementDomination logic (consult
- *   hp::FECollection::find_dominated_fe_extended() for more information). For
- *   example, if the children of a cell use Q1, Q2 and Q3 spaces, then the
- *   values from the children are interpolated into a Q3 space on the mother
- *   cell. After refinement, this Q3 function on the mother cell is then
- *   interpolated into the space the user has selected for this cell (which may
- *   be different from Q3, in this example, if the user has set the
- *   active FE index for a different space post-refinement and before calling
- *   DoFHandler::distribute_dofs()).
  *
- * @note In the context of hp-refinement, if cells are coarsened or the
- * polynomial degree is lowered on some cells, then the old finite element
- * space is not a subspace of the new space and you may run into the same
- * situation as discussed above with hanging nodes. You may want to consider
- * calling AffineConstraints::distribute() on the vector obtained by
- * transferring the solution.
+ *
+ * - 如果单元格要被粗化，那么子单元格的值将使用子单元格未来有限元空间中最大的空间内插到母单元格，这将被识别为遵循FiniteElementDomination逻辑的最小主导元素（参考 hp::FECollection::find_dominated_fe_extended() 了解更多信息）。例如，如果一个单元的子单元使用Q1、Q2和Q3空间，那么来自子单元的值将被内插到母单元的Q3空间中。在细化之后，母单元上的这个Q3函数会被内插到用户为这个单元选择的空间中（在这个例子中，如果用户在细化之后和调用 DoFHandler::distribute_dofs()). 之前为不同的空间设置了活动FE索引，那么这个空间可能与Q3不同。
+ *
+ *
+ * @note
+ * 在HP精简的背景下，如果单元被粗化或者某些单元上的多项式度数被降低，那么旧的有限元空间就不是新空间的子空间，你可能会遇到与上面讨论的悬挂节点相同的情况。你可能要考虑对通过转移解决方案得到的向量调用
+ * AffineConstraints::distribute() 。
+ *
  *
  * @ingroup numerics
+ *
+ *
  */
 template <int dim, typename VectorType = Vector<double>, int spacedim = dim>
 class SolutionTransfer
 {
 public:
   /**
-   * Constructor, takes the current DoFHandler as argument.
+   * 构造函数，将当前的DoFHandler作为参数。
+   *
    */
   SolutionTransfer(const DoFHandler<dim, spacedim> &dof);
 
   /**
-   * Destructor
+   * 解除函数
+   *
    */
   ~SolutionTransfer();
 
   /**
-   * Reinit this class to the state that it has directly after calling the
-   * Constructor
+   * 在调用构造函数后直接将该类重设为它的状态。
+   *
    */
   void
   clear();
 
   /**
-   * Prepares the @p SolutionTransfer for pure refinement. It stores the dof
-   * indices of each cell. After calling this function only calling the @p
-   * refine_interpolate functions is allowed.
+   * 为 @p SolutionTransfer
+   * 的纯细化做准备。它存储了每个单元的dof指数。调用此函数后，只允许调用
+   * @p  refine_interpolate函数。
+   *
    */
   void
   prepare_for_pure_refinement();
 
   /**
-   * Prepares the @p SolutionTransfer for coarsening and refinement. It stores
-   * the dof indices of each cell and stores the dof values of the vectors in
-   * @p all_in in each cell that'll be coarsened. @p all_in includes all
-   * vectors that are to be interpolated onto the new (refined and/or
-   * coarsenend) grid.
+   * 为 @p SolutionTransfer
+   * 的粗化和细化做准备。它存储了每个单元格的道夫指数，并将
+   * @p all_in
+   * 中的向量的道夫值存储在每个将被粗化的单元格中。  @p
+   * all_in
+   * 包括所有将被内插到新（细化和/或粗化）网格的向量。
+   *
    */
   void
   prepare_for_coarsening_and_refinement(const std::vector<VectorType> &all_in);
 
   /**
-   * Same as previous function but for only one discrete function to be
-   * interpolated.
+   * 与前面的函数相同，但只对一个离散函数进行内插。
+   *
    */
   void
   prepare_for_coarsening_and_refinement(const VectorType &in);
 
   /**
-   * This function interpolates the discrete function @p in, which is a vector
-   * on the grid before the refinement, to the function @p out which then is a
-   * vector on the refined grid. It assumes the vectors having the right sizes
-   * (i.e. <tt>in.size()==n_dofs_old</tt>,
-   * <tt>out.size()==n_dofs_refined</tt>)
+   * 这个函数将细化前网格上的离散函数 @p in,
+   * 插值到细化后的网格上的函数 @p out
+   * ，后者是一个矢量。它假定向量具有正确的尺寸（即<tt>in.size()==n_dofs_old</tt>,
+   * <tt>out.size()==n_dofs_refined</tt>）。    只有当 @p
+   * prepare_for_pure_refinement
+   * 被调用并且细化被执行之前，才允许调用此函数。允许多次调用此函数。例如，用于插值几个函数。
    *
-   * Calling this function is allowed only if @p prepare_for_pure_refinement
-   * is called and the refinement is executed before. Multiple calling of this
-   * function is allowed. e.g. for interpolating several functions.
    */
   void
   refine_interpolate(const VectorType &in, VectorType &out) const;
 
   /**
-   * This function interpolates the discrete functions that are stored in @p
-   * all_in onto the refined and/or coarsenend grid. It assumes the vectors in
-   * @p all_in denote the same vectors as in @p all_in as parameter of
-   * <tt>prepare_for_refinement_and_coarsening(all_in)</tt>. However, there is
-   * no way of verifying this internally, so be careful here.
+   * 这个函数将存储在 @p
+   * all_in中的离散函数插值到细化和/或粗化的网格上。它假定
+   * @p all_in 中的向量表示与 @p all_in
+   * 中的向量相同，作为<tt>prepare_for_refinement_and_coarsening(all_in)/tt>的参数。然而，内部没有办法验证这一点，所以这里要小心。
+   * 只有在第一次  Triangulation::prepare_coarsening_and_refinement,
+   * 第二次  @p   SolutionTransfer::prepare_for_coarsening_and_refinement,
+   * 然后第三次  Triangulation::execute_coarsening_and_refinement
+   * 被调用之前，才允许调用此函数。
+   * 不允许多次调用该函数。几个函数的插值可以在一个步骤中进行。
+   * 输出向量的数量被假定为与输入向量的数量相同。另外，假设输出向量的大小是正确的（
+   * @p n_dofs_refined).  否则将抛出一个断言。
    *
-   * Calling this function is allowed only if first
-   * Triangulation::prepare_coarsening_and_refinement, second @p
-   * SolutionTransfer::prepare_for_coarsening_and_refinement, an then third
-   * Triangulation::execute_coarsening_and_refinement are called before.
-   * Multiple calling of this function is NOT allowed. Interpolating several
-   * functions can be performed in one step.
-   *
-   * The number of output vectors is assumed to be the same as the number of
-   * input vectors. Also, the sizes of the output vectors are assumed to be of
-   * the right size (@p n_dofs_refined). Otherwise an assertion will be
-   * thrown.
    */
   void
   interpolate(const std::vector<VectorType> &all_in,
               std::vector<VectorType> &      all_out) const;
 
   /**
-   * Same as the previous function. It interpolates only one function. It
-   * assumes the vectors having the right sizes (i.e.
-   * <tt>in.size()==n_dofs_old</tt>, <tt>out.size()==n_dofs_refined</tt>)
+   * 和前面的函数一样。它只对一个函数进行插值。它假定向量具有正确的大小（即<tt>in.size()==n_dofs_old</tt>,
+   * <tt>out.size()==n_dofs_refined</tt>）。
+   * 不允许多次调用此函数。通过使用<tt>interpolate (all_in,
+   * all_out)</tt>，可以在一个步骤中执行多个函数的插值。
    *
-   * Multiple calling of this function is NOT allowed. Interpolating several
-   * functions can be performed in one step by using <tt>interpolate (all_in,
-   * all_out)</tt>
    */
   void
   interpolate(const VectorType &in, VectorType &out) const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcNotPrepared,
                    "You are attempting an operation for which this object is "
@@ -445,7 +334,8 @@ public:
                    "attempting.");
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(
     ExcAlreadyPrepForRef,
@@ -455,7 +345,8 @@ public:
     "previously prepared for pure refinement.");
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(
     ExcAlreadyPrepForCoarseAndRef,
@@ -466,61 +357,68 @@ public:
 
 private:
   /**
-   * Pointer to the degree of freedom handler to work with.
+   * 指向自由度处理程序的指针，以便与之合作。
+   *
    */
   SmartPointer<const DoFHandler<dim, spacedim>,
                SolutionTransfer<dim, VectorType, spacedim>>
     dof_handler;
 
   /**
-   * Stores the number of DoFs before the refinement and/or coarsening.
+   * 存储细化和/或粗化前的自由度数量。
+   *
    */
   types::global_dof_index n_dofs_old;
 
   /**
-   * Declaration of @p PreparationState that denotes the three possible states
-   * of the @p SolutionTransfer: being prepared for 'pure refinement',
-   * prepared for 'coarsening and refinement' or not prepared.
+   * 对 @p PreparationState 的声明，表示 @p SolutionTransfer:
+   * 的三种可能状态：准备进行 "纯细化"，准备进行
+   * "粗化和细化 "或未准备。
+   *
    */
   enum PreparationState
   {
     /**
-     * The SolutionTransfer is not yet prepared.
+     * 溶液转移器还没有准备好。
+     *
      */
     none,
     /**
-     * The SolutionTransfer is prepared for purely refinement.
+     * 该SolutionTransfer是为纯粹的细化准备的。
+     *
      */
     pure_refinement,
     /**
-     * The SolutionTransfer is prepared for coarsening and refinement.
+     * SolutionTransfer是为粗化和细化而准备的。
+     *
      */
     coarsening_and_refinement
   };
 
   /**
-   * Definition of the respective variable.
+   * 各个变量的定义。
+   *
    */
   PreparationState prepared_for;
 
 
   /**
-   * Is used for @p prepare_for_refining (of course also for @p
-   * repare_for_refining_and_coarsening) and stores all dof indices of the
-   * cells that'll be refined
+   * 用于 @p prepare_for_refining （当然也用于 @p
+   * repare_for_refining_and_coarsening），并存储所有将被细化的单元格的dof指数。
+   *
    */
   std::vector<std::vector<types::global_dof_index>> indices_on_cell;
 
   /**
-   * All cell data (the dof indices and the dof values) should be accessible
-   * from each cell. As each cell has got only one @p user_pointer, multiple
-   * pointers to the data need to be packetized in a structure. Note that in
-   * our case on each cell either the <tt>vector<unsigned int> indices</tt>
-   * (if the cell will be refined) or the <tt>vector<double> dof_values</tt>
-   * (if the children of this cell will be deleted) is needed, hence one @p
-   * user_pointer should be sufficient, but to allow some error checks and to
-   * preserve the user from making user errors the @p user_pointer will be
-   * 'multiplied' by this structure.
+   * 所有的单元格数据（dof指数和dof值）都应该可以从每个单元格中访问。由于每个单元只有一个
+   * @p user_pointer,
+   * ，所以需要将数据的多个指针打包到一个结构中。请注意，在我们的案例中，每个单元都需要<tt>向量<unsigned
+   * int>索引</tt>（如果该单元将被细化）或<tt>向量<double>
+   * dof_values</tt>（如果该单元的孩子将被删除），因此一个
+   * @p
+   * user_pointer应该足够了，但为了允许一些错误检查和保护用户不犯用户错误，
+   * @p user_pointer  将被这个结构 "乘以"。
+   *
    */
   struct Pointerstruct
   {
@@ -551,16 +449,16 @@ private:
   };
 
   /**
-   * Map mapping from level and index of cell to the @p Pointerstructs (cf.
-   * there). This map makes it possible to keep all the information needed to
-   * transfer the solution inside this object rather than using user pointers
-   * of the Triangulation for this purpose.
+   * 从单元格的级别和索引到 @p Pointerstructs
+   * 的地图映射（参见那里）。这个映射使得在这个对象中保留所有传输解决方案所需的信息成为可能，而不是为此目的使用Triangulation的用户指针。
+   *
    */
   std::map<std::pair<unsigned int, unsigned int>, Pointerstruct> cell_map;
 
   /**
-   * Is used for @p prepare_for_refining_and_coarsening The interpolated dof
-   * values of all cells that'll be coarsened will be stored in this vector.
+   * 用于 @p prepare_for_refining_and_coarsening
+   * 所有将被粗化的单元的内插dof值将被存储在这个向量中。
+   *
    */
   std::vector<std::vector<Vector<typename VectorType::value_type>>>
     dof_values_on_cell;
@@ -569,8 +467,9 @@ private:
 namespace Legacy
 {
   /**
-   * @deprecated Use dealii::SolutionTransfer without the DoFHandlerType
-   * template instead.
+   * @deprecated  使用没有DoFHandlerType模板的 dealii::SolutionTransfer
+   * 代替。
+   *
    */
   template <int dim,
             typename VectorType     = Vector<double>,
@@ -583,4 +482,6 @@ namespace Legacy
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_solutiontransfer_h
-/*---------------------------- solutiontransfer.h ---------------------------*/
+ /*---------------------------- solutiontransfer.h ---------------------------*/ 
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/linear_index_iterator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -24,219 +23,229 @@
 
 DEAL_II_NAMESPACE_OPEN
 /**
- * deal.II中的许多类，如FullMatrix、TransposeTable和SparseMatrix，将它们的数据存储在连续的缓冲区中（当然，这些缓冲区的元素所代表的
- * <em> 解释 </em>
- * 可能很复杂）。例如，FullMatrix和TransposeTable分别以行大和列大的顺序存储数据，而对于SparseMatrix，从缓冲区位置到矩阵条目的映射
- * $\mathbf{A}(i, j)$
- * 更为复杂。然而，在任何情况下，元素的连续排列都可以实现随机访问迭代。
- * LinearIndexIterator提供了为这些类编写迭代器所需的大部分功能。LinearIndexIterator本质上是
- * <code>boost::iterator_facade</code> 的一个简化版本，它假定
- * <code>AccessorType</code>
- * 提供了某些成员（下文有记录），这些成员完全描述了迭代器的状态。这个类的预期用途是让容器定义自己的访问器类，然后使用奇怪的重复出现的模板模式（CRTP）技术来定义它们的迭代器。例如，这里是一个使用
- * LinearIndexIterator 来定义自己的迭代器类的容器。
+ * Many classes in deal.II, such as FullMatrix, TransposeTable, and
+ * SparseMatrix, store their data in contiguous buffers (though the
+ * <em>interpretation</em> of what the elements of these buffers represent
+ * can, of course, be complex). For example, FullMatrix and TransposeTable
+ * store their data in row major and column major order respectively, whereas
+ * for SparseMatrix the mapping from buffer location to matrix entry
+ * $\mathbf{A}(i, j)$ is more complicated. In any case, however, the
+ * contiguous arrangements of elements enables random access iteration.
  *
+ * LinearIndexIterator provides most of the functionality needed to write
+ * iterators for these classes. LinearIndexIterator is essentially a
+ * simplified version of <code>boost::iterator_facade</code> that assumes
+ * <code>AccessorType</code> provides certain members (documented below) that
+ * completely describe the state of the iterator. The intended use of this
+ * class is for containers to define their own accessor classes and then use
+ * the curiously recurring template pattern (CRTP) technique to define their
+ * iterators. For example, here is a container that uses LinearIndexIterator
+ * to define its own iterator classes:
  *
  * @code
  * template <typename T>
  * class Container
  * {
  * protected:
- * // forward declaration for friendship
- * template <bool Constness>
- * class Iterator;
+ *   // forward declaration for friendship
+ *   template <bool Constness>
+ *   class Iterator;
  *
- * template <bool Constness>
- * class Accessor
- * {
+ *   template <bool Constness>
+ *   class Accessor
+ *   {
+ *   public:
+ *     // const iterators store a const pointer
+ *     using container_pointer_type
+ *       = typename std::conditional<Constness,
+ *                                   const Container<T>*,
+ *                                   Container<T>*>::type;
+ *
+ *     // This alias is assumed to exist.
+ *     using size_type = std::size_t;
+ *
+ *     // constructor.
+ *     Accessor(const container_pointer_type container,
+ *              const std::ptrdiff_t index);
+ *
+ *     // constructor.
+ *     Accessor();
+ *
+ *     // get a constant reference to the current value.
+ *     const T& value() const;
+ *
+ *   protected:
+ *     container_pointer_type container;
+ *     std::ptrdiff_t linear_index;
+ *
+ *     // LinearIndexIterator needs access to linear_index and container.
+ *     friend class LinearIndexIterator<Iterator<Constness>,
+ *                                      Accessor<Constness>>;
+ *   };
+ *
+ *   template <bool Constness>
+ *   class Iterator : public LinearIndexIterator<Iterator<Constness>,
+ *                                               Accessor<Constness>>
+ *   {
+ *     // Constructor.
+ *     Iterator(Container<T> * const container, const std::ptrdiff_t index);
+ *
+ *     // implement additional constructors here, but all state should be
+ *     // contained in the Accessor, which is a member of the base class.
+ *   };
+ *
  * public:
- *   // const iterators store a const pointer
- *   using container_pointer_type
- *     = typename std::conditional<Constness,
- *                                 const Container<T>*,
- *                                 Container<T>*>::type;
- *
- *   // This alias is assumed to exist.
  *   using size_type = std::size_t;
+ *   using const_iterator = Iterator<true>;
+ *   using iterator = Iterator<false>;
  *
- *   // constructor.
- *   Accessor(const container_pointer_type container,
- *            const std::ptrdiff_t index);
+ *   iterator begin ();
+ *   iterator end ();
  *
- *   // constructor.
- *   Accessor();
- *
- *   // get a constant reference to the current value.
- *   const T& value() const;
- *
- * protected:
- *   container_pointer_type container;
- *   std::ptrdiff_t linear_index;
- *
- *   // LinearIndexIterator needs access to linear_index and container.
- *   friend class LinearIndexIterator<Iterator<Constness>,
- *                                    Accessor<Constness>>;
- * };
- *
- * template <bool Constness>
- * class Iterator : public LinearIndexIterator<Iterator<Constness>,
- *                                             Accessor<Constness>>
- * {
- *   // Constructor.
- *   Iterator(Container<T> const container, const std::ptrdiff_t index);
- *
- *   // implement additional constructors here, but all state should be
- *   // contained in the Accessor, which is a member of the base class.
- * };
- *
- * public:
- * using size_type = std::size_t;
- * using const_iterator = Iterator<true>;
- * using iterator = Iterator<false>;
- *
- * iterator begin ();
- * iterator end ();
- *
- * const_iterator begin () const;
- * const_iterator end () const;
+ *   const_iterator begin () const;
+ *   const_iterator end () const;
  * };
  * @endcode
  *
- * @tparam  DerivedIterator
- * 如上例所示，具体的迭代器类应该使用该类的CRTP技术：这为迭代器提供了模板式的比较和算术运算符。这是必要的，例如，
- * LinearIndexIterator::operator++() 要返回正确的类型。
- * @tparam  AccessorType LinearIndexIterator假定 <code>AccessorType</code>  模板参数有以下成员，这些成员完全描述了迭代器的当前状态。  <ol>   <li>  一个名为 <code>container</code> 的指针指向原始容器（例如，相关的稀疏矩阵）。对于 <code>const</code> 迭代器来说，这应该是一个 <code>const</code> 的指针。 </li>   <li>  一个名为 <code>linear_index</code> 的数组索引，用于存储容器存储缓冲区中的当前位置。  <code>linear_index</code>  不需要是一个整数：它可以是一个实现了  <code>operator+=</code>, <code>operator&lt;</code>  , 和  <code>operator==</code>  的类类型（可转换为容器的正确索引类型）。例如，可以通过实现  <code>operator+=</code>  和  <code>operator-</code>  的乘法因子来实现strided iterator。 </li>   </ol>  此外， <code>AccessorType</code>  应该声明相关的LinearIndexIterator实例化是一个 <code>friend</code> ，并定义一个 <code>size_type</code>  类型。
+ * @tparam DerivedIterator As shown in the example above, concrete iterator
+ * classes should use this class with the CRTP technique: this provides the
+ * boiler-plate comparison and arithmetic operators for iterators. This is
+ * necessary for, e.g., LinearIndexIterator::operator++() to return the
+ * correct type.
  *
+ * @tparam AccessorType LinearIndexIterator assumes that the
+ * <code>AccessorType</code> template parameter has the following members
+ * which completely describe the current state of the iterator:
+ * <ol>
+ *   <li>A pointer named <code>container</code> to the original container (e.g.,
+ *   the relevant SparseMatrix). This should be a <code>const</code> pointer
+ *   for <code>const</code> iterators.</li>
+ *   <li>An array index named <code>linear_index</code> that stores the current
+ *   position in the container's storage buffer. <code>linear_index</code> does
+ *   not need to be an integer: it could be a class type (convertible to the
+ *   correct index type of the container) that implements
+ *   <code>operator+=</code>, <code>operator&lt;</code>, and
+ *   <code>operator==</code>. For example, one could implement a strided
+ *   iterator by implementing <code>operator+=</code> and
+ *   <code>operator-</code> with multiplicative factors.</li>
+ * </ol>
+ * In addition, <code>AccessorType</code> should declare the relevant
+ * LinearIndexIterator instantiation to be a <code>friend</code> and define a
+ * <code>size_type</code> type.
  *
- * @note  TransposeTable使用这个模板来实现其迭代器。
- *
- *
+ * @note TransposeTable uses this template to implement its iterators.
  */
 template <class DerivedIterator, class AccessorType>
 class LinearIndexIterator
 {
 public:
   /**
-   * 迭代器类别。
-   *
+   * Iterator category.
    */
   using iterator_category = std::random_access_iterator_tag;
 
   /**
-   * 当你解除对当前种类的迭代器的定义时，你得到的类型的别名。
-   *
+   * An alias for the type you get when you dereference an iterator of the
+   * current kind.
    */
   using value_type = AccessorType;
 
   /**
-   * 差异类型。
-   *
+   * Difference type.
    */
   using difference_type = std::ptrdiff_t;
 
   /**
-   * 引用类型。
-   *
+   * Reference type.
    */
   using reference = const value_type &;
 
   /**
-   * 指针类型。
-   *
+   * Pointer type.
    */
   using pointer = const value_type *;
 
   /**
-   * 底层容器使用的尺寸类型。
-   *
+   * Size type used by the underlying container.
    */
   using size_type = typename value_type::size_type;
 
   /**
-   * 复制操作符。
-   *
+   * Copy operator.
    */
   DerivedIterator &
   operator=(const DerivedIterator &it);
 
   /**
-   * 前缀增量。
-   *
+   * Prefix increment.
    */
   DerivedIterator &
   operator++();
 
   /**
-   * 后缀增量。
-   *
+   * Postfix increment.
    */
   DerivedIterator
   operator++(int);
 
   /**
-   * 前缀递减。
-   *
+   * Prefix decrement.
    */
   DerivedIterator &
   operator--();
 
   /**
-   * 后缀递减。
-   *
+   * Postfix decrement.
    */
   DerivedIterator
   operator--(int);
 
   /**
-   * 返回一个比当前迭代器提前 @p n 个条目的迭代器。
-   *
+   * Return an iterator that is @p n entries ahead of the current one.
    */
   DerivedIterator
   operator+(const difference_type n) const;
 
   /**
-   * 返回一个比当前迭代器晚 @p n 个条目的迭代器。
-   *
+   * Return an iterator that is @p n entries behind the current one.
    */
   DerivedIterator
   operator-(const difference_type n) const;
 
   /**
-   * 将迭代器的位置增加 @p n.  。
-   *
+   * Increment the iterator position by @p n.
    */
   DerivedIterator &
   operator+=(const difference_type n);
 
   /**
-   * 递减迭代器的位置 @p n. 。
-   *
+   * Decrement the iterator position by @p n.
    */
   DerivedIterator &
   operator-=(const difference_type n);
 
   /**
-   * 返回当前迭代器与参数之间的距离。这个距离是通过对当前迭代器应用operator++()的次数来获得参数（对于正的返回值），或者operator--()（对于负的返回值）。
-   *
+   * Return the distance between the current iterator and the argument. The
+   * distance is given by how many times one has to apply operator++() to the
+   * current iterator to get the argument (for a positive return value), or
+   * operator--() (for a negative return value).
    */
   difference_type
   operator-(const DerivedIterator &p) const;
 
   /**
-   * 解除引用操作符。
-   *
+   * Dereferencing operator.
    */
   reference operator*() const;
 
   /**
-   * 解除引用操作符。
-   *
+   * Dereferencing operator.
    */
   pointer operator->() const;
 
   /**
-   * 比较运算符。如果两个迭代器都指向同一个容器中的同一个条目，则返回
-   * <code>true</code> 。
-   *
+   * Comparison operator. Returns <code>true</code> if both iterators point to
+   * the same entry in the same container.
    */
   template <typename OtherIterator>
   friend typename std::enable_if<
@@ -249,8 +258,7 @@ public:
   }
 
   /**
-   * 与operator==()相对应。
-   *
+   * Opposite of operator==().
    */
   template <typename OtherIterator>
   friend typename std::enable_if<
@@ -262,51 +270,56 @@ public:
   }
 
   /**
-   * 比较运算符：使用与operator<()相同的排序，但也检查是否相等。
-   * 这个函数只有在两个迭代器都指向同一个容器时才有效。
+   * Comparison operator: uses the same ordering as operator<(), but also
+   * checks for equality.
    *
+   * This function is only valid if both iterators point into the same
+   * container.
    */
   bool
   operator<=(const DerivedIterator &) const;
 
   /**
-   * 比较运算符：使用与operator>()相同的排序，但也检查是否相等。
-   * 这个函数只有在两个迭代器都指向同一个容器时才有效。
+   * Comparison operator: uses the same ordering as operator>(), but also
+   * checks for equality.
    *
+   * This function is only valid if both iterators point into the same
+   * container.
    */
   bool
   operator>=(const DerivedIterator &) const;
 
   /**
-   * 比较运算符。如果第一个行号较小，或者行号相等且第一个索引较小，结果为真。
-   * 这个函数只有在两个迭代器都指向同一个容器时才有效。
+   * Comparison operator. Result is true if either the first row number is
+   * smaller or if the row numbers are equal and the first index is smaller.
    *
+   * This function is only valid if both iterators point into the same
+   * container.
    */
   bool
   operator<(const DerivedIterator &) const;
 
   /**
-   * 比较运算符。与operator<()的工作方式相同，只是反过来了。
-   *
+   * Comparison operator. Works in the same way as operator<(), just the other
+   * way round.
    */
   bool
   operator>(const DerivedIterator &) const;
 
 protected:
-  /* 继承类应该有一个默认的构造函数。 
-* */
+  /*
+   * The inheriting class should have a default constructor.
+   */
   LinearIndexIterator() = default; // NOLINT
 
   /**
-   * 复制一个访问器的构造函数。
-   *
+   * Constructor that copies an accessor.
    */
   LinearIndexIterator(const AccessorType accessor);
 
 protected:
   /**
-   * 存储一个访问器类的对象。
-   *
+   * Store an object of the accessor class.
    */
   AccessorType accessor;
 };
@@ -495,5 +508,3 @@ inline LinearIndexIterator<DerivedIterator, AccessorType>::LinearIndexIterator(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

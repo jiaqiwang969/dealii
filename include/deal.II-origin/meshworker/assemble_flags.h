@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/assemble_flags_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -25,92 +24,90 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup MeshWorker */ 
- /*@{*/ 
+/*!@addtogroup MeshWorker */
+/*@{*/
 
 namespace MeshWorker
 {
   /**
-   * 给予Mesh_loop()函数的枚举类型，告诉该函数哪些元素需要被组装起来。
-   * 你可以用位法或 <code>operator|(AssembleFlags,AssembleFlags)</code>
-   * 串联的方式选择多个标志。
+   * The enum type given to the mesh_loop() function, telling that function
+   * which elements need to be assembled.
    *
+   * You can select more than one flag by concatenation using the bitwise or
+   * <code>operator|(AssembleFlags,AssembleFlags)</code>.
    */
   enum AssembleFlags
   {
     /**
-     * 什么都不做。
-     *
+     * Do Nothing.
      */
     assemble_nothing = 0,
     /**
-     * 在本地拥有的单元上进行组合。
-     *
+     * Assemble on locally owned cells.
      */
     assemble_own_cells = 0x0001,
     /**
-     * 集合在幽灵细胞上。
-     *
+     * Assemble on ghost cells.
      */
     assemble_ghost_cells = 0x0002,
     /**
-     * 在两个本地拥有的单元格之间的内部面上进行集合，每个面只访问一次。
-     *
+     * Assemble on interior faces between two locally owned cells,
+     * visiting each face only once.
      */
     assemble_own_interior_faces_once = 0x0004,
     /**
-     * 在两个本地拥有的单元格之间的内部面上集合，对每个内部面访问两次，从相邻的两个单元格中各访问一次。
-     *
+     * Assemble on interior faces between two locally owned cells,
+     * visiting each interior face twice, once from each of the two
+     * adjacent cells.
      */
     assemble_own_interior_faces_both = 0x0008,
     /**
-     * 在一个本地拥有的单元和一个幽灵单元之间的面进行组装，确保只有一个进程将组装这些面（从较细的一面或具有较低mpi等级的进程）。
-     *
+     * Assemble on faces between a locally owned cell and a ghost cell, making
+     * sure that only one of the processes will assemble these faces (from the
+     * finer side or the process with the lower mpi rank).
      */
     assemble_ghost_faces_once = 0x0010,
     /**
-     * 在一个本地拥有的单元和一个幽灵单元之间的面进行组装。两个进程都将组装这些面。请注意，它们永远不会在一个进程中从两边进行装配。
-     *
+     * Assemble on faces between a locally owned cell and a ghost cell. Both
+     * processes will assemble these faces. Note that they are never
+     * assembled from both sides on a single process.
      */
     assemble_ghost_faces_both = 0x0020,
     /**
-     * 在本地拥有的单元格的边界面上进行组装。
-     *
+     * Assemble on boundary faces of the locally owned cells.
      */
     assemble_boundary_faces = 0x0040,
 
     /**
-     * 默认情况下，我们会在面积分之前装配单元积分。如果指定了这个标志，单元格将在面和边界之后被装配。
-     *
+     * By default we assemble cell integrals before face integrals. If this
+     * flag is specified, cells will be assembled after faces and boundaries.
      */
     cells_after_faces = 0x0080,
 
     /**
-     * 结合标志来决定是否对单元进行任何工作。
-     *
+     * Combination of flags to determine if any work on cells is done.
      */
     work_on_cells = assemble_own_cells | assemble_ghost_cells,
 
     /**
-     * 结合标志来决定是否对面进行任何工作。
-     *
+     * Combination of flags to determine if any work is done on faces.
      */
     work_on_faces = assemble_own_interior_faces_once |
                     assemble_own_interior_faces_both |
                     assemble_ghost_faces_once | assemble_ghost_faces_both,
 
     /**
-     * 结合标志来确定是否对边界面做了任何工作。
-     *
+     * Combination of flags to determine if any work is done on the boundary
+     * faces.
      */
     work_on_boundary = assemble_boundary_faces,
   };
 
 
   /**
-   * 输出运算符，将组合标志作为一组or'd文本值输出。
-   * @ref AssembleFlags
+   * Output operator which outputs assemble flags as a set of or'd text values.
    *
+   * @ref AssembleFlags
    */
   template <class StreamType>
   inline StreamType &
@@ -136,9 +133,13 @@ namespace MeshWorker
 
 
   /**
-   * 全局运算符，它返回一个对象，其中所有的位都被设置为第一或第二个参数中的设置。这个操作符的存在是因为如果它不存在，那么bit-or <tt>操作符|</tt>的结果将是一个整数，当我们试图将其分配给AssembleFlags类型的对象时，会引发编译器警告。
-   * @ref AssembleFlags
+   * Global operator which returns an object in which all bits are set which are
+   * either set in the first or the second argument. This operator exists since
+   * if it did not then the result of the bit-or <tt>operator |</tt> would be an
+   * integer which would in turn trigger a compiler warning when we tried to
+   * assign it to an object of type AssembleFlags.
    *
+   * @ref AssembleFlags
    */
   inline AssembleFlags
   operator|(AssembleFlags f1, AssembleFlags f2)
@@ -150,9 +151,10 @@ namespace MeshWorker
 
 
   /**
-   * 全局运算符，将第二个参数的位也设置在第一个参数中。
-   * @ref AssembleFlags
+   * Global operator which sets the bits from the second argument also in the
+   * first one.
    *
+   * @ref AssembleFlags
    */
   inline AssembleFlags &
   operator|=(AssembleFlags &f1, AssembleFlags f2)
@@ -163,9 +165,13 @@ namespace MeshWorker
 
 
   /**
-   * 全局操作符，它返回一个对象，其中所有位都被设置在第一个和第二个参数中。这个操作符的存在是因为如果它不存在，那么比特和<tt>操作符&</tt>的结果将是一个整数，当我们试图将其分配给AssembleFlags类型的对象时，会引发编译器警告。
-   * @ref AssembleFlags
+   * Global operator which returns an object in which all bits are set which are
+   * set in the first as well as the second argument. This operator exists since
+   * if it did not then the result of the bit-and <tt>operator &</tt> would be
+   * an integer which would in turn trigger a compiler warning when we tried to
+   * assign it to an object of type AssembleFlags.
    *
+   * @ref AssembleFlags
    */
   inline AssembleFlags operator&(AssembleFlags f1, AssembleFlags f2)
   {
@@ -175,9 +181,10 @@ namespace MeshWorker
 
 
   /**
-   * 全局操作符，如果第一个参数中的所有位没有在第二个参数中设置，则清除它们。
-   * @ref AssembleFlags
+   * Global operator which clears all the bits in the first argument if they are
+   * not also set in the second argument.
    *
+   * @ref AssembleFlags
    */
   inline AssembleFlags &
   operator&=(AssembleFlags &f1, AssembleFlags f2)
@@ -187,10 +194,8 @@ namespace MeshWorker
   }
 } // namespace MeshWorker
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

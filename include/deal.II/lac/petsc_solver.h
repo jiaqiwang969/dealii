@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/petsc_solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -56,84 +57,63 @@ namespace PETScWrappers
 
 
   /**
-   * Base class for solver classes using the PETSc solvers. Since solvers in
-   * PETSc are selected based on flags passed to a generic solver object,
-   * basically all the actual solver calls happen in this class, and derived
-   * classes simply set the right flags to select one solver or another, or to
-   * set certain parameters for individual solvers.
+   * 使用PETSc求解器的求解器类的基类。由于PETSc中的求解器是根据传递给通用求解器对象的标志来选择的，所以基本上所有实际的求解器调用都发生在这个类中，派生类只是设置正确的标志来选择一个或另一个求解器，或者为单个求解器设置某些参数。
+   * 作为选择，用户可以创建一个从SolverBase类派生出来的求解器，并且可以通过SolverControl来设置解决线性方程组所需的默认参数。这些默认选项可以通过指定形式为
+   * @p 的命令行参数而被覆盖。
    *
-   * Optionally, the user can create a solver derived from the SolverBase
-   * class and can set the default arguments necessary to solve the linear
-   * system of equations with SolverControl. These default options can be
-   * overridden by specifying command line arguments of the form @p -ksp_*.
-   * For example, @p -ksp_monitor_true_residual prints out true residual norm
-   * (unpreconditioned) at each iteration and @p -ksp_view provides
-   * information about the linear solver and the preconditioner used in the
-   * current context. The type of the solver can also be changed during
-   * runtime by specifying @p -ksp_type {richardson, cg, gmres, fgmres, ..} to
-   * dynamically test the optimal solver along with a suitable preconditioner
-   * set using @p -pc_type {jacobi, bjacobi, ilu, lu, ..}. There are several
-   * other command line options available to modify the behavior of the PETSc
-   * linear solver and can be obtained from the <a
-   * href="http://www.mcs.anl.gov/petsc">documentation and manual pages</a>.
+   * - sp_*。  例如， @p  * * - sp_*。
    *
-   * @note Repeated calls to solve() on a solver object with a Preconditioner
-   * must be used with care. The preconditioner is initialized in the first
-   * call to solve() and subsequent calls reuse the solver and preconditioner
-   * object. This is done for performance reasons. The solver and
-   * preconditioner can be reset by calling reset().
+   * - sp_monitor_true_residual在每次迭代时打印出真正的残差准则（无条件的）， @p  * - sp_monitor_true_residual在每次迭代时打印出真正的残差准则。
    *
-   * One of the gotchas of PETSc is that -- in particular in MPI mode -- it
-   * often does not produce very helpful error messages. In order to save
-   * other users some time in searching a hard to track down error, here is
-   * one situation and the error message one gets there: when you don't
-   * specify an MPI communicator to your solver's constructor. In this case,
-   * you will get an error of the following form from each of your parallel
-   * processes:
+   * - sp_view提供了关于当前上下文中使用的线性求解器和预处理器的信息。解算器的类型也可以在运行时通过指定 @p 来改变。
+   *
+   * - sp_type{richardson, cg, gmres, fgmres, ...}来动态测试最佳求解器以及使用 @p 的合适的前置条件集。
+   *
+   * - c_type{jacobi, bjacobi, ilu, lu, ..}。还有其他几个命令行选项可用于修改PETSc线性求解器的行为，可从<a
+   * href="http://www.mcs.anl.gov/petsc">documentation and manual
+   * pages</a>中获得。
+   * @note
+   * 在带有预设条件器的求解器对象上重复调用solve()必须谨慎使用。先决条件在第一次调用solve()时被初始化，随后的调用会重复使用求解器和先决条件对象。这样做是出于性能考虑。可以通过调用reset()来重置求解器和前置条件器。
+   * PETSc的一个问题是
+   *
+   * - 特别是在MPI模式下
+   *
+   * 它经常不产生非常有用的错误信息。为了节省其他用户寻找一个难以追踪的错误的时间，这里有一种情况和得到的错误信息：当你没有给你的求解器的构造器指定一个MPI通信器时。在这种情况下，你会从你的每个并行进程中得到以下形式的错误。
    * @verbatim
-   *   [1]PETSC ERROR: PCSetVector() line 1173 in src/ksp/pc/interface/precon.c
-   *   [1]PETSC ERROR:   Arguments must have same communicators!
-   *   [1]PETSC ERROR:   Different communicators in the two objects: Argument #
+   * [1]PETSC ERROR: PCSetVector() line 1173 in src/ksp/pc/interface/precon.c
+   * [1]PETSC ERROR:   Arguments must have same communicators!
+   * [1]PETSC ERROR:   Different communicators in the two objects: Argument #
    * 1 and 2! [1]PETSC ERROR: KSPSetUp() line 195 in
    * src/ksp/ksp/interface/itfunc.c
    * @endverbatim
-   *
-   * This error, on which one can spend a very long time figuring out what
-   * exactly goes wrong, results from not specifying an MPI communicator. Note
-   * that the communicator @em must match that of the matrix and all vectors
-   * in the linear system which we want to solve. Aggravating the situation is
-   * the fact that the default argument to the solver classes, @p
-   * PETSC_COMM_SELF, is the appropriate argument for the sequential case
-   * (which is why it is the default argument), so this error only shows up in
-   * parallel mode.
-   *
+   * 这个错误是由于没有指定MPI通信器而导致的，人们可以花很长的时间来弄清楚到底出了什么问题。请注意，通信器
+   * @em
+   * 必须与我们要解决的线性系统中的矩阵和所有向量相匹配。使情况恶化的是，解算器类的默认参数，
+   * @p
+   * PETSC_COMM_SELF，是顺序情况下的适当参数（这就是为什么它是默认参数），所以这个错误只在并行模式下显示出来。
    * @ingroup PETScWrappers
+   *
    */
   class SolverBase
   {
   public:
     /**
-     * Constructor. Takes the solver control object and the MPI communicator
-     * over which parallel computations are to happen.
+     * 构造函数。接受求解器控制对象和MPI通信器，并行计算将在该通信器上进行。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，以便用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverBase(SolverControl &cn, const MPI_Comm &mpi_communicator);
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     virtual ~SolverBase() = default;
 
     /**
-     * Solve the linear system <tt>Ax=b</tt>. Depending on the information
-     * provided by derived classes and the object passed as a preconditioner,
-     * one of the linear solvers and preconditioners of PETSc is chosen.
-     * Repeated calls to solve() do not reconstruct the preconditioner for
-     * performance reasons. See class Documentation.
+     * 解决线性系统<tt>Ax=b</tt>。根据派生类提供的信息和作为预处理程序传递的对象，会选择PETSc的一个线性求解器和预处理程序。
+     * 由于性能的原因，重复调用solve()不会重构预处理程序。参见类的文档。
+     *
      */
     void
     solve(const MatrixBase &      A,
@@ -143,69 +123,69 @@ namespace PETScWrappers
 
 
     /**
-     * Resets the contained preconditioner and solver object. See class
-     * description for more details.
+     * 重置所包含的前置条件器和求解器对象。更多细节见类描述。
+     *
      */
     virtual void
     reset();
 
 
     /**
-     * Sets a prefix name for the solver object. Useful when customizing the
-     * PETSc KSP object with command-line options.
+     * 为求解器对象设置一个前缀名称。在用命令行选项定制PETSc
+     * KSP对象时很有用。
+     *
      */
     void
     set_prefix(const std::string &prefix);
 
 
     /**
-     * Access to object that controls convergence.
+     * 访问控制收敛的对象。
+     *
      */
     SolverControl &
     control() const;
 
     /**
-     * initialize the solver with the preconditioner. This function is
-     * intended for use with SLEPc spectral transformation class.
+     * 用前置条件器初始化求解器。该函数旨在与SLEPc谱系变换类一起使用。
+     *
      */
     void
     initialize(const PreconditionBase &preconditioner);
 
   protected:
     /**
-     * Reference to the object that controls convergence of the iterative
-     * solver. In fact, for these PETSc wrappers, PETSc does so itself, but we
-     * copy the data from this object before starting the solution process,
-     * and copy the data back into it afterwards.
+     * 对控制迭代求解器收敛的对象的引用。事实上，对于这些PETSc封装器来说，PETSc本身就这样做了，但是我们在开始求解过程之前从这个对象中复制数据，之后再把数据复制回它。
+     *
      */
     SolverControl &solver_control;
 
     /**
-     * Copy of the MPI communicator object to be used for the solver.
+     * 将用于求解器的MPI通信器对象的拷贝。
+     *
      */
     const MPI_Comm mpi_communicator;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is requested by the derived class.
+     * %函数，它接收一个Krylov Subspace
+     * Solver上下文对象，并设置派生类所要求的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const = 0;
 
     /**
-     * Solver prefix name to qualify options specific to the PETSc KSP object
-     * in the current context. Note: A hyphen (-) must NOT be given at the
-     * beginning of the prefix name. The first character of all runtime
-     * options is AUTOMATICALLY the hyphen.
+     * 解算器前缀名称，用于限定当前上下文中PETSc
+     * KSP对象的特定选项。注意：前缀名称的开头不能有连字符（-）。所有运行时选项的第一个字符是自动的连字符。
+     *
      */
     std::string prefix_name;
 
   private:
     /**
-     * A function that is used in PETSc as a callback to check on convergence.
-     * It takes the information provided from PETSc and checks it against
-     * deal.II's own SolverControl objects to see if convergence has been
-     * reached.
+     * 一个在PETSc中用作回调的函数，用于检查收敛情况。
+     * 它采用PETSc提供的信息，并与deal.II自己的SolverControl对象进行核对，以确定是否已经达到收敛。
+     *
      */
     static PetscErrorCode
     convergence_test(KSP                 ksp,
@@ -215,38 +195,31 @@ namespace PETScWrappers
                      void *              solver_control);
 
     /**
-     * A structure that contains the PETSc solver and preconditioner objects.
-     * This object is preserved between subsequent calls to the solver if the
-     * same preconditioner is used as in the previous solver step. This may
-     * save some computation time, if setting up a preconditioner is
-     * expensive, such as in the case of an ILU for example.
+     * 一个包含PETSc求解器和预处理器对象的结构。
+     * 如果在前一个求解步骤中使用了相同的预处理程序，那么这个对象在后续的求解器调用中会被保留下来。如果设置先决条件的成本很高，例如在ILU的情况下，这可以节省一些计算时间。
+     * 这个类的实际声明很复杂，因为PETSc在2.1.6和2.2.0版本之间完全不兼容地改变了它的求解器接口
+     * :-(
+     * 这种类型的对象是明确创建的，但是当周围的求解器对象超出范围时，或者当我们给这个对象的指针分配一个新值时，就会被销毁。因此，各自的Destroy函数被写入该对象的析构器中，即使该对象没有构造函数。
      *
-     * The actual declaration of this class is complicated by the fact that
-     * PETSc changed its solver interface completely and incompatibly between
-     * versions 2.1.6 and 2.2.0 :-(
-     *
-     * Objects of this type are explicitly created, but are destroyed when the
-     * surrounding solver object goes out of scope, or when we assign a new
-     * value to the pointer to this object. The respective *Destroy functions
-     * are therefore written into the destructor of this object, even though
-     * the object does not have a constructor.
      */
     struct SolverData
     {
       /**
-       * Destructor
+       * 毁灭函数
+       *
        */
       ~SolverData();
 
       /**
-       * Object for Krylov subspace solvers.
+       * Krylov子空间求解器的对象。
+       *
        */
       KSP ksp;
     };
 
     /**
-     * Pointer to an object that stores the solver context. This is recreated
-     * in the main solver routine if necessary.
+     * 指向存储求解器上下文的对象的指针。如果有必要，这将在主求解器例程中重新创建。
+     *
      */
     std::unique_ptr<SolverData> solver_data;
 
@@ -260,45 +233,39 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc Richardson
-   * solver.
-   *
+   * 使用PETSc Richardson解算器的解算器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverRichardson : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {
       /**
-       * Constructor. By default, set the damping parameter to one.
+       * 构造函数。默认情况下，将阻尼参数设置为1。
+       *
        */
       explicit AdditionalData(const double omega = 1);
 
       /**
-       * Relaxation parameter.
+       * 松弛参数。
+       *
        */
       double omega;
     };
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造函数。与deal.II自己的求解器相比，不需要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverRichardson(SolverControl &       cn,
                      const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -306,13 +273,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -321,35 +290,28 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc Chebyshev (or,
-   * prior version 3.3, Chebychev) solver.
-   *
+   * 使用PETSc
+   * Chebyshev（或3.3版之前的Chebychev）求解器接口的一个实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverChebychev : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverChebychev(SolverControl &       cn,
                     const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -357,13 +319,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -372,34 +336,27 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc CG solver.
-   *
+   * 一个使用PETSc CG求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverCG : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverCG(SolverControl &       cn,
              const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -407,13 +364,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -422,34 +381,27 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc BiCG solver.
-   *
+   * 一个使用PETSc BiCG求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverBiCG : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverBiCG(SolverControl &       cn,
                const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -457,13 +409,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 为这个特定的求解器存储一份标志。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -472,51 +426,46 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc GMRES solver.
-   *
+   * 使用PETSc GMRES求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverGMRES : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {
       /**
-       * Constructor. By default, set the number of temporary vectors to 30,
-       * i.e. do a restart every 30 iterations.
+       * 构造函数。默认情况下，设置临时向量的数量为30，即每30次迭代做一次重启。
+       *
        */
       AdditionalData(const unsigned int restart_parameter     = 30,
                      const bool         right_preconditioning = false);
 
       /**
-       * Maximum number of tmp vectors.
+       * 临时向量的最大数量。
+       *
        */
       unsigned int restart_parameter;
 
       /**
-       * Flag for right preconditioning.
+       * 右侧预处理的标志。
+       *
        */
       bool right_preconditioning;
     };
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造函数。与deal.II自己的求解器相比，不需要给出一个向量存储对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverGMRES(SolverControl &       cn,
                 const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -524,13 +473,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 为这个特定的求解器存储一份标志。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -539,35 +490,27 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc BiCGStab
-   * solver.
-   *
+   * 使用PETSc BiCGStab求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverBicgstab : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverBicgstab(SolverControl &       cn,
                    const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -575,48 +518,42 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
   };
 
   /**
-   * An implementation of the solver interface using the PETSc CG Squared
-   * solver.
-   *
+   * 一个使用PETSc CG Squared求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverCGS : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverCGS(SolverControl &       cn,
               const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -624,13 +561,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -639,34 +578,27 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc TFQMR solver.
-   *
+   * 使用PETSc TFQMR求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverTFQMR : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverTFQMR(SolverControl &       cn,
                 const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -674,13 +606,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -689,39 +623,30 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc TFQMR-2 solver
-   * (called TCQMR in PETSc). Note that this solver had a serious bug in
-   * versions up to and including PETSc 2.1.6, in that it did not check
-   * convergence and always returned an error code. Thus, this class will
-   * abort with an error indicating failure to converge with PETSc 2.1.6 and
-   * prior. This should be fixed in later versions of PETSc, though.
-   *
+   * 一个使用PETSc
+   * TFQMR-2求解器（在PETSc中称为TCQMR）的求解器接口的实现。请注意，这个求解器在PETSc
+   * 2.1.6以下的版本中有一个严重的错误，即它不检查收敛性，总是返回一个错误代码。因此，在PETSc
+   * 2.1.6及以前的版本中，这个类会以一个错误的方式终止，表明未能收敛。不过这个问题应该在以后的PETSc版本中得到修正。
    * @ingroup PETScWrappers
+   *
    */
   class SolverTCQMR : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，可以向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给出一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverTCQMR(SolverControl &       cn,
                 const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -729,13 +654,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -744,34 +671,27 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc CR solver.
-   *
+   * 一个使用PETSc CR求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverCR : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverCR(SolverControl &       cn,
              const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -779,13 +699,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 为这个特定的求解器存储一份标志。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -794,35 +716,27 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc Least Squares
-   * solver.
-   *
+   * 一个使用PETSc最小二乘法求解器的求解器接口的实现。
    * @ingroup PETScWrappers
+   *
    */
   class SolverLSQR : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给出一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverLSQR(SolverControl &       cn,
                const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -830,13 +744,15 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
@@ -844,40 +760,30 @@ namespace PETScWrappers
 
 
   /**
-   * An implementation of the solver interface using the PETSc PREONLY solver.
-   * Actually this is NOT a real solution algorithm. solve() only applies the
-   * preconditioner once and returns immediately. Its only purpose is to
-   * provide a solver object, when the preconditioner should be used as a real
-   * solver. It is very useful in conjunction with the complete LU
-   * decomposition preconditioner <tt> PreconditionLU </tt>, which in
-   * conjunction with this solver class becomes a direct solver.
-   *
+   * 一个使用PETSc PREONLY求解器的求解器接口的实现。
+   * 实际上这不是一个真正的求解算法。solve()只应用一次预处理程序，并立即返回。它的唯一目的是提供一个求解器对象，当预设条件器应该作为一个真正的求解器使用时。它与完整的LU分解预处理<tt>
+   * PreconditionLU
+   * </tt>结合起来非常有用，它与这个求解器类一起成为一个直接求解器。
    * @ingroup PETScWrappers
+   *
    */
   class SolverPreOnly : public SolverBase
   {
   public:
     /**
-     * Standardized data struct to pipe additional data to the solver.
+     * 标准化的数据结构，用于向求解器输送额外的数据。
+     *
      */
     struct AdditionalData
     {};
 
     /**
-     * Constructor. In contrast to deal.II's own solvers, there is no need to
-     * give a vector memory object. However, PETSc solvers want to have an MPI
-     * communicator context over which computations are parallelized. By
-     * default, @p PETSC_COMM_SELF is used here, but you can change this. Note
-     * that for single processor (non-MPI) versions, this parameter does not
-     * have any effect.
+     * 构造器。与deal.II自己的求解器相比，没有必要给一个矢量内存对象。然而，PETSc求解器希望有一个MPI通信器的上下文，在这个上下文上计算被并行化。默认情况下，这里使用
+     * @p PETSC_COMM_SELF
+     * ，但你可以改变这个。注意，对于单处理器（非MPI）版本，这个参数没有任何影响。
+     * 最后一个参数是一个结构，包含额外的、与求解器相关的调谐标志。
+     * 请注意，这里使用的通信器必须与系统矩阵、解决方案和右侧对象中使用的通信器相匹配，才能用这个求解器来完成。否则，PETSc将产生难以追踪的错误，见SolverBase类的文档。
      *
-     * The last argument takes a structure with additional, solver dependent
-     * flags for tuning.
-     *
-     * Note that the communicator used here must match the communicator used
-     * in the system matrix, solution, and right hand side object of the solve
-     * to be done with this solver. Otherwise, PETSc will generate hard to
-     * track down errors, see the documentation of the SolverBase class.
      */
     SolverPreOnly(SolverControl &       cn,
                   const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -885,73 +791,70 @@ namespace PETScWrappers
 
   protected:
     /**
-     * Store a copy of the flags for this particular solver.
+     * 存储这个特定求解器的标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
     /**
-     * %Function that takes a Krylov Subspace Solver context object, and sets
-     * the type of solver that is appropriate for this class.
+     * %函数，接收一个Krylov Subspace
+     * Solver上下文对象，并设置适合该类的求解器类型。
+     *
      */
     virtual void
     set_solver_type(KSP &ksp) const override;
   };
 
   /**
-   * An implementation of the solver interface using the sparse direct MUMPS
-   * solver through PETSc. This class has the usual interface of all other
-   * solver classes but it is of course different in that it doesn't implement
-   * an iterative solver. As a consequence, things like the SolverControl
-   * object have no particular meaning here.
-   *
-   * MUMPS allows to make use of symmetry in this matrix. In this class this
-   * is made possible by the set_symmetric_mode() function. If your matrix is
-   * symmetric, you can use this class as follows:
+   * 一个通过PETSc使用稀疏直接MUMPS求解器接口的实现。这个类具有所有其他求解器类的常规接口，但它当然不同，因为它没有实现迭代求解器。因此，像SolverControl对象这样的东西在这里没有特别的意义。
+   * MUMPS允许在这个矩阵中使用对称性。在这个类中，这是由set_symmetric_mode()函数实现的。如果你的矩阵是对称的，你可以按以下方式使用这个类。
    * @code
-   *   SolverControl cn;
-   *   PETScWrappers::SparseDirectMUMPS solver(cn, mpi_communicator);
-   *   solver.set_symmetric_mode(true);
-   *   solver.solve(system_matrix, solution, system_rhs);
+   * SolverControl cn;
+   * PETScWrappers::SparseDirectMUMPS solver(cn, mpi_communicator);
+   * solver.set_symmetric_mode(true);
+   * solver.solve(system_matrix, solution, system_rhs);
    * @endcode
    *
-   * @note The class internally calls KSPSetFromOptions thus you are able to
-   * use all the PETSc parameters for MATSOLVERMUMPS package. See
-   * http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
-   *
+   * @note
+   * 该类内部调用KSPSetFromOptions，因此你能够使用MATSOLVERMUMPS包的所有PETSc参数。见http://www.mcs.anl.gov/petsc/petsc-current/docs/manualpages/Mat/MATSOLVERMUMPS.html
    * @ingroup PETScWrappers
+   *
    */
   class SparseDirectMUMPS : public SolverBase
   {
   public:
     /**
-     * Standardized data structure to pipe additional data to the solver.
+     * 标准化的数据结构可以将额外的数据输送到求解器中。
+     *
      */
     struct AdditionalData
     {};
     /**
-     * Constructor
+     * 构造函数
+     *
      */
     SparseDirectMUMPS(SolverControl &       cn,
                       const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
                       const AdditionalData &data = AdditionalData());
 
     /**
-     * The method to solve the linear system.
+     * 解决线性系统的方法。
+     *
      */
     void
     solve(const MatrixBase &A, VectorBase &x, const VectorBase &b);
 
     /**
-     * The method allows to take advantage if the system matrix is symmetric
-     * by using LDL^T decomposition instead of more expensive LU. The argument
-     * indicates whether the matrix is symmetric or not.
+     * 如果系统矩阵是对称的，该方法允许使用LDL^T分解，而不是更昂贵的LU分解。该参数表示矩阵是否对称。
+     *
      */
     void
     set_symmetric_mode(const bool flag);
 
   protected:
     /**
-     * Store a copy of flags for this particular solver.
+     * 为这个特定的求解器存储一份标志的副本。
+     *
      */
     const AdditionalData additional_data;
 
@@ -960,10 +863,8 @@ namespace PETScWrappers
 
   private:
     /**
-     * A function that is used in PETSc as a callback to check convergence. It
-     * takes the information provided from PETSc and checks it against
-     * deal.II's own SolverControl objects to see if convergence has been
-     * reached.
+     * 一个在PETSc中用作回调的函数，用于检查收敛性。它接收来自PETSc的信息，并与deal.II自己的SolverControl对象进行核对，看是否已经达到收敛。
+     *
      */
     static PetscErrorCode
     convergence_test(KSP                 ksp,
@@ -973,14 +874,15 @@ namespace PETScWrappers
                      void *              solver_control);
 
     /**
-     * A structure that contains the PETSc solver and preconditioner objects.
-     * Since the solve member function in the base is not used here, the
-     * private SolverData struct located in the base could not be used either.
+     * 一个包含PETSc求解器和预处理器对象的结构。
+     * 由于这里没有使用基础中的solve成员函数，所以位于基础中的私有SolverData结构也不能使用。
+     *
      */
     struct SolverDataMUMPS
     {
       /**
-       * Destructor
+       * 破坏器
+       *
        */
       ~SolverDataMUMPS();
 
@@ -991,8 +893,8 @@ namespace PETScWrappers
     std::unique_ptr<SolverDataMUMPS> solver_data;
 
     /**
-     * Flag specifies whether matrix being factorized is symmetric or not. It
-     * influences the type of the used preconditioner (PCLU or PCCHOLESKY)
+     * 标志指定被分解的矩阵是否是对称的。它影响到使用的预处理程序的类型（PCLU或PCCHOLESKY）。
+     *
      */
     bool symmetric_mode;
   };
@@ -1002,7 +904,9 @@ DEAL_II_NAMESPACE_CLOSE
 
 #  endif // DEAL_II_WITH_PETSC
 
-/*----------------------------   petsc_solver.h ---------------------------*/
+ /*----------------------------   petsc_solver.h ---------------------------*/ 
 
 #endif
-/*----------------------------   petsc_solver.h ---------------------------*/
+ /*----------------------------   petsc_solver.h ---------------------------*/ 
+
+

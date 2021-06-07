@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/cuda_fe_evaluation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -35,17 +34,15 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 用于CUDA包装器的命名空间
- *
- *
+ * Namespace for the CUDA wrappers
  */
 namespace CUDAWrappers
 {
   namespace internal
   {
     /**
-     * 计算给定的线程ID、维度和每个空间维度中的点的数量的Dof/Quad索引。
-     *
+     * Compute the dof/quad index for a given thread id, dimension, and
+     * number of points in each space dimensions.
      */
     template <int dim, int n_points_1d>
     __device__ inline unsigned int
@@ -61,18 +58,29 @@ namespace CUDAWrappers
   } // namespace internal
 
   /**
-   * 该类提供了在正交点和单元格积分上评估函数所需的所有函数。在功能上，这个类类似于FEValues<dim>。
-   * 该类有五个模板参数。      @tparam  dim 本类使用的维度
-   * @tparam  fe_degree
-   * 每一坐标方向具有fe_degree+1个自由度的张量指令有限元的度数
-   * @tparam  n_q_points_1d
-   * 一维正交公式中的点数，默认为fe_degree+1  @tparam
-   * n_components
-   * 解决PDEs系统时的矢量元件数量。如果同一个操作被应用于一个PDE的几个分量（例如，一个矢量拉普拉斯方程），它们可以通过一次调用同时应用（而且通常更有效率）。默认为1
-   * @tparam  数字 数字格式， @p double  或  @p float.  默认为  @p
-   * 双重。
-   * @ingroup CUDAWrappers
+   * This class provides all the functions necessary to evaluate functions at
+   * quadrature points and cell integrations. In functionality, this class is
+   * similar to FEValues<dim>.
    *
+   * This class has five template arguments:
+   *
+   * @tparam dim Dimension in which this class is to be used
+   *
+   * @tparam fe_degree Degree of the tensor prodict finite element with fe_degree+1
+   * degrees of freedom per coordinate direction
+   *
+   * @tparam n_q_points_1d Number of points in the quadrature formular in 1D,
+   * defaults to fe_degree+1
+   *
+   * @tparam n_components Number of vector components when solving a system of
+   * PDEs. If the same operation is applied to several components of a PDE (e.g.
+   * a vector Laplace equation), they can be applied simultaneously with one
+   * call (and often more efficiently). Defaults to 1
+   *
+   * @tparam Number Number format, @p double or @p float. Defaults to @p
+   * double.
+   *
+   * @ingroup CUDAWrappers
    */
   template <int dim,
             int fe_degree,
@@ -83,52 +91,44 @@ namespace CUDAWrappers
   {
   public:
     /**
-     * 标量的一个别名。
-     *
+     * An alias for scalar quantities.
      */
     using value_type = Number;
 
     /**
-     * 矢量的别名。
-     *
+     * An alias for vectorial quantities.
      */
     using gradient_type = Tensor<1, dim, Number>;
 
     /**
-     * 内核特定信息的别名。
-     *
+     * An alias to kernel specific information.
      */
     using data_type = typename MatrixFree<dim, Number>::Data;
 
     /**
-     * 尺寸。
-     *
+     * Dimension.
      */
     static constexpr unsigned int dimension = dim;
 
     /**
-     * 组件的数量。
-     *
+     * Number of components.
      */
     static constexpr unsigned int n_components = n_components_;
 
     /**
-     * 每个单元的正交点的数量。
-     *
+     * Number of quadrature points per cell.
      */
     static constexpr unsigned int n_q_points =
       Utilities::pow(n_q_points_1d, dim);
 
     /**
-     * 每个单元的张量自由度的数量。
-     *
+     * Number of tensor degrees of freedoms per cell.
      */
     static constexpr unsigned int tensor_dofs_per_cell =
       Utilities::pow(fe_degree + 1, dim);
 
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     __device__
     FEEvaluation(const unsigned int       cell_id,
@@ -136,93 +136,97 @@ namespace CUDAWrappers
                  SharedData<dim, Number> *shdata);
 
     /**
-     * 对于向量 @p src,
-     * 读出当前单元的自由度的值，并在内部存储。当没有约束条件时，与函数
-     * DoFAccessor::get_interpolated_dof_values
-     * 的功能类似，但它也包括来自悬挂节点的约束条件，所以一旦也可以把它看作是与
-     * AffineConstraints::read_dof_valuess 类似的函数。
-     *
+     * For the vector @p src, read out the values on the degrees of freedom of
+     * the current cell, and store them internally. Similar functionality as
+     * the function DoFAccessor::get_interpolated_dof_values when no
+     * constraints are present, but it also includes constraints from hanging
+     * nodes, so once can see it as a similar function to
+     * AffineConstraints::read_dof_valuess as well.
      */
     __device__ void
     read_dof_values(const Number *src);
 
     /**
-     * 取当前单元格的dof值内部存储的值，并将其加到向量中
-     * @p dst.
-     * 该函数也在写操作过程中应用约束。因此，其功能与函数
-     * AffineConstraints::distribute_local_to_global. 相似。
-     *
+     * Take the value stored internally on dof values of the current cell and
+     * sum them into the vector @p dst. The function also applies constraints
+     * during the write operation. The functionality is hence similar to the
+     * function AffineConstraints::distribute_local_to_global.
      */
     __device__ void
     distribute_local_to_global(Number *dst) const;
 
     /**
-     * 在单元格上的正交点上评估输入矢量中的DoF值的函数值和FE函数的梯度。函数参数指定哪些部分应被实际计算。这个函数需要在函数
-     * @p get_value() 或 @p get_gradient() 提供有用信息之前调用。
-     *
+     * Evaluate the function values and the gradients of the FE function given
+     * at the DoF values in the input vector at the quadrature points on the
+     * unit cell. The function arguments specify which parts shall actually be
+     * computed. This function needs to be called before the functions
+     * @p get_value() or @p get_gradient() give useful information.
      */
     __device__ void
     evaluate(const bool evaluate_val, const bool evaluate_grad);
 
     /**
-     * 该函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度进行测试，并执行单元积分。两个函数参数
-     * @p integrate_val 和 @p integrate_grad
-     * 用于启用/禁用某些值或梯度。
-     *
+     * This function takes the values and/or gradients that are stored on
+     * quadrature points, tests them by all the basis functions/gradients on
+     * the cell and performs the cell integration. The two function arguments
+     * @p integrate_val and @p integrate_grad are used to enable/disable some
+     * of the values or the gradients.
      */
     __device__ void
     integrate(const bool integrate_val, const bool integrate_grad);
 
     /**
-     * 与上述相同，只是正交点是由线程id计算的。
-     *
+     * Same as above, except that the quadrature point is computed from thread
+     * id.
      */
     __device__ value_type
                get_value() const;
 
     /**
-     * 同上，除了本地的dof指数是由线程id计算出来的。
-     *
+     * Same as above, except that the local dof index is computed from the
+     * thread id.
      */
     __device__ value_type
                get_dof_value() const;
 
     /**
-     * 同上，除了正交点是由线程ID计算出来的。
-     *
+     * Same as above, except that the quadrature point is computed from the
+     * thread id.
      */
     __device__ void
     submit_value(const value_type &val_in);
 
     /**
-     * 同上，除了本地的dof指数是由线程id计算出来的。
-     *
+     * Same as above, except that the local dof index is computed from the
+     * thread id.
      */
     __device__ void
     submit_dof_value(const value_type &val_in);
 
     /**
-     * 同上，除了正交点是由线程ID计算出来的。
-     *
+     * Same as above, except that the quadrature point is computed from the
+     * thread id.
      */
     __device__ gradient_type
                get_gradient() const;
 
     /**
-     * 同上，除了正交点是由线程ID计算出来的。
-     *
+     * Same as above, except that the quadrature point is computed from the
+     * thread id.
      */
     __device__ void
     submit_gradient(const gradient_type &grad_in);
 
     // clang-format off
     /**
-     * 同上，只是函数器 @p func
-     * 只接受一个输入参数（fe_eval），并从线程id计算正交点。
-     * @p func  需要定义代码 __device__ void operator()(
-     * CUDAWrappers::FEEvaluation<dim,  fe_degree, n_q_points_1d,
-     * n_components, Number>fe_eval) const; /endcode
+     * Same as above, except that the functor @p func only takes a single input
+     * argument (fe_eval) and computes the quadrature point from the thread id.
      *
+     * @p func needs to define
+     * \code
+     * __device__ void operator()(
+     *   CUDAWrappers::FEEvaluation<dim, fe_degree, n_q_points_1d, n_components, Number> *fe_eval) const;
+     * \endcode
      */
     // clang-format on
     template <typename Functor>
@@ -549,5 +553,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
-
-

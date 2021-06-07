@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_smoother_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -32,26 +31,25 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/* MGSmootherBase在mg_base.h中定义。
+/*
+ * MGSmootherBase is defined in mg_base.h
+ */
 
-* 
-* */
-
- /*!@addtogroup mg */ 
- /*@{*/ 
+/*!@addtogroup mg */
+/*@{*/
 
 /**
- * 一个用于平滑器处理平滑信息的基类。虽然没有添加到MGSmootherBase中的抽象接口，但这个类存储了平滑步骤的数量和类型的信息，反过来可以被派生类使用。
- *
- *
+ * A base class for smoother handling information on smoothing. While not
+ * adding to the abstract interface in MGSmootherBase, this class stores
+ * information on the number and type of smoothing steps, which in turn can be
+ * used by a derived class.
  */
 template <typename VectorType>
 class MGSmoother : public MGSmootherBase<VectorType>
 {
 public:
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   MGSmoother(const unsigned int steps     = 1,
              const bool         variable  = false,
@@ -59,96 +57,91 @@ public:
              const bool         transpose = false);
 
   /**
-   * 在最好的级别上修改平滑步骤的数量。
-   *
+   * Modify the number of smoothing steps on finest level.
    */
   void
   set_steps(const unsigned int);
 
   /**
-   * 开启/关闭变量平滑。
-   *
+   * Switch on/off variable smoothing.
    */
   void
   set_variable(const bool);
 
   /**
-   * 开启/关闭对称平滑。
-   *
+   * Switch on/off symmetric smoothing.
    */
   void
   set_symmetric(const bool);
 
   /**
-   * 开启/关闭换位平滑。该效果被set_symmetric()所覆盖。
-   *
+   * Switch on/off transposed smoothing. The effect is overridden by
+   * set_symmetric().
    */
   void
   set_transpose(const bool);
 
   /**
-   * 将 @p debug 设置为非零值以获得记录在 @p
-   * deallog的调试信息。增加以获得更多信息
-   *
+   * Set @p debug to a nonzero value to get debug information logged to @p
+   * deallog. Increase to get more information
    */
   void
   set_debug(const unsigned int level);
 
 protected:
   /**
-   * 一个用于临时向量的内存对象。
-   * 该对象被标记为可变的，因为我们将需要用它来分配临时向量，也是在常量的函数中。
+   * A memory object to be used for temporary vectors.
    *
+   * The object is marked as mutable since we will need to use it to allocate
+   * temporary vectors also in functions that are const.
    */
   mutable GrowingVectorMemory<VectorType> vector_memory;
 
   /**
-   * 最细级别上的平滑步骤数。如果没有选择#variable
-   * smoothing，这就是所有级别的步数。
-   *
+   * Number of smoothing steps on the finest level. If no #variable smoothing
+   * is chosen, this is the number of steps on all levels.
    */
   unsigned int steps;
 
   /**
-   * 可变平滑：每当进入下一个更粗的级别时，平滑步骤的数量将增加一倍。
-   *
+   * Variable smoothing: double the number of smoothing steps whenever going
+   * to the next coarser level
    */
   bool variable;
 
   /**
-   * 对称平滑：在平滑迭代中，在松弛方法和其转置之间交替进行。
-   *
+   * Symmetric smoothing: in the smoothing iteration, alternate between the
+   * relaxation method and its transpose.
    */
   bool symmetric;
 
   /**
-   * 使用松弛方法的转置而不是该方法本身。
-   * 如果选择了#symmetric smoothing，这就没有影响。
-   *
+   * Use the transpose of the relaxation method instead of the method itself.
+   * This has no effect if #symmetric smoothing is chosen.
    */
   bool transpose;
 
   /**
-   * 如果这不是零，则将调试信息输出到 @p deallog 。
-   *
+   * Output debugging information to @p deallog if this is nonzero.
    */
   unsigned int debug;
 };
 
 
 /**
- * 平滑化不做任何事情。这个类对于很多应用来说是没有用的，除了测试一些多网格程序。另外，有些应用可能在没有平滑的情况下得到收敛，然后这个类会给你带来最便宜的多网格。
- *
- *
+ * Smoother doing nothing. This class is not useful for many applications
+ * other than for testing some multigrid procedures. Also some applications
+ * might get convergence without smoothing and then this class brings you the
+ * cheapest possible multigrid.
  */
 template <typename VectorType>
 class MGSmootherIdentity : public MGSmootherBase<VectorType>
 {
 public:
   /**
-   * @p Multigrid. 接口的实现
-   * 这个函数什么都不做，通过与这个函数的定义比较，这意味着平滑算子等于空算子。
-   *
+   * Implementation of the interface for @p Multigrid. This function does
+   * nothing, which by comparison with the definition of this function means
+   * that the smoothing operator equals the null operator.
    */
   virtual void
   smooth(const unsigned int level, VectorType &u, const VectorType &rhs) const;
@@ -161,20 +154,30 @@ public:
 namespace mg
 {
   /**
-   * 使用松弛类进行平滑处理。    一个松弛类是一个满足 @ref ConceptRelaxationType "松弛概念 "
-   * 的对象。
-   * 这个类在每个层次上执行平滑操作。该操作可以由几个参数控制。首先，松弛参数
-   * @p  omega用于底层松弛方法。  @p steps
-   * 是在最细级别上的松弛步骤的数量（如果 @p variable
-   * 关闭，则在所有级别上）。如果 @p variable 是 @p true,
-   * ，则每一个较粗的层次上的平滑步数是双倍的。这导致了一种具有W-循环复杂性的方法，但节省了网格转移。这是Bramble等人提出的方法。选项
-   * @p symmetric
-   * 按照Bramble的建议，在每个步骤中交替使用平滑器和其转置。
-   * @p transpose
-   * 使用<tt>Tstep</tt>的转置平滑操作，而不是放松方案的常规<tt>step</tt>。
-   * 如果你使用块矩阵，第二个 @p initialize
-   * 函数提供了提取单个块进行平滑的可能性。在这种情况下，多棱镜方法必须只用于与该单一块相关的矢量。
+   * Smoother using relaxation classes.
    *
+   * A relaxation class is an object that satisfies the
+   * @ref ConceptRelaxationType "relaxation concept".
+   *
+   * This class performs smoothing on each level. The operation can be
+   * controlled by several parameters. First, the relaxation parameter @p
+   * omega is used in the underlying relaxation method. @p steps is the number
+   * of relaxation steps on the finest level (on all levels if @p variable is
+   * off). If @p variable is @p true, the number of smoothing steps is doubled
+   * on each coarser level. This results in a method having the complexity of
+   * the W-cycle, but saving grid transfers. This is the method proposed by
+   * Bramble at al.
+   *
+   * The option @p symmetric switches on alternating between the smoother and
+   * its transpose in each step as proposed by Bramble.
+   *
+   * @p transpose uses the transposed smoothing operation using <tt>Tstep</tt>
+   * instead of the regular <tt>step</tt> of the relaxation scheme.
+   *
+   * If you are using block matrices, the second @p initialize function offers
+   * the possibility to extract a single block for smoothing. In this case,
+   * the multigrid method must be used only with the vector associated to that
+   * single block.
    */
   template <class RelaxationType, typename VectorType>
   class SmootherRelaxation : public MGLevelObject<RelaxationType>,
@@ -182,8 +185,7 @@ namespace mg
   {
   public:
     /**
-     * 构造函数。设置平滑参数。
-     *
+     * Constructor. Sets smoothing parameters.
      */
     SmootherRelaxation(const unsigned int steps     = 1,
                        const bool         variable  = false,
@@ -191,10 +193,12 @@ namespace mg
                        const bool         transpose = false);
 
     /**
-     * 对矩阵进行初始化。这个函数用每个级别的相同的平滑器来初始化平滑运算器。
-     * @p additional_data 是一个 @p  RelaxationType::AdditionalData
-     * 类型的对象，被交给松弛方法的初始化函数。
+     * Initialize for matrices. This function initializes the smoothing
+     * operator with the same smoother for each level.
      *
+     * @p additional_data is an object of type @p
+     * RelaxationType::AdditionalData and is handed to the initialization
+     * function of the relaxation method.
      */
     template <typename MatrixType2>
     void
@@ -203,9 +207,11 @@ namespace mg
                  typename RelaxationType::AdditionalData());
 
     /**
-     * 初始化每个层次的矩阵和附加数据。
-     * 如果两个对象的最小或最大级别不同，则利用最大的共同范围。这样，即使矩阵是为所有级别生成的，平滑也可以限制在某些级别上。
+     * Initialize matrices and additional data for each level.
      *
+     * If minimal or maximal level of the two objects differ, the greatest
+     * common range is utilized. This way, smoothing can be restricted to
+     * certain levels even if the matrix was generated for all levels.
      */
     template <typename MatrixType2, class DATA>
     void
@@ -213,15 +219,13 @@ namespace mg
                const MGLevelObject<DATA> &       additional_data);
 
     /**
-     * 清空所有的向量。
-     *
+     * Empty all vectors.
      */
     void
     clear() override;
 
     /**
-     * 实际的平滑方法。
-     *
+     * The actual smoothing method.
      */
     virtual void
     smooth(const unsigned int level,
@@ -229,14 +233,20 @@ namespace mg
            const VectorType & rhs) const override;
 
     /**
-     * 平滑化的应用变体，在调用平滑函数之前将向量u设置为零。这个函数等同于以下代码
+     * The apply variant of smoothing, setting the vector u to zero before
+     * calling the smooth function. This function is equivalent to the
+     * following code
      * @code
      * u = 0;
      * smooth(level, u, rhs);
      * @endcode
-     * 在多网格预处理接口中，apply()方法用于预平滑操作，因为解向量中以前的内容需要为新进来的残差所覆盖。另一方面，所有后续的操作都需要平滑已经存在于向量
-     * @p u 中的内容，给定的右手边，这是由smooth()完成的。
      *
+     * In the multigrid preconditioner interfaces, the apply() method is used
+     * for the pre-smoothing operation because the previous content in the
+     * solution vector needs to be overwritten for a new incoming residual. On
+     * the other hand, all subsequent operations need to smooth the content
+     * already present
+     * in the vector @p u given the right hand side, which is done by smooth().
      */
     virtual void
     apply(const unsigned int level,
@@ -244,8 +254,7 @@ namespace mg
           const VectorType & rhs) const override;
 
     /**
-     * 这个对象使用的内存。
-     *
+     * Memory used by this object.
      */
     std::size_t
     memory_consumption() const;
@@ -253,32 +262,40 @@ namespace mg
 } // namespace mg
 
 /**
- * 使用满足 @ref ConceptRelaxationType "放松概念 "
- * 的求解器进行平滑处理。
- * 该类在每个层次上执行平滑操作。该操作可以由几个参数控制。首先，松弛参数
- * @p omega 被用于底层松弛方法中。  @p steps
- * 是最细层次上的松弛步数（如果 @p variable
- * 关闭，则在所有层次上）。如果 @p variable 是 @p true,
- * ，则每一个较粗的层次上的平滑步数是双倍的。这导致了一种具有W-循环复杂性的方法，但节省了网格转移。这是Bramble
- * at al.提出的方法。 选项 @p symmetric
- * 按照Bramble的建议，在每个步骤中交替使用平滑器和其转置。
- * @p transpose
- * 使用<tt>Tstep</tt>的转置平滑操作，而不是放松方案的常规<tt>step</tt>。
- * 如果你使用块矩阵，第二个 @p initialize
- * 函数提供了提取单个块进行平滑的可能性。在这种情况下，多棱镜方法必须只用于与该单块相关的向量。
- * 该库包含<tt>SparseMatrix<.></tt>和<tt>Vector<.></tt>的实例化，其中模板参数是
- * @p  float和 @p double.
- * 的所有组合，其他实例化可以通过包括文件mg_smoother.templates.h来创建。
+ * Smoother using a solver that satisfies the
+ * @ref ConceptRelaxationType "relaxation concept".
  *
+ * This class performs smoothing on each level. The operation can be
+ * controlled by several parameters. First, the relaxation parameter @p omega
+ * is used in the underlying relaxation method. @p steps is the number of
+ * relaxation steps on the finest level (on all levels if @p variable is off).
+ * If @p variable is @p true, the number of smoothing steps is doubled on each
+ * coarser level. This results in a method having the complexity of the
+ * W-cycle, but saving grid transfers. This is the method proposed by Bramble
+ * at al.
  *
+ * The option @p symmetric switches on alternating between the smoother and
+ * its transpose in each step as proposed by Bramble.
+ *
+ * @p transpose uses the transposed smoothing operation using <tt>Tstep</tt>
+ * instead of the regular <tt>step</tt> of the relaxation scheme.
+ *
+ * If you are using block matrices, the second @p initialize function offers
+ * the possibility to extract a single block for smoothing. In this case, the
+ * multigrid method must be used only with the vector associated to that
+ * single block.
+ *
+ * The library contains instantiation for <tt>SparseMatrix<.></tt> and
+ * <tt>Vector<.></tt>, where the template arguments are all combinations of @p
+ * float and @p double. Additional instantiations may be created by including
+ * the file mg_smoother.templates.h.
  */
 template <typename MatrixType, class RelaxationType, typename VectorType>
 class MGSmootherRelaxation : public MGSmoother<VectorType>
 {
 public:
   /**
-   * 构造函数。设置平滑参数。
-   *
+   * Constructor. Sets smoothing parameters.
    */
   MGSmootherRelaxation(const unsigned int steps     = 1,
                        const bool         variable  = false,
@@ -286,10 +303,12 @@ public:
                        const bool         transpose = false);
 
   /**
-   * 对矩阵进行初始化。这个函数存储指向水平矩阵的指针，并且用每个水平的相同的平滑器来初始化平滑运算器。
-   * @p additional_data 是一个 @p RelaxationType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for matrices. This function stores pointers to the level
+   * matrices and initializes the smoothing operator with the same smoother
+   * for each level.
    *
+   * @p additional_data is an object of type @p RelaxationType::AdditionalData
+   * and is handed to the initialization function of the relaxation method.
    */
   template <typename MatrixType2>
   void
@@ -298,10 +317,12 @@ public:
                typename RelaxationType::AdditionalData());
 
   /**
-   * 为矩阵进行初始化。这个函数存储指向水平矩阵的指针，并且用每个水平的相应平滑器初始化平滑运算器。
-   * @p additional_data 是一个 @p RelaxationType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for matrices. This function stores pointers to the level
+   * matrices and initializes the smoothing operator with the according
+   * smoother for each level.
    *
+   * @p additional_data is an object of type @p RelaxationType::AdditionalData
+   * and is handed to the initialization function of the relaxation method.
    */
   template <typename MatrixType2, class DATA>
   void
@@ -309,12 +330,13 @@ public:
              const MGLevelObject<DATA> &       additional_data);
 
   /**
-   * 对单块矩阵进行初始化。在这个块状矩阵中，每一级都会选择
-   * @p block_row 和 @p block_col 所指示的块。
-   * 这个函数存储了指向水平矩阵的指针，并以每个水平的相同平滑器初始化平滑运算器。
-   * @p additional_data 是一个 @p RelaxationType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for single blocks of matrices. Of this block matrix, the block
+   * indicated by @p block_row and @p block_col is selected on each level.
+   * This function stores pointers to the level matrices and initializes the
+   * smoothing operator with the same smoother for each level.
    *
+   * @p additional_data is an object of type @p RelaxationType::AdditionalData
+   * and is handed to the initialization function of the relaxation method.
    */
   template <typename MatrixType2, class DATA>
   void
@@ -324,12 +346,13 @@ public:
              const unsigned int                block_col);
 
   /**
-   * 对单块矩阵进行初始化。在这个块状矩阵中，每一级都会选择
-   * @p block_row 和 @p block_col 所指示的块。
-   * 这个函数存储指向水平矩阵的指针，并为每个水平用相应的平滑器初始化平滑运算器。
-   * @p additional_data 是一个 @p RelaxationType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for single blocks of matrices. Of this block matrix, the block
+   * indicated by @p block_row and @p block_col is selected on each level.
+   * This function stores pointers to the level matrices and initializes the
+   * smoothing operator with the according smoother for each level.
    *
+   * @p additional_data is an object of type @p RelaxationType::AdditionalData
+   * and is handed to the initialization function of the relaxation method.
    */
   template <typename MatrixType2, class DATA>
   void
@@ -339,41 +362,42 @@ public:
              const unsigned int                block_col);
 
   /**
-   * 清空所有的向量。
-   *
+   * Empty all vectors.
    */
   void
   clear();
 
   /**
-   * 实际的平滑方法。
-   *
+   * The actual smoothing method.
    */
   virtual void
   smooth(const unsigned int level, VectorType &u, const VectorType &rhs) const;
 
   /**
-   * 平滑化的应用变体，在调用平滑函数之前将向量u设置为零。这个函数等同于以下代码
+   * The apply variant of smoothing, setting the vector u to zero before
+   * calling the smooth function. This function is equivalent to the
+   * following code
    * @code
    * u = 0;
    * smooth(level, u, rhs);
    * @endcode
-   * 在多网格预处理接口中，apply()方法用于预平滑操作，因为解向量中以前的内容需要为新进来的残差所覆盖。另一方面，所有后续的操作都需要平滑已经存在于向量
-   * @p u 中的内容，给定的右手边，这是由smooth()完成。
    *
+   * In the multigrid preconditioner interfaces, the apply() method is used for
+   * the pre-smoothing operation because the previous content in the solution
+   * vector needs to be overwritten for a new incoming residual. On the other
+   * hand, all subsequent operations need to smooth the content already present
+   * in the vector @p u given the right hand side, which is done by smooth().
    */
   virtual void
   apply(const unsigned int level, VectorType &u, const VectorType &rhs) const;
 
   /**
-   * 包含放松方法的对象。
-   *
+   * Object containing relaxation methods.
    */
   MGLevelObject<RelaxationType> smoothers;
 
   /**
-   * 这个对象所使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
@@ -381,8 +405,7 @@ public:
 
 private:
   /**
-   * 指向矩阵的指针。
-   *
+   * Pointer to the matrices.
    */
   MGLevelObject<LinearOperator<VectorType>> matrices;
 };
@@ -390,31 +413,39 @@ private:
 
 
 /**
- * 使用预处理器类的平滑器。
- * 该类在每一级上执行平滑操作。该操作可以由几个参数控制。首先，放松参数
- * @p omega 用于底层放松方法。  @p steps
- * 是在最细级别上的松弛步骤的数量（如果 @p variable
- * 关闭，则在所有级别上）。如果 @p variable 是 @p true,
- * ，则每一个较粗的层次上的平滑步数是双倍的。这导致了一种具有W-循环复杂性的方法，但节省了网格转移。这是Bramble
- * at al.提出的方法。 选项 @p symmetric
- * 按照Bramble的建议，在每个步骤中交替使用平滑器和其转置。
- * @p transpose
- * 使用<tt>Tvmult</tt>的转置平滑操作，而不是放松方案的常规<tt>vmult</tt>。
- * 如果你使用块矩阵，第二个 @p initialize
- * 函数提供了提取单个块进行平滑的可能性。在这种情况下，多棱镜方法必须只用于与该单块相关的向量。
- * 该库包含<tt>SparseMatrix<.></tt>和<tt>Vector<.></tt>的实例化，其中模板参数是
- * @p  float和 @p double.
- * 的所有组合，其他实例化可以通过包括文件mg_smoother.templates.h来创建。
+ * Smoother using preconditioner classes.
  *
+ * This class performs smoothing on each level. The operation can be
+ * controlled by several parameters. First, the relaxation parameter @p omega
+ * is used in the underlying relaxation method. @p steps is the number of
+ * relaxation steps on the finest level (on all levels if @p variable is off).
+ * If @p variable is @p true, the number of smoothing steps is doubled on each
+ * coarser level. This results in a method having the complexity of the
+ * W-cycle, but saving grid transfers. This is the method proposed by Bramble
+ * at al.
  *
+ * The option @p symmetric switches on alternating between the smoother and
+ * its transpose in each step as proposed by Bramble.
+ *
+ * @p transpose uses the transposed smoothing operation using <tt>Tvmult</tt>
+ * instead of the regular <tt>vmult</tt> of the relaxation scheme.
+ *
+ * If you are using block matrices, the second @p initialize function offers
+ * the possibility to extract a single block for smoothing. In this case, the
+ * multigrid method must be used only with the vector associated to that
+ * single block.
+ *
+ * The library contains instantiation for <tt>SparseMatrix<.></tt> and
+ * <tt>Vector<.></tt>, where the template arguments are all combinations of @p
+ * float and @p double. Additional instantiations may be created by including
+ * the file mg_smoother.templates.h.
  */
 template <typename MatrixType, typename PreconditionerType, typename VectorType>
 class MGSmootherPrecondition : public MGSmoother<VectorType>
 {
 public:
   /**
-   * 构造函数。设置平滑参数。
-   *
+   * Constructor. Sets smoothing parameters.
    */
   MGSmootherPrecondition(const unsigned int steps     = 1,
                          const bool         variable  = false,
@@ -422,10 +453,13 @@ public:
                          const bool         transpose = false);
 
   /**
-   * 对矩阵进行初始化。这个函数存储指向水平矩阵的指针，并且用每个水平的相同的平滑器来初始化平滑运算器。
-   * @p additional_data 是一个 @p  PreconditionerType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for matrices. This function stores pointers to the level
+   * matrices and initializes the smoothing operator with the same smoother
+   * for each level.
    *
+   * @p additional_data is an object of type @p
+   * PreconditionerType::AdditionalData and is handed to the initialization
+   * function of the relaxation method.
    */
   template <typename MatrixType2>
   void
@@ -434,10 +468,13 @@ public:
                additional_data = typename PreconditionerType::AdditionalData());
 
   /**
-   * 为矩阵进行初始化。这个函数存储指向水平矩阵的指针，并且用每个水平的相应平滑器初始化平滑运算器。
-   * @p additional_data 是一个 @p  PreconditionerType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for matrices. This function stores pointers to the level
+   * matrices and initializes the smoothing operator with the according
+   * smoother for each level.
    *
+   * @p additional_data is an object of type @p
+   * PreconditionerType::AdditionalData and is handed to the initialization
+   * function of the relaxation method.
    */
   template <typename MatrixType2, class DATA>
   void
@@ -445,12 +482,14 @@ public:
              const MGLevelObject<DATA> &       additional_data);
 
   /**
-   * 对单块矩阵进行初始化。在这个块状矩阵中， @p block_row
-   * 和 @p block_col 所指示的块在每一级都被选择。
-   * 这个函数存储了指向水平矩阵的指针，并以每个水平的相同平滑器初始化平滑运算器。
-   * @p additional_data 是一个 @p  PreconditionerType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for single blocks of matrices. Of this block matrix, the block
+   * indicated by @p block_row and @p block_col is selected on each level.
+   * This function stores pointers to the level matrices and initializes the
+   * smoothing operator with the same smoother for each level.
    *
+   * @p additional_data is an object of type @p
+   * PreconditionerType::AdditionalData and is handed to the initialization
+   * function of the relaxation method.
    */
   template <typename MatrixType2, class DATA>
   void
@@ -460,12 +499,14 @@ public:
              const unsigned int                block_col);
 
   /**
-   * 对单块矩阵进行初始化。在这个块状矩阵中， @p block_row
-   * 和 @p block_col 所指示的块在每一级都被选择。
-   * 这个函数存储指向水平矩阵的指针，并为每个水平用相应的平滑器初始化平滑运算器。
-   * @p additional_data 是一个 @p  PreconditionerType::AdditionalData
-   * 类型的对象，被交给放松方法的初始化函数。
+   * Initialize for single blocks of matrices. Of this block matrix, the block
+   * indicated by @p block_row and @p block_col is selected on each level.
+   * This function stores pointers to the level matrices and initializes the
+   * smoothing operator with the according smoother for each level.
    *
+   * @p additional_data is an object of type @p
+   * PreconditionerType::AdditionalData and is handed to the initialization
+   * function of the relaxation method.
    */
   template <typename MatrixType2, class DATA>
   void
@@ -475,15 +516,13 @@ public:
              const unsigned int                block_col);
 
   /**
-   * 清空所有的向量。
-   *
+   * Empty all vectors.
    */
   void
   clear() override;
 
   /**
-   * 实际的平滑方法。
-   *
+   * The actual smoothing method.
    */
   virtual void
   smooth(const unsigned int level,
@@ -491,14 +530,19 @@ public:
          const VectorType & rhs) const override;
 
   /**
-   * 平滑化的应用变体，在调用平滑函数之前将向量u设置为零。这个函数等同于以下代码
+   * The apply variant of smoothing, setting the vector u to zero before
+   * calling the smooth function. This function is equivalent to the
+   * following code
    * @code
    * u = 0;
    * smooth(level, u, rhs);
    * @endcode
-   * 在多网格预处理接口中，apply()方法用于预平滑操作，因为解向量中以前的内容需要为新进来的残差所覆盖。另一方面，所有后续的操作都需要平滑已经存在于向量
-   * @p u 中的内容，给定的右手边，这是由smooth()完成。
    *
+   * In the multigrid preconditioner interfaces, the apply() method is used for
+   * the pre-smoothing operation because the previous content in the solution
+   * vector needs to be overwritten for a new incoming residual. On the other
+   * hand, all subsequent operations need to smooth the content already present
+   * in the vector @p u given the right hand side, which is done by smooth().
    */
   virtual void
   apply(const unsigned int level,
@@ -506,14 +550,12 @@ public:
         const VectorType & rhs) const override;
 
   /**
-   * 包含放松方法的对象。
-   *
+   * Object containing relaxation methods.
    */
   MGLevelObject<PreconditionerType> smoothers;
 
   /**
-   * 这个对象所使用的内存。
-   *
+   * Memory used by this object.
    */
   std::size_t
   memory_consumption() const;
@@ -521,16 +563,15 @@ public:
 
 private:
   /**
-   * 指向矩阵的指针。
-   *
+   * Pointer to the matrices.
    */
   MGLevelObject<LinearOperator<VectorType>> matrices;
 };
 
- /*@}*/ 
+/*@}*/
 
- /* ------------------------------- Inline functions --------------------------
- */ 
+/* ------------------------------- Inline functions --------------------------
+ */
 
 #ifndef DOXYGEN
 
@@ -1235,5 +1276,3 @@ MGSmootherPrecondition<MatrixType, PreconditionerType, VectorType>::
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

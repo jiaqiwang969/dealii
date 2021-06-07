@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/cuda_size_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -23,32 +24,34 @@ DEAL_II_NAMESPACE_OPEN
 namespace CUDAWrappers
 {
   /**
-   * Define the size of a block when launching a CUDA kernel. This number can be
-   * changed depending on the architecture the code is running on.
+   * 定义启动CUDA内核时的块的大小。这个数字可以根据代码所运行的架构来改变。
+   *
    */
   constexpr int block_size = 512;
 
   /**
-   * Define the size of chunk of data worked on by a thread. This number can be
-   * changed depending on the architecture the code is running on.
+   * 定义一个线程所处理的数据块的大小。这个数字可以根据代码运行的架构而改变。
+   *
    */
   constexpr int chunk_size = 1;
 
   /**
-   * Define the number of threads in a warp.
+   * 定义一个经线中的线程数量。
+   *
    */
   constexpr int warp_size = 32;
 
   /**
-   * Define the largest finite element degree that can be solved using
-   * CUDAWrappers::MatrixFree. Changing this number will affect the amount of
-   * constant memory being used.
+   * 定义可以使用 CUDAWrappers::MatrixFree.
+   * 求解的最大有限元度，改变这个数字将影响正在使用的恒定内存量。
+   *
    */
   constexpr unsigned int mf_max_elem_degree = 10;
 
   /**
-   * Define the maximum number of valid CUDAWrappers::MatrixFree object.
-   * Changing this number will affect the amount of constant memory being used.
+   * 定义有效 CUDAWrappers::MatrixFree 对象的最大数量。
+   * 改变这个数字将影响正在使用的恒定内存的数量。
+   *
    */
   constexpr unsigned int mf_n_concurrent_objects = 5;
 } // namespace CUDAWrappers
@@ -56,3 +59,5 @@ namespace CUDAWrappers
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

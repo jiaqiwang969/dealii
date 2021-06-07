@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/identity_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
@@ -24,100 +23,108 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup  Matrix1  @{ ! 
-
- 
-* */
+/*! @addtogroup Matrix1
+ *@{
+ */
 
 
 /**
- * 实现一个简单的类，代表给定大小的身份矩阵，即一个条目为
- * $A_{ij}=\delta_{ij}$
- * 的矩阵。虽然它具有矩阵的最重要的成分，特别是可以询问它的大小并对它进行矩阵-向量乘积，但这种类型的矩阵实际上只在两种情况下有用：预处理和初始化其他矩阵。
- * <h4>Initialization</h4>
- * 这个类的主要用处在于它能够初始化其他矩阵，就像这样。
+ * Implementation of a simple class representing the identity matrix of a
+ * given size, i.e. a matrix with entries $A_{ij}=\delta_{ij}$. While it has
+ * the most important ingredients of a matrix, in particular that one can ask
+ * for its size and perform matrix-vector products with it, a matrix of this
+ * type is really only useful in two contexts: preconditioning and
+ * initializing other matrices.
  *
+ * <h4>Initialization</h4>
+ *
+ * The main usefulness of this class lies in its ability to initialize other
+ * matrix, like this:
  * @code
  * FullMatrix<double> identity (IdentityMatrix(10));
  * @endcode
  *
- * 这将创建一个 $10\times 10$
- * 矩阵，对角线上是1，其他地方是0。大多数矩阵类型，特别是FullMatrix和SparseMatrix，都有IdentityMatrix的转换构造函数和赋值运算符，因此可以相当容易地用身份矩阵来填充。
+ * This creates a $10\times 10$ matrix with ones on the diagonal and zeros
+ * everywhere else. Most matrix types, in particular FullMatrix and
+ * SparseMatrix, have conversion constructors and assignment operators for
+ * IdentityMatrix, and can therefore be filled rather easily with identity
+ * matrices.
  *
- *  <h4>Preconditioning</h4>
- * deal.II有一个专门的类用于此目的，即PreconditionIdentity，比可以在该类的文档中所示的背景下使用。本类可以用大致相同的方式使用，尽管没有任何额外的好处。
  *
+ * <h4>Preconditioning</h4>
+ *
+ * No preconditioning at all is equivalent to preconditioning with
+ * preconditioning with the identity matrix. deal.II has a specialized class
+ * for this purpose, PreconditionIdentity, than can be used in a context as
+ * shown in the documentation of that class. The present class can be used in
+ * much the same way, although without any additional benefit:
  * @code
  * SolverControl           solver_control (1000, 1e-12);
  * SolverCG<>              cg (solver_control);
  * cg.solve (system_matrix, solution, system_rhs,
- *         IdentityMatrix(solution.size()));
+ *           IdentityMatrix(solution.size()));
  * @endcode
- *
- *
- *
  */
 class IdentityMatrix
 {
 public:
   /**
-   * 声明容器尺寸的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 默认构造函数。创建一个零大小的矩阵，以后应该使用reinit()函数来调整其大小。
-   *
+   * Default constructor. Creates a zero-sized matrix that should be resized
+   * later on using the reinit() function.
    */
   IdentityMatrix();
 
   /**
-   * 构造函数。创建一个大小为#n的身份矩阵。
-   *
+   * Constructor. Creates a identity matrix of size #n.
    */
   explicit IdentityMatrix(const size_type n);
 
   /**
-   * 调整矩阵的大小为#n乘#n。
-   *
+   * Resize the matrix to be of size #n by #n.
    */
   void
   reinit(const size_type n);
 
   /**
-   * 该矩阵的行数。对于本矩阵，行数和列数当然是相等的。
-   *
+   * Number of rows of this matrix. For the present matrix, the number of rows
+   * and columns are equal, of course.
    */
   size_type
   m() const;
 
   /**
-   * 该矩阵的列数。对于本矩阵，行数和列数当然是相等的。
-   *
+   * Number of columns of this matrix. For the present matrix, the number of
+   * rows and columns are equal, of course.
    */
   size_type
   n() const;
 
   /**
-   * 矩阵-向量的乘法。对于本例来说，这当然相当于简单地将输入向量复制到输出向量。
-   *
+   * Matrix-vector multiplication. For the present case, this of course
+   * amounts to simply copying the input vector to the output vector.
    */
   template <typename OutVectorType, typename InVectorType>
   void
   vmult(OutVectorType &out, const InVectorType &in) const;
 
   /**
-   * 矩阵向量乘以输出向量的加法。在本例中，这当然相当于简单地将输入向量加到输出向量上。
-   *
+   * Matrix-vector multiplication with addition to the output vector. For the
+   * present case, this of course amounts to simply adding the input vector to
+   * the output vector.
    */
   template <typename OutVectorType, typename InVectorType>
   void
   vmult_add(OutVectorType &out, const InVectorType &in) const;
 
   /**
-   * 矩阵-向量乘以转置矩阵。在本例中，这当然相当于简单地将输入向量复制到输出向量。
-   *
+   * Matrix-vector multiplication with the transpose matrix. For the present
+   * case, this of course amounts to simply copying the input vector to the
+   * output vector.
    */
   template <typename OutVectorType, typename InVectorType>
   void
@@ -125,8 +132,9 @@ public:
 
 
   /**
-   * 与转置矩阵的矩阵向量乘法，并在输出向量上做加法。对于目前的情况，这当然相当于简单地将输入向量加到输出向量。
-   *
+   * Matrix-vector multiplication with the transpose matrix, with addition to
+   * the output vector. For the present case, this of course amounts to simply
+   * adding the input vector to the output vector.
    */
   template <typename OutVectorType, typename InVectorType>
   void
@@ -134,8 +142,7 @@ public:
 
 private:
   /**
-   * 这个矩阵的行和列的数量。
-   *
+   * Number of rows and columns of this matrix.
    */
   size_type size;
 };
@@ -231,10 +238,8 @@ IdentityMatrix::Tvmult_add(OutVectorType &out, const InVectorType &in) const
 
 #endif
 
- /**@}*/ 
+/**@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

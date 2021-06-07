@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/la_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -47,31 +48,25 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace for vector classes.
+ * 一个用于向量类的命名空间。
+ * 这个命名空间包含了各种类，它们为来自不同的外部库（如Trilinos
+ * (EPetra)或PETSc）和本地实现（如
+ * LinearAlgebra::distributed::Vector. ）的向量类提供包装。
+ * 不同的向量类派生自VectorSpaceVector，为向量空间操作提供一个联合接口，或派生自ReadWriteVector（或ReadWriteVector本身），或两者皆有。通过VectorSpaceVector的向量空间操作（如规范或向量添加）和通过ReadWriteVector的元素访问的分离是设计上的，可以提高性能。
  *
- * This namespace contains various classes that provide wrappers to vector
- * classes from different external libraries like Trilinos (EPetra) or PETSc
- * and native implementations like LinearAlgebra::distributed::Vector.
  *
- * The different vector classes are derived from VectorSpaceVector to provide
- * a joint interface for vector space operations, are derived from
- * ReadWriteVector (or ReadWriteVector itself), or both. The separation of
- * vector space operations (like norms or vector additions) through
- * VectorSpaceVector and element access through ReadWriteVector are by design
- * and improve performance.
  */
 namespace LinearAlgebra
 {
-  /*! @addtogroup Vectors
-   *@{
-   */
+  /*!   @addtogroup 矢量  @{ !   
+* */
 
   /**
-   * Numerical vector of data. This class derives from both
-   * ::dealii::LinearAlgebra::ReadWriteVector and
-   * ::dealii::LinearAlgebra::VectorSpaceVector. As opposed to the array of
-   * the C++ standard library, this class implements an element of a vector
-   * space suitable for numerical computations.
+   * 数值化的数据向量。该类同时派生自
+   * ::dealii::LinearAlgebra::ReadWriteVector 和
+   * ::dealii::LinearAlgebra::VectorSpaceVector.
+   * 与C++标准库中的数组不同，该类实现了适合数值计算的向量空间的元素。
+   *
    */
   template <typename Number>
   class Vector : public ReadWriteVector<Number>,
@@ -82,54 +77,53 @@ namespace LinearAlgebra
     using value_type = typename ReadWriteVector<Number>::value_type;
 
     /**
-     * Constructor. Create a vector of dimension zero.
+     * 构造函数。创建一个维数为0的向量。
+     *
      */
     Vector() = default;
 
     /**
-     * Copy constructor. Sets the dimension to that of the given vector and
-     * copies all elements.
+     * 复制构造函数。将维数设置为给定的向量的维数，并复制所有元素。
+     *
      */
     Vector(const Vector<Number> &V);
 
     /**
-     * Constructor. Set dimension to @p n and initialize all elements with
-     * zero.
+     * 构造函数。将维度设置为 @p n
+     * 并将所有元素初始化为零。
+     * 构造函数是明确的，以避免像这样的意外。
+     * <tt>v=0;</tt>。据推测，用户希望将向量的每一个元素都设置为零，但相反，发生的是这样的调用。
+     * <tt>v=向量 @<Number@>(0);</tt>,
+     * 即向量被一个长度为0的向量所取代。
      *
-     * The constructor is made explicit to avoid accident like this:
-     * <tt>v=0;</tt>. Presumably, the user wants to set every element of the
-     * vector to zero, but instead, what happens is this call:
-     * <tt>v=Vector@<Number@>(0);</tt>, i.e. the vector is replaced by one of
-     * length zero.
      */
     explicit Vector(const size_type n);
 
     /**
-     * Initialize the vector with a given range of values pointed to by the
-     * iterators. This function exists in analogy to the @p std::vector class.
+     * 用迭代器指向的给定范围的值初始化向量。这个函数的存在是与
+     * @p std::vector 类相类似的。
+     *
      */
     template <typename InputIterator>
     Vector(const InputIterator first, const InputIterator last);
 
     /**
-     * Set the global size of the vector to @p size. The stored elements have
-     * their index in [0,size).
+     * 将向量的全局大小设置为 @p size.
+     * 存储的元素的索引在[0,size]。        如果标志 @p
+     * omit_zeroing_entries
+     * 被设置为false，内存将被初始化为0，否则内存将不被触动（用户在使用前必须确保用合理的数据填充它）。
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
      */
     virtual void
     reinit(const size_type size,
            const bool      omit_zeroing_entries = false) override;
 
     /**
-     * Uses the same IndexSet as the one of the input vector @p in_vector and
-     * allocates memory for this vector.
+     * 使用与输入向量 @p in_vector
+     * 相同的IndexSet，并为该向量分配内存。        如果标志
+     * @p omit_zeroing_entries
+     * 被设置为false，内存将被初始化为0，否则内存将不被触动（用户在使用前必须确保用合理的数据填充它）。
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
      */
     template <typename Number2>
     void
@@ -137,13 +131,11 @@ namespace LinearAlgebra
            const bool                      omit_zeroing_entries = false);
 
     /**
-     * Initializes the vector. The indices are specified by @p
-     * locally_stored_indices.
+     * 初始化向量。指数由 @p  locally_stored_indices指定。
+     * 如果标志 @p omit_zeroing_entries
+     * 被设置为false，内存将被初始化为0，否则内存将不被触动（用户在使用前必须确保用合理的数据填充它）。
+     * local_stored_indices。
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
-     * locally_stored_indices.
      */
     virtual void
     reinit(const IndexSet &locally_stored_indices,
@@ -151,73 +143,81 @@ namespace LinearAlgebra
 
 
     /**
-     * Change the dimension to that of the vector V. The elements of V are not
-     * copied.
+     * 将维度改为向量V的维度，V的元素不会被复制。
+     *
      */
     virtual void
     reinit(const VectorSpaceVector<Number> &V,
            const bool omit_zeroing_entries = false) override;
 
     /**
-     * Returns `false` as this is a serial vector.
+     * 返回`false`，因为这是一个串行向量。
+     * 这个功能只有在使用基于MPI的向量时才需要调用，并且为了兼容而存在于其他对象中。
      *
-     * This functionality only needs to be called if using MPI based vectors and
-     * exists in other objects for compatibility.
      */
     bool
     has_ghost_elements() const;
 
     /**
-     * Copies the data of the input vector @p in_vector.
+     * 复制输入向量的数据  @p in_vector. .
+     *
      */
     Vector<Number> &
     operator=(const Vector<Number> &in_vector);
 
     /**
-     * Copies the data of the input vector @p in_vector.
+     * 复制输入向量 @p in_vector. 的数据。
+     *
      */
     template <typename Number2>
     Vector<Number> &
     operator=(const Vector<Number2> &in_vector);
 
     /**
-     * Sets all elements of the vector to the scalar @p s. This operation is
-     * only allowed if @p s is equal to zero.
+     * 将向量的所有元素设置为标量  @p s.  只有当 @p s
+     * 等于零时才允许进行此操作。
+     *
      */
     virtual Vector<Number> &
     operator=(const Number s) override;
 
     /**
-     * Multiply the entire vector by a fixed factor.
+     * 将整个向量乘以一个固定系数。
+     *
      */
     virtual Vector<Number> &
     operator*=(const Number factor) override;
 
     /**
-     * Divide the entire vector by a fixed factor.
+     * 用整个向量除以一个固定的因子。
+     *
      */
     virtual Vector<Number> &
     operator/=(const Number factor) override;
 
     /**
-     * Add the vector @p V to the present one.
+     * 将向量 @p V 添加到现在的向量中。
+     *
      */
     virtual Vector<Number> &
     operator+=(const VectorSpaceVector<Number> &V) override;
 
     /**
-     * Subtract the vector @p V from the present one.
+     * 从现在的向量中减去向量 @p V 。
+     *
      */
     virtual Vector<Number> &
     operator-=(const VectorSpaceVector<Number> &V) override;
 
     /**
-     * Return the scalar product of two vectors.
+     * 返回两个向量的标量乘积。
+     *
      */
     virtual Number operator*(const VectorSpaceVector<Number> &V) const override;
 
     /**
-     * This function is not implemented and will throw an exception.
+     * 这个函数没有实现，将抛出一个异常。
+     *
      */
     virtual void
     import(const ReadWriteVector<Number> &V,
@@ -226,20 +226,23 @@ namespace LinearAlgebra
              communication_pattern = {}) override;
 
     /**
-     * Add @p a to all components. Note that @p a is a scalar not a vector.
+     * 将 @p a 添加到所有分量中。注意， @p a
+     * 是一个标量，而不是一个矢量。
+     *
      */
     virtual void
     add(const Number a) override;
 
     /**
-     * Simple addition of a multiple of a vector, i.e. <tt>*this += a*V</tt>.
+     * 向量的倍数的简单加法，即<tt>*this += a*V</tt>。
+     *
      */
     virtual void
     add(const Number a, const VectorSpaceVector<Number> &V) override;
 
     /**
-     * Multiple addition of a multiple of a vector, i.e. <tt>*this +=
-     * a*V+b*W</tt>.
+     * 矢量的倍数加法，即：<tt>*this += a*V+b*W</tt>。
+     *
      */
     virtual void
     add(const Number                     a,
@@ -248,8 +251,9 @@ namespace LinearAlgebra
         const VectorSpaceVector<Number> &W) override;
 
     /**
-     * Scaling and simple addition of a multiple of a vector, i.e. <tt>*this =
-     * s*(*this)+a*V</tt>.
+     * 一个向量的倍数的缩放和简单加法，即<tt>*this =
+     * s*(*this)+a*V</tt>。
+     *
      */
     virtual void
     sadd(const Number                     s,
@@ -257,71 +261,68 @@ namespace LinearAlgebra
          const VectorSpaceVector<Number> &V) override;
 
     /**
-     * Scale each element of this vector by the corresponding element in the
-     * argument. This function is mostly meant to simulate multiplication (and
-     * immediate re-assignment) by a diagonal scaling matrix.
+     * 用参数中的相应元素来缩放这个向量的每个元素。这个函数主要是为了模拟对角线缩放矩阵的乘法（和立即重新分配）。
+     *
      */
     virtual void
     scale(const VectorSpaceVector<Number> &scaling_factors) override;
 
     /**
-     * Assignment <tt>*this = a*V</tt>.
+     * 赋值 <tt>*this = a*V</tt>.
+     *
      */
     virtual void
     equ(const Number a, const VectorSpaceVector<Number> &V) override;
 
     /**
-     * Return whether the vector contains only elements with value zero.
+     * 返回向量是否只包含值为0的元素。
+     *
      */
     virtual bool
     all_zero() const override;
 
     /**
-     * Return the mean value of all the entries of this vector.
+     * 返回这个向量的所有条目的平均值。
+     *
      */
     virtual value_type
     mean_value() const override;
 
     /**
-     * Return the l<sub>1</sub> norm of the vector (i.e., the sum of the
-     * absolute values of all entries).
+     * 返回该向量的l<sub>1</sub>准则（即所有条目的绝对值之和）。
+     *
      */
     virtual typename VectorSpaceVector<Number>::real_type
     l1_norm() const override;
 
     /**
-     * Return the l<sub>2</sub> norm of the vector (i.e., the square root of
-     * the sum of the square of all entries among all processors).
+     * 返回向量的l<sub>2</sub>准则（即所有处理器中所有条目的平方根之和）。
+     *
      */
     virtual typename VectorSpaceVector<Number>::real_type
     l2_norm() const override;
 
     /**
-     * Return the maximum norm of the vector (i.e., the maximum absolute value
-     * among all entries and among all processors).
+     * 返回向量的最大规范（即所有条目和所有处理器之间的最大绝对值）。
+     *
      */
     virtual typename VectorSpaceVector<Number>::real_type
     linfty_norm() const override;
 
     /**
-     * Perform a combined operation of a vector addition and a subsequent
-     * inner product, returning the value of the inner product. In other
-     * words, the result of this function is the same as if the user called
+     * 执行一个向量加法和后续内积的组合操作，返回内积的值。换句话说，这个函数的结果与用户调用的
      * @code
      * this->add(a, V);
-     * return_value = *this * W;
+     * return_value =this W;
      * @endcode
+     * 这个函数存在的原因是这个操作比单独调用这两个函数涉及的内存转移要少。这个方法只需要加载三个向量，
+     * @p this,   @p V,   @p W,
+     * ，而调用单独的方法意味着要加载调用向量 @p this
+     * 两次。由于大多数向量操作都有内存传输限制，这就使时间减少了25\%（如果
+     * @p W 等于 @p this).
+     * ，则减少50\%）对于复值向量，第二步中的标量乘法被实现为
+     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$  。
      *
-     * The reason this function exists is that this operation involves less
-     * memory transfer than calling the two functions separately. This method
-     * only needs to load three vectors, @p this, @p V, @p W, whereas calling
-     * separate methods means to load the calling vector @p this twice. Since
-     * most vector operations are memory transfer limited, this reduces the time
-     * by 25\% (or 50\% if @p W equals @p this).
-     *
-     * For complex-valued vectors, the scalar product in the second step is
-     * implemented as
-     * $\left<v,w\right>=\sum_i v_i \bar{w_i}$.
      */
     virtual Number
     add_and_dot(const Number                     a,
@@ -329,28 +330,26 @@ namespace LinearAlgebra
                 const VectorSpaceVector<Number> &W) override;
 
     /**
-     * Return the global size of the vector, equal to the sum of the number of
-     * locally owned indices among all processors.
+     * 返回向量的全局大小，等于所有处理器中本地拥有的索引数之和。
+     *
      */
     virtual size_type
     size() const override;
 
     /**
-     * Return an index set that describes which elements of this vector are
-     * owned by the current processor. As a consequence, the index sets
-     * returned on different processors if this is a distributed vector will
-     * form disjoint sets that add up to the complete index set. Obviously, if
-     * a vector is created on only one processor, then the result would
-     * satisfy
+     * 返回一个索引集，描述这个向量的哪些元素是由当前处理器拥有的。因此，如果这是一个分布式向量，在不同处理器上返回的索引集将形成不相交的集合，加起来就是完整的索引集。很明显，如果一个向量只在一个处理器上创建，那么结果将满足
      * @code
-     *  vec.locally_owned_elements() == complete_index_set(vec.size())
+     * vec.locally_owned_elements() == complete_index_set(vec.size())
      * @endcode
+     *
+     *
      */
     virtual dealii::IndexSet
     locally_owned_elements() const override;
 
     /**
-     * Print the vector to the output stream @p out.
+     * 将向量打印到输出流中  @p out.  。
+     *
      */
     virtual void
     print(std::ostream &     out,
@@ -359,58 +358,51 @@ namespace LinearAlgebra
           const bool         across     = true) const override;
 
     /**
-     * Print the vector to the output stream @p out in a format that can be
-     * read by numpy::readtxt(). Note that the IndexSet is not printed but only
-     * the values stored in the Vector. To load the vector in python just do
-     * <code>
-     * vector = numpy.loadtxt('my_vector.txt')
-     * </code>
+     * 打印向量到输出流 @p out ，其格式可以被 numpy::readtxt().
+     * 读取
+     * 注意，IndexSet不被打印，而只是存储在Vector中的值。要在python中加载向量，只需执行<code>
+     * vector = numpy.loadtxt('my_vector.txt') </code>。
+     *
      */
     void
     print_as_numpy_array(std::ostream &     out,
                          const unsigned int precision = 9) const;
 
     /**
-     * Write the vector en bloc to a file. This is done in a binary mode, so
-     * the output is neither readable by humans nor (probably) by other
-     * computers using a different operating system or number format.
+     * 将向量全部写入文件。这是在二进制模式下完成的，所以输出结果既不能被人类阅读，也不能（可能）被其他使用不同操作系统或数字格式的计算机阅读。
+     *
      */
     void
     block_write(std::ostream &out) const;
 
     /**
-     * Read a vector en block from a file. This is done using the inverse
-     * operations to the above function, so it is reasonably fast because the
-     * bitstream is not interpreted.
+     * 从一个文件中读取一个矢量en块。这是用上述函数的逆运算来完成的，所以它的速度相当快，因为位流没有被解释。
+     * 如果有必要，矢量会被调整大小。
+     * 一个原始形式的错误检查被执行，它将识别最直截了当的尝试，将一些数据解释为存储在文件中的位流向量，但不会更多。
      *
-     * The vector is resized if necessary.
-     *
-     * A primitive form of error checking is performed which will recognize
-     * the bluntest attempts to interpret some data as a vector stored bitwise
-     * to a file, but not more.
      */
     void
     block_read(std::istream &in);
 
     /**
-     * Return the memory consumption of this class in bytes.
+     * 返回这个类的内存消耗，单位是字节。
+     *
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * Write and read the data of this object from a stream for the purpose
-     * of serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从一个流中写入和读取此对象的数据，以便进行序列化。
+     *
      */
     template <typename Archive>
     void
     serialize(Archive &ar, const unsigned int version);
 
     /**
-     * Attempt to perform an operation between two incompatible vector types.
-     *
+     * 试图在两个不兼容的向量类型之间执行操作。
      * @ingroup Exceptions
+     *
      */
     DeclException0(ExcVectorTypeNotCompatible);
 
@@ -420,8 +412,8 @@ namespace LinearAlgebra
     friend class Vector;
   };
 
-  /*@}*/
-  /*--------------------------- Inline functions ----------------------------*/
+   /*@}*/ 
+   /*--------------------------- Inline functions ----------------------------*/ 
 
   template <typename Number>
   inline Vector<Number>::Vector(const Vector<Number> &V)
@@ -504,14 +496,16 @@ namespace LinearAlgebra
 
 
 /**
- * Declare dealii::LinearAlgebra::Vector as serial vector.
+ * 将 dealii::LinearAlgebra::Vector 声明为串行向量。
+ *
+ *
  */
 template <typename Number>
 struct is_serial_vector<LinearAlgebra::Vector<Number>> : std::true_type
 {};
 
 #ifndef DOXYGEN
-/*----------------------- Inline functions ----------------------------------*/
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 namespace LinearAlgebra
 {
@@ -533,3 +527,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
+
+

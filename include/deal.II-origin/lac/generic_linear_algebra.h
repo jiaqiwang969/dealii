@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/generic_linear_algebra_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
@@ -31,39 +30,35 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 一个命名空间，其中deal.II线性代数类被别名为通用名称。还有类似的命名空间LinearAlgebraPETSc和LinearAlgebraTrilinos，用于别名与PETSc和Trilinos库接口的类。
- *
- *
+ * A namespace in which the deal.II linear algebra classes are aliased to
+ * generic names. There are similar namespaces LinearAlgebraPETSc and
+ * LinearAlgebraTrilinos for alias to classes that interface with the PETSc
+ * and Trilinos libraries.
  */
 namespace LinearAlgebraDealII
 {
   /**
-   * 用于向量类型的类型化定义
-   *
+   * Typedef for the vector type used
    */
   using Vector = Vector<double>;
 
   /**
-   * 用于块向量类型的类型定义
-   *
+   * Typedef for the block-vector type used
    */
   using BlockVector = BlockVector<double>;
 
   /**
-   * 用于稀疏矩阵类型的类型定义
-   *
+   * Typedef for sparse matrix type used
    */
   using SparseMatrix = SparseMatrix<double>;
 
   /**
-   * 描述由多个块组成的稀疏矩阵的类型定义。
-   *
+   * Typedef describing sparse matrices that consist of multiple blocks.
    */
   using BlockSparseMatrix = BlockSparseMatrix<double>;
 
   /**
-   * 用于SSOR预处理程序的类型定义
-   *
+   * Typedef for the SSOR preconditioner used
    */
   using PreconditionSSOR = PreconditionSSOR<SparseMatrix>;
 } // namespace LinearAlgebraDealII
@@ -82,89 +77,78 @@ DEAL_II_NAMESPACE_CLOSE
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个命名空间，其中PETSc线性代数类的封装器被别名为通用名称。还有类似的命名空间
- * LinearAlgebraDealII 和 LinearAlgebraTrilinos，用于别名 deal.II
- * 自己的类和与 Trilinos 接口的类。
- *
- *
+ * A namespace in which the wrappers to the PETSc linear algebra classes are
+ * aliased to generic names. There are similar namespaces
+ * LinearAlgebraDealII and LinearAlgebraTrilinos for alias to deal.II's own
+ * classes and classes that interface with Trilinos.
  */
 namespace LinearAlgebraPETSc
 {
   /**
-   * 用于CG求解器类型的类型化定义。
-   *
+   * Typedef for the CG solver type used.
    */
   using SolverCG = PETScWrappers::SolverCG;
 
   /**
-   * 用于GMRES求解器类型的类型定义。
-   *
+   * Typedef for the GMRES solver type used.
    */
   using SolverGMRES = PETScWrappers::SolverGMRES;
 
   /**
-   * 一个带有平行PETSc线性代数对象通用名称别名的命名空间。
-   *
+   * A namespace with alias to generic names for parallel PETSc linear
+   * algebra objects.
    */
   namespace MPI
   {
     /**
-     * 用于向量类型的类型定义。
-     *
+     * Typedef for the vector type used.
      */
     using Vector = PETScWrappers::MPI::Vector;
 
     /**
-     * 用于描述由多个块组成的向量的类型的类型定义。
-     *
+     * Typedef for the type used to describe vectors that consist of multiple
+     * blocks.
      */
     using BlockVector = PETScWrappers::MPI::BlockVector;
 
     /**
-     * 用于描述稀疏矩阵类型的类型定义。
-     *
+     * Typedef for the sparse matrix type used.
      */
     using SparseMatrix = PETScWrappers::MPI::SparseMatrix;
 
     /**
-     * 用于描述由多个块组成的稀疏矩阵的类型的类型定义。
-     *
+     * Typedef for the type used to describe sparse matrices that consist of
+     * multiple blocks.
      */
     using BlockSparseMatrix = PETScWrappers::MPI::BlockSparseMatrix;
 
     /**
-     * 用于压缩块疏散模式的类型定义。
-     *
+     * Typedef for the compressed block sparsity pattern used.
      */
     using BlockCompressedSparsityPattern = dealii::BlockDynamicSparsityPattern;
 
     /**
-     * AMG预处理器类型的类型定义。
-     *
+     * Typedef for the AMG preconditioner type.
      */
     using PreconditionAMG = PETScWrappers::PreconditionBoomerAMG;
 
     /**
-     * 用于不完全Cholesky预处理的类型定义。
-     *
+     * Typedef for the Incomplete Cholesky preconditioner.
      */
     using PreconditionIC = PETScWrappers::PreconditionICC;
 
     /**
-     * 不完全LU分解预处理器的类型定义。
-     *
+     * Typedef for the Incomplete LU decomposition preconditioner.
      */
     using PreconditionILU = PETScWrappers::PreconditionILU;
 
     /**
-     * 不完全雅各比分解预处理程序的类型定义。
-     *
+     * Typedef for the Incomplete Jacobi decomposition preconditioner.
      */
     using PreconditionJacobi = PETScWrappers::PreconditionJacobi;
 
     /**
-     * SSOR预处理程序的类型定义。
-     *
+     * Typedef for the SSOR preconditioner.
      */
     using PreconditionSSOR = PETScWrappers::PreconditionSSOR;
 
@@ -186,90 +170,79 @@ DEAL_II_NAMESPACE_CLOSE
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个命名空间，其中Trilinos线性代数类的包装器被别名为通用名称。还有类似的命名空间
- * LinearAlgebraDealII 和 LinearAlgebraPETSc，用于别名 deal.II
- * 自己的类和与 PETSc 接口的类。
- *
- *
+ * A namespace in which the wrappers to the Trilinos linear algebra classes
+ * are aliased to generic names. There are similar namespaces
+ * LinearAlgebraDealII and LinearAlgebraPETSc for alias to deal.II's own
+ * classes and classes that interface with PETSc.
  */
 namespace LinearAlgebraTrilinos
 {
   /**
-   * 用于CG求解器类型的类型化定义。
-   *
+   * Typedef for the CG solver type used.
    */
   using SolverCG = TrilinosWrappers::SolverCG;
 
   /**
-   * 用于GMRES求解器类型的类型定义。
-   *
+   * Typdef for the GMRES solver type used.
    */
   using SolverGMRES = TrilinosWrappers::SolverGMRES;
 
   /**
-   * 一个带有别名的命名空间，用于并行Trilinos线性代数对象的通用名称。
-   *
+   * A namespace with alias to generic names for parallel Trilinos linear
+   * algebra objects.
    */
   namespace MPI
   {
     /**
-     * 用于向量类型的类型定义。
-     *
+     * Typedef for the vector type used.
      */
     using Vector = TrilinosWrappers::MPI::Vector;
 
     /**
-     * 用于描述由多个块组成的向量的类型的类型定义。
-     *
+     * Typedef for the type used to describe vectors that consist of multiple
+     * blocks.
      */
     using BlockVector = TrilinosWrappers::MPI::BlockVector;
 
     /**
-     * 用于描述稀疏矩阵类型的类型定义。
-     *
+     * Typedef for the sparse matrix type used.
      */
     using SparseMatrix = TrilinosWrappers::SparseMatrix;
 
     /**
-     * 用于描述由多个块组成的稀疏矩阵的类型的类型定义。
-     *
+     * Typedef for the type used to describe sparse matrices that consist of
+     * multiple blocks.
      */
     using BlockSparseMatrix = TrilinosWrappers::BlockSparseMatrix;
 
     /**
-     * 用于压缩块稀疏模式的类型的类型定义。
-     *
+     * Typedef for the type used for compressed block sparsity pattern.
      */
     using BlockCompressedSparsityPattern =
       TrilinosWrappers::BlockSparsityPattern;
 
     /**
-     * AMG预处理器类型的类型定义。
-     *
+     * Typedef for the AMG preconditioner type.
      */
     using PreconditionAMG = TrilinosWrappers::PreconditionAMG;
 
     /**
-     * 用于不完全Cholesky预处理程序的类型定义。
-     *
+     * Typedef for the Incomplete Cholesky preconditioner.
      */
     using PreconditionIC = TrilinosWrappers::PreconditionIC;
 
     /**
-     * 不完全LU分解预处理程序的类型定义。
-     *
+     * Typedef for the Incomplete LU decomposition preconditioner.
      */
     using PreconditionILU = TrilinosWrappers::PreconditionILU;
 
     /**
-     * 不完全雅各比分解预处理程序的类型定义。
-     *
+     * Typedef for the Incomplete Jacobi decomposition preconditioner.
      */
     using PreconditionJacobi = TrilinosWrappers::PreconditionJacobi;
 
     /**
-     * SSOR预处理程序的类型定义
-     *
+     * Typedef for the SSOR preconditioner
      */
     using PreconditionSSOR = TrilinosWrappers::PreconditionSSOR;
 
@@ -286,5 +259,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 
 #endif
-
-

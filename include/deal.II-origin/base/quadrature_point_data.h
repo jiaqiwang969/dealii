@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/quadrature_point_data_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -39,58 +38,64 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup Quadrature */ 
- /*@{*/ 
+/*!@addtogroup Quadrature */
+/*@{*/
 
 /**
- * 一个用于在每个由类型为  @p CellIteratorType
- * 的迭代器代表的单元格存储数据向量的类  @p DataType
- * 。这个类的底层结构和初始化()方法是这样设计的：人们可以使用从基础DataType类派生出来的不同子类来存储给定单元的数据。这意味着指针的使用，在我们的例子中
+ * A class for storing at each cell represented by iterators of type @p CellIteratorType
+ * a vector of data @p DataType .
+ * The underlying structure and the initialize() method of this class are
+ * designed in such a way that one could use different child classes derived
+ * from the base DataType class to store data on a given cell. This implies the
+ * usage of pointers, in our case -- std::shared_ptr.
  *
- * -  std::shared_ptr.
- * 类型 @p DataType
- * 是任意的，但是当使用从TransferableQuadraturePointData派生的类时，可以使用
- * parallel::distributed::ContinuousQuadratureDataTransfer. 的设施。
+ * The type @p DataType is arbitrary, but when using a class derived from
+ * TransferableQuadraturePointData one can use the facilities of
+ * parallel::distributed::ContinuousQuadratureDataTransfer.
  *
- *
- * @note
- * 每个单元上存储的数据类型可以是不同的。然而，在单元格内，该类存储的是单一数据类型的对象向量。由于这个原因，当例如采用水平集方法来描述材料行为时，这个类可能不够灵活。
- *
- *
+ * @note The data type stored on each cell can be different.
+ * However, within the cell this class stores a vector of objects of a single
+ * data type. For this reason, this class may not be sufficiently flexible when,
+ * for example, adopting a level-set approach to describe material behavior.
  */
 template <typename CellIteratorType, typename DataType>
 class CellDataStorage : public Subscriptor
 {
 public:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   CellDataStorage() = default;
 
   /**
-   * 默认的解构器。
-   *
+   * Default destructor.
    */
   ~CellDataStorage() override = default;
 
   /**
-   * 在  @p cell  上初始化数据，以存储  @p
-   * number_of_data_points_per_cell  类型为  @p T  的对象。  类型名
-   * @p T  可能是另一个类，它是由基  @p DataType
-   * 类派生的。为了初始化对象的向量，我们必须假设 @p T
-   * 类有一个默认的构造函数。
-   * 这个函数必须在每个要存储数据的单元格中调用。
-   * 数据被初始化后，可以使用get_data()函数对其进行修改。
-   * @note  此函数的后续调用与 @p cell
-   * 相同，不会改变与之相关的对象。为了删除存储的数据，请使用erase()函数。
-   * @note  可以为不同的单元使用不同的类型 @p T
-   * ，这可能反映出，例如，在领域的不同部分，连续体力学的不同构成模型。
-   * @note
-   * 该方法第一次被调用时，会存储一个SmartPointer到拥有该单元的Triangulation对象。以后调用此方法时，希望该单元来自于同一存储的三角剖面。
-   * @pre  类型 @p T 需要等于 @p DataType, 或是从 @p DataType.
-   * 派生的类  @p T 需要是可默认构造的。
+   * Initialize data on the @p cell to store @p number_of_data_points_per_cell of objects of type @p T .
+   * The typename @p T is possibly another class which is derived from the
+   * base @p DataType class. In order to initialize the vector of objects
+   * we have to assume that the class @p T has a default constructor.
+   * This function has to be called on every cell where data is to be stored.
    *
+   * After the data is initialized, it can be modified using the get_data()
+   * function.
+   *
+   * @note Subsequent calls of this function with the same @p cell will not
+   * alter the objects associated with it. In order to remove the stored data,
+   * use the erase() function.
+   *
+   * @note It is possible to use different types @p T for different cells which
+   * may reflect, for example, different constitutive models of continuum
+   * mechanics in different parts of the domain.
+   *
+   * @note The first time this method is called, it stores a SmartPointer to the
+   * Triangulation object that owns the cell. The future invocations of this
+   * method expects the cell to be from the same stored triangulation.
+   *
+   * @pre The type @p T needs to either equal @p DataType, or be a class derived
+   * from @p DataType. @p T needs to be default constructible.
    */
   template <typename T = DataType>
   void
@@ -98,9 +103,9 @@ public:
              const unsigned int      number_of_data_points_per_cell);
 
   /**
-   * 同上，但对于所有本地拥有的单元格，即`cell->is_locally_owned()==true`的迭代器范围，从
-   * @p cell_start 开始，直到但不包括 @p cell_end  。
-   *
+   * Same as above but for a range of iterators starting at @p cell_start
+   * until, but not including, @p cell_end for all locally owned cells, i.e.
+   * for which `cell->is_locally_owned()==true` .
    */
   template <typename T = DataType>
   void
@@ -109,88 +114,94 @@ public:
              const unsigned int      number_of_data_points_per_cell);
 
   /**
-   * 移除存储在 @p cell. 的数据
-   * 如果数据被移除，则返回true。  如果没有数据附在 @p
-   * cell, 上，这个函数将不做任何事情，并返回false。
-   * @note
-   * 此函数还将检查是否有对存储在此单元格上的数据的未决引用。也就是说，对存储的数据的唯一引用是由这个类作出的。
+   * Removes data stored at the @p cell. Returns true if the data was removed.
+   * If no data is attached to the @p cell, this function will not do anything
+   * and returns false.
    *
+   * @note This function will also check that there are no
+   * outstanding references to the data stored on this cell. That is to say,
+   * that the only references to the stored data are that made by this class.
    */
   bool
   erase(const CellIteratorType &cell);
 
   /**
-   * 清除存储在此对象中的所有数据。
-   *
+   * Clear all the data stored in this object.
    */
   void
   clear();
 
   /**
-   * 获取位于  @p cell  的数据的向量。
-   * 一个可能的附加类型名 @p T
-   * 是基类DataType可以被投到的类。由于 @p DataType
-   * 是以共享指针的形式存储的，所以通过值而不是引用返回向量的开销最小。
-   * 如果 @p T 类与 @p DataType
-   * 在逐个单元的基础上不相同，这允许灵活性。      @pre
-   * 类型 @p T 需要与提供给initialize()的类匹配。      @pre   @p
-   * cell
-   * 必须来自用于初始化()单元数据的同一个三角结构。
+   * Get a vector of the data located at @p cell .
+   * A possible additional typename @p T is the class to which the base class
+   * DataType could be cast. Since @p DataType is stored as shared pointers,
+   * there is minimal overhead in returning a vector by value instead of by
+   * reference.
+   * This allows flexibility if class @p T is not the same as @p DataType on a
+   * cell-by-cell basis.
    *
+   * @pre The type @p T needs to match the class provided to initialize() .
+   *
+   * @pre @p cell must be from the same Triangulation that is used to
+   * initialize() the cell data.
    */
   template <typename T = DataType>
   std::vector<std::shared_ptr<T>>
   get_data(const CellIteratorType &cell);
 
   /**
-   * 获取位于  @p cell  的数据的常数指针的向量。
-   * 一个可能的附加类型名 @p T
-   * 是基类DataType可以被投向的类。由于 @p DataType
-   * 是以共享指针的形式存储的，所以通过值而不是引用来返回一个向量的开销最小。
-   * 如果 @p T 类与 @p DataType
-   * 在逐个单元的基础上不相同，这允许灵活性。      @pre
-   * 类型 @p T 需要与提供给initialize()的类匹配。      @pre   @p
-   * cell
-   * 必须来自用于初始化()单元数据的同一个三角结构。
+   * Get a vector of constant pointers to data located at @p cell .
+   * A possible additional typename @p T is the class to which the base class
+   * DataType could be cast. Since @p DataType is stored as shared pointers,
+   * there is minimal overhead in returning a vector by value instead of by
+   * reference.
+   * This allows flexibility if class @p T is not the same as @p DataType on a
+   * cell-by-cell basis.
    *
+   * @pre The type @p T needs to match the class provided to initialize() .
+   *
+   * @pre @p cell must be from the same Triangulation that is used to
+   * initialize() the cell data.
    */
   template <typename T = DataType>
   std::vector<std::shared_ptr<const T>>
   get_data(const CellIteratorType &cell) const;
 
   /**
-   * 返回一个 std_cxx17::optional ，表明 @p cell
-   * 是否包含相关数据。如果数据是可用的，解除引用
-   * std_cxx17::optional
-   * 会显示一个指向正交点的基础数据的指针向量。
-   * 一个可能的附加类型名 @p T
-   * 是基类DataType可以被投射到的类。由于 @p DataType
-   * 是以共享指针的形式存储的，所以通过值而不是引用来返回矢量的开销最小。
-   * 如果 @p T 类与 @p DataType
-   * 在逐个单元的基础上不相同，这允许灵活性。      @pre
-   * 类型 @p T 需要与提供给initialize()的类匹配。    @pre   @p
-   * cell
-   * 必须来自用于初始化()单元数据的同一个三角结构。
+   * Returns a std_cxx17::optional indicating whether @p cell contains an
+   * associated data or not. If data is available, dereferencing the
+   * std_cxx17::optional reveals a vector of pointers to the underlying data
+   * at the quadrature points.
+   * A possible additional typename @p T is the class to which the base class
+   * DataType could be cast. Since @p DataType is stored as shared pointers,
+   * there is minimal overhead in returning a vector by value instead of by
+   * reference.
+   * This allows flexibility if class @p T is not the same as @p DataType on a
+   * cell-by-cell basis.
    *
+   * @pre The type @p T needs to match the class provided to initialize().
+   * @pre @p cell must be from the same Triangulation that is used to
+   * initialize() the cell data.
    */
   template <typename T = DataType>
   std_cxx17::optional<std::vector<std::shared_ptr<T>>>
   try_get_data(const CellIteratorType &cell);
 
   /**
-   * 返回一个 std_cxx17::optional ，表明 @p cell
-   * 是否包含相关数据。如果数据可用，解除引用
-   * std_cxx17::optional
-   * 会显示一个指向正交点的基础数据的常数指针向量。
-   * 一个可能的附加类型名 @p T
-   * 是基类DataType可以被投射到的类。由于 @p DataType
-   * 是以共享指针的形式存储的，所以通过值而不是引用来返回矢量的开销最小。
-   * 如果 @p T 类与 @p DataType
-   * 在逐个单元的基础上不相同，这允许灵活性。      @pre
-   * 类型 @p T 需要与提供给initialize()的类匹配。    @pre   @p
-   * cell
-   * 必须来自用于初始化()单元数据的同一个三角结构。
+   * Returns a std_cxx17::optional indicating whether @p cell contains an
+   * associated data or not. If data is available, dereferencing the
+   * std_cxx17::optional reveals a vector of constant pointers to the
+   * underlying data at the quadrature points.
+   * A possible additional typename @p T is the class to which the base class
+   * DataType could be cast. Since @p DataType is stored as shared pointers,
+   * there is minimal overhead in returning a vector by value instead of by
+   * reference.
+   * This allows flexibility if class @p T is not the same as @p DataType on a
+   * cell-by-cell basis.
    *
+   * @pre The type @p T needs to match the class provided to initialize().
+   * @pre @p cell must be from the same Triangulation that is used to
+   * initialize() the cell data.
    */
   template <typename T = DataType>
   std_cxx17::optional<std::vector<std::shared_ptr<const T>>>
@@ -198,45 +209,42 @@ public:
 
 private:
   /**
-   * 尺寸的数量
-   *
+   * Number of dimensions
    */
   static constexpr unsigned int dimension =
     CellIteratorType::AccessorType::dimension;
 
   /**
-   * 空间维度的数量
-   *
+   * Number of space dimensions
    */
   static constexpr unsigned int space_dimension =
     CellIteratorType::AccessorType::space_dimension;
 
   /**
-   * 为了确保CellDataStorage中的所有单元都来自同一个三角形，我们需要在该类中存储一个对该三角形的引用。
-   *
+   * To ensure that all the cells in the CellDataStorage come from the same
+   * Triangulation, we need to store a reference to that Triangulation within
+   * the class.
    */
   SmartPointer<const Triangulation<dimension, space_dimension>,
                CellDataStorage<CellIteratorType, DataType>>
     tria;
 
   /**
-   * 一个用于存储每个单元格的数据向量的地图。
-   * 我们需要使用CellId作为键，因为它在自适应细化过程中保持唯一。
-   *
+   * A map to store a vector of data on each cell.
+   * We need to use CellId as the key because it remains unique during
+   * adaptive refinement.
    */
   std::map<CellId, std::vector<std::shared_ptr<DataType>>> map;
 
   /**
-   * @addtogroup  异常情况
-   *
+   * @addtogroup Exceptions
    */
   DeclExceptionMsg(
     ExcCellDataTypeMismatch,
     "Cell data is being retrieved with a type which is different than the type used to initialize it");
 
   /**
-   * @addtogroup  异常情况
-   *
+   * @addtogroup Exceptions
    */
   DeclExceptionMsg(
     ExcTriangulationMismatch,
@@ -245,55 +253,66 @@ private:
 
 
 /**
- * 一个抽象的类，它规定了在细化或重新划分过程中，单个正交点的数据可以转移的要求。
- * 这个类提供了一个框架，代表正交点数据的派生类可以声明他们存储了多少标量值，然后实现将这些标量打包和解压到数组的函数。这些数组用于将数据从一个单元的正交点转移到另一个单元的正交点，以及在网格细化和重新划分时在处理器之间转移。父单元和子单元之间的正交点数据传输需要某种投影和/或内插。一个可能的实现是通过
- * parallel::distributed::ContinuousQuadratureDataTransfer
- * 类中实现的二级投影和延长矩阵。
- * 要存储和访问从该类派生的类的实例，请参阅CellDataStorage类。
+ * An abstract class which specifies requirements for data on
+ * a single quadrature point to be transferable during refinement or
+ * repartitioning.
  *
+ * This class provides a framework by which derived classes representing data at
+ * quadrature points can declare how many scalar values they store, and then
+ * implement functions that pack and unpack these scalars into arrays.
+ * These arrays are used to transfer data from quadrature points of one cell to
+ * quadrature points of another cell as well as between processors
+ * upon mesh refinement and repartitioning.
+ * The transfer of quadrature point data between parent and child cells requires
+ * some kind of projection and/or interpolation.
+ * One possible implementation is via the L2 projection and prolongation
+ * matrices as implemented in
+ * parallel::distributed::ContinuousQuadratureDataTransfer class.
  *
+ * To store and access instances of classes derived from this class, see the
+ * CellDataStorage class.
  */
 class TransferableQuadraturePointData
 {
 public:
   /**
-   * 默认构造函数。
-   *
+   * Default constructor.
    */
   TransferableQuadraturePointData() = default;
 
   /**
-   * 默认的虚拟解构器。
-   *
+   * Default virtual destructor.
    */
   virtual ~TransferableQuadraturePointData() = default;
 
   /**
-   * 返回将从用户的DataType类中打包/解包的数值总数。因此，它也是pack_values()和unpack_values()中向量的大小。
-   *
+   * Return the total number of values which will be
+   * packed/unpacked from the user's DataType class. Consequently it is also
+   * the size of the vectors in pack_values() and unpack_values() .
    */
   virtual unsigned int
   number_of_values() const = 0;
 
   /**
-   * 一个必须在派生类中实现的虚拟函数，用于将派生类中存储的所有数据打包成一个向量
-   * @p values  。
-   * 这个向量将包含每个正交点的所有标量和/或量纲数据。
-   * @note  该函数将以大小为number_of_values()的 @p values
-   * 被调用。
-   * 实现时可能仍有一个断言来检查是否确实如此。
+   * A virtual function that have to be implemented in derived classes to
+   * pack all data stored in the derived class into a vector @p values .
+   * This vector will contain all scalar and/or Tensorial data local to each
+   * quadrature point.
    *
+   * @note  The function will be called with @p values of size number_of_values().
+   * The implementation may still have an assert to check that it is indeed the
+   * case.
    */
   virtual void
   pack_values(std::vector<double> &values) const = 0;
 
   /**
-   * 与上面的情况相反，即把一个向量 @p values
-   * 解压为存储在这个类中的数据。
-   * @note 该函数将以大小为number_of_values()的 @p values
-   * 被调用。
-   * 实现可能仍然有一个断言来检查是否确实如此。
+   * The opposite of the above, namely
+   * unpack a vector @p values into the data stored in this class.
    *
+   * @note  The function will be called with @p values of size number_of_values().
+   * The implementation may still have an assert to check that it is indeed the
+   * case.
    */
   virtual void
   unpack_values(const std::vector<double> &values) = 0;
@@ -306,59 +325,73 @@ namespace parallel
   namespace distributed
   {
     /**
-     * 在执行  parallel::distributed::Triangulation  的h-adaptive
-     * refinement时，用于传输存储在正交点的连续数据的类。
+     * A class for the transfer of continuous data stored at quadrature points
+     * when performing h-adaptive refinement of
+     * parallel::distributed::Triangulation .
+     *
      * <h3>Implementation details</h3>
-     * 该类实现了在使用L2投影进行自适应细化的情况下，单元格之间正交点数据的传输。这也包括不同处理器之间的信息自动运输。
-     * 为此，该类的构造函数提供了三个主要对象：标量FiniteElement
-     * @p projection_fe,   @p mass_quadrature  和  @p data_quadrature
-     * 正交规则。    首先，位于每个单元的 @p data_quadrature
-     * 的数据被L2投影到由单个FiniteElement  @p projection_fe
-     * 定义的连续空间。    这是用
-     * FETools::compute_projection_from_quadrature_points_matrix().
-     * 实现的。在这样做时，需要这个元素的质量矩阵，这将用
-     * @p mass_quadrature
-     * 规则计算。如果该单元现在属于另一个处理器，那么数据就会被发送到这个处理器。该类利用了p4est（和
-     * parallel::distributed::Triangulation)
-     * 的一个特性，允许人们在网格细化和再平衡过程中给单元附加信息。在接收到目标单元的信息后，使用
-     * FETools::compute_interpolation_to_quadrature_points_matrix()
-     * 计算的矩阵将数据投射回正交点。
-     * 在进行局部细化的情况下，该类首先将父元素的局部DoF值投影到每个子元素。
-     * 这个类是由 @p DataType 类型模板化的，然而用户的 @p
-     * DataType
-     * 类必须派生自TransferableQuadraturePointData类。在实践中，这相当于为一个有2个标量的正交点数据实现以下三个函数。
+     *
+     * This class implements the transfer of the quadrature point data between
+     * cells in case of adaptive refinement using L2 projection. That also
+     * includes automatic shipping of information between different processors.
+     *
+     * To that end, the constructor of the class is provided with three main
+     * objects:
+     * scalar FiniteElement @p projection_fe, @p mass_quadrature and @p data_quadrature
+     * Quadrature rules.
+     * First, the data located at @p data_quadrature of each cell is L2-projected
+     * to the continuous space defined by a single FiniteElement @p projection_fe .
+     * This is achieved using
+     * FETools::compute_projection_from_quadrature_points_matrix(). In  doing so
+     * the mass matrix of this element is required, which will be calculated
+     * with the @p mass_quadrature rule . Should the cell now belong to another processor,
+     * the data is then sent to this processor. The class makes use of a feature
+     * of p4est (and parallel::distributed::Triangulation) that allows one to
+     * attach information to cells during mesh refinement and rebalancing. On
+     * receiving information on the target cell, the data is projected back to
+     * the quadrature points using the matrix calculated by
+     * FETools::compute_interpolation_to_quadrature_points_matrix() .
+     * In the case that local refinement is performed, this class first
+     * project local DoF values of the parent element to each child.
+     *
+     *
+     * This class is templated by @p DataType type, however the user's @p DataType class
+     * has to be derived from the TransferableQuadraturePointData class. In
+     * practice that amounts to implementing the following three functions shown
+     * below for a quadrature point data with 2 scalars:
      * @code
      * class MyQData : public TransferableQuadraturePointData
      * {
      * public:
-     * double elasticity_parameter_lambda;
-     * double elasticity_parameter_mu;
-     * unsigned int number_of_values() const
-     * {
-     *    return 2;
-     * }
+     *   double elasticity_parameter_lambda;
+     *   double elasticity_parameter_mu;
+     *   unsigned int number_of_values() const
+     *   {
+     *      return 2;
+     *   }
      *
-     * // a function to pack scalars into a vector
-     * void pack_values(std::vector<double> &values) const
-     * {
-     *   Assert (values.size()==2, ExcInternalError());
-     *   values[0] = elasticity_parameter_lambda;
-     *   values[1] = elasticity_parameter_mu;
-     * }
+     *   // a function to pack scalars into a vector
+     *   void pack_values(std::vector<double> &values) const
+     *   {
+     *     Assert (values.size()==2, ExcInternalError());
+     *     values[0] = elasticity_parameter_lambda;
+     *     values[1] = elasticity_parameter_mu;
+     *   }
      *
-     * void unpack_values(const std::vector<double> &values)
-     * {
-     *   Assert (values.size() ==2, ExcInternalError());
-     *   elasticity_parameter_lambda = values[0];
-     *   elasticity_parameter_mu     = values[1];
-     * }
+     *   void unpack_values(const std::vector<double> &values)
+     *   {
+     *     Assert (values.size() ==2, ExcInternalError());
+     *     elasticity_parameter_lambda = values[0];
+     *     elasticity_parameter_mu     = values[1];
+     *   }
      * };
      * @endcode
-     * 注意，打包和解包的顺序必须相同。
-     * 然后，这个类可以通过以下方式与CellDataStorage一起使用。
+     * Note that the order of packing and unpacking has to be the same.
+     *
+     * This class can then be use with CellDataStorage in the following way:
      * @code
      * CellDataStorage<typename Triangulation<dim,dim>::cell_iterator,MyQData>
-     * data_storage;
+     *   data_storage;
      * parallel::distributed::ContinuousQuadratureDataTransfer<dim,MyQData>
      * data_transfer(FE_Q<dim>(2),QGauss<dim>(3),QGauss<dim>(4));
      * //...populate data for all active cells in data_storage
@@ -369,19 +402,36 @@ namespace parallel
      * // CellDataStorage::initialize()
      * data_transfer.interpolate();
      * @endcode
-     * 这种方法可以扩展到具有任意顺序的张量对象的正交点数据，尽管在MyQData类中对数据的打包和解包要多做一点工作。
-     * @note  目前不支持粗化。
-     * @note  这个类所提供的功能也可以用
-     * parallel::distributed::SolutionTransfer.
-     * 来实现，但是，这需要以下步骤。(i)
-     * 创建一个具有（非连续Galerkin）FiniteElement的辅助DoFHandler，该FiniteElement有足够的分量来表示存储在正交点的所有数据；(ii)
-     * 将数据投影到FiniteElement空间，从而将结果存储在全局向量中；(iii)
-     * 使用 parallel::distributed::SolutionTransfer
-     * 将FE向量投影到新网格上；(iv)
-     * 最后通过FEValues类将数据投影回新网格的正交点。ContinuousQuadratureDataTransfer类的目的是简化整个过程，只要求正交点数据类派生自TransferableQuadraturePointData。其他一切都将自动完成。
-     * @note
-     * 这个类不太适合存储在正交点的值代表不连续场的样本的情况。这种情况的一个例子是，存储在正交点的数据代表了材料的弹性或塑性状态，即在固体中不连续变化的属性。在这种情况下，试图将数据从正交点转移到连续的有限元场（至少在一个单元内）可能会产生过冲和下冲，一旦在不同的正交点集（在子单元或父单元上）进行评估，就会产生没有多大意义的数值。
+     * This approach can be extended to quadrature point data with Tensor
+     * objects of arbitrary order, although with a little bit more work in
+     * packing and unpacking of data inside MyQData class.
      *
+     * @note Currently coarsening is not supported.
+     *
+     * @note The functionality provided by this class can alternatively be achieved
+     * using parallel::distributed::SolutionTransfer. However, that would
+     * require the following steps: (i) create an auxiliary DoFHandler with a
+     * (discontinuous Galerkin) FiniteElement which has enough components to
+     * represent all data stored at the quadrature points; (ii) project the data
+     * to the FiniteElement space and thereby store results in global vectors;
+     * (iii) use parallel::distributed::SolutionTransfer to project FE vectors
+     * to the new mesh; and (iv) finally project the data back to the quadrature
+     * points on the new mesh via FEValues class. The
+     * ContinuousQuadratureDataTransfer class aims at simplifying the whole
+     * process by only requiring that the quadrature point data class is derived
+     * from the TransferableQuadraturePointData. Everything else will be done
+     * automatically.
+     *
+     * @note This class is not well suited to situations where the values stored
+     * at quadrature points represent samples from a discontinuous field. An
+     * example for such a situation would be where the data stored at the
+     * quadrature points represents the elastic or plastic state of a material,
+     * i.e., a property that varies discontinuously within a solid. In such
+     * cases, trying to transfer data from the quadrature points to a finite
+     * element field that is continuous (at least within one cell) will likely
+     * yield over and undershoots that, once evaluated at a different set of
+     * quadrature points (on child or parent cells) results in values that will
+     * not make much sense.
      */
     template <int dim, typename DataType>
     class ContinuousQuadratureDataTransfer
@@ -392,34 +442,34 @@ namespace parallel
         "User's DataType class should be derived from TransferableQuadraturePointData");
 
       /**
-       * 一个单元格的别名。
-       *
+       * An alias for a cell.
        */
       using CellIteratorType =
         typename parallel::distributed::Triangulation<dim>::cell_iterator;
 
       /**
-       * 构造函数，它接收有限元素 @p projection_fe
-       * ，用于积分其局部质量矩阵的正交规则 @p
-       * mass_quadrature ，最后用于存储 @p DataType.   @pre   @p
-       * projection_fe 的正交规则必须是标度值。
-       * @note 由于该类在单元格基础上进行投影， @p
-       * projection_fe 只需要在单元格内是连续的。
+       * Constructor which takes the FiniteElement @p projection_fe , the quadrature
+       * rule @p mass_quadrature used to integrate its local mass matrix and
+       * finally the quadrature rule @p data_quadrature which is used to store @p DataType.
        *
+       * @pre @p projection_fe has to be scalar-valued.
+       *
+       * @note Since this class does projection on cell-by-cell basis,
+       * @p projection_fe is only required to be continuous within the cell.
        */
       ContinuousQuadratureDataTransfer(const FiniteElement<dim> &projection_fe,
                                        const Quadrature<dim> &mass_quadrature,
                                        const Quadrature<dim> &data_quadrature);
 
       /**
-       * 为粗化和细化三角形做准备  @p tria  。        @p
-       * data_storage
-       * 代表应该转移的单元数据，它应该对每个本地拥有的活动单元进行初始化。
-       * @note
-       * 尽管CellDataStorage类允许在不同的单元上存储来自基类的不同对象，这里我们假设
-       * @p data_storage
-       * 包含相同类型的对象，更确切地说，它们打包/解包相同的数据。
+       * Prepare for coarsening and refinement of a triangulation @p tria .
+       * @p data_storage represents the cell data which should be transferred
+       * and it should be initialized for each locally owned active cell.
        *
+       * @note Although CellDataStorage class allows storing on different cells
+       * different objects derived from the base class, here we assume that
+       * @p data_storage contains objects of the same type, more specifically
+       * they pack/unpack the same data.
        */
       void
       prepare_for_coarsening_and_refinement(
@@ -427,21 +477,23 @@ namespace parallel
         CellDataStorage<CellIteratorType, DataType> &data_storage);
 
       /**
-       * 在网格被细化或粗化之前，将先前存储在该对象中的数据插值到当前活动单元组的正交点上。
-       * @note 在调用此函数之前，用户应使用
-       * CellDataStorage::initialize().
-       * 在新的单元格中填充存储在提供给prepare_for_coarsening_and_refinement()的
-       * @p data_storage
-       * 对象中的数据，如果不是这样，在调试模式下将会抛出一个异常。
+       * Interpolate the data previously stored in this object before the mesh
+       * was refined or coarsened onto the quadrature points of the currently
+       * active set of cells.
        *
+       * @note Before calling this function the user is expected to populate the
+       * data stored in the @p data_storage object provided to prepare_for_coarsening_and_refinement()
+       * at new cells using CellDataStorage::initialize(). If that is not the
+       * case, an exception will be thrown in debug mode.
        */
       void
       interpolate();
 
     private:
       /**
-       * 一个回调函数，用于将当前网格上的数据打包成对象，以后可以在细化、粗化和重新划分后进行检索。
-       *
+       * A callback function used to pack the data on the current mesh into
+       * objects that can later be retrieved after refinement, coarsening and
+       * repartitioning.
        */
       std::vector<char>
       pack_function(
@@ -451,8 +503,9 @@ namespace parallel
           status);
 
       /**
-       * 一个回调函数，用来解开当前网格上的数据，这些数据在细化、粗化和重新划分之前，已经被打包在网格上了。
-       *
+       * A callback function used to unpack the data on the current mesh that
+       * has been packed up previously on the mesh before refinement,
+       * coarsening and repartitioning.
        */
       void
       unpack_function(
@@ -464,71 +517,66 @@ namespace parallel
           &data_range);
 
       /**
-       * 用于投影正交点的数据的FiniteElement。
-       *
+       * FiniteElement used to project data from and to quadrature points.
        */
       const std::unique_ptr<const FiniteElement<dim>> projection_fe;
 
       /**
-       * 将被发送的数据的大小，这取决于数据类型类。
-       *
+       * The size of the data that will be sent, which depends on the DataType
+       * class.
        */
       std::size_t data_size_in_bytes;
 
       /**
-       * 存储DataType的正交点的数量。
-       *
+       * Number of quadrature points at which DataType is stored.
        */
       const unsigned int n_q_points;
 
       /**
-       * 从正交点到单个标量的本地DoF的投影矩阵。
-       *
+       * Projection matrix from the quadrature points to local DoFs for a single
+       * scalar.
        */
       FullMatrix<double> project_to_fe_matrix;
 
       /**
-       * 单个标量从局部DoF到正交点的投影矩阵。
-       *
+       * Projection matrix from the local DoFs to quadrature points for a single
+       * scalar.
        */
       FullMatrix<double> project_to_qp_matrix;
 
       /**
-       * 辅助矩阵，表示存储在正交点（第二个索引）的每个内部值对
-       * @p projection_fe （第一个索引）的本地DoF的投影。
-       *
+       * Auxiliary matrix which represents projection of each internal value
+       * stored
+       * at the quadrature point (second index) to the local DoFs of the @p projection_fe
+       * (first index).
        */
       FullMatrix<double> matrix_dofs;
 
       /**
-       * 在自适应细化的情况下， @p matrix_dofs
-       * 对每个子单元的投影。
-       *
+       * Projection of @p matrix_dofs to each child cell in case of adaptive refinement.
        */
       FullMatrix<double> matrix_dofs_child;
 
       /**
-       * 辅助矩阵，代表存储在每个正交点（第一索引）的数据（第二索引）。
-       *
+       * Auxiliary matrix which represents data (second index) stored at each
+       * quadrature point (first index).
        */
       FullMatrix<double> matrix_quadrature;
 
       /**
-       * parallel::distributed::Triangulation
-       * 在注册pack_callback函数时分配给这个对象的句柄。
-       *
+       * The handle that the parallel::distributed::Triangulation has assigned
+       * to this object while registering the pack_callback function.
        */
       unsigned int handle;
 
       /**
-       * 一个指向CellDataStorage类的指针，其数据将被转移。
-       *
+       * A pointer to the CellDataStorage class whose data will be transferred.
        */
       CellDataStorage<CellIteratorType, DataType> *data_storage;
 
       /**
-       * 一个指向分布式三角图的指针，单元格数据被附加到该三角图上。
-       *
+       * A pointer to the distributed triangulation to which cell data is
+       * attached.
        */
       parallel::distributed::Triangulation<dim> *triangulation;
     };
@@ -539,7 +587,7 @@ namespace parallel
 
 #endif
 
- /*@}*/ 
+/*@}*/
 
 #ifndef DOXYGEN
 
@@ -761,10 +809,13 @@ CellDataStorage<CellIteratorType, DataType>::try_get_data(
 //--------------------------------------------------------------------
 
 
-/*将使用 @p data_storage 存储在 @p cell 中的每个正交点的 @p matrix_data. 类型的单元数据打包到 @p matrix_data 这里 @p matrix_data 是一个矩阵，其第一个索引对应于单元上的不同正交点，而第二个索引代表存储在DataType类中每个正交点的不同值。
-
-* 
-* */
+/*
+ * Pack cell data of type @p DataType stored using @p data_storage in @p cell
+ * at each quadrature point to @p matrix_data. Here @p matrix_data is a matrix
+ * whose first index corresponds to different quadrature points on the cell
+ * whereas the second index represents different values stored at each
+ * quadrature point in the DataType class.
+ */
 template <typename CellIteratorType, typename DataType>
 inline void
 pack_cell_data(const CellIteratorType &                           cell,
@@ -800,10 +851,9 @@ pack_cell_data(const CellIteratorType &                           cell,
 
 
 
-/* 与上面的打包函数相反。
-
-* 
-* */
+/*
+ * the opposite of the pack function above.
+ */
 template <typename CellIteratorType, typename DataType>
 inline void
 unpack_to_cell_data(const CellIteratorType &                     cell,
@@ -888,7 +938,7 @@ namespace parallel
             dim>::cell_iterator &cell,
           const typename parallel::distributed::Triangulation<dim>::CellStatus
             status) { return this->pack_function(cell, status); },
-         /*returns_variable_size_data=*/ true);
+        /*returns_variable_size_data=*/true);
     }
 
 
@@ -920,7 +970,7 @@ namespace parallel
       const typename parallel::distributed::Triangulation<dim>::cell_iterator
         &cell,
       const typename parallel::distributed::Triangulation<
-        dim>::CellStatus  /*status*/ )
+        dim>::CellStatus /*status*/)
     {
       pack_cell_data(cell, data_storage, matrix_quadrature);
 
@@ -930,7 +980,7 @@ namespace parallel
       if (number_of_values > 0)
         project_to_fe_matrix.mmult(matrix_dofs, matrix_quadrature);
 
-      return Utilities::pack(matrix_dofs,  /*allow_compression=*/ false);
+      return Utilities::pack(matrix_dofs, /*allow_compression=*/false);
     }
 
 
@@ -953,7 +1003,7 @@ namespace parallel
       matrix_dofs =
         Utilities::unpack<FullMatrix<double>>(data_range.begin(),
                                               data_range.end(),
-                                               /*allow_compression=*/ false);
+                                              /*allow_compression=*/false);
       const unsigned int number_of_values = matrix_dofs.n();
       if (number_of_values == 0)
         return;
@@ -1005,5 +1055,3 @@ namespace parallel
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

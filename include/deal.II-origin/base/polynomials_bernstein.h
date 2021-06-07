@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/polynomials_bernstein_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2013 - 2020 by the deal.II authors
@@ -29,41 +28,36 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 该类实现了欲望度的伯恩斯坦基础多项式，如http://www.idav.ucdavis.edu/education/CAGDNotes/Bernstein-Polynomials.pdf
- * "从伯恩斯坦基础转换到功率基础 "一段中所述。
- * 它们被用来创建Bernstein有限元FE_Bernstein。
+ * This class implements Bernstein basis polynomials of desire degree as
+ * described in
+ * http://www.idav.ucdavis.edu/education/CAGDNotes/Bernstein-Polynomials.pdf in
+ * the paragraph "Converting from the Bernstein Basis to the Power Basis".
  *
+ * They are used to create the Bernstein finite element FE_Bernstein.
  *
  * @ingroup Polynomials
- *
  */
 template <typename number>
 class PolynomialsBernstein : public Polynomials::Polynomial<number>
 {
 public:
   /**
-   * 构建 @p index 。
+   * Construct the @p index -th Bernstein Polynomial of degree @p degree.
    *
-   * - h伯恩斯坦多项式的度数为 @p degree. 。
    * @f{align*}{
    * B_{\text{index}, \text{degree}} (t)
-   * &= \text{binom}(\text{degree}, \text{index})
-   *    \cdot t^{\text{index}}
-   *    \cdot (1
-   *
-   * - t)^{\text{degree}
-   *
-   * - \text{index}} \\
-   * &= \sum_{i = \text{index}}^\text{degree}
-   *    \cdot (-1)^{i
-   *
-   * - \text{index}}
-   *    \cdot \text{binom}(\text{degree}, i)
-   *    \cdot \text{binom}(i, \text{index})
-   *    \cdot t^i
+   *   &= \text{binom}(\text{degree}, \text{index})
+   *      \cdot t^{\text{index}}
+   *      \cdot (1 - t)^{\text{degree} - \text{index}} \\
+   *   &= \sum_{i = \text{index}}^\text{degree}
+   *      \cdot (-1)^{i - \text{index}}
+   *      \cdot \text{binom}(\text{degree}, i)
+   *      \cdot \text{binom}(i, \text{index})
+   *      \cdot t^i
    * @f}
-   * @param  指数  @param  度数
    *
+   * @param index
+   * @param degree
    */
   PolynomialsBernstein(const unsigned int index, const unsigned int degree);
 };
@@ -82,5 +76,3 @@ generate_complete_bernstein_basis(const unsigned int degree)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

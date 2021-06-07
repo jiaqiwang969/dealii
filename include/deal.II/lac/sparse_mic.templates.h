@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/sparse_mic.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -199,8 +200,8 @@ SparseMIC<number>::vmult(Vector<somenumber> &      dst,
 template <typename number>
 template <typename somenumber>
 void
-SparseMIC<number>::Tvmult(Vector<somenumber> & /*dst*/,
-                          const Vector<somenumber> & /*src*/) const
+SparseMIC<number>::Tvmult(Vector<somenumber> &  /*dst*/ ,
+                          const Vector<somenumber> &  /*src*/ ) const
 {
   AssertThrow(false, ExcNotImplemented());
 }
@@ -222,3 +223,5 @@ SparseMIC<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_sparse_mic_templates_h
+
+

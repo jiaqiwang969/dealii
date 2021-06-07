@@ -1,3 +1,4 @@
+//include/deal.II-translator/matrix_free/fe_evaluation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -72,30 +73,23 @@ class FEEvaluation;
 
 
 /**
- * This base class of the FEEvaluation and FEFaceEvaluation classes handles
- * mapping-related information independent of the degrees of freedom and
- * finite element in use. This class provides access functionality for user
- * code but is otherwise invisible without any public constructor. The usage
- * is through the class FEEvaluation instead.
+ * 这个FEEvaluation和FEFaceEvaluation类的基类处理与映射相关的信息，与使用中的自由度和有限元无关。该类为用户代码提供了访问功能，但除此之外没有任何公共构造函数，是不可见的。使用方法是通过FEEvaluation类来代替。
+ * 这个类有四个模板参数。
+ * @tparam  该类要使用的dim尺寸
+ * @tparam  Number 数字格式，通常是 @p double 或 @p float  。
+ * @tparam  is_face
+ * 该类是用于单元积分器（正交尺寸与空间尺寸相同）还是用于面积分器（正交尺寸少一个）。
+ * @tparam  VectorizedArrayType
+ * 以矢量方式处理的数组类型，默认为 VectorizedArray<Number>。
  *
- * This class has four template arguments:
  *
- * @tparam dim Dimension in which this class is to be used
+ * @note  目前只有VectorizedArray<Number,
+ * width>被支持作为VectorizedArrayType。
  *
- * @tparam Number Number format, usually @p double or @p float
- *
- * @tparam is_face Whether the class is used for a cell integrator (with
- * quadrature dimension the same as the space dimension) or for a face
- * integrator (with quadrature dimension one less)
- *
- * @tparam VectorizedArrayType Type of array to be woked on in a vectorized
- *                             fashion, defaults to VectorizedArray<Number>
- *
- * @note Currently only VectorizedArray<Number, width> is supported as
- *       VectorizedArrayType.
  *
  *
  * @ingroup matrixfree
+ *
  */
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationBaseData
@@ -108,100 +102,98 @@ public:
   static constexpr unsigned int dimension = dim;
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   ~FEEvaluationBaseData();
 
   /**
-   * Return the index offset within the geometry fields for the cell the @p
-   * reinit() function has been called for. This index can be used to access
-   * an index into a field that has the same compression behavior as the
-   * Jacobian of the geometry, e.g., to store an effective coefficient tensors
-   * that combines a coefficient with the geometry for lower memory transfer
-   * as the available data fields.
+   * 返回 @p
+   * reinit()函数所调用的单元格在几何字段中的索引偏移。这个索引可以用来访问一个字段的索引，这个字段的压缩行为与几何体的Jacobian相同，例如，存储一个有效的系数tensors，将系数与几何体结合起来，以降低内存传输，作为可用的数据字段。
+   *
    */
   unsigned int
   get_mapping_data_index_offset() const;
 
   /**
-   * Return the type of the cell the @p reinit() function has been called for.
-   * Valid values are @p cartesian for Cartesian cells (which allows for
-   * considerable data compression), @p affine for cells with affine mappings,
-   * and @p general for general cells without any compressed storage applied.
+   * 返回 @p reinit() 函数被调用的单元格的类型。  有效值是
+   * @p cartesian 用于笛卡尔单元（允许相当大的数据压缩），
+   * @p affine 用于具有仿射映射的单元， @p general
+   * 用于没有应用任何压缩存储的一般单元。
+   *
    */
   internal::MatrixFreeFunctions::GeometryType
   get_cell_type() const;
 
   /**
-   * Return a reference to the ShapeInfo object currently in use.
+   * 返回当前正在使用的ShapeInfo对象的引用。
+   *
    */
   const internal::MatrixFreeFunctions::ShapeInfo<VectorizedArrayType> &
   get_shape_info() const;
 
   /**
-   * Return a reference to the DoFInfo object currently in use.
+   * 返回当前正在使用的DoFInfo对象的引用。
+   *
    */
   const internal::MatrixFreeFunctions::DoFInfo &
   get_dof_info() const;
 
   /**
-   * Return the determinant of the Jacobian from the unit to the real cell
-   * times the quadrature weight.
+   * 返回从单位到实数单元的雅各布系数乘以正交权重的行列式。
+   *
    */
   VectorizedArrayType
   JxW(const unsigned int q_point) const;
 
   /**
-   * Return the inverse and transposed version $J^{-\mathrm T}$ of the
-   * Jacobian of the mapping between the unit to the real cell defined as
-   * $J_{ij} = d x_i / d\hat x_j$. The $(i,j)$ entry of the returned tensor
-   * contains $d\hat x_j/dx_i$, i.e., columns refer to reference space
-   * coordinates and rows to real cell coordinates. Thus, the returned tensor
-   * represents a covariant transformation, which is used in the
-   * FEEvaluationBase::get_gradient() function to transform the unit cell
-   * gradients to gradients on the real cell by a multiplication $J^{-\mathrm
-   * T} \hat{\nabla} u_h$.
+   * 返回定义为  $J_{ij} = d x_i / d\hat x_j$
+   * 的单位到实数单元之间映射的雅各布系数的反转和转置版本
+   * $J^{-\mathrm T}$  。返回张量的 $(i,j)$ 项包含 $d\hat x_j/dx_i$
+   * ，即列是指参考空间坐标，行是指实单元坐标。因此，返回的张量代表一个协变变换，在
+   * FEEvaluationBase::get_gradient() 函数中用于通过乘法 $J^{-\mathrm
+   * T} \hat{\nabla} u_h$
+   * 将单元格梯度转换为实单元格上的梯度。
+   *
    */
   Tensor<2, dim, VectorizedArrayType>
   inverse_jacobian(const unsigned int q_point) const;
 
   /**
-   * Return the unit normal vector on a face. Note that both sides of a face
-   * use the same orientation of the normal vector: For the faces enumerated
-   * as `interior` in FaceToCellTopology and selected with the
-   * `is_interior_face=true` flag of the constructor, this corresponds to the
-   * outer normal vector, whereas for faces enumerated as `exterior` in
-   * FaceToCellTopology and selected with the `is_interior_face=false` flag of
-   * the constructor, the normal points into the element as a consequence of
-   * the single normal vector.
+   * 返回一个面的单位法向量。注意，一个面的两边都使用相同方向的法向量。对于在FaceToCellTopology中被列举为
+   * "内部 "并在构造函数中被选择为 "is_interior_face=true
+   * "的面，这对应于外部法向量，而对于在FaceToCellTopology中被列举为
+   * "外部 "并在构造函数中被选择为 "is_interior_face=false
+   * "的面，作为单一法向量的结果，法向量指向该元素中。
+   * @note 只在`is_face == true`的情况下实现。
    *
-   * @note Only implemented in case `is_face == true`.
    */
   Tensor<1, dim, VectorizedArrayType>
   get_normal_vector(const unsigned int q_point) const;
 
   /**
-   * Provides a unified interface to access data in a vector of
-   * VectorizedArray fields of length MatrixFree::n_cell_batches() +
-   * MatrixFree::n_ghost_cell_batches() for both cells (plain read) and faces
-   * (indirect addressing).
+   * 提供一个统一的接口来访问长度为
+   * MatrixFree::n_cell_batches() + MatrixFree::n_ghost_cell_batches()
+   * 的向量Array字段中的数据，用于单元（普通读取）和面（间接寻址）。
+   *
    */
   VectorizedArrayType
   read_cell_data(const AlignedVector<VectorizedArrayType> &array) const;
 
   /**
-   * Provides a unified interface to set data in a vector of
-   * VectorizedArray fields of length MatrixFree::n_cell_batches() +
-   * MatrixFree::n_ghost_cell_batches() for both cells (plain read) and faces
-   * (indirect addressing).
+   * 为单元格（明读）和面（间接寻址）提供一个统一的接口来设置长度为
+   * MatrixFree::n_cell_batches()  +  MatrixFree::n_ghost_cell_batches()
+   * 的矢量Array字段中的数据。
+   *
    */
   void
   set_cell_data(AlignedVector<VectorizedArrayType> &array,
                 const VectorizedArrayType &         value) const;
 
   /**
-   * The same as above, just for std::array of length of VectorizedArrayType for
-   * arbitrary data type.
+   * 与上述相同，只是对于任意数据类型的VectorizedArrayType的长度
+   * std::array 。
+   *
    */
   template <typename T>
   std::array<T, VectorizedArrayType::size()>
@@ -209,8 +201,9 @@ public:
                    &array) const;
 
   /**
-   * The same as above, just for std::array of length of VectorizedArrayType for
-   * arbitrary data type.
+   * 和上面一样，只是对于任意数据类型的VectorizedArrayType的长度为
+   * std::array 。
+   *
    */
   template <typename T>
   void
@@ -219,75 +212,73 @@ public:
     const std::array<T, VectorizedArrayType::size()> &         value) const;
 
   /**
-   * Return the id of the cells this FEEvaluation or FEFaceEvaluation is
-   * associated with.
+   * 返回这个FEEvaluation或FEFaceEvaluation所关联的单元格的id。
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   get_cell_ids() const;
 
   /**
-   * Return the id of the cells/faces this FEEvaluation/FEFaceEvaluation is
-   * associated with.
+   * 返回与此FEEvaluation/FEFaceEvaluation相关的单元格/面的id。
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   get_cell_or_face_ids() const;
 
 
   /**
-   * Return the numbering of local degrees of freedom within the evaluation
-   * routines of FEEvaluation in terms of the standard numbering on finite
-   * elements.
+   * 返回FEEvaluation的评估程序中局部自由度的编号，以有限元的标准编号为准。
+   *
    */
   const std::vector<unsigned int> &
   get_internal_dof_numbering() const;
 
   /**
-   * Return an ArrayView to internal memory for temporary use. Note that some
-   * of this memory is overwritten during evaluate() and integrate() calls so
-   * do not assume it to be stable over those calls. The maximum size you can
-   * write into is 3*dofs_per_cell+2*n_q_points.
+   * 返回一个ArrayView到内部内存，供临时使用。注意，在evaluation()和integration()调用过程中，这部分内存会被覆盖，所以不要认为它在这些调用中是稳定的。你可以写入的最大容量是3*dofs_per_cell+2*n_q_points。
+   *
    */
   ArrayView<VectorizedArrayType>
   get_scratch_data() const;
 
   /**
-   * Return the number of the quadrature formula of the present cell.
+   * 返回当前单元格的正交公式的编号。
+   *
    */
   unsigned int
   get_quadrature_index() const;
 
   /**
-   * Return index of the current cell or face.
+   * 返回当前单元格或面的索引。
+   *
    */
   unsigned int
   get_current_cell_index() const;
 
   /**
-   * Return the active FE index for this class for efficient indexing in the hp-
-   * case.
+   * 返回该类的活动FE索引，以便在hp-情况下有效地进行索引。
+   *
    */
   unsigned int
   get_active_fe_index() const;
 
   /**
-   * Return the active quadrature index for this class for efficient indexing in
-   * the hp-case.
+   * 返回该类的活动正交索引，以便在hp情况下有效地进行索引。
+   *
    */
   unsigned int
   get_active_quadrature_index() const;
 
   /**
-   * Return the underlying MatrixFree object.
+   * 返回底层的MatrixFree对象。
+   *
    */
   const MatrixFree<dim, Number, VectorizedArrayType> &
   get_matrix_free() const;
 
 protected:
   /**
-   * Constructor. Made protected to prevent users from directly using this
-   * class. Takes all data stored in MatrixFree. If applied to problems with
-   * more than one quadrature formula selected during construction of
-   * `matrix_free`, `quad_no` allows to select the appropriate formula.
+   * 构造函数。为了防止用户直接使用这个类，做了保护。采取所有存储在MatrixFree中的数据。如果应用于在构造`matrix_free`时选择了多个正交公式的问题，`quad_no`允许选择适当的公式。
+   *
    */
   FEEvaluationBaseData(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -302,8 +293,8 @@ protected:
     const unsigned int face_type);
 
   /**
-   * Constructor that comes with reduced functionality and works similar as
-   * FEValues.
+   * 构造函数，功能减少，工作方式与FEValues类似。
+   *
    */
   FEEvaluationBaseData(
     const Mapping<dim> &      mapping,
@@ -315,56 +306,53 @@ protected:
       *other);
 
   /**
-   * Copy constructor. If FEEvaluationBase was constructed from a mapping, fe,
-   * quadrature, and update flags, the underlying geometry evaluation based on
-   * FEValues will be deep-copied in order to allow for using in parallel with
-   * threads.
+   * 复制构造函数。如果FEEvaluationBase是由映射、fe、正交和更新标志构建的，基于FEValues的底层几何评估将被深度复制，以便于与线程并行使用。
+   *
    */
   FEEvaluationBaseData(const FEEvaluationBaseData &other);
 
   /**
-   * Copy assignment operator. If FEEvaluationBase was constructed from a
-   * mapping, fe, quadrature, and update flags, the underlying geometry
-   * evaluation based on FEValues will be deep-copied in order to allow for
-   * using in parallel with threads.
+   * 复制赋值运算符。如果FEEvaluationBase是由映射、fe、正交和更新标志构建的，基于FEValues的底层几何评估将被深度复制，以允许与线程并行使用。
+   *
    */
   FEEvaluationBaseData &
   operator=(const FEEvaluationBaseData &other);
 
   /**
-   * This is the general array for all data fields.
+   * 这是所有数据字段的一般阵列。
+   *
    */
   AlignedVector<VectorizedArrayType> *scratch_data_array;
 
   /**
-   * This is the user-visible part of scratch_data_array, only showing the
-   * last part of scratch_data_array. The first part is consumed by
-   * values_dofs, values_quad, etc.
+   * 这是 scratch_data_array 中用户可见的部分，只显示
+   * scratch_data_array 的最后一部分。第一部分被 values_dofs,
+   * values_quad 等消耗了。
+   *
    */
   VectorizedArrayType *scratch_data;
 
   /**
-   * The number of the quadrature formula of the present cell.
+   * 本单元格的正交公式的编号。
+   *
    */
   const unsigned int quad_no;
 
   /**
-   * A pointer to the underlying data.
+   * 一个指向基础数据的指针。
+   *
    */
   const MatrixFree<dim, Number, VectorizedArrayType> *matrix_info;
 
   /**
-   * A pointer to the underlying DoF indices and constraint description
-   * for the component specified at construction. Also contained in
-   * matrix_info, but it simplifies code if we store a reference to it.
+   * 一个指向底层DoF指数和约束描述的指针，用于构造时指定的组件。也包含在matrix_info中，但是如果我们存储一个对它的引用，可以简化代码。
+   *
    */
   const internal::MatrixFreeFunctions::DoFInfo *dof_info;
 
   /**
-   * A pointer to the underlying transformation data from unit to real cells
-   * for the given quadrature formula specified at construction. Also
-   * contained in matrix_info, but it simplifies code if we store a reference
-   * to it.
+   * 指向结构中指定的正交公式从单位到实数单元的基础转换数据的指针。也包含在matrix_info中，但如果我们存储对它的引用，可以简化代码。
+   *
    */
   const internal::MatrixFreeFunctions::MappingInfoStorage<
     (is_face ? dim - 1 : dim),
@@ -373,20 +361,21 @@ protected:
     VectorizedArrayType> *mapping_data;
 
   /**
-   * The active FE index for this class for efficient indexing in the hp-case.
+   * 该类的活动FE索引，用于在hp情况下的有效索引。
+   *
    */
   const unsigned int active_fe_index;
 
   /**
-   * The active quadrature index for this class for efficient indexing in the
-   * hp-case.
+   * 该类的活动正交索引，用于在hp情况下的有效索引。
+   *
    */
   const unsigned int active_quad_index;
 
   /**
-   * A pointer to the underlying quadrature formula specified at construction.
-   * Also contained in matrix_info, but it simplifies code if we store a
-   * reference to it.
+   * 一个指向构造时指定的底层正交公式的指针。
+   * 也包含在matrix_info中，但是如果我们存储一个对它的引用，可以简化代码。
+   *
    */
   const typename internal::MatrixFreeFunctions::MappingInfoStorage<
     (is_face ? dim - 1 : dim),
@@ -395,97 +384,97 @@ protected:
     VectorizedArrayType>::QuadratureDescriptor *descriptor;
 
   /**
-   * The number of quadrature points in the current evaluation context.
+   * 当前评估环境中正交点的数量。
+   *
    */
   const unsigned int n_quadrature_points;
 
   /**
-   * A pointer to the unit cell shape data, i.e., values, gradients and
-   * Hessians in 1D at the quadrature points that constitute the tensor
-   * product. Also contained in matrix_info, but it simplifies code if we
-   * store a reference to it.
+   * 一个指向单元格形状数据的指针，即构成张量积的正交点的值、梯度和一维的Hessians。也包含在matrix_info中，但是如果我们存储一个对它的引用，可以简化代码。
+   *
    */
   const internal::MatrixFreeFunctions::ShapeInfo<VectorizedArrayType> *data;
 
   /**
-   * A pointer to the Jacobian information of the present cell. Only set to a
-   * useful value if on a non-Cartesian cell.
+   * 一个指向当前单元格的雅各布信息的指针。只有在非卡尔蒂斯单元上才设置为有用的值。
+   *
    */
   const Tensor<2, dim, VectorizedArrayType> *jacobian;
 
   /**
-   * A pointer to the Jacobian determinant of the present cell. If on a
-   * Cartesian cell or on a cell with constant Jacobian, this is just the
-   * Jacobian determinant, otherwise the Jacobian determinant times the
-   * quadrature weight.
+   * 指向当前单元格的雅各布行列式的指针。如果在笛卡尔单元或具有恒定雅各布系数的单元上，这只是雅各布行列式，否则就是雅各布行列式乘以正交权。
+   *
    */
   const VectorizedArrayType *J_value;
 
   /**
-   * A pointer to the normal vectors at faces.
+   * 一个指向面的法向量的指针。
+   *
    */
   const Tensor<1, dim, VectorizedArrayType> *normal_vectors;
 
   /**
-   * A pointer to the normal vectors times the jacobian at faces.
+   * 一个指向面的法向量乘以雅各布式的指针。
+   *
    */
   const Tensor<1, dim, VectorizedArrayType> *normal_x_jacobian;
 
   /**
-   * A pointer to the quadrature weights of the underlying quadrature formula.
+   * 一个指向基础正交公式的正交权重的指针。
+   *
    */
   const Number *quadrature_weights;
 
   /**
-   * After a call to reinit(), stores the number of the cell we are currently
-   * working with.
+   * 在调用reinit()后，存储我们当前正在处理的单元格的编号。
+   *
    */
   unsigned int cell;
 
   /**
-   * Flag holding information whether a face is an interior or exterior face
-   * according to the defined direction of the normal.  Not used for cells.
+   * 根据定义的法线方向，保存一个面是内部还是外部面的信息的标志。
+   * 不用于单元格。
+   *
    */
   bool is_interior_face;
 
   /**
-   * Stores the index an FEFaceEvaluation object is currently pointing into
-   * (interior face, exterior face, data associated with cell).
+   * 存储FEFaceEvaluation对象当前所指向的索引（内部面、外部面、与单元格相关的数据）。
+   *
    */
   internal::MatrixFreeFunctions::DoFInfo::DoFAccessIndex dof_access_index;
 
   /**
-   * Stores the current number of a face within the given cell in case
-   * `is_face==true`, using values between `0` and `2*dim`.
+   * 在`is_face==true'的情况下，存储给定单元格内一个面的当前编号，使用`0'到`2*dim'之间的值。
+   *
    */
   unsigned int face_no;
 
   /**
-   * Stores the orientation of the given face with respect to the standard
-   * orientation, 0 if in standard orientation.
+   * 存储给定的面相对于标准方向的方向，如果在标准方向，则为0。
+   *
    */
   unsigned int face_orientation;
 
   /**
-   * Stores the subface index of the given face. Usually, this variable takes
-   * the value numbers::invalid_unsigned_int to indicate integration over the
-   * full face, but in case the current physical face has a neighbor that is
-   * more refined, it is a subface and must scale the entries in ShapeInfo
-   * appropriately.
+   * 存储给定面的子面索引。通常情况下，这个变量的值为
+   * numbers::invalid_unsigned_int
+   * ，以表示对整个面的整合，但如果当前的物理面有一个更精细的邻居，它就是一个子面，必须适当地缩放ShapeInfo中的条目。
+   *
    */
   unsigned int subface_index;
 
   /**
-   * Stores the type of the cell we are currently working with after a call to
-   * reinit(). Valid values are @p cartesian, @p affine and @p general, which
-   * have different implications on how the Jacobian transformations are
-   * stored internally in MappingInfo.
+   * 在调用reinit()后，存储我们当前正在处理的单元格的类型。有效值是
+   * @p cartesian,  @p affine 和 @p general,
+   * ，它们对MappingInfo中的雅各布变换的内部存储方式有不同的影响。
+   *
    */
   internal::MatrixFreeFunctions::GeometryType cell_type;
 
   /**
-   * Geometry data that can be generated FEValues on the fly with the
-   * respective constructor.
+   * 可以用各自的构造函数在空中生成FEValues的几何数据。
+   *
    */
   std::shared_ptr<internal::MatrixFreeFunctions::
                     MappingDataOnTheFly<dim, Number, VectorizedArrayType>>
@@ -500,41 +489,29 @@ protected:
 
 
 /**
- * This is the base class for the FEEvaluation classes.  This class needs
- * usually not be called in user code and does not have any public
- * constructor. The usage is through the class FEEvaluation instead. It
- * implements a reinit method that is used to set pointers so that operations
- * on quadrature points can be performed quickly, access functions to vectors
- * for the FEEvaluationBase::read_dof_values(),
- * FEEvaluationBase::set_dof_values(), and
- * FEEvaluationBase::distribute_local_to_global() functions, as well as
- * methods to access values and gradients of finite element functions. It also
- * inherits the geometry access functions provided by the class
- * FEEvaluationBaseData.
+ * 这是FEEvaluation类的基类。
+ * 该类通常不需要在用户代码中调用，也没有任何公共构造函数。使用方法是通过FEEvaluation类来代替。它实现了一个reinit方法，用于设置指针，以便快速执行对正交点的操作，访问
+ * FEEvaluationBase::read_dof_values(),  FEEvaluationBase::set_dof_values(),
+ * 和 FEEvaluationBase::distribute_local_to_global()
+ * 函数的向量函数，以及访问有限元函数的值和梯度的方法。它还继承了FEEvaluationBaseData类所提供的几何体访问功能。
+ * 这个类有五个模板参数。
+ * @tparam  该类所使用的dim尺寸
+ * @tparam  n_components
+ * 解决PDEs系统时的矢量分量的数量。如果同一个操作被应用于一个PDE的几个分量（例如，一个矢量拉普拉斯方程），它们可以通过一个调用同时应用（而且通常更有效）。
+ * @tparam  数字 Number 格式，通常为  @p double  或  @p float  。
+ * @tparam  is_face
+ * 该类是用于单元积分器（正交维度与空间维度相同）还是用于面积分器（正交维度少一个）？
+ * @tparam  VectorizedArrayType
+ * 以矢量方式处理的数组类型，默认为 VectorizedArray<Number>。
  *
- * This class has five template arguments:
  *
- * @tparam dim Dimension in which this class is to be used
+ * @note  目前只有VectorizedArray<Number,
+ * width>被支持作为VectorizedArrayType。
  *
- * @tparam n_components Number of vector components when solving a system of
- * PDEs. If the same operation is applied to several components of a PDE (e.g.
- * a vector Laplace equation), they can be applied simultaneously with one
- * call (and often more efficiently)
- *
- * @tparam Number Number format, usually @p double or @p float
- *
- * @tparam is_face Whether the class is used for a cell integrator (with
- * quadrature dimension the same as the space dimension) or for a face
- * integrator (with quadrature dimension one less)
- *
- * @tparam VectorizedArrayType Type of array to be woked on in a vectorized
- *                             fashion, defaults to VectorizedArray<Number>
- *
- * @note Currently only VectorizedArray<Number, width> is supported as
- *       VectorizedArrayType.
  *
  *
  * @ingroup matrixfree
+ *
  */
 template <int dim,
           int n_components_,
@@ -553,72 +530,56 @@ public:
   static constexpr unsigned int n_components = n_components_;
 
   /**
-   * @name 1: Reading from and writing to vectors
+   * @name  1：从向量中读取和写入向量
+   *
    */
   //@{
   /**
-   * For the vector @p src, read out the values on the degrees of freedom of
-   * the current cell, and store them internally. Similar functionality as the
-   * function DoFAccessor::get_interpolated_dof_values when no constraints are
-   * present, but it also includes constraints from hanging nodes, so one can
-   * see it as a similar function to AffineConstraints::read_dof_values as
-   * well. Note that if vectorization is enabled, the DoF values for several
-   * cells are set.
+   * 对于向量 @p src,
+   * 读出当前单元格自由度上的数值，并在内部存储。与没有约束条件时的功能
+   * DoFAccessor::get_interpolated_dof_values
+   * 类似，但它也包括来自悬挂节点的约束条件，所以可以把它也看作是与
+   * AffineConstraints::read_dof_values
+   * 类似的功能。注意，如果启用了矢量化，几个单元的DoF值会被设置。
+   * 如果向量上的某些约束条件是不均匀的，则使用函数read_dof_values_plain代替，并通过调用
+   * AffineConstraints::distribute.
+   * 为向量提供有用的数据，也是在受约束的位置，在线性系统的求解过程中访问向量条目时，临时解应该总是有均匀的约束，这种方法是正确的。
+   * 如果给定的向量模板类是块向量（通过模板函数
+   * 'IsBlockVector<VectorType>::value', 确定，该函数检查从
+   * dealii::BlockVectorBase) 或 std::vector<VectorType> 或
+   * std::vector<VectorType>, 派生的向量，该函数从块向量的索引
+   * @p first_index. 开始读取 @p n_components 块 对于非块向量， @p
+   * first_index 被忽略了。
+   * @note
+   * 如果这个类是在没有MatrixFree对象的情况下构建的，并且信息是通过
+   * DoFHandler<dim>::cell_iterator,
+   * 来获取的，那么这个类只使用一个单元，这个函数会提取给定单元上的基础分量的值。这个调用比通过MatrixFree对象完成的调用要慢，并且导致一个结构在基于这些值的评估例程中不能有效地使用矢量化（相反，
+   * VectorizedArray::size() 相同的副本被工作）。
    *
-   * If some constraints on the vector are inhomogeneous, use the function
-   * read_dof_values_plain instead and provide the vector with useful data
-   * also in constrained positions by calling AffineConstraints::distribute.
-   * When accessing vector entries during the solution of linear systems, the
-   * temporary solution should always have homogeneous constraints and this
-   * method is the correct one.
-   *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function reads
-   * @p n_components blocks from the block vector starting at the index
-   * @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
-   * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
-   * class and this function extracts the values of the underlying components
-   * on the given cell. This call is slower than the ones done through a
-   * MatrixFree object and lead to a structure that does not effectively use
-   * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
    */
   template <typename VectorType>
   void
   read_dof_values(const VectorType &src, const unsigned int first_index = 0);
 
   /**
-   * For the vector @p src, read out the values on the degrees of freedom of
-   * the current cell, and store them internally. Similar functionality as the
-   * function DoFAccessor::get_interpolated_dof_values. As opposed to the
-   * read_dof_values function, this function reads out the plain entries from
-   * vectors, without taking stored constraints into account. This way of
-   * access is appropriate when the constraints have been distributed on the
-   * vector by a call to AffineConstraints::distribute previously. This
-   * function is also necessary when inhomogeneous constraints are to be used,
-   * as MatrixFree can only handle homogeneous constraints. Note that if
-   * vectorization is enabled, the DoF values for several cells are set.
+   * 对于矢量 @p src,
+   * 读出当前单元格自由度上的值，并在内部存储。与函数
+   * DoFAccessor::get_interpolated_dof_values. 的功能相似
+   * 相对于read_dof_values函数，这个函数从向量中读出普通条目，而不考虑存储的约束。当约束条件已经通过先前调用
+   * AffineConstraints::distribute
+   * 分布在向量上时，这种访问方式是合适的。当要使用不均匀的约束时，这个函数也是必要的，因为MatrixFree只能处理均匀的约束。注意，如果启用了矢量化，几个单元的DoF值会被设置。
+   * 如果给定的向量模板类是块向量（通过模板函数
+   * 'IsBlockVector<VectorType>::value', 确定，该函数检查从
+   * dealii::BlockVectorBase) 或 std::vector<VectorType> 或
+   * std::vector<VectorType>, 派生的向量，该函数从块向量的索引
+   * @p first_index. 开始读取 @p n_components 块 对于非块向量， @p
+   * first_index 被忽略了。
+   * @note
+   * 如果这个类是在没有MatrixFree对象的情况下构建的，并且信息是通过
+   * DoFHandler<dim>::cell_iterator,
+   * 来获取的，那么这个类只使用一个单元，这个函数提取给定单元上的基础分量的值。这个调用比通过MatrixFree对象完成的调用要慢，并且导致一个结构在基于这些值的评估例程中不能有效地使用矢量化（相反，
+   * VectorizedArray::size() 相同的副本被工作）。
    *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function reads
-   * @p n_components blocks from the block vector starting at the index
-   * @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
-   * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
-   * class and this function extracts the values of the underlying components
-   * on the given cell. This call is slower than the ones done through a
-   * MatrixFree object and lead to a structure that does not effectively use
-   * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
    */
   template <typename VectorType>
   void
@@ -626,35 +587,26 @@ public:
                         const unsigned int first_index = 0);
 
   /**
-   * Takes the values stored internally on dof values of the current cell and
-   * sums them into the vector @p dst. The function also applies constraints
-   * during the write operation. The functionality is hence similar to the
-   * function AffineConstraints::distribute_local_to_global. If vectorization
-   * is enabled, the DoF values for several cells are used.
+   * 获取内部存储在当前单元格的dof值的值，并将它们加到向量中
+   * @p dst.
+   * 该函数在写操作过程中也应用约束。因此，其功能与函数
+   * AffineConstraints::distribute_local_to_global.
+   * 相似。如果启用了矢量化，则会使用几个单元的DoF值。
+   * 如果给定的向量模板类是块向量（通过模板函数
+   * 'IsBlockVector<VectorType>::value', 确定，该函数检查从
+   * dealii::BlockVectorBase) 或 std::vector<VectorType> 或
+   * std::vector<VectorType>, 派生的向量，该函数写入块向量的 @p
+   * n_components 块，从索引 @p first_index. 开始 对于非块向量，
+   * @p first_index  被忽略了。     @p mask
+   * 可以用来抑制对当前单元向量批中包含的一些单元的写入访问，例如，在本地时间步进的情况下，一些单元被排除在调用之外。比特集中的
+   * "true "值意味着将处理相应的车道索引，而 "false
+   * "值则跳过该索引。默认设置是一个包含所有1的比特集，这将把累积的积分写到批次中的所有单元。
+   * @note
+   * 如果这个类是在没有MatrixFree对象的情况下构建的，并且信息是通过
+   * DoFHandler<dim>::cell_iterator,
+   * 来获取的，那么这个类只使用一个单元格，这个函数会提取给定单元格上的底层组件的值。这个调用比通过MatrixFree对象完成的调用要慢，并且导致一个结构在基于这些值的评估例程中不能有效地使用矢量化（相反，
+   * VectorizedArray::size() 相同的副本被工作）。
    *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function
-   * writes to @p n_components blocks of the block vector starting at the
-   * index @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * The @p mask can be used to suppress the write access for some of the
-   * cells contained in the current cell vectorization batch, e.g. in case of
-   * local time stepping, where some cells are excluded from a call. A value
-   * of `true` in the bitset means that the respective lane index will be
-   * processed, whereas a value of `false` skips this index. The default
-   * setting is a bitset that contains all ones, which will write the
-   * accumulated integrals to all cells in the batch.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
-   * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
-   * class and this function extracts the values of the underlying components
-   * on the given cell. This call is slower than the ones done through a
-   * MatrixFree object and lead to a structure that does not effectively use
-   * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
    */
   template <typename VectorType>
   void
@@ -665,42 +617,27 @@ public:
       std::bitset<VectorizedArrayType::size()>().flip()) const;
 
   /**
-   * Takes the values stored internally on dof values of the current cell and
-   * writes them into the vector @p dst. The function skips the degrees of
-   * freedom which are constrained. As opposed to the
-   * distribute_local_to_global method, the old values at the position given
-   * by the current cell are overwritten. Thus, if a degree of freedom is
-   * associated to more than one cell (as usual in continuous finite
-   * elements), the values will be overwritten and only the value written last
-   * is retained. Please note that in a parallel context this function might
-   * also touch degrees of freedom owned by other MPI processes, so that a
-   * subsequent update or accumulation of ghost values as done by
-   * MatrixFree::loop() might invalidate the degrees of freedom set by this
-   * function.
+   * 获取内部存储在当前单元格的自由度值，并将其写入向量
+   * @p dst.
+   * ，该函数跳过了被约束的自由度。与distribution_local_to_global方法相反，当前单元格给出的位置上的旧值被覆盖。因此，如果一个自由度与一个以上的单元相关联（在连续有限元中很常见），这些值将被覆盖，只有最后写入的值被保留。请注意，在并行环境下，这个函数也可能触及其他MPI进程所拥有的自由度，因此，随后的更新或积累幽灵值（如
+   * MatrixFree::loop()
+   * 所做的）可能会使这个函数设置的自由度失效。
+   * 如果给定的向量模板类是块向量（通过模板函数
+   * 'IsBlockVector<VectorType>::value', 确定，该函数检查从
+   * dealii::BlockVectorBase) 或 std::vector<VectorType> 或
+   * std::vector<VectorType>, 派生的向量，该函数从索引 @p
+   * first_index. 开始向块向量的 @p n_components 块写入。
+   * 对于非块向量， @p first_index 被忽略了。     @p mask
+   * 可以用来抑制对当前单元向量批中包含的一些单元的写入访问，例如，在本地时间步进的情况下，一些单元被排除在调用之外。
+   * 比特集中的 "true "值意味着将处理相应的车道索引，而
+   * "false
+   * "值则跳过该索引。默认设置是一个包含所有1的bitset，它将把累积的积分写到批次中的所有单元。
+   * @note
+   * 如果这个类是在没有MatrixFree对象的情况下构建的，并且信息是通过
+   * DoFHandler<dim>::cell_iterator,
+   * 来获取的，那么这个类只使用一个单一的单元格，这个函数会提取给定单元格上的底层组件的值。这个调用比通过MatrixFree对象完成的调用要慢，并且导致一个结构在基于这些值的评估例程中不能有效地使用矢量化（相反，
+   * VectorizedArray::size() 相同的副本被工作）。
    *
-   * If the given vector template class is a block vector (determined through
-   * the template function 'IsBlockVector<VectorType>::value', which checks
-   * for vectors derived from dealii::BlockVectorBase) or an
-   * std::vector<VectorType> or std::vector<VectorType *>, this function
-   * writes to @p n_components blocks of the block vector starting at the
-   * index @p first_index. For non-block vectors, @p first_index is ignored.
-   *
-   * The @p mask can be used to suppress the write access for some
-   * of the cells contained in the current cell vectorization batch, e.g. in
-   * case of local time stepping, where some  cells are excluded from a call.
-   * A value of `true` in the bitset means that the respective lane index will
-   * be processed, whereas a value of `false` skips this index. The default
-   * setting is a bitset that contains all ones, which will write the
-   * accumulated integrals to all cells in the batch.
-   *
-   * @note If this class was constructed without a MatrixFree object and the
-   * information is acquired on the fly through a
-   * DoFHandler<dim>::cell_iterator, only one single cell is used by this
-   * class and this function extracts the values of the underlying components
-   * on the given cell. This call is slower than the ones done through a
-   * MatrixFree object and lead to a structure that does not effectively use
-   * vectorization in the evaluate routines based on these values (instead,
-   * VectorizedArray::size() same copies are worked on).
    */
   template <typename VectorType>
   void
@@ -710,7 +647,8 @@ public:
                    std::bitset<VectorizedArrayType::size()>().flip()) const;
 
   /**
-   * Same as set_dof_values(), but without resolving constraints.
+   * 与set_dof_values()相同，但不解决约束。
+   *
    */
   template <typename VectorType>
   void
@@ -723,174 +661,149 @@ public:
   //@}
 
   /**
-   * @name 2: Access to data at quadrature points or the gather vector data
+   * @name  2：访问正交点的数据或聚集矢量数据
+   *
    */
   //@{
   /**
-   * Return the value stored for the local degree of freedom with index @p
-   * dof. If the object is vector-valued, a vector-valued return argument is
-   * given. Thus, the argument @p dof can at most run until @p
-   * dofs_per_component rather than @p dofs_per_cell since the different
-   * components of a vector-valued FE are return together. Note that when
-   * vectorization is enabled, values from several cells are grouped
-   * together. If @p set_dof_values was called last, the value corresponds to
-   * the one set there. If @p integrate was called last, it instead
-   * corresponds to the value of the integrated function with the test
-   * function of the given index.
+   * 返回索引为 @p
+   * dof的局部自由度的存储值。如果对象是矢量值的，就会给出一个矢量值的返回参数。因此，参数
+   * @p dof 最多可以运行到 @p  dofs_per_component，而不是 @p
+   * dofs_per_cell
+   * ，因为矢量值FE的不同成分会一起返回。请注意，当矢量化被启用时，来自几个单元的值被分组在一起。如果
+   * @p set_dof_values
+   * 是最后被调用的，那么该值就对应于那里设置的值。如果
+   * @p integrate
+   * 是最后被调用的，那么它就对应于具有给定索引的测试函数的综合函数的值。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量情况（n_components == dim）重载了这个操作。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_dof_value(const unsigned int dof) const;
 
   /**
-   * Write a value to the field containing the degrees of freedom with
-   * component @p dof. Writes to the same field as is accessed through @p
-   * get_dof_value. Therefore, the original data that was read from a vector
-   * is overwritten as soon as a value is submitted.
+   * 向包含自由度分量的字段写入一个值  @p dof.  向通过 @p
+   * get_dof_value访问的同一字段写入一个值。因此，一旦提交了一个值，从向量中读取的原始数据就会被覆盖。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量值情况（n_components == dim）重载了这个操作。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   void
   submit_dof_value(const value_type val_in, const unsigned int dof);
 
   /**
-   * Return the value of a finite element function at quadrature point number
-   * @p q_point after a call to FEEvaluation::evaluate() with
-   * EvaluationFlags::values set, or the value that has been stored there with
-   * a call to FEEvaluationBase::submit_value(). If the object is
-   * vector-valued, a vector-valued return argument is given. Note that when
-   * vectorization is enabled, values from several cells are grouped together.
+   * 在调用 FEEvaluation::evaluate() 并设置了 EvaluationFlags::values
+   * 后，返回正交点号 @p q_point
+   * 处的有限元函数值，或者调用 FEEvaluationBase::submit_value().
+   * 时已经存储在那里的值。
+   * 如果对象是矢量值的，将给出一个矢量值的返回参数。注意，当矢量化被启用时，来自几个单元的值被分组在一起。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量值情况（n_components ==
+   * dim）重载了这一操作的特殊性。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_value(const unsigned int q_point) const;
 
   /**
-   * Write a value to the field containing the values on quadrature points
-   * with component @p q_point. Access to the same field as through
-   * get_value(). If applied before the function FEEvaluation::integrate()
-   * with EvaluationFlags::values set is called, this specifies the value
-   * which is tested by all basis function on the current cell and integrated
-   * over.
+   * 向包含正交点上的值的字段写一个值，其成分为  @p
+   * q_point.
+   * 通过get_value()访问同一个字段。如果在调用设置了
+   * EvaluationFlags::values 的函数 FEEvaluation::integrate()
+   * 之前应用，这将指定由当前单元上的所有基函数测试并整合的值。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量情况（n_components == dim）重载了这个操作。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   void
   submit_value(const value_type val_in, const unsigned int q_point);
 
   /**
-   * Return the gradient of a finite element function at quadrature point
-   * number @p q_point after a call to FEEvaluation::evaluate() with
-   * EvaluationFlags::gradients, or the value that has been stored there with
-   * a call to FEEvaluationBase::submit_gradient().
+   * 在用 EvaluationFlags::gradients, 调用 FEEvaluation::evaluate()
+   * 后，返回正交点 @p q_point 的有限元函数梯度，或用
+   * FEEvaluationBase::submit_gradient().
+   * 调用后，返回存储在那里的值
+   * 注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和矢量情况（n_components ==
+   * dim）重载了该操作，具有特殊性。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
-   * Return the derivative of a finite element function at quadrature point
-   * number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::gradients) the direction normal
-   * to the face: $\boldsymbol \nabla u(\mathbf x_q) \cdot \mathbf n(\mathbf
-   * x_q)$
+   * 在调用 FEEvaluation::evaluate(EvaluationFlags::gradients)
+   * 面的法线方向后，返回正交点号 @p q_point
+   * 的有限元函数的导数。  $\boldsymbol \nabla u(\mathbf x_q) \cdot
+   * \mathbf n(\mathbf x_q)$  这个调用等同于调用get_gradient()
+   * get_normal_vector()，但将使用更有效的内部数据表示。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量情况（n_components == dim）重载了这个操作。
    *
-   * This call is equivalent to calling get_gradient() * get_normal_vector()
-   * but will use a more efficient internal representation of data.
-   *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_normal_derivative(const unsigned int q_point) const;
 
   /**
-   * Write a contribution that is tested by the gradient to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through get_gradient(). If applied before the
-   * function FEEvaluation::integrate(EvaluationFlags::gradients) is called,
-   * this specifies what is tested by all basis function gradients on the
-   * current cell and integrated over.
+   * 写一个贡献，这个贡献被梯度测试到包含分量为 @p
+   * q_point.
+   * 的正交点上的值的字段，通过get_gradient()访问同一个字段。如果在函数
+   * FEEvaluation::integrate(EvaluationFlags::gradients)
+   * 被调用之前应用，这指定了当前单元上所有基函数梯度测试的内容，并对其进行积分。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量情况（n_components ==
+   * dim）重载了这个操作，并进行了特殊化处理。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
-   * Write a contribution that is tested by the gradient to the field
-   * containing the values on quadrature points with component @p
-   * q_point. Access to the same field as through get_gradient() or
-   * get_normal_derivative(). If applied before the function
-   * FEEvaluation::integrate(EvaluationFlags::gradients) is called, this
-   * specifies what is tested by all basis function gradients on the current
-   * cell and integrated over.
+   * 编写一个贡献，该贡献由梯度测试到包含分量为 @p
+   * q_point的正交点上的值的域。与通过get_gradient()或get_normal_derivative()访问相同的字段。如果在函数
+   * FEEvaluation::integrate(EvaluationFlags::gradients)
+   * 被调用之前应用，这指定了当前单元上所有基函数梯度的测试内容，并在此基础上进行积分。
+   * @note
+   * 这个操作将数据写到与submit_gradient()相同的字段。因此，只能使用这两者中的一个。通常情况下，对这个函数的潜在调用的贡献必须加到submit_gradient()的贡献中。
+   * @note 派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和矢量情况（n_components == dim）重载了这个操作。
    *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added into the contribution for submit_gradient().
-   *
-   * @note The derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   void
   submit_normal_derivative(const value_type   grad_in,
                            const unsigned int q_point);
 
   /**
-   * Return the Hessian of a finite element function at quadrature point
-   * number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::hessians). If only the diagonal
-   * or even the trace of the Hessian, the Laplacian, is needed, use the other
-   * functions below.
+   * 在调用 FEEvaluation::evaluate(EvaluationFlags::hessians).
+   * 后，返回正交点号 @p q_point
+   * 处的有限元函数的Hessian。如果只需要Hessian的对角线甚至跟踪，即拉普拉斯，请使用以下其他函数。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量情况（n_components == dim）重载了这个操作。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   Tensor<1, n_components_, Tensor<2, dim, VectorizedArrayType>>
   get_hessian(const unsigned int q_point) const;
 
   /**
-   * Return the diagonal of the Hessian of a finite element function at
-   * quadrature point number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::hessians).
+   * 在调用 FEEvaluation::evaluate(EvaluationFlags::hessians).
+   * 后，返回正交点编号为 @p q_point
+   * 的有限元函数的对角线。注意，派生类FEEvaluationAccess对该操作进行了重载，并对标量情况（n_components
+   * == 1）和矢量情况（n_components ==
+   * dim）进行了专业化处理。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * Return the Laplacian (i.e., the trace of the Hessian) of a finite element
-   * function at quadrature point number @p q_point after a call to
-   * FEEvaluation::evaluate(EvaluationFlags::hessians). Compared to the case
-   * when computing the full Hessian, some operations can be saved when only
-   * the Laplacian is requested.
+   * 在调用 FEEvaluation::evaluate(EvaluationFlags::hessians).
+   * 后，返回正交点号 @p q_point
+   * 处的有限元函数的拉普拉斯（即Hessian的踪迹）。
+   * 与计算全部Hessian的情况相比，当只要求拉普拉斯时，可以节省一些操作。
+   * 请注意，派生类FEEvaluationAccess为标量情况（n_components ==
+   * 1）和向量情况（n_components == dim）重载了这个操作。
    *
-   * Note that the derived class FEEvaluationAccess overloads this operation
-   * with specializations for the scalar case (n_components == 1) and for the
-   * vector-valued case (n_components == dim).
    */
   value_type
   get_laplacian(const unsigned int q_point) const;
@@ -901,68 +814,57 @@ public:
   // For now, hack in those functions manually only to fix documentation:
 
   /**
-   * Return the divergence of a vector-valued finite element at quadrature
-   * point number @p q_point after a call to @p evaluate(...,true,...).
+   * 在调用 @p evaluate(...,true,...). 后，返回正交点号 @p q_point
+   * 处的矢量值有限元的发散。
+   * @note 仅对n_components_==dim有效。
    *
-   * @note Only available for n_components_==dim.
    */
   VectorizedArrayType
   get_divergence(const unsigned int q_point) const;
 
   /**
-   * Return the symmetric gradient of a vector-valued finite element at
-   * quadrature point number @p q_point after a call to @p
-   * evaluate(...,true,...). It corresponds to <tt>0.5
-   * (grad+grad<sup>T</sup>)</tt>.
+   * 在调用 @p evaluation(...,true,...)后，返回正交点号 @p q_point
+   * 处的矢量值有限元的对称梯度。它对应于<tt>0.5
+   * (grad+grad<sup>T</sup>)</tt>。
+   * @note 只对n_components_==dim有效。
    *
-   * @note Only available for n_components_==dim.
    */
   SymmetricTensor<2, dim, VectorizedArrayType>
   get_symmetric_gradient(const unsigned int q_point) const;
 
   /**
-   * Return the curl of the vector field, $\nabla \times v$ after a call to @p
-   * evaluate(...,true,...).
+   * 在调用 @p evaluate(...,true,...)后，返回矢量场的卷积，
+   * $\nabla \times v$ 。
+   * @note  只对n_components_==dim有效。
    *
-   * @note Only available for n_components_==dim.
    */
   Tensor<1, (dim == 2 ? 1 : dim), VectorizedArrayType>
   get_curl(const unsigned int q_point) const;
 
   /**
-   * Write a contribution that is tested by the divergence to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies what is
-   * tested by all basis function gradients on the current cell and integrated
-   * over.
+   * 写入一个贡献，这个贡献被发散测试到包含组件 @p
+   * q_point. 的正交点上的值的字段，访问与通过 @p
+   * get_gradient. 相同的字段，如果在调用函数 @p
+   * integrate(...,true)
+   * 之前应用，这指定了由当前单元上的所有基函数梯度测试并整合的内容。
+   * @note  只对n_components_==dim有效。
+   * @note
+   * 该操作将数据写到与submit_gradient()相同的字段。因此，只能使用这两者中的一个。通常情况下，对这个函数的潜在调用的贡献必须加到submit_gradient()的贡献的对角线中。
    *
-   * @note Only available for n_components_==dim.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added into the diagonal of the contribution for submit_gradient().
    */
   void
   submit_divergence(const VectorizedArrayType div_in,
                     const unsigned int        q_point);
 
   /**
-   * Write a contribution that is tested by the symmetric gradient to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_symmetric_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies the
-   * symmetric gradient which is tested by all basis function symmetric
-   * gradients on the current cell and integrated over.
+   * 写入一个贡献，该贡献被对称梯度测试到包含正交点上的值的字段，其分量为
+   * @p q_point.  通过 @p get_symmetric_gradient. 访问同一字段
+   * 如果在函数 @p integrate(...,true)
+   * 被调用之前应用，这指定了对称梯度，它被当前单元上的所有基函数对称梯度测试并整合到。
+   * @note  只对n_components_==dim有效。
+   * @note
+   * 该操作将数据写到与submit_gradient()相同的字段。因此，只能使用这两者中的一个。通常情况下，对这个函数的潜在调用的贡献必须加到submit_gradient()的rank-2张量的相应条目中。
    *
-   * @note Only available for n_components_==dim.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added to the respective entries of the rank-2 tensor for
-   * submit_gradient().
    */
   void
   submit_symmetric_gradient(
@@ -970,16 +872,12 @@ public:
     const unsigned int                                 q_point);
 
   /**
-   * Write the components of a curl containing the values on quadrature point
-   * @p q_point. Access to the same data field as through @p get_gradient.
+   * 写下包含正交点上的值的curl的分量  @p q_point.  通过 @p
+   * get_gradient. 访问同一数据域
+   * @note  只对n_components_==dim有效。
+   * @note
+   * 该操作将数据写到与submit_gradient()相同的字段。因此，只能使用这两者中的一个。通常情况下，对这个函数的潜在调用的贡献必须加到submit_gradient()的rank-2张量的相应条目中。
    *
-   * @note Only available for n_components_==dim.
-   *
-   * @note This operation writes the data to the same field as
-   * submit_gradient(). As a consequence, only one of these two can be
-   * used. Usually, the contribution of a potential call to this function must
-   * be added to the respective entries of the rank-2 tensor for
-   * submit_gradient().
    */
   void
   submit_curl(const Tensor<1, dim == 2 ? 1 : dim, VectorizedArrayType> curl_in,
@@ -988,20 +886,10 @@ public:
 #endif
 
   /**
-   * Takes values at quadrature points, multiplies by the Jacobian determinant
-   * and quadrature weights (JxW) and sums the values for all quadrature
-   * points on the cell. The result is a scalar, representing the integral
-   * over the function over the cell. If a vector-element is used, the
-   * resulting components are still separated. Moreover, if vectorization is
-   * enabled, the integral values of several cells are contained in the slots
-   * of the returned VectorizedArray field.
+   * 取正交点的值，乘以雅各布行列式和正交权重（JxW），并对单元上所有正交点的值进行求和。其结果是一个标量，代表函数在单元上的积分。如果使用了一个矢量元素，结果的分量仍然是分开的。此外，如果启用了矢量化，几个单元的积分值将包含在返回的VectorizedArray字段的槽中。
+   * @note
+   * 如果FEEvaluation对象被初始化为一批单元，在SIMD向量VectorizedArray中并非所有的通道都代表实际数据，这个方法在虚拟数据（从最后一个有效通道复制的）上执行计算，将没有意义。因此，用户需要确保在任何计算中不明确地使用它，比如在对几个单元格的结果求和时。
    *
-   * @note In case the FEEvaluation object is initialized with a batch of
-   * cells where not all lanes in the SIMD vector VectorizedArray are
-   * representing actual data, this method performs computations on dummy data
-   * (that is copied from the last valid lane) that will not make sense. Thus,
-   * the user needs to make sure that it is not used in any computation
-   * explicitly, like when summing the results of several cells.
    */
   value_type
   integrate_value() const;
@@ -1009,111 +897,82 @@ public:
   //@}
 
   /**
-   * @name 3: Access to internal data
+   * @name  3：对内部数据的访问
+   *
    */
   //@{
   /**
-   * Return a read-only pointer to the first field of the dof values. This is
-   * the data field the read_dof_values() functions write into. First come the
-   * dof values for the first component, then all values for the second
-   * component, and so on. This is related to the internal data structures
-   * used in this class. In general, it is safer to use the get_dof_value()
-   * function instead.
+   * 返回一个指向dof值的第一个字段的只读指针。这是read_dof_values()函数写进的数据字段。首先是第一个组件的dof值，然后是第二个组件的所有值，以此类推。这与这个类中使用的内部数据结构有关。一般来说，使用get_dof_value()函数来代替比较安全。
+   *
    */
   const VectorizedArrayType *
   begin_dof_values() const;
 
   /**
-   * Return a read and write pointer to the first field of the dof values.
-   * This is the data field the read_dof_values() functions write into. First
-   * come the dof values for the first component, then all values for the
-   * second component, and so on. This is related to the internal data
-   * structures used in this class. In general, it is safer to use the
-   * get_dof_value() function instead.
+   * 返回一个指向dof值的第一个字段的读写指针。
+   * 这是read_dof_values()函数写进的数据字段。首先是第一个组件的dof值，然后是第二个组件的所有值，以此类推。这与这个类中使用的内部数据结构有关。一般来说，使用get_dof_value()函数来代替比较安全。
+   *
    */
   VectorizedArrayType *
   begin_dof_values();
 
   /**
-   * Return a read-only pointer to the first field of function values on
-   * quadrature points. First come the function values on all quadrature
-   * points for the first component, then all values for the second component,
-   * and so on. This is related to the internal data structures used in this
-   * class. The raw data after a call to @p evaluate only contains unit cell
-   * operations, so possible transformations, quadrature weights etc. must be
-   * applied manually. In general, it is safer to use the get_value() function
-   * instead, which does all the transformation internally.
+   * 返回一个指向正交点上函数值第一域的只读指针。首先是第一个分量的所有正交点上的函数值，然后是第二个分量的所有数值，以此类推。这与本类中使用的内部数据结构有关。调用
+   * @p evaluate
+   * 后的原始数据只包含单元格操作，所以可能的变换、正交权重等必须手动应用。一般来说，使用get_value()函数反而更安全，它在内部完成所有的转换。
+   *
    */
   const VectorizedArrayType *
   begin_values() const;
 
   /**
-   * Return a read and write pointer to the first field of function values on
-   * quadrature points. First come the function values on all quadrature
-   * points for the first component, then all values for the second component,
-   * and so on. This is related to the internal data structures used in this
-   * class. The raw data after a call to @p evaluate only contains unit cell
-   * operations, so possible transformations, quadrature weights etc. must be
-   * applied manually. In general, it is safer to use the get_value() function
-   * instead, which does all the transformation internally.
+   * 返回一个指向正交点上的函数值的第一个字段的读和写指针。首先是第一个分量的所有正交点上的函数值，然后是第二个分量的所有数值，以此类推。这与本类中使用的内部数据结构有关。调用
+   * @p evaluate
+   * 后的原始数据只包含单元格操作，所以可能的变换、正交权重等必须手动应用。一般来说，使用get_value()函数反而更安全，它在内部完成所有的转换。
+   *
    */
   VectorizedArrayType *
   begin_values();
 
   /**
-   * Return a read-only pointer to the first field of function gradients on
-   * quadrature points. First comes the x-component of the gradient for the
-   * first component on all quadrature points, then the y-component, and so
-   * on. Next comes the x-component of the second component, and so on. This
-   * is related to the internal data structures used in this class. The raw
-   * data after a call to @p evaluate only contains unit cell operations, so
-   * possible transformations, quadrature weights etc. must be applied
-   * manually. In general, it is safer to use the get_gradient() function
-   * instead, which does all the transformation internally.
+   * 返回一个指向正交点上的函数梯度的第一个字段的只读指针。首先是所有正交点上第一个分量的梯度的x分量，然后是y分量，以此类推。接下来是第二个分量的x分量，以此类推。这与本类中使用的内部数据结构有关。调用
+   * @p evaluate
+   * 后的原始数据只包含单元格操作，所以可能的变换、正交权重等必须手动应用。一般来说，使用get_gradient()函数反而更安全，它在内部完成所有的变换。
+   *
    */
   const VectorizedArrayType *
   begin_gradients() const;
 
   /**
-   * Return a read and write pointer to the first field of function gradients
-   * on quadrature points. First comes the x-component of the gradient for the
-   * first component on all quadrature points, then the y-component, and so
-   * on. Next comes the x-component of the second component, and so on. This
-   * is related to the internal data structures used in this class. The raw
-   * data after a call to @p evaluate only contains unit cell operations, so
-   * possible transformations, quadrature weights etc. must be applied
-   * manually. In general, it is safer to use the get_gradient() function
-   * instead, which does all the transformation internally.
+   * 返回一个指向正交点上函数梯度第一域的读写指针。首先是所有正交点上第一个分量的梯度的x分量，然后是y分量，以此类推。接下来是第二个分量的x分量，以此类推。这与本类中使用的内部数据结构有关。调用
+   * @p evaluate
+   * 后的原始数据只包含单元格操作，所以可能的变换、正交权重等必须手动应用。一般来说，使用get_gradient()函数反而更安全，它在内部完成所有的变换。
+   *
    */
   VectorizedArrayType *
   begin_gradients();
 
   /**
-   * Return a read-only pointer to the first field of function hessians on
-   * quadrature points. First comes the xx-component of the hessian for the
-   * first component on all quadrature points, then the yy-component, zz-
-   * component in (3D), then the xy-component, and so on. Next comes the xx-
-   * component of the second component, and so on. This is related to the
-   * internal data structures used in this class. The raw data after a call to
-   * @p evaluate only contains unit cell operations, so possible
-   * transformations, quadrature weights etc. must be applied manually. In
-   * general, it is safer to use the get_laplacian() or get_hessian()
-   * functions instead, which does all the transformation internally.
+   * 返回一个只读指针，指向正交点上的函数 hessians
+   * 的第一个字段。首先是所有正交点上第一个分量的
+   * hessians 的 xx-分量，然后是
+   * yy-分量，zz-分量（3D），然后是
+   * xy-分量，以此类推。接下来是第二个分量的xx-分量，以此类推。这与本类中使用的内部数据结构有关。调用
+   * @p evaluate
+   * 后的原始数据只包含单元格操作，所以可能的变换、正交权重等必须手动应用。一般来说，使用get_laplacian()或get_hessian()函数来代替比较安全，它在内部完成所有的变换。
+   *
    */
   const VectorizedArrayType *
   begin_hessians() const;
 
   /**
-   * Return a read and write pointer to the first field of function hessians
-   * on quadrature points. First comes the xx-component of the hessian for the
-   * first component on all quadrature points, then the yy-component, zz-
-   * component in (3D), then the xy-component, and so on. Next comes the xx-
-   * component of the second component, and so on. This is related to the
-   * internal data structures used in this class. The raw data after a call to
-   * @p evaluate only contains unit cell operations, so possible
-   * transformations, quadrature weights etc. must be applied manually. In
-   * general, it is safer to use the get_laplacian() or get_hessian()
-   * functions instead, which does all the transformation internally.
+   * 返回一个读写指针，指向正交点上的函数hesians的第一个字段。首先是所有正交点上第一个分量的
+   * hessians 的 xx-分量，然后是
+   * yy-分量，zz-分量（3D），然后是
+   * xy-分量，以此类推。接下来是第二个分量的xx-分量，以此类推。这与本类中使用的内部数据结构有关。调用
+   * @p evaluate
+   * 后的原始数据只包含单元格操作，所以可能的变换、正交权重等必须手动应用。一般来说，使用get_laplacian()或get_hessian()函数来代替比较安全，它在内部完成所有的变换。
+   *
    */
   VectorizedArrayType *
   begin_hessians();
@@ -1121,19 +980,18 @@ public:
   //@}
 
   /**
-   * Return the first selected component.
+   * 返回第一个选定的分量。
+   *
    */
   unsigned int
   get_first_selected_component() const;
 
 protected:
   /**
-   * Constructor. Made protected to prevent users from directly using this
-   * class. Takes all data stored in MatrixFree. If applied to problems with
-   * more than one finite element or more than one quadrature formula selected
-   * during construction of @p matrix_free, @p dof_no, @p
-   * first_selected_component and @p quad_no allow to select the appropriate
-   * components.
+   * 构造函数。为了防止用户直接使用这个类，做了保护。采取所有存储在MatrixFree中的数据。如果应用于有多个有限元或多个正交公式的问题，在构造
+   * @p matrix_free,   @p dof_no,   @p  first_selected_component和 @p quad_no
+   * 时，允许选择适当的组件。
+   *
    */
   FEEvaluationBase(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1148,39 +1006,20 @@ protected:
     const unsigned int face_type);
 
   /**
-   * Constructor that comes with reduced functionality and works similar as
-   * FEValues. The arguments are similar to the ones passed to the constructor
-   * of FEValues, with the notable difference that FEEvaluation expects a one-
-   * dimensional quadrature formula, Quadrature<1>, instead of a @p dim
-   * dimensional one. The finite element can be both scalar or vector valued,
-   * but this method always only selects a scalar base element at a time (with
-   * @p n_components copies as specified by the class template argument). For
-   * vector-valued elements, the optional argument @p first_selected_component
-   * allows to specify the index of the base element to be used for
-   * evaluation. Note that the internal data structures always assume that the
-   * base element is primitive, non-primitive are not supported currently.
+   * 构造函数，带有减少的功能，工作方式与FEValues类似。参数与传递给FEValues构造函数的参数类似，但明显的区别是，FEEvaluation期望一个一维的正交公式，Quadrature<1>，而不是
+   * @p dim
+   * 维的。有限元既可以是标量值，也可以是矢量值，但是这个方法每次总是只选择一个标量基元（按照类模板参数指定的
+   * @p n_components 副本）。对于矢量值元素，可选的参数 @p
+   * first_selected_component
+   * 允许指定用于评估的基元素的索引。注意，内部数据结构总是假定基元是原始的，目前不支持非原始的。
+   * 正如从FEValues中得知的那样，调用带有
+   * Triangulation::cell_iterator
+   * 的reinit方法是必要的，以使当前类的几何和自由度为人所知。如果迭代器包括DoFHandler信息（即它是
+   * DoFHandler::cell_iterator 或类似的），初始化也允许以
+   * DoFHandler::active_cell_iterator
+   * 类型的标准方式一次从向量中读取或写入一个单元。然而，这种方法比使用MPI的MatrixFree的路径要慢得多，因为必须进行索引转换。由于每次只使用一个单元，这种方法不会在几个元素上进行矢量化（这对矢量操作来说是最有效的），而只可能在元素内进行，如果评估/整合例程在用户代码内被结合起来（例如计算单元矩阵）。
+   * 可选的FEEvaluationBaseData对象允许几个FEEvaluation对象共享几何评估，也就是说，底层映射和正交点只需要评估一次。这只有在正交公式相同的情况下才有效。否则，将创建一个新的评估对象。当你打算将FEEvaluation对象与另一个对象并行使用时，请确保不要传递一个可选的对象，因为否则打算共享的对象可能会产生竞赛条件。
    *
-   * As known from FEValues, a call to the reinit method with a
-   * Triangulation::cell_iterator is necessary to make the geometry and
-   * degrees of freedom of the current class known. If the iterator includes
-   * DoFHandler information (i.e., it is a DoFHandler::cell_iterator or
-   * similar), the initialization allows to also read from or write to vectors
-   * in the standard way for DoFHandler::active_cell_iterator types for one
-   * cell at a time. However, this approach is much slower than the path with
-   * MatrixFree with MPI since index translation has to be done. As only one
-   * cell at a time is used, this method does not vectorize over several
-   * elements (which is most efficient for vector operations), but only
-   * possibly within the element if the evaluate/integrate routines are
-   * combined inside user code (e.g. for computing cell matrices).
-   *
-   * The optional FEEvaluationBaseData object allows several
-   * FEEvaluation objects to share the geometry evaluation, i.e., the
-   * underlying mapping and quadrature points do only need to be evaluated
-   * once. This only works if the quadrature formulas are the same. Otherwise,
-   * a new evaluation object is created. Make sure to not pass an optional
-   * object around when you intend to use the FEEvaluation object in %parallel
-   * with another one because otherwise the intended sharing may create race
-   * conditions.
    */
   FEEvaluationBase(
     const Mapping<dim> &      mapping,
@@ -1192,27 +1031,23 @@ protected:
       *other);
 
   /**
-   * Copy constructor. If FEEvaluationBase was constructed from a mapping, fe,
-   * quadrature, and update flags, the underlying geometry evaluation based on
-   * FEValues will be deep-copied in order to allow for using in parallel with
-   * threads.
+   * 复制构造函数。如果FEEvaluationBase是由映射、fe、正交和更新标志构建的，基于FEValues的底层几何评估将被深度复制，以允许与线程并行使用。
+   *
    */
   FEEvaluationBase(const FEEvaluationBase &other);
 
   /**
-   * Copy assignment operator. If FEEvaluationBase was constructed from a
-   * mapping, fe, quadrature, and update flags, the underlying geometry
-   * evaluation based on FEValues will be deep-copied in order to allow for
-   * using in parallel with threads.
+   * 复制赋值运算符。如果FEEvaluationBase是由映射、fe、正交和更新标志构建的，基于FEValues的底层几何评估将被深度复制，以便允许与线程并行使用。
+   *
    */
   FEEvaluationBase &
   operator=(const FEEvaluationBase &other);
 
   /**
-   * A unified function to read from and write into vectors based on the given
-   * template operation. It can perform the operation for @p read_dof_values,
-   * @p distribute_local_to_global, and @p set_dof_values. It performs the
-   * operation for several vectors at a time.
+   * 一个统一的函数，根据给定的模板操作从向量中读出和写入向量。它可以对
+   * @p read_dof_values,  @p distribute_local_to_global, 和 @p
+   * set_dof_values. 进行操作，一次对几个向量进行操作。
+   *
    */
   template <typename VectorType, typename VectorOperation>
   void
@@ -1226,11 +1061,8 @@ protected:
     const bool apply_constraints = true) const;
 
   /**
-   * A unified function to read from and write into vectors based on the given
-   * template operation for DG-type schemes where all degrees of freedom on
-   * cells are contiguous. It can perform the operation for read_dof_values(),
-   * distribute_local_to_global(), and set_dof_values() for several vectors at
-   * a time, depending on n_components.
+   * 一个统一的函数，基于给定的模板操作从向量中读出和写入向量，用于DG型方案，其中单元格上的所有自由度是连续的。它可以一次对多个向量进行read_dof_values()、distribut_local_to_global()和set_dof_values()的操作，具体取决于n_components。
+   *
    */
   template <typename VectorType, typename VectorOperation>
   void
@@ -1243,11 +1075,11 @@ protected:
     const std::bitset<VectorizedArrayType::size()> &mask) const;
 
   /**
-   * A unified function to read from and write into vectors based on the given
-   * template operation for the case when we do not have an underlying
-   * MatrixFree object. It can perform the operation for @p read_dof_values,
-   * @p distribute_local_to_global, and @p set_dof_values. It performs the
-   * operation for several vectors at a time, depending on n_components.
+   * 一个统一的函数，在我们没有底层MatrixFree对象的情况下，根据给定的模板操作从向量中读取和写入向量。它可以对
+   * @p read_dof_values,  @p distribute_local_to_global, 和 @p
+   * set_dof_values. 进行操作。
+   * 它一次对几个向量进行操作，取决于n_components。
+   *
    */
   template <typename VectorType, typename VectorOperation>
   void
@@ -1256,124 +1088,98 @@ protected:
     const std::array<VectorType *, n_components_> &vectors) const;
 
   /**
-   * This field stores the values for local degrees of freedom (e.g. after
-   * reading out from a vector but before applying unit cell transformations
-   * or before distributing them into a result vector). The methods
-   * get_dof_value() and submit_dof_value() read from or write to this field.
+   * 这个字段存储了局部自由度的值（例如，从矢量中读出后，但在应用单元格变换前或在将它们分配到结果矢量中之前）。get_dof_value()和submit_dof_value()方法从这个字段读取或写入。
+   * 这个数组的值存储在 @p scratch_data_array.
+   * 的起始部分。由于其作为线程本地内存的访问，该内存可以在不同的调用之间得到重复使用。相对于在堆栈上请求内存，这种方法允许非常大的多项式程度。
    *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
-   * memory can get reused between different calls. As opposed to requesting
-   * memory on the stack, this approach allows for very large polynomial
-   * degrees.
    */
   VectorizedArrayType *values_dofs[n_components];
 
   /**
-   * This field stores the values of the finite element function on quadrature
-   * points after applying unit cell transformations or before integrating.
-   * The methods get_value() and submit_value() access this field.
+   * 这个字段存储了应用单元格变换后或积分前正交点上的有限元函数的值。
+   * get_value()和submit_value()方法访问这个字段。
+   * 这个数组的值存储在 @p scratch_data_array.
+   * 的起始部分。由于其作为线程本地内存的访问，内存可以在不同的调用之间得到重复使用。相对于在堆栈上请求内存，这种方法允许非常大的多项式程度。
    *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
-   * memory can get reused between different calls. As opposed to requesting
-   * memory on the stack, this approach allows for very large polynomial
-   * degrees.
    */
   VectorizedArrayType *values_quad;
 
   /**
-   * This field stores the gradients of the finite element function on
-   * quadrature points after applying unit cell transformations or before
-   * integrating. The methods get_gradient() and submit_gradient() (as well as
-   * some specializations like get_symmetric_gradient() or get_divergence())
-   * access this field.
+   * 这个字段存储了应用单元格变换后或积分前正交点上的有限元函数的梯度。get_gradient()和submit_gradient()方法（以及一些特殊的方法如get_symmetric_gradient()或get_divergence()）访问这个字段。
+   * 这个数组的值存储在 @p scratch_data_array.
+   * 的起始部分。由于它作为线程本地内存的访问，内存可以在不同的调用之间得到重复使用。相对于在堆栈上请求内存，这种方法允许非常大的多项式程度。
    *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
-   * memory can get reused between different calls. As opposed to requesting
-   * memory on the stack, this approach allows for very large polynomial
-   * degrees.
    */
   VectorizedArrayType *gradients_quad;
 
   /**
-   * This field stores the Hessians of the finite element function on
-   * quadrature points after applying unit cell transformations. The methods
-   * get_hessian(), get_laplacian(), get_hessian_diagonal() access this field.
+   * 这个字段存储了应用单元格变换后正交点上的有限元函数的Hessians。get_hessian(),
+   * get_laplacian(), get_hessian_diagonal()方法访问这个字段。
+   * 这个数组的值存储在 @p scratch_data_array.
+   * 的起始部分。由于其作为线程本地内存的访问，该内存可以在不同的调用之间得到重复使用。相对于在堆栈上请求内存，这种方法允许非常大的多项式程度。
    *
-   * The values of this array are stored in the start section of
-   * @p scratch_data_array. Due to its access as a thread local memory, the
-   * memory can get reused between different calls. As opposed to requesting
-   * memory on the stack, this approach allows for very large polynomial
-   * degrees.
    */
   VectorizedArrayType *hessians_quad;
 
   /**
-   * Stores the number of components in the finite element as detected in the
-   * MatrixFree storage class for comparison with the template argument.
+   * 存储在MatrixFree存储类中检测到的有限元中的组件数量，以便与模板参数进行比较。
+   *
    */
   const unsigned int n_fe_components;
 
   /**
-   * Debug information to track whether dof values have been initialized
-   * before accessed. Used to control exceptions when uninitialized data is
-   * used.
+   * 调试信息，跟踪dof值在访问前是否已被初始化。当使用未初始化的数据时，用于控制异常。
+   *
    */
   bool dof_values_initialized;
 
   /**
-   * Debug information to track whether values on quadrature points have been
-   * initialized before accessed. Used to control exceptions when
-   * uninitialized data is used.
+   * 调试信息，跟踪正交点的值在访问前是否已经被初始化。用于控制使用未初始化数据时的异常情况。
+   *
    */
   bool values_quad_initialized;
 
   /**
-   * Debug information to track whether gradients on quadrature points have
-   * been initialized before accessed. Used to control exceptions when
-   * uninitialized data is used.
+   * 调试信息，跟踪正交点上的梯度是否在访问前被初始化。用于控制使用未初始化数据时的异常情况。
+   *
    */
   bool gradients_quad_initialized;
 
   /**
-   * Debug information to track whether Hessians on quadrature points have
-   * been initialized before accessed. Used to control exceptions when
-   * uninitialized data is used.
+   * 调试信息，跟踪正交点上的Hessians在访问前是否已经被初始化。用于控制使用未初始化数据时的异常情况。
+   *
    */
   bool hessians_quad_initialized;
 
   /**
-   * Debug information to track whether values on quadrature points have been
-   * submitted for integration before the integration is actually stared. Used
-   * to control exceptions when uninitialized data is used.
+   * 调试信息跟踪正交点上的值是否在实际盯住积分之前被提交给了积分。用于控制使用未初始化数据时的异常情况。
+   *
    */
   bool values_quad_submitted;
 
   /**
-   * Debug information to track whether gradients on quadrature points have
-   * been submitted for integration before the integration is actually stared.
-   * Used to control exceptions when uninitialized data is used.
+   * 调试信息，跟踪正交点的梯度在积分实际被盯住之前是否已被提交用于积分。
+   * 用于控制使用未初始化数据时的异常情况。
+   *
    */
   bool gradients_quad_submitted;
 
   /**
-   * For a FiniteElement with more than one base element, select at which
-   * component this data structure should start.
+   * 对于一个有多个基元的FiniteElement，选择这个数据结构应该从哪个分量开始。
+   *
    */
   const unsigned int first_selected_component;
 
   /**
-   * A temporary data structure necessary to read degrees of freedom when no
-   * MatrixFree object was given at initialization.
+   * 当初始化时没有给出MatrixFree对象时，需要一个临时数据结构来读取自由度。
+   *
    */
   mutable std::vector<types::global_dof_index> local_dof_indices;
 
 private:
   /**
-   * Sets the pointers for values, gradients, hessians to the central
-   * scratch_data_array of the base class.
+   * 将数值、梯度、赫西恩的指针设置为基类的中央scratch_data_array。
+   *
    */
   void
   set_data_pointers();
@@ -1382,11 +1188,12 @@ private:
 
 
 /**
- * This class provides access to the data fields of the FEEvaluation classes.
- * Generic access is achieved through the base class, and specializations for
- * scalar and vector-valued elements are defined separately.
+ * 这个类提供对FEEvaluation类的数据字段的访问。通用访问是通过基类实现的，标量和矢量值元素的特殊化是单独定义的。
+ *
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim,
           int n_components_,
@@ -1415,11 +1222,10 @@ public:
 
 protected:
   /**
-   * Constructor. Made protected to prevent initialization in user code. Takes
-   * all data stored in MatrixFree. If applied to problems with more than one
-   * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * 构造函数。为了防止在用户代码中进行初始化，该构造函数被保护起来。接受存储在MatrixFree中的所有数据。如果应用于有多个有限元的问题，或者在构造
+   * @p matrix_free,  @p first_selected_component 和 @p
+   * quad_no时选择了多个正交公式，允许选择适当的组件。
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1434,8 +1240,8 @@ protected:
     const unsigned int face_type         = numbers::invalid_unsigned_int);
 
   /**
-   * Constructor with reduced functionality for similar usage of FEEvaluation
-   * as FEValues, including matrix assembly.
+   * 构造函数的功能减少，用于类似于FEValues的FEEvaluation的用法，包括矩阵组装。
+   *
    */
   FEEvaluationAccess(
     const Mapping<dim> &      mapping,
@@ -1447,12 +1253,14 @@ protected:
       *other);
 
   /**
-   * Copy constructor
+   * 复制构造函数
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
-   * Copy assignment operator
+   * 拷贝赋值操作符
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1461,12 +1269,11 @@ protected:
 
 
 /**
- * This class provides access to the data fields of the FEEvaluation classes.
- * Partial specialization for scalar fields that defines access with simple
- * data fields, i.e., scalars for the values and Tensor<1,dim> for the
- * gradients.
+ * 该类提供对FEEvaluation类的数据字段的访问。标量字段的部分特殊化，定义了对简单数据字段的访问，即标量的值和Tensor<1,dim>的梯度。
+ *
  *
  * @ingroup matrixfree
+ *
  */
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationAccess<dim, 1, Number, is_face, VectorizedArrayType>
@@ -1485,92 +1292,115 @@ public:
     FEEvaluationBase<dim, 1, Number, is_face, VectorizedArrayType>;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_dof_value()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::get_dof_value()
+   *
    */
   value_type
   get_dof_value(const unsigned int dof) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_dof_value()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::submit_dof_value()
+   * FEEvaluationBase<dim,1,Number,is_face>::submit_dof_value() .
+   *
    */
   void
   submit_dof_value(const value_type val_in, const unsigned int dof);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_value()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::get_value()
+   * FEEvaluationBase<dim,1,Number,is_face>::get_value() 。
+   *
    */
   value_type
   get_value(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   * FEEvaluationBase<dim,1,Number,is_face>::submit_value() 。
+   *
    */
   void
   submit_value(const value_type val_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::submit_value()
+   * FEEvaluationBase<dim,1,Number,is_face>::submit_value() 。
+   *
    */
   void
   submit_value(const Tensor<1, 1, VectorizedArrayType> val_in,
                const unsigned int                      q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_gradient()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::get_gradient()
+   * FEEvaluationBase<dim,1,Number,is_face>::get_gradient() .
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   * FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative() 。
+   *
    */
   value_type
   get_normal_derivative(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_gradient()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::submit_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::submit_normal_derivative()
+   * FEEvaluationBase<dim,1,Number,is_face>::submit_normal_derivative() 。
+   *
    */
   void
   submit_normal_derivative(const value_type   grad_in,
                            const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_hessian()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::get_hessian()
+   * FEEvaluationBase<dim,1,Number,is_face>::get_hessian() .
+   *
    */
   Tensor<2, dim, VectorizedArrayType>
   get_hessian(unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_hessian_diagonal()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::get_hessian_diagonal()
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_laplacian()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::get_laplacian()
+   * FEEvaluationBase<dim,1,Number,is_face>::get_laplacian() .
+   *
    */
   value_type
   get_laplacian(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::integrate_value()
+   * @copydoc   FEEvaluationBase<dim,1,Number,is_face>::integrate_value() .
+   *
    */
   value_type
   integrate_value() const;
 
 protected:
   /**
-   * Constructor. Made protected to avoid initialization in user code. Takes
-   * all data stored in MatrixFree. If applied to problems with more than one
-   * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * 构造函数。为了避免在用户代码中进行初始化，做了保护。接受所有存储在MatrixFree中的数据。如果应用于有多个有限元的问题，或在构造
+   * @p matrix_free,   @p first_selected_component  和  @p
+   * quad_no时选择了多个正交公式，则允许选择适当的组件。
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1585,8 +1415,8 @@ protected:
     const unsigned int face_type         = numbers::invalid_unsigned_int);
 
   /**
-   * Constructor with reduced functionality for similar usage of FEEvaluation
-   * as FEValues, including matrix assembly.
+   * 构造函数的功能减少，用于类似于FEValues的FEEvaluation的用法，包括矩阵组装。
+   *
    */
   FEEvaluationAccess(
     const Mapping<dim> &      mapping,
@@ -1598,12 +1428,14 @@ protected:
       *other);
 
   /**
-   * Copy constructor
+   * 复制构造函数
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
-   * Copy assignment operator
+   * 拷贝赋值操作符
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1612,13 +1444,12 @@ protected:
 
 
 /**
- * This class provides access to the data fields of the FEEvaluation classes.
- * Partial specialization for fields with as many components as the underlying
- * space dimension, i.e., values are of type Tensor<1,dim> and gradients of
- * type Tensor<2,dim>. Provides some additional functions for access, like the
- * symmetric gradient and divergence.
+ * 该类提供对FEEvaluation类的数据字段的访问。对具有与基础空间维度一样多的分量的字段进行了部分专业化处理，即值是Tensor<1,dim>类型，梯度是Tensor<2,dim>类型。提供一些额外的访问函数，如对称梯度和发散。
+ *
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationAccess<dim, dim, Number, is_face, VectorizedArrayType>
@@ -1638,59 +1469,64 @@ public:
     FEEvaluationBase<dim, dim, Number, is_face, VectorizedArrayType>;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::get_gradient()
+   * @copydoc   FEEvaluationBase<dim,dim,Number,is_face>::get_gradient() .
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
-   * Return the divergence of a vector-valued finite element at quadrature
-   * point number @p q_point after a call to @p evaluate(...,true,...).
+   * 在调用 @p evaluate(...,true,...). 后，返回正交点号 @p q_point
+   * 的矢量值有限元的发散。
+   *
    */
   VectorizedArrayType
   get_divergence(const unsigned int q_point) const;
 
   /**
-   * Return the symmetric gradient of a vector-valued finite element at
-   * quadrature point number @p q_point after a call to @p
-   * evaluate(...,true,...). It corresponds to <tt>0.5
-   * (grad+grad<sup>T</sup>)</tt>.
+   * 在调用 @p evaluation(...,true,...)后，返回在正交点号 @p
+   * q_point 处的矢量值有限元的对称梯度。它对应于<tt>0.5
+   * (grad+grad<sup>T</sup>)</tt>。
+   *
    */
   SymmetricTensor<2, dim, VectorizedArrayType>
   get_symmetric_gradient(const unsigned int q_point) const;
 
   /**
-   * Return the curl of the vector field, $\nabla \times v$ after a call to @p
-   * evaluate(...,true,...).
+   * 在调用 @p evaluate(...,true,...)之后，返回矢量场的卷积，
+   * $\nabla \times v$ 。
+   *
    */
   Tensor<1, (dim == 2 ? 1 : dim), VectorizedArrayType>
   get_curl(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::get_hessian()
+   * @copydoc   FEEvaluationBase<dim,dim,Number,is_face>::get_hessian() 。
+   *
    */
   Tensor<3, dim, VectorizedArrayType>
   get_hessian(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::get_hessian_diagonal()
+   * @copydoc
+   * FEEvaluationBase<dim,dim,Number,is_face>::get_hessian_diagonal()
+   * FEEvaluationBase<dim,dim,Number,is_face>::get_hessian_diagonal() .
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,dim,Number,is_face>::submit_gradient()
+   * @copydoc   FEEvaluationBase<dim,dim,Number,is_face>::submit_gradient() .
+   *
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
-   * Write a contribution that is tested by the gradient to the field
-   * containing the values on quadrature points with component @p q_point.
-   * This function is an alternative to the other submit_gradient function
-   * when using a system of fixed number of equations which happens to
-   * coincide with the dimension for some dimensions, but not all. To allow
-   * for dimension-independent programming, this function can be used instead.
+   * 编写一个贡献，通过梯度对包含分量为 @p q_point.
+   * 的正交点上的值的域进行测试，这个函数是其他submit_gradient函数的替代方案，当使用固定数量的方程组时，恰好与某些维度的维度重合，但不是全部。为了实现与维度无关的编程，可以使用这个函数来代替。
+   *
    */
   void
   submit_gradient(
@@ -1698,24 +1534,22 @@ public:
     const unsigned int                                        q_point);
 
   /**
-   * Write a contribution that is tested by the divergence to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies what is
-   * tested by all basis function gradients on the current cell and integrated
-   * over.
+   * 编写一个贡献，通过发散测试到包含正交点上的值的字段，组件
+   * @p q_point.  通过 @p get_gradient.
+   * 访问相同的字段，如果在调用函数 @p integrate(...,true)
+   * 之前应用，这指定了由当前单元上的所有基函数梯度测试并整合的内容。
+   *
    */
   void
   submit_divergence(const VectorizedArrayType div_in,
                     const unsigned int        q_point);
 
   /**
-   * Write a contribution that is tested by the symmetric gradient to the field
-   * containing the values on quadrature points with component @p q_point.
-   * Access to the same field as through @p get_symmetric_gradient. If applied before
-   * the function @p integrate(...,true) is called, this specifies the
-   * symmetric gradient which is tested by all basis function symmetric
-   * gradients on the current cell and integrated over.
+   * 写入一个贡献，这个贡献被对称梯度测试到包含正交点上的值的字段，其分量为
+   * @p q_point.  通过  @p get_symmetric_gradient.  访问同一个字段
+   * 如果在调用函数  @p integrate(...,true)
+   * 之前应用，这指定了对称梯度，它被当前单元上的所有基函数对称梯度测试并整合在一起。
+   *
    */
   void
   submit_symmetric_gradient(
@@ -1723,8 +1557,9 @@ public:
     const unsigned int                                 q_point);
 
   /**
-   * Write the components of a curl containing the values on quadrature point
-   * @p q_point. Access to the same data field as through @p get_gradient.
+   * 写下包含正交点 @p q_point. 上的值的curl的分量 通过 @p
+   * get_gradient. 访问相同的数据域。
+   *
    */
   void
   submit_curl(const Tensor<1, dim == 2 ? 1 : dim, VectorizedArrayType> curl_in,
@@ -1732,11 +1567,10 @@ public:
 
 protected:
   /**
-   * Constructor. Made protected to avoid initialization in user code. Takes
-   * all data stored in MatrixFree. If applied to problems with more than one
-   * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * 构造函数。为了避免在用户代码中进行初始化，做了保护。取用存储在MatrixFree中的所有数据。如果应用于有多个有限元的问题，或在构建
+   * @p matrix_free,  @p first_selected_component 和 @p
+   * quad_no时选择了多个正交公式，允许选择适当的组件。
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -1751,8 +1585,8 @@ protected:
     const unsigned int face_type         = numbers::invalid_unsigned_int);
 
   /**
-   * Constructor with reduced functionality for similar usage of FEEvaluation
-   * as FEValues, including matrix assembly.
+   * 构造函数的功能减少，用于类似于FEValues的FEEvaluation的用法，包括矩阵组装。
+   *
    */
   FEEvaluationAccess(
     const Mapping<dim> &      mapping,
@@ -1764,12 +1598,14 @@ protected:
       *other);
 
   /**
-   * Copy constructor
+   * 复制构造函数
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
-   * Copy assignment operator
+   * 拷贝赋值操作符
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1777,12 +1613,12 @@ protected:
 
 
 /**
- * This class provides access to the data fields of the FEEvaluation classes.
- * Partial specialization for scalar fields in 1d that defines access with
- * simple data fields, i.e., scalars for the values and Tensor<1,1> for the
- * gradients.
+ * 该类提供对FEEvaluation类的数据字段的访问。1d中标量字段的部分特殊化，定义了对简单数据字段的访问，即标量为值，Tensor<1,1>为梯度。
+ *
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <typename Number, bool is_face, typename VectorizedArrayType>
 class FEEvaluationAccess<1, 1, Number, is_face, VectorizedArrayType>
@@ -1801,117 +1637,145 @@ public:
     FEEvaluationBase<1, 1, Number, is_face, VectorizedArrayType>;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_dof_value()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_dof_value()
+   * FEEvaluationBase<1,1,Number,is_face>::get_dof_value() 。
+   *
    */
   value_type
   get_dof_value(const unsigned int dof) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_dof_value()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::submit_dof_value()
+   * FEEvaluationBase<1,1,Number,is_face>::submit_dof_value() .
+   *
    */
   void
   submit_dof_value(const value_type val_in, const unsigned int dof);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_value()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_value() .
+   *
    */
   value_type
   get_value(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_value()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::submit_value() .
+   *
    */
   void
   submit_value(const value_type val_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_value()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::submit_value() .
+   *
    */
   void
   submit_value(const gradient_type val_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_gradient()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_gradient() .
+   *
    */
   gradient_type
   get_gradient(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_divergence()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_divergence() .
+   *
    */
   value_type
   get_divergence(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<dim,1,Number,is_face>::get_normal_derivative() .
+   *
    */
   value_type
   get_normal_derivative(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * FEEvaluationBase<1,1,Number,is_face>::submit_gradient() 。
+   *
    */
   void
   submit_gradient(const gradient_type grad_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::submit_gradient() .
+   *
    */
   void
   submit_gradient(const value_type grad_in, const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::submit_gradient()
+   *
    */
   void
   submit_gradient(const Tensor<2, 1, VectorizedArrayType> grad_in,
                   const unsigned int                      q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   * FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative() 。
+   *
    */
   void
   submit_normal_derivative(const value_type   grad_in,
                            const unsigned int q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   * @copydoc
+   * FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative()
+   * FEEvaluationBase<1,1,Number,is_face>::submit_normal_derivative() .
+   *
    */
   void
   submit_normal_derivative(const gradient_type grad_in,
                            const unsigned int  q_point);
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_hessian()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_hessian()
+   * FEEvaluationBase<1,1,Number,is_face>::get_hessian() 。
+   *
    */
   Tensor<2, 1, VectorizedArrayType>
   get_hessian(unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_hessian_diagonal()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_hessian_diagonal()
+   * FEEvaluationBase<1,1,Number,is_face>::get_hessian_diagonal() 。
+   *
    */
   gradient_type
   get_hessian_diagonal(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::get_laplacian()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::get_laplacian()
+   * FEEvaluationBase<1,1,Number,is_face>::get_laplacian() .
+   *
    */
   value_type
   get_laplacian(const unsigned int q_point) const;
 
   /**
-   * @copydoc FEEvaluationBase<1,1,Number,is_face>::integrate_value()
+   * @copydoc   FEEvaluationBase<1,1,Number,is_face>::integrate_value()
+   * FEEvaluationBase<1,1,Number,is_face>::integrate_value() 。
+   *
    */
   value_type
   integrate_value() const;
 
 protected:
   /**
-   * Constructor. Made protected to avoid initialization in user code. Takes
-   * all data stored in MatrixFree. If applied to problems with more than one
-   * finite element or more than one quadrature formula selected during
-   * construction of @p matrix_free, @p first_selected_component and @p
-   * quad_no allow to select the appropriate components.
+   * 构造函数。为了避免在用户代码中进行初始化，做了保护。接受所有存储在MatrixFree中的数据。如果应用于有多个有限元的问题，或在构造
+   * @p matrix_free,  @p first_selected_component 和 @p
+   * quad_no时选择了多个正交公式，允许选择适当的组件。
+   *
    */
   FEEvaluationAccess(
     const MatrixFree<1, Number, VectorizedArrayType> &matrix_free,
@@ -1926,8 +1790,8 @@ protected:
     const unsigned int face_type         = numbers::invalid_unsigned_int);
 
   /**
-   * Constructor with reduced functionality for similar usage of FEEvaluation
-   * as FEValues, including matrix assembly.
+   * 构造器的功能减少，用于类似FEValues的FEEvaluation的使用，包括矩阵组装。
+   *
    */
   FEEvaluationAccess(
     const Mapping<1> &      mapping,
@@ -1938,12 +1802,14 @@ protected:
     const FEEvaluationBaseData<1, Number, is_face, VectorizedArrayType> *other);
 
   /**
-   * Copy constructor
+   * 复制构造函数
+   *
    */
   FEEvaluationAccess(const FEEvaluationAccess &other);
 
   /**
-   * Copy assignment operator
+   * 拷贝赋值操作符
+   *
    */
   FEEvaluationAccess &
   operator=(const FEEvaluationAccess &other);
@@ -1952,558 +1818,316 @@ protected:
 
 
 /**
- * The class that provides all functions necessary to evaluate functions at
- * quadrature points and cell integrations. In functionality, this class is
- * similar to FEValues, however, it includes a lot of specialized functions
- * that make it much faster (between 5 and 500, depending on the polynomial
- * degree). For evaluation of face terms in DG, see the class
- * FEFaceEvaluation.
+ * 该类提供了在正交点和单元格积分上评估函数所需的所有功能。在功能上，这个类与FEValues类似，但是，它包括很多专门的函数，使其速度更快（5到500之间，取决于多项式的程度）。对于DG中人脸项的评估，请参见类FEFaceEvaluation。
+ * <h3>Usage and initialization</h3> <h4>Fast usage in combination with
+ * MatrixFree</h4>
+ * 首要的使用方法是通过MatrixFree对象初始化这个类，该对象缓存了所有与自由度和映射信息相关的内容。这样，就有可能使用矢量化的方式，一次为几个单元应用微分算子。
+ * FEEvaluation的能力涵盖了大量的弱形式的积分任务。一般来说，有两类任务是可以完成的。一个是
+ * @p evaluate 路径，从解向量插值到正交点。
  *
- * <h3>Usage and initialization</h3>
- *
- * <h4>Fast usage in combination with MatrixFree</h4>
- *
- * The first and foremost way of usage is to initialize this class from a
- * MatrixFree object that caches everything related to the degrees of freedom
- * and the mapping information. This way, it is possible to use vectorization
- * for applying a differential operator for several cells at once.
- *
- * The capabilities of FEEvaluation span a large spectrum of integration tasks
- * for weak forms. In general, there are two classes of tasks that get
- * done. One is the @p evaluate path that interpolates from a solution vector
- * to quadrature points:
  *
  * @code
  * FEEvaluation<dim,fe_degree> phi(matrix_free);
  * for (unsigned int cell_index = cell_range.first;
- *      cell_index < cell_range.second; ++cell_index)
- *   {
- *     phi.reinit(cell_index);
- *     phi.read_dof_values(vector);
- *     phi.evaluate(EvaluationFlags::values);   // interpolate values only
- *     for (unsigned int q=0; q<phi.n_q_points; ++q)
- *       {
- *         VectorizedArray<double> val = phi.get_value(q);
- *         // do something with val
- *       }
- *   }
+ *    cell_index < cell_range.second; ++cell_index)
+ * {
+ *   phi.reinit(cell_index);
+ *   phi.read_dof_values(vector);
+ *   phi.evaluate(EvaluationFlags::values);   // interpolate values only
+ *   for (unsigned int q=0; q<phi.n_q_points; ++q)
+ *     {
+ *       VectorizedArray<double> val = phi.get_value(q);
+ *       // do something with val
+ *     }
+ * }
  * @endcode
  *
- * Likewise, a gradient of the finite element solution represented by @p
- * vector can be interpolated to the quadrature points by @p
- * phi.get_gradient(q). The combination of read_dof_values(), evaluate() and
- * get_value() is similar to what FEValues::get_function_values or
- * FEValues::get_function_gradients does, but it is in general much faster
- * because it makes use of the tensor product, see the description of the
- * evaluation routines below, and can do this operation for several cells at
- * once through vectorization.
+ * 同样，由 @p 矢量代表的有限元解的梯度可以通过 @p
+ * phi.get_gradient(q)插值到正交点。read_dof_values()、evaluate()和get_value()的组合与
+ * FEValues::get_function_values 或 FEValues::get_function_gradients
+ * 所做的类似，但一般来说要快得多，因为它利用了张量积，见下面对评估例程的描述，并且可以通过矢量化一次为几个单元做这个操作。
+ * FEEvaluation完成的第二类任务是右手边的积分任务。在有限元计算中，这些任务通常包括将正交点上的一个量（一个函数值，或者一个由有限元空间本身插值的场）与一组测试函数相乘，通过对每个正交点的值进行求和，再乘以正交权重和变换的雅各布行列式，对单元进行积分。如果给定一个通用的Function对象，我们想计算
+ * $v_i = \int_\Omega \varphi_i f dx$
+ * ，这可以通过以下单元的积分来完成。
  *
- * The second class of tasks done by FEEvaluation are integration tasks for
- * right hand sides. In finite element computations, these typically consist
- * of multiplying a quantity on quadrature points (a function value, or a
- * field interpolated by the finite element space itself) by a set of test
- * functions and integrating over the cell through summation of the values in
- * each quadrature point, multiplied by the quadrature weight and the Jacobian
- * determinant of the transformation. If a generic Function object is given
- * and we want to compute $v_i = \int_\Omega \varphi_i f dx$, this is done by
- * the following cell-wise integration:
  *
  * @code
  * FEEvaluation<dim,fe_degree> phi(matrix_free);
  * Function<dim> &function = ...;
  * for (unsigned int cell_index = cell_range.first;
- *      cell_index < cell_range.second; ++cell_index)
- *   {
- *     phi.reinit(cell_index);
- *     for (unsigned int q=0; q<phi.n_q_points; ++q)
- *       {
- *         Point<dim,VectorizedArray<double> > p_vect =
- *           phi.quadrature_point(q);
- *         // Need to evaluate function for each component in VectorizedArray
- *         VectorizedArray<double> f_value;
- *         for (unsigned int v=0; v<VectorizedArray<double>::size(); ++v)
- *           {
- *             Point<dim> p;
- *             for (unsigned int d=0; d<dim; ++d)
- *               p[d] = p_vect[d][v];
- *             f_value[v] = function.value(p);
- *           }
- *         phi.submit_value(f_value, q);
- *       }
- *     phi.integrate(EvaluationFlags::values);
- *     phi.distribute_local_to_global(dst);
- *   }
+ *    cell_index < cell_range.second; ++cell_index)
+ * {
+ *   phi.reinit(cell_index);
+ *   for (unsigned int q=0; q<phi.n_q_points; ++q)
+ *     {
+ *       Point<dim,VectorizedArray<double> > p_vect =
+ *         phi.quadrature_point(q);
+ *       // Need to evaluate function for each component in VectorizedArray
+ *       VectorizedArray<double> f_value;
+ *       for (unsigned int v=0; v<VectorizedArray<double>::size(); ++v)
+ *         {
+ *           Point<dim> p;
+ *           for (unsigned int d=0; d<dim; ++d)
+ *             p[d] = p_vect[d][v];
+ *           f_value[v] = function.value(p);
+ *         }
+ *       phi.submit_value(f_value, q);
+ *     }
+ *   phi.integrate(EvaluationFlags::values);
+ *   phi.distribute_local_to_global(dst);
+ * }
  * @endcode
  *
- * In this code, the call to @p phi.submit_value() prepares for the
- * multiplication by the test function prior to the actual integration (inside
- * the submit call, the value to be tested is also multiplied by the
- * determinant of the Jacobian and the quadrature weight). In the
- * @p integrate() call, an integral contribution tested by each basis function
- * underlying the FEEvaluation object (e.g. the four linear shape functions of
- * FE_Q@<2@>(1) in 2D) is computed, which gives the vector entries to be
- * summed into the @p dst vector. Note that the above code needs to explicitly
- * loop over the components in the vectorized array for evaluating the
- * function, which is necessary for interfacing with a generic Function object
- * with double arguments. Simple functions can also be implemented in
- * VectorizedArray form directly as VectorizedArray provides the basic math
- * operations.
- *
- * For evaluating a bilinear form, the evaluation on a source vector is
- * combined with the integration involving test functions that get written
- * into a result vector. This setting is the context of matrix-free operator
- * evaluation and explained in the step-37 and step-48 tutorial programs.
- *
- * Note that the two vector accesses through FEEvaluation::read_dof_values and
- * FEEvaluation::distribute_local_to_global resolve constraints on the fly,
- * based on the AffineConstraints object specified at the MatrixFree::reinit()
- * call. In case the values in the degrees of freedom are of interest (usually
- * only the values in quadrature points are necessary), these can be accessed
- * through FEEvaluation::get_dof_value(i), where i is the index of the basis
- * function. Note that the numbering of the degrees of freedom for continuous
- * elements in FEEvaluation is different from the ordering in FE_Q (or
- * FEValues) because FEEvaluation needs to access them in lexicographic order,
- * which is the ordering used in FE_DGQ, for instance. Re-indexing would be
- * too expensive because the access inside evaluate() and integrate() is on
- * the critical path in the tensorial evaluation parts. An alternative to
- * filling the DoF values by read_dof_values() before an evaluate() call is to
- * manually assign a value by a set_dof_value() call. Likewise, if the local
- * result of integration should be further processed rather than scattered
- * into a vector by distribute_local_to_global(), one can access it by
- * get_dof_value() after an integrate() call. An example for using the values
- * of an integral in a different context is fast assembly of matrices as shown
- * in the next subsection.
- *
- * For most operator evaluation tasks that repeatedly go through the mesh, the
- * realization by MatrixFree that combines pre-computed data for the mapping
- * (Jacobian transformations for the geometry description) with on-the-fly
- * evaluation of basis functions is the most efficient way of doing things. In
- * other words, the framework selects a trade-off between memory usage and
- * initialization of objects that is suitable for replacement of matrix-vector
- * products or explicit time integration in a matrix-free way.
- *
+ * 在这段代码中，对 @p phi.submit_value()
+ * 的调用在实际积分之前为测试函数的乘法做了准备（在提交调用中，要测试的值也被乘以雅各布的行列式和正交的权重）。在
+ * @p integrate()
+ * 调用中，由FEEvaluation对象的每个基础函数（例如二维的FE_Q
+ * @<2@>(1)
+ * 的四个线性形状函数）测试的积分贡献被计算出来，这就给出了要加到
+ * @p dst
+ * 向量中的向量条目。需要注意的是，上面的代码需要明确地在向量数组中循环计算函数的分量，这对于与具有双参数的通用Function对象对接是必要的。简单的函数也可以直接用VectorizedArray形式实现，因为VectorizedArray提供了基本的数学运算。
+ * 对于评估一个双线性形式，在源向量上的评估与涉及测试函数的积分相结合，被写入结果向量中。这种设置是无矩阵算子求值的背景，在
+ * step-37 和 step-48 的教程程序中解释过。 请注意，通过
+ * FEEvaluation::read_dof_values 和 FEEvaluation::distribute_local_to_global
+ * 的两个向量访问，基于 MatrixFree::reinit()
+ * 调用时指定的AffineConstraints对象，在飞行中解决约束。如果对自由度的值感兴趣（通常只需要正交点的值），可以通过
+ * FEEvaluation::get_dof_value(i),
+ * 访问这些值，其中i是基函数的索引。请注意，FEEvaluation中连续元素自由度的编号与FE_Q（或FEValues）中的排序不同，因为FEEvaluation需要以lexicographic顺序访问它们，例如FE_DGQ中使用的就是这种排序。重新索引的成本太高，因为evaluate()和integration()里面的访问是在张量评估部分的关键路径上。在evaluate()调用之前，通过read_dof_values()填充DoF值的一个替代方法是通过set_dof_value()调用手动赋值。同样，如果积分的局部结果应该被进一步处理，而不是通过distribut_local_to_global()分散到一个向量中，我们可以在调用
+ * integrate()后通过get_dof_value()来访问它。在不同背景下使用积分值的一个例子是快速装配矩阵，如下一小节所示。
+ * 对于大多数反复穿过网格的算子评估任务，MatrixFree的实现方式是将预先计算的映射数据（几何描述的雅各布变换）与基函数的即时评估相结合，是最有效的方式。换句话说，该框架在内存使用和对象的初始化之间选择了一种权衡，适合用无矩阵的方式替代矩阵-向量乘积或显式时间积分。
  * <h4>Usage without pre-initialized MatrixFree object</h4>
+ * 第二种使用形式是通过FEValues生成的几何信息来初始化FEEvaluation。这允许在不事先初始化MatrixFree对象的情况下，即时应用积分循环。当MatrixFree的内存和初始化成本不可接受时，这可能很有用，例如，在误差计算中，不同数量的正交点应该被用于一次评估。另外，当使用这个类的例程来组装矩阵时，MatrixFree类所暗示的权衡可能是不可取的。在这种情况下，即时初始化必要的几何数据的成本是相当低的，因此避免全局对象MatrixFree是有用的。当以这种方式使用时，会使用让人想起带有单元格迭代器的FEValues的reinit方法。然而，请注意，这种模式的结果是一次只处理一个单元，几何数据在矢量化数组的所有组件中都是重复的。因此，只有在可以对不同的数据进行相同的操作时，矢量化才是有用的，例如在进行矩阵装配时。
+ * 作为一个例子，考虑下面的代码来组装对拉普拉斯矩阵的贡献。
  *
- * The second form of usage is to initialize FEEvaluation from geometry
- * information generated by FEValues. This allows to apply the integration
- * loops on the fly without prior initialization of MatrixFree objects. This
- * can be useful when the memory and initialization cost of MatrixFree is not
- * acceptable, e.g. when a different number of quadrature points should be
- * used for one single evaluation in error computation. Also, when using the
- * routines of this class to assemble matrices the trade-off implied by the
- * MatrixFree class may not be desired. In such a case, the cost to initialize
- * the necessary geometry data on the fly is comparably low and thus avoiding
- * a global object MatrixFree can be useful. When used in this way, reinit
- * methods reminiscent from FEValues with a cell iterator are used. However,
- * note that this model results in working on a single cell at a time, with
- * geometry data duplicated in all components of the vectorized array. Thus,
- * vectorization is only useful when it can apply the same operation on
- * different data, e.g. when performing matrix assembly.
- *
- * As an example, consider the following code to assemble the contributions to
- * the Laplace matrix:
  *
  * @code
  * FEEvaluation<dim,fe_degree> fe_eval (mapping, finite_element,
- *                                      QGauss<1>(fe_degree+1), flags);
+ *                                    QGauss<1>(fe_degree+1), flags);
  * for (const auto &cell : dof_handler.active_cell_iterators())
- *   {
- *     fe_eval.reinit(cell);
- *     for (unsigned int i=0; i<dofs_per_cell;
- *          i += VectorizedArray<double>::size())
- *       {
- *         const unsigned int n_items =
- *           i+VectorizedArray<double>::size() > dofs_per_cell ?
- *           (dofs_per_cell - i) :
- *           VectorizedArray<double>::size();
+ * {
+ *   fe_eval.reinit(cell);
+ *   for (unsigned int i=0; i<dofs_per_cell;
+ *        i += VectorizedArray<double>::size())
+ *     {
+ *       const unsigned int n_items =
+ *         i+VectorizedArray<double>::size() > dofs_per_cell ?
+ *         (dofs_per_cell
  *
- *         // Set n_items unit vectors
+ * - i) :
+ *         VectorizedArray<double>::size();
+ *
+ *       // Set n_items unit vectors
+ *       for (unsigned int j=0; j<dofs_per_cell; ++j)
+ *         fe_eval.set_dof_value(VectorizedArray<double>(), j);
+ *       for (unsigned int v=0; v<n_items; ++v)
+ *         {
+ *           VectorizedArray<double> one_value = VectorizedArray<double>();
+ *           one_value[v] = 1.;
+ *           fe_eval.set_dof_value(one_value, i+v);
+ *         }
+ *
+ *       // Apply operator on unit vector to generate the next few matrix
+ *       // columns
+ *       fe_eval.evaluate(EvaluationFlags::values|EvaluationFlags::gradients);
+ *       for (unsigned int q=0; q<n_q_points; ++q)
+ *         {
+ *           fe_eval.submit_value(10.*fe_eval.get_value(q), q);
+ *           fe_eval.submit_gradient(fe_eval.get_gradient(q), q);
+ *         }
+ *       fe_eval.integrate(EvaluationFlags::values|EvaluationFlags::gradients);
+ *
+ *       // Insert computed entries in matrix
+ *       for (unsigned int v=0; v<n_items; ++v)
  *         for (unsigned int j=0; j<dofs_per_cell; ++j)
- *           fe_eval.set_dof_value(VectorizedArray<double>(), j);
- *         for (unsigned int v=0; v<n_items; ++v)
- *           {
- *             VectorizedArray<double> one_value = VectorizedArray<double>();
- *             one_value[v] = 1.;
- *             fe_eval.set_dof_value(one_value, i+v);
- *           }
- *
- *         // Apply operator on unit vector to generate the next few matrix
- *         // columns
- *         fe_eval.evaluate(EvaluationFlags::values|EvaluationFlags::gradients);
- *         for (unsigned int q=0; q<n_q_points; ++q)
- *           {
- *             fe_eval.submit_value(10.*fe_eval.get_value(q), q);
- *             fe_eval.submit_gradient(fe_eval.get_gradient(q), q);
- *           }
- *         fe_eval.integrate(EvaluationFlags::values|EvaluationFlags::gradients);
- *
- *         // Insert computed entries in matrix
- *         for (unsigned int v=0; v<n_items; ++v)
- *           for (unsigned int j=0; j<dofs_per_cell; ++j)
- *             cell_matrix(fe_eval.get_internal_dof_numbering()[j],
- *                         fe_eval.get_internal_dof_numbering()[i+v])
- *               = fe_eval.get_dof_value(j)[v];
- *       }
- *     ...
- *   }
+ *           cell_matrix(fe_eval.get_internal_dof_numbering()[j],
+ *                       fe_eval.get_internal_dof_numbering()[i+v])
+ *             = fe_eval.get_dof_value(j)[v];
+ *     }
+ *   ...
+ * }
  * @endcode
  *
- * This code generates the columns of the cell matrix with the loop over @p i
- * above. The way this is done is the following: FEEvaluation's routines focus
- * on the evaluation of finite element operators, so for computing a cell
- * matrix out of an operator evaluation it is applied to all the unit vectors
- * on the cell. Applying the operator on a unit vector might seem inefficient
- * but the evaluation routines used here are so quick that they still work
- * much faster than what is possible with FEValues. In particular, the
- * complexity is <code>(fe_degree+1)<sup>2*dim+1</sup> </code> rather than
- * <code>(fe_degree+1)<sup>3*dim</sup> </code>.
- *
- * Due to vectorization, we can generate matrix columns for several unit
- * vectors at a time (e.g. 4). The variable @p n_items make sure that we do
- * the last iteration where the number of cell dofs is not divisible by the
- * vectorization length correctly. Also note that we need to get the internal
- * dof numbering applied by fe_eval because FEEvaluation internally uses a
- * lexicographic numbering of degrees of freedom as explained above.
- *
+ * 这段代码用上面 @p i
+ * 的循环生成了单元格矩阵的列。这样做的方式如下。FEEvaluation的例程专注于有限元算子的评估，所以对于计算单元矩阵的算子评估，它被应用于单元上的所有单位向量。在单位向量上应用算子可能看起来效率不高，但这里使用的评估例程非常快，以至于它们的工作速度仍然比FEValues可能的要快得多。特别是，复杂度是
+ * <code>(fe_degree+1)<sup>2*dim+1</sup> </code>  而不是
+ * <code>(fe_degree+1)<sup>3*dim</sup> </code>  。
+ * 由于矢量化，我们可以一次生成几个单位向量的矩阵列（例如4）。变量
+ * @p n_items
+ * 确保我们正确地做最后一次迭代，其中单元格的数量不被矢量化长度所除。还要注意的是，我们需要得到fe_eval应用的内部自由度编号，因为FEEvaluation内部使用的是自由度的词法编号，如上所述。
  * <h4>Internal data organization</h4>
- *
- * The temporary data for holding the solution values on the local degrees of
- * freedom as well as the interpolated values, gradients, and Hessians on
- * quadrature points is a scratch array provided by
- * MatrixFree::acquire_scratch_data() that is re-used between different calls
- * to FEEvaluation. Therefore, constructing an FEEvaluation object is
- * typically cheap and does not involve any expensive operation. Only a few
- * dozen pointers to the actual data fields are set during
- * construction. Therefore, no negative performance impact arises when
- * creating an FEEvaluation several times per loop, such as at the top of a
- * `local_cell_operation` operation that is split in small chunks for a parallel
- * for loop, obviating a separate scratch data field for parallel loops as
- * necessary in the loop of @p WorkStream.
- *
- * When using the FEEvaluation class in multithreaded mode, the thread local
- * storage of the scratch data in MatrixFree automatically makes sure that
- * each thread gets it private data array. Note, however, that deal.II must be
- * compiled with thread support also when all the thread parallelization is
- * provided externally and not done via deal.II's routines, such as
- * OpenMP. This is because deal.II needs to know the notation of thread local
- * storage. The FEEvaluation kernels have been verified to work within OpenMP
- * loops.
- *
+ * 用于保存局部自由度的求解值以及正交点的内插值、梯度和Hessians的临时数据是由
+ * MatrixFree::acquire_scratch_data()
+ * 提供的Scratch数组，在对FEEvaluation的不同调用之间被重复使用。因此，构造一个FEEvaluation对象通常很便宜，不涉及任何昂贵的操作。在构建过程中，只有几十个指向实际数据字段的指针被设置。因此，在每个循环中多次创建一个FEEvaluation时，不会产生负面的性能影响，例如在一个`local_cell_operation`操作的顶部，该操作被分割成小块用于并行for循环，避免了在
+ * @p WorkStream. 的循环中需要单独的抓取数据字段。
+ * 当在多线程模式下使用FEEvaluation类时，MatrixFree中抓取数据的线程本地存储会自动确保每个线程得到它的私有数据阵列。然而，请注意，当所有的线程并行化是由外部提供的，而不是通过deal.II的例程完成的，如OpenMP，deal.II也必须被编译为支持线程。这是因为deal.II需要知道线程本地存储的符号。FEEvaluation内核已经被验证可以在OpenMP循环中工作。
  * <h4>Vectorization scheme through VectorizedArray</h4>
- *
- * This class is designed to perform all arithmetics on single-instruction
- * multiple-data (SIMD) instructions present on modern CPUs by explicit
- * vectorization, which are made available in deal.II through the class
- * VectorizedArray, using the widest vector width available at
- * configure/compile time. In order to keep programs flexible, FEEvaluation
- * always applies vectorization over several elements. This is often the best
- * compromise because computations on different elements are usually
- * independent in the finite element method (except of course the process of
- * adding an integral contribution to a global residual vector), also in more
- * complicated scenarios: Stabilization parameter can e.g. be defined as the
- * maximum of some quantities on all quadrature points of a cell divided by
- * the cell's volume, but without locally mixing the results with
- * neighbors. Using the terminology from computer architecture, the design of
- * FEEvaluation relies on not doing any cross-lane data exchange when
- * operating on the cell in typical integration scenarios.
- *
- * When the number of cells in the problem is not a multiple of the number of
- * array elements in the SIMD vector, the implementation of FEEvaluation fills
- * in some dummy entries in the unused SIMD lanes and carries them around
- * nonetheless, a choice made necessary since the length of VectorizedArray is
- * fixed at compile time. Yet, this approach most often results in superior
- * code as compared to an auto-vectorization setup where an alternative
- * unvectorized code path would be necessary next to the vectorized version to
- * be used on fully populated lanes, together with a dispatch mechanism. In
- * @p read_dof_values, the empty lanes resulting from a reinit() call to an
- * incomplete batch of cells are set to zero, whereas
- * @p distribute_local_to_global or @p set_dof_values simply ignores the
- * content in the empty lanes. The number of actually filled SIMD lanes can by
- * queried by MatrixFree::n_components_filled().
- *
- * Obviously, the computations performed on the artificial lanes (without real
- * data) should never be mixed with valid results. The contract in using this
- * class is that the user makes sure that lanes are not crossed in user code,
- * in particular since it is not clear a priori which cells are going to be
- * put together in vectorization. For example, results on an element should
- * not be added to results on other elements except through the global vector
- * access methods or by access that is masked by
- * MatrixFree::n_components_filled(). No guarantee can be made that results on
- * artificial lanes will always be zero that can safely be added to other
- * results: The data on JxW or Jacobians is copied from the last valid lane in
- * order to avoid division by zero that could trigger floating point
- * exceptions or trouble in other situations.
- *
+ * 该类旨在通过显式矢量化来执行现代CPU上存在的单指令多数据（SIMD）指令的所有算术，这些指令在deal.II中通过类VectorizedArray提供，使用配置/编译时可用的最宽矢量宽度。为了保持程序的灵活性，FEEvaluation总是在几个元素上应用矢量化。这通常是最好的妥协，因为在有限元方法中，不同元素上的计算通常是独立的（当然，除了向全局残差向量添加积分贡献的过程），在更复杂的情况下也是如此。例如，稳定参数可以定义为一个单元的所有正交点上的某些量的最大值除以该单元的体积，但不需要将结果与邻接点进行局部混合。使用计算机结构的术语，FEEvaluation的设计依赖于在典型的集成场景下对单元进行操作时不做任何跨线数据交换。
+ * 当问题中的单元数不是SIMD向量中数组元素的倍数时，FEEvaluation的实现会在未使用的SIMD通道中填入一些假条目，并将它们带入周围，由于VectorizedArray的长度在编译时是固定的，所以这一选择是必要的。然而，与自动矢量化设置相比，这种方法通常会产生更好的代码，因为在自动矢量化设置中，除了在完全填充的通道上使用的矢量化版本外，还需要另一个未矢量化的代码路径，同时还有一个调度机制。在
+ * @p read_dof_values,
+ * 中，对不完整的一批单元的reinit()调用所产生的空道被设置为零，而
+ * @p distribute_local_to_global 或 @p set_dof_values
+ * 则简单地忽略了空道中的内容。实际填充的SIMD通道的数量可以通过
+ * MatrixFree::n_components_filled(). 来查询。
+ * 很明显，在人工通道上进行的计算（没有真实的数据）不应该与有效的结果混合。使用这个类的契约是，用户要确保通道在用户代码中不被交叉，特别是由于事先不清楚哪些单元会在矢量化中被放在一起。例如，除了通过全局向量访问方法或通过被屏蔽的访问
+ * MatrixFree::n_components_filled().
+ * ，一个元素上的结果不应该被添加到其他元素上的结果中。
+ * 不能保证人工车道上的结果永远是可以安全地添加到其他结果中的零。JxW或Jacobian上的数据是从最后一个有效车道复制的，以避免除以零，这可能引发浮点异常或其他情况下的麻烦。
  * <h3>Description of evaluation routines</h3>
- *
- * This class contains specialized evaluation routines for elements based on
- * tensor-product quadrature formulas and tensor-product-like shape functions,
- * including standard FE_Q or FE_DGQ elements and quadrature points symmetric
- * around 0.5 (like Gauss quadrature), FE_DGP elements based on truncated
- * tensor products as well as the faster case of Gauss-Lobatto elements with
- * Gauss-Lobatto quadrature which give diagonal mass matrices and quicker
- * evaluation internally. The main benefit of this class is the evaluation of
- * all shape functions in all quadrature or integration over all shape
- * functions in <code>dim (fe_degree+1)<sup>dim+1</sup> </code> operations
- * instead of the slower <code> (fe_degree+1)<sup>2*dim</sup></code>
- * complexity in the evaluation routines of FEValues. This is done by an
- * algorithm called sum factorization which factors out constant factors
- * during the evaluation along a coordinate direction. This algorithm is the
- * basis of many spectral element algorithms.
- *
- * Note that many of the operations available through this class are inherited
- * from the base class FEEvaluationBase, in particular reading from and
- * writing to vectors. Also, the class inherits from FEEvaluationAccess that
- * implements access to values, gradients and Hessians of the finite element
- * function on quadrature points.
- *
- * This class assumes that the shape functions of the FiniteElement under
- * consideration do <em>not</em> depend on the geometry of the cells in real
- * space. Currently, other finite elements cannot be treated with the
- * matrix-free concept.
- *
+ * 这个类包含了基于张量积正交公式和类似张量积的形状函数的元素的专门评估例程，包括标准的FE_Q或FE_DGQ元素和围绕0.5对称的正交点（像高斯正交），基于截断张量积的FE_DGP元素以及高斯-洛巴托正交元素的更快情况，它给出对角线质量矩阵和内部更快评估。该类的主要优点是在所有正交中评估所有形状函数，或者在
+ * <code>dim (fe_degree+1)<sup>dim+1</sup> </code>
+ * 操作中对所有形状函数进行积分，而不是在FEValues的评估例程中的较慢的
+ * <code> (fe_degree+1)<sup>2*dim</sup></code>
+ * 复杂性。这是由一种叫做和因子化的算法完成的，该算法在沿坐标方向的评估过程中剔除了常数因子。这个算法是许多谱元算法的基础。
+ * 请注意，通过这个类可以进行的许多操作都是从基类FEEvaluationBase继承的，特别是对向量的读写。另外，该类继承了FEEvaluationAccess，实现了对正交点上有限元函数的值、梯度和Hessians的访问。
+ * 该类假定所考虑的有限元的形状函数 <em> 不 </em>
+ * 依赖于实空间中单元的几何形状。目前，其他有限元不能用无矩阵概念处理。
  * <h4>Degree of finite element as a compile-time parameter</h4>
+ * 该类FEEvaluation为两个使用模式。第一个使用模式是将多项式程度作为模板参数来指定。这保证了最大的效率。用和因数法进行评估时，会执行一些嵌套的短1D循环，其长度等于多项式度数加1。如果在编译时知道循环的边界，编译器可以根据其启发式方法认为最有效的方式展开循环。至少最里面的循环几乎总是被完全解开，避免了循环的开销。
+ * 然而，将多项式度数（以及正交点的数量）作为模板参数携带，在需要考虑不同的多项式度数的代码中，例如在通过输入文件给出多项式度数的应用代码中，事情就变得更加复杂。第二种使用模式是依靠预编译的代码来处理多项式度数。虽然用户代码可以为单元格使用不同的函数（这些函数会被一些动态调度机制调用，用于不同的度数模板），但deal.II也支持基于传递给初始化的元素中的信息来使用这个类。对于这种使用模式，将多项式程度的模板参数设置为
  *
- * The class FEEvaluation as two usage models. The first usage model is to
- * specify the polynomial degree as a template parameter. This guarantees
- * maximum
- * efficiency: The evaluation with sum factorization performs a number of nested
- * short 1D loops of length equal to the polynomial degree plus one. If the
- * loop bounds are known at compile time, the compiler can unroll loops as
- * deemed most efficient by its heuristics. At least the innermost loop is
- * almost always completely unrolled, avoiding the loop overhead.
+ * - 并为正交点的数量选择一个任意的数字。该代码部分包含预编译的模板代码，用于1到6之间的多项式度数和常见的正交公式，其运行速度几乎与模板版本相同。如果所选的度数没有被预编译，一个具有模板专业性的评估器对象将用于
  *
- * However, carrying the polynomial degree (and the number of quadrature
- * points) as a template parameter makes things more complicated in codes
- * where different polynomial degrees should be considered, e.g. in
- * application codes where the polynomial degree is given through an input
- * file. The second usage model is to rely on pre-compiled code for polynomial
- * degrees. While a user code can use different functions for the cells (that
- * get e.g. invoked by some dynamic dispatch mechanism for the various degree
- * templates), deal.II also supports usage of this class based on the
- * information in the element passed to the initialization. For this usage
- * model, set the template parameter for the polynomial degree to -1 and
- * choose an arbitrary number for the number of quadrature points. That code
- * part contains pre-compiled templated code for polynomial degrees between 1
- * and 6 and common quadrature formulas, which runs almost as fast as the
- * templated version. In case the chosen degree is not pre-compiled, an
- * evaluator object with template specialization for -1 is invoked that runs
- * according to run-time bounds.
+ * -被调用，根据运行时间的界限运行。
+ * 下图给出了FEEvaluation的性能概览。它考虑了使用类似于
+ * step-37
+ * 单精度算术教程程序的代码，用连续有限元评估拉普拉斯的每个自由度所花费的时间。该时间是基于英特尔至强E5-2687W
+ * v4单核的实验，运行频率为3.4GHz，在问题大小为1000万左右时测量的。该图列出了计算时间（约0.1秒）除以自由度数。
+*  @image html fe_evaluation_laplacian_time_per_dof.png
+ * 该图显示，模板化的计算核比非模板化的计算核快2.5到3倍。在这个设置上，最快的周转是对多项式5度的计算，每自由度7.4e-9秒，或每秒1.34亿自由度。
  *
- * An overview of the performance of FEEvaluation is given in the following
- * figure. It considers the time spent per degree of freedom for evaluating
- * the Laplacian with continuous finite elements using a code similar to the
- * step-37 tutorial program for single-precision arithmetics. The time is
- * based on an experiment on a single core of an Intel Xeon E5-2687W v4,
- * running at 3.4 GHz and measured at problem sizes of around 10 million. The
- * plot lists the computational time (around 0.1 seconds) divided by the
- * number of degrees freedom.
- *
- * @image html fe_evaluation_laplacian_time_per_dof.png
- *
- * The figure shows that the templated computational kernels are between 2.5
- * and 3 times faster than the non-templated ones. The fastest turnaround on
- * this setup is for polynomial degree 5 at 7.4e-9 seconds per degree of
- * freedom or 134 million degrees of freedom per second - on a single
- * core. The non-templated version is also fastest at polynomial degree 5 with
- * 2.1e-9 seconds per degree of freedom or 48 million degrees of freedom per
- * second. Note that using FEEvaluation with template `degree=-1` selects the
- * fast path for degrees between one and six, and the slow path for other
- * degrees.
- *
+ * - 在一个单核上。非模板化版本在多项式5度时也是最快的，每个自由度2.1e-9秒，或每秒4800万自由度。注意，使用模板`degree=-1`的FEEvaluation会选择1到6度之间的快速路径，而其他度数则选择慢速路径。
  * <h4>Pre-compiling code for more polynomial degrees</h4>
- *
- * It is also possible to pre-compile the code in FEEvaluation for a different
- * maximal polynomial degree. This is controlled by the class
- * internal::FEEvaluationFactory and the implementation in
- * `include/deal.II/matrix_free/evaluation_template_factory.templates.h`. By
- * setting the macro `FE_EVAL_FACTORY_DEGREE_MAX` to the desired integer and
- * instantiating the classes FEEvaluationFactory and FEFaceEvaluationFactory
- * (the latter for FEFaceEvaluation) creates paths to templated functions for
- * a possibly larger set of degrees. You can check if fast
- * evaluation/integration for a given degree/n_quadrature_points pair by calling
- * FEEvaluation::fast_evaluation_supported() or
+ * 也可以为不同的最大多项式度数预先编译FEEvaluation中的代码。这由类
+ * internal::FEEvaluationFactory
+ * 和`nclude/deal.II/matrix_free/evaluation_template_factory.templates.h`中的实现控制。通过设置宏`FE_EVAL_FACTORY_DEGREE_MAX`为所需的整数，并实例化类FEEvaluationFactory和FEFaceEvaluationFactory（后者用于FEFaceEvaluation），为可能更大的度数集创建模板函数的路径。你可以通过调用
+ * FEEvaluation::fast_evaluation_supported() 或
  * FEFaceEvaluation::fast_evaluation_supported().
- *
+ * 来检查是否对一个给定的度数/n_正交点进行了快速评估/积分。
  * <h3>Handling multi-component systems</h3>
+ * FEEvaluation还允许通过一个关于分量数量的模板参数来处理矢量值问题。
  *
- * FEEvaluation also allows for treating vector-valued problems through a
- * template parameter on the number of components:
  *
  * @code
  * FEEvaluation<dim,fe_degree,n_q_points_1d,n_components> phi(matrix_free);
  * @endcode
  *
- * If used this way, the components can be gathered from several components of
- * an @p std::vector<VectorType> through the call
+ * 如果这样使用，可以通过调用从一个 @p std::vector<VectorType>
+ * 的几个组件中收集组件
+ *
  *
  * @code
  * phi.read_dof_values(src, 0);
  * @endcode
  *
- * where the 0 means that the vectors starting from the zeroth vector in the
- * @p std::vector should be used, <code>src[0], src[1], ...,
- * src[n_components-1]</code>.
+ * 其中的0表示应该使用从 @p std::vector
+ * 中的第2个向量开始的向量，<code>src[0], src[1], ...,
+ * src[n_components-1]</code>。
+ * 如果MatrixFree数据底层的DoFHandler是基于 @p
+ * n_components项的FESystem，那么读取多成分系统的另一种方式是可能的。在这种情况下，为read_dof_values()和distribut_local_to_global()调用提供一个单一的向量。
+ * FEEvaluation在多组件系统中的一个重要属性是在get_value()、get_gradient()或get_dof_value()调用中的多组件布局。在这种情况下，返回的不是标量字段
+ * VectorizedArray  @<double@>  而是张量。
  *
- * An alternative way for reading multi-component systems is possible if the
- * DoFHandler underlying the MatrixFree data is based on an FESystem of @p
- * n_components entries. In that case, a single vector is provided for the
- * read_dof_values() and distribute_local_to_global() calls.
- *
- * An important property of FEEvaluation in multi-component systems is the
- * layout of multiple components in the get_value(), get_gradient(), or
- * get_dof_value() calls. In this case, instead of a scalar return field
- * VectorizedArray@<double@> a tensor is returned,
  *
  * @code
- * get_value -> Tensor<1,n_components,VectorizedArray<double>>
- * get_gradient -> Tensor<1,n_components,Tensor<1,dim,VectorizedArray<double>>
+ * get_value
+ *
+ * -> Tensor<1,n_components,VectorizedArray<double>>
+ * get_gradient
+ *
+ * -> Tensor<1,n_components,Tensor<1,dim,VectorizedArray<double>>
  * @endcode
  *
- * In a similar vein, the submit_value() and submit_gradient() calls take
- * tensors of values. Note that there exist specializations for @p
- * n_components=1 and @p n_components=dim, which are provided through the base
- * class FEEvaluationAccess. In the scalar case, these provide the scalar
- * return types described above. In the vector-valued case, the gradient is
- * converted from <code>Tensor@<1,dim,Tensor@<1,dim,VectorizedArray@<double@>
- * @> @></code> to <code>Tensor@<2,dim,VectorizedArray@<double@>
- * @></code>. Furthermore, additional operations such as the diveregence or
- * curl are available.
+ * 与此类似，submit_value()和submit_gradient()调用的是张量的值。请注意，存在对
+ * @p n_components=1和 @p n_components=dim,
+ * 的特殊化，它们是通过基类FEEvaluationAccess提供的。在标量情况下，这些提供了上述的标量返回类型。在矢量值的情况下，梯度从<code>Tensor
+ * @<1,dim,Tensor@<1,dim,VectorizedArray@<double@>   @>   @></code>
+ * 转换为<code>Tensor  @<2,dim,VectorizedArray@<double@>   @></code>.
+ * 此外，额外的操作，如diveregence或curl也是可用的。
+ * 如果不同的形状函数被结合起来，例如Stokes流中的混合有限元公式，将创建两个FEEvaluation对象，一个用于速度，一个用于压力。然后在正交点上进行组合。
  *
- * In case different shape functions are combined, for example mixed finite
- * element formulations in Stokes flow, two FEEvaluation objects are created,
- * one for the velocity and one for the pressure. Those are then combined on
- * quadrature points:
  *
  * @code
  * FEEvaluation<dim,degree_p+1,degree_p+2,dim> velocity (data, 0);
  * FEEvaluation<dim,degree_p,  degree_p+2,1, > pressure (data, 1);
  *
  * for (unsigned int cell=cell_range.first; cell<cell_range.second; ++cell)
- *   {
- *     velocity.reinit (cell);
- *     velocity.read_dof_values (src.block(0));
- *     velocity.evaluate (EvaluationFlags::gradients);
- *     pressure.reinit (cell);
- *     pressure.read_dof_values (src.block(1));
- *     pressure.evaluate (EvaluationFlags::values);
+ * {
+ *   velocity.reinit (cell);
+ *   velocity.read_dof_values (src.block(0));
+ *   velocity.evaluate (EvaluationFlags::gradients);
+ *   pressure.reinit (cell);
+ *   pressure.read_dof_values (src.block(1));
+ *   pressure.evaluate (EvaluationFlags::values);
  *
- *     for (unsigned int q=0; q<velocity.n_q_points; ++q)
- *       {
- *         SymmetricTensor<2,dim,VectorizedArray<double> > sym_grad_u =
- *           velocity.get_symmetric_gradient (q);
- *         VectorizedArray<double> pres = pressure.get_value(q);
- *         VectorizedArray<double> div = -trace(sym_grad_u);
- *         pressure.submit_value (div, q);
+ *   for (unsigned int q=0; q<velocity.n_q_points; ++q)
+ *     {
+ *       SymmetricTensor<2,dim,VectorizedArray<double> > sym_grad_u =
+ *         velocity.get_symmetric_gradient (q);
+ *       VectorizedArray<double> pres = pressure.get_value(q);
+ *       VectorizedArray<double> div =
  *
- *         // subtract p * I
- *         for (unsigned int d=0; d<dim; ++d)
- *           sym_grad_u[d][d] -= pres;
+ * -trace(sym_grad_u);
+ *       pressure.submit_value (div, q);
  *
- *         velocity.submit_symmetric_gradient(sym_grad_u, q);
- *      }
+ *       // subtract p I
+ *       for (unsigned int d=0; d<dim; ++d)
+ *         sym_grad_u[d][d]
  *
- *     velocity.integrate (EvaluationFlags::gradients);
- *     velocity.distribute_local_to_global (dst.block(0));
- *     pressure.integrate (EvaluationFlags::values);
- *     pressure.distribute_local_to_global (dst.block(1));
- *   }
+ * -= pres;
+ *
+ *       velocity.submit_symmetric_gradient(sym_grad_u, q);
+ *    }
+ *
+ *   velocity.integrate (EvaluationFlags::gradients);
+ *   velocity.distribute_local_to_global (dst.block(0));
+ *   pressure.integrate (EvaluationFlags::values);
+ *   pressure.distribute_local_to_global (dst.block(1));
+ * }
  * @endcode
  *
- * This code assumes that a BlockVector of two components describes the
- * velocity and pressure components, respectively. For identifying the
- * different DoFHandler objects for velocity and pressure, the second argument
- * to the FEEvaluation objects specify the respective component 0 for velocity
- * and 1 for pressure. For further examples of vector-valued problems, the
- * deal.II test suite includes a few additional examples as well, e.g. the
- * Stokes operator described above is found at
- * https://github.com/dealii/dealii/blob/master/tests/matrix_free/matrix_vector_stokes_noflux.cc
- *
+ * 这段代码假设一个由两个分量组成的BlockVector分别描述了速度和压力分量。为了识别速度和压力的不同DoFHandler对象，FEEvaluation对象的第二个参数为速度指定各自的分量0，为压力指定1。对于矢量值问题的进一步例子，deal.II测试套件也包括一些额外的例子，例如，上面描述的斯托克斯算子可以在https://github.com/dealii/dealii/blob/master/tests/matrix_free/matrix_vector_stokes_noflux.cc
  * <h3>Handling several integration tasks and data storage in quadrature
  * points</h3>
+ * FEEvaluation和MatrixFree的设计将几何学与基函数分开。因此，几个DoFHandler对象（或者同一个DoFHandler配备了不同的约束对象）可以共享相同的几何信息，就像上面的Stokes例子一样。所有的几何体在MatrixFree中被缓存一次，所以FEEvaluation不需要做昂贵的初始化调用，而是设置一些指针。这种实现是基于这样的想法：当几个字段被评估时，也只需要一次几何信息，这与FEValues不同，后者为每个字段设置了内部映射数据。例如，如果一个多分量的PDE涉及到一个分量的形状值和另一个分量的形状梯度，如果两者都基于同一个MatrixFree对象，并且更新标志指定
+ * @p  update_values ,  @p update_gradients  , 和  @p update_jxw_values
+ * 都给出，就不会失去效率。形状值所需数量的选择是通过evaluation()或integration调用中的标志和正交点的访问。
  *
- * The design of FEEvaluation and MatrixFree separates the geometry from the
- * basis functions. Therefore, several DoFHandler objects (or the same
- * DoFHandler equipped with different constraint objects) can share the same
- * geometry information like in the Stokes example above. All geometry is
- * cached once in MatrixFree, so FEEvaluation does not need to do expensive
- * initialization calls and rather sets a few pointers. This realization is
- * based on the idea that the geometry information is needed only once also
- * when several fields are evaluated, in a departure from FEValues which sets
- * up the internal mapping data for each field. If for example a
- * multi-component PDE involves the shape values on one component and the
- * shape gradient on the other, no efficiency is lost if both are based on the
- * same MatrixFree object where the update flags specify that both @p
- * update_values , @p update_gradients , and @p update_jxw_values are
- * given. The selection of desired quantities of shape values is through the
- * flags in the evaluate() or integrate calls and the access at quadrature
- * points:
  *
  * @code
  * phi1.evaluate(EvaluationFlags::values);
  * phi2.evaluate(EvaluationFlags::gradients);
  * for (unsigned int q=0; q<phi1.n_q_points; ++q)
- *   {
- *     VectorizedArray<double> val1 = phi1.get_value(q);
- *     Tensor<1,dim,VectorizedArray<double> > grad2 = phi2.get_gradient(q);
- *     Point<dim,VectorizedArray<double> > point = phi1.quadrature_point(q);
- *     // ... some complicated formula combining those three...
- *   }
+ * {
+ *   VectorizedArray<double> val1 = phi1.get_value(q);
+ *   Tensor<1,dim,VectorizedArray<double> > grad2 = phi2.get_gradient(q);
+ *   Point<dim,VectorizedArray<double> > point = phi1.quadrature_point(q);
+ *   // ... some complicated formula combining those three...
+ * }
  * @endcode
  *
- * In the loop over quadrature points, one can ask any of the two FEEvaluation
- * objects &mdash; it does not really matter which one because they only keep
- * pointers to the quadrature point data &mdash; to provide the quadrature
- * point location.
+ * 在正交点的循环中，我们可以要求两个FEEvaluation对象中的任何一个提供正交点的位置，这并不重要，因为它们只保留正交点数据的指针。
+ * 这一观察结果也转化为在程序中实现不同的微分算子的情况，例如，在算法的一个阶段，质量矩阵的作用，而在另一个阶段，刚度矩阵的作用。只需要一个MatrixFree对象，通过在不同的FEEvaluation对象中使用不同的局部函数和各自的实现来保持充分的效率。换句话说，用户在为MatrixFree的初始化提供update_flags时，不需要为了效率的原因而费心保守
  *
- * This observation also translates to the case when different differential
- * operators are implemented in a program, for example the action of a mass
- * matrix for one phase of the algorithm and the action of a stiffness matrix
- * in another one. Only a single MatrixFree object is necessary, maintaining
- * full efficiency by using different local functions with the respective
- * implementation in separate FEEvaluation objects. In other words, a user
- * does not need to bother about being conservative when providing
- * update_flags to the initialization of MatrixFree for efficiency reasons -
- * no overhead incurs inside FEEvaluation, except for at most one or two more
- * @p if statements inside the FEEvaluation::reinit() call. Rather, the
- * largest set of flags necessary among all calls is perfectly fine from an
- * efficiency point of view.
+ * - 除了在 FEEvaluation::reinit() 调用里面最多增加一两个 @p if 语句外，FEEvaluation内部不会产生任何开销。相反，从效率的角度来看，所有调用中必要的最大标志集是完全没有问题的。
+ * 对于不同字段的组合，包括来自不同时间步骤的不同解向量，强制要求所有的FEEvaluation对象共享同一个MatrixFree对象。这是因为单元格被
+ * MatrixFree::cell_loop()
+ * 循环的方式对于不同的DoFHandler或AffineConstraints参数可能不同。更确切地说，即使在串行中布局是相同的，但在MPI情况下，对于不同的DoFHandler/AffineConstraints的排序没有任何保证。原因是该算法检测需要与MPI进行数据交换的单元，而这些单元对于不同的元素可能会发生变化，例如，具有悬挂节点约束的FE_Q比FE_DGQ元素连接到更多的邻居，而需要数据交换的单元被放在单元循环中的不同位置。当然，如果设置了完全相同的DoFHandler、AffineConstraints和选项（如线程并行的设置），那么顺序就会相同，因为算法是确定性的。
+ * @tparam  该类所使用的dim维度
+ * @tparam  fe_degree
+ * 每个坐标方向具有fe_degree+1个自由度的张量积有限元的程度。可以设置为
  *
- * For the combination of different fields, including different solution
- * vectors that come from different time steps, it is mandatory that all
- * FEEvaluation objects share the same MatrixFree object. This is because the
- * way cells are looped by MatrixFree::cell_loop() can be different for
- * different DoFHandler or AffineConstraints arguments. More precisely, even
- * though the layout is going to be the same in serial, there is no guarantee
- * about the ordering for different DoFHandler/AffineConstraints in the MPI
- * case. The reason is that the algorithm detects cells that need data
- * exchange with MPI and those can change for different elements &mdash; FE_Q
- * with hanging node constraints connects to more neighbors than a FE_DGQ
- * element, for instance, and cells which need data exchange are put in
- * different positions inside the cell loop. Of course, if the exact same
- * DoFHandler, AffineConstraints, and options (such as the setting for thread
- * parallelism) are set, then the order is going to be the same because the
- * algorithm is deterministic.
+ * - 如果在编译时不知道度数，但性能通常会差2-3倍。
+ * @tparam  n_q_points_1d
+ * 一维正交公式中的点数，默认为fe_degree+1。
+ * @tparam  n_components
+ * 在求解PDEs系统时，向量分量的数量。如果同一个操作被应用于一个PDE的几个分量（例如，一个矢量拉普拉斯方程），它们可以通过一次调用同时应用（而且通常更有效）。默认为1。
+ * @tparam  数字 数字格式，通常为 @p double 或 @p float.  默认为
+ * @p 双数
  *
- * @tparam dim Dimension in which this class is to be used
- *
- * @tparam fe_degree Degree of the tensor product finite element with
- * fe_degree+1 degrees of freedom per coordinate direction. Can be set to -1
- * if the degree is not known at compile time, but performance will usually be
- * worse by a factor of 2-3.
- *
- * @tparam n_q_points_1d Number of points in the quadrature formula in 1D,
- * defaults to fe_degree+1
- *
- * @tparam n_components Number of vector components when solving a system of
- * PDEs. If the same operation is applied to several components of a PDE (e.g.
- * a vector Laplace equation), they can be applied simultaneously with one
- * call (and often more efficiently). Defaults to 1.
- *
- * @tparam Number Number format, usually @p double or @p float. Defaults to @p
- * double
  *
  * @ingroup matrixfree
+ *
+ *
  */
 template <int dim,
           int fe_degree,
@@ -2523,113 +2147,90 @@ class FEEvaluation : public FEEvaluationAccess<dim,
 
 public:
   /**
-   * An alias to the base class.
+   * 基类的别名。
+   *
    */
   using BaseClass =
     FEEvaluationAccess<dim, n_components_, Number, false, VectorizedArrayType>;
 
   /**
-   * An underlying number type specified as template argument.
+   * 一个作为模板参数指定的底层数字类型。
+   *
    */
   using number_type = Number;
 
   /**
-   * The type of function values, e.g. `VectorizedArrayType` for
-   * `n_components=1` or `Tensor<1,dim,VectorizedArrayType >` for
-   * `n_components=dim`.
+   * 函数值的类型，例如 "n_components=1 "的 "VectorizedArrayType
+   * "或 "n_components=dim "的 "Tensor<1,dim,VectorizedArrayType>"。
+   *
    */
   using value_type = typename BaseClass::value_type;
 
   /**
-   * The type of gradients, e.g. `Tensor<1,dim,VectorizedArrayType>` for
-   * `n_components=1` or `Tensor<2,dim,VectorizedArrayType >` for
-   * `n_components=dim`.
+   * 梯度的类型，例如，`Tensor<1,dim,VectorizedArrayType>`代表`n_components=1`或者`Tensor<2,dim,VectorizedArrayType
+   * >`代表`n_components=dim`。
+   *
    */
   using gradient_type = typename BaseClass::gradient_type;
 
   /**
-   * The dimension given as template argument.
+   * 作为模板参数给出的尺寸。
+   *
    */
   static constexpr unsigned int dimension = dim;
 
   /**
-   * The number of solution components of the evaluator given as template
-   * argument.
+   * 作为模板参数给定的评估器的解决方案组件的数量。
+   *
    */
   static constexpr unsigned int n_components = n_components_;
 
   /**
-   * The static number of quadrature points determined from the given template
-   * argument `n_q_points_1d`. Note that the actual number of quadrature
-   * points, `n_q_points`, can be different if `fe_degree=-1` is given and
-   * run-time loop lengths are used rather than compile time ones.
+   * 从给定的模板参数`n_q_points_1d`确定的正交点的静态数量。请注意，如果给定了`fe_degree=-1`，并且使用了运行时的循环长度而不是编译时的循环长度，那么实际的正交点数量`n_q_points`可能不同。
+   *
    */
   static constexpr unsigned int static_n_q_points =
     Utilities::pow(n_q_points_1d, dim);
 
   /**
-   * The static number of degrees of freedom of a scalar component determined
-   * from the given template argument `fe_degree`. Note that the actual number
-   * of degrees of freedom `dofs_per_component` can be different if
-   * `fe_degree=-1` is given or if the underlying is of more complicated type
-   * than the usual FE_Q or FE_DGQ ones, such as FE_DGP.
+   * 根据给定的模板参数`fe_degree`确定的标量分量的静态自由度数。请注意，如果给定了`fe_degree=-1`，或者如果底层的类型比通常的FE_Q或FE_DGQ更复杂，如FE_DGP，那么实际的自由度`dofs_per_component`可能会不同。
+   *
    */
   static constexpr unsigned int static_dofs_per_component =
     Utilities::pow(fe_degree + 1, dim);
 
   /**
-   * The static number of degrees of freedom of all components determined from
-   * the given template argument `fe_degree`. Note that the actual number of
-   * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
-   * given or if the underlying is of more complicated type than the usual
-   * FE_Q or FE_DGQ ones, such as FE_DGP.
+   * 根据给定的模板参数`fe_degree`确定的所有组件的静态自由度数。请注意，如果给定了`fe_degree=-1`，或者如果底层的类型比通常的FE_Q或FE_DGQ更复杂，比如FE_DGP，那么实际的自由度`dofs_per_cell`可能会不同。
+   *
    */
   static constexpr unsigned int tensor_dofs_per_cell =
     static_dofs_per_component * n_components;
 
   /**
-   * The static number of degrees of freedom of all components determined from
-   * the given template argument `fe_degree`. Note that the actual number of
-   * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
-   * given or if the underlying is of more complicated type than the usual
-   * FE_Q or FE_DGQ ones, such as FE_DGP.
+   * 根据给定的模板参数`fe_degree`确定的所有组件的静态自由度数。请注意，如果给定了`fe_degree=-1`，或者如果底层的类型比通常的FE_Q或FE_DGQ更复杂，比如FE_DGP，那么实际的自由度`dofs_per_cell`可能会不同。
+   *
    */
   static constexpr unsigned int static_dofs_per_cell =
     static_dofs_per_component * n_components;
 
   /**
-   * Constructor. Takes all data stored in MatrixFree. If applied to problems
-   * with more than one finite element or more than one quadrature formula
-   * selected during construction of @p matrix_free, the appropriate component
-   * can be selected by the optional arguments.
+   * 构造函数。接受存储在MatrixFree中的所有数据。如果应用于在构建
+   * @p matrix_free,
+   * 过程中选择了一个以上的有限元或一个以上的正交公式的问题，可以通过可选的参数选择合适的组件。
+   * @param  matrix_free 包含所有数据的数据对象  @param  dof_no
+   * 如果matrix_free是用多个DoFHandler对象设置的，这个参数可以选择给定的评估器应该连接到哪个DoFHandler/AffineConstraints对。
+   * @param  quad_no
+   * 如果matrix_free被设置为多个正交对象，该参数将选择适当的正交公式编号。
+   * @param  first_selected_component
+   * 如果由dof_no选择的dof_handler使用一个由多个组件组成的FESystem，这个参数允许选择当前评估程序开始的组件。注意，一个评估器不支持在不同的组件中结合不同的形状函数。换句话说，FESystem的同一个基本元素需要为
+   * @p first_selected_component 和
+   * <code>first_selected_component+n_components_</code>
+   * 之间的组件设置。      @param  active_fe_index
+   * 如果matrix_free是用 hp::FECollections,
+   * 的DoFHandler对象设置的，这个参数可以选择给定的评估器应该连接到哪个DoFHandler/AffineConstraints对。
+   * @param  active_quad_index 如果matrix_free是用 hp::Collection
+   * 对象设置的，该参数选择正交公式的适当编号。
    *
-   * @param matrix_free Data object that contains all data
-   *
-   * @param dof_no If matrix_free was set up with multiple DoFHandler
-   * objects, this parameter selects to which DoFHandler/AffineConstraints pair
-   * the given evaluator should be attached to.
-   *
-   * @param quad_no If matrix_free was set up with multiple Quadrature
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
-   *
-   * @param first_selected_component If the dof_handler selected by dof_no
-   * uses an FESystem consisting of more than one component, this parameter
-   * allows for selecting the component where the current evaluation routine
-   * should start. Note that one evaluator does not support combining
-   * different shape functions in different components. In other words, the
-   * same base element of a FESystem needs to be set for the components
-   * between @p first_selected_component and
-   * <code>first_selected_component+n_components_</code>.
-   *
-   * @param active_fe_index If matrix_free was set up with DoFHandler
-   * objects with hp::FECollections, this parameter selects to which
-   * DoFHandler/AffineConstraints pair the given evaluator should be attached
-   * to.
-   *
-   * @param active_quad_index If matrix_free was set up with hp::Collection
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
    */
   FEEvaluation(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -2640,11 +2241,9 @@ public:
     const unsigned int active_quad_index = numbers::invalid_unsigned_int);
 
   /**
-   * Constructor. Takes all data stored in MatrixFree for a given cell range,
-   * which allows to automatically identify the active_fe_index and
-   * active_quad_index in case of a p-adaptive strategy.
+   * 构造函数。接受存储在MatrixFree中的所有数据，用于给定的单元格范围，这可以在p-adaptive策略的情况下自动识别active_fe_index和active_quad_index。
+   * 其余的参数与上面的构造函数相同。
    *
-   * The rest of the arguments are the same as in the constructor above.
    */
   FEEvaluation(const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
                const std::pair<unsigned int, unsigned int> &       range,
@@ -2653,30 +2252,19 @@ public:
                const unsigned int first_selected_component                 = 0);
 
   /**
-   * Constructor that comes with reduced functionality and works similar as
-   * FEValues. The arguments are similar to the ones passed to the constructor
-   * of FEValues, with the notable difference that FEEvaluation expects a one-
-   * dimensional quadrature formula, Quadrature<1>, instead of a @p dim
-   * dimensional one. The finite element can be both scalar or vector valued,
-   * but this method always only selects a scalar base element at a time (with
-   * @p n_components copies as specified by the class template). For vector-
-   * valued elements, the optional argument @p first_selected_component allows
-   * to specify the index of the base element to be used for evaluation. Note
-   * that the internal data structures always assume that the base element is
-   * primitive, non-primitive are not supported currently.
+   * 构造函数，功能减少，工作方式与FEValues类似。参数与传递给FEValues的构造函数的参数类似，值得注意的是，FEEvaluation期望一个一维的正交公式Quadrature<1>，而不是一个
+   * @p dim
+   * 维的公式。有限元既可以是标量也可以是矢量值，但是这个方法每次总是只选择一个标量基元（按照类模板指定的
+   * @p n_components 副本）。对于向量值元素，可选的参数 @p
+   * first_selected_component
+   * 允许指定用于评估的基础元素的索引。注意，内部数据结构总是假定基元是原始的，目前不支持非原始的。
+   * 正如从FEValues中得知的那样，调用带有
+   * Triangulation<dim>::cell_iterator
+   * 的reinit方法是必要的，以使当前类的几何和自由度为人所知。如果迭代器包括DoFHandler信息（即它是一个
+   * DoFHandler<dim>::cell_iterator 或类似的），初始化也允许以
+   * DoFHandler<dim>::active_cell_iterator
+   * 类型的标准方式一次从向量中读取或写入一个单元。然而，这种方法比使用MPI的MatrixFree的路径要慢得多，因为必须进行索引转换。由于每次只使用一个单元，这种方法不会在几个元素上进行矢量化（这对矢量操作来说是最有效的），而只可能在元素内进行矢量化，如果评估/整合例程在用户代码内组合的话（例如，计算单元矩阵）。
    *
-   * As known from FEValues, a call to the reinit method with a
-   * Triangulation<dim>::cell_iterator is necessary to make the geometry and
-   * degrees of freedom of the current class known. If the iterator includes
-   * DoFHandler information (i.e., it is a DoFHandler<dim>::cell_iterator or
-   * similar), the initialization allows to also read from or write to vectors
-   * in the standard way for DoFHandler<dim>::active_cell_iterator types for
-   * one cell at a time. However, this approach is much slower than the path
-   * with MatrixFree with MPI since index translation has to be done. As only
-   * one cell at a time is used, this method does not vectorize over several
-   * elements (which is most efficient for vector operations), but only
-   * possibly within the element if the evaluate/integrate routines are
-   * combined inside user code (e.g. for computing cell matrices).
    */
   FEEvaluation(const Mapping<dim> &      mapping,
                const FiniteElement<dim> &fe,
@@ -2685,9 +2273,9 @@ public:
                const unsigned int        first_selected_component = 0);
 
   /**
-   * Constructor for the reduced functionality. This constructor is equivalent
-   * to the other one except that it makes the object use a $Q_1$ mapping
-   * (i.e., an object of type MappingQGeneric(1)) implicitly.
+   * 缩小功能的构造函数。这个构造函数等同于另一个构造函数，除了它使对象隐含地使用
+   * $Q_1$ 映射（即，MappingQGeneric(1)类型的对象）。
+   *
    */
   FEEvaluation(const FiniteElement<dim> &fe,
                const Quadrature<1> &     quadrature,
@@ -2695,14 +2283,8 @@ public:
                const unsigned int        first_selected_component = 0);
 
   /**
-   * Constructor for the reduced functionality. Similar to the other
-   * constructor with FiniteElement argument but using another
-   * FEEvaluationBase object to provide information about the geometry. This
-   * allows several FEEvaluation objects to share the geometry evaluation, i.e.,
-   * the underlying mapping and quadrature points do only need to be evaluated
-   * once. Make sure to not pass an optional object around when you intend to
-   * use the FEEvaluation object in %parallel to the given one because
-   * otherwise the intended sharing may create race conditions.
+   * 缩小功能的构造函数。类似于其他带有FiniteElement参数的构造函数，但使用另一个FEEvaluationBase对象来提供关于几何的信息。这允许几个FEEvaluation对象共享几何评估，即底层映射和正交点只需要评估一次。当你打算使用与给定对象平行的FEEvaluation对象时，请确保不要传递一个可选的对象，因为否则打算共享的对象可能会产生竞赛条件。
+   *
    */
   FEEvaluation(
     const FiniteElement<dim> &                                           fe,
@@ -2710,84 +2292,68 @@ public:
     const unsigned int first_selected_component = 0);
 
   /**
-   * Copy constructor. If FEEvaluationBase was constructed from a mapping, fe,
-   * quadrature, and update flags, the underlying geometry evaluation based on
-   * FEValues will be deep-copied in order to allow for using in parallel with
-   * threads.
+   * 复制构造函数。如果FEEvaluationBase是由映射、fe、正交和更新标志构建的，基于FEValues的底层几何评估将被深度复制，以便允许与线程并行使用。
+   *
    */
   FEEvaluation(const FEEvaluation &other);
 
   /**
-   * Copy assignment operator. If FEEvaluationBase was constructed from a
-   * mapping, fe, quadrature, and update flags, the underlying geometry
-   * evaluation based on FEValues will be deep-copied in order to allow for
-   * using in parallel with threads.
+   * 复制赋值运算符。如果FEEvaluationBase是由映射、fe、正交和更新标志构建的，基于FEValues的底层几何评估将被深度复制，以允许与线程并行使用。
+   *
    */
   FEEvaluation &
   operator=(const FEEvaluation &other);
 
   /**
-   * Initialize the operation pointer to the current cell batch index. Unlike
-   * the reinit functions taking a cell iterator as argument below and the
-   * FEValues::reinit() methods, where the information related to a particular
-   * cell is generated in the reinit call, this function is very cheap since
-   * all data is pre-computed in @p matrix_free, and only a few indices have
-   * to be set appropriately.
+   * 将操作指针初始化为当前的单元格批索引。与下面以单元格迭代器为参数的reinit函数和
+   * FEValues::reinit()
+   * 方法不同，与特定单元格相关的信息是在reinit调用中生成的，这个函数非常便宜，因为所有数据都是在
+   * @p matrix_free,
+   * 中预先计算的，只有少数指数需要适当设置。
+   *
    */
   void
   reinit(const unsigned int cell_batch_index);
 
   /**
-   * Initialize the data to the current cell using a TriaIterator object as
-   * usual in FEValues. The argument is either of type
-   * DoFHandler::active_cell_iterator or DoFHandler::level_cell_iterator. This
-   * option is only available if the FEEvaluation object was created with a
-   * finite element, quadrature formula and correct update flags and
-   * <b>without</b> a MatrixFree object. This initialization method loses the
-   * ability to use vectorization, see also the description of the
-   * FEEvaluation class. When this reinit method is used, FEEvaluation can
-   * also read from vectors (but less efficient than with data coming from
-   * MatrixFree).
+   * 如同FEValues中的惯例，使用TriaIterator对象将数据初始化到当前单元。参数类型为
+   * DoFHandler::active_cell_iterator 或 DoFHandler::level_cell_iterator.
+   * 只有在创建FEEvaluation对象时带有有限元、正交公式和正确的更新标志以及<b>without</b>MatrixFree对象时，该选项才能使用。这种初始化方法失去了使用矢量化的能力，另见FEEvaluation类的描述。当使用这种重启方法时，FEEvaluation也可以从向量中读取数据（但效率比来自MatrixFree的数据低）。
+   *
    */
   template <bool level_dof_access>
   void
   reinit(const TriaIterator<DoFCellAccessor<dim, dim, level_dof_access>> &cell);
 
   /**
-   * Initialize the data to the current cell using a TriaIterator object as
-   * usual in FEValues. This option is only available if the FEEvaluation
-   * object was created with a finite element, quadrature formula and correct
-   * update flags and <b>without</b> a MatrixFree object. This initialization
-   * method loses the ability to use vectorization, see also the description
-   * of the FEEvaluation class. When this reinit method is used, FEEvaluation
-   * can <b>not</b> read from vectors because no DoFHandler information is
-   * available.
+   * 像在FEValues中一样使用TriaIterator对象将数据初始化到当前单元。这个选项只有在FEEvaluation对象是用有限元、正交公式和正确的更新标志以及<b>without</b>MatrixFree对象创建的情况下才可用。这种初始化方法失去了使用矢量化的能力，另见FEEvaluation类的描述。当使用这种重启方法时，FEEvaluation可以<b>not</b>从矢量中读取，因为没有DoFHandler信息可用。
+   *
    */
   void
   reinit(const typename Triangulation<dim>::cell_iterator &cell);
 
   /**
-   * Check if face evaluation/integration is supported.
+   * 检查是否支持面部评估/整合。
+   *
    */
   static bool
   fast_evaluation_supported(const unsigned int given_degree,
                             const unsigned int give_n_q_points_1d);
 
   /**
-   * Evaluate the function values, the gradients, and the Hessians of the
-   * polynomial interpolation from the DoF values in the input vector to the
-   * quadrature points on the unit cell.  The function arguments specify which
-   * parts shall actually be computed. This function has to be called first so
-   * that the access functions @p get_value(), @p get_gradient() or @p
-   * get_laplacian give useful information (unless these values have been set
-   * manually).
+   * 评估函数值、梯度和从输入矢量中的DoF值到单元格上的正交点的多项式内插的Hessians。
+   * 函数参数指定哪些部分应被实际计算。这个函数必须首先被调用，以便访问函数
+   * @p get_value(),   @p get_gradient()  或  @p
+   * get_laplacian提供有用的信息（除非这些值已经被手动设置）。
+   *
    */
   void
   evaluate(const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * Like above but with separate bool flags.
-   * @deprecated use evaluate() with the EvaluationFlags argument.
+   * 和上面一样，但有单独的bool标志。    @deprecated
+   * 使用evaluate()与EvaluationFlags参数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const bool evaluate_values,
@@ -2795,24 +2361,22 @@ public:
            const bool evaluate_hessians = false);
 
   /**
-   * Evaluate the function values, the gradients, and the Hessians of the
-   * polynomial interpolation from the DoF values in the input array @p
-   * values_array to the quadrature points on the unit cell. If multiple
-   * components are involved in the current FEEvaluation object, the sorting
-   * in @p values_array is such that all degrees of freedom for the first
-   * component come first, then all degrees of freedom for the second, and so
-   * on. The function arguments specify which parts shall actually be
-   * computed. This function has to be called first so that the access
-   * functions @p get_value(), @p get_gradient() or @p get_laplacian give
-   * useful information (unless these values have been set manually).
+   * 评估从输入数组 @p
+   * values_array中的DoF值到单元格上的正交点的函数值、梯度和多项式内插的Hessians。如果当前的FEEvaluation对象涉及多个部件，
+   * @p values_array
+   * 中的排序是第一个部件的所有自由度排在前面，然后是第二个部件的所有自由度，以此类推。函数参数指定哪些部分应被实际计算。这个函数必须先被调用，这样访问函数
+   * @p get_value(),  @p get_gradient() 或 @p get_laplacian
+   * 才能提供有用的信息（除非这些值是手动设置的）。
+   *
    */
   void
   evaluate(const VectorizedArrayType *            values_array,
            const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * Like above but using separate bool flags.
-   * @deprecated use evaluate() with the EvaluationFlags argument.
+   * 像上面一样，但使用单独的bool标志。    @deprecated
+   * 使用evaluate()与EvaluationFlags参数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const VectorizedArrayType *values_array,
@@ -2821,17 +2385,13 @@ public:
            const bool                 evaluate_hessians = false);
 
   /**
-   * Read from the input vector and evaluates the function values, the
-   * gradients, and the Hessians of the polynomial interpolation of the vector
-   * entries from @p input_vector associated with the current cell to the
-   * quadrature points on the unit cell. The function arguments specify which
-   * parts shall actually be computed. This function has to be called first so
-   * that the access functions @p get_value(), @p get_gradient() or @p
-   * get_laplacian give useful information (unless these values have been set
-   * manually).
+   * 从输入向量中读取并评估函数值、梯度以及从与当前单元格相关的
+   * @p input_vector
+   * 向量条目到单元格上的正交点的多项式内插的Hessians。函数参数指定哪些部分应被实际计算。这个函数必须首先被调用，以便访问函数
+   * @p get_value(),   @p get_gradient() 或 @p
+   * get_laplacian提供有用的信息（除非这些值已经被手动设置）。
+   * 这个调用等同于调用read_dof_values()，然后再调用evaluate()，但内部可能会使用一些额外的优化。
    *
-   * This call is equivalent to calling read_dof_values() followed by
-   * evaluate(), but might internally use some additional optimizations.
    */
   template <typename VectorType>
   void
@@ -2839,7 +2399,9 @@ public:
                   const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the gather_evaluate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带有EvaluationFlags参数的
+   * gather_evaluate()函数。
+   *
    */
   template <typename VectorType>
   DEAL_II_DEPRECATED_EARLY void
@@ -2849,42 +2411,39 @@ public:
                   const bool        evaluate_hessians = false);
 
   /**
-   * This function takes the values and/or gradients that are stored on
-   * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments
-   * @p integrate_values and @p integrate_gradients are used to enable/disable
-   * summation of the contributions submitted to the values or gradients slots,
-   * respectively. The result is written into the internal data field
-   * @p dof_values (that is usually written into the result vector by the
-   * distribute_local_to_global() or set_dof_values() methods).
+   * 这个函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度进行测试，并执行单元积分。两个函数参数
+   * @p integrate_values 和 @p integrate_gradients
+   * 分别用于启用/禁用提交给数值或梯度槽的贡献求和。结果被写入内部数据域
+   * @p dof_values
+   * （通常由distribut_local_to_global()或set_dof_values()方法写入结果向量中）。
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags integration_flag);
 
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带EvaluationFlags参数的 integrate() 函数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool integrate_values, const bool integrate_gradients);
 
   /**
-   * This function takes the values and/or gradients that are stored on
-   * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments @p
-   * integrate_values and @p integrate_gradients are used to enable/disable
-   * summation of the contributions submitted to the values or gradients
-   * slots, respectively. As opposed to the other integrate() method, this
-   * call stores the result of the testing in the given array @p values_array,
-   * whose previous results is overwritten, rather than writing it on the
-   * internal data structures behind begin_dof_values().
+   * 该函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度进行测试，并执行单元积分。两个函数参数
+   * @p  integrate_values 和  @p integrate_gradients
+   * 分别用于启用/禁用提交给数值或梯度槽的贡献的求和。与其他integration()方法相反，这个调用将测试结果存储在给定的数组
+   * @p values_array,
+   * 中，其先前的结果被覆盖，而不是写在begin_dof_values()后面的内部数据结构中。
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags integration_flag,
             VectorizedArrayType *                  values_array);
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带EvaluationFlags参数的 integrate() 函数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool           integrate_values,
@@ -2892,17 +2451,14 @@ public:
             VectorizedArrayType *values_array);
 
   /**
-   * This function takes the values and/or gradients that are stored on
-   * quadrature points, tests them by all the basis functions/gradients on the
-   * cell, performs the cell integration, and adds the result into the global
-   * vector @p output_vector on the degrees of freedom associated with the
-   * present cell index. The two function arguments @p integrate_values and
-   * @p integrate_gradients are used to enable/disable summation of the
-   * contributions submitted to the values or gradients slots, respectively.
+   * 该函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度进行测试，执行单元积分，并将结果加入与当前单元索引相关的自由度上的全局向量
+   * @p output_vector 。两个函数参数 @p integrate_values 和 @p
+   * integrate_gradients
+   * 分别用于启用/禁用提交给数值或梯度槽的贡献求和。
+   * 这个调用等同于调用 integrate() 后面的
+   * distribute_local_to_global()
+   * ，但可能在内部使用一些额外的优化。
    *
-   * This call is equivalent to calling integrate() followed by
-   * distribute_local_to_global(), but might internally use
-   * some additional optimizations.
    */
   template <typename VectorType>
   void
@@ -2910,7 +2466,9 @@ public:
                     VectorType &                           output_vector);
 
   /**
-   * @deprecated Please use the integrate_scatter() function with the EvaluationFlags argument.
+   * @deprecated  请使用带有EvaluationFlags参数的 integrate_scatter()
+   * 函数。
+   *
    */
   template <typename VectorType>
   DEAL_II_DEPRECATED_EARLY void
@@ -2919,41 +2477,38 @@ public:
                     VectorType &output_vector);
 
   /**
-   * Return the q-th quadrature point in real coordinates stored in
-   * MappingInfo.
+   * 返回存储在MappingInfo中的实坐标的第q个正交点。
+   *
    */
   Point<dim, VectorizedArrayType>
   quadrature_point(const unsigned int q_point) const;
 
   /**
-   * The number of degrees of freedom of a single component on the cell for
-   * the underlying evaluation object. Usually close to
-   * static_dofs_per_component, but the number depends on the actual element
-   * selected and is thus not static.
+   * 底层评价对象的单元上的单个组件的自由度数。通常接近static_dofs_per_component，但这个数字取决于实际选择的元素，因此不是静态的。
+   *
    */
   const unsigned int dofs_per_component;
 
   /**
-   * The number of degrees of freedom on the cell accumulated over all
-   * components in the current evaluation object. Usually close to
-   * static_dofs_per_cell = static_dofs_per_component*n_components, but the
-   * number depends on the actual element selected and is thus not static.
+   * 单元上的自由度数量在当前评估对象的所有元件上累积。通常接近static_dofs_per_cell
+   * =
+   * static_dofs_per_component*n_components，但这个数字取决于所选择的实际元素，因此不是静态的。
+   *
    */
   const unsigned int dofs_per_cell;
 
   /**
-   * The number of quadrature points in use. If the number of quadrature
-   * points in 1d is given as a template, this number is simply the
-   * <tt>dim</tt>-th power of that value. If the element degree is set to -1
-   * (dynamic selection of element degree), the static value of quadrature
-   * points is inaccurate and this value must be used instead.
+   * 使用中的正交点的数量。如果1d中的正交点数量是作为模板给出的，这个数字只是该值的<tt>dim</tt>-次幂。如果元素度数被设置为
+   *
+   * -（元素度的动态选择），正交点的静态值就不准确了，必须用这个值来代替。
+   *
    */
   const unsigned int n_q_points;
 
 private:
   /**
-   * Checks if the template arguments regarding degree of the element
-   * corresponds to the actual element used at initialization.
+   * 检查关于元素度的模板参数是否与初始化时使用的实际元素相一致。
+   *
    */
   void
   check_template_arguments(const unsigned int fe_no,
@@ -2963,39 +2518,25 @@ private:
 
 
 /**
- * The class that provides all functions necessary to evaluate functions at
- * quadrature points and face integrations. The design of the class is similar
- * to FEEvaluation and most of the interfaces are shared with that class, in
- * particular most access functions that come from the common base classes
- * FEEvaluationAccess and FEEvaluationBase. Furthermore, the relation of this
- * class to FEEvaluation is similar to the relation between FEValues and
- * FEFaceValues.
+ * 该类提供了在正交点评估函数和面积分所需的所有函数。该类的设计与FEEvaluation相似，大部分接口与该类共享，特别是大部分访问函数来自共同的基类FEEvaluationAccess和FEEvaluationBase。此外，该类与FEEvaluation的关系类似于FEValues与FEFaceValues的关系。
+ * @tparam  该类将被用于的dim尺寸
+ * @tparam  fe_degree
+ * 每个坐标方向具有fe_degree+1个自由度的张量积有限元的程度。如果设置为
  *
- * @tparam dim Dimension in which this class is to be used
+ * - ，将使用底层元素的度数，它作为一个运行时常数，而不是减缓执行速度的编译时常数。
+ * @tparam  n_q_points_1d
+ * 一维正交公式中的点数，通常选择为fe_degree+1
+ * @tparam  n_components
+ * 在求解PDEs系统时，向量分量的数量。如果相同的操作应用于一个PDE的几个分量（例如一个矢量拉普拉斯方程），它们可以通过一次调用同时应用（而且通常更有效）。
+ * @tparam  数字 Number 格式，通常为  @p double  或  @p float  。
+ * @tparam  VectorizedArrayType
+ * 以矢量方式处理的数组类型，默认为 VectorizedArray<Number>。
  *
- * @tparam fe_degree Degree of the tensor product finite element with
- *                  fe_degree+1 degrees of freedom per coordinate
- *                  direction. If set to -1, the degree of the underlying
- *                  element will be used, which acts as a run time constant
- *                  rather than a compile time constant that slows down the
- *                  execution.
  *
- * @tparam n_q_points_1d Number of points in the quadrature formula in 1D,
- *                  usually chosen as fe_degree+1
+ * @note  目前只有VectorizedArray<Number,
+ * width>被支持作为VectorizedArrayType。
  *
- * @tparam n_components Number of vector components when solving a system of
- *                  PDEs. If the same operation is applied to several
- *                  components of a PDE (e.g. a vector Laplace equation), they
- *                  can be applied simultaneously with one call (and often
- *                  more efficiently)
  *
- * @tparam Number Number format, usually @p double or @p float
- *
- * @tparam VectorizedArrayType Type of array to be woked on in a vectorized
- *                             fashion, defaults to VectorizedArray<Number>
- *
- * @note Currently only VectorizedArray<Number, width> is supported as
- *       VectorizedArrayType.
  */
 template <int dim,
           int fe_degree,
@@ -3015,127 +2556,89 @@ class FEFaceEvaluation : public FEEvaluationAccess<dim,
 
 public:
   /**
-   * An alias to the base class.
+   * 基类的别名。
+   *
    */
   using BaseClass =
     FEEvaluationAccess<dim, n_components_, Number, true, VectorizedArrayType>;
 
   /**
-   * A underlying number type specified as template argument.
+   * 一个作为模板参数指定的底层数字类型。
+   *
    */
   using number_type = Number;
 
   /**
-   * The type of function values, e.g. `VectorizedArrayType` for
-   * `n_components=1` or `Tensor<1,dim,VectorizedArrayType >` for
-   * `n_components=dim`.
+   * 函数值的类型，例如 "n_components=1 "的 "VectorizedArrayType
+   * "或 "n_components=dim "的 "Tensor<1,dim,VectorizedArrayType>"。
+   *
    */
   using value_type = typename BaseClass::value_type;
 
   /**
-   * The type of gradients, e.g. `Tensor<1,dim,VectorizedArrayType>` for
-   * `n_components=1` or `Tensor<2,dim,VectorizedArrayType >` for
-   * `n_components=dim`.
+   * 梯度的类型，例如，`Tensor<1,dim,VectorizedArrayType>`代表`n_components=1`或`Tensor<2,dim,VectorizedArrayType
+   * >`代表`n_components=dim`。
+   *
    */
   using gradient_type = typename BaseClass::gradient_type;
 
   /**
-   * The dimension given as template argument.
+   * 作为模板参数给出的尺寸。
+   *
    */
   static constexpr unsigned int dimension = dim;
 
   /**
-   * The number of solution components of the evaluator given as template
-   * argument.
+   * 作为模板参数给定的评估器的解决方案组件的数量。
+   *
    */
   static constexpr unsigned int n_components = n_components_;
 
   /**
-   * The static number of quadrature points determined from the given template
-   * argument `n_q_points_1d` taken to the power of dim-1. Note that the actual
-   * number of quadrature points, `n_q_points`, can be different if
-   * `fe_degree=-1` is given and run-time loop lengths are used rather than
-   * compile time ones.
+   * 根据给定的模板参数`n_q_points_1d`确定的正交点的静态数量，取为dim-1的幂。请注意，如果给定了`fe_degree=-1`，并且使用了运行时的循环长度而不是编译时的长度，那么实际的正交点数量`n_q_points`可能不同。
+   *
    */
   static constexpr unsigned int static_n_q_points =
     Utilities::pow(n_q_points_1d, dim - 1);
 
   /**
-   * The static number of quadrature points on a cell with the same quadrature
-   * formula. Note that this value is only present for simpler comparison with
-   * the cell quadrature, as the actual number of points is given to a face by
-   * the `static_n_q_points` variable.
+   * 一个单元格上具有相同正交公式的正交点的静态数量。请注意，这个值只是为了与单元格正交进行更简单的比较，因为实际的点数是由`static_n_q_points`变量赋予一个面的。
+   *
    */
   static constexpr unsigned int static_n_q_points_cell =
     Utilities::pow(n_q_points_1d, dim);
 
   /**
-   * The static number of degrees of freedom of a scalar component determined
-   * from the given template argument `fe_degree`. Note that the actual number
-   * of degrees of freedom `dofs_per_component` can be different if
-   * `fe_degree=-1` is given.
+   * 从给定的模板参数`fe_degree'确定的标量分量的静态自由度数。注意，如果给定`fe_degree=-1`，实际的自由度`dofs_per_component`可能不同。
+   *
    */
   static constexpr unsigned int static_dofs_per_component =
     Utilities::pow(fe_degree + 1, dim);
 
   /**
-   * The static number of degrees of freedom of all components determined from
-   * the given template argument `fe_degree`. Note that the actual number of
-   * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
-   * given.
+   * 根据给定的模板参数`fe_degree`确定的所有组件的静态自由度数。注意，如果给定了`fe_degree=-1`，实际的自由度`dofs_per_cell`可能不同。
+   *
    */
   static constexpr unsigned int tensor_dofs_per_cell =
     static_dofs_per_component * n_components;
 
   /**
-   * The static number of degrees of freedom of all components determined from
-   * the given template argument `fe_degree`. Note that the actual number of
-   * degrees of freedom `dofs_per_cell` can be different if `fe_degree=-1` is
-   * given.
+   * 根据给定的模板参数`fe_degree`确定的所有组件的静态自由度数。注意，如果给定了`fe_degree=-1`，实际的自由度`dofs_per_cell`可能不同。
+   *
    */
   static constexpr unsigned int static_dofs_per_cell =
     static_dofs_per_component * n_components;
 
   /**
-   * Constructor. Takes all data stored in MatrixFree. If applied to problems
-   * with more than one finite element or more than one quadrature formula
-   * selected during construction of @p matrix_free, the appropriate component
-   * can be selected by the optional arguments.
+   * 构造函数。接受存储在MatrixFree中的所有数据。如果应用于在构造
+   * @p matrix_free,
+   * 过程中选择了一个以上的有限元或一个以上的正交公式的问题，可以通过可选的参数选择适当的组件。
+   * @param  matrix_free 包含所有数据的数据对象  @param
+   * is_interior_face
+   * 这选择了当前评估器将基于内部面的两个单元中的哪个。内部面是主要的面，法线向量是沿着它的方向的。来自另一侧的外部面提供了与内部面相同的法向量，所以如果想要该面的外部法向量，必须乘以
    *
-   * @param matrix_free Data object that contains all data
+   * - .       @param  dof_no 如果matrix_free是用多个DoFHandler对象设置的，这个参数可以选择给定的评估器应该连接到哪个DoFHandler/AffineConstraints对。      @param  quad_no 如果matrix_free被设置为多个正交对象，该参数将选择适当的正交公式编号。      @param  first_selected_component 如果由dof_no选择的dof_handler使用一个由多个基本元素组成的FESystem，这个参数选择FESystem中的基本元素的编号。请注意，由于元素中可能存在多重性，这与各元素的分量没有直接关系。      @param  active_fe_index 如果matrix_free是用 hp::FECollections, 的DoFHandler对象设置的，这个参数可以选择给定的评估器应该连接到哪个DoFHandler/AffineConstraints对。      @param  face_type 在面的情况下，指示其参考单元的类型（0代表线或四边形，1代表三角形）。      @param  active_quad_index 如果matrix_free是用 hp::Collection 对象设置的，这个参数会选择正交公式的适当编号。
    *
-   * @param is_interior_face This selects which of the two cells of an
-   * internal face the current evaluator will be based upon. The interior face
-   * is the main face along which the normal vectors are oriented. The
-   * exterior face coming from the other side provides the same normal vector
-   * as the interior side, so if the outer normal vector to that side is
-   * desired, it must be multiplied by -1.
-   *
-   * @param dof_no If matrix_free was set up with multiple DoFHandler
-   * objects, this parameter selects to which DoFHandler/AffineConstraints pair
-   * the given evaluator should be attached to.
-   *
-   * @param quad_no If matrix_free was set up with multiple Quadrature
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
-   *
-   * @param first_selected_component If the dof_handler selected by dof_no
-   * uses an FESystem consisting of more than one base element, this parameter
-   * selects the number of the base element in FESystem. Note that this does
-   * not directly relate to the component of the respective element due to the
-   * possibility for a multiplicity in the element.
-   *
-   * @param active_fe_index If matrix_free was set up with DoFHandler
-   * objects with hp::FECollections, this parameter selects to which
-   * DoFHandler/AffineConstraints pair the given evaluator should be attached
-   * to.
-   *
-   * @param face_type In the case of a face, indicate its reference-cell type
-   * (0 for line or quadrilateral 1 for triangle).
-   *
-   * @param active_quad_index If matrix_free was set up with hp::Collection
-   * objects, this parameter selects the appropriate number of the quadrature
-   * formula.
    */
   FEFaceEvaluation(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -3148,11 +2651,9 @@ public:
     const unsigned int face_type         = numbers::invalid_unsigned_int);
 
   /**
-   * Constructor. Takes all data stored in MatrixFree for a given face range,
-   * which allows to automatically identify the active_fe_index and
-   * active_quad_index in case of a p-adaptive strategy.
+   * 构造函数。接受存储在MatrixFree中的所有数据，用于给定的面的范围，这可以在p自适应策略的情况下自动识别active_fe_index和active_quad_index。
+   * 其余的参数与上面的构造函数相同。
    *
-   * The rest of the arguments are the same as in the constructor above.
    */
   FEFaceEvaluation(
     const MatrixFree<dim, Number, VectorizedArrayType> &matrix_free,
@@ -3163,72 +2664,57 @@ public:
     const unsigned int first_selected_component                          = 0);
 
   /**
-   * Initializes the operation pointer to the current face. This method is the
-   * default choice for face integration as the data stored in MappingInfo is
-   * stored according to this numbering. Unlike the reinit functions taking a
-   * cell iterator as argument below and the FEValues::reinit() methods, where
-   * the information related to a particular cell is generated in the reinit
-   * call, this function is very cheap since all data is pre-computed in
-   * @p matrix_free, and only a few indices and pointers have to be set
-   * appropriately.
+   * 将操作指针初始化为当前的面。这个方法是面集成的默认选择，因为MappingInfo中存储的数据是按照这个编号存储的。与下面以单元格迭代器为参数的reinit函数和
+   * FEValues::reinit()
+   * 方法不同，与特定单元格相关的信息是在reinit调用中生成的，这个函数非常便宜，因为所有数据都是在
+   * @p matrix_free,
+   * 中预先计算的，只有少数索引和指针需要适当设置。
+   *
    */
   void
   reinit(const unsigned int face_batch_number);
 
   /**
-   * As opposed to the reinit() method from the base class, this reinit()
-   * method initializes for a given number of cells and a face number. This
-   * method is less efficient than the other reinit() method taking a
-   * numbering of the faces because it needs to copy the data associated with
-   * the faces to the cells in this call.
+   * 相对于基类中的reinit()方法，这个reinit()方法是针对给定的单元数和面数进行初始化。这个方法的效率低于其他采取面数的reinit()方法，因为它需要在这个调用中把与面数相关的数据复制到单元中。
+   *
    */
   void
   reinit(const unsigned int cell_batch_number, const unsigned int face_number);
 
   /**
-   * Check if face evaluation/integration is supported.
+   * 检查是否支持面的评估/整合。
+   *
    */
   static bool
   fast_evaluation_supported(const unsigned int given_degree,
                             const unsigned int give_n_q_points_1d);
 
   /**
-   * Evaluates the function values, the gradients, and the Laplacians of the
-   * FE function given at the DoF values stored in the internal data field
-   * `dof_values` (that is usually filled by the read_dof_values() method) at
-   * the quadrature points on the unit cell.  The function arguments specify
-   * which parts shall actually be computed. Needs to be called before the
-   * functions get_value(), get_gradient() or get_normal_derivative() give
-   * useful information (unless these values have been set manually by
-   * accessing the internal data pointers).
+   * 评估FE函数的函数值、梯度和Laplacians，这些都是存储在内部数据域`dof_values`中的DoF值（通常由read_dof_values()方法填充），在单元格上的正交点。
+   * 函数参数指定哪些部分应被实际计算。需要在函数get_value()、get_gradient()或get_normal_derivative()提供有用信息之前调用（除非这些值是通过访问内部数据指针手动设置的）。
+   *
    */
   void
   evaluate(const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the evaluate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带EvaluationFlags参数的evaluation()函数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const bool evaluate_values, const bool evaluate_gradients);
 
   /**
-   * Evaluates the function values, the gradients, and the Laplacians of the
-   * FE function given at the DoF values in the input array `values_array` at
-   * the quadrature points on the unit cell. If multiple components are
-   * involved in the current FEEvaluation object, the sorting in values_array
-   * is such that all degrees of freedom for the first component come first,
-   * then all degrees of freedom for the second, and so on. The function
-   * arguments specify which parts shall actually be computed. Needs to be
-   * called before the functions get_value(), get_gradient(), or
-   * get_normal_derivative() give useful information (unless these values have
-   * been set manually).
+   * 评估FE函数的函数值、梯度以及在输入数组`values_array`中的DoF值在单元格上的正交点处给出的拉普拉斯。如果当前的FEEvaluation对象涉及多个组件，values_array中的排序是：第一个组件的所有自由度排在前面，然后是第二个组件的所有自由度，以此类推。函数参数指定哪些部分应被实际计算。需要在函数get_value()、get_gradient()或get_normal_derivative()提供有用信息之前调用（除非这些值已经被手动设置）。
+   *
    */
   void
   evaluate(const VectorizedArrayType *            values_array,
            const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the evaluate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带EvaluationFlags参数的evaluation()函数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   evaluate(const VectorizedArrayType *values_array,
@@ -3236,15 +2722,11 @@ public:
            const bool                 evaluate_gradients);
 
   /**
-   * Reads from the input vector and evaluates the function values, the
-   * gradients, and the Laplacians of the FE function at the quadrature points
-   * on the unit cell. The function arguments specify which parts shall
-   * actually be computed. Needs to be called before the functions
-   * get_value(), get_gradient(), or get_normal_derivative() give useful
-   * information.
+   * 从输入向量中读取并评估FE函数在单元格上的正交点的函数值、梯度和拉普拉斯。函数参数指定哪些部分应被实际计算。需要在函数get_value(),
+   * get_gradient(),
+   * 或get_normal_derivative()提供有用信息之前调用。
+   * 这个调用等同于调用read_dof_values()，然后再调用evaluate()，但内部可能会使用一些额外的优化措施。
    *
-   * This call is equivalent to calling read_dof_values() followed by
-   * evaluate(), but might internally use some additional optimizations.
    */
   template <typename VectorType>
   void
@@ -3252,7 +2734,9 @@ public:
                   const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the gather_evaluate() function with the EvaluationFlags argument.
+   * @deprecated
+   * 请使用带有EvaluationFlags参数的gather_evaluate（）函数。
+   *
    */
   template <typename VectorType>
   DEAL_II_DEPRECATED_EARLY void
@@ -3261,37 +2745,31 @@ public:
                   const bool        evaluate_gradients);
 
   /**
-   * This function takes the values and/or gradients that are stored on
-   * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments
-   * `integrate_val` and `integrate_grad` are used to enable/disable some of
-   * values or gradients. The result is written into the internal data field
-   * `dof_values` (that is usually written into the result vector by the
-   * distribute_local_to_global() or set_dof_values() methods).
+   * 这个函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度来测试它们，并执行单元积分。两个函数参数`integrate_val`和`integrate_grad`用于启用/禁用某些值或梯度。结果被写入内部数据域`dof_values`（通常由distribut_local_to_global()或set_dof_values()方法写入结果向量中）。
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags evaluation_flag);
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带EvaluationFlags参数的 integrate() 函数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool integrate_values, const bool integrate_gradients);
 
   /**
-   * This function takes the values and/or gradients that are stored on
-   * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments
-   * `integrate_val` and `integrate_grad` are used to enable/disable some of
-   * values or gradients. As opposed to the other integrate() method, this
-   * call stores the result of the testing in the given array `values_array`.
+   * 这个函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度进行测试，并执行单元积分。两个函数参数`integrate_val`和`integrate_grad`用于启用/禁用某些值或梯度。与其他
+   * integrate()方法相反，这个调用将测试结果存储在给定的数组`values_array`中。
+   *
    */
   void
   integrate(const EvaluationFlags::EvaluationFlags evaluation_flag,
             VectorizedArrayType *                  values_array);
 
   /**
-   * @deprecated Please use the integrate() function with the EvaluationFlags argument.
+   * @deprecated  请使用带EvaluationFlags参数的 integrate() 函数。
+   *
    */
   DEAL_II_DEPRECATED_EARLY void
   integrate(const bool           integrate_values,
@@ -3299,15 +2777,11 @@ public:
             VectorizedArrayType *values_array);
 
   /**
-   * This function takes the values and/or gradients that are stored on
-   * quadrature points, tests them by all the basis functions/gradients on the
-   * cell and performs the cell integration. The two function arguments
-   * `integrate_val` and `integrate_grad` are used to enable/disable some of
-   * values or gradients.
+   * 这个函数获取存储在正交点上的值和/或梯度，通过单元上的所有基函数/梯度进行测试，并执行单元积分。两个函数参数`integrate_val`和`integrate_grad`用于启用/禁用某些值或梯度。
+   * 这个调用等同于调用 integrate() 后面的
+   * distribute_local_to_global()
+   * ，但内部可能使用一些额外的优化。
    *
-   * This call is equivalent to calling integrate() followed by
-   * distribute_local_to_global(), but might internally use some additional
-   * optimizations.
    */
   template <typename VectorType>
   void
@@ -3315,7 +2789,9 @@ public:
                     VectorType &                           output_vector);
 
   /**
-   * @deprecated Please use the integrate_scatter() function with the EvaluationFlags argument.
+   * @deprecated  请使用带有EvaluationFlags参数的 integrate_scatter()
+   * 函数。
+   *
    */
   template <typename VectorType>
   void
@@ -3324,47 +2800,46 @@ public:
                     VectorType &output_vector);
 
   /**
-   * Returns the q-th quadrature point on the face in real coordinates stored
-   * in MappingInfo.
+   * 返回存储在MappingInfo中的实坐标的面的第q个正交点。
+   *
    */
   Point<dim, VectorizedArrayType>
   quadrature_point(const unsigned int q_point) const;
 
   /**
-   * The number of degrees of freedom of a single component on the cell for
-   * the underlying evaluation object. Usually close to
-   * static_dofs_per_component, but the number depends on the actual element
-   * selected and is thus not static.
+   * 底层评估对象的单元格上单个组件的自由度数。通常接近于static_dofs_per_component，但是这个数字取决于实际选择的元素，因此不是静态的。
+   *
    */
   const unsigned int dofs_per_component;
 
   /**
-   * The number of degrees of freedom on the cell accumulated over all
-   * components in the current evaluation object. Usually close to
-   * static_dofs_per_cell = static_dofs_per_component*n_components, but the
-   * number depends on the actual element selected and is thus not static.
+   * 单元上的自由度数量在当前评估对象的所有元件上累积。通常接近static_dofs_per_cell
+   * =
+   * static_dofs_per_component*n_components，但这个数字取决于所选择的实际元素，因此不是静态的。
+   *
    */
   const unsigned int dofs_per_cell;
 
   /**
-   * The number of quadrature points in use. If the number of quadrature
-   * points in 1d is given as a template, this number is simply the
-   * <tt>dim-1</tt>-th power of that value. If the element degree is set to -1
-   * (dynamic selection of element degree), the static value of quadrature
-   * points is inaccurate and this value must be used instead.
+   * 使用中的正交点的数量。如果1d中的正交点的数量是作为模板给出的，这个数字只是该值的<tt>dim-1</tt>-次幂。如果元素度数被设置为
+   *
+   * -（元素度的动态选择），正交点的静态值就不准确了，必须用这个值代替。
+   *
    */
   const unsigned int n_q_points;
 
 
 private:
   /**
-   * Return face number of each face of the current face batch.
+   * 返回当前面批中每个面的面号。
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   compute_face_no_data();
 
   /**
-   * Determine the orientation of each face of the current face batch.
+   * 确定当前面批中每个面的方向。
+   *
    */
   std::array<unsigned int, VectorizedArrayType::size()>
   compute_face_orientations();
@@ -3396,12 +2871,12 @@ namespace internal
 } // namespace internal
 
 
-/*----------------------- Inline functions ----------------------------------*/
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 #ifndef DOXYGEN
 
 
-/*----------------------- FEEvaluationBaseData ------------------------*/
+ /*----------------------- FEEvaluationBaseData ------------------------*/ 
 
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
 inline FEEvaluationBaseData<dim, Number, is_face, VectorizedArrayType>::
@@ -4077,7 +3552,7 @@ FEEvaluationBaseData<dim, Number, is_face, VectorizedArrayType>::
 }
 
 
-/*----------------------- FEEvaluationBase ----------------------------------*/
+ /*----------------------- FEEvaluationBase ----------------------------------*/ 
 
 template <int dim,
           int n_components_,
@@ -5181,7 +4656,7 @@ namespace internal
   {
     // note: no hp is supported
     if (is_valid_mode_for_sm &&
-        dof_info->dof_indices_contiguous_sm[0 /*any index (<3) should work*/]
+        dof_info->dof_indices_contiguous_sm[0  /*any index (<3) should work*/ ]
             .size() > 0 &&
         active_fe_index == 0)
       return &vec.shared_vector_data();
@@ -5417,7 +4892,7 @@ FEEvaluationBase<dim, n_components_, Number, is_face, VectorizedArrayType>::
 
 
 
-/*------------------------------ access to data fields ----------------------*/
+ /*------------------------------ access to data fields ----------------------*/ 
 
 
 
@@ -6217,7 +5692,7 @@ FEEvaluationBase<dim, n_components_, Number, is_face, VectorizedArrayType>::
 
 
 
-/*----------------------- FEEvaluationAccess --------------------------------*/
+ /*----------------------- FEEvaluationAccess --------------------------------*/ 
 
 
 template <int dim,
@@ -6333,7 +5808,7 @@ operator=(const FEEvaluationAccess<dim,
 
 
 
-/*-------------------- FEEvaluationAccess scalar ----------------------------*/
+ /*-------------------- FEEvaluationAccess scalar ----------------------------*/ 
 
 
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
@@ -6646,7 +6121,7 @@ FEEvaluationAccess<dim, 1, Number, is_face, VectorizedArrayType>::
 
 
 
-/*----------------- FEEvaluationAccess vector-valued ------------------------*/
+ /*----------------- FEEvaluationAccess vector-valued ------------------------*/ 
 
 
 template <int dim, typename Number, bool is_face, typename VectorizedArrayType>
@@ -7058,7 +6533,7 @@ FEEvaluationAccess<dim, dim, Number, is_face, VectorizedArrayType>::submit_curl(
 }
 
 
-/*-------------------- FEEvaluationAccess scalar for 1d ---------------------*/
+ /*-------------------- FEEvaluationAccess scalar for 1d ---------------------*/ 
 
 
 template <typename Number, bool is_face, typename VectorizedArrayType>
@@ -7366,7 +6841,7 @@ FEEvaluationAccess<1, 1, Number, is_face, VectorizedArrayType>::
 
 
 
-/*-------------------------- FEEvaluation -----------------------------------*/
+ /*-------------------------- FEEvaluation -----------------------------------*/ 
 
 
 template <int dim,
@@ -7393,7 +6868,7 @@ inline FEEvaluation<dim,
               quad_no,
               fe_degree,
               static_n_q_points,
-              true /*note: this is not a face*/,
+              true  /*note: this is not a face*/ ,
               active_fe_index,
               active_quad_index)
   , dofs_per_component(this->data->dofs_per_component_on_cell)
@@ -8065,7 +7540,8 @@ FEEvaluation<
 namespace internal
 {
   /**
-   * Implementation for standard vectors (that have the begin() methods).
+   * 对标准向量（有begin()方法的）的实现。
+   *
    */
   template <typename Number,
             typename VectorizedArrayType,
@@ -8122,7 +7598,8 @@ namespace internal
   }
 
   /**
-   * Implementation for block vectors.
+   * 对块状向量的实现。
+   *
    */
   template <typename Number,
             typename VectorizedArrayType,
@@ -8146,7 +7623,8 @@ namespace internal
   }
 
   /**
-   * Implementation for vectors that have the begin() methods.
+   * 对有begin()方法的向量的实现。
+   *
    */
   template <int dim,
             int fe_degree,
@@ -8228,7 +7706,8 @@ namespace internal
   }
 
   /**
-   * Implementation for all other vectors like block vectors.
+   * 对所有其他向量（如块向量）的实现。
+   *
    */
   template <int dim,
             int fe_degree,
@@ -8498,7 +7977,7 @@ FEEvaluation<dim,
 
 
 
-/*-------------------------- FEFaceEvaluation ---------------------------*/
+ /*-------------------------- FEFaceEvaluation ---------------------------*/ 
 
 
 
@@ -9603,7 +9082,7 @@ FEFaceEvaluation<dim,
 
 
 
-/*------------------------- end FEFaceEvaluation ------------------------- */
+ /*------------------------- end FEFaceEvaluation ------------------------- */ 
 
 
 #endif // ifndef DOXYGEN
@@ -9612,3 +9091,5 @@ FEFaceEvaluation<dim,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

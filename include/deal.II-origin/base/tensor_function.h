@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/tensor_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -32,12 +31,26 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 这个类是一个张量值函数的模型。该类的接口与函数类的接口基本相同，只是不支持有多个分量的向量值函数，但返回类型总是张量值的。对这种类型的对象进行评估的返回值总是整个张量，而对于<tt>Function</tt>类，可以只要求一个特定的分量，或者使用<tt>vector_value</tt>函数，但它不返回值，而是将其写入其第二个参数提供的地址中。类的不同行为的原因是，在张量值函数的情况下，编译器预先知道参数的大小，这样就可以在堆栈中为返回值分配正确的内存量；另一方面，对于矢量值函数，编译器不知道其大小，所以内存必须在堆中分配，导致相对昂贵的复制操作。因此，我们可以认为这个类是<tt>Function</tt>类的特化，对于这个类，大小是已知的。另一个好处是可以返回任意等级的张量，而不仅仅是向量，因为它们的大小也可以简单地确定。
- *
+ * This class is a model for a tensor valued function. The interface of the
+ * class is mostly the same as that for the Function class, with the exception
+ * that it does not support vector-valued functions with several components,
+ * but that the return type is always tensor-valued. The returned values of
+ * the evaluation of objects of this type are always whole tensors, while for
+ * the <tt>Function</tt> class, one can ask for a specific component only, or
+ * use the <tt>vector_value</tt> function, which however does not return the
+ * value, but rather writes it into the address provided by its second
+ * argument. The reason for the different behavior of the classes is that in
+ * the case of tensor valued functions, the size of the argument is known to
+ * the compiler a priori, such that the correct amount of memory can be
+ * allocated on the stack for the return value; on the other hand, for the
+ * vector valued functions, the size is not known to the compiler, so memory
+ * has to be allocated on the heap, resulting in relatively expensive copy
+ * operations. One can therefore consider this class a specialization of the
+ * <tt>Function</tt> class for which the size is known. An additional benefit
+ * is that tensors of arbitrary rank can be returned, not only vectors, as for
+ * them the size can be determined similarly simply.
  *
  * @ingroup functions
- *
- *
  */
 template <int rank, int dim, typename Number = double>
 class TensorFunction
@@ -46,63 +59,59 @@ class TensorFunction
 {
 public:
   /**
-   * <tt>value</tt>函数的返回类型的别名。
-   *
+   * Alias for the return types of the <tt>value</tt> function.
    */
   using value_type = Tensor<rank, dim, Number>;
 
   /**
-   * <tt>gradient</tt>函数的返回类型的别名。
-   *
+   * Alias for the return types of the <tt>gradient</tt> functions.
    */
   using gradient_type = Tensor<rank + 1, dim, Number>;
 
   /**
-   * 用于表示时间的标量值实数类型。
-   *
+   * The scalar-valued real type used for representing time.
    */
   using time_type = typename FunctionTime<
     typename numbers::NumberTraits<Number>::real_type>::time_type;
 
   /**
-   * 构造函数。可以为时间变量取一个初始值，默认为零。
-   *
+   * Constructor. May take an initial value for the time variable, which
+   * defaults to zero.
    */
   TensorFunction(const time_type initial_time = time_type(0.0));
 
   /**
-   * 虚拟析构器；在这种情况下是绝对必要的，因为类通常不是通过它们的真实类型来使用，而是通过指向这个基类的指针。
-   *
+   * Virtual destructor; absolutely necessary in this case, as classes are
+   * usually not used by their true type, but rather through pointers to this
+   * base class.
    */
   virtual ~TensorFunction() override = default;
 
   /**
-   * 返回函数在给定点的值。
-   *
+   * Return the value of the function at the given point.
    */
   virtual value_type
   value(const Point<dim> &p) const;
 
   /**
-   * 将<tt>values</tt>设为函数在<tt>点</tt>的点值。
-   * 假设<tt>values</tt>已经有合适的大小，即与<tt>points</tt>数组的大小相同。
-   *
+   * Set <tt>values</tt> to the point values of the function at the
+   * <tt>points</tt>.  It is assumed that <tt>values</tt> already has the
+   * right size, i.e.  the same size as the <tt>points</tt> array.
    */
   virtual void
   value_list(const std::vector<Point<dim>> &points,
              std::vector<value_type> &      values) const;
 
   /**
-   * 返回函数在给定点的梯度。
-   *
+   * Return the gradient of the function at the given point.
    */
   virtual gradient_type
   gradient(const Point<dim> &p) const;
 
   /**
-   * 设置<tt>gradients</tt>为函数在<tt>points</tt>的梯度。
-   * 假设<tt>values</tt>已经有合适的大小，即与<tt>points</tt>数组的大小相同。
-   *
+   * Set <tt>gradients</tt> to the gradients of the function at the
+   * <tt>points</tt>.  It is assumed that <tt>values</tt> already has the
+   * right size, i.e.  the same size as the <tt>points</tt> array.
    */
   virtual void
   gradient_list(const std::vector<Point<dim>> &points,
@@ -112,27 +121,26 @@ public:
 
 
 /**
- * 提供一个张量值的函数，它总是返回一个恒定的张量值。很明显，这个函数的所有导数都是零。
- *
+ * Provide a tensor valued function which always returns a constant tensor
+ * value. Obviously, all derivates of this function are zero.
  *
  * @ingroup functions
- *
- *
  */
 template <int rank, int dim, typename Number = double>
 class ConstantTensorFunction : public TensorFunction<rank, dim, Number>
 {
 public:
   /**
-   * 用于表示时间的标量值实数类型。
-   *
+   * The scalar-valued real type used for representing time.
    */
   using time_type = typename TensorFunction<rank, dim, Number>::time_type;
 
   /**
-   * 构造函数；将常数张量值作为参数。参考值在内部被复制。
-   * 可以指定时间变量的初始值，否则默认为零。
+   * Constructor; takes the constant tensor value as an argument. The
+   * reference value is copied internally.
    *
+   * An initial value for the time variable may be specified, otherwise it
+   * defaults to zero.
    */
   ConstantTensorFunction(const dealii::Tensor<rank, dim, Number> &value,
                          const time_type initial_time = 0.0);
@@ -165,28 +173,26 @@ private:
 
 
 /**
- * 提供一个张量值的函数，它总是返回0。很明显，这个函数的所有派生都是零。
- *
+ * Provide a tensor valued function which always returns zero. Obviously, all
+ * derivates of this function are zero.
  *
  * @ingroup functions
- *
- *
  */
 template <int rank, int dim, typename Number = double>
 class ZeroTensorFunction : public ConstantTensorFunction<rank, dim, Number>
 {
 public:
   /**
-   * 用于表示时间的标量值实数类型。
-   *
+   * The scalar-valued real type used for representing time.
    */
   using time_type =
     typename ConstantTensorFunction<rank, dim, Number>::time_type;
 
   /**
-   * 构造函数。
-   * 可以指定时间变量的初始值，否则默认为零。
+   * Constructor.
    *
+   * An initial value for the time variable may be specified, otherwise it
+   * defaults to zero.
    */
   ZeroTensorFunction(const time_type initial_time = 0.0);
 };
@@ -195,5 +201,3 @@ public:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

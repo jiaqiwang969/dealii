@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/arpack_solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -118,117 +119,112 @@ dseupd_(int *         rvec,
         int *         info);
 
 /**
- * Interface for using ARPACK. ARPACK is a collection of Fortran77 subroutines
- * designed to solve large scale eigenvalue problems.  Here we interface to
- * the routines <code>dnaupd</code> and <code>dneupd</code> of ARPACK.
- * If the operator is specified to be symmetric we use the symmetric interface
- * <code>dsaupd</code> and <code>dseupd</code> of ARPACK instead.  The
- * package is designed to compute a few eigenvalues and corresponding
- * eigenvectors of a general n by n matrix A. It is most appropriate for large
- * sparse matrices A.
+ * 使用ARPACK的接口。ARPACK是一个Fortran77的子程序集，旨在解决大规模的特征值问题。
+ * 这里我们为ARPACK的例程 <code>dnaupd</code> and <code>dneupd</code>
+ * 提供接口。如果运算符被指定为对称的，我们就使用ARPACK的对称接口
+ * <code>dsaupd</code> and <code>dseupd</code> 代替。
+ * 该软件包被设计用来计算一般n乘n矩阵A的几个特征值和相应的特征向量。它最适用于大的稀疏矩阵A。
+ * 在这个类中，我们利用了应用于广义特征谱问题 $(A-\lambda
+ * B)x=0$ 的方法，用于 $x\neq0$ ；其中 $A$ 是一个系统矩阵，
+ * $B$ 是一个质量矩阵，而 $\lambda, x$
+ * 分别是一组特征值和特征向量。
+ * ArpackSolver可以通过以下方式用于带有串行对象的应用代码中。
  *
- * In this class we make use of the method applied to the generalized
- * eigenspectrum problem $(A-\lambda B)x=0$, for $x\neq0$; where $A$ is a
- * system matrix, $B$ is a mass matrix, and $\lambda, x$ are a set of
- * eigenvalues and eigenvectors respectively.
- *
- * The ArpackSolver can be used in application codes with serial objects in
- * the following way:
  * @code
  * SolverControl solver_control(1000, 1e-9);
  * ArpackSolver solver(solver_control);
  * solver.solve(A, B, OP, lambda, x, size_of_spectrum);
  * @endcode
- * for the generalized eigenvalue problem $Ax=B\lambda x$, where the variable
- * <code>size_of_spectrum</code> tells ARPACK the number of
- * eigenvector/eigenvalue pairs to solve for. Here, <code>lambda</code> is a
- * vector that will contain the eigenvalues computed, <code>x</code> a vector
- * that will contain the eigenvectors computed, and <code>OP</code> is an
- * inverse operation for the matrix <code>A</code>. Shift and invert
- * transformation around zero is applied.
+ * 对于广义的特征值问题 $Ax=B\lambda x$  ，其中变量
+ * <code>size_of_spectrum</code>
+ * 告诉ARPACK要解决的特征向量/特征值对的数量。这里，
+ * <code>lambda</code> 是一个包含计算的特征值的向量，
+ * <code>x</code> 是一个包含计算的特征向量的向量，
+ * <code>OP</code> 是对矩阵 <code>A</code>
+ * 的逆运算。围绕零点的移位和反转变换被应用。
+ * 通过AdditionalData，用户可以指定一些要设置的参数。
+ * 关于ARPACK例程 <code>dsaupd</code> ,  <code>dseupd</code>,
+ * <code>dnaupd</code> and <code>dneupd</code>
+ * 如何工作以及如何适当设置参数的进一步信息，请看ARPACK手册。
  *
- * Through the AdditionalData the user can specify some of the parameters to
- * be set.
  *
- * For further information on how the ARPACK routines <code>dsaupd</code>,
- * <code>dseupd</code>, <code>dnaupd</code> and <code>dneupd</code> work
- * and also how to set the parameters appropriately
- * please take a look into the ARPACK manual.
+ * @note  每当你使用AffineConstraints消除自由度时，你会产生虚假的特征值和特征向量。如果你确保消除的矩阵行的对角线都等于1，你会得到一个额外的特征值。但要注意deal.II中的一些函数将这些对角线设置为相当任意的（从特征值问题的角度来看）值。参见 @ref step_36  "  step-36  "
+ * 的例子。
  *
- * @note Whenever you eliminate degrees of freedom using AffineConstraints,
- * you generate spurious eigenvalues and eigenvectors. If you make sure
- * that the diagonals of eliminated matrix rows are all equal to one, you
- * get a single additional eigenvalue. But beware that some functions in
- * deal.II set these diagonals to rather arbitrary (from the point of view
- * of eigenvalue problems) values. See also
- * @ref step_36 "step-36"
- * for an example.
+ *
  */
 class ArpackSolver : public Subscriptor
 {
 public:
   /**
-   * Declare the type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
 
   /**
-   * An enum that lists the possible choices for which eigenvalues to compute
-   * in the solve() function.
+   * 一个枚举，列出在solve()函数中计算哪些特征值的可能选择。
+   *
    */
   enum WhichEigenvalues
   {
     /**
-     * The algebraically largest eigenvalues.
+     * 代数上最大的特征值。
+     *
      */
     algebraically_largest,
     /**
-     * The algebraically smallest eigenvalues.
+     * 代数上最小的特征值。
+     *
      */
     algebraically_smallest,
     /**
-     * The eigenvalue with the largest magnitudes.
+     * 具有最大量级的特征值。
+     *
      */
     largest_magnitude,
     /**
-     * The eigenvalue with the smallest magnitudes.
+     * 具有最小量级的特征值。
+     *
      */
     smallest_magnitude,
     /**
-     * The eigenvalues with the largest real parts.
+     * 具有最大实部的特征值。
+     *
      */
     largest_real_part,
     /**
-     * The eigenvalues with the smallest real parts.
+     * 具有最小实部的特征值。
+     *
      */
     smallest_real_part,
     /**
-     * The eigenvalues with the largest imaginary parts.
+     * 具有最大虚部的特征值。
+     *
      */
     largest_imaginary_part,
     /**
-     * The eigenvalues with the smallest imaginary parts.
+     * 具有最小虚部的特征值。
+     *
      */
     smallest_imaginary_part,
     /**
-     * Compute half of the eigenvalues from the high end of the spectrum and
-     * the other half from the low end. If the number of requested
-     * eigenvectors is odd, then the extra eigenvector comes from the high end
-     * of the spectrum.
+     * 从频谱的高端计算一半的特征值，另一半从低端计算。如果要求的特征向量的数量是奇数，那么额外的特征向量来自谱的高端。
+     *
      */
     both_ends
   };
 
   /**
-   * Standardized data struct to pipe additional data to the solver.
+   * 标准化的数据结构，用于向求解器输送额外的数据。
+   *
    */
   struct AdditionalData
   {
     /**
-     * Constructor. By default, set the number of Arnoldi vectors (Lanczos
-     * vectors if the problem is symmetric) to 15. Set the solver to find the
-     * eigenvalues of largest magnitude for a non-symmetric problem).
+     * 构造函数。默认情况下，将Arnoldi向量的数量（如果问题是对称的，则为Lanczos向量）设置为15。对于非对称问题，设置求解器寻找最大的特征值）。)
+     *
      */
     explicit AdditionalData(
       const unsigned int     number_of_arnoldi_vectors = 15,
@@ -236,98 +232,77 @@ public:
       const bool             symmetric                 = false);
 
     /**
-     * Number of Arnoldi/Lanczos vectors. This number should be less than the
-     * size of the problem but greater than 2 times the number of eigenvalues
-     * (or n_eigenvalues if it is set) plus one.
+     * Arnoldi/Lanczos向量的数量。这个数字应该小于问题的大小，但要大于2倍的特征值数量（如果设置了n_eigenvalues）加1。
+     *
      */
     const unsigned int number_of_arnoldi_vectors;
 
     /**
-     * Specify the eigenvalues of interest.
+     * 指定感兴趣的特征值。
+     *
      */
     const WhichEigenvalues eigenvalue_of_interest;
 
     /**
-     * Specify if the problem is symmetric or not.
+     * 指定问题是否是对称的。
+     *
      */
     const bool symmetric;
   };
 
   /**
-   * Access to the object that controls convergence.
+   * 访问控制收敛的对象。
+   *
    */
   SolverControl &
   control() const;
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   ArpackSolver(SolverControl &       control,
                const AdditionalData &data = AdditionalData());
 
   /**
-   * Set initial vector for building Krylov space.
+   * 设置初始矢量，用于构建Krylov空间。
+   *
    */
   template <typename VectorType>
   void
   set_initial_vector(const VectorType &vec);
 
   /**
-   * Set shift @p sigma for shift-and-invert spectral transformation.
+   * 设置移位 @p sigma ，用于移位和反转的光谱变换。
+   * 如果这个函数没有被调用，则假定移位为零。
    *
-   * If this function is not called, the shift is assumed to be zero.
    */
   void
   set_shift(const std::complex<double> sigma);
 
   /**
-   * Solve the generalized eigensprectrum problem $A x=\lambda B x$ by calling
-   * the <code>dsaupd</code> and <code>dseupd</code> or
-   * <code>dnaupd</code> and <code>dneupd</code> functions of ARPACK.
+   * 通过调用ARPACK的 <code>dsaupd</code> and <code>dseupd</code> 或
+   * <code>dnaupd</code> and <code>dneupd</code>
+   * 函数来解决广义的特征直角问题 $A x=\lambda B x$ 。
+   * 该函数返回一个长度为<i>n</i>的特征值向量和一个长度为<i>n</i>的特征向量（在对称情况下），以及长度为<i>n+1</i>的非对称情况下的向量。在对称情况下，所有的特征向量都是实数。在非对称情况下，复杂的特征值总是以复数共轭对的形式出现。因此，具有非零复数部分的特征值的特征向量是通过将实数和虚数部分放在连续的实值向量中来存储的。复数共轭特征值的特征向量不需要被存储，因为它只是存储的特征向量的复数共轭。因此，如果最后n个特征值有一个非零的虚部，Arpack总共需要n+1个实值向量来存储特征向量的实部和虚部。
+   * @param  A
+   * 我们要计算特征值的算子。实际上，这个参数完全没有使用。
+   * @param  B
+   * 基础空间的内积，通常是质量矩阵。对于受限问题，它可以是一个部分质量矩阵，例如，像斯托克斯问题的速度质量矩阵。只有它的函数
+   * <code>vmult()</code> 被使用。      @param  inverse
+   * 这是实际使用的可能移位的逆矩阵，而不是 <code>A</code>.
+   * Only its function <code>vmult()</code> 被使用。      @param
+   * eigenvalues 是一个复数的向量，其中的特征值被返回。
+   * @param
+   * 特征向量是一个<b>real</b>特征向量的向量，包含所有特征向量的实部和与复数共轭特征值对对应的特征向量的虚部。
+   * 因此，其长度在对称情况下应为<i>n</i>，在非对称情况下应为<i>n+1</i>。在非对称情况下，存储方案会导致例如以下模式。假设前两个特征值是实数，第三和第四是一对复数共轭。询问三个特征对的结果是<i>[real(v1),real(v2),
+   * real(v3),imag(v3)]</i>。请注意，如果我们在这个例子中要求四个特征对，我们会得到同样的模式，因为第四个特征向量只是第三个的复共轭。
+   * @param  n_eigenvalues
+   * 这个参数的目的并不清楚，但将其设置为
+   * <code>eigenvalues</code> 或更大的规模是安全的。
+   * 让它保持默认的0，它将在内部被重置为
+   * <code>eigenvalues</code> 的大小。
    *
-   * The function returns a vector of eigenvalues of length <i>n</i> and a
-   * vector of eigenvectors of length <i>n</i> in the symmetric case
-   * and of length <i>n+1</i> in the non-symmetric case. In the symmetric case
-   * all eigenvectors are real. In the non-symmetric case complex eigenvalues
-   * always occur as complex conjugate pairs. Therefore the eigenvector for an
-   * eigenvalue with nonzero complex part is stored by putting the real and
-   * the imaginary parts in consecutive real-valued vectors. The eigenvector
-   * of the complex conjugate eigenvalue does not need to be stored, since it
-   * is just the complex conjugate of the stored eigenvector. Thus, if the last
-   * n-th eigenvalue has a nonzero imaginary part, Arpack needs in total n+1
-   * real-valued vectors to store real and imaginary parts of the eigenvectors.
-   *
-   * @param A The operator for which we want to compute eigenvalues. Actually,
-   * this parameter is entirely unused.
-   *
-   * @param B The inner product of the underlying space, typically the mass
-   * matrix. For constrained problems, it can be a partial mass matrix, like
-   * for instance the velocity mass matrix of a Stokes problem. Only its
-   * function <code>vmult()</code> is used.
-   *
-   * @param inverse This is the possibly shifted inverse that is actually used
-   * instead of <code>A</code>. Only its function <code>vmult()</code> is
-   * used.
-   *
-   * @param eigenvalues is a vector of complex numbers in which the
-   * eigenvalues are returned.
-   *
-   * @param eigenvectors is a <b>real</b> vector of eigenvectors, containing
-   * the real parts of all eigenvectors and the imaginary parts of the
-   * eigenvectors corresponding to complex conjugate eigenvalue pairs.
-   * Therefore, its length should be <i>n</i> in the symmetric case and
-   * <i>n+1</i> in the non-symmetric case. In the non-symmetric case the storage
-   * scheme leads for example to the following pattern. Suppose that the first
-   * two eigenvalues are real and the third and fourth are a complex conjugate
-   * pair. Asking for three eigenpairs results in <i>[real(v1),real(v2),
-   * real(v3),imag(v3)]</i>. Note that we get the same pattern if we ask for
-   * four eigenpairs in this example, since the fourth eigenvector is simply the
-   * complex conjugate of the third one.
-   *
-   * @param n_eigenvalues The purpose of this parameter is not clear, but it
-   * is safe to set it to the size of <code>eigenvalues</code> or greater.
-   * Leave it at its default zero, which will be reset to the size of
-   * <code>eigenvalues</code> internally.
    */
   template <typename VectorType,
             typename MatrixType1,
@@ -343,36 +318,41 @@ public:
 
 protected:
   /**
-   * Reference to the object that controls convergence of the iterative
-   * solver.
+   * 对控制迭代求解器收敛的对象的引用。
+   *
    */
   SolverControl &solver_control;
 
   /**
-   * Store a copy of the flags for this particular solver.
+   * 存储这个特定求解器的标志的副本。
+   *
    */
   const AdditionalData additional_data;
 
   /**
-   * Store an initial vector
+   * 存储一个初始向量
+   *
    */
   bool                initial_vector_provided;
   std::vector<double> resid;
 
   /**
-   * Real part of the shift
+   * 移位的实数部分
+   *
    */
   double sigmar;
 
   /**
-   * Imaginary part of the shift
+   * 移位的虚数部分
+   *
    */
   double sigmai;
 
 
 private:
   /**
-   * Exceptions.
+   * 例外的情况。
+   *
    */
   DeclException2(ArpackExcInvalidNumberofEigenvalues,
                  int,
@@ -535,7 +515,7 @@ template <typename VectorType,
           typename MatrixType2,
           typename INVERSE>
 inline void
-ArpackSolver::solve(const MatrixType1 & /*system_matrix*/,
+ArpackSolver::solve(const MatrixType1 &  /*system_matrix*/ ,
                     const MatrixType2 &                mass_matrix,
                     const INVERSE &                    inverse,
                     std::vector<std::complex<double>> &eigenvalues,
@@ -902,3 +882,5 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif
 #endif
+
+

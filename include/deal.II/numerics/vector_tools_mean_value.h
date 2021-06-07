@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_mean_value_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -29,58 +30,35 @@ class DoFHandler;
 namespace VectorTools
 {
   /**
-   * Mean value operations
+   * 均值运算
+   *
    */
   //@{
 
   /**
-   * Subtract the (algebraic) mean value from a vector.
+   * 从一个向量中减去（代数）均值。
+   * 这个函数最经常被用作斯托克斯的均值过滤器。
+   * 在斯托克斯方程中，速度只有Dirichlet边界的压力只确定到一个常数。这个函数允许减去压力的平均值。它通常在预处理程序中调用，并产生平均值为零的更新。平均值是按照输入矢量给出的自由度值的平均值计算的；它们不以单元面积为权重，也就是说，平均值被计算为
+   * $\sum_i v_i$ ，而不是 $\int_\Omega v(x) =
+   * \int_\Omega \sum_i
+   * v_i \phi_i(x)$ 。然而，后者可以从
+   * VectorTools::compute_mean_function, 中得到。    除了对向量 @p v
+   * 进行操作外，该函数还需要一个布尔掩码 @p p_select
+   * ，该掩码对向量的每个元素都有一个真条目，对这些元素将计算出平均值并随后减去。该参数用于表示解向量中与压力相对应的分量，而避免触及向量的所有其他分量，如速度分量。(但是请注意，该掩码不是对解向量
+   * @p v 可能与之相关的有限元的向量分量进行操作的 @ref
+   * GlossComponentMask
+   * ；相反，它是对整个向量的掩码，而不参考向量元素的含义)。
+   * 布尔掩码 @p p_select
+   * 有一个空矢量作为默认值，这将被解释为选择所有矢量元素，因此，减去整个矢量上的代数平均值。如果要处理整个向量，这允许在没有布尔掩码的情况下调用这个函数。
+   * @note
+   * 在使用这个函数过滤掉一个算子的内核的情况下（例如由常数压力组成的斯托克斯算子的空空间），这个函数只对空空间确实由矢量组成的有限元素有意义
+   * $(1,1,\ldots,1)^T$
+   * 。例如，对于通常的拉格朗日元素就是这种情况，所有形状函数的总和等于恒一的函数。然而，对于其他一些函数则不然：例如，对于FE_DGP元素（Stokes离散中压力的另一个有效选择），每个单元上的第一个形状函数是常数，而更多的元素与它正交（在参考单元上）；因此，所有形状函数之和不等于一，与常数模式相关的向量也不等于
+   * $(1,1,\ldots,1)^T$
+   * 。对于这样的元素，在减去平均值时，必须使用不同的程序。
+   * @warning
+   * 这个函数只能用于分布式向量类，前提是布尔掩码为空，即选择整个向量。
    *
-   * This function is most frequently used as a mean-value filter for Stokes:
-   * The pressure in Stokes' equations with only Dirichlet boundaries for the
-   * velocities is only determined up to a constant. This function allows to
-   * subtract the mean value of the pressure. It is usually called in a
-   * preconditioner and generates updates with mean value zero. The mean value
-   * is computed as the mean value of the degrees of freedom values as given
-   * by the input vector; they are not weighted by the area of cells, i.e. the
-   * mean is computed as $\sum_i v_i$, rather than as $\int_\Omega v(x) =
-   * \int_\Omega \sum_i v_i \phi_i(x)$. The latter can be obtained from the
-   * VectorTools::compute_mean_function, however.
-   *
-   * Apart from the vector @p v to operate on, this function takes a boolean
-   * mask @p p_select that has a true entry for every element of the vector
-   * for which the mean value shall be computed and later subtracted. The
-   * argument is used to denote which components of the solution vector
-   * correspond to the pressure, and avoid touching all other components of
-   * the vector, such as the velocity components. (Note, however, that the
-   * mask is not a
-   * @ref GlossComponentMask
-   * operating on the vector components of the finite element the solution
-   * vector @p v may be associated with; rather, it is a mask on the entire
-   * vector, without reference to what the vector elements mean.)
-   *
-   * The boolean mask @p p_select has an empty vector as default value, which
-   * will be interpreted as selecting all vector elements, hence, subtracting
-   * the algebraic mean value on the whole vector. This allows to call this
-   * function without a boolean mask if the whole vector should be processed.
-   *
-   * @note In the context of using this function to filter out the kernel of
-   * an operator (such as the null space of the Stokes operator that consists
-   * of the constant pressures), this function only makes sense for finite
-   * elements for which the null space indeed consists of the vector
-   * $(1,1,\ldots,1)^T$. This is the case for example for the usual Lagrange
-   * elements where the sum of all shape functions equals the function that is
-   * constant one. However, it is not true for some other functions: for
-   * example, for the FE_DGP element (another valid choice for the pressure in
-   * Stokes discretizations), the first shape function on each cell is
-   * constant while further elements are $L_2$ orthogonal to it (on the
-   * reference cell); consequently, the sum of all shape functions is not
-   * equal to one, and the vector that is associated with the constant mode is
-   * not equal to $(1,1,\ldots,1)^T$. For such elements, a different procedure
-   * has to be used when subtracting the mean value.
-   *
-   * @warning This function can only be used for distributed vector classes
-   * provided the boolean mask is empty, i.e. selecting the whole vector.
    */
   template <typename VectorType>
   void
@@ -88,27 +66,12 @@ namespace VectorTools
 
 
   /**
-   * Compute the mean value of one component of the solution.
+   * 计算解决方案中一个分量的平均值。
+   * 这个函数将所选分量在整个域上进行积分并返回结果，即计算
+   * $\frac{1}{|\Omega|}\int_\Omega
+   * @note
+   * 该函数最常用于解决其解只定义到一个常数的问题，例如纯诺伊曼问题或斯托克斯或纳维尔斯托克斯问题中的压力。在这两种情况下，从节点向量中减去当前函数计算出的均值，一般不会产生均值为零的有限元函数的理想结果。事实上，它只对拉格朗日元素有效。对于所有其他元素，你需要计算均值并在评估程序中减去它。
    *
-   * This function integrates the chosen component over the whole domain and
-   * returns the result, i.e. it computes $\frac{1}{|\Omega|}\int_\Omega
-   * [u_h(x)]_c \; dx$ where $c$ is the vector component and $u_h$ is the
-   * function representation of the nodal vector given as fourth argument. The
-   * integral is evaluated numerically using the quadrature formula given as
-   * third argument.
-   *
-   * This function is used in the "Possibilities for extensions" part of the
-   * results section of
-   * @ref step_3 "step-3".
-   *
-   * @note The function is most often used when solving a problem whose
-   * solution is only defined up to a constant, for example a pure Neumann
-   * problem or the pressure in a Stokes or Navier-Stokes problem. In both
-   * cases, subtracting the mean value as computed by the current function,
-   * from the nodal vector does not generally yield the desired result of a
-   * finite element function with mean value zero. In fact, it only works for
-   * Lagrangian elements. For all other elements, you will need to compute the
-   * mean value and subtract it right inside the evaluation routine.
    */
   template <int dim, typename VectorType, int spacedim>
   typename VectorType::value_type
@@ -119,8 +82,9 @@ namespace VectorTools
                      const unsigned int               component);
 
   /**
-   * Call the other compute_mean_value() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 调用另一个compute_mean_value()函数，见上文，使用<tt>mapping=MappingQGeneric
+   * @<dim@>(1)</tt>.  。
+   *
    */
   template <int dim, typename VectorType, int spacedim>
   typename VectorType::value_type
@@ -134,3 +98,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_mean_value_h
+
+

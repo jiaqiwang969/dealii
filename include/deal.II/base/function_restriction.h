@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/function_restriction_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2021 by the deal.II authors
@@ -26,37 +27,34 @@ DEAL_II_NAMESPACE_OPEN
 namespace Functions
 {
   /**
-   * This class takes a function in `dim + 1` dimensions and creates a new
-   * function in one dimension lower by restricting one of the coordinates to a
-   * given value. Mathematically this corresponds to taking a function
-   * $f = f(x, y, z)$,
-   * a fixed value, $Z$, and defining a new function (the restriction)
-   * $g = g(x, y) = f(x, y, Z)$.
-   * Using this class, this translates to
+   * 这个类在`dim +
+   * 1`维度上接收一个函数，并通过将其中一个坐标限制在给定的值上，在低一个维度上创建一个新函数。在数学上，这相当于取一个函数
+   * $f = f(x, y, z)$ ，一个固定值， $Z$
+   * ，并定义一个新的函数（限制） $g = g(x, y) = f(x, y, Z)$ 。
+   * 使用这个类，这可以转化为
    * @code
-   *   Function<3> &            function             = ...
-   *   double                   z                    = ...
-   *   unsigned int             restricted_direction = 2;
-   *   CoordinateRestriction<2> restriction(function, restricted_direction, z);
+   * Function<3> &            function             = ...
+   * double                   z                    = ...
+   * unsigned int             restricted_direction = 2;
+   * CoordinateRestriction<2> restriction(function, restricted_direction, z);
    * @endcode
+   * 限制上的`dim`维坐标从限制的（`dim +
+   * 1`）坐标开始排序。特别是，这意味着如果 $y$
+   * -坐标在三维中被锁定为 $Y$
+   * ，那么在限制上的坐标被排序为 $(z, x)$  。    $g = g(z, x)
+   * = f(x, Y, z)$  .   这与 BoundingBox::cross_section.
+   * 中的惯例相同。
    *
-   * The `dim`-dimensional coordinates on the restriction are ordered starting
-   * from the restricted (`dim + 1`)-coordinate. In particular, this means that
-   * if the $y$-coordinate is locked to $Y$ in 3D, the coordinates are ordered
-   * as $(z, x)$ on the restriction:
-   * $g = g(z, x) = f(x, Y, z)$.
-   * This is the same convention as in BoundingBox::cross_section.
    */
   template <int dim>
   class CoordinateRestriction : public Function<dim>
   {
   public:
     /**
-     * Constructor, takes the (`dim + 1`)-coordinate direction and the value
-     * that the incoming function should be restricted to.
+     * 构造函数，接受(`dim +
+     * 1`)坐标方向和传入函数应被限制的值。
+     * 一个指向传入函数的指针在内部存储，所以该函数的寿命必须比创建的限制值长。
      *
-     * A pointer to the incoming function is stored internally, so the function
-     * must have a longer lifetime than the created restriction.
      */
     CoordinateRestriction(const Function<dim + 1> &function,
                           const unsigned int       direction,
@@ -87,36 +85,32 @@ namespace Functions
 
 
   /**
-   * This class creates a 1-dimensional function from a `dim + 1` dimensional
-   * function by restricting `dim` of the coordinate values to a given point.
-   * Mathematically this corresponds to taking a function, $f = f(x, y, z)$, and
-   * a point $(Y, Z)$, and defining a new function $g = g(x) = f(x, Y, Z)$.
-   * Using this class, this translates to
+   * 该类通过将坐标值的`dim`限制在一个给定的点上，从`dim+1`维函数中创建一个一维函数。
+   * 在数学上，这相当于从一个函数 $f = f(x, y, z)$ 和一个点
+   * $(Y, Z)$ ，定义了一个新的函数 $g = g(x) = f(x, Y, Z)$ 。
+   * 使用这个类，这可以转化为
    * @code
-   *   Function<3> &       function = ...
-   *   Point<2>            point(y, z);
-   *   unsigned int        open_direction = 0;
-   *   PointRestriction<2> restriction(function, open_direction, point);
+   * Function<3> &       function = ...
+   * Point<2>            point(y, z);
+   * unsigned int        open_direction = 0;
+   * PointRestriction<2> restriction(function, open_direction, point);
    * @endcode
+   * 点的坐标将在高维函数坐标中展开，从开放方向开始（并环绕）。特别是，如果我们限制到一个点
+   * $(Z, X)$
+   * ，并选择保持y方向的开放性，那么创建的限制就是函数
+   * $g(y) = f(X, y, Z)$  。  这与 BoundingBox::cross_section.
+   * 中的惯例一致
    *
-   * The coordinates of the point will be expanded in the higher-dimensional
-   * functions coordinates starting from the open-direction (and wrapping
-   * around). In particular, if we restrict to a point $(Z, X)$ and choose to
-   * keep the y-direction open, the restriction that is created is the function
-   * $g(y) = f(X, y, Z)$.
-   * This is consistent with the convention in BoundingBox::cross_section.
    */
   template <int dim>
   class PointRestriction : public Function<1>
   {
   public:
     /**
-     * Constructor, takes the point that the incoming function should be
-     * restricted to and which (`dim + 1`)-dimensional coordinate direction
-     * should be kept "open".
+     * 构造函数，接受传入函数应该被限制的点，以及哪个（`dim
+     * + 1`）维坐标方向应该被保持 "开放"。
+     * 一个指向传入函数的指针在内部存储，所以该函数的寿命必须比创建的限制更长。
      *
-     * A pointer to the incoming function is stored internally, so the function
-     * must have a longer lifetime than the created restriction.
      */
     PointRestriction(const Function<dim + 1> &function,
                      const unsigned int       open_direction,
@@ -149,18 +143,16 @@ namespace Functions
 namespace internal
 {
   /**
-   * Creates a (`dim + 1`)-dimensional point by copying over the coordinates of
-   * the incoming `dim`-dimensional point and setting the "missing"
-   * (`dim + 1`)-dimensional component to the incoming coordinate value.
+   * 创建一个(`dim +
+   * 1`)维的点，方法是复制传入的`dim`维的点的坐标，并将
+   * "缺失的"(`dim + 1`)维分量设置为传入坐标值。
+   * 例如，给定输入 $\{(x, y), 2, z \}$ ，该函数创建点 $(x, y,
+   * z)$  。
+   * `dim`维的点的坐标按照函数coordinate_to_one_dim_higher给出的约定顺序写到(`dim
+   * +
+   * 1`)维的点的坐标。因此，低维点上的坐标顺序没有被保留。
+   * $\{(z, x), 1, y \}$  创建点  $(x, y, z)$  .
    *
-   * For example, given the input
-   * $\{(x, y), 2, z \}$ this function creates the point $(x, y, z)$.
-   *
-   * The coordinates of the `dim`-dimensional point are written to the
-   * coordinates of the (`dim + 1`)-dimensional point in the order of the
-   * convention given by the function coordinate_to_one_dim_higher. Thus, the
-   * order of coordinates on the lower-dimensional point are not preserved:
-   * $\{(z, x), 1, y \}$ creates the point $(x, y, z)$.
    */
   template <int dim>
   Point<dim + 1>
@@ -171,4 +163,6 @@ namespace internal
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_function_restriction_h */
+#endif  /* dealii_function_restriction_h */ 
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/thread_management_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -42,50 +41,56 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup threads */ 
- /*@{*/ 
+/*!@addtogroup threads */
+/*@{*/
 
 
 /**
- * 一个用于实现deal.II中线程管理的命名空间。这个命名空间的大部分内容在deal.II的文档页面上链接到的一份报告中详细讨论过。
- *
+ * A namespace for the implementation of thread management in deal.II. Most of
+ * the content of this namespace is discussed in detail in one of the reports
+ * linked to from the documentation page of deal.II.
  *
  * @ingroup threads
- *
- *
  */
 namespace Threads
 {
   /**
-   * 一个实现<a
-   * href="https://en.wikipedia.org/wiki/Lock_(computer_science)">mutex</a>的类。
-   * Mutexes用于锁定数据结构，以确保在同一时间内只有一个执行线程可以访问它们。
-   * 这个类是对 `std::mutex`.
-   * 的一个薄包装，唯一的区别是这个类是可复制的，而
-   * `std::mutex` 是不可复制的。
-   * 事实上，当复制时，接收对象不会从被复制的对象中复制任何状态，也就是说，会创建一个全新的mutex。如果一个突变体被用作成员变量来锁定一个类的其他成员变量，那么这些语义与常见的使用情况是一致的：在这种情况下，被复制到对象的突变体应该只保护被复制到对象的成员，而不是被复制到对象和被复制从对象的成员。因为在类被复制的时候，目的地的成员变量还没有被使用，其对应的mutex也应该保持在原来的状态。
+   * A class implementing a <a
+   * href="https://en.wikipedia.org/wiki/Lock_(computer_science)">mutex</a>.
+   * Mutexes are used to lock data structures to ensure that only a
+   * single thread of execution can access them at the same time.
    *
+   * This class is a thin wrapper around `std::mutex`. The only difference
+   * is that this class is copyable when `std::mutex` is not.  Indeed, when
+   * copied, the receiving object does not copy any state from the object
+   * being copied, i.e. an entirely new mutex is created. These semantics
+   * are consistent with the common use case if a mutex is used as a member
+   * variable to lock the other member variables of a class: in that case,
+   * the mutex of the copied-to object should only guard the members of the
+   * copied-to object, not the members of both the copied-to and
+   * copied-from object. Since at the time when the class is copied, the
+   * destination's member variable is not used yet, its corresponding mutex
+   * should also remain in its original state.
    */
   class Mutex : public std::mutex
   {
   public:
     /**
-     * 默认构造函数。
-     *
+     * Default constructor.
      */
     Mutex() = default;
 
     /**
-     * 复制构造函数。正如在这个类的文档中所讨论的，不会从作为参数给出的对象中复制状态。
-     *
+     * Copy constructor. As discussed in this class's documentation, no state
+     * is copied from the object given as argument.
      */
     Mutex(const Mutex &)
       : std::mutex()
     {}
 
     /**
-     * 拷贝操作符。正如在这个类的文档中所讨论的，不从作为参数的对象中复制状态。
-     *
+     * Copy operators. As discussed in this class's documentation, no state
+     * is copied from the object given as argument.
      */
     Mutex &
     operator=(const Mutex &)
@@ -99,15 +104,18 @@ namespace Threads
 namespace Threads
 {
   /**
-   * 将范围 <code>[begin,end)</code> into <code>n_intervals</code>
-   * 分割为大小相等的子区间。如果整个范围内的元素数不正好被
-   * <code>n_intervals</code>
-   * 整除，最后一个区间会稍微大一点。迭代器的类型必须满足前向迭代器的要求，即
-   * <code>operator++</code> 必须可用，当然也必须是可分配的。
-   * 一个子间隔的列表以一对迭代器的向量形式返回，其中每一对迭代器表示的范围是
-   * <code>[begin[i],end[i])</code>  .
-   * @ingroup threads
+   * Split the range <code>[begin,end)</code> into <code>n_intervals</code>
+   * subintervals of equal size. The last interval will be a little bit
+   * larger, if the number of elements in the whole range is not exactly
+   * divisible by <code>n_intervals</code>. The type of the iterators has to
+   * fulfill the requirements of a forward iterator, i.e.
+   * <code>operator++</code> must be available, and of course it must be
+   * assignable.
    *
+   * A list of subintervals is returned as a vector of pairs of iterators,
+   * where each pair denotes the range <code>[begin[i],end[i])</code>.
+   *
+   * @ingroup threads
    */
   template <typename ForwardIterator>
   std::vector<std::pair<ForwardIterator, ForwardIterator>>
@@ -116,10 +124,12 @@ namespace Threads
               const unsigned int     n_intervals);
 
   /**
-   * 将区间 <code>[begin,end)</code>
-   * 分割成（几乎）同等大小的子区间。这个函数的工作原理与之前的函数基本相同，不同的是，现在取的是定义整个区间的值，而不是迭代器。
-   * @ingroup threads
+   * Split the interval <code>[begin,end)</code> into subintervals of (almost)
+   * equal size. This function works mostly as the one before, with the
+   * difference that instead of iterators, now values are taken that define
+   * the whole interval.
    *
+   * @ingroup threads
    */
   std::vector<std::pair<unsigned int, unsigned int>>
   split_interval(const unsigned int begin,
@@ -127,31 +137,40 @@ namespace Threads
                  const unsigned int n_intervals);
 
   /**
-   * @cond 内部
-   *
+   * @cond internal
    */
 
   /**
-   * 一个命名空间，用于实现线程子系统的辅助函数和类似功能。这个命名空间的成员不打算公开使用。
-   *
+   * A namespace in which helper functions and the like for the threading
+   * subsystem are implemented. The members of this namespace are not meant
+   * for public use.
    */
   namespace internal
   {
     /**
      * @internal
-     * 如果在子线程中抛出了一个异常，它不会被传播到主线程中。因此，由应用程序的主函数或其他一些部分提供的异常处理程序将无法捕捉这些异常。因此，我们必须在每个子线程的顶层函数中提供一个异常处理程序，至少要捕捉到异常并打印出一些信息，而不是让操作系统在没有信息的情况下直接杀死程序。因此，在我们用作新线程入口的每个函数中，我们都安装了一个try-catch块，如果捕获到
-     * <code>std::exception</code>
-     * 类型的异常，它就会将控制权移交给这个函数，然后它将提供一些输出。
      *
+     * If in a sub-thread an exception is thrown, it is not propagated to the
+     * main thread. Therefore, the exception handler that is provided by the
+     * applications main function or some of its other parts will not be able
+     * to catch these exceptions. Therefore, we have to provide an exception
+     * handler in the top function of each sub-thread that at least catches
+     * the exception and prints some information, rather than letting the
+     * operating system to just kill the program without a message. In each of
+     * the functions we use as entry points to new threads, we therefore
+     * install a try-catch block, and if an exception of type
+     * <code>std::exception</code> is caught, it passes over control to this
+     * function, which will then provide some output.
      */
     [[noreturn]] void
     handle_std_exception(const std::exception &exc);
 
     /**
-     * @internal  和上面一样，但是异常的类型不是从
-     * <code>std::exception</code>
-     * 派生出来的，所以没有什么办法提供更有用的东西。
+     * @internal
      *
+     * Same as above, but the type of the exception is not derived from
+     * <code>std::exception</code>, so there is little way to provide
+     * something more useful.
      */
     [[noreturn]] void
     handle_unknown_exception();
@@ -159,12 +178,11 @@ namespace Threads
 
   /**
    * @endcond
-   *
    */
 
 } // namespace Threads
 
- /* ----------- implementation of functions in namespace Threads ---------- */ 
+/* ----------- implementation of functions in namespace Threads ---------- */
 #  ifndef DOXYGEN
 namespace Threads
 {
@@ -224,14 +242,21 @@ namespace Threads
   {
     /**
      * @internal
-     * 给定一个任意类型的RT，存储其中的一个元素，并通过函数get()和set()授予对它的访问。对于引用类型（需要作为指向被引用对象的指针来存储）和void类型，有专门的规定。
-     * 这个函数与 `std::promise`/`std::future`
-     * 的类的组合没有什么不同。不同的是，一个
-     * `std::promise` 只能通过 `std::future::get()`
-     * 读取一次（据推测，这种设计是由于 `std::future::get()`
-     * 可以抛出一个先前存储在 `std::promise`). 中的异常
-     * 另一方面，这个类使结果可用于任意次数。它也不存储任何异常（尽管它们会被使用当前类的类转发）。
      *
+     * Given an arbitrary type RT, store an element of it and grant
+     * access to it through functions get() and set(). There are
+     * specializations for reference types (which need to be stored as
+     * pointers to the object being referenced), and for type void.
+     *
+     * This function is not dissimilar to the `std::promise`/`std::future`
+     * combination of classes. The difference is that a `std::promise`
+     * can only be read once via `std::future::get()` (presumably this
+     * design is due to the fact that `std::future::get()` can throw
+     * an exception previously stored in the `std::promise`). On
+     * the other hand, this class makes the result available for
+     * as many times as desired. It also doesn't store any exceptions
+     * (though they will be forwarded by the classes using the current
+     * class).
      */
     template <typename RT>
     struct return_value
@@ -268,14 +293,22 @@ namespace Threads
 
     /**
      * @internal
-     * 给定一个任意类型的RT，存储其中的一个元素，并通过函数get()和set()授予其访问权。这是对引用类型的特殊化：由于引用在构造时间之后不能被设置，我们存储一个指针，而指针持有被引用对象的地址。
-     * 这个函数与 `std::promise`/`std::future`
-     * 类的组合没有什么不同。不同的是，一个 `std::promise`
-     * 只能通过 `std::future::get()`
-     * 读取一次（据推测，这种设计是由于 `std::future::get()`
-     * 可以抛出一个先前存储在 `std::promise`). 中的异常
-     * 另一方面，这个类使结果可用于任意次数。它也不存储任何异常（尽管它们会被使用当前类的类转发）。
      *
+     * Given an arbitrary type RT, store an element of it and grant access to
+     * it through functions get() and set(). This is the specialization for
+     * reference types: since references cannot be set after construction time,
+     * we store a pointer instead, which holds the address of the object being
+     * referenced.
+     *
+     * This function is not dissimilar to the `std::promise`/`std::future`
+     * combination of classes. The difference is that a `std::promise`
+     * can only be read once via `std::future::get()` (presumably this
+     * design is due to the fact that `std::future::get()` can throw
+     * an exception previously stored in the `std::promise`). On
+     * the other hand, this class makes the result available for
+     * as many times as desired. It also doesn't store any exceptions
+     * (though they will be forwarded by the classes using the current
+     * class).
      */
     template <typename RT>
     struct return_value<RT &>
@@ -312,14 +345,21 @@ namespace Threads
 
     /**
      * @internal
-     * 给定一个任意类型的RT，存储其中的一个元素，并通过函数get()和set()授予其访问权。这是对void类型的特殊化：显然没有任何东西可以存储，所以没有函数set()，而函数get()则返回void。
-     * 这个函数与 `std::promise`/`std::future`
-     * 类的组合没有什么不同。不同的是，一个 `std::promise`
-     * 只能通过 `std::future::get()`
-     * 读取一次（据推测，这种设计是由于 `std::future::get()`
-     * 可以抛出一个先前存储在 `std::promise`). 中的异常
-     * 另一方面，这个类使结果可用于任意次数。它也不存储任何异常（尽管它们会被使用当前类的类转发）。
      *
+     * Given an arbitrary type RT, store an element of it and grant access to
+     * it through functions get() and set(). This is the specialization for
+     * type void: there is obviously nothing to store, so no function set(),
+     * and a function get() that returns void.
+     *
+     * This function is not dissimilar to the `std::promise`/`std::future`
+     * combination of classes. The difference is that a `std::promise`
+     * can only be read once via `std::future::get()` (presumably this
+     * design is due to the fact that `std::future::get()` can throw
+     * an exception previously stored in the `std::promise`). On
+     * the other hand, this class makes the result available for
+     * as many times as desired. It also doesn't store any exceptions
+     * (though they will be forwarded by the classes using the current
+     * class).
      */
     template <>
     struct return_value<void>
@@ -362,59 +402,77 @@ namespace Threads
   namespace internal
   {
     /**
-     * 一个代表线程的类。对于每个线程，我们正好创建一个这样的对象
+     * A class that represents threads. For each thread, we create exactly one
+     * of these objects -- exactly one because it carries the returned value
+     * of the function called on the thread.
      *
-     * - 正是一个，因为它携带着线程上调用的函数的返回值。        虽然我们每个线程只有一个这样的对象，但几个 Threads::Thread 对象可以引用这个描述符。如果所有的Thread对象都超出了范围，那么ThreadDescriptor将在被销毁之前从线程中分离出来。
-     *
+     * While we have only one of these objects per thread, several
+     * Threads::Thread objects may refer to this descriptor. If all Thread
+     * objects go out of scope the ThreadDescriptor will detach from the
+     * thread before being destroyed.
      */
     template <typename RT>
     struct ThreadDescriptor
     {
       /**
-       * 一个代表线程启动的对象。
-       *
+       * An object that represents the thread started.
        */
       std::thread thread;
 
       /**
-       * 一个对象，它将保存线程上调用的函数所返回的值。
-       * 返回值被保存在一个shared_ptr中，因为我们可能会放弃ThreadDescriptor。
-       * 这可以确保该对象保持活力，直到线程退出。
+       * An object that will hold the value returned by the function called on
+       * the thread.
        *
+       * The return value is stored in a shared_ptr because we might abandon
+       * the ThreadDescriptor.  This makes sure the object stays alive
+       * until the thread exits.
        */
       std::shared_ptr<return_value<RT>> ret_val;
 
       /**
-       * 一个原子型的bool变量，最初是假的，当一个新的线程开始时被设置为真，一旦join()被调用，就被设置为假。
-       * 我们使用这个变量来确保我们可以在同一个线程上调用两次join()。出于某种原因，如果试图调用
-       * std::thread::join 两次，C++标准库会抛出一个
-       * std::system_error 异常（事实上，在第二次调用之前，
-       * std::thread::joinable
-       * 返回false），但这是一个有点可取的做法，因为我们不必跟踪
-       * join() 是否在之前被调用。
-       * 使用这个变量，只要我们之前调用过join()，这个变量就会被设置为true，我们就可以跳过第二次调用
-       * std::thread::join()
-       * 。对这个变量的访问是由下面的突变来保护的。
-       * @note
-       * 历史上，我们不需要这个变量的mutex：线程只能从最初创建它的线程中被加入。因此，在不创建线程的函数中发生的一切（比如下面的join()函数）在外界看来都是原子的。由于我们在调用
-       * std::thread::join,
-       * 的同一个函数中清除和测试thread_is_active，这些动作是原子的，不需要mutex。当然，两个线程可以同时在同一个线程对象上调用join()，但这个动作无论如何都是未定义的，因为它们不能同时加入同一个线程。也就是说，最近的C++标准似乎不再有这样的要求，即唯一可以调用join()的线程是创建该线程的那个。`pthread_join`似乎也没有这个要求。
-       * 因此，我们实际上可以从不同的线程加入，我们在base/thread_validity_07中测试了这一点。
-       * @note 我们需要使用 std::atomic<bool> 的原因在
-       * Task::task_has_finished. 的文档中有详细讨论。
+       * An atomic  bool variable that is initially false, is set to true
+       * when a new thread is started, and is set back to false once join()
+       * has been called.
        *
+       * We use this variable to make sure we can call join() twice on the
+       * same thread. For some reason, the C++ standard library throws a
+       * std::system_error exception if one tries to call std::thread::join
+       * twice (and in fact, before the second call, std::thread::joinable
+       * returns false) but this is a somewhat desirable thing to do because
+       * one doesn't have to keep track whether join() has been called before.
+       * Using this variable, whenever we have called join() before, the
+       * variable is set to true and we can skip over calling
+       * std::thread::join() a second time. Access to this variable is guarded
+       * by the following mutex.
+       *
+       * @note Historically, we did not need the mutex for this variable:
+       * threads can only be joined from the thread that created it
+       * originally. Consequently, everything that happens in a function that
+       * does not create threads (such as the join() function below) looks
+       * atomic to the outside world. Since we clear and test thread_is_active
+       * in the same function as we call std::thread::join, these actions are
+       * atomic and need no mutex. Of course, two threads may call join() on
+       * the same thread object at the same time, but this action is undefined
+       * anyway since they can not both join the same thread. That said, more
+       * recent C++ standards do not appear to have the requirement any more
+       * that the only thread that can call join() is the one that created the
+       * thread. Neither does `pthread_join` appear to have this requirement any
+       * more.  Consequently, we can in fact join from different threads and
+       * we test this in base/thread_validity_07.
+       *
+       * @note The reason why we need to use a std::atomic<bool> is
+       * discussed in detail in the documentation of
+       * Task::task_has_finished.
        */
       std::atomic<bool> thread_is_active;
 
       /**
-       * 守护对前一个变量的访问的Mutex。
-       *
+       * Mutex guarding access to the previous variable.
        */
       Mutex thread_is_active_mutex;
 
       /**
-       * 默认构造函数。
-       *
+       * Default constructor.
        */
       ThreadDescriptor()
         : thread_is_active(false)
@@ -429,8 +487,8 @@ namespace Threads
       }
 
       /**
-       * 启动线程并让它将其返回值放入ret_val对象中。
-       *
+       * Start the thread and let it put its return value into the ret_val
+       * object.
        */
       void
       start(const std::function<RT()> &function)
@@ -442,8 +500,7 @@ namespace Threads
 
 
       /**
-       * 等待线程结束。
-       *
+       * Wait for the thread to end.
        */
       void
       join()
@@ -465,8 +522,7 @@ namespace Threads
 
     private:
       /**
-       * 在该线程上运行的函数。
-       *
+       * The function that runs on the thread.
        */
       static void
       thread_entry_point(const std::function<RT()> &       function,
@@ -495,34 +551,37 @@ namespace Threads
 
 
   /**
-   * 一个代表被催生的线程的对象。这个对象可以在用户空间中自由复制，所有的实例将代表同一个线程，并可以要求等待它的终止和访问它的返回值。
-   * 线程可以被放弃，也就是说，如果你只是调用
-   * Threads::new_thread
-   * ，但并不关心返回的对象，或者如果你把返回的
-   * Threads::Thread
-   * 对象分配给一个随后超出范围的对象，那么之前创建的线程仍然会继续工作。你只是不能再访问它的返回值，而且还可能发生你的程序在该线程完成工作之前就终止了。
-   * 模板参数的默认值是  <code>void</code>
-   * ，所以如果你在一个新线程上调用的函数没有返回值，你可以省略模板参数。
-   * @ingroup threads   @deprecated  使用  std::thread  或  std::jthread
-   * 来代替。
-   * @note
-   * 由于该类在ThreadGroup中使用，它的构造函数，而不是该类本身，已被弃用，以允许用以下方式进行编译
+   * An object that represents a spawned thread. This object can be freely
+   * copied around in user space, and all instances will represent the same
+   * thread and can require to wait for its termination and access its return
+   * value.
    *
+   * Threads can be abandoned, i.e. if you just call Threads::new_thread but
+   * don't care about the returned object, or if you assign the return
+   * Threads::Thread object to an object that subsequently goes out of scope,
+   * then the thread previously created will still continue to do work. You
+   * will simply not be able to access its return value any more, and it may
+   * also happen that your program terminates before the thread has finished
+   * its work.
    *
+   * The default value of the template argument is <code>void</code>, so if
+   * the function you are calling on a new thread has no return value, you can
+   * omit the template argument.
    *
+   * @ingroup threads
    *
+   * @deprecated Use std::thread or std::jthread instead.
    *
-   *
-   * - error=deprecated-declarations.
-   *
+   * @note Since this class is used in ThreadGroup, its constructors, rather
+   * than the class itself, are deprecated to allow compilation with
+   * -Werror=deprecated-declarations.
    */
   template <typename RT = void>
   class Thread
   {
   public:
     /**
-     * 用一个函数对象构造一个线程对象。
-     *
+     * Construct a thread object with a function object.
      */
     DEAL_II_DEPRECATED
     Thread(const std::function<RT()> &function)
@@ -533,15 +592,15 @@ namespace Threads
     }
 
     /**
-     * 默认的构造函数。除了给它分配一个持有new_thread()函数创建的数据的线程对象外，你不能对这样构造的线程对象做什么。
-     *
+     * Default constructor. You can't do much with a thread object constructed
+     * this way, except for assigning it a thread object that holds data
+     * created by the new_thread() functions.
      */
     DEAL_II_DEPRECATED
     Thread() = default;
 
     /**
-     * 复制构造函数。
-     *
+     * Copy constructor.
      */
     DEAL_II_DEPRECATED
     Thread(const Thread<RT> &t)
@@ -549,9 +608,9 @@ namespace Threads
     {}
 
     /**
-     * 加入这个对象所代表的线程，也就是等待它完成。
-     * 如果你使用了这个类的默认构造函数，并且没有给它分配一个线程对象，那么这个函数就是一个无用功。
-     *
+     * Join the thread represented by this object, i.e. wait for it to finish.
+     * If you have used the default constructor of this class and have not
+     * assigned a thread object to it, then this function is a no-op.
      */
     void
     join() const
@@ -561,38 +620,47 @@ namespace Threads
     }
 
     /**
-     * 获取线程的函数的返回值。由于只有在线程结束后才能使用，这个函数在内部也调用join()。只要对象指的是同一个任务，你就可以多次调用这个函数，并期望每次都能得到相同的返回值。(返回的对象被移动的情况除外，见下文)。
-     * @note  函数返回一个<i>non-@p const
-     * reference</i>给返回对象，而不是返回对象。这允许编写诸如以下的代码
+     * Get the return value of the function of the thread. Since it
+     * is only available once the thread finishes, this function
+     * internally also calls join(). You can call this function
+     * multiple times as long as the object refers to the same task,
+     * and expect to get the same return value every time. (With the
+     * exception of the case where the returned object has been moved;
+     * see below.)
+     *
+     * @note The function returns a <i>non-@p const reference</i> to
+     * the returned object, instead of the returned object. This
+     * allows writing code such as
      * @code
-     * Threads::Thread<int> t = Threads::new_thread (
-     *   ...function returning an int...);
-     * t.return_value() = 42;      // overwrite returned value
-     * int i = t.return_value();   // i is now 42
+     *   Threads::Thread<int> t = Threads::new_thread (
+     *     ...function returning an int...);
+     *   t.return_value() = 42;      // overwrite returned value
+     *   int i = t.return_value();   // i is now 42
      * @endcode
-     * 你很少会有写这种代码的需要。另一方面，该函数需要返回一个可写的（非
-     * @p const) 引用，以支持像这样的代码。
+     * You will rarely have a need to write such code. On the other hand,
+     * the function needs to return a writable (non-@p const) reference to
+     * support code such as this:
      * @code
-     * std::unique_ptr<int> create_int (const std::string &s)
-     * {
-     *   ...
-     * }
+     *   std::unique_ptr<int> create_int (const std::string &s)
+     *   {
+     *     ...
+     *   }
      *
-     * void f()
-     * {
-     *   Threads::Thread<std::unique_ptr<int>>
-     *     t = Threads::new_thread (&create_int, "42");
+     *   void f()
+     *   {
+     *     Threads::Thread<std::unique_ptr<int>>
+     *       t = Threads::new_thread (&create_int, "42");
      *
-     *   std::unique_ptr<int> i = std::move(t.return_value());
-     *   ...
-     * }
+     *     std::unique_ptr<int> i = std::move(t.return_value());
+     *     ...
+     *   }
      * @endcode
-     * 这里，需要对 `std::move` 返回的对象（即
-     * <code>std::unique_ptr</code> 对象），因为
-     * <code>std::unique_ptr</code>
-     * 对象不能被复制。换句话说，要想从线程返回的对象中得到指针，就需要移动它，而为了移动它，当前函数需要返回一个可写的（非
-     * @p const) 引用。
-     *
+     * Here, it is necessary to `std::move` the returned object (namely,
+     * the <code>std::unique_ptr</code> object) because
+     * <code>std::unique_ptr</code> objects can not be copied. In other words,
+     * to get the pointer out of the object returned from the thread, it needs
+     * to be moved, and in order to be moved, the current function needs to
+     * return a writable (non-@p const) reference.
      */
     typename internal::return_value<RT>::reference_type
     return_value()
@@ -602,8 +670,8 @@ namespace Threads
     }
 
     /**
-     * 如果这个对象曾经有一个线程与之相关联，无论是通过使用非默认的构造函数还是通过赋值，则返回true。
-     *
+     * Return true if this object has had a thread associated with it, either
+     * by using the non-default constructor or by assignment.
      */
     bool
     valid() const
@@ -613,8 +681,9 @@ namespace Threads
 
 
     /**
-     * 检查线程对象的平等性。由于这个类的对象存储了一个隐含的指向对象的指针，而这个指针对每个线程来说只存在一次，所以检查只是比较这些指针。
-     *
+     * Check for equality of thread objects. Since objects of this class store
+     * an implicit pointer to an object that exists exactly once for each
+     * thread, the check is simply to compare these pointers.
      */
     bool
     operator==(const Thread &t) const
@@ -624,8 +693,9 @@ namespace Threads
 
   private:
     /**
-     * 代表线程的对象的共享指针，并抽象出操作系统的函数来对其工作。这也确保了只要有至少一个订阅者，该对象就会存在。
-     *
+     * Shared pointer to the object representing the thread, and abstracting
+     * operating system functions to work on it. This also makes sure that the
+     * object lives as long as there is at least one subscriber to it.
      */
     std::shared_ptr<internal::ThreadDescriptor<RT>> thread_descriptor;
   };
@@ -634,10 +704,11 @@ namespace Threads
   namespace internal
   {
     /**
-     * 一个一般的模板，如果t是引用类型，返回 std::ref(t)
-     * ，否则返回t。
-     * t是引用类型的情况在下面声明的部分特殊化中处理。
+     * A general template that returns std::ref(t) if t is of reference
+     * type, and t otherwise.
      *
+     * The case that t is of reference type is handled in a partial
+     * specialization declared below.
      */
     template <typename T>
     struct maybe_make_ref
@@ -652,10 +723,11 @@ namespace Threads
 
 
     /**
-     * 一个一般的模板，如果t是引用类型，返回 std::ref(t)
-     * ，否则返回t。
-     * t是引用类型的情况在这个部分特殊化中处理。
+     * A general template that returns std::ref(t) if t is of reference
+     * type, and t otherwise.
      *
+     * The case that t is of reference type is handled in this partial
+     * specialization.
      */
     template <typename T>
     struct maybe_make_ref<T &>
@@ -673,10 +745,12 @@ namespace Threads
   // ----------- thread starters for functions not taking any parameters
 
   /**
-   * new_thread函数的重载，适用于可以转换为 std::function<RT
-   * ()>的对象，即任何可以像函数对象一样被调用而没有参数并返回RT（或void）类型的对象。
-   * @ingroup threads
+   * Overload of the new_thread function for objects that can be converted to
+   * std::function<RT ()>, i.e. anything that can be called like a
+   * function object without arguments and returning an object of type RT (or
+   * void).
    *
+   * @ingroup threads
    */
   template <typename RT>
   inline Thread<RT>
@@ -688,58 +762,68 @@ namespace Threads
 
 
   /**
-   * new_thread()函数的重载，适用于可以像函数对象一样被调用而没有参数的对象。特别是，这个函数允许用使用
-   * std::bind, 产生的对象或使用lambda函数来调用
-   * Threads::new_thread()
-   * 。例如，在编写如下代码时，可以调用这个函数
+   * Overload of the new_thread() function for objects that can be called like a
+   * function object without arguments. In particular, this function allows
+   * calling Threads::new_thread() with either objects that result from using
+   * std::bind, or using lambda functions. For example, this function is called
+   * when writing code such as
    * @code
    * Threads::Thread<int>
-   * thread = Threads::new_thread ( [] () {
-   *                                        do_this();
-   *                                        then_do_that();
-   *                                        return 42;
-   *                                      });
+   *   thread = Threads::new_thread ( [] () {
+   *                                          do_this();
+   *                                          then_do_that();
+   *                                          return 42;
+   *                                        });
    * @endcode
-   * 这里，我们在一个单独的线程上运行函数序列
-   * <code>do_this()</code> and <code>then_do_that()</code>
-   * ，通过使这里声明的lambda函数成为在该线程上执行的函数。然后lambda函数返回42（在这里有点无意义，但它当然可以是一些计算出来的数字），这将是你后来在线程（即lambda函数的主体）完成后可以通过
-   * <code>thread.return_value()</code> 检索到的返回值。
-   * @note
-   * 每个lambda函数（或者你在这里传递给new_thread()函数的其他东西，例如一个
-   * std::bind()
-   * 表达式的结果）都有一个返回类型，因此会返回一个该类型的对象。这个类型可以通过在这个函数的声明中使用的C++11
-   * <code>decltype</code>
-   * 语句来推断，然后它被用作当前函数返回的 Threads::Thread
-   * 对象的模板参数。
-   * 在上面的例子中，因为lambda函数返回42（在C++中它的数据类型是
-   * <code>int</code> ），推断的类型是 <code>int</code>
-   * ，任务对象的类型将是 <code>Task@<int@></code>
-   * 。换句话说，在用户代码中不能<i>necessary</i>明确指定λ或
-   * std::bind
-   * 表达式的返回类型，尽管可以通过（完全等价）写出明确的规定
-   * @code
-   * Threads::Thread<int>
-   *   thread = Threads::new_thread ( [] ()
+   * Here, we run the sequence of functions
+   * <code>do_this()</code> and <code>then_do_that()</code> on
+   * a separate thread, by making the lambda function declared here the
+   * function to execute on the thread. The lambda function then returns
+   * 42 (which is a bit pointless here, but it could of course be some
+   * computed number), and this is going to be the returned value you
+   * can later retrieve via <code>thread.return_value()</code> once the
+   * thread (i.e., the body of the lambda function) has completed.
    *
-   * -> int {
-   *                                                 do_this();
-   *                                                 then_do_that();
-   *                                                 return 42;
-   *                                               });
-   * @endcode
+   * @note Every lambda function (or whatever else it is you pass to
+   *   the new_thread() function here, for example the result of a
+   *   std::bind() expression) has a return type and consequently
+   *   returns an object of this type. This type can be inferred
+   *   using the C++11 <code>decltype</code> statement used in the
+   *   declaration of this function, and it is then used as the template
+   *   argument of the Threads::Thread object returned by the current function.
+   *   In the example above, because the lambda function returns 42
+   *   (which in C++ has data type <code>int</code>), the inferred
+   *   type is <code>int</code> and the task object will have type
+   *   <code>Task@<int@></code>. In other words, it is not <i>necessary</i>
+   *   to explicitly specify in user code what that return type
+   *   of the lambda or std::bind expression will be, though it is
+   *   possible to explicitly do so by (entirely equivalently) writing
+   *   @code
+   *   Threads::Thread<int>
+   *     thread = Threads::new_thread ( [] () -> int {
+   *                                                   do_this();
+   *                                                   then_do_that();
+   *                                                   return 42;
+   *                                                 });
+   *   @endcode
    *
-   * @note
-   * 在实践中，你将传递给new_thread()的lambda函数当然会更加复杂。
-   * 特别是，它们可能会从周围的环境中<i>capture</i>变量，并在lambda中使用它们。
-   * 更多关于lambda函数的工作原理，请参见https://en.wikipedia.org/wiki/Anonymous_function#C.2B.2B_.28since_C.2B.2B11.29。
-   * @note
-   * 如果你将一个lambda函数作为参数传递给当前函数，该函数捕获了一个变量<i>by
-   * reference</i>，或者如果你使用一个 std::bind
-   * 将一个函数参数与一个引用变量绑定，使用 std::ref() 或
-   * std::cref(),
-   * ，那么显然你只能在你引用或捕获的变量具有至少延伸到线程结束时的生命周期时才能这样做。
+   * @note In practice, the lambda functions you will pass to
+   *   new_thread() will of course typically be more complicated.
+   *   In particular, they will likely <i>capture</i> variables
+   *   from the surrounding context and use them within the lambda.
+   *   See
+   * https://en.wikipedia.org/wiki/Anonymous_function#C.2B.2B_.28since_C.2B.2B11.29
+   *   for more on how lambda functions work.
+   *
+   * @note If you pass a lambda function as an argument to the
+   *   current function that captures a variable <i>by reference</i>,
+   *   or if you use a std::bind that binds a function argument to
+   *   a reference variable using std::ref() or std::cref(), then
+   *   obviously you can only do this if the variables you reference
+   *   or capture have a lifetime that extends at least until the time
+   *   where the thread finishes.
+   *
    * @ingroup CPP11
-   *
    */
   template <typename FunctionObjectType>
   inline auto
@@ -753,9 +837,10 @@ namespace Threads
 
 
   /**
-   * 对非成员或静态成员函数的new_thread函数进行重载。
-   * @ingroup threads
+   * Overload of the new_thread function for non-member or static member
+   * functions.
    *
+   * @ingroup threads
    */
   template <typename RT, typename... Args>
   inline Thread<RT>
@@ -769,9 +854,9 @@ namespace Threads
 
 
   /**
-   * 对成员函数的非const new_thread函数的重载。
-   * @ingroup threads
+   * Overload of the non-const new_thread function for member functions.
    *
+   * @ingroup threads
    */
   template <typename RT, typename C, typename... Args>
   inline Thread<RT>
@@ -785,9 +870,9 @@ namespace Threads
   }
 
   /**
-   * 对常量成员函数new_thread函数的重载。
-   * @ingroup threads
+   * Overload of the new_thread function for const member functions.
    *
+   * @ingroup threads
    */
   template <typename RT, typename C, typename... Args>
   inline Thread<RT>
@@ -803,17 +888,20 @@ namespace Threads
   // ------------------------ ThreadGroup -------------------------------------
 
   /**
-   * 一个线程对象的容器。允许添加新的线程对象并一起等待它们。线程对象需要对被调用的函数有相同的返回值。
-   * @ingroup threads   @deprecated  用任务组代替。
+   * A container for thread objects. Allows to add new thread objects and wait
+   * for them all together. The thread objects need to have the same return
+   * value for the called function.
    *
+   * @ingroup threads
+   *
+   * @deprecated Use TaskGroup instead.
    */
   template <typename RT = void>
   class DEAL_II_DEPRECATED ThreadGroup
   {
   public:
     /**
-     * 在集合中添加另一个线程对象。
-     *
+     * Add another thread object to the collection.
      */
     ThreadGroup &
     operator+=(const Thread<RT> &t)
@@ -823,8 +911,10 @@ namespace Threads
     }
 
     /**
-     * 等待集合中的所有线程都完成。如果有些线程已经被等待过了，这也不是什么问题，也就是说，你可以多次调用这个函数，如果你愿意，你也可以在后续调用这个函数之间添加新的线程对象。
-     *
+     * Wait for all threads in the collection to finish. It is not a problem
+     * if some of them have already been waited for, i.e. you may call this
+     * function more than once, and you can also add new thread objects
+     * between subsequent calls to this function if you want.
      */
     void
     join_all() const
@@ -837,8 +927,7 @@ namespace Threads
 
   private:
     /**
-     * 线程对象的列表。
-     *
+     * List of thread objects.
      */
     std::list<Thread<RT>> threads;
   };
@@ -847,8 +936,7 @@ namespace Threads
   namespace internal
   {
     /**
-     * 通过评估动作来设置一个 std::promise 对象的值。
-     *
+     * Set the value of a std::promise object by evaluating the action.
      */
     template <typename RT, typename Function>
     void
@@ -859,10 +947,11 @@ namespace Threads
 
 
     /**
-     * 通过评估动作来设置一个 std::promise
-     * 对象的值。这个函数是前一个函数的特殊化，用于返回类型为`void`的情况。因此，我们不能设置一个值。但我们确实评估了函数对象，并在没有参数的情况下调用
-     * `std::promise::set_value()` 。
-     *
+     * Set the value of a std::promise object by evaluating the
+     * action. This function is a specialization of the previous one
+     * for the case where the return type is `void`. Consequently, we
+     * can't set a value. But we do evaluate the function object and
+     * call `std::promise::set_value()` without argument.
      */
     template <typename Function>
     void
@@ -876,28 +965,45 @@ namespace Threads
 
 
   /**
-   * 这个类描述了一个任务对象，即通过调用
-   * Threads::new_task(). 得到的东西。其想法是，
-   * Threads::new_task()
-   * 允许人们在C++运行时系统认为方便时运行一个函数。
+   * This class describes a task object, i.e., what one obtains by calling
+   * Threads::new_task(). The idea is that Threads::new_task() allows one to run
+   * a function whenever the C++ run-time system finds it convenient --
+   * typically, when there is an idle processor available. This can be used to
+   * run things in the background when there is no immediate need for the
+   * result, or if there are other things that could well be done in parallel.
+   * Whenever the result of that background task is needed, one can call either
+   * join() to just wait for the task to finish, or return_value() to obtain the
+   * value that was returned by the function that was run on that background
+   * task.
    *
-   * - 通常，当有一个空闲的处理器可用时。这可以用来在没有立即需要结果的情况下在后台运行，或者在有其他事情可以并行进行的情况下。  每当需要该背景任务的结果时，可以调用join()来等待任务完成，或者调用return_value()来获得在该背景任务上运行的函数所返回的值。    这个类在概念上类似于由 [`std::async`](https://en.cppreference.com/w/cpp/thread/async) 返回的 [`std::future`](https://en.cppreference.com/w/cpp/thread/future) 类（其本身类似于 Threads::new_task() 的作用）。主要的概念差异是，人们只能调用 `std::future::get()` 一次，而可以根据需要多次调用 Threads::Task::return_value() 。因此，它可以与 [`std::shared_future`](https://en.cppreference.com/w/cpp/thread/shared_future) 类相媲美。然而， `std::shared_future` 不能用于不能被复制的类型
+   * This class is conceptually similar to the
+   * [`std::future`](https://en.cppreference.com/w/cpp/thread/future) class that
+   * is returned by
+   * [`std::async`](https://en.cppreference.com/w/cpp/thread/async) (which is
+   * itself similar to what Threads::new_task() does). The principal conceptual
+   * difference is that one can only call `std::future::get()` once, whereas one
+   * can call Threads::Task::return_value() as many times as desired. It is,
+   * thus, comparable to the
+   * [`std::shared_future`](https://en.cppreference.com/w/cpp/thread/shared_future)
+   * class. However, `std::shared_future` can not be used for types that can not
+   * be copied -- a particular restriction for `std::unique_ptr`, for example.
    *
-   * --例如对 `std::unique_ptr`, 的一个特殊限制。
    * @ingroup threads
-   *
    */
   template <typename RT = void>
   class Task
   {
   public:
     /**
-     * 构建一个任务对象，给定一个要在任务上执行的函数对象，然后安排这个函数的执行。然而，当
-     * MultithreadInfo::n_threads()
-     * 返回1时，即如果deal.II运行时系统已被配置为只使用一个线程，那么只要执行给定的函数对象即可。
-     * @post
-     * 使用这个构造函数会自动使任务对象可加入（）。
+     * Construct a task object, given a function object to execute on
+     * the task, and then schedule this function for
+     * execution. However, when MultithreadInfo::n_threads() returns
+     * 1, i.e., if the deal.II runtime system has been configured to
+     * only use one thread, then just execute the given function
+     * object.
      *
+     * @post Using this constructor automatically makes the task object
+     * joinable().
      */
     Task(const std::function<RT()> &function_object)
     {
@@ -937,29 +1043,45 @@ namespace Threads
     }
 
     /**
-     * 默认构造函数。你不能对这样构造的任务对象做很多事情，除了给它分配一个持有由
-     * Threads::new_task() 函数创建的数据的任务对象。
-     * @post
-     * 使用这个构造函数会使对象处于不可连接的状态，即joinable()将返回false。
+     * Default constructor. You can't do much with a task object constructed
+     * this way, except for assigning it a task object that holds data created
+     * by the Threads::new_task() functions.
      *
+     * @post Using this constructor leaves the object in an unjoinable state,
+     * i.e., joinable() will return false.
      */
     Task() = default;
 
     /**
-     * 加入这个对象所代表的任务，即等待它完成。
-     * 一个任务可以被多次加入（虽然第一次join()操作可能会阻塞，直到任务完成运行，但所有连续的加入尝试将立即返回）。
-     * 如果在这个对象被初始化的任务上执行的操作抛出一个异常，而不是定期返回，那么调用当前的join()函数将首先等待该任务完成，然后反过来抛出该任务操作最初抛出的异常。这允许将异常从独立线程上执行的任务传播到调用线程。
-     * (这种行为与
-     * [`std::future`](https://en.cppreference.com/w/cpp/thread/future),
-     * 不同， `std::future::wait()`
-     * 函数只等待操作的完成，而只有当人们调用
-     * `std::future::get()`. 时才会传播异常。然而，当把 "void
-     * "函数放到独立的任务上时，这种做法就很尴尬了，因为这些任务实际上不会返回任何东西；因此，对这类任务调用
-     * `std::task::wait()` 比调用 `std::task::get()`
-     * 函数更自然，因为后者实际上不会返回任何可以得到的东西。)
-     * @pre
-     * 如果你使用了这个类的默认构造函数，并且没有给它分配一个任务对象，你就不能调用这个函数。换句话说，函数joinable()必须返回true。
+     * Join the task represented by this object, i.e. wait for it to finish.
      *
+     * A task can be joined multiple times (while the first join() operation
+     * may block until the task has completed running, all successive attempts
+     * to join will return immediately).
+     *
+     * If the operation that was executed on the task with which this
+     * object was initialized throws an exception instead of returning
+     * regularly, then calling the current join() function will first
+     * wait for that task to finish, and then in turn throw the
+     * exception that the task operation had thrown originally. This
+     * allows for the propagation of exceptions from tasks executed on
+     * a separate thread to the calling thread.
+     *
+     * (This behavior differs from that of
+     * [`std::future`](https://en.cppreference.com/w/cpp/thread/future),
+     * where the `std::future::wait()` function only waits for
+     * completion of the operation, whereas the exception is
+     * propagated only once one calls `std::future::get()`. However,
+     * this is awkward when putting `void` functions onto separate
+     * tasks because these do not actually return anything;
+     * consequently, it is more natural to call `std::task::wait()`
+     * for such tasks than the `std::task::get()` function since the
+     * latter does not, actually, return anything that could be
+     * gotten.)
+     *
+     * @pre You can't call this function if you have used the default
+     * constructor of this class and have not assigned a task object to it. In
+     * other words, the function joinable() must return true.
      */
     void
     join() const
@@ -971,11 +1093,16 @@ namespace Threads
     }
 
     /**
-     * 返回当前对象是否可以被加入。一旦一个任务（通常是用
-     * Threads::new_task())
-     * 创建的）实际上已经被分配给它，你就可以加入一个任务对象。另一方面，如果该对象已被默认构建，该函数返回false。
-     * 一个任务可以被多次加入（虽然第一次join()操作可能会阻塞，直到任务完成运行，但所有连续的加入尝试将立即返回）。因此，如果这个函数返回真，它将继续返回真，直到它所报告的任务对象被从另一个对象分配到。
+     * Return whether the current object can be joined. You can join a task
+     * object once a task (typically created with Threads::new_task()) has
+     * actually been assigned to it. On the other hand, the function returns
+     * false if the object has been default constructed.
      *
+     * A task can be joined multiple times (while the first join() operation
+     * may block until the task has completed running, all successive attempts
+     * to join will return immediately). Consequently, if this function
+     * returns true, it will continue to return true until the task object it
+     * reports on is assigned to from another object.
      */
     bool
     joinable() const
@@ -985,37 +1112,53 @@ namespace Threads
 
 
     /**
-     * 获取任务的函数的返回值。由于它只有在线程结束后才能使用，这个函数在内部也调用join()。只要对象指的是同一个任务，你就可以多次调用这个函数，并期望每次都能得到相同的返回值。(返回的对象被移动的情况除外，见下文)。
-     * @note  函数返回一个<i>non-@p const
-     * reference</i>给返回对象，而不是返回对象。这允许编写诸如以下的代码
+     * Get the return value of the function of the task. Since it is
+     * only available once the thread finishes, this function
+     * internally also calls join(). You can call this function
+     * multiple times as long as the object refers to the same task,
+     * and expect to get the same return value every time. (With the
+     * exception of the case where the returned object has been moved;
+     * see below.)
+     *
+     * @note The function returns a <i>non-@p const reference</i> to
+     * the returned object, instead of the returned object. This
+     * allows writing code such as
      * @code
-     * Threads::Task<int> t = Threads::new_task (...function returning an
+     *   Threads::Task<int> t = Threads::new_task (...function returning an
      * int...); t.return_value() = 42;      // overwrite returned value int i =
      * t.return_value();   // i is now 42
      * @endcode
-     * 你很少会有写这种代码的需要。另一方面，该函数需要返回一个可写的（非
-     * @p const) 引用，以支持像这样的代码。
+     * You will rarely have a need to write such code. On the other hand,
+     * the function needs to return a writable (non-@p const) reference to
+     * support code such as this:
      * @code
-     * std::unique_ptr<int> create_int (const std::string &s) { ... }
+     *   std::unique_ptr<int> create_int (const std::string &s) { ... }
      *
-     * void f()
-     * {
-     *   Threads::Task<std::unique_ptr<int>>
-     *     t = Threads::new_task (&create_int, "42");
+     *   void f()
+     *   {
+     *     Threads::Task<std::unique_ptr<int>>
+     *       t = Threads::new_task (&create_int, "42");
      *
-     *   std::unique_ptr<int> i = std::move(t.return_value());
-     *   ...
-     * }
+     *     std::unique_ptr<int> i = std::move(t.return_value());
+     *     ...
+     *   }
      * @endcode
-     * 这里，需要对 `std::move` 返回的对象（即
-     * <code>std::unique_ptr</code> 对象），因为
-     * <code>std::unique_ptr</code>
-     * 对象不能被复制。换句话说，要想从任务返回的对象中得到指针，需要移动它，为了移动它，当前函数需要返回一个可写的（非
-     * @p const) 引用。        这个函数在内部调用了 join()
-     * 成员函数。因此，正如那里所解释的，如果被打包的任务抛出一个异常，那么这个异常会被join()函数重新抛出，如果你之前没有调用join()，那么也会被当前函数抛出。
-     * @pre
-     * 如果你使用了这个类的默认构造函数，并且没有给它分配一个任务对象，你就不能调用这个函数。换句话说，函数joinable()必须返回true。
+     * Here, it is necessary to `std::move` the returned object (namely,
+     * the <code>std::unique_ptr</code> object) because
+     * <code>std::unique_ptr</code> objects can not be copied. In other words,
+     * to get the pointer out of the object returned from the task, it needs
+     * to be moved, and in order to be moved, the current function needs to
+     * return a writable (non-@p const) reference.
      *
+     * This function internally calls the join() member function. As a
+     * consequence, and as explained there, if the packaged task
+     * throws an exception that is then re-thrown by the join()
+     * function and consequently also the current function if you have
+     * not previously called join().
+     *
+     * @pre You can't call this function if you have used the default
+     * constructor of this class and have not assigned a task object to it. In
+     * other words, the function joinable() must return true.
      */
     typename internal::return_value<RT>::reference_type
     return_value()
@@ -1030,13 +1173,12 @@ namespace Threads
 
 
     /**
-     * @addtogroup  异常  @{ 。
-     *
+     * @addtogroup Exceptions
+     * @{
      */
 
     /**
-     * 异常情况
-     *
+     * Exception
      */
     DeclExceptionMsg(ExcNoTask,
                      "The current object is not associated with a task that "
@@ -1045,19 +1187,19 @@ namespace Threads
     //@}
   private:
     /**
-     * 一个持有 std::future
-     * 的数据结构，任务将其返回值存入其中。由于只能调用
-     * std::future::get()
-     * 一次，我们在get()成员函数中这样做，然后将返回的对象移到`returned_object`成员变量中，我们可以从那里多次读取它，如果它不能被复制，也可以从那里移开。
-     *
+     * A data structure that holds a std::future into which the task deposits
+     * its return value. Since one can only call std::future::get() once,
+     * we do so in the get() member function and then move the returned object
+     * into the `returned_object` member variable from where we can read it
+     * multiple times and from where it can also be moved away if it is not
+     * copyable.
      */
     class TaskData
     {
     public:
       /**
-       * 构造函数。初始化一个 std::future
-       * 对象，并假定这样设置的任务还没有完成。
-       *
+       * Constructor. Initializes an std::future object and assumes
+       * that the task so set has not finished yet.
        */
       TaskData(std::future<RT> &&future)
         : future(std::move(future))
@@ -1065,9 +1207,9 @@ namespace Threads
       {}
 
       /**
-       * 等待 std::future 对象准备好，即等待 std::promise
-       * 接收其值的时间。如果这已经发生了，这个函数可以遵循一个快速路径。
-       *
+       * Wait for the std::future object to be ready, i.e., for the
+       * time when the std::promise receives its value. If this has
+       * already happened, this function can follow a fast path.
        */
       void
       wait()
@@ -1115,42 +1257,47 @@ namespace Threads
 
     private:
       /**
-       * 一个用于同步访问该类数据结构的mutex。
-       *
+       * A mutex used to synchronize access to the data structures of this
+       * class.
        */
       std::mutex mutex;
 
       /**
-       * 与当前类所代表的任务相关的承诺。
-       *
+       * The promise associated with the task that is represented by the current
+       * class.
        */
       std::future<RT> future;
 
       /**
-       * 一个布尔值，表示有关任务是否已经完成。
-       * @note 我们在这里使用一个 `std::atomic_bool`
-       * ，因为我们必须确保线程之间的并发读取和存储是正确同步的，并且在一个特定线程上的顺序读取不会被重新排序或优化掉。一个
-       * std::atomic
-       * [1]实现了这一点，因为（如果没有其他注释的话）对布尔的读取和存储都受制于
-       * std::memory_order_seq_cst
-       * 内存排序[2]。这确保了Schmidt的双重检查确实有效。更多信息（以及可能更有效的实现）请参见[3]。
-       * [1] https://en.cppreference.com/w/cpp/atomic/atomic [2]
-       * https://en.cppreference.com/w/cpp/atomic/memory_order [3]
-       * https://preshing.com/20130930/double-checked-locking-is-fixed-in-cpp11/
+       * A boolean indicating whether the task in question has finished.
        *
+       * @note We are using a `std::atomic_bool` here because we have
+       * to make sure that concurrent reads and stores between threads are
+       * properly synchronized, and that sequential reads on a given thread
+       * are not reordered or optimized away. A std::atomic [1] achieves
+       * this because (if not otherwise annotated) reads and stores to the
+       * boolean are subject to the std::memory_order_seq_cst memory
+       * ordering [2]. This ensures that Schmidt's double checking does
+       * indeed work. For additional information (and a potentially more
+       * efficient implementation) see [3].
+       *
+       * [1] https://en.cppreference.com/w/cpp/atomic/atomic
+       * [2] https://en.cppreference.com/w/cpp/atomic/memory_order
+       * [3]
+       * https://preshing.com/20130930/double-checked-locking-is-fixed-in-cpp11/
        */
       std::atomic<bool> task_has_finished;
 
       /**
-       * 一旦 std::future 交付后，返回值将被移到的地方。
-       *
+       * The place where the returned value is moved to once the std::future
+       * has delivered.
        */
       internal::return_value<RT> returned_object;
     };
 
     /**
-     * 一个指向描述任务及其返回值的对象描述符的指针。
-     *
+     * A pointer to a descriptor of the object that described the task
+     * and its return value.
      */
     std::shared_ptr<TaskData> task_data;
   };
@@ -1158,15 +1305,23 @@ namespace Threads
 
 
   /**
-   * new_task函数的重载，用于可以转换为 std::function<RT
-   * ()>的对象，即任何可以像函数对象一样被调用而不需要参数并返回RT（或void）类型的对象。
-   * @note  当 MultithreadInfo::n_threads()
-   * 返回1时，即如果deal.II运行时系统被配置为只使用一个线程，那么这个函数只是立即执行给定的函数对象，并将返回值存储在由该函数返回的任务对象中。
-   * @note   Threads::new_task() 本质上等同于调用
-   * `std::async(std::launch::async,
-   * ...)`，因为它在后台运行给定的任务。更多信息见https://en.cppreference.com/w/cpp/thread/async。
-   * @ingroup threads
+   * Overload of the new_task function for objects that can be converted to
+   * std::function<RT ()>, i.e. anything that can be called like a
+   * function object without arguments and returning an object of type RT (or
+   * void).
    *
+   * @note When MultithreadInfo::n_threads() returns 1, i.e., if the
+   *   deal.II runtime system has been configured to only use one
+   *   thread, then this function just executes the given function
+   *   object immediately and stores the return value in the Task
+   *   object returned by this function.
+   *
+   * @note Threads::new_task() is, in essence, equivalent to calling
+   *   `std::async(std::launch::async, ...)` in that it runs the given task
+   *   in the background. See https://en.cppreference.com/w/cpp/thread/async
+   *   for more information.
+   *
+   * @ingroup threads
    */
   template <typename RT>
   inline Task<RT>
@@ -1178,62 +1333,79 @@ namespace Threads
 
 
   /**
-   * new_task函数的重载，对象可以像函数对象一样被调用，没有参数。特别是，这个函数允许用使用
-   * std::bind, 或使用lambda函数产生的对象来调用
-   * Threads::new_task()
-   * 。例如，在编写如下代码时，可以调用这个函数
+   * Overload of the new_task function for objects that can be called like a
+   * function object without arguments. In particular, this function allows
+   * calling Threads::new_task() with either objects that result from using
+   * std::bind, or using lambda functions. For example, this function is called
+   * when writing code such as
    * @code
    * Threads::Task<int>
-   * task = Threads::new_task ( [] () {
-   *                                    do_this();
-   *                                    then_do_that();
-   *                                    return 42;
-   *                                  });
+   *   task = Threads::new_task ( [] () {
+   *                                      do_this();
+   *                                      then_do_that();
+   *                                      return 42;
+   *                                    });
    * @endcode
-   * 在这里，我们把对函数序列 <code>do_this()</code> and
-   * <code>then_do_that()</code>
-   * 的调用安排在一个单独的任务上，把这里声明的lambda函数作为任务上执行的函数。然后lambda函数返回42（这在这里有点无意义，但它当然可以是一些计算出来的数字），这将是你以后在任务（即lambda函数的主体）完成后可以通过
-   * <code>task.return_value()</code> 检索到的返回值。
-   * @note  当 MultithreadInfo::n_threads()
-   * 返回1时，即如果deal.II运行时系统被配置为只使用一个线程，那么这个函数只是立即执行给定的函数对象，并将返回值存储在由该函数返回的任务对象中。
-   * @note
-   * 每个lambda函数（或者你在这里传递给new_task()函数的其他东西，例如一个
-   * std::bind()
-   * 表达式的结果）都有一个返回类型，并因此返回一个该类型的对象。这个类型可以通过在这个函数的声明中使用的C++11
-   * <code>decltype</code>
-   * 语句来推断，然后它被用作当前函数返回的 Threads::Task
-   * 对象的模板参数。
-   * 在上面的例子中，因为lambda函数返回42（在C++中它的数据类型是
-   * <code>int</code> ），推断的类型是 <code>int</code>
-   * ，任务对象的类型将是 <code>Task@<int@></code>
-   * 。换句话说，在用户代码中不能<i>necessary</i>明确指定lambda或
-   * std::bind
-   * 表达式的返回类型，尽管可以通过（完全等价）写出明确的方式来做到这一点
-   * @code
-   * Threads::Task<int>
-   *   task = Threads::new_task ( [] ()
+   * Here, we schedule the call to the sequence of functions
+   * <code>do_this()</code> and <code>then_do_that()</code> on
+   * a separate task, by making the lambda function declared here the
+   * function to execute on the task. The lambda function then returns
+   * 42 (which is a bit pointless here, but it could of course be some
+   * computed number), and this is going to be the returned value you
+   * can later retrieve via <code>task.return_value()</code> once the
+   * task (i.e., the body of the lambda function) has completed.
    *
-   * -> int {
-   *                                             do_this();
-   *                                             then_do_that();
-   *                                             return 42;
-   *                                           });
-   * @endcode
+   * @note When MultithreadInfo::n_threads() returns 1, i.e., if the
+   *   deal.II runtime system has been configured to only use one
+   *   thread, then this function just executes the given function
+   *   object immediately and stores the return value in the Task
+   *   object returned by this function.
    *
-   * @note
-   * 在实践中，你将传递给new_task()的lambda函数当然会更加复杂。
-   * 特别是，它们可能会从周围的环境中<i>capture</i>变量并在lambda中使用它们。
-   * 关于lambda函数如何工作的更多信息，请参阅https://en.wikipedia.org/wiki/Anonymous_function#C.2B.2B_.28since_C.2B.2B11.29。
-   * @note
-   * 如果你把一个lambda函数作为参数传递给当前函数，该函数捕获了一个变量<i>by
-   * reference</i>，或者如果你使用一个 std::bind ，用 std::ref()
-   * 或 std::cref(),
-   * 将一个函数参数绑定到一个引用变量，那么显然你只能在你引用或捕获的变量有一个至少延伸到任务结束的时间的寿命时才能这样做。
-   * @note   Threads::new_task() 本质上等同于调用
-   * `std::async(std::launch::async,
-   * ...)`，因为它在后台运行指定的任务。更多信息见https://en.cppreference.com/w/cpp/thread/async。
+   * @note Every lambda function (or whatever else it is you pass to
+   *   the new_task() function here, for example the result of a
+   *   std::bind() expression) has a return type and consequently
+   *   returns an object of this type. This type can be inferred
+   *   using the C++11 <code>decltype</code> statement used in the
+   *   declaration of this function, and it is then used as the template
+   *   argument of the Threads::Task object returned by the current function.
+   *   In the example above, because the lambda function returns 42
+   *   (which in C++ has data type <code>int</code>), the inferred
+   *   type is <code>int</code> and the task object will have type
+   *   <code>Task@<int@></code>. In other words, it is not <i>necessary</i>
+   *   to explicitly specify in user code what that return type
+   *   of the lambda or std::bind expression will be, though it is
+   *   possible to explicitly do so by (entirely equivalently) writing
+   *   @code
+   *   Threads::Task<int>
+   *     task = Threads::new_task ( [] () -> int {
+   *                                               do_this();
+   *                                               then_do_that();
+   *                                               return 42;
+   *                                             });
+   *   @endcode
+   *
+   * @note In practice, the lambda functions you will pass to
+   *   new_task() will of course typically be more complicated.
+   *   In particular, they will likely <i>capture</i> variables
+   *   from the surrounding context and use them within the lambda.
+   *   See
+   * https://en.wikipedia.org/wiki/Anonymous_function#C.2B.2B_.28since_C.2B.2B11.29
+   *   for more on how lambda functions work.
+   *
+   * @note If you pass a lambda function as an argument to the
+   *   current function that captures a variable <i>by reference</i>,
+   *   or if you use a std::bind that binds a function argument to
+   *   a reference variable using std::ref() or std::cref(), then
+   *   obviously you can only do this if the variables you reference
+   *   or capture have a lifetime that extends at least until the time
+   *   where the task finishes.
+   *
+   * @note Threads::new_task() is, in essence, equivalent to calling
+   *   `std::async(std::launch::async, ...)` in that it runs the given task
+   *   in the background. See https://en.cppreference.com/w/cpp/thread/async
+   *   for more information.
+   *
    * @ingroup CPP11
-   *
    */
   template <typename FunctionObjectType>
   inline auto
@@ -1248,9 +1420,10 @@ namespace Threads
 
 
   /**
-   * new_task函数的重载，用于非成员或静态成员函数。更多信息见同名的其他函数。
-   * @ingroup threads
+   * Overload of the new_task function for non-member or static member
+   * functions. See the other functions of same name for more information.
    *
+   * @ingroup threads
    */
   template <typename RT, typename... Args>
   inline Task<RT>
@@ -1264,10 +1437,10 @@ namespace Threads
 
 
   /**
-   * 非const
-   * new_task函数的重载。更多信息请参见同名的其他函数。
-   * @ingroup threads
+   * Overload of the non-const new_task function. See the other functions of
+   * same name for more information.
    *
+   * @ingroup threads
    */
   template <typename RT, typename C, typename... Args>
   inline Task<RT>
@@ -1281,9 +1454,10 @@ namespace Threads
   }
 
   /**
-   * new_task函数的重载。更多信息请参见同名的其他函数。
-   * @ingroup threads
+   * Overload of the new_task function. See the other functions of same name for
+   * more information.
    *
+   * @ingroup threads
    */
   template <typename RT, typename C, typename... Args>
   inline Task<RT>
@@ -1300,18 +1474,23 @@ namespace Threads
   // ------------------------ TaskGroup -------------------------------------
 
   /**
-   * 一个任务对象的容器。允许添加新的任务对象并一起等待它们。任务对象需要对被调用的函数有相同的返回值。
-   * 注意，对join_all()的调用必须与添加子任务的调用在同一个线程上执行。否则，可能会出现死锁。换句话说，一个任务对象绝不应该传递给另一个任务来调用join()方法。
-   * @ingroup tasks
+   * A container for task objects. Allows to add new task objects and wait for
+   * them all together. The task objects need to have the same return value
+   * for the called function.
    *
+   * Note that the call to join_all() must be executed on the same thread as
+   * the calls that add subtasks. Otherwise, there might be a deadlock. In
+   * other words, a Task object should never passed on to another task for
+   * calling the join() method.
+   *
+   * @ingroup tasks
    */
   template <typename RT = void>
   class TaskGroup
   {
   public:
     /**
-     * 将另一个任务对象添加到集合中。
-     *
+     * Add another task object to the collection.
      */
     TaskGroup &
     operator+=(const Task<RT> &t)
@@ -1322,8 +1501,11 @@ namespace Threads
 
 
     /**
-     * 返回有多少个任务被放入这个组。这个函数不区分其中有多少任务已经运行并完成，仍在等待被安排到CPU资源，或目前正在运行。已经加入的任务也仍然被计算在内。
-     *
+     * Return how many tasks have been put into this group. This
+     * function does not distinguish how many of these tasks have
+     * already run and have finished, are still waiting to be
+     * scheduled to a CPU resource, or are currently running. Tasks
+     * that have been joined already are also still counted.
      */
     std::size_t
     size() const
@@ -1333,8 +1515,10 @@ namespace Threads
 
 
     /**
-     * 等待集合中的所有任务完成。如果其中有些任务已经被等待过了，也不是什么问题，也就是说，你可以多次调用这个函数，如果你愿意，你也可以在后续调用这个函数之间添加新任务对象。
-     *
+     * Wait for all tasks in the collection to finish. It is not a problem if
+     * some of them have already been waited for, i.e. you may call this
+     * function more than once, and you can also add new task objects between
+     * subsequent calls to this function if you want.
      */
     void
     join_all() const
@@ -1345,8 +1529,7 @@ namespace Threads
 
   private:
     /**
-     * 任务对象的列表。
-     *
+     * List of task objects.
      */
     std::list<Task<RT>> tasks;
   };
@@ -1355,8 +1538,6 @@ namespace Threads
 
 /**
  * @}
- *
- *
  */
 
 
@@ -1365,5 +1546,3 @@ DEAL_II_NAMESPACE_CLOSE
 // end of #ifndef dealii_thread_management_h
 #endif
 //---------------------------------------------------------------------------
-
-

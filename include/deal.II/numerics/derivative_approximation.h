@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/derivative_approximation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -37,143 +38,112 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * This namespace provides functions that compute a cell-wise approximation of
- * the norm of a derivative of a finite element field by taking difference
- * quotients between neighboring cells. This is a rather simple but efficient
- * form to get an error indicator, since it can be computed with relatively
- * little numerical effort and yet gives a reasonable approximation.
+ * 这个命名空间提供了一些函数，这些函数通过取相邻单元之间的差值商来计算有限元场的导数的规范的逐一逼近。这是一种相当简单而有效的错误指示形式，因为它可以用相对较少的数值努力来计算，但却能给出一个合理的近似值。
+ * 在单元格 $K$
+ * 上计算差商的方式如下（这里描述的是有限元场梯度的近似，但对于更高的导数见下文）：让
+ * $K'$ 是一个相邻的单元格，让 $y_{K'}=x_{K'}-x_K$
+ * ]是两个单元中心之间的距离向量，那么 $ \frac{u_h(x_{K'})
  *
- * The way the difference quotients are computed on cell $K$ is the following
- * (here described for the approximation of the gradient of a finite element
- * field, but see below for higher derivatives): let $K'$ be a neighboring
- * cell, and let $y_{K'}=x_{K'}-x_K$ be the distance vector between the
- * centers of the two cells, then $ \frac{u_h(x_{K'}) - u_h(x_K)}{ \|y_{K'}\|
- * }$ is an approximation of the directional derivative $ \nabla u(x_K) \cdot
- * \frac{y_{K'}}{ \|y_{K'}\| }.$ By multiplying both terms by $\frac{y_{K'}}{
- * \|y_{K'}\| }$ from the left and summing over all neighbors $K'$, we obtain
+ * - u_h(x_K)}{ \|y_{K'}\| }$ 是方向性导数的近似值 $ \nabla u(x_K)
+ * \cdot \frac{y_{K'}}{ \|y_{K'}\| }.$  通过从左边开始乘以
+ * $\frac{y_{K'}}{ \|y_{K'}\| }$ 并对所有邻居 $K'$ 求和，我们得到
  * $ \sum_{K'} \left( \frac{y_{K'}}{ \|y_{K'}\|} \frac{y_{K'}^T}{ \|y_{K'}\| }
  * \right) \nabla u(x_K) \approx \sum_{K'} \left( \frac{y_{K'}}{ \|y_{K'}\|}
- * \frac{u_h(x_{K'}) - u_h(x_K)}{ \|y_{K'}\| }  \right).$
+ * \frac{u_h(x_{K'})
  *
- * Thus, if the matrix $ Y =  \sum_{K'} \left( \frac{y_{K'}}{\|y_{K'}\|}
- * \frac{y_{K'}^T}{ \|y_{K'}\| } \right)$ is regular (which is the case when
- * the vectors $y_{K'}$ to all neighbors span the whole space), we can obtain
- * an approximation to the true gradient by $ \nabla u(x_K) \approx Y^{-1}
- * \sum_{K'} \left( \frac{y_{K'}}{\|y_{K'}\|} \frac{u_h(x_{K'}) - u_h(x_K)}{
- * \|y_{K'}\| } \right).$ This is a quantity that is easily computed. The
- * value returned for each cell when calling the @p approximate_gradient
- * function of this class is the $l_2$ norm of this approximation to the
- * gradient. To make this a useful quantity, you may want to scale each
- * element by the correct power of the respective cell size.
+ * - u_h(x_K)}{ \|y_{K'}\| }  \right).$ 因此，如果矩阵 $ Y =  \sum_{K'}
+ * \left( \frac{y_{K'}}{\|y_{K'}\|} \frac{y_{K'}^T}{ \|y_{K'}\| } \right)$
+ * 是规则的（当向量 $y_{K'}$
+ * 到所有邻居跨越整个空间时就是这种情况），我们可以通过
+ * $ \nabla u(x_K) \approx Y^{-1} \sum_{K'} \left( \frac{y_{K'}}{\|y_{K'}\|}
+ * \frac{u_h(x_{K'})
  *
- * The computation of this quantity must fail if a cell has only neighbors for
- * which the direction vectors $y_K$ do not span the whole space, since then
- * the matrix $Y$ is no longer invertible. If this happens, you will get an
- * error similar to this one:
+ * - u_h(x_K)}{ \|y_{K'}\| } \right).$
+ * 得到真实梯度的近似值，这是一个容易计算的量。当调用该类的
+ * @p approximate_gradient
+ * 函数时，每个单元格的返回值是这个梯度近似值的 $l_2$
+ * 准则。为了使这个量成为一个有用的量，你可能想把每个元素按各自的单元格大小的正确幂进行缩放。
+ * 如果一个单元只有方向向量 $y_K$
+ * 不跨越整个空间的邻居，那么这个量的计算一定会失败，因为此时矩阵
+ * $Y$
+ * 不再是可逆的。如果发生这种情况，你会得到一个类似于这个的错误。
+ *
  * @code
+ *
+ *
+ *
+ *
+ *
  * --------------------------------------------------------
  * An error occurred in line <749>
  * of file <source/numerics/derivative_approximation.cc> in function
- *     void DerivativeApproximation::approximate(...)
+ *   void DerivativeApproximation::approximate(...)
  * [with DerivativeDescription = DerivativeApproximation::Gradient<3>, int
  * dim = 3, InputVector = Vector<double>, spacedim = 3]
  * The violated condition was:
- *     determinant(Y) != 0
+ *   determinant(Y) != 0
  * The name and call sequence of the exception was:
- *     ExcInsufficientDirections()
+ *   ExcInsufficientDirections()
  * Additional Information:
  * (none)
+ *
+ *
+ *
+ *
+ *
  * --------------------------------------------------------
  * @endcode
- * As can easily be verified, this can only happen on very coarse grids, when
- * some cells and all their neighbors have not been refined even once. You
- * should therefore only call the functions of this class if all cells are at
- * least once refined. In practice this is not much of a restriction.
+ * 正如很容易验证的那样，这种情况只可能发生在非常粗糙的网格上，当一些单元和它们的所有邻居甚至没有被精炼过一次。因此，你应该只在所有单元至少被精炼过一次的情况下才调用这个类别的函数。在实践中，这并不是一个很大的限制。
+ *
+ *  <h3>Approximation of higher derivatives</h3>
+ * 与上面的推理类似，高阶导数的近似值也可以用类似的方式计算。例如，二阶导数的张量由公式
+ * $ \nabla^2 u(x_K) \approx Y^{-1} \sum_{K'} \left( \frac{y_{K'}}{\|y_{K'}\|}
+ * \otimes \frac{\nabla u_h(x_{K'})
  *
  *
- * <h3>Approximation of higher derivatives</h3>
  *
- * Similar to the reasoning above, approximations to higher derivatives can be
- * computed in a similar fashion. For example, the tensor of second
- * derivatives is approximated by the formula $ \nabla^2 u(x_K) \approx Y^{-1}
- * \sum_{K'} \left( \frac{y_{K'}}{\|y_{K'}\|} \otimes \frac{\nabla u_h(x_{K'})
- * - \nabla u_h(x_K)}{ \|y_{K'}\| } \right), $ where $\otimes$ denotes the
- * outer product of two vectors. Note that unlike the true tensor of second
- * derivatives, its approximation is not necessarily symmetric. This is due to
- * the fact that in the derivation, it is not clear whether we shall consider
- * as projected second derivative the term $\nabla^2 u y_{KK'}$ or $y_{KK'}^T
- * \nabla^2 u$. Depending on which choice we take, we obtain one approximation
- * of the tensor of second derivatives or its transpose. To avoid this
- * ambiguity, as result we take the symmetrized form, which is the mean value
- * of the approximation and its transpose.
+ * - \nabla u_h(x_K)}{ \|y_{K'}\| } \right), $ 近似，其中 $\otimes$
+ * 表示两个向量的外积。请注意，与真正的二阶导数张量不同，其近似值不一定是对称的。这是由于在推导过程中，不清楚我们是将
+ * $\nabla^2 u y_{KK'}$ 还是 $y_{KK'}^T \nabla^2 u$
+ * 项作为投射二阶导数。根据我们的选择，我们会得到二阶导数张量的一个近似值或其转置。为了避免这种模糊性，作为结果，我们采取对称的形式，即近似值及其转置的平均值。
+ * 每个单元格的返回值是二阶导数的近似张量的谱准则，即绝对值最大的特征值。这等于每个单元的有限元场的最大曲率，谱规范是与
+ * $l_2$ 向量规范相关的矩阵规范。
+ * 甚至比二阶导数更高的导数也可以沿着上面暴露的相同思路得到。
  *
- * The returned value on each cell is the spectral norm of the approximated
- * tensor of second derivatives, i.e. the largest eigenvalue by absolute
- * value. This equals the largest curvature of the finite element field at
- * each cell, and the spectral norm is the matrix norm associated to the $l_2$
- * vector norm.
+ *  <h3>Refinement indicators based on the derivatives</h3>
+ * 如果你想在这些导数的近似值的基础上建立一个细化标准，你必须将这一类的结果按网格宽度的一个适当的幂进行缩放。例如，由于
+ * $\|u-u_h\|^2_{L_2} \le C h^2 \|\nabla u\|^2_{L_2}$
+ * ，可能正确的做法是将指标缩放为 $\eta_K = h \|\nabla u\|_K$
+ * ，即 $\eta_K = h^{1+d/2} \|\nabla u\|_{\infty;K}$ ，即正确的幂是
+ * $1+d/2$  。
+ * 同样的，对于二阶导数，应该选择比梯度高一个的网格大小
+ * $h$ 的幂。
  *
- * Even higher than the second derivative can be obtained along the same lines
- * as exposed above.
+ *  <h3>Implementation</h3>
+ * 上面显示的梯度和二阶导数张量的近似计算公式是非常相似的。基本区别在于，在一种情况下，有限差分商是一个标量，而在另一种情况下，它是一个矢量。对于更高的导数，这将是一个更高等级的张量。然后我们必须用距离向量
+ * $y_{KK'}$ 形成这个差分商的外积，对其进行对称，用矩阵
+ * $Y^{-1}$
+ * 收缩，并计算其规范。为了使实现更简单并允许代码重用，所有这些取决于要逼近的导数的实际顺序的操作，以及进入差商的量的计算，都被分离到辅助嵌套类中（名称为
+ * @p Gradient 和 @p SecondDerivative)
+ * ），主算法只是传递一个或其他数据类型并要求它们执行取决于顺序的操作。独立于此的主要框架，如寻找所有活动邻居，或设置矩阵
+ * $Y$ 是在主函数 @p approximate. 中完成的。
+ * 由于这种操作方式，该类可以很容易地扩展到比目前实现的更高阶导数。基本上，只需要按照导数描述符类
+ * @p 梯度和 @p SecondDerivative
+ * 的思路实现一个额外的类，用要近似的导数的适当类似物替换各自的别名和函数。
  *
- *
- * <h3>Refinement indicators based on the derivatives</h3>
- *
- * If you would like to base a refinement criterion upon these approximation
- * of the derivatives, you will have to scale the results of this class by an
- * appropriate power of the mesh width. For example, since $\|u-u_h\|^2_{L_2}
- * \le C h^2 \|\nabla u\|^2_{L_2}$, it might be the right thing to scale the
- * indicators as $\eta_K = h \|\nabla u\|_K$, i.e. $\eta_K = h^{1+d/2}
- * \|\nabla u\|_{\infty;K}$, i.e. the right power is $1+d/2$.
- *
- * Likewise, for the second derivative, one should choose a power of the mesh
- * size $h$ one higher than for the gradient.
- *
- *
- * <h3>Implementation</h3>
- *
- * The formulae for the computation of approximations to the gradient and to
- * the tensor of second derivatives shown above are very much alike. The basic
- * difference is that in one case the finite difference quotient is a scalar,
- * while in the other case it is a vector. For higher derivatives, this would
- * be a tensor of even higher rank. We then have to form the outer product of
- * this difference quotient with the distance vector $y_{KK'}$, symmetrize it,
- * contract it with the matrix $Y^{-1}$ and compute its norm. To make the
- * implementation simpler and to allow for code reuse, all these operations
- * that are dependent on the actual order of the derivatives to be
- * approximated, as well as the computation of the quantities entering the
- * difference quotient, have been separated into auxiliary nested classes
- * (names @p Gradient and @p SecondDerivative) and the main algorithm is
- * simply passed one or the other data types and asks them to perform the
- * order dependent operations. The main framework that is independent of this,
- * such as finding all active neighbors, or setting up the matrix $Y$ is done
- * in the main function @p approximate.
- *
- * Due to this way of operation, the class may be easily extended for higher
- * order derivatives than are presently implemented. Basically, only an
- * additional class along the lines of the derivative descriptor classes @p
- * Gradient and @p SecondDerivative has to be implemented, with the respective
- * alias and functions replaced by the appropriate analogues for the
- * derivative that is to be approximated.
  *
  * @ingroup numerics
+ *
+ *
  */
 namespace DerivativeApproximation
 {
   /**
-   * This function is used to obtain an approximation of the gradient. Pass it
-   * the DoF handler object that describes the finite element field, a nodal
-   * value vector, and receive the cell-wise Euclidean norm of the
-   * approximated gradient.
+   * 该函数用于获得梯度的近似值。将描述有限元场的DoF处理程序对象和一个节点值向量传递给它，并接收近似梯度的单元格欧氏规范。
+   * 最后一个参数是指要计算梯度的解分量。它默认为第一个分量。对于标量元素，这是唯一有效的选择；对于矢量值元素，可以在这里给出零和矢量分量数量之间的任何分量。
+   * 在并行计算中， @p solution
+   * 向量需要包含本地相关的未知数。
    *
-   * The last parameter denotes the solution component, for which the gradient
-   * is to be computed. It defaults to the first component. For scalar
-   * elements, this is the only valid choice; for vector-valued ones, any
-   * component between zero and the number of vector components can be given
-   * here.
-   *
-   * In a parallel computation the @p solution vector needs to contain the
-   * locally relevant unknowns.
    */
   template <int dim, class InputVector, int spacedim>
   void
@@ -184,7 +154,8 @@ namespace DerivativeApproximation
                        const unsigned int               component = 0);
 
   /**
-   * Call the function above with <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 用<tt>mapping=MappingQGeneric  @<dim@>(1)</tt>. 调用上述函数。
+   *
    */
   template <int dim, class InputVector, int spacedim>
   void
@@ -194,21 +165,12 @@ namespace DerivativeApproximation
                        const unsigned int               component = 0);
 
   /**
-   * This function is the analogue to the one above, computing finite
-   * difference approximations of the tensor of second derivatives. Pass it
-   * the DoF handler object that describes the finite element field, a nodal
-   * value vector, and receive the cell-wise spectral norm of the approximated
-   * tensor of second derivatives. The spectral norm is the matrix norm
-   * associated to the $l_2$ vector norm.
+   * 这个函数是上面那个函数的类似物，计算二阶导数张量的有限差分近似值。将描述有限元场的DoF处理程序对象、节点值向量传递给它，并接收第二导数张量近似值的单元格谱准则。谱准则是与
+   * $l_2$ 向量准则相关的矩阵准则。
+   * 最后一个参数是指要计算梯度的解分量。它默认为第一个分量。对于标量元素，这是唯一有效的选择；对于矢量值元素，这里可以给出零和矢量分量数量之间的任何分量。
+   * 在并行计算中， @p solution
+   * 向量需要包含本地相关的未知数。
    *
-   * The last parameter denotes the solution component, for which the gradient
-   * is to be computed. It defaults to the first component. For scalar
-   * elements, this is the only valid choice; for vector-valued ones, any
-   * component between zero and the number of vector components can be given
-   * here.
-   *
-   * In a parallel computation the @p solution vector needs to contain the
-   * locally relevant unknowns.
    */
   template <int dim, class InputVector, int spacedim>
   void
@@ -219,7 +181,8 @@ namespace DerivativeApproximation
                                 const unsigned int component = 0);
 
   /**
-   * Call the function above with <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 用<tt>mapping=MappingQGeneric  @<dim@>(1)</tt>. 调用上述函数。
+   *
    */
   template <int dim, class InputVector, int spacedim>
   void
@@ -229,17 +192,11 @@ namespace DerivativeApproximation
                                 const unsigned int component = 0);
 
   /**
-   * This function calculates the <tt>order</tt>-th order approximate
-   * derivative and returns the full tensor for a single cell.
+   * 这个函数计算<tt>阶</tt>-阶近似导数，并返回单个单元的完整张量。
+   * 最后一个参数是指要计算梯度的解分量。它默认为第一个分量。对于标量元素，这是唯一有效的选择；对于矢量值元素，可以在这里给出零和矢量分量数量之间的任何分量。
+   * 在并行计算中， @p solution
+   * 向量需要包含本地相关的未知数。
    *
-   * The last parameter denotes the solution component, for which the gradient
-   * is to be computed. It defaults to the first component. For scalar
-   * elements, this is the only valid choice; for vector-valued ones, any
-   * component between zero and the number of vector components can be given
-   * here.
-   *
-   * In a parallel computation the @p solution vector needs to contain the
-   * locally relevant unknowns.
    */
   template <int dim, int spacedim, class InputVector, int order>
   void
@@ -257,7 +214,8 @@ namespace DerivativeApproximation
     const unsigned int  component = 0);
 
   /**
-   * Same as above, with <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 同上，<tt>mapping=MappingQGeneric  @<dim@>(1)</tt>. 。
+   *
    */
   template <int dim, int spacedim, class InputVector, int order>
   void
@@ -274,14 +232,16 @@ namespace DerivativeApproximation
     const unsigned int  component = 0);
 
   /**
-   * Return the norm of the derivative.
+   * 返回导数的规范。
+   *
    */
   template <int dim, int order>
   double
   derivative_norm(const Tensor<order, dim> &derivative);
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException2(ExcVectorLengthVsNActiveCells,
                  int,
@@ -292,7 +252,8 @@ namespace DerivativeApproximation
                  << arg1 << "There are " << arg2
                  << " active cells in your triangulation.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcInsufficientDirections,
                    "While computing a finite difference approximation to "
@@ -312,3 +273,5 @@ namespace DerivativeApproximation
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

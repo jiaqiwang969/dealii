@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/mapping_q_internal_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -47,8 +46,9 @@ DEAL_II_NAMESPACE_OPEN
 namespace internal
 {
   /**
-   * 内部命名空间，用于实现MappingQ1特有的方法，特别是二维中从实数到单元格转换的明确公式。
-   *
+   * Internal namespace to implement methods specific to MappingQ1, in
+   * particular an explicit formula for the transformation from the real to
+   * the unit cell in 2D.
    */
   namespace MappingQ1
   {
@@ -138,8 +138,10 @@ namespace internal
       const long double eta =
         (std::abs(eta1 - 0.5) < std::abs(eta2 - 0.5)) ? eta1 : eta2;
 
-      /*有两种方法可以从eta计算xi，但任何一种都可能有一个零分母。     
-* */
+      /*
+       * There are two ways to compute xi from eta, but either one may have a
+       * zero denominator.
+       */
       const long double subexpr0        = -eta * x2 + x0 * (eta - 1);
       const long double xi_denominator0 = eta * x3 - x1 * (eta - 1) + subexpr0;
       const long double max_x = std::max(std::max(std::abs(x0), std::abs(x1)),
@@ -184,8 +186,8 @@ namespace internal
     inline Point<3>
     transform_real_to_unit_cell(
       const std::array<Point<spacedim>, GeometryInfo<3>::vertices_per_cell>
-        &  /*vertices*/ ,
-      const Point<spacedim> &  /*p*/ )
+        & /*vertices*/,
+      const Point<spacedim> & /*p*/)
     {
       // It should not be possible to get here
       Assert(false, ExcInternalError());
@@ -198,14 +200,15 @@ namespace internal
 
 
   /**
-   * 内部命名空间，用于实现MappingQGeneric的方法，如映射的评估和实数与单元格之间的转换。
-   *
+   * Internal namespace to implement methods of MappingQGeneric, such as the
+   * evaluation of the mapping and the transformation between real and unit
+   * cell.
    */
   namespace MappingQGenericImplementation
   {
     /**
-     * 这个函数通过扩展张量积从1d支持点生成参考单元支持点。
-     *
+     * This function generates the reference cell support points from the 1d
+     * support points by expanding the tensor product.
      */
     template <int dim>
     std::vector<Point<dim>>
@@ -232,10 +235,11 @@ namespace internal
 
 
     /**
-     * 这个函数是<tt>MappingQ<dim,spacedim></tt>的构造函数需要的，用于<tt>dim=</tt>2和3。
-     * 关于 @p support_point_weights_on_quad
-     * 的定义，请参考TransfiniteInterpolationManifold的描述。
+     * This function is needed by the constructor of
+     * <tt>MappingQ<dim,spacedim></tt> for <tt>dim=</tt> 2 and 3.
      *
+     * For the definition of the @p support_point_weights_on_quad please
+     * refer to the description of TransfiniteInterpolationManifold.
      */
     inline dealii::Table<2, double>
     compute_support_point_weights_on_quad(const unsigned int polynomial_degree)
@@ -284,10 +288,10 @@ namespace internal
 
 
     /**
-     * 这个函数被<tt>MappingQ<3></tt>的构造函数所需要。
-     * 关于 @p support_point_weights_on_quad
-     * 的定义，请参考TransfiniteInterpolationManifold的描述。
+     * This function is needed by the constructor of <tt>MappingQ<3></tt>.
      *
+     * For the definition of the @p support_point_weights_on_quad please
+     * refer to the description of TransfiniteInterpolationManifold.
      */
     inline dealii::Table<2, double>
     compute_support_point_weights_on_hex(const unsigned int polynomial_degree)
@@ -375,8 +379,8 @@ namespace internal
 
 
     /**
-     * 这个函数将compute_support_point_weights_on_{quad,hex}的输出收集到一个数据结构中。
-     *
+     * This function collects the output of
+     * compute_support_point_weights_on_{quad,hex} in a single data structure.
      */
     inline std::vector<dealii::Table<2, double>>
     compute_support_point_weights_perimeter_to_interior(
@@ -410,8 +414,7 @@ namespace internal
 
 
     /**
-     * 收集各个维度的所有内部点。
-     *
+     * Collects all interior points for the various dimensions.
      */
     template <int dim>
     inline dealii::Table<2, double>
@@ -439,8 +442,11 @@ namespace internal
 
 
     /**
-     * 使用在参考单元上的一个点上评估的形状函数的相对权重（并存储在data.shape_values中，通过data.shape(0,i)访问）和映射支持点的位置（存储在data.mapping_support_points中），计算该点在实际空间中的映射位置。
-     *
+     * Using the relative weights of the shape functions evaluated at
+     * one point on the reference cell (and stored in data.shape_values
+     * and accessed via data.shape(0,i)) and the locations of mapping
+     * support points (stored in data.mapping_support_points), compute
+     * the mapped location of that point in real space.
      */
     template <int dim, int spacedim>
     inline Point<spacedim>
@@ -461,8 +467,8 @@ namespace internal
 
 
     /**
-     * 实现transform_real_to_unit_cell，类型为double或VectorizedArray<double>。
-     *
+     * Implementation of transform_real_to_unit_cell for either type double
+     * or VectorizedArray<double>
      */
     template <int dim, int spacedim, typename Number>
     inline Point<dim, Number>
@@ -712,8 +718,7 @@ namespace internal
 
 
     /**
-     * 实现dim==spacedim-1的transform_real_to_unit_cell。
-     *
+     * Implementation of transform_real_to_unit_cell for dim==spacedim-1
      */
     template <int dim>
     inline Point<dim>
@@ -839,28 +844,42 @@ namespace internal
 
 
     /**
-     * 一个用于计算从实数到单位点的反映射的二次方近似的类，通过沿映射支持点的最小二乘法拟合。最小二乘法拟合很特别，因为这个近似是为MappingQGeneric的反函数构造的，它通常是一个有理函数。这允许通过简单的多项式插值对反映射进行非常便宜的评估，这可以作为将点从实坐标转化为单位坐标的更好的初始猜测，而不是仿射近似。
-     * 在单元格外的远处，这种近似对于非仿生单元格形状来说可能变得不准确。这必须从多项式与有理函数的拟合中预料到，并且由于最小二乘法拟合的区域，即单元格，被离开了。因此，在这些情况下要小心使用这个函数。
+     * A class to compute a quadratic approximation to the inverse map from
+     * real to unit points by a least-squares fit along the mapping support
+     * points. The least squares fit is special in the sense that the
+     * approximation is constructed for the inverse function of a
+     * MappingQGeneric, which is generally a rational function. This allows
+     * for a very cheap evaluation of the inverse map by a simple polynomial
+     * interpolation, which can be used as a better initial guess for
+     * transforming points from real to unit coordinates than an affine
+     * approximation.
      *
+     * Far away outside the unit cell, this approximation can become
+     * inaccurate for non-affine cell shapes. This must be expected from a
+     * fit of a polynomial to a rational function, and due to the fact that
+     * the region of the least squares fit, the unit cell, is left. Hence,
+     * use this function with care in those situations.
      */
     template <int dim, int spacedim>
     class InverseQuadraticApproximation
     {
     public:
       /**
-       * 二次方近似中的基函数的数量。
-       *
+       * Number of basis functions in the quadratic approximation.
        */
       static constexpr unsigned int n_functions =
         (spacedim == 1 ? 3 : (spacedim == 2 ? 6 : 10));
 
       /**
-       * 构造函数。              @param  real_support_points
-       * 映射支持点在实空间的位置，由
-       * MappingQGeneric::compute_mapping_support_points().   @param
-       * unit_support_points 参考坐标  $[0, 1]^d$
-       * 中支持点的位置，通过多项式映射到实空间的映射支持点。
+       * Constructor.
        *
+       * @param real_support_points The position of the mapping support points
+       * in real space, queried by
+       * MappingQGeneric::compute_mapping_support_points().
+       *
+       * @param unit_support_points The location of the support points in
+       * reference coordinates $[0, 1]^d$ that map to the mapping support
+       * points in real space by a polynomial map.
        */
       InverseQuadraticApproximation(
         const std::vector<Point<spacedim>> &real_support_points,
@@ -978,15 +997,13 @@ namespace internal
       }
 
       /**
-       * 复制构造函数。
-       *
+       * Copy constructor.
        */
       InverseQuadraticApproximation(const InverseQuadraticApproximation &) =
         default;
 
       /**
-       * 评估二次函数的近似值。
-       *
+       * Evaluate the quadratic approximation.
        */
       template <typename Number>
       Point<dim, Number>
@@ -1019,26 +1036,28 @@ namespace internal
 
     private:
       /**
-       * 为了保证良好的调节，我们需要对实空间中的点应用一个变换，这个变换是由一个移位向量normalization_shift（实空间中映射支持点的第一点）和一个称为`length_normalization`的反长度尺度作为前两点之间的距离计算的。
-       *
+       * In order to guarantee a good conditioning, we need to apply a
+       * transformation to the points in real space that is computed by a
+       * shift vector normalization_shift (first point of the mapping support
+       * points in real space) and an inverse length scale called
+       * `length_normalization` as the distance between the first two points.
        */
       const Point<spacedim> normalization_shift;
 
       /**
-       * 见上面`normalization_shift`的文档。
-       *
+       * See the documentation of `normalization_shift` above.
        */
       const double normalization_length;
 
       /**
-       * 二次方近似中的系数向量。
-       *
+       * The vector of coefficients in the quadratic approximation.
        */
       std::array<Point<dim>, n_functions> coefficients;
 
       /**
-       * 如果由于支持点的数量不足而无法进行二次近似，我们就改用仿生近似，这种近似总是有效的，但精度较低。
-       *
+       * In case the quadratic approximation is not possible due to an
+       * insufficient number of support points, we switch to an affine
+       * approximation that always works but is less accurate.
        */
       bool is_affine;
     };
@@ -1046,9 +1065,9 @@ namespace internal
 
 
     /**
-     * 如果正交公式是张量乘积，这是对 maybe_compute_q_points(),
-     * maybe_update_Jacobians() 和 maybe_update_jacobian_grads() 的替代。
-     *
+     * In case the quadrature formula is a tensor product, this is a
+     * replacement for maybe_compute_q_points(), maybe_update_Jacobians() and
+     * maybe_update_jacobian_grads()
      */
     template <int dim, int spacedim>
     inline void
@@ -1229,9 +1248,10 @@ namespace internal
 
 
     /**
-     * 计算第一个参数描述的对象上的正交点的位置（以及已经设置了映射支持点的单元），但只有在
-     * @p data 参数的update_flags表明的情况下才会如此。
-     *
+     * Compute the locations of quadrature points on the object described by
+     * the first argument (and the cell for which the mapping support points
+     * have already been set), but only if the update_flags of the @p data
+     * argument indicate so.
      */
     template <int dim, int spacedim>
     inline void
@@ -1258,10 +1278,12 @@ namespace internal
 
 
     /**
-     * 更新共变矩阵和逆变矩阵以及它们的行列式，对于存储在数据对象中描述的单元，但只有当
-     * @p data 参数的update_flags表明是这样。
-     * 如果可能的话，如第一个参数所示，跳过该计算。
+     * Update the co- and contravariant matrices as well as their determinant,
+     * for the cell
+     * described stored in the data object, but only if the update_flags of the @p data
+     * argument indicate so.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1341,9 +1363,10 @@ namespace internal
 
 
     /**
-     * 更新从单位到实数单元的转换的Hessian，即雅各布梯度。
-     * 如果可能的话，如第一个参数所示，跳过该计算。
+     * Update the Hessian of the transformation from unit to real cell, the
+     * Jacobian gradients.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1387,9 +1410,10 @@ namespace internal
 
 
     /**
-     * 更新从单位到实心单元的变换的Hessian，雅各布梯度，向前推到实心单元的坐标。
-     * 如果可能的话，如第一个参数所示，跳过该计算。
+     * Update the Hessian of the transformation from unit to real cell, the
+     * Jacobian gradients, pushed forward to the real cell coordinates.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1460,9 +1484,10 @@ namespace internal
 
 
     /**
-     * 更新从单位到实心单元的转换的第三个导数，即雅各布式的斜率。
-     * 如果可能的话，如第一个参数所示，跳过该计算。
+     * Update the third derivatives of the transformation from unit to real
+     * cell, the Jacobian hessians.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1514,9 +1539,11 @@ namespace internal
 
 
     /**
-     * 更新从单位到实数单元的变换的Hessian，雅各布Hessian梯度，向前推到实数单元坐标。
-     * 如果可能的话，跳过计算，如第一个参数所示。
+     * Update the Hessian of the Hessian of the transformation from unit
+     * to real cell, the Jacobian Hessian gradients, pushed forward to the
+     * real cell coordinates.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1614,9 +1641,10 @@ namespace internal
 
 
     /**
-     * 更新从单位到实心单元转换的第四导数，即雅各布海森梯度。
-     * 如第一个参数所示，如果可能的话，跳过该计算。
+     * Update the fourth derivatives of the transformation from unit to real
+     * cell, the Jacobian hessian gradients.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1671,9 +1699,11 @@ namespace internal
 
 
     /**
-     * 更新从单位到实际单元的转换的Hessian梯度，即雅各布Hessians，向前推到实际单元坐标。
-     * 如果可能的话，如第一个参数所示，跳过计算。
+     * Update the Hessian gradient of the transformation from unit to real
+     * cell, the Jacobian Hessians, pushed forward to the real cell
+     * coordinates.
      *
+     * Skip the computation if possible as indicated by the first argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1794,10 +1824,13 @@ namespace internal
 
 
     /**
-     * 根据 @p data
-     * 对象的更新标志中所要求的信息，计算fill_fe_face_values()和fill_fe_subface_values()函数所要求的各种信息。这个函数简单地统一了这两个函数所要做的工作。
-     * 得到的数据被放入 @p output_data 参数中。
+     * Depending on what information is called for in the update flags of the
+     * @p data object, compute the various pieces of information that is
+     * required by the fill_fe_face_values() and fill_fe_subface_values()
+     * functions. This function simply unifies the work that would be done by
+     * those two functions.
      *
+     * The resulting data is put into the @p output_data argument.
      */
     template <int dim, int spacedim>
     inline void
@@ -1958,10 +1991,10 @@ namespace internal
 
 
     /**
-     * 以一种通用的方式完成 MappingQGeneric::fill_fe_face_values()
-     * 和 MappingQGeneric::fill_fe_subface_values()
-     * 的工作，使用'data_set'来区分我们是在一个面（如果是的话，是哪一个）还是在子面上工作。
-     *
+     * Do the work of MappingQGeneric::fill_fe_face_values() and
+     * MappingQGeneric::fill_fe_subface_values() in a generic way,
+     * using the 'data_set' to differentiate whether we will
+     * work on a face (and if so, which one) or subface.
      */
     template <int dim, int spacedim>
     inline void
@@ -2034,8 +2067,7 @@ namespace internal
 
 
     /**
-     * 实现 MappingQGeneric::transform() 的通用张量。
-     *
+     * Implementation of MappingQGeneric::transform() for generic tensors.
      */
     template <int dim, int spacedim, int rank>
     inline void
@@ -2113,8 +2145,7 @@ namespace internal
 
 
     /**
-     * 实现 MappingQGeneric::transform() 的梯度。
-     *
+     * Implementation of MappingQGeneric::transform() for gradients.
      */
     template <int dim, int spacedim, int rank>
     inline void
@@ -2212,8 +2243,7 @@ namespace internal
 
 
     /**
-     * 实现 MappingQGeneric::transform() 的豫章。
-     *
+     * Implementation of MappingQGeneric::transform() for hessians.
      */
     template <int dim, int spacedim>
     inline void
@@ -2379,8 +2409,8 @@ namespace internal
 
 
     /**
-     * 实现 MappingQGeneric::transform() 的DerivativeForm参数。
-     *
+     * Implementation of MappingQGeneric::transform() for DerivativeForm
+     * arguments.
      */
     template <int dim, int spacedim, int rank>
     inline void
@@ -2423,5 +2453,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

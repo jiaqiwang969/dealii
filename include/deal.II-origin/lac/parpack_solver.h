@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/parpack_solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -136,138 +135,142 @@ extern "C"
 }
 
 /**
- * 使用PARPACK的接口。PARPACK是一个Fortran77子程序的集合，旨在解决大规模的特征值问题。这里我们为PARPACK的例程
- * <code>pdneupd</code>, <code>pdseupd</code> 、 <code>pdnaupd</code>,
- * <code>pdsaupd</code> 提供接口。
- * 该软件包被设计用来计算一般n乘n矩阵A的几个特征值和相应的特征向量。它最适用于大的稀疏矩阵A。
- * 在这个类中，我们利用了应用于广义特征谱问题 $(A-\lambda
- * B)x=0$ 的方法，用于 $x\neq0$ ；其中 $A$ 是一个系统矩阵，
- * $B$ 是一个质量矩阵，而 $\lambda, x$
- * 分别是一组特征值和特征向量。
- * ArpackSolver可以通过以下方式在应用代码中使用。
+ * Interface for using PARPACK. PARPACK is a collection of Fortran77
+ * subroutines designed to solve large scale eigenvalue problems. Here we
+ * interface to the routines <code>pdneupd</code>, <code>pdseupd</code>,
+ * <code>pdnaupd</code>, <code>pdsaupd</code> of PARPACK.  The package is
+ * designed to compute a few eigenvalues and corresponding eigenvectors of a
+ * general n by n matrix A. It is most appropriate for large sparse matrices
+ * A.
  *
+ * In this class we make use of the method applied to the generalized
+ * eigenspectrum problem $(A-\lambda B)x=0$, for $x\neq0$; where $A$ is a
+ * system matrix, $B$ is a mass matrix, and $\lambda, x$ are a set of
+ * eigenvalues and eigenvectors respectively.
+ *
+ * The ArpackSolver can be used in application codes in the following way:
  * @code
- * SolverControl solver_control (1000, 1e-9);
- * const unsigned int num_arnoldi_vectors = 2*size_of_spectrum + 2;
- * PArpackSolver<V>::AdditionalData
- *   additional_data(num_arnoldi_vectors,
- *                   dealii::PArpackSolver<V>::largest_magnitude,
- *                   true);
+ *   SolverControl solver_control (1000, 1e-9);
+ *   const unsigned int num_arnoldi_vectors = 2*size_of_spectrum + 2;
+ *   PArpackSolver<V>::AdditionalData
+ *     additional_data(num_arnoldi_vectors,
+ *                     dealii::PArpackSolver<V>::largest_magnitude,
+ *                     true);
  *
- *  PArpackSolver<V> eigensolver (solver_control,
- *                                mpi_communicator,
- *                                additional_data);
- *  eigensolver.set_shift(sigma);
- *  eigensolver.reinit(locally_owned_dofs);
- *  eigensolver.solve (A,
- *                     B,
- *                     OP,
- *                     lambda,
- *                     x,
- *                     size_of_spectrum);
+ *    PArpackSolver<V> eigensolver (solver_control,
+ *                                  mpi_communicator,
+ *                                  additional_data);
+ *    eigensolver.set_shift(sigma);
+ *    eigensolver.reinit(locally_owned_dofs);
+ *    eigensolver.solve (A,
+ *                       B,
+ *                       OP,
+ *                       lambda,
+ *                       x,
+ *                       size_of_spectrum);
  * @endcode
- * 对于广义的特征值问题 $Ax=B\lambda x$  ，其中变量
- * <code>size_of_spectrum</code>
- * 告诉PARPACK要解决的特征向量/特征值对的数量。这里，
- * <code>lambda</code> 是一个包含计算的特征值的向量，
- * <code>x</code> 是一个包含计算的特征向量的 <code>V</code>
- * 类型的对象的向量。
- * 目前，只有(P)Arpack的三种模式被实现。在模式3（默认）中，
- * <code>OP</code> 是对矩阵<code>A的逆运算。
+ * for the generalized eigenvalue problem $Ax=B\lambda x$, where the variable
+ * <code>size_of_spectrum</code> tells PARPACK the number of
+ * eigenvector/eigenvalue pairs to solve for. Here, <code>lambda</code> is a
+ * vector that will contain the eigenvalues computed, <code>x</code> a vector
+ * of objects of type <code>V</code> that will contain the eigenvectors
+ * computed.
  *
- * - sigma B</code>，其中 <code> sigma </code> 是一个移位值，默认设置为零。而在模式2中， <code>OP</code> 是 <code>M</code> 的逆运算。最后，模式1对应于没有谱系转换的标准特征值问题  $Ax=\lambda x$  。模式可以通过AdditionalData对象指定。请注意，对于移位和反转（模式=3），所寻求的特征对是应用谱系转换后的特征对。
- * <code>OP</code>  可以通过使用LinearOperator来指定。
+ * Currently, only three modes of (P)Arpack are implemented. In mode 3
+ * (default), <code>OP</code> is an inverse operation for the matrix <code>A -
+ * sigma * B</code>, where <code> sigma </code> is a shift value, set to zero
+ * by default. Whereas in mode 2, <code>OP</code> is an inverse of
+ * <code>M</code>. Finally, mode 1 corresponds to standard eigenvalue problem
+ * without spectral transformation $Ax=\lambda x$. The mode can be specified via
+ * AdditionalData object. Note that for shift-and-invert (mode=3), the sought
+ * eigenpairs are those after the spectral transformation is applied.
  *
+ * The <code>OP</code> can be specified by using a LinearOperator:
  * @code
- * const double shift = 5.0;
- * const auto op_A = linear_operator<vector_t>(A);
- * const auto op_B = linear_operator<vector_t>(B);
- * const auto op_shift = op_A
+ *   const double shift = 5.0;
+ *   const auto op_A = linear_operator<vector_t>(A);
+ *   const auto op_B = linear_operator<vector_t>(B);
+ *   const auto op_shift = op_A - shift * op_B;
+ *   SolverControl solver_control_lin (1000, 1e-10,false,false);
  *
- * - shift op_B;
- * SolverControl solver_control_lin (1000, 1e-10,false,false);
- *
- * SolverCG<vector_t> cg(solver_control_lin);
- * const auto op_shift_invert =
- *   inverse_operator(op_shift, cg, PreconditionIdentity ());
+ *   SolverCG<vector_t> cg(solver_control_lin);
+ *   const auto op_shift_invert =
+ *     inverse_operator(op_shift, cg, PreconditionIdentity ());
  * @endcode
  *
- * 该类旨在与MPI一起使用，可以在任意的向量和矩阵分布式类上工作。
- * 对称和非对称的 <code>A</code> 都支持。 关于PARPACK例程
- * <code>pdneupd</code> 、 <code>pdseupd</code>, <code>pdnaupd</code>,
- * <code>pdsaupd</code>
- * 如何工作以及如何适当设置参数的进一步信息，请查看PARPACK手册。
+ * The class is intended to be used with MPI and can work on arbitrary vector
+ * and matrix distributed classes.  Both symmetric and non-symmetric
+ * <code>A</code> are supported.
  *
- *
+ * For further information on how the PARPACK routines <code>pdneupd</code>,
+ * <code>pdseupd</code>, <code>pdnaupd</code>, <code>pdsaupd</code> work and
+ * also how to set the parameters appropriately please take a look into the
+ * PARPACK manual.
  */
 template <typename VectorType>
 class PArpackSolver : public Subscriptor
 {
 public:
   /**
-   * 声明容器大小的类型。
-   *
+   * Declare the type for container size.
    */
   using size_type = types::global_dof_index;
 
   /**
-   * 一个枚举，列出在solve()函数中计算哪些特征值的可能选择。注意，这与应用移位和反转（目前唯一支持的谱系变换）后的问题相对应。
-   * 一个特定的选择是基于对称或非对称矩阵 <code>A</code>
-   * 考虑的限制。
+   * An enum that lists the possible choices for which eigenvalues to compute
+   * in the solve() function. Note, that this corresponds to the problem after
+   * shift-and-invert (the only currently supported spectral transformation)
+   * is applied.
    *
+   * A particular choice is limited based on symmetric or non-symmetric matrix
+   * <code>A</code> considered.
    */
   enum WhichEigenvalues
   {
     /**
-     * 代数上最大的特征值。
-     *
+     * The algebraically largest eigenvalues.
      */
     algebraically_largest,
     /**
-     * 代数上最小的特征值。
-     *
+     * The algebraically smallest eigenvalues.
      */
     algebraically_smallest,
     /**
-     * 具有最大量级的特征值。
-     *
+     * The eigenvalue with the largest magnitudes.
      */
     largest_magnitude,
     /**
-     * 具有最小量级的特征值。
-     *
+     * The eigenvalue with the smallest magnitudes.
      */
     smallest_magnitude,
     /**
-     * 具有最大实部的特征值。
-     *
+     * The eigenvalues with the largest real parts.
      */
     largest_real_part,
     /**
-     * 具有最小实部的特征值。
-     *
+     * The eigenvalues with the smallest real parts.
      */
     smallest_real_part,
     /**
-     * 具有最大虚部的特征值。
-     *
+     * The eigenvalues with the largest imaginary parts.
      */
     largest_imaginary_part,
     /**
-     * 具有最小虚部的特征值。
-     *
+     * The eigenvalues with the smallest imaginary parts.
      */
     smallest_imaginary_part,
     /**
-     * 从频谱的高端计算一半的特征值，另一半从低端计算。如果要求的特征向量的数量是奇数，那么额外的特征向量来自谱的高端。
-     *
+     * Compute half of the eigenvalues from the high end of the spectrum and
+     * the other half from the low end. If the number of requested
+     * eigenvectors is odd, then the extra eigenvector comes from the high end
+     * of the spectrum.
      */
     both_ends
   };
 
   /**
-   * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-   *
+   * Standardized data struct to pipe additional data to the solver, should it
+   * be needed.
    */
   struct AdditionalData
   {
@@ -283,69 +286,65 @@ public:
   };
 
   /**
-   * 对控制收敛的对象的访问。
-   *
+   * Access to the object that controls convergence.
    */
   SolverControl &
   control() const;
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   PArpackSolver(SolverControl &       control,
                 const MPI_Comm &      mpi_communicator,
                 const AdditionalData &data = AdditionalData());
 
   /**
-   * 初始化内部变量。
-   *
+   * Initialize internal variables.
    */
   void
   reinit(const IndexSet &locally_owned_dofs);
 
   /**
-   * 在使用BlockVectors时初始化内部变量。    @p locally_owned_dofs
-   * 用于设置问题的维度，而 @p partitioning
-   * 用于调用所使用的deal.II blockvector的reinit。
-   *
+   * Initialize internal variables when working with BlockVectors.
+   * @p locally_owned_dofs is used to set the dimension of the problem,
+   * whereas @p partitioning is used for calling the reinit of the deal.II
+   * blockvectors used.
    */
   void
   reinit(const IndexSet &             locally_owned_dofs,
          const std::vector<IndexSet> &partitioning);
 
   /**
-   * 从输入中初始化内部变量  @p distributed_vector.  。
-   *
+   * Initialize internal variables from the input @p distributed_vector.
    */
   void
   reinit(const VectorType &distributed_vector);
 
   /**
-   * 设置初始矢量，用于建立Krylov空间。
-   *
+   * Set initial vector for building Krylov space.
    */
   void
   set_initial_vector(const VectorType &vec);
 
   /**
-   * 设置移位 @p sigma ，用于移位和反转的光谱变换。
-   * 如果这个函数没有被调用，则假定移位为零。
-   * @note 只与 <code>mode=3</code>
-   * 有关（关于什么是不同模式的定义，请看这个类的一般文档）。
+   * Set shift @p sigma for shift-and-invert spectral transformation.
    *
+   * If this function is not called, the shift is assumed to be zero.
+   *
+   * @note only relevant for <code>mode=3</code> (see the general documentation of this
+   * class for a definition of what the different modes are).
    */
   void
   set_shift(const std::complex<double> sigma);
 
   /**
-   * 通过调用PARPACK的 <code>pd(n/s)eupd</code> and
-   * <code>pd(n/s)aupd</code> 函数来解决广义的特征直角问题 $A
-   * x=\lambda B x$ 。    在 <code>mode=3</code> 中， @p inverse
-   * 应对应于 $[A-\sigma B]^{-1}$ ，而在 <code>mode=2</code>
-   * 中应代表 $B^{-1}$ 。对于 <code>mode=1</code> ， @p B 和 @p
-   * inverse 都被忽略了。
+   * Solve the generalized eigensprectrum problem $A x=\lambda B x$ by calling
+   * the <code>pd(n/s)eupd</code> and <code>pd(n/s)aupd</code> functions of
+   * PARPACK.
    *
+   * In <code>mode=3</code>, @p inverse should correspond to $[A-\sigma B]^{-1}$,
+   * whereas in <code>mode=2</code> it should represent $B^{-1}$. For
+   * <code>mode=1</code> both @p B and @p inverse are ignored.
    */
   template <typename MatrixType1, typename MatrixType2, typename INVERSE>
   void
@@ -357,8 +356,7 @@ public:
         const unsigned int                 n_eigenvalues);
 
   /**
-   * 与上述相同，但将特征向量作为指针。
-   *
+   * Same as above but takes eigenvectors as pointers.
    */
   template <typename MatrixType1, typename MatrixType2, typename INVERSE>
   void
@@ -370,165 +368,144 @@ public:
         const unsigned int                 n_eigenvalues);
 
   /**
-   * 以字节为单位返回该类的内存消耗。
-   *
+   * Return the memory consumption of this class in bytes.
    */
   std::size_t
   memory_consumption() const;
 
 protected:
   /**
-   * 对控制迭代求解器收敛性的对象的引用。
-   *
+   * Reference to the object that controls convergence of the iterative
+   * solver.
    */
   SolverControl &solver_control;
 
   /**
-   * 存储这个特定求解器的标志的副本。
-   *
+   * Store a copy of the flags for this particular solver.
    */
   const AdditionalData additional_data;
 
   // keep MPI communicator non-const as Arpack functions are not const either:
 
   /**
-   * C++ MPI通信器。
-   *
+   * C++ MPI communicator.
    */
   MPI_Comm mpi_communicator;
 
   /**
-   * Fortran MPI通信器。
-   *
+   * Fortran MPI communicator.
    */
   MPI_Fint mpi_communicator_fortran;
 
   // C++98 guarantees that the elements of a vector are stored contiguously
 
   /**
-   * 工作数组的长度workl。
-   *
+   * Length of the work array workl.
    */
   int lworkl;
 
   /**
-   * 长度为lworkl的双精度工作数组
-   *
+   * Double precision  work array of length lworkl
    */
   std::vector<double> workl;
 
   /**
-   * 长度为3*N的双精度工作数组
-   *
+   * Double precision  work array of length 3*N
    */
   std::vector<double> workd;
 
   /**
-   * 本地自由度的数量。
-   *
+   * Number of local degrees of freedom.
    */
   int nloc;
 
   /**
-   * Additional_data中指定的Arnoldi基向量的数量
-   *
+   * Number of Arnoldi basis vectors specified in additional_data
    */
   int ncv;
 
 
   /**
-   * 数组v的前导维度
-   *
+   * The leading dimension of the array v
    */
   int ldv;
 
   /**
-   * 双精度向量，大小为ldv的NCV。
-   * 将包含最终的Arnoldi基向量集。
-   *
+   * Double precision vector of size ldv by NCV.  Will contains the final set
+   * of Arnoldi basis vectors.
    */
   std::vector<double> v;
 
   /**
-   * 一个辅助标志，当提供初始向量时被设置为真。
-   *
+   * An auxiliary flag which is set to true when initial vector is provided.
    */
   bool initial_vector_provided;
 
   /**
-   * 初始残差向量，可能来自先前的运行。
-   * 在输出时，它包含最终的残差向量。
-   *
+   * The initial residual vector, possibly from a previous run.  On output, it
+   * contains the final residual vector.
    */
   std::vector<double> resid;
 
   /**
-   * 数组Z的前导尺寸等于nloc。
-   *
+   * The leading dimension of the array Z equal to nloc.
    */
   int ldz;
 
   /**
-   * 一个最小尺寸为nloc的NEV+1的向量。 Z包含了特征系统A*z =
-   * lambda*B*z的B-正态里兹向量，对应于里兹值的近似值。
-   *
+   * A vector of minimum size of nloc by NEV+1.  Z contains the B-orthonormal
+   * Ritz vectors of the eigensystem A*z = lambda*B*z corresponding to the
+   * Ritz value approximations.
    */
   std::vector<double> z;
 
   /**
-   * Workev数组的大小。
-   *
+   * The size of the workev array.
    */
   int lworkev;
 
   /**
-   * 尺寸为3*NCV的双精度工作阵列。
-   *
+   * Double precision  work array of dimension 3* NCV.
    */
   std::vector<double> workev;
 
   /**
-   * 维度为NCV的向量。
-   *
+   * A vector of dimension NCV.
    */
   std::vector<int> select;
 
   /**
-   * 在Arpack和deal.II之间使用的临时向量
-   *
+   * Temporary vectors used between Arpack and deal.II
    */
   VectorType src, dst, tmp;
 
   /**
-   * 局部自由度的索引。
-   *
+   * Indices of local degrees of freedom.
    */
   std::vector<types::global_dof_index> local_indices;
 
   /**
-   * 移位的实数部分
-   *
+   * Real part of the shift
    */
   double sigmar;
 
   /**
-   * 移位的虚数部分
-   *
+   * Imaginary part of the shift
    */
   double sigmai;
 
 private:
   /**
-   * 初始化依赖于 @p locally_owned_dofs. 的内部变量
-   * 该函数在reinit()函数中被调用。
+   * Initialize internal variables which depend on
+   * @p locally_owned_dofs.
    *
+   * This function is called inside the reinit() functions
    */
   void
   internal_reinit(const IndexSet &locally_owned_dofs);
 
   /**
    * PArpackExcInfoPdnaupds.
-   *
    */
   DeclException2(PArpackExcConvergedEigenvectors,
                  int,
@@ -734,7 +711,7 @@ PArpackSolver<VectorType>::internal_reinit(const IndexSet &locally_owned_dofs)
   z.resize(ldz * ncv, 0.); // TODO we actually need only ldz*nev
 
   // WORKEV  Double precision  work array of dimension 3*NCV.
-  lworkev = additional_data.symmetric ? 0  /*not used in symmetric case*/ 
+  lworkev = additional_data.symmetric ? 0 /*not used in symmetric case*/
                                         :
                                         3 * ncv;
   workev.resize(lworkev, 0.);
@@ -1189,5 +1166,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/vectorization_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2020 by the deal.II authors
@@ -91,17 +92,18 @@ struct EnableIfScalar<VectorizedArray<Number, width>>
 
 
 /**
- * An iterator for VectorizedArray.
+ * VectorizedArray的一个迭代器。
+ *
+ *
  */
 template <typename T>
 class VectorizedArrayIterator
 {
 public:
   /**
-   * Constructor.
+   * 构造函数。      @param  data 实际的VectorizedArray。    @param
+   * lane 一个指向当前车道的指针。
    *
-   * @param data The actual VectorizedArray.
-   * @param lane A pointer to the current lane.
    */
   VectorizedArrayIterator(T &data, const std::size_t lane)
     : data(&data)
@@ -109,7 +111,8 @@ public:
   {}
 
   /**
-   * Compare for equality.
+   * 比较是否相等。
+   *
    */
   bool
   operator==(const VectorizedArrayIterator<T> &other) const
@@ -121,7 +124,8 @@ public:
   }
 
   /**
-   * Compare for inequality.
+   * 比较不等式。
+   *
    */
   bool
   operator!=(const VectorizedArrayIterator<T> &other) const
@@ -133,14 +137,15 @@ public:
   }
 
   /**
-   * Copy assignment.
+   * 复制赋值。
+   *
    */
   VectorizedArrayIterator<T> &
   operator=(const VectorizedArrayIterator<T> &other) = default;
 
   /**
-   * Dereferencing operator (const version): returns the value of the current
-   * lane.
+   * 解除引用操作符（const版本）：返回当前车道的值。
+   *
    */
   const typename T::value_type &operator*() const
   {
@@ -150,8 +155,8 @@ public:
 
 
   /**
-   * Dereferencing operator (non-@p const version): returns the value of the
-   * current lane.
+   * 去引用操作符（非 @p const 版本）：返回当前车道的值。
+   *
    */
   template <typename U = T>
   typename std::enable_if<!std::is_same<U, const U>::value,
@@ -163,9 +168,8 @@ public:
   }
 
   /**
-   * Prefix <tt>++</tt> operator: <tt>++iterator</tt>. This operator advances
-   * the iterator to the next lane and returns a reference to
-   * <tt>*this</tt>.
+   * 前缀<tt>++</tt>运算符。<tt>++iterator</tt>。这个操作符将迭代器推进到下一个车道，并返回对<tt>*this</tt>的引用。
+   *
    */
   VectorizedArrayIterator<T> &
   operator++()
@@ -176,8 +180,9 @@ public:
   }
 
   /**
-   * This operator advances the iterator by @p offset lanes and returns a
-   * reference to <tt>*this</tt>.
+   * 这个操作符使迭代器前进了 @p offset
+   * 个通道，并返回对<tt>*this</tt>的引用。
+   *
    */
   VectorizedArrayIterator<T> &
   operator+=(const std::size_t offset)
@@ -188,9 +193,8 @@ public:
   }
 
   /**
-   * Prefix <tt>--</tt> operator: <tt>--iterator</tt>. This operator advances
-   * the iterator to the previous lane and returns a reference to
-   * <tt>*this</tt>.
+   * 前缀<tt>--</tt>操作符。<tt>--iterator</tt>。这个操作符使迭代器前进到前一个通道，并返回一个对<tt>*this</tt>的引用。
+   *
    */
   VectorizedArrayIterator<T> &
   operator--()
@@ -204,7 +208,8 @@ public:
   }
 
   /**
-   * Create new iterator, which is shifted by @p offset.
+   * 创建新的迭代器，该迭代器被移位 @p offset. 。
+   *
    */
   VectorizedArrayIterator<T>
   operator+(const std::size_t &offset) const
@@ -214,7 +219,8 @@ public:
   }
 
   /**
-   * Compute distance between this iterator and iterator @p other.
+   * 计算这个迭代器和迭代器之间的距离  @p other.  。
+   *
    */
   std::ptrdiff_t
   operator-(const VectorizedArrayIterator<T> &other) const
@@ -225,12 +231,14 @@ public:
 
 private:
   /**
-   * Pointer to the actual VectorizedArray.
+   * 指向实际的VectorizedArray的指针。
+   *
    */
   T *data;
 
   /**
-   * Pointer to the current lane.
+   * 指向当前车道的指针。
+   *
    */
   std::size_t lane;
 };
@@ -238,20 +246,21 @@ private:
 
 
 /**
- * A base class for the various VectorizedArray template specializations,
- * containing common functionalities.
+ * 各种VectorizedArray模板特化的基类，包含共同的功能。
+ * @tparam  T
+ * 实际矢量数组的类型。我们在这个类中使用Couriously
+ * Recurring Template
+ * Pattern（见https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern），以避免求助于`虚拟`成员函数。
  *
- * @tparam T Type of the actual vectorized array. We are using the
- *   Couriously Recurring Template Pattern (see
- *   https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern) in this
- *   class to avoid having to resort to `virtual` member functions.
+ *
  */
 template <typename T, std::size_t width>
 class VectorizedArrayBase
 {
 public:
   /**
-   * Return the number of elements in the array.
+   * 返回数组中元素的数量。
+   *
    */
   static constexpr std::size_t
   size()
@@ -260,7 +269,8 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the beginning of the underlying data.
+   * @return  指向底层数据开始的一个迭代器。
+   *
    */
   VectorizedArrayIterator<T>
   begin()
@@ -269,8 +279,8 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the beginning of the underlying data (`const`
-   * version).
+   * @return  一个指向基础数据开始的迭代器（`const`版本）。
+   *
    */
   VectorizedArrayIterator<const T>
   begin() const
@@ -279,7 +289,8 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the end of the underlying data.
+   * @return  指向基础数据结束的迭代器。
+   *
    */
   VectorizedArrayIterator<T>
   end()
@@ -288,8 +299,8 @@ public:
   }
 
   /**
-   * @return An iterator pointing to the end of the underlying data (`const`
-   * version).
+   * @return  一个指向基础数据末端的迭代器（`const`版本）。
+   *
    */
   VectorizedArrayIterator<const T>
   end() const
@@ -302,88 +313,97 @@ public:
 
 
 /**
- * This generic class defines a unified interface to a vectorized data type.
- * For general template arguments, this class simply corresponds to the
- * template argument. For example, VectorizedArray<long double> is nothing
- * else but a wrapper around <tt>long double</tt> with exactly one data field
- * of type <tt>long double</tt> and overloaded arithmetic operations. This
- * means that <tt>VectorizedArray<ComplicatedType></tt> has a similar layout
- * as ComplicatedType, provided that ComplicatedType defines basic arithmetic
- * operations. For floats and doubles, an array of numbers are packed together
- * with the goal to be processed in a single-instruction/multiple-data (SIMD)
- * fashion. In the SIMD context, the elements of such a short vector are often
- * called lanes. The number of elements packed together, i.e., the number of
- * lanes, depends on the computer system and compiler flags that are used for
- * compilation of deal.II. The fundamental idea of these packed data types is
- * to use one single CPU instruction to perform arithmetic operations on the
- * whole array using the processor's vector (SIMD) units. Most computer
- * systems by 2010 standards will use an array of two doubles or four floats,
- * respectively (this corresponds to the SSE/SSE2 data sets) when compiling
- * deal.II on 64-bit operating systems. On Intel Sandy Bridge processors and
- * newer or AMD Bulldozer processors and newer, four doubles or eight floats
- * are used when deal.II is configured using gcc with \--with-cpu=native
- * or \--with-cpu=corei7-avx. On compilations with AVX-512 support (e.g.,
- * Intel Skylake Server from 2017), eight doubles or sixteen floats are used.
+ * 这个通用类定义了一个矢量数据类型的统一接口。对于一般的模板参数，这个类简单地对应于模板参数。例如，VectorizedArray<long
+ * double>只不过是<tt>long
+ * double</tt>的一个封装器，它的数据字段正好是<tt>long
+ * double</tt>类型，并且有重载的算术操作。这意味着<tt>VectorizedArray<ComplicatedType></tt>具有与ComplicatedType类似的布局，只要ComplicatedType定义了基本的算术操作。对于浮点数和双数来说，数组被打包在一起，目的是为了以单指令/多数据（SIMD）的方式进行处理。在SIMD背景下，这种短矢量的元素通常被称为通道。包装在一起的元素的数量，即车道的数量，取决于计算机系统和用于编译deal.II的编译器标志。这些打包数据类型的基本思想是使用一条CPU指令，利用处理器的向量（SIMD）单元对整个阵列进行算术运算。按照2010年的标准，大多数计算机系统在64位操作系统上编译deal.II时，将分别使用两个双数或四个浮点数的数组（这对应于SSE/SSE2数据集）。在英特尔Sandy
+ * Bridge处理器和更新的处理器或AMD
+ * Bulldozer处理器和更新的处理器上，当deal.II使用gcc配置为
+ * \--with-cpu=native 或
+ * \--with-cpu=corei7-avx时，会使用四个双数或八个浮点。在支持AVX-512的编译器上（例如2017年开始的英特尔Skylake服务器），会使用8个双数或16个浮点。
+ * 这个类的行为被做成与基本数据类型double和float类似。向量数组的定义并不初始化数据字段，而是让它未被定义，就像double和float的情况一样。然而，当调用诸如`矢量化数组<double>
+ * a =矢量化数组<double>()`或`矢量化数组<double> a =
+ * 0.`时，它将这个字段中的所有数字设置为零。根据C++11标准，该类属于标准布局类型，这意味着有一个等效的C表示法，例如，该类可以用
+ * std::memcpy.
+ * 安全地复制（也见https://en.cppreference.com/w/cpp/named_req/StandardLayoutType）。标准布局对于确保在向量中收集的数据与地址边界正确对齐也是必要的（即，当向量中的第一个元素正确对齐时，所有后续元素也将正确对齐）。
+ * 请注意，为了使这个类的正常运行，必须遵守某些数据对齐规则。这是因为计算机期望VectorizedArray<double>字段的起始地址在内存中的特定地址（通常，矢量数组的地址应该是以字节为单位的数组长度的倍数）。否则，可能会出现分段故障或严重的性能损失。当在堆栈上创建一个单一的数据字段时，如
+ * "VectorizedArray<double> a = 5.
+ * ;"，编译器会自动处理数据对齐。然而，当分配一个VectorizedArray<double>数据的长向量时，需要尊重这些规则。为此要使用AlignedVector类或基于AlignedVector的数据容器（如Table）。这是一个与
+ * std::vector
+ * 非常相似的类，否则，它总是能确保数据正确对齐。
+ * 用户可以通过该封装类的第二个模板参数指定通道数，明确控制特定指令集架构（ISA）扩展的宽度。例如，在英特尔Skylake服务器上，你对数据类型double有以下选择。
  *
- * This behavior of this class is made similar to the basic data types double
- * and float. The definition of a vectorized array does not initialize the
- * data field but rather leaves it undefined, as is the case for double and
- * float. However, when calling something like `VectorizedArray<double> a =
- * VectorizedArray<double>()` or `VectorizedArray<double> a = 0.`, it sets all
- * numbers in this field to zero. This class is of standard layout type
- * according to the C++11 standard, which means that there is an equivalent C
- * representation and the class can e.g. be safely copied with std::memcpy.
- * (See also https://en.cppreference.com/w/cpp/named_req/StandardLayoutType.)
- * The standard layout is also necessary for ensuring correct alignment of
- * data with address boundaries when collected in a vector (i.e., when the
- * first element in a vector is properly aligned, all subsequent elements will
- * be correctly aligned, too).
  *
- * Note that for proper functioning of this class, certain data alignment
- * rules must be respected. This is because the computer expects the starting
- * address of a VectorizedArray<double> field at specific addresses in memory
- * (usually, the address of the vectorized array should be a multiple of the
- * length of the array in bytes). Otherwise, a segmentation fault or a severe
- * loss of performance might occur. When creating a single data field on the
- * stack like `VectorizedArray<double> a = 5.;`, the compiler will take care
- * of data alignment automatically. However, when allocating a long vector of
- * VectorizedArray<double> data, one needs to respect these rules. Use the
- * class AlignedVector or data containers based on AlignedVector (such as
- * Table) for this purpose. It is a class very similar to std::vector
- * otherwise but always makes sure that data is correctly aligned.
  *
- * The user can explicitly control the width of a particular instruction set
- * architecture (ISA) extension by specifying the number of lanes via the second
- * template parameter of this wrapper class. For example on Intel Skylake
- * Server, you have the following options for the data type double:
- *  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
- *  - VectorizedArray<double, 2> // SSE2
- *  - VectorizedArray<double, 4> // AVX
- *  - VectorizedArray<double, 8> // AVX-512 (default)
  *
- * and for Intel Sandy Bridge, Haswell, Broadwell, AMD Bulldozer and Zen/Ryzen:
- *  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
- *  - VectorizedArray<double, 2> // SSE2
- *  - VectorizedArray<double, 4> // AVX (default)
  *
- * and for processors with AltiVec support:
- *  - VectorizedArray<double, 1>
- *  - VectorizedArray<double, 2>
+ * - VectorizedArray<double, 1> // 无矢量化（自动优化）。
  *
- * for older x86 processors or in case no processor-specific compilation flags
- * were added (i.e., without `-D CMAKE_CXX_FLAGS=-march=native` or similar
- * flags):
- *  - VectorizedArray<double, 1> // no vectorization (auto-optimization)
- *  - VectorizedArray<double, 2> // SSE2
  *
- * Similar considerations also apply to the data type `float`.
  *
- * Wrongly selecting the width, e.g., width=3 or width=8 on a processor which
- * does not support AVX-512 leads to a static assert.
  *
- * @tparam Number underlying data type
- * @tparam width  vector length (optional; if not set, the maximal width of the
- *                architecture is used)
+ *
+ * - VectorizedArray<double, 2> // SSE2
+ *
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 4> // AVX
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 8> // AVX-512 (默认)
+ * 并用于英特尔Sandy Bridge、Haswell、Broadwell、AMD
+ * Bulldozer和Zen/Ryzen。
+ *
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 1> // 无矢量化（自动优化）。
+ *
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 2> // SSE2
+ *
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 4> // AVX (默认)
+ * 以及对于支持AltiVec的处理器。
+ *
+ *
+ *
+ *
+ *
+ * - 矢量Array<double, 1> * - 矢量Array<double, 1>
+ *
+ *
+ * 适用于旧的x86处理器或在没有添加特定处理器编译标志的情况下（即没有`-D
+ * CMAKE_CXX_FLAGS=-march=native`或类似标志）。
+ *
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 1> // 无矢量化（自动优化）。
+ *
+ *
+ *
+ *
+ *
+ * - VectorizedArray<double, 2> // SSE2
+ * 类似的考虑也适用于数据类型`float`。
+ * 错误地选择宽度，例如，在不支持AVX-512的处理器上选择width=3或width=8，会导致静态断言。
+ * @tparam  数字基础数据类型  @tparam
+ * 宽度向量长度（可选；如果不设置，则使用架构的最大宽度）。
+ *
+ *
  */
 template <typename Number, std::size_t width>
 class VectorizedArray
@@ -391,7 +411,8 @@ class VectorizedArray
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = Number;
 
@@ -399,13 +420,14 @@ public:
                 "You specified an illegal width that is not supported.");
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，使数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组广播到所有的通道。
+   *
    */
   VectorizedArray(const Number scalar)
   {
@@ -413,7 +435,8 @@ public:
   }
 
   /**
-   * This function assigns a scalar to this class.
+   * 这个函数将一个标量分配给这个类。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -424,8 +447,8 @@ public:
   }
 
   /**
-   * Access operator (only valid with component 0 in the base class without
-   * specialization).
+   * 访问操作符（只对基类中的0号组件有效，没有特殊化）。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   Number &operator[](const unsigned int comp)
@@ -436,8 +459,8 @@ public:
   }
 
   /**
-   * Constant access operator (only valid with component 0 in the base class
-   * without specialization).
+   * 常数访问操作符（只对基类中的0号组件有效，没有特殊化）。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const Number &operator[](const unsigned int comp) const
@@ -448,7 +471,8 @@ public:
   }
 
   /**
-   * Addition
+   * 加法
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -459,7 +483,8 @@ public:
   }
 
   /**
-   * Subtraction
+   * 减法
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -470,7 +495,8 @@ public:
   }
 
   /**
-   * Multiplication
+   * 乘法
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -481,7 +507,8 @@ public:
   }
 
   /**
-   * Division
+   * 除法
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -492,10 +519,8 @@ public:
   }
 
   /**
-   * Load size() data items from memory into the calling class, starting at
-   * the given address. The pointer `ptr` needs not be aligned by the amount
-   * of bytes in the vectorized array, as opposed to casting a double address
-   * to VectorizedArray<double>*.
+   * 从内存中加载size()数据项到调用类中，从给定的地址开始。指针`ptr`不需要按矢量数组中的字节数对齐，与之相反的是，将双倍地址投给VectorizedArray<double>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -505,10 +530,8 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of
-   * size() data items to the given address. The pointer `ptr` needs not be
-   * aligned by the amount of bytes in the vectorized array, as opposed to
-   * casting a double address to VectorizedArray<double>*.
+   * 将调用类的内容以size()数据项的形式写入内存中，到给定的地址。指针`ptr`不需要按矢量数组中的字节数对齐，与之相反的是，将一个双倍地址投给VectorizedArray<double>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -518,50 +541,18 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of
-   * size() data items to the given address using non-temporal stores that
-   * bypass the processor's caches, using @p _mm_stream_pd store intrinsics on
-   * supported CPUs. The destination of the store @p ptr must be aligned by
-   * the amount of bytes in the vectorized array.
+   * 在支持的CPU上使用 @p _mm_stream_pd
+   * 存储本征，将调用类的内容以size()数据项的形式写入内存，并使用绕过处理器缓存的非时间性存储来给定地址。存储
+   * @p ptr 的目标必须按矢量数组中的字节数对齐。
+   * 在存储是流式的情况下，这种存储操作可以比通常的存储操作更快，因为它避免了通常在标准存储中调用的读取所有权转移。这个大约的工作原理如下（详见计算机结构方面的文献）。当一个算法将一些结果存储到一个内存地址时，一个处理器通常希望将它移到它的一些缓存中，因为它期望这些数据在某个时候会被再次使用。由于缓存是以64字节或128字节的行来组织的，但写入的数据通常较小，所以处理器在写入时必须首先加载目标缓存行，因为最初只有部分缓存行被覆盖。如果一系列的存储写入的数据比任何一个缓冲区都要大，那么这些数据最后就必须从缓冲区转移到主内存。但是，由于所有的地址都是先被读取的，这就使主内存的负载增加了一倍，这就会产生性能上的损失。此外，在多核环境下的缓存组织也需要在将某一地址写入缓存之前读取该地址，详情请参见<a
+   * href="https://en.wikipedia.org/wiki/MESI_protocol">Wikipedia article on
+   * the MESI
+   * protocol</a>。这个函数调用的基础指令向处理器发出信号，在存储上的这两个先决条件被放宽了：首先，人们期望整个高速缓存行被覆盖（意味着内存子系统确保一起跨越高速缓存行的连续存储被合并，并适当处理只有部分高速缓存行被写入的情况），所以没有必要首先读取高速缓存行的
+   * "剩余部分"。其次，该特定内存后面的数据将不受缓存一致性协议的约束，因为当同一处理器想要再次访问它时，以及在多核芯片中的任何其他处理器，它都将在主内存中。由于这种特殊的设置，随后对该函数写入的数据的任何访问都需要查询主存，这在延迟和吞吐量上都比从高速缓存中访问要慢。因此，这个命令应该只用于存储大的数组，这些数组总体上不适合放在缓存中，否则性能就会下降。关于一个典型的用例，请参见<a
+   * href="https://blogs.fau.de/hager/archives/2103">this blog article</a>。
+   * 注意，流式存储只在类型为 @p double 或 @p float,
+   * 的VectorizedArray的专业SSE/AVX类中可用，而不是在通用基类中。
    *
-   * This store operation can be faster than usual store operations in case
-   * the store is streaming because it avoids the read-for-ownership transfer
-   * typically invoked in standard stores. This approximately works as follows
-   * (see the literature on computer architecture for details): When an
-   * algorithm stores some results to a memory address, a processor typically
-   * wants to move it into some of its caches as it expects the data to be
-   * re-used again at some point. Since caches are organized in lines of sizes
-   * either 64 byte or 128 byte but writes are usually smaller, a processor
-   * must first load in the destination cache line upon a write because only
-   * part of the cache line is overwritten initially. If a series of stores
-   * write data in a chunk bigger than any of its caches could handle, the
-   * data finally has to be moved out from the caches to main memory. But
-   * since all addressed have first been read, this doubles the load on main
-   * memory, which can incur a performance penalty. Furthermore, the
-   * organization of caches in a multicore context also requires reading an
-   * address before something can be written to cache to that address, see
-   * e.g. the <a href="https://en.wikipedia.org/wiki/MESI_protocol">Wikipedia
-   * article on the MESI protocol</a> for details. The instruction underlying
-   * this function call signals to the processor that these two prerequisites
-   * on a store are relaxed: Firstly, one expects the whole cache line to be
-   * overwritten (meaning that the memory subsystem makes sure that
-   * consecutive stores that together span a cache line are merged, and
-   * appropriately handling the case where only part of a cache line is
-   * written), so there is no need to first read the "remainder" of the cache
-   * line. Secondly, the data behind that particular memory will not be
-   * subject to cache coherency protocol as it will be in main memory both
-   * when the same processor wants to access it again as well as any other
-   * processors in a multicore chip. Due to this particular setup, any
-   * subsequent access to the data written by this function will need to query
-   * main memory, which is slower than an access from a cache both
-   * latency-wise and throughput-wise. Thus, this command should only be used
-   * for storing large arrays that will collectively not fit into caches, as
-   * performance will be degraded otherwise. For a typical use case, see also
-   * <a href="https://blogs.fau.de/hager/archives/2103">this blog article</a>.
-   *
-   * Note that streaming stores are only available in the specialized SSE/AVX
-   * classes of VectorizedArray of type @p double or @p float, not in the
-   * generic base class.
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -571,16 +562,14 @@ public:
   }
 
   /**
-   * Load size() data items from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 从内存中加载size()数据项到调用的类中，从给定的地址和给定的偏移量开始，从偏移量开始的每个条目提供一个矢量化数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -590,16 +579,13 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of
-   * size() data items to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以size()数据项的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下，使用更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -609,16 +595,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   Number data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -630,8 +615,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回这个字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -643,8 +628,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -656,8 +641,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -688,16 +673,18 @@ private:
 
 
 /**
- * @name Packing and unpacking of a VectorizedArray
+ * @name  矢量数组的打包和拆包
+ *
+ *
  */
 //@{
 
 
 /**
- * Create a vectorized array that sets all entries in the array to the given
- * scalar, i.e., broadcasts the scalar to all array elements.
+ * 创建一个矢量数组，将数组中的所有条目设置为给定的标量，也就是说，将标量广播到所有数组元素。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number,
           std::size_t width =
@@ -712,10 +699,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 
 /**
- * Create a vectorized array of given type and broadcast the scalar value
- * to all array elements.
+ * 创建一个给定类型的矢量数组，并将标量值广播给所有数组元素。
+ * @relatesalso  VectorizedArray
  *
- *  @relatesalso VectorizedArray
+ *
  */
 template <typename VectorizedArrayType>
 inline DEAL_II_ALWAYS_INLINE VectorizedArrayType
@@ -734,15 +721,17 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArrayType
 
 
 /**
- * Load size() data items from memory into the VectorizedArray @p out,
- * starting at the given addresses and with given offset, each entry from the
- * offset providing one element of the vectorized array.
+ * 从内存中加载size()数据项到VectorizedArray  @p out,
+ * ，从给定的地址和给定的偏移量开始，从偏移量开始的每个条目提供一个矢量化数组的元素。
+ * 这个操作对应于以下代码。
  *
- * This operation corresponds to the following code:
  * @code
  * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *   out.data[v] = ptrs[v][offset];
+ * out.data[v] = ptrs[v][offset];
  * @endcode
+ *
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -757,29 +746,25 @@ gather(VectorizedArray<Number, width> &   out,
 
 
 /**
- * This method loads VectorizedArray::size() data streams from the
- * given array @p in. The offsets to the input array are given by the array @p
- * offsets. From each stream, n_entries are read. The data is then transposed
- * and stored it into an array of VectorizedArray type. The output array @p
- * out is expected to be an array of size @p n_entries. This method operates
- * on plain arrays, so no checks for valid data access are made. It is the
- * user's responsibility to ensure that the given arrays are valid according
- * to the access layout below.
+ * 这个方法从给定的数组 @p in. 中加载 VectorizedArray::size()
+ * 数据流，输入数组的偏移量由数组 @p
+ * 偏移量给出。从每个数据流中读取n_entries。然后数据被转置并存储到一个VectorizedArray类型的数组中。输出数组
+ * @p  out预计是一个大小为 @p n_entries.
+ * 的数组。这个方法在普通数组上操作，所以没有检查有效的数据访问。用户有责任确保给定的数组根据下面的访问布局是有效的。
+ * 该操作对应于根据以下公式将一个结构数组（输入）转换为一个数组结构（输出）。
  *
- * This operation corresponds to a transformation of an array-of-struct
- * (input) into a struct-of-array (output) according to the following formula:
  *
  * @code
  * for (unsigned int i=0; i<n_entries; ++i)
- *   for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *     out[i][v] = in[offsets[v]+i];
+ * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
+ *   out[i][v] = in[offsets[v]+i];
  * @endcode
  *
- * A more optimized version of this code will be used for supported types.
+ * 该代码的一个更优化的版本将用于支持的类型。
+ * 这是对vectorized_transpose_and_store()的逆向操作。
+ * @relatesalso  VectorizedArray
  *
- * This is the inverse operation to vectorized_transpose_and_store().
  *
- * @relatesalso VectorizedArray
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -795,15 +780,12 @@ vectorized_load_and_transpose(const unsigned int              n_entries,
 
 
 /**
- * The same as above with the difference that an array of pointers are
- * passed in as input argument @p in.
+ * 与上面的函数相同，不同的是将一个指针数组作为输入参数传入
+ * @p in.  。 与上面的函数类比，可以认为
+ * "in+offset[v]"是预先计算并作为输入参数传递的。
+ * 然而，如果某些函数返回一个指针数组，并且不能假设它们属于同一个数组，也就是说，它们可以在不同的内存分配中获得原点，那么也可以使用这个函数。
  *
- * In analogy to the function above, one can consider that
- * `in+offset[v]` is precomputed and passed as input argument.
  *
- * However, this function can also be used if some function returns an array
- * of pointers and no assumption can be made that they belong to the same array,
- * i.e., they can have their origin in different memory allocations.
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -819,42 +801,33 @@ vectorized_load_and_transpose(const unsigned int                 n_entries,
 
 
 /**
- * This method stores the vectorized arrays in transposed form into the given
- * output array @p out with the given offsets @p offsets. This operation
- * corresponds to a transformation of a struct-of-array (input) into an array-
- * of-struct (output). This method operates on plain array, so no checks for
- * valid data access are made. It is the user's responsibility to ensure that
- * the given arrays are valid according to the access layout below.
+ * 该方法以转置的形式将矢量数组存储到给定的输出数组 @p
+ * out 中，并给定偏移量 @p offsets.
+ * ，该操作相当于将一个数组结构（输入）转换为一个数组结构（输出）。该方法对纯数组进行操作，所以没有对有效的数据访问进行检查。用户有责任确保给定的数组根据下面的访问布局是有效的。
+ * 该方法假设指定的偏移量不重叠。否则，在矢量化的情况下，该行为是未定义的。用户有责任确保访问不重叠，避免未定义的行为。
+ * 参数 @p add_into
+ * 选择哪里的条目应该只被写入输出数组，或者结果应该被添加到输出的现有条目中。对于
+ * <code>add_into == false</code>  ，假设以下代码。
  *
- * This method assumes that the specified offsets do not overlap. Otherwise,
- * the behavior is undefined in the vectorized case. It is the user's
- * responsibility to make sure that the access does not overlap and avoid
- * undefined behavior.
- *
- * The argument @p add_into selects where the entries should only be written
- * into the output arrays or the result should be added into the existing
- * entries in the output. For <code>add_into == false</code>, the following
- * code is assumed:
  *
  * @code
  * for (unsigned int i=0; i<n_entries; ++i)
- *   for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *     out[offsets[v]+i] = in[i][v];
+ * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
+ *   out[offsets[v]+i] = in[i][v];
  * @endcode
  *
- * For <code>add_into == true</code>, the code implements the following
- * action:
+ * 对于  <code>add_into == true</code>  ，代码实现了以下动作。
  * @code
  * for (unsigned int i=0; i<n_entries; ++i)
- *   for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
- *     out[offsets[v]+i] += in[i][v];
+ * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
+ *   out[offsets[v]+i] += in[i][v];
  * @endcode
  *
- * A more optimized version of this code will be used for supported types.
+ * 对于支持的类型，将使用该代码的一个更优化的版本。
+ * 这是对vectorized_load_and_transpose()的逆向操作。
+ * @relatesalso  VectorizedArray
  *
- * This is the inverse operation to vectorized_load_and_transpose().
  *
- * @relatesalso VectorizedArray
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -876,15 +849,12 @@ vectorized_transpose_and_store(const bool                            add_into,
 
 
 /**
- * The same as above with the difference that an array of pointers are
- * passed in as input argument @p out.
+ * 和上面一样，不同的是，一个指针数组被作为输入参数传入
+ * @p out.  。
+ * 与上面的函数相类似，可以认为`out+offset[v]`是预先计算好的，并作为输入参数传入。
+ * 然而，如果某些函数返回一个指针数组，并且不能假设它们属于同一个数组，也就是说，它们可以在不同的内存分配中拥有自己的原点，那么也可以使用这个函数。
  *
- * In analogy to the function above, one can consider that
- * `out+offset[v]` is precomputed and passed as input argument.
  *
- * However, this function can also be used if some function returns an array
- * of pointers and no assumption can be made that they belong to the same array,
- * i.e., they can have their origin in different memory allocations.
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE void
@@ -914,7 +884,9 @@ vectorized_transpose_and_store(const bool                            add_into,
 #  if DEAL_II_VECTORIZATION_WIDTH_IN_BITS >= 512 && defined(__AVX512F__)
 
 /**
- * Specialization of VectorizedArray class for double and AVX-512.
+ * 针对double和AVX-512的VectorizedArray类的专业化。
+ *
+ *
  */
 template <>
 class VectorizedArray<double, 8>
@@ -922,18 +894,20 @@ class VectorizedArray<double, 8>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = double;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组，广播给所有通道。
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -941,7 +915,8 @@ public:
   }
 
   /**
-   * This function can be used to set all data fields to a given scalar.
+   * 这个函数可以用来将所有的数据字段设置为一个给定的标量。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -952,7 +927,8 @@ public:
   }
 
   /**
-   * Access operator.
+   * 访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -962,7 +938,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -972,7 +949,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -992,7 +970,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1006,7 +985,8 @@ public:
     return *this;
   }
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1021,7 +1001,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1036,9 +1017,8 @@ public:
   }
 
   /**
-   * Load size() data items from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 64 bytes, as opposed
-   * to casting a double address to VectorizedArray<double>*.
+   * 从内存中加载size()数据项到调用类中，从给定的地址开始。内存不需要按64字节对齐，相对于将双倍地址投给VectorizedArray<double>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1048,10 +1028,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 64 bytes, as opposed to casting a double address to
-   * VectorizedArray<double>*.
+   * 将调用类的内容以 @p
+   * size()的形式写入内存到给定地址。内存不需要按64字节对齐，相对于将双倍地址投给VectorizedArray<double>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1060,8 +1039,10 @@ public:
     _mm512_storeu_pd(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 64 bytes.
+  /**
+   * @copydoc   VectorizedArray<Number>::streaming_store() 。
+   * @note  内存必须以64字节对齐。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1073,16 +1054,15 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将 @p size()
+   * 从内存中加载到调用类中，从给定的地址开始，并有给定的偏移量，从偏移量开始的每个条目提供一个矢量数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1098,16 +1078,14 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以 @p
+   * size()的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1129,16 +1107,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __m512d data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1150,8 +1127,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回该字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1171,8 +1148,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1184,8 +1161,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1216,7 +1193,9 @@ private:
 
 
 /**
- * Specialization for double and AVX-512.
+ * 对double和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1261,7 +1240,9 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 
 /**
- * Specialization for double and AVX-512.
+ * 对double和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1300,7 +1281,9 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 
 /**
- * Specialization for double and AVX-512.
+ * 用于双倍和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1383,7 +1366,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for double and AVX-512.
+ * 用于双倍和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1461,7 +1446,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for float and AVX512.
+ * 浮动和AVX512的特殊化。
+ *
+ *
  */
 template <>
 class VectorizedArray<float, 16>
@@ -1469,18 +1456,20 @@ class VectorizedArray<float, 16>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = float;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组广播到所有的通道。
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -1488,7 +1477,8 @@ public:
   }
 
   /**
-   * This function can be used to set all data fields to a given scalar.
+   * 这个函数可以用来将所有的数据字段设置为一个给定的标量。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1499,7 +1489,8 @@ public:
   }
 
   /**
-   * Access operator.
+   * 访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -1509,7 +1500,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -1519,7 +1511,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1539,7 +1532,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1553,7 +1547,8 @@ public:
     return *this;
   }
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1568,7 +1563,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -1583,9 +1579,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 64 bytes, as opposed
-   * to casting a float address to VectorizedArray<float>*.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。内存不需要对齐64字节，相对于将浮点地址投给VectorizedArray<float>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1595,10 +1591,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 64 bytes, as opposed to casting a float address to
-   * VectorizedArray<float>*.
+   * 将调用类的内容以 @p
+   * size()的形式写到内存中的给定地址。内存不需要按64字节对齐，相对于将浮点地址投给VectorizedArray<float>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1607,8 +1602,10 @@ public:
     _mm512_storeu_ps(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 64 bytes.
+  /**
+   * @copydoc   VectorizedArray<Number>::streaming_store() 。
+   * @note  内存必须以64字节对齐。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1620,16 +1617,15 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将 @p size()
+   * 从内存中加载到调用类中，从给定的地址开始，并有给定的偏移量，从偏移量开始的每个条目提供一个矢量数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1645,16 +1641,15 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以 @p
+   * size()的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -1676,16 +1671,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __m512 data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1697,8 +1691,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回该字段的绝对值。不适合在用户代码中使用。使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1718,8 +1712,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1731,8 +1725,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -1763,7 +1757,9 @@ private:
 
 
 /**
- * Specialization for float and AVX-512.
+ * 浮点数和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1825,7 +1821,9 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 
 /**
- * Specialization for float and AVX-512.
+ * 浮点数和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1877,7 +1875,9 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 
 /**
- * Specialization for float and AVX-512.
+ * 浮动和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -1991,7 +1991,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for float and AVX-512.
+ * 浮动和AVX-512的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2104,7 +2106,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 #  if DEAL_II_VECTORIZATION_WIDTH_IN_BITS >= 256 && defined(__AVX__)
 
 /**
- * Specialization of VectorizedArray class for double and AVX.
+ * 适用于双数和AVX的VectorizedArray类的特化。
+ *
+ *
  */
 template <>
 class VectorizedArray<double, 4>
@@ -2112,18 +2116,20 @@ class VectorizedArray<double, 4>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = double;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组，广播给所有通道。
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -2131,7 +2137,8 @@ public:
   }
 
   /**
-   * This function can be used to set all data fields to a given scalar.
+   * 这个函数可以用来将所有的数据字段设置为一个给定的标量。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2142,7 +2149,8 @@ public:
   }
 
   /**
-   * Access operator.
+   * 访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -2152,7 +2160,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -2162,7 +2171,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2182,7 +2192,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2196,7 +2207,8 @@ public:
     return *this;
   }
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2211,7 +2223,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2226,9 +2239,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 32 bytes, as opposed
-   * to casting a double address to VectorizedArray<double>*.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。内存不需要按32字节对齐，与之相对应的是将一个双倍地址投给VectorizedArray<double>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2238,10 +2251,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 32 bytes, as opposed to casting a double address to
-   * VectorizedArray<double>*.
+   * 将调用类的内容以 @p
+   * size()的形式写入内存到给定地址。内存不需要按32字节对齐，相对于将双倍地址投给VectorizedArray<double>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2250,8 +2262,10 @@ public:
     _mm256_storeu_pd(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 32 bytes.
+  /**
+   * @copydoc   VectorizedArray<Number>::streaming_store() 。
+   * @note  内存必须以32字节对齐。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2263,16 +2277,14 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将 @p size()
+   * 从内存中加载到调用的类中，从给定的地址和给定的偏移量开始，从偏移量开始的每个条目提供一个矢量数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2293,16 +2305,15 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以 @p
+   * size()的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2314,16 +2325,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __m256d data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2335,8 +2345,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回这个字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2352,8 +2362,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2365,8 +2375,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2397,7 +2407,9 @@ private:
 
 
 /**
- * Specialization for double and AVX.
+ * double和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2436,7 +2448,9 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 
 /**
- * Specialization for double and AVX.
+ * 双重和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2475,7 +2489,9 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 
 /**
- * Specialization for double and AVX.
+ * 为双数和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2542,7 +2558,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for double and AVX.
+ * 双重和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2610,7 +2628,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for float and AVX.
+ * 浮动和AVX的特殊化。
+ *
+ *
  */
 template <>
 class VectorizedArray<float, 8>
@@ -2618,18 +2638,20 @@ class VectorizedArray<float, 8>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = float;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，使数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组广播到所有的通道。
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -2637,7 +2659,8 @@ public:
   }
 
   /**
-   * This function can be used to set all data fields to a given scalar.
+   * 这个函数可以用来将所有的数据字段设置为一个给定的标量。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2648,7 +2671,8 @@ public:
   }
 
   /**
-   * Access operator.
+   * 访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -2658,7 +2682,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -2668,7 +2693,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2688,7 +2714,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2702,7 +2729,8 @@ public:
     return *this;
   }
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2717,7 +2745,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -2732,9 +2761,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 32 bytes, as opposed
-   * to casting a float address to VectorizedArray<float>*.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。内存不需要按32字节对齐，与之相对应的是将一个浮点地址投给VectorizedArray<float>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2744,10 +2773,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 32 bytes, as opposed to casting a float address to
-   * VectorizedArray<float>*.
+   * 将调用类的内容以 @p
+   * size()的形式写入内存到给定地址。内存不需要按32字节对齐，与之相对应的是将浮点地址投给VectorizedArray<float>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2756,8 +2784,10 @@ public:
     _mm256_storeu_ps(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 32 bytes.
+  /**
+   * @copydoc   VectorizedArray<Number>::streaming_store() 。
+   * @note  内存必须以32字节对齐。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2769,16 +2799,14 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将 @p size()
+   * 从内存中加载到调用的类中，从给定的地址和给定的偏移量开始，从偏移量开始的每个条目提供一个矢量数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2799,16 +2827,15 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以 @p
+   * size()的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -2820,16 +2847,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并能与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __m256 data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2841,8 +2867,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回这个字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2858,8 +2884,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2871,8 +2897,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -2903,7 +2929,9 @@ private:
 
 
 /**
- * Specialization for float and AVX.
+ * 浮点数和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2945,7 +2973,9 @@ vectorized_load_and_transpose(const unsigned int         n_entries,
 
 
 /**
- * Specialization for float and AVX.
+ * 浮点和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -2985,7 +3015,9 @@ vectorized_load_and_transpose(const unsigned int            n_entries,
 
 
 /**
- * Specialization for float and AVX.
+ * 浮动和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3068,7 +3100,9 @@ vectorized_transpose_and_store(const bool                       add_into,
 
 
 /**
- * Specialization for float and AVX.
+ * 浮动和AVX的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3150,7 +3184,9 @@ vectorized_transpose_and_store(const bool                       add_into,
 #  if DEAL_II_VECTORIZATION_WIDTH_IN_BITS >= 128 && defined(__SSE2__)
 
 /**
- * Specialization for double and SSE2.
+ * 对双倍数和SSE2的特殊化。
+ *
+ *
  */
 template <>
 class VectorizedArray<double, 2>
@@ -3158,18 +3194,20 @@ class VectorizedArray<double, 2>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = double;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组广播到所有的通道。
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -3177,7 +3215,8 @@ public:
   }
 
   /**
-   * This function can be used to set all data fields to a given scalar.
+   * 这个函数可以用来将所有的数据字段设置为一个给定的标量。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3188,7 +3227,8 @@ public:
   }
 
   /**
-   * Access operator.
+   * 访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -3198,7 +3238,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -3208,7 +3249,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3223,7 +3265,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3238,7 +3281,8 @@ public:
   }
 
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3253,7 +3297,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3268,9 +3313,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 16 bytes, as opposed
-   * to casting a double address to VectorizedArray<double>*.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。内存不需要对齐16个字节，相对于将双倍地址投给VectorizedArray<double>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3280,10 +3325,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 16 bytes, as opposed to casting a double address to
-   * VectorizedArray<double>*.
+   * 将调用类的内容以 @p
+   * size()的形式写到内存中的给定地址。内存不需要对齐16个字节，相对于将双倍地址投给VectorizedArray<double>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3292,8 +3336,10 @@ public:
     _mm_storeu_pd(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 16 bytes.
+  /**
+   * @copydoc   VectorizedArray<Number>::streaming_store() 。
+   * @note  内存必须以16字节对齐。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3305,16 +3351,14 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将 @p size()
+   * 从内存中加载到调用的类中，从给定的地址和给定的偏移量开始，从偏移量开始的每个条目提供一个矢量数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3325,16 +3369,14 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以 @p
+   * size()的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3345,16 +3387,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __m128d data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3366,8 +3407,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回这个字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3384,8 +3425,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3397,8 +3438,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3429,7 +3470,9 @@ private:
 
 
 /**
- * Specialization for double and SSE2.
+ * double和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3456,7 +3499,9 @@ vectorized_load_and_transpose(const unsigned int          n_entries,
 
 
 /**
- * Specialization for double and SSE2.
+ * 对double和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3483,7 +3528,9 @@ vectorized_load_and_transpose(const unsigned int             n_entries,
 
 
 /**
- * Specialization for double and SSE2.
+ * 双重和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3535,7 +3582,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for double and SSE2.
+ * 双重和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3586,7 +3635,9 @@ vectorized_transpose_and_store(const bool                        add_into,
 
 
 /**
- * Specialization for float and SSE2.
+ * 浮动和SSE2的特殊化。
+ *
+ *
  */
 template <>
 class VectorizedArray<float, 4>
@@ -3594,22 +3645,25 @@ class VectorizedArray<float, 4>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = float;
 
   /**
-   * This function can be used to set all data fields to a given scalar.
+   * 这个函数可以用来将所有的数据字段设置为一个给定的标量。
+   *
    */
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 构造一个数组，将给定的标量广播给所有通道。
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -3625,7 +3679,8 @@ public:
   }
 
   /**
-   * Access operator.
+   * 访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -3635,7 +3690,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问操作符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -3645,7 +3701,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3660,7 +3717,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3675,7 +3733,8 @@ public:
   }
 
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3690,7 +3749,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -3705,9 +3765,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address. The memory need not be aligned by 16 bytes, as opposed
-   * to casting a float address to VectorizedArray<float>*.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。内存不需要对齐16个字节，相对于将浮点地址投给VectorizedArray<float>*来说。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3717,10 +3777,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address. The memory need not be aligned by
-   * 16 bytes, as opposed to casting a float address to
-   * VectorizedArray<float>*.
+   * 将调用类的内容以 @p
+   * size()的形式写入内存到给定地址。内存不需要对齐16个字节，与之相对应的是将浮点地址投给VectorizedArray<float>*。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3729,8 +3788,10 @@ public:
     _mm_storeu_ps(ptr, data);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   * @note Memory must be aligned by 16 bytes.
+  /**
+   * @copydoc   VectorizedArray<Number>::streaming_store() 。
+   * @note  内存必须以16字节对齐。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3742,16 +3803,14 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address and with given offsets, each entry from the offset
-   * providing one element of the vectorized array.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将 @p size()
+   * 从内存中加载到调用的类中，从给定的地址和给定的偏移量开始，从偏移量开始的每个条目提供一个矢量数组的元素。
+   * 这个操作对应于以下代码（但在硬件允许的情况下，使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   this->operator[](v) = base_ptr[offsets[v]];
+   * this->operator[](v) = base_ptr[offsets[v]];
    * @endcode
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3762,16 +3821,15 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address and the given offsets, filling the
-   * elements of the vectorized array into each offset.
-   *
-   * This operation corresponds to the following code (but uses a more
-   * efficient implementation in case the hardware allows for that):
+   * 将调用类的内容以 @p
+   * size()的形式写入内存，到给定的地址和给定的偏移量，将矢量数组的元素填入每个偏移量。
+   * 这个操作对应于下面的代码（但在硬件允许的情况下使用了更有效的实现）。
    * @code
    * for (unsigned int v=0; v<VectorizedArray<Number>::size(); ++v)
-   *   base_ptr[offsets[v]] = this->operator[](v);
+   * base_ptr[offsets[v]] = this->operator[](v);
    * @endcode
+   *
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -3782,16 +3840,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __m128 data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3803,8 +3860,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回该字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3820,8 +3877,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3833,8 +3890,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -3865,7 +3922,9 @@ private:
 
 
 /**
- * Specialization for float and SSE2.
+ * 对float和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3900,7 +3959,9 @@ vectorized_load_and_transpose(const unsigned int         n_entries,
 
 
 /**
- * Specialization for float and SSE2.
+ * 对浮点和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3935,7 +3996,9 @@ vectorized_load_and_transpose(const unsigned int            n_entries,
 
 
 /**
- * Specialization for float and SSE2.
+ * 浮动和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -3998,7 +4061,9 @@ vectorized_transpose_and_store(const bool                       add_into,
 
 
 /**
- * Specialization for float and SSE2.
+ * 浮动和SSE2的特殊化。
+ *
+ *
  */
 template <>
 inline DEAL_II_ALWAYS_INLINE void
@@ -4068,18 +4133,20 @@ class VectorizedArray<double, 2>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = double;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组广播到所有的通道。
+   *
    */
   VectorizedArray(const double scalar)
   {
@@ -4087,7 +4154,8 @@ public:
   }
 
   /**
-   * This function assigns a scalar to this class.
+   * 这个函数将一个标量分配给这个类。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4103,7 +4171,8 @@ public:
   }
 
   /**
-   * Access operator. The component must be either 0 or 1.
+   * 访问操作符。该组件必须是0或1。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   double &operator[](const unsigned int comp)
@@ -4113,7 +4182,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const double &operator[](const unsigned int comp) const
@@ -4123,7 +4193,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4134,7 +4205,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4145,7 +4217,8 @@ public:
   }
 
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4156,7 +4229,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4167,8 +4241,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4178,8 +4253,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address.
+   * 将调用类的内容以 @p
+   * size()的形式写进内存，到给定的地址。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4188,8 +4264,9 @@ public:
     vec_vsx_st(data, 0, ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::streaming_store()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   streaming_store(double *ptr) const
@@ -4197,8 +4274,9 @@ public:
     store(ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::gather()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::gather()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   gather(const double *base_ptr, const unsigned int *offsets)
@@ -4207,8 +4285,9 @@ public:
       *(reinterpret_cast<double *>(&data) + i) = base_ptr[offsets[i]];
   }
 
-  /** @copydoc VectorizedArray<Number>::scatter
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::scatter
+    */
   DEAL_II_ALWAYS_INLINE
   void
   scatter(const unsigned int *offsets, double *base_ptr) const
@@ -4218,16 +4297,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __vector double data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4239,8 +4317,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回该字段的绝对值。不适合在用户代码中使用。请使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4252,8 +4330,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4265,8 +4343,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4302,18 +4380,20 @@ class VectorizedArray<float, 4>
 {
 public:
   /**
-   * This gives the type of the array elements.
+   * 这给出了数组元素的类型。
+   *
    */
   using value_type = float;
 
   /**
-   * Default empty constructor, leaving the data in an uninitialized state
-   * similar to float/double.
+   * 默认的空构造函数，让数据处于未初始化的状态，类似于float/double。
+   *
    */
   VectorizedArray() = default;
 
   /**
-   * Construct an array with the given scalar broadcast to all lanes.
+   * 用给定的标量构建一个数组，广播给所有通道。
+   *
    */
   VectorizedArray(const float scalar)
   {
@@ -4321,7 +4401,8 @@ public:
   }
 
   /**
-   * This function assigns a scalar to this class.
+   * 这个函数将一个标量分配给这个类。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4337,7 +4418,8 @@ public:
   }
 
   /**
-   * Access operator. The component must be between 0 and 3.
+   * 访问操作符。该分量必须在0和3之间。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   float &operator[](const unsigned int comp)
@@ -4347,7 +4429,8 @@ public:
   }
 
   /**
-   * Constant access operator.
+   * 常数访问运算符。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   const float &operator[](const unsigned int comp) const
@@ -4357,7 +4440,8 @@ public:
   }
 
   /**
-   * Addition.
+   * 加法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4368,7 +4452,8 @@ public:
   }
 
   /**
-   * Subtraction.
+   * 减法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4379,7 +4464,8 @@ public:
   }
 
   /**
-   * Multiplication.
+   * 乘法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4390,7 +4476,8 @@ public:
   }
 
   /**
-   * Division.
+   * 除法。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray &
@@ -4401,8 +4488,9 @@ public:
   }
 
   /**
-   * Load @p size() from memory into the calling class, starting at
-   * the given address.
+   * 从内存中加载 @p size()
+   * 到调用类中，从给定的地址开始。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4412,8 +4500,9 @@ public:
   }
 
   /**
-   * Write the content of the calling class into memory in form of @p
-   * size() to the given address.
+   * 将调用类的内容以 @p
+   * size()的形式写进内存，到给定的地址。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   void
@@ -4422,8 +4511,9 @@ public:
     vec_vsx_st(data, 0, ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::streaming_store()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::streaming_store()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   streaming_store(float *ptr) const
@@ -4431,8 +4521,9 @@ public:
     store(ptr);
   }
 
-  /** @copydoc VectorizedArray<Number>::gather()
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::gather()
+    */
   DEAL_II_ALWAYS_INLINE
   void
   gather(const float *base_ptr, const unsigned int *offsets)
@@ -4441,8 +4532,9 @@ public:
       *(reinterpret_cast<float *>(&data) + i) = base_ptr[offsets[i]];
   }
 
-  /** @copydoc VectorizedArray<Number>::scatter
-   */
+   /**
+    * @copydoc VectorizedArray<Number>::scatter
+    */
   DEAL_II_ALWAYS_INLINE
   void
   scatter(const unsigned int *offsets, float *base_ptr) const
@@ -4452,16 +4544,15 @@ public:
   }
 
   /**
-   * Actual data field. To be consistent with the standard layout type and to
-   * enable interaction with external SIMD functionality, this member is
-   * declared public.
+   * 实际的数据字段。为了与标准布局类型保持一致，并且能够与外部SIMD功能进行交互，这个成员被声明为公共的。
+   *
    */
   __vector float data;
 
 private:
   /**
-   * Return the square root of this field. Not for use in user code. Use
-   * sqrt(x) instead.
+   * 返回这个字段的平方根。不适合在用户代码中使用。使用sqrt(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4473,8 +4564,8 @@ private:
   }
 
   /**
-   * Return the absolute value of this field. Not for use in user code. Use
-   * abs(x) instead.
+   * 返回这个字段的绝对值。不适合在用户代码中使用。使用abs(x)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4486,8 +4577,8 @@ private:
   }
 
   /**
-   * Return the component-wise maximum of this field and another one. Not for
-   * use in user code. Use max(x,y) instead.
+   * 返回这个字段和另一个字段的分量上的最大值。不适合在用户代码中使用。使用max(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4499,8 +4590,8 @@ private:
   }
 
   /**
-   * Return the component-wise minimum of this field and another one. Not for
-   * use in user code. Use min(x,y) instead.
+   * 返回这个字段和另一个字段的最小分量。不适合在用户代码中使用。使用min(x,y)代替。
+   *
    */
   DEAL_II_ALWAYS_INLINE
   VectorizedArray
@@ -4535,14 +4626,17 @@ private:
 #endif // DOXYGEN
 
 /**
- * @name Arithmetic operations with VectorizedArray
+ * @name  用VectorizedArray进行算术运算
+ *
+ *
  */
 //@{
 
 /**
- * Relational operator == for VectorizedArray
+ * 对VectorizedArray的关系运算符==。
+ * @relatesalso  VectorizedArray的运算
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE bool
@@ -4558,9 +4652,10 @@ operator==(const VectorizedArray<Number, width> &lhs,
 
 
 /**
- * Addition of two vectorized arrays with operator +.
+ * 用操作符+对两个矢量数组进行加法。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4572,9 +4667,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Subtraction of two vectorized arrays with operator -.
+ * 两个矢量数组的减法，用操作符
  *
- * @relatesalso VectorizedArray
+ * -
+ * @relatesalso  矢量Array
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4586,9 +4684,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Multiplication of two vectorized arrays with operator *.
+ * 用运算符对两个矢量数组进行乘法。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4600,9 +4699,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Division of two vectorized arrays with operator /.
+ * 用运算符/对两个矢量数组进行除法。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4614,10 +4714,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Addition of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array.
+ * 一个标量（用 @p
+ * size()相等的条目扩展为一个向量数组）和一个向量数组的加法。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4628,12 +4729,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Addition of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * 在标量是双数的情况下，标量的加法（扩展为矢量数组，
+ * @p
+ * size()相等的条目）和矢量数组的加法（为了能够用通常是双数的常量编写简单的代码而需要）。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4644,10 +4745,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Addition of a vectorized array and a scalar (expanded to a vectorized array
- * with @p size() equal entries).
+ * 矢量数组和标量的相加（扩展为一个具有 @p size()
+ * 等量项的矢量数组）。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4657,12 +4759,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Addition of a vectorized array and a scalar (expanded to a vectorized array
- * with @p size() equal entries) in case the scalar is a double
- * (needed in order to be able to write simple code with constants that are
- * usually double numbers).
+ * 在标量为双数的情况下，将一个矢量数组和一个标量相加（扩展为一个具有
+ * @p size()
+ * 相等条目的矢量数组）（为了能够用通常为双数的常量编写简单的代码而需要）。
+ * @relatesalso  矢量化数组
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4672,10 +4774,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Subtraction of a vectorized array from a scalar (expanded to a vectorized
- * array with @p size() equal entries).
+ * 从标量中减去一个矢量数组（扩展为一个具有 @p size()
+ * 相等条目的矢量数组）。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4686,12 +4789,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Subtraction of a vectorized array from a scalar (expanded to a vectorized
- * array with @p size() equal entries) in case the scalar is a
- * double (needed in order to be able to write simple code with constants that
- * are usually double numbers).
+ * 在标量为双数的情况下，从标量中减去一个矢量数组（扩展为一个具有
+ * @p size()
+ * 相等条目的矢量数组）（为了能够用通常为双数的常数编写简单的代码而需要）。
+ * @relatesalso  矢量化数组
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4702,10 +4805,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Subtraction of a scalar (expanded to a vectorized array with @p
- * size() equal entries) from a vectorized array.
+ * 从一个矢量数组中减去一个标量（扩展为一个矢量数组，
+ * @p  size()等于条目）。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4716,12 +4820,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Subtraction of a scalar (expanded to a vectorized array with @p
- * size() equal entries) from a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * 从一个矢量数组中减去一个标量（扩展为一个矢量数组，
+ * @p
+ * size()相等的条目），如果该标量是一个双数（为了能够用通常是双数的常量编写简单的代码而需要）。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4732,10 +4836,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Multiplication of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array.
+ * 一个标量（扩展为一个具有 @p
+ * size()等分项的向量数组）和一个向量数组的乘法。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4746,12 +4851,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Multiplication of a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * 在标量是双数的情况下，标量（扩展为一个矢量数组， @p
+ * size()相等的条目）和矢量数组的乘法（为了能够用通常是双数的常量编写简单的代码而需要）。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4762,10 +4866,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Multiplication of a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries).
+ * 矢量数组和标量的乘法（扩展为具有 @p size()
+ * 相等条目的矢量数组）。
+ * @relatesalso  VectorizedArray
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4775,12 +4880,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Multiplication of a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries) in case the scalar is a
- * double (needed in order to be able to write simple code with constants that
- * are usually double numbers).
+ * 在标量为双数的情况下，矢量数组和标量的乘法（扩展为具有
+ * @p size()
+ * 相等条目的矢量数组）（为了能够用通常为双数的常量编写简单的代码而需要）。
+ * @relatesalso  矢量化数组
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4790,10 +4895,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Quotient between a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array.
+ * 标量（扩展为矢量数组， @p
+ * size()等于条目）与矢量数组之间的商。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4804,12 +4910,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Quotient between a scalar (expanded to a vectorized array with @p
- * size() equal entries) and a vectorized array in case the scalar
- * is a double (needed in order to be able to write simple code with constants
- * that are usually double numbers).
+ * 在标量是双数的情况下，标量（扩展为具有 @p
+ * size()相等条目的向量数组）和向量数组之间的商（为了能够用通常为双数的常量编写简单的代码，需要）。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4820,10 +4925,11 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Quotient between a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries).
+ * 矢量数组和标量之间的商（扩展为具有 @p size()
+ * 相等条目的矢量数组）。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4834,12 +4940,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Quotient between a vectorized array and a scalar (expanded to a vectorized
- * array with @p size() equal entries) in case the scalar is a
- * double (needed in order to be able to write simple code with constants that
- * are usually double numbers).
+ * 在标量为双数的情况下，矢量数组和标量之间的商（扩展为具有
+ * @p size()
+ * 相等条目的矢量数组）（为了能够用通常为双数的常量编写简单的代码而需要）。
+ * @relatesalso  矢量化数组
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
@@ -4850,9 +4956,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 }
 
 /**
- * Unary operator + on a vectorized array.
+ * 矢量化数组上的单项运算符+。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4862,9 +4969,12 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Unary operator - on a vectorized array.
+ * 单元运算符
  *
- * @relatesalso VectorizedArray
+ * - 在一个矢量化数组上。
+ * @relatesalso  矢量Array
+ *
+ *
  */
 template <typename Number, std::size_t width>
 inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
@@ -4876,9 +4986,10 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 }
 
 /**
- * Output operator for vectorized array.
+ * 矢量化数组的输出运算符。
+ * @relatesalso  矢量Array
  *
- * @relatesalso VectorizedArray
+ *
  */
 template <typename Number, std::size_t width>
 inline std::ostream &
@@ -4895,17 +5006,22 @@ operator<<(std::ostream &out, const VectorizedArray<Number, width> &p)
 //@}
 
 /**
- * @name Ternary operations on VectorizedArray
+ * @name  对VectorizedArray的三元操作
+ *
+ *
  */
 //@{
 
 
 /**
- * enum class encoding binary operations for a component-wise comparison of
- * VectorizedArray data types.
+ * 编码二进制操作的枚举类，用于对VectorizedArray数据类型进行组件式比较。
  *
- * @note In case of SIMD vecorization (sse, avx, av512) we select the
- * corresponding ordered, non-signalling (<code>OQ</code>) variants.
+ *
+ * @note  在SIMD矢量化（sse, avx,
+ * av512）的情况下，我们选择相应的有序、非信号（
+ * <code>OQ</code>  ）变体。
+ *
+ *
  */
 enum class SIMDComparison : int
 {
@@ -4928,67 +5044,63 @@ enum class SIMDComparison : int
 
 
 /**
- * Computes the vectorized equivalent of the following ternary operation:
- * @code
- *   (left OP right) ? true_value : false_value
- * @endcode
- * where <code>OP</code> is a binary operator (such as <code>=</code>,
- * <code>!=</code>, <code><</code>, <code><=</code>, <code>></code>, and
- * <code>>=</code>).
+ * 计算以下三元操作的矢量等价物。
  *
- * Such a computational idiom is useful as an alternative to branching
- * whenever the control flow itself would depend on (computed) data. For
- * example, in case of a scalar data type the statement
- * <code>(left < right) ? true_value : false_value</code>
- * could have been also implemented using an <code>if</code>-statement:
+ * @code
+ * (left OP right) ? true_value : false_value
+ * @endcode
+ * 其中 <code>OP</code> is a binary operator (such as <code>=</code>  ,
+ * <code>!=</code>, <code><</code>, <code><=</code>, <code>></code>  , 和
+ * <code>>=</code>  )。
+ * 当控制流本身取决于（计算的）数据时，这样的计算成语作为分支的替代是很有用的。例如，在标量数据类型的情况下，语句
+ * <code>(left < right) ? true_value : false_value</code> 也可以使用
+ * <code>if</code> 语句来实现。
+ *
  * @code
  * if (left < right)
- *     result = true_value;
+ *   result = true_value;
  * else
- *     result = false_value;
+ *   result = false_value;
  * @endcode
- * This, however, is fundamentally impossible in case of vectorization
- * because different decisions will be necessary on different vector entries
- * (lanes) and
- * the first variant (based on a ternary operator) has to be used instead:
+ * 然而，这在向量化的情况下是根本不可能的，因为不同的向量条目（通道）需要不同的决定，所以必须使用第一个变体（基于三元运算符）来代替。
+ *
  * @code
- *   result = compare_and_apply_mask<SIMDComparison::less_than>
- *     (left, right, true_value, false_value);
+ * result = compare_and_apply_mask<SIMDComparison::less_than>
+ *   (left, right, true_value, false_value);
  * @endcode
- * Some more illustrative examples (that are less efficient than the
- * dedicated <code>std::max</code> and <code>std::abs</code> overloads):
+ * 一些更具说明性的例子（比专用的 <code>std::max</code> and
+ * <code>std::abs</code> 重载效率低）。
+ *
  * @code
- *   VectorizedArray<double> left;
- *   VectorizedArray<double> right;
+ * VectorizedArray<double> left;
+ * VectorizedArray<double> right;
  *
- *   // std::max
- *   const auto maximum = compare_and_apply_mask<SIMDComparison::greater_than>
- *     (left, right, left, right);
+ * // std::max
+ * const auto maximum = compare_and_apply_mask<SIMDComparison::greater_than>
+ *   (left, right, left, right);
  *
- *   // std::abs
- *   const auto absolute = compare_and_apply_mask<SIMDComparison::less_than>
- *     (left, VectorizedArray<double>(0.), -left, left);
+ * // std::abs
+ * const auto absolute = compare_and_apply_mask<SIMDComparison::less_than>
+ *   (left, VectorizedArray<double>(0.),
+ *
+ * -left, left);
  * @endcode
  *
- * More precisely, this function first computes a (boolean) mask that is
- * the result of a binary operator <code>OP</code> applied to all elements
- * of the VectorizedArray arguments @p left and @p right. The mask is then
- * used to either select the corresponding component of @p true_value (if
- * the binary operation equates to true), or @p false_value. The binary
- * operator is encoded via the SIMDComparison template argument
- * @p predicate.
+ * 更确切地说，这个函数首先计算一个（布尔）掩码，它是二进制运算符
+ * <code>OP</code> 应用于VectorizedArray参数 @p left 和 @p right.
+ * 的所有元素的结果，然后掩码被用来选择 @p true_value
+ * 的相应组件（如果二进制运算相当于真），或者 @p
+ * false_value. 二进制运算符通过SIMDComparison模板参数 @p
+ * predicate. 编码。
+ * 为了方便通用编程方法，该函数为所有VectorizedArray<Number>变体以及通用POD类型（如double和float）提供重载。
  *
- * In order to ease with generic programming approaches, the function
- * provides overloads for all VectorizedArray<Number> variants as well as
- * generic POD types such as double and float.
  *
- * @note For this function to work the binary operation has to be encoded
- * via a SIMDComparison template argument @p predicate. Depending on it
- * appropriate low-level machine instructions are generated replacing the
- * call to compare_and_apply_mask. This also explains why @p predicate is a
- * compile-time constant template parameter and not a constant function
- * argument. In order to be able to emit the correct low-level instruction,
- * the compiler has to know the comparison at compile time.
+ * @note
+ * 为了使这个函数工作，二进制操作必须通过SIMDComparison模板参数进行编码。这也解释了为什么
+ * @p predicate
+ * 是一个编译时常量模板参数，而不是一个常量函数参数。为了能够发出正确的低级指令，编译器必须在编译时知道比较的情况。
+ *
+ *
  */
 template <SIMDComparison predicate, typename Number>
 DEAL_II_ALWAYS_INLINE inline Number
@@ -5025,8 +5137,10 @@ compare_and_apply_mask(const Number &left,
 
 
 /**
- * Specialization of above function for the non-vectorized
- * VectorizedArray<Number, 1> variant.
+ * 上述函数对非矢量化的VectorizedArray<Number,
+ * 1>变体的特殊化。
+ *
+ *
  */
 template <SIMDComparison predicate, typename Number>
 DEAL_II_ALWAYS_INLINE inline VectorizedArray<Number, 1>
@@ -5201,19 +5315,18 @@ compare_and_apply_mask(const VectorizedArray<double, 2> &left,
 DEAL_II_NAMESPACE_CLOSE
 
 /**
- * Implementation of functions from cmath on VectorizedArray. These functions
- * do not reside in the dealii namespace in order to ensure a similar
- * interface as for the respective functions in cmath. Instead, call them
- * using std::sin.
+ * 在VectorizedArray上实现来自cmath的函数。这些函数不在dealii命名空间中，以确保与cmath中的相关函数有类似的接口。相反，使用
+ * std::sin. 调用它们。
+ *
+ *
  */
 namespace std
 {
   /**
-   * Compute the sine of a vectorized data field. The result is returned as
-   * vectorized array in the form <tt>{sin(x[0]), sin(x[1]), ...,
-   * sin(x[VectorizedArray::size()-1])}</tt>.
+   * 计算一个矢量数据域的正弦。结果将以<tt>{sin(x[0]),
+   * sin(x[1]), ...,  sin(x[VectorizedArray::size()-1])}</tt>.   @relatesalso
+   * VectorizedArray的形式返回。
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5236,11 +5349,9 @@ namespace std
 
 
   /**
-   * Compute the cosine of a vectorized data field. The result is returned as
-   * vectorized array in the form <tt>{cos(x[0]), cos(x[1]), ...,
-   * cos(x[size()-1])}</tt>.
+   * 计算一个矢量数据域的余弦。结果以矢量数组的形式返回<tt>{cos(x[0]),
+   * cos(x[1]), ..., cos(x[size()-1]) }</tt>。      @relatesalso  矢量Array
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5258,11 +5369,9 @@ namespace std
 
 
   /**
-   * Compute the tangent of a vectorized data field. The result is returned
-   * as vectorized array in the form <tt>{tan(x[0]), tan(x[1]), ...,
-   * tan(x[size()-1])}</tt>.
+   * 计算一个矢量数据域的正切。结果以矢量数组的形式返回<tt>{tan(x[0]),
+   * tan(x[1]), ..., tan(x[size()-1]) }</tt>。      @relatesalso  矢量Array
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5280,11 +5389,10 @@ namespace std
 
 
   /**
-   * Compute the exponential of a vectorized data field. The result is
-   * returned as vectorized array in the form <tt>{exp(x[0]), exp(x[1]), ...,
-   * exp(x[size()-1])}</tt>.
+   * 计算一个矢量数据域的指数。结果以矢量数组的形式返回<tt>{exp(x[0]),
+   * exp(x[1]), ..., exp(x[size()-1]) }</tt>。      @relatesalso
+   * VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5302,11 +5410,10 @@ namespace std
 
 
   /**
-   * Compute the natural logarithm of a vectorized data field. The result is
-   * returned as vectorized array in the form <tt>{log(x[0]), log(x[1]), ...,
-   * log(x[size()-1])}</tt>.
+   * 计算一个矢量数据域的自然对数。结果以矢量数组的形式返回<tt>{log(x[0]),
+   * log(x[1]), ..., log(x[size()-1])}</tt>。      @relatesalso
+   * VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5324,11 +5431,10 @@ namespace std
 
 
   /**
-   * Compute the square root of a vectorized data field. The result is
-   * returned as vectorized array in the form <tt>{sqrt(x[0]), sqrt(x[1]),
-   * ..., sqrt(x[size()-1])}</tt>.
+   * 计算一个矢量数据域的平方根。结果以矢量数组的形式返回<tt>{sqrt(x[0]),
+   * sqrt(x[1]), ..., sqrt(x[size()-1]) }</tt>。      @relatesalso
+   * 矢量Array
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5340,11 +5446,11 @@ namespace std
 
 
   /**
-   * Raises the given number @p x to the power @p p for a vectorized data
-   * field. The result is returned as vectorized array in the form
-   * <tt>{pow(x[0],p), pow(x[1],p), ..., pow(x[size()-1],p)}</tt>.
+   * 将给定的数字 @p x 提高到幂数 @p p
+   * ，用于一个矢量数据域。结果以矢量数组的形式返回<tt>{pow(x[0],p),
+   * pow(x[1],p), ..., pow(x[size()-1], p)}</tt>。      @relatesalso
+   * 矢量Array
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5362,12 +5468,11 @@ namespace std
 
 
   /**
-   * Raises the given number @p x to the power @p p for a vectorized data
-   * field. The result is returned as vectorized array in the form
-   * <tt>{pow(x[0],p[0]), pow(x[1],p[1]), ...,
-   * pow(x[size()-1],p[size()-1])}</tt>.
+   * 将给定的数字 @p x 提高到幂数 @p p
+   * ，用于一个矢量数据域。结果以矢量数组的形式返回<tt>{pow(x[0],p[0]),
+   * pow(x[1],p[1]), ..., pow(x[size()-1],p[size()-1]) }</tt>。
+   * @relatesalso  矢量Array
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5386,11 +5491,10 @@ namespace std
 
 
   /**
-   * Compute the absolute value (modulus) of a vectorized data field. The
-   * result is returned as vectorized array in the form <tt>{abs(x[0]),
-   * abs(x[1]), ..., abs(x[size()-1])}</tt>.
+   * 计算一个矢量数据字段的绝对值（模数）。结果以矢量数组的形式返回<tt>{abs(x[0]),
+   * abs(x[1]), ..., abs(x[size()-1]) }</tt>。      @relatesalso
+   * VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5402,11 +5506,9 @@ namespace std
 
 
   /**
-   * Compute the componentwise maximum of two vectorized data fields. The
-   * result is returned as vectorized array in the form <tt>{max(x[0],y[0]),
-   * max(x[1],y[1]), ...}</tt>.
+   * 计算两个矢量数据域的分量最大。结果以矢量数组的形式返回<tt>{max(x[0],y[0]),
+   * max(x[1],y[1), ...}</tt>。      @relatesalso  VectorizedArray
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5419,11 +5521,9 @@ namespace std
 
 
   /**
-   * Compute the componentwise minimum of two vectorized data fields. The
-   * result is returned as vectorized array in the form <tt>{min(x[0],y[0]),
-   * min(x[1],y[1]), ...}</tt>.
+   * 计算两个矢量数据域的分量最小值。结果以矢量数组的形式返回<tt>{min(x[0],y[0]),
+   * min(x[1],y[1), ...}</tt>。      @relatesalso  矢量Array
    *
-   * @relatesalso VectorizedArray
    */
   template <typename Number, std::size_t width>
   inline ::dealii::VectorizedArray<Number, width>
@@ -5436,7 +5536,8 @@ namespace std
 
 
   /**
-   * Iterator traits for VectorizedArrayIterator.
+   * VectorizedArrayIterator的迭代器特质。
+   *
    */
   template <class T>
   struct iterator_traits<dealii::VectorizedArrayIterator<T>>
@@ -5449,3 +5550,5 @@ namespace std
 } // namespace std
 
 #endif
+
+

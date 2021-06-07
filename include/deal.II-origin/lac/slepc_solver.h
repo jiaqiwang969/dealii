@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/slepc_solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
@@ -36,102 +35,145 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 使用SLEPc求解器的求解器类的基础命名空间，这些求解器是根据传递给特征值问题求解器上下文的标志来选择的。派生类设置正确的标志来设置正确的求解器。
- * SLEPc求解器旨在用于解决广义的特征谱问题 $(A-\lambda B)x=0$
- * ，用于 $x\neq0$ ；其中 $A$ 是一个系统矩阵， $B$
- * 是一个质量矩阵， $\lambda, x$
- * 分别为一组特征值和特征向量。重点是适合相关矩阵是稀疏的问题的方法和技术。SLEPc库提供的大多数方法都是投影方法或其他具有类似属性的方法；并提供了包装器来连接处理这两个问题集的SLEPc求解器。
- * SLEPcWrappers可以通过以下方式在应用程序代码中实现。
+ * Base namespace for solver classes using the SLEPc solvers which are
+ * selected based on flags passed to the eigenvalue problem solver context.
+ * Derived classes set the right flags to set the right solver.
  *
+ * The SLEPc solvers are intended to be used for solving the generalized
+ * eigenspectrum problem $(A-\lambda B)x=0$, for $x\neq0$; where $A$ is a
+ * system matrix, $B$ is a mass matrix, and $\lambda, x$ are a set of
+ * eigenvalues and eigenvectors respectively. The emphasis is on methods and
+ * techniques appropriate for problems in which the associated matrices are
+ * sparse. Most of the methods offered by the SLEPc library are projection
+ * methods or other methods with similar properties; and wrappers are provided
+ * to interface to SLEPc solvers that handle both of these problem sets.
+ *
+ * SLEPcWrappers can be implemented in application codes in the following way:
  * @code
  * SolverControl solver_control (1000, 1e-9);
  * SolverArnoldi system (solver_control, mpi_communicator);
  * system.solve (A, B, lambda, x, size_of_spectrum);
  * @endcode
- * 用于广义特征值问题  $Ax=B\lambda x$  ，其中变量  <code>const
- * unsigned int size_of_spectrum</code>
- * 告诉SLEPc要解决的特征向量/特征值对的数量。额外的选项和求解器参数可以在调用
- * <code>solve()</code>
- * 之前传递给SLEPc求解器。例如，如果一般特征谱问题的矩阵不是隐性的，而且只想要低级特征值，那么在调用
- * <code>solve()</code>  之前可以实现以下代码。
- *
+ * for the generalized eigenvalue problem $Ax=B\lambda x$, where the variable
+ * <code>const unsigned int size_of_spectrum</code> tells SLEPc the number of
+ * eigenvector/eigenvalue pairs to solve for. Additional options and solver
+ * parameters can be passed to the SLEPc solvers before calling
+ * <code>solve()</code>. For example, if the matrices of the general
+ * eigenspectrum problem are not hermitian and the lower eigenvalues are
+ * wanted only, the following code can be implemented before calling
+ * <code>solve()</code>:
  * @code
  * system.set_problem_type (EPS_NHEP);
  * system.set_which_eigenpairs (EPS_SMALLEST_REAL);
  * @endcode
- * 这些选项也可以在命令行中设置。 也可参见
- * <code>step-36</code> 中的实战案例。
- * 对于谱系转换与Krylov类型求解器或Davidson类型求解器结合使用的情况，可以额外指定使用哪种线性求解器和预处理器。这可以通过以下方式实现
+ * These options can also be set at the command line.
  *
+ * See also <code>step-36</code> for a hands-on example.
+ *
+ * For cases when spectral transformations are used in conjunction with
+ * Krylov-type solvers or Davidson-type eigensolvers are employed one can
+ * additionally specify which linear solver and preconditioner to use. This
+ * can be achieved as follows
  * @code
  * PETScWrappers::PreconditionBoomerAMG::AdditionalData data;
  * data.symmetric_operator = true;
  * PETScWrappers::PreconditionBoomerAMG preconditioner(mpi_communicator, data);
  * SolverControl linear_solver_control (dof_handler.n_dofs(),
- *                                    1e-12, false, false);
+ *                                      1e-12, false, false);
  * PETScWrappers::SolverCG linear_solver(linear_solver_control,
- *                                     mpi_communicator);
+ *                                       mpi_communicator);
  * linear_solver.initialize(preconditioner);
  * SolverControl solver_control (100, 1e-9,false,false);
  * SLEPcWrappers::SolverKrylovSchur eigensolver(solver_control,
- *                                            mpi_communicator);
+ *                                              mpi_communicator);
  * SLEPcWrappers::TransformationShift spectral_transformation(mpi_communicator);
  * spectral_transformation.set_solver(linear_solver);
  * eigensolver.set_transformation(spectral_transformation);
  * eigensolver.solve(stiffness_matrix, mass_matrix,
- *                 eigenvalues, eigenfunctions, eigenfunctions.size());
+ *                   eigenvalues, eigenfunctions, eigenfunctions.size());
  * @endcode
  *
- * 为了支持这种使用情况，与PETSc包装器不同，该命名空间中的类的编写方式是在构造函数中初始化基础SLEPc对象。这样做也避免了对不同设置（如目标特征值或问题类型）的缓存；相反，这些设置在调用包装器类的相应函数时直接应用。
- * 上述方法的另一种实现方式是在应用程序代码中直接使用API的内部功能。这样一来，调用序列需要调用SolverBase的几个函数，而不是只有一个。这种自由是为了使用SLEPcWrappers，它需要对特征值问题求解器上下文有更多的处理。也请看API，例如。
+ * In order to support this usage case, different from PETSc wrappers, the
+ * classes in this namespace are written in such a way that the underlying
+ * SLEPc objects are initialized in constructors. By doing so one also avoid
+ * caching of different settings (such as target eigenvalue or type of the
+ * problem); instead those are applied straight away when the corresponding
+ * functions of the wrapper classes are called.
  *
+ * An alternative implementation to the one above is to use the API internals
+ * directly within the application code. In this way the calling sequence
+ * requires calling several of SolverBase functions rather than just one. This
+ * freedom is intended for use of the SLEPcWrappers that require a greater
+ * handle on the eigenvalue problem solver context. See also the API of, for
+ * example:
  * @code
  * template <typename OutputVector>
  * void
  * SolverBase::solve (const PETScWrappers::MatrixBase &A,
- *                  const PETScWrappers::MatrixBase &B,
- *                  std::vector<PetscScalar>        &eigenvalues,
- *                  std::vector<OutputVector>       &eigenvectors,
- *                  const unsigned int               n_eigenpairs)
+ *                    const PETScWrappers::MatrixBase &B,
+ *                    std::vector<PetscScalar>        &eigenvalues,
+ *                    std::vector<OutputVector>       &eigenvectors,
+ *                    const unsigned int               n_eigenpairs)
  * {
- * ...
+ *   ...
  * }
  * @endcode
- * 以此为例说明如何做到这一点。
+ * as an example on how to do this.
  *
+ * For further information and explanations on handling the
+ * @ref SLEPcWrappers "SLEPcWrappers",
+ * see also the
+ * @ref PETScWrappers "PETScWrappers",
+ * on which they depend.
  *
  * @ingroup SLEPcWrappers
- *
  */
 namespace SLEPcWrappers
 {
   /**
-   * 使用SLEPc求解器的求解器类的基类。由于SLEPc中的求解器是根据传递给通用求解器对象的标志来选择的，所以基本上所有实际的求解器调用都发生在这个类中，而派生类只是设置正确的标志来选择一个或另一个求解器，或者为单个求解器设置某些参数。
-   * 关于如何使用这个类及其派生类的例子，包括如何为要计算特征值的矩阵提供预处理程序，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
+   * Base class for solver classes using the SLEPc solvers. Since solvers in
+   * SLEPc are selected based on flags passed to a generic solver object,
+   * basically all the actual solver calls happen in this class, and derived
+   * classes simply set the right flags to select one solver or another, or to
+   * set certain parameters for individual solvers.
    *
+   * For examples of how this and its derived classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
    */
   class SolverBase
   {
   public:
     /**
-     * 构造函数。接受MPI通信器，在该通信器上发生并行计算。
-     *
+     * Constructor. Takes the MPI communicator over which parallel
+     * computations are to happen.
      */
     SolverBase(SolverControl &cn, const MPI_Comm &mpi_communicator);
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~SolverBase();
 
     /**
-     * 解决特征系统的复合方法  $Ax=\lambda x$
-     * 。送入的特征向量必须至少有一个元素，我们可以在调整大小时作为模板使用，因为我们不知道使用的具体向量类的参数（即MPI向量的local_dofs）。然而，在复制特征向量时，至少要使用两倍于<tt>特征向量</tt>的内存大小（而且可能更多）。为了避免这样做，这里执行的相当标准的调用序列被使用。设置用于求解的矩阵；实际求解系统；收集求解结果。
-     * @note
-     * 注意收敛的特征向量的数量可能大于请求的特征向量的数量；这是由于特征问题求解器上下文的舍弃错误（成功）。如果发现这种情况，我们就不去管比请求的更多的特征对，而是通过忽略任何额外的东西来处理可能超过指定的数量。
-     * 默认情况下，将计算一个特征向量/特征值对。
+     * Composite method that solves the eigensystem $Ax=\lambda x$. The
+     * eigenvector sent in has to have at least one element that we can use as
+     * a template when resizing, since we do not know the parameters of the
+     * specific vector class used (i.e. local_dofs for MPI vectors). However,
+     * while copying eigenvectors, at least twice the memory size of
+     * <tt>eigenvectors</tt> is being used (and can be more). To avoid doing
+     * this, the fairly standard calling sequence executed here is used: Set
+     * up matrices for solving; Actually solve the system; Gather the
+     * solution(s).
      *
+     * @note Note that the number of converged eigenvectors can be larger than
+     * the number of eigenvectors requested; this is due to a round off error
+     * (success) of the eigenproblem solver context. If this is found to be
+     * the case we simply do not bother with more eigenpairs than requested,
+     * but handle that it may be more than specified by ignoring any extras.
+     * By default one eigenvector/eigenvalue pair is computed.
      */
     template <typename OutputVector>
     void
@@ -141,9 +183,9 @@ namespace SLEPcWrappers
           const unsigned int               n_eigenpairs = 1);
 
     /**
-     * 同上，但这里是解决系统的复合方法  $A x=\lambda B x$
-     * ，用于实数矩阵、向量和值  $A, B, x, \lambda$  。
-     *
+     * Same as above, but here a composite method for solving the system $A
+     * x=\lambda B x$, for real matrices, vectors, and values $A, B, x,
+     * \lambda$.
      */
     template <typename OutputVector>
     void
@@ -154,9 +196,9 @@ namespace SLEPcWrappers
           const unsigned int               n_eigenpairs = 1);
 
     /**
-     * 同上，但这里是解决系统 $A x=\lambda B x$ 与实数矩阵 $A,
-     * B$ 和虚数特征对 $x, \lambda$ 的复合方法。
-     *
+     * Same as above, but here a composite method for solving the system $A
+     * x=\lambda B x$ with real matrices $A, B$ and imaginary eigenpairs $x,
+     * \lambda$.
      */
     template <typename OutputVector>
     void
@@ -169,61 +211,63 @@ namespace SLEPcWrappers
           const unsigned int               n_eigenpairs = 1);
 
     /**
-     * 设置求解器的初始向量空间。
-     * 默认情况下，SLEPc随机地初始化起始向量或初始子空间。
+     * Set the initial vector space for the solver.
      *
+     * By default, SLEPc initializes the starting vector or the initial
+     * subspace randomly.
      */
     template <typename Vector>
     void
     set_initial_space(const std::vector<Vector> &initial_space);
 
     /**
-     * 设置要使用的谱系变换。
-     *
+     * Set the spectral transformation to be used.
      */
     void
     set_transformation(SLEPcWrappers::TransformationBase &this_transformation);
 
     /**
-     * 设置要计算的频谱中的目标特征值。默认情况下，不设置目标。
-     *
+     * Set target eigenvalues in the spectrum to be computed. By default, no
+     * target is set.
      */
     void
     set_target_eigenvalue(const PetscScalar &this_target);
 
     /**
-     * 指明要计算的频谱的哪一部分。默认情况下，计算的是最大量级的特征值。
-     * @note 关于其他允许的值，见SLEPc文档。
+     * Indicate which part of the spectrum is to be computed. By default
+     * largest magnitude eigenvalues are computed.
      *
+     * @note For other allowed values see the SLEPc documentation.
      */
     void
     set_which_eigenpairs(EPSWhich set_which);
 
     /**
-     * 指定特征谱问题的类型。这可以用来利用构成标准/广义同位素问题的矩阵的已知对称性。
-     * 默认情况下，假定是一个非赫米特问题。
-     * @note 关于其他允许的值，见SLEPc文档。
+     * Specify the type of the eigenspectrum problem. This can be used to
+     * exploit known symmetries of the matrices that make up the
+     * standard/generalized eigenspectrum problem.  By default a non-Hermitian
+     * problem is assumed.
      *
+     * @note For other allowed values see the SLEPc documentation.
      */
     void
     set_problem_type(EPSProblemType set_problem);
 
     /**
-     * 利用SLEPc提供的信息，与deal.II自己的SolverControl对象进行核对，看是否已经达到收敛。
-     *
+     * Take the information provided from SLEPc and checks it against
+     * deal.II's own SolverControl objects to see if convergence has been
+     * reached.
      */
     void
     get_solver_state(const SolverControl::State state);
 
     /**
-     * 异常。标准异常。
-     *
+     * Exception. Standard exception.
      */
     DeclException0(ExcSLEPcWrappersUsageError);
 
     /**
-     * 异常。带有错误号码的SLEPc错误。
-     *
+     * Exception. SLEPc error with error number.
      */
     DeclException1(ExcSLEPcError,
                    int,
@@ -231,8 +275,7 @@ namespace SLEPcWrappers
                    << " occurred while calling a SLEPc function");
 
     /**
-     * 异常。在特征向量的数量上收敛失败。
-     *
+     * Exception. Convergence failure on the number of eigenvectors.
      */
     DeclException2(ExcSLEPcEigenvectorConvergenceMismatchError,
                    int,
@@ -241,39 +284,36 @@ namespace SLEPcWrappers
                    << " but " << arg2 << " were requested. ");
 
     /**
-     * 访问控制收敛的对象。
-     *
+     * Access to the object that controls convergence.
      */
     SolverControl &
     control() const;
 
   protected:
     /**
-     * 对控制迭代求解器收敛的对象的引用。
-     *
+     * Reference to the object that controls convergence of the iterative
+     * solver.
      */
     SolverControl &solver_control;
 
     /**
-     * 将用于求解器的MPI通信器对象的副本。
-     *
+     * Copy of the MPI communicator object to be used for the solver.
      */
     const MPI_Comm mpi_communicator;
 
     /**
-     * 解决 <code>n_eigenpairs</code> 特征状态的线性系统。
-     * 参数 <code>n_converged</code>
-     * 包含已经收敛的特征态的实际数量；这可以少于或多于n_eigenpairs，取决于使用的SLEPc
-     * eigensolver。
-     *
+     * Solve the linear system for <code>n_eigenpairs</code> eigenstates.
+     * Parameter <code>n_converged</code> contains the actual number of
+     * eigenstates that have  converged; this can be both fewer or more than
+     * n_eigenpairs, depending on the SLEPc eigensolver used.
      */
     void
     solve(const unsigned int n_eigenpairs, unsigned int *n_converged);
 
     /**
-     * 访问已解决的特征向量问题的解决方案的实部，对索引解决方案，
-     * $\text{index}\,\in\,0\dots \mathrm{n\_converged}-1$  。
-     *
+     * Access the real parts of solutions for a solved eigenvector problem,
+     * pair index solutions, $\text{index}\,\in\,0\dots
+     * \mathrm{n\_converged}-1$.
      */
     void
     get_eigenpair(const unsigned int         index,
@@ -281,9 +321,9 @@ namespace SLEPcWrappers
                   PETScWrappers::VectorBase &eigenvectors);
 
     /**
-     * 访问已解决的特征向量问题的解的实部和虚部，对索引解，
-     * $\text{index}\,\in\,0\dots \mathrm{n\_converged}-1$  。
-     *
+     * Access the real and imaginary parts of solutions for a solved
+     * eigenvector problem, pair index solutions, $\text{index}\,\in\,0\dots
+     * \mathrm{n\_converged}-1$.
      */
     void
     get_eigenpair(const unsigned int         index,
@@ -293,17 +333,15 @@ namespace SLEPcWrappers
                   PETScWrappers::VectorBase &imag_eigenvectors);
 
     /**
-     * 初始化线性系统的求解器  $Ax=\lambda x$  .
-     * (注意：在调用solve ()之前需要这样做)
-     *
+     * Initialize solver for the linear system $Ax=\lambda x$. (Note: this is
+     * required before calling solve ())
      */
     void
     set_matrices(const PETScWrappers::MatrixBase &A);
 
     /**
-     * 同上，但在这里初始化线性系统的求解器  $A x=\lambda B
-     * x$  。
-     *
+     * Same as above, but here initialize solver for the linear system $A
+     * x=\lambda B x$.
      */
     void
     set_matrices(const PETScWrappers::MatrixBase &A,
@@ -311,23 +349,22 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 特征值问题求解器的对象。
-     *
+     * Objects for Eigenvalue Problem Solver.
      */
     EPS eps;
 
   private:
     /**
-     * 收敛的原因。
-     *
+     * Convergence reason.
      */
     EPSConvergedReason reason;
 
 
     /**
-     * 一个可以在SLEPc中作为回调使用的函数，以检查收敛情况。
-     * @note 这个函数目前没有使用。
+     * A function that can be used in SLEPc as a callback to check on
+     * convergence.
      *
+     * @note This function is not used currently.
      */
     static int
     convergence_test(EPS         eps,
@@ -341,25 +378,31 @@ namespace SLEPcWrappers
 
 
   /**
-   * 一个使用SLEPc
-   * Krylov-Schur求解器的求解器接口的实现。使用方法。所有光谱，所有问题类型，复杂。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc Krylov-Schur
+   * solver. Usage: All spectrum, all problem types, complex.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverKrylovSchur : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {};
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在这个上下文中计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverKrylovSchur(SolverControl &       cn,
                       const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -367,8 +410,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -376,37 +418,42 @@ namespace SLEPcWrappers
 
 
   /**
-   * 一个使用SLEPc Arnoldi求解器的求解器接口的实现。
-   * 使用方法。所有频谱，所有问题类型，复杂。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc Arnoldi solver.
+   * Usage: All spectrum, all problem types, complex.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverArnoldi : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {
       /**
-       * 构造函数。默认情况下，将延迟正交化的选项设置为false，即不做。
-       *
+       * Constructor. By default, set the option of delayed
+       * reorthogonalization to false, i.e. don't do it.
        */
       AdditionalData(const bool delayed_reorthogonalization = false);
 
       /**
-       * 延迟正交化的标志。
-       *
+       * Flag for delayed reorthogonalization.
        */
       bool delayed_reorthogonalization;
     };
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在这个上下文中计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverArnoldi(SolverControl &       cn,
                   const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -414,8 +461,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -423,38 +469,43 @@ namespace SLEPcWrappers
 
 
   /**
-   * 一个使用SLEPc Lanczos求解器的求解器接口的实现。
-   * 使用方法。所有光谱，所有问题类型，复杂。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc Lanczos solver.
+   * Usage: All spectrum, all problem types, complex.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverLanczos : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {
       /**
-       * 在Lanczos迭代过程中使用的正交化类型。
-       *
+       * The type of reorthogonalization used during the Lanczos iteration.
        */
       EPSLanczosReorthogType reorthog;
 
       /**
-       * 构造函数。默认情况下，在Lanczos迭代过程中使用的正交化类型为完全。
-       *
+       * Constructor. By default sets the type of reorthogonalization used
+       * during the Lanczos iteration to full.
        */
       AdditionalData(
         const EPSLanczosReorthogType r = EPS_LANCZOS_REORTHOG_FULL);
     };
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在该上下文上计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverLanczos(SolverControl &       cn,
                   const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -462,8 +513,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -471,25 +521,31 @@ namespace SLEPcWrappers
 
 
   /**
-   * 一个使用SLEPc Power求解器的求解器接口的实现。
-   * 使用方法。仅限频谱的最大值，所有问题类型，复杂。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc Power solver.
+   * Usage: Largest values of spectrum only, all problem types, complex.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverPower : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，以便在需要时将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {};
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在这个上下文中计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverPower(SolverControl &       cn,
                 const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -497,8 +553,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -506,37 +561,41 @@ namespace SLEPcWrappers
 
 
   /**
-   * 使用SLEPc
-   * Davidson求解器的求解器接口的一个实现。用法。所有问题类型。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc Davidson
+   * solver. Usage: All problem types.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverGeneralizedDavidson : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {
       /**
-       * 在搜索子空间中使用双重扩展。
-       *
+       * Use double expansion in search subspace.
        */
       bool double_expansion;
 
       /**
-       * 构造函数。默认将double_expansion设置为false。
-       *
+       * Constructor. By default set double_expansion to false.
        */
       AdditionalData(bool double_expansion = false);
     };
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在该上下文上计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverGeneralizedDavidson(
       SolverControl &       cn,
@@ -545,8 +604,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -554,25 +612,31 @@ namespace SLEPcWrappers
 
 
   /**
-   * 使用SLEPc
-   * Jacobi-Davidson求解器的求解器接口的一个实现。用法。所有问题类型。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档，以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc Jacobi-Davidson
+   * solver. Usage: All problem types.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverJacobiDavidson : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {};
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在这个上下文中计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverJacobiDavidson(SolverControl & cn,
                          const MPI_Comm &mpi_communicator = PETSC_COMM_SELF,
@@ -580,8 +644,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -589,24 +652,31 @@ namespace SLEPcWrappers
 
 
   /**
-   * 一个使用SLEPc LAPACK直接求解器的求解器接口的实现。
-   * 关于如何使用这个类和它的兄弟类的例子，包括如何为要计算特征值的矩阵提供前置条件，请参见SolverBase类的文档以及SLEPcWrappers命名空间的文档中的广泛讨论。
-   * @ingroup SLEPcWrappers
+   * An implementation of the solver interface using the SLEPc LAPACK direct
+   * solver.
    *
+   * For examples of how this and its sibling classes can be used, including
+   * how to provide preconditioners to the matrix of which eigenvalues are
+   * to be computed, see the documentation of the SolverBase class as well
+   * as the extensive discussions in the documentation of the SLEPcWrappers
+   * namespace.
+   *
+   * @ingroup SLEPcWrappers
    */
   class SolverLAPACK : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，如果需要的话，可以将额外的数据输送到求解器中。
-     *
+     * Standardized data struct to pipe additional data to the solver, should
+     * it be needed.
      */
     struct AdditionalData
     {};
 
     /**
-     * SLEPc求解器将希望有一个MPI通信器上下文，在这个上下文中计算被并行化。默认情况下，这与PETScWrappers的行为相同，但你可以改变它。
-     *
+     * SLEPc solvers will want to have an MPI communicator context over which
+     * computations are parallelized. By default, this carries the same
+     * behavior as the PETScWrappers, but you can change that.
      */
     SolverLAPACK(SolverControl &       cn,
                  const MPI_Comm &      mpi_communicator = PETSC_COMM_SELF,
@@ -614,8 +684,7 @@ namespace SLEPcWrappers
 
   protected:
     /**
-     * 为这个特定的求解器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -624,9 +693,8 @@ namespace SLEPcWrappers
 
   // --------------------------- inline and template functions -----------
   /**
-   * 在此声明的目的是为了使其有可能采取 std::vector
-   * 不同的PETScWrappers向量类型
-   *
+   * This is declared here to make it possible to take a std::vector of
+   * different PETScWrappers vector types
    */
   // todo: The logic of these functions can be simplified without breaking
   // backward compatibility...
@@ -787,10 +855,8 @@ DEAL_II_NAMESPACE_CLOSE
 
 #  endif // DEAL_II_WITH_SLEPC
 
- /*----------------------------   slepc_solver.h  ---------------------------*/ 
+/*----------------------------   slepc_solver.h  ---------------------------*/
 
 #endif
 
- /*----------------------------   slepc_solver.h  ---------------------------*/ 
-
-
+/*----------------------------   slepc_solver.h  ---------------------------*/

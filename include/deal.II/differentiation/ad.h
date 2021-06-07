@@ -1,3 +1,4 @@
+//include/deal.II-translator/differentiation/ad_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2018 by the deal.II authors
@@ -31,20 +32,28 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace that encapsulates various classes and helper functions related
- * to automatic and symbolic differentiation.
+ * 一个命名空间，封装了与自动和符号微分有关的各种类和辅助函数。
+ *
  *
  * @ingroup auto_symb_diff
+ *
  */
 namespace Differentiation
 {
   /**
-   * Wrappers for automatic differentiation libraries. Currently there is
-   * support for the following libraries:
-   *   - ADOL-C
-   *   - Sacado (a component of Trilinos)
+   * 自动分化库的封装器。目前支持以下库。
    *
+   *
+   *
+   * - ADOL-C
+   *
+   *
+   *
+   *
+   *
+   * - 萨卡多（Trilinos的一个组成部分）。
    * @ingroup auto_symb_diff
+   *
    */
   namespace AD
   {}
@@ -53,3 +62,5 @@ namespace Differentiation
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

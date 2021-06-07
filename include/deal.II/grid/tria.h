@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/tria_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -95,9 +96,8 @@ namespace internal
     class Policy;
 
     /**
-     * Forward declaration of a class into which we put much of the
-     * implementation of the Triangulation class. See the .cc file for more
-     * information.
+     * 一个类的前向声明，我们把三角形类的大部分实现放在这个类中。参见.cc文件以了解更多信息。
+     *
      */
     struct Implementation;
     struct ImplementationMixedMesh;
@@ -111,87 +111,80 @@ namespace internal
 #endif
 
 
-/*------------------------------------------------------------------------*/
+ /*------------------------------------------------------------------------*/ 
 
 
 namespace internal
 {
   /**
-   * A namespace for classes internal to the triangulation classes and
-   * helpers.
+   * 一个命名空间，用于三角化类和帮助器的内部类。
+   *
    */
   namespace TriangulationImplementation
   {
     /**
-     * Cache class used to store the number of used and active elements (lines
-     * or quads etc) within the levels of a triangulation. This is only the
-     * declaration of the template, concrete instantiations are below.
+     * 缓存类，用于存储三角剖分中各层内已使用和活动的元素（线或四边形等）的数量。这只是模板的声明，具体实例在下面。
+     * 在过去，每当人们想要访问这些数字之一时，就必须在所有的线上执行一个循环，例如，计算元素，直到我们碰到终端迭代器。这很耗时，而且由于访问行数等是一个相当频繁的操作，这并不是一个最佳的解决方案。
      *
-     * In the old days, whenever one wanted to access one of these numbers,
-     * one had to perform a loop over all lines, e.g., and count the elements
-     * until we hit the end iterator. This is time consuming and since access
-     * to the number of lines etc is a rather frequent operation, this was not
-     * an optimal solution.
      */
     template <int dim>
     struct NumberCache
     {};
 
     /**
-     * Cache class used to store the number of used and active elements (lines
-     * or quads etc) within the levels of a triangulation. This specialization
-     * stores the numbers of lines.
+     * 缓存类，用于存储三角形的各层中已使用和活跃的元素（线或四边形等）的数量。这个特殊化存储了线的数量。
+     * 在过去，每当人们想要访问这些数字之一时，就必须在所有的线上进行循环，例如，计算元素，直到我们碰到结束迭代器。这很耗时，而且由于访问行数等是一个相当频繁的操作，这并不是一个最佳的解决方案。
      *
-     * In the old days, whenever one wanted to access one of these numbers,
-     * one had to perform a loop over all lines, e.g., and count the elements
-     * until we hit the end iterator. This is time consuming and since access
-     * to the number of lines etc is a rather frequent operation, this was not
-     * an optimal solution.
      */
     template <>
     struct NumberCache<1>
     {
       /**
-       * The number of levels on which we have used objects.
+       * 我们使用过的对象的层数。
+       *
        */
       unsigned int n_levels;
 
       /**
-       * Number of used lines in the whole triangulation.
+       * 整个三角测量中使用的线的数量。
+       *
        */
       unsigned int n_lines;
 
       /**
-       * Array holding the number of used lines on each level.
+       * 保存每层所用线数的数组。
+       *
        */
       std::vector<unsigned int> n_lines_level;
 
       /**
-       * Number of active lines in the whole triangulation.
+       * 整个三角测量中的活动线数。
+       *
        */
       unsigned int n_active_lines;
 
       /**
-       * Array holding the number of active lines on each level.
+       * 保存每层活动线数的数组。
+       *
        */
       std::vector<unsigned int> n_active_lines_level;
 
       /**
-       * Constructor. Set values to zero by default.
+       * 构造函数。默认情况下，将数值设置为零。
+       *
        */
       NumberCache();
 
       /**
-       * Determine an estimate for the memory consumption (in bytes) of this
-       * object.
+       * 确定此对象的内存消耗（以字节为单位）的估计值。
+       *
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * Read or write the data of this object to or from a stream for the
-       * purpose of serialization using the [BOOST serialization
-       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+       *
        */
       template <class Archive>
       void
@@ -200,56 +193,53 @@ namespace internal
 
 
     /**
-     * Cache class used to store the number of used and active elements (lines
-     * or quads etc) within the levels of a triangulation. This specialization
-     * stores the numbers of quads. Due to the inheritance from the base class
-     * NumberCache<1>, the numbers of lines are also within this class.
+     * 缓存类，用于存储三角形的各层中已使用和活动的元素（线或四边形等）的数量。这个特殊化存储四边形的数量。由于从基类NumberCache<1>的继承，线的数量也在这个类中。
+     * 在过去，每当人们想要访问这些数字中的一个，就必须在所有的线上进行循环，例如，计算元素，直到我们碰到结束的迭代器。这很耗时，而且由于访问行数等是一个相当频繁的操作，这并不是一个最佳的解决方案。
      *
-     * In the old days, whenever one wanted to access one of these numbers,
-     * one had to perform a loop over all lines, e.g., and count the elements
-     * until we hit the end iterator. This is time consuming and since access
-     * to the number of lines etc is a rather frequent operation, this was not
-     * an optimal solution.
      */
     template <>
     struct NumberCache<2> : public NumberCache<1>
     {
       /**
-       * Number of used quads in the whole triangulation.
+       * 整个三角形中使用的四边形的数量。
+       *
        */
       unsigned int n_quads;
 
       /**
-       * Array holding the number of used quads on each level.
+       * 保存每层所用四边形数量的数组。
+       *
        */
       std::vector<unsigned int> n_quads_level;
 
       /**
-       * Number of active quads in the whole triangulation.
+       * 整个三角结构中的活动四边形的数量。
+       *
        */
       unsigned int n_active_quads;
 
       /**
-       * Array holding the number of active quads on each level.
+       * 保存每层活动四边形数量的数组。
+       *
        */
       std::vector<unsigned int> n_active_quads_level;
 
       /**
-       * Constructor. Set values to zero by default.
+       * 构造函数。默认情况下，将数值设置为零。
+       *
        */
       NumberCache();
 
       /**
-       * Determine an estimate for the memory consumption (in bytes) of this
-       * object.
+       * 确定此对象的内存消耗（以字节为单位）的估计值。
+       *
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * Read or write the data of this object to or from a stream for the
-       * purpose of serialization using the [BOOST serialization
-       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，将此对象的数据读入或写入一个流中。
+       *
        */
       template <class Archive>
       void
@@ -258,57 +248,53 @@ namespace internal
 
 
     /**
-     * Cache class used to store the number of used and active elements (lines
-     * or quads etc) within the levels of a triangulation. This specialization
-     * stores the numbers of hexes. Due to the inheritance from the base class
-     * NumberCache<2>, the numbers of lines and quads are also within this
-     * class.
+     * 缓存类，用于存储三角图各层中已使用和活动的元素（线或四边形等）的数量。这个特殊化存储的是六边形的数量。由于从基类NumberCache<2>的继承，线和四边形的数量也在这个类中。
+     * 在过去，每当人们想要访问这些数字之一时，就必须在所有的线上执行一个循环，例如，计算元素，直到我们碰到终点。这很耗时，而且由于访问行数等是一个相当频繁的操作，这并不是一个最佳的解决方案。
      *
-     * In the old days, whenever one wanted to access one of these numbers,
-     * one had to perform a loop over all lines, e.g., and count the elements
-     * until we hit the end . This is time consuming and since access to the
-     * number of lines etc is a rather frequent operation, this was not an
-     * optimal solution.
      */
     template <>
     struct NumberCache<3> : public NumberCache<2>
     {
       /**
-       * Number of used hexes in the whole triangulation.
+       * 整个三角测量中使用的六边形的数量。
+       *
        */
       unsigned int n_hexes;
 
       /**
-       * Array holding the number of used hexes on each level.
+       * 保存每层使用的六边形数量的数组。
+       *
        */
       std::vector<unsigned int> n_hexes_level;
 
       /**
-       * Number of active hexes in the whole triangulation.
+       * 整个三角测量中的活动爻数。
+       *
        */
       unsigned int n_active_hexes;
 
       /**
-       * Array holding the number of active hexes on each level.
+       * 保存每层活动六角的数量的数组。
+       *
        */
       std::vector<unsigned int> n_active_hexes_level;
 
       /**
-       * Constructor. Set values to zero by default.
+       * 构造函数。默认情况下，将数值设置为零。
+       *
        */
       NumberCache();
 
       /**
-       * Determine an estimate for the memory consumption (in bytes) of this
-       * object.
+       * 确定此对象的内存消耗（以字节为单位）的估计值。
+       *
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * Read or write the data of this object to or from a stream for the
-       * purpose of serialization using the [BOOST serialization
-       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+       * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，将此对象的数据读入或写入一个流中。
+       *
        */
       template <class Archive>
       void
@@ -318,1526 +304,863 @@ namespace internal
 } // namespace internal
 
 
-/*------------------------------------------------------------------------*/
+ /*------------------------------------------------------------------------*/ 
 
 
 /**
- * A triangulation is a collection of cells that, jointly, cover the domain
- * on which one typically wants to solve a partial differential equation.
- * This domain, and the mesh that covers it, represents a @p dim -dimensional manifold
- * and lives in @p spacedim spatial dimensions, where @p dim and @p spacedim
- * are the template arguments of this class. (If @p spacedim is not specified,
- * it takes the default value `spacedim=dim`.)
+ * 三角形是一个单元的集合，这些单元共同覆盖了人们通常想要解决的偏微分方程的领域。这个域和覆盖它的网格代表了一个
+ * @p dim 。
  *
- * Thus, for example, an object of type @p Triangulation<1,1> (or simply @p
- * Triangulation<1> since @p spacedim==dim by default) is used to represent
- * and handle the usual one-dimensional triangulation used in the finite
- * element method (so, segments on a straight line). On the other hand,
- * objects such as @p Triangulation<1,2> or @p Triangulation<2,3> (that are
- * associated with curves in 2D or surfaces in 3D) are the ones one wants to
- * use in the boundary element method.
+ * - 扩张流形，并且生活在 @p spacedim 空间维度中，其中 @p dim 和 @p spacedim 是该类的模板参数。(如果没有指定 @p spacedim ，则采用默认值`spacedim=dim`)。
+ * 因此，例如，一个 @p Triangulation<1,1>
+ * 类型的对象（或者干脆是 @p  Triangulation<1>，因为默认为 @p
+ * spacedim==dim
+ * ）被用来表示和处理有限元方法中常用的一维三角形（因此，直线上的段）。另一方面，像
+ * @p Triangulation<1,2> 或 @p Triangulation<2,3>
+ * 这样的对象（与二维的曲线或三维的曲面有关）是人们想在边界元素方法中使用的对象。
+ * 该类的名称主要是分层次的，并不意味着三角计算只能由三角形组成。相反，三角形由1d的线段组成（即，如果`dim==1`），以及由三维单元组成（如果`dim==3`）。此外，历史上，deal.II只支持二维的四边形（有四个顶点的单元：变形的矩形）和六面体（有六个边和八个顶点的单元，是变形的盒子），它们都不是三角形。换句话说，deal.II语言中的术语
+ * "三角形 "是 "网格
+ * "的同义词，应与它的语言来源分开理解。
+ * 这个类被写成尽可能独立于维度（因此
+ * dealii::internal::TriangulationImplementation::TriaLevel
+ * 类的复杂结构），以允许代码共享，允许减少将一个维度的代码变化反映到其他维度的代码中的需要。尽管如此，一些函数是依赖于维度的，并且只存在针对不同维度的专门版本。
+ * 这个类满足了 @ref ConceptMeshType "MeshType概念 "
+ * 的要求。 <h3>Structure and iterators</h3>
+ * Triangulation对象的实际数据结构是相当复杂的，如果试图直接对其进行操作的话，是相当不方便的，因为数据分布在相当多的数组和其他地方。然而，有足够强大的方法可以在不知道其确切关系的情况下对这些数据结构进行操作。deal.II使用类的局部别名（见下文）来使事情变得尽可能简单和不依赖维度。
+ * Triangulation类提供了迭代器，可以在不知道用于描述单元的确切表示法的情况下，在所有单元上循环操作。更多信息见<tt>TriaIterator</tt>的文档。它们的名字是从迭代器类中导入的别名（从而使它们成为这个类的本地类型），具体如下。
+ * <ul>   <li>  <tt>cell_iterator</tt>: 循环处理三角测量中使用的所有单元  <li>  <tt>active_cell_iterator</tt>: 循环处理所有活动单元  </ul>  。
+ * 对于<tt>dim==1</tt>，这些迭代器被映射为如下。
+ * @code
+ *  using cell_iterator = line_iterator;
+ *  using active_cell_iterator = active_line_iterator;
+ * @endcode
+ * 而对于 @p dim==2 我们有额外的面孔迭代器。
+ * @code
+ *  using cell_iterator = quad_iterator;
+ *  using active_cell_iterator = active_quad_iterator;
  *
- * The name of the class is mostly hierarchical and is not meant to imply that
- * a Triangulation can only consist of triangles. Instead, triangulations
- * consist of line segments in 1d (i.e., if `dim==1`), and of three-dimensional
- * cells (if `dim==3`). Moreover, historically, deal.II only supported
- * quadrilaterals (cells with four vertices: deformed rectangles) in 2d
- * and hexahedra (cells with six sides and eight vertices that are deformed
- * boxes), neither of which are triangles. In other words, the term
- * "triangulation" in the deal.II language is synonymous with "mesh" and is
- * to be understood separate from its linguistic origin.
+ *  using face_iterator = line_iterator;
+ *  using active_face_iterator = active_line_iterator;
+ * @endcode
  *
- * This class is written to be as independent of the dimension as possible
- * (thus the complex construction of the
- * dealii::internal::TriangulationImplementation::TriaLevel classes) to allow
- * code-sharing, to allow reducing the need to mirror changes in the code for
- * one dimension to the code for other dimensions. Nonetheless, some of the
- * functions are dependent of the dimension and there only exist specialized
- * versions for distinct dimensions.
- *
- * This class satisfies the
- * @ref ConceptMeshType "MeshType concept"
- * requirements.
- *
- * <h3>Structure and iterators</h3>
- *
- * The actual data structure of a Triangulation object is rather complex and
- * quite inconvenient if one attempted to operate on it directly, since data
- * is spread over quite a lot of arrays and other places. However, there are
- * ways powerful enough to work on these data structures without knowing their
- * exact relations. deal.II uses class local alias (see below) to make
- * things as easy and dimension independent as possible.
- *
- * The Triangulation class provides iterators which enable looping over all
- * cells without knowing the exact representation used to describe them. For
- * more information see the documentation of <tt>TriaIterator</tt>. Their
- * names are alias imported from the Iterators class (thus making them
- * local types to this class) and are as follows:
- *
- * <ul>
- * <li> <tt>cell_iterator</tt>: loop over all cells used in the Triangulation
- * <li> <tt>active_cell_iterator</tt>: loop over all active cells
+ * 通过使用单元格迭代器，你可以编写独立于空间维度的代码。这同样适用于子结构迭代器，子结构被定义为一个单元的面。单元的面在一维是一个顶点，在二维是一条线；但是，顶点的处理方式不同，因此线没有面。
+ * Triangulation类提供了一些函数，如begin_active()，它给你一个通往第一个活动单元的迭代器。有相当多的函数返回迭代器。请看一下类的文档以获得一个概述。
+ * 这些迭代器的使用与标准容器迭代器的使用类似。以下是Triangulation源代码中的一些例子（注意在最后两个例子中，模板参数
+ * @p spacedim 被省略了，所以它采用默认值 <code>dim</code> ）。
+ * <ul>   <li>   <em>  计算特定层次上的细胞数量  </em>  。
+ * @code
+ *    template <int dim, int spacedim>
+ *    unsigned int
+ *    Triangulation<dim, spacedim>::n_cells (const int level) const
+ *    {
+ *      int n=0;
+ *      for (const auto &cell : cell_iterators_on_level(level))
+ *        ++n;
+ *      return n;
+ *    }
+ * @endcode
+ * 另一种方法，即使用 <tt>std::distance</tt>, 将写成
+ * @code
+ *    template <int dim>
+ *    unsigned int
+ *    Triangulation<dim>::n_cells (const int level) const
+ *    {
+ *      int n=0;
+ *      distance (begin(level),
+ *                (level == levels.size()-1 ?
+ *                 cell_iterator(end()) :
+ *                 begin (level+1)),
+ *                n);
+ *      return n;
+ *    }
+ * @endcode
+ * <li>   <em>  完善一个三角形的所有单元  </em>  。
+ * @code
+ *    template <int dim>
+ *    void Triangulation<dim>::refine_global ()
+ *    {
+ *      for (const auto &cell : active_cell_iterators())
+ *        cell->set_refine_flag ();
+ *      execute_coarsening_and_refinement ();
+ *    }
+ * @endcode
  * </ul>
  *
- * For <tt>dim==1</tt>, these iterators are mapped as follows:
- *  @code
- *    using cell_iterator = line_iterator;
- *    using active_cell_iterator = active_line_iterator;
- *  @endcode
- * while for @p dim==2 we have the additional face iterator:
- *  @code
- *    using cell_iterator = quad_iterator;
- *    using active_cell_iterator = active_quad_iterator;
+ *  <h3>Usage</h3>
+ * 三角形的使用主要是通过使用迭代器完成的。一个例子可能最能说明如何使用它。
  *
- *    using face_iterator = line_iterator;
- *    using active_face_iterator = active_line_iterator;
- *  @endcode
- *
- * By using the cell iterators, you can write code independent of the spatial
- * dimension. The same applies for substructure iterators, where a
- * substructure is defined as a face of a cell. The face of a cell is a vertex
- * in 1D and a line in 2D; however, vertices are handled in a different way
- * and therefore lines have no faces.
- *
- * The Triangulation class offers functions like begin_active() which gives
- * you an iterator to the first active cell. There are quite a lot of
- * functions returning iterators. Take a look at the class doc to get an
- * overview.
- *
- * Usage of these iterators is similar to usage of standard container
- * iterators. Some examples taken from the Triangulation source code follow
- * (notice that in the last two examples the template parameter @p spacedim
- * has been omitted, so it takes the default value <code>dim</code>).
- *
- * <ul>
- * <li> <em>Counting the number of cells on a specific level</em>
- *    @code
- *      template <int dim, int spacedim>
- *      unsigned int
- *      Triangulation<dim, spacedim>::n_cells (const int level) const
- *      {
- *        int n=0;
- *        for (const auto &cell : cell_iterators_on_level(level))
- *          ++n;
- *        return n;
- *      }
- *    @endcode
- * Another way, which uses <tt>std::distance</tt>, would be to write
- *    @code
- *      template <int dim>
- *      unsigned int
- *      Triangulation<dim>::n_cells (const int level) const
- *      {
- *        int n=0;
- *        distance (begin(level),
- *                  (level == levels.size()-1 ?
- *                   cell_iterator(end()) :
- *                   begin (level+1)),
- *                  n);
- *        return n;
- *      }
- *    @endcode
- *
- * <li> <em>Refining all cells of a triangulation</em>
- *    @code
- *      template <int dim>
- *      void Triangulation<dim>::refine_global ()
- *      {
- *        for (const auto &cell : active_cell_iterators())
- *          cell->set_refine_flag ();
- *        execute_coarsening_and_refinement ();
- *      }
- *    @endcode
- * </ul>
- *
- *
- * <h3>Usage</h3>
- *
- * Usage of a Triangulation is mainly done through the use of iterators. An
- * example probably shows best how to use it:
  * @code
  * int main ()
  * {
- *   Triangulation<2> tria;
+ * Triangulation<2> tria;
  *
- *   // read in a coarse grid file
+ * // read in a coarse grid file
  *
- *   // we want to log the refinement history
- *   ofstream history ("mesh.history");
+ * // we want to log the refinement history
+ * ofstream history ("mesh.history");
  *
- *   // refine first cell
- *   tria.begin_active()->set_refine_flag();
- *   tria.save_refine_flags (history);
- *   tria.execute_coarsening_and_refinement ();
+ * // refine first cell
+ * tria.begin_active()->set_refine_flag();
+ * tria.save_refine_flags (history);
+ * tria.execute_coarsening_and_refinement ();
  *
- *   // refine first active cell on coarsest level
- *   tria.begin_active()->set_refine_flag ();
- *   tria.save_refine_flags (history);
- *   tria.execute_coarsening_and_refinement ();
+ * // refine first active cell on coarsest level
+ * tria.begin_active()->set_refine_flag ();
+ * tria.save_refine_flags (history);
+ * tria.execute_coarsening_and_refinement ();
  *
- *   Triangulation<2>::active_cell_iterator cell;
- *   for (int i=0; i<17; ++i)
- *     {
- *       // refine the presently second last cell 17 times
- *       cell = tria.last_active(tria.n_levels()-1);
- *       --cell;
- *       cell->set_refine_flag ();
- *       tria.save_refine_flags (history);
- *       tria.execute_coarsening_and_refinement ();
- *     };
- *   // output the grid
- *   ofstream out("grid.1");
- *   GridOut::write_gnuplot (tria, out);
+ * Triangulation<2>::active_cell_iterator cell;
+ * for (int i=0; i<17; ++i)
+ *   {
+ *     // refine the presently second last cell 17 times
+ *     cell = tria.last_active(tria.n_levels()-1);
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * --cell;
+ *     cell->set_refine_flag ();
+ *     tria.save_refine_flags (history);
+ *     tria.execute_coarsening_and_refinement ();
+ *   };
+ * // output the grid
+ * ofstream out("grid.1");
+ * GridOut::write_gnuplot (tria, out);
  * }
  * @endcode
  *
  *
- * <h3>Creating a triangulation</h3>
- *
- * There are several possibilities to create a triangulation:
- * <ul>
- * <li> The most common domains, such as hypercubes (i.e. lines, squares,
- * cubes, etc), hyper-balls (circles, balls, ...) and some other, more weird
- * domains such as the L-shape region and higher dimensional generalizations
- * and others, are provided by the GridGenerator class which takes a
- * triangulation and fills it by a division of the required domain.
- *
- * <li> Reading in a triangulation: By using an object of the GridIn class,
- * you can read in fairly general triangulations. See there for more
- * information. The mentioned class uses the interface described directly
- * below to transfer the data into the triangulation.
- *
- * <li> Explicitly creating a triangulation: you can create a triangulation by
- * providing a list of vertices and a list of cells. Each such cell consists
- * of a vector storing the indices of the vertices of this cell in the vertex
- * list. To see how this works, you can take a look at the GridIn<dim>::read_*
- * functions. The appropriate function to be called is create_triangulation().
- *
- * Creating the hierarchical information needed for this library from cells
- * storing only vertex information can be quite a complex task.  For example
- * in 2D, we have to create lines between vertices (but only once, though
- * there are two cells which link these two vertices) and we have to create
- * neighborhood information. Grids being read in should therefore not be too
- * large, reading refined grids would be inefficient (although there is
- * technically no problem in reading grids with several 10.000 or 100.000
- * cells; the library can handle this without much problems). Apart from the
- * performance aspect, refined grids do not lend too well to multigrid
- * algorithms, since solving on the coarsest level is expensive. It is wiser
- * in any case to read in a grid as coarse as possible and then do the needed
- * refinement steps.
- *
- * It is your duty to guarantee that cells have the correct orientation. To
- * guarantee this, in the input vector keeping the cell list, the vertex
- * indices for each cell have to be in a defined order, see the documentation
- * of GeometryInfo<dim>. In one dimension, the first vertex index must refer
- * to that vertex with the lower coordinate value. In 2D and 3D, the
- * corresponding conditions are not easy to verify and no full attempt to do
- * so is made. If you violate this condition, you may end up with matrix
- * entries having the wrong sign (clockwise vertex numbering, which results in
- * a negative area element) of with wrong matrix elements (twisted
- * quadrilaterals, i.e. two vertices interchanged; this results in a wrong
- * area element).
- *
- * There are more subtle conditions which must be imposed upon the vertex
- * numbering within cells. They do not only hold for the data read from an UCD
- * or any other input file, but also for the data passed to
- * create_triangulation(). See the documentation for the GridIn class for more
- * details on this, and above all to the GridReordering class that explains
- * many of the problems and an algorithm to reorder cells such that they
- * satisfy the conditions outlined above.
- *
- * <li> Copying a triangulation: when computing on time dependent meshes or
- * when using adaptive refinement, you will often want to create a new
- * triangulation to be the same as another one. This is facilitated by the @p
- * copy_triangulation function.
- *
- * It is guaranteed that vertex, line or cell numbers in the two
- * triangulations are the same and that two iterators walking on the two
- * triangulations visit matching cells if they are incremented in parallel. It
- * may be conceivable to implement a clean-up in the copy operation, which
- * eliminates holes of unused memory, re-joins scattered data and so on. In
- * principle this would be a useful operation but guaranteeing some
- * parallelism in the two triangulations seems more important since usually
- * data will have to be transferred between the grids.
- * </ul>
- *
- * Finally, there is a special function for folks who like bad grids:
- * distort_random(). It moves all the vertices in the grid a bit around by a
- * random value, leaving behind a distorted mesh. Note that you should apply
- * this function to the final mesh, since refinement smoothes the mesh a bit.
- *
- * The function will make sure that vertices on restricted faces (hanging
- * nodes) will end up in the correct place, i.e. in the middle of the two
- * other vertices of the mother line, and the analogue in higher space
- * dimensions (vertices on the boundary are not corrected, so don't distort
- * boundary vertices in more than two space dimension, i.e. in dimensions
- * where boundary vertices can be hanging nodes). Applying the algorithm has
- * another drawback related to the placement of cells, however: the children
- * of a cell will not occupy the same region of the domain as the mother cell
- * does. While this is the usual behavior with cells at the boundary, here you
- * may get into trouble when using multigrid algorithms or when transferring
- * solutions from coarse to fine grids and back. In general, the use of this
- * function is only safe if you only use the most refined level of the
- * triangulation for computations.
- *
+ *  <h3>Creating a triangulation</h3>
+ * 有几种创建三角的可能性。  <ul>   <li>  最常见的域，如超立方体（即直线、正方形、立方体等）、超球体（圆、球...）和其他一些更奇怪的域，如L形区域和高维泛化等，由GridGenerator类提供，它接受一个三角形，通过对所需域的划分来填充它。
+ * <li>
+ * 读入一个三角剖面。通过使用GridIn类的一个对象，你可以读入相当普遍的三角形。更多信息见那里。所提到的类使用下面直接描述的接口，将数据传输到三角测量中。
+ * <li>
+ * 明确创建一个三角形：你可以通过提供一个顶点列表和一个单元格列表来创建一个三角形。每个单元由一个向量组成，存储该单元在顶点列表中的顶点的索引。要看这是如何工作的，你可以看看
+ * GridIn<dim>::read_*
+ * 函数。要调用的适当函数是create_triangulation()。
+ * 从只存储顶点信息的单元中创建本库所需的层次信息可能是一项相当复杂的任务。
+ * 例如在二维中，我们必须在顶点之间创建线条（但只有一次，尽管有两个单元格将这两个顶点连接起来），我们还必须创建邻域信息。因此，被读入的网格不应该太大，读入细化的网格将是低效的（尽管从技术上讲，读入几个10,000或100,000个单元的网格是没有问题的；库可以处理这些问题）。除了性能方面，细化网格并不适合多网格算法，因为在最粗的层次上求解是昂贵的。在任何情况下，最明智的做法是尽可能粗略地读入网格，然后进行必要的细化步骤。
+ * 你有责任保证单元有正确的方向。为了保证这一点，在保持单元格列表的输入向量中，每个单元格的顶点指数必须按规定的顺序排列，见GeometryInfo<dim>的文档。在一维中，第一个顶点索引必须是指具有较低坐标值的顶点。在二维和三维中，相应的条件不容易验证，也没有完全尝试这样做。如果你违反了这个条件，你可能会发现矩阵条目有错误的符号（顺时针方向的顶点编号，这将导致一个负的面积元素）或错误的矩阵元素（扭曲的四边形，即两个顶点互换；这将导致一个错误的面积元素）。
+ * 有一些更微妙的条件必须施加在单元格内的顶点编号上。它们不仅适用于从UCD或任何其他输入文件中读取的数据，也适用于传递给create_triangulation()的数据。有关这方面的更多细节，请参见GridIn类的文档，最重要的是GridReordering类，它解释了许多问题和一种重新排序单元的算法，使它们满足上述条件。
+ * <li>
+ * 复制三角形：当在与时间相关的网格上计算或使用自适应细化时，你经常希望创建一个新的三角形，使其与另一个相同。
+ * @p copy_triangulation函数为此提供了便利。
+ * 它保证了两个三角形中的顶点、线或单元格的编号是相同的，并且如果两个迭代器在两个三角形上行走，它们会访问匹配的单元格，如果它们是平行递增的。可以设想在复制操作中实现清理，消除未使用的内存孔，重新连接分散的数据等等。原则上，这将是一个有用的操作，但是保证两个三角形的某些并行性似乎更重要，因为通常数据必须在网格之间传输。  </ul>
+ * 最后，对于喜欢坏网格的人来说，还有一个特殊的函数：distort_random()。它将网格中的所有顶点按一个随机值左右移动，留下一个扭曲的网格。注意，你应该将这个函数应用于最终的网格，因为细化会使网格变得更加平滑。
+ * 该函数将确保受限面的顶点（悬空节点）最终会出现在正确的位置，即在母线的另外两个顶点的中间，在更高的空间维度上也是如此（边界上的顶点不会被修正，所以不要在两个以上的空间维度上扭曲边界顶点，即在边界顶点可以成为悬空节点的维度上）。然而，应用该算法还有一个与单元格放置有关的缺点：一个单元格的子女不会像母单元格那样占据领域的同一区域。虽然这是边界上的单元的通常行为，但在使用多网格算法或将解从粗网格转移到细网格时，你可能会遇到麻烦。一般来说，只有当你只使用最精细的三角网格进行计算时，使用这个函数才是安全的。
  *
  *
  * <h3>Refinement and coarsening of a triangulation</h3>
+ * 三角形的细化可以通过几种方式完成。最低级的方式是直接通过迭代器：让
+ * @p i
+ * 成为一个活动单元的迭代器（即指向的单元没有子代），然后函数调用<tt>i->set_refine_flag()</tt>标记相应的单元进行细化。标记非活动单元格会导致一个错误。
+ * 在所有你想标记为细化的单元格之后，调用execute_coarsening_and_refinement()来实际执行细化。这个函数本身首先调用
+ * @p prepare_coarsening_and_refinement
+ * 函数来规范生成的三角形：由于两个相邻单元之间的面只能被细分一次（即两个相邻单元的层次最多只能相差一个；不可能一个单元被细化两次而相邻的单元没有被细化），一些额外的单元被标记为细化以平滑网格。这增加了结果单元的数量，但使网格更加规则，从而导致更好的近似特性，最重要的是，使数据结构和算法的处理更加容易。说实话，这主要是一个算法上的步骤，而不是有限元方法所需要的。
+ * 要粗化一个网格，可以通过使用<tt>i->set_coarsen_flag</tt>和调用execute_coarsening_and_refinement()来实现上述同样的方法。
+ * 先粗化，后细化的原因是，细化通常会增加一些额外的单元以保持三角形的规则，从而满足所有细化的要求，而粗化不会删除没有要求的单元；因此细化往往会恢复粗化的一些效果，而反之则不然。因此，所述的先粗化后细化的顺序通常会导致一个更接近预期的结果。
+ * 通过迭代器 "手工
+ * "标记单元进行细化是产生新网格的一种方法，特别是当你知道你在寻找什么样的网格时，比如你想让网格向边界连续细化或者总是在中心细化（参见示例程序，它们正是做这些事情）。然而，还有一些更高级的函数，它们更适合于在后验误差估计和自适应有限元的背景下自动生成分层网格。这些函数可以在GridRefinement类中找到。
  *
- * Refinement of a triangulation may be done through several ways. The most
- * low-level way is directly through iterators: let @p i be an iterator to an
- * active cell (i.e. the cell pointed to has no children), then the function
- * call <tt>i->set_refine_flag()</tt> marks the respective cell for
- * refinement. Marking non-active cells results in an error.
- *
- * After all the cells you wanted to mark for refinement, call
- * execute_coarsening_and_refinement() to actually perform the refinement.
- * This function itself first calls the @p prepare_coarsening_and_refinement
- * function to regularize the resulting triangulation: since a face between
- * two adjacent cells may only be subdivided once (i.e. the levels of two
- * adjacent cells may differ by one at most; it is not possible to have a cell
- * refined twice while the neighboring one is not refined), some additional
- * cells are flagged for refinement to smooth the grid. This enlarges the
- * number of resulting cells but makes the grid more regular, thus leading to
- * better approximation properties and, above all, making the handling of data
- * structures and algorithms much easier. To be honest, this is mostly an
- * algorithmic step than one needed by the finite element method.
- *
- * To coarsen a grid, the same way as above is possible by using
- * <tt>i->set_coarsen_flag</tt> and calling
- * execute_coarsening_and_refinement().
- *
- * The reason for first coarsening, then refining is that the refinement
- * usually adds some additional cells to keep the triangulation regular and
- * thus satisfies all refinement requests, while the coarsening does not
- * delete cells not requested for; therefore the refinement will often revert
- * some effects of coarsening while the opposite is not true. The stated order
- * of coarsening before refinement will thus normally lead to a result closer
- * to the intended one.
- *
- * Marking cells for refinement 'by hand' through iterators is one way to
- * produce a new grid, especially if you know what kind of grid you are
- * looking for, e.g. if you want to have a grid successively refined towards
- * the boundary or always at the center (see the example programs, they do
- * exactly these things). There are more advanced functions, however, which
- * are more suitable for automatic generation of hierarchical grids in the
- * context of a posteriori error estimation and adaptive finite elements.
- * These functions can be found in the GridRefinement class.
+ *  <h3>Smoothing of a triangulation</h3>
+ * 对于过于非结构化的网格，已经观察到一些近似特性的退化。因此，prepare_coarsening_and_refinement()被execute_coarsening_and_refinement()自动调用，可以对三角网格进行一些平滑处理。注意，网格平滑只对两个或多个空间维度进行，目前没有对一个空间维度的平滑。在下文中，让<tt>execute_*</tt>代表execute_coarsening_and_refinement（）。
+ * 为了实现平滑化，Triangulation构造函数需要一个参数，指定每次调用<tt>execute_*</tt>时是否要对网格进行平滑化处理。默认情况下是不做这样的步骤，因为这将导致产生额外的单元格，这在所有情况下可能是不必要的。如果开启，调用<tt>execute_*</tt>的结果是标记额外的单元格进行细化，以避免出现上述的顶点。正则化和平滑三角形的算法将在下面的技术问题部分描述。这个参数必须给构造函数而不是给<tt>execute_*</tt>的原因是，如果你调用<tt>execute_*</tt>一次，没有平滑，一次就会导致算法问题，因为这样在某些细化步骤中需要细化两次。
+ * 构造函数获取的参数是一个整数，它可以由定义在枚举#MeshSmoothing中的常数进行比特化组合（见那里的可能性）。
  *
  *
- * <h3>Smoothing of a triangulation</h3>
+ * @note  虽然有可能将#MeshSmoothing中的所有标志传递给类型为
+ * parallel::distributed::Triangulation,
+ * 的对象，但如果它们需要了解不属于这个处理器的单元上的细化/粗化标志，则并不总是能够实现所有这些平滑选项。因此，对于其中的一些标志，并行三角形的最终单元数可能取决于它被分割成的处理器的数量。
  *
- * Some degradation of approximation properties has been observed for grids
- * which are too unstructured. Therefore, prepare_coarsening_and_refinement()
- * which is automatically called by execute_coarsening_and_refinement() can do
- * some smoothing of the triangulation. Note that mesh smoothing is only done
- * for two or more space dimensions, no smoothing is available at present for
- * one spatial dimension. In the following, let <tt>execute_*</tt> stand for
- * execute_coarsening_and_refinement().
+ *  <h3>Material and boundary information</h3>
+ * 每个单元、面或边都存储了表示物体所属的材料或边界部分的信息。单元的材料ID通常用于识别哪些单元属于域的特定部分，例如，当你有不同的材料（钢铁、混凝土、木材）都属于同一个域时。然后，在组装双线性表格时，通常会查询与某个单元相关的材料ID，并使用它来确定（例如，通过表格查询，或一连串的if-else语句）该单元的正确材料系数是什么。另见 @ref GlossMaterialId "本词汇表条目"
+ * 。 这个 material_id 可以在构建三角形时设置（通过 CellData
+ * 数据结构），也可以在之后通过使用单元格迭代器设置。关于这个功能的典型使用，请看
+ * step-28
+ * 的教程程序。GridGenerator命名空间的函数通常将所有单元的材料ID设置为0。当通过GridIn类读取三角图时，不同的输入文件格式有不同的约定，但通常是明确指定材料ID，如果没有，则GridIn简单地将其设置为零。因为一个单元的材料是与域的特定区域相关的，所以材料ID在网格细化时由子单元从其父单元继承。
+ * 低维对象上的边界指示器（这些对象没有材料ID）表示边界组件的数量。偏微分方程的弱表述可能在边界的不同部分有不同的边界条件。边界指标可以在创建矩阵或右侧向量时使用，以表示模型的这些不同部分（这种使用就像单元格的材料id）。边界指示器的范围可以从零到
+ * numbers::internal_face_boundary_id-1. ，值
+ * numbers::internal_face_boundary_id
+ * 是保留的，用来表示没有边界指示器的内部线（在二维）和内部线和四边形（在三维）。这样一来，程序就可以很容易地确定这样的物体是否在边界上。材料指标的范围可以从零到
+ * numbers::invalid_material_id-1. 。
+ * 二维的线和三维的四边形在细化时将其边界指标继承给它们的子代。因此，你应该确保如果你有不同的边界部分，不同的部分被一个顶点（在二维）或一条线（在三维）分开，这样每个边界线或四边形都有一个唯一的边界指标。
+ * 默认情况下（除非在创建三角图的过程中另有规定），边界的所有部分都有边界指标为零。作为一个历史遗留问题，这对于1d网格来说并不是真的。对于这些，最左边的顶点的边界指标为零，而最右边的顶点的边界指标为一。在这两种情况下，一个面的边界指示器都可以通过调用
+ * <code>cell-@>face(1)-@>set_boundary_id(42);</code>  来改变。
+ * @see   @ref GlossBoundaryIndicator  "关于边界指示器的词汇条目"
  *
- * For the purpose of smoothing, the Triangulation constructor takes an
- * argument specifying whether a smoothing step shall be performed on the grid
- * each time <tt>execute_*</tt> is called. The default is that such a step not
- * be done, since this results in additional cells being produced, which may
- * not be necessary in all cases. If switched on, calling <tt>execute_*</tt>
- * results in flagging additional cells for refinement to avoid vertices as
- * the ones mentioned. The algorithms for both regularization and smoothing of
- * triangulations are described below in the section on technical issues. The
- * reason why this parameter must be given to the constructor rather than to
- * <tt>execute_*</tt> is that it would result in algorithmic problems if you
- * called <tt>execute_*</tt> once without and once with smoothing, since then
- * in some refinement steps would need to be refined twice.
+ *  <h3>History of a triangulation</h3>
+ * 可以从细化历史中重建网格，这些历史可以通过 @p
+ * save_refine_flags  和  @p
+ * load_refine_flags函数来存储和加载。通常情况下，代码会是这样的。
+ * @code
+ *   // open output file
+ *   std::ofstream history("mesh.history");
+ *   // do 10 refinement steps
+ *   for (unsigned int step=0; step<10; ++step)
+ *     {
+ *       ...;
+ *       // flag cells according to some criterion
+ *       ...;
+ *       tria.save_refine_flags (history);
+ *       tria.execute_coarsening_and_refinement ();
+ *     }
+ * @endcode
  *
- * The parameter taken by the constructor is an integer which may be composed
- * bitwise by the constants defined in the enum #MeshSmoothing (see there for
- * the possibilities).
+ * 如果你想从存储的信息中重新创建网格，你就写。
+ * @code
+ *   // open input file
+ *   std::ifstream history("mesh.history");
+ *   // do 10 refinement steps
+ *   for (unsigned int step=0; step<10; ++step)
+ *     {
+ *       tria.load_refine_flags (history);
+ *       tria.execute_coarsening_and_refinement ();
+ *     }
+ * @endcode
  *
- * @note While it is possible to pass all of the flags in #MeshSmoothing to
- * objects of type parallel::distributed::Triangulation, it is not always
- * possible to honor all of these smoothing options if they would require
- * knowledge of refinement/coarsening flags on cells not locally owned by this
- * processor. As a consequence, for some of these flags, the ultimate number
- * of cells of the parallel triangulation may depend on the number of
- * processors into which it is partitioned.
+ * 粗化和粗化标志也采用同样的方案。
+ * 你可以在不同的细化信息集之间向输出文件写入其他信息，只要你在重新创建网格时读取这些信息。你应该确保将从保存的标志中创建的新三角图中的其他信息与旧三角图的信息相匹配，例如平滑水平；如果不是，从标志中实际创建的单元可能是其他单元，因为平滑增加了额外的单元，但它们的数量可能取决于平滑水平。
+ * 实际上有两组<tt>save_*_flags</tt>和<tt>load_*_flags</tt>函数。一个以流为参数，从/到流中读/写信息，从而实现将标志存储到文件。另一个集合需要一个<tt>vector<bool></tt>类型的参数。这使得用户可以临时存储一些标志，例如，如果另一个函数需要它们，之后再恢复它们。
  *
- *
- * <h3>Material and boundary information</h3>
- *
- * Each cell, face or edge stores information denoting the material or the
- * part of the boundary that an object belongs to. The material id of a cell
- * is typically used to identify which cells belong to a particular part of
- * the domain, e.g., when you have different materials (steel, concrete, wood)
- * that are all part of the same domain. One would then usually query the
- * material id associated with a cell during assembly of the bilinear form,
- * and use it to determine (e.g., by table lookup, or a sequence of if-else
- * statements) what the correct material coefficients would be for that cell.
- * See also
- * @ref GlossMaterialId "this glossary entry".
- *
- * This material_id may be set upon construction of a triangulation (through
- * the CellData data structure), or later through use of cell iterators. For a
- * typical use of this functionality, see the step-28 tutorial program. The
- * functions of the GridGenerator namespace typically set the material ID of
- * all cells to zero. When reading a triangulation through the GridIn class,
- * different input file formats have different conventions, but typically
- * either explicitly specify the material id, or if they don't, then GridIn
- * simply sets them to zero. Because the material of a cell is intended
- * to pertain to a particular region of the domain, material ids are inherited
- * by child cells from their parent upon mesh refinement.
- *
- * Boundary indicators on lower dimensional objects (these have no material
- * id) indicate the number of a boundary component. The weak formulation of the
- * partial differential equation may have different boundary conditions on
- * different parts of the boundary. The boundary indicator can be used in
- * creating the matrix or the right hand side vector to indicate these
- * different parts of the model (this use is like the material id of cells).
- * Boundary indicators may be in the range from zero to
- * numbers::internal_face_boundary_id-1. The value
- * numbers::internal_face_boundary_id is reserved to denote interior lines (in
- * 2D) and interior lines and quads (in 3D), which do not have a boundary
- * indicator. This way, a program can easily determine, whether such an object
- * is at the boundary or not. Material indicators may be in the range from
- * zero to numbers::invalid_material_id-1.
- *
- * Lines in two dimensions and quads in three dimensions inherit their
- * boundary indicator to their children upon refinement. You should therefore
- * make sure that if you have different boundary parts, the different parts
- * are separated by a vertex (in 2D) or a line (in 3D) such that each boundary
- * line or quad has a unique boundary indicator.
- *
- * By default (unless otherwise specified during creation of a triangulation),
- * all parts of the boundary have boundary indicator zero. As a historical
- * wart, this isn't true for 1d meshes, however: For these, leftmost vertices
- * have boundary indicator zero while rightmost vertices have boundary
- * indicator one. In either case, the boundary indicator of a face can be
- * changed using a call of the kind
- * <code>cell-@>face(1)-@>set_boundary_id(42);</code>.
- *
- * @see
- * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
+ *  <h3>User flags and data</h3>
+ * 三角形为用户标志提供了每行、四边形等的一个比特。这个字段可以像所有其他数据一样使用迭代器来访问。通常情况下，如果一个算法走过所有的单元并需要另一个单元，例如邻居，是否已经被处理过，那么这个用户标志就会被使用。参见 @ref GlossUserFlags "更多信息的词汇表"
+ * 。
+ * 还有一组用户数据，可以是<tt>无符号int</tt>或<tt>void</tt>，用于每一行、四边形等。你可以通过访问器类中<tt>用户数据</tt>下所列的函数访问这些数据。同样，见 @ref GlossUserData "词汇表的更多信息"
+ * 。 这些用户索引或指针的值默认为 @p nullptr
+ * 。请注意，这些指针在细化时不会被继承给子代。然而，在重新划分后，它们在所有单元上都是可用的，因为它们在以前的网格上被设置过。
+ * 通常关于 @p void
+ * 指针的类型安全缺失的警告在这里显然是适用的；类型的正确性等的责任完全在于指针的使用者。
  *
  *
- * <h3>History of a triangulation</h3>
+ * @note
+ * 用户指针和用户索引被存储在同一个地方。为了避免不必要的转换，Triangulation检查其中一个正在使用，并且不允许访问另一个，直到调用clear_user_data()。
  *
- * It is possible to reconstruct a grid from its refinement history, which can
- * be stored and loaded through the @p save_refine_flags and @p
- * load_refine_flags functions. Normally, the code will look like this:
- *   @code
- *     // open output file
- *     std::ofstream history("mesh.history");
- *     // do 10 refinement steps
- *     for (unsigned int step=0; step<10; ++step)
- *       {
- *         ...;
- *         // flag cells according to some criterion
- *         ...;
- *         tria.save_refine_flags (history);
- *         tria.execute_coarsening_and_refinement ();
- *       }
- *   @endcode
+ *  <h3>Describing curved geometries</h3>
+ * deal.II用继承自Manifold的类来实现所有的几何图形（弯曲的和其他的）；参见Manifold的文档， step-49
+ * ，或 @ref manifold
+ * 模块的例子和算法的完整描述。默认情况下，Triangulation中的所有单元都具有平坦的几何形状，也就是说，Triangulation中的所有线条都被假定为直线。如果一个单元的manifold_id不等于
+ * numbers::flat_manifold_id
+ * ，那么Triangulation会使用相关的Manifold对象对该单元进行计算（如单元细化）。下面是一个快速的例子，取自
+ * GridGenerator::hyper_ball(), 的实现，它设置了一个极地网格。
  *
- * If you want to re-create the grid from the stored information, you write:
- *   @code
- *     // open input file
- *     std::ifstream history("mesh.history");
- *     // do 10 refinement steps
- *     for (unsigned int step=0; step<10; ++step)
- *       {
- *         tria.load_refine_flags (history);
- *         tria.execute_coarsening_and_refinement ();
- *       }
- *   @endcode
- *
- * The same scheme is employed for coarsening and the coarsening flags.
- *
- * You may write other information to the output file between different sets
- * of refinement information, as long as you read it upon re-creation of the
- * grid. You should make sure that the other information in the new
- * triangulation which is to be created from the saved flags, matches that of
- * the old triangulation, for example the smoothing level; if not, the cells
- * actually created from the flags may be other ones, since smoothing adds
- * additional cells, but their number may be depending on the smoothing level.
- *
- * There actually are two sets of <tt>save_*_flags</tt> and
- * <tt>load_*_flags</tt> functions. One takes a stream as argument and
- * reads/writes the information from/to the stream, thus enabling storing
- * flags to files. The other set takes an argument of type
- * <tt>vector<bool></tt>. This enables the user to temporarily store some
- * flags, e.g. if another function needs them, and restore them afterwards.
- *
- *
- * <h3>User flags and data</h3>
- *
- * A triangulation offers one bit per line, quad, etc for user flags. This
- * field can be accessed as all other data using iterators. Normally, this
- * user flag is used if an algorithm walks over all cells and needs
- * information whether another cell, e.g. a neighbor, has already been
- * processed. See
- * @ref GlossUserFlags "the glossary for more information".
- *
- * There is another set of user data, which can be either an <tt>unsigned
- * int</tt> or a <tt>void *</tt>, for each line, quad, etc. You can access
- * these through the functions listed under <tt>User data</tt> in the accessor
- * classes. Again, see
- * @ref GlossUserData "the glossary for more information".
- *
- * The value of these user indices or pointers is @p nullptr by default. Note
- * that the pointers are not inherited to children upon refinement. Still,
- * after a remeshing they are available on all cells, where they were set on
- * the previous mesh.
- *
- * The usual warning about the missing type safety of @p void pointers are
- * obviously in place here; responsibility for correctness of types etc lies
- * entirely with the user of the pointer.
- *
- * @note User pointers and user indices are stored in the same place. In order
- * to avoid unwanted conversions, Triangulation checks which one of them is in
- * use and does not allow access to the other one, until clear_user_data() has
- * been called.
- *
- *
- * <h3>Describing curved geometries</h3>
- *
- * deal.II implements all geometries (curved and otherwise) with classes
- * inheriting from Manifold; see the documentation of Manifold, step-49, or
- * the
- * @ref manifold
- * module for examples and a complete description of the algorithms. By
- * default, all cells in a Triangulation have a flat geometry, meaning that
- * all lines in the Triangulation are assumed to be straight. If a cell has a
- * manifold_id that is not equal to numbers::flat_manifold_id then the
- * Triangulation uses the associated Manifold object for computations on that
- * cell (e.g., cell refinement). Here is a quick example, taken from the
- * implementation of GridGenerator::hyper_ball(), that sets up a polar grid:
  *
  * @code
  * int main ()
  * {
- *   Triangulation<2> triangulation;
- *   const std::vector<Point<2>> vertices = {{-1.0,-1.0},
- *                                           {+1.0,-1.0},
- *                                           {-0.5,-0.5},
- *                                           {+0.5,-0.5},
- *                                           {-0.5,+0.5},
- *                                           {+1.0,+1.0},
- *                                           {-1.0,+1.0},
- *                                           {+1.0,+1.0}};
- *   const std::vector<std::array<int,GeometryInfo<2>::vertices_per_cell>>
- *     cell_vertices = {{0, 1, 2, 3},
- *                      {0, 2, 6, 4},
- *                      {2, 3, 4, 5},
- *                      {1, 7, 3, 5},
- *                      {6, 4, 7, 5}};
+ * Triangulation<2> triangulation;
+ * const std::vector<Point<2>> vertices = {{-1.0,-1.0},
+ *                                         {+1.0,-1.0},
+ *                                         {-0.5,-0.5},
+ *                                         {+0.5,-0.5},
+ *                                         {-0.5,+0.5},
+ *                                         {+1.0,+1.0},
+ *                                         {-1.0,+1.0},
+ *                                         {+1.0,+1.0}};
+ * const std::vector<std::array<int,GeometryInfo<2>::vertices_per_cell>>
+ *   cell_vertices = {{0, 1, 2, 3},
+ *                    {0, 2, 6, 4},
+ *                    {2, 3, 4, 5},
+ *                    {1, 7, 3, 5},
+ *                    {6, 4, 7, 5}};
  *
- *   std::vector<CellData<2>> cells(cell_vertices.size(), CellData<2>());
- *   for (unsigned int i=0; i<cell_vertices.size(); ++i)
- *     for (unsigned int j=0; j<GeometryInfo<2>::vertices_per_cell; ++j)
- *       cells[i].vertices[j] = cell_vertices[i][j];
+ * std::vector<CellData<2>> cells(cell_vertices.size(), CellData<2>());
+ * for (unsigned int i=0; i<cell_vertices.size(); ++i)
+ *   for (unsigned int j=0; j<GeometryInfo<2>::vertices_per_cell; ++j)
+ *     cells[i].vertices[j] = cell_vertices[i][j];
  *
- *   triangulation.create_triangulation (vertices, cells, SubCellData());
- *   triangulation.set_all_manifold_ids_on_boundary(42);
+ * triangulation.create_triangulation (vertices, cells, SubCellData());
+ * triangulation.set_all_manifold_ids_on_boundary(42);
  *
- *   // set_manifold stores a copy of its second argument,
- *   // so a temporary is okay
- *   triangulation.set_manifold(42, PolarManifold<2>());
- *   for (unsigned int i = 0; i < 4; ++i)
- *     {
- *       // refine all boundary cells
- *       for (const auto &cell : triangulation.active_cell_iterators())
- *         if (cell->at_boundary())
- *           cell->set_refine_flag();
+ * // set_manifold stores a copy of its second argument,
+ * // so a temporary is okay
+ * triangulation.set_manifold(42, PolarManifold<2>());
+ * for (unsigned int i = 0; i < 4; ++i)
+ *   {
+ *     // refine all boundary cells
+ *     for (const auto &cell : triangulation.active_cell_iterators())
+ *       if (cell->at_boundary())
+ *         cell->set_refine_flag();
  *
- *       triangulation.execute_coarsening_and_refinement();
- *     }
+ *     triangulation.execute_coarsening_and_refinement();
+ *   }
  * }
  * @endcode
  *
- * This will set up a grid where the boundary lines will be refined by
- * performing calculations in polar coordinates. When the mesh is refined the
- * cells adjacent to the boundary will use this new line midpoint (as well as
- * the other three midpoints and original cell vertices) to calculate the cell
- * midpoint with a transfinite interpolation: this propagates the curved
- * boundary into the interior in a smooth way. It is possible to generate a
- * better grid (which interpolates across all cells between two different
- * Manifold descriptions, instead of just going one cell at a time) by using
- * TransfiniteInterpolationManifold; see the documentation of that class for
- * more information.
+ * 这将设置一个网格，边界线将通过在极坐标中进行计算而被细化。当网格被细化时，与边界相邻的单元将使用这个新的线中点（以及其他三个中点和原来的单元顶点），用转折插值计算单元中点：这将使弯曲的边界以平滑的方式传播到内部。通过使用TransfiniteInterpolationManifold，可以生成一个更好的网格（在两个不同的Manifold描述之间对所有单元进行内插，而不是每次只插一个单元）；更多信息请参见该类的文档。
+ * 你应该注意一个注意事项：如果你有凹形边界，你必须确保一个新的边界顶点不会位于要被细化的单元内太多。原因是中心顶点被放置在原单元的顶点、新面的中点和（在三维）新线的中点的加权平均点。因此，如果你的新边界顶点太靠近旧的四边形或六面体的中心，到中点顶点的距离就会变得太小，从而产生扭曲的单元。这个问题在 @ref GlossDistorted "扭曲的单元格 "
+ * 中得到了广泛的讨论。 <h3>Getting notice when a triangulation
+ * changes</h3>
+ * 在有些情况下，一个对象希望知道每当一个三角形被细化、复制或以其他一些方式被修改时。当然，如果在你的用户代码中，每当你要细化三角测量时，你都要告诉每一个这样的对象，这可以实现，但这将变得很繁琐，而且容易出错。Triangulation类实现了一种更优雅的方式来实现这一点：信号。
+ * 实质上，信号是一个对象（Triangulation类的一个成员），另一个对象可以连接到它。连接实质上是连接对象传递一个接受一定数量和种类的参数的函数对象。每当信号的拥有者想要表示某种事件时，它就会
+ * "触发
+ * "信号，这反过来意味着信号的所有连接都被触发：换句话说，函数对象被执行，可以采取必要的行动。
+ * 作为一个简单的例子，下面的代码将在每次三角测量刚刚被完善时向输出打印一些东西。
+ * @code
+ *   void f()
+ *   {
+ *     std::cout << "Triangulation has been refined." << std::endl;
+ *   }
  *
- * You should take note of one caveat: if you have concave boundaries, you
- * must make sure that a new boundary vertex does not lie too much inside the
- * cell which is to be refined. The reason is that the center vertex is placed
- * at the point which is a weighted average of the vertices of the original
- * cell, new face midpoints, and (in 3D) new line midpoints. Therefore if your
- * new boundary vertex is too near the center of the old quadrilateral or
- * hexahedron, the distance to the midpoint vertex will become too small, thus
- * generating distorted cells. This issue is discussed extensively in
- * @ref GlossDistorted "distorted cells".
+ *   void run ()
+ *   {
+ *     Triangulation<dim> triangulation;
+ *     // fill it somehow
+ *     triangulation.signals.post_refinement.connect (&f);
+ *     triangulation.refine_global (2);
+ *   }
+ * @endcode
+ * 这段代码将产生两次输出，每次精化周期一次。
+ * 一个更有趣的应用是下面的，类似于FEValues类的作用。这个类存储了一个指向三角形的指针和一个指向最后处理的单元的迭代器（这样它就可以比较当前的单元和上一个单元，例如，如果新的单元是上一个单元的简单转换，那么就不需要重新计算雅各布矩阵）。然而，每当三角结构被修改时，以前处理的单元的迭代器就需要失效，因为它现在不再指向任何有用的单元（或者，至少，指向可能不一定与以前处理的单元相似的东西）。这段代码看起来是这样的（真正的代码有更多的错误检查，并且必须处理后续的单元格实际上可能属于不同的三角形的情况，但这对我们来说并不关心）。
  *
- * <h3>Getting notice when a triangulation changes</h3>
- *
- * There are cases where one object would like to know whenever a
- * triangulation is being refined, copied, or modified in a number of other
- * ways. This could of course be achieved if, in your user code, you tell
- * every such object whenever you are about to refine the triangulation, but
- * this will get tedious and is error prone. The Triangulation class
- * implements a more elegant way to achieve this: signals.
- *
- * In essence, a signal is an object (a member of the Triangulation class)
- * that another object can connect to. A connection is in essence that the
- * connecting object passes a function object taking a certain number and kind
- * of arguments. Whenever the owner of the signal wants to indicate a certain
- * kind of event, it 'triggers' the signal, which in turn means that all
- * connections of the signal are triggered: in other word, the function
- * objects are executed and can take the action that is necessary.
- *
- * As a simple example, the following code will print something to the output
- * every time the triangulation has just been refined:
- *   @code
- *     void f()
- *     {
- *       std::cout << "Triangulation has been refined." << std::endl;
- *     }
- *
- *     void run ()
- *     {
- *       Triangulation<dim> triangulation;
- *       // fill it somehow
- *       triangulation.signals.post_refinement.connect (&f);
- *       triangulation.refine_global (2);
- *     }
- *   @endcode
- * This code will produce output twice, once for each refinement cycle.
- *
- * A more interesting application would be the following, akin to what the
- * FEValues class does. This class stores a pointer to a triangulation and
- * also an iterator to the cell last handled (so that it can compare the
- * current cell with the previous one and, for example, decide that there is
- * no need to re-compute the Jacobian matrix if the new cell is a simple
- * translation of the previous one). However, whenever the triangulation is
- * modified, the iterator to the previously handled cell needs to be
- * invalidated since it now no longer points to any useful cell (or, at the
- * very least, points to something that may not necessarily resemble the cells
- * previously handled). The code would look something like this (the real code
- * has some more error checking and has to handle the case that subsequent
- * cells might actually belong to different triangulation, but that is of no
- * concern to us here):
  * @code
  * template <int dim>
  * class FEValues
  * {
- *   Triangulation<dim>::active_cell_iterator current_cell, previous_cell;
+ * Triangulation<dim>::active_cell_iterator current_cell, previous_cell;
  * public:
- *   void reinit (Triangulation<dim>::active_cell_iterator &cell);
- *   void invalidate_previous_cell ();
+ * void reinit (Triangulation<dim>::active_cell_iterator &cell);
+ * void invalidate_previous_cell ();
  * };
  *
  * template <int dim>
  * void
  * FEValues<dim>::reinit (Triangulation<dim>::active_cell_iterator &cell)
  * {
- *   if (previous_cell.status() != valid)
- *     {
- *       // previous_cell has not been set. set it now, and register with the
- *       // triangulation that we want to be informed about mesh refinement
- *       previous_cell = current_cell;
- *       previous_cell->get_triangulation().signals.post_refinement.connect(
- *         [this]()
- *         {
- *           this->invalidate_previous_cell();
- *         });
- *     }
- *   else
- *    previous_cell = current_cell;
+ * if (previous_cell.status() != valid)
+ *   {
+ *     // previous_cell has not been set. set it now, and register with the
+ *     // triangulation that we want to be informed about mesh refinement
+ *     previous_cell = current_cell;
+ *     previous_cell->get_triangulation().signals.post_refinement.connect(
+ *       [this]()
+ *       {
+ *         this->invalidate_previous_cell();
+ *       });
+ *   }
+ * else
+ *  previous_cell = current_cell;
  *
- *   current_cell = cell;
- *   // ... do something with the cell...
+ * current_cell = cell;
+ * // ... do something with the cell...
  * }
  *
  * template <int dim>
  * void
  * FEValues<dim>::invalidate_previous_cell ()
  * {
- *   previous_cell = Triangulation<dim>::active_cell_iterator();
+ * previous_cell = Triangulation<dim>::active_cell_iterator();
  * }
  * @endcode
- * Here, whenever the triangulation is refined, it triggers the post-
- * refinement signal which calls the function object attached to it. This
- * function object is the member function
- * <code>FEValues<dim>::invalidate_previous_cell</code> where we have bound
- * the single argument (the <code>this</code> pointer of a member function
- * that otherwise takes no arguments) to the <code>this</code> pointer of the
- * FEValues object. Note how here there is no need for the code that owns the
- * triangulation and the FEValues object to inform the latter if the former is
- * refined. (In practice, the function would want to connect to some of the
- * other signals that the triangulation offers as well, in particular to
- * creation and deletion signals.)
- *
- * The Triangulation class has a variety of signals that indicate different
- * actions by which the triangulation can modify itself and potentially
- * require follow-up action elsewhere. Please refer to Triangulation::Signals
- * for details.
- *
- * <h3>Serializing (loading or storing) triangulations</h3>
- *
- * Like many other classes in deal.II, the Triangulation class can stream its
- * contents to an archive using BOOST's serialization facilities. The data so
- * stored can later be retrieved again from the archive to restore the
- * contents of this object. This facility is frequently used to save the state
- * of a program to disk for possible later resurrection, often in the context
- * of checkpoint/restart strategies for long running computations or on
- * computers that aren't very reliable (e.g. on very large clusters where
- * individual nodes occasionally fail and then bring down an entire MPI job).
- *
- * For technical reasons, writing and restoring a Triangulation object is not
- * trivial. The primary reason is that unlike many other objects,
- * triangulations rely on many other objects to which they store pointers or
- * with which they interface; for example, triangulations store pointers to
- * objects describing boundaries and manifolds, and they have signals that
- * store pointers to other objects so they can be notified of changes in the
- * triangulation (see the section on signals in this introduction). Since these
- * objects are owned by the user space (for example the user can create a custom
- * manifold object), they may not be serializable. So in cases like this,
- * boost::serialize can store a reference to an object instead of the pointer,
- * but the reference will never be satisfied at write time because the object
- * pointed to is not serialized. Clearly, at load time, boost::serialize will
- * not know where to let the pointer point to because it never gets to re-create
- * the object originally pointed to.
- *
- * For these reasons, saving a triangulation to an archive does not store all
- * information, but only certain parts. More specifically, the information
- * that is stored is everything that defines the mesh such as vertex
- * locations, vertex indices, how vertices are connected to cells, boundary
- * indicators, subdomain ids, material ids, etc. On the other hand, the
- * following information is not stored:
- *   - signals
- *   - pointers to Manifold objects previously set using
- *     Triangulation::set_manifold()
- *
- * On the other hand, since these are objects that
- * are usually set in user code, they can typically easily be set again in that
- * part of your code in which you re-load triangulations.
- *
- * In a sense, this approach to serialization means that re-loading a
- * triangulation is more akin to calling the
- * Triangulation::create_triangulation() function and filling it with some
- * additional content, as that function also does not touch the signals and
- * Manifold objects that belong to this triangulation. In keeping with this
- * analogy, the Triangulation::load() function also triggers the same kinds of
- * signal as Triangulation::create_triangulation().
+ * 这里，每当三角剖分被细化时，就会触发细化后的信号，调用附加在它身上的函数对象。这个函数对象是成员函数
+ * <code>FEValues<dim>::invalidate_previous_cell</code>
+ * ，我们将单一的参数（ <code>this</code>
+ * 成员函数的指针，否则没有参数）绑定到FEValues对象的
+ * <code>this</code>
+ * 指针上。请注意，这里不需要拥有三角形和FEValues对象的代码在前者被完善时通知后者。(在实践中，该函数也希望连接到三角形所提供的其他一些信号，特别是创建和删除信号)。
+ * Triangulation类有各种信号，表明三角形可以通过不同的行动来修改自己，并可能需要在其他地方采取后续行动。详情请参考
+ * Triangulation::Signals 。 <h3>Serializing (loading or storing)
+ * triangulations</h3>
+ * 与deal.II中的许多其他类一样，Triangulation类可以使用BOOST的序列化设施将其内容流向一个档案。这样存储的数据以后可以再次从存档中检索，以恢复这个对象的内容。这个工具经常被用来将程序的状态保存到磁盘上，以便以后可能复活，通常是在长期运行的计算的检查点/重启策略的背景下，或者在不是很可靠的计算机上（例如，在非常大的集群上，个别节点偶尔会出现故障，然后导致整个MPI作业的崩溃）。
+ * 由于技术原因，编写和恢复Triangulation对象并非易事。主要原因是，与许多其他对象不同，三角计算依赖于许多其他对象，它们存储指针或与之对接；例如，三角计算存储指向描述边界和流形的对象的指针，它们有存储指向其他对象的信号，以便它们能够被通知三角计算的变化（见本介绍中关于信号的部分）。由于这些对象是由用户空间拥有的（例如，用户可以创建一个自定义流形对象），它们可能无法被序列化。所以在这样的情况下，
+ * boost::serialize
+ * 可以存储一个对象的引用，而不是指针，但是在写的时候，这个引用永远不会被满足，因为所指向的对象没有被序列化。显然，在加载时，
+ * boost::serialize
+ * 将不知道让指针指向哪里，因为它从未得到重新创建最初指向的对象。
+ * 由于这些原因，将三角图保存到档案中并不存储所有信息，而只是存储某些部分。更具体地说，被存储的信息是定义网格的所有信息，如顶点位置、顶点索引、顶点与单元的连接方式、边界指示器、子域ID、材料ID等。另一方面，以下信息不被存储。
  *
  *
- * <h3>Technical details</h3>
- *
- * <h4>%Algorithms for mesh regularization and smoothing upon refinement</h4>
- *
- * We chose an inductive point of view: since upon creation of the
- * triangulation all cells are on the same level, all regularity assumptions
- * regarding the maximum difference in level of cells sharing a common face,
- * edge or vertex hold. Since we use the regularization and smoothing in each
- * step of the mesh history, when coming to the point of refining it further
- * the assumptions also hold.
- *
- * The regularization and smoothing is done in the @p
- * prepare_coarsening_and_refinement function, which is called by @p
- * execute_coarsening_and_refinement at the very beginning.  It decides which
- * additional cells to flag for refinement by looking at the old grid and the
- * refinement flags for each cell.
- *
- * <ul>
- * <li> <em>Regularization:</em> The algorithm walks over all cells checking
- * whether the present cell is flagged for refinement and a neighbor of the
- * present cell is refined once less than the present one. If so, flag the
- * neighbor for refinement. Because of the induction above, there may be no
- * neighbor with level two less than the present one.
- *
- * The neighbor thus flagged for refinement may induce more cells which need
- * to be refined. However, such cells which need additional refinement always
- * are on one level lower than the present one, so we can get away with only
- * one sweep over all cells if we do the loop in the reverse way, starting
- * with those on the highest level. This way, we may flag additional cells on
- * lower levels, but if these induce more refinement needed, this is performed
- * later on when we visit them in out backward running loop.
- *
- * <li> <em>Smoothing:</em>
- * <ul>
- * <li> @p limit_level_difference_at_vertices: First a list is set up which
- * stores for each vertex the highest level one of the adjacent cells belongs
- * to. Now, since we did smoothing in the previous refinement steps also, each
- * cell may only have vertices with levels at most one greater than the level
- * of the present cell.
- *
- * However, if we store the level plus one for cells marked for refinement, we
- * may end up with cells which have vertices of level two greater than the
- * cells level. We need to refine this cell also, and need thus also update
- * the levels of its vertices. This itself may lead to cells needing
- * refinement, but these are on lower levels, as above, which is why we may do
- * all kinds of additional flagging in one loop only.
- *
- * <li> @p eliminate_unrefined_islands: For each cell we count the number of
- * neighbors which are refined or flagged for refinement. If this exceeds the
- * number of neighbors which are not refined and not flagged for refinement,
- * then the current cell is flagged for refinement. Since this may lead to
- * cells on the same level which also will need refinement, we will need
- * additional loops of regularization and smoothing over all cells until
- * nothing changes any more.
- *
- * <li> <tt>eliminate_refined_*_islands</tt>: This one does much the same as
- * the above one, but for coarsening. If a cell is flagged for refinement or
- * if all of its children are active and if the number of neighbors which are
- * either active and not flagged for refinement, or not active but all
- * children flagged for coarsening equals the total number of neighbors, then
- * this cell's children are flagged for coarsening or (if this cell was
- * flagged for refinement) the refine flag is cleared.
- *
- * For a description of the distinction between the two versions of the flag
- * see above in the section about mesh smoothing in the general part of this
- * classes description.
- *
- * The same applies as above: several loops may be necessary.
- * </ul>
- * </ul>
- *
- * Regularization and smoothing are a bit complementary in that we check
- * whether we need to set additional refinement flags when being on a cell
- * flagged for refinement (regularization) or on a cell not flagged for
- * refinement. This makes readable programming easier.
- *
- * All the described algorithms apply only for more than one space dimension,
- * since for one dimension no restrictions apply. It may be necessary to apply
- * some smoothing for multigrid algorithms, but this has to be decided upon
- * later.
  *
  *
- * <h3>Warning</h3>
  *
- * It seems impossible to preserve @p constness of a triangulation through
- * iterator usage. Thus, if you declare pointers to a @p const triangulation
- * object, you should be well aware that you might involuntarily alter the
- * data stored in the triangulation.
+ * - 信号
+ *
+ * - 以前使用 Triangulation::set_manifold() 设置的Manifold对象的指针。
+ * 另一方面，由于这些是通常在用户代码中设置的对象，它们通常可以很容易地在你重新加载三角图的那部分代码中再次设置。
+ * 在某种意义上，这种序列化的方法意味着重新加载三角化更类似于调用
+ * Triangulation::create_triangulation()
+ * 函数，并在其中填充一些额外的内容，因为该函数也不接触属于这个三角化的信号和Manifold对象。为了保持这种类比，
+ * Triangulation::load() 函数也触发了与
+ * Triangulation::create_triangulation(). 相同种类的信号
+ *
+ *  <h3>Technical details</h3> <h4>%Algorithms for mesh regularization and
+ * smoothing upon refinement</h4>
+ * 我们选择了一个归纳的观点：由于在创建三角形时，所有的单元都在同一水平线上，所有关于共享一个共同面、边或顶点的单元的最大水平差异的正则性假设都是成立的。由于我们在网格历史的每一步中都使用了正则化和平滑化，所以在进一步细化时，这些假设也是成立的。
+ * 正则化和平滑化是在 @p
+ * 的prepare_coarsening_and_refinement函数中完成的，该函数在一开始就被
+ * @p execute_coarsening_and_refinement调用。
+ * 它通过查看旧网格和每个单元的细化标志来决定哪些额外的单元需要细化。
+ * <ul>   <li>   <em>  正则化。 </em>  算法遍历所有单元，检查当前单元是否被标记为细化，以及当前单元的邻居是否比当前单元少细化一次。如果是，则标记该邻居进行细化。由于上面的归纳法，可能没有比现在的单元格少2级的邻居。
+ * 这样标记为细化的邻居可能诱导出更多需要细化的单元。然而，这种需要额外细化的单元总是比现在的单元低一级，所以如果我们以相反的方式进行循环，从最高级别的单元开始，我们可以只对所有单元进行一次扫描。这样一来，我们就可以标记出更多低层的单元，但是如果这些单元需要更多的细化，那么在我们向后运行的循环中访问这些单元时，就会进行细化。
+ * <li>   <em>  平滑化： </em>   <ul>   <li>   @p limit_level_difference_at_vertices:  首先建立一个列表，为每个顶点存储相邻单元所属的最高层。现在，由于我们在之前的细化步骤中也做了平滑处理，所以每个单元只能有顶点，其级别最多只能比当前单元的级别大一个。
+ * 然而，如果我们为标记为细化的单元格存储级别加一，我们最终可能会发现单元格的顶点级别比该单元格的级别大两个。我们也需要细化这个单元，因此也需要更新其顶点的级别。这本身就可能导致需要细化的单元格，但这些单元格的层次较低，如上所述，这就是为什么我们可以只在一个循环中做各种额外标记的原因。
+ * <li>   @p eliminate_unrefined_islands:
+ * 对于每个单元，我们计算被细化或被标记为细化的邻居的数量。如果这个数字超过了没有被精炼和没有被标记为精炼的邻居的数量，那么当前单元格就被标记为精炼。由于这可能导致同一层次的单元也需要细化，我们将需要对所有单元进行额外的正则化和平滑化循环，直到没有任何变化。
+ * <li>  <tt>eliminate_refined_*_islands</tt>:
+ * 这个功能与上面的功能基本相同，但是用于粗化。如果一个单元格被标记为精简，或者它的所有子单元都是活动的，并且如果邻居的数量是活动的并且没有标记为精简，或者没有活动但所有子单元被标记为粗化的，那么这个单元的子单元被标记为粗化或者（如果这个单元被标记为精简）精简标记被清空。
+ * 关于这两个版本的标志的区别，请看上面在本类描述的一般部分中关于网格平滑的部分。
+ * 同样适用于上述情况：可能需要几个循环。  </ul>  </ul>  。
+ * 正则化和平滑有一点互补性，当我们在一个标记为细化（正则化）的单元上或在一个未标记为细化的单元上时，我们会检查是否需要设置额外的细化标志。这使得可读的编程更容易。
+ * 所有描述的算法只适用于一个以上的空间维度，因为对于一个维度没有任何限制。可能有必要对多网格算法进行一些平滑处理，但这必须在以后决定。
+ *
+ *  <h3>Warning</h3>
+ * 似乎不可能通过迭代器的使用来保留三角形的 @p constness
+ * 。因此，如果你声明指向 @p const
+ * 三角形对象的指针，你应该清楚地知道你可能会不由自主地改变存储在三角形中的数据。
+ *
  *
  * @ingroup grid aniso
+ *
  */
 template <int dim, int spacedim = dim>
 class Triangulation : public Subscriptor
 {
 private:
   /**
-   * An internal alias to make the definition of the iterator classes
-   * simpler.
+   * 一个内部别名，使迭代器类的定义更简单。
+   *
    */
   using IteratorSelector =
     dealii::internal::TriangulationImplementation::Iterators<dim, spacedim>;
 
 public:
   /**
-   * Declare some symbolic names for mesh smoothing algorithms. The meaning of
-   * these flags is documented in the Triangulation class.
+   * 声明一些网格平滑算法的符号名称。这些标志的含义在Triangulation类中有记载。
+   *
    */
   enum MeshSmoothing
   {
     /**
-     * No mesh smoothing at all, except that meshes have to remain one-
-     * irregular.
+     * 完全没有网格平滑，只是网格必须保持一个不规则。
+     *
      */
     none = 0x0,
     /**
-     * It can be shown, that degradation of approximation occurs if the
-     * triangulation contains vertices which are member of cells with levels
-     * differing by more than one. One such example is the following:
      *
-     * @image html limit_level_difference_at_vertices.png ""
-     *
-     * It would seem that in two space dimensions, the maximum jump in levels
-     * between cells sharing a common vertex is two (as in the example above).
-     * However, this is not true if more than four cells meet at a vertex. It
-     * is not uncommon that a
-     * @ref GlossCoarseMesh "coarse (initial) mesh" contains vertices at which
-     * six or even eight cells meet, when small features of the domain have to
-     * be resolved even on the coarsest mesh. In that case, the maximum
-     * difference in levels is three or four, respectively. The problem gets
-     * even worse in three space dimensions.
-     *
-     * Looking at an interpolation of the second derivative of the finite
-     * element solution (assuming bilinear finite elements), one sees that the
-     * numerical solution is almost totally wrong, compared with the true
-     * second derivative. Indeed, on regular meshes, there exist sharp
-     * estimations that the H<sup>2</sup>-error is only of order one, so we
-     * should not be surprised; however, the numerical solution may show a
-     * value for the second derivative which may be a factor of ten away from
-     * the true value. These problems are located on the small cell adjacent
-     * to the center vertex, where cells of non-subsequent levels meet, as
-     * well as on the upper and right neighbor of this cell (but with a less
-     * degree of deviation from the true value).
-     *
-     * If the smoothing indicator given to the constructor contains the bit
-     * for #limit_level_difference_at_vertices, situations as the above one
-     * are eliminated by also marking the upper right cell for refinement.
-     *
-     * In case of anisotropic refinement, the level of a cell is not linked to
-     * the refinement of a cell as directly as in case of isotropic
-     * refinement. Furthermore, a cell can be strongly refined in one
-     * direction and not or at least much less refined in another. Therefore,
-     * it is very difficult to decide, which cases should be excluded from the
-     * refinement process. As a consequence, when using anisotropic
-     * refinement, the #limit_level_difference_at_vertices flag must not be
-     * set. On the other hand, the implementation of multigrid methods in
-     * deal.II requires that this bit be set.
      */
     limit_level_difference_at_vertices = 0x1,
     /**
-     * Single cells which are not refined and are surrounded by cells which
-     * are refined usually also lead to a sharp decline in approximation
-     * properties locally. The reason is that the nodes on the faces between
-     * unrefined and refined cells are not real degrees of freedom but carry
-     * constraints. The patch without additional degrees of freedom is thus
-     * significantly larger then the unrefined cell itself. If in the
-     * parameter passed to the constructor the bit for
-     * #eliminate_unrefined_islands is set, all cells which are not flagged
-     * for refinement but which are surrounded by more refined cells than
-     * unrefined cells are flagged for refinement. Cells which are not yet
-     * refined but flagged for that are accounted for the number of refined
-     * neighbors. Cells on the boundary are not accounted for at all. An
-     * unrefined island is, by this definition also a cell which (in 2D) is
-     * surrounded by three refined cells and one unrefined one, or one
-     * surrounded by two refined cells, one unrefined one and is at the
-     * boundary on one side. It is thus not a true island, as the name of the
-     * flag may indicate. However, no better name came to mind to the author
-     * by now.
+     * 没有被细化的单个单元，被细化的单元所包围，通常也会导致局部的近似特性急剧下降。原因是未精化和精化单元之间的面的节点不是真实的自由度，而是带有约束。因此，没有额外自由度的补丁要比未精炼单元本身大得多。如果在传递给构造函数的参数中，#eliminate_unrefined_islands的位被设置，所有没有被标记为精炼的单元，但被比未精炼单元更多的精炼单元包围的单元都被标记为精炼。还没有被细化但被标记为细化的单元被计入细化邻居的数量。边界上的单元则完全不计算在内。根据这个定义，一个未精炼的岛也是一个被三个精炼的单元和一个未精炼的单元所包围的单元（在二维），或者一个被两个精炼的单元和一个未精炼的单元所包围的单元，并且在一侧处于边界上。因此，它并不是一个真正的岛屿，正如旗帜的名称所表明的那样。然而，到现在作者也没有想到更好的名字。
+     *
      */
     eliminate_unrefined_islands = 0x2,
     /**
-     * A triangulation of patch level 1 consists of patches, i.e. of cells
-     * that are refined once. This flag ensures that a mesh of patch level 1
-     * is still of patch level 1 after coarsening and refinement. It is,
-     * however, the user's responsibility to ensure that the mesh is of patch
-     * level 1 before calling
-     * Triangulation::execute_coarsening_and_refinement() the first time. The
-     * easiest way to achieve this is by calling global_refine(1) straight
-     * after creation of the triangulation.  It follows that if at least one
-     * of the children of a cell is or will be refined than all children need
-     * to be refined. If the #patch_level_1 flag is set, than the flags
-     * #eliminate_unrefined_islands, #eliminate_refined_inner_islands and
-     * #eliminate_refined_boundary_islands will be ignored as they will be
-     * fulfilled automatically.
+     * 补丁级别1的三角网格由补丁组成，也就是由被细化一次的单元组成。这个标志可以确保一个1级补丁的网格在粗化和细化之后仍然是1级补丁的。然而，在第一次调用
+     * Triangulation::execute_coarsening_and_refinement()
+     * 之前，用户有责任确保网格是属于补丁级的。最简单的方法是在创建三角网格后直接调用
+     * global_refine(1)。
+     * 由此可见，如果一个单元的至少一个子单元是或将被精炼，那么所有子单元都需要被精炼。如果设置了#patch_level_1标志，那么#eliminate_unrefined_islands、#eliminate_refined_inner_islands和#eliminate_refined_boundary_islands标志将被忽略，因为它们将被自动履行。
+     *
      */
     patch_level_1 = 0x4,
     /**
-     * Each
-     * @ref GlossCoarseMesh "coarse grid"
-     * cell is refined at least once,
-     * i.e., the triangulation
-     * might have active cells on level 1 but not on level 0. This flag
-     * ensures that a mesh which has coarsest_level_1 has still
-     * coarsest_level_1 after coarsening and refinement. It is, however, the
-     * user's responsibility to ensure that the mesh has coarsest_level_1
-     * before calling execute_coarsening_and_refinement the first time. The
-     * easiest way to achieve this is by calling global_refine(1) straight
-     * after creation of the triangulation. It follows that active cells on
-     * level 1 may not be coarsened.
+     * 每个 @ref GlossCoarseMesh "粗略网格 "
+     * 单元至少被精炼一次，也就是说，三角形可能在第1层有活动单元，但在第0层没有。这个标志可以确保一个具有最粗_级_1的网格在经过粗化和细化后仍然具有最粗_级_1。然而，用户有责任在第一次调用execute_coarsening_and_refinement之前，确保网格具有最粗的级别_1。最简单的方法是在创建三角网格后直接调用global_refine(1)。因此，第1层的活动单元可能不会被粗化。
+     * 这个标志的主要用途是确保每个单元在每个坐标方向上至少有一个邻居（即每个单元至少有一个左或右，以及至少一个2d的上或下邻居）。这是某些计算单元间有限差异的算法的必要前提。DerivativeApproximation类是这些算法中的一种，它要求一个三角形是最粗级别的，除非所有单元在最粗级别的每个坐标方向上已经有至少一个邻居。
      *
-     * The main use of this flag is to ensure that each cell has at least one
-     * neighbor in each coordinate direction (i.e. each cell has at least a
-     * left or right, and at least an upper or lower neighbor in 2d). This is
-     * a necessary precondition for some algorithms that compute finite
-     * differences between cells. The DerivativeApproximation class is one of
-     * these algorithms that require that a triangulation is coarsest_level_1
-     * unless all cells already have at least one neighbor in each coordinate
-     * direction on the coarsest level.
      */
     coarsest_level_1 = 0x8,
     /**
-     * This flag is not included in @p maximum_smoothing. The flag is
-     * concerned with the following case: consider the case that an unrefined
-     * and a refined cell share a common face and that one of the children of
-     * the refined cell along the common face is flagged for further
-     * refinement. In that case, the resulting mesh would have more than one
-     * hanging node along one or more of the edges of the triangulation, a
-     * situation that is not allowed. Consequently, in order to perform the
-     * refinement, the coarser of the two original cells is also going to be
-     * refined.
+     * 这个标志不包括在 @p maximum_smoothing.
+     * 中，该标志与以下情况有关：考虑一个未精化的单元和一个精化的单元有一个共同的面，并且精化的单元沿共同面的一个子节点被标记为进一步精化的情况。在这种情况下，所得到的网格将沿着三角形的一条或多条边有一个以上的悬空节点，这种情况是不允许的。因此，为了进行细化，两个原始单元中较粗的单元也将被细化。
+     * 然而，在许多情况下，以各向异性的方式细化两个原始单元中的较粗的单元就足够了，以避免在一条边上出现多个悬空顶点的情况。只做最小的各向异性细化可以节省单元和自由度。通过指定这个标志，库可以产生这些各向异性的细化。
+     * 这个标志在默认情况下是不包含的，因为它可能导致各向异性细化的网格，即使没有单元被用户命令明确地进行各向异性细化。这个令人惊讶的事实可能会导致程序做错事，因为它们不是为各向异性网格可能发生的额外情况而编写的，见
+     * step-30 的介绍中的讨论。
      *
-     * However, in many cases it is sufficient to refine the coarser of the
-     * two original cells in an anisotropic way to avoid the case of multiple
-     * hanging vertices on a single edge. Doing only the minimal anisotropic
-     * refinement can save cells and degrees of freedom. By specifying this
-     * flag, the library can produce these anisotropic refinements.
-     *
-     * The flag is not included by default since it may lead to
-     * anisotropically refined meshes even though no cell has ever been
-     * refined anisotropically explicitly by a user command. This surprising
-     * fact may lead to programs that do the wrong thing since they are not
-     * written for the additional cases that can happen with anisotropic
-     * meshes, see the discussion in the introduction to step-30.
      */
     allow_anisotropic_smoothing = 0x10,
     /**
-     * This algorithm seeks for isolated cells which are refined or flagged
-     * for refinement. This definition is unlike that for
-     * #eliminate_unrefined_islands, which would mean that an island is
-     * defined as a cell which is refined but more of its neighbors are not
-     * refined than are refined. For example, in 2D, a cell's refinement would
-     * be reverted if at most one of its neighbors is also refined (or refined
-     * but flagged for coarsening).
+     * 该算法寻求被细化或标记为细化的孤立单元。这个定义与#eliminate_unrefined_islands的定义不同，后者意味着一个岛屿被定义为一个被细化的单元，但其邻居中未被细化的单元多于被细化的单元。例如，在2D中，如果一个单元的邻居也被细化（或被细化但被标记为粗化），那么该单元的细化将被恢复。
+     * 改变岛的定义的原因是，这个选项有点危险，因为如果你考虑一连串的细化单元（例如，沿着解决方案中的结点），两端的单元将被粗化，之后最外层的单元将需要被粗化。因此，只能对这样的细胞进行一次循环标记，以避免吃掉整个精炼细胞链（"链式反应"...）。
+     * 这个算法也考虑到了那些实际上没有被细化但被标记为细化的单元。如果有必要的话，它会拿走细化标志。
+     * 实际上这个标志有两个版本，#eliminate_refined_inner_islands和#eliminate_refined_boundary_islands。第一个消除了上面定义的位于域内部的岛屿，而第二个只消除了那些位于边界的单元的岛屿。之所以这样划分标志，是因为人们经常希望消除内部的岛屿，而边界上的岛屿却很有可能被需要，例如，当人们根据与边界积分相关的准则来细化网格，或者当人们有粗糙的边界数据时。
      *
-     * The reason for the change in definition of an island is, that this
-     * option would be a bit dangerous, since if you consider a chain of
-     * refined cells (e.g. along a kink in the solution), the cells at the two
-     * ends would be coarsened, after which the next outermost cells would
-     * need to be coarsened. Therefore, only one loop of flagging cells like
-     * this could be done to avoid eating up the whole chain of refined cells
-     * (`chain reaction'...).
-     *
-     * This algorithm also takes into account cells which are not actually
-     * refined but are flagged for refinement. If necessary, it takes away the
-     * refinement flag.
-     *
-     * Actually there are two versions of this flag,
-     * #eliminate_refined_inner_islands and
-     * #eliminate_refined_boundary_islands. The first eliminates islands
-     * defined by the definition above which are in the interior of the
-     * domain, while the second eliminates only those islands if the cell is
-     * at the boundary. The reason for this split of flags is that one often
-     * wants to eliminate such islands in the interior while those at the
-     * boundary may well be wanted, for example if one refines the mesh
-     * according to a criterion associated with a boundary integral or if one
-     * has rough boundary data.
      */
     eliminate_refined_inner_islands = 0x100,
     /**
-     * The result of this flag is very similar to
-     * #eliminate_refined_inner_islands. See the documentation there.
+     * 这个标志的结果与#eliminate_refined_inner_islands非常相似。见那里的文档。
+     *
      */
     eliminate_refined_boundary_islands = 0x200,
     /**
-     * This flag prevents the occurrence of unrefined islands. In more detail:
-     * It prohibits the coarsening of a cell if 'most of the neighbors' will
-     * be refined after the step.
+     * 这个标志可以防止未精炼岛屿的出现。更详细地说。
+     * 如果 "大部分邻居
+     * "在该步骤后将被精炼，它将禁止粗化一个单元。
+     *
      */
     do_not_produce_unrefined_islands = 0x400,
 
     /**
-     * This flag sums up all smoothing algorithms which may be performed upon
-     * refinement by flagging some more cells for refinement.
+     * 这个标志总结了所有的平滑算法，这些算法可能在细化时通过标志一些更多的单元来进行细化。
+     *
      */
     smoothing_on_refinement =
       (limit_level_difference_at_vertices | eliminate_unrefined_islands),
     /**
-     * This flag sums up all smoothing algorithms which may be performed upon
-     * coarsening by flagging some more cells for coarsening.
+     * 这个标志总结了所有的平滑算法，这些算法可以在粗化时通过标记一些更多的单元格来进行粗化。
+     *
      */
     smoothing_on_coarsening =
       (eliminate_refined_inner_islands | eliminate_refined_boundary_islands |
        do_not_produce_unrefined_islands),
 
     /**
-     * This flag includes all the above ones (therefore combines all
-     * smoothing algorithms implemented), with the exception of anisotropic
-     * smoothing.
+     * 这个标志包括上述所有的（因此结合了所有实施的平滑算法），但各向异性的平滑算法除外。
+     *
      */
     maximum_smoothing = 0xffff ^ allow_anisotropic_smoothing
   };
 
   /**
-   * An alias that is used to identify cell iterators. The concept of
-   * iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias identifies cells in a triangulation. The TriaIterator
-   * class works like a pointer that when you dereference it yields an object
-   * of type CellAccessor. CellAccessor is a class that identifies properties
-   * that are specific to cells in a triangulation, but it is derived (and
-   * consequently inherits) from TriaAccessor that describes what you can ask
-   * of more general objects (lines, faces, as well as cells) in a
-   * triangulation.
-   *
+   * 一个别名，用于识别单元格迭代器。迭代器的概念在 @ref Iterators "迭代器文档模块 "
+   * 中有详细的讨论。
+   * 当前的别名用于识别三角形中的单元。TriaIterator类的工作原理就像一个指针，当你解除引用时，会产生一个CellAccessor类型的对象。CellAccessor是一个标识三角形中单元格特定属性的类，但它派生（因此继承）于TriaAccessor，TriaAccessor描述了你可以对三角形中更一般的对象（线、面以及单元格）提出什么要求。
    * @ingroup Iterators
+   *
    */
   using cell_iterator = TriaIterator<CellAccessor<dim, spacedim>>;
 
   /**
-   * The same as above to allow the usage of the "MeshType concept" also
-   * on the refinement levels.
+   * 和上面一样，允许在细化层次上使用 "MeshType概念"。
+   *
    */
   using level_cell_iterator = cell_iterator;
 
   /**
-   * An alias that is used to identify
-   * @ref GlossActive "active cell iterators".
-   * The concept of iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias identifies active cells in a triangulation. The
-   * TriaActiveIterator class works like a pointer to active objects that when
-   * you dereference it yields an object of type CellAccessor. CellAccessor is
-   * a class that identifies properties that are specific to cells in a
-   * triangulation, but it is derived (and consequently inherits) from
-   * TriaAccessor that describes what you can ask of more general objects
-   * (lines, faces, as well as cells) in a triangulation.
-   *
    * @ingroup Iterators
+   *
    */
   using active_cell_iterator = TriaActiveIterator<CellAccessor<dim, spacedim>>;
 
   /**
-   * An alias that is used to identify iterators that point to faces.
-   * The concept of iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias identifies faces in a triangulation. The
-   * TriaIterator class works like a pointer to objects that when
-   * you dereference it yields an object of type TriaAccessor, i.e.,
-   * class that can be used to query geometric properties of faces
-   * such as their vertices, their area, etc.
-   *
+   * 一个别名，用于识别指向面的迭代器。  迭代器的概念在 @ref Iterators "迭代器文档模块 "
+   * 中有详细的讨论。
+   * 当前的别名是识别三角形中的面。TriaIterator类的工作原理就像一个指向对象的指针，当你解除引用时，会产生一个TriaAccessor类型的对象，即可以用来查询面的几何属性的类，如它们的顶点、面积等。
    * @ingroup Iterators
+   *
    */
   using face_iterator = TriaIterator<TriaAccessor<dim - 1, dim, spacedim>>;
 
   /**
-   * An alias that is used to identify iterators that point to active faces,
-   * i.e., to faces that have no children. Active faces must be faces of at
-   * least one active cell.
-   *
-   * Other than the "active" qualification, this alias is identical to the
-   * @p face_iterator alias. In particular, dereferencing either yields
-   * the same kind of object.
-   *
+   * 一个别名，用于识别指向活动面的迭代器，即指向没有子节点的面。活动面必须是至少一个活动单元的面。
+   * 除了 "活动 "的限定，这个别名与 @p face_iterator
+   * 的别名相同。特别是，取消引用这两个别名都会产生相同的对象。
    * @ingroup Iterators
+   *
    */
   using active_face_iterator =
     TriaActiveIterator<TriaAccessor<dim - 1, dim, spacedim>>;
 
   /**
-   * An alias that defines an iterator type to iterate over
-   * vertices of a mesh.  The concept of iterators is discussed at
-   * length in the
-   * @ref Iterators "iterators documentation module".
-   *
+   * 一个定义了迭代器类型的别名，用于迭代网格的顶点。 迭代器的概念在 @ref Iterators "迭代器文档模块 "
+   * 中有详细的讨论。
    * @ingroup Iterators
+   *
    */
   using vertex_iterator = TriaIterator<dealii::TriaAccessor<0, dim, spacedim>>;
 
   /**
-   * An alias that defines an iterator type to iterate over
-   * vertices of a mesh.  The concept of iterators is discussed at
-   * length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * This alias is in fact identical to the @p vertex_iterator alias
-   * above since all vertices in a mesh are active (i.e., are a vertex of
-   * an active cell).
-   *
+   * 一个别名，定义了一个迭代器类型，用于迭代网格的顶点。 迭代器的概念在 @ref Iterators  "迭代器文档模块 "
+   * 中有详细的讨论。    这个别名实际上与上面的 @p
+   * vertex_iterator
+   * 别名相同，因为网格中的所有顶点都是活动的（即，是活动单元的一个顶点）。
    * @ingroup Iterators
+   *
    */
   using active_vertex_iterator =
     TriaActiveIterator<dealii::TriaAccessor<0, dim, spacedim>>;
 
   /**
-   * An alias that defines an iterator over the (one-dimensional) lines
-   * of a mesh. In one-dimensional meshes, these are the cells of the mesh,
-   * whereas in two-dimensional meshes the lines are the faces of cells.
-   *
+   * 一个别名，定义了一个网格的（一维）线条的迭代器。在一维网格中，这些线是网格的单元，而在二维网格中，线是单元的面。
    * @ingroup Iterators
+   *
    */
   using line_iterator = typename IteratorSelector::line_iterator;
 
   /**
-   * An alias that allows iterating over the <i>active</i> lines, i.e.,
-   * that subset of lines that have no children. In one-dimensional meshes,
-   * these are the cells of the mesh, whereas in two-dimensional
-   * meshes the lines are the faces of cells.
-   *
-   * In two- or three-dimensional meshes, lines without children (i.e.,
-   * the active lines) are part of at least one active cell. Each such line may
-   * additionally be a child of a line of a coarser cell adjacent to a cell
-   * that is active. (This coarser neighbor would then also be active.)
-   *
+   * 一个别名，允许在<i>active</i>线上迭代，即没有子节点的线的子集。在一维网格中，这些是网格的单元，而在二维网格中，线是单元的面。
+   * 在二维或三维网格中，没有子节点的线（即活动线）是至少一个活动单元的一部分。每条这样的线还可能是与活动单元相邻的更粗的单元的线的子线。(这个较粗的邻居也是活动的)。
    * @ingroup Iterators
+   *
    */
   using active_line_iterator = typename IteratorSelector::active_line_iterator;
 
   /**
-   * An alias that defines an iterator over the (two-dimensional) quads
-   * of a mesh. In two-dimensional meshes, these are the cells of the mesh,
-   * whereas in three-dimensional meshes the quads are the faces of cells.
-   *
+   * 一个别名，定义了一个网格的（二维）四边形的迭代器。在二维网格中，这些是网格的单元，而在三维网格中，四边形是单元的面。
    * @ingroup Iterators
+   *
    */
   using quad_iterator = typename IteratorSelector::quad_iterator;
 
   /**
-   * An alias that allows iterating over the <i>active</i> quads, i.e.,
-   * that subset of quads that have no children. In two-dimensional meshes,
-   * these are the cells of the mesh, whereas in three-dimensional
-   * meshes the quads are the faces of cells.
-   *
-   * In three-dimensional meshes, quads without children (i.e.,
-   * the active quads) are faces of at least one active cell. Each such quad may
-   * additionally be a child of a quad face of a coarser cell adjacent to a cell
-   * that is active. (This coarser neighbor would then also be active.)
-   *
+   * 一个别名，允许在<i>active</i>四边形上进行迭代，即没有子节点的四边形子集。在二维网格中，这些是网格的单元，而在三维网格中，四边形是单元的面。
+   * 在三维网格中，没有孩子的四边形（即活动四边形）是至少一个活动单元的面。每个这样的四边形还可能是与活动单元相邻的更粗的单元的四边形面的子。这个较粗的邻居也将是活动的）。
    * @ingroup Iterators
+   *
    */
   using active_quad_iterator = typename IteratorSelector::active_quad_iterator;
 
   /**
-   * An alias that defines an iterator over the (three-dimensional) hexes
-   * of a mesh. This iterator only makes sense in three-dimensional meshes,
-   * where hexes are the cells of the mesh.
-   *
+   * 一个别名，定义了一个网格的（三维）六边形的迭代器。这个迭代器只有在三维网格中才有意义，在三维网格中六边形是网格的单元。
    * @ingroup Iterators
+   *
    */
   using hex_iterator = typename IteratorSelector::hex_iterator;
 
   /**
-   * An alias that allows iterating over the <i>active</i> hexes of a mesh.
-   * This iterator only makes sense in three-dimensional meshes,
-   * where hexes are the cells of the mesh. Consequently, in these
-   * three-dimensional meshes, this iterator is equivalent to the
-   * @p active_cell_iterator alias.
-   *
+   * 一个别名，允许在网格的<i>active</i>六边形上迭代。
+   * 这个迭代器只有在三维网格中才有意义，在三维网格中六边形是网格的单元。因此，在这些三维网格中，这个迭代器等同于
+   * @p active_cell_iterator  别名。
    * @ingroup Iterators
+   *
    */
   using active_hex_iterator = typename IteratorSelector::active_hex_iterator;
 
   /**
-   * A structure that is used as an exception object by the
-   * create_triangulation() function to indicate which cells among the coarse
-   * mesh cells are inverted or severely distorted (see the entry on
-   * @ref GlossDistorted "distorted cells"
-   * in the glossary).
+   * 一个结构，被create_triangulation()函数用作异常对象，用于指示粗略网格单元中哪些单元是倒置的或严重扭曲的（见术语表中 @ref GlossDistorted "扭曲的单元 "
+   * 条目）。
+   * 这类对象会被create_triangulation()和execute_coarsening_and_refinement()函数抛出，如果要忽略这个条件，可以在用户代码中捕获它们。然而，请注意，只有在调用三角形类的构造函数时表明有必要进行这种检查，才会产生这种异常。
+   * 如果从参考单元到实数单元的映射的Jacobian的行列式至少在一个顶点是负的，则该单元被称为<i>deformed</i>。这一计算是通过
+   * GeometryInfo::jacobian_determinants_at_vertices 函数完成的。
    *
-   * Objects of this kind are thrown by the create_triangulation() and
-   * execute_coarsening_and_refinement() functions, and they can be caught in
-   * user code if this condition is to be ignored. Note, however, that such
-   * exceptions are only produced if the necessity for this check was
-   * indicated when calling the constructor of the Triangulation class.
-   *
-   * A cell is called <i>deformed</i> if the determinant of the Jacobian of
-   * the mapping from reference cell to real cell is negative at least at one
-   * vertex. This computation is done using the
-   * GeometryInfo::jacobian_determinants_at_vertices function.
    */
   struct DistortedCellList : public dealii::ExceptionBase
   {
     /**
-     * Destructor. Empty, but needed for the sake of exception specification,
-     * since the base class has this exception specification and the
-     * automatically generated destructor would have a different one due to
-     * member objects.
+     * 解构器。空的，但为了异常规范而需要，因为基类有这个异常规范，而自动生成的析构器会因为成员对象而有一个不同的规范。
+     *
      */
     virtual ~DistortedCellList() noexcept override;
 
     /**
-     * A list of those cells among the coarse mesh cells that are deformed or
-     * whose children are deformed.
+     * 粗略网格单元中那些被变形或其子单元被变形的单元列表。
+     *
      */
     std::list<typename Triangulation<dim, spacedim>::cell_iterator>
       distorted_cells;
   };
 
   /**
-   * Make the dimension available in function templates.
+   * 使尺寸在函数模板中可用。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Make the space-dimension available in function templates.
+   * 使空间维度在函数模板中可用。
+   *
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * Create an empty triangulation. Do not create any cells.
+   * 创建一个空的三角结构。不要创建任何单元。      @param  smooth_grid 决定在网格细化时应强制执行的网格尺寸函数的平滑程度。      @param  check_for_distorted_cells 决定三角网格是否应该检查由create_triangulation()或execute_coarsening_and_refinement()创建的任何单元是否扭曲（见 @ref GlossDistorted  "扭曲的单元"
+   * ）。
+   * 如果设置，这两个函数在遇到扭曲的单元格时可能会抛出一个异常。
    *
-   * @param smooth_grid Determines the level of smoothness of the mesh size
-   * function that should be enforced upon mesh refinement.
-   *
-   * @param check_for_distorted_cells Determines whether the triangulation
-   * should check whether any of the cells that are created by
-   * create_triangulation() or execute_coarsening_and_refinement() are
-   * distorted (see
-   * @ref GlossDistorted "distorted cells").
-   * If set, these two functions may throw an exception if they encounter
-   * distorted cells.
    */
   Triangulation(const MeshSmoothing smooth_grid               = none,
                 const bool          check_for_distorted_cells = false);
 
   /**
-   * Copy constructor.
+   * 复制构造函数。    你真的应该使用 @p copy_triangulation
+   * 函数，所以这个构造函数被删除。这样做的原因是，我们可能想在集合中使用三角函数对象。然而，C++容器要求存储在其中的对象是可复制的，所以我们需要提供一个复制构造函数。另一方面，复制三角形是非常昂贵的，我们不希望这种对象被意外地复制，例如在编译器生成的临时对象中。通过定义一个复制构造函数但抛出一个错误，我们满足了容器的形式要求，但同时又不允许实际的复制。
+   * 最后，通过这个异常，我们很容易找到需要修改代码以避免拷贝的地方。
    *
-   * You should really use the @p copy_triangulation function, so this
-   * constructor is deleted. The reason for this is
-   * that we may want to use triangulation objects in collections. However,
-   * C++ containers require that the objects stored in them are copyable, so
-   * we need to provide a copy constructor. On the other hand, copying
-   * triangulations is so expensive that we do not want such objects copied by
-   * accident, for example in compiler-generated temporary objects. By
-   * defining a copy constructor but throwing an error, we satisfy the formal
-   * requirements of containers, but at the same time disallow actual copies.
-   * Finally, through the exception, one easily finds the places where code
-   * has to be changed to avoid copies.
    */
   Triangulation(const Triangulation<dim, spacedim> &) = delete;
 
   /**
-   * Move constructor.
+   * 移动构造器。
+   * 通过窃取另一个三角结构的内部数据来创建一个新的三角结构。
    *
-   * Create a new triangulation by stealing the internal data of another
-   * triangulation.
    */
   Triangulation(Triangulation<dim, spacedim> &&tria) noexcept;
 
   /**
-   * Move assignment operator.
+   * 移动赋值运算符。
+   *
    */
   Triangulation &
   operator=(Triangulation<dim, spacedim> &&tria) noexcept;
 
   /**
-   * Delete the object and all levels of the hierarchy.
+   * 删除对象和所有级别的层次结构。
+   *
    */
   virtual ~Triangulation() override;
 
   /**
-   * Reset this triangulation into a virgin state by deleting all data.
+   * 通过删除所有数据，将这个三角结构重置为处女状态。
+   * 注意，只有当这个对象不再存在任何订阅时，才允许进行这个操作，比如使用它的DoFHandler对象。
    *
-   * Note that this operation is only allowed if no subscriptions to this
-   * object exist any more, such as DoFHandler objects using it.
    */
   virtual void
   clear();
 
   /**
-   * Return MPI communicator used by this triangulation. In the case of
-   * a serial Triangulation object, MPI_COMM_SELF is returned.
+   * 返回该三角函数所使用的MPI通信器。如果是一个串行Triangulation对象，将返回MPI_COMM_SELF。
+   *
    */
   virtual MPI_Comm
   get_communicator() const;
 
   /**
-   * Set the mesh smoothing to @p mesh_smoothing. This overrides the
-   * MeshSmoothing given to the constructor. It is allowed to call this
-   * function only if the triangulation is empty.
+   * 设置网格平滑度为 @p mesh_smoothing.
+   * 这将覆盖给构造函数的MeshSmoothing。只有在三角结构为空时才允许调用这个函数。
+   *
    */
   virtual void
   set_mesh_smoothing(const MeshSmoothing mesh_smoothing);
 
   /**
-   * Return the mesh smoothing requirements that are obeyed.
+   * 返回遵守的网格平滑要求。
+   *
    */
   virtual const MeshSmoothing &
   get_mesh_smoothing() const;
 
   /**
-   * Assign a manifold object to a certain part of the triangulation. If
-   * an object with manifold number @p number is refined, this object is used
-   * to find the location of new vertices (see the results section of step-49
-   * for a more in-depth discussion of this, with examples).  It is also used
-   * for non-linear (i.e.: non-Q1) transformations of cells to the unit cell
-   * in shape function calculations.
+   * 将一个流形对象分配给三角剖面的某一部分。如果一个流形编号为
+   * @p number
+   * 的对象被细化，这个对象会被用来寻找新顶点的位置（参见
+   * step-49
+   * 的结果部分，对这个问题有更深入的讨论，并有例子）。
+   * 它也被用于形状函数计算中的单元格向单元格的非线性（即：非Q1）转换。
+   * 使用Manifold<dim,  spacedim>::clone() 创建一个 @p manifold_object
+   * 的副本，并在内部存储。
+   * 在非空三角的有效期内，有可能移除或替换一个Manifold对象。通常情况下，这是在第一次细化之前进行的，之后就很危险了。移除流形对象是通过reset_manifold()完成的。然后，该操作将之前给出的流形对象替换成一个直的流形近似值。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * A copy of @p manifold_object is created using
-   * Manifold<dim, spacedim>::clone() and stored internally.
-   *
-   * It is possible to remove or replace a Manifold object during the
-   * lifetime of a non-empty triangulation. Usually, this is done before the
-   * first refinement and is dangerous afterwards. Removal of a manifold
-   * object is done by reset_manifold(). This operation then replaces the
-   * manifold object given before by a straight manifold approximation.
-   *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_manifold(const types::manifold_id       number,
                const Manifold<dim, spacedim> &manifold_object);
 
   /**
-   * Reset those parts of the triangulation with the given
-   * @p manifold_number to use a FlatManifold object. This is the
-   * default state of a non-curved triangulation, and undoes
-   * assignment of a different Manifold object by the function
-   * Triangulation::set_manifold().
+   * 重置三角形中具有给定 @p manifold_number
+   * 的那些部分，以使用FlatManifold对象。这是一个非弯曲三角形的默认状态，并撤销由函数
+   * Triangulation::set_manifold(). 分配的不同的Manifold对象。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   reset_manifold(const types::manifold_id manifold_number);
 
   /**
-   * Reset all parts of the triangulation, regardless of their
-   * manifold_id, to use a FlatManifold object. This undoes assignment
-   * of all Manifold objects by the function
-   * Triangulation::set_manifold().
+   * 重置三角形的所有部分，无论其manifold_id如何，都要使用FlatManifold对象。这将撤销函数对所有Manifold对象的分配
+   * Triangulation::set_manifold().  。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   reset_all_manifolds();
 
   /**
-   * Set the manifold_id of all cells and faces to the given argument.
+   * 将所有单元格和面的manifold_id设置为给定参数。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_all_manifold_ids(const types::manifold_id number);
 
   /**
-   * Set the manifold_id of all boundary faces to the given argument.
+   * 将所有边界面的manifold_id设置为给定参数。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_all_manifold_ids_on_boundary(const types::manifold_id number);
 
   /**
-   * Set the manifold_id of all boundary faces and edges with given
-   * boundary_id @p b_id to the given manifold_id @p number.
+   * 将所有边界面和边的manifold_id与给定的 boundary_id  @p b_id
+   * 设置为给定的manifold_id  @p number.  。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_all_manifold_ids_on_boundary(const types::boundary_id b_id,
                                    const types::manifold_id number);
 
   /**
-   * Return a constant reference to a Manifold object used for this
-   * triangulation. @p number is the same as in set_manifold().
+   * 返回一个对用于该三角测量的流形对象的常数引用。  @p
+   * number 与set_manifold()中相同。
+   * @note  如果找不到流形，则返回默认的平面流形。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @note If no manifold could be found, the default flat manifold is returned.
-   *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   const Manifold<dim, spacedim> &
   get_manifold(const types::manifold_id number) const;
 
   /**
-   * Return a vector containing all boundary indicators assigned to boundary
-   * faces of active cells of this Triangulation object. Note, that each
-   * boundary indicator is reported only once. The size of the return vector
-   * will represent the number of different indicators (which is greater or
-   * equal one).
+   * 返回一个向量，包含分配给该三角测量对象的活动单元的边界面的所有边界指标。注意，每个边界指标只被报告一次。返回向量的大小将代表不同指标的数量（大于或等于1）。
+   * @ingroup boundary   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @ingroup boundary
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   virtual std::vector<types::boundary_id>
   get_boundary_ids() const;
 
   /**
-   * Return a vector containing all manifold indicators assigned to the
-   * objects of the active cells of this Triangulation. Note, that each
-   * manifold indicator is reported only once. The size of the return vector
-   * will represent the number of different indicators (which is greater or
-   * equal one).
+   * 返回一个向量，该向量包含分配给该三角结构中活动单元格对象的所有流形指标。注意，每个流形指标只报告一次。返回向量的大小将代表不同指标的数量（大于或等于1）。
+   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @ingroup manifold
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   virtual std::vector<types::manifold_id>
   get_manifold_ids() const;
 
   /**
-   * Copy @p other_tria to this triangulation. This operation is not cheap, so
-   * you should be careful with using this. We do not implement this function
-   * as a copy constructor, since it makes it easier to maintain collections
-   * of triangulations if you can assign them values later on.
+   * 将 @p other_tria
+   * 复制到这个三角区。这个操作并不便宜，所以你应该小心使用这个。我们没有把这个函数作为一个复制构造函数来实现，因为如果你可以在以后给它们赋值，那么维护三角形的集合就更容易了。
+   * 请记住，这个函数也复制了之前由 @p set_manifold
+   * 函数设置的边界描述符的指针。因此，你还必须保证描述边界的Manifold对象的寿命至少与复制的三角图一样长。
+   * 这个三角形必须事先是空的。    该函数被制成 @p virtual
+   * ，因为一些派生类可能想禁用或扩展该函数的功能。
+   * @note
+   * 调用这个函数会在other_tria上触发'copy'信号，也就是被复制的三角结构<i>from</i>。
+   * 它还会触发当前三角形的'创建'信号。更多信息请参见通用文档中关于信号的部分。
+   * @note
+   * 信号的连接列表不会从旧的三角结构复制到新的三角结构，因为这些连接的建立是为了监视旧的三角结构如何变化，而不是它可能被复制到的任何三角结构如何变化。
    *
-   * Keep in mind that this function also copies the pointer to the boundary
-   * descriptor previously set by the @p set_manifold function. You must
-   * therefore also guarantee that the Manifold objects describing the boundary
-   * have a lifetime at least as long as the copied triangulation.
-   *
-   * This triangulation must be empty beforehand.
-   *
-   * The function is made @p virtual since some derived classes might want to
-   * disable or extend the functionality of this function.
-   *
-   * @note Calling this function triggers the 'copy' signal on other_tria, i.e.
-   * the triangulation being copied <i>from</i>.  It also triggers the
-   * 'create' signal of the current triangulation. See the section on signals
-   * in the general documentation for more information.
-   *
-   * @note The list of connections to signals is not copied from the old to
-   * the new triangulation since these connections were established to monitor
-   * how the old triangulation changes, not how any triangulation it may be
-   * copied to changes.
    */
   virtual void
   copy_triangulation(const Triangulation<dim, spacedim> &other_tria);
 
   /**
-   * Create a triangulation from a list of vertices and a list of cells, each
-   * of the latter being a list of <tt>1<<dim</tt> vertex indices. The
-   * triangulation must be empty upon calling this function and the cell list
-   * should be useful (connected domain, etc.). The result of calling this
-   * function is a
-   * @ref GlossCoarseMesh "coarse mesh".
    *
-   * Material data for the cells is given within the @p cells array, while
-   * boundary information is given in the @p subcelldata field.
    *
-   * The numbering of vertices within the @p cells array is subject to some
-   * constraints; see the general class documentation for this.
    *
-   * For conditions when this function can generate a valid triangulation, see
-   * the documentation of this class, and the GridIn and GridReordering class.
    *
-   * If the <code>check_for_distorted_cells</code> flag was specified upon
-   * creation of this object, at the very end of its operation, the current
-   * function walks over all cells and verifies that none of the cells is
-   * deformed (see the entry on
-   * @ref GlossDistorted "distorted cells"
-   * in the glossary), where we call a cell deformed if the determinant of the
-   * Jacobian of the mapping from reference cell to real cell is negative at
-   * least at one of the vertices (this computation is done using the
-   * GeometryInfo::jacobian_determinants_at_vertices function). If there are
-   * deformed cells, this function throws an exception of kind
-   * DistortedCellList. Since this happens after all data structures have been
-   * set up, you can catch and ignore this exception if you know what you do
-   * -- for example, it may be that the determinant is zero (indicating that
-   * you have collapsed edges in a cell) but that this is ok because you
-   * didn't intend to integrate on this cell anyway. On the other hand,
-   * deformed cells are often a sign of a mesh that is too coarse to resolve
-   * the geometry of the domain, and in this case ignoring the exception is
-   * probably unwise.
+   * - 例如，它可能是行列式为零(表明你在一个单元中的边缘塌陷了)，但这是可以的，因为你并不打算在这个单元上进行积分。另一方面，变形的单元通常表明网格太粗，无法解决领域的几何问题，在这种情况下，忽略这个例外可能是不明智的。
+   * @note  这个函数在  step-14  和  step-19  中使用。
+   * @note  这个函数在做完它的工作后会触发 "创建
+   * "信号。参见该类的一般文档中关于信号的部分。例如，作为其结果，所有连接到这个三角形的DoFHandler对象将通过
+   * DoFHandler::reinit().  被重新初始化。
+   * @note
+   * 只有在dim==spacedim的情况下才会对扭曲的单元进行检查，否则，如果单元所描述的流形是扭曲的，那么单元就可以合法地被扭曲。
    *
-   * @note This function is used in step-14 and step-19.
-   *
-   * @note This function triggers the "create" signal after doing its work. See
-   * the section on signals in the general documentation of this class. For
-   * example as a consequence of this, all DoFHandler objects connected to
-   * this triangulation will be reinitialized via DoFHandler::reinit().
-   *
-   * @note The check for distorted cells is only done if dim==spacedim, as
-   * otherwise cells can legitimately be twisted if the manifold they describe
-   * is twisted.
    */
   virtual void
   create_triangulation(const std::vector<Point<spacedim>> &vertices,
@@ -1845,16 +1168,14 @@ public:
                        const SubCellData &                 subcelldata);
 
   /**
-   * Create a triangulation from the provided
-   * TriangulationDescription::Description.
+   * 从提供的 TriangulationDescription::Description.
+   * 中创建一个三角形。
+   * @note
+   * 如果需要流形，别忘了在调用此函数前用set_manifold()附加流形。
+   * @note  命名空间 TriangulationDescription::Utilities 包含创建
+   * TriangulationDescription::Description.   @param  construction_data
+   * 这个过程需要的数据。
    *
-   * @note Don't forget to attach the manifolds with set_manifold() before
-   *   calling this function if manifolds are needed.
-   *
-   * @note The namespace TriangulationDescription::Utilities contains functions
-   *   to create TriangulationDescription::Description.
-   *
-   * @param construction_data The data needed for this process.
    */
   virtual void
   create_triangulation(
@@ -1862,12 +1183,10 @@ public:
       &construction_data);
 
   /**
-   * For backward compatibility, only. This function takes the cell data in
-   * the ordering as requested by deal.II versions up to 5.2, converts it to
-   * the new (lexicographic) ordering and calls create_triangulation().
+   * 仅用于向后兼容。这个函数按照5.2之前的deal.II版本的要求，以排序方式获取单元格数据，将其转换为新的（lexicographic）排序，并调用create_triangulation()。
+   * @note
+   * 该函数内部调用create_triangulation，因此可以抛出与其他函数相同的异常。
    *
-   * @note This function internally calls create_triangulation and therefore
-   * can throw the same exception as the other function.
    */
   DEAL_II_DEPRECATED
   virtual void
@@ -1877,176 +1196,128 @@ public:
     const SubCellData &                 subcelldata);
 
   /**
-   * Revert or flip the direction_flags of a dim<spacedim triangulation, see
-   * @ref GlossDirectionFlag.
+   * 还原或翻转dim<spacedim三角形的方向标志，见
+   * @ref GlossDirectionFlag  。
+   * 如果dim等于spacedim，这个函数会抛出一个异常。
    *
-   * This function throws an exception if dim equals spacedim.
    */
   void
   flip_all_direction_flags();
 
   /**
-   * @name Mesh refinement
-   * @{
+   * @name  网格细化  @{  。
+   *
    */
 
   /**
-   * Flag all active cells for refinement.  This will refine all cells of all
-   * levels which are not already refined (i.e. only cells are refined which
-   * do not yet have children). The cells are only flagged, not refined, thus
-   * you have the chance to save the refinement flags.
+   * 标记所有活动单元进行细化。
+   * 这将细化所有级别的、尚未细化的单元格（也就是说，只有尚未有子代的单元格才会被细化）。这些单元格只被标记，不被细化，因此你有机会保存细化标记。
+   *
    */
   void
   set_all_refine_flags();
 
   /**
-   * Refine all cells @p times times. In other words, in each one of
-   * the @p times iterations, loop over all cells and refine each cell
-   * uniformly into $2^\text{dim}$ children. In practice, this
-   * function repeats the following operations @p times times: call
-   * set_all_refine_flags() followed by
-   * execute_coarsening_and_refinement(). The end result is that the
-   * number of cells increases by a factor of
-   * $(2^\text{dim})^\text{times}=2^{\text{dim} \times \text{times}}$.
+   * 精炼所有单元格 @p times 次。换句话说，在每一次的 @p
+   * times
+   * 迭代中，循环所有单元格，并将每个单元格统一细化为
+   * $2^\text{dim}$ 个子。在实践中，这个函数重复了以下操作
+   * @p times
+   * 次：调用set_all_refine_flags()，然后是execute_coarsening_and_refinement()。最终的结果是，单元格的数量增加了
+   * $(2^\text{dim})^\text{times}=2^{\text{dim} \times \text{times}}$  倍。
+   * 在这个循环中调用的execute_coarsening_and_refinement()函数如果创建了扭曲的单元格，可能会抛出一个异常（见其文档解释）。如果发生这种情况，这个异常将通过这个函数传播，在这种情况下，你可能不会得到实际的细化步骤数。
+   * @note
+   * 这个函数在做每个单独的细化循环之前和之后都会触发细化前和细化后的信号（即如果`times
+   * >
+   * 1'的话，会不止一次）。参见该类的一般文档中关于信号的部分。
    *
-   * The execute_coarsening_and_refinement() function called in this
-   * loop may throw an exception if it creates cells that are
-   * distorted (see its documentation for an explanation). This
-   * exception will be propagated through this function if that
-   * happens, and you may not get the actual number of refinement
-   * steps in that case.
-   *
-   * @note This function triggers the pre- and post-refinement signals before
-   * and after doing each individual refinement cycle (i.e. more than once if
-   * `times > 1`) . See the section on signals in the general documentation of
-   * this class.
    */
   void
   refine_global(const unsigned int times = 1);
 
   /**
-   * Coarsen all cells the given number of times.
+   * 对所有单元格进行给定次数的粗化。    在 @p times
+   * 的每一次迭代中，所有单元格都将被标记为粗化。如果一个活动的单元格已经在最粗的层次上，它将被忽略。
+   * @note
+   * 该函数在做每个单独的粗化循环（即如果`时间>1'，则不止一次）之前和之后都会触发预精化信号。参见该类的一般文档中关于信号的部分。
    *
-   * In each of one of the @p times iterations, all cells will be marked for
-   * coarsening. If an active cell is already on the coarsest level, it will
-   * be ignored.
-   *
-   * @note This function triggers the pre- and post-refinement signals before
-   * and after doing each individual coarsening cycle (i.e. more than once if
-   * `times > 1`) . See the section on signals in the general documentation of
-   * this class.
    */
   void
   coarsen_global(const unsigned int times = 1);
 
   /**
-   * Execute both refinement and coarsening of the triangulation.
+   * 同时执行三角形的细化和粗化。
+   * 该函数将所有细化和粗化的标志重置为假。它将用户标志用于内部目的。因此，它们将被未定义的内容所覆盖。
+   * 为了允许用户程序修复这些单元，如果需要的话，这个函数在完成所有其他工作后可能会抛出一个类型为DistortedCellList的异常，该异常包含一个已经被细化并且至少有一个子单元被扭曲的单元列表。如果没有单元格创建了扭曲的子代，该函数就不会创建这样的异常。
+   * 请注意，为了实现对变形单元的检查，必须在创建三角形对象时指定
+   * <code>check_for_distorted_cells</code> 标志。
+   * 更多信息请参见通用文档。
+   * @note
+   * 这个函数在工作之前和之后都会触发精简前和精简后的信号。参见该类的一般文档中关于信号的部分。
+   * @note  如果边界描述足够不规则，可能会发生一些由网格细化产生的子节点被扭曲（见 @ref GlossDistorted "扭曲的单元 "
+   * 的广泛讨论）。
+   * @note
+   * 这个函数是<tt>虚拟的</tt>，以允许派生类插入钩子，如保存细化标志等（见例如PersistentTriangulation类）。
    *
-   * The function resets all refinement and coarsening flags to false. It uses
-   * the user flags for internal purposes. They will therefore be overwritten
-   * by undefined content.
-   *
-   * To allow user programs to fix up these cells if that is desired, this
-   * function after completing all other work may throw an exception of type
-   * DistortedCellList that contains a list of those cells that have been
-   * refined and have at least one child that is distorted. The function does
-   * not create such an exception if no cells have created distorted children.
-   * Note that for the check for distorted cells to happen, the
-   * <code>check_for_distorted_cells</code> flag has to be specified upon
-   * creation of a triangulation object.
-   *
-   * See the general docs for more information.
-   *
-   * @note This function triggers the pre- and post-refinement signals before
-   * and after doing its work. See the section on signals in the general
-   * documentation of this class.
-   *
-   * @note If the boundary description is sufficiently irregular, it can
-   * happen that some of the children produced by mesh refinement are
-   * distorted (see the extensive discussion on
-   * @ref GlossDistorted "distorted cells").
-   *
-   * @note This function is <tt>virtual</tt> to allow derived classes to
-   * insert hooks, such as saving refinement flags and the like (see e.g. the
-   * PersistentTriangulation class).
    */
   virtual void
   execute_coarsening_and_refinement();
 
   /**
-   * Do both preparation for refinement and coarsening as well as mesh
-   * smoothing.
+   * 既做细化和粗化的准备，也做网格的平滑。
+   * 关于细化过程，它在<tt>dim>=2</tt>中固定细化的闭合（确保没有两个单元在细化水平上相差超过一个），等等。
+   * 如果这个类的构造函数给出了相应的标志，它将执行一些网格平滑处理。
+   * 该函数返回是否有额外的单元被标记为细化。
+   * 更多关于细化后平滑的信息，请参见本类的通用文档。
+   * 关于粗化部分，在准备实际的粗化步骤时，要对单元进行标记和去标记。这包括从可能不被删除的单元中删除粗化标志（例如，因为一个邻居比该单元更精细），做一些平滑处理，等等。
+   * 其效果是，只有那些被标记为粗化的单元才会被实际粗化。这包括所有被标记的单元格都属于父单元格，其所有子单元格都被标记。
+   * 该函数返回一些单元格的标记是否在这个过程中被改变。
+   * 这个函数使用了用户标志，所以如果你事后还需要它们，请储存它们。
    *
-   * Regarding the refinement process it fixes the closure of the refinement
-   * in <tt>dim>=2</tt> (make sure that no two cells are adjacent with a
-   * refinement level differing with more than one), etc.  It performs some
-   * mesh smoothing if the according flag was given to the constructor of this
-   * class.  The function returns whether additional cells have been flagged
-   * for refinement.
-   *
-   * See the general doc of this class for more information on smoothing upon
-   * refinement.
-   *
-   * Regarding the coarsening part, flagging and deflagging cells in
-   * preparation of the actual coarsening step are done. This includes
-   * deleting coarsen flags from cells which may not be deleted (e.g. because
-   * one neighbor is more refined than the cell), doing some smoothing, etc.
-   *
-   * The effect is that only those cells are flagged for coarsening which will
-   * actually be coarsened. This includes the fact that all flagged cells
-   * belong to parent cells of which all children are flagged.
-   *
-   * The function returns whether some cells' flagging has been changed in the
-   * process.
-   *
-   * This function uses the user flags, so store them if you still need them
-   * afterwards.
    */
   virtual bool
   prepare_coarsening_and_refinement();
 
-  /*
-   * @}
-   */
+  /*  @} 。  
+* */
 
   /**
-   * @name Keeping up with what happens to a triangulation
-   * @{
+   * @name  跟上一个三角形所发生的事情  @{  。
+   *
    */
 
 
   /**
-   * Used to inform functions in derived classes how the cell with the given
-   * cell_iterator is going to change. Note that this may me different than
-   * the refine_flag() and coarsen_flag() in the cell_iterator in parallel
-   * calculations because of refinement constraints that this machine does not
-   * see.
+   * 用于通知派生类中的函数，给定cell_iterator的单元格将如何变化。请注意，这可能与平行计算中cell_iterator中的refine_flag()和coarsen_flag()不同，因为细化约束是本机看不到的。
+   *
    */
   enum CellStatus
   {
     /**
-     * The cell will not be refined or coarsened and might or might not move
-     * to a different processor.
+     * 单元不会被细化或粗化，可能会也可能不会移动到不同的处理器。
+     *
      */
     CELL_PERSIST,
     /**
-     * The cell will be or was refined.
+     * 该单元将被或被精简。
+     *
      */
     CELL_REFINE,
     /**
-     * The children of this cell will be or were coarsened into this cell.
+     * 该单元的子单元将被或被粗化为该单元。
+     *
      */
     CELL_COARSEN,
     /**
-     * Invalid status. Will not occur for the user.
+     * 无效状态。不会发生在用户身上。
+     *
      */
     CELL_INVALID
   };
 
   /**
-   * A structure used to accumulate the results of the cell_weights slot
-   * functions below. It takes an iterator range and returns the sum of
-   * values.
+   * 一个用于累积下面的cell_weights槽函数的结果的结构。它接受一个迭代器范围，并返回值的总和。
+   *
    */
   template <typename T>
   struct CellWeightSum
@@ -2062,139 +1333,108 @@ public:
   };
 
   /**
-   * A structure that has boost::signal objects for a number of actions that a
-   * triangulation can do to itself. Please refer to the "Getting notice when
-   * a triangulation changes" section in the general documentation of the
-   * Triangulation class for more information and examples.
+   * 一个拥有 boost::signal
+   * 对象的结构，用于三角形可以对自己做的一些操作。更多的信息和例子，请参考Triangulation类的一般文档中的
+   * "三角形变化时获得通知 "部分。
+   * 关于信号的文档，见http://www.boost.org/doc/libs/release/libs/signals2
+   * 。
    *
-   * For documentation on signals, see
-   * http://www.boost.org/doc/libs/release/libs/signals2 .
    */
   struct Signals
   {
     /**
-     * This signal is triggered whenever the
-     * Triangulation::create_triangulation or
-     * Triangulation::copy_triangulation() is called. This signal is also
-     * triggered when loading a triangulation from an archive via
-     * Triangulation::load().
+     * 只要调用 Triangulation::create_triangulation 或
+     * Triangulation::copy_triangulation()
+     * 就会触发这个信号。当通过 Triangulation::load().
+     * 从档案中加载三角图时也会触发这个信号。
+     *
      */
     boost::signals2::signal<void()> create;
 
     /**
-     * This signal is triggered at the beginning of execution of the
-     * Triangulation::execute_coarsening_and_refinement() function (which is
-     * itself called by other functions such as Triangulation::refine_global()
-     * ). At the time this signal is triggered, the triangulation is still
-     * unchanged.
+     * 这个信号在 Triangulation::execute_coarsening_and_refinement()
+     * 函数（其本身被其他函数如 Triangulation::refine_global()
+     * 调用）开始执行时被触发。在这个信号被触发的时候，三角结构仍然没有改变。
+     *
      */
     boost::signals2::signal<void()> pre_refinement;
 
     /**
-     * This signal is triggered at the end of execution of the
-     * Triangulation::execute_coarsening_and_refinement() function when the
-     * triangulation has reached its final state.
+     * 这个信号在 Triangulation::execute_coarsening_and_refinement()
+     * 函数的执行结束时被触发，此时三角结构已经达到最终状态。
+     *
      */
     boost::signals2::signal<void()> post_refinement;
 
     /**
-     * This signal is triggered at the beginning of execution of the
-     * GridTools::partition_triangulation() and
-     * GridTools::partition_triangulation_zorder() functions. At the time this
-     * signal is triggered, the triangulation is still unchanged.
+     * 该信号在 GridTools::partition_triangulation() 和
+     * GridTools::partition_triangulation_zorder()
+     * 函数开始执行时被触发。在该信号被触发时，三角结构仍未改变。
+     *
      */
     boost::signals2::signal<void()> pre_partition;
 
     /**
-     * This signal is triggered when a function in deal.II moves the grid
-     * points of a mesh, e.g. GridTools::transform. Unfortunately,
-     * modification of a vertex in user code through
-     * <code>cell_iterator->vertex(v) = xxxx</code> cannot be detected by this
-     * method.
+     * 当deal.II中的函数移动网格点时，这个信号会被触发，例如
+     * GridTools::transform.  不幸的是，通过
+     * <code>cell_iterator->vertex(v) = xxxx</code>
+     * 修改用户代码中的顶点不能被这种方法检测到。
+     *
      */
     boost::signals2::signal<void()> mesh_movement;
 
     /**
-     * This signal is triggered for each cell that is going to be coarsened.
+     * 这个信号对每个要被粗化的单元都会被触发。
+     * @note
+     * 该信号是以一组活动单元的直接父单元为参数触发的。该父单元的子单元随后将被粗化。
      *
-     * @note This signal is triggered with the immediate parent cell of a set
-     * of active cells as argument. The children of this parent cell will
-     * subsequently be coarsened away.
      */
     boost::signals2::signal<void(
       const typename Triangulation<dim, spacedim>::cell_iterator &cell)>
       pre_coarsening_on_cell;
 
     /**
-     * This signal is triggered for each cell that just has been refined.
+     * 这个信号对每一个刚刚被粗化的单元格都会被触发。
+     * @note  信号参数 @p cell
+     * 对应于一组新创建的活动单元的直接父单元。
      *
-     * @note The signal parameter @p cell corresponds to the immediate parent
-     * cell of a set of newly created active cells.
      */
     boost::signals2::signal<void(
       const typename Triangulation<dim, spacedim>::cell_iterator &cell)>
       post_refinement_on_cell;
 
     /**
-     * This signal is triggered whenever the triangulation owning the signal
-     * is copied by another triangulation using
-     * Triangulation::copy_triangulation() (i.e. it is triggered on the
-     * <i>old</i> triangulation, but the new one is passed as an argument).
+     * 每当拥有该信号的三角结构被另一个使用
+     * Triangulation::copy_triangulation()
+     * 的三角结构复制时，该信号就会被触发（即在<i>old</i>三角结构上被触发，但新的三角结构被作为参数传递）。
+     *
      */
     boost::signals2::signal<void(
       const Triangulation<dim, spacedim> &destination_tria)>
       copy;
 
     /**
-     * This signal is triggered whenever the Triangulation::clear() function
-     * is called and in the destructor of the triangulation. This signal is
-     * also triggered when loading a triangulation from an archive via
-     * Triangulation::load() as the previous content of the triangulation is
-     * first destroyed.
+     * 只要调用 Triangulation::clear()
+     * 函数，并在三角形的析构器中，这个信号就会被触发。当通过
+     * Triangulation::load()
+     * 从存档中加载三角函数时，该信号也会被触发，因为三角函数的先前内容首先被销毁。
+     * 该信号在三角剖析的数据结构被销毁之前被触发。换句话说，连接到这个信号的函数可以最后看一下三角图，例如保存作为三角图的一部分存储的信息。
      *
-     * The signal is triggered before the data structures of the
-     * triangulation are destroyed. In other words, the functions
-     * attached to this signal get a last look at the triangulation,
-     * for example to save information stored as part of the
-     * triangulation.
      */
     boost::signals2::signal<void()> clear;
 
     /**
-     * This is a catch-all signal that is triggered whenever the create,
-     * post_refinement, or clear signals are triggered. In effect, it can be
-     * used to indicate to an object connected to the signal that the
-     * triangulation has been changed, whatever the exact cause of the change.
+     * 这是一个总括性的信号，每当创建、细化后或清除信号被触发时都会被触发。实际上，它可以用来向连接到该信号的对象表明三角测量已经被改变，不管改变的具体原因是什么。
+     * @note 单元级信号 @p pre_coarsening_on_cell 和 @p
+     * post_refinement_on_cell不与此信号连接。
      *
-     * @note The cell-level signals @p pre_coarsening_on_cell and @p
-     * post_refinement_on_cell are not connected to this signal.
      */
     boost::signals2::signal<void()> any_change;
 
     /**
-     * This signal is triggered for each cell during every automatic or manual
-     * repartitioning. This signal is somewhat special in that it is only
-     * triggered for distributed parallel calculations and only if functions
-     * are connected to it. It is intended to allow a weighted repartitioning
-     * of the domain to balance the computational load across processes in a
-     * different way than balancing the number of cells. Any connected
-     * function is expected to take an iterator to a cell, and a CellStatus
-     * argument that indicates whether this cell is going to be refined,
-     * coarsened or left untouched (see the documentation of the CellStatus
-     * enum for more information). The function is expected to return an
-     * unsigned integer, which is interpreted as the additional computational
-     * load of this cell. If this cell is going to be coarsened, the signal is
-     * called for the parent cell and you need to provide the weight of the
-     * future parent cell. If this cell is going to be refined the function
-     * should return a weight, which will be equally assigned to every future
-     * child cell of the current cell. As a reference a value of 1000 is added
-     * for every cell to the total weight. This means a signal return value of
-     * 1000 (resulting in a weight of 2000) means that it is twice as
-     * expensive for a process to handle this particular cell. If several
-     * functions are connected to this signal, their return values will be
-     * summed to calculate the final weight.
+     * 这个信号在每次自动或手动重新分区时对每个单元都会被触发。这个信号有些特殊，因为它只在分布式并行计算中被触发，而且只有当函数连接到它时才会被触发。它的目的是允许对领域进行加权重新划分，以平衡各进程的计算负载，而不是平衡单元的数量。任何连接的函数都需要一个指向单元格的迭代器，以及一个CellStatus参数，该参数表示该单元格是要被细化、粗化还是不被触及（更多信息请参见CellStatus枚举的文档）。该函数预计将返回一个无符号整数，它被解释为该单元的额外计算负荷。如果这个单元要被粗化，信号是为父单元调用的，你需要提供未来父单元的权重。如果这个单元将被精简，该函数应返回一个权重，该权重将被平均分配给当前单元的每个未来子单元。作为参考，每个单元格的总权重都要加上1000的值。这意味着信号返回值为1000（导致权重为2000）意味着一个进程处理这个特定单元的成本是两倍。如果有几个函数连接到这个信号，它们的返回值将被相加，以计算出最终的权重。
+     * 这个函数在 step-68 中使用。
      *
-     * This function is used in step-68.
      */
     boost::signals2::signal<unsigned int(const cell_iterator &,
                                          const CellStatus),
@@ -2202,1166 +1442,1080 @@ public:
       cell_weight;
 
     /**
-     * This signal is triggered at the beginning of execution of the
+     * 这个信号在
      * parallel::distributed::Triangulation::execute_coarsening_and_refinement()
-     * function (which is
-     * itself called by other functions such as Triangulation::refine_global()
-     * ). At the time this signal is triggered, the triangulation is still
-     * unchanged. This signal
-     * is different from the pre_refinement signal, because in the parallel
-     * distributed case the pre_refinement signal is triggered multiple times
-     * without a way to distinguish the last signal call.
+     * 函数开始执行时被触发（该函数本身被其他函数如
+     * Triangulation::refine_global()
+     * 调用）。在这个信号被触发的时候，三角结构仍然没有改变。这个信号与pre_refinement信号不同，因为在并行分布的情况下，pre_refinement信号被多次触发，没有办法区分最后的信号调用。
+     *
      */
     boost::signals2::signal<void()> pre_distributed_refinement;
 
     /**
-     * This signal is triggered during execution of the
+     * 这个信号是在执行
      * parallel::distributed::Triangulation::execute_coarsening_and_refinement()
-     * function. At the time this signal is triggered, the p4est oracle has been
-     * refined and the cell relations have been updated. The triangulation is
-     * unchanged otherwise, and the p4est oracle has not yet been repartitioned.
+     * 函数时触发的。在这个信号被触发的时候，p4est神谕已经被完善，单元格关系已经被更新。否则，三角结构是不变的，而且p4est谕言还没有被重新划分。
+     *
      */
     boost::signals2::signal<void()> post_p4est_refinement;
 
     /**
-     * This signal is triggered at the end of execution of the
+     * 这个信号在
      * parallel::distributed::Triangulation::execute_coarsening_and_refinement()
-     * function when the triangulation has reached its final state. This signal
-     * is different from the post_refinement signal, because in the parallel
-     * distributed case the post_refinement signal is triggered multiple times
-     * without a way to distinguish the last signal call.
+     * 函数的执行结束时被触发，此时三角剖分已经达到最终状态。这个信号与post_refinement信号不同，因为在并行分布的情况下，post_refinement信号会被多次触发，而没有办法区分最后的信号调用。
+     *
      */
     boost::signals2::signal<void()> post_distributed_refinement;
 
     /**
-     * This signal is triggered at the beginning of execution of the
-     * parallel::distributed::Triangulation::repartition() function. At the time
-     * this signal is triggered, the triangulation is still unchanged.
+     * 这个信号在 parallel::distributed::Triangulation::repartition()
+     * 函数的执行开始时被触发。在这个信号被触发的时候，三角关系仍然没有改变。
+     * @note  parallel::distributed::Triangulation::repartition() 函数也被
+     * parallel::distributed::Triangulation::load().
+     * 调用。因此，pre_distributed_repartition信号将在pre_distributed_load信号之后被触发。
      *
-     * @note The parallel::distributed::Triangulation::repartition() function is
-     * also called by parallel::distributed::Triangulation::load(). Thus, the
-     * pre_distributed_repartition signal will be triggered after the
-     * pre_distributed_load one.
      */
     boost::signals2::signal<void()> pre_distributed_repartition;
 
     /**
-     * This signal is triggered at the end of execution of the
-     * parallel::distributed::Triangulation::repartition()
-     * function when the triangulation has reached its final state.
+     * 这个信号在 parallel::distributed::Triangulation::repartition()
+     * 函数的执行结束时被触发，此时三角化已经达到最终状态。
+     *
      */
     boost::signals2::signal<void()> post_distributed_repartition;
 
     /**
-     * This signal is triggered at the beginning of execution of the
-     * parallel::distributed::Triangulation::save()
-     * function. At the time this signal is triggered, the triangulation
-     * is still unchanged.
+     * 该信号在 parallel::distributed::Triangulation::save()
+     * 函数开始执行时被触发。在这个信号被触发的时候，三角测量仍然没有变化。
+     *
      */
     boost::signals2::signal<void()> pre_distributed_save;
 
     /**
-     * This signal is triggered at the end of execution of the
-     * parallel::distributed::Triangulation::save()
-     * function when the triangulation has reached its final state.
+     * 在 parallel::distributed::Triangulation::save()
+     * 函数执行结束时，该信号被触发，此时三角结构已达到最终状态。
+     *
      */
     boost::signals2::signal<void()> post_distributed_save;
 
     /**
-     * This signal is triggered at the beginning of execution of the
-     * parallel::distributed::Triangulation::load()
-     * function. At the time this signal is triggered, the triangulation
-     * is still unchanged.
+     * 该信号在 parallel::distributed::Triangulation::load()
+     * 函数开始执行时被触发。在这个信号被触发的时候，三角测量仍然没有变化。
+     *
      */
     boost::signals2::signal<void()> pre_distributed_load;
 
     /**
-     * This signal is triggered at the end of execution of the
-     * parallel::distributed::Triangulation::load()
-     * function when the triangulation has reached its final state.
+     * 在 parallel::distributed::Triangulation::load()
+     * 函数执行结束时，该信号被触发，此时三角结构已达到最终状态。
+     *
      */
     boost::signals2::signal<void()> post_distributed_load;
   };
 
   /**
-   * Signals for the various actions that a triangulation can do to itself.
+   * 三角形可以对自己进行的各种操作的信号。
+   *
    */
   mutable Signals signals;
 
-  /*
-   * @}
+  /*  @} .   
+* */
+
+  /**
+   * @name  一个三角形的历史  @{  。
+   *
    */
 
   /**
-   * @name History of a triangulation
-   * @{
-   */
-
-  /**
-   * Save the addresses of the cells which are flagged for refinement to @p
-   * out.  For usage, read the general documentation for this class.
+   * 将被标记为细化的单元格的地址保存到 @p 外。
+   * 关于用法，请阅读该类的一般文档。
+   *
    */
   void
   save_refine_flags(std::ostream &out) const;
 
   /**
-   * Same as above, but store the flags to a bitvector rather than to a file.
+   * 与上述相同，但将标志存储到一个位向量而不是文件中。
+   *
    */
   void
   save_refine_flags(std::vector<bool> &v) const;
 
   /**
-   * Read the information stored by @p save_refine_flags.
+   * 读取由 @p save_refine_flags. 存储的信息。
+   *
    */
   void
   load_refine_flags(std::istream &in);
 
   /**
-   * Read the information stored by @p save_refine_flags.
+   * 读取由 @p save_refine_flags. 存储的信息。
+   *
    */
   void
   load_refine_flags(const std::vector<bool> &v);
 
   /**
-   * Analogue to @p save_refine_flags.
+   * 类似于 @p save_refine_flags. 的内容。
+   *
    */
   void
   save_coarsen_flags(std::ostream &out) const;
 
   /**
-   * Same as above, but store the flags to a bitvector rather than to a file.
+   * 与上述相同，但将标志存储到一个位向量，而不是存储到一个文件。
+   *
    */
   void
   save_coarsen_flags(std::vector<bool> &v) const;
 
   /**
-   * Analogue to @p load_refine_flags.
+   * 类似于 @p load_refine_flags. 。
+   *
    */
   void
   load_coarsen_flags(std::istream &out);
 
   /**
-   * Analogue to @p load_refine_flags.
+   * 类似于 @p load_refine_flags. 。
+   *
    */
   void
   load_coarsen_flags(const std::vector<bool> &v);
 
   /**
-   * Return whether this triangulation has ever undergone anisotropic (as
-   * opposed to only isotropic) refinement.
+   * 返回该三角形是否经历过各向异性（而不是各向同性）的细化。
+   *
    */
   bool
   get_anisotropic_refinement_flag() const;
 
-  /*
-   * @}
+  /*  @} .   
+* */
+
+  /**
+   * @name  用户数据  @{
+   *
    */
 
   /**
-   * @name User data
-   * @{
-   */
-
-  /**
-   * Clear all user flags.  See also
-   * @ref GlossUserFlags.
+   * 清除所有的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   clear_user_flags();
 
   /**
-   * Save all user flags. See the general documentation for this class and the
-   * documentation for the @p save_refine_flags for more details.  See also
-   * @ref GlossUserFlags.
+   * 保存所有的用户标志。更多细节请参见该类的一般文档和
+   * @p save_refine_flags  的文档。 也请参见  @ref GlossUserFlags  。
+   *
    */
   void
   save_user_flags(std::ostream &out) const;
 
   /**
-   * Same as above, but store the flags to a bitvector rather than to a file.
-   * The output vector is resized if necessary.  See also
-   * @ref GlossUserFlags.
+   * 和上面一样，但是把标志存储到一个位向量而不是文件中。
+   * 如果有必要，输出向量会被调整大小。 也见  @ref
+   * GlossUserFlags  。
+   *
    */
   void
   save_user_flags(std::vector<bool> &v) const;
 
   /**
-   * Read the information stored by @p save_user_flags.  See also
-   * @ref GlossUserFlags.
+   * 读取由
+   * @p save_user_flags.  储存的信息 也见  @ref GlossUserFlags  .
+   *
    */
   void
   load_user_flags(std::istream &in);
 
   /**
-   * Read the information stored by @p save_user_flags.  See also
-   * @ref GlossUserFlags.
+   * 读取由 @p
+   * save_user_flags. 存储的信息 也见 @ref GlossUserFlags  .
+   *
    */
   void
   load_user_flags(const std::vector<bool> &v);
 
   /**
-   * Clear all user flags on lines.  See also
-   * @ref GlossUserFlags.
+   * 清除所有行上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   clear_user_flags_line();
 
   /**
-   * Save the user flags on lines.  See also
-   * @ref GlossUserFlags.
+   * 保存行上的用户标志。 也见
+   * @ref GlossUserFlags  .
+   *
    */
   void
   save_user_flags_line(std::ostream &out) const;
 
   /**
-   * Same as above, but store the flags to a bitvector rather than to a file.
-   * The output vector is resized if necessary.  See also
-   * @ref GlossUserFlags.
+   * 与上述相同，但将标志存储到一个位向量而不是文件中。
+   * 如果有必要，输出向量会被调整大小。 也见  @ref
+   * GlossUserFlags  。
+   *
    */
   void
   save_user_flags_line(std::vector<bool> &v) const;
 
   /**
-   * Load the user flags located on lines.  See also
-   * @ref GlossUserFlags.
+   * 加载位于行上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   load_user_flags_line(std::istream &in);
 
   /**
-   * Load the user flags located on lines.  See also
-   * @ref GlossUserFlags.
+   * 加载位于行上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   load_user_flags_line(const std::vector<bool> &v);
 
   /**
-   * Clear all user flags on quads.  See also
-   * @ref GlossUserFlags.
+   * 清除四边形上的所有用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   clear_user_flags_quad();
 
   /**
-   * Save the user flags on quads.  See also
-   * @ref GlossUserFlags.
+   * 保存四边形上的用户标志。 参见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   save_user_flags_quad(std::ostream &out) const;
 
   /**
-   * Same as above, but store the flags to a bitvector rather than to a file.
-   * The output vector is resized if necessary.  See also
-   * @ref GlossUserFlags.
+   * 与上述相同，但将标志存储到一个位向量而不是文件中。
+   * 如果有必要，输出向量会被调整大小。 也见  @ref
+   * GlossUserFlags  。
+   *
    */
   void
   save_user_flags_quad(std::vector<bool> &v) const;
 
   /**
-   * Load the user flags located on quads.  See also
-   * @ref GlossUserFlags.
+   * 加载位于四边形上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   load_user_flags_quad(std::istream &in);
 
   /**
-   * Load the user flags located on quads.  See also
-   * @ref GlossUserFlags.
+   * 加载位于四边形上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   load_user_flags_quad(const std::vector<bool> &v);
 
 
   /**
-   * Clear all user flags on quads.  See also
-   * @ref GlossUserFlags.
+   * 清除四边形上的所有用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   clear_user_flags_hex();
 
   /**
-   * Save the user flags on hexs.  See also
-   * @ref GlossUserFlags.
+   * 保存赫兹上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   save_user_flags_hex(std::ostream &out) const;
 
   /**
-   * Same as above, but store the flags to a bitvector rather than to a file.
-   * The output vector is resized if necessary.  See also
-   * @ref GlossUserFlags.
+   * 与上述相同，但将标志存储到一个位向量而不是文件中。
+   * 如果有必要，输出向量会被调整大小。 也见  @ref
+   * GlossUserFlags  。
+   *
    */
   void
   save_user_flags_hex(std::vector<bool> &v) const;
 
   /**
-   * Load the user flags located on hexs.  See also
-   * @ref GlossUserFlags.
+   * 加载位于hexs上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   load_user_flags_hex(std::istream &in);
 
   /**
-   * Load the user flags located on hexs.  See also
-   * @ref GlossUserFlags.
+   * 加载位于hexs上的用户标志。 也见
+   * @ref GlossUserFlags  。
+   *
    */
   void
   load_user_flags_hex(const std::vector<bool> &v);
 
   /**
-   * Clear all user pointers and indices and allow the use of both for next
-   * access.  See also
-   * @ref GlossUserData.
+   * 清除所有的用户指针和索引，并允许在下一次访问时使用这两者。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   clear_user_data();
 
   /**
-   * Save all user indices. The output vector is resized if necessary. See
-   * also
-   * @ref GlossUserData.
+   * 保存所有的用户索引。如果有必要，输出向量的大小会被调整。也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_indices(std::vector<unsigned int> &v) const;
 
   /**
-   * Read the information stored by save_user_indices().  See also
-   * @ref GlossUserData.
+   * 读取由save_user_indices()存储的信息。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   load_user_indices(const std::vector<unsigned int> &v);
 
   /**
-   * Save all user pointers. The output vector is resized if necessary.  See
-   * also
-   * @ref GlossUserData.
+   * 保存所有的用户指针。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_pointers(std::vector<void *> &v) const;
 
   /**
-   * Read the information stored by save_user_pointers().  See also
-   * @ref GlossUserData.
+   * 读取由save_user_pointers()存储的信息。 也见
+   * @ref GlossUserData  .
+   *
    */
   void
   load_user_pointers(const std::vector<void *> &v);
 
   /**
-   * Save the user indices on lines. The output vector is resized if
-   * necessary.  See also
-   * @ref GlossUserData.
+   * 保存用户索引的行数。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_indices_line(std::vector<unsigned int> &v) const;
 
   /**
-   * Load the user indices located on lines.  See also
-   * @ref GlossUserData.
+   * 加载位于行上的用户索引。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   load_user_indices_line(const std::vector<unsigned int> &v);
 
   /**
-   * Save the user indices on quads. The output vector is resized if
-   * necessary.  See also
-   * @ref GlossUserData.
+   * 保存位于四边形的用户索引。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_indices_quad(std::vector<unsigned int> &v) const;
 
   /**
-   * Load the user indices located on quads.  See also
-   * @ref GlossUserData.
+   * 加载位于四边形上的用户索引。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   load_user_indices_quad(const std::vector<unsigned int> &v);
 
   /**
-   * Save the user indices on hexes. The output vector is resized if
-   * necessary.  See also
-   * @ref GlossUserData.
+   * 保存位于十六进制的用户索引。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_indices_hex(std::vector<unsigned int> &v) const;
 
   /**
-   * Load the user indices located on hexs.  See also
-   * @ref GlossUserData.
+   * 加载位于十六进制上的用户索引。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   load_user_indices_hex(const std::vector<unsigned int> &v);
   /**
-   * Save the user indices on lines. The output vector is resized if
-   * necessary.  See also
-   * @ref GlossUserData.
+   * 保存位于行上的用户索引。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_pointers_line(std::vector<void *> &v) const;
 
   /**
-   * Load the user pointers located on lines.  See also
-   * @ref GlossUserData.
+   * 加载位于行上的用户指针。 也见
+   * @ref GlossUserData  .
+   *
    */
   void
   load_user_pointers_line(const std::vector<void *> &v);
 
   /**
-   * Save the user pointers on quads. The output vector is resized if
-   * necessary.  See also
-   * @ref GlossUserData.
+   * 保存位于四边形上的用户指针。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_pointers_quad(std::vector<void *> &v) const;
 
   /**
-   * Load the user pointers located on quads.  See also
-   * @ref GlossUserData.
+   * 加载位于四边形上的用户指针。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   load_user_pointers_quad(const std::vector<void *> &v);
 
   /**
-   * Save the user pointers on hexes. The output vector is resized if
-   * necessary.  See also
-   * @ref GlossUserData.
+   * 保存位于十六进制的用户指针。如果有必要，输出向量会被调整大小。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   save_user_pointers_hex(std::vector<void *> &v) const;
 
   /**
-   * Load the user pointers located on hexs.  See also
-   * @ref GlossUserData.
+   * 加载位于六角星上的用户指针。 也见
+   * @ref GlossUserData  。
+   *
    */
   void
   load_user_pointers_hex(const std::vector<void *> &v);
 
-  /*
-   * @}
-   */
+  /*  @}  。  
+* */
 
   /**
-   * @name Cell iterator functions
-   * @{
-   */
-
-  /**
-   * Iterator to the first used cell on level @p level.
+   * @name  细胞迭代器函数  @{  。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
+   */
+
+  /**
+   * 迭代到第一层使用的单元格  @p level.  。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
+   *
    */
   cell_iterator
   begin(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first active cell on level @p level. If the given level
-   * does not contain any active cells (i.e., all cells on this level are
-   * further refined, then this function returns
-   * <code>end_active(level)</code> so that loops of the kind
+   * 迭代到第一层的活动单元  @p level.
+   * 如果给定的层不包含任何活动单元（即这一层的所有单元都被进一步细化了，那么这个函数返回
+   * <code>end_active(level)</code> ，这样的循环就会有
    * @code
-   *   for (const auto cell=tria.begin_active(level);
-   *        cell!=tria.end_active(level);
-   *        ++cell)
-   *     {
-   *       ...
-   *     }
-   *  @endcode
-   * have zero iterations, as may be expected if there are no active cells on
-   * this level.
+   * for (const auto cell=tria.begin_active(level);
+   *      cell!=tria.end_active(level);
+   *      ++cell)
+   *   {
+   *     ...
+   *   }
+   * @endcode
+   * 迭代次数为零，如果这一层没有活动单元，可能会有这样的预期。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   active_cell_iterator
   begin_active(const unsigned int level = 0) const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 过了终点的迭代器；这个迭代器用于比较具有过了终点或开始前状态的迭代器。
+   *
    */
   cell_iterator
   end() const;
 
   /**
-   * Return an iterator which is the first iterator not on level. If @p level
-   * is the last level, then this returns <tt>end()</tt>.
+   * 返回一个迭代器，它是第一个不在水平线上的迭代器。如果
+   * @p level 是最后一个层次，那么这将返回<tt>end()</tt>。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   cell_iterator
   end(const unsigned int level) const;
 
   /**
-   * Return an active iterator which is the first active iterator not on the
-   * given level. If @p level is the last level, then this returns
-   * <tt>end()</tt>.
+   * 返回一个活动的迭代器，它是不在给定层次上的第一个活动迭代器。如果
+   * @p level 是最后一个层次，那么这将返回<tt>end()</tt>。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   active_cell_iterator
   end_active(const unsigned int level) const;
 
 
   /**
-   * Return an iterator pointing to the last used cell.
+   * 返回一个指向最后使用的单元格的迭代器。
+   *
    */
   cell_iterator
   last() const;
 
   /**
-   * Return an iterator pointing to the last active cell.
+   * 返回一个指向最后一个活动单元格的迭代器。
+   *
    */
   active_cell_iterator
   last_active() const;
 
   /**
-   * Return an iterator to a cell of this Triangulation object constructed from
-   * an independent CellId object.
+   * 返回一个迭代器，指向这个由独立的CellId对象构建的Triangulation对象的一个单元。
+   * 如果给定的参数对应于这个三角形中的一个有效单元，对于当前处理器存储所有属于三角形的单元的顺序三角形，这个操作总是会成功。另一方面，如果这是一个平行三角形，那么当前的处理器可能实际上不知道这个单元。在这种情况下，对于本地相关的单元，这个操作会成功，但对于在当前处理器上不太精细的人工单元，这个操作可能不会成功。
    *
-   * If the given argument corresponds to a valid cell in this triangulation,
-   * this operation will always succeed for sequential triangulations where the
-   * current processor stores all cells that are part of the triangulation. On
-   * the other hand, if this is a parallel triangulation, then the current
-   * processor may not actually know about this cell. In this case, this
-   * operation will succeed for locally relevant cells, but may not for
-   * artificial cells that are less refined on the current processor.
    */
   cell_iterator
   create_cell_iterator(const CellId &cell_id) const;
 
   /**
-   * @name Cell iterator functions returning ranges of iterators
+   * @name  细胞迭代器函数返回迭代器的范围
+   *
    */
 
   /**
-   * Return an iterator range that contains all cells (active or not) that
-   * make up this triangulation. Such a range is useful to initialize range-
-   * based for loops as supported by C++11. See the example in the
-   * documentation of active_cell_iterators().
-   *
-   * @return The half open range <code>[this->begin(), this->end())</code>
-   *
+   * 返回一个迭代器范围，该范围包含构成这个三角形的所有单元格（无论是否激活）。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @return
+   * 半开范围  <code>[this->begin(), this->end())</code>
    * @ingroup CPP11
+   *
    */
   IteratorRange<cell_iterator>
   cell_iterators() const;
 
   /**
-   * Return an iterator range that contains all active cells that make up this
-   * triangulation. Such a range is useful to initialize range-based for loops
-   * as supported by C++11, see also
-   * @ref CPP11 "C++11 standard".
-   *
-   * Range-based for loops are useful in that they require much less code than
-   * traditional loops (see <a href="http://en.wikipedia.org/wiki/C%2B%2B11
-   * #Range-based_for_loop">here</a> for a discussion of how they work). An
-   * example is that without range-based for loops, one often writes code such
-   * as the following (assuming for a moment that our goal is setting the user
-   * flag on every active cell):
+   * #Range-based_for_loop">here</a>）。一个例子是，如果没有基于范围的for循环，人们往往会写出如下的代码（假设我们的目标是在每个活动单元上设置用户标志）。
    * @code
-   *   Triangulation<dim> triangulation;
-   *   ...
-   *   typename Triangulation<dim>::active_cell_iterator
-   *     cell = triangulation.begin_active(),
-   *     endc = triangulation.end();
-   *   for (; cell!=endc; ++cell)
-   *     cell->set_user_flag();
+   * Triangulation<dim> triangulation;
+   * ...
+   * typename Triangulation<dim>::active_cell_iterator
+   *   cell = triangulation.begin_active(),
+   *   endc = triangulation.end();
+   * for (; cell!=endc; ++cell)
+   *   cell->set_user_flag();
    * @endcode
-   * Using C++11's range-based for loops, this is now entirely equivalent to
-   * the following:
+   * 使用C++11的基于范围的for循环，现在这完全等同于下面的内容。
    * @code
-   *   Triangulation<dim> triangulation;
-   *   ...
-   *   for (const auto &cell : triangulation.active_cell_iterators())
-   *     cell->set_user_flag();
+   * Triangulation<dim> triangulation;
+   * ...
+   * for (const auto &cell : triangulation.active_cell_iterators())
+   *   cell->set_user_flag();
    * @endcode
-   *
-   * @return The half open range <code>[this->begin_active(),
-   * this->end())</code>
-   *
+   * @return  半开范围<code>[this->begin_active(), this->end())</code>。
    * @ingroup CPP11
+   *
    */
   IteratorRange<active_cell_iterator>
   active_cell_iterators() const;
 
   /**
-   * Return an iterator range that contains all cells (active or not) that
-   * make up the given level of this triangulation. Such a range is useful to
-   * initialize range-based for loops as supported by C++11. See the example
-   * in the documentation of active_cell_iterators().
-   *
-   * @param[in] level A given level in the refinement hierarchy of this
-   * triangulation.
-   * @return The half open range <code>[this->begin(level),
-   * this->end(level))</code>
-   *
-   * @pre level must be less than this->n_levels().
-   *
+   * 返回一个迭代器范围，该范围包含了构成该三角图给定层次的所有单元（无论是否激活）。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @param[in]  level
+   * 这个三角结构的细化层次中的一个给定的级别。
+   * @return  半开范围<code>[this->begin(level), this->end(level))</code>
+   * @pre  level必须小于this->n_levels()。
    * @ingroup CPP11
+   *
    */
   IteratorRange<cell_iterator>
   cell_iterators_on_level(const unsigned int level) const;
 
   /**
-   * Return an iterator range that contains all active cells that make up the
-   * given level of this triangulation. Such a range is useful to initialize
-   * range-based for loops as supported by C++11. See the example in the
-   * documentation of active_cell_iterators().
-   *
-   * @param[in] level A given level in the refinement hierarchy of this
-   * triangulation.
-   * @return The half open range <code>[this->begin_active(level),
-   * this->end(level))</code>
-   *
-   * @pre level must be less than this->n_levels().
-   *
+   * 返回一个迭代器范围，该范围包含所有构成该三角形的给定级别的活动单元。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @param[in]  level
+   * 这个三角形的细化层次中的一个给定级别。    @return
+   * 半开范围<code>[this->begin_active(level), this->end(level))</code>
+   * @pre  level必须小于this->n_levels()。
    * @ingroup CPP11
+   *
    */
   IteratorRange<active_cell_iterator>
   active_cell_iterators_on_level(const unsigned int level) const;
 
-  /*
-   * @}
-   */
+  /*  @} 。  
+* */
 
-  /*-------------------------------------------------------------------------*/
-
-  /**
-   * @name Face iterator functions
-   * @{
-   */
+   /*-------------------------------------------------------------------------*/ 
 
   /**
-   * Iterator to the first used face.
+   * @name  面对迭代器函数  @{  。
+   *
+   */
+
+  /**
+   * 迭代到第一个使用的面。
+   *
    */
   face_iterator
   begin_face() const;
 
   /**
-   * Iterator to the first active face.
+   * 迭代到第一个活动面。
+   *
    */
   active_face_iterator
   begin_active_face() const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 超过终点的迭代器；这个迭代器用于比较超过终点或开始前状态的迭代器。
+   *
    */
   face_iterator
   end_face() const;
 
   /**
-   * Return an iterator range that contains all active faces that make up this
-   * triangulation. This function is the face version of
-   * Triangulation::active_cell_iterators(), and allows one to write code
-   * like, e.g.,
-   *
+   * 返回一个迭代器范围，其中包含构成这个三角形的所有活动面。这个函数是
+   * Triangulation::active_cell_iterators(),
+   * 的面的版本，允许人们写代码，例如。
    * @code
-   *   Triangulation<dim> triangulation;
-   *   ...
-   *   for (auto &face : triangulation.active_face_iterators())
-   *     face->set_manifold_id(42);
+   * Triangulation<dim> triangulation;
+   * ...
+   * for (auto &face : triangulation.active_face_iterators())
+   *   face->set_manifold_id(42);
    * @endcode
-   *
-   * @return The half open range <code>[this->begin_active_face(),
-   * this->end_face())</code>
-   *
+   * @return  半开范围<code>[this->begin_active_face(),
+   * this->end_face())</code>。
    * @ingroup CPP11
+   *
    */
   IteratorRange<active_face_iterator>
   active_face_iterators() const;
 
-  /*
-   * @}
-   */
+  /*  @} .   
+* */
 
-  /*-------------------------------------------------------------------------*/
-
-  /**
-   * @name Vertex iterator functions
-   * @{
-   */
+   /*-------------------------------------------------------------------------*/ 
 
   /**
-   * Iterator to the first used vertex. This function can only be used if dim
-   * is not one.
+   * @name  顶点迭代器函数  @{
+   *
+   */
+
+  /**
+   * 迭代到第一个使用的顶点。这个函数只有在dim不是一个的情况下才能使用。
+   *
    */
   vertex_iterator
   begin_vertex() const;
 
   /**
-   * Iterator to the first active vertex. Because all vertices are active,
-   * begin_vertex() and begin_active_vertex() return the same vertex. This
-   * function can only be used if dim is not one.
+   * 到第一个活动顶点的迭代器。因为所有的顶点都是活动的，begin_vertex()和begin_active_vertex()返回同一个顶点。这个函数只有在dim不是一个的情况下才可以使用。
+   *
    */
   active_vertex_iterator
   begin_active_vertex() const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states. This function can only
-   * be used if dim is not one.
+   * 过去的迭代器；这个迭代器用于比较过去或开始前状态的迭代器。这个函数只有在dim不为一的情况下才能使用。
+   *
    */
   vertex_iterator
   end_vertex() const;
 
-  /*
-   * @}
+  /*  @} 。  
+* */
+
+  /**
+   * @name  关于三角形的信息 @{  。
+   *
    */
 
   /**
-   * @name Information about the triangulation
-   * @{
+   * 在下文中，大多数函数都提供了两个版本，有和没有描述水平的参数。有这个参数的版本只适用于描述当前三角剖分的单元的对象。例如：在二维中不能调用<tt>n_lines(level)</tt>，只能调用<tt>n_lines()</tt>，因为线在二维中是面，因此没有层次。
+   *
    */
 
   /**
-   * In the following, most functions are provided in two versions, with and
-   * without an argument describing the level. The versions with this argument
-   * are only applicable for objects describing the cells of the present
-   * triangulation. For example: in 2D <tt>n_lines(level)</tt> cannot be
-   * called, only <tt>n_lines()</tt>, as lines are faces in 2D and therefore
-   * have no level.
-   */
-
-  /**
-   * Return the total number of used lines, active or not.
+   * 返回已使用的线的总数，无论是否激活。
+   *
    */
   unsigned int
   n_lines() const;
 
   /**
-   * Return the total number of used lines, active or not on level @p level.
+   * 返回已使用的线的总数，在 @p level. 层上是否有效。
+   *
    */
   unsigned int
   n_lines(const unsigned int level) const;
 
   /**
-   * Return the total number of active lines.
+   * 返回有效线路的总数。
+   *
    */
   unsigned int
   n_active_lines() const;
 
   /**
-   * Return the total number of active lines, on level @p level.
+   * 返回活动线路的总数，在级别 @p level. 上。
+   *
    */
   unsigned int
   n_active_lines(const unsigned int level) const;
 
   /**
-   * Return the total number of used quads, active or not.
+   * 返回已使用的四边形总数，无论是否激活。
+   *
    */
   unsigned int
   n_quads() const;
 
   /**
-   * Return the total number of used quads, active or not on level @p level.
+   * 返回已使用的四边形总数，活跃或不活跃，在级别 @p
+   * level. 。
+   *
    */
   unsigned int
   n_quads(const unsigned int level) const;
 
   /**
-   * Return the total number of active quads, active or not.
+   * 返回活跃的四边形总数，活跃与否。
+   *
    */
   unsigned int
   n_active_quads() const;
 
   /**
-   * Return the total number of active quads, active or not on level @p level.
+   * 返回活跃的四边形总数，活跃或不活跃的水平 @p level.
+   * 。
+   *
    */
   unsigned int
   n_active_quads(const unsigned int level) const;
 
   /**
-   * Return the total number of used hexahedra, active or not.
+   * 返回已使用的六面体的总数，活跃与否。
+   *
    */
   unsigned int
   n_hexs() const;
 
   /**
-   * Return the total number of used hexahedra, active or not on level @p
-   * level.
+   * 返回已使用的六面体总数，在 @p 层中是否有效。
+   *
    */
   unsigned int
   n_hexs(const unsigned int level) const;
 
   /**
-   * Return the total number of active hexahedra, active or not.
+   * 返回使用中的六面体总数，无论是否激活。
+   *
    */
   unsigned int
   n_active_hexs() const;
 
   /**
-   * Return the total number of active hexahedra, active or not on level @p
-   * level.
+   * 返回活跃的六面体总数，在 @p 层中活跃或不活跃。
+   *
    */
   unsigned int
   n_active_hexs(const unsigned int level) const;
 
   /**
-   * Return the total number of used cells, active or not.  Maps to
-   * <tt>n_lines()</tt> in one space dimension and so on.
+   * 返回已使用的单元格总数，激活或未激活。
+   * 在一个空间维度上映射到<tt>n_lines()</tt>，以此类推。
+   *
    */
   unsigned int
   n_cells() const;
 
   /**
-   * Return the total number of used cells, active or not, on level @p level.
-   * Maps to <tt>n_lines(level)</tt> in one space dimension and so on.
+   * 返回已使用的单元格总数，无论是否激活，在级别 @p
+   * level.
+   * 中映射到<tt>n_lines(level)</tt>在一个空间维度上，等等。
+   *
    */
   unsigned int
   n_cells(const unsigned int level) const;
 
   /**
-   * Return the total number of active cells. Maps to
-   * <tt>n_active_lines()</tt> in one space dimension and so on.
+   * 返回活动单元格的总数。在一个空间维度上映射到<tt>n_active_lines()</tt>，依此类推。
+   *
    */
   unsigned int
   n_active_cells() const;
 
   /**
-   * Return the total number of active cells. For the current class, this is
-   * the same as n_active_cells(). However, the function may be overloaded in
-   * derived classes (e.g., in parallel::distributed::Triangulation) where it
-   * may return a value greater than the number of active cells reported by
-   * the triangulation object on the current processor.
+   * 返回活动单元格的总数。对于当前的类，这与n_active_cells()相同。然而，该函数可以在派生类中被重载（例如，在
+   * parallel::distributed::Triangulation)
+   * 中，它可以返回一个大于当前处理器上三角形对象报告的活动单元数的值。
+   *
    */
   virtual types::global_cell_index
   n_global_active_cells() const;
 
 
   /**
-   * Return the total number of active cells on level @p level.  Maps to
-   * <tt>n_active_lines(level)</tt> in one space dimension and so on.
+   * 返回层面上的活动单元总数  @p level.
+   * 在一个空间维度上映射为<tt>n_active_lines(level)</tt>，依此类推。
+   *
    */
   unsigned int
   n_active_cells(const unsigned int level) const;
 
   /**
-   * Return the total number of used faces, active or not.  In 2D, the result
-   * equals n_lines(), in 3D it equals n_quads(), while in 1D it equals
-   * the number of used vertices.
+   * 返回已使用的面的总数，无论是否激活。
+   * 在二维中，其结果等于n_lines()，在三维中等于n_quads()，而在一维中则等于使用的顶点数。
+   *
    */
   unsigned int
   n_faces() const;
 
   /**
-   * Return the total number of active faces.  In 2D, the result equals
-   * n_active_lines(), in 3D it equals n_active_quads(), while in 1D it equals
-   * the number of used vertices.
+   * 返回活动面的总数。
+   * 在2D中，其结果等于n_active_lines()，在3D中等于n_active_quads()，而在1D中等于使用的顶点数。
+   *
    */
   unsigned int
   n_active_faces() const;
 
   /**
-   * Return the number of levels in this triangulation.
+   * 返回这个三角形的层数。
+   * @note
+   * 在内部，三角形以层为单位存储数据，这个数据结构中的层数可能比人们想象的要多。
    *
-   * @note Internally, triangulations store data in levels, and there may be
-   * more levels in this data structure than one may think -- for example,
-   * imagine a triangulation that we just got by coarsening the highest level
-   * so that it was completely depopulated. That level is not removed, since
-   * it will most likely be repopulated soon by the next refinement process.
-   * As a consequence, if you happened to run through raw cell iterators
-   * (which you can't do as a user of this class, but can internally), then
-   * the number of objects in the levels hierarchy is larger than the level of
-   * the most refined cell plus one. On the other hand, since this is rarely
-   * what a user of this class cares about, the function really just returns
-   * the level of the most refined active cell plus one. (The plus one is
-   * because in a coarse, unrefined mesh, all cells have level zero -- making
-   * the number of levels equal to one.)
+   * - 例如，想象一下我们刚刚通过粗化最高层而得到的三角形，这样它就完全被删除了。这个层次并没有被删除，因为它很可能很快就会被下一个细化过程重新填充。  因此，如果你碰巧跑过原始单元格迭代器（作为这个类的用户你不能这样做，但在内部可以），那么层次结构中的对象数量就会大于最细化的单元格的层次加一。另一方面，由于这个类的用户很少关心这个问题，这个函数实际上只是返回最细化的活动单元的级别加一。(加一是因为在一个粗略的、未精炼的网格中，所有的单元都是零级的。
+   *
+   * - 使得级别的数量等于1）。)
+   *
    */
   unsigned int
   n_levels() const;
 
   /**
-   * Return the number of levels in use. This function is equivalent to
-   * n_levels() for a serial Triangulation, but gives the maximum of
-   * n_levels() over all processors for a parallel::distributed::Triangulation
-   * and therefore can be larger than n_levels().
+   * 返回正在使用的层数。这个函数等同于串行三角网格的n_levels()，但是对于
+   * parallel::distributed::Triangulation
+   * 来说，它给出了所有处理器上n_levels()的最大值，因此可以比n_levels()大。
+   *
    */
   virtual unsigned int
   n_global_levels() const;
 
   /**
-   * Return true if the triangulation has hanging nodes.
+   * 如果三角形有悬空节点，返回true。
+   * 这个函数是虚拟的，因为其结果可以有不同的解释，这取决于三角剖分是否只存在于单个处理器上，或者像
+   * parallel::distributed::Triangulation
+   * 类中所做的那样，可能是分布式的（关于这个函数在并行情况下应该做什么，见那里的描述）。
    *
-   * The function is made virtual since the result can be interpreted in
-   * different ways, depending on whether the triangulation lives only on a
-   * single processor, or may be distributed as done in the
-   * parallel::distributed::Triangulation class (see there for a description
-   * of what the function is supposed to do in the parallel context).
    */
   virtual bool
   has_hanging_nodes() const;
 
   /**
-   * Return the total number of vertices.  Some of them may not be used, which
-   * usually happens upon coarsening of a triangulation when some vertices are
-   * discarded, but we do not want to renumber the remaining ones, leading to
-   * holes in the numbers of used vertices.  You can get the number of used
-   * vertices using @p n_used_vertices function.
+   * 返回顶点的总数。
+   * 其中一些顶点可能没有被使用，这通常发生在粗化三角形时，一些顶点被丢弃，但我们不想对剩余的顶点重新编号，导致使用的顶点数量出现漏洞。
+   * 你可以使用 @p n_used_vertices 函数获得已用顶点的数量。
+   *
    */
   unsigned int
   n_vertices() const;
 
   /**
-   * Return a constant reference to all the vertices present in this
-   * triangulation. Note that not necessarily all vertices in this array are
-   * actually used; for example, if you coarsen a mesh, then some vertices are
-   * deleted, but their positions in this array are unchanged as the indices
-   * of vertices are only allocated once. You can find out about which
-   * vertices are actually used by the function get_used_vertices().
+   * 返回一个对该三角结构中所有顶点的常数引用。注意，这个数组中不一定所有的顶点都被实际使用；例如，如果你粗化一个网格，那么一些顶点会被删除，但是它们在这个数组中的位置是不变的，因为顶点的索引只被分配一次。你可以通过函数get_used_vertices()来了解哪些顶点被实际使用。
+   *
    */
   const std::vector<Point<spacedim>> &
   get_vertices() const;
 
   /**
-   * Return the number of vertices that are presently in use, i.e. belong to
-   * at least one used element.
+   * 返回目前正在使用的顶点的数量，即至少属于一个被使用的元素。
+   *
    */
   unsigned int
   n_used_vertices() const;
 
   /**
-   * Return @p true if the vertex with this @p index is used.
+   * 如果具有此 @p index 的顶点被使用，返回 @p true 。
+   *
    */
   bool
   vertex_used(const unsigned int index) const;
 
   /**
-   * Return a constant reference to the array of @p bools indicating whether
-   * an entry in the vertex array is used or not.
+   * 返回一个对 @p bools
+   * 数组的常数引用，表明顶点数组中的一个条目是否被使用。
+   *
    */
   const std::vector<bool> &
   get_used_vertices() const;
 
   /**
-   * Return the maximum number of cells meeting at a common vertex. Since this
-   * number is an invariant under refinement, only the cells on the coarsest
-   * level are considered. The operation is thus reasonably fast. The
-   * invariance is only true for sufficiently many cells in the coarsest
-   * triangulation (e.g. for a single cell one would be returned), so a
-   * minimum of four is returned in two dimensions, 8 in three dimensions,
-   * etc, which is how many cells meet if the triangulation is refined.
+   * 返回在一个共同顶点相遇的最大单元格数。由于这个数字在细化过程中是一个不变量，所以只考虑最粗层的单元。因此该操作是相当快的。该不变性只适用于最粗的三角形中足够多的单元格（例如，对于单个单元格会返回一个），因此在二维空间中会返回最小的4个，在三维空间中会返回8个，等等，这就是如果三角形被细化，会有多少单元格相遇。
+   * 在一个空间维度上，会返回两个。
    *
-   * In one space dimension, two is returned.
    */
   unsigned int
   max_adjacent_cells() const;
 
   /**
-   * This function always returns @p invalid_subdomain_id but is there for
-   * compatibility with the derived @p parallel::distributed::Triangulation
-   * class. For distributed parallel triangulations this function returns the
-   * subdomain id of those cells that are owned by the current processor.
+   * 这个函数总是返回 @p invalid_subdomain_id
+   * ，但是为了与派生的 @p parallel::distributed::Triangulation
+   * 类兼容而存在。对于分布式并行三角计算，该函数返回由当前处理器拥有的那些单元的子域ID。
+   *
    */
   virtual types::subdomain_id
   locally_owned_subdomain() const;
 
   /**
-   * Return a reference to the current object.
+   * 返回一个对当前对象的引用。    这似乎不是很有用，但允许编写代码，可以访问任何满足 @ref ConceptMeshType "MeshType概念 "
+   * 的底层三角形（这可能不仅是一个三角形，也可能是一个DoFHandler，例如）。
    *
-   * This doesn't seem to be very useful but allows to write code that can
-   * access the underlying triangulation for anything that satisfies the
-   * @ref ConceptMeshType "MeshType concept"
-   * (which may not only be a triangulation, but also a DoFHandler, for
-   * example).
    */
   Triangulation<dim, spacedim> &
   get_triangulation();
 
   /**
-   * Return a reference to the current object. This is the const-version of
-   * the previous function.
+   * 返回一个对当前对象的引用。这是前一个函数的const-version。
+   *
    */
   const Triangulation<dim, spacedim> &
   get_triangulation() const;
 
 
-  /*
-   * @}
-   */
+  /*  @} .   
+* */
 
   /**
-   * @name Internal information about the number of objects
-   * @{
-   */
-
-  /**
-   * Total number of lines, used or unused.
+   * @name  有关对象数量的内部信息  @{  。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
+   */
+
+  /**
+   * 已使用或未使用的总行数。
+   * @note
+   * 这个函数实际上是输出关于三角测量的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用于其他一些非常紧密地建立在它之上的类（特别是DoFHandler类）。
+   *
    */
   unsigned int
   n_raw_lines() const;
 
   /**
-   * Number of lines, used or unused, on the given level.
+   * 在给定级别上，已使用或未使用的行数。
+   * @note
+   * 这个函数实际上是输出关于三角形的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用于其他一些非常紧密地建立在它之上的类（特别是DoFHandler类）。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
    */
   unsigned int
   n_raw_lines(const unsigned int level) const;
 
   /**
-   * Total number of quads, used or unused.
+   * 已使用或未使用的四边形总数。
+   * @note
+   * 这个函数实际上是在输出关于三角形的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用于其他一些非常紧密地建立在它之上的类（特别是DoFHandler类）。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
    */
   unsigned int
   n_raw_quads() const;
 
   /**
-   * Number of quads, used or unused, on the given level.
+   * 在给定的水平上，已使用或未使用的四边形的数量。
+   * @note
+   * 这个函数实际上是输出关于三角测量的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用于其他一些非常紧密地建立在它之上的类（特别是DoFHandler类）。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
    */
   unsigned int
   n_raw_quads(const unsigned int level) const;
 
   /**
-   * Number of hexs, used or unused, on the given level.
+   * 在给定级别上，已使用或未使用的赫兹数。
+   * @note
+   * 这个函数实际上是输出关于三角测量的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用于其他一些非常紧密地建立在它之上的类（特别是DoFHandler类）。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
    */
   unsigned int
   n_raw_hexs(const unsigned int level) const;
 
   /**
-   * Number of cells, used or unused, on the given level.
+   * 给定层次上已使用或未使用的单元格的数量。
+   * @note
+   * 这个函数实际上是输出关于三角形的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用于其他一些非常紧密地建立在它之上的类（特别是DoFHandler类）。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
    */
   unsigned int
   n_raw_cells(const unsigned int level) const;
 
   /**
-   * Return the total number of faces, used or not. In 2d, the result equals
-   * n_raw_lines(), in 3d it equals n_raw_quads(), while in 1D it equals
-   * the number of vertices.
+   * 返回面的总数，无论是否使用。在2D中，这个结果等于n_raw_lines()，在3D中等于n_raw_quads()，而在1D中等于顶点的数量。
+   * @note
+   * 这个函数实际上是输出关于三角形的内部信息。它不应该在应用程序中使用。这个函数只是这个类的公共接口的一部分，因为它被用在其他一些非常紧密地建立在它之上的类中（特别是DoFHandler类）。
    *
-   * @note This function really exports internal information about the
-   * triangulation. It shouldn't be used in applications. The function is only
-   * part of the public interface of this class because it is used in some of
-   * the other classes that build very closely on it (in particular, the
-   * DoFHandler class).
    */
   unsigned int
   n_raw_faces() const;
 
-  /*
-   * @}
-   */
+  /*  @} 。  
+* */
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   * 这个函数是虚拟的，因为三角测量对象可能通过这个基类的指针被访问，即使实际对象是一个派生类。
    *
-   * This function is made virtual, since a triangulation object might be
-   * accessed through a pointer to this base class, even if the actual object
-   * is a derived class.
    */
   virtual std::size_t
   memory_consumption() const;
 
   /**
-   * Write the data of this object to a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入一个流中，以便进行序列化。
+   * @note
+   * 这个函数不保存<i>all</i>当前三角结构的成员变量。相反，只有某些种类的信息被保存。更多信息请参见该类的一般文档。
    *
-   * @note This function does not save <i>all</i> member variables of the
-   * current triangulation. Rather, only certain kinds of information are
-   * stored. For more information see the general documentation of this class.
    */
   template <class Archive>
   void
   save(Archive &ar, const unsigned int version) const;
 
   /**
-   * Read the data of this object from a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
-   * Throw away the previous content.
+   * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，从一个流中读取此对象的数据。
+   * 扔掉之前的内容。
+   * @note
+   * 这个函数不会将当前三角结构的<i>all</i>成员变量重置为之前存储到存档的三角结构的成员变量。相反，只有某些种类的信息被加载。更多信息请参见该类的一般文档。
+   * @note  这个函数调用 Triangulation::clear() 函数，因此触发了
+   * "清除 "信号。在从存档中加载所有数据后，它又触发了
+   * "创建
+   * "信号。关于信号的更多信息，请参见该类的一般文档。
    *
-   * @note This function does not reset <i>all</i> member variables of the
-   * current triangulation to the ones of the triangulation that was
-   * previously stored to an archive. Rather, only certain kinds of
-   * information are loaded. For more information see the general
-   * documentation of this class.
-   *
-   * @note This function calls the Triangulation::clear() function and
-   * consequently triggers the "clear" signal. After loading all data from the
-   * archive, it then triggers the "create" signal. For more information on
-   * signals, see the general documentation of this class.
    */
   template <class Archive>
   void
@@ -3369,26 +2523,22 @@ public:
 
 
   /**
-   * Declare the (coarse) face pairs given in the argument of this function as
-   * periodic. This way it is possible to obtain neighbors across periodic
-   * boundaries.
+   * 将这个函数的参数中给出的（粗略的）面对宣布为周期性的。这样就有可能获得跨越周期性边界的邻居。
+   * 该向量可以由函数 GridTools::collect_periodic_faces.
+   * 填充。关于周期性边界条件的更多信息，请参见
+   * GridTools::collect_periodic_faces,
+   * DoFTools::make_periodicity_constraints 和 step-45  。
+   * @note
+   * 在使用这个函数之前，必须先初始化三角结构，而且不能进行精化。
    *
-   * The vector can be filled by the function
-   * GridTools::collect_periodic_faces.
-   *
-   * For more information on periodic boundary conditions see
-   * GridTools::collect_periodic_faces, DoFTools::make_periodicity_constraints
-   * and step-45.
-   *
-   * @note Before this function can be used the Triangulation has to be
-   * initialized and must not be refined.
    */
   virtual void
   add_periodicity(
     const std::vector<GridTools::PeriodicFacePair<cell_iterator>> &);
 
   /**
-   * Return the periodic_face_map.
+   * 返回 periodic_face_map。
+   *
    */
   const std::map<
     std::pair<cell_iterator, unsigned int>,
@@ -3396,24 +2546,23 @@ public:
   get_periodic_face_map() const;
 
   /**
-   * Return vector filled with the used reference-cell types of this
-   * triangulation.
+   * 返回填充有该三角图所用参考单元类型的向量。
+   *
    */
   const std::vector<ReferenceCell> &
   get_reference_cells() const;
 
   /**
-   * Indicate if the triangulation only consists of hypercube-like cells, i.e.,
-   * lines, quadrilaterals, or hexahedra.
+   * 指示三角形是否只由类似超立方体的单元组成，即线、四边形或六面体。
+   *
    */
   bool
   all_reference_cells_are_hyper_cube() const;
 
 #ifdef DOXYGEN
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization. using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)，从一个流中写入和读取这个对象的数据，以便进行序列化。
+   *
    */
   template <class Archive>
   void
@@ -3425,14 +2574,14 @@ public:
 #endif
 
   /**
-   * @name Exceptions
-   * @{
+   * @name  异常情况  @{
+   *
    */
 
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException2(ExcInvalidLevel,
                  int,
@@ -3443,10 +2592,9 @@ public:
                  << arg2 << " refinement levels. The given level " << arg1
                  << " must be *less* than " << arg2 << ".");
   /**
-   * The function raising this exception can only operate on an empty
-   * Triangulation, i.e., a Triangulation without grid cells.
-   *
+   * 引发该异常的函数只能对空三角图进行操作，即没有网格单元的三角图。
    * @ingroup Exceptions
+   *
    */
   DeclException2(
     ExcTriangulationNotEmpty,
@@ -3457,38 +2605,36 @@ public:
     << "However, it currently stores " << arg1 << " vertices and has "
     << "cells on " << arg2 << " levels.");
   /**
-   * Trying to re-read a grid, an error occurred.
-   *
+   * 试图重新读取一个网格，发生了错误。
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcGridReadError);
   /**
-   * Exception
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcFacesHaveNoLevel);
   /**
-   * The triangulation level you accessed is empty.
-   *
+   * 你所访问的三角测量层是空的。
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcEmptyLevel,
                  int,
                  << "You tried to do something on level " << arg1
                  << ", but this level is empty.");
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcNonOrientableTriangulation);
 
   /**
-   * Exception
+   * 异常 请求的边界_id没有找到
    *
-   * Requested boundary_id not found
-   *
-   * @ingroup Exceptions
    */
   DeclException1(ExcBoundaryIdNotFound,
                  types::boundary_id,
@@ -3496,9 +2642,9 @@ public:
                  << " is not defined in this Triangulation!");
 
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclExceptionMsg(
     ExcInconsistentCoarseningFlags,
@@ -3507,35 +2653,35 @@ public:
     "coarsen flags on your triangulation via "
     "Triangulation::prepare_coarsening_and_refinement() beforehand!");
 
-  /*
-   * @}
+  /*  @}  * */
+
+protected:
+  /**
+   * 异常
+   *
    */
 
 protected:
   /**
-   * Do some smoothing in the process of refining the triangulation. See the
-   * general doc of this class for more information about this.
+   * 在细化三角形的过程中做一些平滑处理。关于这方面的更多信息，请参见该类的通用文档。
+   *
    */
   MeshSmoothing smooth_grid;
 
   /**
-   * Vector caching all reference-cell types of the given triangulation
-   * (also in the distributed case).
+   * 矢量缓存给定三角形的所有参考单元类型（也是在分布式情况下）。
+   *
    */
   std::vector<ReferenceCell> reference_cells;
 
   /**
-   * Write a bool vector to the given stream, writing a pre- and a postfix
-   * magic number. The vector is written in an almost binary format, i.e. the
-   * bool flags are packed but the data is written as ASCII text.
+   * 向给定的流写入一个bool向量，写入一个前缀和一个后缀的魔法数字。该向量以几乎二进制的格式写入，即bool标志被打包，但数据被写成ASCII文本。
+   * 标志以二进制格式存储：对于每个 @p true, ，存储一个 @p
+   * 1 位，否则存储一个 @p 0 位。
+   * 这些位被存储为<tt>无符号字符</tt>，从而避免了字节数。它们被写入
+   * @p out
+   * 的纯文本中，因此平均每输入一个比特就有3.6个比特在输出中。其他信息（神奇的数字和输入向量的元素数）也是以纯文本形式存储。因此，该格式应该是跨平台兼容的。
    *
-   * The flags are stored in a binary format: for each @p true, a @p 1 bit is
-   * stored, a @p 0 bit otherwise.  The bits are stored as <tt>unsigned
-   * char</tt>, thus avoiding endianness. They are written to @p out in plain
-   * text, thus amounting to 3.6 bits in the output per bits in the input on
-   * the average. Other information (magic numbers and number of elements of
-   * the input vector) is stored as plain text as well. The format should
-   * therefore be interplatform compatible.
    */
   static void
   write_bool_vector(const unsigned int       magic_number1,
@@ -3544,8 +2690,9 @@ protected:
                     std::ostream &           out);
 
   /**
-   * Re-read a vector of bools previously written by @p write_bool_vector and
-   * compare with the magic numbers.
+   * 重新读取之前由 @p write_bool_vector
+   * 编写的一个布尔矢量，并与神奇数字进行比较。
+   *
    */
   static void
   read_bool_vector(const unsigned int magic_number1,
@@ -3554,14 +2701,15 @@ protected:
                    std::istream &     in);
 
   /**
-   * Recreate information about periodic neighbors from
-   * periodic_face_pairs_level_0.
+   * 从periodic_face_pairs_level_0重新创建周期性邻居的信息。
+   *
    */
   void
   update_periodic_face_map();
 
   /**
-   * Update the internal reference_cells vector.
+   * 更新内部reference_cells向量。
+   *
    */
   virtual void
   update_reference_cells();
@@ -3569,42 +2717,37 @@ protected:
 
 private:
   /**
-   * Policy with the Triangulation-specific tasks related to creation,
-   * refinement, and coarsening.
+   * 与创建、细化和粗化相关的三角形具体任务的政策。
+   *
    */
   std::unique_ptr<
     dealii::internal::TriangulationImplementation::Policy<dim, spacedim>>
     policy;
 
   /**
-   * If add_periodicity() is called, this variable stores the given periodic
-   * face pairs on level 0 for later access during the identification of ghost
-   * cells for the multigrid hierarchy and for setting up the
-   * periodic_face_map.
+   * 如果调用add_periodicity()，该变量将给定的周期性面对存储在第0层，以便以后在识别多网格层次的鬼单元和设置period_face_map时访问。
+   *
    */
   std::vector<GridTools::PeriodicFacePair<cell_iterator>>
     periodic_face_pairs_level_0;
 
   /**
-   * If add_periodicity() is called, this variable stores the active periodic
-   * face pairs.
+   * 如果调用add_periodicity()，这个变量将存储活动的周期性面对。
+   *
    */
   std::map<std::pair<cell_iterator, unsigned int>,
            std::pair<std::pair<cell_iterator, unsigned int>, std::bitset<3>>>
     periodic_face_map;
 
   /**
-   * @name Cell iterator functions for internal use
-   * @{
+   * @name  内部使用的细胞迭代器函数  @{  。
+   *
    */
 
   /**
-   * Declare a number of iterator types for raw iterators, i.e., iterators
-   * that also iterate over holes in the list of cells left by cells that have
-   * been coarsened away in previous mesh refinement cycles.
+   * 声明一些原始迭代器的迭代器类型，即迭代器也可以迭代在以前的网格细化周期中被粗化掉的单元格列表中的孔。
+   * 由于用户不应该访问我们存储数据的这些内部属性，所以这些迭代器类型被定为私有。
    *
-   * Since users should never have to access these internal properties of how
-   * we store data, these iterator types are made private.
    */
   using raw_cell_iterator = TriaRawIterator<CellAccessor<dim, spacedim>>;
   using raw_face_iterator =
@@ -3616,331 +2759,271 @@ private:
   using raw_hex_iterator  = typename IteratorSelector::raw_hex_iterator;
 
   /**
-   * Iterator to the first cell, used or not, on level @p level. If a level
-   * has no cells, a past-the-end iterator is returned.
+   * 迭代器到第一个单元，无论是否使用，在关卡上  @p
+   * level.
+   * 如果一个关卡没有单元，将返回一个过去的迭代器。
+   *
    */
   raw_cell_iterator
   begin_raw(const unsigned int level = 0) const;
 
   /**
-   * Return a raw iterator which is the first iterator not on level. If @p
-   * level is the last level, then this returns <tt>end()</tt>.
+   * 返回一个原始迭代器，该迭代器是不在关卡上的第一个迭代器。如果
+   * @p 级别是最后一个级别，那么这将返回<tt>end()</tt>。
+   *
    */
   raw_cell_iterator
   end_raw(const unsigned int level) const;
 
-  /*
-   * @}
+  /*  @} 。  
+* */
+
+  /**
+   * @name  内部使用的行迭代器函数  @{
+   *
    */
 
   /**
-   * @name Line iterator functions for internal use
-   * @{
-   */
-
-  /**
-   * Iterator to the first line, used or not, on level @p level. If a level
-   * has no lines, a past-the-end iterator is returned.  If lines are no
-   * cells, i.e. for @p dim>1 no @p level argument must be given.  The same
-   * applies for all the other functions above, of course.
+   * 到第一行的迭代器，无论是否使用，在级别上  @p level.
+   * 如果一个级别没有行，将返回一个过去的迭代器。
+   * 如果行没有单元格，即对于 @p dim>1 来说，必须给出 @p
+   * level 参数。 当然，这也适用于上述所有其他函数。
+   *
    */
   raw_line_iterator
   begin_raw_line(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first used line on level @p level.
+   * 迭代器到第 @p level. 层的第一个使用行。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   line_iterator
   begin_line(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first active line on level @p level.
+   * 迭代器到第一层的活动线  @p level.  。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   active_line_iterator
   begin_active_line(const unsigned int level = 0) const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 过去的迭代器；这个迭代器用于比较具有过去或开始前状态的迭代器。
+   *
    */
   line_iterator
   end_line() const;
 
-  /*
-   * @}
-   */
+  /*  @} .   
+* */
 
   /**
-   * @name Quad iterator functions for internal use
-   * @{
-   */
-
-  /**
-   * Iterator to the first quad, used or not, on the given level. If a level
-   * has no quads, a past-the-end iterator is returned.  If quads are no
-   * cells, i.e. for $dim>2$ no level argument must be given.
+   * @name  内部使用的四重迭代器函数  @{
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
+   */
+
+  /**
+   * 迭代到给定关卡上的第一个四边形，无论是否使用。如果一个级别没有四边形，则返回一个过去式的迭代器。
+   * 如果四边形没有单元格，即对于 $dim>2$
+   * 来说，不需要给出级别参数。
+   * @note  给出的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
+   *
    */
   raw_quad_iterator
   begin_raw_quad(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first used quad on level @p level.
+   * 迭代到第一层使用的四边形 @p level. 。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   quad_iterator
   begin_quad(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first active quad on level @p level.
+   * 迭代到第一层的活动四边形  @p level.  。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的值。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   active_quad_iterator
   begin_active_quad(const unsigned int level = 0) const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 过了终点的迭代器；这个迭代器用于比较具有过了终点或开始前状态的迭代器。
+   *
    */
   quad_iterator
   end_quad() const;
 
-  /*
-   * @}
-   */
+  /*  @} .   
+* */
 
   /**
-   * @name Hex iterator functions for internal use
-   * @{
-   */
-
-  /**
-   * Iterator to the first hex, used or not, on level @p level. If a level has
-   * no hexes, a past-the-end iterator is returned.
+   * @name  内部使用的十六进制迭代器函数  @{ .
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
+   */
+
+  /**
+   * 迭代器到第一个十六进制，无论是否使用，在级别上  @p
+   * level.
+   * 如果一个级别没有十六进制，将返回一个过去的迭代器。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
+   *
    */
   raw_hex_iterator
   begin_raw_hex(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first used hex on level @p level.
+   * 迭代器到第一层使用的六边形 @p level. 。
+   * @note  给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   hex_iterator
   begin_hex(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first active hex on level @p level.
+   * 迭代到第一层的活动六边形 @p level. 。
+   * @note 给定的 @p level
+   * 参数需要对应于三角形的一个层次，也就是说，应该小于n_levels()返回的值。另一方面，对于使用
+   * parallel::distributed::Triangulation
+   * 对象的并行计算，在全局网格的所有层次的单元上写循环通常是很方便的，即使三角形的<i>local</i>部分实际上没有高层次的单元。在这些情况下，如果
+   * @p level
+   * 参数小于n_global_levels()函数的返回值，则可以接受。如果给定的
+   * @p level
+   * 在n_levels()和n_global_levels()返回的值之间，那么在这个层次的三角形的本地部分不存在单元，该函数只是返回end()的结果。
    *
-   * @note The given @p level argument needs to correspond to a level of the
-   *   triangulation, i.e., should be less than the value returned by
-   *   n_levels(). On the other hand, for parallel computations using
-   *   a parallel::distributed::Triangulation object, it is often convenient
-   *   to write loops over the cells of all levels of the global mesh, even
-   *   if the <i>local</i> portion of the triangulation does not actually
-   *   have cells at one of the higher levels. In those cases, the
-   *   @p level argument is accepted if it is less than what the
-   *   n_global_levels() function returns. If the given @p level is
-   *   between the values returned by n_levels() and n_global_levels(),
-   *   then no cells exist in the local portion of the triangulation
-   *   at this level, and the function simply returns what end() would
-   *   return.
    */
   active_hex_iterator
   begin_active_hex(const unsigned int level = 0) const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 过了终点的迭代器；这个迭代器用于比较具有过了终点或开始前状态的迭代器。
+   *
    */
   hex_iterator
   end_hex() const;
 
-  /*
-   * @}
-   */
+  /*  @} .   
+* */
 
 
   /**
-   * The (public) function clear() will only work when the triangulation is
-   * not subscribed to by other users. The clear_despite_subscriptions()
-   * function now allows the triangulation being cleared even when there are
-   * subscriptions.
+   * (公共)函数clear()只有在三角图没有被其他用户订阅的情况下才会工作。现在，clear_despite_subscriptions()函数允许在有订阅的情况下清除三角图。
+   * 请确保，在调用这个函数时，你知道你在做什么，因为它的使用只在非常罕见的情况下是合理的。例如，当订阅是针对最初的空三角图的，并且三角图对象希望在由于输入错误而抛出断言之前释放其内存（例如在create_triangulation()函数中）。
    *
-   * Make sure, you know what you do, when calling this function, as its use
-   * is reasonable in very rare cases, only. For example, when the
-   * subscriptions were for the initially empty Triangulation and the
-   * Triangulation object wants to release its memory before throwing an
-   * assertion due to input errors (e.g. in the create_triangulation()
-   * function).
    */
   void
   clear_despite_subscriptions();
 
   /**
-   * Reset triangulation policy.
+   * 重置三角化策略。
+   *
    */
   void
   reset_policy();
 
   /**
-   * For all cells, set the active cell indices so that active cells know the
-   * how many-th active cell they are, and all other cells have an invalid
-   * value. This function is called after mesh creation, refinement, and
-   * serialization.
+   * 对于所有的单元格，设置活动单元格指数，使活动单元格知道自己是第几个活动单元格，而其他所有的单元格都有一个无效的值。这个函数在网格创建、细化和序列化之后被调用。
+   *
    */
   void
   reset_active_cell_indices();
 
   /**
-   * Reset global cell ids and globale level cell ids.
+   * 重置全局单元ID和全局级单元ID。
+   *
    */
   void
   reset_global_cell_indices();
 
   /**
-   * Reset cache for the cells' vertex indices.
+   * 重置单元格的顶点索引的缓存。
+   *
    */
   void
   reset_cell_vertex_indices_cache();
 
   /**
-   * Refine all cells on all levels which were previously flagged for
-   * refinement.
+   * 细化所有级别上的所有单元格，这些单元格之前被标记为细化。    注意，这个函数对<tt>dim=2,3</tt>使用<tt>line->user_flags</tt>，对<tt>dim=3</tt>使用<tt>quad->user_flags。    如果在创建此对象时指定了 <code>check_for_distorted_cells</code> 标志，该函数将返回一个产生了满足 @ref GlossDistorted "扭曲的单元格 "
+   * 标准的单元格列表，在
    *
-   * Note, that this function uses the <tt>line->user_flags</tt> for
-   * <tt>dim=2,3</tt> and the <tt>quad->user_flags</tt> for <tt>dim=3</tt>.
-   *
-   * The function returns a list of cells that have produced children that
-   * satisfy the criteria of
-   * @ref GlossDistorted "distorted cells"
-   * if the <code>check_for_distorted_cells</code> flag was specified upon
-   * creation of this object, at
    */
   DistortedCellList
   execute_refinement();
 
   /**
-   * Coarsen all cells which were flagged for coarsening, or rather: delete
-   * all children of those cells of which all child cells are flagged for
-   * coarsening and several other constraints hold (see the general doc of
-   * this class).
+   * 粗化所有被标记为粗化的单元格，或者说：删除那些所有子单元格都被标记为粗化的单元格的所有子单元格，并且其他一些约束条件也成立（见该类的一般文档）。
+   *
    */
   void
   execute_coarsening();
 
   /**
-   * Make sure that either all or none of the children of a cell are tagged
-   * for coarsening.
+   * 确保一个单元格的所有子单元格或没有子单元格被标记为粗化。
+   *
    */
   void
   fix_coarsen_flags();
 
   /**
-   * Translate the unique id of a coarse cell to its index. See the glossary
-   * entry on
-   * @ref GlossCoarseCellId "coarse cell IDs"
-   * for more information.
+   * 将粗化单元格的唯一id转化为其索引。更多信息请参见术语表中的 @ref GlossCoarseCellId "粗放单元格ID "
+   * 条目。
+   * @note  对于串行和共享三角测量，id和index都是一样的。
+   * 对于分布式三角形的设置，两者可能不同，因为id可能对应于一个全局id，而索引对应于一个局部id。
+   * @param  coarse_cell_id 粗略单元的唯一id。    @return
+   * 粗略单元在当前三角测量中的索引。
    *
-   * @note For serial and shared triangulation both id and index are the same.
-   *       For distributed triangulations setting both might differ, since the
-   *       id might correspond to a global id and the index to a local id.
-   *
-   * @param coarse_cell_id Unique id of the coarse cell.
-   * @return Index of the coarse cell within the current triangulation.
    */
   virtual unsigned int
   coarse_cell_id_to_coarse_cell_index(
@@ -3948,114 +3031,91 @@ private:
 
 
   /**
-   * Translate the index of coarse cell to its unique id. See the glossary
-   * entry on
-   * @ref GlossCoarseCellId "coarse cell IDs"
-   * for more information.
+   * 将粗略单元的索引转换为其唯一的ID。更多信息请参见术语表中的 @ref GlossCoarseCellId "粗放单元ID "
+   * 条目。
+   * @note 见方法coarse_cell_id_to_coarse_cell_index()的说明。
+   * @param  coarse_cell_index 粗放单元的索引。    @return
+   * 粗体单元的Id。
    *
-   * @note See the note of the method
-   * coarse_cell_id_to_coarse_cell_index().
-   *
-   * @param coarse_cell_index Index of the coarse cell.
-   * @return Id of the coarse cell.
    */
   virtual types::coarse_cell_id
   coarse_cell_index_to_coarse_cell_id(
     const unsigned int coarse_cell_index) const;
 
   /**
-   * Array of pointers pointing to the objects storing the cell data on the
-   * different levels.
+   * 指向在不同层次上存储单元数据的对象的指针阵列。
+   *
    */
   std::vector<
     std::unique_ptr<dealii::internal::TriangulationImplementation::TriaLevel>>
     levels;
 
   /**
-   * Pointer to the faces of the triangulation. In 1d this contains nothing,
-   * in 2D it contains data concerning lines and in 3D quads and lines.  All
-   * of these have no level and are therefore treated separately.
+   * 指向三角剖分的面的指针。在1d中，它不包含任何内容，在2D中，它包含关于线的数据，在3D中，包含四边形和线。
+   * 所有这些都没有水平，因此被分开处理。
+   *
    */
   std::unique_ptr<dealii::internal::TriangulationImplementation::TriaFaces>
     faces;
 
 
   /**
-   * Array of the vertices of this triangulation.
+   * 该三角形的顶点数组。
+   *
    */
   std::vector<Point<spacedim>> vertices;
 
   /**
-   * Array storing a bit-pattern which vertices are used.
+   * 存储顶点使用的比特模式的数组。
+   *
    */
   std::vector<bool> vertices_used;
 
   /**
-   * Collection of manifold objects. We store only objects, which are not of
-   * type FlatManifold.
+   * 流形对象的集合。我们只存储不属于FlatManifold类型的对象。
+   *
    */
   std::map<types::manifold_id, std::unique_ptr<const Manifold<dim, spacedim>>>
     manifold;
 
   /**
-   * Flag indicating whether anisotropic refinement took place.
+   * 表示是否进行了各向异性的细化的标志。
+   *
    */
   bool anisotropic_refinement;
 
 
   /**
-   * A flag that determines whether we are to check for distorted cells upon
-   * creation and refinement of a mesh.
+   * 一个决定我们是否在创建和细化网格时检查扭曲的单元的标志。
+   *
    */
   const bool check_for_distorted_cells;
 
   /**
-   * Cache to hold the numbers of lines, quads, hexes, etc. These numbers are
-   * set at the end of the refinement and coarsening functions and enable
-   * faster access later on. In the old days, whenever one wanted to access
-   * one of these numbers, one had to perform a loop over all lines, e.g., and
-   * count the elements until we hit the end iterator. This is time consuming
-   * and since access to the number of lines etc is a rather frequent
-   * operation, this was not an optimal solution.
+   * 用于保存线、四边形、六边形等数字的缓存。这些数字是在细化和粗化功能结束时设置的，可以使以后的访问更加快速。在过去，每当人们想要访问这些数字之一时，就必须在所有的行上执行一个循环，例如，计算元素，直到我们碰到终端迭代器。这很耗时，而且由于访问行数等是一个相当频繁的操作，这并不是一个最佳的解决方案。
+   *
    */
   dealii::internal::TriangulationImplementation::NumberCache<dim> number_cache;
 
   /**
-   * A map that relates the number of a boundary vertex to the boundary
-   * indicator. This field is only used in 1d. We have this field because we
-   * store boundary indicator information with faces in 2d and higher where we
-   * have space in the structures that store data for faces, but in 1d there
-   * is no such space for faces.
+   * 一个将边界顶点的数量与边界指标联系起来的映射。这个字段只在1d中使用。我们有这个字段是因为我们在2D和更高的版本中用面来存储边界指示器信息，在那里我们有存储面的数据的结构空间，但在1D中没有这样的面的空间。
+   * 这个字段被声明为指针是出于一个相当平凡的原因：这个类的所有其他可以被TriaAccessor层次结构修改的字段都是指针，所以这些访问器类存储了一个指向三角形的常数指针。如果这个字段（可以被
+   * TriaAccessor::set_boundary_id)
+   * 修改的字段不是指针，我们就不能再为TriaAccessor<0,1,spacedim>这样做。
    *
-   * The field is declared as a pointer for a rather mundane reason: all other
-   * fields of this class that can be modified by the TriaAccessor hierarchy
-   * are pointers, and so these accessor classes store a const pointer to the
-   * triangulation. We could no longer do so for TriaAccessor<0,1,spacedim> if
-   * this field (that can be modified by TriaAccessor::set_boundary_id) were
-   * not a pointer.
    */
   std::unique_ptr<std::map<unsigned int, types::boundary_id>>
     vertex_to_boundary_id_map_1d;
 
 
   /**
-   * A map that relates the number of a boundary vertex to the manifold
-   * indicator. This field is only used in 1d. We have this field because we
-   * store manifold indicator information with faces in 2d and higher where we
-   * have space in the structures that store data for faces, but in 1d there
-   * is no such space for faces.
+   * 一个将边界顶点的数量与流形指标联系起来的映射。这个字段只在1d中使用。我们之所以有这个字段，是因为在2d及以上版本中，我们将流形指示器信息与面孔一起存储，在这些结构中，我们有存储面孔数据的空间，但在1d中，没有为面孔提供这样的空间。
+   * @note
+   * 流形对象对于点来说是非常无用的，因为它们既没有被细化，也没有被映射到其内部。然而，我们允许为点存储流形ID，以便在独立于维度的程序中保持一致。
+   * 这个字段被声明为指针，是出于一个相当平凡的原因：这个类中所有可以被TriaAccessor层次结构修改的其他字段都是指针，所以这些访问器类存储了一个指向三角的常量指针。如果这个字段（可以被
+   * TriaAccessor::set_manifold_id)
+   * 修改的字段不是指针，我们就不能再为TriaAccessor<0,1,spacedim>这样做。
    *
-   * @note Manifold objects are pretty useless for points since they are
-   * neither refined nor are their interiors mapped. We nevertheless allow
-   * storing manifold ids for points to be consistent in dimension-independent
-   * programs.
-   *
-   * The field is declared as a pointer for a rather mundane reason: all other
-   * fields of this class that can be modified by the TriaAccessor hierarchy
-   * are pointers, and so these accessor classes store a const pointer to the
-   * triangulation. We could no longer do so for TriaAccessor<0,1,spacedim> if
-   * this field (that can be modified by TriaAccessor::set_manifold_id) were
-   * not a pointer.
    */
   std::unique_ptr<std::map<unsigned int, types::manifold_id>>
     vertex_to_manifold_id_map_1d;
@@ -4304,7 +3364,7 @@ Triangulation<dim, spacedim>::coarse_cell_index_to_coarse_cell_id(
 
 
 
-/* -------------- declaration of explicit specializations ------------- */
+ /* -------------- declaration of explicit specializations ------------- */ 
 
 template <>
 unsigned int
@@ -4440,3 +3500,5 @@ DEAL_II_NAMESPACE_CLOSE
 #include <deal.II/grid/tria_accessor.h>
 
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_values_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -63,17 +64,16 @@ class FEValuesBase;
 namespace internal
 {
   /**
-   * A class whose specialization is used to define what type the curl of a
-   * vector valued function corresponds to.
+   * 一个类，其特化用于定义一个向量值函数的卷曲对应于什么类型。
+   *
    */
   template <int dim, class NumberType = double>
   struct CurlType;
 
   /**
-   * A class whose specialization is used to define what type the curl of a
-   * vector valued function corresponds to.
+   * 一个专门用于定义向量值函数的curl所对应的类型的类。
+   * 在1d中，curl是一个标量。
    *
-   * In 1d, the curl is a scalar.
    */
   template <class NumberType>
   struct CurlType<1, NumberType>
@@ -82,10 +82,9 @@ namespace internal
   };
 
   /**
-   * A class whose specialization is used to define what type the curl of a
-   * vector valued function corresponds to.
+   * 一个专门用于定义向量值函数的curl所对应的类型的类。
+   * 在2d中，curl是一个标量。
    *
-   * In 2d, the curl is a scalar.
    */
   template <class NumberType>
   struct CurlType<2, NumberType>
@@ -94,10 +93,9 @@ namespace internal
   };
 
   /**
-   * A class whose specialization is used to define what type the curl of a
-   * vector valued function corresponds to.
+   * 一个专门用于定义向量值函数的curl所对应的类型的类。
+   * 在3D中，curl是一个矢量。
    *
-   * In 3d, the curl is a vector.
    */
   template <class NumberType>
   struct CurlType<3, NumberType>
@@ -109,164 +107,160 @@ namespace internal
 
 
 /**
- * A namespace for "views" on a FEValues, FEFaceValues, or FESubfaceValues
- * object. A view represents only a certain part of the whole: whereas the
- * FEValues object represents <i>all</i> values, gradients, or second
- * derivatives of all components of a vector-valued element, views restrict
- * the attention to only a single component or a subset of components. You
- * typically get objects of classes defined in this namespace by applying
- * FEValuesExtractors objects to a FEValues, FEFaceValues or FESubfaceValues
- * objects using the square bracket operator.
+ * 一个用于FEValues、FEFaceValues或FESSubfaceValues对象的 "视图
+ * "的命名空间。一个视图只代表整体的某一部分：而FEValues对象代表<i>all</i>向量值元素的所有分量的值、梯度或二阶导数，视图将注意力限制在单个分量或分量的一个子集上。你通常通过使用方括号操作符将FEValuesExtractors对象应用于FEValues、FEFaceValues或FESubfaceValues对象，来获得这个命名空间中定义的类的对象。
+ * 有一些类为单个标量组件、由 <code>dim</code>
+ * 元素组成的向量组件和由 <code>(dim*dim + dim)/2</code>
+ * 元素组成的对称二阶张量组件提供视图。
+ * 参见 @ref
+ * vector_valued
+ * 模块的描述，了解如何使用该命名空间的特征的例子。
  *
- * There are classes that present views for single scalar components, vector
- * components consisting of <code>dim</code> elements, and symmetric second
- * order tensor components consisting of <code>(dim*dim + dim)/2</code>
- * elements
- *
- * See the description of the
- * @ref vector_valued
- * module for examples how to use the features of this namespace.
  *
  * @ingroup feaccess vector_valued
+ *
+ *
  */
 namespace FEValuesViews
 {
   /**
-   * A class representing a view to a single scalar component of a possibly
-   * vector-valued finite element. Views are discussed in the
-   * @ref vector_valued
-   * module.
-   *
-   * You get an object of this type if you apply a FEValuesExtractors::Scalar
-   * to an FEValues, FEFaceValues or FESubfaceValues object.
-   *
+   * 一个代表对一个可能是矢量值的有限元的单一标量分量的视图的类。视图将在 @ref
+   * vector_valued 模块中讨论。    如果你将
+   * FEValuesExtractors::Scalar
+   * 应用于FEValues、FEFaceValues或FESSubfaceValues对象，你会得到这种类型的对象。
    * @ingroup feaccess vector_valued
+   *
    */
   template <int dim, int spacedim = dim>
   class Scalar
   {
   public:
     /**
-     * An alias for the data type of values of the view this class
-     * represents. Since we deal with a single components, the value type is a
-     * scalar double.
+     * 这个类所代表的视图值的数据类型的别名。由于我们处理的是一个单一的组件，所以值的类型是一个标量的双数。
+     *
      */
     using value_type = double;
 
     /**
-     * An alias for the type of gradients of the view this class represents.
-     * Here, for a scalar component of the finite element, the gradient is a
-     * <code>Tensor@<1,dim@></code>.
+     * 该类代表的视图的梯度类型的别名。
+     * 这里，对于有限元的标量分量，梯度是一个
+     * <code>Tensor@<1,dim@></code>  。
+     *
      */
     using gradient_type = dealii::Tensor<1, spacedim>;
 
     /**
-     * An alias for the type of second derivatives of the view this class
-     * represents. Here, for a scalar component of the finite element, the
-     * Hessian is a <code>Tensor@<2,dim@></code>.
+     * 该类代表的视图的二阶导数类型的别名。这里，对于有限元的标量分量，Hessian是一个
+     * <code>Tensor@<2,dim@></code>  .
+     *
      */
     using hessian_type = dealii::Tensor<2, spacedim>;
 
     /**
-     * An alias for the type of third derivatives of the view this class
-     * represents. Here, for a scalar component of the finite element, the
-     * Third derivative is a <code>Tensor@<3,dim@></code>.
+     * 该类所代表的视图的第三导数的类型的别名。这里，对于有限元的标量分量，第三导数是一个
+     * <code>Tensor@<3,dim@></code>  。
+     *
      */
     using third_derivative_type = dealii::Tensor<3, spacedim>;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * values of the view this class provides. This is the data type of
-     * scalar components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * a  @p Number
+     * 与本类提供的视图值的乘积的数据类型的别名。这是一个有限元场的标量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的向量描述。
+     *
      */
     template <typename Number>
     using solution_value_type = typename ProductType<Number, value_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * gradients of the view this class provides. This is the data type of
-     * scalar components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * @p Number
+     * 和该类提供的视图梯度的乘积的数据类型的别名。这是一个有限元场的标量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的向量描述。
+     *
      */
     template <typename Number>
     using solution_gradient_type =
       typename ProductType<Number, gradient_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * laplacians of the view this class provides. This is the data type of
-     * scalar components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的拉普拉斯的乘积的数据类型的别名。这是一个有限元场的标量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的向量描述。
+     *
      */
     template <typename Number>
     using solution_laplacian_type =
       typename ProductType<Number, value_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * hessians of the view this class provides. This is the data type of
-     * scalar components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的赫西的乘积的数据类型的别名。这是一个有限元场的标量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的向量描述。
+     *
      */
     template <typename Number>
     using solution_hessian_type =
       typename ProductType<Number, hessian_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * third derivatives of the view this class provides. This is the data type
-     * of scalar components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的第三导数的乘积的数据类型的别名。这是一个有限元场的标量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的向量描述。
+     *
      */
     template <typename Number>
     using solution_third_derivative_type =
       typename ProductType<Number, third_derivative_type>::type;
 
     /**
-     * A struct that provides the output type for the product of the value
-     * and derivatives of basis functions of the Scalar view and any @p Number type.
+     * 一个结构，为标量视图和任何 @p Number
+     * 类型的基函数的值和导数的乘积提供输出类型。
+     * @deprecated  使用周围类中定义的类型来代替。
      *
-     * @deprecated Use the types defined in the surrounding class instead.
      */
     template <typename Number>
     struct DEAL_II_DEPRECATED OutputType
     {
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * values of the view the Scalar class.
+       * 一个 @p Number
+       * 和Scalar类的视图值的乘积的数据类型的别名。
+       *
        */
       using value_type =
         typename ProductType<Number,
                              typename Scalar<dim, spacedim>::value_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * gradients of the view the Scalar class.
+       * @p Number
+       * 和Scalar类视图的梯度的乘积的数据类型的别名。
+       *
        */
       using gradient_type = typename ProductType<
         Number,
         typename Scalar<dim, spacedim>::gradient_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * laplacians of the view the Scalar class.
+       * 一个 @p Number
+       * 和拉普拉斯类视图的乘积的数据类型的别名。
+       *
        */
       using laplacian_type =
         typename ProductType<Number,
                              typename Scalar<dim, spacedim>::value_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * hessians of the view the Scalar class.
+       * @p Number
+       * 和Scalar类视图的Hessians之积的数据类型的别名。
+       *
        */
       using hessian_type = typename ProductType<
         Number,
         typename Scalar<dim, spacedim>::hessian_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * third derivatives of the view the Scalar class.
+       * 一个 @p Number
+       * 的乘积和Scalar类视图的第三导数的数据类型的别名。
+       *
        */
       using third_derivative_type = typename ProductType<
         Number,
@@ -274,149 +268,120 @@ namespace FEValuesViews
     };
 
     /**
-     * A structure where for each shape function we pre-compute a bunch of
-     * data that will make later accesses much cheaper.
+     * 一个结构，对于每个形状函数，我们预先计算出一堆数据，这将使以后的访问变得更加便宜。
+     *
      */
     struct ShapeFunctionData
     {
       /**
-       * For each shape function, store whether the selected vector component
-       * may be nonzero. For primitive shape functions we know for sure
-       * whether a certain scalar component of a given shape function is
-       * nonzero, whereas for non-primitive shape functions this may not be
-       * entirely clear (e.g. for RT elements it depends on the shape of a
-       * cell).
+       * 对于每个形状函数，存储所选向量分量是否可能为非零。对于原始形状函数，我们可以肯定地知道某个给定形状函数的某个标量分量是否为非零，而对于非原始形状函数，这可能并不完全清楚（例如，对于RT元素，它取决于单元格的形状）。
+       *
        */
       bool is_nonzero_shape_function_component;
 
       /**
-       * For each shape function, store the row index within the shape_values,
-       * shape_gradients, and shape_hessians tables (the column index is the
-       * quadrature point index). If the shape function is primitive, then we
-       * can get this information from the shape_function_to_row_table of the
-       * FEValues object; otherwise, we have to work a bit harder to compute
-       * this information.
+       * 对于每个形状函数，在shape_values、shape_gradients和shape_hessians表中存储行索引（列索引是正交点的索引）。如果形状函数是原始的，那么我们可以从FEValues对象的shape_function_to_row_table中获得这些信息；否则，我们必须花点功夫来计算这些信息。
+       *
        */
       unsigned int row_index;
     };
 
     /**
-     * Default constructor. Creates an invalid object.
+     * 默认构造函数。创建一个无效的对象。
+     *
      */
     Scalar();
 
     /**
-     * Constructor for an object that represents a single scalar component of
-     * a FEValuesBase object (or of one of the classes derived from
-     * FEValuesBase).
+     * 表示FEValuesBase对象（或从FEValuesBase派生的类之一）的单个标量分量的对象的构造函数。
+     *
      */
     Scalar(const FEValuesBase<dim, spacedim> &fe_values_base,
            const unsigned int                 component);
 
     /**
-     * Copy constructor. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 复制构造函数。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     Scalar(const Scalar<dim, spacedim> &) = delete;
 
     /**
-     * Move constructor.
+     * 移动构造函数。
+     *
      */
     // NOLINTNEXTLINE OSX does not compile with noexcept
     Scalar(Scalar<dim, spacedim> &&) = default;
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     ~Scalar() = default;
 
     /**
-     * Copy operator. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 拷贝操作符。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     Scalar &
     operator=(const Scalar<dim, spacedim> &) = delete;
 
     /**
-     * Move assignment operator.
+     * 移动赋值运算符。
+     *
      */
     Scalar &
     operator=(Scalar<dim, spacedim> &&) noexcept = default;
 
     /**
-     * Return the value of the vector component selected by this view, for the
-     * shape function and quadrature point selected by the arguments.
-     *
-     * @param shape_function Number of the shape function to be evaluated.
-     * Note that this number runs from zero to dofs_per_cell, even in the case
-     * of an FEFaceValues or FESubfaceValues object.
-     *
-     * @param q_point Number of the quadrature point at which function is to
-     * be evaluated.
-     *
+     * 返回该视图所选择的矢量分量的值，用于参数所选择的形状函数和正交点。
+     * @param  shape_function 要评估的形状函数的编号。
+     * 请注意，这个数字从零到dofs_per_cell，即使是在FEFaceValues或FESubfaceValues对象的情况下。
+     * @param  q_point 要评估函数的正交点的编号。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     value_type
     value(const unsigned int shape_function, const unsigned int q_point) const;
 
     /**
-     * Return the gradient (a tensor of rank 1) of the vector component
-     * selected by this view, for the shape function and quadrature point
-     * selected by the arguments.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图所选择的矢量分量的梯度（等级为1的张量），用于形状函数和参数选择的正交点。
+     * @note 参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     gradient_type
     gradient(const unsigned int shape_function,
              const unsigned int q_point) const;
 
     /**
-     * Return the Hessian (the tensor of rank 2 of all second derivatives) of
-     * the vector component selected by this view, for the shape function and
-     * quadrature point selected by the arguments.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 对于参数选择的形状函数和正交点，返回该视图选择的向量分量的Hessian（所有二次导数的等级2的张量）。
+     * @note  参数的含义与value()函数的记载相同。
      * @dealiiRequiresUpdateFlags{update_hessians}
+     *
      */
     hessian_type
     hessian(const unsigned int shape_function,
             const unsigned int q_point) const;
 
     /**
-     * Return the tensor of rank 3 of all third derivatives of the vector
-     * component selected by this view, for the shape function and quadrature
-     * point selected by the arguments.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图选择的向量分量的所有三次导数的等级3的张量，用于参数选择的形状函数和正交点。
+     * @note 参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_third_derivatives}
+     *
      */
     third_derivative_type
     third_derivative(const unsigned int shape_function,
                      const unsigned int q_point) const;
 
     /**
-     * Return the values of the selected scalar component of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_values function but it only works on the
-     * selected scalar component.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the values of shape functions (i.e., @p value_type) times the
-     * type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的标量分量的值。
+     * 这个函数等同于 FEValuesBase::get_function_values
+     * 函数，但它只对选定的标量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的值相乘后得到的（即
+     * @p value_type) 乘以用于存储你的有限元向量 $U$ 的未知数
+     * $U_j$ 值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     template <class InputVector>
     void
@@ -426,38 +391,21 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Same as above, but using a vector of local degree-of-freedom values. In
-     * other words, instead of extracting the nodal values of the degrees of
-     * freedom located on the current cell from a global vector associated with
-     * a DoFHandler object (as the function above does), this function instead
-     * takes these local nodal values through its first argument. A typical
-     * way to obtain such a vector is by calling code such as
+     * 与上述相同，但使用局部自由度值的向量。换句话说，这个函数不是从与DoFHandler对象相关的全局向量中提取位于当前单元上的自由度的节点值（如上面的函数），而是通过其第一个参数获取这些局部节点值。获得这样一个向量的典型方法是通过调用如下代码
      * @code
-     *   cell->get_dof_values (dof_values, local_dof_values);
+     * cell->get_dof_values (dof_values, local_dof_values);
      * @endcode
-     * (See DoFCellAccessor::get_dof_values() for more information on this
-     * function.) The point of the current function is then that one could
-     * modify these local values first, for example by applying a limiter
-     * or by ensuring that all nodal values are positive, before evaluating
-     * the finite element field that corresponds to these local values on the
-     * current cell. Another application is where one wants to postprocess
-     * the solution on a cell into a different finite element space on every
-     * cell, without actually creating a corresponding DoFHandler -- in that
-     * case, all one would compute is a local representation of that
-     * postprocessed function, characterized by its nodal values; this function
-     * then allows the evaluation of that representation at quadrature points.
+     * 当前函数的意义在于，人们可以先修改这些局部值，例如应用限制器或确保所有节点值为正，然后再评估与当前单元上这些局部值相对应的有限元场。另一种应用是，人们希望将一个单元上的解后处理为每个单元上的不同的有限元空间，而不需要实际创建一个相应的DoFHandler
      *
-     * @param[in] dof_values A vector of local nodal values. This vector must
-     *   have a length equal to number of DoFs on the current cell, and must
-     *   be ordered in the same order as degrees of freedom are numbered on
-     *   the reference cell.
+     * 在这种情况下，我们所要计算的是该后处理函数的局部表示，其特征是节点值；然后该函数允许在正交点评估该表示。
+     * @param[in]  dof_values
+     * 一个本地节点值的向量。该向量的长度必须等于当前单元上的DoF数量，并且必须按照参考单元上自由度的编号顺序排列。
+     * @param[out]  值
+     * 给定的有限元场的值的向量，在当前对象上的正交点。
+     * @tparam  InputVector  @p InputVector
+     * 类型必须允许从中创建ArrayView对象；这一点由
+     * `std::vector` 类和其他类满足。
      *
-     * @param[out] values A vector of values of the given finite element field,
-     *   at the quadrature points on the current object.
-     *
-     * @tparam InputVector The @p InputVector type must allow creation
-     *   of an ArrayView object from it; this is satisfied by the
-     *   `std::vector` class, among others.
      */
     template <class InputVector>
     void
@@ -467,21 +415,14 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Return the gradients of the selected scalar component of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_gradients function but it only works on the
-     * selected scalar component.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the gradients of shape functions (i.e., @p gradient_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的标量分量的梯度。
+     * 这个函数等同于 FEValuesBase::get_function_gradients
+     * 函数，但它只对选定的标量分量起作用。
+     * 输出向量存储的数据类型必须是你将形状函数的梯度相乘后得到的数据类型（即
+     * @p gradient_type) 乘以用于存储你的有限元向量 $U$
+     * 的未知数 $U_j$ 值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -491,10 +432,8 @@ namespace FEValuesViews
         &gradients) const;
 
     /**
-     * This function relates to get_function_gradients() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_gradients()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -504,21 +443,14 @@ namespace FEValuesViews
         &gradients) const;
 
     /**
-     * Return the Hessians of the selected scalar component of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_hessians function but it only works on the
-     * selected scalar component.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the Hessians of shape functions (i.e., @p hessian_type) times
-     * the type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的Hessians。
+     * 这个函数等同于 FEValuesBase::get_function_hessians
+     * 函数，但它只对选定的标量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的Hessians相乘后得到的（即
+     * @p hessian_type) 乘以用于存储你的有限元向量 $U$
+     * 的未知数 $U_j$ 值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_hessians}
+     *
      */
     template <class InputVector>
     void
@@ -528,10 +460,8 @@ namespace FEValuesViews
         &hessians) const;
 
     /**
-     * This function relates to get_function_hessians() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_hessians()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -542,22 +472,14 @@ namespace FEValuesViews
 
 
     /**
-     * Return the Laplacians of the selected scalar component of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called. The
-     * Laplacians are the trace of the Hessians.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_laplacians function but it only works on the
-     * selected scalar component.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the Laplacians of shape functions (i.e., @p value_type) times
-     * the type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数标量分量的拉普拉斯。Laplacians是Hessians的轨迹。
+     * 这个函数相当于 FEValuesBase::get_function_laplacians
+     * 函数，但它只对选定的标量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的拉普拉斯系数相乘后得到的（即
+     * @p value_type) 乘以用于存储你的有限元向量 $U_j$
+     * 的未知数值的类型 $U$ （由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_hessians}
+     *
      */
     template <class InputVector>
     void
@@ -567,10 +489,8 @@ namespace FEValuesViews
         &laplacians) const;
 
     /**
-     * This function relates to get_function_laplacians() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_laplacians()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -581,22 +501,15 @@ namespace FEValuesViews
 
 
     /**
-     * Return the third derivatives of the selected scalar component of the
-     * finite element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_third_derivatives function but it only works
-     * on the selected scalar component.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the third derivatives of shape functions (i.e., @p
-     * third_derivative_type) times the type used to store the values of the
-     * unknowns $U_j$ of your finite element vector $U$ (represented by the @p
-     * fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的标量分量的三次导数。
+     * 这个函数相当于 FEValuesBase::get_function_third_derivatives
+     * 函数，但它只对选定的标量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的三次导数（即
+     * @p  third_derivative_type）乘以你的有限元向量 $U$ （由 @p
+     * fe_function参数表示）用于存储未知数 $U_j$
+     * 的值的类型。
      * @dealiiRequiresUpdateFlags{update_third_derivatives}
+     *
      */
     template <class InputVector>
     void
@@ -607,10 +520,8 @@ namespace FEValuesViews
         &third_derivatives) const;
 
     /**
-     * This function relates to get_function_third_derivatives() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_third_derivatives()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -623,18 +534,20 @@ namespace FEValuesViews
 
   private:
     /**
-     * A pointer to the FEValuesBase object we operate on.
+     * 一个指向我们操作的FEValuesBase对象的指针。
+     *
      */
     const SmartPointer<const FEValuesBase<dim, spacedim>> fe_values;
 
     /**
-     * The single scalar component this view represents of the FEValuesBase
-     * object.
+     * 这个视图代表FEValuesBase对象的单一标量组件。
+     *
      */
     const unsigned int component;
 
     /**
-     * Store the data about shape functions.
+     * 存储有关形状函数的数据。
+     *
      */
     std::vector<ShapeFunctionData> shape_function_data;
   };
@@ -642,242 +555,234 @@ namespace FEValuesViews
 
 
   /**
-   * A class representing a view to a set of <code>spacedim</code> components
-   * forming a vector part of a vector-valued finite element. Views are
-   * discussed in the
-   * @ref vector_valued
-   * module.
-   *
-   * Note that in the current context, a vector is meant in the sense physics
-   * uses it: it has <code>spacedim</code> components that behave in specific
-   * ways under coordinate system transformations. Examples include velocity
-   * or displacement fields. This is opposed to how mathematics uses the word
-   * "vector" (and how we use this word in other contexts in the library, for
-   * example in the Vector class), where it really stands for a collection of
-   * numbers. An example of this latter use of the word could be the set of
-   * concentrations of chemical species in a flame; however, these are really
-   * just a collection of scalar variables, since they do not change if the
-   * coordinate system is rotated, unlike the components of a velocity vector,
-   * and consequently, this class should not be used for this context.
-   *
-   * This class allows to query the value, gradient and divergence of
-   * (components of) shape functions and solutions representing vectors. The
-   * gradient of a vector $d_{k}, 0\le k<\text{dim}$ is defined as $S_{ij} =
-   * \frac{\partial d_{i}}{\partial x_j}, 0\le i,j<\text{dim}$.
-   *
-   * You get an object of this type if you apply a FEValuesExtractors::Vector
-   * to an FEValues, FEFaceValues or FESubfaceValues object.
-   *
+   * 一个代表对一组 <code>spacedim</code> 分量的视图的类，这些分量构成了一个矢量值的有限元的矢量部分。视图将在 @ref vector_valued 模块中讨论。    请注意，在目前的上下文中，矢量是指物理学上使用的意义：它有 <code>spacedim</code> 个分量，在坐标系变换下以特定的方式表现出来。例子包括速度或位移场。这与数学中使用 "向量 "
+   * 一词的方式相反（以及我们在库中的其他上下文中使用这个词的方式，例如在向量类中），在那里它真正代表了一个数字的集合。后者的一个例子是火焰中化学物种浓度的集合；然而，这些实际上只是标量变量的集合，因为如果坐标系被旋转，它们不会改变，不像速度矢量的分量，因此，这个类不应该被用于这种情况。
+   * 该类允许查询代表矢量的形状函数和解决方案的（分量）的值、梯度和发散。一个向量的梯度
+   * $d_{k}, 0\le k<\text{dim}$  被定义为  $S_{ij} = \frac{\partial
+   * d_{i}}{\partial x_j}, 0\le i,j<\text{dim}$  。    如果你将
+   * FEValuesExtractors::Vector
+   * 应用于FEValues、FEFaceValues或FESubfaceValues对象，你会得到这种类型的对象。
    * @ingroup feaccess vector_valued
+   *
    */
   template <int dim, int spacedim = dim>
   class Vector
   {
   public:
     /**
-     * An alias for the data type of values of the view this class
-     * represents. Since we deal with a set of <code>dim</code> components,
-     * the value type is a Tensor<1,spacedim>.
+     * 这个类所代表的视图值的数据类型的别名。因为我们处理的是一组
+     * <code>dim</code> 的组件，所以值的类型是Tensor<1,spacedim>。
+     *
      */
     using value_type = dealii::Tensor<1, spacedim>;
 
     /**
-     * An alias for the type of gradients of the view this class represents.
-     * Here, for a set of <code>dim</code> components of the finite element,
-     * the gradient is a <code>Tensor@<2,spacedim@></code>.
+     * 这个类所代表的视图的梯度类型的别名。
+     * 这里，对于一组 <code>dim</code>
+     * 分量的有限元，梯度是一个 <code>Tensor@<2,spacedim@></code>
+     * 。
+     * 关于向量的梯度到底是如何定义的，请看这个类的一般文档。
      *
-     * See the general documentation of this class for how exactly the
-     * gradient of a vector is defined.
      */
     using gradient_type = dealii::Tensor<2, spacedim>;
 
     /**
-     * An alias for the type of symmetrized gradients of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the symmetrized gradient is a
-     * <code>SymmetricTensor@<2,spacedim@></code>.
+     * 这个类所代表的视图的对称梯度的类型的别名。这里，对于一组
+     * <code>dim</code> 分量的有限元，对称梯度是一个
+     * <code>SymmetricTensor@<2,spacedim@></code>  。        一个矢量场
+     * $\mathbf v$ 的对称梯度定义为 $\varepsilon(\mathbf v)=\frac 12
+     * (\nabla \mathbf v + \nabla \mathbf v^T)$  .
      *
-     * The symmetric gradient of a vector field $\mathbf v$ is defined as
-     * $\varepsilon(\mathbf v)=\frac 12 (\nabla \mathbf v + \nabla \mathbf
-     * v^T)$.
      */
     using symmetric_gradient_type = dealii::SymmetricTensor<2, spacedim>;
 
     /**
-     * An alias for the type of the divergence of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the divergence of course is a scalar.
+     * 该类代表的视图发散的类型的别名。这里，对于一组
+     * <code>dim</code> 分量的有限元，发散当然是一个标量。
+     *
      */
     using divergence_type = double;
 
     /**
-     * An alias for the type of the curl of the view this class represents.
-     * Here, for a set of <code>spacedim=2</code> components of the finite
-     * element, the curl is a <code>Tensor@<1, 1@></code>. For
-     * <code>spacedim=3</code> it is a <code>Tensor@<1, dim@></code>.
+     * 这个类所代表的视图的卷曲类型的别名。
+     * 这里，对于一组 <code>spacedim=2</code>
+     * 的有限元分量，curl是一个 <code>Tensor@<1, 1@></code>
+     * 。对于 <code>spacedim=3</code> it is a <code>Tensor@<1, dim@></code>
+     * .
+     *
      */
     using curl_type = typename dealii::internal::CurlType<spacedim>::type;
 
     /**
-     * An alias for the type of second derivatives of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the Hessian is a <code>Tensor@<3,dim@></code>.
+     * 这个类所代表的视图的二阶导数的类型的别名。这里，对于一组
+     * <code>dim</code> 分量的有限元，Hessian是一个
+     * <code>Tensor@<3,dim@></code>  。
+     *
      */
     using hessian_type = dealii::Tensor<3, spacedim>;
 
     /**
-     * An alias for the type of third derivatives of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the third derivative is a <code>Tensor@<4,dim@></code>.
+     * 该类代表的视图的第三导数类型的别名。这里，对于有限元的一组
+     * <code>dim</code> 分量，第三导数是一个
+     * <code>Tensor@<4,dim@></code>  。
+     *
      */
     using third_derivative_type = dealii::Tensor<4, spacedim>;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * values of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * a  @p Number
+     * 和该类提供的视图值的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_value_type = typename ProductType<Number, value_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * gradients of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * @p Number
+     * 和该类提供的视图梯度的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_gradient_type =
       typename ProductType<Number, gradient_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * symmetric gradients of the view this class provides. This is the data
-     * type of vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的对称梯度的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_symmetric_gradient_type =
       typename ProductType<Number, symmetric_gradient_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * divergences of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的分歧的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_divergence_type =
       typename ProductType<Number, divergence_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * laplacians of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的拉普拉斯的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_laplacian_type =
       typename ProductType<Number, value_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * curls of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的卷积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_curl_type = typename ProductType<Number, curl_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * hessians of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的赫西的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_hessian_type =
       typename ProductType<Number, hessian_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * third derivatives of the view this class provides. This is the data type
-     * of vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的第三导数的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_third_derivative_type =
       typename ProductType<Number, third_derivative_type>::type;
 
     /**
-     * A struct that provides the output type for the product of the value
-     * and derivatives of basis functions of the Vector view and any @p Number type.
+     * 一个结构，为矢量视图和任何 @p Number
+     * 类型的基函数的值和导数的乘积提供输出类型。
+     * @deprecated  使用周围类中定义的类型来代替。
      *
-     * @deprecated Use the types defined in the surrounding class instead.
      */
     template <typename Number>
     struct DEAL_II_DEPRECATED OutputType
     {
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * values of the view the Vector class.
+       * 一个 @p Number
+       * 和Vector类的视图值的乘积的数据类型的别名。
+       *
        */
       using value_type =
         typename ProductType<Number,
                              typename Vector<dim, spacedim>::value_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * gradients of the view the Vector class.
+       * 一个 @p Number
+       * 和视图矢量类的梯度的乘积的数据类型的别名。
+       *
        */
       using gradient_type = typename ProductType<
         Number,
         typename Vector<dim, spacedim>::gradient_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * symmetric gradients of the view the Vector class.
+       * @p Number
+       * 与向量类的对称梯度的乘积的数据类型的别名。
+       *
        */
       using symmetric_gradient_type = typename ProductType<
         Number,
         typename Vector<dim, spacedim>::symmetric_gradient_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * divergences of the view the Vector class.
+       * 一个 @p Number
+       * 和向量类视图的发散的数据类型的别名。
+       *
        */
       using divergence_type = typename ProductType<
         Number,
         typename Vector<dim, spacedim>::divergence_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * laplacians of the view the Vector class.
+       * 一个 @p Number
+       * 和矢量类视图的拉普拉斯的乘积的数据类型的别名。
+       *
        */
       using laplacian_type =
         typename ProductType<Number,
                              typename Vector<dim, spacedim>::value_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * curls of the view the Vector class.
+       * 一个 @p Number
+       * 和向量类视图的卷积的数据类型的别名。
+       *
        */
       using curl_type =
         typename ProductType<Number,
                              typename Vector<dim, spacedim>::curl_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * hessians of the view the Vector class.
+       * 一个 @p Number
+       * 和视图向量类的Hessians的乘积的数据类型的别名。
+       *
        */
       using hessian_type = typename ProductType<
         Number,
         typename Vector<dim, spacedim>::hessian_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * third derivatives of the view the Vector class.
+       * 一个 @p Number
+       * 和向量类视图的第三导数的乘积的数据类型的别名。
+       *
        */
       using third_derivative_type = typename ProductType<
         Number,
@@ -885,227 +790,180 @@ namespace FEValuesViews
     };
 
     /**
-     * A structure where for each shape function we pre-compute a bunch of
-     * data that will make later accesses much cheaper.
+     * 一个结构，对于每个形状函数，我们预先计算出一堆数据，这将使以后的访问变得更加便宜。
+     *
      */
     struct ShapeFunctionData
     {
       /**
-       * For each pair (shape function,component within vector), store whether
-       * the selected vector component may be nonzero. For primitive shape
-       * functions we know for sure whether a certain scalar component of a
-       * given shape function is nonzero, whereas for non-primitive shape
-       * functions this may not be entirely clear (e.g. for RT elements it
-       * depends on the shape of a cell).
+       * 对于每一对(形状函数,向量内的分量)，存储所选向量分量是否可能为非零。对于原始形状函数，我们可以肯定地知道某个给定形状函数的某个标量分量是否为非零，而对于非原始形状函数，这可能并不完全清楚（例如，对于RT元素，它取决于单元格的形状）。
+       *
        */
       bool is_nonzero_shape_function_component[spacedim];
 
       /**
-       * For each pair (shape function, component within vector), store the
-       * row index within the shape_values, shape_gradients, and
-       * shape_hessians tables (the column index is the quadrature point
-       * index). If the shape function is primitive, then we can get this
-       * information from the shape_function_to_row_table of the FEValues
-       * object; otherwise, we have to work a bit harder to compute this
-       * information.
+       * 对于每一对（形状函数，矢量内的组件），在shape_values、shape_gradients和shape_hessians表中存储行索引（列索引是正交点索引）。如果形状函数是原始的，那么我们可以从FEValues对象的shape_function_to_row_table中获得这些信息；否则，我们必须花点功夫来计算这些信息。
+       *
        */
       unsigned int row_index[spacedim];
 
       /**
-       * For each shape function say the following: if only a single entry in
-       * is_nonzero_shape_function_component for this shape function is
-       * nonzero, then store the corresponding value of row_index and
-       * single_nonzero_component_index represents the index between 0 and dim
-       * for which it is attained. If multiple components are nonzero, then
-       * store -1. If no components are nonzero then store -2.
+       * 对于每个形状函数说如下：如果这个形状函数的is_nonzero_shape_function_component中只有一个条目是非零的，那么就存储row_index的相应值，single_nonzero_component_index代表在0和dim之间的索引，对它来说，是达到了非零的。如果多个分量不为零，那么就存储
+       *
+       * 如果没有组件是非零的，则存储 * - 。
+       *
+       * - .
+       *
        */
       int          single_nonzero_component;
       unsigned int single_nonzero_component_index;
     };
 
     /**
-     * Default constructor. Creates an invalid object.
+     * 默认构造函数。创建一个无效的对象。
+     *
      */
     Vector();
 
     /**
-     * Constructor for an object that represents dim components of a
-     * FEValuesBase object (or of one of the classes derived from
-     * FEValuesBase), representing a vector-valued variable.
+     * 表示FEValuesBase对象（或从FEValuesBase派生的类之一）的dim分量的对象的构造函数，代表一个向量值变量。
+     * 第二个参数表示所选向量的第一个分量的索引。
      *
-     * The second argument denotes the index of the first component of the
-     * selected vector.
      */
     Vector(const FEValuesBase<dim, spacedim> &fe_values_base,
            const unsigned int                 first_vector_component);
 
     /**
-     * Copy constructor. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 复制构造函数。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     Vector(const Vector<dim, spacedim> &) = delete;
 
     /**
-     * Move constuctor.
+     * 移动构造器。
+     *
      */
     // NOLINTNEXTLINE OSX does not compile with noexcept
     Vector(Vector<dim, spacedim> &&) = default;
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     ~Vector() = default;
 
     /**
-     * Copy operator. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 拷贝操作符。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     Vector &
     operator=(const Vector<dim, spacedim> &) = delete;
 
     /**
-     * Move assignment operator.
+     * 移动赋值运算符。
+     *
      */
     // NOLINTNEXTLINE OSX does not compile with noexcept
     Vector &
     operator=(Vector<dim, spacedim> &&) = default; // NOLINT
 
     /**
-     * Return the value of the vector components selected by this view, for
-     * the shape function and quadrature point selected by the arguments.
-     * Here, since the view represents a vector-valued part of the FEValues
-     * object with <code>dim</code> components, the return type is a tensor of
-     * rank 1 with <code>dim</code> components.
-     *
-     * @param shape_function Number of the shape function to be evaluated.
-     * Note that this number runs from zero to dofs_per_cell, even in the case
-     * of an FEFaceValues or FESubfaceValues object.
-     *
-     * @param q_point Number of the quadrature point at which function is to
-     * be evaluated.
-     *
+     * 返回该视图所选择的向量分量的值，用于参数所选择的形状函数和正交点。
+     * 这里，由于视图代表FEValues对象中具有 <code>dim</code>
+     * 分量的向量值部分，所以返回类型是具有 <code>dim</code>
+     * 分量的秩1张量。          @param  shape_function
+     * 要评估的形状函数的编号。
+     * 注意，这个数字从零到dofs_per_cell，即使是在FEFaceValues或FESubfaceValues对象的情况下。
+     * @param  q_point 要评估函数的正交点的编号。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     value_type
     value(const unsigned int shape_function, const unsigned int q_point) const;
 
     /**
-     * Return the gradient (a tensor of rank 2) of the vector component
-     * selected by this view, for the shape function and quadrature point
-     * selected by the arguments.
-     *
-     * See the general documentation of this class for how exactly the
-     * gradient of a vector is defined.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图所选择的矢量分量的梯度（等级为2的张量），用于参数所选择的形状函数和正交点。
+     * 关于向量的梯度到底是如何定义的，请看这个类的一般文档。
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     gradient_type
     gradient(const unsigned int shape_function,
              const unsigned int q_point) const;
 
     /**
-     * Return the symmetric gradient (a symmetric tensor of rank 2) of the
-     * vector component selected by this view, for the shape function and
-     * quadrature point selected by the arguments.
-     *
-     * The symmetric gradient is defined as $\frac 12 [(\nabla \phi_i(x_q)) +
-     * (\nabla \phi_i(x_q))^T]$, where $\phi_i$ represents the
-     * <code>dim</code> components selected from the FEValuesBase object, and
-     * $x_q$ is the location of the $q$-th quadrature point.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图选择的向量分量的对称梯度（等级为2的对称张量），用于参数选择的形状函数和正交点。
+     * 对称梯度定义为 $\frac 12 [(\nabla \phi_i(x_q)) + (\nabla
+     * \phi_i(x_q))^T]$  ，其中 $\phi_i$
+     * 代表从FEValuesBase对象中选择的 <code>dim</code> 分量，
+     * $x_q$ 是第 $q$ 个正交点的位置。
+     * @note  参数的含义与value()函数的记载相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     symmetric_gradient_type
     symmetric_gradient(const unsigned int shape_function,
                        const unsigned int q_point) const;
 
     /**
-     * Return the scalar divergence of the vector components selected by this
-     * view, for the shape function and quadrature point selected by the
-     * arguments.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图所选择的向量分量的标量发散，用于参数所选择的形状函数和正交点。
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     divergence_type
     divergence(const unsigned int shape_function,
                const unsigned int q_point) const;
 
     /**
-     * Return the vector curl of the vector components selected by this view,
-     * for the shape function and quadrature point selected by the arguments.
-     * For 1d this function does not make any sense. Thus it is not
-     * implemented for <code>spacedim=1</code>.  In 2d the curl is defined as
-     * @f{equation*}{
-     * \operatorname{curl}(u) \dealcoloneq \frac{du_2}{dx} -\frac{du_1}{dy},
-     * @f}
-     * whereas in 3d it is given by
-     * @f{equation*}{
+     * 对于参数选择的形状函数和正交点，返回该视图选择的矢量分量的向量卷曲。    对于1d来说，这个函数没有任何意义。因此，它没有在  <code>spacedim=1</code>  中实现。 在2D中，卷曲被定义为@f{equation*}{
+     * \operatorname{curl}(u) \dealcoloneq \frac{du_2}{dx}
+     *
+     * -\frac{du_1}{dy},
+     * @f} 。
+     * 而在三维中，它是由@f{equation*}{
      * \operatorname{curl}(u) \dealcoloneq \left( \begin{array}{c}
      * \frac{du_3}{dy}-\frac{du_2}{dz}\\ \frac{du_1}{dz}-\frac{du_3}{dx}\\
      * \frac{du_2}{dx}-\frac{du_1}{dy} \end{array} \right).
-     * @f}
+     * @f}给出的。
      *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     curl_type
     curl(const unsigned int shape_function, const unsigned int q_point) const;
 
     /**
-     * Return the Hessian (the tensor of rank 2 of all second derivatives) of
-     * the vector components selected by this view, for the shape function and
-     * quadrature point selected by the arguments.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 对于参数选择的形状函数和正交点，返回该视图选择的向量分量的Hessian（所有二次导数的等级2的张量）。
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_hessians}
+     *
      */
     hessian_type
     hessian(const unsigned int shape_function,
             const unsigned int q_point) const;
 
     /**
-     * Return the tensor of rank 3 of all third derivatives of the vector
-     * components selected by this view, for the shape function and quadrature
-     * point selected by the arguments.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图选择的向量分量的所有三次导数的等级3的张量，用于参数选择的形状函数和正交点。
+     * @note 参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+     *
      */
     third_derivative_type
     third_derivative(const unsigned int shape_function,
                      const unsigned int q_point) const;
 
     /**
-     * Return the values of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_values function but it only works on the
-     * selected vector components.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the values of shape functions (i.e., @p value_type) times the
-     * type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上以<tt>fe_function</tt>为特征的有限元函数的选定向量分量的值。
+     * 这个函数相当于 FEValuesBase::get_function_values
+     * 函数，但它只对选定的向量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的值相乘后得到的（即
+     * @p value_type) 乘以用于存储你的有限元向量 $U$ 的未知数
+     * $U_j$ 值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     template <class InputVector>
     void
@@ -1115,38 +973,21 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Same as above, but using a vector of local degree-of-freedom values. In
-     * other words, instead of extracting the nodal values of the degrees of
-     * freedom located on the current cell from a global vector associated with
-     * a DoFHandler object (as the function above does), this function instead
-     * takes these local nodal values through its first argument. A typical
-     * way to obtain such a vector is by calling code such as
+     * 与上述相同，但使用局部自由度值的向量。换句话说，这个函数不是从与DoFHandler对象相关的全局向量中提取位于当前单元上的自由度的节点值（如上面的函数），而是通过其第一个参数获取这些局部节点值。获得这样一个向量的典型方法是调用如下代码
      * @code
-     *   cell->get_dof_values (dof_values, local_dof_values);
+     * cell->get_dof_values (dof_values, local_dof_values);
      * @endcode
-     * (See DoFCellAccessor::get_dof_values() for more information on this
-     * function.) The point of the current function is then that one could
-     * modify these local values first, for example by applying a limiter
-     * or by ensuring that all nodal values are positive, before evaluating
-     * the finite element field that corresponds to these local values on the
-     * current cell. Another application is where one wants to postprocess
-     * the solution on a cell into a different finite element space on every
-     * cell, without actually creating a corresponding DoFHandler -- in that
-     * case, all one would compute is a local representation of that
-     * postprocessed function, characterized by its nodal values; this function
-     * then allows the evaluation of that representation at quadrature points.
+     * 当前函数的意义在于，人们可以先修改这些局部值，例如应用限制器或确保所有节点值为正，然后再评估当前单元上与这些局部值相对应的有限元场。另一种应用是，人们希望将一个单元上的解后处理为每个单元上的不同的有限元空间，而不需要实际创建一个相应的DoFHandler
      *
-     * @param[in] dof_values A vector of local nodal values. This vector must
-     *   have a length equal to number of DoFs on the current cell, and must
-     *   be ordered in the same order as degrees of freedom are numbered on
-     *   the reference cell.
+     * 在这种情况下，我们所要计算的是该后处理函数的局部表示，其特征是节点值；然后该函数允许在正交点评估该表示。
+     * @param[in]  dof_values
+     * 一个本地节点值的向量。该向量的长度必须等于当前单元上的DoF数量，并且必须按照参考单元上自由度的编号顺序排列。
+     * @param[out]  值
+     * 给定的有限元场的值的向量，在当前对象上的正交点。
+     * @tparam  InputVector  @p InputVector
+     * 类型必须允许从中创建ArrayView对象；这一点由
+     * `std::vector` 类等满足。
      *
-     * @param[out] values A vector of values of the given finite element field,
-     *   at the quadrature points on the current object.
-     *
-     * @tparam InputVector The @p InputVector type must allow creation
-     *   of an ArrayView object from it; this is satisfied by the
-     *   `std::vector` class, among others.
      */
     template <class InputVector>
     void
@@ -1156,21 +997,14 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Return the gradients of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_gradients function but it only works on the
-     * selected vector components.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the gradients of shape functions (i.e., @p gradient_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的选定矢量成分的梯度。
+     * 这个函数相当于 FEValuesBase::get_function_gradients
+     * 函数，但它只对选定的向量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的梯度相乘后得到的数据（即
+     * @p gradient_type) 乘以用于存储你的有限元向量 $U_j$
+     * 的未知数值的类型 $U$ （由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -1180,10 +1014,8 @@ namespace FEValuesViews
         &gradients) const;
 
     /**
-     * This function relates to get_function_gradients() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_gradients()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1193,27 +1025,19 @@ namespace FEValuesViews
         &gradients) const;
 
     /**
-     * Return the symmetrized gradients of the selected vector components of
-     * the finite element function characterized by <tt>fe_function</tt> at
-     * the quadrature points of the cell, face or subface selected the last
-     * time the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * The symmetric gradient of a vector field $\mathbf v$ is defined as
-     * $\varepsilon(\mathbf v)=\frac 12 (\nabla \mathbf v + \nabla \mathbf
-     * v^T)$.
-     *
-     * @note There is no equivalent function such as
-     * FEValuesBase::get_function_symmetric_gradients in the FEValues classes
-     * but the information can be obtained from
-     * FEValuesBase::get_function_gradients, of course.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the symmetric gradients of shape functions (i.e., @p
-     * symmetric_gradient_type) times the type used to store the values of the
-     * unknowns $U_j$ of your finite element vector $U$ (represented by the @p
-     * fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>描述的有限元函数的对称梯度。
+     * 矢量场的对称梯度 $\mathbf v$ 定义为 $\varepsilon(\mathbf
+     * v)=\frac 12 (\nabla \mathbf v + \nabla \mathbf v^T)$  。
+     * @note  在FEValues类中没有
+     * FEValuesBase::get_function_symmetric_gradients
+     * 这样的等效函数，但当然可以从
+     * FEValuesBase::get_function_gradients, 中获得相关信息。
+     * 输出向量存储的数据类型必须是你将形状函数的对称梯度（即
+     * @p  symmetric_gradient_type）乘以用于存储你的有限元向量
+     * $U_j$ 的未知数值的类型 $U$ （由 @p
+     * fe_function参数表示）时得到的。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -1224,10 +1048,8 @@ namespace FEValuesViews
         &symmetric_gradients) const;
 
     /**
-     * This function relates to get_function_symmetric_gradients() in the same
-     * way as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_symmetric_gradients()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1238,22 +1060,15 @@ namespace FEValuesViews
         &symmetric_gradients) const;
 
     /**
-     * Return the divergence of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * There is no equivalent function such as
-     * FEValuesBase::get_function_divergences in the FEValues classes but the
-     * information can be obtained from FEValuesBase::get_function_gradients,
-     * of course.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the divergences of shape functions (i.e., @p divergence_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的选定矢量分量的发散。
+     * 在FEValues类中没有诸如 FEValuesBase::get_function_divergences
+     * 这样的等效函数，但当然可以从
+     * FEValuesBase::get_function_gradients, 中获得相关信息。
+     * 输出向量所存储的数据类型必须是你将形状函数的发散量相乘后得到的（即
+     * @p divergence_type) 乘以用于存储你的有限元向量 $U$ （由
+     * @p fe_function 参数表示）的未知数 $U_j$ 的值的类型）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -1263,10 +1078,8 @@ namespace FEValuesViews
         &divergences) const;
 
     /**
-     * This function relates to get_function_divergences() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_divergences()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。更多信息请参见get_function_values_from_local_dof_values()的文档。
+     *
      */
     template <class InputVector>
     void
@@ -1276,22 +1089,15 @@ namespace FEValuesViews
         &divergences) const;
 
     /**
-     * Return the curl of the selected vector components of the finite element
-     * function characterized by <tt>fe_function</tt> at the quadrature points
-     * of the cell, face or subface selected the last time the <tt>reinit</tt>
-     * function of the FEValues object was called.
-     *
-     * There is no equivalent function such as
-     * FEValuesBase::get_function_curls in the FEValues classes but the
-     * information can be obtained from FEValuesBase::get_function_gradients,
-     * of course.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the curls of shape functions (i.e., @p curl_type) times the
-     * type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的所选向量分量的卷曲。
+     * 在FEValues类中没有诸如 FEValuesBase::get_function_curls
+     * 这样的等效函数，但当然可以从
+     * FEValuesBase::get_function_gradients, 中获得相关信息。
+     * 输出向量所存储的数据类型必须是你将形状函数的卷曲相乘后得到的（即
+     * @p curl_type) 乘以用于存储你的有限元向量 $U$ （由 @p
+     * fe_function 参数表示）的未知数 $U_j$ 的值的类型）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -1301,10 +1107,8 @@ namespace FEValuesViews
       const;
 
     /**
-     * This function relates to get_function_curls() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_curls()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1314,21 +1118,14 @@ namespace FEValuesViews
       const;
 
     /**
-     * Return the Hessians of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_hessians function but it only works on the
-     * selected vector components.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the Hessians of shape functions (i.e., @p hessian_type) times
-     * the type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的选定矢量分量的Hessians。
+     * 这个函数相当于 FEValuesBase::get_function_hessians
+     * 函数，但它只对选定的向量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的Hessians相乘后得到的（即
+     * @p hessian_type) 乘以用于存储你的有限元向量 $U_j$
+     * 的未知数值的类型 $U$ （由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_hessians}
+     *
      */
     template <class InputVector>
     void
@@ -1338,10 +1135,8 @@ namespace FEValuesViews
         &hessians) const;
 
     /**
-     * This function relates to get_function_hessians() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_hessians()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1351,22 +1146,14 @@ namespace FEValuesViews
         &hessians) const;
 
     /**
-     * Return the Laplacians of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called. The
-     * Laplacians are the trace of the Hessians.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_laplacians function but it only works on the
-     * selected vector components.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the Laplacians of shape functions (i.e., @p laplacian_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的选定向量分量的拉普拉斯。Laplacians是Hessians的轨迹。
+     * 这个函数相当于 FEValuesBase::get_function_laplacians
+     * 函数，但它只对选定的向量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的拉普拉斯系数相乘后得到的数据（即
+     * @p laplacian_type) 乘以用于存储你的有限元向量 $U$ （由
+     * @p fe_function 参数表示）的未知数 $U_j$ 的值的类型。
      * @dealiiRequiresUpdateFlags{update_hessians}
+     *
      */
     template <class InputVector>
     void
@@ -1376,10 +1163,8 @@ namespace FEValuesViews
         &laplacians) const;
 
     /**
-     * This function relates to get_function_laplacians() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_laplacians()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1389,22 +1174,15 @@ namespace FEValuesViews
         &laplacians) const;
 
     /**
-     * Return the third derivatives of the selected scalar component of the
-     * finite element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_third_derivatives function but it only works
-     * on the selected scalar component.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the third derivatives of shape functions (i.e., @p
-     * third_derivative_type) times the type used to store the values of the
-     * unknowns $U_j$ of your finite element vector $U$ (represented by the @p
-     * fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的标量分量的三次导数。
+     * 这个函数相当于 FEValuesBase::get_function_third_derivatives
+     * 函数，但它只对选定的标量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的三次导数（即
+     * @p  third_derivative_type）乘以用于存储你的有限元向量 $U$
+     * （由 @p  fe_function参数表示）的未知数 $U_j$
+     * 的值的类型。
      * @dealiiRequiresUpdateFlags{update_third_derivatives}
+     *
      */
     template <class InputVector>
     void
@@ -1415,10 +1193,8 @@ namespace FEValuesViews
         &third_derivatives) const;
 
     /**
-     * This function relates to get_function_third_derivatives() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_third_derivatives()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1430,18 +1206,20 @@ namespace FEValuesViews
 
   private:
     /**
-     * A pointer to the FEValuesBase object we operate on.
+     * 一个指向我们操作的FEValuesBase对象的指针。
+     *
      */
     const SmartPointer<const FEValuesBase<dim, spacedim>> fe_values;
 
     /**
-     * The first component of the vector this view represents of the
-     * FEValuesBase object.
+     * 这个视图代表FEValuesBase对象的向量的第一个分量。
+     *
      */
     const unsigned int first_vector_component;
 
     /**
-     * Store the data about shape functions.
+     * 存储有关形状函数的数据。
+     *
      */
     std::vector<ShapeFunctionData> shape_function_data;
   };
@@ -1451,64 +1229,56 @@ namespace FEValuesViews
   class SymmetricTensor;
 
   /**
-   * A class representing a view to a set of <code>(dim*dim + dim)/2</code>
-   * components forming a symmetric second-order tensor from a vector-valued
-   * finite element. Views are discussed in the
-   * @ref vector_valued
-   * module.
-   *
-   * This class allows to query the value and divergence of (components of)
-   * shape functions and solutions representing symmetric tensors. The
-   * divergence of a symmetric tensor $S_{ij}, 0\le i,j<\text{dim}$ is defined
-   * as $d_i = \sum_j \frac{\partial S_{ij}}{\partial x_j}, 0\le
-   * i<\text{dim}$, which due to the symmetry of the tensor is also $d_i =
-   * \sum_j \frac{\partial S_{ji}}{\partial x_j}$.  In other words, it due to
-   * the symmetry of $S$ it does not matter whether we apply the nabla
-   * operator by row or by column to get the divergence.
-   *
-   * You get an object of this type if you apply a
-   * FEValuesExtractors::SymmetricTensor to an FEValues, FEFaceValues or
-   * FESubfaceValues object.
-   *
+   * 一个代表对一组 <code>(dim*dim
+   * + dim)/2</code>
+   * 分量的视图的类，该分量形成了一个来自矢量值有限元的对称二阶张量。视图将在
+   * @ref vector_valued 模块中讨论。
+   * 该类允许查询代表对称张量的形状函数和解决方案的（组件）的值和发散。对称张量的发散
+   * $S_{ij}, 0\le i,j<\text{dim}$  被定义为  $d_i = \sum_j \frac{\partial
+   * S_{ij}}{\partial x_j}, 0\le i<\text{dim}$
+   * ，由于张量的对称性，它也是  $d_i = \sum_j \frac{\partial
+   * S_{ji}}{\partial x_j}$  。 换句话说，由于 $S$
+   * 的对称性，我们是按行还是按列应用纳布拉算子来得到发散并不重要。
+   * 如果你将 FEValuesExtractors::SymmetricTensor
+   * 应用于FEValues、FEFaceValues或FESubfaceValues对象，你会得到一个这种类型的对象。
    * @ingroup feaccess vector_valued
+   *
    */
   template <int dim, int spacedim>
   class SymmetricTensor<2, dim, spacedim>
   {
   public:
     /**
-     * An alias for the data type of values of the view this class
-     * represents. Since we deal with a set of <code>(dim*dim + dim)/2</code>
-     * components (i.e. the unique components of a symmetric second-order
-     * tensor), the value type is a SymmetricTensor<2,spacedim>.
+     * 这个类所代表的视图值的数据类型的别名。由于我们处理的是一组
+     * <code>(dim*dim + dim)/2</code>
+     * 成分（即对称二阶张量的唯一成分），所以数值类型是SymmetricTensor<2,spacedim>。
+     *
      */
     using value_type = dealii::SymmetricTensor<2, spacedim>;
 
     /**
-     * An alias for the type of the divergence of the view this class
-     * represents. Here, for a set of <code>(dim*dim + dim)/2</code> unique
-     * components of the finite element representing a symmetric second-order
-     * tensor, the divergence of course is a * <code>Tensor@<1,dim@></code>.
+     * 这个类所代表的视图的发散类型的别名。这里，对于一组代表对称二阶张量的有限元的
+     * <code>(dim*dim + dim)/2</code> 唯一分量，发散当然是一个
+     * <code>Tensor@<1,dim@></code>  。
+     * 关于发散的定义，请参见该类的一般讨论。
      *
-     * See the general discussion of this class for a definition of the
-     * divergence.
      */
     using divergence_type = dealii::Tensor<1, spacedim>;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * values of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * a  @p Number
+     * 与本类提供的视图值之积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_value_type = typename ProductType<Number, value_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * divergences of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的分歧的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_divergence_type =
@@ -1516,25 +1286,27 @@ namespace FEValuesViews
 
 
     /**
-     * A struct that provides the output type for the product of the value
-     * and derivatives of basis functions of the SymmetricTensor view and any @p Number type.
+     * 一个结构，为SymmetricTensor视图和任何 @p Number
+     * 类型的基函数的值和导数的乘积提供输出类型。
+     * @deprecated  使用周围类中定义的类型来代替。
      *
-     * @deprecated Use the types defined in the surrounding class instead.
      */
     template <typename Number>
     struct DEAL_II_DEPRECATED OutputType
     {
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * values of the view the SymmetricTensor class.
+       * @p Number
+       * 与SymmetricTensor类的视图值之积的数据类型的别名。
+       *
        */
       using value_type = typename ProductType<
         Number,
         typename SymmetricTensor<2, dim, spacedim>::value_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * divergences of the view the SymmetricTensor class.
+       * 一个 @p Number
+       * 的乘积的数据类型和SymmetricTensor类视图的分歧的别名。
+       *
        */
       using divergence_type = typename ProductType<
         Number,
@@ -1542,144 +1314,117 @@ namespace FEValuesViews
     };
 
     /**
-     * A structure where for each shape function we pre-compute a bunch of
-     * data that will make later accesses much cheaper.
+     * 一个结构，对于每个形状函数，我们预先计算出一堆数据，这将使以后的访问变得更加便宜。
+     *
      */
     struct ShapeFunctionData
     {
       /**
-       * For each pair (shape function,component within vector), store whether
-       * the selected vector component may be nonzero. For primitive shape
-       * functions we know for sure whether a certain scalar component of a
-       * given shape function is nonzero, whereas for non-primitive shape
-       * functions this may not be entirely clear (e.g. for RT elements it
-       * depends on the shape of a cell).
+       * 对于每一对(形状函数,向量内的分量)，存储所选向量分量是否可能为非零。对于原始形状函数，我们肯定知道某个给定形状函数的某个标量分量是否为非零，而对于非原始形状函数，这可能并不完全清楚（例如，对于RT元素，它取决于单元格的形状）。
+       *
        */
       bool is_nonzero_shape_function_component
         [value_type::n_independent_components];
 
       /**
-       * For each pair (shape function, component within vector), store the
-       * row index within the shape_values, shape_gradients, and
-       * shape_hessians tables (the column index is the quadrature point
-       * index). If the shape function is primitive, then we can get this
-       * information from the shape_function_to_row_table of the FEValues
-       * object; otherwise, we have to work a bit harder to compute this
-       * information.
+       * 对于每一对（形状函数，矢量内的组件），在shape_values、shape_gradients和shape_hessians表中存储行索引（列索引是正交点索引）。如果形状函数是原始的，那么我们可以从FEValues对象的shape_function_to_row_table中获得这些信息；否则，我们必须花点功夫来计算这些信息。
+       *
        */
       unsigned int row_index[value_type::n_independent_components];
 
       /**
-       * For each shape function say the following: if only a single entry in
-       * is_nonzero_shape_function_component for this shape function is
-       * nonzero, then store the corresponding value of row_index and
-       * single_nonzero_component_index represents the index between 0 and
-       * (dim^2 + dim)/2 for which it is attained. If multiple components are
-       * nonzero, then store -1. If no components are nonzero then store -2.
+       * 对于每个形状函数说如下：如果这个形状函数的is_nonzero_shape_function_component中只有一个条目是非零的，那么就存储row_index的相应值，single_nonzero_component_index代表在0和（dim^2+dim）/2之间的索引，对它来说是达到的。如果多个分量为非零，那么就存储
+       *
+       * 如果没有分量是非零的，则存储 * - 。
+       *
+       * - .
+       *
        */
       int single_nonzero_component;
 
       /**
-       * Index of the @p single_nonzero_component .
+       * @p single_nonzero_component 的索引。
+       *
        */
       unsigned int single_nonzero_component_index;
     };
 
     /**
-     * Default constructor. Creates an invalid object.
+     * 默认构造函数。创建一个无效的对象。
+     *
      */
     SymmetricTensor();
 
     /**
-     * Constructor for an object that represents <code>(dim*dim +
-     * dim)/2</code> components of a FEValuesBase object (or of one of the
-     * classes derived from FEValuesBase), representing the unique components
-     * comprising a symmetric second- order tensor valued variable.
+     * 表示<code>(dim*dim + dim)/2</code>
+     * FEValuesBase对象（或从FEValuesBase派生的类之一）的组件的构造函数，代表构成对称二阶张量值变量的唯一组件。
+     * 第二个参数表示所选对称二阶张量的第一个分量的索引。
      *
-     * The second argument denotes the index of the first component of the
-     * selected symmetric second order tensor.
      */
     SymmetricTensor(const FEValuesBase<dim, spacedim> &fe_values_base,
                     const unsigned int                 first_tensor_component);
 
     /**
-     * Copy constructor. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 复制构造函数。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     SymmetricTensor(const SymmetricTensor<2, dim, spacedim> &) = delete;
 
     /**
-     * Move constructor.
+     * 移动构造函数。
+     *
      */
     // NOLINTNEXTLINE OSX does not compile with noexcept
     SymmetricTensor(SymmetricTensor<2, dim, spacedim> &&) = default;
 
     /**
-     * Copy operator. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 复制操作符。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     SymmetricTensor &
     operator=(const SymmetricTensor<2, dim, spacedim> &) = delete;
 
     /**
-     * Move assignment operator.
+     * 移动赋值运算符。
+     *
      */
     SymmetricTensor &
     operator=(SymmetricTensor<2, dim, spacedim> &&) noexcept = default;
 
     /**
-     * Return the value of the vector components selected by this view, for
-     * the shape function and quadrature point selected by the arguments.
-     * Here, since the view represents a vector-valued part of the FEValues
-     * object with <code>(dim*dim + dim)/2</code> components (the unique
-     * components of a symmetric second-order tensor), the return type is a
-     * symmetric tensor of rank 2.
-     *
-     * @param shape_function Number of the shape function to be evaluated.
-     * Note that this number runs from zero to dofs_per_cell, even in the case
-     * of an FEFaceValues or FESubfaceValues object.
-     *
-     * @param q_point Number of the quadrature point at which function is to
-     * be evaluated.
-     *
+     * 返回该视图所选择的向量分量的值，用于参数所选择的形状函数和正交点。
+     * 这里，由于视图代表FEValues对象的一个矢量值部分，具有
+     * <code>(dim*dim + dim)/2</code>
+     * 分量（对称二阶张量的唯一分量），所以返回类型是等级2的对称张量。
+     * @param  shape_function 要评估的形状函数的编号。
+     * 注意，这个数字从零到dofs_per_cell，即使是在FEFaceValues或FESubfaceValues对象的情况下。
+     * @param  q_point 要评估函数的正交点的编号。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     value_type
     value(const unsigned int shape_function, const unsigned int q_point) const;
 
     /**
-     * Return the vector divergence of the vector components selected by this
-     * view, for the shape function and quadrature point selected by the
-     * arguments.
-     *
-     * See the general discussion of this class for a definition of the
-     * divergence.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图所选择的矢量分量的矢量发散，对于参数所选择的形状函数和正交点。
+     * 关于发散的定义，请参见本类的一般讨论。
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     divergence_type
     divergence(const unsigned int shape_function,
                const unsigned int q_point) const;
 
     /**
-     * Return the values of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_values function but it only works on the
-     * selected vector components.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the values of shape functions (i.e., @p value_type) times the
-     * type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上以<tt>fe_function</tt>为特征的有限元函数的选定向量分量的值。
+     * 这个函数相当于 FEValuesBase::get_function_values
+     * 函数，但它只对选定的向量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的值相乘后得到的（即
+     * @p value_type) 乘以用于存储你的有限元向量 $U$ 的未知数
+     * $U_j$ 值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     template <class InputVector>
     void
@@ -1689,38 +1434,21 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Same as above, but using a vector of local degree-of-freedom values. In
-     * other words, instead of extracting the nodal values of the degrees of
-     * freedom located on the current cell from a global vector associated with
-     * a DoFHandler object (as the function above does), this function instead
-     * takes these local nodal values through its first argument. A typical
-     * way to obtain such a vector is by calling code such as
+     * 与上述相同，但使用局部自由度值的向量。换句话说，这个函数不是从与DoFHandler对象相关的全局向量中提取位于当前单元上的自由度的节点值（如上面的函数），而是通过其第一个参数获取这些局部节点值。获得这样一个向量的典型方法是调用如下代码
      * @code
-     *   cell->get_dof_values (dof_values, local_dof_values);
+     * cell->get_dof_values (dof_values, local_dof_values);
      * @endcode
-     * (See DoFCellAccessor::get_dof_values() for more information on this
-     * function.) The point of the current function is then that one could
-     * modify these local values first, for example by applying a limiter
-     * or by ensuring that all nodal values are positive, before evaluating
-     * the finite element field that corresponds to these local values on the
-     * current cell. Another application is where one wants to postprocess
-     * the solution on a cell into a different finite element space on every
-     * cell, without actually creating a corresponding DoFHandler -- in that
-     * case, all one would compute is a local representation of that
-     * postprocessed function, characterized by its nodal values; this function
-     * then allows the evaluation of that representation at quadrature points.
+     * 当前函数的意义在于，人们可以先修改这些局部值，例如应用限制器或确保所有节点值为正，然后再评估与当前单元上这些局部值相对应的有限元场。另一种应用是，人们希望将一个单元上的解后处理为每个单元上的不同的有限元空间，而不需要实际创建一个相应的DoFHandler
      *
-     * @param[in] dof_values A vector of local nodal values. This vector must
-     *   have a length equal to number of DoFs on the current cell, and must
-     *   be ordered in the same order as degrees of freedom are numbered on
-     *   the reference cell.
+     * 在这种情况下，我们所要计算的是该后处理函数的局部表示，其特征是节点值；然后该函数允许在正交点评估该表示。
+     * @param[in]  dof_values
+     * 一个本地节点值的向量。该向量的长度必须等于当前单元上的DoF数量，并且必须按照参考单元上自由度的编号顺序排列。
+     * @param[out]  值
+     * 给定的有限元场的值的向量，在当前对象的正交点上。
+     * @tparam  InputVector  @p InputVector
+     * 类型必须允许从中创建ArrayView对象；这一点由
+     * `std::vector` 类等满足。
      *
-     * @param[out] values A vector of values of the given finite element field,
-     *   at the quadrature points on the current object.
-     *
-     * @tparam InputVector The @p InputVector type must allow creation
-     *   of an ArrayView object from it; this is satisfied by the
-     *   `std::vector` class, among others.
      */
     template <class InputVector>
     void
@@ -1730,25 +1458,16 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Return the divergence of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * There is no equivalent function such as
-     * FEValuesBase::get_function_divergences in the FEValues classes but the
-     * information can be obtained from FEValuesBase::get_function_gradients,
-     * of course.
-     *
-     * See the general discussion of this class for a definition of the
-     * divergence.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the divergences of shape functions (i.e., @p divergence_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的选定向量分量的发散。
+     * 在FEValues类中没有诸如 FEValuesBase::get_function_divergences
+     * 这样的等效函数，但当然可以从
+     * FEValuesBase::get_function_gradients, 中获得信息。
+     * 关于发散的定义，请参见该类的一般讨论。
+     * 输出向量存储的数据类型必须是你将形状函数的发散量相乘后得到的（即
+     * @p divergence_type) 乘以用于存储你的有限元向量 $U_j$
+     * 的未知数值的类型 $U$ （由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -1758,10 +1477,8 @@ namespace FEValuesViews
         &divergences) const;
 
     /**
-     * This function relates to get_function_divergences() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_divergences()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -1772,18 +1489,20 @@ namespace FEValuesViews
 
   private:
     /**
-     * A pointer to the FEValuesBase object we operate on.
+     * 一个指向我们操作的FEValuesBase对象的指针。
+     *
      */
     const SmartPointer<const FEValuesBase<dim, spacedim>> fe_values;
 
     /**
-     * The first component of the vector this view represents of the
-     * FEValuesBase object.
+     * 这个视图代表FEValuesBase对象的向量的第一个分量。
+     *
      */
     const unsigned int first_tensor_component;
 
     /**
-     * Store the data about shape functions.
+     * 存储有关形状函数的数据。
+     *
      */
     std::vector<ShapeFunctionData> shape_function_data;
   };
@@ -1793,68 +1512,64 @@ namespace FEValuesViews
   class Tensor;
 
   /**
-   * A class representing a view to a set of <code>dim*dim</code> components
-   * forming a second-order tensor from a vector-valued finite element. Views
-   * are discussed in the
-   * @ref vector_valued
-   * module.
-   *
-   * This class allows to query the value, gradient and divergence of
-   * (components of) shape functions and solutions representing tensors. The
-   * divergence of a tensor $T_{ij},\, 0\le i,j<\text{dim}$ is defined as $d_i =
-   * \sum_j \frac{\partial T_{ij}}{\partial x_j}, \, 0\le i<\text{dim}$, whereas
-   * its gradient is $G_{ijk} = \frac{\partial T_{ij}}{\partial x_k}$.
-   *
-   * You get an object of this type if you apply a FEValuesExtractors::Tensor
-   * to an FEValues, FEFaceValues or FESubfaceValues object.
-   *
+   * 一个代表对一组 <code>dim*dim</code>
+   * 分量的视图的类，这些分量构成了一个来自矢量值有限元的二阶张量。视图将在
+   * @ref vector_valued 模块中讨论。
+   * 该类允许查询代表张量的形状函数和解决方案的（组件）的值、梯度和发散。张量
+   * $T_{ij},\, 0\le i,j<\text{dim}$ 的发散被定义为 $d_i = \sum_j
+   * \frac{\partial T_{ij}}{\partial x_j}, \, 0\le i<\text{dim}$
+   * ，而它的梯度是 $G_{ijk} = \frac{\partial T_{ij}}{\partial x_k}$
+   * 。    如果你将 FEValuesExtractors::Tensor
+   * 应用于FEValues、FEFaceValues或FESubfaceValues对象，你会得到这种类型的对象。
    * @ingroup feaccess vector_valued
+   *
    */
   template <int dim, int spacedim>
   class Tensor<2, dim, spacedim>
   {
   public:
     /**
-     * Data type for what you get when you apply an extractor of this kind to
-     * a vector-valued finite element.
+     * 当你将这种提取器应用于一个矢量值的有限元时，你得到的数据类型。
+     *
      */
     using value_type = dealii::Tensor<2, spacedim>;
 
     /**
-     * Data type for taking the divergence of a tensor: a vector.
+     * 用于获取张量的发散的数据类型：一个矢量。
+     *
      */
     using divergence_type = dealii::Tensor<1, spacedim>;
 
     /**
-     * Data type for taking the gradient of a second order tensor: a third order
-     * tensor.
+     * 用于获取二阶张量的梯度的数据类型：三阶张量。
+     *
      */
     using gradient_type = dealii::Tensor<3, spacedim>;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * values of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * @p Number
+     * 与该类提供的视图值的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由一个元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_value_type = typename ProductType<Number, value_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * divergences of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 一个 @p Number
+     * 和该类提供的视图的分歧的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_divergence_type =
       typename ProductType<Number, divergence_type>::type;
 
     /**
-     * An alias for the data type of the product of a @p Number and the
-     * gradient of the view this class provides. This is the data type of
-     * vector components of a finite element field whose degrees of
-     * freedom are described by a vector with elements of type @p Number.
+     * 该类提供的 @p Number
+     * 与视图梯度的乘积的数据类型的别名。这是一个有限元场的矢量分量的数据类型，其自由度由元素类型为
+     * @p Number. 的矢量描述。
+     *
      */
     template <typename Number>
     using solution_gradient_type =
@@ -1862,33 +1577,35 @@ namespace FEValuesViews
 
 
     /**
-     * A struct that provides the output type for the product of the value
-     * and derivatives of basis functions of the Tensor view and any @p Number type.
+     * 一个结构，为张量视图和任何 @p Number
+     * 类型的基函数的值和导数的乘积提供输出类型。
+     * @deprecated  使用周围类中定义的类型来代替。
      *
-     * @deprecated Use the types defined in the surrounding class instead.
      */
     template <typename Number>
     struct DEAL_II_DEPRECATED OutputType
     {
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * values of the view the Tensor class.
+       * 一个 @p Number
+       * 和张量类的视图值的乘积的数据类型的别名。
+       *
        */
       using value_type = typename ProductType<
         Number,
         typename Tensor<2, dim, spacedim>::value_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * divergences of the view the Tensor class.
+       * 一个 @p Number
+       * 和张量类视图的分歧的乘积的数据类型的别名。
+       *
        */
       using divergence_type = typename ProductType<
         Number,
         typename Tensor<2, dim, spacedim>::divergence_type>::type;
 
       /**
-       * An alias for the data type of the product of a @p Number and the
-       * gradient of the view the Tensor class.
+       * 张量类中 @p Number 与梯度的乘积的数据类型的别名。
+       *
        */
       using gradient_type = typename ProductType<
         Number,
@@ -1896,166 +1613,136 @@ namespace FEValuesViews
     };
 
     /**
-     * A structure where for each shape function we pre-compute a bunch of
-     * data that will make later accesses much cheaper.
+     * 一个结构，对于每个形状函数，我们预先计算出一堆数据，这将使以后的访问变得更便宜。
+     *
      */
     struct ShapeFunctionData
     {
       /**
-       * For each pair (shape function,component within vector), store whether
-       * the selected vector component may be nonzero. For primitive shape
-       * functions we know for sure whether a certain scalar component of a
-       * given shape function is nonzero, whereas for non-primitive shape
-       * functions this may not be entirely clear (e.g. for RT elements it
-       * depends on the shape of a cell).
+       * 对于每一对(形状函数,向量内的分量)，存储所选向量分量是否可能为非零。对于原始形状函数，我们肯定知道某个给定形状函数的某个标量分量是否为非零，而对于非原始形状函数，这可能并不完全清楚（例如，对于RT元素，它取决于单元格的形状）。
+       *
        */
       bool is_nonzero_shape_function_component
         [value_type::n_independent_components];
 
       /**
-       * For each pair (shape function, component within vector), store the
-       * row index within the shape_values, shape_gradients, and
-       * shape_hessians tables (the column index is the quadrature point
-       * index). If the shape function is primitive, then we can get this
-       * information from the shape_function_to_row_table of the FEValues
-       * object; otherwise, we have to work a bit harder to compute this
-       * information.
+       * 对于每一对（形状函数，矢量内的成分），在shape_values、shape_gradients和shape_hessians表中存储行索引（列索引是正交点索引）。如果形状函数是原始的，那么我们可以从FEValues对象的shape_function_to_row_table中获得这些信息；否则，我们必须花点功夫来计算这些信息。
+       *
        */
       unsigned int row_index[value_type::n_independent_components];
 
       /**
-       * For each shape function say the following: if only a single entry in
-       * is_nonzero_shape_function_component for this shape function is
-       * nonzero, then store the corresponding value of row_index and
-       * single_nonzero_component_index represents the index between 0 and
-       * (dim^2) for which it is attained. If multiple components are nonzero,
-       * then store -1. If no components are nonzero then store -2.
+       * 对于每个形状函数说如下：如果这个形状函数的is_nonzero_shape_function_component中只有一个条目是非零的，那么就存储row_index的相应值，single_nonzero_component_index代表在0和（dim^2）之间的索引，对它来说是达到了。如果多个分量为非零，则存储
+       *
+       * 如果没有组件是非零的，则存储* - 。
+       *
+       * - .
+       *
        */
       int single_nonzero_component;
 
       /**
-       * Index of the @p single_nonzero_component .
+       * @p single_nonzero_component 的索引。
+       *
        */
       unsigned int single_nonzero_component_index;
     };
 
     /**
-     * Default constructor. Creates an invalid object.
+     * 默认构造函数。创建一个无效的对象。
+     *
      */
     Tensor();
 
     /**
-     * Copy constructor. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 复制构造函数。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     Tensor(const Tensor<2, dim, spacedim> &) = delete;
 
     /**
-     * Move constructor.
+     * 移动构造函数。
+     *
      */
     // NOLINTNEXTLINE OSX does not compile with noexcept
     Tensor(Tensor<2, dim, spacedim> &&) = default;
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     ~Tensor() = default;
 
     /**
-     * Constructor for an object that represents <code>(dim*dim)</code>
-     * components of a FEValuesBase object (or of one of the classes derived
-     * from FEValuesBase), representing the unique components comprising a
-     * second-order tensor valued variable.
+     * 表示FEValuesBase对象（或从FEValuesBase派生的类之一）的
+     * <code>(dim*dim)</code>
+     * 分量的对象的构造函数，表示构成二阶张量值变量的唯一分量。
+     * 第二个参数表示所选对称二阶张量的第一个分量的索引。
      *
-     * The second argument denotes the index of the first component of the
-     * selected symmetric second order tensor.
      */
     Tensor(const FEValuesBase<dim, spacedim> &fe_values_base,
            const unsigned int                 first_tensor_component);
 
 
     /**
-     * Copy operator. This is not a lightweight object so we don't allow
-     * copying and generate a compile-time error if this function is called.
+     * 复制操作符。这不是一个轻量级的对象，所以我们不允许复制，如果调用这个函数会产生一个编译时错误。
+     *
      */
     Tensor &
     operator=(const Tensor<2, dim, spacedim> &) = delete;
 
     /**
-     * Move assignment operator.
+     * 移动赋值运算符。
+     *
      */
     // NOLINTNEXTLINE
     Tensor &operator=(Tensor<2, dim, spacedim> &&) = default;
 
     /**
-     * Return the value of the vector components selected by this view, for
-     * the shape function and quadrature point selected by the arguments.
-     * Here, since the view represents a vector-valued part of the FEValues
-     * object with <code>(dim*dim)</code> components (the unique components of
-     * a second-order tensor), the return type is a tensor of rank 2.
-     *
-     * @param shape_function Number of the shape function to be evaluated.
-     * Note that this number runs from zero to dofs_per_cell, even in the case
-     * of an FEFaceValues or FESubfaceValues object.
-     *
-     * @param q_point Number of the quadrature point at which function is to
-     * be evaluated.
-     *
+     * 返回该视图所选择的向量分量的值，用于参数所选择的形状函数和正交点。
+     * 这里，由于视图代表了FEValues对象中具有
+     * <code>(dim*dim)</code>
+     * 分量（二阶张量的唯一分量）的矢量值部分，所以返回类型是等级2的张量。
+     * @param  shape_function 要评估的形状函数的编号。
+     * 注意，这个数字从零到dofs_per_cell，即使是在FEFaceValues或FESubfaceValues对象的情况下。
+     * @param  q_point 要评估函数的正交点的编号。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     value_type
     value(const unsigned int shape_function, const unsigned int q_point) const;
 
     /**
-     * Return the vector divergence of the vector components selected by this
-     * view, for the shape function and quadrature point selected by the
-     * arguments.
-     *
-     * See the general discussion of this class for a definition of the
-     * divergence.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图所选择的矢量分量的矢量发散，对于参数所选择的形状函数和正交点。
+     * 关于发散的定义，请参见本类的一般讨论。
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     divergence_type
     divergence(const unsigned int shape_function,
                const unsigned int q_point) const;
 
     /**
-     * Return the gradient (3-rd order tensor) of the vector components selected
-     * by this view, for the shape function and quadrature point selected by the
-     * arguments.
-     *
-     * See the general discussion of this class for a definition of the
-     * gradient.
-     *
-     * @note The meaning of the arguments is as documented for the value()
-     * function.
-     *
+     * 返回该视图选择的向量分量的梯度（3阶张量），用于参数选择的形状函数和正交点。
+     * 关于梯度的定义，请参见本类的一般讨论。
+     * @note  参数的含义与value()函数的记录相同。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     gradient_type
     gradient(const unsigned int shape_function,
              const unsigned int q_point) const;
 
     /**
-     * Return the values of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * This function is the equivalent of the
-     * FEValuesBase::get_function_values function but it only works on the
-     * selected vector components.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the values of shape functions (i.e., @p value_type) times the
-     * type used to store the values of the unknowns $U_j$ of your finite
-     * element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上以<tt>fe_function</tt>为特征的有限元函数的选定向量分量的值。
+     * 这个函数相当于 FEValuesBase::get_function_values
+     * 函数，但它只对选定的向量分量起作用。
+     * 输出向量所存储的数据类型必须是你将形状函数的值相乘后得到的（即
+     * @p value_type) 乘以用于存储你的有限元向量 $U$ 的未知数
+     * $U_j$ 的值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_values}
+     *
      */
     template <class InputVector>
     void
@@ -2065,38 +1752,21 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Same as above, but using a vector of local degree-of-freedom values. In
-     * other words, instead of extracting the nodal values of the degrees of
-     * freedom located on the current cell from a global vector associated with
-     * a DoFHandler object (as the function above does), this function instead
-     * takes these local nodal values through its first argument. A typical
-     * way to obtain such a vector is by calling code such as
+     * 与上述相同，但使用局部自由度值的向量。换句话说，这个函数不是从与DoFHandler对象相关的全局向量中提取位于当前单元上的自由度的节点值（如上面的函数），而是通过其第一个参数获取这些局部节点值。获得这样一个向量的典型方法是调用如下代码
      * @code
-     *   cell->get_dof_values (dof_values, local_dof_values);
+     * cell->get_dof_values (dof_values, local_dof_values);
      * @endcode
-     * (See DoFCellAccessor::get_dof_values() for more information on this
-     * function.) The point of the current function is then that one could
-     * modify these local values first, for example by applying a limiter
-     * or by ensuring that all nodal values are positive, before evaluating
-     * the finite element field that corresponds to these local values on the
-     * current cell. Another application is where one wants to postprocess
-     * the solution on a cell into a different finite element space on every
-     * cell, without actually creating a corresponding DoFHandler -- in that
-     * case, all one would compute is a local representation of that
-     * postprocessed function, characterized by its nodal values; this function
-     * then allows the evaluation of that representation at quadrature points.
+     * 当前函数的意义在于，人们可以先修改这些局部值，例如应用限制器或确保所有节点值为正，然后再评估当前单元上与这些局部值相对应的有限元场。另一种应用是，人们希望将一个单元上的解后处理为每个单元上的不同的有限元空间，而不需要实际创建一个相应的DoFHandler
      *
-     * @param[in] dof_values A vector of local nodal values. This vector must
-     *   have a length equal to number of DoFs on the current cell, and must
-     *   be ordered in the same order as degrees of freedom are numbered on
-     *   the reference cell.
+     * 在这种情况下，我们所要计算的是该后处理函数的局部表示，其特征是节点值；然后该函数允许在正交点评估该表示。
+     * @param[in]  dof_values
+     * 一个本地节点值的向量。该向量的长度必须等于当前单元上的DoF数量，并且必须按照参考单元上自由度编号的相同顺序排序。
+     * @param[out]  值
+     * 给定的有限元场的值的向量，在当前对象上的正交点。
+     * @tparam  InputVector  @p InputVector
+     * 类型必须允许从中创建ArrayView对象；这一点由
+     * `std::vector` 类和其他类满足。
      *
-     * @param[out] values A vector of values of the given finite element field,
-     *   at the quadrature points on the current object.
-     *
-     * @tparam InputVector The @p InputVector type must allow creation
-     *   of an ArrayView object from it; this is satisfied by the
-     *   `std::vector` class, among others.
      */
     template <class InputVector>
     void
@@ -2106,25 +1776,16 @@ namespace FEValuesViews
         &values) const;
 
     /**
-     * Return the divergence of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * There is no equivalent function such as
-     * FEValuesBase::get_function_divergences in the FEValues classes but the
-     * information can be obtained from FEValuesBase::get_function_gradients,
-     * of course.
-     *
-     * See the general discussion of this class for a definition of the
-     * divergence.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the divergences of shape functions (i.e., @p divergence_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的选定向量分量的发散。
+     * 在FEValues类中没有诸如 FEValuesBase::get_function_divergences
+     * 这样的等效函数，但当然可以从
+     * FEValuesBase::get_function_gradients, 中获取信息。
+     * 关于发散的定义，请参见该类的一般讨论。
+     * 输出向量存储的数据类型必须是你将形状函数的发散量相乘后得到的数据（即
+     * @p divergence_type) 乘以用于存储你的有限元向量 $U$
+     * 的未知数 $U_j$ 值的类型（由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -2134,10 +1795,8 @@ namespace FEValuesViews
         &divergences) const;
 
     /**
-     * This function relates to get_function_divergences() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_divergences()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -2147,20 +1806,13 @@ namespace FEValuesViews
         &divergences) const;
 
     /**
-     * Return the gradient of the selected vector components of the finite
-     * element function characterized by <tt>fe_function</tt> at the
-     * quadrature points of the cell, face or subface selected the last time
-     * the <tt>reinit</tt> function of the FEValues object was called.
-     *
-     * See the general discussion of this class for a definition of the
-     * gradient.
-     *
-     * The data type stored by the output vector must be what you get when you
-     * multiply the gradients of shape functions (i.e., @p gradient_type)
-     * times the type used to store the values of the unknowns $U_j$ of your
-     * finite element vector $U$ (represented by the @p fe_function argument).
-     *
+     * 返回上次调用FEValues对象的<tt>reinit</tt>函数时选择的单元、面或子面的正交点上由<tt>fe_function</tt>表征的有限元函数的梯度。
+     * 关于梯度的定义，请参见本类的一般讨论。
+     * 输出向量所存储的数据类型必须是你将形状函数的梯度相乘后得到的（即
+     * @p gradient_type) 乘以用于存储你的有限元向量 $U_j$
+     * 的未知数值的类型 $U$ （由 @p fe_function 参数代表）。
      * @dealiiRequiresUpdateFlags{update_gradients}
+     *
      */
     template <class InputVector>
     void
@@ -2170,10 +1822,8 @@ namespace FEValuesViews
         &gradients) const;
 
     /**
-     * This function relates to get_function_gradients() in the same way
-     * as get_function_values_from_local_dof_values() relates to
-     * get_function_values(). See the documentation of
-     * get_function_values_from_local_dof_values() for more information.
+     * 这个函数与get_function_gradients()的关系，与get_function_values_from_local_dof_values()与get_function_values()的关系相同。参见get_function_values_from_local_dof_values()的文档以了解更多信息。
+     *
      */
     template <class InputVector>
     void
@@ -2184,18 +1834,20 @@ namespace FEValuesViews
 
   private:
     /**
-     * A pointer to the FEValuesBase object we operate on.
+     * 一个指向我们操作的FEValuesBase对象的指针。
+     *
      */
     const SmartPointer<const FEValuesBase<dim, spacedim>> fe_values;
 
     /**
-     * The first component of the vector this view represents of the
-     * FEValuesBase object.
+     * 这个视图代表FEValuesBase对象的向量的第一个分量。
+     *
      */
     const unsigned int first_tensor_component;
 
     /**
-     * Store the data about shape functions.
+     * 存储有关形状函数的数据。
+     *
      */
     std::vector<ShapeFunctionData> shape_function_data;
   };
@@ -2208,19 +1860,18 @@ namespace internal
   namespace FEValuesViews
   {
     /**
-     * A class whose specialization is used to define what FEValuesViews
-     * object corresponds to the given FEValuesExtractors object.
+     * 一个类，其特化用于定义什么FEValuesViews对象与给定的FEValuesExtractors对象相对应。
+     *
      */
     template <int dim, int spacedim, typename Extractor>
     struct ViewType
     {};
 
     /**
-     * A class whose specialization is used to define what FEValuesViews
-     * object corresponds to the given FEValuesExtractors object.
+     * 一个类，它的特化是用来定义什么FEValuesViews对象对应于给定的FEValuesExtractors对象。
+     * 当使用 FEValuesExtractors::Scalar, 时，对应的视图是一个
+     * FEValuesViews::Scalar<dim, spacedim>。
      *
-     * When using FEValuesExtractors::Scalar, the corresponding view is an
-     * FEValuesViews::Scalar<dim, spacedim>.
      */
     template <int dim, int spacedim>
     struct ViewType<dim, spacedim, FEValuesExtractors::Scalar>
@@ -2229,11 +1880,10 @@ namespace internal
     };
 
     /**
-     * A class whose specialization is used to define what FEValuesViews
-     * object corresponds to the given FEValuesExtractors object.
+     * 一个类，其专门化用于定义什么FEValuesViews对象与给定的FEValuesExtractors对象相对应。
+     * 当使用 FEValuesExtractors::Vector, 时，对应的视图是一个
+     * FEValuesViews::Vector<dim, spacedim>。
      *
-     * When using FEValuesExtractors::Vector, the corresponding view is an
-     * FEValuesViews::Vector<dim, spacedim>.
      */
     template <int dim, int spacedim>
     struct ViewType<dim, spacedim, FEValuesExtractors::Vector>
@@ -2242,11 +1892,11 @@ namespace internal
     };
 
     /**
-     * A class whose specialization is used to define what FEValuesViews
-     * object corresponds to the given FEValuesExtractors object.
+     * 一个类，其专门化用于定义什么FEValuesViews对象与给定的FEValuesExtractors对象相对应。
+     * 当使用 FEValuesExtractors::Tensor<rank>,
+     * 时，对应的视图是一个 FEValuesViews::Tensor<rank, dim,
+     * spacedim>。
      *
-     * When using FEValuesExtractors::Tensor<rank>, the corresponding view is an
-     * FEValuesViews::Tensor<rank, dim, spacedim>.
      */
     template <int dim, int spacedim, int rank>
     struct ViewType<dim, spacedim, FEValuesExtractors::Tensor<rank>>
@@ -2255,11 +1905,11 @@ namespace internal
     };
 
     /**
-     * A class whose specialization is used to define what FEValuesViews
-     * object corresponds to the given FEValuesExtractors object.
+     * 一个类，其专门化用于定义什么FEValuesViews对象与给定的FEValuesExtractors对象相对应。
+     * 当使用 FEValuesExtractors::SymmetricTensor<rank>,
+     * 时，对应的视图是一个 FEValuesViews::SymmetricTensor<rank,
+     * dim, spacedim>。
      *
-     * When using FEValuesExtractors::SymmetricTensor<rank>, the corresponding
-     * view is an FEValuesViews::SymmetricTensor<rank, dim, spacedim>.
      */
     template <int dim, int spacedim, int rank>
     struct ViewType<dim, spacedim, FEValuesExtractors::SymmetricTensor<rank>>
@@ -2269,18 +1919,17 @@ namespace internal
     };
 
     /**
-     * A class objects of which store a collection of FEValuesViews::Scalar,
-     * FEValuesViews::Vector, etc object. The FEValuesBase class uses it to
-     * generate all possible Views classes upon construction time; we do this
-     * at construction time since the Views classes cache some information and
-     * are therefore relatively expensive to create.
+     * 一个类的对象，其中存储有 FEValuesViews::Scalar,
+     * FEValuesViews::Vector,
+     * 等对象的集合。FEValuesBase类在构建时使用它来生成所有可能的Views类；我们在构建时这样做，因为Views类会缓存一些信息，因此创建起来相对昂贵。
+     *
      */
     template <int dim, int spacedim>
     struct Cache
     {
       /**
-       * Caches for scalar and vector, and symmetric second-order tensor
-       * valued views.
+       * 缓存标量和矢量以及对称二阶张量值的视图。
+       *
        */
       std::vector<dealii::FEValuesViews::Scalar<dim, spacedim>> scalars;
       std::vector<dealii::FEValuesViews::Vector<dim, spacedim>> vectors;
@@ -2290,7 +1939,8 @@ namespace internal
         second_order_tensors;
 
       /**
-       * Constructor.
+       * 构造函数。
+       *
        */
       Cache(const FEValuesBase<dim, spacedim> &fe_values);
     };
@@ -2300,8 +1950,8 @@ namespace internal
 namespace FEValuesViews
 {
   /**
-   * A templated alias that associates to a given Extractor class
-   * the corresponding view in FEValuesViews.
+   * 一个模板化的别名，将FEValuesViews中的相应视图关联到给定的Extractor类。
+   *
    */
   template <int dim, int spacedim, typename Extractor>
   using View = typename dealii::internal::FEValuesViews::
@@ -2310,152 +1960,89 @@ namespace FEValuesViews
 
 
 /**
- * FEValues, FEFaceValues and FESubfaceValues objects are interfaces to finite
- * element and mapping classes on the one hand side, to cells and quadrature
- * rules on the other side. They allow to evaluate values or derivatives of
- * shape functions at the quadrature points of a quadrature formula when
- * projected by a mapping from the unit cell onto a cell in real space. The
- * reason for this abstraction is possible optimization: Depending on the type
- * of finite element and mapping, some values can be computed once on the unit
- * cell. Others must be computed on each cell, but maybe computation of
- * several values at the same time offers ways for optimization. Since this
- * interplay may be complex and depends on the actual finite element, it
- * cannot be left to the applications programmer.
- *
- * FEValues, FEFaceValues and FESubfaceValues provide only data handling:
- * computations are left to objects of type Mapping and FiniteElement. These
- * provide functions <tt>get_*_data</tt> and <tt>fill_*_values</tt> which are
- * called by the constructor and <tt>reinit</tt> functions of
- * <tt>FEValues*</tt>, respectively.
- *
+ * FEValues、FEFaceValues和FESSubfaceValues对象一方面是有限元和映射类的接口，另一方面是单元和正交规则的接口。它们允许在正交公式的正交点评估形状函数的值或导数，当通过映射从单元格投射到实空间的单元格时。这种抽象的原因是可能的优化。根据有限元和映射的类型，有些值可以在单元格上计算一次。其他的必须在每个单元上计算，但也许同时计算几个值会提供优化的方法。由于这种相互作用可能很复杂，并且取决于实际的有限元，所以不能留给应用程序的程序员。
+ * FEValues、FEFaceValues和FESSubfaceValues只提供数据处理：计算留给Mapping和FiniteElement类型的对象。这些对象提供了<tt>get_*_data</tt>和<tt>fill_*_values</tt>函数，分别由<tt>FEValues*</tt>的构造器和<tt>reinit</tt>函数调用。
  * <h3>General usage</h3>
+ * 通常，<tt>FEValues*</tt>的对象被用于一个三角形的所有单元（或单元的面）的积分循环中。为了充分利用优化功能，应该在循环之前构建该对象，这样就可以一劳永逸地计算不依赖于单元格位置和形状的信息（例如，这包括最常见元素的正交点的形状函数值：我们可以在单元格上评估它们，当映射到真实单元格时它们将是一样的）。然后，在所有单元的循环中，必须为每个网格单元重新初始化，以计算根据实际单元而变化的那部分信息（例如，形状函数的梯度等于单元格上的梯度
  *
- * Usually, an object of <tt>FEValues*</tt> is used in integration loops over
- * all cells of a triangulation (or faces of cells). To take full advantage of
- * the optimization features, it should be constructed before the loop so that
- * information that does not depend on the location and shape of cells can be
- * computed once and for all (this includes, for example, the values of shape
- * functions at quadrature points for the most common elements: we can
- * evaluate them on the unit cell and they will be the same when mapped to the
- * real cell). Then, in the loop over all cells, it must be re-initialized for
- * each grid cell to compute that part of the information that changes
- * depending on the actual cell (for example, the gradient of shape functions
- * equals the gradient on the unit cell -- which can be computed once and for
- * all -- times the Jacobian matrix of the mapping between unit and real cell,
- * which needs to be recomputed for each cell).
+ * - 可以一次性计算出来
  *
- * A typical piece of code, adding up local contributions to the Laplace
- * matrix looks like this:
+ * - 乘以单位和实际单元之间映射的雅各布矩阵，这需要为每个单元重新计算）。)
+ * 一段典型的代码，把对拉普拉斯矩阵的局部贡献加起来，看起来像这样。
+ *
  *
  * @code
  * FEValues values (mapping, finite_element, quadrature, flags);
  * for (const auto &cell : dof_handler.active_cell_iterators())
- *   {
- *     values.reinit(cell);
- *     for (unsigned int q=0; q<quadrature.size(); ++q)
- *       for (unsigned int i=0; i<finite_element.n_dofs_per_cell(); ++i)
- *         for (unsigned int j=0; j<finite_element.n_dofs_per_cell(); ++j)
- *           A(i,j) += fe_values.shape_value(i,q) *
- *                     fe_values.shape_value(j,q) *
- *                     fe_values.JxW(q);
- *     ...
- *   }
+ * {
+ *   values.reinit(cell);
+ *   for (unsigned int q=0; q<quadrature.size(); ++q)
+ *     for (unsigned int i=0; i<finite_element.n_dofs_per_cell(); ++i)
+ *       for (unsigned int j=0; j<finite_element.n_dofs_per_cell(); ++j)
+ *         A(i,j) += fe_values.shape_value(i,q)
+ *                   fe_values.shape_value(j,q)
+ *                   fe_values.JxW(q);
+ *   ...
+ * }
  * @endcode
  *
- * The individual functions used here are described below. Note that by
- * design, the order of quadrature points used inside the FEValues object is
- * the same as defined by the quadrature formula passed to the constructor of
- * the FEValues object above.
- *
+ * 这里使用的各个函数描述如下。请注意，根据设计，在FEValues对象内部使用的正交点的顺序与上述传递给FEValues对象构造函数的正交公式所定义的相同。
  * <h3>Member functions</h3>
+ * 本类的函数分为不同的类别。  <ul>   <li>  shape_value(), shape_grad()等：每次返回此对象的一个值。这些函数都是内联的，所以这就是对所有有限元值的建议访问。使用优化的编译器应该不会有性能上的损失。如果有限元是矢量值的，那么这些函数返回所请求的形状函数的唯一非零分量。然而，一些有限元的形状函数有一个以上的非零分量（我们称之为非 "原始"），在这种情况下，这组函数将抛出一个异常，因为它们不能产生一个有用的结果。相反，请使用下一组函数。
+ * <li>  shape_value_component(), shape_grad_component(),
+ * 等等。这是与上面相同的一组函数，只是对于矢量值的有限元，它们只返回一个矢量分量。这对于那些形状函数有多个非零分量的元素来说是很有用的，因为这时不能使用上述函数，你必须使用这组函数走遍形状函数的所有（或只有非零）分量。
+ * <li>  get_function_values(), get_function_gradients(), etc.:
+ * 计算一个有限元函数或其在正交点的导数。
+ * <li>  reinit：初始化某个单元的FEValues对象。这个函数不在本类中，只在派生类中，并且有一个变量调用语法。更多信息请参见派生类的文档。  </ul>
  *
- * The functions of this class fall into different categories:
- * <ul>
- * <li> shape_value(), shape_grad(), etc: return one of the values of this
- * object at a time. These functions are inlined, so this is the suggested
- * access to all finite element values. There should be no loss in performance
- * with an optimizing compiler. If the finite element is vector valued, then
- * these functions return the only non-zero component of the requested shape
- * function. However, some finite elements have shape functions that have more
- * than one non-zero component (we call them non-"primitive"), and in this
- * case this set of functions will throw an exception since they cannot
- * generate a useful result. Rather, use the next set of functions.
+ *  <h3>Internals about the implementation</h3>
  *
- * <li> shape_value_component(), shape_grad_component(), etc: This is the same
- * set of functions as above, except that for vector valued finite elements
- * they return only one vector component. This is useful for elements of which
- * shape functions have more than one non-zero component, since then the above
- * functions cannot be used, and you have to walk over all (or only the non-
- * zero) components of the shape function using this set of functions.
- *
- * <li> get_function_values(), get_function_gradients(), etc.: Compute a
- * finite element function or its derivative in quadrature points.
- *
- * <li> reinit: initialize the FEValues object for a certain cell. This
- * function is not in the present class but only in the derived classes and
- * has a variable call syntax. See the docs for the derived classes for more
- * information.
- * </ul>
- *
- *
- * <h3>Internals about the implementation</h3>
- *
- * The mechanisms by which this class work are discussed on the page on
- * @ref UpdateFlags "Update flags"
- * and about the
- * @ref FE_vs_Mapping_vs_FEValues "How Mapping, FiniteElement, and FEValues work together".
  *
  *
  * @ingroup feaccess
+ *
  */
 template <int dim, int spacedim>
 class FEValuesBase : public Subscriptor
 {
 public:
   /**
-   * Dimension in which this object operates.
+   * 该对象所处的尺寸。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Dimension of the space in which this object operates.
+   * 该对象所处空间的尺寸。
+   *
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * Number of quadrature points of the current object. Its value is
-   * initialized by the value of max_n_quadrature_points and is updated,
-   * e.g., if FEFaceValues::reinit() is called for a new cell/face.
+   * 当前对象的正交点的数量。它的值由max_n_quadrature_points的值初始化并被更新，例如，如果为一个新的单元/面调用
+   * FEFaceValues::reinit() 。
+   * @note 默认值等于max_n_quadrature_points的值。
    *
-   * @note The default value equals to the value of max_n_quadrature_points.
    */
   const unsigned int n_quadrature_points;
 
   /**
-   * Maximum number of quadrature points. This value might be different from
-   * n_quadrature_points, e.g., if a QCollection with different face quadrature
-   * rules has been passed to initialize FEFaceValues.
+   * 正交点的最大数量。这个值可能与n_quadrature_points不同，例如，如果一个具有不同面孔正交规则的QCollection被传递给初始化FEFaceValues。
+   * 这对于初始化数组，分配最大的内存量是非常有用的，在以后重新调整大小的时候，可能会用到n_quadrature_points给出的当前正交点的数量。
    *
-   * This is mostly useful to initialize arrays to allocate the maximum amount
-   * of memory that may be used when re-sizing later on to a the current
-   * number of quadrature points given by n_quadrature_points.
    */
   const unsigned int max_n_quadrature_points;
 
   /**
-   * Number of shape functions per cell. If we use this base class to evaluate
-   * a finite element on faces of cells, this is still the number of degrees
-   * of freedom per cell, not per face.
+   * 每个单元的形状函数的数量。如果我们使用这个基类来评估单元面的有限元，这仍然是每个单元的自由度数量，而不是每个面的自由度。
+   *
    */
   const unsigned int dofs_per_cell;
 
 
   /**
-   * Constructor. Set up the array sizes with <tt>n_q_points</tt> quadrature
-   * points, <tt>dofs_per_cell</tt> trial functions per cell and with the
-   * given pattern to update the fields when the <tt>reinit</tt> function of
-   * the derived classes is called. The fields themselves are not set up, this
-   * must happen in the constructor of the derived class.
+   * 构造函数。用<tt>n_q_points</tt>正交点，<tt>dofs_per_cell</tt>每个单元的试验函数来设置数组大小，用给定的模式在调用派生类的<tt>reinit</tt>函数时更新字段。字段本身没有被设置，这必须发生在派生类的构造函数中。
+   *
    */
   FEValuesBase(const unsigned int                  n_q_points,
                const unsigned int                  dofs_per_cell,
@@ -2464,20 +2051,21 @@ public:
                const FiniteElement<dim, spacedim> &fe);
 
   /**
-   * The copy assignment is deleted since objects of this class are not
-   * copyable.
+   * 复制赋值被删除，因为这个类的对象是不可复制的。
+   *
    */
   FEValuesBase &
   operator=(const FEValuesBase &) = delete;
 
   /**
-   * The copy constructor is deleted since objects of this class are not
-   * copyable.
+   * 复制构造函数被删除，因为这个类的对象是不可复制的。
+   *
    */
   FEValuesBase(const FEValuesBase &) = delete;
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   virtual ~FEValuesBase() override;
 
@@ -2488,48 +2076,25 @@ public:
   //@{
 
   /**
-   * Value of a shape function at a quadrature point on the cell, face or
-   * subface selected the last time the <tt>reinit</tt> function of the
-   * derived class was called.
+   * 派生类的<tt>reinit</tt>函数最后一次被调用时选择的单元格、面或子面的正交点上的形状函数的值。
+   * 如果形状函数是矢量值，那么这将返回唯一的非零分量。如果形状函数有一个以上的非零分量（也就是说，它不是原始的），那么抛出一个ExcShapeFunctionNotPrimitive类型的异常。在这种情况下，使用
+   * shape_value_component() 函数。      @param  function_no
+   * 要被评估的形状函数的数字。请注意，这个数字从零到dofs_per_cell，即使是在FEFaceValues或FESubfaceValues对象的情况下。
+   * @param  point_no 要评估函数的正交点的数目
+   * @dealiiRequiresUpdateFlags{update_values}  。
    *
-   * If the shape function is vector-valued, then this returns the only non-
-   * zero component. If the shape function has more than one non-zero
-   * component (i.e. it is not primitive), then throw an exception of type
-   * ExcShapeFunctionNotPrimitive. In that case, use the
-   * shape_value_component() function.
-   *
-   * @param function_no Number of the shape function to be evaluated. Note
-   * that this number runs from zero to dofs_per_cell, even in the case of an
-   * FEFaceValues or FESubfaceValues object.
-   *
-   * @param point_no Number of the quadrature point at which function is to be
-   * evaluated
-   *
-   * @dealiiRequiresUpdateFlags{update_values}
    */
   const double &
   shape_value(const unsigned int function_no,
               const unsigned int point_no) const;
 
   /**
-   * Compute one vector component of the value of a shape function at a
-   * quadrature point. If the finite element is scalar, then only component
-   * zero is allowed and the return value equals that of the shape_value()
-   * function. If the finite element is vector valued but all shape functions
-   * are primitive (i.e. they are non-zero in only one component), then the
-   * value returned by shape_value() equals that of this function for exactly
-   * one component. This function is therefore only of greater interest if the
-   * shape function is not primitive, but then it is necessary since the other
-   * function cannot be used.
-   *
-   * @param function_no Number of the shape function to be evaluated.
-   *
-   * @param point_no Number of the quadrature point at which function is to be
-   * evaluated.
-   *
-   * @param component vector component to be evaluated.
-   *
+   * 计算一个正交点的形状函数值的一个向量分量。如果有限元是标量的，那么只允许零分量，返回值等于shape_value()函数的值。如果有限元是矢量值的，但所有形状函数都是原始的（即它们只有一个分量是非零的），那么shape_value()返回的值正好等于这个函数的一个分量。因此，只有在形状函数不是基元的情况下，这个函数才更有意义，但此时它是必要的，因为其他函数不能被使用。
+   * @param  function_no 要评估的形状函数的编号。      @param
+   * point_no 要评估函数的正交点的编号。      @param  component
+   * 要评估的向量分量。
    * @dealiiRequiresUpdateFlags{update_values}
+   *
    */
   double
   shape_value_component(const unsigned int function_no,
@@ -2537,49 +2102,25 @@ public:
                         const unsigned int component) const;
 
   /**
-   * Compute the gradient of the <tt>function_no</tt>th shape function at the
-   * <tt>quadrature_point</tt>th quadrature point with respect to real cell
-   * coordinates.  If you want to get the derivative in one of the coordinate
-   * directions, use the appropriate function of the Tensor class to extract
-   * one component of the Tensor returned by this function. Since only a
-   * reference to the gradient's value is returned, there should be no major
-   * performance drawback.
-   *
-   * If the shape function is vector-valued, then this returns the only non-
-   * zero component. If the shape function has more than one non-zero
-   * component (i.e. it is not primitive), then it will throw an exception of
-   * type ExcShapeFunctionNotPrimitive. In that case, use the
-   * shape_grad_component() function.
-   *
-   * The same holds for the arguments of this function as for the
-   * shape_value() function.
-   *
-   * @param function_no Number of the shape function to be evaluated.
-   *
-   * @param quadrature_point Number of the quadrature point at which function
-   * is to be evaluated.
-   *
+   * 计算<tt>function_no</tt>第1个形状函数在<tt>quadrature_point</tt>第1个正交点的梯度，相对于实际单元坐标。
+   * 如果你想得到其中一个坐标方向的导数，使用张量类的适当函数来提取这个函数返回的张量的一个分量。因为只返回对梯度值的引用，所以应该不会有大的性能缺陷。
+   * 如果形状函数是矢量值的，那么它返回唯一的非零分量。如果形状函数有一个以上的非零分量（即它不是原始的），那么它将抛出一个ExcShapeFunctionNotPrimitive类型的异常。在这种情况下，请使用
+   * shape_grad_component() 函数。
+   * 这个函数的参数与shape_value()函数的参数相同。      @param
+   * function_no 要被评估的形状函数的编号。      @param
+   * quadrature_point 要评估函数的正交点的数量。
    * @dealiiRequiresUpdateFlags{update_gradients}
+   *
    */
   const Tensor<1, spacedim> &
   shape_grad(const unsigned int function_no,
              const unsigned int quadrature_point) const;
 
   /**
-   * Return one vector component of the gradient of a shape function at a
-   * quadrature point. If the finite element is scalar, then only component
-   * zero is allowed and the return value equals that of the shape_grad()
-   * function. If the finite element is vector valued but all shape functions
-   * are primitive (i.e. they are non-zero in only one component), then the
-   * value returned by shape_grad() equals that of this function for exactly
-   * one component. This function is therefore only of greater interest if the
-   * shape function is not primitive, but then it is necessary since the other
-   * function cannot be used.
-   *
-   * The same holds for the arguments of this function as for the
-   * shape_value_component() function.
-   *
+   * 返回形状函数在正交点的梯度的一个向量分量。如果有限元是标量的，那么只允许零分量，返回值等于shape_grad()函数的值。如果有限元是矢量值的，但所有形状函数都是原始的（即它们只有一个分量是非零的），那么shape_grad()返回的值就等于这个函数的一个分量。因此，只有在形状函数不是基元的情况下，这个函数才更有意义，但此时它是必要的，因为其他函数不能使用。
+   * 这个函数的参数与shape_value_component()函数的参数同样成立。
    * @dealiiRequiresUpdateFlags{update_gradients}
+   *
    */
   Tensor<1, spacedim>
   shape_grad_component(const unsigned int function_no,
@@ -2587,43 +2128,22 @@ public:
                        const unsigned int component) const;
 
   /**
-   * Second derivatives of the <tt>function_no</tt>th shape function at the
-   * <tt>point_no</tt>th quadrature point with respect to real cell
-   * coordinates. If you want to get the derivatives in one of the coordinate
-   * directions, use the appropriate function of the Tensor class to extract
-   * one component. Since only a reference to the hessian values is returned,
-   * there should be no major performance drawback.
-   *
-   * If the shape function is vector-valued, then this returns the only non-
-   * zero component. If the shape function has more than one non-zero
-   * component (i.e. it is not primitive), then throw an exception of type
-   * ExcShapeFunctionNotPrimitive. In that case, use the
-   * shape_hessian_component() function.
-   *
-   * The same holds for the arguments of this function as for the
-   * shape_value() function.
-   *
+   * <tt>function_no</tt>第1个形状函数在<tt>point_no</tt>第1个正交点相对于实际单元坐标的二次导数。如果你想得到其中一个坐标方向的导数，使用张量类的适当函数来提取一个分量。由于只返回对Hessian值的引用，应该不会有大的性能缺陷。
+   * 如果形状函数是矢量值的，那么这将返回唯一的非零分量。如果形状函数有一个以上的非零分量（即它不是原始的），那么抛出一个ExcShapeFunctionNotPrimitive类型的异常。在这种情况下，使用shape_hessian_component()函数。
+   * 这个函数的参数与shape_value()函数的参数相同。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   const Tensor<2, spacedim> &
   shape_hessian(const unsigned int function_no,
                 const unsigned int point_no) const;
 
   /**
-   * Return one vector component of the hessian of a shape function at a
-   * quadrature point. If the finite element is scalar, then only component
-   * zero is allowed and the return value equals that of the shape_hessian()
-   * function. If the finite element is vector valued but all shape functions
-   * are primitive (i.e. they are non-zero in only one component), then the
-   * value returned by shape_hessian() equals that of this function for
-   * exactly one component. This function is therefore only of greater
-   * interest if the shape function is not primitive, but then it is necessary
-   * since the other function cannot be used.
-   *
-   * The same holds for the arguments of this function as for the
-   * shape_value_component() function.
-   *
+   * 返回一个正交点上的形状函数的 hessian
+   * 的一个向量分量。如果有限元是标量的，那么只允许零分量，返回值等于shape_hessian()函数的值。如果有限元是矢量的，但是所有的形状函数都是原始的（即它们只有一个分量是不为零的），那么shape_hessian()返回的值就等于这个函数的一个分量。因此，只有在形状函数不是原始函数的情况下，这个函数才更有意义，但此时它是必要的，因为其他函数不能使用。
+   * 这个函数的参数与shape_value_component()函数的参数同样成立。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   Tensor<2, spacedim>
   shape_hessian_component(const unsigned int function_no,
@@ -2631,43 +2151,22 @@ public:
                           const unsigned int component) const;
 
   /**
-   * Third derivatives of the <tt>function_no</tt>th shape function at the
-   * <tt>point_no</tt>th quadrature point with respect to real cell
-   * coordinates. If you want to get the 3rd derivatives in one of the
-   * coordinate directions, use the appropriate function of the Tensor class
-   * to extract one component. Since only a reference to the 3rd derivative
-   * values is returned, there should be no major performance drawback.
-   *
-   * If the shape function is vector-valued, then this returns the only non-
-   * zero component. If the shape function has more than one non-zero
-   * component (i.e. it is not primitive), then throw an exception of type
-   * ExcShapeFunctionNotPrimitive. In that case, use the
-   * shape_3rdderivative_component() function.
-   *
-   * The same holds for the arguments of this function as for the
-   * shape_value() function.
-   *
+   * <tt>function_no</tt>第1个形状函数在<tt>point_no</tt>第1个正交点相对于实际单元坐标的3次导数。如果你想得到其中一个坐标方向的3阶导数，请使用张量类的适当函数来提取一个分量。由于只返回对三阶导数值的引用，应该不会有大的性能缺陷。
+   * 如果形状函数是矢量值的，那么这将返回唯一的非零分量。如果形状函数有一个以上的非零分量（即它不是原始的），那么抛出一个ExcShapeFunctionNotPrimitive类型的异常。在这种情况下，使用
+   * shape_3rdderivative_component() 函数。
+   * 这个函数的参数与shape_value()函数的参数相同。
    * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+   *
    */
   const Tensor<3, spacedim> &
   shape_3rd_derivative(const unsigned int function_no,
                        const unsigned int point_no) const;
 
   /**
-   * Return one vector component of the third derivative of a shape function
-   * at a quadrature point. If the finite element is scalar, then only
-   * component zero is allowed and the return value equals that of the
-   * shape_3rdderivative() function. If the finite element is vector valued
-   * but all shape functions are primitive (i.e. they are non-zero in only one
-   * component), then the value returned by shape_3rdderivative() equals that
-   * of this function for exactly one component. This function is therefore
-   * only of greater interest if the shape function is not primitive, but then
-   * it is necessary since the other function cannot be used.
-   *
-   * The same holds for the arguments of this function as for the
-   * shape_value_component() function.
-   *
+   * 返回一个正交点的形状函数的三次导数的一个向量分量。如果有限元是标量的，那么只允许零分量，返回值等于shape_3rdderivative()函数的值。如果有限元是矢量值的，但所有形状函数都是原始的（即它们只有一个分量是非零的），那么shape_3rdderivative()返回的值就等于这个函数的一个分量。因此，只有在形状函数不是原始函数的情况下，这个函数才更有意义，但此时它是必要的，因为其他函数不能使用。
+   * 这个函数的参数与 shape_value_component() 函数的参数相同。
    * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+   *
    */
   Tensor<3, spacedim>
   shape_3rd_derivative_component(const unsigned int function_no,
@@ -2679,40 +2178,23 @@ public:
   //@{
 
   /**
-   * Return the values of a finite element function restricted to the current
-   * cell, face or subface selected the last time the <tt>reinit</tt> function
-   * of the derived class was called, at the quadrature points.
-   *
-   * If the present cell is not active then values are interpolated to the
-   * current cell and point values are computed from that.
-   *
-   * This function may only be used if the finite element in use is a scalar
-   * one, i.e. has only one vector component.  To get values of multi-
-   * component elements, there is another get_function_values() below,
-   * returning a vector of vectors of results.
-   *
-   * @param[in] fe_function A vector of values that describes (globally) the
-   * finite element function that this function should evaluate at the
-   * quadrature points of the current cell.
-   *
-   * @param[out] values The values of the function specified by fe_function at
-   * the quadrature points of the current cell.  The object is assume to
-   * already have the correct size. The data type stored by this output vector
-   * must be what you get when you multiply the values of shape function times
-   * the type used to store the values of the unknowns $U_j$ of your finite
-   * element vector $U$ (represented by the @p fe_function argument). This
-   * happens to be equal to the type of the elements of the solution vector.
-   *
-   * @post <code>values[q]</code> will contain the value of the field
-   * described by fe_function at the $q$th quadrature point.
-   *
-   * @note The actual data type of the input vector may be either a
-   * Vector&lt;T&gt;, BlockVector&lt;T&gt;, or one of the PETSc or Trilinos
-   * vector wrapper classes. It represents a global vector of DoF values
-   * associated with the DoFHandler object with which this FEValues object was
-   * last initialized.
-   *
+   * 返回限制在当前单元、面或子面的有限元函数的值，这些单元、面或子面是在最后一次调用派生类的<tt>reinit</tt>函数时选择的正交点。
+   * 如果当前的单元没有被激活，那么数值将被内插到当前的单元，并从中计算出点值。
+   * 这个函数只能在使用的有限元是标量的情况下使用，即只有一个矢量分量。
+   * 为了获得多分量元素的值，下面有另一个get_function_values()，返回结果的向量的向量。
+   * @param[in]  fe_function
+   * 一个值向量，描述（全局）该函数应在当前单元的正交点评估的有限元函数。
+   * @param[out]  values
+   * 由fe_function指定的函数在当前单元的正交点的值。
+   * 假设该对象已经具有正确的大小。这个输出向量所存储的数据类型必须是当你将形状函数的值乘以用于存储你的有限元向量
+   * $U$ （由 @p fe_function
+   * 参数表示）的未知数的值的类型时得到的。这恰好等于解向量元素的类型。
+   * @post   <code>values[q]</code>  将包含fe_function描述的场在 $q$
+   * 第三个正交点的值。
+   * @note
+   * 输入矢量的实际数据类型可以是Vector&lt;T&gt;、BlockVector&lt;T&gt;或PETSc或Trilinos矢量包装类之一。它代表了与DoFHandler对象相关的全局DoF值的向量，这个FEValues对象最后被初始化。
    * @dealiiRequiresUpdateFlags{update_values}
+   *
    */
   template <class InputVector>
   void
@@ -2721,17 +2203,13 @@ public:
     std::vector<typename InputVector::value_type> &values) const;
 
   /**
-   * This function does the same as the other get_function_values(), but
-   * applied to multi-component (vector-valued) elements. The meaning of the
-   * arguments is as explained there.
+   * 这个函数与其他get_function_values()的作用相同，但应用于多分量（矢量值）元素。参数的含义如那里所解释。
+   * @post   <code>values[q]</code> 是fe_function描述的场在 $q$
+   * 个正交点的值的向量。由 <code>values[q]</code>
+   * 访问的矢量的大小等于有限元的分量数，即
+   * <code>values[q](c)</code> 返回 $q$ 个正交点的 $c$
+   * 个矢量的值。
    *
-   * @post <code>values[q]</code> is a vector of values of the field described
-   * by fe_function at the $q$th quadrature point. The size of the vector
-   * accessed by <code>values[q]</code> equals the number of components of the
-   * finite element, i.e. <code>values[q](c)</code> returns the value of the
-   * $c$th vector component at the $q$th quadrature point.
-   *
-   * @dealiiRequiresUpdateFlags{update_values}
    */
   template <class InputVector>
   void
@@ -2740,60 +2218,33 @@ public:
     std::vector<Vector<typename InputVector::value_type>> &values) const;
 
   /**
-   * Generate function values from an arbitrary vector. This function
-   * does in essence the same as the first function of this name above,
-   * except that it does not make the assumption that the input vector
-   * corresponds to a DoFHandler that describes the unknowns of a finite
-   * element field (and for which we would then assume that
-   * `fe_function.size() == dof_handler.n_dofs()`). Rather, the nodal
-   * values corresponding to the current cell are elements of an otherwise
-   * arbitrary vector, and these elements are indexed by the second
-   * argument to this function. What the rest of the `fe_function` input
-   * argument corresponds to is of no consequence to this function.
-   *
-   * Given this, the function above corresponds to passing `fe_function`
-   * as first argument to the current function, and using the
-   * `local_dof_indices` array that results from the following call as
-   * second argument to the current function:
+   * 从一个任意的矢量生成函数值。这个函数与上面这个名字的第一个函数本质上是一样的，只是它没有假设输入矢量对应于描述有限元场的未知数的DoFHandler（然后我们会假设`fe_function.size()
+   * ==
+   * dof_handler.n_dofs()`）。相反，对应于当前单元的节点值是一个任意矢量的元素，这些元素由这个函数的第二个参数来索引。`fe_function`输入参数的其余部分对应于什么，对这个函数没有影响。
+   * 鉴于此，上面的函数相当于将`fe_function`作为第一个参数传给当前函数，并将以下调用产生的`local_dof_indices`数组作为当前函数的第二个参数。
    * @code
-   *   cell->get_dof_indices (local_dof_indices);
+   * cell->get_dof_indices (local_dof_indices);
    * @endcode
-   * (See DoFCellAccessor::get_dof_indices() for more information.)
-   *
-   * Likewise, the function above is equivalent to calling
+   * (更多信息见 DoFCellAccessor::get_dof_indices()
+   * 。)同样地，上面的函数也相当于调用
    * @code
-   *   cell->get_dof_values (fe_function, local_dof_values);
+   * cell->get_dof_values (fe_function, local_dof_values);
    * @endcode
-   * and then calling the current function with `local_dof_values` as
-   * first argument, and an array with indices `{0,...,fe.dofs_per_cell-1}`
-   * as second argument.
+   * 然后调用当前函数，将`local_dof_values`作为第一个参数，并将一个索引为`{0,...,fe.dofs_per_cell-1}的数组作为第二个参数。
+   * 当前函数的意义在于，人们有时希望在正交点评估有限元函数，其节点值没有存储在全局矢量中
    *
-   * The point of the current function is that one sometimes wants to
-   * evaluate finite element functions at quadrature points with nodal
-   * values that are not stored in a global vector -- for example, one could
-   * modify these local values first, such as by applying a limiter
-   * or by ensuring that all nodal values are positive, before evaluating
-   * the finite element field that corresponds to these local values on the
-   * current cell. Another application is where one wants to postprocess
-   * the solution on a cell into a different finite element space on every
-   * cell, without actually creating a corresponding DoFHandler -- in that
-   * case, all one would compute is a local representation of that
-   * postprocessed function, characterized by its nodal values; this function
-   * then allows the evaluation of that representation at quadrature points.
+   * 例如，可以先修改这些局部值，例如应用限制器或确保所有节点值为正值，然后再评估当前单元上与这些局部值对应的有限元场。另一种应用是，人们希望将一个单元上的解后处理为每个单元上的不同有限元空间，而不需要实际创建一个相应的DoFHandler
    *
-   * @param[in] fe_function A vector of nodal values. This vector can have
-   *   an arbitrary size, as long as all elements index by `indices` can
-   *   actually be accessed.
-   *
-   * @param[in] indices A vector of indices into `fe_function`. This vector
-   *   must have length equal to the number of degrees of freedom on the
-   *   current cell, and must identify elements in `fe_function` in the
-   *   order in which degrees of freedom are indexed on the reference cell.
-   *
-   * @param[out] values A vector of values of the given finite element field,
-   *   at the quadrature points on the current object.
-   *
+   * 在这种情况下，我们所要计算的是该后处理函数的局部表示，其特征是节点值；然后该函数允许在正交点评估该表示。
+   * @param[in]  fe_function
+   * 一个结点值的向量。这个向量可以有一个任意的大小，只要所有由
+   * "indices "索引的元素可以被实际访问。      @param[in]
+   * indices
+   * 进入`fe_function`的索引的一个向量。这个向量的长度必须等于当前单元上的自由度数量，并且必须按照参考单元上自由度的索引顺序识别`fe_function`中的元素。
+   * @param[out]  values
+   * 给定的有限元场的数值向量，在当前对象上的正交点。
    * @dealiiRequiresUpdateFlags{update_values}
+   *
    */
   template <class InputVector>
   void
@@ -2803,12 +2254,10 @@ public:
     std::vector<typename InputVector::value_type> & values) const;
 
   /**
-   * Generate vector function values from an arbitrary vector.
-   *
-   * This function corresponds to the previous one, just for the vector-valued
-   * case.
-   *
+   * 从一个任意的矢量生成矢量函数值。
+   * 这个函数与前一个函数相对应，只是针对矢量值的情况。
    * @dealiiRequiresUpdateFlags{update_values}
+   *
    */
   template <class InputVector>
   void
@@ -2819,25 +2268,17 @@ public:
 
 
   /**
-   * Generate vector function values from an arbitrary vector. This
-   * function is similar to the previous one, but the `indices`
-   * vector may also be a multiple of the number of dofs per
-   * cell. Then, the vectors in <tt>value</tt> should allow for the same
-   * multiple of the components of the finite element.
-   *
-   * Depending on the value of the last argument, the outer vector of
-   * <tt>values</tt> has either the length of the quadrature rule
-   * (<tt>quadrature_points_fastest == false</tt>) or the length of components
-   * to be filled <tt>quadrature_points_fastest == true</tt>. If <tt>p</tt> is
-   * the current quadrature point number and <tt>i</tt> is the vector
-   * component of the solution desired, the access to <tt>values</tt> is
-   * <tt>values[p][i]</tt> if <tt>quadrature_points_fastest == false</tt>, and
-   * <tt>values[i][p]</tt> otherwise.
-   *
-   * Since this function allows for fairly general combinations of argument
-   * sizes, be aware that the checks on the arguments may not detect errors.
-   *
+   * 从一个任意的向量生成向量函数值。这个函数与前一个函数类似，但`indices`向量也可以是每个单元格的dofs数量的倍数。然后，<tt>value</tt>中的向量应该允许有限元的分量的相同倍数。
+   * 根据最后一个参数的值，<tt>values</tt>的外向量要么有正交规则的长度（<tt>quadrature_points_fastest
+   * ==
+   * false</tt>），要么有要填充的元件的长度<tt>quadrature_points_fastest
+   * ==
+   * true</tt>。如果<tt>p</tt>是当前的正交点编号，<tt>i</tt>是所需解决方案的矢量分量，如果<tt>quadrature_points_fastest
+   * ==
+   * false</tt>，对<tt>values[p][i]</tt>的访问是<tt>values[i][p]</tt>，否则是<tt>values</tt>。
+   * 由于这个函数允许相当普遍的参数大小组合，所以要注意对参数的检查可能不会发现错误。
    * @dealiiRequiresUpdateFlags{update_values}
+   *
    */
   template <class InputVector>
   void
@@ -2852,40 +2293,23 @@ public:
   //@{
 
   /**
-   * Compute the gradients of a finite element at the quadrature points of a
-   * cell. This function is the equivalent of the corresponding
-   * get_function_values() function (see there for more information) but
-   * evaluates the finite element field's gradient instead of its value.
-   *
-   * This function may only be used if the finite element in use is a scalar
-   * one, i.e. has only one vector component. There is a corresponding
-   * function of the same name for vector-valued finite elements.
-   *
-   * @param[in] fe_function A vector of values that describes (globally) the
-   * finite element function that this function should evaluate at the
-   * quadrature points of the current cell.
-   *
-   * @param[out] gradients The gradients of the function specified by
-   * fe_function at the quadrature points of the current cell.  The gradients
-   * are computed in real space (as opposed to on the unit cell).  The object
-   * is assume to already have the correct size. The data type stored by this
-   * output vector must be what you get when you multiply the gradients of
-   * shape function times the type used to store the values of the unknowns
-   * $U_j$ of your finite element vector $U$ (represented by the @p
-   * fe_function argument).
-   *
-   * @post <code>gradients[q]</code> will contain the gradient of the field
-   * described by fe_function at the $q$th quadrature point.
-   * <code>gradients[q][d]</code> represents the derivative in coordinate
-   * direction $d$ at quadrature point $q$.
-   *
-   * @note The actual data type of the input vector may be either a
-   * Vector&lt;T&gt;, BlockVector&lt;T&gt;, or one of the PETSc or Trilinos
-   * vector wrapper classes. It represents a global vector of DoF values
-   * associated with the DoFHandler object with which this FEValues object was
-   * last initialized.
-   *
+   * 计算一个单元的正交点上的有限元梯度。这个函数等同于相应的get_function_values()函数（更多信息见那里），但评估的是有限元场的梯度而不是它的值。
+   * 这个函数只能在使用的有限元是标量的情况下使用，即只有一个矢量成分。对于矢量值的有限元，有一个相同名称的相应函数。
+   * @param[in]  fe_function
+   * 一个值的向量，描述（全局）该函数应在当前单元的正交点评估的有限元函数。
+   * @param[out]  gradients
+   * 由fe_function指定的函数在当前单元的正交点的梯度。
+   * 梯度是在实空间计算的（而不是在单元格上）。
+   * 假设该对象已经有了正确的尺寸。这个输出向量所存储的数据类型必须是当你将形状函数的梯度乘以用于存储有限元向量
+   * $U_j$ 的未知数 $U$ （由 @p
+   * fe_function参数表示）的类型时所得到的。      @post
+   * <code>gradients[q]</code>  将包含fe_function描述的场在 $q$
+   * 第三个正交点的梯度。    <code>gradients[q][d]</code>
+   * 代表坐标方向 $d$ 在正交点 $q$ 的导数。
+   * @note
+   * 输入矢量的实际数据类型可以是Vector&lt;T&gt;、BlockVector&lt;T&gt;或PETSc或Trilinos矢量包装类之一。它代表了与DoFHandler对象相关的全局DoF值的向量，而这个FEValues对象最后被初始化。
    * @dealiiRequiresUpdateFlags{update_gradients}
+   *
    */
   template <class InputVector>
   void
@@ -2895,20 +2319,15 @@ public:
       &gradients) const;
 
   /**
-   * This function does the same as the other get_function_gradients(), but
-   * applied to multi-component (vector-valued) elements. The meaning of the
-   * arguments is as explained there.
+   * 这个函数与其他get_function_gradients()的作用相同，但应用于多分量（矢量值）元素。参数的含义与那里解释的一样。
+   * @post   <code>gradients[q]</code>  是fe_function描述的场在 $q$
+   * 第1个正交点的梯度的矢量。由 <code>gradients[q]</code>
+   * 访问的矢量的大小等于有限元的分量数，即
+   * <code>gradients[q][c]</code> 返回 $c$ 个矢量分量在 $q$
+   * 个正交点的梯度。因此， <code>gradients[q][c][d]</code>
+   * 是当前单元的 $c$ 矢量场的第1个矢量分量在坐标方向 $d$
+   * 上的导数。      @dealiiRequiresUpdateFlags{update_gradients}
    *
-   * @post <code>gradients[q]</code> is a vector of gradients of the field
-   * described by fe_function at the $q$th quadrature point. The size of the
-   * vector accessed by <code>gradients[q]</code> equals the number of
-   * components of the finite element, i.e. <code>gradients[q][c]</code>
-   * returns the gradient of the $c$th vector component at the $q$th
-   * quadrature point. Consequently, <code>gradients[q][c][d]</code> is the
-   * derivative in coordinate direction $d$ of the $c$th vector component of
-   * the vector field at quadrature point $q$ of the current cell.
-   *
-   * @dealiiRequiresUpdateFlags{update_gradients}
    */
   template <class InputVector>
   void
@@ -2919,12 +2338,9 @@ public:
       &gradients) const;
 
   /**
-   * This function relates to the first of the get_function_gradients() function
-   * above in the same way as the get_function_values() with similar arguments
-   * relates to the first of the get_function_values() functions. See there for
-   * more information.
-   *
+   * 这个函数与上述get_function_gradients()函数中的第一个函数的关系，与带有类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_gradients}
+   *
    */
   template <class InputVector>
   void
@@ -2935,12 +2351,9 @@ public:
       &gradients) const;
 
   /**
-   * This function relates to the first of the get_function_gradients() function
-   * above in the same way as the get_function_values() with similar arguments
-   * relates to the first of the get_function_values() functions. See there for
-   * more information.
-   *
+   * 这个函数与上述get_function_gradients()函数中的第一个函数的关系，与带有类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_gradients}
+   *
    */
   template <class InputVector>
   void
@@ -2959,41 +2372,23 @@ public:
   //@{
 
   /**
-   * Compute the tensor of second derivatives of a finite element at the
-   * quadrature points of a cell. This function is the equivalent of the
-   * corresponding get_function_values() function (see there for more
-   * information) but evaluates the finite element field's second derivatives
-   * instead of its value.
-   *
-   * This function may only be used if the finite element in use is a scalar
-   * one, i.e. has only one vector component. There is a corresponding
-   * function of the same name for vector-valued finite elements.
-   *
-   * @param[in] fe_function A vector of values that describes (globally) the
-   * finite element function that this function should evaluate at the
-   * quadrature points of the current cell.
-   *
-   * @param[out] hessians The Hessians of the function specified by
-   * fe_function at the quadrature points of the current cell.  The Hessians
-   * are computed in real space (as opposed to on the unit cell).  The object
-   * is assume to already have the correct size. The data type stored by this
-   * output vector must be what you get when you multiply the Hessians of
-   * shape function times the type used to store the values of the unknowns
-   * $U_j$ of your finite element vector $U$ (represented by the @p
-   * fe_function argument).
-   *
-   * @post <code>hessians[q]</code> will contain the Hessian of the field
-   * described by fe_function at the $q$th quadrature point.
-   * <code>hessians[q][i][j]</code> represents the $(i,j)$th component of the
-   * matrix of second derivatives at quadrature point $q$.
-   *
-   * @note The actual data type of the input vector may be either a
-   * Vector&lt;T&gt;, BlockVector&lt;T&gt;, or one of the PETSc or Trilinos
-   * vector wrapper classes. It represents a global vector of DoF values
-   * associated with the DoFHandler object with which this FEValues object was
-   * last initialized.
-   *
+   * 计算单元格正交点上的有限元二阶导数的张量。这个函数等同于相应的get_function_values()函数（更多信息见那里），但评估有限元场的二阶导数而不是其值。
+   * 这个函数只能在使用的有限元是标量的情况下使用，即只有一个矢量成分。对于矢量值的有限元有一个相同名称的相应函数。
+   * @param[in]  fe_function
+   * 一个值的向量，描述（全局）该函数应在当前单元的正交点评估的有限元函数。
+   * @param[out]  hessians
+   * 由fe_function指定的函数在当前单元的正交点上的Hessians。
+   * Hessians是在实空间计算的（而不是在单元格上）。
+   * 假设该对象已经有了正确的尺寸。这个输出向量所存储的数据类型必须是你将形状函数的Hessians乘以用于存储你的有限元向量
+   * $U_j$ （由 @p
+   * fe_function参数表示）的未知数值的类型时得到的。
+   * @post   <code>hessians[q]</code>  将包含fe_function描述的场在 $q$
+   * 第三个正交点的Hessian。    <code>hessians[q][i][j]</code>
+   * 代表正交点 $q$ 的第二导数矩阵的 $(i,j)$ 分量。
+   * @note
+   * 输入矢量的实际数据类型可以是Vector&lt;T&gt;、BlockVector&lt;T&gt;或PETSc或Trilinos矢量封装类之一。它代表了与DoFHandler对象相关的全局DoF值的向量，这个FEValues对象最后被初始化。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3003,21 +2398,16 @@ public:
       &hessians) const;
 
   /**
-   * This function does the same as the other get_function_hessians(), but
-   * applied to multi-component (vector-valued) elements. The meaning of the
-   * arguments is as explained there.
-   *
-   * @post <code>hessians[q]</code> is a vector of Hessians of the field
-   * described by fe_function at the $q$th quadrature point. The size of the
-   * vector accessed by <code>hessians[q]</code> equals the number of
-   * components of the finite element, i.e. <code>hessians[q][c]</code>
-   * returns the Hessian of the $c$th vector component at the $q$th quadrature
-   * point. Consequently, <code>hessians[q][c][i][j]</code> is the $(i,j)$th
-   * component of the matrix of second derivatives of the $c$th vector
-   * component of the vector field at quadrature point $q$ of the current
-   * cell.
-   *
+   * 这个函数与其他get_function_hessians()的作用相同，但应用于多分量（矢量值）元素。参数的含义与那里解释的一样。
+   * @post   <code>hessians[q]</code> 是fe_function描述的场在 $q$
+   * 第1个正交点的Hessians的向量。由 <code>hessians[q]</code>
+   * 访问的矢量的大小等于有限元的分量数，即
+   * <code>hessians[q][c]</code> 返回 $c$ 第1个正交点的 $q$
+   * 矢量分量的Hessian。因此， <code>hessians[q][c][i][j]</code>
+   * 是当前单元格的正交点 $q$ 处向量场的 $c$
+   * 个向量分量的第二导数矩阵的 $(i,j)$ 个分量。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3029,12 +2419,9 @@ public:
     const bool quadrature_points_fastest = false) const;
 
   /**
-   * This function relates to the first of the get_function_hessians() function
-   * above in the same way as the get_function_values() with similar arguments
-   * relates to the first of the get_function_values() functions. See there for
-   * more information.
-   *
+   * 这个函数与上述get_function_hessians()函数中的第一个函数的关系，与带有类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3045,12 +2432,9 @@ public:
       &hessians) const;
 
   /**
-   * This function relates to the first of the get_function_hessians() function
-   * above in the same way as the get_function_values() with similar arguments
-   * relates to the first of the get_function_values() functions. See there for
-   * more information.
-   *
+   * 这个函数与上述get_function_hessians()函数中的第一个函数的关系，与带类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3063,44 +2447,25 @@ public:
     const bool quadrature_points_fastest = false) const;
 
   /**
-   * Compute the (scalar) Laplacian (i.e. the trace of the tensor of second
-   * derivatives) of a finite element at the quadrature points of a cell. This
-   * function is the equivalent of the corresponding get_function_values()
-   * function (see there for more information) but evaluates the finite
-   * element field's second derivatives instead of its value.
-   *
-   * This function may only be used if the finite element in use is a scalar
-   * one, i.e. has only one vector component. There is a corresponding
-   * function of the same name for vector-valued finite elements.
-   *
-   * @param[in] fe_function A vector of values that describes (globally) the
-   * finite element function that this function should evaluate at the
-   * quadrature points of the current cell.
-   *
-   * @param[out] laplacians The Laplacians of the function specified by
-   * fe_function at the quadrature points of the current cell.  The Laplacians
-   * are computed in real space (as opposed to on the unit cell).  The object
-   * is assume to already have the correct size. The data type stored by this
-   * output vector must be what you get when you multiply the Laplacians of
-   * shape function times the type used to store the values of the unknowns
-   * $U_j$ of your finite element vector $U$ (represented by the @p
-   * fe_function argument). This happens to be equal to the type of the
-   * elements of the input vector.
-   *
-   * @post <code>laplacians[q]</code> will contain the Laplacian of the field
-   * described by fe_function at the $q$th quadrature point.
-   *
-   * @post For each component of the output vector, there holds
-   * <code>laplacians[q]=trace(hessians[q])</code>, where <tt>hessians</tt>
-   * would be the output of the get_function_hessians() function.
-   *
-   * @note The actual data type of the input vector may be either a
-   * Vector&lt;T&gt;, BlockVector&lt;T&gt;, or one of the PETSc or Trilinos
-   * vector wrapper classes. It represents a global vector of DoF values
-   * associated with the DoFHandler object with which this FEValues object was
-   * last initialized.
-   *
+   * 计算单元格正交点上的有限元的（标量）拉普拉斯（即二阶导数张量的迹）。这个函数等同于相应的get_function_values()函数（更多信息见那里），但评估的是有限元场的二阶导数而不是其值。
+   * 这个函数只能在使用的有限元是标量的情况下使用，即只有一个矢量成分。对于矢量值的有限元有一个相同名称的相应函数。
+   * @param[in]  fe_function
+   * 一个值的向量，描述（全局）该函数应在当前单元的正交点评估的有限元函数。
+   * @param[out]  laplacians
+   * 由fe_function指定的函数在当前单元的正交点上的拉普拉斯方程。
+   * 拉普拉斯是在实空间计算的（而不是在单元格上）。
+   * 假设该对象已经有了正确的尺寸。这个输出向量所存储的数据类型必须是当你将形状函数的拉普拉斯系数乘以用于存储有限元向量
+   * $U_j$ 的未知数 $U$ （由 @p
+   * fe_function参数表示）的类型时所得到的。这恰好等于输入向量元素的类型。
+   * @post   <code>laplacians[q]</code>  将包含fe_function描述的场在
+   * $q$  第三个正交点的拉普拉斯。      @post
+   * 对于输出向量的每个分量，都有
+   * <code>laplacians[q]=trace(hessians[q])</code>
+   * ，其中<tt>hessians</tt>将是get_function_hessians()函数的输出。
+   * @note
+   * 输入向量的实际数据类型可以是Vector&lt;T&gt;、BlockVector&lt;T&gt;或PETSc或Trilinos向量封装类之一。它代表了与DoFHandler对象相关的全局DoF值的向量，而这个FEValues对象最后被初始化。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3109,23 +2474,17 @@ public:
     std::vector<typename InputVector::value_type> &laplacians) const;
 
   /**
-   * This function does the same as the other get_function_laplacians(), but
-   * applied to multi-component (vector-valued) elements. The meaning of the
-   * arguments is as explained there.
+   * 这个函数与其他get_function_laplacians()的作用相同，但应用于多分量（矢量值）元素。参数的含义与那里解释的一样。
+   * @post   <code>laplacians[q]</code>  是fe_function描述的场在 $q$
+   * 个正交点的拉普拉斯矢量。由 <code>laplacians[q]</code>
+   * 访问的矢量的大小等于有限元的分量数，即
+   * <code>laplacians[q][c]</code> 返回 $c$ 第1个正交点的 $q$
+   * 矢量的拉普拉斯。      @post
+   * 对于输出向量的每个分量，持有
+   * <code>laplacians[q][c]=trace(hessians[q][c])</code>
+   * ，其中<tt>hessians</tt>将是get_function_hessians()
+   * 函数的输出。      @dealiiRequiresUpdateFlags{update_hessians}
    *
-   * @post <code>laplacians[q]</code> is a vector of Laplacians of the field
-   * described by fe_function at the $q$th quadrature point. The size of the
-   * vector accessed by <code>laplacians[q]</code> equals the number of
-   * components of the finite element, i.e. <code>laplacians[q][c]</code>
-   * returns the Laplacian of the $c$th vector component at the $q$th
-   * quadrature point.
-   *
-   * @post For each component of the output vector, there holds
-   * <code>laplacians[q][c]=trace(hessians[q][c])</code>, where
-   * <tt>hessians</tt> would be the output of the get_function_hessians()
-   * function.
-   *
-   * @dealiiRequiresUpdateFlags{update_hessians}
    */
   template <class InputVector>
   void
@@ -3134,12 +2493,9 @@ public:
     std::vector<Vector<typename InputVector::value_type>> &laplacians) const;
 
   /**
-   * This function relates to the first of the get_function_laplacians()
-   * function above in the same way as the get_function_values() with similar
-   * arguments relates to the first of the get_function_values() functions. See
-   * there for more information.
-   *
+   * 这个函数与上述get_function_laplacians()函数中的第一个函数的关系，与带有类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3149,12 +2505,9 @@ public:
     std::vector<typename InputVector::value_type> & laplacians) const;
 
   /**
-   * This function relates to the first of the get_function_laplacians()
-   * function above in the same way as the get_function_values() with similar
-   * arguments relates to the first of the get_function_values() functions. See
-   * there for more information.
-   *
+   * 这个函数与上述get_function_laplacians()函数中的第一个函数的关系，与带类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3164,12 +2517,9 @@ public:
     std::vector<Vector<typename InputVector::value_type>> &laplacians) const;
 
   /**
-   * This function relates to the first of the get_function_laplacians()
-   * function above in the same way as the get_function_values() with similar
-   * arguments relates to the first of the get_function_values() functions. See
-   * there for more information.
-   *
+   * 这个函数与上述get_function_laplacians()函数中的第一个函数的关系，与带类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_hessians}
+   *
    */
   template <class InputVector>
   void
@@ -3184,42 +2534,24 @@ public:
   //@{
 
   /**
-   * Compute the tensor of third derivatives of a finite element at the
-   * quadrature points of a cell. This function is the equivalent of the
-   * corresponding get_function_values() function (see there for more
-   * information) but evaluates the finite element field's third derivatives
-   * instead of its value.
-   *
-   * This function may only be used if the finite element in use is a scalar
-   * one, i.e. has only one vector component. There is a corresponding
-   * function of the same name for vector-valued finite elements.
-   *
-   * @param[in] fe_function A vector of values that describes (globally) the
-   * finite element function that this function should evaluate at the
-   * quadrature points of the current cell.
-   *
-   * @param[out] third_derivatives The third derivatives of the function
-   * specified by fe_function at the quadrature points of the current cell.
-   * The third derivatives are computed in real space (as opposed to on the
-   * unit cell).  The object is assumed to already have the correct size. The
-   * data type stored by this output vector must be what you get when you
-   * multiply the third derivatives of shape function times the type used to
-   * store the values of the unknowns $U_j$ of your finite element vector $U$
-   * (represented by the @p fe_function argument).
-   *
-   * @post <code>third_derivatives[q]</code> will contain the third
-   * derivatives of the field described by fe_function at the $q$th quadrature
-   * point. <code>third_derivatives[q][i][j][k]</code> represents the
-   * $(i,j,k)$th component of the 3rd order tensor of third derivatives at
-   * quadrature point $q$.
-   *
-   * @note The actual data type of the input vector may be either a
-   * Vector&lt;T&gt;, BlockVector&lt;T&gt;, or one of the PETSc or Trilinos
-   * vector wrapper classes. It represents a global vector of DoF values
-   * associated with the DoFHandler object with which this FEValues object was
-   * last initialized.
-   *
+   * 计算一个单元的正交点上的有限元的三阶导数张量。这个函数等同于相应的get_function_values()函数（更多信息见那里），但评估的是有限元场的第三导数而不是它的值。
+   * 这个函数只能在使用的有限元是标量的情况下使用，即只有一个矢量成分。对于矢量值的有限元有一个相同名称的相应函数。
+   * @param[in]  fe_function
+   * 一个值的向量，描述（全局）该函数应在当前单元的正交点评估的有限元函数。
+   * @param[out]  third_derivatives
+   * 由fe_function指定的函数在当前单元的正交点上的第三导数。
+   * 三次导数是在实空间计算的（而不是在单元格上）。
+   * 假设该对象已经有了正确的尺寸。这个输出向量所存储的数据类型必须是当你将形状函数的三次导数乘以用于存储你的有限元向量
+   * $U_j$ 的未知数值的类型 $U$ （由 @p fe_function
+   * 参数表示）时所得到的。      @post
+   * <code>third_derivatives[q]</code> 将包含fe_function描述的场在 $q$
+   * 第1个正交点的第三导数。
+   * <code>third_derivatives[q][i][j][k]</code> 代表在正交点 $q$
+   * 的三阶张量的 $(i,j,k)$ 的第三导数的第三部分。
+   * @note
+   * 输入矢量的实际数据类型可以是Vector&lt;T&gt;、BlockVector&lt;T&gt;或PETSc或Trilinos矢量封装类之一。它代表了与DoFHandler对象相关的全局DoF值的向量，而这个FEValues对象最后被初始化。
    * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+   *
    */
   template <class InputVector>
   void
@@ -3229,22 +2561,17 @@ public:
       &third_derivatives) const;
 
   /**
-   * This function does the same as the other
-   * get_function_third_derivatives(), but applied to multi-component (vector-
-   * valued) elements. The meaning of the arguments is as explained there.
-   *
-   * @post <code>third_derivatives[q]</code> is a vector of third derivatives
-   * of the field described by fe_function at the $q$th quadrature point. The
-   * size of the vector accessed by <code>third_derivatives[q]</code> equals
-   * the number of components of the finite element, i.e.
-   * <code>third_derivatives[q][c]</code> returns the third derivative of the
-   * $c$th vector component at the $q$th quadrature point. Consequently,
-   * <code>third_derivatives[q][c][i][j][k]</code> is the $(i,j,k)$th
-   * component of the tensor of third derivatives of the $c$th vector
-   * component of the vector field at quadrature point $q$ of the current
-   * cell.
-   *
+   * 这个函数的作用与其他get_function_third_derivatives()相同，但应用于多分量（矢量值）元素。参数的含义与那里的解释相同。
+   * @post   <code>third_derivatives[q]</code>  是fe_function描述的场在
+   * $q$ 第1个正交点上的第三导数的向量。由
+   * <code>third_derivatives[q]</code>
+   * 访问的矢量的大小等于有限元的分量数，即
+   * <code>third_derivatives[q][c]</code> 返回 $c$ 在 $q$
+   * 第1个正交点的第1个矢量分量的三次导数。因此，
+   * <code>third_derivatives[q][c][i][j][k]</code> 是当前单元的正交点
+   * $q$ 处向量场的 $c$ 第3个向量分量的张量的 $(i,j,k)$ 。
    * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+   *
    */
   template <class InputVector>
   void
@@ -3256,12 +2583,9 @@ public:
     const bool quadrature_points_fastest = false) const;
 
   /**
-   * This function relates to the first of the get_function_third_derivatives()
-   * function above in the same way as the get_function_values() with similar
-   * arguments relates to the first of the get_function_values() functions. See
-   * there for more information.
-   *
+   * 这个函数与上述get_function_third_derivatives()函数中的第一个函数的关系，与带有类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+   *
    */
   template <class InputVector>
   void
@@ -3272,12 +2596,9 @@ public:
       &third_derivatives) const;
 
   /**
-   * This function relates to the first of the get_function_third_derivatives()
-   * function above in the same way as the get_function_values() with similar
-   * arguments relates to the first of the get_function_values() functions. See
-   * there for more information.
-   *
+   * 这个函数与上述get_function_third_derivatives()函数中的第一个函数的关系，与带有类似参数的get_function_values()函数与get_function_values()函数中的第一个函数的关系相同。更多信息见那里。
    * @dealiiRequiresUpdateFlags{update_3rd_derivatives}
+   *
    */
   template <class InputVector>
   void
@@ -3294,95 +2615,82 @@ public:
   //@{
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from zero (inclusive) to `dofs_per_cell` (exclusive). This allows
-   * one to write code using range-based `for` loops of the following kind:
+   * 返回一个对象，它可以被认为是一个包含从零（包括）到`dofs_per_cell`（不包括）所有索引的数组。这允许人们使用基于范围的
+   * "for "循环来编写代码，如以下类型。
    * @code
-   *   FEValues<dim>      fe_values (...);
-   *   FullMatrix<double> cell_matrix (...);
+   * FEValues<dim>      fe_values (...);
+   * FullMatrix<double> cell_matrix (...);
    *
-   *   for (auto &cell : dof_handler.active_cell_iterators())
-   *     {
-   *       cell_matrix = 0;
-   *       fe_values.reinit(cell);
-   *       for (const auto q : fe_values.quadrature_point_indices())
-   *         for (const auto i : fe_values.dof_indices())
-   *           for (const auto j : fe_values.dof_indices())
-   *             cell_matrix(i,j) += ...; // Do something for DoF indices (i,j)
-   *                                      // at quadrature point q
-   *     }
+   * for (auto &cell : dof_handler.active_cell_iterators())
+   *   {
+   *     cell_matrix = 0;
+   *     fe_values.reinit(cell);
+   *     for (const auto q : fe_values.quadrature_point_indices())
+   *       for (const auto i : fe_values.dof_indices())
+   *         for (const auto j : fe_values.dof_indices())
+   *           cell_matrix(i,j) += ...; // Do something for DoF indices (i,j)
+   *                                    // at quadrature point q
+   *   }
    * @endcode
-   * Here, we are looping over all degrees of freedom on all cells, with
-   * `i` and `j` taking on all valid indices for cell degrees of freedom, as
-   * defined by the finite element passed to `fe_values`.
+   * 这里，我们在所有单元上的所有自由度上循环，`i'和`j'代表所有单元自由度的有效指数，由传递给`fe_values'的有限元定义。
+   *
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   dof_indices() const;
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from @p start_dof_index (inclusive) to `dofs_per_cell` (exclusive).
-   * This allows one to write code using range-based `for` loops of the
-   * following kind:
+   * 返回一个对象，可以认为是一个数组，包含从 @p
+   * start_dof_index
+   * （包括）到`dofs_per_cell`（包括）的所有索引。
+   * 这允许人们使用基于范围的 "for
+   * "循环来编写以下类型的代码。
    * @code
-   *   FEValues<dim>      fe_values (...);
-   *   FullMatrix<double> cell_matrix (...);
+   * FEValues<dim>      fe_values (...);
+   * FullMatrix<double> cell_matrix (...);
    *
-   *   for (auto &cell : dof_handler.active_cell_iterators())
-   *     {
-   *       cell_matrix = 0;
-   *       fe_values.reinit(cell);
-   *       for (const auto q : fe_values.quadrature_point_indices())
-   *         for (const auto i : fe_values.dof_indices())
-   *           for (const auto j : fe_values.dof_indices_starting_at(i))
-   *             cell_matrix(i,j) += ...; // Do something for DoF indices (i,j)
-   *                                      // at quadrature point q
-   *     }
+   * for (auto &cell : dof_handler.active_cell_iterators())
+   *   {
+   *     cell_matrix = 0;
+   *     fe_values.reinit(cell);
+   *     for (const auto q : fe_values.quadrature_point_indices())
+   *       for (const auto i : fe_values.dof_indices())
+   *         for (const auto j : fe_values.dof_indices_starting_at(i))
+   *           cell_matrix(i,j) += ...; // Do something for DoF indices (i,j)
+   *                                    // at quadrature point q
+   *   }
    * @endcode
-   * Here, we are looping over all local degrees of freedom on all cells, with
-   * `i` taking on all valid indices for cell degrees of freedom, as
-   * defined by the finite element passed to `fe_values`, and `j` taking
-   * on a specified subset of `i`'s range, starting at `i` itself and ending at
-   * the number of cell degrees of freedom. In this way, we can construct the
-   * upper half and the diagonal of a stiffness matrix contribution (assuming it
-   * is symmetric, and that only one half of it needs to be computed), for
-   * example.
+   * 这里，我们在所有单元上的所有局部自由度上循环，`i`取所有单元自由度的有效指数，由传递给`fe_values`的有限元定义，而`j`取`i`范围的指定子集，从`i`本身开始，到单元自由度的数量为止。通过这种方式，我们可以构建刚度矩阵贡献的上半部分和对角线（假设它是对称的，并且只需要计算它的一半），例如。
+   * @note 如果 @p start_dof_index
+   * 等于单元格中的DoF数量，则返回的索引范围为空。
    *
-   * @note If the @p start_dof_index is equal to the number of DoFs in the cell,
-   * then the returned index range is empty.
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   dof_indices_starting_at(const unsigned int start_dof_index) const;
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from zero (inclusive) to @p end_dof_index (inclusive). This allows
-   * one to write code using range-based `for` loops of the following kind:
+   * 返回一个对象，它可以被认为是一个包含从0（包括）到
+   * @p end_dof_index
+   * （包括）所有索引的数组。这允许人们使用基于范围的
+   * "for "循环来编写以下类型的代码。
    * @code
-   *   FEValues<dim>      fe_values (...);
-   *   FullMatrix<double> cell_matrix (...);
+   * FEValues<dim>      fe_values (...);
+   * FullMatrix<double> cell_matrix (...);
    *
-   *   for (auto &cell : dof_handler.active_cell_iterators())
-   *     {
-   *       cell_matrix = 0;
-   *       fe_values.reinit(cell);
-   *       for (const auto q : fe_values.quadrature_point_indices())
-   *         for (const auto i : fe_values.dof_indices())
-   *           for (const auto j : fe_values.dof_indices_ending_at(i))
-   *             cell_matrix(i,j) += ...; // Do something for DoF indices (i,j)
-   *                                      // at quadrature point q
-   *     }
+   * for (auto &cell : dof_handler.active_cell_iterators())
+   *   {
+   *     cell_matrix = 0;
+   *     fe_values.reinit(cell);
+   *     for (const auto q : fe_values.quadrature_point_indices())
+   *       for (const auto i : fe_values.dof_indices())
+   *         for (const auto j : fe_values.dof_indices_ending_at(i))
+   *           cell_matrix(i,j) += ...; // Do something for DoF indices (i,j)
+   *                                    // at quadrature point q
+   *   }
    * @endcode
-   * Here, we are looping over all local degrees of freedom on all cells, with
-   * `i` taking on all valid indices for cell degrees of freedom, as
-   * defined by the finite element passed to `fe_values`, and `j` taking
-   * on a specified subset of `i`'s range, starting at zero and ending at
-   * `i` itself. In this way, we can construct the lower half and the
-   * diagonal of a stiffness matrix contribution (assuming it is symmetric, and
-   * that only one half of it needs to be computed), for example.
+   * 这里，我们在所有单元上的所有局部自由度上循环，`i'代表所有单元自由度的有效指数，由传递给`fe_values'的有限元定义，而`j'代表`i'范围的指定子集，从零开始，到`i'本身结束。这样，我们可以构建刚度矩阵贡献的下半部分和对角线（假设它是对称的，并且只需要计算它的一半），例如。
+   * @note 如果 @p end_dof_index
+   * 等于零，则返回的索引范围为空。
    *
-   * @note If the @p end_dof_index is equal to zero, then the returned index
-   * range is empty.
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   dof_indices_ending_at(const unsigned int end_dof_index) const;
@@ -3393,254 +2701,213 @@ public:
   //@{
 
   /**
-   * Return an object that can be thought of as an array containing all
-   * indices from zero to `n_quadrature_points`. This allows to write code
-   * using range-based `for` loops of the following kind:
+   * 返回一个对象，可以认为是一个包含从零到`n_quadrature_points`所有索引的数组。这允许使用基于范围的`for'循环来编写以下类型的代码。
    * @code
-   *   FEValues<dim> fe_values (...);
+   * FEValues<dim> fe_values (...);
    *
-   *   for (auto &cell : dof_handler.active_cell_iterators())
-   *     {
-   *       fe_values.reinit(cell);
-   *       for (const auto q_point : fe_values.quadrature_point_indices())
-   *         ... do something at the quadrature point ...
-   *     }
+   * for (auto &cell : dof_handler.active_cell_iterators())
+   *   {
+   *     fe_values.reinit(cell);
+   *     for (const auto q_point : fe_values.quadrature_point_indices())
+   *       ... do something at the quadrature point ...
+   *   }
    * @endcode
-   * Here, we are looping over all quadrature points on all cells, with
-   * `q_point` taking on all valid indices for quadrature points, as defined
-   * by the quadrature rule passed to `fe_values`.
+   * 这里，我们正在循环所有单元格上的所有正交点，`q_point`采用所有有效的正交点索引，由传递给`fe_values`的正交规则定义。
+   * @see  CPP11
    *
-   * @see CPP11
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   quadrature_point_indices() const;
 
   /**
-   * Position of the <tt>q</tt>th quadrature point in real space.
-   *
+   * <tt>q</tt>第1个正交点在实空间的位置。
    * @dealiiRequiresUpdateFlags{update_quadrature_points}
+   *
    */
   const Point<spacedim> &
   quadrature_point(const unsigned int q) const;
 
   /**
-   * Return a reference to the vector of quadrature points in real space.
-   *
+   * 返回实空间中正交点向量的参考。
    * @dealiiRequiresUpdateFlags{update_quadrature_points}
+   *
    */
   const std::vector<Point<spacedim>> &
   get_quadrature_points() const;
 
   /**
-   * Mapped quadrature weight. If this object refers to a volume evaluation
-   * (i.e. the derived class is of type FEValues), then this is the Jacobi
-   * determinant times the weight of the *<tt>i</tt>th unit quadrature point.
+   * 映射的正交点权重。如果这个对象指的是体积评价（即派生类是FEValues类型），那么这就是雅可比行列式乘以<tt>i</tt>第1个单位正交点的权重。
+   * 对于表面评估（即类FEFaceValues或FESubfaceValues），它是映射的表面元素乘以正交点的权重。
+   * 你可以把这个函数返回的数量看作是我们在这里通过正交实现的积分中的体积或表面元素
+   * $dx, ds$ 。      @dealiiRequiresUpdateFlags{update_JxW_values}
    *
-   * For surface evaluations (i.e. classes FEFaceValues or FESubfaceValues),
-   * it is the mapped surface element times the weight of the quadrature
-   * point.
-   *
-   * You can think of the quantity returned by this function as the volume or
-   * surface element $dx, ds$ in the integral that we implement here by
-   * quadrature.
-   *
-   * @dealiiRequiresUpdateFlags{update_JxW_values}
    */
   double
   JxW(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by JxW().
+   * 返回一个对存放JxW()返回值的数组的引用。
+   *
    */
   const std::vector<double> &
   get_JxW_values() const;
 
   /**
-   * Return the Jacobian of the transformation at the specified quadrature
-   * point, i.e.  $J_{ij}=dx_i/d\hat x_j$
+   * 返回指定正交点上的变换的雅各布系数，即
+   * $J_{ij}=dx_i/d\hat x_j$   @dealiiRequiresUpdateFlags{update_jacobians}
+   * 。
    *
-   * @dealiiRequiresUpdateFlags{update_jacobians}
    */
   const DerivativeForm<1, dim, spacedim> &
   jacobian(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian().
-   *
+   * 返回一个对存放jacobian()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobians}
+   *
    */
   const std::vector<DerivativeForm<1, dim, spacedim>> &
   get_jacobians() const;
 
   /**
-   * Return the second derivative of the transformation from unit to real
-   * cell, i.e. the first derivative of the Jacobian, at the specified
-   * quadrature point, i.e. $G_{ijk}=dJ_{jk}/d\hat x_i$.
-   *
+   * 返回在指定的正交点，即 $G_{ijk}=dJ_{jk}/d\hat x_i$
+   * ，从单位到实数单元转换的二阶导数，即雅各布式的一阶导数。
    * @dealiiRequiresUpdateFlags{update_jacobian_grads}
+   *
    */
   const DerivativeForm<2, dim, spacedim> &
   jacobian_grad(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian_grads().
-   *
+   * 返回对存放jacobian_grads()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobian_grads}
+   *
    */
   const std::vector<DerivativeForm<2, dim, spacedim>> &
   get_jacobian_grads() const;
 
   /**
-   * Return the second derivative of the transformation from unit to real
-   * cell, i.e. the first derivative of the Jacobian, at the specified
-   * quadrature point, pushed forward to the real cell coordinates, i.e.
-   * $G_{ijk}=dJ_{iJ}/d\hat x_K (J_{jJ})^{-1} (J_{kK})^{-1}$.
-   *
+   * 返回从单位单元到实数单元转换的二阶导数，即雅各布式的一阶导数，在指定的正交点，向前推到实数单元坐标，即
+   * $G_{ijk}=dJ_{iJ}/d\hat x_K (J_{jJ})^{-1} (J_{kK})^{-1}$  。
    * @dealiiRequiresUpdateFlags{update_jacobian_pushed_forward_grads}
+   *
    */
   const Tensor<3, spacedim> &
   jacobian_pushed_forward_grad(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian_pushed_forward_grads().
-   *
+   * 返回持有jacobian_pushed_forward_grads()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobian_pushed_forward_grads}
+   *
    */
   const std::vector<Tensor<3, spacedim>> &
   get_jacobian_pushed_forward_grads() const;
 
   /**
-   * Return the third derivative of the transformation from unit to real cell,
-   * i.e. the second derivative of the Jacobian, at the specified quadrature
-   * point, i.e. $G_{ijkl}=\frac{d^2J_{ij}}{d\hat x_k d\hat x_l}$.
-   *
+   * 返回在指定的正交点上，即 $G_{ijkl}=\frac{d^2J_{ij}}{d\hat x_k
+   * d\hat x_l}$
+   * ，从单位到实数单元转换的第三导数，即雅各布的第二导数。
    * @dealiiRequiresUpdateFlags{update_jacobian_2nd_derivatives}
+   *
    */
   const DerivativeForm<3, dim, spacedim> &
   jacobian_2nd_derivative(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian_2nd_derivatives().
-   *
+   * 返回对存放jacobian_2nd_derivatives()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobian_2nd_derivatives}
+   *
    */
   const std::vector<DerivativeForm<3, dim, spacedim>> &
   get_jacobian_2nd_derivatives() const;
 
   /**
-   * Return the third derivative of the transformation from unit to real cell,
-   * i.e. the second derivative of the Jacobian, at the specified quadrature
-   * point, pushed forward to the real cell coordinates, i.e.
+   * 返回从单位到实心单元转换的第三导数，即雅各布的第二导数，在指定的正交点，向前推到实心单元坐标，即
    * $G_{ijkl}=\frac{d^2J_{iJ}}{d\hat x_K d\hat x_L} (J_{jJ})^{-1}
-   * (J_{kK})^{-1}(J_{lL})^{-1}$.
-   *
+   * (J_{kK})^{-1}(J_{lL})^{-1}$  。
    * @dealiiRequiresUpdateFlags{update_jacobian_pushed_forward_2nd_derivatives}
+   *
    */
   const Tensor<4, spacedim> &
   jacobian_pushed_forward_2nd_derivative(
     const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian_pushed_forward_2nd_derivatives().
-   *
+   * 返回持有jacobian_pushed_forward_2nd_derivatives()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobian_pushed_forward_2nd_derivatives}
+   *
    */
   const std::vector<Tensor<4, spacedim>> &
   get_jacobian_pushed_forward_2nd_derivatives() const;
 
   /**
-   * Return the fourth derivative of the transformation from unit to real
-   * cell, i.e. the third derivative of the Jacobian, at the specified
-   * quadrature point, i.e. $G_{ijklm}=\frac{d^2J_{ij}}{d\hat x_k d\hat x_l
-   * d\hat x_m}$.
+   * 返回在指定的正交点，即 $G_{ijklm}=\frac{d^2J_{ij}}{d\hat x_k
+   * d\hat x_l d\hat x_m}$
+   * ，从单位到实数单元转换的第四导数，即雅各布式的第三导数
+   * 。      @dealiiRequiresUpdateFlags{update_jacobian_3rd_derivatives}
    *
-   * @dealiiRequiresUpdateFlags{update_jacobian_3rd_derivatives}
    */
   const DerivativeForm<4, dim, spacedim> &
   jacobian_3rd_derivative(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian_3rd_derivatives().
-   *
+   * 返回对存放jacobian_3rd_derivatives()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobian_3rd_derivatives}
+   *
    */
   const std::vector<DerivativeForm<4, dim, spacedim>> &
   get_jacobian_3rd_derivatives() const;
 
   /**
-   * Return the fourth derivative of the transformation from unit to real
-   * cell, i.e. the third derivative of the Jacobian, at the specified
-   * quadrature point, pushed forward to the real cell coordinates, i.e.
+   * 返回从单位到实心单元转换的第四导数，即雅各布的第三导数，在指定的正交点，向前推到实心单元坐标，即
    * $G_{ijklm}=\frac{d^3J_{iJ}}{d\hat x_K d\hat x_L d\hat x_M} (J_{jJ})^{-1}
-   * (J_{kK})^{-1} (J_{lL})^{-1} (J_{mM})^{-1}$.
-   *
+   * (J_{kK})^{-1} (J_{lL})^{-1} (J_{mM})^{-1}$  。
    * @dealiiRequiresUpdateFlags{update_jacobian_pushed_forward_3rd_derivatives}
+   *
    */
   const Tensor<5, spacedim> &
   jacobian_pushed_forward_3rd_derivative(
     const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * jacobian_pushed_forward_3rd_derivatives().
-   *
+   * 返回持有jacobian_pushed_forward_3rd_derivatives()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_jacobian_pushed_forward_2nd_derivatives}
+   *
    */
   const std::vector<Tensor<5, spacedim>> &
   get_jacobian_pushed_forward_3rd_derivatives() const;
 
   /**
-   * Return the inverse Jacobian of the transformation at the specified
-   * quadrature point, i.e.  $J_{ij}=d\hat x_i/dx_j$
+   * 返回指定正交点上的变换的逆雅各布系数，即
+   * $J_{ij}=d\hat x_i/dx_j$
+   * @dealiiRequiresUpdateFlags{update_inverse_jacobians}  。
    *
-   * @dealiiRequiresUpdateFlags{update_inverse_jacobians}
    */
   const DerivativeForm<1, spacedim, dim> &
   inverse_jacobian(const unsigned int quadrature_point) const;
 
   /**
-   * Return a reference to the array holding the values returned by
-   * inverse_jacobian().
-   *
+   * 返回一个对存放inverse_jacobian()返回值的数组的引用。
    * @dealiiRequiresUpdateFlags{update_inverse_jacobians}
+   *
    */
   const std::vector<DerivativeForm<1, spacedim, dim>> &
   get_inverse_jacobians() const;
 
   /**
-   * Return the normal vector at a quadrature point. If you call this
-   * function for a face (i.e., when using a FEFaceValues or FESubfaceValues
-   * object), then this function returns the outward normal vector to
-   * the cell at the <tt>i</tt>th quadrature point of the face.
+   * 返回一个正交点的法向量。如果你为一个面调用这个函数（即，当使用FEFaceValues或FESubfaceValues对象时），那么这个函数返回面的<tt>i</tt>第1个正交点处的单元格的外向法向量。
+   * 相反，如果你为一个一维的单元格调用这个函数（即，当使用`FEValues<dim,spacedim>`对象时，`spacedim>dim`），那么这个函数返回单元格的法向量
    *
-   * In contrast, if you call this function for a cell of codimension one
-   * (i.e., when using a `FEValues<dim,spacedim>` object with
-   * `spacedim>dim`), then this function returns the normal vector to the
-   * cell -- in other words, an approximation to the normal vector to the
-   * manifold in which the triangulation is embedded. There are of
-   * course two normal directions to a manifold in that case, and this
-   * function returns the "up" direction as induced by the numbering of the
-   * vertices.
+   * - 换句话说，是对嵌入三角形的流形的法向量的一个近似值。在这种情况下，流形的法线方向当然有两个，这个函数返回由顶点编号引起的 "向上 "方向。    矢量的长度被规范化为1。      @dealiiRequiresUpdateFlags{update_normal_vectors}
    *
-   * The length of the vector is normalized to one.
-   *
-   * @dealiiRequiresUpdateFlags{update_normal_vectors}
    */
   const Tensor<1, spacedim> &
   normal_vector(const unsigned int i) const;
 
   /**
-   * Return the normal vectors at all quadrature points represented by
-   * this object. See the normal_vector() function for what the normal
-   * vectors represent.
-   *
+   * 返回此对象所代表的所有正交点的法向量。关于法向量所代表的内容，请参见normal_vector()函数。
    * @dealiiRequiresUpdateFlags{update_normal_vectors}
+   *
    */
   const std::vector<Tensor<1, spacedim>> &
   get_normal_vectors() const;
@@ -3651,47 +2918,38 @@ public:
   //@{
 
   /**
-   * Create a view of the current FEValues object that represents a particular
-   * scalar component of the possibly vector-valued finite element. The
-   * concept of views is explained in the documentation of the namespace
-   * FEValuesViews and in particular in the
-   * @ref vector_valued
-   * module.
+   * 创建当前FEValues对象的一个视图，该视图代表可能是矢量值的有限元的特定标量分量。视图的概念在命名空间FEValuesViews的文档中解释，特别是在 @ref
+   * vector_valued 模块中。
+   *
    */
   const FEValuesViews::Scalar<dim, spacedim> &
   operator[](const FEValuesExtractors::Scalar &scalar) const;
 
   /**
-   * Create a view of the current FEValues object that represents a set of
-   * <code>dim</code> scalar components (i.e. a vector) of the vector-valued
-   * finite element. The concept of views is explained in the documentation of
-   * the namespace FEValuesViews and in particular in the
-   * @ref vector_valued
-   * module.
+   * 创建一个当前FEValues对象的视图，该视图代表了一组 <code>dim</code>
+   * 矢量值有限元的标量分量（即矢量）。视图的概念在命名空间FEValuesViews的文档中解释，特别是在
+   * @ref vector_valued 模块中。
+   *
    */
   const FEValuesViews::Vector<dim, spacedim> &
   operator[](const FEValuesExtractors::Vector &vector) const;
 
   /**
-   * Create a view of the current FEValues object that represents a set of
-   * <code>(dim*dim + dim)/2</code> scalar components (i.e. a symmetric 2nd
-   * order tensor) of the vector-valued finite element. The concept of views
-   * is explained in the documentation of the namespace FEValuesViews and in
-   * particular in the
-   * @ref vector_valued
-   * module.
+   * 创建当前FEValues对象的视图，该视图代表了一组 <code>(dim*dim
+   * + dim)/2</code>
+   * 矢量值有限元的标量分量（即对称的二阶张量）。视图的概念在命名空间FEValuesViews的文档中解释，特别是在
+   * @ref vector_valued 模块中。
+   *
    */
   const FEValuesViews::SymmetricTensor<2, dim, spacedim> &
   operator[](const FEValuesExtractors::SymmetricTensor<2> &tensor) const;
 
 
   /**
-   * Create a view of the current FEValues object that represents a set of
-   * <code>(dim*dim)</code> scalar components (i.e. a 2nd order tensor) of the
-   * vector-valued finite element. The concept of views is explained in the
-   * documentation of the namespace FEValuesViews and in particular in the
-   * @ref vector_valued
-   * module.
+   * 创建一个当前FEValues对象的视图，该视图表示一组 <code>(dim*dim)</code>
+   * 矢量值有限元的标量分量（即二阶张量）。视图的概念在命名空间FEValuesViews的文档中解释，特别是在
+   * @ref vector_valued 模块中。
+   *
    */
   const FEValuesViews::Tensor<2, dim, spacedim> &
   operator[](const FEValuesExtractors::Tensor<2> &tensor) const;
@@ -3702,40 +2960,45 @@ public:
   //@{
 
   /**
-   * Constant reference to the selected mapping object.
+   * 对所选映射对象的常量引用。
+   *
    */
   const Mapping<dim, spacedim> &
   get_mapping() const;
 
   /**
-   * Constant reference to the selected finite element object.
+   * 对所选有限元对象的常数参考。
+   *
    */
   const FiniteElement<dim, spacedim> &
   get_fe() const;
 
   /**
-   * Return the update flags set for this object.
+   * 返回为该对象设置的更新标志。
+   *
    */
   UpdateFlags
   get_update_flags() const;
 
   /**
-   * Return a triangulation iterator to the current cell.
+   * 返回到当前单元的三角形迭代器。
+   *
    */
   const typename Triangulation<dim, spacedim>::cell_iterator
   get_cell() const;
 
   /**
-   * Return the relation of the current cell to the previous cell. This allows
-   * re-use of some cell data (like local matrices for equations with constant
-   * coefficients) if the result is <tt>CellSimilarity::translation</tt>.
+   * 返回当前单元格与前一个单元格的关系。如果结果是
+   * <tt>CellSimilarity::translation</tt>.
+   * ，这允许重新使用一些单元格数据（如具有常数系数的方程的局部矩阵）。
+   *
    */
   CellSimilarity::Similarity
   get_cell_similarity() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -3743,10 +3006,9 @@ public:
 
 
   /**
-   * This exception is thrown if FEValuesBase is asked to return the value of
-   * a field which was not required by the UpdateFlags for this FEValuesBase.
-   *
+   * 如果要求FEValuesBase返回一个字段的值，而这个字段不是这个FEValuesBase的UpdateFlags所要求的，就会抛出这个异常。
    * @ingroup Exceptions
+   *
    */
   DeclException1(
     ExcAccessToUninitializedField,
@@ -3760,19 +3022,19 @@ public:
     << "upon construction.");
 
   /**
-   * Mismatch between the FEValues FiniteElement and
-   * cell->get_dof_handler().get_fe()
-   *
+   * FEValues
+   * FiniteElement和cell->get_dof_handler().get_fe()之间不匹配。
    * @ingroup Exceptions
+   *
    */
   DeclExceptionMsg(
     ExcFEDontMatch,
     "The FiniteElement you provided to FEValues and the FiniteElement that belongs "
     "to the DoFHandler that provided the cell iterator do not match.");
   /**
-   * A given shape function is not primitive, but it needs to be.
-   *
+   * 一个给定的形状函数不是原始的，但它需要是。
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcShapeFunctionNotPrimitive,
                  int,
@@ -3784,10 +3046,10 @@ public:
                  << "_component suffix?");
 
   /**
-   * The given FiniteElement is not a primitive element, see
-   * FiniteElement::is_primitive().
-   *
+   * 给定的FiniteElement不是原始元素，见
+   * FiniteElement::is_primitive(). 。
    * @ingroup Exceptions
+   *
    */
   DeclExceptionMsg(
     ExcFENotPrimitive,
@@ -3796,132 +3058,111 @@ public:
 
 protected:
   /**
-   * Objects of the FEValues class need to store an iterator
-   * to the present cell in order to be able to extract the values of the
-   * degrees of freedom on this cell in the get_function_values() and assorted
-   * functions. On the other hand, this class should also work for different
-   * iterators, as long as they have the same interface to extract the DoF
-   * values (i.e., for example, they need to have a @p
-   * get_interpolated_dof_values function).
+   * FEValues类的对象需要存储一个指向当前单元的迭代器，以便能够在get_function_values()和各种函数中提取该单元上的自由度值。另一方面，这个类也应该适用于不同的迭代器，只要它们有相同的接口来提取自由度值（即，例如，它们需要有一个
+   * @p get_interpolated_dof_values函数）。
+   * 这就需要一个共同的迭代器类的基类，并使我们在这里需要的函数
+   * @p virtual.
+   * 另一方面，这是我们在库中唯一需要的地方，引入一个迭代器的基类并使一个函数虚化会惩罚
+   * <em>  迭代器的所有  </em>
+   * 用户，这些函数基本上是作为非常快速的存取函数。所以我们不想这样做。相反，我们在这里做的是让我们需要的函数变成虚拟的，只用于
+   * <em>  这个类  </em>
+   * 。这个想法是这样的：有一个共同的基类，它声明了一些纯虚拟的函数，对于每个可能的迭代器类型，我们有一个派生类，它将迭代器存储到单元格并实现这些函数。由于迭代器类具有相同的接口，我们可以使派生类成为模板，对迭代器类型进行模板化。
+   * 这样一来，虚函数的使用就只限于这个类，其他迭代器的使用者就不用承担负面影响了。
+   * @note  这个类是<a
+   * href="https://www.artima.com/cppsource/type_erasure.html">type
+   * erasure</a>设计模式的一个例子。
    *
-   * This calls for a common base class of iterator classes, and making the
-   * functions we need here @p virtual. On the other hand, this is the only
-   * place in the library where we need this, and introducing a base class of
-   * iterators and making a function virtual penalizes <em>all</em> users of
-   * the iterators, which are basically intended as very fast accessor
-   * functions. So we do not want to do this. Rather, what we do here is
-   * making the functions we need virtual only for use with <em>this
-   * class</em>. The idea is the following: have a common base class which
-   * declares some pure virtual functions, and for each possible iterator
-   * type, we have a derived class which stores the iterator to the cell and
-   * implements these functions. Since the iterator classes have the same
-   * interface, we can make the derived classes a template, templatized on the
-   * iterator type.
-   *
-   * This way, the use of virtual functions is restricted to only this class,
-   * and other users of iterators do not have to bear the negative effects.
-   *
-   * @note This class is an example of the
-   * <a href="https://www.artima.com/cppsource/type_erasure.html">type
-   * erasure</a> design pattern.
    */
   class CellIteratorBase;
 
   /**
-   * Forward declaration of classes derived from CellIteratorBase. Their
-   * definition and implementation is given in the .cc file.
+   * 向前声明源自CellIteratorBase的类。它们的定义和实现在.cc文件中给出。
+   *
    */
   template <typename CI>
   class CellIterator;
   class TriaCellIterator;
 
   /**
-   * Store the cell selected last time the reinit() function was called.  This
-   * is necessary for the <tt>get_function_*</tt> functions as well as the
-   * functions of same name in the extractor classes.
+   * 存储上次调用reinit()函数时选择的单元格。
+   * 这对<tt>get_function_*</tt>函数以及提取器类中的同名函数是必要的。
+   *
    */
   std::unique_ptr<const CellIteratorBase> present_cell;
 
   /**
-   * A signal connection we use to ensure we get informed whenever the
-   * triangulation changes by refinement. We need to know about that because
-   * it invalidates all cell iterators and, as part of that, the
-   * 'present_cell' iterator we keep around between subsequent calls to
-   * reinit() in order to compute the cell similarity.
+   * 一个信号连接，我们用来确保每当三角结构因细化而发生变化时，我们会得到通知。我们需要知道这一点，因为它使所有的单元格迭代器失效，作为其中的一部分，我们在随后调用reinit()时保留了'present_cell'迭代器，以便计算单元格相似度。
+   *
    */
   boost::signals2::connection tria_listener_refinement;
 
   /**
-   * A signal connection we use to ensure we get informed whenever the
-   * triangulation changes by mesh transformations. We need to know about that
-   * because it invalidates all cell iterators and, as part of that, the
-   * 'present_cell' iterator we keep around between subsequent calls to
-   * reinit() in order to compute the cell similarity.
+   * 一个信号连接，我们用它来确保每当三角结构因网格转换而发生变化时，我们都能得到通知。我们需要知道这一点，因为它使所有的单元格迭代器失效，作为其中的一部分，我们在后续调用reinit()时保留了'present_cell'迭代器，以便计算单元格的相似度。
+   *
    */
   boost::signals2::connection tria_listener_mesh_transform;
 
   /**
-   * A function that is connected to the triangulation in order to reset the
-   * stored 'present_cell' iterator to an invalid one whenever the
-   * triangulation is changed and the iterator consequently becomes invalid.
+   * 一个与三角结构相连的函数，以便在三角结构发生变化，迭代器随之失效时，将存储的'present_cell'迭代器重置为一个无效的迭代器。
+   *
    */
   void
   invalidate_present_cell();
 
   /**
-   * This function is called by the various reinit() functions in derived
-   * classes. Given the cell indicated by the argument, test whether we have
-   * to throw away the previously stored present_cell argument because it
-   * would require us to compare cells from different triangulations. In
-   * checking all this, also make sure that we have tria_listener connected to
-   * the triangulation to which we will set present_cell right after calling
-   * this function.
+   * 这个函数被派生类中的各种 reinit()
+   * 函数调用。给定参数所指示的单元格，测试我们是否必须丢弃之前存储的present_cell参数，因为这需要我们比较不同三角形的单元格。在检查这一切的时候，还要确保我们有tria_listener连接到我们将在调用此函数后立即设置present_cell的三角结构。
+   *
    */
   void
   maybe_invalidate_previous_present_cell(
     const typename Triangulation<dim, spacedim>::cell_iterator &cell);
 
   /**
-   * A pointer to the mapping object associated with this FEValues object.
+   * 指向与该FEValues对象相关的映射对象的指针。
+   *
    */
   const SmartPointer<const Mapping<dim, spacedim>, FEValuesBase<dim, spacedim>>
     mapping;
 
   /**
-   * A pointer to the internal data object of mapping, obtained from
-   * Mapping::get_data(), Mapping::get_face_data(), or
-   * Mapping::get_subface_data().
+   * 一个指向映射内部数据对象的指针，从 Mapping::get_data(),
+   * Mapping::get_face_data(), 或 Mapping::get_subface_data(). 获得。
+   *
    */
   std::unique_ptr<typename Mapping<dim, spacedim>::InternalDataBase>
     mapping_data;
 
   /**
-   * An object into which the Mapping::fill_fe_values() and similar functions
-   * place their output.
+   * 一个对象， Mapping::fill_fe_values()
+   * 和类似的函数将其输出放入其中。
+   *
    */
   dealii::internal::FEValuesImplementation::MappingRelatedData<dim, spacedim>
     mapping_output;
 
 
   /**
-   * A pointer to the finite element object associated with this FEValues
-   * object.
+   * 一个指向与此FEValues对象相关的有限元对象的指针。
+   *
    */
   const SmartPointer<const FiniteElement<dim, spacedim>,
                      FEValuesBase<dim, spacedim>>
     fe;
 
   /**
-   * A pointer to the internal data object of finite element, obtained from
-   * FiniteElement::get_data(), Mapping::get_face_data(), or
-   * FiniteElement::get_subface_data().
+   * 指向有限元内部数据对象的指针，从
+   * FiniteElement::get_data(),  Mapping::get_face_data(), 或
+   * FiniteElement::get_subface_data(). 获得。
+   *
    */
   std::unique_ptr<typename FiniteElement<dim, spacedim>::InternalDataBase>
     fe_data;
 
   /**
-   * An object into which the FiniteElement::fill_fe_values() and similar
-   * functions place their output.
+   * 一个对象， FiniteElement::fill_fe_values()
+   * 和类似的函数将其输出放入其中。
+   *
    */
   dealii::internal::FEValuesImplementation::FiniteElementRelatedData<dim,
                                                                      spacedim>
@@ -3929,32 +3170,29 @@ protected:
 
 
   /**
-   * Original update flags handed to the constructor of FEValues.
+   * 交给FEValues构造器的原始更新标志。
+   *
    */
   UpdateFlags update_flags;
 
   /**
-   * Initialize some update flags. Called from the @p initialize functions of
-   * derived classes, which are in turn called from their constructors.
+   * 初始化一些更新标志。从派生类的 @p initialize
+   * 函数中调用，这些函数又从它们的构造函数中调用。
+   * 基本上，这个函数使用已经存储的有限元和映射对象找出需要设置的标志来计算用户想要的一切，正如通过作为参数传递的标志所表达的那样。
    *
-   * Basically, this function finds out using the finite element and mapping
-   * object already stored which flags need to be set to compute everything
-   * the user wants, as expressed through the flags passed as argument.
    */
   UpdateFlags
   compute_update_flags(const UpdateFlags update_flags) const;
 
   /**
-   * An enum variable that can store different states of the current cell in
-   * comparison to the previously visited cell. If wanted, additional states
-   * can be checked here and used in one of the methods used during reinit.
+   * 一个枚举变量，可以存储当前单元与之前访问的单元的不同状态。如果需要，可以在这里检查额外的状态，并在重新启动时使用其中一个方法。
+   *
    */
   CellSimilarity::Similarity cell_similarity;
 
   /**
-   * A function that checks whether the new cell is similar to the one
-   * previously used. Then, a significant amount of the data can be reused,
-   * e.g. the derivatives of the basis functions in real space, shape_grad.
+   * 一个检查新单元是否与之前使用的单元相似的函数。然后，大量的数据可以被重新使用，例如实空间中的基函数导数，shape_grad。
+   *
    */
   void
   check_cell_similarity(
@@ -3962,7 +3200,8 @@ protected:
 
 private:
   /**
-   * A cache for all possible FEValuesViews objects.
+   * 对所有可能的FEValuesViews对象进行缓存。
+   *
    */
   dealii::internal::FEValuesViews::Cache<dim, spacedim> fe_values_views_cache;
 
@@ -3981,27 +3220,28 @@ private:
 
 
 /**
- * Finite element evaluated in quadrature points of a cell.
+ * 在单元格的正交点上评估的有限元。
+ * 这个函数实现了FEValuesBase的初始化程序，如果需要以单元格的正交点为单位的值。更多的文件请看这个类。
  *
- * This function implements the initialization routines for FEValuesBase, if
- * values in quadrature points of a cell are needed. For further documentation
- * see this class.
  *
  * @ingroup feaccess
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FEValues : public FEValuesBase<dim, spacedim>
 {
 public:
   /**
-   * Dimension of the object over which we integrate. For the present class,
-   * this is equal to <code>dim</code>.
+   * 我们对其进行积分的对象的尺寸。对于本类，这等于
+   * <code>dim</code>  。
+   *
    */
   static const unsigned int integral_dimension = dim;
 
   /**
-   * Constructor. Gets cell independent data from mapping and finite element
-   * objects, matching the quadrature rule and update flags.
+   * 构造函数。从映射和有限元对象中获取单元独立数据，匹配正交规则和更新标志。
+   *
    */
   FEValues(const Mapping<dim, spacedim> &      mapping,
            const FiniteElement<dim, spacedim> &fe,
@@ -4009,10 +3249,10 @@ public:
            const UpdateFlags                   update_flags);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules.
+   * 像上面的函数一样，但取一个正交规则的集合。
+   * @note
+   * 与FEFaceValues相反，我们要求集合中正交规则的数量为1。
    *
-   * @note We require, in contrast to FEFaceValues, that the number of quadrature
-   *   rules in the collection is one.
    */
   FEValues(const Mapping<dim, spacedim> &      mapping,
            const FiniteElement<dim, spacedim> &fe,
@@ -4020,29 +3260,28 @@ public:
            const UpdateFlags                   update_flags);
 
   /**
-   * Constructor. This constructor is equivalent to the other one except that
-   * it makes the object use a $Q_1$ mapping (i.e., an object of type
-   * MappingQGeneric(1)) implicitly.
+   * 构造函数。这个构造函数除了使对象隐含地使用 $Q_1$
+   * 映射（即MappingQGeneric(1)类型的对象）外，与其他构造函数是等价的。
+   *
    */
   FEValues(const FiniteElement<dim, spacedim> &fe,
            const Quadrature<dim> &             quadrature,
            const UpdateFlags                   update_flags);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules.
+   * 像上面的函数一样，但取一个正交规则的集合。
+   * @note
+   * 与FEFaceValues相反，我们要求集合中的正交规则的数量为1。
    *
-   * @note We require, in contrast to FEFaceValues, that the number of quadrature
-   *   rules in the collection is one.
    */
   FEValues(const FiniteElement<dim, spacedim> &fe,
            const hp::QCollection<dim> &        quadrature,
            const UpdateFlags                   update_flags);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the given cell
-   * of type "iterator into a DoFHandler object", and the finite element
-   * associated with this object. It is assumed that the finite element used
-   * by the given cell is also the one used by this FEValues object.
+   * 重新初始化类型为 "iterator into a DoFHandler object
+   * "的给定单元的梯度、雅各比行列式等，以及与此对象相关的有限元。假设给定单元所使用的有限元也是这个FEValues对象所使用的有限元。
+   *
    */
   template <bool level_dof_access>
   void
@@ -4050,69 +3289,60 @@ public:
     const TriaIterator<DoFCellAccessor<dim, spacedim, level_dof_access>> &cell);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the given cell
-   * of type "iterator into a Triangulation object", and the given finite
-   * element. Since iterators into triangulation alone only convey information
-   * about the geometry of a cell, but not about degrees of freedom possibly
-   * associated with this cell, you will not be able to call some functions of
-   * this class if they need information about degrees of freedom. These
-   * functions are, above all, the
-   * <tt>get_function_value/gradients/hessians/laplacians/third_derivatives</tt>
-   * functions. If you want to call these functions, you have to call the @p
-   * reinit variants that take iterators into DoFHandler or other DoF handler
-   * type objects.
+   * 重新初始化梯度、雅可比行列式等，用于给定类型为
+   * "进入三角测量对象的迭代器
+   * "的单元和给定的有限元。由于进入三角剖分的迭代器只传递单元的几何信息，而不传递可能与此单元相关的自由度的信息，所以如果需要自由度的信息，你将无法调用这一类的一些函数。这些函数首先是<tt>get_function_value/gradients/hessians/laplacians/third_derivatives</tt>函数。如果你想调用这些函数，你必须调用
+   * @p
+   * reinit变体，将迭代器带入DoFHandler或其他DoF处理程序类型对象。
+   *
    */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell);
 
   /**
-   * Return a reference to the copy of the quadrature formula stored by this
-   * object.
+   * 返回对该对象所存储的正交公式副本的引用。
+   *
    */
   const Quadrature<dim> &
   get_quadrature() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Return a reference to this very object.
+   * 返回对这个非常对象的引用。
+   * 虽然看起来不是很有用，但是这个函数的存在是为了给
+   * hp::FEValues
+   * 类提供能力，在这种情况下，它提供了当前单元的FEValues对象（记住，对于hp-finite元素，实际使用的FE对象可能会在不同的单元之间变化，所以我们也需要不同的FEValues对象用于不同的单元；一旦你重新初始化了
+   * hp::FEValues
+   * ]对象，它就会为该单元格的FE检索FEValues对象，并通过与此相同的函数返回；因此，这里的这个函数只提供相同的接口，以便人们可以对FEValues和
+   * hp::FEValues). 进行模板化。
    *
-   * Though it seems that it is not very useful, this function is there to
-   * provide capability to the hp::FEValues class, in which case it provides
-   * the FEValues object for the present cell (remember that for hp-finite
-   * elements, the actual FE object used may change from cell to cell, so we
-   * also need different FEValues objects for different cells; once you
-   * reinitialize the hp::FEValues object for a specific cell, it retrieves
-   * the FEValues object for the FE on that cell and returns it through a
-   * function of the same name as this one; this function here therefore only
-   * provides the same interface so that one can templatize on FEValues and
-   * hp::FEValues).
    */
   const FEValues<dim, spacedim> &
   get_present_fe_values() const;
 
 private:
   /**
-   * Store a copy of the quadrature formula here.
+   * 在这里存储一份正交公式的副本。
+   *
    */
   const Quadrature<dim> quadrature;
 
   /**
-   * Do work common to the two constructors.
+   * 做两个构造函数的共同工作。
+   *
    */
   void
   initialize(const UpdateFlags update_flags);
 
   /**
-   * The reinit() functions do only that part of the work that requires
-   * knowledge of the type of iterator. After setting present_cell(), they
-   * pass on to this function, which does the real work, and which is
-   * independent of the actual type of the cell iterator.
+   * reinit()函数只做需要了解迭代器类型的那部分工作。在设置完present_cell()后，它们会传递给这个函数，这个函数做真正的工作，而且与单元格迭代器的实际类型无关。
+   *
    */
   void
   do_reinit();
@@ -4120,34 +3350,31 @@ private:
 
 
 /**
- * Extend the interface of FEValuesBase to values that only make sense when
- * evaluating something on the surface of a cell. All the data that is
- * available in the interior of cells is also available here.
+ * 将FEValuesBase的接口扩展到只有在评估单元格表面的东西时才有意义的值。所有在单元格内部的数据也都可以在这里得到。
+ * 见FEValuesBase
  *
- * See FEValuesBase
  *
  * @ingroup feaccess
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FEFaceValuesBase : public FEValuesBase<dim, spacedim>
 {
 public:
   /**
-   * Dimension of the object over which we integrate. For the present class,
-   * this is equal to <code>dim-1</code>.
+   * 我们对其进行积分的对象的尺寸。对于本类，这等于
+   * <code>dim-1</code>  。
+   *
    */
   static const unsigned int integral_dimension = dim - 1;
 
   /**
-   * Constructor. Call the constructor of the base class and set up the arrays
-   * of this class with the right sizes.  Actually filling these arrays is a
-   * duty of the derived class's constructors.
+   * 构造函数。调用基类的构造函数，用正确的尺寸设置本类的数组。
+   * 实际上，填充这些数组是派生类的构造函数的职责。
+   * @p n_faces_or_subfaces
+   * 是这个对象所要存储的面或子面的数量。实际数量取决于派生类，对于FEFaceValues来说，它是<tt>2*dim</tt>，而对于FESubfaceValues类来说，它是<tt>2*dim*(1<<(dim-1))</tt>，即面的数量乘以每个面的子面的数量。
    *
-   * @p n_faces_or_subfaces is the number of faces or subfaces that this
-   * object is to store. The actual number depends on the derived class, for
-   * FEFaceValues it is <tt>2*dim</tt>, while for the FESubfaceValues class it
-   * is <tt>2*dim*(1<<(dim-1))</tt>, i.e. the number of faces times the number
-   * of subfaces per face.
    */
   FEFaceValuesBase(const unsigned int                  dofs_per_cell,
                    const UpdateFlags                   update_flags,
@@ -4156,10 +3383,8 @@ public:
                    const Quadrature<dim - 1> &         quadrature);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules. This
-   * allows to assign each face a different quadrature rule. In the case that
-   * the collection only contains a single face quadrature, this quadrature
-   * rule is use on all faces.
+   * 像上面的函数一样，但采取的是正交规则的集合。这允许给每个面分配一个不同的正交规则。在集合只包含一个面的正交规则的情况下，这个正交规则将用于所有面。
+   *
    */
   FEFaceValuesBase(const unsigned int                  dofs_per_cell,
                    const UpdateFlags                   update_flags,
@@ -4168,60 +3393,59 @@ public:
                    const hp::QCollection<dim - 1> &    quadrature);
 
   /**
-   * Boundary form of the transformation of the cell at the <tt>i</tt>th
-   * quadrature point.  See
-   * @ref GlossBoundaryForm.
-   *
+   * 单元在<tt>i</tt>第1个正交点的变换的边界形式。 见
+   * @ref GlossBoundaryForm  。
    * @dealiiRequiresUpdateFlags{update_boundary_forms}
+   *
    */
   const Tensor<1, spacedim> &
   boundary_form(const unsigned int i) const;
 
   /**
-   * Return the list of outward normal vectors times the Jacobian of the
-   * surface mapping.
-   *
+   * 返回曲面映射的外向法向量乘以雅各布系数的列表。
    * @dealiiRequiresUpdateFlags{update_boundary_forms}
+   *
    */
   const std::vector<Tensor<1, spacedim>> &
   get_boundary_forms() const;
 
   /**
-   * Return the index of the face selected the last time the reinit() function
-   * was called.
+   * 返回上次调用reinit()函数时选择的面的索引。
+   *
    */
   unsigned int
   get_face_index() const;
 
   /**
-   * Return a reference to the copy of the quadrature formula stored by this
-   * object.
+   * 返回该对象所存储的正交公式副本的引用。
+   *
    */
   const Quadrature<dim - 1> &
   get_quadrature() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
 protected:
   /**
-   * Number of the face selected the last time the reinit() function was
-   * called.
+   * 上次调用reinit()函数时选择的面的编号。
+   *
    */
   unsigned int present_face_no;
 
   /**
-   * Index of the face selected the last time the reinit() function was
-   * called.
+   * 最后一次调用reinit()函数时选择的面的索引。
+   *
    */
   unsigned int present_face_index;
 
   /**
-   * Store a copy of the quadrature formula here.
+   * 在这里存储一份正交公式的副本。
+   *
    */
   const hp::QCollection<dim - 1> quadrature;
 };
@@ -4229,24 +3453,22 @@ protected:
 
 
 /**
- * Finite element evaluated in quadrature points on a face.
+ * 在一个面上的正交点中评估的有限元。
+ * 这个类将FEFaceValuesBase的功能添加到FEValues中；更多的文档请看那里。
+ * 由于有限元函数及其导数在单元格边界可能是不连续的，所以这个函数对一个网格面没有限制。但是，这些值从相邻的任何一个单元接近面的时候都有限制。
  *
- * This class adds the functionality of FEFaceValuesBase to FEValues; see
- * there for more documentation.
- *
- * Since finite element functions and their derivatives may be discontinuous
- * at cell boundaries, there is no restriction of this function to a mesh
- * face. But, there are limits of these values approaching the face from
- * either of the neighboring cells.
  *
  * @ingroup feaccess
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FEFaceValues : public FEFaceValuesBase<dim, spacedim>
 {
 public:
   /**
-   * Dimension in which this object operates.
+   * 该对象所处的尺寸。
+   *
    */
 
   static const unsigned int dimension = dim;
@@ -4254,14 +3476,15 @@ public:
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * Dimension of the object over which we integrate. For the present class,
-   * this is equal to <code>dim-1</code>.
+   * 我们对其进行积分的对象的维度。对于本类，这等于
+   * <code>dim-1</code>  。
+   *
    */
   static const unsigned int integral_dimension = dim - 1;
 
   /**
-   * Constructor. Gets cell independent data from mapping and finite element
-   * objects, matching the quadrature rule and update flags.
+   * 构造函数。从映射和有限元对象中获取单元独立数据，匹配正交规则和更新标志。
+   *
    */
   FEFaceValues(const Mapping<dim, spacedim> &      mapping,
                const FiniteElement<dim, spacedim> &fe,
@@ -4269,10 +3492,8 @@ public:
                const UpdateFlags                   update_flags);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules. This
-   * allows to assign each face a different quadrature rule. In the case that
-   * the collection only contains a single face quadrature, this quadrature
-   * rule is use on all faces.
+   * 像上面的函数一样，但取一个正交规则的集合。这允许给每个面分配一个不同的正交规则。在集合只包含一个面的正交规则的情况下，这个正交规则将用于所有面。
+   *
    */
   FEFaceValues(const Mapping<dim, spacedim> &      mapping,
                const FiniteElement<dim, spacedim> &fe,
@@ -4280,27 +3501,26 @@ public:
                const UpdateFlags                   update_flags);
 
   /**
-   * Constructor. This constructor is equivalent to the other one except that
-   * it makes the object use a $Q_1$ mapping (i.e., an object of type
-   * MappingQGeneric(1)) implicitly.
+   * 构造函数。这个构造函数等同于其他的构造函数，只是它使对象隐含地使用
+   * $Q_1$ 映射（即MappingQGeneric(1)类型的对象）。
+   *
    */
   FEFaceValues(const FiniteElement<dim, spacedim> &fe,
                const Quadrature<dim - 1> &         quadrature,
                const UpdateFlags                   update_flags);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules. This
-   * allows to assign each face a different quadrature rule. In the case that
-   * the collection only contains a single face quadrature, this quadrature
-   * rule is use on all faces.
+   * 像上面的函数一样，但采取的是正交规则的集合。这允许给每个面分配一个不同的正交规则。在集合只包含一个面的正交规则的情况下，这个正交规则将用于所有面。
+   *
    */
   FEFaceValues(const FiniteElement<dim, spacedim> &fe,
                const hp::QCollection<dim - 1> &    quadrature,
                const UpdateFlags                   update_flags);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the face with
-   * number @p face_no of @p cell and the given finite element.
+   * 重新初始化 @p face_no 的 @p cell
+   * 面和给定的有限元的梯度、雅克比行列式等。
+   *
    */
   template <bool level_dof_access>
   void
@@ -4309,10 +3529,10 @@ public:
     const unsigned int face_no);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for face @p face
-   * and cell @p cell.
+   * 重新初始化面 @p face 和单元 @p cell.
+   * 的梯度、雅可比决定数等。
+   * @note   @p face  必须是 @p cell's 面的迭代器之一。
    *
-   * @note @p face must be one of @p cell's face iterators.
    */
   template <bool level_dof_access>
   void
@@ -4321,70 +3541,47 @@ public:
     const typename Triangulation<dim, spacedim>::face_iterator &          face);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the given face
-   * on a given cell of type "iterator into a Triangulation object", and the
-   * given finite element. Since iterators into a triangulation alone only
-   * convey information about the geometry of a cell, but not about degrees of
-   * freedom possibly associated with this cell, you will not be able to call
-   * some functions of this class if they need information about degrees of
-   * freedom. These functions are, above all, the
-   * <tt>get_function_value/gradients/hessians/third_derivatives</tt>
-   * functions. If you want to call these functions, you have to call the @p
-   * reinit variants that take iterators into DoFHandler or other DoF handler
-   * type objects.
+   * 重新初始化 "进入三角形对象的迭代器
+   * "类型的给定单元上的给定面的梯度、雅可比行列式等，以及给定的有限元。由于进入三角剖分的迭代器只传递单元的几何信息，而不传递可能与此单元相关的自由度信息，如果需要自由度信息，你将无法调用该类的一些函数。这些函数首先是<tt>get_function_value/gradients/hessians/third_derivatives</tt>函数。如果你想调用这些函数，你必须调用
+   * @p
+   * reinit变体，将迭代器带入DoFHandler或其他DoF处理程序类型对象。
+   *
    */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
          const unsigned int                                          face_no);
 
-  /*
-   * Reinitialize the gradients, Jacobi determinants, etc for the given face
-   * on a given cell of type "iterator into a Triangulation object", and the
-   * given finite element. Since iterators into a triangulation alone only
-   * convey information about the geometry of a cell, but not about degrees of
-   * freedom possibly associated with this cell, you will not be able to call
-   * some functions of this class if they need information about degrees of
-   * freedom. These functions are, above all, the
-   * <tt>get_function_value/gradients/hessians/third_derivatives</tt>
-   * functions. If you want to call these functions, you have to call the @p
-   * reinit variants that take iterators into DoFHandler or other DoF handler
-   * type objects.
-   *
-   * @note @p face must be one of @p cell's face iterators.
-   */
+  /* 重新初始化 "进入三角形对象的迭代器 "类型的给定单元上的给定面的梯度、雅各比行列式等，以及给定的有限元。由于进入三角剖分的迭代器只传递单元的几何信息，而不传递可能与此单元相关的自由度的信息，所以如果需要自由度的信息，你将无法调用这一类的一些函数。这些函数首先是<tt>get_function_value/gradients/hessians/third_derivatives</tt>函数。如果你想调用这些函数，你必须调用 @p  reinit变体，将迭代器带入DoFHandler或其他DoF处理程序类型对象。   
+*  @note   @p face 必须是 @p cell's 面的迭代器之一。 
+* */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
          const typename Triangulation<dim, spacedim>::face_iterator &face);
 
   /**
-   * Return a reference to this very object.
+   * 返回对这个非常对象的引用。
+   * 虽然看起来不是很有用，但是这个函数的存在是为了给
+   * hp::FEValues
+   * 类提供能力，在这种情况下，它提供了当前单元的FEValues对象（请记住，对于HP-finite元素，实际使用的FE对象可能会在不同的单元之间变化，所以我们也需要不同的FEValues对象用于不同的单元；一旦你重新初始化了
+   * hp::FEValues
+   * ]对象，它就会为该单元格上的FE检索FEValues对象，并通过与此相同的函数返回；因此，这里的这个函数只提供相同的接口，以便人们可以对FEValues和
+   * hp::FEValues). 进行模板化。
    *
-   * Though it seems that it is not very useful, this function is there to
-   * provide capability to the hp::FEValues class, in which case it provides
-   * the FEValues object for the present cell (remember that for hp-finite
-   * elements, the actual FE object used may change from cell to cell, so we
-   * also need different FEValues objects for different cells; once you
-   * reinitialize the hp::FEValues object for a specific cell, it retrieves
-   * the FEValues object for the FE on that cell and returns it through a
-   * function of the same name as this one; this function here therefore only
-   * provides the same interface so that one can templatize on FEValues and
-   * hp::FEValues).
    */
   const FEFaceValues<dim, spacedim> &
   get_present_fe_values() const;
 
 private:
   /**
-   * Do work common to the two constructors.
+   * 做两个构造函数的共同工作。
+   *
    */
   void
   initialize(const UpdateFlags update_flags);
 
   /**
-   * The reinit() functions do only that part of the work that requires
-   * knowledge of the type of iterator. After setting present_cell(), they
-   * pass on to this function, which does the real work, and which is
-   * independent of the actual type of the cell iterator.
+   * reinit()函数只做需要了解迭代器类型的那部分工作。在设置完present_cell()之后，它们会传递给这个函数，这个函数会做真正的工作，而且与单元格迭代器的实际类型无关。
+   *
    */
   void
   do_reinit(const unsigned int face_no);
@@ -4392,44 +3589,41 @@ private:
 
 
 /**
- * Finite element evaluated in quadrature points on a face.
+ * 在一个面的正交点上评估的有限元。
+ * 这个类将FEFaceValuesBase的功能添加到FEValues中；更多的文档请看那里。
+ * 该类用于位于细化边上的面。在这种情况下，邻近的单元被细化。为了能够计算内部和外部函数值之间的差异，邻近单元的细化必须在这个单元上模拟。这可以通过应用模拟细化的正交规则来实现。由此产生的数据字段被分割开来，以反映邻居的细化结构：一个子面的编号对应于邻居面的孩子的编号。
  *
- * This class adds the functionality of FEFaceValuesBase to FEValues; see
- * there for more documentation.
- *
- * This class is used for faces lying on a refinement edge. In this case, the
- * neighboring cell is refined. To be able to compute differences between
- * interior and exterior function values, the refinement of the neighboring
- * cell must be simulated on this cell. This is achieved by applying a
- * quadrature rule that simulates the refinement. The resulting data fields
- * are split up to reflect the refinement structure of the neighbor: a subface
- * number corresponds to the number of the child of the neighboring face.
  *
  * @ingroup feaccess
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FESubfaceValues : public FEFaceValuesBase<dim, spacedim>
 {
 public:
   /**
-   * Dimension in which this object operates.
+   * 该对象所处的尺寸。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Dimension of the space in which this object operates.
+   * 该对象所处空间的尺寸。
+   *
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * Dimension of the object over which we integrate. For the present class,
-   * this is equal to <code>dim-1</code>.
+   * 我们所整合的对象的维度。对于本类，这等于
+   * <code>dim-1</code>  。
+   *
    */
   static const unsigned int integral_dimension = dim - 1;
 
   /**
-   * Constructor. Gets cell independent data from mapping and finite element
-   * objects, matching the quadrature rule and update flags.
+   * 构造函数。从映射和有限元对象中获取独立单元数据，匹配正交规则和更新标志。
+   *
    */
   FESubfaceValues(const Mapping<dim, spacedim> &      mapping,
                   const FiniteElement<dim, spacedim> &fe,
@@ -4437,10 +3631,10 @@ public:
                   const UpdateFlags                   update_flags);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules.
+   * 像上面的函数一样，但取一个正交规则的集合。
+   * @note
+   * 与FEFaceValues相反，我们要求集合中正交规则的数量为1。
    *
-   * @note We require, in contrast to FEFaceValues, that the number of quadrature
-   *   rules in the collection is one.
    */
   FESubfaceValues(const Mapping<dim, spacedim> &      mapping,
                   const FiniteElement<dim, spacedim> &fe,
@@ -4448,29 +3642,28 @@ public:
                   const UpdateFlags                   update_flags);
 
   /**
-   * Constructor. This constructor is equivalent to the other one except that
-   * it makes the object use a $Q_1$ mapping (i.e., an object of type
-   * MappingQGeneric(1)) implicitly.
+   * 构造函数。这个构造函数除了使对象隐含地使用 $Q_1$
+   * 映射（即MappingQGeneric(1)类型的对象）外，与其他构造函数是等价的。
+   *
    */
   FESubfaceValues(const FiniteElement<dim, spacedim> &fe,
                   const Quadrature<dim - 1> &         face_quadrature,
                   const UpdateFlags                   update_flags);
 
   /**
-   * Like the function above, but taking a collection of quadrature rules.
+   * 像上面的函数一样，但取一个正交规则的集合。
+   * @note
+   * 与FEFaceValues相反，我们要求集合中的正交规则的数量为1。
    *
-   * @note We require, in contrast to FEFaceValues, that the number of quadrature
-   *   rules in the collection is one.
    */
   FESubfaceValues(const FiniteElement<dim, spacedim> &fe,
                   const hp::QCollection<dim - 1> &    face_quadrature,
                   const UpdateFlags                   update_flags);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the given cell
-   * of type "iterator into a DoFHandler object", and the finite element
-   * associated with this object. It is assumed that the finite element used
-   * by the given cell is also the one used by this FESubfaceValues object.
+   * 重新初始化类型为 "iterator into a DoFHandler object
+   * "的给定单元的梯度、雅各比行列式等，以及与该对象相关的有限元。假设给定单元所使用的有限元也是这个FESubfaceValues对象所使用的有限元。
+   *
    */
   template <bool level_dof_access>
   void
@@ -4480,8 +3673,8 @@ public:
     const unsigned int subface_no);
 
   /**
-   * Alternative reinitialization function that takes, as arguments, iterators
-   * to the face and subface instead of their numbers.
+   * 替代的重新初始化函数，作为参数，接受面和子面的迭代器，而不是它们的数字。
+   *
    */
   template <bool level_dof_access>
   void
@@ -4491,17 +3684,12 @@ public:
     const typename Triangulation<dim, spacedim>::face_iterator &subface);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the given
-   * subface on a given cell of type "iterator into a Triangulation object", and
-   * the given finite element. Since iterators into a triangulation alone only
-   * convey information about the geometry of a cell, but not about degrees of
-   * freedom possibly associated with this cell, you will not be able to call
-   * some functions of this class if they need information about degrees of
-   * freedom. These functions are, above all, the
-   * <tt>get_function_value/gradients/hessians/third_derivatives</tt>
-   * functions. If you want to call these functions, you have to call the @p
-   * reinit variants that take iterators into DoFHandler or other DoF handler
-   * type objects.
+   * 重新初始化给定子面的梯度、雅可比行列式等，这些梯度和雅可比行列式是在给定的
+   * "进入三角形对象的迭代器
+   * "和给定的有限元的单元上进行的。由于进入三角剖分的迭代器只传递单元的几何信息，而不传递可能与此单元相关的自由度的信息，如果需要自由度的信息，你将无法调用这一类的一些函数。这些函数首先是<tt>get_function_value/gradients/hessians/third_derivatives</tt>函数。如果你想调用这些函数，你必须调用
+   * @p
+   * reinit变体，将迭代器带入DoFHandler或其他DoF处理程序类型对象。
+   *
    */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -4509,23 +3697,15 @@ public:
          const unsigned int subface_no);
 
   /**
-   * Reinitialize the gradients, Jacobi determinants, etc for the given
-   * subface on a given cell of type "iterator into a Triangulation object", and
-   * the given finite element. Since iterators into a triangulation alone only
-   * convey information about the geometry of a cell, but not about degrees of
-   * freedom possibly associated with this cell, you will not be able to call
-   * some functions of this class if they need information about degrees of
-   * freedom. These functions are, above all, the
-   * <tt>get_function_value/gradients/hessians/third_derivatives</tt>
-   * functions. If you want to call these functions, you have to call the @p
-   * reinit variants that take iterators into DoFHandler or other DoF handler
-   * type objects.
+   * 重新初始化给定子面的梯度、雅可比行列式等，这些梯度、雅可比行列式是在给定的
+   * "进入三角形对象的迭代器
+   * "类型的单元上，以及给定的有限元上。由于进入三角剖分的迭代器只传递单元的几何信息，而不传递可能与此单元相关的自由度的信息，如果需要自由度的信息，你将无法调用这一类的一些函数。这些函数首先是<tt>get_function_value/gradients/hessians/third_derivatives</tt>函数。如果你想调用这些函数，你必须调用
+   * @p
+   * reinit变体，将迭代器带入DoFHandler或其他DoF处理程序类型对象。
+   * 这和前面的函数做的事情一样，但是把迭代器而不是数字作为参数。
+   * @note   @p face  和  @p subface  必须对应于  @p cell.
+   * 的一个面（以及该面的一个子面）。
    *
-   * This does the same thing as the previous function but takes iterators
-   * instead of numbers as arguments.
-   *
-   * @note @p face and @p subface must correspond to a face (and a subface of
-   * that face) of @p cell.
    */
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -4533,48 +3713,43 @@ public:
          const typename Triangulation<dim, spacedim>::face_iterator &subface);
 
   /**
-   * Return a reference to this very object.
+   * 返回一个对这个对象的引用。
+   * 虽然看起来不是很有用，但是这个函数的存在是为了给
+   * hp::FEValues
+   * 类提供能力，在这种情况下，它提供了当前单元的FEValues对象（记住，对于hp-finite元素，实际使用的FE对象可能在不同的单元中发生变化，所以我们也需要不同的FEValues对象用于不同的单元；一旦你重新初始化了
+   * hp::FEValues
+   * ]对象，它就会为该单元格上的FE检索FEValues对象，并通过与此相同的函数返回；因此，这里的这个函数只提供相同的接口，以便人们可以对FEValues和
+   * hp::FEValues). 进行模板化。
    *
-   * Though it seems that it is not very useful, this function is there to
-   * provide capability to the hp::FEValues class, in which case it provides
-   * the FEValues object for the present cell (remember that for hp-finite
-   * elements, the actual FE object used may change from cell to cell, so we
-   * also need different FEValues objects for different cells; once you
-   * reinitialize the hp::FEValues object for a specific cell, it retrieves
-   * the FEValues object for the FE on that cell and returns it through a
-   * function of the same name as this one; this function here therefore only
-   * provides the same interface so that one can templatize on FEValues and
-   * hp::FEValues).
    */
   const FESubfaceValues<dim, spacedim> &
   get_present_fe_values() const;
 
   /**
-   * @todo Document this
-   *
+   * @todo  Document this
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcReinitCalledWithBoundaryFace);
 
   /**
-   * @todo Document this
-   *
+   * @todo  记录这一点
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcFaceHasNoSubfaces);
 
 private:
   /**
-   * Do work common to the two constructors.
+   * 做两个构造函数的共同工作。
+   *
    */
   void
   initialize(const UpdateFlags update_flags);
 
   /**
-   * The reinit() functions do only that part of the work that requires
-   * knowledge of the type of iterator. After setting present_cell(), they
-   * pass on to this function, which does the real work, and which is
-   * independent of the actual type of the cell iterator.
+   * reinit()函数只做需要了解迭代器类型的那部分工作。在设置完present_cell()之后，它们会传递给这个函数，这个函数会做真正的工作，而且与单元格迭代器的实际类型无关。
+   *
    */
   void
   do_reinit(const unsigned int face_no, const unsigned int subface_no);
@@ -4584,7 +3759,7 @@ private:
 #ifndef DOXYGEN
 
 
-/*------------------------ Inline functions: namespace FEValuesViews --------*/
+ /*------------------------ Inline functions: namespace FEValuesViews --------*/ 
 
 namespace FEValuesViews
 {
@@ -5048,8 +4223,8 @@ namespace FEValuesViews
   namespace internal
   {
     /**
-     * Return the symmetrized version of a tensor whose n'th row equals the
-     * second argument, with all other rows equal to zero.
+     * 返回一个张量的对称版本，该张量的第n行等于第二个参数，其他所有的行都等于0。
+     *
      */
     inline dealii::SymmetricTensor<2, 1>
     symmetrize_single_row(const unsigned int n, const dealii::Tensor<1, 1> &t)
@@ -5434,7 +4609,7 @@ namespace FEValuesViews
 
 
 
-/*---------------------- Inline functions: FEValuesBase ---------------------*/
+ /*---------------------- Inline functions: FEValuesBase ---------------------*/ 
 
 
 
@@ -6116,7 +5291,7 @@ FEValuesBase<dim, spacedim>::normal_vector(const unsigned int i) const
 
 
 
-/*--------------------- Inline functions: FEValues --------------------------*/
+ /*--------------------- Inline functions: FEValues --------------------------*/ 
 
 
 template <int dim, int spacedim>
@@ -6136,7 +5311,7 @@ FEValues<dim, spacedim>::get_present_fe_values() const
 }
 
 
-/*---------------------- Inline functions: FEFaceValuesBase -----------------*/
+ /*---------------------- Inline functions: FEFaceValuesBase -----------------*/ 
 
 
 template <int dim, int spacedim>
@@ -6147,7 +5322,7 @@ FEFaceValuesBase<dim, spacedim>::get_face_index() const
 }
 
 
-/*----------------------- Inline functions: FE*FaceValues -------------------*/
+ /*----------------------- Inline functions: FE*FaceValues -------------------*/ 
 
 template <int dim, int spacedim>
 inline const Quadrature<dim - 1> &
@@ -6193,3 +5368,5 @@ FEFaceValuesBase<dim, spacedim>::boundary_form(const unsigned int i) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

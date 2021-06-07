@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/dof_renumbering_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -31,233 +32,83 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Implementation of a number of renumbering algorithms for the degrees of
- * freedom on a triangulation. The functions in this namespace compute
- * new indices for each degree of freedom of a DoFHandler object, and then call
- * DoFHandler::renumber_dofs().
+ * 实现一些对三角形自由度的重新编号算法。这个命名空间中的函数为DoFHandler对象的每个自由度计算新的索引，然后调用
+ * DoFHandler::renumber_dofs().  。   <h3>Cuthill-McKee like algorithms</h3>
+ * 在这个类中，Cuthill-McKee算法被实现。它从一个自由度开始，在其他自由度中搜索那些与我们开始的自由度相耦合的自由度，并以一定的方式对这些自由度进行编号。然后它找到第二层的自由度，即那些与上一层的自由度（也就是与初始自由度耦合的自由度）耦合的自由度，并对这些自由度进行编号。以此类推。关于该算法的细节，特别是每个层次内的编号，请参见H.R.Schwarz："Methode
+ * der finiten
+ * Elemente"。反向的Cuthill-McKee算法也做同样的工作，但对所有元素的编号顺序是相反的。
+ * 这些算法有一个主要的缺点：它们需要一个好的起点，即自由度指数，将得到一个新的指数为零。因此，重新编号函数允许调用者指定这样一个初始自由度，例如通过利用域的实际拓扑结构知识。也可以给出几个起始指数，可以用来模拟简单的上游编号（通过给流入的DoF作为起始值）或使预处理更快（通过让Dirichlet边界指数作为起始点）。
+ * 如果没有给出起始指数，会自动选择一个，即协调数最小的一个（协调数是这个道口与其他道口的耦合数）。这个道夫通常位于域的边界上。然而，在使用本库中使用的分层网格时，这一点存在很大的模糊性，因为在大多数情况下，计算域不是通过倾斜和变形元素以及在顶点插入可变数量的元素来逼近的，而是通过分层细化。因此，有大量的协调数相等的道夫。因此，重新编号的算法将不会得到最佳的结果。
+ * 在施瓦茨（H.R.Schwarz: Methode der finiten
+ * Elemente）的书中，建议测试许多起点，如果可能的话，所有的协调数都是最小的，还有那些略高的协调数。然而，这似乎只适用于20世纪80年代初的小型工程问题（第二版于1984年出版）中的最多几十个或几百个元素的网格，但肯定不适用于本库中的那些具有几万至几十万个元素的网格。
  *
+ *  <h4>Implementation of renumbering schemes</h4>
+ * 重新编号的算法需要相当多的内存，因为他们必须为每个道夫存储它与哪些其他道夫的耦合。这是用一个SparsityPattern对象完成的，用来存储矩阵的稀疏模式。用户在分配道夫和重新编号之间做任何事情都是没有用的，也就是说，对
+ * DoFHandler::distribute_dofs 和 DoFHandler::renumber_dofs
+ * 的调用应该紧接着进行。如果你试图在两者之间创建一个稀疏模式或其他任何东西，这些之后将是无效的。
+ * 重新编号可能会照顾到仅由消除约束引起的dof-to-of耦合。除了上面提到的内存消耗外，这也需要相当多的计算时间，但它可以在调用
+ * @p renumber_dofs
+ * 函数时被关闭。这样就会得到较差的结果，因为图中的结（代表道夫）不会被发现是邻居，即使它们在浓缩后会是邻居。
+ * 重新编号的算法是在纯代数的基础上工作的，这是因为算法所依据的图论基础和稀疏模式所代表的二进制矩阵（其条目为二进制值的矩阵）之间存在同构性。特别是，这些算法并不试图利用拓扑学知识（如角检测）来寻找适当的起点。然而，这样一来，他们在任意的空间维度上工作。
+ * 如果你想给起点，你可以给一个dof指数的列表，这将形成重新编号的第一步。列表中的道夫将从零开始连续编号，也就是说，这个列表不是根据节点的协调数来重新编号的。不在允许范围内的索引被删除。如果不允许有索引，算法将搜索自己的起点。
  *
- * <h3>Cuthill-McKee like algorithms</h3>
+ *  <h4>Results of renumbering</h4>
+ * 上面提到的重新编号方案并没有导致最佳结果。然而，毕竟没有任何算法能在合理的时间内完成这个任务。在有些情况下，缺乏最优性甚至会导致比原来粗略的逐级编号方案更差的结果；其中一个例子是一个由四个单元组成的网格，其中总是精炼那些与中心相邻的单元（你可以称这种网格为
+ * "放大 "网格）。在这样一个例子中，带宽增加了大约50%。
+ * 在其他大多数情况下，带宽会明显减少。网格的结构越少，减少的效果就越好。有一个网格的单元是按照随机驱动的算法进行细化的，带宽减少了6倍。
+ * 使用约束信息通常会使带宽减少10%或20%，但对于一些非常非结构化的网格，也可能导致带宽增加。你必须权衡在你的情况下减少的带宽与使用约束信息所花费的时间，后者通常比
+ * "纯 "重新编号的算法长几倍。
+ * 在几乎所有情况下，重新编号方案都会找到一个角来开始。由于大多数网格中有不止一个角，而且即使是内部自由度也可能是一个更好的起点，如果你有一个简单的方案来推导出一个合适的点，那么由用户给出起点可能是一个可行的方法（例如，如果你想得到左上角的顶点，可以依次取最粗层次的单元的第三个孩子，取其第三个顶点和其道夫指数）。如果你事先不知道你的网格会是什么样子（例如，当使用自适应算法时），寻找一个最佳的起始点可能会很困难，然而，在许多情况下，这并不值得努力。
  *
- * Within this class, the Cuthill-McKee algorithm is implemented. It starts at
- * a degree of freedom, searches the other DoFs for those which are coupled
- * with the one we started with and numbers these in a certain way. It then
- * finds the second level of DoFs, namely those that couple with those of the
- * previous level (which were those that coupled with the initial DoF) and
- * numbers these. And so on. For the details of the algorithm, especially the
- * numbering within each level, please see H. R. Schwarz: "Methode der finiten
- * Elemente". The reverse Cuthill-McKee algorithm does the same job, but
- * numbers all elements in the reverse order.
+ *  <h3>Component-wise and block-wise numberings</h3>
+ * 对于使用FESystem类的几个基本元素组成的有限元，或者对于本身提供了几个组件的元素，按组件对DoF指数进行排序可能是有意义的。这样就能显示出块状矩阵结构，因为否则自由度是按单元编号的，而没有考虑到它们可能属于不同的构件。例如，我们可能希望对斯托克斯离散化的自由度进行排序，这样我们首先得到所有的速度，然后是所有的压力，这样得到的矩阵就会自然地分解为
+ * $2\times 2$ 系统。
+ * 这种编号可以通过调用本类的component_wise()函数获得。由于它没有触及每个分量中的指数顺序，因此可能值得首先使用Cuthill-
+ * McKee或类似的算法进行重新编号，然后再按分量重新编号。这将带出矩阵结构，并在每个块内有一个良好的编号。
+ * component_wise()函数不仅允许基于向量成分的枚举，还允许使用各种 DoFRenumbering::component_wise() 函数的默认参数将向量成分组合成 "块"
+ * （见 @ref GlossComponent 与 @ref GlossBlock
+ * 的区别说明）。通过这个参数指定的块可以，但不一定要等于有限元报告的块。例如，一个典型的斯托克斯元素将是
  *
- * These algorithms have one major drawback: they require a good starting
- * point, i.e. the degree of freedom index that will get a new index of zero.
- * The renumbering functions therefore allow the caller to specify such an
- * initial DoF, e.g. by exploiting knowledge of the actual topology of the
- * domain. It is also possible to give several starting indices, which may be
- * used to simulate a simple upstream numbering (by giving the inflow dofs as
- * starting values) or to make preconditioning faster (by letting the
- * Dirichlet boundary indices be starting points).
- *
- * If no starting index is given, one is chosen automatically, namely one with
- * the smallest coordination number (the coordination number is the number of
- * other dofs this dof couples with). This dof is usually located on the
- * boundary of the domain. There is, however, large ambiguity in this when
- * using the hierarchical meshes used in this library, since in most cases the
- * computational domain is not approximated by tilting and deforming elements
- * and by plugging together variable numbers of elements at vertices, but
- * rather by hierarchical refinement. There is therefore a large number of
- * dofs with equal coordination numbers. The renumbering algorithms will
- * therefore not give optimal results.
- *
- * In the book of Schwarz (H.R.Schwarz: Methode der finiten Elemente), it is
- * advised to test many starting points, if possible all with the smallest
- * coordination number and also those with slightly higher numbers. However,
- * this seems only possible for meshes with at most several dozen or a few
- * hundred elements found in small engineering problems of the early 1980s
- * (the second edition was published in 1984), but certainly not with those
- * used in this library, featuring several 10,000 to a few 100,000 elements.
- *
- *
- * <h4>Implementation of renumbering schemes</h4>
- *
- * The renumbering algorithms need quite a lot of memory, since they have to
- * store for each dof with which other dofs it couples. This is done using a
- * SparsityPattern object used to store the sparsity pattern of matrices. It
- * is not useful for the user to do anything between distributing the dofs and
- * renumbering, i.e. the calls to DoFHandler::distribute_dofs and
- * DoFHandler::renumber_dofs should follow each other immediately. If you try
- * to create a sparsity pattern or anything else in between, these will be
- * invalid afterwards.
- *
- * The renumbering may take care of dof-to-dof couplings only induced by
- * eliminating constraints. In addition to the memory consumption mentioned
- * above, this also takes quite some computational time, but it may be
- * switched off upon calling the @p renumber_dofs function. This will then
- * give inferior results, since knots in the graph (representing dofs) are not
- * found to be neighbors even if they would be after condensation.
- *
- * The renumbering algorithms work on a purely algebraic basis, due to the
- * isomorphism between the graph theoretical groundwork underlying the
- * algorithms and binary matrices (matrices of which the entries are binary
- * values) represented by the sparsity patterns. In special, the algorithms do
- * not try to exploit topological knowledge (e.g. corner detection) to find
- * appropriate starting points. This way, however, they work in arbitrary
- * space dimension.
- *
- * If you want to give starting points, you may give a list of dof indices
- * which will form the first step of the renumbering. The dofs of the list
- * will be consecutively numbered starting with zero, i.e. this list is not
- * renumbered according to the coordination number of the nodes. Indices not
- * in the allowed range are deleted. If no index is allowed, the algorithm
- * will search for its own starting point.
- *
- *
- * <h4>Results of renumbering</h4>
- *
- * The renumbering schemes mentioned above do not lead to optimal results.
- * However, after all there is no algorithm that accomplishes this within
- * reasonable time. There are situations where the lack of optimality even
- * leads to worse results than with the original, crude, levelwise numbering
- * scheme; one of these examples is a mesh of four cells of which always those
- * cells are refined which are neighbors to the center (you may call this mesh
- * a `zoom in' mesh). In one such example the bandwidth was increased by about
- * 50 per cent.
- *
- * In most other cases, the bandwidth is reduced significantly. The reduction
- * is the better the less structured the grid is. With one grid where the
- * cells were refined according to a random driven algorithm, the bandwidth
- * was reduced by a factor of six.
- *
- * Using the constraint information usually leads to reductions in bandwidth
- * of 10 or 20 per cent, but may for some very unstructured grids also lead to
- * an increase. You have to weigh the decrease in your case with the time
- * spent to use the constraint information, which usually is several times
- * longer than the `pure' renumbering algorithm.
- *
- * In almost all cases, the renumbering scheme finds a corner to start with.
- * Since there is more than one corner in most grids and since even an
- * interior degree of freedom may be a better starting point, giving the
- * starting point by the user may be a viable way if you have a simple scheme
- * to derive a suitable point (e.g. by successively taking the third child of
- * the cell top left of the coarsest level, taking its third vertex and the
- * dof index thereof, if you want the top left corner vertex). If you do not
- * know beforehand what your grid will look like (e.g. when using adaptive
- * algorithms), searching a best starting point may be difficult, however, and
- * in many cases will not justify the effort.
- *
- *
- * <h3>Component-wise and block-wise numberings</h3>
- *
- * For finite elements composed of several base elements using the FESystem
- * class, or for elements which provide several components themselves, it may
- * be of interest to sort the DoF indices by component. This will then bring
- * out the block matrix structure, since otherwise the degrees of freedom are
- * numbered cell-wise without taking into account that they may belong to
- * different components. For example, one may want to sort degree of freedom
- * for a Stokes discretization so that we first get all velocities and then
- * all the pressures so that the resulting matrix naturally decomposes into a
- * $2\times 2$ system.
- *
- * This kind of numbering may be obtained by calling the component_wise()
- * function of this class. Since it does not touch the order of indices within
- * each component, it may be worthwhile to first renumber using the Cuthill-
- * McKee or a similar algorithm and afterwards renumbering component-wise.
- * This will bring out the matrix structure and additionally have a good
- * numbering within each block.
- *
- * The component_wise() function allows not only to honor enumeration based on
- * vector components, but also allows to group together vector components into
- * "blocks" using a defaulted argument to the various
- * DoFRenumbering::component_wise() functions (see
- * @ref GlossComponent
- * vs
- * @ref GlossBlock
- * for a description of the difference). The blocks designated through this
- * argument may, but do not have to be, equal to the blocks that the finite
- * element reports. For example, a typical Stokes element would be
  * @code
- *   FESystem<dim> stokes_fe (FE_Q<dim>(2), dim,   // dim velocities
- *                            FE_Q<dim>(1), 1);    // one pressure
+ * FESystem<dim> stokes_fe (FE_Q<dim>(2), dim,   // dim velocities
+ *                          FE_Q<dim>(1), 1);    // one pressure
  * @endcode
- * This element has <code>dim+1</code> vector components and equally many
- * blocks. However, one may want to consider the velocities as one logical
- * block so that all velocity degrees of freedom are enumerated the same way,
- * independent of whether they are $x$- or $y$-velocities. This is done, for
- * example, in step-20 and step-22 as well as several other tutorial programs.
+ * 这个元素有 <code>dim+1</code>
+ * 个矢量分量和同样多的块。然而，人们可能希望将速度视为一个逻辑块，这样所有的速度自由度都以同样的方式列举，与它们是
+ * $x$  - 还是 $y$  - 速度无关。例如，在 step-20 和 step-22
+ * 以及其他几个教程程序中就这样做了。
+ * 另一方面，如果你真的想使用有限元本身报告的块状结构（如果你的有限元有多个矢量分量，例如FE_RaviartThomas或FE_Nedelec元，这种情况经常发生），那么你可以使用
+ * DoFRenumbering::block_wise 而不是 DoFRenumbering::component_wise
+ * 函数。
  *
- * On the other hand, if you really want to use block structure reported by
- * the finite element itself (a case that is often the case if you have finite
- * elements that have multiple vector components, e.g. the FE_RaviartThomas or
- * FE_Nedelec elements) then you can use the DoFRenumbering::block_wise
- * instead of the DoFRenumbering::component_wise functions.
- *
- *
- * <h3>Cell-wise numbering</h3>
- *
- * Given an ordered vector of cells, the function cell_wise() sorts the
- * degrees of freedom such that degrees on earlier cells of this vector will
- * occur before degrees on later cells.
- *
- * This rule produces a well-defined ordering for discontinuous Galerkin
- * methods (FE_DGP, FE_DGQ). For continuous methods, we use the additional
- * rule that each degree of freedom is ordered according to the first cell in
- * the ordered vector it belongs to.
- *
- * Applications of this scheme are downstream() and clock_wise_dg(). The first
- * orders the cells according to a downstream direction and then applies
- * cell_wise().
- *
- * @note For DG elements, the internal numbering in each cell remains
- * unaffected. This cannot be guaranteed for continuous elements anymore,
- * since degrees of freedom shared with an earlier cell will be accounted for
- * by the other cell.
+ *  <h3>Cell-wise numbering</h3>
+ * 给定一个有序的单元格向量，函数cell_wise()对自由度进行排序，使该向量中较早的单元格上的自由度出现在较晚的单元格上的自由度之前。
+ * 对于非连续Galerkin方法（FE_DGP,
+ * FE_DGQ），这一规则产生了一个明确的排序。对于连续方法，我们使用额外的规则，即每个自由度根据它所属的有序向量中的第一个单元来排序。
+ * 这个方案的应用是downstream()和clock_wise_dg()。第一个是根据下游方向对单元进行排序，然后应用cell_wise()。
  *
  *
- * <h3>Random renumbering</h3>
+ * @note
+ * 对于DG元素，每个单元的内部编号保持不受影响。这对于连续元素来说已经不能保证了，因为与前面的单元共享的自由度会被另一个单元所占。
  *
- * The random() function renumbers degrees of freedom randomly. This function
- * is probably seldom of use, except to check the dependence of solvers
- * (iterative or direct ones) on the numbering of the degrees of freedom.
+ *  <h3>Random renumbering</h3>
+ * random()函数对自由度进行随机编号。这个函数可能很少使用，除了检查求解器（迭代或直接）对自由度编号的依赖性。
  *
- *
- * <h3>A comparison of reordering strategies</h3>
- *
- * As a benchmark of comparison, let us consider what the different sparsity
- * patterns produced by the various algorithms when using the $Q_2^d\times
- * Q_1$ element combination typically employed in the discretization of Stokes
- * equations, when used on the mesh obtained in step-22 after one adaptive
- * mesh refinement in 3d. The space dimension together with the coupled finite
- * element leads to a rather dense system matrix with, on average around 180
- * nonzero entries per row. After applying each of the reordering strategies
- * shown below, the degrees of freedom are also sorted using
- * DoFRenumbering::component_wise into velocity and pressure groups; this
- * produces the $2\times 2$ block structure seen below with the large
- * velocity-velocity block at top left, small pressure-pressure block at
- * bottom right, and coupling blocks at top right and bottom left.
- *
- * The goal of reordering strategies is to improve the preconditioner. In
- * step-22 we use a SparseILU to preconditioner for the velocity-velocity
- * block at the top left. The quality of the preconditioner can then be
- * measured by the number of CG iterations required to solve a linear system
- * with this block. For some of the reordering strategies below we record this
- * number for adaptive refinement cycle 3, with 93176 degrees of freedom;
- * because we solve several linear systems with the same matrix in the Schur
- * complement, the average number of iterations is reported. The lower the
- * number the better the preconditioner and consequently the better the
- * renumbering of degrees of freedom is suited for this task. We also state
- * the run-time of the program, in part determined by the number of iterations
- * needed, for the first 4 cycles on one of our machines. Note that the
- * reported times correspond to the run time of the entire program, not just
- * the affected solver; if a program runs twice as fast with one particular
- * ordering than with another one, then this means that the actual solver is
- * actually several times faster.
- *
+ *  <h3>A comparison of reordering strategies</h3>
+ * 作为比较的基准，让我们考虑一下，当使用通常用于斯托克斯方程离散化的
+ * $Q_2^d\times Q_1$ 元素组合时，在 step-22
+ * 中得到的网格上，经过三维自适应网格细化后，各种算法产生的不同稀疏性模式是什么。空间维度和耦合有限元导致了一个相当密集的系统矩阵，平均每行大约有180个非零条目。在应用下面所示的每一种重排策略后，自由度也用
+ * DoFRenumbering::component_wise
+ * 排序为速度组和压力组；这产生了下面的 $2\times 2$
+ * 块结构，大的速度-速度块在左上方，小的压力-压力块在右下方，而耦合块在右上方和左下方。
+ * 重排策略的目的是为了改进预处理程序。在 step-22
+ * 中，我们使用SparseILU对左上方的速度-速度块进行预处理。预处理程序的质量可以通过解决这个块的线性系统所需的CG迭代次数来衡量。对于下面的一些重排策略，我们记录了自适应细化周期3的这个数字，有93176个自由度；因为我们用舒尔补数中的同一个矩阵来解决几个线性系统，所以报告了平均迭代次数。数字越小，预处理程序就越好，因此自由度的重新编号就越适合这项任务。我们还说明了程序的运行时间，部分由所需的迭代次数决定，在我们的一台机器上的前4个周期。请注意，报告的时间对应于整个程序的运行时间，而不仅仅是受影响的求解器；如果一个程序用一个特定的排序比用另一个排序运行快一倍，那么这意味着实际的求解器实际上要快几倍。
  * <table> <tr> <td>
- * @image html "reorder_sparsity_step_31_original.png"
+ @image html "reorder_sparsity_step_31_original.png"
  * </td> <td>
- * @image html "reorder_sparsity_step_31_random.png"
+ @image html "reorder_sparsity_step_31_random.png"
  * </td> <td>
- * @image html "reorder_sparsity_step_31_deal_cmk.png"
+ @image html "reorder_sparsity_step_31_deal_cmk.png"
  * </td> </tr> <tr> <td> Enumeration as produced by deal.II's
  * DoFHandler::distribute_dofs function and no further reordering apart from
  * the component-wise one.
@@ -283,11 +134,11 @@ DEAL_II_NAMESPACE_OPEN
  * testcase outlined above, and a runtime of 6min10s. </td> </td> </tr>
  *
  * <tr> <td>
- * @image html "reorder_sparsity_step_31_boost_cmk.png"
+ @image html "reorder_sparsity_step_31_boost_cmk.png"
  * </td> <td>
- * @image html "reorder_sparsity_step_31_boost_king.png"
+ @image html "reorder_sparsity_step_31_boost_king.png"
  * </td> <td>
- * @image html "reorder_sparsity_step_31_boost_md.png"
+ @image html "reorder_sparsity_step_31_boost_md.png"
  * </td> </tr> <tr> <td> Cuthill- McKee enumeration as produced by calling the
  * BOOST implementation of the algorithm provided by
  * DoFRenumbering::boost::Cuthill_McKee after DoFHandler::distribute_dofs.
@@ -321,42 +172,41 @@ DEAL_II_NAMESPACE_OPEN
  * testcase outlined above, and a runtime of 6min11s. </td> </tr>
  *
  * <tr> <td>
- * @image html "reorder_sparsity_step_31_downstream.png"
+ @image html "reorder_sparsity_step_31_downstream.png"
  * </td> <td> </td> <td> </td> </tr> <tr> <td> Downstream enumeration using
  * DoFRenumbering::downstream using a direction that points diagonally through
  * the domain.
  *
  * With this renumbering, we needed an average of 90.5 iterations for the
  * testcase outlined above, and a runtime of 7min05s. </td> <td> </td> <td>
- * </td> </tr> </table>
+ * </td> </tr> </table>   <h3>Multigrid DoF numbering</h3>
+ * 上面列出的大多数算法也适用于多网格自由度的编号。请参考实际的函数声明以获得更多这方面的信息。
  *
- *
- * <h3>Multigrid DoF numbering</h3>
- *
- * Most of the algorithms listed above also work on multigrid degree of
- * freedom numberings. Refer to the actual function declarations to get more
- * information on this.
  *
  * @ingroup dofs
+ *
+ *
  */
 namespace DoFRenumbering
 {
   /**
-   * Direction based comparator for cell iterators: it returns @p true if the
-   * center of the second cell is downstream of the center of the first one
-   * with respect to the direction given to the constructor.
+   * 基于方向的单元格迭代器的比较器：如果第二个单元格的中心在第一个单元格的中心的下游，相对于构造函数所给的方向，它返回
+   * @p true 。
+   *
    */
   template <class Iterator, int dim>
   struct CompareDownstream
   {
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     CompareDownstream(const Tensor<1, dim> &dir)
       : dir(dir)
     {}
     /**
-     * Return true if c1 less c2.
+     * 如果c1小于c2，返回true。
+     *
      */
     bool
     operator()(const Iterator &c1, const Iterator &c2) const
@@ -367,30 +217,32 @@ namespace DoFRenumbering
 
   private:
     /**
-     * Flow direction.
+     * 流动方向。
+     *
      */
     const Tensor<1, dim> dir;
   };
 
 
   /**
-   * Point based comparator for downstream directions: it returns @p true if
-   * the second point is downstream of the first one with respect to the
-   * direction given to the constructor. If the points are the same with
-   * respect to the downstream direction, the point with the lower DoF number
-   * is considered smaller.
+   * 基于点的下游方向的比较器：如果第二个点相对于第一个点的下游方向是给构造函数的，则返回
+   * @p true
+   * 。如果这两个点相对于下游方向是相同的，那么具有较低DoF数的点被认为是较小的。
+   *
    */
   template <int dim>
   struct ComparePointwiseDownstream
   {
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     ComparePointwiseDownstream(const Tensor<1, dim> &dir)
       : dir(dir)
     {}
     /**
-     * Return true if c1 less c2.
+     * 如果c1小于c2，返回true。
+     *
      */
     bool
     operator()(const std::pair<Point<dim>, types::global_dof_index> &c1,
@@ -402,7 +254,8 @@ namespace DoFRenumbering
 
   private:
     /**
-     * Flow direction.
+     * 流动方向。
+     *
      */
     const Tensor<1, dim> dir;
   };
@@ -410,30 +263,19 @@ namespace DoFRenumbering
 
 
   /**
-   * A namespace for the implementation of some renumbering algorithms based
-   * on algorithms implemented in the Boost Graph Library (BGL) by Jeremy Siek
-   * and others.
+   * 一个命名空间，用于实现一些基于Jeremy Siek等人在Boost
+   * Graph Library（BGL）中实现的重新编号算法。
+   * 虽然计算速度通常稍慢，但使用BOOST的算法往往会导致矩阵的带宽更小，因此基于这种编号的稀疏ILU更有效率。
+   * 关于这些算法与DoFRenumbering中定义的算法的比较，请参见DoFRenumbering命名空间的文档中的比较部分。
    *
-   * While often slightly slower to compute, the algorithms using BOOST often
-   * lead to matrices with smaller bandwidths and sparse ILUs based on this
-   * numbering are therefore more efficient.
-   *
-   * For a comparison of these algorithms with the ones defined in
-   * DoFRenumbering, see the comparison section in the documentation of the
-   * DoFRenumbering namespace.
    */
   namespace boost
   {
     /**
-     * Renumber the degrees of freedom according to the Cuthill-McKee method,
-     * eventually using the reverse numbering scheme.
+     * 根据Cuthill-McKee方法对自由度重新编号，最终使用反向编号方案。
+     * 关于不同方法的细节，请参见父类的一般文档。
+     * 作为这种算法结果的一个例子，看看DoFRenumbering命名空间的文档中各种算法的比较。
      *
-     * See the general documentation of the parent class for details on the
-     * different methods.
-     *
-     * As an example of the results of this algorithm, take a look at the
-     * comparison of various algorithms in the documentation of the
-     * DoFRenumbering namespace.
      */
     template <int dim, int spacedim>
     void
@@ -442,9 +284,10 @@ namespace DoFRenumbering
                   const bool                 use_constraints    = false);
 
     /**
-     * Compute the renumbering vector needed by the Cuthill_McKee() function.
-     * Does not perform the renumbering on the DoFHandler dofs but returns the
-     * renumbering vector.
+     * 计算Cuthill_McKee()函数所需的重新编号向量。
+     * 不对DoFHandler
+     * dofs进行重新编号，但返回重新编号的向量。
+     *
      */
     template <int dim, int spacedim>
     void
@@ -454,16 +297,10 @@ namespace DoFRenumbering
                           const bool use_constraints    = false);
 
     /**
-     * Renumber the degrees of freedom based on the BOOST implementation of
-     * the King algorithm. This often results in slightly larger (by a few
-     * percent) bandwidths than the Cuthill-McKee algorithm, but sparse ILUs
-     * are often slightly (also by a few percent) better preconditioners.
+     * 根据King算法的BOOST实现对自由度进行重新编号。这通常会导致比Cuthill-McKee算法稍大（百分之几）的带宽，但是稀疏ILU通常是稍好（也是百分之几）的前置条件。
+     * 作为这种算法结果的一个例子，看看DoFRenumbering命名空间的文档中各种算法的比较。
+     * 这种算法在  step-22  中使用。
      *
-     * As an example of the results of this algorithm, take a look at the
-     * comparison of various algorithms in the documentation of the
-     * DoFRenumbering namespace.
-     *
-     * This algorithm is used in step-22.
      */
     template <int dim, int spacedim>
     void
@@ -472,8 +309,8 @@ namespace DoFRenumbering
                   const bool                 use_constraints    = false);
 
     /**
-     * Compute the renumbering for the King algorithm but do not actually
-     * renumber the degrees of freedom in the DoF handler argument.
+     * 计算King算法的重新编号，但实际上不对DoF处理参数中的自由度进行重新编号。
+     *
      */
     template <int dim, int spacedim>
     void
@@ -483,15 +320,9 @@ namespace DoFRenumbering
                           const bool use_constraints    = false);
 
     /**
-     * Renumber the degrees of freedom based on the BOOST implementation of
-     * the minimum degree algorithm. Unlike the Cuthill-McKee algorithm, this
-     * algorithm does not attempt to minimize the bandwidth of a matrix but to
-     * minimize the amount of fill-in when doing an LU decomposition. It may
-     * sometimes yield better ILUs because of this property.
+     * 根据最小度算法的BOOST实现对自由度进行重新编号。与Cuthill-McKee算法不同，该算法并不试图最小化矩阵的带宽，而是试图在进行LU分解时最小化填充量。由于这一特性，它有时可能会产生更好的ILU。
+     * 作为这种算法结果的一个例子，看看DoFRenumbering命名空间的文档中各种算法的比较。
      *
-     * As an example of the results of this algorithm, take a look at the
-     * comparison of various algorithms in the documentation of the
-     * DoFRenumbering namespace.
      */
     template <int dim, int spacedim>
     void
@@ -500,8 +331,8 @@ namespace DoFRenumbering
                    const bool                 use_constraints    = false);
 
     /**
-     * Compute the renumbering for the minimum degree algorithm but do not
-     * actually renumber the degrees of freedom in the DoF handler argument.
+     * 计算最小度数算法的重新编号，但实际上不对DoF处理参数中的自由度进行重新编号。
+     *
      */
     template <int dim, int spacedim>
     void
@@ -513,68 +344,12 @@ namespace DoFRenumbering
   } // namespace boost
 
   /**
-   * Renumber the degrees of freedom according to the Cuthill-McKee method,
-   * possibly using the reverse numbering scheme.
+   * 根据Cuthill-McKee方法对自由度重新编号，可能使用反向编号方案。    关于不同方法的细节，请参见这个类的一般文档。    作为这种算法结果的一个例子，看看DoFRenumbering命名空间的文档中各种算法的比较。      @param  dof_handler 要工作的DoFHandler对象。    @param  reversed_numbering 是否使用原始的Cuthill-McKee算法，或者颠倒排序。    @param  use_constraints 在确定自由度的重新排序时是否使用悬挂节点约束。    @param  starting_indices 一组自由度，构成重新编号的第一层自由度。如果这个集合是空的，那么就会在那些具有最小数量的与之耦合的其他自由度中自动选择一个起始条目。    <h4> Operation in parallel </h4> 如果给定的DoFHandler使用分布式三角形（即，如果dof_handler.local_owned()不是完整的索引集），重新编号将在每个处理器的自由度上单独执行，处理器之间没有任何通信。换句话说，由此产生的重新编号是分别对<i>each diagonal block of the matrix corresponding to one processor</i>的带宽进行最小化的尝试，而没有对全局矩阵的带宽进行最小化的尝试。此外，重新编号完全重复使用每个处理器之前使用的同一组DoF指数。换句话说，如果一个处理器上先前的DoF编号使用了DoF指数的连续范围，那么在重新编号后，该处理器上的DoF也将如此，它们将占据同样的范围。如果一个处理器上的DoF以前的编号是由一些索引范围或单个索引组成的，情况也是如此：重新编号后，该处理器上的本地拥有的DoF将使用完全相同的索引，只是顺序不同。    此外，如果DoFHandler是建立在平行三角形上的，那么在每个处理器上，重新编号的起始指数需要是 @ref GlossLocallyActiveDof "本地活动自由度 "
+   * 的一个（可能是空）子集。一般来说，这些起始指数在每个处理器上都是不同的（当然，除非你传递一个默认的空列表），每个处理器将使用它们作为该处理器上本地重新编号的起始指数。
+   * 起始指数必须是本地活动的自由度，但该函数将只对本地拥有的自由度子集进行重新编号。该函数接受来自最大的本地活动自由度集合的起始索引，因为用这个函数进行的典型的重新编号操作是从位于边界上的索引开始的
    *
-   * See the general documentation of this class for details on the different
-   * methods.
+   * - 在当前函数的情况下，这将是处理器子域之间的边界。由于位于子域界面上的自由度可能被拥有相邻子域的两个处理器中的任何一个所拥有，所以要确定本地拥有的起始索引并不总是容易。另一方面，子域界面上的所有自由度都是本地活动的，因此该函数接受它们作为起始索引，尽管它只能在给定的处理器上对它们进行重新编号，如果它们也是本地拥有的。
    *
-   * As an example of the results of this algorithm, take a look at the
-   * comparison of various algorithms in the documentation of the
-   * DoFRenumbering namespace.
-   *
-   * @param dof_handler The DoFHandler object to work on.
-   * @param reversed_numbering Whether to use the original Cuthill-McKee
-   *   algorithm, or to reverse the ordering.
-   * @param use_constraints Whether or not to use hanging node constraints in
-   *   determining the reordering of degrees of freedom.
-   * @param starting_indices A set of degrees of freedom that form the first
-   *   level of renumbered degrees of freedom. If the set is empty, then a
-   *   single starting entry is chosen automatically among those that have the
-   *   smallest number of others that couple with it.
-   *
-   * <h4> Operation in parallel </h4>
-   *
-   * If the given DoFHandler uses a distributed triangulation (i.e., if
-   * dof_handler.locally_owned() is not the complete index set), the
-   * renumbering is performed on each processor's degrees of freedom
-   * individually, without any communication between processors. In other
-   * words, the resulting renumbering is an attempt at minimizing the bandwidth
-   * of <i>each diagonal block of the matrix corresponding to one processor</i>
-   * separately, without making an attempt at minimizing the bandwidth of
-   * the global matrix. Furthermore, the renumbering reuses exactly the
-   * same set of DoF indices that each processor used before. In other words,
-   * if the previous numbering of DoFs on one processor used a contiguous
-   * range of DoF indices, then so will the DoFs on that processor after
-   * the renumbering, and they will occupy the same range. The same is true
-   * if the previous numbering of DoFs on a processor consisted of a number
-   * of index ranges or single indices: after renumbering, the locally owned
-   * DoFs on that processor will use the exact same indices, just in a
-   * different order.
-   *
-   * In addition, if the DoFHandler is built on a parallel triangulation, then
-   * on every processor, the starting indices for renumbering need to be a
-   * (possibly empty) subset of the
-   * @ref GlossLocallyActiveDof "locally active degrees of freedom". In
-   * general, these starting indices will be different on each processor
-   * (unless of course you pass an empty list as is the default),
-   * and each processor will use them as starting indices for the local
-   * renumbering on that processor.
-   *
-   * The starting indices must be locally active degrees of freedom, but
-   * the function will only renumber the locally owned subset of the
-   * locally owned DoFs. The function accepts starting indices from the
-   * largest set of locally active degrees of freedom because a typical
-   * renumbering operation with this function starts with indices that
-   * are located on the boundary -- in the case of the current function,
-   * that would be the boundary between processor subdomains. Since the
-   * degrees of freedom that are located on subdomain interfaces may
-   * be owned by either one of the two processors that own the adjacent
-   * subdomains, it is not always easy to identify starting indices that
-   * are locally owned. On the other hand, all degrees of freedom on subdomain
-   * interfaces are locally active, and so the function accepts them as
-   * starting indices even though it can only renumber them on a given
-   * processor if they are also locally owned.
    */
   template <int dim, int spacedim>
   void
@@ -585,13 +360,12 @@ namespace DoFRenumbering
                   std::vector<types::global_dof_index>());
 
   /**
-   * Compute the renumbering vector needed by the Cuthill_McKee() function.
-   * This function does not perform the renumbering on the DoFHandler DoFs but
-   * only returns the renumbering vector.
+   * 计算Cuthill_McKee()函数所需的重新编号向量。
+   * 这个函数不对DoFHandler
+   * DoF进行重新编号，只返回重新编号的向量。
+   * 如果一个有效的级别作为参数被传递，那么这个网格级别的重新编号向量将被返回。
+   * 其他参数的解释见Cuthill_McKee()函数。
    *
-   * If a valid level is passed as parameter, the renumbering vector for this
-   * grid level is returned.
-   * See the Cuthill_McKee() function for an explanation of the other arguments.
    */
   template <int dim, int spacedim>
   void
@@ -605,17 +379,11 @@ namespace DoFRenumbering
     const unsigned int level = numbers::invalid_unsigned_int);
 
   /**
-   * Renumber the degrees of freedom according to the Cuthill-McKee method,
-   * eventually using the reverse numbering scheme, in this case for a
-   * multigrid numbering of degrees of freedom.
+   * 根据Cuthill-McKee方法对自由度进行重新编号，最终使用反向编号方案，在这种情况下为自由度的多网格编号。
+   * 你可以给出一个三角形水平，这个函数将被应用于此。
+   * 因为在逐级编号的情况下，没有悬空的节点，所以不能使用约束，所以前一个函数的相应参数被省略了。
+   * 有关不同方法的细节，请参见该类的一般文档。
    *
-   * You can give a triangulation level to which this function is to be
-   * applied.  Since with a level-wise numbering there are no hanging nodes,
-   * no constraints can be used, so the respective parameter of the previous
-   * function is omitted.
-   *
-   * See the general documentation of this class for details on the different
-   * methods.
    */
   template <int dim, int spacedim>
   void
@@ -626,35 +394,25 @@ namespace DoFRenumbering
                   std::vector<types::global_dof_index>());
 
   /**
-   * @name Component-wise numberings
-   * @{
+   * @name 分量上的编号  @{ .
+   *
    */
 
   /**
-   * Sort the degrees of freedom by vector component. The numbering within
-   * each component is not touched, so a degree of freedom with index $i$,
-   * belonging to some component, and another degree of freedom with index $j$
-   * belonging to the same component will be assigned new indices $n(i)$ and
-   * $n(j)$ with $n(i)<n(j)$ if $i<j$ and $n(i)>n(j)$ if $i>j$.
+   * 按向量分量对自由度进行排序。每个分量内的编号不被触及，所以一个自由度的索引
+   * $i$  ，属于某个分量，而另一个自由度的索引  $j$
+   * 属于同一个分量，将被分配新的索引  $n(i)$  和  $n(j)$
+   * ，如果  $i<j$  ，则  $n(i)>n(j)$  。
+   * 你可以指定组件的排序方式与你使用的FESystem对象所建议的方式不同。为此，设置向量
+   * @p target_component ，使索引 @p i
+   * 处的条目表示FESystem中具有组件 @p i
+   * 的目标组件的编号。
+   * 对同一目标组件进行多次命名是可能的，其结果是将几个组件阻塞成一个。这将在
+   * step-22
+   * 中讨论。如果你省略了这个参数，就会使用有限元给出的相同顺序。
+   * 如果这里考虑的全局有限元所来自的基础有限元之一是一个非原始的有限元，即它的形状函数有一个以上的非零分量，那么就不可能将这些自由度与单个矢量分量联系起来。在这种情况下，它们被与它们所属的第一个矢量分量相关联。
+   * 对于只有一个分量的有限元，或单一的非原始基元，这个函数是身份操作。
    *
-   * You can specify that the components are ordered in a different way than
-   * suggested by the FESystem object you use. To this end, set up the vector
-   * @p target_component such that the entry at index @p i denotes the number
-   * of the target component for dofs with component @p i in the FESystem.
-   * Naming the same target component more than once is possible and results
-   * in a blocking of several components into one. This is discussed in
-   * step-22. If you omit this argument, the same order as given by the finite
-   * element is used.
-   *
-   * If one of the base finite elements from which the global finite element
-   * under consideration here, is a non-primitive one, i.e. its shape
-   * functions have more than one non-zero component, then it is not possible
-   * to associate these degrees of freedom with a single vector component. In
-   * this case, they are associated with the first vector component to which
-   * they belong.
-   *
-   * For finite elements with only one component, or a single non-primitive
-   * base element, this function is the identity operation.
    */
   template <int dim, int spacedim>
   void
@@ -664,10 +422,8 @@ namespace DoFRenumbering
 
 
   /**
-   * Sort the degrees of freedom by component. It does the same thing as the
-   * above function, only that it does this for one single level of a
-   * multilevel discretization. The non-multigrid part of the DoFHandler
-   * is not touched.
+   * 按分量对自由度进行排序。它的作用与上述函数相同，只是它对多级离散化中的单级进行了操作。DoFHandler的非多网格部分没有被触及。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -677,9 +433,10 @@ namespace DoFRenumbering
                    std::vector<unsigned int>());
 
   /**
-   * Compute the renumbering vector needed by the component_wise() functions.
-   * Does not perform the renumbering on the DoFHandler dofs but returns the
-   * renumbering vector.
+   * 计算component_wise()函数所需的重新编号矢量。
+   * 不对DoFHandler
+   * dofs进行重新编号，但返回重新编号的向量。
+   *
    */
   template <int dim, int spacedim, typename CellIterator>
   types::global_dof_index
@@ -691,50 +448,40 @@ namespace DoFRenumbering
 
   /**
    * @}
-   */
-
-  /**
-   * @name Block-wise numberings
-   * @{
-   */
-
-  /**
-   * Sort the degrees of freedom by vector block. The numbering within each
-   * block is not touched, so a degree of freedom with index $i$, belonging to
-   * some block, and another degree of freedom with index $j$ belonging to the
-   * same block will be assigned new indices $n(i)$ and $n(j)$ with
-   * $n(i)<n(j)$ if $i<j$ and $n(i)>n(j)$ if $i>j$.
    *
-   * @note This function only succeeds if each of the elements in the
-   * hp::FECollection attached to the DoFHandler argument has exactly the
-   * same number of blocks (see
-   * @ref GlossBlock "the glossary"
-   * for more information). Note that this is not always given: while the
-   * hp::FECollection class ensures that all of its elements have the same
-   * number of vector components, they need not have the same number of
-   * blocks. At the same time, this function here needs to match individual
-   * blocks across elements and therefore requires that elements have the same
-   * number of blocks and that subsequent blocks in one element have the same
-   * meaning as in another element.
+   */
+
+  /**
+   * @name  块状的编号  @{
+   *
+   */
+
+  /**
+   * 按矢量块对自由度进行排序。每个块内的编号不被触及，所以一个自由度的索引
+   * $i$ ，属于某个块，而另一个自由度的索引 $j$
+   * 属于同一个块，将被分配新的索引 $n(i)$ 和 $n(j)$ ，如果
+   * $i<j$ ，则 $n(i)>n(j)$ ，如果 $i>j$  。
+   * @note  只有当附加到DoFHandler参数的 hp::FECollection 中的每个元素都有完全相同的块数时，该函数才会成功（更多信息见 @ref GlossBlock "术语表"
+   * ）。请注意，这并不总是给定的：虽然 hp::FECollection
+   * 类确保其所有元素具有相同数量的向量分量，但它们不需要有相同数量的块。同时，这里的这个函数需要跨元素匹配单个块，因此要求元素具有相同的块数，并且一个元素中的后续块与另一个元素中的意义相同。
+   *
    */
   template <int dim, int spacedim>
   void
   block_wise(DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * Sort the degrees of freedom by vector block. It does the same thing as
-   * the above function, only that it does this for one single level of a
-   * multilevel discretization. The non-multigrid part of the DoFHandler
-   * is not touched.
+   * 按矢量块对自由度进行排序。它的作用与上述函数相同，只是它对多级离散化中的一个单级进行排序。DoFHandler的非多网格部分不被触及。
+   *
    */
   template <int dim, int spacedim>
   void
   block_wise(DoFHandler<dim, spacedim> &dof_handler, const unsigned int level);
 
   /**
-   * Compute the renumbering vector needed by the block_wise() functions.
-   * Does not perform the renumbering on the DoFHandler dofs but returns the
-   * renumbering vector.
+   * 计算block_wise()函数所需的重新编号矢量。  不在DoFHandler
+   * dofs上执行重新编号，但返回重新编号向量。
+   *
    */
   template <int dim, int spacedim, class ITERATOR, class ENDITERATOR>
   types::global_dof_index
@@ -745,112 +492,74 @@ namespace DoFRenumbering
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Various cell-wise numberings
-   * @{
+   * @name  各种单元格的编号 @{  。
+   *
    */
 
   /**
-   * Renumber the degrees cell by cell by traversing the cells in
-   * @ref GlossZOrder "Z order".
+   * 通过以 @ref GlossZOrder "Z顺序 "
+   * 遍历单元格，逐个单元格重新编号。
+   * 使用这个函数有两个原因。
    *
-   * There are two reasons to use this function:
-   * - It produces a predictable ordering of degrees of freedom
-   *   that is independent of how exactly you arrived at a mesh.
-   *   In particular, in general the order of cells of a mesh
-   *   depends on the order in which cells were marked for
-   *   refinement and coarsening during the refinement cycles
-   *   the mesh has undergone. On the other hand, the z-order
-   *   of cells is independent of the mesh's history, and so yields a
-   *   predictable DoF numbering.
-   * - For meshes based on parallel::distributed::Triangulation,
-   *   the
-   *   @ref GlossLocallyOwnedCell "locally owned cells"
-   *   of
-   *   each MPI process are contiguous in Z order. That means that
-   *   numbering degrees of freedom by visiting cells in Z order yields
-   *   @ref GlossLocallyOwnedDof "locally owned DoF indices"
-   *   that consist
-   *   of contiguous ranges for each process. This is also true for the
-   *   default ordering of DoFs on such triangulations, but the default
-   *   ordering creates an enumeration that also depends on how many
-   *   processors participate in the mesh, whereas the one generated
-   *   by this function enumerates the degrees of freedom on a particular
-   *   cell with indices that will be the same regardless of how many
-   *   processes the mesh is split up between.
    *
-   * For meshes based on parallel::shared::Triangulation, the situation is
-   * more complex. Here, the set of locally owned cells is determined by
-   * a partitioning algorithm (selected by passing an object of type
-   * parallel::shared::Triangulation::Settings to the constructor of the
-   * triangulation), and in general these partitioning algorithms may
-   * assign cells to
-   * @ref GlossSubdomainId "subdomains"
-   * based on
-   * decisions that may have nothing to do with the Z order. (Though it
-   * is possible to select these flags in a way so that partitioning
-   * uses the Z order.) As a consequence, the cells of one subdomain
-   * are not contiguous in Z order, and if one renumbered degrees of freedom
-   * based on the Z order of cells, one would generally end up with DoF
-   * indices that on each processor do not form a contiguous range.
-   * This is often inconvenient (for example, because PETSc cannot store
-   * vectors and matrices for which the locally owned set of indices
-   * is not contiguous), and consequently this function uses the following
-   * algorithm for parallel::shared::Triangulation objects:
-   * - It determines how many degrees of freedom each processor owns.
-   *   This is an invariant under renumbering, and consequently we can
-   *   use how many DoFs each processor owns at the beginning of the current
-   *   function. Let us call this number $n_P$ for processor $P$.
-   * - It determines for each processor a contiguous range of new
-   *   DoF indices $[b_P,e_P)$ so that $e_P-b_P=n_P$, $b_0=0$, and
-   *   $b_P=e_{P-1}$.
-   * - It traverses the <i>locally owned cells</i> in Z order and
-   *   renumbers the locally owned degrees of freedom on these cells
-   *   so that the new numbers fit within the interval $[b_P,e_P)$.
-   * In other words, the <i>locally owned degrees of freedom</i> on each
-   * processor are sorted according to the Z order of the locally
-   * owned cells they are on, but this property may not hold globally,
-   * across cells. This is because the partitioning algorithm may have
-   * decided that, for example, processor 0 owns a cell that comes
-   * <i>later</i> in Z order than one of the cells assigned to processor 1.
-   * On the other hand, the algorithm described above assigns the
-   * degrees of freedom on this cell <i>earlier</i> indices than
-   * all of the indices owned by processor 1.
    *
-   * @note This function generates an ordering that is independent of the previous
-   * numbering of degrees of freedom. In other words, any information that may
-   * have been produced by a previous call to a renumbering function is
-   * ignored.
+   *
+   *
+   *
+   * - 它产生一个可预测的自由度排序，与你究竟是如何得到一个网格的无关。    特别是，一般来说，一个网格的单元的顺序取决于在网格所经历的细化周期中，单元被标记为细化和粗化的顺序。另一方面，单元格的Z轴顺序与网格的历史无关，因此产生一个可预测的DoF编号。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 对于基于 parallel::distributed::Triangulation, 的网格，每个MPI进程的 @ref GlossLocallyOwnedCell "本地拥有的单元 "按Z顺序是连续的。这意味着通过按Z顺序访问单元来对自由度进行编号可以得到 @ref GlossLocallyOwnedDof "本地拥有的DoF指数"，它由每个进程的连续范围组成。这对于这种三角形上的DoF的默认排序也是如此，但是默认排序产生的枚举也取决于有多少个处理器参与到网格中，而这个函数产生的枚举是在一个特定的单元上的自由度的指数，无论网格被分割成多少个进程都是一样的。    对于基于 parallel::shared::Triangulation, 的网格，情况更为复杂。在这里，本地拥有的单元的集合是由分区算法决定的（通过传递一个 parallel::shared::Triangulation::Settings 类型的对象给三角化的构造器来选择），一般来说，这些分区算法可能会根据与Z顺序无关的决定将单元分配到 @ref GlossSubdomainId 的 "子域"。(尽管有可能以一种方式选择这些标志，从而使分区使用Z顺序)。因此，一个子域的单元在Z顺序中是不连续的，如果根据单元的Z顺序对自由度进行重新编号，通常会导致每个处理器上的自由度指数不形成一个连续的范围。  这通常是不方便的（例如，因为PETSc不能存储本地拥有的指数集不连续的向量和矩阵），因此这个函数对 parallel::shared::Triangulation 对象使用以下算法。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 它决定了每个处理器拥有多少个自由度。    这是在重新编号下的一个不变因素，因此我们可以使用每个处理器在当前函数开始时拥有多少个自由度。让我们把这个数字称为 $n_P$ ，用于处理器 $P$  。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 它为每个处理器确定一个新的DoF指数 $[b_P,e_P)$ 的连续范围，以便 $e_P-b_P=n_P$ 、 $b_0=0$ 和 $b_P=e_{P-1}$  。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 它按Z顺序遍历<i>locally owned cells</i>，并对这些单元上本地拥有的自由度重新编号，使新的数字符合区间 $[b_P,e_P)$ 。  换句话说，每个处理器上的<i>locally owned degrees of freedom</i>是根据它们所在的本地拥有的单元的Z顺序进行排序的，但这一属性可能在全局上、在各单元之间不成立。这是因为分区算法可能已经决定，例如，处理器0拥有的单元格比分配给处理器1的一个单元格的Z顺序来<i>later</i>。  另一方面，上述算法在这个单元上分配的自由度<i>earlier</i>指数比处理器1拥有的所有指数都要高。
+   * @note
+   * 这个函数产生的排序与之前自由度的编号无关。换句话说，任何可能由先前调用重新编号函数产生的信息都被忽略。
+   *
    */
   template <int dim, int spacedim>
   void
   hierarchical(DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * Renumber degrees of freedom by cell. The function takes a vector of cell
-   * iterators (which needs to list <i>all</i> locally owned active cells of the
-   * DoF handler objects) and will give degrees of freedom new indices based on
-   * where in the given list of cells the cell is on which the degree of freedom
-   * is located. Degrees of freedom that exist at the interface between two or
-   * more cells will be numbered when they are encountered first.
+   * 按单元重新编号自由度。该函数接收一个单元格迭代器的向量（需要列出<i>all</i>DoF处理对象的本地拥有的活动单元格），并将根据自由度所在的单元格在给定的单元格列表中的位置给予自由度新的指数。存在于两个或多个单元间界面的自由度将在首先遇到时被编号。
+   * 在同一单元上首先遇到的自由度在重新编号步骤前保留其原始顺序。
+   * @param[in,out]  dof_handler
+   * 其自由度将被重新编号的DoFHandler。    @param[in]  cell_order
+   * 包含定义自由度应被重新编号的单元格的顺序的向量。
+   * @pre 对于串行三角形 @p cell_order 必须有
+   * <code>dof_handler.get_triangulation().n_active_cells()</code>
+   * 的大小，而对于并行三角形，其大小应该是
+   * parallel::TriangulationBase::n_locally_owned_active_cells().
+   * 该三角形的每个活动单元迭代器需要正好出现在 @p
+   * cell_order 中一次。
    *
-   * Degrees of freedom that are encountered first on the same cell retain
-   * their original ordering before the renumbering step.
-   *
-   * @param[in,out] dof_handler The DoFHandler whose degrees of freedom are to
-   * be renumbered.
-   * @param[in] cell_order A vector that contains the order of the cells that
-   * defines the order in which degrees of freedom should be renumbered.
-   *
-   * @pre for serial triangulation @p cell_order must have size
-   * <code>dof_handler.get_triangulation().n_active_cells()</code>, whereas
-   * in case of parallel triangulation its size should be
-   * parallel::TriangulationBase::n_locally_owned_active_cells(). Every active
-   * cell
-   * iterator of that triangulation needs to be present in @p cell_order exactly
-   * once.
    */
   template <int dim, int spacedim>
   void
@@ -860,39 +569,28 @@ namespace DoFRenumbering
       &cell_order);
 
   /**
-   * Compute a renumbering of degrees of freedom by cell. The function takes a
-   * vector of cell iterators (which needs to list <i>all</i> locally owned
-   * active cells of the DoF handler objects) and will give degrees of freedom
-   * new indices based on where in the given list of cells the cell is on which
-   * the degree of freedom is located. Degrees of freedom that exist at the
-   * interface between two or more cells will be numbered when they are
-   * encountered first.
+   * 按单元计算自由度的重新编号。该函数接收一个单元格迭代器的向量（需要列出<i>all</i>DoF处理对象的本地拥有的活动单元格），并将根据自由度所在的单元格在给定的单元格列表中的位置，给自由度以新的索引。存在于两个或多个单元间界面的自由度将在首先遇到时被编号。
+   * 在同一单元上首先遇到的自由度在重新编号步骤之前保留其原始排序。
+   * @param[out]  重新编号 一个长度为
+   * <code>dof_handler.n_locally_owned_dofs()</code>
+   * 的向量，包含每个自由度（以其当前编号）的未来DoF索引。因此，这个向量呈现了当前DoF指数的（非常特殊的）<i>permutation</i>。
+   * @param[out]  inverse_renumbering
+   * 前一个参数中返回的排列组合的反向。在
+   * parallel::TriangulationBase
+   * 的情况下，逆向是在本地拥有的DoF内。    @param[in]
+   * dof_handler 其自由度要重新编号的DoFHandler。    @param[in]
+   * cell_order
+   * 包含定义自由度应被重新编号的单元的顺序的向量。
+   * @pre  对于串行三角计算 @p cell_order 必须有大小
+   * <code>dof_handler.get_triangulation().n_active_cells()</code>
+   * ，而对于并行三角计算，其大小应该是
+   * parallel::TriangulationBase::n_locally_owned_active_cells().
+   * 该三角计算的每个活动单元迭代器需要在 @p
+   * cell_order中精确出现一次。  @post  对于零和
+   * <code>dof_handler.n_locally_owned_dofs()</code> 之间的每个 @p i
+   * ，<code>renumbering[inverse_renumbering[i]] ==
+   * dof_handler.local_owned_dofs().nth_index_in_set(i)</code>条件将成立。
    *
-   * Degrees of freedom that are encountered first on the same cell retain
-   * their original ordering before the renumbering step.
-   *
-   * @param[out] renumbering A vector of length
-   * <code>dof_handler.n_locally_owned_dofs()</code> that contains for each
-   * degree of freedom (in their current numbering) their future DoF index. This
-   * vector therefore presents a (very particular) <i>permutation</i> of the
-   * current DoF indices.
-   * @param[out] inverse_renumbering The reverse of the permutation returned
-   * in the previous argument. In case of parallel::TriangulationBase the
-   * inverse is within locally owned DoFs.
-   * @param[in] dof_handler The DoFHandler whose degrees of freedom are to be
-   * renumbered.
-   * @param[in] cell_order A vector that contains the order of the cells that
-   * defines the order in which degrees of freedom should be renumbered.
-   *
-   * @pre for serial triangulation @p cell_order must have size
-   * <code>dof_handler.get_triangulation().n_active_cells()</code>, whereas
-   * in case of parallel triangulation its size should be
-   * parallel::TriangulationBase::n_locally_owned_active_cells(). Every active
-   * cell iterator of that triangulation needs to be present in @p
-   * cell_order exactly once. @post For each @p i between zero and
-   * <code>dof_handler.n_locally_owned_dofs()</code>, the condition
-   * <code>renumbering[inverse_renumbering[i]] ==
-   * dof_handler.locally_owned_dofs().nth_index_in_set(i)</code> will hold.
    */
   template <int dim, int spacedim>
   void
@@ -904,8 +602,8 @@ namespace DoFRenumbering
       &cell_order);
 
   /**
-   * Like the other cell_wise() function, but for one level of a multilevel
-   * enumeration of degrees of freedom.
+   * 像其他cell_wise()函数一样，但对于多级自由度枚举中的一级。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -916,8 +614,8 @@ namespace DoFRenumbering
       &cell_order);
 
   /**
-   * Like the other compute_cell_wise() function, but for one level of a
-   * multilevel enumeration of degrees of freedom.
+   * 像其他compute_cell_wise()函数一样，但对多级自由度枚举中的一级而言。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -931,38 +629,26 @@ namespace DoFRenumbering
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Directional numberings
-   * @{
+   * @name 方向性编号  @{ 。
+   *
    */
 
   /**
-   * Downstream numbering with respect to a constant flow direction. If the
-   * additional argument @p dof_wise_renumbering is set to @p false, the
-   * numbering is performed cell-wise, otherwise it is performed based on the
-   * location of the support points.
+   * 相对于恒定流向的下游编号。如果附加参数 @p
+   * dof_wise_renumbering 被设置为 @p false,
+   * ，则按单元进行编号，否则根据支持点的位置进行编号。
+   * 单元的排序是这样的：相对于常数向量 @p direction
+   * ，编号较高的单元中心比编号较低的单元中心更靠下游。即使这在相当普遍的网格中产生了一个相对于边缘通量的下游编号，这也不一定能保证所有网格的通量。
+   * 如果 @p dof_wise_renumbering 参数被设置为 @p false,
+   * ，该函数会产生一个网格单元的下游排序，并调用cell_wise()。
+   * 因此，在这种情况下，输出结果只对非连续加尔金有限元有意义（在这种情况下，所有的自由度都必须与单元的内部相关联）。
+   * 如果 @p dof_wise_renumbering 被设置为 @p true,
+   * ，自由度将根据各个自由度的支持点位置重新编号（显然，有限元需要定义支持点才能发挥作用）。下游位置相同的点的编号（例如那些与流动方向平行的点，或者一个FES系统内的几个自由度）将不受影响。
    *
-   * The cells are sorted such that the centers of cells numbered higher are
-   * further
-   * downstream with respect to the constant vector @p direction than the
-   * centers of cells numbered lower. Even if this yields a downstream numbering
-   * with respect to the flux on the edges for fairly general grids, this might
-   * not be guaranteed for all meshes.
-   *
-   * If the @p dof_wise_renumbering argument is set to @p false, this function
-   * produces a downstream ordering of the mesh cells and calls cell_wise().
-   * Therefore, the output only makes sense for Discontinuous Galerkin Finite
-   * Elements (all degrees of freedom have to be associated with the interior
-   * of the cell in that case) in that case.
-   *
-   * If @p dof_wise_renumbering is set to @p true, the degrees of freedom are
-   * renumbered based on the support point location of the individual degrees
-   * of freedom (obviously, the finite element needs to define support points
-   * for this to work). The numbering of points with the same position in
-   * downstream location (e.g. those parallel to the flow direction, or
-   * several dofs within a FESystem) will be unaffected.
    */
   template <int dim, int spacedim>
   void
@@ -972,9 +658,8 @@ namespace DoFRenumbering
 
 
   /**
-   * Cell-wise downstream numbering with respect to a constant flow direction
-   * on one level of a multigrid hierarchy. See the other function with the same
-   * name.
+   * 相对于多网格层次结构中某一层的恒定流向，进行单元的下游编号。参见同名的其他函数。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -984,9 +669,10 @@ namespace DoFRenumbering
              const bool                 dof_wise_renumbering = false);
 
   /**
-   * Compute the set of renumbering indices needed by the downstream() function.
-   * Does not perform the renumbering on the DoFHandler dofs but returns the
-   * renumbering vector.
+   * 计算downstream()函数所需的重新编号索引集。
+   * 不对DoFHandler
+   * dofs进行重新编号，但返回重新编号的向量。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -997,9 +683,9 @@ namespace DoFRenumbering
                      const bool dof_wise_renumbering);
 
   /**
-   * Compute the set of renumbering indices needed by the downstream() function.
-   * Does not perform the renumbering on the DoFHandler dofs but returns the
-   * renumbering vector.
+   * 计算下游()函数所需的重新编号索引集。  不对DoFHandler
+   * dofs进行重新编号，但返回重新编号的向量。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1011,12 +697,11 @@ namespace DoFRenumbering
                      const bool dof_wise_renumbering);
 
   /**
-   * Cell-wise clockwise numbering.
+   * 单元的顺时针编号。    这个函数产生一个相对于中心 @p
+   * center
+   * 的网格单元的（反）顺时针排序，并调用cell_wise()。
+   * 因此，它只适用于不连续的Galerkin有限元，即所有的自由度都必须与单元的内部相关。
    *
-   * This function produces a (counter)clockwise ordering of the mesh cells
-   * with respect to the hub @p center and calls cell_wise().  Therefore, it
-   * only works with Discontinuous Galerkin Finite Elements, i.e. all degrees
-   * of freedom have to be associated with the interior of the cell.
    */
   template <int dim, int spacedim>
   void
@@ -1025,8 +710,8 @@ namespace DoFRenumbering
                const bool                 counter = false);
 
   /**
-   * Cell-wise clockwise numbering on one level of a multigrid
-   * hierarchy. See the other function with the same name.
+   * 在多网格层次结构的一个层面上进行单元的顺时针编号。参见同名的其他函数。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1036,9 +721,10 @@ namespace DoFRenumbering
                const bool                 counter = false);
 
   /**
-   * Compute the renumbering vector needed by the clockwise_dg() functions.
-   * Does not perform the renumbering on the DoFHandler dofs but returns the
-   * renumbering vector.
+   * 计算clockwise_dg()函数所需的重新编号向量。
+   * 不对DoFHandler
+   * dofs进行重新编号，但返回重新编号的向量。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1049,21 +735,20 @@ namespace DoFRenumbering
 
   /**
    * @}
-   */
-
-  /**
-   * @name Selective and random numberings
-   * @{
-   */
-
-  /**
-   * Sort those degrees of freedom which are tagged with @p true in the @p
-   * selected_dofs array to the back of the DoF numbers. The sorting is
-   * stable, i.e. the relative order within the tagged degrees of freedom is
-   * preserved, as is the relative order within the untagged ones.
    *
-   * @pre The @p selected_dofs array must have as many elements as the @p
-   * dof_handler has degrees of freedom.
+   */
+
+  /**
+   * @name  选择性的和随机的编号  @{  。
+   *
+   */
+
+  /**
+   * 将那些在 @p selected_dofs数组中被标记为 @p true
+   * 的自由度排序到自由度编号的后面。这种排序是稳定的，也就是说，被标记的自由度中的相对顺序被保留，未被标记的自由度中的相对顺序也被保留。
+   * @pre  @p selected_dofs 数组的元素数量必须与 @p
+   * Dof_handler的自由度一样多。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1071,14 +756,12 @@ namespace DoFRenumbering
                           const std::vector<bool> &  selected_dofs);
 
   /**
-   * Sort those degrees of freedom which are tagged with @p true in the @p
-   * selected_dofs array on the level @p level to the back of the DoF numbers.
-   * The sorting is stable, i.e. the relative order within the tagged degrees
-   * of freedom is preserved, as is the relative order within the untagged
-   * ones.
+   * 将那些在 @p selected_dofs数组中被标记为 @p true
+   * 的自由度排序到DoF数字的后面。
+   * 这种排序是稳定的，也就是说，被标记的自由度内的相对顺序被保留，未被标记的自由度内的相对顺序也被保留。
+   * @pre  @p selected_dofs 数组的元素数量必须与 @p
+   * Dof_handler在给定层次上的自由度相同。
    *
-   * @pre The @p selected_dofs array must have as many elements as the @p
-   * dof_handler has degrees of freedom on the given level.
    */
   template <int dim, int spacedim>
   void
@@ -1087,12 +770,11 @@ namespace DoFRenumbering
                           const unsigned int         level);
 
   /**
-   * Compute the renumbering vector needed by the sort_selected_dofs_back()
-   * function. Does not perform the renumbering on the DoFHandler dofs but
-   * returns the renumbering vector.
+   * 计算sort_selected_dofs_back()函数所需的重新编号向量。不对DoFHandler
+   * dofs进行重新编号，但返回重新编号的向量。      @pre  @p
+   * selected_dofs 数组的元素数必须与 @p
+   * dof_handler的自由度数一样多。
    *
-   * @pre The @p selected_dofs array must have as many elements as the @p
-   * dof_handler has degrees of freedom.
    */
   template <int dim, int spacedim>
   void
@@ -1102,13 +784,11 @@ namespace DoFRenumbering
     const std::vector<bool> &             selected_dofs);
 
   /**
-   * This function computes the renumbering vector on each level needed by the
-   * sort_selected_dofs_back() function. Does not perform the renumbering on
-   * the DoFHandler dofs but only computes the renumbering and returns the
-   * renumbering vector.
+   * 这个函数计算sort_selected_dofs_back()函数所需要的每一层的重新编号向量。不对DoFHandler
+   * dofs进行重新编号，只计算重新编号并返回重新编号向量。
+   * @pre  @p selected_dofs 数组的元素数量必须与 @p
+   * Dof_handler在给定层次上的自由度相同。
    *
-   * @pre The @p selected_dofs array must have as many elements as the @p
-   * dof_handler has degrees of freedom on the given level.
    */
   template <int dim, int spacedim>
   void
@@ -1119,35 +799,26 @@ namespace DoFRenumbering
     const unsigned int                    level);
 
   /**
-   * Renumber the degrees of freedom in a random way. The result of this
-   * function is repeatable in that two runs of the same program will yield
-   * the same result. This is achieved by creating a new random number
-   * generator with a fixed seed every time this function is entered. In
-   * particular, the function therefore does not rely on an external random
-   * number generator for which it would matter how often it has been called
-   * before this function (or, for that matter, whether other threads running
-   * concurrently to this function also draw random numbers).
+   * 以随机的方式对自由度重新编号。这个函数的结果是可重复的，即同一程序的两次运行将产生相同的结果。这是通过每次输入这个函数时用固定的种子创建一个新的随机数发生器来实现的。特别是，该函数因此不依赖于外部随机数生成器，因为它在该函数之前被调用的次数很重要（或者，就这一点而言，与该函数同时运行的其他线程是否也在绘制随机数）。
+   *
    */
   template <int dim, int spacedim>
   void
   random(DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * Renumber the degrees of freedom in a random way. It does the same thing as
-   * the above function, only that it does this for one single level of a
-   * multilevel discretization. The non-multigrid part of the DoFHandler
-   * is not touched.
+   * 以随机的方式对自由度重新编号。它的作用与上述函数相同，只是它是针对多级离散化中的一个单级进行的。DoFHandler的非多网格部分不被触及。
+   *
    */
   template <int dim, int spacedim>
   void
   random(DoFHandler<dim, spacedim> &dof_handler, const unsigned int level);
 
   /**
-   * Compute the renumbering vector needed by the random() function. See
-   * there for more information on the computed random renumbering.
+   * 计算随机()函数所需的重新编号向量。关于计算的随机重新编号的更多信息，见那里。
+   * 这个函数并不对DoFHandler
+   * dofs进行重新编号，而是返回重新编号的向量。
    *
-   * This function does not perform the renumbering on the DoFHandler dofs but
-   * returns the renumbering vector.
    */
   template <int dim, int spacedim>
   void
@@ -1155,9 +826,8 @@ namespace DoFRenumbering
                  const DoFHandler<dim, spacedim> &     dof_handler);
 
   /**
-   * Compute the renumbering vector needed by the random() function. Same
-   * as the above function but for a single level of a multilevel
-   * discretization.
+   * 计算随机()函数所需的重新编号向量。与上述函数相同，但用于多级离散化的单级。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1167,43 +837,32 @@ namespace DoFRenumbering
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Numberings based on cell attributes
-   * @{
+   * @name  基于单元格属性的编号  @{  。
+   *
    */
 
   /**
-   * Renumber the degrees of freedom such that they are associated with the
-   * subdomain id of the cells they are living on, i.e. first all degrees of
-   * freedom that belong to cells with subdomain zero, then all with subdomain
-   * one, etc. This is useful when doing parallel computations with a standard
-   * Triangulation after assigning subdomain ids using a partitioner (see the
-   * GridTools::partition_triangulation function for this). Calling this
-   * function is unnecessary when using a parallel::shared::Triangulation or
-   * parallel::distributed::Triangulation, as the degrees of freedom are
-   * already enumerated according to the MPI process id. Therefore, if the
-   * underlying triangulation is of this type then an error will be thrown.
+   * 对自由度进行重新编号，使其与它们所在的单元格的子域ID相关联，即首先对属于子域0的单元格的所有自由度进行编号，然后是子域1的所有自由度，等等。这在使用分区器分配子域ID后用标准三角法进行并行计算时非常有用（见
+   * GridTools::partition_triangulation 函数）。当使用
+   * parallel::shared::Triangulation 或 parallel::distributed::Triangulation,
+   * 时，调用这个函数是不必要的，因为自由度已经根据MPI进程ID被列举出来。因此，如果底层三角结构是这种类型，那么将产生一个错误。
+   * 请注意，与面、边和顶点相关的自由度可能与多个子域相关，如果它们位于分区边界。因此，它们必须与哪个子域相关联是不确定的。对于这一点，我们使用从
+   * DoFTools::get_subdomain_association 函数中得到的东西。
+   * 该算法是稳定的，即如果两个道夫i,j有<tt>i<j</tt>并且属于同一个子域，那么它们在重新排序后也将是这个顺序。
    *
-   * Note that degrees of freedom associated with faces, edges, and vertices
-   * may be associated with multiple subdomains if they are sitting on
-   * partition boundaries. It would therefore be undefined with which
-   * subdomain they have to be associated. For this, we use what we get from
-   * the DoFTools::get_subdomain_association function.
-   *
-   * The algorithm is stable, i.e. if two dofs i,j have <tt>i<j</tt> and
-   * belong to the same subdomain, then they will be in this order also after
-   * reordering.
    */
   template <int dim, int spacedim>
   void
   subdomain_wise(DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * Compute the renumbering vector needed by the subdomain_wise() function.
-   * Does not perform the renumbering on the @p DoFHandler dofs but returns
-   * the renumbering vector.
+   * 计算subdomain_wise()函数所需的重新编号的向量。  不对 @p
+   * DoFHandler Dofs进行重新编号，但返回重新编号的向量。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1212,14 +871,15 @@ namespace DoFRenumbering
 
   /**
    * @}
+   *
    */
 
 
 
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclExceptionMsg(ExcDoFHandlerNotInitialized,
                    "The DoFHandler on which this function should work has not "
@@ -1227,17 +887,16 @@ namespace DoFRenumbering
                    "have been distributed on it.");
 
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcInvalidComponentOrder);
 
   /**
-   * The function is only implemented for Discontinuous Galerkin Finite
-   * elements.
-   *
+   * 该函数仅对不连续的Galerkin有限元素实现。
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcNotDGFEM);
 } // namespace DoFRenumbering
@@ -1246,3 +905,5 @@ namespace DoFRenumbering
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

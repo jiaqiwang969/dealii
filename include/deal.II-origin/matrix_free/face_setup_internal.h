@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/face_setup_internal_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -42,8 +41,8 @@ namespace internal
   namespace MatrixFreeFunctions
   {
     /**
-     * 一个结构，用于表示一个进程的面孔集合，其邻居之一在结构FaceInfo中完成的设置。
-     *
+     * A struct that is used to represent a collection of faces of a process
+     * with one of its neighbor within the setup done in struct FaceInfo.
      */
     struct FaceIdentifier
     {
@@ -60,8 +59,12 @@ namespace internal
 
 
     /**
-     * 一个结构，用于提取与给定单元集相关的面，包括分配子域边界的两个相邻处理器中的哪一个应该进行整合（从两边）。这个数据结构用于设置面和单元之间的连接，以及识别用于面积分的dof指数。
-     *
+     * A struct that extracts the faces relevant to a given set of cells,
+     * including the assignment of which of the two neighboring processors at
+     * a subdomain boundary with MPI should do the integration (from both
+     * sides). This data structure is used for the setup of the connectivity
+     * between faces and cells and for identification of the dof indices to be
+     * used for face integrals.
      */
     template <int dim>
     struct FaceSetup
@@ -69,8 +72,10 @@ namespace internal
       FaceSetup();
 
       /**
-       * 在读取单元格上的指数之前，进行面的初始检测。这并不是在添加面孔，而只是决定是否应该考虑对一些面孔进行本地处理。
-       *
+       * Perform the initial detection of faces before reading the indices on
+       * the cells. This does not add the faces yet but only decides on
+       * whether some of the faces should be considered for processing
+       * locally.
        */
       void
       initialize(
@@ -80,8 +85,10 @@ namespace internal
         std::vector<std::pair<unsigned int, unsigned int>> &cell_levels);
 
       /**
-       * 在完成dof指数后，这个函数提取与FaceToCellTopology相关的信息，并将面孔分为内部面孔、边界面孔和幽灵面孔（未在本地处理但与本地存在的一些单元相邻）。
-       *
+       * Upon completion of the dof indices, this function extracts the
+       * information relevant for FaceToCellTopology and categorizes the faces
+       * into interior faces, boundary faces, and ghost faces (not processed
+       * locally but adjacent to some of the cells present locally).
        */
       void
       generate_faces(
@@ -90,8 +97,10 @@ namespace internal
         TaskInfo &                                                task_info);
 
       /**
-       * 将单元格的信息、面数和MatrixFree中的纯数组表示法中的数字填入FaceToCellTopology中（没有矢量化，这是在后面应用的东西）。
-       *
+       * Fills the information about the cell, the face number, and numbers
+       * within the plain array representation in MatrixFree into
+       * FaceToCellTopology (without vectorization, which is something applied
+       * later).
        */
       FaceToCellTopology<1>
       create_face(
@@ -104,8 +113,8 @@ namespace internal
       bool use_active_cells;
 
       /**
-       * 一个在第一个initialize()函数中对面孔进行分类的类型，这样我们以后可以在generate_faces()中得到它们的正确值。
-       *
+       * A type that categorizes faces in the first initialize() function such
+       * that we can later get their correct value in generate_faces().
        */
       enum class FaceCategory : char
       {
@@ -127,8 +136,7 @@ namespace internal
 
 
     /**
-     * 实际上形成了脸部积分的矢量执行的批次。
-     *
+     * Actually form the batches for vectorized execution of face integrals.
      */
     template <int vectorization_width>
     void
@@ -140,7 +148,7 @@ namespace internal
 
 
 
-     /* -------------------------------------------------------------------- */ 
+    /* -------------------------------------------------------------------- */
 
 #ifndef DOXYGEN
 
@@ -1022,8 +1030,10 @@ namespace internal
 
 
     /**
-     * 这个用于collect_faces_vectorization()的简单比较可以识别相同类型的面，即所有内部和外部面的编号、子面索引和方向都相同。这被用来将相似的面孔集中起来进行矢量化。
-     *
+     * This simple comparison for collect_faces_vectorization() identifies
+     * faces of the same type, i.e., where all of the interior and exterior
+     * face number, subface index and orientation are the same. This is used
+     * to batch similar faces together for vectorization.
      */
     inline bool
     compare_faces_for_vectorization(
@@ -1061,8 +1071,10 @@ namespace internal
 
 
     /**
-     * 这个比较器在collect_faces_vectorization()中被用来创建一个基于标识符的FaceToCellTopology对象的排序。这被用来在处理脸部积分时获得良好的数据定位。
-     *
+     * This comparator is used within collect_faces_vectorization() to create
+     * a sorting of FaceToCellTopology objects based on their
+     * identifiers. This is used to obtain a good data locality when
+     * processing the face integrals.
      */
     template <int length>
     struct FaceComparator
@@ -1347,5 +1359,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

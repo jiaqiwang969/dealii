@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/petsc_matrix_free_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2012 - 2020 by the deal.II authors
@@ -30,53 +31,43 @@ DEAL_II_NAMESPACE_OPEN
 namespace PETScWrappers
 {
   /**
-   * Implementation of a parallel matrix class based on PETSc
-   * <tt>MatShell</tt> matrix-type. This base class implements only the
-   * interface to the PETSc matrix object, while all the functionality is
-   * contained in the matrix-vector multiplication which must be reimplemented
-   * in derived classes.
-   *
-   * This interface is an addition to the dealii::MatrixFree class to realize
-   * user-defined matrix-classes together with PETSc solvers and
-   * functionalities. See also the documentation of dealii::MatrixFree class
-   * and step-37 and step-48.
-   *
-   * Similar to other matrix classes in namespaces PETScWrappers and
-   * PETScWrappers::MPI, the MatrixFree class provides the usual matrix-vector
-   * multiplication <tt>vmult(VectorBase &dst, const VectorBase &src)</tt>
-   * which is pure virtual and must be reimplemented in derived classes.
-   * Besides the usual interface, this class has a matrix-vector
-   * multiplication <tt>vmult(Vec &dst, const Vec &src)</tt> taking PETSc Vec
-   * objects, which will be called by <tt>matrix_free_mult(Mat A, Vec src, Vec
-   * dst)</tt> registered as matrix-vector multiplication of this PETSc matrix
-   * object. The default implementation of the vmult function in the base
-   * class wraps the given PETSc vectors with the PETScWrappers::VectorBase
-   * class and then calls the usual vmult function with the usual interface.
-   *
+   * 实现一个基于PETSc <tt>MatShell</tt>
+   * 矩阵类型的并行矩阵类。这个基类只实现了PETSc矩阵对象的接口，而所有的功能都包含在矩阵-向量乘法中，必须在派生类中重新实现。
+   * 这个接口是对 dealii::MatrixFree
+   * 类的补充，以实现用户定义的矩阵类与PETSc解算器和功能。参见
+   * dealii::MatrixFree  类和  step-37  以及  step-48  的文档。
+   * 与命名空间PETScWrappers和 PETScWrappers::MPI,
+   * 中的其他矩阵类类似，MatrixFree类提供了通常的矩阵-向量乘法<tt>vmult(VectorBase
+   * &dst, const VectorBase
+   * &src)</tt>，它是纯虚拟的，必须在派生类中重新实现。
+   * 除了通常的接口，这个类还有一个矩阵向量乘法<tt>vmult(Vec
+   * &dst, const Vec &src)</tt>，采取PETSc
+   * Vec对象，它将被<tt>matrix_free_mult(Mat A, Vec src, Vec
+   * dst)</tt>注册为这个PETSc矩阵对象的矩阵-向量乘法。基类中vmult函数的默认实现是用
+   * PETScWrappers::VectorBase
+   * 类包装给定的PETSc向量，然后用常规接口调用常规vmult函数。
    * @ingroup PETScWrappers
    * @ingroup Matrix1
+   *
    */
   class MatrixFree : public MatrixBase
   {
   public:
     /**
-     * Default constructor. Create an empty matrix object.
+     * 默认构造函数。创建一个空的矩阵对象。
+     *
      */
     MatrixFree();
 
     /**
-     * Create a matrix object of dimensions @p m times @p n with communication
-     * happening over the provided @p communicator.
+     * 创建一个尺寸为 @p m 乘以 @p n
+     * 的矩阵对象，通过提供的 @p communicator. 进行通信。
+     * 关于 @p local_rows 和 @p local_columns 参数的含义，请参阅
+     * PETScWrappers::MPI::SparseMatrix 类文档。
+     * 与其他PETSc矩阵一样，无矩阵对象也需要有一个大小，并能有效地并行执行矩阵向量乘法
+     * @p local_rows 和 @p local_columns. ，但与 PETSc::SparseMatrix
+     * 类相反，PETSc无矩阵对象不需要对非零项进行任何估计，也没有<tt>is_symmetric</tt>选项。
      *
-     * For the meaning of the @p local_rows and @p local_columns parameters,
-     * see the PETScWrappers::MPI::SparseMatrix class documentation.
-     *
-     * As other PETSc matrices, also the matrix-free object needs to have
-     * a size and to perform matrix vector multiplications efficiently in
-     * parallel also @p local_rows and @p local_columns. But in contrast to
-     * PETSc::SparseMatrix classes a PETSc matrix-free object does not need
-     * any estimation of non_zero entries and has no option
-     * <tt>is_symmetric</tt>.
      */
     MatrixFree(const MPI_Comm &   communicator,
                const unsigned int m,
@@ -85,15 +76,12 @@ namespace PETScWrappers
                const unsigned int local_columns);
 
     /**
-     * Create a matrix object of dimensions @p m times @p n with communication
-     * happening over the provided @p communicator.
+     * 创建一个尺寸为 @p m 乘以 @p n
+     * 的矩阵对象，并通过提供的 @p communicator. 进行通信。
+     * 与其他PETSc矩阵一样，无矩阵对象也需要有一个尺寸，并能有效地并行执行矩阵向量乘法，但与
+     * PETSc::SparseMatrix
+     * 类相反，PETSc无矩阵对象不需要对非零项进行任何估计，也没有<tt>is_symmetric</tt>选项。
      *
-     * As other PETSc matrices, also the matrix-free object needs to have
-     * a size and to perform matrix vector multiplications efficiently in
-     * parallel also @p local_rows and @p local_columns. But in contrast to
-     * PETSc::SparseMatrix classes a PETSc matrix-free object does not need
-     * any estimation of non_zero entries and has no option
-     * <tt>is_symmetric</tt>.
      */
     MatrixFree(const MPI_Comm &                 communicator,
                const unsigned int               m,
@@ -103,9 +91,9 @@ namespace PETScWrappers
                const unsigned int               this_process);
 
     /**
-     * Constructor for the serial case: Same function as
-     * <tt>MatrixFree()</tt>, see above, with <tt>communicator =
-     * MPI_COMM_WORLD</tt>.
+     * 串行情况下的构造函数。与<tt>MatrixFree()</tt>函数相同，见上文，<tt>communicator
+     * = MPI_COMM_WORLD</tt>。
+     *
      */
     MatrixFree(const unsigned int m,
                const unsigned int n,
@@ -113,9 +101,9 @@ namespace PETScWrappers
                const unsigned int local_columns);
 
     /**
-     * Constructor for the serial case: Same function as
-     * <tt>MatrixFree()</tt>, see above, with <tt>communicator =
-     * MPI_COMM_WORLD</tt>.
+     * 串行情况下的构造函数。与<tt>MatrixFree()</tt>函数相同，见上文，<tt>communicator
+     * = MPI_COMM_WORLD</tt>。
+     *
      */
     MatrixFree(const unsigned int               m,
                const unsigned int               n,
@@ -124,9 +112,8 @@ namespace PETScWrappers
                const unsigned int               this_process);
 
     /**
-     * Throw away the present matrix and generate one that has the same
-     * properties as if it were created by the constructor of this class with
-     * the same argument list as the present function.
+     * 扔掉当前的矩阵，并生成一个具有相同属性的矩阵，就像它是由这个类的构造函数创建的，参数列表与当前函数相同。
+     *
      */
     void
     reinit(const MPI_Comm &   communicator,
@@ -136,9 +123,8 @@ namespace PETScWrappers
            const unsigned int local_columns);
 
     /**
-     * Throw away the present matrix and generate one that has the same
-     * properties as if it were created by the constructor of this class with
-     * the same argument list as the present function.
+     * 扔掉当前的矩阵，并生成一个具有相同属性的矩阵，就像它是由这个类的构造函数创建的一样，参数列表与当前函数相同。
+     *
      */
     void
     reinit(const MPI_Comm &                 communicator,
@@ -149,8 +135,9 @@ namespace PETScWrappers
            const unsigned int               this_process);
 
     /**
-     * Call the @p reinit() function above with <tt>communicator =
-     * MPI_COMM_WORLD</tt>.
+     * 用<tt>communicator = MPI_COMM_WORLD</tt>调用上面的 @p reinit()
+     * 函数。
+     *
      */
     void
     reinit(const unsigned int m,
@@ -159,8 +146,9 @@ namespace PETScWrappers
            const unsigned int local_columns);
 
     /**
-     * Call the @p reinit() function above with <tt>communicator =
-     * MPI_COMM_WORLD</tt>.
+     * 用<tt>communicator = MPI_COMM_WORLD</tt>调用上面的 @p reinit()
+     * 函数。
+     *
      */
     void
     reinit(const unsigned int               m,
@@ -170,113 +158,99 @@ namespace PETScWrappers
            const unsigned int               this_process);
 
     /**
-     * Release all memory and return to a state just like after having called
-     * the default constructor.
+     * 释放所有内存并返回到与调用默认构造函数后一样的状态。
+     *
      */
     void
     clear();
 
     /**
-     * Return a reference to the MPI communicator object in use with this
-     * matrix.
+     * 返回一个对该矩阵使用的MPI通信器对象的引用。
+     *
      */
     const MPI_Comm &
     get_mpi_communicator() const override;
 
     /**
-     * Matrix-vector multiplication: let <i>dst = M*src</i> with <i>M</i>
-     * being this matrix.
+     * 矩阵-向量乘法：让<i>dst =
+     * M*src</i>与<i>M</i>是这个矩阵。
+     * 源和目的不能是同一个向量。
+     * 注意，如果当前对象代表一个平行分布式矩阵（类型为
+     * PETScWrappers::MPI::SparseMatrix),
+     * ，那么两个向量也必须是分布式向量。反之，如果矩阵不是分布式的，那么两个向量都不可以是。
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix (of type PETScWrappers::MPI::SparseMatrix), then both vectors
-     * have to be distributed vectors as well. Conversely, if the matrix is
-     * not distributed, then neither of the vectors may be.
      */
     virtual void
     vmult(VectorBase &dst, const VectorBase &src) const = 0;
 
     /**
-     * Matrix-vector multiplication: let <i>dst = M<sup>T</sup>*src</i> with
-     * <i>M</i> being this matrix. This function does the same as @p vmult()
-     * but takes the transposed matrix.
+     * 矩阵-向量乘法：让<i>dst =
+     * M<sup>T</sup>*src</i>与<i>M</i>为这个矩阵。这个函数与 @p
+     * vmult() 的作用相同，但需要转置的矩阵。
+     * 源和目的不能是同一个向量。
+     * 注意，如果当前对象代表一个平行分布的矩阵，那么两个向量也必须是分布式向量。
+     * 反之，如果矩阵不是分布式的，那么两个向量都不可以是。
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix then both vectors have to be distributed vectors as well.
-     * Conversely, if the matrix is not distributed, then neither of the
-     * vectors may be.
      */
     virtual void
     Tvmult(VectorBase &dst, const VectorBase &src) const = 0;
 
     /**
-     * Adding Matrix-vector multiplication. Add <i>M*src</i> on <i>dst</i>
-     * with <i>M</i> being this matrix.
+     * 加法
+     * 矩阵-向量乘法。在<i>dst</i>上添加<i>M*src</i>，<i>M</i>为该矩阵。
+     * 源和目的不能是同一个向量。
+     * 注意，如果当前对象代表一个平行分布的矩阵，那么两个向量也必须是分布式向量。
+     * 反之，如果矩阵不是分布式的，那么两个向量都不能是。
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix then both vectors have to be distributed vectors as well.
-     * Conversely, if the matrix is not distributed, then neither of the
-     * vectors may be.
      */
     virtual void
     vmult_add(VectorBase &dst, const VectorBase &src) const = 0;
 
     /**
-     * Adding Matrix-vector multiplication. Add <i>M<sup>T</sup>*src</i> to
-     * <i>dst</i> with <i>M</i> being this matrix. This function does the same
-     * as @p vmult_add() but takes the transposed matrix.
+     * 加法
+     * 矩阵-向量乘法。将<i>M<sup>T</sup>*src</i>加到<i>dst</i>，<i>M</i>是这个矩阵。这个函数与
+     * @p vmult_add() 的作用相同，但需要转置的矩阵。
+     * 来源和目的地不能是同一个向量。
+     * 注意，如果当前对象代表一个平行分布的矩阵，那么两个向量也必须是分布式向量。
+     * 反之，如果矩阵不是分布式的，那么两个向量都不可以是。
      *
-     * Source and destination must not be the same vector.
-     *
-     * Note that if the current object represents a parallel distributed
-     * matrix then both vectors have to be distributed vectors as well.
-     * Conversely, if the matrix is not distributed, then neither of the
-     * vectors may be.
      */
     virtual void
     Tvmult_add(VectorBase &dst, const VectorBase &src) const = 0;
 
     /**
-     * The matrix-vector multiplication called by @p matrix_free_mult(). This
-     * function can be reimplemented in derived classes for efficiency. The
-     * default implementation copies the given vectors into
-     * PETScWrappers::*::Vector and calls <tt>vmult(VectorBase &dst, const
-     * VectorBase &src)</tt> which is purely virtual and must be reimplemented
-     * in derived classes.
+     * @p matrix_free_mult(). 调用的矩阵-向量乘法
+     * 这个函数可以在派生类中重新实现以提高效率。默认实现将给定的向量复制到
+     * PETScWrappers::*::Vector 中，并调用<tt>vmult(VectorBase &dst,
+     * const VectorBase
+     * &src)</tt>，它是纯虚的，必须在派生类中重新实现。
+     *
      */
     virtual void
     vmult(Vec &dst, const Vec &src) const;
 
   private:
     /**
-     * Copy of the communicator object to be used for this parallel matrix-
-     * free object.
+     * 将用于该并行矩阵-自由对象的通信器对象的副本。
+     *
      */
     MPI_Comm communicator;
 
     /**
-     * Callback-function registered as the matrix-vector multiplication of
-     * this matrix-free object called by PETSc routines. This function must be
-     * static and takes a PETSc matrix @p A, and vectors @p src and @p dst,
-     * where <i>dst = A*src</i>
+     * 注册为PETSc例程所调用的该无矩阵对象的矩阵-向量乘法的回调函数。这个函数必须是静态的，并且接受一个PETSc矩阵
+     * @p A, 和向量 @p src 和 @p dst, ，其中<i>dst =
+     * A*src</i>源和目的地不能是同一个向量。
+     * 这个函数调用<tt>vmult(Vec &dst, const Vec
+     * &src)</tt>，应该在派生类中重新实现。
      *
-     * Source and destination must not be the same vector.
-     *
-     * This function calls <tt>vmult(Vec &dst, const Vec &src)</tt> which
-     * should be reimplemented in derived classes.
      */
     static int
     matrix_free_mult(Mat A, Vec src, Vec dst);
 
     /**
-     * Do the actual work for the respective @p reinit() function and the
-     * matching constructor, i.e. create a matrix object. Getting rid of the
-     * previous matrix is left to the caller.
+     * 为各自的 @p reinit()
+     * 函数和匹配的构造函数做实际工作，即创建一个矩阵对象。摆脱之前的矩阵是留给调用者的。
+     *
      */
     void
     do_reinit(const unsigned int m,
@@ -301,4 +275,6 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
-/*---------------------------- petsc_matrix_free.h --------------------------*/
+ /*---------------------------- petsc_matrix_free.h --------------------------*/ 
+
+

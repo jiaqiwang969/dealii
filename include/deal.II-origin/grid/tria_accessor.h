@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/tria_accessor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -77,10 +76,9 @@ namespace internal
     struct Implementation;
 
     /**
-     * 一个类型的实现，用它来存储访问器对象的级别。我们只在<tt>structdim
-     * == dim</tt>的情况下需要它。
-     * 否则，一个空对象就足够了。
-     *
+     * Implementation of a type with which to store the level of an accessor
+     * object. We only need it for the case that <tt>structdim == dim</tt>.
+     * Otherwise, an empty object is sufficient.
      */
     template <int structdim, int dim>
     struct PresentLevelType
@@ -88,14 +86,12 @@ namespace internal
       struct type
       {
         /**
-         * 默认构造函数。
-         *
+         * Default constructor.
          */
         type() = default;
 
         /**
-         * 虚构的构造函数。只允许零级。
-         *
+         * Dummy constructor. Only level zero is allowed.
          */
         type(const int level)
         {
@@ -104,8 +100,7 @@ namespace internal
         }
 
         /**
-         * 虚数转换操作符。返回零级。
-         *
+         * Dummy conversion operator. Returns level zero.
          */
         operator int() const
         {
@@ -128,10 +123,9 @@ namespace internal
 
 
     /**
-     * 实现一个类型，用它来存储访问器对象的级别。我们只在<tt>structdim
-     * == dim</tt>的情况下需要它。
-     * 否则，一个空对象就足够了。
-     *
+     * Implementation of a type with which to store the level of an accessor
+     * object. We only need it for the case that <tt>structdim == dim</tt>.
+     * Otherwise, an empty object is sufficient.
      */
     template <int dim>
     struct PresentLevelType<dim, dim>
@@ -154,15 +148,12 @@ class TriaAccessor<0, 1, spacedim>;
 
 
 /**
- * 一个包含访问器类所使用的异常类的命名空间。
- *
- *
+ * A namespace that contains exception classes used by the accessor classes.
  */
 namespace TriaAccessorExceptions
 {
   /**
    * @ingroup Exceptions
-   *
    */
   DeclExceptionMsg(ExcCellNotUsed,
                    "The operation you are attempting can only be performed for "
@@ -176,10 +167,13 @@ namespace TriaAccessorExceptions
                    "for re-use upon the next mesh refinement, but is "
                    "currently unused.)");
   /**
-   * 单元不是 @ref GlossActive 的 "活动 "
-   * 单元，但它已经有了孩子。一些操作，如设置细化标志或访问自由度，只能在活动单元上实现。
-   * @ingroup Exceptions
+   * The cell is not an
+   * @ref GlossActive "active"
+   * cell, but it already has children. Some operations, like setting
+   * refinement flags or accessing degrees of freedom are only possible on
+   * active cells.
    *
+   * @ingroup Exceptions
    */
   DeclExceptionMsg(ExcCellNotActive,
                    "The operation you are attempting can only be performed for "
@@ -190,9 +184,9 @@ namespace TriaAccessorExceptions
                    "the object on which you are trying the current "
                    "operation is not 'active' in this sense.");
   /**
-   * 试图访问一个事实上处于活动状态的单元的子单元。
-   * @ingroup Exceptions
+   * Trying to access the children of a cell which is in fact active.
    *
+   * @ingroup Exceptions
    */
   DeclExceptionMsg(ExcCellHasNoChildren,
                    "The operation you are attempting can only be performed for "
@@ -200,9 +194,10 @@ namespace TriaAccessorExceptions
                    "but the object on which you are trying the current "
                    "operation does not have any.");
   /**
-   * 试图访问处于三角结构最粗层的单元的父级。
-   * @ingroup Exceptions
+   * Trying to access the parent of a cell which is in the coarsest level of
+   * the triangulation.
    *
+   * @ingroup Exceptions
    */
   DeclExceptionMsg(ExcCellHasNoParent,
                    "The operation you are attempting can only be performed for "
@@ -212,7 +207,6 @@ namespace TriaAccessorExceptions
                    "coarsest level of the triangulation.");
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException1(ExcCantSetChildren,
                  int,
@@ -222,7 +216,6 @@ namespace TriaAccessorExceptions
                  << " (-1 means: clear children).");
   /**
    * @ingroup Exceptions
-   *
    */
   template <typename AccessorType>
   DeclException1(ExcDereferenceInvalidObject,
@@ -237,7 +230,6 @@ namespace TriaAccessorExceptions
                           "invalid")));
   /**
    * @ingroup Exceptions
-   *
    */
   DeclExceptionMsg(ExcCantCompareIterators,
                    "Iterators can only be compared if they point to the same "
@@ -246,32 +238,31 @@ namespace TriaAccessorExceptions
   // TODO: Write documentation!
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException0(ExcNeighborIsCoarser);
   // TODO: Write documentation!
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException0(ExcNeighborIsNotCoarser);
   /**
-   * 你试图访问一个面孔的级别，但是面孔没有固有的级别。一个面的级别只能由相邻面的级别决定，这又意味着一个面可以有几个级别。
-   * @ingroup Exceptions
+   * You are trying to access the level of a face, but faces have no inherent
+   * level. The level of a face can only be determined by the level of an
+   * adjacent face, which in turn implies that a face can have several levels.
    *
+   * @ingroup Exceptions
    */
   DeclException0(ExcFacesHaveNoLevel);
   /**
-   * 你试图得到一个面的周期性邻居，而这个面并没有周期性邻居。关于这方面的更多信息，请参考 @ref GlossPeriodicConstraints "周期性边界的条目"
-   * 。
+   * You are trying to get the periodic neighbor for a face, which does not
+   * have a periodic neighbor. For more information on this, refer to
+   * @ref GlossPeriodicConstraints "entry for periodic boundaries".
    * @ingroup Exceptions
-   *
    */
   DeclException0(ExcNoPeriodicNeighbor);
   // TODO: Write documentation!
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException1(
     ExcSetOnlyEvenChildren,
@@ -282,63 +273,77 @@ namespace TriaAccessorExceptions
 
 
 /**
- * TriaRawIterator和派生类所使用的访问器类的基类。
- * 该类只提供迭代器所需的基本功能（存储必要的数据成员，提供比较运算符等），但没有实际解除数据定义的功能。这是在派生类中完成的。
- * 在实现中，该类的行为在<tt>structdim==dim</tt>（网格的单元）和<tt>structdim&lt;dim</tt>（面和边）的情况下有所不同。对于后者，#present_level总是等于0，构造函数不可能在这里收到正值。对于单元格来说，任何级别都是可能的，但只有那些在Triangulation的级别范围内的级别是合理的。此外，函数objects()要么返回具有同一层次的所有单元的容器，要么返回具有该维度的所有对象的容器（<tt>structdim&lt;dim</tt>）。
- * 这个类的一些内部情况在
- * @ref IteratorAccessorInternals  中讨论。
+ * A base class for the accessor classes used by TriaRawIterator and derived
+ * classes.
  *
+ * This class offers only the basic functionality required by the iterators
+ * (stores the necessary data members, offers comparison operators and the
+ * like), but has no functionality to actually dereference data. This is done
+ * in the derived classes.
+ *
+ * In the implementation, the behavior of this class differs between the cases
+ * where <tt>structdim==dim</tt> (cells of a mesh) and
+ * <tt>structdim&lt;dim</tt> (faces and edges). For the latter, #present_level
+ * is always equal to zero and the constructors may not receive a positive
+ * value there. For cells, any level is possible, but only those within the
+ * range of the levels of the Triangulation are reasonable. Furthermore, the
+ * function objects() returns either the container with all cells on the same
+ * level or the container with all objects of this dimension
+ * (<tt>structdim&lt;dim</tt>).
+ *
+ * Some internals of this class are discussed in
+ * @ref IteratorAccessorInternals.
  *
  * @ingroup grid
- *
  * @ingroup Accessors
- *
  */
 template <int structdim, int dim, int spacedim = dim>
 class TriaAccessorBase
 {
 public:
   /**
-   * 这个访问器所代表的对象所处空间的尺寸。
-   * 例如，如果这个访问器代表一个四边形，它是四维空间中一个二维表面的一部分，那么这个值就是四。
-   *
+   * Dimension of the space the object represented by this accessor lives in.
+   * For example, if this accessor represents a quad that is part of a two-
+   * dimensional surface in four-dimensional space, then this value is four.
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * 这个访问器所代表的事物的尺寸，是这个访问器的一部分。例如，如果这个访问器代表一条线，是六面体的一部分，那么这个值就是三。
-   *
+   * Dimensionality of the object that the thing represented by this accessor
+   * is part of. For example, if this accessor represents a line that is part
+   * of a hexahedron, then this value will be three.
    */
   static const unsigned int dimension = dim;
 
   /**
-   * 该访问器所代表的当前对象的尺寸。例如，如果它是线（不管它是四面体还是六面体的一部分，也不管我们处于什么维度），那么这个值就等于1。
-   *
+   * Dimensionality of the current object represented by this accessor. For
+   * example, if it is line (irrespective of whether it is part of a quad or
+   * hex, and what dimension we are in), then this value equals 1.
    */
   static const unsigned int structure_dimension = structdim;
 
   /**
-   * 复制运算符。这些操作符通常在类似<tt>iterator
-   * a,b;a=*b;</tt>的情况下使用。据推测，这里的意图是将 @p b
-   * 所指向的对象复制到 @p a.
-   * 所指向的对象。然而，取消引用迭代器的结果不是一个对象，而是一个访问器；因此，这个操作对三角形的迭代器没有用。
-   * 因此，这个操作被声明为删除，不能使用。
-   *
+   * Copy operator. These operators are usually used in a context like
+   * <tt>iterator a,b; *a=*b;</tt>. Presumably, the intent here is to copy the
+   * object pointed to
+   * by @p b to the object pointed to by @p a. However, the result of
+   * dereferencing an iterator is not an object but an accessor; consequently,
+   * this operation is not useful for iterators on triangulations.
+   * Consequently, this operator is declared as deleted and can not be used.
    */
   void
   operator=(const TriaAccessorBase *) = delete;
 
 protected:
   /**
-   * 声明该访问器类期望从迭代器类中得到的数据类型。由于纯三角迭代器不需要额外的数据，这个数据类型是
-   * @p void. 。
-   *
+   * Declare the data type that this accessor class expects to get passed from
+   * the iterator classes. Since the pure triangulation iterators need no
+   * additional data, this data type is @p void.
    */
   using AccessorData = void;
 
   /**
-   * 构造函数。受保护的，因此只能从好友类中调用。
-   *
+   * Constructor. Protected, thus only callable from friend classes.
    */
   TriaAccessorBase(const Triangulation<dim, spacedim> *parent = nullptr,
                    const int                           level  = -1,
@@ -346,164 +351,183 @@ protected:
                    const AccessorData *                       = nullptr);
 
   /**
-   * 复制构造函数。用完全相同的数据创建一个对象。
-   *
+   * Copy constructor. Creates an object with exactly the same data.
    */
   TriaAccessorBase(const TriaAccessorBase &);
 
   /**
-   * 复制操作符。因为这只是从迭代器中调用，所以不要返回任何东西，因为迭代器会返回自己。
-   * 这个方法是受保护的，因为它只能从迭代器类中调用。
+   * Copy operator. Since this is only called from iterators, do not return
+   * anything, since the iterator will return itself.
    *
+   * This method is protected, since it is only to be called from the iterator
+   * class.
    */
   void
   copy_from(const TriaAccessorBase &);
 
   /**
-   * 复制操作符。创建一个具有完全相同数据的对象。
-   *
+   * Copy operator. Creates an object with exactly the same data.
    */
   TriaAccessorBase &
   operator=(const TriaAccessorBase &);
 
   /**
-   * 访问器的比较运算符。这个操作符在比较迭代器进入三角形的对象时使用，例如，当把它们放入一个
-   * `std::map`.
-   * 如果#structure_dimension小于#dimension，我们只是比较这样一个对象的索引，因为面和边没有层次。如果#structure_dimension等于#dimension，我们首先比较层次，只有在层次相等时才比较索引。
+   * Comparison operator for accessors. This operator is used when comparing
+   * iterators into objects of a triangulation, for example when putting
+   * them into a `std::map`.
    *
+   * If #structure_dimension is less than #dimension, we simply compare the
+   * index of such an object because faces and edges do not have levels. If
+   * #structure_dimension equals #dimension, we compare the level first, and
+   * the index only if levels are equal.
    */
   bool
   operator<(const TriaAccessorBase &other) const;
 
 protected:
   /**
-   * 比较是否相等。
-   *
+   * Compare for equality.
    */
   bool
   operator==(const TriaAccessorBase &) const;
 
   /**
-   * 比较不平等。
-   *
+   * Compare for inequality.
    */
   bool
   operator!=(const TriaAccessorBase &) const;
 
   /**
-   * @name  迭代器的推进
-   *
+   * @name Advancement of iterators
    */
   /**
    * @{
-   *
    */
   /**
-   * 该操作符将迭代器推进到下一个元素。    仅适用于 @p
-   * dim=1
-   * 。如果有更多的元素，下一个元素就是这一层的下一个。如果现在的元素是这一层的最后一个，则访问下一层的第一个。
+   * This operator advances the iterator to the next element.
    *
+   * For @p dim=1 only: The next element is next on this level if there are
+   * more. If the present element is the last on this level, the first on the
+   * next level is accessed.
    */
   void
   operator++();
 
   /**
-   * 这个操作符将迭代器移动到前一个元素。    仅适用于 @p
-   * dim=1
-   * 。如果<tt>index>0</tt>，前一个元素是本层的前一个。如果现在的元素是这一层的第一个，则访问前一层的最后一个。
+   * This operator moves the iterator to the previous element.
    *
+   * For @p dim=1 only: The previous element is previous on this level if
+   * <tt>index>0</tt>. If the present element is the first on this level, the
+   * last on the previous level is accessed.
    */
   void
   operator--();
   /**
    * @}
-   *
    */
 
   /**
-   * 访问具有相同维度的Triangulation的其他对象。
-   *
+   * Access to the other objects of a Triangulation with same dimension.
    */
   dealii::internal::TriangulationImplementation::TriaObjects &
   objects() const;
 
 public:
   /**
-   * 用来从迭代器向访问器类传递参数的数据类型，无论这些参数的数量类型是什么，都是统一的。
-   *
+   * Data type to be used for passing parameters from iterators to the
+   * accessor classes in a unified way, no matter what the type of number of
+   * these parameters is.
    */
   using LocalData = void *;
 
   /**
-   * @name  迭代器地址和状态
-   *
+   * @name Iterator address and state
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 对于单元格，该函数返回该单元格所处的网格层次。对于所有其他对象，该函数返回零。
-   * @note  在一个三角形对象中，单元格由一对 <code>(level,
-   * index)</code>
-   * 唯一标识，前者是单元格的细化层次，后者是该细化层次中单元格的索引（前者是本函数的返回值）。
-   * 因此，可能有多个处于不同细化级别的单元格，但在其级别中具有相同的索引。与此相反，如果当前对象对应的是一个面或边，那么该对象就只能通过其索引来识别，因为面和边没有细化级别。对于这些对象，当前函数总是返回0作为级别。
+   * For cells, this function returns the level within the mesh hierarchy at
+   * which this cell is located. For all other objects, the function returns
+   * zero.
    *
+   * @note Within a Triangulation object, cells are uniquely identified by a
+   * pair <code>(level, index)</code> where the former is the cell's
+   * refinement level and the latter is the index of the cell within this
+   * refinement level (the former being what this function returns).
+   * Consequently, there may be multiple cells on different refinement levels
+   * but with the same index within their level. Contrary to this, if the
+   * current object corresponds to a face or edge, then the object is uniquely
+   * identified solely by its index as faces and edges do not have a
+   * refinement level. For these objects, the current function always returns
+   * zero as the level.
    */
   int
   level() const;
 
   /**
-   * 返回当前级别上指向的元素的索引。
-   * 在Triangulation对象中，单元格由一对 <code>(level,
-   * index)</code>
-   * 唯一标识，前者是单元格的细化级别，后者是该细化级别中单元格的索引（后者是本函数的返回值）。因此，可能有多个处于不同细化级别的单元格，但在其级别中具有相同的索引。与此相反，如果当前对象对应于一个面或边，那么该对象只能通过其索引来识别，因为面和边没有细化级别。
-   * @note
-   * 这个函数返回的索引对象并不是每个层次上的连续数字集：从一个单元到另一个单元，一个层次中的一些索引可能没有使用。
-   * @note  如果三角图实际上是 parallel::distributed::Triangulation
-   * 类型的，那么指数就只相对于存储在当前处理器上的分布式三角图的那部分。换句话说，生活在不同处理器上的三角形分区中的单元可能具有相同的索引，即使它们指的是同一个单元，也可能具有不同的索引，即使它们指的是同一个单元（例如，如果一个单元被一个处理器拥有，但在另一个处理器上是一个幽灵单元）。
+   * Return the index of the element presently pointed to on the present
+   * level.
    *
+   * Within a Triangulation object, cells are uniquely identified by a pair
+   * <code>(level, index)</code> where the former is the cell's refinement
+   * level and the latter is the index of the cell within this refinement
+   * level (the latter being what this function returns). Consequently, there
+   * may be multiple cells on different refinement levels but with the same
+   * index within their level. Contrary to this, if the current object
+   * corresponds to a face or edge, then the object is uniquely identified
+   * solely by its index as faces and edges do not have a refinement level.
+   *
+   * @note The indices objects returned by this function are not a contiguous
+   * set of numbers on each level: going from cell to cell, some of the
+   * indices in a level may be unused.
+   *
+   * @note If the triangulation is actually of type
+   * parallel::distributed::Triangulation then the indices are relatively only
+   * to that part of the distributed triangulation that is stored on the
+   * current processor. In other words, cells living in the partitions of the
+   * triangulation stored on different processors may have the same index even
+   * if they refer to the same cell, and the may have different indices even
+   * if they do refer to the same cell (e.g., if a cell is owned by one
+   * processor but is a ghost cell on another).
    */
   int
   index() const;
 
   /**
-   * 返回迭代器的状态。
-   * 关于一个访问器可能处于的不同状态，请参考TriaRawIterator文档。
-   *
+   * Return the state of the iterator.  For the different states an accessor
+   * can be in, refer to the TriaRawIterator documentation.
    */
   IteratorState::IteratorStates
   state() const;
 
   /**
-   * 返回该类所指向的对象所属于的三角形的引用。
-   *
+   * Return a reference to the triangulation which the object pointed to by this
+   * class belongs to.
    */
   const Triangulation<dim, spacedim> &
   get_triangulation() const;
 
   /**
    * @}
-   *
    */
 protected:
   /**
-   * 如果这是一个单元格（<tt>structdim==dim</tt>），则是水平。否则，包含零。
-   *
+   * The level if this is a cell (<tt>structdim==dim</tt>). Else, contains
+   * zero.
    */
   typename dealii::internal::TriaAccessorImplementation::
     PresentLevelType<structdim, dim>::type present_level;
 
   /**
-   * 用于存储目前所使用的级别上目前所指向的元素的索引。
-   *
+   * Used to store the index of the element presently pointed to on the level
+   * presently used.
    */
   int present_index;
 
   /**
-   * 指向我们行动的三角图的指针。
-   *
+   * Pointer to the triangulation which we act on.
    */
   const Triangulation<dim, spacedim> *tria;
 
@@ -519,35 +543,41 @@ private:
 
 
 /**
- * 一个表示没有意义的迭代器的访问对象的类，如1d网格上的四维迭代器。
- * 这个类不能用来创建对象（事实上，如果试图这样做的话，它会抛出一个异常，但它有时允许以独立于维度的方式，以更简单的方式编写代码。例如，它允许编写独立于维度的四边形迭代器的代码
+ * A class that represents accessor objects to iterators that don't make sense
+ * such as quad iterators in on 1d meshes.  This class can not be used to
+ * create objects (it will in fact throw an exception if this should ever be
+ * attempted but it sometimes allows code to be written in a simpler way in a
+ * dimension independent way. For example, it allows to write code that works
+ * on quad iterators that is dimension independent -- i.e., also compiles
+ * in 1d -- because quad iterators
+ * (via the current class) exist and are syntactically correct. You can not
+ * expect, however, to ever create an actual object of one of these iterators
+ * in 1d, meaning you need to expect to wrap the code block in which you use
+ * quad iterators into something like <code>if (dim@>1)</code> -- which makes
+ * eminent sense anyway.
  *
- * - 即，也可以在1d中进行编译
- *
- * - 因为四元迭代器（通过当前的类）存在，并且在语法上是正确的。然而，你不能期望在1d中创建这些迭代器中的一个实际对象，这意味着你需要期望将使用四元迭代器的代码块包装成类似 <code>if (dim@>1)</code> 的东西。
- *
- * - 这反正是很有意义的。
- * 这个类提供了Accessor类与Iterator类交互所需的最小接口。然而，这只是为了语法上的正确性，这些函数除了产生错误之外，没有任何作用。
- *
+ * This class provides the minimal interface necessary for Accessor classes to
+ * interact with Iterator classes. However, this is only for syntactic
+ * correctness, none of the functions do anything but generate errors.
  *
  * @ingroup Accessors
- *
  */
 template <int structdim, int dim, int spacedim = dim>
 class InvalidAccessor : public TriaAccessorBase<structdim, dim, spacedim>
 {
 public:
   /**
-   * 从基类传播别名到这个类。
-   *
+   * Propagate alias from base class to this class.
    */
   using AccessorData =
     typename TriaAccessorBase<structdim, dim, spacedim>::AccessorData;
 
   /**
-   * 构造器。
-   * 这个类用于在给定维度中没有意义的迭代器，例如1D网格的四边形。因此，虽然这种对象的创建在语法上是有效的，但它们在语义上没有意义，当这种对象实际生成时，我们会产生一个异常。
-   *
+   * Constructor.  This class is used for iterators that do not make
+   * sense in a given dimension, for example quads for 1d meshes. Consequently,
+   * while the creation of such objects is syntactically valid, they make no
+   * semantic sense, and we generate an exception when such an object is
+   * actually generated.
    */
   InvalidAccessor(const Triangulation<dim, spacedim> *parent     = nullptr,
                   const int                           level      = -1,
@@ -555,29 +585,29 @@ public:
                   const AccessorData *                local_data = nullptr);
 
   /**
-   * 复制构造函数。
-   * 这个类用于在给定维度中没有意义的迭代器，例如1D网格的四边形。因此，虽然这种对象的创建在语法上是有效的，但它们在语义上没有意义，当这种对象实际生成时，我们会产生一个异常。
-   *
+   * Copy constructor.  This class is used for iterators that do not make
+   * sense in a given dimension, for example quads for 1d meshes. Consequently,
+   * while the creation of such objects is syntactically valid, they make no
+   * semantic sense, and we generate an exception when such an object is
+   * actually generated.
    */
   InvalidAccessor(const InvalidAccessor &);
 
   /**
-   * 从其他访问器转换到当前无效的访问器。这当然也会导致运行时错误。
-   *
+   * Conversion from other accessors to the current invalid one. This of
+   * course also leads to a run-time error.
    */
   template <typename OtherAccessor>
   InvalidAccessor(const OtherAccessor &);
 
   /**
-   * 虚假的复制操作。
-   *
+   * Dummy copy operation.
    */
   void
   copy_from(const InvalidAccessor &);
 
   /**
-   * 假的比较运算符。
-   *
+   * Dummy comparison operators.
    */
   bool
   operator==(const InvalidAccessor &) const;
@@ -585,8 +615,7 @@ public:
   operator!=(const InvalidAccessor &) const;
 
   /**
-   * 虚构的运算符，以使事情得到编译。什么都不做。
-   *
+   * Dummy operators to make things compile. Does nothing.
    */
   void
   operator++() const;
@@ -594,65 +623,60 @@ public:
   operator--() const;
 
   /**
-   * 代表访问器是否指向已使用或未使用的对象的假函数。
-   *
+   * Dummy function representing whether the accessor points to a used or an
+   * unused object.
    */
   bool
   used() const;
 
   /**
-   * 代表访问器是否指向有子对象的假函数。
-   *
+   * Dummy function representing whether the accessor points to an object that
+   * has children.
    */
   bool
   has_children() const;
 
   /**
-   * 总是返回 numbers::flat_manifold_id. 的假函数。
-   *
+   * Dummy function that always returns numbers::flat_manifold_id.
    */
   types::manifold_id
   manifold_id() const;
 
   /**
-   * 总是返回 numbers::invalid_unsigned_int. 的假函数。
-   *
+   * Dummy function that always returns numbers::invalid_unsigned_int.
    */
   unsigned int
   user_index() const;
 
   /**
-   * 总是抛出的假函数。
-   *
+   * Dummy function that always throws.
    */
   void
   set_user_index(const unsigned int p) const;
 
   /**
-   * 总是抛出的假函数。
-   *
+   * Dummy function that always throws.
    */
   void
   set_manifold_id(const types::manifold_id) const;
 
   /**
-   * 抽取顶点的假函数。返回原点。
-   *
+   * Dummy function to extract vertices. Returns the origin.
    */
   Point<spacedim> &
   vertex(const unsigned int i) const;
 
   /**
-   * 抽取线的假函数。返回一个默认构造的线段迭代器。
-   *
+   * Dummy function to extract lines. Returns a default-constructed line
+   * iterator.
    */
   typename dealii::internal::TriangulationImplementation::
     Iterators<dim, spacedim>::line_iterator
     line(const unsigned int i) const;
 
   /**
-   * 抽取四边形的假函数。返回一个默认的四边形迭代器。
-   *
+   * Dummy function to extract quads. Returns a default-constructed quad
+   * iterator.
    */
   typename dealii::internal::TriangulationImplementation::
     Iterators<dim, spacedim>::quad_iterator
@@ -662,35 +686,34 @@ public:
 
 
 /**
- * 一个提供对三角形中的对象的访问的类，如它的顶点、子对象、子女、几何信息等。这个类表示维度为
- * <code>structdim</code>
- * （即1代表线，2代表四边形，3代表六边形）的对象在维度为
- * <code>dim</code>
- * （即1代表线的三角结构，2代表四边形的三角结构，3代表六边形的三角结构）的三角结构中，该空间嵌入维度为
- * <code>spacedim</code>  ]（对于 <code>spacedim==dim</code>
- * ，三角形代表 $R^{dim}$ 中的一个域，对于
- * <code>spacedim@>dim</code>
- * ，三角形是嵌入高维空间中的流形）。 对于 @p structdim
- * 等于零的情况，即对于三角化的顶点，该类有一个特殊化。
+ * A class that provides access to objects in a triangulation such as its
+ * vertices, sub-objects, children, geometric information, etc. This class
+ * represents objects of dimension <code>structdim</code> (i.e. 1 for lines, 2
+ * for quads, 3 for hexes) in a triangulation of dimensionality
+ * <code>dim</code> (i.e. 1 for a triangulation of lines, 2 for a
+ * triangulation of quads, and 3 for a triangulation of hexes) that is
+ * embedded in a space of dimensionality <code>spacedim</code> (for
+ * <code>spacedim==dim</code> the triangulation represents a domain in
+ * $R^{dim}$, for <code>spacedim@>dim</code> the triangulation is of a
+ * manifold embedded in a higher dimensional space).
  *
+ * There is a specialization of this class for the case where
+ * @p structdim equals zero, i.e., for vertices of a triangulation.
  *
  * @ingroup Accessors
- *
  */
 template <int structdim, int dim, int spacedim>
 class TriaAccessor : public TriaAccessorBase<structdim, dim, spacedim>
 {
 public:
   /**
-   * 从基类传播别名到这个类。
-   *
+   * Propagate alias from base class to this class.
    */
   using AccessorData =
     typename TriaAccessorBase<structdim, dim, spacedim>::AccessorData;
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   TriaAccessor(const Triangulation<dim, spacedim> *parent     = nullptr,
                const int                           level      = -1,
@@ -698,887 +721,1116 @@ public:
                const AccessorData *                local_data = nullptr);
 
   /**
-   * 复制构造函数不被删除，但复制的构造元素不应该被修改，也是对复制赋值运算符的注释。
-   *
+   * The copy constructor is not deleted but copied constructed elements should
+   * not be modified, also the comments to the copy assignment operator.
    */
   TriaAccessor(const TriaAccessor &) = default;
 
   /**
-   * 移动构造函数。
-   *
+   * Move constructor.
    */
   TriaAccessor(TriaAccessor &&) = default; // NOLINT
 
   /**
-   * 转换构造器。这个构造器的存在是为了使某些构造在独立于维度的代码中写得更简单。例如，它允许将一个面的迭代器分配给一个线的迭代器，这个操作在2D中很有用，但在3D中没有任何意义。这里的构造函数是为了使代码符合C++的要求而存在的，但它会无条件地中止；换句话说，将一个面迭代器分配给一个线迭代器，最好放在一个if语句中，检查维度是否为2，并在3D中分配给一个四边形迭代器（如果没有这个构造函数，如果我们碰巧为2d编译，这个操作是非法的）。
-   *
+   * Conversion constructor. This constructor exists to make certain
+   * constructs simpler to write in dimension independent code. For example,
+   * it allows assigning a face iterator to a line iterator, an operation that
+   * is useful in 2d but doesn't make any sense in 3d. The constructor here
+   * exists for the purpose of making the code conform to C++ but it will
+   * unconditionally abort; in other words, assigning a face iterator to a
+   * line iterator is better put into an if-statement that checks that the
+   * dimension is two, and assign to a quad iterator in 3d (an operator that,
+   * without this constructor would be illegal if we happen to compile for
+   * 2d).
    */
   template <int structdim2, int dim2, int spacedim2>
   TriaAccessor(const InvalidAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 另一个对象之间的转换操作符，就像之前的那个一样，没有意义。
-   *
+   * Another conversion operator between objects that don't make sense, just
+   * like the previous one.
    */
   template <int structdim2, int dim2, int spacedim2>
   TriaAccessor(const TriaAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 复制运算符。这些运算符通常在类似<tt>iterator
-   * a,b;a=*b;</tt>的情况下使用。据推测，这里的意图是将 @p b
-   * 所指向的对象复制到 @p a.
-   * 所指向的对象。然而，取消引用迭代器的结果不是一个对象，而是一个存取器；因此，这个操作对三角形的迭代器没有用。
-   * 因此，这个操作被声明为删除，不能使用。
-   *
+   * Copy operator. These operators are usually used in a context like
+   * <tt>iterator a,b; *a=*b;</tt>. Presumably, the intent here is to copy the
+   * object pointed to
+   * by @p b to the object pointed to by @p a. However, the result of
+   * dereferencing an iterator is not an object but an accessor; consequently,
+   * this operation is not useful for iterators on triangulations.
+   * Consequently, this operator is declared as deleted and can not be used.
    */
   TriaAccessor &
   operator=(const TriaAccessor &) = delete;
 
   /**
-   * 移动赋值运算符。允许移动。
-   *
+   * Move assignment operator. Moving is allowed.
    */
   TriaAccessor &
   operator=(TriaAccessor &&) = default; // NOLINT
 
   /**
-   * 默认的解构器。
-   *
+   * Defaulted destructor.
    */
   ~TriaAccessor() = default;
 
   /**
-   * 测试元素是否被使用。 返回值是 @p true
-   * 对于所有的迭代器都是正常的迭代器或活动的迭代器，只有原始迭代器可以返回
-   * @p false.
-   * 因为原始迭代器只在库的内部使用，你通常不需要这个函数。
-   *
+   * Test for the element being used or not.  The return value is @p true for
+   * all iterators that are either normal iterators or active iterators, only
+   * raw iterators can return @p false. Since raw iterators are only used in
+   * the interiors of the library, you will not usually need this function.
    */
   bool
   used() const;
 
   /**
-   * @name  访问子对象
-   *
+   * @name Accessing sub-objects
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 指向与此对象相连接的 @p ith 顶点的指针。如果
-   * <code>dim=1</code> ，则抛出一个异常。
-   *
+   * Pointer to the @p ith vertex bounding this object. Throw an exception if
+   * <code>dim=1</code>.
    */
   TriaIterator<TriaAccessor<0, dim, spacedim>>
   vertex_iterator(const unsigned int i) const;
 
   /**
-   * 返回当前对象的第i个顶点的全局索引。关于顶点编号的惯例在GeometryInfo类的文档中有所规定。
-   * 请注意，返回值只是几何顶点的索引。
-   * 它与可能与之相关的自由度无关。
-   * 关于这一点，请参阅 @p DoFAccessor::vertex_dof_index 函数。
-   * @note
-   * 尽管有这个名字，这里返回的索引只是全局的，即它是特定于一个特定的三角形对象，或者，在三角形实际上是
-   * parallel::distributed::Triangulation,
-   * 类型的情况下，特定于存储在当前处理器上的分布式三角形的那一部分。
+   * Return the global index of i-th vertex of the current object. The
+   * convention regarding the numbering of vertices is laid down in the
+   * documentation of the GeometryInfo class.
    *
+   * Note that the returned value is only the index of the geometrical vertex.
+   * It has nothing to do with possible degrees of freedom associated with it.
+   * For this, see the @p DoFAccessor::vertex_dof_index functions.
+   *
+   * @note Despite the name, the index returned here is only global in the
+   * sense that it is specific to a particular Triangulation object or, in the
+   * case the triangulation is actually of type
+   * parallel::distributed::Triangulation, specific to that part of the
+   * distributed triangulation stored on the current processor.
    */
   unsigned int
   vertex_index(const unsigned int i) const;
 
   /**
-   * 返回一个对 @p ith
-   * 顶点的引用。该引用不是常量，也就是说，可以在赋值的左侧调用该函数，从而在三角剖分中移动单元的顶点。
-   * 当然，这样做需要你确保顶点的新位置保持有用。
+   * Return a reference to the @p ith vertex. The reference is not const,
+   * i.e., it is possible to call this function on the left hand side of an
+   * assignment, thereby moving the vertex of a cell within the triangulation.
+   * Of course, doing so requires that you ensure that the new location of the
+   * vertex remains useful -- for example, avoiding inverted or otherwise
+   * distorted (see also
+   * @ref GlossDistorted "this glossary entry").
    *
-   * - 例如，避免倒置或其他扭曲的情况（另见 @ref GlossDistorted "本词汇表条目"）。
-   * @note
-   * 当一个单元被细化时，它的子单元继承了它们与母单元共享的那些顶点的位置（加上为新的子单元创建的边、面和单元内部的新顶点的位置）。如果一个单元的顶点被移动，这意味着其子单元也将使用这些新的位置。
-   * 另一方面，想象一下2D的情况，你有一个被精化的单元（有四个子单元），然后你移动连接所有四个子单元的中心顶点。如果你再次将这四个子单元粗化到母单元，那么移动的顶点的位置就会丢失，如果在以后的步骤中，你再次细化母单元，那么新的顶点将再次被放置在与第一次相同的位置上。
+   * @note When a cell is refined, its children inherit the position of the
+   * vertex positions of those vertices they share with the mother cell (plus
+   * the locations of the new vertices on edges, faces, and cell interiors
+   * that are created for the new child cells). If the vertex of a cell is
+   * moved, this implies that its children will also use these new locations.
+   * On the other hand, imagine a 2d situation where you have one cell that is
+   * refined (with four children) and then you move the central vertex
+   * connecting all four children. If you coarsen these four children again to
+   * the mother cell, then the location of the moved vertex is lost and if, in
+   * a later step, you refine the mother cell again, the then again new vertex
+   * will be placed again at the same position as the first time around --
+   * i.e., not at the location you had previously moved it to.
    *
-   * - 即，不在你之前移动的位置。
-   * @note  如果你有一个 parallel::distributed::Triangulation 对象，上述的行为是相关的。在那里，细化一个网格总是涉及到重新划分。换句话说，你可能在一个处理器上移动到不同位置的本地拥有的单元的顶点（见 @ref GlossLocallyOwnedCell "这个词汇表条目"
-   * ），在网格细化时可能被移动到不同的处理器上（即使这些特定的单元没有被细化），这将根据他们之前拥有的粗略单元的位置重新创建他们的位置，而不是根据这些顶点在之前拥有它们的处理器的位置。换句话说，在并行计算中，你可能必须在每次网格细化后明确地移动节点，因为顶点的位置可能会也可能不会在伴随着网格细化的重新划分中被保留下来。
-   *
+   * @note The behavior described above is relevant if you have a
+   * parallel::distributed::Triangulation object. There, refining a mesh
+   * always involves a re-partitioning. In other words, vertices of locally
+   * owned cells (see
+   * @ref GlossLocallyOwnedCell "this glossary entry")
+   * that you may have moved to a different location on one processor may be
+   * moved to a different processor upon mesh refinement (even if these
+   * particular cells were not refined) which will re-create their position
+   * based on the position of the coarse cells they previously had, not based
+   * on the position these vertices had on the processor that previously owned
+   * them. In other words, in parallel computations, you will probably have to
+   * move nodes explicitly after every mesh refinement because vertex
+   * positions may or may not be preserved across the re-partitioning that
+   * accompanies mesh refinement.
    */
   Point<spacedim> &
   vertex(const unsigned int i) const;
 
   /**
-   * 指向与此物体相邻的 @p ith 线的指针。
-   *
+   * Pointer to the @p ith line bounding this object.
    */
   typename dealii::internal::TriangulationImplementation::
     Iterators<dim, spacedim>::line_iterator
     line(const unsigned int i) const;
 
   /**
-   * 围绕此对象的 @p ith 线的索引。
-   * 只对<tt>structdim>1</tt>实现，否则会产生异常。
+   * Line index of the @p ith line bounding this object.
    *
+   * Implemented only for <tt>structdim>1</tt>, otherwise an exception
+   * generated.
    */
   unsigned int
   line_index(const unsigned int i) const;
 
   /**
-   * 指向包围此对象的 @p ith 四边形的指针。
-   *
+   * Pointer to the @p ith quad bounding this object.
    */
   typename dealii::internal::TriangulationImplementation::
     Iterators<dim, spacedim>::quad_iterator
     quad(const unsigned int i) const;
 
   /**
-   * 绑定此对象的 @p ith 四边形的索引。
-   * 只对<tt>structdim>2</tt>实现，否则产生异常。
+   * Quad index of the @p ith quad bounding this object.
    *
+   * Implemented only for <tt>structdim>2</tt>, otherwise an exception
+   * generated.
    */
   unsigned int
   quad_index(const unsigned int i) const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  子对象的方向
-   *
+   * @name Orientation of sub-objects
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回索引为 @p face 的面的法线是否指向标准方向（ @p
-   * true) ），或者是否相反（ @p false).
-   * 哪个是标准方向，用GeometryInfo类来记录。在1d和2d中，它总是
-   * @p true,
-   * ，但在3d中它可能是不同的，见GeometryInfo类文档中的相应讨论。
-   * 这个函数实际上只在库的内部使用，除非你绝对知道这是怎么回事。
+   * Return whether the face with index @p face has its normal pointing in the
+   * standard direction (@p true) or whether it is the opposite (@p false).
+   * Which is the standard direction is documented with the GeometryInfo
+   * class. In 1d and 2d, this is always @p true, but in 3d it may be
+   * different, see the respective discussion in the documentation of the
+   * GeometryInfo class.
    *
+   * This function is really only for internal use in the library unless you
+   * absolutely know what this is all about.
    */
   bool
   face_orientation(const unsigned int face) const;
 
   /**
-   * 返回索引为 @p face 的面是否旋转了180度（ @p
-   * 为真）或不旋转（ @p false). 在1d和2d中，这总是 @p false,
-   * ，但在3d中可能不同，见GeometryInfo类文档中的相关讨论。
-   * 这个函数实际上只在库的内部使用，除非你绝对知道这是怎么回事。
+   * Return whether the face with index @p face is rotated by 180 degrees (@p
+   * true) or not (@p false). In 1d and 2d, this is always @p false, but in
+   * 3d it may be different, see the respective discussion in the
+   * documentation of the GeometryInfo class.
    *
+   * This function is really only for internal use in the library unless you
+   * absolutely know what this is all about.
    */
   bool
   face_flip(const unsigned int face) const;
 
   /**
-   * 返回索引为 @p face 的面是否旋转了90度（ @p
-   * 为真）或不旋转（ @p false). 在1d和2d中，这总是 @p false,
-   * ，但在3d中可能不同，见GeometryInfo类文档中的相关讨论。
-   * 这个函数实际上只在库的内部使用，除非你绝对知道这是怎么回事。
+   * Return whether the face with index @p face is rotated by 90 degrees (@p
+   * true) or not (@p false). In 1d and 2d, this is always @p false, but in
+   * 3d it may be different, see the respective discussion in the
+   * documentation of the GeometryInfo class.
    *
+   * This function is really only for internal use in the library unless you
+   * absolutely know what this is all about.
    */
   bool
   face_rotation(const unsigned int face) const;
 
   /**
-   * 返回索引为 @p line 的线条是否朝向标准方向。  @p true
-   * 表示线的方向是从顶点0到顶点1，否则就是相反的方向。在1d和2d中，它总是
-   * @p true,
-   * ，但在3d中它可能是不同的，见GeometryInfo类文档中的相应讨论。
-   * 这个函数实际上只在库的内部使用，除非你绝对知道这是怎么回事。
-   * 这个函数查询 ReferenceCell::standard_vs_true_line_orientation().
-   * 。
+   * Return whether the line with index @p line is oriented in standard
+   * direction. @p true indicates, that the line is oriented from vertex 0 to
+   * vertex 1, whereas it is the other way around otherwise. In 1d and 2d,
+   * this is always @p true, but in 3d it may be different, see the respective
+   * discussion in the documentation of the GeometryInfo class.
    *
+   * This function is really only for internal use in the library unless you
+   * absolutely know what this is all about.
+   *
+   * This function queries ReferenceCell::standard_vs_true_line_orientation().
    */
   bool
   line_orientation(const unsigned int line) const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name 访问儿童
-   *
+   * @name Accessing children
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 测试对象是否有子代。
-   *
+   * Test whether the object has children.
    */
   bool
   has_children() const;
 
   /**
-   * 返回此对象的直系子女数。未精炼的单元格的子代数为零。
-   *
+   * Return the number of immediate children of this object. The number of
+   * children of an unrefined cell is zero.
    */
   unsigned int
   n_children() const;
 
   /**
-   * @deprecated  使用n_active_descendants()代替。
-   *
+   * @deprecated Use n_active_descendants() instead.
    */
   DEAL_II_DEPRECATED
   unsigned int
   number_of_children() const;
 
   /**
-   * 计算并返回该对象的活动后裔的数量。例如，如果一个六边形的所有八个子单元都被进一步各向同性地精炼了一次，返回的数字将是64，而不是80。
-   * 如果目前的单元没有被细化，则返回一个。
-   * 如果把三角结构看成是一个森林，每棵树的根都是粗大的网格单元，节点都有后代（单元的子女），那么这个函数就会返回源自当前对象的子树中终端节点的数量；因此，如果当前对象没有被进一步细化，答案是1。
+   * Compute and return the number of active descendants of this objects. For
+   * example, if all of the eight children of a hex are further refined
+   * isotropically exactly once, the returned number will be 64, not 80.
    *
+   * If the present cell is not refined, one is returned.
+   *
+   * If one considers a triangulation as a forest where the root of each tree
+   * are the coarse mesh cells and nodes have descendants (the children of a
+   * cell), then this function returns the number of terminal nodes in the
+   * sub-tree originating from the current object; consequently, if the
+   * current object is not further refined, the answer is one.
    */
   unsigned int
   n_active_descendants() const;
 
   /**
-   * 返回这个对象被精炼的次数。请注意，并不是所有的子对象都被精炼了那么多次（这就是为什么我们要在前面加上
-   * @p max_),
-   * 的原因，返回的数字是这个对象的任何分支中的最大精炼次数。
-   * 例如，如果这个对象被精炼了，并且它的一个子对象正好再被精炼一次，那么<tt>max_refinement_depth</tt>应该返回2。
-   * 如果这个对象没有被精炼（即它是活动的），那么返回值是0。
+   * Return the number of times that this object is refined. Note that not all
+   * its children are refined that often (which is why we prepend @p max_),
+   * the returned number is rather the maximum number of refinement in any
+   * branch of children of this object.
    *
+   * For example, if this object is refined, and one of its children is
+   * refined exactly one more time, then <tt>max_refinement_depth</tt> should
+   * return 2.
+   *
+   * If this object is not refined (i.e. it is active), then the return value
+   * is zero.
    */
   unsigned int
   max_refinement_depth() const;
 
   /**
-   * 返回一个指向 @p ith 子对象的迭代器。
-   *
+   * Return an iterator to the @p ith child.
    */
   TriaIterator<TriaAccessor<structdim, dim, spacedim>>
   child(const unsigned int i) const;
 
   /**
-   * 返回当前单元格上 @p child 的子数。这是
-   * TriaAccessor::child(). 的反函数。
-   *
+   * Return the child number of @p child on the current cell. This is the
+   * inverse function of TriaAccessor::child().
    */
   unsigned int
   child_iterator_to_index(
     const TriaIterator<TriaAccessor<structdim, dim, spacedim>> &child) const;
 
   /**
-   * 返回该对象的迭代器，该对象与各向同性细化的第i个孩子相同。如果当前对象是各向同性细化的，那么返回的对象就是第i个子对象。如果当前对象是各向异性精炼的，那么返回的子对象实际上可能是该对象的孙子，或者根本就不存在（在这种情况下会产生一个异常）。
-   *
+   * Return an iterator to that object that is identical to the ith child for
+   * isotropic refinement. If the current object is refined isotropically,
+   * then the returned object is the ith child. If the current object is
+   * refined anisotropically, the returned child may in fact be a grandchild
+   * of the object, or may not exist at all (in which case an exception is
+   * generated).
    */
   TriaIterator<TriaAccessor<structdim, dim, spacedim>>
   isotropic_child(const unsigned int i) const;
 
   /**
-   * 返回这个单元格的RefinementCase。
-   *
+   * Return the RefinementCase of this cell.
    */
   RefinementCase<structdim>
   refinement_case() const;
 
   /**
-   * @p ith
-   * 子单元的索引。如果单元格的子代被访问，则子代的级别比本单元格的级别高一个。面的孩子没有级别。如果子单元不存在。
-   *
-   * - 被返回。
-   *
+   * Index of the @p ith child. The level of the child is one higher than that
+   * of the present cell, if the children of a cell are accessed. The children
+   * of faces have no level. If the child does not exist, -1 is returned.
    */
   int
   child_index(const unsigned int i) const;
 
   /**
-   * @p ith
-   * 各向同性的子女的索引。参见isotropic_child()函数对这个概念的定义。
-   * 如果该子集不存在。
-   *
-   * - 被返回。
-   *
+   * Index of the @p ith isotropic child. See the isotropic_child() function
+   * for a definition of this concept.  If the child does not exist, -1 is
+   * returned.
    */
   int
   isotropic_child_index(const unsigned int i) const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理边界指标
-   *
+   * @name Dealing with boundary indicators
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回此对象的边界指示器。    如果返回值是特殊值 numbers::internal_face_boundary_id, ，那么这个对象就在域的内部。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Return the boundary indicator of this object.
    *
+   * If the return value is the special value
+   * numbers::internal_face_boundary_id, then this object is in the interior
+   * of the domain.
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   types::boundary_id
   boundary_id() const;
 
   /**
-   * 设置当前对象的边界指标。这与boundary_id()函数的情况相同。
-   * 这个函数只设置当前对象本身的边界对象，而不是绑定它的指标。例如，在3D中，如果这个函数被调用到一个面，那么绑定这个面的4条边的边界指标保持不变。如果你想同时设置面和边的边界指标，请使用set_all_boundary_ids()函数。你可以在
-   * step-49  的结果部分看到没有使用正确函数的结果。
-   * @warning
-   * 你不应该设置内部面（不在域的边界上的面）的边界指示器，也不应该将外部面的边界指示器设置为
-   * numbers::internal_face_boundary_id
-   * （这个值是为其他目的保留的）。如果边界单元的边界指示器为
-   * numbers::internal_face_boundary_id
-   * ，或者内部单元的边界指示器不是
-   * numbers::internal_face_boundary_id.
-   * ，算法可能无法工作或产生非常混乱的结果。
-   * 不幸的是，当前对象没有办法找出它是否真的处于域的边界，因此无法确定你试图设置的值在当前情况下是否有意义。
-   * @ingroup boundary   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Set the boundary indicator of the current object. The same applies as for
+   * the boundary_id() function.
    *
+   * This function only sets the boundary object of the current object itself,
+   * not the indicators of the ones that bound it. For example, in 3d, if this
+   * function is called on a face, then the boundary indicator of the 4 edges
+   * that bound the face remain unchanged. If you want to set the boundary
+   * indicators of face and edges at the same time, use the
+   * set_all_boundary_ids() function. You can see the result of not using the
+   * correct function in the results section of step-49.
+   *
+   * @warning You should never set the boundary indicator of an interior face
+   * (a face not at the boundary of the domain), or set the boundary
+   * indicator of an exterior face to numbers::internal_face_boundary_id (this
+   * value is reserved for another purpose). Algorithms may not work or
+   * produce very confusing results if boundary cells have a boundary
+   * indicator of numbers::internal_face_boundary_id or if interior cells have
+   * boundary indicators other than numbers::internal_face_boundary_id.
+   * Unfortunately, the current object has no means of finding out whether it
+   * really is at the boundary of the domain and so cannot determine whether
+   * the value you are trying to set makes sense under the current
+   * circumstances.
+   *
+   * @ingroup boundary
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   void
   set_boundary_id(const types::boundary_id) const;
 
   /**
-   * 像set_boundary_id()那样做，但也要设置约束当前对象的边界指标。例如，在3D中，如果对一个面调用set_boundary_id()，那么绑定该面的4条边的边界指标保持不变。相反，如果你调用当前函数，面和边的边界指示器都被设置为给定值。
-   * 如果你在3D中设置面的边界指示器（在2D中，该函数的作用与set_boundary_id()相同），并且你这样做是因为你想用一个弯曲的边界对象来表示与当前面相对应的那部分边界，那么这个函数就很有用。在这种情况下，Triangulation类需要弄清楚在网格细化时将新的顶点放在哪里，高阶Mapping对象也需要弄清楚曲线边界近似的新插值点应该在哪里。在这两种情况下，这两个类首先要确定边界面边缘的插值点，询问边界对象，然后再向边界对象询问对应于边界面内部的插值点。为了使其正常工作，仅仅设置了面的边界指示器是不够的，还需要设置约束面的边缘的边界指示器。这个函数一次就完成了所有这些工作。你可以在
-   * step-49  的结果部分看到没有使用正确函数的结果。
-   * @ingroup boundary   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Do as set_boundary_id() but also set the boundary indicators of the
+   * objects that bound the current object. For example, in 3d, if
+   * set_boundary_id() is called on a face, then the boundary indicator of the
+   * 4 edges that bound the face remain unchanged. In contrast, if you call
+   * the current function, the boundary indicators of face and edges are all
+   * set to the given value.
    *
+   * This function is useful if you set boundary indicators of faces in 3d (in
+   * 2d, the function does the same as set_boundary_id()) and you do so
+   * because you want a curved boundary object to represent the part of the
+   * boundary that corresponds to the current face. In that case, the
+   * Triangulation class needs to figure out where to put new vertices upon
+   * mesh refinement, and higher order Mapping objects also need to figure out
+   * where new interpolation points for a curved boundary approximation should
+   * be. In either case, the two classes first determine where interpolation
+   * points on the edges of a boundary face should be, asking the boundary
+   * object, before asking the boundary object for the interpolation points
+   * corresponding to the interior of the boundary face. For this to work
+   * properly, it is not sufficient to have set the boundary indicator for the
+   * face alone, but you also need to set the boundary indicators of the edges
+   * that bound the face. This function does all of this at once. You can see
+   * the result of not using the correct function in the results section of
+   * step-49.
+   *
+   * @ingroup boundary
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   void
   set_all_boundary_ids(const types::boundary_id) const;
 
   /**
-   * 返回这个对象是否在边界上。显然，这个函数的使用只适用于<tt>dim
-   * @>structdim</tt>;
-   * 然而，对于<tt>dim==structdim</tt>，一个对象是一个单元，CellAccessor类提供了另一种可能性来确定一个单元是否在边界。
-   *
+   * Return whether this object is at the boundary. Obviously, the use of this
+   * function is only possible for <tt>dim@>structdim</tt>; however, for
+   * <tt>dim==structdim</tt>, an object is a cell and the CellAccessor class
+   * offers another possibility to determine whether a cell is at the boundary
+   * or not.
    */
   bool
   at_boundary() const;
 
   /**
-   * 返回该对象所使用的流形对象的常数引用。
-   * 正如 @ref manifold
-   * 模块中所解释的，寻找合适的流形描述的过程涉及到查询流形或边界指标。更多信息见那里。
+   * Return a constant reference to the manifold object used for this object.
    *
+   * As explained in the
+   * @ref manifold
+   * module, the process involved in finding the appropriate manifold
+   * description involves querying both the manifold or boundary
+   * indicators. See there for more information.
    */
   const Manifold<dim, spacedim> &
   get_manifold() const;
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理流形指标的问题
-   *
+   * @name Dealing with manifold indicators
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回此对象的歧管指标。    如果返回值是特殊值 numbers::flat_manifold_id, ，那么这个对象就与一个标准的笛卡尔流形描述相关。      @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
+   * Return the manifold indicator of this object.
    *
+   * If the return value is the special value numbers::flat_manifold_id, then
+   * this object is associated with a standard Cartesian Manifold Description.
+   *
+   * @see
+   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   types::manifold_id
   manifold_id() const;
 
   /**
-   * 设置流形指示器。 与<tt>manifold_id()</tt>函数同样适用。
-   * 注意，它只设置当前对象本身的流形对象，而不是绑定它的指标，也不是其子对象的指标。例如，在3D中，如果对一个面调用这个函数，那么绑定该面的4条边的流形指标就不会改变。如果你想同时设置面、边和所有子节点的流形指标，请使用set_all_manifold_ids()函数。
-   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
+   * Set the manifold indicator.  The same applies as for the
+   * <tt>manifold_id()</tt> function.
    *
+   * Note that it only sets the manifold object of the current object itself,
+   * not the indicators of the ones that bound it, nor of its children. For
+   * example, in 3d, if this function is called on a face, then the manifold
+   * indicator of the 4 edges that bound the face remain unchanged. If you
+   * want to set the manifold indicators of face, edges and all children at
+   * the same time, use the set_all_manifold_ids() function.
+   *
+   *
+   * @ingroup manifold
+   *
+   * @see
+   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_manifold_id(const types::manifold_id) const;
 
   /**
-   * 像set_manifold_id()那样做，但也要设置绑定当前对象的流形指标。例如，在3D中，如果对一个面调用了set_manifold_id()，那么绑定该面的4条边的流形指标就不会改变。另一方面，面和边的流形指标都是用当前函数同时设置的。
-   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
+   * Do as set_manifold_id() but also set the manifold indicators of the
+   * objects that bound the current object. For example, in 3d, if
+   * set_manifold_id() is called on a face, then the manifold indicator of the
+   * 4 edges that bound the face remain unchanged. On the other hand, the
+   * manifold indicators of face and edges are all set at the same time using
+   * the current function.
    *
+   * @ingroup manifold
+   *
+   * @see
+   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_all_manifold_ids(const types::manifold_id) const;
 
   /**
    * @}
-   *
    */
 
 
   /**
-   * @name  用户数据
-   *
+   * @name User data
    */
   /**
    * @{
-   *
    */
   /**
-   * 读取用户标志。更多信息见 @ref
-   * GlossUserFlags 。
-   *
+   * Read the user flag. See
+   * @ref GlossUserFlags
+   * for more information.
    */
   bool
   user_flag_set() const;
 
   /**
-   * 设置用户标志。参见 @ref
-   * GlossUserFlags 了解更多信息。
-   *
+   * Set the user flag. See
+   * @ref GlossUserFlags
+   * for more information.
    */
   void
   set_user_flag() const;
 
   /**
-   * 清除用户标志。参见
-   * @ref GlossUserFlags  了解更多信息。
-   *
+   * Clear the user flag. See
+   * @ref GlossUserFlags
+   * for more information.
    */
   void
   clear_user_flag() const;
 
   /**
-   * 为这个和所有的子代设置用户标志。参见 @ref
-   * GlossUserFlags 以了解更多信息。
-   *
+   * Set the user flag for this and all descendants. See
+   * @ref GlossUserFlags
+   * for more information.
    */
   void
   recursively_set_user_flag() const;
 
   /**
-   * 清除此项目和所有子项目的用户标志。参见 @ref
-   * GlossUserFlags 以了解更多信息。
-   *
+   * Clear the user flag for this and all descendants. See
+   * @ref GlossUserFlags
+   * for more information.
    */
   void
   recursively_clear_user_flag() const;
 
   /**
-   * 将用户数据重置为零，与指针或索引无关。更多信息见 @ref
-   * GlossUserData 。
-   *
+   * Reset the user data to zero, independent if pointer or index. See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   clear_user_data() const;
 
   /**
-   * 将用户指针设置为 @p p. 。
-   * @note
-   * 用户指针和用户索引是相互排斥的。因此，你只能使用其中之一，除非你在中间调用
-   * Triangulation::clear_user_data() 。    参见 @ref GlossUserData
-   * 以了解更多信息。
+   * Set the user pointer to @p p.
    *
+   * @note User pointers and user indices are mutually exclusive. Therefore,
+   * you can only use one of them, unless you call
+   * Triangulation::clear_user_data() in between.
+   *
+   * See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   set_user_pointer(void *p) const;
 
   /**
-   * 将用户指针重置为 @p
-   * nullptr 指针。参见 @ref GlossUserData 以了解更多信息。
-   *
+   * Reset the user pointer to a @p nullptr pointer. See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   clear_user_pointer() const;
 
   /**
-   * 访问用户指针的值。用户有责任确保该指针指向有用的东西。你应该使用新式的cast操作符来保持最低限度的类型安全，例如。
-   * @note
-   * 用户指针和用户索引是互斥的。因此，你只能使用其中之一，除非你在中间调用
-   * Triangulation::clear_user_data() 。<tt>A
-   * a=static_cast<A*>(cell->user_pointer())；</tt>。    更多信息见
-   * @ref GlossUserData 。
+   * Access the value of the user pointer. It is in the responsibility of the
+   * user to make sure that the pointer points to something useful. You should
+   * use the new style cast operator to maintain a minimum of type safety,
+   * e.g.
    *
+   * @note User pointers and user indices are mutually exclusive. Therefore,
+   * you can only use one of them, unless you call
+   * Triangulation::clear_user_data() in between. <tt>A
+   * *a=static_cast<A*>(cell->user_pointer());</tt>.
+   *
+   * See
+   * @ref GlossUserData
+   * for more information.
    */
   void *
   user_pointer() const;
 
   /**
-   * 将此对象及其所有子对象的用户指针设置为给定值。例如，如果某个子域的所有单元格，或者边界的某个部分的所有面都应该有用户指针指向描述这部分域或边界的对象，这就很有用。
-   * 请注意，用户指针在网格细化过程中是不被继承的，所以在网格细化之后，可能会有单元格或面没有用户指针指向描述对象。在这种情况下，只需简单地循环所有具有此信息的最粗层次的元素，并使用此函数递归地设置三角形的所有更细层次的用户指针。
-   * @note
-   * 用户指针和用户索引是互斥的。因此，你只能使用其中之一，除非你在中间调用
-   * Triangulation::clear_user_data()  。    更多信息见 @ref
-   * GlossUserData 。
+   * Set the user pointer of this object and all its children to the given
+   * value. This is useful for example if all cells of a certain subdomain, or
+   * all faces of a certain part of the boundary should have user pointers
+   * pointing to objects describing this part of the domain or boundary.
    *
+   * Note that the user pointer is not inherited under mesh refinement, so
+   * after mesh refinement there might be cells or faces that don't have user
+   * pointers pointing to the describing object. In this case, simply loop
+   * over all the elements of the coarsest level that has this information,
+   * and use this function to recursively set the user pointer of all finer
+   * levels of the triangulation.
+   *
+   * @note User pointers and user indices are mutually exclusive. Therefore,
+   * you can only use one of them, unless you call
+   * Triangulation::clear_user_data() in between.
+   *
+   * See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   recursively_set_user_pointer(void *p) const;
 
   /**
-   * 清除这个对象的用户指针和它所有的子对象。这与recursively_set_user_pointer()函数的说法相同。更多信息见 @ref
-   * GlossUserData 。
-   *
+   * Clear the user pointer of this object and all of its descendants. The
+   * same holds as said for the recursively_set_user_pointer() function. See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   recursively_clear_user_pointer() const;
 
   /**
-   * 将用户索引设置为 @p p. 。
-   * @note
-   * 用户指针和用户索引是相互排斥的。因此，你只能使用其中之一，除非你在中间调用
-   * Triangulation::clear_user_data() 。更多信息见 @ref GlossUserData
-   * 。
+   * Set the user index to @p p.
    *
+   * @note User pointers and user indices are mutually exclusive. Therefore,
+   * you can only use one of them, unless you call
+   * Triangulation::clear_user_data() in between. See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   set_user_index(const unsigned int p) const;
 
   /**
-   * 将用户索引重置为0。更多信息见 @ref
-   * GlossUserData 。
-   *
+   * Reset the user index to 0. See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   clear_user_index() const;
 
   /**
-   * 访问用户索引的值。
-   * @note
-   * 用户指针和用户索引是相互排斥的。因此，你只能使用其中之一，除非你在中间调用
-   * Triangulation::clear_user_data() 。    更多信息见 @ref
-   * GlossUserData 。
+   * Access the value of the user index.
    *
+   * @note User pointers and user indices are mutually exclusive. Therefore,
+   * you can only use one of them, unless you call
+   * Triangulation::clear_user_data() in between.
+   *
+   * See
+   * @ref GlossUserData
+   * for more information.
    */
   unsigned int
   user_index() const;
 
   /**
-   * 设置此对象及其所有子对象的用户索引。
-   * 请注意，用户索引在网格细化中是不被继承的，所以在网格细化后，可能会有单元格或面的用户索引不符合预期。在这种情况下，只需循环查看所有拥有该信息的最粗层次的元素，并使用该函数递归设置三角结构中所有更细层次的用户索引。
-   * @note
-   * 用户指针和用户索引是相互排斥的。因此，你只能使用其中之一，除非你在中间调用
-   * Triangulation::clear_user_data() 。    更多信息见 @ref
-   * GlossUserData 。
+   * Set the user index of this object and all its children.
    *
+   * Note that the user index is not inherited under mesh refinement, so after
+   * mesh refinement there might be cells or faces that don't have the
+   * expected user indices. In this case, simply loop over all the elements of
+   * the coarsest level that has this information, and use this function to
+   * recursively set the user index of all finer levels of the triangulation.
+   *
+   * @note User pointers and user indices are mutually exclusive. Therefore,
+   * you can only use one of them, unless you call
+   * Triangulation::clear_user_data() in between.
+   *
+   * See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   recursively_set_user_index(const unsigned int p) const;
 
   /**
-   * 清除这个对象的用户索引和它的所有后代。这与recursively_set_user_index()函数的说法相同。
-   * 更多信息见 @ref GlossUserData 。
+   * Clear the user index of this object and all of its descendants. The same
+   * holds as said for the recursively_set_user_index() function.
    *
+   * See
+   * @ref GlossUserData
+   * for more information.
    */
   void
   recursively_clear_user_index() const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  关于一个物体的几何信息
-   *
+   * @name Geometric information about an object
    */
   /**
-   *
+   * @{
    */
 
   /**
-   * 物体的直径。
-   * 一个物体的直径被计算为当前物体的最大对角线。如果这个物体是四边形，那么有两条这样的对角线，如果是六面体，那么有四条对角线连接
-   * "对面
-   * "的点。对于三角形和四面体，该函数只是返回最长边的长度。
-   * 楔形和金字塔的情况就比较困难了。对于楔形，我们返回三个四边形面的最长对角线的长度或两个三角形面的最长边的长度。对于金字塔，同样的原则也适用。
-   * 在所有这些情况下，这个 "直径
-   * "的定义不一定是物体内部各点之间最大距离意义上的真正直径。事实上，我们经常可以构造出不是这样的物体，尽管这些物体与参考形状相比一般都有很大的变形。此外，对于可能使用高阶映射的物体，我们可能会有凸起的面，这也会给计算物体直径的精确表示带来麻烦。也就是说，上面使用的定义对于大多数计算来说是完全足够的。
+   * Diameter of the object.
    *
+   * The diameter of an object is computed to be the largest diagonal of the
+   * current object. If this object is a quadrilateral, then there are two
+   * such diagonal, and if it is a hexahedron, then there are four diagonals
+   * that connect "opposite" points. For triangles and tetrahedra, the function
+   * simply returns the length of the longest edge.
+   *
+   * The situation is more difficult for wedges and pyramids: For wedges, we
+   * return the length of the longest diagonal of the three quadrilateral faces
+   * or the longest edge length of the two triangular faces. For pyramids,
+   * the same principle is applied.
+   *
+   * In all of these cases, this definition of "diameter" is
+   * not necessarily the true diameter in the sense of the largest distance
+   * between points inside the object. Indeed, one can often construct objects
+   * for which it is not, though these are generally quite deformed compared to
+   * the reference shape. Furthermore, for objects that may use higher order
+   * mappings, one may have bulging faces that also create trouble for
+   * computing an exact representation of the diameter of the object. That said,
+   * the definition used above is completely sufficient for most computations.
    */
   double
   diameter() const;
 
   /**
-   * 返回一对Point和double，对应于物体的中心和合理的小包围球的半径。
-   * 该函数实现了Ritter的O(n)算法，以获得一个围绕对象顶点的合理的小包围球。
-   * 包围球的初始猜测是包含对象的最大对角线作为其直径的球。
-   * 从这样的初始猜测开始，算法测试对象的所有顶点（除了最大对角线的顶点）在几何上是否在球内。
-   * 如果发现任何顶点（v）在几何上不在球内，则通过移动球的中心和增加半径来构建一个新的球的迭代，以便在几何上包围先前的球和顶点（v）。当所有的顶点都在球的几何范围内时，该算法就结束了。
-   * 如果一个顶点（v）在几何上位于球的某个迭代中，那么它将在球的后续迭代中继续如此（这是真实的，通过/a结构）。
-   * @note  这个函数假定从参考单元开始的d-线性映射。    <a
-   * href="http://geomalgorithms.com/a08-_containers.html">see
-   * this</a>和[Ritter 1990]。
+   * Return a pair of Point and double corresponding to the center and
+   * the radius of a reasonably small enclosing ball of the object.
    *
+   * The function implements Ritter's O(n) algorithm to get a reasonably
+   * small enclosing ball around the vertices of the object.
+   * The initial guess for the enclosing ball is taken to be the ball
+   * which contains the largest diagonal of the object as its diameter.
+   * Starting from such an initial guess, the algorithm tests whether all
+   * the vertices of the object (except the vertices of the largest diagonal)
+   * are geometrically within the ball.
+   * If any vertex (v) is found to be geometrically outside the ball,
+   * a new iterate of the ball is constructed by shifting its center and
+   * increasing the radius so as to geometrically enclose both the previous
+   * ball and the vertex (v). The algorithm terminates when all the vertices
+   * are geometrically inside the ball.
+   *
+   * If a vertex (v) is geometrically inside a particular iterate of the ball,
+   * then it will continue to be so in the subsequent iterates of
+   * the ball (this is true \a by \a construction).
+   *
+   * @note This function assumes d-linear mapping from the reference cell.
+   *
+   * <a href="http://geomalgorithms.com/a08-_containers.html">see this</a> and
+   * [Ritter 1990]
    */
   std::pair<Point<spacedim>, double>
   enclosing_ball() const;
 
   /**
-   * 返回包围该对象的最小边界框。
-   * 注意，这个方法不知道你可能用来做计算的任何映射。如果你使用的是修改顶点位置的映射对象，比如MappingQEulerian，或者MappingFEField，那么你应该调用函数
-   * Mapping::get_bounding_box() 代替。
+   * Return the smallest bounding box that encloses the object.
    *
+   * Notice that this method is not aware of any mapping you may be using to
+   * do your computations. If you are using a mapping object that modifies the
+   * position of the vertices, like MappingQEulerian, or MappingFEField, then
+   * you should call the function Mapping::get_bounding_box() instead.
    */
   BoundingBox<spacedim>
   bounding_box() const;
 
   /**
-   * 对象在给定轴线方向的长度，在本地坐标系中指定。关于本地轴的含义和列举，请参见GeometryInfo的文档。
-   * 请注意，一个物体的 "长度
-   * "可以有多种解释。在这里，我们选择它作为对象的任何一条边的最大长度，这些边与参考单元上选择的轴平行。
+   * Length of an object in the direction of the given axis, specified in the
+   * local coordinate system. See the documentation of GeometryInfo for the
+   * meaning and enumeration of the local axes.
    *
+   * Note that the "length" of an object can be interpreted in a variety of
+   * ways. Here, we choose it as the maximal length of any of the edges of the
+   * object that are parallel to the chosen axis on the reference cell.
    */
   double
   extent_in_direction(const unsigned int axis) const;
 
   /**
-   * 返回任何两个顶点之间的最小距离。
-   *
+   * Return the minimal distance between any two vertices.
    */
   double
   minimum_vertex_distance() const;
 
   /**
-   * 返回一个属于此对象所在的流形<dim,spacedim>的点，给定其在参考单元格
-   * @p structdim
-   * 上的参数化坐标。该函数可查询底层流形对象，并可用于获得该对象上任意点的精确几何位置。
-   * 注意，参数 @p coordinates 是 <em> 参考单元 </em>
-   * 上的坐标，以参考坐标给出。换句话说，该参数提供了不同顶点之间的权重。例如，对于线，调用这个函数的参数是Point<1>(.5)，相当于要求线的中心。
+   * Return a point belonging to the Manifold<dim,spacedim> where this object
+   * lives, given its parametric coordinates on the reference @p structdim
+   * cell. This function queries the underlying manifold object, and can be
+   * used to obtain the exact geometrical location of arbitrary points on this
+   * object.
    *
+   * Notice that the argument @p coordinates are the coordinates on the
+   * <em>reference cell</em>, given in reference coordinates. In other words,
+   * the argument provides a weighting between the different vertices. For
+   * example, for lines, calling this function with argument Point<1>(.5), is
+   * equivalent to asking the line for its center.
    */
   Point<spacedim>
   intermediate_point(const Point<structdim> &coordinates) const;
 
   /**
-   * 这个函数通过从参考 $d$ 维单元反转 $d$
-   * 线性函数的仿射近似，计算从实数到单元格的快速近似转换。
-   * 单位单元到实数单元映射的仿生近似是通过仿生函数与本对象的
-   * $2^d$
-   * 顶点的最小二乘法拟合找到的。对于任何有效的网格单元，其几何形状不是退化的，这个操作的结果是一个唯一的仿生映射。因此，对于所有给定的输入点，这个函数将返回一个有限的结果，即使在实际的双/三线或高阶映射的实际转换可能是单数的情况下。除了仅从顶点近似映射外，该函数还忽略了附加的流形描述。只有在从单元格到实际单元格的转换确实是仿生的情况下，结果才是准确的，比如在一维或二维/三维的笛卡尔和仿生（平行四边形）网格。
-   * 对于单元格的精确变换，使用
-   * Mapping::transform_real_to_unit_cell(). 。
-   * @note  如果dim<spacedim，我们首先将p投影到平面上。
+   * This function computes a fast approximate transformation from the real to
+   * the unit cell by inversion of an affine approximation of the $d$-linear
+   * function from the reference $d$-dimensional cell.
    *
+   * The affine approximation of the unit to real cell mapping is found by a
+   * least squares fit of an affine function to the $2^d$ vertices of the
+   * present object. For any valid mesh cell whose geometry is not degenerate,
+   * this operation results in a unique affine mapping. Thus, this function
+   * will return a finite result for all given input points, even in cases
+   * where the actual transformation by an actual bi-/trilinear or higher
+   * order mapping might be singular. Besides only approximating the mapping
+   * from the vertex points, this function also ignores the attached manifold
+   * descriptions. The result is only exact in case the transformation from
+   * the unit to the real cell is indeed affine, such as in one dimension or
+   * for Cartesian and affine (parallelogram) meshes in 2D/3D.
+   *
+   * For exact transformations to the unit cell, use
+   * Mapping::transform_real_to_unit_cell().
+   *
+   * @note If dim<spacedim we first project p onto the plane.
    */
   Point<structdim>
   real_to_unit_cell_affine_approximation(const Point<spacedim> &point) const;
 
   /**
-   * 物体的中心。对象的中心被定义为顶点位置的平均值，这也是
-   * $Q_1$
-   * 映射将映射参考单元的中心的地方。然而，你也可以要求这个函数返回与当前对象相关的底层流形对象所计算的顶点的平均值，方法是将可选参数
-   * @p respect_manifold.  设置为 true
-   * 流形通常会将顶点的坐标拉回到参考域（不一定是参考单元），在那里计算平均值，然后再将平均值点的坐标推到物理空间；结果点保证位于流形内，即使流形是弯曲的。
-   * 当对象使用不同的流形描述作为其周围环境时，比如该TriaAccessor的部分边界对象使用非平面流形描述，但对象本身是平面的，
-   * TriaAccessor::center()
-   * 函数给出的结果可能不够准确，即使参数 @p
-   * respect_manifold
-   * 被设置为真。如果你发现这种情况，你可以通过将第二个附加参数
-   * @p
-   * interpolate_from_surrounding设置为真来进一步完善中心的计算。这将通过从所有边界对象的中心进行所谓的无限插值来计算中心的位置。对于一个二维物体，它在四条周围线中的每一条上加了
-   * <code>1/2</code> 的权重，在四个顶点上加了 <code>-1/4</code>
-   * 的权重。这相当于四个面的描述之间的线性插值，减去顶点的贡献，当通过与顶点相邻的两条线时，顶点的贡献被加了两次。在三维中，面的权重是
-   * <code>1/2</code> ，线的权重是 <code>-1/4</code>
-   * ，而顶点的权重是 <code>1/8</code>
-   * 。为了进一步了解情况，还可以赋予TransfiniteInterpolationManifold类，该类不仅能够将这种有益的描述应用于单个单元，而且能够应用于粗略单元的所有子女。
+   * Center of the object. The center of an object is defined to be the
+   * average of the locations of the vertices, which is also where a $Q_1$
+   * mapping would map the center of the reference cell. However, you can also
+   * ask this function to instead return the average of the vertices as
+   * computed by the underlying Manifold object associated with the current
+   * object, by setting to true the optional parameter @p respect_manifold.
+   * Manifolds would then typically pull back the coordinates of the vertices
+   * to a reference domain (not necessarily the reference cell), compute the
+   * average there, and then push forward the coordinates of the averaged
+   * point to the physical space again; the resulting point is guaranteed to
+   * lie within the manifold, even if the manifold is curved.
    *
+   * When the object uses a different manifold description as its surrounding,
+   * like when part of the bounding objects of this TriaAccessor use a
+   * non-flat manifold description but the object itself is flat, the result
+   * given by the TriaAccessor::center() function may not be accurate enough,
+   * even when parameter @p respect_manifold is set to true. If you find this
+   * to be case, than you can further refine the computation of the center by
+   * setting to true the second additional parameter @p
+   * interpolate_from_surrounding. This computes the location of the center by
+   * a so-called transfinite interpolation from the center of all the bounding
+   * objects. For a 2D object, it puts a weight of <code>1/2</code> on each of
+   * the four surrounding lines and a weight <code>-1/4</code> on the four
+   * vertices. This corresponds to a linear interpolation between the
+   * descriptions of the four faces, subtracting the contribution of the
+   * vertices that is added twice when coming through both lines adjacent to
+   * the vertex. In 3D, the weights for faces are <code>1/2</code>, the
+   * weights for lines are <code>-1/4</code>, and the weights for vertices are
+   * <code>1/8</code>. For further information, also confer to the
+   * TransfiniteInterpolationManifold class that is able to not only apply
+   * this beneficial description to a single cell but all children of a coarse
+   * cell.
    */
   Point<spacedim>
   center(const bool respect_manifold             = false,
          const bool interpolate_from_surrounding = false) const;
 
   /**
-   * 返回对象的arycenter（也叫中心点）。在 $D$ 空间维度中，维度为 $K$ 的对象的arycenter由@f[
-   * \mathbf x_K = \frac{1}{|K|} \int_K \mathbf x \; \textrm{d}x
-   * @f]定义的 $\mathbf x_K$ -维向量给出，其中对象的度量由@f[
-   * |K| = \int_K \mathbf 1 \; \textrm{d}x. @f]给出。 这个函数假定
-   * $K$ 由 $d$ -线性函数从参考 $d$
-   * -维单元映射出来。然后，上面的积分可以被拉回到参考单元，并准确地进行评估（如果通过冗长的，并且与Center()函数相比，昂贵的计算）。
-   *
+   * Return the barycenter (also called centroid)
+   * of the object. The barycenter for an object $K$
+   * of dimension $d$ in $D$ space dimensions is given by the $D$-dimensional
+   * vector $\mathbf x_K$ defined by
+   * @f[
+   *   \mathbf x_K = \frac{1}{|K|} \int_K \mathbf x \; \textrm{d}x
+   * @f]
+   * where the measure of the object is given by
+   * @f[
+   *   |K| = \int_K \mathbf 1 \; \textrm{d}x.
+   * @f]
+   * This function assumes that $K$ is mapped by a $d$-linear function from
+   * the reference $d$-dimensional cell. Then the integrals above can be
+   * pulled back to the reference cell and evaluated exactly (if through
+   * lengthy and, compared to the center() function, expensive computations).
    */
   Point<spacedim>
   barycenter() const;
 
   /**
-   * 计算对象的dim-dimensional度量。对于二维空间中的二维单元，这等于其体积。另一方面，对于三维空间中的二维单元，或者如果当前指向的对象是三维空间中的三维单元的二维面，那么该函数就会计算该对象所占的面积。对于一个一维的物体，返回其长度。
-   * 该函数只计算假定由（双/三）线性映射表示的单元、面或边的量度。换句话说，它只考虑绑定当前对象的顶点的位置，而不考虑对象的内部实际上如何被映射。在大多数简单的情况下，这正是你想要的。然而，对于不
-   * "直
-   * "的对象，例如，嵌入三维空间的二维单元作为弯曲域的三角化的一部分，三维单元的二维面不仅仅是平行四边形，或者位于域的边界的面不仅仅是由直线段或平面限定的，这个函数只计算由描述有关对象的真实几何的流形或边界对象定义的
-   * "真实
-   * "对象的（双/三）线性内插的二维度量。如果你想考虑
-   * "真实
-   * "几何，你将需要通过在物体上积分一个等于1的函数来计算这个度量，在应用正交之后，等于将你想用于积分的FEValues或FEFaceValues对象返回的JxW值相加。
+   * Compute the dim-dimensional measure of the object. For a dim-dimensional
+   * cell in dim-dimensional space, this equals its volume. On the other hand,
+   * for a 2d cell in 3d space, or if the current object pointed to is a 2d
+   * face of a 3d cell in 3d space, then the function computes the area the
+   * object occupies. For a one-dimensional object, return its length.
    *
+   * The function only computes the measure of cells, faces or edges assumed
+   * to be represented by (bi-/tri-)linear mappings. In other words, it only
+   * takes into account the locations of the vertices that bound the current
+   * object but not how the interior of the object may actually be mapped. In
+   * most simple cases, this is exactly what you want. However, for objects
+   * that are not "straight", e.g. 2d cells embedded in 3d space as part of a
+   * triangulation of a curved domain, two-dimensional faces of 3d cells that
+   * are not just parallelograms, or for faces that are at the boundary of a
+   * domain that is not just bounded by straight line segments or planes, this
+   * function only computes the dim-dimensional measure of a (bi-/tri-)linear
+   * interpolation of the "real" object as defined by the manifold or boundary
+   * object describing the real geometry of the object in question. If you
+   * want to consider the "real" geometry, you will need to compute the
+   * measure by integrating a function equal to one over the object, which
+   * after applying quadrature equals the summing the JxW values returned by
+   * the FEValues or FEFaceValues object you will want to use for the
+   * integral.
    */
   double
   measure() const;
 
   /**
-   * 如果当前对象是给定参数的翻译，则返回真。
-   * @note
-   * 为了三角测量的目的，单元格、面等只由其顶点来描述。因此，当前函数只对顶点的位置进行比较。然而，对于许多实际应用来说，决定一个单元是否是另一个单元的翻译的不仅仅是顶点，还有单元如何从参考单元映射到它在现实空间中的位置。例如，如果我们使用高阶映射，那么不仅顶点必须是彼此的平移，而且还必须是沿边缘的点。因此，在这些问题中，应该问映射，而不是当前的函数，两个对象是否是彼此的平移。
+   * Return true if the current object is a translation of the given argument.
    *
+   * @note For the purpose of a triangulation, cells, faces, etc are only
+   * characterized by their vertices. The current function therefore only
+   * compares the locations of vertices. For many practical applications,
+   * however, it is not only the vertices that determine whether one cell is a
+   * translation of another, but also how the cell is mapped from the
+   * reference cell to its location in real space. For example, if we are
+   * using higher order mappings, then not only do the vertices have to be
+   * translations of each other, but also the points along edges. In these
+   * questions, therefore, it would be appropriate to ask the mapping, not the
+   * current function, whether two objects are translations of each other.
    */
   bool
   is_translation_of(
     const TriaIterator<TriaAccessor<structdim, dim, spacedim>> &o) const;
 
   /**
-   * 当前对象的参考单元格类型。
-   *
+   * Reference cell type of the current object.
    */
   ReferenceCell
   reference_cell() const;
 
   /**
-   * 顶点的数量。
-   *
+   * Number of vertices.
    */
   unsigned int
   n_vertices() const;
 
   /**
-   * 行的数量。
-   *
+   * Number of lines.
    */
   unsigned int
   n_lines() const;
 
   /**
-   * 面的数量。
-   * @note  只对单元格实现（dim==spacedim）。
+   * Number of faces.
    *
+   * @note Only implemented for cells (dim==spacedim).
    */
   unsigned int
   n_faces() const;
 
   /**
-   * 返回一个对象，它可以被认为是一个包含从零到n_vertices()所有索引的数组。
-   *
+   * Return an object that can be thought of as an array containing all indices
+   * from zero to n_vertices().
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   vertex_indices() const;
 
   /**
-   * 返回一个对象，它可以被认为是一个包含从零到n_lines()所有索引的数组。
-   *
+   * Return an object that can be thought of as an array containing all indices
+   * from zero to n_lines().
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   line_indices() const;
 
   /**
-   * 返回一个对象，它可以被认为是一个包含从零到n_faces()的所有索引的数组。
-   * @note 只对单元格实现（dim==spacedim）。
+   * Return an object that can be thought of as an array containing all indices
+   * from zero to n_faces().
    *
+   * @note Only implemented for cells (dim==spacedim).
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   face_indices() const;
 
   /**
    * @}
-   *
    */
 
 private:
   /**
-   * 与set_boundary_id类似，但没有检查内部面或无效的id。
-   *
+   * Like set_boundary_id but without checking for internal faces or invalid
+   * ids.
    */
   void
   set_boundary_id_internal(const types::boundary_id id) const;
 
   /**
-   * 设置那些约束当前对象的对象的索引。例如，如果当前对象代表一个单元格，那么该参数表示绑定该单元格的面的索引。如果当前对象代表一条线，那么该参数表示绑定该线的顶点的指数。以此类推。
-   *
+   * Set the indices of those objects that bound the current
+   * object. For example, if the current object represents a cell,
+   * then the argument denotes the indices of the faces that bound the
+   * cell. If the current object represents a line, the argument
+   * denotes the indices of the vertices that bound it. And so on.
    */
   void
   set_bounding_object_indices(
     const std::initializer_list<int> &new_indices) const;
 
   /**
-   * 与上述相同，但对`无符号int`而言。
-   *
+   * The same as above but for `unsigned int`.
    */
   void
   set_bounding_object_indices(
     const std::initializer_list<unsigned int> &new_indices) const;
 
   /**
-   * 设置标志，表明 <code>line_orientation()</code> 将返回什么。
-   * 只有在3D中才能设置面的线方向（即 <code>structdim==2 &&
-   * dim==3</code>  ）。
+   * Set the flag indicating, what <code>line_orientation()</code> will
+   * return.
    *
+   * It is only possible to set the line_orientation of faces in 3d (i.e.
+   * <code>structdim==2 && dim==3</code>).
    */
   void
   set_line_orientation(const unsigned int line, const bool orientation) const;
 
   /**
-   * 设置索引为 @p face 的四边形的法线是否指向标准方向（
-   * @p true) ），或者是否相反（ @p false).
-   * 哪个是标准方向，用GeometryInfo类记录。
-   * 这个函数只用于库的内部使用。将这个标志设置为任何其他的值，而不是三角测量已经设置的值，必然会给你带来灾难。
+   * Set whether the quad with index @p face has its normal pointing in the
+   * standard direction (@p true) or whether it is the opposite (@p false).
+   * Which is the standard direction is documented with the GeometryInfo
+   * class.
    *
+   * This function is only for internal use in the library. Setting this flag
+   * to any other value than the one that the triangulation has already set is
+   * bound to bring you disaster.
    */
   void
   set_face_orientation(const unsigned int face, const bool orientation) const;
 
   /**
-   * 设置标志表明， <code>face_flip()</code> 将返回什么。
-   * 只有在三维中才能设置单元格的面朝向（即
-   * <code>structdim==3 && dim==3</code>  ）。
+   * Set the flag indicating, what <code>face_flip()</code> will return.
    *
+   * It is only possible to set the face_orientation of cells in 3d (i.e.
+   * <code>structdim==3 && dim==3</code>).
    */
   void
   set_face_flip(const unsigned int face, const bool flip) const;
 
   /**
-   * 设置标志，表明 <code>face_rotation()</code> 将返回什么。
-   * 只有在3D中才能设置单元格的面朝向（即 <code>structdim==3
-   * && dim==3</code>  ）。
+   * Set the flag indicating, what <code>face_rotation()</code> will return.
    *
+   * It is only possible to set the face_orientation of cells in 3d (i.e.
+   * <code>structdim==3 && dim==3</code>).
    */
   void
   set_face_rotation(const unsigned int face, const bool rotation) const;
 
   /**
-   * 设置 @p used 标志。仅用于库的内部使用。
-   *
+   * Set the @p used flag. Only for internal use in the library.
    */
   void
   set_used_flag() const;
 
   /**
-   * 清除 @p used 标志。仅供图书馆内部使用。
-   *
+   * Clear the @p used flag. Only for internal use in the library.
    */
   void
   clear_used_flag() const;
 
   /**
-   * 设置 @p RefinementCase<dim>
-   * 这个TriaObject的精炼。对于<tt>structdim=1</tt>不定义，因为线条总是被细化成2条子线（各向同性细化）。
-   * 如果你接触这个函数，你应该很清楚你在做什么。它是专门用于库的内部使用的。
+   * Set the @p RefinementCase<dim> this TriaObject is refined with. Not
+   * defined for <tt>structdim=1</tt> as lines are always refined resulting in
+   * 2 children lines (isotropic refinement).
    *
+   * You should know quite exactly what you are doing if you touch this
+   * function. It is exclusively for internal use in the library.
    */
   void
   set_refinement_case(const RefinementCase<structdim> &ref_case) const;
 
   /**
-   * 清除这个TriaObject的RefinementCase<dim>，即重置为
+   * Clear the RefinementCase<dim> of this TriaObject, i.e. reset it to
    * RefinementCase<dim>::no_refinement.
-   * 你应该很清楚你在做什么，如果你碰触这个函数。它是专门用于库的内部使用的。
    *
+   * You should know quite exactly what you are doing if you touch this
+   * function. It is exclusively for internal use in the library.
    */
   void
   clear_refinement_case() const;
 
   /**
-   * 设置第1个孩子的索引。由于孩子们至少是成对出现的，我们只需要存储第二个孩子的索引，也就是偶数孩子的索引。请确保首先设置第i=0个孩子的索引。不允许对奇数的孩子调用这个函数。
-   *
+   * Set the index of the ith child. Since the children come at least in
+   * pairs, we need to store the index of only every second child, i.e. of the
+   * even numbered children. Make sure, that the index of child i=0 is set
+   * first. Calling this function for odd numbered children is not allowed.
    */
   void
   set_children(const unsigned int i, const int index) const;
 
   /**
-   * 清除子字段，即把它设置为一个值，表示这个单元格没有子字。
-   *
+   * Clear the child field, i.e. set it to a value which indicates that this
+   * cell has no children.
    */
   void
   clear_children() const;
@@ -1596,61 +1848,64 @@ private:
 
 
 /**
- * 这个类是<code>TriaAccessor<structdim, dim,
- * spacedim></code>的特殊化，用于 @p structdim
- * 为零的情况。该类代表维数为 <code>dim</code>
- * 的三角结构中的顶点（即1代表线的三角结构，2代表四边形的三角结构，3代表六边形的三角结构），该三角结构嵌入在维数为
- * <code>spacedim</code> 的空间中（对于 <code>spacedim==dim</code>
- * 的三角结构代表 ${\mathbb R}^\text{dim}$ 的域，对于
- * <code>spacedim@>dim</code>
- * 的三角结构是嵌入在高维空间的流形）。 对于 @p dim
- * 等于1的情况，即对于一维三角结构的顶点，这个类别还有一个进一步的特殊化，因为在这种情况下顶点也是面。
+ * This class is a specialization of <code>TriaAccessor<structdim, dim,
+ * spacedim></code>
+ * for the case that @p structdim is zero. This
+ * class represents vertices in a triangulation of dimensionality
+ * <code>dim</code> (i.e. 1 for a triangulation of lines, 2 for a
+ * triangulation of quads, and 3 for a triangulation of hexes) that is
+ * embedded in a space of dimensionality <code>spacedim</code> (for
+ * <code>spacedim==dim</code> the triangulation represents a domain in
+ * ${\mathbb R}^\text{dim}$, for <code>spacedim@>dim</code> the triangulation
+ * is of a manifold embedded in a higher dimensional space).
  *
+ * There is a further specialization of this class for the case that
+ * @p dim equals one, i.e., for vertices of a one-dimensional triangulation,
+ * since in that case vertices are also faces.
  *
  * @ingroup Accessors
- *
- *
  */
 template <int dim, int spacedim>
 class TriaAccessor<0, dim, spacedim>
 {
 public:
   /**
-   * 这个访问器所代表的对象所处的空间的维度。
-   * 例如，如果这个访问器代表一个四边形，它是四维空间中一个二维表面的一部分，那么这个值就是四。
-   *
+   * Dimension of the space the object represented by this accessor lives in.
+   * For example, if this accessor represents a quad that is part of a two-
+   * dimensional surface in four-dimensional space, then this value is four.
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * 这个访问器所代表的事物的尺寸，是这个访问器的一部分。例如，如果这个访问器代表一条线，是六面体的一部分，那么这个值就是三。
-   *
+   * Dimensionality of the object that the thing represented by this accessor
+   * is part of. For example, if this accessor represents a line that is part
+   * of a hexahedron, then this value will be three.
    */
   static const unsigned int dimension = dim;
 
   /**
-   * 这个访问器所代表的当前对象的尺寸。例如，如果它是线（不管它是四面体还是六面体的一部分，也不管我们处于什么维度），那么这个值就等于1。
-   *
+   * Dimensionality of the current object represented by this accessor. For
+   * example, if it is line (irrespective of whether it is part of a quad or
+   * hex, and what dimension we are in), then this value equals 1.
    */
   static const unsigned int structure_dimension = 0;
 
   /**
-   * 指向内部数据的指针。
-   *
+   * Pointer to internal data.
    */
   using AccessorData = void;
 
   /**
-   * 构造函数。第二个参数是我们指向的顶点的全局索引。
-   *
+   * Constructor. The second argument is the global index of the vertex we
+   * point to.
    */
   TriaAccessor(const Triangulation<dim, spacedim> *tria,
                const unsigned int                  vertex_index);
 
   /**
-   * 构造函数。这个构造函数的存在是为了保持与其他访问器类的接口兼容性。
-   * @p index 可以用来设置我们所指向的顶点的全局索引。
-   *
+   * Constructor. This constructor exists in order to maintain interface
+   * compatibility with the other accessor classes. @p index can be used to
+   * set the global index of the vertex we point to.
    */
   TriaAccessor(const Triangulation<dim, spacedim> *tria  = nullptr,
                const int                           level = 0,
@@ -1658,277 +1913,254 @@ public:
                const AccessorData *                      = nullptr);
 
   /**
-   * 构造函数。不应该被调用，因此会产生一个错误。
-   *
+   * Constructor. Should never be called and thus produces an error.
    */
   template <int structdim2, int dim2, int spacedim2>
   TriaAccessor(const TriaAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 构造函数。不应该被调用，因此会产生一个错误。
-   *
+   * Constructor. Should never be called and thus produces an error.
    */
   template <int structdim2, int dim2, int spacedim2>
   TriaAccessor(const InvalidAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 返回迭代器的状态。
-   *
+   * Return the state of the iterator.
    */
   IteratorState::IteratorStates
   state() const;
 
   /**
-   * 这个对象的水平。顶点没有级别，所以这个函数总是返回0。
-   *
+   * Level of this object. Vertices have no level, so this function always
+   * returns zero.
    */
   static int
   level();
 
   /**
-   * 此对象的索引。返回这个对象所指向的顶点的全局索引。
-   *
+   * Index of this object. Returns the global index of the vertex this object
+   * points to.
    */
   int
   index() const;
 
   /**
-   * 返回这个类所指向的对象所属于的三角形的引用。
-   *
+   * Return a reference to the triangulation which the object pointed to by this
+   * class belongs to.
    */
   const Triangulation<dim, spacedim> &
   get_triangulation() const;
 
   /**
-   * @name  迭代器的进阶
-   *
+   * @name Advancement of iterators
    */
   /**
    * @{
-   *
    */
   /**
-   * 该操作符将迭代器推进到下一个元素。
-   *
+   * This operator advances the iterator to the next element.
    */
   void
   operator++();
 
   /**
-   * 该操作符将迭代器移到上一个元素。
-   *
+   * This operator moves the iterator to the previous element.
    */
   void
   operator--();
   /**
-   * 进行平等比较。
-   *
+   * Compare for equality.
    */
   bool
   operator==(const TriaAccessor &) const;
 
   /**
-   * 不等式的比较。
-   *
+   * Compare for inequality.
    */
   bool
   operator!=(const TriaAccessor &) const;
 
   /**
    * @}
-   *
    */
 
 
   /**
-   * @name  访问子对象
-   *
+   * @name Accessing sub-objects
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回当前对象的第i个顶点的全局索引。如果 @p i
-   * 为零，这将返回这个对象所指向的当前点的索引。否则，它会抛出一个异常。
-   * 请注意，返回值只是几何顶点的索引。
-   * 它与与之相关的可能的自由度没有关系。
-   * 关于这一点，请参阅 @p DoFAccessor::vertex_dof_index 函数。
-   * @note
-   * 尽管有这个名字，这里返回的索引只是全局的，即它是特定于一个特定的三角形对象，或者，在三角形实际上是
-   * parallel::distributed::Triangulation,
-   * 类型的情况下，特定于存储在当前处理器上的分布式三角形的那一部分。
+   * Return the global index of i-th vertex of the current object. If @p i is
+   * zero, this returns the index of the current point to which this object
+   * refers. Otherwise, it throws an exception.
    *
+   * Note that the returned value is only the index of the geometrical vertex.
+   * It has nothing to do with possible degrees of freedom associated with it.
+   * For this, see the @p DoFAccessor::vertex_dof_index functions.
+   *
+   * @note Despite the name, the index returned here is only global in the
+   * sense that it is specific to a particular Triangulation object or, in the
+   * case the triangulation is actually of type
+   * parallel::distributed::Triangulation, specific to that part of the
+   * distributed triangulation stored on the current processor.
    */
   unsigned int
   vertex_index(const unsigned int i = 0) const;
 
   /**
-   * 返回一个对 @p ith
-   * 顶点的引用。如果i是0，这将返回这个对象所指向的当前点的引用。否则，它会抛出一个异常。
-   *
+   * Return a reference to the @p ith vertex. If i is zero, this returns a
+   * reference to the current point to which this object refers. Otherwise, it
+   * throws an exception.
    */
   Point<spacedim> &
   vertex(const unsigned int i = 0) const;
 
   /**
-   * 指向与此对象相邻的 @p ith
-   * 线的指针。将指向一个无效的对象。
-   *
+   * Pointer to the @p ith line bounding this object. Will point to an invalid
+   * object.
    */
   typename dealii::internal::TriangulationImplementation::
     Iterators<dim, spacedim>::line_iterator static line(const unsigned int);
 
   /**
-   * 围绕此对象的 @p ith 行的行索引。抛出一个异常。
-   *
+   * Line index of the @p ith line bounding this object. Throws an exception.
    */
   static unsigned int
   line_index(const unsigned int i);
 
   /**
-   * 指向包围此对象的 @p ith 四边形的指针。
-   *
+   * Pointer to the @p ith quad bounding this object.
    */
   static typename dealii::internal::TriangulationImplementation::
     Iterators<dim, spacedim>::quad_iterator
     quad(const unsigned int i);
 
   /**
-   * 绑定此对象的 @p ith 四边形的索引。抛出一个异常。
-   *
+   * Quad index of the @p ith quad bounding this object. Throws an exception.
    */
   static unsigned int
   quad_index(const unsigned int i);
 
   /**
    * @}
-   *
    */
 
 
   /**
-   * @name  关于一个物体的几何信息
-   *
+   * @name Geometric information about an object
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 物体的直径。这个函数总是返回零。
-   *
+   * Diameter of the object. This function always returns zero.
    */
   double
   diameter() const;
 
   /**
-   * 对象在给定轴线方向的长度，在本地坐标系中指定。有关本地轴的含义和列举，请参见GeometryInfo的文档。
-   * 这个函数总是返回0。
+   * Length of an object in the direction of the given axis, specified in the
+   * local coordinate system. See the documentation of GeometryInfo for the
+   * meaning and enumeration of the local axes.
    *
+   * This function always returns zero.
    */
   double
   extent_in_direction(const unsigned int axis) const;
 
   /**
-   * 返回此对象的中心，当然，这与此对象所指的顶点的位置相吻合。参数
-   * @p  respect_manifold和 @p interpolate_from_surrounding
-   * 不被使用。它们的存在是为了提供与
-   * <code>TriaAccessor<structdim,dim,spacedim></code>  相同的接口。
-   *
+   * Return the center of this object, which of course coincides with the
+   * location of the vertex this object refers to. The parameters @p
+   * respect_manifold and @p interpolate_from_surrounding are not used. They
+   * are there to provide the same interface as
+   * <code>TriaAccessor<structdim,dim,spacedim></code>.
    */
   Point<spacedim>
   center(const bool respect_manifold             = false,
          const bool interpolate_from_surrounding = false) const;
 
   /**
-   * 计算对象的dim-dimensional度量。对于二维空间中的二维单元，这等于其体积。另一方面，对于三维空间中的二维单元，或者如果当前指向的对象是三维空间中的三维单元的二维面，那么该函数就会计算该对象所占的面积。对于一个一维的对象，返回其长度。对于一个零维的对象，返回零。
-   *
+   * Compute the dim-dimensional measure of the object. For a dim-dimensional
+   * cell in dim-dimensional space, this equals its volume. On the other hand,
+   * for a 2d cell in 3d space, or if the current object pointed to is a 2d
+   * face of a 3d cell in 3d space, then the function computes the area the
+   * object occupies. For a one-dimensional object, return its length. For a
+   * zero-dimensional object, return zero.
    */
   double
   measure() const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  子对象的方向
-   *
+   * @name Orientation of sub-objects
    */
   /**
    * @{
-   *
    */
 
   /**
    * @brief Always return false
-   *
    */
   static bool
   face_orientation(const unsigned int face);
 
   /**
    * @brief Always return false
-   *
    */
   static bool
   face_flip(const unsigned int face);
 
   /**
    * @brief Always return false
-   *
    */
   static bool
   face_rotation(const unsigned int face);
 
   /**
    * @brief Always return false
-   *
    */
   static bool
   line_orientation(const unsigned int line);
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  访问儿童
-   *
+   * @name Accessing children
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 测试该对象是否有子代。总是假的。
-   *
+   * Test whether the object has children. Always false.
    */
   static bool
   has_children();
 
   /**
-   * 返回这个对象的直接子代数。这始终是零。
-   *
+   * Return the number of immediate children of this object. This is always
+   * zero.
    */
   static unsigned int
   n_children();
 
   /**
-   * 计算并返回此对象的活动子孙的数量。  总是零。
-   *
+   * Compute and return the number of active descendants of this objects.
+   * Always zero.
    */
   static unsigned int
   n_active_descendants();
 
   /**
-   * @deprecated  使用n_active_descendants()代替。
-   *
+   * @deprecated Use n_active_descendants() instead.
    */
   DEAL_II_DEPRECATED
   static unsigned int
@@ -1936,92 +2168,85 @@ public:
 
 
   /**
-   * 返回此对象被精炼的次数。总是0。
-   *
+   * Return the number of times that this object is refined. Always 0.
    */
   static unsigned int
   max_refinement_depth();
 
   /**
    * @brief Return an invalid unsigned integer.
-   *
    */
   static unsigned int
   child_iterator_to_index(const TriaIterator<TriaAccessor<0, dim, spacedim>> &);
 
   /**
    * @brief Return an invalid object.
-   *
    */
   static TriaIterator<TriaAccessor<0, dim, spacedim>>
   child(const unsigned int);
 
   /**
    * @brief Return an invalid object.
-   *
    */
   static TriaIterator<TriaAccessor<0, dim, spacedim>>
   isotropic_child(const unsigned int);
 
   /**
-   * 总是不返回细化。
-   *
+   * Always return no refinement.
    */
   static RefinementCase<0>
   refinement_case();
 
   /**
-   * @brief Returns  -
-   *
+   * @brief Returns -1
    */
   static int
   child_index(const unsigned int i);
 
   /**
-   * @brief Returns  -
-   *
+   * @brief Returns -1
    */
   static int
   isotropic_child_index(const unsigned int i);
   /**
    * @}
-   *
    */
 
   /**
-   * 返回这里指向的顶点是否被使用。
-   *
+   * Return whether the vertex pointed to here is used.
    */
   bool
   used() const;
 
 protected:
   /**
-   * 复制操作符。因为这只是从迭代器中调用，所以不要返回任何东西，因为迭代器会返回自己。
-   * 这个方法是受保护的，因为它只能从迭代器类中调用。
+   * Copy operator. Since this is only called from iterators, do not return
+   * anything, since the iterator will return itself.
    *
+   * This method is protected, since it is only to be called from the iterator
+   * class.
    */
   void
   copy_from(const TriaAccessor &);
 
   /**
-   * 访问器的比较运算符。这个操作符在比较迭代器进入三角形的对象时使用，例如在把它们放入
-   * `std::map`.
-   * 这个操作符简单地比较了当前对象所指向的顶点的全局索引。
+   * Comparison operator for accessors. This operator is used when comparing
+   * iterators into objects of a triangulation, for example when putting
+   * them into a `std::map`.
    *
+   * This operator simply compares the global index of the vertex the
+   * current object points to.
    */
   bool
   operator<(const TriaAccessor &other) const;
 
   /**
-   * 指向我们所操作的三角形的指针。
-   *
+   * Pointer to the triangulation we operate on.
    */
   const Triangulation<dim, spacedim> *tria;
 
   /**
-   * 这个对象所对应的顶点的全局索引。
-   *
+   * The global vertex index of the vertex this object corresponds to.
    */
   unsigned int global_vertex_index;
 
@@ -2037,88 +2262,90 @@ private:
 
 
 /**
- * 这个类是<code>TriaAccessor<structdim, dim,
- * spacedim></code>的特化，用于 @p structdim 为零和 @p dim
- * 为一的情况。该类表示嵌入在维数为 <code>spacedim</code>
- * 的空间中的一维三角形的顶点（对于
- * <code>spacedim==dim==1</code> ，三角形表示 ${\mathbb R}^\text{dim}$
- * 中的一个域，对于 <code>spacedim@>dim==1</code>
- * ，三角形是嵌入在高维空间的流形）。
- * 目前TriaAccessor<0,dim,spacedim>类对一维三角形的顶点的专门化存在，因为在
- * @p dim  == 1的情况下，顶点也是面。
+ * This class is a specialization of <code>TriaAccessor<structdim, dim,
+ * spacedim></code>
+ * for the case that @p structdim is zero and @p dim is one. This
+ * class represents vertices in a one-dimensional triangulation that is
+ * embedded in a space of dimensionality <code>spacedim</code> (for
+ * <code>spacedim==dim==1</code> the triangulation represents a domain in
+ * ${\mathbb R}^\text{dim}$, for <code>spacedim@>dim==1</code> the triangulation
+ * is of a manifold embedded in a higher dimensional space).
  *
+ * The current specialization of the TriaAccessor<0,dim,spacedim> class
+ * for vertices of a one-dimensional triangulation exists
+ * since in the @p dim == 1 case vertices are also faces.
  *
  * @ingroup Accessors
- *
- *
  */
 template <int spacedim>
 class TriaAccessor<0, 1, spacedim>
 {
 public:
   /**
-   * 这个访问器所代表的对象所处空间的尺寸。
-   * 例如，如果这个访问器代表一个四边形，它是四维空间中一个二维表面的一部分，那么这个值就是四。
-   *
+   * Dimension of the space the object represented by this accessor lives in.
+   * For example, if this accessor represents a quad that is part of a two-
+   * dimensional surface in four-dimensional space, then this value is four.
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * 这个访问器所代表的事物的尺寸，是这个访问器的一部分。例如，如果这个访问器代表一条线，是六面体的一部分，那么这个值就是三。
-   *
+   * Dimensionality of the object that the thing represented by this accessor
+   * is part of. For example, if this accessor represents a line that is part
+   * of a hexahedron, then this value will be three.
    */
   static const unsigned int dimension = 1;
 
   /**
-   * 这个访问器所代表的当前对象的尺寸。例如，如果它是线（不管它是四面体还是六面体的一部分，也不管我们处于什么维度），那么这个值就等于1。
-   *
+   * Dimensionality of the current object represented by this accessor. For
+   * example, if it is line (irrespective of whether it is part of a quad or
+   * hex, and what dimension we are in), then this value equals 1.
    */
   static const unsigned int structure_dimension = 0;
 
   /**
-   * 指向内部数据的指针。
-   *
+   * Pointer to internal data.
    */
   using AccessorData = void;
 
   /**
-   * 这里代表的顶点是在域的左端、右端，还是在内部。
-   *
+   * Whether the vertex represented here is at the left end of the domain, the
+   * right end, or in the interior.
    */
   enum VertexKind
   {
     /**
-     * 左边的顶点。
-     *
+     * Left vertex.
      */
     left_vertex,
     /**
-     * 内部顶点。
-     *
+     * Interior vertex.
      */
     interior_vertex,
     /**
-     * 右边的顶点。
-     *
+     * Right vertex.
      */
     right_vertex
   };
 
   /**
-   * 构造函数。
-   * 由于没有从顶点到单元的映射，一个点的访问器对象没有办法弄清它是否在域的边界上。因此，第二个参数必须由生成这个访问器的对象传递。
+   * Constructor.
    *
-   * 例如，一个1d单元可以计算出它的左或右顶点是否在边界上。
-   * 第三个参数是我们指向的顶点的全局索引。
+   * Since there is no mapping from vertices to cells, an accessor object for
+   * a point has no way to figure out whether it is at the boundary of the
+   * domain or not. Consequently, the second argument must be passed by the
+   * object that generates this accessor -- e.g. a 1d cell that can figure out
+   * whether its left or right vertex are at the boundary.
    *
+   * The third argument is the global index of the vertex we point to.
    */
   TriaAccessor(const Triangulation<1, spacedim> *tria,
                const VertexKind                  vertex_kind,
                const unsigned int                vertex_index);
 
   /**
-   * 构造函数。这个构造函数的存在是为了保持与其他访问器类的界面兼容。然而，它在这里并没有做任何有用的事情，所以实际上可能不会被调用。
-   *
+   * Constructor. This constructor exists in order to maintain interface
+   * compatibility with the other accessor classes. However, it doesn't do
+   * anything useful here and so may not actually be called.
    */
   TriaAccessor(const Triangulation<1, spacedim> *tria = nullptr,
                const int                              = 0,
@@ -2126,282 +2353,280 @@ public:
                const AccessorData *                   = nullptr);
 
   /**
-   * 构造函数。不应该被调用，因此会产生一个错误。
-   *
+   * Constructor. Should never be called and thus produces an error.
    */
   template <int structdim2, int dim2, int spacedim2>
   TriaAccessor(const TriaAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 构造函数。不应被调用，因此产生错误。
-   *
+   * Constructor. Should never be called and thus produces an error.
    */
   template <int structdim2, int dim2, int spacedim2>
   TriaAccessor(const InvalidAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 复制操作符。因为这只是从迭代器中调用，所以不要返回任何东西，因为迭代器会返回自己。
-   *
+   * Copy operator. Since this is only called from iterators, do not return
+   * anything, since the iterator will return itself.
    */
   void
   copy_from(const TriaAccessor &);
 
   /**
-   * 返回迭代器的状态。由于对点的迭代器不能被增加或减少，它的状态保持不变，特别是等于
-   * IteratorState::valid.  。
-   *
+   * Return the state of the iterator. Since an iterator to points can not be
+   * incremented or decremented, its state remains constant, and in particular
+   * equal to IteratorState::valid.
    */
   static IteratorState::IteratorStates
   state();
 
   /**
-   * 这个对象的级别。顶点没有级别，所以这个函数总是返回0。
-   *
+   * Level of this object. Vertices have no level, so this function always
+   * returns zero.
    */
   static int
   level();
 
   /**
-   * 此对象的索引。返回这个对象所指向的顶点的全局索引。
-   *
+   * Index of this object. Returns the global index of the vertex this object
+   * points to.
    */
   int
   index() const;
 
   /**
-   * 返回这个类所指向的对象所属于的三角形的引用。
-   *
+   * Return a reference to the triangulation which the object pointed to by this
+   * class belongs to.
    */
   const Triangulation<1, spacedim> &
   get_triangulation() const;
 
   /**
-   * @name  推进迭代器的工作
-   *
+   * @name Advancement of iterators
    */
   /**
    * @{
-   *
    */
   /**
-   * 这个操作将迭代器推进到下一个元素。对于点，这个操作没有定义，所以你不能在点的迭代器上迭代。
-   *
+   * This operator advances the iterator to the next element. For points, this
+   * operation is not defined, so you can't iterate over point iterators.
    */
   void
   operator++() const;
 
   /**
-   * 该操作符将迭代器移到上一个元素。对于点来说，这个操作没有被定义，所以你不能对点的迭代器进行迭代。
-   *
+   * This operator moves the iterator to the previous element. For points,
+   * this operation is not defined, so you can't iterate over point iterators.
    */
   void
   operator--() const;
   /**
-   * 进行平等比较。
-   *
+   * Compare for equality.
    */
   bool
   operator==(const TriaAccessor &) const;
 
   /**
-   * 比较不等式。
-   *
+   * Compare for inequality.
    */
   bool
   operator!=(const TriaAccessor &) const;
 
   /**
-   * 访问器的比较运算器。当比较迭代器进入三角形的对象时，例如将其放入
-   * `std::map`.
-   * 中时，该操作符会被使用。该操作符只是比较当前对象所指向的顶点的全局索引。
+   * Comparison operator for accessors. This operator is used when comparing
+   * iterators into objects of a triangulation, for example when putting
+   * them into a `std::map`.
    *
+   * This operator simply compares the global index of the vertex the
+   * current object points to.
    */
   bool
   operator<(const TriaAccessor &other) const;
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  访问子对象
-   *
+   * @name Accessing sub-objects
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回当前对象的第i个顶点的全局索引。如果i为零，则返回该对象所指向的当前点的索引。否则，它会抛出一个异常。
-   * 请注意，返回值只是几何顶点的索引。
-   * 它与与之相关的可能的自由度没有关系。
-   * 关于这一点，请参阅 @p DoFAccessor::vertex_dof_index 函数。
-   * @note
-   * 尽管有这个名字，这里返回的索引只是全局的，即它是特定于一个特定的三角形对象的，或者，在三角形实际上是
-   * parallel::distributed::Triangulation,
-   * 类型的情况下，特定于存储在当前处理器上的分布式三角形的那一部分。
+   * Return the global index of i-th vertex of the current object. If i is
+   * zero, this returns the index of the current point to which this object
+   * refers. Otherwise, it throws an exception.
    *
+   * Note that the returned value is only the index of the geometrical vertex.
+   * It has nothing to do with possible degrees of freedom associated with it.
+   * For this, see the @p DoFAccessor::vertex_dof_index functions.
+   *
+   * @note Despite the name, the index returned here is only global in the
+   * sense that it is specific to a particular Triangulation object or, in the
+   * case the triangulation is actually of type
+   * parallel::distributed::Triangulation, specific to that part of the
+   * distributed triangulation stored on the current processor.
    */
   unsigned int
   vertex_index(const unsigned int i = 0) const;
 
   /**
-   * 返回一个对 @p ith
-   * 顶点的引用。如果i为零，这将返回该对象所指向的当前点的引用。否则，它会抛出一个异常。
-   *
+   * Return a reference to the @p ith vertex. If i is zero, this returns a
+   * reference to the current point to which this object refers. Otherwise, it
+   * throws an exception.
    */
   Point<spacedim> &
   vertex(const unsigned int i = 0) const;
 
   /**
-   * 返回这个对象的中心，当然，这与这个对象所指的顶点的位置是一致的。
-   *
+   * Return the center of this object, which of course coincides with the
+   * location of the vertex this object refers to.
    */
   Point<spacedim>
   center() const;
 
   /**
-   * 指向限定此对象的 @p ith
-   * 线的指针。将指向一个无效的对象。
-   *
+   * Pointer to the @p ith line bounding this object. Will point to an invalid
+   * object.
    */
   typename dealii::internal::TriangulationImplementation::
     Iterators<1, spacedim>::line_iterator static line(const unsigned int);
 
   /**
-   * 围绕此对象的 @p ith 行的行索引。
-   * 只对<tt>structdim>1</tt>实现，否则产生异常。
+   * Line index of the @p ith line bounding this object.
    *
+   * Implemented only for <tt>structdim>1</tt>, otherwise an exception
+   * generated.
    */
   static unsigned int
   line_index(const unsigned int i);
 
   /**
-   * 指向包围此对象的 @p ith 四边形的指针。
-   *
+   * Pointer to the @p ith quad bounding this object.
    */
   static typename dealii::internal::TriangulationImplementation::
     Iterators<1, spacedim>::quad_iterator
     quad(const unsigned int i);
 
   /**
-   * 绑定此对象的 @p ith 四边形的索引。
-   * 只对<tt>structdim>2</tt>实现，否则会产生异常。
+   * Quad index of the @p ith quad bounding this object.
    *
+   * Implemented only for <tt>structdim>2</tt>, otherwise an exception
+   * generated.
    */
   static unsigned int
   quad_index(const unsigned int i);
 
   /**
    * @}
-   *
    */
 
 
   /**
-   * 返回这个点是否在我们这里处理的一维三角的边界上。
-   *
+   * Return whether this point is at the boundary of the one-dimensional
+   * triangulation we deal with here.
    */
   bool
   at_boundary() const;
 
   /**
-   * 返回这个对象的边界指标。一维三角形的惯例是，左端顶点（可构建三角形的每条线段）的边界指示器为0，右端顶点的边界指示器为1，除非明确设置为不同的值。    如果返回值是特殊值 numbers::internal_face_boundary_id, ，那么这个对象是在域的内部。      @see   @ref GlossBoundaryIndicator  "关于边界指示器的词汇条目"
+   * Return the boundary indicator of this object. The convention for one
+   * dimensional triangulations is that left end vertices (of each line
+   * segment from which the triangulation may be constructed) have boundary
+   * indicator zero, and right end vertices have boundary indicator one,
+   * unless explicitly set differently.
    *
+   * If the return value is the special value
+   * numbers::internal_face_boundary_id, then this object is in the interior
+   * of the domain.
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   types::boundary_id
   boundary_id() const;
 
   /**
-   * 返回对该对象所使用的流形对象的常数引用。
-   *
+   * Return a constant reference to the manifold object used for this object.
    */
   const Manifold<1, spacedim> &
   get_manifold() const;
 
   /**
-   * 返回此对象的流形指标。      @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
+   * Return the manifold indicator of this object.
    *
+   * @see
+   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   types::manifold_id
   manifold_id() const;
 
 
   /**
-   * @name  子对象的方向
-   *
+   * @name Orientation of sub-objects
    */
   /**
    * @{
-   *
    */
 
   /**
    * @brief Always return false
-   *
    */
   static bool
   face_orientation(const unsigned int face);
 
   /**
-   *
+   * @brief Always return false
    */
   static bool
   face_flip(const unsigned int face);
 
   /**
-   *
+   * @brief Always return false
    */
   static bool
   face_rotation(const unsigned int face);
 
   /**
    * @brief Always return false
-   *
    */
   static bool
   line_orientation(const unsigned int line);
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  访问儿童
-   *
+   * @name Accessing children
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 测试该对象是否有子代。总是假的。
-   *
+   * Test whether the object has children. Always false.
    */
   static bool
   has_children();
 
   /**
-   * 返回此对象的直系子代数。在维度0中，这始终是零。
-   *
+   * Return the number of immediate children of this object.This is always
+   * zero in dimension 0.
    */
   static unsigned int
   n_children();
 
   /**
-   * 计算并返回此对象的活动子孙的数量。  总是零。
-   *
+   * Compute and return the number of active descendants of this objects.
+   * Always zero.
    */
   static unsigned int
   n_active_descendants();
 
   /**
-   * @deprecated  使用n_active_descendants()代替。
-   *
+   * @deprecated Use n_active_descendants() instead.
    */
   DEAL_II_DEPRECATED
   static unsigned int
@@ -2409,173 +2634,173 @@ public:
 
 
   /**
-   * 返回此对象被精炼的次数。总是0。
-   *
+   * Return the number of times that this object is refined. Always 0.
    */
   static unsigned int
   max_refinement_depth();
 
   /**
    * @brief Return an invalid unsigned integer.
-   *
    */
   static unsigned int
   child_iterator_to_index(const TriaIterator<TriaAccessor<0, 1, spacedim>> &);
 
   /**
    * @brief Return an invalid object
-   *
    */
   static TriaIterator<TriaAccessor<0, 1, spacedim>>
   child(const unsigned int);
 
   /**
    * @brief Return an invalid object
-   *
    */
   static TriaIterator<TriaAccessor<0, 1, spacedim>>
   isotropic_child(const unsigned int);
 
   /**
-   * 总是不返回细化。
-   *
+   * Always return no refinement.
    */
   static RefinementCase<0>
   refinement_case();
 
   /**
-   * @brief Returns
-   *
-   * -
-   *
+   * @brief Returns -1
    */
   static int
   child_index(const unsigned int i);
 
   /**
-   * @brief Returns  -
-   *
+   * @brief Returns -1
    */
   static int
   isotropic_child_index(const unsigned int i);
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理边界指标
-   *
+   * @name Dealing with boundary indicators
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 设置边界指示器。这与<tt>boundary_id()</tt>函数同样适用。
-   * @warning
-   * 你不应该设置内部面（不在域的边界上的面）的边界指示器，也不应该将外部面的边界指示器设置为
-   * numbers::internal_face_boundary_id
-   * （这个值是为其他目的保留的）。如果边界单元的边界指示器为
-   * numbers::internal_face_boundary_id
-   * ，或者内部单元的边界指示器不是
-   * numbers::internal_face_boundary_id.
-   * ，算法可能无法工作或产生非常混乱的结果。
-   * 不幸的是，当前对象没有办法找出它是否真的处于域的边界，因此无法确定你试图设置的值在当前情况下是否有意义。
-   * @ingroup boundary   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Set the boundary indicator. The same applies as for the
+   * <tt>boundary_id()</tt> function.
    *
+   * @warning You should never set the boundary indicator of an interior face
+   * (a face not at the boundary of the domain), or set the boundary
+   * indicator of an exterior face to numbers::internal_face_boundary_id (this
+   * value is reserved for another purpose). Algorithms may not work or
+   * produce very confusing results if boundary cells have a boundary
+   * indicator of numbers::internal_face_boundary_id or if interior cells have
+   * boundary indicators other than numbers::internal_face_boundary_id.
+   * Unfortunately, the current object has no means of finding out whether it
+   * really is at the boundary of the domain and so cannot determine whether
+   * the value you are trying to set makes sense under the current
+   * circumstances.
+   *
+   * @ingroup boundary
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   void
   set_boundary_id(const types::boundary_id);
 
   /**
-   * 设置该顶点的流形指标。到目前为止，这没有任何作用，因为流形只用于细化和映射对象，但顶点没有被细化，映射是微不足道的。这个函数在这里只是为了允许独立维度的编程。
-   *
+   * Set the manifold indicator of this vertex. This does nothing so far since
+   * manifolds are only used to refine and map objects, but vertices are not
+   * refined and the mapping is trivial. This function is here only to allow
+   * dimension independent programming.
    */
   void
   set_manifold_id(const types::manifold_id);
 
   /**
-   * 设置此对象和其所有低维子对象的边界指标。
-   * 因为这个对象只代表一个顶点，所以没有低维对象，这个函数等同于用相同的参数调用set_boundary_id()。
-   * @ingroup boundary   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
+   * Set the boundary indicator of this object and all of its lower-
+   * dimensional sub-objects.  Since this object only represents a single
+   * vertex, there are no lower-dimensional object and this function is
+   * equivalent to calling set_boundary_id() with the same argument.
    *
+   * @ingroup boundary
+   *
+   * @see
+   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   void
   set_all_boundary_ids(const types::boundary_id);
 
   /**
-   * 设置此对象及其所有低维子对象的流形指标。
-   * 由于这个对象只代表一个顶点，所以没有低维对象，这个函数等同于用相同的参数调用set_manifold_id()。
-   * @ingroup manifold   @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
+   * Set the manifold indicator of this object and all of its lower-
+   * dimensional sub-objects.  Since this object only represents a single
+   * vertex, there are no lower-dimensional object and this function is
+   * equivalent to calling set_manifold_id() with the same argument.
    *
+   * @ingroup manifold
+   *
+   * @see
+   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   void
   set_all_manifold_ids(const types::manifold_id);
   /**
    * @}
-   *
    */
 
   /**
-   * 返回这里所指向的顶点是否被使用。
-   *
+   * Return whether the vertex pointed to here is used.
    */
   bool
   used() const;
 
   /**
-   * 参考当前对象的单元格类型。
-   *
+   * Reference cell type of the current object.
    */
   ReferenceCell
   reference_cell() const;
 
   /**
-   * 顶点的数量。
-   *
+   * Number of vertices.
    */
   unsigned int
   n_vertices() const;
 
   /**
-   * 行的数量。
-   *
+   * Number of lines.
    */
   unsigned int
   n_lines() const;
 
   /**
-   * 返回一个对象，它可以被认为是一个包含从零到n_vertices()的所有索引的数组。
-   *
+   * Return an object that can be thought of as an array containing all indices
+   * from zero to n_vertices().
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   vertex_indices() const;
 
   /**
-   * 返回一个对象，它可以被认为是一个包含从零到n_lines()所有索引的数组。
-   *
+   * Return an object that can be thought of as an array containing all indices
+   * from zero to n_lines().
    */
   std_cxx20::ranges::iota_view<unsigned int, unsigned int>
   line_indices() const;
 
 protected:
   /**
-   * 指向我们所操作的三角形的指针。
-   *
+   * Pointer to the triangulation we operate on.
    */
   const Triangulation<1, spacedim> *tria;
 
   /**
-   * 这是一个左端、右端或内部顶点。这个信息是在创建时由单元格提供的。
-   *
+   * Whether this is a left end, right end, or interior vertex. This
+   * information is provided by the cell at the time of creation.
    */
   VertexKind vertex_kind;
 
   /**
-   * 这个对象所对应的顶点的全局顶点索引。
-   *
+   * The global vertex index of the vertex this object corresponds to.
    */
   unsigned int global_vertex_index;
 };
@@ -2583,43 +2808,43 @@ protected:
 
 
 /**
- * 这个类允许访问一个单元：一维的线，二维的四边形，等等。
- * 以下指的是任何维度。
- * 该类允许访问一个<tt>单元格</tt>，在一维中是一条线，在二维中是一个四角形。单元比线或四边形本身有更多的功能，例如，它们可以被标记为细化，它们有邻居，它们有可能检查它们是否在边界上等等。该类提供了对所有这些数据的访问。
+ * This class allows access to a cell: a line in one dimension, a quad in two
+ * dimension, etc.
  *
+ * The following refers to any dimension:
+ *
+ * This class allows access to a <tt>cell</tt>, which is a line in 1D and a
+ * quad in 2D. Cells have more functionality than lines or quads by
+ * themselves, for example they can be flagged for refinement, they have
+ * neighbors, they have the possibility to check whether they are at the
+ * boundary etc. This class offers access to all this data.
  *
  * @ingroup grid
  * @ingroup Accessors
- *
  */
 template <int dim, int spacedim = dim>
 class CellAccessor : public TriaAccessor<dim, dim, spacedim>
 {
 public:
   /**
-   * 将AccessorData类型传播到本类中。
-   *
+   * Propagate the AccessorData type into the present class.
    */
   using AccessorData = typename TriaAccessor<dim, dim, spacedim>::AccessorData;
 
   /**
-   * 定义这个容器的类型，是它的一部分。
-   *
+   * Define the type of the container this is part of.
    */
   using Container = Triangulation<dim, spacedim>;
 
   /**
-   * @name  构造函数
-   *
+   * @name Constructors
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 构建器。
-   *
+   * Constructor.
    */
   CellAccessor(const Triangulation<dim, spacedim> *parent     = nullptr,
                const int                           level      = -1,
@@ -2627,58 +2852,62 @@ public:
                const AccessorData *                local_data = nullptr);
 
   /**
-   * 复制构造器。
-   *
+   * Copy constructor.
    */
   CellAccessor(const TriaAccessor<dim, dim, spacedim> &cell_accessor);
 
   /**
-   * 转换构造器。这个构造器的存在是为了使某些构造在独立于维度的代码中写得更简单。例如，它允许将一个面的迭代器分配给一个线的迭代器，这个操作在2D中很有用，但在3D中没有任何意义。这里的构造函数是为了使代码符合C++的要求而存在的，但它会无条件地中止；换句话说，将面迭代器赋值给线迭代器最好放在一个if语句中，检查维度是否为2，并在3D中赋值给一个四维迭代器（如果没有这个构造函数，如果我们碰巧为2d编译，这个操作是非法的）。
-   *
+   * Conversion constructor. This constructor exists to make certain
+   * constructs simpler to write in dimension independent code. For example,
+   * it allows assigning a face iterator to a line iterator, an operation that
+   * is useful in 2d but doesn't make any sense in 3d. The constructor here
+   * exists for the purpose of making the code conform to C++ but it will
+   * unconditionally abort; in other words, assigning a face iterator to a
+   * line iterator is better put into an if-statement that checks that the
+   * dimension is two, and assign to a quad iterator in 3d (an operator that,
+   * without this constructor would be illegal if we happen to compile for
+   * 2d).
    */
   template <int structdim2, int dim2, int spacedim2>
   CellAccessor(const InvalidAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 另一个对象之间的转换操作符，就像之前的那个一样，没有意义。
-   *
+   * Another conversion operator between objects that don't make sense, just
+   * like the previous one.
    */
   template <int structdim2, int dim2, int spacedim2>
   CellAccessor(const TriaAccessor<structdim2, dim2, spacedim2> &);
 
   /**
-   * 复制构造器。
-   *
+   * Copy constructor.
    */
   CellAccessor(const CellAccessor<dim, spacedim> &) = default;
 
   /**
-   * 移动构造函数。
-   *
+   * Move constructor.
    */
   // NOLINTNEXTLINE OSX does not compile with noexcept
   CellAccessor(CellAccessor<dim, spacedim> &&) = default;
 
   /**
-   * 解除构造器。
-   *
+   * Destructor.
    */
   ~CellAccessor() = default;
 
   /**
-   * 复制操作符。这些操作符通常在类似<tt>iterator
-   * a,b;a=*b;</tt>的情况下使用。据推测，这里的意图是将 @p b
-   * 所指向的对象复制到 @p a.
-   * 所指向的对象。然而，取消引用迭代器的结果不是一个对象，而是一个存取器；因此，这个操作对三角形的迭代器没有用。
-   * 因此，这个操作被声明为删除，不能使用。
-   *
+   * Copy operator. These operators are usually used in a context like
+   * <tt>iterator a,b; *a=*b;</tt>. Presumably, the intent here is to copy the
+   * object pointed to
+   * by @p b to the object pointed to by @p a. However, the result of
+   * dereferencing an iterator is not an object but an accessor; consequently,
+   * this operation is not useful for iterators on triangulations.
+   * Consequently, this operator is declared as deleted and can not be used.
    */
   CellAccessor<dim, spacedim> &
   operator=(const CellAccessor<dim, spacedim> &) = delete;
 
   /**
-   * 移动赋值运算符。
-   *
+   * Move assignment operator.
    */
   // NOLINTNEXTLINE OSX does not compile with noexcept
   CellAccessor<dim, spacedim> &
@@ -2686,53 +2915,45 @@ public:
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  访问子对象和相邻对象
-   *
+   * @name Accessing sub-objects and neighbors
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回一个指向 @p ith
-   * 子对象的指针。重载版本，返回一个更合理的迭代器类。
-   *
+   * Return a pointer to the @p ith child. Overloaded version which returns a
+   * more reasonable iterator class.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   child(const unsigned int i) const;
 
   /**
-   * 返回该单元格所有子代的迭代器的数组。
-   *
+   * Return an array of iterators to all children of this cell.
    */
   boost::container::small_vector<TriaIterator<CellAccessor<dim, spacedim>>,
                                  GeometryInfo<dim>::max_children_per_cell>
   child_iterators() const;
 
   /**
-   * 返回此单元格的 @p ith 面的一个迭代器。
-   *
+   * Return an iterator to the @p ith face of this cell.
    */
   TriaIterator<TriaAccessor<dim - 1, dim, spacedim>>
   face(const unsigned int i) const;
 
   /**
-   * 返回当前单元格上 @p face 的面数。这是 TriaAccessor::face().
-   * 的反函数。
-   *
+   * Return the face number of @p face on the current cell. This is the
+   * inverse function of TriaAccessor::face().
    */
   unsigned int
   face_iterator_to_index(
     const TriaIterator<TriaAccessor<dim - 1, dim, spacedim>> &face) const;
 
   /**
-   * 返回该单元格所有面的迭代器阵列。
-   *
+   * Return an array of iterators to all faces of this cell.
    */
   boost::container::small_vector<
     TriaIterator<TriaAccessor<dim - 1, dim, spacedim>>,
@@ -2740,329 +2961,400 @@ public:
   face_iterators() const;
 
   /**
-   * 返回此单元格的 @p ith 面的（全局）索引。
-   * @note
-   * 尽管有这个名字，这里返回的索引只是全局的，即它是特定于一个特定的三角形对象的，或者，在三角形实际上是
-   * parallel::distributed::Triangulation,
-   * 类型的情况下，特定于存储在当前处理器上的分布式三角形的那一部分。
+   * Return the (global) index of the @p ith face of this cell.
    *
+   * @note Despite the name, the index returned here is only global in the
+   * sense that it is specific to a particular Triangulation object or, in the
+   * case the triangulation is actually of type
+   * parallel::distributed::Triangulation, specific to that part of the
+   * distributed triangulation stored on the current processor.
    */
   unsigned int
   face_index(const unsigned int i) const;
 
   /**
-   * 返回一个单元格的迭代器，该单元格与给定面和子面编号上的当前单元格相邻。
-   * 为了成功，目前的单元必须没有被进一步细化，而在给定面的邻居必须被进一步细化一次；然后返回的单元是该邻居的一个子单元。
-   * 这个函数不能在1d中调用，因为在那里我们没有子面。
-   * 这个函数在2d中的实现相当直接，首先确定当前单元格与邻居单元格的哪个面接壤（这就是
-   * @p neighbor_of_neighbor 函数的作用），然后向 @p
-   * GeometryInfo::child_cell_on_subface 询问子单元的索引。
-   * 然而，在3D中情况更为复杂，因为面可能有不止一个方向，我们必须对这个单元和邻近的单元使用
-   * @p face_orientation,  @p face_flip 和 @p face_rotation
-   * ，以弄清我们想拥有哪个单元。
-   * 这可能会导致令人惊讶的结果：如果我们坐在一个单元格上，并要求得到子面<tt>sf</tt>后面的单元格，那么这意味着我们考虑的是本单元格自然方向上的脸的子面。然而，如果从这个单元格看到的面有<tt>face_orientation()==false</tt>，那么将本单元格与邻近单元格的子面分开的子面不一定是本单元格的
-   * @p sf-th 子面。之所以如此，是因为单元格上的 @p
-   * subface_no
-   * 对应于相对于本单元格的内在排序的子面，而面的迭代器的子女是相对于面的内在排序来计算的；这两个排序只有在面的方向是
-   * @p true, 时才是相同的，否则就会颠倒。
-   * 同样，<tt>face_flip()==true</tt>和<tt>face_rotation()==true()</tt>的影响也要考虑，这两种情况都表示非标准的脸。
-   * 幸运的是，这只是非常少的关注，因为通常我们只希望在一个活动单元的给定面的所有更细的邻居上进行循环。只有在细化三角图的过程中，我们才希望为我们的子单元和邻居的子单元设置邻居信息。因为在这种情况下，我们可以尊重当前单元格的面的方向，在这个函数中，我们不尊重当前单元格的面的方向、面的翻转和面的旋转，即返回的邻居的孩子在关于给定面的内在排序的子面
-   * @p subface 后面。
+   * Return an iterator to that cell that neighbors the present cell on the
+   * given face and subface number.
    *
+   * To succeed, the present cell must not be further refined, and the
+   * neighbor on the given face must be further refined exactly once; the
+   * returned cell is then a child of that neighbor.
+   *
+   * The function may not be called in 1d, since there we have no subfaces.
+   * The implementation of this function is rather straightforward in 2d, by
+   * first determining which face of the neighbor cell the present cell is
+   * bordering on (this is what the @p neighbor_of_neighbor function does),
+   * and then asking @p GeometryInfo::child_cell_on_subface for the index of
+   * the child.
+   *
+   * However, the situation is more complicated in 3d, since there faces may
+   * have more than one orientation, and we have to use @p face_orientation,
+   * @p face_flip and @p face_rotation for both this and the neighbor cell to
+   * figure out which cell we want to have.
+   *
+   * This can lead to surprising results: if we are sitting on a cell and are
+   * asking for a cell behind subface <tt>sf</tt>, then this means that we are
+   * considering the subface for the face in the natural direction for the
+   * present cell. However, if the face as seen from this cell has
+   * <tt>face_orientation()==false</tt>, then the child of the face that
+   * separates the present cell from the neighboring cell's child is not
+   * necessarily the @p sf-th child of the face of this cell. This is so
+   * because the @p subface_no on a cell corresponds to the subface with
+   * respect to the intrinsic ordering of the present cell, whereas children
+   * of face iterators are computed with respect to the intrinsic ordering of
+   * faces; these two orderings are only identical if the face orientation is
+   * @p true, and reversed otherwise.
+   *
+   * Similarly, effects of <tt>face_flip()==true</tt> and
+   * <tt>face_rotation()==true()</tt>, both of which indicate a non-standard
+   * face have to be considered.
+   *
+   * Fortunately, this is only very rarely of concern, since usually one
+   * simply wishes to loop over all finer neighbors at a given face of an
+   * active cell. Only in the process of refinement of a Triangulation we want
+   * to set neighbor information for both our child cells and the neighbor's
+   * children. Since we can respect orientation of faces from our current cell
+   * in that case, we do NOT respect face_orientation, face_flip and
+   * face_rotation of the present cell within this function, i.e. the returned
+   * neighbor's child is behind subface @p subface concerning the intrinsic
+   * ordering of the given face.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   neighbor_child_on_subface(const unsigned int face_no,
                             const unsigned int subface_no) const;
 
   /**
-   返回编号为 @p face_no. 的面的另一侧的邻接单元的迭代器 如果邻接单元不存在，即如果当前对象的编号为 @p face_no 的面处于边界，那么将返回一个无效的迭代器。    因此，索引 @p face_no 必须小于n_faces（）。    一个单元格的邻居最多具有与这个单元格相同的级别。例如，考虑以下情况。    @image html limit_level_difference_at_vertices.png ""  在这里，如果你在右上角的单元格上，并要求得到它的左邻（根据GeometryInfo类中阐明的惯例，就是它的<i>zeroth</i>邻），那么你将得到左上角四个小单元格的母格。换句话说，你作为邻居得到的单元格与你现在所在的单元格（右上角的那个）具有相同的细化级别，而且它可能有子代。    另一方面，如果你在左上角四个小单元格中的右上角，并且你要求获得右邻（与索引 <code>face_no=1</code> 相关），那么你会得到右上角的大单元格，在这种情况下，它的细化级别较低，并且没有自己的孩子。
+   * Return an iterator to the neighboring cell on the other side of the face
+   * with number @p face_no. If the neighbor does not exist,
+   * i.e., if the face with number @p face_no of the current object is at the boundary, then
+   * an invalid iterator is returned.
    *
+   * Consequently, the index @p face_no must be less than n_faces().
+   *
+   * The neighbor of a cell has at most the same level as this cell. For
+   * example, consider the following situation:
+   * @image html limit_level_difference_at_vertices.png ""
+   * Here, if you are on the top right cell and you ask for its left neighbor
+   * (which is, according to the conventions spelled out in the GeometryInfo
+   * class, its <i>zeroth</i> neighbor), then you will get the mother cell of
+   * the four small cells at the top left. In other words, the cell you get as
+   * neighbor has the same refinement level as the one you're on right now
+   * (the top right one) and it may have children.
+   *
+   * On the other hand, if you were at the top right cell of the four small
+   * cells at the top left, and you asked for the right neighbor (which is
+   * associated with index <code>face_no=1</code>), then you would get the large
+   * cell at the top right which in this case has a lower refinement level and
+   * no children of its own.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   neighbor(const unsigned int face_no) const;
 
   /**
-   * 返回索引为 @p face_no.
-   * 的面的另一侧的相邻单元格的单元格索引
-   * 如果相邻单元格不存在，该函数返回
+   * Return the cell index of the neighboring cell on the other side of the face
+   * with index @p face_no. If the neighbor does not exist, this function returns -1.
    *
-   * - .     这个函数等同于<tt>cell->neighbor(face_no)->index()</tt>。  更多细节请参见 neighbor()。
-   *
+   * This function is equivalent to <tt>cell->neighbor(face_no)->index()</tt>.
+   * See neighbor() for more details.
    */
   int
   neighbor_index(const unsigned int face_no) const;
 
   /**
-   * 返回编号为 @p face_no. 的面的另一边的相邻单元的水平
-   * 如果相邻单元不存在，该函数返回
+   * Return the level of the neighboring cell on the other side of the face with
+   * number @p face_no. If the neighbor does not exist, this function returns -1.
    *
-   * - .     这个函数等同于`cell->neighbor(face_no)->level()`。  更多细节请参见 neighbor()。
-   *
+   * This function is equivalent to `cell->neighbor(face_no)->level()`.
+   * See neighbor() for more details.
    */
   int
   neighbor_level(const unsigned int face_no) const;
 
   /**
-   * 返回这个单元格是<tt>cell->neighbor(face_no)</tt>的第几个邻居，即返回
-   * @p other_face_no
-   * ，使得<tt>cell->neighbor(face_no)->neighbor(other_face_no)==cell</tt>。如果你想知道如何从邻居回到现在的单元格，这个函数是正确的。
-   * 请注意，这个操作只有在邻居不比当前单元格粗的情况下才有用。如果邻居更粗，这个函数会抛出一个异常。在这种情况下，请使用
-   * @p neighbor_of_coarser_neighbor 函数。
+   * Return the how-many'th neighbor this cell is of
+   * <tt>cell->neighbor(face_no)</tt>, i.e. return @p other_face_no such that
+   * <tt>cell->neighbor(face_no)->neighbor(other_face_no)==cell</tt>. This
+   * function is the right one if you want to know how to get back from a
+   * neighbor to the present cell.
    *
+   * Note that this operation is only useful if the neighbor is not coarser
+   * than the present cell. If the neighbor is coarser this function throws an
+   * exception. Use the @p neighbor_of_coarser_neighbor function in that case.
    */
   unsigned int
   neighbor_of_neighbor(const unsigned int face_no) const;
 
   /**
-   * 返回，邻居是否比现在的单元更粗大。这在各向异性的细化中很重要，因为这一信息并不取决于单元格的级别。
-   * 请注意，在各向异性的情况下，一个单元只能在给定的面比另一个单元更粗，而不是在一般的基础上。较细的单元的面包含在较粗的单元的相应面中，较细的面是较粗的面的子女或孙子。
+   * Return, whether the neighbor is coarser then the present cell. This is
+   * important in case of anisotropic refinement where this information does
+   * not depend on the levels of the cells.
    *
+   * Note, that in an anisotropic setting, a cell can only be coarser than
+   * another one at a given face, not on a general basis. The face of the
+   * finer cell is contained in the corresponding face of the coarser cell,
+   * the finer face is either a child or a grandchild of the coarser face.
    */
   bool
   neighbor_is_coarser(const unsigned int face_no) const;
 
   /**
-   * 这个函数是 @p neighbor_of_neighbor
-   * 函数的泛化，适用于粗邻的情况。它返回一对数字，face_no和subface_no，如果邻居没有被细化，则具有以下属性。<tt>cell->neighbor(
-   * neighbor)->neighbor_child_on_subface(face_no,
-   * subface_no)==cell</tt>。在3D中，一个更粗的邻居仍然可以被细化。
-   * 在这种情况下，subface_no表示与我们的脸有关的邻居脸的子索引。
-   * <tt>cell->neighbor(neighbor)->face(face_no)->child(subface_no)==cell->face(neighbor)</tt>。
-   * 在 step-30
-   * 教程程序的介绍中讨论了3D中的这种情况以及它如何发生。
-   * 这个函数对于<tt>dim==1</tt>来说是不可能的。
+   * This function is a generalization of the @p neighbor_of_neighbor function
+   * for the case of a coarser neighbor. It returns a pair of numbers, face_no
+   * and subface_no, with the following property, if the neighbor is not
+   * refined: <tt>cell->neighbor(neighbor)->neighbor_child_on_subface(face_no,
+   * subface_no)==cell</tt>. In 3D, a coarser neighbor can still be refined.
+   * In that case subface_no denotes the child index of the neighbors face
+   * that relates to our face:
+   * <tt>cell->neighbor(neighbor)->face(face_no)->child(subface_no)==cell->face(neighbor)</tt>.
+   * This case in 3d and how it can happen is discussed in the introduction of
+   * the step-30 tutorial program.
    *
+   * This function is impossible for <tt>dim==1</tt>.
    */
   std::pair<unsigned int, unsigned int>
   neighbor_of_coarser_neighbor(const unsigned int neighbor) const;
 
   /**
-   * 这个函数是 @p neighbor_of_neighbor 和 @p
-   * neighbor_of_coarser_neighbor
-   * 函数的一个概括。它检查邻居是否更粗，并调用相应的函数。在这两种情况下，只有face_no被返回。
-   *
+   * This function is a generalization of the @p neighbor_of_neighbor and the
+   * @p neighbor_of_coarser_neighbor functions. It checks whether the neighbor
+   * is coarser or not and calls the respective function. In both cases, only
+   * the face_no is returned.
    */
   unsigned int
   neighbor_face_no(const unsigned int neighbor) const;
 
   /**
-   * 与DoFCellAccessor兼容的接口。总是返回 @p false. 。
-   *
+   * Compatibility interface with DoFCellAccessor. Always returns @p false.
    */
   static bool
   is_level_cell();
 
   /**
    * @}
-   *
    */
   /**
-   * @name  处理周期性邻居的问题
-   *
+   * @name Dealing with periodic neighbors
    */
   /**
    * @{
-   *
    */
   /**
-   * 如果单元格在其 @c
-   * 第i个面有周期性邻居，该函数返回真，否则，返回值为假。
-   *
+   * If the cell has a periodic neighbor at its @c ith face, this function
+   * returns true, otherwise, the returned value is false.
    */
   bool
   has_periodic_neighbor(const unsigned int i) const;
 
   /**
-   * 对于其 @c 第i个面位于周期性边界的单元格，见 @ref GlossPeriodicConstraints "周期性边界的条目"
-   * ，该函数返回周期性边界另一侧的单元格的迭代器。如果在
-   * @c 第i个面没有周期性边界，将抛出一个异常。
-   * 为了避免遇到异常，在使用这个函数之前，请检查has_periodic_neighbor()对
-   * @c 第i个面的结果。
-   * periodic_neighbor()的行为与neighbor()类似，即返回的单元最多具有与当前单元相同的细化程度。在分布式网格上，通过调用
+   * For a cell with its @c ith face at a periodic boundary,
+   * see
+   * @ref GlossPeriodicConstraints "the entry for periodic boundaries",
+   * this function returns an iterator to the cell on the other side
+   * of the periodic boundary. If there is no periodic boundary at the @c ith
+   * face, an exception will be thrown.
+   * In order to avoid running into an exception, check the result of
+   * has_periodic_neighbor() for the @c ith face prior to using this function.
+   * The behavior of periodic_neighbor() is similar to neighbor(), in
+   * the sense that the returned cell has at most the same level of refinement
+   * as the current cell. On distributed meshes, by calling
    * Triangulation::add_periodicity(),
-   * ，我们可以确保周期性边界另一侧的元素在这个等级中以幽灵单元或局部拥有的单元存在。
-   *
+   * we can make sure that the element on the other side of the periodic
+   * boundary exists in this rank as a ghost cell or a locally owned cell.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   periodic_neighbor(const unsigned int i) const;
 
   /**
-   * 对于 @c
-   * 第i个面不在边界上的单元格，这个函数返回的结果与邻接()相同。如果
-   * @c
-   * 第i个面在一个周期性的边界上，这个函数返回与periodic_neighbor()相同的结果。如果上述两个条件都不满足，即
-   * @c 第i个面在一个非周期性边界上，将抛出一个异常。
-   *
+   * For a cell whose @c ith face is not at a boundary, this function returns
+   * the same result as neighbor(). If the @c ith face is at a periodic boundary
+   * this function returns the same result as periodic_neighbor(). If neither of
+   * the aforementioned conditions are met, i.e. the @c ith face is on a
+   * nonperiodic boundary, an exception will be thrown.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   neighbor_or_periodic_neighbor(const unsigned int i) const;
 
   /**
-   * 返回单元格在给定面和子面编号处的周期性邻居的一个迭代器。使用这个函数的一般准则类似于函数
-   * neighbor_child_on_subface()。这个函数的实现与periodic_neighbor_of_coarser_periodic_neighbor()一致。例如，假设我们坐在一个名为
-   * @c cell1的单元格上，其在 @c
-   * 第1个面后面的邻居是一个更粗的层次。让我们把这个更粗的邻居命名为
-   * @c cell2。然后，通过调用
-   * periodic_neighbor_of_coarser_periodic_neighbor()，从  @c
-   * cell1，我们得到一个  @c  face_num 和一个  @c
-   * subface_num。现在，如果我们从cell2调用periodic_neighbor_child_on_subface()，用上述face_num和subface_num，我们会得到一个前往
-   * @c  cell1的迭代器。
-   *
+   * Return an iterator to the periodic neighbor of the cell at a given
+   * face and subface number. The general guidelines for using this function
+   * is similar to the function neighbor_child_on_subface(). The
+   * implementation of this function is consistent with
+   * periodic_neighbor_of_coarser_periodic_neighbor(). For instance,
+   * assume that we are sitting on a cell named @c cell1, whose neighbor behind
+   * the @c ith face is one level coarser. Let us name this coarser neighbor
+   * @c cell2. Then, by calling
+   * periodic_neighbor_of_coarser_periodic_neighbor(), from @c cell1, we get
+   * a @c face_num and a @c subface_num. Now, if we call
+   * periodic_neighbor_child_on_subface() from cell2, with the above face_num
+   * and subface_num, we get an iterator to @c cell1.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   periodic_neighbor_child_on_subface(const unsigned int face_no,
                                      const unsigned int subface_no) const;
 
   /**
-   * 这个函数是periodic_neighbor_of_periodic_neighbor()的泛化，用于那些有较粗的周期性邻居的单元。返回的一对数字可以在period_neighbor_child_on_subface()中使用，以回到当前单元。换句话说，对于有较粗的周期性邻居的单元格，下面的断言应该是真的：cell->periodic_neighbor(i)->periodic_neighbor_child_on_subface(face_no,
+   * This function is a generalization of
+   * periodic_neighbor_of_periodic_neighbor()
+   * for those cells which have a coarser periodic neighbor. The returned
+   * pair of numbers can be used in periodic_neighbor_child_on_subface()
+   * to get back to the current cell. In other words, the following
+   * assertion should be true, for a cell with coarser periodic neighbor:
+   * cell->periodic_neighbor(i)->periodic_neighbor_child_on_subface(face_no,
    * subface_no)==cell
-   *
    */
   std::pair<unsigned int, unsigned int>
   periodic_neighbor_of_coarser_periodic_neighbor(const unsigned face_no) const;
 
   /**
-   * 这个函数返回当前单元格的第 @c
-   * 个面的周期性邻居的索引。如果在给定的面没有周期性邻居，返回值为
-   *
-   * - .
-   *
+   * This function returns the index of the periodic neighbor at the
+   * @c ith face of the current cell. If there is no periodic neighbor
+   * at the given face, the returned value is -1.
    */
   int
   periodic_neighbor_index(const unsigned int i) const;
 
   /**
-   * 该函数返回当前单元格的 @c
-   * 第i个面的周期性邻居的水平。如果在给定的面没有周期性邻居，返回值为
-   *
-   * - .
-   *
+   * This function returns the level of the periodic neighbor at the
+   * @c ith face of the current cell. If there is no periodic neighbor
+   * at the given face, the returned value is -1.
    */
   int
   periodic_neighbor_level(const unsigned int i) const;
 
   /**
-   * 对于在其 @c
-   * 第i个面有周期性邻居的单元格，该函数返回该周期性邻居的面数，以便当前单元格是该邻居的周期性邻居。换句话说，对于那些拥有与当前单元相同或更高细化程度的周期性邻居的单元，以下断言成立。
+   * For a cell with a periodic neighbor at its @c ith face, this function
+   * returns the face number of that periodic neighbor such that the
+   * current cell is the periodic neighbor of that neighbor. In other words
+   * the following assertion holds for those cells which have a periodic
+   * neighbor with the same or a higher level of refinement as the current
+   * cell:
    * @c {cell->periodic_neighbor(i)->
-   * periodic_neighbor(cell->periodic_neighbor_of_periodic_neighbor(i))==cell}。
-   * 对于具有较粗的周期性邻居的单元格，应该使用periodic_neighbor_of_coarser_periodic_neighbor()和periodic_neighbor_child_on_subface()来回到当前单元格。
-   *
+   *     periodic_neighbor(cell->periodic_neighbor_of_periodic_neighbor(i))==cell}
+   * For the cells with a coarser periodic neighbor, one should use
+   * periodic_neighbor_of_coarser_periodic_neighbor() and
+   * periodic_neighbor_child_on_subface()
+   * to get back to the current cell.
    */
   unsigned int
   periodic_neighbor_of_periodic_neighbor(const unsigned int i) const;
 
   /**
-   * 如果一个单元格在其 @c
-   * 第i个面有一个周期性邻居，这个函数返回周期性邻居的面数，它与这个单元格的
-   * @c 第i个面相连。
-   *
+   * If a cell has a periodic neighbor at its @c ith face, this function
+   * returns the face number of the periodic neighbor, which is connected
+   * to the @c ith face of this cell.
    */
   unsigned int
   periodic_neighbor_face_no(const unsigned int i) const;
 
   /**
-   * 如果周期性边界另一侧的元素更粗，该函数返回真，否则返回假。该实现允许该函数在各向异性细化的情况下工作。
-   *
+   * This function returns true if the element on the other side of the
+   * periodic boundary is coarser and returns false otherwise. The
+   * implementation allows this function to work in the case of
+   * anisotropic refinement.
    */
   bool
   periodic_neighbor_is_coarser(const unsigned int i) const;
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理边界指标的问题
-   *
+   * @name Dealing with boundary indicators
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回 @p ith
-   * 的顶点或面（取决于维度）是否是边界的一部分。如果
-   * @p ith 的邻居不存在，这就是真的。
-   *
+   * Return whether the @p ith vertex or face (depending on the dimension) is
+   * part of the boundary. This is true, if the @p ith neighbor does not
+   * exist.
    */
   bool
   at_boundary(const unsigned int i) const;
 
   /**
-   * 返回该单元格是否在边界上。在边界上的定义是有一个面在边界上。请注意，这并不包括四边形或六边形中只有一个顶点在边界上的情况，或者六边形中只有一条线在边界上，而所有面的内部都在域的内部。对于后一种情况，
-   * @p has_boundary_lines函数才是正确的请求。
-   *
+   * Return whether the cell is at the boundary. Being at the boundary is
+   * defined by one face being on the boundary. Note that this does not catch
+   * cases where only one vertex of a quad or of a hex is at the boundary, or
+   * where only one line of a hex is at the boundary while the interiors of
+   * all faces are in the interior of the domain. For the latter case, the @p
+   * has_boundary_lines function is the right one to ask.
    */
   bool
   at_boundary() const;
 
   /**
-   * 这是对 @p at_boundary
-   * 函数的一个轻微变化：对于一维和二维，它是等价的，对于三维，它返回六面体的12条线中是否至少有一条位于边界。当然，这包括整个面处于边界的情况，但也包括其他一些情况。
-   *
+   * This is a slight variation to the @p at_boundary function: for 1 and 2
+   * dimensions, it is equivalent, for three dimensions it returns whether at
+   * least one of the 12 lines of the hexahedron is at a boundary. This, of
+   * course, includes the case where a whole face is at the boundary, but also
+   * some other cases.
    */
   bool
   has_boundary_lines() const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理细化指标的问题
-   *
+   * @name Dealing with refinement indicators
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回此单元格被标记为细化的 @p RefinementCase<dim> 。
-   * 这个函数的返回值可以与一个bool进行比较，以检查这个单元格是否被标记为任何种类的细化。例如，如果你之前为一个单元格调用了cell->set_refine_flag()，那么你将进入以下片段中的'if'块。
+   * Return the @p RefinementCase<dim> this cell was flagged to be refined
+   * with.  The return value of this function can be compared to a bool to
+   * check if this cell is flagged for any kind of refinement. For example, if
+   * you have previously called cell->set_refine_flag() for a cell, then you
+   * will enter the 'if' block in the following snippet:
+   *
    * @code
    * if (cell->refine_flag_set())
    * {
-   * // yes, this cell is marked for refinement.
+   *   // yes, this cell is marked for refinement.
    * }
    * @endcode
-   *
-   *
    */
   RefinementCase<dim>
   refine_flag_set() const;
 
   /**
-   * 对指向的单元格进行标记，以便进行细化。这个函数只允许用于活动单元。保持
-   * @p ref_case 的默认值将标记该单元为各向同性的细化。
-   * 如果你选择各向异性的细化，例如通过传递一个标志
-   * RefinementCase::cut_x,   RefinementCase::cut_y,   RefinementCase::cut_z,
-   * 或这些标志的组合作为参数，那么请记住，X、Y或Z方向的细化发生在该单元的
-   * <em> 局部 </em>
-   * 坐标系。换句话说，这些标志决定了单元格的哪些边和面将被切割成新的边和面。另一方面，这个过程与单元在
-   * <em> 全局 </em>
-   * 坐标系中的方向无关，你不应该假定单元的局部坐标系在它所处空间的全局坐标系中的任何特定方向。
+   * Flag the cell pointed to for refinement. This function is only allowed
+   * for active cells. Keeping the default value for @p ref_case will mark
+   * this cell for isotropic refinement.
    *
+   * If you choose anisotropic refinement, for example by passing as argument
+   * one of the flags RefinementCase::cut_x, RefinementCase::cut_y,
+   * RefinementCase::cut_z, or a combination of these, then keep in mind
+   * that refining in x-, y-, or z-direction happens with regard to the
+   * <em>local</em> coordinate system of the cell. In other words, these
+   * flags determine which edges and faces of the cell will be cut into new
+   * edges and faces. On the other hand, this process is independent of
+   * how the cell is oriented within the <em>global</em> coordinate system,
+   * and you should not assume any particular orientation of the cell's
+   * local coordinate system within the global coordinate system of the
+   * space it lives in.
    */
   void
   set_refine_flag(const RefinementCase<dim> ref_case =
                     RefinementCase<dim>::isotropic_refinement) const;
 
   /**
-   * 清除细化标志。
-   *
+   * Clear the refinement flag.
    */
   void
   clear_refine_flag() const;
 
   /**
-   * 修改单元格的细化标志，以确保（至少）在面<tt>face_no</tt>的给定细化情况
-   * @p face_refinement_case
-   * ，考虑到面的方向、翻转和旋转。返回，是否必须修改细化标志。这个函数只允许用于活动单元。
-   *
+   * Modify the refinement flag of the cell to ensure (at least) the given
+   * refinement case @p face_refinement_case at face <tt>face_no</tt>, taking
+   * into account orientation, flip and rotation of the face. Return, whether
+   * the refinement flag had to be modified. This function is only allowed for
+   * active cells.
    */
   bool
   flag_for_face_refinement(
@@ -3071,117 +3363,151 @@ public:
       RefinementCase<dim - 1>::isotropic_refinement) const;
 
   /**
-   * 修改单元格的细化标志，确保行<tt>面_no</tt>将被细化。返回，是否必须修改细化标志。这个函数只允许用于活动单元。
-   *
+   * Modify the refinement flag of the cell to ensure that line
+   * <tt>face_no</tt> will be refined. Return, whether the refinement flag had
+   * to be modified. This function is only allowed for active cells.
    */
   bool
   flag_for_line_refinement(const unsigned int line_no) const;
 
   /**
-   * 返回面<tt>face_no</tt>的SubfaceCase。请注意，这与询问<tt>cell->face(face_no)->refinement_case()</tt>不一样，因为后者返回一个RefinementCase<dim-1>，因此只考虑一个（各向异性的）细化，而这个函数考虑完整的细化情况，包括可能对面的孩子进行细化。这个函数只能在2D和3D的活动单元中调用。
-   *
+   * Return the SubfaceCase of face <tt>face_no</tt>. Note that this is not
+   * identical to asking <tt>cell->face(face_no)->refinement_case()</tt> since
+   * the latter returns a RefinementCase<dim-1> and thus only considers one
+   * (anisotropic) refinement, whereas this function considers the complete
+   * refinement situation including possible refinement of the face's
+   * children. This function may only be called for active cells in 2d and 3d.
    */
   dealii::internal::SubfaceCase<dim>
   subface_case(const unsigned int face_no) const;
 
   /**
-   * 返回粗化标志是否被设置。
-   *
+   * Return whether the coarsen flag is set or not.
    */
   bool
   coarsen_flag_set() const;
 
   /**
-   * 指向粗化的单元格的标志。这个函数只允许用于活动单元。
-   *
+   * Flag the cell pointed to for coarsening. This function is only allowed
+   * for active cells.
    */
   void
   set_coarsen_flag() const;
 
   /**
-   * 清除粗化标志。
-   *
+   * Clear the coarsen flag.
    */
   void
   clear_coarsen_flag() const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理材料指标
-   *
+   * @name Dealing with material indicators
    */
   /**
    * @{
-   *
    */
 
   /**
+   * Return the material id of this cell.
    *
+   * For a typical use of this function, see the
+   * @ref step_28 "step-28"
+   * tutorial program.
+   *
+   * See the
+   * @ref GlossMaterialId "glossary"
+   * for more information.
    */
   types::material_id
   material_id() const;
 
   /**
+   * Set the material id of this cell.
    *
+   * For a typical use of this function, see the
+   * @ref step_28 "step-28"
+   * tutorial program.
+   *
+   * See the
+   * @ref GlossMaterialId "glossary"
+   * for more information.
    */
   void
   set_material_id(const types::material_id new_material_id) const;
 
   /**
-   * 将此单元格及其所有子单元格（以及孙子单元格，以此类推）的材质ID设置为给定值。    参见 @ref GlossMaterialId "词汇表 "
-   * 以了解更多信息。
+   * Set the material id of this cell and all its children (and grand-
+   * children, and so on) to the given value.
    *
+   * See the
+   * @ref GlossMaterialId "glossary"
+   * for more information.
    */
   void
   recursively_set_material_id(const types::material_id new_material_id) const;
   /**
    * @}
-   *
    */
 
   /**
-   * @name  处理子域指标的问题
-   *
+   * @name Dealing with subdomain indicators
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回这个单元格的子域指标。    参见 @ref GlossSubdomainId "词汇表 "
-   * 以了解更多信息。
-   * @note
-   * 单元格的子域是一个只为活动单元格定义的属性，即没有被进一步细化的单元。因此，只有当它所指的单元格没有子域时，你才能调用这个函数。对于并行的多网格方法，知道哪个处理器拥有非活动单元也很重要，为此你可以调用level_subdomain_id()。
+   * Return the subdomain id of this cell.
    *
+   * See the
+   * @ref GlossSubdomainId "glossary"
+   * for more information.
+   *
+   * @note The subdomain of a cell is a property only defined for active
+   * cells, i.e., cells that are not further refined. Consequently, you can
+   * only call this function if the cell it refers to has no children. For
+   * multigrid methods in parallel, it is also important to know which
+   * processor owns non-active cells, and for this you can call
+   * level_subdomain_id().
    */
   types::subdomain_id
   subdomain_id() const;
 
   /**
-   * 设置这个单元的子域id。    参见 @ref GlossSubdomainId "词汇表 "
-   * 以了解更多信息。如果你使用
-   * parallel::distributed::Triangulation 对象，则不应调用此函数。
-   * @note
-   * 单元的子域是一个只为活动单元定义的属性，即没有被进一步细化的单元。因此，只有当它所指的单元格没有子域时，你才能调用这个函数。对于并行的多网格方法，知道哪个处理器拥有非活动单元也很重要，为此你可以调用level_subdomain_id()。
+   * Set the subdomain id of this cell.
    *
+   * See the
+   * @ref GlossSubdomainId "glossary"
+   * for more information. This function should not be called if you use a
+   * parallel::distributed::Triangulation object.
+   *
+   * @note The subdomain of a cell is a property only defined for active
+   * cells, i.e., cells that are not further refined. Consequently, you can
+   * only call this function if the cell it refers to has no children. For
+   * multigrid methods in parallel, it is also important to know which
+   * processor owns non-active cells, and for this you can call
+   * level_subdomain_id().
    */
   void
   set_subdomain_id(const types::subdomain_id new_subdomain_id) const;
 
   /**
-   * 获取该单元的水平子域ID。这用于并行多网格，其中不仅全局网格（由活动单元组成）被划分到处理器中，而且还包括构成网格的递归细化单元的各个层次。换句话说，如果使用多网格层次结构，层次子域id是一个也为非活动单元定义的属性。
-   *
+   * Get the level subdomain id of this cell. This is used for parallel
+   * multigrid where not only the global mesh (consisting of the active cells)
+   * is partitioned among processors, but also the individual levels of the
+   * hierarchy of recursively refined cells that make up the mesh. In
+   * other words, the level subdomain id is a property that is also defined
+   * for non-active cells if a multigrid hierarchy is used.
    */
   types::subdomain_id
   level_subdomain_id() const;
 
   /**
-   * 设置此单元格的水平子域ID。这用于并行多网格。
-   *
+   * Set the level subdomain id of this cell. This is used for parallel
+   * multigrid.
    */
   void
   set_level_subdomain_id(
@@ -3189,173 +3515,263 @@ public:
 
 
   /**
-   * 设置此单元的子域ID（如果它是活动的）或其所有终端子单元（和孙子单元，等等，只要它们没有自己的子单元）的给定值。由于子域id是一个只为活跃的单元格（即没有自己的孩子）定义的概念，这个函数只为这个单元格的所有实际活跃的子和孙子设置子域id，跳过中间的子单元格。    更多信息请参见  @ref GlossSubdomainId  "词汇表"
-   * 。如果你使用 parallel::distributed::Triangulation
-   * 对象，就不应该调用这个函数，因为在那里，子域id是由你所在的处理器隐式定义的。
+   * Set the subdomain id of this cell (if it is active) or all its terminal
+   * children (and grand-children, and so on, as long as they have no children
+   * of their own) to the given value. Since the subdomain id is a concept
+   * that is only defined for cells that are active (i.e., have no children of
+   * their own), this function only sets the subdomain ids for all children
+   * and grand children of this cell that are actually active, skipping
+   * intermediate child cells.
    *
+   * See the
+   * @ref GlossSubdomainId "glossary"
+   * for more information. This function should not be called if you use a
+   * parallel::distributed::Triangulation object since there the subdomain id
+   * is implicitly defined by which processor you're on.
    */
   void
   recursively_set_subdomain_id(
     const types::subdomain_id new_subdomain_id) const;
   /**
    * @}
-   *
    */
 
   /**
-   * 为当前单元格返回一个全局唯一的单元格索引，假设它不是人工的。如果该单元是串行三角形的一部分，其值与active_cell_index()相同。
-   * 在平行三角剖分的情况下，本地拥有的单元在网格的每个子域中被连续地列举出来。这就保证了这个函数返回的索引可以作为总条目数为
-   * Triangulation::n_globally_active_cells()
-   * 的向量的索引，并且每个进程都存储一个连续的部分。
-   * 如果这样一个单元数据向量已经被设置为
-   * parallel::TriangulationBase::global_active_cell_index_partitioner(),
-   * ，那么这个函数返回的索引就可以用来访问正确的向量条目。
+   * Return a globally unique cell index for the current cell,
+   * assuming it is not artificial. The value is identical to
+   * active_cell_index() if the cell is part of a serial
+   * triangulation.
    *
+   * In the context of parallel triangulations, locally-owned cells
+   * are enumerated contiguously within each subdomain of the
+   * mesh. This ensures that the index returned by this function can
+   * be used as the index into vectors with a total of
+   * Triangulation::n_globally_active_cells() entries, and for which
+   * every process stores a contiguous part.  If such a cell-data
+   * vector has been set up with
+   * parallel::TriangulationBase::global_active_cell_index_partitioner(),
+   * the index returned by this function can then be used to access
+   * the correct vector entry.
    */
   types::global_cell_index
   global_active_cell_index() const;
 
   /**
-   * 为非人工水平单元返回一个全局唯一的索引。
-   * @note 与global_active_cell_index()类似。
+   * Return a globally unique index for a non-artificial level cell.
    *
+   * @note Similar to global_active_cell_index().
    */
   types::global_cell_index
   global_level_cell_index() const;
 
   /**
-   * @name  处理codim 1单元的方位问题。
-   *
+   * @name Dealing with codim 1 cell orientation
    */
   /**
    * @{
-   *
    */
 
   /**
-   * 返回此单元格的方向。
-   * 关于这个标志的含义，见  @ref GlossDirectionFlag  。
+   * Return the orientation of this cell.
    *
+   * For the meaning of this flag, see
+   * @ref GlossDirectionFlag.
    */
   bool
   direction_flag() const;
 
   /**
-   * 返回当前单元格是第几个活动单元格（假设当前单元格确实是活动的）。这很有用，例如，如果你要访问一个有多少个条目的向量的元素，就有多少个活动单元。这样的向量用于估计三角形的每个单元的误差，用于指定传递给GridRefinement中的函数的细化标准，以及用于生成单元的输出。
-   * 如果当前单元格没有被激活，该函数会抛出一个异常。
-   * @note
-   * 如果这个函数被调用的三角形是
-   * parallel::distributed::Triangulation,
-   * 类型，那么活动单元可能是本地拥有的、幽灵单元或人工的（见
-   * @ref GlossLocallyOwnedCell 、 @ref GlossGhostCell 和 @ref
-   * GlossArtificialCell  ）。
-   * 这个函数对所有这些单元进行计数，包括幽灵和人工活动单元。这意味着该函数返回的索引可以唯一地识别单个处理器上三角结构中的单元，但不能唯一地识别处理器之间共享的三角结构（部分）中的单元。如果你想识别跨处理器的活动单元，你需要考虑由
-   * CellAccessor::id(). 返回的单元的CellId。
+   * Return the how many-th active cell the current cell is (assuming the
+   * current cell is indeed active). This is useful, for example, if you are
+   * accessing the elements of a vector with as many entries as there are
+   * active cells. Such vectors are used for estimating the error on each cell
+   * of a triangulation, for specifying refinement criteria passed to the
+   * functions in GridRefinement, and for generating cell-wise output.
    *
+   * The function throws an exception if the current cell is not active.
+   *
+   * @note If the triangulation this function is called on is of type
+   * parallel::distributed::Triangulation, then active cells may be locally
+   * owned, ghost cells, or artificial (see
+   * @ref GlossLocallyOwnedCell,
+   * @ref GlossGhostCell,
+   * and
+   * @ref GlossArtificialCell).
+   * This function counts over all of them, including ghost and artificial
+   * active cells. This implies that the index returned by this function
+   * uniquely identifies a cell within the triangulation on a single
+   * processor, but does not uniquely identify the cell among the (parts of
+   * the) triangulation that is shared among processors. If you would like to
+   * identify active cells across processors, you need to consider the CellId
+   * of a cell returned by CellAccessor::id().
    */
   unsigned int
   active_cell_index() const;
 
   /**
-   * 返回该单元格的父单元格在父单元格所属的三角结构层次中的索引。父单元的层次当然要比本单元的层次低一个。如果父单元不存在（即，如果该对象处于网格层次结构的最粗层），将产生一个异常。
-   *
+   * Return the index of the parent of this cell within the level of the
+   * triangulation to which the parent cell belongs. The level of the parent
+   * is of course one lower than that of the present cell. If the parent does
+   * not exist (i.e., if the object is at the coarsest level of the mesh
+   * hierarchy), an exception is generated.
    */
   int
   parent_index() const;
 
   /**
-   * 返回一个到父对象的迭代器。如果父对象不存在（即，如果该对象处于网格层次结构的最粗层），将产生一个异常。
-   *
+   * Return an iterator to the parent. If the parent does not exist (i.e., if
+   * the object is at the coarsest level of the mesh hierarchy), an exception
+   * is generated.
    */
   TriaIterator<CellAccessor<dim, spacedim>>
   parent() const;
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  其他函数
-   *
+   * @name Other functions
    */
   /**
    * @{
-   *
    */
 
   /**
+   * Test that the cell has no children (this is the criterion for whether a
+   * cell is called "active").
    *
+   * See the
+   * @ref GlossActive "glossary"
+   * for more information.
    */
   bool
   is_active() const;
 
   /**
-   * 返回该单元是否为当前处理器所拥有，或为其他处理器所拥有。如果应用于类型为 dealii::Triangulation, 的对象，该函数总是返回true，但如果三角形是类型为 parallel::distributed::Triangulation. ，则可能产生false。更多信息请参见 @ref GlossGhostCell "词汇表 "
-   * 和 @ref distributed 模块。      @post
-   * 返回值等于<code>!is_ghost() && !is_artificial()/code>。
-   * @note
-   * 一个细胞是否是幽灵细胞、人造的，或者是本地拥有的，或者是一个只与活动的细胞有关的属性。因此，只有当它所指的单元格没有孩子时，你才能调用这个函数。
+   * Return whether this cell is owned by the current processor or is owned by
+   * another processor. The function always returns true if applied to an
+   * object of type dealii::Triangulation, but may yield false if the
+   * triangulation is of type parallel::distributed::Triangulation.
    *
+   * See the
+   * @ref GlossGhostCell "glossary"
+   * and the
+   * @ref distributed
+   * module for more information.
+   *
+   * @post The returned value is equal to <code>!is_ghost() &&
+   * !is_artificial()</code>.
+   *
+   * @note Whether a cell is a ghost cell, artificial, or is locally owned or
+   * is a property that only pertains to cells that are active. Consequently,
+   * you can only call this function if the cell it refers to has no children.
    */
   bool
   is_locally_owned() const;
 
   /**
-   * 如果三角结构没有分布，或者level_subdomain_id()等于当前处理器的id，则返回true。
-   *
+   * Return true if either the Triangulation is not distributed or if
+   * level_subdomain_id() is equal to the id of the current processor.
    */
   bool
   is_locally_owned_on_level() const;
 
   /**
-   * 返回这个单元在全局网格中是否存在，但是(i)被另一个处理器所拥有，也就是有一个不同于当前处理器所拥有的子域_id，以及(ii)与当前处理器拥有的单元相邻。    这个函数只有在使用的三角形是 parallel::distributed::Triangulation. 的情况下才有意义，在所有其他情况下，返回值总是错误的。    更多信息请参见 @ref GlossGhostCell  "词汇表 "
-   * 和 @ref distributed  模块。      @post
-   * 返回值等于<code>!is_locally_owned() && !is_artificial()/code>。
-   * @note
-   * 一个细胞是否是幽灵细胞、人造的，或者是本地拥有的，或者是一个只与活动的细胞有关的属性。因此，只有当它所指的单元格没有孩子时，你才能调用这个函数。
+   * Return whether this cell exists in the global mesh but (i) is owned by
+   * another processor, i.e. has a subdomain_id different from the one the
+   * current processor owns and (ii) is adjacent to a cell owned by the
+   * current processor.
    *
+   * This function only makes sense if the triangulation used is of kind
+   * parallel::distributed::Triangulation. In all other cases, the returned
+   * value is always false.
+   *
+   * See the
+   * @ref GlossGhostCell "glossary"
+   * and the
+   * @ref distributed
+   * module for more information.
+   *
+   * @post The returned value is equal to <code>!is_locally_owned() &&
+   * !is_artificial()</code>.
+   *
+   * @note Whether a cell is a ghost cell, artificial, or is locally owned or
+   * is a property that only pertains to cells that are active. Consequently,
+   * you can only call this function if the cell it refers to has no children.
    */
   bool
   is_ghost() const;
 
   /**
-   * 返回这个单元格是否是人造的，即它不是当前处理器所拥有的单元格之一，而且也不在一个单元格的边界上。因此，它存在于网格中，以确保每个处理器拥有所有粗略的网格单元，并保持相邻单元的2：1比例，但它不是我们应该在当前处理器上工作的单元之一。特别是，不能保证这个单元实际上没有在其他处理器上进一步细化。    这个函数只有在使用的三角形是 parallel::distributed::Triangulation. 的情况下才有意义，在所有其他情况下，返回值总是假的。    参见 @ref GlossArtificialCell "词汇表 "
-   * 和 @ref distributed 模块以了解更多信息。      @post
-   * 返回值等于<code>!is_ghost() && !is_locally_owned()/code>。
-   * @note
-   * 一个单元是否是幽灵单元、人造的或本地拥有的是一个只与活动的单元有关的属性。因此，你只能在它所指的单元格没有孩子的情况下调用这个函数。
+   * Return whether this cell is artificial, i.e. it isn't one of the cells
+   * owned by the current processor, and it also doesn't border on one. As a
+   * consequence, it exists in the mesh to ensure that each processor has all
+   * coarse mesh cells and that the 2:1 ratio of neighboring cells is
+   * maintained, but it is not one of the cells we should work on on the
+   * current processor. In particular, there is no guarantee that this cell
+   * isn't, in fact, further refined on one of the other processors.
    *
+   * This function only makes sense if the triangulation used is of kind
+   * parallel::distributed::Triangulation. In all other cases, the returned
+   * value is always false.
+   *
+   * See the
+   * @ref GlossArtificialCell "glossary"
+   * and the
+   * @ref distributed
+   * module for more information.
+   *
+   * @post The returned value is equal to <code>!is_ghost() &&
+   * !is_locally_owned()</code>.
+   *
+   * @note Whether a cell is a ghost cell, artificial, or is locally owned is
+   * a property that only pertains to cells that are active. Consequently, you
+   * can only call this function if the cell it refers to has no children.
    */
   bool
   is_artificial() const;
 
   /**
-   * 测试点 @p p
-   * 是否在这个单元格内。边界上的点被算作是在单元格内。
-   * 请注意，这个函数假定单元格和实际单元格之间的映射是（双，三）线性的，也就是说，2D的面和3D的边都是直线。如果你有更高阶的变换，结果可能不同，因为一个点在实空间中是在单元内还是在单元外。
-   * 在codim>0的情况下，首先将点投影到单元格所嵌入的流形上，然后检查这个投影是否在单元格内。
+   * Test whether the point @p p is inside this cell. Points on the boundary
+   * are counted as being inside the cell.
    *
+   * Note that this function assumes that the mapping between unit cell and
+   * real cell is (bi-, tri-)linear, i.e. that faces in 2d and edges in 3d are
+   * straight lines. If you have higher order transformations, results may be
+   * different as to whether a point is in- or outside the cell in real space.
+   *
+   * In case of codim>0, the point is first projected to the manifold where
+   * the cell is embedded and then check if this projection is inside the
+   * cell.
    */
   bool
   point_inside(const Point<spacedim> &p) const;
 
   /**
-   * 将此单元格的邻居 @p i 设置为 @p pointer. 所指向的单元格
-   * 这个函数其实不应该公开（但由于各种原因需要公开，以便不使一长串函数成为朋友）：它修改了内部数据结构，可能会留下一些东西。请不要从应用程序代码中使用它。
+   * Set the neighbor @p i of this cell to the cell pointed to by @p pointer.
    *
+   * This function shouldn't really be public (but needs to for various
+   * reasons in order not to make a long list of functions friends): it
+   * modifies internal data structures and may leave things. Do not use it
+   * from application codes.
    */
   void
   set_neighbor(const unsigned int                               i,
                const TriaIterator<CellAccessor<dim, spacedim>> &pointer) const;
 
   /**
-   * 返回当前单元格的唯一ID。这个ID是由层次结构中从粗父单元开始的路径构建的，并且在使用类型为
-   * parallel::distributed::Triangulation.
-   * 的对象的并行计算中正确工作。因此，这个函数在为单元（活动或不活动）提供一个唯一的标识符方面非常有用，也适用于并行三角计算。更多信息请参见CellId类的文档。
-   * @note
-   * 这个操作需要O(level)时间来计算。在大多数实际情况下，三角形的层数将取决于三角形中的单元格数量的对数。
+   * Return a unique ID for the current cell. This ID is constructed from the
+   * path in the hierarchy from the coarse father cell and works correctly in
+   * parallel computations using objects of type
+   * parallel::distributed::Triangulation. This function is therefore useful
+   * in providing a unique identifier for cells (active or not) that also
+   * works for parallel triangulations. See the documentation of the CellId
+   * class for more information.
    *
+   * @note This operation takes O(level) time to compute. In most practical
+   * cases, the number of levels of a triangulation will depend
+   * logarithmically on the number of cells in the triangulation.
    */
   CellId
   id() const;
@@ -3363,51 +3779,52 @@ public:
   using TriaAccessor<dim, dim, spacedim>::diameter;
 
   /**
-   * 与 TriaAccessor::diameter() 相同，但也采取映射类。
-   *
+   * The same as TriaAccessor::diameter() but also taking a Mapping class.
    */
   double
   diameter(const Mapping<dim, spacedim> &mapping) const;
 
   /**
    * @}
-   *
    */
 
 
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException0(ExcRefineCellNotActive);
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException0(ExcCellFlaggedForRefinement);
   /**
    * @ingroup Exceptions
-   *
    */
   DeclException0(ExcCellFlaggedForCoarsening);
 
 protected:
   /**
-   * 这个函数假设邻居不比当前单元格粗。在这种情况下，它返回
-   * neighbor_of_neighbor()值。然而，如果邻居更粗，这个函数返回一个
-   * <code>invalid_unsigned_int</code>  。
-   * 这个函数不供公众使用。请使用函数
-   * neighbor_of_neighbor()来代替，如果对一个较粗的邻居进行调用，会抛出一个异常。如果邻居确实较粗（你可以通过neigher_is_coarser()函数知道这一点），那么应该调用neigher_of_coarser_neighbor()函数。如果你只想知道从邻居到现在的单元所需的
-   * <code>face_no</code> ，那么只需使用
-   * neighbor_face_no()函数，该函数可用于较粗的邻居和非较粗的邻居。
+   * This function assumes that the neighbor is not coarser than the current
+   * cell. In this case it returns the neighbor_of_neighbor() value. If,
+   * however, the neighbor is coarser this function returns an
+   * <code>invalid_unsigned_int</code>.
    *
+   * This function is not for public use. Use the function
+   * neighbor_of_neighbor() instead which throws an exception if called for a
+   * coarser neighbor. If neighbor is indeed coarser (you get to know this by
+   * e.g. the neighbor_is_coarser() function) then the
+   * neighbor_of_coarser_neighbor() function should be call. If you'd like to
+   * know only the <code>face_no</code> which is required to get back from the
+   * neighbor to the present cell then simply use the neighbor_face_no()
+   * function which can be used for coarser as well as non-coarser neighbors.
    */
   unsigned int
   neighbor_of_neighbor_internal(const unsigned int neighbor) const;
 
   /**
-   * 至于任何codim>0，我们可以使用类似的代码，C++不允许部分模板。我们使用这个辅助函数，然后从point_inside调用。
-   *
+   * As for any codim>0 we can use a similar code and c++ does not allow
+   * partial templates. we use this auxiliary function that is then called
+   * from point_inside.
    */
   template <int dim_, int spacedim_>
   bool
@@ -3417,37 +3834,35 @@ protected:
 
 private:
   /**
-   * 设置一个单元格的活动单元格索引。这是在细化结束时进行的。
-   *
+   * Set the active cell index of a cell. This is done at the end of
+   * refinement.
    */
   void
   set_active_cell_index(const unsigned int active_cell_index) const;
 
   /**
-   * 设置一个单元格的全局活动单元格索引。
-   *
+   * Set global active cell index for a cell.
    */
   void
   set_global_active_cell_index(const types::global_cell_index index) const;
 
   /**
-   * 为一个水平单元设置全局水平单元索引。
-   *
+   * Set global level cell index for a level cell.
    */
   void
   set_global_level_cell_index(const types::global_cell_index index) const;
 
   /**
-   * 设置一个单元格的父级。
-   *
+   * Set the parent of a cell.
    */
   void
   set_parent(const unsigned int parent_index);
 
   /**
-   * 设置该单元格的方向。
-   * 关于这个标志的含义，见  @ref GlossDirectionFlag  。
+   * Set the orientation of this cell.
    *
+   * For the meaning of this flag, see
+   * @ref GlossDirectionFlag.
    */
   void
   set_direction_flag(const bool new_direction_flag) const;
@@ -3465,7 +3880,7 @@ private:
 
 
 
- /* ----- declaration of explicit specializations and general templates ----- */ 
+/* ----- declaration of explicit specializations and general templates ----- */
 
 
 template <int structdim, int dim, int spacedim>
@@ -3576,5 +3991,3 @@ DEAL_II_NAMESPACE_CLOSE
 #include "tria_accessor.templates.h"
 
 #endif
-
-

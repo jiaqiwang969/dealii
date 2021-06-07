@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_rhs_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -44,15 +45,16 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Assembling of right hand sides
+   * @name  右手边的组装
+   *
    */
   //@{
 
   /**
-   * Create a right hand side vector. Prior content of the given @p rhs_vector
-   * vector is deleted.
+   * 创建一个右手边的向量。先前给定的 @p rhs_vector
+   * 向量的内容被删除。
+   * 更多信息请参见该命名空间的一般文档。
    *
-   * See the general documentation of this namespace for further information.
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -66,8 +68,9 @@ namespace VectorTools
       AffineConstraints<typename VectorType::value_type>());
 
   /**
-   * Call the create_right_hand_side() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 调用create_right_hand_side()函数，见上文，<tt>mapping=MappingQGeneric
+   * @<dim@>(1)</tt>.  。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -80,7 +83,8 @@ namespace VectorTools
       AffineConstraints<typename VectorType::value_type>());
 
   /**
-   * Like the previous set of functions, but for hp-objects.
+   * 和前面的一组函数一样，但是针对hp-objects。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -94,7 +98,8 @@ namespace VectorTools
       AffineConstraints<typename VectorType::value_type>());
 
   /**
-   * Like the previous set of functions, but for hp-objects.
+   * 像以前的一组函数，但对hp-objects而言。
+   *
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -107,13 +112,8 @@ namespace VectorTools
       AffineConstraints<typename VectorType::value_type>());
 
   /**
-   * Create a right hand side vector from boundary forces. Prior content of
-   * the given @p rhs_vector vector is deleted.
+   * 从边界力创建一个右手边的向量。之前给定的 @p rhs_vector 矢量的内容被删除。    更多信息请参见该命名空间的一般文档。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * See the general documentation of this namespace for further information.
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -127,11 +127,8 @@ namespace VectorTools
       std::set<types::boundary_id>());
 
   /**
-   * Call the create_boundary_right_hand_side() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 调用create_boundary_right_hand_side()函数，见上文，<tt>mapping=MappingQGeneric  @<dim@>(1)</tt>.   @see   @ref GlossBoundaryIndicator  "关于边界指标的术语条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -144,10 +141,8 @@ namespace VectorTools
       std::set<types::boundary_id>());
 
   /**
-   * Same as the set of functions above, but for hp-objects.
+   * 与上面的函数集相同，但用于hp-objects。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -161,12 +156,8 @@ namespace VectorTools
       std::set<types::boundary_id>());
 
   /**
-   * Call the create_boundary_right_hand_side() function, see above, with a
-   * single Q1 mapping as collection. This function therefore will only work
-   * if the only active FE index in use is zero.
+   * 调用create_boundary_right_hand_side()函数，见上文，用一个Q1映射作为集合。因此，这个函数只有在使用中的唯一活跃的FE指标为0时才会起作用。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename VectorType>
   void
@@ -183,3 +174,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_rhs_h
+
+

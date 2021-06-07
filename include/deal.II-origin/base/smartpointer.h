@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/smartpointer_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -28,171 +27,189 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 智能指针避免使用悬空的指针。它们可以像指针一样被使用（即使用<tt>*</tt>和<tt>-></tt>操作符和通过铸造），但要确保在使用指针的过程中，被指向的对象不会被删除或移动，要给被指向者发出使用信号。
- * 指向的对象，即类T，应该继承Subscriptor或者必须实现相同的功能。空指针是这个规则的一个例外，也是允许的。
- * 第二个模板参数P只有一个作用：如果使用了一个没有调试字符串的构造函数，那么P的名字就被用作调试字符串。
- * SmartPointer没有实现任何内存处理！尤其是删除一个SmartPointer。特别是，删除一个SmartPointer并不会删除该对象。写作
+ * Smart pointers avoid using dangling pointers. They can be used just
+ * like a pointer (i.e. using the <tt>*</tt> and <tt>-></tt> operators and
+ * through casting) but make sure that the object pointed to is not deleted or
+ * moved from in the course of use of the pointer by signaling the pointee its
+ * use.
  *
+ * Objects pointed to, i.e. the class T, should inherit Subscriptor or must
+ * implement the same functionality. Null pointers are an exception from this
+ * rule and are allowed, too.
+ *
+ * The second template argument P only serves a single purpose: if a
+ * constructor without a debug string is used, then the name of P is used as
+ * the debug string.
+ *
+ * SmartPointer does NOT implement any memory handling! Especially, deleting a
+ * SmartPointer does not delete the object. Writing
  * @code
  * SmartPointer<T,P> dont_do_this = new T;
  * @endcode
- * 是一个肯定的方法来编写一个内存泄漏的程序!
- * 安全的版本是
- *
+ * is a sure way to program a memory leak! The secure version is
  * @code
  * T* p = new T;
  * {
- * SmartPointer<T,P> t(p);
- * ...
+ *   SmartPointer<T,P> t(p);
+ *   ...
  * }
  * delete p;
  * @endcode
  *
- * 注意智能指针可以处理对象的<tt>const</tt>性，即一个<tt>SmartPointer<const
- * ABC></tt>真的表现得像一个指向常量对象的指针（取消引用时不允许写访问），而<tt>SmartPointer<ABC></tt>是一个可变的指针。
- *
+ * Note that a smart pointer can handle <tt>const</tt>ness of an object, i.e.
+ * a <tt>SmartPointer<const ABC></tt> really behaves as if it were a pointer
+ * to a constant object (disallowing write access when dereferenced), while
+ * <tt>SmartPointer<ABC></tt> is a mutable pointer.
  *
  * @ingroup memory
- *
- *
  */
 template <typename T, typename P = void>
 class SmartPointer
 {
 public:
   /**
-   * 空指针的标准构造函数。这个指针的id被设置为类P的名称。
-   *
+   * Standard constructor for null pointer. The id of this pointer is set to
+   * the name of the class P.
    */
   SmartPointer();
 
   /**
-   * SmartPointer的复制构造函数。我们不复制从<tt>tt</tt>订阅的对象，而是再次订阅自己的对象。
-   *
+   * Copy constructor for SmartPointer. We do not copy the object subscribed
+   * to from <tt>tt</tt>, but subscribe ourselves to it again.
    */
   template <class Q>
   SmartPointer(const SmartPointer<T, Q> &tt);
 
   /**
-   * SmartPointer的复制构造函数。我们不复制从<tt>tt</tt>订阅的对象，而是自己再次订阅它。
-   *
+   * Copy constructor for SmartPointer. We do not copy the object subscribed
+   * to from <tt>tt</tt>, but subscribe ourselves to it again.
    */
   SmartPointer(const SmartPointer<T, P> &tt);
 
   /**
-   * 构造函数接受一个普通的指针。如果可能的话，也就是说，如果该指针不是空指针，构造函数会订阅给定的对象以锁定它，也就是说，防止它在使用结束前被破坏。
-   * <tt>id</tt>在调用 Subscriptor::subscribe(id) 时被使用，在调用
-   * Subscriptor::unsubscribe(). 时被~SmartPointer()使用。
+   * Constructor taking a normal pointer. If possible, i.e. if the pointer is
+   * not a null pointer, the constructor subscribes to the given object to
+   * lock it, i.e. to prevent its destruction before the end of its use.
    *
+   * The <tt>id</tt> is used in the call to Subscriptor::subscribe(id) and by
+   * ~SmartPointer() in the call to Subscriptor::unsubscribe().
    */
   SmartPointer(T *t, const std::string &id);
 
   /**
-   * 构造函数取一个正常的指针。如果可能的话，即如果该指针不是空指针，构造函数订阅给定的对象以锁定它，即防止它在使用结束前被破坏。这个指针的id被设置为类P的名称。
-   *
+   * Constructor taking a normal pointer. If possible, i.e. if the pointer is
+   * not a null pointer, the constructor subscribes to the given object to
+   * lock it, i.e. to prevent its destruction before the end of its use. The
+   * id of this pointer is set to the name of the class P.
    */
   SmartPointer(T *t);
 
   /**
-   * 销毁器，删除订阅。
-   *
+   * Destructor, removing the subscription.
    */
   ~SmartPointer();
 
   /**
-   * 普通指针的赋值操作符。指针会自动订阅新的对象，如果旧的对象存在，则取消订阅。它不会尝试订阅一个空指针，但仍会删除旧的订阅。
-   *
+   * Assignment operator for normal pointers. The pointer subscribes to the
+   * new object automatically and unsubscribes to an old one if it exists. It
+   * will not try to subscribe to a null-pointer, but still delete the old
+   * subscription.
    */
   SmartPointer<T, P> &
   operator=(T *tt);
 
   /**
-   * SmartPointer的赋值操作符。指针会自动订阅新的对象，如果存在旧的对象，则会取消订阅。
-   *
+   * Assignment operator for SmartPointer. The pointer subscribes to the new
+   * object automatically and unsubscribes to an old one if it exists.
    */
   template <class Q>
   SmartPointer<T, P> &
   operator=(const SmartPointer<T, Q> &tt);
 
   /**
-   * 用于SmartPointer的赋值操作符。指针会自动订阅新的对象，如果旧的对象存在，则会取消订阅。
-   *
+   * Assignment operator for SmartPointer. The pointer subscribes to the new
+   * object automatically and unsubscribes to an old one if it exists.
    */
   SmartPointer<T, P> &
   operator=(const SmartPointer<T, P> &tt);
 
   /**
-   * 删除所指向的对象并将指针设为零。
-   *
+   * Delete the object pointed to and set the pointer to zero.
    */
   void
   clear();
 
   /**
-   * 转换为普通指针。
-   *
+   * Conversion to normal pointer.
    */
   operator T *() const;
 
   /**
-   * 解除引用操作符。如果指针是一个空指针，这个操作符会抛出一个ExcNotInitialized()。
-   *
+   * Dereferencing operator. This operator throws an ExcNotInitialized() if the
+   * pointer is a null pointer.
    */
   T &operator*() const;
 
   /**
-   * 解除引用操作符。如果指针是一个空指针，该操作符会抛出一个ExcNotInitializedi()。
-   *
+   * Dereferencing operator. This operator throws an ExcNotInitializedi() if the
+   * pointer is a null pointer.
    */
   T *operator->() const;
 
   /**
-   * 交换这个对象和参数的指针。由于被指向的两个对象在之前和之后都被订阅了，我们不必改变它们的订阅计数器。
-   * 请注意，这个函数（有两个参数）以及其中一个参数是指针，另一个参数是C型指针的相应函数是在全局命名空间实现的。
+   * Exchange the pointers of this object and the argument. Since both the
+   * objects to which is pointed are subscribed to before and after, we do not
+   * have to change their subscription counters.
    *
+   * Note that this function (with two arguments) and the respective functions
+   * where one of the arguments is a pointer and the other one is a C-style
+   * pointer are implemented in global namespace.
    */
   template <class Q>
   void
   swap(SmartPointer<T, Q> &tt);
 
   /**
-   * 在这个对象和给出的指针之间交换指针。由于这释放了目前所指向的对象，我们把它的订阅数减少了一个，并在我们将来要指向的对象处增加订阅数。
-   * 注意，我们确实需要一个指针的引用，因为我们想改变我们所给的指针变量。
+   * Swap pointers between this object and the pointer given. As this releases
+   * the object pointed to presently, we reduce its subscription count by one,
+   * and increase it at the object which we will point to in the future.
    *
+   * Note that we indeed need a reference of a pointer, as we want to change
+   * the pointer variable which we are given.
    */
   void
   swap(T *&tt);
 
   /**
-   * 返回这个类所使用的内存量的估计值（以字节为单位）。
-   * 特别注意，这只包括<b>this</b>对象所使用的内存量，而不是所指向的对象。
-   *
+   * Return an estimate of the amount of memory (in bytes) used by this class.
+   * Note in particular, that this only includes the amount of memory used by
+   * <b>this</b> object, not by the object pointed to.
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * 指向我们要订阅的对象的指针。由于在调试时经常需要跟踪这个指针，我们特意选择了一个简短的名字。
-   *
+   * Pointer to the object we want to subscribe to. Since it is often
+   * necessary to follow this pointer when debugging, we have deliberately
+   * chosen a short name.
    */
   T *t;
 
   /**
-   * 用于下标的标识。
-   *
+   * The identification for the subscriptor.
    */
   const std::string id;
 
   /**
-   * 当所指向的对象被销毁或被移出时，Smartpointer就会被废止。
-   *
+   * The Smartpointer is invalidated when the object pointed to is destroyed
+   * or moved from.
    */
   std::atomic<bool> pointed_to_object_is_alive;
 };
 
 
- /* --------------------- inline Template functions ------------------------- */ 
+/* --------------------- inline Template functions ------------------------- */
 
 
 template <typename T, typename P>
@@ -417,9 +434,9 @@ SmartPointer<T, P>::memory_consumption() const
 // compiler.
 #ifndef _MSC_VER
 /**
- * 全局性的函数来交换两个智能指针的内容。由于指针所指向的两个对象都保留了订阅，我们不必改变它们的订阅数。
- *
- *
+ * Global function to swap the contents of two smart pointers. As both objects
+ * to which the pointers point retain to be subscribed to, we do not have to
+ * change their subscription count.
  */
 template <typename T, typename P, class Q>
 inline void
@@ -431,10 +448,11 @@ swap(SmartPointer<T, P> &t1, SmartPointer<T, Q> &t2)
 
 
 /**
- * 全局函数来交换一个智能指针和一个C型指针的内容。
- * 注意，我们确实需要一个指针的引用，因为我们要改变我们所给的指针变量。
+ * Global function to swap the contents of a smart pointer and a C-style
+ * pointer.
  *
- *
+ * Note that we indeed need a reference of a pointer, as we want to change the
+ * pointer variable which we are given.
  */
 template <typename T, typename P>
 inline void
@@ -446,10 +464,11 @@ swap(SmartPointer<T, P> &t1, T *&t2)
 
 
 /**
- * 全局函数，用于交换一个C-style指针和一个智能指针的内容。
- * 注意，我们确实需要一个指针的引用，因为我们想改变我们所给的指针变量。
+ * Global function to swap the contents of a C-style pointer and a smart
+ * pointer.
  *
- *
+ * Note that we indeed need a reference of a pointer, as we want to change the
+ * pointer variable which we are given.
  */
 template <typename T, typename P>
 inline void
@@ -461,5 +480,3 @@ swap(T *&t1, SmartPointer<T, P> &t2)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

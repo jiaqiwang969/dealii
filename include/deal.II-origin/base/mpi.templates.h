@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/mpi.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -42,8 +41,7 @@ namespace Utilities
     {
 #ifdef DEAL_II_WITH_MPI
       /**
-       * 为给定的参数返回相应的MPI数据类型id。
-       *
+       * Return the corresponding MPI data type id for the argument given.
        */
       inline MPI_Datatype
       mpi_type_id(const bool *)
@@ -671,5 +669,3 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

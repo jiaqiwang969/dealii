@@ -1,3 +1,4 @@
+//include/deal.II-translator/distributed/shared_tria_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2021 by the deal.II authors
@@ -48,58 +49,22 @@ namespace parallel
   namespace shared
   {
     /**
-     * This class provides a parallel triangulation for which every processor
-     * knows about every cell of the global mesh (unlike for the
-     * parallel::distributed::Triangulation class) but in which cells are
-     * automatically partitioned when run with MPI so that each processor
-     * "owns" a subset of cells. The use of this class is demonstrated in
-     * step-18.
-     *
-     * Different from the parallel::distributed::Triangulation and
-     * parallel::fullydistributed::Triangulation classes, this implies
-     * that the entire mesh is stored on each processor. While this is clearly
-     * a memory bottleneck that limits the use of this class to a few dozen
-     * or hundreds of MPI processes, the partitioning of the mesh can be used
-     * to partition work such as assembly or postprocessing between
-     * participating processors, and it can also be used to partition which
-     * processor stores which parts of matrices and vectors. As a consequence,
-     * using this class is often a gentler introduction to parallelizing a
-     * code than the more involved parallel::distributed::Triangulation class
-     * in which processors only know their own part of the mesh, but nothing
-     * about cells owned by other processors with the exception of a single
-     * layer of ghost cells around their own part of the domain.
-     *
-     * As a consequence of storing the entire mesh on each processor, active
-     * cells need to be flagged for refinement or coarsening consistently on
-     * all processors if you want to adapt them, regardless of being classified
-     * as locally owned, ghost or artificial.
-     *
-     * The class is also useful in cases where compute time and memory
-     * considerations dictate that the program needs to be run in parallel,
-     * but where algorithmic concerns require that every processor knows
-     * about the entire mesh. An example could be where an application
-     * has to have both volume and surface meshes that can then both
-     * be partitioned independently, but where it is difficult to ensure
-     * that the locally owned set of surface mesh cells is adjacent to the
-     * locally owned set of volume mesh cells and the other way around. In
-     * such cases, knowing the <i>entirety</i> of both meshes ensures that
-     * assembly of coupling terms can be implemented without also
-     * implementing overly complicated schemes to transfer information about
-     * adjacent cells from processor to processor.
-     *
-     * The partitioning of cells between processors is done internally
-     * based on a number of different possibilities. By passing appropriate
-     * flags to the constructor of this class (see the
+     * 这个类提供了一个并行的三角形，每个处理器都知道全局网格的每个单元（与
+     * parallel::distributed::Triangulation
+     * 类不同），但在用MPI运行时，单元被自动分割，这样每个处理器就
+     * "拥有 "一个单元子集。这个类的使用在  step-18
+     * 中得到了证明。        与 parallel::distributed::Triangulation
+     * 和 parallel::fullydistributed::Triangulation
+     * 类不同，这意味着整个网格被存储在每个处理器上。虽然这显然是一个内存瓶颈，将这个类的使用限制在几十个或几百个MPI进程中，但网格的划分可以用来划分参与处理器之间的工作，如装配或后处理，它也可以用来划分哪个处理器存储矩阵和向量的哪一部分。因此，使用这个类通常是比更多的
+     * parallel::distributed::Triangulation
+     * 类更温和的代码并行化介绍，在后者中，处理器只知道他们自己的那部分网格，但对其他处理器拥有的单元却一无所知，除了他们自己那部分域周围的单层幽灵单元之外。
+     * 作为在每个处理器上存储整个网格的结果，活动单元需要在所有处理器上被标记为细化或粗化，如果你想调整它们，无论它们被归类为本地所有、幽灵或人工。
+     * 在计算时间和内存的考虑决定了程序需要并行运行，但在算法上需要每个处理器都知道整个网格的情况下，该类也很有用。一个例子是，一个应用程序必须同时拥有体积和表面网格，然后都可以独立分区，但很难确保本地拥有的表面网格单元集与本地拥有的体积网格单元集相邻，反之亦然。在这种情况下，知道两个网格的<i>entirety</i>可以确保耦合项的装配可以实现，而不需要实施过于复杂的方案来在处理器之间传递相邻单元的信息。
+     * 单元在处理器之间的划分是根据一些不同的可能性在内部完成的。通过向该类的构造函数传递适当的标志（见
      * parallel::shared::Triangulation::Settings
-     * enum), it is possible to select different ways of partitioning the mesh,
-     * including ways that are dictated by the application and not by the
-     * desire to minimize the length of the interface between subdomains owned
-     * by processors (as is done by the METIS and Zoltan packages, both of
-     * which are options for partitioning). The DoFHandler class knows how to
-     * enumerate degrees of freedom in ways appropriate for the partitioned
-     * mesh.
-     *
+     * 枚举），可以选择不同的网格划分方式，包括由应用决定的方式，而不是由希望最小化处理器所拥有的子域之间的接口长度（如METIS和Zoltan包所做的，两者都是划分的选项）。DoFHandler类知道如何以适合于分区网格的方式列举自由度。
      * @ingroup distributed
+     *
      */
     template <int dim, int spacedim = dim>
     class Triangulation
@@ -112,145 +77,110 @@ namespace parallel
         typename dealii::Triangulation<dim, spacedim>::cell_iterator;
 
       /**
-       * Configuration flags for distributed Triangulations to be set in the
-       * constructor. Settings can be combined using bitwise OR.
+       * 分布式三角计算的配置标志要在构造函数中设置。设置可以用位法OR来组合。
+       * 构造函数要求 <code>partition_auto</code>,
+       * <code>partition_metis</code> 、 <code>partition_zorder</code>,
+       * <code>partition_zoltan</code> 和
+       * <code>partition_custom_signal</code>
+       * 中正好有一个被设置。如果 <code>partition_auto</code>
+       * 被选中，它将使用 <code>partition_zoltan</code>
+       * （如果可用），然后是 <code>partition_metis</code>
+       * （如果可用），最后是 <code>partition_zorder</code>  。
        *
-       * The constructor requires that exactly one of
-       * <code>partition_auto</code>, <code>partition_metis</code>,
-       * <code>partition_zorder</code>, <code>partition_zoltan</code> and
-       * <code>partition_custom_signal</code> is set. If
-       * <code>partition_auto</code> is chosen, it will use
-       * <code>partition_zoltan</code> (if available), then
-       * <code>partition_metis</code> (if available) and finally
-       * <code>partition_zorder</code>.
        */
       enum Settings
       {
         /**
-         * Choose the partitioner depending on the enabled
-         * dependencies that were found when configuring deal.II.  In
-         * particular, if the Trilinos package Zoltan was found, then
-         * use the @p partition_zoltan strategy. If Zoltan was not
-         * found but the METIS package was found, then use the
-         * partition_metis strategy. If neither of these were found,
-         * then use the partition_zorder partitioning strategy.
+         * 根据配置deal.II时发现的启用的依赖关系，选择分区器。
+         * 特别是，如果发现了Trilinos软件包Zoltan，那么就使用
+         * @p partition_zoltan
+         * 策略。如果没有找到Zoltan，但找到了METIS包，那么就使用partition_metis策略。如果这两个都没有找到，那么就使用partition_zorder分区策略。
+         *
          */
         partition_auto = 0x0,
 
         /**
-         * Use METIS partitioner to partition active cells.
+         * 使用METIS分区器对活动单元进行分区。
+         *
          */
         partition_metis = 0x1,
 
         /**
-         * Partition active cells with the same scheme used in the
-         * p4est library.
          *
-         * The term "Z-order" originates in the fact that cells are
-         * sorted using a space filling curve which in 2d connects the
-         * four children of a cell in the order bottom left, bottom
-         * right, top left, top right (i.e., with a curve that looks
-         * like a reverse "Z"), and does so recursively on all levels
-         * of a triangulation. This is also the order in which
-         * children are enumerated by the GeometryInfo class. The
-         * "Z-order" is also sometimes called "Morton ordering", see
-         * https://en.wikipedia.org/wiki/Z-order_curve .
-         *
-         * @see
-         * @ref GlossZOrder "Z order glossary entry".
          */
         partition_zorder = 0x2,
 
         /**
-         * Use Zoltan to partition active cells.
+         * 使用Zoltan来划分活动单元。
+         *
          */
         partition_zoltan = 0x3,
 
         /**
-         * Partition cells using a custom, user defined function. This is
-         * accomplished by connecting the post_refinement signal to the
-         * triangulation whenever it is first created and passing the user
-         * defined function through the signal using <code>std::bind</code>.
-         * Here is an example:
+         * 使用一个自定义的、用户定义的函数来划分单元格。这可以通过在三角图首次创建时将post_refinement信号连接到三角图，并通过信号传递用户定义的函数来实现
+         * <code>std::bind</code>  。        下面是一个例子。
          * @code
          * template <int dim>
          * void mypartition(parallel::shared::Triangulation<dim> &tria)
          * {
-         *   // user defined partitioning scheme: assign subdomain_ids
-         *   // round-robin in a mostly random way:
-         *   std::vector<unsigned int> assignment =
-         *     {0,0,1,2,0,0,2,1,0,2,2,1,2,2,0,0};
-         *   unsigned int index = 0;
-         *   for (const auto &cell : tria.active_cell_iterators())
-         *     cell->set_subdomain_id(assignment[(index++)%16]);
+         * // user defined partitioning scheme: assign subdomain_ids
+         * // round-robin in a mostly random way:
+         * std::vector<unsigned int> assignment =
+         *   {0,0,1,2,0,0,2,1,0,2,2,1,2,2,0,0};
+         * unsigned int index = 0;
+         * for (const auto &cell : tria.active_cell_iterators())
+         *   cell->set_subdomain_id(assignment[(index++)%16]);
          * }
          *
          * int main ()
          * {
-         *   parallel::shared::Triangulation<dim> tria(
-         *     ...,
-         *     parallel::shared::Triangulation<dim>::partition_custom_signal);
-         *   tria.signals.post_refinement.connect(std::bind(&mypartition<dim>,
-         *                                        std::ref(tria)));
+         * parallel::shared::Triangulation<dim> tria(
+         *   ...,
+         *   parallel::shared::Triangulation<dim>::partition_custom_signal);
+         * tria.signals.post_refinement.connect(std::bind(&mypartition<dim>,
+         *                                      std::ref(tria)));
          * }
          * @endcode
-         *
-         * An equivalent code using lambda functions would look like this:
+         * 一个使用lambda函数的等效代码看起来是这样的。
          * @code
          * int main ()
          * {
-         *   parallel::shared::Triangulation<dim> tria(
-         *     ...,
-         *     parallel::shared::Triangulation<dim>::partition_custom_signal);
-         *   tria.signals.post_refinement.connect (
-         *     [&tria]()
-         *     {
-         *       // user defined partitioning scheme as above
-         *       ...
-         *     });
+         * parallel::shared::Triangulation<dim> tria(
+         *   ...,
+         *   parallel::shared::Triangulation<dim>::partition_custom_signal);
+         * tria.signals.post_refinement.connect (
+         *   [&tria]()
+         *   {
+         *     // user defined partitioning scheme as above
+         *     ...
+         *   });
          * }
          * @endcode
          *
-         * @note If you plan to use a custom partition with geometric multigrid,
-         * you must manually partition the level cells in addition to the active
-         * cells.
+         * @note
+         * 如果你打算使用几何多网格的自定义分区，除了活动单元外，你必须手动分区水平单元。
+         *
          */
         partition_custom_signal = 0x4,
 
         /**
-         * This flag needs to be set to use the geometric multigrid
-         * functionality. This option requires additional computation and
-         * communication.
+         * 这个标志需要被设置以使用几何多网格功能。这个选项需要额外的计算和通信。
+         * 注意：这个标志应该总是和活动单元划分方法的标志一起设置。
          *
-         * Note: This flag should always be set alongside a flag for an
-         * active cell partitioning method.
          */
         construct_multigrid_hierarchy = 0x8,
       };
 
 
       /**
-       * Constructor.
+       * 构造器。            标志 @p allow_artificial_cells
+       * 可以用来启用人工细胞。如果启用，这个类的行为与
+       * parallel::distributed::Triangulation 和
+       * parallel::fullydistributed::Triangulation
+       * 类似，即会有本地拥有的细胞、单层的幽灵细胞和人工细胞。然而，我们不应该忘记，与那些平行三角形相比，所有的细胞都是在所有的过程中重复的，在大多数情况下，导致人工细胞明显增多。
+       * 如果人工细胞被禁用，所有非本地拥有的细胞都被视为幽灵细胞。这可能会导致非常昂贵的幽灵值更新步骤。虽然在人工单元的情况下，幽灵值更新只导致与直接进程邻居的点对点通信，但如果没有人工单元，这些就会退化为每个进程与其他每个进程的通信（"全对全
+       * "通信）。如果这样的幽灵值更新是你代码中的瓶颈，你可能想考虑启用人工单元。
        *
-       * The flag @p allow_artificial_cells can be used to enable artificial
-       * cells. If enabled, this class will behave similarly
-       * to parallel::distributed::Triangulation and
-       * parallel::fullydistributed::Triangulation in the sense that there will
-       * be locally owned cells, a single layer of ghost cells, and
-       * artificial cells. However, one should not forget that in contrast to
-       * those parallel triangulations all cells are duplicated on all
-       * processes, leading in most cases to significantly more artificial
-       * cells.
-       *
-       * If artificial cells are disabled, all non-locally owned cells are
-       * considered ghost cells. This might lead to very expensive ghost-value
-       * update steps. While in the case of artificial cells, ghost-value
-       * updates lead to communication only with the direct process neighbors in
-       * a point-to-point fashion, these degenerate to an operation in which
-       * every process communicates with every other process (an "all-to-all"
-       * communication) if no artificial cells are available. If such
-       * ghost-value updates are the bottleneck in your code, you may want to
-       * consider enabling artificial cells.
        */
       Triangulation(
         const MPI_Comm &mpi_communicator,
@@ -260,32 +190,31 @@ namespace parallel
         const Settings settings               = partition_auto);
 
       /**
-       * Destructor.
+       * 销毁器。
+       *
        */
       virtual ~Triangulation() override = default;
 
       /**
-       * Return if multilevel hierarchy is supported and has been constructed.
+       * 如果支持多级层次结构并且已经构建完成，则返回。
+       *
        */
       virtual bool
       is_multilevel_hierarchy_constructed() const override;
 
       /**
-       * Coarsen and refine the mesh according to refinement and coarsening
-       * flags set.
+       * 根据设置的细化和粗化标志，对网格进行粗化和细化。
+       * 这一步等同于 dealii::Triangulation 类，在最后增加调用
+       * dealii::GridTools::partition_triangulation() 。
        *
-       * This step is equivalent to the dealii::Triangulation class with an
-       * addition of calling dealii::GridTools::partition_triangulation() at
-       * the end.
        */
       virtual void
       execute_coarsening_and_refinement() override;
 
       /**
-       * Create a triangulation.
+       * 创建一个三角剖面。
+       * 这个函数也是根据提供给构造函数的MPI通信器来划分三角形的。
        *
-       * This function also partitions triangulation based on the MPI
-       * communicator provided to the constructor.
        */
       virtual void
       create_triangulation(const std::vector<Point<spacedim>> &vertices,
@@ -293,9 +222,9 @@ namespace parallel
                            const SubCellData &subcelldata) override;
 
       /**
-       * @copydoc Triangulation::create_triangulation()
+       * @copydoc   Triangulation::create_triangulation() .
+       * @note  还没有实现。
        *
-       * @note Not implemented yet.
        */
       virtual void
       create_triangulation(
@@ -303,99 +232,84 @@ namespace parallel
           &construction_data) override;
 
       /**
-       * Copy @p other_tria to this triangulation.
+       * 将 @p other_tria 复制到这个三角形中。
+       * 这个函数也是根据提供给构造器的MPI通信器来划分三角结构。
+       * @note 这个函数不能与 parallel::distributed::Triangulation,
+       * 一起使用，因为它只存储它拥有的那些单元，在它本地拥有的单元周围的一层幽灵单元，以及一些人造单元。
        *
-       * This function also partitions triangulation based on the MPI
-       * communicator provided to the constructor.
-       *
-       * @note This function can not be used with parallel::distributed::Triangulation,
-       * since it only stores those cells that it owns, one layer of ghost cells
-       * around the ones it locally owns, and a number of artificial cells.
        */
       virtual void
       copy_triangulation(
         const dealii::Triangulation<dim, spacedim> &other_tria) override;
 
       /**
-       * Read the data of this object from a stream for the purpose of
-       * serialization. Throw away the previous content.
+       * 为了序列化的目的，从一个流中读取此对象的数据。扔掉之前的内容。
+       * 这个函数首先做与 dealii::Triangulation::load,
+       * 相同的工作，然后根据提供给构造函数的MPI通信器来划分三角形。
        *
-       * This function first does the same work as in
-       * dealii::Triangulation::load, then partitions the triangulation based on
-       * the MPI communicator provided to the constructor.
        */
       template <class Archive>
       void
       load(Archive &ar, const unsigned int version);
 
       /**
-       * Return a vector of length Triangulation::n_active_cells() where each
-       * element stores the subdomain id of the owner of this cell. The
-       * elements of the vector are obviously the same as the subdomain ids
-       * for locally owned and ghost cells, but are also correct for
-       * artificial cells that do not store who the owner of the cell is in
-       * their subdomain_id field.
+       * 返回一个长度为 Triangulation::n_active_cells()
+       * 的向量，其中每个元素都存储了这个单元的所有者的子域ID。向量的元素显然与本地拥有的和幽灵单元的子域id相同，但对于那些不在其子域_id字段中存储单元所有者是谁的人工单元也是正确的。
+       *
        */
       const std::vector<types::subdomain_id> &
       get_true_subdomain_ids_of_cells() const;
 
       /**
-       * Return a vector of length Triangulation::n_cells(level) where each
-       * element stores the level subdomain id of the owner of this cell. The
-       * elements of the vector are obviously the same as the level subdomain
-       * ids for locally owned and ghost cells, but are also correct for
-       * artificial cells that do not store who the owner of the cell is in
-       * their level_subdomain_id field.
+       * 返回一个长度为 Triangulation::n_cells(level)
+       * 的向量，其中每个元素都存储了这个单元的所有者的水平子域id。该向量的元素显然与本地拥有的和幽灵单元的水平子域ID相同，但对于那些不在其水平子域_id字段中存储单元的所有者的人工单元也是正确的。
+       *
        */
       const std::vector<types::subdomain_id> &
       get_true_level_subdomain_ids_of_cells(const unsigned int level) const;
 
       /**
-       * Return allow_artificial_cells , namely true if artificial cells are
-       * allowed.
+       * 返回allow_artificial_cells
+       * ，即如果允许人工细胞，则为true。
+       *
        */
       bool
       with_artificial_cells() const;
 
     private:
       /**
-       * Settings
+       * 设置
+       *
        */
       const Settings settings;
 
       /**
-       * A flag to decide whether or not artificial cells are allowed.
+       * 一个决定是否允许人造细胞的标志。
+       *
        */
       const bool allow_artificial_cells;
 
       /**
-       * This function calls GridTools::partition_triangulation () and if
-       * requested in the constructor of the class marks artificial cells.
+       * 这个函数调用 GridTools::partition_triangulation
+       * ()，如果在类的构造函数中要求，就会标记人工细胞。
+       *
        */
       void
       partition();
 
       /**
-       * A vector containing subdomain IDs of cells obtained by partitioning
-       * using either zorder, METIS, or a user-defined partitioning scheme.
-       * In case allow_artificial_cells is false, this vector is
-       * consistent with IDs stored in cell->subdomain_id() of the
-       * triangulation class. When allow_artificial_cells is true, cells which
-       * are artificial will have cell->subdomain_id() == numbers::artificial;
+       * 一个包含子域ID的向量，这些子域是通过使用zorder、METIS或用户定义的分区方案获得的细胞。
+       * 在allow_artificial_cells为false的情况下，这个向量与存储在三角形类的cell->subdomain_id()的ID一致。当allow_artificial_cells为true时，属于人工的单元将有cell->subdomain_id()
+       * ==  numbers::artificial;
+       * 原始分区信息被存储，以允许使用半人工的单元的顺序DoF分布和分区函数。
        *
-       * The original partition information is stored to allow using sequential
-       * DoF distribution and partitioning functions with semi-artificial
-       * cells.
        */
       std::vector<types::subdomain_id> true_subdomain_ids_of_cells;
 
       /**
-       * A vector containing level subdomain IDs of cells obtained by
-       * partitioning each level.
+       * 一个包含通过划分每个级别获得的单元的级别子域ID的向量。
+       * 原始的分区信息被存储起来，以允许使用半人工单元的顺序DoF分布和分区函数。
        *
-       * The original partition information is stored to allow using sequential
-       * DoF distribution and partitioning functions with semi-artificial
-       * cells.
        */
       std::vector<std::vector<types::subdomain_id>>
         true_level_subdomain_ids_of_cells;
@@ -416,15 +330,10 @@ namespace parallel
   namespace shared
   {
     /**
-     * Dummy class the compiler chooses for parallel shared triangulations if
-     * we didn't actually configure deal.II with the MPI library. The
-     * existence of this class allows us to refer to
-     * parallel::shared::Triangulation objects throughout the library even if
-     * it is disabled.
+     * 如果我们没有用MPI库实际配置deal.II，编译器为并行共享三角计算选择的假类。这个类的存在使得我们可以在整个库中引用
+     * parallel::shared::Triangulation 对象，即使它被禁用。
+     * 由于这个类的构造函数被删除，实际上不能创建这样的对象，因为考虑到MPI不可用，这将是毫无意义的。
      *
-     * Since the constructor of this class is deleted, no such objects
-     * can actually be created as this would be pointless given that
-     * MPI is not available.
      */
     template <int dim, int spacedim = dim>
     class Triangulation
@@ -432,43 +341,49 @@ namespace parallel
     {
     public:
       /**
-       * Constructor. Deleted to make sure that objects of this type cannot be
-       * constructed (see also the class documentation).
+       * 构造器。已删除，以确保不能构造这种类型的对象（也可参见类的文档）。
+       *
        */
       Triangulation() = delete;
 
       /**
-       * Return if multilevel hierarchy is supported and has been constructed.
+       * 如果支持多级层次结构并已构建，则返回。
+       *
        */
       virtual bool
       is_multilevel_hierarchy_constructed() const override;
 
       /**
-       * A dummy function to return empty vector.
+       * 一个假函数，用于返回空向量。
+       *
        */
       const std::vector<types::subdomain_id> &
       get_true_subdomain_ids_of_cells() const;
 
       /**
-       * A dummy function to return empty vector.
+       * 一个假函数，用于返回空向量。
+       *
        */
       const std::vector<types::subdomain_id> &
       get_true_level_subdomain_ids_of_cells(const unsigned int level) const;
 
       /**
-       * A dummy function which always returns true.
+       * 一个假函数，它总是返回真。
+       *
        */
       bool
       with_artificial_cells() const;
 
     private:
       /**
-       * A dummy vector.
+       * 一个假的向量。
+       *
        */
       std::vector<types::subdomain_id> true_subdomain_ids_of_cells;
 
       /**
-       * A dummy vector.
+       * 一个假的向量。
+       *
        */
       std::vector<types::subdomain_id> true_level_subdomain_ids_of_cells;
     };
@@ -486,58 +401,41 @@ namespace internal
     namespace shared
     {
       /**
-       * This class temporarily modifies the subdomain ID of all active cells to
-       * their respective "true" owner.
        *
-       * The modification only happens on parallel::shared::Triangulation
-       * objects with artificial cells, and persists for the lifetime of an
-       * instantiation of this class.
-       *
-       * The TemporarilyRestoreSubdomainIds class should only be used for
-       * temporary read-only purposes. For example, whenever your implementation
-       * requires to treat artificial cells temporarily as locally relevant to
-       * access their dof indices.
-       *
-       * This class has effect only if artificial cells are allowed. Without
-       * artificial cells, the current subdomain IDs already correspond to the
-       * true subdomain IDs. See the @ref GlossArtificialCell "glossary"
-       * for more information about artificial cells.
        */
       template <int dim, int spacedim = dim>
       class TemporarilyRestoreSubdomainIds : public Subscriptor
       {
       public:
         /**
-         * Constructor.
+         * 构造函数。                如果提供的Triangulation是
+         * parallel::shared::Triangulation.
+         * 类型，则存储所有活动单元的子域ID，用它们的真实子域ID等价物替换。
          *
-         * Stores the subdomain ID of all active cells if the provided
-         * Triangulation is of type parallel::shared::Triangulation.
-         *
-         * Replaces them by their true subdomain ID equivalent.
          */
         TemporarilyRestoreSubdomainIds(
           const Triangulation<dim, spacedim> &tria);
 
         /**
-         * Destructor.
+         * 解构器。                将 parallel::shared::Triangulation
+         * 上所有活动单元的子域ID返回到它们之前的状态。
          *
-         * Returns the subdomain ID of all active cells on the
-         * parallel::shared::Triangulation into their previous state.
          */
         ~TemporarilyRestoreSubdomainIds();
 
       private:
         /**
-         * The modified parallel::shared::Triangulation.
+         * 修改后的 parallel::shared::Triangulation. 。
+         *
          */
         const SmartPointer<
           const dealii::parallel::shared::Triangulation<dim, spacedim>>
           shared_tria;
 
         /**
-         * A vector that temporarily stores the subdomain IDs on all active
-         * cells before they have been modified on the
-         * parallel::shared::Triangulation.
+         * 一个向量，在 parallel::shared::Triangulation.
+         * 上的所有活动单元被修改之前，临时存储它们的子域ID。
+         *
          */
         std::vector<unsigned int> saved_subdomain_ids;
       };
@@ -548,3 +446,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

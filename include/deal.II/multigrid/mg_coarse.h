@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/mg_coarse_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -27,41 +28,47 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup mg */
-/*@{*/
+ /*!@addtogroup mg */ 
+ /*@{*/ 
 
 /**
- * Coarse grid solver using smoother only. This is a little wrapper,
- * transforming a smoother into a coarse grid solver.
+ * 仅使用平滑器的粗略网格求解器。这是一个小的封装器，将平滑器转化为粗网格求解器。
+ *
+ *
  */
 template <class VectorType = Vector<double>>
 class MGCoarseGridApplySmoother : public MGCoarseGridBase<VectorType>
 {
 public:
   /**
-   * Default constructor.
+   * 默认构造函数。
+   *
    */
   MGCoarseGridApplySmoother();
 
   /**
-   * Constructor. Store a pointer to the smoother for later use.
+   * 构造函数。存储一个指向平滑器的指针供以后使用。
+   *
    */
   MGCoarseGridApplySmoother(const MGSmootherBase<VectorType> &coarse_smooth);
 
   /**
-   * Clear the pointer.
+   * 清除该指针。
+   *
    */
   void
   clear();
 
   /**
-   * Initialize new data.
+   * 初始化新的数据。
+   *
    */
   void
   initialize(const MGSmootherBase<VectorType> &coarse_smooth);
 
   /**
-   * Implementation of the abstract function.
+   * 实现抽象函数。
+   *
    */
   void
   operator()(const unsigned int level,
@@ -70,7 +77,8 @@ public:
 
 private:
   /**
-   * Reference to the smoother.
+   * 对平滑器的引用。
+   *
    */
   SmartPointer<const MGSmootherBase<VectorType>,
                MGCoarseGridApplySmoother<VectorType>>
@@ -80,10 +88,10 @@ private:
 
 
 /**
- * Coarse grid multigrid operator for an iterative solver.
+ * 迭代求解器的粗网格多格运算器。
+ * 该类为具有给定矩阵和预调节器的deal.II迭代求解器提供了一个包装，作为粗网格算子。
  *
- * This class provides a wrapper for a deal.II iterative solver with a given
- * matrix and preconditioner as a coarse grid operator.
+ *
  */
 template <class VectorType,
           class SolverType,
@@ -93,21 +101,22 @@ class MGCoarseGridIterativeSolver : public MGCoarseGridBase<VectorType>
 {
 public:
   /**
-   * Default constructor.
+   * 默认构造函数。
+   *
    */
   MGCoarseGridIterativeSolver();
 
   /**
-   * Constructor. Only a reference to these objects is stored, so
-   * their lifetime needs to exceed the usage in this class.
+   * 构造器。只存储这些对象的引用，所以它们的寿命需要超过这个类中的用量。
+   *
    */
   MGCoarseGridIterativeSolver(SolverType &              solver,
                               const MatrixType &        matrix,
                               const PreconditionerType &precondition);
 
   /**
-   * Initialize with new data, see the corresponding constructor for more
-   * details.
+   * 用新的数据进行初始化，更多细节见相应的构造函数。
+   *
    */
   void
   initialize(SolverType &              solver,
@@ -115,14 +124,15 @@ public:
              const PreconditionerType &precondition);
 
   /**
-   * Clear all pointers.
+   * 清除所有的指针。
+   *
    */
   void
   clear();
 
   /**
-   * Implementation of the abstract function. Calls the solve method of the
-   * given solver with matrix, vectors, and preconditioner.
+   * 抽象函数的实现。用矩阵、向量和预调节器调用给定求解器的求解方法。
+   *
    */
   virtual void
   operator()(const unsigned int level,
@@ -131,7 +141,8 @@ public:
 
 private:
   /**
-   * Reference to the solver.
+   * 对解算器的引用。
+   *
    */
   SmartPointer<SolverType,
                MGCoarseGridIterativeSolver<VectorType,
@@ -141,7 +152,8 @@ private:
     solver;
 
   /**
-   * Reference to the matrix.
+   * 对矩阵的参考。
+   *
    */
   SmartPointer<const MatrixType,
                MGCoarseGridIterativeSolver<VectorType,
@@ -151,7 +163,8 @@ private:
     matrix;
 
   /**
-   * Reference to the preconditioner.
+   * 对预处理程序的引用。
+   *
    */
   SmartPointer<const PreconditionerType,
                MGCoarseGridIterativeSolver<VectorType,
@@ -164,24 +177,25 @@ private:
 
 
 /**
- * Coarse grid solver by QR factorization implemented in the class
- * Householder.
+ * 在Householder类中通过QR分解实现的粗网格求解器。
+ * 初始化时，计算矩阵的QR分解。然后，运算器()使用
+ * Householder::least_squares() 来计算逆的作用。
  *
- * Upon initialization, the QR decomposition of the matrix is computed. then,
- * the operator() uses Householder::least_squares() to compute the action of
- * the inverse.
+ *
  */
 template <typename number = double, class VectorType = Vector<number>>
 class MGCoarseGridHouseholder : public MGCoarseGridBase<VectorType>
 {
 public:
   /**
-   * Constructor, taking the coarse grid matrix.
+   * 构造函数，采取粗略的网格矩阵。
+   *
    */
   MGCoarseGridHouseholder(const FullMatrix<number> *A = nullptr);
 
   /**
-   * Initialize for a new matrix.
+   * 为一个新的矩阵进行初始化。
+   *
    */
   void
   initialize(const FullMatrix<number> &A);
@@ -193,28 +207,31 @@ public:
 
 private:
   /**
-   * Matrix for QR-factorization.
+   * 用于QR因子化的矩阵。
+   *
    */
   Householder<number> householder;
 };
 
 /**
- * Coarse grid solver using singular value decomposition of LAPACK matrices.
+ * 使用LAPACK矩阵的奇异值分解的粗略网格求解器。
+ * 初始化时，计算矩阵的奇异值分解。然后，运算器（）使用
  *
- * Upon initialization, the singular value decomposition of the matrix is
- * computed. then, the operator() uses
+ *
  */
 template <typename number = double, class VectorType = Vector<number>>
 class MGCoarseGridSVD : public MGCoarseGridBase<VectorType>
 {
 public:
   /**
-   * Constructor leaving an uninitialized object.
+   * 构造函数留下一个未初始化的对象。
+   *
    */
   MGCoarseGridSVD() = default;
 
   /**
-   * Initialize for a new matrix. This resets the dimensions to the
+   * 对一个新的矩阵进行初始化。这将重设尺寸为
+   *
    */
   void
   initialize(const FullMatrix<number> &A, const double threshold = 0);
@@ -225,22 +242,24 @@ public:
              const VectorType & src) const;
 
   /**
-   * Write the singular values to @p deallog.
+   * 将奇异值写到 @p deallog. 。
+   *
    */
   void
   log() const;
 
 private:
   /**
-   * Matrix for singular value decomposition.
+   * 用于奇异值分解的矩阵。
+   *
    */
   LAPACKFullMatrix<number> matrix;
 };
 
-/*@}*/
+ /*@}*/ 
 
 #ifndef DOXYGEN
-/* ------------------ Functions for MGCoarseGridApplySmoother -----------*/
+ /* ------------------ Functions for MGCoarseGridApplySmoother -----------*/ 
 template <class VectorType>
 MGCoarseGridApplySmoother<VectorType>::MGCoarseGridApplySmoother()
   : coarse_smooth(nullptr)
@@ -284,7 +303,7 @@ MGCoarseGridApplySmoother<VectorType>::operator()(const unsigned int level,
   coarse_smooth->smooth(level, dst, src);
 }
 
-/* ------------------ Functions for MGCoarseGridIterativeSolver ------------ */
+ /* ------------------ Functions for MGCoarseGridIterativeSolver ------------ */ 
 
 template <class VectorType,
           class SolverType,
@@ -365,7 +384,7 @@ MGCoarseGridIterativeSolver<VectorType,
                             SolverType,
                             MatrixType,
                             PreconditionerType>::
-operator()(const unsigned int /*level*/,
+operator()(const unsigned int  /*level*/ ,
            VectorType &      dst,
            const VectorType &src) const
 {
@@ -377,7 +396,7 @@ operator()(const unsigned int /*level*/,
 
 
 
-/* ------------------ Functions for MGCoarseGridHouseholder ------------ */
+ /* ------------------ Functions for MGCoarseGridHouseholder ------------ */ 
 
 template <typename number, class VectorType>
 MGCoarseGridHouseholder<number, VectorType>::MGCoarseGridHouseholder(
@@ -402,7 +421,7 @@ MGCoarseGridHouseholder<number, VectorType>::initialize(
 template <typename number, class VectorType>
 void
 MGCoarseGridHouseholder<number, VectorType>::
-operator()(const unsigned int /*level*/,
+operator()(const unsigned int  /*level*/ ,
            VectorType &      dst,
            const VectorType &src) const
 {
@@ -426,7 +445,7 @@ MGCoarseGridSVD<number, VectorType>::initialize(const FullMatrix<number> &A,
 
 template <typename number, class VectorType>
 void
-MGCoarseGridSVD<number, VectorType>::operator()(const unsigned int /*level*/,
+MGCoarseGridSVD<number, VectorType>::operator()(const unsigned int  /*level*/ ,
                                                 VectorType &      dst,
                                                 const VectorType &src) const
 {
@@ -451,3 +470,5 @@ MGCoarseGridSVD<number, VectorType>::log() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

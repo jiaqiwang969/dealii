@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/sparse_ilu.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2018 by the deal.II authors
@@ -309,6 +308,4 @@ SparseILU<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
- /*-------------------------- sparse_ilu.templates.h -------------------------*/ 
-
-
+/*-------------------------- sparse_ilu.templates.h -------------------------*/

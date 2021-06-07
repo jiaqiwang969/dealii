@@ -1,3 +1,4 @@
+//include/deal.II-translator/particles/partitioner_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -27,90 +28,71 @@ namespace Particles
   namespace internal
   {
     /**
-     * Cache structure used to store the elements which are required to
-     * exchange the particle information (location and properties) across
-     * processors in order to update the ghost particles.
+     * 缓存结构，用于存储跨处理器交换粒子信息（位置和属性）所需的元素，以便更新鬼魂粒子。
+     * 这个结构应该只在希望使用粒子进行工作而不在每次迭代时调用sort_particles_into_subdomain_and_cells时使用。当粒子与粒子之间的相互作用发生在不同的时间尺度上时，这很有用。
      *
-     * This structure should only be used when one wishes to carry out work
-     * using the particles without calling
-     * sort_particles_into_subdomain_and_cells at every iteration. This is
-     * useful when particle-particle interaction occurs at a different time
-     * scale than particle-mesh interaction.
      */
     template <int dim, int spacedim>
     struct GhostParticlePartitioner
     {
       /**
-       * A type that can be used to iterate over all particles in the domain.
+       * 一个可以用来迭代域中所有粒子的类型。
+       *
        */
       using particle_iterator = ParticleIterator<dim, spacedim>;
 
       /**
-       * Indicates if the cache has been built to prevent updating particles
-       * with an invalid cache.
+       * 表示是否已经建立了缓存，以防止用无效的缓存更新粒子。
+       *
        */
       bool valid = false;
 
       /**
-       * Vector of the subdomain id of all possible neighbors of the current
-       * subdomain.
+       * 当前子域的所有可能的邻居的子域ID的矢量。
+       *
        */
       std::vector<types::subdomain_id> neighbors;
 
       /**
-       * Vector of size (neighbors.size()+1) used to store the start and the
-       * end point of the data that must go from the current subdomain to the
-       * neighbors. For neighbor i, send_pointers[i] indicates the beginning
-       * and send_pointers[i+1] indicates the end of the data that must be
-       * sent.
+       * 大小（neighbors.size()+1）的向量，用于存储必须从当前子域到邻居的数据的起点和终点。对于邻居i，send_pointers[i]表示开始，send_pointers[i+1]表示必须发送的数据的结束。
+       *
        */
       std::vector<unsigned int> send_pointers;
 
       /**
-       * Set of particles that currently live in the ghost cells of the local
-       * domain, organized by the subdomain_id. These
-       * particles are equivalent to the ghost entries in distributed vectors.
+       * 目前居住在本地域的幽灵单元中的粒子集合，由subdomain_id组织。这些粒子相当于分布式向量中的幽灵条目。
+       *
        */
       std::map<types::subdomain_id, std::vector<particle_iterator>>
         ghost_particles_by_domain;
 
       /**
-       * Vector of size (neighbors.size()+1) used to store the start and the
-       * end point of the data that must be received from neighbor[i] on
-       * the current subdomain. For neighbor i, recv_pointers[i] indicate the
-       * beginning and recv_pointers[i+1] indicates the end of the data that
-       * must be received.
+       * 大小为(neighbors.size()+1)的向量，用于存储必须从当前子域上的邻居[i]接收的数据的起点和终点。对于邻居i，recv_pointers[i]表示开始，recv_pointers[i+1]表示必须接收的数据的结束。
+       * 这个结构与邻居结合时类似于
+       * Utilities::MPI::Partitioner::import_targets 。
        *
-       * This structure is similar to
-       * Utilities::MPI::Partitioner::import_targets when combined with
-       * neighbors.
        */
       std::vector<unsigned int> recv_pointers;
 
       /**
-       * Vector of ghost particles in the order in which they are inserted
-       * in the multimap used to store particles on the triangulation. This
-       * information is used to update the ghost particle information
-       * without clearing the multimap of ghost particles, thus greatly
-       * reducing the cost of exchanging the ghost particles information.
+       * 幽灵粒子的矢量，其顺序是它们被插入用于存储三角形上的粒子的多图中。该信息用于更新鬼魂粒子信息，而无需清除多图中的鬼魂粒子，从而大大降低了交换鬼魂粒子信息的成本。
+       *
        */
       std::vector<typename std::multimap<internal::LevelInd,
                                          Particle<dim, spacedim>>::iterator>
         ghost_particles_iterators;
 
       /**
-       * Temporary storage that holds the data of the particles to be sent
-       * to other processors to update the ghost particles information
-       * in update_ghost_particles()
-       * send_recv_particles_properties_and_location()
+       * 临时存储，用于保存要发送给其他处理器的粒子数据，以便在update_ghost_particles()
+       * send_recv_particles_properties_and_location()中更新幽灵粒子的信息。
+       *
        */
       std::vector<char> send_data;
 
       /**
-       * Temporary storage that holds the data of the particles to receive
-       * the ghost particles information from other processors in
-       * update_ghost_particles()
-       * send_recv_particles_properties_and_location()
+       * 保存粒子数据的临时存储器，以便在update_ghost_particles()
+       * send_recv_particles_properties_and_location()中接收来自其他处理器的幽灵粒子信息。
+       *
        */
       std::vector<char> recv_data;
     };
@@ -121,3 +103,5 @@ namespace Particles
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

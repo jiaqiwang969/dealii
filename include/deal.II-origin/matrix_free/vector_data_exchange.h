@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/vector_data_exchange_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -31,14 +30,13 @@ namespace internal
   namespace MatrixFreeFunctions
   {
     /**
-     * 包含MatrixFree中用于进程间数据交换（即用于update_ghost_values和compress）的类的命名空间。
-     *
+     * Namespace containing classes for inter-process data exchange (i.e.,
+     * for update_ghost_values and compress) in MatrixFree.
      */
     namespace VectorDataExchange
     {
       /**
-       * MatrixFree所需的接口。
-       *
+       * Interface needed by MatrixFree.
        */
       class Base
       {
@@ -139,9 +137,7 @@ namespace internal
 
 
       /**
-       * 简单地将任务委托给一个 Utilities::MPI::Partitioner.
-       * 的类。
-       *
+       * Class that simply delegates the task to a Utilities::MPI::Partitioner.
        */
       class PartitionerWrapper : public Base
       {
@@ -254,8 +250,9 @@ namespace internal
 
 
       /**
-       * 与上述类似，但使用分区器中的内部数据结构，以便识别处于同一共享内存区域的自由度的索引。
-       *
+       * Similar to the above but using the internal data structures in the
+       * partitioner in order to identify indices of degrees of freedom that are
+       * in the same shared memory region.
        */
       class Full : public Base
       {
@@ -404,111 +401,109 @@ namespace internal
 
       private:
         /**
-         * 全局通信器。
-         *
+         * Global communicator.
          */
         const MPI_Comm comm;
 
         /**
-         * 共享内存子通信器。
-         *
+         * Shared-memory sub-communicator.
          */
         const MPI_Comm comm_sm;
 
         /**
-         * 本地拥有的向量项的数量。
-         *
+         * Number of locally-owned vector entries.
          */
         const unsigned int n_local_elements;
 
         /**
-         * 幽灵向量条目的数量。
-         *
+         * Number of ghost vector entries.
          */
         const unsigned int n_ghost_elements;
 
         /**
-         * 全局向量条目的数量。
-         *
+         * Number of global vector entries.
          */
         const types::global_dof_index n_global_elements;
 
         /**
-         * 一个变量按等级缓存更大的索引集中的鬼魂索引数。
-         *
+         * A variable caching the number of ghost indices in a larger set of
+         * indices by rank.
          */
         std::vector<unsigned int> n_ghost_indices_in_larger_set_by_remote_rank;
 
         /**
-         * 为一个IndexSet出现的索引集，该索引集是一个较大的索引集的子集，以压缩的方式出现在每个等级中。
-         *
+         * The set of indices that appear for an IndexSet that is a subset of a
+         * larger set for each rank in a compressed manner.
          */
         std::pair<std::vector<unsigned int>,
                   std::vector<std::pair<unsigned int, unsigned int>>>
           ghost_indices_subset_data;
 
         /**
-         * 一个包含信息的数组，我的鬼魂索引属于哪个处理器，在哪个偏移量，以及这些索引的数量。
-         *
+         * An array that contains information which processors my ghost indices
+         * belong to, at which offset and how many those indices are
          */
         std::vector<std::array<unsigned int, 3>> ghost_targets_data;
 
         /**
-         * 向我们发送幽灵数据的处理器的集合和数据字段的长度。
-         * @note 结构为ghost_targets_data。
+         * The set of processors and length of data field which send us their
+         * ghost data.
          *
+         * @note Structured as ghost_targets_data.
          */
         std::vector<std::array<unsigned int, 3>> import_targets_data;
 
         /**
-         * 一个数组，用于缓存每个MPI等级的导入索引中的块数。其长度为
-         * import_indices_data.size()+1。
-         * 我们在compress()过程中从远程进程中导入的（本地）索引集，即属于本地范围的其他人的幽灵。
+         * An array that caches the number of chunks in the import indices per
+         * MPI rank. The length is import_indices_data.size()+1.
          *
+         * The set of (local) indices that we are importing during compress()
+         * from remote processes, i.e., others' ghosts that belong to the local
+         * range.
          */
         std::pair<std::vector<unsigned int>,
                   std::vector<std::pair<unsigned int, unsigned int>>>
           import_indices_data;
 
         /**
-         * 共享内存行列，在export_to_ghosted_array_finish()过程中，数据是从这个行列复制过来的。
-         *
+         * Shared-memory ranks from which data is copied from during
+         * export_to_ghosted_array_finish().
          */
         std::vector<unsigned int> sm_ghost_ranks;
 
         /**
-         * 在export_to_ghosted_array_finish()过程中从哪里复制数据的索引。
-         *
+         * Indices from where to copy data from during
+         * export_to_ghosted_array_finish().
          */
         std::pair<std::vector<unsigned int>,
                   std::vector<std::pair<unsigned int, unsigned int>>>
           sm_export_data;
 
         /**
-         * 在export_to_ghosted_array_finish()过程中，将数据复制到哪里的索引。
-         *
+         * Indices where to copy data to during
+         * export_to_ghosted_array_finish().
          */
         std::pair<std::vector<unsigned int>,
                   std::vector<std::pair<unsigned int, unsigned int>>>
           sm_export_data_this;
 
         /**
-         * 在import_from_ghosted_array_finish()过程中，从哪里复制数据的共享内存等级。
-         *
+         * Shared-memory ranks from where to copy data from during
+         * import_from_ghosted_array_finish().
          */
         std::vector<unsigned int> sm_import_ranks;
 
         /**
-         * 在import_from_ghosted_array_finish()过程中从哪里复制数据的索引。
-         *
+         * Indices from where to copy data from during
+         * import_from_ghosted_array_finish().
          */
         std::pair<std::vector<unsigned int>,
                   std::vector<std::pair<unsigned int, unsigned int>>>
           sm_import_data;
 
         /**
-         * 在import_from_ghosted_array_finish()过程中，将数据复制到哪里的索引。
-         *
+         * Indices where to copy data to during
+         * import_from_ghosted_array_finish().
          */
         std::pair<std::vector<unsigned int>,
                   std::vector<std::pair<unsigned int, unsigned int>>>
@@ -522,5 +517,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

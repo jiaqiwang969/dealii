@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_poly.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
@@ -221,10 +220,13 @@ FE_Poly<dim, spacedim>::requires_update_flags(const UpdateFlags flags) const
 
 
 /**
- * 返回我们是否需要用Jacobian的导数来修正Hessians和第三导数。这是通过检查jacobian_pushed_forward是否为零来确定的。
- * 特别是对于三阶导数，修正项是非常昂贵的，这就是为什么我们在计算修正前检查导数是否为零。
+ * Returns whether we need to correct the Hessians and third derivatives with
+ * the derivatives of the Jacobian. This is determined by checking if
+ * the jacobian_pushed_forward are zero.
  *
- *
+ * Especially for the third derivatives, the correction term is very expensive,
+ * which is why we check if the derivatives are zero before computing the
+ * correction.
  */
 template <int dim, int spacedim>
 bool
@@ -629,5 +631,3 @@ FE_Poly<dim, spacedim>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

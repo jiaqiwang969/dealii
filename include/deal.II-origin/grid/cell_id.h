@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/cell_id_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -40,173 +39,201 @@ class Triangulation;
 #endif
 
 /**
- * 一个表示三角结构中单元格的唯一ID的类。它由`cell->id()`返回（即，
- * CellAccessor::id()) ，其中`cell`被认为是一个单元格迭代器。
- * 这个类存储了一个单元的后裔的粗略单元的索引（或者更具体地说， @ref GlossCoarseCellId "粗略单元ID "
- * 的条目），以及如何从该粗略单元到达该单元的信息（即，当从一个单元移动到其子单元时，在三角结构的每一层采取哪个子单元索引）。关于这个类的重要的一点是，当前类的对象在三角剖分中唯一地识别一个单元，它甚至在类型为
- * parallel::distributed::Triangulation
- * 的对象的背景下也是如此，因为网格的局部部分可能不存储所有单元。例如，在一个处理器上为一个幽灵单元计算的CellId与在实际拥有该单元的处理器上为同一单元计算的CellId完全相同，尽管指向该单元<i>within
- * the triangulation stored on each of the
- * processors</i>的迭代器的级别和索引可能（而且一般会）不同。换句话说，CellId提供了一个工具，用它可以全局地、唯一地识别平行三角形中的单元，从而使处理器之间交换与单个单元相关的数据成为可能。
+ * A class to represent a unique ID for a cell in a Triangulation. It is
+ * returned by `cell->id()` (i.e., CellAccessor::id()) where
+ * `cell` is assumed to be a cell iterator.
  *
+ * This class stores the index of the coarse cell from which a cell is
+ * descendant (or, more specifically, the
+ * entry on
+ * @ref GlossCoarseCellId "coarse cell IDs"),
+ * together with information on how to reach the cell from that coarse cell
+ * (i.e., which child index to take on each level of the triangulation when
+ * moving from one cell to its children). The important point about this
+ * class is that an object of
+ * the current class uniquely identifies a cell in triangulation, and it even
+ * does so in the context of objects of type
+ * parallel::distributed::Triangulation where the local portion of a mesh may
+ * not store all cells. For example, the CellId computed for a ghost cell on
+ * one processor will be exactly the same as the CellId computed for the very
+ * same cell on the processor that actually owns the cell, although the level
+ * and index of the iterators pointing to that cell <i>within the
+ * triangulation stored on each of the processors</i> may (and in general
+ * will) be different. In other words, CellId provides the tool with which it
+ * is possible to globally and uniquely identify cells in a parallel
+ * triangulation, and consequently makes it possible to exchange, between
+ * processors, data tied to individual cells.
  *
- * @note
- * 这些数据在内部如何表示并不重要（也没有故意暴露）。
- *
- *
+ * @note How this data is internally represented is not of importance (and not
+ * exposed on purpose).
  */
 class CellId
 {
 public:
   /**
-   * 一个用于以紧凑和快速的方式编码CellId数据的类型（例如，用于MPI传输到其他进程）。请注意，它限制了可以传输的子节点数量，在三维中为20个，在二维中为30个（使用2倍的32位进行存储），这个限制与p4est使用的限制相同。
-   *
+   * A type that is used to encode the CellId data in a compact and fast way
+   * (e.g. for MPI transfer to other processes). Note that it limits the
+   * number of children that can be transferred to 20 in 3D and 30 in 2D
+   * (using 2 times 32 bit for storage), a limitation that is identical to
+   * the one used by p4est.
    */
   using binary_type = std::array<unsigned int, 4>;
 
   /**
-   * 用给定的 @p coarse_cell_id
-   * 和子指数的向量构造一个CellId对象。  @p child_indices
-   * 的解释与同名的成员变量相同，即每个条目表示从一个细化级别到下一个细化级别挑选哪个子单元，从粗略的单元开始，直到我们到达当前对象代表的单元。因此，每个条目应该是一个介于0和当前空间维度中单元格的子代数之间的数字（即，
-   * GeometryInfo<dim>::max_children_per_cell). 。
-   *
+   * Construct a CellId object with a given @p coarse_cell_id and vector of
+   * child indices. @p child_indices is
+   * interpreted identical to the member variable with the same name, namely
+   * each entry denotes which child to pick from one refinement level to the
+   * next, starting with the coarse cell, until we get to the cell represented
+   * by the current object. Therefore, each entry should be a number between 0
+   * and the number of children of a cell in the current space dimension (i.e.,
+   * GeometryInfo<dim>::max_children_per_cell).
    */
   CellId(const types::coarse_cell_id      coarse_cell_id,
          const std::vector<std::uint8_t> &child_indices);
 
   /**
-   * 用给定的 @p coarse_cell_id 和 @p child_indices.
-   * 中提供的子节点数组构造一个CellId对象 @p child_indices
-   * ，其解释与同名的成员变量相同，即每个条目表示从一个细化层到下一个细化层要挑选哪个子节点，从粗大的单元开始，直到我们到达当前对象所代表的单元。因此，每个条目应该是一个介于0和当前空间维度中单元格的子数之间的数字（即
-   * GeometryInfo<dim>::max_children_per_cell).  数组 @p child_indices
-   * 必须至少有 @p n_child_indices 个有效条目。
-   *
+   * Construct a CellId object with a given @p coarse_cell_id and array of
+   * child indices provided in @p child_indices. @p child_indices is
+   * interpreted identical to the member variable with the same name, namely
+   * each entry denotes which child to pick from one refinement level to the
+   * next, starting with the coarse cell, until we get to the cell represented
+   * by the current object. Therefore, each entry should be a number between 0
+   * and the number of children of a cell in the current space dimension (i.e.,
+   * GeometryInfo<dim>::max_children_per_cell). The array
+   * @p child_indices must have at least @p n_child_indices valid entries.
    */
   CellId(const types::coarse_cell_id coarse_cell_id,
          const unsigned int          n_child_indices,
          const std::uint8_t *        child_indices);
 
   /**
-   * 用给定的二进制表示法构建一个CellId对象，该对象之前是由
-   * CellId::to_binary. 构建的。
-   *
+   * Construct a CellId object with a given binary representation that was
+   * previously constructed by CellId::to_binary.
    */
   CellId(const binary_type &binary_representation);
 
   /**
-   * 从一个与to_string()产生的格式相同的字符串创建一个CellId。
-   *
+   * Create a CellId from a string with the same format that is produced by
+   * to_string().
    */
   explicit CellId(const std::string &string_representation);
 
   /**
-   * 构建一个无效的CellId。
-   *
+   * Construct an invalid CellId.
    */
   CellId();
 
   /**
-   * 返回这个CellId的人可读的字符串表示。
-   * 该函数返回的字符串仅由ASCII字符组成，例如，看起来像这样。`"0_3:006"`.
-   * 它可以*被人类解释为："这个单元来自于第四个粗略网格单元，生活在细化水平3，从粗略网格单元到其子代和孙代的路径由006给出"。
-   * 但这并不意味着*可以用任何有意义的方式来解释。它只是一种表示当前对象的内部状态的方法，只使用可打印范围内的ASCII字符。
+   * Return a human-readable string representation of this CellId.
    *
+   * The string returned by this function consists of only ASCII characters
+   * and will look, for example, like this: `"0_3:006"`. It *can* be
+   * interpreted by humans as saying "This cell originates from the zeroth
+   * coarse mesh cell, lives on refinement level 3, and the path from the
+   * coarse mesh cell to its children and grand children is given by 006".
+   * But it is not *meant* to be interpreted in any meaningful way: It's just
+   * a way of representing the internal state of the current object using
+   * only ASCII characters in the printable range.
    */
   std::string
   to_string() const;
 
   /**
-   * 返回这个CellId的一个紧凑而快速的二进制表示。
-   *
+   * Return a compact and fast binary representation of this CellId.
    */
   template <int dim>
   binary_type
   to_binary() const;
 
   /**
-   * 返回一个到此CellId所代表的单元格的cell_iterator。
-   * @deprecated  使用 Triangulation::create_cell_iterator() 代替。
+   * Return a cell_iterator to the cell represented by this CellId.
    *
+   * @deprecated Use Triangulation::create_cell_iterator() instead.
    */
   template <int dim, int spacedim>
   DEAL_II_DEPRECATED typename Triangulation<dim, spacedim>::cell_iterator
   to_cell(const Triangulation<dim, spacedim> &tria) const;
 
   /**
-   * 比较两个CellId对象是否相等。
-   *
+   * Compare two CellId objects for equality.
    */
   bool
   operator==(const CellId &other) const;
 
   /**
-   * 比较两个CellIds的不等式。
-   *
+   * Compare two CellIds for inequality.
    */
   bool
   operator!=(const CellId &other) const;
 
   /**
-   * 比较两个CellIds的排序。这个排序的细节是未指定的，只是该操作提供了所有单元格之间的总排序。
-   *
+   * Compare two CellIds with regard to an ordering. The details of this
+   * ordering are unspecified except that the operation provides a
+   * total ordering among all cells.
    */
   bool
   operator<(const CellId &other) const;
 
   /**
-   * 确定这个单元格ID是否是输入单元格ID的直接父级。
-   *
+   * Determine if this cell id is the direct parent of the input cell id.
    */
   bool
   is_parent_of(const CellId &other) const;
 
   /**
-   * 确定此单元格ID是否为输入单元格ID的祖先。
-   *
+   * Determine if this cell id is the ancestor of the input cell id.
    */
   bool
   is_ancestor_of(const CellId &other) const;
 
   /**
-   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-   *
+   * Read or write the data of this object to or from a stream for the
+   * purpose of serialization using the [BOOST serialization
+   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
    */
   template <class Archive>
   void
   serialize(Archive &ar, const unsigned int version);
 
   /**
-   * 返回粗体单元的id。
-   *
+   * Return the id of the coarse cell.
    */
   types::coarse_cell_id
   get_coarse_cell_id() const;
 
   /**
-   * 返回一个整数的只读容器，表示从一个细化级别到下一个细化级别，从粗略单元开始，直到我们到达当前对象所代表的单元，要挑选哪个孩子。
-   * 这个容器中的元素数对应于当前单元的（第1级）。
+   * Return a read-only container of integers that denotes which child to pick
+   * from one refinement level to the next, starting with the coarse cell, until
+   * we get to the cell represented by the current object.
    *
+   * The number of elements in this container corresponds to (level-1) of the
+   * current cell.
    */
   ArrayView<const std::uint8_t>
   get_child_indices() const;
 
 private:
   /**
-   * 当前对象所代表的单元格位于其树中的粗单元格的编号。
-   *
+   * The number of the coarse cell within whose tree the cell
+   * represented by the current object is located.
    */
   types::coarse_cell_id coarse_cell_id;
 
   /**
-   * 存储在child_indices数组中的子索引的数量。这相当于当前单元格的（第1级）。
-   *
+   * The number of child indices stored in the child_indices array. This is
+   * equivalent to (level-1) of the current cell.
    */
   unsigned int n_child_indices;
 
   /**
-   * 一个整数数组，表示从一个细化级别到下一个细化级别，从粗略的单元开始，直到我们到达当前对象所代表的单元，要挑选哪个孩子。
-   * 只有最初的n_child_indices条目被使用，但我们使用静态分配的数组，而不是n_child_indices大小的向量，以加快该对象的创建速度。如果给定的尺寸成为一种限制，那么数组可以被扩展。
-   *
+   * An array of integers that denotes which child to pick from one
+   * refinement level to the next, starting with the coarse cell,
+   * until we get to the cell represented by the current object.
+   * Only the first n_child_indices entries are used, but we use a statically
+   * allocated array instead of a vector of size n_child_indices to speed up
+   * creation of this object. If the given dimensions ever become a limitation
+   * the array can be extended.
    */
 #ifdef DEAL_II_WITH_P4EST
   std::array<std::uint8_t, internal::p4est::functions<2>::max_level>
@@ -224,9 +251,7 @@ private:
 
 
 /**
- * 将一个CellId对象写入一个流中。
- *
- *
+ * Write a CellId object into a stream.
  */
 inline std::ostream &
 operator<<(std::ostream &os, const CellId &cid)
@@ -244,13 +269,11 @@ operator<<(std::ostream &os, const CellId &cid)
 
 
 /**
- * 序列化功能
- *
- *
+ * Serialization function
  */
 template <class Archive>
 void
-CellId::serialize(Archive &ar, const unsigned int  /*version*/ )
+CellId::serialize(Archive &ar, const unsigned int /*version*/)
 {
   ar &coarse_cell_id;
   ar &n_child_indices;
@@ -258,9 +281,7 @@ CellId::serialize(Archive &ar, const unsigned int  /*version*/ )
 }
 
 /**
- * 从一个流中读取一个CellId对象。
- *
- *
+ * Read a CellId object from a stream.
  */
 inline std::istream &
 operator>>(std::istream &is, CellId &cid)
@@ -395,5 +416,3 @@ CellId::get_child_indices() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/task_info_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -39,8 +38,8 @@ DEAL_II_NAMESPACE_OPEN
 namespace internal
 {
   /**
-   * 工作者对象的接口，该对象在无矩阵循环中运行我们要执行的各种操作。
-   *
+   * An interface for the worker object that runs the various operations we
+   * want to perform during the matrix-free loop.
    */
   struct MFWorkerInterface
   {
@@ -100,8 +99,9 @@ namespace internal
   namespace MatrixFreeFunctions
   {
     /**
-     * 一个收集与线程并行化有关的所有信息的结构。工作被细分为可以独立完成的任务。
-     *
+     * A struct that collects all information related to parallelization with
+     * threads: The work is subdivided into tasks that can be done
+     * independently.
      */
     struct TaskInfo
     {
@@ -118,51 +118,71 @@ namespace internal
       };
 
       /**
-       * 构造函数。
-       *
+       * Constructor.
        */
       TaskInfo();
 
       /**
-       * 清除所有的数据字段并将其重置为零。
-       *
+       * Clears all the data fields and resets them
+       * to zero.
        */
       void
       clear();
 
       /**
-       * 运行无矩阵循环。
-       *
+       * Runs the matrix-free loop.
        */
       void
       loop(MFWorkerInterface &worker) const;
 
       /**
-       * 使只能在通信重叠中处理的单元格的数量被矢量化长度所除。
-       *
+       * Make the number of cells which can only be treated in the
+       * communication overlap divisible by the vectorization length.
        */
       void
       make_boundary_cells_divisible(std::vector<unsigned int> &boundary_cells);
 
       /**
-       * 根据输入参数控制的选项，设置运行单元格循环的块。
-       * @param  cells_with_comm
-       * 一个需要在执行计算前交换数据的单元的列表。这些将在分区中被赋予一定的id，以确保与通信重叠的单元格循环有准备好的幽灵数据。
-       * @param  dofs_per_cell
-       * 给出一个单元上自由度数量的预期值，用于确定交错单元和面积分的块大小。
-       * @param  categories_are_hp
-       * 定义`cell_vectorization_categories`是源于具有可变多项式程度的hp自适应计算还是用户定义的变体。
-       * @param  cell_vectorization_categories
-       * 这组类别定义了在向量数组的通道内应该被分组的单元。这可以是hp-元素中的多项式程度，也可以是用户提供的分组。
-       * @param  cell_vectorization_categories_strict
-       * 定义前面的变量所定义的类别是否应该被严格分开，或者是否允许将较低的类别插入到下一个较高的类别。
-       * @param  parent_relation
-       * 这个数据字段用于指定哪些单元格有相同的父单元格。具有相同祖先的单元格被分组到同一批次（es），并在单元格之间进行矢量处理。
-       * @param  重新编号
-       * 当离开这个函数时，向量包含一个新的单元格编号，与存储在这个类中的分组一致。
-       * @param  incompletely_filled_vectorization
-       * 鉴于本类的矢量布局，一些单元格批次可能在矢量数组（SIMD通道）中有未被使用的组件，并且不承载有效数据。这个数组根据这个函数返回的重新编号，指出发生这种情况的单元批处理。
+       * Sets up the blocks for running the cell loop based on the options
+       * controlled by the input arguments.
        *
+       * @param cells_with_comm A list of cells that need to exchange data
+       * prior to performing computations. These will be given a certain id in
+       * the partitioning to make sure cell loops that overlap communication
+       * with communication have the ghost data ready.
+       *
+       * @param dofs_per_cell Gives an expected value for the number of degrees
+       * of freedom on a cell, which is used to determine the block size for
+       * interleaving cell and face integrals.
+       *
+       * @param categories_are_hp Defines whether
+       * `cell_vectorization_categories` is originating from a hp-adaptive
+       * computation with variable polynomial degree or a user-defined
+       * variant.
+       *
+       * @param cell_vectorization_categories This set of categories defines
+       * the cells that should be grouped together inside the lanes of a
+       * vectorized array. This can be the polynomial degree in an hp-element
+       * or a user-provided grouping.
+       *
+       * @param cell_vectorization_categories_strict Defines whether the
+       * categories defined by the previous variables should be separated
+       * strictly or whether it is allowed to insert lower categories into the
+       * next high one(s).
+       *
+       * @param parent_relation This data field is used to specify which cells
+       * have the same parent cell. Cells with the same ancestor are grouped
+       * together into the same batch(es) with vectorization across cells.
+       *
+       * @param renumbering When leaving this function, the vector contains a
+       * new numbering of the cells that aligns with the grouping stored in
+       * this class.
+       *
+       * @param incompletely_filled_vectorization Given the vectorized layout
+       * of this class, some cell batches might have components in the
+       * vectorized array (SIMD lanes) that are not used and do not carray
+       * valid data. This array indicates the cell batches where this occurs
+       * according to the renumbering returned by this function.
        */
       void
       create_blocks_serial(
@@ -176,14 +196,21 @@ namespace internal
         std::vector<unsigned char> &     incompletely_filled_vectorization);
 
       /**
-       * 任务并行分块设置的分块创建的第一步。
-       * @param  boundary_cells
-       * 一个需要在执行计算前交换数据的单元格的列表。这些单元在分区中会被赋予一定的ID。
-       * @param  重新编号
-       * 当离开这个函数时，向量包含一个新的单元格编号，与存储在这个类中的分组一致（在实际创建任务之前）。
-       * @param  incompletely_filled_vectorization
-       * 考虑到这个类的矢量布局，一些单元格批次可能在矢量数组（SIMD通道）中有未被使用的组件，并不承载有效数据。这个数组根据这个函数返回的重新编号，指出发生这种情况的单元批处理。
+       * First step in the block creation for the task-parallel blocking setup.
        *
+       * @param boundary_cells A list of cells that need to exchange data prior
+       * to performing computations. These will be given a certain id in the
+       * partitioning.
+       *
+       * @param renumbering When leaving this function, the vector contains a
+       * new numbering of the cells that aligns with the grouping stored in
+       * this class (before actually creating the tasks).
+       *
+       * @param incompletely_filled_vectorization Given the vectorized layout
+       * of this class, some cell batches might have components in the
+       * vectorized array (SIMD lanes) that are not used and do not carray
+       * valid data. This array indicates the cell batches where this occurs
+       * according to the renumbering returned by this function.
        */
       void
       initial_setup_blocks_tasks(
@@ -192,25 +219,39 @@ namespace internal
         std::vector<unsigned char> &     incompletely_filled_vectorization);
 
       /**
-       * 如果用户决定不通过 MatrixFree::AdditionalData.
-       * 强制确定一个块的大小，这个辅助函数确定一个块的大小，这是根据系统的硬件线程数和我们应该工作的宏单元数计算出来的。
-       *
+       * This helper function determines a block size if the user decided not
+       * to force a block size through MatrixFree::AdditionalData. This is
+       * computed based on the number of hardware threads on the system and
+       * the number of macro cells that we should work on.
        */
       void
       guess_block_size(const unsigned int dofs_per_cell);
 
       /**
-       * 这个方法通过所有已经填入 @p
-       * dof_indices的单元，找出哪些单元可以独立工作，哪些单元是相邻的，在并行使用时需要在不同时间进行。
-       * 该策略是基于两层的方法。外层被细分为类似于Cuthill-McKee中邻居类型的分区，内层则通过颜色进行细分（对于同一颜色内的块，可以独立工作）。一个任务由一个单元块来代表。单元块在细分为分区和颜色之前就已经形成。
-       * @param  连通性（in/out）
-       * 判断单元格`i`和`j`是否冲突，用位置（i,j）的条目表示。
-       * @param  重新编号（in/out）
-       * 在输出时，该变量的元素j给出了单元格的原始编号，由于线程图的排序而被重新排序到j的位置。
-       * @param  irregular_cells (in/out)
-       * 通知当前函数，对于给定的单元格批次索引，VectorizedArray中的一些SIMD通道是否不会被填充。
-       * @param  hp_bool 定义我们是否在hp模式下。
+       * This method goes through all cells that have been filled into @p
+       * dof_indices and finds out which cells can be worked on independently
+       * and which ones are neighboring and need to be done at different times
+       * when used in parallel.
        *
+       * The strategy is based on a two-level approach. The outer level is
+       * subdivided into partitions similar to the type of neighbors in
+       * Cuthill-McKee, and the inner level is subdivided via colors (for
+       * chunks within the same color, can work independently). One task is
+       * represented by a chunk of cells. The cell chunks are formed before
+       * subdivision into partitions and colors.
+       *
+       * @param connectivity (in/out) Determines whether cells `i` and `j` are
+       * conflicting, expressed by an entry in position (i,j).
+       *
+       * @param renumbering (in/out) At output, the element j of this variable
+       * gives the original number of the cell that is reordered to place j by
+       * the ordering due to the thread graph.
+       *
+       * @param irregular_cells (in/out) Informs the current function whether
+       * some SIMD lanes in VectorizedArray would not be filled for a given
+       * cell batch index.
+       *
+       * @param hp_bool Defines whether we are in hp-mode or not
        */
       void
       make_thread_graph_partition_color(
@@ -220,19 +261,36 @@ namespace internal
         const bool                  hp_bool);
 
       /**
-       * 这个函数会浏览所有已经填入 @p
-       * dof_indices的单元格，找出哪些单元格可以独立工作，哪些单元格是相邻的，在并行使用时需要在不同时间进行。
-       * 该策略是基于两层的方法。外层被细分为类似于Cuthill-McKee中邻居类型的分区，内层又被细分为类似Cuthill-McKee的分区（级别相差2以上的分区可以独立工作）。一个任务由一个单元块来代表。细胞块是在细分为两级分区后形成的。
-       * @param  cell_active_fe_index
-       * 与所有单元格索引列表中的单个索引相对应的活动FE索引，以便能够不将具有不同索引的单元格放置在具有矢量化的同一单元格批次中。
-       * @param  connectivity (in/out)
-       * 确定单元格`i`和`j`是否冲突，由位置（i,j）的条目表示。
-       * @param  重新编号（in/out）
-       * 在输出时，该变量的元素j给出了单元格的原始编号，由于线程图的排序而被重新排序到j的位置。
-       * @param  irregular_cells (in/out)
-       * 通知当前函数，对于给定的单元格批次索引，VectorizedArray中的一些SIMD通道是否不会被填充。
-       * @param  hp_bool 定义我们是否在hp模式下。
+       * This function goes through all cells that have been filled into @p
+       * dof_indices and finds out which cells can be worked on independently
+       * and which ones are neighboring and need to be done at different times
+       * when used in parallel.
        *
+       * The strategy is based on a two-level approach. The outer level is
+       * subdivided into partitions similar to the type of neighbors in
+       * Cuthill-McKee, and the inner level is again subdivided into Cuthill-
+       * McKee-like partitions (partitions whose level differs by more than 2
+       * can be worked on independently). One task is represented by a chunk
+       * of cells. The cell chunks are formed after subdivision into the two
+       * levels of partitions.
+       *
+       * @param cell_active_fe_index The active FE index corresponding to the
+       * individual indices in the list of all cell indices, in order to be
+       * able to not place cells with different indices into the same cell
+       * batch with vectorization.
+       *
+       * @param connectivity (in/out) Determines whether cells `i` and `j` are
+       * conflicting, expressed by an entry in position (i,j).
+       *
+       * @param renumbering (in/out) At output, the element j of this variable
+       * gives the original number of the cell that is reordered to place j by
+       * the ordering due to the thread graph.
+       *
+       * @param irregular_cells (in/out) Informs the current function whether
+       * some SIMD lanes in VectorizedArray would not be filled for a given
+       * cell batch index.
+       *
+       * @param hp_bool Defines whether we are in hp-mode or not
        */
       void
       make_thread_graph_partition_partition(
@@ -243,17 +301,27 @@ namespace internal
         const bool                       hp_bool);
 
       /**
-       * 要么调用make_thread_graph_partition_color()，要么调用外部可访问的make_thread_graph_partition_partition()，这取决于数据结构中的设置。
-       * @param  cell_active_fe_index
-       * 与所有单元格索引列表中的单个索引相对应的活动FE索引，以便能够不将具有不同索引的单元格放入同一个具有矢量的单元格批次中。
-       * @param  connectivity (in/out)
-       * 确定单元格`i`和`j`是否冲突，用位置（i,j）的条目表示。
-       * @param  重新编号（in/out）
-       * 在输出时，该变量的元素j给出了单元格的原始编号，由于线程图的排序而被重新排序到j的位置。
-       * @param  irregular_cells (in/out)
-       * 通知当前函数，对于给定的单元格批次索引，VectorizedArray中的一些SIMD通道是否不会被填充。
-       * @param  hp_bool 定义我们是否在hp模式下。
+       * Either calls make_thread_graph_partition_color() or
+       * make_thread_graph_partition_partition() accessible from the outside,
+       * depending on the setting in the data structure.
        *
+       * @param cell_active_fe_index The active FE index corresponding to the
+       * individual indices in the list of all cell indices, in order to be
+       * able to not place cells with different indices into the same cell
+       * batch with vectorization.
+       *
+       * @param connectivity (in/out) Determines whether cells `i` and `j` are
+       * conflicting, expressed by an entry in position (i,j).
+       *
+       * @param renumbering (in/out) At output, the element j of this variable
+       * gives the original number of the cell that is reordered to place j by
+       * the ordering due to the thread graph.
+       *
+       * @param irregular_cells (in/out) Informs the current function whether
+       * some SIMD lanes in VectorizedArray would not be filled for a given
+       * cell batch index.
+       *
+       * @param hp_bool Defines whether we are in hp-mode or not
        */
       void
       make_thread_graph(const std::vector<unsigned int> &cell_active_fe_index,
@@ -263,8 +331,8 @@ namespace internal
                         const bool                       hp_bool);
 
       /**
-       * 这个函数从单个细胞之间的连接性计算出细胞块之间的连接性。
-       *
+       * This function computes the connectivity between blocks of cells from
+       * the connectivity between the individual cells.
        */
       void
       make_connectivity_cells_to_blocks(
@@ -273,8 +341,8 @@ namespace internal
         DynamicSparsityPattern &          connectivity_blocks) const;
 
       /**
-       * 在每个分区内的第二层上创建着色的%函数。
-       *
+       * %Function to create coloring on the second layer within each
+       * partition.
        */
       void
       make_coloring_within_partitions_pre_blocked(
@@ -286,8 +354,8 @@ namespace internal
         std::vector<unsigned int> &      partition_color_list);
 
       /**
-       * 在每个分区的第二层上创建分区的函数。
-       *
+       * %Function to create partitioning on the second layer within each
+       * partition.
        */
       void
       make_partitioning_within_partitions_post_blocked(
@@ -303,18 +371,24 @@ namespace internal
         std::vector<unsigned char> &     irregular_cells);
 
       /**
-       * 这个函数根据提供的连接图创建分区。
-       * @param  connectivity （细胞块）之间的连通性  @param
-       * cluster_size
-       * 每个分区的细胞数应该是cluster_size的倍数（用于以后的阻塞）
-       * @param  cell_partition
-       * 保存每个（细胞块）的分区，该块属于哪个分区
-       * @param  ] partition_list partition_list[j]
-       * 给出了由于分区而应该重新编号为j的块的旧编号
-       * @param  partition_size
-       * 指向每个分区的开始的矢量（在输出时）  @param
-       * partition 创建的分区数
+       * This function creates partitions according to the provided connectivity
+       * graph.
        *
+       * @param connectivity Connectivity between (blocks of cells)
+       *
+       * @param cluster_size The number of cells in each partition should be a
+       * multiple of cluster_size (for blocking later on)
+       *
+       * @param cell_partition Saves of each (block of cells) to which
+       * partition the block belongs
+       *
+       * @param partition_list partition_list[j] gives the old number of the
+       * block that should be renumbered to j due to the partitioning
+       *
+       * @param partition_size Vector pointing to start of each partition (on
+       * output)
+       *
+       * @param partition number of partitions created
        */
       void
       make_partitioning(const DynamicSparsityPattern &connectivity,
@@ -325,227 +399,228 @@ namespace internal
                         unsigned int &                partition) const;
 
       /**
-       * 为make_thread_graph中设置的任务图更新任务信息的字段。
-       *
+       * Update fields of task info for task graph set up in
+       * make_thread_graph.
        */
       void
       update_task_info(const unsigned int partition);
 
       /**
-       * 从连接结构中创建一个任务图。
-       *
+       * Creates a task graph from a connectivity structure.
        */
       void
       create_flow_graph();
 
       /**
-       * 返回该类的内存消耗。
-       *
+       * Returns the memory consumption of the class.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 打印MPI进程的最小、平均和最大的内存消耗。
-       *
+       * Prints minimum, average, and maximal memory consumption over the MPI
+       * processes.
        */
       template <typename StreamType>
       void
       print_memory_statistics(StreamType &out, std::size_t data_length) const;
 
       /**
-       * 网格中的物理单元的数量，而不是矢量化后的单元批次
-       *
+       * Number of physical cells in the mesh, not cell batches after
+       * vectorization
        */
       unsigned int n_active_cells;
 
       /**
-       * 网格中的物理幽灵单元的数量，这些单元要进行特殊处理，不应包括在循环中。
-       *
+       * Number of physical ghost cells in the mesh which are subject to
+       * special treatment and should not be included in loops
        */
       unsigned int n_ghost_cells;
 
       /**
-       * SIMD阵列中用于矢量化的通道数量
-       *
+       * Number of lanes in the SIMD array that are used for vectorization
        */
       unsigned int vectorization_length;
 
       /**
-       * 用于多线程的块大小信息
-       *
+       * Block size information for multithreading
        */
       unsigned int block_size;
 
       /**
-       * 用于多线程的块的数量
-       *
+       * Number of blocks for multithreading
        */
       unsigned int n_blocks;
 
       /**
-       * 多线程应用的并行方案
-       *
+       * Parallel scheme applied by multithreading
        */
       TasksParallelScheme scheme;
 
       /**
-       * 块是由矢量的概念组织的，这个数据字段 @p
-       * partition_row_index 在所有数据的线性存储中存储了一个
-       * "矢量 "到下一个的距离，以两级划分。
-       *
+       * The blocks are organized by a vector-of-vector concept, and this data
+       * field @p partition_row_index stores the distance from one 'vector' to
+       * the next within the linear storage of all data to the two-level
+       * partitioning.
        */
       std::vector<unsigned int> partition_row_index;
 
       /**
-       * 这是所有分区的线性存储，在MatrixFree中所有单元的整数列表中建立一个形式为cell_partition_data[idx]到cell_partition_data[idx+1]的索引范围，通过
-       * @p partition_row_index. 细分为大块。
-       *
+       * This is a linear storage of all partitions, building a range of
+       * indices of the form cell_partition_data[idx] to
+       * cell_partition_data[idx+1] within the integer list of all cells in
+       * MatrixFree, subdivided into chunks by @p partition_row_index.
        */
       std::vector<unsigned int> cell_partition_data;
 
       /**
-       * 像cell_partition_data一样，但对每个活动的fe索引有预先计算的子范围。分区的起点和终点由cell_partition_data_hp_ptr给出。
-       *
+       * Like cell_partition_data but with precomputed subranges for each
+       * active fe index. The start and end point of a partition is given
+       * by cell_partition_data_hp_ptr.
        */
       std::vector<unsigned int> cell_partition_data_hp;
 
       /**
-       * cell_partition_data_hp内的指针，表示一个分区的开始和结束。
-       *
+       * Pointers within cell_partition_data_hp, indicating the start and end
+       * of a partition.
        */
       std::vector<unsigned int> cell_partition_data_hp_ptr;
 
       /**
-       * 这是对所有内面的分区的线性存储，在MatrixFree中所有内面的整数列表中建立一个形式为face_partition_data[idx]到face_partition_data[idx+1]的索引范围，按
-       * @p partition_row_index细分为大块。
-       *
+       * This is a linear storage of all partitions of inner faces, building a
+       * range of indices of the form face_partition_data[idx] to
+       * face_partition_data[idx+1] within the integer list of all interior
+       * faces in MatrixFree, subdivided into chunks by @p
+       * partition_row_index.
        */
       std::vector<unsigned int> face_partition_data;
 
       /**
-       * 像face_partition_data一样，但对每个活动fe索引对都有预先计算的子范围。分区的起点和终点由face_partition_data_hp_ptr给出。
-       *
+       * Like face_partition_data but with precomputed subranges for each
+       * active fe index pair. The start and end point of a partition is given
+       * by face_partition_data_hp_ptr.
        */
       std::vector<unsigned int> face_partition_data_hp;
 
       /**
-       * face_partition_data_hp内的指针，表示一个分区的开始和结束。
-       *
+       * Pointers within face_partition_data_hp, indicating the start and end
+       * of a partition.
        */
       std::vector<unsigned int> face_partition_data_hp_ptr;
 
       /**
-       * 这是对边界面所有分区的线性存储，在MatrixFree中所有边界面的整数列表中建立一个形式为boundary_partition_data[idx]到boundary_partition_data[idx+1]的索引范围，按
-       * @p partition_row_index细分为大块。
-       *
+       * This is a linear storage of all partitions of boundary faces,
+       * building a range of indices of the form boundary_partition_data[idx]
+       * to boundary_partition_data[idx+1] within the integer list of all
+       * boundary faces in MatrixFree, subdivided into chunks by @p
+       * partition_row_index.
        */
       std::vector<unsigned int> boundary_partition_data;
 
       /**
-       * 像boundary_partition_data一样，但对每个活动的fe索引有预先计算的子范围。分区的起点和终点是由boundary_partition_data_hp_ptr给出的。
-       *
+       * Like boundary_partition_data but with precomputed subranges for each
+       * active fe index. The start and end point of a partition is given
+       * by boundary_partition_data_hp_ptr.
        */
       std::vector<unsigned int> boundary_partition_data_hp;
 
       /**
-       * boundary_partition_data_hp内的指针，表示一个分区的开始和结束。
-       *
+       * Pointers within boundary_partition_data_hp, indicating the start and
+       * end of a partition.
        */
       std::vector<unsigned int> boundary_partition_data_hp_ptr;
 
       /**
-       * 这是对边界上所有内部面的分区的线性存储，以其他处理器不在本地使用的方式，在MatrixFree中所有此类面的整数列表中建立一个形式为ghost_face_partition_data[idx]到ghost_face_partition_data[idx+1]的索引范围，按
-       * @p  partition_row_index细分为大块。
-       *
+       * This is a linear storage of all partitions of interior faces on
+       * boundaries to other processors that are not locally used, building a
+       * range of indices of the form ghost_face_partition_data[idx] to
+       * ghost_face_partition_data[idx+1] within the integer list of all such
+       * faces in MatrixFree, subdivided into chunks by @p
+       * partition_row_index.
        */
       std::vector<unsigned int> ghost_face_partition_data;
 
       /**
-       * 这是一个线性存储多网格级别的所有面的分区，这些面有一个更粗的邻居，只包括在某些剩余计算中，但不包括在平滑中，在MatrixFree中所有这些面的整数列表中建立一个形式为refinement_edge_face_partition_data[idx]到refinement_edge_face_partition_data[idx+1]的索引范围，按
-       * @p  partition_row_index细分为几块。
-       *
+       * This is a linear storage of all partitions of faces for multigrid
+       * levels that have a coarser neighbor and are only included in certain
+       * residual computations but not in smoothing, building a range of
+       * indices of the form refinement_edge_face_partition_data[idx] to
+       * refinement_edge_face_partition_data[idx+1] within the integer list of
+       * all such faces in MatrixFree, subdivided into chunks by @p
+       * partition_row_index.
        */
       std::vector<unsigned int> refinement_edge_face_partition_data;
 
       /**
-       * 将交给动态任务调度器的线程信息（从哪个块开始
-       * "偶数 "分区）。
-       *
+       * Thread information (which chunk to start 'even' partitions from) to
+       * be handed to the dynamic task scheduler
        */
       std::vector<unsigned int> partition_evens;
 
       /**
-       * 将线程信息（从哪个区块启动 "奇数
-       * "分区）交给动态任务调度器
-       *
+       * Thread information (which chunk to start 'odd' partitions from) to be
+       * handed to the dynamic task scheduler
        */
       std::vector<unsigned int> partition_odds;
 
       /**
-       * 关于移交给动态任务调度器的分区的依赖性的线程信息
-       *
+       * Thread information regarding the dependencies for partitions handed
+       * to the dynamic task scheduler
        */
       std::vector<unsigned int> partition_n_blocked_workers;
 
       /**
-       * 关于移交给动态任务调度器的分区的依赖关系的线程信息
-       *
+       * Thread information regarding the dependencies for partitions handed
+       * to the dynamic task scheduler
        */
       std::vector<unsigned int> partition_n_workers;
 
       /**
-       * 在字段 @p 中积累的偶数分区的数量partitions_even
-       *
+       * Number of even partitions accumulated over the field @p
+       * partitions_even
        */
       unsigned int evens;
 
       /**
-       * 场上累计的奇数分区数量  @p  partitions_odd
-       *
+       * Number of odd partitions accumulated over the field @p
+       * partitions_odd
        */
       unsigned int odds;
 
       /**
-       * 在该领域积累的被封锁工人的数量  @p
+       * Number of blocked workers accumulated over the field @p
        * partition_n_blocked_workers
-       *
        */
       unsigned int n_blocked_workers;
 
       /**
-       * 在该领域积累的工人数量  @p partition_n_workers  。
-       *
+       * Number of workers accumulated over the field @p partition_n_workers
        */
       unsigned int n_workers;
 
       /**
-       * 存储一个特定的任务是否处于MPI边界并需要数据交换
-       *
+       * Stores whether a particular task is at an MPI boundary and needs data
+       * exchange
        */
       std::vector<unsigned char> task_at_mpi_boundary;
 
       /**
-       * MPI通信器
-       *
+       * MPI communicator
        */
       MPI_Comm communicator;
 
       /**
-       * 共享内存的MPI通信器
-       *
+       * Shared-memory MPI communicator
        */
       MPI_Comm communicator_sm;
 
       /**
-       * MPI进程的等级
-       *
+       * Rank of MPI process
        */
       unsigned int my_pid;
 
       /**
-       * 当前通信器的MPI等级的数量
-       *
+       * Number of MPI rank for the current communicator
        */
       unsigned int n_procs;
     };
@@ -556,5 +631,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

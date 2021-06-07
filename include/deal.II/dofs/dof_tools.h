@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/dof_tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -73,12 +74,8 @@ namespace DoFTools
 {
   namespace internal
   {
-    /*
-     * Default value of the face_has_flux_coupling parameter of
-     * make_flux_sparsity_pattern. Defined here (instead of using a default
-     * lambda in the parameter list) to avoid a bug in gcc where the same lambda
-     * gets defined multiple times.
-     */
+    /* make_flux_sparsity_pattern的face_has_flux_coupling参数的默认值。在此定义（而不是使用参数列表中的默认lambda），以避免gcc中的一个bug，即同一个lambda被多次定义。   
+* */
     template <int dim, int spacedim>
     inline bool
     always_couple_on_faces(
@@ -93,167 +90,85 @@ namespace DoFTools
 #endif
 
 /**
- * This is a collection of functions operating on, and manipulating the
- * numbers of degrees of freedom. The documentation of the member functions
- * will provide more information, but for functions that exist in multiple
- * versions, there are sections in this global documentation stating some
- * commonalities.
- *
+ * 这是一个对自由度进行操作的函数集合，并对自由度的数量进行操作。成员函数的文档将提供更多的信息，但是对于存在于多个版本的函数，在这个全局文档中有一些章节说明了一些共同点。
  * <h3>Setting up sparsity patterns</h3>
+ * 当组装系统矩阵时，条目通常是 $a_{ij} = a(\phi_i, \phi_j)$
+ * 的形式，其中 $a$
+ * 是一个双线性函数，通常是一个积分。因此，当使用稀疏矩阵时，我们只需要为那些
+ * $a_{ij}$ 保留空间，它们是非零的，这等于说基函数 $\phi_i$
+ * 和 $\phi_j$
+ * 的支持有一个非空交点。由于基函数的支持只约束在它们所在的单元或与之相邻的单元上，为了确定稀疏模式，只需在所有单元上循环，并将每个单元上的所有基函数与该单元上的所有其他基函数连接起来。
+ * 可能有一些有限元，其单元上的所有基函数并不相互连接，但由于作者不知道有这种情况发生，所以没有使用这种情况。
  *
- * When assembling system matrices, the entries are usually of the form
- * $a_{ij} = a(\phi_i, \phi_j)$, where $a$ is a bilinear functional, often an
- * integral. When using sparse matrices, we therefore only need to reserve
- * space for those $a_{ij}$ only, which are nonzero, which is the same as to
- * say that the basis functions $\phi_i$ and $\phi_j$ have a nonempty
- * intersection of their support. Since the support of basis functions is
- * bound only on cells on which they are located or to which they are
- * adjacent, to determine the sparsity pattern it is sufficient to loop over
- * all cells and connect all basis functions on each cell with all other basis
- * functions on that cell.  There may be finite elements for which not all
- * basis functions on a cell connect with each other, but no use of this case
- * is made since no examples where this occurs are known to the author.
+ *  <h3>DoF numberings on boundaries</h3>
+ * 当把函数的轨迹投射到边界或部分边界时，我们需要建立只作用于位于边界上的自由度的矩阵和向量，而不是作用于所有自由度。我们可以通过简单地建立所有内部自由度的条目为零的矩阵来做到这一点，但是这样的矩阵总是有很大的等级缺陷，而且在工作中不是很实用。
+ * 在这种情况下，需要的是对边界自由度进行编号，也就是说，我们应该列举所有位于边界的自由度，并排除所有其他（内部）自由度。map_dof_to_boundary_indices()函数正是这样做的：它提供一个矢量，其条目数与整个域上的自由度一样多，每个条目是边界编号中的数字，如果自由度不在边界上，则为
+ * numbers::invalid_dof_index 。
+ * 有了这个向量，对于任何给定的自由度，可以在那些位于边界上的自由度中得到一个唯一的数字；或者，如果你的自由度在域的内部，结果就是
+ * numbers::invalid_dof_index.
+ * 我们需要这个映射，例如，在边界上建立质量矩阵（关于这一点，见make_boundary_sparsity_pattern()函数，下面相应部分，以及MatrixCreator命名空间文档）。
+ * 实际上，有两个map_dof_to_boundary_indices()函数，一个产生所有边界自由度的编号，另一个只产生边界部分的编号，即那些边界指标被列在给函数的指标集中的部分。后一种情况是需要的，例如，我们只想投射边界的Dirichlet部分的边界值。然后，你给函数一个边界指标的列表，指的是要进行投影的Dirichlet部分。你想投射的边界部分不需要是连续的；但是，不保证每个边界部分的指数是连续的，也就是说，不同部分的自由度指数可能是混合的。
+ * 边界上的自由度但不在指定的边界部分之一的自由度被赋予指数
+ * numbers::invalid_dof_index,
+ * ，就像它们在内部一样。如果没有给出边界指标，或者如果一个单元格的任何面都没有包含在给定列表中的边界指标，那么新指数的向量仅由
+ * numbers::invalid_dof_index. 组成。
+ * （作为一个附带说明，对于角落的情况。边界上的自由度是什么，这个问题不是那么容易。
+ * 它实际上应该是一个自由度，其各自的基础函数在边界上有非零值。至少对于拉格朗日元素来说，这个定义等于说形状函数的离点，或者deal.II所说的支持点，即函数承担其名义值的点（对于拉格朗日元素来说，这是函数值为1的点），是位于边界上。我们并不直接检查这一点，这个标准是通过有限元类给出的信息来定义的：有限元类定义了每个顶点、每条线等的基函数数量，基函数是根据这些信息来编号的；一个基函数被认为是在一个单元的面上（如果该单元在边界上，也就在边界上），根据它属于一个顶点、线等，但不属于单元的内部。有限元使用相同的单元编号，因此我们可以说，如果一个自由度被编号为线上的一个道夫，我们就认为它位于线上。偏离点究竟在哪里，是有限元的秘密（好吧，你可以问，但我们在这里不做），在此不作讨论。
  *
+ *  <h3>Setting up sparsity patterns for boundary matrices</h3>
+ * 在某些情况下，人们只想处理位于边界上的DoF。例如，一个应用是，如果不是插值非同质的边界值，而是想投影它们。为此，我们需要两样东西：一种识别位于边界上（部分）的节点的方法，以及一种只用边界上的自由度建立矩阵的方法（即更小的矩阵，在其中我们甚至不建立大的零块，因为大多数自由度在域的边界上没有支持）。这些任务中的第一部分由map_dof_to_boundary_indices()函数完成（如上所述）。
+ * 第二部分要求我们首先为边界节点之间的耦合建立一个稀疏模式，然后实际建立这个矩阵的组成部分。虽然实际计算这些小边界矩阵的条目在MatrixCreator命名空间中讨论，但创建稀疏模式是由create_boundary_sparsity_pattern()函数完成的。对于它的工作，它需要有一个所有这些自由度的编号，这些自由度在我们感兴趣的边界的那些部分。你可以从map_dof_to_boundary_indices()函数中得到这个数字。然后它建立对应于
+ * $\int_\Gamma \varphi_{b2d(i)} \varphi_{b2d(j)} dx$
+ * 这样的积分的稀疏模式，其中 $i$ 和 $j$ 是矩阵的索引，
+ * $b2d(i)$ 是位于边界上的自由度的全局DoF编号（即 $b2d$
+ * 是map_dof_to_boundary_indices() 函数返回的映射的逆值）。
  *
- * <h3>DoF numberings on boundaries</h3>
- *
- * When projecting the traces of functions to the boundary or parts thereof,
- * one needs to build matrices and vectors that act only on those degrees of
- * freedom that are located on the boundary, rather than on all degrees of
- * freedom. One could do that by simply building matrices in which the entries
- * for all interior DoFs are zero, but such matrices are always very rank
- * deficient and not very practical to work with.
- *
- * What is needed instead in this case is a numbering of the boundary degrees
- * of freedom, i.e. we should enumerate all the degrees of freedom that are
- * sitting on the boundary, and exclude all other (interior) degrees of
- * freedom. The map_dof_to_boundary_indices() function does exactly this: it
- * provides a vector with as many entries as there are degrees of freedom on
- * the whole domain, with each entry being the number in the numbering of the
- * boundary or numbers::invalid_dof_index if the dof is not on the
- * boundary.
- *
- * With this vector, one can get, for any given degree of freedom, a unique
- * number among those DoFs that sit on the boundary; or, if your DoF was
- * interior to the domain, the result would be numbers::invalid_dof_index.
- * We need this mapping, for example, to build the mass matrix on the boundary
- * (for this, see make_boundary_sparsity_pattern() function, the corresponding
- * section below, as well as the MatrixCreator namespace documentation).
- *
- * Actually, there are two map_dof_to_boundary_indices() functions, one
- * producing a numbering for all boundary degrees of freedom and one producing
- * a numbering for only parts of the boundary, namely those parts for which
- * the boundary indicator is listed in a set of indicators given to the
- * function. The latter case is needed if, for example, we would only want to
- * project the boundary values for the Dirichlet part of the boundary. You
- * then give the function a list of boundary indicators referring to Dirichlet
- * parts on which the projection is to be performed. The parts of the boundary
- * on which you want to project need not be contiguous; however, it is not
- * guaranteed that the indices of each of the boundary parts are continuous,
- * i.e. the indices of degrees of freedom on different parts may be
- * intermixed.
- *
- * Degrees of freedom on the boundary but not on one of the specified boundary
- * parts are given the index numbers::invalid_dof_index, as if they were in
- * the interior. If no boundary indicator was given or if no face of a cell
- * has a boundary indicator contained in the given list, the vector of new
- * indices consists solely of numbers::invalid_dof_index.
- *
- * (As a side note, for corner cases: The question what a degree of freedom on
- * the boundary is, is not so easy.  It should really be a degree of freedom
- * of which the respective basis function has nonzero values on the boundary.
- * At least for Lagrange elements this definition is equal to the statement
- * that the off-point, or what deal.II calls support_point, of the shape
- * function, i.e. the point where the function assumes its nominal value (for
- * Lagrange elements this is the point where it has the function value 1), is
- * located on the boundary. We do not check this directly, the criterion is
- * rather defined through the information the finite element class gives: the
- * FiniteElement class defines the numbers of basis functions per vertex, per
- * line, and so on and the basis functions are numbered after this
- * information; a basis function is to be considered to be on the face of a
- * cell (and thus on the boundary if the cell is at the boundary) according to
- * it belonging to a vertex, line, etc but not to the interior of the cell.
- * The finite element uses the same cell-wise numbering so that we can say
- * that if a degree of freedom was numbered as one of the dofs on lines, we
- * assume that it is located on the line. Where the off-point actually is, is
- * a secret of the finite element (well, you can ask it, but we don't do it
- * here) and not relevant in this context.)
- *
- *
- * <h3>Setting up sparsity patterns for boundary matrices</h3>
- *
- * In some cases, one wants to only work with DoFs that sit on the boundary.
- * One application is, for example, if rather than interpolating non-
- * homogeneous boundary values, one would like to project them. For this, we
- * need two things: a way to identify nodes that are located on (parts of) the
- * boundary, and a way to build matrices out of only degrees of freedom that
- * are on the boundary (i.e. much smaller matrices, in which we do not even
- * build the large zero block that stems from the fact that most degrees of
- * freedom have no support on the boundary of the domain). The first of these
- * tasks is done by the map_dof_to_boundary_indices() function (described
- * above).
- *
- * The second part requires us first to build a sparsity pattern for the
- * couplings between boundary nodes, and then to actually build the components
- * of this matrix. While actually computing the entries of these small
- * boundary matrices is discussed in the MatrixCreator namespace, the creation
- * of the sparsity pattern is done by the create_boundary_sparsity_pattern()
- * function. For its work, it needs to have a numbering of all those degrees
- * of freedom that are on those parts of the boundary that we are interested
- * in. You can get this from the map_dof_to_boundary_indices() function. It
- * then builds the sparsity pattern corresponding to integrals like
- * $\int_\Gamma \varphi_{b2d(i)} \varphi_{b2d(j)} dx$, where $i$ and $j$ are
- * indices into the matrix, and $b2d(i)$ is the global DoF number of a degree
- * of freedom sitting on a boundary (i.e., $b2d$ is the inverse of the mapping
- * returned by map_dof_to_boundary_indices() function).
  *
  *
  * @ingroup dofs
+ *
+ *
  */
 namespace DoFTools
 {
   /**
-   * The flags used in tables by certain <tt>make_*_pattern</tt> functions to
-   * describe whether two components of the solution couple in the bilinear
-   * forms corresponding to cell or face terms. An example of using these
-   * flags is shown in the introduction of step-46.
+   * 某些<tt>make_*_pattern</tt>函数在表格中使用的标志，用于描述解的两个分量是否在对应于单元项或面项的双线性形式中耦合。一个使用这些标志的例子在
+   * step-46  的介绍中显示。
+   * 在下面对各个元素的描述中，请记住这些标志是作为大小为
+   * FiniteElement::n_components 乘以 FiniteElement::n_components
+   * 的表格的元素使用的，其中每个元素表示两个组件是否耦合。
    *
-   * In the descriptions of the individual elements below, remember that these
-   * flags are used as elements of tables of size FiniteElement::n_components
-   * times FiniteElement::n_components where each element indicates whether
-   * two components do or do not couple.
    */
   enum Coupling
   {
     /**
-     * Two components do not couple.
+     * 两个组件不耦合。
+     *
      */
     none,
     /**
-     * Two components do couple.
+     * 两个组件是耦合的。
+     *
      */
     always,
     /**
-     * Two components couple only if their shape functions are both nonzero on
-     * a given face. This flag is only used when computing integrals over
-     * faces of cells, e.g., in DoFTools::make_flux_sparsity_pattern().
-     * Use Coupling::always in general cases where gradients etc. occur on face
-     * integrals.
+     * 只有当两个组件的形状函数在一个给定的面上都不为零时，它们才会耦合。这个标志只在计算单元格面上的积分时使用，例如，在
+     * DoFTools::make_flux_sparsity_pattern(). 中 使用 Coupling::always
+     * 在一般情况下，梯度等发生在面上的积分。
+     *
      */
     nonzero
   };
 
   /**
-   * @name DoF couplings
-   * @{
+   * @name  DoF耦合  @{
+   *
    */
 
   /**
-   * Map a coupling table from the user friendly organization by components to
-   * the organization by blocks.
+   * 将一个耦合表从用户友好的按组件组织映射到按块组织。
+   * 返回的向量将被初始化为该函数中的正确长度。
    *
-   * The return vector will be initialized to the correct length inside this
-   * function.
    */
   template <int dim, int spacedim>
   void
@@ -262,9 +177,8 @@ namespace DoFTools
                               std::vector<Table<2, Coupling>> &tables_by_block);
 
   /**
-   * Given a finite element and a table how the vector components of it couple
-   * with each other, compute and return a table that describes how the
-   * individual shape functions couple with each other.
+   * 给定一个有限元和它的向量分量如何相互耦合的表，计算并返回一个描述各个形状函数如何相互耦合的表。
+   *
    */
   template <int dim, int spacedim>
   Table<2, Coupling>
@@ -273,11 +187,10 @@ namespace DoFTools
     const Table<2, Coupling> &          component_couplings);
 
   /**
-   * Same function as above for a collection of finite elements, returning a
-   * collection of tables.
+   * 与上述有限元集合的函数相同，返回一个表格的集合。
+   * 该函数目前对 DoFTools::Couplings::nonzero 的处理与
+   * DoFTools::Couplings::always 相同。
    *
-   * The function currently treats DoFTools::Couplings::nonzero the same as
-   * DoFTools::Couplings::always .
    */
   template <int dim, int spacedim>
   std::vector<Table<2, Coupling>>
@@ -286,128 +199,58 @@ namespace DoFTools
     const Table<2, Coupling> &             component_couplings);
   /**
    * @}
+   *
    */
 
   /**
-   * @name Sparsity pattern generation
-   * @{
+   * @name  稀疏模式生成  @{  。
+   *
    */
 
   /**
-   * Compute which entries of a matrix built on the given @p dof_handler may
-   * possibly be nonzero, and create a sparsity pattern object that represents
-   * these nonzero locations.
-   *
-   * This function computes the possible positions of non-zero entries in the
-   * global system matrix by <i>simulating</i> which entries one would write
-   * to during the actual assembly of a matrix. For this, the function assumes
-   * that each finite element basis function is non-zero on a cell only if its
-   * degree of freedom is associated with the interior, a face, an edge or a
-   * vertex of this cell.  As a result, a matrix entry $A_{ij}$ that is
-   * computed from two basis functions $\varphi_i$ and $\varphi_j$ with
-   * (global) indices $i$ and $j$ (for example, using a bilinear form
-   * $A_{ij}=a(\varphi_i,\varphi_j)$) can be non-zero only if these shape
-   * functions correspond to degrees of freedom that are defined on at least
-   * one common cell. Therefore, this function just loops over all cells,
-   * figures out the global indices of all degrees of freedom, and presumes
-   * that all matrix entries that couple any of these indices will result in a
-   * nonzero matrix entry. These will then be added to the sparsity pattern.
-   * As this process of generating the sparsity pattern does not take into
-   * account the equation to be solved later on, the resulting sparsity
-   * pattern is symmetric.
-   *
-   * This algorithm makes no distinction between shape functions on each cell,
-   * i.e., it simply couples all degrees of freedom on a cell with all other
-   * degrees of freedom on a cell. This is often the case, and always a safe
-   * assumption. However, if you know something about the structure of your
-   * operator and that it does not couple certain shape functions with certain
-   * test functions, then you can get a sparser sparsity pattern by calling a
-   * variant of the current function described below that allows to specify
-   * which vector components couple with which other vector components.
-   *
-   * The method described above lives on the assumption that coupling between
-   * degrees of freedom only happens if shape functions overlap on at least
-   * one cell. This is the case with most usual finite element formulations
-   * involving conforming elements. However, for formulations such as the
-   * Discontinuous Galerkin finite element method, the bilinear form contains
-   * terms on interfaces between cells that couple shape functions that live
-   * on one cell with shape functions that live on a neighboring cell. The
-   * current function would not see these couplings, and would consequently
-   * not allocate entries in the sparsity pattern. You would then get into
-   * trouble during matrix assembly because you try to write into matrix
-   * entries for which no space has been allocated in the sparsity pattern.
-   * This can be avoided by calling the DoFTools::make_flux_sparsity_pattern()
-   * function instead, which takes into account coupling between degrees of
-   * freedom on neighboring cells.
-   *
-   * There are other situations where bilinear forms contain non-local terms,
-   * for example in treating integral equations. These require different
-   * methods for building the sparsity patterns that depend on the exact
-   * formulation of the problem. You will have to do this yourself then.
-   *
-   * @param[in] dof_handler The DoFHandler object that describes which degrees
-   * of freedom live on which cells.
-   *
-   * @param[out] sparsity_pattern The sparsity pattern to be filled with
-   * entries.
-   *
-   * @param[in] constraints The process for generating entries described above
-   * is purely local to each cell. Consequently, the sparsity pattern does
-   * not provide for matrix entries that will only be written into during
-   * the elimination of hanging nodes or other constraints. They have to be
-   * taken care of by a subsequent call to AffineConstraints::condense().
-   * Alternatively, the constraints on degrees of freedom can already be
-   * taken into account at the time of creating the sparsity pattern. For
-   * this, pass the AffineConstraints object as the third argument to the
-   * current function. No call to AffineConstraints::condense() is then
-   * necessary. This process is explained in step-6, step-27, and other
-   * tutorial programs.
-   *
-   * @param[in] keep_constrained_dofs In case the constraints are already
-   * taken care of in this function by passing in a AffineConstraints object,
-   * it is possible to abandon some off-diagonal entries in the sparsity
-   * pattern if these entries will also not be written into during the actual
-   * assembly of the matrix this sparsity pattern later serves. Specifically,
-   * when using an assembly method that uses
-   * AffineConstraints::distribute_local_to_global(), no entries will ever be
-   * written into those matrix rows or columns that correspond to constrained
-   * degrees of freedom. In such cases, you can set the argument @p
-   * keep_constrained_dofs to @p false to avoid allocating these entries in
-   * the sparsity pattern.
-   *
-   * @param[in] subdomain_id If specified, the sparsity pattern is built only
-   * on cells that have a subdomain_id equal to the given argument. This is
-   * useful in parallel contexts where the matrix and sparsity pattern (for
-   * example a TrilinosWrappers::SparsityPattern) may be distributed and not
-   * every MPI process needs to build the entire sparsity pattern; in that
-   * case, it is sufficient if every process only builds that part of the
-   * sparsity pattern that corresponds to the subdomain_id for which it is
-   * responsible. This feature is used in step-32. (This argument is not
-   * usually needed for objects of type parallel::distributed::Triangulation
-   * because the current function only loops over locally owned cells anyway;
-   * thus, this argument typically only makes sense if you want to use the
-   * subdomain_id for anything other than indicating which processor owns a
-   * cell, for example which geometric component of the domain a cell belongs
-   * to.)
-   *
-   * @note The actual type of the sparsity pattern may be SparsityPattern,
-   * DynamicSparsityPattern, BlockSparsityPattern,
-   * BlockDynamicSparsityPattern, or any other class that satisfies similar
-   * requirements. It is assumed that the size of the sparsity pattern matches
-   * the number of degrees of freedom and that enough unused nonzero entries
-   * are left to fill the sparsity pattern if the sparsity pattern is of
-   * "static" kind (see
+   * 计算建立在给定 @p dof_handler
+   * 上的矩阵的哪些条目可能是非零的，并创建一个代表这些非零位置的稀疏模式对象。
+   * 这个函数通过<i>simulating</i>计算全局系统矩阵中非零项的可能位置，在实际组装矩阵的过程中，人们会将这些条目写入全局系统矩阵。为此，该函数假设每个有限元基函数只有在其自由度与该单元的内部、面、边或顶点相关时，才是该单元的非零值。
+   * 因此，从两个具有（全局）指数 $i$ 和 $j$ 的基函数
+   * $\varphi_i$ 和 $\varphi_j$ 计算出来的矩阵条目 $A_{ij}$
+   * （例如，使用双线性形式 $A_{ij}=a(\varphi_i,\varphi_j)$
+   * ）只有在这些形状函数对应于至少一个共同单元上定义的自由度时才可能是非零。因此，这个函数只是在所有单元中循环，找出所有自由度的全局指数，并假定所有与这些指数相联系的矩阵条目将导致一个非零矩阵条目。然后，这些将被添加到稀疏模式中。
+   * 由于这个生成稀疏性模式的过程没有考虑到以后要解决的方程，所以产生的稀疏性模式是对称的。
+   * 这种算法对每个单元上的形状函数不加区分，也就是说，它只是将一个单元上的所有自由度与一个单元上的所有其他自由度进行耦合。这通常是一种情况，而且总是一种安全的假设。然而，如果你对运算符的结构有所了解，知道它不会将某些形状函数与某些测试函数耦合，那么你可以通过调用下面描述的当前函数的变体来获得更稀疏的稀疏模式，该变体允许指定哪些向量分量与其他向量分量耦合。
+   * 上面描述的方法基于这样的假设：自由度之间的耦合只发生在形状函数至少在一个单元上重叠的情况下。这是最常见的涉及保形元素的有限元公式的情况。然而，对于诸如非连续Galerkin有限元方法这样的公式，双线性形式包含了单元之间的界面条款，这些条款将生活在一个单元上的形状函数与生活在相邻单元上的形状函数相耦合。当前函数不会看到这些耦合，因此不会在稀疏模式中分配条目。然后，你会在矩阵组装过程中遇到麻烦，因为你试图向矩阵条目中写入疏散模式中没有分配到的空间。
+   * 这可以通过调用 DoFTools::make_flux_sparsity_pattern()
+   * 函数来避免，该函数考虑了相邻单元上自由度之间的耦合。
+   * 在其他情况下，双线性形式包含非局部项，例如在处理积分方程时。这些情况需要不同的方法来建立稀疏模式，这取决于问题的确切表述。那么，你必须自己做这件事。
+   * @param[in]  dof_handler
+   * 描述哪些自由度存在于哪些单元的DoFHandler对象。
+   * @param[out]  sparsity_pattern 要填入条目的稀疏性模式。
+   * @param[in]  约束
+   * 上述生成条目的过程完全是每个单元的局部。因此，稀疏性模式没有规定只有在消除悬空节点或其他约束时才会被写入的矩阵条目。它们必须通过后续调用
+   * AffineConstraints::condense().
+   * 来处理。另外，在创建稀疏模式时，自由度的约束已经被考虑在内。为此，将AffineConstraints对象作为第三个参数传递给当前函数。这样就不需要调用
+   * AffineConstraints::condense() 了。这个过程在 step-6 、 step-27
+   * 和其他教程程序中都有解释。      @param[in]
+   * keep_constrained_dofs
+   * 如果约束条件已经通过传递AffineConstraints对象在该函数中得到了处理，那么如果这些条目在实际装配该疏散模式的矩阵时也不会被写入，那么就可以放弃疏散模式中的一些非对角线条目。具体来说，当使用
+   * AffineConstraints::distribute_local_to_global(),
+   * 的装配方法时，没有条目会被写入那些对应于受限自由度的矩阵行或列中。在这种情况下，你可以将参数
+   * @p  keep_constrained_dofs设置为 @p false
+   * 来避免在稀疏模式中分配这些条目。      @param[in]
+   * subdomain_id
+   * 如果指定的话，疏散模式只建立在子域_id等于给定参数的单元上。这在矩阵和稀疏模式（例如
+   * TrilinosWrappers::SparsityPattern)
+   * ）可能是分布式的，并且不是每个MPI进程都需要构建整个稀疏模式的并行环境中很有用；在这种情况下，如果每个进程只构建与它负责的子域_id相对应的那部分稀疏模式就足够了。这个特征在
+   * step-32 中使用。（对于 parallel::distributed::Triangulation
+   * 类型的对象通常不需要这个参数，因为当前函数无论如何只在本地拥有的单元上循环；因此，这个参数通常只在你想把子域_id用于指示哪个处理器拥有一个单元以外的事情时才有意义，例如一个单元属于域的哪个几何成分）。
+   * @note  稀疏模式的实际类型可以是SparsityPattern、DynamicSparsityPattern、BlockSparsityPattern、BlockDynamicSparsityPattern，或者其他任何满足类似要求的类。假设疏散模式的大小与自由度的数量相匹配，并且如果疏散模式是 "静态 "
+   * 的，则有足够的未使用的非零条目来填充疏散模式（关于这意味着什么的更多信息，请参见
    * @ref Sparsity
-   * for more information on what this means). The nonzero entries generated
-   * by this function are added to possible previous content of the object,
-   * i.e., previously added entries are not removed.
-   *
-   * @note If the sparsity pattern is represented by an object of type
-   * SparsityPattern (as opposed to, for example, DynamicSparsityPattern), you
-   * need to remember using SparsityPattern::compress() after generating the
-   * pattern.
-   *
+   * ）。这个函数生成的非零条目被添加到对象以前可能的内容中，也就是说，以前添加的条目不会被删除。
+   * @note
+   * 如果稀疏模式由SparsityPattern类型的对象表示（而不是例如DynamicSparsityPattern），你需要记住在生成模式后使用
+   * SparsityPattern::compress() 。
    * @ingroup constraints
+   *
    */
   template <int dim,
             int spacedim,
@@ -422,69 +265,37 @@ namespace DoFTools
     const types::subdomain_id subdomain_id = numbers::invalid_subdomain_id);
 
   /**
-   * Compute which entries of a matrix built on the given @p dof_handler may
-   * possibly be nonzero, and create a sparsity pattern object that represents
-   * these nonzero locations.
-   *
-   * This function is a simple variation on the previous
-   * make_sparsity_pattern() function (see there for a description of all of
-   * the common arguments), but it provides functionality for vector finite
-   * elements that allows to be more specific about which variables couple in
-   * which equation.
-   *
-   * For example, if you wanted to solve the Stokes equations,
-   *
+   * 计算建立在给定的 @p dof_handler
+   * 上的矩阵的哪些条目可能是非零的，并创建一个代表这些非零位置的稀疏模式对象。
+   * 这个函数是以前的make_sparsity_pattern()函数的一个简单的变化（关于所有常用参数的描述见那里），但它为矢量有限元提供了功能，允许更具体地确定哪些变量在哪个方程中耦合。
+   * 例如，如果你想解决斯托克斯方程。
    * @f{align*}{
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
    * -\Delta \mathbf u + \nabla p &= 0,\\ \text{div}\ u &= 0
    * @f}
-   *
-   * in two space dimensions, using stable Q2/Q1 mixed elements (using the
-   * FESystem class), then you don't want all degrees of freedom to couple in
-   * each equation. More specifically, in the first equation, only $u_x$ and
-   * $p$ appear; in the second equation, only $u_y$ and $p$ appear; and in the
-   * third equation, only $u_x$ and $u_y$ appear. (Note that this discussion
-   * only talks about vector components of the solution variable and the
-   * different equation, and has nothing to do with degrees of freedom, or in
-   * fact with any kind of discretization.) We can describe this by the
-   * following pattern of "couplings":
-   *
-   * @f[
+   * *在两个空间维度上，使用稳定的Q2/Q1混合元素（使用FESystem类），那么你不希望所有的自由度在每个方程中耦合。更具体地说，在第一个方程中，只有 $u_x$ 和 $p$ 出现；在第二个方程中，只有 $u_y$ 和 $p$ 出现；而在第三个方程中，只有 $u_x$ 和 $u_y$ 出现。(注意，这个讨论只谈及解变量的矢量分量和不同的方程，而与自由度无关，事实上也与任何一种离散化无关)。我们可以用以下的 "耦合 "模式来描述这一点。    @f[
    * \left[
    * \begin{array}{ccc}
-   *   1 & 0 & 1 \\
-   *   0 & 1 & 1 \\
-   *   1 & 1 & 0
+   * 1 & 0 & 1 \\
+   * 0 & 1 & 1 \\
+   * 1 & 1 & 0
    * \end{array}
    * \right]
-   * @f]
-   *
-   * where "1" indicates that two variables (i.e., vector components of the
-   * FESystem) couple in the respective equation, and a "0" means no coupling.
-   * These zeros imply that upon discretization via a standard finite element
-   * formulation, we will not write entries into the matrix that, for example,
-   * couple pressure test functions with pressure shape functions (and similar
-   * for the other zeros above). It is then a waste to allocate memory for
-   * these entries in the matrix and the sparsity pattern, and you can avoid
-   * this by creating a mask such as the one above that describes this to the
-   * (current) function that computes the sparsity pattern. As stated above,
-   * the mask shown above refers to components of the composed FESystem,
-   * rather than to degrees of freedom or shape functions.
-   *
-   * This function is designed to accept a coupling pattern, like the one
-   * shown above, through the @p couplings parameter, which contains values of
-   * type #Coupling. It builds the matrix structure just like the previous
-   * function, but does not create matrix elements if not specified by the
-   * coupling pattern. If the couplings are symmetric, then so will be the
-   * resulting sparsity pattern.
-   *
-   * There is a complication if some or all of the shape functions of the
-   * finite element in use are non-zero in more than one component (in deal.II
-   * speak: they are
-   * @ref GlossPrimitive "non-primitive finite elements").
-   * In this case, the coupling element corresponding to the first non-zero
-   * component is taken and additional ones for this component are ignored.
-   *
+   * @f] 其中 "1 "表示两个变量（即FES系统的矢量分量）在各自的方程中耦合，而 "0 "表示没有耦合。  这些零意味着在通过标准的有限元公式进行离散化时，我们将不会向矩阵中写入条目，例如，将压力测试函数与压力形状函数耦合（与上述其他零类似）。那么为矩阵中的这些条目和稀疏模式分配内存就是一种浪费，你可以通过创建一个像上面那样的掩码来避免这种情况，该掩码向计算稀疏模式的（当前）函数描述这一点。如上所述，上面显示的掩码是指组成FES系统的组件，而不是自由度或形状函数。    这个函数被设计成通过 @p couplings 参数接受耦合模式，如上图所示，该参数包含#Coupling类型的值。它就像前面的函数一样建立矩阵结构，但如果不是由耦合模式指定的，就不创建矩阵元素。如果耦合是对称的，那么产生的稀疏模式也将是对称的。    如果使用中的有限元的一些或全部形状函数在一个以上的分量中是非零的（用交易二的话说：它们是 @ref GlossPrimitive "非原始有限元"），就会有一个复杂的情况。  在这种情况下，采取对应于第一个非零分量的耦合元素，并忽略该分量的其他耦合元素。
    * @ingroup constraints
+   *
    */
   template <int dim,
             int spacedim,
@@ -500,24 +311,10 @@ namespace DoFTools
     const types::subdomain_id subdomain_id = numbers::invalid_subdomain_id);
 
   /**
-   * Construct a sparsity pattern that allows coupling degrees of freedom on
-   * two different but related meshes.
+   * 构建一个稀疏模式，允许在两个不同但相关的网格上耦合自由度。
+   * 这个想法是，如果两个给定的DoFHandler对象对应于两个不同的网格（并且可能对应于在这些单元上使用的不同的有限元），但是如果它们所基于的两个三角形是通过分层细化从同一个粗网格导出的，那么人们可能会设置一个问题，想用一个网格的形状函数来测试另一个网格的形状函数。特别是，这意味着来自第一个网格上的单元的形状函数要与第二个网格上位于相应单元的形状函数进行测试；这种对应关系是IntergridMap类可以确定的。
+   * 这个函数然后构建一个稀疏模式，其中代表行的自由度来自第一个给定的DoFHandler，而对应列的自由度则来自第二个DoFHandler。
    *
-   * The idea is that if the two given DoFHandler objects correspond to two
-   * different meshes (and potentially to different finite elements used on
-   * these cells), but that if the two triangulations they are based on are
-   * derived from the same coarse mesh through hierarchical refinement, then
-   * one may set up a problem where one would like to test shape functions
-   * from one mesh against the shape functions from another mesh. In
-   * particular, this means that shape functions from a cell on the first mesh
-   * are tested against those on the second cell that are located on the
-   * corresponding cell; this correspondence is something that the
-   * IntergridMap class can determine.
-   *
-   * This function then constructs a sparsity pattern for which the degrees of
-   * freedom that represent the rows come from the first given DoFHandler,
-   * whereas the ones that correspond to columns come from the second
-   * DoFHandler.
    */
   template <int dim, int spacedim, typename SparsityPatternType>
   void
@@ -526,49 +323,22 @@ namespace DoFTools
                         SparsityPatternType &            sparsity);
 
   /**
-   * Compute which entries of a matrix built on the given @p dof_handler may
-   * possibly be nonzero, and create a sparsity pattern object that represents
-   * these nonzero locations. This function is a variation of the
-   * make_sparsity_pattern() functions above in that it assumes that the
-   * bilinear form you want to use to generate the matrix also contains terms
-   * that integrate over the <i>faces</i> between cells (i.e., it contains
-   * "fluxes" between cells, explaining the name of the function).
-   *
-   * This function is useful for Discontinuous Galerkin methods where the
-   * standard make_sparsity_pattern() function would only create nonzero
-   * entries for all degrees of freedom on one cell coupling to all other
-   * degrees of freedom on the same cell; however, in DG methods, all or some
-   * degrees of freedom on each cell also couple to the degrees of freedom on
-   * other cells connected to the current one by a common face. The current
-   * function also creates the nonzero entries in the matrix resulting from
-   * these additional couplings. In other words, this function computes a
-   * strict super-set of nonzero entries compared to the work done by
-   * make_sparsity_pattern().
-   *
-   * @param[in] dof_handler The DoFHandler object that describes which degrees
-   * of freedom live on which cells.
-   *
-   * @param[out] sparsity_pattern The sparsity pattern to be filled with
-   * entries.
-   *
-   * @note The actual type of the sparsity pattern may be SparsityPattern,
-   * DynamicSparsityPattern, BlockSparsityPattern,
-   * BlockDynamicSparsityPattern, or any other class that satisfies similar
-   * requirements. It is assumed that the size of the sparsity pattern matches
-   * the number of degrees of freedom and that enough unused nonzero entries
-   * are left to fill the sparsity pattern if the sparsity pattern is of
-   * "static" kind (see
+   * 计算建立在给定 @p dof_handler
+   * 上的矩阵的哪些条目可能是非零的，并创建一个代表这些非零位置的稀疏模式对象。这个函数是上述make_sparsity_pattern()函数的一个变体，它假定你想用来生成矩阵的双线性形式也包含了单元格之间<i>faces</i>的积分项（即，它包含了单元格之间的
+   * "通量"，解释了这个函数的名称）。
+   * 这个函数对非连续加尔金方法很有用，标准的make_sparsity_pattern()函数只会为一个单元上的所有自由度与同一单元上的所有其他自由度耦合创建非零条目；然而，在DG方法中，每个单元上的所有或部分自由度也与通过共同面连接到当前单元的其他单元的自由度耦合。当前函数还创建了由这些额外耦合产生的矩阵中的非零条目。换句话说，与make_sparsity_pattern()所做的工作相比，这个函数计算了一个严格的非零项的超级集合。
+   * @param[in]  dof_handler
+   * 描述哪些自由度存在于哪些单元上的DoFHandler对象。
+   * @param[out]  sparsity_pattern 要填入的稀疏度模式。
+   * @note  稀疏度模式的实际类型可以是SparsityPattern、DynamicSparsityPattern、BlockSparsityPattern、BlockDynamicSparsityPattern或任何其他满足类似要求的类。假设疏散模式的大小与自由度的数量相匹配，并且如果疏散模式是 "静态 "
+   * 的，则有足够的未使用的非零条目来填充疏散模式（关于这意味着什么的更多信息，请参见
    * @ref Sparsity
-   * for more information on what this means). The nonzero entries generated
-   * by this function are added to possible previous content of the object,
-   * i.e., previously added entries are not removed.
-   *
-   * @note If the sparsity pattern is represented by an object of type
-   * SparsityPattern (as opposed to, for example, DynamicSparsityPattern), you
-   * need to remember using SparsityPattern::compress() after generating the
-   * pattern.
-   *
+   * ）。这个函数生成的非零条目被添加到对象以前可能的内容中，也就是说，以前添加的条目不会被删除。
+   * @note
+   * 如果稀疏模式由SparsityPattern类型的对象表示（而不是例如DynamicSparsityPattern），你需要记住在生成模式后使用
+   * SparsityPattern::compress() 。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename SparsityPatternType>
   void
@@ -576,12 +346,9 @@ namespace DoFTools
                              SparsityPatternType &            sparsity_pattern);
 
   /**
-   * This function does essentially the same as the other
-   * make_flux_sparsity_pattern() function but allows the specification of a
-   * number of additional arguments. These carry the same meaning as discussed
-   * in the first make_sparsity_pattern() function above.
-   *
+   * 这个函数的作用与其他make_flux_sparsity_pattern()函数基本相同，但允许指定一些额外的参数。这些参数的含义与上述第一个make_sparsity_pattern()函数中讨论的相同。
    * @ingroup constraints
+   *
    */
   template <int dim,
             int spacedim,
@@ -597,23 +364,10 @@ namespace DoFTools
 
 
   /**
-   * This function does essentially the same as the other
-   * make_flux_sparsity_pattern() function but allows the specification of
-   * coupling matrices that state which components of the solution variable
-   * couple in each of the equations you are discretizing. This works in
-   * complete analogy as discussed in the second make_sparsity_pattern()
-   * function above.
-   *
-   * In fact, this function takes two such masks, one describing which
-   * variables couple with each other in the cell integrals that make up your
-   * bilinear form, and which variables couple with each other in the face
-   * integrals. If you passed masks consisting of only 1s to both of these,
-   * then you would get the same sparsity pattern as if you had called the
-   * first of the make_sparsity_pattern() functions above. By setting some of
-   * the entries of these masks to zeros, you can get a sparser sparsity
-   * pattern.
-   *
+   * 这个函数的作用与另一个make_flux_sparsity_pattern()函数基本相同，但允许指定耦合矩阵，说明在你离散化的每个方程中，解变量的哪些成分是耦合的。这与上面第二个make_sparsity_pattern()函数中讨论的完全类似。
+   * 事实上，这个函数需要两个这样的掩码，一个是描述哪些变量在构成双线性方程的单元积分中相互耦合，哪些变量在面积分中相互耦合。如果你把只由1组成的掩码传递给这两个掩码，那么你将得到与你调用上述make_sparsity_pattern()函数中的第一个相同的稀疏性模式。通过将这些掩码中的一些条目设置为0，你可以得到一个更稀疏的稀疏模式。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename SparsityPatternType>
   void
@@ -626,30 +380,22 @@ namespace DoFTools
 
 
   /**
-   * This function does essentially the same as the previous
-   * make_flux_sparsity_pattern() function but allows the application of an
-   * AffineConstraints object. This is useful in the case where some
-   * components of a finite element are continuous and some discontinuous,
-   * allowing constraints to be imposed on the continuous part while also
-   * building the flux terms needed for the discontinuous part.
-   *
-   * The optional @p face_has_flux_coupling can be used to specify on which
-   * faces flux couplings occur. This allows for creating a sparser pattern when
-   * using a bilinear form where flux terms only appear on a subset of the faces
-   * in the triangulation. By default flux couplings are added over all internal
-   * faces. @p face_has_flux_coupling should be a function that takes an
-   * active_cell_iterator and a face index and should return true if there is a
-   * flux coupling over the face. When using the ::dealii::DoFHandler we could,
-   * for example, use
-   *
+   * 这个函数与之前的make_flux_sparsity_pattern()函数的功能基本相同，但允许应用AffineConstraints对象。这对于有限元的某些部分是连续的，某些部分是不连续的情况很有用，允许对连续部分施加约束，同时也建立不连续部分所需的通量项。
+   * 可选的 @p face_has_flux_coupling
+   * 可以用来指定在哪些面上发生通量耦合。这允许在使用双线性形式时创建一个更稀疏的模式，即通量项只出现在三角结构中的一个子集的面上。默认情况下，通量耦合被添加到所有内部面。
+   * @p face_has_flux_coupling
+   * 应该是一个函数，它接收一个active_cell_iterator和一个面的索引，如果该面有一个通量耦合，应该返回true。当使用
+   * ::dealii::DoFHandler 时，我们可以，比如说，使用
    * @code
-   *  auto face_has_flux_coupling =
-   *    [](const typename DoFHandler<dim>::active_cell_iterator &cell,
-   *       const unsigned int                                    face_index) {
-   *      const Point<dim> &face_center = cell->face(face_index)->center();
-   *      return 0 < face_center[0];
-   *    };
+   * auto face_has_flux_coupling =
+   *  [](const typename DoFHandler<dim>::active_cell_iterator &cell,
+   *     const unsigned int                                    face_index) {
+   *    const Point<dim> &face_center = cell->face(face_index)->center();
+   *    return 0 < face_center[0];
+   *  };
    * @endcode
+   *
+   *
    */
   template <int dim,
             int spacedim,
@@ -670,13 +416,9 @@ namespace DoFTools
       &internal::always_couple_on_faces<dim, spacedim>);
 
   /**
-   * Create the sparsity pattern for boundary matrices. See the general
-   * documentation of this class for more information.
+   * 创建边界矩阵的稀疏模式。更多信息请参见该类的一般文档。
+   * 该函数基本上做了其他make_sparsity_pattern()函数所做的事情，但假定用于建立矩阵的双线性形式不包括域的积分，而只包括域的边界上的积分。
    *
-   * The function does essentially what the other make_sparsity_pattern()
-   * functions do, but assumes that the bilinear form that is used to build
-   * the matrix does not consist of domain integrals, but only of integrals
-   * over the boundary of the domain.
    */
   template <int dim, int spacedim, typename SparsityPatternType>
   void
@@ -686,21 +428,14 @@ namespace DoFTools
     SparsityPatternType &                       sparsity_pattern);
 
   /**
-   * This function is a variation of the previous
-   * make_boundary_sparsity_pattern() function in which we assume that the
-   * boundary integrals that will give rise to the matrix extends only over
-   * those parts of the boundary whose boundary indicators are listed in the
-   * @p boundary_ids argument to this function.
+   * 这个函数是之前make_boundary_sparsity_pattern()函数的一个变体，我们假设将产生矩阵的边界积分只延伸到边界的那些部分，这些部分的边界指标在这个函数的
+   * @p boundary_ids 参数中列出。
+   * 这个函数本来可以通过传递一个 @p set
+   * 的边界_id数字来写。然而，整个deal.II中处理边界指标的大多数函数都采取边界指标和相应的边界函数的映射，即一个
+   * std::map<types::boundary_id,  const
+   * Function<spacedim,number>*>参数。相应地，这个函数也是这样做的，尽管实际的边界函数在这里被忽略了。
+   * 因此，如果你没有任何这样的边界函数，只要用你想要的边界指标创建一个地图，并将函数指针设置为空指针）。
    *
-   * This function could have been written by passing a @p set of boundary_id
-   * numbers. However, most of the functions throughout deal.II dealing with
-   * boundary indicators take a mapping of boundary indicators and the
-   * corresponding boundary function, i.e., a std::map<types::boundary_id, const
-   * Function<spacedim,number>*> argument. Correspondingly, this function does
-   * the same, though the actual boundary function is ignored here.
-   * (Consequently, if you don't have any such boundary functions, just create a
-   * map with the boundary indicators you want and set the function pointers to
-   * null pointers).
    */
   template <int dim,
             int spacedim,
@@ -716,50 +451,17 @@ namespace DoFTools
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Hanging nodes and other constraints
-   * @{
+   * @name  悬空节点和其他约束  @{  。
+   *
    */
 
   /**
-   * Compute the constraints resulting from the presence of hanging nodes.
-   * Hanging nodes are best explained using a small picture:
-   *
-   * @image html hanging_nodes.png
-   *
-   * In order to make a finite element function globally continuous, we have
-   * to make sure that the dark red nodes have values that are compatible with
-   * the adjacent yellow nodes, so that the function has no jump when coming
-   * from the small cells to the large one at the top right. We therefore have
-   * to add conditions that constrain those "hanging nodes".
-   *
-   * The object into which these are inserted is later used to condense the
-   * global system matrix and right hand side, and to extend the solution
-   * vectors from the true degrees of freedom also to the constraint nodes.
-   * This function is explained in detail in the
-   * @ref step_6 "step-6"
-   * tutorial program and is used in almost all following programs as well.
-   *
-   * This function does not clear the AffineConstraints object before use, in
-   * order to allow adding constraints from different sources to the same
-   * object. You therefore need to make sure it contains only constraints you
-   * still want; otherwise call the AffineConstraints::clear() function.
-   * Since this function does not check if it would add cycles in
-   * @p constraints, it is recommended to call this function prior to other
-   * functions that constrain DoFs with respect to others such as
-   * make_periodicity_constraints().
-   * This function does not close the object since you may want to
-   * enter other constraints later on yourself.
-   *
-   * Using a DoFHandler with hp-capabilities, we consider constraints due to
-   * different finite elements used on two sides of a face between cells as
-   * hanging nodes as well. In other words, in hp-mode, this function computes
-   * all constraints due to differing mesh sizes (h) or polynomial degrees (p)
-   * between adjacent cells.
-   *
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -767,71 +469,36 @@ namespace DoFTools
                                 AffineConstraints<number> &      constraints);
 
   /**
-   * This function is used when different variables in a problem are
-   * discretized on different grids, where one grid is strictly coarser than
-   * the other. An example are optimization problems where the control
-   * variable is often discretized on a coarser mesh than the state variable.
+   * 当问题中的不同变量被离散在不同的网格上时，这个函数被使用，其中一个网格严格地比另一个更粗。一个例子是优化问题，控制变量通常在比状态变量更粗的网格上离散。
+   * 该函数的结果可以在数学上表述如下。让 ${\cal T}_0$ 和
+   * ${\cal T}_1$ 是两个网格，其中 ${\cal T}_1$ 是由 ${\cal T}_0$
+   * 严格通过细化或不考虑 ${\cal T}_0$
+   * 的单元而得到的。在两者上使用相同的有限元，有与这些网格相关的函数空间
+   * ${\cal V}_0$ 和 ${\cal V}_1$ 。那么每个函数 $v_0 \in {\cal V}_0$
+   * 当然也可以在 ${\cal V}_1$ 中精确表示，因为通过构造
+   * ${\cal V}_0 \subset {\cal V}_1$  。  然而，并不是 ${\cal V}_1$
+   * 中的每个函数都能被表达为 ${\cal V}_0$
+   * 的形状函数的线性组合。可以表示的函数位于 ${\cal V}_1$
+   * 的一个同质子空间（即 ${\cal V}_0$
+   * ，当然），这个子空间可以用 $CV=0$
+   * 形式的线性约束来表示，其中 $V$ 是函数 $v\in {\cal V}_1$
+   * 的结点值的向量。换句话说，每个同时满足  $v_h\in {\cal
+   * V}_0$  的函数  $v_h=\sum_j V_j \varphi_j^{(1)} \in {\cal V}_1$
+   * 都自动满足  $CV=0$
+   * 。这个函数以AffineConstraints对象的形式计算矩阵 $C$ 。
+   * 这些约束的构造如下：对于粗网格上的每个自由度（即形状函数），我们计算它在细网格上的表现，即细网格上的形状函数的线性组合看起来如何与粗网格上的形状函数相像。从这些信息中，我们可以计算出如果一个线性方程在细网格上的解在粗网格上可以表示出来，那么这些约束就必须成立。如何计算这些约束条件的确切算法相当复杂，最好是通过阅读源代码来理解，其中包含许多注释。
+   * 这个函数的用法如下：它接受两个DoF处理程序作为参数，第一个是指粗网格，第二个是指细网格。在这两者上，一个有限元由DoF处理程序对象表示，通常会有几个向量分量，可能属于不同的基元。因此，这个函数的第二和第四个参数说明粗网格上的哪个矢量分量应被用来限制细网格上的所述分量。两个网格上的各个分量所使用的有限元必须是相同的。一个例子可以说明这一点：考虑一个优化问题，控制
+   * $q$ 在粗网格上离散，状态变量 $u$
+   * （和相应的拉格朗日乘子 $\lambda$
+   * ）在细网格上离散。它们分别使用片状常数不连续、连续线性和连续线性元素进行离散。在粗网格上只有参数
+   * $q$
+   * 被表示，因此粗网格上的DoFHandler对象只表示一个变量，用片状常数不连续元素离散。那么，粗网格上表示矢量分量的参数将是零（唯一可能的选择，因为粗网格上的变量是标量）。如果细网格FES系统中变量的排序是
+   * $u, q, \lambda$
+   * ，那么对应于矢量分量的函数的第四个参数将是1（对应于变量
+   * $q$ ；0将是 $u$ ，2将是 $\lambda$ ）。
+   * 该函数还需要一个IntergridMap类型的对象，代表如何从粗网格单元到细网格上的相应单元。原则上，这个对象可以由函数本身从两个DoFHandler对象中生成，但由于它在使用不同网格的程序中可能是可用的，所以函数只是把它作为一个参数。
+   * 计算出的约束被输入一个AffineConstraints类型的变量中；之前的内容不会被删除。
    *
-   * The function's result can be stated as follows mathematically: Let ${\cal
-   * T}_0$ and ${\cal T}_1$ be two meshes where ${\cal T}_1$ results from
-   * ${\cal T}_0$ strictly by refining or leaving alone the cells of ${\cal
-   * T}_0$. Using the same finite element on both, there are function spaces
-   * ${\cal V}_0$ and ${\cal V}_1$ associated with these meshes. Then every
-   * function $v_0 \in {\cal V}_0$ can of course also be represented exactly
-   * in ${\cal V}_1$ since by construction ${\cal V}_0 \subset {\cal V}_1$.
-   * However, not every function in ${\cal V}_1$ can be expressed as a linear
-   * combination of the shape functions of ${\cal V}_0$. The functions that
-   * can be represented lie in a homogeneous subspace of ${\cal V}_1$ (namely,
-   * ${\cal V}_0$, of course) and this subspace can be represented by a linear
-   * constraint of the form $CV=0$ where $V$ is the vector of nodal values of
-   * functions $v\in {\cal V}_1$. In other words, every function $v_h=\sum_j
-   * V_j \varphi_j^{(1)} \in {\cal V}_1$ that also satisfies $v_h\in {\cal
-   * V}_0$ automatically satisfies $CV=0$. This function computes the matrix
-   * $C$ in the form of a AffineConstraints object.
-   *
-   * The construction of these constraints is done as follows: for each of the
-   * degrees of freedom (i.e. shape functions) on the coarse grid, we compute
-   * its representation on the fine grid, i.e. how the linear combination of
-   * shape functions on the fine grid looks like that resembles the shape
-   * function on the coarse grid. From this information, we can then compute
-   * the constraints which have to hold if a solution of a linear equation on
-   * the fine grid shall be representable on the coarse grid. The exact
-   * algorithm how these constraints can be computed is rather complicated and
-   * is best understood by reading the source code, which contains many
-   * comments.
-   *
-   * The use of this function is as follows: it accepts as parameters two DoF
-   * Handlers, the first of which refers to the coarse grid and the second of
-   * which is the fine grid. On both, a finite element is represented by the
-   * DoF handler objects, which will usually have several vector components,
-   * which may belong to different base elements. The second and fourth
-   * parameter of this function therefore state which vector component on the
-   * coarse grid shall be used to restrict the stated component on the fine
-   * grid. The finite element used for the respective components on the two
-   * grids needs to be the same. An example may clarify this: consider an
-   * optimization problem with controls $q$ discretized on a coarse mesh and a
-   * state variable $u$ (and corresponding Lagrange multiplier $\lambda$)
-   * discretized on the fine mesh. These are discretized using piecewise
-   * constant discontinuous, continuous linear, and continuous linear
-   * elements, respectively. Only the parameter $q$ is represented on the
-   * coarse grid, thus the DoFHandler object on the coarse grid represents
-   * only one variable, discretized using piecewise constant discontinuous
-   * elements. Then, the parameter denoting the vector component on the coarse
-   * grid would be zero (the only possible choice, since the variable on the
-   * coarse grid is scalar). If the ordering of variables in the fine mesh
-   * FESystem is $u, q, \lambda$, then the fourth argument of the function
-   * corresponding to the vector component would be one (corresponding to the
-   * variable $q$; zero would be $u$, two would be $\lambda$).
-   *
-   * The function also requires an object of type IntergridMap representing
-   * how to get from the coarse mesh cells to the corresponding cells on the
-   * fine mesh. This could in principle be generated by the function itself
-   * from the two DoFHandler objects, but since it is probably available
-   * anyway in programs that use different meshes, the function simply takes
-   * it as an argument.
-   *
-   * The computed constraints are entered into a variable of type
-   * AffineConstraints; previous contents are not deleted.
    */
   template <int dim, int spacedim>
   void
@@ -845,20 +512,10 @@ namespace DoFTools
 
 
   /**
-   * This function generates a matrix such that when a vector of data with as
-   * many elements as there are degrees of freedom of this component on the
-   * coarse grid is multiplied to this matrix, we obtain a vector with as many
-   * elements as there are global degrees of freedom on the fine grid. All the
-   * elements of the other vector components of the finite element fields on
-   * the fine grid are not touched.
+   * 这个函数生成一个矩阵，当一个元素数与粗网格上该分量的自由度相同的数据向量乘以这个矩阵时，我们得到一个元素数与细网格上全局自由度相同的向量。细网格上有限元场的其他矢量分量的所有元素都不被触及。
+   * 细网格的三角化可以是分布式的。当并行调用时，每个进程必须有一份粗网格的副本。在这种情况下，函数返回本地拥有的一组单元的转移表示。
+   * 这个函数的输出是一种压缩格式，可以用来构造相应的稀疏转移矩阵。
    *
-   * Triangulation of the fine grid can be distributed. When called in
-   * parallel, each process has to have a copy of the coarse grid. In this
-   * case, function returns transfer representation for a set of locally owned
-   * cells.
-   *
-   * The output of this function is a compressed format that can be used to
-   * construct corresponding sparse transfer matrix.
    */
   template <int dim, int spacedim>
   void
@@ -873,177 +530,150 @@ namespace DoFTools
 
   /**
    * @}
+   *
    */
 
 
   /**
-   * @name Periodic boundary conditions
-   * @{
+   * @name  周期性的边界条件  @{  。
+   *
    */
 
   /**
-   * Insert the (algebraic) constraints due to periodic boundary conditions
-   * into an AffineConstraints object @p constraints.
-   *
-   * Given a pair of not necessarily active boundary faces @p face_1 and @p
-   * face_2, this functions constrains all DoFs associated with the boundary
-   * described by @p face_1 to the respective DoFs of the boundary described
-   * by @p face_2. More precisely:
-   *
-   * If @p face_1 and @p face_2 are both active faces it adds the DoFs of @p
-   * face_1 to the list of constrained DoFs in @p constraints and adds
-   * entries to constrain them to the corresponding values of the DoFs on @p
-   * face_2. This happens on a purely algebraic level, meaning, the global DoF
-   * with (local face) index <tt>i</tt> on @p face_1 gets constraint to the
-   * DoF with (local face) index <tt>i</tt> on @p face_2 (possibly corrected
-   * for orientation, see below).
-   *
-   * Otherwise, if @p face_1 and @p face_2 are not active faces, this function
-   * loops recursively over the children of @p face_1 and @p face_2. If only
-   * one of the two faces is active, then we recursively iterate over the
-   * children of the non-active ones and make sure that the solution function
-   * on the refined side equals that on the non-refined face in much the same
-   * way as we enforce hanging node constraints at places where differently
-   * refined cells come together. (However, unlike hanging nodes, we do not
-   * enforce the requirement that there be only a difference of one refinement
-   * level between the two sides of the domain you would like to be periodic).
-   *
-   * This routine only constrains DoFs that are not already constrained. If
-   * this routine encounters a DoF that already is constrained (for instance
-   * by Dirichlet boundary conditions), the old setting of the constraint
-   * (dofs the entry is constrained to, inhomogeneities) is kept and nothing
-   * happens.
-   *
-   * The flags in the @p component_mask (see
-   * @ref GlossComponentMask)
-   * denote which components of the finite element space shall be constrained
-   * with periodic boundary conditions. If it is left as specified by the
-   * default value all components are constrained. If it is different from the
-   * default value, it is assumed that the number of entries equals the number
-   * of components of the finite element. This can be used to enforce
-   * periodicity in only one variable in a system of equations.
-   *
-   * @p face_orientation, @p face_flip and @p face_rotation describe an
-   * orientation that should be applied to @p face_1 prior to matching and
-   * constraining DoFs. This has nothing to do with the actual orientation of
-   * the given faces in their respective cells (which for boundary faces is
-   * always the default) but instead how you want to see periodicity to be
-   * enforced. For example, by using these flags, you can enforce a condition
-   * of the kind $u(0,y)=u(1,1-y)$ (i.e., a Moebius band) or in 3d a twisted
-   * torus. More precisely, these flags match local face DoF indices in the
-   * following manner:
-   *
-   * In 2d: <tt>face_orientation</tt> must always be <tt>true</tt>,
-   * <tt>face_rotation</tt> is always <tt>false</tt>, and face_flip has the
-   * meaning of <tt>line_flip</tt>; this implies e.g. for <tt>Q1</tt>:
-   *
+   * 将周期性边界条件引起的（代数）约束插入AffineConstraints对象 @p
+   * constraints.  给定一对不一定活动的边界面 @p face_1 和 @p
+   * face_2，这个函数将与 @p face_1
+   * 描述的边界相关的所有DoF约束到 @p face_2.
+   * 描述的边界的各自DoF 更确切地说。    如果 @p face_1 和 @p
+   * face_2 都是活动面，它将 @p 面_1的DoFs添加到 @p constraints
+   * 的约束DoFs列表中，并添加条目将它们约束到 @p
+   * 面_2的相应DoFs值。这发生在一个纯粹的代数层面上，意味着
+   * @p face_1
+   * 上具有（局部面）索引<tt>i</tt>的全局DoF被约束到 @p
+   * face_2
+   * 上具有（局部面）索引<tt>i</tt>的DoF（可能被纠正方向，见下文）。
+   * 否则，如果 @p face_1 和 @p face_2
+   * 不是活动面，这个函数就会递归地在 @p face_1 和 @p face_2.
+   * 的子代上循环，如果两个面中只有一个是活动的，那么我们就会递归地迭代非活动面的子代，并确保精炼面的解函数与非精炼面的解函数相等，这与我们在不同的精炼单元聚集的地方执行悬挂节点约束一样的方式。然而，与悬挂节点不同的是，我们并不强制要求域的两边只能有一个细化级别的差异，你希望是周期性的）。
+   * 这个程序只约束那些还没有被约束的DoF。如果这个例程遇到一个已经被约束的DoF（例如被Dirichlet边界条件约束），约束的旧设置（条目被约束的DoF，不均匀性）被保留，什么也不会发生。
+   * @p component_mask 中的标志（见 @ref GlossComponentMask
+   * ）表示有限元空间的哪些部分应受到周期性边界条件的约束。如果它与默认值相同，则所有分量都受到约束。如果它与默认值不同，则假定条目数等于有限元的分量数。这可以用来强制执行方程组中只有一个变量的周期性。
+   * @p face_orientation,   @p face_flip 和 @p face_rotation
+   * 描述了在匹配和约束DoF之前应该应用到 @p face_1
+   * 的方向。这与给定面在各自单元中的实际方向无关（对于边界面总是默认的），而是你想看到周期性被强制执行的方式。例如，通过使用这些标志，你可以执行
+   * $u(0,y)=u(1,1-y)$
+   * 那种条件（即莫比乌斯带），或者在三维中执行扭曲的环。更确切地说，这些标志是以如下方式匹配局部面的DoF指数。
+   * 在2d中。<tt>face_orientation</tt>必须总是<tt>true</tt>，<tt>face_rotation</tt>总是<tt>false</tt>，face_flip具有<tt>line_flip</tt>的意义；这意味着，例如对于<tt>Q1</tt>。
    * @code
    *
    * face_orientation = true, face_flip = false, face_rotation = false:
    *
-   *     face1:           face2:
+   *   face1:           face2:
    *
-   *     1                1
-   *     |        <-->    |
-   *     0                0
+   *   1                1
+   *   |        <-->    |
+   *   0                0
    *
-   *     Resulting constraints: 0 <-> 0, 1 <-> 1
+   *   Resulting constraints: 0 <-> 0, 1 <-> 1
    *
-   *     (Numbers denote local face DoF indices.)
+   *   (Numbers denote local face DoF indices.)
    *
    *
    * face_orientation = true, face_flip = true, face_rotation = false:
    *
-   *     face1:           face2:
+   *   face1:           face2:
    *
-   *     0                1
-   *     |        <-->    |
-   *     1                0
+   *   0                1
+   *   |        <-->    |
+   *   1                0
    *
-   *     Resulting constraints: 1 <-> 0, 0 <-> 1
+   *   Resulting constraints: 1 <-> 0, 0 <-> 1
    * @endcode
-   *
-   * And similarly for the case of Q1 in 3d:
-   *
+   * 同样地，对于Q1在3D中的情况也是如此。
    * @code
    *
    * face_orientation = true, face_flip = false, face_rotation = false:
    *
-   *     face1:           face2:
+   *   face1:           face2:
    *
-   *     2 - 3            2 - 3
-   *     |   |    <-->    |   |
-   *     0 - 1            0 - 1
+   *   2
    *
-   *     Resulting constraints: 0 <-> 0, 1 <-> 1, 2 <-> 2, 3 <-> 3
+   * - 3            2
    *
-   *     (Numbers denote local face DoF indices.)
+   * - 3
+   *   |   |    <-->    |   |
+   *   0
+   *
+   * - 1            0
+   *
+   * - 1
+   *
+   *   Resulting constraints: 0 <-> 0, 1 <-> 1, 2 <-> 2, 3 <-> 3
+   *
+   *   (Numbers denote local face DoF indices.)
    *
    *
    * face_orientation = false, face_flip = false, face_rotation = false:
    *
-   *     face1:           face2:
+   *   face1:           face2:
    *
-   *     1 - 3            2 - 3
-   *     |   |    <-->    |   |
-   *     0 - 2            0 - 1
+   *   1
    *
-   *     Resulting constraints: 0 <-> 0, 2 <-> 1, 1 <-> 2, 3 <-> 3
+   * - 3            2
+   *
+   * - 3
+   *   |   |    <-->    |   |
+   *   0
+   *
+   * - 2            0
+   *
+   * - 1
+   *
+   *   Resulting constraints: 0 <-> 0, 2 <-> 1, 1 <-> 2, 3 <-> 3
    *
    *
    * face_orientation = true, face_flip = true, face_rotation = false:
    *
-   *     face1:           face2:
+   *   face1:           face2:
    *
-   *     1 - 0            2 - 3
-   *     |   |    <-->    |   |
-   *     3 - 2            0 - 1
+   *   1
    *
-   *     Resulting constraints: 3 <-> 0, 2 <-> 1, 1 <-> 2, 0 <-> 3
+   * - 0            2
+   *
+   * - 3
+   *   |   |    <-->    |   |
+   *   3
+   *
+   * - 2            0
+   *
+   * - 1
+   *
+   *   Resulting constraints: 3 <-> 0, 2 <-> 1, 1 <-> 2, 0 <-> 3
    *
    *
    * face_orientation = true, face_flip = false, face_rotation = true
    *
-   *     face1:           face2:
+   *   face1:           face2:
    *
-   *     0 - 2            2 - 3
-   *     |   |    <-->    |   |
-   *     1 - 3            0 - 1
+   *   0
    *
-   *     Resulting constraints: 1 <-> 0, 3 <-> 1, 0 <-> 2, 2 <-> 3
+   * - 2            2
+   *
+   * - 3
+   *   |   |    <-->    |   |
+   *   1
+   *
+   * - 3            0
+   *
+   * - 1
+   *
+   *   Resulting constraints: 1 <-> 0, 3 <-> 1, 0 <-> 2, 2 <-> 3
    *
    * and any combination of that...
    * @endcode
+   * 可以指定一个矩阵 @p matrix 和一个 std::vector  @p first_vector_components，描述在约束到 @p face_2. 的DoF之前， @p face_1的DoF应该如何被修改，这里有两种声明。如果 std::vector   @p  first_vector_components是非空的，该矩阵被解释为一个 @p  dim  $\times$   @p dim  旋转矩阵，它被应用于FESystem的 @p first_vector_components 中列出的所有矢量值块。如果 @p first_vector_components为空，该矩阵将被解释为大小为no_face_dofs  $\times$  no_face_dofs的插值矩阵。    这个函数确保身份约束不会在 @p constraints.  @p periodicity_factor 中产生循环，可以用来实现 $\psi(\mathbf{r})=e^{-i\mathbf{k}\cdot\mathbf{r}}u(\mathbf{r})$ 形式的布洛赫周期条件（又称相移周期条件），其中 $u$ 是与晶格相同的周期性， $\mathbf{k}$ 是波矢，见[https://en.wikipedia.org/wiki/Bloch_wave]（https://en.wikipedia.org/wiki/Bloch_wave）。  在 @p face_2 处的解等于 @p face_1 乘以 @p periodicity_factor. 处的解。例如，如果 @p face_1 处的解是 $\psi(0)$ ， $\mathbf{d}$ 是 @p face_2, 上的相应点，那么 @p face_2 处的解应该是 $\psi(d) = \psi(0)e^{-i \mathbf{k}\cdot \mathbf{d}}$  。这个条件可以用  $\mathrm{periodicity\_factor}=e^{-i \mathbf{k}\cdot \mathbf{d}}$  来实现。    详细信息可参见  @ref GlossPeriodicConstraints  "关于周期性边界条件的词汇条目"
+   * 。
    *
-   * Optionally a matrix @p matrix along with a std::vector @p
-   * first_vector_components can be specified that describes how DoFs on @p
-   * face_1 should be modified prior to constraining to the DoFs of @p face_2.
-   * Here, two declarations are possible: If the std::vector @p
-   * first_vector_components is non empty the matrix is interpreted as a @p
-   * dim $\times$ @p dim rotation matrix that is applied to all vector valued
-   * blocks listed in @p first_vector_components of the FESystem. If @p
-   * first_vector_components is empty the matrix is interpreted as an
-   * interpolation matrix with size no_face_dofs $\times$ no_face_dofs.
-   *
-   * This function makes sure that identity constraints don't create cycles
-   * in @p constraints.
-   *
-   * @p periodicity_factor can be used to implement Bloch periodic conditions
-   * (a.k.a. phase shift periodic conditions) of the form
-   * $\psi(\mathbf{r})=e^{-i\mathbf{k}\cdot\mathbf{r}}u(\mathbf{r})$
-   * where $u$ is periodic with the same periodicity as the crystal lattice and
-   * $\mathbf{k}$ is the wavevector, see
-   * [https://en.wikipedia.org/wiki/Bloch_wave](https://en.wikipedia.org/wiki/Bloch_wave).
-   * The solution at @p face_2 is equal to the solution at @p face_1 times
-   * @p periodicity_factor. For example, if the solution at @p face_1 is
-   * $\psi(0)$ and $\mathbf{d}$ is the corresponding point on @p face_2, then
-   * the solution at @p face_2 should be
-   * $\psi(d) = \psi(0)e^{-i \mathbf{k}\cdot \mathbf{d}}$. This condition can be
-   * implemented using
-   * $\mathrm{periodicity\_factor}=e^{-i \mathbf{k}\cdot \mathbf{d}}$.
-   *
-   * Detailed information can be found in the see
-   * @ref GlossPeriodicConstraints "Glossary entry on periodic boundary conditions".
    */
   template <typename FaceIterator, typename number>
   void
@@ -1063,23 +693,16 @@ namespace DoFTools
 
 
   /**
-   * Insert the (algebraic) constraints due to periodic boundary conditions
-   * into an AffineConstraints object @p constraints.
+   * 将周期性边界条件引起的（代数）约束插入AffineConstraints对象
+   * @p constraints.
+   * 这是上述make_periodicity_constraints()的低级变量的主要高级接口。它接受一个
+   * std::vector   @p periodic_faces
+   * 作为参数，并在每个条目上应用上面的make_periodicity_constraints()。
+   * @p periodic_faces  可以通过 GridTools::collect_periodic_faces.
+   * 创建。
+   * @note  对于建立在 parallel::distributed::Triangulation 对象上的DoFHandler对象， parallel::distributed::Triangulation::add_periodicity 在调用此函数之前必须被调用。      @see   @ref GlossPeriodicConstraints  "关于周期性边界条件的词汇条目 "
+   * 和 step-45 的进一步信息。
    *
-   * This is the main high level interface for above low level variant of
-   * make_periodicity_constraints(). It takes a std::vector @p periodic_faces
-   * as argument and applies above make_periodicity_constraints() on each
-   * entry. @p periodic_faces can be created by
-   * GridTools::collect_periodic_faces.
-   *
-   * @note For DoFHandler objects that are built on a
-   * parallel::distributed::Triangulation object
-   * parallel::distributed::Triangulation::add_periodicity has to be called
-   * before calling this function..
-   *
-   * @see
-   * @ref GlossPeriodicConstraints "Glossary entry on periodic boundary conditions"
-   * and step-45 for further information.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -1093,10 +716,9 @@ namespace DoFTools
     const number periodicity_factor = 1.);
 
   /**
-   * The same as above.
+   * 与上述相同。      @deprecated
+   * 使用以dim和spacedim为模板参数的函数。
    *
-   * @deprecated Use the function that takes dim and spacedim as template
-   *   argument.
    */
   template <typename DoFHandlerType, typename number>
   DEAL_II_DEPRECATED void
@@ -1113,33 +735,19 @@ namespace DoFTools
 
 
   /**
-   * Insert the (algebraic) constraints due to periodic boundary conditions
-   * into a AffineConstraints @p constraints.
+   * 将周期性边界条件引起的（代数）约束插入AffineConstraints
+   * @p constraints.
+   * 这个函数作为make_periodicity_constraints()函数的一个高级接口。
+   * 定义一个 "第一 "边界为所有边界面，其边界ID为 @p
+   * b_id1，一个 "第二 "边界由所有属于 @p  b_id2的面组成。
+   * 这个函数试图在orthogonal_equality()的帮助下将所有属于第一条边界的面与属于第二条边界的面相匹配。更确切地说，坐标只在
+   * @p direction 部分不同的面被识别。
+   * 如果这个匹配是成功的，它将所有与 "第一
+   * "边界相关的DoFs约束到 "第二
+   * "边界的相应DoFs，并尊重两个面的相对方向。
+   * @note  这个函数是一个方便的封装器。它在内部调用 GridTools::collect_periodic_faces() 的参数，并将输出结果反馈给上述make_periodicity_constraints()变量。如果你需要更多的功能，直接使用 GridTools::collect_periodic_faces() 。      @see   @ref GlossPeriodicConstraints  "关于周期性边界条件的词汇条目"
+   * ，以获得更多信息。
    *
-   * This function serves as a high level interface for the
-   * make_periodicity_constraints() function.
-   *
-   * Define a 'first' boundary as all boundary faces having boundary_id @p
-   * b_id1 and a 'second' boundary consisting of all faces belonging to @p
-   * b_id2.
-   *
-   * This function tries to match all faces belonging to the first boundary
-   * with faces belonging to the second boundary with the help of
-   * orthogonal_equality(). More precisely, faces with coordinates only
-   * differing in the @p direction component are identified.
-   *
-   * If this matching is successful it constrains all DoFs associated with the
-   * 'first' boundary to the respective DoFs of the 'second' boundary
-   * respecting the relative orientation of the two faces.
-   *
-   * @note This function is a convenience wrapper. It internally calls
-   * GridTools::collect_periodic_faces() with the supplied parameters and
-   * feeds the output to above make_periodicity_constraints() variant. If you
-   * need more functionality use GridTools::collect_periodic_faces() directly.
-   *
-   * @see
-   * @ref GlossPeriodicConstraints "Glossary entry on periodic boundary conditions"
-   * for further information.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -1155,29 +763,11 @@ namespace DoFTools
 
 
   /**
-   * This compatibility version of make_periodicity_constraints only works on
-   * grids with cells in
-   * @ref GlossFaceOrientation "standard orientation".
+   * @note  这个版本的make_periodicity_constraints将不会在单元格不在 @ref GlossFaceOrientation "标准方向 "
+   * 的网格上工作。
+   * @note  这个函数是一个方便的封装器。它在内部调用 GridTools::collect_periodic_faces() 中提供的参数，并将输出结果反馈给上述make_periodicity_constraints()变量。如果你需要更多的功能，请直接使用 GridTools::collect_periodic_faces() 。      @see   @ref GlossPeriodicConstraints  "关于周期性边界条件的词汇条目"
+   * ，以获得更多信息。
    *
-   * Instead of defining a 'first' and 'second' boundary with the help of two
-   * boundary_ids this function defines a 'left' boundary as all faces with
-   * local face index <code>2*dimension</code> and boundary indicator @p b_id
-   * and, similarly, a 'right' boundary consisting of all face with local face
-   * index <code>2*dimension+1</code> and boundary indicator @p b_id. Faces with
-   * coordinates only differing in the @p direction component are identified.
-   *
-   * @note This version of make_periodicity_constraints  will not work on
-   * meshes with cells not in
-   * @ref GlossFaceOrientation "standard orientation".
-   *
-   * @note This function is a convenience wrapper. It internally calls
-   * GridTools::collect_periodic_faces() with the supplied parameters and
-   * feeds the output to above make_periodicity_constraints() variant. If you
-   * need more functionality use GridTools::collect_periodic_faces() directly.
-   *
-   * @see
-   * @ref GlossPeriodicConstraints "Glossary entry on periodic boundary conditions"
-   * for further information.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -1191,56 +781,31 @@ namespace DoFTools
 
   /**
    * @}
-   */
-
-  /**
-   * @name Identifying subsets of degrees of freedom with particular properties
-   * @{
-   */
-
-  /**
-   * Return an IndexSet describing all dofs that will be constrained by
-   * interface constraints, i.e. all hanging nodes.
    *
-   * In case of a parallel::shared::Triangulation or a
-   * parallel::distributed::Triangulation only locally relevant dofs are
-   * considered.
+   */
+
+  /**
+   * @name  识别具有特殊性质的自由度子集  @{ 。
+   *
+   */
+
+  /**
+   * 返回一个IndexSet，描述所有将被接口约束的自由度，即所有悬挂节点。
+   * 在 parallel::shared::Triangulation 或
+   * parallel::distributed::Triangulation
+   * 的情况下，只考虑本地相关的道夫。
+   *
    */
   template <int dim, int spacedim>
   IndexSet
   extract_hanging_node_dofs(const DoFHandler<dim, spacedim> &dof_handler);
 
   /**
-   * Extract the (locally owned) indices of the degrees of freedom belonging to
-   * certain vector components of a vector-valued finite element. The
-   * @p component_mask defines which components or blocks of an FESystem or
-   * vector-valued element are to be extracted
-   * from the DoFHandler @p dof. The entries in the output object then
-   * correspond to degrees of freedom belonging to these
-   * components.
+   * 提取属于矢量值有限元的某些矢量分量的自由度的（本地拥有的）指数。 @p component_mask 定义了要从DoFHandler @p dof. 中提取FES系统或矢量值元素的哪些组件或块，然后输出对象中的条目对应于属于这些组件的自由度。    如果所考虑的有限元不是原始的，即它的一些或全部形状函数在一个以上的矢量分量中是非零的（例如，对于FE_Nedelec或FE_RaviartThomas元素来说，这一点是成立的），那么形状函数不能与单个矢量分量相关联。  在这种情况下，如果 <em> 这个元素的一个 </em> 形状向量分量在 @p component_mask 中被标记（见 @ref GlossComponentMask ），那么这相当于选择 <em> 与这个非原始基础元素对应的所有 </em> 向量分量。      @param[in]  dof_handler 其列举的自由度将被此函数过滤的DoFHandler。    @param[in]  component_mask 一个说明你要选择哪些组件的掩码。该掩码的大小必须与 @p dof_handler. 所使用的FiniteElement中的构件数量相匹配。更多信息请参见 @ref GlossComponentMask "构件掩码的词汇表条目"
+   * 。    @return
+   * 一个IndexSet对象，它将确切地包含那些(i)对应于上述掩码所选择的自由度的条目，以及(ii)是本地拥有的条目。索引集的大小等于全局自由度的数量。请注意，产生的对象总是
+   * DoFHandler::locally_owned_dofs() 返回的一个子集。
    *
-   * If the finite element under consideration is not primitive, i.e., some or
-   * all of its shape functions are non-zero in more than one vector component
-   * (which holds, for example, for FE_Nedelec or FE_RaviartThomas elements),
-   * then shape functions cannot be associated with a single vector component.
-   * In this case, if <em>one</em> shape vector component of this element is
-   * flagged in @p component_mask (see
-   * @ref GlossComponentMask),
-   * then this is equivalent to selecting <em>all</em> vector components
-   * corresponding to this non-primitive base element.
-   *
-   * @param[in] dof_handler The DoFHandler whose enumerated degrees of freedom
-   *   are to be filtered by this function.
-   * @param[in] component_mask A mask that states which components you want
-   *   to select. The size of this mask must be compatible with the number of
-   *   components in the FiniteElement used by the @p dof_handler. See
-   *   @ref GlossComponentMask "the glossary entry on component masks"
-   *   for more information.
-   * @return An IndexSet object that will contain exactly those entries that
-   *   (i) correspond to degrees of freedom selected by the mask above, and
-   *   (ii) are locally owned. The size of the index set is equal to the global
-   *   number of degrees of freedom. Note that the resulting object is always
-   *   a subset of what DoFHandler::locally_owned_dofs() returns.
    */
   template <int dim, int spacedim>
   IndexSet
@@ -1248,27 +813,11 @@ namespace DoFTools
                const ComponentMask &            component_mask);
 
   /**
-   * This function is the equivalent to the DoFTools::extract_dofs() functions
-   * above except that the selection of which degrees of freedom to extract is
-   * not done based on components (see
-   * @ref GlossComponent)
-   * but instead based on whether they are part of a particular block (see
-   * @ref GlossBlock).
-   * Consequently, the second argument is not a ComponentMask but a BlockMask
-   * object.
+   * 这个函数等同于上面的 DoFTools::extract_dofs() 函数，除了不是根据组件（见 @ref GlossComponent ）而是根据它们是否是特定块的一部分（见 @ref GlossBlock ）来选择提取哪些自由度。  因此，第二个参数不是一个ComponentMask，而是一个BlockMask对象。      @param[in]  dof_handler 其列举的自由度将被这个函数过滤的DoFHandler。    @param[in]  block_mask 一个说明你想选择哪些块的掩码。该掩码的大小必须与 @p dof_handler. 所使用的FiniteElement中的块数相匹配。更多信息请参见 @ref GlossBlockMask "关于块掩码的词汇表条目"
+   * 。    @return
+   * 一个IndexSet对象，它将确切地包含那些(i)对应于由上述掩码选择的自由度的条目，以及(ii)本地拥有的条目。索引集的大小等于全局自由度的数量。请注意，产生的对象总是
+   * DoFHandler::locally_owned_dofs() 返回的一个子集。
    *
-   * @param[in] dof_handler The DoFHandler whose enumerated degrees of freedom
-   *   are to be filtered by this function.
-   * @param[in] block_mask A mask that states which blocks you want
-   *   to select. The size of this mask must be compatible with the number of
-   *   blocks in the FiniteElement used by the @p dof_handler. See
-   *   @ref GlossBlockMask "the glossary entry on block masks"
-   *   for more information.
-   * @return An IndexSet object that will contain exactly those entries that
-   *   (i) correspond to degrees of freedom selected by the mask above, and
-   *   (ii) are locally owned. The size of the index set is equal to the global
-   *   number of degrees of freedom. Note that the resulting object is always
-   *   a subset of what DoFHandler::locally_owned_dofs() returns.
    */
   template <int dim, int spacedim>
   IndexSet
@@ -1276,8 +825,8 @@ namespace DoFTools
                const BlockMask &                block_mask);
 
   /**
-   * Do the same thing as the corresponding extract_dofs() function for one
-   * level of a multi-grid DoF numbering.
+   * 对于多网格自由度编号的一个层次，做与相应的extract_dofs()函数相同的事情。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1287,8 +836,8 @@ namespace DoFTools
                      std::vector<bool> &              selected_dofs);
 
   /**
-   * Do the same thing as the corresponding extract_dofs() function for one
-   * level of a multi-grid DoF numbering.
+   * 对一个多网格DoF编号的一个层次，做与相应的extract_dofs()函数相同的事情。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1298,58 +847,8 @@ namespace DoFTools
                      std::vector<bool> &              selected_dofs);
 
   /**
-   * Extract all degrees of freedom which are at the boundary and belong to
-   * specified components of the solution. The function returns its results in
-   * the last non-default-valued parameter which contains @p true if a degree
-   * of freedom is at the boundary and belongs to one of the selected
-   * components, and @p false otherwise.
+   * 提取所有在边界的自由度，并属于解决方案的指定组件。该函数在最后一个非缺省值参数中返回其结果，如果一个自由度在边界并属于所选分量之一，该参数包含 @p true ，否则包含 @p false 。    通过指定 @p boundary_ids 变量，你可以选择自由度所在的面必须有哪些边界指标才能被提取出来。如果它是一个空列表，那么所有的边界指标都被接受。     @p component_mask 的大小（见 @ref GlossComponentMask ）应等于 @p 自由度所使用的有限元中的组件数。 @p selected_dofs 的大小应等于<tt>dof_handler.n_dofs()</tt>。这个数组以前的内容会被覆盖掉。    使用通常的惯例，如果一个形状函数在一个以上的分量中是非零的（即它是非正则的），那么就使用分量掩码中对应于第一个非零分量的元素。  掩码中对应于后面分量的元素被忽略。      @deprecated  这个函数对建立在 parallel::distributed::Triangulation 对象上的DoFHandler对象不起作用。原因是输出参数 @p selected_dofs 的长度必须等于<i>all</i>全局自由度。因此，这不能扩展到非常大的问题，这也是该函数被废弃的原因。如果你需要这个函数的功能来进行平行三角计算，那么你需要使用另一个 DoFTools::extract_boundary_dofs() 函数，它通过IndexSet对象返回信息。      @param[in]  dof_handler 描述哪个自由度在哪个单元上的对象。    @param[in]  component_mask 表示应考虑的有限元的矢量分量的掩码（也见 @ref GlossComponentMask ）。    @param[out]  selected_dofs 一个被返回的布尔运算的向量，对于这个向量，如果相应的索引是位于边界上的自由度（并且对应于被选择的向量分量和边界指标，取决于 @p component_mask 和 @p boundary_ids参数的值），则该元素将是 @p true 。    @param[in]  boundary_ids 如果为空，该函数提取边界所有部分的自由度指数。如果它是一个非空的列表，那么这个函数只考虑具有这个参数中所列边界指标的边界面。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * By specifying the @p boundary_ids variable, you can select which boundary
-   * indicators the faces have to have on which the degrees of freedom are
-   * located that shall be extracted. If it is an empty list, then all
-   * boundary indicators are accepted.
-   *
-   * The size of @p component_mask (see
-   * @ref GlossComponentMask)
-   * shall equal the number of components in the finite element used by @p
-   * dof. The size of @p selected_dofs shall equal
-   * <tt>dof_handler.n_dofs()</tt>. Previous contents of this array are
-   * overwritten.
-   *
-   * Using the usual convention, if a shape function is non-zero in more than
-   * one component (i.e. it is non-primitive), then the element in the
-   * component mask is used that corresponds to the first non-zero components.
-   * Elements in the mask corresponding to later components are ignored.
-   *
-   * @deprecated This function will not work for DoFHandler objects that are built
-   * on a parallel::distributed::Triangulation object. The reasons is that the
-   * output argument @p selected_dofs has to have a length equal to <i>all</i>
-   * global degrees of freedom. Consequently, this does not scale to very
-   * large problems, and this is also why the function is deprecated. If you
-   * need the functionality of this function for
-   * parallel triangulations, then you need to use the other
-   * DoFTools::extract_boundary_dofs() function that returns its information
-   * via an IndexSet object.
-   *
-   * @param[in] dof_handler The object that describes which degrees of freedom
-   * live on which cell.
-   * @param[in] component_mask A mask denoting the vector components of the
-   * finite element that should be considered (see also
-   * @ref GlossComponentMask).
-   * @param[out] selected_dofs A vector of booleans that is returned and for
-   * which
-   * an element will be @p true if the corresponding index is a
-   * degree of freedom that is located on the
-   * boundary (and correspond to the selected vector components and boundary
-   * indicators, depending on the values of the @p component_mask and @p
-   * boundary_ids arguments).
-   * @param[in] boundary_ids If empty, this function extracts the indices of the
-   * degrees of freedom for all parts of the boundary. If it is a non- empty
-   * list, then the function only considers boundary faces with the boundary
-   * indicators listed in this argument.
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   DEAL_II_DEPRECATED void
@@ -1359,46 +858,11 @@ namespace DoFTools
                         const std::set<types::boundary_id> &boundary_ids = {});
 
   /**
-   * Extract all degrees of freedom which are at the boundary and belong to
-   * specified components of the solution. The function returns its results in
-   * the form of an IndexSet that contains those entries that correspond to
-   * these selected degrees of freedom, i.e., which are at the boundary and
-   * belong to one of the selected components.
+   * 提取在边界上的所有自由度，并属于解决方案的指定组件。该函数以IndexSet的形式返回其结果，IndexSet包含与这些选定的自由度相对应的条目，也就是说，这些自由度位于边界并属于选定的成分之一。
+   * 通过指定 @p boundary_ids
+   * 变量，你可以选择要提取的自由度所在的面必须有哪些边界指标。如果它是一个空列表（默认），那么所有的边界指标都被接受。
+   * 这个功能在  step-11  和  step-15  中使用，例如。
    *
-   * By specifying the @p boundary_ids variable, you can select which boundary
-   * indicators the faces have to have on which the degrees of freedom are
-   * located that shall be extracted. If it is an empty list (the default), then
-   * all boundary indicators are accepted.
-   *
-   * This function is used in step-11 and step-15, for example.
-   *
-   * @note If the DoFHandler object is defined on a
-   * parallel Triangulation object, then the computed index set
-   * will contain only those degrees of freedom on the boundary that belong to
-   * the locally relevant set (see
-   * @ref GlossLocallyRelevantDof "locally relevant DoFs"), i.e., the function
-   * only considers faces of locally owned and ghost cells, but not of
-   * artificial cells.
-   *
-   * @param[in] dof_handler The object that describes which degrees of freedom
-   * live on which cell.
-   * @param[in] component_mask A mask denoting the vector components of the
-   * finite element that should be considered (see also
-   * @ref GlossComponentMask). If left at the default, the component mask
-   * indicates that all vector components of the finite element should be
-   * considered.
-   * @param[in] boundary_ids If empty, this function extracts the indices of the
-   * degrees of freedom for all parts of the boundary. If it is a non-empty
-   * list, then the function only considers boundary faces with the boundary
-   * indicators listed in this argument.
-   * @return The IndexSet object that
-   * will contain the indices of degrees of freedom that are located on the
-   * boundary (and correspond to the selected vector components and boundary
-   * indicators, depending on the values of the @p component_mask and @p
-   * boundary_ids arguments).
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   IndexSet
@@ -1407,10 +871,9 @@ namespace DoFTools
                         const std::set<types::boundary_id> &boundary_ids = {});
 
   /**
-   * The same as the previous function, except that it returns its information
-   * via the third argument.
+   * 与前一个函数相同，只是它通过第三个参数返回其信息。
+   * @deprecated  用前面的函数代替。
    *
-   * @deprecated Use the previous function instead.
    */
   template <int dim, int spacedim>
   DEAL_II_DEPRECATED void
@@ -1420,20 +883,8 @@ namespace DoFTools
                         const std::set<types::boundary_id> &boundary_ids = {});
 
   /**
-   * This function is similar to the extract_boundary_dofs() function but it
-   * extracts those degrees of freedom whose shape functions are nonzero on at
-   * least part of the selected boundary. For continuous elements, this is
-   * exactly the set of shape functions whose degrees of freedom are defined
-   * on boundary faces. On the other hand, if the finite element in used is a
-   * discontinuous element, all degrees of freedom are defined in the inside
-   * of cells and consequently none would be boundary degrees of freedom.
-   * Several of those would have shape functions that are nonzero on the
-   * boundary, however. This function therefore extracts all those for which
-   * the FiniteElement::has_support_on_face function says that it is nonzero
-   * on any face on one of the selected boundary parts.
+   * 这个函数与extract_boundary_dofs()函数类似，但它提取那些形状函数在所选边界的至少一部分为非零的自由度。对于连续元素，这正是自由度定义在边界面上的形状函数的集合。另一方面，如果使用的有限元是不连续元，所有的自由度都定义在单元内部，因此没有一个是边界自由度。  然而，其中有几个自由度的形状函数在边界上是不为零的。因此，这个函数提取了所有那些 FiniteElement::has_support_on_face 函数说它在所选边界部分的任何面上都是非零的。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   void
@@ -1445,31 +896,8 @@ namespace DoFTools
       std::set<types::boundary_id>());
 
   /**
-   * Extract all indices of shape functions such that their support is entirely
-   * contained within the cells for which the @p predicate is <code>true</code>.
-   * The result is returned as an IndexSet.
+   提取形状函数的所有索引，使其支持完全包含在 @p predicate 为 <code>true</code> 的单元格中。  结果以IndexSet的形式返回。    考虑以下的FE空间，其中谓词对域的左半部的所有单元格返回 <code>true</code> 。      @image html extract_dofs_with_support_contained_within.png  这个函数将返回这些单元格上的所有DoF指数的联合，减去DoF 11, 13, 2和0；结果将是<code>[9,10], 12, [14,38]</code>。在上图中，返回的DoFs被红线隔开，从本质上讲，这个函数回答的问题如下。  给定一个带有相关DoFs的子域，这些DoFs中允许非零的最大子集是什么，以便在调用 AffineConstraints::distribute() 后，得到的解向量将只在给定的域内有支持。这里， @p constraints 是包含悬挂节点约束的AffineConstraints容器。    在 parallel::distributed::Triangulation 的情况下， @p predicate 将只为本地拥有的和幽灵单元调用。产生的索引集可能包含与本地拥有的或幽灵单元相关的DoF，但不为当前MPI核所拥有。
    *
-   * Consider the following FE space where predicate returns <code>true</code>
-   * for all cells on the left half of the domain:
-   *
-   * @image html extract_dofs_with_support_contained_within.png
-   *
-   * This functions will return the union of all DoF indices on those cells
-   * minus DoF 11, 13, 2 and 0; the result will be <code>[9,10], 12,
-   * [14,38]</code>. In the image above the returned DoFs are separated from the
-   * rest by the red line
-   *
-   * Essentially, the question this functions answers is the following:
-   * Given a subdomain with associated DoFs, what is the largest subset of
-   * these DoFs that are allowed to be non-zero such that after calling
-   * AffineConstraints::distribute() the resulting solution vector will have
-   * support only within the given domain. Here, @p constraints is the
-   * AffineConstraints container containing hanging nodes constraints.
-   *
-   * In case of parallel::distributed::Triangulation @p predicate will be called
-   * only for locally owned and ghost cells. The resulting index set may contain
-   * DoFs that are associated with the locally owned or ghost cells, but are not
-   * owned by the current MPI core.
    */
   template <int dim, int spacedim, typename number = double>
   IndexSet
@@ -1481,37 +909,18 @@ namespace DoFTools
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * Extract a vector that represents the constant modes of the DoFHandler for
-   * the components chosen by <tt>component_mask</tt> (see
-   * @ref GlossComponentMask).
-   * The constant modes on a discretization are the null space of a Laplace
-   * operator on the selected components with Neumann boundary conditions
-   * applied. The null space is a necessary ingredient for obtaining a good
-   * AMG preconditioner when using the class
-   * TrilinosWrappers::PreconditionAMG.  Since the ML AMG package only works
-   * on algebraic properties of the respective matrix, it has no chance to
-   * detect whether the matrix comes from a scalar or a vector valued problem.
-   * However, a near null space supplies exactly the needed information about
-   * the components placement of vector components within the matrix. The null
-   * space (or rather, the constant modes) is provided by the finite element
-   * underlying the given DoFHandler and for most elements, the null space
-   * will consist of as many vectors as there are true arguments in
-   * <tt>component_mask</tt> (see
-   * @ref GlossComponentMask),
-   * each of which will be one in one vector component and zero in all others.
-   * However, the representation of the constant function for e.g. FE_DGP is
-   * different (the first component on each element one, all other components
-   * zero), and some scalar elements may even have two constant modes
-   * (FE_Q_DG0). Therefore, we store this object in a vector of vectors, where
-   * the outer vector contains the collection of the actual constant modes on
-   * the DoFHandler. Each inner vector has as many components as there are
-   * (locally owned) degrees of freedom in the selected components. Note that
-   * any matrix associated with this null space must have been constructed
-   * using the same <tt>component_mask</tt> argument, since the numbering of
-   * DoFs is done relative to the selected dofs, not to all dofs.
+   * 提取一个向量，代表DoFHandler对<tt>component_mask</tt>（见 @ref
+   * GlossComponentMask ）选择的组件的恒定模式。
+   * 离散化的恒定模式是所选分量上的拉普拉斯算子的无效空间，并应用诺伊曼边界条件。在使用类
+   * TrilinosWrappers::PreconditionAMG.
+   * 时，无效空间是获得良好的AMG预处理的必要成分，因为ML
+   * AMG包只对各自矩阵的代数属性工作，它没有机会检测矩阵是来自标量还是矢量值问题。
+   * 然而，一个近乎无效的空间正好提供了所需的关于矩阵中矢量分量位置的信息。空空间（或者说，常数模式）是由给定的DoFHandler底层的有限元提供的，对于大多数元素，空空间将由与<tt>component_mask</tt>（见
+   * @ref GlossComponentMask
+   * ）中的真实参数一样多的向量组成，每个向量在一个向量分量中为1，在所有其他分量中为0。
+   * 然而，例如FE_DGP的常数函数的表示是不同的（每个元素上的第一个分量为一，其他所有分量为零），有些标量元素甚至可能有两个常数模式（FE_Q_DG0）。因此，我们将这个对象存储在一个向量中，其中外向量包含DoFHandler上的实际恒定模式的集合。每个内向量有多少个分量，就有多少个所选分量中的（本地拥有的）自由度。请注意，任何与这个无效空间相关的矩阵都必须使用相同的<tt>component_mask</tt>参数来构建，因为自由度的编号是相对于所选的道夫而言的，而不是相对于所有道夫而言的。
+   * 这个程序的主要原因是使用AMG预处理程序的空空间。
    *
-   * The main reason for this program is the use of the null space with the
-   * AMG preconditioner.
    */
   template <int dim, int spacedim>
   void
@@ -1521,17 +930,14 @@ namespace DoFTools
   //@}
 
   /**
-   * @name Parallelization and domain decomposition
-   * @{
+   * @name  并行化和域分解 @{  。
+   *
    */
   /**
-   * Flag all those degrees of freedom which are on cells with the given
-   * subdomain id. Note that DoFs on faces can belong to cells with differing
-   * subdomain ids, so the sets of flagged degrees of freedom are not mutually
-   * exclusive for different subdomain ids.
+   * 标记所有在给定子域id的单元上的自由度。请注意，面的自由度可以属于不同子域id的单元，所以对于不同的子域id来说，被标记的自由度集并不相互排斥。
+   * 如果你想得到自由度与子域的唯一关联，请使用 @p
+   * get_subdomain_association 函数。
    *
-   * If you want to get a unique association of degree of freedom with
-   * subdomains, use the @p get_subdomain_association function.
    */
   template <int dim, int spacedim>
   void
@@ -1540,18 +946,10 @@ namespace DoFTools
                          std::vector<bool> &              selected_dofs);
 
   /**
-   * Extract the set of global DoF indices that are active on the current
-   * DoFHandler. For regular DoFHandlers, these are all DoF indices, but for
-   * DoFHandler objects built on parallel::distributed::Triangulation this set
-   * is a superset of DoFHandler::locally_owned_dofs() and contains all DoF
-   * indices that live on all locally owned cells (including on the interface
-   * to ghost cells). However, it does not contain the DoF indices that are
-   * exclusively defined on ghost or artificial cells (see
-   * @ref GlossArtificialCell "the glossary").
+   * 提取在当前DoFHandler上有效的全局DoF指数集合。对于普通的DoFHandler来说，这些都是DoF指数，但是对于建立在 parallel::distributed::Triangulation 上的DoFHandler对象来说，这个集合是 DoFHandler::locally_owned_dofs() 的超集，包含了所有住在本地拥有的单元上的DoF指数（包括在与幽灵单元的接口上）。然而，它不包含专门定义在幽灵或人工单元上的自由度指数（见 @ref GlossArtificialCell "词汇表"
+   * ）。
+   * 这个函数识别的自由度等于从Dof_indices_with_subdomain_association()函数中获得的自由度，当调用本地拥有的子域ID时。
    *
-   * The degrees of freedom identified by this function equal those obtained
-   * from the dof_indices_with_subdomain_association() function when called
-   * with the locally owned subdomain id.
    */
   template <int dim, int spacedim>
   void
@@ -1559,10 +957,9 @@ namespace DoFTools
                               IndexSet &                       dof_set);
 
   /**
-   * Same function as above but for a certain (multigrid-)level.
-   * This function returns all DoF indices that live on
-   * all locally owned cells (including on the interface to ghost cells) on the
-   * given level.
+   * 与上述函数相同，但适用于某个（多网格）层次。
+   * 这个函数返回在给定层次上所有本地拥有的单元（包括与幽灵单元的接口）上的所有DoF指数。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1572,13 +969,9 @@ namespace DoFTools
     const unsigned int               level);
 
   /**
-   * Extract the set of global DoF indices that are active on the current
-   * DoFHandler. For regular DoFHandlers, these are all DoF indices, but for
-   * DoFHandler objects built on parallel::distributed::Triangulation this set
-   * is the union of DoFHandler::locally_owned_dofs() and the DoF indices on
-   * all ghost cells. In essence, it is the DoF indices on all cells that are
-   * not artificial (see
-   * @ref GlossArtificialCell "the glossary").
+   * 提取在当前DoFHandler上活动的全局DoF指数集合。对于普通的DoFHandler，这些都是DoF指数，但是对于建立在 parallel::distributed::Triangulation 上的DoFHandler对象，这个集合是 DoFHandler::locally_owned_dofs() 和所有鬼魂单元上的DoF指数的联合。实质上，它是所有非人造单元上的DoF指数（见 @ref GlossArtificialCell "术语表"
+   * ）。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1587,13 +980,9 @@ namespace DoFTools
 
 
   /**
-   * Extract the set of locally owned DoF indices for each component within the
-   * mask that are owned by the current  processor. For components disabled by
-   * the mask, an empty IndexSet is returned. For a scalar DoFHandler built on a
-   * sequential triangulation, the return vector contains a single complete
-   * IndexSet with all DoF indices. If the mask contains all components (which
-   * also corresponds to the default value), then the union of the returned
-   * index sets equlas what DoFHandler::locally_owned_dofs() returns.
+   * 为掩码内的每个组件提取本地拥有的DoF指数集，这些指数为当前处理器所拥有。对于被掩码禁用的组件，会返回一个空的IndexSet。对于建立在顺序三角形上的标量DoFHandler，返回的向量包含一个包含所有DoF指数的完整IndexSet。如果掩码包含所有组件（这也对应于默认值），那么返回的索引集的联合就相当于
+   * DoFHandler::locally_owned_dofs() 的返回值。
+   *
    */
   template <int dim, int spacedim>
   std::vector<IndexSet>
@@ -1602,17 +991,12 @@ namespace DoFTools
     const ComponentMask &            components = ComponentMask());
 
   /**
-   * For each processor, determine the set of locally owned degrees of freedom
-   * as an IndexSet. This function then returns a vector of index sets, where
-   * the vector has size equal to the number of MPI processes that participate
-   * in the DoF handler object.
+   * 对于每个处理器，确定本地拥有的自由度集合为一个IndexSet。然后这个函数返回一个索引集的向量，其中向量的大小等于参与自由度处理对象的MPI进程的数量。
+   * 该函数可用于 dealii::Triangulation 或
+   * parallel::shared::Triangulation. 类型的对象，但对
+   * parallel::distributed::Triangulation
+   * 类型的对象不起作用，因为对于这样的三角形，我们没有关于三角形的所有单元的本地可用信息，因此不能对其他处理器本地拥有的单元上的自由度有任何明确的说法。
    *
-   * The function can be used for objects of type dealii::Triangulation or
-   * parallel::shared::Triangulation. It will not work for objects of type
-   * parallel::distributed::Triangulation since for such triangulations we do
-   * not have information about all cells of the triangulation available
-   * locally, and consequently can not say anything definitive about the
-   * degrees of freedom active on other processors' locally owned cells.
    */
   template <int dim, int spacedim>
   std::vector<IndexSet>
@@ -1620,18 +1004,12 @@ namespace DoFTools
     const DoFHandler<dim, spacedim> &dof_handler);
 
   /**
+   * 对于每个处理器，确定本地相关自由度的集合为IndexSet。然后这个函数返回一个索引集的向量，其中向量的大小等于参与自由度处理对象的MPI进程的数量。
+   * 该函数可用于 dealii::Triangulation 或
+   * parallel::shared::Triangulation. 类型的对象，但对
+   * parallel::distributed::Triangulation
+   * 类型的对象不起作用，因为对于这样的三角形，我们没有关于三角形的所有单元的本地可用信息，因此不能对其他处理器本地拥有的单元上的自由度有任何明确的说法。
    *
-   * For each processor, determine the set of locally relevant degrees of
-   * freedom as an IndexSet. This function then returns a vector of index
-   * sets, where the vector has size equal to the number of MPI processes that
-   * participate in the DoF handler object.
-   *
-   * The function can be used for objects of type dealii::Triangulation or
-   * parallel::shared::Triangulation. It will not work for objects of type
-   * parallel::distributed::Triangulation since for such triangulations we do
-   * not have information about all cells of the triangulation available
-   * locally, and consequently can not say anything definitive about the
-   * degrees of freedom active on other processors' locally owned cells.
    */
   template <int dim, int spacedim>
   std::vector<IndexSet>
@@ -1640,8 +1018,9 @@ namespace DoFTools
 
 
   /**
-   * Same as extract_locally_relevant_dofs() but for multigrid DoFs for the
-   * given @p level.
+   * 与extract_locally_relevant_dofs()相同，但对于给定的 @p level.
+   * 的多网格DoFs。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -1652,34 +1031,17 @@ namespace DoFTools
 
 
   /**
-   * For each degree of freedom, return in the output array to which subdomain
-   * (as given by the <tt>cell->subdomain_id()</tt> function) it belongs. The
-   * output array is supposed to have the right size already when calling this
-   * function.
+   * 对于每个自由度，在输出数组中返回它属于哪个子域（由<tt>cell->subdomain_id()</tt>函数给出）。在调用这个函数时，输出数组应该已经有了合适的大小。
+   * 请注意，与面、边和顶点相关的自由度如果位于分区的边界上，可能与多个子域相关。在这种情况下，我们将它们分配给具有较小子域ID的进程。这可能会导致分区中自由度的数量不同，即使单元格的数量是完全等分的。虽然这是令人遗憾的，但在实践中这并不是一个问题，因为只要分区的数量保持不变，当我们细化网格时，分区边界上的自由度数量是渐进式消失的。
+   * 这个函数返回每个DoF与一个子域的关联。如果你正在寻找每个
+   * @em
+   * 单元与一个子域的关联，可以查询<tt>cell->subdomain_id()</tt>函数，或者使用
+   * <tt>GridTools::get_subdomain_association</tt> 函数。
+   * 请注意，这个函数对于建立在
+   * parallel::distributed::Triangulation
+   * 上的DoFHandler对象的用途值得怀疑，因为在这种情况下，MPI进程对各个自由度的所有权是由DoF
+   * handler对象控制的，而不是基于某种几何算法与子域id相结合。特别是，这个命名空间中的函数所识别的与子域相关的自由度与DoFHandler类所识别的自由度不一样。
    *
-   * Note that degrees of freedom associated with faces, edges, and vertices
-   * may be associated with multiple subdomains if they are sitting on
-   * partition boundaries. In these cases, we assign them to the process with
-   * the smaller subdomain id. This may lead to different numbers of degrees
-   * of freedom in partitions, even if the number of cells is perfectly
-   * equidistributed. While this is regrettable, it is not a problem in
-   * practice since the number of degrees of freedom on partition boundaries
-   * is asymptotically vanishing as we refine the mesh as long as the number
-   * of partitions is kept constant.
-   *
-   * This function returns the association of each DoF with one subdomain. If
-   * you are looking for the association of each @em cell with a subdomain,
-   * either query the <tt>cell->subdomain_id()</tt> function, or use the
-   * <tt>GridTools::get_subdomain_association</tt> function.
-   *
-   * Note that this function is of questionable use for DoFHandler objects
-   * built on parallel::distributed::Triangulation since in that case
-   * ownership of individual degrees of freedom by MPI processes is controlled
-   * by the DoF handler object, not based on some geometric algorithm in
-   * conjunction with subdomain id. In particular, the degrees of freedom
-   * identified by the functions in this namespace as associated with a
-   * subdomain are not the same the DoFHandler class identifies as those it
-   * owns.
    */
   template <int dim, int spacedim>
   void
@@ -1687,29 +1049,19 @@ namespace DoFTools
                             std::vector<types::subdomain_id> &subdomain);
 
   /**
-   * Count how many degrees of freedom are uniquely associated with the given
-   * @p subdomain index.
+   * 计算有多少个自由度与给定的 @p subdomain
+   * 索引唯一相关。
+   * 请注意，可能有一些罕见的情况，即具有给定 @p subdomain
+   * 索引的单元格存在，但它的自由度实际上都没有与之相关。在这种情况下，返回值将为零。
+   * 如果没有具有给定 @p subdomain
+   * 索引的单元格，该函数将产生一个异常。
+   * 该函数返回与一个子域相关的DoFs数量。
+   * 如果你要寻找与这个子域相关的 @em 单元，请使用
+   * <tt>GridTools::count_cells_with_subdomain_association</tt> 函数。
+   * 注意这个函数对于建立在 parallel::distributed::Triangulation
+   * 上的DoFHandler对象的用途值得怀疑，因为在这种情况下，MPI进程对单个自由度的所有权是由DoF
+   * handler对象控制的，而不是基于一些与子域id相关的几何算法。特别是，这个命名空间中的函数所识别的与子域相关的自由度与DoFHandler类所识别的自由度不一样。
    *
-   * Note that there may be rare cases where cells with the given @p subdomain
-   * index exist, but none of its degrees of freedom are actually associated
-   * with it. In that case, the returned value will be zero.
-   *
-   * This function will generate an exception if there are no cells with the
-   * given @p subdomain index.
-   *
-   * This function returns the number of DoFs associated with one subdomain.
-   * If you are looking for the association of @em cells with this subdomain,
-   * use the <tt>GridTools::count_cells_with_subdomain_association</tt>
-   * function.
-   *
-   * Note that this function is of questionable use for DoFHandler objects
-   * built on parallel::distributed::Triangulation since in that case
-   * ownership of individual degrees of freedom by MPI processes is controlled
-   * by the DoF handler object, not based on some geometric algorithm in
-   * conjunction with subdomain id. In particular, the degrees of freedom
-   * identified by the functions in this namespace as associated with a
-   * subdomain are not the same the DoFHandler class identifies as those it
-   * owns.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -1718,23 +1070,13 @@ namespace DoFTools
     const types::subdomain_id        subdomain);
 
   /**
-   * Count how many degrees of freedom are uniquely associated with the given
-   * @p subdomain index.
+   * 计算有多少个自由度与给定的 @p subdomain
+   * 索引唯一相关。
+   * 这个函数的作用与前一个函数相同，只是它将结果在DoFHandler对象所使用的有限元的向量分量之间进行分割。因此，最后一个参数（其长度必须等于矢量分量的数量）将存储每个矢量分量的多少个自由度与给定的子域相关。
+   * 注意这个函数对于建立在 parallel::distributed::Triangulation
+   * 上的DoFHandler对象的用途是值得怀疑的，因为在这种情况下，MPI进程对各个自由度的所有权是由DoF
+   * handler对象控制的，而不是基于一些与子域id相关的几何算法。特别是，这个命名空间中的函数所识别的与子域相关的自由度与DoFHandler类所识别的自由度不一样。
    *
-   * This function does what the previous one does except that it splits the
-   * result among the vector components of the finite element in use by the
-   * DoFHandler object. The last argument (which must have a length equal to
-   * the number of vector components) will therefore store how many degrees of
-   * freedom of each vector component are associated with the given subdomain.
-   *
-   * Note that this function is of questionable use for DoFHandler objects
-   * built on parallel::distributed::Triangulation since in that case
-   * ownership of individual degrees of freedom by MPI processes is controlled
-   * by the DoF handler object, not based on some geometric algorithm in
-   * conjunction with subdomain id. In particular, the degrees of freedom
-   * identified by the functions in this namespace as associated with a
-   * subdomain are not the same the DoFHandler class identifies as those it
-   * owns.
    */
   template <int dim, int spacedim>
   void
@@ -1744,25 +1086,15 @@ namespace DoFTools
     std::vector<unsigned int> &      n_dofs_on_subdomain);
 
   /**
-   * Return a set of indices that denotes the degrees of freedom that live on
-   * the given subdomain, i.e. that are on cells owned by the current
-   * processor. Note that this includes the ones that this subdomain "owns"
-   * (i.e. the ones for which get_subdomain_association() returns a value
-   * equal to the subdomain given here and that are selected by the
-   * DoFHandler::locally_owned_dofs() function) but also all of those that sit
-   * on the boundary between the given subdomain and other subdomain. In
-   * essence, degrees of freedom that sit on boundaries between subdomain will
-   * be in the index sets returned by this function for more than one
-   * subdomain.
+   * 返回一组索引，表示生活在给定子域上的自由度，即当前处理器拥有的单元上的自由度。请注意，这包括这个子域
+   * "拥有
+   * "的自由度（即get_subdomain_association()返回的值等于这里给出的子域，并且被
+   * DoFHandler::locally_owned_dofs()
+   * 函数选中的自由度），也包括所有位于给定子域和其他子域之间边界上的自由度。从本质上讲，位于子域之间边界的自由度将出现在这个函数返回的多个子域的索引集中。
+   * 注意这个函数对于建立在 parallel::distributed::Triangulation
+   * 上的DoFHandler对象的用途是值得怀疑的，因为在这种情况下，MPI进程对各个自由度的所有权是由DoF
+   * handler对象控制的，而不是基于一些与子域id相关的几何算法。特别是，这个命名空间中的函数所识别的与子域相关的自由度与DoFHandler类所识别的自由度不一样。
    *
-   * Note that this function is of questionable use for DoFHandler objects
-   * built on parallel::distributed::Triangulation since in that case
-   * ownership of individual degrees of freedom by MPI processes is controlled
-   * by the DoF handler object, not based on some geometric algorithm in
-   * conjunction with subdomain id. In particular, the degrees of freedom
-   * identified by the functions in this namespace as associated with a
-   * subdomain are not the same the DoFHandler class identifies as those it
-   * owns.
    */
   template <int dim, int spacedim>
   IndexSet
@@ -1771,58 +1103,38 @@ namespace DoFTools
     const types::subdomain_id        subdomain);
   // @}
   /**
-   * @name DoF indices on patches of cells
+   * @name  细胞斑块上的DoF指数 为小块的细胞斑块创建包含大量自由度的结构。由此产生的对象可用于RelaxationBlockSOR和相关类，以实现Schwarz预处理和平滑器，其中子域仅由少量单元组成。
    *
-   * Create structures containing a large set of degrees of freedom for small
-   * patches of cells. The resulting objects can be used in RelaxationBlockSOR
-   * and related classes to implement Schwarz preconditioners and smoothers,
-   * where the subdomains consist of small numbers of cells only.
    */
   //@{
 
   /**
-   * Return the set of degrees of freedom that live on a set of cells (i.e., a
-   * patch) described by the argument.
-   *
-   * Patches are often used in defining error estimators that require the
-   * solution of a local problem on the patch surrounding each of the cells of
-   * the mesh. You can get a list of cells that form the patch around a given
-   * cell using GridTools::get_patch_around_cell(). While
-   * DoFTools::count_dofs_on_patch() can be used to determine the size of
-   * these local problems, so that one can assemble the local system and then
-   * solve it, it is still necessary to provide a mapping between the global
-   * indices of the degrees of freedom that live on the patch and a local
-   * enumeration. This function provides such a local enumeration by returning
-   * the set of degrees of freedom that live on the patch.
-   *
-   * Since this set is returned in the form of a std::vector, one can also
-   * think of it as a mapping
+   * 返回由参数描述的一组单元（即补丁）上的自由度集合。
+   * 补丁通常用于定义误差估计器，这些估计器需要解决网格中每个单元周围补丁上的局部问题。你可以使用
+   * GridTools::get_patch_around_cell().
+   * 得到一个构成给定单元周围补丁的单元列表。虽然
+   * DoFTools::count_dofs_on_patch()
+   * 可以用来确定这些局部问题的大小，这样就可以组装局部系统，然后进行求解，但仍然有必要提供一个住在补丁上的自由度的全局索引和局部枚举之间的映射。这个函数通过返回住在补丁上的自由度的集合来提供这样一个局部列举。
+   * 由于这个集合是以 std::vector,
+   * 的形式返回的，我们也可以把它看成是一个映射
    * @code
-   *   i -> global_dof_index
+   * i
+   *
+   * -> global_dof_index
    * @endcode
-   * where <code>i</code> is an index into the returned vector (i.e., a the
-   * <i>local</i> index of a degree of freedom on the patch) and
-   * <code>global_dof_index</code> is the global index of a degree of freedom
-   * located on the patch. The array returned has size equal to
-   * DoFTools::count_dofs_on_patch().
+   * 其中 <code>i</code>
+   * 是返回向量的索引（即补丁上一个自由度的<i>local</i>索引），
+   * <code>global_dof_index</code>
+   * 是位于补丁上的自由度的全局索引。返回的数组大小等于
+   * DoFTools::count_dofs_on_patch(). 。
+   * @note
+   * 返回的数组是按全局自由度索引排序的。因此，如果我们认为这个数组的索引是本地DoF索引，那么产生的本地系统就保留了全局系统的块状结构。
+   * @param  补丁 一个DoFHandler<dim,  spacedim>::active_cell_iterator
+   * @return
+   * 位于补丁上的那些全局自由度的列表，如上定义。
+   * @note
+   * 在并行分布式计算的背景下，只有在本地拥有的单元周围的补丁上调用这个函数才有意义。这是因为本地拥有的单元的邻居要么是本地拥有的单元，要么是幽灵单元。对于这两种情况，我们知道这些单元实际上是完整的、平行的三角形的真实单元。我们还可以查询这些单元的自由度。换句话说，这个函数只有在补丁中的所有单元都是本地拥有的或者是幽灵单元的情况下才能工作。
    *
-   * @note The array returned is sorted by global DoF index. Consequently, if
-   * one considers the index into this array a local DoF index, then the local
-   * system that results retains the block structure of the global system.
-   *
-   * @param patch A collection of cells within an object of type
-   * DoFHandler<dim, spacedim>::active_cell_iterator
-   *
-   * @return A list of those global degrees of freedom located on the patch,
-   * as defined above.
-   *
-   * @note In the context of a parallel distributed computation, it only makes
-   * sense to call this function on patches around locally owned cells. This
-   * is because the neighbors of locally owned cells are either locally owned
-   * themselves, or ghost cells. For both, we know that these are in fact the
-   * real cells of the complete, parallel triangulation. We can also query the
-   * degrees of freedom on these. In other words, this function can only work
-   * if all cells in the patch are either locally owned or ghost cells.
    */
   template <int dim, int spacedim>
   std::vector<types::global_dof_index>
@@ -1831,10 +1143,9 @@ namespace DoFTools
       &patch);
 
   /**
-   * The same as above.
+   * 与上述相同。      @deprecated
+   * 使用以dim和spacedim为模板参数的函数。
    *
-   * @deprecated Use the function that takes dim and spacedim as template
-   *   argument.
    */
   template <typename DoFHandlerType>
   DEAL_II_DEPRECATED std::vector<types::global_dof_index>
@@ -1842,24 +1153,13 @@ namespace DoFTools
                        const std::vector<typename DoFHandlerType::active_cell_iterator> &patch);
 
   /**
-   * Creates a sparsity pattern, which lists
-   * the degrees of freedom associated to each cell on the given
-   * level. This pattern can be used in RelaxationBlock classes as
-   * block list for additive and multiplicative Schwarz methods.
+   * 创建一个稀疏模式，它列出了与给定层次上每个单元相关的自由度。这种模式可以在RelaxationBlock类中作为加法和乘法施瓦茨方法的块列表。
+   * 该模式中的行指数是通过三角法的一个层次进行标准迭代而得到的单元格指数。对于一个
+   * parallel::distributed::Triangulation,
+   * 来说，只有本地拥有的单元被输入。
+   * 稀疏模式在这个函数中被调整为包含与给定级别上本地拥有的单元格一样多的行，与该级别上的自由度一样多的列。
+   * <tt>selected_dofs</tt>是一个由单元上的局部自由度索引的向量。如果它被使用，只有这些自由度被输入到块列表中被选择。例如，这允许排除组件或边界上的道夫。
    *
-   * The row index in this pattern is the cell index resulting from
-   * standard iteration through a level of the Triangulation. For a
-   * parallel::distributed::Triangulation, only locally owned cells
-   * are entered.
-   *
-   * The sparsity pattern is resized in this function to contain as
-   * many rows as there are locally owned cells on a given level, as
-   * many columns as there are degrees of freedom on this level.
-   *
-   * <tt>selected_dofs</tt> is a vector indexed by the local degrees
-   * of freedom on a cell. If it is used, only such dofs are entered
-   * into the block list which are selected. This allows for instance
-   * the exclusion of components or of dofs on the boundary.
    */
   template <int dim, int spacedim>
   void
@@ -1870,55 +1170,24 @@ namespace DoFTools
                     const types::global_dof_index    offset        = 0);
 
   /**
-   * Create an incidence matrix that for every vertex on a given level of a
-   * multilevel DoFHandler flags which degrees of freedom are associated with
-   * the adjacent cells. This data structure is a matrix with as many rows as
-   * there are vertices on a given level, as many columns as there are degrees
-   * of freedom on this level, and entries that are either true or false. This
-   * data structure is conveniently represented by a SparsityPattern object.
-   * The sparsity pattern may be empty when entering this function and will be
-   * reinitialized to the correct size.
+   * 创建一个入射矩阵，对于多级DoFHandler的某一层的每一个顶点，标志着哪些自由度与相邻单元相关。这个数据结构是一个矩阵，有多少行就有多少顶点，有多少列就有多少自由度，条目是真还是假。这个数据结构由一个SparsityPattern对象方便地表示。
+   * 在进入这个函数时，稀疏性模式可能是空的，将被重新初始化为正确的大小。
+   * 该函数有一些布尔参数（列在下面）控制生成补丁的细节。默认设置是Arnold-Falk-Winther类型的平滑器，用于具有基本边界条件的发散和曲率符合的有限元。其他应用也是可能的，特别是改变<tt>boundary_patches</tt>用于非基本边界条件。
+   * 这个函数返回<tt>vertex_mapping</tt>，它包含从顶点索引到<tt>block_list</tt>块索引的映射。对于没有导致顶点补丁的顶点，<tt>vertex_mapping</tt>中的条目包含值<tt>invalid_unsigned_int</tt>。如果<tt>invert_vertex_mapping</tt>被设置为<tt>true</tt>，那么<tt>vertex_mapping</tt>将被倒置，这样它就包含了从块索引到相应顶点索引的映射。
+   * @arg  <tt>block_list</tt>：将存储补丁的SparsityPattern。
+   * @arg
+   * <tt>dof_handler</tt>：提供拓扑结构操作的多级dof处理程序。
+   * @arg
+   * <tt>interior_dofs_only</tt>：对于一个顶点周围的每个单元补丁，只收集该补丁的内部自由度，而不考虑该补丁边界上的自由度。例如，这是Arnold-Falk-Winther类型的平滑器的设置。
+   * @arg
+   * <tt>boundary_patches</tt>：包括域的边界顶点周围的补丁。如果不包括，将只生成内部顶点周围的补丁。
+   * @arg
+   * <tt>level_boundary_patches</tt>：对朝向更粗的单元的细化边也是如此。
+   * @arg
+   * <tt>single_cell_patches</tt>：如果不为真，包含单个单元的补丁会被消除。
+   * @arg
+   * <tt>invert_vertex_mapping</tt>：如果为真，那么返回值包含每个块的一个顶点索引；如果为假，那么返回值包含每个顶点的一个块索引或<tt>invalid_unsigned_int</tt>。
    *
-   * The function has some boolean arguments (listed below) controlling
-   * details of the generated patches. The default settings are those for
-   * Arnold-Falk-Winther type smoothers for divergence and curl conforming
-   * finite elements with essential boundary conditions. Other applications
-   * are possible, in particular changing <tt>boundary_patches</tt> for non-
-   * essential boundary conditions.
-   *
-   * This function returns the <tt>vertex_mapping</tt>,
-   * that contains the mapping from the vertex indices to the block indices
-   * of the <tt>block_list</tt>. For vertices that do not lead to a vertex
-   * patch, the entry in <tt>vertex_mapping</tt> contains the value
-   * <tt>invalid_unsigned_int</tt>. If <tt>invert_vertex_mapping</tt> is set to
-   * <tt>true</tt>, then the <tt>vertex_mapping</tt> is inverted such that it
-   * contains the mapping from the block indices to the corresponding vertex
-   * indices.
-   *
-   * @arg <tt>block_list</tt>: the SparsityPattern into which the patches will
-   * be stored.
-   *
-   * @arg <tt>dof_handler</tt>: the multilevel dof handler providing the
-   * topology operated on.
-   *
-   * @arg <tt>interior_dofs_only</tt>: for each patch of cells around a
-   * vertex, collect only the interior degrees of freedom of the patch and
-   * disregard those on the boundary of the patch. This is for instance the
-   * setting for smoothers of Arnold-Falk-Winther type.
-   *
-   * @arg <tt>boundary_patches</tt>: include patches around vertices at the
-   * boundary of the domain. If not, only patches around interior vertices
-   * will be generated.
-   *
-   * @arg <tt>level_boundary_patches</tt>: same for refinement edges towards
-   * coarser cells.
-   *
-   * @arg <tt>single_cell_patches</tt>: if not true, patches containing a
-   * single cell are eliminated.
-   *
-   * @arg <tt>invert_vertex_mapping</tt>: if true, then the return value
-   * contains one vertex index for each block; if false, then the return value
-   * contains one block index or <tt>invalid_unsigned_int</tt> for each vertex.
    */
   template <int dim, int spacedim>
   std::vector<unsigned int>
@@ -1932,18 +1201,12 @@ namespace DoFTools
                       const bool invert_vertex_mapping = false);
 
   /**
-   * Same as above but allows boundary dofs on blocks to be excluded
-   * individually.
+   * 与上述相同，但允许单独排除块上的边界道夫。
+   * 如果你想使用，例如，Taylor
+   * Hood元素，这很有帮助，因为它允许你不包括速度块在补丁上的边界DoFs，同时也允许你包括压力块的边界DoFs。
+   * 对于顶点周围的每个单元补丁，如果 @p exclude_boundary_dofs
+   * 的BlockMask中对应块的布尔值为false，则收集该补丁的所有内部自由度并忽略该补丁边界上的自由度。
    *
-   * This is helpful if you want to use, for example, Taylor Hood elements as
-   * it allows you to not include the boundary DoFs for the velocity block on
-   * the patches while also letting you include the boundary DoFs for the
-   * pressure block.
-   *
-   * For each patch of cells around a vertex, collect all of the interior
-   * degrees of freedom of the patch and disregard those on the boundary of
-   * the patch if the boolean value for the corresponding block in the
-   * BlockMask of @p exclude_boundary_dofs is false.
    */
   template <int dim, int spacedim>
   std::vector<unsigned int>
@@ -1957,41 +1220,17 @@ namespace DoFTools
                       const bool       invert_vertex_mapping  = false);
 
   /**
-   * Create an incidence matrix that for every cell on a given level of a
-   * multilevel DoFHandler flags which degrees of freedom are associated with
-   * children of this cell. This data structure is conveniently represented by
-   * a SparsityPattern object.
+   * 创建一个入射矩阵，对于多级DoFHandler的某一层的每一个单元，都标志着哪些自由度与这个单元的子代相关。这个数据结构可以方便地用SparsityPattern对象表示。
+   * 因此，该函数创建了一个稀疏模式，在每一行（行对应于该层的单元）列出与该单元的子单元相关的自由度。这里使用的自由度指数是多级层次结构中的一级自由度指数，也就是说，它们可能与本身并不活跃的子单元有关。进入这个函数时，稀疏模式可能是空的，将被重新初始化为正确的大小。
+   * 该函数有一些布尔参数（列在下面）控制生成补丁的细节。默认设置是Arnold-Falk-Winther类型的平滑器，用于具有基本边界条件的发散和曲率符合的有限元。其他应用也是可能的，特别是改变<tt>boundary_dofs</tt>用于非基本边界条件。
+   * @arg  <tt>block_list</tt>：将存储补丁的SparsityPattern。
+   * @arg
+   * <tt>dof_handler</tt>：提供所操作的拓扑结构的多级dof处理器。
+   * @arg
+   * <tt>interior_dofs_only</tt>：对于顶点周围的每个单元补丁，只收集该补丁的内部自由度，而忽略该补丁边界上的自由度。例如，这就是Arnold-Falk-Winther类型的平滑器的设置。
+   * @arg  <tt>boundary_dofs</tt>:
+   * 包括自由度，这些自由度将被<tt>interior_dofs_only</tt>排除，但位于域的边界上，因此需要平滑。如果<tt>interior_dofs_only</tt>是假的，这个参数就没有影响。
    *
-   * The function thus creates a sparsity pattern which in each row (with rows
-   * corresponding to the cells on this level) lists the degrees of freedom
-   * associated to the cells that are the children of this cell. The DoF
-   * indices used here are level dof indices of a multilevel hierarchy, i.e.,
-   * they may be associated with children that are not themselves active. The
-   * sparsity pattern may be empty when entering this function and will be
-   * reinitialized to the correct size.
-   *
-   * The function has some boolean arguments (listed below) controlling
-   * details of the generated patches. The default settings are those for
-   * Arnold-Falk-Winther type smoothers for divergence and curl conforming
-   * finite elements with essential boundary conditions. Other applications
-   * are possible, in particular changing <tt>boundary_dofs</tt> for non-
-   * essential boundary conditions.
-   *
-   * @arg <tt>block_list</tt>: the SparsityPattern into which the patches will
-   * be stored.
-   *
-   * @arg <tt>dof_handler</tt>: The multilevel dof handler providing the
-   * topology operated on.
-   *
-   * @arg <tt>interior_dofs_only</tt>: for each patch of cells around a
-   * vertex, collect only the interior degrees of freedom of the patch and
-   * disregard those on the boundary of the patch. This is for instance the
-   * setting for smoothers of Arnold-Falk-Winther type.
-   *
-   * @arg <tt>boundary_dofs</tt>: include degrees of freedom, which would have
-   * excluded by <tt>interior_dofs_only</tt>, but are lying on the boundary of
-   * the domain, and thus need smoothing. This parameter has no effect if
-   * <tt>interior_dofs_only</tt> is false.
    */
   template <int dim, int spacedim>
   void
@@ -2002,23 +1241,15 @@ namespace DoFTools
                      const bool                       boundary_dofs = false);
 
   /**
-   * Create a block list with only a single patch, which in turn contains all
-   * degrees of freedom on the given level.
+   * 创建一个只有一个补丁的块列表，它又包含了给定层次上的所有自由度。
+   * 这个函数主要是对make_child_patches()和make_vertex_patches()等函数在第0层的一个闭合，这些函数可能会产生一个空的补丁列表。
+   * @arg  <tt>block_list</tt>: 补丁将被存储到的SparsityPattern。
+   * @arg
+   * <tt>dof_handler</tt>：提供拓扑结构操作的多级dof处理程序。
+   * @arg  <tt>level</tt> 用于建立列表的网格级别。      @arg
+   * <tt>interior_dofs_only</tt>:
+   * 如果为真，排除域的边界上的自由度。
    *
-   * This function is mostly a closure on level 0 for functions like
-   * make_child_patches() and make_vertex_patches(), which may produce an
-   * empty patch list.
-   *
-   * @arg <tt>block_list</tt>: the SparsityPattern into which the patches will
-   * be stored.
-   *
-   * @arg <tt>dof_handler</tt>: The multilevel dof handler providing the
-   * topology operated on.
-   *
-   * @arg <tt>level</tt> The grid level used for building the list.
-   *
-   * @arg <tt>interior_dofs_only</tt>: if true, exclude degrees of freedom on
-   * the boundary of the domain.
    */
   template <int dim, int spacedim>
   void
@@ -2029,45 +1260,27 @@ namespace DoFTools
 
   /**
    * @}
+   *
    */
   /**
-   * @name Counting degrees of freedom and related functions
-   * @{
+   * @name  计算自由度和相关函数  @{  。
+   *
    */
 
   /**
-   * Count how many degrees of freedom out of the total number belong to each
-   * component. If the number of components the finite element has is one
-   * (i.e. you only have one scalar variable), then the number in this
-   * component obviously equals the total number of degrees of freedom.
-   * Otherwise, the sum of the DoFs in all the components needs to equal the
-   * total number.
+   * 计算在总数中，有多少自由度属于每个组件。如果有限元的构件数是一个（即你只有一个标量变量），那么这个构件中的数字显然等于自由度总数。
+   * 否则，所有组件中的自由度之和需要等于总数量。
+   * 然而，如果有限元不是原始的，即它的一些或全部形状函数在一个以上的矢量分量中是非零的，那么最后一句话就不成立了。例如，这适用于Nedelec或Raviart-Thomas元素。在这种情况下，一个自由度在每个分量中都被计算为非零，因此上述的总和大于自由度的总数。
+   * 这种行为可以通过可选的参数<tt>vector_valued_once</tt>来关闭。如果这是<tt>true</tt>，非原始向量值元素的成分数只收集在第一个成分中。所有其他分量的计数将为零。
+   * 额外的可选参数 @p target_component
+   * 允许对组件进行重新排序和分组。为此，它包含了每个组件的组件编号，它应该被计算为。如果多次输入相同的号码，就会把几个组件归为同一个。这个参数的应用之一是当你想形成块状矩阵和向量，但又想把几个分量打包到同一个块中时（例如，当你有
+   * @p dim
+   * 速度和一个压力时，要把所有速度放到一个块中，而把压力放到另一个块中）。
+   * 结果在 @p dofs_per_component. 中返回。注意， @p
+   * dofs_per_component的大小需要足以容纳 @p target_component.
+   * 中指定的所有索引。如果不是这样，会抛出一个断言。
+   * 没有被target_components锁定的索引将不被触及。
    *
-   * However, the last statement does not hold true if the finite element is
-   * not primitive, i.e. some or all of its shape functions are non-zero in
-   * more than one vector component. This applies, for example, to the Nedelec
-   * or Raviart-Thomas elements. In this case, a degree of freedom is counted
-   * in each component in which it is non-zero, so that the sum mentioned
-   * above is greater than the total number of degrees of freedom.
-   *
-   * This behavior can be switched off by the optional parameter
-   * <tt>vector_valued_once</tt>. If this is <tt>true</tt>, the number of
-   * components of a nonprimitive vector valued element is collected only in
-   * the first component. All other components will have a count of zero.
-   *
-   * The additional optional argument @p target_component allows for a re-
-   * sorting and grouping of components. To this end, it contains for each
-   * component the component number it shall be counted as. Having the same
-   * number entered several times sums up several components as the same. One
-   * of the applications of this argument is when you want to form block
-   * matrices and vectors, but want to pack several components into the same
-   * block (for example, when you have @p dim velocities and one pressure, to
-   * put all velocities into one block, and the pressure into another).
-   *
-   * The result is returned in @p dofs_per_component. Note that the size of @p
-   * dofs_per_component needs to be enough to hold all the indices specified
-   * in @p target_component. If this is not the case, an assertion is thrown.
-   * The indices not targeted by target_components are left untouched.
    */
   template <int dim, int spacedim>
   std::vector<types::global_dof_index>
@@ -2077,20 +1290,12 @@ namespace DoFTools
     const std::vector<unsigned int> &target_component   = {});
 
   /**
-   * Count the degrees of freedom in each block. This function is similar to
-   * count_dofs_per_component(), with the difference that the counting is done
-   * by blocks. See
-   * @ref GlossBlock "blocks"
-   * in the glossary for details. Again the vectors are assumed to have the
-   * correct size before calling this function. If this is not the case, an
-   * assertion is thrown.
+   * 计算每个块中的自由度。这个函数类似于count_dofs_per_component()，不同的是，计数是按块进行的。详见术语表中的 @ref GlossBlock  "块"
+   * 。在调用这个函数之前，再次假设向量具有正确的大小。如果不是这样，就会抛出一个断言。
+   * 这个函数在  step-22  ,  step-31  , 和  step-32
+   * 教程中使用，还有其他一些程序。      @pre
+   * dofs_per_block变量具有与dof_handler参数所使用的有限元的块数相同的组件，或者与target_blocks参数中列举的块数相同（如果给出的话）。
    *
-   * This function is used in the step-22, step-31, and step-32 tutorial
-   * programs, among others.
-   *
-   * @pre The dofs_per_block variable has as many components as the finite
-   * element used by the dof_handler argument has blocks, or alternatively as
-   * many blocks as are enumerated in the target_blocks argument if given.
    */
   template <int dim, int spacedim>
   std::vector<types::global_dof_index>
@@ -2099,13 +1304,9 @@ namespace DoFTools
                             std::vector<unsigned int>());
 
   /**
-   * For each active cell of a DoFHandler, extract the active finite element
-   * index and fill the vector given as second argument. This vector is assumed
-   * to have as many entries as there are active cells.
+   * 对于DoFHandler的每个活动单元，提取活动的有限元索引并填充作为第二个参数的矢量。这个向量被认为具有与活动单元相同数量的条目。
+   * 对于没有hp-capabilities作为第一个参数的DoFHandler对象，返回的向量将只由0组成，表示所有单元使用相同的有限元。在hp模式下，这些值可能是不同的，但是。
    *
-   * For DoFHandler objects without hp-capabilities given as first argument, the
-   * returned vector will consist of only zeros, indicating that all cells use
-   * the same finite element. In hp-mode, the values may be different, though.
    */
   template <int dim, int spacedim>
   void
@@ -2113,31 +1314,18 @@ namespace DoFTools
                         std::vector<unsigned int> &      active_fe_indices);
 
   /**
-   * Count how many degrees of freedom live on a set of cells (i.e., a patch)
-   * described by the argument.
+   * 计算参数所描述的一组单元（即一个补丁）上有多少自由度。
+   * 补丁通常用于定义误差估计器，这些估计器需要解决网格中每个单元周围补丁上的局部问题。你可以使用
+   * GridTools::get_patch_around_cell().
+   * 得到一个围绕给定单元的补丁的单元列表，这个函数在设置用于解决单元周围补丁的局部问题的线性系统的大小时非常有用。然后，函数
+   * DoFTools::get_dofs_on_patch()
+   * 将有助于建立全局自由度和局部自由度之间的联系。
+   * @param  patch 一个DoFHandler<dim,
+   * spacedim>类型的对象内的单元的集合  @return
+   * 与这个补丁的单元相关的自由度数。
+   * @note
+   * 在并行分布式计算的背景下，只有在本地拥有的单元格周围的补丁上调用这个函数才有意义。这是因为本地拥有的单元的邻居要么是本地拥有的单元，要么是幽灵单元。对于这两种情况，我们知道这些单元实际上是完整的、平行的三角形的真实单元。我们还可以查询这些单元的自由度。换句话说，这个函数只有在补丁中的所有单元都是本地拥有的或者是幽灵单元的情况下才能工作。
    *
-   * Patches are often used in defining error estimators that require the
-   * solution of a local problem on the patch surrounding each of the cells of
-   * the mesh. You can get a list of cells that form the patch around a given
-   * cell using GridTools::get_patch_around_cell(). This function is then
-   * useful in setting up the size of the linear system used to solve the
-   * local problem on the patch around a cell. The function
-   * DoFTools::get_dofs_on_patch() will then help to make the connection
-   * between global degrees of freedom and the local ones.
-   *
-   * @param patch A collection of cells within an object of type
-   * DoFHandler<dim, spacedim>
-   *
-   * @return The number of degrees of freedom associated with the cells of
-   * this patch.
-   *
-   * @note In the context of a parallel distributed computation, it only makes
-   * sense to call this function on patches around locally owned cells. This
-   * is because the neighbors of locally owned cells are either locally owned
-   * themselves, or ghost cells. For both, we know that these are in fact the
-   * real cells of the complete, parallel triangulation. We can also query the
-   * degrees of freedom on these. In other words, this function can only work
-   * if all cells in the patch are either locally owned or ghost cells.
    */
   template <int dim, int spacedim>
   unsigned int
@@ -2146,10 +1334,9 @@ namespace DoFTools
       &patch);
 
   /**
-   * The same as above.
+   * 与上述相同。      @deprecated
+   * 使用以dim和spacedim为模板参数的函数。
    *
-   * @deprecated Use the function that takes dim and spacedim as template
-   *   argument.
    */
   template <typename DoFHandlerType>
   DEAL_II_DEPRECATED unsigned int
@@ -2158,25 +1345,22 @@ namespace DoFTools
 
   /**
    * @}
-   */
-
-  /**
-   * @name Functions that return different DoF mappings
-   * @{
-   */
-
-  /**
-   * Create a mapping from degree of freedom indices to the index of that
-   * degree of freedom on the boundary. After this operation,
-   * <tt>mapping[dof]</tt> gives the index of the degree of freedom with
-   * global number @p dof in the list of degrees of freedom on the boundary.
-   * If the degree of freedom requested is not on the boundary, the value of
-   * <tt>mapping[dof]</tt> is numbers::invalid_dof_index. This function is
-   * mainly used when setting up matrices and vectors on the boundary from the
-   * trial functions, which have global numbers, while the matrices and vectors
-   * use numbers of the trial functions local to the boundary.
    *
-   * Prior content of @p mapping is deleted.
+   */
+
+  /**
+   * @name  返回不同DoF映射的函数  @{ .
+   *
+   */
+
+  /**
+   * 创建一个从自由度指数到该自由度在边界上的指数的映射。在此操作之后，<tt>mapping[dof]</tt>给出边界上自由度列表中全局编号为
+   * @p dof 的自由度的索引。
+   * 如果要求的自由度不在边界上，则<tt>mapping[dof]</tt>的值为
+   * numbers::invalid_dof_index.
+   * 该函数主要用于从试验函数中设置边界上的矩阵和向量，而矩阵和向量使用边界本地的试验函数的编号。
+   * @p mapping 的先前内容被删除。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2184,14 +1368,8 @@ namespace DoFTools
                               std::vector<types::global_dof_index> &mapping);
 
   /**
-   * Same as the previous function, except that only those parts of the
-   * boundary are considered for which the boundary indicator is listed in the
-   * second argument.
+   * 与之前的函数相同，只是只考虑边界的那些部分，对于这些部分的边界指标列在第二个参数中。    更多信息请参见本类的一般文档。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * See the general doc of this class for more information.
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim>
   void
@@ -2200,32 +1378,22 @@ namespace DoFTools
                               std::vector<types::global_dof_index> &mapping);
 
   /**
-   * Return a list of support points (see this
-   * @ref GlossSupport "glossary entry")
-   * for all the degrees of freedom handled by this DoF handler object. This
-   * function, of course, only works if the finite element object used by the
-   * DoF handler object actually provides support points, i.e. no edge
-   * elements or the like. Otherwise, an exception is thrown.
+   * 返回该DoF处理对象处理的所有自由度的支持点（见此 @ref GlossSupport "术语条目"
+   * ）的列表。当然，这个函数只有在DoF处理对象使用的有限元对象实际提供支持点时才起作用，即没有边缘元素或类似的东西。否则，就会抛出一个异常。
+   * @pre  给定的数组的长度必须与自由度的元素数量相同。
+   * @note
+   * 这个函数的前提条件是输出参数的大小必须等于自由度的总数，这使得这个函数不适合给定的DoFHandler对象派生自
+   * parallel::TriangulationBase 对象的情况（或任何派生自
+   * parallel::TriangulationBase).
+   * 的类，因此，如果用这样的DoFHandler调用，这个函数将产生一个错误。
+   * @param[in]  映射 从参考单元到定义DoF的实际单元的映射。
+   * @param[in]  dof_handler
+   * 描述哪个DoF指数在三角结构的哪个单元上的对象。
+   * @param[in,out]  support_points
+   * 存储实空间坐标中斗室的相应位置的向量。这个对象以前的内容在这个函数中被删除。
+   * @param[in]  mask
+   * 一个可选的分量掩码，用于限制从中提取支持点的分量。
    *
-   * @pre The given array must have a length of as many elements as there are
-   * degrees of freedom.
-   *
-   * @note The precondition to this function that the output argument needs to
-   * have size equal to the total number of degrees of freedom makes this
-   * function unsuitable for the case that the given DoFHandler object derives
-   * from a parallel::TriangulationBase object (or any of the classes derived
-   * from parallel::TriangulationBase). Consequently, this function will produce
-   * an error if called with such a DoFHandler.
-   *
-   * @param[in] mapping The mapping from the reference cell to the real cell on
-   * which DoFs are defined.
-   * @param[in] dof_handler The object that describes which DoF indices live on
-   * which cell of the triangulation.
-   * @param[in,out] support_points A vector that stores the corresponding
-   * location of the dofs in real space coordinates. Previous content of this
-   * object is deleted in this function.
-   * @param[in] mask An optional component mask that restricts the
-   * components from which the support points are extracted.
    */
   template <int dim, int spacedim>
   void
@@ -2235,7 +1403,8 @@ namespace DoFTools
                              const ComponentMask &mask = ComponentMask());
 
   /**
-   * Same as the previous function but for the hp-case.
+   * 与前面的函数相同，但用于hp-case。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2246,34 +1415,7 @@ namespace DoFTools
     const ComponentMask &                               mask = ComponentMask());
 
   /**
-   * This function is a version of the above map_dofs_to_support_points
-   * function that doesn't simply return a vector of support points (see this
-   * @ref GlossSupport "glossary entry")
-   * with one entry for each global degree of freedom, but instead a map that
-   * maps from the DoFs index to its location. The point of this function is
-   * that it is also usable in cases where the DoFHandler is based on a
-   * parallel::TriangulationBase object (or any of the classes derived from
-   * parallel::TriangulationBase). In such cases, each
-   * processor will not be able to determine the support point location of all
-   * DoFs, and worse no processor may be able to hold a vector that would
-   * contain the locations of all DoFs even if they were known. As a
-   * consequence, this function constructs a map from those DoFs for which we
-   * can know the locations (namely, those DoFs that are locally relevant (see
-   * @ref GlossLocallyRelevantDof "locally relevant DoFs")
-   * to their locations.
    *
-   * For non-distributed triangulations, the map returned as @p support_points
-   * is of course dense, i.e., every DoF is to be found in it.
-   *
-   * @param[in] mapping The mapping from the reference cell to the real cell on
-   * which DoFs are defined.
-   * @param[in] dof_handler The object that describes which DoF indices live on
-   * which cell of the triangulation.
-   * @param[in,out] support_points A map that for every locally relevant DoF
-   * index contains the corresponding location in real space coordinates.
-   * Previous content of this object is deleted in this function.
-   * @param[in] mask An optional component mask that restricts the
-   * components from which the support points are extracted.
    */
   template <int dim, int spacedim>
   void
@@ -2284,7 +1426,8 @@ namespace DoFTools
     const ComponentMask &                               mask = ComponentMask());
 
   /**
-   * Same as the previous function but for the hp-case.
+   * 与前面的函数相同，但用于hp-case。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -2296,24 +1439,14 @@ namespace DoFTools
 
 
   /**
-   * This is the opposite function to the one above. It generates a map where
-   * the keys are the support points of the degrees of freedom, while the
-   * values are the DoF indices. For a definition of support points, see this
-   * @ref GlossSupport "glossary entry".
+   * 这是一个与上面那个相反的函数。它生成一个地图，其中键是自由度的支持点，而值是自由度指数。关于支持点的定义，请看这个 @ref GlossSupport "词汇表条目"
+   * 。
+   * 由于在点的空间中没有自然的顺序（除了1d的情况），你必须提供一个带有明确指定的比较器对象的地图。因此，这个函数在比较器对象上被模板化。
+   * 在这个函数中，地图对象的先前内容被删除。
+   * 就像上面的函数一样，假定这里使用的有限元实际上支持其所有组件的支持点的概念。
+   * @todo
+   * 这个函数应该生成一个多图，而不仅仅是一个地图，因为几个道夫可能位于同一个支持点。目前，只有map_dofs_to_support_points()为每个点返回的地图中的最后一个值将被返回。
    *
-   * Since there is no natural order in the space of points (except for the 1d
-   * case), you have to provide a map with an explicitly specified comparator
-   * object. This function is therefore templatized on the comparator object.
-   * Previous content of the map object is deleted in this function.
-   *
-   * Just as with the function above, it is assumed that the finite element in
-   * use here actually supports the notion of support points of all its
-   * components.
-   *
-   * @todo This function should generate a multimap, rather than just a map,
-   * since several dofs may be located at the same support point. Currently,
-   * only the last value in the map returned by map_dofs_to_support_points() for
-   * each point will be returned.
    */
   template <int dim, int spacedim, class Comp>
   void
@@ -2324,40 +1457,27 @@ namespace DoFTools
       &point_to_index_map);
   /**
    * @}
+   *
    */
 
   /**
-   * @name Miscellaneous
-   * @{
+   * @name  杂项  @{ 。
+   *
    */
 
   /**
-   * Take a vector of values which live on cells (e.g. an error per cell) and
-   * distribute it to the dofs in such a way that a finite element field
-   * results, which can then be further processed, e.g. for output. You should
-   * note that the resulting field will not be continuous at hanging nodes.
-   * This can, however, easily be arranged by calling the appropriate @p
-   * distribute function of an AffineConstraints object created for this
-   * DoFHandler object, after the vector has been fully assembled.
+   * 取一个住在单元上的值的向量（例如，每个单元的误差），并以这样的方式将其分配到道夫上，从而产生一个有限元场，然后可以进一步处理，例如，用于输出。你应该注意到，所产生的场在悬挂的节点上将不是连续的。
+   * 然而，这可以通过在矢量完全组装后调用为该DoFHandler对象创建的AffineConstraints对象的适当
+   * @p 分布函数来轻松安排。    假设 @p cell_data
+   * 中的元素数等于活动单元的数量， @p dof_data
+   * 中的元素数等于<tt>dof_handler.n_dofs()</tt>。
+   * 注意，输入向量可以是任何数据类型的向量，只要它可以转换为
+   * @p double.
+   * 输出向量，作为DoF处理程序上的数据向量，总是由 @p
+   * double. 类型的元素组成。
+   * 如果这个DoFHandler使用的有限元由一个以上的分量组成，你需要指定输出向量中的哪个分量应该用来存储有限元场；默认是0（如果有限元只由一个分量组成则不允许有其他值）。矢量的所有其他分量保持不动，即它们的内容不被改变。
+   * 如果所使用的有限元的形状函数在一个以上的向量分量中是非零的（用deal.II的话说：它们是非正则的），则不能使用这个函数。
    *
-   * It is assumed that the number of elements in @p cell_data equals the
-   * number of active cells and that the number of elements in @p dof_data
-   * equals <tt>dof_handler.n_dofs()</tt>.
-   *
-   * Note that the input vector may be a vector of any data type as long as it
-   * is convertible to @p double.  The output vector, being a data vector on a
-   * DoF handler, always consists of elements of type @p double.
-   *
-   * In case the finite element used by this DoFHandler consists of more than
-   * one component, you need to specify which component in the output vector
-   * should be used to store the finite element field in; the default is zero
-   * (no other value is allowed if the finite element consists only of one
-   * component). All other components of the vector remain untouched, i.e.
-   * their contents are not changed.
-   *
-   * This function cannot be used if the finite element in use has shape
-   * functions that are non-zero in more than one vector component (in deal.II
-   * speak: they are non-primitive).
    */
   template <int dim, int spacedim, typename Number>
   void
@@ -2368,80 +1488,74 @@ namespace DoFTools
 
 
   /**
-   * Generate text output readable by gnuplot with point data based on the
-   * given map @p support_points.  For each support point location, a string
-   * label containing a list of all DoFs from the map is generated.  The map
-   * can be generated with a call to map_dofs_to_support_points() and is useful
-   * to visualize location and global numbering of unknowns.
-   *
-   * An example for the format of each line in the output is:
+   * 根据给定的地图，用点数据生成gnuplot可读的文本输出
+   * @p support_points.
+   * 对于每个支持点的位置，生成一个包含地图上所有DoF列表的字符串标签。
+   * 该地图可以通过调用map_dofs_to_support_points()来生成，对于可视化未知数的位置和全局编号非常有用。
+   * 输出中每一行的格式的例子是。
    * @code
    * x [y] [z] "dof1, dof2"
    * @endcode
-   * where x, y, and z (present only in corresponding dimension) are the
-   * coordinates of the support point, followed by a list of DoF numbers.
-   *
-   * The points with labels can be plotted as follows in gnuplot:
+   * 其中x、y和z（只存在于相应的维度）是支持点的坐标，后面是一串DoF编号。
+   * 带标签的点可以在gnuplot中作如下图示。
    * @code
    * plot "./points.gpl" using 1:2:3 with labels point offset 1,1
    * @endcode
-   *
-   * Examples (this also includes the grid written separately using GridOut):
-   * <p ALIGN="center">
-   * @image html support_point_dofs1.png
-   * @image html support_point_dofs2.png
+   * 例子（这也包括用GridOut单独编写的网格）。    <p
+   * ALIGN="center">
+   @image html support_point_dofs1.png
+   @image html support_point_dofs2.png
    * </p>
-   *
-   * To generate the mesh and the support point information in a
-   * single gnuplot file, use code similar to
+   * 要在单个gnuplot文件中生成网格和支撑点信息，请使用类似的代码
    * @code
    * std::ofstream out("gnuplot.gpl");
    * out << "plot '-' using 1:2 with lines, "
-   *     << "'-' with labels point pt 2 offset 1,1"
-   *     << std::endl;
+   *   << "'-' with labels point pt 2 offset 1,1"
+   *   << std::endl;
    * GridOut().write_gnuplot (triangulation, out);
    * out << "e" << std::endl;
    *
    * std::map<types::global_dof_index, Point<dim> > support_points;
    * DoFTools::map_dofs_to_support_points (MappingQ1<dim>(),
-   *                                       dof_handler,
-   *                                       support_points);
+   *                                     dof_handler,
+   *                                     support_points);
    * DoFTools::write_gnuplot_dof_support_point_info(out,
-   *                                                support_points);
+   *                                              support_points);
    * out << "e" << std::endl;
    * @endcode
-   * and from within gnuplot execute the following command:
+   * 并在gnuplot中执行以下命令。
    * @code
    * load "gnuplot.gpl"
    * @endcode
-   *
-   * Alternatively, the following gnuplot script will generate a png file when
-   * executed as <tt>gnuplot gnuplot.gpl</tt> on the command line:
+   * 或者，以下gnuplot脚本在命令行中以<tt>gnuplot
+   * gnuplot.gpl</tt>的形式执行时将生成一个png文件。
    * @code
    * std::ofstream out("gnuplot.gpl");
    *
    * out << "set terminal png size 400,410 enhanced font \"Helvetica,8\"\n"
-   *     << "set output \"output.png\"\n"
-   *     << "set size square\n"
-   *     << "set view equal xy\n"
-   *     << "unset xtics\n"
-   *     << "unset ytics\n"
-   *     << "unset grid\n"
-   *     << "unset border\n"
-   *     << "plot '-' using 1:2 with lines notitle, "
-   *     << "'-' with labels point pt 2 offset 1,1 notitle"
-   *     << std::endl;
+   *   << "set output \"output.png\"\n"
+   *   << "set size square\n"
+   *   << "set view equal xy\n"
+   *   << "unset xtics\n"
+   *   << "unset ytics\n"
+   *   << "unset grid\n"
+   *   << "unset border\n"
+   *   << "plot '-' using 1:2 with lines notitle, "
+   *   << "'-' with labels point pt 2 offset 1,1 notitle"
+   *   << std::endl;
    * GridOut().write_gnuplot (triangulation, out);
    * out << "e" << std::endl;
    *
    * std::map<types::global_dof_index, Point<dim> > support_points;
    * DoFTools::map_dofs_to_support_points (MappingQ1<dim>(),
-   *                                       dof_handler,
-   *                                       support_points);
+   *                                     dof_handler,
+   *                                     support_points);
    * DoFTools::write_gnuplot_dof_support_point_info(out,
-   *                                                support_points);
+   *                                              support_points);
    * out << "e" << std::endl;
    * @endcode
+   *
+   *
    */
   template <int spacedim>
   void
@@ -2451,44 +1565,12 @@ namespace DoFTools
 
 
   /**
-   * Add constraints to @p zero_boundary_constraints corresponding to
-   * enforcing a zero boundary condition on the given boundary indicator.
+   * 为 @p zero_boundary_constraints 添加约束，对应于在给定的边界指标上强制执行零边界条件。    这个函数约束了边界给定部分的所有自由度。    在 step-36 中使用了这个函数的一个变体，参数不同。      @param  dof 要工作的DoFHandler。    @param  boundary_id 应该被计算约束的那部分边界的指标。如果这个数字等于 numbers::invalid_boundary_id ，那么该域的所有边界都将被处理。    @param  zero_boundary_constraints 约束对象，约束条件将被写入其中。由于零边界值而产生的新约束将被简单地添加，保留之前存在的任何其他约束。然而，这只有在该对象以前的内容由不在这里处理的边界上的自由度的约束组成时才有效。如果以前有位于边界上的自由度的约束，那么这将构成冲突。参见 @ref constraints 模块，以处理个别自由度上存在冲突约束的情况。    @param  component_mask 一个可选的组件掩码，将这个函数的功能限制在一个FES系统的子集上。对于非 @ref GlossPrimitive "原始 "
+   * 形状函数，任何属于形状函数的自由度都会受到影响，其中至少有一个非零分量受到分量屏蔽的影响（见
+   * @ref GlossComponentMask  ）。
+   * 如果省略这个参数，有限元中所有在边界上有自由度的分量将被考虑。
+   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * This function constrains all degrees of freedom on the given part of the
-   * boundary.
-   *
-   * A variant of this function with different arguments is used in step-36.
-   *
-   * @param dof The DoFHandler to work on.
-   * @param boundary_id The indicator of that part of the boundary for which
-   * constraints should be computed. If this number equals
-   * numbers::invalid_boundary_id then all boundaries of the domain will be
-   * treated.
-   * @param zero_boundary_constraints The constraint object into which the
-   * constraints will be written. The new constraints due to zero boundary
-   * values will simply be added, preserving any other constraints previously
-   * present. However, this will only work if the previous content of that
-   * object consists of constraints on degrees of freedom that are not located
-   * on the boundary treated here. If there are previously existing
-   * constraints for degrees of freedom located on the boundary, then this
-   * would constitute a conflict. See the
-   * @ref constraints
-   * module for handling the case where there are conflicting constraints on
-   * individual degrees of freedom.
-   * @param component_mask An optional component mask that restricts the
-   * functionality of this function to a subset of an FESystem. For non-
-   * @ref GlossPrimitive "primitive"
-   * shape functions, any degree of freedom is affected that belongs to a
-   * shape function where at least one of its nonzero components is affected
-   * by the component mask (see
-   * @ref GlossComponentMask).
-   * If this argument is omitted, all components of the finite element with
-   * degrees of freedom at the boundary will be considered.
-   *
-   * @ingroup constraints
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename number>
   void
@@ -2499,14 +1581,11 @@ namespace DoFTools
     const ComponentMask &            component_mask = ComponentMask());
 
   /**
-   * Do the same as the previous function, except do it for all parts of the
-   * boundary, not just those with a particular boundary indicator. This
-   * function is then equivalent to calling the previous one with
-   * numbers::invalid_boundary_id as second argument.
-   *
-   * This function is used in step-36, for example.
-   *
+   * 与前一个函数相同，只是对边界的所有部分进行处理，而不仅仅是那些有特定边界指标的部分。那么这个函数就相当于以
+   * numbers::invalid_boundary_id 为第二个参数调用前一个函数。
+   * 这个函数在  step-36  中使用，例如。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -2517,62 +1596,61 @@ namespace DoFTools
 
   /**
    * @}
-   */
-
-  /**
-   * @name Exceptions
-   * @{
-   */
-
-  /**
-   * @todo Write description
    *
-   * @ingroup Exceptions
+   */
+
+  /**
+   * @name  异常情况  @{  。
+   *
+   */
+
+  /**
+   * @todo  编写说明
+   *
    */
   DeclException0(ExcFiniteElementsDontMatch);
   /**
-   * @todo Write description
-   *
+   * @todo  撰写描述
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcGridNotCoarser);
   /**
-   * @todo Write description
-   *
-   * Exception
+   * @todo  编写描述 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcGridsDontMatch);
   /**
-   * The DoFHandler was not initialized with a finite element. Please call
-   * DoFHandler::distribute_dofs() first.
-   *
+   * DoFHandler没有用有限元进行初始化。请先调用
+   * DoFHandler::distribute_dofs() 。
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcNoFESelected);
   /**
-   * @todo Write description
-   *
+   * @todo  编写说明
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcInvalidBoundaryIndicator);
   /**
-   * @}
+   *
    */
 } // namespace DoFTools
 
 
 
-/* ------------------------- inline functions -------------- */
+ /* ------------------------- inline functions -------------- */ 
 
 #ifndef DOXYGEN
 
 namespace DoFTools
 {
   /**
-   * Operator computing the maximum coupling out of two.
+   * 操作员计算出两个中的最大耦合度。      @relatesalso
+   * DoFTools
    *
-   * @relatesalso DoFTools
    */
   inline Coupling
   operator|=(Coupling &c1, const Coupling c2)
@@ -2586,9 +1664,9 @@ namespace DoFTools
 
 
   /**
-   * Operator computing the maximum coupling out of two.
+   * 计算两个人中的最大耦合度的操作者。      @relatesalso
+   * DoFTools
    *
-   * @relatesalso DoFTools
    */
   inline Coupling
   operator|(const Coupling c1, const Coupling c2)
@@ -2674,3 +1752,5 @@ namespace DoFTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

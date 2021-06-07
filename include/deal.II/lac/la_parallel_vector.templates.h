@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/la_parallel_vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -91,31 +92,31 @@ namespace LinearAlgebra
 
         static void
         resize_val(
-          const types::global_dof_index /*new_alloc_size*/,
-          types::global_dof_index & /*allocated_size*/,
+          const types::global_dof_index  /*new_alloc_size*/ ,
+          types::global_dof_index &  /*allocated_size*/ ,
           ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpaceType>
-            & /*data*/,
-          const MPI_Comm & /*comm_sm*/)
+            &  /*data*/ ,
+          const MPI_Comm &  /*comm_sm*/ )
         {}
 
         static void
         import_elements(
-          const ::dealii::LinearAlgebra::ReadWriteVector<Number> & /*V*/,
-          ::dealii::VectorOperation::values /*operation*/,
+          const ::dealii::LinearAlgebra::ReadWriteVector<Number> &  /*V*/ ,
+          ::dealii::VectorOperation::values  /*operation*/ ,
           const std::shared_ptr<const ::dealii::Utilities::MPI::Partitioner> &
-          /*communication_pattern*/,
-          const IndexSet & /*locally_owned_elem*/,
+           /*communication_pattern*/ ,
+          const IndexSet &  /*locally_owned_elem*/ ,
           ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpaceType>
-            & /*data*/)
+            &  /*data*/ )
         {}
 
         template <typename RealType>
         static void
         linfty_norm_local(
           const ::dealii::MemorySpace::MemorySpaceData<Number, MemorySpaceType>
-            & /*data*/,
-          const unsigned int /*size*/,
-          RealType & /*max*/)
+            &  /*data*/ ,
+          const unsigned int  /*size*/ ,
+          RealType &  /*max*/ )
         {}
       };
 
@@ -2185,3 +2186,5 @@ namespace LinearAlgebra
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

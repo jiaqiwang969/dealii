@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_minres_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -31,60 +30,73 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup Solvers */ 
- /*@{*/ 
+/*!@addtogroup Solvers */
+/*@{*/
 
 /**
- * 对称矩阵的最小残差法。
- * 为了使用这个类，对矩阵和向量的要求，见求解器基类的文档。
- * 像所有其他求解器类一样，这个类有一个名为 @p
- * AdditionalData的局部结构，用来向求解器传递额外的参数，如阻尼参数或临时向量的数量。我们使用这个额外的结构，而不是直接将这些值传递给构造函数，因为这使得
- * @p SolverSelector
- * 和其他类的使用更加容易，并保证即使某个求解器的额外参数的数量或类型发生变化，这些也能继续工作。
- * 然而，由于MinRes方法不需要额外的数据，相应的结构是空的，不提供任何功能。构造函数有一个默认参数，所以你可以在没有附加参数的情况下调用它。
- * 前提条件必须是正定和对称的。 该算法取自Astrid
- * Battermann的硕士论文，并做了一些修改。全文可在http://scholar.lib.vt.edu/theses/public/etd-12164379662151/etd-title.html。
+ * Minimal residual method for symmetric matrices.
  *
- *  <h3>Observing the progress of linear solver iterations</h3>
- * 这个类的solve()函数使用Solver基类中描述的机制来确定收敛性。这个机制也可以用来观察迭代的进度。
+ * For the requirements on matrices and vectors in order to work with this
+ * class, see the documentation of the Solver base class.
+ *
+ * Like all other solver classes, this class has a local structure called @p
+ * AdditionalData which is used to pass additional parameters to the solver,
+ * like damping parameters or the number of temporary vectors. We use this
+ * additional structure instead of passing these values directly to the
+ * constructor because this makes the use of the @p SolverSelector and other
+ * classes much easier and guarantees that these will continue to work even if
+ * number or type of the additional parameters for a certain solver changes.
+ *
+ * However, since the MinRes method does not need additional data, the
+ * respective structure is empty and does not offer any functionality. The
+ * constructor has a default argument, so you may call it without the
+ * additional parameter.
+ *
+ * The preconditioner has to be positive definite and symmetric
+ *
+ * The algorithm is taken from the Master thesis of Astrid Battermann with
+ * some changes. The full text can be found at
+ * http://scholar.lib.vt.edu/theses/public/etd-12164379662151/etd-title.html
  *
  *
+ * <h3>Observing the progress of linear solver iterations</h3>
+ *
+ * The solve() function of this class uses the mechanism described in the
+ * Solver base class to determine convergence. This mechanism can also be used
+ * to observe the progress of the iteration.
  */
 template <class VectorType = Vector<double>>
 class SolverMinRes : public SolverBase<VectorType>
 {
 public:
   /**
-   * 标准化的数据结构，用于向求解器输送额外的数据。这个求解器还不需要额外的数据。
-   *
+   * Standardized data struct to pipe additional data to the solver. This
+   * solver does not need additional data yet.
    */
   struct AdditionalData
   {};
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   SolverMinRes(SolverControl &           cn,
                VectorMemory<VectorType> &mem,
                const AdditionalData &    data = AdditionalData());
 
   /**
-   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
-   *
+   * Constructor. Use an object of type GrowingVectorMemory as a default to
+   * allocate memory.
    */
   SolverMinRes(SolverControl &       cn,
                const AdditionalData &data = AdditionalData());
 
   /**
-   * 虚拟解构器。
-   *
+   * Virtual destructor.
    */
   virtual ~SolverMinRes() override = default;
 
   /**
-   * 求解x的线性系统 $Ax=b$ 。
-   *
+   * Solve the linear system $Ax=b$ for x.
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -94,28 +106,27 @@ public:
         const PreconditionerType &preconditioner);
 
   /**
-   * @addtogroup  异常情况  @{  。
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcPreconditionerNotDefinite);
   //@}
 
 protected:
   /**
-   * 实现计算残差的准则。
-   *
+   * Implementation of the computation of the norm of the residual.
    */
   virtual double
   criterion();
 
   /**
-   * 派生类的接口。这个函数得到当前的迭代向量，残差和每一步的更新向量。它可以用于收敛历史的图形输出。
-   *
+   * Interface for derived class. This function gets the current iteration
+   * vector, the residual and the update vector in each step. It can be used
+   * for graphical output of the convergence history.
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -124,17 +135,16 @@ protected:
                 const VectorType & d) const;
 
   /**
-   * 在迭代循环中，残差向量的平方被存储在这个变量中。函数
-   * @p criterion
-   * 使用这个变量来计算收敛值，在这个类别中，它是残差向量的规范，因此是
-   * @p res2 值的平方根。
-   *
+   * Within the iteration loop, the square of the residual vector is stored in
+   * this variable. The function @p criterion uses this variable to compute
+   * the convergence value, which in this class is the norm of the residual
+   * vector and thus the square root of the @p res2 value.
    */
   double res2;
 };
 
- /*@}*/ 
- /*------------------------- Implementation ----------------------------*/ 
+/*@}*/
+/*------------------------- Implementation ----------------------------*/
 
 #ifndef DOXYGEN
 
@@ -345,5 +355,3 @@ SolverMinRes<VectorType>::solve(const MatrixType &        A,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

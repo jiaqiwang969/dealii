@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/sparse_matrix_collection_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -34,8 +35,8 @@ DEAL_II_NAMESPACE_OPEN
 namespace mg
 {
   /**
-   * Handler and storage for all five SparseMatrix object involved in using
-   * multigrid with local refinement.
+   * 处理程序和存储所有五个SparseMatrix对象，涉及使用局部细化的多重网格。
+   *
    */
   template <typename number>
   class SparseMatrixCollection : public Subscriptor
@@ -132,3 +133,5 @@ namespace mg
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

@@ -1,3 +1,4 @@
+//include/deal.II-translator/multigrid/mg_constrained_dofs_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -38,39 +39,29 @@ class DoFHandler;
 
 
 /**
- * Collection of boundary constraints and refinement edge constraints for
- * level vectors.
+ * 水平向量的边界约束和细化边缘约束的集合。
+ *
  *
  * @ingroup mg
+ *
+ *
  */
 class MGConstrainedDoFs : public Subscriptor
 {
 public:
   using size_dof = std::vector<std::set<types::global_dof_index>>::size_type;
   /**
-   * Fill the internal data structures with hanging node constraints extracted
-   * from the dof handler object. Works with natural boundary conditions only.
-   * There exists a sister function setting up boundary constraints as well.
+   * 用从dof
+   * handler对象中提取的悬挂节点约束来填充内部数据结构。只在自然边界条件下工作。
+   * 也存在一个设置边界约束的姐妹函数。
+   * 这个函数确保在每个层次上，细化层次的内部边缘的自由度被正确处理，但假设不存在迪里希特边界条件，则不触及域的边界自由度。
+   * 此外，这个调用在每个层次上设置了一个AffineConstraints对象，该对象包含可能的周期性约束，以防这些约束被添加到底层三角形中。该AffineConstraints对象可以通过get_level_constraints(level)查询。请注意，目前这个类中周期性约束的实现不支持周期性定义中的旋转矩阵，也就是说，
+   * GridTools::collect_periodic_faces()
+   * 中的相应参数可能与身份矩阵不同。
+   * 如果没有传递level_relevant_dofs作为第二个参数，该函数将使用由
+   * DoFTools::extract_locally_relevant_level_dofs().
+   * 提取的本地相关级别DoFs。否则，用户提供的IndexSets（应定义本地相关DoFs的超集）将在每个级别上使用，以允许用户向受限DoFs集添加额外的指数。
    *
-   * This function ensures that on every level, degrees of freedom at interior
-   * edges of a refinement level are treated corrected but leaves degrees of
-   * freedom at the boundary of the domain untouched assuming that no
-   * Dirichlet boundary conditions for them exist.
-   *
-   * Furthermore, this call sets up an AffineConstraints object on each
-   * level that contains possible periodicity constraints in case those
-   * have been added to the underlying triangulation. The AffineConstraints
-   * object can be queried by get_level_constraints(level). Note that the
-   * current implementation of periodicity constraints in this class does
-   * not support rotation matrices in the periodicity definition, i.e., the
-   * respective argument in the GridTools::collect_periodic_faces() may not
-   * be different from the identity matrix.
-   * If no level_relevant_dofs are passed as the second argument, the function
-   * uses the locally relevant level DoFs, extracted by
-   * DoFTools::extract_locally_relevant_level_dofs(). Otherwise, the
-   * user-provided IndexSets, which should define a superset of locally relevant
-   * DoFs, are used on each level to allow the user to add additional indices to
-   * the set of constrained DoFs.
    */
   template <int dim, int spacedim>
   void
@@ -79,14 +70,10 @@ public:
                MGLevelObject<IndexSet>());
 
   /**
-   * Fill the internal data structures with information
-   * about Dirichlet boundary dofs.
+   * 用有关Dirichlet边界DoF的信息填充内部数据结构。
+   * 在设置悬挂节点约束之前，必须调用initialize()函数。
+   * 这个函数可以被多次调用，以允许考虑不同组件的不同边界_ID集。
    *
-   * The initialize() function has to be called before
-   * to set hanging node constraints.
-   *
-   * This function can be called multiple times to allow considering
-   * different sets of boundary_ids for different components.
    */
   template <int dim, int spacedim>
   void
@@ -96,36 +83,22 @@ public:
     const ComponentMask &               component_mask = ComponentMask());
 
   /**
-   * Add user defined constraints to be used on level @p level.
+   * 添加用户定义的约束条件，用于水平 @p level.
+   * 用户可以多次调用这个函数，任何新的、冲突的约束条件将覆盖该DoF的先前约束。
+   * 在转移之前，用户定义的约束将被分配到源矢量，然后任何使用make_zero_boundary_constraints()设置的DoF索引将被覆盖为零值。
+   * @note 目前这只在MGTransferMatrixFree中实现。
    *
-   * The user can call this function multiple times and any new,
-   * conflicting constraints will overwrite the previous constraints
-   * for that DoF.
-   *
-   * Before the transfer, the user defined constraints will be distributed
-   * to the source vector, and then any DoF index set using
-   * make_zero_boundary_constraints() will be overwritten with
-   * value zero.
-   *
-   * @note This is currently only implemented for MGTransferMatrixFree.
    */
   void
   add_user_constraints(const unsigned int               level,
                        const AffineConstraints<double> &constraints_on_level);
 
   /**
-   * Fill the internal data structures with information
-   * about no normal flux boundary dofs.
+   * 用无法线通量边界道夫的信息填充内部数据结构。
+   * 这个函数只限于那些无法线通量边界的面与x轴、y轴或z轴为法线的网格。同时，对于一个特定的边界ID，所有的面必须朝向同一个方向，也就是说，对X轴法线的边界必须与对Y轴或Z轴法线的边界具有不同的边界ID，以此类推。如果网格是用
+   * <tt>GridGenerator::hyper_cube()</tt>
+   * 函数生成的，在网格生成时设置<tt>colorize=true</tt>，并为每个无法线通量边界调用make_no_normal_flux_constraints()就可以了。
    *
-   * This function is limited to meshes whose no normal flux boundaries
-   * have faces which are normal to the x-, y-, or z-axis. Also, for a
-   * specific boundary id, all faces must be facing in the same direction,
-   * i.e., a boundary normal to the x-axis must have a different boundary
-   * id than a boundary normal to the y- or z-axis and so on. If the mesh
-   * was produced, for example, using the <tt>GridGenerator::hyper_cube()</tt>
-   * function, setting <tt>colorize=true</tt> during mesh generation and calling
-   * make_no_normal_flux_constraints() for each no normal flux boundary is
-   * sufficient.
    */
   template <int dim, int spacedim>
   void
@@ -134,20 +107,23 @@ public:
                                   const unsigned int first_vector_component);
 
   /**
-   * Reset the data structures.
+   * 重置数据结构。
+   *
    */
   void
   clear();
 
   /**
-   * Determine whether a dof index is subject to a boundary constraint.
+   * 判断一个道夫指数是否受到边界约束。
+   *
    */
   bool
   is_boundary_index(const unsigned int            level,
                     const types::global_dof_index index) const;
 
   /**
-   * Determine whether a dof index is at the refinement edge.
+   * 判断一个道夫指数是否处于细化边缘。
+   *
    */
   bool
   at_refinement_edge(const unsigned int            level,
@@ -155,10 +131,9 @@ public:
 
 
   /**
-   * Determine whether the (i,j) entry of the interface matrix
-   * on a given level should be set. This is taken in terms of
-   * dof i, that is, return true if i is at a refinement edge,
-   * j is not, and both are not on the external boundary.
+   * 确定是否应该设置给定层次上的界面矩阵的（i,j）项。这是就dof
+   * i而言的，也就是说，如果i在细化边缘，j不在细化边缘，并且两者都不在外部边界上，则返回true。
+   *
    */
   bool
   is_interface_matrix_entry(const unsigned int            level,
@@ -166,66 +141,66 @@ public:
                             const types::global_dof_index j) const;
 
   /**
-   * Return the indices of level dofs on the given level that are subject to
-   * Dirichlet boundary conditions (as set by the @p function_map parameter in
-   * initialize()).  The indices are restricted to the set of locally relevant
-   * level dofs.
+   * 返回给定层次上受Dirichlet边界条件约束的层次道夫的索引（如initialize()中的
+   * @p function_map 参数所设定）。
+   * 指数被限制在本地相关的层面道夫的集合中。
+   *
    */
   const IndexSet &
   get_boundary_indices(const unsigned int level) const;
 
 
   /**
-   * Return the indices of dofs on the given level that lie on an refinement
-   * edge (dofs on faces to neighbors that are coarser).
+   * 返回位于细化边上的给定层次上的道夫的指数（道夫在面与邻居的关系更粗）。
+   *
    */
   const IndexSet &
   get_refinement_edge_indices(unsigned int level) const;
 
 
   /**
-   * Return if Dirichlet boundary indices are set in initialize().
+   * 返回是否在initialize()中设置了Dirichlet边界指数。
+   *
    */
   bool
   have_boundary_indices() const;
 
   /**
-   * Return the AffineConstraints object for a given level, containing
-   * periodicity constraints (if enabled on the triangulation).
+   * 返回给定层次的AffineConstraints对象，包含周期性约束（如果在三角剖面上启用）。
+   *
    */
   const AffineConstraints<double> &
   get_level_constraints(const unsigned int level) const;
 
   /**
-   * Return the user defined constraint matrix for a given level. These
-   * constraints are set using the function add_user_constraints() and
-   * should not contain constraints for DoF indices set in
-   * make_zero_boundary_constraints() as they will be overwritten during
-   * the transfer.
+   * 返回给定水平的用户定义的约束矩阵。这些约束是用函数add_user_constraints()设置的，不应该包含在make_zero_boundary_constraints()中设置的DoF指数的约束，因为它们将在传输过程中被覆盖。
+   *
    */
   const AffineConstraints<double> &
   get_user_constraint_matrix(const unsigned int level) const;
 
 private:
   /**
-   * The indices of boundary dofs for each level.
+   * 每一层的边界DoF的指数。
+   *
    */
   std::vector<IndexSet> boundary_indices;
 
   /**
-   * The degrees of freedom on a given level that live on the refinement edge
-   * between the level and cells on a coarser level.
+   * 某一层次上的自由度，它们生活在该层次和更粗层次上的单元之间的细化边缘上。
+   *
    */
   std::vector<IndexSet> refinement_edge_indices;
 
   /**
-   * Constraint matrices containing information regarding potential
-   * periodic boundary conditions for each level .
+   * 包含每个层的潜在周期性边界条件信息的约束矩阵。
+   *
    */
   std::vector<AffineConstraints<double>> level_constraints;
 
   /**
-   * Constraint matrices defined by user.
+   * 由用户定义的约束矩阵。
+   *
    */
   std::vector<AffineConstraints<double>> user_constraints;
 };
@@ -521,3 +496,5 @@ MGConstrainedDoFs::get_user_constraint_matrix(const unsigned int level) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

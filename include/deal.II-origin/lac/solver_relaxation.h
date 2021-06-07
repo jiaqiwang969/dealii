@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_relaxation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -29,44 +28,52 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 实现一个基于松弛方法的迭代求解器。停止的标准是残差的准则。
- * 关于使用该类时对矩阵和向量的要求，请参见Solver基类的文档。
- * 像所有其他求解器类一样，该类有一个名为 @p
- * AdditionalData的局部结构，用于向求解器传递额外的参数，如阻尼参数或临时向量的数量。我们使用这个额外的结构，而不是直接将这些值传递给构造函数，因为这使得
- * @p SolverSelector
- * 和其他类的使用更加容易，并保证即使某个求解器的额外参数的数量或类型发生变化，这些也能继续工作。这个类的AdditionalData目前不包含任何数据。
+ * Implementation of an iterative solver based on relaxation methods. The
+ * stopping criterion is the norm of the residual.
  *
- *  <h3>Observing the progress of linear solver iterations</h3>
- * 该类的solve()函数使用Solver基类中描述的机制来确定收敛性。这个机制也可以用来观察迭代的进度。
+ * For the requirements on matrices and vectors in order to work with this
+ * class, see the documentation of the Solver base class.
  *
+ * Like all other solver classes, this class has a local structure called @p
+ * AdditionalData which is used to pass additional parameters to the solver,
+ * like damping parameters or the number of temporary vectors. We use this
+ * additional structure instead of passing these values directly to the
+ * constructor because this makes the use of the @p SolverSelector and other
+ * classes much easier and guarantees that these will continue to work even if
+ * number or type of the additional parameters for a certain solver changes.
+ * AdditionalData of this class currently does not contain any data.
+ *
+ *
+ * <h3>Observing the progress of linear solver iterations</h3>
+ *
+ * The solve() function of this class uses the mechanism described in the
+ * Solver base class to determine convergence. This mechanism can also be used
+ * to observe the progress of the iteration.
  *
  *
  * @ingroup Solvers
- *
- *
  */
 template <typename VectorType = Vector<double>>
 class SolverRelaxation : public SolverBase<VectorType>
 {
 public:
   /**
-   * 标准化的数据结构，用于向求解器输送额外数据。这里没有松弛方法的数据。
-   *
+   * Standardized data struct to pipe additional data to the solver. There is
+   * no data in here for relaxation methods.
    */
   struct AdditionalData
   {};
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   SolverRelaxation(SolverControl &       cn,
                    const AdditionalData &data = AdditionalData());
 
   /**
-   * 使用松弛方法  $x_{k+1} = R(x_k,b)$  解决系统  $Ax = b$
-   * 。矩阵<i>A</i>本身只用于计算残差。
-   *
+   * Solve the system $Ax = b$ using the relaxation method $x_{k+1} =
+   * R(x_k,b)$. The matrix <i>A</i> itself is only used to compute the
+   * residual.
    */
   template <typename MatrixType, class RelaxationType>
   void
@@ -136,5 +143,3 @@ SolverRelaxation<VectorType>::solve(const MatrixType &    A,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

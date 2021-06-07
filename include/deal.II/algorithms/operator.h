@@ -1,3 +1,4 @@
+//include/deal.II-translator/algorithms/operator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -28,114 +29,104 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Namespace containing numerical algorithms in a unified form.
+ * 包含统一形式的数字算法的命名空间。
+ * 这个命名空间中的所有算法类都是从Operator或OutputOperator派生出来的，这取决于它们是否返回一个值。关于如何使用这些类的更多详细信息，请参见这些类的文档。
  *
- * All algorithmic classes in this namespace are derived from either Operator
- * or OutputOperator, depending on whether they return a value or not. See the
- * documentation of those classes for more detailed information on how to use
- * them.
+ *
  */
 namespace Algorithms
 {
   /**
-   * @todo Update this documentation and the one of Operator
-   *
-   * The abstract base class of all algorithms in this library. An operator is
-   * an object with an operator(), which transforms a set of named vectors
-   * into another set of named vectors.
-   *
-   * Furthermore, an operator can be notified of parameter changes by the
-   * calling routine. The outer iteration can notify() the Operator of an
-   * Event, which could be for instance a change of mesh, a different time
-   * step size or too slow convergence of Newton's method, which would then
-   * trigger reassembling of a matrix or similar things.
-   *
+   * @todo  更新本文档和Operator的文档
+   * 本库中所有算法的抽象基类。操作符是一个具有operator()的对象，它将一组命名的向量转换成另一组命名的向量。
+   * 此外，一个运算符可以被调用例程通知参数的变化。外层迭代可以通知()运算器一个事件，例如，网格的改变、不同的时间步长或牛顿方法的收敛速度太慢，这将触发矩阵的重新组合或类似的事情。
    * <h3>Usage for nested iterations</h3>
+   * 这可能是Operator最突出的用途，一个外部迭代方法调用一个内部求解器，等等。通常，在这样的嵌套系统中，最内层的方法必须使用所有外层迭代的值来计算一个残差。由于这种嵌套的深度和顺序在设计通用工具时很难预测，我们使用AnyData来访问这些向量。通常，<tt>out</tt>中的第一个向量包含调用operator()()时的起始向量，以及函数返回时的解决方案。对象<tt>in</tt>是提供额外的信息，并转发给嵌套迭代的内部Operator对象。
    *
-   * This is probably the most prominent use for Operator, where an outer
-   * iterative method calls an inner solver and so on. Typically, the
-   * innermost method in such a nested system will have to compute a residual
-   * using values from all outer iterations. Since the depth and order of such
-   * a nesting is hardly predictable when designing a general tool, we use
-   * AnyData to access these vectors. Typically, the first vector in
-   * <tt>out</tt> contains the start vector when operator()() is called, and
-   * the solution when the function returns. The object <tt>in</tt> is
-   * providing additional information and forwarded to the inner Operator
-   * objects of the nested iteration.
    */
   class OperatorBase : public Subscriptor
   {
   public:
     /**
-     * The virtual destructor.
+     * 虚拟析构器。
+     *
      */
     virtual ~OperatorBase() override = default;
 
     /**
-     * The actual operation, which is implemented in a derived class.
+     * 实际的操作，在一个派生类中实现。
+     *
      */
     virtual void
     operator()(AnyData &out, const AnyData &in) = 0;
 
     /**
-     * Register an event triggered by an outer iteration.
+     * 注册一个由外部迭代触发的事件。
+     *
      */
     virtual void
     notify(const Event &);
 
     /**
-     * Clear all #notifications.
+     * 清除所有的#通知。
+     *
      */
     void
     clear_events();
 
   protected:
     /**
-     * Accumulate events here. If any of those is set, the function solve() of
-     * a terminal application must take care of reassembling the matrix.
+     * 在这里累积事件。如果其中任何一个被设置，终端应用程序的函数solve()必须负责重新组装矩阵。
+     *
      */
     Event notifications;
   };
 
   /**
-   * An unary operator base class, intended to output the vectors in AnyData
-   * in each step of an iteration.
+   * 一个单数运算器基类，目的是在迭代的每个步骤中输出AnyData中的向量。
+   *
    */
   template <typename VectorType>
   class OutputOperator : public Subscriptor
   {
   public:
     /**
-     * Constructor initializing member variables with invalid data.
+     * 用无效数据初始化成员变量的构造器。
+     *
      */
     OutputOperator();
 
     /**
-     * The copy constructor is deleted since objects of this class
-     * should not be copied.
+     * 复制构造函数被删除，因为这个类的对象不应该被复制。
+     *
      */
     OutputOperator(const OutputOperator<VectorType> &) = delete;
 
     /**
-     * Empty virtual destructor.
+     * 空的虚拟析构器。
+     *
      */
     virtual ~OutputOperator() override = default;
 
     /**
-     * Set the stream @p os to which data is written. If no stream is selected
-     * with this function, data goes to @p deallog.
+     * 设置数据被写入的流 @p os
+     * 。如果没有用这个函数选择流，数据将进入 @p deallog.
+     * 。
+     *
      */
     void
     initialize_stream(std::ostream &stream);
 
     /**
-     * Set the current step.
+     * 设置当前的步骤。
+     *
      */
     void
     set_step(const unsigned int step);
 
     /**
-     * Output all the vectors in AnyData.
+     * 输出AnyData中的所有向量。
+     *
      */
     virtual OutputOperator<VectorType> &
     operator<<(const AnyData &vectors);
@@ -156,9 +147,9 @@ namespace Algorithms
 
 
   /**
-   * Set the step number in OutputOperator by shifting an integer value.
+   * 在OutputOperator中通过移位一个整数值来设置步数。
+   * @relatesalso  OutputOperator
    *
-   * @relatesalso OutputOperator
    */
   template <typename VectorType>
   inline OutputOperator<VectorType> &
@@ -172,3 +163,5 @@ namespace Algorithms
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

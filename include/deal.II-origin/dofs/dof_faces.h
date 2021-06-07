@@ -1,4 +1,3 @@
-//include/deal.II-translator/dofs/dof_faces_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
@@ -31,52 +30,70 @@ DEAL_II_NAMESPACE_OPEN
 namespace internal
 {
   /**
-   * 用于DoFHandler类组的内部数据结构的命名空间。
-   * @ingroup dofs
+   * A namespace for internal data structures of the DoFHandler group of
+   * classes.
    *
+   * @ingroup dofs
    */
   namespace DoFHandlerImplementation
   {
     /**
-     * <h4>DoFFaces</h4>
-     * 这些类与DoFLevel类类似。我们在这里存储的是与面孔相关的信息，而不是细胞，因为这些信息与细胞的层次结构无关，而细胞是以层次来组织的。在二维中我们存储位于线上的自由度信息，而在三维中我们存储位于四边形和线上的自由度信息。在一维中我们什么都不做，因为线的面是顶点，被单独处理。
-     * 除了DoFObjects对象包含要存储的数据（自由度指数）外，我们不存储任何数据或提供任何功能。然而，我们确实实现了一个函数来确定所含DoFObjects对象的内存消耗估计值。
-     * 所包含的数据通常不被直接访问。相反，除了来自DoFHandler类的一些访问，通常是通过
-     * DoFAccessor::set_dof_index() 和 DoFAccessor::dof_index()
-     * 函数或派生类的类似函数来访问，而派生类又使用
-     * DoFHandler::get_dof_index()
-     * 和相应的setter函数访问成员变量。因此，实际数据格式的知识被封装到本层次的类以及
-     * dealii::DoFHandler 类中。
      *
+     * <h4>DoFFaces</h4>
+     *
+     * These classes are similar to the DoFLevel classes. We here store
+     * information that is associated with faces, rather than cells, as this
+     * information is independent of the hierarchical structure of cells,
+     * which are organized in levels. In 2D we store information on degrees of
+     * freedom located on lines whereas in 3D we store information on degrees
+     * of freedom located on quads and lines. In 1D we do nothing, as the
+     * faces of lines are vertices which are treated separately.
+     *
+     * Apart from the DoFObjects object containing the data to store (degree
+     * of freedom indices) we do not store any data or provide any
+     * functionality. However, we do implement a function to determine an
+     * estimate of the memory consumption of the contained DoFObjects
+     * object(s).
+     *
+     * The data contained isn't usually directly accessed. Rather, except for
+     * some access from the DoFHandler class, access is usually through the
+     * DoFAccessor::set_dof_index() and DoFAccessor::dof_index() functions or
+     * similar functions of derived classes that in turn access the member
+     * variables using the DoFHandler::get_dof_index() and corresponding
+     * setter functions. Knowledge of the actual data format is therefore
+     * encapsulated to the present hierarchy of classes as well as the
+     * dealii::DoFHandler class.
      */
     template <int dim>
     class DoFFaces
     {
     public:
       /**
-       * 构造函数。这个构造函数被删除，以防止使用这个模板，因为只应该使用特殊化。
-       *
+       * Constructor. This constructor is deleted to prevent the use of this
+       * template, as only the specializations should be used
        */
       DoFFaces() = delete;
     };
 
     /**
-     * 存储1D中面的自由度指数。因为这些将是顶点，被单独处理，所以不要做任何事情。
-     *
+     * Store the indices of degrees of freedom on faces in 1D. As these would
+     * be vertices, which are treated separately, don't do anything.
      */
     template <>
     class DoFFaces<1>
     {
     public:
       /**
-       * 确定这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+       * Read or write the data of this object to or from a stream for the
+       * purpose of serialization using the [BOOST serialization
+       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
        *
        */
       template <class Archive>
@@ -85,29 +102,29 @@ namespace internal
     };
 
     /**
-     * 存储2D中面的自由度的指数，这些自由度是线。
-     *
+     * Store the indices of degrees of freedom on faces in 2D, which are
+     * lines.
      */
     template <>
     class DoFFaces<2>
     {
     public:
       /**
-       * 含有线上自由度数据的对象。
-       *
+       * The object containing the data of DoFs on lines.
        */
       internal::DoFHandlerImplementation::DoFObjects<1> lines;
 
       /**
-       * 确定这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-       *
+       * Read or write the data of this object to or from a stream for the
+       * purpose of serialization using the [BOOST serialization
+       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
        */
       template <class Archive>
       void
@@ -115,35 +132,34 @@ namespace internal
     };
 
     /**
-     * 存储三维中面的自由度指数，这些面是四边形的，另外也存储在线上。
-     *
+     * Store the indices of degrees of freedom on faces in 3D, which are
+     * quads, additionally also on lines.
      */
     template <>
     class DoFFaces<3>
     {
     public:
       /**
-       * 包含线上自由度数据的对象。
-       *
+       * The object containing the data of DoFs on lines.
        */
       internal::DoFHandlerImplementation::DoFObjects<1> lines;
 
       /**
-       * 包含四边形上的DoFs数据的对象。
-       *
+       * The object containing the data of DoFs on quads.
        */
       internal::DoFHandlerImplementation::DoFObjects<2> quads;
 
       /**
-       * 确定此对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-       *
+       * Read or write the data of this object to or from a stream for the
+       * purpose of serialization using the [BOOST serialization
+       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
        */
       template <class Archive>
       void
@@ -179,5 +195,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

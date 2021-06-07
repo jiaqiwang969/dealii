@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_bicgstab_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -31,83 +30,94 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup Solvers */ 
- /*@{*/ 
+/*!@addtogroup Solvers */
+/*@{*/
 
 namespace internal
 {
   /**
-   * 包含SolverBicgstab类所使用的非参数非模板值的类。
-   *
+   * Class containing the non-parameter non-template values used by the
+   * SolverBicgstab class.
    */
   class SolverBicgstabData
   {
   protected:
     /**
-     * 辅助值。
-     *
+     * Auxiliary value.
      */
     double alpha;
     /**
-     * 辅助值。
-     *
+     * Auxiliary value.
      */
     double beta;
     /**
-     * 辅助值。
-     *
+     * Auxiliary value.
      */
     double omega;
     /**
-     * 辅助值。
-     *
+     * Auxiliary value.
      */
     double rho;
     /**
-     * 辅助值。
-     *
+     * Auxiliary value.
      */
     double rhobar;
 
     /**
-     * 当前迭代步骤。
-     *
+     * Current iteration step.
      */
     unsigned int step;
 
     /**
-     * 残差。
-     *
+     * Residual.
      */
     double res;
 
     /**
-     * 默认构造函数。这是受保护的，所以只有SolverBicgstab可以创建实例。
-     *
+     * Default constructor. This is protected so that only SolverBicgstab can
+     * create instances.
      */
     SolverBicgstabData();
   };
 } // namespace internal
 
 /**
- * van der Vorst的Bicgstab算法。
- * 关于使用该类时对矩阵和向量的要求，请参见Solver基类的文档。
- * 像所有其他求解器类一样，这个类有一个叫做 @p
- * AdditionalData的局部结构，用来向求解器传递额外的参数，如阻尼参数或临时向量的数量。我们使用这个额外的结构，而不是直接将这些值传递给构造函数，因为这使得
- * @p SolverSelector
- * 和其他类的使用更加容易，并保证即使某个求解器的额外参数的数量或类型发生变化，这些也能继续工作。
- * Bicgstab方法有两个额外的参数：第一个是布尔值，决定是在每一步中计算实际的残差（
- * @p true)  还是使用计算的正交残差的长度（  @p false).
- * 注意，计算残差会在每一步中引起第三次矩阵-向量-乘法，尽管没有额外的预处理。这样做的原因是，在迭代过程中计算的正交残差的大小可能比真正的残差要大几个数量级。这是由于与条件不良的矩阵有关的数值不稳定性造成的。由于这种不稳定性导致了不好的停止标准，这个参数的默认值是
- * @p true.
- * 。每当用户知道估计的残差工作得很合理时，为了提高求解器的性能，这个标志应该设置为
- * @p false 。
- * 第二个参数是分解准则的大小。很难找到一个普遍的好准则，所以如果事情对你不适用，可以尝试改变这个值。
+ * Bicgstab algorithm by van der Vorst.
  *
- *  <h3>Observing the progress of linear solver iterations</h3>
- * 这个类的solve()函数使用Solver基类中描述的机制来确定收敛性。这个机制也可以用来观察迭代的进度。
+ * For the requirements on matrices and vectors in order to work with this
+ * class, see the documentation of the Solver base class.
+ *
+ * Like all other solver classes, this class has a local structure called @p
+ * AdditionalData which is used to pass additional parameters to the solver,
+ * like damping parameters or the number of temporary vectors. We use this
+ * additional structure instead of passing these values directly to the
+ * constructor because this makes the use of the @p SolverSelector and other
+ * classes much easier and guarantees that these will continue to work even if
+ * number or type of the additional parameters for a certain solver changes.
+ *
+ * The Bicgstab-method has two additional parameters: the first is a boolean,
+ * deciding whether to compute the actual residual in each step (@p true) or
+ * to use the length of the computed orthogonal residual (@p false). Note that
+ * computing the residual causes a third matrix-vector-multiplication, though
+ * no additional preconditioning, in each step. The reason for doing this is,
+ * that the size of the orthogonalized residual computed during the iteration
+ * may be larger by orders of magnitude than the true residual. This is due to
+ * numerical instabilities related to badly conditioned matrices. Since this
+ * instability results in a bad stopping criterion, the default for this
+ * parameter is @p true. Whenever the user knows that the estimated residual
+ * works reasonably as well, the flag should be set to @p false in order to
+ * increase the performance of the solver.
+ *
+ * The second parameter is the size of a breakdown criterion. It is difficult
+ * to find a general good criterion, so if things do not work for you, try to
+ * change this value.
  *
  *
+ * <h3>Observing the progress of linear solver iterations</h3>
+ *
+ * The solve() function of this class uses the mechanism described in the
+ * Solver base class to determine convergence. This mechanism can also be used
+ * to observe the progress of the iteration.
  */
 template <typename VectorType = Vector<double>>
 class SolverBicgstab : public SolverBase<VectorType>,
@@ -115,18 +125,23 @@ class SolverBicgstab : public SolverBase<VectorType>,
 {
 public:
   /**
-   * 计算残差有两种可能：一种是使用计算值 @p tau.
-   * 进行估计
-   * 另一种是使用另一个矩阵向量乘法进行精确计算。这增加了算法的成本，所以只要问题允许，就应该将其设置为假。
-   * Bicgstab很容易发生故障，所以我们需要一个参数来告诉我们哪些数字被认为是零。
+   * There are two possibilities to compute the residual: one is an estimate
+   * using the computed value @p tau. The other is exact computation using
+   * another matrix vector multiplication. This increases the costs of the
+   * algorithm, so it is should be set to false whenever the problem allows
+   * it.
    *
+   * Bicgstab is susceptible to breakdowns, so we need a parameter telling us,
+   * which numbers are considered zero.
    */
   struct AdditionalData
   {
     /**
-     * 构造函数。
-     * 默认是进行精确的残差计算，分解参数是VectorType的value_type可表示的最小有限值。
+     * Constructor.
      *
+     * The default is to perform an exact residual computation and breakdown
+     * parameter is the minimum finite value representable by the value_type of
+     * VectorType.
      */
     explicit AdditionalData(
       const bool   exact_residual = true,
@@ -136,41 +151,36 @@ public:
       , breakdown(breakdown)
     {}
     /**
-     * 残差精确计算的标志。
-     *
+     * Flag for exact computation of residual.
      */
     bool exact_residual;
     /**
-     * 破解阈值。
-     *
+     * Breakdown threshold.
      */
     double breakdown;
   };
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   SolverBicgstab(SolverControl &           cn,
                  VectorMemory<VectorType> &mem,
                  const AdditionalData &    data = AdditionalData());
 
   /**
-   * 构造器。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
-   *
+   * Constructor. Use an object of type GrowingVectorMemory as a default to
+   * allocate memory.
    */
   SolverBicgstab(SolverControl &       cn,
                  const AdditionalData &data = AdditionalData());
 
   /**
-   * 虚拟解构器。
-   *
+   * Virtual destructor.
    */
   virtual ~SolverBicgstab() override = default;
 
   /**
-   * 只解决原始问题。
-   *
+   * Solve primal problem only.
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -181,71 +191,61 @@ public:
 
 protected:
   /**
-   * 传递给solve()的解决方案矢量的指针。
-   *
+   * A pointer to the solution vector passed to solve().
    */
   VectorType *Vx;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vr;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vrbar;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vp;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vy;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vz;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vt;
 
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   typename VectorMemory<VectorType>::Pointer Vv;
 
   /**
-   * 指向传递给solve()的右手边向量的指针。
-   *
+   * A pointer to the right hand side vector passed to solve().
    */
   const VectorType *Vb;
 
   /**
-   * 停止准则的计算。
-   *
+   * Computation of the stopping criterion.
    */
   template <typename MatrixType>
   double
   criterion(const MatrixType &A, const VectorType &x, const VectorType &b);
 
   /**
-   * 派生类的接口。
-   * 这个函数在每一步中获得当前迭代向量、残差和更新向量。它可以用于收敛历史的图形输出。
-   *
+   * Interface for derived class.  This function gets the current iteration
+   * vector, the residual and the update vector in each step. It can be used
+   * for graphical output of the convergence history.
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -254,15 +254,14 @@ protected:
                 const VectorType & d) const;
 
   /**
-   * 附加参数。
-   *
+   * Additional parameters.
    */
   AdditionalData additional_data;
 
 private:
   /**
-   * iterate()函数返回的一个结构，代表它发现在迭代过程中发生的事情。
-   *
+   * A structure returned by the iterate() function representing what it found
+   * is happening during the iteration.
    */
   struct IterationResult
   {
@@ -278,16 +277,16 @@ private:
   };
 
   /**
-   * 迭代循环本身。该函数返回一个结构，表示在这个函数中发生了什么。
-   *
+   * The iteration loop itself. The function returns a structure indicating
+   * what happened in this function.
    */
   template <typename MatrixType, typename PreconditionerType>
   IterationResult
   iterate(const MatrixType &A, const PreconditionerType &preconditioner);
 };
 
- /*@}*/ 
- /*-------------------------Inline functions -------------------------------*/ 
+/*@}*/
+/*-------------------------Inline functions -------------------------------*/
 
 #ifndef DOXYGEN
 
@@ -519,5 +518,3 @@ SolverBicgstab<VectorType>::solve(const MatrixType &        A,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

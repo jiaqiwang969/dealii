@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/time_stepping_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2014 - 2020 by the deal.II authors
@@ -27,118 +28,196 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Namespace containing the time stepping methods.
+ * 包含时间步进方法的命名空间。
+ *
+ *
  */
 
 namespace TimeStepping
 {
   /**
-   * The following Runge-Kutta methods are available:
-   * - Explicit methods (see ExplicitRungeKutta::initialize):
-   *   - FORWARD_EULER (first order)
-   *   - RK_THIRD_ORDER (third order Runge-Kutta)
-   *   - SSP_THIRD_ORDER (third order SSP Runge-Kutta)
-   *   - RK_CLASSIC_FOURTH_ORDER (classical fourth order Runge-Kutta)
-   * - Low-storage (explicit) Runge-Kutta methods
-   *   - LOW_STORAGE_RK_STAGE3_ORDER3 (Three stages and third order)
-   *   - LOW_STORAGE_RK_STAGE5_ORDER4 (Five stages and fourth order)
-   *   - LOW_STORAGE_RK_STAGE7_ORDER4 (Seven stages and fourth order)
-   *   - LOW_STORAGE_RK_STAGE9_ORDER5 (Nine stages and fifth order)
-   * - Implicit methods (see ImplicitRungeKutta::initialize):
-   *   - BACKWARD_EULER (first order)
-   *   - IMPLICIT_MIDPOINT (second order)
-   *   - CRANK_NICOLSON (second order)
-   *   - SDIRK_TWO_STAGES (second order)
-   * - Embedded explicit methods (see EmbeddedExplicitRungeKutta::initialize):
-   *   - HEUN_EULER (second order)
-   *   - BOGACKI_SHAMPINE (third order)
-   *   - DOPRI (Dormand-Prince method, fifth order; this is the method used by
-   * ode45 in MATLAB)
-   *   - FEHLBERG (fifth order)
-   *   - CASH_KARP (fifth order)
+   * 下列Runge-Kutta方法可用。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 明确的方法（见 ExplicitRungeKutta::initialize): ）。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - FORWARD_EULER (第一顺序)
+   *
+   *
+   *
+   * - RK_THIRD_ORDER (三阶 Runge-Kutta)
+   *
+   * - SSP_THIRD_ORDER (三阶SSP Runge-Kutta)
+   *
+   * - RK_CLASSIC_FOURTH_ORDER (经典四阶Runge-Kutta)
+   *
+   *
+   * - 低存储（显式）Runge-Kutta方法
+   *
+   *
+   * - LOW_STORAGE_RK_STAGE3_ORDER3 (三段式和三阶式)
+   *
+   *
+   *
+   * - LOW_STORAGE_RK_STAGE5_ORDER4 (五级四阶)
+   *
+   *
+   *
+   * - LOW_STORAGE_RK_STAGE7_ORDER4 (七级四阶)
+   *
+   *
+   *
+   * - LOW_STORAGE_RK_STAGE9_ORDER5 (九级五阶)
+   *
+   *
+   * - 隐式方法（见 ImplicitRungeKutta::initialize): ）。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - BACKWARD_EULER (一阶)
+   *
+   *
+   *
+   * - IMPLICIT_MIDPOINT (二阶)
+   *
+   * - CRANK_NICOLSON (二阶)
+   *
+   *
+   *
+   *
+   *
+   * - SDIRK_TWO_STAGES (二阶)
+   *
+   *
+   *
+   * - 嵌入式显式方法（见 EmbeddedExplicitRungeKutta::initialize): ）。
+   *
+   *
+   *
+   *
+   *
+   * - HEUN_EULER (二阶)
+   *
+   *
+   *
+   * - BOGACKI_SHAMPINE (三阶)
+   *
+   * - DOPRI (Dormand-Prince method, fifth order; this is the method used by ode45 in MATLAB)
+   *
+   *
+   *
+   * - FEHLBERG (第五阶)
+   * - CASH_KARP (第五阶)
+   *
    */
   enum runge_kutta_method
   {
     /**
-     * Forward Euler method, first order.
+     * 正向欧拉法，一阶。
+     *
      */
     FORWARD_EULER,
     /**
-     * Third order Runge-Kutta method.
+     * 三阶Runge-Kutta方法。
+     *
      */
     RK_THIRD_ORDER,
     /**
-     * Third order Strong Stability Preserving (SSP) Runge-Kutta method
-     * (SSP time discretizations are also called Total Variation Diminishing
-     * (TVD) methods in the literature, see @cite gottlieb2001strong).
+     * 三阶强稳定（SSP）Runge-Kutta方法（SSP时间离散化在文献中也称为总变差递减（TVD）方法，见
+     * @cite gottlieb2001strong ）。
+     *
      */
     SSP_THIRD_ORDER,
     /**
-     * Classical fourth order Runge-Kutta method.
+     * 经典的四阶Runge-Kutta方法。
+     *
      */
     RK_CLASSIC_FOURTH_ORDER,
     /**
-     * Three-stage scheme of order three by Kennedy et al.
-     * @cite KennedyCarpenterLewis2000. Its stability region is
-     * significantly smaller than the higher order schemes, but due to three
-     * stages only, it is very competitive in terms of the work per stage.
+     * Kennedy等人的三阶方案  @cite KennedyCarpenterLewis2000
+     * 。它的稳定区域明显小于高阶方案，但由于只有三个阶段，它在每个阶段的工作方面非常有竞争力。
+     *
      */
     LOW_STORAGE_RK_STAGE3_ORDER3,
     /**
-     * Five-stage scheme of order four,
-     * defined in the paper by Kennedy et al. @cite KennedyCarpenterLewis2000.
+     * 四阶的五级方案，在Kennedy等人的论文中定义  @cite
+     * KennedyCarpenterLewis2000  。
+     *
      */
     LOW_STORAGE_RK_STAGE5_ORDER4,
     /**
-     * Seven-stage scheme of order four defined in the paper by Tselios and
-     * Simos @cite TseliosSimos2007.
+     * Tselios和Simos的论文中定义的四阶七级方案  @cite
+     * TseliosSimos2007  。
+     *
      */
     LOW_STORAGE_RK_STAGE7_ORDER4,
     /**
-     * Nine-stage scheme of order five
-     * defined in the paper by Kennedy et al. @cite KennedyCarpenterLewis2000.
+     * 肯尼迪等人的论文中定义的五阶九段式方案  @cite
+     * KennedyCarpenterLewis2000  。
+     *
      */
     LOW_STORAGE_RK_STAGE9_ORDER5,
     /**
-     * Backward Euler method, first order.
+     * 后退欧拉法，一阶。
+     *
      */
     BACKWARD_EULER,
     /**
-     * Implicit midpoint method, second order.
+     * 隐式中点法，二阶。
+     *
      */
     IMPLICIT_MIDPOINT,
     /**
-     * Crank-Nicolson method, second order.
+     * Crank-Nicolson方法，二阶。
+     *
      */
     CRANK_NICOLSON,
     /**
-     * Two stage SDIRK method (short for "singly diagonally implicit
-     * Runge-Kutta"), second order.
+     * 两阶段SDIRK方法（"单对角隐式Runge-Kutta
+     * "的简称），二阶。
+     *
      */
     SDIRK_TWO_STAGES,
     /**
-     * Heun's method (improved Euler's method), second order.
+     * Heun方法（改进的欧拉方法），二阶。
+     *
      */
     HEUN_EULER,
     /**
-     * Bogacki–Shampine method, third-order.
+     * Bogacki-Shampine方法，三阶。
+     *
      */
     BOGACKI_SHAMPINE,
     /**
-     * Dormand-Prince method, fifth order; this is the method used by
-     * ode45 in MATLAB.
+     * Dormand-Prince方法，五阶；这是MATLAB中ODE45所使用的方法。
+     *
      */
     DOPRI,
     /**
-     * Fehlberg method, fifth order.
+     * Fehlberg方法，五阶。
+     *
      */
     FEHLBERG,
     /**
-     * Cash–Karp method, fifth order.
+     * Cash-Karp方法，五阶。
+     *
      */
     CASH_KARP,
     /**
-     * Invalid.
+     * 无效。
+     *
      */
     invalid
   };
@@ -146,21 +225,25 @@ namespace TimeStepping
 
 
   /**
-   * Reason for exiting evolve_one_time_step when using an embedded method:
-   * DELTA_T, MIN_DELTA_T, MAX_DELTA_T.
+   * 使用嵌入式方法时退出evolve_one_time_step的原因。  delta_t,
+   * min_delta_t, max_delta_t.
+   *
    */
   enum embedded_runge_kutta_time_step
   {
     /**
-     * The time step is in the valid range.
+     * 时间步长在有效范围内。
+     *
      */
     DELTA_T,
     /**
-     * The time step was increased to the minimum acceptable time step.
+     * 时间步长被增加到可接受的最小时间步长。
+     *
      */
     MIN_DELTA_T,
     /**
-     * The time step was reduced to the maximum acceptable time step.
+     * 时间步长被减少到可接受的最大时间步长。
+     *
      */
     MAX_DELTA_T
   };
@@ -168,27 +251,29 @@ namespace TimeStepping
 
 
   /**
-   * Abstract class for time stepping methods. These methods assume that the
-   * equation has the form: $ \frac{\partial y}{\partial t} = f(t,y) $.
+   * 时间步长方法的抽象类。这些方法假定方程的形式。  $
+   * \frac{\partial y}{\partial t} = f(t,y) $  .
+   *
    */
   template <typename VectorType>
   class TimeStepping
   {
   public:
     /**
-     * Virtual destructor.
+     * 虚拟解构器。
+     *
      */
     virtual ~TimeStepping() = default;
 
     /**
-     * Purely virtual function. This function is used to advance from time @p
-     * t to t+ @p delta_t. @p F is a vector of functions $ f(t,y) $ that
-     * should be integrated, the input parameters are the time t and the
-     * vector y and the output is value of f at this point. @p J_inverse is a
-     * vector functions that compute the inverse of the Jacobians associated
-     * to the implicit problems. The input parameters are the time, $ \tau $,
-     * and a vector. The output is the value of function at this point. This
-     * function returns the time at the end of the time step.
+     * 纯粹的虚拟函数。这个函数用于从时间 @p t推进到t+  @p
+     * delta_t.   @p F 是一个应该被整合的函数 $ f(t,y) $
+     * 的向量，输入参数是时间t和向量y，输出是此时的f值。
+     * @p J_inverse
+     * 是一个计算与隐式问题相关的雅各布式的逆函数的向量。输入参数是时间，
+     * $ \tau $
+     * 和一个矢量。输出是函数在这一点上的值。该函数返回时间步数结束时的时间。
+     *
      */
     virtual double
     evolve_one_time_step(
@@ -201,13 +286,15 @@ namespace TimeStepping
       VectorType &                                                    y) = 0;
 
     /**
-     * Empty structure used to store information.
+     * 用来存储信息的空结构。
+     *
      */
     struct Status
     {};
 
     /**
-     * Purely virtual function that return Status.
+     * 纯粹的虚拟函数，返回状态。
+     *
      */
     virtual const Status &
     get_status() const = 0;
@@ -216,33 +303,36 @@ namespace TimeStepping
 
 
   /**
-   * Base class for the Runge-Kutta method
+   * Runge-Kutta方法的基类
+   *
    */
   template <typename VectorType>
   class RungeKutta : public TimeStepping<VectorType>
   {
   public:
     /**
-     * Virtual destructor.
+     * 虚拟解构器。
+     *
      */
     virtual ~RungeKutta() override = default;
 
     /**
-     * Purely virtual method used to initialize the Runge-Kutta method.
+     * 用于初始化Runge-Kutta方法的纯虚拟方法。
+     *
      */
     virtual void
     initialize(const runge_kutta_method method) = 0;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. @p F
-     * is a vector of functions $ f(t,y) $ that should be integrated, the
-     * input parameters are the time t and the vector y and the output is
-     * value of f at this point. @p J_inverse is a vector functions that
-     * compute the inverse of the Jacobians associated to the implicit
-     * problems. The input parameters are the time, $ \tau $, and a vector.
-     * The output is the value of function at this point. This function
-     * returns the time at the end of the time step. When using Runge-Kutta
-     * methods, @p F and @ J_inverse can only contain one element.
+     * 该函数用于从时间 @p t 推进到t+ @p delta_t.   @p F
+     * 是一个应被积分的函数 $ f(t,y) $
+     * 的向量，输入参数是时间t和向量y，输出是f在此点的值。
+     * @p J_inverse
+     * 是一个计算与隐式问题相关的雅各布式的逆函数的向量。输入参数是时间，
+     * $ \tau $  ，和一个向量。
+     * 输出是函数在这一点上的值。该函数返回时间步数结束时的时间。当使用Runge-Kutta方法时，
+     * @p F 和@J_inverse只能包含一个元素。
+     *
      */
     double
     evolve_one_time_step(
@@ -255,15 +345,16 @@ namespace TimeStepping
       VectorType &y) override;
 
     /**
-     * Purely virtual function. This function is used to advance from time @p
-     * t to t+ @p delta_t. @p f  is the function $ f(t,y) $ that should be
-     * integrated, the input parameters are the time t and the vector y and
-     * the output is value of f at this point. @p id_minus_tau_J_inverse is a
-     * function that computes $ inv(I-\tau J)$ where $ I $ is the identity
-     * matrix, $ \tau $ is given, and $ J $ is the Jacobian $ \frac{\partial
-     * J}{\partial y} $. The input parameters are the time, $ \tau $, and a
-     * vector. The output is the value of function at this point.
-     * evolve_one_time_step returns the time at the end of the time step.
+     * 纯粹的虚拟函数。这个函数用于从时间 @p t推进到t+ @p
+     * delta_t.   @p f 是应该被积分的函数 $ f(t,y) $
+     * ，输入参数是时间t和向量y，输出是f在这一点上的值。
+     * @p id_minus_tau_J_inverse 是一个计算 $ inv(I-\tau J)$
+     * 的函数，其中 $ I $ 是身份矩阵， $ \tau $ 是给定的， $
+     * J $ 是雅各布 $ \frac{\partial J}{\partial y} $
+     * 。输入参数是时间， $ \tau $
+     * ，和一个矢量。输出是函数在这一点上的值。
+     * evolve_one_time_step返回时间步数结束时的时间。
+     *
      */
     virtual double
     evolve_one_time_step(
@@ -277,22 +368,26 @@ namespace TimeStepping
 
   protected:
     /**
-     * Number of stages of the Runge-Kutta method.
+     * Runge-Kutta方法的阶段数。
+     *
      */
     unsigned int n_stages;
 
     /**
-     * Butcher tableau coefficients.
+     * Butcher tableau系数。
+     *
      */
     std::vector<double> b;
 
     /**
-     * Butcher tableau coefficients.
+     * 屠夫 tableau 系数。
+     *
      */
     std::vector<double> c;
 
     /**
-     * Butcher tableau coefficients.
+     * 屠夫 tableau 系数。
+     *
      */
     std::vector<std::vector<double>> a;
   };
@@ -300,8 +395,8 @@ namespace TimeStepping
 
 
   /**
-   * ExplicitRungeKutta is derived from RungeKutta and implement the explicit
-   * methods.
+   * ExplicitRungeKutta派生自RungeKutta并实现显式方法。
+   *
    */
   template <typename VectorType>
   class ExplicitRungeKutta : public RungeKutta<VectorType>
@@ -310,33 +405,36 @@ namespace TimeStepping
     using RungeKutta<VectorType>::evolve_one_time_step;
 
     /**
-     * Default constructor. This constructor creates an object for which
-     * you will want to call <code>initialize(runge_kutta_method)</code>
-     * before it can be used.
+     * 默认构造函数。这个构造函数创建了一个对象，在它被使用之前，你要为它调用
+     * <code>initialize(runge_kutta_method)</code> 。
+     *
      */
     ExplicitRungeKutta() = default;
 
     /**
-     * Constructor. This function calls initialize(runge_kutta_method).
+     * 构造函数。这个函数调用initialize(runge_kutta_method)。
+     *
      */
     ExplicitRungeKutta(const runge_kutta_method method);
 
     /**
-     * Initialize the explicit Runge-Kutta method.
+     * 初始化显式Runge-Kutta方法。
+     *
      */
     void
     initialize(const runge_kutta_method method) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. @p f
-     * is the function $ f(t,y) $ that should be integrated, the input
-     * parameters are the time t and the vector y and the output is value of f
-     * at this point. @p id_minus_tau_J_inverse is a function that computes $
-     * inv(I-\tau J)$ where $ I $ is the identity matrix, $ \tau $ is given,
-     * and $ J $ is the Jacobian $ \frac{\partial J}{\partial y} $. The input
-     * parameter are the time, $ \tau $, and a vector. The output is the value
-     * of function at this point. evolve_one_time_step returns the time at the
-     * end of the time step.
+     * 该函数用于从时间 @p t 推进到t+ @p delta_t.   @p f
+     * 是应该被积分的函数 $ f(t,y) $
+     * ，输入参数是时间t和矢量y，输出是此时的f值。  @p
+     * id_minus_tau_J_inverse 是一个计算 $ inv(I-\tau J)$
+     * 的函数，其中 $ I $ 是身份矩阵， $ \tau $ 是给定的， $
+     * J $ 是雅各布 $ \frac{\partial J}{\partial y} $
+     * 。输入参数是时间， $ \tau $
+     * ，和一个矢量。输出是函数在这一点上的值。
+     * evolve_one_time_step返回时间步数结束时的时间。
+     *
      */
     double
     evolve_one_time_step(
@@ -349,11 +447,10 @@ namespace TimeStepping
       VectorType &y) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. This
-     * function is similar to the one derived from RungeKutta, but does not
-     * required id_minus_tau_J_inverse because it is not used for explicit
-     * methods. evolve_one_time_step returns the time at the end of the time
-     * step.
+     * 这个函数用于从时间 @p t 推进到t+ @p delta_t.
+     * 这个函数类似于从RungeKutta导出的函数，但不需要id_minus_tau_J_inverse，因为它不用于显式方法。
+     * evolve_one_time_step 返回时间步长结束时的时间。
+     *
      */
     double
     evolve_one_time_step(
@@ -363,7 +460,8 @@ namespace TimeStepping
       VectorType &y);
 
     /**
-     * This structure stores the name of the method used.
+     * 该结构存储了所使用方法的名称。
+     *
      */
     struct Status : public TimeStepping<VectorType>::Status
     {
@@ -375,14 +473,16 @@ namespace TimeStepping
     };
 
     /**
-     * Return the status of the current object.
+     * 返回当前对象的状态。
+     *
      */
     const Status &
     get_status() const override;
 
   private:
     /**
-     * Compute the different stages needed.
+     * 计算所需的不同阶段。
+     *
      */
     void
     compute_stages(
@@ -393,7 +493,8 @@ namespace TimeStepping
       std::vector<VectorType> &f_stages) const;
 
     /**
-     * Status structure of the object.
+     * 对象的状态结构。
+     *
      */
     Status status;
   };
@@ -401,9 +502,8 @@ namespace TimeStepping
 
 
   /**
-   * The LowStorageRungeKutta class is derived from RungeKutta and implements a
-   * specific class of explicit methods. The main advantages of low-storage
-   * methods are the reduced memory consumption and the reduced memory access.
+   * LowStorageRungeKutta类派生于RungeKutta，实现了一类特殊的显式方法。低存储方法的主要优点是降低了内存消耗和减少了内存访问。
+   *
    */
   template <typename VectorType>
   class LowStorageRungeKutta : public RungeKutta<VectorType>
@@ -412,33 +512,36 @@ namespace TimeStepping
     using RungeKutta<VectorType>::evolve_one_time_step;
 
     /**
-     * Default constructor. This constructor creates an object for which
-     * you will want to call <code>initialize(runge_kutta_method)</code>
-     * before it can be used.
+     * 默认构造函数。这个构造函数创建了一个对象，在使用该对象之前，你要先调用
+     * <code>initialize(runge_kutta_method)</code> 。
+     *
      */
     LowStorageRungeKutta() = default;
 
     /**
-     * Constructor. This function calls initialize(runge_kutta_method).
+     * 构造函数。这个函数调用initialize(runge_kutta_method)。
+     *
      */
     LowStorageRungeKutta(const runge_kutta_method method);
 
     /**
-     * Initialize the explicit Runge-Kutta method.
+     * 初始化显式Runge-Kutta方法。
+     *
      */
     void
     initialize(const runge_kutta_method method) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. @p f
-     * is the function $ f(t,y) $ that should be integrated, the input
-     * parameters are the time t and the vector y and the output is value of f
-     * at this point. @p id_minus_tau_J_inverse is a function that computes $
-     * inv(I-\tau J)$ where $ I $ is the identity matrix, $ \tau $ is given,
-     * and $ J $ is the Jacobian $ \frac{\partial J}{\partial y} $. The input
-     * parameters are the time, $ \tau $, and a vector. The output is the value
-     * of function at this point. evolve_one_time_step returns the time at the
-     * end of the time step.
+     * 该函数用于从时间 @p t 推进到t+ @p delta_t.   @p f
+     * 是应该被积分的函数 $ f(t,y) $
+     * ，输入参数是时间t和向量y，输出是此时的f值。  @p
+     * id_minus_tau_J_inverse 是一个计算 $ inv(I-\tau J)$
+     * 的函数，其中 $ I $ 是身份矩阵， $ \tau $ 是给定的， $
+     * J $ 是雅各布 $ \frac{\partial J}{\partial y} $
+     * 。输入参数是时间， $ \tau $
+     * ，和一个矢量。输出是函数在这一点上的值。
+     * evolve_one_time_step返回时间步数结束时的时间。
+     *
      */
     double
     evolve_one_time_step(
@@ -451,13 +554,10 @@ namespace TimeStepping
       VectorType &y) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. This
-     * function is similar to the one derived from RungeKutta, but does not
-     * required id_minus_tau_J_inverse because it is not used for explicit
-     * methods. evolve_one_time_step returns the time at the end of the time
-     * step. Note that vec_ki holds the evaluation of the differential operator,
-     * and vec_ri holds the right-hand side for the differential operator
-     * application.
+     * 这个函数用于从时间 @p t 推进到t+ @p delta_t.
+     * 这个函数类似于从RungeKutta导出的函数，但是不需要id_minus_tau_J_inverse，因为它不用于显式方法。
+     * evolve_one_time_step返回时间步长结束时的时间。注意，vec_ki保存微分算子的评估，vec_ri保存微分算子应用的右手边。
+     *
      */
     double
     evolve_one_time_step(
@@ -469,10 +569,10 @@ namespace TimeStepping
       VectorType &vec_ki);
 
     /**
-     * Get the coefficients of the scheme.
-     * Note that here vector @p a is not the conventional definition in terms of a
-     * Butcher tableau but merely one of the sub-diagonals. More details can be
-     * found in step-67 and the references therein.
+     * 获取该方案的系数。    注意这里的向量 @p a
+     * 不是传统意义上的布彻表的定义，而只是其中的一个子对角线。更多细节可以在
+     * step-67 和其中的参考文献中找到。
+     *
      */
     void
     get_coefficients(std::vector<double> &a,
@@ -480,7 +580,8 @@ namespace TimeStepping
                      std::vector<double> &c) const;
 
     /**
-     * This structure stores the name of the method used.
+     * 该结构存储所使用的方法的名称。
+     *
      */
     struct Status : public TimeStepping<VectorType>::Status
     {
@@ -492,14 +593,16 @@ namespace TimeStepping
     };
 
     /**
-     * Return the status of the current object.
+     * 返回当前对象的状态。
+     *
      */
     const Status &
     get_status() const override;
 
   private:
     /**
-     * Compute  one stage of low storage rk.
+     * 计算一个阶段的低存储量rk。
+     *
      */
     void
     compute_one_stage(
@@ -513,7 +616,8 @@ namespace TimeStepping
       VectorType &      next_ri) const;
 
     /**
-     * Status structure of the object.
+     * 对象的状态结构。
+     *
      */
     Status status;
   };
@@ -521,8 +625,9 @@ namespace TimeStepping
 
 
   /**
-   * This class is derived from RungeKutta and implement the implicit methods.
-   * This class works only for Diagonal Implicit Runge-Kutta (DIRK) methods.
+   * 该类派生于RungeKutta并实现了隐式方法。
+   * 这个类只对对角线隐式Runge-Kutta（DIRK）方法起作用。
+   *
    */
   template <typename VectorType>
   class ImplicitRungeKutta : public RungeKutta<VectorType>
@@ -531,37 +636,38 @@ namespace TimeStepping
     using RungeKutta<VectorType>::evolve_one_time_step;
 
     /**
-     * Default constructor. initialize(runge_kutta_method) and
-     * set_newton_solver_parameters(unsigned int,double) need to be called
-     * before the object can be used.
+     * 默认构造函数。初始化(runge_kutta_method)和set_newton_solver_parameters(unsigned
+     * int,double)需要在使用该对象之前被调用。
+     *
      */
     ImplicitRungeKutta() = default;
 
     /**
-     * Constructor. This function calls initialize(runge_kutta_method) and
-     * initialize the maximum number of iterations and the tolerance of the
-     * Newton solver.
+     * 构造函数。该函数调用initialize(runge_kutta_method)并初始化牛顿求解器的最大迭代次数和容忍度。
+     *
      */
     ImplicitRungeKutta(const runge_kutta_method method,
                        const unsigned int       max_it    = 100,
                        const double             tolerance = 1e-6);
 
     /**
-     * Initialize the implicit Runge-Kutta method.
+     * 初始化隐式Runge-Kutta方法。
+     *
      */
     void
     initialize(const runge_kutta_method method) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. @p f
-     * is the function $ f(t,y) $ that should be integrated, the input
-     * parameters are the time t and the vector y and the output is value of f
-     * at this point. @p id_minus_tau_J_inverse is a function that computes $
-     * (I-\tau J)^{-1}$ where $ I $ is the identity matrix, $ \tau $ is given,
-     * and $ J $ is the Jacobian $ \frac{\partial J}{\partial y} $. The input
-     * parameters this function receives are the time, $ \tau $, and a vector.
-     * The output is the value of function at this point. evolve_one_time_step
-     * returns the time at the end of the time step.
+     * 该函数用于从时间 @p t 推进到t+ @p delta_t.   @p f
+     * 是应该被积分的函数 $ f(t,y) $
+     * ，输入参数是时间t和矢量y，输出是此时的f值。  @p
+     * id_minus_tau_J_inverse 是一个计算 $ (I-\tau J)^{-1}$
+     * 的函数，其中 $ I $ 是身份矩阵， $ \tau $ 是给定的， $
+     * J $ 是雅各布 $ \frac{\partial J}{\partial y} $
+     * 。这个函数收到的输入参数是时间， $ \tau $
+     * ，和一个向量。    输出是函数在这一点上的值。
+     * evolve_one_time_step返回时间步数结束时的时间。
+     *
      */
     double
     evolve_one_time_step(
@@ -574,16 +680,16 @@ namespace TimeStepping
       VectorType &y) override;
 
     /**
-     * Set the maximum number of iterations and the tolerance used by the
-     * Newton solver.
+     * 设置牛顿求解器使用的最大迭代次数和公差。
+     *
      */
     void
     set_newton_solver_parameters(const unsigned int max_it,
                                  const double       tolerance);
 
     /**
-     * Structure that stores the name of the method, the number of Newton
-     * iterations and the norm of the residual when exiting the Newton solver.
+     * 存储方法名称、牛顿迭代次数和退出牛顿求解器时的残差准则的结构。
+     *
      */
     struct Status : public TimeStepping<VectorType>::Status
     {
@@ -599,14 +705,16 @@ namespace TimeStepping
     };
 
     /**
-     * Return the status of the current object.
+     * 返回当前对象的状态。
+     *
      */
     const Status &
     get_status() const override;
 
   private:
     /**
-     * Compute the different stages needed.
+     * 计算所需的不同阶段。
+     *
      */
     void
     compute_stages(
@@ -620,7 +728,8 @@ namespace TimeStepping
       std::vector<VectorType> &f_stages);
 
     /**
-     * Newton solver used for the implicit stages.
+     * 用于隐含阶段的牛顿求解器。
+     *
      */
     void
     newton_solve(
@@ -630,7 +739,8 @@ namespace TimeStepping
       VectorType &y);
 
     /**
-     * Compute the residual needed by the Newton solver.
+     * 计算牛顿求解器所需的残差。
+     *
      */
     void
     compute_residual(
@@ -643,24 +753,26 @@ namespace TimeStepping
       VectorType &      residual) const;
 
     /**
-     * When using SDIRK, there is no need to compute the linear combination of
-     * the stages. Thus, when this flag is true, the linear combination is
-     * skipped.
+     * 当使用SDIRK时，不需要计算各阶段的线性组合。因此，当这个标志为真时，线性组合被跳过。
+     *
      */
     bool skip_linear_combi;
 
     /**
-     * Maximum number of iterations of the Newton solver.
+     * 牛顿求解器的最大迭代次数。
+     *
      */
     unsigned int max_it;
 
     /**
-     * Tolerance of the Newton solver.
+     * 牛顿求解器的容忍度。
+     *
      */
     double tolerance;
 
     /**
-     * Status structure of the object.
+     * 对象的状态结构。
+     *
      */
     Status status;
   };
@@ -668,8 +780,8 @@ namespace TimeStepping
 
 
   /**
-   * This class is derived from RungeKutta and implements embedded explicit
-   * methods.
+   * 该类派生于RungeKutta，实现了嵌入式显式方法。
+   *
    */
   template <typename VectorType>
   class EmbeddedExplicitRungeKutta : public RungeKutta<VectorType>
@@ -678,15 +790,16 @@ namespace TimeStepping
     using RungeKutta<VectorType>::evolve_one_time_step;
 
     /**
-     * Default constructor. initialize(runge_kutta_method) and
-     * set_time_adaptation_parameters(double, double, double, double, double,
-     * double) need to be called before the object can be used.
+     * 默认构造函数。初始化(runge_kutta_method)和set_time_adaptation_parameters(double,
+     * double, double, double, double,
+     * double)需要在使用该对象之前被调用。
+     *
      */
     EmbeddedExplicitRungeKutta() = default;
 
     /**
-     * Constructor. This function calls initialize(runge_kutta_method) and
-     * initialize the parameters needed for time adaptation.
+     * 构造函数。这个函数调用initialize(runge_kutta_method)并初始化时间适应所需的参数。
+     *
      */
     EmbeddedExplicitRungeKutta(const runge_kutta_method method,
                                const double             coarsen_param = 1.2,
@@ -697,7 +810,8 @@ namespace TimeStepping
                                const double             coarsen_tol   = 1e-12);
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     ~EmbeddedExplicitRungeKutta() override
     {
@@ -705,27 +819,30 @@ namespace TimeStepping
     }
 
     /**
-     * If necessary, deallocate memory allocated by the object.
+     * 如果有必要，删除对象分配的内存。
+     *
      */
     void
     free_memory();
 
     /**
-     * Initialize the embedded explicit Runge-Kutta method.
+     * 初始化嵌入式显式Runge-Kutta方法。
+     *
      */
     void
     initialize(const runge_kutta_method method) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. @p f
-     * is the function $ f(t,y) $ that should be integrated, the input
-     * parameters are the time t and the vector y and the output is value of f
-     * at this point. @p id_minus_tau_J_inverse is a function that computes $
-     * inv(I-\tau J)$ where $ I $ is the identity matrix, $ \tau $ is given,
-     * and $ J $ is the Jacobian $ \frac{\partial J}{\partial y} $. The input
-     * parameters are the time, $ \tau $, and a vector. The output is the
-     * value of function at this point. evolve_one_time_step returns the time
-     * at the end of the time step.
+     * 该函数用于从时间 @p t 推进到t+ @p delta_t.   @p f
+     * 是应该被积分的函数 $ f(t,y) $
+     * ，输入参数是时间t和矢量y，输出是此时的f值。  @p
+     * id_minus_tau_J_inverse 是一个计算 $ inv(I-\tau J)$
+     * 的函数，其中 $ I $ 是身份矩阵， $ \tau $ 是给定的， $
+     * J $ 是雅各布系数 $ \frac{\partial J}{\partial y} $
+     * 。输入参数是时间， $ \tau $
+     * ，和一个矢量。输出是函数在这一点上的值。
+     * evolve_one_time_step返回时间步数结束时的时间。
+     *
      */
     double
     evolve_one_time_step(
@@ -738,11 +855,10 @@ namespace TimeStepping
       VectorType &y) override;
 
     /**
-     * This function is used to advance from time @p t to t+ @p delta_t. This
-     * function is similar to the one derived from TimeStepping, but does not
-     * required id_minus_tau_J_inverse because it is not used for explicit
-     * methods. evolve_one_time_step returns the time at the end of the time
-     * step.
+     * 这个函数用于从时间 @p t 推进到t+ @p delta_t.
+     * 这个函数类似于从TimeStepping导出的函数，但不需要id_minus_tau_J_inverse，因为它不用于显式方法。
+     * evolve_one_time_step返回时间步数结束时的时间。
+     *
      */
     double
     evolve_one_time_step(
@@ -752,7 +868,8 @@ namespace TimeStepping
       VectorType &y);
 
     /**
-     * Set the parameters necessary for the time adaptation.
+     * 设置时间适应的必要参数。
+     *
      */
     void
     set_time_adaptation_parameters(const double coarsen_param,
@@ -763,10 +880,8 @@ namespace TimeStepping
                                    const double coarsen_tol);
 
     /**
-     * Structure that stores the name of the method, the reason to exit
-     * evolve_one_time_step, the number of iteration inside n_iterations, a
-     * guess of what the next time step should be, and an estimate of the norm
-     * of the error.
+     * 存储方法名称的结构，退出evolve_one_time_step的原因，n_iterations里面的迭代次数，对下一个时间步长的猜测，以及对误差规范的估计。
+     *
      */
     struct Status : public TimeStepping<VectorType>::Status
     {
@@ -778,14 +893,16 @@ namespace TimeStepping
     };
 
     /**
-     * Return the status of the current object.
+     * 返回当前对象的状态。
+     *
      */
     const Status &
     get_status() const override;
 
   private:
     /**
-     * Compute the different stages needed.
+     * 计算所需的不同阶段。
+     *
      */
     void
     compute_stages(
@@ -796,63 +913,69 @@ namespace TimeStepping
       std::vector<VectorType> &f_stages);
 
     /**
-     * This parameter is the factor (>1) by which the time step is multiplied
-     * when the time stepping can be coarsen.
+     * 这个参数是时间步长可以粗化时，时间步长所乘的系数（>1）。
+     *
      */
     double coarsen_param;
 
     /**
-     * This parameter is the factor (<1) by which the time step is multiplied
-     * when the time stepping must be refined.
+     * 该参数是当时间步长必须细化时，时间步长乘以的系数（<1）。
+     *
      */
     double refine_param;
 
     /**
-     * Smallest time step allowed.
+     * 允许的最小的时间步长。
+     *
      */
     double min_delta_t;
 
     /**
-     * Largest time step allowed.
+     * 允许的最大的时间步长。
+     *
      */
     double max_delta_t;
 
     /**
-     * Refinement tolerance: if the error estimate is larger than refine_tol,
-     * the time step is refined.
+     * 细化容忍度：如果误差估计值大于refine_tol，则对时间步长进行细化。
+     *
      */
     double refine_tol;
 
     /**
-     * Coarsening tolerance: if the error estimate is smaller than coarse_tol,
-     * the time step is coarsen.
+     * 粗化公差：如果误差估计值小于coarse_tol，则对时间步长进行粗化。
+     *
      */
     double coarsen_tol;
 
     /**
-     * If the flag is true, the last stage is the same as the first stage and
-     * one evaluation of f can be saved.
+     * 如果该标志为真，最后阶段与第一阶段相同，可以保存f的一次评估。
+     *
      */
     bool last_same_as_first;
 
     /**
-     * Butcher tableau coefficients.
+     * 屠夫 tableau 系数。
+     *
      */
     std::vector<double> b1;
 
     /**
-     * Butcher tableau coefficients.
+     * 屠夫 tableau 系数。
+     *
      */
     std::vector<double> b2;
 
     /**
-     * If the last_same_as_first flag is set to true, the last stage is saved
-     * and reused as the first stage of the next time step.
+     * 如果last_same_as_first标志被设置为
+     * "true"，最后一个阶段将被保存并作为下一个时间步骤的第一阶段重新使用。
+     *
      */
     VectorType *last_stage;
 
     /**
-     * Status structure of the object.
+     * 对象的状态结构。
+     *
      */
     Status status;
   };
@@ -861,3 +984,5 @@ namespace TimeStepping
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

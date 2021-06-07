@@ -1,4 +1,3 @@
-//include/deal.II-translator/matrix_free/cuda_hanging_nodes_internal_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -37,28 +36,26 @@ namespace CUDAWrappers
   namespace internal
   {
     /**
-     * 该类创建了用于处理 CUDAWrappers::MatrixFree.
-     * 中悬挂节点的掩码，该类的实现在 <em>
-     * 第3节无矩阵有限元计算在图形处理器上的自适应细化非结构化网格
-     * </em> 中解释，作者Karl
-     * Ljungkvist，SpringSim-HPC，2017年4月23-26。
-     *
+     * This class creates the mask used in the treatment of hanging nodes in
+     * CUDAWrappers::MatrixFree.
+     * The implementation of this class is explained in <em>Section 3 of
+     * Matrix-Free Finite-Element Computations On Graphics Processors With
+     * Adaptively Refined Unstructured Meshes</em> by Karl Ljungkvist,
+     * SpringSim-HPC, 2017 April 23-26.
      */
     template <int dim>
     class HangingNodes
     {
     public:
       /**
-       * 构造器。
-       *
+       * Constructor.
        */
       HangingNodes(unsigned int                     fe_degree,
                    const DoFHandler<dim> &          dof_handler,
                    const std::vector<unsigned int> &lexicographic_mapping);
 
       /**
-       * 计算给定单元的约束掩码的值。
-       *
+       * Compute the value of the constraint mask for a given cell.
        */
       template <typename CellIterator>
       void
@@ -70,8 +67,7 @@ namespace CUDAWrappers
 
     private:
       /**
-       * 为三维中的边缘约束设置线到单元的映射。
-       *
+       * Set up line-to-cell mapping for edge constraints in 3D.
        */
       void
       setup_line_to_cell();
@@ -967,12 +963,12 @@ namespace CUDAWrappers
 
 
     /**
-     * 这个函数使用张量积来解决悬挂的节点。
-     * 该类的实现在 <em>  Matrix-Free Finite-Element Computations On
-     * Graphics Processors With Adaptive Refined Unstructured Meshes  </em>
-     * 中解释，作者Karl
-     * Ljungkvist，SpringSim-HPC，2017年4月23-26日。
+     * This function resolves the hanging nodes using tensor product.
      *
+     * The implementation of this class is explained in <em>Matrix-Free
+     * Finite-Element Computations On Graphics Processors With Adaptively
+     * Refined Unstructured Meshes</em> by Karl Ljungkvist, SpringSim-HPC, 2017
+     * April 23-26.
      */
     template <int dim, int fe_degree, bool transpose, typename Number>
     __device__ void
@@ -1007,5 +1003,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
-
-

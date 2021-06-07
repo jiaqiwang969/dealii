@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_interface_values_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -31,26 +32,30 @@ class FEInterfaceValues;
 #endif
 
 /**
- * Namespace for views you get from accessing FEInterfaceValues using an
- * extractor.
+ * 使用提取器访问FEInterfaceValues得到的视图的命名空间。
+ *
+ *
  */
 namespace FEInterfaceViews
 {
   /**
-   * The base class for the views.
+   * 视图的基类。
+   *
    */
   template <int dim, int spacedim = dim>
   class Base
   {
   public:
     /**
-     * The constructor.
-     **/
+     * 构造函数。
+     *
+     */
     Base(const FEInterfaceValues<dim, spacedim> &fe_interface);
 
   protected:
     /**
-     * Store a pointer to the FEInterfaceValues instance.
+     * 存储一个指向FEInterfaceValues实例的指针。
+     *
      */
     const FEInterfaceValues<dim, spacedim> *fe_interface;
   };
@@ -58,61 +63,60 @@ namespace FEInterfaceViews
 
 
   /**
-   * The view of a scalar variable for FEInterfaceValues.
+   * FEInterfaceValues的标量变量的视图。
+   *
    */
   template <int dim, int spacedim = dim>
   class Scalar : public Base<dim, spacedim>
   {
   public:
     /**
-     * This is the type returned for values.
+     * 这是返回数值的类型。
+     *
      */
     using value_type = double;
 
     /**
-     * This is the type returned for gradients, for example from
-     * average_gradient().
+     * 这是返回梯度的类型，例如从average_gradient()返回。
+     *
      */
     using gradient_type =
       typename FEValuesViews::Scalar<dim, spacedim>::gradient_type;
 
     /**
-     * This is the type returned for hessians, for example from jump_hessian().
+     * 这是为hesians返回的类型，例如从jump_hessian()返回。
+     *
      */
     using hessian_type =
       typename FEValuesViews::Scalar<dim, spacedim>::hessian_type;
 
     /**
-     * This is the type returned for third derivatives, for example from
-     * jump_hessian().
+     * 这是返回三阶导数的类型，例如从jump_hessian()返回。
+     *
      */
     using third_derivative_type =
       typename FEValuesViews::Scalar<dim, spacedim>::third_derivative_type;
 
     /**
-     * Constructor for an object that represents a single scalar component
+     * 表示一个单一标量分量的对象的构造函数
+     *
      */
     Scalar(const FEInterfaceValues<dim, spacedim> &fe_interface,
            const unsigned int                      component);
 
     /**
-     * Return the value of the shape function
-     * with interface dof index @p interface_dof_index in
-     * quadrature point @p q_point of the component selected by this view.
+     * 返回该视图所选分量的正交点 @p q_point
+     * 中具有界面dof索引 @p interface_dof_index
+     * 的形状函数的值。        参数 @p here_or_there
+     * 在上游值和下游值之间进行选择，上游值由该正交点的法向量方向定义。如果
+     * @p here_or_there
+     * 为真，则使用界面的第一个单元的形状函数。
+     * 换句话说，当从界面的两个单元之一接近给定的正交点时，该函数返回形状函数值的极限。
+     * @note
+     * 这个函数通常用于根据一个方向来挑选上游或下游的值。这可以通过使用
+     * <code>(direction normal)>0</code>
+     * 作为该函数的第一个参数来实现。
      *
-     * The argument @p here_or_there selects between the upstream value and
-     * the downstream value as defined by the direction of the normal vector
-     * in this quadrature point. If @p here_or_there is true, the shape
-     * functions from the first cell of the interface is used.
-     *
-     * In other words, this function returns the limit of the value of the shape
-     * function in the given quadrature point when approaching it from one of
-     * the two cells of the interface.
-     *
-     * @note This function is typically used to pick the upstream or downstream
-     * value based on a direction. This can be achieved by using
-     * <code>(direction * normal)>0</code> as the first argument of this
-     * function.
      */
     value_type
     value(const bool         here_or_there,
@@ -120,71 +124,85 @@ namespace FEInterfaceViews
           const unsigned int q_point) const;
 
     /**
-     * Return the jump $\jump{u}=u_1 - u_2$ on the interface for the shape
-     * function
-     * @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * 返回该视图所选部件的正交点 @p q_point 中形状函数 @p
+     * interface_dof_index 在界面上的跳变 $\jump{u}=u_1
+     *
+     * - u_2$ 。
+     *
      */
     value_type
     jump(const unsigned int interface_dof_index,
          const unsigned int q_point) const;
 
     /**
-     * Return the average value $\average{u}=\frac{1}{2}(u_1 + u_2)$ on the
-     * interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 的形状函数 @p
+     * interface_dof_index 的界面上的平均值
+     * $\average{u}=\frac{1}{2}(u_1 + u_2)$ 。
+     *
      */
     value_type
     average(const unsigned int interface_dof_index,
             const unsigned int q_point) const;
 
     /**
-     * Return the average of the gradient $\average{\nabla u}$ on the interface
-     * for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 的形状函数 @p
+     * interface_dof_index 在界面上的梯度 $\average{\nabla u}$
+     * 的平均值。
+     *
      */
     gradient_type
     average_gradient(const unsigned int interface_dof_index,
                      const unsigned int q_point) const;
 
     /**
-     * Return the jump of the gradient $\jump{nabla u}$ on the interface for
-     * the shape
-     * function @p interface_dof_index in the quadrature point @p q_point
-     * of the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 的形状函数 @p
+     * interface_dof_index 在界面上的梯度 $\jump{nabla u}$ 的跳跃。
+     *
      */
     gradient_type
     jump_gradient(const unsigned int interface_dof_index,
                   const unsigned int q_point) const;
 
     /**
-     * Return the average of the Hessian $\average{\nabla^2 u} =
+     * 返回此视图所选组件的正交点 @p q_point处形状函数 @p
+     * interface_dof_index 界面上的Hessian $\average{\nabla^2 u} =
      * \frac{1}{2}\nabla^2 u_{\text{cell0}} + \frac{1}{2} \nabla^2
-     * u_{\text{cell1}}$ on the interface
-     * for the shape function @p interface_dof_index at the quadrature point @p
-     * q_point of the component selected by this view.
+     * u_{\text{cell1}}$ 的平均值。
+     *
      */
     hessian_type
     average_hessian(const unsigned int interface_dof_index,
                     const unsigned int q_point) const;
 
     /**
-     * Return the jump in the gradient $\jump{\nabla u}=\nabla u_{\text{cell0}}
-     * - \nabla u_{\text{cell1}}$ on the interface for the shape function @p
-     * interface_dof_index at the quadrature point @p q_point of
-     * the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 处的形状函数
+     * @p interface_dof_index的界面上的梯度 $\jump{\nabla u}=\nabla
+     * u_{\text{cell0}}
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \nabla u_{\text{cell1}}$ 的跳变。
+     *
      */
     hessian_type
     jump_hessian(const unsigned int interface_dof_index,
                  const unsigned int q_point) const;
 
     /**
-     * Return the jump in the third derivative $\jump{\nabla^3 u} = \nabla^3
-     * u_{\text{cell0}} - \nabla^3 u_{\text{cell1}}$ on the interface for the
-     * shape function @p interface_dof_index at the quadrature point @p q_point of
-     * the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 处形状函数 @p
+     * interface_dof_index 的界面上的第三导数 $\jump{\nabla^3 u} =
+     * \nabla^3 u_{\text{cell0}}
+     *
+     * - \nabla^3 u_{\text{cell1}}$ 的跳变。
+     *
      */
     third_derivative_type
     jump_3rd_derivative(const unsigned int interface_dof_index,
@@ -192,7 +210,8 @@ namespace FEInterfaceViews
 
   private:
     /**
-     * The extractor for this view.
+     * 该视图的提取器。
+     *
      */
     const FEValuesExtractors::Scalar extractor;
   };
@@ -200,65 +219,64 @@ namespace FEInterfaceViews
 
 
   /**
-   * The view of a vector-valued variable for FEInterfaceValues.
+   * FEInterfaceValues的矢量值变量的视图。
+   *
    */
   template <int dim, int spacedim = dim>
   class Vector : public Base<dim, spacedim>
   {
   public:
     /**
-     * This is the type returned for values.
+     * 这是返回数值的类型。
+     *
      */
     using value_type =
       typename FEValuesViews::Vector<dim, spacedim>::value_type;
 
     /**
-     * This is the type returned for gradients, for example from
-     * average_gradient().
+     * 这是返回梯度的类型，例如从average_gradient()返回。
+     *
      */
     using gradient_type =
       typename FEValuesViews::Vector<dim, spacedim>::gradient_type;
 
     /**
-     * An alias for the type of second derivatives of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the Hessian is a <code>Tensor@<3,dim@></code>.
+     * 这个类所代表的视图的二阶导数的类型的别名。这里，对于一组
+     * <code>dim</code> 分量的有限元，Hessian是一个
+     * <code>Tensor@<3,dim@></code>  。
+     *
      */
     using hessian_type =
       typename FEValuesViews::Vector<dim, spacedim>::hessian_type;
 
     /**
-     * An alias for the type of third derivatives of the view this class
-     * represents. Here, for a set of <code>dim</code> components of the
-     * finite element, the third derivative is a <code>Tensor@<4,dim@></code>.
+     * 该类代表的视图的第三导数类型的别名。这里，对于有限元的一组
+     * <code>dim</code> 分量，第三导数是一个
+     * <code>Tensor@<4,dim@></code>  。
+     *
      */
     using third_derivative_type =
       typename FEValuesViews::Vector<dim, spacedim>::third_derivative_type;
 
     /**
-     * Constructor for an object that represents a vector component
+     * 代表一个矢量分量的对象的构造函数
+     *
      */
     Vector(const FEInterfaceValues<dim, spacedim> &fe_interface,
            const unsigned int                      first_vector_component);
 
     /**
-     * Return the value of the vector components selected by this view
-     * with interface dof index @p interface_dof_index in
-     * quadrature point @p q_point.
+     * 返回该视图选择的具有界面dof索引 @p interface_dof_index
+     * 的向量分量在正交点 @p q_point. 的值 参数 @p here_or_there
+     * 在该正交点的法向量方向定义的上游值和下游值之间选择。如果
+     * @p here_or_there
+     * 为真，则使用界面的第一个单元的形状函数。
+     * 换句话说，当从界面的两个单元之一接近给定正交点时，该函数返回形状函数的极限值。
+     * @note
+     * 这个函数通常用于根据一个方向来挑选上游或下游的值。这可以通过使用
+     * <code>(direction normal)>0</code>
+     * 作为该函数的第一个参数来实现。
      *
-     * The argument @p here_or_there selects between the upstream value and
-     * the downstream value as defined by the direction of the normal vector
-     * in this quadrature point. If @p here_or_there is true, the shape
-     * functions from the first cell of the interface is used.
-     *
-     * In other words, this function returns the limit of the value of the shape
-     * function in the given quadrature point when approaching it from one of
-     * the two cells of the interface.
-     *
-     * @note This function is typically used to pick the upstream or downstream
-     * value based on a direction. This can be achieved by using
-     * <code>(direction * normal)>0</code> as the first argument of this
-     * function.
      */
     value_type
     value(const bool         here_or_there,
@@ -266,67 +284,86 @@ namespace FEInterfaceViews
           const unsigned int q_point) const;
 
     /**
-     * Return the jump vector $[\mathbf{u}]=\mathbf{u_1} - \mathbf{u_2}$ on the
-     * interface for the shape function
-     * @p interface_dof_index in the quadrature point @p q_point.
+     * 返回正交点 @p q_point. 中形状函数 @p interface_dof_index
+     * 的界面上的跳跃向量 $[\mathbf{u}]=\mathbf{u_1}
+     *
+     * - \mathbf{u_2}$ 。
+     *
      */
     value_type
     jump(const unsigned int interface_dof_index,
          const unsigned int q_point) const;
 
     /**
-     * Return the average vector $\average{\mathbf{u}}=\frac{1}{2}(\matbf{u_1} +
-     * \mathbf{u_2})$ on the interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point.
+     * 返回正交点 @p q_point. 的形状函数 @p interface_dof_index
+     * 的界面上的平均矢量
+     * $\average{\mathbf{u}}=\frac{1}{2}(\matbf{u_1} + \mathbf{u_2})$ 。
+     *
      */
     value_type
     average(const unsigned int interface_dof_index,
             const unsigned int q_point) const;
 
     /**
-     * Return the average of the gradient (a tensor of rank 2) $\average{\nabla
-     * \mathbf{u}}$ on the interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point.
+     * 返回正交点 @p q_point. 的形状函数 @p interface_dof_index
+     * 在界面上的梯度（等级2的张量） $\average{\nabla
+     * \mathbf{u}}$ 的平均值。
+     *
      */
     gradient_type
     average_gradient(const unsigned int interface_dof_index,
                      const unsigned int q_point) const;
 
     /**
-     * Return the jump of the gradient (a tensor of rank 2) $\jump{\nabla
-     * \mathbf{u}}$ on the interface for the shape
-     * function @p interface_dof_index in the quadrature point @p q_point.
+     * 返回形状函数 @p interface_dof_index 在正交点 @p q_point.
+     * 的界面上的梯度（等级为2的张量） $\jump{\nabla
+     * \mathbf{u}}$ 的跳跃。
+     *
      */
     gradient_type
     jump_gradient(const unsigned int interface_dof_index,
                   const unsigned int q_point) const;
 
     /**
-     * Return the average of the Hessian $\average{\nabla^2 u} =
+     * 返回该视图所选组件的正交点 @p q_point处形状函数 @p
+     * interface_dof_index 的界面上的Hessian $\average{\nabla^2 u} =
      * \frac{1}{2}\nabla^2 u_{\text{cell0}} + \frac{1}{2} \nabla^2
-     * u_{\text{cell1}}$ on the interface
-     * for the shape function @p interface_dof_index at the quadrature point @p
-     * q_point of the component selected by this view.
+     * u_{\text{cell1}}$ 的平均值。
+     *
      */
     hessian_type
     average_hessian(const unsigned int interface_dof_index,
                     const unsigned int q_point) const;
 
     /**
-     * Return the jump in the gradient $\jump{\nabla u}=\nabla u_{\text{cell0}}
-     * - \nabla u_{\text{cell1}}$ on the interface for the shape function @p
-     * interface_dof_index at the quadrature point @p q_point of
-     * the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 处的形状函数
+     * @p interface_dof_index的界面上的梯度 $\jump{\nabla u}=\nabla
+     * u_{\text{cell0}}
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \nabla u_{\text{cell1}}$ 的跳变。
+     *
      */
     hessian_type
     jump_hessian(const unsigned int interface_dof_index,
                  const unsigned int q_point) const;
 
     /**
-     * Return the jump in the third derivative $\jump{\nabla^3 u} = \nabla^3
-     * u_{\text{cell0}} - \nabla^3 u_{\text{cell1}}$ on the interface for the
-     * shape function @p interface_dof_index at the quadrature point @p q_point of
-     * the component selected by this view.
+     * 返回此视图所选组件的正交点 @p q_point 处形状函数 @p
+     * interface_dof_index 的界面上的第三导数 $\jump{\nabla^3 u} =
+     * \nabla^3 u_{\text{cell0}}
+     *
+     * - \nabla^3 u_{\text{cell1}}$ 的跳变。
+     *
      */
     third_derivative_type
     jump_3rd_derivative(const unsigned int interface_dof_index,
@@ -334,7 +371,8 @@ namespace FEInterfaceViews
 
   private:
     /**
-     * The extractor for this view.
+     * 此视图的提取器。
+     *
      */
     const FEValuesExtractors::Vector extractor;
   };
@@ -343,42 +381,32 @@ namespace FEInterfaceViews
 
 
 /**
- * FEInterfaceValues is a data structure to access and assemble finite element
- * data on interfaces between two cells of a mesh.
+ * FEInterfaceValues是一个数据结构，用于访问和组合网格中两个单元之间的界面上的有限元数据。
+ * 它提供了一种方法来访问两个相邻单元之间的界面上的平均数、跳跃项和用于非连续加尔金方法的类似操作。这允许以类似于FEValues对单元、FEFaceValues对面的方式计算典型的网格相关的线性或双线性形式。在文献中，相邻单元之间的面被称为
+ * "内部界面 "或 "面"。
+ * 在内部，该类为两个FEFaceValues对象（或使用自适应细化时的FESubfaceValues）提供了一个抽象。该类引入了一个新的
+ * "界面dof索引"，它在两个FEFaceValues对象的dof索引的联盟上行走。辅助函数允许在新的
+ * "界面dof索引 "和相应的
+ * "单元格索引"（0代表第一个单元格，1代表第二个单元格）以及该单元格中的
+ * "dof索引 "之间进行转换。 该类是在 MeshWorker::mesh_loop().
+ * 中使用的，其目的是作为MeshWorker和LocalIntegrators的低级替代品，与手动组装面状术语相比，它是一个更高级的抽象。
  *
- * It provides a way to access averages, jump terms, and similar operations used
- * in Discontinuous Galerkin methods on a face between two neighboring cells.
- * This allows the computation of typical mesh-dependent linear or bilinear
- * forms in a similar way as FEValues does for cells and FEFaceValues does for
- * faces. In
- * the literature, the faces between neighboring cells are called "inner
- * interfaces" or "facets".
  *
- * Internally, this class provides an abstraction for two FEFaceValues
- * objects (or FESubfaceValues when using adaptive refinement). The class
- * introduces a new "interface dof index" that walks over
- * the union of the dof indices of the two FEFaceValues objects. Helper
- * functions allow translating between the new "interface dof index" and the
- * corresponding "cell index" (0 for the first cell, 1 for the second cell)
- * and "dof index" within that cell.
- *
- * The class is made to be used inside MeshWorker::mesh_loop(). It is intended
- * to be a low level replacement for MeshWorker and LocalIntegrators and a
- * higher level abstraction compared to assembling face terms manually.
  */
 template <int dim, int spacedim = dim>
 class FEInterfaceValues
 {
 public:
   /**
-   * Number of quadrature points.
+   * 正交点的数量。
+   *
    */
   const unsigned int n_quadrature_points;
 
   /**
-   * Construct the FEInterfaceValues with a single FiniteElement (same on both
-   * sides of the facet). The FEFaceValues objects will be initialized with
-   * the given @p mapping, @p quadrature, and @p update_flags.
+   * 用一个有限元素（FiniteElement）构建FEInterfaceValues（面的两边都一样）。FEFaceValues对象将以给定的
+   * @p mapping,   @p quadrature, 和 @p update_flags. 进行初始化。
+   *
    */
   FEInterfaceValues(const Mapping<dim, spacedim> &      mapping,
                     const FiniteElement<dim, spacedim> &fe,
@@ -386,9 +414,8 @@ public:
                     const UpdateFlags                   update_flags);
 
   /**
-   * The same as above but taking a collection of quadrature rules
-   * so that different quadrature rules can be assigned to different
-   * faces.
+   * 与上述相同，但取一个正交规则的集合，以便不同的正交规则可以分配给不同的面。
+   *
    */
   FEInterfaceValues(const Mapping<dim, spacedim> &      mapping,
                     const FiniteElement<dim, spacedim> &fe,
@@ -396,45 +423,32 @@ public:
                     const UpdateFlags                   update_flags);
 
   /**
-   * Construct the FEInterfaceValues with a single FiniteElement and
-   * a Q1 Mapping.
+   * 用一个FiniteElement和一个Q1 Mapping构造FEInterfaceValues。
+   * 见上面的构造函数。
    *
-   * See the constructor above.
    */
   FEInterfaceValues(const FiniteElement<dim, spacedim> &fe,
                     const Quadrature<dim - 1> &         quadrature,
                     const UpdateFlags                   update_flags);
 
   /**
-   * Re-initialize this object to be used on a new interface given by two faces
-   * of two neighboring cells. The `cell` and `cell_neighbor` cells will be
-   * referred to through `cell_index` zero and one after this call in all places
-   * where one needs to identify the two cells adjacent to the interface.
+   * 重新初始化这个对象，以用于由两个相邻单元的两个面给出的新接口。`cell`和`cell_neighbor`单元格将通过`cell_index`零和一在此调用后在所有需要识别界面相邻的两个单元格的地方被提及。
+   * 使用  numbers::invalid_unsigned_int  表示  @p sub_face_no  或  @p
+   * sub_face_no_neighbor 表示你想在整个面而不是子面工作。
+   * 参数（包括它们的顺序）与 @p face_worker 中的
+   * MeshWorker::mesh_loop(). 参数相同  @param[in]  cell
+   * 与界面相邻的第一个单元的迭代器。    @param[in]  face_no
+   * 一个整数，识别接口在第一个单元的哪个面上。
+   * @param[in]  sub_face_no
+   * 一个整数，标识界面所对应的面（由前面两个参数标识）的子面（子）。如果等于
+   * numbers::invalid_unsigned_int, ，那么该界面被认为是整个面。
+   * @param[in]  cell_neighbor
+   * 一个与界面相邻的第二个单元格的迭代器。这个迭代器的类型不一定等于`cell`，但必须可以转换为`cell`。这允许对`cell`使用活动单元迭代器，对`cell_neighbor`使用`cell->neighbor(f)`，因为`cell->neighbor(f)`的返回类型只是一个单元迭代器（不一定是一个活动单元迭代器）。
+   * @param[in]  face_no_neighbor
+   * 和`face_no`一样，只是针对邻近的单元。    @param[in]
+   * sub_face_no_neighbor
+   * 和`sub_face_no`一样，只是针对相邻的单元。
    *
-   * Use numbers::invalid_unsigned_int for @p sub_face_no or @p
-   * sub_face_no_neighbor to indicate that you want to work on the entire face,
-   * not a sub-face.
-   *
-   * The arguments (including their order) are identical to the @p face_worker
-   * arguments in MeshWorker::mesh_loop().
-   *
-   * @param[in] cell An iterator to the first cell adjacent to the interface.
-   * @param[in] face_no An integer identifying which face of the first cell the
-   *   interface is on.
-   * @param[in] sub_face_no An integer identifying the subface (child) of the
-   *   face (identified by the previous two arguments) that the interface
-   *   corresponds to. If equal to numbers::invalid_unsigned_int, then the
-   *   interface is considered to be the entire face.
-   * @param[in] cell_neighbor An iterator to the second cell adjacent to
-   *   the interface. The type of this iterator does not have to equal that
-   *   of `cell`, but must be convertible to it. This allows using an
-   *   active cell iterator for `cell`, and `cell->neighbor(f)` for
-   *   `cell_neighbor`, since the return type of `cell->neighbor(f)` is
-   *   simply a cell iterator (not necessarily an active cell iterator).
-   * @param[in] face_no_neighbor Like `face_no`, just for the neighboring
-   *   cell.
-   * @param[in] sub_face_no_neighbor Like `sub_face_no`, just for the
-   *   neighboring cell.
    */
   template <class CellIteratorType>
   void
@@ -446,190 +460,169 @@ public:
          const unsigned int                               sub_face_no_neighbor);
 
   /**
-   * Re-initialize this object to be used on an interface given by a single face
-   * @p face_no of the cell @p cell. This is useful to use FEInterfaceValues
-   * on boundaries of the domain.
+   * 重新初始化此对象，使其用于由单元格的单个面 @p
+   * face_no 给出的界面 @p cell.
+   * 这对于在域的边界上使用FEInterfaceValues很有用。
+   * 因此，像jump()这样的成员将假定 "另一边
+   * "的值为零。请注意，不需要sub_face_number，因为一个边界面不能与更细的单元相邻。
+   * 调用此函数at_boundary()后将返回true。
    *
-   * As a consequence, members like jump() will assume a value of zero for the
-   * values on the "other" side. Note that no sub_face_number is needed as a
-   * boundary face can not neighbor a finer cell.
-   *
-   * After calling this function at_boundary() will return true.
    */
   template <class CellIteratorType>
   void
   reinit(const CellIteratorType &cell, const unsigned int face_no);
 
   /**
-   * Return a reference to the FEFaceValues or FESubfaceValues object
-   * of the specified cell of the interface.
+   * 返回对界面中指定单元的FEFaceValues或FESubfaceValues对象的引用。
+   * @p cell_index
+   * 是0或1，对应于interface_dof_to_cell_and_dof_index()返回的单元格索引。
    *
-   * The @p cell_index is either 0 or 1 and corresponds to the cell index
-   * returned by interface_dof_to_cell_and_dof_index().
    */
   const FEFaceValuesBase<dim, spacedim> &
   get_fe_face_values(const unsigned int cell_index) const;
 
   /**
-   * Constant reference to the selected mapping object.
+   * 对所选映射对象的常量引用。
+   *
    */
   const Mapping<dim, spacedim> &
   get_mapping() const;
 
   /**
-   * Constant reference to the selected finite element object.
+   * 对所选有限元对象的常数引用。
+   *
    */
   const FiniteElement<dim, spacedim> &
   get_fe() const;
 
   /**
-   * Return a reference to the quadrature object in use.
+   * 返回对使用中的正交对象的引用。
+   *
    */
   const Quadrature<dim - 1> &
   get_quadrature() const;
 
   /**
-   * Return the update flags set.
+   * 返回设置的更新标志。
+   *
    */
   UpdateFlags
   get_update_flags() const;
 
   /**
-   * @name Functions to query information on a given interface
-   * @{
+   * @name  查询给定接口信息的函数  @{ .
+   *
    */
 
   /**
-   * Return if the current interface is a boundary face or an internal
-   * face with two adjacent cells.
+   * 返回当前界面是一个边界面还是一个有两个相邻单元的内部面。
+   * 详见相应的reinit()函数。
    *
-   * See the corresponding reinit() functions for details.
    */
   bool
   at_boundary() const;
 
   /**
-   * Mapped quadrature weight. This value equals the
-   * mapped surface element times the weight of the quadrature
-   * point.
+   * 映射的正交权重。这个值等于映射的表面元素乘以正交点的权重。
+   * 你可以把这个函数返回的数量看作是我们在这里通过四分法实现的积分中的表面元素
+   * $ds$ 。      @dealiiRequiresUpdateFlags{update_JxW_values}
    *
-   * You can think of the quantity returned by this function as the
-   * surface element $ds$ in the integral that we implement here by
-   * quadrature.
-   *
-   * @dealiiRequiresUpdateFlags{update_JxW_values}
    */
   double
   JxW(const unsigned int quadrature_point) const;
 
   /**
-   * Return the vector of JxW values for each quadrature point.
-   *
+   * 返回每个正交点的JxW值的向量。
    * @dealiiRequiresUpdateFlags{update_JxW_values}
+   *
    */
   const std::vector<double> &
   get_JxW_values() const;
 
   /**
-   * Return the normal vector of the interface in each quadrature point.
-   *
-   * The return value is identical to get_fe_face_values(0).get_normal_vectors()
-   * and therefore, are outside normal vectors from the perspective of the
-   * first cell of this interface.
-   *
+   * 返回每个正交点中界面的法向量。
+   * 返回值与get_fe_face_values(0).get_normal_vectors()相同，因此，从这个界面的第一个单元的角度来看，是外部法向量。
    * @dealiiRequiresUpdateFlags{update_normal_vectors}
+   *
    */
   const std::vector<Tensor<1, spacedim>> &
   get_normal_vectors() const;
 
   /**
-   * Return a reference to the quadrature points in real space.
-   *
+   * 返回实空间中正交点的引用。
    * @dealiiRequiresUpdateFlags{update_quadrature_points}
+   *
    */
   const std::vector<Point<spacedim>> &
   get_quadrature_points() const;
 
   /**
-   * Return the number of DoFs (or shape functions) on the current interface.
+   * 返回当前界面上的DoFs（或形状函数）的数量。
+   * @note
+   * 这个数字只有在调用reinit()后才能得到，而且在调用reinit()后会发生变化。例如，在一个边界界面上，它等于单个FEFaceValues对象的道夫数，而对于一个DG元素的内部界面，它是这个数字的两倍。对于一个连续元素，它略小，因为界面上的两个单元共享一些道夫。
    *
-   * @note This number is only available after a call to reinit() and can change
-   * from one call to reinit() to the next. For example, on a boundary interface
-   * it is equal to the number of dofs of the single FEFaceValues object, while
-   * it is twice that for an interior interface for a DG element. For a
-   * continuous element, it is slightly smaller because the two cells on the
-   * interface share some of the dofs.
    */
   unsigned
   n_current_interface_dofs() const;
 
   /**
-   * Return the set of joint DoF indices. This includes indices from both cells.
-   * If reinit was called with an active cell iterator, the indices are based
-   * on the active indices (returned by `DoFCellAccessor::get_dof_indices()` ),
-   * in case of level cell (that is, if is_level_cell() return true )
-   * the mg dof indices are returned.
+   * 返回联合DoF指数的集合。这包括两个单元的指数。
+   * 如果调用 reinit
+   * 时有一个活动单元的迭代器，该指数基于活动指数（由
+   * `DoFCellAccessor::get_dof_indices()`
+   * 返回），如果是水平单元（即，如果 is_level_cell() 返回
+   * true ），则返回 mg dof 指数。
+   * @note
+   * 这个函数只有在调用reinit()后才能使用，并且在调用reinit()后会发生变化。
    *
-   * @note This function is only available after a call to reinit() and can
-   * change from one call to reinit() to the next.
    */
   std::vector<types::global_dof_index>
   get_interface_dof_indices() const;
 
   /**
-   * Convert an interface dof index into the corresponding local DoF indices of
-   * the two cells. If an interface DoF is only active on one of the
-   * cells, the other index will be numbers::invalid_unsigned_int.
+   * 将一个界面DoF指数转换成两个单元的相应本地DoF指数。如果一个界面DoF只在其中一个单元上起作用，另一个索引将是
+   * numbers::invalid_unsigned_int.
+   * 对于不连续的有限元，每个界面Dof将正好对应一个DoF索引。
+   * @note
+   * 该函数仅在调用reinit()后可用，并且可以从一次调用reinit()到下一次调用而改变。
    *
-   * For discontinuous finite elements each interface dof will correspond to
-   * exactly one DoF index.
-   *
-   * @note This function is only available after a call to reinit() and can
-   * change from one call to reinit() to the next.
    */
   std::array<unsigned int, 2>
   interface_dof_to_dof_indices(const unsigned int interface_dof_index) const;
 
   /**
-   * Return the normal in a given quadrature point.
-   *
-   * The normal points in outwards direction as seen from the first cell of
-   * this interface.
-   *
+   * 返回给定正交点的法线。
+   * 法线指向从这个界面的第一个单元看到的向外的方向。
    * @dealiiRequiresUpdateFlags{update_normal_vectors}
+   *
    */
   Tensor<1, spacedim>
   normal(const unsigned int q_point_index) const;
 
   /**
    * @}
+   *
    */
 
   /**
-   * @name Functions to evaluate data of the shape functions
-   * @{
+   * @name  用于评估形状函数数据的函数  @{
+   *
    */
 
   /**
-   * Return component @p component of the value of the shape function
-   * with interface dof index @p interface_dof_index in
-   * quadrature point @p q_point.
+   * 返回正交点 @p q_point. 中具有接口道夫索引 @p
+   * interface_dof_index 的形状函数值的分量 @p component  参数 @p
+   * here_or_there 在0单元（这里为 @p true) ）和1单元（那里为
+   * @p false). ）的值之间选择。你也可以把它解释为
+   * "上游"（ @p true) 和 "下游"（ @p false)
+   * 由这个正交点的法向量的方向定义。如果 @p here_or_there
+   * 为真，则使用界面的第一个单元的形状函数。
+   * 换句话说，当从界面的两个单元之一接近给定正交点时，该函数返回形状函数的极限值。
+   * @note
+   * 这个函数通常用于根据一个方向来挑选上游或下游的值。这可以通过使用
+   * <code>(direction normal)>0</code>
+   * 作为该函数的第一个参数来实现。
    *
-   * The argument @p here_or_there selects between the value on cell 0 (here, @p true)
-   * and cell 1 (there, @p false). You can also interpret it as "upstream" (@p true)
-   * and "downstream" (@p false) as defined by the direction of the normal
-   * vector
-   * in this quadrature point. If @p here_or_there is true, the shape
-   * functions from the first cell of the interface is used.
-   *
-   * In other words, this function returns the limit of the value of the shape
-   * function in the given quadrature point when approaching it from one of the
-   * two cells of the interface.
-   *
-   * @note This function is typically used to pick the upstream or downstream
-   * value based on a direction. This can be achieved by using
-   * <code>(direction * normal)>0</code> as the first argument of this
-   * function.
    */
   double
   shape_value(const bool         here_or_there,
@@ -638,18 +631,17 @@ public:
               const unsigned int component = 0) const;
 
   /**
-   * Return the jump $\jump{u}=u_{\text{cell0}} - u_{\text{cell1}}$ on the
-   * interface
-   * for the shape function @p interface_dof_index at the quadrature point
-   * @p q_point of component @p component.
+   * 返回形状函数 @p interface_dof_index 在分量 @p component.
+   * 的正交点 @p q_point 的界面上的跳变 $\jump{u}=u_{\text{cell0}}
    *
-   * Note that one can define the jump in
-   * different ways (the value "there" minus the value "here", or the other way
-   * around; both are used in the finite element literature). The definition
-   * here uses "value here minus value there", as seen from the first cell.
+   * - u_{\text{cell1}}$
+   * 注意，可以用不同的方式定义跳变（"那里 "的值减去
+   * "这里
+   * "的值，或者用其他方式；两者在有限元文献中都使用）。这里的定义使用
+   * "这里的值减去那里的值"，从第一个单元格看。
+   * 如果这是一个边界面（at_boundary()返回true），那么
+   * $\jump{u}=u_{\text{cell0}}$  .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{u}=u_{\text{cell0}}$.
    */
   double
   jump(const unsigned int interface_dof_index,
@@ -657,13 +649,12 @@ public:
        const unsigned int component = 0) const;
 
   /**
-   * Return the average $\average{u}=\frac{1}{2}u_{\text{cell0}} +
-   * \frac{1}{2}u_{\text{cell1}}$ on the interface
-   * for the shape function @p interface_dof_index at the quadrature point
-   * @p q_point of component @p component.
+   * 返回组件 @p component. 的正交点 @p q_point 处的形状函数
+   * $\average{u}=\frac{1}{2}u_{\text{cell0}} + \frac{1}{2}u_{\text{cell1}}$
+   * 在界面上的平均值
+   * 如果这是一个边界面（at_boundary()返回true），那么
+   * $\average{u}=u_{\text{cell0}}$  .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\average{u}=u_{\text{cell0}}$.
    */
   double
   average(const unsigned int interface_dof_index,
@@ -671,13 +662,12 @@ public:
           const unsigned int component = 0) const;
 
   /**
-   * Return the average of the gradient $\average{\nabla u} = \frac{1}{2}\nabla
-   * u_{\text{cell0}} + \frac{1}{2} \nabla u_{\text{cell1}}$ on the interface
-   * for the shape function @p interface_dof_index at the quadrature point @p
-   * q_point of component @p component.
+   * 返回组件 @p component. 的正交点 @p q_point处的形状函数
+   * $\average{\nabla u} = \frac{1}{2}\nabla u_{\text{cell0}} + \frac{1}{2}
+   * \nabla u_{\text{cell1}}$
+   * 在界面上的梯度平均值，如果这是一个边界面（at_boundary()返回true），那么
+   * $\average{\nabla u}=\nabla u_{\text{cell0}}$  .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\average{\nabla u}=\nabla u_{\text{cell0}}$.
    */
   Tensor<1, spacedim>
   average_gradient(const unsigned int interface_dof_index,
@@ -685,14 +675,13 @@ public:
                    const unsigned int component = 0) const;
 
   /**
-   * Return the average of the Hessian $\average{\nabla^2 u} =
-   * \frac{1}{2}\nabla^2 u_{\text{cell0}} + \frac{1}{2} \nabla^2
-   * u_{\text{cell1}}$ on the interface
-   * for the shape function @p interface_dof_index at the quadrature point @p
-   * q_point of component @p component.
+   * 返回形状函数 @p interface_dof_index 在组件 @p
+   * q_point的正交点 @p component. 的界面上的Hessian
+   * $\average{\nabla^2 u} = \frac{1}{2}\nabla^2 u_{\text{cell0}} +
+   * \frac{1}{2} \nabla^2 u_{\text{cell1}}$ 的平均值
+   * 如果这是一个边界面（at_boundary()返回true），那么
+   * $\average{\nabla^2 u}=\nabla^2 u_{\text{cell0}}$  .
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\average{\nabla^2 u}=\nabla^2 u_{\text{cell0}}$.
    */
   Tensor<2, spacedim>
   average_hessian(const unsigned int interface_dof_index,
@@ -700,13 +689,14 @@ public:
                   const unsigned int component = 0) const;
 
   /**
-   * Return the jump in the gradient $\jump{\nabla u}=\nabla u_{\text{cell0}} -
-   * \nabla u_{\text{cell1}}$ on the interface for the shape function @p
-   * interface_dof_index at the quadrature point @p q_point of component @p
-   * component.
+   * 返回形状函数 @p interface_dof_index在组件 @p 的正交点 @p
+   * q_point 的界面上的梯度跳变 $\jump{\nabla u}=\nabla
+   * u_{\text{cell0}}
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{\nabla u}=\nabla u_{\text{cell0}}$.
+   * - \nabla u_{\text{cell1}}$ 。
+   * 如果这是一个边界面（at_boundary()返回true），那么
+   * $\jump{\nabla u}=\nabla u_{\text{cell0}}$  .
+   *
    */
   Tensor<1, spacedim>
   jump_gradient(const unsigned int interface_dof_index,
@@ -714,14 +704,14 @@ public:
                 const unsigned int component = 0) const;
 
   /**
-   * Return the jump in the Hessian $\jump{\nabla^2 u} = \nabla^2
-   * u_{\text{cell0}} - \nabla^2 u_{\text{cell1}}$ on the interface for the
-   * shape function
-   * @p interface_dof_index at the quadrature point @p q_point of component
-   * @p component.
+   * 返回形状函数 @p interface_dof_index 在组件 @p component.
+   * 的正交点 @p q_point 的界面上的Hessian $\jump{\nabla^2 u} =
+   * \nabla^2 u_{\text{cell0}}
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{\nabla^2 u} = \nabla^2 u_{\text{cell0}}$.
+   * - \nabla^2 u_{\text{cell1}}$ 的跳变
+   * 如果这是一个边界面（at_boundary()返回true），那么
+   * $\jump{\nabla^2 u} = \nabla^2 u_{\text{cell0}}$  .
+   *
    */
   Tensor<2, spacedim>
   jump_hessian(const unsigned int interface_dof_index,
@@ -729,13 +719,14 @@ public:
                const unsigned int component = 0) const;
 
   /**
-   * Return the jump in the third derivative $\jump{\nabla^3 u} = \nabla^3
-   * u_{\text{cell0}} - \nabla^3 u_{\text{cell1}}$ on the interface for the
-   * shape function @p interface_dof_index at the quadrature point @p q_point of
-   * component @p component.
+   * 返回形状函数 @p interface_dof_index 在组件 @p component.
+   * 的正交点 @p q_point 的界面上的第三导数 $\jump{\nabla^3 u} =
+   * \nabla^3 u_{\text{cell0}}
    *
-   * If this is a boundary face (at_boundary() returns true), then
-   * $\jump{\nabla^3 u} = \nabla^3 u_{\text{cell0}}$.
+   * - \nabla^3 u_{\text{cell1}}$
+   * 的跳变，如果这是一个边界面（at_boundary()返回真），那么
+   * $\jump{\nabla^3 u} = \nabla^3 u_{\text{cell0}}$  .
+   *
    */
   Tensor<3, spacedim>
   jump_3rd_derivative(const unsigned int interface_dof_index,
@@ -743,76 +734,79 @@ public:
                       const unsigned int component = 0) const;
 
   /**
-   * Create a view of the current FEInterfaceValues object that represents a
-   * particular scalar component of the possibly vector-valued finite element.
-   * The concept of views is explained in the documentation of the namespace
-   * FEValuesViews.
+   * 创建一个当前FEInterfaceValues对象的视图，该视图代表了可能是矢量值的有限元中的一个特定标量分量。
+   * 视图的概念在命名空间FEValuesViews的文档中解释。
+   *
    */
   const FEInterfaceViews::Scalar<dim, spacedim>
   operator[](const FEValuesExtractors::Scalar &scalar) const;
 
   /**
-   * Create a view of the current FEInterfaceValues object that represents a set
-   * of <code>dim</code> scalar components (i.e. a vector) of the vector-valued
-   * finite element. The concept of views is explained in the documentation of
-   * the namespace FEValuesViews.
+   * 为当前的FEInterfaceValues对象创建一个视图，该视图表示矢量值有限元的一组
+   * <code>dim</code>
+   * 标量分量（即一个矢量）。视图的概念在命名空间FEValuesViews的文档中有所解释。
+   *
    */
   const FEInterfaceViews::Vector<dim, spacedim>
   operator[](const FEValuesExtractors::Vector &vector) const;
 
   /**
    * @}
+   *
    */
 
 private:
   /**
-   * The list of DoF indices for the current interface, filled in reinit().
+   * 当前界面的DoF指数列表，在reinit()中填写。
+   *
    */
   std::vector<types::global_dof_index> interface_dof_indices;
 
   /**
-   * The mapping from interface dof to the two local dof indices of the
-   * FeFaceValues objects. If an interface DoF is only active on one of the
-   * cells, the other one will have numbers::invalid_unsigned_int.
+   * 从界面DoF到FeFaceValues对象的两个局部DoF指数的映射。如果一个界面DoF只在其中一个单元上活动，另一个单元将有
+   * numbers::invalid_unsigned_int. 。
+   *
    */
   std::vector<std::array<unsigned int, 2>> dofmap;
 
   /**
-   * The FEFaceValues object for the current cell.
+   * 当前单元的FEFaceValues对象。
+   *
    */
   FEFaceValues<dim, spacedim> internal_fe_face_values;
 
   /**
-   * The FEFaceValues object for the current cell if the cell is refined.
+   * 当前单元格的FEFaceValues对象，如果该单元格被精炼。
+   *
    */
   FESubfaceValues<dim, spacedim> internal_fe_subface_values;
 
   /**
-   * The FEFaceValues object for the neighboring cell.
+   * 邻近单元格的FEFaceValues对象。
+   *
    */
   FEFaceValues<dim, spacedim> internal_fe_face_values_neighbor;
 
   /**
-   * The FEFaceValues object for the neighboring cell if the cell is refined.
+   * 如果该单元格被细化，则为相邻单元格的FEFaceValues对象。
+   *
    */
   FESubfaceValues<dim, spacedim> internal_fe_subface_values_neighbor;
 
   /**
-   * Pointer to internal_fe_face_values or internal_fe_subface_values,
-   * respectively as determined in reinit().
+   * 指向internal_fe_face_values或internal_fe_subface_values的指针，分别在reinit()中确定。
+   *
    */
   FEFaceValuesBase<dim, spacedim> *fe_face_values;
 
   /**
-   * Pointer to internal_fe_face_values_neighbor,
-   * internal_fe_subface_values_neighbor, or nullptr, respectively
-   * as determined in reinit().
+   * 指向internal_fe_face_values_neighbor、internal_fe_subface_values_neighbor或nullptr的指针，分别在reinit()中确定。
+   *
    */
   FEFaceValuesBase<dim, spacedim> *fe_face_values_neighbor;
 
-  /* Make the view classes friends of this class, since they access internal
-   * data.
-   */
+  /* 让视图类成为该类的朋友，因为它们访问内部数据。 
+* */
   template <int, int>
   friend class FEInterfaceViews::Scalar;
   template <int, int>
@@ -823,7 +817,7 @@ private:
 
 #ifndef DOXYGEN
 
-/*---------------------- Inline functions ---------------------*/
+ /*---------------------- Inline functions ---------------------*/ 
 
 template <int dim, int spacedim>
 FEInterfaceValues<dim, spacedim>::FEInterfaceValues(
@@ -1377,7 +1371,7 @@ FEInterfaceValues<dim, spacedim>::jump_3rd_derivative(
 
 
 
-/*------------ Inline functions: FEInterfaceValues------------*/
+ /*------------ Inline functions: FEInterfaceValues------------*/ 
 template <int dim, int spacedim>
 inline const FEInterfaceViews::Scalar<dim, spacedim>
   FEInterfaceValues<dim, spacedim>::
@@ -1871,3 +1865,5 @@ namespace FEInterfaceViews
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

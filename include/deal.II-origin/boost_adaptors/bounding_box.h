@@ -1,4 +1,3 @@
-//include/deal.II-translator/boost_adaptors/bounding_box_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -33,8 +32,7 @@ namespace boost
     namespace traits
     {
       /**
-       * 用于 dealii::BoundingBox. 的标签适配器。
-       *
+       * Tag adaptor for dealii::BoundingBox.
        */
       template <int dim, class Number>
       struct tag<dealii::BoundingBox<dim, Number>>
@@ -43,8 +41,7 @@ namespace boost
       };
 
       /**
-       * 用于 dealii::BoundingBox. 的点类型适配器
-       *
+       * Point type adaptor for dealii::BoundingBox.
        */
       template <int dim, class Number>
       struct point_type<dealii::BoundingBox<dim, Number>>
@@ -53,15 +50,15 @@ namespace boost
       };
 
       /**
-       * 访问一个 dealii::BoundingBox. 的左下角的D-th坐标
-       *
+       * Access to the D-th coordinate of the lower left  corner of a
+       * dealii::BoundingBox.
        */
       template <int dim, class Number, std::size_t D>
       struct indexed_access<dealii::BoundingBox<dim, Number>, min_corner, D>
       {
         /**
-         * 获取 dealii::BoundingBox. 左下角的D-th坐标的函数。
-         *
+         * Getter function for the D-th coordinate of the lower left corner of
+         * a dealii::BoundingBox.
          */
         static inline double
         get(dealii::BoundingBox<dim, Number> const &box)
@@ -70,9 +67,8 @@ namespace boost
         }
 
         /**
-         * 为 dealii::BoundingBox.
-         * 的左下角的D-th坐标设置的函数。
-         *
+         * Setter function for the D-th coordinate of the lower left corner of
+         * a dealii::BoundingBox.
          */
         static inline void
         set(dealii::BoundingBox<dim, Number> &box, Number value)
@@ -82,15 +78,15 @@ namespace boost
       };
 
       /**
-       * 访问一个 dealii::BoundingBox. 的右上角的D-th坐标。
-       *
+       * Access to the D-th coordinate of the upper right corner of a
+       * dealii::BoundingBox.
        */
       template <int dim, class Number, std::size_t D>
       struct indexed_access<dealii::BoundingBox<dim, Number>, max_corner, D>
       {
         /**
-         * 获取 dealii::BoundingBox. 右上角D-th坐标的函数。
-         *
+         * Getter function for the D-th coordinate of the upper right corner of
+         * a dealii::BoundingBox.
          */
         static inline double
         get(dealii::BoundingBox<dim, Number> const &box)
@@ -99,9 +95,8 @@ namespace boost
         }
 
         /**
-         * 为 dealii::BoundingBox.
-         * 的右上角的D-th坐标设置的函数。
-         *
+         * Setter function for the D-th coordinate of the upper right corner of
+         * a dealii::BoundingBox.
          */
         static inline void
         set(dealii::BoundingBox<dim, Number> &box, Number value)
@@ -114,5 +109,3 @@ namespace boost
 } // namespace boost
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/hp/fe_collection_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
@@ -32,32 +31,44 @@ DEAL_II_NAMESPACE_OPEN
 namespace hp
 {
   /**
-   * 该类作为DoFHandler中使用的有限元对象的集合。
-   * 它实现了doxygen文档中描述的 @ref hpcollection
-   * 模块中的概念。
-   * 除了提供对集合元素的访问外，该类还提供对每个顶点、线等的最大自由度的访问，以便在使用与三角形单元相关的有限元时，在最坏的情况下分配尽可能多的内存。
-   * 这个类还没有实现在一维情况下的使用（<tt>spacedim != dim
-   * </tt>）。
-   * @ingroup hp hpcollection
+   * This class acts as a collection of finite element objects used in the
+   * DoFHandler.
    *
+   * It implements the concepts stated in the
+   * @ref hpcollection
+   * module described in the doxygen documentation.
+   *
+   * In addition to offering access to the elements of the collection, this
+   * class provides access to the maximal number of degrees of freedom per
+   * vertex, line, etc, to allow allocation of as much memory as is necessary
+   * in the worst case when using the finite elements associated with the
+   * cells of a triangulation.
+   *
+   * This class has not yet been implemented for the use in the codimension
+   * one case (<tt>spacedim != dim </tt>).
+   *
+   * @ingroup hp hpcollection
    */
   template <int dim, int spacedim = dim>
   class FECollection : public Collection<FiniteElement<dim, spacedim>>
   {
   public:
     /**
-     * 在hp-finite
-     * element程序中考虑p-adaptivity时，需要建立一个有限元的层次结构，以确定细化的后续有限元和粗化的前期有限元。
-     * 在这个结构中，我们提供了一个层次结构，默认情况下强加在所有FECollection对象上。
+     * Whenever p-adaptivity is considered in an hp-finite element program,
+     * a hierarchy of finite elements needs to be established to determine
+     * succeeding finite elements for refinement and preceding ones for
+     * coarsening.
      *
+     * In this struct, we supply a hierarchy that is imposed on all FECollection
+     * objects by default.
      */
     struct DefaultHierarchy
     {
       /**
-       * 返回 @p fe_collection. 中 @p fe_index 的后续索引 一旦到达
-       * @p fe_collection
-       * 的最后一个元素，在层次结构中就没有更高层次的元素，因此我们返回最后的值。
+       * Return the index succeeding @p fe_index in the @p fe_collection.
        *
+       * Once the last element of the @p fe_collection is reached, there is no element on a higher level in
+       * the hierarchy and thus we return the last value.
        */
       static unsigned int
       next_index(const typename hp::FECollection<dim, spacedim> &fe_collection,
@@ -68,10 +79,10 @@ namespace hp
       }
 
       /**
-       * 返回 @p fe_collection. 中 @p fe_index 之前的索引 一旦到达
-       * @p fe_collection
-       * 的第一个元素，在层次结构中就没有较低层次的元素，因此我们返回第一个值。
+       * Return the index preceding @p fe_index in the @p fe_collection.
        *
+       * Once the first element of the @p fe_collection is reached, there is no element on a lower level in
+       * the hierarchy and thus we return the first value.
        */
       static unsigned int
       previous_index(
@@ -84,42 +95,51 @@ namespace hp
     };
 
     /**
-     * 默认构造函数。导致一个空的集合，以后可以用push_back()来填充。建立一个有限元的层次结构，与它们在集合中的索引相对应。
-     *
+     * Default constructor. Leads to an empty collection that can later be
+     * filled using push_back(). Establishes a hierarchy of finite elements
+     * corresponding to their index in the collection.
      */
     FECollection();
 
     /**
-     * 转换构造函数。这个构造函数从一个单一的有限元创建一个FECollection。如果需要，可以用push_back()添加更多的有限元对象，尽管用同样的方式添加所有的映射可能会更清楚。
-     *
+     * Conversion constructor. This constructor creates a FECollection from a
+     * single finite element. More finite element objects can be added with
+     * push_back(), if desired, though it would probably be clearer to add all
+     * mappings the same way.
      */
     explicit FECollection(const FiniteElement<dim, spacedim> &fe);
 
     /**
-     * 构造函数。这个构造函数从传递给构造函数的一个或多个有限元对象创建一个FECollection。为了使这个调用有效，所有的参数都需要是派生自FiniteElement<dim,spacedim>类的类型。
-     *
+     * Constructor. This constructor creates a FECollection from one or
+     * more finite element objects passed to the constructor. For this
+     * call to be valid, all arguments need to be of types derived
+     * from class FiniteElement<dim,spacedim>.
      */
     template <class... FETypes>
     explicit FECollection(const FETypes &... fes);
 
     /**
-     * 构造函数。和上面一样，但是对于任何数量的元素。元素的指针以向量形式传递给这个构造函数。如上所述，参数所指向的有限元对象除了在内部创建副本外，实际上并不使用。因此，你可以在调用这个构造函数后立即再次删除这些指针。
-     *
+     * Constructor. Same as above but for any number of elements. Pointers to
+     * the elements are passed in a vector to this constructor. As above, the
+     * finite element objects pointed to by the argument are not actually used
+     * other than to create copies internally. Consequently, you can delete
+     * these pointers immediately again after calling this constructor.
      */
     FECollection(const std::vector<const FiniteElement<dim, spacedim> *> &fes);
 
     /**
-     * 拷贝构造函数。
-     *
+     * Copy constructor.
      */
     FECollection(const FECollection<dim, spacedim> &) = default;
 
     /**
-     * 移动构造函数。
-     * @note
-     * 标准数据类型的实现可能会随着不同的库而改变，所以它们的移动成员可能会或不会被标记为非抛出。
-     * 我们需要根据其成员变量显式地设置noexcept指定器，以便仍然获得性能优势（并满足clang-tidy）。
+     * Move constructor.
      *
+     * @note The implementation of standard datatypes may change with different
+     * libraries, so their move members may or may not be flagged non-throwing.
+     * We need to explicitly set the noexcept specifier according to its
+     * member variables to still get the performance benefits (and to satisfy
+     * clang-tidy).
      */
     FECollection(FECollection<dim, spacedim> &&) noexcept(
       std::is_nothrow_move_constructible<
@@ -129,241 +149,324 @@ namespace hp
                        const unsigned int)>>::value) = default;
 
     /**
-     * 移动赋值运算符。
-     *
+     * Move assignment operator.
      */
     FECollection<dim, spacedim> &
     operator=(FECollection<dim, spacedim> &&) = default; // NOLINT
 
     /**
-     * 等价比较运算符。所有存储的FiniteElement对象都按顺序进行比较。
-     *
+     * Equality comparison operator. All stored FiniteElement objects are
+     * compared in order.
      */
     bool
     operator==(const FECollection<dim, spacedim> &fe_collection) const;
 
     /**
-     * 非等价比较运算符。所有存储的FiniteElement对象按顺序进行比较。
-     *
+     * Non-equality comparison operator. All stored FiniteElement objects are
+     * compared in order.
      */
     bool
     operator!=(const FECollection<dim, spacedim> &fe_collection) const;
 
     /**
-     * 添加一个有限元素。这个函数生成一个给定元素的副本，即你可以做类似<tt>push_back(FE_Q<dim>(1));</tt>的事情。
-     * 这个内部拷贝后来在整个集合被销毁时被这个对象销毁。
-     * 当一个新的元素被添加时，它需要拥有与已经在集合中的所有其他元素相同数量的向量成分。
+     * Add a finite element. This function generates a copy of the given
+     * element, i.e. you can do things like <tt>push_back(FE_Q<dim>(1));</tt>.
+     * The internal copy is later destroyed by this object upon destruction of
+     * the entire collection.
      *
+     * When a new element is added, it needs to have the same number of vector
+     * components as all other elements already in the collection.
      */
     void
     push_back(const FiniteElement<dim, spacedim> &new_fe);
 
     /**
-     * 返回这个集合中的有限元素的向量分量的数量。 这个数字对于集合中的所有元素必须是相同的。        这个函数调用 FiniteElement::n_components. 更多信息见 @ref GlossComponent "术语表"
-     * 。
+     * Return the number of vector components of the finite elements in this
+     * collection.  This number must be the same for all elements in the
+     * collection.
      *
+     * This function calls FiniteElement::n_components.  See
+     * @ref GlossComponent "the glossary"
+     * for more information.
      */
     unsigned int
     n_components() const;
 
     /**
-     * 返回这个集合中的有限元素的向量块的数量。虽然这个类保证了存储在其中的所有元素都有相同数量的向量分量，但是对于每个元素所组成的块数却没有这样的保证（一个元素的块数可能少于向量分量，更多信息见 @ref GlossBlock  "术语表"
-     * ）。例如，你可能有一个FECollection对象，它存储了一份带有
-     * <code>dim</code>
-     * FE_Q对象的FESystem和一份FE_RaviartThomas元素的副本。两者都有
-     * <code>dim</code> 向量成分，但前者有 <code>dim</code>
-     * 块，后者只有一个。因此，如果所有元素的块数不一样，这个函数将抛出一个断言。如果它们相同，该函数返回的结果是
-     * FiniteElement::n_blocks().  。
-     *
+     * Return the number of vector blocks of the finite elements in this
+     * collection. While this class ensures that all elements stored in it
+     * have the same number of vector components, there is no such guarantees
+     * for the number of blocks each element is made up of (an element may
+     * have fewer blocks than vector components; see
+     * @ref GlossBlock "the glossary"
+     * for more information). For example, you may have an FECollection object
+     * that stores one copy of an FESystem with <code>dim</code> FE_Q objects
+     * and one copy of an FE_RaviartThomas element. Both have <code>dim</code>
+     * vector components but while the former has <code>dim</code> blocks the
+     * latter has only one. Consequently, this function will throw an
+     * assertion if the number of blocks is not the same for all elements. If
+     * they are the same, this function returns the result of
+     * FiniteElement::n_blocks().
      */
     unsigned int
     n_blocks() const;
 
     /**
-     * 返回 FiniteElement::get_degree()
-     * 在这个集合的所有元素上返回的值的最大值。
-     *
+     * Return the maximum of values returned by FiniteElement::get_degree()
+     * over all elements of this collection.
      */
     unsigned int
     max_degree() const;
 
     /**
-     * 返回此集合所有元素中每个顶点的最大自由度数。
-     *
+     * Return the maximal number of degrees of freedom per vertex over all
+     * elements of this collection.
      */
     unsigned int
     max_dofs_per_vertex() const;
 
     /**
-     * 返回这个集合的所有元素中每条线的最大自由度数。
-     *
+     * Return the maximal number of degrees of freedom per line over all
+     * elements of this collection.
      */
     unsigned int
     max_dofs_per_line() const;
 
     /**
-     * 返回这个集合中所有元素的每个四边形的最大自由度数。
-     *
+     * Return the maximal number of degrees of freedom per quad over all
+     * elements of this collection.
      */
     unsigned int
     max_dofs_per_quad() const;
 
     /**
-     * 返回这个集合中所有元素中每个六度的最大自由度数。
-     *
+     * Return the maximal number of degrees of freedom per hex over all
+     * elements of this collection.
      */
     unsigned int
     max_dofs_per_hex() const;
 
     /**
-     * 返回这个集合的所有元素中每个面的最大自由度数。
-     *
+     * Return the maximal number of degrees of freedom per face over all
+     * elements of this collection.
      */
     unsigned int
     max_dofs_per_face() const;
 
     /**
-     * 返回这个集合的所有元素中每个单元的最大自由度数。
-     *
+     * Return the maximal number of degrees of freedom per cell over all
+     * elements of this collection.
      */
     unsigned int
     max_dofs_per_cell() const;
 
 
     /**
-     * 返回这个集合中的所有元素是否以新的方式实现了悬挂节点约束，这必须用于使元素
-     * "hp-compatible"。如果不是这样，该函数返回false，这意味着FECollection中至少有一个元素不支持新的面孔接口约束。另一方面，如果这个方法确实返回true，这并不意味着hp-方法会起作用。
-     * 这种行为与以下事实有关，即提供新式悬挂节点约束的FiniteElement类可能仍然没有为所有可能的情况提供这些约束。如果FE_Q和FE_RaviartThomas元素包含在FECollection中，并且都正确实现了get_face_interpolation_matrix方法，这个方法将返回true。
-     * 但是get_face_interpolation_matrix可能仍然无法找到这两个元素之间的插值矩阵。
+     * Return whether all elements in this collection implement the hanging
+     * node constraints in the new way, which has to be used to make elements
+     * "hp-compatible". If this is not the case, the function returns false,
+     * which implies, that at least one element in the FECollection does not
+     * support the new face interface constraints. On the other hand, if this
+     * method does return true, this does not imply that the hp-method will
+     * work!
      *
+     * This behavior is related to the fact, that FiniteElement classes,
+     * which provide the new style hanging node constraints might still not
+     * provide them for all possible cases. If FE_Q and FE_RaviartThomas
+     * elements are included in the FECollection and both properly implement
+     * the get_face_interpolation_matrix method, this method will return true.
+     * But the get_face_interpolation_matrix might still fail to find an
+     * interpolation matrix between these two elements.
      */
     bool
     hp_constraints_are_implemented() const;
 
     /**
-     * 返回这个FECollection中支配所有与所提供的索引集相关的元素的有限元素的索引
-     * @p fes.
-     * 你可以在其各自的类文档或其继承的成员函数的实现中找到关于有限元素的支配行为的信息
-     * FiniteElement::compare_for_domination().
-     * 考虑到一个有限元素可能支配也可能不支配它自己（例如FE_Nothing元素）。
-     * 例如，如果一个FEC集合由`{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}`元素组成，我们要寻找支配这个集合中间元素的有限元素（即
-     * @p fes
-     * 为`{1,2}`），那么答案是`{FE_Q(1),FE_Q(2)`，因此这个函数将返回它们在FEC集合中的索引，即`{0,1}`。
-     * @p codim
-     * 参数描述了被调查的子空间的码率，并指定它受此比较。更多信息见
-     * FiniteElement::compare_for_domination() 。
+     * Return the indices of finite elements in this FECollection that dominate
+     * all elements associated with the provided set of indices @p fes.
      *
+     * You may find information about the domination behavior of finite elements
+     * in their respective class documentation or in the implementation of their
+     * inherited member function FiniteElement::compare_for_domination().
+     * Consider that a finite element may or may not dominate itself (e.g.
+     * FE_Nothing elements).
+     *
+     * For example, if a FECollection consists of
+     * `{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}` elements and we are looking for the
+     * finite elements that dominate the middle elements of this
+     * collection (i.e., @p fes is `{1,2}`), then the answer is `{FE_Q(1),FE_Q(2)`
+     * and therefore this function will return their indices in the
+     * FECollection, namely `{0,1}`.
+     *
+     * The @p codim parameter describes the codimension of the investigated
+     * subspace and specifies that it is subject to this comparison. See
+     * FiniteElement::compare_for_domination() for more information.
      */
     std::set<unsigned int>
     find_common_fes(const std::set<unsigned int> &fes,
                     const unsigned int            codim = 0) const;
 
     /**
-     * 返回此FECollection中被与所提供的指数集相关的所有元素支配的有限元的指数
-     * @p fes.
-     * 你可以在其各自的类文件或其继承的成员函数的实现中找到关于有限元的支配行为的信息
-     * FiniteElement::compare_for_domination().
-     * 考虑到一个有限元可能支配也可能不支配自己（例如，FE_Nothing元素）。
-     * 例如，如果一个FEC集合由`{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}`元素组成，我们要寻找被这个集合的中间元素支配的有限元素（即。
-     * @p fes
-     * 是`{1,2}`，那么答案是`{FE_Q(3),FE_Q(4)`，因此这个函数将返回它们在FEC集合中的索引，即`{2,3}`。
-     * @p codim
-     * 参数描述了被调查的子空间的码率，并指定它受此比较。更多信息见
-     * FiniteElement::compare_for_domination() 。
+     * Return the indices of finite elements in this FECollection that are
+     * dominated by all elements associated with the provided set of indices @p fes.
      *
+     * You may find information about the domination behavior of finite elements
+     * in their respective class documentation or in the implementation of their
+     * inherited member function FiniteElement::compare_for_domination().
+     * Consider that a finite element may or may not dominate itself (e.g.
+     * FE_Nothing elements).
+     *
+     * For example, if a FECollection consists of
+     * `{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}` elements and we are looking for the
+     * finite elements that are dominated by the middle elements of this
+     * collection (i.e., @p fes is `{1,2}`), then the answer is `{FE_Q(3),FE_Q(4)`
+     * and therefore this function will return their indices in the
+     * FECollection, namely `{2,3}`.
+     *
+     * The @p codim parameter describes the codimension of the investigated
+     * subspace and specifies that it is subject to this comparison. See
+     * FiniteElement::compare_for_domination() for more information.
      */
     std::set<unsigned int>
     find_enclosing_fes(const std::set<unsigned int> &fes,
                        const unsigned int            codim = 0) const;
 
     /**
-     * 返回所提供的指数集 @p fes
-     * 中的一个有限元素的指数，该元素支配着这个非常集合中的所有其他元素。
-     * 你可以在其各自的类文件中或在其继承的成员函数的实现中找到关于有限元的支配行为的信息
-     * FiniteElement::compare_for_domination().
-     * 考虑到一个有限元可能支配也可能不支配自己（例如FE_Nothing元素）。
-     * 如果这个集合正好由一个元素组成，我们认为它是支配性的，并返回其相应的索引。此外，如果函数根本无法找到一个有限元素，则返回
-     * numbers::invalid_unsigned_int.
-     * 例如，如果一个FEC集合由`{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}`元素组成，我们要在这个集合的中间元素中寻找主导的有限元素（即。
-     * @p fes
-     * 是`{1,2}`），那么答案是FE_Q(2)，因此这个函数将返回它在FEC集合中的索引，即`1`。
-     * 当然，有可能存在不止一个元素支配着所有被选中的元素。例如，如果集合由`{FE_Q(1),FE_Q(1),FE_Q(2),FE_Q(2)}`组成，并且`fes`涵盖所有的索引，那么可以返回0或1。
-     * 在这种情况下，该函数要么返回 "0"，要么返回
-     * "1"，因为两者之间不存在平局。         @p codim
-     * 参数描述了被调查的子空间的二维度，并指定它要接受这种比较。更多信息见
-     * FiniteElement::compare_for_domination() 。
+     * Return the index of a finite element from the provided set of indices @p fes
+     * that dominates all other elements of this very set.
      *
+     * You may find information about the domination behavior of finite elements
+     * in their respective class documentation or in the implementation of their
+     * inherited member function FiniteElement::compare_for_domination().
+     * Consider that a finite element may or may not dominate itself (e.g.
+     * FE_Nothing elements).
+     *
+     * If this set consists of exactly one element, we consider it to be
+     * the dominating one and return its corresponding index. Further, if the
+     * function is not able to find a finite element at all, it returns
+     * numbers::invalid_unsigned_int.
+     *
+     * For example, if a FECollection consists of
+     * `{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}` elements and we are looking for the
+     * dominating finite element among the middle elements of this
+     * collection (i.e., @p fes is `{1,2}`), then the answer is FE_Q(2)
+     * and therefore this function will return its index in the
+     * FECollection, namely `1`.
+     *
+     * It is of course possible that there is more than one element that
+     * dominates all selected elements. For example, if the collection consists
+     * of `{FE_Q(1),FE_Q(1),FE_Q(2),FE_Q(2)}` and `fes` covers all indices,
+     * then one could return zero or one.  In that case, the function returns
+     * either `0` or `1` since there is no tie-breaker between the two.
+     *
+     * The @p codim parameter describes the codimension of the investigated
+     * subspace and specifies that it is subject to this comparison. See
+     * FiniteElement::compare_for_domination() for more information.
      */
     unsigned int
     find_dominating_fe(const std::set<unsigned int> &fes,
                        const unsigned int            codim = 0) const;
 
     /**
-     * 返回所提供的指数集 @p fes
-     * 中的一个有限元素的指数，该元素被这个非常集合的所有其他元素所支配。
-     * 你可以在其各自的类文件中或其继承成员函数的实现中找到关于有限元的支配行为的信息
-     * FiniteElement::compare_for_domination().
-     * 考虑到一个有限元可能支配自己，也可能不支配自己（例如FE_Nothing元素）。
-     * 如果这个集合正好由一个元素组成，我们认为它是被支配的，并返回其相应的索引。此外，如果函数根本无法找到有限元，则返回
-     * numbers::invalid_unsigned_int.
-     * 例如，如果一个FEC集合由`{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}`元素组成，我们在这个集合的中间元素中寻找支配的有限元（即。
-     * @p fes
-     * 是`{1,2}`），那么答案是FE_Q(3)，因此这个函数将返回它在FEC集合中的索引，即`2`。
-     * 当然，有可能存在不止一个元素被所有选定的元素所支配。例如，如果集合由`{FE_Q(1),FE_Q(1),FE_Q(2),FE_Q(2)}`组成，并且`fes`覆盖了所有的索引，那么可以返回2或3。
-     * 在这种情况下，该函数要么返回`2`，要么返回`3`，因为两者之间没有平局。
-     * @p codim
-     * 参数描述了被调查的子空间的维度，并指定它要接受这种比较。更多信息见
-     * FiniteElement::compare_for_domination() 。
+     * Return the index of a finite element from the provided set of indices @p fes
+     * that is dominated by all other elements of this very set.
      *
+     * You may find information about the domination behavior of finite elements
+     * in their respective class documentation or in the implementation of their
+     * inherited member function FiniteElement::compare_for_domination().
+     * Consider that a finite element may or may not dominate itself (e.g.
+     * FE_Nothing elements).
+     *
+     * If this set consists of exactly one element, we consider it to be
+     * the dominated one and return its corresponding index. Further, if the
+     * function is not able to find a finite element at all, it returns
+     * numbers::invalid_unsigned_int.
+     *
+     * For example, if a FECollection consists of
+     * `{FE_Q(1),FE_Q(2),FE_Q(3),FE_Q(4)}` elements and we are looking for the
+     * dominated finite element among the middle elements of this
+     * collection (i.e., @p fes is `{1,2}`), then the answer is FE_Q(3)
+     * and therefore this function will return its index in the
+     * FECollection, namely `2`.
+     *
+     * It is of course possible that there is more than one element that is
+     * dominated by all selected elements. For example, if the collection
+     * consists of `{FE_Q(1),FE_Q(1),FE_Q(2),FE_Q(2)}` and `fes` covers all
+     * indices, then one could return two or three.  In that case, the function
+     * returns either `2` or `3` since there is no tie-breaker between the two.
+     *
+     * The @p codim parameter describes the codimension of the investigated
+     * subspace and specifies that it is subject to this comparison. See
+     * FiniteElement::compare_for_domination() for more information.
      */
     unsigned int
     find_dominated_fe(const std::set<unsigned int> &fes,
                       const unsigned int            codim = 0) const;
 
     /**
-     * 返回所提供的指数集 @p fes
-     * 中的一个有限元素的指数，该元素支配着这个非常集合中的所有其他元素。如果我们没有成功，我们就在整个集合上扩大搜索范围，挑选最不占优势的，也就是描述最大的有限元空间的元素，所提供的集合
-     * @p fes 的所有有限元都是其中的一部分。
-     * 你可以在其各自的类文件中或其继承的成员函数的实现中找到关于有限元的支配行为的信息
-     * FiniteElement::compare_for_domination().
-     * 考虑到一个有限元可以支配也可以不支配自己（例如FE_Nothing元素）。
-     * 如果这个集合正好由一个元素组成，我们认为它是被支配的，并返回其相应的索引。此外，如果函数根本无法找到一个有限元，则返回
-     * numbers::invalid_unsigned_int.   @p codim
-     * 参数描述了所研究的子空间的二维度，并指定它受此比较。更多信息见
-     * FiniteElement::compare_for_domination() 。
+     * Return the index of a finite element from the provided set of indices @p fes
+     * that dominates all other elements of this very set. If we do not succeed,
+     * we extend our search on the whole collection by picking the least
+     * dominating one, which is the element that describes the largest finite
+     * element space of which all of the finite elements of the
+     * provided set @p fes are part of.
      *
+     * You may find information about the domination behavior of finite elements
+     * in their respective class documentation or in the implementation of their
+     * inherited member function FiniteElement::compare_for_domination().
+     * Consider that a finite element may or may not dominate itself (e.g.
+     * FE_Nothing elements).
+     *
+     * If this set consists of exactly one element, we consider it to be
+     * the dominated one and return its corresponding index. Further, if the
+     * function is not able to find a finite element at all, it returns
+     * numbers::invalid_unsigned_int.
+     *
+     * The @p codim parameter describes the codimension of the investigated
+     * subspace and specifies that it is subject to this comparison. See
+     * FiniteElement::compare_for_domination() for more information.
      */
     unsigned int
     find_dominating_fe_extended(const std::set<unsigned int> &fes,
                                 const unsigned int            codim = 0) const;
 
     /**
-     * 返回所提供的指数集 @p fes
-     * 中的一个有限元素的指数，该元素被这个非常集的所有其他元素所支配。如果我们没有成功，我们就在整个集合上扩展搜索，挑选出最被支配的，也就是描述最小的有限元空间的元素，该空间包括所提供集合的所有有限元
-     * @p fes.
-     * 你可以在其各自的类文档中或其继承成员函数的实现中找到关于有限元支配行为的信息
-     * FiniteElement::compare_for_domination().
-     * 考虑到一个有限元可能支配也可能不支配自己（例如，FE_Nothing元素）。
-     * 如果这个集合正好由一个元素组成，我们就认为它是支配性的，并返回其相应的索引。此外，如果该函数根本无法找到一个有限元素，则返回
-     * numbers::invalid_unsigned_int.   @p codim
-     * 参数描述了被调查的子空间的二维度，并指定其受此比较。更多信息见
-     * FiniteElement::compare_for_domination() 。
+     * Return the index of a finite element from the provided set of indices @p fes
+     * that is dominated by all other elements of this very set. If we do not
+     * succeed, we extend our search on the whole collection by picking the most
+     * dominated one, which is the element that describes the smallest finite
+     * element space which includes all finite elements of the provided set @p fes.
      *
+     * You may find information about the domination behavior of finite elements
+     * in their respective class documentation or in the implementation of their
+     * inherited member function FiniteElement::compare_for_domination().
+     * Consider that a finite element may or may not dominate itself (e.g.
+     * FE_Nothing elements).
+     *
+     * If this set consists of exactly one element, we consider it to be
+     * the dominating one and return its corresponding index. Further, if the
+     * function is not able to find a finite element at all, it returns
+     * numbers::invalid_unsigned_int.
+     *
+     * The @p codim parameter describes the codimension of the investigated
+     * subspace and specifies that it is subject to this comparison. See
+     * FiniteElement::compare_for_domination() for more information.
      */
     unsigned int
     find_dominated_fe_extended(const std::set<unsigned int> &fes,
                                const unsigned int            codim = 0) const;
 
     /**
-     * 确定有限元层次的集合函数，即一个函数 @p next
-     * 返回给定的有限元后的索引，一个函数 @p prev
-     * 返回前一个。        这两个函数都需要一个
-     * hp::FECollection
-     * 来传递有限元索引，在其基础上找到并返回新的索引。
-     * @note
-     * 传递和返回的索引都必须在这个集合的索引范围内有效，即在[0,
-     * size()]内。
+     * Set functions determining the hierarchy of finite elements, i.e. a
+     * function @p next that returns the index of the finite element following
+     * the given one, and a function @p prev returning the preceding one.
      *
+     * Both functions expect an hp::FECollection to be passed along with a
+     * finite element index, on whose basis the new index will be found and
+     * returned.
+     *
+     * @note Both passed and returned indices have to be valid within the index
+     * range of this collection, i.e. within [0, size()).
      */
     void
     set_hierarchy(const std::function<unsigned int(
@@ -374,192 +477,282 @@ namespace hp
                     const unsigned int)> &prev);
 
     /**
-     * 设置与集合中每个有限元的索引相对应的默认层次结构。
-     * 这个默认层次是通过函数 DefaultHierarchy::next_index() 和
-     * DefaultHierarchy::previous_index(). 建立的。
+     * Set the default hierarchy corresponding to the index of each finite
+     * element in the collection.
      *
+     * This default hierarchy is established with functions
+     * DefaultHierarchy::next_index() and DefaultHierarchy::previous_index().
      */
     void
     set_default_hierarchy();
 
     /**
-     * 返回一个对应于注册层次结构的FE指数序列，以升序排列，即FE指数从低到高排序。
-     * 用set_hierarchy()注册的一个自定义层次结构可以有多个FE指数序列。该函数将返回包含用户提供的索引
-     * @p fe_index
-     * 的序列，该索引可以位于序列内的任何位置。通过set_default_hierarchy()设置的默认层次结构，对应于升序的FE指数，只包含一个序列。
-     * 例如，这个函数可以用来验证你所提供的层次结构是否涵盖了所有的元素，并符合所需的顺序。
-     * 如果返回的容器的大小等于这个对象的元素数，则只存在一个FE指数序列，即
-     * FECollection::size().  。
+     * Returns a sequence of FE indices that corresponds to the registered
+     * hierarchy in ascending order, i.e., FE indices are sorted from lowest to
+     * highest level.
      *
+     * Multiple sequences of FE indices are possible with a single custom
+     * hierarchy that can be registered with set_hierarchy(). This function
+     * will return the sequence that contains the user-provided index
+     * @p fe_index which could be located anywhere inside the sequence. The
+     * default hierarchy set via set_default_hierarchy(), which corresponds to
+     * FE indices in ascending order, consists of only one sequence.
+     *
+     * This function can be used, for example, to verify that your provided
+     * hierarchy covers all elements in the desired order.
+     *
+     * Only one sequence of FE indices exists if the size of the returned
+     * container equals the number of elements of this object, i.e.,
+     * FECollection::size().
      */
     std::vector<unsigned int>
     get_hierarchy_sequence(const unsigned int fe_index = 0) const;
 
     /**
-     * %函数返回层次结构中给定的 @p fe_index
-     * 之后的有限元的索引。        默认情况下，将返回 @p
-     * fe_index 之后的索引。如果 @p fe_index
-     * 已经对应于最后一个索引，将返回最后一个索引。
-     * 可以通过成员函数set_hierachy()提供一个自定义的层次结构。
+     * %Function returning the index of the finite element following the given
+     * @p fe_index in hierarchy.
      *
+     * By default, the index succeeding @p fe_index will be returned. If @p fe_index
+     * already corresponds to the last index, the last index will be returned.
+     * A custom hierarchy can be supplied via the member function
+     * set_hierachy().
      */
     unsigned int
     next_in_hierarchy(const unsigned int fe_index) const;
 
     /**
-     * %函数返回层次结构中给定 @p fe_index
-     * 之前的有限元的索引。        默认情况下，将返回 @p
-     * fe_index 之前的索引。如果 @p fe_index
-     * 已经对应于第一个索引，第一个索引将被返回。
-     * 可以通过成员函数set_hierachy()提供一个自定义的层次结构。
+     * %Function returning the index of the finite element preceding the given
+     * @p fe_index in hierarchy.
      *
+     * By default, the index preceding @p fe_index will be returned. If @p fe_index
+     * already corresponds to the first index, the first index will be returned.
+     * A custom hierarchy can be supplied via the member function
+     * set_hierachy().
      */
     unsigned int
     previous_in_hierarchy(const unsigned int fe_index) const;
 
     /**
-     * 返回一个分量掩码，其元素数量与此对象的向量分量相同，并且其中正好有一个分量是真实的，与给定的参数相对应。
-     * @note  这个函数等同于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它是否从存储在这个FECollection中的每一个元素中得到了相同的结果。如果不是这样的话，它会抛出一个异常。
-     * @param  标量
-     * 一个代表该有限元的单一标量矢量分量的对象。
-     * @return
-     * 一个分量掩码，在所有分量中都是假的，除了与参数相对应的那一个。
+     * Return a component mask with as many elements as this object has vector
+     * components and of which exactly the one component is true that
+     * corresponds to the given argument.
      *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param scalar An object that represents a single scalar vector
+     * component of this finite element.
+     * @return A component mask that is false in all components except for the
+     * one that corresponds to the argument.
      */
     ComponentMask
     component_mask(const FEValuesExtractors::Scalar &scalar) const;
 
     /**
-     * 返回一个分量掩码，其元素数与此对象的向量分量相同，其中与给定参数对应的
-     * <code>dim</code> 分量为真。
-     * @note 这个函数等同于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样，它会抛出一个异常。
-     * @param  矢量
-     * 一个表示该有限元的微弱矢量成分的对象。      @return
-     * 一个分量掩码，在所有分量中都是假的，除了与参数相对应的分量。
+     * Return a component mask with as many elements as this object has vector
+     * components and of which exactly the <code>dim</code> components are
+     * true that correspond to the given argument.
      *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param vector An object that represents dim vector components of this
+     * finite element.
+     * @return A component mask that is false in all components except for the
+     * ones that corresponds to the argument.
      */
     ComponentMask
     component_mask(const FEValuesExtractors::Vector &vector) const;
 
     /**
-     * 返回一个分量掩码，其元素数与此对象的向量分量相同，其中与给定参数对应的
-     * <code>dim*(dim+1)/2</code> 分量为真。
-     * @note 这个函数等同于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样，它会抛出一个异常。
-     * @param  sym_tensor
-     * 一个表示该有限元的dim*(dim+1)/2组件的对象，这些组件共同被解释为形成一个对称张量。
-     * @return
-     * 一个分量掩码，在所有分量中都是假的，除了与参数相对应的分量。
+     * Return a component mask with as many elements as this object has vector
+     * components and of which exactly the <code>dim*(dim+1)/2</code>
+     * components are true that correspond to the given argument.
      *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param sym_tensor An object that represents dim*(dim+1)/2 components of
+     * this finite element that are jointly to be interpreted as forming a
+     * symmetric tensor.
+     * @return A component mask that is false in all components except for the
+     * ones that corresponds to the argument.
      */
     ComponentMask
     component_mask(
       const FEValuesExtractors::SymmetricTensor<2> &sym_tensor) const;
 
     /**
-     * @note  这个函数等同于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样，它会抛出一个异常。
-     * @param  block_mask 选择有限元单个块的掩码  @return
-     * 选择那些与输入参数的选定块对应的组件的掩码。
+     * Given a block mask (see
+     * @ref GlossBlockMask "this glossary entry"
+     * ), produce a component mask (see
+     * @ref GlossComponentMask "this glossary entry"
+     * ) that represents the components that correspond to the blocks selected
+     * in the input argument. This is essentially a conversion operator from
+     * BlockMask to ComponentMask.
      *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param block_mask The mask that selects individual blocks of the finite
+     * element
+     * @return A mask that selects those components corresponding to the
+     * selected blocks of the input argument.
      */
     ComponentMask
     component_mask(const BlockMask &block_mask) const;
 
     /**
-     * 返回一个块掩码，其元素数与此对象的块数相同，并且其中正好有一个与给定参数相对应的成分是真的。更多信息请参见  @ref GlossBlockMask  "术语表"
-     * 。
-     * @note
-     * 这个函数只有在参数所引用的标量包含一个完整的块时才会成功。换句话说，例如，如果你传递了一个单一
-     * $x$
-     * 速度的提取器，并且这个对象代表一个FE_RaviartThomas对象，那么你选择的单一标量对象是一个更大的块的一部分，因此没有代表它的块屏蔽。然后该函数将产生一个异常。
-     * @note  这个函数相当于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样的话，它会抛出一个异常。
-     * @param  标量
-     * 一个代表该有限元的单个标量向量分量的对象。
-     * @return
-     * 一个分量掩码，在所有分量中都是假的，除了与参数相对应的那一个。
+     * Return a block mask with as many elements as this object has blocks and
+     * of which exactly the one component is true that corresponds to the
+     * given argument. See
+     * @ref GlossBlockMask "the glossary"
+     * for more information.
      *
+     * @note This function will only succeed if the scalar referenced by the
+     * argument encompasses a complete block. In other words, if, for example,
+     * you pass an extractor for the single $x$ velocity and this object
+     * represents an FE_RaviartThomas object, then the single scalar object
+     * you selected is part of a larger block and consequently there is no
+     * block mask that would represent it. The function will then produce an
+     * exception.
+     *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param scalar An object that represents a single scalar vector
+     * component of this finite element.
+     * @return A component mask that is false in all components except for the
+     * one that corresponds to the argument.
      */
     BlockMask
     block_mask(const FEValuesExtractors::Scalar &scalar) const;
 
     /**
-     * 返回一个分量掩码，其元素数与此对象的向量分量相同，并且其中对应于给定参数的 <code>dim</code> 分量为真。更多信息见 @ref GlossBlockMask  "术语表"
-     * 。
-     * @note  这个函数等同于 FiniteElement::component_mask()
-     * ，参数相同。它验证是否从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样的话，它会抛出一个异常。
-     * @note  同样的注意事项适用于上述函数的版本。
-     * 作为参数传递的提取器对象必须使其对应于完整的块，而不是分割这个元素的块。
-     * @param  vector 一个表示该有限元的dim向量分量的对象。
-     * @return
-     * 一个分量掩码，在所有分量中都是假的，除了与参数相对应的分量。
+     * Return a component mask with as many elements as this object has vector
+     * components and of which exactly the <code>dim</code> components are
+     * true that correspond to the given argument. See
+     * @ref GlossBlockMask "the glossary"
+     * for more information.
      *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @note The same caveat applies as to the version of the function above:
+     * The extractor object passed as argument must be so that it corresponds
+     * to full blocks and does not split blocks of this element.
+     *
+     * @param vector An object that represents dim vector components of this
+     * finite element.
+     * @return A component mask that is false in all components except for the
+     * ones that corresponds to the argument.
      */
     BlockMask
     block_mask(const FEValuesExtractors::Vector &vector) const;
 
     /**
-     * 返回一个分量掩码，其元素数与此对象的向量分量相同，其中与给定参数对应的 <code>dim*(dim+1)/2</code> 分量为真。更多信息见 @ref GlossBlockMask  "术语表"
-     * 。
-     * @note  同样的注意事项适用于上述函数的版本。
-     * 作为参数传递的提取器对象必须使其对应于完整的块，而不是分割此元素的块。
-     * @note  这个函数等同于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样，它会抛出一个异常。
-     * @param  sym_tensor
-     * 一个代表该有限元的dim*(dim+1)/2组件的对象，这些组件共同被解释为形成一个对称张量。
-     * @return
-     * 一个分量掩码，在所有分量中都是假的，除了与参数相对应的那些。
+     * Return a component mask with as many elements as this object has vector
+     * components and of which exactly the <code>dim*(dim+1)/2</code>
+     * components are true that correspond to the given argument. See
+     * @ref GlossBlockMask "the glossary"
+     * for more information.
      *
+     * @note The same caveat applies as to the version of the function above:
+     * The extractor object passed as argument must be so that it corresponds
+     * to full blocks and does not split blocks of this element.
+     *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param sym_tensor An object that represents dim*(dim+1)/2 components of
+     * this finite element that are jointly to be interpreted as forming a
+     * symmetric tensor.
+     * @return A component mask that is false in all components except for the
+     * ones that corresponds to the argument.
      */
     BlockMask
     block_mask(const FEValuesExtractors::SymmetricTensor<2> &sym_tensor) const;
 
     /**
-     * @note
-     * 这个函数只有在参数所引用的组件包含完整的块时才会成功。换句话说，例如，如果你传递了一个单一
-     * $x$
-     * 速度的组件掩码，而这个对象代表一个FE_RaviartThomas对象，那么你选择的单一组件是一个更大的块的一部分，因此，没有代表它的块掩码。然后该函数将产生一个异常。
-     * @note  这个函数相当于 FiniteElement::component_mask()
-     * ，参数相同。它验证了它从存储在这个FECollection中的每一个元素中得到相同的结果。如果不是这样，它会抛出一个异常。
-     * @param component_mask 选择有限元个别组件的掩码  @return
-     * 选择那些与输入参数的选定块对应的掩码。
+     * Given a component mask (see
+     * @ref GlossComponentMask "this glossary entry"
+     * ), produce a block mask (see
+     * @ref GlossBlockMask "this glossary entry"
+     * ) that represents the blocks that correspond to the components selected
+     * in the input argument. This is essentially a conversion operator from
+     * ComponentMask to BlockMask.
      *
+     * @note This function will only succeed if the components referenced by
+     * the argument encompasses complete blocks. In other words, if, for
+     * example, you pass an component mask for the single $x$ velocity and
+     * this object represents an FE_RaviartThomas object, then the single
+     * component you selected is part of a larger block and consequently there
+     * is no block mask that would represent it. The function will then
+     * produce an exception.
+     *
+     * @note This function is the equivalent of
+     * FiniteElement::component_mask() with the same arguments. It verifies
+     * that it gets the same result from every one of the elements that are
+     * stored in this FECollection. If this is not the case, it throws an
+     * exception.
+     *
+     * @param component_mask The mask that selects individual components of
+     * the finite element
+     * @return A mask that selects those blocks corresponding to the selected
+     * blocks of the input argument.
      */
     BlockMask
     block_mask(const ComponentMask &component_mask) const;
 
     /**
-     * @name  异常情况  @{
-     *
+     * @name Exceptions
+     * @{
      */
 
     /**
-     * 异常情况
-     * @ingroup Exceptions
+     * Exception
      *
+     * @ingroup Exceptions
      */
     DeclException0(ExcNoFiniteElements);
 
     /**
      * @}
-     *
      */
 
   private:
     /**
-     * %函数返回层次结构中给定元素之后的有限元素的索引。
-     *
+     * %Function returning the index of the finite element following the given
+     * one in hierarchy.
      */
     std::function<unsigned int(const typename hp::FECollection<dim, spacedim> &,
                                const unsigned int)>
       hierarchy_next;
 
     /**
-     * 返回在层次结构中给定的有限元之前的有限元的索引的函数。
-     *
+     * %Function returning the index of the finite element preceding the given
+     * one in hierarchy.
      */
     std::function<unsigned int(const typename hp::FECollection<dim, spacedim> &,
                                const unsigned int)>
@@ -568,7 +761,7 @@ namespace hp
 
 
 
-   /* --------------- inline functions ------------------- */ 
+  /* --------------- inline functions ------------------- */
 
   template <int dim, int spacedim>
   template <class... FETypes>
@@ -760,5 +953,3 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

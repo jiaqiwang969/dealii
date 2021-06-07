@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/trilinos_sparse_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2021 by the deal.II authors
@@ -80,17 +81,20 @@ namespace TrilinosWrappers
 namespace TrilinosWrappers
 {
   /**
-   * Iterators for Trilinos matrices
+   * Trilinos矩阵的迭代器
+   *
    */
   namespace SparseMatrixIterators
   {
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException0(ExcBeyondEndOfMatrix);
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException3(ExcAccessToNonlocalRow,
                    std::size_t,
@@ -102,145 +106,141 @@ namespace TrilinosWrappers
                    << " are stored locally and can be accessed.");
 
     /**
-     * Handling of indices for both constant and non constant Accessor objects
+     * 处理常数和非常数访问器对象的指数 对于普通的
+     * dealii::SparseMatrix,
+     * ，我们将使用一个访问器来处理稀疏模式。对于Trilinos矩阵，这似乎并不那么简单，因此，我们在这里写一个小的基类。
      *
-     * For a regular dealii::SparseMatrix, we would use an accessor for the
-     * sparsity pattern. For Trilinos matrices, this does not seem so simple,
-     * therefore, we write a little base class here.
      */
     class AccessorBase
     {
     public:
       /**
-       * Declare the type for container size.
+       * 声明容器大小的类型。
+       *
        */
       using size_type = dealii::types::global_dof_index;
 
       /**
-       * Constructor.
+       * 构造函数。
+       *
        */
       AccessorBase(SparseMatrix *  matrix,
                    const size_type row,
                    const size_type index);
 
       /**
-       * Row number of the element represented by this object.
+       * 这个对象所代表的元素的行数。
+       *
        */
       size_type
       row() const;
 
       /**
-       * Index in row of the element represented by this object.
+       * 这个对象所代表的元素在行中的索引。
+       *
        */
       size_type
       index() const;
 
       /**
-       * Column number of the element represented by this object.
+       * 这个对象所代表的元素的列号。
+       *
        */
       size_type
       column() const;
 
     protected:
       /**
-       * Pointer to the matrix object. This object should be handled as a
-       * const pointer or non-const by the appropriate derived classes. In
-       * order to be able to implement both, it is not const here, so handle
-       * with care!
+       * 指向矩阵对象的指针。这个对象应该被适当的派生类作为常量指针或非常量来处理。为了能够同时实现这两个对象，这里不是常数，所以要小心处理
+       *
        */
       mutable SparseMatrix *matrix;
       /**
-       * Current row number.
+       * 当前的行数。
+       *
        */
       size_type a_row;
 
       /**
-       * Current index in row.
+       * 当前在行中的索引。
+       *
        */
       size_type a_index;
 
       /**
-       * Discard the old row caches (they may still be used by other
-       * accessors) and generate new ones for the row pointed to presently by
-       * this accessor.
+       * 丢弃旧的行缓存（它们可能仍然被其他访问器使用），并为这个访问器目前所指向的行生成新的行缓存。
+       *
        */
       void
       visit_present_row();
 
       /**
-       * Cache where we store the column indices of the present row. This is
-       * necessary, since Trilinos makes access to the elements of its
-       * matrices rather hard, and it is much more efficient to copy all
-       * column entries of a row once when we enter it than repeatedly asking
-       * Trilinos for individual ones. This also makes some sense since it is
-       * likely that we will access them sequentially anyway.
+       * 缓存，我们在这里存储当前行的列索引。这是必要的，因为Trilinos对其矩阵元素的访问相当困难，当我们进入某一行时，一次性复制该行的所有列项比反复向Trilinos索取单个列项要有效得多。这也有一定的意义，因为无论如何，我们很可能会按顺序访问它们。
+       * 为了使迭代器/存取器的复制具有可接受的性能，我们为这些条目保留了一个共享指针，以便在必要时有多个存取器可以访问这些数据。
        *
-       * In order to make copying of iterators/accessor of acceptable
-       * performance, we keep a shared pointer to these entries so that more
-       * than one accessor can access this data if necessary.
        */
       std::shared_ptr<std::vector<size_type>> colnum_cache;
 
       /**
-       * Cache for the values of this row.
+       * 该行的值的缓存。
+       *
        */
       std::shared_ptr<std::vector<TrilinosScalar>> value_cache;
     };
 
     /**
-     * General template for sparse matrix accessors. The first template
-     * argument denotes the underlying numeric type, the second the constness
-     * of the matrix.
+     * 稀疏矩阵访问器的通用模板。第一个模板参数表示底层数字类型，第二个表示矩阵的常数。
+     * 一般的模板没有被实现，只有针对第二个模板参数的两个可能值的特殊化。因此，这里列出的接口只是作为提供的模板，因为doxygen并没有链接这些特殊化。
      *
-     * The general template is not implemented, only the specializations for
-     * the two possible values of the second template argument. Therefore, the
-     * interface listed here only serves as a template provided since doxygen
-     * does not link the specializations.
      */
     template <bool Constess>
     class Accessor : public AccessorBase
     {
       /**
-       * Value of this matrix entry.
+       * 这个矩阵条目的值。
+       *
        */
       TrilinosScalar
       value() const;
 
       /**
-       * Value of this matrix entry.
+       * 此矩阵条目的值。
+       *
        */
       TrilinosScalar &
       value();
     };
 
     /**
-     * The specialization for a const Accessor.
+     * const Accessor的特殊化。
+     *
      */
     template <>
     class Accessor<true> : public AccessorBase
     {
     public:
       /**
-       * Typedef for the type (including constness) of the matrix to be used
-       * here.
+       * 这里要使用的矩阵的类型（包括constness）的类型定义。
+       *
        */
       using MatrixType = const SparseMatrix;
 
       /**
-       * Constructor. Since we use accessors only for read access, a const
-       * matrix pointer is sufficient.
+       * 构造器。因为我们只使用访问器进行读取访问，所以一个常数矩阵指针就足够了。
+       *
        */
       Accessor(MatrixType *matrix, const size_type row, const size_type index);
 
       /**
-       * Copy constructor to get from a const or non-const accessor to a const
-       * accessor.
+       * 复制构造函数，从一个常量或非常量访问器获取到一个常量访问器。
+       *
        */
       template <bool Other>
       Accessor(const Accessor<Other> &a);
 
       /**
-       * Value of this matrix entry.
+       * 这个矩阵条目的值。
+       *
        */
       TrilinosScalar
       value() const;
@@ -252,7 +252,8 @@ namespace TrilinosWrappers
     };
 
     /**
-     * The specialization for a mutable Accessor.
+     * 可变访问器的特殊化。
+     *
      */
     template <>
     class Accessor<false> : public AccessorBase
@@ -261,68 +262,76 @@ namespace TrilinosWrappers
       {
       public:
         /**
-         * Constructor.
+         * 构造函数。
+         *
          */
         Reference(const Accessor<false> &accessor);
 
         /**
-         * Conversion operator to the data type of the matrix.
+         * 对矩阵数据类型的转换操作。
+         *
          */
         operator TrilinosScalar() const;
 
         /**
-         * Set the element of the matrix we presently point to to @p n.
+         * 将我们目前指向的矩阵的元素设置为 @p n. 。
+         *
          */
         const Reference &
         operator=(const TrilinosScalar n) const;
 
         /**
-         * Add @p n to the element of the matrix we presently point to.
+         * 将 @p n 添加到我们目前指向的矩阵元素中。
+         *
          */
         const Reference &
         operator+=(const TrilinosScalar n) const;
 
         /**
-         * Subtract @p n from the element of the matrix we presently point to.
+         * 从我们现在指向的矩阵元素中减去 @p n 。
+         *
          */
         const Reference &
         operator-=(const TrilinosScalar n) const;
 
         /**
-         * Multiply the element of the matrix we presently point to by @p n.
+         * 将我们现在指向的矩阵元素乘以 @p n. 。
+         *
          */
         const Reference &
         operator*=(const TrilinosScalar n) const;
 
         /**
-         * Divide the element of the matrix we presently point to by @p n.
+         * 用我们现在指向的矩阵的元素除以 @p n. 。
+         *
          */
         const Reference &
         operator/=(const TrilinosScalar n) const;
 
       private:
         /**
-         * Pointer to the accessor that denotes which element we presently
-         * point to.
+         * 指向访问器的指针，表示我们目前指向哪个元素。
+         *
          */
         Accessor &accessor;
       };
 
     public:
       /**
-       * Typedef for the type (including constness) of the matrix to be used
-       * here.
+       * 这里要使用的矩阵的类型（包括常数）的类型定义。
+       *
        */
       using MatrixType = SparseMatrix;
 
       /**
-       * Constructor. Since we use accessors only for read access, a const
-       * matrix pointer is sufficient.
+       * 构造函数。因为我们只使用访问器进行读取访问，所以一个常数矩阵指针就足够了。
+       *
        */
       Accessor(MatrixType *matrix, const size_type row, const size_type index);
 
       /**
-       * Value of this matrix entry.
+       * 这个矩阵条目的值。
+       *
        */
       Reference
       value() const;
@@ -337,96 +346,98 @@ namespace TrilinosWrappers
     };
 
     /**
-     * This class acts as an iterator walking over the elements of Trilinos
-     * matrices. The implementation of this class is similar to the one for
-     * PETSc matrices.
-     *
-     * Note that Trilinos stores the elements within each row in ascending
-     * order. This is opposed to the deal.II sparse matrix style where the
-     * diagonal element (if it exists) is stored before all other values, and
-     * the PETSc sparse matrices, where one can't guarantee a certain order of
-     * the elements.
-     *
+     * 这个类作为一个迭代器，在特里诺斯矩阵的元素上行走。这个类的实现与PETSc矩阵的实现类似。
+     * 请注意，Trilinos以升序的方式存储每一行的元素。这与deal.II稀疏矩阵风格相反，在这种风格中，对角线元素（如果存在的话）被存储在所有其他数值之前，而在PETSc稀疏矩阵中，人们无法保证元素的一定顺序。
      * @ingroup TrilinosWrappers
+     *
      */
     template <bool Constness>
     class Iterator
     {
     public:
       /**
-       * Declare type for container size.
+       * 声明容器大小的类型。
+       *
        */
       using size_type = dealii::types::global_dof_index;
 
       /**
-       * Typedef for the matrix type (including constness) we are to operate
-       * on.
+       * 为我们要操作的矩阵类型（包括constness）提供类型定义。
+       *
        */
       using MatrixType = typename Accessor<Constness>::MatrixType;
 
       /**
-       * Constructor. Create an iterator into the matrix @p matrix for the
-       * given row and the index within it.
+       * 构造函数。在矩阵 @p matrix
+       * 中创建一个迭代器，用于给定行和其中的索引。
+       *
        */
       Iterator(MatrixType *matrix, const size_type row, const size_type index);
 
       /**
-       * Copy constructor with optional change of constness.
+       * 复制构造函数，可选择改变常态。
+       *
        */
       template <bool Other>
       Iterator(const Iterator<Other> &other);
 
       /**
-       * Prefix increment.
+       * 前缀增量。
+       *
        */
       Iterator<Constness> &
       operator++();
 
       /**
-       * Postfix increment.
+       * 后缀增量。
+       *
        */
       Iterator<Constness>
       operator++(int);
 
       /**
-       * Dereferencing operator.
+       * 撤消运算符。
+       *
        */
       const Accessor<Constness> &operator*() const;
 
       /**
-       * Dereferencing operator.
+       * 解除引用操作符。
+       *
        */
       const Accessor<Constness> *operator->() const;
 
       /**
-       * Comparison. True, if both iterators point to the same matrix
-       * position.
+       * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+       *
        */
       bool
       operator==(const Iterator<Constness> &) const;
 
       /**
-       * Inverse of <tt>==</tt>.
+       * <tt>==</tt>的倒数。
+       *
        */
       bool
       operator!=(const Iterator<Constness> &) const;
 
       /**
-       * Comparison operator. Result is true if either the first row number is
-       * smaller or if the row numbers are equal and the first index is
-       * smaller.
+       * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
+       *
        */
       bool
       operator<(const Iterator<Constness> &) const;
 
       /**
-       * Comparison operator. The opposite of the previous operator
+       * 比较运算符。与前一个运算符相反。
+       *
        */
       bool
       operator>(const Iterator<Constness> &) const;
 
       /**
-       * Exception
+       * 异常情况
+       *
        */
       DeclException2(ExcInvalidIndexWithinRow,
                      size_type,
@@ -436,7 +447,8 @@ namespace TrilinosWrappers
 
     private:
       /**
-       * Store an object of the accessor class.
+       * 存储一个访问器类的对象。
+       *
        */
       Accessor<Constness> accessor;
 
@@ -448,75 +460,25 @@ namespace TrilinosWrappers
 
 
   /**
-   * This class implements a wrapper to use the Trilinos distributed sparse
-   * matrix class Epetra_FECrsMatrix. This is precisely the kind of matrix we
-   * deal with all the time - we most likely get it from some assembly
-   * process, where also entries not locally owned might need to be written
-   * and hence need to be forwarded to the owner process.  This class is
-   * designed to be used in a distributed memory architecture with an MPI
-   * compiler on the bottom, but works equally well also for serial processes.
-   * The only requirement for this class to work is that Trilinos has been
-   * installed with the same compiler as is used for generating deal.II.
+   * 这个类实现了一个包装器，用于使用Trilinos分布式稀疏矩阵类Epetra_FECrsMatrix。这正是我们一直在处理的那种矩阵
    *
-   * The interface of this class is modeled after the existing SparseMatrix
-   * class in deal.II. It has almost the same member functions, and is often
-   * exchangeable. However, since Trilinos only supports a single scalar type
-   * (double), it is not templated, and only works with doubles.
-   *
-   * Note that Trilinos only guarantees that operations do what you expect if
-   * the functions @p GlobalAssemble has been called after matrix assembly.
-   * Therefore, you need to call SparseMatrix::compress() before you actually
-   * use the matrix. This also calls @p FillComplete that compresses the
-   * storage format for sparse matrices by discarding unused elements.
-   * Trilinos allows to continue with assembling the matrix after calls to
-   * these functions, though.
-   *
-   * <h3>Thread safety of Trilinos matrices</h3>
-   *
-   * When writing into Trilinos matrices from several threads in shared
-   * memory, several things must be kept in mind as there is no built-in locks
-   * in this class to prevent data races. Simultaneous access to the same
-   * matrix row at the same time can lead to data races and must be explicitly
-   * avoided by the user. However, it is possible to access <b>different</b>
-   * rows of the matrix from several threads simultaneously under the
-   * following three conditions:
-   * <ul>
-   * <li> The matrix uses only one MPI process.
-   * <li> The matrix has been initialized with the reinit() method with a
-   * DynamicSparsityPattern (that includes the set of locally relevant rows,
-   * i.e., the rows that an assembly routine will possibly write into).
-   * <li> The matrix has been initialized from a
-   * TrilinosWrappers::SparsityPattern object that in turn has been
-   * initialized with the reinit function specifying three index sets, one for
-   * the rows, one for the columns and for the larger set of @p
-   * writeable_rows, and the operation is an addition. At some point in the
-   * future, Trilinos support might be complete enough such that initializing
-   * from a TrilinosWrappers::SparsityPattern that has been filled by a
-   * function similar to DoFTools::make_sparsity_pattern always results in a
-   * matrix that allows several processes to write into the same matrix row.
-   * However, Trilinos until version at least 11.12 does not correctly support
-   * this feature.
-   * </ul>
-   *
-   * Note that all other reinit methods and constructors of
-   * TrilinosWrappers::SparsityPattern will result in a matrix that needs to
-   * allocate off-processor entries on demand, which breaks thread-safety. Of
-   * course, using the respective reinit method for the block Trilinos
-   * sparsity pattern and block matrix also results in thread-safety.
-   *
+   * - 我们很可能从一些装配过程中得到它，其中不属于本地的条目也可能需要被写入，因此需要转发给所有者过程。 这个类被设计用来在分布式内存架构中使用，底部有一个MPI编译器，但也同样适用于串行进程。  该类工作的唯一要求是，Trilinos已经安装了与生成deal.II相同的编译器。    这个类的接口是以deal.II中现有的SparseMatrix类为模型的。它有几乎相同的成员函数，而且通常是可以交换的。然而，由于Trilinos只支持单一的标量类型（double），所以它没有模板化，只对double起作用。    请注意，Trilinos只保证在矩阵装配后调用了函数 @p GlobalAssemble 的情况下，操作才会达到你的期望。  因此，你需要在实际使用矩阵之前调用 SparseMatrix::compress() 。这也会调用 @p FillComplete ，通过丢弃未使用的元素来压缩稀疏矩阵的存储格式。  不过，Trilinos允许在调用这些函数后继续组装矩阵。    <h3>Thread safety of Trilinos matrices</h3> 当从共享内存中的几个线程向Trilinos矩阵写入时，必须记住几件事，因为这个类中没有内置锁来防止数据竞赛。在同一时间内同时访问同一矩阵行会导致数据竞赛，用户必须明确避免。然而，在以下三个条件下，可以从几个线程同时访问矩阵的<b>different</b>行。    <ul>   <li>  矩阵只使用一个MPI进程。    <li>  矩阵已经用reinit()方法进行了初始化，并采用了DynamicSparsityPattern（包括本地相关行的集合，即汇编程序可能写入的行）。    <li>  矩阵已经从一个 TrilinosWrappers::SparsityPattern 对象中初始化，该对象又被reinit函数初始化，指定了三个索引集，一个用于行，一个用于列，以及更大的 @p 可写行集，操作是一个加法。在未来的某个时间点，Trilinos的支持可能足够完整，以至于从一个已经被类似于 DoFTools::make_sparsity_pattern 的函数填充的 TrilinosWrappers::SparsityPattern 初始化，总是会产生一个允许多个进程写入同一矩阵行的矩阵。  然而，Trilinos至少在11.12版本之前并不正确支持这一功能。    </ul>  请注意， TrilinosWrappers::SparsityPattern 的所有其他reinit方法和构造函数都会导致矩阵需要按需分配非进程条目，这就破坏了线程安全。当然，对块状Trilinos稀疏模式和块状矩阵使用各自的reinit方法也会导致线程安全。
    * @ingroup TrilinosWrappers
    * @ingroup Matrix1
+   *
    */
   class SparseMatrix : public Subscriptor
   {
   public:
     /**
-     * Declare the type for container size.
+     * 声明容器大小的类型。
+     *
      */
     using size_type = dealii::types::global_dof_index;
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException1(ExcAccessToNonlocalRow,
                    std::size_t,
@@ -526,158 +488,132 @@ namespace TrilinosWrappers
                    << " is not stored locally and can't be accessed.");
 
     /**
-     * A structure that describes some of the traits of this class in terms of
-     * its run-time behavior. Some other classes (such as the block matrix
-     * classes) that take one or other of the matrix classes as its template
-     * parameters can tune their behavior based on the variables in this
-     * class.
+     * 一个描述这个类在运行时行为方面的一些特征的结构。其他一些以一个或其他矩阵类作为其模板参数的类（如块状矩阵类），可以根据这个类中的变量来调整其行为。
+     *
      */
     struct Traits
     {
       /**
-       * It is safe to elide additions of zeros to individual elements of this
-       * matrix.
+       * 对该矩阵的单个元素进行零的添加是安全的。
+       *
        */
       static const bool zero_addition_can_be_elided = true;
     };
 
     /**
-     * Declare an alias for the iterator class.
+     * 为迭代器类声明一个别名。
+     *
      */
     using iterator = SparseMatrixIterators::Iterator<false>;
 
     /**
-     * Declare an alias for the const iterator class.
+     * 为常量迭代器类声明一个别名。
+     *
      */
     using const_iterator = SparseMatrixIterators::Iterator<true>;
 
     /**
-     * Declare an alias in analogy to all the other container classes.
+     * 为所有其他的容器类声明一个别名，以示类比。
+     *
      */
     using value_type = TrilinosScalar;
 
     /**
-     * @name Constructors and initialization.
+     * @name  构造函数和初始化。
+     *
      */
     //@{
     /**
-     * Default constructor. Generates an empty (zero-size) matrix.
+     * 默认构造函数。生成一个空的（零大小）矩阵。
+     *
      */
     SparseMatrix();
 
     /**
-     * Generate a matrix that is completely stored locally, having #m rows and
-     * #n columns.
+     * 生成一个完全存储在本地的矩阵，有#m行和#n列。
+     * 每行的列条目数被指定为最大条目数参数。
      *
-     * The number of columns entries per row is specified as the maximum
-     * number of entries argument.
      */
     SparseMatrix(const size_type    m,
                  const size_type    n,
                  const unsigned int n_max_entries_per_row);
 
     /**
-     * Generate a matrix that is completely stored locally, having #m rows and
-     * #n columns.
+     * 生成一个完全存储在本地的矩阵，有#m行和#n列。
+     * 向量<tt>n_entries_per_row</tt>指定了每一行的条目数。
      *
-     * The vector <tt>n_entries_per_row</tt> specifies the number of entries
-     * in each row.
      */
     SparseMatrix(const size_type                  m,
                  const size_type                  n,
                  const std::vector<unsigned int> &n_entries_per_row);
 
     /**
-     * Generate a matrix from a Trilinos sparsity pattern object.
+     * 从Trilinos稀疏模式对象生成一个矩阵。
+     *
      */
     SparseMatrix(const SparsityPattern &InputSparsityPattern);
 
     /**
-     * Move constructor. Create a new sparse matrix by stealing the internal
-     * data.
+     * 移动构造函数。通过窃取内部数据创建一个新的稀疏矩阵。
+     *
      */
     SparseMatrix(SparseMatrix &&other) noexcept;
 
     /**
-     * Copy constructor is deleted.
+     * 复制构造函数被删除。
+     *
      */
     SparseMatrix(const SparseMatrix &) = delete;
 
     /**
-     * operator= is deleted.
+     * operator=被删除。
+     *
      */
     SparseMatrix &
     operator=(const SparseMatrix &) = delete;
 
     /**
-     * Destructor. Made virtual so that one can use pointers to this class.
+     * 解构器。做成了虚拟，这样就可以使用指向这个类的指针。
+     *
      */
     virtual ~SparseMatrix() override = default;
 
     /**
-     * This function initializes the Trilinos matrix with a deal.II sparsity
-     * pattern, i.e. it makes the Trilinos Epetra matrix know the position of
-     * nonzero entries according to the sparsity pattern. This function is
-     * meant for use in serial programs, where there is no need to specify how
-     * the matrix is going to be distributed among different processors. This
-     * function works in %parallel, too, but it is recommended to manually
-     * specify the %parallel partitioning of the matrix using an Epetra_Map.
-     * When run in %parallel, it is currently necessary that each processor
-     * holds the sparsity_pattern structure because each processor sets its
-     * rows.
+     * 这个函数用deal.II稀疏模式初始化Trilinos矩阵，也就是说，它使Trilinos
+     * Epetra矩阵根据稀疏模式知道非零项的位置。这个函数是为了在串行程序中使用，不需要指定矩阵如何在不同处理器之间分配。这个函数也可以在%并行中使用，但建议使用Epetra_Map手动指定矩阵的%并行分区。
+     * 当以%并行方式运行时，目前需要每个处理器都持有sparsity_pattern结构，因为每个处理器都要设置其行数。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     template <typename SparsityPatternType>
     void
     reinit(const SparsityPatternType &sparsity_pattern);
 
     /**
-     * This function reinitializes the Trilinos sparse matrix from a (possibly
-     * distributed) Trilinos sparsity pattern.
+     * 这个函数从一个（可能是分布式的）Trilinos稀疏模式重新初始化Trilinos稀疏矩阵。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
+     * 如果你想从几个线程写到矩阵并使用MPI，你需要使用这个reinit方法，并使用已经创建的明确说明可写行的稀疏度模式。在所有其他情况下，你不能把MPI和多线程写进矩阵中。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
-     *
-     * If you want to write to the matrix from several threads and use MPI,
-     * you need to use this reinit method with a sparsity pattern that has
-     * been created with explicitly stating writeable rows. In all other
-     * cases, you cannot mix MPI with multithreaded writing into the matrix.
      */
     void
     reinit(const SparsityPattern &sparsity_pattern);
 
     /**
-     * This function copies the layout of @p sparse_matrix to the calling
-     * matrix. The values are not copied, but you can use copy_from() for
-     * this.
+     * 这个函数将 @p sparse_matrix
+     * 的布局复制到调用矩阵中。值不会被复制，但你可以使用copy_from()来实现。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     void
     reinit(const SparseMatrix &sparse_matrix);
 
     /**
-     * This function initializes the Trilinos matrix using the deal.II sparse
-     * matrix and the entries stored therein. It uses a threshold to copy only
-     * elements with modulus larger than the threshold (so zeros in the
-     * deal.II matrix can be filtered away).
+     * 这个函数使用deal.II稀疏矩阵和存储在其中的条目来初始化Trilinos矩阵。它使用一个阈值，只复制模数大于阈值的元素（所以deal.II矩阵中的零可以被过滤掉）。
+     * 可选参数<tt>copy_values</tt>决定是只使用输入矩阵的稀疏结构，还是也要复制矩阵的条目。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
+     * @note
+     * 如果在最后一个参数中给出了不同的稀疏模式（即与第一个参数中给出的稀疏矩阵中使用的模式不同），那么生成的特里诺斯矩阵将具有如此给出的稀疏模式。当然，这也意味着给定的矩阵中所有不属于这个单独的稀疏模式的条目实际上将被删除。
      *
-     * The optional parameter <tt>copy_values</tt> decides whether only the
-     * sparsity structure of the input matrix should be used or the matrix
-     * entries should be copied, too.
-     *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a deadlock.
-     *
-     * @note If a different sparsity pattern is given in the last argument
-     * (i.e., one that differs from the one used in the sparse matrix given in
-     * the first argument), then the resulting Trilinos matrix will have the
-     * sparsity pattern so given. This of course also means that all entries
-     * in the given matrix that are not part of this separate sparsity pattern
-     * will in fact be dropped.
      */
     template <typename number>
     void
@@ -687,58 +623,45 @@ namespace TrilinosWrappers
            const ::dealii::SparsityPattern *     use_this_sparsity = nullptr);
 
     /**
-     * This reinit function takes as input a Trilinos Epetra_CrsMatrix and
-     * copies its sparsity pattern. If so requested, even the content (values)
-     * will be copied.
+     * 这个reinit函数将一个Trilinos
+     * Epetra_CrsMatrix作为输入，并复制其稀疏性模式。如果有此要求，甚至连内容（值）也将被复制。
+     *
      */
     void
     reinit(const Epetra_CrsMatrix &input_matrix, const bool copy_values = true);
     //@}
 
     /**
-     * @name Constructors and initialization using an IndexSet description
+     * @name  使用IndexSet描述的构造器和初始化
+     *
      */
     //@{
     /**
-     * Constructor using an IndexSet and an MPI communicator to describe the
-     * %parallel partitioning. The parameter @p n_max_entries_per_row sets the
-     * number of nonzero entries in each row that will be allocated. Note that
-     * this number does not need to be exact, and it is even allowed that the
-     * actual matrix structure has more nonzero entries than specified in the
-     * constructor. However it is still advantageous to provide good estimates
-     * here since this will considerably increase the performance of the
-     * matrix setup. However, there is no effect in the performance of matrix-
-     * vector products, since Trilinos reorganizes the matrix memory prior to
-     * use (in the compress() step).
+     * 使用一个IndexSet和一个MPI通信器的构造器来描述%并行分区。参数
+     * @p n_max_entries_per_row
+     * 设置将被分配的每一行中的非零条目的数量。注意，这个数字不需要精确，甚至允许实际的矩阵结构有比构造函数中指定的更多的非零条目。但是在这里提供良好的估计仍然是有利的，因为这将大大增加矩阵设置的性能。然而，对矩阵-向量乘积的性能没有影响，因为Trilinos在使用前（在compress()步骤中）重新组织了矩阵内存。
+     *
      */
     SparseMatrix(const IndexSet &   parallel_partitioning,
                  const MPI_Comm &   communicator          = MPI_COMM_WORLD,
                  const unsigned int n_max_entries_per_row = 0);
 
     /**
-     * Same as before, but now set the number of nonzeros in each matrix row
-     * separately. Since we know the number of elements in the matrix exactly
-     * in this case, we can already allocate the right amount of memory, which
-     * makes the creation process including the insertion of nonzero elements
-     * by the respective SparseMatrix::reinit call considerably faster.
+     * 与之前相同，但现在单独设置每个矩阵行中的非零的数量。因为在这种情况下，我们确切地知道矩阵中的元素数量，所以我们已经可以分配合适的内存数量，这使得创建过程（包括通过各自的
+     * SparseMatrix::reinit 调用插入非零元素）大大加快。
+     *
      */
     SparseMatrix(const IndexSet &                 parallel_partitioning,
                  const MPI_Comm &                 communicator,
                  const std::vector<unsigned int> &n_entries_per_row);
 
     /**
-     * This constructor is similar to the one above, but it now takes two
-     * different IndexSet partitions for row and columns. This interface is
-     * meant to be used for generating rectangular matrices, where the first
-     * index set describes the %parallel partitioning of the degrees of
-     * freedom associated with the matrix rows and the second one the
-     * partitioning of the matrix columns. The second index set specifies the
-     * partitioning of the vectors this matrix is to be multiplied with, not
-     * the distribution of the elements that actually appear in the matrix.
+     * 这个构造函数与上面的构造函数类似，但现在它为行和列采取了两个不同的
+     * IndexSet
+     * 分区。这个接口是用来生成矩形矩阵的，其中第一个索引集描述了与矩阵行相关的自由度的平行分区，第二个索引集描述了矩阵列的分区。第二个索引集指定了这个矩阵要与之相乘的向量的分区，而不是实际出现在矩阵中的元素的分布。
+     * 参数 @p n_max_entries_per_row
+     * 定义了将为每一行分配多少内存。这个数字不需要准确，因为结构会在compress()调用中被重组。
      *
-     * The parameter @p n_max_entries_per_row defines how much memory will be
-     * allocated for each row. This number does not need to be accurate, as
-     * the structure is reorganized in the compress() call.
      */
     SparseMatrix(const IndexSet &row_parallel_partitioning,
                  const IndexSet &col_parallel_partitioning,
@@ -746,18 +669,8 @@ namespace TrilinosWrappers
                  const size_type n_max_entries_per_row = 0);
 
     /**
-     * This constructor is similar to the one above, but it now takes two
-     * different Epetra maps for rows and columns. This interface is meant to
-     * be used for generating rectangular matrices, where one map specifies
-     * the %parallel distribution of degrees of freedom associated with matrix
-     * rows and the second one specifies the %parallel distribution the dofs
-     * associated with columns in the matrix. The second map also provides
-     * information for the internal arrangement in matrix vector products
-     * (i.e., the distribution of vector this matrix is to be multiplied
-     * with), but is not used for the distribution of the columns &ndash;
-     * rather, all column elements of a row are stored on the same processor
-     * in any case. The vector <tt>n_entries_per_row</tt> specifies the number
-     * of entries in each row of the newly generated matrix.
+     * 这个构造函数与上面的构造函数类似，但它现在需要两个不同的Epetra映射来表示行和列。这个接口是用来生成矩形矩阵的，其中一个映射指定了与矩阵行相关的自由度的平行分布%，第二个映射指定了与矩阵中的列相关的自由度的平行分布%。第二个映射也为矩阵向量乘积中的内部排列提供信息（即这个矩阵要与之相乘的向量分布），但不用于列的分布&ndash；相反，在任何情况下，一行的所有列元素都存储在同一个处理器上。向量<tt>n_entries_per_row</tt>指定了新生成的矩阵中每一行的条目数。
+     *
      */
     SparseMatrix(const IndexSet &                 row_parallel_partitioning,
                  const IndexSet &                 col_parallel_partitioning,
@@ -765,24 +678,12 @@ namespace TrilinosWrappers
                  const std::vector<unsigned int> &n_entries_per_row);
 
     /**
-     * This function is initializes the Trilinos Epetra matrix according to
-     * the specified sparsity_pattern, and also reassigns the matrix rows to
-     * different processes according to a user-supplied index set and
-     * %parallel communicator. In programs following the style of the tutorial
-     * programs, this function (and the respective call for a rectangular
-     * matrix) are the natural way to initialize the matrix size, its
-     * distribution among the MPI processes (if run in %parallel) as well as
-     * the location of non-zero elements. Trilinos stores the sparsity pattern
-     * internally, so it won't be needed any more after this call, in contrast
-     * to the deal.II own object. The optional argument @p exchange_data can
-     * be used for reinitialization with a sparsity pattern that is not fully
-     * constructed. This feature is only implemented for input sparsity
-     * patterns of type DynamicSparsityPattern. If the flag is not set, each
-     * processor just sets the elements in the sparsity pattern that belong to
-     * its rows.
+     * 这个函数是根据指定的稀疏性_模式初始化Tridinos
+     * Epetra矩阵，同时根据用户提供的索引集和%并行通信器，将矩阵的行数重新分配给不同进程。在遵循教程程序风格的程序中，这个函数（以及对矩形矩阵的相应调用）是初始化矩阵大小、其在MPI进程中的分布（如果在%parallel中运行）以及非零元素位置的自然方式。Trilinos在内部存储了稀疏模式，所以在这个调用之后就不再需要它了，与deal.II自己的对象相反。可选的参数
+     * @p exchange_data
+     * 可用于重新初始化未完全构建的稀疏度模式。这个功能只对动态稀疏模式类型的输入稀疏模式实现。如果没有设置该标志，每个处理器只是设置疏散度模式中属于其行的元素。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     template <typename SparsityPatternType>
     void
@@ -792,16 +693,11 @@ namespace TrilinosWrappers
            const bool                 exchange_data = false);
 
     /**
-     * This function is similar to the other initialization function above,
-     * but now also reassigns the matrix rows and columns according to two
-     * user-supplied index sets.  To be used for rectangular matrices. The
-     * optional argument @p exchange_data can be used for reinitialization
-     * with a sparsity pattern that is not fully constructed. This feature is
-     * only implemented for input sparsity patterns of type
-     * DynamicSparsityPattern.
+     * 这个函数类似于上面的另一个初始化函数，但现在也根据两个用户提供的索引集重新分配矩阵的行和列。
+     * 要用于矩形矩阵。可选的参数 @p exchange_data
+     * 可用于用未完全构建的稀疏模式进行重新初始化。这个功能只对动态稀疏模式类型的输入稀疏模式实现。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     template <typename SparsityPatternType>
     typename std::enable_if<
@@ -814,20 +710,10 @@ namespace TrilinosWrappers
            const bool                 exchange_data = false);
 
     /**
-     * This function initializes the Trilinos matrix using the deal.II sparse
-     * matrix and the entries stored therein. It uses a threshold to copy only
-     * elements with modulus larger than the threshold (so zeros in the
-     * deal.II matrix can be filtered away). In contrast to the other reinit
-     * function with deal.II sparse matrix argument, this function takes a
-     * %parallel partitioning specified by the user instead of internally
-     * generating it.
+     * 这个函数使用deal.II稀疏矩阵和存储在其中的条目来初始化Trilinos矩阵。它使用一个阈值，只复制模数大于阈值的元素（所以deal.II矩阵中的零可以被过滤掉）。与其他带有deal.II稀疏矩阵参数的reinit函数不同的是，该函数采用用户指定的%并行分区，而不是内部生成的。
+     * 可选参数<tt>copy_values</tt>决定是只使用输入矩阵的稀疏结构还是也要复制矩阵条目。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * The optional parameter <tt>copy_values</tt> decides whether only the
-     * sparsity structure of the input matrix should be used or the matrix
-     * entries should be copied, too.
-     *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     template <typename number>
     void
@@ -839,17 +725,10 @@ namespace TrilinosWrappers
            const ::dealii::SparsityPattern *     use_this_sparsity = nullptr);
 
     /**
-     * This function is similar to the other initialization function with
-     * deal.II sparse matrix input above, but now takes index sets for both
-     * the rows and the columns of the matrix. Chosen for rectangular
-     * matrices.
+     * 这个函数类似于上面的另一个初始化函数与deal.II稀疏矩阵输入，但现在需要矩阵的行和列的索引集。选用于矩形矩阵。
+     * 可选参数<tt>copy_values</tt>决定是只使用输入矩阵的稀疏结构还是也复制矩阵条目。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * The optional parameter <tt>copy_values</tt> decides whether only the
-     * sparsity structure of the input matrix should be used or the matrix
-     * entries should be copied, too.
-     *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     template <typename number>
     void
@@ -862,200 +741,133 @@ namespace TrilinosWrappers
            const ::dealii::SparsityPattern *     use_this_sparsity = nullptr);
     //@}
     /**
-     * @name Information on the matrix
+     * @name  矩阵的信息
+     *
      */
     //@{
 
     /**
-     * Return the number of rows in this matrix.
+     * 返回这个矩阵的行数。
+     *
      */
     size_type
     m() const;
 
     /**
-     * Return the number of columns in this matrix.
+     * 返回此矩阵中的列数。
+     *
      */
     size_type
     n() const;
 
     /**
-     * Return the local dimension of the matrix, i.e. the number of rows
-     * stored on the present MPI process. For sequential matrices, this number
-     * is the same as m(), but for %parallel matrices it may be smaller.
+     * 返回矩阵的本地维度，即存储在当前MPI进程中的行数。对于顺序矩阵，这个数字与m()相同，但对于%并行矩阵，这个数字可能更小。
+     * 要想知道哪些元素被存储在本地，可以使用local_range()。
      *
-     * To figure out which elements exactly are stored locally, use
-     * local_range().
      */
     unsigned int
     local_size() const;
 
     /**
-     * Return a pair of indices indicating which rows of this matrix are
-     * stored locally. The first number is the index of the first row stored,
-     * the second the index of the one past the last one that is stored
-     * locally. If this is a sequential matrix, then the result will be the
-     * pair (0,m()), otherwise it will be a pair (i,i+n), where
-     * <tt>n=local_size()</tt>.
+     * 返回一对指数，表明该矩阵的哪些行是本地存储的。第一个数字是存储的第一行的索引，第二个数字是本地存储的最后一行之后的那一行的索引。如果这是一个连续的矩阵，那么结果将是一对(0,m())，否则将是一对(i,i+n)，其中<tt>n=local_size()</tt>。
+     *
      */
     std::pair<size_type, size_type>
     local_range() const;
 
     /**
-     * Return whether @p index is in the local range or not, see also
-     * local_range().
+     * 返回 @p index 是否在本地范围内，另见local_range()。
+     *
      */
     bool
     in_local_range(const size_type index) const;
 
     /**
-     * Return the total number of nonzero elements of this matrix (summed
-     * over all MPI processes).
+     * 返回这个矩阵的非零元素的总数（所有MPI进程的总和）。
+     *
      */
     size_type
     n_nonzero_elements() const;
 
     /**
-     * Number of entries in a specific row.
+     * 特定行中的条目数。
+     *
      */
     unsigned int
     row_length(const size_type row) const;
 
     /**
-     * Return the state of the matrix, i.e., whether compress() needs to be
-     * called after an operation requiring data exchange. A call to compress()
-     * is also needed when the method set() has been called (even when working
-     * in serial).
+     * 返回矩阵的状态，即在需要数据交换的操作之后是否需要调用compress()。当方法set()被调用时，也需要调用compress()（即使在串行工作时）。
+     *
      */
     bool
     is_compressed() const;
 
     /**
-     * Determine an estimate for the memory consumption (in bytes) of this
-     * object. Note that only the memory reserved on the current processor is
-     * returned in case this is called in an MPI-based program.
+     * 确定这个对象的内存消耗（以字节为单位）的估计值。注意，如果在基于MPI的程序中调用这个方法，则只返回当前处理器上保留的内存。
+     *
      */
     size_type
     memory_consumption() const;
 
     /**
-     * Return the MPI communicator object in use with this matrix.
+     * 返回与该矩阵一起使用的MPI通信器对象。
+     *
      */
     MPI_Comm
     get_mpi_communicator() const;
 
     //@}
     /**
-     * @name Modifying entries
+     * @name  修改条目
+     *
      */
     //@{
 
     /**
-     * This operator assigns a scalar to a matrix. Since this does usually not
-     * make much sense (should we set all matrix entries to this value?  Only
-     * the nonzero entries of the sparsity pattern?), this operation is only
-     * allowed if the actual value to be assigned is zero. This operator only
-     * exists to allow for the obvious notation <tt>matrix=0</tt>, which sets
-     * all elements of the matrix to zero, but keeps the sparsity pattern
-     * previously used.
+     * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？
+     * 仅仅是稀疏模式的非零条目？），只有当要分配的实际值为零时，才允许这个操作。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留了之前使用的稀疏模式。
+     *
      */
     SparseMatrix &
     operator=(const double d);
 
     /**
-     * Release all memory and return to a state just like after having called
-     * the default constructor.
+     * 释放所有内存并返回到与调用默认构造函数后相同的状态。
+     * 这是一个集体操作，需要在所有处理器上调用，以避免出现死锁。
      *
-     * This is a collective operation that needs to be called on all
-     * processors in order to avoid a dead lock.
      */
     void
     clear();
 
     /**
-     * This command does two things:
-     * <ul>
-     * <li> If the matrix was initialized without a sparsity pattern, elements
-     * have been added manually using the set() command. When this process is
-     * completed, a call to compress() reorganizes the internal data
-     * structures (sparsity pattern) so that a fast access to data is possible
-     * in matrix-vector products.
-     * <li> If the matrix structure has already been fixed (either by
-     * initialization with a sparsity pattern or by calling compress() during
-     * the setup phase), this command does the %parallel exchange of data.
-     * This is necessary when we perform assembly on more than one (MPI)
-     * process, because then some non-local row data will accumulate on nodes
-     * that belong to the current's processor element, but are actually held
-     * by another. This command is usually called after all elements have been
-     * traversed.
-     * </ul>
+     * 这个命令做两件事。      <ul>   <li>  如果矩阵在初始化时没有稀疏模式，则使用set()命令手动添加元素。当这个过程完成后，对compress()的调用重组了内部数据结构（稀疏模式），这样就可以在矩阵-向量产品中快速访问数据。      <li>  如果矩阵结构已经被固定（通过初始化稀疏模式或在设置阶段调用compress()），该命令将进行数据的%并行交换。    当我们在一个以上的（MPI）进程上进行装配时，这是必要的，因为这时一些非本地的行数据会积累在属于当前的处理器元素的节点上，但实际上是由另一个处理器持有的。这个命令通常在所有元素都被遍历后调用。      </ul>  在这两种情况下，这个函数都会压缩数据结构，并允许产生的矩阵用于所有其他操作，如矩阵-向量乘积。这是一个集体操作，也就是说，在%并行使用时，需要在所有处理器上运行。        更多信息见 @ref GlossCompress "压缩分布式对象"。
      *
-     * In both cases, this function compresses the data structures and allows
-     * the resulting matrix to be used in all other operations like matrix-
-     * vector products. This is a collective operation, i.e., it needs to be
-     * run on all processors when used in %parallel.
-     *
-     * See
-     * @ref GlossCompress "Compressing distributed objects"
-     * for more information.
      */
     void
     compress(::dealii::VectorOperation::values operation);
 
     /**
-     * Set the element (<i>i,j</i>) to @p value.
+     * 将元素（<i>i,j</i>）设置为 @p value.
+     * 只要compress()没有被调用，这个函数就能够在矩阵中插入新的元素，所以稀疏模式将被扩展。当compress()第一次被调用时（或者在矩阵被初始化为稀疏模式的情况下），不能添加新的元素，在未被初始化的位置插入元素会引发异常。
+     * 如果矩阵是在没有稀疏模式的情况下构建的，并且新的矩阵条目是按需添加的，请注意底层Epetra_FECrsMatrix数据结构施加的以下行为。
+     * 如果同一个矩阵条目被多次插入，那么即使
+     * VectorOperation::insert
+     * 被指定为compress()的参数，矩阵条目也会在调用compress()时被添加（因为Epetra不会在最终调用compress()前跟踪同一个条目的值）。如果你不能确保矩阵条目只被设置一次，那么在插入元素之前，用稀疏模式初始化矩阵，固定矩阵结构。
      *
-     * This function is able to insert new elements into the matrix as long as
-     * compress() has not been called, so the sparsity pattern will be
-     * extended. When compress() is called for the first time (or in case the
-     * matrix is initialized from a sparsity pattern), no new elements can be
-     * added and an insertion of elements at positions which have not been
-     * initialized will throw an exception.
-     *
-     * For the case that the matrix is constructed without a sparsity pattern
-     * and new matrix entries are added on demand, please note the following
-     * behavior imposed by the underlying Epetra_FECrsMatrix data structure:
-     * If the same matrix entry is inserted more than once, the matrix entries
-     * will be added upon calling compress() (since Epetra does not track
-     * values to the same entry before the final compress() is called), even
-     * if VectorOperation::insert is specified as argument to compress(). In
-     * the case you cannot make sure that matrix entries are only set once,
-     * initialize the matrix with a sparsity pattern to fix the matrix
-     * structure before inserting elements.
      */
     void
     set(const size_type i, const size_type j, const TrilinosScalar value);
 
     /**
-     * Set all elements given in a FullMatrix<double> into the sparse matrix
-     * locations given by <tt>indices</tt>. In other words, this function
-     * writes the elements in <tt>full_matrix</tt> into the calling matrix,
-     * using the local-to-global indexing specified by <tt>indices</tt> for
-     * both the rows and the columns of the matrix. This function assumes a
-     * quadratic sparse matrix and a quadratic full_matrix, the usual
-     * situation in FE calculations.
+     * 将FullMatrix<double>中给出的所有元素设置到<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素写入调用的矩阵中，对矩阵的行和列都使用<tt>indices</tt>指定的本地到全球的索引。这个函数假设一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中的通常情况。
+     * 只要没有调用compress()，这个函数就能够在矩阵中插入新的元素，所以稀疏模式将被扩展。在第一次调用compress()后，或者矩阵被初始化为稀疏模式后，扩展稀疏模式就不再可能了，在未初始化的位置插入元素会产生一个异常。
+     * 可选参数<tt>elide_zero_values</tt>可以用来指定零值是否应该被插入，或者应该被过滤掉。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+     * 对于矩阵的构建没有稀疏模式，新的矩阵条目是按需添加的情况，请注意底层Epetra_FECrsMatrix数据结构施加的以下行为。
+     * 如果同一个矩阵条目被多次插入，那么即使
+     * VectorOperation::insert
+     * 被指定为compress()的参数，矩阵条目也会在调用compress()时被添加（因为Epetra不会在最终调用compress()前跟踪同一个条目的值）。如果你不能确保矩阵条目只被设置一次，那么在插入元素之前，用稀疏模式初始化矩阵，固定矩阵结构。
      *
-     * This function is able to insert new elements into the matrix as long as
-     * compress() has not been called, so the sparsity pattern will be
-     * extended. After compress() has been called for the first time or the
-     * matrix has been initialized from a sparsity pattern, extending the
-     * sparsity pattern is no longer possible and an insertion of elements at
-     * positions which have not been initialized will throw an exception.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be inserted anyway or they should be
-     * filtered away. The default value is <tt>false</tt>, i.e., even zero
-     * values are inserted/replaced.
-     *
-     * For the case that the matrix is constructed without a sparsity pattern
-     * and new matrix entries are added on demand, please note the following
-     * behavior imposed by the underlying Epetra_FECrsMatrix data structure:
-     * If the same matrix entry is inserted more than once, the matrix entries
-     * will be added upon calling compress() (since Epetra does not track
-     * values to the same entry before the final compress() is called), even
-     * if VectorOperation::insert is specified as argument to compress(). In
-     * the case you cannot make sure that matrix entries are only set once,
-     * initialize the matrix with a sparsity pattern to fix the matrix
-     * structure before inserting elements.
      */
     void
     set(const std::vector<size_type> &    indices,
@@ -1063,9 +875,8 @@ namespace TrilinosWrappers
         const bool                        elide_zero_values = false);
 
     /**
-     * Same function as before, but now including the possibility to use
-     * rectangular full_matrices and different local-to-global indexing on
-     * rows and columns, respectively.
+     * 与之前的功能相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的局部到全局的索引。
+     *
      */
     void
     set(const std::vector<size_type> &    row_indices,
@@ -1074,31 +885,14 @@ namespace TrilinosWrappers
         const bool                        elide_zero_values = false);
 
     /**
-     * Set several elements in the specified row of the matrix with column
-     * indices as given by <tt>col_indices</tt> to the respective value.
+     * 将矩阵指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
+     * 只要没有调用compress()，这个函数就能够在矩阵中插入新的元素，所以稀疏模式将被扩展。在第一次调用compress()后，或者矩阵被初始化为稀疏模式后，扩展稀疏模式就不再可能了，在未初始化的位置插入元素将引发异常。
+     * 可选参数<tt>elide_zero_values</tt>可以用来指定零值是否应该被插入，或者应该被过滤掉。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+     * 对于矩阵的构建没有稀疏模式，新的矩阵条目是按需添加的情况，请注意底层Epetra_FECrsMatrix数据结构施加的以下行为。
+     * 如果同一个矩阵条目被多次插入，那么即使
+     * VectorOperation::insert
+     * 被指定为compress()的参数，矩阵条目也会在调用compress()时被添加（因为Epetra不会在最终调用compress()前跟踪同一条目的值）。如果你不能确保矩阵条目只被设置一次，那么在插入元素之前，用稀疏模式初始化矩阵，固定矩阵结构。
      *
-     * This function is able to insert new elements into the matrix as long as
-     * compress() has not been called, so the sparsity pattern will be
-     * extended. After compress() has been called for the first time or the
-     * matrix has been initialized from a sparsity pattern, extending the
-     * sparsity pattern is no longer possible and an insertion of elements at
-     * positions which have not been initialized will throw an exception.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be inserted anyway or they should be
-     * filtered away. The default value is <tt>false</tt>, i.e., even zero
-     * values are inserted/replaced.
-     *
-     * For the case that the matrix is constructed without a sparsity pattern
-     * and new matrix entries are added on demand, please note the following
-     * behavior imposed by the underlying Epetra_FECrsMatrix data structure:
-     * If the same matrix entry is inserted more than once, the matrix entries
-     * will be added upon calling compress() (since Epetra does not track
-     * values to the same entry before the final compress() is called), even
-     * if VectorOperation::insert is specified as argument to compress(). In
-     * the case you cannot make sure that matrix entries are only set once,
-     * initialize the matrix with a sparsity pattern to fix the matrix
-     * structure before inserting elements.
      */
     void
     set(const size_type                    row,
@@ -1107,31 +901,14 @@ namespace TrilinosWrappers
         const bool                         elide_zero_values = false);
 
     /**
-     * Set several elements to values given by <tt>values</tt> in a given row
-     * in columns given by col_indices into the sparse matrix.
+     * 将几个元素设置为<tt>values</tt>所给的值，在稀疏矩阵的col_indices所给的列中的某一行。
+     * 只要没有调用compress()，这个函数就能够在矩阵中插入新的元素，所以稀疏模式将被扩展。在第一次调用compress()后，或者矩阵被初始化为稀疏模式后，扩展稀疏模式就不再可能了，在未初始化的位置插入元素将引发异常。
+     * 可选参数<tt>elide_zero_values</tt>可以用来指定零值是否应该被插入，或者应该被过滤掉。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
+     * 对于矩阵的构建没有稀疏模式，新的矩阵条目是按需添加的情况，请注意底层Epetra_FECrsMatrix数据结构施加的以下行为。
+     * 如果同一个矩阵条目被多次插入，那么即使
+     * VectorOperation::insert
+     * 被指定为compress()的参数，矩阵条目也会在调用compress()时被添加（因为Epetra不会在最终调用compress()前跟踪同一个条目的值）。如果你不能确保矩阵条目只被设置一次，那么在插入元素之前，用稀疏模式初始化矩阵，固定矩阵结构。
      *
-     * This function is able to insert new elements into the matrix as long as
-     * compress() has not been called, so the sparsity pattern will be
-     * extended. After compress() has been called for the first time or the
-     * matrix has been initialized from a sparsity pattern, extending the
-     * sparsity pattern is no longer possible and an insertion of elements at
-     * positions which have not been initialized will throw an exception.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be inserted anyway or they should be
-     * filtered away. The default value is <tt>false</tt>, i.e., even zero
-     * values are inserted/replaced.
-     *
-     * For the case that the matrix is constructed without a sparsity pattern
-     * and new matrix entries are added on demand, please note the following
-     * behavior imposed by the underlying Epetra_FECrsMatrix data structure:
-     * If the same matrix entry is inserted more than once, the matrix entries
-     * will be added upon calling compress() (since Epetra does not track
-     * values to the same entry before the final compress() is called), even
-     * if VectorOperation::insert is specified as argument to compress(). In
-     * the case you cannot make sure that matrix entries are only set once,
-     * initialize the matrix with a sparsity pattern to fix the matrix
-     * structure before inserting elements.
      */
     template <typename Number>
     void
@@ -1142,34 +919,20 @@ namespace TrilinosWrappers
         const bool       elide_zero_values = false);
 
     /**
-     * Add @p value to the element (<i>i,j</i>).
+     * 在元素（<i>i,j</i>）上添加 @p value 。        就像deal.II
+     * SparseMatrix<Number>类中的相应调用一样（但与基于PETSc的矩阵的情况不同），如果稀疏模式中不存在一个条目，这个函数会抛出一个异常。
+     * 此外，如果<tt>value</tt>不是一个有限的数字，也会抛出一个异常。
      *
-     * Just as the respective call in deal.II SparseMatrix<Number> class (but
-     * in contrast to the situation for PETSc based matrices), this function
-     * throws an exception if an entry does not exist in the sparsity pattern.
-     * Moreover, if <tt>value</tt> is not a finite number an exception is
-     * thrown.
      */
     void
     add(const size_type i, const size_type j, const TrilinosScalar value);
 
     /**
-     * Add all elements given in a FullMatrix<double> into sparse matrix
-     * locations given by <tt>indices</tt>. In other words, this function adds
-     * the elements in <tt>full_matrix</tt> to the respective entries in
-     * calling matrix, using the local-to-global indexing specified by
-     * <tt>indices</tt> for both the rows and the columns of the matrix. This
-     * function assumes a quadratic sparse matrix and a quadratic full_matrix,
-     * the usual situation in FE calculations.
+     * 将FullMatrix<double>中给出的所有元素添加到由<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素添加到调用矩阵的相应条目中，使用<tt>indices</tt>为矩阵的行和列指定的本地到全球索引。这个函数假设了一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中的通常情况。
+     * 就像deal.II
+     * SparseMatrix<Number>类中的相应调用一样（但与基于PETSc的矩阵的情况不同），如果稀疏模式中不存在一个条目，这个函数会抛出一个异常。
+     * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
      *
-     * Just as the respective call in deal.II SparseMatrix<Number> class (but
-     * in contrast to the situation for PETSc based matrices), this function
-     * throws an exception if an entry does not exist in the sparsity pattern.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be added anyway or these should be
-     * filtered away and only non-zero data is added. The default value is
-     * <tt>true</tt>, i.e., zero values won't be added into the matrix.
      */
     void
     add(const std::vector<size_type> &    indices,
@@ -1177,9 +940,8 @@ namespace TrilinosWrappers
         const bool                        elide_zero_values = true);
 
     /**
-     * Same function as before, but now including the possibility to use
-     * rectangular full_matrices and different local-to-global indexing on
-     * rows and columns, respectively.
+     * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
+     *
      */
     void
     add(const std::vector<size_type> &    row_indices,
@@ -1188,17 +950,11 @@ namespace TrilinosWrappers
         const bool                        elide_zero_values = true);
 
     /**
-     * Set several elements in the specified row of the matrix with column
-     * indices as given by <tt>col_indices</tt> to the respective value.
+     * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
+     * 就像deal.II
+     * SparseMatrix<Number>类中的相应调用一样（但与基于PETSc的矩阵的情况不同），如果稀疏模式中不存在一个条目，这个函数会抛出一个异常。
+     * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
      *
-     * Just as the respective call in deal.II SparseMatrix<Number> class (but
-     * in contrast to the situation for PETSc based matrices), this function
-     * throws an exception if an entry does not exist in the sparsity pattern.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be added anyway or these should be
-     * filtered away and only non-zero data is added. The default value is
-     * <tt>true</tt>, i.e., zero values won't be added into the matrix.
      */
     void
     add(const size_type                    row,
@@ -1207,17 +963,11 @@ namespace TrilinosWrappers
         const bool                         elide_zero_values = true);
 
     /**
-     * Add an array of values given by <tt>values</tt> in the given global
-     * matrix row at columns specified by col_indices in the sparse matrix.
+     * 在给定的全局矩阵行中，在稀疏矩阵中由col_indices指定的列中添加一个由<tt>values</tt>给出的数值阵列。
+     * 就像deal.II
+     * SparseMatrix<Number>类中的相应调用一样（但与基于PETSc的矩阵的情况不同），如果在稀疏模式中不存在条目，这个函数会抛出一个异常。
+     * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
      *
-     * Just as the respective call in deal.II SparseMatrix<Number> class (but
-     * in contrast to the situation for PETSc based matrices), this function
-     * throws an exception if an entry does not exist in the sparsity pattern.
-     *
-     * The optional parameter <tt>elide_zero_values</tt> can be used to
-     * specify whether zero values should be added anyway or these should be
-     * filtered away and only non-zero data is added. The default value is
-     * <tt>true</tt>, i.e., zero values won't be added into the matrix.
      */
     void
     add(const size_type       row,
@@ -1228,178 +978,109 @@ namespace TrilinosWrappers
         const bool            col_indices_are_sorted = false);
 
     /**
-     * Multiply the entire matrix by a fixed factor.
+     * 将整个矩阵乘以一个固定系数。
+     *
      */
     SparseMatrix &
     operator*=(const TrilinosScalar factor);
 
     /**
-     * Divide the entire matrix by a fixed factor.
+     * 用整个矩阵除以一个固定系数。
+     *
      */
     SparseMatrix &
     operator/=(const TrilinosScalar factor);
 
     /**
-     * Copy the given (Trilinos) matrix (sparsity pattern and entries).
+     * 复制给定的（Trilinos）矩阵（稀疏模式和条目）。
+     *
      */
     void
     copy_from(const SparseMatrix &source);
 
     /**
-     * Add <tt>matrix</tt> scaled by <tt>factor</tt> to this matrix, i.e. the
-     * matrix <tt>factor*matrix</tt> is added to <tt>this</tt>. If the
-     * sparsity pattern of the calling matrix does not contain all the
-     * elements in the sparsity pattern of the input matrix, this function
-     * will throw an exception.
+     * 将<tt>matrix</tt>按<tt>factor</tt>的比例添加到该矩阵中，即<tt>factor*matrix</tt>的矩阵被添加到<tt>this</tt>。如果调用矩阵的稀疏性模式不包含输入矩阵的稀疏性模式中的所有元素，这个函数将抛出一个异常。
+     *
      */
     void
     add(const TrilinosScalar factor, const SparseMatrix &matrix);
 
     /**
-     * Remove all elements from this <tt>row</tt> by setting them to zero. The
-     * function does not modify the number of allocated nonzero entries, it
-     * only sets the entries to zero.
+     * 将此<tt>行</tt>中的所有元素设置为零，将其删除。这个函数并不修改分配的非零条目的数量，它只是将这些条目设置为零。
+     * 这个操作用于消除约束（例如由于挂起的节点），并确保我们可以将这个修改写入矩阵，而不必从矩阵中读取条目（例如非零元素的位置）&mdash；如果没有这个操作，消除%并行矩阵的约束是一个相当复杂的程序。
+     * 第二个参数可以用来将该行的对角线条目设置为一个不同于零的值。默认是将其设置为零。
+     * @note
+     * 如果矩阵是使用MPI在多个处理器之间并行存储的，这个函数只触及本地存储的行，而简单地忽略所有其他行的索引。此外，在并行计算的背景下，如果你清除了某一行，而其他处理器对同一行仍有待处理的写入或添加，你会陷入麻烦。换句话说，如果另一个处理器仍然想向某行的某个元素添加东西，而你调用这个函数将该行清零，那么你下次调用compress()时可能会将远程值添加到你刚刚创建的零上。因此，你要在对矩阵进行最后一次修改后，在开始清空行之前调用compress()。
      *
-     * This operation is used in eliminating constraints (e.g. due to hanging
-     * nodes) and makes sure that we can write this modification to the matrix
-     * without having to read entries (such as the locations of non-zero
-     * elements) from it &mdash; without this operation, removing constraints
-     * on %parallel matrices is a rather complicated procedure.
-     *
-     * The second parameter can be used to set the diagonal entry of this row
-     * to a value different from zero. The default is to set it to zero.
-     *
-     * @note If the matrix is stored in parallel across multiple processors
-     * using MPI, this function only touches rows that are locally stored and
-     * simply ignores all other row indices. Further, in the context of
-     * parallel computations, you will get into trouble if you clear a row
-     * while other processors still have pending writes or additions into the
-     * same row. In other words, if another processor still wants to add
-     * something to an element of a row and you call this function to zero out
-     * the row, then the next time you call compress() may add the remote
-     * value to the zero you just created. Consequently, you will want to call
-     * compress() after you made the last modifications to a matrix and before
-     * starting to clear rows.
      */
     void
     clear_row(const size_type row, const TrilinosScalar new_diag_value = 0);
 
     /**
-     * Same as clear_row(), except that it works on a number of rows at once.
+     * 与clear_row()相同，不同的是，它一次对若干行进行操作。
+     * 第二个参数可以用来将所有被清除的行的对角线项设置为不同于0的内容。请注意，所有这些对角线项都得到相同的值
      *
-     * The second parameter can be used to set the diagonal entries of all
-     * cleared rows to something different from zero. Note that all of these
-     * diagonal entries get the same value -- if you want different values for
-     * the diagonal entries, you have to set them by hand.
+     * - 如果你想要不同的对角线条目的值，你必须手动设置它们。
+     * @note
+     * 如果矩阵是用MPI在多个处理器之间并行存储的，这个函数只触及本地存储的行，而简单地忽略所有其他行的索引。此外，在并行计算的背景下，如果你清除了某一行，而其他处理器对同一行仍有待处理的写入或添加，你会陷入麻烦。换句话说，如果另一个处理器仍然想向某行的某个元素添加东西，而你调用这个函数将该行清零，那么你下次调用compress()时可能会将远程值添加到你刚刚创建的零上。因此，你要在对矩阵进行最后一次修改后，在开始清空行之前调用compress()。
      *
-     * @note If the matrix is stored in parallel across multiple processors
-     * using MPI, this function only touches rows that are locally stored and
-     * simply ignores all other row indices. Further, in the context of
-     * parallel computations, you will get into trouble if you clear a row
-     * while other processors still have pending writes or additions into the
-     * same row. In other words, if another processor still wants to add
-     * something to an element of a row and you call this function to zero out
-     * the row, then the next time you call compress() may add the remote
-     * value to the zero you just created. Consequently, you will want to call
-     * compress() after you made the last modifications to a matrix and before
-     * starting to clear rows.
      */
     void
     clear_rows(const std::vector<size_type> &rows,
                const TrilinosScalar          new_diag_value = 0);
 
     /**
-     * Sets an internal flag so that all operations performed by the matrix,
-     * i.e., multiplications, are done in transposed order. However, this does
-     * not reshape the matrix to transposed form directly, so care should be
-     * taken when using this flag.
+     * 设置一个内部标志，使矩阵进行的所有操作，即乘法，都以转置的顺序进行。然而，这并不能直接将矩阵重塑为转置的形式，所以在使用这个标志时应该注意。
+     * @note
+     * 连续调用此函数的任何偶数次，都将使对象返回到其原始状态。
      *
-     * @note Calling this function any even number of times in succession will
-     * return the object to its original state.
      */
     void
     transpose();
 
     //@}
     /**
-     * @name Entry Access
+     * @name  入口访问
+     *
      */
     //@{
 
     /**
-     * Return the value of the entry (<i>i,j</i>).  This may be an expensive
-     * operation and you should always take care where to call this function.
-     * As in the deal.II sparse matrix class, we throw an exception if the
-     * respective entry doesn't exist in the sparsity pattern of this class,
-     * which is requested from Trilinos. Moreover, an exception will be thrown
-     * when the requested element is not saved on the calling process.
+     * 返回条目的值（<i>i,j</i>）。
+     * 这可能是一个昂贵的操作，你应该始终注意在哪里调用这个函数。
+     * 正如在deal.II稀疏矩阵类中，如果相应的条目不存在于该类的稀疏模式中，我们会抛出一个异常，这是从Trilinos中请求的。此外，如果要求的元素没有保存在调用过程中，也会抛出一个异常。
+     *
      */
     TrilinosScalar
     operator()(const size_type i, const size_type j) const;
 
     /**
-     * Return the value of the matrix entry (<i>i,j</i>). If this entry does
-     * not exist in the sparsity pattern, then zero is returned. While this
-     * may be convenient in some cases, note that it is simple to write
-     * algorithms that are slow compared to an optimal solution, since the
-     * sparsity of the matrix is not used.  On the other hand, if you want to
-     * be sure the entry exists, you should use operator() instead.
+     * 返回矩阵条目的值（<i>i,j</i>）。如果这个条目在稀疏模式中不存在，那么将返回0。虽然这在某些情况下可能很方便，但请注意，由于没有使用矩阵的稀疏性，写出的算法与最优解相比很简单，很慢。
+     * 另一方面，如果你想确定条目存在，你应该使用operator()来代替。
+     * 如果你有一个并行的矩阵，这个函数中缺乏错误检查，也会产生令人惊讶的结果。在这种情况下，你从这个函数中得到一个零的结果，并不意味着该条目在稀疏模式中不存在，或者它存在但数值为零。相反，也可能是它根本就没有存储在当前的处理器上；在这种情况下，它可能被存储在另一个处理器上，而且可能是以非零值存储的。
      *
-     * The lack of error checking in this function can also yield surprising
-     * results if you have a parallel matrix. In that case, just because you
-     * get a zero result from this function does not mean that either the
-     * entry does not exist in the sparsity pattern or that it does but has a
-     * value of zero. Rather, it could also be that it simply isn't stored on
-     * the current processor; in that case, it may be stored on a different
-     * processor, and possibly so with a nonzero value.
      */
     TrilinosScalar
     el(const size_type i, const size_type j) const;
 
     /**
-     * Return the main diagonal element in the <i>i</i>th row. This function
-     * throws an error if the matrix is not quadratic and it also throws an
-     * error if <i>(i,i)</i> is not element of the local matrix.  See also the
-     * comment in trilinos_sparse_matrix.cc.
+     * 返回第<i>i</i>行的主对角线元素。如果矩阵不是二次方的，这个函数会抛出一个错误，如果<i>(i,i)</i>不是本地矩阵的元素，它也会抛出一个错误。
+     * 参见trilinos_sparse_matrix.cc中的注释。
+     *
      */
     TrilinosScalar
     diag_element(const size_type i) const;
 
     //@}
     /**
-     * @name Multiplications
+     * @name  乘法运算
+     *
      */
     //@{
 
     /**
-     * Matrix-vector multiplication: let <i>dst = M*src</i> with <i>M</i>
-     * being this matrix.
+     * 矩阵-向量乘法：让<i>dst = M*src</i>与<i>M</i>为该矩阵。        源和目的不能是同一个向量。        这个函数可以用几种类型的向量对象来调用，即 @p VectorType 可以是 <ul>   <li>   TrilinosWrappers::MPI::Vector,   <li>   LinearAlgebra::EpetraWrappers::Vector,   <li>   LinearAlgebra::TpetraWrappers::Vector,   <li>  Vector<double>， <li>   LinearAlgebra::distributed::Vector<double>.   </ul>  当使用类型为 TrilinosWrappers::MPI::Vector,  ]的向量 @p dst 必须用用于矩阵行索引的相同IndexSet进行初始化，向量 @p src 必须用用于矩阵列索引的相同IndexSet进行初始化。        当矩阵对象和向量对象的底层数字类型相同时，这个函数将被调用。    尽管看起来很复杂，但其返回类型只是 "void"。        如果是一个串行向量，这个函数只有在一个处理器上运行时才会起作用，因为矩阵对象本身就是分布的。否则，会产生一个异常。
      *
-     * Source and destination must not be the same vector.
-     *
-     * This function can be called with several types of vector objects,
-     * namely @p VectorType can be
-     * <ul>
-     * <li> TrilinosWrappers::MPI::Vector,
-     * <li> LinearAlgebra::EpetraWrappers::Vector,
-     * <li> LinearAlgebra::TpetraWrappers::Vector,
-     * <li> Vector<double>,
-     * <li> LinearAlgebra::distributed::Vector<double>.
-     * </ul>
-     *
-     * When using vectors of type TrilinosWrappers::MPI::Vector, the vector
-     * @p dst has to be initialized with the same IndexSet that was used for
-     * the row indices of the matrix and the vector @p src has to be
-     * initialized with the same IndexSet that was used for the column indices
-     * of the matrix.
-     *
-     * This function will be called when the underlying number type for the
-     * matrix object and the one for the vector object are the same.
-     * Despite looking complicated, the return type is just `void`.
-     *
-     * In case of a serial vector, this function will only work when
-     * running on one processor, since the matrix object is inherently
-     * distributed. Otherwise, an exception will be thrown.
      */
     template <typename VectorType>
     typename std::enable_if<std::is_same<typename VectorType::value_type,
@@ -1407,10 +1088,10 @@ namespace TrilinosWrappers
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Same as the function above for the case that the underlying number type
-     * for the matrix object and the one for the vector object do not coincide.
-     * This case is not implemented. Calling it will result in a runtime error.
-     * Despite looking complicated, the return type is just `void`.
+     * 与上面的函数相同，适用于矩阵对象的底层数字类型和向量对象的数字类型不一致的情况。
+     * 这种情况没有实现。调用它将导致一个运行时错误。
+     * 尽管看起来很复杂，但其返回类型只是 "void"。
+     *
      */
     template <typename VectorType>
     typename std::enable_if<!std::is_same<typename VectorType::value_type,
@@ -1418,18 +1099,14 @@ namespace TrilinosWrappers
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Matrix-vector multiplication: let <i>dst = M<sup>T</sup>*src</i> with
-     * <i>M</i> being this matrix. This function does the same as vmult() but
-     * takes the transposed matrix.
+     * 矩阵-向量乘法：让<i>dst =
+     * M<sup>T</sup>*src</i>与<i>M</i>是这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
+     * 源和目的不能是同一个向量。
+     * 这个函数可以用几种类型的向量对象调用，见vmult()中关于
+     * @p VectorType 的讨论。
+     * 当矩阵对象的底层数字类型和向量对象的底层数字类型相同时，该函数将被调用。
+     * 尽管看起来很复杂，但其返回类型只是 "void"。
      *
-     * Source and destination must not be the same vector.
-     *
-     * This function can be called with several types of vector objects,
-     * see the discussion about @p VectorType in vmult().
-     *
-     * This function will be called when the underlying number type for the
-     * matrix object and the one for the vector object are the same.
-     * Despite looking complicated, the return type is just `void`.
      */
     template <typename VectorType>
     typename std::enable_if<std::is_same<typename VectorType::value_type,
@@ -1437,10 +1114,10 @@ namespace TrilinosWrappers
     Tvmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Same as the function above for the case that the underlying number type
-     * for the matrix object and the one for the vector object do not coincide.
-     * This case is not implemented. Calling it will result in a runtime error.
-     * Despite looking complicated, the return type is just `void`.
+     * 与上面的函数相同，适用于矩阵对象的底层数字类型和向量对象的底层数字类型不一致的情况。
+     * 这种情况没有实现。调用它将导致一个运行时错误。
+     * 尽管看起来很复杂，但其返回类型只是 "void"。
+     *
      */
     template <typename VectorType>
     typename std::enable_if<!std::is_same<typename VectorType::value_type,
@@ -1448,93 +1125,65 @@ namespace TrilinosWrappers
     Tvmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Adding matrix-vector multiplication. Add <i>M*src</i> on <i>dst</i>
-     * with <i>M</i> being this matrix.
+     * 添加矩阵-向量的乘法。在<i>dst</i>上添加<i>M*src</i>，<i>M</i>为该矩阵。
+     * 源和目的不能是同一个向量。
+     * 这个函数可以用几种类型的向量对象调用，见vmult()中关于
+     * @p VectorType 的讨论。
      *
-     * Source and destination must not be the same vector.
-     *
-     * This function can be called with several types of vector objects,
-     * see the discussion about @p VectorType in vmult().
      */
     template <typename VectorType>
     void
     vmult_add(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Adding matrix-vector multiplication. Add <i>M<sup>T</sup>*src</i> to
-     * <i>dst</i> with <i>M</i> being this matrix. This function does the same
-     * as vmult_add() but takes the transposed matrix.
+     * 添加矩阵-向量的乘法。将<i>M<sup>T</sup>*src</i>加到<i>dst</i>，<i>M</i>是这个矩阵。这个函数的作用与vmult_add()相同，但取的是转置的矩阵。
+     * 来源和目的地不能是同一个向量。
+     * 这个函数可以用几种类型的向量对象调用，见vmult()中关于
+     * @p VectorType 的讨论。
      *
-     * Source and destination must not be the same vector.
-     *
-     * This function can be called with several types of vector objects,
-     * see the discussion about @p VectorType in vmult().
      */
     template <typename VectorType>
     void
     Tvmult_add(VectorType &dst, const VectorType &src) const;
 
     /**
-     * Return the square of the norm of the vector $v$ with respect to the
-     * norm induced by this matrix, i.e., $\left(v,Mv\right)$. This is useful,
-     * e.g. in the finite element context, where the $L_2$ norm of a function
-     * equals the matrix norm with respect to the mass matrix of the vector
-     * representing the nodal values of the finite element function.
+     * 返回向量 $v$ 相对于该矩阵引起的规范的平方，即
+     * $\left(v,Mv\right)$
+     * 。这很有用，例如在有限元背景下，一个函数的 $L_2$
+     * 规范等于相对于代表有限元函数节点值的向量的质量矩阵的矩阵规范。
+     * 很明显，对于这个操作，矩阵需要是二次的。
+     * 这个函数的实现没有deal.II中使用的 @p SparseMatrix
+     * 类（即原始的，而不是Trilinos包装类）的效率高，因为Trilinos不支持这个操作，需要一个临时向量。
+     * 矢量必须用矩阵初始化的相同IndexSet进行初始化。
+     * 如果是一个本地化的Vector，这个函数只有在一个处理器上运行时才会起作用，因为矩阵对象本身就是分布的。否则，将抛出一个异常。
      *
-     * Obviously, the matrix needs to be quadratic for this operation.
-     *
-     * The implementation of this function is not as efficient as the one in
-     * the @p SparseMatrix class used in deal.II (i.e. the original one, not
-     * the Trilinos wrapper class) since Trilinos doesn't support this
-     * operation and needs a temporary vector.
-     *
-     * The vector has to be initialized with the same IndexSet the matrix
-     * was initialized with.
-     *
-     * In case of a localized Vector, this function will only work when
-     * running on one processor, since the matrix object is inherently
-     * distributed. Otherwise, an exception will be thrown.
      */
     TrilinosScalar
     matrix_norm_square(const MPI::Vector &v) const;
 
     /**
-     * Compute the matrix scalar product $\left(u,Mv\right)$.
+     * 计算矩阵标量乘积  $\left(u,Mv\right)$  。
+     * 这个函数的实现没有deal.II中使用的 @p SparseMatrix
+     * 类（即原始的，而不是Trilinos包装类）的效率高，因为Trilinos不支持这个操作，需要一个临时矢量。
+     * 矢量 @p u
+     * 必须用用于矩阵行索引的相同IndexSet进行初始化，矢量
+     * @p v 必须用用于矩阵列索引的相同IndexSet进行初始化。
+     * 如果是一个本地化的Vector，这个函数只有在一个处理器上运行时才会起作用，因为矩阵对象本身是分布式的。否则，将抛出一个异常。
+     * 这个函数只对方形矩阵实现。
      *
-     * The implementation of this function is not as efficient as the one in
-     * the @p SparseMatrix class used in deal.II (i.e. the original one, not
-     * the Trilinos wrapper class) since Trilinos doesn't support this
-     * operation and needs a temporary vector.
-     *
-     * The vector @p u has to be initialized with the same IndexSet that
-     * was used for the row indices of the matrix and the vector @p v has
-     * to be initialized with the same IndexSet that was used for the
-     * column indices of the matrix.
-     *
-     * In case of a localized Vector, this function will only work when
-     * running on one processor, since the matrix object is inherently
-     * distributed. Otherwise, an exception will be thrown.
-     *
-     * This function is only implemented for square matrices.
      */
     TrilinosScalar
     matrix_scalar_product(const MPI::Vector &u, const MPI::Vector &v) const;
 
     /**
-     * Compute the residual of an equation <i>Mx=b</i>, where the residual is
-     * defined to be <i>r=b-Mx</i>. Write the residual into @p dst. The
-     * <i>l<sub>2</sub></i> norm of the residual vector is returned.
+     * 计算方程<i>Mx=b</i>的残差，其中残差被定义为<i>r=b-Mx</i>。将残差写入
+     * @p dst.  返回残差向量的<i>l<sub>2</sub></i>准则。
+     * 源<i>x</i>和目的<i>dst</i>不能是同一个向量。        向量
+     * @p dst 和 @p b
+     * 必须用用于矩阵行索引的相同IndexSet进行初始化，向量
+     * @p x 必须用用于矩阵列索引的相同IndexSet进行初始化。
+     * 如果是一个本地化的Vector，这个函数只有在一个处理器上运行时才会起作用，因为矩阵对象本身是分布式的。否则，将抛出一个异常。
      *
-     * Source <i>x</i> and destination <i>dst</i> must not be the same vector.
-     *
-     * The vectors @p dst and @p b have to be initialized with the same
-     * IndexSet that was used for the row indices of the matrix and the vector
-     * @p x has to be initialized with the same IndexSet that was used for the
-     * column indices of the matrix.
-     *
-     * In case of a localized Vector, this function will only work when
-     * running on one processor, since the matrix object is inherently
-     * distributed. Otherwise, an exception will be thrown.
      */
     TrilinosScalar
     residual(MPI::Vector &      dst,
@@ -1542,18 +1191,13 @@ namespace TrilinosWrappers
              const MPI::Vector &b) const;
 
     /**
-     * Perform the matrix-matrix multiplication <tt>C = A * B</tt>, or, if an
-     * optional vector argument is given, <tt>C = A * diag(V) * B</tt>, where
-     * <tt>diag(V)</tt> defines a diagonal matrix with the vector entries.
+     * 执行矩阵-矩阵乘法<tt>C = A
+     * B</tt>，或者，如果给出一个可选的矢量参数，<tt>C = A
+     * diag(V)
+     * B</tt>，其中<tt>diag(V)</tt>定义了一个带有矢量条目的对角矩阵。
+     * 这个函数假定调用矩阵<tt>A</tt>和<tt>B</tt>的大小是兼容的。<tt>C</tt>的大小将在本函数中设置。
+     * 矩阵C的内容和稀疏模式将被这个函数改变，所以要确保稀疏模式没有在你的程序中其他地方使用。这是一个昂贵的操作，所以在使用这个函数之前请三思。
      *
-     * This function assumes that the calling matrix <tt>A</tt> and <tt>B</tt>
-     * have compatible sizes. The size of <tt>C</tt> will be set within this
-     * function.
-     *
-     * The content as well as the sparsity pattern of the matrix C will be
-     * changed by this function, so make sure that the sparsity pattern is not
-     * used somewhere else in your program. This is an expensive operation, so
-     * think twice before you use this function.
      */
     void
     mmult(SparseMatrix &      C,
@@ -1562,20 +1206,14 @@ namespace TrilinosWrappers
 
 
     /**
-     * Perform the matrix-matrix multiplication with the transpose of
-     * <tt>this</tt>, i.e., <tt>C = A<sup>T</sup> * B</tt>, or, if an optional
-     * vector argument is given, <tt>C = A<sup>T</sup> * diag(V) * B</tt>,
-     * where <tt>diag(V)</tt> defines a diagonal matrix with the vector
-     * entries.
+     * 用<tt>this</tt>的转置进行矩阵-矩阵相乘，即<tt>C =
+     * A<sup>T</sup>
+     * B</tt>，或者，如果给出了可选的矢量参数，<tt>C =
+     * A<sup>T</sup> diag(V)
+     * B</tt>，其中<tt>diag(V)</tt>定义了一个带有矢量项的对角矩阵。
+     * 这个函数假定调用矩阵<tt>A</tt>和<tt>B</tt>的大小兼容。<tt>C</tt>的大小将在本函数中设置。
+     * 矩阵C的内容和稀疏模式将被这个函数改变，所以要确保稀疏模式没有在你的程序中其他地方使用。这是一个昂贵的操作，所以在使用这个函数之前请三思。
      *
-     * This function assumes that the calling matrix <tt>A</tt> and <tt>B</tt>
-     * have compatible sizes. The size of <tt>C</tt> will be set within this
-     * function.
-     *
-     * The content as well as the sparsity pattern of the matrix C will be
-     * changed by this function, so make sure that the sparsity pattern is not
-     * used somewhere else in your program. This is an expensive operation, so
-     * think twice before you use this function.
      */
     void
     Tmmult(SparseMatrix &      C,
@@ -1584,54 +1222,60 @@ namespace TrilinosWrappers
 
     //@}
     /**
-     * @name Matrix norms
+     * @name  矩阵规范
+     *
      */
     //@{
 
     /**
-     * Return the <i>l</i><sub>1</sub>-norm of the matrix, that is $|M|_1=
+     * 返回矩阵的<i>l</i><sub>1</sub>规范，即 $|M|_1=
      * \max_{\mathrm{all\ columns\ } j} \sum_{\mathrm{all\ rows\ } i}
-     * |M_{ij}|$, (max. sum of columns).  This is the natural matrix norm that
-     * is compatible to the l1-norm for vectors, i.e.  $|Mv|_1 \leq |M|_1
-     * |v|_1$.  (cf. Haemmerlin-Hoffmann: Numerische Mathematik)
+     * |M_{ij}|$  ，（最大列之和）。
+     * 这是自然的矩阵准则，与向量的l1准则兼容，即 $|Mv|_1
+     * \leq |M|_1 |v|_1$  。 (参看Haemmerlin-Hoffmann: Numerische
+     * Mathematik)
+     *
      */
     TrilinosScalar
     l1_norm() const;
 
     /**
-     * Return the linfty-norm of the matrix, that is
-     * $|M|_\infty=\max_{\mathrm{all\ rows\ } i}\sum_{\mathrm{all\ columns\ }
-     * j} |M_{ij}|$, (max. sum of rows).  This is the natural matrix norm that
-     * is compatible to the linfty-norm of vectors, i.e.  $|Mv|_\infty \leq
-     * |M|_\infty |v|_\infty$.  (cf. Haemmerlin-Hoffmann: Numerische
-     * Mathematik)
+     * 返回矩阵的linfty-norm，即 $|M|_\infty=\max_{\mathrm{all\ rows\ }
+     * i}\sum_{\mathrm{all\ columns\ } j} |M_{ij}|$  , (行的最大和)。
+     * 这是一个自然的矩阵规范，与向量的linfty-norm兼容，即
+     * $|Mv|_\infty \leq |M|_\infty |v|_\infty$  。
+     * (参看Haemmerlin-Hoffmann: Numerische Mathematik)
+     *
      */
     TrilinosScalar
     linfty_norm() const;
 
     /**
-     * Return the frobenius norm of the matrix, i.e. the square root of the
-     * sum of squares of all entries in the matrix.
+     * 返回矩阵的frobenius
+     * norm，即矩阵中所有条目的平方之和的平方根。
+     *
      */
     TrilinosScalar
     frobenius_norm() const;
 
     //@}
     /**
-     * @name Access to underlying Trilinos data
+     * @name  访问底层Trilinos数据
+     *
      */
     //@{
 
     /**
-     * Return a const reference to the underlying Trilinos Epetra_CrsMatrix
-     * data.
+     * 返回对底层Trilinos Epetra_CrsMatrix数据的一个常量引用。
+     *
      */
     const Epetra_CrsMatrix &
     trilinos_matrix() const;
 
     /**
-     * Return a const reference to the underlying Trilinos Epetra_CrsGraph
-     * data that stores the sparsity pattern of the matrix.
+     * 返回一个对底层Trilinos
+     * Epetra_CrsGraph数据的常量引用，该数据存储了矩阵的稀疏性模式。
+     *
      */
     const Epetra_CrsGraph &
     trilinos_sparsity_pattern() const;
@@ -1639,21 +1283,21 @@ namespace TrilinosWrappers
     //@}
 
     /**
-     * @name Partitioners
+     * @name  分割器
+     *
      */
     //@{
 
     /**
-     * Return the partitioning of the domain space of this matrix, i.e., the
-     * partitioning of the vectors this matrix has to be multiplied with.
+     * 返回该矩阵的域空间的分区，即该矩阵要与之相乘的向量的分区。
+     *
      */
     IndexSet
     locally_owned_domain_indices() const;
 
     /**
-     * Return the partitioning of the range space of this matrix, i.e., the
-     * partitioning of the vectors that are result from matrix-vector
-     * products.
+     * 返回该矩阵的范围空间的划分，即由矩阵-向量乘积产生的向量的划分。
+     *
      */
     IndexSet
     locally_owned_range_indices() const;
@@ -1661,125 +1305,97 @@ namespace TrilinosWrappers
     //@}
 
     /**
-     * @name Iterators
+     * @name  迭代器
+     *
      */
     //@{
 
     /**
-     * Return an iterator pointing to the first element of the matrix.
+     * 返回一个指向矩阵的第一个元素的迭代器。
+     * 迭代器在每一行中访问的元素是按照Trilinos的存储方式来排序的，尽管实现上保证了一行的所有元素在下一行的元素之前被访问。如果你的算法依赖于访问一行中的元素，你将需要咨询Trilinos文档，了解它存储数据的顺序。然而，如果你对元素进行迭代，依靠接收元素的顺序通常不是一个好的和长期稳定的想法。
+     * 当你遍历一个并行矩阵的元素时，你将只能访问本地拥有的行。(你也可以访问其他行，但它们看起来是空的。)在这种情况下，你可能想调用begin()函数，该函数将行作为一个参数，以限制要循环的元素范围。
      *
-     * The elements accessed by iterators within each row are ordered in the
-     * way in which Trilinos stores them, though the implementation guarantees
-     * that all elements of one row are accessed before the elements of the
-     * next row. If your algorithm relies on visiting elements within one row,
-     * you will need to consult with the Trilinos documentation on the order
-     * in which it stores data. It is, however, generally not a good and long-
-     * term stable idea to rely on the order in which receive elements if you
-     * iterate over them.
-     *
-     * When you iterate over the elements of a parallel matrix, you will only
-     * be able to access the locally owned rows. (You can access the other
-     * rows as well, but they will look empty.) In that case, you probably
-     * want to call the begin() function that takes the row as an argument to
-     * limit the range of elements to loop over.
      */
     const_iterator
     begin() const;
 
     /**
-     * Like the function above, but for non-const matrices.
+     * 像上面的函数一样，但对于非恒定矩阵。
+     *
      */
     iterator
     begin();
 
     /**
-     * Return an iterator pointing the element past the last one of this
-     * matrix.
+     * 返回一个迭代器，指向这个矩阵的最后一个以上的元素。
+     *
      */
     const_iterator
     end() const;
 
     /**
-     * Like the function above, but for non-const matrices.
+     * 像上面的函数一样，但对于非静态矩阵。
+     *
      */
     iterator
     end();
 
     /**
-     * Return an iterator pointing to the first element of row @p r.
+     * 返回一个指向行 @p r. 第一个元素的迭代器
+     * 注意，如果给定的行是空的，即不包含任何非零条目，那么这个函数返回的迭代器就等于<tt>end(r)</tt>。在这种情况下，如果行
+     * @p r
+     * 和下面的任何一行都不包含任何非零条目，那么返回的迭代器可能无法被解除引用。
+     * 迭代器在每一行中访问的元素是按照Trilinos的存储方式排序的，尽管实现上保证了一行的所有元素在下一行的元素之前被访问。如果你的算法依赖于访问一行中的元素，你将需要咨询Trilinos文档，了解它存储数据的顺序。然而，如果你对元素进行迭代，依靠接收元素的顺序通常不是一个好的和长期稳定的想法。
+     * @note
+     * 当你访问一个并行矩阵的元素时，你只能访问实际存储在本地的行的元素。(你也可以访问其他行，但它们看起来是空的。)即使如此，如果另一个处理器后来写进或增加了存储在当前处理器上的矩阵元素，那么你仍然会看到这个条目的旧值，除非你在远程处理器上修改矩阵元素和在当前处理器上访问它之间调用compress()。更多信息请参见compress()函数的文档。
      *
-     * Note that if the given row is empty, i.e. does not contain any nonzero
-     * entries, then the iterator returned by this function equals
-     * <tt>end(r)</tt>. The returned iterator may not be dereferenceable in
-     * that case if neither row @p r nor any of the following rows contain any
-     * nonzero entries.
-     *
-     * The elements accessed by iterators within each row are ordered in the
-     * way in which Trilinos stores them, though the implementation guarantees
-     * that all elements of one row are accessed before the elements of the
-     * next row. If your algorithm relies on visiting elements within one row,
-     * you will need to consult with the Trilinos documentation on the order
-     * in which it stores data. It is, however, generally not a good and long-
-     * term stable idea to rely on the order in which receive elements if you
-     * iterate over them.
-     *
-     * @note When you access the elements of a parallel matrix, you can only
-     * access the elements of rows that are actually stored locally. (You can
-     * access the other rows as well, but they will look empty.) Even then, if
-     * another processor has since written into, or added to, an element of
-     * the matrix that is stored on the current processor, then you will still
-     * see the old value of this entry unless you have called compress()
-     * between modifying the matrix element on the remote processor and
-     * accessing it on the current processor. See the documentation of the
-     * compress() function for more information.
      */
     const_iterator
     begin(const size_type r) const;
 
     /**
-     * Like the function above, but for non-const matrices.
+     * 像上面的函数一样，但是对于非恒定矩阵。
+     *
      */
     iterator
     begin(const size_type r);
 
     /**
-     * Return an iterator pointing the element past the last one of row @p r ,
-     * or past the end of the entire sparsity pattern if none of the rows
-     * after @p r contain any entries at all.
+     * 返回一个指向第 @p r
+     * 行最后一个元素的迭代器，如果第 @p r
+     * 行之后没有任何条目，则指向整个稀疏模式的末端。
+     * 请注意，结束迭代器不一定是可被解读的。特别是如果它是一个矩阵的最后一行的结束迭代器，情况更是如此。
      *
-     * Note that the end iterator is not necessarily dereferenceable. This is
-     * in particular the case if it is the end iterator for the last row of a
-     * matrix.
      */
     const_iterator
     end(const size_type r) const;
 
     /**
-     * Like the function above, but for non-const matrices.
+     * 像上面的函数一样，但是对于非恒定矩阵。
+     *
      */
     iterator
     end(const size_type r);
 
     //@}
     /**
-     * @name Input/Output
+     * @name  输入/输出
+     *
      */
     //@{
 
     /**
-     * Abstract Trilinos object that helps view in ASCII other Trilinos
-     * objects. Currently this function is not implemented.  TODO: Not
-     * implemented.
+     * 抽象的Trilinos对象，帮助以ASCII格式查看其他Trilinos对象。目前这个功能还没有实现。
+     * TODO：没有实现。
+     *
      */
     void
     write_ascii();
 
     /**
-     * Print the matrix to the given stream, using the format <tt>(line,col)
-     * value</tt>, i.e. one nonzero entry of the matrix per line. The optional
-     * flag outputs the sparsity pattern in Trilinos style, where the data is
-     * sorted according to the processor number when printed to the stream, as
-     * well as a summary of the matrix like the global size.
+     * 打印矩阵到给定的流中，使用格式<tt>(line,col)
+     * value</tt>，即每行一个非零的矩阵条目。可选的标志以Trilinos风格输出稀疏模式，在打印到流中时，数据根据处理器编号进行排序，以及矩阵的摘要，如全局大小。
+     *
      */
     void
     print(std::ostream &out,
@@ -1787,11 +1403,13 @@ namespace TrilinosWrappers
 
     //@}
     /**
-     * @addtogroup Exceptions
+     * @addtogroup  异常情况
+     *
      */
     //@{
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException1(ExcTrilinosError,
                    int,
@@ -1799,7 +1417,8 @@ namespace TrilinosWrappers
                    << " occurred while calling a Trilinos function");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException2(ExcInvalidIndex,
                    size_type,
@@ -1808,7 +1427,8 @@ namespace TrilinosWrappers
                    << "> does not exist.");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclExceptionMsg(ExcSourceEqualsDestination,
                      "You are attempting an operation on two matrices that "
@@ -1816,12 +1436,14 @@ namespace TrilinosWrappers
                      "two objects are in fact different.");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException0(ExcMatrixNotCompressed);
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException4(ExcAccessToNonLocalElement,
                    size_type,
@@ -1835,7 +1457,8 @@ namespace TrilinosWrappers
                    << "] are stored locally and can be accessed.");
 
     /**
-     * Exception
+     * 异常情况
+     *
      */
     DeclException2(ExcAccessToNonPresentElement,
                    size_type,
@@ -1850,22 +1473,17 @@ namespace TrilinosWrappers
 
   protected:
     /**
-     * For some matrix storage formats, in particular for the PETSc
-     * distributed blockmatrices, set and add operations on individual
-     * elements can not be freely mixed. Rather, one has to synchronize
-     * operations when one wants to switch from setting elements to adding to
-     * elements.  BlockMatrixBase automatically synchronizes the access by
-     * calling this helper function for each block.  This function ensures
-     * that the matrix is in a state that allows adding elements; if it
-     * previously already was in this state, the function does nothing.
+     * 对于某些矩阵存储格式，特别是PETSc分布式块矩阵，对单个元素的设置和添加操作不能自由混合。相反，当我们想从设置元素切换到添加元素时，我们必须同步操作。
+     * BlockMatrixBase通过为每个块调用这个辅助函数来自动同步访问。
+     * 这个函数确保矩阵处于一个允许添加元素的状态；如果它之前已经处于这个状态，那么这个函数就不会做任何事情。
+     *
      */
     void
     prepare_add();
 
     /**
-     * Same as prepare_add() but prepare the matrix for setting elements if
-     * the representation of elements in this class requires such an
-     * operation.
+     * 与prepare_add()相同，但如果该类中的元素表示法需要这样的操作，则为设置元素准备矩阵。
+     *
      */
     void
     prepare_set();
@@ -1874,46 +1492,40 @@ namespace TrilinosWrappers
 
   private:
     /**
-     * Pointer to the user-supplied Epetra Trilinos mapping of the matrix
-     * columns that assigns parts of the matrix to the individual processes.
+     * 指向用户提供的矩阵列的Epetra
+     * Trilinos映射的指针，该映射将矩阵的一部分分配给各个进程。
+     *
      */
     std::unique_ptr<Epetra_Map> column_space_map;
 
     /**
-     * A sparse matrix object in Trilinos to be used for finite element based
-     * problems which allows for assembling into non-local elements.  The
-     * actual type, a sparse matrix, is set in the constructor.
+     * Trilinos中的一个稀疏矩阵对象，用于基于有限元的问题，允许组装成非局部元素。
+     * 实际的类型是稀疏矩阵，在构造函数中设置。
+     *
      */
     std::unique_ptr<Epetra_FECrsMatrix> matrix;
 
     /**
-     * A sparse matrix object in Trilinos to be used for collecting the non-
-     * local elements if the matrix was constructed from a Trilinos sparsity
-     * pattern with the respective option.
+     * Trilinos中的一个稀疏矩阵对象，用于收集非局部元素，如果该矩阵是由Trilinos稀疏模式构建的，并有相应的选项。
+     *
      */
     std::unique_ptr<Epetra_CrsMatrix> nonlocal_matrix;
 
     /**
-     * An export object used to communicate the nonlocal matrix.
+     * 一个用于交流非本地矩阵的导出对象。
+     *
      */
     std::unique_ptr<Epetra_Export> nonlocal_matrix_exporter;
 
     /**
-     * Trilinos doesn't allow to mix additions to matrix entries and
-     * overwriting them (to make synchronization of %parallel computations
-     * simpler). The way we do it is to, for each access operation, store
-     * whether it is an insertion or an addition. If the previous one was of
-     * different type, then we first have to flush the Trilinos buffers;
-     * otherwise, we can simply go on. Luckily, Trilinos has an object for
-     * this which does already all the %parallel communications in such a
-     * case, so we simply use their model, which stores whether the last
-     * operation was an addition or an insertion.
+     * Trilinos不允许混合添加矩阵条目和覆盖它们（以使%并行计算的同步更简单）。我们的方法是，对于每个访问操作，存储它是插入还是添加。如果前一个是不同的类型，那么我们首先要刷新Trilinos缓冲区；否则，我们可以简单地继续下去。幸运的是，Trilinos有一个这样的对象，在这种情况下已经完成了所有的%并行通信，所以我们只需使用他们的模型，它存储了上一个操作是加法还是插入。
+     *
      */
     Epetra_CombineMode last_action;
 
     /**
-     * A boolean variable to hold information on whether the vector is
-     * compressed or not.
+     * 一个布尔变量，用来保存关于向量是否被压缩的信息。
+     *
      */
     bool compressed;
 
@@ -1988,129 +1600,124 @@ namespace TrilinosWrappers
     namespace LinearOperatorImplementation
     {
       /**
-       * This is an extension class to LinearOperators for Trilinos sparse
-       * matrix and preconditioner types. It provides the interface to
-       * performing basic operations (<tt>vmult</tt> and <tt>Tvmult</tt>)  on
-       * Trilinos vector types. It fulfills the requirements necessary for
-       * wrapping a Trilinos solver, which calls Epetra_Operator functions, as a
-       * LinearOperator.
-       *
-       * @note The TrilinosWrappers::SparseMatrix or
-       * TrilinosWrappers::PreconditionBase that this payload wraps is passed by
-       * reference to the <tt>vmult</tt> and <tt>Tvmult</tt> functions. This
-       * object is not thread-safe when the transpose flag is set on it or the
-       * Trilinos object to which it refers. See the docuemtation for the
+       * 这是对Trilinos稀疏矩阵和预处理类型的LinearOperators的一个扩展类。它提供了对Trilinos向量类型进行基本操作（<tt>vmult</tt>和<tt>Tvmult</tt>）的接口。它满足了将调用Epetra_Operator函数的Trilinos求解器包装成LinearOperator的必要条件。
+       * @note  这个有效载荷所包装的 TrilinosWrappers::SparseMatrix
+       * 或 TrilinosWrappers::PreconditionBase
+       * 是通过引用传递给<tt>vmult</tt>和<tt>Tvmult</tt>函数。当它或它所引用的Trilinos对象上设置了转置标志时，这个对象不是线程安全的。更多细节请参见
        * TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload::SetUseTranspose()
-       * function for further details.
-       *
-       *
+       * 函数的文档。
        * @ingroup TrilinosWrappers
+       *
        */
       class TrilinosPayload : public Epetra_Operator
       {
       public:
         /**
-         * Definition for the internally supported vector type.
+         * 内部支持的向量类型的定义。
+         *
          */
         using VectorType = Epetra_MultiVector;
 
         /**
-         * Definition for the vector type for the domain space of the operator.
+         * 运算器领域空间的向量类型的定义。
+         *
          */
         using Range = VectorType;
 
         /**
-         * Definition for the vector type for the range space of the operator.
+         * 运算器的范围空间的向量类型的定义。
+         *
          */
         using Domain = VectorType;
 
         /**
-         * @name Constructors / destructor
+         * @name  构造函数/解构函数
+         *
          */
         //@{
 
         /**
-         * Default constructor
+         * 默认构造函数
+         * @note
+         * 根据设计，由于没有足够的信息来构建域和范围图，因此产生的对象是不可操作的。
          *
-         * @note By design, the resulting object is inoperable since there is
-         * insufficient information with which to construct the domain and
-         * range maps.
          */
         TrilinosPayload();
 
         /**
-         * Constructor for a sparse matrix based on an exemplary matrix
+         * 基于典范矩阵的稀疏矩阵的构造函数
+         *
          */
         TrilinosPayload(const TrilinosWrappers::SparseMatrix &matrix_exemplar,
                         const TrilinosWrappers::SparseMatrix &matrix);
 
         /**
-         * Constructor for a preconditioner based on an exemplary matrix
+         * 基于典范矩阵的预处理器的构造器
+         *
          */
         TrilinosPayload(
           const TrilinosWrappers::SparseMatrix &    matrix_exemplar,
           const TrilinosWrappers::PreconditionBase &preconditioner);
 
         /**
-         * Constructor for a preconditioner based on an exemplary preconditioner
+         * 基于示范性预处理的预处理器的构造器
+         *
          */
         TrilinosPayload(
           const TrilinosWrappers::PreconditionBase &preconditioner_exemplar,
           const TrilinosWrappers::PreconditionBase &preconditioner);
 
         /**
-         * Default copy constructor
+         * 默认的复制构造器
+         *
          */
         TrilinosPayload(const TrilinosPayload &payload);
 
         /**
-         * Composite copy constructor
+         * 复合复制构造函数
+         * 这是PackagedOperations所需要的，因为它设置了域和范围图，以及基于两个操作的复合<tt>vmult</tt>和<tt>Tvmult</tt>操作的组合操作
          *
-         * This is required for PackagedOperations as it sets up the domain and
-         * range maps, and composite <tt>vmult</tt> and <tt>Tvmult</tt>
-         * operations based on the combined operation of both operations
          */
         TrilinosPayload(const TrilinosPayload &first_op,
                         const TrilinosPayload &second_op);
 
         /**
-         * Destructor
+         * 破坏器
+         *
          */
         virtual ~TrilinosPayload() override = default;
 
         /**
-         * Return a payload configured for identity operations
+         * 返回一个为身份操作配置的有效载荷
+         *
          */
         TrilinosPayload
         identity_payload() const;
 
         /**
-         * Return a payload configured for null operations
+         * 返回一个为空操作而配置的有效载荷
+         *
          */
         TrilinosPayload
         null_payload() const;
 
         /**
-         * Return a payload configured for transpose operations
+         * 返回一个为转置操作配置的有效载荷
+         *
          */
         TrilinosPayload
         transpose_payload() const;
 
         /**
-         * Return a payload configured for inverse operations
+         * 返回一个为反转操作配置的有效载荷
+         * 调用这个工厂函数将配置两个额外的函数，即<tt>inv_vmult</tt>和<tt>inv_Tvmult</tt>，这两个函数都包裹了反转操作。<tt>vmult</tt>和<tt>Tvmult</tt>操作保留了从
+         * @p op. 继承的标准定义。
+         * @note
+         * 只有当求解器和预处理器派生自各自的TrilinosWrappers基类时，该功能才会启用。
+         * 因此，C++编译器只有在满足以下标准的情况下才会考虑这个功能。
+         * 1.  @p Solver 派生自 TrilinosWrappers::SolverBase, ，2.  @p
+         * Preconditioner 派生自 TrilinosWrappers::PreconditionBase.  。
          *
-         * Invoking this factory function will configure two additional
-         * functions, namely <tt>inv_vmult</tt> and <tt>inv_Tvmult</tt>, both of
-         * which wrap inverse operations. The <tt>vmult</tt> and <tt>Tvmult</tt>
-         * operations retain the standard
-         * definitions inherited from @p op.
-         *
-         * @note This function is enabled only if the solver and preconditioner
-         * derive from the respective TrilinosWrappers base classes.
-         * The C++ compiler will therefore only consider this function if the
-         * following criterion are satisfied:
-         * 1. the @p Solver derives from TrilinosWrappers::SolverBase, and
-         * 2. the @p Preconditioner derives from TrilinosWrappers::PreconditionBase.
          */
         template <typename Solver, typename Preconditioner>
         typename std::enable_if<
@@ -2121,21 +1728,16 @@ namespace TrilinosWrappers
         inverse_payload(Solver &, const Preconditioner &) const;
 
         /**
-         * Return a payload configured for inverse operations
+         * 返回一个为逆运算配置的有效载荷
+         * 调用这个工厂函数将配置两个额外的函数，即<tt>inv_vmult</tt>和<tt>inv_Tvmult</tt>，这两个函数被禁用，因为
+         * @p Solver 或 @p Preconditioner 与Epetra_MultiVector不兼容。
+         * <tt>vmult</tt>和<tt>Tvmult</tt>操作保留了从 @p op.
+         * 继承的标准定义。
+         * @note
+         * 只有满足以下标准，C++编译器才会考虑这个函数。
+         * 1.  @p Solver 不从 TrilinosWrappers::SolverBase, 派生，2.  @p
+         * Preconditioner 不从 TrilinosWrappers::PreconditionBase. 派生。
          *
-         * Invoking this factory function will configure two additional
-         * functions, namely <tt>inv_vmult</tt> and <tt>inv_Tvmult</tt>, both of
-         * which
-         * are disabled because the @p Solver or @p Preconditioner are not
-         * compatible with Epetra_MultiVector.
-         * The <tt>vmult</tt> and <tt>Tvmult</tt> operations retain the standard
-         * definitions inherited from @p op.
-         *
-         * @note The C++ compiler will only consider this function if the
-         * following criterion are satisfied:
-         * 1. the @p Solver does not derive from TrilinosWrappers::SolverBase, and
-         * 2. the @p Preconditioner does not derive from
-         * TrilinosWrappers::PreconditionBase.
          */
         template <typename Solver, typename Preconditioner>
         typename std::enable_if<
@@ -2148,190 +1750,165 @@ namespace TrilinosWrappers
         //@}
 
         /**
-         * @name LinearOperator functionality
+         * @name  LinearOperator功能
+         *
          */
         //@{
 
         /**
-         * Return an IndexSet that defines the partitioning of the domain space
-         * of this matrix, i.e., the partitioning of the vectors this matrix has
-         * to be multiplied with / operate on.
+         * 返回一个IndexSet，它定义了这个矩阵的域空间的分区，即这个矩阵要与之相乘/操作的向量的分区。
+         *
          */
         IndexSet
         locally_owned_domain_indices() const;
 
         /**
-         * Return an IndexSet that defines the partitioning of the range space
-         * of this matrix, i.e., the partitioning of the vectors that result
-         * from matrix-vector products.
+         * 返回一个IndexSet，它定义了这个矩阵的范围空间的划分，即由矩阵-向量积产生的向量的划分。
+         *
          */
         IndexSet
         locally_owned_range_indices() const;
 
         /**
-         * Return the MPI communicator object in use with this Payload.
+         * 返回与该有效载荷一起使用的MPI通信器对象。
+         *
          */
         MPI_Comm
         get_mpi_communicator() const;
 
         /**
-         * Sets an internal flag so that all operations performed by the matrix,
-         * i.e., multiplications, are done in transposed order.
-         * @note This does not reshape the matrix to transposed form directly,
-         * so care should be taken when using this flag.
+         * 设置一个内部标志，使矩阵进行的所有操作，即乘法，都以转置的顺序进行。
+         * @note
+         * 这并不直接将矩阵重塑为转置形式，所以在使用这个标志时要注意。
+         *
          */
         void
         transpose();
 
         /**
-         * The standard matrix-vector operation to be performed by the payload
-         * when Apply is called.
+         * 当Apply被调用时，将由有效载荷执行的标准矩阵-向量操作。
+         * @note
+         * 这不是由LinearOperator调用的，而是由Trilinos函数调用的，这些函数希望以此来模仿LinearOperator的动作。
          *
-         * @note This is not called by a LinearOperator, but rather by Trilinos
-         * functions that expect this to mimic the action of the LinearOperator.
          */
         std::function<void(VectorType &, const VectorType &)> vmult;
 
         /**
-         * The standard transpose matrix-vector operation to be performed by
-         * the payload when Apply is called.
+         * 当Apply被调用时，标准的转置矩阵-向量操作将由有效载荷执行。
+         * @note
+         * 这不是由LinearOperator调用的，而是由Trilinos函数调用的，该函数希望以此来模仿LinearOperator的动作。
          *
-         * @note This is not called by a LinearOperator, but rather by Trilinos
-         * functions that expect this to mimic the action of the LinearOperator.
          */
         std::function<void(VectorType &, const VectorType &)> Tvmult;
 
         /**
-         * The inverse matrix-vector operation to be performed by the payload
-         * when ApplyInverse is called.
+         * 当ApplyInverse被调用时，有效载荷将进行矩阵-向量的逆运算。
+         * @note
+         * 这不是由LinearOperator调用的，而是由Trilinos函数调用的，这些函数希望以此来模仿InverseOperator的动作。
          *
-         * @note This is not called by a LinearOperator, but rather by Trilinos
-         * functions that expect this to mimic the action of the
-         * InverseOperator.
          */
         std::function<void(VectorType &, const VectorType &)> inv_vmult;
 
         /**
-         * The inverse transpose matrix-vector operation to be performed by
-         * the payload when ApplyInverse is called.
+         * 当ApplyInverse被调用时，将由有效载荷执行的矩阵-向量的反转操作。
+         * @note
+         * 这不是由LinearOperator调用的，而是由Trilinos函数调用的，该函数期望以此来模仿InverseOperator的动作。
          *
-         * @note This is not called by a LinearOperator, but rather by Trilinos
-         * functions that expect this to mimic the action of the
-         * InverseOperator.
          */
         std::function<void(VectorType &, const VectorType &)> inv_Tvmult;
 
         //@}
 
         /**
-         * @name Core Epetra_Operator functionality
+         * @name  核心Epetra_Operator功能
+         *
          */
         //@{
 
         /**
-         * Return the status of the transpose flag for this operator
+         * 返回该运算符的转置标志状态
+         * 这是对Trilinos类Epetra_Operator的同一函数的重载。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual bool
         UseTranspose() const override;
 
         /**
-         * Sets an internal flag so that all operations performed by the matrix,
-         * i.e., multiplications, are done in transposed order.
+         * 设置一个内部标志，使矩阵进行的所有操作，即乘法，都以转置的顺序进行。
+         * 这是对Trilinos类Epetra_Operator的相同函数的重载。
+         * @note
+         * 这并不直接将矩阵重塑为转置形式，所以在使用这个标志时要注意。当该标志被设置为
+         * "true
+         * "时（无论是在这里还是直接在底层的Tridinos对象本身），该对象不再是线程安全的。从本质上讲，它不可能确保LinearOperator和底层Trilinos对象的转置状态在可能同时发生在不同线程上的所有操作中保持同步。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
-         *
-         * @note This does not reshape the matrix to transposed form directly,
-         * so care should be taken when using this flag. When the flag is set to
-         * true (either here or directly on the underlying Trilinos object
-         * itself), this object is no longer thread-safe. In essence, it is not
-         * possible ensure that the transposed state of the LinearOperator and
-         * the underlying Trilinos object remain synchronized throughout all
-         * operations that may occur on different threads simultaneously.
          */
         virtual int
         SetUseTranspose(bool UseTranspose) override;
 
         /**
-         * Apply the vmult operation on a vector @p X (of internally defined
-         * type VectorType) and store the result in the vector @p Y.
+         * 对一个向量 @p X
+         * （内部定义的VectorType类型）应用vmult操作，并将结果存储在向量中
+         * @p Y.
+         * 这是从Trilinos类Epetra_Operator中重载的相同函数。
+         * @note
+         * 预定的操作取决于内部转置标志的状态。如果这个标志被设置为
+         * "真"，那么结果将相当于执行一个Tvmult操作。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
-         *
-         * @note The intended operation depends on the status of the internal
-         * transpose flag. If this flag is set to true, the result will be
-         * the equivalent of performing a Tvmult operation.
          */
         virtual int
         Apply(const VectorType &X, VectorType &Y) const override;
 
         /**
-         * Apply the vmult inverse operation on a vector @p X (of internally
-         * defined type VectorType) and store the result in the vector @p Y.
+         * 对一个向量 @p X
+         * （内部定义的VectorType类型）应用vmult逆运算，并将结果存储在向量
+         * @p Y. 中。
+         * 实际上，只有当包裹的对象作为预处理程序时，才会从特里诺斯求解器调用这个函数。
+         * 这是从Tridinos类Epetra_Operator中重载的相同函数。
+         * @note
+         * 只有当有效载荷被InverseOperator初始化，或者是一个预处理程序的包装器时，这个函数才可操作。如果没有，那么使用这个函数将导致抛出一个错误。
+         * @note
+         * 预期的操作取决于内部转置标志的状态。如果这个标志被设置为
+         * "true"，那么结果将等同于执行一个Tvmult操作。
          *
-         * In practise, this function is only called from a Trilinos solver if
-         * the wrapped object is to act as a preconditioner.
-         *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
-         *
-         * @note This function will only be operable if the payload has been
-         * initialized with an InverseOperator, or is a wrapper to a
-         * preconditioner. If not, then using this function will lead to an
-         * error being thrown.
-         * @note The intended operation depends on the status of the internal
-         * transpose flag. If this flag is set to true, the result will be
-         * the equivalent of performing a Tvmult operation.
          */
         virtual int
         ApplyInverse(const VectorType &Y, VectorType &X) const override;
         //@}
 
         /**
-         * @name Additional Epetra_Operator functionality
+         * @name  附加Epetra_Operator功能
+         *
          */
         //@{
 
         /**
-         * Return a label to describe this class.
+         * 返回一个标签来描述这个类。
+         * 这重载了Trilinos类Epetra_Operator中的相同功能。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual const char *
         Label() const override;
 
         /**
-         * Return a reference to the underlying MPI communicator for
-         * this object.
+         * 返回这个对象的底层MPI通信器的引用。
+         * 这是从Trilinos类Epetra_Operator中重载的相同函数。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual const Epetra_Comm &
         Comm() const override;
 
         /**
-         * Return the partitioning of the domain space of this matrix, i.e., the
-         * partitioning of the vectors this matrix has to be multiplied with.
+         * 返回该矩阵的域空间的划分，即该矩阵必须与之相乘的向量的划分。
+         * 这是对Trilinos类Epetra_Operator的相同函数的重载。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual const Epetra_Map &
         OperatorDomainMap() const override;
 
         /**
-         * Return the partitioning of the range space of this matrix, i.e., the
-         * partitioning of the vectors that are result from matrix-vector
-         * products.
+         * 返回该矩阵的范围空间的划分，即由矩阵-向量乘积产生的向量的划分。
+         * 这是对Trilinos类Epetra_Operator的相同函数的重载。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual const Epetra_Map &
         OperatorRangeMap() const override;
@@ -2339,14 +1916,14 @@ namespace TrilinosWrappers
 
       private:
         /**
-         * A flag recording whether the operator is to perform standard
-         * matrix-vector multiplication, or the transpose operation.
+         * 一个记录运算器是执行标准的矩阵-向量乘法，还是转置运算的标志。
+         *
          */
         bool use_transpose;
 
         /**
-         * Internal communication pattern in case the matrix needs to be copied
-         * from deal.II format.
+         * 内部通信模式，以防矩阵需要从deal.II格式中复制。
+         *
          */
 #    ifdef DEAL_II_WITH_MPI
         Epetra_MpiComm communicator;
@@ -2355,56 +1932,52 @@ namespace TrilinosWrappers
 #    endif
 
         /**
-         * Epetra_Map that sets the partitioning of the domain space of
-         * this operator.
+         * Epetra_Map，用于设置该运算器的域空间的划分。
+         *
          */
         Epetra_Map domain_map;
 
         /**
-         * Epetra_Map that sets the partitioning of the range space of
-         * this operator.
+         * Epetra_Map，设置此运算符的范围空间的划分。
+         *
          */
         Epetra_Map range_map;
 
         /**
-         * Return a flag that describes whether this operator can return the
-         * computation of the infinity norm. Since in general this is not the
-         * case, this always returns a negetive result.
+         * 返回一个标志，描述该算子是否可以返回无穷大准则的计算。因为一般情况下不是这样的，所以总是返回一个否定的结果。
+         * 这是对Trilinos类Epetra_Operator的相同函数的重载。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual bool
         HasNormInf() const override;
 
         /**
-         * Return the infinity norm of this operator.
-         * Throws an error since, in general, we cannot compute this value.
+         * 返回该运算符的无穷大规范。
+         * 抛出一个错误，因为一般来说，我们无法计算这个值。
+         * 这是对Trilinos类Epetra_Operator中相同函数的重载。
          *
-         * This overloads the same function from the Trilinos class
-         * Epetra_Operator.
          */
         virtual double
         NormInf() const override;
       };
 
       /**
-       * Return an operator that returns a payload configured to support the
-       * addition of two LinearOperators
+       * 返回一个运算器，该运算器返回一个配置为支持两个LinearOperator相加的有效载荷
+       *
        */
       TrilinosPayload
       operator+(const TrilinosPayload &first_op,
                 const TrilinosPayload &second_op);
 
       /**
-       * Return an operator that returns a payload configured to support the
-       * multiplication of two LinearOperators
+       * 返回一个操作符，该操作符返回一个被配置为支持两个LinearOperator的乘法的有效载荷。
+       *
        */
       TrilinosPayload operator*(const TrilinosPayload &first_op,
                                 const TrilinosPayload &second_op);
 
     } // namespace LinearOperatorImplementation
-  }   /* namespace internal */
+  }    /* namespace internal */ 
 
 
 
@@ -3121,7 +2694,7 @@ namespace TrilinosWrappers
                                     const bool            elide_zero_values);
 #    endif // DOXYGEN
 
-} /* namespace TrilinosWrappers */
+}  /* namespace TrilinosWrappers */ 
 
 
 DEAL_II_NAMESPACE_CLOSE
@@ -3130,7 +2703,9 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_TRILINOS
 
 
-/*-----------------------   trilinos_sparse_matrix.h     --------------------*/
+ /*-----------------------   trilinos_sparse_matrix.h     --------------------*/ 
 
 #endif
-/*-----------------------   trilinos_sparse_matrix.h     --------------------*/
+ /*-----------------------   trilinos_sparse_matrix.h     --------------------*/ 
+
+

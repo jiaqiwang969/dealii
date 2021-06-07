@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/patterns_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -62,89 +61,99 @@ class FunctionParser;
 #endif
 
 /**
- * 一些作为ParameterHandler类的模式的类的命名空间。这些类实现了一个接口，用于检查输入文件中的参数是否符合某种模式，如
- * "是布尔值"、"整数值 "等。
- *
+ * Namespace for a few classes that act as patterns for the ParameterHandler
+ * class. These classes implement an interface that checks whether a parameter
+ * in an input file matches a certain pattern, such as "being boolean", "an
+ * integer value", etc.
  *
  * @ingroup input
- *
- *
  */
 namespace Patterns
 {
   /**
-   * 用于声明通用接口的基类。这个类的目的主要是为了定义模式的接口，并强制派生类有一个<tt>clone</tt>函数。因此，用《设计模式》一书（Gamma
-   * et al.）的语言来说，它是一个 "原型"。
-   *
+   * Base class to declare common interface. The purpose of this class is
+   * mostly to define the interface of patterns, and to force derived classes
+   * to have a <tt>clone</tt> function. It is thus, in the languages of the
+   * "Design Patterns" book (Gamma et al.), a "prototype".
    */
   class PatternBase
   {
   public:
     /**
-     * 使这个类和所有派生类的析构器成为虚拟的。
-     *
+     * Make destructor of this and all derived classes virtual.
      */
     virtual ~PatternBase() = default;
 
     /**
-     * 如果给定的字符串与模式匹配，返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the given string matches the pattern.
      */
     virtual bool
     match(const std::string &test_string) const = 0;
 
     /**
-     * 可能的描述输出格式的列表。        大写字母的选择与
-     * ParameterHandler::OutputStyle. 相似。
+     * List of possible description output formats.
      *
+     * Capitalization chosen for similarity to ParameterHandler::OutputStyle.
      */
     enum OutputStyle
     {
       /**
-       * 适合在所有内置继承类的静态公共成员函数中进行机器解析的简单文本。
-       * 最好是人类可读的，但机器解析更为关键。
+       * Simple text suitable for machine parsing in the static public member
+       * functions for all of the built in inheriting classes.
        *
+       * Preferably human readable, but machine parsing is more critical.
        */
       Machine,
       /**
-       * 易于人类阅读的纯文本格式，适合纯文本文档。
-       *
+       * Easily human readable plain text format suitable for plain text
+       * documentation.
        */
       Text,
       /**
-       * 易于人类阅读的LaTeX格式，适合在手册中打印。
-       *
+       * Easily human readable LaTeX format suitable for printing in manuals.
        */
       LaTeX
     };
 
     /**
-     * 返回一个描述该模式的字符串。
-     *
+     * Return a string describing the pattern.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const = 0;
 
     /**
-     * 返回一个指向该对象的精确拷贝的指针。这是必要的，因为我们想把这种类型的对象存储在容器中，我们需要复制对象而不知道它们的实际数据类型（我们只有指向基类的指针）。
-     * 由这个函数返回的对象的所有权被传递给这个函数的调用者。
+     * Return a pointer to an exact copy of the object. This is necessary
+     * since we want to store objects of this type in containers, were we need
+     * to copy objects without knowledge of their actual data type (we only
+     * have pointers to the base class).
      *
+     * Ownership of the objects returned by this function is passed to the
+     * caller of this function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const = 0;
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。为了避免不必要的开销，我们不强迫派生类提供这个函数作为一个虚拟的重载函数，而是尝试把现在的对象投给已知的派生类之一，如果失败了，那么就取这个基类的大小来代替，并加上32字节（这个值是任意的，它应该考虑到虚拟函数表，和一些可能的数据元素）。由于周围通常没有几千个这种类型的对象，并且由于memory_consumption机制是用来找出许多兆字节范围内的内存的，这似乎是一个合理的近似值。
-     * 另一方面，如果你知道你的类大大偏离了这个假设，你仍然可以重载这个函数。
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object. To avoid unnecessary overhead, we do not force derived classes
+     * to provide this function as a virtual overloaded one, but rather try to
+     * cast the present object to one of the known derived classes and if that
+     * fails then take the size of this base class instead and add 32 byte
+     * (this value is arbitrary, it should account for virtual function
+     * tables, and some possible data elements). Since there are usually not
+     * many thousands of objects of this type around, and since the
+     * memory_consumption mechanism is used to find out where memory in the
+     * range of many megabytes is, this seems like a reasonable approximation.
      *
+     * On the other hand, if you know that your class deviates from this
+     * assumption significantly, you can still overload this function.
      */
     virtual std::size_t
     memory_consumption() const;
   };
 
   /**
-   * 根据描述返回指向正确派生类的指针。
-   *
+   * Return pointer to the correct derived class based on description.
    */
   std::unique_ptr<PatternBase>
   pattern_factory(const std::string &description);
@@ -152,9 +161,9 @@ namespace Patterns
   namespace internal
   {
     /**
-     * 对指定的 @p style 的字符串 @p input
-     * 进行转义，使字符按预期出现。例如，像_这样的字符在LateX中不能按原样书写，必须转义为\_。
-     *
+     * Escape the string @p input for the specified @p style so that characters
+     * will appear as intended. For example, characters like _ can not be
+     * written as is in LateX and have to be escaped as \_.
      */
     std::string
     escape(const std::string &input, const PatternBase::OutputStyle style);
@@ -162,255 +171,299 @@ namespace Patterns
   } // namespace internal
 
   /**
-   * 测试字符串是否是一个整数。如果构造函数给出了边界，那么给出的整数也需要在这些边界所指定的区间内。请注意，与C++标准库中的惯例不同，这个区间的两个边界都是包容的；原因是在大多数情况下，我们需要封闭的区间，但对于非整数值来说，这些只能用包容的边界来实现。因此，我们总是使用封闭区间来保持一致性。
-   * 如果给构造函数的上界小于下界，那么每个整数都是允许的。
-   * 如果一个值只能是正数并且小于一个合理的上限（例如要执行的细化步骤的数量），或者在许多其他情况下，给出边界可能是有用的。
+   * Test for the string being an integer. If bounds are given to the
+   * constructor, then the integer given also needs to be within the interval
+   * specified by these bounds. Note that unlike common convention in the C++
+   * standard library, both bounds of this interval are inclusive; the reason
+   * is that in practice in most cases, one needs closed intervals, but these
+   * can only be realized with inclusive bounds for non-integer values. We
+   * thus stay consistent by always using closed intervals.
    *
+   * If the upper bound given to the constructor is smaller than the
+   * lower bound, then every integer is allowed.
+   *
+   * Giving bounds may be useful if for example a value can only be positive
+   * and less than a reasonable upper bound (for example the number of
+   * refinement steps to be performed), or in many other cases.
    */
   class Integer : public PatternBase
   {
   public:
     /**
-     * 最小的整数值。如果numeric_limits类可用，则使用此信息来获得极值，否则设置它，使该类理解为允许所有值。
-     *
+     * Minimal integer value. If the numeric_limits class is available use
+     * this information to obtain the extremal values, otherwise set it so
+     * that this class understands that all values are allowed.
      */
     static const int min_int_value;
 
     /**
-     * 最大的整数值。如果numeric_limits类可用，则使用此信息来获得极值，否则设置它，使该类理解为允许所有的值。
-     *
+     * Maximal integer value. If the numeric_limits class is available use
+     * this information to obtain the extremal values, otherwise set it so
+     * that this class understands that all values are allowed.
      */
     static const int max_int_value;
 
     /**
-     * 构造函数。可以指定一个有效参数必须在其范围内的界限。如果上界小于下界，那么就意味着整个整数集。默认值的选择是不对参数强制执行界限。
-     * 请注意，当前类型的对象所隐含的范围包括两个界限值，即
-     * @p upper_bound
-     * 是一个允许的值，而不是像其他情况下经常做的那样表示一个半开的值。
+     * Constructor. Bounds can be specified within which a valid
+     * parameter has to be. If the upper bound is smaller than the
+     * lower bound, then the entire set of integers is implied. The
+     * default values are chosen such that no bounds are enforced on
+     * parameters.
      *
+     * Note that the range implied by an object of the current type
+     * is inclusive of both bounds values, i.e., the @p upper_bound is
+     * an allowed value, rather than indicating a half-open value as
+     * is often done in other contexts.
      */
     Integer(const int lower_bound = min_int_value,
             const int upper_bound = max_int_value);
 
     /**
-     * 如果字符串是一个整数且其值在指定范围内，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is an integer and its value is
+     * within the specified range.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。如果向构造函数指定了边界，那么就把它们包括在这个描述中。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. If bounds were specified to the constructor, then include them
+     * into this description.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回一个当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移到该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新的对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<Integer>
     create(const std::string &description);
 
   private:
     /**
-     * 下限的值。满足该类的 @ref
-     * match
-     * 操作的数字必须等于这个值或者更大，如果区间的边界为有效范围。
-     *
+     * Value of the lower bound. A number that satisfies the
+     * @ref match
+     * operation of this class must be equal to this value or larger, if the
+     * bounds of the interval for a valid range.
      */
     const int lower_bound;
 
     /**
-     * 上限的值。满足本类的 @ref
-     * match
-     * 操作的数字必须等于这个值或更小，如果区间的边界为有效范围。
-     *
+     * Value of the upper bound. A number that satisfies the
+     * @ref match
+     * operation of this class must be equal to this value or less, if the
+     * bounds of the interval for a valid range.
      */
     const int upper_bound;
 
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
   /**
-   * 测试字符串是否为<tt>double</tt>。如果给构造函数设定了边界，那么给定的整数也需要在这些边界所指定的区间内。请注意，与C++标准库中的惯例不同，这个区间的两个边界都是包容的；原因是在大多数情况下，我们需要封闭的区间，但对于非整数值来说，这些只能用包容的边界来实现。因此，我们总是使用封闭区间来保持一致性。
-   * 如果给构造函数的上界小于下界，那么每个双精度数字都是允许的。
-   * 如果一个值只能是正数并且小于一个合理的上限（例如阻尼参数经常只有在0和1之间才是合理的），或者在许多其他情况下，给出边界可能是有用的。
+   * Test for the string being a <tt>double</tt>. If bounds are given to the
+   * constructor, then the integer given also needs to be within the interval
+   * specified by these bounds. Note that unlike common convention in the C++
+   * standard library, both bounds of this interval are inclusive; the reason
+   * is that in practice in most cases, one needs closed intervals, but these
+   * can only be realized with inclusive bounds for non-integer values. We
+   * thus stay consistent by always using closed intervals.
    *
+   * If the upper bound given to the constructor is smaller than the
+   * lower bound, then every double precision number is allowed.
+   *
+   * Giving bounds may be useful if for example a value can only be positive
+   * and less than a reasonable upper bound (for example damping parameters
+   * are frequently only reasonable if between zero and one), or in many other
+   * cases.
    */
   class Double : public PatternBase
   {
   public:
     /**
-     * 用作默认值的最小双值，取自 <tt>std::numeric_limits</tt>.
-     * 。
-     *
+     * Minimal double value used as default value, taken from
+     * <tt>std::numeric_limits</tt>.
      */
     static const double min_double_value;
 
     /**
-     * 用作默认值的最大双倍值，取自
-     * <tt>std::numeric_limits</tt>. 。
-     *
+     * Maximal double value used as default value, taken from
+     * <tt>std::numeric_limits</tt>.
      */
     static const double max_double_value;
 
     /**
-     * 构造函数。可以指定一个有效参数必须在的范围内。如果上界小于下界，那么就意味着整个双精度的数字集。默认值的选择使参数不受任何约束。
-     *
+     * Constructor. Bounds can be specified within which a valid
+     * parameter has to be. If the upper bound is smaller than the
+     * lower bound, then the entire set of double precision numbers is
+     * implied. The default values are chosen such that no bounds are
+     * enforced on parameters.
      */
     Double(const double lower_bound = min_double_value,
            const double upper_bound = max_double_value);
 
     /**
-     * 如果字符串是一个数字且其值在指定范围内，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is a number and its value is within
+     * the specified range.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。如果向构造函数指定了边界，那么就把它们包括在这个描述中。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. If bounds were specified to the constructor, then include them
+     * into this description.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回一个当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移到该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果给定的 @p description
-     * 是一个有效的格式（例如通过调用现有对象的description()创建），则使用
-     * @p new 在堆上创建一个新的对象，否则使用 @p nullptr
-     * 。返回的对象的所有权被转移给这个函数的调用者，应该使用
-     * @p delete. 释放它。
-     *
+     * Creates a new object on the heap using @p new if the given
+     * @p description is a valid format (for example created by calling
+     * description() on an existing object), or @p nullptr otherwise. Ownership
+     * of the returned object is transferred to the caller of this function,
+     * which should be freed using @p delete.
      */
     static std::unique_ptr<Double>
     create(const std::string &description);
 
   private:
     /**
-     * 下限的值。满足该类的 @ref
-     * match
-     * 操作的数字必须等于这个值，或者更大，如果区间的边界形成一个有效的范围。
-     *
+     * Value of the lower bound. A number that satisfies the
+     * @ref match
+     * operation of this class must be equal to this value or larger, if the
+     * bounds of the interval form a valid range.
      */
     const double lower_bound;
 
     /**
-     * 上限的值。如果区间的边界形成一个有效的范围，满足该类的 @ref
-     * match 操作的数字必须等于这个值或小于这个值。
-     *
+     * Value of the upper bound. A number that satisfies the
+     * @ref match
+     * operation of this class must be equal to this value or less, if the
+     * bounds of the interval form a valid range.
      */
     const double upper_bound;
 
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
   /**
-   *
+   * Test for the string being one of a sequence of values given like a
+   * regular expression. For example, if the string given to the constructor
+   * is <tt>"red|blue|black"</tt>, then the
+   * @ref match
+   * function returns <tt>true</tt> exactly if the string is either "red" or
+   * "blue" or "black". Spaces around the pipe signs do not matter and are
+   * eliminated.
    */
   class Selection : public PatternBase
   {
   public:
     /**
-     * 构造函数。以给定的参数作为有效字符串的规范。
-     *
+     * Constructor. Take the given parameter as the specification of valid
+     * strings.
      */
     Selection(const std::string &seq);
 
     /**
-     * 如果该字符串是传递给构造函数的描述列表中的一个元素，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is an element of the description
+     * list passed to the constructor.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。这里，这是传递给构造函数的有效字符串的列表。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. Here, this is the list of valid strings passed to the
+     * constructor.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回当前对象的副本，它是在堆上新分配的。该对象的所有权被转移到该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。
-     *
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object.
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * 如果description的开头与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<Selection>
     create(const std::string &description);
 
   private:
     /**
-     * 传递给构造函数的有效字符串的列表。我们不使这个字符串成为常量，因为我们在构造函数中对它进行了一定的处理。
-     *
+     * List of valid strings as passed to the constructor. We don't make this
+     * string constant, as we process it somewhat in the constructor.
      */
     std::string sequence;
 
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
 
   /**
-   * 这个模式匹配一个由逗号（或另一个字符串）隔开的值的列表，每个值都必须匹配给构造器的模式。
-   * 通过两个额外的参数，可以指定这个列表必须有的元素数量。如果没有指定，该列表可以有零个或更多的条目。
-   *
+   * This pattern matches a list of values separated by commas (or another
+   * string), each of which have to match a pattern given to the constructor.
+   * With two additional parameters, the number of elements this list has to
+   * have can be specified. If none is specified, the list may have zero or
+   * more entries.
    */
   class List : public PatternBase
   {
   public:
     /**
-     * 最大的整数值。如果numeric_limits类可用，则使用此信息获得极值，否则设置它，使此类理解为允许所有值。
-     *
+     * Maximal integer value. If the numeric_limits class is available use
+     * this information to obtain the extremal values, otherwise set it so
+     * that this class understands that all values are allowed.
      */
     static const unsigned int max_int_value;
 
     /**
-     * 构造函数。以给定的参数作为列表的有效元素的规范。
-     * 其他三个参数可以用来表示列表的最小和最大允许长度，以及作为列表元素之间分隔符的字符串。
+     * Constructor. Take the given parameter as the specification of valid
+     * elements of the list.
      *
+     * The three other arguments can be used to denote minimal and maximal
+     * allowable lengths of the list, and the string that is used as a
+     * separator between elements of the list.
      */
     List(const PatternBase &base_pattern,
          const unsigned int min_elements = 0,
@@ -419,69 +472,66 @@ namespace Patterns
 
 
     /**
-     * 返回内部存储的分隔符。
-     *
+     * Return the internally stored separator.
      */
     const std::string &
     get_separator() const;
 
     /**
-     * 返回内部存储的基本模式。
-     *
+     * Return the internally stored base pattern.
      */
     const PatternBase &
     get_base_pattern() const;
 
     /**
-     * 复制构造函数。
-     *
+     * Copy constructor.
      */
     List(const List &other);
 
     /**
-     * 如果字符串是一个以逗号分隔的字符串列表，其中每一个都与给构造函数的模式匹配，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is a comma-separated list of strings
+     * each of which match the pattern given to the constructor.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回有效字符串预期匹配的模式的描述。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回一个当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移给该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<List>
     create(const std::string &description);
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。
-     *
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object.
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * @addtogroup  异常情况 @{ 。
-     *
+     * @addtogroup Exceptions
+     * @{
      */
 
     /**
-     * 异常情况。
-     *
+     * Exception.
      */
     DeclException2(ExcInvalidRange,
                    int,
@@ -491,59 +541,63 @@ namespace Patterns
     //@}
   private:
     /**
-     * 列表中每个元素必须满足的模式的拷贝。
-     *
+     * Copy of the pattern that each element of the list has to satisfy.
      */
     std::unique_ptr<PatternBase> pattern;
 
     /**
-     * 列表必须有的最小元素数。
-     *
+     * Minimum number of elements the list must have.
      */
     const unsigned int min_elements;
 
     /**
-     * 列表必须有的最大元素数。
-     *
+     * Maximum number of elements the list must have.
      */
     const unsigned int max_elements;
 
     /**
-     * 列表中各元素之间的分隔符。
-     *
+     * Separator between elements of the list.
      */
     const std::string separator;
 
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
 
   /**
-   * 这个模式匹配一个用逗号分隔的列表，每个列表表示一对键和值。key和value都必须与给构造函数的模式匹配。对于地图的每个条目，必须以
-   * <code>key: value</code>
-   * 的形式输入参数。换句话说，一个地图的描述形式是<code>key1:
-   * value1, key2: value2, key3: value3,
-   * ...</code>。两个构造函数参数允许选择除逗号以外的对之间的分隔符，以及除冒号以外的键和值之间的分隔符。
-   * 通过两个额外的参数，可以指定这个列表必须有的元素数量。如果没有指定，地图可以有零个或多个条目。
+   * This pattern matches a list of comma-separated values each of which
+   * denotes a pair of key and value. Both key and value have to match a
+   * pattern given to the constructor. For each entry of the map, parameters
+   * have to be entered in the form <code>key: value</code>. In other words, a
+   * map is described in the form <code>key1: value1, key2: value2, key3:
+   * value3, ...</code>. Two constructor arguments allow to choose a delimiter
+   * between pairs other than the comma, and a delimiter between key and value
+   * other than colon.
    *
+   * With two additional parameters, the number of elements this list has to
+   * have can be specified. If none is specified, the map may have zero or
+   * more entries.
    */
   class Map : public PatternBase
   {
   public:
     /**
-     * 最大的整数值。如果numeric_limits类可用，则使用此信息获得极值，否则设置它，使此类理解为允许所有值。
-     *
+     * Maximal integer value. If the numeric_limits class is available use
+     * this information to obtain the extremal values, otherwise set it so
+     * that this class understands that all values are allowed.
      */
     static const unsigned int max_int_value;
 
     /**
-     * 构造函数。以给定的参数作为列表的有效元素的规范。
-     * 其他四个参数可以用来表示列表的最小和最大的允许长度，以及用来划分map的对的分隔符和用来分隔key和value的符号。
+     * Constructor. Take the given parameter as the specification of valid
+     * elements of the list.
      *
+     * The four other arguments can be used to denote minimal and maximal
+     * allowable lengths of the list as well as the separators used to delimit
+     * pairs of the map and the symbol used to separate keys and values.
      */
     Map(const PatternBase &key_pattern,
         const PatternBase &value_pattern,
@@ -553,83 +607,78 @@ namespace Patterns
         const std::string &key_value_separator = ":");
 
     /**
-     * 复制构造函数。
-     *
+     * Copy constructor.
      */
     Map(const Map &other);
 
     /**
-     * 如果字符串是一个逗号分隔的字符串列表，其中每个字符串都符合构造函数所给的模式，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is a comma-separated list of strings
+     * each of which match the pattern given to the constructor.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回有效字符串预期匹配的模式的描述。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回一个当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移给该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<Map>
     create(const std::string &description);
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。
-     *
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object.
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * 返回一个对关键模式的引用。
-     *
+     * Return a reference to the key pattern.
      */
     const PatternBase &
     get_key_pattern() const;
 
     /**
-     * 返回一个对值模式的引用。
-     *
+     * Return a reference to the value pattern.
      */
     const PatternBase &
     get_value_pattern() const;
 
     /**
-     * 返回地图条目的分隔符。
-     *
+     * Return the separator of the map entries.
      */
     const std::string &
     get_separator() const;
 
     /**
-     * 返回键值分离器。
-     *
+     * Return the key-value separator.
      */
     const std::string &
     get_key_value_separator() const;
 
     /**
-     * @addtogroup  异常情况  @{ .
-     *
+     * @addtogroup Exceptions
+     * @{
      */
 
     /**
-     * 异常情况。
-     *
+     * Exception.
      */
     DeclException2(ExcInvalidRange,
                    int,
@@ -639,40 +688,35 @@ namespace Patterns
     //@}
   private:
     /**
-     * 复制地图的每个键和每个值必须满足的模式。
-     *
+     * Copy of the patterns that each key and each value of the map has to
+     * satisfy.
      */
     std::unique_ptr<PatternBase> key_pattern;
     std::unique_ptr<PatternBase> value_pattern;
 
     /**
-     * 列表必须有的最小元素数。
-     *
+     * Minimum number of elements the list must have.
      */
     const unsigned int min_elements;
 
     /**
-     * 列表必须有的最大元素数。
-     *
+     * Maximum number of elements the list must have.
      */
     const unsigned int max_elements;
 
     /**
-     * 列表中各元素之间的分隔符。
-     *
+     * Separator between elements of the list.
      */
     const std::string separator;
 
 
     /**
-     * 键和值之间的分隔符。
-     *
+     * Separator between keys and values.
      */
     const std::string key_value_separator;
 
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
@@ -680,8 +724,11 @@ namespace Patterns
 
 
   /**
-   * 这个模式匹配任意类型的以冒号分隔的值。每个类型都必须与构造函数所给的模式相匹配。
-   * 下面是一个用法示例。
+   * This pattern matches colon-separated values of arbitrary types. Each type
+   * has to match a pattern given to the constructor.
+   *
+   * An example usage is the following:
+   *
    * @code
    * std::vector< std::unique_ptr<Patterns::PatternBase> > ps;
    *
@@ -693,7 +740,9 @@ namespace Patterns
    *
    * bool check = ps.match("5 : 3.14 : Ciao"); // check = true
    * @endcode
-   * 或者，如果你想利用 ParameterHandler::add_parameter(): 。
+   *
+   * or, if you want to exploit ParameterHandler::add_parameter():
+   *
    * @code
    * using T = std::tuple<std::string, Point<3>, unsigned int>;
    *
@@ -712,193 +761,199 @@ namespace Patterns
    * deallog << Patterns::Tools::Convert<T>::to_string(a) << std::endl;
    * // DEAL::Mondo : 2.000000, 3.000000, 4.000000 : 34
    * @endcode
-   * 构造函数希望得到一个模式的向量，以及一个指定从字符串解析Tuple时要使用的分隔符的字符串。
-   * 默认的分隔符是冒号，这是因为一对元素实际上是一个有两个元素的元组。
    *
+   * The constructor expects a vector of Patterns, and optionally a string
+   * specifying the separator to use when parsing the Tuple from a string.
+   *
+   * The default separator is a colon, owing to the fact that a pair is in fact
+   * a tuple with two elements.
    */
   class Tuple : public PatternBase
   {
   public:
     /**
-     * 构造函数。使用一个指向模式的唯一指针的向量来构造元组。
-     * @param  patterns 元组的每个对象应该匹配的模式  @param
-     * separator 用于限定每个元素的可选字符串 构建器。
+     * Constructor. Use a vector of unique pointers to Patterns to construct
+     * the tuple.
      *
+     * @param patterns The pattern each object of the Tuple should match
+     * @param separator An optional string used to delimit each element
+     * Constructor.
      */
     Tuple(const std::vector<std::unique_ptr<PatternBase>> &patterns,
           const std::string &                              separator = ":");
 
     /**
-     * 构造函数。和上面一样，专门用于 const
-     * char。这是必要的，以避免编译器因下面提供的变量构造器而产生错误。
-     *
+     * Constructor. Same as above, specialized for const char *. This is
+     * necessary to avoid compilers errors due to the variadic constructors
+     * provided below.
      */
     Tuple(const std::vector<std::unique_ptr<PatternBase>> &patterns,
           const char *                                     separator);
 
 
     /**
-     * 构造函数。从一个以上的PatternBase派生的类中创建一个Tuple。
-     * @param  分隔符 要使用什么分隔符。      @param  patterns
-     * 要使用的模式列表。
+     * Constructor. Creates a Tuple from more than one class derived from
+     * PatternBase.
      *
+     * @param separator What separator to use.
+     * @param patterns The list of patterns to use
      */
     template <class... PatternTypes>
     Tuple(const std::string &separator, const PatternTypes &... patterns);
 
     /**
-     * 构造器。这是需要的，以允许用户直接指定分离器而不使用
-     * std::string(";").
-     * 因为我们支持纯变体模板版本，如果没有这个特殊化，编译器将以隐性错误失败。
+     * Constructor. This is needed to allow users to specify
+     * directly the separator without using std::string(";").
      *
+     * Since we support a pure variadic templates version, without this
+     * specialization, the compiler will fail with cryptic errors.
      */
     template <class... PatternTypes>
     Tuple(const char *separator, const PatternTypes &... patterns);
 
     /**
-     * 构造函数。和上面一样，使用默认的分离器。
-     * @param  patterns 要使用的模式列表
+     * Constructor. Same as above, using the default separator.
      *
+     * @param patterns The list of patterns to use
      */
     template <typename... Patterns>
     Tuple(const Patterns &... patterns);
 
     /**
-     * 复制构造函数。
-     *
+     * Copy constructor.
      */
     Tuple(const Tuple &other);
 
     /**
-     * 如果字符串是一个字符串的列表，其中每一个都与给构造函数的模式相匹配，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is a list of strings
+     * each of which matches the patterns given to the constructor.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回一个当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移给该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<Tuple>
     create(const std::string &description);
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。
-     *
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object.
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * 返回一个对元组中第i个模式的引用。
-     *
+     * Return a reference to the i-th pattern in the tuple.
      */
     const PatternBase &
     get_pattern(const unsigned int i) const;
 
     /**
-     * 返回元组条目的分隔符。
-     *
+     * Return the separator of the tuple entries.
      */
     const std::string &
     get_separator() const;
 
   private:
     /**
-     * 复制存储在Tuple中的模式。
-     *
+     * Copy of the patterns stored in the Tuple.
      */
     std::vector<std::unique_ptr<PatternBase>> patterns;
 
     /**
-     * 列表中元素之间的分隔符。
-     *
+     * Separator between elements of the list.
      */
     const std::string separator;
 
     /**
-     * 描述的初始部分。
-     *
+     * Initial part of description.
      */
     static const char *description_init;
   };
 
 
   /**
-   * 这个类很像选择类，但它允许输入是一个逗号分隔的列表，每个值都必须在构造函数参数中给出。输入可以是空的，也可以包含多个值，而且逗号周围可以有任意数量的空格。当然，给构造函数的值中不允许有逗号。
-   * 例如，如果给构造函数的字符串是<tt>"ucd|gmv|eps"</tt>，那么以下是合法输入。"eps",
-   * "gmv, eps", 或者""。
+   * This class is much like the Selection class, but it allows the input to
+   * be a comma-separated list of values which each have to be given in the
+   * constructor argument. The input is allowed to be empty or contain values
+   * more than once and have an arbitrary number of spaces around commas. Of
+   * course commas are not allowed inside the values given to the constructor.
    *
+   * For example, if the string to the constructor was <tt>"ucd|gmv|eps"</tt>,
+   * then the following would be legal inputs: "eps", "gmv, eps", or "".
    */
   class MultipleSelection : public PatternBase
   {
   public:
     /**
-     * 构建器。  @p seq 是一个由"|"分隔的有效选项的列表。
-     *
+     * Constructor. @p seq is a list of valid options separated by "|".
      */
     MultipleSelection(const std::string &seq);
 
     /**
-     * 如果字符串是传递给构造函数的描述列表中的一个元素，则返回<tt>true</tt>。
-     *
+     * Return <tt>true</tt> if the string is an element of the description
+     * list passed to the constructor.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。这里，这是传递给构造函数的有效字符串的列表。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. Here, this is the list of valid strings passed to the
+     * constructor.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回当前对象的副本，它是在堆上新分配的。该对象的所有权被转移到该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<MultipleSelection>
     create(const std::string &description);
 
     /**
-     * 确定这个对象的内存消耗（以字节为单位）的估计值。
-     *
+     * Determine an estimate for the memory consumption (in bytes) of this
+     * object.
      */
     std::size_t
     memory_consumption() const override;
 
     /**
-     * @addtogroup  异常情况  @{
-     *
+     * @addtogroup Exceptions
+     * @{
      */
 
     /**
-     * 异常情况。
-     *
+     * Exception.
      */
     DeclException1(
       ExcCommasNotAllowed,
@@ -908,243 +963,255 @@ namespace Patterns
     //@}
   private:
     /**
-     * 传递给构造函数的有效字符串的列表。我们不使这个字符串成为常量，因为我们在构造函数中会对它进行一些处理。
-     *
+     * List of valid strings as passed to the constructor. We don't make this
+     * string constant, as we process it somewhat in the constructor.
      */
     std::string sequence;
 
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
   /**
-   * 测试该字符串是 "真 "还是 "假"。这被映射到选择类中。
-   *
+   * Test for the string being either "true" or "false". This is mapped to the
+   * Selection class.
    */
   class Bool : public Selection
   {
   public:
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     Bool();
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回一个当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移给该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新的对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<Bool>
     create(const std::string &description);
 
   private:
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
   /**
-   * 当测试一个字符串时总是返回<tt>true</tt>。
-   *
+   * Always returns <tt>true</tt> when testing a string.
    */
   class Anything : public PatternBase
   {
   public:
     /**
-     * 构造函数。(允许在这个类中至少有一个非虚拟函数，因为否则有时没有虚拟表被发出)。
-     *
+     * Constructor. (Allow for at least one non-virtual function in this
+     * class, as otherwise sometimes no virtual table is emitted.)
      */
     Anything() = default;
 
     /**
-     * 如果字符串符合其约束条件，则返回<tt>true</tt>，即总是如此。
-     *
+     * Return <tt>true</tt> if the string matches its constraints, i.e.
+     * always.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。这里，这是一个字符串<tt>"[Anything]"</tt>。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. Here, this is the string <tt>"[Anything]"</tt>.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回当前对象的副本，该对象是在堆上新分配的。该对象的所有权被转移到该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<Anything>
     create(const std::string &description);
 
   private:
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
 
   /**
-   * 一个模式，可以用来指示一个参数何时打算成为一个文件的名称。就其本身而言，这个类并不检查在参数文件中给出的字符串是否真的对应于一个现有的文件（例如，它可能是一个你想写入输出的文件的名称）。因此，该类在功能上等同于Anything类。然而，它允许指定一个参数的<i>intent</i>。给予构造函数的标志也允许指定该文件应该是一个输入或输出文件。
-   * 这个类存在的原因是为了支持编辑参数文件的图形用户界面。如果文件名应该代表一个输入文件，这些文件可以打开一个文件选择对话框。
+   * A pattern that can be used to indicate when a parameter is intended to be
+   * the name of a file. By itself, this class does not check whether the
+   * string that is given in a parameter file actually corresponds to an
+   * existing file (it could, for example, be the name of a file to which you
+   * want to write output). Functionally, the class is therefore equivalent to
+   * the Anything class. However, it allows to specify the <i>intent</i> of a
+   * parameter. The flag given to the constructor also allows to specify
+   * whether the file is supposed to be an input or output file.
    *
+   * The reason for the existence of this class is to support graphical user
+   * interfaces for editing parameter files. These may open a file selection
+   * dialog if the filename is supposed to represent an input file.
    */
   class FileName : public PatternBase
   {
   public:
     /**
-     * 文件可以被用于输入或输出。这可以在构造函数中通过选择标志<tt>类型</tt>来指定。
-     *
+     * Files can be used for input or output. This can be specified in the
+     * constructor by choosing the flag <tt>type</tt>.
      */
     enum FileType
     {
       /**
-       * 打开用于输入。
-       *
+       * Open for input.
        */
       input = 0,
       /**
-       * 为输出而开放。
-       *
+       * Open for output.
        */
       output = 1
     };
 
     /**
-     * 构造器。 文件的类型可以通过选择标志来指定。
-     *
+     * Constructor.  The type of the file can be specified by choosing the
+     * flag.
      */
     FileName(const FileType type = input);
 
     /**
-     * 如果字符串符合其约束条件，则返回<tt>true</tt>，即总是如此。
-     *
+     * Return <tt>true</tt> if the string matches its constraints, i.e.
+     * always.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。这里，这是一个字符串<tt>"[Filename]"</tt>。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. Here, this is the string <tt>"[Filename]"</tt>.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回当前对象的副本，它是在堆上新分配的。该对象的所有权被转移给该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 文件类型标志
-     *
+     * file type flag
      */
     FileType file_type;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<FileName>
     create(const std::string &description);
 
   private:
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
 
   /**
-   * 一个模式，可用于指示参数何时打算成为一个目录的名称。就其本身而言，这个类并不检查在参数文件中给出的字符串是否真的对应于一个现有的目录。因此在功能上，该类等同于Anything类。然而，它允许指定一个参数的<i>intent</i>。
-   * 这个类存在的原因是为了支持编辑参数文件的图形用户界面。这些可以打开一个文件选择对话框来选择或创建一个目录。
+   * A pattern that can be used to indicate when a parameter is intended to be
+   * the name of a directory. By itself, this class does not check whether the
+   * string that is given in a parameter file actually corresponds to an
+   * existing directory. Functionally, the class is therefore equivalent to
+   * the Anything class. However, it allows to specify the <i>intent</i> of a
+   * parameter.
    *
+   * The reason for the existence of this class is to support graphical user
+   * interfaces for editing parameter files. These may open a file selection
+   * dialog to select or create a directory.
    */
   class DirectoryName : public PatternBase
   {
   public:
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     DirectoryName() = default;
 
     /**
-     * 如果字符串符合其约束条件，则返回<tt>true</tt>，即总是如此。
-     *
+     * Return <tt>true</tt> if the string matches its constraints, i.e.
+     * always.
      */
     virtual bool
     match(const std::string &test_string) const override;
 
     /**
-     * 返回对有效字符串预期匹配的模式的描述。这里，这是一个字符串<tt>"[Filename]"</tt>。
-     *
+     * Return a description of the pattern that valid strings are expected to
+     * match. Here, this is the string <tt>"[Filename]"</tt>.
      */
     virtual std::string
     description(const OutputStyle style = Machine) const override;
 
     /**
-     * 返回当前对象的副本，它是在堆上新分配的。该对象的所有权被转移给该函数的调用者。
-     *
+     * Return a copy of the present object, which is newly allocated on the
+     * heap. Ownership of that object is transferred to the caller of this
+     * function.
      */
     virtual std::unique_ptr<PatternBase>
     clone() const override;
 
     /**
-     * 如果描述的开始部分与description_init匹配，则创建一个新对象。
-     * 该对象的所有权将被转移给该函数的调用者。
-     *
+     * Create a new object if the start of description matches
+     * description_init.  Ownership of that object is transferred to the
+     * caller of this function.
      */
     static std::unique_ptr<DirectoryName>
     create(const std::string &description);
 
   private:
     /**
-     * 描述的初始部分
-     *
+     * Initial part of description
      */
     static const char *description_init;
   };
 
 
   /**
-   * 一些类和函数的命名空间，它们作用于值和模式，并允许从非基本类型转换为字符串，反之亦然。
-   * 这些工具的一个典型用法是在下面的例子中。
+   * Namespace for a few classes and functions that act on values and patterns,
+   * and allow to convert from non elementary types to strings and vice versa.
+   *
+   * A typical usage of these tools is in the following example:
+   *
    * @code
    * using T = std::vector<unsigned int>;
    *
@@ -1168,13 +1235,15 @@ namespace Patterns
    * std::cout << internal::RankInfo<T>::list_rank << std::endl; // Outputs 1
    * std::cout << internal::RankInfo<T>::map_rank  << std::endl; // Outputs 0
    * @endcode
-   * Convert<T>被这个命名空间中的函数
-   * Patterns::Tools::add_parameter() 使用。在内部，它使用
-   * internal::RankInfo<T>
-   * 类来决定需要多少个不同的分隔符来将给定的类型转换为字符串。
-   * 例如，要写向量的向量，默认是使用",
-   * "作为第一个（内部）分隔符，而";
-   * "作为第二个（外部）分隔符，即
+   *
+   * Convert<T> is used by the function Patterns::Tools::add_parameter() in this
+   * namespace. Internally it uses the internal::RankInfo<T> class to decide how
+   * many different separators are required to convert the given type to a
+   * string.
+   *
+   * For example, to write vectors of vectors, the default is to use "," for the
+   * first (inner) separator, and ";" for the second (outer) separator, i.e.
+   *
    * @code
    * std::vector<std::vector<unsigned int>> vec;
    * vec = Convert<decltype(vec)>::to_value("1,2,3 ; 4,5,6");
@@ -1182,56 +1251,74 @@ namespace Patterns
    * s = convert<decltype(vec[0])>::to_string(vec[0]);
    * // s now contains the string "1,2,3"
    * @endcode
-   * Patterns::List 和 Patterns::Map
-   * 兼容类型的分隔符根据列表和地图对象的等级来选择，使用数组
-   * Patterns::Tools::internal::default_list_separator 和
+   *
+   * Separators for Patterns::List and Patterns::Map compatible types are
+   * selected according to the
+   * rank of the list and map objects, using the arrays
+   * Patterns::Tools::internal::default_list_separator and
    * Patterns::Tools::internal::default_map_separator.
-   * 它们目前被设置为。
+   *
+   * They are currently set to:
+   *
    * @code
    * default_list_separator{{","  ,  ";"  ,  "|"  ,   "%"}};
    * default_map_separator {{":"  ,  "="  ,  "@"  ,   "#"}};
    * @endcode
-   * 当人们需要 Patterns::List 和 Patterns::Map
-   * 类型的混合物时，它们的RankInfo是通过取Key和Value类型的vector_rank的最大值来计算的，因此，例如，可以有以下情况
+   *
+   * When one needs a mixture of Patterns::List and Patterns::Map types, their
+   * RankInfo is computed by taking the maximum of the vector_rank of the Key
+   * and of the Value type, so that, for example, it is possible to have the
+   * following
    * @code
    * ... // Build compare class
    * std::map<std::vector<unsigned int>, std::vector<double>, compare> map;
    *
    * map = convert<decltype(map)>::to_value(
-   * "1,2,3 : 5.0,6.0,7.0  ; 8,9,10 : 11.0,12.0,13.0");
+   *   "1,2,3 : 5.0,6.0,7.0  ; 8,9,10 : 11.0,12.0,13.0");
    *
    * @endcode
-   * 支持一些非基本类型，比如Point()，或者
-   * std::complex<double>.
-   * 如果你希望支持更多的类型，你必须对Convert结构以及RankInfo结构进行专业化。
-   * @ingroup input
    *
+   * Some non elementary types are supported, like Point(), or
+   * std::complex<double>. If you wish to support more types, you have to
+   * specialize the Convert struct as well as the RankInfo struct.
+   *
+   * @ingroup input
    */
   namespace Tools
   {
     /**
-     * 转换器类。这个类用于生成与给定类型相关的字符串和模式，以及从字符串转换到给定类型，反之亦然。
-     * 第二个模板参数在内部使用，以允许先进的SFINAE（替换失败不是错误）技巧，用于为任意的STL容器和映射专门化这个类。
+     * Converter class. This class is used to generate strings and Patterns
+     * associated to the given type, and to convert from a string to the given
+     * type and vice versa.
      *
+     * The second template parameter is used internally to allow for advanced
+     * SFINAE (substitution failure is not an error) tricks used to specialise
+     * this class for arbitrary STL containers and maps.
      */
     template <class T, class Enable = void>
     struct Convert
     {
       /**
-       * 返回一个 std::unique_ptr
-       * 给Pattern，可以用来解释一个字符串为模板参数的类型，反之亦然。
-       * 虽然当前的函数（在一般的Convert模板中）被删除了，但它在Convert类模板的特殊化中被实现并可用于特定种类的模板参数
-       * @p T.  。
+       * Return a std::unique_ptr to a Pattern that can be used to interpret a
+       * string as the type of the template argument, and the other way around.
        *
+       * While the current function (in the general Convert template) is
+       * deleted, it is implemented and available in the specializations of the
+       * Convert
+       * class template for particular kinds of template arguments @p T.
        */
       static std::unique_ptr<Patterns::PatternBase>
       to_pattern() = delete;
 
       /**
-       * 返回一个包含变量s的文本版本的字符串。使用传递的模式来执行转换，或者创建并使用一个默认的模式。
-       * 虽然当前的函数（在一般的Convert模板中）被删除了，但它在Convert类模板的特殊化中被实现并可用于特定种类的模板参数
-       * @p T.  。
+       * Return a string containing a textual version of the variable s. Use the
+       * pattern passed to perform the conversion, or create and use a default
+       * one.
        *
+       * While the current function (in the general Convert template) is
+       * deleted, it is implemented and available in the specializations of the
+       * Convert
+       * class template for particular kinds of template arguments @p T.
        */
       static std::string
       to_string(const T &                    s,
@@ -1239,10 +1326,13 @@ namespace Patterns
         delete;
 
       /**
-       * 使用给定的模式，将一个字符串转换为一个值。使用传递的模式来执行转换，或者创建并使用一个默认的模式。
-       * 虽然当前的函数（在一般的Convert模板中）被删除了，但它在Convert类模板的特殊类型的模板参数中被实现并可用
-       * @p T.  。
+       * Convert a string to a value, using the given pattern. Use the pattern
+       * passed to perform the conversion, or create and use a default one.
        *
+       * While the current function (in the general Convert template) is
+       * deleted, it is implemented and available in the specializations of the
+       * Convert
+       * class template for particular kinds of template arguments @p T.
        */
       static T
       to_value(const std::string &          s,
@@ -1251,28 +1341,34 @@ namespace Patterns
     };
 
     /**
-     * 一个实用的函数，简化了对任意复杂类型的字符串的转换。
-     * 这个函数以默认模式调用方法 Convert<T>::to_string()
-     * 。下面是一个用法示例。
+     * A utility function that simplifies the conversion to strings of
+     * arbitrarily complex types.
+     *
+     * This function calls the method Convert<T>::to_string() with the default
+     * pattern. An example usage is the following:
+     *
      * @code
      * auto t = std::make_tuple(1.0, std::make_pair(1, "ciao"));
      * auto s = Patterns::Tools::to_string(t);
      *
      * std::cout << s; // will print "1 % 1 : ciao""
      * @endcode
-     * 参见类 Patterns::Tools::Convert, 和辅助类
-     * Patterns::Tools::RankInfo
-     * 的文档，以了解输出STL容器类型时选择分隔符的方式的细节。
      *
+     * See the documentation of the class Patterns::Tools::Convert, and of the
+     * helper class Patterns::Tools::RankInfo for details on the way separators
+     * are selected when outputting STL container types.
      */
     template <typename T>
     std::string
     to_string(const T &t);
 
     /**
-     * 一个实用的函数，简化了从字符串到任意类型的转换。
-     * 这个函数以默认模式调用方法 Convert<T>::to_value()
-     * 。下面是一个用法示例。
+     * A utility function that simplifies the conversion from strings to
+     * arbitrary types.
+     *
+     * This function calls the method Convert<T>::to_value() with the default
+     * pattern. An example usage is the following:
+     *
      * @code
      * auto t = std::make_tuple(1.0, std::make_pair(1, "ciao"));
      * // replace the value of 't' by the parsed content of the string argument:
@@ -1281,26 +1377,27 @@ namespace Patterns
      * auto s = Patterns::Tools::to_string(t);
      * std::cout << s; // will print "2 % 3 : mondo""
      * @endcode
-     * 参见类 Patterns::Tools::Convert, 和辅助类
-     * Patterns::Tools::RankInfo
-     * 的文档，以了解从字符串转换到容器类型时应该在字符串模式中使用的分隔符。
-     * 注意，变量 @p t
-     * 的当前内容被忽略了。它的类型是用来推断如何解释字符串的。如果字符串被成功解析，那么
-     * @p t 将被设置为 @p s. 的解析内容。
      *
+     * See the documentation of the class Patterns::Tools::Convert, and of the
+     * helper class Patterns::Tools::RankInfo for details on the separators you
+     * should use in your string patterns when converting from a string to a
+     * container type.
+     *
+     * Notice that the current content of variable @p t is ignored. Its type is
+     * used to infer how to interpret the string. If the string is successfully
+     * parsed, then @p t will be set to the parsed content of @p s.
      */
     template <typename T>
     void
     to_value(const std::string &s, T &t);
 
     /**
-     * @addtogroup  例外情况  @{  。
-     *
+     * @addtogroup Exceptions
+     * @{
      */
 
     /**
-     * 异常情况。
-     *
+     * Exception.
      */
     DeclException2(ExcNoMatch,
                    std::string,
@@ -1352,23 +1449,28 @@ namespace Patterns
     namespace internal
     {
       /**
-       * 存储关于给定类的等级类型的信息。
-       * 一个类的等级等于在一个字符串中唯一识别其元素所需的不同分隔符的数量。
-       * 这个类用于检测类T是否与 Patterns::List 模式或与
-       * Patterns::Map 模式兼容。            像Point()或
-       * std::complex<double>
-       * 这样的对象是向量类，并且有vector_rank
-       * 1。基本类型，如 "int"、"unsigned int"、"double
-       * "等，具有vector_rank 0。  `std::vector`,   `std::list`
-       * 一般来说，容器的等级等于1+所含类型的vector_rank。对于地图类型也是如此。
-       * 一个 list_rank::value
-       * =0的类要么是基本类要么是地图。一个 map_rank::value
-       * =0的类要么是一个List兼容类，要么是一个基本类型。
-       * 基本类型与 Patterns::List,
-       * 不兼容，但非基本类型，如Point()，或
-       * std::complex<double>,
-       * 则与List类型兼容。添加更多的兼容类型是为给定的类型添加此结构的特殊化问题。
+       * Store information about the rank types of the given class.
        *
+       * A class has Rank equal to the number of different separators
+       * that are required to uniquely identify its element(s) in a string.
+       *
+       * This class is used to detect whether the class T is compatible
+       * with a Patterns::List pattern or with a Patterns::Map pattern.
+       *
+       * Objects like Point() or std::complex<double> are vector-likes, and
+       * have vector_rank 1. Elementary types, like `int`, `unsigned int`,
+       * `double`, etc. have vector_rank 0. `std::vector`, `std::list` and in
+       * general containers have rank equal to 1 + vector_rank of the contained
+       * type. Similarly for map types.
+       *
+       * A class with list_rank::value = 0 is either elementary or a
+       * map. A class with map_rank::value = 0 is either a List compatible
+       * class, or an elementary type.
+       *
+       * Elementary types are not compatible with Patterns::List, but non
+       * elementary types, like Point(), or std::complex<double>, are compatible
+       * with the List type. Adding more compatible types is a matter of adding
+       * a specialization of this struct for the given type.
        */
       template <class T, class Enable = void>
       struct RankInfo
@@ -2040,8 +2142,7 @@ namespace Patterns
       }
 
       /**
-       * 使用给定的模式或默认模式，将字符串转换为数值。
-       *
+       * Convert a string to a value, using the given pattern, or a default one.
        */
       static T
       to_value(const std::string &          s,
@@ -2244,5 +2345,3 @@ namespace Patterns
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

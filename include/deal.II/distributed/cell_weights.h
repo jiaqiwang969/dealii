@@ -1,3 +1,4 @@
+//include/deal.II-translator/distributed/cell_weights_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -28,118 +29,87 @@ DEAL_II_NAMESPACE_OPEN
 namespace parallel
 {
   /**
-   * Anytime a parallel::TriangulationBase is repartitioned, either upon request
-   * or by refinement/coarsening, cells will be distributed amongst all
-   * subdomains to achieve an equally balanced workload. If the workload per
-   * cell varies, which is in general the case for DoFHandler objects with
-   * hp-capabilities, we can take that into account by introducing individual
-   * weights for different cells.
-   *
-   * This class allows computing these weights for load balancing by
-   * consulting the FiniteElement that is associated with each cell of
-   * a DoFHandler. One can choose from predefined weighting algorithms provided
-   * by this class or provide a custom one.
-   *
-   * If the associated DoFHandler has not been initialized yet, i.e., its
-   * hp::FECollection is empty, all cell weights will be evaluated as zero.
-   *
-   * This class offers two different ways of connecting the chosen weighting
-   * function to the corresponding signal of the linked
-   * parallel::TriangulationBase. The recommended way involves creating an
-   * object of this class which will automatically take care of registering the
-   * weighting function upon creation and de-registering it once destroyed. An
-   * object of this class needs to exist for every DoFHandler associated with
-   * the Triangulation we work on to achieve satisfying work balancing results.
-   * The connected weighting function may be changed anytime using the
-   * CellWeights::reinit() function. The following code snippet demonstrates how
-   * to achieve each cell being weighted by its current number of degrees of
-   * freedom. We chose a factor of `1000` that corresponds to the initial weight
-   * each cell is assigned to upon creation.
+   * 任何时候 parallel::TriangulationBase
+   * 被重新分区，不管是根据要求还是通过细化/粗化，单元格将被分配到所有子域中，以达到平等的平衡工作量。如果每个单元的工作量不同，对于具有hp-capabilities的DoFHandler对象来说通常是这样的，我们可以通过为不同的单元引入单独的权重来考虑到这一点。
+   * 这个类允许通过查询与DoFHandler的每个单元相关联的FiniteElement来计算这些用于负载平衡的权重。人们可以从该类提供的预定义权重算法中选择，也可以提供一个自定义的算法。
+   * 如果相关的DoFHandler还没有被初始化，即它的
+   * hp::FECollection 是空的，所有单元的权重将被评估为零。
+   * 该类提供了两种不同的方式来连接所选择的加权函数和链接的
+   * parallel::TriangulationBase.
+   * 的相应信号。推荐的方式包括创建一个该类的对象，该对象将在创建时自动负责注册加权函数，并在销毁时取消其注册。为了达到令人满意的工作平衡结果，每个与我们工作的三角形相关的DoFHandler都需要存在这个类的一个对象。
+   * 连接的加权函数可以使用 CellWeights::reinit()
+   * 函数随时改变。下面的代码片断演示了如何实现每个单元按其当前自由度数加权。我们选择了一个`1000`的系数，对应于每个单元在创建时被分配到的初始权重。
    * @code
    * parallel::CellWeights<dim, spacedim> cell_weights(
-   *   hp_dof_handler,
-   *   parallel::CellWeights<dim, spacedim>::ndofs_weighting({1000, 1}));
+   * hp_dof_handler,
+   * parallel::CellWeights<dim, spacedim>::ndofs_weighting({1000, 1}));
    * @endcode
-   *
-   * On the other hand, you are also able to take care of handling the signal
-   * connection manually by using the static member function of this class. In
-   * this case, an analogous code example looks as follows.
+   * 另一方面，你也能够通过使用这个类的静态成员函数来手动处理信号连接。在这种情况下，一个类似的代码例子看起来如下。
    * @code
    * boost::signals2::connection connection =
-   *   hp_dof_handler.get_triangulation().signals.cell_weight.connect(
-   *     parallel::CellWeights<dim, spacedim>::make_weighting_callback(
-   *       hp_dof_handler,
-   *       parallel::CellWeights<dim, spacedim>::ndofs_weighting(
-   *         {1000, 1}));
+   * hp_dof_handler.get_triangulation().signals.cell_weight.connect(
+   *   parallel::CellWeights<dim, spacedim>::make_weighting_callback(
+   *     hp_dof_handler,
+   *     parallel::CellWeights<dim, spacedim>::ndofs_weighting(
+   *       {1000, 1}));
    * @endcode
-   *
-   * The use of this class is demonstrated in step-75.
-   *
-   * @note See Triangulation::Signals::cell_weight for more information on
-   * weighting and load balancing.
-   *
-   * @note Be aware that this class connects the weight function to the
-   * Triangulation during this class's constructor. If the Triangulation
-   * associated with the DoFHandler changes during the lifetime of the
-   * latter via DoFHandler::reinit(), an assertion will be triggered in
-   * the weight_callback() function. Use CellWeights::reinit() to deregister the
-   * weighting function on the old Triangulation and connect it to the new one.
-   *
+   * 这个类的使用在  step-75  中演示。
+   * @note  参见 Triangulation::Signals::cell_weight
+   * ，了解更多关于加权和负载平衡的信息。
+   * @note
+   * 注意这个类在这个类的构造函数中把权重函数连接到Triangulation。如果与DoFHandler相关的Triangulation在后者的生命周期内通过
+   * DoFHandler::reinit(),
+   * 发生变化，将在weight_callback()函数中触发断言。使用
+   * CellWeights::reinit()
+   * 取消对旧三角函数的注册，并将其连接到新的三角函数。
    * @ingroup distributed
+   *
    */
   template <int dim, int spacedim = dim>
   class CellWeights
   {
   public:
     /**
-     * An alias that defines the characteristics of a function that can be used
-     * for weighting cells during load balancing.
+     * 一个别名，它定义了一个函数的特性，可以在负载平衡期间用于加权单元。
+     * 这种加权函数的参数是一个单元的迭代器和重新分区后将分配给它的未来有限元。
+     * 它们返回一个无符号整数，被解释为单元的权重，或者说，与之相关的额外计算负荷。
      *
-     * Such weighting functions take as arguments an iterator to a cell and the
-     * future finite element that will be assigned to it after repartitioning.
-     * They return an unsigned integer which is interpreted as the cell's
-     * weight or, in other words, the additional computational load associated
-     * with it.
      */
     using WeightingFunction = std::function<
       unsigned int(const typename DoFHandler<dim, spacedim>::cell_iterator &,
                    const FiniteElement<dim, spacedim> &)>;
 
     /**
-     * Constructor.
+     * 构造函数。          @param[in]  dof_handler
+     * 将被用于确定每个单元的有限元的DoFHandler。
+     * @param[in]  weighting_function
+     * 在负载平衡期间确定每个单元重量的函数。
      *
-     * @param[in] dof_handler The DoFHandler which will be used to
-     *    determine each cell's finite element.
-     * @param[in] weighting_function The function that determines each
-     *    cell's weight during load balancing.
      */
     CellWeights(const dealii::DoFHandler<dim, spacedim> &dof_handler,
                 const WeightingFunction &                weighting_function);
 
     /**
-     * Destructor.
+     * 解构器。        断开之前连接到权重信号的函数。
      *
-     * Disconnects the function previously connected to the weighting signal.
      */
     ~CellWeights();
 
     /**
-     * Connect a different @p weighting_function to the Triangulation
-     * associated with the @p dof_handler.
+     * 将不同的 @p weighting_function 连接到与 @p dof_handler.
+     * 相关的三角图上 断开先前连接到加权信号的函数。
      *
-     * Disconnects the function previously connected to the weighting signal.
      */
     void
     reinit(const DoFHandler<dim, spacedim> &dof_handler,
            const WeightingFunction &        weighting_function);
 
     /**
-     * Converts a @p weighting_function to a different type that qualifies as
-     * a callback function, which can be connected to a weighting signal of a
-     * Triangulation.
+     * 将 @p weighting_function
+     * 转换为符合回调函数条件的不同类型，可以连接到Triangulation的加权信号。
+     * 这个函数确实<b>not</b>将转换后的函数连接到与 @p
+     * dof_handler. 相关的Triangulation。
      *
-     * This function does <b>not</b> connect the converted function to the
-     * Triangulation associated with the @p dof_handler.
      */
     static std::function<unsigned int(
       const typename dealii::Triangulation<dim, spacedim>::cell_iterator &cell,
@@ -148,57 +118,56 @@ namespace parallel
                             const WeightingFunction &weighting_function);
 
     /**
-     * @name Selection of weighting functions
-     * @{
+     * @name  选择加权函数 @{  。
+     *
      */
 
     /**
-     * Choose a constant weight @p factor on each cell.
+     * 在每个单元格上选择一个常数权重 @p factor 。
+     *
      */
     static WeightingFunction
     constant_weighting(const unsigned int factor = 1000);
 
     /**
-     * The pair of floating point numbers $(a,b)$ provided via
-     * @p coefficients determines the weight $w_K$ of each cell $K$ with
-     * $n_K$ degrees of freedom in the following way: \f[ w_K =
-     * a \, n_K^b \f]
+     * 通过 @p coefficients 提供的一对浮点数 $(a,b)$
+     * 以下列方式确定每个具有 $n_K$ 自由度的单元 $K$
+     * 的权重。\f[ w_K = a \, n_K^b
+     * \f]由于要求细胞权重为整数，所以右边将被四舍五入为最接近的整数。
      *
-     * The right hand side will be rounded to the nearest integer since cell
-     * weights are required to be integers.
      */
     static WeightingFunction
     ndofs_weighting(const std::pair<float, float> &coefficients);
 
     /**
-     * The container @p coefficients provides pairs of floating point numbers
-     * $(a_i, b_i)$ that determine the weight $w_K$ of each cell
-     * $K$ with $n_K$ degrees of freedom in the following way: \f[ w_K =
-     * \sum_i a_i \, n_K^{b_i} \f]
+     * 容器 @p coefficients 提供了成对的浮点数 $(a_i, b_i)$
+     * ，它们以下列方式确定每个具有 $n_K$ 自由度的单元 $K$
+     * 的权重 $w_K$ 。\f[ w_K = \sum_i a_i \, n_K^{b_i}
+     * \f]由于要求单元格权重为整数，所以右手边将被四舍五入为最近的整数。
      *
-     * The right hand side will be rounded to the nearest integer since cell
-     * weights are required to be integers.
      */
     static WeightingFunction
     ndofs_weighting(const std::vector<std::pair<float, float>> &coefficients);
 
     /**
      * @}
+     *
      */
 
   private:
     /**
-     * A connection to the corresponding cell_weight signal of the Triangulation
-     * which is attached to the DoFHandler.
+     * 与连接到DoFHandler的Triangulation的相应cell_weight信号的连接。
+     *
      */
     boost::signals2::connection connection;
 
     /**
-     * A callback function that will be connected to the cell_weight signal of
-     * the @p triangulation, to which the @p dof_handler is attached. Ultimately
-     * returns the weight for each cell, determined by the @p weighting_function
-     * provided as a parameter. Returns zero if @p dof_handler has not been
-     * initialized yet.
+     * 一个回调函数，它将连接到 @p triangulation,
+     * 的cell_weight信号， @p dof_handler
+     * 被连接到该信号。最终返回每个单元的重量，由作为参数提供的
+     * @p weighting_function 决定。如果 @p dof_handler
+     * 还没有被初始化，则返回0。
+     *
      */
     static unsigned int
     weighting_callback(
@@ -214,3 +183,5 @@ namespace parallel
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

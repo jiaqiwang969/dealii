@@ -1,3 +1,4 @@
+//include/deal.II-translator/physics/transformations_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -30,30 +31,30 @@ namespace Physics
   namespace Transformations
   {
     /**
-     * Transformation functions and tensors that are defined in terms of
-     * rotation angles and axes of rotation.
+     * 以旋转角度和旋转轴定义的变换函数和张量。
+     *
      */
     namespace Rotations
     {
       /**
-       * @name Rotation matrices
+       * @name 旋转矩阵
+       *
        */
       //@{
 
       /**
-       * Return the rotation matrix for 2-d Euclidean space, namely
-       * @f[
-       *  \mathbf{R} \dealcoloneq \left[ \begin{array}{cc}
-       *  cos(\theta) & -sin(\theta) \\
-       *  sin(\theta) & cos(\theta)
-       * \end{array}\right]
-       * @f]
-       * where $\theta$ is the rotation angle given in radians. In particular,
-       * this describes the counter-clockwise rotation of a vector relative to
-       * a <a href="http://mathworld.wolfram.com/RotationMatrix.html">fixed
-       * set of right-handed axes</a>.
+       * 返回2维欧氏空间的旋转矩阵，即@f[
+       * \mathbf{R} \dealcoloneq \left[ \begin{array}{cc}
+       * cos(\theta) &
        *
-       * @param[in] angle The rotation angle (about the z-axis) in radians
+       * -sin(\theta) \\
+       * sin(\theta) & cos(\theta)
+       * \end{array}\right]
+       * @f]，其中 $\theta$ 是以弧度给出的旋转角度。特别是，这描述了一个向量相对于<a href="http://mathworld.wolfram.com/RotationMatrix.html">fixed
+       * set of right-handed axes</a>的逆时针旋转。
+       * @param[in] 角度
+       * 以弧度为单位的旋转角度（关于Z轴）。
+       *
        */
       template <typename Number>
       Tensor<2, 2, Number>
@@ -61,32 +62,20 @@ namespace Physics
 
 
       /**
-       * Return the rotation matrix for 3-d Euclidean space. Most concisely
-       * stated using the Rodrigues' rotation formula, this function returns
-       * the equivalent of
-       * @f[
-       *  \mathbf{R} \dealcoloneq cos(\theta)\mathbf{I} + sin(\theta)\mathbf{W}
-       *              + (1-cos(\theta))\mathbf{u}\otimes\mathbf{u}
-       * @f]
-       * where $\mathbf{u}$ is the axial vector (an axial vector) and $\theta$
-       * is the rotation angle given in radians, $\mathbf{I}$ is the identity
-       * tensor and $\mathbf{W}$ is the skew symmetric tensor of $\mathbf{u}$.
-       *
-       * @dealiiWriggersA{374,9.194} This presents Rodrigues' rotation
-       * formula, but the implementation used in this function is described in
-       * this <a
+       * 返回3维欧几里得空间的旋转矩阵。用罗德里格斯的旋转公式最简洁地说明，这个函数返回相当于@f[
+       * \mathbf{R} \dealcoloneq cos(\theta)\mathbf{I} + sin(\theta)\mathbf{W}
+       *            + (1-cos(\theta))\mathbf{u}\otimes\mathbf{u}
+       * @f]，其中 $\mathbf{u}$ 是轴向量（一个轴向向量）， $\theta$ 是以弧度给出的旋转角度， $\mathbf{I}$ 是身份张量， $\mathbf{W}$ 是 $\mathbf{u}$ 的斜对称张量。              @dealiiWriggersA{374,9.194}  这提出了罗德里格斯的旋转公式，但在这个函数中使用的实现在这个<a
        * href="https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle">wikipedia
-       * link</a>. In particular, this describes the counter-clockwise
-       * rotation of a vector <a
+       * link</a>中描述。特别是，这描述了一个向量<a
        * href="http://mathworld.wolfram.com/RotationMatrix.html">in a plane
-       * with its normal</a>. defined by the @p axis of rotation. An
-       * alternative implementation is discussed at <a
+       * with its normal</a>的逆时针旋转。由旋转的 @p axis
+       * 定义。在<a
        * href="https://www.gamedev.net/resources/_/technical/math-and-physics/do-we-really-need-quaternions-r1199">this
-       * link</a>, but is inconsistent (sign-wise) with the Rodrigues'
-       * rotation formula as it describes the rotation of a coordinate system.
+       * link</a>中讨论了另一种实现方式，但与罗德里格斯的旋转公式不一致（符号上），因为它描述的是坐标系的旋转。
+       * @param[in]  axis 一个定义旋转轴的单位向量  @param[in]
+       * angle 旋转角度，单位为弧度
        *
-       * @param[in] axis  A unit vector that defines the axis of rotation
-       * @param[in] angle The rotation angle in radians
        */
       template <typename Number>
       Tensor<2, 3, Number>
@@ -97,40 +86,31 @@ namespace Physics
     } // namespace Rotations
 
     /**
-     * Transformation of tensors that are defined in terms of a set of
-     * contravariant bases. Rank-1 and rank-2 contravariant tensors
-     * $\left(\bullet\right)^{\sharp} = \mathbf{T}$ (and its spatial
-     * counterpart $\mathbf{t}$) typically satisfy the relation
-     * @f[
-     *    \int_{V_{0}} \nabla_{0} \cdot \mathbf{T} \; dV
-     *      = \int_{\partial V_{0}} \mathbf{T} \cdot \mathbf{N} \; dA
-     *      = \int_{\partial V_{t}} \mathbf{T} \cdot \mathbf{n} \; da
-     *      = \int_{V_{t}} \nabla \cdot \mathbf{t} \; dv
-     * @f]
-     * where $V_{0}$ and $V_{t}$ are respectively control volumes in the
-     * reference and spatial configurations, and their surfaces $\partial
-     * V_{0}$ and $\partial V_{t}$ have the outwards facing normals
-     * $\mathbf{N}$ and $\mathbf{n}$.
+     * 以一组禁忌基数定义的张量的变换。等级1和等级2的忌变张量 $\left(\bullet\right)^{\sharp} = \mathbf{T}$ （以及它的空间对应物 $\mathbf{t}$ ）通常满足关系@f[
+     *  \int_{V_{0}} \nabla_{0} \cdot \mathbf{T} \; dV
+     *    = \int_{\partial V_{0}} \mathbf{T} \cdot \mathbf{N} \; dA
+     *    = \int_{\partial V_{t}} \mathbf{T} \cdot \mathbf{n} \; da
+     *    = \int_{V_{t}} \nabla \cdot \mathbf{t} \; dv
+     * @f]，其中 $V_{0}$ 和 $V_{t}$ 分别是参考和空间配置中的控制体积，其表面 $\partial
+     * V_{0}$ 和 $\partial V_{t}$ 具有向外的法线 $\mathbf{N}$ 和
+     * $\mathbf{n}$  。
+     *
      */
     namespace Contravariant
     {
       /**
-       * @name Push forward operations
+       * @name  向前推操作
+       *
        */
       //@{
 
       /**
-       * Return the result of the push forward transformation on a
-       * contravariant vector, i.e.
-       * @f[
-       *  \chi\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \mathbf{F} \cdot \left(\bullet\right)^{\sharp}
-       * @f]
+       * 返回对一个禁忌向量进行前推变换的结果，即 @f[
+       * \chi\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \mathbf{F} \cdot \left(\bullet\right)^{\sharp}
+       * @f]  @param[in]  V 被操作的（参考）向量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{V} \right)$
        *
-       * @param[in] V The (referential) vector to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{V} \right)$
        */
       template <int dim, typename Number>
       Tensor<1, dim, Number>
@@ -138,18 +118,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-2
-       * contravariant tensor, i.e.
-       * @f[
-       *  \chi\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \mathbf{F} \cdot \left(\bullet\right)^{\sharp} \cdot
+       * 返回对第2级禁忌张量的前推变换结果，即 @f[
+       * \chi\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \mathbf{F} \cdot \left(\bullet\right)^{\sharp} \cdot
        * \mathbf{F}^{T}
-       * @f]
+       * @f]  @param[in]  T 要操作的（参考）第2级张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{T} \right)$  。
        *
-       * @param[in] T The (referential) rank-2 tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{T} \right)$
        */
       template <int dim, typename Number>
       Tensor<2, dim, Number>
@@ -157,19 +132,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-2
-       * contravariant symmetric tensor, i.e.
-       * @f[
-       *  \chi\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \mathbf{F} \cdot \left(\bullet\right)^{\sharp} \cdot
+       * 返回对等级2的禁忌对称张量进行前推变换的结果，即 @f[
+       * \chi\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \mathbf{F} \cdot \left(\bullet\right)^{\sharp} \cdot
        * \mathbf{F}^{T}
-       * @f]
+       * @f]  @param[in]  T 要操作的（参考）等级2的对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{T} \right)$  。
        *
-       * @param[in] T The (referential) rank-2 symmetric tensor to be operated
-       * on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{T} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<2, dim, Number>
@@ -177,18 +146,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &         F);
 
       /**
-       * Return the result of the push forward transformation on a rank-4
-       * contravariant tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi\left(\bullet\right)^{\sharp} \right]_{ijkl}
-       *    \dealcoloneq F_{iI} F_{jJ}
-       *    \left(\bullet\right)^{\sharp}_{IJKL} F_{kK} F_{lL}
-       * @f]
+       * 返回对一个等级4的禁忌张量进行前推变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi\left(\bullet\right)^{\sharp} \right]_{ijkl}
+       *  \dealcoloneq F_{iI} F_{jJ}
+       *  \left(\bullet\right)^{\sharp}_{IJKL} F_{kK} F_{lL}
+       * @f]  @param[in]  H 要操作的（参考）秩-4张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{H} \right)$
        *
-       * @param[in] H The (referential) rank-4 tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{H} \right)$
        */
       template <int dim, typename Number>
       Tensor<4, dim, Number>
@@ -196,19 +160,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-4
-       * contravariant symmetric tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi\left(\bullet\right)^{\sharp} \right]_{ijkl}
-       *    \dealcoloneq F_{iI} F_{jJ}
-       *    \left(\bullet\right)^{\sharp}_{IJKL} F_{kK} F_{lL}
-       * @f]
+       * 返回对等级4的禁忌对称张量进行推前变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi\left(\bullet\right)^{\sharp} \right]_{ijkl}
+       *  \dealcoloneq F_{iI} F_{jJ}
+       *  \left(\bullet\right)^{\sharp}_{IJKL} F_{kK} F_{lL}
+       * @f]  @param[in]  H 要操作的（参考）等级-4对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{H} \right)$
        *
-       * @param[in] H The (referential) rank-4 symmetric tensor to be operated
-       * on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{H} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<4, dim, Number>
@@ -218,22 +176,18 @@ namespace Physics
       //@}
 
       /**
-       * @name Pull back operations
+       * @name  拉回操作
+       *
        */
       //@{
 
       /**
-       * Return the result of the pull back transformation on a contravariant
-       * vector, i.e.
-       * @f[
-       *  \chi^{-1}\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \mathbf{F}^{-1} \cdot \left(\bullet\right)^{\sharp}
-       * @f]
+       * 返回对一个禁忌向量进行回拉变换的结果，即 @f[
+       * \chi^{-1}\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \mathbf{F}^{-1} \cdot \left(\bullet\right)^{\sharp}
+       * @f]  @param[in]  v 被操作的（空间）向量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{v} \right)$
        *
-       * @param[in] v The (spatial) vector to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{v} \right)$
        */
       template <int dim, typename Number>
       Tensor<1, dim, Number>
@@ -241,18 +195,14 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-2
-       * contravariant tensor, i.e.
-       * @f[
-       *  \chi^{-1}\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \mathbf{F}^{-1} \cdot \left(\bullet\right)^{\sharp}
-       *    \cdot \mathbf{F}^{-T}
-       * @f]
+       * 返回2级禁忌张量的回拉变换结果，即 @f[
+       * \chi^{-1}\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \mathbf{F}^{-1} \cdot \left(\bullet\right)^{\sharp}
+       *  \cdot \mathbf{F}^{-T}
+       * @f]  @param[in]  t 要操作的（空间）张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{t} \right)$
+       * 。
        *
-       * @param[in] t The (spatial) tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{t} \right)$
        */
       template <int dim, typename Number>
       Tensor<2, dim, Number>
@@ -260,18 +210,14 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-2
-       * contravariant symmetric tensor, i.e.
-       * @f[
-       *  \chi^{-1}\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \mathbf{F}^{-1} \cdot \left(\bullet\right)^{\sharp}
-       *    \cdot \mathbf{F}^{-T}
-       * @f]
+       * 返回2级禁忌对称张量的回拉变换结果，即 @f[
+       * \chi^{-1}\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \mathbf{F}^{-1} \cdot \left(\bullet\right)^{\sharp}
+       *  \cdot \mathbf{F}^{-T}
+       * @f]  @param[in]  t 要操作的（空间）对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{t} \right)$
+       * 。
        *
-       * @param[in] t The (spatial) symmetric tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{t} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<2, dim, Number>
@@ -279,18 +225,13 @@ namespace Physics
                 const Tensor<2, dim, Number> &         F);
 
       /**
-       * Return the result of the pull back transformation on a rank-4
-       * contravariant tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi^{-1}\left(\bullet\right)^{\sharp} \right]_{IJKL}
-       *    \dealcoloneq F^{-1}_{Ii} F^{-1}_{Jj}
+       * 返回对一个等级为4的禁忌张量进行回拉变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi^{-1}\left(\bullet\right)^{\sharp} \right]_{IJKL}
+       *  \dealcoloneq F^{-1}_{Ii} F^{-1}_{Jj}
        * \left(\bullet\right)^{\sharp}_{ijkl} F^{-1}_{Kk} F^{-1}_{Ll}
-       * @f]
+       * @f]  @param[in]  h 要操作的（空间）张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{h} \right)$
        *
-       * @param[in] h The (spatial) tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{h} \right)$
        */
       template <int dim, typename Number>
       Tensor<4, dim, Number>
@@ -298,18 +239,13 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-4
-       * contravariant symmetric tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi^{-1}\left(\bullet\right)^{\sharp} \right]_{IJKL}
-       *    \dealcoloneq F^{-1}_{Ii} F^{-1}_{Jj}
-       *    \left(\bullet\right)^{\sharp}_{ijkl} F^{-1}_{Kk} F^{-1}_{Ll}
-       * @f]
+       * 返回对等级4的禁忌对称张量进行回拉变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi^{-1}\left(\bullet\right)^{\sharp} \right]_{IJKL}
+       *  \dealcoloneq F^{-1}_{Ii} F^{-1}_{Jj}
+       *  \left(\bullet\right)^{\sharp}_{ijkl} F^{-1}_{Kk} F^{-1}_{Ll}
+       * @f]  @param[in]  h 要操作的（空间）对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{h} \right)$
        *
-       * @param[in] h The (spatial) symmetric tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{h} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<4, dim, Number>
@@ -320,42 +256,30 @@ namespace Physics
     } // namespace Contravariant
 
     /**
-     * Transformation of tensors that are defined in terms of a set of
-     * covariant basis vectors. Rank-1 and rank-2 covariant tensors
-     * $\left(\bullet\right)^{\flat} = \mathbf{T}$ (and its spatial
-     * counterpart $\mathbf{t}$) typically satisfy the relation
-     * @f[
-     *    \int_{\partial V_{0}} \left[ \nabla_{0} \times \mathbf{T} \right]
+     * 以一组协变基向量定义的张量的变换。等级1和等级2协变张量 $\left(\bullet\right)^{\flat} = \mathbf{T}$ （及其空间对应物 $\mathbf{t}$ ）通常满足关系@f[
+     *  \int_{\partial V_{0}} \left[ \nabla_{0} \times \mathbf{T} \right]
      * \cdot \mathbf{N} \; dA = \oint_{\partial A_{0}} \mathbf{T} \cdot
      * \mathbf{L} \; dL = \oint_{\partial A_{t}} \mathbf{t} \cdot \mathbf{l} \;
      * dl = \int_{\partial V_{t}} \left[ \nabla \times \mathbf{t} \right] \cdot
      * \mathbf{n} \; da
-     * @f]
-     * where the control surfaces $\partial V_{0}$ and $\partial V_{t}$ with
-     * outwards facing normals $\mathbf{N}$ and $\mathbf{n}$ are bounded by
-     * the curves $\partial A_{0}$ and $\partial A_{t}$ that are,
-     * respectively, associated with the line directors $\mathbf{L}$ and
-     * $\mathbf{l}$.
+     * @f]，其中控制面 $\partial V_{0}$ 和 $\partial V_{t}$  ] 的法线 $\mathbf{N}$ 和 $\mathbf{n}$ 被曲线 $\partial A_{0}$ 和 $\partial A_{t}$ 所约束，这些曲线分别与线长 $\mathbf{L}$ 和 $\mathbf{l}$ 有关。
+     *
      */
     namespace Covariant
     {
       /**
-       * @name Push forward operations
+       * @name  推进操作
+       *
        */
       //@{
 
       /**
-       * Return the result of the push forward transformation on a covariant
-       * vector, i.e.
-       * @f[
-       *  \chi\left(\bullet\right)^{\flat}
-       *    \dealcoloneq \mathbf{F}^{-T} \cdot \left(\bullet\right)^{\flat}
-       * @f]
+       * 返回共变向量上的前推变换结果，即 @f[
+       * \chi\left(\bullet\right)^{\flat}
+       *  \dealcoloneq \mathbf{F}^{-T} \cdot \left(\bullet\right)^{\flat}
+       * @f]  @param[in]  V 被操作的（参考）向量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{V} \right)$
        *
-       * @param[in] V The (referential) vector to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{V} \right)$
        */
       template <int dim, typename Number>
       Tensor<1, dim, Number>
@@ -363,18 +287,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-2
-       * covariant tensor, i.e.
-       * @f[
-       *  \chi\left(\bullet\right)^{\flat}
-       *    \dealcoloneq \mathbf{F}^{-T} \cdot \left(\bullet\right)^{\flat}
-       *    \cdot \mathbf{F}^{-1}
-       * @f]
+       * 返回对等级2共变张量的前推变换结果，即 @f[
+       * \chi\left(\bullet\right)^{\flat}
+       *  \dealcoloneq \mathbf{F}^{-T} \cdot \left(\bullet\right)^{\flat}
+       *  \cdot \mathbf{F}^{-1}
+       * @f]  @param[in]  T 要操作的（参考）等级2张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{T} \right)$  。
        *
-       * @param[in] T The (referential) rank-2 tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{T} \right)$
        */
       template <int dim, typename Number>
       Tensor<2, dim, Number>
@@ -382,19 +301,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-2
-       * covariant symmetric tensor, i.e.
-       * @f[
-       *  \chi\left(\bullet\right)^{\flat}
-       *    \dealcoloneq \mathbf{F}^{-T} \cdot \left(\bullet\right)^{\flat}
-       *    \cdot \mathbf{F}^{-1}
-       * @f]
+       * 返回对等级2共变对称张量的前推变换结果，即 @f[
+       * \chi\left(\bullet\right)^{\flat}
+       *  \dealcoloneq \mathbf{F}^{-T} \cdot \left(\bullet\right)^{\flat}
+       *  \cdot \mathbf{F}^{-1}
+       * @f]  @param[in]  T 要操作的（参考）等级2对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{T} \right)$  。
        *
-       * @param[in] T The (referential) rank-2 symmetric tensor to be operated
-       * on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{T} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<2, dim, Number>
@@ -402,18 +315,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &         F);
 
       /**
-       * Return the result of the push forward transformation on a rank-4
-       * covariant tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi\left(\bullet\right)^{\flat} \right]_{ijkl}
-       *    \dealcoloneq F^{-T}_{iI} F^{-T}_{jJ}
-       *    \left(\bullet\right)^{\flat}_{IJKL} F^{-T}_{kK} F^{-T}_{lL}
-       * @f]
+       * 返回对等级4共变张量的前推变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi\left(\bullet\right)^{\flat} \right]_{ijkl}
+       *  \dealcoloneq F^{-T}_{iI} F^{-T}_{jJ}
+       *  \left(\bullet\right)^{\flat}_{IJKL} F^{-T}_{kK} F^{-T}_{lL}
+       * @f]  @param[in]  H 要操作的（参考）等级-4张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{H} \right)$
        *
-       * @param[in] H The (referential) rank-4 tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{H} \right)$
        */
       template <int dim, typename Number>
       Tensor<4, dim, Number>
@@ -421,19 +329,13 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-4
-       * covariant symmetric tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi\left(\bullet\right)^{\flat} \right]_{ijkl}
-       *    \dealcoloneq F^{-T}_{iI} F^{-T}_{jJ}
-       *    \left(\bullet\right)^{\flat}_{IJKL} F^{-T}_{kK} F^{-T}_{lL}
-       * @f]
+       * 返回对等级4共变对称张量的前推变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi\left(\bullet\right)^{\flat} \right]_{ijkl}
+       *  \dealcoloneq F^{-T}_{iI} F^{-T}_{jJ}
+       *  \left(\bullet\right)^{\flat}_{IJKL} F^{-T}_{kK} F^{-T}_{lL}
+       * @f]  @param[in]  H 要操作的（参考）等级-4对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi\left( \mathbf{H} \right)$ .
        *
-       * @param[in] H The (referential) rank-4 symmetric tensor to be operated
-       * on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi\left( \mathbf{H} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<4, dim, Number>
@@ -443,22 +345,18 @@ namespace Physics
       //@}
 
       /**
-       * @name Pull back operations
+       * @name  拉回操作
+       *
        */
       //@{
 
       /**
-       * Return the result of the pull back transformation on a covariant
-       * vector, i.e.
-       * @f[
-       *  \chi^{-1}\left(\bullet\right)^{\flat}
-       *    \dealcoloneq \mathbf{F}^{T} \cdot \left(\bullet\right)^{\flat}
-       * @f]
+       * 返回共变向量上的回拉变换结果，即 @f[
+       * \chi^{-1}\left(\bullet\right)^{\flat}
+       *  \dealcoloneq \mathbf{F}^{T} \cdot \left(\bullet\right)^{\flat}
+       * @f]  @param[in]  v 被操作的（空间）向量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{v} \right)$
        *
-       * @param[in] v The (spatial) vector to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{v} \right)$
        */
       template <int dim, typename Number>
       Tensor<1, dim, Number>
@@ -466,18 +364,13 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-2
-       * covariant tensor, i.e.
-       * @f[
-       *  \chi^{-1}\left(\bullet\right)^{\flat}
-       *    \dealcoloneq \mathbf{F}^{T} \cdot \left(\bullet\right)^{\flat} \cdot
+       * 返回2级协变张量的回拉变换结果，即 @f[
+       * \chi^{-1}\left(\bullet\right)^{\flat}
+       *  \dealcoloneq \mathbf{F}^{T} \cdot \left(\bullet\right)^{\flat} \cdot
        * \mathbf{F}
-       * @f]
+       * @f]  @param[in]  t 要操作的（空间）张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{t} \right)$
        *
-       * @param[in] t The (spatial) tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{t} \right)$
        */
       template <int dim, typename Number>
       Tensor<2, dim, Number>
@@ -485,18 +378,14 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-2
-       * covariant symmetric tensor, i.e.
-       * @f[
-       *  \chi^{-1}\left(\bullet\right)^{\flat}
-       *    \dealcoloneq \mathbf{F}^{T} \cdot \left(\bullet\right)^{\flat}
-       *    \cdot \mathbf{F}
-       * @f]
+       * 返回对等级2共变对称张量的回拉变换结果，即 @f[
+       * \chi^{-1}\left(\bullet\right)^{\flat}
+       *  \dealcoloneq \mathbf{F}^{T} \cdot \left(\bullet\right)^{\flat}
+       *  \cdot \mathbf{F}
+       * @f]  @param[in]  t 要操作的（空间）对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{t} \right)$
+       * 。
        *
-       * @param[in] t The (spatial) symmetric tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{t} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<2, dim, Number>
@@ -504,18 +393,13 @@ namespace Physics
                 const Tensor<2, dim, Number> &         F);
 
       /**
-       * Return the result of the pull back transformation on a rank-4
-       * contravariant tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi^{-1}\left(\bullet\right)^{\flat} \right]_{IJKL}
-       *  \dealcoloneq F^{T}_{Ii} F^{T}_{Jj}
-       *  \left(\bullet\right)^{\flat}_{ijkl} F^{T}_{Kk} F^{T}_{Ll}
-       * @f]
+       * 返回对一个等级4的禁忌张量进行回拉变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi^{-1}\left(\bullet\right)^{\flat} \right]_{IJKL}
+       * \dealcoloneq F^{T}_{Ii} F^{T}_{Jj}
+       * \left(\bullet\right)^{\flat}_{ijkl} F^{T}_{Kk} F^{T}_{Ll}
+       * @f]  @param[in]  h 要操作的（空间）张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{h} \right)$
        *
-       * @param[in] h The (spatial) tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{h} \right)$
        */
       template <int dim, typename Number>
       Tensor<4, dim, Number>
@@ -523,18 +407,14 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-4
-       * contravariant symmetric tensor, i.e. (in index notation):
-       * @f[
-       *  \left[ \chi^{-1}\left(\bullet\right)^{\flat} \right]_{IJKL}
-       *  \dealcoloneq F^{T}_{Ii} F^{T}_{Jj}
-       *  \left(\bullet\right)^{\flat}_{ijkl} F^{T}_{Kk} F^{T}_{Ll}
-       * @f]
+       * 返回对等级4的禁忌对称张量进行回拉变换的结果，即（用索引符号表示）。      @f[
+       * \left[ \chi^{-1}\left(\bullet\right)^{\flat} \right]_{IJKL}
+       * \dealcoloneq F^{T}_{Ii} F^{T}_{Jj}
+       * \left(\bullet\right)^{\flat}_{ijkl} F^{T}_{Kk} F^{T}_{Ll}
+       * @f]  @param[in]  h 要操作的（空间）对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\chi^{-1}\left( \mathbf{h} \right)$
+       * 。
        *
-       * @param[in] h The (spatial) symmetric tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\chi^{-1}\left( \mathbf{h} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<4, dim, Number>
@@ -545,31 +425,26 @@ namespace Physics
     } // namespace Covariant
 
     /**
-     * Transformation of tensors that are defined in terms of a set of
-     * contravariant basis vectors and scale with the inverse of the volume
-     * change associated with the mapping.
+     * 张量的变换是以一组禁忌基向量来定义的，并以与映射相关的体积变化的逆数来缩放。
+     *
      */
     namespace Piola
     {
       /**
-       * @name Push forward operations
+       * @name  前推操作
+       *
        */
       //@{
 
       /**
-       * Return the result of the push forward transformation on a
-       * contravariant vector, i.e.
-       * @f[
-       *  \textrm{det} \mathbf{F}^{-1} \; \chi\left(\bullet\right)^{\sharp}
-       *  \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; \mathbf{F} \cdot
-       *  \left(\bullet\right)^{\sharp}
-       * @f]
+       * 返回对一个禁忌向量进行前推变换的结果，即 @f[
+       * \textrm{det} \mathbf{F}^{-1} \; \chi\left(\bullet\right)^{\sharp}
+       * \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; \mathbf{F} \cdot
+       * \left(\bullet\right)^{\sharp}
+       * @f]  @param[in]  V 被操作的（参考）向量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\frac{1}{\textrm{det} \mathbf{F}} \;
+       * \chi\left( \mathbf{V} \right)$
        *
-       * @param[in] V The (referential) vector to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\frac{1}{\textrm{det} \mathbf{F}} \; \chi\left(
-       * \mathbf{V} \right)$
        */
       template <int dim, typename Number>
       Tensor<1, dim, Number>
@@ -577,19 +452,14 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-2
-       * contravariant tensor, i.e.
-       * @f[
-       *  \textrm{det} \mathbf{F}^{-1} \; \chi\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; \mathbf{F} \cdot
+       * 返回对第2级禁忌张量的前推变换结果，即 @f[
+       * \textrm{det} \mathbf{F}^{-1} \; \chi\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; \mathbf{F} \cdot
        * \left(\bullet\right)^{\sharp} \cdot \mathbf{F}^{T}
-       * @f]
+       * @f]  @param[in]  T 被操作的（参考）第2级张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\frac{1}{\textrm{det} \mathbf{F}} \;
+       * \chi\left( \mathbf{T} \right)$
        *
-       * @param[in] T The (referential) rank-2 tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\frac{1}{\textrm{det} \mathbf{F}} \; \chi\left(
-       * \mathbf{T} \right)$
        */
       template <int dim, typename Number>
       Tensor<2, dim, Number>
@@ -597,20 +467,14 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-2
-       * contravariant symmetric tensor, i.e.
-       * @f[
-       *  \textrm{det} \mathbf{F}^{-1} \; \chi\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; \mathbf{F} \cdot
+       * 返回对等级2的禁忌对称张量进行前推变换的结果，即 @f[
+       * \textrm{det} \mathbf{F}^{-1} \; \chi\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; \mathbf{F} \cdot
        * \left(\bullet\right)^{\sharp} \cdot \mathbf{F}^{T}
-       * @f]
+       * @f]  @param[in]  T 要操作的（参考）等级2的对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\frac{1}{\textrm{det} \mathbf{F}} \;
+       * \chi\left( \mathbf{T} \right)$  。
        *
-       * @param[in] T The (referential) rank-2 symmetric tensor to be operated
-       * on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\frac{1}{\textrm{det} \mathbf{F}} \; \chi\left(
-       * \mathbf{T} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<2, dim, Number>
@@ -618,20 +482,15 @@ namespace Physics
                    const Tensor<2, dim, Number> &         F);
 
       /**
-       * Return the result of the push forward transformation on a rank-4
-       * contravariant tensor, i.e. (in index notation):
-       * @f[
-       *  \textrm{det} \mathbf{F}^{-1} \; \left[
+       * 返回对一个等级4的禁忌张量进行前推变换的结果，即（用索引符号表示）。      @f[
+       * \textrm{det} \mathbf{F}^{-1} \; \left[
        * \chi\left(\bullet\right)^{\sharp} \right]_{ijkl}
-       *    \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; F_{iI} F_{jJ}
+       *  \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; F_{iI} F_{jJ}
        * \left(\bullet\right)^{\sharp}_{IJKL} F_{kK} F_{lL}
-       * @f]
+       * @f]  @param[in]  H 被操作的（参考）等级-4张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\frac{1}{\textrm{det} \mathbf{F}} \;
+       * \chi\left( \mathbf{H} \right)$
        *
-       * @param[in] H The (referential) rank-4 tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\frac{1}{\textrm{det} \mathbf{F}} \; \chi\left(
-       * \mathbf{H} \right)$
        */
       template <int dim, typename Number>
       Tensor<4, dim, Number>
@@ -639,21 +498,15 @@ namespace Physics
                    const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the push forward transformation on a rank-4
-       * contravariant symmetric tensor, i.e. (in index notation):
-       * @f[
-       *  \textrm{det} \mathbf{F}^{-1} \; \left[
+       * 返回对等级4的禁忌对称张量进行推前变换的结果，即（用索引符号表示）。      @f[
+       * \textrm{det} \mathbf{F}^{-1} \; \left[
        * \chi\left(\bullet\right)^{\sharp} \right]_{ijkl}
-       *    \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; F_{iI} F_{jJ}
+       *  \dealcoloneq \frac{1}{\textrm{det} \mathbf{F}} \; F_{iI} F_{jJ}
        * \left(\bullet\right)^{\sharp}_{IJKL} F_{kK} F_{lL}
-       * @f]
+       * @f]  @param[in]  H 要操作的（参考）等级4对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\frac{1}{\textrm{det} \mathbf{F}} \;
+       * \chi\left( \mathbf{H} \right)$
        *
-       * @param[in] H The (referential) rank-4 symmetric tensor to be operated
-       * on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\frac{1}{\textrm{det} \mathbf{F}} \; \chi\left(
-       * \mathbf{H} \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<4, dim, Number>
@@ -663,24 +516,20 @@ namespace Physics
       //@}
 
       /**
-       * @name Pull back operations
+       * @name  拉回操作
+       *
        */
       //@{
 
       /**
-       * Return the result of the pull back transformation on a contravariant
-       * vector, i.e.
-       * @f[
-       *  \textrm{det} \mathbf{F} \; \chi^{-1}\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \textrm{det} \mathbf{F} \; \mathbf{F}^{-1} \cdot
+       * 返回对一个禁忌向量进行回拉变换的结果，即 @f[
+       * \textrm{det} \mathbf{F} \; \chi^{-1}\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \textrm{det} \mathbf{F} \; \mathbf{F}^{-1} \cdot
        * \left(\bullet\right)^{\sharp}
-       * @f]
+       * @f]  @param[in]  v 要操作的（空间）向量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\textrm{det} \mathbf{F} \;
+       * \chi^{-1}\left( \mathbf{v} \right)$
        *
-       * @param[in] v The (spatial) vector to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\textrm{det} \mathbf{F} \; \chi^{-1}\left( \mathbf{v}
-       * \right)$
        */
       template <int dim, typename Number>
       Tensor<1, dim, Number>
@@ -688,19 +537,14 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-2
-       * contravariant tensor, i.e.
-       * @f[
-       *  \textrm{det} \mathbf{F} \; \chi^{-1}\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \textrm{det} \mathbf{F} \; \mathbf{F}^{-1} \cdot
+       * 返回2级禁忌张量的回拉变换结果，即 @f[
+       * \textrm{det} \mathbf{F} \; \chi^{-1}\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \textrm{det} \mathbf{F} \; \mathbf{F}^{-1} \cdot
        * \left(\bullet\right)^{\sharp} \cdot \mathbf{F}^{-T}
-       * @f]
+       * @f]  @param[in]  t 要操作的（空间）张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\textrm{det} \mathbf{F} \;
+       * \chi^{-1}\left( \mathbf{t} \right)$ 。
        *
-       * @param[in] t The (spatial) tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\textrm{det} \mathbf{F} \; \chi^{-1}\left( \mathbf{t}
-       * \right)$
        */
       template <int dim, typename Number>
       Tensor<2, dim, Number>
@@ -708,19 +552,14 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-2
-       * contravariant symmetric tensor, i.e.
-       * @f[
-       *  \textrm{det} \mathbf{F} \; \chi^{-1}\left(\bullet\right)^{\sharp}
-       *    \dealcoloneq \textrm{det} \mathbf{F} \; \mathbf{F}^{-1} \cdot
+       * 返回2级禁忌对称张量的回拉变换结果，即 @f[
+       * \textrm{det} \mathbf{F} \; \chi^{-1}\left(\bullet\right)^{\sharp}
+       *  \dealcoloneq \textrm{det} \mathbf{F} \; \mathbf{F}^{-1} \cdot
        * \left(\bullet\right)^{\sharp} \cdot \mathbf{F}^{-T}
-       * @f]
+       * @f]  @param[in]  t 要操作的（空间）对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\textrm{det} \mathbf{F} \;
+       * \chi^{-1}\left( \mathbf{t} \right)$  。
        *
-       * @param[in] t The (spatial) symmetric tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\textrm{det} \mathbf{F} \; \chi^{-1}\left( \mathbf{t}
-       * \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<2, dim, Number>
@@ -728,20 +567,15 @@ namespace Physics
                 const Tensor<2, dim, Number> &         F);
 
       /**
-       * Return the result of the pull back transformation on a rank-4
-       * contravariant tensor, i.e. (in index notation):
-       * @f[
-       *  \textrm{det} \mathbf{F} \; \left[
+       * 返回对一个等级4的禁忌张量进行回拉变换的结果，即（用索引符号表示）。      @f[
+       * \textrm{det} \mathbf{F} \; \left[
        * \chi^{-1}\left(\bullet\right)^{\sharp} \right]_{IJKL}
-       *    \dealcoloneq \textrm{det} \mathbf{F} \; F^{-1}_{Ii} F^{-1}_{Jj}
+       *  \dealcoloneq \textrm{det} \mathbf{F} \; F^{-1}_{Ii} F^{-1}_{Jj}
        * \left(\bullet\right)^{\sharp}_{ijkl} F^{-1}_{Kk} F^{-1}_{Ll}
-       * @f]
+       * @f]  @param[in]  h 要操作的（空间）张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\textrm{det} \mathbf{F} \;
+       * \chi^{-1}\left( \mathbf{h} \right)$  。
        *
-       * @param[in] h The (spatial) tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\textrm{det} \mathbf{F} \; \chi^{-1}\left( \mathbf{h}
-       * \right)$
        */
       template <int dim, typename Number>
       Tensor<4, dim, Number>
@@ -749,20 +583,15 @@ namespace Physics
                 const Tensor<2, dim, Number> &F);
 
       /**
-       * Return the result of the pull back transformation on a rank-4
-       * contravariant symmetric tensor, i.e. (in index notation):
-       * @f[
-       *  \textrm{det} \mathbf{F} \; \left[
+       * 返回对等级4的禁忌对称张量进行回拉变换的结果，即（用索引符号表示）。      @f[
+       * \textrm{det} \mathbf{F} \; \left[
        * \chi^{-1}\left(\bullet\right)^{\sharp} \right]_{IJKL}
-       *    \dealcoloneq \textrm{det} \mathbf{F} \; F^{-1}_{Ii} F^{-1}_{Jj}
+       *  \dealcoloneq \textrm{det} \mathbf{F} \; F^{-1}_{Ii} F^{-1}_{Jj}
        * \left(\bullet\right)^{\sharp}_{ijkl} F^{-1}_{Kk} F^{-1}_{Ll}
-       * @f]
+       * @f]  @param[in]  h 要操作的（空间）对称张量  @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+       * \mathbf{X} \right)$   @return   $\textrm{det} \mathbf{F} \;
+       * \chi^{-1}\left( \mathbf{h} \right)$  。
        *
-       * @param[in] h The (spatial) symmetric tensor to be operated on
-       * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-       * \mathbf{X} \right)$
-       * @return      $\textrm{det} \mathbf{F} \; \chi^{-1}\left( \mathbf{h}
-       * \right)$
        */
       template <int dim, typename Number>
       SymmetricTensor<4, dim, Number>
@@ -773,31 +602,20 @@ namespace Physics
     } // namespace Piola
 
     /**
-     * @name Special operations
+     * @name  特殊操作
+     *
      */
     //@{
 
     /**
-     * Return the result of applying Nanson's formula for the transformation
-     * of the material surface area element $d\mathbf{A}$ to the current
-     * surfaces area element $d\mathbf{a}$ under the nonlinear transformation
-     * map $\mathbf{x} = \boldsymbol{\varphi} \left( \mathbf{X} \right)$.
+     * 返回在非线性变换图 $\mathbf{x} = \boldsymbol{\varphi} \left( \mathbf{X} \right)$ 下，应用南森公式对材料表面积元素 $d\mathbf{A}$ 进行变换的结果。        返回的结果是由参考和空间表面元素之间的面积比缩放的空间法线，即 @f[
+     * \mathbf{n} \frac{da}{dA}
+     * \dealcoloneq \textrm{det} \mathbf{F} \, \mathbf{F}^{-T} \cdot \mathbf{N}
+     * = \textrm{cof} \mathbf{F} \cdot \mathbf{N} \, .
+     * @f]  @param[in]  N 参考法线单位向量  $\mathbf{N}$   @param[in]  F 变形梯度张量  $\mathbf{F} \left(
+     * \mathbf{X} \right)$   @return  缩放的空间法向量  $\mathbf{n}
+     * \frac{da}{dA}$   @dealiiHolzapfelA{75,2.55}   @dealiiWriggersA{23,3.11}
      *
-     * The returned result is the spatial normal scaled by the ratio of areas
-     * between the reference and spatial surface elements, i.e.
-     * @f[
-     *  \mathbf{n} \frac{da}{dA}
-     *  \dealcoloneq \textrm{det} \mathbf{F} \, \mathbf{F}^{-T} \cdot \mathbf{N}
-     *  = \textrm{cof} \mathbf{F} \cdot \mathbf{N} \, .
-     * @f]
-     *
-     * @param[in] N The referential normal unit vector $\mathbf{N}$
-     * @param[in] F The deformation gradient tensor $\mathbf{F} \left(
-     * \mathbf{X} \right)$
-     * @return      The scaled spatial normal vector $\mathbf{n}
-     * \frac{da}{dA}$
-     *
-     * @dealiiHolzapfelA{75,2.55} @dealiiWriggersA{23,3.11}
      */
     template <int dim, typename Number>
     Tensor<1, dim, Number>
@@ -807,19 +625,16 @@ namespace Physics
     //@}
 
     /**
-     * @name Basis transformations
+     * @name  基准转换
+     *
      */
     //@{
 
     /**
-     * Return a vector with a changed basis, i.e.
-     * @f[
-     *  \mathbf{V}^{\prime} \dealcoloneq \mathbf{B} \cdot \mathbf{V}
-     * @f]
+     * 返回一个改变了基数的向量，即 @f[
+     * \mathbf{V}^{\prime} \dealcoloneq \mathbf{B} \cdot \mathbf{V}
+     * @f]  @param[in]  V 要转换的向量  $\mathbf{V}$   @param[in]  B 转换矩阵  $\mathbf{B}$   @return   $\mathbf{V}^{\prime}$
      *
-     * @param[in] V The vector to be transformed $\mathbf{V}$
-     * @param[in] B The transformation matrix $\mathbf{B}$
-     * @return      $\mathbf{V}^{\prime}$
      */
     template <int dim, typename Number>
     Tensor<1, dim, Number>
@@ -827,15 +642,11 @@ namespace Physics
                          const Tensor<2, dim, Number> &B);
 
     /**
-     * Return a rank-2 tensor with a changed basis, i.e.
-     * @f[
-     *  \mathbf{T}^{\prime} \dealcoloneq \mathbf{B} \cdot \mathbf{T} \cdot
+     * 返回一个改变了基础的第2级张量，即 @f[
+     * \mathbf{T}^{\prime} \dealcoloneq \mathbf{B} \cdot \mathbf{T} \cdot
      * \mathbf{B}^{T}
-     * @f]
+     * @f]  @param[in]  T 要转换的张量  $\mathbf{T}$   @param[in]  B 转换矩阵  $\mathbf{B}$   @return   $\mathbf{T}^{\prime}$  。
      *
-     * @param[in] T The tensor to be transformed $\mathbf{T}$
-     * @param[in] B The transformation matrix $\mathbf{B}$
-     * @return      $\mathbf{T}^{\prime}$
      */
     template <int dim, typename Number>
     Tensor<2, dim, Number>
@@ -843,15 +654,11 @@ namespace Physics
                          const Tensor<2, dim, Number> &B);
 
     /**
-     * Return a symmetric rank-2 tensor with a changed basis, i.e.
-     * @f[
-     *  \mathbf{T}^{\prime} \dealcoloneq \mathbf{B} \cdot \mathbf{T} \cdot
+     * 返回一个改变了基础的对称秩-2张量，即 @f[
+     * \mathbf{T}^{\prime} \dealcoloneq \mathbf{B} \cdot \mathbf{T} \cdot
      * \mathbf{B}^{T}
-     * @f]
+     * @f]  @param[in]  T 要转换的张量  $\mathbf{T}$   @param[in]  B 转换矩阵  $\mathbf{B}$   @return   $\mathbf{T}^{\prime}$  。
      *
-     * @param[in] T The tensor to be transformed $\mathbf{T}$
-     * @param[in] B The transformation matrix $\mathbf{B}$
-     * @return      $\mathbf{T}^{\prime}$
      */
     template <int dim, typename Number>
     SymmetricTensor<2, dim, Number>
@@ -859,14 +666,10 @@ namespace Physics
                          const Tensor<2, dim, Number> &         B);
 
     /**
-     * Return a rank-4 tensor with a changed basis, i.e. (in index notation):
-     * @f[
-     *  H_{ijkl}^{\prime} \dealcoloneq B_{iI} B_{jJ} H_{IJKL} B_{kK} B_{lL}
-     * @f]
+     * 返回一个改变了基础的等级4张量，即（用索引符号表示）。    @f[
+     * H_{ijkl}^{\prime} \dealcoloneq B_{iI} B_{jJ} H_{IJKL} B_{kK} B_{lL}
+     * @f]  @param[in]  H 要转换的张量  $\mathbf{T}$   @param[in]  B 转换矩阵  $\mathbf{B}$   @return   $\mathbf{H}^{\prime}$ .
      *
-     * @param[in] H The tensor to be transformed $\mathbf{T}$
-     * @param[in] B The transformation matrix $\mathbf{B}$
-     * @return      $\mathbf{H}^{\prime}$
      */
     template <int dim, typename Number>
     Tensor<4, dim, Number>
@@ -874,15 +677,10 @@ namespace Physics
                          const Tensor<2, dim, Number> &B);
 
     /**
-     * Return a symmetric rank-4 tensor with a changed basis, i.e. (in index
-     * notation):
-     * @f[
-     *  H_{ijkl}^{\prime} \dealcoloneq B_{iI} B_{jJ} H_{IJKL} B_{kK} B_{lL}
-     * @f]
+     * 返回一个改变了基础的对称秩-4张量，即（用索引符号表示）。    @f[
+     * H_{ijkl}^{\prime} \dealcoloneq B_{iI} B_{jJ} H_{IJKL} B_{kK} B_{lL}
+     * @f]  @param[in]  H 要转换的张量  $\mathbf{T}$   @param[in]  B 转换矩阵  $\mathbf{B}$   @return   $\mathbf{H}^{\prime}$  。
      *
-     * @param[in] H The tensor to be transformed $\mathbf{T}$
-     * @param[in] B The transformation matrix $\mathbf{B}$
-     * @return      $\mathbf{H}^{\prime}$
      */
     template <int dim, typename Number>
     SymmetricTensor<4, dim, Number>
@@ -1396,3 +1194,8 @@ Physics::Transformations::basis_transformation(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+
+#！/bin/bash
+cat * > 合并
+

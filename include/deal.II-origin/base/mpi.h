@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/mpi_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2011 - 2021 by the deal.II authors
@@ -65,16 +64,17 @@ using MPI_Op       = int;
 
 
 /**
- * 帮助性宏，用于从一些MPI_*的指针参数中移除const。
- * 函数的指针参数中删除const。
- * 这是需要的，因为像MPI_Allgather()这样的函数的输入参数在OpenMPI
- * 1.6.5中没有标记为const。如果使用MPI
- * 3或更新的版本，这个宏是一个NOOP，而我们在其他情况下做以下工作。
- * 1.从 @p expr 的类型中移除 2.从结果类型中移除const
- * 3.添加到结果类型中 4.将给定的表达式 @p expr
- * const_cast到这个新类型中。
+ * Helper macro to remove const from the pointer arguments to some MPI_*
+ * functions.
  *
+ * This is needed as the input arguments of functions like MPI_Allgather() are
+ * not marked as const in OpenMPI 1.6.5. If using MPI 3 or newer, this macro
+ * is a NOOP, while we do the following otherwise:
  *
+ * 1. remove * from type of @p expr
+ * 2. remove const from resulting type
+ * 3. add * to resulting type
+ * 4. const_cast the given expression @p expr to this new type.
  */
 #ifdef DEAL_II_WITH_MPI
 #  if DEAL_II_MPI_VERSION_GTE(3, 0)
@@ -111,13 +111,16 @@ class IndexSet;
 namespace Utilities
 {
   /**
-   * 给出元素总数 @p total_size, ，为整个 @p n_partitions.
-   * 的元素创建一个均匀分布的1:1分区，本地大小将等于 @p
-   * total_size
-   * 除以分区的数量，再加上余下的部分在第一个进程中分配。每个进程将存储一个连续的索引子集，进程p+1上的索引集从比进程p上存储的最后一个索引大的索引开始。例如，一个
-   * @p total_size 为11的3个进程将产生索引集{ [0,4), [4,8), [8,11)]
-   * }，这个函数将返回 @p my_partition_id  的索引集。
-   *
+   * Given the total number of elements @p total_size, create an evenly
+   * distributed 1:1 partitioning of the elements for across @p n_partitions.
+   * The local sizes will be equal to the @p total_size divided by the number
+   * of partitions plus the remainder being divided amongst the first
+   * processes. Each process will store a contiguous subset of indices, and the
+   * index set on process p+1 starts at the index one larger than the last one
+   * stored on process p.
+   * For example, a @p total_size of 11 with 3 processes will result
+   * in the IndexSets { [0,4), [4,8), [8,11)] }, and this function will
+   * return the @p my_partition_id 's IndexSet.
    */
   IndexSet
   create_evenly_distributed_partitioning(const unsigned int my_partition_id,
@@ -125,43 +128,64 @@ namespace Utilities
                                          const IndexSet::size_type total_size);
 
   /**
-   * 一个命名空间，用于抽象使用消息传递接口（MPI）的某些操作，或者在deal.II被配置为完全不使用MPI的情况下提供后备操作的实用函数。
-   * @ingroup utilities
+   * A namespace for utility functions that abstract certain operations using
+   * the Message Passing Interface (MPI) or provide fallback operations in
+   * case deal.II is configured not to use MPI at all.
    *
+   * @ingroup utilities
    */
   namespace MPI
   {
     /**
-     * 返回给定的 @ref GlossMPICommunicator "communicator "
-     * 对象中存在的MPI进程的数量。如果这是一个顺序作业（即，程序根本没有使用MPI，或者使用了MPI但只启动了一个MPI进程），那么通信器必然只涉及一个进程，函数返回1。
-     *
+     * Return the number of MPI processes there exist in the given
+     * @ref GlossMPICommunicator "communicator"
+     * object. If this is a sequential job (i.e., the program
+     * is not using MPI at all, or is using MPI but has been started with
+     * only one MPI process), then the communicator necessarily involves
+     * only one process and the function returns 1.
      */
     unsigned int
     n_mpi_processes(const MPI_Comm &mpi_communicator);
 
     /**
-     *
+     * Return the
+     * @ref GlossMPIRank "rank of the present MPI process"
+     * in the space of processes described by the given
+     * @ref GlossMPICommunicator "communicator".
+     * This will be a unique value for each process between zero and (less
+     * than) the number of all processes (given by get_n_mpi_processes()).
      */
     unsigned int
     this_mpi_process(const MPI_Comm &mpi_communicator);
 
     /**
-     * 返回一个行列向量（在 @p comm_large) 指定的进程子集的
-     * @p comm_small. 内）。
-     *
+     * Return a vector of the ranks (within @p comm_large) of a subset of
+     * processes specified by @p comm_small.
      */
     const std::vector<unsigned int>
     mpi_processes_within_communicator(const MPI_Comm &comm_large,
                                       const MPI_Comm &comm_small);
 
     /**
-     * 考虑一个非结构化的通信模式，MPI宇宙中的每个进程都想向其他进程的一个子集发送一些数据。要做到这一点，其他处理器需要知道从谁那里期待消息。这个函数可以计算这个信息。          @param  mpi_comm 一个 @ref GlossMPICommunicator  "通信器"
-     * ，描述要相互通信的处理器。          @param  destinations
-     * 当前进程想要发送信息的处理器列表。这个列表不需要以任何方式进行排序。如果它包含重复的条目，那就意味着有多条信息是要发给某个目的地的。
-     * @return
-     * 已表示要向当前处理器发送东西的处理器的列表。由此产生的列表没有被排序。
-     * 如果处理器在其目的地列表中多次输入同一个目的地，它可能包含重复的条目。
+     * Consider an unstructured communication pattern where every process in
+     * an MPI universe wants to send some data to a subset of the other
+     * processors. To do that, the other processors need to know who to expect
+     * messages from. This function computes this information.
      *
+     * @param mpi_comm A
+     * @ref GlossMPICommunicator "communicator"
+     * that describes the processors that are going to communicate with each
+     * other.
+     *
+     * @param destinations The list of processors the current process wants to
+     * send information to. This list need not be sorted in any way. If it
+     * contains duplicate entries that means that multiple messages are
+     * intended for a given destination.
+     *
+     * @return A list of processors that have indicated that they want to send
+     * something to the current processor. The resulting list is not sorted.
+     * It may contain duplicate entries if processors enter the same
+     * destination more than once in their destinations list.
      */
     std::vector<unsigned int>
     compute_point_to_point_communication_pattern(
@@ -169,11 +193,23 @@ namespace Utilities
       const std::vector<unsigned int> &destinations);
 
     /**
-     * compute_point_to_point_communication_pattern()的简化版本（为了提高效率），它只计算MPI宇宙中期待通信的进程数。          @param  mpi_comm 一个 @ref GlossMPICommunicator "通信器"
-     * ，描述要相互通信的处理器。          @param  destinations
-     * 当前进程想要发送信息的处理器的列表。这个列表不需要以任何方式进行排序。如果它包含重复的条目，那就意味着有多条信息是要发给某个目的地的。
-     * @return 想要向当前处理器发送东西的处理器的数量。
+     * Simplified (for efficiency) version of the
+     * compute_point_to_point_communication_pattern()
+     * which only computes the number of processes in an MPI universe to expect
+     * communication from.
      *
+     * @param mpi_comm A
+     * @ref GlossMPICommunicator "communicator"
+     * that describes the processors that are going to communicate with each
+     * other.
+     *
+     * @param destinations The list of processors the current process wants to
+     * send information to. This list need not be sorted in any way. If it
+     * contains duplicate entries that means that multiple messages are
+     * intended for a given destination.
+     *
+     * @return A number of processors that want to send something to the current
+     * processor.
      */
     unsigned int
     compute_n_point_to_point_communications(
@@ -181,55 +217,65 @@ namespace Utilities
       const std::vector<unsigned int> &destinations);
 
     /**
-     * 给定一个 @ref GlossMPICommunicator "通信器"
-     * ，生成一个新的通信器，该通信器包含相同的处理器集合，但有一个不同的、唯一的标识。
-     * 这个功能可以用来确保不同的对象，如分布式矩阵，都有唯一的通信器，它们可以在上面进行交互而不互相干扰。
-     * 当不再需要时，这里创建的通信器需要用free_communicator()来销毁。
-     * 这个函数等同于调用  <code>MPI_Comm_dup(mpi_communicator,
-     * &return_value);</code>  。
+     * Given a
+     * @ref GlossMPICommunicator "communicator",
+     * generate a new communicator that contains the same set of processors
+     * but that has a different, unique identifier.
      *
+     * This functionality can be used to ensure that different objects, such
+     * as distributed matrices, each have unique communicators over which they
+     * can interact without interfering with each other.
+     *
+     * When no longer needed, the communicator created here needs to be
+     * destroyed using free_communicator().
+     *
+     * This function is equivalent to calling
+     * <code>MPI_Comm_dup(mpi_communicator, &return_value);</code>.
      */
     MPI_Comm
     duplicate_communicator(const MPI_Comm &mpi_communicator);
 
     /**
-     * 释放给定的 @ref GlossMPICommunicator "通信器"
-     * @p mpi_communicator
-     * ，该通信器是使用diplicate_communicator()复制的。
-     * 参数是通过引用传递的，并且将被无效化并设置为MPI空手柄。这个函数等同于调用
-     * <code>MPI_Comm_free(&mpi_communicator);</code>  。
+     * Free the given
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator that was duplicated using duplicate_communicator().
      *
+     * The argument is passed by reference and will be invalidated and set to
+     * the MPI null handle. This function is equivalent to calling
+     * <code>MPI_Comm_free(&mpi_communicator);</code>.
      */
     void
     free_communicator(MPI_Comm &mpi_communicator);
 
     /**
-     * 帮助类，用于自动复制和释放MPI  @ref GlossMPICommunicator  "communicator"
-     * 。
-     * 这个类使用diplicate_communicator()复制构造函数中给出的通信器，并在这个对象被销毁时通过调用free_communicator()自动释放它。你可以使用operator*来访问被包裹的通信器。
-     * 这个类的存在是为了轻松地允许复制通信器，而不必担心使用后何时以及如何释放它。
+     * Helper class to automatically duplicate and free an MPI
+     * @ref GlossMPICommunicator "communicator".
      *
+     * This class duplicates the communicator given in the constructor
+     * using duplicate_communicator() and frees it automatically when
+     * this object gets destroyed by calling free_communicator(). You
+     * can access the wrapped communicator using operator*.
+     *
+     * This class exists to easily allow duplicating communicators without
+     * having to worry when and how to free it after usage.
      */
     class DuplicatedCommunicator
     {
     public:
       /**
-       * 创建一个给定的 @p communicator. 的复制品。
-       *
+       * Create a duplicate of the given @p communicator.
        */
       explicit DuplicatedCommunicator(const MPI_Comm &communicator)
         : comm(duplicate_communicator(communicator))
       {}
 
       /**
-       * 不允许制作副本。
-       *
+       * Do not allow making copies.
        */
       DuplicatedCommunicator(const DuplicatedCommunicator &) = delete;
 
       /**
-       * 解构器会自动释放通讯器。
-       *
+       * The destructor will free the communicator automatically.
        */
       ~DuplicatedCommunicator()
       {
@@ -237,8 +283,7 @@ namespace Utilities
       }
 
       /**
-       * 访问存储的通信器。
-       *
+       * Access the stored communicator.
        */
       const MPI_Comm &operator*() const
       {
@@ -247,49 +292,60 @@ namespace Utilities
 
 
       /**
-       * 不允许对这个类进行赋值。
-       *
+       * Do not allow assignment of this class.
        */
       DuplicatedCommunicator &
       operator=(const DuplicatedCommunicator &) = delete;
 
     private:
       /**
-       * 当然的通讯器。
-       *
+       * The communicator of course.
        */
       MPI_Comm comm;
     };
 
     /**
-     * 这个类代表一个mutex，在使用MPI的并行计算中为一组处理器守卫一个关键部分。
-     * lock()命令会等待，直到通信器中的所有MPI等级都使用unlock()释放了之前的锁。
-     * 一个典型的用法是使用锁防护来守护一个关键部分。
+     * This class represents a mutex to guard a critical section for a set of
+     * processors in a parallel computation using MPI.
+     *
+     * The lock() commands waits until all MPI ranks in the communicator have
+     * released a previous lock using unlock().
+     *
+     * A typical usage involves guarding a critical section using a lock guard:
      * @code
      * {
-     * static CollectiveMutex      mutex;
-     * CollectiveMutex::ScopedLock lock(mutex, comm);
-     * // [ critical code to be guarded]
+     *   static CollectiveMutex      mutex;
+     *   CollectiveMutex::ScopedLock lock(mutex, comm);
+     *   // [ critical code to be guarded]
      * }
      * @endcode
-     * 这里，关键代码将在所有处理器上完成，然后才能再次获得mutex（例如通过第二次执行上面的块。关键代码块通常涉及MPI通信，如果没有锁，会产生不正确的结果。例如，如果代码包含具有MPI_ANY_SOURCE的非阻塞接收，数据包在迭代之间可能会被混淆。
-     * 请注意，在调用同一关键区域之间，mutex需要是同一个实例。虽然不是必须的，但这可以通过使实例静态化来实现（就像上面的例子）。该变量也可以是一个全局变量，或执行函数所属对象的成员变量。
      *
+     * Here, the critical code will finish on all processors before the mutex
+     * can be acquired again (for example by a second execution of the block
+     * above. The critical code block typically involves MPI communication that
+     * would yield incorrect results without the lock. For example, if the code
+     * contains nonblocking receives with MPI_ANY_SOURCE, packets can be
+     * confused between iterations.
+     *
+     * Note that the mutex needs to be the same instance between calls to the
+     * same critical region. While not required, this can be achieved by making
+     * the instance static (like in the example above). The variable can also be
+     * a global variable, or a member variable of the object to which the
+     * executing function belongs.
      */
     class CollectiveMutex
     {
     public:
       /**
-       * 这个辅助类为CollectiveMutex提供了一个范围内的锁。
-       * 详见CollectiveMutex的类文档。
+       * This helper class provides a scoped lock for the CollectiveMutex.
        *
+       * See the class documentation of CollectiveMutex for details.
        */
       class ScopedLock
       {
       public:
         /**
-         * 构造函数。阻塞直到它能获得锁。
-         *
+         * Constructor. Blocks until it can acquire the lock.
          */
         explicit ScopedLock(CollectiveMutex &mutex, const MPI_Comm &comm)
           : mutex(mutex)
@@ -299,8 +355,7 @@ namespace Utilities
         }
 
         /**
-         * 销毁器。释放锁。
-         *
+         * Destructor. Releases the lock.
          */
         ~ScopedLock()
         {
@@ -309,55 +364,51 @@ namespace Utilities
 
       private:
         /**
-         * 对mutex的引用。
-         *
+         * A reference to the mutex.
          */
         CollectiveMutex &mutex;
         /**
-         * 通信器。
-         *
+         * The communicator.
          */
         const MPI_Comm comm;
       };
 
       /**
-       * 该类的构造函数。
-       *
+       * Constructor of this class.
        */
       explicit CollectiveMutex();
 
       /**
-       * 销毁mutex。假设当前没有持有锁。
-       *
+       * Destroy the mutex. Assumes the lock is not currently held.
        */
       ~CollectiveMutex();
 
       /**
-       * 获取mutex，如果有必要，等待我们可以这样做。
-       * 这是一个集体调用，需要由通信器中的所有处理器来执行。
+       * Acquire the mutex and, if necessary, wait until we can do so.
        *
+       * This is a collective call that needs to be executed by all processors
+       * in the communicator.
        */
       void
       lock(const MPI_Comm &comm);
 
       /**
-       * 释放锁。
-       * 这是一个集体调用，需要由通信器中的所有处理器来执行。
+       * Release the lock.
        *
+       * This is a collective call that needs to be executed by all processors
+       * in the communicator.
        */
       void
       unlock(const MPI_Comm &comm);
 
     private:
       /**
-       * 保持跟踪，如果我们现在有这个锁。
-       *
+       * Keep track if we have this lock right now.
        */
       bool locked;
 
       /**
-       * 追踪非阻塞屏障的请求。
-       *
+       * The request to keep track of the non-blocking barrier.
        */
       MPI_Request request;
     };
@@ -365,29 +416,31 @@ namespace Utilities
 
 
     /**
-     * 如果 @p comm
-     * 是一个内部通信器，这个函数返回一个新的通信器 @p
-     * newcomm ，其通信组由 @p group
-     * 参数定义。该函数只对实际想要创建通信器的进程组进行集合，即在
-     * @p group
-     * 参数中被命名的进程。如果一个给定进程的多个线程同时执行create_group()操作，用户必须通过提供不同的
-     * @p tag 或 @p comm 参数来区分这些操作。
-     * 这个函数是在MPI-3.0标准中引入的。如果可用，则使用所提供的MPI实现中的相应函数。
-     * 否则，该实现遵循以下出版物中描述的实现。
+     * If @p comm is an intracommunicator, this function returns a new
+     * communicator @p newcomm with communication group defined by the
+     * @p group argument. The function is only collective over the group of
+     * processes that actually want to create the communicator, i.e., that
+     * are named in the @p group argument. If multiple threads at a given
+     * process perform concurrent create_group() operations, the user must
+     * distinguish these operations by providing different @p tag or @p comm
+     * arguments.
+     *
+     * This function was introduced in the MPI-3.0 standard. If available,
+     * the corresponding function in the provided MPI implementation is used.
+     * Otherwise, the implementation follows the one described in the
+     * following publication:
      * @code{.bib}
      * @inproceedings{dinan2011noncollective,
-     * title        = {Noncollective communicator creation in MPI},
-     * author       = {Dinan, James and Krishnamoorthy, Sriram and Balaji,
-     *                 Pavan and Hammond, Jeff R and Krishnan, Manojkumar and
-     *                 Tipparaju, Vinod and Vishnu, Abhinav},
-     * booktitle    = {European MPI Users' Group Meeting},
-     * pages        = {282--291},
-     * year         = {2011},
-     * organization = {Springer}
+     *   title        = {Noncollective communicator creation in MPI},
+     *   author       = {Dinan, James and Krishnamoorthy, Sriram and Balaji,
+     *                   Pavan and Hammond, Jeff R and Krishnan, Manojkumar and
+     *                   Tipparaju, Vinod and Vishnu, Abhinav},
+     *   booktitle    = {European MPI Users' Group Meeting},
+     *   pages        = {282--291},
+     *   year         = {2011},
+     *   organization = {Springer}
      * }
      * @endcode
-     *
-     *
      */
 #ifdef DEAL_II_WITH_MPI
     int
@@ -398,24 +451,23 @@ namespace Utilities
 #endif
 
     /**
-     * 考虑到本地拥有的元素数量 @p locally_owned_size,
-     * ，在整个MPI通信器中创建一个1:1的元素分区 @p comm.
-     * ，元素的总大小是整个MPI通信器中 @p locally_owned_size
-     * 的总和。
-     * 每个进程将存储连续的索引子集，进程p+1上的索引集从比进程p上存储的最后一个索引大的一个索引开始。
-     *
+     * Given the number of locally owned elements @p locally_owned_size,
+     * create a 1:1 partitioning of the of elements across the MPI
+     * communicator @p comm. The total size of elements is the sum of
+     * @p locally_owned_size across the MPI communicator.  Each process will
+     * store contiguous subset of indices, and the index set on process p+1
+     * starts at the index one larger than the last one stored on process p.
      */
     std::vector<IndexSet>
     create_ascending_partitioning(const MPI_Comm &          comm,
                                   const IndexSet::size_type locally_owned_size);
 
     /**
-     * 给定元素总数  @p total_size,
-     * 在MPI通信器上创建一个均匀分布的1:1的元素分区  @p
-     * comm.  使用  @p comm
-     * 来确定分区数量和处理器ID，以调用上述  @p
-     * create_evenly_distributed_partitioning()  函数。
-     *
+     * Given the total number of elements @p total_size, create an evenly
+     * distributed 1:1 partitioning of the elements across the
+     * MPI communicator @p comm.
+     * Uses @p comm to determine number of partitions and processor ID to call the
+     * @p create_evenly_distributed_partitioning() function above.
      */
     IndexSet
     create_evenly_distributed_partitioning(
@@ -424,17 +476,19 @@ namespace Utilities
 
 #ifdef DEAL_II_WITH_MPI
     /**
-     * 计算整个MPI通信器 @p comm
-     * 的平均值和标准偏差，提供的数值为一个范围`[begin,end)`。
-     * 平均值计算为 $\bar x=\frac 1N \sum x_k$ ，其中 $x_k$
-     * 是所有处理器上的`begin'和`end'迭代器所指向的元素（即，每个处理器的`[begin,end]范围指向整体元素数量的一个子集）。标准偏差的计算方法是
-     * $\sigma=\sqrt{\frac {1}{N-1} \sum |x_k
+     * Calculate mean and standard deviation across the MPI communicator @p comm
+     * for values provided as a range `[begin,end)`.
+     * The mean is computed as $\bar x=\frac 1N \sum x_k$ where the $x_k$ are
+     * the elements pointed to by the `begin` and `end` iterators on all
+     * processors (i.e., each processor's `[begin,end)` range points to a subset
+     * of the overall number of elements). The standard deviation is calculated
+     * as $\sigma=\sqrt{\frac {1}{N-1} \sum |x_k -\bar x|^2}$, which is known as
+     * unbiased sample variance.
      *
-     * -\bar x|^2}$  ，这被称为无偏的样本方差。          @tparam
-     * Number指定了存储均值的类型。
-     * 标准偏差被存储为相应的实数类型。
-     * 例如，这允许从整数输入值计算统计数据。
-     *
+     * @tparam Number specifies the type to store the mean value.
+     * The standard deviation is stored as the corresponding real type.
+     * This allows, for example, to calculate statistics from integer input
+     * values.
      */
     template <class Iterator, typename Number = long double>
     std::pair<Number, typename numbers::NumberTraits<Number>::real_type>
@@ -444,37 +498,49 @@ namespace Utilities
 #endif
 
     /**
-     * 返回所有处理器上的数值之和  @p t.  这个函数是在 @ref GlossMPICommunicator "通信器 "
-     * 中给出的所有处理器上的集体。
-     * 如果deal.II没有被配置为使用MPI，这个函数只是返回  @p
-     * t.  这个函数对应于  <code>MPI_Allreduce</code>
-     * 函数，即所有处理器都收到这个操作的结果。
-     * @note
-     * 有时，并非所有处理器都需要一个结果，在这种情况下，人们会调用
-     * <code>MPI_Reduce</code> 函数而不是 <code>MPI_Allreduce</code>
-     * 函数。后者的费用最多是前者的两倍，所以如果你关心性能，可能值得调查一下你的算法是否确实到处需要结果。
-     * @note  这个函数只对某些模板参数实现  <code>T</code>,
-     * namely <code>float, double, int, unsigned int</code>  。
+     * Return the sum over all processors of the value @p t. This function is
+     * collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
+     * If deal.II is not configured for use of MPI, this function simply
+     * returns the value of @p t. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e. all processors receive the
+     * result of this operation.
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
+     *
+     * @note This function is only implemented for certain template arguments
+     * <code>T</code>, namely <code>float, double, int, unsigned int</code>.
      */
     template <typename T>
     T
     sum(const T &t, const MPI_Comm &mpi_communicator);
 
     /**
-     * 和前面的函数一样，但是对T类型的数组的元素进行求和。换句话说，结果数组的第i个元素是每个处理器的输入数组的第i个条目之和。T和U必须衰减到相同的类型，例如，它们的区别只是其中一个有const类型限定符，另一个没有。
-     * 输入和输出数组可以是相同的。
+     * Like the previous function, but take the sums over the elements of an
+     * array of type T. In other words, the i-th element of the results
+     * array is the sum over the i-th entries of the input arrays from each
+     * processor. T and U must decay to the same type, e.g. they just differ by
+     * one of them having a const type qualifier and the other not.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T, typename U>
     void
     sum(const T &values, const MPI_Comm &mpi_communicator, U &sums);
 
     /**
-     * 和前面的函数一样，但是要对ArrayView参数指定的数组元素进行求和。
-     * 换句话说，结果数组的第i个元素是每个处理器的输入数组的第i个条目之和。
-     * 输入和输出数组可以是相同的。
+     * Like the previous function, but take the sums over the elements of an
+     * array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results
+     * array is the sum over the i-th entries of the input arrays from each
+     * processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -483,9 +549,9 @@ namespace Utilities
         const ArrayView<T> &      sums);
 
     /**
-     * 对一个对称张量的条目进行MPI求和。          @relatesalso
-     * SymmetricTensor
+     * Perform an MPI sum of the entries of a symmetric tensor.
      *
+     * @relatesalso SymmetricTensor
      */
     template <int rank, int dim, typename Number>
     SymmetricTensor<rank, dim, Number>
@@ -493,9 +559,9 @@ namespace Utilities
         const MPI_Comm &                          mpi_communicator);
 
     /**
-     * 对一个张量的条目进行MPI求和。          @relatesalso
-     * 张量
+     * Perform an MPI sum of the entries of a tensor.
      *
+     * @relatesalso Tensor
      */
     template <int rank, int dim, typename Number>
     Tensor<rank, dim, Number>
@@ -503,11 +569,12 @@ namespace Utilities
         const MPI_Comm &                 mpi_communicator);
 
     /**
-     * 对稀疏矩阵的条目进行MPI求和。
-     * @note   @p local  和  @p global
-     * 应该具有相同的稀疏模式，而且对所有MPI进程都应该是相同的。
-     * @relatesalso  稀疏矩阵
+     * Perform an MPI sum of the entries of a SparseMatrix.
      *
+     * @note @p local and @p global should have the same sparsity
+     * pattern and it should be the same for all MPI processes.
+     *
+     * @relatesalso SparseMatrix
      */
     template <typename Number>
     void
@@ -516,37 +583,49 @@ namespace Utilities
         SparseMatrix<Number> &      global);
 
     /**
-     * 返回所有处理器上的最大值  @p t.  这个函数是在 @ref GlossMPICommunicator  "通信器 "
-     * 中给出的所有处理器上的集合。
-     * 如果deal.II没有被配置为使用MPI，这个函数只是返回 @p
-     * t. 的值，这个函数对应于 <code>MPI_Allreduce</code>
-     * 函数，即所有处理器都收到这个操作的结果。
-     * @note
-     * 有时，并非所有处理器都需要一个结果，在这种情况下，人们会调用
-     * <code>MPI_Reduce</code> 函数而不是 <code>MPI_Allreduce</code>
-     * 函数。后者的费用最多是前者的两倍，所以如果你关心性能，可能值得调查一下你的算法是否确实到处需要结果。
-     * @note  这个函数只对某些模板参数实现  <code>T</code>,
-     * namely <code>float, double, int, unsigned int</code>  。
+     * Return the maximum over all processors of the value @p t. This function
+     * is collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
+     * If deal.II is not configured for use of MPI, this function simply
+     * returns the value of @p t. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e. all processors receive the
+     * result of this operation.
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
+     *
+     * @note This function is only implemented for certain template arguments
+     * <code>T</code>, namely <code>float, double, int, unsigned int</code>.
      */
     template <typename T>
     T
     max(const T &t, const MPI_Comm &mpi_communicator);
 
     /**
-     * 和前面的函数一样，但是在一个T类型的数组的元素上取最大值。换句话说，结果数组的第i个元素是每个处理器的输入数组的第i个条目的最大值。T和U必须衰减到相同的类型，例如，它们的区别只是其中一个有const类型限定符，另一个没有。
-     * 输入和输出向量可以是相同的。
+     * Like the previous function, but take the maximum over the elements of an
+     * array of type T. In other words, the i-th element of the results array is
+     * the maximum over the i-th entries of the input arrays from each
+     * processor. T and U must decay to the same type, e.g. they just differ by
+     * one of them having a const type qualifier and the other not.
      *
+     * Input and output vectors may be the same.
      */
     template <typename T, typename U>
     void
     max(const T &values, const MPI_Comm &mpi_communicator, U &maxima);
 
     /**
-     * 和前面的函数一样，但在ArrayView参数指定的数组元素上取最大值。
-     * 换句话说，结果数组的第i个元素是每个处理器的输入数组的第i个条目上的最大值。
-     * 输入和输出数组可以是相同的。
+     * Like the previous function, but take the maximum over the elements of an
+     * array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results
+     * array is the maximum over the i-th entries of the input arrays from each
+     * processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -555,37 +634,49 @@ namespace Utilities
         const ArrayView<T> &      maxima);
 
     /**
-     * 返回所有处理器上的最小值  @p t.  这个函数是在 @ref GlossMPICommunicator "通信器 "
-     * 中给出的所有处理器上的集合。
-     * 如果deal.II没有被配置为使用MPI，这个函数只是返回  @p
-     * t.  这个函数对应于  <code>MPI_Allreduce</code>
-     * 函数，即所有处理器都收到这个操作的结果。
-     * @note
-     * 有时，并非所有处理器都需要一个结果，在这种情况下，人们会调用
-     * <code>MPI_Reduce</code> 函数而不是 <code>MPI_Allreduce</code>
-     * 函数。后者的费用最多是前者的两倍，所以如果你关心性能，可能值得调查一下你的算法是否确实到处需要结果。
-     * @note  这个函数只对某些模板参数实现  <code>T</code>,
-     * namely <code>float, double, int, unsigned int</code>  。
+     * Return the minimum over all processors of the value @p t. This function
+     * is collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
+     * If deal.II is not configured for use of MPI, this function simply
+     * returns the value of @p t. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e. all processors receive the
+     * result of this operation.
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
+     *
+     * @note This function is only implemented for certain template arguments
+     * <code>T</code>, namely <code>float, double, int, unsigned int</code>.
      */
     template <typename T>
     T
     min(const T &t, const MPI_Comm &mpi_communicator);
 
     /**
-     * 和前面的函数一样，但在一个T类型的数组的元素上取最小值。换句话说，结果数组的第i个元素是每个处理器的输入数组的第i个条目的最小值。T和U必须衰减到相同的类型，例如，它们的区别只是其中一个有const类型限定符，另一个没有。
-     * 输入和输出数组可以是相同的。
+     * Like the previous function, but take the minima over the elements of an
+     * array of type T. In other words, the i-th element of the results
+     * array is the minimum of the i-th entries of the input arrays from each
+     * processor. T and U must decay to the same type, e.g. they just differ by
+     * one of them having a const type qualifier and the other not.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T, typename U>
     void
     min(const T &values, const MPI_Comm &mpi_communicator, U &minima);
 
     /**
-     * 和前面的函数一样，但是在ArrayView参数指定的数组元素中取最小值。
-     * 换句话说，结果数组的第i个元素是每个处理器的输入数组的第i个条目上的最小值。
-     * 输入和输出数组可以是相同的。
+     * Like the previous function, but take the minimum over the elements of an
+     * array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results
+     * array is the minimum over the i-th entries of the input arrays from each
+     * processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -594,43 +685,58 @@ namespace Utilities
         const ArrayView<T> &      minima);
 
     /**
-     * 在数值为 @p t. 的所有处理器上执行<i>logical or</i>的操作。 <i>logical or</i>操作符`||`如果任一或所有操作数为`真'，则返回布尔值`真'，否则返回`假`。如果提供的值 @p t 在其相关的数据类型`T`中对应于`0`，它将被解释为`false`，否则为`true`。数据类型`T`必须是`integral`类型，即`bool`、`char`、`short`、`int`、`long`，或它们的任何变化。        这个函数是在 @ref GlossMPICommunicator "通信器 "
-     * 中给出的所有处理器上的集体。
-     * 如果deal.II没有被配置为使用MPI，这个函数只是返回 @p
-     * value. 的值，这个函数对应于 <code>MPI_Allreduce</code>
-     * 函数，即所有处理器都收到这个操作的结果。
-     * @note
-     * 有时，并非所有处理器都需要一个结果，在这种情况下，人们会调用
-     * <code>MPI_Reduce</code> 函数而不是 <code>MPI_Allreduce</code>
-     * 函数。后者的费用最多是前者的两倍，所以如果你关心性能，可能值得调查一下你的算法是否确实到处需要结果。
+     * Performs a <i>logical or</i> operation over all processors of the value
+     * @p t. The <i>logical or</i> operator `||` returns the boolean value
+     * `true` if either or all operands are `true` and returns `false`
+     * otherwise. If the provided value @p t corresponds to `0` in its
+     * associated data type `T`, it will be interpreted as `false`, and `true`
+     * otherwise. Data type `T` must be of type `integral`, i.e., `bool`,
+     * `char`, `short`, `int`, `long`, or any of their variations.
      *
+     * This function is collective over all processors given in the
+     * @ref GlossMPICommunicator "communicator".
+     * If deal.II is not configured for use of MPI, this function simply
+     * returns the value of @p value. This function corresponds to the
+     * <code>MPI_Allreduce</code> function, i.e., all processors receive the
+     * result of this operation.
+     *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
      */
     template <typename T>
     T
     logical_or(const T &t, const MPI_Comm &mpi_communicator);
 
     /**
-     * 和前面的函数一样，但是对数组中的每个元素执行<i>logical
-     * or</i>操作。换句话说，结果数组的第i个元素是对每个处理器的输入数组的第i个条目应用<i>logical
-     * or</i>操作的结果。T和U必须衰减到相同的类型，例如，它们只是因其中一个有const类型限定符而另一个没有而不同。
-     * 输入和输出数组可以是相同的。
-     * @note
-     * 根据你的标准库，这个函数可能无法与数据类型`bool`的
-     * `std::vector`
-     * 的特殊化一起工作。在这种情况下，请使用一个不同的容器或数据类型。
+     * Like the previous function, but performs the <i>logical or</i> operation
+     * on each element of an array. In other words, the i-th element of the
+     * results array is the result of the <i>logical or</i> operation applied on
+     * the i-th entries of the input arrays from each processor. T and U must
+     * decay to the same type, e.g., they just differ by one of them having a
+     * const type qualifier and the other not.
      *
+     * Input and output arrays may be the same.
+     *
+     * @note Depending on your standard library, this function may not work with
+     *   specializations of `std::vector` for the data type `bool`. In that
+     *   case, use a different container or data type.
      */
     template <typename T, typename U>
     void
     logical_or(const T &values, const MPI_Comm &mpi_communicator, U &results);
 
     /**
-     * 和前面的函数一样，但是对ArrayView参数指定的数组中的每个元素执行<i>logical
-     * or</i>操作。
-     * 换句话说，结果数组的第i个元素是对每个处理器的输入数组的第i个条目应用<i>logical
-     * or</i>操作的结果。
-     * 输入和输出数组可以是相同的。
+     * Like the previous function, but performs the <i>logical or</i> operation
+     * on each element of an array as specified by the ArrayView arguments.
+     * In other words, the i-th element of the results array is the result of
+     * the <i>logical or</i> operation applied on the i-th entries of the input
+     * arrays from each processor.
      *
+     * Input and output arrays may be the same.
      */
     template <typename T>
     void
@@ -639,67 +745,93 @@ namespace Utilities
                const ArrayView<T> &      results);
 
     /**
-     * @note
-     * 这个结构没有构造函数，因为MPI要求它是一个POD类型。
+     * A data structure to store the result of the min_max_avg() function.
+     * The structure stores the minimum, maximum, and average of one
+     * value contributed by each processor that participates in an
+     * @ref GlossMPICommunicator "MPI communicator".
+     * The structure also stores
+     * the indices (or, more precisely, the
+     * @ref GlossMPIRank "MPI rank")
+     * of the processors that hold the minimum and maximum values,
+     * as well as the sum over all values.
      *
+     * @note This structure has no constructors because MPI requires it
+     *   to be a POD type.
      */
     struct MinMaxAvg
     {
       /**
-       * 参与调用min_max_avg()的处理器贡献的所有值的总和。
-       *
+       * The sum over all values contributed by the processors that
+       * participate in the call to min_max_avg().
        */
       double sum;
 
       /**
-       * 参与调用min_max_avg()的处理器贡献的所有数值的最小值。
-       *
+       * The minimum value over all values contributed by the processors that
+       * participate in the call to min_max_avg().
        */
       double min;
 
       /**
-       * 参与调用min_max_avg()的处理器贡献的所有数值的最大值。
-       *
+       * The maximum value over all values contributed by the processors that
+       * participate in the call to min_max_avg().
        */
       double max;
 
       /**
-       *
+       * One of the ranks (i.e.,
+       * @ref GlossMPIRank "MPI rank"
+       * within an
+       * @ref GlossMPICommunicator "MPI communicator")
+       * of the
+       * processors that hold the minimal value.
        */
       unsigned int min_index;
 
       /**
-       *
+       * One of the ranks (i.e.,
+       * @ref GlossMPIRank "MPI rank"
+       * within an
+       * @ref GlossMPICommunicator "MPI communicator")
+       * of the
+       * processors that hold the maximal value.
        */
       unsigned int max_index;
 
       /**
-       * 参与调用min_max_avg()的处理器所贡献数值的平均值。
-       *
+       * The average of the values contributed by the processors that
+       * participate in the call to min_max_avg().
        */
       double avg;
     };
 
     /**
-     * 在给定的MPI  @ref GlossMPICommunicator  "communicator"
-     * @p mpi_communicator.
-     * 的集体操作中，返回总和、平均值、最小值、最大值、最小和最大值的处理器ID，并将返回结果。该结果在所有机器上都可用。
-     * @note
-     * 有时，并非所有处理器都需要结果，在这种情况下，人们会调用
-     * <code>MPI_Reduce</code> 函数而不是 <code>MPI_Allreduce</code>
-     * 函数。后者最多只有两倍的费用，所以如果你关心性能，可能值得调查一下你的算法是否确实到处需要结果。
+     * Return sum, average, minimum, maximum, processor id of minimum and
+     * maximum as a collective operation of on the given MPI
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator. Each processor's value is given in @p my_value and
+     * the result will be returned. The result is available on all machines.
      *
+     * @note Sometimes, not all processors need a result and in that case one
+     * would call the <code>MPI_Reduce</code> function instead of the
+     * <code>MPI_Allreduce</code> function. The latter is at most twice as
+     * expensive, so if you are concerned about performance, it may be
+     * worthwhile investigating whether your algorithm indeed needs the result
+     * everywhere.
      */
     MinMaxAvg
     min_max_avg(const double my_value, const MPI_Comm &mpi_communicator);
 
     /**
-     * 与上述相同，但在给定的MPI  @ref GlossMPICommunicator  "communicator"
-     * @p mpi_communicator
-     * 上对向量的每个条目返回总和、平均数、最小值、最大值、最小和最大值的进程ID作为集体操作。
-     * @note  该函数执行一次缩减扫频。          @pre
-     * 输入向量的大小在所有进程中必须是相同的。
+     * Same as above but returning the sum, average, minimum, maximum,
+     * process id of minimum and maximum as a collective operation on the
+     * given MPI
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator for each entry of the vector.
      *
+     * @note This function performs a single reduction sweep.
+     *
+     * @pre Size of the input vector has to be the same on all processes.
      */
     std::vector<MinMaxAvg>
     min_max_avg(const std::vector<double> &my_value,
@@ -707,13 +839,16 @@ namespace Utilities
 
 
     /**
-     * 和上面一样，但是在给定的MPI  @ref GlossMPICommunicator  "communicator"
-     * @p mpi_communicator  上对ArrayView的每个条目返回sum, average,
-     * minimum, maximum, process id of minimum and
-     * maximum作为一个集体操作。
-     * @note  该函数执行一次缩减扫频。          @pre
-     * 输入ArrayView的大小在所有进程中必须是相同的，并且输入和输出ArrayVew必须有相同的大小。
+     * Same as above but returning the sum, average, minimum, maximum,
+     * process id of minimum and maximum as a collective operation on the
+     * given MPI
+     * @ref GlossMPICommunicator "communicator"
+     * @p mpi_communicator for each entry of the ArrayView.
      *
+     * @note This function performs a single reduction sweep.
+     *
+     * @pre Size of the input ArrayView has to be the same on all processes
+     *   and the input and output ArrayVew have to have the same size.
      */
     void
     min_max_avg(const ArrayView<const double> &my_values,
@@ -722,46 +857,95 @@ namespace Utilities
 
 
     /**
-     * 一个用于在程序开始时初始化MPI系统并在程序结束时再次关闭的类。它还允许你控制每个MPI进程中使用的线程数量。
-     * 如果deal.II配置了PETSc，PETSc将在开始时通过`PetscInitialize`初始化（该类的构造函数），在结束时通过`PetscFinalize`去初始化（即在该类的析构函数中）。这对SLEPc来说也是如此。
-     * 如果deal.II配置了p4est，该库也将在开始时被初始化，并在结束时被解除初始化（通过调用sc_init(),
-     * p4est_init(), 和sc_finalize()）。
-     * 如果一个程序使用MPI，通常只需在  <code>main()</code>
-     * 的开头创建一个这种类型的对象。然后，这个类的构造函数带着给定的参数运行
-     * <code>MPI_Init()</code>
-     * ，同时初始化上面提到的其他库。在程序结束时，编译器将调用这个对象的析构器，反过来调用
-     * <code>MPI_Finalize</code> 来关闭MPI系统。        这个类在
-     * step-17 、 step-18 、 step-40 、 step-32
-     * 和其他一些地方使用。
-     * @note
-     * 该类通过`MPI_COMM_WORLD`通信器执行MPI子系统以及上面列出的依赖库的初始化。这意味着你必须在<i>all</i>MPI进程上创建一个MPI_InitFinalize对象，无论你是否打算在特定的处理器上使用deal.II。在大多数使用情况下，人们当然希望使用基本相同的程序在所有MPI进程上工作，因此这不是一个问题。但是如果你计划只在MPI进程的一个子集上运行基于deal.II的工作，使用@
-     * ref GlossMPICommunicator "MPI
-     * communicator"，它是`MPI_COMM_WORLD`的一个子集（例如，在客户-服务器设置中，只有一个子集的进程负责有限元通信，其余进程做其他事情），那么你仍然需要在程序开始时在所有MPI进程中创建这个对象，因为它在初始化时使用`MPI_COMM_WORLD`。
+     * A class that is used to initialize the MPI system at the beginning of a
+     * program and to shut it down again at the end. It also allows you to
+     * control the number of threads used within each MPI process.
      *
+     * If deal.II is configured with PETSc, PETSc will be initialized
+     * via `PetscInitialize` in the beginning (constructor of this
+     * class) and de-initialized via `PetscFinalize` at the end (i.e.,
+     * in the destructor of this class). The same is true for SLEPc.
+     *
+     * If deal.II is configured with p4est, that library will also be
+     * initialized in the beginning, and de-initialized at the end
+     * (by calling sc_init(), p4est_init(), and sc_finalize()).
+     *
+     * If a program uses MPI one would typically just create an object
+     * of this type at the beginning of <code>main()</code>. The
+     * constructor of this class then runs <code>MPI_Init()</code>
+     * with the given arguments and also initializes the other
+     * libraries mentioned above. At the end of the program, the
+     * compiler will invoke the destructor of this object which in
+     * turns calls <code>MPI_Finalize</code> to shut down the MPI
+     * system.
+     *
+     * This class is used in step-17, step-18, step-40, step-32, and
+     * several others.
+     *
+     * @note This class performs initialization of the MPI subsystem
+     * as well as the dependent libraries listed above through the
+     * `MPI_COMM_WORLD` communicator. This means that you will have to
+     * create an MPI_InitFinalize object on <i>all</i> MPI processes,
+     * whether or not you intend to use deal.II on a given
+     * processor. In most use cases, one will of course want to work
+     * on all MPI processes using essentially the same program, and so
+     * this is not an issue. But if you plan to run deal.II-based work
+     * on only a subset of MPI processes, using an @ ref
+     * GlossMPICommunicator "MPI communicator" that is a subset of
+     * `MPI_COMM_WORLD` (for example, in client-server settings where
+     * only a subset of processes is responsible for the finite
+     * element communications and the remaining processes do other
+     * things), then you still need to create this object here on all
+     * MPI processes at the beginning of the program because it uses
+     * `MPI_COMM_WORLD` during initialization.
      */
     class MPI_InitFinalize
     {
     public:
       /**
-       * 初始化MPI（如果deal.II被配置为使用它，则初始化PETSc），并将deal.II使用的线程数（通过底层的线程构件库）设置为给定参数。
-       * @param[in,out]  argc
-       * 对传递给main的'argc'参数的引用。这个参数用于初始化MPI（可能还有PETSc），因为它们从命令行读取参数。
-       * @param[in,out]  argv 对传递给main的'argv'参数的引用。
-       * @param[in]  max_num_threads
-       * 这个MPI进程应该利用的最大线程数。如果这个参数被设置为
-       * numbers::invalid_unsigned_int
-       * （默认值），那么线程的数量将以如下方式自动确定：在这个MPI进程上运行的线程数量是以你的节点上所有的核心都被使用的方式设置的。换句话说，如果你在每个节点上启动了一个MPI进程，设置这个参数就相当于把它设置为这个MPI进程所运行的节点上的核心数。如果你在每个节点上启动的MPI进程与每个节点上的核数一样多，那么这就相当于将1作为参数传递。另一方面，例如，如果你在每个16核节点上启动4个MPI进程，那么这个选项将为每个节点启动4个工作线程。如果你在一个8核节点上启动3个进程，那么它们将分别启动3、3和2个线程。
-       * @note  这个函数用 @p max_num_threads
-       * 或者按照上面的讨论，用等于分配给这个MPI进程的核数的线程数调用
-       * MultithreadInfo::set_thread_limit() 。然而，
-       * MultithreadInfo::set_thread_limit()
-       * 反过来也评估了环境变量DEAL_II_NUM_THREADS。最后，工作线程只能在当前MPI进程可以访问的核上创建；一些MPI实现将每个进程可以访问的核数量限制在一个或一个子集上，以确保更好的缓存行为。因此，真正被创建的线程数将是这里传递的参数、环境变量（如果设置了）和线程可访问的核心数的最小值。
-       * @note   MultithreadInfo::set_thread_limit()
-       * 只有在创建任何线程之前调用它才能发挥作用。因此，对它的调用最安全的地方是在
-       * <code>main()</code>  的开头。
-       * 因此，这延伸到了当前的类：创建这种类型的对象的最佳位置也是在
-       * <code>main()</code>  的顶部或接近顶部。
+       * Initialize MPI (and, if deal.II was configured to use it, PETSc) and
+       * set the number of threads used by deal.II (via the underlying
+       * Threading Building Blocks library) to the given parameter.
        *
+       * @param[in,out] argc A reference to the 'argc' argument passed to
+       * main. This argument is used to initialize MPI (and, possibly, PETSc)
+       * as they read arguments from the command line.
+       * @param[in,out] argv A reference to the 'argv' argument passed to
+       * main.
+       * @param[in] max_num_threads The maximal number of threads this MPI
+       * process should utilize. If this argument is set to
+       * numbers::invalid_unsigned_int (the default value), then the number of
+       * threads is determined automatically in the following way: the number
+       * of threads to run on this MPI process is set in such a way that all
+       * of the cores in your node are spoken for. In other words, if you have
+       * started one MPI process per node, setting this argument is equivalent
+       * to setting it to the number of cores present in the node this MPI
+       * process runs on. If you have started as many MPI processes per node
+       * as there are cores on each node, then this is equivalent to passing 1
+       * as the argument. On the other hand, if, for example, you start 4 MPI
+       * processes on each 16-core node, then this option will start 4 worker
+       * threads for each node. If you start 3 processes on an 8 core node,
+       * then they will start 3, 3 and 2 threads, respectively.
+       *
+       * @note This function calls MultithreadInfo::set_thread_limit() with
+       * either @p max_num_threads or, following the discussion above, a
+       * number of threads equal to the number of cores allocated to this MPI
+       * process. However, MultithreadInfo::set_thread_limit() in turn also
+       * evaluates the environment variable DEAL_II_NUM_THREADS. Finally, the
+       * worker threads can only be created on cores to which the current MPI
+       * process has access to; some MPI implementations limit the number of
+       * cores each process may access to one or a subset of cores in order to
+       * ensure better cache behavior. Consequently, the number of threads
+       * that will really be created will be the minimum of the argument
+       * passed here, the environment variable (if set), and the number of
+       * cores accessible to the thread.
+       *
+       * @note MultithreadInfo::set_thread_limit() can only work if it is
+       * called before any threads are created. The safest place for a call to
+       * it is therefore at the beginning of <code>main()</code>.
+       * Consequently, this extends to the current class: the best place to
+       * create an object of this type is also at or close to the top of
+       * <code>main()</code>.
        */
       MPI_InitFinalize(
         int &              argc,
@@ -769,62 +953,66 @@ namespace Utilities
         const unsigned int max_num_threads = numbers::invalid_unsigned_int);
 
       /**
-       * 解构器。在该类拥有MPI进程的情况下调用<tt>MPI_Finalize()</tt>。
-       *
+       * Destructor. Calls <tt>MPI_Finalize()</tt> in case this class owns the
+       * MPI process.
        */
       ~MPI_InitFinalize();
 
       /**
-       * 注册一个MPI_Request的引用，在调用`MPI_Finalize'之前，我们需要对其调用`MPI_Wait'。
-       * 当MPI_Finalize被调用时，该对象 @p request
-       * 需要存在，这意味着该请求通常是静态分配的。否则，你需要在请求超出范围之前调用unregister_request()。注意，一个请求已经被等待（并因此被重置为MPI_REQUEST_NULL）是可以接受的。
-       * 在同一个实例中多次调用这个函数是可以接受的（就像下面的例子中所做的）。
-       * 通常情况下，这个函数被CollectiveMutex使用，而不是直接使用，但它也可以像这样直接使用。
+       * Register a reference to an MPI_Request
+       * on which we need to call `MPI_Wait` before calling `MPI_Finalize`.
+       *
+       * The object @p request needs to exist when MPI_Finalize is called, which means the
+       * request is typically statically allocated. Otherwise, you need to call
+       * unregister_request() before the request goes out of scope. Note that it
+       * is acceptable for a request to be already waited on (and consequently
+       * reset to MPI_REQUEST_NULL).
+       *
+       * It is acceptable to call this function more than once with the same
+       * instance (as it is done in the example below).
+       *
+       * Typically, this function is used by CollectiveMutex and not directly,
+       * but it can also be used directly like this:
        * @code
        * void my_fancy_communication()
        * {
-       * static MPI_Request request = MPI_REQUEST_NULL;
-       * MPI_InitFinalize::register_request(request);
-       * MPI_Wait(&request, MPI_STATUS_IGNORE);
-       * // [some algorithm that is not safe to be executed twice in a row.]
-       * MPI_IBarrier(comm, &request);
+       *   static MPI_Request request = MPI_REQUEST_NULL;
+       *   MPI_InitFinalize::register_request(request);
+       *   MPI_Wait(&request, MPI_STATUS_IGNORE);
+       *   // [some algorithm that is not safe to be executed twice in a row.]
+       *   MPI_IBarrier(comm, &request);
        * }
        * @endcode
-       *
-       *
        */
       static void
       register_request(MPI_Request &request);
 
       /**
-       * 取消先前使用register_request()添加的请求的注册。
-       *
+       * Unregister a request previously added using register_request().
        */
       static void
       unregister_request(MPI_Request &request);
 
       /**
-       * 一个具有 boost::signal 对象的结构，用于注册MPI
-       * init或finalize之后的回调运行。
-       * 关于信号的文档，见http://www.boost.org/doc/libs/release/libs/signals2
-       * 。
+       * A structure that has boost::signal objects to register a call back
+       * to run after MPI init or finalize.
        *
+       * For documentation on signals, see
+       * http://www.boost.org/doc/libs/release/libs/signals2 .
        */
       struct Signals
       {
         /**
-         * 在我们用 <code>MPI_Init()</code>
-         * 初始化MPI上下文后立即触发的信号。
-         *
+         * A signal that is triggered immediately after we have
+         * initialized the MPI context with <code>MPI_Init()</code>.
          */
         boost::signals2::signal<void()> at_mpi_init;
 
         /**
-         * 一个在我们用  <code>MPI_Finalize()</code>
-         * 关闭MPI上下文之前触发的信号。它可用于在调用
-         * <code>MPI_Finalize()</code>
-         * 之前取消静态分配的MPI资源，这些资源需要被取消分配。
-         *
+         * A signal that is triggered just before we close the MPI context
+         * with <code>MPI_Finalize()</code>. It can be used to deallocate
+         * statically allocated MPI resources that need to be deallocated
+         * before <code>MPI_Finalize()</code> is called.
          */
         boost::signals2::signal<void()> at_mpi_finalize;
       };
@@ -833,33 +1021,41 @@ namespace Utilities
 
     private:
       /**
-       * 在最终确定之前对MPI_Wait的请求
-       *
+       * Requests to MPI_Wait before finalizing
        */
       static std::set<MPI_Request *> requests;
     };
 
     /**
-     * 返回(i)deal.II是否已被编译为支持MPI（例如用
-     * <code>CXX=mpiCC</code> 编译），如果是，是否(ii)
-     * <code>MPI_Init()</code> 已被调用（例如使用
-     * Utilities::MPI::MPI_InitFinalize
-     * 类）。换句话说，该结果表明当前作业是否在MPI下运行。
-     * @note
-     * 该函数没有考虑到一个MPI作业是否实际运行在一个以上的处理器上，或者实际上是一个恰好在MPI下运行的单节点作业。
+     * Return whether (i) deal.II has been compiled to support MPI (for
+     * example by compiling with <code>CXX=mpiCC</code>) and if so whether
+     * (ii) <code>MPI_Init()</code> has been called (for example using the
+     * Utilities::MPI::MPI_InitFinalize class). In other words, the result
+     * indicates whether the current job is running under MPI.
      *
+     * @note The function does not take into account whether an MPI job
+     * actually runs on more than one processor or is, in fact, a single-node
+     * job that happens to run under MPI.
      */
     bool
     job_supports_mpi();
 
     /**
-     * 发起一个某某通信，并在处理器之间交换任意对象（类T应该是可序列化的，使用
-     * boost::serialize) 。          @param[in]  comm MPI通信器。
-     * @param[in]  objects_to_send
-     * 从意在接收数据的进程的等级（无符号int）和要发送的对象的映射（类型`T`必须是可序列化的，这个函数才能正常工作）。如果这个映射包含一个键值等于当前进程等级的条目（即一个向进程发送数据给自己的指令），那么这个数据项就被简单地复制到返回的对象中。
-     * @return
-     * 从发送数据的进程的等级（无符号int）和收到的对象的映射。
+     * Initiate a some-to-some communication, and exchange arbitrary objects
+     * (the class T should be serializable using boost::serialize) between
+     * processors.
      *
+     * @param[in] comm MPI communicator.
+     *
+     * @param[in] objects_to_send A map from the rank (unsigned int) of the
+     *  process meant to receive the data and the object to send (the type `T`
+     *  must be serializable for this function to work properly). If this
+     *  map contains an entry with a key equal to the rank of the current
+     *  process (i.e., an instruction to a process to send data to itself),
+     *  then this data item is simply copied to the returned object.
+     *
+     * @return A map from the rank (unsigned int) of the process
+     *  which sent the data and object received.
      */
     template <typename T>
     std::map<unsigned int, T>
@@ -867,26 +1063,36 @@ namespace Utilities
                  const std::map<unsigned int, T> &objects_to_send);
 
     /**
-     * 经典MPI_Allgather函数的泛化，它接受任意的数据类型T，只要
-     * boost::serialize 接受T作为参数。          @param[in]  comm
-     * MPI通信器。      @param[in]  object_to_send
-     * 一个要发送给所有其他进程的对象  @return
-     * 一个对象的向量，其大小等于MPI通信器中的进程数。每个条目包含从处理器收到的对象，在通信器中具有相应的等级。
+     * A generalization of the classic MPI_Allgather function, that accepts
+     * arbitrary data types T, as long as boost::serialize accepts T as an
+     * argument.
      *
+     * @param[in] comm MPI communicator.
+     * @param[in] object_to_send An object to send to all other processes
+     *
+     * @return A vector of objects, with size equal to the number of
+     *  processes in the MPI communicator. Each entry contains the object
+     *  received from the processor with the corresponding rank within the
+     *  communicator.
      */
     template <typename T>
     std::vector<T>
     all_gather(const MPI_Comm &comm, const T &object_to_send);
 
     /**
-     * 经典MPI_Gather函数的泛化，它接受任意的数据类型T，只要
-     * boost::serialize 接受T作为参数。          @param[in]  comm
-     * MPI通信器。      @param[in]  object_to_send
-     * 一个要发送给根进程的对象  @param[in]  root_process
-     * 进程，它接收来自所有进程的对象。默认情况下，等级为0的进程是根进程。
-     * @return   @p root_process
-     * 接收一个对象的向量，其大小等于MPI通信器中的进程数。每个条目包含从通信器中具有相应等级的处理器接收的对象。所有其他进程收到一个空的向量。
+     * A generalization of the classic MPI_Gather function, that accepts
+     * arbitrary data types T, as long as boost::serialize accepts T as an
+     * argument.
      *
+     * @param[in] comm MPI communicator.
+     * @param[in] object_to_send an object to send to the root process
+     * @param[in] root_process The process, which receives the objects from all
+     * processes. By default the process with rank 0 is the root process.
+     *
+     * @return The @p root_process receives a vector of objects, with size equal to the number of
+     *  processes in the MPI communicator. Each entry contains the object
+     *  received from the processor with the corresponding rank within the
+     *  communicator. All other processes receive an empty vector.
      */
     template <typename T>
     std::vector<T>
@@ -895,19 +1101,22 @@ namespace Utilities
            const unsigned int root_process = 0);
 
     /**
-     * 从进程 @p root_process 发送一个对象 @p object_to_send
-     * 到所有其他进程。
-     * 经典的`MPI_Bcast`函数的泛化，接受任意的数据类型`T`，只要
-     * Utilities::pack() （它反过来使用 `boost::serialize`, ，详见
-     * Utilities::pack() ）接受`T`作为参数。          @param[in]  comm
-     * MPI通信器。      @param[in]  object_to_send
-     * 一个要发送给所有进程的对象。      @param[in]
-     * root_process
-     * 向所有进程发送对象的进程。默认情况下，等级为0的进程是根进程。
-     * @return  在根进程上，返回一份  @p object_to_send.
-     * 在其他每个进程上，返回一份由  @p root_process.
-     * 发送的对象的副本。
+     * Sends an object @p object_to_send from the process @p root_process
+     * to all other processes.
      *
+     * A generalization of the classic `MPI_Bcast` function that accepts
+     * arbitrary data types `T`, as long as Utilities::pack() (which in turn
+     * uses `boost::serialize`, see in Utilities::pack() for details) accepts
+     * `T` as an argument.
+     *
+     * @param[in] comm MPI communicator.
+     * @param[in] object_to_send An object to send to all processes.
+     * @param[in] root_process The process that sends the object to all
+     * processes. By default the process with rank 0 is the root process.
+     *
+     * @return On the root process, return a copy of @p object_to_send.
+     *   On every other process, return a copy of the object sent by
+     *   the @p root_process.
      */
     template <typename T>
     T
@@ -916,13 +1125,16 @@ namespace Utilities
               const unsigned int root_process = 0);
 
     /**
-     * 一个通过用户指定的二进制操作 @p combiner 在 @p
-     * root_process. 上结合所有进程的值 @p local_value
-     * 的函数，因此，这个函数类似于MPI_Reduce（和
-     * Utilities::MPI::min/max()):
-     * 然而，一方面由于用户指定的二进制操作，它对内置类型较慢，但另一方面，可以处理一般对象类型，包括存储可变数量数据的对象。
-     * 与all_reduce相反，结果将只在单一等级上可用。在所有其他进程中，返回值是未定义的。
+     * A function that combines values @p local_value from all processes
+     * via a user-specified binary operation @p combiner on the @p root_process.
+     * As such this function is similar to MPI_Reduce (and
+     * Utilities::MPI::min/max()): however on the one hand due to the
+     * user-specified binary operation it is slower for built-in types but
+     * on the other hand general object types, including ones that store
+     * variable amounts of data, can be handled.
      *
+     * In contrast to all_reduce, the result will be only available on a
+     * single rank. On all other processes, the returned value is undefined.
      */
     template <typename T>
     T
@@ -932,10 +1144,13 @@ namespace Utilities
            const unsigned int                            root_process = 0);
 
     /**
-     * 一个通过用户指定的二进制操作 @p combiner
-     * 将所有进程的值 @p local_value
-     * 结合起来并将结果分配给所有进程的函数。因此，这个函数类似于MPI_Allreduce（如果它是由一个全局还原和一个广播步骤实现的），但由于用户指定的二进制操作，也可以处理一般的对象类型，包括那些存储可变数量的数据的对象。
-     *
+     * A function that combines values @p local_value from all processes
+     * via a user-specified binary operation @p combiner and distributes the
+     * result back to all processes. As such this function is similar to
+     * MPI_Allreduce (if it were implemented by a global reduction followed
+     * by a broadcast step) but due to the user-specified binary operation also
+     * general object types, including ones that store variable amounts of data,
+     * can be handled.
      */
     template <typename T>
     T
@@ -944,23 +1159,46 @@ namespace Utilities
                const std::function<T(const T &, const T &)> &combiner);
 
     /**
-     * 给定一个分割的索引集空间，根据分割的索引集，计算第二个索引集的每个元素的自有MPI进程等级。这个函数的一个自然用法是为每个鬼魂的自由度计算拥有该索引的进程的MPI等级。
-     * 人们可能会想："但是我们知道一个鬼魂自由度属于哪个等级，基于它所在单元的子域ID"。但是这种启发式方法对于不同子域ID的幽灵单元之间的接口上的DoF，或者幽灵单元和人工单元之间的接口上的DoF是失败的。此外，这个函数可以实现完全抽象的信息交换，而不需要借助于网格中的邻居。
-     * 传给这个函数的第一个参数， @p owned_indices,
-     * 必须在所有进程之间唯一地划分一个索引空间。
-     * 否则，对这个参数没有任何限制。特别是，没有必要将索引空间划分为连续的子集。此外，对第二个索引集
-     * @p indices_to_look_up
-     * 没有任何限制，只要其大小与第一个索引集相符。它可以在每个进程上任意独立选择。在第二个索引集也包含本地拥有的索引的情况下，这些索引将被正确处理，并为这些条目返回本进程的等级。
-     * @note
-     * 这是一个集体操作：给定通信器内的所有进程都必须调用这个函数。由于这个函数不使用MPI_Alltoall或MPI_Allgather，而是使用非阻塞的点对点通信来代替，并且只使用一个非阻塞的屏障，所以它大大减少了内存消耗。这个函数适合于具有>100k
-     * MPI行列的大规模模拟。          @param[in]  owned_indices
-     * 指数集，包含本进程本地拥有的指数。      @param[in]
-     * indices_to_look_up
-     * 包含用户对拥有的进程的等级感兴趣的指数的索引集。
-     * @param[in]  comm MPI通信器。          @return
-     * 包含索引集中每个条目的MPI进程等级的列表  @p
-     * indices_to_look_up.  顺序与ElementIterator中的顺序相吻合。
+     * Given a partitioned index set space, compute the owning MPI process rank
+     * of each element of a second index set according to the partitioned index
+     * set. A natural usage of this function is to compute for each ghosted
+     * degree of freedom the MPI rank of the process owning that index.
      *
+     * One might think: "But we know which rank a ghost DoF belongs to based on
+     * the subdomain id of the cell it is on". But this heuristic fails for DoFs
+     * on interfaces between ghost cells with different subdomain_ids, or
+     * between a ghost cell and an artificial cell. Furthermore, this function
+     * enables a completely abstract exchange of information without the help of
+     * the mesh in terms of neighbors.
+     *
+     * The first argument passed to this function, @p owned_indices, must
+     * uniquely partition an index space between all processes.
+     * Otherwise, there are no limitations on this argument: In particular,
+     * there is no need in partitioning
+     * the index space into contiguous subsets. Furthermore, there are no
+     * limitations
+     * on the second index set @p indices_to_look_up as long as the size matches
+     * the first one. It can be chosen arbitrarily and independently on each
+     * process. In the case that the second index set also contains locally
+     * owned indices, these indices will be treated correctly and the rank of
+     * this process is returned for those entries.
+     *
+     * @note This is a collective operation: all processes within the given
+     * communicator have to call this function. Since this function does not
+     * use MPI_Alltoall or MPI_Allgather, but instead uses non-blocking
+     * point-to-point communication instead, and only a single non-blocking
+     * barrier, it reduces the memory consumption significantly. This function
+     * is suited for large-scale simulations with >100k MPI ranks.
+     *
+     * @param[in] owned_indices Index set with indices locally owned by this
+     *            process.
+     * @param[in] indices_to_look_up Index set containing indices of which the
+     *            user is interested the rank of the owning process.
+     * @param[in] comm MPI communicator.
+     *
+     * @return List containing the MPI process rank for each entry in the index
+     *         set @p indices_to_look_up. The order coincides with the order
+     *         within the ElementIterator.
      */
     std::vector<unsigned int>
     compute_index_owner(const IndexSet &owned_indices,
@@ -968,19 +1206,18 @@ namespace Utilities
                         const MPI_Comm &comm);
 
     /**
-     * 计算MPI通信器中所有进程的输入向量 @p vec 的联合 @p
-     * comm.  。
-     * @note
-     * 这是一个集体操作。其结果将在所有进程中可用。
+     * Compute the union of the input vectors @p vec of all processes in the
+     *   MPI communicator @p comm.
      *
+     * @note This is a collective operation. The result will available on all
+     *   processes.
      */
     template <typename T>
     std::vector<T>
     compute_set_union(const std::vector<T> &vec, const MPI_Comm &comm);
 
     /**
-     * 与上述相同，但对 std::set. 而言。
-     *
+     * The same as above but for std::set.
      */
     template <typename T>
     std::set<T>
@@ -1097,7 +1334,7 @@ namespace Utilities
             {
               const auto &rank   = rank_obj.first;
               buffers_to_send[i] = Utilities::pack(rank_obj.second,
-                                                    /*allow_compression=*/ false);
+                                                   /*allow_compression=*/false);
               const int ierr     = MPI_Isend(buffers_to_send[i].data(),
                                          buffers_to_send[i].size(),
                                          MPI_CHAR,
@@ -1144,7 +1381,7 @@ namespace Utilities
                      "I should not receive again from this rank"));
             received_objects[rank] =
               Utilities::unpack<T>(buffer,
-                                    /*allow_compression=*/ false);
+                                   /*allow_compression=*/false);
           }
       }
 
@@ -1386,5 +1623,3 @@ namespace Utilities
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

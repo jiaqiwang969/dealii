@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_common_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -26,255 +27,176 @@ DEAL_II_NAMESPACE_OPEN
 namespace VectorTools
 {
   /**
-   * Denote which norm/integral is to be computed by the
-   * integrate_difference() function on each cell and compute_global_error()
-   * for the whole domain.
-   * Let $f:\Omega \rightarrow \mathbb{R}^c$ be a finite element function
-   * with $c$ components where component $c$ is denoted by $f_c$ and $\hat{f}$
-   * be the reference function (the @p fe_function and @p exact_solution
-   * arguments to integrate_difference()). Let $e_c = \hat{f}_c - f_c$
-   * be the difference or error between the two. Further,
-   * let  $w:\Omega \rightarrow \mathbb{R}^c$ be the @p weight function of integrate_difference(), which is
-   * assumed to be equal to one if not supplied. Finally, let $p$ be the
-   * @p exponent argument (for $L_p$-norms).
+   * 表示哪个规范/积分将由 integrate_difference()
+   * 函数在每个单元格上计算，而 compute_global_error()
+   * 则是针对整个域。  让 $f:\Omega \rightarrow \mathbb{R}^c$
+   * 是一个具有 $c$ 分量的有限元函数，其中 $c$ 分量由 $f_c$
+   * 表示， $\hat{f}$ 是参考函数（ integrate_difference()的 @p
+   * fe_function 和 @p exact_solution  参数）。让 $e_c = \hat{f}_c
    *
-   * In the following,we denote by $E_K$ the local error computed by
-   * integrate_difference() on cell $K$, whereas $E$ is the global error
-   * computed by compute_global_error(). Note that integrals are
-   * approximated by quadrature in the usual way:
-   * @f[
+   * - f_c$ 为二者之间的差异或误差。此外，让 $w:\Omega \rightarrow \mathbb{R}^c$ 为 integrate_difference()的 @p weight 函数，如果没有提供，则假定它等于1。最后，让 $p$ 为 @p exponent 的参数（对于 $L_p$ -norms）。    在下文中，我们用 $E_K$ 表示在单元格 $K$ 上通过 integrate_difference() 计算的局部误差，而 $E$ 是通过 compute_global_error() 计算的全局误差。请注意，积分是以通常的方式用正交法进行近似的。  @f[
    * \int_A f(x) dx \approx \sum_q f(x_q) \omega_q.
-   * @f]
-   * Similarly for suprema over a cell $T$:
-   * @f[
-   * \sup_{x\in T} |f(x)| dx \approx \max_q |f(x_q)|.
-   * @f]
+   * @f] 同样，对于一个单元上的上位数 $T$  : @f[
+   * \sup_{x\in T} |f(x)| dx \approx \max_q |f(x_q)|. @f] 。
+   *
    */
   enum NormType
   {
     /**
-     * The function or difference of functions is integrated on each cell $K$:
-     * @f[
-     *   E_K
-     * = \int_K \sum_c (\hat{f}_c - f_c) \, w_c
-     * = \int_K \sum_c e_c \, w_c
-     * @f]
-     * and summed up to get
-     * @f[
-     *   E = \sum_K E_K
-     *     = \int_\Omega \sum_c (\hat{f}_c - f_c) \, w_c
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \int_\Omega (\hat{f} - f)
-     *     = \int_\Omega e.
-     * @f]
+     * 函数或函数之差在每个单元格上进行积分  $K$  : @f[
+     * E_K
+     * = \int_K \sum_c (\hat{f}_c
      *
-     * Note: This differs from what is typically known as
-     * the mean of a function by a factor of $\frac{1}{|\Omega|}$. To
-     * compute the mean you can also use compute_mean_value(). Finally,
-     * pay attention to the sign: if $\hat{f}=0$, this will compute the
-     * negative of the mean of $f$.
+     * - f_c) \, w_c
+     * = \int_K \sum_c e_c \, w_c
+     * @f] 并求和得到 @f[
+     * E = \sum_K E_K = \int_\Omega \sum_c (\hat{f}_c
+     *
+     * - f_c) \, w_c
+     * @f] 或对于  $w \equiv 1$  : @f[
+     * E = \int_\Omega (\hat{f}
+     *
+     * - f) = \int_\Omega e. @f]
+     * 注意：这与通常所说的函数的平均值不同，是
+     * $\frac{1}{|\Omega|}$
+     * 的一个因素。要计算平均值，你也可以使用compute_mean_value()。最后，注意符号：如果
+     * $\hat{f}=0$  ，这将计算  $f$  的平均值的负数。
+     *
      */
     mean,
 
     /**
-     * The absolute value of the function is integrated:
-     * @f[
-     *   E_K = \int_K \sum_c |e_c| \, w_c
-     * @f]
-     * and
-     * @f[
-     *   E = \sum_K E_K = \int_\Omega \sum_c |e_c| w_c,
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E  = \| e \|_{L^1}.
-     * @f]
+     * 函数的绝对值被整合。    @f[
+     * E_K = \int_K \sum_c |e_c| \, w_c
+     * @f]和@f[
+     * E = \sum_K E_K = \int_\Omega \sum_c |e_c| w_c,
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E  = \| e \|_{L^1}. @f] 。
+     *
      */
     L1_norm,
 
     /**
-     * The square of the function is integrated and the square root of the
-     * result is computed on each cell:
-     * @f[
-     *   E_K = \sqrt{ \int_K \sum_c e_c^2 \, w_c }
-     * @f]
-     * and
-     * @f[
-     *   E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega  \sum_c e_c^2 \, w_c }
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \sqrt{ \int_\Omega e^2 }
-     *     = \| e \|_{L^2}
-     * @f]
+     * 函数的平方被整合，结果的平方根在每个单元格上被计算出来。    @f[
+     * E_K = \sqrt{ \int_K \sum_c e_c^2 \, w_c }
+     * @f]和@f[
+     * E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega  \sum_c e_c^2 \, w_c }
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \sqrt{ \int_\Omega e^2 } = \| e \|_{L^2} @f]。
+     *
      */
     L2_norm,
 
     /**
-     * The absolute value to the $p$-th power is integrated and the $p$-th
-     * root is computed on each cell. The exponent $p$ is the @p
-     * exponent argument of integrate_difference() and compute_mean_value():
-     * @f[
-     *   E_K = \left( \int_K \sum_c |e_c|^p \, w_c \right)^{1/p}
-     * @f]
-     * and
-     * @f[
-     *   E = \left( \sum_K E_K^p \right)^{1/p}
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \| e \|_{L^p}.
-     * @f]
+     * 对 $p$ 的绝对值进行整合，在每个单元格上计算 $p$ 的根。指数 $p$ 是 integrate_difference() 和 compute_mean_value() 的 @p  指数参数。    @f[
+     * E_K = \left( \int_K \sum_c |e_c|^p \, w_c \right)^{1/p}
+     * @f]和@f[
+     * E = \left( \sum_K E_K^p \right)^{1/p}
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \| e \|_{L^p}. @f] 。
+     *
      */
     Lp_norm,
 
     /**
-     * The maximum absolute value of the function:
-     * @f[
-     *   E_K = \sup_K \max_c |e_c| \, w_c
-     * @f]
-     * and
-     * @f[
-     *   E = \max_K E_K
-     * = \sup_\Omega \max_c |e_c| \, w_c
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E  = \sup_\Omega \|e\|_\infty = \| e \|_{L^\infty}.
-     * @f]
+     * 的最大绝对值的函数。    @f[
+     * E_K = \sup_K \max_c |e_c| \, w_c
+     * @f] 和 @f[
+     * E = \max_K E_K = \sup_\Omega \max_c |e_c| \, w_c
+     * @f] 或者，对于  $w \equiv 1$  : @f[
+     * E  = \sup_\Omega \|e\|_\infty = \| e \|_{L^\infty}. @f] 。
+     *
      */
     Linfty_norm,
 
     /**
-     * #L2_norm of the gradient:
-     * @f[
-     *   E_K = \sqrt{ \int_K \sum_c (\nabla e_c)^2 \, w_c }
-     * @f]
-     * and
-     * @f[
-     *   E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega \sum_c (\nabla e_c)^2 \,
+     * #L2_norm的梯度。    @f[
+     * E_K = \sqrt{ \int_K \sum_c (\nabla e_c)^2 \, w_c }
+     * @f]和@f[
+     * E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega \sum_c (\nabla e_c)^2 \,
      * w_c }
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \| \nabla e \|_{L^2}.
-     * @f]
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \| \nabla e \|_{L^2}. @f] 。
+     *
      */
     H1_seminorm,
 
     /**
-     * #L2_norm of the divergence of a vector field. The function $f$ is
-     * expected to have $c \geq \text{dim}$ components and the first @p dim
-     * will be used to compute the divergence:
-     * @f[
-     *   E_K = \sqrt{ \int_K \left( \sum_c \frac{\partial e_c}{\partial x_c} \,
+     * #L2_norm的向量场的发散。函数 $f$ 预计有 $c \geq \text{dim}$ 个分量，第一个 @p dim 将被用来计算发散。    @f[
+     * E_K = \sqrt{ \int_K \left( \sum_c \frac{\partial e_c}{\partial x_c} \,
      * \sqrt{w_c} \right)^2 }
-     * @f]
-     * and
-     * @f[
-     *   E = \sqrt{\sum_K E_K^2}
-     *     = \sqrt{ \int_\Omega \left( \sum_c \frac{\partial e_c}{\partial x_c}
-     * \, \sqrt{w_c} \right)^2  }
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \| \nabla \cdot e \|_{L^2}.
-     * @f]
+     * @f]和@f[
+     * E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega \left( \sum_c
+     * \frac{\partial e_c}{\partial x_c} \, \sqrt{w_c} \right)^2  }
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \| \nabla \cdot e \|_{L^2}. @f] 。
+     *
      */
     Hdiv_seminorm,
 
     /**
-     * The square of this norm is the square of the #L2_norm plus the square
-     * of the #H1_seminorm:
-     * @f[
-     *   E_K = \sqrt{ \int_K \sum_c (e_c^2 + (\nabla e_c)^2) \, w_c }
-     * @f]
-     * and
-     * @f[
-     *   E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega \sum_c (e_c^2 + (\nabla
+     * 这个规范的平方是#L2_norm的平方加上#H1_seminorm的平方。    @f[
+     * E_K = \sqrt{ \int_K \sum_c (e_c^2 + (\nabla e_c)^2) \, w_c }
+     * @f]和@f[
+     * E = \sqrt{\sum_K E_K^2} = \sqrt{ \int_\Omega \sum_c (e_c^2 + (\nabla
      * e_c)^2) \, w_c }
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \left( \| e \|_{L^2}^2 + \| \nabla e \|_{L^2}^2 \right)^{1/2}.
-     * @f]
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \left( \| e \|_{L^2}^2 + \| \nabla e \|_{L^2}^2 \right)^{1/2}. @f]
+     * 。
+     *
      */
     H1_norm,
 
     /**
-     * #Lp_norm of the gradient:
-     * @f[
-     *   E_K = \left( \int_K \sum_c |\nabla e_c|^p \, w_c \right)^{1/p}
-     * @f]
-     * and
-     * @f[
-     *   E = \left( \sum_K E_K^p \right)^{1/p}
-     *     = \left( \int_\Omega \sum_c |\nabla e_c|^p \, w_c \right)^{1/p}
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \| \nabla e \|_{L^p}.
-     * @f]
+     * #Lp_norm的梯度。    @f[
+     * E_K = \left( \int_K \sum_c |\nabla e_c|^p \, w_c \right)^{1/p}
+     * @f]和@f[
+     * E = \left( \sum_K E_K^p \right)^{1/p} = \left( \int_\Omega \sum_c
+     * |\nabla e_c|^p \, w_c \right)^{1/p}
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \| \nabla e \|_{L^p}. @f] 。
+     *
      */
     W1p_seminorm,
 
     /**
-     * The same as the #H1_norm but using <i>L<sup>p</sup></i>:
-     * @f[
-     *   E_K = \left( \int_K \sum_c (|e_c|^p + |\nabla e_c|^p) \, w_c
+     * 与#H1_norm相同，但使用<i>L<sup>p</sup></i>。    @f[
+     * E_K = \left( \int_K \sum_c (|e_c|^p + |\nabla e_c|^p) \, w_c
      * \right)^{1/p}
-     * @f]
-     * and
-     * @f[
-     *   E = \left( \sum_K E_K^p \right)^{1/p}
-     *     = \left( \int_\Omega \sum_c (|e_c|^p + |\nabla e_c|^p) \, w_c
-     * \right)^{1/p}
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \left( \| e \|_{L^p}^p + \| \nabla e \|_{L^p}^p \right)^{1/p}.
-     * @f]
+     * @f]和@f[
+     * E = \left( \sum_K E_K^p \right)^{1/p} = \left( \int_\Omega \sum_c
+     * (|e_c|^p + |\nabla e_c|^p) \, w_c \right)^{1/p}
+     * @f]，或者，对于 $w \equiv 1$  : @f[
+     * E = \left( \| e \|_{L^p}^p + \| \nabla e \|_{L^p}^p \right)^{1/p}. @f]
+     * 。
+     *
      */
     W1p_norm,
 
     /**
-     * #Linfty_norm of the gradient:
-     * @f[
-     *   E_K = \sup_K \max_c |\nabla e_c| \, w_c
-     * @f]
-     * and
-     * @f[
-     *   E = \max_K E_K
-     *     = \sup_\Omega \max_c |\nabla e_c| \, w_c
-     * @f]
-     * or, for $w \equiv 1$:
-     * @f[
-     *   E = \| \nabla e \|_{L^\infty}.
-     * @f]
+     * #梯度的Linfty_norm。    @f[
+     * E_K = \sup_K \max_c |\nabla e_c| \, w_c
+     * @f]和@f[
+     * E = \max_K E_K = \sup_\Omega \max_c |\nabla e_c| \, w_c
+     * @f]或者，对于 $w \equiv 1$ ：@f[
+     * E = \| \nabla e \|_{L^\infty}. @f] 。
+     *
      */
     W1infty_seminorm,
 
     /**
-     * The sum of #Linfty_norm and #W1infty_seminorm:
-     * @f[
-     *   E_K = \sup_K \max_c |e_c| \, w_c + \sup_K \max_c |\nabla e_c| \, w_c.
-     * @f]
-     * The global norm is not implemented in compute_global_error(),
-     * because it is impossible to compute the sum of the global
-     * norms from the values $E_K$. As a work-around, you can compute the
-     * global #Linfty_norm and #W1infty_seminorm separately and then add them
-     * to get (with $w \equiv 1$):
-     * @f[
-     *   E = \| e \|_{L^\infty} + \| \nabla e \|_{L^\infty}.
-     * @f]
+     * ＃Linfty_norm和＃W1infty_seminorm之和。    @f[
+     * E_K = \sup_K \max_c |e_c| \, w_c + \sup_K \max_c |\nabla e_c| \, w_c.
+     * @f] 全局规范没有在compute_global_error()中实现，因为不可能从值中计算出全局规范的总和  $E_K$  。作为一种变通方法，你可以分别计算全局的#Linfty_norm和#W1infty_seminorm，然后将它们相加，得到（与  $w \equiv 1$  ）。    @f[
+     * E = \| e \|_{L^\infty} + \| \nabla e \|_{L^\infty}. @f]
+     *
      */
     W1infty_norm
   };
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcPointNotAvailableHere,
                    "The given point is inside a cell of a "
@@ -291,7 +213,8 @@ namespace Patterns
     struct Convert<VectorTools::NormType, void>
     {
       /**
-       * Return the Correct pattern for NormType.
+       * 返回NormType的正确模式。
+       *
        */
       static std::unique_ptr<Patterns::PatternBase>
       to_pattern()
@@ -306,7 +229,8 @@ namespace Patterns
 
 
       /**
-       * Convert a NormType to a string.
+       * 将NormType转换为一个字符串。
+       *
        */
       static std::string
       to_string(const VectorTools::NormType &s,
@@ -348,7 +272,8 @@ namespace Patterns
 
 
       /**
-       * Convert a string to a NormType.
+       * 将一个字符串转换为一个NormType。
+       *
        */
       static VectorTools::NormType
       to_value(const std::string &          str,
@@ -398,3 +323,5 @@ namespace Patterns
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_common_h
+
+

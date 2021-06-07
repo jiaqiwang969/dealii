@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/data_out_faces_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -33,8 +32,9 @@ namespace internal
   namespace DataOutFacesImplementation
   {
     /**
-     * 一个派生类，用于DataOutFaces类中。这是一个用于WorkStream上下文的文档中讨论的AdditionalData那种数据结构的类。
-     *
+     * A derived class for use in the DataOutFaces class. This is a class for
+     * the AdditionalData kind of data structure discussed in the
+     * documentation of the WorkStream context.
      */
     template <int dim, int spacedim>
     struct ParallelData
@@ -56,25 +56,54 @@ namespace internal
 
 
 /**
- * 这个类从三角形的面生成输出。它可能只用于生成三角形表面的输出（这是该类的默认值），或者用于活动单元的所有面，如构造函数中指定的那样。这个类的输出是一组补丁（如类
- * DataOutBase::Patch()),
- * 所定义的，每个面都要生成输出。这些补丁可以通过基础类的功能写成几种图形数据格式。
+ * This class generates output from faces of a triangulation. It might be used
+ * to generate output only for the surface of the triangulation (this is the
+ * default of this class), or for all faces of active cells, as specified in
+ * the constructor. The output of this class is a set of patches (as defined
+ * by the class DataOutBase::Patch()), one for each face for which output is
+ * to be generated. These patches can then be written in several graphical
+ * data formats by the functions of the underlying classes.
+ *
  * <h3>Interface</h3>
- * 这个类的接口是从DataOut类复制过来的。此外，它们共享共同的父类DataOut_DoFData。关于接口的讨论，请看这两个类的参考资料。
  *
- *  <h3>Extending this class</h3>
- * 生成补丁的面的序列是以与DataOut类相同的方式生成的；关于各自接口的描述见那里。产生面片序列的函数将被用于生成输出，这些函数被称为first_face()和next_face()。
- * 由于我们需要用这些函数生成的面来初始化FEValues类型的对象，所以它们只返回面的迭代器是不够的。相反，我们需要一对单元格和面的编号，因为有限元场的值在一个面上不一定是唯一的（想想不连续的有限元，有限元场的值取决于你接近一个面的方向，因此有必要使用一对单元格和面，而不是只有一个面的迭代器）。因此，这个类定义了一个
- * @p alias ，它创建了一个类型 @p FaceDescriptor
- * ，是一对单元格迭代器和面数的缩写。函数 @p first_face 和
- * @p next_face 对该类型的对象进行操作。
- * 例如，如果你只想从边界的某些部分输出，例如由各自面的边界指示器指示的，那么扩展这个类可能是有用的。然而，我们也可以想象，我们不是从边界面生成补丁，而是从根据其他标准选择的内部面生成补丁；一种应用可能是只使用那些解的一个分量达到某个值的面，以便在这些面上显示其他解分量的值。其他的应用当然也存在，对于这些应用，作者没有足够的想象力。
- * @todo  使用实际的FEFaceValues和MeshWorker重新实现这整个类。
+ * The interface of this class is copied from the DataOut class. Furthermore,
+ * they share the common parent class DataOut_DoFData. See the reference of
+ * these two classes for a discussion of the interface.
  *
+ *
+ * <h3>Extending this class</h3>
+ *
+ * The sequence of faces to generate patches from is generated in the same way
+ * as in the DataOut class; see there for a description of the respective
+ * interface. The functions generating the sequence of faces which shall be
+ * used to generate output, are called first_face() and next_face().
+ *
+ * Since we need to initialize objects of type FEValues with the faces
+ * generated from these functions, it is not sufficient that they only return
+ * face iterators. Rather, we need a pair of cell and the number of the face,
+ * as the values of finite element fields need not necessarily be unique on a
+ * face (think of discontinuous finite elements, where the value of the finite
+ * element field depend on the direction from which you approach a face, thus
+ * it is necessary to use a pair of cell and face, rather than only a face
+ * iterator). Therefore, this class defines an @p alias which creates a type
+ * @p FaceDescriptor that is an abbreviation for a pair of cell iterator and
+ * face number. The functions @p first_face and @p next_face operate on
+ * objects of this type.
+ *
+ * Extending this class might, for example, be useful if you only want output
+ * from certain portions of the boundary, e.g. as indicated by the boundary
+ * indicator of the respective faces. However, it is also conceivable that one
+ * generates patches not from boundary faces, but from interior faces that are
+ * selected due to other criteria; one application might be to use only those
+ * faces where one component of the solution attains a certain value, in order
+ * to display the values of other solution components on these faces. Other
+ * applications certainly exist, for which the author is not imaginative
+ * enough.
+ *
+ * @todo Reimplement this whole class using actual FEFaceValues and
+ * MeshWorker.
  *
  * @ingroup output
- *
- *
  */
 template <int dim, int spacedim = dim>
 class DataOutFaces : public DataOut_DoFData<dim, dim - 1, spacedim, spacedim>
@@ -83,90 +112,122 @@ class DataOutFaces : public DataOut_DoFData<dim, dim - 1, spacedim, spacedim>
 
 public:
   /**
-   * 补丁的尺寸参数。
-   *
+   * Dimension parameters for the patches.
    */
   static constexpr int patch_dim      = dim - 1;
   static constexpr int patch_spacedim = spacedim;
 
   /**
-   * 对所考虑的dof处理程序类的迭代器类型的别名。
-   *
+   * Alias to the iterator type of the dof handler class under
+   * consideration.
    */
   using cell_iterator =
     typename DataOut_DoFData<dim, patch_dim, spacedim, patch_spacedim>::
       cell_iterator;
 
   /**
-   * 决定是否写入表面网（默认）或整个线筐的构造函数。
-   *
+   * Constructor determining whether a surface mesh (default) or the whole
+   * wire basket is written.
    */
   DataOutFaces(const bool surface_only = true);
 
   /**
-   * 这是该类的核心功能，因为它建立了由基类的低级函数写入的补丁列表。从本质上讲，补丁是三角形和DoFHandler对象的每个面上的数据的一些中间表示，然后可以用来以某种可视化程序可读的格式编写文件。
-   * 你可以在这个类的一般文档中找到关于这个函数的使用概述。在这个类的基类DataOut_DoFData的文档中也提供了一个例子。
-   * @param  n_subdivisions 参见 DataOut::build_patches()
-   * 关于这个参数的广泛描述。
+   * This is the central function of this class since it builds the list of
+   * patches to be written by the low-level functions of the base class. A
+   * patch is, in essence, some intermediate representation of the data on
+   * each face of a triangulation and DoFHandler object that can then be used
+   * to write files in some format that is readable by visualization programs.
    *
+   * You can find an overview of the use of this function in the general
+   * documentation of this class. An example is also provided in the
+   * documentation of this class's base class DataOut_DoFData.
+   *
+   * @param n_subdivisions See DataOut::build_patches() for an extensive
+   * description of this parameter.
    */
   virtual void
   build_patches(const unsigned int n_subdivisions = 0);
 
   /**
-   * 与上述相同，只是额外的第一个参数定义了一个映射，该映射将用于生成输出。如果<tt>n_subdivisions>1</tt>，源于域的边界单元的细分斑块内部的点可以用映射来计算，也就是说，高阶映射导致通过使用更多的细分来表示弯曲的边界。
-   * 即使对于非弯曲的单元，映射参数也可以用于欧拉映射（见MappingQ1Eulerian类），在这里，映射不仅用于确定单元内部的点的位置，也用于确定顶点的位置。
-   * 它提供了一个机会，可以在实际进行计算的变形三角形上观察解决方案，即使网格在内部是以未变形的配置存储的，变形只是通过一个额外的向量来跟踪每个顶点的变形情况。
-   * @todo  如果是具有hp-capabilities的DoFHandler， @p mapping
-   * 参数应该被 hp::MappingCollection 取代。
+   * Same as above, except that the additional first parameter defines a
+   * mapping that is to be used in the generation of output. If
+   * <tt>n_subdivisions>1</tt>, the points interior of subdivided patches
+   * which originate from cells at the boundary of the domain can be computed
+   * using the mapping, i.e. a higher order mapping leads to a representation
+   * of a curved boundary by using more subdivisions.
    *
+   * Even for non-curved cells the mapping argument can be used for the
+   * Eulerian mappings (see class MappingQ1Eulerian) where a mapping is used
+   * not only to determine the position of points interior to a cell, but also
+   * of the vertices.  It offers an opportunity to watch the solution on a
+   * deformed triangulation on which the computation was actually carried out,
+   * even if the mesh is internally stored in its undeformed configuration and
+   * the deformation is only tracked by an additional vector that holds the
+   * deformation of each vertex.
+   *
+   * @todo The @p mapping argument should be replaced by a
+   * hp::MappingCollection in case of a DoFHandler with hp-capabilities.
    */
   virtual void
   build_patches(const Mapping<dim, spacedim> &mapping,
                 const unsigned int            n_subdivisions = 0);
 
   /**
-   * 声明一种描述我们希望产生输出的面的方式。通常的方法当然是使用
-   * <tt>DoFHandler<dim>::face_iterator</tt>,
-   * 类型的对象，但由于我们必须对FEValues类型的对象描述面孔，我们只能用单元格和面孔的编号对来表示面孔。这一对在这里被别名为一个名字，最好是输入。
-   *
+   * Declare a way to describe a face which we would like to generate output
+   * for. The usual way would, of course, be to use an object of type
+   * <tt>DoFHandler<dim>::face_iterator</tt>, but since we have to describe
+   * faces to objects of type FEValues, we can only represent faces by pairs
+   * of a cell and the number of the face. This pair is here aliased to a name
+   * that is better to type.
    */
   using FaceDescriptor = typename std::pair<cell_iterator, unsigned int>;
 
 
   /**
-   * 返回我们想要输出的第一个面。默认的实现是返回一个（本地拥有的）活动单元的第一个面，或者，如果在析构器中设置了
-   * @p surface_only
-   * 选项（如默认），则返回位于边界上的第一个此类面。
-   * 如果你想使用不同的逻辑来决定哪些面应该有助于图形输出的创建，你可以在派生类中重载这个函数。
+   * Return the first face which we want output for. The default
+   * implementation returns the first face of a (locally owned) active cell
+   * or, if the @p surface_only option was set in the destructor (as is the
+   * default), the first such face that is located on the boundary.
    *
+   * If you want to use a different logic to determine which faces should
+   * contribute to the creation of graphical output, you can overload this
+   * function in a derived class.
    */
   virtual FaceDescriptor
   first_face();
 
   /**
-   * 返回我们想要输出的下一个面。如果没有更多的面，<tt>dofs->end()</tt>将作为返回值的第一个组成部分返回。
-   * 默认的实现是返回一个（本地拥有的）活动单元的下一个面，或者边界上的下一个这样的面（取决于是否向构造函数提供了
-   * @p surface_only 选项）。
-   * 这个函数逐个遍历网格中的活动单元（仅限于本地拥有的单元），然后遍历该单元的所有面。因此，内部面会被输出两次，这个特性对于不连续的Galerkin方法或使用数据后处理器可能产生的结果在单元之间不连续的情况下是很有用的）。)
-   * 这个函数可以在派生类中被重载，以选择不同的面组。请注意，默认实现假设给定的
-   * @p face
-   * 是有效的，只要first_face()也是从默认实现中使用，就可以保证。只重载这两个函数中的一个应该谨慎行事。
+   * Return the next face after which we want output for. If there are no more
+   * faces, <tt>dofs->end()</tt> is returned as the first component of the
+   * return value.
    *
+   * The default implementation returns the next face of a (locally owned)
+   * active cell, or the next such on the boundary (depending on whether the
+   * @p surface_only option was provided to the constructor).
+   *
+   * This function traverses the mesh active cell by active cell (restricted to
+   * locally owned cells), and then through all faces of the cell. As a result,
+   * interior faces are output twice, a feature that is useful for
+   * discontinuous Galerkin methods or if a DataPostprocessor is used that
+   * might produce results that are discontinuous between cells).
+   *
+   * This function can be overloaded in a derived class to select a
+   * different set of faces. Note that the default implementation assumes that
+   * the given @p face is active, which is guaranteed as long as first_face()
+   * is also used from the default implementation. Overloading only one of the
+   * two functions should be done with care.
    */
   virtual FaceDescriptor
   next_face(const FaceDescriptor &face);
 
 private:
   /**
-   * 在表面网格和全线篮之间决定的参数。
-   *
+   * Parameter deciding between surface meshes and full wire basket.
    */
   const bool surface_only;
 
   /**
-   * 建立一个补丁。这个函数是在WorkStream上下文中调用的。
-   *
+   * Build one patch. This function is called in a WorkStream context.
    */
   void
   build_one_patch(
@@ -178,9 +239,8 @@ private:
 namespace Legacy
 {
   /**
-   * @deprecated  使用没有DoFHandlerType模板的 dealii::DataOutFaces
-   * 代替。
-   *
+   * @deprecated Use dealii::DataOutFaces without the DoFHandlerType template
+   * instead.
    */
   template <int dim, typename DoFHandlerType = DoFHandler<dim>>
   using DataOutFaces DEAL_II_DEPRECATED =
@@ -191,5 +251,3 @@ namespace Legacy
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

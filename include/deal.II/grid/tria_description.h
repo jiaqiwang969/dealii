@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/tria_description_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -28,114 +29,104 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*------------------------------------------------------------------------*/
+ /*------------------------------------------------------------------------*/ 
 
 /**
- * The CellData class (and the related SubCellData class) is used to
- * provide a comprehensive, but minimal, description of the cells when
- * creating a triangulation via Triangulation::create_triangulation().
- * Specifically, each CellData object -- describing one cell in a
- * triangulation -- has member variables for indices of the $2^d$ vertices
- * (the actual coordinates of the vertices are described in a separate
- * vector passed to Triangulation::create_triangulation(), so the CellData
- * object only needs to store indices into that vector), the material
- * id of the cell that can be used in applications to describe which
- * part of the domain a cell belongs to (see
- * @ref GlossMaterialId "the glossary entry on material ids"),
- * and a manifold id that is used to describe the geometry object
- * that is responsible for this cell (see
- * @ref GlossManifoldIndicator "the glossary entry on manifold ids")
- * to describe the manifold this object belongs to.
+ * CellData类（以及相关的SubCellData类）用于在通过
+ * Triangulation::create_triangulation().
+ * 创建三角图时提供全面但最低限度的单元描述。
+ * 具体来说，每个CellData对象
  *
- * This structure is also used to represent data for faces and edges when used
- * as a member of the SubCellData class. In this case, the template argument
- * @p structdim of an object will be less than the dimension @p dim of the
- * triangulation. If this is so, then #vertices array represents the indices of
- * the vertices of one face or edge of one of the cells passed to
- * Triangulation::create_triangulation(). Furthermore, for faces the
- * material id has no meaning, and the @p material_id field is reused
- * to store a @p boundary_id instead to designate which part of the boundary
- * the face or edge belongs to (see
- * @ref GlossBoundaryIndicator "the glossary entry on boundary ids").
+ * - 描述三角测量中的一个单元
  *
- * An example showing how this class can be used is in the
- * <code>create_coarse_grid()</code> function of step-14. There are also
- * many more use cases in the implementation of the functions of the
- * GridGenerator namespace.
+ * 当作为SubCellData类的成员时，这个结构也被用来表示面和边的数据。在这种情况下，对象的模板参数 @p structdim 将小于三角形的尺寸 @p dim 。如果是这样，那么#vertices数组代表了传递给 Triangulation::create_triangulation(). 的一个单元格的一个面或边的顶点的索引。此外，对于面来说，材料id没有任何意义， @p material_id 字段被重新用来存储一个 @p boundary_id 来代替指定面或边属于边界的哪一部分（见 @ref GlossBoundaryIndicator  "边界id的词汇条"
+ * ）。 一个显示该类如何使用的例子是在  step-14  的
+ * <code>create_coarse_grid()</code>
+ * 函数中。在实现GridGenerator命名空间的功能时，还有很多用例。
+ *
  *
  * @ingroup grid
+ *
+ *
  */
 template <int structdim>
 struct CellData
 {
   /**
-   * Indices of the vertices of this cell. These indices correspond
-   * to entries in the vector of vertex locations passed to
+   * 这个单元的顶点的索引。这些指数对应于传递给
    * Triangulation::create_triangulation().
+   * 的顶点位置向量中的条目。
+   *
    */
   std::vector<unsigned int> vertices;
 
   /**
-   * Material or boundary indicator of this cell.
-   * This field is a union that stores <i>either</i> a boundary or
-   * a material id, depending on whether the current object is used
-   * to describe a cell (in a vector of CellData objects) or a
-   * face or edge (as part of a SubCellData object).
+   * 此单元的材料或边界指标。
+   * 这个字段是一个联合体，存储<i>either</i>边界或材料ID，取决于当前对象是用来描述一个单元（在CellData对象的矢量中）还是一个面或边（作为SubCellData对象的一部分）。
+   *
    */
   union
   {
     /**
-     * The material id of the cell being described. See the documentation
-     * of the CellData class for examples of how to use this field.
+     * 被描述的单元格的材质ID。关于如何使用这个字段的例子，请参见CellData类的文档。
+     * 这个变量只有在当前对象被用来描述一个单元时才能使用，即如果
+     * @p structdim 等于一个三角形的尺寸 @p dim 。
      *
-     * This variable can only be used if the current object is used to
-     * describe a cell, i.e., if @p structdim equals the dimension
-     * @p dim of a triangulation.
      */
     types::material_id material_id;
 
     /**
-     * The boundary id of a face or edge being described. See the documentation
-     * of the CellData class for examples of how to use this field.
+     * 被描述的面或边的边界ID。关于如何使用这个字段的例子，请参见CellData类的文档。
+     * 这个变量只能在当前对象用于描述一个面或边的情况下使用，也就是说，如果
+     * @p structdim 小于三角形的尺寸 @p dim
+     * 。在这种情况下，这个变量所属的CellData对象将是SubCellData对象的一部分。
      *
-     * This variable can only be used if the current object is used to
-     * describe a face or edge, i.e., if @p structdim is less than the dimension
-     * @p dim of a triangulation. In this case, the CellData object this
-     * variable belongs to will be part of a SubCellData object.
      */
     types::boundary_id boundary_id;
   };
 
   /**
-   * Manifold identifier of this object. This identifier should be used to
-   * identify the manifold to which this object belongs, and from which this
-   * object will collect information on how to add points upon refinement.
+   * 该对象的歧管标识符。这个标识符应该被用来识别这个对象所属的流形，这个对象将从流形中收集关于细化后如何添加点的信息。
+   * 关于如何使用这个字段的例子，请参见CellData类的文档。
    *
-   * See the documentation of the CellData class for examples of how to use
-   * this field.
    */
   types::manifold_id manifold_id;
 
   /**
-   * Default constructor. Sets the member variables to the following values:
+   * 默认构造函数。将成员变量设置为以下值。
    *
-   * - vertex indices to invalid values
-   * - boundary or material id zero (the default for boundary or material ids)
-   * - manifold id to numbers::flat_manifold_id
+   *
+   *
+   *
+   *
+   *
+   * -顶点指数为无效值
+   *
+   *
+   *
+   * - 边界或材料ID为零（边界或材料ID的默认值）。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 歧管ID为 numbers::flat_manifold_id 。
+   *
    */
   CellData(
     const unsigned int n_vertices = GeometryInfo<structdim>::vertices_per_cell);
 
   /**
-   * Comparison operator.
+   * 比较运算符。
+   *
    */
   bool
   operator==(const CellData<structdim> &other) const;
 
   /**
-   * Read or write the data of this object to or from a stream for the
-   * purpose of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
@@ -148,84 +139,52 @@ struct CellData
 
 
 /**
- * The SubCellData class is used to describe information about faces and
- * edges at the boundary of a mesh when creating a triangulation via
- * Triangulation::create_triangulation(). It contains member variables
- * that describe boundary edges and boundary quads.
+ * SubCellData类在通过 Triangulation::create_triangulation().
+ * 创建三角形时用于描述网格边界的面和边的信息，它包含描述边界边和边界四边形的成员变量。
+ * 该类没有模板参数，既可用于描述2D的边界边（在这种情况下，
+ * @p boundary_quads
+ * 成员变量的内容被忽略），也可用于描述3D的边界边和面（在这种情况下，
+ * @p boundary_lines 和 @p boundary_quads
+ * 成员都可以使用）。它也被用作1d中
+ * Triangulation::create_triangulation()
+ * 的参数，其中当前类型的对象的内容被简单地忽略。
+ * @p boundary_lines 和 @p boundary_quads
+ * 向量中的每个条目需要对应于由传递给
+ * Triangulation::create_triangulation().
+ * 的CellData对象向量所描述的单元格的边或四边，即每个条目中存储的顶点指数需要对应于具有相同顶点指数集的三角形的边或面，且顺序相同。对于这些边界边或四边形，可以设置
+ * CellData::boundary_id 和 CellData::manifold_id. 中的一个或两个。
+ * 也有一些用例，人们可能想设置<i>interior</i>边或面的流形ID。这种由其顶点指数识别的面也可能出现在
+ * @p boundary_lines 和 @p boundary_quads
+ * 向量中（尽管这些成员变量的名称不同）。然而，这显然不允许设置边界ID（因为该对象实际上不是边界的一部分）。因此，为了有效，内部边缘或面的
+ * CellData::boundary_id 需要等于 numbers::internal_face_boundary_id.  。
  *
- * The class has no template argument and is used both in the description
- * of boundary edges in 2d (in which case the contents of the
- * @p boundary_quads member variable are ignored), as well as in the
- * description of boundary edges and faces in 3d (in which case both the
- * @p boundary_lines and @p boundary_quads members may be used). It is also
- * used as the argument to Triangulation::create_triangulation() in 1d,
- * where the contents of objects of the current type are simply ignored.
- *
- * By default, Triangulation::create_triangulation() simply assigns
- * default boundary indicators and manifold indicators to edges and
- * quads at the boundary of the mesh. (See the glossary entries on
- * @ref GlossBoundaryIndicator "boundary ids"
- * and
- * @ref GlossManifoldIndicator "manifold ids"
- * for more information on what they represent.) As a consequence,
- * it is not <i>necessary</i> to explicitly describe the properties
- * of boundary objects. In all cases, these properties can also be
- * set at a later time, once the triangulation has already been
- * created. On the other hand, it is sometimes convenient to describe
- * boundary indicators or manifold ids at the time of creation. In
- * these cases, the current class can be used by filling the
- * @p boundary_lines and @p boundary_quads vectors with
- * CellData<1> and CellData<2> objects that correspond to boundary
- * edges and quads for which properties other than the default
- * values should be used.
- *
- * Each entry in the @p boundary_lines and @p boundary_quads vectors
- * then needs to correspond to an edge or quad of the cells that
- * are described by the vector of CellData objects passed to
- * Triangulation::create_triangulation(). I.e., the vertex indices
- * stored in each entry need to correspond to an edge or face
- * of the triangulation that has the same set of vertex indices,
- * and in the same order. For these boundary edges or quads, one can
- * then set either or both the CellData::boundary_id and
- * CellData::manifold_id.
- *
- * There are also use cases where one may want to set the manifold id
- * of an <i>interior</i> edge or face. Such faces, identified by
- * their vertex indices, may also appear in the
- * @p boundary_lines and @p boundary_quads vectors (despite the names of
- * these member variables). However, it is then obviously not allowed
- * to set a boundary id (because the object is not actually part of
- * the boundary). As a consequence, to be valid, the CellData::boundary_id
- * of interior edges or faces needs to equal
- * numbers::internal_face_boundary_id.
  *
  * @ingroup grid
+ *
+ *
  */
 struct SubCellData
 {
   /**
-   * A vector of CellData<1> objects that describe boundary and manifold
-   * information for edges of 2d or 3d triangulations.
+   * 一个CellData<1>对象的向量，描述2D或3D三角形的边缘的边界和流形信息。
+   * 这个向量不能用于创建1d三角形。
    *
-   * This vector may not be used in the creation of 1d triangulations.
    */
   std::vector<CellData<1>> boundary_lines;
 
   /**
-   * A vector of CellData<2> objects that describe boundary and manifold
-   * information for quads of 3d triangulations.
+   * 一个CellData<2>对象的向量，描述三维三角形的四边形的边界和流形信息。
+   * 这个向量不能用于创建1d或2d三角形。
    *
-   * This vector may not be used in the creation of 1d or 2d triangulations.
    */
   std::vector<CellData<2>> boundary_quads;
 
   /**
-   * Determine whether the member variables above which may not be used in a
-   * given dimension are really empty. In other words, this function returns
-   * whether
-   * both @p boundary_lines and @p boundary_quads are empty vectors
-   * when @p dim equals one, and whether the @p boundary_quads
-   * vector is empty when @p dim equals two.
+   * 判断上述可能不会在给定维度中使用的成员变量是否真的为空。换句话说，当
+   * @p dim 等于1时，此函数返回 @p boundary_lines 和 @p
+   * boundary_quads 是否都是空向量，当 @p dim 等于2时， @p
+   * boundary_quads 向量是否为空。
+   *
    */
   bool
   check_consistency(const unsigned int dim) const;
@@ -235,7 +194,7 @@ struct SubCellData
 template <int structdim>
 template <class Archive>
 void
-CellData<structdim>::serialize(Archive &ar, const unsigned int /*version*/)
+CellData<structdim>::serialize(Archive &ar, const unsigned int  /*version*/ )
 {
   ar &vertices;
   ar &material_id;
@@ -244,200 +203,201 @@ CellData<structdim>::serialize(Archive &ar, const unsigned int /*version*/)
 }
 
 /**
- * A namespace dedicated to the struct Description, which can be used in
- * Triangulation::create_triangulation().
+ * 一个专门用于结构描述的命名空间，可以在
+ * Triangulation::create_triangulation(). 中使用。
+ *
+ *
  */
 namespace TriangulationDescription
 {
   /**
-   * Configuration flags for Triangulations.
-   * Settings can be combined using bitwise OR.
+   * Triangulations的配置标志。  设置可以用位法OR来组合。
+   *
    */
   enum Settings
   {
     /**
-     * Default settings, other options are disabled.
+     * 默认设置，其他选项被禁用。
+     *
      */
     default_setting = 0x0,
     /**
-     * This flag needs to be set to use the geometric multigrid
-     * functionality. This option requires additional computation and
-     * communication.
+     * 这个标志需要被设置以使用几何多网格功能。这个选项需要额外的计算和通信。
+     *
      */
     construct_multigrid_hierarchy = 0x1
   };
 
   /**
-   * Information needed for each locally relevant cell, stored in
-   * Description and used during construction of a
-   * Triangulation. This struct stores
-   * the cell id, the subdomain_id and the level_subdomain_id as well as
-   * information related to manifold_id and boundary_id.
+   * 每个本地相关单元所需的信息，存储在Description中，并在构建三角结构时使用。该结构存储了单元ID、子域ID和水平子域ID，以及与manifold_id和boundary_id相关的信息。
+   * @note  与 dealii::CellData,
+   * 类似，该结构也存储单元格的信息。然而，与
+   * dealii::CellData,
+   * 不同的是，它还存储一个唯一的id、分区信息以及与单元格面和边相关的信息。
    *
-   * @note Similarly to dealii::CellData, this structure stores information
-   * about a cell. However, in contrast to dealii::CellData, it also stores
-   * a unique id, partitioning information, and information related to cell
-   * faces and edges.
    */
   template <int dim>
   struct CellData
   {
     /**
-     * Read or write the data of this object to or from a stream for the
-     * purpose of serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+     *
      */
     template <class Archive>
     void
-    serialize(Archive &ar, const unsigned int /*version*/);
+    serialize(Archive &ar, const unsigned int  /*version*/ );
 
     /**
-     * Comparison operator.
+     * 比较运算符。
+     *
      */
     bool
     operator==(const CellData<dim> &other) const;
 
     /**
-     * Unique CellID of the cell.
+     * 单元的唯一CellID。
+     *
      */
     CellId::binary_type id;
 
     /**
-     * subdomain_id of the cell.
+     * 单元的subdomain_id。
+     *
      */
     types::subdomain_id subdomain_id;
 
     /**
-     * level_subdomain_id of the cell.
+     * 该单元格的level_subdomain_id。
+     *
      */
     types::subdomain_id level_subdomain_id;
 
     /**
-     * Manifold id of the cell.
+     * 单元的Manifold id。
+     *
      */
     types::manifold_id manifold_id;
 
     /**
-     * Manifold id of all lines of the cell.
+     * 该单元的所有行的Multifold id。
+     * @note  仅用于2D和3D。
      *
-     * @note Only used for 2D and 3D.
      */
     std::array<types::manifold_id, GeometryInfo<dim>::lines_per_cell>
       manifold_line_ids;
 
     /**
-     * Manifold id of all face quads of the cell.
+     * 单元中所有面的四边形的集合体ID。
+     * @note  仅用于三维。
      *
-     * @note Only used for 3D.
      */
     std::array<types::manifold_id,
                dim == 1 ? 1 : GeometryInfo<3>::quads_per_cell>
       manifold_quad_ids;
 
     /**
-     * List of face number and boundary id of all non-internal faces of the
-     * cell.
+     * 单元的所有非内部面的面号和边界ID的列表。
+     *
      */
     std::vector<std::pair<unsigned int, types::boundary_id>> boundary_ids;
   };
 
   /**
-   * Data used in Triangulation::create_triangulation().
+   * 在 Triangulation::create_triangulation(). 中使用的数据。
+   *
    */
   template <int dim, int spacedim>
   struct Description
   {
     /**
-     * Read or write the data of this object to or from a stream for the
-     * purpose of serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
+     *
      */
     template <class Archive>
     void
-    serialize(Archive &ar, const unsigned int /*version*/);
+    serialize(Archive &ar, const unsigned int  /*version*/ );
 
     /**
-     * Comparison operator.
+     * 比较运算符。
+     *
      */
     bool
     operator==(const Description<dim, spacedim> &other) const;
 
     /**
-     * Cells of the locally-relevant coarse-grid triangulation.
+     * 本地相关的粗网格三角测量的单元格。
+     *
      */
     std::vector<dealii::CellData<dim>> coarse_cells;
 
     /**
-     * Vertices of the locally-relevant coarse-grid triangulation.
+     * 本地相关的粗网格三角结构的顶点。
+     *
      */
     std::vector<Point<spacedim>> coarse_cell_vertices;
 
     /**
-     * List that for each locally-relevant coarse cell provides the
-     * corresponding global
-     * @ref GlossCoarseCellId.
+     * 为每个本地相关的粗网格单元提供相应的全局 @ref
+     * GlossCoarseCellId 的列表。
+     *
      */
     std::vector<types::coarse_cell_id> coarse_cell_index_to_coarse_cell_id;
 
     /**
-     * CellData for each locally relevant cell on each level. cell_infos[i]
-     * contains the CellData for each locally relevant cell on the ith
-     * level.
+     * cell_infos[i]包含第i层的每个本地相关单元的CellData。
+     *
      */
     std::vector<std::vector<CellData<dim>>> cell_infos;
 
     /**
-     * The MPI communicator used to create this struct. It will be compared
-     * to the communicator inside of the Triangulation
-     * and an assert is thrown if they do not match.
+     * 用于创建此结构的MPI通信器。它将与Triangulation内部的通信器进行比较，如果不匹配则抛出断言。
+     * @note 请注意这是必要的，因为 parallel::TriangulationBase
+     * 中的通信器是常量，在构造函数被调用后不能被改变。
      *
-     * @note Please note this is necessary since the communicator inside of
-     * parallel::TriangulationBase is const and cannot be changed after the
-     * constructor has been called.
      */
     MPI_Comm comm;
 
     /**
-     * Properties to be use in the construction of the triangulation.
+     * 在构建三角形时要使用的属性。
+     *
      */
     Settings settings;
 
     /**
-     * Mesh smoothing type.
+     * 网格平滑的类型。
+     *
      */
     typename Triangulation<dim, spacedim>::MeshSmoothing smoothing;
   };
 
 
   /**
-   * A namespace for TriangulationDescription::Description utility functions.
-   *
+   * 一个用于 TriangulationDescription::Description
+   * 实用函数的命名空间。
    * @ingroup TriangulationDescription
+   *
    */
   namespace Utilities
   {
     /**
-     * Construct TriangulationDescription::Description from a given
-     * partitioned triangulation `tria` and a specified process.
-     * The input triangulation can be either
-     * a serial triangulation of type dealii::Triangulation which has been
-     * colored (subdomain_id and/or level_subdomain_id has been set) or a
-     * distributed triangulation of type
-     * dealii::parallel::distributed::Triangulation, where the partitioning is
-     * adopted unaltered.
+     * 从一个给定的分区三角形`tria`和一个指定的过程中构造
+     * TriangulationDescription::Description 。
+     * 输入的三角图可以是类型为 dealii::Triangulation
+     * 的串行三角图，它已被着色（子域_id和/或level_subdomain_id已被设置）或类型为
+     * dealii::parallel::distributed::Triangulation,
+     * 的分布式三角图，其中分区被采用而不被改变。
+     * @param  tria 分布式输入三角图。      @param  comm
+     * 要使用的MPI_Communicator。在
+     * dealii::parallel::distributed::Triangulation,
+     * 的情况下，通信器必须匹配。      @param  settings
+     * 参见设置枚举器的描述。      @param  my_rank_in 构造
+     * 指定等级的描述（仅适用于已被
+     * GridToold::partition_triangulation()).
+     * 等函数分割的序列三角图）  @return
+     * 用于设置三角图的描述。
+     * @note
+     * 如果在设置中设置了construct_multigrid_hierarchy，则必须用limit_level_difference_at_vertices设置源三角形。
      *
-     * @param tria Partitioned input triangulation.
-     * @param comm MPI_Communicator to be used. In the case
-     *   of dealii::parallel::distributed::Triangulation, the communicators have
-     * to match.
-     * @param settings See the description of the Settings enumerator.
-     * @param my_rank_in Construct Description for the specified rank (only
-     *   working for serial triangulations that have been partitioned by
-     *   functions like GridToold::partition_triangulation()).
-     * @return Description to be used to set up a Triangulation.
-     *
-     * @note If construct_multigrid_hierarchy is set in the settings, the source
-     *   triangulation has to be setup with limit_level_difference_at_vertices.
      */
     template <int dim, int spacedim = dim>
     Description<dim, spacedim>
@@ -449,21 +409,16 @@ namespace TriangulationDescription
       const unsigned int my_rank_in = numbers::invalid_unsigned_int);
 
     /**
-     * Similar to the above function but the owner of active cells are provided
-     * by a cell vector (see also
-     * parallel::TriangulationBase::global_active_cell_index_partitioner() and
-     * CellAccessor::global_active_cell_index()). This function allows to
-     * repartition distributed Triangulation objects.
+     * 与上述函数类似，但活动单元的所有者由单元向量提供（另见
+     * parallel::TriangulationBase::global_active_cell_index_partitioner() 和
+     * CellAccessor::global_active_cell_index()).
+     * 该函数允许重新划分分布式三角测量对象。
+     * @note  从矢量中提取通讯器  @p partition.  。
+     * @note  三角测量 @p tria 可以在 @p partitioner.
+     * 的通信器的子通信器上设置，所有不属于该子通信器的进程需要用特殊目的通信器MPI_COMM_NULL设置本地三角测量。
+     * @note 目前没有构建多网格层次，因为 @p partition
+     * 只描述了活动层次的划分。
      *
-     * @note The communicator is extracted from the vector @p partition.
-     *
-     * @note The triangulation @p tria can be set up on a subcommunicator of the
-     *   communicator of @p partitioner. All processes that are not part of that
-     *   subcommunicator need to set up the local triangulation with the
-     *   special-purpose communicator MPI_COMM_NULL.
-     *
-     * @note The multgrid levels are currently not constructed, since
-     *   @p partition only describes the partitioning of the active level.
      */
     template <int dim, int spacedim>
     Description<dim, spacedim>
@@ -473,32 +428,25 @@ namespace TriangulationDescription
 
 
     /**
-     * Construct a TriangulationDescription::Description. In contrast
-     * to the function above, this function is also responsible for creating
-     * a serial triangulation and for its partitioning (by calling the
-     * provided `std::function` objects). Internally only selected processes (
-     * every n-th/each root of a group of size group_size) create a serial
-     * triangulation and the TriangulationDescription::Description for all
-     * processes in its group, which is communicated.
+     * 构建一个 TriangulationDescription::Description.
+     * 与上面的函数不同，这个函数也负责创建一个序列三角形，并负责其分区（通过调用提供的
+     * `std::function`
+     * 对象）。在内部，只有选定的进程（每一个n-th/每一个大小为group_size的组的根）才会为其组中的所有进程创建一个串行三角形和
+     * TriangulationDescription::Description ，这是被通报的。
+     * @note
+     * 合理的组大小是一个NUMA域的大小或一个计算节点的大小。
+     * @param  serial_grid_generator 一个创建串行三角形的函数。
+     * @param  serial_grid_partitioner
+     * 一个可以分割串行三角图的函数，即设置活动单元的sudomain_ids。
+     * 该函数的第一个参数是一个串行三角图，第二个参数是MPI通信器，第三个参数是组的大小。
+     * @param  comm MPI communicator。      @param  group_size
+     * 每个组的大小。      @param  smoothing 网格平滑类型。
+     * @param  setting 参见设置枚举器的描述。      @return
+     * 用于设置三角测量的描述。
+     * @note  如果在设置中设置了construct_multigrid_hierarchy， @p
+     * smoothing
+     * 参数会被扩展为limit_level_difference_at_vertices标志。
      *
-     * @note A reasonable group size is the size of a NUMA domain or the
-     * size of a compute node.
-     *
-     * @param serial_grid_generator A function which creates a serial triangulation.
-     * @param serial_grid_partitioner A function which can partition a serial
-     *   triangulation, i.e., sets the sudomain_ids of the active cells.
-     *   The function takes as the first argument a serial triangulation,
-     *   as the second argument the MPI communicator, and as the third
-     *   argument the group size.
-     * @param comm MPI communicator.
-     * @param group_size The size of each group.
-     * @param smoothing Mesh smoothing type.
-     * @param setting See the description of the Settings enumerator.
-     * @return Description to be used to set up a Triangulation.
-     *
-     * @note If construct_multigrid_hierarchy is set in the settings, the
-     *   @p smoothing parameter is extended with the
-     *   limit_level_difference_at_vertices flag.
      */
     template <int dim, int spacedim = dim>
     Description<dim, spacedim>
@@ -522,7 +470,7 @@ namespace TriangulationDescription
   template <int dim>
   template <class Archive>
   void
-  CellData<dim>::serialize(Archive &ar, const unsigned int /*version*/)
+  CellData<dim>::serialize(Archive &ar, const unsigned int  /*version*/ )
   {
     ar &id;
     ar &subdomain_id;
@@ -540,7 +488,7 @@ namespace TriangulationDescription
   template <class Archive>
   void
   Description<dim, spacedim>::serialize(Archive &ar,
-                                        const unsigned int /*version*/)
+                                        const unsigned int  /*version*/ )
   {
     ar &coarse_cells;
     ar &coarse_cell_vertices;
@@ -603,3 +551,5 @@ namespace TriangulationDescription
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

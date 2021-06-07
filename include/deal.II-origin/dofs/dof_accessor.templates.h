@@ -1,4 +1,3 @@
-//include/deal.II-translator/dofs/dof_accessor.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -39,7 +38,7 @@
 DEAL_II_NAMESPACE_OPEN
 
 
- /*------------------------- Functions: DoFAccessor ---------------------------*/ 
+/*------------------------- Functions: DoFAccessor ---------------------------*/
 
 
 template <int structdim, int dim, int spacedim, bool level_dof_access>
@@ -199,8 +198,8 @@ namespace internal
   namespace DoFAccessorImplementation
   {
     /**
-     * 一个类似于tria.cc中同名的类。更多信息见那里。
-     *
+     * A class like the one with same name in tria.cc. See there for more
+     * information.
      */
     struct Implementation
     {
@@ -222,10 +221,9 @@ namespace internal
 
 
       /**
-       * 在全局数为 @p vertex_index 至 @p global_index.
-       * 的顶点上处理 @p local_index-th 对应于 @p fe_index
-       * 所指定的有限元的自由度。
-       *
+       * Process the @p local_index-th degree of freedom corresponding to the
+       * finite element specified by @p fe_index on the vertex with global
+       * number @p vertex_index to @p global_index.
        */
       template <int dim,
                 int spacedim,
@@ -324,8 +322,7 @@ namespace internal
       }
 
       /**
-       * 确定全局数据结构中对象的道夫范围。
-       *
+       * Determine range of dofs of object in global data structure.
        */
       template <int dim, int spacedim, int d>
       static std::pair<unsigned int, unsigned int>
@@ -431,8 +428,7 @@ namespace internal
       }
 
       /**
-       * 处理一个对象的所有道夫。
-       *
+       * Process all dofs of an object.
        */
       template <int dim,
                 int spacedim,
@@ -469,10 +465,9 @@ namespace internal
 
 
       /**
-       * 将全局编号为 @p vertex_index 的顶点上由 @p fe_index
-       * 指定的有限元对应的 @p local_index-th 自由度设置为 @p
-       * global_index.  。
-       *
+       * Set the @p local_index-th degree of freedom corresponding to the
+       * finite element specified by @p fe_index on the vertex with global
+       * number @p vertex_index to @p global_index.
        */
       template <int dim, int spacedim, int d>
       static void
@@ -496,10 +491,9 @@ namespace internal
 
 
       /**
-       * 获取 @p local_index-th 自由度，对应于顶点上 @p fe_index
-       * 指定的有限元，全局编号为 @p vertex_index 至 @p
-       * global_index. 。
-       *
+       * Get the @p local_index-th degree of freedom corresponding to the
+       * finite element specified by @p fe_index on the vertex with global
+       * number @p vertex_index to @p global_index.
        */
       template <int dim, int spacedim, int d>
       static types::global_dof_index
@@ -558,8 +552,8 @@ namespace internal
 
 
       /**
-       * 返回在给定顶点上活动的不同有限元素的数量。
-       *
+       * Return the number of different finite elements that are active on a
+       * given vertex.
        */
       template <int dim, int spacedim, int d>
       static unsigned int
@@ -591,8 +585,8 @@ namespace internal
 
 
       /**
-       * 返回在给定顶点上活动的第n个有限元的FE索引。
-       *
+       * Return the FE index of the n-th finite element active on a given
+       * vertex.
        */
       template <int dim, int spacedim, int d>
       static unsigned int
@@ -634,9 +628,10 @@ namespace internal
 
 
       /**
-       * 返回给定顶点上的所有活动FE指数。
-       * 返回的集合的大小等于在这个顶点上活动的有限元的数量。
+       * Returns all active FE indices on a given vertex.
        *
+       * The size of the returned set equals the number of finite elements that
+       * are active on this vertex.
        */
       template <int dim, int spacedim, int d>
       static std::set<unsigned int>
@@ -788,9 +783,8 @@ namespace internal
 #endif
 
       /**
-       * 循环计算所提供的 @p accessor 和 @p fe_index
-       * 描述的对象的所有自由度，并计算它们。
-       *
+       * Loop over all degrees of freedom of the object described by the
+       * provided @p accessor and @p fe_index and count them.
        */
       template <int dim, int spacedim, bool level_dof_access, int structdim>
       static unsigned int
@@ -810,7 +804,7 @@ namespace internal
             const unsigned int                                   //
               dofs_per_vertex = fe.n_dofs_per_vertex(),          //
               dofs_per_line   = fe.n_dofs_per_line(),            //
-              dofs_per_quad   = fe.n_dofs_per_quad(0  /*dummy*/ ), //
+              dofs_per_quad   = fe.n_dofs_per_quad(0 /*dummy*/), //
               dofs_per_hex    = fe.n_dofs_per_hex();             //
 
             unsigned int index = 0;
@@ -878,9 +872,9 @@ namespace internal
 
 
       /**
-       * 在所提供的 @p accessor 和 @p fe_index
-       * 描述的对象的所有自由度上循环，并对这些自由度执行DoFOperation提供的静态函数（set/get）。
-       *
+       * Loop over all degrees of freedom of the object described by the
+       * provided @p accessor and @p fe_index and perform the static functions
+       * provided by DoFOperation (set/get) on these.
        */
       template <int  dim,
                 int  spacedim,
@@ -980,15 +974,14 @@ namespace internal
 
 
       /**
-       * 一个内部结构，封装了获取（顶点）DoF指数的任务。
-       *
+       * An internal struct encapsulating the task of getting (vertex)
+       * DoF indices.
        */
       template <int dim, int spacedim, bool level_dof_access, int structdim>
       struct DoFIndexGetter
       {
         /**
-         * 返回顶点DoF指数。
-         *
+         * Return vertex DoF indices.
          */
         DEAL_II_ALWAYS_INLINE void
         process_vertex_dofs(
@@ -1020,8 +1013,7 @@ namespace internal
         }
 
         /**
-         * 返回线、四边形和内部自由度的DoF指数。
-         *
+         * Return DoF indices for lines, quads, and inner degrees of freedom.
          */
         template <int structdim_, typename DoFMapping>
         DEAL_II_ALWAYS_INLINE void
@@ -1051,8 +1043,7 @@ namespace internal
         }
 
         /**
-         * DoFInvalidAccessor的回退。
-         *
+         * Fallback for DoFInvalidAccessor.
          */
         template <int structdim_, typename DoFMapping>
         DEAL_II_ALWAYS_INLINE void
@@ -1067,8 +1058,7 @@ namespace internal
         }
 
         /**
-         * 处理非活动的DoF。
-         *
+         * Process non-active DoF.
          */
         DEAL_II_ALWAYS_INLINE void
         process_non_active_dof(
@@ -1082,15 +1072,14 @@ namespace internal
 
 
       /**
-       * 一个内部结构封装了设置（顶点）DoF指数的任务。
-       *
+       * An internal struct encapsulating the task of setting (vertex)
+       * DoF indices.
        */
       template <int dim, int spacedim, bool level_dof_access, int structdim>
       struct DoFIndexSetter
       {
         /**
-         * 设置顶点DoF指数。
-         *
+         * Set vertex DoF indices.
          */
         DEAL_II_ALWAYS_INLINE void
         process_vertex_dofs(
@@ -1122,8 +1111,7 @@ namespace internal
         }
 
         /**
-         * 设置线、四边形和内部自由度的DoF指数。
-         *
+         * Set DoF indices for lines, quads, and inner degrees of freedom.
          */
         template <int structdim_, typename DoFMapping>
         DEAL_II_ALWAYS_INLINE void
@@ -1153,8 +1141,7 @@ namespace internal
         }
 
         /**
-         * DoFInvalidAccessor的回退。
-         *
+         * Fallback for DoFInvalidAccessor.
          */
         template <int structdim_, typename DoFMapping>
         DEAL_II_ALWAYS_INLINE void
@@ -1169,8 +1156,7 @@ namespace internal
         }
 
         /**
-         * 处理非活动自由度。
-         *
+         * Process non-active DoF.
          */
         DEAL_II_ALWAYS_INLINE void
         process_non_active_dof(const std::vector<types::global_dof_index> &,
@@ -1183,15 +1169,14 @@ namespace internal
 
 
       /**
-       * 一个内部结构，封装了获取级别（顶点）DoF指数的任务。
-       *
+       * An internal struct encapsulating the task of getting level (vertex)
+       * DoF indices.
        */
       template <int dim, int spacedim, bool level_dof_access, int structdim>
       struct MGDoFIndexGetter
       {
         /**
-         * 构造函数。
-         *
+         * Constructor.
          */
         MGDoFIndexGetter(const FiniteElement<dim, spacedim> &fe,
                          const unsigned int                  level)
@@ -1200,8 +1185,7 @@ namespace internal
         {}
 
         /**
-         * 返回顶点DoF指数。
-         *
+         * Return vertex DoF indices.
          */
         DEAL_II_ALWAYS_INLINE void
         process_vertex_dofs(
@@ -1220,8 +1204,7 @@ namespace internal
         }
 
         /**
-         * 返回线、四边形和内部自由度的DoF指数。
-         *
+         * Return DoF indices for lines, quads, and inner degrees of freedom.
          */
         template <int structdim_, typename DoFMapping>
         DEAL_II_ALWAYS_INLINE void
@@ -1242,8 +1225,7 @@ namespace internal
         }
 
         /**
-         * DoFInvalidAccessor的回退。
-         *
+         * Fallback for DoFInvalidAccessor.
          */
         template <int structdim_, typename DoFMapping>
         DEAL_II_ALWAYS_INLINE void
@@ -1258,8 +1240,7 @@ namespace internal
         }
 
         /**
-         * 处理非活动自由度。
-         *
+         * Process non-active DoF.
          */
         DEAL_II_ALWAYS_INLINE void
         process_non_active_dof(std::vector<types::global_dof_index> &,
@@ -1276,15 +1257,14 @@ namespace internal
 
 
       /**
-       * 一个内部结构，封装了设置水平（顶点）DoF指数的任务。
-       *
+       * An internal struct encapsulating the task of setting level (vertex)
+       * DoF indices.
        */
       template <int dim, int spacedim, bool level_dof_access, int structdim>
       struct MGDoFIndexSetter
       {
         /**
-         * 构造函数。
-         *
+         * Constructor.
          */
         MGDoFIndexSetter(const FiniteElement<dim, spacedim> &fe,
                          const unsigned int                  level)
@@ -1293,8 +1273,7 @@ namespace internal
         {}
 
         /**
-         * 设置顶点DoF指数。
-         *
+         * Set vertex DoF indices.
          */
         DEAL_II_ALWAYS_INLINE void
         process_vertex_dofs(
@@ -1315,8 +1294,7 @@ namespace internal
         }
 
         /**
-         * 设置线、四边形和内部自由度的DoF指数。
-         *
+         * Set DoF indices for lines, quads, and inner degrees of freedom.
          */
         template <int structdim_, typename MAPPING>
         DEAL_II_ALWAYS_INLINE void
@@ -1337,8 +1315,7 @@ namespace internal
         }
 
         /**
-         * DoFInvalidAccessor的回退。
-         *
+         * Fallback for DoFInvalidAccessor.
          */
         template <int structdim_, typename MAPPING>
         DEAL_II_ALWAYS_INLINE void
@@ -1353,8 +1330,7 @@ namespace internal
         }
 
         /**
-         * 处理非活动自由度。
-         *
+         * Process non-active DoF.
          */
         DEAL_II_ALWAYS_INLINE void
         process_non_active_dof(const std::vector<types::global_dof_index> &,
@@ -1870,7 +1846,7 @@ inline typename dealii::internal::DoFHandlerImplementation::
 }
 
 
- /*----------------- Functions: DoFAccessor<0,1,spacedim> --------------------*/ 
+/*----------------- Functions: DoFAccessor<0,1,spacedim> --------------------*/
 
 
 template <int spacedim, bool level_dof_access>
@@ -1941,9 +1917,9 @@ inline void DoFAccessor<0, 1, spacedim, level_dof_access>::set_dof_handler(
 template <int spacedim, bool level_dof_access>
 inline void
 DoFAccessor<0, 1, spacedim, level_dof_access>::set_dof_index(
-  const unsigned int  /*i*/ ,
-  const types::global_dof_index  /*index*/ ,
-  const unsigned int  /*fe_index*/ ) const
+  const unsigned int /*i*/,
+  const types::global_dof_index /*index*/,
+  const unsigned int /*fe_index*/) const
 {
   Assert(false, ExcNotImplemented());
 }
@@ -1953,10 +1929,10 @@ DoFAccessor<0, 1, spacedim, level_dof_access>::set_dof_index(
 template <int spacedim, bool level_dof_access>
 inline void
 DoFAccessor<0, 1, spacedim, level_dof_access>::set_vertex_dof_index(
-  const unsigned int  /*vertex*/ ,
-  const unsigned int  /*i*/ ,
-  const types::global_dof_index  /*index*/ ,
-  const unsigned int  /*fe_index*/ ) const
+  const unsigned int /*vertex*/,
+  const unsigned int /*i*/,
+  const types::global_dof_index /*index*/,
+  const unsigned int /*fe_index*/) const
 {
   Assert(false, ExcNotImplemented());
 }
@@ -2084,7 +2060,7 @@ DoFAccessor<0, 1, spacedim, level_dof_access>::n_active_fe_indices() const
 template <int spacedim, bool level_dof_access>
 inline unsigned int
 DoFAccessor<0, 1, spacedim, level_dof_access>::nth_active_fe_index(
-  const unsigned int  /*n*/ ) const
+  const unsigned int /*n*/) const
 {
   Assert((std::is_same<DoFHandler<1, spacedim>,
                        dealii::DoFHandler<1, spacedim>>::value == true),
@@ -2098,7 +2074,7 @@ DoFAccessor<0, 1, spacedim, level_dof_access>::nth_active_fe_index(
 template <int spacedim, bool level_dof_access>
 inline bool
 DoFAccessor<0, 1, spacedim, level_dof_access>::fe_index_is_active(
-  const unsigned int  /*fe_index*/ ) const
+  const unsigned int /*fe_index*/) const
 {
   Assert(false, ExcNotImplemented());
   return false;
@@ -2143,7 +2119,7 @@ DoFAccessor<0, 1, spacedim, level_dof_access>::copy_from(
 template <int spacedim, bool level_dof_access>
 inline TriaIterator<DoFAccessor<0, 1, spacedim, level_dof_access>>
 DoFAccessor<0, 1, spacedim, level_dof_access>::child(
-  const unsigned int  /*i*/ ) const
+  const unsigned int /*i*/) const
 {
   return TriaIterator<DoFAccessor<0, 1, spacedim, level_dof_access>>();
 }
@@ -2154,7 +2130,7 @@ template <int spacedim, bool level_dof_access>
 inline typename dealii::internal::DoFHandlerImplementation::
   Iterators<1, spacedim, level_dof_access>::line_iterator
   DoFAccessor<0, 1, spacedim, level_dof_access>::line(
-    const unsigned int  /*c*/ ) const
+    const unsigned int /*c*/) const
 {
   Assert(false, ExcNotImplemented());
   return typename dealii::internal::DoFHandlerImplementation::
@@ -2167,7 +2143,7 @@ template <int spacedim, bool level_dof_access>
 inline typename dealii::internal::DoFHandlerImplementation::
   Iterators<1, spacedim, level_dof_access>::quad_iterator
   DoFAccessor<0, 1, spacedim, level_dof_access>::quad(
-    const unsigned int  /*c*/ ) const
+    const unsigned int /*c*/) const
 {
   Assert(false, ExcNotImplemented());
   return typename dealii::internal::DoFHandlerImplementation::
@@ -2202,7 +2178,7 @@ DoFAccessor<0, 1, spacedim, level_dof_access>::operator!=(
 
 
 
- /*------------------------- Functions: DoFCellAccessor -----------------------*/ 
+/*------------------------- Functions: DoFCellAccessor -----------------------*/
 
 
 namespace internal
@@ -2217,14 +2193,13 @@ namespace internal
     using dealii::DoFHandler;
 
     /**
-     * 一个与Triangulation类的类似命名的类具有相同的目的。更多信息见那里。
-     *
+     * A class with the same purpose as the similarly named class of the
+     * Triangulation class. See there for more information.
      */
     struct Implementation
     {
       /**
-       * 实现对缓存的更新。
-       *
+       * Implement the updating of the cache.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static void
@@ -2264,8 +2239,8 @@ namespace internal
 
 
       /**
-       * 做父类中active_fe_index函数应该做的事。
-       *
+       * Do what the active_fe_index function in the parent class is supposed to
+       * do.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static unsigned int
@@ -2290,8 +2265,8 @@ namespace internal
 
 
       /**
-       * 做父类中的set_active_fe_index函数应该做的事。
-       *
+       * Do what the set_active_fe_index function in the parent class is
+       * supposed to do.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static void
@@ -2321,8 +2296,8 @@ namespace internal
 
 
       /**
-       * 做父类中future_fe_index函数应该做的事。
-       *
+       * Do what the future_fe_index function in the parent class is supposed to
+       * do.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static unsigned int
@@ -2354,8 +2329,8 @@ namespace internal
 
 
       /**
-       * 做父类中set_future_fe_index函数应该做的事。
-       *
+       * Do what the set_future_fe_index function in the parent class is
+       * supposed to do.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static void
@@ -2385,8 +2360,8 @@ namespace internal
 
 
       /**
-       * 做父类中future_fe_index_set函数应该做的事。
-       *
+       * Do what the future_fe_index_set function in the parent class is
+       * supposed to do.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static bool
@@ -2413,8 +2388,8 @@ namespace internal
 
 
       /**
-       * 做父类中的clear_fe_index函数应该做的事情。
-       *
+       * Do what the clear_fe_index function in the parent class is supposed to
+       * do.
        */
       template <int dim, int spacedim, bool level_dof_access>
       static void
@@ -3161,5 +3136,3 @@ DoFCellAccessor<dimension_, space_dimension_, level_dof_access>::
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

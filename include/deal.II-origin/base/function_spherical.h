@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/function_spherical_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -29,97 +28,103 @@ DEAL_II_NAMESPACE_OPEN
 namespace Functions
 {
   /**
-   * 一个抽象的基类，用于定义球面坐标的标量值函数
-   * $f=f(r,\theta,\phi)$
-   * 。这个类包裹了从球面坐标到Function基类所使用的笛卡尔坐标系统的数值、梯度和
-   * hessians的转换。因此，派生类只需要在球面坐标中实现这些函数（特别是svalue(),
-   * sgradient() 和 shessian() ）。角度的约定与
-   * GeometricUtilities::Coordinates. 中相同。
-   * @note  这个函数目前只对dim==3实现。
-   * @ingroup functions
+   * An abstract base class for a scalar-valued function $f=f(r,\theta,\phi)$
+   * defined in spherical coordinates. This class wraps transformation of
+   * values, gradients and hessians from spherical coordinates to the Cartesian
+   * coordinate system used by the Function base class. Therefore derived
+   * classes only need to implement those functions in spherical coordinates
+   * (specifically svalue(), sgradient() and shessian() ). The convention for
+   * angles is the same as in GeometricUtilities::Coordinates.
    *
+   * @note This function is currently only implemented for dim==3 .
+   *
+   * @ingroup functions
    */
   template <int dim>
   class Spherical : public Function<dim>
   {
   public:
     /**
-     * 构造函数，应提供 @p center ，定义坐标系的原点。
-     * 请注意，这个函数的组成部分被视为完全独立的数量。
+     * Constructor which should be provided with @p center defining the origin
+     * of the coordinate system.
      *
-     * - 而不是作为将在不同坐标系中重新解释的向量的组成部分。
-     *
+     * Note that components of this function are treated as entirely separate
+     * quantities -- not as the components of a vector that will be
+     * re-interpreted in a different coordinate system.
      */
     Spherical(const Point<dim> & center       = Point<dim>(),
               const unsigned int n_components = 1);
 
     /**
-     * 返回该函数在给定点的值。
-     * 这个函数将给定的点转换为球面坐标，用它调用svalue()，并返回结果。
+     * Return the value of the function at the given point.
      *
+     * This function converts the given point to spherical coordinates,
+     * calls svalue() with it, and returns the result.
      */
     virtual double
     value(const Point<dim> & point,
           const unsigned int component = 0) const override;
 
     /**
-     * 返回相对于点 @p p. 的笛卡尔坐标的梯度
-     * 这个函数将给定的点转换为球面坐标，用它调用sgradient()，并将结果转换为笛卡尔坐标。
+     * Return the gradient with respect to the Cartesian coordinates at point @p p.
      *
+     * This function converts the given point to spherical coordinates,
+     * calls sgradient() with it, and converts the result into Cartesian
+     * coordinates.
      */
     virtual Tensor<1, dim>
     gradient(const Point<dim> & p,
              const unsigned int component = 0) const override;
 
     /**
-     * 返回关于点 @p p. 的笛卡尔坐标的Hessian
-     * 这个函数将给定的点转换为球面坐标，用它调用sgradient和Shessian()，并将结果转换为笛卡尔坐标。
+     * Return the Hessian with respect to the Cartesian coordinates at point @p p.
      *
+     * This function converts the given point to spherical coordinates,
+     * calls sgradient and shessian() with it, and converts the result into
+     * Cartesian coordinates.
      */
     virtual SymmetricTensor<2, dim>
     hessian(const Point<dim> & p,
             const unsigned int component = 0) const override;
 
     /**
-     * 返回这个对象的内存消耗估计值，以字节为单位。
-     *
+     * Return an estimate for the memory consumption, in bytes, of this object.
      */
     virtual std::size_t
     memory_consumption() const override;
 
   private:
     /**
-     * 返回 @p sp. 点的值 这里， @p sp 是以球面坐标提供的。
-     *
+     * Return the value at point @p sp. Here, @p sp is provided in spherical
+     * coordinates.
      */
     virtual double
     svalue(const std::array<double, dim> &sp,
            const unsigned int             component) const;
 
     /**
-     * 返回球面坐标中的梯度。
-     * 返回的对象应该按照以下顺序包含导数。      $\{
-     * f_{,r},\, f_{,\theta},\, f_{,\phi}\}$  .
+     * Return the gradient in spherical coordinates.
      *
+     * The returned object should contain derivatives in the following order:
+     * $\{ f_{,r},\, f_{,\theta},\, f_{,\phi}\}$.
      */
     virtual std::array<double, dim>
     sgradient(const std::array<double, dim> &sp,
               const unsigned int             component) const;
 
     /**
-     * 返回球面坐标中的Hessian。
-     * 返回的对象应包含按以下顺序排列的导数。      $\{
-     * f_{,rr},\, f_{,\theta\theta},\, f_{,\phi\phi},\, f_{,r\theta},\,
-     * f_{,r\phi},\, f_{,\theta\phi}\}$  .
+     * Return the Hessian in spherical coordinates.
      *
+     * The returned object should contain derivatives in the following order:
+     * $\{ f_{,rr},\, f_{,\theta\theta},\, f_{,\phi\phi},\, f_{,r\theta},\,
+     * f_{,r\phi},\, f_{,\theta\phi}\}$.
      */
     virtual std::array<double, 6>
     shessian(const std::array<double, dim> &sp,
              const unsigned int             component) const;
 
     /**
-     * 从原点到球面坐标系中心的一个矢量。
-     *
+     * A vector from the origin to the center of spherical coordinate system.
      */
     const Tensor<1, dim> coordinate_system_offset;
   };
@@ -128,5 +133,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

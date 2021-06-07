@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/table_indices_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -32,14 +31,14 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * 一个代表固定大小的索引阵列的类。
- * 它被用于像TableBase和SymmetricTensor类这样的张量对象中，表示指数的嵌套选择。
- * @tparam  N 每个对象中存储的指数的数量。
+ * A class representing a fixed size array of indices.
  *
+ * It is used in tensorial objects like the TableBase and SymmetricTensor
+ * classes to represent a nested choice of indices.
+ *
+ * @tparam N The number of indices stored in each object.
  *
  * @ingroup data
- *
- *
  */
 template <int N>
 class TableIndices
@@ -50,56 +49,53 @@ public:
 
 
   /**
-   * 默认构造函数。这个构造函数将所有的指数设置为零。
-   *
+   * Default constructor. This constructor sets all indices to zero.
    */
   constexpr TableIndices() = default;
 
   /**
-   * 构造函数。通过给定的参数 @p indices
-   * 初始化此对象存储的指数，如果模板参数 @p N
-   * 与参数的数量不同，这个构造函数将导致编译器错误。
+   * Constructor. Initializes the indices stored by this object by the given
+   * arguments @p indices
    *
+   * This constructor will result in a compiler error if
+   * the template argument @p N is different from the number of the arguments.
    */
   template <typename... T>
   constexpr TableIndices(const T... indices);
 
   /**
-   * 只读访问<tt>i</tt>第1个索引的值。
-   *
+   * Read-only access the value of the <tt>i</tt>th index.
    */
   constexpr std::size_t operator[](const unsigned int i) const;
 
   /**
-   * 写入访问<tt>i</tt>th索引的值。
-   *
+   * Write access the value of the <tt>i</tt>th index.
    */
   constexpr std::size_t &operator[](const unsigned int i);
 
   /**
-   * 比较两个索引字段是否相等。
-   *
+   * Compare two index fields for equality.
    */
   constexpr bool
   operator==(const TableIndices<N> &other) const;
 
   /**
-   * 比较两个索引字段的不等式。
-   *
+   * Compare two index fields for inequality.
    */
   constexpr bool
   operator!=(const TableIndices<N> &other) const;
 
   /**
-   * 按升序对索引进行排序。虽然这个操作对表对象不是很有用，但它被用于SymmetricTensor类。
-   *
+   * Sort the indices in ascending order. While this operation is not very
+   * useful for Table objects, it is used for the SymmetricTensor class.
    */
   DEAL_II_CONSTEXPR void
   sort();
 
   /**
-   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
-   *
+   * Write or read the data of this object to or from a stream for the purpose
+   * of serialization using the [BOOST serialization
+   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
    */
   template <class Archive>
   void
@@ -107,15 +103,14 @@ public:
 
 protected:
   /**
-   * 在一个数组中存储索引。
-   *
+   * Store the indices in an array.
    */
   std::size_t indices[N]{};
 };
 
 
 
- /* --------------------- Template and inline functions ---------------- */ 
+/* --------------------- Template and inline functions ---------------- */
 
 template <int N>
 template <typename... T>
@@ -182,11 +177,10 @@ TableIndices<N>::serialize(Archive &ar, const unsigned int)
 
 
 /**
- * TableIndices对象的输出运算符；像这样以列表形式报告它们。
- * <code>[i1,i2,...]</code>  .
- * @relatesalso  TableIndices
+ * Output operator for TableIndices objects; reports them in a list like this:
+ * <code>[i1,i2,...]</code>.
  *
- *
+ * @relatesalso TableIndices
  */
 template <int N>
 std::ostream &
@@ -208,5 +202,3 @@ operator<<(std::ostream &out, const TableIndices<N> &indices)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

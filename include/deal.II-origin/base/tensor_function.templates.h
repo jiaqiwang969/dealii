@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/tensor_function.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2019 by the deal.II authors
@@ -100,7 +99,7 @@ ConstantTensorFunction<rank, dim, Number>::ConstantTensorFunction(
 template <int rank, int dim, typename Number>
 typename TensorFunction<rank, dim, Number>::value_type
 ConstantTensorFunction<rank, dim, Number>::value(
-  const Point<dim> &  /*point*/ ) const
+  const Point<dim> & /*point*/) const
 {
   return _value;
 }
@@ -161,6 +160,4 @@ ZeroTensorFunction<rank, dim, Number>::ZeroTensorFunction(
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif  /* dealii_tensor_function_templates_h */ 
-
-
+#endif /* dealii_tensor_function_templates_h */

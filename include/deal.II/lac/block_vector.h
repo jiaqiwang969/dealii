@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/block_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -46,42 +47,43 @@ namespace TrilinosWrappers
 #endif
 
 
-/*! @addtogroup Vectors
- *@{
- */
+/*!   @addtogroup  向量 @{  
+
+ 
+* */
 
 
 /**
- * An implementation of block vectors based on deal.II vectors. While the base
- * class provides for most of the interface, this class handles the actual
- * allocation of vectors and provides functions that are specific to the
- * underlying vector type.
+ * 一个基于deal.II向量的块向量的实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型的特定函数。
  *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
  *
- * @see
- * @ref GlossBlockLA "Block (linear algebra)"
+ * @note
+ * 这个模板的实例提供给<tt>  @<float@>  和  @<double@></tt>;
+ * 其他人可以在应用程序中生成（见手册中的 @ref
+ * Instantiations 部分）。
+ * @see   @ref GlossBlockLA  "块（线性代数）"
+ *
+ *
  */
 template <typename Number>
 class BlockVector : public BlockVectorBase<Vector<Number>>
 {
 public:
   /**
-   * Typedef the base class for simpler access to its own alias.
+   * 对基类进行类型化定义，以便更简单地访问它自己的别名。
+   *
    */
   using BaseClass = BlockVectorBase<Vector<Number>>;
 
   /**
-   * Typedef the type of the underlying vector.
+   * 类型化底层向量的类型。
+   *
    */
   using BlockType = typename BaseClass::BlockType;
 
   /**
-   * Import the alias from the base class.
+   * 从基类中导入别名。
+   *
    */
   using value_type      = typename BaseClass::value_type;
   using real_type       = typename BaseClass::real_type;
@@ -94,74 +96,63 @@ public:
   using const_iterator  = typename BaseClass::const_iterator;
 
   /**
-   * Constructor. There are three ways to use this constructor. First, without
-   * any arguments, it generates an object with no blocks. Given one argument,
-   * it initializes <tt>n_blocks</tt> blocks, but these blocks have size zero.
-   * The third variant finally initializes all blocks to the same size
-   * <tt>block_size</tt>.
+   * 构造函数。有三种方法来使用这个构造函数。首先，没有任何参数，它生成一个没有块的对象。给定一个参数，它初始化<tt>n_blocks</tt>块，但这些块的大小为零。
+   * 第三种变体最后将所有块初始化为相同的大小<tt>block_size</tt>。
+   * 如果你打算使用不同大小的块，请参考下面的其他构造函数。
    *
-   * Confer the other constructor further down if you intend to use blocks of
-   * different sizes.
    */
   explicit BlockVector(const unsigned int n_blocks   = 0,
                        const size_type    block_size = 0);
 
   /**
-   * Copy Constructor. Dimension set to that of @p v, all components are
-   * copied from @p v.
+   * 复制构造函数。尺寸设置为 @p v,
+   * 的尺寸，所有的组件都是从 @p v. 复制过来的。
+   *
    */
   BlockVector(const BlockVector<Number> &V);
 
 
   /**
-   * Move constructor. Creates a new vector by stealing the internal data of
-   * the given argument vector.
+   * 移动构造函数。通过窃取给定参数向量的内部数据创建一个新的向量。
+   *
    */
-  BlockVector(BlockVector<Number> && /*v*/) noexcept = default;
+  BlockVector(BlockVector<Number> &&  /*v*/ ) noexcept = default;
 
   /**
-   * Copy constructor taking a BlockVector of another data type. This will
-   * fail if there is no conversion path from <tt>OtherNumber</tt> to
-   * <tt>Number</tt>. Note that you may lose accuracy when copying to a
-   * BlockVector with data elements with less accuracy.
+   * 复制构造函数，获取另一种数据类型的BlockVector。如果没有从<tt>OtherNumber</tt>到<tt>Number</tt>的转换路径，这将失败。注意，当你复制到一个数据元素精度较低的BlockVector时，可能会失去精度。
+   * 旧版本的gcc不尊重模板构造函数上的 @p explicit
+   * 关键字。在这种情况下，很容易不小心写出效率很低的代码，因为编译器开始执行隐藏的转换。为了避免这种情况，如果我们在配置过程中检测到有损坏的编译器，这个功能就会被禁用。
    *
-   * Older versions of gcc did not honor the @p explicit keyword on template
-   * constructors. In such cases, it is easy to accidentally write code that
-   * can be very inefficient, since the compiler starts performing hidden
-   * conversions. To avoid this, this function is disabled if we have detected
-   * a broken compiler during configuration.
    */
   template <typename OtherNumber>
   explicit BlockVector(const BlockVector<OtherNumber> &v);
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * A copy constructor taking a (parallel) Trilinos block vector and copying
-   * it into the deal.II own format.
+   * 一个复制构造函数，获取一个（并行的）Trilinos块向量，并将其复制成deal.II自己的格式。
+   *
    */
   BlockVector(const TrilinosWrappers::MPI::BlockVector &v);
 
 #endif
   /**
-   * Constructor. Set the number of blocks to <tt>block_sizes.size()</tt> and
-   * initialize each block with <tt>block_sizes[i]</tt> zero elements.
+   * 构造函数。设置块的数量为<tt>block_sizes.size()</tt>，并以<tt>block_sizes[i]</tt>零元素初始化每个块。
+   *
    */
   BlockVector(const std::vector<size_type> &block_sizes);
 
   /**
-   * Constructor. Initialize vector to the structure found in the BlockIndices
-   * argument.
+   * 构造函数。将向量初始化为BlockIndices参数中的结构。
+   *
    */
   BlockVector(const BlockIndices &block_indices);
 
   /**
-   * Constructor. Set the number of blocks to <tt>block_sizes.size()</tt>.
-   * Initialize the vector with the elements pointed to by the range of
-   * iterators given as second and third argument. Apart from the first
-   * argument, this constructor is in complete analogy to the respective
-   * constructor of the <tt>std::vector</tt> class, but the first argument is
-   * needed in order to know how to subdivide the block vector into different
-   * blocks.
+   * 构造函数。设置块的数量为<tt>block_sizes.size()</tt>。
+   * 用作为第二和第三参数的迭代器范围所指向的元素初始化向量。除了第一个参数外，这个构造函数与
+   * <tt>std::vector</tt>
+   * 类的相应构造函数完全类似，但需要第一个参数，以便知道如何将块向量细分为不同的块。
+   *
    */
   template <typename InputIterator>
   BlockVector(const std::vector<size_type> &block_sizes,
@@ -169,88 +160,78 @@ public:
               const InputIterator           end);
 
   /**
-   * Destructor. Clears memory
+   * 解除构造函数。清除内存
+   *
    */
   ~BlockVector() override = default;
 
   /**
-   * Call the compress() function on all the subblocks.
+   * 在所有的子块上调用compress()函数。    这个功能只有在使用基于MPI的向量时才需要调用，为了兼容，在其他对象中也存在。    参见  @ref GlossCompress  "压缩分布式对象 "
+   * 以获得更多信息。
    *
-   * This functionality only needs to be called if using MPI based vectors and
-   * exists in other objects for compatibility.
-   *
-   * See
-   * @ref GlossCompress "Compressing distributed objects"
-   * for more information.
    */
   void
   compress(::dealii::VectorOperation::values operation =
              ::dealii::VectorOperation::unknown);
 
   /**
-   * Returns `false` as this is a serial block vector.
+   * 返回`false`，因为这是一个串行块向量。
+   * 只有在使用基于MPI的向量时才需要调用这个功能，并且为了兼容而存在于其他对象中。
    *
-   * This functionality only needs to be called if using MPI based vectors and
-   * exists in other objects for compatibility.
    */
   bool
   has_ghost_elements() const;
 
   /**
-   * Copy operator: fill all components of the vector with the given scalar
-   * value.
+   * 复制操作：用给定的标量值填充向量的所有组件。
+   *
    */
   BlockVector &
   operator=(const value_type s);
 
   /**
-   * Copy operator for arguments of the same type. Resize the present vector
-   * if necessary.
+   * 对相同类型的参数进行复制操作。如果有必要，可以调整现在的向量的大小。
+   *
    */
   BlockVector<Number> &
   operator=(const BlockVector<Number> &v);
 
   /**
-   * Move the given vector. This operator replaces the present vector with
-   * the contents of the given argument vector.
+   * 移动给定的向量。该操作符用给定参数向量的内容替换当前向量。
+   *
    */
   BlockVector<Number> &
-  operator=(BlockVector<Number> && /*v*/) = default; // NOLINT
+  operator=(BlockVector<Number> &&  /*v*/ ) = default; // NOLINT
 
   /**
-   * Copy operator for template arguments of different types. Resize the
-   * present vector if necessary.
+   * 对不同类型的模板参数进行复制操作。如果有必要，可以调整当前向量的大小。
+   *
    */
   template <class Number2>
   BlockVector<Number> &
   operator=(const BlockVector<Number2> &V);
 
   /**
-   * Copy a regular vector into a block vector.
+   * 将一个常规向量复制到一个块向量中。
+   *
    */
   BlockVector<Number> &
   operator=(const Vector<Number> &V);
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * A copy constructor from a Trilinos block vector to a deal.II block
-   * vector.
+   * 从Trilinos块向量到deal.II块向量的复制构造函数。
+   *
    */
   BlockVector<Number> &
   operator=(const TrilinosWrappers::MPI::BlockVector &V);
 #endif
 
   /**
-   * Reinitialize the BlockVector to contain <tt>n_blocks</tt> blocks of size
-   * <tt>block_size</tt> each.
+   * 重新初始化BlockVector，使其包含<tt>n_blocks</tt>每个大小为<tt>block_size</tt>的块。
+   * 如果第二个参数是默认值，那么区块向量就会分配指定数量的区块，但让它们的大小为零。然后你需要重新初始化各个区块，并调用collect_sizes()来更新区块系统对其各个区块大小的认识。
+   * 如果<tt>omit_zeroing_entries==false</tt>，则向量被填充为零。
    *
-   * If the second argument is left at its default value, then the block
-   * vector allocates the specified number of blocks but leaves them at zero
-   * size. You then need to later reinitialize the individual blocks, and call
-   * collect_sizes() to update the block system's knowledge of its individual
-   * block's sizes.
-   *
-   * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
    */
   void
   reinit(const unsigned int n_blocks,
@@ -258,50 +239,34 @@ public:
          const bool         omit_zeroing_entries = false);
 
   /**
-   * Reinitialize the BlockVector such that it contains
-   * <tt>block_sizes.size()</tt> blocks. Each block is reinitialized to
-   * dimension <tt>block_sizes[i]</tt>.
+   * 重新初始化BlockVector，使其包含<tt>block_sizes.size()</tt>块。每个块都被重新初始化为<tt>block_sizes[i]</tt>的尺寸。
+   * 如果块的数量与调用此函数前相同，所有的向量都保持不变，并且为每个向量调用
+   * reinit()。
+   * 如果<tt>omit_zeroing_entries==false</tt>，则向量被填充为零。
+   * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新其缓存的向量大小。如果你在其中一个块上调用reinit()，那么对这个对象的后续操作可能会产生不可预测的结果，因为它们可能会被路由到错误的块上。
    *
-   * If the number of blocks is the same as before this function was called,
-   * all vectors remain the same and reinit() is called for each vector.
-   *
-   * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
-   *
-   * Note that you must call this (or the other reinit() functions) function,
-   * rather than calling the reinit() functions of an individual block, to
-   * allow the block vector to update its caches of vector sizes. If you call
-   * reinit() on one of the blocks, then subsequent actions on this object may
-   * yield unpredictable results since they may be routed to the wrong block.
    */
   void
   reinit(const std::vector<size_type> &block_sizes,
          const bool                    omit_zeroing_entries = false);
 
   /**
-   * Reinitialize the BlockVector to reflect the structure found in
-   * BlockIndices.
+   * 重新初始化BlockVector以反映BlockIndices中发现的结构。
+   * 如果块的数量与调用此函数前相同，所有的向量都保持不变，并且为每个向量调用
+   * reinit()。
+   * 如果<tt>omit_zeroing_entries==false</tt>，则向量被填充为零。
    *
-   * If the number of blocks is the same as before this function was called,
-   * all vectors remain the same and reinit() is called for each vector.
-   *
-   * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with zeros.
    */
   void
   reinit(const BlockIndices &block_indices,
          const bool          omit_zeroing_entries = false);
 
   /**
-   * Change the dimension to that of the vector <tt>V</tt>. The same applies
-   * as for the other reinit() function.
+   * 将维度改为向量<tt>V</tt>的维度。这与另一个reinit()函数同样适用。
+   * <tt>V</tt>的元素不会被复制，也就是说，这个函数与调用<tt>reinit
+   * (V.size(), omit_zeroing_entries)</tt>相同。
+   * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新它的向量大小缓存。如果你调用其中一个块的reinit()，那么这个对象的后续操作可能会产生不可预测的结果，因为它们可能被路由到错误的块。
    *
-   * The elements of <tt>V</tt> are not copied, i.e.  this function is the
-   * same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.
-   *
-   * Note that you must call this (or the other reinit() functions) function,
-   * rather than calling the reinit() functions of an individual block, to
-   * allow the block vector to update its caches of vector sizes. If you call
-   * reinit() of one of the blocks, then subsequent actions of this object may
-   * yield unpredictable results since they may be routed to the wrong block.
    */
   template <typename Number2>
   void
@@ -309,29 +274,24 @@ public:
          const bool                  omit_zeroing_entries = false);
 
   /**
-   * Multiply each element of this vector by the corresponding element of
-   * <tt>v</tt>.
+   * 将这个向量的每个元素乘以<tt>v</tt>的相应元素。
+   *
    */
   template <class BlockVector2>
   void
   scale(const BlockVector2 &v);
 
   /**
-   * Swap the contents of this vector and the other vector <tt>v</tt>. One
-   * could do this operation with a temporary variable and copying over the
-   * data elements, but this function is significantly more efficient since it
-   * only swaps the pointers to the data of the two vectors and therefore does
-   * not need to allocate temporary storage and move data around.
+   * 把这个向量的内容和另一个向量<tt>v</tt>交换。我们可以通过一个临时变量和复制数据元素来完成这个操作，但是这个函数的效率明显更高，因为它只交换了两个向量的数据指针，因此不需要分配临时存储空间和移动数据。
+   * 这个函数类似于所有C++标准容器的swap()函数。此外，还有一个全局函数swap(u,v)，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数相类似。
    *
-   * This function is analogous to the swap() function of all C++ standard
-   * containers. Also, there is a global function swap(u,v) that simply calls
-   * <tt>u.swap(v)</tt>, again in analogy to standard functions.
    */
   void
   swap(BlockVector<Number> &v);
 
   /**
-   * Print to a stream.
+   * 打印到一个流。
+   *
    */
   void
   print(std::ostream &     out,
@@ -340,43 +300,38 @@ public:
         const bool         across     = true) const;
 
   /**
-   * Write the vector en bloc to a stream. This is done in a binary mode, so
-   * the output is neither readable by humans nor (probably) by other
-   * computers using a different operating system or number format.
+   * 将向量全部写到流中。这是以二进制模式进行的，所以输出结果既不能被人类阅读，也不能（可能）被其他使用不同操作系统或数字格式的计算机阅读。
+   *
    */
   void
   block_write(std::ostream &out) const;
 
   /**
-   * Read a vector en block from a file. This is done using the inverse
-   * operations to the above function, so it is reasonably fast because the
-   * bitstream is not interpreted.
+   * 从一个文件中读取一个矢量en块。这是用上述函数的逆运算来完成的，所以它的速度相当快，因为位流没有被解释过。
+   * 如果有必要，矢量会被调整大小。
+   * 一个原始形式的错误检查被执行，它将识别最直截了当的尝试，将一些数据解释为存储在文件中的位流向量，但不会超过。
    *
-   * The vector is resized if necessary.
-   *
-   * A primitive form of error checking is performed which will recognize the
-   * bluntest attempts to interpret some data as a vector stored bitwise to a
-   * file, but not more.
    */
   void
   block_read(std::istream &in);
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况  @{
+   *
    */
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcIteratorRangeDoesNotMatchVectorSize);
   //@}
 };
 
-/*@}*/
+ /*@}*/ 
 
 #ifndef DOXYGEN
-/*----------------------- Inline functions ----------------------------------*/
+ /*----------------------- Inline functions ----------------------------------*/ 
 
 
 
@@ -478,11 +433,10 @@ BlockVector<Number>::scale(const BlockVector2 &v)
 
 
 /**
- * Global function which overloads the default implementation of the C++
- * standard library which uses a temporary object. The function simply
- * exchanges the data of the two vectors.
+ * 全局函数，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
+ * @relatesalso  BlockVector
  *
- * @relatesalso BlockVector
+ *
  */
 template <typename Number>
 inline void
@@ -500,8 +454,8 @@ namespace internal
     class ReinitHelper;
 
     /**
-     * A helper class used internally in linear_operator.h. Specialization for
-     * BlockVector<number>.
+     * linear_operator.h中内部使用的一个辅助类。对BlockVector<number>的特殊化。
+     *
      */
     template <typename number>
     class ReinitHelper<BlockVector<number>>
@@ -527,11 +481,13 @@ namespace internal
     };
 
   } // namespace LinearOperatorImplementation
-} /* namespace internal */
+}  /* namespace internal */ 
 
 
 /**
- * Declare dealii::BlockVector as serial vector.
+ * 将 dealii::BlockVector 声明为串行向量。
+ *
+ *
  */
 template <typename Number>
 struct is_serial_vector<BlockVector<Number>> : std::true_type
@@ -540,3 +496,5 @@ struct is_serial_vector<BlockVector<Number>> : std::true_type
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

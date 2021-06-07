@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/tria_levels_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -37,18 +36,29 @@ namespace internal
   namespace TriangulationImplementation
   {
     /**
-     * 存储属于多级层次结构中某一层次的所有信息。
-     * 在TriaLevel中，存储所有不依赖于维度的单元数据，例如，存储单元的细化标志的字段（单元的实际内容在其他地方声明），等等。对于非面向水平的数据，也请参见TriaObjects。
-     * 还有一个字段，可能适合在这里，即材料数据（对于单元）或边界指标（对于面），但由于我们需要一个线或四边形的边界信息或材料数据，我们将它们与线和四边形一起存储，而不是与普通数据一起存储。
-     * 同样地，在3D中，我们需要线和四边形的边界指标（如果相邻的两个面有不同的边界指标，我们需要知道如何细化一条线），以及单元格的材料数据。
+     * Store all information which belongs to one level of the multilevel
+     * hierarchy.
      *
+     * In TriaLevel, all cell data is stored which is not dependent on the
+     * dimension, e.g. a field to store the refinement flag for the cells
+     * (what a cell actually is is declared elsewhere), etc. See also
+     * TriaObjects for non level-oriented data.
+     *
+     * There is another field, which may fit in here, namely the material data
+     * (for cells) or the boundary indicators (for faces), but since we need
+     * for a line or quad either boundary information or material data, we
+     * store them with the lines and quads rather than with the common data.
+     * Likewise, in 3d, we need boundary indicators for lines and quads (we
+     * need to know how to refine a line if the two adjacent faces have
+     * different boundary indicators), and material data for cells.
      */
     class TriaLevel
     {
     public:
       /**
-       * 构造函数。              @param  三角形的dim尺寸。
+       * Constructor.
        *
+       * @param dim Dimension of the Triangulation.
        */
       TriaLevel(const unsigned int dim)
         : dim(dim)
@@ -56,8 +66,7 @@ namespace internal
       {}
 
       /**
-       * 默认构造函数（Boost需要）。
-       *
+       * Default constructor (needed by Boost).
        */
       TriaLevel()
         : dim(numbers::invalid_unsigned_int)
@@ -65,135 +74,175 @@ namespace internal
       {}
 
       /**
-       * 三角形的尺寸。
-       *
+       * Dimension of the Triangulation.
        */
       unsigned int dim;
 
       /**
-       * @p RefinementCase<dim>::Type 单元格是否需要精化的标志
-       * (RefinementCase<dim>::no_refinement).
-       * 单元格的含义是与维度有关的，因此这个向量的长度也取决于维度：在一维中，这个向量的长度等于
-       * @p lines 向量的长度，在二维中等于 @p quads
-       * 向量的长度，等等。
-       *
+       * @p RefinementCase<dim>::Type flags for the cells to be refined with
+       * or not (RefinementCase<dim>::no_refinement). The meaning what a cell
+       * is, is dimension specific, therefore also the length of this vector
+       * depends on the dimension: in one dimension, the length of this vector
+       * equals the length of the @p lines vector, in two dimensions that of
+       * the @p quads vector, etc.
        */
       std::vector<std::uint8_t> refine_flags;
 
       /**
-       * 与上面的含义相同，但指定了一个单元是否必须被粗化。
-       *
+       * Same meaning as the one above, but specifies whether a cell must be
+       * coarsened.
        */
       std::vector<bool> coarsen_flags;
 
 
       /**
-       * 一个整数，对于每一个活动单元，它存储了多少个活动单元。对于非活动单元，该值未使用，并设置为无效值。
-       *
+       * An integer that, for every active cell, stores the how many-th active
+       * cell this is. For non-active cells, this value is unused and set to
+       * an invalid value.
        */
       std::vector<unsigned int> active_cell_indices;
 
       /**
-       * 每个活动单元的全局单元索引。
-       *
+       * Global cell index of each active cell.
        */
       std::vector<types::global_cell_index> global_active_cell_indices;
 
       /**
-       * 给定级别上每个单元的全局单元索引。
-       *
+       * Global cell index of each cell on the given level.
        */
       std::vector<types::global_cell_index> global_level_cell_indices;
 
       /**
-       * 级别和单元格邻居的指数。惯例是，索引为 @p i
-       * 的单元格的邻居存储在 $i*(2*real\_space\_dimension)$
-       * 之后的字段中，例如，在一个空间维度中，单元格0的邻居存储在<tt>neighbors[0]</tt>和<tt>neighbors[1]</tt>，单元格1的邻居存储在<tt>neighbors[2]</tt>和<tt>neighbors[3]</tt>，以此类推。
-       * 在邻居中，<tt>neighbors[i].first</tt>是级别，而<tt>neighbors[i].second</tt>是邻居的索引。
-       * 如果一个邻居不存在（单元格在边界），<tt>level=index=-1</tt>被设置。
-       * <em>  公约。 </em>  一个单元的 @p ith
-       * 邻居是与该单元的 @p ith 面（二维的 @p Line ，三维的
-       * @p Quad ）共享的那个。
-       * 一个单元格的邻居最多具有与该单元格相同的水平，也就是说，它可能是也可能不是精炼的。
-       * 在一个维度上，一个邻居可能具有小于或等于这个单元的水平的任何水平。如果它有相同的层次，它可以被精炼任意次数，但邻居指针仍然指向同一层次的单元，而邻居的子单元的邻居可以指向这个单元或其子单元。
-       * 在二维和更多维度上，邻居要么在同一层次上并被细化（在这种情况下，它的子代有指向本单元或其直接子代的邻居指针），要么在同一层次上未被细化，或下一层次（在这种情况下，它的邻居指针指向本单元的母单元）。
+       * Levels and indices of the neighbors of the cells. Convention is, that
+       * the neighbors of the cell with index @p i are stored in the fields
+       * following $i*(2*real\_space\_dimension)$, e.g. in one spatial
+       * dimension, the neighbors of cell 0 are stored in
+       * <tt>neighbors[0]</tt> and <tt>neighbors[1]</tt>, the neighbors of
+       * cell 1 are stored in <tt>neighbors[2]</tt> and <tt>neighbors[3]</tt>,
+       * and so on.
        *
+       * In neighbors, <tt>neighbors[i].first</tt> is the level, while
+       * <tt>neighbors[i].second</tt> is the index of the neighbor.
+       *
+       * If a neighbor does not exist (cell is at the boundary),
+       * <tt>level=index=-1</tt> is set.
+       *
+       * <em>Conventions:</em> The @p ith neighbor of a cell is the one which
+       * shares the @p ith face (@p Line in 2D, @p Quad in 3D) of this cell.
+       *
+       * The neighbor of a cell has at most the same level as this cell, i.e.
+       * it may or may not be refined.
+       *
+       * In one dimension, a neighbor may have any level less or equal the
+       * level of this cell. If it has the same level, it may be refined an
+       * arbitrary number of times, but the neighbor pointer still points to
+       * the cell on the same level, while the neighbors of the children of
+       * the neighbor may point to this cell or its children.
+       *
+       * In two and more dimensions, the neighbor is either on the same level
+       * and refined (in which case its children have neighbor pointers to
+       * this cell or its direct children), unrefined on the same level or one
+       * level down (in which case its neighbor pointer points to the mother
+       * cell of this cell).
        */
       std::vector<std::pair<int, int>> neighbors;
 
       /**
-       * 每个单元有一个整数，用来存储它属于哪个子域。这个字段最常被用于并行计算，它表示哪个处理器应该工作在/拥有给定子域编号的单元。
-       * 这个号码只在活动单元上使用。
+       * One integer per cell to store which subdomain it belongs to. This
+       * field is most often used in parallel computations, where it denotes
+       * which processor shall work on/owns the cells with a given subdomain
+       * number.
        *
+       * This number is only used on active cells.
        */
       std::vector<types::subdomain_id> subdomain_ids;
 
       /**
-       * 在每一层用于并行多网格的子域ID。
-       * 与subdomain_id相反，一旦网格被划分到多网格层次的下层，这个数字也会用于非活动单元上。
+       * The subdomain id used on each level for parallel multigrid.
        *
+       * In contrast to the subdomain_id, this number is also used on inactive
+       * cells once the mesh has been partitioned also on the lower levels of
+       * the multigrid hierarchy.
        */
       std::vector<types::subdomain_id> level_subdomain_ids;
 
       /**
-       * 每一对连续的单元都有一个整数，用于存储它们的父级单元的索引。
-       * (我们为每对单元存储一次这一信息，因为每一次细化，无论是各向同性还是各向异性，在任何空间维度上，总是以2的倍数创建子单元，所以没有必要为每一个单元存储父单元的索引。)
+       * One integer for every consecutive pair of cells to store which index
+       * their parent has.
        *
+       * (We store this information once for each pair of cells since every
+       * refinement, isotropic or anisotropic, and in any space dimension,
+       * always creates children in multiples of two, so there is no need to
+       * store the parent index for every cell.)
        */
       std::vector<int> parents;
 
       /**
-       * 每个单元有一个bool来表示法线的方向 true:
-       * 使用来自顶点的方向 false: 恢复方向。参见  @ref
-       * GlossDirectionFlag  。            这仅用于codim==1的网格。
+       * One bool per cell to indicate the direction of the normal true:  use
+       * orientation from vertex false: revert the orientation. See
+       * @ref GlossDirectionFlag.
        *
+       * This is only used for codim==1 meshes.
        */
       std::vector<bool> direction_flags;
 
       /**
-       * 包含线的数据和相关函数的对象
-       *
+       * The object containing the data on lines and related functions
        */
       TriaObjects cells;
 
       /**
-       * 对于边，我们强制执行一个标准惯例，即相对的边应该是平行的。现在，这在大多数情况下是可以执行的，我们有代码确保如果一个网格允许这种情况发生，我们就有这个约定。我们也知道，总是有可能让相对的面具有平行的法向量。(关于这两点，请参见GridReordering类的文档中提到的ACM
-       * Transactions on Mathematical Software中Agelek, Anderson, Bangerth,
-       * Barth的论文)。
-       * 问题是，我们原本还有一个条件，即0、2和4号面的法线指向单元格内，而其他面的法线指向外面。事实证明，这并不总是可能的。实际上，我们必须存储每个单元格的每个面的法线向量是否遵循这一惯例。如果是这样，那么这个变量就存储一个
-       * @p true 值，否则就是 @p false 值。
-       * 实际上，这个字段有 <code>6*n_cells</code>
-       * 个元素，是每个单元格的六个面的倍数。
-       * @note  只有dim=3时才需要。
+       * For edges, we enforce a standard convention that opposite
+       * edges should be parallel. Now, that's enforceable in most
+       * cases, and we have code that makes sure that if a mesh allows
+       * this to happen, that we have this convention. We also know
+       * that it is always possible to have opposite faces have
+       * parallel normal vectors. (For both things, see the paper by
+       * Agelek, Anderson, Bangerth, Barth in the ACM Transactions on
+       * Mathematical Software mentioned in the documentation of the
+       * GridReordering class.)
        *
+       * The problem is that we originally had another condition, namely that
+       * faces 0, 2 and 4 have normals that point into the cell, while the
+       * other faces have normals that point outward. It turns out that this
+       * is not always possible. In effect, we have to store whether the
+       * normal vector of each face of each cell follows this convention or
+       * not. If this is so, then this variable stores a @p true value,
+       * otherwise a @p false value.
+       *
+       * In effect, this field has <code>6*n_cells</code> elements, being the
+       * number of cells times the six faces each has.
+       *
+       * @note Only needed for dim=3.
        */
       std::vector<unsigned char> face_orientations;
 
       /**
-       * 每个单元格的参考单元格类型。
-       * @note  仅用于dim=2和dim=3。
+       * Reference cell type of each cell.
        *
+       * @note Used only for dim=2 and dim=3.
        */
       std::vector<dealii::ReferenceCell> reference_cell;
 
       /**
-       * 单元顶点索引的缓存（`structdim ==
-       * dim`），以便更快速地检索这些频繁访问的数量。
-       * 为了简化寻址，这些信息以一个单元（四边形/六面体）可能的最大顶点数为索引。
-       *
+       * A cache for the vertex indices of the cells (`structdim == dim`), in
+       * order to more quickly retrieve these frequently accessed quantities.
+       * For simplified addressing, the information is indexed by the maximum
+       * number of vertices possible for a cell (quadrilateral/hexahedron).
        */
       std::vector<unsigned int> cell_vertex_indices_cache;
 
       /**
-       * 确定这个对象的内存消耗（以字节为单位）的估计值。
-       *
+       * Determine an estimate for the memory consumption (in bytes) of this
+       * object.
        */
       std::size_t
       memory_consumption() const;
 
       /**
-       * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据读入或写入一个流中，以便进行序列化。
-       *
+       * Read or write the data of this object to or from a stream for the
+       * purpose of serialization using the [BOOST serialization
+       * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
        */
       template <class Archive>
       void
@@ -233,5 +282,3 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

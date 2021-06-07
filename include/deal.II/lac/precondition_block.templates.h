@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/precondition_block.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2018 by the deal.II authors
@@ -539,7 +540,7 @@ PreconditionBlock<MatrixType, inverse_type>::memory_consumption() const
 
 
 
-/*--------------------- PreconditionBlockJacobi -----------------------*/
+ /*--------------------- PreconditionBlockJacobi -----------------------*/ 
 
 
 template <typename MatrixType, typename inverse_type>
@@ -696,7 +697,7 @@ PreconditionBlockJacobi<MatrixType, inverse_type>::Tstep(
 
 
 
-/*--------------------- PreconditionBlockSOR -----------------------*/
+ /*--------------------- PreconditionBlockSOR -----------------------*/ 
 
 
 template <typename MatrixType, typename inverse_type>
@@ -1068,3 +1069,5 @@ PreconditionBlockSSOR<MatrixType, inverse_type>::Tstep(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

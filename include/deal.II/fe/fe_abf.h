@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_abf_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
@@ -32,92 +33,58 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup fe */
-/*@{*/
+ /*!@addtogroup fe */ 
+ /*@{*/ 
 
 /**
- * Implementation of Arnold-Boffi-Falk (ABF) elements, conforming with the
- * space H<sup>div</sup>. These elements generate vector fields with normal
- * components continuous between mesh cells.
- *
- * These elements are based on an article from Arnold, Boffi and Falk:
- * Quadrilateral H(div) finite elements, SIAM J. Numer. Anal. Vol.42, No.6,
- * pp.2429-2451
- *
- * In this article, the authors demonstrate that the usual RT elements and
- * also BDM and other proposed finite dimensional subspaces of H(div) do not
- * work properly on arbitrary FE grids. I.e. the convergence rates deteriorate
- * on these meshes. As a solution the authors propose the ABF elements, which
- * are implemented in this module.
- *
- * This class is not implemented for the codimension one case (<tt>spacedim !=
- * dim</tt>).
- *
- * @todo Even if this element is implemented for two and three space
- * dimensions, the definition of the node values relies on consistently
- * oriented faces in 3D. Therefore, care should be taken on complicated
- * meshes.
- *
+ * Arnold-Boffi-Falk（ABF）元素的实现，符合空间H<sup>div</sup>。这些元素在网格单元之间产生连续的法向分量的矢量场。
+ * 这些元素是基于Arnold, Boffi and
+ * Falk的文章：四边形H(div)有限元素，SIAM J. Numer.
+ * 分析。第42卷，第6期，第2429-2451页
+ * 在这篇文章中，作者证明了通常的RT元素以及BDM和其他提议的H(div)的有限维度子空间在任意的FE网格上不能正常工作。也就是说，在这些网格上收敛率会恶化。作为一个解决方案，作者提出了ABF元素，在本模块中实现。
+ * 这类元素没有实现在一维的情况下（<tt>spacedim !=
+ * dim</tt>）。
+ * @todo
+ * 即使这个元素是为二维和三维空间实现的，节点值的定义也依赖于三维中一致方向的面。因此，在复杂的网格上应该注意。
  * <h3>Interpolation</h3>
- *
- * The
- * @ref GlossInterpolation "interpolation"
- * operators associated with the RT element are constructed such that
- * interpolation and computing the divergence are commuting operations. We
- * require this from interpolating arbitrary functions as well as the
- * #restriction matrices.  It can be achieved by two interpolation schemes,
- * the simplified one in FE_RaviartThomasNodal and the original one here:
- *
+ * @ref GlossInterpolation  与RT元素相关的 "插值 "
+ * 算子的构造是这样的：插值和计算发散是互换的操作。我们从插值任意函数以及#限制矩阵中要求这一点。
+ * 这可以通过两种插值方案实现，FE_RaviartThomasNodal中的简化方案和这里的原始方案。
  * <h4>Node values on edges/faces</h4>
- *
- * On edges or faces, the
- * @ref GlossNodes "node values"
- * are the moments of the normal component of the interpolated function with
- * respect to the traces of the RT polynomials. Since the normal trace of the
- * RT space of degree <i>k</i> on an edge/face is the space
- * <i>Q<sub>k</sub></i>, the moments are taken with respect to this space.
- *
+ * 在边缘或面上， @ref GlossNodes "节点值 "
+ * 是内插函数的法线分量相对于RT多项式轨迹的矩。由于在一个边缘/面的度数为<i>k</i>的RT空间的法线轨迹是<i>Q<sub>k</sub></i>的空间，因此相对于这个空间的矩被取走。
  * <h4>Interior node values</h4>
- *
- * Higher order RT spaces have interior nodes. These are moments taken with
- * respect to the gradient of functions in <i>Q<sub>k</sub></i> on the cell
- * (this space is the matching space for RT<sub>k</sub> in a mixed
- * formulation).
- *
+ * 高阶RT空间有内部节点。这些是相对于<i>Q<sub>k</sub></i>中的函数在单元上的梯度所取的矩（这个空间是混合表述中RT<sub>k</sub>的匹配空间）。
  * <h4>Generalized support points</h4>
+ * 上面的节点值依赖于积分，这些积分将由正交规则本身计算出来。广义支持点是一组点，使这种正交能够以足够的精度进行。需要的点是每个面上的QGauss<sub>k+1</sub>以及单元内部的QGauss<sub>k</sub>（或者对于RT<sub>0</sub>来说没有）。更多信息请参见 @ref GlossGeneralizedSupport "广义支持点的术语条目"
+ * 。
  *
- * The node values above rely on integrals, which will be computed by
- * quadrature rules themselves. The generalized support points are a set of
- * points such that this quadrature can be performed with sufficient accuracy.
- * The points needed are those of QGauss<sub>k+1</sub> on each face as well as
- * QGauss<sub>k</sub> in the interior of the cell (or none for
- * RT<sub>0</sub>). See the
- * @ref GlossGeneralizedSupport "glossary entry on generalized support points"
- * for more information.
+ *
  */
 template <int dim>
 class FE_ABF : public FE_PolyTensor<dim>
 {
 public:
   /**
-   * Constructor for the ABF element of degree @p p.
+   * 程度为 @p p. 的ABF元素的构造函数。
+   *
    */
   FE_ABF(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_ABF<dim>(degree)</tt>, with @p dim and @p degree replaced
-   * by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_ABF<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 由适当的值代替。
+   *
    */
   virtual std::string
   get_name() const override;
 
   /**
-   * This function returns @p true, if the shape function @p shape_index has
-   * non-zero function values somewhere on the face @p face_index.
+   * 如果形状函数 @p shape_index
+   * 在面的某处有非零函数值，该函数返回 @p true, 。
+   * 现在，这只在一维的RT0中实现。否则，总是返回  @p true.
+   * 。
    *
-   * Right now, this is only implemented for RT0 in 1D. Otherwise, returns
-   * always @p true.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
@@ -137,114 +104,89 @@ public:
 
 private:
   /**
-   * The order of the ABF element. The lowest order elements are usually
-   * referred to as RT0, even though their shape functions are piecewise
-   * quadratics.
+   * ABF元素的顺序。最低阶的元素通常被称为RT0，尽管它们的形状函数是片状二次方程。
+   *
    */
   const unsigned int rt_order;
 
   /**
-   * Only for internal use. Its full name is @p get_dofs_per_object_vector
-   * function and it creates the @p dofs_per_object vector that is needed
-   * within the constructor to be passed to the constructor of @p
-   * FiniteElementData.
+   * 仅供内部使用。它的全称是 @p get_dofs_per_object_vector
+   * 函数，它创建了 @p dofs_per_object
+   * 向量，在构造函数中需要传递给 @p
+   * FiniteElementData的构造函数。
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * Initialize the @p generalized_support_points field of the FiniteElement
-   * class and fill the tables with interpolation weights (#boundary_weights
-   * and #interior_weights). Called from the constructor.
+   * 初始化FiniteElement类的 @p generalized_support_points 字段，用插值权重（#boundary_weights和#interior_weights）填充表格。从构造函数中调用。    更多信息请参见 @ref GlossGeneralizedSupport "广义支持点的词汇表条目"
+   * 。
    *
-   * See the
-   * @ref GlossGeneralizedSupport "glossary entry on generalized support points"
-   * for more information.
    */
   void
   initialize_support_points(const unsigned int rt_degree);
 
   /**
-   * Initialize the interpolation from functions on refined mesh cells onto
-   * the father cell. According to the philosophy of the Raviart-Thomas
-   * element, this restriction operator preserves the divergence of a function
-   * weakly.
+   * 初始化从细化网格单元上的函数到父单元的插值。根据Raviart-Thomas元素的理念，这个限制算子弱地保留了一个函数的发散性。
+   *
    */
   void
   initialize_restriction();
 
   /**
-   * Fields of cell-independent data.
+   * 与单元格无关的数据字段。
+   * 关于这个类的一般用途的信息，请参见基类的文档。
    *
-   * For information about the general purpose of this class, see the
-   * documentation of the base class.
    */
   class InternalData : public FiniteElement<dim>::InternalDataBase
   {
   public:
     /**
-     * Array with shape function values in quadrature points. There is one row
-     * for each shape function, containing values for each quadrature point.
-     * Since the shape functions are vector-valued (with as many components as
-     * there are space dimensions), the value is a tensor.
+     * 带有正交点的形状函数值的数组。每个形状函数都有一行，包含每个正交点的值。
+     * 由于形状函数是矢量值（有多少分量就有多少空间维度），所以值是一个张量。
+     * 在这个数组中，我们将形状函数的值存储在单元格上的正交点。然后，向实空间单元的转换只需与映射的雅各布系数相乘即可完成。
      *
-     * In this array, we store the values of the shape function in the
-     * quadrature points on the unit cell. The transformation to the real
-     * space cell is then simply done by multiplication with the Jacobian of
-     * the mapping.
      */
     std::vector<std::vector<Tensor<1, dim>>> shape_values;
 
     /**
-     * Array with shape function gradients in quadrature points. There is one
-     * row for each shape function, containing values for each quadrature
-     * point.
+     * 包含正交点的形状函数梯度的数组。每个形状函数都有一行，包含每个正交点的值。
+     * 我们将梯度存储在单元格的正交点上。然后我们只需要在访问实际单元格时应用转换（这是一个矩阵-向量乘法）。
      *
-     * We store the gradients in the quadrature points on the unit cell. We
-     * then only have to apply the transformation (which is a matrix-vector
-     * multiplication) when visiting an actual cell.
      */
     std::vector<std::vector<Tensor<2, dim>>> shape_gradients;
   };
 
   /**
-   * These are the factors multiplied to a function in the
-   * #generalized_face_support_points when computing the integration. They are
-   * organized such that there is one row for each generalized face support
-   * point and one column for each degree of freedom on the face.
+   * 这些是计算积分时乘以#generalized_face_support_points中的一个函数的系数。它们的组织方式是，每个广义面支持点有一行，面的每个自由度有一列。
+   *
    */
   Table<2, double> boundary_weights;
   /**
-   * Precomputed factors for interpolation of interior degrees of freedom. The
-   * rationale for this Table is the same as for #boundary_weights. Only, this
-   * table has a third coordinate for the space direction of the component
-   * evaluated.
+   * 用于内部自由度内插的预计算系数。这个表的原理与#boundary_weights的原理相同。只是，这个表有第三个坐标，用于评估组件的空间方向。
+   *
    */
   Table<3, double> interior_weights;
 
 
 
   /**
-   * These are the factors multiplied to a function in the
-   * #generalized_face_support_points when computing the integration. They are
-   * organized such that there is one row for each generalized face support
-   * point and one column for each degree of freedom on the face.
+   * 这些是计算积分时乘以#generalized_face_support_points中的一个函数的系数。它们的组织方式是，每个广义面支持点有一行，面的每个自由度有一列。
+   *
    */
   Table<2, double> boundary_weights_abf;
   /**
-   * Precomputed factors for interpolation of interior degrees of freedom. The
-   * rationale for this Table is the same as for #boundary_weights. Only, this
-   * table has a third coordinate for the space direction of the component
-   * evaluated.
+   * 用于内部自由度内插的预计算系数。这个表的原理与#boundary_weights的原理相同。只是，这个表有第三个坐标，用于评估组件的空间方向。
+   *
    */
   Table<3, double> interior_weights_abf;
 
   /**
-   * Initialize the permutation pattern and the pattern of sign change.
+   * 初始化包络模式和符号变化模式。
+   * @note
+   * 这个函数还没有完全填充正确的实现。它需要在未来的版本中统一实现，以便在包含有翻转面的单元格的网格上工作。
    *
-   * @note This function is not fully filled with the correct implementation
-   * yet. It needs to be consistently implemented in a future release to work
-   * on meshes that contain cells with flipped faces.
    */
   void
   initialize_quad_dof_index_permutation_and_sign_change();
@@ -256,9 +198,11 @@ private:
 
 
 
-/*@}*/
+ /*@}*/ 
 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

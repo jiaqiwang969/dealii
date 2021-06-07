@@ -1,3 +1,4 @@
+//include/deal.II-translator/integrators/laplace_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -35,17 +36,16 @@ namespace LocalIntegrators
 {
   /**
    * @brief Local integrators related to the Laplacian and its DG formulations
-   *
    * @ingroup Integrators
+   *
    */
   namespace Laplace
   {
     /**
-     * Laplacian in weak form, namely on the cell <i>Z</i> the matrix \f[
+     * 弱形式的拉普拉斯，即在单元格<i>Z</i>上的矩阵\f[
      * \int_Z \nu \nabla u \cdot \nabla v \, dx. \f]
+     * <tt>fe</tt>中的FiniteElement可以是标量或矢量值的。在后一种情况下，Laplacian被分别应用于每个分量。
      *
-     * The FiniteElement in <tt>fe</tt> may be scalar or vector valued. In the
-     * latter case, the Laplacian is applied to each component separately.
      */
     template <int dim>
     void
@@ -83,9 +83,9 @@ namespace LocalIntegrators
     }
 
     /**
-     * Laplacian residual operator in weak form
+     * 弱形式的拉普拉斯残差算子 \f[ \int_Z \nu \nabla u \cdot
+     * \nabla v \, dx. \f] 。
      *
-     * \f[ \int_Z \nu \nabla u \cdot \nabla v \, dx. \f]
      */
     template <int dim>
     inline void
@@ -110,9 +110,9 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued Laplacian residual operator in weak form
+     * 弱形式的向量值拉普拉斯残差算子\f[ \int_Z \nu \nabla u :
+     * \nabla v \, dx. \f] 。
      *
-     * \f[ \int_Z \nu \nabla u : \nabla v \, dx. \f]
      */
     template <int dim>
     inline void
@@ -143,14 +143,14 @@ namespace LocalIntegrators
 
 
     /**
-     * Weak boundary condition of Nitsche type for the Laplacian, namely on
-     * the face <i>F</i> the matrix
-     * @f[
-     * \int_F \Bigl(\gamma u v - \partial_n u v - u \partial_n v\Bigr)\;ds.
-     * @f]
+     * 拉普拉斯的Nitsche类型的弱边界条件，即在面<i>F</i>上的矩阵@f[
+     * \int_F \Bigl(\gamma u v
      *
-     * Here, $\gamma$ is the <tt>penalty</tt> parameter suitably computed with
-     * compute_penalty().
+     * - \partial_n u v
+     *
+     * - u \partial_n v\Bigr)\;ds.
+     * @f] 这里， $\gamma$ 是<tt>penalty</tt>参数，适合用compute_penalty()计算。
+     *
      */
     template <int dim>
     void
@@ -182,16 +182,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition of Nitsche type for the Laplacian applied to the
-     * tangential component only, namely on
-     * the face <i>F</i> the matrix
-     * @f[
-     * \int_F \Bigl(\gamma u_\tau v_\tau - \partial_n u_\tau v_\tau - u_\tau
-     * \partial_n v_\tau\Bigr)\;ds.
-     * @f]
+     * Nitsche类型的拉普拉斯的弱边界条件只适用于切向分量，即在面<i>F</i>上的矩阵@f[
+     * \int_F \Bigl(\gamma u_\tau v_\tau
      *
-     * Here, $\gamma$ is the <tt>penalty</tt> parameter suitably computed with
-     * compute_penalty().
+     * - \partial_n u_\tau v_\tau
+     *
+     * - u_\tau
+     * \partial_n v_\tau\Bigr)\;ds.
+     * @f] 这里， $\gamma$ 是<tt>penalty</tt>参数，适合用compute_penalty()来计算。
+     *
      */
     template <int dim>
     void
@@ -244,17 +243,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition for the Laplace operator by Nitsche, scalar
-     * version, namely on the face <i>F</i> the vector
-     * @f[
-     * \int_F \Bigl(\gamma (u-g) v - \partial_n u v - (u-g) \partial_n
-     * v\Bigr)\;ds.
-     * @f]
+     * Nitsche的拉普拉斯算子的弱边界条件，标量版本，即在面 <i>F</i> 矢量 @f[
+     * \int_F \Bigl(\gamma (u-g) v
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. <i>g</i> is the inhomogeneous boundary value in the
-     * argument <tt>data</tt>. $\gamma$ is the usual penalty parameter.
+     * - \partial_n u v
+     *
+     * - (u-g) \partial_n
+     * v\Bigr)\;ds.
+     * @f] 这里，<i>u</i> 是有限元函数，其值和梯度分别在参数<tt>input</tt>和<tt>Dinput</tt>中给出。<i>g</i>是参数<tt>data</tt>中的非均质边界值。  $\gamma$ 是通常的惩罚参数。
+     *
      */
     template <int dim>
     void
@@ -290,18 +287,54 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition for the Laplace operator by Nitsche, vector
-     * valued version, namely on the face <i>F</i> the vector
-     * @f[
+     * Nitsche的拉普拉斯算子的弱边界条件，矢量值版本，即在面<i>F</i>的矢量@f[
      * \int_F \Bigl(\gamma (\mathbf u- \mathbf g) \cdot \mathbf v
-     * - \partial_n \mathbf u \cdot \mathbf v
-     * - (\mathbf u-\mathbf g) \cdot \partial_n \mathbf v\Bigr)\;ds.
-     * @f]
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. <i>g</i> is the inhomogeneous boundary value in the
-     * argument <tt>data</tt>. $\gamma$ is the usual penalty parameter.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \partial_n \mathbf u \cdot \mathbf v
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - (\mathbf u-\mathbf g) \cdot \partial_n \mathbf v\Bigr)\;ds.
+     * @f] 这里，<i>u</i>是有限元函数，其值和梯度分别在参数<tt>input</tt>和<tt>Dinput</tt>中给出。<i>g</i>是参数<tt>data</tt>中的非均质边界值。  $\gamma$ 是通常的惩罚参数。
+     *
      */
     template <int dim>
     void
@@ -339,20 +372,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Flux for the interior penalty method for the Laplacian, namely on the
-     * face <i>F</i> the matrices associated with the bilinear form
-     * @f[
-     * \int_F \Bigl( \gamma [u][v] - \{\nabla u\}[v\mathbf n] - [u\mathbf
+     * 拉普拉斯的内部惩罚方法的通量，即在面<i>F</i>与双线性形式@f[
+     * \int_F \Bigl( \gamma [u][v]
+     *
+     * - \{\nabla u\}[v\mathbf n]
+     *
+     * - [u\mathbf
      * n]\{\nabla v\} \Bigr) \; ds.
-     * @f]
+     * @f]相关的矩阵，惩罚参数应始终是各面稳定所需的惩罚的平均值。在常数系数的情况下，可以用compute_penalty()计算出来。        如果<tt>因子2</tt>缺失或为负数，则假定两边的因子是一样的。如果因子不同，请注意，必须相应地计算惩罚参数。
      *
-     * The penalty parameter should always be the mean value of the penalties
-     * needed for stability on each side. In the case of constant
-     * coefficients, it can be computed using compute_penalty().
-     *
-     * If <tt>factor2</tt> is missing or negative, the factor is assumed the
-     * same on both sides. If factors differ, note that the penalty parameter
-     * has to be computed accordingly.
      */
     template <int dim>
     void
@@ -417,15 +445,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Flux for the interior penalty method for the Laplacian applied to the
-     * tangential components of a vector field, namely on the face <i>F</i>
-     * the matrices associated with the bilinear form
-     * @f[
-     * \int_F \Bigl( \gamma [u_\tau][v_\tau] - \{\nabla u_\tau\}[v_\tau\mathbf
-     * n] - [u_\tau\mathbf n]\{\nabla v_\tau\} \Bigr) \; ds.
-     * @f]
+     * 应用于向量场切向分量的拉普拉斯内部惩罚方法的通量，即在面 <i>F</i> 与双线性形式 @f[
+     * \int_F \Bigl( \gamma [u_\tau][v_\tau]
      *
-     * @warning This function is still under development!
+     * - \{\nabla u_\tau\}[v_\tau\mathbf
+     * n]
+     *
+     * - [u_\tau\mathbf n]\{\nabla v_\tau\} \Bigr) \; ds.
+     * @f]  @warning  相关的矩阵上，这个函数仍在开发中!
+     *
      */
     template <int dim>
     void
@@ -533,11 +561,15 @@ namespace LocalIntegrators
     }
 
     /**
-     * Residual term for the symmetric interior penalty method:
-     * @f[
-     * \int_F \Bigl( \gamma [u][v] - \{\nabla u\}[v\mathbf n] - [u\mathbf
+     * 对称内罚法的残差项。    @f[
+     * \int_F \Bigl( \gamma [u][v]
+     *
+     * - \{\nabla u\}[v\mathbf n]
+     *
+     * - [u\mathbf
      * n]\{\nabla v\} \Bigr) \; ds.
      * @f]
+     *
      */
     template <int dim>
     void
@@ -599,12 +631,54 @@ namespace LocalIntegrators
 
 
     /**
-     * Vector-valued residual term for the symmetric interior penalty method:
-     * @f[
+     * 对称内部惩罚方法的矢量值残余项。    @f[
      * \int_F \Bigl( \gamma [\mathbf u]\cdot[\mathbf v]
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      * - \{\nabla \mathbf u\}[\mathbf v\otimes \mathbf n]
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      * - [\mathbf u\otimes \mathbf n]\{\nabla \mathbf v\} \Bigr) \; ds.
      * @f]
+     *
      */
     template <int dim>
     void
@@ -670,15 +744,11 @@ namespace LocalIntegrators
 
 
     /**
-     * Auxiliary function computing the penalty parameter for interior penalty
-     * methods on rectangles.
+     * 计算矩形上的内部惩罚方法的惩罚参数的辅助函数。
+     * 计算分两步进行：首先，我们在每个单元格<i>Z<sub>i</sub></i>上计算值<i>P<sub>i</sub>
+     * =
+     * p<sub>i</sub>(p<sub>i</sub>+1)/h<sub>i</sub></i>，其中<i>p<sub>i</sub></i>是单元格<i>Z<sub>i</sub></i>上的多项式程度，<i>h<sub>i</sub></i>是<i>Z<sub>i</sub></i>正交于当前面的长度。
      *
-     * Computation is done in two steps: first, we compute on each cell
-     * <i>Z<sub>i</sub></i> the value <i>P<sub>i</sub> =
-     * p<sub>i</sub>(p<sub>i</sub>+1)/h<sub>i</sub></i>, where
-     * <i>p<sub>i</sub></i> is the polynomial degree on cell
-     * <i>Z<sub>i</sub></i> and <i>h<sub>i</sub></i> is the length of
-     * <i>Z<sub>i</sub></i> orthogonal to the current face.
      */
     template <int dim, int spacedim, typename number>
     double
@@ -712,3 +782,5 @@ namespace LocalIntegrators
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

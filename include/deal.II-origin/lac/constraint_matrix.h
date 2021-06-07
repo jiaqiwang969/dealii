@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/constraint_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 by the deal.II authors
@@ -26,5 +25,3 @@ DEAL_II_WARNING(
 #include <deal.II/lac/affine_constraints.h>
 
 #endif
-
-

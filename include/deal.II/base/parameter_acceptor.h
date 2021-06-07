@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/parameter_acceptor_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2017 - 2021 by the deal.II authors
@@ -30,84 +31,70 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A parameter acceptor base class. This class is used to define a public
- * interface for classes which want to use a single global ParameterHandler to
- * handle parameters. This class declares one static ParameterHandler, and two
- * static functions (declare_all_parameters() and parse_all_parameters()) that
- * manage all of the derived classes.
+ * 一个参数接受器基类。这个类用于定义一个公共接口，供那些想使用一个全局ParameterHandler来处理参数的类使用。这个类声明了一个静态的ParameterHandler，以及两个静态函数（declaration_all_parameters()和parse_all_parameters()）来管理所有的派生类。
+ * 基本接口提供了两种订阅机制：一个*全局订阅机制**和一个*本地订阅机制**。
+ * 全局订阅机制是这样的：每当一个从ParameterAcceptor派生的类的对象被创建，那么这个派生类型的对象的指针就会被注册，同时还有参数文件中的路径。
+ * 这种注册表在调用单一函数
+ * ParameterAcceptor::initialize("file.prm")
+ * 时被遍历，该函数依次为每个注册的类调用方法
+ * ParameterAcceptor::declare_parameters()
+ * ，读取文件`file.prm`，随后为每个注册的类再次调用方法
+ * ParameterAcceptor::parse_parameters(),
+ * 。方法log_info()可以用来提取从ParameterAcceptor派生的类的信息，这些信息将在调用
+ * ParameterAcceptor::initialize(). 时被解析。
+ * ParameterAcceptor可以通过三种不同的方式使用：通过重载
+ * ParameterAcceptor::declare_parameters() 和
+ * ParameterAcceptor::parse_parameters()
+ * 方法，为我们想要的每个参数调用其
+ * ParameterAcceptor::add_parameter()
+ * 方法，或者用你自己的类构造一个ParameterAcceptorProxy类，只要你的类实现了
+ * @p declare_parameters 和 @p parse_parameters
+ * 函数（这种情况下第一个可以是一个静态成员）。
+ * 通过使用add_parameter方法，ParameterAcceptor确保给定的参数被注册在全局参数处理程序中（通过调用
+ * ParameterHandler::add_parameter()), 的正确路径。如果你使用
+ * ParameterAcceptor::add_parameter()
+ * 方法定义所有的参数，那么你就不需要重载这个类的任何虚拟方法。
+ * 如果需要对解析后的值进行一些后处理，用户可以给
+ * ParameterAcceptor::declare_parameters_call_back 和
+ * ParameterAcceptor::parse_parameters_call_back,
+ * 附加一个信号，这些信号就在每个派生类的
+ * declare_parameters() 和 parse_parameters() 函数之后调用。  step-69
+ * 有一个这样做的例子。
+ * 这个类的一个典型用法是这样的。
  *
- * The basic interface provides two subscription mechanisms: a **global
- * subscription mechanism** and a **local subscription mechanism**.
- *
- * The global subscription mechanism is such that whenever an object of a class
- * derived from ParameterAcceptor is created, then a pointer to that
- * object-of-derived-type is registered, together with a path in the parameter
- * file.
- *
- * Such registry is traversed upon invocation of the single function
- * ParameterAcceptor::initialize("file.prm") which in turn calls the method
- * ParameterAcceptor::declare_parameters() for each of the registered classes,
- * reads the file `file.prm` and subsequently calls the method
- * ParameterAcceptor::parse_parameters(), again for each of the registered
- * classes. The method log_info() can be used to extract information about the
- * classes that have been derived from ParameterAcceptor, and that will be
- * parsed when calling ParameterAcceptor::initialize().
- *
- * ParameterAcceptor can be used in three different ways: by overloading the
- * ParameterAcceptor::declare_parameters() and
- * ParameterAcceptor::parse_parameters() methods, by calling its
- * ParameterAcceptor::add_parameter() method for each parameter we want to
- * have, or by constructing a ParameterAcceptorProxy class with your own class,
- * provided that your class implements the @p declare_parameters and
- * @p parse_parameters functions (the first can be a static member in this
- * case).
- *
- * By using the add_parameter method, ParameterAcceptor makes sure that the
- * given parameter is registered in the global parameter handler (by calling
- * ParameterHandler::add_parameter()), at the correct path. If you define all
- * your parameters using the ParameterAcceptor::add_parameter() method, then
- * you don't need to overload any of the virtual methods of this class.
- *
- * If some post processing is required on the parsed values, the user can
- * attach a signal to ParameterAcceptor::declare_parameters_call_back and
- * ParameterAcceptor::parse_parameters_call_back, that are called just after
- * the declare_parameters() and parse_parameters() functions of each derived
- * class. step-69 has an example of doing this.
- *
- * A typical usage of this class is the following:
  *
  * @code
  * // This is your own class, derived from ParameterAcceptor
  * class MyClass : public ParameterAcceptor
  * {
- *   // The constructor of ParameterAcceptor requires a std::string,
- *   // which defines the section name where the parameters of MyClass
- *   // will be stored.
- *   MyClass()
- *     : ParameterAcceptor("Some class name")
- *   {
- *     add_parameter("A param", member_var);
- *   }
+ * // The constructor of ParameterAcceptor requires a std::string,
+ * // which defines the section name where the parameters of MyClass
+ * // will be stored.
+ * MyClass()
+ *   : ParameterAcceptor("Some class name")
+ * {
+ *   add_parameter("A param", member_var);
+ * }
  *
  * private:
- *   std::vector<unsigned int> member_var;
- *   ...
+ * std::vector<unsigned int> member_var;
+ * ...
  * };
  *
  * int main()
  * {
- *   // Make sure you create your object BEFORE calling
- *   // ParameterAcceptor::initialize()
- *   MyClass class;
+ * // Make sure you create your object BEFORE calling
+ * // ParameterAcceptor::initialize()
+ * MyClass class;
  *
- *   // With this call, all derived classes will have their
- *   // parameters initialized
- *   ParameterAcceptor::initialize("file.prm");
+ * // With this call, all derived classes will have their
+ * // parameters initialized
+ * ParameterAcceptor::initialize("file.prm");
  * }
  * @endcode
  *
- * An implementation that uses user defined declare and parse functions is given
- * by the following example:
+ * 一个使用用户定义的声明和解析函数的实现是由下面的例子给出的。
+ *
  *
  * @code
  * // Again your own class, derived from ParameterAcceptor
@@ -117,81 +104,79 @@ DEAL_II_NAMESPACE_OPEN
  * // in this case
  * class MyClass : public ParameterAcceptor
  * {
- *   virtual void declare_parameters(ParameterHandler &prm)
- *   {
- *     ...
- *   }
+ * virtual void declare_parameters(ParameterHandler &prm)
+ * {
+ *   ...
+ * }
  *
- *   virtual void parse_parameters(ParameterHandler &prm)
- *   {
- *     ...
- *   }
+ * virtual void parse_parameters(ParameterHandler &prm)
+ * {
+ *   ...
+ * }
  * };
  *
  * int main()
  * {
- *   // Make sure you create your object BEFORE calling
- *   // ParameterAcceptor::initialize()
- *   MyClass class;
- *   ParameterAcceptor::initialize("file.prm");
- *   class.run();
+ * // Make sure you create your object BEFORE calling
+ * // ParameterAcceptor::initialize()
+ * MyClass class;
+ * ParameterAcceptor::initialize("file.prm");
+ * class.run();
  * }
  * @endcode
  *
  *
- * Parameter files can be organised into section/subsection/subsubsection.
- * To do so, the std::string passed to ParameterAcceptor within the
- * constructor of the derived class needs to contain the separator "/".
- * In fact, "first/second/third/My Class" will organize the parameters
- * as follows
+ * 参数文件可以被组织成节/分节/子节。要做到这一点，在派生类的构造函数中传递给ParameterAcceptor的
+ * std::string 需要包含分隔符"/"。事实上，"first/second/third/My
+ * Class "将组织参数如下
+ *
  *
  * @code
  * subsection first
- *   subsection second
- *     subsection third
- *       subsection My Class
- *        ... # all the parameters
- *       end
+ * subsection second
+ *   subsection third
+ *     subsection My Class
+ *      ... # all the parameters
  *     end
  *   end
  * end
+ * end
  * @endcode
  *
- * In the following examples, we propose some use cases with increasing
- * complexities.
+ * 在下面的例子中，我们提出了一些复杂度越来越高的用例。
+ * MyClass是从ParameterAcceptor派生出来的，并且有一个成员对象本身是从ParameterAcceptor派生的。
  *
- * MyClass is derived from ParameterAcceptor and has a
- * member object that is derived itself from ParameterAcceptor.
  * @code
  * class MyClass : public ParameterAcceptor
  * {
- *   MyClass (std::string name);
- *   virtual void declare_parameters(ParameterHandler &prm);
+ * MyClass (std::string name);
+ * virtual void declare_parameters(ParameterHandler &prm);
  * private:
- *   SomeParsedClass<dim> my_subclass;
- *   ...
+ * SomeParsedClass<dim> my_subclass;
+ * ...
  * };
  *
  * MyClass::MyClass(std::string name)
- *   : ParameterAcceptor(name)
- *   , my_subclass("Forcing term")
+ * : ParameterAcceptor(name)
+ * , my_subclass("Forcing term")
  * {}
  *
  * void MyClass::declare_parmeters(ParameterHandler &prm)
  * {
- *   // many add_parameter(...);
+ * // many add_parameter(...);
  * }
  *
  * ...
  *
  * int main()
  * {
- *   MyClass mc("My Class");
- *   ParameterAcceptor::initialize("file.prm");
+ * MyClass mc("My Class");
+ * ParameterAcceptor::initialize("file.prm");
  * }
  * @endcode
  *
- * In this case, the structure of the parameters will be
+ * 在这种情况下，参数的结构将是
+ *
  * @code
  * subsection Forcing term
  * ... #parameters of SomeParsedClass
@@ -201,17 +186,18 @@ DEAL_II_NAMESPACE_OPEN
  * end
  * @endcode
  *
- * Now suppose that in the main file we need two or more objects of MyClass
+ * 现在假设在主文件中我们需要两个或多个MyClass的对象
+ *
  * @code
  * int main()
  * {
- *   MyClass ca("Class A");
- *   MyClass cb("Class B");
- *   ParameterAcceptor::initialize("file.prm");
+ * MyClass ca("Class A");
+ * MyClass cb("Class B");
+ * ParameterAcceptor::initialize("file.prm");
  * }
  * @endcode
  *
- * What we will read in the parameter file looks like
+ * 我们将在参数文件中读取的内容看起来像
  * @code
  * subsection Class A
  * ...
@@ -223,38 +209,72 @@ DEAL_II_NAMESPACE_OPEN
  * ...
  * end
  * @endcode
- * Note that there is only one section "Forcing term", this is because
- * both objects have defined the same name for the section of their
- * SomeParsedClass. There are two strategies to change this behavior. The
- * first one (not recommended) would be to change the name of the section
- * of SomeParsedClass such that it contains also the string passed to
- * the constructor of MyClass:
+ * 注意，只有一个 "强制术语
+ * "部分，这是因为两个对象都为其SomeParsedClass的部分定义了相同的名称。有两种策略可以改变这种行为。第一个策略（不推荐）是改变SomeParsedClass部分的名称，使其也包含传递给MyClass构造函数的字符串。
+ *
  * @code
  * MyClass::MyClass(std::string name)
- *  : ParameterAcceptor(name)
- *  , my_subclass(name+" --- forcing term")
+ * : ParameterAcceptor(name)
+ * , my_subclass(name+"
+ *
+ * --- forcing term")
  * {}
  * @endcode
  *
- * The other way to proceed (recommended) is to use exploit the
- * /section/subsection approach **in the main class**.
+ * 另一种方法（推荐）是在主类中利用/section/subsection方法**。
+ *
  * @code
  * int main()
  * {
- *   MyClass ca("/Class A/Class");
- *   MyClass cb("/Class B/Class");
- *   ParameterAcceptor::initialize("file.prm");
+ * MyClass ca("/Class A/Class");
+ * MyClass cb("/Class B/Class");
+ * ParameterAcceptor::initialize("file.prm");
  * }
  * @endcode
- * Now, in the parameter file we can find
+ * 现在，在参数文件中我们可以找到
+ *
  * @code
  * subsection Class A
- *   subsection Class
- *   ...
- *   end
- *   subsection Forcing term
- *   ...
- *   end
+ * subsection Class
+ * ...
+ * end
+ * subsection Forcing term
+ * ...
+ * end
+ * end
+ * subsection Class B
+ * subsection Class
+ * ...
+ * end
+ * subsection Forcing term
+ * ...
+ * end
+ * end
+ * @endcode
+ *
+ * 注意字符串名称开头的"/"。这被ParameterAcceptor解释为像Unix系统中的根文件夹。"A类
+ * "和 "B类
+ * "部分不会嵌套在任何部分之下。另一方面，如果字符串不以"/"开头，就像前面的情况一样，将在当前路径下创建**节，这取决于先前定义的节/子节/分节。事实上，"强制条款
+ * "部分被嵌套在 "A类 "或 "B类
+ * "之下。为了使事情更清楚，让我们考虑以下两个例子
+ *
+ *
+ * @code
+ * int main()
+ * {
+ * MyClass ca("/Class A/Class");
+ * MyClass cb("Class B/Class");
+ * ParameterAcceptor::initialize("file.prm");
+ * }
+ * @endcode
+ * 参数文件将有以下结构
+ * @code
+ * subsection Class A
+ * subsection Class
+ * ...
+ * end
+ * subsection Forcing term
+ * ...
  * end
  * subsection Class B
  *   subsection Class
@@ -264,138 +284,88 @@ DEAL_II_NAMESPACE_OPEN
  *   ...
  *   end
  * end
+ * end
  * @endcode
  *
- * Note the "/" at the begin of the string name. This is interpreted by
- * ParameterAcceptor like the root folder in Unix systems. The sections "Class
- * A" and "Class B" will not be nested under any section. On the other hand, if
- * the string does not begin with a "/" as in the previous cases the section
- * will be created **under the current path**, which depends on the previously
- * defined sections/subsections/subsubsections. Indeed, the section "Forcing
- * term" is nested under "Class A" or "Class B". To make things more clear.
- * let's consider the following two examples
+ * 如果代替其中一个路径以"/"结尾，而不只是一个类的名称，那么后续的类将把它解释为一个完整的路径，把类的名称解释为一个目录名称。
  *
  * @code
  * int main()
  * {
- *   MyClass ca("/Class A/Class");
- *   MyClass cb("Class B/Class");
- *   ParameterAcceptor::initialize("file.prm");
+ * MyClass ca("/Class A/Class/");
+ * MyClass cb("Class B/Class");
+ * ParameterAcceptor::initialize("file.prm");
  * }
  * @endcode
- * The parameter file will have the following structure
+ * 参数文件将有以下结构
+ *
  * @code
  * subsection Class A
- *   subsection Class
- *   ...
- *   end
- *   subsection Forcing term
- *   ...
- *   end
- *   subsection Class B
- *     subsection Class
- *     ...
- *     end
- *     subsection Forcing term
- *     ...
- *     end
- *   end
+ * subsection Class
+ *    ...
+ *    subsection Forcing term
+ *    ...
+ *    end
+ *    subsection Class B
+ *        subsection Class
+ *        ...
+ *        end
+ *        subsection Forcing term
+ *        ...
+ *        end
+ *    end
+ * end
  * end
  * @endcode
  *
- * If instead one of the paths ends with "/" instead of just
- * a name of the class, subsequent classes will interpret this as
- * a full path, interpreting the class name as a directory name:
- * @code
- * int main()
- * {
- *   MyClass ca("/Class A/Class/");
- *   MyClass cb("Class B/Class");
- *   ParameterAcceptor::initialize("file.prm");
- * }
- * @endcode
- * The parameter file will have the following structure
- * @code
- * subsection Class A
- *   subsection Class
- *      ...
- *      subsection Forcing term
- *      ...
- *      end
- *      subsection Class B
- *          subsection Class
- *          ...
- *          end
- *          subsection Forcing term
- *          ...
- *          end
- *      end
- *   end
- * end
- * @endcode
+ * 作为最后的评论，为了允许对所有的节/子节进行适当的管理，对象的实例化和对
+ * ParameterAcceptor::initialize()
+ * 的调用不能在多个同时运行的线程中进行。
+ * 如果你传递一个空的名字， boost::core::demangle()
+ * 函数会被用来用类名本身的人类可读版本来填充节名。
+ * 关于如何使用这个类，请看教程程序 step-60 中的例子。
  *
- * As a final remark, in order to allow a proper management of all the
- * sections/subsections, the instantiation of objects and the call to
- * ParameterAcceptor::initialize() cannot be done on multiple, concurrently
- * running threads.
  *
- * If you pass an empty name, the boost::core::demangle() function is used to
- * fill the section name with a human readable version of the class name
- * itself.
- *
- * See the tutorial program step-60 for an example on how to use this class.
  */
 class ParameterAcceptor : public Subscriptor
 {
 public:
   /**
-   * The constructor adds derived classes to the list of acceptors. If
-   * a section name is specified, then this is used to scope the
-   * parameters in the given section, otherwise a pretty printed
-   * version of the derived class is used.
+   * 构造函数将派生类添加到接受器的列表中。如果指定了一个部分的名称，那么这将用于在给定的部分范围内的参数，否则将使用派生类的一个漂亮的打印版本。
+   *
    */
   ParameterAcceptor(const std::string &section_name = "");
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   virtual ~ParameterAcceptor() override;
 
   /**
-   * Call declare_all_parameters(), read the parameters from `filename` (only
-   * if `filename` is a non-empty string), and then call
-   * parse_all_parameters().
+   * 调用
+   * declare_all_parameters()，从`filename`中读取参数（只有当`filename`是一个非空的字符串时），然后调用parse_all_parameters()。
+   * 如果参数`filename`是空字符串，那么就不会尝试读取参数文件。如果你可以使用默认值，并且不想读取外部文件来使用从ParameterAcceptor派生的类，这可能很有用。
+   * 如果 @p output_filename
+   * 不是空字符串，那么我们就把读到的内容写到 @p
+   * output_filename 文件中，使用 @p output_style_for_output_filename.
+   * 中指定的样式
+   * 输入和输出文件的格式都是用文件本身的扩展名来选择。对于
+   * @p filename, 可以是`prm`、`xml`或`json`，对于 @p output_filename.
+   * 可以是任何支持的格式。 如果输入文件不存在，将按照
+   * @p output_style_for_filename,
+   * 中指定的样式为你创建一个同名的默认文件，并抛出一个异常。
+   * 默认情况下，用于写入文件的文件格式是由文件名的扩展名推断出来的。如果相应的
+   * ParameterHandler::OutputStyle
+   * 指定了一个格式规范，这必须与文件扩展名兼容，否则将抛出一个异常。
+   * 如果扩展名不被识别，并且你没有在相应的
+   * ParameterHandler::OutputStyle,
+   * 中指定一个格式，则会抛出一个断言。      @param  filename
+   * 输入文件名  @param  output_filename 输出文件名  @param
+   * output_style_for_output_filename 如何写入输出文件  @param  prm
+   * 要使用的ParameterHandler  @param  output_style_for_filename
+   * 如果默认的输入文件不存在如何写入
    *
-   * If the parameter `filename` is the empty string, then no attempt to read a
-   * parameter file is done. This may be useful if you are ok with using
-   * default values, and don't want to read external files to use a class
-   * derived from ParameterAcceptor.
-   *
-   * If @p output_filename is not the empty string, then we write the content
-   * that was read into the @p output_filename file, using the style specified
-   * in @p output_style_for_output_filename. The format of both input and output
-   * files are selected using the extensions of the files themselves. This can
-   * be either `prm`, `xml`, or `json` for the @p filename, and any of the
-   * supported formats for the @p output_filename.
-   *
-   * If the input file does not exist, a default one with the same name is
-   * created for you following the style specified in
-   * @p output_style_for_filename, and an exception is thrown.
-   *
-   * By default, the file format used to write the files is deduced from
-   * the extension of the file names. If the corresponding
-   * ParameterHandler::OutputStyle specifies a format specification, this must
-   * be compatible with the file extension, or an exception will be thrown.
-   *
-   * If the extension is not recognized, and you do not specify a format in the
-   * corresponding ParameterHandler::OutputStyle, an assertion is thrown.
-   *
-   * @param filename Input file name
-   * @param output_filename Output file name
-   * @param output_style_for_output_filename How to write the output file
-   * @param prm The ParameterHandler to use
-   * @param output_style_for_filename How to write the default input file if it
-   * does not exist
    */
   static void
   initialize(const std::string &filename        = "",
@@ -407,13 +377,11 @@ public:
                ParameterHandler::DefaultStyle);
 
   /**
-   * Call declare_all_parameters(), read the parameters from the `input_stream`
-   * in `prm` format, and then call parse_all_parameters().
+   * 调用
+   * declare_all_parameters()，从`input_stream`中读取`prm`格式的参数，然后调用parse_all_parameters()。
+   * 如果 "input_stream "无效，则抛出一个异常。      @param
+   * input_stream 输入流  @param  prm 要使用的ParameterHandler。
    *
-   * An exception is thrown if the `input_stream` is invalid.
-   *
-   * @param input_stream Input stream
-   * @param prm The ParameterHandler to use
    */
   static void
   initialize(std::istream &    input_stream,
@@ -421,86 +389,77 @@ public:
 
 
   /**
-   * Clear class list and global parameter file.
+   * 清除类列表和全局参数文件。
+   *
    */
   static void
   clear();
 
   /**
-   * Derived classes can use this method to declare their parameters.
-   * ParameterAcceptor::initialize() calls it for each derived class. The
-   * default implementation is empty.
+   * 派生类可以使用这个方法来声明他们的参数。
+   * ParameterAcceptor::initialize()
+   * 为每个派生类调用它。默认实现是空的。
+   *
    */
   virtual void
   declare_parameters(ParameterHandler &prm);
 
   /**
-   * Declare parameter call back. This signal is triggered right after
-   * declare_parameters() has been called, to allow users to prepare their
-   * variables right after parameters have been decalred. The default
-   * implementation is empty.
+   * 申报参数的回调。这个信号在declare_parameters()被调用后立即被触发，以允许用户在参数被声明后立即准备他们的变量。默认实现是空的。
+   *
    */
   boost::signals2::signal<void()> declare_parameters_call_back;
 
   /**
-   * Derived classes can use this method to parse their parameters.
-   * ParameterAcceptor::initialize() calls it for each derived class. The
-   * default implementation is empty.
+   * 派生类可以使用这个方法来解析他们的参数。
+   * ParameterAcceptor::initialize()
+   * 为每个派生类调用它。默认的实现是空的。
+   *
    */
   virtual void
   parse_parameters(ParameterHandler &prm);
 
   /**
-   * Parse parameter call back. This function is called at the end of
-   * parse_parameters(), to allow users to process their parameters right after
-   * they have been parsed. The default implementation is empty.
+   * 解析参数的回调。这个函数在parse_parameters()的末尾被调用，以允许用户在参数被解析后立即处理他们的参数。默认实现是空的。
+   * 你可以使用这个函数，例如，在你从参数文件中读取你想使用的正交点的数量后，创建一个正交规则。
    *
-   * You can use this function, for example, to create a quadrature rule after
-   * you have read how many quadrature points you wanted to use from the
-   * parameter file.
    */
   boost::signals2::signal<void()> parse_parameters_call_back;
 
   /**
-   * Parse the given ParameterHandler. This function enters the
-   * subsection returned by get_section_name() for each derived class,
-   * and parses all parameters that were added using add_parameter().
+   * 解析给定的ParameterHandler。这个函数为每个派生类进入get_section_name()返回的小节，并解析所有使用add_parameter()添加的参数。
+   *
    */
   static void
   parse_all_parameters(ParameterHandler &prm = ParameterAcceptor::prm);
 
   /**
-   * Initialize the global ParameterHandler with all derived classes
-   * parameters.This function enters the subsection returned by
-   * get_section_name() for each derived class, and declares all parameters
-   * that were added using add_parameter().
+   * 用所有派生类的参数初始化全局ParameterHandler.这个函数进入每个派生类的get_section_name()返回的小节，并声明使用add_parameter()添加的所有参数。
+   *
    */
   static void
   declare_all_parameters(ParameterHandler &prm = ParameterAcceptor::prm);
 
   /**
-   * Return the section name of this class. If a name was provided
-   * at construction time, then that name is returned, otherwise it
-   * returns the demangled name of this class.
+   * 返回这个类的分节名称。如果在构造时提供了一个名称，那么就返回这个名称，否则就返回这个类的拆分名称。
+   *
    */
   std::string
   get_section_name() const;
 
   /**
-   * Traverse all registered classes, and figure out what subsections we need to
-   * enter.
+   * 遍历所有注册的类，并找出我们需要进入的子段。
+   *
    */
   std::vector<std::string>
   get_section_path() const;
 
   /**
-   * Add a parameter in the correct path. This method forwards all arguments to
-   * the prm.add_parameter() method, after entering the correct section path.
-   * By default it uses the ParameterAcceptor::prm variable as
-   * ParameterHandler.
+   * 在正确的路径上添加一个参数。这个方法在输入正确的章节路径后，将所有参数转发给prm.add_parameter()方法。
+   * 默认情况下，它使用 ParameterAcceptor::prm
+   * 变量作为ParameterHandler。    更多信息请参见
+   * ParameterHandler::add_parameter() 的文档。
    *
-   * See the documentation of ParameterHandler::add_parameter() for more
-   * information.
    */
   template <class ParameterType>
   void
@@ -512,180 +471,170 @@ public:
                   *Patterns::Tools::Convert<ParameterType>::to_pattern());
 
   /**
-   * The global parameter handler.
+   * 全局参数处理程序。
+   *
    */
   static ParameterHandler prm;
 
   /**
-   * Add the given @p subsection to the global path stored in this class.
-   *
-   * This function changes the behavior of enter_my_subsection(), by
-   * appending a new subsection to the path stored in this class.
-   *
-   * This method can be used to split the parameters of this class into
-   * subsections, while still maintaining the general behavior of this
-   * class.
-   *
-   * An example usage is given by the following snippet:
+   * 将给定的 @p subsection
+   * 添加到存储在这个类中的全局路径中。
+   * 这个函数改变了enter_my_subsection()的行为，将一个新的小节追加到存储在这个类中的路径上。
+   * 这个方法可以用来把这个类的参数分成若干小节，同时仍然保持这个类的一般行为。
+   * 下面的片段给出了一个用法示例。
    * @code
    * class MyClass : public ParameterAcceptor
    * {
-   *   MyClass()
-   *     : ParameterAcceptor("Main section")
-   *   {
-   *     add_parameter("A param", member_var);
-   *     enter_subsection("New section");
-   *     add_parameter("Another param", another_member_var);
-   *     leave_subsection();
-   *   }
+   * MyClass()
+   *   : ParameterAcceptor("Main section")
+   * {
+   *   add_parameter("A param", member_var);
+   *   enter_subsection("New section");
+   *   add_parameter("Another param", another_member_var);
+   *   leave_subsection();
+   * }
    *
    * private:
-   *   std::vector<unsigned int> member_var = {1,2};
-   *   std::map<types::boundary_id, std::string> another_member_var;
-   *   ...
+   * std::vector<unsigned int> member_var = {1,2};
+   * std::map<types::boundary_id, std::string> another_member_var;
+   * ...
    * };
    *
    * int main()
    * {
-   *   // ParameterAcceptor::initialize()
-   *   MyClass class;
+   * // ParameterAcceptor::initialize()
+   * MyClass class;
    *
-   *   // With this call, all derived classes will have their
-   *   // parameters initialized
-   *   ParameterAcceptor::initialize("file.prm");
+   * // With this call, all derived classes will have their
+   * // parameters initialized
+   * ParameterAcceptor::initialize("file.prm");
    * }
    * @endcode
-   *
-   * which will produce a parameter file organized as
-   *
+   * 这将产生一个参数文件，组织为
    * @code
    * subsection Main section
-   *   set A param = 1, 2
-   *   subsection New section
-   *     set Another param =
-   *   end
+   * set A param = 1, 2
+   * subsection New section
+   *   set Another param =
+   * end
    * end
    * @endcode
+   *
+   *
    */
   void
   enter_subsection(const std::string &subsection);
 
   /**
-   * Leave the subsection that was entered by calling the enter_subsection()
-   * function.
+   * 留下通过调用enter_subsection()函数输入的分节。
+   *
    */
   void
   leave_subsection();
 
   /**
-   * Make sure we enter the right subsection of the given parameter.
+   * 确保我们输入的是给定参数的正确分节。
+   *
    */
   void
   enter_my_subsection(ParameterHandler &prm);
 
   /**
-   * This function undoes what the enter_my_subsection() function did. It only
-   * makes sense if enter_my_subsection() was called on `prm` before this one.
+   * 这个函数撤销了enter_my_subsection()函数所做的事情。只有在enter_my_subsection()在这个函数之前被调用到`prm`时才有意义。
+   *
    */
   void
   leave_my_subsection(ParameterHandler &prm);
 
 private:
   /**
-   * A list containing all constructed classes of type
-   * ParameterAcceptor.
+   * 一个包含所有ParameterAcceptor类型的构造类的列表。
+   *
    */
   static std::vector<SmartPointer<ParameterAcceptor>> class_list;
 
-  /** The index of this specific class within the class list. */
+   /** The index of this specific class within the class list. */ 
   const unsigned int acceptor_id;
 
   /**
-   * Separator between sections.
+   * 部分之间的分隔符。
+   *
    */
   static const char sep = '/';
 
 protected:
-  /** The subsection name for this class. */
+   /** The subsection name for this class. */ 
   const std::string section_name;
 
-  /** The subsubsections that are currently active. */
+   /** The subsubsections that are currently active. */ 
   std::vector<std::string> subsections;
 };
 
 
 
 /**
- * A proxy ParameterAcceptor wrapper for classes that have a static member
- * function @p declare_parameters, and a non virtual @p parse_parameters method.
+ * 一个代理ParameterAcceptor的包装器，用于具有静态成员函数
+ * @p declare_parameters, 和非虚拟 @p parse_parameters 方法的类。
+ * 如果你不能或不想从ParameterAcceptor派生出你的 "参数接受
+ * "类，例如，根据设计，你必须有一个静态成员函数 @p
+ * declare_parameters 和一个成员 @p
+ * parse_parameters，或者有人已经为你实现了这样一个类，并且只提供给你一个你无法修改的API，那么你仍然可以使用ParameterAcceptor设施，将你的类包装到ParameterAcceptorProxy。
+ * 这个类实现了ParameterAcceptor的公共接口，同时它派生自模板类
+ * @p SourceClass, ，允许你将你现有的 @p SourceClass
+ * 注册为ParameterAcceptor类，而不需要你明确地从ParameterAcceptor派生你的
+ * @p SourceClass 。
+ * 下面的代码片段给出了一个使用方法的例子，使用
+ * Functions::ParsedFunction 作为一个示例源类。
  *
- * If you cannot or do not want to derive your "parameter accepting" class from
- * ParameterAcceptor, for example if by design you are required to have a
- * static member function @p declare_parameters and a member @p
- * parse_parameters, or if someone has already implemented such a class for
- * you, and only provides you with an API that you cannot modify, then you may
- * be able to use ParameterAcceptor facilities nonetheless, by wrapping your
- * class into ParameterAcceptorProxy.
- *
- * This class implements the public interface of ParameterAcceptor, and at the
- * same time it derives from the template class @p SourceClass, allowing you to
- * register your existing @p SourceClass as a ParameterAcceptor class, without
- * requiring you to explicitly derive your @p SourceClass from
- * ParameterAcceptor.
- *
- * An example usage is given by the following snippet of code, using
- * Functions::ParsedFunction as an example source class:
  *
  * @code
  * ParameterAcceptorProxy<Functions::ParsedFunction<2> > fun("Some function");
  * ParameterAcceptor::initialize("test.prm");
  * @endcode
  *
- * The above snippet of code will initialize ParameterAcceptor::prm with a
- * section "Some function", and will correctly parse and assign to the object
- * `fun` the expression parsed from the file `test.prm`. If non-existent, the
- * program will exit, and generate it for you (here you can see the resulting
- * short text version of the parameter file generated with the above snippet):
+ * 上面的代码片段将用 "某个函数 "部分初始化
+ * ParameterAcceptor::prm
+ * ，并将正确地解析和分配从文件`test.prm`中解析出的表达式给对象`fun`。如果不存在，程序将退出，并为你生成（这里你可以看到用上述片段生成的参数文件的结果的简短文本）。
+ *
  *
  * @code
  * # Parameter file generated with
  * # DEAL_II_PACKAGE_VERSION = 9.0.0-pre
  * subsection Some function
- *   set Function constants  =
- *   set Function expression = 0
- *   set Variable names      = x,y,t
+ * set Function constants  =
+ * set Function expression = 0
+ * set Variable names      = x,y,t
  * end
  * @endcode
  *
- * The resulting `fun` object, is both a ParsedFunction object and a
- * ParameterAcceptor one, allowing you to use it as a replacement of the
- * ParsedFunction class, with automatic declaration and parsing of parameter
- * files.
+ * 产生的`fun`对象，既是一个ParsedFunction对象，也是一个ParameterAcceptor对象，允许你用它来替代ParsedFunction类，自动声明和解析参数文件。
+ * 关于如何使用这个类的例子，见教程程序 step-60 。
  *
- * See the tutorial program step-60 for an example on how to use this class.
+ *
  */
 template <class SourceClass>
 class ParameterAcceptorProxy : public SourceClass, public ParameterAcceptor
 {
 public:
   /**
-   * Default constructor. The argument `section_name` is forwarded to the
-   * constructor of the ParameterAcceptor class, while all other arguments
-   * are passed to the SourceClass constructor.
+   * 默认构造函数。参数`section_name`被转发给ParameterAcceptor类的构造函数，而所有其他参数则被传递给SourceClass的构造函数。
+   *
    */
   template <typename... Args>
   ParameterAcceptorProxy(const std::string &section_name, Args... args);
 
   /**
-   * Overloads the ParameterAcceptor::declare_parameters function, by calling
-   * @p SourceClass::declare_parameters with @p prm as an argument.
+   * 重载 ParameterAcceptor::declare_parameters 函数，通过调用 @p
+   * SourceClass::declare_parameters ，以 @p prm 作为参数。
+   *
    */
   virtual void
   declare_parameters(ParameterHandler &prm) override;
 
   /**
-   * Overloads the ParameterAcceptor::parse_parameters function, by calling
-   * @p SourceClass::parse_parameters with @p prm as an argument.
+   * 通过调用 @p SourceClass::parse_parameters 和 @p prm
+   * 作为参数，重载了 ParameterAcceptor::parse_parameters 函数。
+   *
    */
   virtual void
   parse_parameters(ParameterHandler &prm) override;
@@ -739,3 +688,5 @@ ParameterAcceptorProxy<SourceClass>::parse_parameters(ParameterHandler &prm)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

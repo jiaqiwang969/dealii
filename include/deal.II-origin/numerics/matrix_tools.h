@@ -1,4 +1,3 @@
-//include/deal.II-translator/numerics/matrix_tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -95,85 +94,157 @@ namespace TrilinosWrappers
 
 
 /**
- * 这个命名空间提供了一些函数，这些函数为一个给定的三角形，使用一个给定的有限元，一个给定的映射和一个正交公式，组装某些标准矩阵。
+ * This namespace provides functions that assemble certain standard matrices
+ * for a given triangulation, using a given finite element, a given mapping
+ * and a quadrature formula.
  *
- *  <h3>Conventions for all functions</h3>
- * 几乎所有的函数都有两个版本，一个需要一个明确的Mapping参数，另一个不需要。第二个版本一般会调用第一个版本的隐式
- * $Q_1$
- * 参数（即用一个MappingQGeneric(1)类型的参数）。如果你的代码打算使用不同于（双/三）线性的映射，那么你需要调用应该使用<b>with</b>映射参数的函数。
- * 所有的函数都需要一个稀疏矩阵对象来保存要创建的矩阵。这些函数假定矩阵被初始化为与给定自由度处理程序相对应的稀疏模式（SparsityPattern），也就是说，稀疏结构已经是需要的。你可以通过调用
- * DoFTools::make_sparsity_pattern() 函数做到这一点。
- * 此外，假定矩阵中没有相关数据。如果矩阵之前不是空的，有些条目会被覆盖，有些条目会包含无效的数据。因此，你可能想在组装前清除矩阵。
- * 默认情况下，所有创建的矩阵都是 "原始
- * "的：它们没有被压缩，也就是说，悬挂的节点没有被消除。原因是你可能想添加几个矩阵，然后可以在之后只压缩一次，而不是对每个矩阵都压缩。要实际对这些矩阵进行计算，你必须使用
- * AffineConstraints::condense
- * 函数对矩阵进行凝结；你还必须对右手边进行相应的凝结，并在事后分发解。另外，你可以给一个可选的参数AffineConstraints，它将单元格矩阵（和向量）条目用distribution_local_to_global写入全局矩阵和向量中。这样一来，从不同的来源添加几个矩阵就比较复杂了，你应该确保不混合应用约束的不同方式。当给定的AffineConstraints对象包含不均匀的约束时，需要特别小心谨慎。在这种情况下，这样组装的矩阵必须是唯一的矩阵（或者你需要为你生成的<b>every</b>矩阵组装<b>same</b>的右手边并加在一起）。
- * 如果你想在可能的AffineConstraints对象中使用边界条件，除了这个命名空间的函数生成的矩阵之外，你必须使用一个类似<tt>apply_boundary_values</tt>的函数，其中包括矩阵、解和右手边。
  *
- *  <h3>Supported matrices</h3>
- * 目前，有一些函数可以创建以下矩阵。  <ul>   <li>   @p create_mass_matrix:  通过数字正交创建带有条目 $m_{ij} =
- * \int_\Omega \phi_i(x) \phi_j(x) dx$ 的矩阵。这里， $\phi_i$
- * 是给出的有限元空间的基函数。
- * 可以给出一个系数来代替评估 $m_{ij} = \int_\Omega a(x)
- * \phi_i(x) \phi_j(x) dx$ 。
- * <li>   @p create_laplace_matrix: 通过数字正交法创建具有条目
- * $a_{ij} = \int_\Omega \nabla\phi_i(x) \nabla\phi_j(x) dx$ 的矩阵。
- * 同样，可以给一个系数来代替评估 $a_{ij} = \int_\Omega a(x)
- * \nabla\phi_i(x) \nabla\phi_j(x) dx$ 。  </ul>
- * 确保给这些函数的正交公式的阶数足够高，以便以要求的精度计算矩阵。对于这个正交规则的选择，你需要考虑到FiniteElement基础函数的多项式程度，系数
- * @p a, 的粗糙度以及给定 @p Mapping 的程度（如果有）。
- * 注意，对于矢量值元素，质量矩阵和拉普拉斯矩阵的实现方式是每个组件只与自己耦合，也就是说，属于不同组件的形状函数没有耦合。如果自由度已经根据其矢量分量进行了排序（例如，使用
- * DoFRenumbering::component_wise()),
- * ，那么产生的矩阵将是块状对角线。
- * 如果要建立质量矩阵或拉普拉斯矩阵的有限元有一个以上的分量，这些函数接受单一系数以及矢量值的系数函数。对于后一种情况，分量的数量必须与系统有限元的分量数量相吻合。
+ * <h3>Conventions for all functions</h3>
  *
- *  <h3>Matrices on the boundary</h3>
- * create_boundary_mass_matrix()创建条目为 $m_{ij} = \int_{\Gamma} \phi_i
- * \phi_j dx$ 的矩阵，其中 $\Gamma$
- * 是边界部分的联合，其指标包含在一个
- * std::map<types::boundary_id,  ] const
- * Function<spacedim,number>*>传递给函数（例如，如果你想为具有指标0和2的边界部分设置质量矩阵，你传递给函数一个键类型为
- * types::boundary_id 的地图，作为包含键0和2的参数 @p
- * boundary_functions
- * ）。矩阵的大小等于在边界上有支持的自由度的数量，也就是说，它
- * <em> 不是 </em>
- * 所有自由度的矩阵，而只是一个子集。公式中的 $\phi_i$
- * 是至少部分支持在 $\Gamma$
- * 上的基函数的子集）。为了确定要考虑哪些形状函数，以及为了确定哪个顺序，该函数需要一个
- * @p dof_to_boundary_mapping;
- * 这个对象将全局DoF数映射为位于边界上的自由度的编号，可以用函数
- * DoFTools::map_dof_to_boundary_indices(). 得到。
- * 为了工作，该函数需要一个正确大小的矩阵，建立在相应的稀疏模式之上。由于我们只在自由度的一个子集上工作，我们不能使用为整个自由度集创建的矩阵和稀疏模式。相反，你应该使用
- * DoFHandler::make_boundary_sparsity_pattern()
- * 函数来创建正确的稀疏模式，并在其上建立一个矩阵。
- * 请注意，目前没有任何函数可以计算 <em> 所有 </em>
- * 形状函数的质量矩阵，尽管这样一个函数的实现是微不足道的。
+ * There exist two versions of almost all functions, one that takes an
+ * explicit Mapping argument and one that does not. The second one generally
+ * calls the first with an implicit $Q_1$ argument (i.e., with an argument of
+ * kind MappingQGeneric(1)). If your intend your code to use a different
+ * mapping than a (bi-/tri-)linear one, then you need to call the functions
+ * <b>with</b> mapping argument should be used.
  *
- *  <h3>Right hand sides</h3>
- * 在许多情况下，你不仅要建立矩阵，还要建立一个右手边，这将给出一个具有
- * $f_i = \int_\Omega f(x) \phi_i(x) dx$
- * 的向量。为此，每个函数都有两个版本，一个只建立矩阵，一个也建立右手边的向量。如果你想创建一个右手边的向量而不创建矩阵，你可以使用
- * VectorTools::create_right_hand_side()
- * 函数。如果你想创建许多右手向量，使用后者可能很有用。
+ * All functions take a sparse matrix object to hold the matrix to be created.
+ * The functions assume that the matrix is initialized with a sparsity pattern
+ * (SparsityPattern) corresponding to the given degree of freedom handler,
+ * i.e. the sparsity structure is already as needed. You can do this by
+ * calling the DoFTools::make_sparsity_pattern() function.
  *
+ * Furthermore it is assumed that no relevant data is in the matrix. Some
+ * entries will be overwritten and some others will contain invalid data if
+ * the matrix wasn't empty before. Therefore you may want to clear the matrix
+ * before assemblage.
+ *
+ * By default, all created matrices are `raw': they are not condensed, i.e.
+ * hanging nodes are not eliminated. The reason is that you may want to add
+ * several matrices and could then condense afterwards only once, instead of
+ * for every matrix. To actually do computations with these matrices, you have
+ * to condense the matrix using the AffineConstraints::condense function; you
+ * also have to condense the right hand side accordingly and distribute the
+ * solution afterwards. Alternatively, you can give an optional argument
+ * AffineConstraints that writes cell matrix (and vector) entries with
+ * distribute_local_to_global into the global matrix and vector. This way,
+ * adding several matrices from different sources is more complicated and
+ * you should make sure that you do not mix different ways of applying
+ * constraints. Particular caution is necessary when the given
+ * AffineConstraints object contains inhomogeneous constraints: In that case,
+ * the matrix assembled this way must be the only matrix (or you need to
+ * assemble the <b>same</b> right hand side for <b>every</b> matrix you
+ * generate and add together).
+ *
+ * If you want to use boundary conditions with the matrices generated by the
+ * functions of this namespace in addition to the ones in a possible
+ * AffineConstraints object, you have to use a function like
+ * <tt>apply_boundary_values</tt> with the matrix, solution, and right hand
+ * side.
+ *
+ *
+ * <h3>Supported matrices</h3>
+ *
+ * At present there are functions to create the following matrices:
+ * <ul>
+ * <li> @p create_mass_matrix: create the matrix with entries $m_{ij} =
+ * \int_\Omega \phi_i(x) \phi_j(x) dx$ by numerical quadrature. Here, the
+ * $\phi_i$ are the basis functions of the finite element space given.
+ *
+ * A coefficient may be given to evaluate $m_{ij} = \int_\Omega a(x) \phi_i(x)
+ * \phi_j(x) dx$ instead.
+ *
+ * <li> @p create_laplace_matrix: create the matrix with entries $a_{ij} =
+ * \int_\Omega \nabla\phi_i(x) \nabla\phi_j(x) dx$ by numerical quadrature.
+ *
+ * Again, a coefficient may be given to evaluate $a_{ij} = \int_\Omega a(x)
+ * \nabla\phi_i(x) \nabla\phi_j(x) dx$ instead.
+ * </ul>
+ *
+ * Make sure that the order of the Quadrature formula given to these functions
+ * is sufficiently high to compute the matrices with the required accuracy.
+ * For the choice of this quadrature rule you need to take into account the
+ * polynomial degree of the FiniteElement basis functions, the roughness of
+ * the coefficient @p a, as well as the degree of the given @p Mapping (if
+ * any).
+ *
+ * Note, that for vector-valued elements the mass matrix and the laplace
+ * matrix is implemented in such a way that each component couples only with
+ * itself, i.e. there is no coupling of shape functions belonging to different
+ * components. If the degrees of freedom have been sorted according to their
+ * vector component (e.g., using DoFRenumbering::component_wise()), then the
+ * resulting matrices will be block diagonal.
+ *
+ * If the finite element for which the mass matrix or the Laplace matrix is to
+ * be built has more than one component, the functions accept a single
+ * coefficient as well as a vector valued coefficient function. For the latter
+ * case, the number of components must coincide with the number of components
+ * of the system finite element.
+ *
+ *
+ * <h3>Matrices on the boundary</h3>
+ *
+ * The create_boundary_mass_matrix() creates the matrix with entries $m_{ij} =
+ * \int_{\Gamma} \phi_i \phi_j dx$, where $\Gamma$ is the union of boundary
+ * parts with indicators contained in a std::map<types::boundary_id, const
+ * Function<spacedim,number>*> passed to the function (i.e. if you want to set
+ * up the mass matrix for the parts of the boundary with indicators zero and 2,
+ * you pass the function a map with key type types::boundary_id
+ * as the parameter @p boundary_functions containing the keys zero and
+ * 2). The size of the matrix is equal to the number of degrees of freedom
+ * that have support on the boundary, i.e. it is <em>not</em> a matrix on all
+ * degrees of freedom, but only a subset. (The $\phi_i$ in the formula are the
+ * subset of basis functions which have at least part of their support on
+ * $\Gamma$.) In order to determine which shape functions are to be
+ * considered, and in order to determine in which order, the function takes a
+ * @p dof_to_boundary_mapping; this object maps global DoF numbers to a
+ * numbering of the degrees of freedom located on the boundary, and can be
+ * obtained using the function DoFTools::map_dof_to_boundary_indices().
+ *
+ * In order to work, the function needs a matrix of the correct size, built on
+ * top of a corresponding sparsity pattern. Since we only work on a subset of
+ * the degrees of freedom, we can't use the matrices and sparsity patterns
+ * that are created for the entire set of degrees of freedom. Rather, you
+ * should use the DoFHandler::make_boundary_sparsity_pattern() function to
+ * create the correct sparsity pattern, and build a matrix on top of it.
+ *
+ * Note that at present there is no function that computes the mass matrix for
+ * <em>all</em> shape functions, though such a function would be trivial to
+ * implement.
+ *
+ *
+ * <h3>Right hand sides</h3>
+ *
+ * In many cases, you will not only want to build the matrix, but also a right
+ * hand side, which will give a vector with $f_i = \int_\Omega f(x) \phi_i(x)
+ * dx$. For this purpose, each function exists in two versions, one only
+ * building the matrix and one also building the right hand side vector. If
+ * you want to create a right hand side vector without creating a matrix, you
+ * can use the VectorTools::create_right_hand_side() function. The use of the
+ * latter may be useful if you want to create many right hand side vectors.
  *
  * @ingroup numerics
- *
- *
  */
 namespace MatrixCreator
 {
   /**
-   * 组装质量矩阵。如果没有给出系数（即，如果函数对象的指针是零，因为它是默认的），那么系数就被认为是常数，等于1。
-   * 如果你想指定  @p constraints
-   * 并使用默认的系数参数，你必须指定（未使用的）系数参数为
-   * <code>(const Function<spacedim,number>const)nullptr</code>  。
-   * 如果库被配置为使用多线程，这个函数就会并行工作。
-   * 可选的参数 @p constraints
-   * 允许直接在结果矩阵上应用约束。然而，请注意，当你有不均匀的约束，并且后来想添加几个这样的矩阵时，例如在时间相关的设置中，例如
-   * step-26  的主循环，这就变得很困难。
-   * 更多信息请参见该命名空间的一般文档。
+   * Assemble the mass matrix. If no coefficient is given (i.e., if the
+   * pointer to a function object is zero as it is by default), the
+   * coefficient is taken as being constant and equal to one.
+   * In case you want to specify @p constraints and use the default argument
+   * for the coefficient you have to specify the (unused) coefficient argument
+   * as <code>(const Function<spacedim,number> *const)nullptr</code>.
    *
+   * If the library is configured to use multithreading, this function works
+   * in parallel.
+   *
+   * The optional argument @p constraints allows to apply constraints on the
+   * resulting matrix directly. Note, however, that this becomes difficult
+   * when you have inhomogeneous constraints and later want to add several
+   * such matrices, for example in time dependent settings such as the main
+   * loop of step-26.
+   *
+   * See the general documentation of this namespace for more information.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -186,9 +257,8 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 调用create_mass_matrix()函数，见上文，使用<tt>mapping=MappingQGeneric
-   * @<dim@>(1)</tt>.  。
-   *
+   * Call the create_mass_matrix() function, see above, with
+   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -200,16 +270,23 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 组建质量矩阵和一个右手边的向量。如果没有给出系数（也就是说，如果函数对象的指针是零，因为它是默认的），那么系数被认为是常数，等于1。
-   * 如果你想指定  @p constraints
-   * 并使用默认的系数参数，你必须指定（未使用的）系数参数为
-   * <code>(const Function <spacedim,number>const)nullptr</code>  。
-   * 如果库被配置为使用多线程，这个函数就会并行工作。
-   * 可选的参数 @p constraints
-   * 允许直接在结果矩阵上应用约束。然而，请注意，当你有不均匀的约束，并且后来想添加几个这样的矩阵时，例如在时间相关的设置中，例如
-   * step-26  的主循环，这就变得很困难。
-   * 更多信息请参见该命名空间的一般文档。
+   * Assemble the mass matrix and a right hand side vector. If no coefficient
+   * is given (i.e., if the pointer to a function object is zero as it is by
+   * default), the coefficient is taken as being constant and equal to one.
+   * In case you want to specify @p constraints and use the default argument
+   * for the coefficient you have to specify the (unused) coefficient argument
+   * as <code>(const Function <spacedim,number> *const)nullptr</code>.
    *
+   * If the library is configured to use multithreading, this function works
+   * in parallel.
+   *
+   * The optional argument @p constraints allows to apply constraints on the
+   * resulting matrix directly. Note, however, that this becomes difficult
+   * when you have inhomogeneous constraints and later want to add several
+   * such matrices, for example in time dependent settings such as the main
+   * loop of step-26.
+   *
+   * See the general documentation of this namespace for more information.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -224,9 +301,8 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 调用create_mass_matrix()函数，见上文，使用<tt>mapping=MappingQGeneric
-   * @<dim@>(1)</tt>.  。
-   *
+   * Call the create_mass_matrix() function, see above, with
+   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -240,8 +316,7 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 与上面的函数相同，但用于hp-objects。
-   *
+   * Same function as above, but for hp-objects.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -254,8 +329,7 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 与上面的功能相同，但对hp-objects而言。
-   *
+   * Same function as above, but for hp-objects.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -267,8 +341,7 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 与上述功能相同，但对hp-objects而言。
-   *
+   * Same function as above, but for hp-objects.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -283,8 +356,7 @@ namespace MatrixCreator
     const AffineConstraints<number> &constraints = AffineConstraints<number>());
 
   /**
-   * 与上面的功能相同，但对hp-objects而言。
-   *
+   * Same function as above, but for hp-objects.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -299,21 +371,29 @@ namespace MatrixCreator
 
 
   /**
-   * 沿着边界组装质量矩阵和一个右手边的矢量。
-   * 假设该矩阵已经被初始化为合适的稀疏模式（DoFHandler提供了一个合适的函数）。
-   * 如果库被配置为使用多线程，这个函数就可以并行工作。
-   * @arg   @p weight:
-   * 用于计算质量矩阵的可选权重。如果没有给出权重，它将被设置为1。
-   * 如果你想指定  @p component_mapping
-   * 并使用默认的系数参数，你必须将（未使用的）系数参数指定为
-   * <code>(const Function <spacedim,number>const)nullptr</code>  。
-   * @arg   @p component_mapping:  如果 @p boundary_functions 和 @p dof
-   * 中的成分不重合，这个向量允许它们被重新映射。如果这个向量不是空的，它必须有一个条目代表
-   * @p 中的每个分量。这个条目是 @p boundary_functions
-   * 中的分量编号，应该用于 @p dof. 中的这个分量。
-   * 默认情况下，不应用重映射。      @todo
-   * 这个函数对具有单元依赖形状函数的有限元不起作用。
+   * Assemble the mass matrix and a right hand side vector along the boundary.
    *
+   * The matrix is assumed to already be initialized with a suiting sparsity
+   * pattern (the DoFHandler provides an appropriate function).
+   *
+   * If the library is configured to use multithreading, this function works
+   * in parallel.
+   *
+   * @arg @p weight: an optional weight for the computation of the mass
+   * matrix. If no weight is given, it is set to one.
+   * In case you want to specify @p component_mapping and use the default argument
+   * for the coefficient you have to specify the (unused) coefficient argument
+   * as <code>(const Function <spacedim,number> *const)nullptr</code>.
+   *
+   * @arg @p component_mapping: if the components in @p boundary_functions and
+   * @p dof do not coincide, this vector allows them to be remapped. If the
+   * vector is not empty, it has to have one entry for each component in @p
+   * dof. This entry is the component number in @p boundary_functions that
+   * should be used for this component in @p dof. By default, no remapping is
+   * applied.
+   *
+   * @todo This function does not work for finite elements with cell-dependent
+   * shape functions.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -331,9 +411,8 @@ namespace MatrixCreator
 
 
   /**
-   * 调用create_boundary_mass_matrix()函数，见上文，使用<tt>mapping=MappingQGeneric
-   * @<dim@>(1)</tt>.  。
-   *
+   * Call the create_boundary_mass_matrix() function, see above, with
+   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -349,8 +428,7 @@ namespace MatrixCreator
     std::vector<unsigned int>               component_mapping = {});
 
   /**
-   * 与上面的函数相同，但用于hp-objects。
-   *
+   * Same function as above, but for hp-objects.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -367,8 +445,7 @@ namespace MatrixCreator
     std::vector<unsigned int>               component_mapping = {});
 
   /**
-   * 与上面的功能相同，但对hp-objects而言。
-   *
+   * Same function as above, but for hp-objects.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -384,16 +461,23 @@ namespace MatrixCreator
     std::vector<unsigned int>               component_mapping = {});
 
   /**
-   * 组装拉普拉斯矩阵。如果没有给出系数（也就是说，如果函数对象的指针是零，因为它是默认的），那么系数就被认为是常数，等于1。
-   * 如果你想指定  @p constraints
-   * 并使用默认的系数参数，你必须指定（未使用的）系数参数为
-   * <code>(const Function<spacedim>const)nullptr</code>  。
-   * 如果库被配置为使用多线程，这个函数就会并行工作。
-   * 可选的参数 @p constraints
-   * 允许直接在结果矩阵上应用约束。然而，请注意，当你有不均匀的约束，并且后来想添加几个这样的矩阵时，例如在时间相关的设置中，例如
-   * step-26  的主循环，这就变得困难了。
-   * 更多信息请参见该命名空间的一般文档。
+   * Assemble the Laplace matrix. If no coefficient is given (i.e., if the
+   * pointer to a function object is zero as it is by default), the
+   * coefficient is taken as being constant and equal to one.
+   * In case you want to specify @p constraints and use the default argument
+   * for the coefficient you have to specify the (unused) coefficient argument
+   * as <code>(const Function<spacedim> *const)nullptr</code>.
    *
+   * If the library is configured to use multithreading, this function works
+   * in parallel.
+   *
+   * The optional argument @p constraints allows to apply constraints on the
+   * resulting matrix directly. Note, however, that this becomes difficult
+   * when you have inhomogeneous constraints and later want to add several
+   * such matrices, for example in time dependent settings such as the main
+   * loop of step-26.
+   *
+   * See the general documentation of this namespace for more information.
    */
   template <int dim, int spacedim>
   void
@@ -406,9 +490,8 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 调用create_laplace_matrix()函数，见上文，使用<tt>mapping=MappingQGeneric
-   * @<dim@>(1)</tt>.  。
-   *
+   * Call the create_laplace_matrix() function, see above, with
+   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
    */
   template <int dim, int spacedim>
   void
@@ -420,16 +503,22 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 组建拉普拉斯矩阵和一个右手边的向量。如果没有给出系数，则假定其为常数一。
-   * 如果你想指定  @p constraints
-   * 并使用默认的系数参数，你必须指定（未使用的）系数参数为
-   * <code>(const Function<spacedim>const)nullptr</code>  。
-   * 如果库被配置为使用多线程，这个函数就会并行工作。
-   * 可选的参数 @p constraints
-   * 允许直接在结果矩阵上应用约束。然而，请注意，当你有不均匀的约束，并且后来想添加几个这样的矩阵时，例如在时间相关的设置中，例如
-   * step-26  的主循环，这就变得很困难。
-   * 更多信息请参见该命名空间的一般文档。
+   * Assemble the Laplace matrix and a right hand side vector. If no
+   * coefficient is given, it is assumed to be constant one.
+   * In case you want to specify @p constraints and use the default argument
+   * for the coefficient you have to specify the (unused) coefficient argument
+   * as <code>(const Function<spacedim> *const)nullptr</code>.
    *
+   * If the library is configured to use multithreading, this function works
+   * in parallel.
+   *
+   * The optional argument @p constraints allows to apply constraints on the
+   * resulting matrix directly. Note, however, that this becomes difficult
+   * when you have inhomogeneous constraints and later want to add several
+   * such matrices, for example in time dependent settings such as the main
+   * loop of step-26.
+   *
+   * See the general documentation of this namespace for more information.
    */
   template <int dim, int spacedim>
   void
@@ -444,9 +533,8 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 调用create_laplace_matrix()函数，见上文，使用<tt>mapping=MappingQGeneric
-   * @<dim@>(1)</tt>.  。
-   *
+   * Call the create_laplace_matrix() function, see above, with
+   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
    */
   template <int dim, int spacedim>
   void
@@ -460,8 +548,7 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 像上面的函数一样，但对hp-objects而言。
-   *
+   * Like the functions above, but for hp-objects.
    */
   template <int dim, int spacedim>
   void
@@ -474,8 +561,7 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 像上面的函数一样，但对hp-objects而言。
-   *
+   * Like the functions above, but for hp-objects.
    */
   template <int dim, int spacedim>
   void
@@ -487,8 +573,7 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 像上面的函数一样，但对hp-objects而言。
-   *
+   * Like the functions above, but for hp-objects.
    */
   template <int dim, int spacedim>
   void
@@ -503,8 +588,7 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 像上面的函数一样，但对hp-objects而言。
-   *
+   * Like the functions above, but for hp-objects.
    */
   template <int dim, int spacedim>
   void
@@ -518,8 +602,7 @@ namespace MatrixCreator
     const AffineConstraints<double> &constraints = AffineConstraints<double>());
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclExceptionMsg(ExcComponentMismatch,
                    "You are providing either a right hand side function or a "
@@ -535,87 +618,224 @@ namespace MatrixCreator
 
 
 /**
- * 提供一个对矩阵进行操作的函数集合。这些包括对线性方程组的边界条件的应用和其他。
+ * Provide a collection of functions operating on matrices. These include the
+ * application of boundary conditions to a linear system of equations and
+ * others.
  *
- *  <h3>Boundary conditions</h3>
- * apply_boundary_values()函数修改了一个线性系统，以纳入由Dirichlet型边界条件（或者，更具体地说："强
- * "边界条件）所产生的约束。为了真正做到这一点，当前命名空间中的这个名字的函数需要一个自由度指数的列表，以及这些自由度应该具有的值。要了解如何获得这样一个列表，请看
- * VectorTools::interpolate_boundary_values()
- * 函数的讨论，作为一个例子。
- * 有两种方法可以将固定自由度（如边界节点）纳入线性系统，如下文所述。这两种方法都是在局部对全局线性系统的贡献层面上操作，或者是全局系统本身。第三种方法，使用
- * AffineConstraints::copy_local_to_global(),
- * 执行相同的过程，作为将一个单元的局部贡献加入全局线性系统的一部分（"装配
- * "步骤），是目前教程程序中最主要的方法。
+ *
+ * <h3>Boundary conditions</h3>
+ *
+ * The apply_boundary_values() functions modifies a linear system to incorporate
+ * the constraints that result from Dirichlet-type boundary conditions (or, more
+ * specifically: "strong" boundary conditions). To actually do this, the
+ * functions of this name in the current namespace require a list of degree of
+ * freedom indices along with the values these degrees of freedom should have.
+ * To see how to get such a list, see the discussion of the
+ * VectorTools::interpolate_boundary_values() function as one example.
+ *
+ * There are two ways to incorporate fixed degrees of freedom such as boundary
+ * nodes into a linear system, as discussed below. Both operate at either the
+ * level of local contributions to the global linear system, or the global
+ * system itself. A third way, using
+ * AffineConstraints::copy_local_to_global(), performs the same process as part
+ * of adding the local contributions of one cell into the global linear system
+ * (the "assembly" step) and is the method predominantly used in the tutorial
+ * programs today.
+ *
  * @dealiiVideoLecture{21.6,21.65}
  *
+ *
+ *
  * <h3>Global elimination</h3>
- * 在第一种方法中，我们首先在不尊重固定自由度的情况下装配全局线性系统，并在第二步中再次从线性系统中消除它们。纳入组装过程如下：当矩阵和向量被设置好后，要列出受Dirichlet边界条件约束的节点，并对矩阵和向量进行相应修改。这是通过删除矩阵中该自由度行的所有条目，将主对角线条目设置为一个合适的正值，并将右手边的元素设置为一个值，这样线性系统的解将在该节点有边界值。为了使剩余的线性方程组解耦并使系统再次对称（至少以前是这样的），要对这条线进行一个高斯消除步骤，将这条线（现在几乎是空的）加入到所有与给定自由度相耦合的其他线中，从而消除这个自由度与其他自由度之间的所有耦合。现在，除了主要的对角线条目之外，各自的列也只由零组成。另外，这个命名空间的函数有一个布尔参数，允许省略这最后一步，如果所产生的线性系统的对称性不需要的话。请注意，通常情况下，即使是CG也能应对具有这种特殊结构的非对称线性系统。
- * 寻找哪些行包含我们目前正在执行的高斯消除步骤的列中的条目是困难的，或者是非常简单的，取决于情况。如果稀疏模式是对称的（矩阵是否对称在这里无关紧要），那么我们可以通过查看当前行中哪些列是不空的来推断出在当前列中有一个非零条目的行。在这种情况下，我们只需要查看固定数量的行，不需要搜索所有的行。另一方面，如果稀疏模式是非对称的，那么我们需要使用一个迭代求解器，它在任何情况下都可以处理非对称矩阵，所以可能无论如何都不需要做高斯消除。事实上，这个函数就是这样工作的：它接受一个参数（
- * @p eliminate_columns)
- * ，指定稀疏模式是否是对称的；如果是，那么列就会被消除，右手边也会相应修改。如果不是，则只删除该行，完全不涉及该列，而且除了与当前行对应的值之外，所有右手边的值保持不变。
- * 如果你的矩阵的稀疏模式是非对称的，你必须把这个参数的值设置为
- * @p false
- * ，因为这样我们就不能在不搜索所有行的情况下消除这一列，这样就太昂贵了（如果
- * @p N  ]为行数， @p m
- * 为每行的非零元素数，那么消除一列就是<tt>O(N*log(m))</tt>操作，因为在每行搜索需要<tt>log(m)</tt>操作）。)
- * 如果你的稀疏性模式是对称的，但你的矩阵不是，那么你也可以指定
- * @p false
- * 。如果你的稀疏模式和矩阵都是对称的，你可能想指定 @p
- * true
- * （那么消除一行的复杂性是<tt>O(m*log(m))</tt>，因为我们只需要搜索
- * @p m 行的列的相应元素）。鉴于 @p m
- * 大致是恒定的，不管离散化如何，边界节点的数量在2d中是<tt>sqrt(N)</tt>，对称稀疏模式的算法是<tt>O(sqrt(N)*m*log(m))</tt>，而对于一般情况，它将是<tt>O(N*sqrt(N)*log(m))</tt>；后者太昂贵，无法执行。
- * 似乎我们必须明确，在做高斯消除步骤时不要覆盖其他边界节点的线。然而，由于我们在通过这样的节点时重置了右手边，所以改变其他尚未处理的边界节点的右手边的值并不是问题。改变已经处理过的节点的那些条目将是一个问题，但是由于已经处理过的节点的行上的本列矩阵条目是零，高斯步骤不会改变右手边。因此，我们不需要对其他边界节点进行特别的处理。
- * 为了使解题速度更快，我们用正确的边界值预设了解向量（至于为什么要这样做，请看下面关于局部消除的描述）。不清楚在使用迭代求解器时，删除边界自由度和其他自由度之间的耦合是否真的能迫使解向量中的相应条目具有正确的值，因为它们的搜索方向可能包含边界节点方向上的分量。出于这个原因，我们进行了一个非常简单的线平衡，不是将主对角线条目设置为一，而是设置为删除此线之前的值，如果主对角线条目由于某种原因为零，则设置为第一个非零主对角线条目。当然，我们必须适当改变右手边的内容。这不是一个很好的策略，但它至少应该给主对角线条目一个正确的维度顺序的值，这使得求解过程更稳定一些。一个精炼的算法会将该条目设置为其他对角线条目的平均值，但这似乎太昂贵了。
- * 在某些情况下，对同一矩阵进行多次求解，但对不同的右手边或边界值进行求解，可能是有趣的。一个典型的例子是解决一个随时间变化的问题，其中边界值或右手边发生变化，但矩阵本身没有变化。这时，人们可能会想只组装一次矩阵，然后在同一个矩阵对象上重复调用
- * MatrixTools::apply_boundary_values()
- * 函数，在每个时间步长中新形成一个右手边向量。然而，由于对右手向量的边界值的修改取决于原始矩阵，如果不把原始矩阵存储在某个地方，并在每个时间步长中用存储在其他地方的未修改的矩阵初始化系统矩阵，这是不可能的。
- * step-26
- * 通过存储组成系统矩阵的构件，对这一过程进行了变通，但一般原理是相同的。另外，我们可以使用constrained_linear_operator()函数。在它的文档中，你还可以找到一个正式的（数学）描述，即修改矩阵和右手边向量的边界值的过程。
  *
- *  <h3>Local elimination</h3>
- * 处理边界值的第二种方式是在将本地矩阵和向量的贡献转移到全局稀疏矩阵和向量之前，适当地修改它们。这就是local_apply_boundary_values()的作用。这样做的好处是，我们省去了对apply_boundary_values函数的调用（这个函数很昂贵，因为它必须在稀疏数据结构上工作）。另一方面，local_apply_boundary_values()函数被多次调用，即使我们只有非常少的固定边界节点，主要的缺点是，如果有悬挂的节点也需要处理，这个函数就不能像预期的那样工作。这个函数不起作用的原因是，它是要在分布到全局矩阵之前运行的，也就是在悬空节点分布之前；由于悬空节点可以被约束到一个边界节点，对悬空节点的处理会在对应于边界值的行和列上再次增加条目，而这些条目我们已经在局部消除步骤中腾出了。更糟糕的是，在3D中受约束的节点甚至可以位于边界上。因此，当务之急是边界节点的消除发生在悬空节点消除之后
- * @em
- * ，但这无法通过边界节点的局部消除来实现，除非根本就没有悬空节点约束。
- * 局部消除有一个额外的缺点：我们无法获得解向量，只能获得对矩阵和右侧的局部贡献。这方面的问题很微妙，但会导致非常难以发现的困难：当我们消除一个自由度时，我们删除这个未知数的行和列，并将对角线条目设置为某个正值。为了使问题或多或少具有良好的条件，我们将这个对角线条目设置为其先验值的绝对值（如果该值非零），或者设置为所有其他非零对角线元素的平均大小。然后，我们设置右边的值，使得到的解条目具有边界值所给的正确值。由于我们将这些贡献加到所有的局部贡献上，对角线条目和右手边的各自数值也相应地加起来，所以线性系统的解中的条目仍然有效。
- * 然而，如果这样选择的对角线条目不适合线性系统，就会出现问题。例如，考虑一个带有矩阵<tt>[[A
- * B][C^T
- * 0]]</tt>的混合拉普拉斯问题，我们只为解的第二部分指定边界值。在混合公式中，应力应变张量只出现在矩阵
- * @p B 或 @p C,
- * 中，所以其中一个可能明显大于或小于另一个。现在，如果我们消除边界值，就会删除一些行和列，但也会在右下角块的对角线上引入一些条目，这样我们就会得到系统<tt>[[A'
- * B'][C'^T X]]</tt>。矩阵 @p X 中的对角线项将与 @p A.
- * 中的对角线项具有相同的数量级。
- * 现在，如果我们用Schur补码公式解决这个系统，我们必须反转矩阵<tt>X-C'^TA'^{-1}B'</tt>。删除上面的行和列可以确保边界节点在Schur补数中确实也有空行和空列，除了
- * @p X. 中的条目。然而， @p X
- * 中的条目可能与<tt>C'^TA'^{-1}B'</tt>中的条目的数量级明显不同!
- * 如果是这样的话，我们可能会遇到迭代求解器的麻烦。例如，假设我们从解向量的零条目开始，而
- * @p X
- * 中的条目太小了几个数量级；在这种情况下，迭代求解器将在每一步计算残差向量并形成修正向量，但由于
- * @p X
- * 中的条目太小，边界节点的残差贡献确实很小，尽管边界节点的值仍然接近于零，不符合规定的边界值。由于残差如此之小，迭代求解器计算的修正值也非常小，最后求解器会显示收敛到一个小的总残差，而边界值仍然有明显的错误。
- * 在上述的全局消除过程中，我们通过给边界节点的正确值
- * "打底
- * "来避免这个问题。但是，在局部消除过程中，我们不能这样做。因此，如果你遇到类似上述的问题，你需要将
- * @p X
- * 中的对角线项增加到与舒尔补数的其他部分相匹配的大小，或者更简单，在启动求解器之前给解向量打底。
- * 总之，边界节点的局部消除只有在没有悬空节点的情况下才有效，即使如此也不一定能完全令人满意地工作。
+ * In the first method, we first assemble the global linear system without
+ * respect for fixed degrees of freedom, and in a second step eliminate them
+ * again from the linear system. The inclusion into the assembly process is as
+ * follows: when the matrix and vectors are set up, a list of nodes subject to
+ * Dirichlet boundary conditions is made and matrix and vectors are
+ * modified accordingly. This
+ * is done by deleting all entries in the matrix in the line of this degree of
+ * freedom, setting the main diagonal entry to a suitable positive value and
+ * the right hand side element to a value so that the solution of the linear
+ * system will have the boundary value at this node. To decouple the remaining
+ * linear system of equations and to make the system symmetric again (at least
+ * if it was before), one Gauss elimination step is performed with this line,
+ * by adding this (now almost empty) line to all other lines which couple with
+ * the given degree of freedom and thus eliminating all coupling between this
+ * degree of freedom and others. Now the respective column also consists only
+ * of zeroes, apart from the main diagonal entry. Alternatively, the functions
+ * in this namespace take a boolean parameter that allows to omit this last
+ * step, if symmetry of the resulting linear system is not required. Note that
+ * usually even CG can cope with a non-symmetric linear system with this
+ * particular structure.
  *
+ * Finding which rows contain an entry in the column for which we are
+ * presently performing a Gauss elimination step is either difficult or very
+ * simple, depending on the circumstances. If the sparsity pattern is
+ * symmetric (whether the matrix is symmetric is irrelevant here), then we can
+ * infer the rows which have a nonzero entry in the present column by looking
+ * at which columns in the present row are nonempty. In this case, we only
+ * need to look into a fixed number of rows and need not search all rows. On
+ * the other hand, if the sparsity pattern is nonsymmetric, then we need to
+ * use an iterative solver which can handle nonsymmetric matrices in any case,
+ * so there may be no need to do the Gauss elimination anyway. In fact, this
+ * is the way the function works: it takes a parameter (@p eliminate_columns)
+ * that specifies whether the sparsity pattern is symmetric; if so, then the
+ * column is eliminated and the right hand side is also modified accordingly.
+ * If not, then only the row is deleted and the column is not touched at all,
+ * and all right hand side values apart from the one corresponding to the
+ * present row remain unchanged.
+ *
+ * If the sparsity pattern for your matrix is non-symmetric, you must set the
+ * value of this parameter to @p false in any case, since then we can't
+ * eliminate the column without searching all rows, which would be too
+ * expensive (if @p N be the number of rows, and @p m the number of nonzero
+ * elements per row, then eliminating one column is an <tt>O(N*log(m))</tt>
+ * operation, since searching in each row takes <tt>log(m)</tt> operations).
+ * If your sparsity pattern is symmetric, but your matrix is not, then you
+ * might specify @p false as well. If your sparsity pattern and matrix are
+ * both symmetric, you might want to specify @p true (the complexity of
+ * eliminating one row is then <tt>O(m*log(m))</tt>, since we only have to
+ * search @p m rows for the respective element of the column). Given the fact
+ * that @p m is roughly constant, irrespective of the discretization, and that
+ * the number of boundary nodes is <tt>sqrt(N)</tt> in 2d, the algorithm for
+ * symmetric sparsity patterns is <tt>O(sqrt(N)*m*log(m))</tt>, while it would
+ * be <tt>O(N*sqrt(N)*log(m))</tt> for the general case; the latter is too
+ * expensive to be performed.
+ *
+ * It seems as if we had to make clear not to overwrite the lines of other
+ * boundary nodes when doing the Gauss elimination step. However, since we
+ * reset the right hand side when passing such a node, it is not a problem to
+ * change the right hand side values of other boundary nodes not yet
+ * processed. It would be a problem to change those entries of nodes already
+ * processed, but since the matrix entry of the present column on the row of
+ * an already processed node is zero, the Gauss step does not change the right
+ * hand side. We need therefore not take special care of other boundary nodes.
+ *
+ * To make solving faster, we preset the solution vector with the right
+ * boundary values (as to why this is necessary, see the discussion below in
+ * the description of local elimination). It it not clear whether the deletion
+ * of coupling between the boundary degree of freedom and other dofs really
+ * forces the corresponding entry in the solution vector to have the right
+ * value when using iterative solvers, since their search directions may
+ * contain components in the direction of the boundary node. For this reason,
+ * we perform a very simple line balancing by not setting the main diagonal
+ * entry to unity, but rather to the value it had before deleting this line,
+ * or to the first nonzero main diagonal entry if it is zero for some reason.
+ * Of course we have to change the right hand side appropriately. This is not
+ * a very good strategy, but it at least should give the main diagonal entry a
+ * value in the right order of dimension, which makes the solution process a
+ * bit more stable. A refined algorithm would set the entry to the mean of the
+ * other diagonal entries, but this seems to be too expensive.
+ *
+ * In some cases, it might be interesting to solve several times with the same
+ * matrix, but for different right hand sides or boundary values. A typical
+ * case would be the solution of a time-dependent problem in which the boundary
+ * values or right hand side change, but the matrix itself does not. One
+ * may then be tempted to just assemble the matrix once and just call the
+ * MatrixTools::apply_boundary_values() function repeatedly on the same
+ * matrix object, with a right hand side vector newly formed in each time step.
+ * However,
+ * since the modification for boundary values of the right hand side vector
+ * depends on the original matrix, this is not possible without storing the
+ * original matrix somewhere, and in every time step initializing the system
+ * matrix with the unmodified matrix stored elsewhere. step-26 does a variation
+ * of this process by storing building blocks from which the system matrix is
+ * composed, but the general principle is the same. Alternatively, one can
+ * use the constrained_linear_operator() function. In its documentation you can
+ * also find a formal (mathematical) description of the process of modifying the
+ * matrix and right hand side vectors for boundary values.
+ *
+ *
+ * <h3>Local elimination</h3>
+ *
+ * The second way of handling boundary values is to modify the local matrix
+ * and vector contributions appropriately before transferring them into the
+ * global sparse matrix and vector. This is what local_apply_boundary_values()
+ * does. The advantage is that we save the call to the apply_boundary_values
+ * function (which is expensive because it has to work on sparse data
+ * structures). On the other hand, the local_apply_boundary_values() function
+ * is called many times, even if we only have a very small number of fixed
+ * boundary nodes, and the main drawback is that this function doesn't work as
+ * expected if there are hanging nodes that also need to be treated. The
+ * reason that this function doesn't work is that it is meant to be run before
+ * distribution into the global matrix, i.e. before hanging nodes are
+ * distributed; since hanging nodes can be constrained to a boundary node, the
+ * treatment of hanging nodes can add entries again to rows and columns
+ * corresponding to boundary values and that we have already vacated in the
+ * local elimination step. To make things worse, in 3d constrained nodes can
+ * even lie on the boundary. Thus, it is imperative that boundary node
+ * elimination happens @em after hanging node elimination, but this can't be
+ * achieved with local elimination of boundary nodes unless there are no
+ * hanging node constraints at all.
+ *
+ * Local elimination has one additional drawback: we don't have access to the
+ * solution vector, only to the local contributions to the matrix and right
+ * hand side. The problem with this is subtle, but can lead to very hard to
+ * find difficulties: when we eliminate a degree of freedom, we delete the row
+ * and column of this unknown, and set the diagonal entry to some positive
+ * value. To make the problem more or less well-conditioned, we set this
+ * diagonal entry to the absolute value of its prior value if that was non-
+ * zero, or to the average magnitude of all other nonzero diagonal elements.
+ * Then we set the right hand side value such that the resulting solution
+ * entry has the right value as given by the boundary values. Since we add
+ * these contributions up over all local contributions, the diagonal entry and
+ * the respective value in the right hand side are added up correspondingly,
+ * so that the entry in the solution of the linear system is still valid.
+ *
+ * A problem arises, however, if the diagonal entries so chosen are not
+ * appropriate for the linear system. Consider, for example, a mixed Laplace
+ * problem with matrix <tt>[[A B][C^T 0]]</tt>, where we only specify boundary
+ * values for the second component of the solution. In the mixed formulation,
+ * the stress-strain tensor only appears in either the matrix @p B or @p C, so
+ * one of them may be significantly larger or smaller than the other one. Now,
+ * if we eliminate boundary values, we delete some rows and columns, but we
+ * also introduce a few entries on the diagonal of the lower right block, so
+ * that we get the system <tt>[[A' B'][C'^T X]]</tt>. The diagonal entries in
+ * the matrix @p X will be of the same order of magnitude as those in @p A.
+ * Now, if we solve this system in the Schur complement formulation, we have
+ * to invert the matrix <tt>X-C'^TA'^{-1}B'</tt>. Deleting rows and columns
+ * above makes sure that boundary nodes indeed have empty rows and columns in
+ * the Schur complement as well, except for the entries in @p X. However, the
+ * entries in @p X may be of significantly different orders of magnitude than
+ * those in <tt>C'^TA'^{-1}B'</tt>! If this is the case, we may run into
+ * trouble with iterative solvers. For example, assume that we start with zero
+ * entries in the solution vector and that the entries in @p X are several
+ * orders of magnitude too small; in this case, iterative solvers will compute
+ * the residual vector in each step and form correction vectors, but since the
+ * entries in @p X are so small, the residual contributions for boundary nodes
+ * are really small, despite the fact that the boundary nodes are still at
+ * values close to zero and not in accordance with the prescribed boundary
+ * values. Since the residual is so small, the corrections the iterative
+ * solver computes are very small, and in the end the solver will indicate
+ * convergence to a small total residual with the boundary values still being
+ * significantly wrong.
+ *
+ * We avoid this problem in the global elimination process described above by
+ * 'priming' the solution vector with the correct values for boundary nodes.
+ * However, we can't do this for the local elimination process. Therefore, if
+ * you experience a problem like the one above, you need to either increase
+ * the diagonal entries in @p X to a size that matches those in the other part
+ * of the Schur complement, or, simpler, prime the solution vector before you
+ * start the solver.
+ *
+ * In conclusion, local elimination of boundary nodes only works if there are
+ * no hanging nodes and even then doesn't always work fully satisfactorily.
  *
  * @ingroup numerics
- *
- *
  */
 namespace MatrixTools
 {
   /**
-   * 导入命名空间MatrixCreator，以便向后兼容旧版本的deal.II，其中这些命名空间是类，类MatrixTools是公开派生自类MatrixCreator。
-   *
+   * Import namespace MatrixCreator for backward compatibility with older
+   * versions of deal.II in which these namespaces were classes and class
+   * MatrixTools was publicly derived from class MatrixCreator.
    */
   using namespace MatrixCreator;
 
   /**
-   * 对系统矩阵和向量应用Dirichlet边界条件，如该命名空间的一般文档中所述。
-   *
+   * Apply Dirichlet boundary conditions to the system matrix and vectors as
+   * described in the general documentation of this namespace.
    */
   template <typename number>
   void
@@ -627,8 +847,9 @@ namespace MatrixTools
     const bool                                       eliminate_columns = true);
 
   /**
-   * 对系统矩阵和向量应用迪里切特边界条件，如本命名空间的一般文档中所述。这个函数适用于块状稀疏矩阵和块状向量。
-   *
+   * Apply Dirichlet boundary conditions to the system matrix and vectors as
+   * described in the general documentation of this namespace. This function
+   * works for block sparse matrices and block vectors.
    */
   template <typename number>
   void
@@ -641,19 +862,39 @@ namespace MatrixTools
 
 #ifdef DEAL_II_WITH_PETSC
   /**
-   * 对系统矩阵和向量应用Dirichlet边界条件，如本命名空间的一般文档中所述。这个函数对用于包裹PETSc对象的类起作用。
-   * <b>Important:</b>
-   * 这个函数的效率不高：它需要交替地读和写到矩阵中，这种情况PETSc处理得不好。此外，我们只删除了与边界节点相对应的行，但删除相应的列的情况（即如果
-   * @p eliminate_columns 是 @p true)
-   * ，目前还没有实现，而且可能永远不会实现，因为如果不直接访问PETSc数据结构，成本太高。这就导致了最后一个参数的默认值所表示的动作实际上没有实现；该参数的默认值是
-   * <code>true</code>
-   * ，以保持与该命名空间中其他同名函数的一致性）。
-   * 这个函数在  step-17  和  step-18  中使用。
-   * @note
-   * 如果矩阵是用MPI在多个处理器之间并行存储的，这个函数只触及本地存储的行，而简单地忽略所有其他行。换句话说，每个处理器负责自己的行，
-   * @p boundary_values
-   * 参数需要包含你想处理的矩阵中所有本地拥有的行。(但是它也可以包含不属于本地的自由度的条目；这些条目将被简单地忽略)。此外，在并行计算的背景下，如果你处理了某一行，而其他处理器还在等待对同一行的写入或添加，你就会陷入困境。换句话说，如果另一个处理器仍然想向某行的某个元素添加东西，而你调用这个函数将该行清零，那么你下次调用compress()时可能会将远程值添加到你刚刚创建的零值中。因此，你要在对矩阵进行最后一次修改后，在开始清空行之前调用compress()。
+   * Apply Dirichlet boundary conditions to the system matrix and vectors as
+   * described in the general documentation of this namespace. This function
+   * works on the classes that are used to wrap PETSc objects.
    *
+   * <b>Important:</b> This function is not very efficient: it needs to
+   * alternatingly read and write into the matrix, a situation that PETSc does
+   * not handle well. In addition, we only get rid of rows corresponding to
+   * boundary nodes, but the corresponding case of deleting the respective
+   * columns (i.e. if @p eliminate_columns is @p true) is not presently
+   * implemented, and probably will never because it is too expensive without
+   * direct access to the PETSc data structures. (This leads to the situation
+   * where the action indicated by the default value of the last argument is
+   * actually not implemented; that argument has <code>true</code> as its
+   * default value to stay consistent with the other functions of same name in
+   * this namespace.)
+   *
+   * This function is used in step-17 and step-18.
+   *
+   * @note If the matrix is stored in parallel across multiple processors
+   * using MPI, this function only touches rows that are locally stored and
+   * simply ignores all other rows. In other words, each processor is
+   * responsible for its own rows, and the @p boundary_values argument needs
+   * to contain all locally owned rows of the matrix that you want to have
+   * treated. (But it can also contain entries for degrees of freedom not
+   * owned locally; these will simply be ignored.) Further, in the context of
+   * parallel computations, you will get into trouble if you treat a row while
+   * other processors still have pending writes or additions into the same
+   * row. In other words, if another processor still wants to add something to
+   * an element of a row and you call this function to zero out the row, then
+   * the next time you call compress() may add the remote value to the zero
+   * you just created. Consequently, you will want to call compress() after
+   * you made the last modifications to a matrix and before starting to clear
+   * rows.
    */
   void
   apply_boundary_values(
@@ -664,8 +905,7 @@ namespace MatrixTools
     const bool eliminate_columns = true);
 
   /**
-   * 和上面一样，但对于并行的BlockSparseMatrix。
-   *
+   * Same as above but for the parallel BlockSparseMatrix.
    */
   void
   apply_boundary_values(
@@ -679,18 +919,37 @@ namespace MatrixTools
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * 对系统矩阵和向量应用Dirichlet边界条件，如本命名空间的一般文档中所述。这个函数对用于包裹特里诺斯对象的类起作用。
-   * <b>Important:</b>
-   * 这个函数的效率不高：它需要交替地读和写到矩阵中，这种情况Trilinos处理得不好。此外，我们只删除了与边界节点相对应的行，但删除相应的列的情况（即如果
-   * @p eliminate_columns 是 @p true)
-   * ，目前没有实现，可能永远不会实现，因为如果不直接访问Trilinos数据结构，成本太高。这导致最后一个参数的默认值所表示的动作实际上没有实现；该参数的默认值为
-   * <code>true</code>
-   * ，以保持与本命名空间中其他同名函数的一致性）。
-   * @note
-   * 如果矩阵是用MPI在多个处理器之间并行存储的，这个函数只触及本地存储的行，而简单地忽略所有其他行。换句话说，每个处理器负责自己的行，
-   * @p boundary_values
-   * 参数需要包含你想要处理的矩阵的所有本地拥有的行。(但是它也可以包含不属于本地的自由度的条目；这些条目将被简单地忽略)。此外，在并行计算的背景下，如果你处理了某一行，而其他处理器还在等待对同一行的写入或添加，你就会陷入困境。换句话说，如果另一个处理器仍然想向某行的某个元素添加东西，而你调用这个函数将该行清零，那么你下次调用compress()时可能会将远程值添加到你刚刚创建的零值中。因此，你要在对矩阵进行最后一次修改后，在开始清空行之前调用compress()。
+   * Apply Dirichlet boundary conditions to the system matrix and vectors as
+   * described in the general documentation of this namespace. This function
+   * works on the classes that are used to wrap Trilinos objects.
    *
+   * <b>Important:</b> This function is not very efficient: it needs to
+   * alternatingly read and write into the matrix, a situation that Trilinos
+   * does not handle well. In addition, we only get rid of rows corresponding
+   * to boundary nodes, but the corresponding case of deleting the respective
+   * columns (i.e. if @p eliminate_columns is @p true) is not presently
+   * implemented, and probably will never because it is too expensive without
+   * direct access to the Trilinos data structures. (This leads to the
+   * situation where the action indicated by the default value of the last
+   * argument is actually not implemented; that argument has <code>true</code>
+   * as its default value to stay consistent with the other functions of same
+   * name in this namespace.)
+   *
+   * @note If the matrix is stored in parallel across multiple processors
+   * using MPI, this function only touches rows that are locally stored and
+   * simply ignores all other rows. In other words, each processor is
+   * responsible for its own rows, and the @p boundary_values argument needs
+   * to contain all locally owned rows of the matrix that you want to have
+   * treated. (But it can also contain entries for degrees of freedom not
+   * owned locally; these will simply be ignored.) Further, in the context of
+   * parallel computations, you will get into trouble if you treat a row while
+   * other processors still have pending writes or additions into the same
+   * row. In other words, if another processor still wants to add something to
+   * an element of a row and you call this function to zero out the row, then
+   * the next time you call compress() may add the remote value to the zero
+   * you just created. Consequently, you will want to call compress() after
+   * you made the last modifications to a matrix and before starting to clear
+   * rows.
    */
   void
   apply_boundary_values(
@@ -701,8 +960,8 @@ namespace MatrixTools
     const bool eliminate_columns = true);
 
   /**
-   * 这个函数的作用与上面的函数相同，只是现在对块结构进行处理。
-   *
+   * This function does the same as the one above, except now working on block
+   * structures.
    */
   void
   apply_boundary_values(
@@ -714,10 +973,22 @@ namespace MatrixTools
 #endif
 
   /**
-   * 这个函数不是在创建全局矩阵后将边界值应用于全局矩阵和向量，而是在装配过程中通过修改局部矩阵和向量的贡献来实现。如果你在所有的局部贡献上调用这个函数，得到的矩阵将有相同的条目，最后在全局系统上调用apply_boundary_values()就没有必要。
-   * 由于这个函数不需要在稀疏矩阵的复杂数据结构上工作，所以它相对便宜。因此，如果你有很多固定的自由度（比如边界节点），或者对稀疏矩阵的访问很昂贵（比如对于块状稀疏矩阵，或者对于PETSc或Trilinos矩阵），它可能是一种胜利。然而，如果还有悬空节点需要考虑，它就不能如期工作了。更多的注意事项列在这个命名空间的一般文档中。
-   * @dealiiVideoLecture{21.6,21.65}
+   * Rather than applying boundary values to the global matrix and vector
+   * after creating the global matrix, this function does so during assembly,
+   * by modifying the local matrix and vector contributions. If you call this
+   * function on all local contributions, the resulting matrix will have the
+   * same entries, and the final call to apply_boundary_values() on the global
+   * system will not be necessary.
    *
+   * Since this function does not have to work on the complicated data
+   * structures of sparse matrices, it is relatively cheap. It may therefore
+   * be a win if you have many fixed degrees of freedom (e.g. boundary nodes),
+   * or if access to the sparse matrix is expensive (e.g. for block sparse
+   * matrices, or for PETSc or Trilinos matrices). However, it doesn't work as
+   * expected if there are also hanging nodes to be considered. More caveats
+   * are listed in the general documentation of this namespace.
+   *
+   * @dealiiVideoLecture{21.6,21.65}
    */
   template <typename number>
   void
@@ -729,8 +1000,7 @@ namespace MatrixTools
     const bool                                       eliminate_columns);
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclExceptionMsg(ExcBlocksDontMatch,
                    "You are providing a matrix whose subdivision into "
@@ -744,5 +1014,3 @@ namespace MatrixTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

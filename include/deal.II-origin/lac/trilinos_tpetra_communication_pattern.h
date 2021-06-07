@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/trilinos_tpetra_communication_pattern_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -36,26 +35,24 @@ namespace LinearAlgebra
   namespace TpetraWrappers
   {
     /**
-     * 该类实现了对 Tpetra::Import 和 Tpetra::Export. 的包装器。
-     *
+     * This class implements a wrapper to Tpetra::Import and Tpetra::Export.
      */
     class CommunicationPattern : public Utilities::MPI::CommunicationPatternBase
     {
     public:
       /**
-       * 重新初始化通信模式。第一个参数 @p
-       * vector_space_vector_index_set是与一个VectorSpaceVector对象相关的索引集。第二个参数
-       * @p
-       * read_write_vector_index_set是与ReadWriteVector对象相关的索引集。
-       *
+       * Reinitialize the communication pattern. The first argument @p
+       * vector_space_vector_index_set is the index set associated to a
+       * VectorSpaceVector object. The second argument @p
+       * read_write_vector_index_set is the index set associated to a
+       * ReadWriteVector object.
        */
       CommunicationPattern(const IndexSet &vector_space_vector_index_set,
                            const IndexSet &read_write_vector_index_set,
                            const MPI_Comm &communicator);
 
       /**
-       * 重新初始化该对象。
-       *
+       * Reinitialize the object.
        */
       virtual void
       reinit(const IndexSet &vector_space_vector_index_set,
@@ -63,43 +60,37 @@ namespace LinearAlgebra
              const MPI_Comm &communicator) override;
 
       /**
-       * 返回底层的MPI通信器。
-       *
+       * Return the underlying MPI communicator.
        */
       virtual const MPI_Comm &
       get_mpi_communicator() const override;
 
       /**
-       * 返回底层的 Tpetra::Import 对象。
-       *
+       * Return the underlying Tpetra::Import object.
        */
       const Tpetra::Import<int, types::global_dof_index> &
       get_tpetra_import() const;
 
       /**
-       * 返回底层的 Tpetra::Export 对象。
-       *
+       * Return the underlying Tpetra::Export object.
        */
       const Tpetra::Export<int, types::global_dof_index> &
       get_tpetra_export() const;
 
     private:
       /**
-       * 用于MPI通信器的共享指针。
-       *
+       * Shared pointer to the MPI communicator used.
        */
       std::shared_ptr<const MPI_Comm> comm;
 
       /**
-       * 使用的 Tpetra::Import 对象的共享指针。
-       *
+       * Shared pointer to the Tpetra::Import object used.
        */
       std::unique_ptr<Tpetra::Import<int, types::global_dof_index>>
         tpetra_import;
 
       /**
-       * 使用的 Tpetra::Export 对象的共享指针。
-       *
+       * Shared pointer to the Tpetra::Export object used.
        */
       std::unique_ptr<Tpetra::Export<int, types::global_dof_index>>
         tpetra_export;
@@ -112,5 +103,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
-
-

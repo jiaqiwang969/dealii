@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -29,101 +30,59 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace solely for the purpose of defining the Domination enum as well
- * as associated operators.
+ * 一个专门用于定义Domination枚举以及相关运算符的命名空间。
+ *
+ *
  */
 namespace FiniteElementDomination
 {
   /**
-   * An enum that describes the outcome of comparing two elements for mutual
-   * domination. If one element dominates another, then the restriction of the
-   * space described by the dominated element to a face of the cell is
-   * strictly larger than that of the dominating element. For example, in 2-d
-   * Q(2) elements dominate Q(4) elements, because the traces of Q(4) elements
-   * are quartic polynomials which is a space strictly larger than the
-   * quadratic polynomials (the restriction of the Q(2) element). Similar
-   * reasonings apply for vertices and cells as well. In general, Q(k) dominates
-   * Q(k') if $k\le k'$.
    *
-   * This enum is used in the FiniteElement::compare_for_domination() function
-   * that is used in the context of hp-finite element methods when determining
-   * what to do at faces where two different finite elements meet (see the
-   * @ref hp_paper "hp-paper"
-   * for a more detailed description of the following). In that case, the
-   * degrees of freedom of one side need to be constrained to those on the
-   * other side. The determination which side is which is based on the outcome
-   * of a comparison for mutual domination: the dominated side is constrained
-   * to the dominating one.
-   *
-   * Note that there are situations where neither side dominates. The
-   * @ref hp_paper "hp-paper"
-   * lists two case, with the simpler one being that a $Q_2\times Q_1$ vector-
-   * valued element (i.e. a <code>FESystem(FE_Q(2),1,FE_Q(1),1)</code>) meets
-   * a $Q_1\times Q_2$ element: here, for each of the two vector-components,
-   * we can define a domination relationship, but it is different for the two
-   * components.
-   *
-   * It is clear that the concept of domination doesn't matter for
-   * discontinuous elements. However, discontinuous elements may be part of
-   * vector-valued elements and may therefore be compared against each other
-   * for domination. They should return
-   * <code>either_element_can_dominate</code> in that case. Likewise, when
-   * comparing two identical finite elements, they should return this code;
-   * the reason is that we can not decide which element will dominate at the
-   * time we look at the first component of, for example, two $Q_2\times Q_1$
-   * and $Q_2\times Q_2$ elements, and have to keep our options open until we
-   * get to the second base element.
-   *
-   * Finally, the code no_requirements exists for cases where elements impose
-   * no continuity requirements. The case is primarily meant for FE_Nothing
-   * which is an element that has no degrees of freedom in a subdomain. It
-   * could also be used by discontinuous elements, for example.
-   *
-   * More details on domination can be found in the
-   * @ref hp_paper "hp-paper".
    */
   enum Domination
   {
     /**
-     * The current element dominates.
+     * 当前元素占主导地位。
+     *
      */
     this_element_dominates,
     /**
-     * The other element dominates.
+     * 其他元素占主导地位。
+     *
      */
     other_element_dominates,
     /**
-     * Neither element dominates.
+     * 两个元素都不占优势。
+     *
      */
     neither_element_dominates,
     /**
-     * Either element may dominate.
+     * 任何一个元素都可能占主导地位。
+     *
      */
     either_element_can_dominate,
     /**
-     * There are no requirements.
+     * 没有任何要求。
+     *
      */
     no_requirements
   };
 
 
   /**
-   * A generalization of the binary <code>and</code> operator to a comparison
-   * relationship. The way this works is pretty much as when you would want to
-   * define a comparison relationship for vectors: either all elements of the
-   * first vector are smaller, equal, or larger than those of the second
-   * vector, or some are and some are not.
+   * 二进制 <code>and</code>
+   * 运算符的一般化，用于比较关系。其工作方式与你想为向量定义比较关系时差不多：要么第一个向量的所有元素都比第二个向量的元素小、等于或大，要么有些是，有些不是。
+   * 这个运算符基本相同：如果两个参数都是
+   * <code>this_element_dominates</code> 或
+   * <code>other_element_dominates</code>
+   * ，那么返回值就是这个值。另一方面，如果其中一个值是
+   * <code>either_element_can_dominate</code>
+   * ，那么返回值就是另一个参数的值。如果其中一个参数是
+   * <code>neither_element_dominates</code> ，或者两个参数是
+   * <code>this_element_dominates</code> 和
+   * <code>other_element_dominates</code> ，那么返回值是
+   * <code>neither_element_dominates</code>  。
    *
-   * This operator is pretty much the same: if both arguments are
-   * <code>this_element_dominates</code> or
-   * <code>other_element_dominates</code>, then the returned value is that
-   * value. On the other hand, if one of the values is
-   * <code>either_element_can_dominate</code>, then the returned value is that
-   * of the other argument. If either argument is
-   * <code>neither_element_dominates</code>, or if the two arguments are
-   * <code>this_element_dominates</code> and
-   * <code>other_element_dominates</code>, then the returned value is
-   * <code>neither_element_dominates</code>.
    */
   inline Domination operator&(const Domination d1, const Domination d2);
 } // namespace FiniteElementDomination
@@ -131,358 +90,324 @@ namespace FiniteElementDomination
 namespace internal
 {
   /**
-   * Internal data structure for setting up FiniteElementData. It stores for
-   * each object the (inclusive/exclusive) number of degrees of freedoms, as
-   * well as, the index of its first degree of freedom within a cell and the
-   * index of the first d-dimensional object within each face.
-   *
-   * The information is saved as a vector of vectors. One can query the
-   * inclusive number of dofs of the i-th d-dimensional object via:
-   * dofs_per_object_inclusive[d][i].
-   *
-   * As an example, the data is shown for a quadratic wedge. Which consists of
-   * 6 vertices, 9 lines, and 5 faces (two triangles and three quadrilaterals).
+   * 用于设置FiniteElementData的内部数据结构。它为每个对象存储（包括/不包括）自由度的数量，以及它在一个单元中的第一个自由度的索引和每个面中的第一个d维对象的索引。
+   * 这些信息被保存为一个向量的向量。人们可以通过：dofs_per_object_inclusive[d][i]来查询第i个d维对象的自由度的包容数。
+   * 作为一个例子，数据显示的是一个四边形楔形。它由6个顶点、9条线和5个面（两个三角形和三个四边形）组成。
    * @code
-   *              vertices                  lines                  faces cell
+   *            vertices                  lines                  faces cell
    * dpo_excl  1  1  1  1  1  1 | 1  1  1  1  1  1  1  1  1 |  0  0  1  1  1 |  0
    * dpo_incl  1  1  1  1  1  1 | 3  3  3  3  3  3  3  3  3 |  6  6  9  9  9 | 18
    * obj_index 0  1  2  3  4  5 | 6  7  8  9 10 11 12 13 14 | 15 15 15 16 17 | 18
    * @endcode
+   * 由于上述表格看起来如下： 对于。
    *
-   * Since the above table looks as follows for:
    *
-   * - a triangle:
+   *
+   *
+   *
+   * - 一个三角形。
    * @code
    * dpo_excl  1  1  1 | 1  1  1 |  0
    * obj_index 0  1  2 | 3  4  5 |  6
    * @endcode
    *
-   * - quadrilateral:
+   *
+   *
+   *
+   * - 四边形。
    * @code
    * dpo_excl  1  1  1  1 | 1  1  1  1 |  1
    * obj_index 0  1  2  3 | 4  5  6  7 |  8
    * @endcode
-   *
-   * The index of the first d-dimensional object within each face results as:
+   * 每个面内的第一个d维物体的索引结果为。
    * @code
-   *                         vertices      lines       face
+   *                       vertices      lines       face
    * first_obj_index_on_face 0 0 0 0 0 | 3 3 4 4 4 | 6 6 8 8 8
    * @endcode
+   *
    *
    */
   struct GenericDoFsPerObject
   {
     /**
-     * Exclusive number of degrees of freedom per object.
+     * 每个物体的专属自由度数。
+     *
      */
     std::vector<std::vector<unsigned int>> dofs_per_object_exclusive;
 
     /**
-     * Inclusive number of degrees of freedom per object.
+     * 每个对象的自由度的包容数。
+     *
      */
     std::vector<std::vector<unsigned int>> dofs_per_object_inclusive;
 
     /**
-     * First index of an object.
+     * 一个对象的第一个索引。
+     *
      */
     std::vector<std::vector<unsigned int>> object_index;
 
     /**
-     * First index of an object within a face.
+     * 一个物体在一个面中的第一个索引。
+     *
      */
     std::vector<std::vector<unsigned int>> first_object_index_on_face;
   };
 } // namespace internal
 
 /**
- * A class that declares a number of scalar constant variables that describe
- * basic properties of a finite element implementation. This includes, for
- * example, the number of degrees of freedom per vertex, line, or cell; the
- * number of vector components; etc.
+ * 一个声明若干标量常量变量的类，描述了有限元实现的基本属性。这包括，例如，每个顶点、线或单元的自由度的数量；矢量分量的数量；等等。
+ * 这里存储的信息是在有限元对象的初始化过程中计算出来的，并通过其构造函数传递给这个类。这个类所存储的数据是有限元类的公共接口的一部分（它派生自当前的类）。更多信息见那里。
  *
- * The kind of information stored here is computed during initialization of a
- * finite element object and is passed down to this class via its constructor.
- * The data stored by this class is part of the public interface of the
- * FiniteElement class (which derives from the current class). See there for
- * more information.
  *
  * @ingroup febase
+ *
+ *
  */
 template <int dim>
 class FiniteElementData
 {
 public:
   /**
-   * Enumerator for the different types of continuity a finite element may
-   * have. Continuity is measured by the Sobolev space containing the
-   * constructed finite element space and is also called this way.
+   * 一个有限元可能具有的不同类型的连续性的枚举器。连续性是由包含构建的有限元空间的Sobolev空间来衡量的，也这样称呼。    请注意，某些连续性可能意味着其他连续性。例如，<i>H<sup>1</sup></i>中的函数在<i>H<sup>curl</sup></i>和<i>H<sup>div</sup></i>中也是如此。    如果你对经典意义上的连续性感兴趣，那么以下关系是成立的。      <ol>   <li>  <i>H<sup>1</sup></i>意味着该函数在单元格边界上是连续的。      <li>  <i>H<sup>2</sup></i>意味着该函数在单元格边界上是连续可微的。      <li>  <i>L<sup>2</sup></i> 表示该元素是不连续的。  由于不连续元素在网格单元之间没有拓扑耦合，代码实际上可能取决于这一属性，<i>L<sup>2</sup></i>符合性以特殊方式处理，即它是<b>not</b>由任何更高符合性所暗示的。    </ol>  为了测试一个有限元是否符合某个空间，使用 FiniteElementData<dim>::conforms().  。
    *
-   * Note that certain continuities may imply others. For instance, a function
-   * in <i>H<sup>1</sup></i> is in <i>H<sup>curl</sup></i> and
-   * <i>H<sup>div</sup></i> as well.
-   *
-   * If you are interested in continuity in the classical sense, then the
-   * following relations hold:
-   *
-   * <ol>
-   *
-   * <li> <i>H<sup>1</sup></i> implies that the function is continuous over
-   * cell boundaries.
-   *
-   * <li> <i>H<sup>2</sup></i> implies that the function is continuously
-   * differentiable over cell boundaries.
-   *
-   * <li> <i>L<sup>2</sup></i> indicates that the element is discontinuous.
-   * Since discontinuous elements have no topological couplings between grid
-   * cells and code may actually depend on this property, <i>L<sup>2</sup></i>
-   * conformity is handled in a special way in the sense that it is <b>not</b>
-   * implied by any higher conformity.
-   * </ol>
-   *
-   * In order to test if a finite element conforms to a certain space, use
-   * FiniteElementData<dim>::conforms().
    */
   enum Conformity
   {
     /**
-     * Indicates incompatible continuities of a system.
+     * 表示一个系统的不兼容的连续性。
+     *
      */
     unknown = 0x00,
 
     /**
-     * Discontinuous elements. See above!
+     * 不连续的元素。见上文!
+     *
      */
     L2 = 0x01,
 
     /**
-     * Conformity with the space <i>H<sup>curl</sup></i> (continuous
-     * tangential component of a vector field)
+     * 与空间的一致性
+     * <i>H<sup>curl</sup></i>（矢量场的连续切向分量）。
+     *
      */
     Hcurl = 0x02,
 
     /**
-     * Conformity with the space <i>H<sup>div</sup></i> (continuous normal
-     * component of a vector field)
+     * 与空间<i>H<sup>div</sup></i>（矢量场的连续法向分量）的符合性
+     *
      */
     Hdiv = 0x04,
 
     /**
-     * Conformity with the space <i>H<sup>1</sup></i> (continuous)
+     * 与空间<i>H<sup>1</sup></i>的符合性（连续）。
+     *
      */
     H1 = Hcurl | Hdiv,
 
     /**
-     * Conformity with the space <i>H<sup>2</sup></i> (continuously
-     * differentiable)
+     * 与空间<i>H<sup>2</sup></i>的符合性（连续可微）。
+     *
      */
     H2 = 0x0e
   };
 
   /**
-   * The dimension of the finite element, which is the template parameter
-   * <tt>dim</tt>
+   * 有限元的尺寸，也就是模板参数<tt>dim</tt>。
+   *
    */
   static const unsigned int dimension = dim;
 
 private:
   /**
-   * Reference cell type.
+   * 参考单元的类型。
+   *
    */
   const ReferenceCell reference_cell_kind;
 
   /**
-   * Number of unique quads. If all quads have the same type, the value is
-   * one; else it equals the number of quads.
+   * 唯一四边形的数量。如果所有的四边形都有相同的类型，其值为1；否则等于四边形的数量。
+   *
    */
   const unsigned int number_unique_quads;
 
   /**
-   * Number of unique faces. If all faces have the same type, the value is
-   * one; else it equals the number of faces.
+   * 独特的面的数量。如果所有的面都有相同的类型，值是1；否则等于面的数量。
+   *
    */
   const unsigned int number_unique_faces;
 
 public:
   /**
-   * Number of degrees of freedom on a vertex.
+   * 一个顶点上的自由度数量。
+   *
    */
   const unsigned int dofs_per_vertex;
 
   /**
-   * Number of degrees of freedom in a line; not including the degrees of
-   * freedom on the vertices of the line.
+   * 一条线的自由度数；不包括线的顶点上的自由度。
+   *
    */
   const unsigned int dofs_per_line;
 
 private:
   /**
-   * Number of degrees of freedom on quads. If all quads have the same
-   * number of degrees freedoms the values equal dofs_per_quad.
+   * 四边形上的自由度数。如果所有四边形都有相同的自由度数，则数值等于dofs_per_quad。
+   *
    */
   const std::vector<unsigned int> n_dofs_on_quad;
 
 public:
   /**
-   * Number of degrees of freedom in a quadrilateral; not including the
-   * degrees of freedom on the lines and vertices of the quadrilateral.
+   * 四边形的自由度数；不包括四边形的线和顶点的自由度。
+   *
    */
   const unsigned int dofs_per_quad;
 
 private:
   /**
-   * Maximum number of degrees of freedom on any quad.
+   * 任何四边形上的最大自由度数。
+   *
    */
   const unsigned int dofs_per_quad_max;
 
 public:
   /**
-   * Number of degrees of freedom in a hexahedron; not including the degrees
-   * of freedom on the quadrilaterals, lines and vertices of the hexahedron.
+   * 六面体的自由度数；不包括六面体的四边形、线和顶点上的自由度。
+   *
    */
   const unsigned int dofs_per_hex;
 
   /**
-   * First index of dof on a line.
+   * 线上自由度的第一个索引。
+   *
    */
   const unsigned int first_line_index;
 
 private:
   /**
-   * First index of a quad. If all quads have the same number of degrees of
-   * freedom, only the first index of the first quad is stored since the
-   * indices of the others can be simply recomputed.
+   * 一个四边形的第一个索引。如果所有的四边形具有相同的自由度，则只存储第一个四边形的第一个索引，因为其他四边形的索引可以简单地重新计算。
+   *
    */
   const std::vector<unsigned int> first_index_of_quads;
 
 public:
   /**
-   * First index of dof on a quad.
+   * 一个四边形上的第一个自由度的索引。
+   *
    */
   const unsigned int first_quad_index;
 
   /**
-   * First index of dof on a hexahedron.
+   * 六面体上的第一个索引。
+   *
    */
   const unsigned int first_hex_index;
 
 private:
   /**
-   * Index of the first line of all faces.
+   * 所有面的第一行的索引。
+   *
    */
   const std::vector<unsigned int> first_line_index_of_faces;
 
 public:
   /**
-   * First index of dof on a line for face data.
+   * 面的数据在一行中的第一个索引。
+   *
    */
   const unsigned int first_face_line_index;
 
 private:
   /**
-   * Index of the first quad of all faces.
+   * 所有面孔的第一个四边形的索引。
+   *
    */
   const std::vector<unsigned int> first_quad_index_of_faces;
 
 public:
   /**
-   * First index of dof on a quad for face data.
+   * 脸部数据在一个四边形上的第一个索引。
+   *
    */
   const unsigned int first_face_quad_index;
 
 private:
   /**
-   * Number of degrees of freedom on faces. If all faces have the same
-   * number of degrees freedoms the values equal dofs_per_quad.
+   * 面孔上的自由度数。如果所有的面都有相同的自由度数，那么这些值等于dofs_per_quad。
+   *
    */
   const std::vector<unsigned int> n_dofs_on_face;
 
 public:
   /**
-   * Number of degrees of freedom on a face. This is the accumulated number of
-   * degrees of freedom on all the objects of dimension up to <tt>dim-1</tt>
-   * constituting a face.
+   * 一个面的自由度数。这是构成一个面的<tt>dim-1</tt>以内的所有物体上自由度的累积数。
+   *
    */
   const unsigned int dofs_per_face;
 
 private:
   /**
-   * Maximum number of degrees of freedom on any face.
+   * 任何面的最大自由度数。
+   *
    */
   const unsigned int dofs_per_face_max;
 
 public:
   /**
-   * Total number of degrees of freedom on a cell. This is the accumulated
-   * number of degrees of freedom on all the objects of dimension up to
-   * <tt>dim</tt> constituting a cell.
+   * 一个单元上的总自由度数。这是构成一个单元的所有尺寸到<tt>dim</tt>的对象上的自由度的累积数。
+   *
    */
   const unsigned int dofs_per_cell;
 
   /**
-   * Number of vector components of this finite element, and dimension of the
-   * image space. For vector-valued finite elements (i.e. when this number is
-   * greater than one), the number of vector components is in many cases equal
-   * to the number of base elements glued together with the help of the
-   * FESystem class. However, for elements like the Nedelec element, the
-   * number is greater than one even though we only have one base element.
+   * 该有限元的矢量分量的数量，以及图像空间的维度。对于矢量值的有限元（即当这个数字大于1时），矢量分量的数量在很多情况下等于在FESystem类的帮助下粘在一起的基本元素的数量。然而，对于像Nedelec元素这样的元素，尽管我们只有一个基础元素，但这个数字还是大于1的。
+   *
    */
   const unsigned int components;
 
   /**
-   * Maximal polynomial degree of a shape function in a single coordinate
-   * direction.
+   * 形状函数在单一坐标方向上的最大多项式程度。
+   *
    */
   const unsigned int degree;
 
   /**
-   * Indicate the space this element conforms to.
+   * 表示这个元素所符合的空间。
+   *
    */
   const Conformity conforming_space;
 
   /**
-   * Storage for an object describing the sizes of each block of a compound
-   * element. For an element which is not an FESystem, this contains only a
-   * single block with length #dofs_per_cell.
+   * 存储一个描述复合元素每个块的尺寸的对象。对于一个不是FESystem的元素，这只包含一个长度为#dofs_per_cell的单一块。
+   *
    */
   const BlockIndices block_indices_data;
 
   /**
-   * Constructor, computing all necessary values from the distribution of dofs
-   * to geometrical objects.
+   * 构造函数，计算从dofs分布到几何对象的所有必要值。
+   * @param[in]  dofs_per_object
+   * 一个向量，描述每个维度的几何对象的自由度数量。这个向量的大小必须是dim+1，条目0描述每个顶点的自由度数，条目1描述每条线的自由度数，等等。作为一个例子，对于2d中常见的
+   * $Q_1$ 拉格朗日元素，这个向量的元素是 <code>(1,0,0)</code>
+   * 。另一方面，对于3D中的 $Q_3$ 元素，它将有条目
+   * <code>(1,2,4,8)</code>  。      @param[in]  n_components
+   * 元素的向量分量的数量。      @param[in]  degree
+   * 这个元素的任何形状函数在参考元素上的任何变量的最大多项式程度。例如，对于
+   * $Q_1$
+   * 元素(在任何空间维度)，这将是一个；尽管该元素具有
+   * $\hat x\hat y$ (在2D)和 $\hat x\hat y\hat z$
+   * (在3D)形式的形状函数，尽管是二次和三次多项式，但仍然只在每个参考变量中分别是线性的，这一点就是如此。这个变量所提供的信息通常用于确定什么是合适的正交公式。
+   * @param[in]  符合性
+   * 描述这个元素符合哪个Sobolev空间的一个变量。例如，
+   * $Q_p$ 拉格朗日元素（由FE_Q类实现）是 $H^1$
+   * 符合的，而拉维亚-托马斯元素（由FE_RaviartThomas类实现）是
+   * $H_\text{div}$
+   * 符合的；最后，完全不连续的元素（由FE_DGQ类实现）只有
+   * $L_2$ 符合。      @param[in]  block_indices
+   * 一个描述有限元的基本元素如何分组的参数。默认值是构建一个由所有
+   * @p dofs_per_cell 自由度组成的单一块。这适用于所有 "原子
+   * "元素（包括非原始元素），因此这些元素可以省略这个参数。另一方面，像FESystem这样的组成元素会希望在这里传递一个不同的值。
    *
-   * @param[in] dofs_per_object A vector that describes the number of degrees
-   * of freedom on geometrical objects for each dimension. This vector must
-   * have size dim+1, and entry 0 describes the number of degrees of freedom
-   * per vertex, entry 1 the number of degrees of freedom per line, etc. As an
-   * example, for the common $Q_1$ Lagrange element in 2d, this vector would
-   * have elements <code>(1,0,0)</code>. On the other hand, for a $Q_3$
-   * element in 3d, it would have entries <code>(1,2,4,8)</code>.
-   *
-   * @param[in] n_components Number of vector components of the element.
-   *
-   * @param[in] degree The maximal polynomial degree of any of the shape
-   * functions of this element in any variable on the reference element. For
-   * example, for the $Q_1$ element (in any space dimension), this would be
-   * one; this is so despite the fact that the element has a shape function of
-   * the form $\hat x\hat y$ (in 2d) and $\hat x\hat y\hat z$ (in 3d), which,
-   * although quadratic and cubic polynomials, are still only linear in each
-   * reference variable separately. The information provided by this variable
-   * is typically used in determining what an appropriate quadrature formula
-   * is.
-   *
-   * @param[in] conformity A variable describing which Sobolev space this
-   * element conforms to. For example, the $Q_p$ Lagrange elements
-   * (implemented by the FE_Q class) are $H^1$ conforming, whereas the
-   * Raviart-Thomas element (implemented by the FE_RaviartThomas class) is
-   * $H_\text{div}$ conforming; finally, completely discontinuous elements
-   * (implemented by the FE_DGQ class) are only $L_2$ conforming.
-   *
-   * @param[in] block_indices An argument that describes how the base elements
-   * of a finite element are grouped. The default value constructs a single
-   * block that consists of all @p dofs_per_cell degrees of freedom. This is
-   * appropriate for all "atomic" elements (including non-primitive ones) and
-   * these can therefore omit this argument. On the other hand, composed
-   * elements such as FESystem will want to pass a different value here.
    */
   FiniteElementData(const std::vector<unsigned int> &dofs_per_object,
                     const unsigned int               n_components,
@@ -491,8 +416,8 @@ public:
                     const BlockIndices &block_indices = BlockIndices());
 
   /**
-   * The same as above but with the difference that also the type of the
-   * underlying geometric entity can be specified.
+   * 与上述相同，但不同的是，也可以指定基础几何实体的类型。
+   *
    */
   FiniteElementData(const std::vector<unsigned int> &dofs_per_object,
                     const ReferenceCell              reference_cell,
@@ -502,10 +427,8 @@ public:
                     const BlockIndices &block_indices = BlockIndices());
 
   /**
-   * The same as above but instead of passing a vector containing the degrees
-   * of freedoms per object a struct of type GenericDoFsPerObject. This allows
-   * that 2D objects might have different number of degrees of freedoms, which
-   * is particular useful for cells with triangles and quadrilaterals as faces.
+   * 与上述相同，但不是传递一个包含每个对象的自由度的向量，而是一个GenericDoFsPerObject类型的结构。这允许二维对象有不同的自由度，这对以三角形和四边形为面的单元格特别有用。
+   *
    */
   FiniteElementData(const internal::GenericDoFsPerObject &data,
                     const ReferenceCell                   reference_cell,
@@ -515,163 +438,171 @@ public:
                     const BlockIndices &block_indices = BlockIndices());
 
   /**
-   * Return the kind of reference cell this element is defined on: For
-   * example, whether the element's reference cell is a square or
-   * triangle, or similar choices in higher dimensions.
+   * 返回这个元素所定义的参考单元的种类。例如，该元素的参考单元是正方形还是三角形，或更高维度的类似选择。
+   *
    */
   ReferenceCell
   reference_cell() const;
 
   /**
-   * Number of unique quads. If all quads have the same type, the value is
-   * one; else it equals the number of quads.
+   * 唯一的四边形的数量。如果所有的四边形都有相同的类型，该值为1；否则等于四边形的数量。
+   *
    */
   unsigned int
   n_unique_quads() const;
 
   /**
-   * Number of unique faces. If all faces have the same type, the value is
-   * one; else it equals the number of faces.
+   * 独特的面的数量。如果所有的面都有相同的类型，值是1；否则等于面的数量。
+   *
    */
   unsigned int
   n_unique_faces() const;
 
   /**
-   * Number of dofs per vertex.
+   * 每个顶点的道夫数。
+   *
    */
   unsigned int
   n_dofs_per_vertex() const;
 
   /**
-   * Number of dofs per line. Not including dofs on lower dimensional objects.
+   * 每行的道夫数。不包括低维物体上的道夫。
+   *
    */
   unsigned int
   n_dofs_per_line() const;
 
   /**
-   * Number of dofs per quad. Not including dofs on lower dimensional objects.
+   * 每个四边形的道夫数。不包括低维物体上的道夫。
+   *
    */
   unsigned int
   n_dofs_per_quad(unsigned int face_no = 0) const;
 
   /**
-   * Maximum number of dofs per quad. Not including dofs on lower dimensional
-   * objects.
+   * 每个四边形的最多道夫数。不包括低维物体上的道夫。
+   *
    */
   unsigned int
   max_dofs_per_quad() const;
 
   /**
-   * Number of dofs per hex. Not including dofs on lower dimensional objects.
+   * 每个六面体的道夫数。不包括低维物体上的道夫。
+   *
    */
   unsigned int
   n_dofs_per_hex() const;
 
   /**
-   * Number of dofs per face, accumulating degrees of freedom of all lower
-   * dimensional objects.
+   * 每个面的度数，累积所有低维物体的自由度。
+   *
    */
   unsigned int
   n_dofs_per_face(unsigned int face_no = 0, unsigned int child = 0) const;
 
   /**
-   * Maximum number of dofs per face, accumulating degrees of freedom of all
-   * lower dimensional objects.
+   * 每个面的最大度数，累积所有低维物体的自由度。
+   *
    */
   unsigned int
   max_dofs_per_face() const;
 
   /**
-   * Number of dofs per cell, accumulating degrees of freedom of all lower
-   * dimensional objects.
+   * 每个单元的自由度数，累积所有低维物体的自由度。
+   *
    */
   unsigned int
   n_dofs_per_cell() const;
 
   /**
-   * Return the number of degrees per structdim-dimensional object. For
-   * structdim==0, the function therefore returns dofs_per_vertex, for
-   * structdim==1 dofs_per_line, etc. This function is mostly used to allow
-   * some template trickery for functions that should work on all sorts of
-   * objects without wanting to use the different names (vertex, line, ...)
-   * associated with these objects.
+   * 返回每个structdim维度对象的度数。对于
+   * structdim==0，该函数因此返回 dofs_per_vertex，对于
+   * structdim==1
+   * dofs_per_line，等等。这个函数主要用于允许一些模板技巧，这些函数应该在各种对象上工作，而不想使用与这些对象相关的不同名称（顶点、线...）。
+   *
    */
   template <int structdim>
   unsigned int
   n_dofs_per_object(const unsigned int i = 0) const;
 
   /**
-   * Number of components. See
-   * @ref GlossComponent "the glossary"
-   * for more information.
+   * 组件的数量。参见 @ref GlossComponent "术语表 "
+   * 以获得更多信息。
+   *
    */
   unsigned int
   n_components() const;
 
   /**
-   * Number of blocks. See
-   * @ref GlossBlock "the glossary"
-   * for more information.
+   * 块的数量。参见 @ref GlossBlock "术语表 "
+   * 以了解更多信息。
+   *
    */
   unsigned int
   n_blocks() const;
 
   /**
-   * Detailed information on block sizes.
+   * 关于区块大小的详细信息。
+   *
    */
   const BlockIndices &
   block_indices() const;
 
   /**
-   * Maximal polynomial degree of a shape function in a single coordinate
-   * direction.
+   * 形状函数在单一坐标方向上的最大多项式程度。
+   * 这个函数可用于确定最佳正交规则。
    *
-   * This function can be used to determine the optimal quadrature rule.
    */
   unsigned int
   tensor_degree() const;
 
   /**
-   * Test whether a finite element space conforms to a certain Sobolev space.
+   * 测试一个有限元空间是否符合某个Sobolev空间。
+   * @note
+   * 即使有限元空间具有比要求的更高的规则性，这个函数也会返回一个真值。
    *
-   * @note This function will return a true value even if the finite element
-   * space has higher regularity than asked for.
    */
   bool
   conforms(const Conformity) const;
 
   /**
-   * Comparison operator.
+   * 比较运算符。
+   *
    */
   bool
   operator==(const FiniteElementData &) const;
 
   /**
-   * Return first index of dof on a line.
+   * 返回一行中dof的第一个索引。
+   *
    */
   unsigned int
   get_first_line_index() const;
 
   /**
-   * Return first index of dof on a quad.
+   * 返回四边形上的第一个索引。
+   *
    */
   unsigned int
   get_first_quad_index(const unsigned int quad_no = 0) const;
 
   /**
-   * Return first index of dof on a hexahedron.
+   * 返回六面体上的第一个索引。
+   *
    */
   unsigned int
   get_first_hex_index() const;
 
   /**
-   * Return first index of dof on a line for face data.
+   * 返回面的数据在一条线上的第一个索引。
+   *
    */
   unsigned int
   get_first_face_line_index(const unsigned int face_no = 0) const;
 
   /**
-   * Return first index of dof on a quad for face data.
+   * 返回一个四面体上的脸部数据的第一个索引。
+   *
    */
   unsigned int
   get_first_face_quad_index(const unsigned int face_no = 0) const;
@@ -680,8 +611,9 @@ public:
 namespace internal
 {
   /**
-   * Utility function to convert "dofs per object" information
-   * of a @p dim dimensional reference cell @p reference_cell.
+   * 转换 @p dim 维度参考单元 @p reference_cell. 的
+   * "每个对象的道夫 "信息的实用函数。
+   *
    */
   internal::GenericDoFsPerObject
   expand(const unsigned int               dim,
@@ -964,3 +896,5 @@ FiniteElementData<dim>::get_first_face_quad_index(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

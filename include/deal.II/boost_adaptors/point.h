@@ -1,3 +1,4 @@
+//include/deal.II-translator/boost_adaptors/point_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -27,7 +28,8 @@ namespace boost
     namespace traits
     {
       /**
-       * Tag adaptor for dealii::Point.
+       * 用于 dealii::Point. 的标签适配器
+       *
        */
       template <int dim, class Number>
       struct tag<dealii::Point<dim, Number>>
@@ -36,7 +38,8 @@ namespace boost
       };
 
       /**
-       * Coordinate type adaptor for dealii::Point.
+       * 用于 dealii::Point. 的坐标类型适配器
+       *
        */
       template <int dim, class Number>
       struct coordinate_type<dealii::Point<dim, Number>>
@@ -45,8 +48,9 @@ namespace boost
       };
 
       /**
-       * Coordinate system adaptor for dealii::Point. By default, we assume
-       * that a dealii Point is cartesian point.
+       * 用于 dealii::Point. 的坐标系统适配器
+       * 默认情况下，我们假设一个dealii点是笛卡尔点。
+       *
        */
       template <int dim, class Number>
       struct coordinate_system<dealii::Point<dim, Number>>
@@ -55,14 +59,16 @@ namespace boost
       };
 
       /**
-       * Dimension adaptor.
+       * 尺寸适配器。
+       *
        */
       template <int dim, class Number>
       struct dimension<dealii::Point<dim, Number>> : boost::mpl::int_<dim>
       {};
 
       /**
-       * Getter function for D-th coordinate of a dealii Point.
+       * 获取dealii点的D-th坐标的函数。
+       *
        */
       template <std::size_t D, int dim, class Number>
       struct access<dealii::Point<dim, Number>, D>
@@ -74,7 +80,8 @@ namespace boost
         }
 
         /**
-         * Setter function for D-th coordinate of a dealii Point.
+         * 对D-th坐标的设置函数。
+         *
          */
         static inline void
         set(dealii::Point<dim, Number> &p, Number value)
@@ -89,3 +96,5 @@ namespace boost
 
 
 #endif
+
+

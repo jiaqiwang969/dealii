@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/read_write_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -92,51 +93,33 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*! @addtogroup Vectors
-   *@{
-   */
+  /*!   @addtogroup  矢量  @{  。  
+* */
 
   /**
-   * ReadWriteVector is intended to represent vectors in ${\mathbb R}^N$ for
-   * which it stores all or a subset of elements. The latter case in important
-   * in parallel computations, where $N$ may be so large that no processor can
-   * actually all elements of a solution vector, but where this is also not
-   * necessary: one typically only has to store the values of degrees of
-   * freedom that live on cells that are locally owned plus potentially those
-   * degrees of freedom that live on ghost cells.
+   * ReadWriteVector旨在表示 ${\mathbb R}^N$
+   * 中的向量，对于这些向量，它存储了所有或一个子集的元素。后一种情况在并行计算中很重要，因为
+   * $N$
+   * 可能大到没有一个处理器能真正解决向量的所有元素，但这也不是必须的：通常我们只需要存储住在本地拥有的单元上的自由度值，加上可能住在幽灵单元上的自由度。
+   * 该类允许访问单个元素的读或写。
+   * 然而，它不允许全局性的操作，如取法线。
+   * ReadWriteVector可以用来读写从VectorSpaceVector派生的向量中的元素，如
+   * TrilinosWrappers::MPI::Vector 和 PETScWrappers::MPI::Vector. <h3>Storing
+   * elements</h3>，大多数情况下，人们将简单地使用这些自由度的全局数字从当前类的向量中读出或写入。这是用operator()()或operator[]()来完成的，它们调用global_to_local()将<i>global</i>的索引转化为<i>local</i>的。在这种情况下，很明显，人们只能访问当前对象确实存储的向量中的元素。
+   * 然而，也可以按照当前对象所存储的元素的顺序来访问这些元素。换句话说，人们对用<i>global</i>的索引访问元素不感兴趣，而是使用一个枚举，只考虑实际存储的元素。local_element()函数为此提供了便利。为此，有必要知道<i>in
+   * which
+   * order</i>当前类存储的元素。所有连续范围的元素都按照每个范围的第一个索引的升序来存储。
+   * 可以用函数 IndexSet::largest_range_starting_index()
+   * 来获取最大范围的第一个索引。
    *
-   * This class allows to access individual elements to be read or written.
-   * However, it does not allow global operations such as taking the norm.
-   * ReadWriteVector can be used to read and write elements in vectors derived
-   * from VectorSpaceVector such as TrilinosWrappers::MPI::Vector and
-   * PETScWrappers::MPI::Vector.
-   *
-   * <h3>Storing elements</h3> Most of the time, one will simply read from or
-   * write into a vector of the current class using the global numbers of
-   * these degrees of freedom. This is done using operator()() or operator[]()
-   * which call global_to_local() to transform the <i>global</i> index into a
-   * <i>local</i> one. In such cases, it is clear that one can only access
-   * elements of the vector that the current object indeed stores.
-   *
-   * However, it is also possible to access elements in the order in which
-   * they are stored by the current object. In other words, one is not
-   * interested in accessing elements with their <i>global</i> indices, but
-   * instead using an enumeration that only takes into account the elements
-   * that are actually stored. This is facilitated by the local_element()
-   * function. To this end, it is necessary to know <i>in which order</i> the
-   * current class stores its element. The elements of all the consecutive
-   * ranges are stored in ascending order of the first index of each range.
-   * The function IndexSet::largest_range_starting_index() can be used to
-   * get the first index of the largest range.
    */
   template <typename Number>
   class ReadWriteVector : public Subscriptor
   {
   public:
     /**
-     * Declare standard types used in all containers. These types parallel
-     * those in the <tt>C++</tt> standard libraries <tt>vector<...></tt>
-     * class.
+     * 声明所有容器中使用的标准类型。这些类型与<tt>C++</tt>标准库中的<tt>vector<...></tt>类中的类型平行。
+     *
      */
     using value_type      = Number;
     using pointer         = value_type *;
@@ -149,54 +132,57 @@ namespace LinearAlgebra
     using real_type       = typename numbers::NumberTraits<Number>::real_type;
 
     /**
-     * @name 1: Basic Object-handling
+     * @name  1: 基本对象处理
+     *
      */
     //@{
     /**
-     * Empty constructor.
+     * 空的构造函数。
+     *
      */
     ReadWriteVector();
 
     /**
-     * Copy constructor.
+     * 复制构造函数。
+     *
      */
     ReadWriteVector(const ReadWriteVector<Number> &in_vector);
 
     /**
-     * Construct a vector given the size, the stored elements have their
-     * index in [0,size).
+     * 构建一个给定大小的向量，存储的元素的索引在[0,size]。
+     *
      */
     explicit ReadWriteVector(const size_type size);
 
     /**
-     * Construct a vector whose stored elements indices are given by the
-     * IndexSet @p locally_stored_indices.
+     * 构建一个向量，其存储元素的索引由IndexSet @p
+     * locally_stored_indices. 给出。
+     *
      */
     explicit ReadWriteVector(const IndexSet &locally_stored_indices);
 
     /**
-     * Destructor.
+     * 解构器。
+     *
      */
     ~ReadWriteVector() override = default;
 
     /**
-     * Set the global size of the vector to @p size. The stored elements have
-     * their index in [0,size).
+     * 将向量的全局大小设置为 @p size.
+     * 存储元素的索引在[0,size]。        如果标志 @p
+     * omit_zeroing_entries
+     * 被设置为false，内存将被初始化为0，否则内存将不被触动（用户在使用它之前必须确保用合理的数据填充它）。
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
      */
     virtual void
     reinit(const size_type size, const bool omit_zeroing_entries = false);
 
     /**
-     * Uses the same IndexSet as the one of the input vector @p in_vector and
-     * allocates memory for this vector.
+     * 使用与输入向量 @p in_vector
+     * 相同的IndexSet，并为该向量分配内存。        如果标志
+     * @p omit_zeroing_entries
+     * 被设置为false，内存将被初始化为0，否则内存将不被触动（用户在使用前必须确保用合理的数据填充它）。
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
      */
     template <typename Number2>
     void
@@ -204,13 +190,11 @@ namespace LinearAlgebra
            const bool                      omit_zeroing_entries = false);
 
     /**
-     * Initializes the vector. The indices are specified by @p
-     * locally_stored_indices.
+     * 初始化向量。指数由 @p  locally_stored_indices指定。
+     * 如果标志 @p omit_zeroing_entries
+     * 被设置为false，内存将被初始化为0，否则内存将不被触动（用户在使用前必须确保用合理的数据填充它）。
+     * local_stored_indices。
      *
-     * If the flag @p omit_zeroing_entries is set to false, the memory will be
-     * initialized with zero, otherwise the memory will be untouched (and the
-     * user must make sure to fill it with reasonable data before using it).
-     * locally_stored_indices.
      */
     virtual void
     reinit(const IndexSet &locally_stored_indices,
@@ -220,15 +204,13 @@ namespace LinearAlgebra
 #ifdef DEAL_II_WITH_TRILINOS
 #  ifdef DEAL_II_WITH_MPI
     /**
-     * Initialize this ReadWriteVector by supplying access to all locally
-     * available entries in the given ghosted or non-ghosted vector.
+     * 通过提供对给定的ghosted或non-ghosted向量中所有本地可用条目的访问，初始化这个读写向量。
+     * @note
+     * 这个函数目前将参数中的值复制到ReadWriteVector中，所以这里的修改不会修改
+     * @p trilinos_vec.
+     * 这个函数主要是为了向后兼容而写的，以获得对库内重影
+     * TrilinosWrappers::MPI::Vector 的元素访问。
      *
-     * @note This function currently copies the values from the argument into
-     * the ReadWriteVector, so modifications here will not modify @p trilinos_vec.
-     *
-     * This function is mainly written for backwards-compatibility to get
-     * element access to a ghosted TrilinosWrappers::MPI::Vector inside the
-     * library.
      */
     void
     reinit(const TrilinosWrappers::MPI::Vector &trilinos_vec);
@@ -236,65 +218,62 @@ namespace LinearAlgebra
 #endif
 
     /**
-     * Apply the functor @p func to each element of the vector. The functor
-     * should look like
+     * 对向量的每个元素应用漏斗 @p func
+     * 。这个函式应该看起来像
      * @code
      * struct Functor
      * {
-     *   void operator() (Number &value);
+     * void operator() (Number &value);
      * };
      * @endcode
+     * @note
+     * 这个函数要求包含头文件read_write_vector.templates.h。
      *
-     * @note This function requires that the header read_write_vector.templates.h
-     * be included.
      */
     template <typename Functor>
     void
     apply(const Functor &func);
 
     /**
-     * Swap the contents of this vector and the other vector @p v. One could
-     * do this operation with a temporary variable and copying over the data
-     * elements, but this function is significantly more efficient since it
-     * only swaps the pointers to the data of the two vectors and therefore
-     * does not need to allocate temporary storage and move data around.
+     * 交换这个向量和另一个向量的内容  @p v.
+     * 人们可以用一个临时变量和复制数据元素来完成这个操作，但是这个函数明显更有效率，因为它只交换了两个向量的数据指针，因此不需要分配临时存储和移动数据。
+     * 这个函数类似于所有C++标准容器的 @p swap
+     * 函数。此外，还有一个全局函数<tt>swap(u,v)</tt>，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数相类似。
      *
-     * This function is analogous to the @p swap function of all C++
-     * standard containers. Also, there is a global function
-     * <tt>swap(u,v)</tt> that simply calls <tt>u.swap(v)</tt>, again in
-     * analogy to standard functions.
      */
     void
     swap(ReadWriteVector<Number> &v);
 
     /**
-     * Copies the data and the IndexSet of the input vector @p in_vector.
+     * 复制数据和输入向量的IndexSet  @p in_vector.  。
+     *
      */
     ReadWriteVector<Number> &
     operator=(const ReadWriteVector<Number> &in_vector);
 
     /**
-     * Copies the data and the IndexSet of the input vector @p in_vector.
+     * 复制数据和输入向量的IndexSet  @p in_vector.  。
+     *
      */
     template <typename Number2>
     ReadWriteVector<Number> &
     operator=(const ReadWriteVector<Number2> &in_vector);
 
     /**
-     * Sets all elements of the vector to the scalar @p s. This operation is
-     * only allowed if @p s is equal to zero.
+     * 将向量的所有元素设置为标量  @p s.  只有在 @p s
+     * 等于零的情况下才允许此操作。
+     *
      */
     ReadWriteVector<Number> &
     operator=(const Number s);
 
     /**
-     * Imports all the elements present in the vector's IndexSet from the
-     * input vector @p vec. VectorOperation::values @p operation
-     * is used to decide if the elements in @p V should be added to the
-     * current vector or replace the current elements.
+     * 从输入向量 @p vec.   VectorOperation::values   @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。
+     * @note  参数 @p communication_pattern
+     * 被忽略，因为我们在这里处理的是一个串行向量。
      *
-     * @note The parameter @p communication_pattern is ignored since we are
-     *   dealing with a serial vector here.
      */
     void
     import(const dealii::Vector<Number> &vec,
@@ -303,13 +282,12 @@ namespace LinearAlgebra
              &communication_pattern = {});
 
     /**
-     * Imports all the elements present in the vector's IndexSet from the
-     * input vector @p vec. VectorOperation::values @p operation
-     * is used to decide if the elements in @p V should be added to the
-     * current vector or replace the current elements.
+     * 从输入向量 @p vec.   VectorOperation::values   @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。
+     * @note 参数 @p communication_pattern
+     * 被忽略，因为我们在这里处理的是一个串行向量。
      *
-     * @note The parameter @p communication_pattern is ignored since we are
-     *   dealing with a serial vector here.
      */
     void
     import(const LinearAlgebra::Vector<Number> &vec,
@@ -318,12 +296,10 @@ namespace LinearAlgebra
              &communication_pattern = {});
 
     /**
-     * Imports all the elements present in the vector's IndexSet from the
-     * input vector @p vec. VectorOperation::values @p operation
-     * is used to decide if the elements in @p V should be added to the
-     * current vector or replace the current elements. The last parameter can
-     * be used if the same communication pattern is used multiple times. This
-     * can be used to improve performance.
+     * 从输入向量 @p vec.  VectorOperation::values  @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
+     *
      */
     template <typename MemorySpace>
     void
@@ -334,12 +310,10 @@ namespace LinearAlgebra
 
 #ifdef DEAL_II_WITH_PETSC
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p petsc_vec. VectorOperation::values @p operation is used to decide
-     * if the elements in @p V should be added to the current vector or replace
-     * the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * 从输入向量 @p petsc_vec.  VectorOperation::values  @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该添加到当前向量中或替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
+     *
      */
     void
     import(const PETScWrappers::MPI::Vector &petsc_vec,
@@ -350,14 +324,11 @@ namespace LinearAlgebra
 
 #ifdef DEAL_II_WITH_TRILINOS
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p trilinos_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * 从输入向量 @p trilinos_vec.  VectorOperation::values  @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
+     * @note  @p trilinos_vec 不允许有幽灵条目。
      *
-     * @note The @p trilinos_vec is not allowed to have ghost entries.
      */
     void
     import(const TrilinosWrappers::MPI::Vector &trilinos_vec,
@@ -368,12 +339,10 @@ namespace LinearAlgebra
 #  ifdef DEAL_II_WITH_MPI
 #    ifdef DEAL_II_TRILINOS_WITH_TPETRA
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p tpetra_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * 从输入向量 @p tpetra_vec.  VectorOperation::values  @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
+     *
      */
     void
     import(const TpetraWrappers::Vector<Number> &tpetra_vec,
@@ -383,12 +352,10 @@ namespace LinearAlgebra
 #    endif
 
     /**
-     * Imports all the elements present in the vector's IndexSet from the input
-     * vector @p epetra_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter can be used if the same
-     * communication pattern is used multiple times. This can be used to improve
-     * performance.
+     * 从输入向量 @p epetra_vec.  VectorOperation::values  @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。如果多次使用同一通信模式，可以使用最后一个参数。这可以用来提高性能。
+     *
      */
     void
     import(const EpetraWrappers::Vector &epetra_vec,
@@ -400,10 +367,10 @@ namespace LinearAlgebra
 
 #ifdef DEAL_II_WITH_CUDA
     /**
-     * Import all the elements present in the vector's IndexSet from the input
-     * vector @p cuda_vec. VectorOperation::values @p operation is used to
-     * decide if the elements in @p V should be added to the current vector or
-     * replace the current elements. The last parameter is not used.
+     * 从输入向量 @p cuda_vec.  VectorOperation::values  @p operation
+     * 中导入向量的IndexSet中存在的所有元素，用于决定 @p V
+     * 中的元素是否应该被添加到当前向量中，或者替换当前元素。最后一个参数不使用。
+     *
      */
     void
     import(const CUDAWrappers::Vector<Number> &cuda_vec,
@@ -413,65 +380,61 @@ namespace LinearAlgebra
 #endif
 
     /**
-     * The value returned by this function denotes the dimension of the vector
-     * spaces that are modeled by objects of this kind. However, objects of
-     * the current class do not actually stores all elements of vectors of
-     * this space but may, in fact store only a subset. The number of elements
-     * stored is returned by n_elements() and is smaller or equal to the
-     * number returned by the current function.
+     * 这个函数返回的值表示这类对象所模拟的向量空间的维度。然而，当前类的对象实际上并不存储这个空间的向量的所有元素，而实际上可能只存储一个子集。存储的元素数量由n_elements()返回，并且小于或等于当前函数返回的数量。
+     *
      */
     size_type
     size() const;
 
     /**
-     * This function returns the number of elements stored. It is smaller or
-     * equal to the dimension of the vector space that is modeled by an object
-     * of this kind. This dimension is return by size().
+     * 这个函数返回存储的元素数。它小于或等于这种对象所模拟的向量空间的维度。这个维度是由size()返回的。
+     * @deprecated  使用local_owned_size()代替。
      *
-     * @deprecated use locally_owned_size() instead.
      */
     DEAL_II_DEPRECATED
     size_type
     n_elements() const;
 
     /**
-     * Return the local size of the vector, i.e., the number of indices
-     * owned locally.
+     * 返回向量的本地大小，即本地拥有的索引数。
+     *
      */
     size_type
     locally_owned_size() const;
 
     /**
-     * Return the IndexSet that represents the indices of the elements stored.
+     * 返回IndexSet，代表存储的元素的索引。
+     *
      */
     const IndexSet &
     get_stored_elements() const;
 
     /**
-     * Make the @p ReadWriteVector class a bit like the <tt>vector<></tt>
-     * class of the C++ standard library by returning iterators to the start
-     * and end of the <i>locally stored</i> elements of this vector.
+     * 使 @p ReadWriteVector
+     * 类有点像C++标准库的<tt>vector<>/tt>类，返回该向量的<i>locally
+     * stored</i>元素的开始和结束的迭代器。
+     *
      */
     iterator
     begin();
 
     /**
-     * Return constant iterator to the start of the locally stored elements
-     * of the vector.
+     * 返回本地存储的向量元素的开始的常数迭代器。
+     *
      */
     const_iterator
     begin() const;
 
     /**
-     * Return an iterator pointing to the element past the end of the array
-     * of locally stored entries.
+     * 返回一个迭代器，指向本地存储的条目数组结束后的元素。
+     *
      */
     iterator
     end();
 
     /**
-     * Return a constant iterator pointing to the element past the end of the
-     * array of the locally stored entries.
+     * 返回一个恒定的迭代器，指向本地存储的条目数组结束后的元素。
+     *
      */
     const_iterator
     end() const;
@@ -479,58 +442,55 @@ namespace LinearAlgebra
 
 
     /**
-     * @name 2: Data-Access
+     * @name  2: 数据访问
+     *
      */
     //@{
 
     /**
-     * Read access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * 读取对应于 @p  global_index位置的数据。如果 @p
+     * global_index
+     * 不是由当前对象存储的，就会产生一个异常。
+     *
      */
     Number
     operator()(const size_type global_index) const;
 
     /**
-     * Read and write access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * 对 @p  global_index对应位置的数据进行读写访问。如果 @p
+     * global_index 没有被当前对象存储，则会产生一个异常。
+     *
      */
     Number &
     operator()(const size_type global_index);
 
     /**
-     * Read access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * 读取对应于 @p  global_index位置的数据。如果 @p
+     * global_index 没有被当前对象存储，就会产生一个异常。
+     * 这个函数与operator()的作用相同。
      *
-     * This function does the same thing as operator().
      */
     Number operator[](const size_type global_index) const;
 
     /**
-     * Read and write access to the data in the position corresponding to @p
-     * global_index. An exception is thrown if @p global_index is not stored
-     * by the current object.
+     * 读取和写入对应于 @p global_index位置的数据。如果 @p
+     * global_index
+     * 不是由当前对象存储的，就会抛出一个异常。
+     * 这个函数与operator()的作用相同。
      *
-     * This function does the same thing as operator().
      */
     Number &operator[](const size_type global_index);
 
     /**
-     * Instead of getting individual elements of a vector via operator(),
-     * this function allows getting a whole set of elements at once. The
-     * indices of the elements to be read are stated in the first argument, the
-     * corresponding values are returned in the second.
-     *
-     * If the current vector is called @p v, then this function is the equivalent
-     * to the code
+     * 与通过operator()获取向量中的单个元素不同，这个函数允许一次获取整个元素集。要读取的元素的索引在第一个参数中说明，相应的值在第二个参数中返回。
+     * 如果当前的向量被称为 @p v,
+     * ，那么这个函数就等同于代码
      * @code
-     *   for (unsigned int i=0; i<indices.size(); ++i)
-     *     values[i] = v[indices[i]];
+     * for (unsigned int i=0; i<indices.size(); ++i)
+     *   values[i] = v[indices[i]];
      * @endcode
+     * @pre  @p indices 和 @p values 数组的大小必须是一致的。
      *
-     * @pre The sizes of the @p indices and @p values arrays must be identical.
      */
     template <typename Number2>
     void
@@ -538,31 +498,23 @@ namespace LinearAlgebra
                          std::vector<Number2> &        values) const;
 
     /**
-     * Instead of getting individual elements of a vector via operator(),
-     * this function allows getting a whole set of elements at once. In
-     * contrast to the previous function, this function obtains the
-     * indices of the elements by dereferencing all elements of the iterator
-     * range provided by the first two arguments, and puts the vector
-     * values into memory locations obtained by dereferencing a range
-     * of iterators starting at the location pointed to by the third
-     * argument.
-     *
-     * If the current vector is called @p v, then this function is the equivalent
-     * to the code
+     * 这个函数不是通过operator()获得向量的单个元素，而是允许一次获得整个元素集。与前一个函数不同的是，这个函数通过取消引用前两个参数提供的迭代器范围内的所有元素来获得元素的索引，并将向量的值放入通过取消引用从第三个参数指向的位置开始的迭代器范围获得的内存位置。
+     * 如果当前的向量被称为 @p v,
+     * ，那么这个函数就等同于代码
      * @code
-     *   ForwardIterator indices_p = indices_begin;
-     *   OutputIterator  values_p  = values_begin;
-     *   while (indices_p != indices_end)
-     *   {
-     *     *values_p = v[*indices_p];
-     *     ++indices_p;
-     *     ++values_p;
-     *   }
+     * ForwardIterator indices_p = indices_begin;
+     * OutputIterator  values_p  = values_begin;
+     * while (indices_p != indices_end)
+     * {
+     *  values_p = v[*indices_p];
+     *   ++indices_p;
+     *   ++values_p;
+     * }
      * @endcode
+     * @pre  必须能够写进从 @p values_begin
+     * 开始的尽可能多的内存位置，因为有 @p indices_begin 和
+     * @p indices_end. 之间的迭代器。
      *
-     * @pre It must be possible to write into as many memory locations
-     *   starting at @p values_begin as there are iterators between
-     *   @p indices_begin and @p indices_end.
      */
     template <typename ForwardIterator, typename OutputIterator>
     void
@@ -571,27 +523,19 @@ namespace LinearAlgebra
                          OutputIterator        values_begin) const;
 
     /**
-     * Read access to the data field specified by @p local_index. When you
-     * access elements in the order in which they are stored, it is necessary
-     * that you know in which they are stored. In other words, you need to
-     * know the map between the global indices of the elements this class
-     * stores, and the local indices into the contiguous array of these global
-     * elements. For this, see the general documentation of this class.
+     * 读取访问 @p local_index. 指定的数据字段
+     * 当你按照元素的存储顺序访问它们时，你有必要知道它们被存储在哪个位置。换句话说，你需要知道这个类所存储的元素的全局索引与这些全局元素的连续数组中的局部索引之间的映射。关于这一点，请看这个类的一般文档。
+     * 性能。直接数组访问（快速）。
      *
-     * Performance: Direct array access (fast).
      */
     Number
     local_element(const size_type local_index) const;
 
     /**
-     * Read and write access to the data field specified by @p local_index.
-     * When you access elements in the order in which they are stored, it is
-     * necessary that you know in which they are stored. In other words, you
-     * need to know the map between the global indices of the elements this
-     * class stores, and the local indices into the contiguous array of these
-     * global elements. For this, see the general documentation of this class.
+     * 对 @p local_index. 指定的数据域的读写访问
+     * 当你按照元素的存储顺序访问它们时，你有必要知道它们是以何种方式存储的。换句话说，你需要知道这个类所存储的元素的全局索引与这些全局元素的连续数组中的局部索引之间的映射。关于这一点，请看这个类的一般文档。
+     * 性能。直接数组访问（快速）。
      *
-     * Performance: Direct array access (fast).
      */
     Number &
     local_element(const size_type local_index);
@@ -599,13 +543,15 @@ namespace LinearAlgebra
 
 
     /**
-     * @name 3: Modification of vectors
+     * @name  3: 修改向量
+     *
      */
     //@{
 
     /**
-     * This function adds a whole set of values stored in @p values to the
-     * vector components specified by @p indices.
+     * 该函数将存储在 @p values 中的整组值添加到 @p indices.
+     * 指定的向量成分中。
+     *
      */
     template <typename Number2>
     void
@@ -613,8 +559,8 @@ namespace LinearAlgebra
         const std::vector<Number2> &  values);
 
     /**
-     * This function is similar to the previous one but takes a
-     * ReadWriteVector of values.
+     * 这个函数与前一个函数类似，但需要一个读写向量的值。
+     *
      */
     template <typename Number2>
     void
@@ -622,9 +568,8 @@ namespace LinearAlgebra
         const ReadWriteVector<Number2> &values);
 
     /**
-     * Take an address where <tt>n_elements</tt> are stored contiguously and
-     * add them into the vector. Handles all cases which are not covered by
-     * the other two <tt>add()</tt> functions above.
+     * 取一个<tt>n_elements</tt>连续存储的地址，并将其加入到向量中。处理所有其他两个<tt>add()</tt>函数没有涵盖的情况。
+     *
      */
     template <typename Number2>
     void
@@ -633,7 +578,8 @@ namespace LinearAlgebra
         const Number2 *  values);
 
     /**
-     * Prints the vector to the output stream @p out.
+     * 将向量打印到输出流中  @p out.  。
+     *
      */
     void
     print(std::ostream &     out,
@@ -641,7 +587,8 @@ namespace LinearAlgebra
           const bool         scientific = true) const;
 
     /**
-     * Return the memory consumption of this class in bytes.
+     * 以字节为单位返回这个类的内存消耗。
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -651,9 +598,9 @@ namespace LinearAlgebra
 #ifdef DEAL_II_WITH_TRILINOS
 #  ifdef DEAL_II_TRILINOS_WITH_TPETRA
     /**
-     * Import all the elements present in the vector's IndexSet from the input
-     * vector @p tpetra_vector. This is an helper function and it should not be
-     * used directly.
+     * 从输入向量中导入所有存在于向量IndexSet中的元素  @p
+     * tpetra_vector.  这是一个辅助函数，不应该直接使用它。
+     *
      */
     void
     import(
@@ -666,9 +613,9 @@ namespace LinearAlgebra
 #  endif
 
     /**
-     * Import all the elements present in the vector's IndexSet from the input
-     * vector @p multivector. This is an helper function and it should not be
-     * used directly.
+     * 从输入向量导入向量的IndexSet中的所有元素  @p
+     * multivector.  这是一个辅助函数，不应该直接使用。
+     *
      */
     void
     import(const Epetra_MultiVector &multivector,
@@ -680,7 +627,8 @@ namespace LinearAlgebra
 #endif
 
     /**
-     * Return the local position of @p global_index.
+     * 返回 @p global_index. 的本地位置。
+     *
      */
     unsigned int
     global_to_local(const types::global_dof_index global_index) const
@@ -692,7 +640,8 @@ namespace LinearAlgebra
     }
 
     /**
-     * A helper function that is used to resize the val array.
+     * 一个辅助函数，用于调整val数组的大小。
+     *
      */
     void
     resize_val(const size_type new_allocated_size);
@@ -700,8 +649,9 @@ namespace LinearAlgebra
 #if defined(DEAL_II_WITH_TRILINOS) && defined(DEAL_II_WITH_MPI)
 #  ifdef DEAL_II_TRILINOS_WITH_TPETRA
     /**
-     * Return a TpetraWrappers::CommunicationPattern and store it for future
-     * use.
+     * 返回一个 TpetraWrappers::CommunicationPattern
+     * ，并将其储存起来供将来使用。
+     *
      */
     TpetraWrappers::CommunicationPattern
     create_tpetra_comm_pattern(const IndexSet &source_index_set,
@@ -709,8 +659,9 @@ namespace LinearAlgebra
 #  endif
 
     /**
-     * Return a EpetraWrappers::CommunicationPattern and store it for future
-     * use.
+     * 返回一个 EpetraWrappers::CommunicationPattern
+     * ，并存储起来供将来使用。
+     *
      */
     EpetraWrappers::CommunicationPattern
     create_epetra_comm_pattern(const IndexSet &source_index_set,
@@ -718,29 +669,32 @@ namespace LinearAlgebra
 #endif
 
     /**
-     * Indices of the elements stored.
+     * 存储的元素的索引。
+     *
      */
     IndexSet stored_elements;
 
     /**
-     * IndexSet of the elements of the last imported vector;
+     * 最后导入的向量的元素的索引集。
+     *
      */
     IndexSet source_stored_elements;
 
     /**
-     * CommunicationPattern for the communication between the
-     * source_stored_elements IndexSet and the current vector.
+     * Source_stored_elements IndexSet和当前向量之间的通信模式。
+     *
      */
     std::shared_ptr<Utilities::MPI::CommunicationPatternBase> comm_pattern;
 
     /**
-     * Pointer to the array of local elements of this vector.
+     * 指向这个向量的本地元素数组的指针。
+     *
      */
     std::unique_ptr<Number[], decltype(std::free) *> values;
 
     /**
-     * For parallel loops with TBB, this member variable stores the affinity
-     * information of loops.
+     * 对于带有TBB的并行循环，这个成员变量存储循环的亲和力信息。
+     *
      */
     mutable std::shared_ptr<::dealii::parallel::internal::TBBPartitioner>
       thread_loop_partitioner;
@@ -751,42 +705,46 @@ namespace LinearAlgebra
 
   private:
     /**
-     * This class provides a wrapper around a Functor which acts on
-     * single elements of the vector. This is necessary to use
-     * tbb::parallel_for which requires a TBBForFunctor.
+     * 这个类提供了一个围绕Functor的包装器，它作用于向量的单个元素。这对于使用
+     * tbb::parallel_for 是必要的，因为它需要一个TBBForFunctor。
+     *
      */
     template <typename Functor>
     class FunctorTemplate
     {
     public:
       /**
-       * Constructor. Take a functor and store a copy of it.
+       * 构造器。取一个函数并存储它的副本。
+       *
        */
       FunctorTemplate(ReadWriteVector<Number> &parent, const Functor &functor);
 
       /**
-       * Evaluate the element with the stored copy of the functor.
+       * 用存储的functor的拷贝来评估元素。
+       *
        */
       virtual void
       operator()(const size_type begin, const size_type end);
 
     private:
       /**
-       * Alias to the ReadWriteVector object that owns the FunctorTemplate.
+       * 对拥有FunctorTemplate的ReadWriteVector对象的别名。
+       *
        */
       ReadWriteVector &parent;
 
       /**
-       * Copy of the functor.
+       * 漏斗的副本。
+       *
        */
       const Functor &functor;
     };
   };
 
-  /*@}*/
+   /*@}*/ 
 
 
-  /*---------------------------- Inline functions ---------------------------*/
+   /*---------------------------- Inline functions ---------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -1080,11 +1038,11 @@ namespace LinearAlgebra
 
 
 /**
- * Global function @p swap which overloads the default implementation of the
- * C++ standard library which uses a temporary object. The function simply
- * exchanges the data of the two vectors.
+ * 全局函数 @p swap
+ * ，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
+ * @relatesalso  向量
  *
- * @relatesalso Vector
+ *
  */
 template <typename Number>
 inline void
@@ -1098,3 +1056,5 @@ swap(LinearAlgebra::ReadWriteVector<Number> &u,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

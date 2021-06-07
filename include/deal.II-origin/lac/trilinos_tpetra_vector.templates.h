@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/trilinos_tpetra_vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -690,5 +689,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 #endif
-
-

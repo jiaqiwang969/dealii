@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/sparse_matrix_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -66,18 +67,21 @@ namespace TrilinosWrappers
 #  endif
 
 /**
- * @addtogroup Matrix1
- * @{
+ * @addtogroup  Matrix1  @{ .
+ *
+ *
  */
 
 /**
- * A namespace in which we declare iterators over the elements of sparse
- * matrices.
+ * 一个命名空间，我们在其中声明对稀疏矩阵元素的迭代器。
+ *
+ *
  */
 namespace SparseMatrixIterators
 {
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
@@ -86,34 +90,31 @@ namespace SparseMatrixIterators
   class Iterator;
 
   /**
-   * General template for sparse matrix accessors. The first template argument
-   * denotes the underlying numeric type, the second the constness of the
-   * matrix.
+   * 稀疏矩阵访问器的通用模板。第一个模板参数表示底层数字类型，第二个表示矩阵的常数。
+   * 通用模板没有被实现，只有针对第二个模板参数的两个可能值的特殊化。因此，这里列出的接口只是作为提供的模板，因为doxygen并没有链接这些特殊化。
    *
-   * The general template is not implemented, only the specializations for the
-   * two possible values of the second template argument. Therefore, the
-   * interface listed here only serves as a template provided since doxygen
-   * does not link the specializations.
    */
   template <typename number, bool Constness>
   class Accessor : public SparsityPatternIterators::Accessor
   {
   public:
     /**
-     * Value of this matrix entry.
+     * 这个矩阵条目的值。
+     *
      */
     number
     value() const;
 
     /**
-     * Value of this matrix entry.
+     * 此矩阵条目的值。
+     *
      */
     number &
     value();
 
     /**
-     * Return a reference to the matrix into which this accessor points. Note
-     * that in the present case, this is a constant reference.
+     * 返回该访问器所指向的矩阵的引用。注意，在本例中，这是一个常数引用。
+     *
      */
     const SparseMatrix<number> &
     get_matrix() const;
@@ -122,57 +123,61 @@ namespace SparseMatrixIterators
 
 
   /**
-   * Accessor class for constant matrices, used in the const_iterators. This
-   * class builds on the accessor classes used for sparsity patterns to loop
-   * over all nonzero entries, and only adds the accessor functions to gain
-   * access to the actual value stored at a certain location.
+   * 用于常数矩阵的访问器类，在const_iterators中使用。这个类建立在用于稀疏模式的访问器类的基础上，在所有非零条目上循环，只增加了访问器函数，以获得存储在某一位置的实际值。
+   *
    */
   template <typename number>
   class Accessor<number, true> : public SparsityPatternIterators::Accessor
   {
   public:
     /**
-     * Typedef for the type (including constness) of the matrix to be used
-     * here.
+     * 这里要使用的矩阵的类型（包括常数）的类型定义。
+     *
      */
     using MatrixType = const SparseMatrix<number>;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     Accessor(MatrixType *matrix, const std::size_t index_within_matrix);
 
     /**
-     * Constructor. Construct the end accessor for the given matrix.
+     * 构造器。构建给定矩阵的终端访问器。
+     *
      */
     Accessor(MatrixType *matrix);
 
     /**
-     * Copy constructor to get from a non-const accessor to a const accessor.
+     * 复制构造器，从一个非常量访问器到一个常量访问器。
+     *
      */
     Accessor(const SparseMatrixIterators::Accessor<number, false> &a);
 
     /**
-     * Value of this matrix entry.
+     * 这个矩阵条目的值。
+     *
      */
     number
     value() const;
 
     /**
-     * Return a reference to the matrix into which this accessor points. Note
-     * that in the present case, this is a constant reference.
+     * 返回该访问器所指向的矩阵的引用。注意，在本例中，这是一个常量引用。
+     *
      */
     const MatrixType &
     get_matrix() const;
 
   private:
     /**
-     * Pointer to the matrix we use.
+     * 指向我们使用的矩阵的指针。
+     *
      */
     MatrixType *matrix;
 
     /**
-     * Make the advance function of the base class available.
+     * 使基类的前进函数可用。
+     *
      */
     using SparsityPatternIterators::Accessor::advance;
 
@@ -183,129 +188,121 @@ namespace SparseMatrixIterators
 
 
   /**
-   * Accessor class for non-constant matrices, used in the iterators. This
-   * class builds on the accessor classes used for sparsity patterns to loop
-   * over all nonzero entries, and only adds the accessor functions to gain
-   * access to the actual value stored at a certain location.
+   * 用于非恒定矩阵的访问器类，在迭代器中使用。这个类建立在用于稀疏模式的访问器类的基础上，在所有非零条目上循环，只增加了访问器函数，以获得存储在某一位置的实际值。
+   *
    */
   template <typename number>
   class Accessor<number, false> : public SparsityPatternIterators::Accessor
   {
   private:
     /**
-     * Reference class. This is what the accessor class returns when you call
-     * the value() function. The reference acts just as if it were a reference
-     * to the actual value of a matrix entry, i.e. you can read and write it,
-     * you can add and multiply to it, etc, but since the matrix does not give
-     * away the address of this matrix entry, we have to go through functions
-     * to do all this.
+     * 参考类。这是访问器类在你调用value()函数时返回的东西。引用的作用就像它是对矩阵条目实际值的引用一样，也就是说，你可以读写它，可以对它进行加法和乘法，等等，但是由于矩阵并没有给出这个矩阵条目的地址，我们必须通过函数来完成这一切。
+     * 构造函数需要一个指向访问器对象的指针，描述它指向矩阵的哪个元素。当人们写像iterator->value()=0（而不是iterator->value()=0.0）这样的代码时，就会产生歧义，因为右边是一个整数，既可以转换为<tt>数字</tt>（即最常见的双数），也可以转换为另一个<tt>参考</tt>类型的对象。然后编译器抱怨说不知道该采取哪种转换。
+     * 由于某些原因，添加另一个重载operator=(int)似乎并不能解决这个问题。然而，我们通过向Reference构造函数添加第二个假参数来避免这个问题，该参数未被使用，但可以确保没有第二个匹配的转换序列，使用单参数的右侧。
+     * 测试案例oliver_01检查了这一方法是否真的能按预期工作。
      *
-     * The constructor takes a pointer to an accessor object that describes
-     * which element of the matrix it points to. This creates an ambiguity
-     * when one writes code like iterator->value()=0 (instead of
-     * iterator->value()=0.0), since the right hand side is an integer that
-     * can both be converted to a <tt>number</tt> (i.e., most commonly a
-     * double) or to another object of type <tt>Reference</tt>. The compiler
-     * then complains about not knowing which conversion to take.
-     *
-     * For some reason, adding another overload operator=(int) doesn't seem to
-     * cure the problem. We avoid it, however, by adding a second, dummy
-     * argument to the Reference constructor, that is unused, but makes sure
-     * there is no second matching conversion sequence using a one-argument
-     * right hand side.
-     *
-     * The testcase oliver_01 checks that this actually works as intended.
      */
     class Reference
     {
     public:
       /**
-       * Constructor. For the second argument, see the general class
-       * documentation.
+       * 构造函数。关于第二个参数，请参见一般的类文档。
+       *
        */
       Reference(const Accessor *accessor, const bool dummy);
 
       /**
-       * Conversion operator to the data type of the matrix.
+       * 对矩阵的数据类型的转换操作。
+       *
        */
       operator number() const;
 
       /**
-       * Set the element of the matrix we presently point to to @p n.
+       * 将我们目前指向的矩阵的元素设置为 @p n. 。
+       *
        */
       const Reference &
       operator=(const number n) const;
 
       /**
-       * Add @p n to the element of the matrix we presently point to.
+       * 将 @p n 添加到我们目前指向的矩阵元素中。
+       *
        */
       const Reference &
       operator+=(const number n) const;
 
       /**
-       * Subtract @p n from the element of the matrix we presently point to.
+       * 从我们现在指向的矩阵元素中减去 @p n 。
+       *
        */
       const Reference &
       operator-=(const number n) const;
 
       /**
-       * Multiply the element of the matrix we presently point to by @p n.
+       * 将我们现在指向的矩阵元素乘以 @p n. 。
+       *
        */
       const Reference &
       operator*=(const number n) const;
 
       /**
-       * Divide the element of the matrix we presently point to by @p n.
+       * 用我们现在指向的矩阵的元素除以 @p n. 。
+       *
        */
       const Reference &
       operator/=(const number n) const;
 
     private:
       /**
-       * Pointer to the accessor that denotes which element we presently point
-       * to.
+       * 指向访问器的指针，表示我们目前指向哪个元素。
+       *
        */
       const Accessor *accessor;
     };
 
   public:
     /**
-     * Typedef for the type (including constness) of the matrix to be used
-     * here.
+     * 这里要使用的矩阵的类型（包括常数）的类型定义。
+     *
      */
     using MatrixType = SparseMatrix<number>;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     Accessor(MatrixType *matrix, const std::size_t index);
 
     /**
-     * Constructor. Construct the end accessor for the given matrix.
+     * 构造器。构建给定矩阵的终端访问器。
+     *
      */
     Accessor(MatrixType *matrix);
 
     /**
-     * Value of this matrix entry, returned as a read- and writable reference.
+     * 该矩阵条目的值，作为可读可写的引用返回。
+     *
      */
     Reference
     value() const;
 
     /**
-     * Return a reference to the matrix into which this accessor points. Note
-     * that in the present case, this is a non-constant reference.
+     * 返回该访问器所指向的矩阵的引用。注意，在本例中，这是一个非常量的引用。
+     *
      */
     MatrixType &
     get_matrix() const;
 
   private:
     /**
-     * Pointer to the matrix we use.
+     * 指向我们使用的矩阵的指针。
+     *
      */
     MatrixType *matrix;
 
     /**
-     * Make the advance function of the base class available.
+     * 使基类的前进函数可用。
+     *
      */
     using SparsityPatternIterators::Accessor::advance;
 
@@ -317,141 +314,131 @@ namespace SparseMatrixIterators
 
 
   /**
-   * Iterator for constant and non-constant matrices.
+   * 用于常数和非常数矩阵的迭代器。
+   * 这些迭代器的典型用途是迭代稀疏矩阵的元素或单个行的元素。注意，不能保证行的元素实际上是按照列单调增加的顺序来遍历的。更多信息请参见SparsityPattern类的文档。
+   * 第一个模板参数表示基础数字类型，第二个模板参数表示矩阵的常数。
+   * 因为这个类有一个专门的<tt>Constness=false</tt>，所以这个类是用于常数矩阵的迭代器。
+   * @note
+   * 该类直接对SparsityPattern和SparseMatrix类的内部数据结构进行操作。因此，有些操作很便宜，有些则不然。特别是，访问列索引和指向的条目的值是很便宜的。另一方面，访问行索引是很昂贵的（对于一个有
+   * $N$ 行的矩阵，这需要 $O(\log(N))$
+   * 次操作）。因此，当你设计使用这些迭代器的算法时，通常的做法是不一次性循环稀疏矩阵的<i>all</i>个元素，而是在所有行上有一个外循环，并在这个循环中迭代这个行的元素。这样，你只需要解除对迭代器的引用来获得列索引和值，而通过使用循环索引可以避免对行索引的（昂贵）查找。
    *
-   * The typical use for these iterators is to iterate over the elements of a
-   * sparse matrix or over the elements of individual rows. Note that there is
-   * no guarantee that the elements of a row are actually traversed in an
-   * order in which columns monotonically increase. See the documentation of
-   * the SparsityPattern class for more information.
-   *
-   * The first template argument denotes the underlying numeric type, the
-   * second the constness of the matrix.
-   *
-   * Since there is a specialization of this class for
-   * <tt>Constness=false</tt>, this class is for iterators to constant
-   * matrices.
-   *
-   * @note This class operates directly on the internal data structures of the
-   * SparsityPattern and SparseMatrix classes. As a consequence, some
-   * operations are cheap and some are not. In particular, it is cheap to
-   * access the column index and the value of an entry pointed to. On the
-   * other hand, it is expensive to access the row index (this requires
-   * $O(\log(N))$ operations for a matrix with $N$ row). As a consequence,
-   * when you design algorithms that use these iterators, it is common
-   * practice to not loop over <i>all</i> elements of a sparse matrix at once,
-   * but to have an outer loop over all rows and within this loop iterate over
-   * the elements of this row. This way, you only ever need to dereference the
-   * iterator to obtain the column indices and values whereas the (expensive)
-   * lookup of the row index can be avoided by using the loop index instead.
    */
   template <typename number, bool Constness>
   class Iterator
   {
   public:
     /**
-     * Typedef for the matrix type (including constness) we are to operate on.
+     * 我们要操作的矩阵类型（包括常数）的类型定义。
+     *
      */
     using MatrixType = typename Accessor<number, Constness>::MatrixType;
 
     /**
-     * An alias for the type you get when you dereference an iterator of the
-     * current kind.
+     * 当你解除对当前类型的迭代器的定义时，你得到的类型的别名。
+     *
      */
     using value_type = const Accessor<number, Constness> &;
 
     /**
-     * Constructor. Create an iterator into the matrix @p matrix for the given
-     * index in the complete matrix (counting from the zeroth entry).
+     * 构造函数。在矩阵 @p matrix
+     * 中创建一个迭代器，用于完整矩阵中的给定索引（从第2个条目开始计算）。
+     *
      */
     Iterator(MatrixType *matrix, const std::size_t index_within_matrix);
 
     /**
-     * Constructor. Create the end iterator for the given matrix.
+     * 构造函数。为给定的矩阵创建终端迭代器。
+     *
      */
     Iterator(MatrixType *matrix);
 
     /**
-     * Conversion constructor to get from a non-const iterator to a const
-     * iterator.
+     * 转换构造函数，从非常量迭代器到常量迭代器。
+     *
      */
     Iterator(const SparseMatrixIterators::Iterator<number, false> &i);
 
     /**
-     * Copy assignment operator from a non-const iterator to a const iterator.
+     * 从非定常迭代器到定常迭代器的复制赋值操作符。
+     *
      */
     const Iterator<number, Constness> &
     operator=(const SparseMatrixIterators::Iterator<number, false> &i);
 
     /**
-     * Prefix increment.
+     * 前缀增量。
+     *
      */
     Iterator &
     operator++();
 
     /**
-     * Postfix increment.
+     * 后缀增量。
+     *
      */
     Iterator
     operator++(int);
 
     /**
-     * Dereferencing operator.
+     * 撤消运算符。
+     *
      */
     const Accessor<number, Constness> &operator*() const;
 
     /**
-     * Dereferencing operator.
+     * 解除引用操作符。
+     *
      */
     const Accessor<number, Constness> *operator->() const;
 
     /**
-     * Comparison. True, if both iterators point to the same matrix position.
+     * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+     *
      */
     bool
     operator==(const Iterator &) const;
 
     /**
-     * Inverse of <tt>==</tt>.
+     * <tt>==</tt>的倒数。
+     *
      */
     bool
     operator!=(const Iterator &) const;
 
     /**
-     * Comparison operator. Result is true if either the first row number is
-     * smaller or if the row numbers are equal and the first index is smaller.
+     * 比较运算符。如果第一个行号较小，或者行号相等且第一个索引较小，则结果为真。
+     * 这个函数只有在两个迭代器都指向同一个矩阵时才有效。
      *
-     * This function is only valid if both iterators point into the same
-     * matrix.
      */
     bool
     operator<(const Iterator &) const;
 
     /**
-     * Comparison operator. Works in the same way as above operator, just the
-     * other way round.
+     * 比较运算符。与上述运算符的工作方式相同，只是反过来了。
+     *
      */
     bool
     operator>(const Iterator &) const;
 
     /**
-     * Return the distance between the current iterator and the argument. The
-     * distance is given by how many times one has to apply operator++ to the
-     * current iterator to get the argument (for a positive return value), or
-     * operator-- (for a negative return value).
+     * 返回当前迭代器和参数之间的距离。这个距离是通过对当前迭代器应用operator++多少次才能得到参数（对于正的返回值），或者operator--（对于负的返回值）而给出。
+     *
      */
     int
     operator-(const Iterator &p) const;
 
     /**
-     * Return an iterator that is @p n ahead of the current one.
+     * 返回一个比当前迭代器领先 @p n 的迭代器。
+     *
      */
     Iterator
     operator+(const size_type n) const;
 
   private:
     /**
-     * Store an object of the accessor class.
+     * 存储一个访问器类的对象。
+     *
      */
     Accessor<number, Constness> accessor;
   };
@@ -460,323 +447,272 @@ namespace SparseMatrixIterators
 
 /**
  * @}
+ *
+ *
  */
 
 
 // TODO: Add multithreading to the other vmult functions.
 
 /**
- * Sparse matrix. This class implements the functionality to store matrix
- * entry values in the locations denoted by a SparsityPattern. See
- * @ref Sparsity
- * for a discussion about the separation between sparsity patterns and
- * matrices.
+ * 稀疏矩阵。这个类实现了在SparsityPattern表示的位置存储矩阵入口值的功能。参见 @ref
+ * Sparsity 中关于稀疏模式和矩阵之间分离的讨论。
+ * SparseMatrix的元素是按照SparsityPattern类存储其条目的相同顺序来存储的。在每一行中，元素通常以列索引递增的顺序从左到右存储；这一规则的例外是，如果矩阵是正方形（m()
+ * ==
+ * n()），那么对角线条目就会被存储为每一行的第一个元素，以使应用雅可比或SSOR预处理程序等操作更快。因此，如果你用迭代器遍历稀疏矩阵的某一行的元素（使用
+ * SparseMatrix::begin 和 SparseMatrix::end)
+ * ，你会发现只要矩阵是平方的，每一行的元素就不会按列索引排序。
  *
- * The elements of a SparseMatrix are stored in the same order in which the
- * SparsityPattern class stores its entries. Within each row, elements are
- * generally stored left-to-right in increasing column index order; the
- * exception to this rule is that if the matrix is square (m() == n()), then
- * the diagonal entry is stored as the first element in each row to make
- * operations like applying a Jacobi or SSOR preconditioner faster. As a
- * consequence, if you traverse the elements of a row of a SparseMatrix with
- * the help of iterators into this object (using SparseMatrix::begin and
- * SparseMatrix::end) you will find that the elements are not sorted by column
- * index within each row whenever the matrix is square.
  *
- * @note Instantiations for this template are provided for <tt>@<float@> and
- * @<double@></tt>; others can be generated in application programs (see the
- * section on
- * @ref Instantiations
- * in the manual).
+ * @note
+ * 这个模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
+ * 其他的可以在应用程序中生成（见手册中 @ref Instantiations
+ * 一节）。
+ *
  *
  * @ingroup Matrix1
+ *
+ *
  */
 template <typename number>
 class SparseMatrix : public virtual Subscriptor
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Type of the matrix entries. This alias is analogous to
-   * <tt>value_type</tt> in the standard library containers.
+   * 矩阵条目的类型。这个别名类似于标准库容器中的<tt>value_type</tt>。
+   *
    */
   using value_type = number;
 
   /**
-   * Declare a type that has holds real-valued numbers with the same precision
-   * as the template argument to this class. If the template argument of this
-   * class is a real data type, then real_type equals the template argument.
-   * If the template argument is a std::complex type then real_type equals the
-   * type underlying the complex numbers.
+   * 声明一个类型，该类型持有与本类的模板参数相同精度的实值数。如果这个类的模板参数是一个实数数据类型，那么real_type就等于模板参数。
+   * 如果模板参数是一个 std::complex
+   * 类型，那么real_type等于复数的基础类型。
+   * 这个别名被用来表示规范的返回类型。
    *
-   * This alias is used to represent the return type of norms.
    */
   using real_type = typename numbers::NumberTraits<number>::real_type;
 
   /**
-   * Typedef of an iterator class walking over all the nonzero entries of this
-   * matrix. This iterator cannot change the values of the matrix.
+   * 一个迭代器类的类型定义，在这个矩阵的所有非零项上行走。这个迭代器不能改变矩阵的值。
+   *
    */
   using const_iterator = SparseMatrixIterators::Iterator<number, true>;
 
   /**
-   * Typedef of an iterator class walking over all the nonzero entries of this
-   * matrix. This iterator @em can change the values of the matrix, but of
-   * course can't change the sparsity pattern as this is fixed once a sparse
-   * matrix is attached to it.
+   * 走过该矩阵所有非零项的迭代器类的类型定义。这个迭代器
+   * @em
+   * 可以改变矩阵的值，但当然不能改变稀疏模式，因为一旦稀疏矩阵被附加到它上面，这个模式就固定了。
+   *
    */
   using iterator = SparseMatrixIterators::Iterator<number, false>;
 
   /**
-   * A structure that describes some of the traits of this class in terms of
-   * its run-time behavior. Some other classes (such as the block matrix
-   * classes) that take one or other of the matrix classes as its template
-   * parameters can tune their behavior based on the variables in this class.
+   * 一个描述这个类在运行时行为方面的一些特征的结构。其他一些以一个或其他矩阵类作为模板参数的类（如块状矩阵类）可以根据这个类中的变量来调整其行为。
+   *
    */
   struct Traits
   {
     /**
-     * It is safe to elide additions of zeros to individual elements of this
-     * matrix.
+     * 对该矩阵的单个元素进行零的添加是安全的。
+     *
      */
     static const bool zero_addition_can_be_elided = true;
   };
 
   /**
-   * @name Constructors and initialization
+   * @name  构造函数和初始化
+   *
    */
   //@{
   /**
-   * Constructor; initializes the matrix to be empty, without any structure,
-   * i.e.  the matrix is not usable at all. This constructor is therefore only
-   * useful for matrices which are members of a class. All other matrices
-   * should be created at a point in the data flow where all necessary
-   * information is available.
+   * 构造函数；将矩阵初始化为空，没有任何结构，也就是说，矩阵根本无法使用。因此，这个构造函数只对作为类的成员的矩阵有用。所有其他的矩阵都应该在数据流中的一个点上创建，在那里所有必要的信息都是可用的。
+   * 你必须在使用前用reinit(const SparsityPattern&)初始化矩阵。
    *
-   * You have to initialize the matrix before usage with reinit(const
-   * SparsityPattern&).
    */
   SparseMatrix();
 
   /**
-   * Copy constructor. This constructor is only allowed to be called if the
-   * matrix to be copied is empty. This is for the same reason as for the
-   * SparsityPattern, see there for the details.
+   * 复制构造函数。只有当要复制的矩阵为空时，才允许调用该构造函数。这与SparsityPattern的原因相同，详见那里。
+   * 如果你真的想复制一个完整的矩阵，你可以通过使用copy_from()函数来实现。
    *
-   * If you really want to copy a whole matrix, you can do so by using the
-   * copy_from() function.
    */
   SparseMatrix(const SparseMatrix &);
 
   /**
-   * Move constructor. Construct a new sparse matrix by transferring the
-   * internal data of the matrix @p m into a new object.
+   * 移动构造函数。通过将矩阵的内部数据 @p m
+   * 转移到一个新的对象中，构造一个新的稀疏矩阵。
+   * 移动构造允许一个对象从一个函数中返回或打包成一个元组，即使该类不能被复制构造。
    *
-   * Move construction allows an object to be returned from a function or
-   * packed into a tuple even when the class cannot be copy-constructed.
    */
   SparseMatrix(SparseMatrix<number> &&m) noexcept;
 
   /**
-   * Constructor. Takes the given matrix sparsity structure to represent the
-   * sparsity pattern of this matrix. You can change the sparsity pattern
-   * later on by calling the reinit(const SparsityPattern&) function.
+   * 构造器。接受给定的矩阵稀疏度结构来表示这个矩阵的稀疏度模式。你可以在以后通过调用reinit(const
+   * SparsityPattern&)函数来改变稀疏性模式。
+   * 你必须确保稀疏结构的寿命至少与该矩阵的寿命一样长，或者只要reinit(const
+   * SparsityPattern&)没有被调用新的稀疏模式。
+   * 构造函数被明确标记，以便不允许有人将稀疏模式代替稀疏矩阵传递给某个函数，这样就会生成一个空矩阵。
    *
-   * You have to make sure that the lifetime of the sparsity structure is at
-   * least as long as that of this matrix or as long as reinit(const
-   * SparsityPattern&) is not called with a new sparsity pattern.
-   *
-   * The constructor is marked explicit so as to disallow that someone passes
-   * a sparsity pattern in place of a sparse matrix to some function, where an
-   * empty matrix would be generated then.
    */
   explicit SparseMatrix(const SparsityPattern &sparsity);
 
   /**
-   * Copy constructor: initialize the matrix with the identity matrix. This
-   * constructor will throw an exception if the sizes of the sparsity pattern
-   * and the identity matrix do not coincide, or if the sparsity pattern does
-   * not provide for nonzero entries on the entire diagonal.
+   * 拷贝构造函数：用身份矩阵初始化矩阵。如果稀疏模式和身份矩阵的大小不一致，或者如果稀疏模式没有在整个对角线上提供非零条目，这个构造函数将抛出一个异常。
+   *
    */
   SparseMatrix(const SparsityPattern &sparsity, const IdentityMatrix &id);
 
   /**
-   * Destructor. Free all memory, but do not release the memory of the
-   * sparsity structure.
+   * 解构器。释放所有内存，但不释放稀疏结构的内存。
+   *
    */
   virtual ~SparseMatrix() override;
 
   /**
-   * Copy operator. Since copying entire sparse matrices is a very expensive
-   * operation, we disallow doing so except for the special case of empty
-   * matrices of size zero. This doesn't seem particularly useful, but is
-   * exactly what one needs if one wanted to have a
-   * <code>std::vector@<SparseMatrix@<double@> @></code>: in that case, one
-   * can create a vector (which needs the ability to copy objects) of empty
-   * matrices that are then later filled with something useful.
+   * 复制操作符。由于复制整个稀疏矩阵是一个非常昂贵的操作，我们不允许这样做，除了大小为0的空矩阵这一特殊情况。这看起来不是特别有用，但如果想有一个
+   * <code>std::vector@<SparseMatrix@<double@> @></code>
+   * ，这正是人们所需要的：在这种情况下，人们可以创建一个空矩阵的向量（需要复制对象的能力），然后用有用的东西来填充。
+   *
    */
   SparseMatrix<number> &
   operator=(const SparseMatrix<number> &);
 
   /**
-   * Move assignment operator. This operator replaces the present matrix with
-   * @p m by transferring the internal data of @p m.
+   * 移动赋值运算符。这个操作符通过转移 @p m.
+   * 的内部数据，将目前的矩阵替换成 @p m 。
+   *
    */
   SparseMatrix<number> &
   operator=(SparseMatrix<number> &&m) noexcept;
 
   /**
-   * Copy operator: initialize the matrix with the identity matrix. This
-   * operator will throw an exception if the sizes of the sparsity pattern and
-   * the identity matrix do not coincide, or if the sparsity pattern does not
-   * provide for nonzero entries on the entire diagonal.
+   * 复制运算符：用身份矩阵初始化矩阵。如果稀疏模式和身份矩阵的大小不一致，或者如果稀疏模式没有规定整个对角线上的非零条目，这个操作符将抛出一个异常。
+   *
    */
   SparseMatrix<number> &
   operator=(const IdentityMatrix &id);
 
   /**
-   * This operator assigns a scalar to a matrix. Since this does usually not
-   * make much sense (should we set all matrix entries to this value?  Only
-   * the nonzero entries of the sparsity pattern?), this operation is only
-   * allowed if the actual value to be assigned is zero. This operator only
-   * exists to allow for the obvious notation <tt>matrix=0</tt>, which sets
-   * all elements of the matrix to zero, but keep the sparsity pattern
-   * previously used.
-   *
+   * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？
+   * 仅仅是稀疏模式的非零条目？），这个操作只允许在实际要分配的值为零时进行。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留之前使用的稀疏模式。
    * @dealiiOperationIsMultithreaded
+   *
    */
   SparseMatrix &
   operator=(const double d);
 
   /**
-   * Reinitialize the sparse matrix with the given sparsity pattern. The
-   * latter tells the matrix how many nonzero elements there need to be
-   * reserved.
+   * 用给定的稀疏模式重新初始化稀疏矩阵。后者告诉矩阵需要保留多少个非零元素。
+   * 关于内存分配，和上面说的一样。
+   * 你必须确保稀疏结构的寿命至少与该矩阵的寿命一样长，或者只要reinit(const
+   * SparsityPattern &)没有被调用，就不会有新的稀疏结构。
+   * 矩阵的元素被这个函数设置为零。
    *
-   * Regarding memory allocation, the same applies as said above.
-   *
-   * You have to make sure that the lifetime of the sparsity structure is at
-   * least as long as that of this matrix or as long as reinit(const
-   * SparsityPattern &) is not called with a new sparsity structure.
-   *
-   * The elements of the matrix are set to zero by this function.
    */
   virtual void
   reinit(const SparsityPattern &sparsity);
 
   /**
-   * Release all memory and return to a state just like after having called
-   * the default constructor. It also forgets the sparsity pattern it was
-   * previously tied to.
+   * 释放所有内存并返回到与调用默认构造函数后相同的状态。它也会忘记它之前绑定的稀疏模式。
+   *
    */
   virtual void
   clear();
   //@}
   /**
-   * @name Information on the matrix
+   * @name  矩阵的信息
+   *
    */
   //@{
   /**
-   * Return whether the object is empty. It is empty if either both dimensions
-   * are zero or no SparsityPattern is associated.
+   * 返回该对象是否为空。如果两个维度都是零或者没有关联的SparsityPattern，它就是空的。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Return the dimension of the codomain (or range) space. Note that the
-   * matrix is of dimension $m \times n$.
+   * 返回共域（或范围）空间的维度。注意，矩阵的维度是
+   * $m \times n$  。
+   *
    */
   size_type
   m() const;
 
   /**
-   * Return the dimension of the domain space. Note that the matrix is of
-   * dimension $m \times n$.
+   * 返回域空间的维度。请注意，矩阵的维度是 $m \times n$  .
+   *
    */
   size_type
   n() const;
 
   /**
-   * Return the number of entries in a specific row.
+   * 返回特定行中的条目数。
+   *
    */
   size_type
   get_row_length(const size_type row) const;
 
   /**
-   * Return the number of nonzero elements of this matrix. Actually, it
-   * returns the number of entries in the sparsity pattern; if any of the
-   * entries should happen to be zero, it is counted anyway.
+   * 返回该矩阵的非零元素的数量。实际上，它返回的是稀疏模式中的条目数；如果任何一个条目恰好是零，无论如何都会被计算在内。
+   *
    */
   std::size_t
   n_nonzero_elements() const;
 
   /**
-   * Return the number of actually nonzero elements of this matrix. It is
-   * possible to specify the parameter <tt>threshold</tt> in order to count
-   * only the elements that have absolute value greater than the threshold.
+   * 返回这个矩阵中实际非零元素的数量。可以指定参数<tt>threshold</tt>，以便只计算绝对值大于阈值的元素。
+   * 注意，这个函数（与n_nonzero_elements()相反）不计算稀疏模式的所有条目，而只计算非零的（或绝对值大于阈值的）。
    *
-   * Note, that this function does (in contrary to n_nonzero_elements()) not
-   * count all entries of the sparsity pattern but only the ones that are
-   * nonzero (or whose absolute value is greater than threshold).
    */
   std::size_t
   n_actually_nonzero_elements(const double threshold = 0.) const;
 
   /**
-   * Return a (constant) reference to the underlying sparsity pattern of this
-   * matrix.
+   * 返回一个对该矩阵底层稀疏性模式的（常量）引用。
+   * 尽管返回值被声明为<tt>const</tt>，但你应该注意，如果你调用任何对其进行操作的对象的非常量函数，它可能会改变。
    *
-   * Though the return value is declared <tt>const</tt>, you should be aware
-   * that it may change if you call any nonconstant function of objects which
-   * operate on it.
    */
   const SparsityPattern &
   get_sparsity_pattern() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object. See MemoryConsumption.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。参见MemoryConsumption。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Dummy function for compatibility with distributed, parallel matrices.
+   * 虚函数，与分布式并行矩阵兼容。
+   *
    */
   void compress(::dealii::VectorOperation::values);
 
   //@}
   /**
-   * @name Modifying entries
+   * @name  修改条目
+   *
    */
   //@{
   /**
-   * Set the element (<i>i,j</i>) to <tt>value</tt>. Throws an error if the
-   * entry does not exist or if <tt>value</tt> is not a finite number. Still,
-   * it is allowed to store zero values in non-existent fields.
+   * 设置元素（<i>i,j</i>）为<tt>value</tt>。如果条目不存在或者<tt>value</tt>不是一个有限的数字，则抛出一个错误。尽管如此，它仍然允许在不存在的字段中存储零值。
+   *
    */
   void
   set(const size_type i, const size_type j, const number value);
 
   /**
-   * Set all elements given in a FullMatrix into the sparse matrix locations
-   * given by <tt>indices</tt>. In other words, this function writes the
-   * elements in <tt>full_matrix</tt> into the calling matrix, using the
-   * local-to-global indexing specified by <tt>indices</tt> for both the rows
-   * and the columns of the matrix. This function assumes a quadratic sparse
-   * matrix and a quadratic full_matrix, the usual situation in FE
-   * calculations.
+   * 将FullMatrix中给出的所有元素设置到<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素写入调用的矩阵中，对矩阵的行和列都使用<tt>indices</tt>指定的本地到全球的索引。这个函数假设一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中的通常情况。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要设置零值，还是要过滤掉零值（如果存在的话，不改变相应元素中的先前内容）。默认值是<tt>false</tt>，也就是说，即使是零值也要处理。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be set anyway or they should be filtered away
-   * (and not change the previous content in the respective element if it
-   * exists). The default value is <tt>false</tt>, i.e., even zero values are
-   * treated.
    */
   template <typename number2>
   void
@@ -785,9 +721,8 @@ public:
       const bool                    elide_zero_values = false);
 
   /**
-   * Same function as before, but now including the possibility to use
-   * rectangular full_matrices and different local-to-global indexing on rows
-   * and columns, respectively.
+   * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
+   *
    */
   template <typename number2>
   void
@@ -797,14 +732,9 @@ public:
       const bool                    elide_zero_values = false);
 
   /**
-   * Set several elements in the specified row of the matrix with column
-   * indices as given by <tt>col_indices</tt> to the respective value.
+   * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
+   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要设置零值，还是要过滤掉零值（如果存在的话，不改变相应元素中的先前内容）。默认值是<tt>false</tt>，也就是说，即使是零值也要处理。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be set anyway or they should be filtered away
-   * (and not change the previous content in the respective element if it
-   * exists). The default value is <tt>false</tt>, i.e., even zero values are
-   * treated.
    */
   template <typename number2>
   void
@@ -814,13 +744,9 @@ public:
       const bool                    elide_zero_values = false);
 
   /**
-   * Set several elements to values given by <tt>values</tt> in a given row in
-   * columns given by col_indices into the sparse matrix.
+   * 将几个元素设置为由<tt>values</tt>给出的值，在给定的行和col_indices给出的列中设置为稀疏矩阵。
+   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要插入零值还是要过滤掉它们。默认值是<tt>false</tt>，也就是说，即使是零值也要插入/替换。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be inserted anyway or they should be filtered
-   * away. The default value is <tt>false</tt>, i.e., even zero values are
-   * inserted/replaced.
    */
   template <typename number2>
   void
@@ -831,26 +757,17 @@ public:
       const bool       elide_zero_values = false);
 
   /**
-   * Add <tt>value</tt> to the element (<i>i,j</i>).  Throws an error if the
-   * entry does not exist or if <tt>value</tt> is not a finite number. Still,
-   * it is allowed to store zero values in non-existent fields.
+   * 向元素添加<tt>value</tt>（<i>i,j</i>）。
+   * 如果该条目不存在或者<tt>value</tt>不是一个有限的数字，则抛出一个错误。尽管如此，它仍然允许在不存在的字段中存储零值。
+   *
    */
   void
   add(const size_type i, const size_type j, const number value);
 
   /**
-   * Add all elements given in a FullMatrix<double> into sparse matrix
-   * locations given by <tt>indices</tt>. In other words, this function adds
-   * the elements in <tt>full_matrix</tt> to the respective entries in calling
-   * matrix, using the local-to-global indexing specified by <tt>indices</tt>
-   * for both the rows and the columns of the matrix. This function assumes a
-   * quadratic sparse matrix and a quadratic full_matrix, the usual situation
-   * in FE calculations.
+   * 将FullMatrix<double>中给出的所有元素添加到由<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素添加到调用矩阵的相应条目中，使用<tt>indices</tt>为矩阵的行和列指定的本地到全球索引。这个函数假定一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中通常的情况。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number2>
   void
@@ -859,9 +776,8 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Same function as before, but now including the possibility to use
-   * rectangular full_matrices and different local-to-global indexing on rows
-   * and columns, respectively.
+   * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
+   *
    */
   template <typename number2>
   void
@@ -871,13 +787,9 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Set several elements in the specified row of the matrix with column
-   * indices as given by <tt>col_indices</tt> to the respective value.
+   * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number2>
   void
@@ -887,13 +799,9 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Add an array of values given by <tt>values</tt> in the given global
-   * matrix row at columns specified by col_indices in the sparse matrix.
+   * 在给定的全局矩阵行中，在稀疏矩阵中由col_indices指定的列中添加一个由<tt>values</tt>给出的数值阵列。
+   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number2>
   void
@@ -905,80 +813,63 @@ public:
       const bool       col_indices_are_sorted = false);
 
   /**
-   * Multiply the entire matrix by a fixed factor.
+   * 将整个矩阵乘以一个固定系数。
+   *
    */
   SparseMatrix &
   operator*=(const number factor);
 
   /**
-   * Divide the entire matrix by a fixed factor.
+   * 用整个矩阵除以一个固定系数。
+   *
    */
   SparseMatrix &
   operator/=(const number factor);
 
   /**
-   * Symmetrize the matrix by forming the mean value between the existing
-   * matrix and its transpose, $A = \frac 12(A+A^T)$.
+   * 通过形成现有矩阵和其转置之间的平均值来对称矩阵，
+   * $A = \frac 12(A+A^T)$  。
+   * 这个操作假设底层的稀疏模式代表一个对称的对象。如果不是这样，那么这个操作的结果将不是一个对称矩阵，因为出于效率的考虑，它只通过在左下角的三角形部分进行循环来明确地进行对称；如果右上角的三角形有条目，那么这些元素在对称过程中会被遗漏。稀疏模式的对称化可以通过
+   * SparsityPattern::symmetrize(). 得到。
    *
-   * This operation assumes that the underlying sparsity pattern represents a
-   * symmetric object. If this is not the case, then the result of this
-   * operation will not be a symmetric matrix, since it only explicitly
-   * symmetrizes by looping over the lower left triangular part for efficiency
-   * reasons; if there are entries in the upper right triangle, then these
-   * elements are missed in the symmetrization. Symmetrization of the sparsity
-   * pattern can be obtain by SparsityPattern::symmetrize().
    */
   void
   symmetrize();
 
   /**
-   * Copy the matrix given as argument into the current object.
+   * 将作为参数给出的矩阵复制到当前对象中。
+   * 复制矩阵是一个昂贵的操作，我们不希望通过编译器生成的代码
+   * <code>operator=</code>
+   * 而意外发生（例如，如果不小心声明了当前类型的函数参数为<i>by
+   * value</i>而不是<i>by
+   * reference</i>，就会发生这种情况）。复制矩阵的功能是在这个成员函数中实现的。因此，该类型对象的所有复制操作都需要一个明确的函数调用。
+   * 源矩阵可以是一个任意类型的矩阵，只要其数据类型可以转换为该矩阵的数据类型。
+   * 该函数返回一个对<tt>*this</tt>的引用。
    *
-   * Copying matrices is an expensive operation that we do not want to happen
-   * by accident through compiler generated code for <code>operator=</code>.
-   * (This would happen, for example, if one accidentally declared a function
-   * argument of the current type <i>by value</i> rather than <i>by
-   * reference</i>.) The functionality of copying matrices is implemented in
-   * this member function instead. All copy operations of objects of this type
-   * therefore require an explicit function call.
-   *
-   * The source matrix may be a matrix of arbitrary type, as long as its data
-   * type is convertible to the data type of this matrix.
-   *
-   * The function returns a reference to <tt>*this</tt>.
    */
   template <typename somenumber>
   SparseMatrix<number> &
   copy_from(const SparseMatrix<somenumber> &source);
 
   /**
-   * This function is complete analogous to the SparsityPattern::copy_from()
-   * function in that it allows to initialize a whole matrix in one step. See
-   * there for more information on argument types and their meaning. You can
-   * also find a small example on how to use this function there.
+   * 这个函数完全类似于 SparsityPattern::copy_from()
+   * 函数，它允许在一个步骤中初始化整个矩阵。关于参数类型及其含义的更多信息请见那里。你还可以在那里找到一个关于如何使用这个函数的小例子。
+   * 与引用的函数唯一不同的是，内部迭代器指向的对象需要是
+   * <tt>std::pair<unsigned  int,
+   * value</tt>类型，其中<tt>value</tt>需要可转换为该类的元素类型，由<tt>number</tt>模板参数指定。
+   * 矩阵以前的内容被覆盖。注意，由输入参数指定的条目不一定要覆盖矩阵的所有元素。未覆盖的元素保持不动。
    *
-   * The only difference to the cited function is that the objects which the
-   * inner iterator points to need to be of type <tt>std::pair<unsigned int,
-   * value</tt>, where <tt>value</tt> needs to be convertible to the element
-   * type of this class, as specified by the <tt>number</tt> template
-   * argument.
-   *
-   * Previous content of the matrix is overwritten. Note that the entries
-   * specified by the input parameters need not necessarily cover all elements
-   * of the matrix. Elements not covered remain untouched.
    */
   template <typename ForwardIterator>
   void
   copy_from(const ForwardIterator begin, const ForwardIterator end);
 
   /**
-   * Copy the nonzero entries of a full matrix into this object. Previous
-   * content is deleted.
+   * 将一个完整矩阵的非零条目复制到此对象中。之前的内容被删除。
+   * 请注意，底层的稀疏模式必须适合容纳全矩阵的非零条目。这可以使用
+   * SparsityPattern::copy_from()
+   * 的那个版本来实现，该版本以FullMatrix作为参数。
    *
-   * Note that the underlying sparsity pattern must be appropriate to
-   * hold the nonzero entries of the full matrix. This can be achieved
-   * using that version of SparsityPattern::copy_from() that takes a
-   * FullMatrix as argument.
    */
   template <typename somenumber>
   void
@@ -986,28 +877,19 @@ public:
 
 #  ifdef DEAL_II_WITH_TRILINOS
   /**
-   * Copy the given Trilinos matrix to this one. The operation triggers an
-   * assertion if the sparsity patterns of the current object does not contain
-   * the location of a non-zero entry of the given argument.
+   * 将给定的特里诺斯矩阵复制到这个矩阵中。如果当前对象的稀疏模式不包含给定参数的非零条目的位置，该操作会触发一个断言。
+   * 这个函数假设两个矩阵有相同的大小。
+   * 该函数返回一个对<tt>*this</tt>的引用。
    *
-   * This function assumes that the two matrices have the same sizes.
-   *
-   * The function returns a reference to <tt>*this</tt>.
    */
   SparseMatrix<number> &
   copy_from(const TrilinosWrappers::SparseMatrix &matrix);
 #  endif
 
   /**
-   * Add <tt>matrix</tt> scaled by <tt>factor</tt> to this matrix, i.e. the
-   * matrix <tt>factor*matrix</tt> is added to <tt>this</tt>. This function
-   * throws an error if the sparsity patterns of the two involved matrices do
-   * not point to the same object, since in this case the operation is
-   * cheaper.
+   * 将<tt>matrix</tt>按<tt>factor</tt>的比例添加到这个矩阵中，也就是说，将<tt>factor*matrix</tt>的矩阵添加到<tt>this</tt>。如果所涉及的两个矩阵的稀疏性模式不指向同一个对象，这个函数会抛出一个错误，因为在这种情况下，操作会比较便宜。
+   * 源矩阵可以是一个任意底层标量类型的稀疏矩阵，只要其数据类型可以转换为这个矩阵的数据类型。
    *
-   * The source matrix may be a sparse matrix over an arbitrary underlying
-   * scalar type, as long as its data type is convertible to the data type of
-   * this matrix.
    */
   template <typename somenumber>
   void
@@ -1015,174 +897,127 @@ public:
 
   //@}
   /**
-   * @name Entry Access
+   * @name 条目访问
+   *
    */
   //@{
 
   /**
-   * Return the value of the entry (<i>i,j</i>).  This may be an expensive
-   * operation and you should always take care where to call this function. In
-   * order to avoid abuse, this function throws an exception if the required
-   * element does not exist in the matrix.
+   * 返回条目的值（<i>i,j</i>）。
+   * 这可能是一个昂贵的操作，你应该始终注意在哪里调用这个函数。为了避免滥用，如果所需元素在矩阵中不存在，该函数会抛出一个异常。
+   * 如果你想要一个返回零的函数（对于不在矩阵的稀疏模式中的条目），请使用el()函数。
+   * 如果你要在所有元素上循环，可以考虑使用一个迭代器类来代替，因为它们更适合稀疏的矩阵结构。
    *
-   * In case you want a function that returns zero instead (for entries that
-   * are not in the sparsity pattern of the matrix), use the el() function.
-   *
-   * If you are looping over all elements, consider using one of the iterator
-   * classes instead, since they are tailored better to a sparse matrix
-   * structure.
    */
   const number &
   operator()(const size_type i, const size_type j) const;
 
   /**
-   * In contrast to the one above, this function allows modifying the object.
+   * 与上面那个相反，这个函数允许修改对象。
+   *
    */
   number &
   operator()(const size_type i, const size_type j);
 
   /**
-   * This function is mostly like operator()() in that it returns the value of
-   * the matrix entry (<i>i,j</i>). The only difference is that if this entry
-   * does not exist in the sparsity pattern, then instead of raising an
-   * exception, zero is returned. While this may be convenient in some cases,
-   * note that it is simple to write algorithms that are slow compared to an
-   * optimal solution, since the sparsity of the matrix is not used.
+   * 这个函数主要像operator()()，它返回矩阵条目的值（<i>i,j</i>）。唯一的区别是，如果这个条目不存在于稀疏模式中，那么就不会引发异常，而是返回0。虽然这在某些情况下可能很方便，但请注意，由于没有使用矩阵的稀疏性，所以很容易写出与最优解相比很慢的算法。
+   * 如果你要在所有元素上循环，可以考虑使用一个迭代器类来代替，因为它们更适合稀疏的矩阵结构。
    *
-   * If you are looping over all elements, consider using one of the iterator
-   * classes instead, since they are tailored better to a sparse matrix
-   * structure.
    */
   number
   el(const size_type i, const size_type j) const;
 
   /**
-   * Return the main diagonal element in the <i>i</i>th row. This function
-   * throws an error if the matrix is not quadratic.
+   * 返回第<i>i</i>行中的主对角线元素。如果矩阵不是二次方的，这个函数会抛出一个错误。
+   * 这个函数比operator()()快得多，因为对于二次矩阵来说，对角线条目可能是每行中第一个被存储的，因此访问时不需要搜索正确的列号。
    *
-   * This function is considerably faster than the operator()(), since for
-   * quadratic matrices, the diagonal entry may be the first to be stored in
-   * each row and access therefore does not involve searching for the right
-   * column number.
    */
   number
   diag_element(const size_type i) const;
 
   /**
-   * Same as above, but return a writeable reference. You're sure you know
-   * what you do?
+   * 和上面一样，但返回一个可写的引用。你确定你知道你在做什么吗？
+   *
    */
   number &
   diag_element(const size_type i);
 
   //@}
   /**
-   * @name Multiplications
+   * @name  乘法运算
+   *
    */
   //@{
   /**
-   * Matrix-vector multiplication: let <i>dst = M*src</i> with <i>M</i> being
-   * this matrix.
-   *
-   * Note that while this function can operate on all vectors that offer
-   * iterator classes, it is only really effective for objects of type
-   * @ref Vector.
-   * For all classes for which iterating over elements, or random member
-   * access is expensive, this function is not efficient. In particular, if
-   * you want to multiply with BlockVector objects, you should consider using
-   * a BlockSparseMatrix as well.
-   *
-   * Source and destination must not be the same vector.
-   *
+   * 矩阵-向量乘法：让<i>dst =
+   * M*src</i>与<i>M</i>是这个矩阵。
+   * 注意，虽然这个函数可以对所有提供迭代器类的向量进行操作，但它只对类型为
+   * @ref Vector  的对象真正有效。
+   * 对于所有迭代元素或随机成员访问昂贵的类来说，这个函数并不高效。特别是，如果你想与BlockVector对象相乘，你应该考虑同时使用BlockSparseMatrix。
+   * 源和目的不能是同一个向量。
    * @dealiiOperationIsMultithreaded
+   *
    */
   template <class OutVector, class InVector>
   void
   vmult(OutVector &dst, const InVector &src) const;
 
   /**
-   * Matrix-vector multiplication: let <i>dst = M<sup>T</sup>*src</i> with
-   * <i>M</i> being this matrix. This function does the same as vmult() but
-   * takes the transposed matrix.
+   * 矩阵-向量乘法：让<i>dst =
+   * M<sup>T</sup>*src</i>与<i>M</i>是这个矩阵。这个函数与vmult()的作用相同，但需要转置的矩阵。
+   * 注意，虽然这个函数可以对所有提供迭代器类的向量进行操作，但它只对类型为
+   * @ref Vector  的对象真正有效。
+   * 对于所有迭代元素或随机成员访问昂贵的类来说，这个函数并不高效。特别是，如果你想与BlockVector对象相乘，你应该考虑同时使用BlockSparseMatrix。
+   * 源和目的不能是同一个向量。
    *
-   * Note that while this function can operate on all vectors that offer
-   * iterator classes, it is only really effective for objects of type
-   * @ref Vector.
-   * For all classes for which iterating over elements, or random member
-   * access is expensive, this function is not efficient. In particular, if
-   * you want to multiply with BlockVector objects, you should consider using
-   * a BlockSparseMatrix as well.
-   *
-   * Source and destination must not be the same vector.
    */
   template <class OutVector, class InVector>
   void
   Tvmult(OutVector &dst, const InVector &src) const;
 
   /**
-   * Adding Matrix-vector multiplication. Add <i>M*src</i> on <i>dst</i> with
-   * <i>M</i> being this matrix.
-   *
-   * Note that while this function can operate on all vectors that offer
-   * iterator classes, it is only really effective for objects of type
-   * @ref Vector.
-   * For all classes for which iterating over elements, or random member
-   * access is expensive, this function is not efficient. In particular, if
-   * you want to multiply with BlockVector objects, you should consider using
-   * a BlockSparseMatrix as well.
-   *
-   * Source and destination must not be the same vector.
-   *
+   * 添加矩阵-向量的乘法。在<i>dst</i>上添加<i>M*src</i>，<i>M</i>是这个矩阵。
+   * 注意，虽然这个函数可以对所有提供迭代器类的向量进行操作，但它只对类型为
+   * @ref Vector  的对象真正有效。
+   * 对于所有迭代元素或随机成员访问昂贵的类来说，这个函数并不高效。特别是，如果你想与BlockVector对象相乘，你应该考虑同时使用BlockSparseMatrix。
+   * 源和目的不能是同一个向量。
    * @dealiiOperationIsMultithreaded
+   *
    */
   template <class OutVector, class InVector>
   void
   vmult_add(OutVector &dst, const InVector &src) const;
 
   /**
-   * Adding Matrix-vector multiplication. Add <i>M<sup>T</sup>*src</i> to
-   * <i>dst</i> with <i>M</i> being this matrix. This function does the same
-   * as vmult_add() but takes the transposed matrix.
+   * 添加矩阵-向量的乘法。将<i>M<sup>T</sup>*src</i>加到<i>dst</i>，<i>M</i>是这个矩阵。这个函数与vmult_add()的操作相同，但取的是转置的矩阵。
+   * 注意，虽然这个函数可以对所有提供迭代器类的向量进行操作，但它只对类型为
+   * @ref Vector  的对象真正有效。
+   * 对于所有迭代元素或随机成员访问昂贵的类来说，这个函数并不高效。特别是，如果你想与BlockVector对象相乘，你应该考虑同时使用BlockSparseMatrix。
+   * 源和目的不能是同一个向量。
    *
-   * Note that while this function can operate on all vectors that offer
-   * iterator classes, it is only really effective for objects of type
-   * @ref Vector.
-   * For all classes for which iterating over elements, or random member
-   * access is expensive, this function is not efficient. In particular, if
-   * you want to multiply with BlockVector objects, you should consider using
-   * a BlockSparseMatrix as well.
-   *
-   * Source and destination must not be the same vector.
    */
   template <class OutVector, class InVector>
   void
   Tvmult_add(OutVector &dst, const InVector &src) const;
 
   /**
-   * Return the square of the norm of the vector $v$ with respect to the norm
-   * induced by this matrix, i.e. $\left(v,Mv\right)$. This is useful, e.g. in
-   * the finite element context, where the $L_2$ norm of a function equals the
-   * matrix norm with respect to the mass matrix of the vector representing
-   * the nodal values of the finite element function.
-   *
-   * Obviously, the matrix needs to be quadratic for this operation, and for
-   * the result to actually be a norm it also needs to be either real
-   * symmetric or complex hermitian.
-   *
-   * The underlying template types of both this matrix and the given vector
-   * should either both be real or complex-valued, but not mixed, for this
-   * function to make sense.
-   *
+   * 返回向量  $v$  相对于该矩阵诱导的法线的平方，即
+   * $\left(v,Mv\right)$
+   * 。这很有用，例如在有限元背景下，一个函数的 $L_2$
+   * 规范等于相对于代表有限元函数节点值的向量的质量矩阵的矩阵规范。
+   * 显然，对于这个操作来说，矩阵需要是二次的，而且为了使结果真正成为一个规范，它还需要是实数对称的或复数隐式的。
+   * 该矩阵和给定向量的底层模板类型应该都是实值或复值，但不是混合的，这样这个函数才有意义。
    * @dealiiOperationIsMultithreaded
+   *
    */
   template <typename somenumber>
   somenumber
   matrix_norm_square(const Vector<somenumber> &v) const;
 
   /**
-   * Compute the matrix scalar product $\left(u,Mv\right)$.
-   *
+   * 计算矩阵标量乘积  $\left(u,Mv\right)$  。
    * @dealiiOperationIsMultithreaded
+   *
    */
   template <typename somenumber>
   somenumber
@@ -1190,13 +1025,10 @@ public:
                         const Vector<somenumber> &v) const;
 
   /**
-   * Compute the residual of an equation <i>Mx=b</i>, where the residual is
-   * defined to be <i>r=b-Mx</i>. Write the residual into <tt>dst</tt>. The
-   * <i>l<sub>2</sub></i> norm of the residual vector is returned.
-   *
-   * Source <i>x</i> and destination <i>dst</i> must not be the same vector.
-   *
+   * 计算方程<i>Mx=b</i>的残差，其中残差被定义为<i>r=b-Mx</i>。将残差写入<tt>dst</tt>。残差向量的<i>l<sub>2</sub></i>准则被返回。
+   * 源<i>x</i>和目的<i>dst</i>不能是同一个向量。
    * @dealiiOperationIsMultithreaded
+   *
    */
   template <typename somenumber>
   somenumber
@@ -1205,39 +1037,34 @@ public:
            const Vector<somenumber> &b) const;
 
   /**
-   * Perform the matrix-matrix multiplication <tt>C = A * B</tt>, or, if an
-   * optional vector argument is given, <tt>C = A * diag(V) * B</tt>, where
-   * <tt>diag(V)</tt> defines a diagonal matrix with the vector entries.
+   * 执行矩阵-矩阵乘法<tt>C = A
+   * B</tt>，或者，如果给出一个可选的矢量参数，则<tt>C = A
+   * diag(V)
+   * B</tt>，其中<tt>diag(V)</tt>定义了一个带有矢量项的对角矩阵。
+   * 这个函数假定调用矩阵 @p A 和参数 @p B
+   * 的大小兼容。默认情况下，输出矩阵 @p C
+   * 将被适当调整大小。    默认情况下，即如果可选的参数
+   * @p rebuild_sparsity_pattern 是 @p true,
+   * ，矩阵C的稀疏模式将被改变，以确保由乘积 $AB$
+   * 产生的所有条目可以被存储在 $C$
+   * 中。这是一个昂贵的操作，如果有办法预先预测稀疏模式，你可能应该在以
+   * @p false
+   * 为最后一个参数调用这个函数之前自己建立它。在这种情况下，疏密模式的重建被绕过了。
+   * 当把 @p rebuild_sparsity_pattern 设置为 @p true
+   * 时（即把它留在默认值），必须意识到作为第一个参数传递的矩阵
+   * @p C
+   * 仍然需要用稀疏模式进行初始化（可以在创建稀疏矩阵对象时，或者通过
+   * SparseMatrix::reinit()
+   * 函数）。这是因为我们可以在当前函数中创建一个稀疏模式，然后将
+   * @p C
+   * 与之关联，但一旦当前函数结束，就没有办法将这个稀疏模式的所有权转移给任何人。因此，该函数要求
+   * @p C
+   * 已经与一个稀疏模式对象相关联，然后该对象被重置为适合
+   * @p A 和 @p B. 的乘积。 然而，作为其结果，还必须认识到
+   * @p C
+   * 的稀疏模式被修改，这将使碰巧<i>also</i>使用该稀疏模式对象的<i>all
+   * other SparseMatrix objects</i>无效。
    *
-   * This function assumes that the calling matrix @p A and the argument @p B
-   * have compatible sizes. By default, the output matrix @p C will be
-   * resized appropriately.
-   *
-   * By default, i.e., if the optional argument @p rebuild_sparsity_pattern
-   * is @p true, the sparsity pattern of the matrix C will be
-   * changed to ensure that all entries that result from the product $AB$
-   * can be stored in $C$. This is an expensive operation, and if there is
-   * a way to predict the sparsity pattern up front, you should probably
-   * build it yourself before calling this function with @p false as last
-   * argument. In this case, the rebuilding of the sparsity pattern is
-   * bypassed.
-   *
-   * When setting @p rebuild_sparsity_pattern to @p true (i.e., leaving it
-   * at the default value), it is important to realize that the matrix
-   * @p C passed as first argument still has to be initialized with a
-   * sparsity pattern (either at the time of creation of the SparseMatrix
-   * object, or via the SparseMatrix::reinit() function). This is because
-   * we could create a sparsity pattern inside the current function, and
-   * then associate @p C with it, but there would be no way to transfer
-   * ownership of this sparsity pattern to anyone once the current function
-   * finishes. Consequently, the function requires that @p C be already
-   * associated with a sparsity pattern object, and this object is then
-   * reset to fit the product of @p A and @p B.
-   *
-   * As a consequence of this, however, it is also important to realize
-   * that the sparsity pattern of @p C is modified and that this would
-   * render invalid <i>all other SparseMatrix objects</i> that happen
-   * to <i>also</i> use that sparsity pattern object.
    */
   template <typename numberB, typename numberC>
   void
@@ -1247,28 +1074,17 @@ public:
         const bool                   rebuild_sparsity_pattern = true) const;
 
   /**
-   * Perform the matrix-matrix multiplication with the transpose of
-   * <tt>this</tt>, i.e., <tt>C = A<sup>T</sup> * B</tt>, or, if an optional
-   * vector argument is given, <tt>C = A<sup>T</sup> * diag(V) * B</tt>, where
-   * <tt>diag(V)</tt> defines a diagonal matrix with the vector entries.
+   * 用<tt>this</tt>的转置执行矩阵-矩阵乘法，即<tt>C =
+   * A<sup>T</sup>
+   * B</tt>，或者，如果给出了可选的矢量参数，<tt>C =
+   * A<sup>T</sup> diag(V)
+   * B</tt>，其中<tt>diag(V)</tt>定义了一个带有矢量项的对角矩阵。
+   * 这个函数假定调用矩阵<tt>A</tt>和<tt>B</tt>的大小兼容。<tt>C</tt>的大小将在本函数中设置。
+   * 矩阵C的内容和稀疏模式将被这个函数改变，所以要确保稀疏模式没有在你的程序中其他地方使用。这是一个昂贵的操作，所以在你使用这个函数之前要三思而后行。
+   * 有一个可选的标志<tt>rebuild_sparsity_pattern</tt>，可以用来绕过创建一个新的稀疏度模式，而使用存储在<tt>C</tt>中的稀疏度模式。在这种情况下，要确保它真的适合。默认情况下是重建稀疏度模式。
+   * @note
+   * 重建稀疏度模式需要改变它。这意味着所有与该稀疏性模式相关的其他矩阵将有无效的条目。
    *
-   * This function assumes that the calling matrix <tt>A</tt> and <tt>B</tt>
-   * have compatible sizes. The size of <tt>C</tt> will be set within this
-   * function.
-   *
-   * The content as well as the sparsity pattern of the matrix C will be
-   * changed by this function, so make sure that the sparsity pattern is not
-   * used somewhere else in your program. This is an expensive operation, so
-   * think twice before you use this function.
-   *
-   * There is an optional flag <tt>rebuild_sparsity_pattern</tt> that can be
-   * used to bypass the creation of a new sparsity pattern and instead uses
-   * the sparsity pattern stored in <tt>C</tt>. In that case, make sure that
-   * it really fits. The default is to rebuild the sparsity pattern.
-   *
-   * @note Rebuilding the sparsity pattern requires changing it. This means
-   * that all other matrices that are associated with this sparsity pattern
-   * will then have invalid entries.
    */
   template <typename numberB, typename numberC>
   void
@@ -1279,46 +1095,50 @@ public:
 
   //@}
   /**
-   * @name Matrix norms
+   * @name  矩阵规范
+   *
    */
   //@{
 
   /**
-   * Return the $l_1$-norm of the matrix, that is $|M|_1=\max_{\mathrm{all\
-   * columns\ }j}\sum_{\mathrm{all\ rows\ } i} |M_{ij}|$, (max. sum of
-   * columns).  This is the natural matrix norm that is compatible to the
-   * $l_1$-norm for vectors, i.e.  $|Mv|_1\leq |M|_1 |v|_1$. (cf. Haemmerlin-
+   * 返回矩阵的 $l_1$ 规范，即 $|M|_1=\max_{\mathrm{all\ columns\
+   * }j}\sum_{\mathrm{all\ rows\ } i} |M_{ij}|$
+   * ，（最大列数之和）。 这是自然的矩阵准则，与向量的
+   * $l_1$ 准则兼容，即 $|Mv|_1\leq |M|_1 |v|_1$  。(参见Haemmerlin-
    * Hoffmann: Numerische Mathematik)
+   *
    */
   real_type
   l1_norm() const;
 
   /**
-   * Return the $l_\infty$-norm of the matrix, that is
-   * $|M|_\infty=\max_{\mathrm{all\ rows\ }i}\sum_{\mathrm{all\ columns\ }j}
-   * |M_{ij}|$, (max. sum of rows).  This is the natural matrix norm that is
-   * compatible to the $l_\infty$-norm of vectors, i.e.  $|Mv|_\infty \leq
-   * |M|_\infty |v|_\infty$.  (cf. Haemmerlin-Hoffmann: Numerische Mathematik)
+   * 返回矩阵的 $l_\infty$ 准则，即 $|M|_\infty=\max_{\mathrm{all\
+   * rows\ }i}\sum_{\mathrm{all\ columns\ }j} |M_{ij}|$  ,
+   * (行的最大和)。 这是自然的矩阵准则，与向量的
+   * $l_\infty$ 准则兼容，即 $|Mv|_\infty \leq |M|_\infty |v|_\infty$
+   * 。 (参看Haemmerlin-Hoffmann: Numerische Mathematik)
+   *
    */
   real_type
   linfty_norm() const;
 
   /**
-   * Return the frobenius norm of the matrix, i.e. the square root of the sum
-   * of squares of all entries in the matrix.
+   * 返回矩阵的frobenius
+   * norm，即矩阵中所有条目的平方之和的平方根。
+   *
    */
   real_type
   frobenius_norm() const;
   //@}
   /**
-   * @name Preconditioning methods
+   * @name  预处理方法
+   *
    */
   //@{
 
   /**
-   * Apply the Jacobi preconditioner, which multiplies every element of the
-   * <tt>src</tt> vector by the inverse of the respective diagonal element and
-   * multiplies the result with the relaxation factor <tt>omega</tt>.
+   * 应用雅可比预处理，将<tt>src</tt>向量的每个元素乘以各自对角线元素的逆值，并将结果乘以松弛因子<tt>omega</tt>。
+   *
    */
   template <typename somenumber>
   void
@@ -1327,10 +1147,9 @@ public:
                       const number              omega = 1.) const;
 
   /**
-   * Apply SSOR preconditioning to <tt>src</tt> with damping <tt>omega</tt>.
-   * The optional argument <tt>pos_right_of_diagonal</tt> is supposed to
-   * provide an array where each entry specifies the position just right of
-   * the diagonal in the global array of nonzeros.
+   * 对<tt>src</tt>应用SSOR预处理，阻尼<tt>omega</tt>。
+   * 可选的参数<tt>pos_right_of_diagonal</tt>应该提供一个数组，其中每个条目指定全局非零点阵列中对角线的右边位置。
+   *
    */
   template <typename somenumber>
   void
@@ -1341,7 +1160,8 @@ public:
                       std::vector<std::size_t>()) const;
 
   /**
-   * Apply SOR preconditioning matrix to <tt>src</tt>.
+   * 将SOR预处理矩阵应用于<tt>src</tt>。
+   *
    */
   template <typename somenumber>
   void
@@ -1350,7 +1170,8 @@ public:
                    const number              om = 1.) const;
 
   /**
-   * Apply transpose SOR preconditioning matrix to <tt>src</tt>.
+   * 对<tt>src</tt>应用转置的SOR预处理矩阵。
+   *
    */
   template <typename somenumber>
   void
@@ -1359,39 +1180,36 @@ public:
                     const number              om = 1.) const;
 
   /**
-   * Perform SSOR preconditioning in-place.  Apply the preconditioner matrix
-   * without copying to a second vector.  <tt>omega</tt> is the relaxation
-   * parameter.
+   * 就地执行SSOR预处理。
+   * 应用预处理矩阵而不复制到第二个向量。
+   * <tt>omega</tt>是放松参数。
+   *
    */
   template <typename somenumber>
   void
   SSOR(Vector<somenumber> &v, const number omega = 1.) const;
 
   /**
-   * Perform an SOR preconditioning in-place.  <tt>omega</tt> is the
-   * relaxation parameter.
+   * 就地执行SOR预处理。 <tt>omega</tt>是松弛参数。
+   *
    */
   template <typename somenumber>
   void
   SOR(Vector<somenumber> &v, const number om = 1.) const;
 
   /**
-   * Perform a transpose SOR preconditioning in-place.  <tt>omega</tt> is the
-   * relaxation parameter.
+   * 就地进行转置SOR预处理。 <tt>omega</tt>是松弛参数。
+   *
    */
   template <typename somenumber>
   void
   TSOR(Vector<somenumber> &v, const number om = 1.) const;
 
   /**
-   * Perform a permuted SOR preconditioning in-place.
+   * 就地进行移置的SOR预处理。
+   * 标准的SOR方法是按照<tt>permutation</tt>规定的顺序应用的，即首先是行<tt>permutation[0]</tt>，然后是<tt>permutation[1]</tt>，依此类推。出于效率的考虑，需要排列组合以及它的逆向排列。
+   * <tt>omega</tt>是放松参数。
    *
-   * The standard SOR method is applied in the order prescribed by
-   * <tt>permutation</tt>, that is, first the row <tt>permutation[0]</tt>,
-   * then <tt>permutation[1]</tt> and so on. For efficiency reasons, the
-   * permutation as well as its inverse are required.
-   *
-   * <tt>omega</tt> is the relaxation parameter.
    */
   template <typename somenumber>
   void
@@ -1401,14 +1219,10 @@ public:
        const number                  om = 1.) const;
 
   /**
-   * Perform a transposed permuted SOR preconditioning in-place.
+   * 就地进行转置的包络SOR预处理。
+   * 转置的SOR方法按照<tt>permutation</tt>规定的顺序应用，即首先是行<tt>permutation[m()-1]</tt>，然后是<tt>permutation[m()-2]</tt>，依此类推。出于效率的考虑，需要用到permutation以及它的逆向。
+   * <tt>omega</tt>是放松参数。
    *
-   * The transposed SOR method is applied in the order prescribed by
-   * <tt>permutation</tt>, that is, first the row <tt>permutation[m()-1]</tt>,
-   * then <tt>permutation[m()-2]</tt> and so on. For efficiency reasons, the
-   * permutation as well as its inverse are required.
-   *
-   * <tt>omega</tt> is the relaxation parameter.
    */
   template <typename somenumber>
   void
@@ -1418,9 +1232,9 @@ public:
         const number                  om = 1.) const;
 
   /**
-   * Do one Jacobi step on <tt>v</tt>.  Performs a direct Jacobi step with
-   * right hand side <tt>b</tt>. This function will need an auxiliary vector,
-   * which is acquired from GrowingVectorMemory.
+   * 对<tt>v</tt>做一个雅可比步骤。
+   * 对<tt>b</tt>做一个直接的雅可比步骤，右手边<tt>b</tt>。这个函数需要一个辅助向量，它从GrowingVectorMemory中获取。
+   *
    */
   template <typename somenumber>
   void
@@ -1429,8 +1243,9 @@ public:
               const number              om = 1.) const;
 
   /**
-   * Do one SOR step on <tt>v</tt>.  Performs a direct SOR step with right
-   * hand side <tt>b</tt>.
+   * 对<tt>v</tt>做一个SOR步骤。
+   * 对右手边的<tt>b</tt>直接执行SOR步骤。
+   *
    */
   template <typename somenumber>
   void
@@ -1439,8 +1254,9 @@ public:
            const number              om = 1.) const;
 
   /**
-   * Do one adjoint SOR step on <tt>v</tt>.  Performs a direct TSOR step with
-   * right hand side <tt>b</tt>.
+   * 对<tt>v</tt>做一个邻接的SOR步骤。
+   * 对<tt>b</tt>做一个直接的TSOR步骤，右手边<tt>b</tt>。
+   *
    */
   template <typename somenumber>
   void
@@ -1449,8 +1265,9 @@ public:
             const number              om = 1.) const;
 
   /**
-   * Do one SSOR step on <tt>v</tt>.  Performs a direct SSOR step with right
-   * hand side <tt>b</tt> by performing TSOR after SOR.
+   * 对<tt>v</tt>做一个SSOR步骤。
+   * 通过在SOR之后执行TSOR，对右手边的<tt>b</tt>直接执行SSOR步骤。
+   *
    */
   template <typename somenumber>
   void
@@ -1459,88 +1276,85 @@ public:
             const number              om = 1.) const;
   //@}
   /**
-   * @name Iterators
+   * @name  迭代器
+   *
    */
   //@{
 
   /**
-   * Return an iterator pointing to the first element of the matrix.
+   * 返回一个指向矩阵的第一个元素的迭代器。
+   * 注意这个类的一般文档中关于元素访问顺序的讨论。
    *
-   * Note the discussion in the general documentation of this class about the
-   * order in which elements are accessed.
    */
   const_iterator
   begin() const;
 
   /**
-   * Like the function above, but for non-const matrices.
+   * 像上面的函数一样，但是对于非恒定矩阵。
+   *
    */
   iterator
   begin();
 
   /**
-   * Return an iterator pointing the element past the last one of this matrix.
+   * 返回一个迭代器，指向这个矩阵的最后一个以上的元素。
+   *
    */
   const_iterator
   end() const;
 
   /**
-   * Like the function above, but for non-const matrices.
+   * 像上面的函数一样，但对于非静态矩阵。
+   *
    */
   iterator
   end();
 
   /**
-   * Return an iterator pointing to the first element of row @p r.
+   * 返回一个指向行 @p r. 第一个元素的迭代器
+   * 注意，如果给定的行是空的，即不包含任何非零条目，那么这个函数返回的迭代器等于<tt>end(r)</tt>。在这种情况下，如果行
+   * @p r
+   * 和以下任何一行都不包含任何非零条目，则返回的迭代器可能无法被解除引用。
    *
-   * Note that if the given row is empty, i.e. does not contain any nonzero
-   * entries, then the iterator returned by this function equals
-   * <tt>end(r)</tt>. The returned iterator may not be dereferenceable in that
-   * case if neither row @p r nor any of the following rows contain any
-   * nonzero entries.
    */
   const_iterator
   begin(const size_type r) const;
 
   /**
-   * Like the function above, but for non-const matrices.
+   * 像上面的函数一样，但对于非恒定矩阵。
+   *
    */
   iterator
   begin(const size_type r);
 
   /**
-   * Return an iterator pointing the element past the last one of row @p r ,
-   * or past the end of the entire sparsity pattern if none of the rows after
-   * @p r contain any entries at all.
+   * 返回一个指向第 @p r 行最后一个元素的迭代器，如果 @p
+   * r
+   * 之后的行根本不包含任何条目，则指向整个稀疏模式的末端。
+   * 请注意，结束迭代器不一定是可被解读的。特别是如果它是一个矩阵的最后一行的结束迭代器，情况更是如此。
    *
-   * Note that the end iterator is not necessarily dereferenceable. This is in
-   * particular the case if it is the end iterator for the last row of a
-   * matrix.
    */
   const_iterator
   end(const size_type r) const;
 
   /**
-   * Like the function above, but for non-const matrices.
+   * 像上面的函数一样，但是对于非恒定矩阵。
+   *
    */
   iterator
   end(const size_type r);
   //@}
   /**
-   * @name Input/Output
+   * @name  输入/输出
+   *
    */
   //@{
 
   /**
-   * Print the matrix to the given stream, using the format <tt>(row,column)
-   * value</tt>, i.e. one nonzero entry of the matrix per line. If
-   * <tt>across</tt> is true, print all entries on a single line, using the
-   * format row,column:value.
+   * 打印矩阵到给定的流，使用格式<tt>(row,column)
+   * value</tt>，即每行打印矩阵的一个非零条目。如果<tt>across</tt>为真，则在单行上打印所有条目，使用格式row,column:value。
+   * 如果参数<tt>diagonal_first</tt>为真，则二次方矩阵的对角线元素在其行中首先打印，对应于内部存储方案。如果它是假的，一行中的元素将按升列顺序写入。
    *
-   * If the argument <tt>diagonal_first</tt> is true, diagonal elements of
-   * quadratic matrices are printed first in their row, corresponding to the
-   * internal storage scheme. If it is false, the elements in a row are
-   * written in ascending column order.
    */
   template <class StreamType>
   void
@@ -1549,24 +1363,16 @@ public:
         const bool  diagonal_first = true) const;
 
   /**
-   * Print the matrix in the usual format, i.e. as a matrix and not as a list
-   * of nonzero elements. For better readability, elements not in the matrix
-   * are displayed as empty space, while matrix elements which are explicitly
-   * set to zero are displayed as such.
+   * 以通常的格式打印矩阵，即作为矩阵，而不是作为非零元素的列表。为了提高可读性，不在矩阵中的元素显示为空白，而明确设置为零的矩阵元素则显示为空白。
+   * 参数允许对输出格式进行灵活设置。
+   * <tt>precision</tt>和<tt>scientific</tt>用于确定数字格式，其中<tt>scientific
+   * = false</tt>表示固定点符号。
+   * <tt>width</tt>的一个零条目使函数计算出一个宽度，但如果输出粗略的话，可以将其改为一个正值。
+   * 此外，还可以指定一个空值的字符。
+   * 最后，整个矩阵可以与一个共同的分母相乘，以产生更可读的输出，甚至是整数。
+   * @attention
+   * 如果应用于一个大的矩阵，这个函数可能会产生<b>large</b>量的输出!
    *
-   * The parameters allow for a flexible setting of the output format:
-   * <tt>precision</tt> and <tt>scientific</tt> are used to determine the
-   * number format, where <tt>scientific = false</tt> means fixed point
-   * notation.  A zero entry for <tt>width</tt> makes the function compute a
-   * width, but it may be changed to a positive value, if output is crude.
-   *
-   * Additionally, a character for an empty value may be specified.
-   *
-   * Finally, the whole matrix can be multiplied with a common denominator to
-   * produce more readable output, even integers.
-   *
-   * @attention This function may produce <b>large</b> amounts of output if
-   * applied to a large matrix!
    */
   void
   print_formatted(std::ostream &     out,
@@ -1577,64 +1383,49 @@ public:
                   const double       denominator = 1.) const;
 
   /**
-   * Print the actual pattern of the matrix. For each entry with an absolute
-   * value larger than threshold, a '*' is printed, a ':' for every value
-   * smaller and a '.' for every entry not allocated.
+   * 打印矩阵的实际模式。对于每个绝对值大于阈值的条目，打印一个'*'，对于每个较小的数值打印一个':'，对于每个未分配的条目打印一个'.'。
+   *
    */
   void
   print_pattern(std::ostream &out, const double threshold = 0.) const;
 
   /**
-   * Print the matrix to the output stream @p out in a format that can be
-   * read by numpy::readtxt(). To load the matrix in python just do
-   * <code>
-   *  [data, row, column] = numpy.loadtxt('my_matrix.txt')
-   *  sparse_matrix = scipy.sparse.csr_matrix((data, (row, column)))
-   * </code>
+   * 将矩阵打印到输出流 @p out 中，其格式可以被
+   * numpy::readtxt(). 读取 要在python中加载矩阵，只需做<code>
+   * [data, row, column] = numpy.loadtxt('my_matrix.txt') sparse_matrix =
+   * scipy.sparse.csr_matrix((data, (row, column))   </code>
+   *
    */
   void
   print_as_numpy_arrays(std::ostream &     out,
                         const unsigned int precision = 9) const;
 
   /**
-   * Write the data of this object en bloc to a file. This is done in a binary
-   * mode, so the output is neither readable by humans nor (probably) by other
-   * computers using a different operating system of number format.
+   * 把这个对象的数据全部写到一个文件中。这是以二进制模式进行的，所以输出的数据既不能被人类阅读，也不能（可能）被其他使用不同操作系统的数字格式的计算机阅读。
+   * 这个函数的目的是，如果你的内存不足，想在不同的程序之间进行交流，或者允许对象在程序的不同运行中持续存在，你可以把矩阵和稀疏模式换出来。
    *
-   * The purpose of this function is that you can swap out matrices and
-   * sparsity pattern if you are short of memory, want to communicate between
-   * different programs, or allow objects to be persistent across different
-   * runs of the program.
    */
   void
   block_write(std::ostream &out) const;
 
   /**
-   * Read data that has previously been written by block_write() from a file.
-   * This is done using the inverse operations to the above function, so it is
-   * reasonably fast because the bitstream is not interpreted except for a few
-   * numbers up front.
+   * 从文件中读取先前由block_write()写入的数据。
+   * 这是用上述函数的逆运算来完成的，所以它的速度相当快，因为除了前面的几个数字，比特流是不被解释的。
+   * 在这个操作中，对象被调整了大小，所有以前的内容都会丢失。然而，请注意，没有对新数据和底层的SparsityPattern对象是否适合在一起进行检查。你有责任确保稀疏度模式和要读取的数据是匹配的。
+   * 一个原始形式的错误检查会被执行，它将识别最直白的尝试，即把一些数据解释为一个矩阵，以比特方式存储到一个实际上不是这样创建的文件中，但不是更多。
    *
-   * The object is resized on this operation, and all previous contents are
-   * lost. Note, however, that no checks are performed whether new data and
-   * the underlying SparsityPattern object fit together. It is your
-   * responsibility to make sure that the sparsity pattern and the data to be
-   * read match.
-   *
-   * A primitive form of error checking is performed which will recognize the
-   * bluntest attempts to interpret some data as a matrix stored bitwise to a
-   * file that wasn't actually created that way, but not more.
    */
   void
   block_read(std::istream &in);
   //@}
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况  @{ .
+   *
    */
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException2(ExcInvalidIndex,
                  int,
@@ -1656,7 +1447,8 @@ public:
                     "such as the current one at one point or other when "
                     "trying to write into the entries of the matrix.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcDifferentSparsityPatterns,
                    "When copying one sparse matrix into another, "
@@ -1664,7 +1456,8 @@ public:
                    "both matrices need to refer to the same "
                    "sparsity pattern.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException2(ExcIteratorRange,
                  int,
@@ -1672,7 +1465,8 @@ public:
                  << "The iterators denote a range of " << arg1
                  << " elements, but the given number of rows was " << arg2);
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclExceptionMsg(ExcSourceEqualsDestination,
                    "You are attempting an operation on two matrices that "
@@ -1682,47 +1476,37 @@ public:
 
 protected:
   /**
-   * For some matrix storage formats, in particular for the PETSc distributed
-   * blockmatrices, set and add operations on individual elements can not be
-   * freely mixed. Rather, one has to synchronize operations when one wants to
-   * switch from setting elements to adding to elements.  BlockMatrixBase
-   * automatically synchronizes the access by calling this helper function for
-   * each block.  This function ensures that the matrix is in a state that
-   * allows adding elements; if it previously already was in this state, the
-   * function does nothing.
+   * 对于某些矩阵存储格式，特别是PETSc分布式块矩阵，对单个元素的设置和添加操作不能自由混合。相反，当我们想从设置元素切换到添加元素时，我们必须同步操作。
+   * BlockMatrixBase通过为每个块调用这个辅助函数来自动同步访问。
+   * 这个函数确保矩阵处于一个允许添加元素的状态；如果它之前已经处于这个状态，那么这个函数就不会做任何事情。
+   *
    */
   void
   prepare_add();
 
   /**
-   * Same as prepare_add() but prepare the matrix for setting elements if the
-   * representation of elements in this class requires such an operation.
+   * 与prepare_add()相同，但如果该类中的元素表示法需要这样的操作，则为设置元素准备矩阵。
+   *
    */
   void
   prepare_set();
 
 private:
   /**
-   * Pointer to the sparsity pattern used for this matrix. In order to
-   * guarantee that it is not deleted while still in use, we subscribe to it
-   * using the SmartPointer class.
+   * 指向该矩阵使用的稀疏模式的指针。为了保证它在使用中不被删除，我们使用SmartPointer类来订阅它。
+   *
    */
   SmartPointer<const SparsityPattern, SparseMatrix<number>> cols;
 
   /**
-   * Array of values for all the nonzero entries. The position of an
-   * entry within the matrix, i.e., the row and column number for a
-   * given value in this array can only be deduced using the sparsity
-   * pattern. The same holds for the more common operation of finding
-   * an entry by its coordinates.
+   * 所有非零条目的数值数组。一个条目在矩阵中的位置，也就是这个数组中给定值的行号和列号，只能用稀疏模式来推导。同样的道理也适用于更常见的通过坐标寻找一个条目的操作。
+   *
    */
   std::unique_ptr<number[]> val;
 
   /**
-   * Allocated size of #val. This can be larger than the actually used part if
-   * the size of the matrix was reduced sometime in the past by associating a
-   * sparsity pattern with a smaller size to this object, using the reinit()
-   * function.
+   * 拨出的#val的大小。如果在过去的某个时候，通过使用reinit()函数将具有较小尺寸的稀疏模式关联到该对象，从而减少了矩阵的尺寸，那么这个尺寸可能大于实际使用的部分。
+   *
    */
   std::size_t max_len;
 
@@ -1755,7 +1539,7 @@ private:
 };
 
 #  ifndef DOXYGEN
-/*---------------------- Inline functions -----------------------------------*/
+ /*---------------------- Inline functions -----------------------------------*/ 
 
 
 
@@ -2532,9 +2316,11 @@ SparseMatrix<number>::prepare_set()
 #  endif // DOXYGEN
 
 
-/*----------------------------   sparse_matrix.h ---------------------------*/
+ /*----------------------------   sparse_matrix.h ---------------------------*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-/*----------------------------   sparse_matrix.h ---------------------------*/
+ /*----------------------------   sparse_matrix.h ---------------------------*/ 
+
+

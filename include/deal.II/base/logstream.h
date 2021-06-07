@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/logstream_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -34,123 +35,92 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A class that simplifies the process of execution logging. It does so by
- * providing
- * <ul>
- * <li> a push and pop mechanism for prefixes, and
- * <li> the possibility of distributing information to files and the console.
- * </ul>
- *
- * The usual usage of this class is through the pregenerated object
- * <tt>deallog</tt>. Typical setup steps are:
- * <ul>
- * <li> <tt>deallog.depth_console(n)</tt>: restrict output on screen to outer
- * loops.
- * <li> <tt>deallog.attach(std::ostream)</tt>: write logging information into
- * a file.
- * <li> <tt>deallog.depth_file(n)</tt>: restrict output to file to outer
- * loops.
- * </ul>
- *
- * Before entering a new phase of your program, e.g. a new loop, a new prefix
- * can be set via <tt>LogStream::Prefix p("loopname");</tt>. The destructor of
- * the prefix will pop the prefix text from the stack.
- *
- * Write via the <tt>&lt;&lt;</tt> operator, <tt> deallog << "This is a log
- * notice";</tt> will be buffered thread locally until a <tt>std::flush</tt>
- * or <tt>std::endl</tt> is encountered, which will trigger a writeout to the
- * console and, if set up, the log file.
- *
+ * 一个简化了执行日志过程的类。它通过提供  <ul>   <li>  前缀的推送和弹出机制，以及  <li>  将信息分发到文件和控制台的可能性来实现。  </ul>
+ * 这个类的通常用法是通过预生成的对象<tt>deallog</tt>。典型的设置步骤是。  <ul>   <li>  <tt>deallog.depth_console(n)</tt>: 将屏幕上的输出限制在外循环。  <li>   <tt>deallog.attach(std::ostream)</tt>:  将日志信息写进文件。  <li>  <tt>deallog.depth_file(n)</tt>: 限制输出到文件的外循环。  </ul>
+ * 在进入程序的新阶段之前，例如一个新的循环，可以通过
+ * <tt>LogStream::Prefix
+ * p("loopname");</tt>设置一个新的前缀。前缀的析构器将从堆栈中弹出前缀文本。
+ * 通过<tt>&lt;&lt;</tt>操作符写入，<tt> deallog << "This is a log
+ * notice";</tt>将被本地缓冲线程，直到遇到 <tt>std::flush</tt>
+ * 或 <tt>std::endl</tt>
+ * ，这将触发写出到控制台，如果设置了日志文件。
  * <h3>LogStream and thread safety</h3>
+ * 在并发线程的附近，LogStream的行为方式如下。  <ul>   <li>  每一次对Logstream的写操作<tt>&lt;&lt;</tt>（或使用其中一个特殊的成员函数）都会在线程本地存储中进行缓冲。  <li>  一个 <tt>std::flush</tt> 或 <tt>std::endl</tt> 将触发一个写出到控制台和（如果附加）到文件流。这个写出是有顺序的，所以并发的线程的输出不会交错。  <li>  在一个新的线程上，调用写出，以及调用#push或#pop将把创建LogStream实例的 "祝福 "线程的当前前缀复制到线程本地存储。此后，前缀是线程本地的。  </ul>
  *
- * In the vicinity of concurrent threads, LogStream behaves in the following
- * manner:
- * <ul>
- * <li> Every write to a Logstream with operator <tt>&lt;&lt;</tt> (or with
- * one of the special member functions) is buffered in a thread-local storage.
- * <li> An <tt>std::flush</tt> or <tt>std::endl</tt> will trigger a writeout
- * to the console and (if attached) to the file stream. This writeout is
- * sequentialized so that output from concurrent threads don't interleave.
- * <li> On a new thread, invoking a writeout, as well as a call to #push or
- * #pop will copy the current prefix of the "blessed" thread that created the
- * LogStream instance to a thread-local storage. After that prefixes are
- * thread-local.
- * </ul>
  *
  * @ingroup textoutput
+ *
  */
 class LogStream : public Subscriptor
 {
 public:
   /**
-   * A subclass allowing for the safe generation and removal of prefixes.
+   * 一个允许安全生成和移除前缀的子类。
+   * 在一个区块的某个地方，创建一个这样的对象，它将作为前缀出现在LogStream输出中，就像
+   * @p deallog.
+   * 在区块结束时，前缀将自动被删除，当这个对象被销毁时。
+   * 换句话说，这样创建的对象的范围决定了前缀的寿命。使用这样一个对象的好处是，无论你以何种方式退出这个范围，前缀都会被删除
    *
-   * Somewhere at the beginning of a block, create one of these objects, and
-   * it will appear as a prefix in LogStream output like @p deallog. At the
-   * end of the block, the prefix will automatically be removed, when this
-   * object is destroyed.
+   * --通过 <code>continue</code>, <code>break</code>, <code>return</code>
+   * 、 <code>throw</code>
+   * ，或者仅仅通过到达关闭括号。在所有这些情况下，没有必要记得使用
+   * LogStream::pop(). 来手动弹出前缀
+   * 在这一点上，它的工作方式就像更著名的 std::unique_ptr
+   * 和 std::lock_guard 类。
    *
-   * In other words, the scope of the object so created determines the
-   * lifetime of the prefix. The advantage of using such an object is that the
-   * prefix is removed whichever way you exit the scope -- by
-   * <code>continue</code>, <code>break</code>, <code>return</code>,
-   * <code>throw</code>, or by simply reaching the closing brace. In all of
-   * these cases, it is not necessary to remember to pop the prefix manually
-   * using LogStream::pop(). In this, it works just like the better known
-   * std::unique_ptr and std::lock_guard classes.
    */
   class Prefix
   {
   public:
     /**
-     * Set a new prefix for @p deallog, which will be removed when the
-     * variable is destroyed.
+     * 为 @p deallog,
+     * 设置一个新的前缀，这个前缀将在变量被销毁时被删除。
+     *
      */
     Prefix(const std::string &text);
 
     /**
-     * Set a new prefix for the given stream, which will be removed when the
-     * variable is destroyed.
+     * 为给定的流设置一个新的前缀，这个前缀将在变量被销毁时被删除。
+     *
      */
     Prefix(const std::string &text, LogStream &stream);
 
     /**
-     * Remove the prefix associated with this variable.
+     * 删除与此变量相关的前缀。
+     *
      */
     ~Prefix();
 
   private:
     /**
-     * A pointer to the LogStream object to which the prefix is
-     * applied.
+     * 一个指向应用前缀的LogStream对象的指针。
+     *
      */
     SmartPointer<LogStream, LogStream::Prefix> stream;
   };
 
 
   /**
-   * Standard constructor. The constructor sets the output stream to
-   * <tt>std::cout</tt> and the depth to zero. (Use attach() and
-   * depth_console() to change this.)
+   * 标准构造函数。构造函数将输出流设置为 <tt>std::cout</tt>
+   * ，深度设置为零。(使用attach()和depth_console()来改变这个。)
+   *
    */
   LogStream();
 
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   ~LogStream() override;
 
 
   /**
-   * Enable output to a second stream <tt>o</tt>.
+   * 启用输出到第二个流<tt>o</tt>。      @param  o
+   * 附加这个输出流。      @param[in]  print_job_id
+   * 当前进程的JobIdentifier是否应该被打印到流中。
+   * @param[in]  flags 要在输出流上设置的格式标志  @p o.
    *
-   * @param o Attach this output stream.
-   *
-   * @param[in] print_job_id Whether or not the JobIdentifier for the current
-   * process should be printed to the stream.
-   *
-   * @param[in] flags Format flags to set on the output stream @p o.
    */
   void
   attach(std::ostream &                o,
@@ -160,228 +130,222 @@ public:
 
 
   /**
-   * Disable output to the second stream. You may want to call <tt>close</tt>
-   * on the stream that was previously attached to this object.
+   * 禁用对第二个流的输出。你可能想在以前连接到这个对象的流上调用<tt>close</tt>。
+   *
    */
   void
   detach();
 
 
   /**
-   * Return the default stream (<tt>std_out</tt>).
+   * 返回默认流（<tt>std_out</tt>）。
+   *
    */
   std::ostream &
   get_console();
 
 
   /**
-   * Return the file stream.
+   * 返回文件流。
+   *
    */
   std::ostream &
   get_file_stream();
 
 
   /**
-   * Return @p true if file stream has already been attached,
-   * @p false otherwise.
+   * 如果文件流已经被连接，返回 @p true ，否则返回 @p false
+   * 。
+   *
    */
   bool
   has_file() const;
 
 
   /**
-   * Return the prefix string.
+   * 返回前缀字符串。
+   *
    */
   const std::string &
   get_prefix() const;
 
 
   /**
-   * Push another prefix on the stack. Prefixes are automatically separated by
-   * a colon and there is a double colon after the last prefix.
+   * 在堆栈中推送另一个前缀。前缀自动用冒号隔开，最后一个前缀后面有一个双冒号。
+   * 一个更简单的添加前缀的方法（无需手动添加相应的pop()）是使用
+   * LogStream::Prefix
+   * 类。使用该类的好处是，只要Prefix对象超出了范围，就会发出相应的pop()调用
    *
-   * A simpler way to add a prefix (without the manual need to add the
-   * corresponding pop()) is to use the LogStream::Prefix class. Using
-   * that class has the advantage that the corresponding pop() call is
-   * issued whenever the Prefix object goes out of scope -- either at
-   * the end of the code block, at the nearest @p return statement, or
-   * because an intermediate function call results in an exception that
-   * is not immediately caught.
+   * - 无论是在代码块的末尾，还是在最近的 @p return 语句，或者是因为中间函数调用导致的异常没有被立即捕获。
+   *
    */
   void
   push(const std::string &text);
 
 
   /**
-   * Remove the last prefix added with push().
+   * 删除用push()添加的最后一个前缀。
+   *
    */
   void
   pop();
 
 
   /**
-   * Maximum number of levels to be printed on the console. The default is 0,
-   * which will not generate any output. This function allows one to restrict
-   * console output to the highest levels of iterations. Only output with less
-   * than <tt>n</tt> prefixes is printed. By calling this function with
-   * <tt>n=0</tt>, no console output will be written. See step-3 for an
-   * example usage of this method.
+   * 在控制台打印的最大级别数。默认为0，不会产生任何输出。这个函数允许人们将控制台输出限制在最高级别的迭代。只有小于<tt>n</tt>前缀的输出被打印。在<tt>n=0</tt>的情况下调用这个函数，将不会写出控制台输出。参见
+   * step-3 中关于此方法的使用实例。
+   * 该参数的前一个值将被返回。
    *
-   * The previous value of this parameter is returned.
    */
   unsigned int
   depth_console(const unsigned int n);
 
 
   /**
-   * Maximum number of levels to be written to the log file. The functionality
-   * is the same as <tt>depth_console</tt>, nevertheless, this function should
-   * be used with care, since it may spoil the value of a log file.
+   * 写入日志文件的最大层数。其功能与<tt>depth_console</tt>相同，尽管如此，这个函数应该谨慎使用，因为它可能破坏日志文件的价值。
+   * 该参数的前一个值将被返回。
    *
-   * The previous value of this parameter is returned.
    */
   unsigned int
   depth_file(const unsigned int n);
 
 
   /**
-   * Log the thread id.
+   * 记录线程的ID。
+   *
    */
   bool
   log_thread_id(const bool flag);
 
 
   /**
-   * set the precision for the underlying stream and returns the previous
-   * stream precision. This function mimics
-   * http://www.cplusplus.com/reference/ios/ios_base/precision/
+   * 为底层流设置精度，并返回之前的流精度。这个函数模仿http://www.cplusplus.com/reference/ios/ios_base/precision/
+   *
    */
   std::streamsize
   precision(const std::streamsize prec);
 
 
   /**
-   * set the width for the underlying stream and returns the previous stream
-   * width. This function mimics
-   * http://www.cplusplus.com/reference/ios/ios_base/width/
+   * 设置底层流的宽度，并返回上一个流的宽度。此函数模仿http://www.cplusplus.com/reference/ios/ios_base/width/
+   *
    */
   std::streamsize
   width(const std::streamsize wide);
 
 
   /**
-   * set the flags for the underlying stream and returns the previous stream
-   * flags. This function mimics
-   * http://www.cplusplus.com/reference/ios/ios_base/flags/
+   * 设置底层流的标志，并返回之前的流标志。此函数模仿http://www.cplusplus.com/reference/ios/ios_base/flags/
+   *
    */
   std::ios::fmtflags
   flags(const std::ios::fmtflags f);
 
 
   /**
-   * Treat ostream manipulators. This passes on the whole thing to the
-   * template function with the exception of the <tt>std::endl</tt>
-   * manipulator, for which special action is performed: write the temporary
-   * stream buffer including a header to the file and <tt>std::cout</tt> and
-   * empty the buffer.
+   * 处理ostream操作器。这将整个事情传递给模板函数，但
+   * <tt>std::endl</tt>
+   * 操纵器除外，对其进行特殊操作：将临时流缓冲区包括头写入文件和
+   * <tt>std::cout</tt> 并清空缓冲区。
+   * 反正这个函数的重载是需要的，因为编译器不能像以前的通用模板那样，将
+   * @p std::endl 这样的操纵器直接与模板参数 @p T
+   * 绑定。这是由于 @p  std::endl 实际上是 @p std::ostream,  @p
+   * std::wostream,
+   * 以及潜在的更多此类函数的重载集。因此，这个函数有必要从这个重载集合中挑选一个元素。
    *
-   * An overload of this function is needed anyway, since the compiler can't
-   * bind manipulators like @p std::endl directly to template arguments @p T
-   * like in the previous general template. This is due to the fact that @p
-   * std::endl is actually an overloaded set of functions for @p std::ostream,
-   * @p std::wostream, and potentially more of this kind. This function is
-   * therefore necessary to pick one element from this overload set.
    */
   LogStream &
   operator<<(std::ostream &(*p)(std::ostream &));
 
 
   /**
-   * Return an estimate for the memory consumption, in bytes, of this object.
-   * This is not exact (but will usually be close) because calculating the
-   * memory usage of trees (e.g., <tt>std::map</tt>) is difficult.
+   * 返回这个对象的内存消耗估计值，单位是字节。
+   * 这不是精确的（但通常会很接近），因为计算树（例如，
+   * <tt>std::map</tt>) ）的内存用量是很困难的。
+   *
    */
   std::size_t
   memory_consumption() const;
 
 private:
   /**
-   * Internal wrapper around thread-local prefixes. This private function will
-   * return the correct internal prefix stack. More important, a new thread-
-   * local stack will be copied from the current stack of the "blessed" thread
-   * that created this LogStream instance (usually, in the case of deallog,
-   * the "main" thread).
+   * 围绕线程本地前缀的内部包装器。这个私有函数将返回正确的内部前缀栈。更重要的是，一个新的线程本地堆栈将从创建这个LogStream实例的
+   * "受祝福 "线程（通常，在deallog的情况下，是 "主
+   * "线程）的当前堆栈中复制出来。
+   *
    */
   std::stack<std::string> &
   get_prefixes() const;
 
   /**
-   * Stack of strings which are printed at the beginning of each line to allow
-   * identification where the output was generated.
+   * 堆栈中的字符串，这些字符串被打印在每一行的开头，以便于识别输出是在哪里产生的。
+   *
    */
   mutable Threads::ThreadLocalStorage<std::stack<std::string>> prefixes;
 
   /**
-   * We record the thread id of the thread creating this object. We need
-   * this information to "steal" the current prefix from this "parent"
-   * thread on first use of deallog on a new thread.
+   * 我们记录创建此对象的线程ID。我们需要这个信息，以便在一个新的线程上第一次使用deallog时，从这个
+   * "父 "线程 "偷 "出当前的前缀。
+   *
    */
   std::thread::id parent_thread;
 
   /**
-   * Default stream, where the output is to go to. This stream defaults to
-   * <tt>std::cout</tt>, but can be set to another stream through the
-   * constructor.
+   * 默认的流，即输出要去的地方。这个流默认为
+   * <tt>std::cout</tt>, ，但可以通过构造函数设置为其他流。
+   *
    */
   std::ostream *std_out;
 
   /**
-   * Pointer to a stream, where a copy of the output is to go to. Usually,
-   * this will be a file stream.
+   * 指向一个流的指针，输出的副本将被送到那里。通常，这将是一个文件流。
+   * 你可以通过<tt>attach</tt>函数设置和重置这个流。
    *
-   * You can set and reset this stream by the <tt>attach</tt> function.
    */
   std::ostream *file;
 
   /**
-   * Value denoting the number of prefixes to be printed to the standard
-   * output. If more than this number of prefixes is pushed to the stack, then
-   * no output will be generated until the number of prefixes shrinks back
-   * below this number.
+   * 表示要打印到标准输出的前缀数量的值。如果超过这个数量的前缀被推到堆栈，那么将不会产生输出，直到前缀的数量缩减到这个数字以下。
+   *
    */
   unsigned int std_depth;
 
   /**
-   * Same for the maximum depth of prefixes for output to a file.
+   * 输出到文件的最大前缀深度也一样。
+   *
    */
   unsigned int file_depth;
 
   /**
-   * Flag for printing thread id.
+   * 打印线程ID的标志。
+   *
    */
   bool print_thread_id;
 
   /**
-   * A flag indicating whether output is currently at a new line
+   * 指示输出当前是否在新行的标志
+   *
    */
   bool at_newline;
 
   /**
-   * Print head of line.
+   * 打印行的头部。
+   *
    */
   void
   print_line_head();
 
   /**
-   * Internal wrapper around "thread local" outstreams. This private function
-   * will return the correct internal ostringstream buffer for operator<<.
+   * 围绕 "线程本地
+   * "输出流的内部包装器。这个私有函数将为operator<<返回正确的内部ostringstream缓冲区。
+   *
    */
   std::ostringstream &
   get_stream();
 
   /**
-   * We use our thread local storage facility to generate a stringstream for
-   * every thread that sends log messages.
+   * 我们使用我们的线程本地存储设施，为每个发送日志信息的线程生成一个字符串流。
+   *
    */
   Threads::ThreadLocalStorage<std::shared_ptr<std::ostringstream>> outstreams;
 
@@ -391,16 +355,18 @@ private:
 };
 
 
-/* ----------------------------- Inline functions and templates ----------------
- */
+ /* ----------------------------- Inline functions and templates ----------------
+ */ 
 
 
 /**
- * Output a constant something through LogStream:
+ * 通过LogStream输出一个不变的东西。
  *
- * @note We declare this operator as a non-member function so that it is
- * possible to overload it with more specialized templated versions under
- * C++11 overload resolution rules
+ *
+ * @note
+ * 我们将这个操作符声明为一个非成员函数，这样就有可能在C++11重载解析规则下用更专业的模板化版本来重载它
+ *
+ *
  */
 template <typename T>
 inline LogStream &
@@ -414,7 +380,9 @@ operator<<(LogStream &log, const T &t)
 
 
 /**
- * The standard log object of deal.II:
+ * deal.II的标准日志对象。
+ *
+ *
  */
 extern LogStream deallog;
 
@@ -423,3 +391,5 @@ extern LogStream deallog;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

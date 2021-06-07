@@ -1,3 +1,4 @@
+//include/deal.II-translator/hp/refinement_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2019 - 2021 by the deal.II authors
@@ -41,73 +42,20 @@ class DoFHandler;
 namespace hp
 {
   /**
-   * We supply adaptive methods to align computational resources with the
-   * complexity of the numerical solution. Error estimates are an appropriate
-   * means of determining where adjustments need to be made.
-   *
-   * However with hp-adaptivity, we have two ways to realize these adjustments:
-   * For irregular solutions, h-adaptive methods which dynamically assign cell
-   * sizes tend to reduce the approximation error, while for smooth solutions
-   * p-adaptive methods are better suited in which function spaces will be
-   * selected dynamically. This namespace collects tools to decide which type
-   * of adaptive methods to apply.
-   *
-   * <h3>Usage</h3>
-   *
-   * To successfully apply hp-adaptive methods, we recommend the following
-   * workflow:
-   * <ol>
-   * <li> A suitable error estimate is the basis for any kind of adaptive method.
-   * Similar to pure grid refinement, we will determine error estimates in the
-   * usual way (i.e. KellyErrorEstimator) and mark cells for refinement or
-   * coarsening (i.e. GridRefinement).
-   *
-   * Calling Triangulation::execute_coarsening_and_refinement() at this stage
-   * will perform pure grid refinement as expected.
-   *
-   * <li> Once all refinement and coarsening flags have been distributed on the
-   * mesh, we may determine if those qualify for p-adaptive methods.
-   * Corresponding functions will set @p future_fe_indices on top of the
-   * refinement and coarsening flags if they fulfil a certain criterion.
-   *
-   * In case of refinement, the superordinate element of the underlying
-   * hp::FECollection will be assigned as the future finite element.
-   * Correspondingly, the subordinate element will be selected for coarsening.
-   *
-   * Triangulation::execute_coarsening_and_refinement() will now supply both
-   * h- and p-adaptive methods independently.
-   *
-   * <li> Right now, there may be cells scheduled for both h- and p-adaptation.
-   * If we do not want to impose both methods at once, we need to decide which
-   * one to pick for each cell individually and unambiguously. Since grid
-   * refinement will be imposed by default and we only determine qualification
-   * for p-adaptivity on top, we will always decide in favour of p-adaptive
-   * methods.
-   *
-   * Calling Triangulation::execute_coarsening_and_refinement() will now perform
-   * either h- or p-adaptive methods uniquely on each cell.
-   *
-   * <li> Up to this point, each cell knows its destiny in terms of adaptivity.
-   * We can now move on to prepare all data structures to be transferred across
-   * mesh changes. Previously set refinement and coarsening flags as well as
-   * @p future_fe_indices will be used to update the data accordingly.
-   * </ol>
-   *
-   * As an example, a realisation of pure p-adaptive methods would look like the
-   * following:
+   * 我们提供自适应方法，使计算资源与数值解的复杂性相一致。误差估计是确定哪里需要调整的适当手段。    然而通过hp-adaptivity，我们有两种方法来实现这些调整。  对于不规则解，动态分配单元尺寸的h-adaptive方法倾向于减少近似误差，而对于平滑解，p-adaptive方法则更适合于动态选择函数空间。这个命名空间收集了决定应用哪种类型的自适应方法的工具。    <h3>Usage</h3> 为了成功应用hp-adaptive方法，我们建议采用以下工作流程。    <ol>   <li>  一个合适的误差估计是任何一种自适应方法的基础。  与纯网格细化类似，我们将以通常的方式确定误差估计值（即KellyErrorEstimator），并对单元格进行细化或粗化（即GridRefinement）。    在这个阶段调用 Triangulation::execute_coarsening_and_refinement() 将按预期执行纯网格细化。      <li>  一旦所有的细化和粗化标志分布在网格上，我们可以确定这些是否符合p-adaptive方法的要求。  相应的函数将在细化和粗化标志之上设置 @p future_fe_indices ，如果它们满足一定的标准。    在细化的情况下，基础 hp::FECollection 的上位元素将被指定为未来的有限元素。  相应地，下级元素将被选择为粗化。      Triangulation::execute_coarsening_and_refinement()  现在将独立提供h-和p-自适应方法。      <li>  现在，可能会有单元同时安排h-适应和p-适应。  如果我们不想同时施加这两种方法，我们需要决定为每个单元单独和明确地选择哪一种。由于网格细化将被默认施加，我们只在上面确定p适应性的资格，所以我们将总是决定支持p适应性的方法。    现在，调用 Triangulation::execute_coarsening_and_refinement() 将在每个单元上唯一地执行h-或p-adaptive方法。      <li>  到此为止，每个单元都知道自己在适应性方面的命运。  我们现在可以继续准备所有的数据结构，以便在网格变化时进行传输。之前设置的细化和粗化标志以及 @p future_fe_indices 将被用于相应地更新数据。    </ol>  作为一个例子，纯p-adaptive方法的实现将看起来像这样。
    * @code
    * // step 1: flag cells for refinement or coarsening
    * Vector<float> estimated_error_per_cell (triangulation.n_active_cells());
    * KellyErrorEstimator<dim>::estimate(
-   *     hp_dof_handler,
-   *     QGauss<dim-1> (quadrature_points),
-   *     std::map<types::boundary_id, const Function<dim, Number> *>(),
-   *     solution,
-   *     estimated_error_per_cell);
+   *   hp_dof_handler,
+   *   QGauss<dim-1> (quadrature_points),
+   *   std::map<types::boundary_id, const Function<dim, Number>>(),
+   *   solution,
+   *   estimated_error_per_cell);
    * GridRefinement::refine_and_coarsen_fixed_fraction(triangulation,
-   *                                                   estimated_error_per_cell,
-   *                                                   top_fraction,
-   *                                                   bottom_fraction);
+   *                                                 estimated_error_per_cell,
+   *                                                 top_fraction,
+   *                                                 bottom_fraction);
    *
    * // step 2: set future finite element indices on flagged cells
    * hp::Refinement::full_p_adaptivity(hp_dof_handler);
@@ -120,55 +68,49 @@ namespace hp
    *
    * triangulation.execute_coarsening_and_refinement();
    * @endcode
-   *
    * @ingroup hp
+   *
    */
   namespace Refinement
   {
     /**
-     * An alias that defines the characteristics of a function that can be used
-     * as a comparison criterion for deciding whether to perform h- or
-     * p-adaptation.
+     * 一个别名，它定义了一个函数的特性，可以作为决定是进行h-适应还是p-适应的比较标准。
+     * 这样的函数需要两个数字作为参数。第一个对应于所提供的标准，而另一个则符合参考。
+     * 比较的结果将以布尔值的形式返回。
      *
-     * Such functions take two numbers as arguments: The first one corresponds
-     * to the provided criterion, while the other one conforms to the reference.
-     * The result of the comparison will be returned as a boolean.
      */
     template <typename Number>
     using ComparisonFunction =
       std::function<bool(const Number &, const Number &)>;
 
     /**
-     * @name Setting p-adaptivity flags
-     * @{
+     * @name  设置p-adaptivity标志  @{  。
+     *
      */
 
     /**
-     * Each cell flagged for h-refinement will also be flagged for p-refinement.
-     * The same applies to coarsening.
+     * 每个被标记为h-精简的单元也将被标记为p-精简。
+     * 这同样适用于粗化。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能改变细化和粗化标志以及未来的有限元指数。
+     * 避免在这个特殊函数之前调用它们。
      *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, int spacedim>
     void
     full_p_adaptivity(const dealii::DoFHandler<dim, spacedim> &dof_handler);
 
     /**
-     * Adapt which finite element to use on cells that have been specifically
-     * flagged for p-adaptation via the parameter @p p_flags. Future finite
-     * elements will only be assigned if cells have been flagged for refinement
-     * and coarsening beforehand.
+     * 通过参数 @p p_flags.
+     * 对那些被特别标记为p-adaptation的单元进行调整，只有当单元事先被标记为细化和粗化时，才会分配未来的有限元素。
+     * 参数 @p p_flags
+     * 的每个条目都需要对应于一个活动单元。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能改变细化和粗化标志以及未来的有限元指数。
+     * 避免在这个特定函数之前调用它们。
      *
-     * Each entry of the parameter @p p_flags needs to correspond to an active
-     * cell.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, int spacedim>
     void
@@ -177,29 +119,19 @@ namespace hp
       const std::vector<bool> &                p_flags);
 
     /**
-     * Adapt which finite element to use on cells whose criteria meet a certain
-     * absolute threshold.
+     * 适应在标准满足一定绝对阈值的单元上使用哪种有限元。
+     * 对于p-精化和p-粗化，需要通过参数 @p p_refine_threshold
+     * 和 @p p_coarsen_threshold. 提供两个单独的阈值。
+     * 如果一个单元当前被标记为精化或粗化，并且其标准成功地与相应的阈值进行比较，我们就认为它是p-adaptivity。让我们对默认情况进行更具体的说明。如果一个单元被标记为细化，并且其准则大于或等于相应的阈值，我们就认为它是p-细化的。这同样适用于p-粗化，但单元格的准则必须低于或等于阈值。然而，可以通过参数
+     * @p compare_refine 和 @p compare_coarsen
+     * 提供不同的比较函数对象，以施加不同的决策策略。
+     * 参数 @p criteria
+     * 的每个条目都需要对应于一个活动单元。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能改变细化和粗化标志以及未来的有限元指数。
+     * 避免在这个特定函数之前调用它们。
      *
-     * For p-refinement and p-coarsening, two separate thresholds need to
-     * provided via parameters @p p_refine_threshold and @p p_coarsen_threshold.
-     *
-     * We consider a cell for p-adaptivity if it is currently flagged for
-     * refinement or coarsening and its criterion successfully compares to the
-     * corresponding threshold. Let us be more specific on the default case: We
-     * consider a cell for p-refinement if it is flagged for refinement and its
-     * criterion is larger than or equal to the corresponding threshold. The
-     * same applies for p-coarsening, but the cell's criterion must be lower
-     * than or equal to the threshold. However, different compare function
-     * objects can be supplied via the parameters @p compare_refine and
-     * @p compare_coarsen to impose different decision strategies.
-     *
-     * Each entry of the parameter @p criteria needs to correspond to an active
-     * cell.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, typename Number, int spacedim>
     void
@@ -214,35 +146,21 @@ namespace hp
         &compare_coarsen = std::less_equal<Number>());
 
     /**
-     * Adapt which finite element to use on cells whose criteria meet a certain
-     * threshold relative to the overall range of criterion values.
+     * 适应在单元格上使用哪种有限元，这些单元格的标准相对于标准值的整体范围满足一定的阈值。
+     * 阈值将根据当前设置的细化标记为细化和粗化单元分别确定。对于每一类单元格，我们确定所有标准的最大和最小值，并通过这些极限之间的线性内插来确定阈值。
+     * 参数 @p p_refine_fraction 和 @p p_refine_coarsen
+     * 被用作插值因子，其中`0`对应于最小值，`1`对应于最大值。默认情况下，均值被认为是阈值。
+     * 如果一个单元目前被标记为细化或粗化，并且其标准成功地与相应的阈值相比较，我们就认为它是p-adaptivity。让我们对默认情况进行更具体的说明。如果一个单元被标记为细化，并且其准则大于或等于相应的阈值，我们就认为它是p-细化的。这同样适用于p-粗化，但单元格的准则必须低于或等于阈值。然而，可以通过参数
+     * @p compare_refine 和 @p compare_coarsen
+     * 提供不同的比较函数对象，以施加不同的决策策略。
+     * 参数 @p criteria
+     * 的每个条目都需要对应于一个活动单元。参数 @p
+     * p_refine_fraction 和 @p p_coarsen_fraction 需要在区间 $[0,1]$  .
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能会改变细化和粗化标志，以及未来的有限元索引。
+     * 避免在这个特定函数之前调用它们。
      *
-     * The threshold will be determined for refined and coarsened cells
-     * separately based on the currently set refinement markers. For each class
-     * of cells, we determine the maximal and minimal values of all criteria and
-     * determine the threshold by linear interpolation between these limits.
-     * Parameters @p p_refine_fraction and @p p_refine_coarsen are used as
-     * interpolation factors, where `0` corresponds to the minimal and `1` to
-     * the maximal value. By default, mean values are considered as thresholds.
-     *
-     * We consider a cell for p-adaptivity if it is currently flagged for
-     * refinement or coarsening and its criterion successfully compares to the
-     * corresponding threshold. Let us be more specific on the default case: We
-     * consider a cell for p-refinement if it is flagged for refinement and its
-     * criterion is larger than or equal to the corresponding threshold. The
-     * same applies for p-coarsening, but the cell's criterion must be lower
-     * than or equal to the threshold. However, different compare function
-     * objects can be supplied via the parameters @p compare_refine and
-     * @p compare_coarsen to impose different decision strategies.
-     *
-     * Each entry of the parameter @p criteria needs to correspond to an active
-     * cell. Parameters @p p_refine_fraction and @p p_coarsen_fraction need to be
-     * in the interval $[0,1]$.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, typename Number, int spacedim>
     void
@@ -257,36 +175,25 @@ namespace hp
         &compare_coarsen = std::less_equal<Number>());
 
     /**
-     * Adapt which finite element to use on a given fraction of cells.
+     * 适应在给定的一部分单元上使用哪一个有限元。
+     * 在所有被标记为某种适应类型的单元中，无论是细化还是粗化，我们将在这个子集中确定固定数量的单元，这些单元将被标记为相应的p-适应变量。
+     * 对于每个细化和粗化子集，我们将根据提供的参数 @p
+     * criteria
+     * 确定一个阈值，其中包含每个活动单元的指标。在细化的默认情况下，所有指标大于或等于相应阈值的单元将被考虑为p-细化，而对于粗化，所有指标小于或等于匹配阈值的单元将被考虑。然而，可以通过参数
+     * @p compare_refine 和 @p compare_coarsen
+     * 提供不同的比较函数对象来实施不同的决策策略。
+     * 对于细化，阈值将与具有 @p p_refine_fraction 乘以
+     * Triangulation::n_active_cells()
+     * 最大指标的单元相关联，而对于粗化，它是具有 @p
+     * p_refine_coarsen 乘以 Triangulation::n_active_cells()
+     * 最低指标的单元。        参数 @p criteria
+     * 的每个条目需要对应于一个活动单元。参数 @p
+     * p_refine_fraction 和 @p p_coarsen_fraction 需要在区间 $[0,1]$  .
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能会改变细化和粗化标志，以及未来的有限元索引。
+     * 避免在这个特定函数之前调用它们。
      *
-     * Out of all cells flagged for a certain type of adaptation, be it
-     * refinement or coarsening, we will determine a fixed number of cells among
-     * this subset that will be flagged for the corresponding p-adaptive
-     * variant.
-     *
-     * For each of both refinement and coarsening subsets, we will determine a
-     * threshold based on the provided parameter @p criteria containing
-     * indicators for every active cell. In the default case for refinement, all
-     * cells with an indicator larger than or equal to the corresponding
-     * threshold will be considered for p-refinement, while for coarsening all
-     * cells with an indicator less than or equal to the matching threshold are
-     * taken into account. However, different compare function objects can be
-     * supplied via the parameters @p compare_refine and @p compare_coarsen to
-     * impose different decision strategies.
-     *
-     * For refinement, the threshold will be associated with the cell that has
-     * the @p p_refine_fraction times Triangulation::n_active_cells() largest
-     * indicator, while it is the cell with the @p p_refine_coarsen times
-     * Triangulation::n_active_cells() lowest indicator for coarsening.
-     *
-     * Each entry of the parameter @p criteria needs to correspond to an active
-     * cell. Parameters @p p_refine_fraction and @p p_coarsen_fraction need to be
-     * in the interval $[0,1]$.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, typename Number, int spacedim>
     void
@@ -301,30 +208,24 @@ namespace hp
         &compare_coarsen = std::less_equal<Number>());
 
     /**
-     * Adapt which finite element to use on cells based on the regularity of the
-     * (unknown) analytical solution.
+     * 根据（未知的）分析解的规则性来调整单元格上使用的有限元。
+     * 通过局部Sobolev正则性指数的近似值 $k_K$
+     * ，我们可以评估单元格上的局部解属于哪个有限元空间
+     * $K$
+     * 。由于正则性指数只是一个估计值，我们不会用它来直接分配有限元空间，而是将其视为一个适应性指标。如果一个单元被标记为细化，一旦它满足
+     * $k_K > p_{K,\text{super}}$ ，我们将执行p-细化，其中
+     * $p_{K,\text{super}}$
+     * 是单元上当前活动元素的有限元上级的多项式程度  $K$
+     * 。在粗化的情况下，必须满足 $k_K < p_{K,\text{sub}}$
+     * 的标准， $p_{K,\text{sub}}$ 是下级元素的度数。
+     * 参数 @p sobolev_indices
+     * 的每个条目需要对应于一个活动单元。
+     * 更多理论细节见  @cite ainsworth1998hp  。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能会改变细化和粗化标志，以及未来的有限元索引。
+     * 避免在这个特定函数之前调用它们。
      *
-     * With an approximation of the local Sobolev regularity index $k_K$,
-     * we may assess to which finite element space our local solution on cell
-     * $K$ belongs. Since the regularity index is only an estimate, we won't
-     * use it to assign the finite element space directly, but rather consider
-     * it as an indicator for adaptation. If a cell is flagged for refinement,
-     * we will perform p-refinement once it satisfies
-     * $k_K > p_{K,\text{super}}$, where $p_{K,\text{super}}$ is
-     * the polynomial degree of the finite element superordinate to the
-     * currently active element on cell $K$. In case of coarsening, the
-     * criterion $k_K < p_{K,\text{sub}}$ has to be met, with
-     * $p_{K,\text{sub}}$ the degree of the subordinate element.
-     *
-     * Each entry of the parameter @p sobolev_indices needs to correspond
-     * to an active cell.
-     *
-     * For more theoretical details see @cite ainsworth1998hp .
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, typename Number, int spacedim>
     void
@@ -333,24 +234,16 @@ namespace hp
       const Vector<Number> &                   sobolev_indices);
 
     /**
-     * Adapt which finite element to use on each cell based on how its criterion
-     * relates to a reference.
+     * 根据每个单元的标准与参考值的关系，调整在每个单元上使用的有限元。
+     * 如果一个单元当前被标记为细化或粗化，并且其准则成功地与相应的参考比较，我们就考虑对其进行p-adaptivity。除了函数p_adaptivity_from_absolute_threshold()和p_adaptivity_from_relative_threshold()，比较函数对象必须通过参数
+     * @p compare_refine 和 @p compare_coarsen. 明确提供，参数 @p
+     * criteria 和 @p references
+     * 的每个条目需要对应于一个活动单元。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能会改变细化和粗化标志，以及未来的有限元索引。
+     * 避免在这个特定函数之前调用它们。
      *
-     * We consider a cell for p-adaptivity if it is currently flagged for
-     * refinement or coarsening and its criterion successfully compares to the
-     * corresponding reference. Other than functions
-     * p_adaptivity_from_absolute_threshold() and
-     * p_adaptivity_from_relative_threshold(), compare function objects have to
-     * be provided explicitly via the parameters @p compare_refine and
-     * @p compare_coarsen.
-     *
-     * Each entry of the parameters @p criteria and @p references needs to
-     * correspond to an active cell.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, typename Number, int spacedim>
     void
@@ -364,159 +257,107 @@ namespace hp
 
     /**
      * @}
+     *
      */
 
     /**
-     * @name Error prediction
-     * @{
+     * @name  误差预测  @{  。
+     *
      */
 
     /**
-     * Predict how the current @p error_indicators will adapt after refinement
-     * and coarsening were to happen on the provided @p dof_handler, and write its
-     * results to @p predicted_errors. Each entry of @p error_indicators and
-     * @p predicted_errors corresponds to an active cell on the underlying
-     * Triangulation, thus each container has to be of size
-     * Triangulation::n_active_cells(). The errors are interpreted to be
-     * measured in the energy norm; this assumption enters the rate of
-     * convergence that is used in the prediction. The $l_2$-norm of the output
-     * argument @p predicted_errors corresponds to the predicted global error
-     * after adaptation.
+     * 预测当前 @p error_indicators 在所提供的 @p dof_handler,
+     * 上发生细化和粗化后将如何适应，并将其结果写入 @p
+     * predicted_errors.   @p error_indicators 和 @p predicted_errors
+     * 的每个条目对应于底层三角图上的一个活动单元，因此每个容器的大小必须是
+     * Triangulation::n_active_cells().
+     * 误差被解释为以能量准则测量；这一假设进入了预测中使用的收敛率。输出参数的
+     * $l_2$ -norm @p predicted_errors
+     * 对应于适应后预测的全局误差。
+     * 对于p-适应，预计局部误差会随着分配的有限元的多项式程度呈指数级收敛。因此，程度的每一次增加或减少将通过用户定义的控制参数
+     * @p gamma_p. 改变其值。 对于h-适应，我们期望单元 $K$
+     * 上的局部误差 $\eta_K$ 与能量准则中的 $(h_K)^{p_K}$
+     * 成正比，其中 $h_K$ 表示单元直径， $p_K$
+     * 表示当前在单元 $K$ 上分配有限元素的多项式程度。
+     * 在h粗化过程中，兄弟姐妹上的有限元可能是不同的，他们的父单元将被分配给属于其最一般的子单元的最小支配有限元。因此，我们将总是在一个封闭的有限元空间上进行插值。
+     * 此外，假设要粗化的单元上的有限元足以正确表示解决方案（例如，对于二次解来说，至少是二次基函数），我们有信心说，仅在较大的有限元空间上插值，误差不会改变。
+     * 对于p-adaptation，预计局部误差会随着分配的有限元的多项式程度呈指数级收敛。因此，度数的每一次增加或减少将通过用户定义的控制参数改变其值
+     * @p gamma_p.
+     * 指数收敛的假设只有在h-适应和p-适应方法结合在一起的情况下才有效，即它们都在整个网格中被利用，但不必在一个单元上同时应用。
+     * 预测算法制定如下，控制参数 @p gamma_p,  @p gamma_h 和 @p
+     * gamma_n
+     * 可用于单独影响每种适应类型的预测结果。每个单独单元的结果都储存在
+     * @p predicted_errors 输出参数中。      <table> <tr><th>Adaptation
+     * type <th colspan="2">Prediction formula <tr><td>no adaptation
+     * <td>$\eta_{K,\text{pred}} = \eta_{K} \, \gamma_\text{n}$
+     * <td>$\gamma_\text{n} \in (0,\infty)$ <tr><td>p-adaptation
+     * <td>$\eta_{K,\text{pred}} = \eta_{K} \,
+     * \gamma_\text{p}^{(p_{K,\text{future}}
      *
-     * For p-adaptation, the local error is expected to converge exponentially
-     * with the polynomial degree of the assigned finite element. Each increase
-     * or decrease of the degree will thus change its value by a user-defined
-     * control parameter @p gamma_p.
+     * - p_K)}$ <td>$\gamma_\text{p} \in (0,1)$ <tr><td>hp-refinement
+     * <td>$\eta_{K,\text{pred}} = \eta_{K} \, \gamma_\text{h} \,
+     * 0.5^{p_{K,\text{future}}} \, \gamma_\text{p}^{(p_{K,\text{future}}
      *
-     * For h-adaptation, we expect the local error $\eta_K$ on cell $K$ to be
-     * proportional to $(h_K)^{p_K}$ in the energy norm, where $h_K$ denotes the
-     * cell diameter and $p_K$ the polynomial degree of the currently assigned
-     * finite element on cell $K$.
+     * - p_{K})}$ <td rowspan="2">$\gamma_\text{h} \in (0,\infty)$
+     * <tr><td>hp-coarsening <td>$\eta_{K,\text{pred}} = \eta_{K} \,
+     * (\gamma_\text{h} \, 0.5^{p_{K,\text{future}}})^{-1} \,
+     * \gamma_\text{p}^{(p_{K,\text{future}}
      *
-     * During h-coarsening, the finite elements on siblings may be
-     * different, and their parent cell will be assigned to their least
-     * dominating finite element that belongs to its most general child. Thus,
-     * we will always interpolate on an enclosing finite element space.
-     * Additionally assuming that the finite elements on the cells to be
-     * coarsened are sufficient to represent the solution correctly (e.g. at
-     * least quadratic basis functions for a quadratic solution), we are
-     * confident to say that the error will not change by sole interpolation on
-     * the larger finite element space.
+     * - p_{K})}$ </table>
+     * 在细化历史的基础上，我们使用预测的误差估计值来决定在下一个适应步骤中如何适应单元。
+     * 将上一适应步骤的预测误差与当前步骤的误差估计值相比较，可以证明我们之前选择的适应是否合理，并让我们决定在下一步骤中如何适应。
+     * 因此，我们必须将预测的误差从旧的网格转移到适应的网格。当把预测误差转移到适应的网格时，确保配置你的CellDataTransfer对象，将
+     * AdaptationStrategies::Refinement::l2_norm() 作为细化策略，
+     * AdaptationStrategies::Coarsening::l2_norm() 作为粗化策略。
+     * 这可以确保在两个网格上都保留预测误差的 $l_2$
+     * -norm。
+     * 在这种情况下，我们假设被h精化的单元上的局部误差将在其所有的
+     * $n_{K_c}$
+     * 子单元上平均分配，而在h粗化的情况下，兄弟姐妹的局部误差将在父单元上加总。这个假设在实践中经常不被满足。例如，如果一个单元处于角部奇点，那么最终最接近奇点的一个子单元将继承大部分的剩余误差
      *
-     * For p-adaptation, the local error is expected to converge exponentially
-     * with the polynomial degree of the assigned finite element. Each increase
-     * or decrease of the degree will thus change its value by a user-defined
-     * control parameter @p gamma_p. The assumption of exponential convergence
-     * is only valid if both h- and p-adaptive methods are combined in a sense
-     * that they are both utilitzed throughout a mesh, but do not have to be
-     * applied both on a cell simultaneously.
+     * - 但这个函数不可能知道奇点在哪里，因此假定是平均分配。        结合从旧网格到适应网格的转移，完整的误差预测算法如下。      <table>
+     * <tr><th>Adaptation type <th colspan="2">Prediction formula <tr><td>no
+     * adaptation <td>$\eta_{K,\text{pred}} = \eta_{K} \, \gamma_\text{n}$
+     * <td>$\gamma_\text{n} \in (0,\infty)$ <tr><td>p-adaptation
+     * <td>$\eta_{K,\text{pred}} = \eta_{K} \,
+     * \gamma_\text{p}^{(p_{K,\text{future}}
      *
-     * The prediction algorithm is formulated as follows with control parameters
-     * @p gamma_p, @p gamma_h and @p gamma_n that may be used to influence
-     * prediction for each adaptation type individually. The results for each
-     * individual cell are stored in the @p predicted_errors output argument.
-     * <table>
-     *   <tr><th>Adaptation type <th colspan="2">Prediction formula
-     *   <tr><td>no adaptation
-     *       <td>$\eta_{K,\text{pred}} = \eta_{K} \,
-     *            \gamma_\text{n}$
-     *       <td>$\gamma_\text{n} \in (0,\infty)$
-     *   <tr><td>p-adaptation
-     *       <td>$\eta_{K,\text{pred}} = \eta_{K} \,
-     *            \gamma_\text{p}^{(p_{K,\text{future}} - p_K)}$
-     *       <td>$\gamma_\text{p} \in (0,1)$
-     *   <tr><td>hp-refinement
-     *       <td>$\eta_{K,\text{pred}} = \eta_{K} \,
-     *            \gamma_\text{h} \, 0.5^{p_{K,\text{future}}} \,
-     *            \gamma_\text{p}^{(p_{K,\text{future}} - p_{K})}$
-     *       <td rowspan="2">$\gamma_\text{h} \in (0,\infty)$
-     *   <tr><td>hp-coarsening
-     *       <td>$\eta_{K,\text{pred}} = \eta_{K} \,
-     *            (\gamma_\text{h} \, 0.5^{p_{K,\text{future}}})^{-1} \,
-     *            \gamma_\text{p}^{(p_{K,\text{future}} - p_{K})}$
+     * - p_K)}$ <td>$\gamma_\text{p} \in (0,1)$ <tr><td>hp-refinement
+     * <td>$\left( \eta_{K_c,\text{pred}} \right)^2 = n_{K_c}^{-1} \left(
+     * \eta_{K_p} \, \gamma_\text{h} \, 0.5^{p_{K_c,\text{future}}} \,
+     * \gamma_\text{p}^{(p_{K_c,\text{future}}
+     *
+     * - p_{K_p})} \right)^2 \quad \forall K_c \text{ children of } K_p$ <td
+     * rowspan="2">$\gamma_\text{h} \in (0,\infty)$ <tr><td>hp-coarsening
+     * <td>$\left( \eta_{K_p,\text{pred}} \right)^2 = \sum\limits_{K_c} \left(
+     * \eta_{K_c} \, (\gamma_\text{h} \, 0.5^{p_{K_p,\text{future}}})^{-1} \,
+     * \gamma_\text{p}^{(p_{K_p,\text{future}}
+     *
+     * - p_{K_c})} \right)^2 \quad \forall K_c \text{ children of } K_p$
      * </table>
+     * 有了这些预测的误差估计值，我们就能够根据单元的细化历史或者说是预测的误差估计值的变化来调整单元的有限元。
+     * 如果一个单元被标记为适应，一旦单元 $K$
+     * 上的相关误差指标 $\eta_{K}$ 满足 $\eta_{K} <
+     * \eta_{K,\text{pred}}$ ，我们要进行p-适应，其中下标
+     * $\text{pred}$
+     * 表示预测的误差。这对应于我们对平滑性的假设是正确的，否则就采用h-适应性。我们用函数
+     * hp::Refinement::p_adaptivity_from_reference() 和一个函数对象
+     * `std::less<Number>()` 来实现这一点，这两个比较器参数。
+     * 另外，通过另一种策略，我们可以确定所有要适应的细胞中h-适应和p-适应的比例。为此，使用
+     * hp::Refinement::p_adaptivity_fixed_number() 和标准
+     * $(\eta_{K,\text{pred}}
      *
-     * On basis of the refinement history, we use the predicted error estimates
-     * to decide how cells will be adapted in the next adaptation step.
-     * Comparing the predicted error from the previous adaptation step to the
-     * error estimates of the current step allows us to justify whether our
-     * previous choice of adaptation was justified, and lets us decide how to
-     * adapt in the next one.
-     *
-     * We thus have to transfer the predicted error from the old to the adapted
-     * mesh. When transferring the predicted error to the adapted mesh, make
-     * sure to configure your CellDataTransfer object with
-     * AdaptationStrategies::Refinement::l2_norm() as a refinement strategy and
-     * AdaptationStrategies::Coarsening::l2_norm() as a coarsening strategy.
-     * This ensures that the $l_2$-norm of the predict errors is preserved on
-     * both meshes.
-     *
-     * In this context, we assume that the local error on a cell to be h-refined
-     * will be divided equally on all of its $n_{K_c}$ children, whereas local
-     * errors on siblings will be summed up on the parent cell in case of
-     * h-coarsening. This assumption is often not satisfied in practice: For
-     * example, if a cell is at a corner singularity, then the one child cell
-     * that ends up closest to the singularity will inherit the majority of the
-     * remaining error -- but this function can not know where the singularity
-     * will be, and consequently assumes equal distribution.
-     *
-     * Incorporating the transfer from the old to the adapted mesh, the complete
-     * error prediction algorithm reads as follows:
-     * <table>
-     *   <tr><th>Adaptation type <th colspan="2">Prediction formula
-     *   <tr><td>no adaptation
-     *       <td>$\eta_{K,\text{pred}} = \eta_{K} \,
-     *            \gamma_\text{n}$
-     *       <td>$\gamma_\text{n} \in (0,\infty)$
-     *   <tr><td>p-adaptation
-     *       <td>$\eta_{K,\text{pred}} = \eta_{K} \,
-     *            \gamma_\text{p}^{(p_{K,\text{future}} - p_K)}$
-     *       <td>$\gamma_\text{p} \in (0,1)$
-     *   <tr><td>hp-refinement
-     *       <td>$\left( \eta_{K_c,\text{pred}} \right)^2 = n_{K_c}^{-1}
-     *            \left( \eta_{K_p} \,
-     *            \gamma_\text{h} \, 0.5^{p_{K_c,\text{future}}} \,
-     *            \gamma_\text{p}^{(p_{K_c,\text{future}} - p_{K_p})} \right)^2
-     *            \quad \forall K_c \text{ children of } K_p$
-     *       <td rowspan="2">$\gamma_\text{h} \in (0,\infty)$
-     *   <tr><td>hp-coarsening
-     *       <td>$\left( \eta_{K_p,\text{pred}} \right)^2 = \sum\limits_{K_c}
-     *            \left( \eta_{K_c} \,
-     *            (\gamma_\text{h} \, 0.5^{p_{K_p,\text{future}}})^{-1} \,
-     *            \gamma_\text{p}^{(p_{K_p,\text{future}} - p_{K_c})} \right)^2
-     *            \quad \forall K_c \text{ children of } K_p$
-     * </table>
-     *
-     * With these predicted error estimates, we are capable of adapting the
-     * finite element on cells based on their refinement history or rather the
-     * predicted change of their error estimates.
-     *
-     * If a cell is flagged for adaptation, we want to perform p-adaptation once
-     * the associated error indicators $\eta_{K}$ on cell $K$ satisfy
-     * $\eta_{K} < \eta_{K,\text{pred}}$, where the subscript $\text{pred}$
-     * denotes the predicted error. This corresponds to our assumption of
-     * smoothness being correct, else h-adaptation is applied. We achieve this
-     * with the function hp::Refinement::p_adaptivity_from_reference() and a
-     * function object `std::less<Number>()` for both comparator parameters.
-     *
-     * Also with an alternative strategy, we can determine the fractions of
-     * cells to be h- and p-adapted among all cells to be adapted. For this, use
-     * hp::Refinement::p_adaptivity_fixed_number() with criteria
-     * $(\eta_{K,\text{pred}} - \eta_{K})$.
-     *
-     * For the very first adaptation step in either case, the user needs to
-     * decide whether h- or p-adaptation is supposed to happen. An h-step will
-     * be applied with $\eta_{K,\text{pred}} = 0$, whereas
-     * $\eta_{K,\text{pred}} = \infty$ ensures a p-step. The latter may be
-     * realized with `std::numeric_limits::infinity()`.
-     *
-     * The following code snippet demonstrates how to impose hp-adaptivity based
-     * on refinement history in an application:
+     * - \eta_{K})$  。
+     * 在这两种情况下的第一个适应步骤中，用户需要决定是要进行h-适应还是p-适应。使用
+     * $\eta_{K,\text{pred}} = 0$ 时将采用h步，而 $\eta_{K,\text{pred}}
+     * = \infty$ 则确保p步。后者可以通过
+     * `std::numeric_limits::infinity()`. 实现。
+     * 下面的代码片段演示了如何在应用中根据细化历史施加hp-adaptivity。
      * @code
      * // [initialisation...]
      * Vector<float> predicted_error_per_cell(triangulation.n_active_cells());
      * for(unsigned int i = 0; i < triangulation.n_active_cells(); ++i)
-     *   predicted_error_per_cell[i] = std::numeric_limits<float>::infinity();
+     * predicted_error_per_cell[i] = std::numeric_limits<float>::infinity();
      *
      * // [during each refinement step...]
      * // set h-adaptivity flags
@@ -526,26 +367,26 @@ namespace hp
      *
      * // set p-adaptivity flags
      * hp::Refinement::p_adaptivity_from_reference(
-     *   hp_dof_handler,
-     *   estimated_error_per_cell,
-     *   predicted_error_per_cell,
-     *   std::less<float>(),
-     *   std::less<float>());
+     * hp_dof_handler,
+     * estimated_error_per_cell,
+     * predicted_error_per_cell,
+     * std::less<float>(),
+     * std::less<float>());
      * hp::Refinement::{choose|force}_p_over_h(hp_dof_handler);
      *
      * // predict error for the subsequent adaptation
      * triangulation.prepare_coarsening_and_refinement();
      * hp::Refinement::predict_error(
-     *   hp_dof_handler,
-     *   estimated_error_per_cell,
-     *   predicted_error_per_cell);
+     * hp_dof_handler,
+     * estimated_error_per_cell,
+     * predicted_error_per_cell);
      *
      * // perform adaptation
      * CellDataTransfer<dim, spacedim, Vector<float>> cell_data_transfer(
-     *   triangulation,
-     *   false,
-     *   &AdaptationStrategies::Refinement::l2_norm<dim, spacedim, float>,
-     *   &AdaptationStrategies::Coarsening::l2_norm<dim, spacedim, float>);
+     * triangulation,
+     * false,
+     * &AdaptationStrategies::Refinement::l2_norm<dim, spacedim, float>,
+     * &AdaptationStrategies::Coarsening::l2_norm<dim, spacedim, float>);
      * cell_data_transfer.prepare_coarsening_and_refinement();
      *
      * triangulation.execute_coarsening_and_refinement();
@@ -554,42 +395,34 @@ namespace hp
      * cell_data_transfer.unpack(predicted_error_per_cell, transferred_errors);
      * predicted_error_per_cell = std::move(transferred_errors);
      * @endcode
-     *
-     * For more theoretical details see @cite melenk2001hp , where the default
-     * parameters for this function come from as well, i.e.
-     * $\gamma_\text{p}^2 = 0.4$, $\gamma_\text{h}^2 = 4$,
-     * $\gamma_\text{n}^2 = 1$.
-     *
-     * If you are working with parallel::distributed::Triangulation objects, you
-     * need to pay special attention. Here, p4est determines the details of grid
-     * refinement, and consequently, it yields more reliable and trustworthy
-     * results when we determine the predicted errors during the adaptation
-     * process. We can do exactly this by attaching this function to the signal
-     * Triangulation::Signals::post_p4est_refinement, which is triggered after
-     * p4est got refined, but before data is prepared for transfer. Refinement
-     * and coarsening flags of the Triangulation object need to be matched with
-     * the already refined p4est oracle using
+     * 更多的理论细节见  @cite melenk2001hp
+     * ，这个函数的默认参数也来自这里，即  $\gamma_\text{p}^2
+     * = 0.4$  、  $\gamma_\text{h}^2 = 4$  、  $\gamma_\text{n}^2 = 1$  。
+     * 如果你正在处理  parallel::distributed::Triangulation
+     * 对象，你需要特别注意。在这里，p4est决定了网格细化的细节，因此，当我们在适应过程中确定预测的误差时，它能产生更可靠和可信的结果。我们可以通过将这个函数附加到信号
+     * Triangulation::Signals::post_p4est_refinement,
+     * 中来实现，该信号在p4est得到细化后，但在数据准备传输前被触发。Triangulation对象的细化和粗化标志需要使用
      * internal::parallel::distributed::TemporarilyMatchRefineFlags.
-     * Thus, a construct like the following is necessary to correctly predict
-     * errors in parallel distributed applications.
+     * 与已经细化的p4est神谕相匹配。因此，像下面这样的结构对于正确预测并行分布式应用中的错误是必要的。
      * @code
      * Vector<float> predicted_errors;
      * triangulation.signals.post_p4est_refinement.connect([&]() {
-     *   const parallel::distributed::TemporarilyMatchRefineFlags<dim>
-     *     refine_modifier(triangulation);
-     *   predicted_errors.reinit(triangulation.n_active_cells());
-     *   hp::Refinement::predict_error(dof_handler,
-     *                                 error_indicators,
-     *                                 predicted_errors);
+     * const parallel::distributed::TemporarilyMatchRefineFlags<dim>
+     *   refine_modifier(triangulation);
+     * predicted_errors.reinit(triangulation.n_active_cells());
+     * hp::Refinement::predict_error(dof_handler,
+     *                               error_indicators,
+     *                               predicted_errors);
      * });
      * @endcode
-     * The container <code>predicted_errors</code> then needs to follow the
-     * usual parallel::distributed::CellDataTransfer workflow.
+     * 容器 <code>predicted_errors</code> 然后需要遵循通常的
+     * parallel::distributed::CellDataTransfer 工作流程。
+     * @note
+     * 我们想通过适应性的方式来预测错误的实际发生。
+     * 因此，这个函数需要在
+     * Triangulation::prepare_coarsening_and_refinement() 和
+     * hp::Refinement::limit_p_level_difference(). 之后调用。
      *
-     * @note We want to predict the error by how adaptation will actually happen.
-     *   Thus, this function needs to be called after
-     *   Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference().
      */
     template <int dim, typename Number, int spacedim>
     void
@@ -602,71 +435,40 @@ namespace hp
 
     /**
      * @}
+     *
      */
 
     /**
-     * @name Decide between h- and p-adaptivity
-     * @{
+     * @name  在h-adaptivity和p-adaptivity之间做出决定  @{  。
+     *
      */
 
     /**
-     * Choose p-adaptivity over h-adaptivity in any case.
+     * 在任何情况下都选择p-adaptivity而不是h-adaptivity。
+     * 移除所有分配有 @p future_fe_index
+     * 的单元格的细化和粗化标志。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能改变细化和粗化标志以及未来的有限元指数。
+     * 避免在这个特定函数之前调用它们。
      *
-     * Removes all refine and coarsen flags on cells that have a
-     * @p future_fe_index assigned.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, int spacedim>
     void
     force_p_over_h(const dealii::DoFHandler<dim, spacedim> &dof_handler);
 
     /**
-     * Choose p-adaptivity over h-adaptivity whenever it is invoked on all
-     * related cells.
+     * 只要在所有相关单元上调用，就选择p-adaptivity而不是h-adaptivity。        在细化的情况下，关于有限元的信息将被继承。因此，只要有需要，我们就会选择p-细化而不是h-细化，即清除细化标志并提供相应的 @p future_fe_index. 然而对于粗化，我们遵循不同的方法。将一个单元标记为h-粗化并不意味着它最终会被粗化。只有当一个单元和它的所有兄弟姐妹被标记时，它们才会被合并到它们的父单元中。如果我们在上面考虑p粗化，我们必须对所有的兄弟姐妹一起决定他们将如何被粗化。我们区分了三种不同的情况。      <ol>   <li>  不是所有兄弟姐妹都被标记为粗化：p-粗化。        <br>  我们保留  @p future_fe_indices  并清除所有兄弟姐妹的粗化标志。      <li>  所有的兄弟姐妹都被标记为粗化，但不是所有的p-adaptation：h-coarsening。        <br>  我们保留粗化标志，并清除所有兄弟姐妹上的所有 @p future_fe_indices 。      <li>  所有的兄弟姐妹都被标记为粗化和p-适应：p-粗化。        <br>  我们保留 @p future_fe_indices 并清除所有兄弟姐妹上的粗化标志。      </ol>
+     * @note  函数 Triangulation::prepare_coarsening_and_refinement()
+     * 将清理所有h-粗化标志，如果它们不在所有兄弟姐妹中共享的话。在hp情况下，我们需要把这个决定提前。
+     * 如果单元格不会被粗化，但符合p-adaptivity的条件，我们必须相应地设置所有标志。所以这个函数预计了
+     * Triangulation::prepare_coarsening_and_refinement()
+     * 以后会做出的决定。
+     * @note   Triangulation::prepare_coarsening_and_refinement()  和
+     * hp::Refinement::limit_p_level_difference()
+     * 可能会改变细化和粗化标志，以及未来的有限元指数。
+     * 避免在这个特定函数之前调用它们。
      *
-     * In case of refinement, information about finite elements will be
-     * inherited. Thus we will prefer p-refinement over h-refinement whenever
-     * desired, i.e. clear the refine flag and supply a corresponding
-     * @p future_fe_index.
-     *
-     * However for coarsening, we follow a different approach. Flagging a cell
-     * for h-coarsening does not ultimately mean that it will be coarsened. Only
-     * if a cell and all of its siblings are flagged, they will be merged into
-     * their parent cell. If we consider p-coarsening on top, we must decide for
-     * all siblings together how they will be coarsened. We distinguish between
-     * three different cases:
-     * <ol>
-     * <li> Not all siblings flagged for coarsening: p-coarsening.
-     *   <br>
-     *   We keep the @p future_fe_indices and clear the coarsen flags
-     *   on all siblings.
-     * <li> All siblings flagged for coarsening, but not all for
-     *   p-adaptation: h-coarsening.
-     *   <br>
-     *   We keep the coarsen flags and clear all @p future_fe_indices
-     *   on all siblings.
-     * <li> All siblings flagged for coarsening and p-adaptation: p-coarsening.
-     *   <br>
-     *   We keep the @p future_fe_indices and clear the coarsen flags
-     *   on all siblings.
-     * </ol>
-     *
-     * @note The function Triangulation::prepare_coarsening_and_refinement()
-     *   will clean up all h-coarsening flags if they are not shared among
-     *   all siblings. In the hp-case, we need to bring forward this decision:
-     *   If the cell will not be coarsened, but qualifies for p-adaptivity,
-     *   we have to set all flags accordingly. So this function anticipates
-     *   the decision that Triangulation::prepare_coarsening_and_refinement()
-     *   would have made later on.
-     *
-     * @note Triangulation::prepare_coarsening_and_refinement() and
-     *   hp::Refinement::limit_p_level_difference() may change
-     *   refine and coarsen flags as well as future finite element indices.
-     *   Avoid calling them before this particular function.
      */
     template <int dim, int spacedim>
     void
@@ -674,44 +476,33 @@ namespace hp
 
     /**
      * @}
+     *
      */
 
     /**
-     * @name Optimiize p-level distribution
-     * @{
+     * @name  优化p级分布  @{  。
+     *
      */
 
     /**
-     * Limit p-level differences between neighboring cells.
+     * 限制相邻单元之间的p级差。
+     * 本质上，对未来FE指数的作用与
+     * Triangulation::prepare_coarsening_and_refinement()
+     * 对细化标志的作用相同。
+     * 详细来说，这个函数限制了相邻单元的水平差异，从而平滑了整个函数空间。未来的FE指数将被提高（而不是降低），因此与相邻单元的水平差永远不会大于
+     * @p max_difference.  多个FE层次可能已经通过
+     * hp::FECollection::set_hierarchy().
+     * 注册，该函数只对一个层次操作，即包含FE指数的那个层次
+     * @p contains_fe_index.
+     * 未来FE指数不属于相应层次的单元将被忽略掉。
+     * 该函数可以在进行适应性调整之前选择性地调用
+     * Triangulation::execute_coarsening_and_refinement().
+     * 没有必要调用该函数，在库的任何部分也不会自动调用该函数（与三角法的对应函数相反）。
+     * 在将被h-coarsened的单元格上，我们强制执行差异标准，就像它已经是一个父单元格一样。也就是说，我们将所有兄弟姐妹的级别设置为其中最高的一个。在这种情况下，所有的同级单元都需要事先通过
+     * Triangulation::prepare_coarsening_and_refinement()
+     * 终端设置h-coarsenening标志。否则将触发一个断言。
+     * 返回是否有任何未来的FE指数被此函数改变。
      *
-     * Essentially does to future FE indices what
-     * Triangulation::prepare_coarsening_and_refinement() does to refinement
-     * flags.
-     *
-     * In detail, this function limits the level difference of neighboring cells
-     * and thus smoothes the overall function space. Future FE indices will be
-     * raised (and never lowered) so that the level difference to neighboring
-     * cells is never larger than @p max_difference.
-     *
-     * Multiple FE hierarchies might have been registered via
-     * hp::FECollection::set_hierarchy(). This function operates on only one
-     * hierarchy, namely the one that contains the FE index @p contains_fe_index.
-     * Cells with future FE indices that are not part of the corresponding
-     * hierarchy will be ignored.
-     *
-     * The function can optionally be called before performing adaptation with
-     * Triangulation::execute_coarsening_and_refinement(). It is not necessary
-     * to call this function, nor will it be automatically invoked in any part
-     * of the library (contrary to its Triangulation counterpart).
-     *
-     * On cells that will be h-coarsened, we enforce the difference criterion as
-     * if it is already a parent cell. That means, we set the level of all
-     * siblings to the highest one among them. In that case, all sibling cells
-     * need to have the h-coarsenening flags set terminally via
-     * Triangulation::prepare_coarsening_and_refinement() beforehand. Otherwise
-     * an assertion will be triggered.
-     *
-     * Returns whether any future FE indices have been changed by this function.
      */
     template <int dim, int spacedim>
     bool
@@ -722,6 +513,7 @@ namespace hp
 
     /**
      * @}
+     *
      */
   } // namespace Refinement
 } // namespace hp
@@ -730,3 +522,5 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_hp_refinement_h
+
+

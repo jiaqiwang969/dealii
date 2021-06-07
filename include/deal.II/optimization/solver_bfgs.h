@@ -1,3 +1,4 @@
+//include/deal.II-translator/optimization/solver_bfgs_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2018 - 2020 by the deal.II authors
@@ -27,82 +28,87 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Implement the limited memory BFGS minimization method.
+ * 实现有限内存BFGS最小化方法。
+ * 该类实现了一种方法，用于最小化一个给定的函数，对于该函数来说，只有该函数及其导数的值，但没有其二阶导数可用。BFGS方法是牛顿方法的一个变种，用于函数最小化，其中Hessian矩阵仅被近似。特别是，Hessian是用Broyden,
+ * Fletcher, Goldfarb和Shanno（BFGS）的公式更新的。
  *
- * This class implements a method to minimize a given function for which only
- * the values of the function and its derivatives, but not its second
- * derivatives are available. The BFGS method is a variation of the Newton
- * method for function minimization in which the Hessian matrix is only
- * approximated. In particular, the Hessian is updated using the formula of
- * Broyden, Fletcher, Goldfarb, and Shanno (BFGS):
  * @f{align*}{
  * H^{(k+1)} &= \left[
  * I-\rho_{(k)} s^{(k)} \otimes y^{(k)}
  * \right]
  * H^{(k)}
  * \left[
- * I -\rho^{(k)} y^{(k)} \otimes s^{(k)}
+ * I
+ *
+ * -\rho^{(k)} y^{(k)} \otimes s^{(k)}
  * \right]
  * +
  * \rho^{(k)} s^{(k)} \otimes s^{(k)}  \\
- * y^{(k)} &\dealcoloneq g^{(k+1)} - g^{(k)} \\
- * s^{(k)} &\dealcoloneq x^{(k+1)} - x^{(k)} \\
+ * y^{(k)} &\dealcoloneq g^{(k+1)}
+ *
+ * - g^{(k)} \\
+ * s^{(k)} &\dealcoloneq x^{(k+1)}
+ *
+ * - x^{(k)} \\
  * \rho^{(k)} &\dealcoloneq \frac{1}{y^{(k)} \cdot s^{(k)}}
  * @f}
- * for a symmetric positive definite $H$. Limited memory variant is
- * implemented via the two-loop recursion.
+ * 为对称正定 $H$  。有限内存变体通过双环递归实现。
+ *
+ *
  */
 template <typename VectorType>
 class SolverBFGS : public SolverBase<VectorType>
 {
 public:
   /**
-   * Number type.
+   * 数字类型。
+   *
    */
   using Number = typename VectorType::value_type;
 
 
   /**
-   * Standardized data struct to pipe additional data to the solver.
+   * 标准化的数据结构，用于向求解器输送额外的数据。
+   *
    */
   struct AdditionalData
   {
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     explicit AdditionalData(const unsigned int max_history_size = 5,
                             const bool         debug_output     = false);
 
     /**
-     * Maximum history size.
+     * 最大历史尺寸。
+     *
      */
     unsigned int max_history_size;
 
     /**
-     * Print extra debug output to deallog.
+     * 打印额外的调试输出到deallog。
+     *
      */
     bool debug_output;
   };
 
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   explicit SolverBFGS(SolverControl &       residual_control,
                       const AdditionalData &data = AdditionalData());
 
   /**
-   * Solve the unconstrained minimization problem
-   * \f[
-   * \min_{\mathbf x} f(\mathbf x)
-   * \f]
-   * starting from initial state @p x.
+   * 从初始状态 @p x. 开始解决无约束的最小化问题\f[
+   * \min_{\mathbf x} f(\mathbf x) \f] 函数 @p compute
+   * 需要两个参数，表示 $x$ 和梯度 $g=\nabla f(\mathbf
+   * x)=\frac{\partial f}{\partial \mathbf x}$
+   * 的值。当被调用时，它需要更新给定位置  $x$  的梯度
+   * $g$  并返回被最小化的函数值，即  $f(\mathbf x)$  。
    *
-   * The function @p compute takes two arguments indicating the values of $x$
-   * and of the gradient $g=\nabla f(\mathbf x)=\frac{\partial f}{\partial
-   * \mathbf x}$. When called, it needs to update the gradient $g$ at the given
-   * location $x$ and return the value of the function being minimized, i.e.,
-   * $f(\mathbf x)$.
    */
   void
   solve(
@@ -110,12 +116,11 @@ public:
     VectorType &                                                     x);
 
   /**
-   * Connect a slot to perform a custom line-search.
+   * 连接一个槽，进行自定义行搜索。    给出函数值  @p f,
+   * 未知值  @p x,  梯度  @p g  和搜索方向  @p p,  返回步骤  $x
+   * \leftarrow x + \alpha p$  的大小  $\alpha$  ，并相应更新  @p x,
+   * @p g  和  @p f  。
    *
-   * Given the value of function @p f, the current value of unknown @p x,
-   * the gradient @p g and the search direction @p p,
-   * return the size $\alpha$ of the step $x \leftarrow x + \alpha p$,
-   * and update @p x, @p g and @p f accordingly.
    */
   boost::signals2::connection
   connect_line_search_slot(
@@ -124,30 +129,27 @@ public:
       &slot);
 
   /**
-   * Connect a slot to perform a custom preconditioning.
-   *
-   * The preconditioner is applied inside the two loop recursion to
-   * vector `g` using the history of position increments `s` and
-   * gradient increments `y`.
-   *
-   * One possibility is to use the oldest `s,y` pair:
+   * 连接一个槽来执行一个自定义的预处理。
+   * 先决条件在两个循环递归中应用于向量`g`，使用位置增量`s`和梯度增量`y`的历史。
+   * 一种可能性是使用最古老的`s,y`对。
    * @code
-   *  const auto preconditioner = [](VectorType &                         g,
-   *                                 const FiniteSizeHistory<VectorType> &s,
-   *                                 const FiniteSizeHistory<VectorType> &y) {
-   *    if (s.size() > 0)
-   *      {
-   *        const unsigned int i  = s.size() - 1;
-   *        const auto         yy = y[i] * y[i];
-   *        const auto         sy = s[i] * y[i];
-   *        Assert(yy > 0 && sy > 0, ExcInternalError());
-   *        g *= sy / yy;
-   *      }
-   *  };
-   * @endcode
+   * const auto preconditioner = [](VectorType &                         g,
+   *                               const FiniteSizeHistory<VectorType> &s,
+   *                               const FiniteSizeHistory<VectorType> &y) {
+   *  if (s.size() > 0)
+   *    {
+   *      const unsigned int i  = s.size()
    *
-   * No preconditioning is performed if the code using this class has not
-   * attached anything to the signal.
+   * - 1;
+   *      const auto         yy = y[i] y[i];
+   *      const auto         sy = s[i] y[i];
+   *      Assert(yy > 0 && sy > 0, ExcInternalError());
+   *      g= sy / yy;
+   *    }
+   * };
+   * @endcode
+   * 如果使用该类的代码没有给信号附加任何东西，则不进行预处理。
+   *
    */
   boost::signals2::connection
   connect_preconditioner_slot(
@@ -158,19 +160,22 @@ public:
 
 protected:
   /**
-   * Additional data to the solver.
+   * 解算器的附加数据。
+   *
    */
   const AdditionalData additional_data;
 
   /**
-   * Signal used to perform line search.
+   * 用于执行行搜索的信号。
+   *
    */
   boost::signals2::signal<
     Number(Number &f, VectorType &x, VectorType &g, const VectorType &p)>
     line_search_signal;
 
   /**
-   * Signal used to perform preconditioning.
+   * 用于执行预处理的信号。
+   *
    */
   boost::signals2::signal<void(VectorType &                         g,
                                const FiniteSizeHistory<VectorType> &s,
@@ -405,3 +410,5 @@ SolverBFGS<VectorType>::solve(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

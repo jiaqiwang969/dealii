@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/tria_iterator_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2020 by the deal.II authors
@@ -47,32 +48,25 @@ namespace internal
     struct Iterators;
 
     /**
-     * This class implements some types which differ between the dimensions.
-     * These are the declarations for the 1D case only. See the
-     * @ref Iterators
-     * module for more information.
+     * 这个类实现了一些不同维度的类型。
+     * 这些是只针对一维情况的声明。参见 @ref Iterators
+     * 模块以了解更多信息。        一个 @p line_iterator
+     * 别名为在<tt>Triangulation<1></tt>对象的 @p
+     * 行成员变量上操作的一个迭代器。一个 @p
+     * active_line_iterator只对活动线进行操作。  @p
+     * raw_line_iterator对象对所有的线进行操作，无论是否使用。
+     * 由于我们是在一维中，所以声明了以下身份。
+     * @code
+     *  using raw_cell_iterator = raw_line_iterator;
+     *  using cell_iterator = line_iterator;
+     *  using active_cell_iterator = active_line_iterator;
+     * @endcode
+     * 为了能够在<tt>Triangulation<1></tt>中声明 @p begin_quad 等，
+     * @p quad_iterators
+     * 被声明为InvalidAccessor上的迭代器。因此，这些类型存在，但没有用，而且肯定会使任何非自愿的使用变得明显。这同样适用于六面体迭代器。
+     * 这同样适用于 @p face_iterator
+     * 类型，因为线条除了顶点之外没有任何子结构，不过这是以不同的方式处理的。
      *
-     * A @p line_iterator is aliased to an iterator operating on the @p
-     * lines member variable of a <tt>Triangulation<1></tt> object. An @p
-     * active_line_iterator only operates on the active lines. @p
-     * raw_line_iterator objects operate on all lines, used or not.
-     *
-     * Since we are in one dimension, the following identities are declared:
-     *  @code
-     *    using raw_cell_iterator = raw_line_iterator;
-     *    using cell_iterator = line_iterator;
-     *    using active_cell_iterator = active_line_iterator;
-     *  @endcode
-     *
-     * To enable the declaration of @p begin_quad and the like in
-     * <tt>Triangulation<1></tt>, the @p quad_iterators are declared as
-     * iterators over InvalidAccessor. Thus these types exist, but are useless
-     * and will certainly make any involuntary use visible. The same holds for
-     * hexahedron iterators.
-     *
-     * The same applies for the @p face_iterator types, since lines have no
-     * substructures apart from vertices, which are handled in a different
-     * way, however.
      */
     template <int spacedim>
     struct Iterators<1, spacedim>
@@ -101,38 +95,32 @@ namespace internal
 
 
     /**
-     * This class implements some types which differ between the dimensions.
-     * These are the declarations for the 2D case only. See the
-     * @ref Iterators
-     * module for more information.
+     * 这个类实现了一些不同维度的类型。
+     * 这些是只针对二维情况的声明。参见 @ref Iterators
+     * 模块以了解更多信息。        一个 @p line_iterator
+     * 别名为在<tt>Triangulation<2></tt>对象的 @p
+     * 行成员变量上操作的一个迭代器。一个 @p
+     * active_line_iterator只对活动线进行操作。  @p
+     * raw_line_iterator对象对所有的线进行操作，无论是否使用。使用
+     * @p
+     * active_line_iterator可能在2D中不是特别有用，因为它只对未精炼的线进行操作。然而，如果相邻的单元格比现在的单元格多精炼了一次，那么精炼过的线也可能与未精炼过的单元格绑定。
+     * 与线条迭代器类似， @p quad_iterator,  @p raw_quad_iterator 和
+     * @p active_quad_iterator 也被声明。
+     * 为了能够在<tt>Triangulation<[12]></tt>中声明 @p begin_hex
+     * 等， @p hex_iterators
+     * 被声明为InvalidAccessor的迭代器。因此，这些类型存在，但没有用，而且肯定会使任何非自愿的使用变得明显。
+     * 由于我们是在二维空间，所以声明了以下身份。
+     * @code
+     *  using raw_cell_iterator = raw_quad_iterator;
+     *  using cell_iterator = quad_iterator;
+     *  using active_cell_iterator = active_quad_iterator;
      *
-     * A @p line_iterator is aliased to an iterator operating on the @p
-     * lines member variable of a <tt>Triangulation<2></tt> object. An @p
-     * active_line_iterator only operates on the active lines. @p
-     * raw_line_iterator objects operate on all lines, used or not. Using @p
-     * active_line_iterators may not be particularly in 2D useful since it
-     * only operates on unrefined lines. However, also refined lines may bound
-     * unrefined cells if the neighboring cell is refined once more than the
-     * present one.
+     *  using raw_face_iterator = raw_line_iterator;
+     *  using face_iterator = line_iterator;
+     *  using active_face_iterator = active_line_iterator;
+     * @endcode
      *
-     * Similarly to line iterators, @p quad_iterator, @p raw_quad_iterator and
-     * @p active_quad_iterator are declared.
      *
-     * To enable the declaration of @p begin_hex and the like in
-     * <tt>Triangulation<[12]></tt>, the @p hex_iterators are declared as
-     * iterators over InvalidAccessor. Thus these types exist, but are useless
-     * and will certainly make any involuntary use visible.
-     *
-     * Since we are in two dimension, the following identities are declared:
-     *  @code
-     *    using raw_cell_iterator = raw_quad_iterator;
-     *    using cell_iterator = quad_iterator;
-     *    using active_cell_iterator = active_quad_iterator;
-     *
-     *    using raw_face_iterator = raw_line_iterator;
-     *    using face_iterator = line_iterator;
-     *    using active_face_iterator = active_line_iterator;
-     *  @endcode
      */
     template <int spacedim>
     struct Iterators<2, spacedim>
@@ -159,23 +147,21 @@ namespace internal
 
 
     /**
-     * This class implements some types which differ between the dimensions.
-     * These are the declarations for the 3D case only. See the
-     * @ref Iterators
-     * module for more information.
+     * 这个类实现了一些不同维度的类型。
+     * 这些是只针对三维情况的声明。更多信息见 @ref
+     * Iterators 模块。
+     * 对于数据类型的声明，或多或少与低维度的声明相同（见<tt>Iterators<[12]></tt>）。特定维度的数据类型在这里，因为我们是在三个维度。
+     * @code
+     *  using raw_cell_iterator = raw_hex_iterator;
+     *  using cell_iterator = hex_iterator;
+     *  using active_cell_iterator = active_hex_iterator;
      *
-     * For the declarations of the data types, more or less the same holds as
-     * for lower dimensions (see <tt>Iterators<[12]></tt>). The dimension
-     * specific data types are here, since we are in three dimensions:
-     *  @code
-     *    using raw_cell_iterator = raw_hex_iterator;
-     *    using cell_iterator = hex_iterator;
-     *    using active_cell_iterator = active_hex_iterator;
+     *  using raw_face_iterator = raw_quad_iterator;
+     *  using face_iterator = quad_iterator;
+     *  using active_face_iterator = active_quad_iterator;
+     * @endcode
      *
-     *    using raw_face_iterator = raw_quad_iterator;
-     *    using face_iterator = quad_iterator;
-     *    using active_face_iterator = active_quad_iterator;
-     *  @endcode
+     *
      */
     template <int spacedim>
     struct Iterators<3, spacedim>
@@ -206,3 +192,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_tria_iterator_selector_h
+
+

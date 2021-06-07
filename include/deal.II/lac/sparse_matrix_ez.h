@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/sparse_matrix_ez_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -37,135 +38,121 @@ class FullMatrix;
 #  endif
 
 /**
- * @addtogroup Matrix1
- * @{
+ * @addtogroup  Matrix1  @{ .
+ *
+ *
  */
 
 /**
- * Sparse matrix without sparsity pattern.
+ * 无稀疏模式的稀疏矩阵。
+ * 这个矩阵没有使用预先组装好的稀疏模式，而是在飞行中建立了模式。填充矩阵可能比
+ * @p SparseMatrix,
+ * 消耗更多的时间，因为当新的矩阵元素被插入到矩阵中间的某个地方时，可能会涉及到大量的内存移动，而目前没有未使用的内存位置可用于插入新条目的行。为了帮助优化，可以向构造函数提供一个预期的行长度，以及一个行的增量大小。
+ * 该类使用一个存储结构，与通常的稀疏矩阵格式类似，只存储非零元素。这些元素被存储在整个矩阵的一个数据数组中，并按行排序，在每行中按列号排序。一个单独的数组描述了每一行在长数据数组中的起始位置以及它的长度。
+ * 由于这种结构，行与行之间可能出现空隙。每当必须创建一个新条目时，就会尝试使用其行中的间隙。如果没有空隙，该行必须被扩展，所有后续的行都必须向后移位。这是一个非常昂贵的操作，解释了这种数据结构的低效率，以及为什么像SparseMatrix类那样预先分配一个稀疏模式是有用的。
+ * 这就是提供给构造函数或 reinit()函数的优化参数的作用。
+ * @p default_row_length
+ * 是初始化时为每行分配的条目数（行的实际长度仍为0）。这意味着，
+ * @p default_row_length
+ * 个条目可以被添加到这一行，而不会转移其他行。如果添加的条目较少，额外的内存当然就会被浪费掉。
+ * 如果一个行的空间不够，那么它将被扩大 @p default_increment
+ * 个条目。这样一来，后续的行就不会经常被单项移位了。
+ * 最后， @p default_reserve
+ * 在数据数组的末端分配了额外的空间。这个空间在任何必须扩大的行中都会被使用。这很重要，因为否则不仅下面的行必须被移动，而且在为整个数据阵列分配了足够多的空间后，实际上<i>all</i>行也必须被移动。
+ * 建议的设置。  @p default_row_length
+ * 应该是一个典型行的长度，例如网格中常规部分的网板尺寸。然后，
+ * @p default_increment
+ * 可以是有一个挂起的节点给该行增加的预期条目量。这样一来，就应该在内存消耗和速度之间取得一个很好的折中。
+ * @p default_reserve 应该是对悬挂节点数量的估计乘以 @p
+ * default_increment。 让 @p default_increment
+ * 为零会导致每当有行溢出时出现异常。
+ * 如果行被期望或多或少地从头到尾填满，使用 @p
+ * default_row_length 为零可能不是一个坏主意。
  *
- * Instead of using a pre-assembled sparsity pattern, this matrix builds the
- * pattern on the fly. Filling the matrix may consume more time than for
- * @p SparseMatrix, since large memory movements may be involved when new
- * matrix elements are inserted somewhere in the middle of the matrix and no
- * currently unused memory locations are available for the row into which
- * the new entry is to be inserted. To help
- * optimize things, an expected row-length may be provided to the
- * constructor, as well as an increment size for rows.
  *
- * This class uses a storage structure that, similar to the usual sparse matrix
- * format, only stores non-zero elements. These are stored in a single data
- * array for the entire matrix, and are ordered by row and, within each row, by
- * column number. A separate array describes where in the long data array each
- * row starts and how long it is.
+ * @note
+ * 这个类的名字用美国人的方式发音是有意义的，其中 "EZ
+ * "的发音与 "easy "的发音相同。
  *
- * Due to this structure, gaps may occur between rows. Whenever a new entry
- * must be created, an attempt is made to use the gap in its row. If no gap
- * is left, the row must be extended and all subsequent rows must be shifted
- * backwards. This is a very expensive operation and explains the inefficiency
- * of this data structure and why it is useful to pre-allocate a sparsity
- * pattern as the SparseMatrix class does.
  *
- * This is where the optimization parameters, provided to the constructor or
- * to the reinit() functions come in. @p default_row_length is the number of
- * entries that will be allocated for each row on initialization (the actual
- * length of the rows is still zero). This means, that @p default_row_length
- * entries can be added to this row without shifting other rows. If fewer
- * entries are added, the additional memory will of course be wasted.
- *
- * If the space for a row is not sufficient, then it is enlarged by
- * @p default_increment entries. This way, subsequent rows are not shifted by
- * single entries very often.
- *
- * Finally, the @p default_reserve allocates extra space at the end of the
- * data array. This space is used whenever any row must be enlarged. It is
- * important because otherwise not only the following rows must be moved, but
- * in fact <i>all</i> rows after allocating sufficiently much space for the
- * entire data array.
- *
- * Suggested settings: @p default_row_length should be the length of a typical
- * row, for instance the size of the stencil in regular parts of the grid.
- * Then, @p default_increment may be the expected amount of entries added to
- * the row by having one hanging node. This way, a good compromise between
- * memory consumption and speed should be achieved. @p default_reserve should
- * then be an estimate for the number of hanging nodes times @p
- * default_increment.
- *
- * Letting @p default_increment be zero causes an exception whenever a row
- * overflows.
- *
- * If the rows are expected to be filled more or less from first to last,
- * using a @p default_row_length of zero may not be such a bad idea.
- *
- * @note The name of the class makes sense by pronouncing it the American way,
- *   where "EZ" is pronounced the same way as the word "easy".
  */
 template <typename number>
 class SparseMatrixEZ : public Subscriptor
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * The class for storing the column number of an entry together with its
-   * value.
+   * 用于存储条目的列号及其值的类。
+   *
    */
   struct Entry
   {
     /**
-     * Standard constructor. Sets @p column to @p invalid.
+     * 标准构造函数。设置 @p column 到 @p invalid. 。
+     *
      */
     Entry();
 
     /**
-     * Constructor. Fills column and value.
+     * 构造函数。填充列和值。
+     *
      */
     Entry(const size_type column, const number &value);
 
     /**
-     * The column number.
+     * 列的编号。
+     *
      */
     size_type column;
 
     /**
-     * The value there.
+     * 那里的值。
+     *
      */
     number value;
 
     /**
-     * Non-existent column number.
+     * 不存在的列号。
+     *
      */
     static const size_type invalid = numbers::invalid_size_type;
   };
 
   /**
-   * Structure for storing information on a matrix row. One object for each
-   * row will be stored in the matrix.
+   * 用于存储矩阵行的信息的结构。每行有一个对象，将被存储在矩阵中。
+   *
    */
   struct RowInfo
   {
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     RowInfo(const size_type start = Entry::invalid);
 
     /**
-     * Index of first entry of the row in the data field.
+     * 数据域中行的第一个条目的索引。
+     *
      */
     size_type start;
     /**
-     * Number of entries in this row.
+     * 该行的条目数。
+     *
      */
     unsigned short length;
     /**
-     * Position of the diagonal element relative tor the start index.
+     * 对角线元素相对于起始索引的位置。
+     *
      */
     unsigned short diagonal;
     /**
-     * Value for non-existing diagonal.
+     * 不存在的对角线的值。
+     *
      */
     static const unsigned short invalid_diagonal =
       static_cast<unsigned short>(-1);
@@ -173,62 +160,71 @@ public:
 
 public:
   /**
-   * Standard-conforming iterator.
+   * 符合标准的迭代器。
+   *
    */
   class const_iterator
   {
   private:
     /**
-     * Accessor class for iterators
+     * 迭代器的访问器类
+     *
      */
     class Accessor
     {
     public:
       /**
-       * Constructor. Since we use accessors only for read access, a const
-       * matrix pointer is sufficient.
+       * 构造器。因为我们只使用访问器进行读取访问，一个常量矩阵指针就足够了。
+       *
        */
       Accessor(const SparseMatrixEZ<number> *matrix,
                const size_type               row,
                const unsigned short          index);
 
       /**
-       * Row number of the element represented by this object.
+       * 这个对象所代表的元素的行号。
+       *
        */
       size_type
       row() const;
 
       /**
-       * Index in row of the element represented by this object.
+       * 这个对象所代表的元素在行中的索引。
+       *
        */
       unsigned short
       index() const;
 
       /**
-       * Column number of the element represented by this object.
+       * 这个对象所代表的元素的列号。
+       *
        */
       size_type
       column() const;
 
       /**
-       * Value of this matrix entry.
+       * 这个矩阵条目的值。
+       *
        */
       number
       value() const;
 
     protected:
       /**
-       * The matrix accessed.
+       * 访问的矩阵。
+       *
        */
       const SparseMatrixEZ<number> *matrix;
 
       /**
-       * Current row number.
+       * 当前行数。
+       *
        */
       size_type a_row;
 
       /**
-       * Current index in row.
+       * 当前行的索引。
+       *
        */
       unsigned short a_index;
 
@@ -238,82 +234,90 @@ public:
 
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     const_iterator(const SparseMatrixEZ<number> *matrix,
                    const size_type               row,
                    const unsigned short          index);
 
     /**
-     * Prefix increment. This always returns a valid entry or <tt>end()</tt>.
+     * 前缀增量。这总是返回一个有效的条目或<tt>end()</tt>。
+     *
      */
     const_iterator &
     operator++();
 
     /**
-     * Dereferencing operator.
+     * 去引用操作符。
+     *
      */
     const Accessor &operator*() const;
 
     /**
-     * Dereferencing operator.
+     * 解除引用操作符。
+     *
      */
     const Accessor *operator->() const;
 
     /**
-     * Comparison. True, if both iterators point to the same matrix position.
+     * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+     *
      */
     bool
     operator==(const const_iterator &) const;
     /**
-     * Inverse of <tt>==</tt>.
+     * <tt>==</tt>的倒数。
+     *
      */
     bool
     operator!=(const const_iterator &) const;
 
     /**
-     * Comparison operator. Result is true if either the first row number is
-     * smaller or if the row numbers are equal and the first index is smaller.
+     * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
+     *
      */
     bool
     operator<(const const_iterator &) const;
 
   private:
     /**
-     * Store an object of the accessor class.
+     * 存储一个访问器类的对象。
+     *
      */
     Accessor accessor;
   };
 
   /**
-   * Type of matrix entries. This alias is analogous to <tt>value_type</tt>
-   * in the standard library containers.
+   * 矩阵条目的类型。这个别名类似于标准库容器中的<tt>value_type</tt>。
+   *
    */
   using value_type = number;
 
   /**
-   * @name Constructors and initialization
+   * @name  构造函数和初始化
+   *
    */
   //@{
   /**
-   * Constructor. Initializes an empty matrix of dimension zero times zero.
+   * 构造函数。初始化一个尺寸为0乘以0的空矩阵。
+   *
    */
   SparseMatrixEZ();
 
   /**
-   * Dummy copy constructor. This is here for use in containers. It may only
-   * be called for empty objects.
+   * 假的复制构造函数。这是在容器中使用的。它只能为空对象调用。
+   * 如果你真的想复制一个完整的矩阵，你可以使用 @p
+   * copy_from函数来实现。
    *
-   * If you really want to copy a whole matrix, you can do so by using the @p
-   * copy_from function.
    */
   SparseMatrixEZ(const SparseMatrixEZ &);
 
   /**
-   * Constructor. Generates a matrix of the given size, ready to be filled.
-   * The optional parameters @p default_row_length and @p default_increment
-   * allow for preallocating memory. Providing these properly is essential for
-   * an efficient assembling of the matrix.
+   * 构造函数。生成一个给定大小的矩阵，准备被填充。
+   * 可选参数 @p default_row_length 和 @p default_increment
+   * 允许预先分配内存。适当地提供这些参数对于有效地组装矩阵是至关重要的。
+   *
    */
   explicit SparseMatrixEZ(const size_type    n_rows,
                           const size_type    n_columns,
@@ -321,33 +325,30 @@ public:
                           const unsigned int default_increment  = 1);
 
   /**
-   * Destructor. Free all memory.
+   * 销毁器。释放所有的内存。
+   *
    */
   ~SparseMatrixEZ() override = default;
 
   /**
-   * Pseudo operator only copying empty objects.
+   * 只复制空对象的伪操作符。
+   *
    */
   SparseMatrixEZ<number> &
   operator=(const SparseMatrixEZ<number> &);
 
   /**
-   * This operator assigns a scalar to a matrix. Since this does usually not
-   * make much sense (should we set all matrix entries to this value? Only the
-   * nonzero entries of the sparsity pattern?), this operation is only allowed
-   * if the actual value to be assigned is zero. This operator only exists to
-   * allow for the obvious notation <tt>matrix=0</tt>, which sets all elements
-   * of the matrix to zero, but keep the sparsity pattern previously used.
+   * 这个操作符将一个标量分配给一个矩阵。因为这通常没有什么意义（我们应该把所有的矩阵条目都设置为这个值吗？仅仅是稀疏模式的非零条目？），这个操作只允许在实际要分配的值为零的情况下进行。这个操作符的存在只是为了允许明显的符号<tt>matrix=0</tt>，它将矩阵的所有元素设置为零，但保留之前使用的稀疏模式。
+   *
    */
   SparseMatrixEZ<number> &
   operator=(const double d);
 
   /**
-   * Reinitialize the sparse matrix to the dimensions provided. The matrix
-   * will have no entries at this point. The optional parameters @p
-   * default_row_length, @p default_increment and @p reserve allow for
-   * preallocating memory. Providing these properly is essential for an
-   * efficient assembling of the matrix.
+   * 将稀疏矩阵重新初始化为所提供的尺寸。矩阵在此时将没有任何条目。可选参数
+   * @p default_row_length， @p default_increment 和 @p reserve
+   * 允许预先分配内存。正确地提供这些参数对于有效地组装矩阵是至关重要的。
+   *
    */
   void
   reinit(const size_type n_rows,
@@ -357,73 +358,74 @@ public:
          size_type       reserve            = 0);
 
   /**
-   * Release all memory and return to a state just like after having called
-   * the default constructor. It also forgets its sparsity pattern.
+   * 释放所有内存并返回到与调用默认构造函数后相同的状态。它也会忘记其稀疏模式。
+   *
    */
   void
   clear();
   //@}
   /**
-   * @name Information on the matrix
+   * @name  矩阵的信息
+   *
    */
   //@{
   /**
-   * Return whether the object is empty. It is empty if both dimensions are
-   * zero.
+   * 返回该对象是否为空。如果两个维度都是零，它就是空的。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Return the dimension of the codomain (or range) space. Note that the
-   * matrix is of dimension $m \times n$.
+   * 返回共域（或范围）空间的维度。注意，矩阵的维度是
+   * $m \times n$  。
+   *
    */
   size_type
   m() const;
 
   /**
-   * Return the dimension of the domain space. Note that the matrix is of
-   * dimension $m \times n$.
+   * 返回域空间的维度。请注意，矩阵的维度是 $m \times n$  .
+   *
    */
   size_type
   n() const;
 
   /**
-   * Return the number of entries in a specific row.
+   * 返回特定行中的条目数。
+   *
    */
   size_type
   get_row_length(const size_type row) const;
 
   /**
-   * Return the number of nonzero elements of this matrix.
+   * 返回该矩阵的非零元素的数量。
+   *
    */
   size_type
   n_nonzero_elements() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * Print statistics. If @p full is @p true, prints a histogram of all
-   * existing row lengths and allocated row lengths. Otherwise, just the
-   * relation of allocated and used entries is shown.
+   * 打印统计数据。如果 @p full 是 @p true,
+   * ，则打印所有现有行长和分配行长的直方图。否则，只显示已分配和已使用条目的关系。
+   *
    */
   template <class StreamType>
   void
   print_statistics(StreamType &s, bool full = false);
 
   /**
-   * Compute numbers of entries.
+   * 计算条目的数量。
+   * 在前三个参数中，该函数返回该矩阵使用、分配和保留的条目数。
+   * 如果最后一个参数为真，每行的条目数也会被打印出来。
    *
-   * In the first three arguments, this function returns the number of entries
-   * used, allocated and reserved by this matrix.
-   *
-   * If the final argument is true, the number of entries in each line is
-   * printed as well.
    */
   void
   compute_statistics(size_type &             used,
@@ -433,25 +435,18 @@ public:
                      const bool              compute_by_line) const;
   //@}
   /**
-   * @name Modifying entries
+   * @name  修改条目
+   *
    */
   //@{
   /**
-   * Set the element <tt>(i,j)</tt> to @p value.
+   * 将元素<tt>(i,j)</tt>设置为  @p value.
+   * 如果<tt>value</tt>不是一个有限的数字，就会产生异常。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+   * 如果这个函数设置了一个尚不存在的元素的值，那么它将为其分配一个条目。(除非如上所述，`elide_zero_values`是`true`)。
+   * @note
+   * 如果你想保持矩阵的对称稀疏模式，你可能需要插入零元素。
    *
-   * If <tt>value</tt> is not a finite number an exception is thrown.
-   *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
-   *
-   * If this function sets the value of an element that does not yet exist,
-   * then it allocates an entry for it. (Unless `elide_zero_values` is `true`
-   * as mentioned above.)
-   *
-   * @note You may need to insert zero elements if you want to keep a symmetric
-   * sparsity pattern for the matrix.
    */
   void
   set(const size_type i,
@@ -460,31 +455,18 @@ public:
       const bool      elide_zero_values = true);
 
   /**
-   * Add @p value to the element <tt>(i,j)</tt>.
+   * 将 @p value 添加到元素<tt>(i,j)</tt>。
+   * 如果这个函数添加到一个尚不存在的元素的值中，那么它将为其分配一个条目。
+   * 该函数会自动过滤掉零，也就是说，当向一个目前不存在条目的矩阵元素添加零时，它不会创建新条目。
    *
-   * If this function adds to the value of an element that does not yet exist,
-   * then it allocates an entry for it.
-   *
-   * The function filters out zeroes automatically, i.e., it does not create
-   * new entries when adding zero to a matrix element for which no entry
-   * currently exists.
    */
   void
   add(const size_type i, const size_type j, const number value);
 
   /**
-   * Add all elements given in a FullMatrix<double> into sparse matrix
-   * locations given by <tt>indices</tt>. In other words, this function adds
-   * the elements in <tt>full_matrix</tt> to the respective entries in calling
-   * matrix, using the local-to-global indexing specified by <tt>indices</tt>
-   * for both the rows and the columns of the matrix. This function assumes a
-   * quadratic sparse matrix and a quadratic full_matrix, the usual situation
-   * in FE calculations.
+   * 将FullMatrix<double>中给出的所有元素添加到由<tt>indices</tt>给出的稀疏矩阵位置。换句话说，这个函数将<tt>full_matrix</tt>中的元素添加到调用矩阵的相应条目中，使用<tt>indices</tt>为矩阵的行和列指定的本地到全球索引。这个函数假定一个二次稀疏矩阵和一个二次全矩阵，这是FE计算中通常的情况。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number2>
   void
@@ -493,9 +475,8 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Same function as before, but now including the possibility to use
-   * rectangular full_matrices and different local-to-global indexing on rows
-   * and columns, respectively.
+   * 与之前的函数相同，但现在包括了使用矩形full_matrices的可能性，以及在行和列上分别使用不同的本地到全球索引。
+   *
    */
   template <typename number2>
   void
@@ -505,13 +486,9 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Set several elements in the specified row of the matrix with column
-   * indices as given by <tt>col_indices</tt> to the respective value.
+   * 将矩阵的指定行中的几个元素与<tt>col_indices</tt>给出的列索引设置为相应的值。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number2>
   void
@@ -521,13 +498,9 @@ public:
       const bool                    elide_zero_values = true);
 
   /**
-   * Add an array of values given by <tt>values</tt> in the given global
-   * matrix row at columns specified by col_indices in the sparse matrix.
+   * 在给定的全局矩阵行中，在稀疏矩阵中由col_indices指定的列中添加一个由<tt>values</tt>给出的数值阵列。
+   * 可选的参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些数据，只添加非零值。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
    *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
    */
   template <typename number2>
   void
@@ -539,120 +512,118 @@ public:
       const bool       col_indices_are_sorted = false);
 
   /**
-   * Copy the matrix given as argument into the current object.
+   * 将作为参数给出的矩阵复制到当前对象中。
+   * 复制矩阵是一个昂贵的操作，我们不希望通过编译器生成的代码意外发生
+   * <code>operator=</code>
+   * 。（例如，如果不小心声明了一个当前类型为<i>by
+   * value</i>而非<i>by
+   * reference</i>的函数参数，就会发生这种情况）。复制矩阵的功能是在这个成员函数中实现的。因此，该类型对象的所有复制操作都需要一个明确的函数调用。
+   * 源矩阵可以是一个任意类型的矩阵，只要其数据类型可以转换为该矩阵的数据类型。
+   * 可选参数<tt>elide_zero_values</tt>可以用来指定是无论如何都要添加零值，还是要过滤掉这些零值，只添加非零数据。默认值是<tt>true</tt>，也就是说，零值不会被添加到矩阵中。
+   * 该函数返回一个 @p this. 的引用。
    *
-   * Copying matrices is an expensive operation that we do not want to happen
-   * by accident through compiler generated code for <code>operator=</code>.
-   * (This would happen, for example, if one accidentally declared a function
-   * argument of the current type <i>by value</i> rather than <i>by
-   * reference</i>.) The functionality of copying matrices is implemented in
-   * this member function instead. All copy operations of objects of this type
-   * therefore require an explicit function call.
-   *
-   * The source matrix may be a matrix of arbitrary type, as long as its data
-   * type is convertible to the data type of this matrix.
-   *
-   * The optional parameter <tt>elide_zero_values</tt> can be used to specify
-   * whether zero values should be added anyway or these should be filtered
-   * away and only non-zero data is added. The default value is <tt>true</tt>,
-   * i.e., zero values won't be added into the matrix.
-   *
-   * The function returns a reference to @p this.
    */
   template <typename MatrixType>
   SparseMatrixEZ<number> &
   copy_from(const MatrixType &source, const bool elide_zero_values = true);
 
   /**
-   * Add @p matrix scaled by @p factor to this matrix.
+   * 将 @p matrix 按 @p factor 的比例添加到该矩阵中。
+   * 源矩阵可以是一个任意类型的矩阵，只要其数据类型可以转换为该矩阵的数据类型，并且具有标准的
+   * @p const_iterator. 。
    *
-   * The source matrix may be a matrix of arbitrary type, as long as its data
-   * type is convertible to the data type of this matrix and it has the
-   * standard @p const_iterator.
    */
   template <typename MatrixType>
   void
   add(const number factor, const MatrixType &matrix);
   //@}
   /**
-   * @name Entry Access
+   * @name 条目访问
+   *
    */
   //@{
   /**
-   * Return the value of the entry (i,j).  This may be an expensive operation
-   * and you should always take care where to call this function.  In order to
-   * avoid abuse, this function throws an exception if the required element
-   * does not exist in the matrix.
+   * 返回条目(i,j)的值。
+   * 这可能是一个昂贵的操作，你应该始终注意在哪里调用这个函数。
+   * 为了避免滥用，如果所需元素在矩阵中不存在，该函数会抛出一个异常。
+   * 如果你想要一个返回零的函数（对于不在矩阵的稀疏模式中的条目），请使用
+   * @p el 函数。
    *
-   * In case you want a function that returns zero instead (for entries that
-   * are not in the sparsity pattern of the matrix), use the @p el function.
    */
   number
   operator()(const size_type i, const size_type j) const;
 
   /**
-   * Return the value of the entry (i,j). Returns zero for all non-existing
-   * entries.
+   * 返回条目(i,j)的值。对所有不存在的条目返回零。
+   *
    */
   number
   el(const size_type i, const size_type j) const;
   //@}
   /**
-   * @name Multiplications
+   * @name  乘法运算
+   *
    */
   //@{
   /**
-   * Matrix-vector multiplication: let $dst = M*src$ with $M$ being this
-   * matrix.
+   * 矩阵-向量乘法：让 $dst = M*src$ 与 $M$ 为该矩阵。
+   *
    */
   template <typename somenumber>
   void
   vmult(Vector<somenumber> &dst, const Vector<somenumber> &src) const;
 
   /**
-   * Matrix-vector multiplication: let $dst = M^T*src$ with $M$ being this
-   * matrix. This function does the same as @p vmult but takes the transposed
-   * matrix.
+   * 矩阵-向量乘法：让 $dst = M^T*src$ 与 $M$
+   * 为这个矩阵。这个函数与 @p vmult
+   * 的作用相同，但需要转置的矩阵。
+   *
    */
   template <typename somenumber>
   void
   Tvmult(Vector<somenumber> &dst, const Vector<somenumber> &src) const;
 
   /**
-   * Adding Matrix-vector multiplication. Add $M*src$ on $dst$ with $M$ being
-   * this matrix.
+   * 加法 矩阵-向量乘法。在 $dst$ 上添加 $M*src$ ， $M$
+   * 为该矩阵。
+   *
    */
   template <typename somenumber>
   void
   vmult_add(Vector<somenumber> &dst, const Vector<somenumber> &src) const;
 
   /**
-   * Adding Matrix-vector multiplication. Add $M^T*src$ to $dst$ with $M$
-   * being this matrix. This function does the same as @p vmult_add but takes
-   * the transposed matrix.
+   * 添加矩阵-向量乘法。将 $M^T*src$ 加到 $dst$ ， $M$
+   * 是这个矩阵。这个函数与 @p vmult_add
+   * 的作用相同，但需要转置的矩阵。
+   *
    */
   template <typename somenumber>
   void
   Tvmult_add(Vector<somenumber> &dst, const Vector<somenumber> &src) const;
   //@}
   /**
-   * @name Matrix norms
+   * @name  矩阵的准则
+   *
    */
   //@{
   /**
-   * Frobenius-norm of the matrix.
+   * 矩阵的Frobenius-norm。
+   *
    */
   number
   l2_norm() const;
   //@}
   /**
-   * @name Preconditioning methods
+   * @name  预处理方法
+   *
    */
   //@{
   /**
-   * Apply the Jacobi preconditioner, which multiplies every element of the @p
-   * src vector by the inverse of the respective diagonal element and
-   * multiplies the result with the damping factor @p omega.
+   * 应用雅可比预处理方法，将 @p
+   * src向量的每个元素乘以各自对角线元素的逆值，并将结果与阻尼系数
+   * @p omega. 相乘。
+   *
    */
   template <typename somenumber>
   void
@@ -661,7 +632,8 @@ public:
                       const number              omega = 1.) const;
 
   /**
-   * Apply SSOR preconditioning to @p src.
+   * 对 @p src. 应用SSOR预处理。
+   *
    */
   template <typename somenumber>
   void
@@ -672,8 +644,11 @@ public:
                       std::vector<std::size_t>()) const;
 
   /**
-   * Apply SOR preconditioning matrix to @p src. The result of this method is
-   * $dst = (om D - L)^{-1} src$.
+   * 将SOR预处理矩阵应用于 @p src. ，该方法的结果是 $dst =
+   * (om D
+   *
+   * - L)^{-1} src$  。
+   *
    */
   template <typename somenumber>
   void
@@ -682,8 +657,11 @@ public:
                    const number              om = 1.) const;
 
   /**
-   * Apply transpose SOR preconditioning matrix to @p src. The result of this
-   * method is $dst = (om D - U)^{-1} src$.
+   * 对 @p src. 应用转置的SOR预处理矩阵，该方法的结果是
+   * $dst = (om D
+   *
+   * - U)^{-1} src$  。
+   *
    */
   template <typename somenumber>
   void
@@ -692,12 +670,12 @@ public:
                     const number              om = 1.) const;
 
   /**
-   * Add the matrix @p A conjugated by @p B, that is, $B A B^T$ to this
-   * object. If the parameter @p transpose is true, compute $B^T A B$.
+   * 将由 @p B, 共轭的矩阵 @p A 即 $B A B^T$
+   * 添加到该对象中。如果参数 @p transpose 为真，计算 $B^T A
+   * B$  。    这个函数要求 @p B 有一个 @p const_iterator
+   * 遍历所有矩阵条目，并且 @p A
+   * 有一个函数<tt>el(i,j)</tt>用于访问特定条目。
    *
-   * This function requires that @p B has a @p const_iterator traversing all
-   * matrix entries and that @p A has a function <tt>el(i,j)</tt> for access
-   * to a specific entry.
    */
   template <typename MatrixTypeA, typename MatrixTypeB>
   void
@@ -706,65 +684,64 @@ public:
                 const bool         transpose = false);
   //@}
   /**
-   * @name Iterators
+   * @name  迭代器
+   *
    */
   //@{
   /**
-   * Iterator starting at the first existing entry.
+   * 迭代器从第一个现有条目开始。
+   *
    */
   const_iterator
   begin() const;
 
   /**
-   * Final iterator.
+   * 最后的迭代器。
+   *
    */
   const_iterator
   end() const;
 
   /**
-   * Iterator starting at the first entry of row @p r. If this row is empty,
-   * the result is <tt>end(r)</tt>, which does NOT point into row @p r.
+   * 迭代器从第 @p r.
+   * 行的第一个条目开始，如果这一行是空的，结果是<tt>end(r)</tt>，它并不指向第
+   * @p r. 行。
+   *
    */
   const_iterator
   begin(const size_type r) const;
 
   /**
-   * Final iterator of row @p r. The result may be different from
-   * <tt>end()</tt>!
+   * 行 @p r. 的最终迭代器 结果可能与<tt>end()</tt>不同!
+   *
    */
   const_iterator
   end(const size_type r) const;
   //@}
   /**
-   * @name Input/Output
+   * @name  输入/输出
+   *
    */
   //@{
   /**
-   * Print the matrix to the given stream, using the format <tt>(line,col)
-   * value</tt>, i.e. one nonzero entry of the matrix per line.
+   * 打印矩阵到给定的流，使用格式<tt>(line,col)
+   * value</tt>，即每行有一个非零的矩阵条目。
+   *
    */
   void
   print(std::ostream &out) const;
 
   /**
-   * Print the matrix in the usual format, i.e. as a matrix and not as a list
-   * of nonzero elements. For better readability, elements not in the matrix
-   * are displayed as empty space, while matrix elements which are explicitly
-   * set to zero are displayed as such.
+   * 以通常的格式打印矩阵，即作为矩阵而不是作为非零元素的列表。为了提高可读性，不在矩阵中的元素显示为空白，而明确设置为零的矩阵元素则显示为空白。
+   * 参数允许对输出格式进行灵活设置。  @p 精度和 @p
+   * scientific 用于确定数字格式，其中 @p scientific = @p false
+   * 表示定点符号。  @p width
+   * 的零条目使函数计算出一个宽度，但如果输出是粗略的，它可能被改变为一个正值。
+   * 此外，还可以指定一个空值的字符。
+   * 最后，整个矩阵可以与一个共同的分母相乘，产生更可读的输出，甚至是整数。
+   * 如果应用于一个大的矩阵，这个函数可能会产生 @em
+   * 大量的输出!
    *
-   * The parameters allow for a flexible setting of the output format: @p
-   * precision and @p scientific are used to determine the number format,
-   * where @p scientific = @p false means fixed point notation.  A zero entry
-   * for @p width makes the function compute a width, but it may be changed to
-   * a positive value, if output is crude.
-   *
-   * Additionally, a character for an empty value may be specified.
-   *
-   * Finally, the whole matrix can be multiplied with a common denominator to
-   * produce more readable output, even integers.
-   *
-   * This function may produce @em large amounts of output if applied to a
-   * large matrix!
    */
   void
   print_formatted(std::ostream &     out,
@@ -775,39 +752,37 @@ public:
                   const double       denominator = 1.) const;
 
   /**
-   * Write the data of this object in binary mode to a file.
+   * 以二进制模式将此对象的数据写到文件中。
+   * 注意，这种二进制格式与平台有关。
    *
-   * Note that this binary format is platform dependent.
    */
   void
   block_write(std::ostream &out) const;
 
   /**
-   * Read data that has previously been written by @p block_write.
+   * 读取之前由 @p block_write.
+   * 写入的数据，该对象在此操作中被调整大小，所有之前的内容都会丢失。
+   * 执行一种原始形式的错误检查，它将识别最直白的尝试，将一些数据解释为按位数存储到文件中的向量，但不会有更多。
    *
-   * The object is resized on this operation, and all previous contents are
-   * lost.
-   *
-   * A primitive form of error checking is performed which will recognize the
-   * bluntest attempts to interpret some data as a vector stored bitwise to a
-   * file, but not more.
    */
   void
   block_read(std::istream &in);
   //@}
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常  @{
+   *
    */
 
   /**
-   * Exception for missing diagonal entry.
+   * 缺少对角线条目的异常情况。
+   *
    */
   DeclException0(ExcNoDiagonal);
 
   /**
-   * Exception
+   * 例外情况
+   *
    */
   DeclException2(ExcInvalidEntry,
                  int,
@@ -823,29 +798,31 @@ public:
   //@}
 private:
   /**
-   * Find an entry and return a const pointer. Return a zero-pointer if the
-   * entry does not exist.
+   * 找到一个条目并返回一个常数指针。如果该条目不存在，则返回一个零指针。
+   *
    */
   const Entry *
   locate(const size_type row, const size_type col) const;
 
   /**
-   * Find an entry and return a writable pointer. Return a zero-pointer if the
-   * entry does not exist.
+   * 找到一个条目并返回一个可写指针。如果该条目不存在，则返回一个零指针。
+   *
    */
   Entry *
   locate(const size_type row, const size_type col);
 
   /**
-   * Find an entry or generate it.
+   * 查找一个条目或生成它。
+   *
    */
   Entry *
   allocate(const size_type row, const size_type col);
 
   /**
-   * Version of @p vmult which only performs its actions on the region defined
-   * by <tt>[begin_row,end_row)</tt>. This function is called by @p vmult in
-   * the case of enabled multithreading.
+   * @p vmult
+   * 的版本，只对<tt>[begin_row,end_row)</tt>定义的区域进行操作。在启用多线程的情况下，这个函数被
+   * @p vmult 调用。
+   *
    */
   template <typename somenumber>
   void
@@ -855,9 +832,10 @@ private:
                  const size_type           end_row) const;
 
   /**
-   * Version of @p matrix_norm_square which only performs its actions on the
-   * region defined by <tt>[begin_row,end_row)</tt>. This function is called
-   * by @p matrix_norm_square in the case of enabled multithreading.
+   * @p matrix_norm_square
+   * 的版本，只对<tt>[begin_row,end_row)</tt>定义的区域进行操作。在启用多线程的情况下，这个函数被
+   * @p matrix_norm_square 调用。
+   *
    */
   template <typename somenumber>
   void
@@ -867,9 +845,10 @@ private:
                               somenumber *              partial_sum) const;
 
   /**
-   * Version of @p matrix_scalar_product which only performs its actions on
-   * the region defined by <tt>[begin_row,end_row)</tt>. This function is
-   * called by @p matrix_scalar_product in the case of enabled multithreading.
+   * @p matrix_scalar_product
+   * 的版本，只对<tt>[begin_row,end_row)</tt>定义的区域进行操作。在启用多线程的情况下，这个函数被
+   * @p matrix_scalar_product 调用。
+   *
    */
   template <typename somenumber>
   void
@@ -880,35 +859,42 @@ private:
                                  somenumber *              partial_sum) const;
 
   /**
-   * Number of columns. This is used to check vector dimensions only.
+   * 列的数量。这仅用于检查向量尺寸。
+   *
    */
   size_type n_columns;
 
   /**
-   * Info structure for each row.
+   * 每一行的信息结构。
+   *
    */
   std::vector<RowInfo> row_info;
 
   /**
-   * Data storage.
+   * 数据存储。
+   *
    */
   std::vector<Entry> data;
 
   /**
-   * Increment when a row grows.
+   * 当某行增长时进行递增。
+   *
    */
   unsigned int increment;
 
   /**
-   * Remember the user provided default row length.
+   * 记住用户提供的默认行长度。
+   *
    */
   unsigned int saved_default_row_length;
 };
 
 /**
  * @}
+ *
+ *
  */
-/*---------------------- Inline functions -----------------------------------*/
+ /*---------------------- Inline functions -----------------------------------*/ 
 
 template <typename number>
 inline SparseMatrixEZ<number>::Entry::Entry(const size_type column,
@@ -1336,7 +1322,7 @@ SparseMatrixEZ<number>::add(const size_type  row,
                             const size_type *col_indices,
                             const number2 *  values,
                             const bool       elide_zero_values,
-                            const bool /*col_indices_are_sorted*/)
+                            const bool  /*col_indices_are_sorted*/ )
 {
   // TODO: This function can surely be made more efficient
   for (size_type j = 0; j < n_cols; ++j)
@@ -1596,4 +1582,6 @@ SparseMatrixEZ<number>::print_statistics(StreamType &out, bool full)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-/*----------------------------   sparse_matrix.h ---------------------------*/
+ /*----------------------------   sparse_matrix.h ---------------------------*/ 
+
+

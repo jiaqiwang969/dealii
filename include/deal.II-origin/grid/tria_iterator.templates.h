@@ -1,4 +1,3 @@
-//include/deal.II-translator/grid/tria_iterator.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -26,11 +25,13 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/* 注意：这个文件只包含模板定义，因此不会产生一个对象文件。它被认为是包含在the_accessor.cc文件中。
-* */
+/* Note: This file only contains template definitions and will thus
+   not produce an object file. It is rather thought to be included
+   into the *_accessor.cc files.
+*/
 
 
- /*------------------------ Functions: TriaRawIterator ------------------*/ 
+/*------------------------ Functions: TriaRawIterator ------------------*/
 
 
 template <typename Accessor>
@@ -123,7 +124,7 @@ TriaRawIterator<Accessor>::operator--(int)
 }
 
 
- /*-----------------------  functions: TriaIterator ---------------*/ 
+/*-----------------------  functions: TriaIterator ---------------*/
 
 
 template <typename Accessor>
@@ -301,7 +302,7 @@ TriaIterator<Accessor>::operator--(int)
 }
 
 
- /*-----------------------  functions: TriaActiveIterator ---------------*/ 
+/*-----------------------  functions: TriaActiveIterator ---------------*/
 
 
 template <typename Accessor>
@@ -549,5 +550,3 @@ TriaActiveIterator<Accessor>::operator--(int)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

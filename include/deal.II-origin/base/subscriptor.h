@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/subscriptor_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -33,107 +32,119 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 对订阅的处理。
- * 这个类，作为一个基类，允许使用一个特定的对象来跟踪其他对象。它被用来避免指向从Subscriptor派生的类的对象的指针在该对象被无效后被引用。在这里，无效化被认为是在对象被移出或销毁时发生的。该机制的工作方式如下。成员函数subscribe()接受一个指向布尔值的指针，该指针在失效时被修改。拥有这个指针的对象（通常是SmartPointer类型的对象）然后被期望在试图访问这个类之前检查布尔值的状态。
- * 通过为函数subscribe()和unsubscribe()提供识别字符串，这个类的效用甚至得到了加强。这些字符串被表示为
- * <code>const char</code>
- * 指针，因为底层的缓冲区来自（并由）运行时类型信息系统管理：更确切地说，这些指针是函数调用
- * <code>typeid(x).name()</code> 的结果，其中 <code>x</code>
- * 是一些对象。因此，提供给 subscribe() 和 unsubscribe()
- * 的指针必须相同。内容相同的字符串将不会被识别为相同。SmartPointer中的处理方法将照顾到这一点。该类的当前订阅者可以通过调用list_subscribers()获得。
+ * Handling of subscriptions.
  *
+ * This class, as a base class, allows to keep track of other objects using a
+ * specific object. It is used to avoid that pointers that point to an object of
+ * a class derived from Subscriptor are referenced after that object has been
+ * invalidated. Here, invalidation is assumend to happen when the object is
+ * moved from or destroyed.
+ * The mechanism works as follows: The member function subscribe() accepts a
+ * pointer to a boolean that is modified on invalidation. The object that owns
+ * this pointer (usually an object of class type SmartPointer) is then expected
+ * to check the state of the boolean before trying to access this class.
+ *
+ * The utility of this class is even enhanced by providing identifying strings
+ * to the functions subscribe() and unsubscribe(). These strings are represented
+ * as <code>const char</code> pointers since the underlying buffer comes from
+ * (and is managed by) the run-time type information system: more exactly, these
+ * pointers are the result the function call <code>typeid(x).name()</code> where
+ * <code>x</code> is some object. Therefore, the pointers provided to
+ * subscribe() and to unsubscribe() must be the same. Strings with equal
+ * contents will not be recognized to be the same. The handling in
+ * SmartPointer will take care of this.
+ * The current subscribers to this class can be obtained by calling
+ * list_subscribers().
  *
  * @ingroup memory
- *
- *
  */
 class Subscriptor
 {
 public:
   /**
-   * 构造函数将计数器设置为零。
-   *
+   * Constructor setting the counter to zero.
    */
   Subscriptor();
 
   /**
-   * 复制构造器。
-   * 复制的计数器是零，因为引用指向原始对象。
+   * Copy-constructor.
    *
+   * The counter of the copy is zero, since references point to the original
+   * object.
    */
   Subscriptor(const Subscriptor &);
 
   /**
-   * 移动构造函数。
-   * 继承自Subscriptor的对象只有在没有其他对象订阅它的情况下才能被移动。
+   * Move constructor.
    *
+   * An object inheriting from Subscriptor can only be moved if no other
+   * objects are subscribing to it.
    */
   Subscriptor(Subscriptor &&) noexcept;
 
   /**
-   * 解构器，断言计数器为零。
-   *
+   * Destructor, asserting that the counter is zero.
    */
   virtual ~Subscriptor();
 
   /**
-   * 赋值操作符。
-   * 这也要小心处理，因为计数器必须保持不变。因此，它只是返回<tt>*this</tt>而已。
+   * Assignment operator.
    *
+   * This has to be handled with care, too, because the counter has to remain
+   * the same. It therefore does nothing more than returning <tt>*this</tt>.
    */
   Subscriptor &
   operator=(const Subscriptor &);
 
   /**
-   * 移动赋值运算符。只会使所移动的对象无效。
-   *
+   * Move assignment operator. Only invalidates the object moved from.
    */
   Subscriptor &
   operator=(Subscriptor &&) noexcept;
 
   /**
-   * @name Subscriptor功能 从Subscriptor派生的类提供了一个订阅此对象的设施。这主要是由SmartPointer类使用。
+   * @name Subscriptor functionality
    *
+   * Classes derived from Subscriptor provide a facility to subscribe to this
+   * object. This is mostly used by the SmartPointer class.
    */
   // @{
 
   /**
-   * 通过存储指针来订阅该对象的用户  @p validity.
-   * 订阅者可以通过提供的文本来识别  @p identifier.  。
-   *
+   * Subscribes a user of the object by storing the pointer @p validity. The
+   * subscriber may be identified by text supplied as @p identifier.
    */
   void
   subscribe(std::atomic<bool> *const validity,
             const std::string &      identifier = "") const;
 
   /**
-   * 从对象中取消用户的订阅。
-   * @note   @p identifier 和 @p validity
-   * 的指针必须与提供给subscribe()的指针相同。
+   * Unsubscribes a user from the object.
    *
+   * @note The @p identifier and the @p validity pointer must be the same as
+   * the one supplied to subscribe().
    */
   void
   unsubscribe(std::atomic<bool> *const validity,
               const std::string &      identifier = "") const;
 
   /**
-   * 返回目前对这个对象的订阅数量。这允许使用这个类来确定引用计数的寿命，其中最后一个取消订阅的人也会删除该对象。
-   *
+   * Return the present number of subscriptions to this object. This allows to
+   * use this class for reference counted lifetime determination where the
+   * last one to unsubscribe also deletes the object.
    */
   unsigned int
   n_subscriptions() const;
 
   /**
-   * 列出输入的订阅者  @p stream.  。
-   *
+   * List the subscribers to the input @p stream.
    */
   template <typename StreamType>
   void
   list_subscribers(StreamType &stream) const;
 
   /**
-   * 列出输入 @p deallog. 的订阅者。
-   *
+   * List the subscribers to @p deallog.
    */
   void
   list_subscribers() const;
@@ -141,13 +152,12 @@ public:
   // @}
 
   /**
-   * @addtogroup  异常情况  @{ .
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
   /**
-   * 异常情况。对象不能被删除，因为它被使用了。
-   *
+   * Exception: Object may not be deleted, since it is used.
    */
   DeclException3(ExcInUse,
                  int,
@@ -163,9 +173,8 @@ public:
                  << "how to fix programs in which it happens.");
 
   /**
-   * 具有 Subscriptor::unsubscribe()
-   * 给出的识别字符串的订阅者没有订阅该对象。
-   *
+   * A subscriber with the identification string given to
+   * Subscriptor::unsubscribe() did not subscribe to the object.
    */
   DeclException2(ExcNoSubscriber,
                  std::string,
@@ -176,9 +185,17 @@ public:
   //@}
 
   /**
-   * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，将此对象的数据读入或写入一个流中。
-   * 这个函数实际上并没有对这个类的任何成员变量进行序列化。原因是这个类所存储的只是谁订阅了这个对象，但在存储这个对象的内容时，谁订阅了这个对象，与恢复时谁订阅了这个对象并不一定有关系。因此，我们不希望在恢复时覆盖订阅者，那么就没有理由在一开始就把订阅者写出来。
+   * Read or write the data of this object to or from a stream for the purpose
+   * of serialization using the [BOOST serialization
+   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
    *
+   * This function does not actually serialize any of the member variables of
+   * this class. The reason is that what this class stores is only who
+   * subscribes to this object, but who does so at the time of storing the
+   * contents of this object does not necessarily have anything to do with who
+   * subscribes to the object when it is restored. Consequently, we do not
+   * want to overwrite the subscribers at the time of restoring, and then
+   * there is no reason to write the subscribers out in the first place.
    */
   template <class Archive>
   void
@@ -186,59 +203,71 @@ public:
 
 private:
   /**
-   * 存储订阅此对象的对象的数量。最初，这个数字是零，在销毁时，它应再次为零（即所有订阅过的对象应再次取消订阅）。
-   * 如果一个对象的创建者（和所有者）能够提供身份证明，那么他将被计算在下面的地图中。
-   * 我们使用<tt>mutable</tt>关键字，以便也允许订阅常量对象。
-   * 这个计数器可以在多线程代码中被同时读出和写入：因此我们使用了
-   * <code>std::atomic</code> 类模板。
+   * Store the number of objects which subscribed to this object. Initially,
+   * this number is zero, and upon destruction it shall be zero again (i.e.
+   * all objects which subscribed should have unsubscribed again).
    *
+   * The creator (and owner) of an object is counted in the map below if HE
+   * manages to supply identification.
+   *
+   * We use the <tt>mutable</tt> keyword in order to allow subscription to
+   * constant objects also.
+   *
+   * This counter may be read from and written to concurrently in
+   * multithreaded code: hence we use the <code>std::atomic</code> class
+   * template.
    */
   mutable std::atomic<unsigned int> counter;
 
   /**
-   * 在这个地图中，我们为提供给subscribe()的每个不同的标识字符串计算订阅数。
-   *
+   * In this map, we count subscriptions for each different identification
+   * string supplied to subscribe().
    */
   mutable std::map<std::string, unsigned int> counter_map;
 
   /**
-   * 在#counter_map中使用的数据类型。
-   *
+   * The data type used in #counter_map.
    */
   using map_value_type = decltype(counter_map)::value_type;
 
   /**
-   * 在#counter_map中使用的迭代器类型。
-   *
+   * The iterator type used in #counter_map.
    */
   using map_iterator = decltype(counter_map)::iterator;
 
   /**
-   * 在这个向量中，我们在订阅这个类的SmartPointer对象中存储指向有效性bool的指针。
-   *
+   * In this vector, we store pointers to the validity bool in the SmartPointer
+   * objects that subscribe to this class.
    */
   mutable std::vector<std::atomic<bool> *> validity_pointers;
 
   /**
-   * 指向这个对象的typeinfo对象的指针，以后我们可以从中推导出类的名称。因为这个派生类的信息既不能在析构器中获得，也不能在构造器中获得，所以我们在两者之间获得它，并把它存储在这里。
-   *
+   * Pointer to the typeinfo object of this object, from which we can later
+   * deduce the class name. Since this information on the derived class is
+   * neither available in the destructor, nor in the constructor, we obtain it
+   * in between and store it here.
    */
   mutable const std::type_info *object_info;
 
   /**
-   * 检查是否有任何对象订阅了这个对象。如果这个检查通过，那么销毁当前对象是安全的。如果这个检查失败，那么这个函数将中止或向deallog打印错误信息（通过使用AssertNothrow机制），但不会抛出一个异常。
-   * @note
-   * 因为这个函数只是一个一致性检查，所以它在释放模式下没有任何作用。
-   * @note
-   * 如果这个函数在有一个未捕获的异常时被调用，那么，这个函数不是中止，而是向标准错误流打印一个错误信息并返回。
+   * Check that there are no objects subscribing to this object. If this check
+   * passes then it is safe to destroy the current object. It this check fails
+   * then this function will either abort or print an error message to deallog
+   * (by using the AssertNothrow mechanism), but will not throw an exception.
    *
+   * @note Since this function is just a consistency check it does nothing in
+   * release mode.
+   *
+   * @note If this function is called when there is an uncaught exception
+   * then, rather than aborting, this function prints an error message to the
+   * standard error stream and returns.
    */
   void
   check_no_subscribers() const noexcept;
 
   /**
-   * 一个突变器，用于在打印出订阅者列表时确保数据的一致性。
-   *
+   * A mutex used to ensure data consistency when printing out the list
+   * of subscribers.
    */
   static std::mutex mutex;
 };
@@ -298,5 +327,3 @@ Subscriptor::list_subscribers(StreamType &stream) const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

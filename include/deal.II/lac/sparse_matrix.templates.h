@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/sparse_matrix.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -483,12 +484,9 @@ namespace internal
   namespace SparseMatrixImplementation
   {
     /**
-     * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * 使用SparseMatrix数据结构执行vmult，但只使用行索引的子区间。
+     * 在顺序的情况下，这个函数被调用到所有的行上，在并行的情况下，它可能被调用到一个子区间，由任务调度员决定。
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector, typename OutVector>
     void
@@ -879,12 +877,9 @@ namespace internal
   namespace SparseMatrixImplementation
   {
     /**
-     * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * 使用SparseMatrix数据结构执行vmult，但只使用子区间的行索引。
+     * 在顺序的情况下，这个函数是在所有行上调用的，在并行的情况下，它可以在一个子区间上调用，由任务调度员决定。
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector>
     typename InVector::value_type
@@ -945,12 +940,9 @@ namespace internal
   namespace SparseMatrixImplementation
   {
     /**
-     * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * 使用SparseMatrix数据结构执行vmult，但只使用子区间的行索引。
+     * 在顺序情况下，这个函数在所有行上调用，在并行情况下，它可以在一个子区间上调用，由任务调度员决定。
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector>
     typename InVector::value_type
@@ -1289,12 +1281,9 @@ namespace internal
   namespace SparseMatrixImplementation
   {
     /**
-     * Perform a vmult using the SparseMatrix data structures, but only using
-     * a subinterval for the row indices.
+     * 使用SparseMatrix数据结构执行vmult，但只使用子区间的行索引。
+     * 在顺序情况下，这个函数在所有行上调用，在并行情况下，它可以在一个子区间上调用，由任务调度员决定。
      *
-     * In the sequential case, this function is called on all rows, in the
-     * parallel case it may be called on a subrange, at the discretion of the
-     * task scheduler.
      */
     template <typename number, typename InVector, typename OutVector>
     typename OutVector::value_type
@@ -2083,3 +2072,5 @@ SparseMatrix<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

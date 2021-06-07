@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/incremental_function_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -37,95 +36,91 @@ class Vector;
 namespace Functions
 {
   /**
-   * 这个类代表一个增量函数。也就是说，给定一个任意的函数
-   * <code>f</code>  ，这个类将返回 <code>f(t)
+   * This class represents an incremental function. That is, given an arbitrary
+   * function <code>f</code>, this class will return
+   * <code>f(t) - f(t - delta_t)</code>, where <code>f(t)</code> denotes the
+   * function evaluated at time <code>t</code> and, likewise, <code>f(t -
+   * delta_t)</code> denotes the function evaluated at time <code>t -
+   * delta_t</code>. The decrement <code>delta_t</code> is set by the method
+   * set_decrement(). The main application of this class is to transform a given
+   * Dirichlet boundary condition function into incremental form, as is
+   * required by some implementations of non-linear solution schemes.
    *
-   * - f(t
-   *
-   * - delta_t)</code>，其中 <code>f(t)</code> 表示在时间 <code>t</code> 评估的函数，同样地，<code>f(t
-   *
-   * -delta_t）</code>表示在时间<code>t
-   *
-   * -delta_t</code>。递减 <code>delta_t</code>
-   * 是由set_decrement()方法设置的。这个类的主要应用是将一个给定的Dirichlet边界条件函数转换成增量形式，这是一些非线性求解方案的实现所要求的。
    * @ingroup functions
-   *
    */
   template <int dim, typename RangeNumberType = double>
   class IncrementalFunction : public Function<dim, RangeNumberType>
   {
   public:
     /**
-     * 将模板参数的值作为一个静态成员常量导出。
-     * 这在模板编程的背景下有时很有用。
-     *
+     * Export the value of the template parameter as a static member constant.
+     * This is sometimes useful in the context of template programming.
      */
     static const unsigned int dimension = dim;
 
     /**
-     * 用于表示时间的标量值实数类型。
-     *
+     * The scalar-valued real type used for representing time.
      */
     using time_type = typename Function<dim, RangeNumberType>::time_type;
 
     /**
-     * 封装给定函数的构造函数  @p base.  。
-     * @note 该类存储了对 @p base
-     * 的非常量引用，并将在评估过程中调用
-     * <code>base.set_time()</code> ，以便在任何任意时间评估 @p
-     * base 类。    保证 @p base
-     * 的时间状态在该类的每个函数评估后返回到其原始设置。
+     * Constructor which wraps a given function @p base.
      *
+     * @note This class stores a non-constant reference to @p base
+     * and will call <code>base.set_time()</code> during evaluation
+     * in order to evaluate the @p base class at any arbitrary time.
+     * It is guaranteed that the temporal state of @p base is returned
+     * to its original settings after each function evaluation in this
+     * class.
      */
     IncrementalFunction(Function<dim, RangeNumberType> &base);
 
     /**
-     * 返回函数在给定点的值。
-     * 除非只有一个分量（即函数是标量的），否则你应该说明你希望被评估的分量。默认情况下，第一个分量的值被计算出来。
+     * Return the value of the function at the given point.
      *
+     * Unless there is only one component (i.e. the function is scalar), you
+     * should state the component you want to have evaluated. By default, the
+     * value of the first component is computed.
      */
     virtual RangeNumberType
     value(const Point<dim> &p, const unsigned int component = 0) const override;
 
     /**
-     * 返回一个矢量值函数在某一点的所有分量。
-     * 在调用这个函数之前，要求 @p values
-     * 向量有正确的大小。
+     * Return all components of a vector-valued function at a given point.
      *
+     * It is required that the @p values vector have the correct size before
+     * this function is called.
      */
     virtual void
     vector_value(const Point<dim> &       p,
                  Vector<RangeNumberType> &values) const override;
 
     /**
-     * 设置时间递减。        希望这个值是正的。
+     * Set the time decrement.
      *
+     * It is expected that this value be positive.
      */
     void
     set_decrement(const time_type delta_t);
 
   private:
     /**
-     * 对被包装的函数的引用。
-     *
+     * A reference to the function being wrapped.
      */
     Function<dim, RangeNumberType> &base;
 
     /**
-     * 时间递减。
-     *
+     * The time decrement.
      */
     time_type delta_t;
 
     /**
-     * 一个用于存储数值的辅助向量。
-     *
+     * An auxiliary vector to store values.
      */
     mutable Vector<RangeNumberType> values_old;
 
     /**
-     * 用于支持多线程背景下的评估的线程互斥。
-     *
+     * Thread mutex for supporting evaluation in multi-threaded contexts.
      */
     mutable Threads::Mutex mutex;
   };
@@ -136,5 +131,3 @@ namespace Functions
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/matrix_free/evaluation_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -26,19 +27,20 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * This class chooses an appropriate evaluation strategy based on the template
- * parameters and the shape_info variable, providing a short-cut to some
- * internal functions.
+ * 这个类根据模板参数和shape_info变量选择合适的评估策略，为一些内部函数提供捷径。
+ *
+ *
  */
 template <int dim, int fe_degree, int n_q_points_1d, typename Number>
 struct SelectEvaluator
 {
   /**
-   * Chooses an appropriate evaluation strategy for the evaluate function, i.e.
-   * this calls internal::FEEvaluationImpl::evaluate(),
-   * internal::FEEvaluationImplCollocation::evaluate() or
-   * internal::FEEvaluationImplTransformToCollocation::evaluate() with
-   * appropriate template parameters.
+   * 为evaluate函数选择合适的评估策略，即这调用
+   * internal::FEEvaluationImpl::evaluate(),
+   * internal::FEEvaluationImplCollocation::evaluate() 或
+   * internal::FEEvaluationImplTransformToCollocation::evaluate()
+   * 的适当模板参数。
+   *
    */
   static void
   evaluate(const unsigned int                     n_components,
@@ -51,11 +53,12 @@ struct SelectEvaluator
            Number *scratch_data);
 
   /**
-   * Chooses an appropriate evaluation strategy for the integrate function, i.e.
-   * this calls internal::FEEvaluationImpl::integrate(),
-   * internal::FEEvaluationImplCollocation::integrate() or
-   * internal::FEEvaluationImplTransformToCollocation::integrate() with
-   * appropriate template parameters.
+   * 为积分函数选择合适的评估策略，即调用
+   * internal::FEEvaluationImpl::integrate(),
+   * internal::FEEvaluationImplCollocation::integrate() 或
+   * internal::FEEvaluationImplTransformToCollocation::integrate()
+   * ，并带有合适的模板参数。
+   *
    */
   static void
   integrate(const unsigned int                     n_components,
@@ -127,3 +130,5 @@ SelectEvaluator<dim, fe_degree, n_q_points_1d, Number>::integrate(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

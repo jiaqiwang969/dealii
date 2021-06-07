@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/polynomials_wedge_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -25,35 +26,32 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * Polynomials defined on wedge entities. This class is basis of
- * FE_WedgeP.
+ * 定义在楔形实体上的多项式。该类是FE_WedgeP的基础。
+ * 多项式是通过一个 BarycentricPolynomials<2>::get_fe_p_basis(degree)
+ * 和一个 BarycentricPolynomials<1>::get_fe_p_basis(degree),
+ * 的张量乘积创建的，但是，为了更好地匹配FiniteElement的定义，重新进行了列举。
  *
- * The polynomials are created via a tensor product of a
- * BarycentricPolynomials<2>::get_fe_p_basis(degree) and a
- * BarycentricPolynomials<1>::get_fe_p_basis(degree), however, are
- * re-numerated to better match the definition of FiniteElement.
+ *
  */
 template <int dim>
 class ScalarLagrangePolynomialWedge : public ScalarPolynomialsBase<dim>
 {
 public:
   /**
-   * Make the dimension available to the outside.
+   * 使得该维度对外部可用。
+   *
    */
   static const unsigned int dimension = dim;
 
-  /*
-   * Constructor taking the polynomial @p degree as input.
-   *
-   * @note Currently, only linear (degree=1) and quadratic polynomials
-   *   (degree=2) are implemented.
-   */
+  /* 构造函数将多项式 @p degree 作为输入。   
+*  @note  目前，只实现了线性（度数=1）和二次多项式（度数=2）。 
+* */
   ScalarLagrangePolynomialWedge(const unsigned int degree);
 
   /**
-   * @copydoc ScalarPolynomialsBase::evaluate()
+   * @copydoc   ScalarPolynomialsBase::evaluate() .
+   * @note  目前，只有向量 @p values 和 @p grads 被填充。
    *
-   * @note Currently, only the vectors @p values and @p grads are filled.
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -67,9 +65,9 @@ public:
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_derivative() 。
+   * @note  目前，只对一阶导数实现。
    *
-   * @note Currently, only implemented for first derivative.
    */
   template <int order>
   Tensor<order, dim>
@@ -80,44 +78,45 @@ public:
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_2nd_derivative()
+   * @note  还没有实现。
    *
-   * @note Not implemented yet.
    */
   Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_3rd_derivative()
+   * @note  还没有实施。
    *
-   * @note Not implemented yet.
    */
   Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
+   * @copydoc   ScalarPolynomialsBase::compute_4th_derivative()
+   * ScalarPolynomialsBase::compute_4th_derivative() 。
+   * @note  还没有实施。
    *
-   * @note Not implemented yet.
    */
   Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_grad()
+   * @copydoc   ScalarPolynomialsBase::compute_grad() .
+   * @note  还没有实施。
    *
-   * @note Not implemented yet.
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc ScalarPolynomialsBase::compute_grad_grad()
+   * @copydoc   ScalarPolynomialsBase::compute_grad_grad() .
+   * @note  还没有实施。
    *
-   * @note Not implemented yet.
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
@@ -130,12 +129,14 @@ public:
 
 private:
   /**
-   * Scalar polynomials defined on a triangle.
+   * 在一个三角形上定义的标量多项式。
+   *
    */
   const BarycentricPolynomials<2> poly_tri;
 
   /**
-   * Scalar polynomials defined on a line.
+   * 在直线上定义的标量多项式。
+   *
    */
   const BarycentricPolynomials<1> poly_line;
 };
@@ -163,3 +164,5 @@ ScalarLagrangePolynomialWedge<dim>::compute_derivative(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

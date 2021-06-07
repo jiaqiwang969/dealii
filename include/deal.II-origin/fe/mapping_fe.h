@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/mapping_fe_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2020 - 2021 by the deal.II authors
@@ -35,36 +34,37 @@
 DEAL_II_NAMESPACE_OPEN
 
 
- /*!@addtogroup mapping */ 
- /*@{*/ 
+/*!@addtogroup mapping */
+/*@{*/
 
 
 /**
- * 这个类在三角形的所有单元上一致使用用户提供的有限元来实现多项式映射。
- * 如果人们用与离散化相同的FiniteElement初始化这个类，就会得到一个等参量映射。
- * 如果用FE_Q(degree)对象来初始化这个类，那么这个类就等同于MappingQGeneric(degree)。请注意，这里没有增加利用有限元的张量结构的优化。
+ * This class consistently uses a user-provided finite element on all cells of a
+ * triangulation to implement a polynomial mapping.
  *
+ * If one initializes this class with the same FiniteElement as the
+ * discretization, one obtains an iso-parametric mapping.
  *
- * @note  目前，只对张量程度==1和n_components==1的元素实现。
+ * If one initializes this class with an FE_Q(degree) object, then this class is
+ * equivalent to MappingQGeneric(degree). Please note that no optimizations
+ * exploiting tensor-product structures of finite elements have been added here.
  *
+ * @note Currently, only implemented for elements with tensor_degree==1 and
+ *   n_components==1.
  *
  * @ingroup simplex
- *
- *
  */
 template <int dim, int spacedim = dim>
 class MappingFE : public Mapping<dim, spacedim>
 {
 public:
   /**
-   * 构建器。
-   *
+   * Constructor.
    */
   explicit MappingFE(const FiniteElement<dim, spacedim> &fe);
 
   /**
-   * 复制构造函数。
-   *
+   * Copy constructor.
    */
   MappingFE(const MappingFE<dim, spacedim> &mapping);
 
@@ -73,8 +73,8 @@ public:
   clone() const override;
 
   /**
-   * 返回映射的程度，即传递给构造函数的有限元的程度。
-   *
+   * Return the degree of the mapping, i.e., the degree of the finite element
+   * which was passed to the constructor.
    */
   unsigned int
   get_degree() const;
@@ -89,16 +89,15 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const override;
 
   /**
-   * 总是返回 @p true
-   * ，因为这个类中的函数的默认实现保留了顶点位置。
-   *
+   * Always returns @p true because the default implementation of functions in
+   * this class preserves vertex locations.
    */
   virtual bool
   preserves_vertex_locations() const override;
 
   /**
-   * @name  参考单元和实数单元之间的映射点 @{  。
-   *
+   * @name Mapping points between reference and real cells
+   * @{
    */
 
   // for documentation, see the Mapping base class
@@ -115,12 +114,11 @@ public:
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  将张量从参考坐标转换为实坐标的函数  @{
-   *
+   * @name Functions to transform tensors from reference to real coordinates
+   * @{
    */
 
   // for documentation, see the Mapping base class
@@ -159,34 +157,40 @@ public:
             const ArrayView<Tensor<3, spacedim>> &output) const override;
 
   /**
-   *
+   * @}
    */
 
   /**
-   * @name  与FEValues的接口  @{ .
-   *
+   * @name Interface with FEValues
+   * @{
    */
 
   /**
-   * 多项式映射的内部数据的存储。见 Mapping::InternalDataBase
-   * 的广泛描述。
-   * 对于当前的类，InternalData类存储了对象创建时（在get_data()中）计算一次的数据，以及类希望从调用fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()之间存储的数据，直到以后可能从有限元调用转化()等函数。后一类的成员变量被标记为
-   * "可变"。
+   * Storage for internal data of polynomial mappings. See
+   * Mapping::InternalDataBase for an extensive description.
    *
+   * For the current class, the InternalData class stores data that is
+   * computed once when the object is created (in get_data()) as well as data
+   * the class wants to store from between the call to fill_fe_values(),
+   * fill_fe_face_values(), or fill_fe_subface_values() until possible later
+   * calls from the finite element to functions such as transform(). The
+   * latter class of member variables are marked as 'mutable'.
    */
   class InternalData : public Mapping<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     InternalData(const FiniteElement<dim, spacedim> &fe);
 
     /**
-     * 根据给定的参数，初始化对象中与单元格数据相关的成员变量。
-     * 该函数还调用compute_shape_function_values()来实际设置与映射形状函数的值和导数相关的成员变量。
+     * Initialize the object's member variables related to cell data based on
+     * the given arguments.
      *
+     * The function also calls compute_shape_function_values() to actually set
+     * the member variables related to the values and derivatives of the
+     * mapping shape functions.
      */
     void
     initialize(const UpdateFlags      update_flags,
@@ -194,8 +198,9 @@ public:
                const unsigned int     n_original_q_points);
 
     /**
-     * 根据给定的参数，初始化对象中与单元格和面的数据有关的成员变量。为了初始化单元格数据，本函数调用initialize()。
-     *
+     * Initialize the object's member variables related to cell and face data
+     * based on the given arguments. In order to initialize cell data, this
+     * function calls initialize().
      */
     void
     initialize_face(const UpdateFlags      update_flags,
@@ -203,199 +208,191 @@ public:
                     const unsigned int     n_original_q_points);
 
     /**
-     * 计算用于映射的形状函数的值和/或导数。
-     *
+     * Compute the values and/or derivatives of the shape functions used for
+     * the mapping.
      */
     void
     compute_shape_function_values(const std::vector<Point<dim>> &unit_points);
 
 
     /**
-     * 正交点的形状函数。形状函数是按张量积顺序排列的，因此必须对顶点重新排序以获得变换。
-     *
+     * Shape function at quadrature point. Shape functions are in tensor
+     * product order, so vertices must be reordered to obtain transformation.
      */
     const double &
     shape(const unsigned int qpoint, const unsigned int shape_nr) const;
 
     /**
-     * 正交点的形状函数。见上文。
-     *
+     * Shape function at quadrature point. See above.
      */
     double &
     shape(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
-     * 形状函数在正交点的梯度。见上文。
-     *
+     * Gradient of shape function in quadrature point. See above.
      */
     const Tensor<1, dim> &
     derivative(const unsigned int qpoint, const unsigned int shape_nr) const;
 
     /**
-     * 形状函数在正交点的梯度。见上文。
-     *
+     * Gradient of shape function in quadrature point. See above.
      */
     Tensor<1, dim> &
     derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
-     * 形状函数在正交点的二阶导数。见上文。
-     *
+     * Second derivative of shape function in quadrature point. See above.
      */
     const Tensor<2, dim> &
     second_derivative(const unsigned int qpoint,
                       const unsigned int shape_nr) const;
 
     /**
-     * 形状函数在正交点的二阶导数。见上文。
-     *
+     * Second derivative of shape function in quadrature point. See above.
      */
     Tensor<2, dim> &
     second_derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
-     * 形状函数在正交点的三次导数。见上文。
-     *
+     * third derivative of shape function in quadrature point. See above.
      */
     const Tensor<3, dim> &
     third_derivative(const unsigned int qpoint,
                      const unsigned int shape_nr) const;
 
     /**
-     * 形状函数在正交点的三阶导数。见上文。
-     *
+     * third derivative of shape function in quadrature point. See above.
      */
     Tensor<3, dim> &
     third_derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
-     * 形状函数在正交点的第四次导数。见上文。
-     *
+     * fourth derivative of shape function in quadrature point. See above.
      */
     const Tensor<4, dim> &
     fourth_derivative(const unsigned int qpoint,
                       const unsigned int shape_nr) const;
 
     /**
-     * 形状函数在正交点的四次导数。见上文。
-     *
+     * fourth derivative of shape function in quadrature point. See above.
      */
     Tensor<4, dim> &
     fourth_derivative(const unsigned int qpoint, const unsigned int shape_nr);
 
     /**
-     * 返回这个对象的内存消耗估计值（以字节为单位）。
-     *
+     * Return an estimate (in bytes) for the memory consumption of this object.
      */
     virtual std::size_t
     memory_consumption() const override;
 
     /**
-     * 形状函数的值。通过函数访问  @p shape.  计算一次。
+     * Values of shape functions. Access by function @p shape.
      *
+     * Computed once.
      */
     std::vector<double> shape_values;
 
     /**
-     * 形状函数导数的值。通过函数访问  @p derivative.
-     * 计算一次。
+     * Values of shape function derivatives. Access by function @p derivative.
      *
+     * Computed once.
      */
     std::vector<Tensor<1, dim>> shape_derivatives;
 
     /**
-     * 形状函数二次导数的值。通过函数 @p
-     * second_derivative访问。        计算一次。
+     * Values of shape function second derivatives. Access by function @p
+     * second_derivative.
      *
+     * Computed once.
      */
     std::vector<Tensor<2, dim>> shape_second_derivatives;
 
     /**
-     * 形状函数第三导数的值。通过函数 @p
-     * second_derivative访问。        计算一次。
+     * Values of shape function third derivatives. Access by function @p
+     * second_derivative.
      *
+     * Computed once.
      */
     std::vector<Tensor<3, dim>> shape_third_derivatives;
 
     /**
-     * 形状函数第四导数的值。通过函数 @p
-     * second_derivative访问。        计算一次。
+     * Values of shape function fourth derivatives. Access by function @p
+     * second_derivative.
      *
+     * Computed once.
      */
     std::vector<Tensor<4, dim>> shape_fourth_derivatives;
 
     /**
-     * 单位切向量。用于计算边界形式和法向量。
-     * 填充一次。
+     * Unit tangential vectors. Used for the computation of boundary forms and
+     * normal vectors.
      *
+     * Filled once.
      */
     std::array<std::vector<Tensor<1, dim>>,
                GeometryInfo<dim>::faces_per_cell *(dim - 1)>
       unit_tangentials;
 
     /**
-     * 底层有限元。
-     *
+     * Underlying finite element.
      */
     const FiniteElement<dim, spacedim> &fe;
 
     /**
-     * 映射的多项式程度。
-     *
+     * The polynomial degree of the mapping.
      */
     const unsigned int polynomial_degree;
 
     /**
-     * 形状函数的数量。
-     *
+     * Number of shape functions.
      */
     const unsigned int n_shape_functions;
 
     /**
-     * 每个正交点上的协方变换的张量。
-     * 存储的矩阵是Jacobian G^{-1}，其中G = Jacobian^{t}
-     * Jacobian，是地图的第一基本形式；如果dim=spacedim，则还原为Jacobian矩阵的转置，其本身被存储在该结构的
-     * @p contravariant 域中。        在每个单元格上计算。
+     * Tensors of covariant transformation at each of the quadrature points.
+     * The matrix stored is the Jacobian * G^{-1}, where G = Jacobian^{t} *
+     * Jacobian, is the first fundamental form of the map; if dim=spacedim
+     * then it reduces to the transpose of the inverse of the Jacobian matrix,
+     * which itself is stored in the @p contravariant field of this structure.
      *
+     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> covariant;
 
     /**
-     * 每个正交点上的禁忌变换的张量。不变矩阵是变换的雅各布系数，即
-     * $J_{ij}=dx_i/d\hat x_j$  。        在每个单元上计算。
+     * Tensors of contravariant transformation at each of the quadrature
+     * points. The contravariant matrix is the Jacobian of the transformation,
+     * i.e. $J_{ij}=dx_i/d\hat x_j$.
      *
+     * Computed on each cell.
      */
     mutable std::vector<DerivativeForm<1, dim, spacedim>> contravariant;
 
     /**
-     * 供内部使用的辅助向量。
-     *
+     * Auxiliary vectors for internal use.
      */
     mutable std::vector<std::vector<Tensor<1, spacedim>>> aux;
 
     /**
-     * 在  @p
-     * cell_of_current_support_points上存储映射形状函数的支持点。
-     *
+     * Stores the support points of the mapping shape functions on the @p
+     * cell_of_current_support_points.
      */
     mutable std::vector<Point<spacedim>> mapping_support_points;
 
     /**
-     * 存储 @p mapping_support_points 的单元格。
-     *
+     * Stores the cell of which the @p mapping_support_points are stored.
      */
     mutable typename Triangulation<dim, spacedim>::cell_iterator
       cell_of_current_support_points;
 
     /**
-     * 每个正交点中的雅各布系数的行列式。如果#update_volume_elements就会被填满。
-     *
+     * The determinant of the Jacobian in each quadrature point. Filled if
+     * #update_volume_elements.
      */
     mutable std::vector<double> volume_elements;
 
     /**
-     * 投射的正交权重。
-     *
+     * Projected quadrature weights.
      */
     mutable std::vector<double> quadrature_weights;
   };
@@ -456,21 +453,19 @@ public:
 
   /**
    * @}
-   *
    */
 
 protected:
   const std::unique_ptr<FiniteElement<dim, spacedim>> fe;
 
   /**
-   * 用作单元格映射的形状函数的多项式的程度。
-   *
+   * The degree of the polynomials used as shape functions for the mapping of
+   * cells.
    */
   const unsigned int polynomial_degree;
 
   /**
-   * 返回映射的支持点的位置。
-   *
+   * Return the locations of support points for the mapping.
    */
   virtual std::vector<Point<spacedim>>
   compute_mapping_support_points(
@@ -482,9 +477,9 @@ private:
 
 
 
- /*@}*/ 
+/*@}*/
 
- /*----------------------------------------------------------------------*/ 
+/*----------------------------------------------------------------------*/
 
 #ifndef DOXYGEN
 
@@ -616,11 +611,9 @@ MappingFE<dim, spacedim>::preserves_vertex_locations() const
 
 #endif // DOXYGEN
 
- /* -------------- declaration of explicit specializations ------------- */ 
+/* -------------- declaration of explicit specializations ------------- */
 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

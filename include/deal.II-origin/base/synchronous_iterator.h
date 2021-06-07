@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/synchronous_iterator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
@@ -28,47 +27,48 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 一个表示一组迭代器的类，每个迭代器都同时递增一个。这通常用于像
- * <code>std::transform(a.begin(), a.end(), b.begin(), functor);</code>
- * 这样的调用，我们有同步的迭代器在容器中行进
- * <code>a,b</code>
- * 。如果这种类型的对象代表一个范围的结束，只有第一个元素被考虑（我们只有
- * <code>a.end()</code>  ，没有  <code>b.end()</code>  ）。在  step-35
- * 中给出了一个关于如何使用这个类的例子。
- * 当前类的模板参数应是 <code>std::tuple</code>
- * 类型，参数等于迭代器类型。 可以使用
- * <code>std::get<X>(synchronous_iterator.iterators)</code>
- * 访问各个迭代器，其中X是对应于所需迭代器的数字。
- * 这个类型，以及与之相关的辅助函数，被用作Threading
- * Building Blocks的blocked_range类型的Value概念。
+ * A class that represents a set of iterators each of which are incremented by
+ * one at the same time. This is typically used in calls like
+ * <code>std::transform(a.begin(), a.end(), b.begin(), functor);</code> where
+ * we have synchronous iterators marching through the containers
+ * <code>a,b</code>. If an object of this type represents the end of a range,
+ * only the first element is considered (we only have <code>a.end()</code>,
+ * not <code>b.end()</code>). An example of how this class is used is given
+ * in step-35.
  *
+ * The template argument of the current class shall be of type
+ * <code>std::tuple</code> with arguments equal to the iterator types.
  *
+ * The individual iterators can be accessed using
+ * <code>std::get<X>(synchronous_iterator.iterators)</code> where X is
+ * the number corresponding to the desired iterator.
+ *
+ * This type, and the helper functions associated with it, are used as the
+ * Value concept for the blocked_range type of the Threading Building Blocks.
  */
 template <typename Iterators>
 struct SynchronousIterators
 {
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   SynchronousIterators(const Iterators &i);
 
   /**
-   * 解除引用常量操作符。返回一个对当前类所代表的迭代器的常量引用。
-   *
+   * Dereference const operator. Returns a const reference to the iterators
+   * represented by the current class.
    */
   const Iterators &operator*() const;
 
   /**
-   * 解除引用操作符。返回一个对当前类所代表的迭代器的引用。
-   *
+   * Dereference operator. Returns a reference to the iterators
+   * represented by the current class.
    */
   Iterators &operator*();
 
 private:
   /**
-   * 当前类所代表的迭代器的存储。
-   *
+   * Storage for the iterators represented by the current class.
    */
   Iterators iterators;
 };
@@ -99,10 +99,12 @@ inline Iterators &SynchronousIterators<Iterators>::operator*()
 
 
 /**
- * 返回第一个参数的第一个元素是否小于第二个参数的第一个元素。由于被比较的对象同时前进所有的元素，所以比较第一个元素就足够了。
- * @relatesalso  SynchronousIterators
+ * Return whether the first element of the first argument is less than the
+ * first element of the second argument. Since the objects compared march
+ * forward all elements at the same time, comparing the first element is
+ * sufficient.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename Iterators>
 inline bool
@@ -115,10 +117,11 @@ operator<(const SynchronousIterators<Iterators> &a,
 
 
 /**
- * 返回第一个和第二个参数之间的距离。由于被比较的对象在同一时间向前推进所有的元素，所以对第一个元素进行差分就足够了。
- * @relatesalso  SynchronousIterators
+ * Return the distance between the first and the second argument. Since the
+ * objects compared march forward all elements at the same time, differencing
+ * the first element is sufficient.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename Iterators>
 inline std::size_t
@@ -132,10 +135,9 @@ operator-(const SynchronousIterators<Iterators> &a,
 
 
 /**
- * 通过 $n$ 推进一个迭代器的元组。
- * @relatesalso  SynchronousIterators
+ * Advance a tuple of iterators by $n$.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename I1, typename I2>
 inline void
@@ -146,10 +148,9 @@ advance(std::tuple<I1, I2> &t, const unsigned int n)
 }
 
 /**
- * 以 $n$ 推进一个迭代器的元组。
- * @relatesalso  SynchronousIterators
+ * Advance a tuple of iterators by $n$.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename I1, typename I2, typename I3>
 inline void
@@ -161,10 +162,9 @@ advance(std::tuple<I1, I2, I3> &t, const unsigned int n)
 }
 
 /**
- * 以 $n$ 推进一个迭代器的元组。
- * @relatesalso  SynchronousIterators
+ * Advance a tuple of iterators by $n$.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename I1, typename I2, typename I3, typename I4>
 inline void
@@ -179,10 +179,9 @@ advance(std::tuple<I1, I2, I3, I4> &t, const unsigned int n)
 
 
 /**
- * 将一个迭代器的元组提前1。
- * @relatesalso  SynchronousIterators
+ * Advance a tuple of iterators by 1.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename I1, typename I2>
 inline void
@@ -193,10 +192,9 @@ advance_by_one(std::tuple<I1, I2> &t)
 }
 
 /**
- * 将一个迭代器的元组前进1。
- * @relatesalso  SynchronousIterators
+ * Advance a tuple of iterators by 1.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename I1, typename I2, typename I3>
 inline void
@@ -208,10 +206,9 @@ advance_by_one(std::tuple<I1, I2, I3> &t)
 }
 
 /**
- * 将一个迭代器的元组推进1。
- * @relatesalso  SynchronousIterators
+ * Advance a tuple of iterators by 1.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename I1, typename I2, typename I3, typename I4>
 inline void
@@ -226,10 +223,9 @@ advance_by_one(std::tuple<I1, I2, I3, I4> &t)
 
 
 /**
- * 将这个迭代器的元素向前推进  $n$  。
- * @relatesalso  SynchronousIterators
+ * Advance the elements of this iterator by $n$.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename Iterators>
 inline SynchronousIterators<Iterators>
@@ -241,10 +237,9 @@ operator+(const SynchronousIterators<Iterators> &a, const std::size_t n)
 }
 
 /**
- * 将这个迭代器的元素前进1。
- * @relatesalso  SynchronousIterators
+ * Advance the elements of this iterator by 1.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename Iterators>
 inline SynchronousIterators<Iterators>
@@ -256,10 +251,10 @@ operator++(SynchronousIterators<Iterators> &a)
 
 
 /**
- * 比较同步迭代器的不平等。因为它们是同步进行的，所以只比较第一个元素就可以了。
- * @relatesalso  SynchronousIterators
+ * Compare synch iterators for inequality. Since they march in synch,
+ * comparing only the first element is sufficient.
  *
- *
+ * @relatesalso SynchronousIterators
  */
 template <typename Iterators>
 inline bool
@@ -272,5 +267,3 @@ operator!=(const SynchronousIterators<Iterators> &a,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

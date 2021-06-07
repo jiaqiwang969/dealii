@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/scalapack_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -36,58 +37,44 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A wrapper class around ScaLAPACK parallel dense linear algebra.
- *
- * ScaLAPACK assumes that matrices are distributed according to the
- * block-cyclic decomposition scheme. An $M$ by $N$ matrix is first decomposed
- * into $\lceil M / MB \rceil$ by $\lceil N / NB \rceil$ blocks which are then
- * uniformly distributed across the 2D process grid with $p q \le Np$ processes,
- * where $p,q$ are grid dimensions and $Np$ is the total number of processes.
- * The parameters MB and NB are referred to as row and column block size and
- * determine the granularity of the block-cyclic distribution.
- *
- * In the following the block-cyclic distribution of a $10 \times 9$ matrix
- * onto a $3\times 3$ Cartesian process grid with block sizes
- * $\text{MB}=\text{NB}=2$ is displayed.
- *
- * \htmlonly <style>div.image
- * img[src="scalapack_block_cycling.png"]{width:35%;}</style>
- * \endhtmlonly
- * @image html scalapack_block_cycling.png "Block-Cyclic Distribution"
- *
- * Note that the odd number of columns of the local matrices owned by the
- * processes P2, P5 and P8 accounts for $N=9$ not being an integral multiple of
- * $\text{NB}=2$.
- *
- * The choice of the block sizes is a compromise between a sufficiently large
- * size for efficient local/serial BLAS, but one that is also small enough to
- * achieve good parallel load balance.
- *
- * Below we show a strong scaling example of ScaLAPACKMatrix::invert()
- * on up to 5 nodes each composed of two Intel Xeon 2660v2 IvyBridge sockets
- * 2.20GHz, 10 cores/socket. Calculations are performed on square processor
- * grids 1x1, 2x2, 3x3, 4x4, 5x5, 6x6, 7x7, 8x8, 9x9, 10x10.
- *
- * @image html scalapack_invert.png
- *
+ * 一个围绕ScaLAPACK并行密集线性代数的封装类。
+ * ScaLAPACK假设矩阵是按照块-循环分解方案来分布的。一个
+ * $M$ 乘以 $N$ 的矩阵首先被分解成 $\lceil M / MB \rceil$ 乘以
+ * $\lceil N / NB \rceil$ 的块，然后均匀地分布在具有 $p q \le Np$
+ * 进程的二维进程网格上，其中 $p,q$ 是网格尺寸， $Np$
+ * 是进程的总数。参数MB和NB被称为行和列块大小，决定了块-循环分布的颗粒度。
+ * 下面显示了 $10 \times 9$ 矩阵在 $3\times 3$
+ * 笛卡尔进程网格上的块-循环分布，块大小为
+ * $\text{MB}=\text{NB}=2$ 。
+*\htmlonly <style>div.image img[src="scalapack_block_cycling.png"]{width:35%;}</style>\endhtmlonly  @image html scalapack_block_cycling.png "Block-Cyclic Distribution"
+ * 请注意，进程P2、P5和P8所拥有的本地矩阵的列数为奇数，这说明
+ * $N=9$ 不是 $\text{NB}=2$ 的整数倍。
+ * 块大小的选择是一个折中，既要有足够大的大小来实现高效的本地/串行BLAS，又要有足够小的大小来实现良好的并行负载平衡。
+ * 下面我们展示了 ScaLAPACKMatrix::invert()
+ * 在多达5个节点上的强扩展实例，每个节点由两个英特尔至强2660v2
+ * IvyBridge插座2.20GHz，10个核心/插座组成。计算在方形处理器网格1x1,
+ * 2x2, 3x3, 4x4, 5x5, 6x6, 7x7, 8x8, 9x9, 10x10进行。
+*  @image html scalapack_invert.png
  * @ingroup Matrix1
+ *
+ *
  */
 template <typename NumberType>
 class ScaLAPACKMatrix : protected TransposeTable<NumberType>
 {
 public:
   /**
-   * Declare the type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = unsigned int;
 
   /**
-   * Constructor for a rectangular matrix with @p n_rows and @p n_cols
-   * and distributed using the grid @p process_grid.
+   * 矩形矩阵的构造函数，具有 @p n_rows 和 @p n_cols
+   * 并使用网格 @p process_grid. 分布。参数 @p row_block_size 和 @p
+   * column_block_size 是用于矩阵的块循环分布的块大小。
+   * 一般来说，建议使用 $2$ 的幂，例如 $16,32,64, \dots$  。
    *
-   * The parameters @p row_block_size and @p column_block_size are the block sizes used
-   * for the block-cyclic distribution of the matrix.
-   * In general, it is recommended to use powers of $2$, e.g. $16,32,64, \dots$.
    */
   ScaLAPACKMatrix(
     const size_type                                           n_rows,
@@ -98,12 +85,11 @@ public:
     const LAPACKSupport::Property property = LAPACKSupport::Property::general);
 
   /**
-   * Constructor for a square matrix of size @p size, and distributed
-   * using the process grid in @p process_grid.
+   * 一个大小为 @p size, 的正方形矩阵的构造函数，使用 @p
+   * process_grid. 中的过程网格进行分布。
+   * 矩阵的行和列使用相同的块大小。
+   * 一般来说，建议使用 $2$ 的幂，例如 $16,32,64, \dots$  。
    *
-   * The parameter @p block_size is used for the block-cyclic distribution of the matrix.
-   * An identical block size is used for the rows and columns of the matrix.
-   * In general, it is recommended to use powers of $2$, e.g. $16,32,64, \dots$.
    */
   ScaLAPACKMatrix(
     const size_type                                           size,
@@ -113,16 +99,14 @@ public:
       LAPACKSupport::Property::symmetric);
 
   /**
-   * Constructor for a general rectangular matrix that is read from
-   * the file @p filename and distributed using the grid @p process_grid.
+   * 一般矩形矩阵的构造函数，从文件 @p filename
+   * 中读取并使用网格 @p process_grid. 分布。 使用HDF5从文件
+   * @p filename 加载矩阵。
+   * 如果在建立deal.II时没有使用HDF5，调用这个函数将导致一个异常。
+   * 参数 @p row_block_size 和 @p column_block_size
+   * 是用于矩阵的块循环分布的块大小。
+   * 一般来说，建议使用 $2$ 的幂，例如 $16,32,64, \dots$  。
    *
-   * Loads the matrix from file @p filename using HDF5.
-   * In case that deal.II was built without HDF5
-   * a call to this function will cause an exception to be thrown.
-   *
-   * The parameters @p row_block_size and @p column_block_size are the block sizes used
-   * for the block-cyclic distribution of the matrix.
-   * In general, it is recommended to use powers of $2$, e.g. $16,32,64, \dots$.
    */
   ScaLAPACKMatrix(
     const std::string &                                       filename,
@@ -131,17 +115,17 @@ public:
     const size_type column_block_size = 32);
 
   /**
-   * Destructor
+   * 破坏器
+   *
    */
   ~ScaLAPACKMatrix() override = default;
 
   /**
-   * Initialize the rectangular matrix with @p n_rows and @p n_cols
-   * and distributed using the grid @p process_grid.
+   * 用 @p n_rows 和 @p n_cols 初始化矩形矩阵，并使用网格 @p
+   * process_grid. 分布。参数 @p row_block_size 和 @p column_block_size
+   * 是用于矩阵的块循环分布的块大小。
+   * 一般来说，建议使用 $2$ 的幂，例如 $16,32,64, \dots$  。
    *
-   * The parameters @p row_block_size and @p column_block_size are the block sizes used
-   * for the block-cyclic distribution of the matrix.
-   * In general, it is recommended to use powers of $2$, e.g. $16,32,64, \dots$.
    */
   void
   reinit(
@@ -153,11 +137,12 @@ public:
     const LAPACKSupport::Property property = LAPACKSupport::Property::general);
 
   /**
-   * Initialize the square matrix of size @p size and distributed using the grid @p process_grid.
+   * 初始化大小为 @p size 的正方形矩阵，并使用网格 @p
+   * process_grid. 进行分布。参数 @p block_size
+   * 用于矩阵的块循环分布。
+   * 矩阵的行和列使用相同的块大小。
+   * 一般来说，建议使用 $2$ 的幂，例如 $16,32,64, \dots$  。
    *
-   * The parameter @p block_size is used for the block-cyclic distribution of the matrix.
-   * An identical block size is used for the rows and columns of the matrix.
-   * In general, it is recommended to use powers of $2$, e.g. $16,32,64, \dots$.
    */
   void
   reinit(const size_type                                           size,
@@ -167,97 +152,102 @@ public:
            LAPACKSupport::Property::symmetric);
 
   /**
-   * Assign @p property to this matrix.
+   * 将 @p property 分配给这个矩阵。
+   *
    */
   void
   set_property(const LAPACKSupport::Property property);
 
   /**
-   * Return current @p property of this matrix
+   * 返回该矩阵的当前 @p property 。
+   *
    */
   LAPACKSupport::Property
   get_property() const;
 
   /**
-   * Return current @p state of this matrix
+   * 返回此矩阵的当前 @p state 。
+   *
    */
   LAPACKSupport::State
   get_state() const;
 
   /**
-   * Assignment operator from a regular FullMatrix.
+   * 来自普通FullMatrix的赋值操作。
+   * @note
+   * 这个函数应该只用于相对较小的矩阵尺寸。它主要是为了调试的目的。
    *
-   * @note This function should only be used for relatively small matrix
-   * dimensions. It is primarily intended for debugging purposes.
    */
   ScaLAPACKMatrix<NumberType> &
   operator=(const FullMatrix<NumberType> &);
 
   /**
-   * Copies the content of the locally owned @p matrix to the distributed matrix.
-   * The distributed matrix and @p matrix on process @p rank must have matching dimensions.
+   * 将本地拥有的 @p matrix 的内容复制到分布式矩阵中。
+   * 分布式矩阵和进程 @p rank 上的 @p matrix
+   * 必须有匹配的尺寸。
+   * 对于所有进程来说，除了具有等级 @p rank 的进程，序列
+   * @p matrix 不被引用。  用户必须确保所有进程都以相同的
+   * @p rank. 来调用。 @p rank
+   * 是指用于创建分布式矩阵的进程网格的MPI通信器的一个进程。
    *
-   * For all processes except the process with rank @p rank the serial @p matrix is not referenced.
-   * The user has to ensure that all processes call this with identical @p rank.
-   * The @p rank refers to a process of the MPI communicator used to create the process grid
-   * of the distributed matrix.
    */
   void
   copy_from(const LAPACKFullMatrix<NumberType> &matrix,
             const unsigned int                  rank);
 
   /**
-   * Copy the contents of the distributed matrix into @p matrix.
+   * 将分布式矩阵的内容复制到 @p matrix. 中。
+   * @note
+   * 这个函数应该只用于相对较小的矩阵尺寸。它主要是为了调试的目的。
    *
-   * @note This function should only be used for relatively small matrix
-   * dimensions. It is primarily intended for debugging purposes.
    */
   void
   copy_to(FullMatrix<NumberType> &matrix) const;
 
   /**
-   * Copies the content of the distributed matrix into the locally replicated @p matrix
-   * on the process with rank @p rank. For all processes except @p rank @p matrix is not referenced.
-   * The distributed matrix and @p matrix on the process @p rank must have matching dimensions.
+   * 将分布式矩阵的内容复制到本地复制的 @p matrix
+   * 上，该进程的等级为 @p rank.  对于除 @p rank
+   * 外的所有进程， @p matrix 不被引用。  分布式矩阵和进程
+   * @p rank 上的 @p matrix 必须有匹配的尺寸。
+   * 用户必须确保所有进程都以相同的 @p rank. 来调用。 @p
+   * rank
+   * 是指用于创建分布式矩阵的进程网格的MPI通信器的一个进程。
    *
-   * The user has to ensure that all processes call this with identical @p rank.
-   * The @p rank refers to a process of the MPI communicator used to create the process grid
-   * of the distributed matrix.
    */
   void
   copy_to(LAPACKFullMatrix<NumberType> &matrix, const unsigned int rank) const;
 
   /**
-   * Copy the contents of the distributed matrix into a differently distributed matrix @p dest.
-   * The function also works for matrices with different process grids
-   * or block-cyclic distributions.
+   * 将分布式矩阵的内容复制到不同的分布式矩阵中  @p dest.
+   * 该函数也适用于具有不同进程网格或块循环分布的矩阵。
+   *
    */
   void
   copy_to(ScaLAPACKMatrix<NumberType> &dest) const;
 
   /**
-   * Copy a submatrix (subset) of the distributed matrix A to a submatrix of the distributed matrix @p B.
-   *
-   * - The global row and column index of the first element of the submatrix A is provided by @p offset_A
-   *   with row index=<code>offset_A.first</code> and column
-   * index=<code>offset_A.second</code>.
-   *
-   * - The global row and column index of the first element of the submatrix B is provided by @p offset_B
-   *   with row index=<code>offset_B.first</code> and column
-   * index=<code>offset_B.second</code>.
-   *
-   * - The dimension of the submatrix to be copied is given by @p submatrix_size
-   *   with number of rows=<code>submatrix_size.first</code> and number of
-   * columns=<code>submatrix_size.second</code>.
+   * 将分布式矩阵A的一个子矩阵（子集）复制到分布式矩阵的一个子矩阵
+   * @p B.  。
    *
    *
-   * If it is necessary to copy complete matrices with an identical block-cyclic
-   * distribution, use
-   * ScaLAPACKMatrix<NumberType>::copy_to(ScaLAPACKMatrix<NumberType> &dest)
-   * with only one argument to avoid communication.
    *
-   * The underlying process grids of the matrices @p A and @p B must have been built
-   * with the same MPI communicator.
+   *
+   *
+   * - 子矩阵A的第一个元素的全局行和列索引由 @p offset_A 提供，行索引=  <code>offset_A.first</code>  ，列索引=  <code>offset_A.second</code>  。
+   *
+   *
+   *
+   *
+   *
+   * - 子矩阵B的第一个元素的全局行和列索引由 @p offset_B 提供，行索引=  <code>offset_B.first</code>  ，列索引=  <code>offset_B.second</code>  。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 要复制的子矩阵的尺寸由 @p submatrix_size 给出，行数=  <code>submatrix_size.first</code>  ，列数=  <code>submatrix_size.second</code>  。      如果需要复制具有相同块状循环分布的完整矩阵，请使用  ScaLAPACKMatrix<NumberType>::copy_to(ScaLAPACKMatrix<NumberType>  &dest），只需一个参数，以避免通信。    矩阵 @p A 和 @p B 的底层进程网格必须是用同一个MPI通信器建立的。
+   *
    */
   void
   copy_to(ScaLAPACKMatrix<NumberType> &                B,
@@ -266,26 +256,17 @@ public:
           const std::pair<unsigned int, unsigned int> &submatrix_size) const;
 
   /**
-   * Transposing assignment: $\mathbf{A} = \mathbf{B}^T$
+   * 转置赋值。  $\mathbf{A} = \mathbf{B}^T$  矩阵 $\mathbf{A}$ 和
+   * $\mathbf{B}$ 必须具有相同的进程网格。
+   * 必须满足以下对齐条件。  $MB_A=NB_B$  和  $NB_A=MB_B$  .
    *
-   * The matrices $\mathbf{A}$ and $\mathbf{B}$ must have the same process grid.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=NB_B$ and
-   * $NB_A=MB_B$.
    */
   void
   copy_transposed(const ScaLAPACKMatrix<NumberType> &B);
 
   /**
-   * The operations based on the input parameter @p transpose_B and the
-   * alignment conditions are summarized in the following table:
+   * 基于输入参数 @p transpose_B 和对齐条件的操作在下表中进行了总结。    | transpose_B | 块大小 | 操作 | :---------: | :--------------------------: | :-------------------------------------------: | false |  $MB_A=MB_B$   <br>   $NB_A=NB_B$  |  $\mathbf{A} = a \mathbf{A} + b \mathbf{B}$  | | true |  $MB_A=NB_B$   <br>   $NB_A=MB_B$  |  $\mathbf{A} = a \mathbf{A} + b \mathbf{B}^T$  | 矩阵 $\mathbf{A}$  和 $\mathbf{B}$  必须具有相同的过程网格。
    *
-   * | transpose_B |          Block Sizes         |                    Operation                  |
-   * | :---------: | :--------------------------: | :-------------------------------------------: |
-   * |   false     | $MB_A=MB_B$ <br> $NB_A=NB_B$ |  $\mathbf{A} = a \mathbf{A} + b \mathbf{B}$   |
-   * |   true      | $MB_A=NB_B$ <br> $NB_A=MB_B$ | $\mathbf{A} = a \mathbf{A} + b \mathbf{B}^T$  |
-   *
-   * The matrices $\mathbf{A}$ and $\mathbf{B}$ must have the same process grid.
    */
   void
   add(const ScaLAPACKMatrix<NumberType> &B,
@@ -294,48 +275,26 @@ public:
       const bool                         transpose_B = false);
 
   /**
-   * Matrix-addition:
-   * $\mathbf{A} = \mathbf{A} + b\, \mathbf{B}$
+   * 矩阵-加法。    $\mathbf{A} = \mathbf{A} + b\, \mathbf{B}$  矩阵
+   * $\mathbf{A}$ 和 $\mathbf{B}$ 必须有相同的过程网格。
+   * 必须满足以下对齐条件。  $MB_A=MB_B$  和  $NB_A=NB_B$  .
    *
-   * The matrices $\mathbf{A}$ and $\mathbf{B}$ must have the same process grid.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=MB_B$ and
-   * $NB_A=NB_B$.
    */
   void
   add(const NumberType b, const ScaLAPACKMatrix<NumberType> &B);
 
   /**
-   * Matrix-addition:
-   * $\mathbf{A} = \mathbf{A} + b\, \mathbf{B}^T$
+   * 矩阵-加法。    $\mathbf{A} = \mathbf{A} + b\, \mathbf{B}^T$  矩阵
+   * $\mathbf{A}$ 和 $\mathbf{B}$ 必须具有相同的过程网格。
+   * 必须满足以下对齐条件。  $MB_A=NB_B$  和  $NB_A=MB_B$  。
    *
-   * The matrices $\mathbf{A}$ and $\mathbf{B}$ must have the same process grid.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=NB_B$ and
-   * $NB_A=MB_B$.
    */
   void
   Tadd(const NumberType b, const ScaLAPACKMatrix<NumberType> &B);
 
   /**
-   * Matrix-matrix-multiplication:
+   * 矩阵-矩阵-乘法。    基于输入参数和排列条件的操作总结在下表中。    | 转置_A | 转置_B | 块大小 | 操作 | :---------: | :---------: | :-------------------------------------------: | :-------------------------------------------------------------: | 虚假 | 虚假 |  $MB_A=MB_C$   <br>   $NB_A=MB_B$   <br>   $NB_B=NB_C$  |  $\mathbf{C} = b \mathbf{A} \cdot \mathbf{B} + c \mathbf{C}$  | 虚假 | 真实 |  $MB_A=MB_C$  ]  <br>   $NB_A=NB_B$   <br>   $MB_B=NB_C$  |  $\mathbf{C} = b \mathbf{A} \cdot \mathbf{B}^T + c \mathbf{C}$  | | 真实 | 错误 |  $MB_A=MB_B$   <br>   $NB_A=MB_C$   <br>  ]  $NB_B=NB_C$  |  $\mathbf{C} = b \mathbf{A}^T \cdot \mathbf{B} + c \mathbf{C}$  | | 真 | 真 |  $MB_A=NB_B$   <br>   $NB_A=MB_C$   <br>   $MB_B=NB_C$  |  $\mathbf{C} = b \mathbf{A}^T \cdot \mathbf{B}^T + c \mathbf{C}$  | 假设 $\mathbf{A}$ 和 $\mathbf{B}$ 的大小兼容，并且 $\mathbf{C}$ 已经具有正确大小。    矩阵 $\mathbf{A}$ ， $\mathbf{B}$ 和 $\mathbf{C}$ 必须具有相同的过程网格。
    *
-   * The operations based on the input parameters and the alignment conditions
-   * are summarized in the following table:
-   *
-   * | transpose_A | transpose_B |                  Block Sizes                  |                             Operation                           |
-   * | :---------: | :---------: | :-------------------------------------------: | :-------------------------------------------------------------: |
-   * | false       |   false     | $MB_A=MB_C$ <br> $NB_A=MB_B$ <br> $NB_B=NB_C$ |   $\mathbf{C} = b \mathbf{A} \cdot \mathbf{B} + c \mathbf{C}$   |
-   * | false       |   true      | $MB_A=MB_C$ <br> $NB_A=NB_B$ <br> $MB_B=NB_C$ |  $\mathbf{C} = b \mathbf{A} \cdot \mathbf{B}^T + c \mathbf{C}$  |
-   * | true        |   false     | $MB_A=MB_B$ <br> $NB_A=MB_C$ <br> $NB_B=NB_C$ | $\mathbf{C} = b \mathbf{A}^T \cdot \mathbf{B} + c \mathbf{C}$   |
-   * | true        |   true      | $MB_A=NB_B$ <br> $NB_A=MB_C$ <br> $MB_B=NB_C$ | $\mathbf{C} = b \mathbf{A}^T \cdot \mathbf{B}^T + c \mathbf{C}$ |
-   *
-   * It is assumed that $\mathbf{A}$ and $\mathbf{B}$ have compatible sizes and
-   * that
-   * $\mathbf{C}$ already has the right size.
-   *
-   * The matrices $\mathbf{A}$, $\mathbf{B}$ and $\mathbf{C}$ must have the same
-   * process grid.
    */
   void
   mult(const NumberType                   b,
@@ -346,21 +305,15 @@ public:
        const bool                         transpose_B = false) const;
 
   /**
-   * Matrix-matrix-multiplication.
+   * 矩阵-矩阵-乘法。    可选参数 @p adding
+   * 决定了结果是存储在 $\mathbf{C}$ 中还是添加到 $\mathbf{C}$
+   * 中。 如果（  @p adding)   $\mathbf{C} = \mathbf{C} + \mathbf{A}
+   * \cdot \mathbf{B}$  否则 $\mathbf{C} = \mathbf{A} \cdot \mathbf{B}$
+   * 假设 $\mathbf{A}$ 和 $\mathbf{B}$ 的大小兼容，并且
+   * $\mathbf{C}$ 已经有正确大小。
+   * 必须满足以下对齐条件。  $MB_A=MB_C$  ,  $NB_A=MB_B$  和
+   * $NB_B=NB_C$  。
    *
-   * The optional parameter @p adding determines whether the result is
-   * stored in $\mathbf{C}$ or added to $\mathbf{C}$.
-   *
-   * if (@p adding) $\mathbf{C} = \mathbf{C} + \mathbf{A} \cdot \mathbf{B}$
-   *
-   * else $\mathbf{C} = \mathbf{A} \cdot \mathbf{B}$
-   *
-   * It is assumed that $\mathbf{A}$ and $\mathbf{B}$ have compatible sizes and
-   * that
-   * $\mathbf{C}$ already has the right size.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=MB_C$,
-   * $NB_A=MB_B$ and $NB_B=NB_C$.
    */
   void
   mmult(ScaLAPACKMatrix<NumberType> &      C,
@@ -368,21 +321,15 @@ public:
         const bool                         adding = false) const;
 
   /**
-   * Matrix-matrix-multiplication using transpose of $\mathbf{A}$.
+   * 使用  $\mathbf{A}$  的转置进行矩阵-矩阵-乘法。
+   * 可选参数 @p adding 决定了结果是存储在 $\mathbf{C}$
+   * 中还是添加到 $\mathbf{C}$ 中。 如果（  @p adding)
+   * $\mathbf{C} = \mathbf{C} + \mathbf{A}^T \cdot \mathbf{B}$  否则
+   * $\mathbf{C} = \mathbf{A}^T \cdot \mathbf{B}$  假设 $\mathbf{A}$ 和
+   * $\mathbf{B}$ 的大小兼容，并且 $\mathbf{C}$
+   * 已经具有正确大小。    必须满足以下对齐条件。
+   * $MB_A=MB_B$  ,  $NB_A=MB_C$  和  $NB_B=NB_C$  .
    *
-   * The optional parameter @p adding determines whether the result is
-   * stored in $\mathbf{C}$ or added to $\mathbf{C}$.
-   *
-   * if (@p adding) $\mathbf{C} = \mathbf{C} + \mathbf{A}^T \cdot \mathbf{B}$
-   *
-   * else $\mathbf{C} = \mathbf{A}^T \cdot \mathbf{B}$
-   *
-   * It is assumed that $\mathbf{A}$ and $\mathbf{B}$ have compatible sizes and
-   * that
-   * $\mathbf{C}$ already has the right size.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=MB_B$,
-   * $NB_A=MB_C$ and $NB_B=NB_C$.
    */
   void
   Tmmult(ScaLAPACKMatrix<NumberType> &      C,
@@ -390,21 +337,15 @@ public:
          const bool                         adding = false) const;
 
   /**
-   * Matrix-matrix-multiplication using the transpose of $\mathbf{B}$.
+   * 使用  $\mathbf{B}$  的转置进行矩阵-矩阵-乘法。
+   * 可选参数 @p adding 决定了结果是存储在 $\mathbf{C}$
+   * 中还是添加到 $\mathbf{C}$ 中。 如果（  @p adding)
+   * $\mathbf{C} = \mathbf{C} + \mathbf{A} \cdot \mathbf{B}^T$  否则
+   * $\mathbf{C} = \mathbf{A} \cdot \mathbf{B}^T$  假设 $\mathbf{A}$ 和
+   * $\mathbf{B}$ 的大小兼容，并且 $\mathbf{C}$
+   * 已经具有正确大小。    必须满足以下对齐条件。
+   * $MB_A=MB_C$  ,  $NB_A=NB_B$  和  $MB_B=NB_C$  。
    *
-   * The optional parameter @p adding determines whether the result is
-   * stored in $\mathbf{C}$ or added to $\mathbf{C}$.
-   *
-   * if (@p adding) $\mathbf{C} = \mathbf{C} + \mathbf{A} \cdot \mathbf{B}^T$
-   *
-   * else $\mathbf{C} = \mathbf{A} \cdot \mathbf{B}^T$
-   *
-   * It is assumed that $\mathbf{A}$ and $\mathbf{B}$ have compatible sizes and
-   * that
-   * $\mathbf{C}$ already has the right size.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=MB_C$,
-   * $NB_A=NB_B$ and $MB_B=NB_C$.
    */
   void
   mTmult(ScaLAPACKMatrix<NumberType> &      C,
@@ -412,22 +353,16 @@ public:
          const bool                         adding = false) const;
 
   /**
-   * Matrix-matrix-multiplication using transpose of $\mathbf{A}$ and
-   * $\mathbf{B}$.
+   * 使用  $\mathbf{A}$  和  $\mathbf{B}$
+   * 的转置进行矩阵-矩阵-乘法。    可选参数 @p adding
+   * 决定了结果是存储在 $\mathbf{C}$ 中还是添加到 $\mathbf{C}$
+   * 中。 如果（  @p adding)   $\mathbf{C} = \mathbf{C} + \mathbf{A}^T
+   * \cdot \mathbf{B}^T$  否则 $\mathbf{C} = \mathbf{A}^T \cdot
+   * \mathbf{B}^T$  假设 $\mathbf{A}$ 和 $\mathbf{B}$
+   * 的大小兼容，并且 $\mathbf{C}$ 已经有正确大小。
+   * 必须满足以下对齐条件。  $MB_A=NB_B$  ,  $NB_A=MB_C$  和
+   * $MB_B=NB_C$  。
    *
-   * The optional parameter @p adding determines whether the result is
-   * stored in $\mathbf{C}$ or added to $\mathbf{C}$.
-   *
-   * if (@p adding) $\mathbf{C} = \mathbf{C} + \mathbf{A}^T \cdot \mathbf{B}^T$
-   *
-   * else $\mathbf{C} = \mathbf{A}^T \cdot \mathbf{B}^T$
-   *
-   * It is assumed that $\mathbf{A}$ and $\mathbf{B}$ have compatible sizes and
-   * that
-   * $\mathbf{C}$ already has the right size.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A=NB_B$,
-   * $NB_A=MB_C$ and $MB_B=NB_C$.
    */
   void
   TmTmult(ScaLAPACKMatrix<NumberType> &      C,
@@ -435,24 +370,16 @@ public:
           const bool                         adding = false) const;
 
   /**
-   * Stores the distributed matrix in @p filename using HDF5.
+   * 使用HDF5将分布式矩阵存储在 @p filename 中。
+   * 如果在建立deal.II时没有使用HDF5，调用这个函数将导致一个异常。
+   * 如果HDF5是用MPI构建的，那么将使用并行I/O来保存矩阵。
+   * 否则，只有一个进程会进行输出。这意味着在内部，分布式矩阵被复制到一个进程中，由该进程进行输出。因此，矩阵必须适合一个进程的内存。
+   * 为了调整I/O性能，特别是平行I/O，用户可以定义可选的参数
+   * @p chunk_size.  所有MPI进程都需要以相同的值调用该函数。
+   * 矩阵是分块写入文件的，因此系统的属性决定了最佳的分块大小。在内部，HDF5将矩阵分割成<tt>chunk_size.first</tt>
+   * x
+   * <tt>chunk_size.second</tt>大小的块，其中<tt>chunk_size.first</tt>是一个块的行数，<tt>chunk_size.second</tt>是列的数量。
    *
-   * In case that deal.II was built without HDF5
-   * a call to this function will cause an exception to be thrown.
-   *
-   * If HDF5 was built with MPI, parallel I/O is used to save the matrix.
-   * Otherwise, just one process will do the output. This means that
-   * internally the distributed matrix is copied to one process, which
-   * does the output. Therefore, the matrix has to fit into the memory
-   * of one process.
-   *
-   * To tweak the I/O performance, especially for parallel I/O, the user may define the optional parameter @p chunk_size.
-   * All MPI processes need to call the function with the same value.
-   * The matrix is written in chunks to the file, therefore the properties of
-   * the system define the optimal chunk size. Internally, HDF5 splits the
-   * matrix into <tt>chunk_size.first</tt> x <tt>chunk_size.second</tt> sized
-   * blocks, with <tt>chunk_size.first</tt> being the number of rows of a chunk
-   * and <tt>chunk_size.second</tt> the number of columns.
    */
   void
   save(const std::string &                          filename,
@@ -461,64 +388,58 @@ public:
                         numbers::invalid_unsigned_int)) const;
 
   /**
-   * Loads the distributed matrix from file @p filename using HDF5.
-   * In case that deal.II was built without HDF5
-   * a call to this function will cause an exception to be thrown.
+   * 使用HDF5从文件 @p filename 加载分布式矩阵。
+   * 如果在建立deal.II时没有使用HDF5，调用这个函数将导致一个异常。
+   * 矩阵的尺寸必须与存储在文件中的矩阵相同。
+   * 如果HDF5是用MPI构建的，那么将使用并行I/O来加载矩阵。
+   * 否则，只有一个进程会从存储中加载矩阵，并随后将内容分发给其他进程。
    *
-   * The matrix must have the same dimensions as the matrix stored in the file.
-   *
-   * If HDF5 was build with MPI, parallel I/O is used to load the matrix.
-   * Otherwise, just one process will load the matrix from storage
-   * and distribute the content to the other processes subsequently.
    */
   void
   load(const std::string &filename);
 
   /**
-   * Compute the Cholesky factorization of the matrix using ScaLAPACK
-   * function <code>pXpotrf</code>. The result of the factorization is stored in
-   * this object.
+   * 使用ScaLAPACK函数计算矩阵的Cholesky因子化
+   * <code>pXpotrf</code>
+   * 。因式分解的结果被存储在这个对象中。
+   *
    */
   void
   compute_cholesky_factorization();
 
   /**
-   * Compute the LU factorization of the matrix using ScaLAPACK
-   * function <code>pXgetrf</code> and partial pivoting with row interchanges.
-   * The result of the factorization is stored in this object.
+   * 使用ScaLAPACK函数 <code>pXgetrf</code>
+   * 计算矩阵的LU因式分解，并通过行间交换进行部分透视。
+   * 因式分解的结果被存储在这个对象中。
+   *
    */
   void
   compute_lu_factorization();
 
   /**
-   * Invert the matrix by first computing a Cholesky for symmetric matrices
-   * or a LU factorization for general matrices and then
-   * building the actual inverse using <code>pXpotri</code> or
-   * <code>pXgetri</code>. If the matrix is triangular, the LU factorization
-   * step is skipped, and <code>pXtrtri</code> is used directly.
+   * 通过首先计算对称矩阵的Cholesky或一般矩阵的LU因子化来反转矩阵，然后使用
+   * <code>pXpotri</code>  或  <code>pXgetri</code>
+   * 建立实际的反转。如果矩阵是三角形的，则跳过LU因子化步骤，直接使用
+   * <code>pXtrtri</code> 。
+   * 如果之前已经应用了Cholesky或LU因子化，则直接调用
+   * <code>pXpotri</code> or <code>pXgetri</code> 。
+   * 逆运算被存储在这个对象中。
    *
-   * If a Cholesky or LU factorization has been applied previously,
-   * <code>pXpotri</code> or <code>pXgetri</code> are called directly.
-   *
-   * The inverse is stored in this object.
    */
   void
   invert();
 
   /**
-   * Computing selected eigenvalues and, optionally, the eigenvectors of the
-   * real symmetric matrix $\mathbf{A} \in \mathbb{R}^{M \times M}$.
+   * 计算选定的特征值和可选的实数对称矩阵的特征向量
+   * $\mathbf{A} \in \mathbb{R}^{M \times M}$  。
+   * 特征值/特征向量是通过规定一个指数范围来选择的  @p
+   * index_limits.  如果成功，计算出的特征值将按升序排列。
+   * 特征向量被存储在矩阵的列中，从而覆盖了矩阵的原始内容。
+   * 如果必须计算所有的特征值/特征向量，在 @p index_limits.
+   * 中传递封闭区间 $ \left[ 0, M-1 \right] $ 如果需要 $r$
+   * 最大的特征值/特征向量，则传递封闭区间 $ \left[ M-r, M-1
+   * \right] $ 。
    *
-   * The eigenvalues/eigenvectors are selected by prescribing a range of indices @p index_limits.
-   *
-   * If successful, the computed eigenvalues are arranged in ascending order.
-   * The eigenvectors are stored in the columns of the matrix, thereby
-   * overwriting the original content of the matrix.
-   *
-   * If all eigenvalues/eigenvectors have to be computed, pass the closed interval $ \left[ 0, M-1 \right] $ in @p index_limits.
-   *
-   * Pass the closed interval $ \left[ M-r, M-1 \right] $ if the $r$ largest
-   * eigenvalues/eigenvectors are desired.
    */
   std::vector<NumberType>
   eigenpairs_symmetric_by_index(
@@ -526,12 +447,12 @@ public:
     const bool                                   compute_eigenvectors);
 
   /**
-   * Computing selected eigenvalues and, optionally, the eigenvectors.
-   * The eigenvalues/eigenvectors are selected by prescribing a range of values @p value_limits for the eigenvalues.
+   * 计算选定的特征值，并可选择计算特征向量。
+   * 通过规定特征值的取值范围 @p value_limits
+   * 来选择特征值/特征向量。
+   * 如果成功，计算出的特征值将按升序排列。
+   * 特征向量被存储在矩阵的列中，从而覆盖了矩阵的原始内容。
    *
-   * If successful, the computed eigenvalues are arranged in ascending order.
-   * The eigenvectors are stored in the columns of the matrix, thereby
-   * overwriting the original content of the matrix.
    */
   std::vector<NumberType>
   eigenpairs_symmetric_by_value(
@@ -539,20 +460,16 @@ public:
     const bool                               compute_eigenvectors);
 
   /**
-   * Computing selected eigenvalues and, optionally, the eigenvectors of the
-   * real symmetric matrix $\mathbf{A} \in \mathbb{R}^{M \times M}$ using the
-   * MRRR algorithm.
+   * 使用MRRR算法计算选定的特征值和可选的实数对称矩阵
+   * $\mathbf{A} \in \mathbb{R}^{M \times M}$ 的特征向量。
+   * 通过规定指数范围选择特征值/特征向量  @p index_limits.
+   * 如果成功，计算出的特征值将按升序排列。
+   * 特征向量被存储在矩阵的列中，从而覆盖了矩阵的原始内容。
+   * 如果必须计算所有的特征值/特征向量，在 @p index_limits.
+   * 中传递封闭区间 $ \left[ 0, M-1 \right] $ 如果希望得到 $r$
+   * 最大的特征值/特征向量，则传递封闭区间 $ \left[ M-r, M-1
+   * \right] $ 。
    *
-   * The eigenvalues/eigenvectors are selected by prescribing a range of indices @p index_limits.
-   *
-   * If successful, the computed eigenvalues are arranged in ascending order.
-   * The eigenvectors are stored in the columns of the matrix, thereby
-   * overwriting the original content of the matrix.
-   *
-   * If all eigenvalues/eigenvectors have to be computed, pass the closed interval $ \left[ 0, M-1 \right] $ in @p index_limits.
-   *
-   * Pass the closed interval $ \left[ M-r, M-1 \right] $ if the $r$ largest
-   * eigenvalues/eigenvectors are desired.
    */
   std::vector<NumberType>
   eigenpairs_symmetric_by_index_MRRR(
@@ -560,14 +477,13 @@ public:
     const bool                                   compute_eigenvectors);
 
   /**
-   * Computing selected eigenvalues and, optionally, the eigenvectors of the
-   * real symmetric matrix $\mathbf{A} \in \mathbb{R}^{M \times M}$ using the
-   * MRRR algorithm.
-   * The eigenvalues/eigenvectors are selected by prescribing a range of values @p value_limits for the eigenvalues.
+   * 使用MRRR算法计算选定的特征值和可选的实数对称矩阵
+   * $\mathbf{A} \in \mathbb{R}^{M \times M}$ 的特征向量。
+   * 特征值/特征向量是通过规定特征值的取值范围 @p
+   * value_limits 来选择。
+   * 如果成功，计算出的特征值将按升序排列。
+   * 特征向量被存储在矩阵的列中，从而覆盖了矩阵的原始内容。
    *
-   * If successful, the computed eigenvalues are arranged in ascending order.
-   * The eigenvectors are stored in the columns of the matrix, thereby
-   * overwriting the original content of the matrix.
    */
   std::vector<NumberType>
   eigenpairs_symmetric_by_value_MRRR(
@@ -575,212 +491,213 @@ public:
     const bool                               compute_eigenvectors);
 
   /**
-   * Computing the singular value decomposition (SVD) of a
-   * matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, optionally computing the
-   * left and/or right singular vectors. The SVD is written as $\mathbf{A} =
-   * \mathbf{U} \cdot \mathbf{\Sigma} \cdot \mathbf{V}^T$ with $\mathbf{\Sigma}
-   * \in \mathbb{R}^{M \times N}$ as a diagonal matrix,
-   * $\mathbf{U} \in \mathbb{R}^{M \times M}$ and $\mathbf{V} \in \mathbb{R}^{M
-   * \times M}$ as orthogonal matrices. The diagonal elements of
-   * $\mathbf{\Sigma}$ are the singular values of $A$ and the columns of
-   * $\mathbf{U}$ and $\mathbf{V}$ are the corresponding left and right singular
-   * vectors, respectively. The singular values are returned in decreasing order
-   * and only the first $\min(M,N)$ columns of $\mathbf{U}$ and rows of
-   * $\mathbf{V}^T$ are computed.
+   * 计算矩阵 $\mathbf{A} \in \mathbb{R}^{M \times N}$
+   * 的奇异值分解（SVD），可选择计算左和/或右奇异向量。SVD写成
+   * $\mathbf{A} = \mathbf{U} \cdot \mathbf{\Sigma} \cdot \mathbf{V}^T$ ，
+   * $\mathbf{\Sigma} \in \mathbb{R}^{M \times N}$ 为对角矩阵，
+   * $\mathbf{U} \in \mathbb{R}^{M \times M}$ 和 $\mathbf{V} \in
+   * \mathbb{R}^{M \times M}$ 为正交矩阵。 $\mathbf{\Sigma}$
+   * 的对角线元素是 $A$ 的奇异值， $\mathbf{U}$ 和 $\mathbf{V}$
+   * 的列分别是相应的左和右奇异向量。奇异值按递减顺序返回，只计算
+   * $\min(M,N)$ 的第一列和 $\mathbf{V}^T$ 的行。
+   * 返回时，矩阵的内容是不可用的。  矩阵 $\mathbf{A}$
+   * 的行和列必须具有相同的块循环分布。
+   * 如果需要左奇异向量，矩阵 $\mathbf{A}$ 和 $\mathbf{U}$
+   * 必须以相同的过程网格和块循环分布构建。如果需要右奇异向量，矩阵
+   * $\mathbf{A}$ 和 $\mathbf{V}^T$
+   * 必须以相同的过程网格和块循环分布构建。
+   * 为了避免计算左和/或右奇异向量，该函数接受
+   * <code>nullptr</code> 为 @p U 和/或 @p VT. 。
    *
-   * Upon return the content of the matrix is unusable.
-   * The matrix $\mathbf{A}$ must have identical block cyclic distribution for
-   * the rows and column.
-   *
-   * If left singular vectors are required matrices $\mathbf{A}$ and
-   * $\mathbf{U}$ have to be constructed with the same process grid and block
-   * cyclic distribution. If right singular vectors are required matrices
-   * $\mathbf{A}$ and $\mathbf{V}^T$ have to be constructed with the same
-   * process grid  and block cyclic distribution.
-   *
-   * To avoid computing the left and/or right singular vectors the function
-   * accepts <code>nullptr</code>
-   * for @p U and/or @p VT.
    */
   std::vector<NumberType>
   compute_SVD(ScaLAPACKMatrix<NumberType> *U  = nullptr,
               ScaLAPACKMatrix<NumberType> *VT = nullptr);
 
   /**
-   * Solving overdetermined or underdetermined real linear
-   * systems involving matrix $\mathbf{A} \in \mathbb{R}^{M \times N}$, or its
-   * transpose $\mathbf{A}^T$, using a QR or LQ factorization of $\mathbf{A}$
-   * for $N_{\rm RHS}$ RHS vectors in the columns of matrix $\mathbf{B}$
+   * 解决涉及矩阵 $\mathbf{A} \in \mathbb{R}^{M \times N}$ 或其转置
+   * $\mathbf{A}^T$ 的过定或欠定实数线性系统，使用 $\mathbf{A}$
+   * 的QR或LQ因式分解，用于矩阵 $N_{\rm RHS}$ 列中的RHS向量
+   * 假设 $\mathbf{A}$ 具有全等级。  $\rm{rank}(\mathbf{A}) =
+   * \min(M,N)$  .     支持以下选项。
    *
-   * It is assumed that $\mathbf{A}$ has full rank: $\rm{rank}(\mathbf{A}) =
-   * \min(M,N)$.
    *
-   * The following options are supported:
-   * -# If(!transpose) and $M \geq N$: least squares solution of overdetermined
-   * system
-   *    $\min \Vert \mathbf{B} - \mathbf{A}\cdot \mathbf{X}\Vert$.\n
-   *    Upon exit the rows $0$ to $N-1$ of $\mathbf{B}$ contain the least square
-   * solution vectors. The residual sum of squares for each column is given by
-   * the sum of squares of elements $N$ to $M-1$ in that column.
    *
-   * -# If(!transpose) and $M < N$: find minimum norm solutions of
-   * underdetermined systems
-   *    $\mathbf{A} \cdot \mathbf{X} = \mathbf{B}$.\n
-   *    Upon exit the columns of $\mathbf{B}$ contain the minimum norm solution
-   * vectors.
    *
-   * -# If(transpose) and $M \geq N$: find minimum norm solutions of
-   * underdetermined system $ \mathbf{A}^\top \cdot \mathbf{X} = \mathbf{B}$.\n
-   *    Upon exit the columns of $\mathbf{B}$ contain the minimum norm solution
-   * vectors.
    *
-   * -# If(transpose) and $M < N$: least squares solution of overdetermined
-   * system
-   *    $\min \Vert \mathbf{B} - \mathbf{A}^\top \cdot \mathbf{X}\Vert$.\n
-   *    Upon exit the rows $0$ to $M-1$ contain the least square solution
-   * vectors. The residual sum of squares for each column is given by the sum of
-   * squares of elements $M$ to $N-1$ in that column.
    *
-   * If(!tranpose) then $\mathbf{B} \in \mathbb{R}^{M \times N_{\rm RHS}}$,
-   * otherwise $\mathbf{B} \in \mathbb{R}^{N \times N_{\rm RHS}}$.
-   * The matrices $\mathbf{A}$ and $\mathbf{B}$ must have an identical block
-   * cyclic distribution for rows and columns.
+   * - If(!transpose) and  $M \geq N$  : 超定系统 $\min \Vert \mathbf{B}
+   *
+   * - \mathbf{A}\cdot \mathbf{X}\Vert$ 的最小平方解 .n 退出后， $0$
+   * 至 $N-1$
+   * 的行包含最小平方解向量。每一列的剩余平方和由该列中
+   * $N$ 至 $M-1$ 元素的平方和给出。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - If(!transpose) and  $M < N$  : 查找欠定系统的最小规范解  $\mathbf{A} \cdot \mathbf{X} = \mathbf{B}$  .n 退出后， $\mathbf{B}$  的列包含最小规范解向量。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 如果(转置)和 $M \geq N$ ：找到欠定系统 $ \mathbf{A}^\top \cdot \mathbf{X} = \mathbf{B}$ 的最小规范解 .n 退出后， $\mathbf{B}$ 的列包含最小规范解向量。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 如果(转置)和  $M < N$  : 超定系统的最小平方解  $\min \Vert \mathbf{B}
+   *
+   * - \mathbf{A}^\top \cdot \mathbf{X}\Vert$  .n 退出后，行  $0$  到
+   * $M-1$
+   * 包含最小平方解向量。每一列的剩余平方和由该列中元素
+   * $M$ 至 $N-1$ 的平方和给出。    If(!tranpose) then  $\mathbf{B}
+   * \in \mathbb{R}^{M \times N_{\rm RHS}}$  , otherwise  $\mathbf{B} \in
+   * \mathbb{R}^{N \times N_{\rm RHS}}$  。  矩阵 $\mathbf{A}$ 和
+   * $\mathbf{B}$ 的行和列必须有相同的块循环分布。
+   *
    */
   void
   least_squares(ScaLAPACKMatrix<NumberType> &B, const bool transpose = false);
 
   /**
-   * Compute the pseudoinverse $\mathbf{A}^+ \in \mathbb{R}^{N \times M}$
-   * (Moore-Penrose inverse) of a real matrix $\mathbf{A} \in \mathbb{R}^{M
-   * \times N}$ using the singular value decomposition
-   * $\mathbf{A} = \mathbf{U} \cdot \mathbf{\Sigma} \cdot \mathbf{V}^T$.
+   * 使用奇异值分解 $\mathbf{A} = \mathbf{U} \cdot \mathbf{\Sigma}
+   * \cdot \mathbf{V}^T$ 计算实数矩阵 $\mathbf{A} \in \mathbb{R}^{M
+   * \times N}$ 的假逆 $\mathbf{A}^+ \in \mathbb{R}^{N \times M}$
+   * （Moore-Penrose逆）。    与逆不同，假逆  $\mathbf{A}^+ =
+   * \mathbf{V} \cdot \mathbf{\Sigma}^+ \cdot \mathbf{U}^T$
+   * 既适用于矩形矩阵，也适用于奇异矩阵  $\mathbf{A}$  。
+   * 对于一个矩形 $\mathbf{\Sigma}$
+   * ，伪逆的计算方法是取对角线上每个非零元素的倒数，保留零的位置，然后转置
+   * $\mathbf{\Sigma}$  。在数值计算中，只有奇异值 $\sigma_i >
+   * \sigma_{\text{max}} \, \text{ratio}$
+   * 被考虑在内。成功退出后，该函数返回满足该条件的奇异值的数量。这个值可以解释为
+   * $\mathbf{A}$  的等级。    返回时该对象包含伪逆
+   * $\mathbf{A}^+ \in \mathbb{R}^{N \times M}$  。
+   * 必须满足以下排列条件。  $MB_A = NB_A$  .
    *
-   * Unlike the inverse, the pseudoinverse $\mathbf{A}^+ = \mathbf{V} \cdot
-   * \mathbf{\Sigma}^+ \cdot \mathbf{U}^T$ exists for both rectangular as well
-   * as singular matrices $\mathbf{A}$.
-   *
-   * For a rectangular $\mathbf{\Sigma}$ the pseudoinverse is computed by taking
-   * the reciprocal of each non-zero element on the diagonal, leaving the zeros
-   * in place, and then transposing $\mathbf{\Sigma}$. For the numerical
-   * computation only the singular values $\sigma_i > \sigma_{\text{max}} \,
-   * \text{ratio}$ are taken into account. Upon successful exit, the function
-   * returns the number of singular values fulfilling that condition. That value
-   * can be interpreted as the rank of $\mathbf{A}$.
-   *
-   * Upon return this object contains the pseudoinverse $\mathbf{A}^+ \in
-   * \mathbb{R}^{N \times M}$.
-   *
-   * The following alignment conditions have to be fulfilled: $MB_A = NB_A$.
    */
   unsigned int
   pseudoinverse(const NumberType ratio);
 
   /**
-   * Estimate the condition number of a SPD matrix in the $l_1$-norm.
-   * The matrix has to be in the Cholesky state (see
-   * compute_cholesky_factorization()). The reciprocal of the condition number
-   * is returned in order to avoid the possibility of overflow when the
-   * condition number is very large.
+   * 估计一个SPD矩阵在 $l_1$ -norm中的条件数。
+   * 该矩阵必须处于Cholesky状态（见compute_cholesky_factorization()）。条件数的倒数被返回，以避免在条件数非常大时出现溢出的可能性。
+   * @p a_norm 在调用Cholesky因式分解之前，必须包含矩阵的
+   * $l_1$  -norm（见l1_norm()）。
+   * @note  另一种方法是明确计算矩阵的逆值，并手动构建
+   * $k_1 = ||\mathbf{A}||_1 \, ||\mathbf{A}^{-1}||_1$  。
    *
-   * @p a_norm must contain the $l_1$-norm of the matrix prior to calling
-   * Cholesky factorization (see l1_norm()).
-   *
-   * @note An alternative is to compute the inverse of the matrix
-   * explicitly and manually construct $k_1 = ||\mathbf{A}||_1 \,
-   * ||\mathbf{A}^{-1}||_1$.
    */
   NumberType
   reciprocal_condition_number(const NumberType a_norm) const;
 
   /**
-   * Compute the $l_1$-norm of the matrix.
+   * 计算矩阵的 $l_1$ -norm。
+   *
    */
   NumberType
   l1_norm() const;
 
   /**
-   * Compute the $l_{\infty}$ norm of the matrix.
+   * 计算矩阵的 $l_{\infty}$ 准则。
+   *
    */
   NumberType
   linfty_norm() const;
 
   /**
-   * Compute the Frobenius norm of the matrix.
+   * 计算矩阵的Frobenius准则。
+   *
    */
   NumberType
   frobenius_norm() const;
 
   /**
-   * Number of rows of the $M \times N$ matrix.
+   * $M \times N$ 矩阵的行数。
+   *
    */
   size_type
   m() const;
 
   /**
-   * Number of columns of the $M \times N$ matrix.
+   * $M \times N$ 矩阵的列数。
+   *
    */
   size_type
   n() const;
 
   /**
-   * Number of local rows on this MPI processes.
+   * 这个MPI进程上的本地行数。
+   *
    */
   unsigned int
   local_m() const;
 
   /**
-   * Number of local columns on this MPI process.
+   * 这个MPI进程上的本地列数。
+   *
    */
   unsigned int
   local_n() const;
 
   /**
-   * Return the global row number for the given local row @p loc_row .
+   * 返回给定本地行的全局行号  @p loc_row  。
+   *
    */
   unsigned int
   global_row(const unsigned int loc_row) const;
 
   /**
-   * Return the global column number for the given local column @p loc_column.
+   * 为给定的本地列返回全局列号  @p loc_column.  。
+   *
    */
   unsigned int
   global_column(const unsigned int loc_column) const;
 
   /**
-   * Read access to local element.
+   * 读取对本地元素的访问。
+   *
    */
   NumberType
   local_el(const unsigned int loc_row, const unsigned int loc_column) const;
 
   /**
-   * Write access to local element.
+   * 对本地元素的写访问。
+   *
    */
   NumberType &
   local_el(const unsigned int loc_row, const unsigned int loc_column);
 
   /**
-   * Scale the columns of the distributed matrix by the scalars provided in the array @p factors.
+   * 通过数组 @p factors.
+   * 中提供的标量对分布式矩阵的列进行缩放。数组 @p
+   * factors 必须有与矩阵列同样多的条目。     @p factors
+   * 的副本必须在底层MPI通信器的所有进程中可用。
+   * @note   @p InputVector
+   * 的基本前提是必须能够从中创建ArrayView； @p std::vector
+   * 和Vector类满足这一要求。
    *
-   * The array @p factors must have as many entries as the matrix columns.
-   *
-   * Copies of @p factors have to be available on all processes of the underlying MPI communicator.
-   *
-   * @note The fundamental prerequisite for the @p InputVector is that it must be possible to
-   * create an ArrayView from it; this is satisfied by the @p std::vector and Vector classes.
    */
   template <class InputVector>
   void
   scale_columns(const InputVector &factors);
 
   /**
-   * Scale the rows of the distributed matrix by the scalars provided in the array @p factors.
+   * 通过数组 @p factors.
+   * 中提供的标量来缩放分布式矩阵的行，数组 @p factors
+   * 的条目数必须与矩阵的行一样多。     @p factors
+   * 的副本必须在底层MPI通信器的所有进程中可用。
+   * @note   @p InputVector
+   * 的基本前提是必须能够从中创建ArrayView； @p std::vector
+   * 和Vector类满足这一要求。
    *
-   * The array @p factors must have as many entries as the matrix rows.
-   *
-   * Copies of @p factors have to be available on all processes of the underlying MPI communicator.
-   *
-   * @note The fundamental prerequisite for the @p InputVector is that it must be possible to
-   * create an ArrayView from it; this is satisfied by the @p std::vector and Vector classes.
    */
   template <class InputVector>
   void
@@ -788,28 +705,25 @@ public:
 
 private:
   /**
-   * Calculate the norm of a distributed symmetric dense matrix using
-   * ScaLAPACK's internal function.
+   * 使用ScaLAPACK的内部函数计算一个分布式对称密集矩阵的规范。
+   *
    */
   NumberType
   norm_symmetric(const char type) const;
 
   /**
-   * Calculate the norm of a distributed dense matrix using ScaLAPACK's
-   * internal function.
+   * 使用ScaLAPACK的内部函数计算一个分布式密集矩阵的规范。
+   *
    */
   NumberType
   norm_general(const char type) const;
 
   /**
-   * Computing selected eigenvalues and, optionally, the eigenvectors.
-   * The eigenvalues/eigenvectors are selected by either prescribing a range of indices @p index_limits
-   * or a range of values @p value_limits for the eigenvalues. The function will throw an exception
-   * if both ranges are prescribed (meaning that both ranges differ from the
-   * default value) as this ambiguity is prohibited. If successful, the computed
-   * eigenvalues are arranged in ascending order. The eigenvectors are stored in
-   * the columns of the matrix, thereby overwriting the original content of the
-   * matrix.
+   * 计算选定的特征值和可选的特征向量。
+   * 特征值/特征向量是通过为特征值规定一个指数范围 @p
+   * index_limits 或一个值范围 @p value_limits
+   * 来选择的。如果同时规定了两个范围（意味着两个范围都与默认值不同），该函数将抛出一个异常，因为这种模糊性是被禁止的。如果成功，计算出的特征值将按升序排列。特征向量被存储在矩阵的列中，从而覆盖了矩阵的原始内容。
+   *
    */
   std::vector<NumberType>
   eigenpairs_symmetric(
@@ -822,23 +736,18 @@ private:
                      std::numeric_limits<NumberType>::quiet_NaN()));
 
   /**
-   * Computing selected eigenvalues and, optionally, the eigenvectors of the
-   * real symmetric matrix $\mathbf{A} \in \mathbb{R}^{M \times M}$ using the
-   * MRRR algorithm.
-   * The eigenvalues/eigenvectors are selected by either prescribing a range of indices @p index_limits
-   * or a range of values @p value_limits for the eigenvalues. The function will throw an exception
-   * if both ranges are prescribed (meaning that both ranges differ from the
-   * default value) as this ambiguity is prohibited.
+   * 使用MRRR算法计算选定的特征值和可选的实数对称矩阵
+   * $\mathbf{A} \in \mathbb{R}^{M \times M}$ 的特征向量。
+   * 特征值/特征向量是通过规定指数范围 @p index_limits
+   * 或特征值的取值范围 @p value_limits
+   * 来选择。如果两个范围都被规定了（意味着两个范围都与默认值不同），该函数将抛出一个异常，因为这种模糊性是被禁止的。
+   * 通过调用这个函数，矩阵的原始内容将被覆盖。如果要求，特征向量将被存储在矩阵的列中。同样，如果只需要特征值，矩阵的内容也将被覆盖。
+   * 如果成功，计算出的特征值将按升序排列。
+   * @note
+   * 由于Netlib-ScaLAPACK中的一个错误，可以计算所有的或没有特征向量。
+   * 因此，必须对输入 @p index_limits
+   * 进行相应设置。使用Intel-MKL则不需要这种限制。
    *
-   * By calling this function the original content of the matrix will be
-   * overwritten. If requested, the eigenvectors are stored in the columns of
-   * the matrix. Also in the case that just the eigenvalues are required, the
-   * content of the matrix will be overwritten.
-   *
-   * If successful, the computed eigenvalues are arranged in ascending order.
-   *
-   * @note Due to a bug in Netlib-ScaLAPACK, either all or no eigenvectors can be computed.
-   * Therefore, the input @p index_limits has to be set accordingly. Using Intel-MKL this restriction is not required.
    */
   std::vector<NumberType>
   eigenpairs_symmetric_MRRR(
@@ -850,138 +759,142 @@ private:
       std::make_pair(std::numeric_limits<NumberType>::quiet_NaN(),
                      std::numeric_limits<NumberType>::quiet_NaN()));
 
-  /*
-   * Stores the distributed matrix in @p filename
-   * using serial routines
-   */
+  /* 使用串行例程在 @p filename 中存储分布矩阵。 
+* */
   void
   save_serial(const std::string &                          filename,
               const std::pair<unsigned int, unsigned int> &chunk_size) const;
 
-  /*
-   * Loads the distributed matrix from file @p filename
-   * using serial routines
-   */
+  /* 使用串行例程从文件 @p filename 加载分布式矩阵。 
+* */
   void
   load_serial(const std::string &filename);
 
-  /*
-   * Stores the distributed matrix in @p filename
-   * using parallel routines
-   */
+  /* 使用并行例程将分布式矩阵存储在 @p filename 中。 
+* */
   void
   save_parallel(const std::string &                          filename,
                 const std::pair<unsigned int, unsigned int> &chunk_size) const;
 
-  /*
-   * Loads the distributed matrix from file @p filename
-   * using parallel routines
-   */
+  /* 使用并行例程从文件 @p filename 中加载分布式矩阵。 
+* */
   void
   load_parallel(const std::string &filename);
 
   /**
-   * Since ScaLAPACK operations notoriously change the meaning of the matrix
-   * entries, we record the current state after the last operation here.
+   * 由于ScaLAPACK操作会改变矩阵项的含义，所以我们在这里记录最后一次操作后的当前状态。
+   *
    */
   LAPACKSupport::State state;
 
   /**
-   * Additional property of the matrix which may help to select more
-   * efficient ScaLAPACK functions.
+   * 矩阵的其他属性，可能有助于选择更有效的ScaLAPACK函数。
+   *
    */
   LAPACKSupport::Property property;
 
   /**
-   * A shared pointer to a Utilities::MPI::ProcessGrid object which contains a
-   * BLACS context and a MPI communicator, as well as other necessary data
-   * structures.
+   * 一个指向 Utilities::MPI::ProcessGrid
+   * 对象的共享指针，它包含一个BLACS上下文和一个MPI通信器，以及其他必要的数据结构。
+   *
    */
   std::shared_ptr<const Utilities::MPI::ProcessGrid> grid;
 
   /**
-   * Number of rows in the matrix.
+   * 矩阵中的行数。
+   *
    */
   int n_rows;
 
   /**
-   * Number of columns in the matrix.
+   * 矩阵中的列数。
+   *
    */
   int n_columns;
 
   /**
-   * Row block size.
+   * 行块大小。
+   *
    */
   int row_block_size;
 
   /**
-   * Column block size.
+   * 列块大小。
+   *
    */
   int column_block_size;
 
   /**
-   * Number of rows in the matrix owned by the current process.
+   * 当前进程拥有的矩阵中的行数。
+   *
    */
   int n_local_rows;
 
   /**
-   * Number of columns in the matrix owned by the current process.
+   * 当前进程拥有的矩阵中的列数。
+   *
    */
   int n_local_columns;
 
   /**
-   * ScaLAPACK description vector.
+   * ScaLAPACK描述向量。
+   *
    */
   int descriptor[9];
 
   /**
-   * Workspace array.
+   * 工作区阵列。
+   *
    */
   mutable std::vector<NumberType> work;
 
   /**
-   * Integer workspace array.
+   * 整数工作区数组。
+   *
    */
   mutable std::vector<int> iwork;
 
   /**
-   * Integer array holding pivoting information required
-   * by ScaLAPACK's matrix factorization routines.
+   * 保存ScaLAPACK的矩阵分解程序所需的枢轴信息的整数阵列。
+   *
    */
   std::vector<int> ipiv;
 
   /**
-   * A character to define where elements are stored in case
-   * ScaLAPACK operations support this.
+   * 一个字符，用于定义元素的存储位置，以防ScaLAPACK操作支持这个。
+   *
    */
   const char uplo;
 
   /**
-   * The process row of the process grid over which the first row
-   * of the global matrix is distributed.
+   * 过程网格的过程行，全局矩阵的第一行分布于此。
+   *
    */
   const int first_process_row;
 
   /**
-   * The process column of the process grid over which the first column
-   * of the global matrix is distributed.
+   * 全局矩阵第一列所分布的过程网格的过程列。
+   *
    */
   const int first_process_column;
 
   /**
-   * Global row index that determines where to start a submatrix.
-   * Currently this equals unity, as we don't use submatrices.
+   * 全局行索引，决定在哪里开始一个子矩阵。
+   * 目前这等于unity，因为我们不使用子矩阵。
+   *
    */
   const int submatrix_row;
 
   /**
-   * Global column index that determines where to start a submatrix.
-   * Currently this equals unity, as we don't use submatrices.
+   * 全局列索引，决定子矩阵的起始位置。
+   * 目前这等于unity，因为我们不使用子矩阵。
+   *
    */
   const int submatrix_column;
 
   /**
-   * Thread mutex.
+   * 线程互斥。
+   *
    */
   mutable Threads::Mutex mutex;
 };
@@ -1051,3 +964,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_SCALAPACK
 
 #endif
+
+

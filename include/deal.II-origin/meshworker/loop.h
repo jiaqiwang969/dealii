@@ -1,4 +1,3 @@
-//include/deal.II-translator/meshworker/loop_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2020 by the deal.II authors
@@ -43,8 +42,7 @@ class TriaActiveIterator;
 namespace internal
 {
   /**
-   * 找出一个迭代器是否支持非活动单元。
-   *
+   * Find out if an iterator supports inactive cells.
    */
   template <class DI>
   inline bool
@@ -81,15 +79,13 @@ namespace internal
 namespace MeshWorker
 {
   /**
-   * 用于控制MeshWorker循环执行的参数集合。
-   *
+   * Collection of parameters to control the execution of MeshWorker loops.
    */
   class LoopControl
   {
   public:
     /**
-     * 构造函数。
-     *
+     * Constructor.
      */
     LoopControl()
       : own_cells(true)
@@ -100,87 +96,65 @@ namespace MeshWorker
     {}
 
     /**
-     * 在本进程拥有的单元格上进行循环。默认为
-     * <code>true</code>  。
-     *
+     * Loop over cells owned by this process. Defaults to <code>true</code>.
      */
     bool own_cells;
 
     /**
-     * 在不属于本进程的单元格上进行循环。默认为
-     * <code>false</code>  。
-     *
+     * Loop over cells not owned by this process. Defaults to
+     * <code>false</code>.
      */
     bool ghost_cells;
 
     /**
-     * 描述何时对一个面进行装配的枚举：例如，见
-     * MeshWorker::LoopControl::faces_to_ghost
-     * ，以了解在特定情况下如何解释这个枚举的值的例子。
-     *
+     * Enumeration describing when to do assembly on a face: see, e.g.,
+     * MeshWorker::LoopControl::faces_to_ghost for an example of how the value
+     * of this enumeration is interpreted in a particular circumstance.
      */
     enum FaceOption
     {
       /**
-       * 不要在一个面上进行装配。
-       *
+       * Do not perform assembly on a face.
        */
       never,
       /**
-       * 在一个面上进行装配。
-       *
+       * Perform assembly on one face.
        */
       one,
       /**
-       * 在两个面上进行装配。
-       *
+       * Perform assembly on both faces.
        */
       both
     };
 
     /**
-     * 控制在一个本地拥有的单元和一个幽灵单元之间的面的循环。
+     * Control for looping over faces between a locally owned cell and a ghost
+     * cell:
      *
+     * - never: Do not assembly these faces.
+     * - one: Only one of the processes will assemble these faces (from the
+     *   finer side or the process with the lower MPI rank).
+     * - both: Both processes will assemble these faces. Note that these faces
+     *   are never assembled from both sides on a single process.
      *
-     *
-     *
-     * - 绝不。不要装配这些面孔。
-     *
-     *
-     * - 一个。只有一个进程将组装这些面（从较细的一面或MPI等级较低的进程）。
-     *
-     *
-     * - 两者都是。两个进程都将装配这些面。注意，这些面永远不会在一个进程中从两边装配。        默认是  <code>one</code>  。
-     *
+     * The default is <code>one</code>.
      */
     FaceOption faces_to_ghost;
 
     /**
-     * 控制在两个本地拥有的单元之间的面的循环。
+     * Control for looping over faces between two locally owned cells:
      *
+     * - never: Do not assemble face terms.
+     * - one: Assemble once (always coming from the finer side).
+     * - both: Assemble each face twice (not implemented for hanging nodes!).
      *
-     *
-     *
-     *
-     * - 绝不。不要组装脸部条款。
-     *
-     *
-     *
-     * - 一。组装一次（总是从较细的一面来）。
-     *
-     *
-     *
-     *
-     *
-     * - 都是。将每个面组装两次（对悬挂的节点不实施！）。        默认是  <code>one</code>  。
-     *
+     * The default is <code>one</code>.
      */
     FaceOption own_faces;
 
     /**
-     * 一个标志，决定单元格积分应该在面的积分之前或之后进行。默认值是
-     * <code>true</code>  。
-     *
+     * A flag to determine if cells integrals should be done before or after
+     * face integrals. The default is <code>true</code>.
      */
     bool cells_first;
   };
@@ -188,20 +162,29 @@ namespace MeshWorker
 
 
   /**
-   * loop()调用的函数，用于对单元格和其面进行所需的操作。<tt>cell_worker</tt>,
-   * <tt>boundary_worker</tt> 和 <tt>face_worker</tt>
-   * 这三个函数是交给loop()的。在那里，我们只对所有的单元格进行循环，而在这里，我们只做一个单元格，如果有必要的话，还要做它的面、内部和边界。
-   * 返回时，DoFInfoBox中的DoFInfo对象被填充了单元格和每个面所计算的数据。因此，在执行这个函数后，我们就可以调用
-   * DoFInfoBox::assemble() 将局部数据分配到全局数据中。
-   * @param  cell是我们工作的单元  @param
-   * dof_info是输入局部结果的对象。预计它已经被设置为正确的数据类型。
-   * @param  info是包含仅用于内部处理的额外数据的对象。
-   * @param  cell_worker定义了对每个单元的本地操作。    @param
-   * boundary_worker定义了对边界面的局部操作  @param
-   * face_worker定义了对内部面的局部操作。    @param
-   * loop_control控制结构，指定应该执行什么动作。
-   * @ingroup MeshWorker
+   * The function called by loop() to perform the required actions on a cell
+   * and its faces. The three functions <tt>cell_worker</tt>,
+   * <tt>boundary_worker</tt> and <tt>face_worker</tt> are the same ones
+   * handed to loop(). While there we only run the loop over all cells, here,
+   * we do a single cell and, if necessary, its faces, interior and boundary.
    *
+   * Upon return, the DoFInfo objects in the DoFInfoBox are filled with the
+   * data computed on the cell and each of the faces. Thus, after the
+   * execution of this function, we are ready to call DoFInfoBox::assemble()
+   * to distribute the local data into global data.
+   *
+   * @param cell is the cell we work on
+   * @param dof_info is the object into which local results are entered. It is
+   * expected to have been set up for the right types of data.
+   * @param info is the object containing additional data only needed for
+   * internal processing.
+   * @param cell_worker defines the local action on each cell.
+   * @param boundary_worker defines the local action on boundary faces
+   * @param face_worker defines the local action on interior faces.
+   * @param loop_control control structure to specify what actions should be
+   * performed.
+   *
+   * @ingroup MeshWorker
    */
   template <class INFOBOX, class DOFINFO, int dim, int spacedim, class ITERATOR>
   void
@@ -433,11 +416,18 @@ namespace MeshWorker
 
 
   /**
-   * 本命名空间的主要工作功能。它是对一个迭代器范围内所有单元格的循环，其中对每个单元格调用cell_action()。
-   * 循环会自动处理单边细化的内部面。这个循环中的大部分工作是在cell_action()中完成的，它也接收这个函数的大部分参数。更多细节请参见那里的文档。
-   * 如果你不希望在单元格、内部或边界面发生任何事情，只需将Null指针传递给其中一个函数参数。
-   * @ingroup MeshWorker
+   * The main work function of this namespace. It is a loop over all cells in
+   * an iterator range, in which cell_action() is called for each cell.
+   * Unilaterally refined interior faces are handled automatically by the
+   * loop. Most of the work in this loop is done in cell_action(), which also
+   * receives most of the parameters of this function. See the documentation
+   * there for more details.
    *
+   * If you don't want anything to be done on cells, interior or boundary
+   * faces to happen, simply pass the Null pointer to one of the function
+   * arguments.
+   *
+   * @ingroup MeshWorker
    */
   template <int dim,
             int spacedim,
@@ -493,9 +483,10 @@ namespace MeshWorker
 
 
   /**
-   * 如果专门用于积分，使用LocalIntegrator中的虚拟函数，简化了loop()的接口。
-   * @ingroup MeshWorker
+   * Simplified interface for loop() if specialized for integration, using the
+   * virtual functions in LocalIntegrator.
    *
+   * @ingroup MeshWorker
    */
   template <int dim, int spacedim, class ITERATOR, class ASSEMBLER>
   void
@@ -558,5 +549,3 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/precondition_block_base_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -40,71 +41,69 @@ class Vector;
 #endif
 
 /**
- * A class storing the inverse diagonal blocks for block preconditioners and
- * block relaxation methods.
+ * 一个存储块状预处理程序和块状松弛方法的逆对角线块的类。
+ * 这个类为基于反转矩阵对角线上的块的预处理和松弛方法做记账工作。它允许我们存储所有的对角线块和它们的倒数，或者为每个条目存储相同的块，并且它可以跟踪选择。因此，在初始化它并正确填充对角线上的逆块后，派生类可以使用inverse()，其整数参数指的是块数。
+ * 此外，它还允许存储原始对角线块，而不仅仅是逆向的。例如，这些都是用于SSOR预处理程序的中间步骤。
  *
- * This class does the book keeping for preconditioners and relaxation methods
- * based on inverting blocks on the diagonal of a matrix. It allows us to
- * either store all diagonal blocks and their inverses or the same block for
- * each entry, and it keeps track of the choice. Thus, after initializing it
- * and filling the inverse diagonal blocks correctly, a derived class can use
- * inverse() with an integer argument referring to the block number.
  *
- * Additionally, it allows the storage of the original diagonal blocks, not
- * only the inverses. These are for instance used in the intermediate step of
- * the SSOR preconditioner.
  */
 template <typename number>
 class PreconditionBlockBase
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Choose a method for inverting the blocks, and thus the data type for the
-   * inverses.
+   * 选择一个反转块的方法，从而选择反转的数据类型。
+   *
    */
   enum Inversion
   {
     /**
-     * Use the standard Gauss-Jacobi method implemented in
-     * FullMatrix::inverse().
+     * 使用 FullMatrix::inverse().
+     * 中实现的标准高斯-雅各比方法。
+     *
      */
     gauss_jordan,
     /**
-     * Use QR decomposition of the Householder class.
+     * 使用Householder类的QR分解。
+     *
      */
     householder,
     /**
-     * Use the singular value decomposition of LAPACKFullMatrix.
+     * 使用LAPACKFullMatrix的奇异值分解。
+     *
      */
     svd
   };
 
   /**
-   * Constructor initializing default values.
+   * 构造函数初始化默认值。
+   *
    */
   PreconditionBlockBase(bool      store_diagonals = false,
                         Inversion method          = gauss_jordan);
 
   /**
-   * The virtual destructor
+   * 虚拟解构器
+   *
    */
   ~PreconditionBlockBase() = default;
 
   /**
-   * Deletes the inverse diagonal block matrices if existent hence leaves the
-   * class in the state that it had directly after calling the constructor.
+   * 删除对角线块矩阵（如果存在的话），从而使该类处于调用构造函数后的直接状态。
+   *
    */
   void
   clear();
 
   /**
-   * Resize to this number of diagonal blocks with the given block size. If
-   * <tt>compress</tt> is true, then only one block will be stored.
+   * 用给定的块大小调整到这个对角线块的数量。如果<tt>compress</tt>为真，那么将只存储一个块。
+   *
    */
   void
   reinit(unsigned int nblocks,
@@ -113,37 +112,43 @@ public:
          Inversion    method = gauss_jordan);
 
   /**
-   * Tell the class that inverses are computed.
+   * 告诉类，计算反相。
+   *
    */
   void
   inverses_computed(bool are_they);
 
   /**
-   * Does the matrix use only one diagonal block?
+   * 矩阵是否只使用一个对角线块？
+   *
    */
   bool
   same_diagonal() const;
 
   /**
-   * Check, whether diagonal blocks (not their inverses) should be stored.
+   * 检查，是否应该存储对角线块（而不是它们的逆向）。
+   *
    */
   bool
   store_diagonals() const;
 
   /**
-   * Return true, if inverses are ready for use.
+   * 如果反向块可以使用，则返回true。
+   *
    */
   bool
   inverses_ready() const;
 
   /**
-   * The number of blocks.
+   * 块的数量。
+   *
    */
   unsigned int
   size() const;
 
   /**
-   * Multiply with the inverse block at position <tt>i</tt>.
+   * 与位于<tt>i</tt>位置的逆块相乘。
+   *
    */
   template <typename number2>
   void
@@ -152,7 +157,8 @@ public:
                 const Vector<number2> &src) const;
 
   /**
-   * Multiply with the transposed inverse block at position <tt>i</tt>.
+   * 与位置<tt>i</tt>的换位逆块相乘。
+   *
    */
   template <typename number2>
   void
@@ -161,138 +167,144 @@ public:
                  const Vector<number2> &src) const;
 
   /**
-   * Access to the inverse diagonal blocks if Inversion is #gauss_jordan.
+   * 如果反转是#gauss_jordan，则访问反转对角线块。
+   *
    */
   FullMatrix<number> &
   inverse(size_type i);
 
   /**
-   * Access to the inverse diagonal blocks if Inversion is #householder.
+   * 如果反演是#householder，则访问反对角线块。
+   *
    */
   Householder<number> &
   inverse_householder(size_type i);
 
   /**
-   * Access to the inverse diagonal blocks if Inversion is #householder.
+   * 如果反转是#householder，则访问反对角线块。
+   *
    */
   LAPACKFullMatrix<number> &
   inverse_svd(size_type i);
 
   /**
-   * Access to the inverse diagonal blocks.
+   * 访问逆对角线区块。
+   *
    */
   const FullMatrix<number> &
   inverse(size_type i) const;
 
   /**
-   * Access to the inverse diagonal blocks if Inversion is #householder.
+   * 如果反转是#householder，则访问逆对角线区块。
+   *
    */
   const Householder<number> &
   inverse_householder(size_type i) const;
 
   /**
-   * Access to the inverse diagonal blocks if Inversion is #householder.
+   * 如果反转是#householder，则访问逆对角线区块。
+   *
    */
   const LAPACKFullMatrix<number> &
   inverse_svd(size_type i) const;
 
   /**
-   * Access to the diagonal blocks.
+   * 访问对角线块。
+   *
    */
   FullMatrix<number> &
   diagonal(size_type i);
 
   /**
-   * Access to the diagonal blocks.
+   * 访问对角线块。
+   *
    */
   const FullMatrix<number> &
   diagonal(size_type i) const;
 
   /**
-   * Print some statistics about the inverses to @p deallog. Output depends on
-   * #Inversion. It is richest for svd, where we obtain statistics on extremal
-   * singular values and condition numbers.
+   * 向 @p deallog. 打印一些关于求逆者的统计数据
+   * 输出取决于#求逆者。对于svd来说，它是最丰富的，在那里我们可以获得关于极值奇异值和条件数的统计数据。
+   *
    */
   void
   log_statistics() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   /**
-   * You are trying to access a diagonal block (not its inverse), but you
-   * decided not to store the diagonal blocks.
+   * 你试图访问一个对角线块（而不是它的逆向），但你决定不存储对角线块。
+   *
    */
   DeclException0(ExcDiagonalsNotStored);
 
   /**
-   * You are accessing a diagonal block, assuming that it has a certain type.
-   * But, the method used for inverting the diagonal blocks does not use this
-   * type
+   * 你正在访问一个对角线块，假设它具有某种类型。
+   * 但是，用于反转对角线块的方法并没有使用这种类型
+   *
    */
   DeclException0(ExcInverseNotAvailable);
 
 protected:
   /**
-   * The method used for inverting blocks.
+   * 用于倒置块的方法。
+   *
    */
   Inversion inversion;
 
 private:
   /**
-   * The number of (inverse) diagonal blocks, if only one is stored.
+   * 对角线块的（反转）数量，如果只存储一个。
+   *
    */
   unsigned int n_diagonal_blocks;
 
   /**
-   * Storage of the inverse matrices of the diagonal blocks matrices as
-   * <tt>FullMatrix<number></tt> matrices, if Inversion #gauss_jordan is used.
-   * Using <tt>number=float</tt> saves memory in comparison with
-   * <tt>number=double</tt>, but may introduce numerical instability.
+   * 如果使用反转#gauss_jordan，则以<tt>FullMatrix<number></tt>矩阵的形式存储对角线块矩阵的反转矩阵。
+   * 与<tt>number=float</tt>相比，使用<tt>number=double</tt>可以节省内存，但可能会引入数值不稳定。
+   *
    */
   std::vector<FullMatrix<number>> var_inverse_full;
 
   /**
-   * Storage of the inverse matrices of the diagonal blocks matrices as
-   * <tt>Householder</tt> matrices if Inversion #householder is used. Using
-   * <tt>number=float</tt> saves memory in comparison with
-   * <tt>number=double</tt>, but may introduce numerical instability.
+   * 如果使用反转#householder，将对角块矩阵的反矩阵存储为<tt>Householder</tt>矩阵。与<tt>number=float</tt>相比，使用<tt>number=double</tt>可以节省内存，但可能会引入数值不稳定。
+   *
    */
   std::vector<Householder<number>> var_inverse_householder;
 
   /**
-   * Storage of the inverse matrices of the diagonal blocks matrices as
-   * <tt>LAPACKFullMatrix</tt> matrices if Inversion #svd is used. Using
-   * <tt>number=float</tt> saves memory in comparison with
-   * <tt>number=double</tt>, but may introduce numerical instability.
+   * 如果使用反转#svd，将对角块矩阵的反转矩阵存储为<tt>LAPACKFullMatrix</tt>矩阵。与<tt>number=float</tt>相比，使用<tt>number=double</tt>可以节省内存，但可能会引入数值不稳定。
+   *
    */
   std::vector<LAPACKFullMatrix<number>> var_inverse_svd;
 
   /**
-   * Storage of the original diagonal blocks.
+   * 存储原始对角线块。    被封锁的SSOR方法所使用。
    *
-   * Used by the blocked SSOR method.
    */
   std::vector<FullMatrix<number>> var_diagonal;
 
 
   /**
-   * This is true, if the field #var_diagonal is to be used.
+   * 如果要使用#var_diagonal这个字段，则为真。
+   *
    */
   bool var_store_diagonals;
 
   /**
-   * This is true, if only one inverse is stored.
+   * 如果只存储一个逆数，则为真。
+   *
    */
   bool var_same_diagonal;
 
   /**
-   * The inverse matrices are usable. Set by the parent class via
-   * inverses_computed().
+   * 逆矩阵是可以使用的。由父类通过inverses_computed()设置。
+   *
    */
   bool var_inverses_ready;
 };
@@ -676,3 +688,5 @@ PreconditionBlockBase<number>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

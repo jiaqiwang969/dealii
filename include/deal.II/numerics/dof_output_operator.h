@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/dof_output_operator_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2018 by the deal.II authors
@@ -36,21 +37,15 @@ DEAL_II_NAMESPACE_OPEN
 namespace Algorithms
 {
   /**
-   * An output operator writing a separate file in each step and writing the
-   * vectors as finite element functions with respect to a given DoFHandler.
+   * 一个输出运算器，在每一步中写一个单独的文件，并将向量写成相对于给定DoFHandler的有限元函数。
+   *
    */
   template <typename VectorType, int dim, int spacedim = dim>
   class DoFOutputOperator : public OutputOperator<VectorType>
   {
   public:
-    /*
-     * Constructor. The <tt>filename</tt> is the common base name of
-     * all files and the argument <tt>digits</tt> should be the number
-     * of digits of the highest number in the sequence. File names by
-     * default have the form "outputNNN" with NNN the number set by the
-     * last step command. Numbers with less digits are filled with
-     * zeros from the left.
-     */
+    /*构造器。<tt>filename</tt>是所有文件的共同基础名称，参数<tt>digits</tt>应该是序列中最高数字的位数。文件名默认为 "outputNNN "的形式，其中NNN是由上一步命令设定的数字。位数较少的数字从左边开始用零填充。   
+* */
     DoFOutputOperator(const std::string &filename_base = std::string("output"),
                       const unsigned int digits        = 3);
 
@@ -86,3 +81,5 @@ namespace Algorithms
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

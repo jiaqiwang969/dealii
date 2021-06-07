@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_integrate_difference_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -45,96 +46,52 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Evaluation of functions and errors
+   * @name 函数的评估和错误
+   *
    */
   //@{
 
   /**
-   * Compute the cellwise error of the finite element solution.  Integrate the
-   * difference between a reference function which is given as a continuous
-   * function object, and a finite element function. The result of this
-   * function is the vector @p difference that contains one value per active
-   * cell $K$ of the triangulation. Each of the values of this vector $d$
-   * equals
+   * 计算有限元解的单元误差。
+   * 对作为连续函数对象的参考函数和有限元函数之间的差异进行积分。这个函数的结果是向量
+   * @p difference ，包含三角形的每个活动单元 $K$
+   * 的一个值。这个向量 $d$ 的每个值都等于
    * @f{align*}{
    * d_K = \| u-u_h \|_X
    * @f}
-   * where $X$ denotes the norm chosen and $u$ represents the exact solution.
+   * 其中 $X$ 表示选择的规范， $u$ 表示精确解。
+   * 假设函数 @p exact_solution的分量数与 @p dof.
+   * 使用的有限元的分量数一致。
+   * 为了计算有限元解的全局误差准则，使用
+   * VectorTools::compute_global_error()
+   * 与用该函数计算的输出向量。      @param[in]  映射
+   * 在积分差分时使用的映射  $u-u_h$  。    @param[in]  dof
+   * 描述解向量所在的有限元空间的DoFHandler对象。
+   * @param[in]  fe_function 代表数值逼近的节点值的向量  $u_h$
+   * 。这个向量需要对应于  @p dof.  所代表的有限元空间
+   * @param[in]  exact_solution 用于计算误差的精确解。
+   * @param[out]  difference 如上所述计算的值 $d_K$ 的向量。
+   * @param[in]  q
+   * 用来近似上述积分的正交公式。注意有些正交公式在积分中比其他公式更有用
+   * $u-u_h$  。例如，已知 $Q_1$ 对拉普拉斯方程精确解 $u$
+   * 的近似 $u_h$
+   * 在对应于QGauss(2)对象的2D单元的4个高斯点（或3D的8个点）上特别精确（实际上是超融合，即精确到高阶）。因此，由于QGauss(2)公式只对这些特定点上的两个解进行评估，选择这个正交公式可能表明误差远远小于实际情况。
+   * @param[in]  法线 上面显示的应该计算的法线 $X$
+   * 。如果规范是 NormType::Hdiv_seminorm,
+   * ，那么调用此函数的有限元需要至少有dim向量分量，分歧将在第一个div分量上计算。例如，这对用于混合拉普拉斯方程（
+   * step-20 ）和斯托克斯方程（ step-22 ）的有限元有效。
+   * @param[in]  权重 附加参数 @p weight 允许评估加权规范。
+   * 权重函数可以是标量的，在域中为所有分量平等地建立一个空间上的可变权重。例如，这可用于只对域的部分进行积分。
+   * 权重函数也可以是矢量值的，有和有限元一样多的成分。然后，不同的分量得到不同的权重。一个典型的应用是当只计算与一个或一个解变量子集有关的误差时，在这种情况下，其他组件的权重值等于零。ComponentSelectFunction类对这一目的特别有用，因为它提供了这样一个
+   * "屏蔽
+   * "权重。该权重函数被期望为正值，但负值不会被过滤。这个函数的默认值是一个空指针，被解释为
+   * "没有加权函数"，即在整个域中，所有向量成分的权重统一为1。
+   * @param[in]  指数 这个值表示在计算 $L^p$  -norms和 $W^{1,p}$
+   * -norms时使用的 $p$  。如果选择了 NormType::Lp_norm,
+   * NormType::W1p_norm, 或 NormType::W1p_seminorm 以外的 @p norm
+   * ，该值会被忽略。
+   * 更多信息请参见该命名空间的一般文档。
    *
-   * It is assumed that the number of components of the function @p
-   * exact_solution matches that of the finite element used by @p dof.
-   *
-   * To compute a global error norm of a finite element solution, use
-   * VectorTools::compute_global_error() with the output vector computed with
-   * this function.
-   *
-   * @param[in] mapping The mapping that is used when integrating the
-   * difference $u-u_h$.
-   * @param[in] dof The DoFHandler object that describes the finite element
-   * space in which the solution vector lives.
-   * @param[in] fe_function A vector with nodal values representing the
-   * numerical approximation $u_h$. This vector needs to correspond to the
-   * finite element space represented by @p dof.
-   * @param[in] exact_solution The exact solution that is used to compute the
-   * error.
-   * @param[out] difference The vector of values $d_K$ computed as above.
-   * @param[in] q The quadrature formula used to approximate the integral
-   * shown above. Note that some quadrature formulas are more useful than
-   * other in integrating $u-u_h$. For example, it is known that the $Q_1$
-   * approximation $u_h$ to the exact solution $u$ of a Laplace equation is
-   * particularly accurate (in fact, superconvergent, i.e. accurate to higher
-   * order) at the 4 Gauss points of a cell in 2d (or 8 points in 3d) that
-   * correspond to a QGauss(2) object. Consequently, because a QGauss(2)
-   * formula only evaluates the two solutions at these particular points,
-   * choosing this quadrature formula may indicate an error far smaller than
-   * it actually is.
-   * @param[in] norm The norm $X$ shown above that should be computed. If the
-   * norm is NormType::Hdiv_seminorm, then the finite element on which this
-   * function is called needs to have at least dim vector components, and the
-   * divergence will be computed on the first div components. This works, for
-   * example, on the finite elements used for the mixed Laplace (step-20) and
-   * the Stokes equations (step-22).
-   * @param[in] weight The additional argument @p weight allows to evaluate
-   * weighted norms.  The weight function may be scalar, establishing a
-   * spatially variable weight in the domain for all components equally. This
-   * may be used, for instance, to only integrate over parts of the domain.
-   * The weight function may also be vector-valued, with as many components as
-   * the finite element: Then, different components get different weights. A
-   * typical application is when the error with respect to only one or a
-   * subset of the solution variables is to be computed, in which case the
-   * other components would have weight values equal to zero. The
-   * ComponentSelectFunction class is particularly useful for this purpose as
-   * it provides such a "mask" weight. The weight function is expected to be
-   * positive, but negative values are not filtered. The default value of this
-   * function, a null pointer, is interpreted as "no weighting function",
-   * i.e., weight=1 in the whole domain for all vector components uniformly.
-   * @param[in] exponent This value denotes the $p$ used in computing
-   * $L^p$-norms and $W^{1,p}$-norms. The value is ignored if a @p norm other
-   * than NormType::Lp_norm, NormType::W1p_norm, or NormType::W1p_seminorm
-   * is chosen.
-   *
-   *
-   * See the general documentation of this namespace for more information.
-   *
-   * @note If the integration here happens over the cells of a
-   * parallel::distribute::Triangulation object, then this function computes
-   * the vector elements $d_K$ for an output vector with as many cells as
-   * there are active cells of the triangulation object of the current
-   * processor. However, not all active cells are in fact locally owned: some
-   * may be ghost or artificial cells (see
-   * @ref GlossGhostCell "here"
-   * and
-   * @ref GlossArtificialCell "here").
-   * The vector computed will, in the case of a distributed triangulation,
-   * contain zeros for cells that are not locally owned. As a consequence, in
-   * order to compute the <i>global</i> $L_2$ error (for example), the errors
-   * from different processors need to be combined, see
-   * VectorTools::compute_global_error().
-   *
-   * Instantiations for this template are provided for some vector types (see
-   * the general documentation of the namespace), but only for InVectors as in
-   * the documentation of the namespace, OutVector only Vector<double> and
-   * Vector<float>.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -150,8 +107,9 @@ namespace VectorTools
     const double                                             exponent = 2.);
 
   /**
-   * Call the integrate_difference() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 调用 integrate_difference()
+   * 函数，见上文，<tt>mapping=MappingQGeneric  @<dim@>(1)</tt>.  。
+   *
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -166,7 +124,8 @@ namespace VectorTools
     const double                                             exponent = 2.);
 
   /**
-   * Same as above for hp.
+   * 与上面的hp相同。
+   *
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -182,8 +141,9 @@ namespace VectorTools
     const double                                             exponent = 2.);
 
   /**
-   * Call the integrate_difference() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim@>(1)</tt>.
+   * 调用 integrate_difference()
+   * 函数，见上文，<tt>mapping=MappingQGeneric  @<dim@>(1)</tt>.  。
+   *
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -198,29 +158,23 @@ namespace VectorTools
     const double                                             exponent = 2.);
 
   /**
-   * Take a Vector @p cellwise_error of errors on each cell with
-   * <tt>tria.n_active_cells()</tt> entries and return the global
-   * error as given by @p norm.
+   * 在每个有<tt>tria.n_active_cells()</tt>项的单元格上取一个错误向量
+   * @p cellwise_error ，并返回由 @p norm. 给出的全局错误。  @p
+   * cellwise_error 向量通常是由 VectorTools::integrate_difference()
+   * 产生的输出，你通常希望为 @p norm  ]的值与你在
+   * VectorTools::integrate_difference().
+   * 中使用的值相同。如果给定的三角形是
+   * parallel::TriangulationBase,
+   * 中不对应于本地拥有的单元格的条目被假定为0.0，并使用MPI进行并行还原以计算全局误差。
+   * @param  tria 与 @p cellwise_error.
+   * 中的条目相对应的活动单元的三角形  @param  cellwise_error
+   * 每个活动单元的误差矢量。    @param  norm
+   * 要计算的规范类型。    @param  exponent 用于 $L^p$  -norms和
+   * $W^{1,p}$  -norms的指数 $p$ 。如果选择 @p norm 以外的
+   * NormType::Lp_norm,  NormType::W1p_norm, 或 NormType::W1p_seminorm
+   * ，该值会被忽略。
+   * @note  为Vector<double>和Vector<float>类型实例化。
    *
-   * The @p cellwise_error vector is typically an output produced by
-   * VectorTools::integrate_difference() and you normally want to supply the
-   * same value for @p norm as you used in VectorTools::integrate_difference().
-   *
-   * If the given Triangulation is a parallel::TriangulationBase, entries
-   * in @p cellwise_error that do not correspond to locally owned cells are
-   * assumed to be 0.0 and a parallel reduction using MPI is done to compute
-   * the global error.
-   *
-   * @param tria The Triangulation with active cells corresponding with the
-   * entries in @p cellwise_error.
-   * @param cellwise_error Vector of errors on each active cell.
-   * @param norm The type of norm to compute.
-   * @param exponent The exponent $p$ to use for $L^p$-norms and
-   * $W^{1,p}$-norms. The value is ignored if a @p norm other
-   * than NormType::Lp_norm, NormType::W1p_norm, or NormType::W1p_seminorm
-   * is chosen.
-   *
-   * @note Instantiated for type Vector<double> and Vector<float>.
    */
   template <int dim, int spacedim, class InVector>
   double
@@ -235,3 +189,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_integrate_difference_h
+
+

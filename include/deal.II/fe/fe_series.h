@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_series_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2021 by the deal.II authors
@@ -42,47 +43,31 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup feall */
-/*@{*/
+ /*!@addtogroup feall */ 
+ /*@{*/ 
 
 
 /**
- * This namespace offers functions to calculate expansion series of the
- * solution on the reference element. Coefficients of expansion are often used
- * to estimate local smoothness of the underlying FiniteElement field to decide
- * on h- or p-adaptive refinement strategy.
+ * 这个命名空间提供了计算参考元素上的解的扩展系列的函数。膨胀系数通常用于估计底层FiniteElement场的局部平滑性，以决定h-或p-适应性细化策略。
+ *
+ *
  */
 namespace FESeries
 {
   /**
-   * A class to calculate expansion of a scalar FE (or a single component
-   * of vector-valued FE) field into Fourier series on a reference element.
-   * The exponential form of the Fourier series is  based on completeness
-   * and Hermitian orthogonality of the set of exponential
-   * functions $ \phi_{\bf k}({\bf x}) = \exp(2 \pi i\, {\bf k} \cdot {\bf x})$.
-   * For example in 1D the L2-orthogonality condition reads
-   * @f[
-   *   \int_0^1 \phi_k(x) \phi_l^\ast(x) dx=\delta_{kl}.
-   * @f]
-   * Note that $ \phi_{\bf k} = \phi_{-\bf k}^\ast $.
+   * 一个用于计算标量FE（或矢量FE的单一分量）场在参考元素上的傅里叶级数的扩展的类。  傅里叶级数的指数形式是基于指数函数集的完整性和赫米特正交性  $ \phi_{\bf k}({\bf x}) = \exp(2 \pi i\, {\bf k} \cdot {\bf x})$  。  例如在一维中，L2正交性条件为 @f[
+   * \int_0^1 \phi_k(x) \phi_l^\ast(x) dx=\delta_{kl}.
+   * @f] 注意  $ \phi_{\bf k} = \phi_{-\bf k}^\ast $  。    参考元素上的任意标量FE场可以在完整的正交指数基中展开为@f[
+   * u({\bf x}) = \sum_{\bf k} c_{\bf k} \phi_{\bf k}({\bf x}).
+   * @f] 从基的正交性属性来看，可以得出@f[
+   * c_{\bf k} = \int_{[0,1]^d} u({\bf x}) \phi_{\bf k}^\ast ({\bf x}) d{\bf
+   * x}\,. @f]
+   * 正是这个复值展开系数，由这个类计算。请注意， $
+   * u({\bf x}) = \sum_i u_i N_i({\bf x})$  ，其中 $ N_i({\bf x}) $
+   * 是实值的FiniteElement形状函数。  因此 $ c_{\bf k} \equiv
+   * c_{-\bf k}^\ast $ ，我们只需要计算 $ c_{\bf k} $ 的正指数 $
+   * \bf k $  。
    *
-   * The arbitrary scalar FE field on the reference element can be expanded in
-   * the complete orthogonal exponential basis as
-   * @f[
-   *    u({\bf x})
-   *    = \sum_{\bf k} c_{\bf k} \phi_{\bf k}({\bf x}).
-   * @f]
-   * From the orthogonality property of the basis, it follows that
-   * @f[
-   *    c_{\bf k} =
-   *    \int_{[0,1]^d} u({\bf x}) \phi_{\bf k}^\ast ({\bf x}) d{\bf x}\,.
-   * @f]
-   * It is this complex-valued expansion coefficients, that are calculated by
-   * this class. Note that $ u({\bf x}) = \sum_i u_i N_i({\bf x})$,
-   * where $ N_i({\bf x}) $ are real-valued FiniteElement shape functions.
-   * Consequently $ c_{\bf k} \equiv c_{-\bf k}^\ast $ and
-   * we only need to compute $ c_{\bf k} $ for positive indices
-   * $ \bf k $ .
    */
   template <int dim, int spacedim = dim>
   class Fourier : public Subscriptor
@@ -91,22 +76,16 @@ namespace FESeries
     using CoefficientType = typename std::complex<double>;
 
     /**
-     * Constructor that initializes all required data structures.
+     * 构造函数，初始化所有需要的数据结构。         @p
+     * n_coefficients_per_direction 定义了每个方向上的系数数， @p
+     * fe_collection 是将用于扩展的 hp::FECollection ， @p
+     * q_collection 是用于整合每个FiniteElement在 @p fe_collection.
+     * 的扩展的 hp::QCollection
+     * 由于傅里叶扩展只能对标量场进行，这个类不能对矢量值的有限元操作，因此会抛出一个断言。然而，有限元场的每个分量可以分别被视为标量场，对其进行傅里叶展开也是可能的。为此，可选的参数
+     * @p component 定义了每个有限元的哪个分量将被使用。
+     * @p component
+     * 的默认值只适用于标量FEs，在这种情况下，它表示唯一的分量将被分解。对于矢量FE，必须明确提供一个非默认值。
      *
-     * The @p n_coefficients_per_direction defines the number of coefficients in
-     * each direction, @p fe_collection is the hp::FECollection for which
-     * expansion will be used and @p q_collection is the hp::QCollection used to
-     * integrate the expansion for each FiniteElement in @p fe_collection.
-     *
-     * As the Fourier expansion can only be performed on scalar fields, this
-     * class does not operate on vector-valued finite elements and will
-     * therefore throw an assertion. However, each component of a finite element
-     * field can be treated as a scalar field, respectively, on which Fourier
-     * expansions are again possible. For this purpose, the optional parameter
-     * @p component defines which component of each FiniteElement will be used.
-     * The default value of @p component only applies to scalar FEs, in which
-     * case it indicates that the sole component is to be decomposed. For
-     * vector-valued FEs, a non-default value must be explicitly provided.
      */
     Fourier(const std::vector<unsigned int> &      n_coefficients_per_direction,
             const hp::FECollection<dim, spacedim> &fe_collection,
@@ -114,13 +93,13 @@ namespace FESeries
             const unsigned int component = numbers::invalid_unsigned_int);
 
     /**
-     * A non-default constructor. The @p n_coefficients_per_direction defines the
-     * number of modes in each direction, @p fe_collection is the hp::FECollection
-     * for which expansion will be used and @p q_collection is the hp::QCollection
-     * used to integrate the expansion for each FiniteElement
-     * in @p fe_collection.
+     * 一个非默认的构造函数。 @p n_coefficients_per_direction
+     * 定义了每个方向的模数， @p fe_collection
+     * 是将使用扩展的 hp::FECollection ， @p q_collection
+     * 是用于整合 @p fe_collection.  @deprecated
+     * 中每个FiniteElement的扩展的 hp::QCollection
+     * 使用不同的构造函数代替。
      *
-     * @deprecated Use a different constructor instead.
      */
     DEAL_II_DEPRECATED
     Fourier(const unsigned int                     n_coefficients_per_direction,
@@ -128,9 +107,10 @@ namespace FESeries
             const hp::QCollection<dim> &           q_collection);
 
     /**
-     * Calculate @p fourier_coefficients of the cell vector field given by
-     * @p local_dof_values corresponding to FiniteElement with
-     * @p cell_active_fe_index .
+     * 计算 @p fourier_coefficients 中 @p local_dof_values
+     * 给出的单元格矢量场，对应于FiniteElement的 @p
+     * cell_active_fe_index  。
+     *
      */
     template <typename Number>
     void
@@ -139,87 +119,87 @@ namespace FESeries
               Table<dim, CoefficientType> & fourier_coefficients);
 
     /**
-     * Return the number of coefficients in each coordinate direction for the
-     * finite element associated with @p index in the provided hp::FECollection.
+     * 返回与 @p index 相关的有限元在所提供的 hp::FECollection.
+     * 中每个坐标方向的系数数。
+     *
      */
     unsigned int
     get_n_coefficients_per_direction(const unsigned int index) const;
 
     /**
-     * Calculate all transformation matrices to transfer the finite element
-     * solution to the series expansion representation.
+     * 计算所有的转换矩阵，将有限元解转移到系列展开表示。
+     * 这些矩阵将通过调用calculate()按需生成，并存储起来供重复使用。通常情况下，这个操作会消耗大量的工作量。有了这个函数，所有的矩阵将被提前计算。
+     * 这样，我们就可以将其昂贵的生成与实际应用分开。
      *
-     * These matrices will be generated on demand by calling calculate() and
-     * stored for recurring purposes. Usually, this operation consumes a lot of
-     * workload. With this function, all matrices will be calculated in advance.
-     * This way, we can separate their costly generation from the actual
-     * application.
      */
     void
     precalculate_all_transformation_matrices();
 
     /**
-     * Write all transformation matrices of this object to a stream for the
-     * purpose of serialization.
+     * 将此对象的所有转换矩阵写入一个流中，以便进行序列化。
+     * 因为它的任何一个变换矩阵对于一个给定的场景只需要生成一次，所以通常的做法是提前调用precalculate_all_transformation_matrices()来确定它们，并通过序列化保留它们。
      *
-     * Since any of its transformation matrices has to be generated only once
-     * for a given scenario, it is common practice to determine them in advance
-     * calling precalculate_all_transformation_matrices() and keep them via
-     * serialization.
      */
     template <class Archive>
     void
     save_transformation_matrices(Archive &ar, const unsigned int version);
 
     /**
-     * Read all transformation matrices from a stream and recover them for this
-     * object.
+     * 从一个流中读取所有的变换矩阵，并为这个对象恢复它们。
+     *
      */
     template <class Archive>
     void
     load_transformation_matrices(Archive &ar, const unsigned int version);
 
     /**
-     * Test for equality of two series expansion objects.
+     * 测试两个系列扩展对象的相等。
+     *
      */
     bool
     operator==(const Fourier<dim, spacedim> &fourier) const;
 
   private:
     /**
-     * Number of coefficients in each direction for each finite element in the
-     * registered hp::FECollection.
+     * 注册的每个有限元在每个方向上的系数数
+     * hp::FECollection.  。
+     *
      */
     const std::vector<unsigned int> n_coefficients_per_direction;
 
     /**
-     * hp::FECollection for which transformation matrices will be calculated.
+     * hp::FECollection 为其计算变换矩阵。
+     *
      */
     SmartPointer<const hp::FECollection<dim, spacedim>> fe_collection;
 
     /**
-     * hp::QCollection used in calculation of transformation matrices.
+     * hp::QCollection 用于计算转换矩阵。
+     *
      */
     const hp::QCollection<dim> q_collection;
 
     /**
-     * Angular frequencies $ 2 \pi {\bf k} $ .
+     * 角度频率  $ 2 \pi {\bf k} $  .
+     *
      */
     Table<dim, Tensor<1, dim>> k_vectors;
 
     /**
-     * Transformation matrices for each FiniteElement.
+     * 每个FiniteElement的变换矩阵。
+     *
      */
     std::vector<FullMatrix<CoefficientType>> fourier_transform_matrices;
 
     /**
-     * Auxiliary vector to store unrolled coefficients.
+     * 用于存储未滚动系数的辅助向量。
+     *
      */
     std::vector<CoefficientType> unrolled_coefficients;
 
     /**
-     * Which component of FiniteElement should be used to calculate the
-     * expansion.
+     * 应该使用FiniteElement的哪个分量来计算展开。
+     *
      */
     const unsigned int component;
   };
@@ -227,46 +207,23 @@ namespace FESeries
 
 
   /**
-   * A class to calculate expansion of a scalar FE (or a single component
-   * of vector-valued FE) field into series of Legendre functions on a
-   * reference element.
+   * 一个用于计算标量FE（或矢量FE的单个分量）场在参考元素上扩展为一系列Legendre函数的类。    Legendre函数是Legendre微分方程@f[
+   *  \frac{d}{dx}\left([1-x^2] \frac{d}{dx} P_n(x)\right) +
+   *  n[n+1] P_n(x) = 0
+   * @f]的解，可以用Rodrigues公式@f[
+   * P_n(x) = \frac{1}{2^n n!} \frac{d^n}{dx^n}[x^2-1]^n.
+   * @f]来表达，这些多项式相对于区间 $ L^2 $ @f[
+   * \int_{-1}^1 P_m(x) P_n(x) = \frac{2}{2n + 1} \delta_{mn}
+   * @f]的内积是正交的，是完整的。  在 $ L^2 $ 上的 $ [0;1] $ 的正交多项式家族可以通过@f[
+   * \widetilde P_m = \sqrt{2} P_m(2x-1).
+   * @f]构建。 参考元素 $ [0;1] $ 上的任意标量FE场可以在完全正交基础上展开为@f[
+   * u(x) = \sum_{m} c_m \widetilde P_{m}(x).
+   * @f] ]从基的正交特性可以看出，@f[
+   * c_m = \frac{2m+1}{2} \int_0^1 u(x) \widetilde P_m(x) dx .
+   * @f]该类计算系数 $ c_{\bf k} $ 使用 $ dim $
+   * -维Legendre多项式，使用张量积规则从 $ \widetilde P_m(x) $
+   * 构建。
    *
-   * Legendre functions are solutions to Legendre's differential equation
-   * @f[
-   *    \frac{d}{dx}\left([1-x^2] \frac{d}{dx} P_n(x)\right) +
-   *    n[n+1] P_n(x) = 0
-   * @f]
-   * and can be expressed using Rodrigues' formula
-   * @f[
-   *    P_n(x) = \frac{1}{2^n n!} \frac{d^n}{dx^n}[x^2-1]^n.
-   * @f]
-   * These polynomials are orthogonal with respect to the $ L^2 $ inner
-   * product on the interval $ [-1;1] $
-   * @f[
-   *    \int_{-1}^1 P_m(x) P_n(x) = \frac{2}{2n + 1} \delta_{mn}
-   * @f]
-   * and are complete.
-   * A family of $ L^2 $-orthogonal polynomials on $ [0;1] $ can be
-   * constructed via
-   * @f[
-   *    \widetilde P_m = \sqrt{2} P_m(2x-1).
-   * @f]
-   *
-   *
-   * An arbitrary scalar FE field on the reference element $ [0;1] $ can be
-   * expanded in the complete orthogonal basis as
-   * @f[
-   *    u(x)
-   *    = \sum_{m} c_m \widetilde P_{m}(x).
-   * @f]
-   * From the orthogonality property of the basis, it follows that
-   * @f[
-   *    c_m = \frac{2m+1}{2}
-   *    \int_0^1 u(x) \widetilde P_m(x) dx .
-   * @f]
-   * This class calculates coefficients $ c_{\bf k} $ using
-   * $ dim $-dimensional Legendre polynomials constructed from
-   * $ \widetilde P_m(x) $ using tensor product rule.
    */
   template <int dim, int spacedim = dim>
   class Legendre : public Subscriptor
@@ -275,22 +232,16 @@ namespace FESeries
     using CoefficientType = double;
 
     /**
-     * Constructor that initializes all required data structures.
+     * 构造函数，初始化所有需要的数据结构。         @p
+     * n_coefficients_per_direction 定义了每个方向的系数数， @p
+     * fe_collection 是将用于展开的 hp::FECollection ， @p
+     * q_collection 是用于整合 @p fe_collection.
+     * 中每个FiniteElement的展开的 hp::QCollection
+     * 由于Legendre展开只能在标量场上进行，这个类不会对矢量值的有限元操作，因此会抛出一个断言。然而，有限元场的每个分量可以分别被视为标量场，对其进行Legendre扩展也是可能的。为此，可选的参数
+     * @p component 定义了每个有限元的哪个分量将被使用。
+     * 默认值 @p component
+     * 只适用于标量FEs，在这种情况下，它表示唯一的分量将被分解。对于矢量FE，必须明确提供一个非默认值。
      *
-     * The @p n_coefficients_per_direction defines the number of coefficients in
-     * each direction, @p fe_collection is the hp::FECollection for which
-     * expansion will be used and @p q_collection is the hp::QCollection used to
-     * integrate the expansion for each FiniteElement in @p fe_collection.
-     *
-     * As the Legendre expansion can only be performed on scalar fields, this
-     * class does not operate on vector-valued finite elements and will
-     * therefore throw an assertion. However, each component of a finite element
-     * field can be treated as a scalar field, respectively, on which Legendre
-     * expansions are again possible. For this purpose, the optional parameter
-     * @p component defines which component of each FiniteElement will be used.
-     * The default value of @p component only applies to scalar FEs, in which
-     * case it indicates that the sole component is to be decomposed. For
-     * vector-valued FEs, a non-default value must be explicitly provided.
      */
     Legendre(const std::vector<unsigned int> &n_coefficients_per_direction,
              const hp::FECollection<dim, spacedim> &fe_collection,
@@ -298,12 +249,13 @@ namespace FESeries
              const unsigned int component = numbers::invalid_unsigned_int);
 
     /**
-     * A non-default constructor. The @p size_in_each_direction defines the number
-     * of coefficients in each direction, @p fe_collection is the hp::FECollection
-     * for which expansion will be used and @p q_collection is the hp::QCollection
-     * used to integrate the expansion for each FiniteElement in @p fe_collection.
+     * 一个非默认的构造函数。 @p size_in_each_direction
+     * 定义了每个方向的系数数， @p fe_collection 是
+     * hp::FECollection ，将对其进行扩展， @p q_collection
+     * 是用于整合 @p fe_collection.  @deprecated
+     * 中每个FiniteElement的扩展的 hp::QCollection
+     * 使用一个不同的构造函数代替。
      *
-     * @deprecated Use a different constructor instead.
      */
     DEAL_II_DEPRECATED
     Legendre(const unsigned int n_coefficients_per_direction,
@@ -311,9 +263,10 @@ namespace FESeries
              const hp::QCollection<dim> &           q_collection);
 
     /**
-     * Calculate @p legendre_coefficients of the cell vector field given by
-     * @p local_dof_values corresponding to FiniteElement with
-     * @p cell_active_fe_index .
+     * 计算 @p legendre_coefficients 中由 @p local_dof_values
+     * 给出的单元向量场的 @p cell_active_fe_index
+     * 对应的FiniteElement。
+     *
      */
     template <typename Number>
     void
@@ -322,82 +275,81 @@ namespace FESeries
               Table<dim, CoefficientType> & legendre_coefficients);
 
     /**
-     * Return the number of coefficients in each coordinate direction for the
-     * finite element associated with @p index in the provided hp::FECollection.
+     * 返回与 @p index 相关的有限元在所提供的 hp::FECollection.
+     * 中每个坐标方向的系数数。
+     *
      */
     unsigned int
     get_n_coefficients_per_direction(const unsigned int index) const;
 
     /**
-     * Calculate all transformation matrices to transfer the finite element
-     * solution to the series expansion representation.
+     * 计算所有的转换矩阵，将有限元解转移到系列展开表示。
+     * 这些矩阵将通过调用calculate()按需生成，并存储起来供重复使用。通常情况下，这个操作会消耗大量的工作量。有了这个函数，所有的矩阵将被提前计算。
+     * 这样，我们就可以将其昂贵的生成与实际应用分开。
      *
-     * These matrices will be generated on demand by calling calculate() and
-     * stored for recurring purposes. Usually, this operation consumes a lot of
-     * workload. With this function, all matrices will be calculated in advance.
-     * This way, we can separate their costly generation from the actual
-     * application.
      */
     void
     precalculate_all_transformation_matrices();
 
     /**
-     * Write all transformation matrices of this object to a stream for the
-     * purpose of serialization.
+     * 将此对象的所有转换矩阵写入一个流中，以便进行序列化。
+     * 由于它的任何一个变换矩阵对于一个给定的场景只需要生成一次，通常的做法是提前调用precalculate_all_transformation_matrices()来确定它们，并通过序列化来保留它们。
      *
-     * Since any of its transformation matrices has to be generated only once
-     * for a given scenario, it is common practice to determine them in advance
-     * calling precalculate_all_transformation_matrices() and keep them via
-     * serialization.
      */
     template <class Archive>
     void
     save_transformation_matrices(Archive &ar, const unsigned int version);
 
     /**
-     * Read all transformation matrices from a stream and recover them for this
-     * object.
+     * 从一个流中读取所有的变换矩阵，并为这个对象恢复它们。
+     *
      */
     template <class Archive>
     void
     load_transformation_matrices(Archive &ar, const unsigned int version);
 
     /**
-     * Test for equality of two series expansion objects.
+     * 测试两个系列扩展对象的相等。
+     *
      */
     bool
     operator==(const Legendre<dim, spacedim> &legendre) const;
 
   private:
     /**
-     * Number of coefficients in each direction for each finite element in the
-     * registered hp::FECollection.
+     * 注册的每个有限元在每个方向上的系数数
+     * hp::FECollection.  。
+     *
      */
     const std::vector<unsigned int> n_coefficients_per_direction;
 
     /**
-     * hp::FECollection for which transformation matrices will be calculated.
+     * hp::FECollection 将计算其变换矩阵。
+     *
      */
     SmartPointer<const hp::FECollection<dim, spacedim>> fe_collection;
 
     /**
-     * hp::QCollection used in calculation of transformation matrices.
+     * hp::QCollection  用于计算转换矩阵。
+     *
      */
     const hp::QCollection<dim> q_collection;
 
     /**
-     * Transformation matrices for each FiniteElement.
+     * 每个FiniteElement的变换矩阵。
+     *
      */
     std::vector<FullMatrix<CoefficientType>> legendre_transform_matrices;
 
     /**
-     * Auxiliary vector to store unrolled coefficients.
+     * 用于存储解卷系数的辅助向量。
+     *
      */
     std::vector<CoefficientType> unrolled_coefficients;
 
     /**
-     * Which component of FiniteElement should be used to calculate the
-     * expansion.
+     * 应该使用FiniteElement的哪个分量来计算展开。
+     *
      */
     const unsigned int component;
   };
@@ -405,21 +357,15 @@ namespace FESeries
 
 
   /**
-   * Calculate the @p norm of subsets of @p coefficients defined by
-   * @p predicate being constant. Return the pair of vectors of predicate values
-   * and the vector of calculated subset norms.
+   * 计算由 @p predicate 定义的 @p coefficients 的子集的 @p norm
+   * 为常数。返回一对谓词值的向量和计算出的子集规范的向量。
+   * @p predicate 应该返回一对 <code>bool</code>
+   * 和<code>无符号int</code>。前者是一个标志，表明是否应该在计算中使用给定的TableIndices，而后者是指数的解卷值，根据这个指数将形成系数的子集。
+   * 只有那些大于 @p smallest_abs_coefficient.
+   * 的系数才会被考虑。
+   * @note  只有以下 @p norm_type
+   * 的值可以实现，并且在这种情况下是有意义的：均值、L1_norm、L2_norm、Linfty_norm。均值准则只适用于实值系数。
    *
-   * @p predicate should return a pair of <code>bool</code> and <code>unsigned
-   * int</code>. The former is a flag whether a given TableIndices should be
-   * used in calculation, whereas the latter is the unrolled value of indices
-   * according to which the subsets of coefficients will be formed.
-   *
-   * Only those coefficients will be considered which are larger than
-   * @p smallest_abs_coefficient.
-   *
-   * @note Only the following values of @p norm_type are implemented and make
-   * sense in this case: mean, L1_norm, L2_norm, Linfty_norm. The mean norm ca
-   * only be applied to real valued coefficients.
    */
   template <int dim, typename CoefficientType>
   std::pair<std::vector<unsigned int>, std::vector<double>>
@@ -430,16 +376,17 @@ namespace FESeries
                        const double smallest_abs_coefficient = 1e-10);
 
   /**
-   * Linear regression least-square fit of $y = k \, x + b$.
-   * The size of the input vectors should be equal and more than 1.
-   * The returned pair will contain $k$ (first) and $b$ (second).
+   * $y = k \, x + b$ 的线性回归最小平方拟合。
+   * 输入向量的大小应该等于和大于1。返回的对子将包含
+   * $k$ （第一）和 $b$ （第二）。
+   *
    */
   std::pair<double, double>
   linear_regression(const std::vector<double> &x, const std::vector<double> &y);
 
 } // namespace FESeries
 
-/*@}*/
+ /*@}*/ 
 
 
 
@@ -628,7 +575,7 @@ template <class Archive>
 inline void
 FESeries::Fourier<dim, spacedim>::save_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Store information about those resources which have been used to generate
   // the transformation matrices.
@@ -658,7 +605,7 @@ template <class Archive>
 inline void
 FESeries::Fourier<dim, spacedim>::load_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Check whether the currently registered resources are compatible with
   // the transformation matrices to load.
@@ -706,7 +653,7 @@ template <class Archive>
 inline void
 FESeries::Legendre<dim, spacedim>::save_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Store information about those resources which have been used to generate
   // the transformation matrices.
@@ -736,7 +683,7 @@ template <class Archive>
 inline void
 FESeries::Legendre<dim, spacedim>::load_transformation_matrices(
   Archive &ar,
-  const unsigned int /*version*/)
+  const unsigned int  /*version*/ )
 {
   // Check whether the currently registered resources are compatible with
   // the transformation matrices to load.
@@ -783,3 +730,5 @@ FESeries::Legendre<dim, spacedim>::load_transformation_matrices(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_fe_series_h
+
+

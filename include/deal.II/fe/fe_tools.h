@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_tools_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -56,97 +57,86 @@ class AffineConstraints;
 #endif
 
 
-/*!@addtogroup feall */
-/*@{*/
+ /*!@addtogroup feall */ 
+ /*@{*/ 
 
 
 /**
- * This namespace offers interpolations and extrapolations of discrete
- * functions of one @p FiniteElement @p fe1 to another @p FiniteElement @p
- * fe2.
+ * 这个命名空间提供了一个 @p FiniteElement  @p fe1
+ * 的离散函数向另一个 @p FiniteElement  @p fe2的内插和外推。
+ * 它还提供了在每个单元上进行插值的局部插值矩阵。此外，它还提供了差分矩阵
+ * $id-I_h$ ，这是评估 $(id-I_h)z$ 所需要的，例如，对偶解 $z$
+ * 。
+ * 关于<tt>spacedim</tt>模板参数的更多信息，请查阅FiniteElement或Triangulation的文档。
  *
- * It also provides the local interpolation matrices that interpolate on each
- * cell. Furthermore it provides the difference matrix $id-I_h$ that is needed
- * for evaluating $(id-I_h)z$ for e.g. the dual solution $z$.
  *
- * For more information about the <tt>spacedim</tt> template parameter check
- * the documentation of FiniteElement or the one of Triangulation.
  */
 namespace FETools
 {
   /**
-   * A base class for factory objects creating finite elements of a given
-   * degree. Derived classes are called whenever one wants to have a
-   * transparent way to create a finite element object.
+   * 一个用于创建给定程度的有限元素的工厂对象的基类。每当人们想用一种透明的方式来创建有限元对象时，就会调用派生类。
+   * 该类在 FETools::get_fe_by_name() 和 FETools::add_fe_name()
+   * 函数中使用。
    *
-   * This class is used in the FETools::get_fe_by_name() and
-   * FETools::add_fe_name() functions.
    */
   template <int dim, int spacedim = dim>
   class FEFactoryBase : public Subscriptor
   {
   public:
     /**
-     * Create a FiniteElement and return a pointer to it.
+     * 创建一个FiniteElement，并返回一个指向它的指针。
+     *
      */
     virtual std::unique_ptr<FiniteElement<dim, spacedim>>
     get(const unsigned int degree) const = 0;
 
     /**
-     * Create a FiniteElement from a quadrature formula (currently only
-     * implemented for FE_Q) and return a pointer to it.
+     * 从正交公式创建一个FiniteElement（目前只对FE_Q实现），并返回一个指针。
+     *
      */
 
     virtual std::unique_ptr<FiniteElement<dim, spacedim>>
     get(const Quadrature<1> &quad) const = 0;
 
     /**
-     * Virtual destructor doing nothing but making the compiler happy.
+     * 虚拟析构器，除了让编译器高兴，什么都不做。
+     *
      */
     virtual ~FEFactoryBase() override = default;
   };
 
   /**
-   * A concrete class for factory objects creating finite elements of a given
-   * degree.
+   * 一个具体的类，用于创建特定程度的有限元的工厂对象。
+   * 该类的get()函数生成一个作为模板参数的类型的有限元对象，并将度数（无论有限元类希望如何解释这个数字）作为get()的参数给出。
    *
-   * The class's get() function generates a finite element object of the type
-   * given as template argument, and with the degree (however the finite
-   * element class wishes to interpret this number) given as argument to
-   * get().
    */
   template <class FE>
   class FEFactory : public FEFactoryBase<FE::dimension, FE::space_dimension>
   {
   public:
     /**
-     * Create a FiniteElement and return a pointer to it.
+     * 创建一个FiniteElement并返回一个指针。
+     *
      */
     virtual std::unique_ptr<FiniteElement<FE::dimension, FE::space_dimension>>
     get(const unsigned int degree) const override;
 
     /**
-     * Create a FiniteElement from a quadrature formula (currently only
-     * implemented for FE_Q) and return a pointer to it.
+     * 从正交公式中创建一个FiniteElement（目前只对FE_Q实现）并返回一个指针。
+     *
      */
     virtual std::unique_ptr<FiniteElement<FE::dimension, FE::space_dimension>>
     get(const Quadrature<1> &quad) const override;
   };
 
   /**
-   * @warning In most cases, you will probably want to use
-   * compute_base_renumbering().
+   * @warning  在大多数情况下，你可能想使用
+   * compute_base_renumbering()。
+   * 计算出一个单元格按分量重新编号所需的向量。
+   * 此外，计算存储本地块向量中每个组件的起始索引的向量。
+   * 第二个向量是这样组织的：每个基元都有一个向量，包含这个基元所服务的每个分量的起始索引。
+   * 当第一个向量被检查到有正确的大小时，第二个向量被重新初始化以方便使用。
    *
-   * Compute the vector required to renumber the dofs of a cell by component.
-   * Furthermore, compute the vector storing the start indices of each
-   * component in the local block vector.
-   *
-   * The second vector is organized such that there is a vector for each base
-   * element containing the start index for each component served by this base
-   * element.
-   *
-   * While the first vector is checked to have the correct size, the second
-   * one is reinitialized for convenience.
    */
   template <int dim, int spacedim>
   void
@@ -155,19 +145,12 @@ namespace FETools
                          std::vector<std::vector<unsigned int>> &start_indices);
 
   /**
-   * Compute the vector required to renumber the dofs of a cell by block.
-   * Furthermore, compute the vector storing either the start indices or the
-   * size of each local block vector.
+   * 计算按区块对单元格的道夫重新编号所需的向量。
+   * 此外，计算存储每个本地块向量的起始索引或大小的向量。
+   * 如果 @p bool 参数为真， @p block_data
+   * 将被填充为每个局部块的起始指数。如果它是假的，那么就返回块的大小。
+   * 向量<tt>renumbering</tt>将以本地自由度的标准编号为索引，即第一个顶点，然后是第二个顶点，之后是顶点线、四边形和六边形。对于每个索引，条目表示这个自由度在一个编号方案中得到的索引，其中第一块的编号完全在第二块之前。
    *
-   * If the @p bool parameter is true, @p block_data is filled with the start
-   * indices of each local block. If it is false, then the block sizes are
-   * returned.
-   *
-   * The vector <tt>renumbering</tt> will be indexed by the standard numbering
-   * of local degrees of freedom, namely the first vertex, then the second
-   * vertex, after vertices lines, quads, and hexes. For each index, the entry
-   * indicates the index which this degree of freedom receives in a numbering
-   * scheme, where the first block is numbered completely before the second.
    */
   template <int dim, int spacedim>
   void
@@ -177,17 +160,16 @@ namespace FETools
                             bool return_start_indices = true);
 
   /**
-   * @name Generation of local matrices
-   * @{
+   * @name 生成局部矩阵  @{ 。
+   *
    */
   /**
-   * Compute the interpolation matrix that interpolates a @p fe1-function to a
-   * @p fe2-function on each cell. The interpolation_matrix needs to be of
-   * size <tt>(fe2.n_dofs_per_cell(), fe1.n_dofs_per_cell())</tt>.
+   * 计算内插矩阵，将每个单元上的 @p fe1-function 内插到 @p
+   * fe2-function 。插值矩阵的大小为<tt>(fe2.n_dofs_per_cell(),
+   * fe1.n_dofs_per_cell())/tt>。    注意，如果有限元空间 @p fe1
+   * 是有限元空间 @p fe2 的一个子集，那么 @p
+   * interpolation_matrix 就是一个嵌入矩阵。
    *
-   * Note, that if the finite element space @p fe1 is a subset of the finite
-   * element space @p fe2 then the @p interpolation_matrix is an embedding
-   * matrix.
    */
   template <int dim, typename number, int spacedim>
   void
@@ -196,15 +178,14 @@ namespace FETools
                            FullMatrix<number> &interpolation_matrix);
 
   /**
-   * Compute the interpolation matrix that interpolates a @p fe1-function to a
-   * @p fe2-function, and interpolates this to a second @p fe1-function on
-   * each cell. The interpolation_matrix needs to be of size
-   * <tt>(fe1.n_dofs_per_cell(), fe1.n_dofs_per_cell())</tt>.
+   * 计算内插矩阵，将一个 @p fe1-function 内插到一个 @p
+   * fe2-function, ，并将此内插到每个单元上的第二个 @p
+   * fe1-function 。插值矩阵的大小为<tt>(fe1.n_dofs_per_cell(),
+   * fe1.n_dofs_per_cell())/tt>。    注意，只有当 @p fe1
+   * 的有限元空间不是 @p fe2,
+   * 的有限元空间的子集时，这个函数才有意义，因为如果它是一个子集，那么
+   * @p interpolation_matrix 就只有单位矩阵了。
    *
-   * Note, that this function only makes sense if the finite element space due
-   * to @p fe1 is not a subset of the finite element space due to @p fe2, as
-   * if it were a subset then the @p interpolation_matrix would be only the
-   * unit matrix.
    */
   template <int dim, typename number, int spacedim>
   void
@@ -213,15 +194,14 @@ namespace FETools
                                 FullMatrix<number> &interpolation_matrix);
 
   /**
-   * Compute the identity matrix minus the back interpolation matrix.
-   * The @p difference_matrix will be of size <tt>(fe1.n_dofs_per_cell(),
-   * fe1.n_dofs_per_cell())</tt> after this function. Previous content
-   * of the argument will be overwritten.
+   * 计算身份矩阵减去回补矩阵。  在这个函数之后， @p
+   * difference_matrix 的大小将是<tt>(fe1.n_dofs_per_cell(),
+   * fe1.n_dofs_per_cell())/tt>。之前的参数内容将被覆盖。
+   * 这个函数计算将 @p fe1 函数 $z$ 转换到 $z-I_hz$
+   * 的矩阵，其中 $I_h$ 表示从 @p fe1 空间到 @p fe2
+   * 空间的插值运算符。因此，这个矩阵对于评估误差呈现是有用的，其中
+   * $z$ 表示对偶解。
    *
-   * This function computes the matrix that transforms a @p fe1 function $z$ to
-   * $z-I_hz$ where $I_h$ denotes the interpolation operator from the @p fe1
-   * space to the @p fe2 space. This matrix hence is useful to evaluate
-   * error-representations where $z$ denotes the dual solution.
    */
   template <int dim, typename number, int spacedim>
   void
@@ -230,7 +210,8 @@ namespace FETools
                                       FullMatrix<number> &difference_matrix);
 
   /**
-   * Compute the local $L^2$-projection matrix from fe1 to fe2.
+   * 计算从fe1到fe2的局部 $L^2$ -投影矩阵。
+   *
    */
   template <int dim, typename number, int spacedim>
   void
@@ -239,114 +220,82 @@ namespace FETools
                         FullMatrix<number> &                matrix);
 
   /**
-   * This is a rather specialized function used during the construction of
-   * finite element objects. It is used to build the basis of shape functions
-   * for an element, given a set of polynomials and interpolation points. The
-   * function is only implemented for finite elements with exactly @p dim
-   * vector components. In particular, this applies to classes derived from
-   * the FE_PolyTensor class.
-   *
-   * Specifically, the purpose of this function is as follows: FE_PolyTensor
-   * receives, from its derived classes, an argument that describes a polynomial
-   * space. This space may be parameterized in terms of monomials, or in some
-   * other way, but is in general not in the form that we use for finite
-   * elements where we typically want to use a basis that is derived from
-   * some kind of node functional (e.g., the interpolation at specific points).
-   * Concretely, assume that the basis used by the polynomial space is
-   * $\{\tilde\varphi_j(\mathbf x)\}_{j=1}^N$, and that the node functionals
-   * of the finite element are $\{\Psi_i\}_{i=1}^N$. We then want to compute a
-   * basis $\{\varphi_j(\mathbf x)\}_{j=1}^N$ for the finite element space so
-   * that $\Psi_i[\varphi_j] = \delta_{ij}$. To do this, we can set
-   * $\varphi_j(\mathbf x) = \sum_{k=1}^N c_{jk} \tilde\varphi_k(\mathbf x)$
-   * where we need to determine the expansion coefficients $c_{jk}$. We do this
-   * by applying $\Psi_i$ to both sides of the equation, to obtain
+   * 这是一个相当专业的函数，在构建有限元对象时使用。它用于为一个元素建立形状函数的基础，给定一组多项式和插值点。该函数只针对正好有
+   * @p dim
+   * 个矢量分量的有限元实现。特别是，这适用于从FE_PolyTensor类派生的类。
+   * 具体来说，这个函数的目的是这样的。FE_PolyTensor从其派生类中接收一个描述多项式空间的参数。这个空间可以用单项式或其他方式进行参数化，但一般来说，不是我们用于有限元的形式，在有限元中，我们通常要使用从某种节点函数（例如，特定点的内插）派生的基。
+   * 具体来说，假设多项式空间使用的基是
+   * $\{\tilde\varphi_j(\mathbf x)\}_{j=1}^N$
+   * ，而有限元的节点函数是 $\{\Psi_i\}_{i=1}^N$
+   * 。然后我们想为有限元空间计算一个基  $\{\varphi_j(\mathbf
+   * x)\}_{j=1}^N$  ，以便  $\Psi_i[\varphi_j] = \delta_{ij}$
+   * 。为了做到这一点，我们可以设置  $\varphi_j(\mathbf x) =
+   * \sum_{k=1}^N c_{jk} \tilde\varphi_k(\mathbf x)$
+   * ，我们需要确定扩展系数  $c_{jk}$  。我们通过将 $\Psi_i$
+   * 应用于方程的两边来做到这一点，得到
    * @f{align*}{
-   *   \Psi_i [\varphi_j] = \sum_{k=1}^N c_{jk} \Psi_i[\tilde\varphi_k],
+   * \Psi_i [\varphi_j] = \sum_{k=1}^N c_{jk} \Psi_i[\tilde\varphi_k],
    * @f}
-   * and we know that the left hand side equals $\delta_{ij}$.
-   * If you think of this as a system of $N\times N$ equations for the
-   * elements of a matrix on the left and on the right, then this can be
-   * written as
+   * 我们知道左手边等于  $\delta_{ij}$  。
+   * 如果你认为这是一个 $N\times N$
+   * 的方程系统，左边和右边的矩阵的元素，那么这可以写为
    * @f{align*}{
-   *   I = C X^T
+   * I = C X^T
    * @f}
-   * where $C$ is the matrix of coefficients $c_{jk}$ and
-   * $X_{ik} = \Psi_i[\tilde\varphi_k]$. Consequently, in order to compute
-   * the expansion coefficients $C=X^{-T}$, we need to apply the node
-   * functionals to all functions of the "raw" basis of the polynomial space.
+   * 其中 $C$ 是系数 $c_{jk}$ 和 $X_{ik} = \Psi_i[\tilde\varphi_k]$
+   * 的矩阵。因此，为了计算膨胀系数 $C=X^{-T}$
+   * ，我们需要将节点函数应用于多项式空间的 "原始
+   * "基础的所有函数。    在有限元收到这个矩阵 $X$
+   * 回来之前，它描述其形状函数（例如，在
+   * FiniteElement::shape_value()) 中的形式 $\tilde\varphi_j$
+   * 。在它调用这个函数后，它有了膨胀系数，可以描述它的形状函数为
+   * $\varphi_j$  。    因此，这个函数计算这个矩阵  $X$
+   * ，具体情形如下。
    *
-   * Until the finite element receives this matrix $X$ back, it describes its
-   * shape functions (e.g., in FiniteElement::shape_value()) in the form
-   * $\tilde\varphi_j$. After it calls this function, it has the expansion
-   * coefficients and can describe its shape functions as $\varphi_j$.
    *
-   * This function therefore computes this matrix $X$, for the following
-   * specific circumstances:
-   * - That the node functionals $\Psi_i$ are point evaluations at points
-   *   $\mathbf x_i$ that the finite element in question describes via its
-   *   "generalized" support points (through
-   *   FiniteElement::get_generalized_support_points(), see also
-   *   @ref GlossGeneralizedSupport "this glossary entry"). These point
-   *   evaluations need to necessarily evaluate the <i>value</i> of a shape
-   *   function at that point (the shape function may be vector-valued, and
-   *   so the functional may be a linear combination of the individual
-   *   components of the values); but, in particular, the nodal functions may
-   *   not be <i>integrals</i> over entire edges or faces,
-   *   or other non-local functionals. In other words, we assume that
-   *   $\Psi_i[\tilde\varphi_j] = f_j(\tilde\varphi_j(\mathbf x_i))$
-   *   where $f_j$ is a function of the (possibly vector-valued) argument
-   *   that returns a scalar.
-   * - That the finite element has exactly @p dim vector components.
-   * - That the function $f_j$ is given by whatever the element implements
-   *   through the
-   * FiniteElement::convert_generalized_support_point_values_to_dof_values()
-   *   function.
    *
-   * @param fe The finite element for which the operations above are to be
-   *        performed.
-   * @return The matrix $X$ as discussed above.
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 有限元素正好有 @p dim 个矢量分量。
+   *
+   *
+   *
+   *
+   *
+   * - 该函数 $f_j$ 是由任何元素通过 FiniteElement::convert_generalized_support_point_values_to_dof_values() 函数实现的。      @param  fe 要对其进行上述操作的有限元。    @return  如上所述的矩阵 $X$ 。
+   *
    */
   template <int dim, int spacedim>
   FullMatrix<double>
   compute_node_matrix(const FiniteElement<dim, spacedim> &fe);
 
   /**
-   * For all possible (isotropic and anisotropic) refinement cases compute the
-   * embedding matrices from a coarse cell to the child cells. Each column of
-   * the resulting matrices contains the representation of a coarse grid basis
-   * function by the fine grid basis; the matrices are split such that there
-   * is one matrix for every child.
+   * 对于所有可能的（各向同性和各向异性）细化情况，计算从一个粗单元到子单元的嵌入矩阵。所得矩阵的每一列都包含了粗网格基函数在细网格基上的表示；矩阵被分割，使得每个子单元都有一个矩阵。
+   * 这个函数在足够多的正交点中计算粗网格函数，并使用最小二乘法近似拟合细网格函数。因此，这个函数的使用只限于有限元空间实际上是嵌套的情况。
+   * 注意， <code>matrices[refinement_case-1][child]</code>
+   * 包括了RefinementCase  <code>refinement_case</code> 的子
+   * <code>child</code> 的嵌入（或延长）矩阵。这里，我们使用
+   * <code>refinement_case-1</code> instead of <code>refinement_case</code>
+   * ，因为对于 RefinementCase::no_refinement(=0)
+   * ，没有可用的延长矩阵。
+   * 通常，这个函数被FiniteElement类的各种实现所调用，以填充各自的
+   * FiniteElement::prolongation 矩阵。      @param  fe
+   * 我们为其计算嵌入矩阵的有限元类。      @param  矩阵
+   * 对FullMatrix对象的 RefinementCase<dim>::isotropic_refinement
+   * 向量的引用。每个向量对应一个RefinementCase  @p
+   * refinement_case ，向量大小为
+   * GeometryInfo<dim>::n_children(refinement_case).
+   * 这是在FiniteElement中使用的格式，我们主要想在这里使用这个函数。
+   * @param  isotropic_only 设置为 <code>true</code>
+   * 如果你只想计算各向同性的细化矩阵。      @param
+   * threshold是计算嵌入的最小二乘法中允许的差距。
    *
-   * This function computes the coarse grid function in a sufficiently large
-   * number of quadrature points and fits the fine grid functions using least
-   * squares approximation. Therefore, the use of this function is restricted
-   * to the case that the finite element spaces are actually nested.
-   *
-   * Note, that <code>matrices[refinement_case-1][child]</code> includes the
-   * embedding (or prolongation) matrix of child <code>child</code> for the
-   * RefinementCase <code>refinement_case</code>. Here, we use
-   * <code>refinement_case-1</code> instead of <code>refinement_case</code> as
-   * for RefinementCase::no_refinement(=0) there are no prolongation matrices
-   * available.
-   *
-   * Typically this function is called by the various implementations of
-   * FiniteElement classes in order to fill the respective
-   * FiniteElement::prolongation matrices.
-   *
-   * @param fe The finite element class for which we compute the embedding
-   * matrices.
-   *
-   * @param matrices A reference to RefinementCase<dim>::isotropic_refinement
-   * vectors of FullMatrix objects. Each vector corresponds to one
-   * RefinementCase @p refinement_case and is of the vector size
-   * GeometryInfo<dim>::n_children(refinement_case). This is the format used
-   * in FiniteElement, where we want to use this function mostly.
-   *
-   * @param isotropic_only Set to <code>true</code> if you only want to
-   * compute matrices for isotropic refinement.
-   *
-   * @param threshold is the gap allowed in the least squares algorithm
-   * computing the embedding.
    */
   template <int dim, typename number, int spacedim>
   void
@@ -357,25 +306,18 @@ namespace FETools
     const double                                  threshold      = 1.e-12);
 
   /**
-   * Compute the embedding matrices on faces needed for constraint matrices.
+   * 计算约束矩阵所需的面的嵌入矩阵。      @param  fe
+   * 要计算这些矩阵的有限元。      @param  matrices
+   * 一个<i>GeometryInfo<dim>::subfaces_per_face =
+   * 2<sup>dim-1</sup></i>
+   * FullMatrix对象的数组，保存每个子面的嵌入矩阵。
+   * @param  face_coarse 计算该面的粗面的面的编号。      @param
+   * face_fine 脸部精细化的脸部数量，这是为其计算的。
+   * @param
+   * threshold是计算嵌入的最小二乘法算法中允许的差距。
+   * @warning
+   * 这个函数将被用于计算约束矩阵。它还没有得到充分的测试。
    *
-   * @param fe The finite element for which to compute these matrices.
-   *
-   * @param matrices An array of <i>GeometryInfo<dim>::subfaces_per_face =
-   * 2<sup>dim-1</sup></i> FullMatrix objects,holding the embedding matrix for
-   * each subface.
-   *
-   * @param face_coarse The number of the face on the coarse side of the face
-   * for which this is computed.
-   *
-   * @param face_fine The number of the face on the refined side of the face
-   * for which this is computed.
-   *
-   * @param threshold is the gap allowed in the least squares algorithm
-   * computing the embedding.
-   *
-   * @warning This function will be used in computing constraint matrices. It
-   * is not sufficiently tested yet.
    */
   template <int dim, typename number, int spacedim>
   void
@@ -387,35 +329,24 @@ namespace FETools
     const double       threshold = 1.e-12);
 
   /**
-   * For all possible (isotropic and anisotropic) refinement cases compute the
-   * <i>L<sup>2</sup></i>-projection matrices from the children to a coarse
-   * cell.
+   * 对于所有可能的（各向同性和各向异性）细化情况，计算从子单元到粗略单元的<i>L<sup>2</sup></i>投影矩阵。
+   * 注意， <code>matrices[refinement_case-1][child]</code>
+   * 包括RefinementCase  <code>refinement_case</code> 的子集
+   * <code>child</code> 的投影（或限制）矩阵。这里，我们使用
+   * <code>refinement_case-1</code> instead of <code>refinement_case</code>
+   * ，因为对于 RefinementCase::no_refinement(=0)
+   * ，没有可用的投影矩阵。
+   * 通常，这个函数被FiniteElement类的各种实现所调用，以填充各自的
+   * FiniteElement::restriction 矩阵。      @arg[in]  fe
+   * 我们为其计算投影矩阵的有限元类。      @arg[out]  矩阵
+   * 对一组 <tt>RefinementCase<dim>::isotropic_refinement</tt>
+   * FullMatrix对象向量的引用。每个向量对应一个RefinementCase
+   * @p refinement_case ，向量大小为
+   * <tt>GeometryInfo<dim>::n_children(refinement_case)</tt>.
+   * 这是在FiniteElement中使用的格式，我们主要想在这里使用这个函数。
+   * @arg[in]  isotropic_only 如果设置为  <code>true</code>
+   * ，那么这个函数只计算各向同性的细化情况的数据。输出向量的其他元素将不被触及（但仍然存在）。
    *
-   * Note, that <code>matrices[refinement_case-1][child]</code> includes the
-   * projection (or restriction) matrix of child <code>child</code> for the
-   * RefinementCase <code>refinement_case</code>. Here, we use
-   * <code>refinement_case-1</code> instead of <code>refinement_case</code> as
-   * for RefinementCase::no_refinement(=0) there are no projection matrices
-   * available.
-   *
-   * Typically this function is called by the various implementations of
-   * FiniteElement classes in order to fill the respective
-   * FiniteElement::restriction matrices.
-   *
-   * @arg[in] fe The finite element class for which we compute the projection
-   *   matrices.
-   *
-   * @arg[out] matrices A reference to a set of
-   *   <tt>RefinementCase<dim>::isotropic_refinement</tt> vectors of FullMatrix
-   *   objects. Each vector corresponds to one RefinementCase @p refinement_case
-   *   and is of the vector size
-   *   <tt>GeometryInfo<dim>::n_children(refinement_case)</tt>. This is the
-   *   format used in FiniteElement, where we want to use this function mostly.
-   *
-   * @arg[in] isotropic_only If set to <code>true</code>, then this
-   *   function only computes data for the isotropic refinement case. The
-   *   other elements of the output vector are left untouched (but still
-   *   exist).
    */
   template <int dim, typename number, int spacedim>
   void
@@ -425,89 +356,34 @@ namespace FETools
     const bool                                    isotropic_only = false);
 
   /**
-   * Project scalar data defined in quadrature points to a finite element
-   * space on a single cell.
+   * 将定义在正交点的标量数据投射到单个单元上的有限元空间。
+   * 这个函数的作用如下：假设有标量数据<tt>u<sub>q</sub>, 0
+   * <= q <
+   * Q:=quadrature.size()</tt>定义在一个单元的正交点，这些点由给定的<tt>rhs_quadrature</tt>对象定义。然后，我们可能想问在给定的FE对象所定义的有限元空间中的有限元函数（在单个单元上）<tt>v<sub>h</sub></tt>，它是<tt>u</tt>在下列意义上的投影。
+   * 通常，投影<tt>v<sub>h</sub></tt>是满足<tt>(v<sub>h</sub>,w)=(u,w)</tt>对所有离散测试函数<tt>w</tt>的函数。在目前的情况下，我们无法评估右侧，因为<tt>u</tt>只在<tt>rhs_quadrature</tt>给出的正交点中定义，所以我们用正交近似值代替它。同样，左手边也是用<tt>lhs_quadrature</tt>对象来近似；如果这个正交对象选择得当，那么左手边的积分就可以准确完成，不需要任何近似。如果右手边的正交对象的正交点太少，则有必要使用不同的正交对象
    *
-   * What this function does is the following: assume that there is scalar
-   * data <tt>u<sub>q</sub>, 0 <= q < Q:=quadrature.size()</tt> defined at the
-   * quadrature points of a cell, with the points defined by the given
-   * <tt>rhs_quadrature</tt> object. We may then want to ask for that finite
-   * element function (on a single cell) <tt>v<sub>h</sub></tt> in the finite-
-   * dimensional space defined by the given FE object that is the projection
-   * of <tt>u</tt> in the following sense:
-   *
-   * Usually, the projection <tt>v<sub>h</sub></tt> is that function that
-   * satisfies <tt>(v<sub>h</sub>,w)=(u,w)</tt> for all discrete test
-   * functions <tt>w</tt>. In the present case, we can't evaluate the right
-   * hand side, since <tt>u</tt> is only defined in the quadrature points
-   * given by <tt>rhs_quadrature</tt>, so we replace it by a quadrature
-   * approximation. Likewise, the left hand side is approximated using the
-   * <tt>lhs_quadrature</tt> object; if this quadrature object is chosen
-   * appropriately, then the integration of the left hand side can be done
-   * exactly, without any approximation. The use of different quadrature
-   * objects is necessary if the quadrature object for the right hand side has
-   * too few quadrature points -- for example, if data <tt>q</tt> is only
-   * defined at the cell center, then the corresponding one-point quadrature
-   * formula is obviously insufficient to approximate the scalar product on
-   * the left hand side by a definite form.
-   *
-   * After these quadrature approximations, we end up with a nodal
-   * representation <tt>V<sub>h</sub></tt> of <tt>v<sub>h</sub></tt> that
-   * satisfies the following system of linear equations: <tt>M V<sub>h</sub> =
-   * Q U</tt>, where <tt>M<sub>ij</sub>=(phi_i,phi_j)</tt> is the mass matrix
-   * approximated by <tt>lhs_quadrature</tt>, and <tt>Q</tt> is the matrix
-   * <tt>Q<sub>iq</sub>=phi<sub>i</sub>(x<sub>q</sub>) w<sub>q</sub></tt>
-   * where <tt>w<sub>q</sub></tt> are quadrature weights; <tt>U</tt> is the
-   * vector of quadrature point data <tt>u<sub>q</sub></tt>.
-   *
-   * In order to then get the nodal representation <tt>V<sub>h</sub></tt> of
-   * the projection of <tt>U</tt>, one computes <tt>V<sub>h</sub> = X U,
-   * X=M<sup>-1</sup> Q</tt>. The purpose of this function is to compute the
-   * matrix <tt>X</tt> and return it through the last argument of this
-   * function.
-   *
-   * Note that this function presently only supports scalar data. An extension
-   * of the mass matrix is of course trivial, but one has to define the order
-   * of data in the vector <tt>U</tt> if it contains vector valued data in all
-   * quadrature points.
-   *
-   * A use for this function is described in the introduction to the step-18
-   * example program.
-   *
-   * The opposite of this function, interpolation of a finite element function
-   * onto quadrature points is essentially what the
-   * <tt>FEValues::get_function_values</tt> functions do; to make things a
-   * little simpler, the
+   * --例如，如果数据<tt>q</tt>只定义在单元格中心，那么相应的一点正交公式显然不足以用定式来近似左手边的标量积。
+   * 经过这些正交近似，我们最终得到一个<tt>V<sub>h</sub></tt>的<tt>v<sub>h</sub></tt>的节点表示，满足以下线性方程组。<tt>M
+   * V<sub>h</sub> = Q
+   * U</tt>，其中<tt>M<sub>ij</sub>=(phi_i,phi_j)</tt>是由<tt>lhs_quadrature</tt>近似的质量矩阵。和<tt>Q</tt>是矩阵<tt>Q<sub>iq</sub>=phi<sub>i</sub>(x<sub>q</sub>)
+   * w<sub>q</sub></tt>
+   * 其中<tt>w<sub>q</sub></tt>是正交权重。<tt>U</tt>是正交点数据的矢量
+   * <tt>u<sub>q</sub></tt>。
+   * 为了得到<tt>V<sub>h</sub></tt>的投影的节点表示，我们计算<tt>V<sub>h</sub>
+   * = X U, X=M<sup>-1</sup>
+   * Q</tt>。这个函数的目的是计算矩阵<tt>X</tt>并通过这个函数的最后一个参数返回。
+   * 请注意，这个函数目前只支持标量数据。质量矩阵的扩展当然是微不足道的，但如果在所有正交点都包含矢量值的数据，就必须定义矢量<tt>U</tt>中的数据顺序。
+   * 在 step-18 示例程序的介绍中描述了这个函数的用途。
+   * 这个函数的反面，将有限元函数插值到正交点上，基本上就是
+   * <tt>FEValues::get_function_values</tt>
+   * 函数的作用；为了使事情变得简单一点，
    * <tt>FETools::compute_interpolation_to_quadrature_points_matrix</tt>
-   * provides the matrix form of this.
+   * 提供了这个函数的矩阵形式。
+   * 请注意，这个函数是在单个单元上工作的，而不是在整个三角形上。因此，实际上，如果你使用连续或不连续版本的有限元，这并不重要。
+   * 值得注意的是，这个函数有几个令人困惑的情况。
+   * 第一个是，真正有意义的是投射到每个单元的自由度最多与正交点一样多的有限元上；N个正交点数据投射到一个有M>N个未知数的空间是定义明确的，但往往会产生有趣和不直观的结果。其次，人们认为如果正交点数据在有限元的支持点中定义，即<tt>ths_quadrature</tt>的正交点等于<tt>fe.get_unit_support_points()</tt>，那么投影应该是同一的，即有限元的每个自由度等于相应形状函数的支持点中给定数据的值。然而，一般情况下不是这样的：虽然在这种情况下矩阵<tt>Q</tt>是身份矩阵，但质量矩阵<tt>M</tt>不等于身份矩阵，除了正交公式<tt>lhs_quadrature</tt>在有限元的支持点上也有其正交点的特殊情况。
+   * 最后，这个函数只定义了一个单元的投影，而人们经常希望将其应用于三角结构中的所有单元。然而，如果它被应用于一个又一个的单元，如果自由度存在于单元之间的界面上，后面的单元的结果可能会覆盖之前的单元已经计算出来的节点值。因此，该函数对不连续的元素最有用。
    *
-   * Note that this function works on a single cell, rather than an entire
-   * triangulation. In effect, it therefore doesn't matter if you use a
-   * continuous or discontinuous version of the finite element.
-   *
-   * It is worth noting that there are a few confusing cases of this function.
-   * The first one is that it really only makes sense to project onto a finite
-   * element that has at most as many degrees of freedom per cell as there are
-   * quadrature points; the projection of N quadrature point data into a space
-   * with M>N unknowns is well-defined, but often yields funny and non-
-   * intuitive results. Secondly, one would think that if the quadrature point
-   * data is defined in the support points of the finite element, i.e. the
-   * quadrature points of <tt>ths_quadrature</tt> equal
-   * <tt>fe.get_unit_support_points()</tt>, then the projection should be the
-   * identity, i.e. each degree of freedom of the finite element equals the
-   * value of the given data in the support point of the corresponding shape
-   * function. However, this is not generally the case: while the matrix
-   * <tt>Q</tt> in that case is the identity matrix, the mass matrix
-   * <tt>M</tt> is not equal to the identity matrix, except for the special
-   * case that the quadrature formula <tt>lhs_quadrature</tt> also has its
-   * quadrature points in the support points of the finite element.
-   *
-   * Finally, this function only defines a cell wise projection, while one
-   * frequently wants to apply it to all cells in a triangulation. However, if
-   * it is applied to one cell after the other, the results from later cells
-   * may overwrite nodal values computed already from previous cells if
-   * degrees of freedom live on the interfaces between cells. The function is
-   * therefore most useful for discontinuous elements.
    */
   template <int dim, int spacedim>
   void
@@ -518,11 +394,10 @@ namespace FETools
     FullMatrix<double> &                X);
 
   /**
-   * Given a (scalar) local finite element function, compute the matrix that
-   * maps the vector of nodal values onto the vector of values of this
-   * function at quadrature points as given by the second argument. In a
-   * sense, this function does the opposite of the
-   * FETools::compute_projection_from_quadrature_points_matrix function.
+   * 给定一个（标量）局部有限元函数，计算矩阵，将节点值的矢量映射到该函数在正交点的值的矢量上，如第二个参数所给的。在某种意义上，这个函数与
+   * FETools::compute_projection_from_quadrature_points_matrix
+   * 函数的作用相反。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -532,17 +407,16 @@ namespace FETools
     FullMatrix<double> &                I_q);
 
   /**
-   * Compute the projection of tensorial (first-order tensor) data stored at
-   * the quadrature points @p vector_of_tensors_at_qp to data @p
-   * vector_of_tensors_at_nodes at the support points of the cell.  The data
-   * in @p vector_of_tensors_at_qp is ordered sequentially following the
-   * quadrature point numbering.  The size of @p vector_of_tensors_at_qp must
-   * correspond to the number of columns of @p projection_matrix.  The size of
-   * @p vector_of_tensors_at_nodes must correspond to the number of rows of @p
-   * vector_of_tensors_at_nodes .  The projection matrix @p projection_matrix
-   * describes the projection of scalar data from the quadrature points and
-   * can be obtained from the
-   * FETools::compute_projection_from_quadrature_points_matrix function.
+   * 计算存储在正交点 @p vector_of_tensors_at_qp
+   * 的张量（一阶张量）数据对单元支持点的数据 @p
+   * 张量的矢量_节点的投影。  @p vector_of_tensors_at_qp
+   * 中的数据是按照正交点编号顺序排列的。  @p
+   * vector_of_tensors_at_qp 的大小必须对应于 @p projection_matrix.
+   * 的列数， @p vector_of_tensors_at_nodes 的大小必须对应于 @p
+   * 向量的行数。 投影矩阵 @p projection_matrix
+   * 描述了来自正交点的标量数据的投影，可以通过
+   * FETools::compute_projection_from_quadrature_points_matrix 函数得到。
+   *
    */
   template <int dim>
   void
@@ -554,7 +428,8 @@ namespace FETools
 
 
   /**
-   * same as last function but for a @p SymmetricTensor .
+   * 与上一个函数相同，但对一个 @p SymmetricTensor 。
+   *
    */
   template <int dim>
   void
@@ -566,13 +441,12 @@ namespace FETools
 
 
   /**
-   * This method implements the
-   * FETools::compute_projection_from_quadrature_points_matrix method for
-   * faces of a mesh.  The matrix that it returns, X, is face specific and its
-   * size is fe.n_dofs_per_cell() by rhs_quadrature.size().  The dimension, dim
-   * must be larger than 1 for this class, since Quadrature<dim-1> objects are
-   * required. See the documentation on the Quadrature class for more
-   * information.
+   * 这个方法实现了
+   * FETools::compute_projection_from_quadrature_points_matrix
+   * 方法，用于网格的面。
+   * 它返回的矩阵，X，是针对面的，其大小是fe.n_dofs_per_cell()乘以rhs_quadrature.size()。
+   * 该类的尺寸，dim必须大于1，因为需要Quadrature<dim-1>对象。更多信息请参见正交类的文档。
+   *
    */
   template <int dim, int spacedim>
   void
@@ -587,19 +461,15 @@ namespace FETools
 
 
   /**
-   * Wrapper around
+   * 围绕
    * FiniteElement::convert_generalized_support_point_values_to_dof_values()
-   * that works with arbitrary number types.
+   * 的封装器，可用于任意的数字类型。      @param[in]
+   * finite_element 用于计算dof值的FiniteElement。    @param[in]
+   * support_point_values 一个大小为 @p dofs_per_cell
+   * 的数组（相当于get_generalized_support_points()函数将返回的点的数量），其中每个元素是一个向量，其条目数量与该元素的向量分量相同。这个数组应该包含有限元的广义支持点上的函数值。
+   * @param[out]  dof_values 一个大小为 @p dofs_per_cell
+   * 的数组，包含应用于给定函数的元素的节点函数值。
    *
-   * @param[in] finite_element The FiniteElement to compute dof values for.
-   * @param[in] support_point_values An array of size @p dofs_per_cell
-   *   (which equals the number of points the get_generalized_support_points()
-   *   function will return) where each element is a vector with as many entries
-   *   as the element has vector components. This array should contain
-   *   the values of a function at the generalized support points of the
-   *   finite element.
-   * @param[out] dof_values An array of size @p dofs_per_cell that contains
-   *   the node functionals of the element applied to the given function.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -612,37 +482,27 @@ namespace FETools
 
   //@}
   /**
-   * @name Functions which should be in DoFTools
+   * @name  应该在DoFTools中出现的函数
+   *
    */
   //@{
   /**
-   * Compute the interpolation of a the @p dof1-function @p u1 to a @p
-   * dof2-function @p u2. @p dof1 and @p dof2 need to be DoFHandlers based on
-   * the same triangulation.
+   * 计算一个 @p dof1-function  @p u1 到 @p Dof2-函数 @p u2.  @p dof1
+   * 和 @p dof2 的内插，需要基于相同的三角形的DoFHandler。
+   * 如果元素 @p fe1 和 @p fe2
+   * 都是连续的或者都是不连续的，那么这个插值就是通常的点插值。
+   * 如果 @p fe1 是一个连续的和 @p fe2
+   * 是一个不连续的有限元也是如此。对于 @p fe1
+   * 是不连续的， @p fe2
+   * 是连续有限元的情况，在不连续处没有定义点插值。
+   * 因此，平均值是在不连续点上的DoF值处取的。
+   * 请注意，对于有悬挂节点的网格上的连续元素（即局部细化的网格），这个函数并不能给出预期的输出。
+   * 事实上，产生的输出矢量在悬空节点处不一定尊重连续性要求：例如，如果你是将一个Q2场插值到Q1场，那么在悬空节点处，输出场将具有输入场的函数值，然而这通常不是两个相邻节点的平均值。因此，它不是整个三角形上Q1函数空间的一部分，尽管它当然是每个单元上的Q1。
+   * 对于这种情况（带有悬挂节点的网格上的连续元素），请使用
+   * @p interpolate()
+   * 函数，并以额外的AffineConstraints对象作为参数，见下文，或者通过调用悬挂节点约束对象的
+   * @p distribute 函数使场符合。
    *
-   * If the elements @p fe1 and @p fe2 are either both continuous or both
-   * discontinuous then this interpolation is the usual point interpolation.
-   * The same is true if @p fe1 is a continuous and @p fe2 is a discontinuous
-   * finite element. For the case that @p fe1 is a discontinuous and @p fe2 is
-   * a continuous finite element there is no point interpolation defined at
-   * the discontinuities.  Therefore the mean value is taken at the DoF values
-   * on the discontinuities.
-   *
-   * Note that for continuous elements on grids with hanging nodes (i.e.
-   * locally refined grids) this function does not give the expected output.
-   * Indeed, the resulting output vector does not necessarily respect
-   * continuity requirements at hanging nodes: if, for example, you are
-   * interpolating a Q2 field to a Q1 field, then at hanging nodes the output
-   * field will have the function value of the input field, which however is
-   * not usually the mean value of the two adjacent nodes. It is thus not part
-   * of the Q1 function space on the whole triangulation, although it is of
-   * course Q1 on each cell.
-   *
-   * For this case (continuous elements on grids with hanging nodes), please
-   * use the @p interpolate() function with an additional AffineConstraints
-   * object as argument, see below, or make the field conforming yourself
-   * by calling the @p distribute function of your hanging node constraints
-   * object.
    */
   template <int dim, int spacedim, class InVector, class OutVector>
   void
@@ -652,20 +512,18 @@ namespace FETools
               OutVector &                      u2);
 
   /**
-   * Compute the interpolation of a the @p dof1-function @p u1 to a @p
-   * dof2-function @p u2. @p dof1 and @p dof2 need to be DoFHandlers based on
-   * the same triangulation. @p constraints is a hanging node constraints object
-   * corresponding to @p dof2. This object is particular important when
-   * interpolating onto continuous elements on grids with hanging nodes (locally
-   * refined grids).
+   * 计算 @p dof1-function  @p u1 到 @p Dof2-函数的插值 @p u2.  @p
+   * dof1 和 @p dof2 需要是基于同一三角的DoFHandlers。  @p
+   * constraints 是对应于 @p dof2.
+   * 的悬空节点约束对象，当插值到具有悬空节点的网格（局部细化网格）上的连续元素时，该对象特别重要。
+   * 如果元素 @p fe1 和 @p fe2
+   * 都是连续的或者都是不连续的，那么这个内插就是通常的点内插。
+   * 如果 @p fe1 是一个连续的和 @p fe2
+   * 是一个不连续的有限元也是如此。对于 @p fe1
+   * 是不连续的和 @p fe2
+   * 是连续有限元的情况，在不连续处没有定义点插值。
+   * 因此，均值取自不连续处的DoF值。
    *
-   * If the elements @p fe1 and @p fe2 are either both continuous or both
-   * discontinuous then this interpolation is the usual point interpolation.
-   * The same is true if @p fe1 is a continuous and @p fe2 is a discontinuous
-   * finite element. For the case that @p fe1 is a discontinuous and @p fe2 is
-   * a continuous finite element there is no point interpolation defined at
-   * the discontinuities.  Therefore the mean value is taken at the DoF values
-   * at the discontinuities.
    */
   template <int dim, int spacedim, class InVector, class OutVector>
   void
@@ -677,17 +535,15 @@ namespace FETools
     OutVector &                                              u2);
 
   /**
-   * Compute the interpolation of the @p fe1-function @p u1 to a @p
-   * fe2-function, and interpolates this to a second @p fe1-function named @p
-   * u1_interpolated.
+   * 计算 @p fe1-function  @p u1 到 @p
+   * fe2-函数的内插，并将其内插到第二个 @p fe1-function 名为
+   * @p 的u1_interpolated。
+   * 注意，这个函数对悬挂节点的连续元素不起作用。对于这种情况，请使用下面的
+   * @p back_interpolate 函数，它需要一个额外的 @p
+   * AffineConstraints 对象。    此外，请注意，对于 @p fe1
+   * 对应的有限元空间是 @p fe2,
+   * 对应的有限元空间的一个子集的特殊情况，这个函数只是一个身份映射。
    *
-   * Note, that this function does not work on continuous elements at hanging
-   * nodes. For that case use the @p back_interpolate function, below, that
-   * takes an additional @p AffineConstraints object.
-   *
-   * Furthermore note, that for the specific case when the finite element
-   * space corresponding to @p fe1 is a subset of the finite element space
-   * corresponding to @p fe2, this function is simply an identity mapping.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -697,16 +553,14 @@ namespace FETools
                    OutVector &                         u1_interpolated);
 
   /**
-   * Compute the interpolation of the @p dof1-function @p u1 to a @p
-   * dof2-function, and interpolates this to a second @p dof1-function named
-   * @p u1_interpolated.  @p constraints1 and @p constraints2 are the hanging
-   * node constraints corresponding to @p dof1 and @p dof2, respectively.
-   * These objects are particular important when continuous elements on grids
-   * with hanging nodes (locally refined grids) are involved.
+   * 计算 @p dof1-function  @p u1 到 @p
+   * dof2-函数的内插，并将其内插到第二个 @p dof1-function
+   * ，命名为 @p u1_interpolated.   @p constraints1 和 @p constraints2
+   * 分别是对应于 @p dof1 和 @p dof2, 的悬挂节点约束。
+   * 当涉及到带有悬挂节点的网格（局部细化网格）上的连续元素时，这些对象特别重要。
+   * 此外，请注意，对于 @p dof1 对应的有限元空间是 @p dof2,
+   * 对应的有限元空间的一个子集的特定情况，这个函数只是一个身份映射。
    *
-   * Furthermore note, that for the specific case when the finite element
-   * space corresponding to @p dof1 is a subset of the finite element space
-   * corresponding to @p dof2, this function is simply an identity mapping.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -719,13 +573,13 @@ namespace FETools
     OutVector &                                              u1_interpolated);
 
   /**
-   * Compute $(Id-I_h)z_1$ for a given @p dof1-function $z_1$, where $I_h$ is
-   * the interpolation from @p fe1 to @p fe2. The result $(Id-I_h)z_1$ is
-   * written into @p z1_difference.
+   * 对于给定的 @p dof1-function  $z_1$ 计算 $(Id-I_h)z_1$ ，其中
+   * $I_h$ 是从 @p fe1 到 @p fe2. 的插值，结果 $(Id-I_h)z_1$
+   * 被写入 @p z1_difference.
+   * 注意，这个函数对于悬挂节点的连续元素不起作用。对于这种情况，请使用下面的
+   * @p interpolation_difference 函数，它需要一个额外的 @p
+   * AffineConstraints 对象。
    *
-   * Note, that this function does not work for continuous elements at hanging
-   * nodes. For that case use the @p interpolation_difference function, below,
-   * that takes an additional @p AffineConstraints object.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -735,16 +589,14 @@ namespace FETools
                            OutVector &                         z1_difference);
 
   /**
-   * Compute $(Id-I_h)z_1$ for a given @p dof1-function $z_1$, where $I_h$ is
-   * the interpolation from @p fe1 to @p fe2. The result $(Id-I_h)z_1$ is
-   * written into @p z1_difference.  @p constraints1 and @p constraints2 are
-   * the hanging node constraints corresponding to @p dof1 and @p dof2,
-   * respectively. These objects are particular important when continuous
-   * elements on grids with hanging nodes (locally refined grids) are
-   * involved.
+   * 对于给定的 @p dof1-function  $z_1$ 计算 $(Id-I_h)z_1$ ，其中
+   * $I_h$ 是从 @p fe1 到 @p fe2. 的插值，结果 $(Id-I_h)z_1$
+   * 被写入 @p z1_difference.   @p constraints1 和 @p constraints2
+   * 是悬挂节点约束，分别对应 @p dof1  和  @p dof2,
+   * 。当涉及到带有悬挂节点的网格（局部细化网格）上的连续元素时，这些对象特别重要。
+   * 对于并行计算，提供 @p z1 和 @p
+   * z1_difference，不含鬼魂元素。
    *
-   * For parallel computations, supply @p z1 with ghost elements and @p
-   * z1_difference without ghost elements.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -759,12 +611,9 @@ namespace FETools
 
 
   /**
-   * $L^2$ projection for discontinuous elements. Operates the same direction
-   * as interpolate.
+   * $L^2$  不连续元素的投影。操作方向与插值相同。
+   * 如果有限元空间是不连续的，全局投影可以通过局部矩阵来计算。对于连续元素，这是不可能的，因为全局质量矩阵必须被倒置。
    *
-   * The global projection can be computed by local matrices if the finite
-   * element spaces are discontinuous. With continuous elements, this is
-   * impossible, since a global mass matrix must be inverted.
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -774,64 +623,37 @@ namespace FETools
              OutVector &                      u2);
 
   /**
-   * Compute the patchwise extrapolation of a @p dof1 function @p z1 to a @p
-   * dof2 function @p z2.  @p dof1 and @p dof2 need to be DoFHandler objects
-   * based on the same triangulation. This function is used, for example, for
-   * extrapolating patchwise a piecewise linear solution to a piecewise
-   * quadratic solution.
+   * 计算 @p dof1 函数 @p z1 到 @p Dof2函数 @p z2. 的修补外推 @p
+   * dof1 和 @p dof2
+   * 需要是基于同一三角的DoFHandler对象。这个函数用于，例如，将逐片线性解外推到逐片二次解。
+   * 这个函数的名字是历史性的，可能不是特别好的选择。该函数一个接一个地执行以下操作。
    *
-   * The function's name is historical and probably not particularly well
-   * chosen. The function performs the following operations, one after the
-   * other:
    *
-   * - It interpolates directly from every cell of @p dof1 to the
-   * corresponding cell of `dof2` using the interpolation matrix of the finite
-   * element spaces used on these cells and provided by the finite element
-   * objects involved. This step is done using the FETools::interpolate()
-   * function.
-   * - It then performs a loop over all non-active cells of `dof2`.
-   * If such a non-active cell has at least one active child, then we call the
-   * children of this cell a "patch". We then interpolate from the children of
-   * this patch to the patch, using the finite element space associated with
-   * `dof2` and immediately interpolate back to the children. In essence, this
-   * information throws away all information in the solution vector that lives
-   * on a scale smaller than the patch cell.
-   * - Since we traverse non-active cells from the coarsest to the finest
-   * levels, we may find patches that correspond to child cells of previously
-   * treated patches if the mesh had been refined adaptively (this cannot
-   * happen if the  mesh has been refined globally because there the children
-   * of a patch are all active). We also perform the operation described above
-   * on these patches, but it is easy to see that on patches that are children
-   * of previously treated patches, the operation is now the identity operation
-   * (since it interpolates from the children of the current patch a function
-   * that had previously been interpolated to these children from an even
-   * coarser patch). Consequently, this does not alter the solution vector any
-   * more.
    *
-   * The name of the function originates from the fact that it can be used to
-   * construct a representation of a function of higher polynomial degree on a
-   * once coarser mesh. For example, if you imagine that you start with a
-   * $Q_1$ function on a globally refined mesh, and that @p dof2 is associated
-   * with a $Q_2$ element, then this function computes the equivalent of the
-   * operator $I_{2h}^{(2)}$ interpolating the original piecewise linear
-   * function onto a quadratic function on a once coarser mesh with mesh size
-   * $2h$ (but representing this function on the original mesh with size $h$).
-   * If the exact solution is sufficiently smooth, then
-   * $u^\ast=I_{2h}^{(2)}u_h$ is typically a better approximation to the exact
-   * solution $u$ of the PDE than $u_h$ is. In other words, this function
-   * provides a postprocessing step that improves the solution in a similar
-   * way one often obtains by extrapolating a sequence of solutions,
-   * explaining the origin of the function's name.
    *
-   * @note The resulting field does not satisfy continuity requirements of the
-   * given finite elements if the algorithm outlined above is used. When you
-   * use continuous elements on grids with hanging nodes, please use the @p
-   * extrapolate function with an additional AffineConstraints argument, see
-   * below.
    *
-   * @note Since this function operates on patches of cells, it requires that
-   * the underlying grid is refined at least once for every coarse grid cell.
-   * If this is not the case, an exception will be raised.
+   *
+   * - 它直接从 @p dof1 的每个单元内插到`dof2`的相应单元，使用这些单元上使用的有限元空间的内插矩阵，并由相关的有限元对象提供。这一步是使用 FETools::interpolate() 函数完成的。
+   *
+   *
+   *
+   *
+   *
+   *
+   * - 然后它在`dof2`的所有非活动单元上执行循环。  如果这样的非活动单元至少有一个活动的子单元，那么我们称这个单元的子单元为 "补丁"。然后我们使用与`dof2`相关的有限元空间，从这个补丁的子单元插补到补丁，并立即插补回子单元。从本质上讲，这个信息抛开了解向量中所有生活在比补丁单元更小范围内的信息。
+   *
+   *
+   *
+   *
+   *
+   * - 由于我们从最粗的层次到最细的层次遍历非活动单元，如果网格被自适应地细化，我们可能会发现对应于先前处理过的补丁的子单元的补丁（如果网格被全局细化，这种情况不会发生，因为那里的补丁的子单元都是活动的）。我们也对这些补丁进行上述操作，但很容易看出，在作为先前处理过的补丁的子单元的补丁上，该操作现在是身份操作（因为它从当前补丁的子单元插值一个先前从更粗的补丁插值到这些子单元的函数）。因此，这不会再改变解向量。    这个函数的名字源于这样一个事实：它可以用来在一个更粗的网格上构造一个更高多项式程度的函数的表示。例如，如果你想象你从一个全局细化的网格上的 $Q_1$ 函数开始，并且 @p dof2 与 $Q_2$ 元素相关联，那么这个函数计算出在一个网格尺寸为 $2h$ 的一次粗化的网格上将原始片状线性函数插值为二次函数的等效算子 $I_{2h}^{(2)}$ （但在原始网格上表示这个函数尺寸为 $h$  ）。  如果精确解足够平滑，那么 $u^\ast=I_{2h}^{(2)}u_h$ 通常比 $u_h$ 更能接近PDE的精确解 $u$ 。换句话说，这个函数提供了一个后处理步骤，以类似于人们经常通过外推一连串的解决方案获得的方式改进解决方案，解释了该函数名称的由来。
+   * @note
+   * 如果使用上述算法，产生的场不满足给定有限元的连续性要求。当你在有悬挂节点的网格上使用连续元素时，请使用带有额外AffineConstraints参数的
+   * @p  外推函数，见下文。
+   * @note
+   * 由于这个函数在单元的补丁上操作，它要求底层网格对每个粗略的网格单元至少进行一次细化。
+   * 如果不是这样，就会产生一个异常。
+   *
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -841,16 +663,13 @@ namespace FETools
               OutVector &                      z2);
 
   /**
-   * Compute the patchwise extrapolation of a @p dof1 function @p z1 to a @p
-   * dof2 function @p z2.  @p dof1 and @p dof2 need to be DoFHandler objects
-   * based on the same triangulation.  @p constraints is a hanging node
-   * constraints object corresponding to @p dof2. This object is necessary
-   * when interpolating onto continuous elements on grids with hanging nodes
-   * (locally refined grids).
+   * 计算 @p dof1 函数 @p z1 对 @p Dof2函数 @p z2. 的修补外推 @p
+   * dof1 和 @p dof2 需要是基于同一三角的DoFHandler对象。   @p
+   * constraints 是对应于 @p dof2.
+   * 的悬空节点约束对象，当插值到有悬空节点的网格上的连续元素时，这个对象是必要的（局部细化网格）。
+   * 否则，该函数的作用与上述另一个 @p extrapolate
+   * 函数相同（对于该函数，文档中提供了大量的操作描述）。
    *
-   * Otherwise, the function does the same as the other @p extrapolate
-   * function above (for which the documentation provides an extensive
-   * description of its operation).
    */
   template <int dim, class InVector, class OutVector, int spacedim>
   void
@@ -863,123 +682,73 @@ namespace FETools
 
   //@}
   /**
-   * The numbering of the degrees of freedom in continuous finite elements is
-   * hierarchic, i.e. in such a way that we first number the vertex dofs, in
-   * the order of the vertices as defined by the triangulation, then the line
-   * dofs in the order and respecting the direction of the lines, then the
-   * dofs on quads, etc. However, we could have, as well, numbered them in a
-   * lexicographic way, i.e. with indices first running in x-direction, then
-   * in y-direction and finally in z-direction. Discontinuous elements of
-   * class FE_DGQ() are numbered in this way, for example.
+   * 连续有限元中自由度的编号是分层次的，也就是说，我们首先按照三角形定义的顶点顺序对顶点自由度进行编号，然后按照顺序和尊重线的方向对线自由度进行编号，然后对四边形的自由度进行编号，等等。然而，我们也可以用词法对它们进行编号，即指数先按X方向，然后按Y方向，最后按Z方向。例如，FE_DGQ()类的不连续元素就是以这种方式编号的。
+   * 这个函数返回一个向量，其中包含了分级编号中每个自由度对连续有限元的给定程度的词汇索引的信息。
    *
-   * This function returns a vector containing information about the
-   * lexicographic index each degree of freedom in the hierarchic numbering
-   * would have to a given degree of a continuous finite element.
    */
   template <int dim>
   std::vector<unsigned int>
   hierarchic_to_lexicographic_numbering(unsigned int degree);
 
   /**
-   * This is the reverse function to the above one, generating the map from
-   * the lexicographic to the hierarchical numbering for a given polynomial
-   * degree of a continuous finite element. All the remarks made about the
-   * above function are also valid here.
+   * 这是与上述函数相反的函数，生成连续有限元给定多项式程度的词典式编号到层次式编号的映射。所有关于上述函数的评论在这里也是有效的。
+   *
    */
   template <int dim>
   std::vector<unsigned int>
   lexicographic_to_hierarchic_numbering(unsigned int degree);
 
   /**
-   * A namespace that contains functions that help setting up internal
-   * data structures when implementing FiniteElement which are build
-   * from simpler ("base") elements, for example FESystem. The things
-   * computed by these functions typically serve as constructor
-   * arguments to the FiniteElement base class of the derived finite
-   * element object being constructed.
-   *
-   * There are generally two ways in which one can build more complex
-   * elements, and this is reflected by several of the functions in
-   * this namespace having arguments called
-   * <code>do_tensor_product</code>:
-   *
-   * <ol>
-   * <li> Tensor product construction (<code>do_tensor_product=true</code>):
-   * The tensor product construction, in the simplest case, builds a
-   * vector-valued element from scalar elements (see
-   * @ref vector_valued "this documentation module" and
-   * @ref GlossComponent "this glossary entry" for more information).
-   * To give an example, consider creating a vector-valued element with
-   * two vector components, where the first should have linear shape
-   * functions and the second quadratic shape functions. In 1d, the
-   * shape functions (on the reference cell) of the base elements are then
+   * 一个命名空间，包含了在实现FiniteElement时帮助设置内部数据结构的函数，FiniteElement是由更简单的（"基"）元素构建的，例如FESystem。这些函数计算出来的东西通常作为被构造的派生有限元对象的FiniteElement基类的构造器参数。    一般来说，有两种方法可以构建更复杂的元素，这反映在这个命名空间的几个函数的参数被称为  <code>do_tensor_product</code>  ：  <ol>   <li>  张量积构造（  <code>do_tensor_product=true</code>  ）。  张量积构造，在最简单的情况下，从标量元素中建立一个矢量值元素（更多信息见 @ref vector_valued  "本文档模块 "和 @ref GlossComponent  "本词汇条"）。  举个例子，考虑创建一个有两个矢量分量的矢量值元素，其中第一个应该有线性形状函数，第二个有二次形状函数。在1d中，基础元素的形状函数（在参考单元上）则是
    * @f{align*}{
-   *   Q_1 &= \{ 1-x, x \},
-   *   \\  Q_2 &= \{ 2(\frac 12 - x)(1-x), 2(x - \frac 12)x, 4x(1-x) \},
+   * Q_1 &= \{ 1-x, x \},
+   * \\  Q_2 &= \{ 2(\frac 12
+   *
+   * - x)(1-x), 2(x
+   *
+   * - \frac 12)x, 4x(1-x) \},
    * @f}
-   * where shape functions are ordered in the usual way (first on the
-   * first vertex, then on the second vertex, then in the interior of
-   * the cell). The tensor product construction will create an element with
-   * the following shape functions:
+   * 其中形状函数以通常的方式排序（首先在第一个顶点上，然后在第二个顶点上，然后在单元的内部）。张量乘积结构将创建一个具有以下形状函数的元素。
    * @f{align*}{
-   *   Q_1 \times Q_2 &=
-   *   \left\{
-   *     \begin{pmatrix} 1-x \\ 0 \end{pmatrix},
-   *     \begin{pmatrix} 0 \\ 2(\frac 12 - x)(1-x)  \end{pmatrix},
-   *     \begin{pmatrix} x \\ 0 \end{pmatrix},
-   *     \begin{pmatrix} 0 \\ 2(x - \frac 12)x \end{pmatrix},
-   *     \begin{pmatrix} 0 \\ 4x(1-x) \end{pmatrix}
-   *   \right\}.
+   * Q_1 \times Q_2 &=
+   * \left\{
+   *   \begin{pmatrix} 1-x \\ 0 \end{pmatrix},
+   *   \begin{pmatrix} 0 \\ 2(\frac 12
+   *
+   * - x)(1-x)  \end{pmatrix},
+   *   \begin{pmatrix} x \\ 0 \end{pmatrix},
+   *   \begin{pmatrix} 0 \\ 2(x
+   *
+   * - \frac 12)x \end{pmatrix},
+   *   \begin{pmatrix} 0 \\ 4x(1-x) \end{pmatrix}
+   * \right\}.
    * @f}
-   * The list here is again in standard order.
-   *
-   * Of course, the procedure also works if the base elements are
-   * already vector valued themselves: in that case, the composed
-   * element simply has as many vector components as the base elements
-   * taken together.
-   *
-   * <li> Combining shape functions
-   * (<code>do_tensor_product=false</code>): In contrast to the
-   * previous strategy, combining shape functions simply takes
-   * <i>all</i> of the shape functions together. In the case above,
-   * this would yield the following element:
+   * 这里的列表又是按标准顺序排列的。
+   * 当然，如果基数元素本身已经是矢量值，这个过程也是有效的：在这种情况下，组成的元素只是具有与基数元素加起来一样多的矢量成分。
+   * <li>  组合形状函数（ <code>do_tensor_product=false</code>
+   * ）。与之前的策略相反，组合形状函数只是将<i>all</i>的形状函数合在一起。在上面的例子中，这将产生以下元素。
    * @f{align*}{
-   *   Q_1 + Q_2 &= \{ 1-x, 2(\frac 12 - x)(1-x),
-   *                   x, 2(x - \frac 12)x, 4x(1-x) \}.
+   * Q_1 + Q_2 &= \{ 1-x, 2(\frac 12
+   *
+   * - x)(1-x),
+   *                 x, 2(x
+   *
+   * - \frac 12)x, 4x(1-x) \}.
    * @f}
-   * In other words, if the base elements are scalar, the resulting
-   * element will also be. In general, the base elements all will
-   * have to have the same number of vector components.
+   * 换句话说，如果基础元素是标量的，产生的元素也将是标量的。一般来说，基本元素都必须有相同数量的矢量成分。    当然，上面构建的元素不再有一组线性独立的形状函数。因此，通过以同样的方式处理组成元素的所有形状函数而创建的任何矩阵将是奇异的。因此，在实践中，这种策略通常用于明确确保某些形状函数被区别对待的情况（例如，通过与权重函数相乘），或者用于所组合的形状函数不是线性独立的情况。      </ol>
    *
-   * The element constructed above of course no longer has a linearly
-   * independent set of shape functions. As a consequence, any matrix
-   * one creates by treating all shape functions of the composed
-   * element in the same way will be singular. In practice, this
-   * strategy is therefore typically used in situations where one
-   * explicitly makes sure that certain shape functions are treated
-   * differently (e.g., by multiplying them with weight functions), or
-   * in cases where the shape functions one combines are not linearly
-   * dependent.
-   *
-   * </ol>
    */
   namespace Compositing
   {
     /**
-     * Take vectors of finite elements and multiplicities and multiply out
-     * how many degrees of freedom the composed element has per vertex,
-     * line, etc.
+     * 取有限元和乘数的向量，乘出组成的元素在每个顶点、线条等方面有多少自由度。
+     * 如果 @p do_tensor_product
+     * 为真，在FiniteElementData对象中返回的构件数是每个有限元中的构件数乘以相应的倍数的乘积之和。
+     * 否则，组件数取自第一个具有非零倍数的有限元素，所有其他具有非零倍数的元素需要具有相同数量的矢量组件。
+     * 关于 FETools::Compositing
+     * 参数的更多信息，请参见命名空间 @p do_tensor_product
+     * 的文档。
      *
-     * If @p do_tensor_product is true, the number of components
-     * returned in the FiniteElementData object is the sum over the
-     * product of the number of components in each of the finite
-     * elements times the corresponding multiplicity.  Otherwise the
-     * number of components is taken from the first finite element with
-     * non-zero multiplicity, and all other elements with non-zero
-     * multiplicities need to have the same number of vector components.
-     *
-     * See the documentation of namespace FETools::Compositing for more
-     * information about the @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     FiniteElementData<dim>
@@ -989,9 +758,11 @@ namespace FETools
       const bool do_tensor_product = true);
 
     /**
-     * Same as above for an arbitrary number of parameters of type
-     * <code>std::pair<std::unique_ptr<FiniteElement<dim, spacedim>>, unsigned
-     * int></code> and <code>do_tensor_product = true</code>.
+     * 对于任意数量的
+     * <code>std::pair<std::unique_ptr<FiniteElement<dim,  spacedim>>,
+     * unsigned int></code>和 <code>do_tensor_product = true</code>
+     * 类型的参数，与上述相同。
+     *
      */
     template <int dim, int spacedim>
     FiniteElementData<dim>
@@ -1001,7 +772,8 @@ namespace FETools
         &fe_systems);
 
     /**
-     * Same as above but for a specific number of sub-elements.
+     * 与上述相同，但对特定数量的子元素。
+     *
      */
     template <int dim, int spacedim>
     FiniteElementData<dim>
@@ -1017,16 +789,14 @@ namespace FETools
                          const unsigned int                  N5  = 0);
 
     /**
-     * Compute the "restriction is additive" flags (see the
-     * documentation of the FiniteElement class) for a list of finite
-     * elements with multiplicities given in the second argument.
+     * 计算 "限制是加法的
+     * "标志（见FiniteElement类的文档），用于第二个参数中给出的乘数的有限元列表。
+     * 限制是相加的
+     * "标志是单个形状函数的属性，不取决于组成元素是否使用
+     * FETools::Composition
+     * 命名空间的文档中概述的张量乘积或组合策略。因此，这个函数没有
+     * @p do_tensor_product 参数。
      *
-     * The "restriction is additive" flags are properties of
-     * individual shape functions that do not depend on whether the
-     * composed element uses the tensor product or combination
-     * strategy outlined in the documentation of the
-     * FETools::Composition namespace. Consequently, this function
-     * does not have a @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     std::vector<bool>
@@ -1035,9 +805,10 @@ namespace FETools
       const std::vector<unsigned int> &                        multiplicities);
 
     /**
-     * Same as above for an arbitrary number of parameters of type
-     * <code>std::pair<std::unique_ptr<FiniteElement<dim, spacedim>>, unsigned
-     * int></code>.
+     * 与上述相同，用于任意数量的
+     * <code>std::pair<std::unique_ptr<FiniteElement<dim,  spacedim>>,
+     * unsigned int></code>类型的参数。
+     *
      */
     template <int dim, int spacedim>
     std::vector<bool>
@@ -1047,18 +818,17 @@ namespace FETools
         &fe_systems);
 
     /**
-     * Take a @p FiniteElement object and return a boolean vector
-     * describing the @p restriction_is_additive_flags (see the
-     * documentation of the FiniteElement class) for each shape function
-     * of the mixed element consisting of @p N1, @p N2, ... copies of
-     * the sub-elements @p fe1, @p fe2, ...
+     * 取一个 @p FiniteElement
+     * 对象并返回一个布尔向量，描述由 @p N1,  @p N2,
+     * ...子元素 @p fe1,  @p fe2,
+     * 的副本组成的混合元素的每个形状函数的 @p
+     * restriction_is_additive_flags （见FiniteElement类的文档）。
+     * "限制是加法的
+     * "标志是单个形状函数的属性，不取决于组成元素是否使用
+     * FETools::Composition
+     * 命名空间的文档中概述的张量积或组合策略。因此，这个函数没有
+     * @p do_tensor_product 参数。
      *
-     * The "restriction is additive" flags are properties of
-     * individual shape functions that do not depend on whether the
-     * composed element uses the tensor product or combination
-     * strategy outlined in the documentation of the
-     * FETools::Composition namespace. Consequently, this function
-     * does not have a @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     std::vector<bool>
@@ -1076,20 +846,14 @@ namespace FETools
 
 
     /**
-     * Compute the nonzero components for each shape function of a
-     * composed finite element described by a list of finite elements
-     * with multiplicities given in the second argument.
+     * 计算由有限元列表描述的组成有限元的每个形状函数的非零分量，其乘数在第二个参数中给出。
+     * 如果 @p do_tensor_product
+     * 为真，则分量的数量（以及ComponentMask对象的大小）是每个有限元中的分量数量乘以相应倍数的乘积之和。
+     * 否则，组件数从第一个具有非零倍数的有限元中提取，所有其他具有非零倍数的元素都需要有相同数量的向量组件。
+     * 关于 @p do_tensor_product
+     * 参数的更多信息，请参见命名空间 FETools::Compositing
+     * 的文档。
      *
-     * If @p do_tensor_product is true, the number of components (and
-     * thus the size of the ComponentMask objects) is the sum over the
-     * product of the number of components in each of the finite
-     * elements times the corresponding multiplicity.  Otherwise the
-     * number of components is taken from the first finite element with
-     * non-zero multiplicity, and all other elements with non-zero
-     * multiplicities need to have the same number of vector components.
-     *
-     * See the documentation of namespace FETools::Compositing for more
-     * information about the @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     std::vector<ComponentMask>
@@ -1099,9 +863,11 @@ namespace FETools
       const bool do_tensor_product = true);
 
     /**
-     * Same as above for an arbitrary number of parameters of type
-     * <code>std::pair<std::unique_ptr<FiniteElement<dim, spacedim>>, unsigned
-     * int></code> and <code>do_tensor_product = true</code>.
+     * 对于任意数量的
+     * <code>std::pair<std::unique_ptr<FiniteElement<dim,  spacedim>>,
+     * unsigned int></code>和 <code>do_tensor_product = true</code>
+     * 类型的参数，与上述相同。
+     *
      */
     template <int dim, int spacedim>
     std::vector<ComponentMask>
@@ -1111,22 +877,16 @@ namespace FETools
         &fe_systems);
 
     /**
-     * Compute the non-zero vector components of a composed finite
-     * element. This function is similar to the previous one, except
-     * that the pointers indicate the elements to be composed, and the
-     * arguments @p N1, @p N2, ... the multiplicities. Null pointers
-     * indicate that an argument is to be skipped.
+     * 计算组成有限元的非零向量分量。这个函数与前一个函数类似，只是指针表示要组成的元素，而参数
+     * @p N1,   @p N2,
+     * ......是乘数。空指针表示一个参数将被跳过。
+     * 如果 @p do_tensor_product
+     * 为真，组件的数量（以及ComponentMask对象的大小）是每个有限元素中的组件数量乘以相应的倍数的乘积之和。
+     * 否则，组件数从第一个具有非零倍数的有限元中提取，所有其他具有非零倍数的元素都需要有相同数量的向量组件。
+     * 关于 FETools::Compositing
+     * 参数的更多信息，请参见命名空间 @p do_tensor_product
+     * 的文档。
      *
-     * If @p do_tensor_product is true, the number of components (and
-     * thus the size of the ComponentMask objects) is the sum over the
-     * product of the number of components in each of the finite
-     * elements times the corresponding multiplicity.  Otherwise the
-     * number of components is taken from the first finite element with
-     * non-zero multiplicity, and all other elements with non-zero
-     * multiplicities need to have the same number of vector components.
-     *
-     * See the documentation of namespace FETools::Compositing for more
-     * information about the @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     std::vector<ComponentMask>
@@ -1144,20 +904,15 @@ namespace FETools
       const bool                          do_tensor_product = true);
 
     /**
-     * For a given (composite) @p finite_element build @p
-     * system_to_component_table, @p system_to_base_table and @p
-     * component_to_base_table.
+     * 对于一个给定的（复合） @p finite_element 构建 @p
+     * 系统_to_component_table， @p system_to_base_table 和 @p
+     * component_to_base_table。        如果 @p do_tensor_product
+     * 为真，用于复合元素的组件数是每个有限元素中的组件数乘以相应的倍数的乘积之和。
+     * 否则，组件数取自第一个具有非零倍数的有限元，所有其他具有非零倍数的元素需要有相同数量的矢量组件。
+     * 关于 FETools::Compositing
+     * 参数的更多信息，请参见命名空间 @p do_tensor_product
+     * 的文档。
      *
-     * If @p do_tensor_product is true, the number of components
-     * used for the composite element is the sum over the
-     * product of the number of components in each of the finite
-     * elements times the corresponding multiplicity.  Otherwise the
-     * number of components is taken from the first finite element with
-     * non-zero multiplicity, and all other elements with non-zero
-     * multiplicities need to have the same number of vector components.
-     *
-     * See the documentation of namespace FETools::Compositing for more
-     * information about the @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     void
@@ -1172,19 +927,15 @@ namespace FETools
       const bool                            do_tensor_product = true);
 
     /**
-     * For a given (composite) @p finite_element build @p face_system_to_base_table,
-     * and @p face_system_to_component_table.
+     * 对于给定的（复合） @p finite_element 建立 @p
+     * face_system_to_base_table, 和 @p face_system_to_component_table.
+     * 如果 @p do_tensor_product
+     * 为真，用于复合元素的组件数是每个有限元素中的组件数乘以相应倍数的乘积之和。
+     * 否则，组件数取自第一个具有非零倍数的有限元，所有其他具有非零倍数的元素需要有相同数量的矢量组件。
+     * 关于 @p do_tensor_product
+     * 参数的更多信息，请参见命名空间 FETools::Compositing
+     * 的文档。
      *
-     * If @p do_tensor_product is true, the number of components
-     * used for the composite element is the sum over the
-     * product of the number of components in each of the finite
-     * elements times the corresponding multiplicity.  Otherwise the
-     * number of components is taken from the first finite element with
-     * non-zero multiplicity, and all other elements with non-zero
-     * multiplicities need to have the same number of vector components.
-     *
-     * See the documentation of namespace FETools::Compositing for more
-     * information about the @p do_tensor_product argument.
      */
     template <int dim, int spacedim>
     void
@@ -1195,89 +946,51 @@ namespace FETools
         &                                 face_system_to_component_table,
       const FiniteElement<dim, spacedim> &finite_element,
       const bool                          do_tensor_product = true,
-      const unsigned int                  face_no           = 0 /*TODO*/);
+      const unsigned int                  face_no           = 0  /*TODO*/ );
 
   } // namespace Compositing
 
 
   /**
-   * Parse the name of a finite element and generate a finite element object
-   * accordingly. The parser ignores space characters between words (things
-   * matching the regular expression [A-Za-z0-9_]).
-   *
-   * The name must be in the form which is returned by the
-   * FiniteElement::get_name function, where dimension template parameters
-   * &lt;2&gt; etc. can be omitted. Alternatively, the explicit number can be
-   * replaced by <tt>dim</tt> or <tt>d</tt>. If a number is given, it
-   * <b>must</b> match the template parameter of this function.
-   *
-   * The names of FESystem elements follow the pattern
+   * 解析有限元的名称并相应地生成一个有限元对象。解析器忽略单词之间的空格字符（与正则表达式[A-Za-z0-9_]相匹配的东西）。
+   * 名称必须是由 FiniteElement::get_name
+   * 函数返回的形式，其中尺寸模板参数&lt;2&gt;等可以省略。另外，明确的数字可以用<tt>dim</tt>或<tt>d</tt>代替。如果给出一个数字，它<b>must</b>与该函数的模板参数相匹配。
+   * FESystem元素的名称遵循
    * <code>FESystem[FE_Base1^p1-FE_Base2^p2]</code> The powers <code>p1</code>
-   * etc. may either be numbers or can be replaced by <tt>dim</tt> or
-   * <tt>d</tt>.
+   * 的模式，可以是数字，也可以用<tt>dim</tt>或<tt>d</tt>代替。
+   * 如果不能从这个字符串中重建有限元，将抛出一个 @p
+   * FETools::ExcInvalidFEName 类型的异常。    该函数返回一个
+   * std::unique_ptr
+   * 的新创建的有限元，意味着调用者获得了对返回对象的所有权。
+   * 由于模板参数的值不能从给这个函数的（字符串）参数中推导出来，你必须在调用这个函数时明确指定它。
+   * 这个函数知道库中定义的所有标准元素。然而，它默认不知道你可能在你的程序中定义的元素。要使这个函数知道你自己的元素，请使用add_fe_name()函数。
+   * 如果想得到一个模数维为1的有限元，这个函数就不起作用。
    *
-   *
-   * If no finite element can be reconstructed from this string, an exception
-   * of type @p FETools::ExcInvalidFEName is thrown.
-   *
-   * The function returns a std::unique_ptr to a newly created finite element
-   * meaning the caller obtains ownership over the returned object.
-   *
-   * Since the value of the template argument can't be deduced from the
-   * (string) argument given to this function, you have to explicitly specify
-   * it when you call this function.
-   *
-   * This function knows about all the standard elements defined in the
-   * library. However, it doesn't by default know about elements that you may
-   * have defined in your program. To make your own elements known to this
-   * function, use the add_fe_name() function.  This function does not work if
-   * one wants to get a codimension 1 finite element.
    */
   template <int dim, int spacedim = dim>
   std::unique_ptr<FiniteElement<dim, spacedim>>
   get_fe_by_name(const std::string &name);
 
   /**
-   * Extend the list of finite elements that can be generated by
-   * get_fe_by_name() by the one given as @p name. If get_fe_by_name() is
-   * later called with this name, it will use the object given as second
-   * argument to create a finite element object.
+   * 用给定的 @p name.
+   * 扩展可由get_fe_by_name()生成的有限元列表，如果以后用这个名字调用get_fe_by_name()，它将使用给定的作为第二个参数的对象来创建一个有限元对象。
+   * @p name
+   * 参数的格式应包括有限元的名称。然而，单独使用类名或使用
+   * FiniteElement::get_name
+   * 的结果（包括空间维度以及多项式程度）都是安全的，因为第一个非名称字符之后的所有内容将被忽略。
+   * FEFactory对象应该是一个用<tt>new</tt>新建的对象。
+   * FETools将拥有这个对象的所有权，一旦不再使用它，就将其删除。
+   * 在大多数情况下，如果你想在给get_fe_by_name提供名称
+   * <code>my_fe</code> 时创建 <code>MyFE</code>
+   * 类型的对象，你会希望这个函数的第二个参数是FEFactory
+   * @<MyFE@>,
+   * 类型，但你当然可以创建你的自定义有限元工厂类。
+   * 这个函数接管了作为第二个参数的对象的所有权，也就是说，你不应该试图在以后销毁它。该对象将在程序的生命周期结束时被删除。
+   * 如果该元素的名称已经被使用，则会抛出一个异常。
+   * 因此，get_fe_by_name()的功能只能被添加，不能被改变。
+   * @note  这个函数操作一个全局表（每个空间维度有一个表）。它是线程安全的，因为对这个表的每一次访问都有一个锁来保证。然而，由于每个名字只能被添加一次，用户代码必须确保只有一个线程添加一个新元素。    还要注意，这个表对每个空间维度都存在一次。如果你有一个在不同空间维度上处理有限元的程序（例如， @ref step_4  "  step-4  "
+   * 做这样的事情），那么你应该为每个空间维度调用这个函数，你希望你的有限元被添加到地图中。
    *
-   * The format of the @p name parameter should include the name of a finite
-   * element. However, it is safe to use either the class name alone or to use
-   * the result of FiniteElement::get_name (which includes the space dimension
-   * as well as the polynomial degree), since everything after the first non-
-   * name character will be ignored.
-   *
-   * The FEFactory object should be an object newly created with <tt>new</tt>.
-   * FETools will take ownership of this object and delete it once it is not
-   * used anymore.
-   *
-   * In most cases, if you want objects of type <code>MyFE</code> be created
-   * whenever the name <code>my_fe</code> is given to get_fe_by_name, you
-   * will want the second argument to this function be of type
-   * FEFactory@<MyFE@>, but you can of course create your custom finite
-   * element factory class.
-   *
-   * This function takes over ownership of the object given as second
-   * argument, i.e. you should never attempt to destroy it later on. The
-   * object will be deleted at the end of the program's lifetime.
-   *
-   * If the name of the element is already in use, an exception is thrown.
-   * Thus, functionality of get_fe_by_name() can only be added, not changed.
-   *
-   * @note This function manipulates a global table (one table for each space
-   * dimension). It is thread safe in the sense that every access to this
-   * table is secured by a lock. Nevertheless, since each name can be added
-   * only once, user code has to make sure that only one thread adds a new
-   * element.
-   *
-   * Note also that this table exists once for each space dimension. If you
-   * have a program that works with finite elements in different space
-   * dimensions (for example,
-   * @ref step_4 "step-4"
-   * does something like this), then you should call this function for each
-   * space dimension for which you want your finite element added to the map.
    */
   template <int dim, int spacedim>
   void
@@ -1285,13 +998,10 @@ namespace FETools
               const FEFactoryBase<dim, spacedim> *factory);
 
   /**
-   * The string used for get_fe_by_name() cannot be translated to a finite
-   * element.
-   *
-   * Either the string is badly formatted or you are using a custom element
-   * that must be added using add_fe_name() first.
-   *
+   * 用于get_fe_by_name()的字符串不能被翻译成有限元。
+   * 要么是字符串的格式不好，要么是你使用的是自定义元素，必须先用add_fe_name()添加。
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcInvalidFEName,
                  std::string,
@@ -1299,15 +1009,10 @@ namespace FETools
                  << arg1 << "'.");
 
   /**
-   * The string used for get_fe_by_name() cannot be translated to a finite
-   * element.
-   *
-   * Dimension arguments in finite element names should be avoided. If they
-   * are there, the dimension should be <tt>dim</tt> or <tt>d</tt>. Here, you
-   * gave a numeric dimension argument, which does not match the template
-   * dimension of the finite element class.
-   *
+   * 用于get_fe_by_name()的字符串不能被翻译成有限元。
+   * 应该避免在有限元名称中出现尺寸参数。如果有的话，尺寸应该是<tt>dim</tt>或者<tt>d</tt>。这里，你给了一个数字尺寸参数，这与有限元类的模板尺寸不匹配。
    * @ingroup Exceptions
+   *
    */
   DeclException2(ExcInvalidFEDimension,
                  char,
@@ -1317,31 +1022,30 @@ namespace FETools
                  << "the space dimension " << arg2 << ".");
 
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcInvalidFE);
 
   /**
-   * The finite element must be
-   * @ref GlossPrimitive "primitive".
-   *
+   * 有限元必须是 @ref GlossPrimitive "原始的"
+   * 。
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcFENotPrimitive);
   /**
-   * Exception
-   *
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcTriangulationMismatch);
 
   /**
-   * A continuous element is used on a mesh with hanging nodes, but the
-   * constraint matrices are missing.
-   *
+   * 在有悬挂节点的网格上使用连续元素，但缺少约束矩阵。
    * @ingroup Exceptions
+   *
    */
   DeclExceptionMsg(ExcHangingNodesNotAllowed,
                    "You are using continuous elements on a grid with "
@@ -1349,15 +1053,15 @@ namespace FETools
                    "constraints. Use the respective function with "
                    "additional AffineConstraints argument(s), instead.");
   /**
-   * You need at least two grid levels.
-   *
+   * 你需要至少两个网格级别。
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcGridNotRefinedAtLeastOnce);
   /**
-   * The dimensions of the matrix used did not match the expected dimensions.
-   *
+   * 所用矩阵的尺寸与预期的尺寸不一致。
    * @ingroup Exceptions
+   *
    */
   DeclException4(ExcMatrixDimensionMismatch,
                  int,
@@ -1368,18 +1072,18 @@ namespace FETools
                  << "but should be a " << arg3 << "x" << arg4 << " matrix.");
 
   /**
-   * Exception thrown if an embedding matrix was computed inaccurately.
-   *
+   * 如果嵌入矩阵的计算不准确，则抛出异常。
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcLeastSquaresError,
                  double,
                  << "Least squares fit leaves a gap of " << arg1);
 
   /**
-   * Exception thrown if one variable may not be greater than another.
-   *
+   * 如果一个变量可能不大于另一个变量，则抛出异常。
    * @ingroup Exceptions
+   *
    */
   DeclException2(ExcNotGreaterThan,
                  int,
@@ -1481,8 +1185,10 @@ namespace FETools
 
 #endif
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_fe_tools_H */
+#endif  /* dealii_fe_tools_H */ 
+
+

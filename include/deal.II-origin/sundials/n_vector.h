@@ -1,4 +1,3 @@
-//include/deal.II-translator/sundials/n_vector_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2020 - 2021 by the deal.II authors
@@ -43,127 +42,139 @@ namespace SUNDIALS
   namespace internal
   {
     /**
-     * 创建一个给定的NVectorView  @p vector.
-     * 这个调用的目的是用来作为
-     * @code
-     * auto view = make_nvector_view(vector);
-     * @endcode
-     * 产生的对象`view`必须被保留在周围，只要任何其他对象将使用内部查看的N_Vector。
-     * @tparam  VectorType
-     * 被观察的向量的类型。这个参数可以自动推导，并将尊重一个潜在的const-qualifier。
-     * @param  矢量 要查看的矢量。      @return   @p vector.
-     * 的NVectorView  @related  NVectorView
+     * Create a NVectorView of the given @p vector.
      *
+     * This call is intended to be used as
+     *
+     * @code
+     *   auto view = make_nvector_view(vector);
+     * @endcode
+     *
+     * The resulting object `view` must be kept around as long as any other
+     * object will use the internally viewed N_Vector.
+     *
+     * @tparam VectorType Type of the viewed vector. This parameter can be
+     *   deduced automatically and will respect a potential const-qualifier.
+     * @param vector The vector to view.
+     * @return A NVectorView of the @p vector.
+     *
+     * @related NVectorView
      */
     template <typename VectorType>
     NVectorView<VectorType>
     make_nvector_view(VectorType &vector);
 
     /**
-     * 检索连接到N_Vector的底层向量  @p v.
-     * 只有当底层向量不是常量时，这个调用才会成功。在这种情况下，请使用unwrap_nvector_const()。
-     * @note
-     * 用户必须确保在调用此函数时询问正确的VectorType，并且没有类型安全检查。
-     * @tparam  VectorType 存储在 @p v 中的向量的类型  @param  v
-     * 要解包的向量  @return  存储在 @p v 中的向量
+     * Retrieve the underlying vector attached to N_Vector @p v. This call will
+     * only succeed if the underlying vector is not const. Use
+     * unwrap_nvector_const() for this case.
      *
+     * @note Users must ensure that they ask for the correct VectorType when
+     *   calling this function and there are no type-safety checks in place.
+     *
+     * @tparam VectorType Type of the vector that is stored in @p v
+     * @param v Vector to unwrap
+     * @return The vector that is stored inside @p v
      */
     template <typename VectorType>
     VectorType *
     unwrap_nvector(N_Vector v);
 
     /**
-     * 检索连接到N_Vector  @p v
-     * 的底层向量，作为一个常数指针。
-     * @note
-     * 用户必须确保在调用此函数时询问正确的VectorType，并且没有类型安全检查。
-     * @tparam  VectorType 存储在 @p v 中的向量的类型  @param  v
-     * 要解包的向量  @return  存储在 @p v 中的向量
+     * Retrieve the underlying vector attached to N_Vector @p v as a constant
+     * pointer.
      *
+     * @note Users must ensure that they ask for the correct VectorType when
+     *   calling this function and there are no type-safety checks in place.
+     *
+     * @tparam VectorType Type of the vector that is stored in @p v
+     * @param v Vector to unwrap
+     * @return The vector that is stored inside @p v
      */
     template <typename VectorType>
     const VectorType *
     unwrap_nvector_const(N_Vector v);
 
     /**
-     * 一个指向向量的视图，只要需要N_Vector就可以使用。
-     * 这个类的对象最好是通过make_nvector_view()创建，因为
-     * @code
-     * auto view = make_nvector_view(vector);
-     * @endcode
-     * 产生的N_Vector是实际矢量的视图，而不是拥有内存。另外，不能对生成的N_Vector调用N_VDestroy()，因为这将导致在析构器中出现双倍删除。
-     * @note
-     * SUNDIALS永远不会在它自己没有创建的向量上调用N_VDestroy()，因此上述约束没有限制用户。
-     * @tparam  VectorType 储存在 @p v 的向量的类型。
+     * A view to a vector which can be used whenever a N_Vector is required.
      *
+     * Objects of this class should preferably be created by
+     * make_nvector_view() as
+     *
+     * @code
+     *   auto view = make_nvector_view(vector);
+     * @endcode
+     *
+     * The resulting N_Vector is a view of the actual vector and not owning
+     * memory. Also, N_VDestroy() cannot be called on the resulting N_Vector
+     * since this would lead to a double delete in the destructor.
+     *
+     * @note SUNDIALS will never call N_VDestroy() on a vector it didn't create
+     *   itself and thus the above constraint is not limiting the user.
+     *
+     * @tparam VectorType Type of the vector that is stored in @p v
      */
     template <typename VectorType>
     class NVectorView
     {
     public:
       /**
-       * 默认构造函数。
-       * 该对象实际上没有查看任何东西，需要用operator=(NVectorView
-       * &&)来分配。
+       * Default constructor.
        *
+       * The object is not actually viewing anything and needs to be assigned to
+       * with operator=(NVectorView &&).
        */
       NVectorView() = default;
 
       /**
-       * 构造函数。创建 @p vector. 的视图。
-       *
+       * Constructor. Create view of @p vector.
        */
       NVectorView(VectorType &vector);
 
       /**
-       * 移动赋值。
-       *
+       * Move assignment.
        */
       NVectorView(NVectorView &&) noexcept = default;
 
       /**
-       * 移动构造器。
-       *
+       * Move constructor.
        */
       NVectorView &
       operator=(NVectorView &&) noexcept = default;
 
       /**
-       * 明确删除复制的ctor。这个类只有移动。
-       *
+       * Explicitly delete copy ctor. This class is move-only.
        */
       NVectorView(const NVectorView &) = delete;
 
       /**
-       * 明确删除复制赋值。这个类是只允许移动的。
-       *
+       * Explicitly delete copy assignment. This class is move-only.
        */
       NVectorView &
       operator=(const NVectorView &) = delete;
 
       /**
-       * 解构器。
-       * @note  这将不会破坏被查看的向量。
+       * Destructor.
        *
+       * @note This will not destroy the viewed vector.
        */
       ~NVectorView() = default;
 
       /**
-       * 隐式转换为N_Vector。这个操作符使NVectorView看起来像一个实际的N_Vector，它可以直接作为许多SUNDIALS函数的参数使用。
-       *
+       * Implicit conversion to N_Vector. This operator makes the NVectorView
+       * look like an actual N_Vector and it can be used directly as an
+       * argument in many SUNDIALS functions.
        */
       operator N_Vector() const;
 
       /**
-       * 访问这个对象所查看的N_Vector。
-       *
+       * Access the N_Vector that is viewed by this object.
        */
       N_Vector operator->() const;
 
     private:
       /**
-       * 实际指向该类所查看的向量的指针。
-       *
+       * Actual pointer to a vector viewed by this class.
        */
       std::unique_ptr<_generic_N_Vector, std::function<void(N_Vector)>>
         vector_ptr;
@@ -175,5 +186,3 @@ DEAL_II_NAMESPACE_CLOSE
 
 #endif
 #endif
-
-

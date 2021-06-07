@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/trilinos_parallel_block_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
@@ -47,41 +46,46 @@ namespace TrilinosWrappers
 } // namespace TrilinosWrappers
 #  endif
 
-/*!   @addtogroup  TrilinosWrappers  @{ ! 
-
- 
-* */
+/*! @addtogroup TrilinosWrappers
+ *@{
+ */
 
 namespace TrilinosWrappers
 {
   namespace MPI
   {
     /**
-     * 一个基于TrilinosWrappers中实现的向量类的块向量实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型特有的函数。
-     * 数据的分配模式是这样的，每个块都分布在MPI通信器中命名的所有MPI进程中。
-     * 也就是说，我们不只是分发整个向量，而是分发每个组件。因此，在构造函数和reinit()函数中，不仅要指定各个块的大小，还要指定这些块中每个元素在本地进程中的存储数量。
-     * @ingroup Vectors
-     * @ingroup TrilinosWrappers @see   @ref GlossBlockLA  "块（线性代数）"
+     * An implementation of block vectors based on the vector class
+     * implemented in TrilinosWrappers. While the base class provides for most
+     * of the interface, this class handles the actual allocation of vectors
+     * and provides functions that are specific to the underlying vector type.
      *
+     * The model of distribution of data is such that each of the blocks is
+     * distributed across all MPI processes named in the MPI communicator.
+     * I.e. we don't just distribute the whole vector, but each component. In
+     * the constructors and reinit() functions, one therefore not only has to
+     * specify the sizes of the individual blocks, but also the number of
+     * elements of each of these blocks to be stored on the local process.
+     *
+     * @ingroup Vectors
+     * @ingroup TrilinosWrappers @see
+     * @ref GlossBlockLA "Block (linear algebra)"
      */
     class BlockVector : public dealii::BlockVectorBase<MPI::Vector>
     {
     public:
       /**
-       * 对基类进行类型化定义，以便更简单地访问它自己的别名。
-       *
+       * Typedef the base class for simpler access to its own alias.
        */
       using BaseClass = dealii::BlockVectorBase<MPI::Vector>;
 
       /**
-       * 类型化底层向量的类型。
-       *
+       * Typedef the type of the underlying vector.
        */
       using BlockType = BaseClass::BlockType;
 
       /**
-       * 从基类中导入别名。
-       *
+       * Import the alias from the base class.
        */
       using value_type      = BaseClass::value_type;
       using pointer         = BaseClass::pointer;
@@ -93,24 +97,23 @@ namespace TrilinosWrappers
       using const_iterator  = BaseClass::const_iterator;
 
       /**
-       * 默认构造函数。生成一个没有任何块的空向量。
-       *
+       * Default constructor. Generate an empty vector without any blocks.
        */
       BlockVector() = default;
 
       /**
-       * 构造函数。生成一个块向量，其块数与 @p partitioning.
-       * 中的条目一样多。每个IndexSet与MPI通信器一起包含MPI进程之间的数据分配布局。
-       *
+       * Constructor. Generate a block vector with as many blocks as there are
+       * entries in @p partitioning.  Each IndexSet together with the MPI
+       * communicator contains the layout of the distribution of data among
+       * the MPI processes.
        */
       explicit BlockVector(const std::vector<IndexSet> &parallel_partitioning,
                            const MPI_Comm &communicator = MPI_COMM_WORLD);
 
       /**
-       * 创建一个带有幽灵元素的BlockVector。更多细节见各自的reinit()方法。
-       * @p ghost_values 可以包含 @p parallel_partitioning,
-       * 中的任何元素，它们将被忽略。
-       *
+       * Creates a BlockVector with ghost elements. See the respective
+       * reinit() method for more details. @p ghost_values may contain any
+       * elements in @p parallel_partitioning, they will be ignored.
        */
       BlockVector(const std::vector<IndexSet> &parallel_partitioning,
                   const std::vector<IndexSet> &ghost_values,
@@ -118,67 +121,70 @@ namespace TrilinosWrappers
                   const bool                   vector_writable = false);
 
       /**
-       * 复制-构造器。将平行向量的所有属性设置为给定参数的属性，并复制这些元素。
-       *
+       * Copy-Constructor. Set all the properties of the parallel vector to
+       * those of the given argument and copy the elements.
        */
       BlockVector(const BlockVector &v);
 
       /**
-       * 移动构造函数。通过窃取向量的内部数据创建一个新的向量
-       * @p v. 。
-       *
+       * Move constructor. Creates a new vector by stealing the internal data
+       * of the vector @p v.
        */
       BlockVector(BlockVector &&v) noexcept;
 
       /**
-       * 创建一个由<tt>num_blocks</tt>组件组成的块状向量，但各个组件中没有内容，用户必须使用块状向量的重定位来填充适当的数据。
-       *
+       * Creates a block vector consisting of <tt>num_blocks</tt> components,
+       * but there is no content in the individual components and the user has
+       * to fill appropriate data using a reinit of the blocks.
        */
       explicit BlockVector(const size_type num_blocks);
 
       /**
-       * 销毁器。清除内存
-       *
+       * Destructor. Clears memory
        */
       ~BlockVector() override = default;
 
       /**
-       * 复制操作符：用给定的标量值填充本地存储的向量的所有组件。
-       *
+       * Copy operator: fill all components of the vector that are locally
+       * stored with the given scalar value.
        */
       BlockVector &
       operator=(const value_type s);
 
       /**
-       * 对相同类型的参数进行复制操作。
-       *
+       * Copy operator for arguments of the same type.
        */
       BlockVector &
       operator=(const BlockVector &v);
 
       /**
-       * 移动给定的向量。这个操作符通过有效地交换内部数据结构，将目前的向量替换为
-       * @p v 。
-       *
+       * Move the given vector. This operator replaces the present vector with
+       * @p v by efficiently swapping the internal data structures.
        */
       BlockVector &
       operator=(BlockVector &&v) noexcept;
 
       /**
-       * 另一个复制函数。这个函数接收一个deal.II块向量并将其复制到一个TrilinosWrappers块向量中。注意，块的数量必须与输入向量中的相同。
-       * 使用 reinit() 命令来调整 BlockVector
-       * 的大小或改变块组件的内部结构。
-       * 由于Trilinos只在双数上工作，这个函数被限制为在deal.II向量中只接受一种可能的数字类型。
+       * Another copy function. This one takes a deal.II block vector and
+       * copies it into a TrilinosWrappers block vector. Note that the number
+       * of blocks has to be the same in the vector as in the input vector.
+       * Use the reinit() command for resizing the BlockVector or for changing
+       * the internal structure of the block components.
        *
+       * Since Trilinos only works on doubles, this function is limited to
+       * accept only one possible number type in the deal.II vector.
        */
       template <typename Number>
       BlockVector &
       operator=(const ::dealii::BlockVector<Number> &v);
 
       /**
-       * 重新初始化BlockVector，使其包含与输入参数中给出的索引集一样多的块，根据地图中描述的各个组件的平行分布。
-       * 如果<tt>omit_zeroing_entries==false</tt>，该向量将被填充为零。
+       * Reinitialize the BlockVector to contain as many blocks as there are
+       * index sets given in the input argument, according to the parallel
+       * distribution of the individual components described in the maps.
        *
+       * If <tt>omit_zeroing_entries==false</tt>, the vector is filled with
+       * zeros.
        */
       void
       reinit(const std::vector<IndexSet> &parallel_partitioning,
@@ -186,14 +192,21 @@ namespace TrilinosWrappers
              const bool                   omit_zeroing_entries = false);
 
       /**
-       * Reinit功能。这个函数销毁了旧的向量内容，并根据输入的分区生成一个新的向量。除了像上面所有其他方法一样只指定一个索引集外，这个方法还允许提供一个额外的幽灵条目集。
-       * 有两个不同版本的向量可以被创建。如果标志 @p
-       * vector_writable 被设置为 @p false, ，该向量只允许读取 @p
-       * parallel_partitioning 和 @p ghost_entries.
-       * 的联合集合，那么reinit方法的效果相当于调用其他的reinit方法，其索引集包含本地拥有的条目和幽灵条目。
-       * 如果标志 @p vector_writable 被设置为
-       * "true"，这就为ghost元素创建了一个替代性的存储方案，允许多个线程向向量中写入数据（对于其他reinit方法，一次只允许一个线程向ghost条目写入数据）。
+       * Reinit functionality. This function destroys the old vector content
+       * and generates a new one based on the input partitioning. In addition
+       * to just specifying one index set as in all the other methods above,
+       * this method allows to supply an additional set of ghost entries.
+       * There are two different versions of a vector that can be created. If
+       * the flag @p vector_writable is set to @p false, the vector only
+       * allows read access to the joint set of @p parallel_partitioning and
+       * @p ghost_entries. The effect of the reinit method is then equivalent
+       * to calling the other reinit method with an index set containing both
+       * the locally owned entries and the ghost entries.
        *
+       * If the flag @p vector_writable is set to true, this creates an
+       * alternative storage scheme for ghost elements that allows multiple
+       * threads to write into the vector (for the other reinit methods, only
+       * one thread is allowed to write into the ghost entries at a time).
        */
       void
       reinit(const std::vector<IndexSet> &partitioning,
@@ -203,52 +216,83 @@ namespace TrilinosWrappers
 
 
       /**
-       * 将尺寸改为向量<tt>V</tt>的尺寸。这与其他reinit()函数的情况相同。
-       * <tt>V</tt>的元素不会被复制，也就是说，这个函数与调用<tt>reinit
-       * (V.size(), omit_zeroing_entries)</tt>相同。
-       * 注意，你必须调用这个（或其他reinit()函数）函数，而不是调用单个块的reinit()函数，以允许块向量更新它的向量大小缓存。如果你在其中一个块上调用reinit()，那么对这个对象的后续操作可能会产生不可预测的结果，因为它们可能会被路由到错误的块上。
+       * Change the dimension to that of the vector <tt>V</tt>. The same
+       * applies as for the other reinit() function.
        *
+       * The elements of <tt>V</tt> are not copied, i.e.  this function is the
+       * same as calling <tt>reinit (V.size(), omit_zeroing_entries)</tt>.
+       *
+       * Note that you must call this (or the other reinit() functions)
+       * function, rather than calling the reinit() functions of an individual
+       * block, to allow the block vector to update its caches of vector
+       * sizes. If you call reinit() on one of the blocks, then subsequent
+       * actions on this object may yield unpredictable results since they may
+       * be routed to the wrong block.
        */
       void
       reinit(const BlockVector &V, const bool omit_zeroing_entries = false);
 
       /**
-       * 将块的数量改为<tt>num_blocks</tt>。各个区块将被初始化为零大小，所以假定用户自己以适当的方式调整各个区块的大小，并在之后调用<tt>collect_sizes</tt>。
-       *
+       * Change the number of blocks to <tt>num_blocks</tt>. The individual
+       * blocks will get initialized with zero size, so it is assumed that the
+       * user resizes the individual blocks by herself in an appropriate way,
+       * and calls <tt>collect_sizes</tt> afterwards.
        */
       void
       reinit(const size_type num_blocks);
 
       /**
-       * 这个reinit函数是为了用于需要使用一些非本地数据的并行计算。需要这个函数的典型情况是并行调用
-       * FEValues<dim>::get_function_values
-       * 函数（或一些导数）。由于提前检索数据通常更快，这个函数可以在汇编分叉到不同处理器之前被调用。这个函数的作用如下。
-       * 它获取给定矩阵的列中的信息，并寻找不同处理器之间的数据耦合。然后从输入向量中查询这些数据。注意，你不应该再向结果向量写入数据，因为有些数据可以在不同的处理器上存储多次，导致不可预测的结果。特别是，这样的向量不能用于矩阵-向量乘积，例如在线性系统的求解过程中。
-       *
+       * This reinit function is meant to be used for parallel calculations
+       * where some non-local data has to be used. The typical situation where
+       * one needs this function is the call of the
+       * FEValues<dim>::get_function_values function (or of some derivatives)
+       * in parallel. Since it is usually faster to retrieve the data in
+       * advance, this function can be called before the assembly forks out to
+       * the different processors. What this function does is the following:
+       * It takes the information in the columns of the given matrix and looks
+       * which data couples between the different processors. That data is
+       * then queried from the input vector. Note that you should not write to
+       * the resulting vector any more, since the some data can be stored
+       * several times on different processors, leading to unpredictable
+       * results. In particular, such a vector cannot be used for matrix-
+       * vector products as for example done during the solution of linear
+       * systems.
        */
       void
       import_nonlocal_data_for_fe(const TrilinosWrappers::BlockSparseMatrix &m,
                                   const BlockVector &                        v);
 
       /**
-       * 如果这个向量包含鬼魂元素，则返回。              @see   @ref GlossGhostedVector  "有鬼元素的向量"
+       * Return if this Vector contains ghost elements.
        *
+       * @see
+       * @ref GlossGhostedVector "vectors with ghost elements"
        */
       bool
       has_ghost_elements() const;
 
       /**
-       * 交换这个向量和另一个向量<tt>v</tt>的内容。我们可以用一个临时变量和复制数据元素来完成这个操作，但这个函数明显更有效率，因为它只交换两个向量的数据指针，因此不需要分配临时存储空间和移动数据。
-       * 限制：现在这个函数只在两个向量有相同数量的块的情况下工作。如果需要，也应该交换块的数量。
-       * 这个函数类似于所有C++标准容器的swap()函数。此外，还有一个全局函数swap(u,v)，它简单地调用<tt>u.swap(v)</tt>，同样与标准函数类比。
+       * Swap the contents of this vector and the other vector <tt>v</tt>. One
+       * could do this operation with a temporary variable and copying over
+       * the data elements, but this function is significantly more efficient
+       * since it only swaps the pointers to the data of the two vectors and
+       * therefore does not need to allocate temporary storage and move data
+       * around.
        *
+       * Limitation: right now this function only works if both vectors have
+       * the same number of blocks. If needed, the numbers of blocks should be
+       * exchanged, too.
+       *
+       * This function is analogous to the swap() function of all C++
+       * standard containers. Also, there is a global function swap(u,v) that
+       * simply calls <tt>u.swap(v)</tt>, again in analogy to standard
+       * functions.
        */
       void
       swap(BlockVector &v);
 
       /**
-       * 打印到一个流。
-       *
+       * Print to a stream.
        */
       void
       print(std::ostream &     out,
@@ -257,21 +301,19 @@ namespace TrilinosWrappers
             const bool         across     = true) const;
 
       /**
-       * 异常情况
-       *
+       * Exception
        */
       DeclException0(ExcIteratorRangeDoesNotMatchVectorSize);
 
       /**
-       * 异常情况
-       *
+       * Exception
        */
       DeclException0(ExcNonMatchingBlockVectors);
     };
 
 
 
-     /*-------------------------- Inline functions ---------------------------*/ 
+    /*-------------------------- Inline functions ---------------------------*/
     inline BlockVector::BlockVector(
       const std::vector<IndexSet> &parallel_partitioning,
       const MPI_Comm &             communicator)
@@ -369,9 +411,11 @@ namespace TrilinosWrappers
 
 
     /**
-     * 全局函数，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
-     * @relatesalso   TrilinosWrappers::MPI::BlockVector .
+     * Global function which overloads the default implementation of the C++
+     * standard library which uses a temporary object. The function simply
+     * exchanges the data of the two vectors.
      *
+     * @relatesalso TrilinosWrappers::MPI::BlockVector
      */
     inline void
     swap(BlockVector &u, BlockVector &v)
@@ -379,11 +423,11 @@ namespace TrilinosWrappers
       u.swap(v);
     }
 
-  }  /* namespace MPI */ 
+  } /* namespace MPI */
 
-}  /* namespace TrilinosWrappers */ 
+} /* namespace TrilinosWrappers */
 
- /*@}*/ 
+/*@}*/
 
 
 namespace internal
@@ -394,9 +438,8 @@ namespace internal
     class ReinitHelper;
 
     /**
-     * linear_operator.h中内部使用的一个辅助类。对
-     * TrilinosWrappers::MPI::BlockVector. 的特殊化。
-     *
+     * A helper class used internally in linear_operator.h. Specialization for
+     * TrilinosWrappers::MPI::BlockVector.
      */
     template <>
     class ReinitHelper<TrilinosWrappers::MPI::BlockVector>
@@ -426,13 +469,11 @@ namespace internal
     };
 
   } // namespace LinearOperatorImplementation
-}  /* namespace internal */ 
+} /* namespace internal */
 
 
 /**
- * 将 dealii::TrilinosWrappers::MPI::BlockVector 声明为分布式向量。
- *
- *
+ * Declare dealii::TrilinosWrappers::MPI::BlockVector as distributed vector.
  */
 template <>
 struct is_serial_vector<TrilinosWrappers::MPI::BlockVector> : std::false_type
@@ -443,5 +484,3 @@ DEAL_II_NAMESPACE_CLOSE
 #endif // DEAL_II_WITH_TRILINOS
 
 #endif
-
-

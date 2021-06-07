@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/index_set_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2021 by the deal.II authors
@@ -48,26 +49,16 @@ using MPI_Comm = int;
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A class that represents a subset of indices among a larger set. For
- * example, it can be used to denote the set of degrees of freedom within the
- * range $[0,\mathrm{dof\_handler.n\_dofs()})$ that belongs to a particular
- * subdomain, or those among all degrees of freedom that are stored on a
- * particular processor in a distributed parallel computation.
+ * 一个代表较大集合中的一个索引子集的类。例如，它可以用来表示在
+ * $[0,\mathrm{dof\_handler.n\_dofs()})$
+ * 范围内属于某个特定子域的自由度集合，或者在分布式并行计算中存储在某个特定处理器上的所有自由度中的自由度。
+ * 这个类可以表示半开范围的指数集合，也可以表示单个元素。为实用起见，它还存储了这些指数可以承担的总体范围。换句话说，你需要指定索引空间的大小
+ * $[0,\text{size})$ ，这个类的对象是其中的一个子集。
+ * 有两种方法可以在IndexSets上进行迭代。首先，begin()和end()允许对集合中的单个索引进行迭代。第二，begin_interval()和end_interval()允许对上述的半开范围进行迭代。
+ * 这个类中使用的数据结构以及原理可以在 @ref distributed_paper "分布式计算论文 "
+ * 中找到。
  *
- * This class can represent a collection of half-open ranges of indices as
- * well as individual elements. For practical purposes it also stores the
- * overall range these indices can assume. In other words, you need to specify
- * the size of the index space $[0,\text{size})$ of which objects of this
- * class are a subset.
  *
- * There are two ways to iterate over the IndexSets: First, begin() and end()
- * allow iteration over individual indices in the set. Second,
- * begin_interval() and end_interval() allow iteration over the half-open
- * ranges as described above.
- *
- * The data structures used in this class along with a rationale can be found
- * in the
- * @ref distributed_paper "Distributed Computing paper".
  */
 class IndexSet
 {
@@ -77,407 +68,372 @@ public:
   class IntervalIterator;
 
   /**
-   * @p size_type is the type used for storing the size and the individual
-   * entries in the IndexSet.
+   * @p size_type 是用于存储索引集的大小和单个条目的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * One can see an IndexSet as a container of size size(), where the elements
-   * of the containers are bool values that are either false or true,
-   * depending on whether a particular index is an element of the IndexSet or
-   * not. In other words, an IndexSet is a bit like a vector in which the
-   * elements we store are booleans. In this view, the correct local alias
-   * indicating the type of the elements of the vector would then be @p bool.
+   * 我们可以把 IndexSet 看作是 size()
+   * 的容器，其中容器的元素是 bool
+   * 值，这些元素要么是假的，要么是真的，取决于某个特定的索引是否是
+   * IndexSet 的一个元素。换句话说，IndexSet
+   * 有点像一个矢量，其中我们存储的元素是布尔值。另一方面，
+   * @p bool
+   * 的缺点是它不是一个数字类型，例如，它不允许与 @p
+   * double.
+   * 相乘。换句话说，在一个允许使用其他向量的地方，我们不能轻易使用一个布尔的向量。因此，我们声明这样一个向量的元素的类型是有符号的整数。这是因为在C++语言中，booleans可以隐含地转换为整数。换句话说，将向量元素的类型声明为有符号整数只是一个小谎言，但它是一个有用的谎言。
    *
-   * On the other hand, @p bool has the disadvantage that it is not a
-   * numerical type that, for example, allows multiplication with a @p double.
-   * In other words, one can not easily use a vector of booleans in a place
-   * where other vectors are allowed. Consequently, we declare the type of the
-   * elements of such a vector as a signed integer. This uses the fact that in
-   * the C++ language, booleans are implicitly convertible to integers. In
-   * other words, declaring the type of the elements of the vector as a signed
-   * integer is only a small lie, but it is a useful one.
    */
   using value_type = signed int;
 
 
   /**
-   * Default constructor.
+   * 默认构造函数。
+   *
    */
   IndexSet();
 
   /**
-   * Constructor that also sets the overall size of the index range.
+   * 构造函数，也设置了索引范围的整体大小。
+   *
    */
   explicit IndexSet(const size_type size);
 
   /**
-   * Copy constructor.
+   * 复制构造函数。
+   *
    */
   IndexSet(const IndexSet &) = default;
 
   /**
-   * Copy assignment operator.
+   * 拷贝赋值操作符。
+   *
    */
   IndexSet &
   operator=(const IndexSet &) = default;
 
   /**
-   * Move constructor. Create a new IndexSet by transferring the internal data
-   * of the input set.
+   * 移动构造函数。通过转移输入集的内部数据来创建一个新的IndexSet。
+   *
    */
   IndexSet(IndexSet &&is) noexcept;
 
   /**
-   * Move assignment operator. Transfer the internal data of the input set into
-   * the current one.
+   * 移动赋值运算符。将输入集的内部数据转移到当前集中。
+   *
    */
   IndexSet &
   operator=(IndexSet &&is) noexcept;
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * Constructor from a Trilinos Epetra_BlockMap.
+   * 来自Trilinos Epetra_BlockMap的构造函数。
+   *
    */
   explicit IndexSet(const Epetra_BlockMap &map);
 #endif
 
   /**
-   * Remove all indices from this index set. The index set retains its size,
-   * however.
+   * 从这个索引集中删除所有的索引。然而，索引集仍保留其大小。
+   *
    */
   void
   clear();
 
   /**
-   * Set the maximal size of the indices upon which this object operates.
+   * 设置这个对象所操作的索引的最大尺寸。
+   * 这个函数只有在索引集还不包含任何元素时才能被调用。
+   * 这可以通过调用clear()来实现，比如说。
    *
-   * This function can only be called if the index set does not yet contain
-   * any elements.  This can be achieved by calling clear(), for example.
    */
   void
   set_size(const size_type size);
 
   /**
-   * Return the size of the index space of which this index set is a subset
-   * of.
+   * 返回这个索引集是其子集的索引空间的大小。
+   * 注意，这个结果不等于这个索引集内的索引数。后者的信息是由n_elements()返回的。
    *
-   * Note that the result is not equal to the number of indices within this
-   * set. The latter information is returned by n_elements().
    */
   size_type
   size() const;
 
   /**
-   * Add the half-open range $[\text{begin},\text{end})$ to the set of indices
-   * represented by this class.
-   * @param[in] begin The first element of the range to be added.
-   * @param[in] end The past-the-end element of the range to be added.
+   * 将半开范围 $[\text{begin},\text{end})$
+   * 添加到该类所代表的索引集合中。    @param[in]  开始
+   * 要添加的范围的第一个元素。    @param[in]  结束
+   * 要添加的范围的过末元素。
+   *
    */
   void
   add_range(const size_type begin, const size_type end);
 
   /**
-   * Add an individual index to the set of indices.
+   * 将一个单独的索引添加到索引集合中。
+   *
    */
   void
   add_index(const size_type index);
 
   /**
-   * Add a whole set of indices described by dereferencing every element of
-   * the iterator range <code>[begin,end)</code>.
+   * 添加一整组索引，通过取消引用迭代器范围的每个元素来描述
+   * <code>[begin,end)</code>  。      @param[in]  开始
+   * 迭代器到要添加的索引范围的第一个元素  @param[in]
+   * 结束 要添加的元素范围的过去-结束迭代器。  @pre
+   * 需要满足条件 <code>begin@<=end</code> 。
    *
-   * @param[in] begin Iterator to the first element of range of indices to be
-   * added
-   * @param[in] end The past-the-end iterator for the range of elements to be
-   * added. @pre The condition <code>begin@<=end</code> needs to be satisfied.
    */
   template <typename ForwardIterator>
   void
   add_indices(const ForwardIterator &begin, const ForwardIterator &end);
 
   /**
-   * Add the given IndexSet @p other to the current one, constructing the
-   * union of *this and @p other.
+   * 将给定的索引集 @p other
+   * 添加到当前的索引集，构建this和 @p other. 的联合体 如果
+   * @p offset 参数为非零，那么 @p other
+   * 中的每个索引在被添加到当前索引集之前都会被 @p offset
+   * 移位。例如，这允许从其他几个应该代表不同范围的索引集中构建一个索引集（例如，当从一个向量的各个块的非零元素集中构建一个块向量的非零条目集时）。
+   * 如果 @p other
+   * 索引集的任何索引（可能是移位的）位于当前对象所代表的
+   * <code>[0,size())</code>
+   * 范围之外，这个函数将产生一个异常。
    *
-   * If the @p offset argument is nonzero, then every index in @p other is
-   * shifted by @p offset before being added to the current index set. This
-   * allows to construct, for example, one index set from several others that
-   * are supposed to represent index sets corresponding to different ranges
-   * (e.g., when constructing the set of nonzero entries of a block vector
-   * from the sets of nonzero elements of the individual blocks of a vector).
-   *
-   * This function will generate an exception if any of the (possibly shifted)
-   * indices of the @p other index set lie outside the range
-   * <code>[0,size())</code> represented by the current object.
    */
   void
   add_indices(const IndexSet &other, const size_type offset = 0);
 
   /**
-   * Return whether the specified index is an element of the index set.
+   * 返回指定索引是否是索引集的一个元素。
+   *
    */
   bool
   is_element(const size_type index) const;
 
   /**
-   * Return whether the index set stored by this object defines a contiguous
-   * range. This is true also if no indices are stored at all.
+   * 返回这个对象所存储的索引集是否定义了一个连续的范围。如果根本没有存储任何索引，这也是真的。
+   *
    */
   bool
   is_contiguous() const;
 
   /**
-   * Return whether the index set stored by this object contains no elements.
-   * This is similar, but faster than checking <code>n_elements() == 0</code>.
+   * 返回这个对象所存储的索引集是否不包含任何元素。
+   * 这类似于，但比检查  <code>n_elements() == 0</code>  要快。
+   *
    */
   bool
   is_empty() const;
 
   /**
-   * Return whether the IndexSets are ascending with respect to MPI process
-   * number and 1:1, i.e., each index is contained in exactly one IndexSet
-   * (among those stored on the different processes), each process stores
-   * contiguous subset of indices, and the index set on process $p+1$ starts
-   * at the index one larger than the last one stored on process $p$.
-   * In case there is only one MPI process, this just means that the IndexSet
-   * is complete.
+   * 返回IndexSets是否相对于MPI进程号是升序的，并且是1:1，也就是说，每个索引正好包含在一个IndexSet中（在不同进程上存储的索引中），每个进程存储连续的索引子集，并且进程
+   * $p+1$  上的索引集开始于比进程  $p$
+   * 上存储的最后一个索引大的索引。
+   * 在只有一个MPI进程的情况下，这仅仅意味着索引集已经完成。
+   *
    */
   bool
   is_ascending_and_one_to_one(const MPI_Comm &communicator) const;
 
   /**
-   * Return the number of elements stored in this index set.
+   * 返回存储在这个索引集中的元素的数量。
+   *
    */
   size_type
   n_elements() const;
 
   /**
-   * Return the global index of the local index with number @p local_index
-   * stored in this index set. @p local_index obviously needs to be less than
-   * n_elements().
+   * 返回存储在这个索引集中的编号为 @p local_index
+   * 的局部索引的全局索引。  @p local_index
+   * 显然需要小于n_elements()。
+   *
    */
   size_type
   nth_index_in_set(const size_type local_index) const;
 
   /**
-   * Return the how-manyth element of this set (counted in ascending order) @p
-   * global_index is. @p global_index needs to be less than the size(). This
-   * function returns numbers::invalid_dof_index if the index @p global_index is not actually
-   * a member of this index set, i.e. if is_element(global_index) is false.
+   * 返回这个集合的第多少个元素（按升序计数）  @p
+   * global_index是。  @p global_index 需要小于size()。如果索引 @p
+   * global_index
+   * 实际上不是这个索引集的成员，即如果is_element(global_index)是假的，这个函数返回
+   * numbers::invalid_dof_index 。
+   *
    */
   size_type
   index_within_set(const size_type global_index) const;
 
   /**
-   * Each index set can be represented as the union of a number of contiguous
-   * intervals of indices, where if necessary intervals may only consist of
-   * individual elements to represent isolated members of the index set.
+   * 每个索引集可以表示为若干个连续的索引区间的联合，如果有必要，区间可以只由单个元素组成，以表示索引集的孤立成员。
+   * 这个函数返回代表所考虑的索引集所需的最小数量的这种区间。
    *
-   * This function returns the minimal number of such intervals that are
-   * needed to represent the index set under consideration.
    */
   unsigned int
   n_intervals() const;
 
   /**
-   * This function returns the local index of the beginning of the largest
-   * range.
+   * 该函数返回最大区间开始的局部索引。
+   * 换句话说，返回值是nth_index_in_set(x)，其中x是IndexSet中最大连续范围的第一个索引。因此，返回值等于集合中在最大范围之前的元素的数量。
+   * 这个调用假定IndexSet是不空的。
    *
-   * In other words, the return value is nth_index_in_set(x), where x is the
-   * first index of the largest contiguous range of indices in the
-   * IndexSet. The return value is therefore equal to the number of elements
-   * in the set that come before the largest range.
-   *
-   * This call assumes that the IndexSet is nonempty.
    */
   size_type
   largest_range_starting_index() const;
 
   /**
-   * Compress the internal representation by merging individual elements with
-   * contiguous ranges, etc. This function does not have any external effect.
+   * 通过合并具有连续范围的单个元素来压缩内部表示，等等。这个函数没有任何外部影响。
+   *
    */
   void
   compress() const;
 
   /**
-   * Comparison for equality of index sets. This operation is only allowed if
-   * the size of the two sets is the same (though of course they do not have
-   * to have the same number of indices).
+   * 对索引集的平等进行比较。这个操作只允许在两个集合的大小相同的情况下进行（当然它们不一定要有相同数量的索引）。
+   *
    */
   bool
   operator==(const IndexSet &is) const;
 
   /**
-   * Comparison for inequality of index sets. This operation is only allowed
-   * if the size of the two sets is the same (though of course they do not
-   * have to have the same number of indices).
+   * 索引集不平等的比较。这个操作只允许在两个集合的大小相同的情况下进行（当然它们不一定要有相同的索引数）。
+   *
    */
   bool
   operator!=(const IndexSet &is) const;
 
   /**
-   * Return the intersection of the current index set and the argument given,
-   * i.e. a set of indices that are elements of both index sets. The two index
-   * sets must have the same size (though of course they do not have to have
-   * the same number of indices).
+   * 返回当前索引集和所给参数的交集，即一组索引是两个索引集的元素。这两个索引集必须具有相同的大小（当然，它们不一定具有相同的索引数）。
+   *
    */
   IndexSet operator&(const IndexSet &is) const;
 
   /**
-   * This command takes an interval <tt>[begin, end)</tt> and returns the
-   * intersection of the current index set with the interval, shifted to the
-   * range <tt>[0, end-begin)</tt>.
+   * 这个命令接收一个区间<tt>[begin,
+   * end)</tt>，并返回当前索引集与该区间的交集，移到<tt>[0,
+   * end-begin)</tt>范围。
+   * 换句话说，这个操作的结果是当前对象所代表的集合与区间<tt>[begin,
+   * end)</tt>的交集，如<i>within the interval <tt>[begin,
+   * end)</tt></i>所见，将交集操作的结果向左移动<tt>begin</tt>。这对应于一个<i>view</i>的概念。区间<tt>[begin,
+   * end)</tt>是一个<i>window</i>，通过它我们可以看到当前对象所代表的集合。
    *
-   * In other words, the result of this operation is the intersection of the
-   * set represented by the current object and the interval <tt>[begin,
-   * end)</tt>, as seen <i>within the interval <tt>[begin, end)</tt></i> by
-   * shifting the result of the intersection operation to the left by
-   * <tt>begin</tt>. This corresponds to the notion of a <i>view</i>: The
-   * interval <tt>[begin, end)</tt> is a <i>window</i> through which we see
-   * the set represented by the current object.
    */
   IndexSet
   get_view(const size_type begin, const size_type end) const;
 
   /**
-   * Split the set indices represented by this object into blocks given by the
-   * @p n_indices_per_block structure. The sum of its entries must match the
-   * global size of the current object.
+   * 将此对象所代表的集合指数分割成由 @p n_indices_per_block
+   * 结构给出的块。其条目之和必须与当前对象的全局大小一致。
+   *
    */
   std::vector<IndexSet>
   split_by_block(
     const std::vector<types::global_dof_index> &n_indices_per_block) const;
 
   /**
-   * Remove all elements contained in @p other from this set. In other words,
-   * if $x$ is the current object and $o$ the argument, then we compute $x
-   * \leftarrow x \backslash o$.
+   * 从这个集合中移除 @p other
+   * 中包含的所有元素。换句话说，如果 $x$ 是当前对象，
+   * $o$ 是参数，那么我们计算 $x \leftarrow x \backslash o$  。
+   *
    */
   void
   subtract_set(const IndexSet &other);
 
   /**
-   * Return a new IndexSet, with global size equal to
-   * `this->size()*other.size()`, containing for every element `n` of this
-   * IndexSet, the entries in the half open range `[n*other.size(),
-   * (n+1)*other.size())` of the @p other IndexSet.
+   * 返回一个新的IndexSet，全局大小等于`this->size()*other.size()`，对于这个IndexSet的每个元素`n`，包含
+   * @p other IndexSet的半开放范围`[n*other.size(),
+   * (n+1)*other.size()]中的条目。
+   * 这个名字来自于这样的观点：我们从一个IndexSet开始，与另一个有`other.size()`元素的IndexSet进行张量乘积；这将产生一个大小为`this->size()`乘以`other.size()`的矩阵，在这个IndexSet包含一个索引的行和
+   * @p other
+   * IndexSet包含一个索引的列中有1。然后，这个矩阵被再次
+   * "解卷"，逐一浏览每一行，并以连续的顺序对矩阵的条目重新进行索引。矩阵中的
+   * "1
+   * "对应于重新索引的IndexSet中的一个条目，这个函数将返回该条目。
    *
-   * The name results from the perspective that one starts with an IndexSet and
-   * takes the tensor product with another IndexSet with `other.size()`
-   * elements; this results in a matrix of size `this->size()` times
-   * `other.size()` that has ones in exactly the rows for which this IndexSet
-   * contained an index and in the columns for which the @p other IndexSet
-   * contained an index. This matrix is then "unrolled" again by going through
-   * each row one by one and reindexing the entries of the matrix in consecutive
-   * order. A one in the matrix then corresponds to an entry in the reindexed
-   * IndexSet that is returned by this function.
    */
   IndexSet
   tensor_product(const IndexSet &other) const;
 
   /**
-   * Remove and return the last element of the last range.
-   * This function throws an exception if the IndexSet is empty.
+   * 删除并返回最后一个范围的最后一个元素。
+   * 如果IndexSet是空的，这个函数会抛出一个异常。
+   *
    */
   size_type
   pop_back();
 
   /**
-   * Remove and return the first element of the first range.
-   * This function throws an exception if the IndexSet is empty.
+   * 删除并返回第一个区域的第一个元素。
+   * 如果IndexSet是空的，这个函数会抛出一个异常。
+   *
    */
   size_type
   pop_front();
 
   /**
-   * Fill the given vector with all indices contained in this IndexSet.
+   * 用这个IndexSet中包含的所有索引填充给定的向量。
+   *
    */
   void
   fill_index_vector(std::vector<size_type> &indices) const;
 
   /**
-   * Fill the given vector with either zero or one elements, providing a
-   * binary representation of this index set. The given vector is assumed to
-   * already have the correct size.
+   * 用零或一的元素填充给定的向量，提供这个索引集的二进制表示。假设给定的向量已经有了正确的大小。
+   * 给定的参数用整数值0和1填充，使用
+   * <code>vector.operator[]</code>
+   * 。因此，只要允许将零和一的整数转换为向量的元素，任何具有这种操作符的对象都可以被使用。具体来说，对于类Vector、BlockVector，以及
+   * std::vector@<bool@>,   std::vector@<int@>, 和 std::vector@<double@>.
+   * 都是这样的情况。
    *
-   * The given argument is filled with integer values zero and one, using
-   * <code>vector.operator[]</code>. Thus, any object that has such an
-   * operator can be used as long as it allows conversion of integers zero and
-   * one to elements of the vector. Specifically, this is the case for classes
-   * Vector, BlockVector, but also std::vector@<bool@>, std::vector@<int@>,
-   * and std::vector@<double@>.
    */
   template <typename VectorType>
   void
   fill_binary_vector(VectorType &vector) const;
 
   /**
-   * Output a text representation of this IndexSet to the given stream. Used
-   * for testing.
+   * 将此IndexSet的文本表示法输出到给定的流中。用于测试。
+   *
    */
   template <class StreamType>
   void
   print(StreamType &out) const;
 
   /**
-   * Write the IndexSet into a text based file format, that can be read in
-   * again using the read() function.
+   * 将IndexSet写成基于文本的文件格式，可以用read()函数再次读入。
+   *
    */
   void
   write(std::ostream &out) const;
 
   /**
-   * Construct the IndexSet from a text based representation given by the
-   * stream @p in written by the write() function.
+   * 从由write()函数写入的流 @p in
+   * 给出的基于文本的表示法中构建IndexSet。
+   *
    */
   void
   read(std::istream &in);
 
   /**
-   * Write the IndexSet into a binary, compact representation, that can be
-   * read in again using the block_read() function.
+   * 将 IndexSet 写入一个二进制的、紧凑的表示法，可以使用
+   * block_read() 函数再次读入。
+   *
    */
   void
   block_write(std::ostream &out) const;
 
   /**
-   * Construct the IndexSet from a binary representation given by the stream
-   * @p in written by the write_block() function.
+   * 从由write_block()函数写入的流 @p in
+   * 给出的二进制表示法中构造IndexSet。
+   *
    */
   void
   block_read(std::istream &in);
 
 #ifdef DEAL_II_WITH_TRILINOS
   /**
-   * Given an MPI communicator, create a Trilinos map object that represents a
-   * distribution of vector elements or matrix rows in which we will locally
-   * store those elements or rows for which we store the index in the current
-   * index set, and all the other elements/rows elsewhere on one of the other
-   * MPI processes.
+   * 给定一个MPI通信器，创建一个Trilinos
+   * map对象，该对象表示向量元素或矩阵行的分布，我们将在其中本地存储那些我们在当前索引集中存储索引的元素或行，而所有其他元素/行则在其他MPI进程之一上的其他地方。
+   * 最后一个参数只有在通信器是一个并行的通信器，将计算分布在多个处理器上时才起作用。在这种情况下，如果最后一个参数是假的，那么就假定在所有处理器上调用这个函数的索引集是互斥的，但一起列举每个索引时正好是一次。换句话说，如果你在两个处理器上调用这个函数，那么这个函数被调用的索引集必须一起拥有从0到size()-1的所有可能的索引，并且没有索引必须出现在两个索引集中。例如，这相当于我们要把向量的元素分成独特的子集，存储在不同的处理器上的情况
    *
-   * The last argument only plays a role if the communicator is a parallel
-   * one, distributing computations across multiple processors. In that case,
-   * if the last argument is false, then it is assumed that the index sets
-   * this function is called with on all processors are mutually exclusive but
-   * together enumerate each index exactly once. In other words, if you call
-   * this function on two processors, then the index sets this function is
-   * called with must together have all possible indices from zero to
-   * size()-1, and no index must appear in both index sets. This corresponds,
-   * for example, to the case where we want to split the elements of vectors
-   * into unique subsets to be stored on different processors -- no element
-   * should be owned by more than one processor, but each element must be
-   * owned by one.
+   * - 任何元素都不应被一个以上的处理器所拥有，但每个元素必须被一个处理器所拥有。    另一方面，如果第二个参数为真，那么索引集可以是重叠的，它们也不需要横跨整个索引集。如果我们想创建的向量不仅包含本地拥有的索引，而且还包含对应于位于幽灵单元上的自由度的元素，那么这是一个有用的操作。这个方法的另一个应用是选择一个向量的元素子集，例如，只提取某些解的成分。
    *
-   * On the other hand, if the second argument is true, then the index sets
-   * can be overlapping, and they also do not need to span the whole index
-   * set. This is a useful operation if we want to create vectors that not
-   * only contain the locally owned indices, but for example also the elements
-   * that correspond to degrees of freedom located on ghost cells. Another
-   * application of this method is to select a subset of the elements of a
-   * vector, e.g. for extracting only certain solution components.
    */
   Epetra_Map
   make_trilinos_map(const MPI_Comm &communicator = MPI_COMM_WORLD,
@@ -492,8 +448,8 @@ public:
 
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定这个对象的内存消耗（以字节为单位）的估计值。
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -504,9 +460,8 @@ public:
                  << " is not an element of this set.");
 
   /**
-   * Write or read the data of this object to or from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
@@ -514,95 +469,107 @@ public:
 
 
   /**
-   * @name Iterators
-   * @{
+   * @name  迭代器  @{ .
+   *
    */
 
   /**
-   * Dereferencing an IntervalIterator will return a reference to an object of
-   * this type. It allows access to a contiguous interval $[a,b[$ (also called
-   * a range) of the IndexSet being iterated over.
+   * 解除对IntervalIterator的引用将返回对该类型对象的引用。它允许访问被迭代的IndexSet的一个连续的区间
+   * $[a,b[$ （也称为范围）。
+   *
    */
   class IntervalAccessor
   {
   public:
     /**
-     * Construct a valid accessor given an IndexSet and the index @p range_idx
-     * of the range to point to.
+     * 给出一个IndexSet和要指向的范围的索引 @p range_idx
+     * ，构造一个有效的访问器。
+     *
      */
     IntervalAccessor(const IndexSet *idxset, const size_type range_idx);
 
     /**
-     * Construct an invalid accessor for the IndexSet.
+     * 为IndexSet构造一个无效的访问器。
+     *
      */
     explicit IntervalAccessor(const IndexSet *idxset);
 
     /**
-     * Number of elements in this interval.
+     * 这个区间内的元素数量。
+     *
      */
     size_type
     n_elements() const;
 
     /**
-     * If true, we are pointing at a valid interval in the IndexSet.
+     * 如果为真，我们就指向IndexSet中的一个有效区间。
+     *
      */
     bool
     is_valid() const;
 
     /**
-     * Return an iterator pointing at the first index in this interval.
+     * 返回一个迭代器，指向这个区间的第一个索引。
+     *
      */
     ElementIterator
     begin() const;
 
     /**
-     * Return an iterator pointing directly after the last index in this
-     * interval.
+     * 返回一个直接指向该区间最后一个索引之后的迭代器。
+     *
      */
     ElementIterator
     end() const;
 
     /**
-     * Return the index of the last index in this interval.
+     * 返回这个区间的最后一个索引的索引。
+     *
      */
     size_type
     last() const;
 
   private:
     /**
-     * Private copy constructor.
+     * 私有的复制构造函数。
+     *
      */
     IntervalAccessor(const IntervalAccessor &other);
     /**
-     * Private copy operator.
+     * 私有的复制操作符。
+     *
      */
     IntervalAccessor &
     operator=(const IntervalAccessor &other);
 
     /**
-     * Test for equality, used by IntervalIterator.
+     * 平等测试，由IntervalIterator使用。
+     *
      */
     bool
     operator==(const IntervalAccessor &other) const;
     /**
-     * Smaller-than operator, used by IntervalIterator.
+     * 小于运算符，由IntervalIterator使用。
+     *
      */
     bool
     operator<(const IntervalAccessor &other) const;
     /**
-     * Advance this accessor to point to the next interval in the @p
-     * index_set.
+     * 推进这个访问器，指向 @p index_set中的下一个区间。
+     *
      */
     void
     advance();
     /**
-     * Reference to the IndexSet.
+     * 对IndexSet的引用。
+     *
      */
     const IndexSet *index_set;
 
     /**
-     * Index into index_set.ranges[]. Set to numbers::invalid_dof_index if
-     * invalid or the end iterator.
+     * 进入index_set. ranges[]的索引。如果无效，则设置为
+     * numbers::invalid_dof_index ，或者结束迭代器。
+     *
      */
     size_type range_idx;
 
@@ -610,92 +577,102 @@ public:
   };
 
   /**
-   * Class that represents an iterator pointing to a contiguous interval
-   * $[a,b[$ as returned by IndexSet::begin_interval().
+   * 表示指向由 IndexSet::begin_interval(). 返回的连续区间 $[a,b[$
+   * 的迭代器的类。
+   *
    */
   class IntervalIterator
   {
   public:
     /**
-     * Construct a valid iterator pointing to the interval with index @p
-     * range_idx.
+     * 构建一个有效的迭代器，指向索引为 @p
+     * range_idx的区间。
+     *
      */
     IntervalIterator(const IndexSet *idxset, const size_type range_idx);
 
     /**
-     * Construct an invalid iterator (used as end()).
+     * 构建一个无效的迭代器（作为end()使用）。
+     *
      */
     explicit IntervalIterator(const IndexSet *idxset);
 
     /**
-     * Construct an empty iterator.
+     * 构建一个空的迭代器。
+     *
      */
     IntervalIterator();
 
     /**
-     * Copy constructor from @p other iterator.
+     * 从 @p other 迭代器复制构造函数。
+     *
      */
     IntervalIterator(const IntervalIterator &other) = default;
 
     /**
-     * Assignment of another iterator.
+     * 对另一个迭代器进行赋值。
+     *
      */
     IntervalIterator &
     operator=(const IntervalIterator &other) = default;
 
     /**
-     * Prefix increment.
+     * 前缀增量。
+     *
      */
     IntervalIterator &
     operator++();
 
     /**
-     * Postfix increment.
+     * 后缀增量。
+     *
      */
     IntervalIterator
     operator++(int);
 
     /**
-     * Dereferencing operator, returns an IntervalAccessor.
+     * 撤消运算符，返回一个IntervalAccessor。
+     *
      */
     const IntervalAccessor &operator*() const;
 
     /**
-     * Dereferencing operator, returns a pointer to an IntervalAccessor.
+     * 去引用操作符，返回一个指向IntervalAccessor的指针。
+     *
      */
     const IntervalAccessor *operator->() const;
 
     /**
-     * Comparison.
+     * 比较。
+     *
      */
     bool
     operator==(const IntervalIterator &) const;
 
     /**
-     * Inverse of <tt>==</tt>.
+     * <tt>==</tt>的倒数。
+     *
      */
     bool
     operator!=(const IntervalIterator &) const;
 
     /**
-     * Comparison operator.
+     * 比较运算符。
+     *
      */
     bool
     operator<(const IntervalIterator &) const;
 
     /**
-     * Return the distance between the current iterator and the argument. The
-     * distance is given by how many times one has to apply operator++ to the
-     * current iterator to get the argument (for a positive return value), or
-     * operator-- (for a negative return value).
+     * 返回当前迭代器与参数之间的距离。这个距离是通过对当前迭代器应用operator++多少次才能得到参数（对于一个正的返回值），或operator--（对于一个负的返回值）。
+     *
      */
     int
     operator-(const IntervalIterator &p) const;
 
     /**
-     * Mark the class as forward iterator and declare some alias which are
-     * standard for iterators and are used by algorithms to enquire about the
-     * specifics of the iterators they work on.
+     * 将该类标记为前向迭代器，并声明一些别名，这些别名是迭代器的标准，被算法用来查询它们所工作的迭代器的具体内容。
+     *
      */
     using iterator_category = std::forward_iterator_tag;
     using value_type        = IntervalAccessor;
@@ -705,88 +682,98 @@ public:
 
   private:
     /**
-     * Accessor that contains what IndexSet and interval we are pointing at.
+     * 访问器，包含了我们所指向的IndexSet和间隔的内容。
+     *
      */
     IntervalAccessor accessor;
   };
 
   /**
-   * Class that represents an iterator pointing to a single element in the
-   * IndexSet as returned by IndexSet::begin().
+   * 表示指向IndexSet中单个元素的迭代器的类，如
+   * IndexSet::begin(). 返回的那样。
+   *
    */
   class ElementIterator
   {
   public:
     /**
-     * Construct an iterator pointing to the global index @p index in the
-     * interval @p range_idx
+     * 在区间 @p range_idx 内构造一个指向全局索引 @p index
+     * 的迭代器。
+     *
      */
     ElementIterator(const IndexSet *idxset,
                     const size_type range_idx,
                     const size_type index);
 
     /**
-     * Construct an iterator pointing to the end of the IndexSet.
+     * 构建一个指向IndexSet末端的迭代器。
+     *
      */
     explicit ElementIterator(const IndexSet *idxset);
 
     /**
-     * Dereferencing operator. The returned value is the index of the element
-     * inside the IndexSet.
+     * 去引用操作符。返回值是IndexSet中元素的索引。
+     *
      */
     size_type operator*() const;
 
     /**
-     * Does this iterator point to an existing element?
+     * 这个迭代器是否指向一个现有的元素？
+     *
      */
     bool
     is_valid() const;
 
     /**
-     * Prefix increment.
+     * 前缀增量。
+     *
      */
     ElementIterator &
     operator++();
 
     /**
-     * Postfix increment.
+     * 后缀增量。
+     *
      */
     ElementIterator
     operator++(int);
 
     /**
-     * Comparison.
+     * 比较。
+     *
      */
     bool
     operator==(const ElementIterator &) const;
 
     /**
-     * Inverse of <tt>==</tt>.
+     * <tt>==</tt>的倒数。
+     *
      */
     bool
     operator!=(const ElementIterator &) const;
 
     /**
-     * Comparison operator.
+     * 比较运算符。
+     *
      */
     bool
     operator<(const ElementIterator &) const;
 
     /**
-     * Return the distance between the current iterator and the argument. In
-     * the expression <code>it_left-it_right</code> the distance is given by
-     * how many times one has to apply operator++ to the right operand @p
-     * it_right to get the left operand @p it_left (for a positive return
-     * value), or to @p it_left to get the @p it_right (for a negative return
-     * value).
+     * 返回当前迭代器与参数之间的距离。在表达式
+     * <code>it_left-it_right</code> 中，距离是由对右操作数 @p
+     * it_right应用operator++多少次才能得到左操作数 @p it_left
+     * （对于正返回值），或者对 @p it_left
+     * 应用多少次才能得到 @p it_right
+     * （对于负返回值）而给出。
+     *
      */
     std::ptrdiff_t
     operator-(const ElementIterator &p) const;
 
     /**
-     * Mark the class as forward iterator and declare some alias which are
-     * standard for iterators and are used by algorithms to enquire about the
-     * specifics of the iterators they work on.
+     * 将该类标记为前向迭代器，并声明一些别名，这些别名是迭代器的标准，被算法用来查询它们所工作的迭代器的具体信息。
+     *
      */
     using iterator_category = std::forward_iterator_tag;
     using value_type        = size_type;
@@ -796,81 +783,85 @@ public:
 
   private:
     /**
-     * Advance iterator by one.
+     * 将迭代器提前一个。
+     *
      */
     void
     advance();
 
     /**
-     * The parent IndexSet.
+     * 父索引集。
+     *
      */
     const IndexSet *index_set;
     /**
-     * Index into index_set.ranges.
+     * 索引到index_set. ranges。
+     *
      */
     size_type range_idx;
     /**
-     * The global index this iterator is pointing at.
+     * 这个迭代器所指向的全局索引。
+     *
      */
     size_type idx;
   };
 
   /**
-   * Return an iterator that points at the first index that is contained in
-   * this IndexSet.
+   * 返回一个迭代器，指向这个IndexSet中包含的第一个索引。
+   *
    */
   ElementIterator
   begin() const;
 
   /**
-   * Return an element iterator pointing to the element with global index
-   * @p global_index or the next larger element if the index is not in the
-   * set. This is equivalent to
+   * 返回一个指向全局索引 @p global_index
+   * 的元素的迭代器，如果该索引不在集合中，则指向下一个更大的元素。这等同于
    * @code
    * auto p = begin();
    * while (*p<global_index)
-   *   ++p;
+   * ++p;
    * return p;
    * @endcode
+   * 如果在这个IndexSet中没有位于 @p global_index,
+   * 或后面的元素，这个方法将返回end()。
    *
-   * If there is no element in this IndexSet at or behind @p global_index,
-   * this method will return end().
    */
   ElementIterator
   at(const size_type global_index) const;
 
   /**
-   * Return an iterator that points one after the last index that is contained
-   * in this IndexSet.
+   * 返回一个迭代器，该迭代器指向这个IndexSet中包含的最后一个索引之后。
+   *
    */
   ElementIterator
   end() const;
 
   /**
-   * Return an Iterator that points at the first interval of this IndexSet.
+   * 返回一个迭代器，该迭代器指向此IndexSet的第一个区间。
+   *
    */
   IntervalIterator
   begin_intervals() const;
 
   /**
-   * Return an Iterator that points one after the last interval of this
-   * IndexSet.
+   * 返回一个指向此IndexSet的最后一个区间后的迭代器。
+   *
    */
   IntervalIterator
   end_intervals() const;
 
   /**
    * @}
+   *
    */
 
 private:
   /**
-   * A type that denotes the half open index range <code>[begin,end)</code>.
+   * 一个表示半开索引范围的类型  <code>[begin,end)</code>  。
+   * nth_index_in_set表示当前范围的第一个元素在这个IndexSet中的第几个索引。只有当
+   * IndexSet::compress()
+   * 在最后一次插入后被调用，这个信息才是准确的。
    *
-   * The nth_index_in_set denotes the how many-th index within this IndexSet
-   * the first element of the current range is. This information is only
-   * accurate if IndexSet::compress() has been called after the last
-   * insertion.
    */
   struct Range
   {
@@ -880,21 +871,16 @@ private:
     size_type nth_index_in_set;
 
     /**
-     * Default constructor. Since there is no useful choice for a default
-     * constructed interval, this constructor simply creates something that
-     * resembles an invalid range. We need this constructor for serialization
-     * purposes, but the invalid range should be filled with something read
-     * from the archive before it is used, so we should hopefully never get to
-     * see an invalid range in the wild.
+     * 默认构造函数。由于默认构造的区间没有有用的选择，这个构造函数简单地创建了类似于一个无效区间的东西。我们需要这个构造函数来进行序列化，但是无效区间在使用之前应该用从存档中读取的东西来填充，所以我们应该希望永远不会在野外看到一个无效区间。
+     *
      */
     Range();
 
     /**
-     * Constructor. Create a half-open interval with the given indices.
+     * 构造函数。用给定的指数创建一个半开放的区间。
+     * @param  i1 区间的左端点。      @param  i2
+     * 大于指定范围最后一个索引的第一个索引。
      *
-     * @param i1 Left end point of the interval.
-     * @param i2 First index greater than the last index of the indicated
-     * range.
      */
     Range(const size_type i1, const size_type i2);
 
@@ -932,9 +918,8 @@ private:
     }
 
     /**
-     * Write or read the data of this object to or from a stream for the
-     * purpose of serialization using the [BOOST serialization
-     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+     * 为了使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)进行序列化，将此对象的数据写入或读出到一个流中。
+     *
      */
     template <class Archive>
     void
@@ -942,50 +927,45 @@ private:
   };
 
   /**
-   * A set of contiguous ranges of indices that make up (part of) this index
-   * set. This variable is always kept sorted.
+   * 一组连续的索引范围，构成了这个索引集的（一部分）。这个变量总是保持排序。
+   * 这个变量被标记为
+   * "可变"，因此它可以被compress()改变，当然这并不改变这个索引集的外部表示。
    *
-   * The variable is marked "mutable" so that it can be changed by compress(),
-   * though this of course doesn't change anything about the external
-   * representation of this index set.
    */
   mutable std::vector<Range> ranges;
 
   /**
-   * True if compress() has been called after the last change in the set of
-   * indices.
+   * 如果compress()在索引集的最后一次改变后被调用，则为真。
+   * 该变量被标记为
+   * "可变"，因此它可以被compress()改变，当然这并不改变这个索引集的外部表示。
    *
-   * The variable is marked "mutable" so that it can be changed by compress(),
-   * though this of course doesn't change anything about the external
-   * representation of this index set.
    */
   mutable bool is_compressed;
 
   /**
-   * The overall size of the index range. Elements of this index set have to
-   * have a smaller number than this value.
+   * 索引范围的总体大小。这个索引集的元素必须有一个比这个值小的数字。
+   *
    */
   size_type index_space_size;
 
   /**
-   * This integer caches the index of the largest range in @p ranges. This
-   * gives <tt>O(1)</tt> access to the range with most elements, while general
-   * access costs <tt>O(log(n_ranges))</tt>. The largest range is needed for
-   * the methods @p is_element(), @p index_within_set(), @p nth_index_in_set.
-   * In many applications, the largest range contains most elements (the
-   * locally owned range), whereas there are only a few other elements
-   * (ghosts).
+   * 这个整数缓存了 @p ranges.
+   * 中最大范围的索引，这给了<tt>O(1)</tt>对具有最多元素的范围的访问，而一般的访问成本<tt>O(log(n_ranges))</tt>。最大的范围需要用于
+   * @p is_element(),   @p index_within_set(),   @p nth_index_in_set.
+   * 的方法。在许多应用中，最大的范围包含大多数元素（本地拥有的范围），而只有少数其他元素（幽灵）。
+   *
    */
   mutable size_type largest_range;
 
   /**
-   * A mutex that is used to synchronize operations of the do_compress()
-   * function that is called from many 'const' functions via compress().
+   * 一个mutex，用于同步do_compress()函数的操作，该函数通过compress()从许多'const'函数调用。
+   *
    */
   mutable Threads::Mutex compress_mutex;
 
   /**
-   * Actually perform the compress() operation.
+   * 实际执行compress()操作。
+   *
    */
   void
   do_compress() const;
@@ -993,21 +973,22 @@ private:
 
 
 /**
- * Create and return an index set of size $N$ that contains every single index
- * within this range. In essence, this function returns an index set created
- * by
- * @code
- *  IndexSet is (N);
- *  is.add_range(0, N);
- * @endcode
- * This function exists so that one can create and initialize index sets that
- * are complete in one step, or so one can write code like
- * @code
- *   if (my_index_set == complete_index_set(my_index_set.size())
- *     ...
- * @endcode
+ * 创建并返回一个大小为 $N$
+ * 的索引集，其中包含这个范围内的每一个索引。从本质上讲，这个函数返回一个由以下方式创建的索引集
  *
- * @relatesalso IndexSet
+ * @code
+ * IndexSet is (N);
+ * is.add_range(0, N);
+ * @endcode
+ * 这个函数的存在是为了让人们能够在一个步骤中创建和初始化完整的索引集，或者说是为了让人们能够写出这样的代码
+ *
+ * @code
+ * if (my_index_set == complete_index_set(my_index_set.size())
+ *   ...
+ * @endcode
+ * @relatesalso  IndexSet
+ *
+ *
  */
 inline IndexSet
 complete_index_set(const IndexSet::size_type N)
@@ -1018,10 +999,10 @@ complete_index_set(const IndexSet::size_type N)
   return is;
 }
 
-/* ------------------ inline functions ------------------ */
+ /* ------------------ inline functions ------------------ */ 
 
 
-/* IntervalAccessor */
+ /* IntervalAccessor */ 
 
 inline IndexSet::IntervalAccessor::IntervalAccessor(
   const IndexSet *          idxset,
@@ -1154,7 +1135,7 @@ IndexSet::IntervalAccessor::advance()
 }
 
 
-/* IntervalIterator */
+ /* IntervalIterator */ 
 
 inline IndexSet::IntervalIterator::IntervalIterator(
   const IndexSet *          idxset,
@@ -1262,7 +1243,7 @@ operator-(const IndexSet::IntervalIterator &other) const
 
 
 
-/* ElementIterator */
+ /* ElementIterator */ 
 
 inline IndexSet::ElementIterator::ElementIterator(
   const IndexSet *          idxset,
@@ -1442,7 +1423,7 @@ operator-(const IndexSet::ElementIterator &other) const
 }
 
 
-/* Range */
+ /* Range */ 
 
 inline IndexSet::Range::Range()
   : begin(numbers::invalid_dof_index)
@@ -1460,7 +1441,7 @@ inline IndexSet::Range::Range(const size_type i1, const size_type i2)
 
 
 
-/* IndexSet itself */
+ /* IndexSet itself */ 
 
 inline IndexSet::IndexSet()
   : is_compressed(true)
@@ -2051,3 +2032,5 @@ IndexSet::serialize(Archive &ar, const unsigned int)
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

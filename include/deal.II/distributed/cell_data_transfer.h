@@ -1,3 +1,4 @@
+//include/deal.II-translator/distributed/cell_data_transfer_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2021 by the deal.II authors
@@ -36,26 +37,16 @@ namespace parallel
   namespace distributed
   {
     /**
-     * Transfer data that is associated with each active cell (like error
-     * indicators) while refining and/or coarsening a distributed triangulation
-     * and handle the necessary communication.
-     *
-     * This class therefore does for cell-related information what
-     * parallel::distributed::SolutionTransfer does for the values of degrees of
-     * freedom defined on a parallel::distributed::Triangulation.
-     *
-     * This class has been designed to operate on any kind of datatype that is
-     * serializable. A non-distributed container (like Vector or `std::vector`)
-     * has to be provided, which holds the cell-wise data in the same order as
-     * active cells are traversed. In other words, each entry corresponds to the
-     * cell with the same index CellAccessor::active_cell_index(), and the
-     * container has to be of size Triangulation::n_active_cells().
-     *
-     * <h3>Transferring cell-wise data</h3>
-     *
-     * The following code snippet demonstrates how to transfer cell-related data
-     * across refinement/coarsening of the registered triangulation.
-     *
+     * 在细化和/或粗化分布式三角测量时，传输与每个活动单元相关的数据（如错误指示器）并处理必要的通信。
+     * 因此，该类对单元相关信息的作用就像
+     * parallel::distributed::SolutionTransfer 对定义在
+     * parallel::distributed::Triangulation.
+     * 上的自由度值的作用一样。该类被设计用来操作任何一种可序列化的数据类型。必须提供一个非分布式的容器（如Vector或
+     * `std::vector`)
+     * ），它以活动单元被遍历的相同顺序来保存单元的数据。换句话说，每个条目都对应于具有相同索引
+     * CellAccessor::active_cell_index(), 的单元，容器的大小必须是
+     * Triangulation::n_active_cells().  <h3>Transferring cell-wise data</h3>
+     * 下面的代码片段演示了如何在细化/粗化注册三角的过程中传输单元相关数据。
      * @code
      * // prepare the triangulation,
      * triangulation.prepare_coarsening_and_refinement();
@@ -66,7 +57,7 @@ namespace parallel
      * //[fill data_to_transfer with cell-wise values...]
      *
      * parallel::distributed::CellDataTransfer<dim, spacedim, Vector<double>>
-     *   cell_data_trans(triangulation);
+     * cell_data_trans(triangulation);
      * cell_data_trans.prepare_for_coarsening_and_refinement(data_to_transfer);
      *
      * // actually execute the refinement,
@@ -77,76 +68,63 @@ namespace parallel
      * cell_data_trans.unpack(transferred_data);
      *
      * @endcode
-     *
-     *
      * <h3>Use for serialization</h3>
-     *
-     * This class can be used to serialize and later deserialize a distributed
-     * mesh with attached data to separate files.
-     *
-     * For serialization, the following code snippet saves not only the
-     * triangulation itself, but also the cell-wise data attached:
+     * 这个类可以用来序列化和随后反序列化一个带有附加数据的分布式网格到不同的文件。
+     * 对于序列化，下面的代码片段不仅保存了三角图本身，而且还保存了附加的单元数据。
      * @code
      * Vector<double> data_to_transfer(triangulation.n_active_cells());
      * //[fill data_to_transfer with cell-wise values...]
      *
      * parallel::distributed::CellDataTransfer<dim, spacedim, Vector<double>>
-     *   cell_data_trans(triangulation);
+     * cell_data_trans(triangulation);
      * cell_data_trans.prepare_for_serialization(data_to_transfer);
      *
      * triangulation.save(filename);
      * @endcode
-     *
-     * Later, during deserialization, both triangulation and data can be
-     * restored as follows:
+     * 之后，在反序列化过程中，三角图和数据都可以按以下方式恢复。
      * @code
      * //[create coarse mesh...]
      * triangulation.load(filename);
      *
      * parallel::distributed::CellDataTransfer<dim, spacedim, Vector<double>>
-     *   cell_data_trans(triangulation);
+     * cell_data_trans(triangulation);
      * Vector<double> transferred_data(triangulation.n_active_cells());
      * cell_data_trans.deserialize(transferred_data);
      * @endcode
      *
-     * @note If you use more than one object to transfer data via the
-     * parallel::distributed::Triangulation::register_data_attach() and
-     * parallel::distributed::Triangulation::notify_ready_for_unpack() interface
-     * with the aim of serialization, the calls to the corresponding
-     * prepare_for_serialization() and deserialize() functions need to happen in
-     * the same order, respectively. Classes relying on this interface are e.g.
+     * @note  如果你通过
+     * parallel::distributed::Triangulation::register_data_attach() 和
+     * parallel::distributed::Triangulation::notify_ready_for_unpack()
+     * 接口使用一个以上的对象来传输数据，目的是为了序列化，对相应的prepare_for_serialization()和deserialize()函数的调用需要分别以相同的顺序发生。依靠这个接口的类，例如
      * parallel::distributed::CellDataTransfer,
-     * parallel::distributed::SolutionTransfer, and Particles::ParticleHandler.
-     *
-     * @note See the documentation of parallel::distributed::SolutionTransfer for
-     * matching code snippets for both transfer and serialization.
-     *
+     * parallel::distributed::SolutionTransfer, 和
+     * Particles::ParticleHandler.  。
+     * @note  参见 parallel::distributed::SolutionTransfer
+     * 的文档，了解传输和序列化的匹配代码片段。
      * @ingroup distributed
+     *
      */
     template <int dim, int spacedim = dim, typename VectorType = Vector<double>>
     class CellDataTransfer
     {
     private:
       /**
-       * An alias that defines the data type of provided container template.
+       * 一个别名，定义了所提供的容器模板的数据类型。
+       *
        */
       using value_type = typename VectorType::value_type;
 
     public:
       /**
-       * Constructor.
+       * 构造函数。              @param[in]  triangulation
+       * 所有的操作都将发生在这个三角形上。当这个构造函数被调用时，有关的细化还没有发生。
+       * @param[in]  transfer_variable_size_data
+       * 指定你的VectorType容器是否存储有不同大小的值。不同数量的数据可能会被打包到每个单元格中，例如，如果VectorType容器的底层ValueType是一个容器本身。
+       * @param[in]  refinement_strategy
+       * %函数决定数据将如何从其父单元格存储在精炼单元格上。
+       * @param[in]  coarsening_strategy
+       * %函数决定在一个单元格上存储哪些数据，其子单元格将被粗化为。
        *
-       * @param[in] triangulation The triangulation on which all operations will
-       *   happen. At the time when this constructor is called, the refinement
-       *   in question has not happened yet.
-       * @param[in] transfer_variable_size_data Specify whether your VectorType
-       *   container stores values that differ in size. A varying amount of data
-       *   may be packed per cell, if for example the underlying ValueType of
-       *   the VectorType container is a container itself.
-       * @param[in] refinement_strategy %Function deciding how data will be
-       *   stored on refined cells from its parent cell.
-       * @param[in] coarsening_strategy %Function deciding which data to store
-       *   on a cell whose children will get coarsened into.
        */
       CellDataTransfer(
         const parallel::distributed::Triangulation<dim, spacedim>
@@ -166,88 +144,88 @@ namespace parallel
             check_equality<dim, spacedim, value_type>);
 
       /**
-       * Prepare the current object for coarsening and refinement.
+       * 为粗化和细化的当前对象做准备。
+       * 它在底层三角形上注册了 @p in 的数据传输。        @p
+       * in
+       * 包括要插值到新的（细化和/或粗化的）网格上的数据。关于如何使用这个功能的更多信息，请参见这个类的文档。
+       * 这个函数对指定的容器只能调用一次，直到数据传输完成。如果要通过这个类传输多个向量，请使用下面这个函数。
        *
-       * It registers the data transfer of @p in on the underlying triangulation.
-       * @p in includes data to be interpolated onto the new (refined and/or
-       * coarsened) grid. See documentation of this class for more information
-       * on how to use this functionality.
-       *
-       * This function can be called only once for the specified container
-       * until data transfer has been completed. If multiple vectors shall be
-       * transferred via this class, use the function below.
        */
       void
       prepare_for_coarsening_and_refinement(const VectorType &in);
 
       /**
-       * Same as the function above, only for a list of vectors.
+       * 与上面的函数相同，只是针对一个向量的列表。
+       *
        */
       void
       prepare_for_coarsening_and_refinement(
         const std::vector<const VectorType *> &all_in);
 
       /**
-       * Prepare the serialization of the given vector.
+       * 准备对给定的向量进行序列化。            序列化是由
+       * Triangulation::save().
+       * 完成的，关于如何使用这一功能的更多信息，请参见该类的文档。
+       * 这个函数对指定的容器只能调用一次，直到数据传输完成。如果多个向量应通过这个类来传输，请使用下面的函数。
        *
-       * The serialization is done by Triangulation::save(). See documentation
-       * of this class for more information on how to use this functionality.
-       *
-       * This function can be called only once for the specified container
-       * until data transfer has been completed. If multiple vectors shall be
-       * transferred via this class, use the function below.
        */
       void
       prepare_for_serialization(const VectorType &in);
 
       /**
-       * Same as the function above, only for a list of vectors.
+       * 与上面的函数相同，只是针对一个向量的列表。
+       *
        */
       void
       prepare_for_serialization(const std::vector<const VectorType *> &all_in);
 
       /**
-       * Unpack the information previously stored in this object before
-       * the mesh was refined or coarsened onto the current set of cells.
+       * 在网格被细化或粗化到当前的单元格集合之前，解压之前存储在这个对象中的信息。
+       *
        */
       void
       unpack(VectorType &out);
 
       /**
-       * Same as the function above, only for a list of vectors.
+       * 与上面的函数相同，只是针对一个向量列表。
+       *
        */
       void
       unpack(std::vector<VectorType *> &all_out);
 
       /**
-       * Execute the deserialization of the stored information.
-       * This needs to be done after calling Triangulation::load().
+       * 执行存储信息的反序列化。      这需要在调用
+       * Triangulation::load(). 后进行。
+       *
        */
       void
       deserialize(VectorType &out);
 
       /**
-       * Same as the function above, only for a list of vectors.
+       * 和上面的函数一样，只是针对一个向量的列表。
+       *
        */
       void
       deserialize(std::vector<VectorType *> &all_out);
 
     private:
       /**
-       * Pointer to the triangulation to work with.
+       * 指向要处理的三角结构的指针。
+       *
        */
       SmartPointer<const parallel::distributed::Triangulation<dim, spacedim>,
                    CellDataTransfer<dim, spacedim, VectorType>>
         triangulation;
 
       /**
-       * Specifies if size of data to transfer varies from cell to cell.
+       * 指定要传输的数据的大小是否因单元格而异。
+       *
        */
       const bool transfer_variable_size_data;
 
       /**
-       * %Function deciding how data will be stored on refined cells from its
-       * parent cell.
+       * 决定数据如何从其父单元存储到细化单元的函数。
+       *
        */
       const std::function<std::vector<value_type>(
         const typename Triangulation<dim, spacedim>::cell_iterator &parent,
@@ -255,8 +233,8 @@ namespace parallel
         refinement_strategy;
 
       /**
-       * %Function deciding on how to process data from children to be stored on
-       * the parent cell.
+       * 决定如何处理来自子单元的数据以存储在父单元上的函数。
+       *
        */
       const std::function<value_type(
         const typename Triangulation<dim, spacedim>::cell_iterator &parent,
@@ -264,28 +242,27 @@ namespace parallel
         coarsening_strategy;
 
       /**
-       * A vector that stores pointers to all the vectors we are supposed to
-       * copy over from the old to the new mesh.
+       * 一个向量，存储所有我们应该从旧网格复制到新网格的向量的指针。
+       *
        */
       std::vector<const VectorType *> input_vectors;
 
       /**
-       * The handle that triangulation has assigned to this object
-       * with which we can access our memory offset and our pack function.
+       * triangulation分配给这个对象的句柄，我们可以用它来访问我们的内存偏移和我们的打包函数。
+       *
        */
       unsigned int handle;
 
       /**
-       * Registers the pack_callback() function to the triangulation
-       * and stores the returning handle.
+       * 将pack_callback()函数注册给triangulation并存储返回的句柄。
+       *
        */
       void
       register_data_attach();
 
       /**
-       * A callback function used to pack the data on the current mesh into
-       * objects that can later be retrieved after refinement, coarsening and
-       * repartitioning.
+       * 一个回调函数，用于将当前网格上的数据打包成对象，以后可以在细化、粗化和重新划分后取回。
+       *
        */
       std::vector<char>
       pack_callback(const typename parallel::distributed::
@@ -294,9 +271,8 @@ namespace parallel
                       Triangulation<dim, spacedim>::CellStatus status);
 
       /**
-       * A callback function used to unpack the data on the current mesh that
-       * has been packed up previously on the mesh before refinement,
-       * coarsening and repartitioning.
+       * 一个回调函数，用来解开当前网格上的数据，这些数据在细化、粗化和重新划分之前，已经被打包在网格上了。
+       *
        */
       void
       unpack_callback(
@@ -314,4 +290,6 @@ namespace parallel
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif /* dealii_distributed_cell_data_transfer_h */
+#endif  /* dealii_distributed_cell_data_transfer_h */ 
+
+

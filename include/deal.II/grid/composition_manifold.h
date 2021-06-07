@@ -1,3 +1,4 @@
+//include/deal.II-translator/grid/composition_manifold_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2016 - 2020 by the deal.II authors
@@ -17,7 +18,7 @@
 #define dealii_composition_manifold_h
 
 
-/*----------------------------   composition_manifold.h     ------------*/
+ /*----------------------------   composition_manifold.h     ------------*/ 
 
 #include <deal.II/base/config.h>
 
@@ -36,34 +37,22 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * CompositionManifold.  Take two ChartManifold objects, and make
- * their composition. The CompositionManifold object is a
- * ChartManifold going from the chart of the first ChartManifold to
- * the embedding space of the second ChartManifold. If the first
- * ChartManifold is periodic, so is the resulting ChartManifold, with
- * the same periodicity. Periodicity on the second ChartManifold is not
- * allowed, and the constructor will throw an exception if the second
- * Manifold is periodic.
+ * CompositionManifold。
+ * 取两个ChartManifold对象，并使其组成。CompositionManifold对象是一个ChartManifold，从第一个ChartManifold的图到第二个ChartManifold的嵌入空间。如果第一个ChartManifold是周期性的，那么产生的ChartManifold也是周期性的，具有相同的周期性。第二个ChartManifold的周期性是不允许的，如果第二个Manifold是周期性的，构造函数将抛出一个异常。
+ * 这个类只适用于dim <= chartdim <= intermediate_spacedim <=
+ * spacedim。如果你试图实例化任何不同的东西，在ChartManifold类中的一个违反这个条件的类将抛出一个异常。
+ * 给定ChartManifold F和ChartManifold
+ * G，这个类代表F之后的G的组成。 模板参数有以下含义。
+ * @tparam  dim 产生的ChartManifold的尺寸  @tparam  spacedim
+ * 产生的ChartManifold的空间尺寸  @tparam  chartdim
+ * 产生的ChartManifold的图表尺寸  @tparam  ] intermediate_dim
+ * 第一个ChartManifold的空间尺寸  @tparam  dim1
+ * 第一个ChartManifold的尺寸，它也与第二个ChartManifold的图表尺寸重合
+ * @tparam  dim2 第二个ChartManifold的尺寸
  *
- * This class only works for dim <= chartdim <= intermediate_spacedim
- * <= spacedim. If you try to instantiate anything different, an
- * Exception will be thrown in one of the ChartManifold classes that
- * violates this condition.
- *
- * Given the ChartManifold F and the ChartManifold G, this class
- * represents the composition of G after F.
- *
- * The template parameters have the following meaning:
- *
- * @tparam dim The dimension of the resulting ChartManifold
- * @tparam spacedim The space dimension of the resulting ChartManifold
- * @tparam chartdim The chart dimension of the resulting ChartManifold
- * @tparam intermediate_dim The space dimension of the first ChartManifold
- * @tparam dim1 The dimension of the first ChartManifold, which coincides also
- * with the chart dimension of the second ChartManifold
- * @tparam dim2 The dimension of the second ChartManifold
  *
  * @ingroup manifold
+ *
  */
 template <int dim,
           int spacedim         = dim,
@@ -75,43 +64,45 @@ class CompositionManifold : public ChartManifold<dim, spacedim, chartdim>
 {
 public:
   /**
-   * Construct the composition of the two given manifolds.
+   * 构建两个给定流形的组合。
+   *
    */
   CompositionManifold(const ChartManifold<dim1, intermediate_dim, chartdim> &F,
                       const ChartManifold<dim2, spacedim, intermediate_dim> &G);
 
   /**
-   * Make a clone of this Manifold.
+   * 制作该流形的克隆。
+   *
    */
   virtual std::unique_ptr<Manifold<dim, spacedim>>
   clone() const override;
 
   /**
-   * Pull back the given point in spacedim to the Euclidean chartdim
-   * dimensional space. This function calls the pull_back() function
-   * of G, and then the pull_back() function of F.
+   * 将spacedim中的给定点拉回欧几里得图表维空间。这个函数调用G的pull_back()函数，然后再调用F的pull_back()函数。
+   *
    */
   virtual Point<chartdim>
   pull_back(const Point<spacedim> &space_point) const;
 
 
   /**
-   * Push forward the chartdim dimensional point to a spacedim
-   * Euclidean point. The function calls first the push_forward() of
-   * F, and then the push_forward() of G.
+   * 将chartdim维度的点向前推到一个欧几里得的间隔点。该函数首先调用F的push_forward()，然后调用G的push_forward()。
+   *
    */
   virtual Point<spacedim>
   push_forward(const Point<chartdim> &chart_point) const;
 
   /**
-   * Return the derivative of the composition of G after F.
+   * 返回F之后的G的组成的导数。
+   *
    */
   virtual DerivativeForm<1, chartdim, spacedim>
   push_forward_gradient(const Point<chartdim> &chart_point) const;
 
 private:
   /**
-   * The first ChartManifold.
+   * 第一个ChartManifold。
+   *
    */
   SmartPointer<
     const ChartManifold<dim1, intermediate_dim, chartdim>,
@@ -120,7 +111,8 @@ private:
 
 
   /**
-   * The second ChartManifold.
+   * 第二个ChartManifold。
+   *
    */
   SmartPointer<
     const ChartManifold<dim2, spacedim, intermediate_dim>,
@@ -129,7 +121,7 @@ private:
 };
 
 
-/*------------------Template Implementations------------------------*/
+ /*------------------Template Implementations------------------------*/ 
 
 template <int dim,
           int spacedim,
@@ -227,3 +219,5 @@ CompositionManifold<dim, spacedim, chartdim, intermediate_dim, dim1, dim2>::
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

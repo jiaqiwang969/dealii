@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/mapping_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -52,227 +51,288 @@ class FESubfaceValues;
 
 
 /**
- * 用于 Mapping::transform() 函数的变换种类。
- * 特殊的有限元可能需要从参考单元到实际网格单元的特殊Mapping。为了做到最灵活，这个枚举为任意变换提供了一个可扩展的接口。尽管如此，这些必须在继承类的transform()函数中实现，才能发挥作用。
+ * The transformation kind used for the Mapping::transform() functions.
  *
+ * Special finite elements may need special Mapping from the reference cell to
+ * the actual mesh cell. In order to be most flexible, this enum provides an
+ * extensible interface for arbitrary transformations. Nevertheless, these
+ * must be implemented in the transform() functions of inheriting classes in
+ * order to work.
  *
  * @ingroup mapping
- *
- *
  */
 enum MappingKind
 {
   /**
-   * 无映射，即形状函数不从参考单元映射，而是直接在实空间单元上定义。
-   *
+   * No mapping, i.e., shape functions are not mapped from a reference cell
+   * but instead are defined right on the real-space cell.
    */
   mapping_none = 0x0000,
 
   /**
-   * 协变映射（详见 Mapping::transform() ）。
-   *
+   * Covariant mapping (see Mapping::transform() for details).
    */
   mapping_covariant = 0x0001,
 
   /**
-   * 等变量映射（详见 Mapping::transform() ）。
-   *
+   * Contravariant mapping (see Mapping::transform() for details).
    */
   mapping_contravariant = 0x0002,
 
   /**
-   * 协变向量场梯度的映射（详见 Mapping::transform() ）。
-   *
+   * Mapping of the gradient of a covariant vector field (see
+   * Mapping::transform() for details).
    */
   mapping_covariant_gradient = 0x0003,
 
   /**
-   * 不变向量场的梯度映射（详见 Mapping::transform() ）。
-   *
+   * Mapping of the gradient of a contravariant vector field (see
+   * Mapping::transform() for details).
    */
   mapping_contravariant_gradient = 0x0004,
 
   /**
-   * 通常用于Hdiv元素的皮奥拉变换。Piola变换是H<sup>div</sup>中矢量值元素的标准变换。
-   * 它相当于一个以体积元素的逆值为尺度的禁忌变换。
-   *
+   * The Piola transform usually used for Hdiv elements. Piola transform is
+   * the standard transformation of vector valued elements in H<sup>div</sup>.
+   * It amounts to a contravariant transformation scaled by the inverse of the
+   * volume element.
    */
   mapping_piola = 0x0100,
 
   /**
-   * 对应于mapping_piola变换的矢量场的梯度变换（详见
-   * Mapping::transform() ）。
-   *
+   * Transformation for the gradient of a vector field corresponding to a
+   * mapping_piola transformation (see Mapping::transform() for details).
    */
   mapping_piola_gradient = 0x0101,
 
   /**
-   * 用于Nedelec元素的映射。
-   * 卷曲元素被映射为协变向量。尽管如此，我们还是引入了一个单独的映射种类，这样我们就可以对向量和其梯度使用相同的标志（详见
-   * Mapping::transform() ）。
+   * The mapping used for Nedelec elements.
    *
+   * Curl-conforming elements are mapped as covariant vectors. Nevertheless,
+   * we introduce a separate mapping kind, such that we can use the same flag
+   * for the vector and its gradient (see Mapping::transform() for details).
    */
   mapping_nedelec = 0x0200,
 
   /**
-   * 用于Raviart-Thomas元素的映射。
-   *
+   * The mapping used for Raviart-Thomas elements.
    */
   mapping_raviart_thomas = 0x0300,
 
   /**
-   * 用于BDM元素的映射。
-   *
+   * The mapping used for BDM elements.
    */
   mapping_bdm = mapping_raviart_thomas,
 
   /**
-   * 2-forms和三阶张量的映射。
-   * 这些是典型的应用于转换到参考单元的豫章的映射。
-   * 协变向量场的赫斯的映射（详见 Mapping::transform() ）。
+   * The mappings for 2-forms and third order tensors.
    *
+   * These are mappings typpically applied to hessians transformed to the
+   * reference cell.
+   *
+   * Mapping of the hessian of a covariant vector field (see
+   * Mapping::transform() for details).
    */
   mapping_covariant_hessian,
 
   /**
-   * 忌变向量场的犹豫值的映射（详见 Mapping::transform() ）。
-   *
+   * Mapping of the hessian of a contravariant vector field (see
+   * Mapping::transform() for details).
    */
   mapping_contravariant_hessian,
 
   /**
-   * 皮奥拉（piola）矢量场的赫斯的映射（详见
-   * Mapping::transform() ）。
-   *
+   * Mapping of the hessian of a piola vector field (see Mapping::transform()
+   * for details).
    */
   mapping_piola_hessian
 };
 
 
 /**
- * @short  映射类的抽象基类。
- * 该类声明了用于描述从参考（单位）单元到实空间单元的映射功能的接口，以及用于填写使用FEValues、FEFaceValues和FESubfaceValues类所需的信息。这些接口的具体实现是在派生类中提供的。
- * <h3>Mathematics of the mapping</h3> 映射是一种转换 $\mathbf x =
- * \mathbf F_K(\hat{\mathbf  x})$ ，它将参考单元 $[0,1]^\text{dim}$
- * 中的点 $\hat{\mathbf x}$ 映射到实际网格单元 $K\subset{\mathbb
- * R}^\text{spacedim}$ 中的点 $\mathbf x$
- * 。这种映射的许多应用都需要这种映射的雅各布，
- * $J(\hat{\mathbf x}) =
- * \hat\nabla {\mathbf F}_K(\hat{\mathbf  x})$  。例如，如果dim=spacedim=2，我们有 @f[
+ * @short Abstract base class for mapping classes.
+ *
+ * This class declares the interface for the functionality to describe
+ * mappings from the reference (unit) cell to a cell in real space, as well as
+ * for filling the information necessary to use the FEValues, FEFaceValues,
+ * and FESubfaceValues classes. Concrete implementations of these interfaces
+ * are provided in derived classes.
+ *
+ * <h3>Mathematics of the mapping</h3>
+ *
+ * The mapping is a transformation $\mathbf x = \mathbf F_K(\hat{\mathbf  x})$
+ * which maps points $\hat{\mathbf x}$ in the reference cell
+ * $[0,1]^\text{dim}$ to points $\mathbf x$ in the actual grid cell
+ * $K\subset{\mathbb R}^\text{spacedim}$. Many of the applications of such
+ * mappings require the Jacobian of this mapping, $J(\hat{\mathbf x}) =
+ * \hat\nabla {\mathbf F}_K(\hat{\mathbf  x})$. For instance, if
+ * dim=spacedim=2, we have
+ * @f[
  * J(\hat{\mathbf  x}) = \left(\begin{matrix}
  * \frac{\partial x}{\partial \hat x} & \frac{\partial x}{\partial \hat y}
  * \\
  * \frac{\partial y}{\partial \hat x} & \frac{\partial y}{\partial \hat y}
  * \end{matrix}\right)
- * @f] 。
+ * @f]
+ *
  * <h4>%Mapping of scalar functions</h4>
- * *标量有限元的形状函数通常是在参考单元上定义的，然后根据规则@f[
+ *
+ * The shape functions of scalar finite elements are typically defined on a
+ * reference cell and are then simply mapped according to the rule
+ * @f[
  * \varphi(\mathbf x) = \varphi\bigl(\mathbf F_K(\hat{\mathbf  x})\bigr)
  * = \hat \varphi(\hat{\mathbf  x}).
- * @f]简单地进行映射。
+ * @f]
  *
- *  <h4>%Mapping of integrals</h4>
- * 使用简单的变量变化，标量函数在一个单元上的积分  $K$  可以表示为在参考单元上的积分  $\hat K$  。具体来说，体积形式 $d\hat x$ 被转换为@f[
- * \int_K u(\mathbf x)\,dx = \int_{\hat K} \hat
+ *
+ * <h4>%Mapping of integrals</h4>
+ *
+ * Using simply a change of variables, integrals of scalar functions over a
+ * cell $K$ can be expressed as an integral over the reference cell $\hat K$.
+ * Specifically, The volume form $d\hat x$ is transformed so that
+ * @f[
+ *  \int_K u(\mathbf x)\,dx = \int_{\hat K} \hat
  * u(\hat{\mathbf  x}) \left|\text{det}J(\hat{\mathbf  x})\right|
  * \,d\hat x.
- * @f]。
- * 在这种积分被正交近似的表达中，这就导致了形式为@f[
- * \int_K u(\mathbf x)\,dx
- * \approx
- * \sum_{q}
- * \hat u(\hat{\mathbf  x}_q)
- * \underbrace{\left|\text{det}J(\hat{\mathbf  x}_q)\right| w_q}_{=:
- * \text{JxW}_q}.
- * @f]的项。 这里，每个正交点的权重 $\text{JxW}_q$ （其中<i>JxW</i>象征着<i>Jacobian times Quadrature Weights</i>）在原始积分中扮演了 $dx$ 的角色。因此，它们出现在所有计算正交积分的代码中，并通过 FEValues::JxW(). 访问。
- * @todo  记录了在二维-1的情况下会发生什么。
+ * @f]
  *
- *  <h4>%Mapping of vector fields, differential forms and gradients of vector
- * fields</h4> 矢量场或微分形式（标量函数的梯度） $\mathbf v$
- * ，以及矢量场的梯度 $\mathbf T$ 的变换遵循一般形式
+ * In expressions where such integrals are approximated by quadrature, this
+ * then leads to terms of the form
+ * @f[
+ *  \int_K u(\mathbf x)\,dx
+ *  \approx
+ *  \sum_{q}
+ *  \hat u(\hat{\mathbf  x}_q)
+ *  \underbrace{\left|\text{det}J(\hat{\mathbf  x}_q)\right| w_q}_{=:
+ * \text{JxW}_q}.
+ * @f]
+ * Here, the weights $\text{JxW}_q$ of each quadrature point (where <i>JxW</i>
+ * mnemonically stands for <i>Jacobian times Quadrature Weights</i>) take the
+ * role of the $dx$ in the original integral. Consequently, they appear in all
+ * code that computes integrals approximated by quadrature, and are accessed
+ * by FEValues::JxW().
+ *
+ * @todo Document what happens in the codimension-1 case.
+ *
+ *
+ * <h4>%Mapping of vector fields, differential forms and gradients of vector
+ * fields</h4>
+ *
+ * The transformation of vector fields or differential forms (gradients of
+ * scalar functions) $\mathbf v$, and gradients of vector fields $\mathbf T$
+ * follows the general form
+ *
  * @f[
  * \mathbf v(\mathbf x) = \mathbf A(\hat{\mathbf  x})
  * \hat{\mathbf  v}(\hat{\mathbf  x}),
  * \qquad
  * \mathbf T(\mathbf x) = \mathbf A(\hat{\mathbf  x})
  * \hat{\mathbf  T}(\hat{\mathbf  x}) \mathbf B(\hat{\mathbf  x}).
- * @f] 微分形式<b>A</b>和<b>B</b>是由被转换的对象的种类决定。这些转换是通过transform()函数进行的，被转换的对象的类型由其MappingKind参数指定。关于可能的选择，请看那里的文档。
+ * @f]
+ * The differential forms <b>A</b> and <b>B</b> are determined by the kind of
+ * object being transformed. These transformations are performed through the
+ * transform() functions, and the type of object being transformed is
+ * specified by their MappingKind argument. See the documentation there for
+ * possible choices.
+ *
  * <h4>Derivatives of the mapping</h4>
- * 一些应用需要映射的导数，其中一阶导数是映射的Jacobian，
- * $J_{iJ}(\hat{\mathbf x})=\frac{\partial x_i}{\partial \hat x_J}$
- * ，如上所述。映射的高阶导数也有类似的定义，例如，雅各布导数
- * $\hat H_{iJK}(\hat{\mathbf  x}) = \frac{\partial^2 x_i}{\partial \hat x_J
- * \partial \hat x_K}$  ，以及雅各布二阶导数  $\hat
- * K_{iJKL}(\hat{\mathbf  x}) = \frac{\partial^3 x_i}{\partial \hat x_J
- * \partial \hat x_K \partial \hat x_L}$  。定义高阶导数的 "前推
- * "版本也很有用：雅各布前推导数， $H_{ijk}(\hat{\mathbf x}) =
- * \frac{\partial^2 x_i}{\partial \hat x_J \partial \hat
- * x_K}(J_{jJ})^{-1}(J_{kK})^{-1}$  ，以及雅各布后推导数，
- * $K_{ijkl}(\hat{\mathbf  x}) = \frac{\partial^3 x_i}{\partial \hat x_J
- * \partial \hat x_K \partial \hat
- * x_L}(J_{jJ})^{-1}(J_{kK})^{-1}(J_{lL})^{-1}$
- * 。这些向前推的版本可以用来计算定义在参考单元上的函数相对于实际单元坐标的高阶导数。例如，相对于实细胞坐标的雅各布导数由以下公式给出。
+ *
+ * Some applications require the derivatives of the mapping, of which the
+ * first order derivative is the mapping Jacobian, $J_{iJ}(\hat{\mathbf
+ * x})=\frac{\partial x_i}{\partial \hat x_J}$, described above. Higher order
+ * derivatives of the mapping are similarly defined, for example the Jacobian
+ * derivative, $\hat H_{iJK}(\hat{\mathbf  x}) = \frac{\partial^2
+ * x_i}{\partial \hat x_J \partial \hat x_K}$, and the Jacobian second
+ * derivative, $\hat K_{iJKL}(\hat{\mathbf  x}) = \frac{\partial^3
+ * x_i}{\partial \hat x_J \partial \hat x_K \partial \hat x_L}$. It is also
+ * useful to define the "pushed-forward" versions of the higher order
+ * derivatives: the Jacobian pushed-forward derivative, $H_{ijk}(\hat{\mathbf
+ * x}) = \frac{\partial^2 x_i}{\partial \hat x_J \partial \hat
+ * x_K}(J_{jJ})^{-1}(J_{kK})^{-1}$, and the Jacobian pushed-forward second
+ * derivative, $K_{ijkl}(\hat{\mathbf  x}) = \frac{\partial^3 x_i}{\partial
+ * \hat x_J \partial \hat x_K \partial \hat
+ * x_L}(J_{jJ})^{-1}(J_{kK})^{-1}(J_{lL})^{-1}$. These pushed-forward versions
+ * can be used to compute the higher order derivatives of functions defined on
+ * the reference cell with respect to the real cell coordinates. For instance,
+ * the Jacobian derivative with respect to the real cell coordinates is given
+ * by:
+ *
  * @f[
  * \frac{\partial}{\partial x_j}\left[J_{iJ}(\hat{\mathbf  x})\right] =
  * H_{ikn}(\hat{\mathbf  x})J_{nJ}(\hat{\mathbf  x}),
- * @f]，而相对于实细胞坐标的雅各布反导也同样由以下公式给出。@f[
+ * @f]
+ * and the derivative of the Jacobian inverse with respect to the real cell
+ * coordinates is similarly given by:
+ * @f[
  * \frac{\partial}{\partial x_j}\left[\left(J_{iJ}(\hat{\mathbf
- * x})\right)^{-1}\right] =
+ * x})\right)^{-1}\right] = -H_{nik}(\hat{\mathbf  x})\left(J_{nJ}(\hat{\mathbf
+ * x})\right)^{-1}.
+ * @f]
  *
- * -H_{nik}(\hat{\mathbf  x})\left(J_{nJ}(\hat{\mathbf x})\right)^{-1}. @f]
- * 以类似的方式，在参考单元上定义的函数的高阶导数，相对于实数单元坐标，可以使用雅各布式推前高阶导数来定义。例如，Jacobian
- * pushed-forward导数相对于实际单元坐标的导数由以下公式给出。
+ * In a similar fashion, higher order derivatives, with respect to the real
+ * cell coordinates, of functions defined on the reference cell can be defined
+ * using the Jacobian pushed-forward higher-order derivatives. For example,
+ * the derivative, with respect to the real cell coordinates, of the Jacobian
+ * pushed-forward derivative is given by:
+ *
  * @f[
  * \frac{\partial}{\partial x_l}\left[H_{ijk}(\hat{\mathbf  x})\right] =
- * K_{ijkl}(\hat{\mathbf  x})
- *
- * -H_{mjl}(\hat{\mathbf  x})H_{imk}(\hat{\mathbf
+ * K_{ijkl}(\hat{\mathbf  x}) -H_{mjl}(\hat{\mathbf  x})H_{imk}(\hat{\mathbf
  * x})-H_{mkl}(\hat{\mathbf  x})H_{imj}(\hat{\mathbf  x}).
  * @f]
+ *
  * <h3>References</h3>
- * 关于微分几何和有限元的一般出版物是调查报告 <ul>   <li>  Douglas N. Arnold, Richard S. Falk, and Ragnar Winther. <i>Finite
+ *
+ * A general publication on differential geometry and finite elements is the
+ * survey
+ * <ul>
+ * <li>Douglas N. Arnold, Richard S. Falk, and Ragnar Winther. <i>Finite
  * element exterior calculus: from Hodge theory to numerical stability.</i>
  * Bull. Amer. Math. Soc. (N.S.), 47:281-354, 2010. <a
  * href="http://dx.doi.org/10.1090/S0273-0979-10-01278-4">DOI:
- * 10.1090/S0273-0979-10-01278-4</a>.   </ul>
- * 皮奥拉变换的描述来自休斯顿大学Ronald H. W. Hoppe的<a
- * href="http://www.math.uh.edu/~rohop/spring_05/downloads/">lecture
- * notes</a>，第七章。
+ * 10.1090/S0273-0979-10-01278-4</a>.
+ * </ul>
  *
+ * The description of the Piola transform has been taken from the <a
+ * href="http://www.math.uh.edu/~rohop/spring_05/downloads/">lecture notes</a>
+ * by Ronald H. W. Hoppe, University of Houston, Chapter 7.
  *
  * @ingroup mapping
- *
- *
  */
 template <int dim, int spacedim = dim>
 class Mapping : public Subscriptor
 {
 public:
   /**
-   * 虚拟解构器。
-   *
+   * Virtual destructor.
    */
   virtual ~Mapping() override = default;
 
   /**
-   * 返回一个指向当前对象副本的指针。然后，这个副本的调用者将拥有它的所有权。
-   * 这个函数在这个基类中被声明为抽象的虚函数，派生类将不得不实现它。
-   * 这个函数主要由 hp::MappingCollection 类使用。
+   * Return a pointer to a copy of the present object. The caller of this copy
+   * then assumes ownership of it.
    *
+   * The function is declared abstract virtual in this base class, and derived
+   * classes will have to implement it.
+   *
+   * This function is mainly used by the hp::MappingCollection class.
    */
   virtual std::unique_ptr<Mapping<dim, spacedim>>
   clone() const = 0;
 
   /**
-   * 返回一个单元格的映射顶点。
-   * 大多数时候，这些值将仅仅是由 <code>cell-@>vertex(v)</code>
-   * 返回的顶点 <code>v</code>
-   * 的坐标，即由三角法存储的信息。
-   * 然而，也有增加位移或选择完全不同位置的映射，例如MappingQEulerian,
-   * MappingQ1Eulerian, 或MappingFEField。
-   * 这个函数的默认实现只是返回三角形所存储的信息，即：
-   * <code>cell-@>vertex(v)</code>  .
+   * Return the mapped vertices of a cell.
    *
+   * Most of the time, these values will simply be the coordinates of the
+   * vertices of a cell as returned by <code>cell-@>vertex(v)</code> for
+   * vertex <code>v</code>, i.e., information stored by the triangulation.
+   * However, there are also mappings that add displacements or choose
+   * completely different locations, e.g., MappingQEulerian,
+   * MappingQ1Eulerian, or MappingFEField.
+   *
+   * The default implementation of this function simply returns the
+   * information stored by the triangulation, i.e.,
+   * <code>cell-@>vertex(v)</code>.
    */
   virtual boost::container::small_vector<Point<spacedim>,
                                          GeometryInfo<dim>::vertices_per_cell>
@@ -280,64 +340,89 @@ public:
     const typename Triangulation<dim, spacedim>::cell_iterator &cell) const;
 
   /**
-   * 返回一个单元格的映射中心。
-   * 如果你使用的是保留顶点位置的(bi-,tri-)线性映射，这个函数只是返回同样由`cell->center()`产生的值。然而，也有一些映射会增加位移或选择完全不同的位置，例如MappingQEulerian、MappingQ1Eulerian或MappingFEField，以及基于高阶多项式的映射，对于这些映射，中心可能不会与顶点位置的平均值重合。
-   * 默认情况下，该函数返回参考单元中心的前推。如果参数
-   * @p map_center_of_reference_cell
-   * 被设置为false，那么返回值将是由get_vertices()方法返回的顶点位置的平均值。
-   * @param[in]  cell 你想计算中心的单元格  @param[in]
-   * map_center_of_reference_cell
-   * 一个标志，用于将计算单元格中心的算法从应用于参考单元格中心的transform_unit_to_real_cell()转换为计算顶点平均数。
+   * Return the mapped center of a cell.
    *
+   * If you are using a (bi-,tri-)linear mapping that preserves vertex
+   * locations, this function simply returns the value also produced by
+   * `cell->center()`. However, there are also mappings that add displacements
+   * or choose completely different locations, e.g., MappingQEulerian,
+   * MappingQ1Eulerian, or MappingFEField, and mappings based on high order
+   * polynomials, for which the center may not coincide with the average of
+   * the vertex locations.
+   *
+   * By default, this function returns the push forward of the center of the
+   * reference cell. If the parameter
+   * @p map_center_of_reference_cell is set to false, than the return value
+   * will be the average of the vertex locations, as returned by the
+   * get_vertices() method.
+   *
+   * @param[in] cell The cell for which you want to compute the center
+   * @param[in] map_center_of_reference_cell A flag that switches the algorithm
+   * for the computation of the cell center from
+   * transform_unit_to_real_cell() applied to the center of the reference cell
+   * to computing the vertex averages.
    */
   virtual Point<spacedim>
   get_center(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
              const bool map_center_of_reference_cell = true) const;
 
   /**
-   * 返回映射的单元格的边界盒。
-   * 如果你使用的是保留顶点位置的(bi-,tri-)线性映射，这个函数简单地返回同样由`cell->bounding_box()`产生的值。然而，也有一些映射会增加位移或选择完全不同的位置，例如MappingQEulerian、MappingQ1Eulerian或MappingFEField。
-   * 对于线性映射，该函数返回包含单元格所有顶点的边界框，如get_vertices()方法所返回的。对于通过支持点定义的高阶映射，边界盒只保证包含所有支持点，而且一般来说，它只是真正边界盒的近似值，可能更大。
-   * @param[in] 单元格 你想计算边界框的单元格
+   * Return the bounding box of a mapped cell.
    *
+   * If you are using a (bi-,tri-)linear mapping that preserves vertex
+   * locations, this function simply returns the value also produced by
+   * `cell->bounding_box()`. However, there are also mappings that add
+   * displacements or choose completely different locations, e.g.,
+   * MappingQEulerian, MappingQ1Eulerian, or MappingFEField.
+   *
+   * For linear mappings, this function returns the bounding box containing all
+   * the vertices of the cell, as returned by the get_vertices() method. For
+   * higher order mappings defined through support points, the bounding box is
+   * only guaranteed to contain all the support points, and it is, in general,
+   * only an approximation of the true bounding box, which may be larger.
+   *
+   * @param[in] cell The cell for which you want to compute the bounding box
    */
   virtual BoundingBox<spacedim>
   get_bounding_box(
     const typename Triangulation<dim, spacedim>::cell_iterator &cell) const;
 
   /**
-   * 返回映射是否保留了顶点位置。换句话说，这个函数返回参考单元格顶点的映射位置（由
-   * GeometryInfo::unit_cell_vertex()) 给出）是否等于
-   * <code>cell-@>vertex()</code>
-   * 的结果（即由三角法存储的信息）。
-   * 例如，派生类中的实现对MappingQ、MappingQGeneric、MappingCartesian返回
-   * @p true
-   * ，但对MappingQEulerian、MappingQ1Eulerian、MappingFEField返回 @p
-   * false 。
+   * Return whether the mapping preserves vertex locations. In other words,
+   * this function returns whether the mapped location of the reference cell
+   * vertices (given by GeometryInfo::unit_cell_vertex()) equals the result of
+   * <code>cell-@>vertex()</code> (i.e., information stored by the
+   * triangulation).
    *
+   * For example, implementations in derived classes return @p true for
+   * MappingQ, MappingQGeneric, MappingCartesian, but @p false for
+   * MappingQEulerian, MappingQ1Eulerian, and MappingFEField.
    */
   virtual bool
   preserves_vertex_locations() const = 0;
 
   /**
-   * 返回这个Mapping实例是否与 @p reference_cell.
-   * 中的单元格类型兼容。
-   *
+   * Returns if this instance of Mapping is compatible with the type of cell
+   * in @p reference_cell.
    */
   virtual bool
   is_compatible_with(const ReferenceCell &reference_cell) const = 0;
 
   /**
-   * @name  引用单元格和实数单元格之间的映射点  @{  。
-   *
+   * @name Mapping points between reference and real cells
+   * @{
    */
 
   /**
-   * 将单元格上的点 @p p 映射到实数单元格上的相应点 @p
-   * cell.   @param  单元格 迭代器到将用于定义映射的单元。
-   * @param  p 参考单元格上一个点的位置。    @return
-   * 参考点的位置，使用由当前实现映射的派生类所定义的映射映射到实空间，以及第一个参数所确定的单元格的坐标。
+   * Map the point @p p on the unit cell to the corresponding point on the
+   * real cell @p cell.
    *
+   * @param cell Iterator to the cell that will be used to define the mapping.
+   * @param p Location of a point on the reference cell.
+   * @return The location of the reference point mapped to real space using
+   * the mapping defined by the class derived from the current one that
+   * implements the mapping, and the coordinates of the cell identified by the
+   * first argument.
    */
   virtual Point<spacedim>
   transform_unit_to_real_cell(
@@ -345,21 +430,32 @@ public:
     const Point<dim> &                                          p) const = 0;
 
   /**
-   * 将实数 @p p 上的点 @p cell
-   * 映射到单元格上的相应点，并返回其坐标。这个函数提供了transform_unit_to_real_cell()所提供的映射的逆映射。
-   * 在一维的情况下，本函数返回实点 @p p 在 @p cell.
-   * 所标识的曲线或曲面上的法线投影。
-   * @note
-   * 如果要计算反映射的点位于单元格边界之外，从参考（单位）单元格坐标到实数单元格坐标系的多项式映射并不总是可逆的。在这种情况下，当前函数可能无法计算参考单元上的一个点，该点在映射下的图像等于给定的点
-   * @p p.  如果是这种情况，该函数会抛出一个
-   * Mapping::ExcTransformationFailed  类型的异常。因此，给定的点
-   * @p p
-   * 是否位于单元格之外可以通过检查返回的参考坐标是否位于参考单元格之内或之外来确定（例如，使用
-   * GeometryInfo::is_inside_unit_cell()) 或上述异常是否被抛出。
-   * @param  cell 将用于定义映射的单元的迭代器。    @param  p
-   * 给定单元格上的一个点的位置。    @return
-   * 点的参考单元位置，当映射到实空间时等于第二个参数给出的坐标。这个映射使用由当前实现映射的派生类所定义的映射，以及第一个参数所确定的单元格的坐标。
+   * Map the point @p p on the real @p cell to the corresponding point on the
+   * unit cell, and return its coordinates. This function provides the inverse
+   * of the mapping provided by transform_unit_to_real_cell().
    *
+   * In the codimension one case, this function returns the normal projection
+   * of the real point @p p on the curve or surface identified by the @p cell.
+   *
+   * @note Polynomial mappings from the reference (unit) cell coordinates to
+   * the coordinate system of a real cell are not always invertible if the
+   * point for which the inverse mapping is to be computed lies outside the
+   * cell's boundaries. In such cases, the current function may fail to
+   * compute a point on the reference cell whose image under the mapping
+   * equals the given point @p p.  If this is the case then this function
+   * throws an exception of type Mapping::ExcTransformationFailed . Whether
+   * the given point @p p lies outside the cell can therefore be determined by
+   * checking whether the returned reference coordinates lie inside or outside
+   * the reference cell (e.g., using GeometryInfo::is_inside_unit_cell()) or
+   * whether the exception mentioned above has been thrown.
+   *
+   * @param cell Iterator to the cell that will be used to define the mapping.
+   * @param p Location of a point on the given cell.
+   * @return The reference cell location of the point that when mapped to real
+   * space equals the coordinates given by the second argument. This mapping
+   * uses the mapping defined by the class derived from the current one that
+   * implements the mapping, and the coordinates of the cell identified by the
+   * first argument.
    */
   virtual Point<dim>
   transform_real_to_unit_cell(
@@ -367,11 +463,15 @@ public:
     const Point<spacedim> &                                     p) const = 0;
 
   /**
-   * 将多个点从真实点位置映射到参考位置的点。其功能基本上与在所有点上循环并为每个点单独调用
-   * Mapping::transform_real_to_unit_cell()
-   * 函数相同，但对于某些实现了更专业的版本的映射，如MappingQGeneric，其速度会更快。行为上的唯一区别是，这个函数永远不会抛出ExcTransformationFailed()异常。如果对`real_points[i]`转换失败，返回的`unit_points[i]`包含
-   * std::numeric_limits<double>::infinity() 作为第一个条目。
-   *
+   * Map multiple points from the real point locations to points in reference
+   * locations. The functionality is essentially the same as looping over all
+   * points and calling the Mapping::transform_real_to_unit_cell() function
+   * for each point individually, but it can be much faster for certain
+   * mappings that implement a more specialized version such as
+   * MappingQGeneric. The only difference in behavior is that this function
+   * will never throw an ExcTransformationFailed() exception. If the
+   * transformation fails for `real_points[i]`, the returned `unit_points[i]`
+   * contains std::numeric_limits<double>::infinity() as the first entry.
    */
   virtual void
   transform_points_real_to_unit_cell(
@@ -380,14 +480,14 @@ public:
     const ArrayView<Point<dim>> &unit_points) const;
 
   /**
-   * 将实数 @p cell 上的点 @p p
-   * 转换为参考单元上的对应点，然后将此点投射到给定面数
-   * @p face_no.
-   * 的面的坐标系中的一个(dim-1)维的点，理想情况下，点 @p
-   * p 靠近面 @p face_no,
-   * ，但技术上单元中的任何点都可以被投影。
-   * 当dim=1时，这个函数没有物理意义，所以在这种情况下它会抛出一个异常。
+   * Transform the point @p p on the real @p cell to the corresponding point
+   * on the reference cell, and then project this point to a (dim-1)-dimensional
+   * point in the coordinate system of the face with
+   * the given face number @p face_no. Ideally the point @p p is near the face
+   * @p face_no, but any point in the cell can technically be projected.
    *
+   * This function does not make physical sense when dim=1, so it throws an
+   * exception in this case.
    */
   Point<dim - 1>
   project_real_point_to_unit_point_on_face(
@@ -397,26 +497,26 @@ public:
 
   /**
    * @}
-   *
    */
 
 
   /**
-   * @name  异常情况  @{
-   *
+   * @name Exceptions
+   * @{
    */
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException0(ExcInvalidData);
 
 
   /**
-   * 计算实空间点和参考空间点之间的映射失败，通常是因为给定的点位于反向映射不唯一的单元之外。
-   * @ingroup Exceptions
+   * Computing the mapping between a real space point and a point in reference
+   * space failed, typically because the given point lies outside the cell
+   * where the inverse mapping is not unique.
    *
+   * @ingroup Exceptions
    */
   DeclExceptionMsg(
     ExcTransformationFailed,
@@ -425,9 +525,11 @@ public:
     "where the inverse mapping is not unique.");
 
   /**
-   * deal.II假设雅各布行列式为正。当单元格的几何形状在映射的图像下被扭曲时，映射变得无效，并抛出这个异常。
-   * @ingroup Exceptions
+   * deal.II assumes the Jacobian determinant to be positive. When the cell
+   * geometry is distorted under the image of the mapping, the mapping becomes
+   * invalid and this exception is thrown.
    *
+   * @ingroup Exceptions
    */
   DeclException3(ExcDistortedMappedCell,
                  Point<spacedim>,
@@ -441,84 +543,116 @@ public:
 
   /**
    * @}
-   *
    */
 
   /**
-   * @name  与FEValues的接口  @{ .
-   *
+   * @name Interface with FEValues
+   * @{
    */
 
 public:
   /**
-   * 用于映射对象内部数据的基类。内部机制是，在构建FEValues对象时，它要求将要使用的映射和有限元类为自己的目的分配内存，在其中可以存储只需要计算一次的数据。例如，大多数有限元将在这个对象中存储正交点的形状函数值，因为它们不会在单元之间变化，只需要计算一次。对于希望只在正交点评估一次用于映射的形状函数的映射类也是如此。
-   * 由于使用不同正交规则的不同FEValues对象可能同时访问同一个映射对象，因此有必要为每个FEValues对象创建一个这样的对象。FEValues通过调用
-   * Mapping::get_data(),
-   * 或在现实中调用派生类中相应函数的实现来做到这一点。由
-   * Mapping::get_data()
-   * 创建的对象的所有权随后被转移到FEValues对象中，但每次要求它计算具体单元的信息时，这个对象的引用就会被传递给映射对象。当
-   * FEValues::reinit()
-   * （或FEFaceValues和FESubfaceValues中的相应类）调用
-   * Mapping::fill_fe_values() （以及类似地通过
-   * Mapping::fill_fe_face_values() 和 Mapping::fill_fe_subface_values()).
-   * 该类的目的是让映射对象存储可以在开始时在参考单元上计算一次的信息，并在以后计算具体单元的信息时访问它。因此，交给
-   * Mapping::fill_fe_values() 的对象被标记为 <code>const</code>
-   * ，因为假设在使用这些信息的时候，不需要再次修改。然而，从Mapping派生出来的类也可以将这类对象用于其他两个目的。
+   * Base class for internal data of mapping objects. The internal mechanism
+   * is that upon construction of a FEValues object, it asks the mapping and
+   * finite element classes that are to be used to allocate memory for their
+   * own purpose in which they may store data that only needs to be computed
+   * once. For example, most finite elements will store the values of the
+   * shape functions at the quadrature points in this object, since they do
+   * not change from cell to cell and only need to be computed once. The same
+   * may be true for Mapping classes that want to only evaluate the shape
+   * functions used for mapping once at the quadrature points.
    *
+   * Since different FEValues objects using different quadrature rules might
+   * access the same mapping object at the same time, it is necessary to
+   * create one such object per FEValues object. FEValues does this by calling
+   * Mapping::get_data(), or in reality the implementation of the
+   * corresponding function in derived classes. Ownership of the object
+   * created by Mapping::get_data() is then transferred to the FEValues
+   * object, but a reference to this object is passed to the mapping object
+   * every time it is asked to compute information on a concrete cell. This
+   * happens when FEValues::reinit() (or the corresponding classes in
+   * FEFaceValues and FESubfaceValues) call Mapping::fill_fe_values() (and
+   * similarly via Mapping::fill_fe_face_values() and
+   * Mapping::fill_fe_subface_values()).
    *
+   * The purpose of this class is for mapping objects to store information
+   * that can be computed once at the beginning, on the reference cell, and to
+   * access it later when computing information on a concrete cell. As such,
+   * the object handed to Mapping::fill_fe_values() is marked as
+   * <code>const</code>, because the assumption is that at the time this
+   * information is used, it will not need to modified again. However, classes
+   * derived from Mapping can also use such objects for two other purposes:
    *
+   * - To provide scratch space for computations that are done in
+   * Mapping::fill_fe_values() and similar functions. Some of the derived
+   * classes would like to use scratch arrays and it would be a waste of time
+   * to allocate these arrays every time this function is called, just to de-
+   * allocate it again at the end of the function. Rather, one could allocate
+   * this memory once as a member variable of the current class, and simply
+   * use it in Mapping::fill_fe_values().
+   * - After calling Mapping::fill_fe_values(), FEValues::reinit()
+   * calls FiniteElement::fill_fe_values() where the finite element computes
+   * values, gradients, etc of the shape functions using both information
+   * computed once at the beginning using a mechanism similar to the one
+   * described here (see FiniteElement::InternalDataBase) as well as the data
+   * already computed by Mapping::fill_fe_values(). As part of its work, some
+   * implementations of FiniteElement::fill_fe_values() need to transform
+   * shape function data, and they do so by calling Mapping::transform(). The
+   * call to the latter function also receives a reference to the
+   * Mapping::InternalDataBase object. Since Mapping::transform() may be
+   * called many times on each cell, it is sometimes worth for derived classes
+   * to compute some information only once in Mapping::fill_fe_values() and
+   * reuse it in Mapping::transform(). This information can also be stored in
+   * the classes that derived mapping classes derive from InternalDataBase.
    *
-   *
-   * - 为在 Mapping::fill_fe_values() 和类似函数中进行的计算提供划痕空间。一些派生类希望使用从头开始的数组，如果每次调用这个函数时都要分配这些数组，只是在函数结束时再去分配，那就太浪费时间了。相反，可以把这块内存作为当前类的成员变量分配一次，然后在 Mapping::fill_fe_values(). 中简单地使用它。
-   *
-   *
-   *
-   *
-   *
-   * - 在调用 Mapping::fill_fe_values(), 后， FEValues::reinit() 调用 FiniteElement::fill_fe_values() ，其中有限元计算形状函数的值、梯度等，使用与这里描述的机制类似的开始时计算的信息（见 FiniteElement::InternalDataBase)  作为其工作的一部分， FiniteElement::fill_fe_values() 的一些实现需要转换形状函数数据，它们通过调用 Mapping::transform(). 来实现。对后者的调用也会收到对 Mapping::InternalDataBase 对象的引用。由于 Mapping::transform() 可能会在每个单元上被多次调用，有时值得派生类在 Mapping::fill_fe_values() 中只计算一次某些信息，并在 Mapping::transform(). 中重复使用，这些信息也可以存储在派生映射类从InternalDataBase派生的类中。    在这两种情况下，被传递的InternalDataBase对象都是 "道德上的约束"，也就是说，任何外部观察者都无法判断 Mapping::transform() 的抓取数组或一些中间数据是否被 Mapping::fill_fe_values() 所修改。因此，InternalDataBase对象总是作为 <code>const</code> 对象被传递。因此，想要利用上述两种额外用途的派生类需要将他们想要用于这些目的的成员变量标记为 <code>mutable</code> ，以允许它们被修改，尽管周围的对象被标记为 <code>const</code>  。
-   *
+   * In both of these cases, the InternalDataBase object being passed around
+   * is "morally const", i.e., no external observer can tell whether a scratch
+   * array or some intermediate data for Mapping::transform() is being
+   * modified by Mapping::fill_fe_values() or not. Consequently, the
+   * InternalDataBase objects are always passed around as <code>const</code>
+   * objects. Derived classes that would like to make use of the two
+   * additional uses outlined above therefore need to mark the member
+   * variables they want to use for these purposes as <code>mutable</code> to
+   * allow for their modification despite the fact that the surrounding object
+   * is marked as <code>const</code>.
    */
   class InternalDataBase
   {
   public:
     /**
-     * 构造函数。设置update_flags为 @p update_default ， @p
-     * first_cell 为 @p true.  。
-     *
+     * Constructor. Sets update_flags to @p update_default and @p first_cell
+     * to @p true.
      */
     InternalDataBase();
 
     /**
-     * 禁止复制构造。
-     *
+     * Copy construction is forbidden.
      */
     InternalDataBase(const InternalDataBase &) = delete;
 
     /**
-     * 派生类的虚拟解构器
-     *
+     * Virtual destructor for derived classes
      */
     virtual ~InternalDataBase() = default;
 
     /**
-     * 一组更新标志，指定Mapping接口的实现需要在每个单元或面计算的信息种类，即在
-     * Mapping::fill_fe_values() 和朋友圈。        这组标志被
-     * Mapping::get_data(),  Mapping::get_face_data(), 或
-     * Mapping::get_subface_data(),
-     * 的实现存储在这里，是传递给那些需要对每个单元进行重新计算的函数的更新标志的子集。
-     * (对应于在调用 Mapping::get_data()
-     * 时已经可以一次性计算的信息的标志子集。
+     * A set of update flags specifying the kind of information that an
+     * implementation of the Mapping interface needs to compute on each cell
+     * or face, i.e., in Mapping::fill_fe_values() and friends.
      *
-     * - 或该接口的实现
-     *
-     * - 不需要存储在这里，因为它已经被处理过了)。
-     *
+     * This set of flags is stored here by implementations of
+     * Mapping::get_data(), Mapping::get_face_data(), or
+     * Mapping::get_subface_data(), and is that subset of the update flags
+     * passed to those functions that require re-computation on every cell.
+     * (The subset of the flags corresponding to information that can be
+     * computed once and for all already at the time of the call to
+     * Mapping::get_data() -- or an implementation of that interface -- need
+     * not be stored here because it has already been taken care of.)
      */
     UpdateFlags update_each;
 
     /**
-     * 返回这个对象的内存消耗估计值（以字节为单位）。
-     *
+     * Return an estimate (in bytes) for the memory consumption of this object.
      */
     virtual std::size_t
     memory_consumption() const;
@@ -527,112 +661,235 @@ public:
 
 protected:
   /**
-   * 给定一组更新标志，计算哪些其他的量<i>also</i>需要被计算，以满足给定标志的请求。
-   * 然后返回原始标志集和刚刚计算的标志的组合。
-   * 举个例子，如果 @p update_flags
-   * 包含update_JxW_values（即雅各布式的行列式和正交公式提供的权重的乘积），一个映射可能需要计算完整的雅各布式矩阵，以便计算其行列式。然后他们将不仅返回update_JxW_values，而且还返回update_jacobians。在计算JxW值的派生类中，内部实际上不是这样做的
+   * Given a set of update flags, compute which other quantities <i>also</i>
+   * need to be computed in order to satisfy the request by the given flags.
+   * Then return the combination of the original set of flags and those just
+   * computed.
    *
-   * - 他们设置了update_contravariant_transformation来代替，由此也可以计算出行列式。
+   * As an example, if @p update_flags contains update_JxW_values (i.e., the
+   * product of the determinant of the Jacobian and the weights provided by
+   * the quadrature formula), a mapping may require the computation of the
+   * full Jacobian matrix in order to compute its determinant. They would then
+   * return not just update_JxW_values, but also update_jacobians. (This is
+   * not how it is actually done internally in the derived classes that
+   * compute the JxW values -- they set update_contravariant_transformation
+   * instead, from which the determinant can also be computed -- but this does
+   * not take away from the instructiveness of the example.)
    *
-   * - 但这并不影响这个例子的启发性）。)     关于这个函数和FEValues之间的互动的广泛讨论可以在 @ref FE_vs_Mapping_vs_FEValues 文档模块中找到。      @see  UpdateFlags
+   * An extensive discussion of the interaction between this function and
+   * FEValues can be found in the
+   * @ref FE_vs_Mapping_vs_FEValues
+   * documentation module.
    *
+   * @see UpdateFlags
    */
   virtual UpdateFlags
   requires_update_flags(const UpdateFlags update_flags) const = 0;
 
   /**
-   * 创建并返回一个指向对象的指针，映射可以在该对象中存储数据，这些数据只需要计算一次，但在映射应用于具体单元时都可以使用（例如，在各种transform()函数中，以及构成映射与FEValues类接口的fill_fe_values()、fill_fe_face_values()和fill_fe_subface_values()中）。
-   * 派生类将返回指向从 Mapping::InternalDataBase
-   * 派生的类型的对象的指针（更多信息见那里），并且可能已经预先计算了一些信息（根据未来对映射的要求，由更新标志指定）和给定的正交对象。随后对transform()或fill_fe_values()和friends的调用将收到这里创建的对象（具有相同的更新标志集和相同的正交对象）。因此，派生类可以在其get_data()函数中预先计算一些信息，并将其存储在内部数据对象中。
-   * 映射类不会跟踪由该函数创建的对象。因此，所有权将归调用者所有。
-   * 关于这个函数和FEValues之间的互动的广泛讨论可以在 @ref
-   * FE_vs_Mapping_vs_FEValues 文档模块中找到。      @param
-   * update_flags
-   * 一组标志，定义了在未来调用transform()或fill_fe_values()函数组时对映射类的期望。这组标志可能包含映射不知道如何处理的标志（例如，对于事实上由有限元类计算的信息，如
-   * UpdateFlags::update_values).
-   * 派生类将需要存储这些标志，或者至少是需要映射在fill_fe_values()中执行任何操作的标志子集，在
-   * InternalDataBase::update_each.   @param  quadrature
-   * 必须计算映射信息的正交对象。这包括正交点的位置和权重。
-   * @return
-   * 一个指向新创建的InternalDataBase类型（或派生类）对象的指针。该对象的所有权转移给调用函数。
-   * @note
-   * C++允许派生类中的虚拟函数可以返回不是InternalDataBase类型的对象的指针，但实际上是指向InternalDataBase的类<i>derived</i>的对象的指针。(这个特性被称为
-   * "共变返回类型"。)这在某些情况下是很有用的，因为在派生类中的调用将立即使用返回的对象，知道它的真实（派生）类型。
+   * Create and return a pointer to an object into which mappings can store
+   * data that only needs to be computed once but that can then be used
+   * whenever the mapping is applied to a concrete cell (e.g., in the various
+   * transform() functions, as well as in the fill_fe_values(),
+   * fill_fe_face_values() and fill_fe_subface_values() that form the
+   * interface of mappings with the FEValues class).
    *
+   * Derived classes will return pointers to objects of a type derived from
+   * Mapping::InternalDataBase (see there for more information) and may pre-
+   * compute some information already (in accordance with what will be asked
+   * of the mapping in the future, as specified by the update flags) and for
+   * the given quadrature object. Subsequent calls to transform() or
+   * fill_fe_values() and friends will then receive back the object created
+   * here (with the same set of update flags and for the same quadrature
+   * object). Derived classes can therefore pre-compute some information in
+   * their get_data() function and store it in the internal data object.
+   *
+   * The mapping classes do not keep track of the objects created by this
+   * function. Ownership will therefore rest with the caller.
+   *
+   * An extensive discussion of the interaction between this function and
+   * FEValues can be found in the
+   * @ref FE_vs_Mapping_vs_FEValues
+   * documentation module.
+   *
+   * @param update_flags A set of flags that define what is expected of the
+   * mapping class in future calls to transform() or the fill_fe_values()
+   * group of functions. This set of flags may contain flags that mappings do
+   * not know how to deal with (e.g., for information that is in fact computed
+   * by the finite element classes, such as UpdateFlags::update_values).
+   * Derived classes will need to store these flags, or at least that subset
+   * of flags that will require the mapping to perform any actions in
+   * fill_fe_values(), in InternalDataBase::update_each.
+   * @param quadrature The quadrature object for which mapping information
+   * will have to be computed. This includes the locations and weights of
+   * quadrature points.
+   * @return A pointer to a newly created object of type InternalDataBase (or
+   * a derived class). Ownership of this object passes to the calling
+   * function.
+   *
+   * @note C++ allows that virtual functions in derived classes may return
+   * pointers to objects not of type InternalDataBase but in fact pointers to
+   * objects of classes <i>derived</i> from InternalDataBase. (This feature is
+   * called "covariant return types".) This is useful in some contexts where
+   * the calling is within the derived class and will immediately make use of
+   * the returned object, knowing its real (derived) type.
    */
   virtual std::unique_ptr<InternalDataBase>
   get_data(const UpdateFlags      update_flags,
            const Quadrature<dim> &quadrature) const = 0;
 
   /**
-   * 像get_data()一样，但是为以后调用transform()或fill_fe_face_values()做准备，这些调用需要关于从参考面到具体单元面的映射信息。
-   * @param  update_flags
-   * 一组标志，定义在未来调用transform()或fill_fe_values()函数组时对映射类的期望。这组标志可能包含映射不知道如何处理的标志（例如，对于事实上由有限元类计算的信息，如
-   * UpdateFlags::update_values).
-   * 派生类将需要存储这些标志，或者至少是需要映射在fill_fe_values()中执行任何操作的标志子集，在
-   * InternalDataBase::update_each.   @param  quadrature
-   * 需要计算映射信息的正交对象。这包括正交点的位置和权重。
-   * @return
-   * 一个指向新创建的InternalDataBase类型（或派生类）对象的指针。该对象的所有权转移给调用函数。
-   * @note
-   * C++允许派生类中的虚拟函数可以返回不是InternalDataBase类型的对象的指针，但实际上是指向InternalDataBase的类<i>derived</i>的对象的指针。(这个特性被称为
-   * "共变返回类型"。)这在某些情况下是很有用的，因为在派生类中的调用将立即使用返回的对象，知道它的真实（派生）类型。
+   * Like get_data(), but in preparation for later calls to transform() or
+   * fill_fe_face_values() that will need information about mappings from the
+   * reference face to a face of a concrete cell.
    *
+   * @param update_flags A set of flags that define what is expected of the
+   * mapping class in future calls to transform() or the fill_fe_values()
+   * group of functions. This set of flags may contain flags that mappings do
+   * not know how to deal with (e.g., for information that is in fact computed
+   * by the finite element classes, such as UpdateFlags::update_values).
+   * Derived classes will need to store these flags, or at least that subset
+   * of flags that will require the mapping to perform any actions in
+   * fill_fe_values(), in InternalDataBase::update_each.
+   * @param quadrature The quadrature object for which mapping information
+   * will have to be computed. This includes the locations and weights of
+   * quadrature points.
+   * @return A pointer to a newly created object of type InternalDataBase (or
+   * a derived class). Ownership of this object passes to the calling
+   * function.
+   *
+   * @note C++ allows that virtual functions in derived classes may return
+   * pointers to objects not of type InternalDataBase but in fact pointers to
+   * objects of classes <i>derived</i> from InternalDataBase. (This feature is
+   * called "covariant return types".) This is useful in some contexts where
+   * the calling is within the derived class and will immediately make use of
+   * the returned object, knowing its real (derived) type.
    */
   virtual std::unique_ptr<InternalDataBase>
   get_face_data(const UpdateFlags               update_flags,
                 const hp::QCollection<dim - 1> &quadrature) const;
 
   /**
-   * @deprecated  使用带有 hp::QCollection 参数的版本。
-   *
+   * @deprecated Use the version taking a hp::QCollection argument.
    */
   virtual std::unique_ptr<InternalDataBase>
   get_face_data(const UpdateFlags          update_flags,
                 const Quadrature<dim - 1> &quadrature) const;
 
   /**
-   * 像get_data()和get_face_data()一样，但是为以后调用transform()或fill_fe_subface_values()做准备，这些调用将需要关于从参考面到具体单元的面的子（即子面）的映射信息。
-   * @param  update_flags
-   * 一组标志，定义在未来调用transform()或fill_fe_values()函数组时对映射类的期望。这组标志可能包含映射不知道如何处理的标志（例如，对于事实上由有限元类计算的信息，如
-   * UpdateFlags::update_values).
-   * 派生类将需要存储这些标志，或者至少是需要映射在fill_fe_values()中执行任何操作的标志子集，在
-   * InternalDataBase::update_each.   @param  quadrature
-   * 必须计算映射信息的正交对象。这包括正交点的位置和权重。
-   * @return
-   * 一个指向新创建的InternalDataBase类型（或派生类）对象的指针。该对象的所有权转移给调用函数。
-   * @note
-   * C++允许派生类中的虚拟函数可以返回不是InternalDataBase类型的对象的指针，但实际上是指向InternalDataBase的类<i>derived</i>的对象的指针。(这个特性被称为
-   * "共变返回类型"。)这在某些情况下是很有用的，在这些情况下，调用是在派生类中，并且将立即使用返回的对象，知道它的真实（派生）类型。
+   * Like get_data() and get_face_data(), but in preparation for later calls
+   * to transform() or fill_fe_subface_values() that will need information
+   * about mappings from the reference face to a child of a face (i.e.,
+   * subface) of a concrete cell.
    *
+   * @param update_flags A set of flags that define what is expected of the
+   * mapping class in future calls to transform() or the fill_fe_values()
+   * group of functions. This set of flags may contain flags that mappings do
+   * not know how to deal with (e.g., for information that is in fact computed
+   * by the finite element classes, such as UpdateFlags::update_values).
+   * Derived classes will need to store these flags, or at least that subset
+   * of flags that will require the mapping to perform any actions in
+   * fill_fe_values(), in InternalDataBase::update_each.
+   * @param quadrature The quadrature object for which mapping information
+   * will have to be computed. This includes the locations and weights of
+   * quadrature points.
+   * @return A pointer to a newly created object of type InternalDataBase (or
+   * a derived class). Ownership of this object passes to the calling
+   * function.
+   *
+   * @note C++ allows that virtual functions in derived classes may return
+   * pointers to objects not of type InternalDataBase but in fact pointers to
+   * objects of classes <i>derived</i> from InternalDataBase. (This feature is
+   * called "covariant return types".) This is useful in some contexts where
+   * the calling is within the derived class and will immediately make use of
+   * the returned object, knowing its real (derived) type.
    */
   virtual std::unique_ptr<InternalDataBase>
   get_subface_data(const UpdateFlags          update_flags,
                    const Quadrature<dim - 1> &quadrature) const = 0;
 
   /**
-   * 计算从参考单元到此函数的第一个参数所指示的实数单元的映射信息。派生类将不得不根据它们所代表的映射类型来实现这个函数。它被
-   * FEValues::reinit().
-   * 调用。从概念上讲，这个函数代表了从参考坐标
-   * $\mathbf\in [0,1]^d$  到实空间坐标  $\mathbf x$  的映射  $K$
-   * 的应用。它的目的是计算以下种类的数据。
+   * Compute information about the mapping from the reference cell to the real
+   * cell indicated by the first argument to this function. Derived classes
+   * will have to implement this function based on the kind of mapping they
+   * represent. It is called by FEValues::reinit().
    *
+   * Conceptually, this function's represents the application of the mapping
+   * $\mathbf x=\mathbf F_K(\hat {\mathbf x})$ from reference coordinates
+   * $\mathbf\in [0,1]^d$ to real space coordinates $\mathbf x$ for a given
+   * cell $K$. Its purpose is to compute the following kinds of data:
    *
+   * - Data that results from the application of the mapping itself, e.g.,
+   * computing the location $\mathbf x_q = \mathbf F_K(\hat{\mathbf x}_q)$ of
+   * quadrature points on the real cell, and that is directly useful to users
+   * of FEValues, for example during assembly.
+   * - Data that is necessary for finite element implementations to compute
+   * their shape functions on the real cell. To this end, the
+   * FEValues::reinit() function calls FiniteElement::fill_fe_values() after
+   * the current function, and the output of this function serves as input to
+   * FiniteElement::fill_fe_values(). Examples of information that needs to be
+   * computed here for use by the finite element classes is the Jacobian of
+   * the mapping, $\hat\nabla \mathbf F_K(\hat{\mathbf x})$ or its inverse,
+   * for example to transform the gradients of shape functions on the
+   * reference cell to the gradients of shape functions on the real cell.
    *
+   * The information computed by this function is used to fill the various
+   * member variables of the output argument of this function. Which of the
+   * member variables of that structure should be filled is determined by the
+   * update flags stored in the Mapping::InternalDataBase object passed to
+   * this function.
    *
+   * An extensive discussion of the interaction between this function and
+   * FEValues can be found in the
+   * @ref FE_vs_Mapping_vs_FEValues
+   * documentation module.
    *
+   * @param[in] cell The cell of the triangulation for which this function is
+   * to compute a mapping from the reference cell to.
+   * @param[in] cell_similarity Whether or not the cell given as first
+   * argument is simply a translation, rotation, etc of the cell for which
+   * this function was called the most recent time. This information is
+   * computed simply by matching the vertices (as stored by the Triangulation)
+   * between the previous and the current cell. The value passed here may be
+   * modified by implementations of this function and should then be returned
+   * (see the discussion of the return value of this function).
+   * @param[in] quadrature A reference to the quadrature formula in use for
+   * the current evaluation. This quadrature object is the same as the one
+   * used when creating the @p internal_data object. The object is used both
+   * to map the location of quadrature points, as well as to compute the JxW
+   * values for each quadrature point (which involves the quadrature weights).
+   * @param[in] internal_data A reference to an object previously created by
+   * get_data() and that may be used to store information the mapping can
+   * compute once on the reference cell. See the documentation of the
+   * Mapping::InternalDataBase class for an extensive description of the
+   * purpose of these objects.
+   * @param[out] output_data A reference to an object whose member variables
+   * should be computed. Not all of the members of this argument need to be
+   * filled; which ones need to be filled is determined by the update flags
+   * stored inside the @p internal_data object.
+   * @return An updated value of the @p cell_similarity argument to this
+   * function. The returned value will be used for the corresponding argument
+   * when FEValues::reinit() calls FiniteElement::fill_fe_values(). In most
+   * cases, derived classes will simply want to return the value passed for @p
+   * cell_similarity. However, implementations of this function may downgrade
+   * the level of cell similarity. This is, for example, the case for classes
+   * that take not only into account the locations of the vertices of a cell
+   * (as reported by the Triangulation), but also other information specific
+   * to the mapping. The purpose is that FEValues::reinit() can compute
+   * whether a cell is similar to the previous one only based on the cell's
+   * vertices, whereas the mapping may also consider displacement fields
+   * (e.g., in the MappingQ1Eulerian and MappingFEField classes). In such
+   * cases, the mapping may conclude that the previously computed cell
+   * similarity is too optimistic, and invalidate it for subsequent use in
+   * FiniteElement::fill_fe_values() by returning a less optimistic cell
+   * similarity value.
    *
-   * - 从应用映射本身产生的数据，例如，计算实数单元上正交点的位置 $\mathbf x_q = \mathbf F_K(\hat{\mathbf x}_q)$ ，对FEValues的用户直接有用，例如在装配过程中。
-   *
-   *
-   *
-   *
-   *
-   * - 数据是有限元实现在真实单元上计算其形状函数所必需的。为此， FEValues::reinit() 函数在当前函数后调用 FiniteElement::fill_fe_values() ，该函数的输出作为 FiniteElement::fill_fe_values(). 的输入。这里需要计算的信息的例子是映射的Jacobian， $\hat\nabla \mathbf F_K(\hat{\mathbf x})$ 或其逆，例如，将参考单元上的形状函数的梯度转换为实单元上形状函数的梯度。    这个函数计算出来的信息被用来填充这个函数的输出参数的各个成员变量。该结构中的哪些成员变量应该被填充，由存储在传递给该函数的 Mapping::InternalDataBase 对象中的更新标志决定。    关于此函数和FEValues之间的互动的广泛讨论可以在 @ref FE_vs_Mapping_vs_FEValues 文档模块中找到。      @param[in]  cell 三角形中的单元格，本函数要计算从参考单元格到的映射。    @param[in]  cell_similarity 作为第一个参数的单元格是否是最近一次调用此函数的单元格的简单平移、旋转等。这个信息是通过匹配前一个单元和当前单元之间的顶点（由三角结构存储）简单计算出来的。这里传递的值可能被这个函数的实现所修改，然后应该被返回（见关于这个函数的返回值的讨论）。    @param[in]  quadrature 对当前评估中使用的正交公式的引用。这个正交对象与创建 @p internal_data 对象时使用的对象相同。该对象既用于映射正交点的位置，也用于计算每个正交点的JxW值（涉及正交权重）。    @param[in]  internal_data 一个对先前由get_data()创建的对象的引用，可用于存储映射在参考单元上可以计算一次的信息。参见 Mapping::InternalDataBase 类的文档，以了解这些对象的用途的广泛描述。    @param[out]  output_data 对成员变量应被计算的对象的引用。并非所有这个参数的成员都需要被填充；哪些成员需要被填充是由存储在 @p internal_data 对象内的更新标志决定的。    @return  这个函数的 @p cell_similarity 参数的一个更新值。当 FEValues::reinit() 调用 FiniteElement::fill_fe_values(). 时，返回的值将被用于相应的参数。在大多数情况下，派生类只想返回为 @p cell_similarity传递的值。然而，这个函数的实现可能会降低细胞相似度的级别。例如，对于那些不仅考虑到单元格顶点的位置（如Triangulation所报告的），而且还考虑到映射的其他特定信息的类，就是这种情况。目的是 FEValues::reinit() 可以只根据单元格的顶点来计算一个单元格是否与前一个单元格相似，而映射也可以考虑位移场（例如，在MappingQ1Eulerian和MappingFEField类中）。在这种情况下，映射可能会得出结论，先前计算的单元格相似度过于乐观，并通过返回一个不那么乐观的单元格相似度值，使其在随后的使用中无效 FiniteElement::fill_fe_values()  。
-   * @note  FEValues确保这个函数总是用同一对 @p internal_data 和
-   * @p output_data
-   * 对象调用。换句话说，如果这个函数的实现知道它在之前的调用中已经把一个数据写入了输出参数，那么在以后的调用中，如果实现知道这是同一个值，就没有必要再把它复制到那里。
-   *
+   * @note FEValues ensures that this function is always called with the same
+   * pair of @p internal_data and @p output_data objects. In other words, if
+   * an implementation of this function knows that it has written a piece of
+   * data into the output argument in a previous call, then there is no need
+   * to copy it there again in a later call if the implementation knows that
+   * this is the same value.
    */
   virtual CellSimilarity::Similarity
   fill_fe_values(
@@ -644,23 +901,28 @@ protected:
       &output_data) const = 0;
 
   /**
-   * 这个函数等同于 Mapping::fill_fe_values(),
-   * ，但用于单元格的面。有关其目的的广泛讨论，请参见那里。它被
-   * FEFaceValues::reinit().  @param[in]
-   * 单元格所调用，该函数要计算从参考单元格到的映射。
-   * @param[in]  face_no 请求提供信息的给定单元的面的编号。
-   * @param[in]  quadrature
-   * 当前评估中使用的正交公式的引用。此正交对象与创建
-   * @p internal_data
-   * 对象时使用的对象相同。该对象既用于映射正交点的位置，也用于计算每个正交点的JxW值（涉及正交权重）。
-   * @param[in]  internal_data
-   * 一个对先前由get_data()创建的对象的引用，可用于存储映射在参考单元上可以计算一次的信息。参见
-   * Mapping::InternalDataBase
-   * 类的文档，以了解这些对象的用途的广泛描述。
-   * @param[out]  output_data
-   * 对成员变量应被计算的对象的引用。并非这个参数的所有成员都需要被填充；哪些成员需要被填充是由存储在
-   * @p internal_data 对象内的更新标志决定的。
+   * This function is the equivalent to Mapping::fill_fe_values(), but for
+   * faces of cells. See there for an extensive discussion of its purpose. It
+   * is called by FEFaceValues::reinit().
    *
+   * @param[in] cell The cell of the triangulation for which this function is
+   * to compute a mapping from the reference cell to.
+   * @param[in] face_no The number of the face of the given cell for which
+   * information is requested.
+   * @param[in] quadrature A reference to the quadrature formula in use for
+   * the current evaluation. This quadrature object is the same as the one
+   * used when creating the @p internal_data object. The object is used both
+   * to map the location of quadrature points, as well as to compute the JxW
+   * values for each quadrature point (which involves the quadrature weights).
+   * @param[in] internal_data A reference to an object previously created by
+   * get_data() and that may be used to store information the mapping can
+   * compute once on the reference cell. See the documentation of the
+   * Mapping::InternalDataBase class for an extensive description of the
+   * purpose of these objects.
+   * @param[out] output_data A reference to an object whose member variables
+   * should be computed. Not all of the members of this argument need to be
+   * filled; which ones need to be filled is determined by the update flags
+   * stored inside the @p internal_data object.
    */
   virtual void
   fill_fe_face_values(
@@ -672,8 +934,7 @@ protected:
       &output_data) const;
 
   /**
-   * @deprecated  使用带有 hp::QCollection 参数的版本。
-   *
+   * @deprecated Use the version taking a hp::QCollection argument.
    */
   virtual void
   fill_fe_face_values(
@@ -685,25 +946,30 @@ protected:
       &output_data) const;
 
   /**
-   * 这个函数等同于 Mapping::fill_fe_values(),
-   * ，但适用于单元格的子面（即面的子女）。关于其目的的广泛讨论见那里。它被
-   * FESubfaceValues::reinit().   @param[in]  cell
-   * 三角形中的单元格，这个函数要为其计算从参考单元格到的映射。
-   * @param[in]  face_no 请求提供信息的给定单元的面的编号。
-   * @param[in]  subface_no
-   * 请求提供信息的给定单元的面的子的编号。    @param[in]
-   * quadrature
-   * 对当前评估中使用的正交公式的引用。这个正交对象与创建
-   * @p internal_data
-   * 对象时使用的对象相同。该对象既用于映射正交点的位置，也用于计算每个正交点的JxW值（涉及正交权重）。
-   * @param[in]  internal_data
-   * 一个对先前由get_data()创建的对象的引用，可用于存储映射在参考单元上可以计算一次的信息。参见
-   * Mapping::InternalDataBase
-   * 类的文档，以了解这些对象的用途的广泛描述。
-   * @param[out]  output_data
-   * 对成员变量应被计算的对象的引用。并非所有这个参数的成员都需要被填充；哪些成员需要被填充是由存储在
-   * @p internal_data 对象内的更新标志决定的。
+   * This function is the equivalent to Mapping::fill_fe_values(), but for
+   * subfaces (i.e., children of faces) of cells. See there for an extensive
+   * discussion of its purpose. It is called by FESubfaceValues::reinit().
    *
+   * @param[in] cell The cell of the triangulation for which this function is
+   * to compute a mapping from the reference cell to.
+   * @param[in] face_no The number of the face of the given cell for which
+   * information is requested.
+   * @param[in] subface_no The number of the child of a face of the given cell
+   * for which information is requested.
+   * @param[in] quadrature A reference to the quadrature formula in use for
+   * the current evaluation. This quadrature object is the same as the one
+   * used when creating the @p internal_data object. The object is used both
+   * to map the location of quadrature points, as well as to compute the JxW
+   * values for each quadrature point (which involves the quadrature weights).
+   * @param[in] internal_data A reference to an object previously created by
+   * get_data() and that may be used to store information the mapping can
+   * compute once on the reference cell. See the documentation of the
+   * Mapping::InternalDataBase class for an extensive description of the
+   * purpose of these objects.
+   * @param[out] output_data A reference to an object whose member variables
+   * should be computed. Not all of the members of this argument need to be
+   * filled; which ones need to be filled is determined by the update flags
+   * stored inside the @p internal_data object.
    */
   virtual void
   fill_fe_subface_values(
@@ -717,37 +983,76 @@ protected:
 
   /**
    * @}
-   *
    */
 
 public:
   /**
-   * @name  将张量从参考坐标转换为实数坐标的函数  @{  。
-   *
+   * @name Functions to transform tensors from reference to real coordinates
+   * @{
    */
 
   /**
-   * 根据所选的MappingKind对矢量或1-差分形式的场进行变换。
-   * @note  通常情况下，这个函数被一个有限元调用，填充FEValues对象。对于这个有限元，应该有一个别名MappingKind，如 @p mapping_bdm,   @p mapping_nedelec,  等。这个别名应该优先于使用下面的种类。    目前由派生类实现的映射种类是。    <ul>   <li>   @p mapping_contravariant:  通过Jacobian将参考单元上的矢量场映射到物理单元。  @f[
+   * Transform a field of vectors or 1-differential forms according to the
+   * selected MappingKind.
+   *
+   * @note Normally, this function is called by a finite element, filling
+   * FEValues objects. For this finite element, there should be an alias
+   * MappingKind like @p mapping_bdm, @p mapping_nedelec, etc. This alias
+   * should be preferred to using the kinds below.
+   *
+   * The mapping kinds currently implemented by derived classes are:
+   * <ul>
+   * <li> @p mapping_contravariant: maps a vector field on the reference cell
+   * to the physical cell through the Jacobian:
+   * @f[
    * \mathbf u(\mathbf x) = J(\hat{\mathbf  x})\hat{\mathbf  u}(\hat{\mathbf
    * x}).
    * @f]
-   * 在物理学中，这通常被称为反变量变换。在数学上，它是一个矢量场的前推。
-   * <li>   @p mapping_covariant:
-   * 将参考单元上的一形场映射到物理单元上的一形场。理论上，这将指的是DerivativeForm<1,dim,1>，但我们将这种类型与Tensor<1,dim>进行规范性的识别）。在数学上，它是微分形式的回拉@f[
+   * In physics, this is usually referred to as the contravariant
+   * transformation. Mathematically, it is the push forward of a vector field.
+   *
+   * <li> @p mapping_covariant: maps a field of one-forms on the reference
+   * cell to a field of one-forms on the physical cell. (Theoretically this
+   * would refer to a DerivativeForm<1,dim,1> but we canonically identify this
+   * type with a Tensor<1,dim>). Mathematically, it is the pull back of the
+   * differential form
+   * @f[
    * \mathbf u(\mathbf x) = J(\hat{\mathbf  x})(J(\hat{\mathbf  x})^{T}
    * J(\hat{\mathbf  x}))^{-1}\hat{\mathbf u}(\hat{\mathbf  x}).
-   * @f]标量可微分函数的梯度是这样转化的。    在dim=spacedim的情况下，前面的公式简化为@f[
+   * @f]
+   * Gradients of scalar differentiable functions are transformed this way.
+   *
+   * In the case when dim=spacedim the previous formula reduces to
+   * @f[
    * \mathbf u(\mathbf x) = J(\hat{\mathbf  x})^{-T}\hat{\mathbf
    * u}(\hat{\mathbf  x})
-   * @f]，因为我们假设映射 $\mathbf F_K$
-   * 总是可逆的，因此其雅各布 $J$ 是一个可逆矩阵。
-   * <li>   @p mapping_piola:
-   * 参考单元上的<i>dim-1</i>形式的场也由矢量场表示，但同样以不同的方式变换，即通过皮奥拉变换@f[
-   * \mathbf u(\mathbf x) = \frac{1}{\text{det}\;J(\hat{\mathbf x})}
-   * J(\hat{\mathbf x}) \hat{\mathbf  u}(\hat{\mathbf x}).
-   * @f]  </ul>   @param[in]  输入 一个应该被映射的输入对象的数组（或数组的一部分）。    @param[in]  kind 要应用的映射的种类。    @param[in]  internal 一个指向 Mapping::InternalDataBase 类型的对象的指针，该对象包含先前由映射存储的信息。指向的对象是由get_data()、get_face_data()或get_subface_data()函数创建的，在调用当前函数之前，将作为对当前单元格的fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()调用的一部分而被更新。换句话说，这个对象也代表了与哪个单元格有关的变换应该被应用。    @param[out]  输出 一个数组（或数组的一部分），转换后的对象应该被放入其中。(注意，数组视图是 @p 常数，但它所指向的张量不是。)
+   * @f]
+   * because we assume that the mapping $\mathbf F_K$ is always invertible,
+   * and consequently its Jacobian $J$ is an invertible matrix.
    *
+   * <li> @p mapping_piola: A field of <i>dim-1</i>-forms on the reference
+   * cell is also represented by a vector field, but again transforms
+   * differently, namely by the Piola transform
+   * @f[
+   *  \mathbf u(\mathbf x) = \frac{1}{\text{det}\;J(\hat{\mathbf x})}
+   * J(\hat{\mathbf x}) \hat{\mathbf  u}(\hat{\mathbf x}).
+   * @f]
+   * </ul>
+   *
+   * @param[in] input An array (or part of an array) of input objects that
+   * should be mapped.
+   * @param[in] kind The kind of mapping to be applied.
+   * @param[in] internal A pointer to an object of type
+   * Mapping::InternalDataBase that contains information previously stored by
+   * the mapping. The object pointed to was created by the get_data(),
+   * get_face_data(), or get_subface_data() function, and will have been
+   * updated as part of a call to fill_fe_values(), fill_fe_face_values(), or
+   * fill_fe_subface_values() for the current cell, before calling the current
+   * function. In other words, this object also represents with respect to
+   * which cell the transformation should be applied to.
+   * @param[out] output An array (or part of an array) into which the
+   * transformed objects should be placed. (Note that the array view is @p
+   * const, but the tensors it points to are not.)
    */
   virtual void
   transform(const ArrayView<const Tensor<1, dim>> &                  input,
@@ -756,27 +1061,51 @@ public:
             const ArrayView<Tensor<1, spacedim>> &output) const = 0;
 
   /**
-   * 将一个微分形式的场从参考单元转换到物理单元。 认为 $\mathbf{T} = \nabla \mathbf u$ 和 $\hat{\mathbf  T} = \hat \nabla \hat{\mathbf  u}$ 是有用的， $\mathbf u$ 是一个矢量场。 目前由派生类实现的映射种类有。    <ul>   <li>   @p mapping_covariant:  将参考单元上的形式域映射到物理单元上的形式域。在数学上，它是微分形式的回拉@f[
-   * \mathbf T(\mathbf x) = \hat{\mathbf  T}(\hat{\mathbf  x}) J(\hat{\mathbf
-   * x})(J(\hat{\mathbf  x})^{T} J(\hat{\mathbf  x}))^{-1}.
-   * @f]间隔向量值微分函数的雅各布斯是这样转换的。    在dim=spacedim的情况下，前面的公式简化为@f[
-   * \mathbf T(\mathbf x) = \hat{\mathbf  u}(\hat{\mathbf  x}) J(\hat{\mathbf
-   * x})^{-1}.
-   * @f]  </ul>  。
-   * @note
-   * 如果把这个变换变成一个模板函数，其等级在<code>DerivativeForm
-   * @<1,  dim, rank  @></code>.
-   * 中会更合理，可惜C++不允许模板化虚拟函数。这就是为什么我们在这个函数transform()上面使用mapping_covariant()时，将<code>DerivativeForm
-   * @<1,  dim, 1  @></code> 标识为 <code>Tensor@<1,dim@></code> 。
-   * @param[in]  input
-   * 应该被映射的输入对象的一个数组（或数组的一部分）。
-   * @param[in]  kind 要应用的映射的种类。    @param[in]  internal
-   * 一个指向 Mapping::InternalDataBase
-   * 类型的对象的指针，该对象包含先前由映射存储的信息。指向的对象是由get_data()、get_face_data()或get_subface_data()函数创建的，在调用当前函数之前，将作为对当前单元格的fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()调用的一部分被更新。换句话说，这个对象也代表了与哪个单元格有关的变换应该被应用。
-   * @param[out]  输出
-   * 一个数组（或数组的一部分），转换后的对象应该被放入其中。(注意，数组视图是
-   * @p 常数，但它所指向的张量不是。)
+   * Transform a field of differential forms from the reference cell to the
+   * physical cell.  It is useful to think of $\mathbf{T} = \nabla \mathbf u$
+   * and $\hat{\mathbf  T} = \hat \nabla \hat{\mathbf  u}$, with $\mathbf u$ a
+   * vector field.  The mapping kinds currently implemented by derived classes
+   * are:
+   * <ul>
+   * <li> @p mapping_covariant: maps a field of forms on the reference cell to
+   * a field of forms on the physical cell. Mathematically, it is the pull
+   * back of the differential form
+   * @f[
+   * \mathbf T(\mathbf x) = \hat{\mathbf  T}(\hat{\mathbf  x})
+   *                        J(\hat{\mathbf  x})(J(\hat{\mathbf  x})^{T}
+   * J(\hat{\mathbf  x}))^{-1}.
+   * @f]
+   * Jacobians of spacedim-vector valued differentiable functions are
+   * transformed this way.
    *
+   * In the case when dim=spacedim the previous formula reduces to
+   * @f[
+   * \mathbf T(\mathbf x) = \hat{\mathbf  u}(\hat{\mathbf  x})
+   *                        J(\hat{\mathbf  x})^{-1}.
+   * @f]
+   * </ul>
+   *
+   * @note It would have been more reasonable to make this transform a
+   * template function with the rank in <code>DerivativeForm@<1, dim,
+   * rank@></code>. Unfortunately C++ does not allow templatized virtual
+   * functions. This is why we identify <code>DerivativeForm@<1, dim,
+   * 1@></code> with a <code>Tensor@<1,dim@></code> when using
+   * mapping_covariant() in the function transform() above this one.
+   *
+   * @param[in] input An array (or part of an array) of input objects that
+   * should be mapped.
+   * @param[in] kind The kind of mapping to be applied.
+   * @param[in] internal A pointer to an object of type
+   * Mapping::InternalDataBase that contains information previously stored by
+   * the mapping. The object pointed to was created by the get_data(),
+   * get_face_data(), or get_subface_data() function, and will have been
+   * updated as part of a call to fill_fe_values(), fill_fe_face_values(), or
+   * fill_fe_subface_values() for the current cell, before calling the current
+   * function. In other words, this object also represents with respect to
+   * which cell the transformation should be applied to.
+   * @param[out] output An array (or part of an array) into which the
+   * transformed objects should be placed. (Note that the array view is @p
+   * const, but the tensors it points to are not.)
    */
   virtual void
   transform(const ArrayView<const DerivativeForm<1, dim, spacedim>> &input,
@@ -785,25 +1114,56 @@ public:
             const ArrayView<Tensor<2, spacedim>> &output) const = 0;
 
   /**
-   * 将一个张量场从参考单元转换到物理单元。  这些张量通常是参考单元中已经从物理单元拉回来的矢量场的雅各布系数。 目前由派生类实现的映射种类有。    <ul>   <li>   @p mapping_contravariant_gradient: 它假设 $\mathbf u(\mathbf x)
-   * = J \hat{\mathbf  u}$ 这样@f[
+   * Transform a tensor field from the reference cell to the physical cell.
+   * These tensors are usually the Jacobians in the reference cell of vector
+   * fields that have been pulled back from the physical cell.  The mapping
+   * kinds currently implemented by derived classes are:
+   * <ul>
+   * <li> @p mapping_contravariant_gradient: it assumes $\mathbf u(\mathbf x)
+   * = J \hat{\mathbf  u}$ so that
+   * @f[
    * \mathbf T(\mathbf x) =
    * J(\hat{\mathbf  x}) \hat{\mathbf  T}(\hat{\mathbf  x})
    * J(\hat{\mathbf  x})^{-1}.
-   * @f]  <li>   @p mapping_covariant_gradient: 它假设 $\mathbf u(\mathbf x) =
-   * J^{-T} \hat{\mathbf  u}$ 这样@f[
+   * @f]
+   * <li> @p mapping_covariant_gradient: it assumes $\mathbf u(\mathbf x) =
+   * J^{-T} \hat{\mathbf  u}$ so that
+   * @f[
    * \mathbf T(\mathbf x) =
    * J(\hat{\mathbf  x})^{-T} \hat{\mathbf  T}(\hat{\mathbf  x})
    * J(\hat{\mathbf  x})^{-1}.
-   * @f]  <li>   @p mapping_piola_gradient: 它假设 $\mathbf u(\mathbf x) =
+   * @f]
+   * <li> @p mapping_piola_gradient: it assumes $\mathbf u(\mathbf x) =
    * \frac{1}{\text{det}\;J(\hat{\mathbf x})} J(\hat{\mathbf x}) \hat{\mathbf
-   * u}(\hat{\mathbf x})$ 这样 @f[
+   * u}(\hat{\mathbf x})$ so that
+   * @f[
    * \mathbf T(\mathbf x) =
    * \frac{1}{\text{det}\;J(\hat{\mathbf x})}
    * J(\hat{\mathbf  x}) \hat{\mathbf  T}(\hat{\mathbf  x})
    * J(\hat{\mathbf  x})^{-1}.
-   * @f] ]  </ul>   @todo  mapping_covariant_gradient、mapping_contravariant_gradient和mapping_piola_gradient的公式只对线性映射而言是真的。例如，如果映射是双线性的（或具有高阶多项式程度），那么就会有一个与  $J$  的导数相关的缺失项。      @param[in]  输入 一个应该被映射的输入对象的数组（或数组的一部分）。    @param[in]  kind 要应用的映射的种类。    @param[in]  internal 一个指向 Mapping::InternalDataBase 类型的对象的指针，该对象包含先前由映射存储的信息。指向的对象是由get_data()、get_face_data()或get_subface_data()函数创建的，在调用当前函数之前，将作为对当前单元格的fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()调用的一部分被更新。换句话说，这个对象也代表了与哪个单元格有关的变换应该被应用。    @param[out]  output 一个数组（或数组的一部分），转换后的对象应该被放入其中。(注意，数组视图是 @p 常数，但它所指向的张量不是。)
+   * @f]
+   * </ul>
    *
+   * @todo The formulas for mapping_covariant_gradient,
+   * mapping_contravariant_gradient and mapping_piola_gradient are only true
+   * as stated for linear mappings. If, for example, the mapping is bilinear
+   * (or has a higher order polynomial degree) then there is a missing term
+   * associated with the derivative of $J$.
+   *
+   * @param[in] input An array (or part of an array) of input objects that
+   * should be mapped.
+   * @param[in] kind The kind of mapping to be applied.
+   * @param[in] internal A pointer to an object of type
+   * Mapping::InternalDataBase that contains information previously stored by
+   * the mapping. The object pointed to was created by the get_data(),
+   * get_face_data(), or get_subface_data() function, and will have been
+   * updated as part of a call to fill_fe_values(), fill_fe_face_values(), or
+   * fill_fe_subface_values() for the current cell, before calling the current
+   * function. In other words, this object also represents with respect to
+   * which cell the transformation should be applied to.
+   * @param[out] output An array (or part of an array) into which the
+   * transformed objects should be placed. (Note that the array view is @p
+   * const, but the tensors it points to are not.)
    */
   virtual void
   transform(const ArrayView<const Tensor<2, dim>> &                  input,
@@ -812,12 +1172,45 @@ public:
             const ArrayView<Tensor<2, spacedim>> &output) const = 0;
 
   /**
-   * 将一个张量场从参考单元转换到物理单元。  这种张量在大多数情况下是参考单元中的向量场的 hessians，这些向量场已经从物理单元拉回来。    目前由派生类实现的映射种类有。    <ul>   <li>   @p mapping_covariant_gradient:  将参考单元上的形式场映射到物理单元上的形式场。在数学上，它是微分形式@f[
-   * \mathbf T_{ijk}(\mathbf x) = \hat{\mathbf  T}_{iJK}(\hat{\mathbf  x})
-   * J_{jJ}^{\dagger} J_{kK}^{\dagger}@f]的回拉，其中@f[ J^{\dagger} = J(\hat{\mathbf  x})(J(\hat{\mathbf  x})^{T}
-   * J(\hat{\mathbf  x}))^{-1}.
-   * @f]  </ul> 间隔向量值可微函数的Hessians是这样转化的（在减去导数与雅各布梯度的乘积后）。    在dim=spacedim的情况下，前面的公式简化为 @f[J^{\dagger} = J^{-1}@f]  @param[in]  input 应该被映射的输入对象的数组（或数组的一部分）。    @param[in]  kind 要应用的映射的种类。    @param[in]  internal 一个指向类型为 Mapping::InternalDataBase 的对象的指针，该对象包含先前由映射存储的信息。指向的对象是由get_data()、get_face_data()或get_subface_data()函数创建的，在调用当前函数之前，将作为对当前单元格的fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()调用的一部分被更新。换句话说，这个对象也代表了与哪个单元格有关的变换应该被应用。    @param[out]  output 一个数组（或数组的一部分），转换后的对象应该被放入其中。(注意，数组视图是 @p 常数，但它指向的张量不是。)
+   * Transform a tensor field from the reference cell to the physical cell.
+   * This tensors are most of times the hessians in the reference cell of
+   * vector fields that have been pulled back from the physical cell.
    *
+   * The mapping kinds currently implemented by derived classes are:
+   * <ul>
+   * <li> @p mapping_covariant_gradient: maps a field of forms on the
+   * reference cell to a field of forms on the physical cell. Mathematically,
+   * it is the pull back of the differential form
+   * @f[
+   * \mathbf T_{ijk}(\mathbf x) = \hat{\mathbf  T}_{iJK}(\hat{\mathbf  x})
+   * J_{jJ}^{\dagger} J_{kK}^{\dagger}@f],
+   *
+   * where @f[ J^{\dagger} = J(\hat{\mathbf  x})(J(\hat{\mathbf  x})^{T}
+   * J(\hat{\mathbf  x}))^{-1}.
+   * @f]
+   * </ul>
+   *
+   * Hessians of spacedim-vector valued differentiable functions are
+   * transformed this way (After subtraction of the product of the derivative
+   * with the Jacobian gradient).
+   *
+   * In the case when dim=spacedim the previous formula reduces to
+   * @f[J^{\dagger} = J^{-1}@f]
+   *
+   * @param[in] input An array (or part of an array) of input objects that
+   * should be mapped.
+   * @param[in] kind The kind of mapping to be applied.
+   * @param[in] internal A pointer to an object of type
+   * Mapping::InternalDataBase that contains information previously stored by
+   * the mapping. The object pointed to was created by the get_data(),
+   * get_face_data(), or get_subface_data() function, and will have been
+   * updated as part of a call to fill_fe_values(), fill_fe_face_values(), or
+   * fill_fe_subface_values() for the current cell, before calling the current
+   * function. In other words, this object also represents with respect to
+   * which cell the transformation should be applied to.
+   * @param[out] output An array (or part of an array) into which the
+   * transformed objects should be placed. (Note that the array view is @p
+   * const, but the tensors it points to are not.)
    */
   virtual void
   transform(const ArrayView<const DerivativeForm<2, dim, spacedim>> &input,
@@ -826,28 +1219,51 @@ public:
             const ArrayView<Tensor<3, spacedim>> &output) const = 0;
 
   /**
-   * 将一个3差分形式的场从参考单元转换到物理单元。
-   * 认为 $\mathbf{T}_{ijk} = D^2_{jk} \mathbf u_i$ 和 $\mathbf{\hat
-   * T}_{IJK} = \hat D^2_{JK} \mathbf{\hat
-   * u}_I$ 很有用， $\mathbf u_i$ 是一个矢量场。    目前由派生类实现的映射种类是。    <ul>   <li>   @p mapping_contravariant_hessian:  它假定 $\mathbf u_i(\mathbf x)
-   * = J_{iI} \hat{\mathbf  u}_I$ 以便@f[
+   * Transform a field of 3-differential forms from the reference cell to the
+   * physical cell.  It is useful to think of $\mathbf{T}_{ijk} = D^2_{jk}
+   * \mathbf u_i$ and $\mathbf{\hat T}_{IJK} = \hat D^2_{JK} \mathbf{\hat
+   * u}_I$, with $\mathbf u_i$ a vector field.
+   *
+   * The mapping kinds currently implemented by derived classes are:
+   * <ul>
+   * <li> @p mapping_contravariant_hessian: it assumes $\mathbf u_i(\mathbf x)
+   * = J_{iI} \hat{\mathbf  u}_I$ so that
+   * @f[
    * \mathbf T_{ijk}(\mathbf x) =
    * J_{iI}(\hat{\mathbf  x}) \hat{\mathbf  T}_{IJK}(\hat{\mathbf  x})
    * J_{jJ}(\hat{\mathbf  x})^{-1} J_{kK}(\hat{\mathbf  x})^{-1}.
-   * @f]  <li>   @p mapping_covariant_hessian:  它假定 $\mathbf u_i(\mathbf x) =
-   * J_{iI}^{-T} \hat{\mathbf  u}_I$  以便@f[
+   * @f]
+   * <li> @p mapping_covariant_hessian: it assumes $\mathbf u_i(\mathbf x) =
+   * J_{iI}^{-T} \hat{\mathbf  u}_I$ so that
+   * @f[
    * \mathbf T_{ijk}(\mathbf x) =
    * J_iI(\hat{\mathbf  x})^{-1} \hat{\mathbf  T}_{IJK}(\hat{\mathbf  x})
    * J_{jJ}(\hat{\mathbf  x})^{-1} J_{kK}(\hat{\mathbf  x})^{-1}.
-   * @f]  <li>   @p mapping_piola_hessian:  ] 它假定  $\mathbf u_i(\mathbf x) =
+   * @f]
+   * <li> @p mapping_piola_hessian: it assumes $\mathbf u_i(\mathbf x) =
    * \frac{1}{\text{det}\;J(\hat{\mathbf x})} J_{iI}(\hat{\mathbf x})
-   * \hat{\mathbf u}(\hat{\mathbf x})$  这样 @f[
+   * \hat{\mathbf u}(\hat{\mathbf x})$ so that
+   * @f[
    * \mathbf T_{ijk}(\mathbf x) =
    * \frac{1}{\text{det}\;J(\hat{\mathbf x})}
    * J_{iI}(\hat{\mathbf  x}) \hat{\mathbf  T}_{IJK}(\hat{\mathbf  x})
    * J_{jJ}(\hat{\mathbf  x})^{-1} J_{kK}(\hat{\mathbf  x})^{-1}.
-   * @f]  </ul>   @param[in]  输入 一个应该被映射的输入对象的数组（或数组的一部分）。    @param[in]  kind 要应用的映射的种类。    @param[in]  internal 一个指向 Mapping::InternalDataBase 类型的对象的指针，该对象包含先前由映射存储的信息。指向的对象是由get_data()、get_face_data()或get_subface_data()函数创建的，在调用当前函数之前，将作为对当前单元格的fill_fe_values()、fill_fe_face_values()或fill_fe_subface_values()调用的一部分被更新。换句话说，这个对象也代表了与哪个单元格有关的变换应该被应用。    @param[out]  output 一个数组（或数组的一部分），转换后的对象应该被放入其中。
+   * @f]
+   * </ul>
    *
+   * @param[in] input An array (or part of an array) of input objects that
+   * should be mapped.
+   * @param[in] kind The kind of mapping to be applied.
+   * @param[in] internal A pointer to an object of type
+   * Mapping::InternalDataBase that contains information previously stored by
+   * the mapping. The object pointed to was created by the get_data(),
+   * get_face_data(), or get_subface_data() function, and will have been
+   * updated as part of a call to fill_fe_values(), fill_fe_face_values(), or
+   * fill_fe_subface_values() for the current cell, before calling the current
+   * function. In other words, this object also represents with respect to
+   * which cell the transformation should be applied to.
+   * @param[out] output An array (or part of an array) into which the
+   * transformed objects should be placed.
    */
   virtual void
   transform(const ArrayView<const Tensor<3, dim>> &                  input,
@@ -857,7 +1273,6 @@ public:
 
   /**
    * @}
-   *
    */
 
 
@@ -871,9 +1286,11 @@ public:
 
 
 /**
- * 返回一个适用于给定三角形的默认线性映射。在内部，这个函数为给定的三角结构所使用的参考单元调用上述函数，假设三角结构只使用单一的单元类型。如果三角剖分使用混合单元格类型，那么这个函数将触发一个异常。
- *
- *
+ * Return a default linear mapping that works for the given triangulation.
+ * Internally, this function calls the function above for the reference
+ * cell used by the given triangulation, assuming that the triangulation
+ * uses only a single cell type. If the triangulation uses mixed cell
+ * types, then this function will trigger an exception.
  */
 template <int dim, int spacedim>
 const Mapping<dim, spacedim> &
@@ -883,5 +1300,3 @@ get_default_linear_mapping(const Triangulation<dim, spacedim> &triangulation);
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

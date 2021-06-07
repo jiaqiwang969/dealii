@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/polynomials_barycentric_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2021 by the deal.II authors
@@ -27,202 +26,181 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * 以arycentric坐标实现的多项式。
- * arycentric坐标是一个定义在单片机上的坐标系统，它特别容易操作，因为它把单片机中的坐标表达为顶点的凸组合。例如，一个三角形中的任何一点都可以写成
+ * Polynomial implemented in barycentric coordinates.
+ *
+ * Barycentric coordinates are a coordinate system defined on simplices that
+ * are particularly easy to work with since they express coordinates in the
+ * simplex as convex combinations of the vertices. For example, any point in a
+ * triangle can be written as
+ *
  * @f[
- * (x, y) = c_0 (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
+ *   (x, y) = c_0 (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
  * @f]
- * 其中每个值 $c_i$
- * 是每个顶点的相对权重（所以中心点在二维中是每个 $c_i
- * = 1/3$
- * ）。由于我们只考虑凸形组合，我们可以把这个方程改写为
+ *
+ * where each value $c_i$ is the relative weight of each vertex (so the
+ * centroid is, in 2D, where each $c_i = 1/3$). Since we only consider convex
+ * combinations we can rewrite this equation as
+ *
  * @f[
- * (x, y) = (1
- *
- * - c_1
- *
- * - c_2) (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
+ *   (x, y) = (1 - c_1 - c_2) (x_0, y_0) + c_1 (x_1, y_1) + c_2 (x_2, y_2).
  * @f]
- * 这导致三个多项式在二维中等同于 $P^1$
- * 。更确切地说，这个类实现了一个以二维的基础定义的多项式空间，即
  *
+ * This results in three polynomials that are equivalent to $P^1$ in 2D. More
+ * exactly, this class implements a polynomial space defined with the basis,
+ * in 2D, of
  * @f{align*}{
- * t_0(x, y) &= 1
- *
- * - x
- *
- * - y \\
+ * t_0(x, y) &= 1 - x - y \\
  * t_1(x, y) &= x \\
  * t_2(x, y) &= y
  * @f}
- * 而在三维中。
- *
+ * and, in 3D,
  * @f{align*}{
- * t_0(x, y) &= 1
- *
- * - x
- *
- * - y
- *
- * - z \\
+ * t_0(x, y) &= 1 - x - y - z \\
  * t_1(x, y) &= x             \\
  * t_2(x, y) &= y             \\
  * t_2(x, y) &= z
  * @f}
  *
- * 在实践中，这是一个非常方便的定义单项多项式的基础：例如，TRI6元素的第四个基础函数是
- * @f[
- * 4 t_1(x, y) t_2(x, y).
- * @f]
- * 在 <code>dim</code> -维空间的单项多项式有 <code>dim + 1</code>
- * variables in since <code>t_0</code> 可以用其他单项式来写。
- * 单项式可以方便地用 BarycentricPolynomial::monomial(). 构造。
+ * which is, in practice, a very convenient basis for defining simplex
+ * polynomials: for example, the fourth basis function of a TRI6 element is
  *
+ * @f[
+ * 4 * t_1(x, y) * t_2(x, y).
+ * @f]
+ *
+ * Barycentric polynomials in <code>dim</code>-dimensional space have
+ * <code>dim + 1</code> variables in since <code>t_0</code> can be written in
+ * terms of the other monomials.
+ *
+ * Monomials can be conveniently constructed with
+ * BarycentricPolynomial::monomial().
  *
  * @ingroup Polynomials
- *
- *
  */
 template <int dim, typename Number = double>
 class BarycentricPolynomial
 {
 public:
   /**
-   * 零点多项式的构造函数。
-   *
+   * Constructor for the zero polynomial.
    */
   BarycentricPolynomial();
 
   /**
-   * 单项式的构造函数。
-   *
+   * Constructor for a monomial.
    */
   BarycentricPolynomial(const TableIndices<dim + 1> &powers,
                         const Number                 coefficient);
 
   /**
-   * 返回指定的单项式。
-   *
+   * Return the specified monomial.
    */
   static BarycentricPolynomial<dim, Number>
   monomial(const unsigned int d);
 
   /**
-   * 将多项式打印到输出流中，先打印最低阶的项。
-   * 例如，第一个P6基函数被打印为 <code>-1 t0^1 + 2 t0^2</code>,
-   * where <code>t0</code> 是第一个arycentric变量， <code>t1</code>
-   * 是第二个，等等。
-   *
+   * Print the polynomial to the output stream with lowest-order terms first.
+   * For example, the first P6 basis function is printed as
+   * <code>-1 * t0^1 + 2 * t0^2</code>, where <code>t0</code> is the first
+   * barycentric variable, <code>t1</code> is the second, etc.
    */
   void
   print(std::ostream &out) const;
 
   /**
-   * 每个重心多项式的度数。
-   *
+   * Degree of each barycentric polynomial.
    */
   TableIndices<dim + 1>
   degrees() const;
 
   /**
-   * 单数减去。
-   *
+   * Unary minus.
    */
   BarycentricPolynomial<dim, Number>
   operator-() const;
 
   /**
-   * 增加一个标量。
-   *
+   * Add a scalar.
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number>
   operator+(const Number2 &a) const;
 
   /**
-   * 减去一个标量。
-   *
+   * Subtract a scalar.
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number>
   operator-(const Number2 &a) const;
 
   /**
-   * 乘以一个标量。
-   *
+   * Multiply by a scalar.
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number> operator*(const Number2 &a) const;
 
   /**
-   * 除以一个标量。
-   *
+   * Divide by a scalar.
    */
   template <typename Number2>
   BarycentricPolynomial<dim, Number>
   operator/(const Number2 &a) const;
 
   /**
-   * 添加另一个巴里中心多项式。
-   *
+   * Add another barycentric polynomial.
    */
   BarycentricPolynomial<dim, Number>
   operator+(const BarycentricPolynomial<dim, Number> &augend) const;
 
   /**
-   * 减去另一个arycentric多项式。
-   *
+   * Subtract another barycentric polynomial.
    */
   BarycentricPolynomial<dim, Number>
   operator-(const BarycentricPolynomial<dim, Number> &augend) const;
 
   /**
-   * 乘以另一个arycentric多项式。
-   *
+   * Multiply by another barycentric polynomial.
    */
   BarycentricPolynomial<dim, Number>
   operator*(const BarycentricPolynomial<dim, Number> &multiplicand) const;
 
   /**
-   * 在重心坐标中进行微分。
-   *
+   * Differentiate in barycentric coordinates.
    */
   BarycentricPolynomial<dim, Number>
   barycentric_derivative(const unsigned int coordinate) const;
 
   /**
-   * 在直角坐标中进行微分。
-   *
+   * Differentiate in Cartesian coordinates.
    */
   BarycentricPolynomial<dim, Number>
   derivative(const unsigned int coordinate) const;
 
   /**
-   * 评估多项式。
-   *
+   * Evaluate the polynomial.
    */
   Number
   value(const Point<dim> &point) const;
 
   /**
-   * 以字节为单位，返回该对象的内存使用量的估计值。
-   *
+   * Return an estimate, in bytes, of the memory usage of the object.
    */
   std::size_t
   memory_consumption() const;
 
 protected:
   /**
-   * 多项式的系数。指数是整数的索引。
-   *
+   * Coefficients of the polynomial. The exponents are the integer indexes.
    */
   Table<dim + 1, Number> coefficients;
 
   /**
-   * 用于巴里中心多项式的实用函数
-   *
-   * - 其方便之处在于以独立于维度的方式一次性循环所有的索引，但我们也需要访问底层表对象的实际索引。这个实用函数将一个积分索引转换为等价的TableIndices数组（也是隐含存储的多项式指数）。
-   *
+   * Utility function for barycentric polynomials - its convenient to loop
+   * over all the indices at once in a dimension-independent way, but we also
+   * need to access the actual indices of the underlying Table object. This
+   * utility function converts an integral index into the equivalent
+   * TableIndices array (which are also the implicitly stored polynomial
+   * exponents).
    */
   static TableIndices<dim + 1>
   index_to_indices(const std::size_t &          index,
@@ -230,43 +208,36 @@ protected:
 };
 
 /**
- * 基于arycentric多项式空间的标量多项式。
- *
- *
+ * Scalar polynomial space based on barycentric polynomials.
  */
 template <int dim>
 class BarycentricPolynomials : public ScalarPolynomialsBase<dim>
 {
 public:
   /**
-   * 使得维度可以向外延伸。
-   *
+   * Make the dimension available to the outside.
    */
   static const unsigned int dimension = dim;
 
   /**
-   * 获取指定度数的标准拉格朗日基础。
-   *
+   * Get the standard Lagrange basis for a specified degree.
    */
   static BarycentricPolynomials<dim>
   get_fe_p_basis(const unsigned int degree);
 
   /**
-   * 构造函数将多项式 @p degree 作为输入。
-   *
+   * Constructor taking the polynomial @p degree as input.
    */
   BarycentricPolynomials(
     const std::vector<BarycentricPolynomial<dim>> &polynomials);
 
   /**
-   * 访问操作符。
-   *
+   * Access operator.
    */
   const BarycentricPolynomial<dim> &operator[](const std::size_t i) const;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::evaluate() .
-   *
+   * @copydoc ScalarPolynomialsBase::evaluate()
    */
   void
   evaluate(const Point<dim> &           unit_point,
@@ -277,75 +248,65 @@ public:
            std::vector<Tensor<4, dim>> &fourth_derivatives) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_value()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_value()
    */
   double
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_1st_derivative() 
+   * @copydoc ScalarPolynomialsBase::compute_1st_derivative()
    */
   Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
-
   /**
-   *
+   * @copydoc ScalarPolynomialsBase::compute_2nd_derivative()
    */
   Tensor<2, dim>
   compute_2nd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_3rd_derivative()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_3rd_derivative()
    */
   Tensor<3, dim>
   compute_3rd_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_4th_derivative()
-   * ScalarPolynomialsBase::compute_4th_derivative() .
-   *
+   * @copydoc ScalarPolynomialsBase::compute_4th_derivative()
    */
   Tensor<4, dim>
   compute_4th_derivative(const unsigned int i,
                          const Point<dim> & p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_grad()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_grad()
    */
   Tensor<1, dim>
   compute_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_grad_grad()
-   *
+   * @copydoc ScalarPolynomialsBase::compute_grad_grad()
    */
   Tensor<2, dim>
   compute_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::memory_consumption()
-   *
+   * @copydoc ScalarPolynomialsBase::memory_consumption()
    */
   virtual std::size_t
   memory_consumption() const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::name()
-   *
+   * @copydoc ScalarPolynomialsBase::name()
    */
   std::string
   name() const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::clone()
-   *
+   * @copydoc ScalarPolynomialsBase::clone()
    */
   virtual std::unique_ptr<ScalarPolynomialsBase<dim>>
   clone() const override;
@@ -365,9 +326,7 @@ protected:
 // non-member template functions for algebra
 
 /**
- * BarycentricPolynomial乘以一个常数。
- *
- *
+ * Multiply a BarycentricPolynomial by a constant.
  */
 template <int dim, typename Number1, typename Number2>
 BarycentricPolynomial<dim, Number1>
@@ -377,9 +336,7 @@ operator*(const Number2 &a, const BarycentricPolynomial<dim, Number1> &bp)
 }
 
 /**
- * 将一个常数添加到一个BarycentricPolynomial中。
- *
- *
+ * Add a constant to a BarycentricPolynomial.
  */
 template <int dim, typename Number1, typename Number2>
 BarycentricPolynomial<dim, Number1>
@@ -389,9 +346,7 @@ operator+(const Number2 &a, const BarycentricPolynomial<dim, Number1> &bp)
 }
 
 /**
- * 从一个常数中减去一个BarycentricPolynomial。
- *
- *
+ * Subtract a BarycentricPolynomial from a constant.
  */
 template <int dim, typename Number1, typename Number2>
 BarycentricPolynomial<dim, Number1>
@@ -401,9 +356,7 @@ operator-(const Number2 &a, const BarycentricPolynomial<dim, Number1> &bp)
 }
 
 /**
- * 将一个BarycentricPolynomial写到提供的输出流中。
- *
- *
+ * Write a BarycentricPolynomial to the provided output stream.
  */
 template <int dim, typename Number>
 std::ostream &
@@ -754,5 +707,3 @@ const BarycentricPolynomial<dim> &BarycentricPolynomials<dim>::
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

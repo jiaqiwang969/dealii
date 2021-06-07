@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/trilinos_solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2008 - 2020 by the deal.II authors
@@ -47,102 +46,109 @@ namespace TrilinosWrappers
 
 
   /**
-   * 使用Trilinos求解器的求解器类的基类。由于Trilinos中的求解器是根据传递给通用求解器对象的标志来选择的，基本上所有实际的求解器调用都发生在这个类中，派生类只是设置正确的标志来选择一个或另一个求解器，或者为单个求解器设置某些参数。关于Trilinos求解器包AztecOO的一般讨论，我们参考了<a
+   * Base class for solver classes using the Trilinos solvers. Since solvers
+   * in Trilinos are selected based on flags passed to a generic solver
+   * object, basically all the actual solver calls happen in this class, and
+   * derived classes simply set the right flags to select one solver or
+   * another, or to set certain parameters for individual solvers. For a
+   * general discussion on the Trilinos solver package AztecOO, we refer to
+   * the <a
    * href="https://trilinos.org/docs/dev/packages/aztecoo/doc/html/index.html">AztecOO
-   * user guide</a>。
-   * 这个求解器类也可以作为一个独立的类来使用，通过标志<tt>solver_name</tt>来设置各自的Krylov方法。这可以在运行时进行（例如，在从ParameterList解析求解器时），与deal.II类SolverSelector类似。
-   * @ingroup TrilinosWrappers
+   * user guide</a>.
    *
+   * This solver class can also be used as a standalone class, where the
+   * respective Krylov method is set via the flag <tt>solver_name</tt>. This
+   * can be done at runtime (e.g., when parsing the solver from a
+   * ParameterList) and is similar to the deal.II class SolverSelector.
+   *
+   * @ingroup TrilinosWrappers
    */
   class SolverBase
   {
   public:
     /**
-     * 枚举对象，在派生类的构造函数中设置，并告诉Trilinos要使用哪个求解器。这个选项也可以在用户程序中设置，所以当解算器应该在运行时设置时，人们可能会使用这个基类而不是某个专门的派生类。目前启用的选项有。
-     *
+     * Enumeration object that is set in the constructor of the derived
+     * classes and tells Trilinos which solver to use. This option can also be
+     * set in the user program, so one might use this base class instead of
+     * one of the specialized derived classes when the solver should be set at
+     * runtime. Currently enabled options are:
      */
     enum SolverName
     {
       /**
-       * 使用共轭梯度（CG）算法。
-       *
+       * Use the conjugate gradient (CG) algorithm.
        */
       cg,
       /**
-       * 使用共轭梯度平方（CGS）算法。
-       *
+       * Use the conjugate gradient squared (CGS) algorithm.
        */
       cgs,
       /**
-       * 使用广义最小残差（GMRES）算法。
-       *
+       * Use the generalized minimum residual (GMRES) algorithm.
        */
       gmres,
       /**
-       * 使用双共轭梯度稳定化（BICGStab）算法。
-       *
+       * Use the biconjugate gradient stabilized (BICGStab) algorithm.
        */
       bicgstab,
       /**
-       * 使用无转置的准最小残差（TFQMR）方法。
-       *
+       * Use the transpose-free quasi-minimal residual (TFQMR) method.
        */
       tfqmr
     } solver_name;
 
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
 
     struct AdditionalData
     {
       /**
-       * 将附加数据字段设置为所需的输出格式，并在派生类为GMRES的情况下放入重启参数。
-       * TODO:
-       * 找到一个更好的方法来设置GMRES重启参数，因为在基类中为所有求解器设置一个求解器的特定选项是相当不优雅的。
+       * Set the additional data field to the desired output format and puts
+       * the restart parameter in case the derived class is GMRES.
        *
+       * TODO: Find a better way for setting the GMRES restart parameter since
+       * it is quite inelegant to set a specific option of one solver in the
+       * base class for all solvers.
        */
       explicit AdditionalData(const bool         output_solver_details = false,
                               const unsigned int gmres_restart_parameter = 30);
 
       /**
-       * 启用/禁用求解器细节的输出（每次迭代的残差等）。
-       *
+       * Enables/disables the output of solver details (residual in each
+       * iterations etc.).
        */
       const bool output_solver_details;
 
       /**
-       * GMRES求解器的重新启动参数。
-       *
+       * Restart parameter for GMRES solver.
        */
       const unsigned int gmres_restart_parameter;
     };
 
     /**
-     * 构造函数。接受求解器控制对象并创建求解器。
-     *
+     * Constructor. Takes the solver control object and creates the solver.
      */
     SolverBase(SolverControl &       cn,
                const AdditionalData &data = AdditionalData());
 
     /**
-     * 第二个构造函数。这个构造函数接收一个指定求解器名称的枚举对象，并设置适当的Krylov方法。
-     *
+     * Second constructor. This constructor takes an enum object that
+     * specifies the solver name and sets the appropriate Krylov method.
      */
     SolverBase(const enum SolverName solver_name,
                SolverControl &       cn,
                const AdditionalData &data = AdditionalData());
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~SolverBase() = default;
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>。根据派生类提供的信息和作为预处理程序传递的对象，选择Trilinos的线性求解器和预处理程序中的一个。
-     *
+     * Solve the linear system <tt>Ax=b</tt>. Depending on the information
+     * provided by derived classes and the object passed as a preconditioner,
+     * one of the linear solvers and preconditioners of Trilinos is chosen.
      */
     void
     solve(const SparseMatrix &    A,
@@ -151,9 +157,11 @@ namespace TrilinosWrappers
           const PreconditionBase &preconditioner);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>，其中<tt>A</tt>是一个算子。
-     * 这个函数可以用来进行无矩阵计算。根据派生类提供的信息和作为预处理程序传递的对象，选择Trilinos的线性求解器和预处理程序中的一个。
-     *
+     * Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator.
+     * This function can be used for matrix free computation. Depending on the
+     * information provided by derived classes and the object passed as a
+     * preconditioner, one of the linear solvers and preconditioners of
+     * Trilinos is chosen.
      */
     void
     solve(const Epetra_Operator & A,
@@ -162,12 +170,13 @@ namespace TrilinosWrappers
           const PreconditionBase &preconditioner);
 
     /**
-     * 求解线性系统<tt>Ax=b</tt>，其中<tt>A</tt>和其 @p
-     * preconditioner 都是一个算子。    当<tt>A</tt>和 @p
-     * preconditioner
-     * 都是由TrilinosPayload派生的LinearOperators时，就可以使用这个函数。
-     * 根据派生类提供的信息和作为预处理程序传递的对象，会选择Trilinos的线性求解器和预处理程序之一。
-     *
+     * Solve the linear system <tt>Ax=b</tt> where both <tt>A</tt> and its
+     * @p preconditioner are an operator.
+     * This function can be used when both <tt>A</tt> and the @p preconditioner
+     * are LinearOperators derived from a TrilinosPayload.
+     * Depending on the information provided by derived classes and the object
+     * passed as a preconditioner, one of the linear solvers and preconditioners
+     * of Trilinos is chosen.
      */
     void
     solve(const Epetra_Operator &A,
@@ -176,11 +185,13 @@ namespace TrilinosWrappers
           const Epetra_Operator &preconditioner);
 
     /**
-     * 求解线性系统<tt>Ax=b</tt>，其中<tt>A</tt>是一个算子，向量
-     * @p x 和 @p b 是Trilinos本地的向量类型。
-     * 当<tt>A</tt>是一个从TrilinosPayload派生的LinearOperators时，可以使用这个函数。
-     * 根据派生类提供的信息和作为预处理程序传递的对象，会选择Trilinos的线性求解器和预处理程序之一。
-     *
+     * Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator,
+     * and the vectors @p x and @p b are native Trilinos vector types.
+     * This function can be used when <tt>A</tt> is a LinearOperators derived
+     * from a TrilinosPayload.
+     * Depending on the information provided by derived classes and the object
+     * passed as a preconditioner, one of the linear solvers and preconditioners
+     * of Trilinos is chosen.
      */
     void
     solve(const Epetra_Operator &   A,
@@ -189,13 +200,14 @@ namespace TrilinosWrappers
           const PreconditionBase &  preconditioner);
 
     /**
-     * 求解线性系统<tt>Ax=b</tt>，其中<tt>A</tt>及其 @p
-     * preconditioner 都是一个算子，而向量 @p x 和 @p b
-     * 是Trilinos的本地向量类型。    当<tt>A</tt>和 @p
-     * preconditioner
-     * 都是源自TrilinosPayload的LinearOperators时，可以使用这个函数。
-     * 根据派生类提供的信息和作为预处理程序传递的对象，会选择Trilinos的线性求解器和预处理程序之一。
-     *
+     * Solve the linear system <tt>Ax=b</tt> where both <tt>A</tt> and its
+     * @p preconditioner are an operator, and the vectors @p x and @p b are
+     * native Trilinos vector types.
+     * This function can be used when both <tt>A</tt> and the @p preconditioner
+     * are LinearOperators derived from a TrilinosPayload.
+     * Depending on the information provided by derived classes and the object
+     * passed as a preconditioner, one of the linear solvers and preconditioners
+     * of Trilinos is chosen.
      */
     void
     solve(const Epetra_Operator &   A,
@@ -206,9 +218,14 @@ namespace TrilinosWrappers
 
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>。根据派生类提供的信息和作为预处理程序传递的对象，选择Trilinos的线性求解器和预处理程序中的一个。
-     * 该类按照TrilinosWrappers的格式处理矩阵，但可以将deal.II向量作为参数。由于deal.II是串行向量（非分布式），这个函数只在矩阵为本地所有的情况下做你期望的事情。否则，会产生一个异常。
-     *
+     * Solve the linear system <tt>Ax=b</tt>. Depending on the information
+     * provided by derived classes and the object passed as a preconditioner,
+     * one of the linear solvers and preconditioners of Trilinos is chosen.
+     * This class works with matrices according to the TrilinosWrappers
+     * format, but can take deal.II vectors as argument. Since deal.II are
+     * serial vectors (not distributed), this function does only what you
+     * expect in case the matrix is locally owned. Otherwise, an exception
+     * will be thrown.
      */
     void
     solve(const SparseMatrix &          A,
@@ -217,10 +234,15 @@ namespace TrilinosWrappers
           const PreconditionBase &      preconditioner);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>，其中<tt>A</tt>是一个运算符。
-     * 这个函数可用于无矩阵计算。根据派生类提供的信息和作为预处理程序传递的对象，会选择Trilinos的线性求解器和预处理程序之一。该类根据TrilinosWrappers的格式处理矩阵，但可以将deal.II向量作为参数。
-     * 由于deal.II是串行向量（非分布式），这个函数只在矩阵为本地所有的情况下做你期望的事情。否则，会产生一个异常。
-     *
+     * Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator.
+     * This function can be used for matrix free computations. Depending on
+     * the information provided by derived classes and the object passed as a
+     * preconditioner, one of the linear solvers and preconditioners of
+     * Trilinos is chosen. This class works with matrices according to the
+     * TrilinosWrappers format, but can take deal.II vectors as argument.
+     * Since deal.II are serial vectors (not distributed), this function does
+     * only what you expect in case the matrix is locally owned. Otherwise, an
+     * exception will be thrown.
      */
     void
     solve(Epetra_Operator &             A,
@@ -229,8 +251,10 @@ namespace TrilinosWrappers
           const PreconditionBase &      preconditioner);
 
     /**
-     * 为deal.II的平行分布向量求解线性系统<tt>Ax=b</tt>。根据派生类提供的信息和作为预处理器传递的对象，选择Trilinos的线性求解器和预处理器中的一个。
-     *
+     * Solve the linear system <tt>Ax=b</tt> for deal.II's parallel
+     * distributed vectors. Depending on the information provided by derived
+     * classes and the object passed as a preconditioner, one of the linear
+     * solvers and preconditioners of Trilinos is chosen.
      */
     void
     solve(const SparseMatrix &                                      A,
@@ -239,9 +263,11 @@ namespace TrilinosWrappers
           const PreconditionBase &preconditioner);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>，其中<tt>A</tt>是一个算子。
-     * 这个函数可以用来进行无矩阵计算。根据派生类提供的信息和作为预处理程序传递的对象，选择Trilinos的线性求解器和预处理程序中的一个。
-     *
+     * Solve the linear system <tt>Ax=b</tt> where <tt>A</tt> is an operator.
+     * This function can be used for matrix free computation. Depending on the
+     * information provided by derived classes and the object passed as a
+     * preconditioner, one of the linear solvers and preconditioners of
+     * Trilinos is chosen.
      */
     void
     solve(Epetra_Operator &                                         A,
@@ -251,15 +277,13 @@ namespace TrilinosWrappers
 
 
     /**
-     * 访问控制收敛的对象。
-     *
+     * Access to object that controls convergence.
      */
     SolverControl &
     control() const;
 
     /**
-     * 异常情况
-     *
+     * Exception
      */
     DeclException1(ExcTrilinosError,
                    int,
@@ -268,49 +292,50 @@ namespace TrilinosWrappers
 
   protected:
     /**
-     * 对控制迭代求解器收敛性的对象的引用。事实上，对于这些Trilinos包装器来说，Trilinos本身就这样做了，但是我们在开始求解过程之前从这个对象中复制数据，之后再把数据复制回这个对象中。
-     *
+     * Reference to the object that controls convergence of the iterative
+     * solver. In fact, for these Trilinos wrappers, Trilinos does so itself,
+     * but we copy the data from this object before starting the solution
+     * process, and copy the data back into it afterwards.
      */
     SolverControl &solver_control;
 
   private:
     /**
-     * 解决函数用于正确设置Epetra_LinearProblem，一旦完成，这个函数就能解决线性问题。
-     *
+     * The solve function is used to set properly the Epetra_LinearProblem,
+     * once it is done this function solves the linear problem.
      */
     template <typename Preconditioner>
     void
     do_solve(const Preconditioner &preconditioner);
 
     /**
-     * 一个设置解算器将应用的预处理程序的函数。
-     *
+     * A function that sets the preconditioner that the solver will apply
      */
     template <typename Preconditioner>
     void
     set_preconditioner(AztecOO &solver, const Preconditioner &preconditioner);
 
     /**
-     * 一个收集Trilinos稀疏矩阵、右手向量和解向量的结构，它被传递给Trilinos求解器。
-     *
+     * A structure that collects the Trilinos sparse matrix, the right hand
+     * side vector and the solution vector, which is passed down to the
+     * Trilinos solver.
      */
     std::unique_ptr<Epetra_LinearProblem> linear_problem;
 
     /**
-     * 一个包含Trilinos对象的结构，可以查询线性求解器并确定是否达到收敛标准。
-     *
+     * A structure that contains a Trilinos object that can query the linear
+     * solver and determine whether the convergence criterion have been met.
      */
     std::unique_ptr<AztecOO_StatusTest> status_test;
 
     /**
-     * 一个包含Trilinos求解器和预处理器对象的结构。
-     *
+     * A structure that contains the Trilinos solver and preconditioner
+     * objects.
      */
     AztecOO solver;
 
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -330,38 +355,37 @@ namespace TrilinosWrappers
 
 
   /**
-   * 使用Trilinos CG求解器的求解器接口的实现。
-   * @ingroup TrilinosWrappers
+   * An implementation of the solver interface using the Trilinos CG solver.
    *
+   * @ingroup TrilinosWrappers
    */
   class SolverCG : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
 
     struct AdditionalData : public SolverBase::AdditionalData
     {
       /**
-       * 将附加数据字段设置为所需的输出格式。
-       *
+       * Set the additional data field to the desired output format.
        */
       explicit AdditionalData(const bool output_solver_details = false);
     };
 
     /**
-     * 构造器。与deal.II自己的求解器相比，不需要给出一个矢量内存对象。
-     * 最后一个参数是一个结构，带有额外的、与求解器相关的标志，用于调整。
+     * Constructor. In contrast to deal.II's own solvers, there is no need to
+     * give a vector memory object.
      *
+     * The last argument takes a structure with additional, solver dependent
+     * flags for tuning.
      */
     SolverCG(SolverControl &cn, const AdditionalData &data = AdditionalData());
 
   protected:
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -369,37 +393,36 @@ namespace TrilinosWrappers
 
 
   /**
-   * 使用Trilinos CGS求解器的求解器接口的实现。
-   * @ingroup TrilinosWrappers
+   * An implementation of the solver interface using the Trilinos CGS solver.
    *
+   * @ingroup TrilinosWrappers
    */
   class SolverCGS : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData : public SolverBase::AdditionalData
     {
       /**
-       * 将附加数据字段设置为所需的输出格式。
-       *
+       * Set the additional data field to the desired output format.
        */
       explicit AdditionalData(const bool output_solver_details = false);
     };
 
     /**
-     * 构造器。与deal.II自己的求解器相比，不需要给出一个矢量内存对象。
-     * 最后一个参数是一个结构，带有额外的、与求解器相关的标志，用于调整。
+     * Constructor. In contrast to deal.II's own solvers, there is no need to
+     * give a vector memory object.
      *
+     * The last argument takes a structure with additional, solver dependent
+     * flags for tuning.
      */
     SolverCGS(SolverControl &cn, const AdditionalData &data = AdditionalData());
 
   protected:
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -407,38 +430,38 @@ namespace TrilinosWrappers
 
 
   /**
-   * 使用Trilinos GMRES求解器的求解器接口的实现。
-   *
+   * An implementation of the solver interface using the Trilinos GMRES
+   * solver.
    */
   class SolverGMRES : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData : public SolverBase::AdditionalData
     {
       /**
-       * 构造函数。默认情况下，设置临时向量的数量为30，即每30次迭代做一次重启。
-       *
+       * Constructor. By default, set the number of temporary vectors to 30,
+       * i.e. do a restart every 30 iterations.
        */
       explicit AdditionalData(const bool         output_solver_details = false,
                               const unsigned int restart_parameter     = 30);
     };
 
     /**
-     * 构造函数。与deal.II自己的求解器相比，不需要给出一个向量存储对象。
-     * 最后一个参数是一个结构，包含额外的、与求解器相关的标志，用于调谐。
+     * Constructor. In contrast to deal.II's own solvers, there is no need to
+     * give a vector memory object.
      *
+     * The last argument takes a structure with additional, solver dependent
+     * flags for tuning.
      */
     SolverGMRES(SolverControl &       cn,
                 const AdditionalData &data = AdditionalData());
 
   protected:
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -446,38 +469,38 @@ namespace TrilinosWrappers
 
 
   /**
-   * 使用Trilinos BiCGStab求解器的求解器接口的实现。
-   * @ingroup TrilinosWrappers
+   * An implementation of the solver interface using the Trilinos BiCGStab
+   * solver.
    *
+   * @ingroup TrilinosWrappers
    */
   class SolverBicgstab : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData : public SolverBase::AdditionalData
     {
       /**
-       * 将附加数据字段设置为所需的输出格式。
-       *
+       * Set the additional data field to the desired output format.
        */
       explicit AdditionalData(const bool output_solver_details = false);
     };
 
     /**
-     * 构造器。与deal.II自己的求解器相比，不需要给出一个矢量内存对象。
-     * 最后一个参数是一个结构，带有额外的、与求解器相关的标志，用于调整。
+     * Constructor. In contrast to deal.II's own solvers, there is no need to
+     * give a vector memory object.
      *
+     * The last argument takes a structure with additional, solver dependent
+     * flags for tuning.
      */
     SolverBicgstab(SolverControl &       cn,
                    const AdditionalData &data = AdditionalData());
 
   protected:
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -485,38 +508,38 @@ namespace TrilinosWrappers
 
 
   /**
-   * 使用Trilinos TFQMR求解器的求解器接口的实现。
-   * @ingroup TrilinosWrappers
+   * An implementation of the solver interface using the Trilinos TFQMR
+   * solver.
    *
+   * @ingroup TrilinosWrappers
    */
   class SolverTFQMR : public SolverBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
     struct AdditionalData : public SolverBase::AdditionalData
     {
       /**
-       * 将附加数据字段设置为所需的输出格式。
-       *
+       * Set the additional data field to the desired output format.
        */
       explicit AdditionalData(const bool output_solver_details = false);
     };
 
     /**
-     * 构造器。与deal.II自己的求解器相比，不需要给出一个矢量内存对象。
-     * 最后一个参数是一个结构，带有额外的、与求解器相关的标志，用于调整。
+     * Constructor. In contrast to deal.II's own solvers, there is no need to
+     * give a vector memory object.
      *
+     * The last argument takes a structure with additional, solver dependent
+     * flags for tuning.
      */
     SolverTFQMR(SolverControl &       cn,
                 const AdditionalData &data = AdditionalData());
 
   protected:
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -524,89 +547,111 @@ namespace TrilinosWrappers
 
 
   /**
-   * Trilinos直接求解器的一个实现（使用Amesos包）。  数据域
-   * AdditionalData::solver_type
-   * 可以用来指定求解器的类型。它允许使用内置解算器Amesos_Klu以及第三方解算器Amesos_Superludist或Amesos_Mumps。
-   * 关于如何安装Trilinos以使用KLU以外的直接求解器的说明，请参见deal.II
-   * ReadMe文件中链接的Trilinos安装说明。
-   * @ingroup TrilinosWrappers
+   * An implementation of Trilinos direct solvers (using the Amesos package).
+   * The data field AdditionalData::solver_type can be used to specify the
+   * type of solver. It allows the use of built-in solvers Amesos_Klu as well
+   * as third-party solvers Amesos_Superludist or Amesos_Mumps.
    *
+   * For instructions on how to install Trilinos for use with direct solvers
+   * other than KLU, see the link to the Trilinos installation instructions
+   * linked to from the deal.II ReadMe file.
+   *
+   * @ingroup TrilinosWrappers
    */
   class SolverDirect
   {
   public:
     /**
-     * 标准化的数据结构，用于向求解器输送额外的数据。
-     *
+     * Standardized data struct to pipe additional data to the solver.
      */
 
     struct AdditionalData
     {
       /**
-       * 将附加数据字段设置为所需的输出格式。
-       *
+       * Set the additional data field to the desired output format.
        */
       explicit AdditionalData(const bool         output_solver_details = false,
                               const std::string &solver_type = "Amesos_Klu");
 
       /**
-       * 启用/禁用求解器细节的输出（每次迭代的残差等）。
-       *
+       * Enables/disables the output of solver details (residual in each
+       * iterations etc.).
        */
       bool output_solver_details;
 
       /**
-       * 设置求解器类型（用于支持Triminos Amesos软件包的第三方求解器）。可能的情况是。        <ul>   <li>  "Amesos_Lapack"  </li>   <li>  "Amesos_Scalapack"  </li>   <li>  "Amesos_Klu"  </li>   <li>  ] "Amesos_Umfpack"  </li>   <li>  "Amesos_Pardiso"  </li>   <li>  "Amesos_Taucs"  </li>   <li>  "Amesos_Superlu"  </li>  ]  <li>  "Amesos_Superludist"  </li>   <li>  "Amesos_Dscpack"  </li>   <li>  "Amesos_Mumps"  </li>   </ul>  注意，这些求解器在 deal.II 的可用性取决于配置 Trilinos 时设置了哪些求解器。
-       *
+       * Set the solver type (for third party solver support of Trilinos
+       * Amesos package). Possibilities are:
+       * <ul>
+       * <li>  "Amesos_Lapack" </li>
+       * <li>  "Amesos_Scalapack" </li>
+       * <li>  "Amesos_Klu" </li>
+       * <li>  "Amesos_Umfpack" </li>
+       * <li>  "Amesos_Pardiso" </li>
+       * <li>  "Amesos_Taucs" </li>
+       * <li>  "Amesos_Superlu" </li>
+       * <li>  "Amesos_Superludist" </li>
+       * <li>  "Amesos_Dscpack" </li>
+       * <li>  "Amesos_Mumps" </li>
+       * </ul>
+       * Note that the availability of these solvers in deal.II depends on
+       * which solvers were set when configuring Trilinos.
        */
       std::string solver_type;
     };
 
     /**
-     * 构造函数。接受求解器控制对象并创建求解器。
-     *
+     * Constructor. Takes the solver control object and creates the solver.
      */
     SolverDirect(SolverControl &       cn,
                  const AdditionalData &data = AdditionalData());
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~SolverDirect() = default;
 
     /**
-     * 初始化矩阵<tt>A</tt>的直接求解器，并用从附加数据结构中选择的包为它创建一个因式分解。请注意，这里不需要预处理程序，也不调用solve()。
-     *
+     * Initializes the direct solver for the matrix <tt>A</tt> and creates a
+     * factorization for it with the package chosen from the additional
+     * data structure. Note that there is no need for a preconditioner
+     * here and solve() is not called.
      */
     void
     initialize(const SparseMatrix &A);
 
     /**
-     * 根据initialize()中设置的包，解决线性系统<tt>Ax=b</tt>。注意在这个调用过程中，矩阵没有被重构。
-     *
+     * Solve the linear system <tt>Ax=b</tt> based on the
+     * package set in initialize(). Note the matrix is not refactorized during
+     * this call.
      */
     void
     solve(MPI::Vector &x, const MPI::Vector &b);
 
     /**
-     * 根据initialize()中设置的软件包，为deal.II自己的平行向量求解线性系统<tt>Ax=b</tt>。注意在这个调用过程中，矩阵没有被重构。
-     *
+     * Solve the linear system <tt>Ax=b</tt> based on the package set in
+     * initialize() for deal.II's own parallel vectors. Note the matrix is not
+     * refactorized during this call.
      */
     void
     solve(dealii::LinearAlgebra::distributed::Vector<double> &      x,
           const dealii::LinearAlgebra::distributed::Vector<double> &b);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>。用从附加数据结构中选择的包创建一个矩阵的因式分解，并执行求解。注意，这里不需要预处理程序。
-     *
+     * Solve the linear system <tt>Ax=b</tt>. Creates a factorization of the
+     * matrix with the package chosen from the additional data structure and
+     * performs the solve. Note that there is no need for a preconditioner
+     * here.
      */
     void
     solve(const SparseMatrix &A, MPI::Vector &x, const MPI::Vector &b);
 
     /**
-     * 解决线性系统<tt>Ax=b</tt>。这个类对Trilinos矩阵起作用，但需要deal.II串行向量作为参数。由于这些向量不是分布式的，这个函数只在矩阵是串行的情况下（即本地拥有）做你所期望的事情。否则，将抛出一个异常。
-     *
+     * Solve the linear system <tt>Ax=b</tt>. This class works with Trilinos
+     * matrices, but takes deal.II serial vectors as argument. Since these
+     * vectors are not distributed, this function does only what you expect in
+     * case the matrix is serial (i.e., locally owned). Otherwise, an
+     * exception will be thrown.
      */
     void
     solve(const SparseMatrix &          A,
@@ -614,8 +659,10 @@ namespace TrilinosWrappers
           const dealii::Vector<double> &b);
 
     /**
-     * 为deal.II自己的并行向量求解线性系统<tt>Ax=b</tt>。用从附加数据结构中选择的包创建一个矩阵的因式分解，并执行求解。注意，这里不需要预处理程序。
-     *
+     * Solve the linear system <tt>Ax=b</tt> for deal.II's own parallel
+     * vectors. Creates a factorization of the matrix with the package chosen
+     * from the additional data structure and performs the solve. Note that
+     * there is no need for a preconditioner here.
      */
     void
     solve(const SparseMatrix &                                      A,
@@ -623,15 +670,13 @@ namespace TrilinosWrappers
           const dealii::LinearAlgebra::distributed::Vector<double> &b);
 
     /**
-     * 访问控制收敛的对象。
-     *
+     * Access to object that controls convergence.
      */
     SolverControl &
     control() const;
 
     /**
-     * 异常情况
-     *
+     * Exception
      */
     DeclException1(ExcTrilinosError,
                    int,
@@ -640,33 +685,35 @@ namespace TrilinosWrappers
 
   private:
     /**
-     * 实际执行解决线性系统的操作，包括因式分解和前向、后向替换。
-     *
+     * Actually performs the operations for solving the linear system,
+     * including the factorization and forward and backward substitution.
      */
     void
     do_solve();
 
     /**
-     * 对控制迭代求解器收敛的对象的引用。事实上，对于这些Trilinos包装器来说，Trilinos本身就是这样做的，但是我们在开始求解过程之前从这个对象中复制数据，之后再将数据复制回对象中。
-     *
+     * Reference to the object that controls convergence of the iterative
+     * solver. In fact, for these Trilinos wrappers, Trilinos does so itself,
+     * but we copy the data from this object before starting the solution
+     * process, and copy the data back into it afterwards.
      */
     SolverControl &solver_control;
 
     /**
-     * 一个收集Trilinos稀疏矩阵、右手边向量和求解向量的结构，它被传递给Trilinos求解器。
-     *
+     * A structure that collects the Trilinos sparse matrix, the right hand
+     * side vector and the solution vector, which is passed down to the
+     * Trilinos solver.
      */
     std::unique_ptr<Epetra_LinearProblem> linear_problem;
 
     /**
-     * 一个包含Trilinos求解器和预处理器对象的结构。
-     *
+     * A structure that contains the Trilinos solver and preconditioner
+     * objects.
      */
     std::unique_ptr<Amesos_BaseSolver> solver;
 
     /**
-     * 存储这个特定求解器的标志的副本。
-     *
+     * Store a copy of the flags for this particular solver.
      */
     const AdditionalData additional_data;
   };
@@ -677,9 +724,7 @@ DEAL_II_NAMESPACE_CLOSE
 
 #  endif // DEAL_II_WITH_TRILINOS
 
- /*----------------------------   trilinos_solver.h ---------------------------*/ 
+/*----------------------------   trilinos_solver.h ---------------------------*/
 
 #endif
- /*----------------------------   trilinos_solver.h ---------------------------*/ 
-
-
+/*----------------------------   trilinos_solver.h ---------------------------*/

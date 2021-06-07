@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/eigen_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -33,43 +34,42 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 /**
- * Power method (von Mises) for eigenvalue computations.
+ * 用于特征值计算的功率法（von Mises）。
+ * 这种方法通过将一个矩阵的增幂应用于一个向量来确定该矩阵的最大特征值。如果有一个绝对值占优势的特征值
+ * $l$ ，迭代的向量将与它的特征空间和 $Ax = lx$ 对齐。
+ * 一个移动参数允许移动频谱，所以也可以计算最小的特征值。
+ * 这种方法的收敛性已知是很慢的。
  *
- * This method determines the largest eigenvalue of a matrix by applying
- * increasing powers of this matrix to a vector. If there is an eigenvalue $l$
- * with dominant absolute value, the iteration vectors will become aligned to
- * its eigenspace and $Ax = lx$.
  *
- * A shift parameter allows to shift the spectrum, so it is possible to
- * compute the smallest eigenvalue, too.
- *
- * Convergence of this method is known to be slow.
  */
 template <typename VectorType = Vector<double>>
 class EigenPower : private SolverBase<VectorType>
 {
 public:
   /**
-   * Declare type of container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Standardized data struct to pipe additional data to the solver.
+   * 标准化的数据结构，用于向求解器输送额外的数据。
+   *
    */
   struct AdditionalData
   {
     /**
-     * Shift parameter. This parameter allows to shift the spectrum to compute
-     * a different eigenvalue.
+     * 移位参数。这个参数允许转移频谱以计算不同的特征值。
+     *
      */
     double shift;
     /**
-     * Constructor. Set the shift parameter.
+     * 构造函数。设置移位参数。
+     *
      */
     AdditionalData(const double shift = 0.)
       : shift(shift)
@@ -77,7 +77,8 @@ public:
   };
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   EigenPower(SolverControl &           cn,
              VectorMemory<VectorType> &mem,
@@ -85,10 +86,11 @@ public:
 
 
   /**
-   * Power method. @p x is the (not necessarily normalized, but nonzero) start
-   * vector for the power method. After the iteration, @p value is the
-   * approximated eigenvalue and @p x is the corresponding eigenvector,
-   * normalized with respect to the l2-norm.
+   * 功率法。  @p x
+   * 是功率法的（不一定是归一化的，但不为零）起始向量。迭代后，
+   * @p value 是近似的特征值， @p x
+   * 是相应的特征向量，相对于l2-norm进行归一化。
+   *
    */
   template <typename MatrixType>
   void
@@ -96,61 +98,63 @@ public:
 
 protected:
   /**
-   * Shift parameter.
+   * 移位参数。
+   *
    */
   AdditionalData additional_data;
 };
 
 /**
- * Inverse iteration (Wieland) for eigenvalue computations.
+ * 用于特征值计算的逆向迭代（Wieland）。
+ * 该类实现了Wieland反迭代的自适应版本。
+ * 对于停止标准有两种选择：默认情况下，计算残差 $A x
  *
- * This class implements an adaptive version of the inverse iteration by
- * Wieland.
+ * - l x$
+ * 的准则。由于这对于非对称矩阵的非琐碎约旦块来说可能不会收敛为零，因此可以用检查连续的特征值之差来代替。使用
+ * AdditionalData::use_residual 来切换这个选项。
+ * 通常，进入这个方法的初始猜测在每一步之后都会被更新，用新的特征值的近似值来代替它。使用参数
+ * AdditionalData::relaxation
+ * 在0和1之间，这个更新可以被阻尼。如果放松参数为0，则不进行更新。这种阻尼允许较慢地适应转移值，以确保方法收敛到最接近初始猜测的特征值。这可以通过参数
+ * AdditionalData::start_adaption,
+ * 来帮助实现，该参数表示应该调整移位值的第一个迭代步骤。
  *
- * There are two choices for the stopping criterion: by default, the norm of
- * the residual $A x - l x$ is computed. Since this might not converge to zero
- * for non-symmetric matrices with non-trivial Jordan blocks, it can be
- * replaced by checking the difference of successive eigenvalues. Use
- * AdditionalData::use_residual for switching this option.
  *
- * Usually, the initial guess entering this method is updated after each step,
- * replacing it with the new approximation of the eigenvalue. Using a
- * parameter AdditionalData::relaxation between 0 and 1, this update can be
- * damped. With relaxation parameter 0, no update is performed. This damping
- * allows for slower adaption of the shift value to make sure that the method
- * converges to the eigenvalue closest to the initial guess. This can be aided
- * by the parameter AdditionalData::start_adaption, which indicates the first
- * iteration step in which the shift value should be adapted.
  */
 template <typename VectorType = Vector<double>>
 class EigenInverse : private SolverBase<VectorType>
 {
 public:
   /**
-   * Declare type of container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Standardized data struct to pipe additional data to the solver.
+   * 标准化的数据结构，用于向求解器输送额外的数据。
+   *
    */
   struct AdditionalData
   {
     /**
-     * Damping of the updated shift value.
+     * 更新移位值的阻尼。
+     *
      */
     double relaxation;
 
     /**
-     * Start step of adaptive shift parameter.
+     * 自适应移位参数的起始步骤。
+     *
      */
     unsigned int start_adaption;
     /**
-     * Flag for the stopping criterion.
+     * 停止标准的标志。
+     *
      */
     bool use_residual;
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     AdditionalData(double       relaxation     = 1.,
                    unsigned int start_adaption = 6,
@@ -162,18 +166,19 @@ public:
   };
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   EigenInverse(SolverControl &           cn,
                VectorMemory<VectorType> &mem,
                const AdditionalData &    data = AdditionalData());
 
   /**
-   * Inverse method. @p value is the start guess for the eigenvalue and @p x
-   * is the (not necessarily normalized, but nonzero) start vector for the
-   * power method. After the iteration, @p value is the approximated
-   * eigenvalue and @p x is the corresponding eigenvector, normalized with
-   * respect to the l2-norm.
+   * 逆向方法。  @p value 是特征值的起始猜测， @p x
+   * 是功率法的（不一定是归一化的，但不为零）起始向量。迭代后，
+   * @p value 是近似的特征值， @p x
+   * 是相应的特征向量，相对于l2-norm进行归一化。
+   *
    */
   template <typename MatrixType>
   void
@@ -181,12 +186,13 @@ public:
 
 protected:
   /**
-   * Flags for execution.
+   * 执行的标志。
+   *
    */
   AdditionalData additional_data;
 };
 
-/*@}*/
+ /*@}*/ 
 //---------------------------------------------------------------------------
 
 
@@ -389,3 +395,5 @@ EigenInverse<VectorType>::solve(double &          value,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

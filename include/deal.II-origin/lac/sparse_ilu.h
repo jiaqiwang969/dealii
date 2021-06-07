@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/sparse_ilu_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -27,61 +26,74 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup  先决条件  @{  。
-
- 
-* */
+/*! @addtogroup Preconditioners
+ *@{
+ */
 
 /**
- * 该类计算稀疏矩阵的不完全LU（ILU）分解，使用相同的稀疏模式或不同的模式。我们所说的不完全是指，与精确的分解不同，不完全的分解也是使用稀疏因子计算的，分解中不适合给定的稀疏结构的条目被丢弃。
- * 本课使用的算法基本上是Y.Saad书中给出的算法的副本："稀疏线性系统的迭代方法"，第二版，在第10.3.2节。
+ * This class computes an Incomplete LU (ILU) decomposition of a sparse
+ * matrix, using either the same sparsity pattern or a different one. By
+ * incomplete we mean that unlike the exact decomposition, the incomplete one
+ * is also computed using sparse factors, and entries in the decomposition
+ * that do not fit into the given sparsity structure are discarded.
  *
- *  <h3>Usage and state management</h3>
- * 请参考SparseLUDecomposition文档中的建议用法和状态管理。这个类在 @ref step_22  "  step-22  "
- * 教程中使用。
- *
- *
- * @note
- * 这个模板的实例化提供给<tt>  @<float@>  和  @<double@></tt>;
- * 其他可以在应用程序中生成（见手册中 @ref Instantiations
- * 部分）。
+ * The algorithm used by this class is essentially a copy of the algorithm
+ * given in the book Y. Saad: "Iterative methods for sparse linear systems",
+ * second edition, in section 10.3.2.
  *
  *
+ * <h3>Usage and state management</h3>
+ *
+ * Refer to SparseLUDecomposition documentation for suggested usage and state
+ * management. This class is used in the
+ * @ref step_22 "step-22"
+ * tutorial program.
+ *
+ * @note Instantiations for this template are provided for <tt>@<float@> and
+ * @<double@></tt>; others can be generated in application programs (see the
+ * section on
+ * @ref Instantiations
+ * in the manual).
  */
 template <typename number>
 class SparseILU : public SparseLUDecomposition<number>
 {
 public:
   /**
-   * 声明容器大小的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = typename SparseLUDecomposition<number>::size_type;
 
   /**
-   * 构造函数。什么都不做。
-   * 在使用此对象作为预处理程序之前，请调用 @p initialize
-   * 函数。
+   * Constructor. Does nothing.
    *
+   * Call the @p initialize function before using this object as
+   * preconditioner.
    */
   SparseILU() = default;
 
   /**
-   * 使 SparseLUDecomposition::AdditionalData 也能被这个类访问。
-   *
+   * Make SparseLUDecomposition::AdditionalData accessible to this class as
+   * well.
    */
   using AdditionalData = typename SparseLUDecomposition<number>::AdditionalData;
 
   /**
-   * 对给定的矩阵进行不完全LU因子化。
-   * 这个函数需要在这个类的对象被用作预调节器之前被调用。
-   * 关于可能的参数的更多细节，请参阅SparseLUDecomposition的类文件和
-   * @p  SparseLUDecomposition::AdditionalData 类的文件。    根据 @p
-   * parameters,
-   * ，这个函数创建一个新的SparsityPattern，或者保持以前的稀疏度，或者采用用户给定的稀疏度，以
-   * @p data. 然后，这个函数执行LU分解。
-   * 在这个函数被调用后，预处理程序就可以使用了。
+   * Perform the incomplete LU factorization of the given matrix.
    *
+   * This function needs to be called before an object of this class is used
+   * as preconditioner.
+   *
+   * For more details about possible parameters, see the class documentation
+   * of SparseLUDecomposition and the documentation of the @p
+   * SparseLUDecomposition::AdditionalData class.
+   *
+   * According to the @p parameters, this function creates a new
+   * SparsityPattern or keeps the previous sparsity or takes the sparsity
+   * given by the user to @p data. Then, this function performs the LU
+   * decomposition.
+   *
+   * After this function is called the preconditioner is ready to be used.
    */
   template <typename somenumber>
   void
@@ -89,9 +101,10 @@ public:
              const AdditionalData &          parameters = AdditionalData());
 
   /**
-   * 应用不完全分解，即做一个前向-后向步骤
-   * $dst=(LU)^{-1}src$  。    初始化（）函数需要在之前调用。
+   * Apply the incomplete decomposition, i.e. do one forward-backward step
+   * $dst=(LU)^{-1}src$.
    *
+   * The initialize() function needs to be called before.
    */
   template <typename somenumber>
   void
@@ -99,9 +112,10 @@ public:
 
 
   /**
-   * 应用不完全分解的转置，即做一个向前向后的步骤
-   * $dst=(LU)^{-T}src$  。    初始化（）函数需要在之前调用。
+   * Apply the transpose of the incomplete decomposition, i.e. do one forward-
+   * backward step $dst=(LU)^{-T}src$.
    *
+   * The initialize() function needs to be called before.
    */
   template <typename somenumber>
   void
@@ -109,28 +123,26 @@ public:
 
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   *
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    */
   std::size_t
   memory_consumption() const override;
 
   /**
-   * @addtogroup  异常情况  @{
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcInvalidStrengthening,
                  double,
                  << "The strengthening parameter " << arg1
                  << " is not greater or equal than zero!");
   /**
-   * 异常情况
-   *
+   * Exception
    */
   DeclException1(ExcZeroPivot,
                  size_type,
@@ -143,12 +155,10 @@ public:
   //@}
 };
 
- /*@}*/ 
+/*@}*/
 //---------------------------------------------------------------------------
 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_sparse_ilu_h
-
-

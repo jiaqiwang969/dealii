@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_qmrs_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -29,55 +28,101 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup Solvers */ 
- /*@{*/ 
+/*!@addtogroup Solvers */
+/*@{*/
 
 /**
  * <h3>Quasi-minimal method for symmetric matrices (SQMR)</h3>
- * SQMR（对称准最小残差）方法应该是用来解决具有对称的、不一定是确定的预处理的对称不定线性系统。它是原始准最小残差法（QMR）的变体，产生相同的迭代解。这个版本的SQMR是由Freund/Nachtigal各自给出的对称QMR-from-BiCG算法改编的。A
- * new Krylov-subspace method for symmetric indefinite linear systems, NASA
- * STI/Recon Technical Report N, 95 (1994) and Freund/Nachtigal: Software for
- * simplified Lanczos and QMR algorithms, Appl. Num. Math. 19 (1995), pp.
- * 319-341，并提供了右和左（但不是分裂）预处理。
  *
- *  <h3>Trade off of stability to simplicity</h3>
- * 请注意，给定算法所基于的QMR实现是由经典的BiCG导出的。可以证明（Freund/Szeto:
- * A transpos-free quasi-minimal residual squared algorithm for non-Hermitian
- * linear systems, Advances in Computer Methods for Partial Differential
- * Equations VII (IMACS, New Brunswick, NJ, 1992)
- * pp.258-264)，QMR迭代结果可以通过一个额外的向量和一些标量更新从BiCG迭代中生成。因此，BiCG可能出现的故障（准确地说是除以0）显然会转移到这个简单的无先验算法上。
- * 与经典的QMR或BiCGStab相比，该算法的成本很低，每次迭代只使用一个与系统矩阵的矩阵向量乘积和一个预处理程序的应用。
- * 用于衡量收敛性的残差只是通过一个上界来近似计算。如果该值低于AdditionalData结构中规定的阈值，那么当前QMR迭代的精确残差将通过与系统矩阵的另一次乘法来计算。根据经验（根据Freund和Nachtigal），这种技术对于阈值是求解容忍度的10倍是有用的，在这种情况下，只在完整迭代的最后一到两步使用。
- * 为了使用这个类，对矩阵和向量的要求，见求解器基类的文档。
- * 像所有其他求解器类一样，该类有一个名为 @p
- * AdditionalData的局部结构，用于向求解器传递额外的参数，如阻尼参数或临时向量的数量。我们使用这个额外的结构，而不是直接将这些值传递给构造函数，因为这使得
- * @p SolverSelector
- * 和其他类的使用更加容易，并保证即使某个求解器的额外参数的数量或类型发生变化，这些也能继续工作。
- *
- *  <h3>Observing the progress of linear solver iterations</h3>
- * 这个类的solve()函数使用Solver基类中描述的机制来确定收敛性。这个机制也可以用来观察迭代的进度。
+ * The SQMR (symmetric quasi-minimal residual) method is supposed to solve
+ * symmetric indefinite linear systems with symmetric, not necessarily definite
+ * preconditioners. It is a variant of the original quasi-minimal residual
+ * method (QMR) and produces the same iterative solution. This version of SQMR
+ * is adapted from the respective symmetric QMR-from-BiCG algorithm given by
+ * both Freund/Nachtigal: A new Krylov-subspace method for symmetric indefinite
+ * linear systems, NASA STI/Recon Technical Report N, 95 (1994) and
+ * Freund/Nachtigal: Software for simplified Lanczos and QMR algorithms, Appl.
+ * Num. Math. 19 (1995), pp. 319-341 and provides both right and left (but not
+ * split) preconditioning.
  *
  *
+ * <h3>Trade off of stability to simplicity</h3>
+ *
+ * Note, that the QMR implementation that the given algorithm is based on is
+ * derived from classical BiCG. It can be shown (Freund/Szeto: A transpose-free
+ * quasi-minimal residual squared algorithm for non-Hermitian linear systems,
+ * Advances in Computer Methods for Partial Differential Equations VII
+ * (IMACS, New Brunswick, NJ, 1992) pp. 258-264) that the QMR iterates can
+ * be generated from the BiCG iteration through one additional vector and
+ * some scalar updates. Possible breakdowns (or precisely, divisions by
+ * zero) of BiCG therefore obviously transfer to this simple no-look-ahead
+ * algorithm.
+ *
+ * In return the algorithm is cheap compared to classical QMR or BiCGStab,
+ * using only one matrix-vector product with the system matrix and
+ * one application of the preconditioner per iteration respectively.
+ *
+ * The residual used for measuring convergence is only approximately calculated
+ * by an upper bound. If this value comes below a threshold prescribed within
+ * the AdditionalData struct, then the exact residual of the current QMR iterate
+ * will be calculated using another multiplication with the system matrix. By
+ * experience (according to Freund and Nachtigal) this technique is useful for a
+ * threshold that is ten times the solving tolerance, and in that case will be
+ * only used in the last one or two steps of the complete iteration.
+ *
+ * For the requirements on matrices and vectors in order to work with this
+ * class, see the documentation of the Solver base class.
+ *
+ * Like all other solver classes, this class has a local structure called @p
+ * AdditionalData which is used to pass additional parameters to the solver,
+ * like damping parameters or the number of temporary vectors. We use this
+ * additional structure instead of passing these values directly to the
+ * constructor because this makes the use of the @p SolverSelector and other
+ * classes much easier and guarantees that these will continue to work even if
+ * number or type of the additional parameters for a certain solver changes.
+ *
+ *
+ * <h3>Observing the progress of linear solver iterations</h3>
+ *
+ * The solve() function of this class uses the mechanism described in the
+ * Solver base class to determine convergence. This mechanism can also be used
+ * to observe the progress of the iteration.
  */
 template <typename VectorType = Vector<double>>
 class SolverQMRS : public SolverBase<VectorType>
 {
 public:
   /**
-   * 标准化的数据结构，用于向求解器输送额外的数据。
-   * 用户能够在右预处理和左预处理之间进行切换，也就是使用相应的参数分别求解<i>P<sup>-1</sup>A</i>和<i>AP<sup>-1</sup></i>的系统。请注意，左预处理意味着采用预处理的（BiCG-）残差，否则采用未预处理的残差。默认情况是采用右侧的应用。
-   * @p solver_tolerance
-   * 阈值用于定义所说的边界，在该边界以下的残差被精确计算。更多信息请参见类文件。默认值是1e-9，也就是默认解算精度乘以10。
-   * SQMR容易受到分解（除以零）的影响，所以我们需要一个参数告诉我们哪些数字被认为是零。适当的分解标准非常不清楚，所以这里可能需要进行实验。
-   * 甚至有可能在除以小数的情况下也能实现收敛。甚至在有些情况下，接受这样的除法是有利的，因为廉价的迭代成本使该算法成为所有可用的不定式迭代求解器中最快的。尽管如此，默认的分解阈值是1e-16。
+   * Standardized data struct to pipe additional data to the solver.
    *
+   * The user is able to switch between right and left preconditioning, that
+   * means solving the systems <i>P<sup>-1</sup>A</i> and <i>AP<sup>-1</sup></i>
+   * respectively, using the corresponding parameter. Note that left
+   * preconditioning means to employ the preconditioned (BiCG-)residual and
+   * otherwise the unpreconditioned one. The default is the application from the
+   * right side.
+   *
+   * The @p solver_tolerance threshold is used to define the said bound below which the residual
+   * is computed exactly. See the class documentation for more information. The
+   * default value is 1e-9, that is the default solving precision multiplied by
+   * ten.
+   *
+   * SQMR is susceptible to breakdowns (divisions by zero), so we need a
+   * parameter telling us which numbers are considered zero. The proper
+   * breakdown criterion is very unclear, so experiments may be necessary here.
+   * It is even possible to achieve convergence despite of dividing through by
+   * small numbers. There are even cases in which it is advantageous to accept
+   * such divisions because the cheap iteration cost makes the algorithm the
+   * fastest of all available indefinite iterative solvers. Nonetheless, the
+   * default breakdown threshold value is 1e-16.
    */
   struct AdditionalData
   {
     /**
-     * 构造器。        默认是右预处理， @p solver_tolerance
-     * 选择为1e-9， @p breakdown_threshold 设置为1e-16。
+     * Constructor.
      *
+     * The default is right preconditioning, with the @p solver_tolerance chosen to be 1e-9 and
+     * the @p breakdown_threshold set at 1e-16.
      */
     explicit AdditionalData(const bool   left_preconditioning = false,
                             const double solver_tolerance     = 1.e-9,
@@ -90,47 +135,42 @@ public:
     {}
 
     /**
-     * 标志着使用左置条件的版本。
-     *
+     * Flag for using a left-preconditioned version.
      */
     bool left_preconditioning;
 
     /**
-     * 准确计算当前残差的阈值。
-     *
+     * The threshold below which the current residual is computed exactly.
      */
     double solver_tolerance;
 
     /**
-     * 击穿测试的标志。
-     *
+     * Flag for breakdown testing.
      */
     bool breakdown_testing;
 
     /**
-     * 崩溃阈值。测量到这个界限的标度被用于划分。
-     *
+     * Breakdown threshold. Scalars measured to this bound are used for
+     * divisions.
      */
     double breakdown_threshold;
   };
 
   /**
-   * 构造器。
-   *
+   * Constructor.
    */
   SolverQMRS(SolverControl &           cn,
              VectorMemory<VectorType> &mem,
              const AdditionalData &    data = AdditionalData());
 
   /**
-   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
-   *
+   * Constructor. Use an object of type GrowingVectorMemory as a default to
+   * allocate memory.
    */
   SolverQMRS(SolverControl &cn, const AdditionalData &data = AdditionalData());
 
   /**
-   * 求解x的线性系统 $Ax=b$ 。
-   *
+   * Solve the linear system $Ax=b$ for x.
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -140,8 +180,9 @@ public:
         const PreconditionerType &preconditioner);
 
   /**
-   * 派生类的接口。这个函数在每一步中获得当前的迭代向量、残差和更新向量。它可以用于收敛历史的图形输出。
-   *
+   * Interface for derived class. This function gets the current iteration
+   * vector, the residual and the update vector in each step. It can be used
+   * for a graphical output of the convergence history.
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -151,15 +192,14 @@ public:
 
 protected:
   /**
-   * 附加参数。
-   *
+   * Additional parameters.
    */
   AdditionalData additional_data;
 
 private:
   /**
-   * 由iterate()函数返回的一个结构，代表它发现在迭代过程中发生的事情。
-   *
+   * A structure returned by the iterate() function representing what it found
+   * is happening during the iteration.
    */
   struct IterationResult
   {
@@ -171,8 +211,8 @@ private:
   };
 
   /**
-   * 迭代循环本身。该函数返回一个结构，表示在这个函数中发生了什么。
-   *
+   * The iteration loop itself. The function returns a structure indicating
+   * what happened in this function.
    */
   template <typename MatrixType, typename PreconditionerType>
   IterationResult
@@ -187,14 +227,13 @@ private:
           VectorType &              d);
 
   /**
-   * 当前迭代的编号（在重启过程中累积）。
-   *
+   * Number of the current iteration (accumulated over restarts)
    */
   unsigned int step;
 };
 
- /*@}*/ 
- /*------------------------- Implementation ----------------------------*/ 
+/*@}*/
+/*------------------------- Implementation ----------------------------*/
 
 #ifndef DOXYGEN
 
@@ -425,5 +464,3 @@ SolverQMRS<VectorType>::iterate(const MatrixType &        A,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

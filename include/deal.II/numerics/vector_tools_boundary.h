@@ -1,3 +1,4 @@
+//include/deal.II-translator/numerics/vector_tools_boundary_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -42,98 +43,67 @@ namespace hp
 namespace VectorTools
 {
   /**
-   * @name Interpolation and projection
+   * @name  内插和投影
+   *
    */
   //@{
 
   /**
-   * Compute constraints on the solution that corresponds to the imposition
-   * of Dirichlet boundary conditions.  This function creates a map of
-   * degrees of freedom subject to Dirichlet boundary conditions and the
-   * corresponding values to be assigned to them, by interpolation around the
-   * boundary. For each degree of freedom at the boundary, if its index
-   * already exists in @p boundary_values then its boundary value will be
-   * overwritten, otherwise a new entry with proper index and boundary value
-   * for this degree of freedom will be inserted into @p boundary_values.
+   * 计算对应于施加Dirichlet边界条件的解决方案的约束。 这个函数通过在边界周围插值，创建一个受迪里希特边界条件约束的自由度地图，以及要分配给它们的相应数值。对于边界上的每个自由度，如果它的索引已经存在于
+   * @p boundary_values 中，那么它的边界值将被覆盖，否则将在
+   * @p boundary_values.
+   * 中插入一个具有适当索引和边界值的新条目。 参数 @p
+   * function_map
+   * 提供了一个由该函数处理的边界指标列表和相应的边界值函数。
+   * 该图的键对应于面的编号 @p boundary_id 。
+   * numbers::internal_face_boundary_id
+   * 是这个键的非法值，因为它是为内部面保留的。关于如何用非空地图使用这个参数的例子，请看
+   * step-16 的教程程序。    最后一个参数 @p component_mask
+   * 中的标志表示有限元空间的哪些部分应被插值。如果保留默认值（即一个空数组），所有组件都被插值。如果它与默认值不同，则假定条目数等于边界函数和有限元中的分量数，给定边界函数中的那些分量将被用于在分量掩码中设置的相应标志。另见
+   * @ref GlossComponentMask  。
+   * 举个例子，假设你正在求解2d中的斯托克斯方程，变量为
+   * $(u,v,p)$
+   * ，你只想插值速度的边界值，那么分量掩码应该对应于
+   * <code>(true,true,false)</code>  。
+   * @note  无论是否指定了分量掩码， @p function_map
+   * 中函数的分量数必须与 @p dof.
+   * 使用的有限元的分量数一致。 ]
+   * 换句话说，对于上面的例子，你需要提供一个有3个分量（两个速度和压力）的Function对象，尽管你只对其中的前两个感兴趣。
+   * interpolate_boundary_values()然后会调用这个函数，在每个插值点获得3个值的向量，但只取前两个，舍弃第三个。换句话说，你可以自由地在
+   * Function::vector_value,
+   * 返回的向量的第三个分量中返回你喜欢的东西，但Function对象必须说明它有3个分量。
+   * 如果使用的有限元的形状函数在一个以上的分量中是非零的（用deal.II的话说：它们是非原始的），那么这些分量目前不能用于内插边界值。
+   * 因此，与这些非正则形状函数的分量相对应的分量掩码中的元素必须是
+   * @p false.  更多信息请参见该命名空间的一般文档。
+   * @note  当求解带有边界条件的偏微分方程
+   * $u|_{\partial\Omega}=g$
+   * （或边界的部分*）时，那么这个边界条件一般不能用
+   * $u_h|_{\partial\Omega}=g$
+   * 形式的有限元准确满足。这是因为函数 $g$
+   * 一般不是多项式，而 $u_h|_{\partial\Omega}$
+   * 在位于边界的网格的每个面上都是*项多项式。换句话说，一般来说，不可能施加*这样的边界条件；然而，可以*做的是施加@f[
+   * u_h|_{\partial\Omega}=I_h^{\partial\Omega} g, @f]，其中
+   * $I_h^{\partial\Omega} g$
+   * 是一个函数，在位于边界的有限元空间的每个节点上等于
+   * $g$ ，并且在两者之间是片断多项式。换句话说，
+   * $I_h^{\partial\Omega}$ 是一个内插算子*， $I_h^{\partial\Omega} g$
+   * 是内插的边界值
    *
-   * The parameter @p function_map provides a list of boundary indicators to
-   * be handled by this function and corresponding boundary value functions.
-   * The keys of this map correspond to the number @p boundary_id of the face.
-   * numbers::internal_face_boundary_id is an illegal value for this key since
-   * it is reserved for interior faces. For an example of how to use this
-   * argument with a non-empty map, see the step-16 tutorial program.
+   * --因此而得名。使用 $I_h^{\partial\Omega} g$ 而不是 $g$
+   * 作为边界值会带来一个额外的误差（与使用正交引入一个额外的误差相比，能够准确计算弱形式的积分）。在大多数情况下，这个额外的误差与有限元方法中的其他误差项相同，尽管在测量
+   * $L^2$
+   * 准则中的误差时有一些微妙的差别。关于一些细节，请参见
+   * @cite Bartels2004  。
+   * @note  使用内插法的一个替代方法，@f[
+   * u_h|_{\partial\Omega}=I_h^{\partial\Omega} g @f]是使用边界值 $g$
+   * 对边界上的有限元空间的投影*：@f[
+   * u_h|_{\partial\Omega}=\Pi_h^{\partial\Omega} g. @f]
+   * 投影可以使用project_boundary_values()函数。使用投影可能有一些理论上的优势（参见
+   * @cite Bartels2004
+   * ），但有一个实际的缺点，即计算投影比计算插值要昂贵得多，因为后者可以一次完成一个面，而投影则需要解决整个边界上的问题。另一方面，插值只适用于
+   * "节点式
+   * "有限元空间（如FE_Q，但不包括FE_Q_Hierarchical），而投影则始终适用。
    *
-   * The flags in the last parameter, @p component_mask denote which
-   * components of the finite element space shall be interpolated. If it is
-   * left as specified by the default value (i.e. an empty array), all
-   * components are interpolated. If it is different from the default value,
-   * it is assumed that the number of entries equals the number of components
-   * in the boundary functions and the finite element, and those components in
-   * the given boundary function will be used for which the respective flag
-   * was set in the component mask. See also
-   * @ref GlossComponentMask.
-   * As an example, assume that you are solving the Stokes equations in 2d,
-   * with variables $(u,v,p)$ and that you only want to interpolate boundary
-   * values for the velocity, then the component mask should correspond to
-   * <code>(true,true,false)</code>.
-   *
-   * @note Whether a component mask has been specified or not, the number of
-   * components of the functions in @p function_map must match that of the
-   * finite element used by @p dof. In other words, for the example above, you
-   * need to provide a Function object that has 3 components (the two
-   * velocities and the pressure), even though you are only interested in the
-   * first two of them. interpolate_boundary_values() will then call this
-   * function to obtain a vector of 3 values at each interpolation point but
-   * only take the first two and discard the third. In other words, you are
-   * free to return whatever you like in the third component of the vector
-   * returned by Function::vector_value, but the Function object must state
-   * that it has 3 components.
-   *
-   * If the finite element used has shape functions that are non-zero in more
-   * than one component (in deal.II speak: they are non-primitive), then these
-   * components can presently not be used for interpolating boundary values.
-   * Thus, the elements in the component mask corresponding to the components
-   * of these non-primitive shape functions must be @p false.
-   *
-   * See the general documentation of this namespace for more information.
-   *
-   * @note When solving a partial differential equation with boundary
-   *   conditions $u|_{\partial\Omega}=g$ (or on *parts* of the boundary),
-   *   then this boundary condition is in general not satisfiable exactly
-   *   using finite elements in the form $u_h|_{\partial\Omega}=g$. That is
-   *   because the function $g$ is generally not a polynomial, whereas
-   *   $u_h|_{\partial\Omega}$ *is* a polynomial on each face of the
-   *   mesh that is located at the boundary. In other words, it is in
-   *   general not possible to *impose* such boundary condition; what one
-   *   *can* do, however, is to impose
-   *     @f[ u_h|_{\partial\Omega}=I_h^{\partial\Omega} g, @f]
-   *   where $I_h^{\partial\Omega} g$ is a function that equals $g$ at each node
-   *   of the finite element space located on the boundary, and is piecewise
-   *   polynomial in between. In other words, $I_h^{\partial\Omega}$ is an
-   *   *interpolation operator* and $I_h^{\partial\Omega} g$ are the
-   *   interpolated boundary values -- thus the name. The use of
-   *   $I_h^{\partial\Omega} g$ instead of $g$ as boundary values imposes
-   *   an additional error (in the same spirit as using quadrature introduces
-   *   an additional error compared to being able to compute the integrals of
-   *   the weak form exactly). In most cases, this additional error is of the
-   *   same order as the other error terms in the finite element method,
-   *   though there are some subtle differences when measuring the error in
-   *   the $L^2$ norm. For some details, see @cite Bartels2004 .
-   *
-   * @note An alternative to using the interpolant,
-   *     @f[ u_h|_{\partial\Omega}=I_h^{\partial\Omega} g @f]
-   *   is to use the *projection* of the boundary values $g$ onto the
-   *   finite element space on the boundary:
-   *     @f[ u_h|_{\partial\Omega}=\Pi_h^{\partial\Omega} g. @f]
-   *   The projection is available using the project_boundary_values()
-   *   function. Using the projection may have some theoretical advantages
-   *   (see again @cite Bartels2004) but has the practical disadvantage
-   *   that computing the projection is far more expensive than computing
-   *   the interpolation because the latter can be done one face at a time
-   *   whereas the projection requires the solution of a problem on the entire
-   *   boundary. On the other hand, interpolation is only possible for
-   *   "nodal" finite element spaces (such as FE_Q, but not
-   *   FE_Q_Hierarchical), whereas the projection is always possible.
    */
   template <int dim, int spacedim, typename number>
   void
@@ -146,8 +116,8 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Like the previous function, but take a mapping collection to go with
-   * DoFHandler objects with hp-capabilities.
+   * 像之前的函数一样，但采取一个映射集合，以配合具有hp能力的DoFHandler对象。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -160,13 +130,8 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Same function as above, but taking only one pair of boundary indicator
-   * and corresponding boundary function. The same comments apply as for the
-   * previous function, in particular about the use of the component mask and
-   * the requires size of the function object.
+   * 和上面的函数一样，但只取一对边界指标和相应的边界函数。同样的评论适用于前面的函数，特别是关于组件掩码的使用和函数对象的要求大小。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename number>
   void
@@ -179,8 +144,8 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Like the previous function, but take a mapping collection to go with
-   * DoFHandler objects with hp-capabilities.
+   * 像之前的函数一样，但要取一个映射集合，以配合具有hp-capabilities的DoFHandler对象。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -193,13 +158,8 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Call the other interpolate_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>. The same comments
-   * apply as for the previous function, in particular about the use of the
-   * component mask and the requires size of the function object.
+   * 调用另一个interpolate_boundary_values()函数，见上文，使用<tt>mapping=MappingQGeneric  @<dim,spacedim@>(1)</tt>.  与前一个函数的注释相同，特别是关于组件掩码的使用和函数对象的要求大小。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename number>
   void
@@ -212,10 +172,10 @@ namespace VectorTools
 
 
   /**
-   * Call the other interpolate_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>. The same comments
-   * apply as for the previous function, in particular about the use of the
-   * component mask and the requires size of the function object.
+   * 调用另一个interpolate_boundary_values()函数，见上文，<tt>mapping=MappingQGeneric
+   * @<dim,spacedim@>(1)</tt>.
+   * 与前一个函数的评论相同，特别是关于使用分量掩码和函数对象的要求大小。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -228,32 +188,18 @@ namespace VectorTools
 
 
   /**
-   * Insert the (algebraic) constraints due to Dirichlet boundary conditions
-   * into a AffineConstraints @p constraints. This function identifies the
-   * degrees of freedom subject to Dirichlet boundary conditions, adds them to
-   * the list of constrained DoFs in @p constraints and sets the respective
-   * inhomogeneity to the value interpolated around the boundary. If this
-   * routine encounters a DoF that already is constrained (for instance by a
-   * hanging node constraint, see below, or any other type of constraint, e.g.
-   * from periodic boundary conditions), the old setting of the constraint
-   * (dofs the entry is constrained to, inhomogeneities) is kept and nothing
-   * happens.
-   *
-   * @note When combining adaptively refined meshes with hanging node
-   * constraints and boundary conditions like from the current function within
-   * one AffineConstraints object, the hanging node constraints should always
-   * be set first, and then the boundary conditions since boundary conditions
-   * are not set in the second operation on degrees of freedom that are
-   * already constrained. This makes sure that the discretization remains
-   * conforming as is needed. See the discussion on conflicting constraints in
-   * the module on
-   * @ref constraints.
-   *
-   * This function is fundamentally equivalent to the ones above except that it
-   * puts its results into an AffineConstraint object rather than a `std::map`.
-   * See the functions above for more comments.
-   *
+   * 将由于Dirichlet边界条件引起的（代数）约束插入AffineConstraints
+   * @p constraints.
+   * 这个函数识别受Dirichlet边界条件约束的自由度，将它们添加到
+   * @p constraints
+   * 中受约束的DoF列表中，并将各自的不均匀性设置为围绕边界插值的值。如果这个例程遇到一个已经被约束的DoF（例如被悬挂的节点约束，见下文，或任何其他类型的约束，例如来自周期性边界条件的约束），约束的旧设置（条目被约束的DoF，不均匀性）被保留，不会发生什么。
+   * @note
+   * 当在一个AffineConstraints对象中结合具有悬挂节点约束和边界条件的自适应细化网格时，悬挂节点约束应该总是首先被设置，然后是边界条件，因为边界条件不会在已经被约束的自由度的第二次操作中被设置。这可以确保离散化保持所需的一致性。参见
+   * @ref constraints 模块中关于冲突约束的讨论。
+   * 这个函数与上面的函数基本等同，只是它将其结果放入AffineConstraint对象中，而不是
+   * `std::map`.  更多评论见上面的函数。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -266,8 +212,8 @@ namespace VectorTools
     const ComponentMask &      component_mask = ComponentMask());
 
   /**
-   * Like the previous function, but take a mapping collection to go with
-   * DoFHandler objects with hp-capabilities.
+   * 和前面的函数一样，但要取一个映射集合，以配合具有hp-capabilities的DoFHandler对象。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -280,15 +226,9 @@ namespace VectorTools
     const ComponentMask &      component_mask = ComponentMask());
 
   /**
-   * Same function as above, but taking only one pair of boundary indicator
-   * and corresponding boundary function. The same comments apply as for the
-   * previous function, in particular about the use of the component mask and
-   * the requires size of the function object.
+   * 与上述函数相同，但只取一对边界指标和相应的边界函数。同样的评论适用于前面的函数，特别是关于组件掩码的使用和函数对象的要求大小。
+   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @ingroup constraints
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename number>
   void
@@ -301,8 +241,8 @@ namespace VectorTools
     const ComponentMask &             component_mask = ComponentMask());
 
   /**
-   * Like the previous function, but take a mapping collection to go with
-   * DoFHandler objects with hp-capabilities.
+   * 像之前的函数一样，但要取一个映射集合，以配合具有hp-capabilities的DoFHandler对象。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -315,15 +255,11 @@ namespace VectorTools
     const ComponentMask &component_mask = ComponentMask());
 
   /**
-   * Call the other interpolate_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>. The same comments
-   * apply as for the previous function, in particular about the use of the
-   * component mask and the requires size of the function object.
+   * 调用另一个interpolate_boundary_values()函数，见上文，使用<tt>mapping=MappingQGeneric
+   * @<dim,spacedim@>(1)</tt>.
+   * 与前一个函数的注释相同，特别是关于组件掩码的使用和函数对象的要求大小。
+   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @ingroup constraints
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, int spacedim, typename number>
   void
@@ -336,12 +272,11 @@ namespace VectorTools
 
 
   /**
-   * Call the other interpolate_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>. The same comments
-   * apply as for the previous function, in particular about the use of the
-   * component mask and the requires size of the function object.
-   *
+   * 调用另一个interpolate_boundary_values()函数，见上文，<tt>mapping=MappingQGeneric
+   * @<dim,spacedim@>(1)</tt>.
+   * 与前一个函数的注释相同，特别是关于组件掩码的使用和函数对象的要求大小。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -354,81 +289,57 @@ namespace VectorTools
 
 
   /**
-   * Project a function or a set of functions to the boundary of the domain.
-   * In other words, compute the solution of the following problem: Find $u_h
-   * \in V_h$ (where $V_h$ is the finite element space represented by the
-   * DoFHandler argument of this function) so that
+   * 投射一个函数或一组函数到域的边界。
+   * 换句话说，计算以下问题的解决方案：找到 $u_h \in V_h$
+   * （其中 $V_h$
+   * 是由该函数的DoFHandler参数所代表的有限元空间），以便
    * @f{align*}{
    * \int_{\Gamma} \varphi_i u_h
    * = \sum_{k \in {\cal K}} \int_{\Gamma_k} \varphi_i f_k,
    * \qquad \forall \varphi_i \in V_h
    * @f}
-   * where $\Gamma = \bigcup_{k \in {\cal K}} \Gamma_k$, $\Gamma_k \subset
-   * \partial\Omega$, $\cal K$ is the set of indices and $f_k$ the
-   * corresponding boundary functions represented in the function map argument
-   * @p boundary_values to this function, and the integrals are evaluated by
-   * quadrature. This problem has a non-unique solution in the interior, but
-   * it is well defined for the degrees of freedom on the part of the
-   * boundary, $\Gamma$, for which we do the integration. The values of
-   * $u_h|_\Gamma$, i.e., the nodal values of the degrees of freedom of this
-   * function along the boundary, are then what is computed by this function.
-   *
-   * In case this function is used with $H_{div}$ conforming finite element
-   * space, the solution of a different problem is computed, namely: Find
-   * $\vec{u}_h \in V_h \subset H(\text{div}; \Omega)$ so that
+   * 其中 $\Gamma = \bigcup_{k \in {\cal K}} \Gamma_k$ ,  $\Gamma_k \subset
+   * \partial\Omega$ ,  $\cal K$ 是指数集， $f_k$
+   * 是该函数的函数图参数 @p boundary_values
+   * 所代表的相应边界函数，积分用正交法求值。这个问题在内部有一个非唯一的解决方案，但对于边界部分的自由度，
+   * $\Gamma$ ，它是定义良好的，我们对其进行积分。
+   * $u_h|_\Gamma$
+   * 的值，即这个函数沿边界的自由度的节点值，就是这个函数所计算的。
+   * 如果这个函数与 $H_{div}$
+   * 符合的有限元空间一起使用，则会计算出一个不同的问题的解决方案，即。找到
+   * $\vec{u}_h \in V_h \subset H(\text{div}; \Omega)$ ，以便
    * @f{align*}{
    * \int_{\Gamma} (\vec{\varphi}_i \cdot \vec{n}) (\vec{u}_h \cdot \vec{n})
    * = \sum_{k \in {\cal K}} \int_{\Gamma_k} (\vec{\varphi}_i \cdot \vec{n})
    * (\vec{f}_k \cdot \vec{n}),
    * \qquad \forall \vec{\varphi_i} \in V_h,
    * @f}
-   * where $\vec{n}$ is an outward normal vector.
-   *
-   * This function throws an exception if used with $H_\text{curl}$ conforming
-   * elements, so the project_boundary_values_curl_conforming_l2() should be
-   * used instead.
-   *
-   * @param[in] mapping The mapping that will be used in the transformations
-   * necessary to integrate along the boundary.
-   * @param[in] dof The DoFHandler that describes the finite element space and
-   * the numbering of degrees of freedom.
-   * @param[in] boundary_functions A map from boundary indicators to pointers
-   * to functions that describe the desired values on those parts of the
-   * boundary marked with this boundary indicator (see
-   * @ref GlossBoundaryIndicator "Boundary indicator").
-   * The projection happens on only those parts of the boundary whose
-   * indicators are represented in this map.
-   * @param[in] q The face quadrature used in the integration necessary to
-   * compute the mass matrix and right hand side of the projection.
-   * @param[out] boundary_values The result of this function. It is a map
-   * containing all indices of degrees of freedom at the boundary (as covered
-   * by the boundary parts in @p boundary_functions) and the computed dof
-   * value for this degree of freedom. For each degree of freedom at the
-   * boundary, if its index already exists in @p boundary_values then its
-   * boundary value will be overwritten, otherwise a new entry with proper
-   * index and boundary value for this degree of freedom will be inserted into
+   * 其中 $\vec{n}$ 是一个外向法向量。    如果与 $H_\text{curl}$ 符合的元素一起使用，这个函数会抛出一个异常，所以应该使用project_boundary_values_curl_conforming_l2()来代替。      @param[in]  映射 将用于沿边界整合所需的转换的映射。    @param[in]  dof 描述有限元空间和自由度编号的DoFHandler。    @param[in]  boundary_functions 从边界指标到函数指针的映射，这些函数描述了边界上标有该边界指标的那些部分的期望值（见 @ref GlossBoundaryIndicator  "边界指标"
+   * ）。
+   * 投影只发生在边界的那些部分，这些部分的指标在这个地图中被代表。
+   * @param[in]  q
+   * 用于计算质量矩阵和投影的右手边所需的积分的面正交。
+   * @param[out]  boundary_values
+   * 这个函数的结果。它是一个包含边界上所有自由度指数的地图（如
+   * @p boundary_functions)
+   * 中的边界部分所涵盖的，以及该自由度的计算dof值。对于边界上的每个自由度，如果它的索引已经存在于
+   * @p boundary_values 中，那么它的边界值将被覆盖，否则将在
    * @p boundary_values.
-   * @param[in] component_mapping It is sometimes convenient to project a
-   * vector-valued function onto only parts of a finite element space (for
-   * example, to project a function with <code>dim</code> components onto the
-   * velocity components of a <code>dim+1</code> component DoFHandler for a
-   * Stokes problem). To allow for this, this argument allows components to be
-   * remapped. If the vector is not empty, it has to have one entry for each
-   * vector component of the finite element used in @p dof. This entry is the
-   * component number in @p boundary_functions that should be used for this
-   * component in @p dof. By default, no remapping is applied.
+   * 中插入一个具有适当索引和边界值的新条目。 ]
+   * component_mapping
+   * 有时，将一个矢量值函数投射到有限元空间的一部分是很方便的（例如，将一个
+   * <code>dim</code> 分量的函数投射到斯托克斯问题的
+   * <code>dim+1</code>
+   * 分量DoFHandler的速度分量）。为了允许这一点，这个参数允许分量被重新映射。如果矢量不是空的，它必须为
+   * @p dof.
+   * 中使用的有限元的每个矢量分量有一个条目，这个条目是
+   * @p boundary_functions 中的分量编号，应该用于 @p dof.
+   * 中的这个分量。 默认情况下，不应用重新映射。
+   * @note
+   * 使用投影*而不是边界值的插值*，在实践中没有什么区别。也就是说，计算投影的计算成本要高得多，因为它需要解决一个耦合边界上所有未知数的问题，而内插法则是一次只计算一个面。另一方面，插值只适用于
+   * "节点型
+   * "有限元空间（如FE_Q，但不包括FE_Q_Hierarchical），而投影则始终适用。(关于一些更多的理论考虑，见上面第一个interpolate_boundary_values()函数的文档)。
    *
-   * @note Using the *projection* rather than the *interpolation* of
-   *   boundary values makes relatively little difference in
-   *   practice. That said, it is far more computationally expensive
-   *   to compute projections because the require the solution of a
-   *   problem that couples all unknowns on the boundary, whereas
-   *   interpolation works on one face at a time. On the other hand,
-   *   interpolation is only possible for "nodal" finite element
-   *   spaces (such as FE_Q, but not FE_Q_Hierarchical), whereas the
-   *   projection is always possible. (For some more theoretical
-   *   considerations, see the documentation of the first
-   *   interpolate_boundary_values() function above.)
    */
   template <int dim, int spacedim, typename number>
   void
@@ -442,8 +353,9 @@ namespace VectorTools
     std::vector<unsigned int>                  component_mapping = {});
 
   /**
-   * Call the project_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>.
+   * 调用project_boundary_values()函数，见上文，<tt>mapping=MappingQGeneric
+   * @<dim,spacedim@>(1)</tt>.  。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -456,7 +368,8 @@ namespace VectorTools
     std::vector<unsigned int>                  component_mapping = {});
 
   /**
-   * Same as above, but with hp-capabilities.
+   * 和上面一样，但有hp-capabilities。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -470,8 +383,9 @@ namespace VectorTools
     std::vector<unsigned int>                  component_mapping = {});
 
   /**
-   * Call the project_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>.
+   * 调用project_boundary_values()函数，见上文，使用<tt>mapping=MappingQGeneric
+   * @<dim,spacedim@>(1)</tt>.  。
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -484,42 +398,22 @@ namespace VectorTools
     std::vector<unsigned int>                  component_mapping = {});
 
   /**
-   * Project a function to the boundary of the domain, using the given
-   * quadrature formula for the faces. This function identifies the degrees of
-   * freedom subject to Dirichlet boundary conditions, adds them to the list
-   * of constrained DoFs in @p constraints and sets the respective
-   * inhomogeneity to the value resulting from the projection operation. If
-   * this routine encounters a DoF that already is constrained (for instance
-   * by a hanging node constraint, see below, or any other type of constraint,
-   * e.g. from periodic boundary conditions), the old setting of the
-   * constraint (dofs the entry is constrained to, inhomogeneities) is kept
-   * and nothing happens.
-   *
-   * @note When combining adaptively refined meshes with hanging node
-   * constraints and boundary conditions like from the current function within
-   * one AffineConstraints object, the hanging node constraints should always
-   * be set first, and then the boundary conditions since boundary conditions
-   * are not set in the second operation on degrees of freedom that are
-   * already constrained. This makes sure that the discretization remains
-   * conforming as is needed. See the discussion on conflicting constraints in
-   * the module on
-   * @ref constraints.
-   *
-   * If @p component_mapping is empty, it is assumed that the number of
-   * components of @p boundary_function matches that of the finite element
-   * used by @p dof.
-   *
-   * In 1d, projection equals interpolation. Therefore,
-   * interpolate_boundary_values is called.
-   *
-   * @arg @p component_mapping: if the components in @p boundary_functions and
-   * @p dof do not coincide, this vector allows them to be remapped. If the
-   * vector is not empty, it has to have one entry for each component in @p
-   * dof. This entry is the component number in @p boundary_functions that
-   * should be used for this component in @p dof. By default, no remapping is
-   * applied.
-   *
+   * 将一个函数投影到域的边界，使用给定的面的正交公式。该函数识别受Dirichlet边界条件约束的自由度，将其添加到
+   * @p constraints
+   * 中的受约束自由度列表中，并将各自的不均匀性设置为投影操作产生的值。如果这个例程遇到一个已经被约束的DoF（例如被悬挂的节点约束，见下文，或任何其他类型的约束，例如来自周期性边界条件的约束），约束的旧设置（条目被约束的DoF，不均匀性）被保留，不会发生什么。
+   * @note
+   * 当在一个AffineConstraints对象中结合具有悬挂节点约束和边界条件的自适应细化网格时，悬挂节点约束应该总是首先被设置，然后是边界条件，因为边界条件不会在已经被约束的自由度的第二次操作中被设置。这可以确保离散化保持所需的一致性。参见
+   * @ref constraints 模块中关于冲突约束的讨论。    如果 @p
+   * component_mapping 为空，则假定 @p boundary_function 的分量数与
+   * @p dof. 所使用的有限元的分量数一致。
+   * 在1d中，投影等于插值。因此，interpolate_boundary_values被调用。
+   * @arg   @p component_mapping:  如果 @p boundary_functions 和 @p dof
+   * 中的组件不重合，这个向量允许它们被重新映射。如果这个向量不是空的，它必须有一个条目代表
+   * @p 中的每个组件。这个条目是 @p boundary_functions
+   * 中的分量编号，应该用于 @p dof. 中的这个分量。
+   * 默认情况下，不应用重映射。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -533,10 +427,10 @@ namespace VectorTools
     std::vector<unsigned int>  component_mapping = {});
 
   /**
-   * Call the project_boundary_values() function, see above, with
-   * <tt>mapping=MappingQGeneric@<dim,spacedim@>(1)</tt>.
-   *
+   * 调用project_boundary_values()函数，见上文，使用<tt>mapping=MappingQGeneric
+   * @<dim,spacedim@>(1)</tt>.  。
    * @ingroup constraints
+   *
    */
   template <int dim, int spacedim, typename number>
   void
@@ -549,99 +443,50 @@ namespace VectorTools
     std::vector<unsigned int>  component_mapping = {});
 
   /**
-   * This function is an updated version of the
-   * project_boundary_values_curl_conforming function. The intention is to fix
-   * a problem when using the previous function in conjunction with non-
-   * rectangular geometries (i.e. elements with non-rectangular faces). The
-   * L2-projection method used has been taken from the paper "Electromagnetic
-   * scattering simulation using an H (curl) conforming hp-finite element
-   * method in three dimensions" by PD Ledger, K Morgan and O Hassan ( Int. J.
-   * Num. Meth. Fluids, Volume 53, Issue 8, pages 1267-1296).
-   *
-   * This function will compute constraints that correspond to Dirichlet
-   * boundary conditions of the form
-   * $\vec{n}\times\vec{E}=\vec{n}\times\vec{F}$ i.e. the tangential
-   * components of $\vec{E}$ and $f$ shall coincide.
-   *
-   * <h4>Computing constraints</h4>
-   *
-   * To compute the constraints we use a projection method based upon the
-   * paper mentioned above. In 2D this is done in a single stage for the edge-
-   * based shape functions, regardless of the order of the finite element. In
-   * 3D this is done in two stages, edges first and then faces.
-   *
-   * For each cell, each edge, $e$, is projected by solving the linear system
-   * $Ax=b$ where $x$ is the vector of constraints on degrees of freedom on the
-   * edge and
-   *
-   * $A_{ij} = \int_{e} (\vec{s}_{i}\cdot\vec{t})(\vec{s}_{j}\cdot\vec{t}) dS$
-   *
-   * $b_{i} = \int_{e} (\vec{s}_{i}\cdot\vec{t})(\vec{F}\cdot\vec{t}) dS$
-   *
-   * with $\vec{s}_{i}$ the $i^{th}$ shape function and $\vec{t}$ the tangent
-   * vector.
-   *
-   * Once all edge constraints, $x$, have been computed, we may compute the
-   * face constraints in a similar fashion, taking into account the residuals
-   * from the edges.
-   *
-   * For each face on the cell, $f$, we solve the linear system $By=c$ where
-   * $y$ is the vector of constraints on degrees of freedom on the face and
-   *
-   * $B_{ij} = \int_{f} (\vec{n} \times \vec{s}_{i}) \cdot (\vec{n} \times
-   * \vec{s}_{j}) dS$
-   *
+   * 这个函数是project_boundary_values_curl_conforming函数的一个更新版本。其目的是修复在使用前一个函数时与非矩形几何体（即具有非矩形面的元素）一起使用的一个问题。所用的L2投影方法取自PD
+   * Ledger, K Morgan and O Hassan的论文 "Electromagnetic Scattering
+   * simulation using an H (curl) conforming hp-finite element method in three
+   * dimensions" ( Int. J. Num. Meth. Fluids, Volume 53, Issue 8, pages
+   * 1267-1296) 。    该函数将计算对应于
+   * $\vec{n}\times\vec{E}=\vec{n}\times\vec{F}$
+   * 形式的Dirichlet边界条件的约束，即 $\vec{E}$ 和 $f$
+   * 的切向分量应相吻合。    <h4>Computing constraints</h4>
+   * 为了计算约束条件，我们使用基于上述论文的投影方法。在二维中，对于基于边缘的形状函数，无论有限元的顺序如何，这都是在单一阶段完成的。在三维中，这是在两个阶段完成的，首先是边，然后是面。
+   * 对于每个单元，每个边 $e$ 通过解决线性系统 $Ax=b$
+   * 进行投影，其中 $x$ 是边上自由度的约束向量， $A_{ij} =
+   * \int_{e} (\vec{s}_{i}\cdot\vec{t})(\vec{s}_{j}\cdot\vec{t}) dS$  $b_{i} =
+   * \int_{e} (\vec{s}_{i}\cdot\vec{t})(\vec{F}\cdot\vec{t}) dS$ 是
+   * $\vec{s}_{i}$ 形状函数， $\vec{t}$ 是切线向量。
+   * 一旦所有的边缘约束， $x$
+   * 被计算出来，我们可以用类似的方式计算面的约束，同时考虑到边缘的残差。
+   * 对于单元格上的每个面， $f$ ，我们解决线性系统 $By=c$
+   * ，其中 $y$ 是面的自由度约束矢量， $B_{ij} = \int_{f}
+   * (\vec{n} \times \vec{s}_{i}) \cdot (\vec{n} \times \vec{s}_{j}) dS$
    * $c_{i} = \int_{f} (\vec{n} \times \vec{r}) \cdot (\vec{n} \times
-   * \vec{s}_i) dS$
+   * \vec{s}_i) dS$ 和 $\vec{r} = \vec{F}
    *
-   * and $\vec{r} = \vec{F} - \sum_{e \in f} \sum{i \in e} x_{i}\vec{s}_i$,
-   * the edge residual.
-   *
-   * The resulting constraints are then given in the solutions $x$ and $y$.
-   *
-   * If the AffineConstraints @p constraints contained values or other
-   * constraints before, the new ones are added or the old ones overwritten,
-   * if a node of the boundary part to be used was already in the list of
-   * constraints. This is handled by using inhomogeneous constraints. Please
-   * note that when combining adaptive meshes and this kind of constraints,
-   * the Dirichlet conditions should be set first, and then completed by
-   * hanging node constraints, in order to make sure that the discretization
-   * remains consistent. See the discussion on conflicting constraints in the
-   * module on
-   * @ref constraints.
-   *
+   * - \sum_{e
+   * \in f} \sum{i \in e} x_{i}\vec{s}_i$ ，是边缘残差。
+   * 然后在解决方案 $x$ 和 $y$ 中给出所产生的约束。
+   * 如果AffineConstraints  @p constraints
+   * 中包含数值或其他约束，那么如果要使用的边界部分的节点已经在约束列表中，那么新的约束将被添加或覆盖旧的约束。这可以通过使用不均匀约束来处理。请注意，当结合自适应网格和这种约束时，应该首先设置Dirichlet条件，然后通过悬挂节点约束完成，以确保离散化保持一致。参见
+   * @ref constraints  模块中关于冲突约束的讨论。
    * <h4>Arguments to this function</h4>
+   * 该函数明确用于FE_Nedelec元素，或包含FE_Nedelec元素的FESystem元素。如果在调用该函数时使用任何其他有限元，则会产生一个异常。用户在使用此函数时必须保证FESystem元素的正确设置，因为在这种情况下不可能进行检查。
+   * 这个函数的第二个参数表示有限元的第一个矢量分量，对应于你希望约束的矢量函数。例如，如果我们正在求解三维麦克斯韦方程，并且有分量
+   * $(E_x,E_y,E_z,B_x,B_y,B_z)$ ，我们想要边界条件
+   * $\vec{n}\times\vec{B}=\vec{n}\times\vec{f}$ ，那么 @p
+   * 第一_向量_分量将是3。在这个例子中， @p boundary_function
+   * 必须返回6个分量，前3个对应于 $\vec{E}$ ，后3个对应于
+   * $\vec{B}$  。隐含地假定矢量正好有 <code>dim</code>
+   * 个分量，这些分量的排序方式与我们通常对坐标方向的排序方式相同，即
+   * $x$  -， $y$  -，最后是 $z$  -分量。    参数 @p
+   * boundary_component 对应于面的编号 @p 边界_id。
+   * numbers::internal_face_boundary_id
+   * 是一个非法值，因为它是为内部面保留的。
+   * 最后一个参数被表示为计算边界点的法向量 $\vec{n}$ 。
+   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * This function is explicitly for use with FE_Nedelec elements, or with
-   * FESystem elements which contain FE_Nedelec elements. It will throw an
-   * exception if called with any other finite element. The user must ensure
-   * that FESystem elements are correctly setup when using this function as
-   * this check not possible in this case.
-   *
-   * The second argument of this function denotes the first vector component
-   * of the finite element which corresponds to the vector function that you
-   * wish to constrain. For example, if we are solving Maxwell's equations in
-   * 3D and have components $(E_x,E_y,E_z,B_x,B_y,B_z)$ and we want the
-   * boundary conditions $\vec{n}\times\vec{B}=\vec{n}\times\vec{f}$, then @p
-   * first_vector_component would be 3. The @p boundary_function must return 6
-   * components in this example, with the first 3 corresponding to $\vec{E}$
-   * and the second 3 corresponding to $\vec{B}$. Vectors are implicitly
-   * assumed to have exactly <code>dim</code> components that are ordered in
-   * the same way as we usually order the coordinate directions, i.e. $x$-,
-   * $y$-, and finally $z$-component.
-   *
-   * The parameter @p boundary_component corresponds to the number @p
-   * boundary_id of the face. numbers::internal_face_boundary_id is an illegal
-   * value, since it is reserved for interior faces.
-   *
-   * The last argument is denoted to compute the normal vector $\vec{n}$ at
-   * the boundary points.
-   *
-   *
-   * @ingroup constraints
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim, typename number>
   void
@@ -655,10 +500,9 @@ namespace VectorTools
 
 
   /**
-   * hp-namespace version of project_boundary_values_curl_conforming_l2
-   * (above).
-   *
+   * project_boundary_values_curl_conforming_l2（上文）的hp-namespace版本。
    * @ingroup constraints
+   *
    */
   template <int dim, typename number>
   void
@@ -673,50 +517,30 @@ namespace VectorTools
 
 
   /**
-   * Compute constraints that correspond to boundary conditions of the form
-   * $\vec{n}^T\vec{u}=\vec{n}^T\vec{f}$, i.e. the normal components of the
-   * solution $u$ and a given $f$ shall coincide. The function $f$ is given by
-   * @p boundary_function and the resulting constraints are added to @p
-   * constraints for faces with boundary indicator @p boundary_component.
+   * 计算对应于 $\vec{n}^T\vec{u}=\vec{n}^T\vec{f}$
+   * 形式的边界条件的约束，即解 $u$ 和给定 $f$
+   * 的法线分量应重合。函数 $f$ 由 @p boundary_function
+   * 给出，所得到的约束被添加到 @p
+   * 约束中，用于具有边界指标的面 @p boundary_component.
+   * 这个函数是明确写给FE_RaviartThomas元素使用的。因此，如果它与其他有限元一起被调用，就会抛出一个异常。
+   * 如果AffineConstraints对象 @p constraints
+   * 之前包含数值或其他约束，那么如果要使用的边界部分的一个节点已经在约束列表中，那么就会添加新的约束或覆盖旧的约束。这可以通过使用不均匀约束来处理。请注意，当结合自适应网格和这种约束时，应该首先设置Dirichlet条件，然后通过悬挂节点约束完成，以确保离散化保持一致。参见
+   * @ref constraints  模块中关于冲突约束的讨论。    参数 @p
+   * first_vector_component
+   * 表示有限元中的第一个矢量分量，对应于你要约束的矢量函数
+   * $\vec{u}$ 。隐含地假定矢量正好有 <code>dim</code>
+   * 个分量，这些分量的排序方式与我们通常对坐标方向的排序方式相同，即
+   * $x$  -， $y$  -，最后是 $z$  -分量。    参数 @p
+   * boundary_component 对应的是应用边界条件的面的 @p boundary_id
+   * 。    numbers::internal_face_boundary_id
+   * 是一个非法值，因为它被保留给内部面。 @p mapping
+   * 用于计算边界点的法向量 $\vec{n}$ 。    <h4>Computing
+   * constraints</h4>
+   * 为了计算约束条件，我们在位于边界的每个面上使用Brezzi,
+   * Fortin (Mixed and Hybrid Finite Element Methods, Springer,
+   * 1991)中提出的插值运算。
+   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * This function is explicitly written to use with the FE_RaviartThomas
-   * elements. Thus it throws an exception, if it is called with other finite
-   * elements.
-   *
-   * If the AffineConstraints object @p constraints contained values or other
-   * constraints before, the new ones are added or the old ones overwritten,
-   * if a node of the boundary part to be used was already in the list of
-   * constraints. This is handled by using inhomogeneous constraints. Please
-   * note that when combining adaptive meshes and this kind of constraints,
-   * the Dirichlet conditions should be set first, and then completed by
-   * hanging node constraints, in order to make sure that the discretization
-   * remains consistent. See the discussion on conflicting constraints in the
-   * module on
-   * @ref constraints.
-   *
-   * The argument @p first_vector_component denotes the first vector component
-   * in the finite element that corresponds to the vector function $\vec{u}$
-   * that you want to constrain. Vectors are implicitly assumed to have
-   * exactly <code>dim</code> components that are ordered in the same way as
-   * we usually order the coordinate directions, i.e., $x$-, $y$-, and finally
-   * $z$-component.
-   *
-   * The parameter @p boundary_component corresponds to the @p boundary_id of
-   * the faces where the boundary conditions are applied.
-   * numbers::internal_face_boundary_id is an illegal value, since it is
-   * reserved for interior faces. The @p mapping is used to compute the normal
-   * vector $\vec{n}$ at the boundary points.
-   *
-   * <h4>Computing constraints</h4>
-   *
-   * To compute the constraints we use interpolation operator proposed in
-   * Brezzi, Fortin (Mixed and Hybrid Finite Element Methods, Springer, 1991)
-   * on every face located at the boundary.
-   *
-   * @ingroup constraints
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim>
   void
@@ -729,12 +553,9 @@ namespace VectorTools
     const Mapping<dim> &         mapping);
 
   /**
-   * Same as above for the hp-namespace.
+   * 与上述hp-namespace的情况相同。
+   * @ingroup constraints   @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇表条目"
    *
-   * @ingroup constraints
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   template <int dim>
   void
@@ -753,3 +574,5 @@ namespace VectorTools
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_vector_tools_boundary_h
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/hp/mapping_collection_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2005 - 2021 by the deal.II authors
@@ -34,56 +33,69 @@ DEAL_II_NAMESPACE_OPEN
 namespace hp
 {
   /**
-   * 这个类实现了映射对象的集合，与 hp::FECollection
-   * 实现有限元类集合的方式相同。
-   * 它实现了doxygen文档中描述的 @ref hpcollection
-   * 模块中的概念。
-   * 尽管建议为hp-computation中使用的每个有限元种类提供一个适当的映射，但MappingCollection类实现了一个来自单一映射的转换构造器。
-   * 因此，可以只为 hp::FEValues 类提供一个映射，而不是
-   * hp::MappingCollection.
-   * 类。这是为了方便用户，因为许多简单的几何形状不需要沿边界提供不同的映射来达到最佳收敛率。
-   * 因此，提供一个单一的映射对象通常就足够了。参见
-   * hp::FEValues 类中关于为给定单元选择映射的规则。
-   * @ingroup hp hpcollection
+   * This class implements a collection of mapping objects in the same way as
+   * the hp::FECollection implements a collection of finite element classes.
    *
+   * It implements the concepts stated in the
+   * @ref hpcollection
+   * module described in the doxygen documentation.
+   *
+   * Although it is recommended to supply an appropriate mapping for each
+   * finite element kind used in a hp-computation, the MappingCollection class
+   * implements a conversion constructor from a single mapping.  Therefore it
+   * is possible to offer only a single mapping to the hp::FEValues class
+   * instead of a hp::MappingCollection. This is for the convenience of the
+   * user, as many simple geometries do not require different mappings along
+   * the boundary to achieve optimal convergence rates.  Hence providing a
+   * single mapping object will usually suffice. See the hp::FEValues class
+   * for the rules which mapping will be selected for a given cell.
+   *
+   * @ingroup hp hpcollection
    */
   template <int dim, int spacedim = dim>
   class MappingCollection : public Collection<Mapping<dim, spacedim>>
   {
   public:
     /**
-     * 默认构造函数。导致一个空的集合，以后可以用push_back()来填充。
-     *
+     * Default constructor. Leads to an empty collection that can later be
+     * filled using push_back().
      */
     MappingCollection() = default;
 
     /**
-     * 转换构造函数。这个构造函数从一个单一的映射中创建一个MappingCollection。如果需要的话，可以用push_back()添加更多的映射，尽管用同样的方式添加所有的映射可能会更清楚。
-     *
+     * Conversion constructor. This constructor creates a MappingCollection
+     * from a single mapping. More mappings can be added with push_back(), if
+     * desired, though it would probably be clearer to add all mappings the
+     * same way.
      */
     explicit MappingCollection(const Mapping<dim, spacedim> &mapping);
 
     /**
-     * 复制构造函数。
-     *
+     * Copy constructor.
      */
     MappingCollection(
       const MappingCollection<dim, spacedim> &mapping_collection);
 
     /**
-     * 构造函数。这个构造函数从传递给构造函数的一个或多个映射对象创建一个MappingCollection。为了使这个调用有效，所有的参数都需要是从Mapping<dim,spacedim>类派生的类型。
-     *
+     * Constructor. This constructor creates a MappingCollection from one or
+     * more mapping objects passed to the constructor. For this
+     * call to be valid, all arguments need to be of types derived
+     * from class Mapping<dim,spacedim>.
      */
     template <class... MappingTypes>
     explicit MappingCollection(const MappingTypes &... mappings);
 
     /**
-     * 向MappingCollection添加一个新的映射。一般来说，你会希望对映射使用与你使用的
-     * hp::FECollection 对象的元素相同的顺序。然而，与
-     * hp::QCollection::push_back()
-     * 函数讨论的相同的考虑因素也适用于当前的环境。
-     * 这个类创建了一个给定映射对象的副本，也就是说，你可以做像<tt>push_back(MappingQ<dim>(3));</tt>的事情。这个内部拷贝后来在整个集合被销毁时被这个对象销毁。
+     * Add a new mapping to the MappingCollection. Generally, you will
+     * want to use the same order for mappings as for the elements of
+     * the hp::FECollection object you use. However, the same
+     * considerations as discussed with the hp::QCollection::push_back()
+     * function also apply in the current context.
      *
+     * This class creates a copy of the given mapping object, i.e., you can
+     * do things like <tt>push_back(MappingQ<dim>(3));</tt>. The internal copy
+     * is later destroyed by this object upon destruction of the entire
+     * collection.
      */
     void
     push_back(const Mapping<dim, spacedim> &new_mapping);
@@ -91,27 +103,33 @@ namespace hp
 
 
   /**
-   * 库中的许多地方默认使用（bi-,tri-）线性映射，除非用户明确提供不同的映射来使用。在这些情况下，被调用的函数必须创建一个
-   * $Q_1$
-   * 映射对象，即一个MappingQGeneric(1)类型的对象。这是很昂贵的。在受影响的函数中创建这样的对象作为静态对象也是很昂贵的，因为静态对象在程序的整个生命周期中都不会被销毁，尽管它们只需要在代码第一次运行某个特定函数时创建一次。
-   * 为了避免在整个库的这些上下文中创建（静态或动态）
-   * $Q_1$ 映射对象，这个类定义了一个具有单一 $Q_1$
-   * 映射对象的静态映射集合。然后这个集合可以在所有需要这种集合的地方使用。
+   * Many places in the library by default use (bi-,tri-)linear mappings
+   * unless users explicitly provide a different mapping to use. In these
+   * cases, the called function has to create a $Q_1$ mapping object, i.e., an
+   * object of kind MappingQGeneric(1). This is costly. It would also be
+   * costly to create such objects as static objects in the affected
+   * functions, because static objects are never destroyed throughout the
+   * lifetime of a program, even though they only have to be created once the
+   * first time code runs through a particular function.
    *
+   * In order to avoid creation of (static or dynamic) $Q_1$ mapping objects
+   * in these contexts throughout the library, this class defines a static
+   * collection of mappings with a single $Q_1$ mapping object. This
+   * collection can then be used in all of those places where such a
+   * collection is needed.
    */
   template <int dim, int spacedim = dim>
   struct StaticMappingQ1
   {
   public:
     /**
-     * 公开可用的静态 $Q_1$  映射集合对象。
-     *
+     * The publicly available static $Q_1$ mapping collection object.
      */
     static MappingCollection<dim, spacedim> mapping_collection;
   };
 
 
-   /* --------------- inline functions ------------------- */ 
+  /* --------------- inline functions ------------------- */
 
   template <int dim, int spacedim>
   template <class... MappingTypes>
@@ -138,5 +156,3 @@ namespace hp
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

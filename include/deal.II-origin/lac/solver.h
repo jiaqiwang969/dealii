@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -36,93 +35,114 @@ class Vector;
 #endif
 
 /**
- * 一个用于迭代线性求解器的基类。该类提供了与内存池和确定求解器是否收敛的对象的接口。
+ * A base class for iterative linear solvers. This class provides interfaces
+ * to a memory pool and the objects that determine whether a solver has
+ * converged.
  *
- *  <h3>Requirements common to derived solver classes</h3>
- * 一般来说，迭代求解器不依赖于矩阵的任何特殊结构或存储格式。相反，它们只要求矩阵和向量定义某些操作，如矩阵-向量积，或向量之间的标量积。因此，这个类以及实现具体线性求解器的派生类及其成员函数是以矩阵和向量的类型为模板的。然而，矩阵或向量类型必须满足一些共同的要求，才有资格成为这个层次结构中的求解器的可接受类型。这些要求列举如下。
- * 我们下面展示的类不是任何具体的类。相反，它们旨在形成一个具体类必须符合的
- * "签名"。请注意，这个库中的矩阵和向量类当然符合这个接口；因此，SparseMatrix和Vector是这些类的好例子，因为它们提供了成员函数的必要签名（尽管它们也提供了许多解算器事实上不需要的接口
  *
- * - 例如，元素访问）。) 此外，你可能想看看 step-20 、 step-22 或LinearSolvers命名空间中的一些类，以了解如何定义可以作为线性求解器的线性运算符的类似矩阵的类。
- * 具体来说，可以传递给线性求解器的矩阵和向量类需要提供以下接口。
+ * <h3>Requirements common to derived solver classes</h3>
  *
+ * In general, iterative solvers do not rely on any special structure of
+ * matrices or the format of storage. Rather, they only require that matrices
+ * and vectors define certain operations such as matrix-vector products, or
+ * scalar products between vectors. Consequently, this class as well as the
+ * derived classes and their member functions implementing concrete linear
+ * solvers are templated on the types of matrices and vectors. However, there
+ * are some common requirements a matrix or vector type must fulfill to qualify
+ * as an acceptable type for the solvers in this hierarchy. These requirements
+ * are listed below.
+ *
+ * The classes we show below are not any concrete class. Rather, they are
+ * intended to form a "signature" which a concrete class has to conform to.
+ * Note that the matrix and vector classes within this library of course
+ * conform to this interface; therefore, SparseMatrix and Vector are good
+ * examples for these classes as they provide the necessary signatures of
+ * member functions (although they also provide many more interfaces that
+ * solvers do not in fact need -- for example, element access). In addition,
+ * you may want to take a look at step-20, step-22, or a number of classes
+ * in the LinearSolvers namespace for examples of how one can define
+ * matrix-like classes that can serve as linear operators for linear solvers.
+ *
+ * Concretely, matrix and vector classes that can be passed to a linear
+ * solver need to provide the following interfaces:
  * @code
  * class Matrix
  * {
- * public:
- *   // Application of matrix to vector src. Write result into dst.
- *   void vmult (VectorType       &dst,
- *               const VectorType &src) const;
+ *   public:
+ *     // Application of matrix to vector src. Write result into dst.
+ *     void vmult (VectorType       &dst,
+ *                 const VectorType &src) const;
  *
- *   // Application of transpose to a vector. This function is,
- *   // however, only used by some iterative methods.
- *   void Tvmult (VectorType       &dst,
- *                const VectorType &src) const;
+ *     // Application of transpose to a vector. This function is,
+ *     // however, only used by some iterative methods.
+ *     void Tvmult (VectorType       &dst,
+ *                  const VectorType &src) const;
  * };
- *
- *
  *
  *
  * class Vector
  * {
- * public:
- *   // Define value type of the entries
- *   using value_type = double;
+ *   public:
+ *     // Define value type of the entries
+ *     using value_type = double;
  *
- *   // Resize the current object to have the same size and layout as
- *   // the model_vector argument provided. The second argument
- *   // indicates whether to clear the current object after resizing.
- *   // The second argument must have a default value equal to false.
- *   void reinit (const Vector &model_vector,
- *                const bool  leave_elements_uninitialized = false);
+ *     // Resize the current object to have the same size and layout as
+ *     // the model_vector argument provided. The second argument
+ *     // indicates whether to clear the current object after resizing.
+ *     // The second argument must have a default value equal to false.
+ *     void reinit (const Vector &model_vector,
+ *                  const bool  leave_elements_uninitialized = false);
  *
- *   // Inner product between the current object and the argument.
- *   double operator (const Vector &v) const;
+ *     // Inner product between the current object and the argument.
+ *     double operator * (const Vector &v) const;
  *
- *   // Set all the vector entries to a constant scalar.
- *   Vector & operator = (const double a);
+ *     // Set all the vector entries to a constant scalar.
+ *     Vector & operator = (const double a);
  *
- *   // Deep copy of the vector.
- *   // Important if Vector contains pointers to data to duplicate data.
- *   Vector & operator = (const Vector &x);
+ *     // Deep copy of the vector.
+ *     // Important if Vector contains pointers to data to duplicate data.
+ *     Vector & operator = (const Vector &x);
  *
- *   // Addition of vectors
- *   void add (const Vector &x);
+ *     // Addition of vectors
+ *     void add (const Vector &x);
  *
- *   // Scaled addition of vectors
- *   void add (const double  a,
- *             const Vector &x);
+ *     // Scaled addition of vectors
+ *     void add (const double  a,
+ *               const Vector &x);
  *
- *   // Scaled addition of vectors
- *   void sadd (const double  a,
- *              const double  b,
- *              const Vector &x);
+ *     // Scaled addition of vectors
+ *     void sadd (const double  a,
+ *                const double  b,
+ *                const Vector &x);
  *
- *   // Scaled assignment of a vector
- *   void equ (const double  a,
- *             const Vector &x);
+ *     // Scaled assignment of a vector
+ *     void equ (const double  a,
+ *               const Vector &x);
  *
- *   // Combined scaled addition of vector x into the current object and
- *   // subsequent inner product of the current object with v.
- *   double add_and_dot (const double  a,
- *                       const Vector &x,
- *                       const Vector &v);
+ *     // Combined scaled addition of vector x into the current object and
+ *     // subsequent inner product of the current object with v.
+ *     double add_and_dot (const double  a,
+ *                         const Vector &x,
+ *                         const Vector &v);
  *
- *   // Multiply the elements of the current object by a fixed value.
- *   Vector & operator= (const double a);
+ *     // Multiply the elements of the current object by a fixed value.
+ *     Vector & operator *= (const double a);
  *
- *   // Return the l2 norm of the vector.
- *   double l2_norm () const;
+ *     // Return the l2 norm of the vector.
+ *     double l2_norm () const;
  * };
  * @endcode
  *
- * 此外，对于某些求解器来说，必须有一个全局函数<tt>swap(VectorType
- * &a, VectorType &b)</tt>来交换这两个向量的值。
- * 最后，求解器还期望有一个GrowingVectorMemory @<VectorType@>.
- * 的实例，这些实例由deal.II库为内置的向量类型提供，但必须为用户提供的向量类明确添加。否则，链接器会抱怨说它找不到发生在
- * @p SolverBase  类中的 GrowingVectorMemory
- * 的构造函数和析构函数。
+ * In addition, for some solvers there has to be a global function
+ * <tt>swap(VectorType &a, VectorType &b)</tt> that exchanges the values of
+ * the two vectors.
  *
+ * Finally, the solvers also expect an instantiation of
+ * GrowingVectorMemory@<VectorType@>. These instantiations are provided by the
+ * deal.II library for the built-in vector types, but must be explicitly added
+ * for user-provided vector classes. Otherwise, the linker will complain that
+ * it cannot find the constructors and destructors of GrowingVectorMemory that
+ * happen in the @p SolverBase class.
  *
  * @code
  * // Definition and implementation of vector class
@@ -138,168 +158,245 @@ class Vector;
  * template class GrowingVectorMemory<UserVector>;
  * @endcode
  *
- * 所用的预处理程序必须具有与矩阵相同的接口，也就是说，特别是它们必须提供一个成员函数
- * @p vmult ，表示预处理程序的应用。
+ * The preconditioners used must have the same interface as matrices, i.e. in
+ * particular they have to provide a member function @p vmult which denotes
+ * the application of the preconditioner.
  *
- *  <h3>AdditionalData</h3> 一些求解器需要额外的数据，比如 @p
- * SolverRichardson 类的阻尼参数 @p omega 或 @p SolverGMRES.
- * 的最大临时向量数。
- * 为了有一个标准化的求解器构造方式，每个求解器类都有一个<tt>struct
- * AdditionalData</tt>作为成员，并且所有求解器类的构造函数都接受这样一个参数。有些求解器不需要额外的数据，或者在当前不需要。对于这些求解器，结构
- * @p AdditionalData
- * 是空的，调用构造函数时可以不给额外的结构作为参数，因为默认
- * @p AdditionalData被设置。
- * 有了这个，创建一个求解器看起来就像下面的一个块。
  *
+ * <h3>AdditionalData</h3>
+ *
+ * Several solvers need additional data, like the damping parameter @p omega
+ * of the @p SolverRichardson class or the maximum number of temporary vectors
+ * of @p SolverGMRES.  To have a standardized way of constructing solvers,
+ * each solver class has a <tt>struct AdditionalData</tt> as a member, and
+ * constructors of all solver classes take such an argument. Some solvers need
+ * no additional data, or may not at the current time. For these solvers the
+ * struct @p AdditionalData is empty and calling the constructor may be done
+ * without giving the additional structure as an argument as a default @p
+ * AdditionalData is set by default.
+ *
+ * With this, creating a solver looks like one of the following blocks:
  * @code
- * // GMRES with restart every 50 iterations
- * SolverGMRES solver_gmres (solver_control, vector_memory,
- *                           SolverGMRES::AdditionalData(50));
+ *   // GMRES with restart every 50 iterations
+ *   SolverGMRES solver_gmres (solver_control, vector_memory,
+ *                             SolverGMRES::AdditionalData(50));
  *
- * // Richardson with omega=0.8
- * SolverRichardson solver_richardson (solver_control, vector_memory,
- *                                     SolverGMRES::AdditionalData(0.8));
+ *   // Richardson with omega=0.8
+ *   SolverRichardson solver_richardson (solver_control, vector_memory,
+ *                                       SolverGMRES::AdditionalData(0.8));
  *
- * // CG with default AdditionalData
- * SolverCG solver_cg (solver_control, vector_memory);
+ *   // CG with default AdditionalData
+ *   SolverCG solver_cg (solver_control, vector_memory);
  * @endcode
  *
- * 对所有求解器使用统一的构造参数列表，支持 @p
- * SolverSelector类；统一的接口使我们能够不变地使用这个类，即使某个求解器的参数类型数量发生了变化，仍然可以以简单的方式为每个可能使用的求解器向
- * @p SolverSelector  对象提供这些附加数据。
- *
- *  <h3>Observing the progress of linear solver iterations</h3>
- * SolverBase类是所有迭代求解器（如SolverCG、SolverGMRES等）的基类，它提供了一些设施，实际的求解器实现通过这些设施来确定迭代是否已经收敛、尚未收敛或已经失败。通常，这是用一个SolverControl类型的对象来完成的，该对象被传递给求解器类的构造器，并从它们传递给该基类的构造器。每一个解决线性问题的教程程序（从
- * step-3
- * 开始）都使用这个方法，并且在那里有详细的描述。然而，底层机制更为普遍，允许许多其他用途，以观察线性求解器的迭代进展。
- * 基本的方法是，迭代求解器在每次迭代结束时调用一个<i>signal</i>来确定解是否收敛。信号是一个类，从概念上讲，它有一个指向函数的列表，每次信号被调用时，这些函数都会被调用。在信号的语言中，被调用的函数被称为<i>slots</i>，人们可以在一个信号上附加任何数量的槽。我们在这里使用的信号和槽的实现是BOOST.signals2库中的一个）。一些细节可以说明下面发生了什么。
+ * Using a unified constructor parameter list for all solvers supports the @p
+ * SolverSelector class; the unified interface enables us to use this class
+ * unchanged even if the number of types of parameters to a certain solver
+ * changes and it is still possible in a simple way to give these additional
+ * data to the @p SolverSelector object for each solver which it may use.
  *
  *
+ * <h3>Observing the progress of linear solver iterations</h3>
  *
- * - 在现实中，信号对象并不存储指向函数的指针，而是作为槽的函数对象。每个槽必须符合一个特定的签名：在这里，它是一个可以用三个参数（当前线性迭代的编号、当前残差和当前迭代；更多的细节在connect()函数的文档中讨论）来调用的对象。一个指向具有该参数列表的函数的指针就满足了要求，但你也可以传递一个成员函数，其 <code>this</code> 参数已经用lambda函数绑定（见下面的例子）。
+ * The SolverBase class, being the base class for all of the iterative solvers
+ * such as SolverCG, SolverGMRES, etc, provides the facilities by which actual
+ * solver implementations determine whether the iteration is converged, not
+ * yet converged, or has failed. Typically, this is done using an object of
+ * type SolverControl that is passed to the solver classes's constructors and
+ * from them down to the constructor of this base class. Every one of the
+ * tutorial programs that solves a linear problem (starting with step-3) uses
+ * this method and it is described in detail there. However, the underlying
+ * mechanism is more general and allows for many other uses to observe how the
+ * linear solver iterations progress.
  *
+ * The basic approach is that the iterative solvers invoke a <i>signal</i> at
+ * the end of each iteration to determine whether the solution is converged. A
+ * signal is a class that has, conceptually, a list of pointers to functions
+ * and every time the signal is invoked, each of these functions are called.
+ * In the language of signals, the functions called are called <i>slots</i>
+ * and one can attach any number of slots to a signal. (The implementation of
+ * signals and slots we use here is the one from the BOOST.signals2 library.)
+ * A number of details may clarify what is happening underneath:
+ * - In reality, the signal object does not store pointers to functions, but
+ * function objects as slots. Each slot must conform to a particular signature:
+ * here, it is an object that can be called with three arguments (the number of
+ * the current linear iteration, the current residual, and the current iterate;
+ * more specifics are discussed in the documentation of the connect()
+ * function). A pointer to a function with this argument list satisfies the
+ * requirements, but you can also pass a member function whose
+ * <code>this</code> argument has been bound using a lambda function
+ * (see the example below).
+ * - Each of the slots will return a value that indicates whether the iteration
+ * should continue, should stop because it has succeeded, or stop because it has
+ * failed. The return type of slots is therefore of type SolverControl::State.
+ * The returned values from all of the slots will then have to be combined
+ * before they are returned to the iterative solver that invoked the signal.
+ * The way this works is that if at least one slot returned
+ * SolverControl::failure, then the combined value is SolverControl::failure;
+ * otherwise, if at least one slot returned SolverControl::iterate, then this
+ * is going to be the return value of the signal; finally, only if all slots
+ * return SolverControl::success will the signal's return value be
+ * SolverControl::success.
+ * - It may of course be that a particular slot has
+ * been connected to the signal only to observe how the solution or a specific
+ * part of it converges, but has no particular opinion on whether the
+ * iteration should continue or not. In such cases, the slot should just
+ * return SolverControl::success, which is the weakest of all return values
+ * according to the rules laid out above.
  *
+ * Given all this, it should now be obvious how the SolverControl object fits
+ * into this scheme: when a SolverControl object is passed to the constructor
+ * of the current class, we simply connect the SolverControl::check() function
+ * of that object as a slot to the signal we maintain here. In other words,
+ * since a SolverBase object is always constructed using a SolverControl object,
+ * there is always at least one slot associated with the signal, namely the
+ * one that determines convergence.
  *
- * - 每个槽将返回一个值，表示迭代是否应该继续，是否应该因为成功而停止，或者因为失败而停止。因此，槽的返回类型是 SolverControl::State. ，所有槽的返回值在返回给调用信号的迭代求解器之前必须进行合并。其工作方式是，如果至少有一个槽返回 SolverControl::failure, ，那么合并后的值就是 SolverControl::failure; ，否则，如果至少有一个槽返回 SolverControl::iterate, ，那么这将是信号的返回值；最后，只有当所有槽返回 SolverControl::success 时，信号的返回值才是 SolverControl::success.  。
+ * On the other hand, using the connect() member function, it is possible to
+ * connect any number of other slots to the signal to observe whatever it is
+ * you want to observe. The connect() function also returns an object that
+ * describes the connection from the signal to the slot, and the corresponding
+ * BOOST functions then allow you to disconnect the slot if you want.
  *
- *
- *
- * - 当然，也有可能某个槽连接到信号只是为了观察解决方案或其特定部分的收敛情况，但对是否应该继续迭代没有特别的意见。在这种情况下，槽应该只是返回 SolverControl::success, ，根据上面的规则，这是所有返回值中最弱的一个。
- * 鉴于这一切，现在应该很明显，SolverControl对象如何适合这个方案：当一个SolverControl对象被传递给当前类的构造函数时，我们只需将该对象的
- * SolverControl::check()
- * 函数作为槽连接到我们在这里维护的信号。换句话说，由于SolverBase对象总是使用SolverControl对象构造的，所以总是至少有一个槽与信号相关，即决定收敛的槽。
- * 另一方面，使用connect()成员函数，可以将任何数量的其他槽连接到信号上，以观察你想要观察的东西。connect()函数还返回一个描述从信号到槽的连接的对象，然后相应的BOOST函数允许你在需要时断开槽的连接。
- * 一个例子可以说明这些问题。在 step-3
- * 的教程程序中，让我们在主类中添加一个成员函数如下。
- *
+ * An example may illuminate these issues. In the step-3 tutorial program, let
+ * us add a member function as follows to the main class:
  * @code
  * SolverControl::State
  * Step3::write_intermediate_solution (
- * const unsigned int    iteration,
- * const double          , //check_value
- * const Vector<double> &current_iterate) const
+ *   const unsigned int    iteration,
+ *   const double          , //check_value
+ *   const Vector<double> &current_iterate) const
  * {
- * DataOut<2> data_out;
- * data_out.attach_dof_handler (dof_handler);
- * data_out.add_data_vector (current_iterate, "solution");
- * data_out.build_patches ();
+ *   DataOut<2> data_out;
+ *   data_out.attach_dof_handler (dof_handler);
+ *   data_out.add_data_vector (current_iterate, "solution");
+ *   data_out.build_patches ();
  *
- * std::ofstream output ("solution-"
- *                       + Utilities::int_to_string(iteration,4)
- *                       + ".vtu");
- * data_out.write_vtu (output);
+ *   std::ofstream output ("solution-"
+ *                         + Utilities::int_to_string(iteration,4)
+ *                         + ".vtu");
+ *   data_out.write_vtu (output);
  *
- * return SolverControl::success;
+ *   return SolverControl::success;
  * }
  * @endcode
- * 该函数满足了成为上面讨论的信号槽所需的签名，但例外的是它是一个成员函数，因此需要一个
- * <code>this</code>
- * 指针。该函数所做的是将给定的向量作为最后一个参数，并将其写入一个VTU格式的文件中，文件名由迭代的次数得出。
- * 这个函数可以通过修改 <code>Step3::solve()</code>
- * 函数来连接到CG求解器中，如下所示。
+ * The function satisfies the signature necessary to be a slot for the signal
+ * discussed above, with the exception that it is a member function and
+ * consequently requires a <code>this</code> pointer. What the function does
+ * is to take the vector given as last argument and write it into a file in
+ * VTU format with a file name derived from the number of the iteration.
  *
+ * This function can then be hooked into the CG solver by modifying the
+ * <code>Step3::solve()</code> function as follows:
  * @code
  * void Step3::solve ()
  * {
- * SolverControl           solver_control (1000, 1e-12);
- * SolverCG<>              solver (solver_control);
+ *   SolverControl           solver_control (1000, 1e-12);
+ *   SolverCG<>              solver (solver_control);
  *
- * solver.connect ([this](const unsigned int iteration,
- *                        const double check_value,
- *                        const Vector<double>current_iterate){
- *                   this->write_intermediate_solution(
- *                     iteration, check_value, current_iterate);
- *                 });
- * solver.solve (system_matrix, solution, system_rhs,
- *               PreconditionIdentity());
+ *   solver.connect ([this](const unsigned int iteration,
+ *                          const double check_value,
+ *                          const Vector<double> *current_iterate){
+ *                     this->write_intermediate_solution(
+ *                       iteration, check_value, current_iterate);
+ *                   });
+ *   solver.solve (system_matrix, solution, system_rhs,
+ *                 PreconditionIdentity());
  * }
  * @endcode
- * 这里使用lambda函数确保我们将有三个参数加上
- * <code>this</code>
- * 指针的成员函数转换为只取三个参数的函数，方法是将该函数的隐含
- * <code>this</code> 参数固定为当前函数中的 <code>this</code>
- * 的指针。
- * 众所周知，CG方法是一种平滑迭代（与更常用的Jacobi或SSOR迭代是平滑器的方式相同）。因此，上面的代码可以观察到解决方案在每次迭代中是如何变得越来越平滑的。这最好是通过用随机分布的数字初始化解向量来观察
- * $[-1,1]$ ，使用如下代码
+ * The use of a lambda function here ensures that we convert the
+ * member function with its three arguments plus the <code>this</code>
+ * pointer, to a function that only takes three arguments, by fixing the
+ * implicit <code>this</code> argument of the function to the
+ * <code>this</code> pointer in the current function.
  *
+ * It is well understood that the CG method is a smoothing iteration (in the
+ * same way as the more commonly used Jacobi or SSOR iterations are
+ * smoothers). The code above therefore allows to observe how the solution
+ * becomes smoother and smoother in every iteration. This is best observed by
+ * initializing the solution vector with randomly distributed numbers in
+ * $[-1,1]$, using code such as
  * @code
- * for (unsigned int i=0; i<solution.size(); ++i)
- *   solution(i) = 2.*rand()/RAND_MAX-1;
+ *   for (unsigned int i=0; i<solution.size(); ++i)
+ *     solution(i) = 2.*rand()/RAND_MAX-1;
  * @endcode
- * 利用这一点，槽将产生文件，当可视化时，在迭代0到5的过程中看起来像这样。
- * <table> <tr> <td>
- @image html "cg-monitor-smoothing-0.png"
+ * Using this, the slot will then generate files that when visualized look
+ * like this over the course of iterations zero to five: <table> <tr> <td>
+ * @image html "cg-monitor-smoothing-0.png"
  * </td> <td>
- @image html "cg-monitor-smoothing-1.png"
+ * @image html "cg-monitor-smoothing-1.png"
  * </td> <td>
- @image html "cg-monitor-smoothing-2.png"
+ * @image html "cg-monitor-smoothing-2.png"
  * </td> </tr> <tr> <td>
- @image html "cg-monitor-smoothing-3.png"
+ * @image html "cg-monitor-smoothing-3.png"
  * </td> <td>
- @image html "cg-monitor-smoothing-4.png"
+ * @image html "cg-monitor-smoothing-4.png"
  * </td> <td>
- @image html "cg-monitor-smoothing-5.png"
+ * @image html "cg-monitor-smoothing-5.png"
  * </td> </tr> </table>
  *
- *
  * @ingroup Solvers
- *
  */
 template <class VectorType = Vector<double>>
 class SolverBase : public Subscriptor
 {
 public:
   /**
-   * 底层向量类型的一个别名
-   *
+   * An alias for the underlying vector type
    */
   using vector_type = VectorType;
 
   /**
-   * 构造函数。接受一个评估收敛条件的控制对象，以及一个允许求解器为临时对象分配内存的对象。
-   * 在这两个对象中，都存储了一个引用，所以用户有责任保证这两个参数的寿命至少与求解器对象的寿命一样长。
+   * Constructor. Takes a control object which evaluates the conditions for
+   * convergence, and an object that allows solvers to allocate memory for
+   * temporary objects.
    *
+   * Of both objects, a reference is stored, so it is the user's
+   * responsibility to guarantee that the lifetime of the two arguments is at
+   * least as long as that of the solver object.
    */
   SolverBase(SolverControl &           solver_control,
              VectorMemory<VectorType> &vector_memory);
 
   /**
-   * 构造函数。接受一个控制对象，该对象评估收敛的条件。与其他构造函数不同，该构造函数指定一个GrowingVectorMemory类型的内部对象来分配内存。
-   * 对控制对象的引用被存储，所以用户有责任保证该参数的寿命至少与求解器对象的寿命一样长。
+   * Constructor. Takes a control object which evaluates the conditions for
+   * convergence. In contrast to the other constructor, this constructor
+   * designates an internal object of type GrowingVectorMemory to allocate
+   * memory.
    *
+   * A reference to the control object is stored, so it is the user's
+   * responsibility to guarantee that the lifetime of the argument is at least
+   * as long as that of the solver object.
    */
   SolverBase(SolverControl &solver_control);
 
   /**
-   * 连接一个将在迭代求解器中被定期调用的函数对象。这个函数用于将监视器附加到迭代求解器上，以确定何时发生收敛，或者只是观察迭代的进度。更多信息请参见该类的文档。
-   * @param  槽
-   * 这里指定的函数对象将在每次调用时接收当前迭代的编号、用于检查收敛的值（通常是当前迭代相对于要解决的线性系统的残差）以及当前迭代的当前最佳可用猜测。请注意，有些求解器并不是在每次迭代中都更新近似解，而只是在确定收敛或失败后才更新（GMRES就是一个例子）；在这种情况下，作为信号的最后一个参数传递的向量只是在信号被调用时的最佳近似值，而不是在信号的返回值表明迭代应该终止时将返回的向量。函数对象必须返回一个
-   * SolverControl::State
-   * 值，表明迭代是否应该继续，已经失败，或者已经成功。然后，所有连接的函数的结果将被结合起来，以确定迭代应该发生什么。
-   * @return
-   * 一个连接对象，表示从信号到函数对象的连接。它可以用来再次断开函数对象与信号的连接。关于连接管理的更多信息，请参见BOOST
-   * Signals2库的文档。
+   * Connect a function object that will be called periodically within
+   * iterative solvers. This function is used to attach monitors to iterative
+   * solvers, either to determine when convergence has happened, or simply to
+   * observe the progress of an iteration. See the documentation of this class
+   * for more information.
    *
+   * @param slot A function object specified here will, with each call,
+   * receive the number of the current iteration, the value that is used to
+   * check for convergence (typically the residual of the current iterate with
+   * respect to the linear system to be solved) and the currently best
+   * available guess for the current iterate. Note that some solvers do not
+   * update the approximate solution in every iteration but only after
+   * convergence or failure has been determined (GMRES is an example); in such
+   * cases, the vector passed as the last argument to the signal is simply the
+   * best approximate at the time the signal is called, but not the vector
+   * that will be returned if the signal's return value indicates that the
+   * iteration should be terminated. The function object must return a
+   * SolverControl::State value that indicates whether the iteration should
+   * continue, has failed, or has succeeded. The results of all connected
+   * functions will then be combined to determine what should happen with the
+   * iteration.
+   *
+   * @return A connection object that represents the connection from the
+   * signal to the function object. It can be used to disconnect the function
+   * object again from the signal. See the documentation of the BOOST Signals2
+   * library for more information on connection management.
    */
   boost::signals2::connection
   connect(
@@ -312,40 +409,25 @@ public:
 
 protected:
   /**
-   * 一个静态的向量内存对象，只要没有给构造函数提供这样的对象，就可以使用。
-   *
+   * A static vector memory object to be used whenever no such object has been
+   * given to the constructor.
    */
   mutable GrowingVectorMemory<VectorType> static_vector_memory;
 
   /**
-   * 对一个为辅助向量提供内存的对象的引用。
-   *
+   * A reference to an object that provides memory for auxiliary vectors.
    */
   VectorMemory<VectorType> &memory;
 
 private:
   /**
-   * 一个类，其operator()结合了两个状态，表明我们应该继续迭代还是停止，并返回一个占优势的状态。其规则是
-   *
-   *
-   *
-   *
-   *
-   * - 如果两个状态中的一个表示失败，则返回失败。
-   *
-   *
-   *
-   *
-   *
-   * - 否则，如果两个状态中的一个表示要继续迭代，那么就继续迭代。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - 否则，返回成功。
-   *
+   * A class whose operator() combines two states indicating whether we should
+   * continue iterating or stop, and returns a state that dominates. The rules
+   * are:
+   * - If one of the two states indicates failure, return failure.
+   * - Otherwise, if one of the two states indicates to continue iterating, then
+   * continue iterating.
+   * - Otherwise, return success.
    */
   struct StateCombiner
   {
@@ -362,9 +444,24 @@ private:
 
 protected:
   /**
-   * 一个信号，迭代求解器可以在每次迭代结束时（或以其他周期性方式）执行，以了解我们是否应该继续迭代。该信号可以调用一个或多个槽，每个槽都会自己做出这个判断，而所有槽的结果（函数调用）将由StateCombiner对象决定。
-   * 传递给信号的参数是：（i）当前迭代的编号；（ii）用于确定收敛的值（通常是残差，但在其他情况下可以使用其他量，只要它们在迭代接近线性系统的解时收敛为零）；以及（iii）对应于信号被调用时的解的当前最佳猜测的矢量。请注意，有些求解器并不是在每次迭代中都更新近似解，而只是在确定收敛或失败后才更新（GMRES就是一个例子）；在这种情况下，作为信号的最后一个参数传递的向量只是在信号被调用时的最佳近似值，而不是在信号的返回值表明迭代应该终止时将返回的向量。
+   * A signal that iterative solvers can execute at the end of every iteration
+   * (or in an otherwise periodic fashion) to find out whether we should
+   * continue iterating or not. The signal may call one or more slots that
+   * each will make this determination by themselves, and the result over all
+   * slots (function calls) will be determined by the StateCombiner object.
    *
+   * The arguments passed to the signal are (i) the number of the current
+   * iteration; (ii) the value that is used to determine convergence
+   * (oftentimes the residual, but in other cases other quantities may be used
+   * as long as they converge to zero as the iterate approaches the solution
+   * of the linear system); and (iii) a vector that corresponds to the current
+   * best guess for the solution at the point where the signal is called. Note
+   * that some solvers do not update the approximate solution in every
+   * iteration but only after convergence or failure has been determined
+   * (GMRES is an example); in such cases, the vector passed as the last
+   * argument to the signal is simply the best approximate at the time the
+   * signal is called, but not the vector that will be returned if the
+   * signal's return value indicates that the iteration should be terminated.
    */
   boost::signals2::signal<
     SolverControl::State(const unsigned int iteration,
@@ -376,7 +473,7 @@ protected:
 
 
 
- /*-------------------------------- Inline functions ------------------------*/ 
+/*-------------------------------- Inline functions ------------------------*/
 
 
 template <class VectorType>
@@ -468,5 +565,3 @@ SolverBase<VectorType>::connect(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

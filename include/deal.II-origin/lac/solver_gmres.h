@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/solver_gmres_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -38,22 +37,22 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup Solvers */ 
- /*@{*/ 
+/*!@addtogroup Solvers */
+/*@{*/
 
 namespace internal
 {
   /**
-   * 一个用于GMRES求解器的辅助类的命名空间。
-   *
+   * A namespace for a helper class to the GMRES solver.
    */
   namespace SolverGMRESImplementation
   {
     /**
-     * 用于保存临时向量的类。
-     * 一旦需要，这个类就会自动分配一个新的向量。
-     * 未来的版本还应该能够自动转移向量，避免重新启动。
+     * Class to hold temporary vectors.  This class automatically allocates a
+     * new vector, once it is needed.
      *
+     * A future version should also be able to shift through vectors
+     * automatically, avoiding restart.
      */
 
     template <typename VectorType>
@@ -61,37 +60,34 @@ namespace internal
     {
     public:
       /**
-       * 构造函数。准备一个长度为 @p  max_size的 @p VectorType
-       * 数组。
-       *
+       * Constructor. Prepares an array of @p VectorType of length @p
+       * max_size.
        */
       TmpVectors(const unsigned int max_size, VectorMemory<VectorType> &vmem);
 
       /**
-       * 销毁器。删除所有分配的向量。
-       *
+       * Destructor. Delete all allocated vectors.
        */
       ~TmpVectors() = default;
 
       /**
-       * 获取向量编号  @p i.
-       * 如果这个向量之前未被使用，会发生错误。
-       *
+       * Get vector number @p i. If this vector was unused before, an error
+       * occurs.
        */
       VectorType &operator[](const unsigned int i) const;
 
       /**
-       * 获取向量编号  @p i.  必要时分配它。
-       * 如果必须分配一个向量，则使用 @p temp
-       * 将其重新设定为适当的尺寸。
+       * Get vector number @p i. Allocate it if necessary.
        *
+       * If a vector must be allocated, @p temp is used to reinit it to the
+       * proper dimensions.
        */
       VectorType &
       operator()(const unsigned int i, const VectorType &temp);
 
       /**
-       * 返回数据向量的大小。它在求解器中用于存储Arnoldi向量。
-       *
+       * Return size of data vector. It is used in the solver to store
+       * the Arnoldi vectors.
        */
       unsigned int
       size() const;
@@ -99,14 +95,12 @@ namespace internal
 
     private:
       /**
-       * 获得向量的池子。
-       *
+       * Pool where vectors are obtained from.
        */
       VectorMemory<VectorType> &mem;
 
       /**
-       * 用于存储向量的字段。
-       *
+       * Field for storing the vectors.
        */
       std::vector<typename VectorMemory<VectorType>::Pointer> data;
     };
@@ -114,44 +108,83 @@ namespace internal
 } // namespace internal
 
 /**
- * 重启预设条件的直接广义最小残差法的实现。停止的标准是残差的规范。
- * AdditionalData结构包含使用的临时向量的数量。阿诺尔迪基的大小是这个数字减去3。此外，它允许你选择右预处理或左预处理。默认是左预处理。最后，它包括一个标志，表明是否使用默认残差作为停止标准。
+ * Implementation of the Restarted Preconditioned Direct Generalized Minimal
+ * Residual Method. The stopping criterion is the norm of the residual.
  *
- *  <h3>Left versus right preconditioning</h3> @p AdditionalData
- * 允许你在左和右预处理之间进行选择。正如预期的那样，这将分别在对系统<i>P<sup>-1</sup>A</i>和<i>AP<sup>-1</sup></i>的求解之间切换。
- * 第二个结果是用来衡量收敛性的残差类型。对于左预处理，这是<b>preconditioned</b>的残差，而对于右预处理，它是未预处理系统的残差。
- * 可以选择使用标志 AdditionalData::use_default_residual.
- * 来覆盖这一行为。<tt>true</tt>值是指上一段描述的行为，而<tt>false</tt>则是恢复它。但是要注意，在这种情况下必须计算额外的残差，阻碍了求解器的整体性能。
- *
- *  <h3>The size of the Arnoldi basis</h3> 最大的基数大小是由
- * AdditionalData::max_n_tmp_vectors,
- * 控制的，它是这个数字减去2。如果迭代步数超过这个数字，所有的基向量都会被丢弃，并从目前得到的近似值重新开始迭代。
- * 请注意，GMRes的最小化特性只涉及到Arnoldi基所跨越的Krylov空间。因此，重新启动的GMRes不再是<b>not</b>的最小化。基长的选择是内存消耗和收敛速度之间的权衡，因为较长的基意味着在更大的空间内实现最小化。
- * 关于使用该类对矩阵和向量的要求，请参见Solver基类的文档。
- *
- *  <h3>Observing the progress of linear solver iterations</h3>
- * 这个类的solve()函数使用Solver基类中描述的机制来确定收敛性。这个机制也可以用来观察迭代的进度。
- *
- *  <h3>Eigenvalue and condition number estimates</h3>
- * 该类可以在求解过程中估计特征值和条件数。这是在内部迭代过程中通过创建海森堡矩阵来实现的。特征值被估计为海森堡矩阵的特征值，条件数被估计为海森堡矩阵的最大和最小奇异值的比率。估算值可以通过使用
- * @p  connect_condition_number_slot和 @p connect_eigenvalues_slot.
- * 连接一个函数作为槽来获得，然后这些槽将被解算器以估算值为参数调用。
+ * The AdditionalData structure contains the number of temporary vectors used.
+ * The size of the Arnoldi basis is this number minus three. Additionally, it
+ * allows you to choose between right or left preconditioning. The default is
+ * left preconditioning. Finally it includes a flag indicating whether or not
+ * the default residual is used as stopping criterion.
  *
  *
+ * <h3>Left versus right preconditioning</h3>
+ *
+ * @p AdditionalData allows you to choose between left and right
+ * preconditioning. As expected, this switches between solving for the systems
+ * <i>P<sup>-1</sup>A</i> and <i>AP<sup>-1</sup></i>, respectively.
+ *
+ * A second consequence is the type of residual which is used to measure
+ * convergence. With left preconditioning, this is the <b>preconditioned</b>
+ * residual, while with right preconditioning, it is the residual of the
+ * unpreconditioned system.
+ *
+ * Optionally, this behavior can be overridden by using the flag
+ * AdditionalData::use_default_residual. A <tt>true</tt> value refers to the
+ * behavior described in the previous paragraph, while <tt>false</tt> reverts
+ * it. Be aware though that additional residuals have to be computed in this
+ * case, impeding the overall performance of the solver.
+ *
+ *
+ * <h3>The size of the Arnoldi basis</h3>
+ *
+ * The maximal basis size is controlled by AdditionalData::max_n_tmp_vectors,
+ * and it is this number minus 2. If the number of iteration steps exceeds
+ * this number, all basis vectors are discarded and the iteration starts anew
+ * from the approximation obtained so far.
+ *
+ * Note that the minimizing property of GMRes only pertains to the Krylov
+ * space spanned by the Arnoldi basis. Therefore, restarted GMRes is
+ * <b>not</b> minimizing anymore. The choice of the basis length is a trade-
+ * off between memory consumption and convergence speed, since a longer basis
+ * means minimization over a larger space.
+ *
+ * For the requirements on matrices and vectors in order to work with this
+ * class, see the documentation of the Solver base class.
+ *
+ *
+ * <h3>Observing the progress of linear solver iterations</h3>
+ *
+ * The solve() function of this class uses the mechanism described in the
+ * Solver base class to determine convergence. This mechanism can also be used
+ * to observe the progress of the iteration.
+ *
+ *
+ * <h3>Eigenvalue and condition number estimates</h3>
+ *
+ * This class can estimate eigenvalues and condition number during the
+ * solution process. This is done by creating the Hessenberg matrix during the
+ * inner iterations. The eigenvalues are estimated as the eigenvalues of the
+ * Hessenberg matrix and the condition number is estimated as the ratio of the
+ * largest and smallest singular value of the Hessenberg matrix. The estimates
+ * can be obtained by connecting a function as a slot using @p
+ * connect_condition_number_slot and @p connect_eigenvalues_slot. These slots
+ * will then be called from the solver with the estimates as argument.
  */
 template <class VectorType = Vector<double>>
 class SolverGMRES : public SolverBase<VectorType>
 {
 public:
   /**
-   * 标准化的数据结构，用于向求解器输送额外的数据。
-   *
+   * Standardized data struct to pipe additional data to the solver.
    */
   struct AdditionalData
   {
     /**
-     * 构造函数。默认情况下，设置临时向量的数量为30，即每28次迭代做一次重启。同时从左边开始设置预设条件，停止准则的残差为默认残差，仅在必要时进行重新正交。
-     *
+     * Constructor. By default, set the number of temporary vectors to 30,
+     * i.e. do a restart every 28 iterations. Also set preconditioning from
+     * left, the residual of the stopping criterion to the default residual,
+     * and re-orthogonalization only if necessary.
      */
     explicit AdditionalData(const unsigned int max_n_tmp_vectors     = 30,
                             const bool         right_preconditioning = false,
@@ -159,56 +192,56 @@ public:
                             const bool force_re_orthogonalization    = false);
 
     /**
-     * 临时向量的最大数量。这个参数控制Arnoldi基的大小，由于历史原因，这个参数是#max_n_tmp_vectors-2。SolverGMRES假设至少有三个临时向量，所以这个值必须大于或等于3。
-     *
+     * Maximum number of temporary vectors. This parameter controls the size
+     * of the Arnoldi basis, which for historical reasons is
+     * #max_n_tmp_vectors-2. SolverGMRES assumes that there are at least three
+     * temporary vectors, so this value must be greater than or equal to three.
      */
     unsigned int max_n_tmp_vectors;
 
     /**
-     * 右侧预处理的标志。
-     * @note
-     * 在左和右预处理之间的改变也会改变残差的评估方式。参见SolverGMRES中的相应章节。
+     * Flag for right preconditioning.
      *
+     * @note Change between left and right preconditioning will also change
+     * the way residuals are evaluated. See the corresponding section in the
+     * SolverGMRES.
      */
     bool right_preconditioning;
 
     /**
-     * 用于衡量收敛性的默认残差的标志。
-     *
+     * Flag for the default residual that is used to measure convergence.
      */
     bool use_default_residual;
 
     /**
-     * 在每一步中强制对正交基进行重新正交的标志。
-     * 如果设置为false，求解器每5次迭代都会自动检查正交性的损失，只有在必要时才启用重新正交化。
-     *
+     * Flag to force re-orthogonalization of orthonormal basis in every step.
+     * If set to false, the solver automatically checks for loss of
+     * orthogonality every 5 iterations and enables re-orthogonalization only
+     * if necessary.
      */
     bool force_re_orthogonalization;
   };
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   SolverGMRES(SolverControl &           cn,
               VectorMemory<VectorType> &mem,
               const AdditionalData &    data = AdditionalData());
 
   /**
-   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
-   *
+   * Constructor. Use an object of type GrowingVectorMemory as a default to
+   * allocate memory.
    */
   SolverGMRES(SolverControl &cn, const AdditionalData &data = AdditionalData());
 
   /**
-   * 复制构造函数被删除。
-   *
+   * The copy constructor is deleted.
    */
   SolverGMRES(const SolverGMRES<VectorType> &) = delete;
 
   /**
-   * 求解x的线性系统 $Ax=b$ 。
-   *
+   * Solve the linear system $Ax=b$ for x.
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -218,16 +251,20 @@ public:
         const PreconditionerType &preconditioner);
 
   /**
-   * 连接一个槽来检索估计的条件数。如果every_iteration=true，则在每次外部迭代时调用，否则在迭代结束时调用一次（即因为已经达到收敛，或者因为检测到分歧）。
-   *
+   * Connect a slot to retrieve the estimated condition number. Called on each
+   * outer iteration if every_iteration=true, otherwise called once when
+   * iterations are ended (i.e., either because convergence has been achieved,
+   * or because divergence has been detected).
    */
   boost::signals2::connection
   connect_condition_number_slot(const std::function<void(double)> &slot,
                                 const bool every_iteration = false);
 
   /**
-   * 连接一个槽来检索估计的特征值。如果every_iteration=true，则在每次外部迭代时调用，否则在迭代结束时调用一次（即，要么因为已经实现收敛，要么因为检测到分歧）。
-   *
+   * Connect a slot to retrieve the estimated eigenvalues. Called on each
+   * outer iteration if every_iteration=true, otherwise called once when
+   * iterations are ended (i.e., either because convergence has been achieved,
+   * or because divergence has been detected).
    */
   boost::signals2::connection
   connect_eigenvalues_slot(
@@ -235,8 +272,11 @@ public:
     const bool every_iteration = false);
 
   /**
-   * 连接一个槽，检索由初始矩阵在Krylov基上的投影得到的海森堡矩阵。如果every_iteration=true，则在每次外部迭代时调用，否则在迭代结束时调用一次（即因为已经达到收敛，或者因为检测到分歧）。
-   *
+   * Connect a slot to retrieve the Hessenberg matrix obtained by the
+   * projection of the initial matrix on the Krylov basis. Called on each
+   * outer iteration if every_iteration=true, otherwise called once when
+   * iterations are ended (i.e., either because convergence has been achieved,
+   * or because divergence has been detected).
    */
   boost::signals2::connection
   connect_hessenberg_slot(
@@ -244,8 +284,10 @@ public:
     const bool every_iteration = true);
 
   /**
-   * 连接一个槽，检索由Arnoldi算法生成的Krylov空间的基向量。当迭代完成时（即，因为已经达到收敛，或者因为检测到发散），一次性调用。
-   *
+   * Connect a slot to retrieve the basis vectors of the Krylov space
+   * generated by the Arnoldi algorithm. Called at once when iterations
+   * are completed (i.e., either because convergence has been achieved,
+   * or because divergence has been detected).
    */
   boost::signals2::connection
   connect_krylov_space_slot(
@@ -255,8 +297,8 @@ public:
 
 
   /**
-   * 连接一个槽，当向量被重新正交时，检索一个通知。
-   *
+   * Connect a slot to retrieve a notification when the vectors are
+   * re-orthogonalized.
    */
   boost::signals2::connection
   connect_re_orthogonalization_slot(const std::function<void(int)> &slot);
@@ -270,74 +312,72 @@ public:
 
 protected:
   /**
-   * 包括tmp向量的最大数量。
-   *
+   * Includes the maximum number of tmp vectors.
    */
   AdditionalData additional_data;
 
   /**
-   * 用来检索估计条件数的信号。在所有迭代结束时调用一次。
-   *
+   * Signal used to retrieve the estimated condition number. Called once when
+   * all iterations are ended.
    */
   boost::signals2::signal<void(double)> condition_number_signal;
 
   /**
-   * 用来检索估计条件数的信号。在每次外部迭代时被调用。
-   *
+   * Signal used to retrieve the estimated condition numbers. Called on each
+   * outer iteration.
    */
   boost::signals2::signal<void(double)> all_condition_numbers_signal;
 
   /**
-   * 用来检索估计的特征值的信号。在所有迭代结束时调用一次。
-   *
+   * Signal used to retrieve the estimated eigenvalues. Called once when all
+   * iterations are ended.
    */
   boost::signals2::signal<void(const std::vector<std::complex<double>> &)>
     eigenvalues_signal;
 
   /**
-   * 用来检索估计的特征值的信号。在每次外部迭代时被调用。
-   *
+   * Signal used to retrieve the estimated eigenvalues. Called on each outer
+   * iteration.
    */
   boost::signals2::signal<void(const std::vector<std::complex<double>> &)>
     all_eigenvalues_signal;
 
   /**
-   * 用于检索海森堡矩阵的信号。在所有迭代结束时调用一次。
-   *
+   * Signal used to retrieve the Hessenberg matrix. Called once when
+   * all iterations are ended.
    */
   boost::signals2::signal<void(const FullMatrix<double> &)> hessenberg_signal;
 
   /**
-   * 用于检索海森堡矩阵的信号。在每次外部迭代时被调用。
-   *
+   * Signal used to retrieve the Hessenberg matrix. Called on each outer
+   * iteration.
    */
   boost::signals2::signal<void(const FullMatrix<double> &)>
     all_hessenberg_signal;
 
   /**
-   * 用来检索Krylov空间基向量的信号。当所有迭代结束时调用一次。
-   *
+   * Signal used to retrieve the Krylov space basis vectors. Called once
+   * when all iterations are ended.
    */
   boost::signals2::signal<void(
     const internal::SolverGMRESImplementation::TmpVectors<VectorType> &)>
     krylov_space_signal;
 
   /**
-   * 当向量被重新正交化时，用于检索通知的信号。
-   *
+   * Signal used to retrieve a notification
+   * when the vectors are re-orthogonalized.
    */
   boost::signals2::signal<void(int)> re_orthogonalize_signal;
 
   /**
-   * 实现对残差准则的计算。
-   *
+   * Implementation of the computation of the norm of the residual.
    */
   virtual double
   criterion();
 
   /**
-   * 通过最后一列的基辅旋转，将上黑森伯格矩阵转化为三对角结构。
-   *
+   * Transformation of an upper Hessenberg matrix into tridiagonal structure
+   * by givens rotation of the last column
    */
   void
   givens_rotation(Vector<double> &h,
@@ -347,13 +387,14 @@ protected:
                   int             col) const;
 
   /**
-   * 使用修改后的Gram-Schmidt算法将向量 @p vv
-   * 与第一个参数给出的 @p dim （正交）向量正交。
-   * 用于正交的因子存储在 @p h. 中。 布尔值 @p
-   * re_orthogonalize指定是否应将修正的Gram-Schmidt算法应用两次。该算法每隔五步就会检查程序中的正交性损失，并在这种情况下将该标志设置为真。
-   * 所有随后的迭代都使用重新正交。
-   * 如果信号re_orthogonalize_signal被连接，则调用它。
-   *
+   * Orthogonalize the vector @p vv against the @p dim (orthogonal) vectors
+   * given by the first argument using the modified Gram-Schmidt algorithm.
+   * The factors used for orthogonalization are stored in @p h. The boolean @p
+   * re_orthogonalize specifies whether the modified Gram-Schmidt algorithm
+   * should be applied twice. The algorithm checks loss of orthogonality in
+   * the procedure every fifth step and sets the flag to true in that case.
+   * All subsequent iterations use re-orthogonalization.
+   * Calls the signal re_orthogonalize_signal if it is connected.
    */
   static double
   modified_gram_schmidt(
@@ -368,9 +409,10 @@ protected:
       boost::signals2::signal<void(int)>());
 
   /**
-   * 从内部迭代过程中产生的海森堡矩阵H_orig中估计出特征值。使用这些估计值来计算条件数。以这些估计值为参数调用信号eigenvalues_signal和
-   * cond_signal。
-   *
+   * Estimates the eigenvalues from the Hessenberg matrix, H_orig, generated
+   * during the inner iterations. Uses these estimate to compute the condition
+   * number. Calls the signals eigenvalues_signal and cond_signal with these
+   * estimates as arguments.
    */
   static void
   compute_eigs_and_cond(
@@ -383,71 +425,74 @@ protected:
     const boost::signals2::signal<void(double)> &cond_signal);
 
   /**
-   * 投射的系统矩阵
-   *
+   * Projected system matrix
    */
   FullMatrix<double> H;
 
   /**
-   * 用于反转的辅助矩阵  @p H  。
-   *
+   * Auxiliary matrix for inverting @p H
    */
   FullMatrix<double> H1;
 };
 
 /**
- * 实现具有灵活预处理的广义最小残差法（灵活的GMRES或FGMRES）。
- * 这个灵活版本的GMRES方法允许在每个迭代步骤中使用不同的预处理。因此，对于预处理器的不准确评估，它也更加稳健。一个重要的应用是在预处理程序中使用Krylov空间方法。与允许在左右预处理之间进行选择的SolverGMRES相反，这个求解器总是从右边应用预处理。
- * FGMRES在每个迭代步骤中需要两个向量，总共产生
- * <tt>2*SolverFGMRES::%AdditionalData::%max_basis_size+1</tt>
- * 个辅助向量。除此之外，与GMRES相比，FGMRES每次迭代所需的操作数量大致相同，只是在每次重启和solve()结束时少用一次预处理程序。
- * 更多细节见  @cite Saad1991  。
+ * Implementation of the Generalized minimal residual method with flexible
+ * preconditioning (flexible GMRES or FGMRES).
  *
+ * This flexible version of the GMRES method allows for the use of a different
+ * preconditioner in each iteration step. Therefore, it is also more robust
+ * with respect to inaccurate evaluation of the preconditioner. An important
+ * application is the use of a Krylov space method inside the
+ * preconditioner. As opposed to SolverGMRES which allows one to choose
+ * between left and right preconditioning, this solver always applies the
+ * preconditioner from the right.
  *
+ * FGMRES needs two vectors in each iteration steps yielding a total of
+ * <tt>2*SolverFGMRES::%AdditionalData::%max_basis_size+1</tt> auxiliary
+ * vectors. Otherwise, FGMRES requires roughly the same number of operations
+ * per iteration compared to GMRES, except one application of the
+ * preconditioner less at each restart and at the end of solve().
+ *
+ * For more details see @cite Saad1991.
  */
 template <class VectorType = Vector<double>>
 class SolverFGMRES : public SolverBase<VectorType>
 {
 public:
   /**
-   * 标准化的数据结构，用于向求解器输送额外的数据。
-   *
+   * Standardized data struct to pipe additional data to the solver.
    */
   struct AdditionalData
   {
     /**
-     * 构造函数。默认情况下，将最大基础尺寸设置为30。
-     *
+     * Constructor. By default, set the maximum basis size to 30.
      */
     explicit AdditionalData(const unsigned int max_basis_size = 30)
       : max_basis_size(max_basis_size)
     {}
 
     /**
-     * 最大基数大小。
-     *
+     * Maximum basis size.
      */
     unsigned int max_basis_size;
   };
 
   /**
-   * 构造函数。
-   *
+   * Constructor.
    */
   SolverFGMRES(SolverControl &           cn,
                VectorMemory<VectorType> &mem,
                const AdditionalData &    data = AdditionalData());
 
   /**
-   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
-   *
+   * Constructor. Use an object of type GrowingVectorMemory as a default to
+   * allocate memory.
    */
   SolverFGMRES(SolverControl &       cn,
                const AdditionalData &data = AdditionalData());
 
   /**
-   * 求解x的线性系统 $Ax=b$ 。
-   *
+   * Solve the linear system $Ax=b$ for x.
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -458,26 +503,23 @@ public:
 
 private:
   /**
-   * 额外的标志。
-   *
+   * Additional flags.
    */
   AdditionalData additional_data;
 
   /**
-   * 投射的系统矩阵
-   *
+   * Projected system matrix
    */
   FullMatrix<double> H;
 
   /**
-   * 用于反转的辅助矩阵  @p H  。
-   *
+   * Auxiliary matrix for inverting @p H
    */
   FullMatrix<double> H1;
 };
 
- /*@}*/ 
- /* --------------------- Inline and template functions ------------------- */ 
+/*@}*/
+/* --------------------- Inline and template functions ------------------- */
 
 
 #ifndef DOXYGEN
@@ -1249,5 +1291,3 @@ SolverFGMRES<VectorType>::solve(const MatrixType &        A,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

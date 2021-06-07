@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/fe_dg_vector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -34,35 +35,29 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * DG elements based on vector valued polynomials.
+ * 基于矢量值多项式的DG元素。
+ * 这些元素使用矢量值多项式空间，因为它们已经被引入H<sup>div</sup>和H<sup>curl</sup>符合的有限元，但不使用这些元素的通常连续性。因此，它们适用于涉及这些函数空间的DG和混合公式。
+ * 模板参数<tt>PolynomialType</tt>指的是一个矢量值的多项式空间，比如PolynomialsRaviartThomas或者PolynomialsNedelec。注意，多项式空间的维度和参数<tt>dim</tt>必须重合。
  *
- * These elements use vector valued polynomial spaces as they have been
- * introduced for H<sup>div</sup> and H<sup>curl</sup> conforming finite
- * elements, but do not use the usual continuity of these elements. Thus, they
- * are suitable for DG and hybrid formulations involving these function
- * spaces.
- *
- * The template argument <tt>PolynomialType</tt> refers to a vector valued
- * polynomial space like PolynomialsRaviartThomas or PolynomialsNedelec. Note
- * that the dimension of the polynomial space and the argument <tt>dim</tt>
- * must coincide.
  *
  * @ingroup febase
+ *
+ *
  */
 template <class PolynomialType, int dim, int spacedim = dim>
 class FE_DGVector : public FE_PolyTensor<dim, spacedim>
 {
 public:
   /**
-   * Constructor for the vector element of degree @p p.
+   * 程度为 @p p. 的向量元素的构造函数
+   *
    */
   FE_DGVector(const unsigned int p, MappingKind m);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns `FE_DGVector_` plus a piece of the name that is taken from what
-   * the polynomial object returns, plus `<dim>(degree)`, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。这个类返回`FE_DGVector_`加上一块取自多项式对象返回的名称，再加上`<dim>(degree)`，其中
+   * @p dim 和 @p degree 用适当的值代替。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -71,10 +66,10 @@ public:
   clone() const override;
 
   /**
-   * This function returns @p true, if the shape function @p shape_index has
-   * non-zero function values somewhere on the face @p face_index.
+   * 如果形状函数 @p shape_index
+   * 在面的某处有非零函数值，这个函数就会返回 @p true,
+   * 对于这个元素，我们总是返回 @p true.  。
    *
-   * For this element, we always return @p true.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
@@ -85,44 +80,35 @@ public:
 
 private:
   /**
-   * Only for internal use. Its full name is @p get_dofs_per_object_vector
-   * function and it creates the @p dofs_per_object vector that is needed
-   * within the constructor to be passed to the constructor of @p
-   * FiniteElementData.
+   * 仅供内部使用。它的全称是 @p get_dofs_per_object_vector
+   * 函数，它创建了 @p dofs_per_object
+   * 向量，在构造函数内需要传递给 @p
+   * FiniteElementData的构造函数。
+   *
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * Fields of cell-independent data.
+   * 与单元无关的数据字段。
+   * 关于这个类的一般用途的信息，请看基类的文档。
    *
-   * For information about the general purpose of this class, see the
-   * documentation of the base class.
    */
   class InternalData : public FiniteElement<dim>::InternalDataBase
   {
   public:
     /**
-     * Array with shape function values in quadrature points. There is one row
-     * for each shape function, containing values for each quadrature point.
-     * Since the shape functions are vector-valued (with as many components as
-     * there are space dimensions), the value is a tensor.
+     * 具有正交点的形状函数值的数组。每个形状函数都有一行，包含每个正交点的值。
+     * 由于形状函数是矢量值（有多少分量就有多少空间维度），所以值是一个张量。
+     * 在这个数组中，我们将形状函数的值存储在单元格上的正交点。然后，向实空间单元的转换只需与映射的雅各布系数相乘即可完成。
      *
-     * In this array, we store the values of the shape function in the
-     * quadrature points on the unit cell. The transformation to the real
-     * space cell is then simply done by multiplication with the Jacobian of
-     * the mapping.
      */
     std::vector<std::vector<Tensor<1, dim>>> shape_values;
 
     /**
-     * Array with shape function gradients in quadrature points. There is one
-     * row for each shape function, containing values for each quadrature
-     * point.
+     * 包含正交点的形状函数梯度的数组。每个形状函数都有一行，包含每个正交点的值。
+     * 我们将梯度存储在单元格的正交点上。然后我们只需要在访问实际单元格时应用转换（这是一个矩阵-向量乘法）。
      *
-     * We store the gradients in the quadrature points on the unit cell. We
-     * then only have to apply the transformation (which is a matrix-vector
-     * multiplication) when visiting an actual cell.
      */
     std::vector<std::vector<Tensor<2, dim>>> shape_gradients;
   };
@@ -132,28 +118,29 @@ private:
 
 
 /**
- * A vector-valued DG element based on the polynomials space of FE_Nedelec.
- * This class implements a "broken" finite element
- * space that is discontinuous between cells and on each cell has shape
- * functions that equal those of the Nedelec element.
+ * 一个基于FE_Nedelec的多项式空间的矢量值DG元素。这个类实现了一个
+ * "破碎的
+ * "有限元空间，它在单元之间是不连续的，在每个单元上的形状函数等于Nedelec元素的形状函数。
+ * 相关的类FE_DGRT用于  step-61  。
  *
- * The related class FE_DGRT is used in step-61.
  * @ingroup fe
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_DGNedelec : public FE_DGVector<PolynomialsNedelec<dim>, dim, spacedim>
 {
 public:
   /**
-   * Constructor for the discontinuous N&eacute;d&eacute;lec element of degree
-   * @p p.
+   * 度的不连续N&eacute;d&eacute;lec元素的构造函数  @p p.  。
+   *
    */
   FE_DGNedelec(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_DGNedelec<dim>(degree)</tt>, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_DGNedelec<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 被适当的值替换。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -162,14 +149,15 @@ public:
 
 
 /**
- * A vector-valued DG element based on the polynomials space of
- * FE_RaviartThomas. This class implements a "broken" finite element
- * space that is discontinuous between cells and on each cell has shape
- * functions that equal those of the Raviart-Thomas element.
+ * 一个基于FE_RaviartThomas的多项式空间的矢量值DG元素。该类实现了一个
+ * "破碎的
+ * "有限元空间，在单元之间是不连续的，在每个单元上的形状函数与Raviart-Thomas元的形状函数相同。
+ * 该类在  step-61  中使用。
  *
- * The class is used in step-61.
  *
  * @ingroup fe
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_DGRaviartThomas
@@ -177,14 +165,15 @@ class FE_DGRaviartThomas
 {
 public:
   /**
-   * Constructor for the Raviart-Thomas element of degree @p p.
+   * 度的拉维奥特-托马斯元素的构造函数  @p p.  。
+   *
    */
   FE_DGRaviartThomas(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_DGRaviartThomas<dim>(degree)</tt>, with @p dim and @p
-   * degree replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_DGRaviartThomas<dim>(degree)</tt>，其中
+   * @p dim 和 @p 度被适当的值取代。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -193,28 +182,30 @@ public:
 
 
 /**
- * A vector-valued DG element based on the polynomials space of FE_BDM.
- * This class implements a "broken" finite element
- * space that is discontinuous between cells and on each cell has shape
- * functions that equal those of the BDM element.
+ * 一个基于FE_BDM的多项式空间的矢量值DG元素。该类实现了一个
+ * "破碎的
+ * "有限元空间，在单元之间是不连续的，在每个单元上的形状函数与BDM元素相同。
+ * 相关的类FE_DGRT用于  step-61  。
  *
- * The related class FE_DGRT is used in step-61.
  *
  * @ingroup fe
+ *
+ *
  */
 template <int dim, int spacedim = dim>
 class FE_DGBDM : public FE_DGVector<PolynomialsBDM<dim>, dim, spacedim>
 {
 public:
   /**
-   * Constructor for the discontinuous BDM element of degree @p p.
+   * 度的不连续BDM元素的构造函数  @p p.  。
+   *
    */
   FE_DGBDM(const unsigned int p);
 
   /**
-   * Return a string that uniquely identifies a finite element. This class
-   * returns <tt>FE_DGBDM<dim>(degree)</tt>, with @p dim and @p degree
-   * replaced by appropriate values.
+   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_DGBDM<dim>(degree)</tt>，其中
+   * @p dim 和 @p degree 由适当的值代替。
+   *
    */
   virtual std::string
   get_name() const override;
@@ -224,3 +215,5 @@ public:
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

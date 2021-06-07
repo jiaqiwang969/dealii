@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/polynomial_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -31,84 +30,111 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup  多项式  @{ .
- *
+ * @addtogroup Polynomials
+ * @{
  */
 
 /**
- * 一个命名空间，与描述1d多项式空间有关的类在其中被声明。
- *
- *
+ * A namespace in which classes relating to the description of 1d polynomial
+ * spaces are declared.
  */
 namespace Polynomials
 {
   /**
-   * 所有一维多项式的基类。一个多项式在这个类中由它的系数来表示，系数是通过构造函数或派生类来设置的。
-   * 多项式的评估有两条路径。一个是基于系数，通过Horner方案进行评估，这是一个强大的通用方案。对于根在单位区间内的高阶多项式，另一种更稳定的评估方法是通过根的乘积来提供。这种形式可用于特殊多项式，如Lagrange多项式或Legendre多项式，并与相应的构造器一起使用。为了获得这种更稳定的评估形式，必须使用拉格朗日多项式形式的根的构造器。如果做了一个改变根的操作，则表示法将被切换为系数形式。
-   * 这个类是TensorProductPolynomials类可能的模板参数的一个典型例子。
+   * Base class for all 1D polynomials. A polynomial is represented in this
+   * class by its coefficients, which are set through the constructor or by
+   * derived classes.
    *
+   * There are two paths for evaluation of polynomials. One is based on the
+   * coefficients which are evaluated through the Horner scheme which is a
+   * robust general-purpose scheme. An alternative and more stable evaluation
+   * of high-degree polynomials with roots in the unit interval is provided by
+   * a product in terms of the roots. This form is available for special
+   * polynomials such as Lagrange polynomials or Legendre polynomials and used
+   * with the respective constructor. To obtain this more stable evaluation
+   * form, the constructor with the roots in form of a Lagrange polynomial
+   * must be used. In case a manipulation is done that changes the roots, the
+   * representation is switched to the coefficient form.
+   *
+   * This class is a typical example of a possible template argument for the
+   * TensorProductPolynomials class.
    */
   template <typename number>
   class Polynomial : public Subscriptor
   {
   public:
     /**
-     * 构造函数。多项式的系数作为参数传递，表示多项式
-     * $\sum_i a[i] x^i$
-     * ，即数组的第一个元素表示常数项，第二个表示线性项，以此类推。因此这个对象所代表的多项式的度数是<tt>系数</tt>数组中的元素数减去1。
-     *
+     * Constructor. The coefficients of the polynomial are passed as
+     * arguments, and denote the polynomial $\sum_i a[i] x^i$, i.e. the first
+     * element of the array denotes the constant term, the second the linear
+     * one, and so on. The degree of the polynomial represented by this object
+     * is thus the number of elements in the <tt>coefficient</tt> array minus
+     * one.
      */
     Polynomial(const std::vector<number> &coefficients);
 
     /**
-     * 构造函数创建一个零度的多项式  @p n.  。
-     *
+     * Constructor creating a zero polynomial of degree @p n.
      */
     Polynomial(const unsigned int n);
 
     /**
-     * 拉格朗日多项式的构造函数和它的评估点。其思路是构造
-     * $\prod_{i\neq j} \frac{x-x_i}{x_j-x_i}$
-     * ，其中j是作为参数指定的评估点，支持点包含所有的点（包括x_j，内部将不被存储）。
-     *
+     * Constructor for a Lagrange polynomial and its point of evaluation. The
+     * idea is to construct $\prod_{i\neq j} \frac{x-x_i}{x_j-x_i}$, where j
+     * is the evaluation point specified as argument and the support points
+     * contain all points (including x_j, which will internally not be
+     * stored).
      */
     Polynomial(const std::vector<Point<1>> &lagrange_support_points,
                const unsigned int           evaluation_point);
 
     /**
-     * 默认构造函数创建一个非法对象。
-     *
+     * Default constructor creating an illegal object.
      */
     Polynomial();
 
     /**
-     * 返回这个多项式在给定点的值。
-     * 这个函数对所提供的多项式的形式使用最稳定的数值评估算法。如果多项式是根的乘积形式，那么评估是基于(x)形式的乘积。
+     * Return the value of this polynomial at the given point.
      *
-     * - x_i), 而对于系数形式的多项式，则使用霍纳方案。
-     *
+     * This function uses the most numerically stable evaluation
+     * algorithm for the provided form of the polynomial. If the
+     * polynomial is in the product form of roots, the evaluation is
+     * based on products of the form (x - x_i), whereas the Horner
+     * scheme is used for polynomials in the coefficient form.
      */
     number
     value(const number x) const;
 
     /**
-     * 返回多项式在<tt>x</tt>点的值和导数。 <tt>values[i],
-     * i=0,...,values.size()-1</tt>包括<tt>i</tt>的导数。因此，要计算的导数的数量由传递的数组的大小决定。
-     * 这个函数使用Horner方案对系数形式的多项式或涉及根的项的乘积（如果使用该表示法）进行数值稳定评估。
+     * Return the values and the derivatives of the Polynomial at point
+     * <tt>x</tt>.  <tt>values[i], i=0,...,values.size()-1</tt> includes the
+     * <tt>i</tt>th derivative. The number of derivatives to be computed is
+     * thus determined by the size of the array passed.
      *
+     * This function uses the Horner scheme for numerical stability of the
+     * evaluation for polynomials in the coefficient form or the product of
+     * terms involving the roots if that representation is used.
      */
     void
     value(const number x, std::vector<number> &values) const;
 
     /**
-     * 返回多项式在<tt>x</tt>点的值和导数。 <tt>values[i],
-     * i=0,...,n_derivatives</tt>包括<tt>i</tt>的导数。要计算的导数数量由
-     * @p n_derivatives 决定， @p values 必须为 @p n_derivatives
-     * +1个值提供足够的空间。
-     * 这个函数对于所提供的多项式的形式使用最稳定的数值评估算法。如果多项式是根的乘积形式，评估是基于形式为(x
+     * Return the values and the derivatives of the Polynomial at point
+     * <tt>x</tt>.  <tt>values[i], i=0,...,n_derivatives</tt> includes the
+     * <tt>i</tt>th derivative. The number of derivatives to be computed is
+     * determined by @p n_derivatives and @p values has to provide sufficient
+     * space for @p n_derivatives + 1 values.
      *
-     * - x_i），而Horner方案则用于系数形式的多项式。        模板类型`Number2`必须实现算术运算，如与多项式的`number`类型的加法或乘法，并且必须通过`operator=`从`number`转换过来。
+     * This function uses the most numerically stable evaluation
+     * algorithm for the provided form of the polynomial. If the
+     * polynomial is in the product form of roots, the evaluation is
+     * based on products of the form (x - x_i), whereas the Horner
+     * scheme is used for polynomials in the coefficient form.
      *
+     * The template type `Number2` must implement arithmetic
+     * operations such as additions or multiplication with the type
+     * `number` of the polynomial, and must be convertible from
+     * `number` by `operator=`.
      */
     template <typename Number2>
     void
@@ -117,195 +143,190 @@ namespace Polynomials
           Number2 *          values) const;
 
     /**
-     * 多项式的程度。这是由构造函数提供的系数数所反映的程度。领先的非零系数不被单独处理。
-     *
+     * Degree of the polynomial. This is the degree reflected by the number of
+     * coefficients provided by the constructor. Leading non-zero coefficients
+     * are not treated separately.
      */
     unsigned int
     degree() const;
 
     /**
-     * 缩放多项式的底线。 给出多项式<i>p(t)</i>和缩放<i>t =
-     * ax</i>，那么这个操作的结果就是多项式<i>q</i>，如<i>q(x)
-     * = p(t)</i>。        该操作是在原地进行的。
+     * Scale the abscissa of the polynomial.  Given the polynomial <i>p(t)</i>
+     * and the scaling <i>t = ax</i>, then the result of this operation is the
+     * polynomial <i>q</i>, such that <i>q(x) = p(t)</i>.
      *
+     * The operation is performed in place.
      */
     void
     scale(const number factor);
 
     /**
-     * 将多项式的标点移出。 给出多项式<i>p(t)</i>和移位<i>t
-     * = x +
-     * a</i>，那么这个操作的结果就是多项式<i>q</i>，比如<i>q(x)
-     * = p(t)</i>。
-     * 模板参数允许以更高的精度计算新的系数，因为所有的计算都以<tt>number2</tt>类型进行。这可能是必要的，因为这个操作涉及大量的加法。在装有Solaris
-     * 2.8的Sun Sparc Ultra上，<tt>double</tt>和<tt>long
-     * double</tt>之间的差异并不明显，不过。
-     * 操作是就地进行的，也就是说，现在对象的系数被改变。
+     * Shift the abscissa oft the polynomial.  Given the polynomial
+     * <i>p(t)</i> and the shift <i>t = x + a</i>, then the result of this
+     * operation is the polynomial <i>q</i>, such that <i>q(x) = p(t)</i>.
      *
+     * The template parameter allows to compute the new coefficients with
+     * higher accuracy, since all computations are performed with type
+     * <tt>number2</tt>. This may be necessary, since this operation involves
+     * a big number of additions. On a Sun Sparc Ultra with Solaris 2.8, the
+     * difference between <tt>double</tt> and <tt>long double</tt> was not
+     * significant, though.
+     *
+     * The operation is performed in place, i.e. the coefficients of the
+     * present object are changed.
      */
     template <typename number2>
     void
     shift(const number2 offset);
 
     /**
-     * 计算一个多项式的导数。
-     *
+     * Compute the derivative of a polynomial.
      */
     Polynomial<number>
     derivative() const;
 
     /**
-     * 计算一个多项式的基数。多项式的零阶项的系数为零。
-     *
+     * Compute the primitive of a polynomial. the coefficient of the zero
+     * order term of the polynomial is zero.
      */
     Polynomial<number>
     primitive() const;
 
     /**
-     * 与一个标量相乘。
-     *
+     * Multiply with a scalar.
      */
     Polynomial<number> &
     operator*=(const double s);
 
     /**
-     * 与另一个多项式相乘。
-     *
+     * Multiply with another polynomial.
      */
     Polynomial<number> &
     operator*=(const Polynomial<number> &p);
 
     /**
-     * 添加第二个多项式。
-     *
+     * Add a second polynomial.
      */
     Polynomial<number> &
     operator+=(const Polynomial<number> &p);
 
     /**
-     * 减去第二个多项式。
-     *
+     * Subtract a second polynomial.
      */
     Polynomial<number> &
     operator-=(const Polynomial<number> &p);
 
     /**
-     * 测试两个多项式是否相等。
-     *
+     * Test for equality of two polynomials.
      */
     bool
     operator==(const Polynomial<number> &p) const;
 
     /**
-     * 打印系数。
-     *
+     * Print coefficients.
      */
     void
     print(std::ostream &out) const;
 
     /**
-     * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入或读出到一个流中，以便进行序列化。
-     *
+     * Write or read the data of this object to or from a stream for the
+     * purpose of serialization using the [BOOST serialization
+     * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
      */
     template <class Archive>
     void
     serialize(Archive &ar, const unsigned int version);
 
     /**
-     * 返回此对象的内存消耗估计值（以字节为单位）。
-     *
+     * Return an estimate (in bytes) for the memory consumption of this object.
      */
     virtual std::size_t
     memory_consumption() const;
 
   protected:
     /**
-     * 这个函数执行实际的缩放操作。
-     *
+     * This function performs the actual scaling.
      */
     static void
     scale(std::vector<number> &coefficients, const number factor);
 
     /**
-     * 这个函数执行实际的移位
-     *
+     * This function performs the actual shift
      */
     template <typename number2>
     static void
     shift(std::vector<number> &coefficients, const number2 shift);
 
     /**
-     * 将多项式乘以一个系数。
-     *
+     * Multiply polynomial by a factor.
      */
     static void
     multiply(std::vector<number> &coefficients, const number factor);
 
     /**
-     * 将线性因子的乘积的多项式形式转化为标准形式，
-     * $\sum_i a_i x^i$
-     * 。删除所有与乘积形式有关的数据结构。
-     *
+     * Transform polynomial form of product of linear factors into standard
+     * form, $\sum_i a_i x^i$. Deletes all data structures related to the
+     * product form.
      */
     void
     transform_into_standard_form();
 
     /**
-     * 多项式的系数  $\sum_i a_i x^i$
-     * 。这个向量由这个类的构造函数填充，并且可以由派生类传递下去。
-     * 这个向量不能是常数，因为我们要允许复制多项式。
+     * Coefficients of the polynomial $\sum_i a_i x^i$. This vector is filled
+     * by the constructor of this class and may be passed down by derived
+     * classes.
      *
+     * This vector cannot be constant since we want to allow copying of
+     * polynomials.
      */
     std::vector<number> coefficients;
 
     /**
-     * 存储该多项式是否为拉格朗日乘积形式，即构造为乘积
-     * $(x-x_0) (x-x_1) \ldots (x-x_n)/c$ ，或者不是。
-     *
+     * Stores whether the polynomial is in Lagrange product form, i.e.,
+     * constructed as a product $(x-x_0) (x-x_1) \ldots (x-x_n)/c$, or not.
      */
     bool in_lagrange_product_form;
 
     /**
-     * 如果多项式是拉格朗日积形式，即构造为积 $(x-x_0)
-     * (x-x_1) \ldots (x-x_n)/c$ ，则存储移位 $x_i$  。
-     *
+     * If the polynomial is in Lagrange product form, i.e., constructed as a
+     * product $(x-x_0) (x-x_1) \ldots (x-x_n)/c$, store the shifts $x_i$.
      */
     std::vector<number> lagrange_support_points;
 
     /**
-     * 如果多项式是拉格朗日积的形式，即构造为积 $(x-x_0)
-     * (x-x_1) \ldots (x-x_n)/c$ ，则存储权重c。
-     *
+     * If the polynomial is in Lagrange product form, i.e., constructed as a
+     * product $(x-x_0) (x-x_1) \ldots (x-x_n)/c$, store the weight c.
      */
     number lagrange_weight;
   };
 
 
   /**
-   * 类产生代表n度单项式的多项式对象，即函数  $x^n$  。
-   *
+   * Class generates Polynomial objects representing a monomial of degree n,
+   * that is, the function $x^n$.
    */
   template <typename number>
   class Monomial : public Polynomial<number>
   {
   public:
     /**
-     * 构造函数，以单项式的度数和可选的系数作为参数。
-     *
+     * Constructor, taking the degree of the monomial and an optional
+     * coefficient as arguments.
      */
     Monomial(const unsigned int n, const double coefficient = 1.);
 
     /**
-     * 返回一个零度到<tt>度</tt>的单项式对象的向量，然后横跨到给定度数的全部多项式空间。这个函数可以用来初始化TensorProductPolynomials和PolynomialSpace类。
-     *
+     * Return a vector of Monomial objects of degree zero through
+     * <tt>degree</tt>, which then spans the full space of polynomials up to
+     * the given degree. This function may be used to initialize the
+     * TensorProductPolynomials and PolynomialSpace classes.
      */
     static std::vector<Polynomial<number>>
     generate_complete_basis(const unsigned int degree);
 
   private:
     /**
-     * 构造函数所需要的。
-     *
+     * Needed by constructor.
      */
     static std::vector<number>
     make_vector(unsigned int n, const double coefficient);
@@ -313,33 +334,45 @@ namespace Polynomials
 
 
   /**
-   * 拉格朗日多项式，其等距插值点在[0,1]。度数为<tt>n</tt>的多项式得到<tt>n+1</tt>的插值点。这些插值点按升序排列。这个顺序给每个插值点一个索引。
-   * 一个拉格朗日多项式在其 "支持点
-   * "等于1，在所有其他插值点等于0。例如，如果度数是3，支持点是1，那么这个对象所代表的多项式是立方的，它在<tt>x=1/3</tt>点的值是1，在<tt>x=0</tt>、<tt>x=2/3</tt>和<tt>x=1</tt>点是0。所有的多项式的度数都等于<tt>度数</tt>，但它们一起跨越了度数小于或等于<tt>度数</tt>的整个多项式空间。
-   * 拉格朗日多项式的实现最高可达10度。
+   * Lagrange polynomials with equidistant interpolation points in [0,1]. The
+   * polynomial of degree <tt>n</tt> has got <tt>n+1</tt> interpolation
+   * points. The interpolation points are sorted in ascending order. This
+   * order gives an index to each interpolation point.  A Lagrangian
+   * polynomial equals to 1 at its `support point', and 0 at all other
+   * interpolation points. For example, if the degree is 3, and the support
+   * point is 1, then the polynomial represented by this object is cubic and
+   * its value is 1 at the point <tt>x=1/3</tt>, and zero at the point
+   * <tt>x=0</tt>, <tt>x=2/3</tt>, and <tt>x=1</tt>. All the polynomials have
+   * polynomial degree equal to <tt>degree</tt>, but together they span the
+   * entire space of polynomials of degree less than or equal <tt>degree</tt>.
    *
+   * The Lagrange polynomials are implemented up to degree 10.
    */
   class LagrangeEquidistant : public Polynomial<double>
   {
   public:
     /**
-     * 构造函数。取拉格朗日多项式的度数<tt>n</tt>和支持点的索引<tt>support_point</tt>。填充基类多项式的<tt>系数</tt>。
-     *
+     * Constructor. Takes the degree <tt>n</tt> of the Lagrangian polynomial
+     * and the index <tt>support_point</tt> of the support point. Fills the
+     * <tt>coefficients</tt> of the base class Polynomial.
      */
     LagrangeEquidistant(const unsigned int n, const unsigned int support_point);
 
     /**
-     * 返回一个度数为<tt>degree</tt>的多项式对象的向量，然后横跨到给定度数的全部多项式空间。多项式是通过调用这个类的构造函数生成的，其度数相同，但支持点从零到<tt>度</tt>。
-     * 这个函数可以用来初始化TensorProductPolynomials和PolynomialSpace类。
-     *
+     * Return a vector of polynomial objects of degree <tt>degree</tt>, which
+     * then spans the full space of polynomials up to the given degree. The
+     * polynomials are generated by calling the constructor of this class with
+     * the same degree but support point running from zero to <tt>degree</tt>.
+     * This function may be used to initialize the TensorProductPolynomials
+     * and PolynomialSpace classes.
      */
     static std::vector<Polynomial<double>>
     generate_complete_basis(const unsigned int degree);
 
   private:
     /**
-     * 计算基类Polynomial的<tt>系数</tt>。这个函数是<tt>静态的</tt>，允许在构造函数中调用。
-     *
+     * Compute the <tt>coefficients</tt> of the base class Polynomial. This
+     * function is <tt>static</tt> to allow to be called in the constructor.
      */
     static void
     compute_coefficients(const unsigned int   n,
@@ -350,8 +383,10 @@ namespace Polynomials
 
 
   /**
-   * 给定一组沿实数轴的点，该函数返回用于插值这些点的所有拉格朗日多项式。多项式的数量等于点的数量，最大的度数是少一个。
-   *
+   * Given a set of points along the real axis, this function returns all
+   * Lagrange polynomials for interpolation of these points. The number of
+   * polynomials is equal to the number of points and the maximum degree is
+   * one less.
    */
   std::vector<Polynomial<double>>
   generate_complete_Lagrange_basis(const std::vector<Point<1>> &points);
@@ -359,68 +394,74 @@ namespace Polynomials
 
 
   /**
-   * 任意度的Legendre多项式。构造一个学位为<tt>p</tt>的Legendre多项式,
-   * 根将由各自的点数的高斯公式和多项式的根的表示法来计算。
-   * @note
-   * 这类定义的多项式与通常所说的Legendre多项式在两个方面有所不同。(i)
-   * 该类在参考区间  $[0,1]$
-   * 上定义它们，而不是常用的区间  $[-1,1]$  。(ii)
-   * 多项式的缩放方式使得它们是正交的，而不仅仅是正交的；因此，多项式的边界值不一定等于1。
+   * Legendre polynomials of arbitrary degree. Constructing a Legendre
+   * polynomial of degree <tt>p</tt>, the roots will be computed by the Gauss
+   * formula of the respective number of points and a representation of the
+   * polynomial by its roots.
    *
+   * @note The polynomials defined by this class differ in two aspects by what
+   * is usually referred to as Legendre polynomials: (i) This classes defines
+   * them on the reference interval $[0,1]$, rather than the commonly used
+   * interval $[-1,1]$. (ii) The polynomials have been scaled in such a way
+   * that they are orthonormal, not just orthogonal; consequently, the
+   * polynomials do not necessarily have boundary values equal to one.
    */
   class Legendre : public Polynomial<double>
   {
   public:
     /**
-     * 度数为<tt>p</tt>的多项式的构造函数。
-     *
+     * Constructor for polynomial of degree <tt>p</tt>.
      */
     Legendre(const unsigned int p);
 
     /**
-     * 返回一个零度到<tt>度</tt>的Legendre多项式对象的向量，然后横跨到给定度数的全部多项式空间。这个函数可用于初始化TensorProductPolynomials和PolynomialSpace类。
-     *
+     * Return a vector of Legendre polynomial objects of degrees zero through
+     * <tt>degree</tt>, which then spans the full space of polynomials up to
+     * the given degree. This function may be used to initialize the
+     * TensorProductPolynomials and PolynomialSpace classes.
      */
     static std::vector<Polynomial<double>>
     generate_complete_basis(const unsigned int degree);
   };
 
   /**
-   * <tt>[0,1]</tt>上任意程度的Lobatto多项式。
-   * 这些多项式是[0,1]上的综合Legendre多项式。前两个多项式是由
-   * $l_0(x) = 1-x$  和  $l_1(x) = x$
-   * 给出的标准线性形状函数。对于  $i\geq2$  我们使用定义
-   * $l_i(x) = \frac{1}{\Vert L_{i-1}\Vert_2}\int_0^x L_{i-1}(t)\,dt$
-   * ，其中  $L_i$  表示  $i$  -次 Legendre 多项式在  $[0,1]$
-   * 。Lobatto多项式 $l_0,\ldots,l_k$ 构成度数 $k$
-   * 的多项式空间的完整基础。
-   * 以给定的索引<tt>k</tt>调用构造函数将生成索引为<tt>k</tt>的多项式。但是只有对于
-   * $k\geq 1$
-   * ，索引等于多项式的度数。对于<tt>k==0</tt>也会生成一个1度的多项式。
-   * 这些多项式被用于构建任意阶数的N&eacute;d&eacute;lec元素的形状函数。
+   * Lobatto polynomials of arbitrary degree on <tt>[0,1]</tt>.
    *
+   * These polynomials are the integrated Legendre polynomials on [0,1]. The
+   * first two polynomials are the standard linear shape functions given by
+   * $l_0(x) = 1-x$ and $l_1(x) = x$. For $i\geq2$ we use the definition
+   * $l_i(x) = \frac{1}{\Vert L_{i-1}\Vert_2}\int_0^x L_{i-1}(t)\,dt$, where
+   * $L_i$ denotes the $i$-th Legendre polynomial on $[0,1]$. The Lobatto
+   * polynomials $l_0,\ldots,l_k$ form a complete basis of the polynomials
+   * space of degree $k$.
+   *
+   * Calling the constructor with a given index <tt>k</tt> will generate the
+   * polynomial with index <tt>k</tt>. But only for $k\geq 1$ the index equals
+   * the degree of the polynomial. For <tt>k==0</tt> also a polynomial of
+   * degree 1 is generated.
+   *
+   * These polynomials are used for the construction of the shape functions of
+   * N&eacute;d&eacute;lec elements of arbitrary order.
    */
   class Lobatto : public Polynomial<double>
   {
   public:
     /**
-     * 度数为<tt>p</tt>的多项式的构造器。对于<tt>p==0</tt>有一个例外，见一般文档。
-     *
+     * Constructor for polynomial of degree <tt>p</tt>. There is an exception
+     * for <tt>p==0</tt>, see the general documentation.
      */
     Lobatto(const unsigned int p = 0);
 
     /**
-     * 返回索引为<tt>0</tt>的多项式，直至<tt>度</tt>。
-     * 对于<tt>p==0</tt>有一个例外，见一般文档。
-     *
+     * Return the polynomials with index <tt>0</tt> up to <tt>degree</tt>.
+     * There is an exception for <tt>p==0</tt>, see the general documentation.
      */
     static std::vector<Polynomial<double>>
     generate_complete_basis(const unsigned int p);
 
   private:
     /**
-     * 递归地计算系数。
-     *
+     * Compute coefficients recursively.
      */
     std::vector<double>
     compute_coefficients(const unsigned int p);
@@ -429,64 +470,85 @@ namespace Polynomials
 
 
   /**
-   * 在<tt>[0,1]</tt>上任意程度的层次多项式。
-   * 当构造一个度数为<tt>p</tt>的层次多项式时，系数将通过递归公式计算出来。
-   * 系数被存储在一个静态数据向量中，以便下次需要时可以使用。
-   * 这些分层多项式是基于Demkowicz, Oden,
-   * Rachowicz和Hardy的多项式（CMAME 77 (1989) 79-112,
-   * 第4节）。前两个多项式是由  $\phi_{0}(x) = 1
+   * Hierarchical polynomials of arbitrary degree on <tt>[0,1]</tt>.
    *
-   * - x$  和  $\phi_{1}(x) = x$  给出的标准线性形状函数。对于
-   * $l \geq 2$  我们使用定义  $\phi_{l}(x) = (2x-1)^l
+   * When Constructing a Hierarchical polynomial of degree <tt>p</tt>, the
+   * coefficients will be computed by a recursion formula.  The coefficients
+   * are stored in a static data vector to be available when needed next time.
    *
-   * - 1, l = 2,4,6,...$  和  $\phi_{l}(x) = (2x-1)^l
+   * These hierarchical polynomials are based on those of Demkowicz, Oden,
+   * Rachowicz, and Hardy (CMAME 77 (1989) 79-112, Sec. 4). The first two
+   * polynomials are the standard linear shape functions given by $\phi_{0}(x)
+   * = 1 - x$ and $\phi_{1}(x) = x$. For $l \geq 2$ we use the definitions
+   * $\phi_{l}(x) = (2x-1)^l - 1, l = 2,4,6,...$ and $\phi_{l}(x) = (2x-1)^l -
+   * (2x-1), l = 3,5,7,...$. These satisfy the recursion relations
+   * $\phi_{l}(x) = (2x-1)\phi_{l-1}, l=3,5,7,...$ and $\phi_{l}(x) =
+   * (2x-1)\phi_{l-1} + \phi_{2}, l=4,6,8,...$.
    *
-   * - (2x-1), l = 3,5,7,...$  。这些满足递归关系  $\phi_{l}(x) =
-   * (2x-1)\phi_{l-1}, l=3,5,7,...$  和  $\phi_{l}(x) = (2x-1)\phi_{l-1} +
-   * \phi_{2}, l=4,6,8,...$  。
-   * 自由度是顶点的值和中点的导数。目前，我们没有以任何方式对多项式进行缩放，尽管通过缩放可以实现对元素刚度矩阵更好的调节。
-   * 以给定的索引<tt>p</tt>调用构造函数将产生以下结果：如果<tt>p==0</tt>，那么产生的多项式是与左边顶点相关的线性函数，如果<tt>p==1</tt>是与右边顶点相关的函数。对于更高的<tt>p</tt>值，你会得到与之前所有的正交的<tt>p</tt>度的多项式。注意，对于<tt>p==0</tt>，你因此确实<b>not</b>得到一个零度的多项式，但得到一个一度的多项式。这是为了允许生成一个完整的多项式空间的基础，只需迭代给构造函数的指数。
-   * 另一方面，函数 generate_complete_basis()
-   * 创建了一个给定度数的完整基。为了与多项式程度的概念相一致，如果给定的参数是零，它不会<b>not</b>返回上述的线性多项式，而是返回一个常数多项式。
+   * The degrees of freedom are the values at the vertices and the derivatives
+   * at the midpoint. Currently, we do not scale the polynomials in any way,
+   * although better conditioning of the element stiffness matrix could
+   * possibly be achieved with scaling.
    *
+   * Calling the constructor with a given index <tt>p</tt> will generate the
+   * following: if <tt>p==0</tt>, then the resulting polynomial is the linear
+   * function associated with the left vertex, if <tt>p==1</tt> the one
+   * associated with the right vertex. For higher values of <tt>p</tt>, you
+   * get the polynomial of degree <tt>p</tt> that is orthogonal to all
+   * previous ones. Note that for <tt>p==0</tt> you therefore do <b>not</b>
+   * get a polynomial of degree zero, but one of degree one. This is to allow
+   * generating a complete basis for polynomial spaces, by just iterating over
+   * the indices given to the constructor.
+   *
+   * On the other hand, the function generate_complete_basis() creates a
+   * complete basis of given degree. In order to be consistent with the
+   * concept of a polynomial degree, if the given argument is zero, it does
+   * <b>not</b> return the linear polynomial described above, but rather a
+   * constant polynomial.
    */
   class Hierarchical : public Polynomial<double>
   {
   public:
     /**
-     * 度数为<tt>p</tt>的多项式的构造函数。对于<tt>p==0</tt>有一个例外，见一般文档。
-     *
+     * Constructor for polynomial of degree <tt>p</tt>. There is an exception
+     * for <tt>p==0</tt>, see the general documentation.
      */
     Hierarchical(const unsigned int p);
 
     /**
-     * 返回一个零度到<tt>degree</tt>的Hierarchical多项式对象的向量，然后横跨到给定度数的全部多项式空间。注意，如果给定的<tt>度数</tt>等于零，会有一个例外，请看这个类的一般文档。
-     * 这个函数可以用来初始化TensorProductPolynomials,
-     * AnisotropicPolynomials和PolynomialSpace类。
+     * Return a vector of Hierarchical polynomial objects of degrees zero
+     * through <tt>degree</tt>, which then spans the full space of polynomials
+     * up to the given degree. Note that there is an exception if the given
+     * <tt>degree</tt> equals zero, see the general documentation of this
+     * class.
      *
+     * This function may be used to initialize the TensorProductPolynomials,
+     * AnisotropicPolynomials, and PolynomialSpace classes.
      */
     static std::vector<Polynomial<double>>
     generate_complete_basis(const unsigned int degree);
 
   private:
     /**
-     * 递归地计算系数。
-     *
+     * Compute coefficients recursively.
      */
     static void
     compute_coefficients(const unsigned int p);
 
     /**
-     * 为构造函数获取系数。
-     * 这样，它就可以使用Polynomial的非标准构造函数。
-     *
+     * Get coefficients for constructor.  This way, it can use the non-
+     * standard constructor of Polynomial.
      */
     static const std::vector<double> &
     get_coefficients(const unsigned int p);
 
     /**
-     * 带有已经计算过的系数的向量。对于多项式的每一个度数，我们保留一个指向系数列表的指针；我们这样做而不是保留一个向量的向量，以便简化多线程安全编程。为了避免内存泄漏，我们使用一个唯一的指针，以便在调用全局析构器时正确释放向量的内存。
-     *
+     * Vector with already computed coefficients. For each degree of the
+     * polynomial, we keep one pointer to the list of coefficients; we do so
+     * rather than keeping a vector of vectors in order to simplify
+     * programming multithread-safe. In order to avoid memory leak, we use a
+     * unique_ptr in order to correctly free the memory of the vectors when
+     * the global destructor is called.
      */
     static std::vector<std::unique_ptr<const std::vector<double>>>
       recursive_coefficients;
@@ -495,38 +557,45 @@ namespace Polynomials
 
 
   /**
-   * 用于Hermite插值条件的多项式。
-   * 这是至少三度的多项式的集合，这样可以满足以下插值条件：多项式和它们的一阶导数在值<i>x</i>处消失。
-   * ]=0和<i>x</i>=1，但<i>p</i><sub>0</sub>(0)=1，<i>p</i><sub><i>1</i></sub>(1)=1，<i>p</i>'<sub>2</sub>(0)=1，<<i>p'</i><sub>3</sub>(1)=1。
-   * 对于三度，我们得到标准的四赫米特插值多项式，例如，见<a
-   * href="http://en.wikipedia.org/wiki/Cubic_Hermite_spline">Wikipedia</a>。
-   * 对于更高的度数，首先通过在<i>x</i>=0和<i>x</i>=1处具有消失值和导数的四度多项式进行增强，然后通过这个四阶多项式与增阶Legendre多项式的乘积进行增强。实现方法是
+   * Polynomials for Hermite interpolation condition.
+   *
+   * This is the set of polynomials of degree at least three, such that the
+   * following interpolation conditions are met: the polynomials and their
+   * first derivatives vanish at the values <i>x</i>=0 and <i>x</i>=1, with
+   * the exceptions <i>p</i><sub>0</sub>(0)=1,
+   * <i>p</i><sub><i>1</i></sub>(1)=1, <i>p</i>'<sub>2</sub>(0)=1,
+   * <i>p'</i><sub>3</sub>(1)=1.
+   *
+   * For degree three, we obtain the standard four Hermitian interpolation
+   * polynomials, see for instance <a
+   * href="http://en.wikipedia.org/wiki/Cubic_Hermite_spline">Wikipedia</a>.
+   * For higher degrees, these are augmented first, by the polynomial of
+   * degree four with vanishing values and derivatives at <i>x</i>=0 and
+   * <i>x</i>=1, then by the product of this fourth order polynomial with
+   * Legendre polynomials of increasing order. The implementation is
    * @f{align*}{
    * p_0(x) &= 2x^3-3x^2+1 \\
-   * p_1(x) &=
-   *
-   * -2x^3+3x^2 \\
+   * p_1(x) &= -2x^3+3x^2 \\
    * p_2(x) &= x^3-2x^2+x  \\
    * p_3(x) &= x^3-x^2 \\
    * p_4(x) &= 16x^2(x-1)^2 \\
    * \ldots & \ldots \\
    * p_k(x) &= x^2(x-1)^2 L_{k-4}(x)
    * @f}
-   *
-   *
    */
   class HermiteInterpolation : public Polynomial<double>
   {
   public:
     /**
-     * 多项式的构造函数，索引为<tt>p</tt>。参见类文件中关于多项式序列的定义。
-     *
+     * Constructor for polynomial with index <tt>p</tt>. See the class
+     * documentation on the definition of the sequence of polynomials.
      */
     HermiteInterpolation(const unsigned int p);
 
     /**
-     * 返回指数<tt>0</tt>到<tt>p+1</tt>的多项式在一个度数不超过<tt>p</tt>的空间中。这里，<tt>p</tt>必须至少是3。
-     *
+     * Return the polynomials with index <tt>0</tt> up to <tt>p+1</tt> in a
+     * space of degree up to <tt>p</tt>. Here, <tt>p</tt> has to be at least
+     * 3.
      */
     static std::vector<Polynomial<double>>
     generate_complete_basis(const unsigned int p);
@@ -535,61 +604,119 @@ namespace Polynomials
 
 
   /**
-   * Hermite多项式的一个变体，在插值中的条件数比HermiteInterpolation的基础更好。
-   * 与适当的Hermite多项式相类似，这个基础在 $p_0$
-   * 处将第一个多项式 $x=0$ 评估为1，在 $x=1$
-   * 处有一个零值和零导数。同样地，最后一个多项式  $p_n$
-   * 在  $x=1$  处评估为1，在  $x=0$
-   * 处有零值和零导数。第二个多项式 $p_1$
-   * 和倒数第二个多项式 $p_{n-1}$ 分别代表 $x=0$ 和 $x=1$
-   * 处的导数自由度。  它们在两个端点 $x=0, x=1$
-   * 处均为零，在另一端 $p_1'(1)=0$ 和 $p_{n-1}'(0)=0$
-   * 处导数为零。与原来的Hermite多项式不同， $p_0$ 在 $x=0$
-   * 处没有零导数。额外的自由度被用来使 $p_0$ 和 $p_1$
-   * 正交，对于 $n=3$ ，其结果是 $p_0$ 的根在 $x=\frac{2}{7}$ ，
-   * $p_n$ 的根在 $x=\frac{5}{7}$
-   * ，分别。此外，这些多项式扩展到更高的度数 $n>3$
-   * 是通过在单位区间内添加额外的节点来构建的，再次确保了更好的调节。这些节点被计算为
-   * $\alpha=\beta=4$ 的雅可比多项式的根，它与生成函数
-   * $x^2(1-x)^2$
-   * 的平方是正交的，具有Hermite特性。然后，这些多项式以通常的方式构建为拉格朗日多项式，其双根在
-   * $x=0$  和  $x=1$  。例如，有了 $n=4$ ，所有的 $p_0, p_1, p_3,
-   * p_4$ 通过因子 $(x-0.5)$ 在 $x=0.5$
-   * 处得到一个额外的根。综上所述，这个基础是由节点贡献主导的，但它不是一个节点的基础，因为第二个和倒数第二个多项式是非节点的，而且由于
-   * $x=0$  和  $x=1$
-   * 中存在双节点。基函数的权重设定为：所有具有单位权重的多项式之和代表常数函数1，与Lagrange多项式类似。
-   * 基础只包含 <code>degree>=3</code>
-   * 的Hermite信息，但对于0到2之间的度数也可以实现。对于线性情况，实现了通常的帽子函数，而对于
-   * <code>degree=2</code> 的多项式是 $p_0(x)=(1-x)^2$ ，
-   * $p_1(x)=2x(x-1)$ ，和 $p_2(x)=x^2$
-   * ，根据3度的构造原理。这两个放松明显改善了质量矩阵的条件数（即内插），从下表可以看出这一点。
-   * <table align="center" border="1"> <tr> <th>&nbsp;</th> <th
-   * colspan="2">Condition number mass matrix</th> </tr> <tr> <th>degree</th>
-   * <th>HermiteInterpolation</th> <th>HermiteLikeInterpolation</th> </tr>
-   * <tr> <th>n=3</th> <th>1057</th> <th>17.18</th> </tr> <tr> <th>n=4</th>
-   * <th>6580</th> <th>16.83</th> </tr> <tr> <th>n=5</th> <th>1.875e+04</th>
-   * <th>15.99</th> </tr> <tr> <th>n=6</th> <th>6.033e+04</th> <th>16.34</th>
-   * </tr> <tr> <th>n=10</th> <th>9.756e+05</th> <th>20.70</th> </tr> <tr>
-   * <th>n=15</th> <th>9.431e+06</th> <th>27.91</th> </tr> <tr> <th>n=25</th>
-   * <th>2.220e+08</th> <th>43.54</th> </tr> <tr> <th>n=35</th>
-   * <th>2.109e+09</th> <th>59.51</th> </tr> </table>
-   * 这个多项式继承了Hermite多项式的有利特性，在一个面上只有两个函数的值和/或导数不为零，这对不连续Galerkin方法是有利的，但却给出了更好的插值条件数，这改善了一些迭代方案的性能，如共轭梯度与点-Jacobi。这个多项式在FE_DGQHermite中使用。
+   * Polynomials for a variant of Hermite polynomials with better condition
+   * number in the interpolation than the basis from HermiteInterpolation.
    *
+   * In analogy to the proper Hermite polynomials, this basis evaluates the
+   * first polynomial $p_0$ to 1 at $x=0$ and has both a zero value and zero
+   * derivative at $x=1$. Likewise, the last polynomial $p_n$ evaluates to 1
+   * at $x=1$ with a zero value and zero derivative at $x=0$. The second
+   * polynomial $p_1$ and the second to last polynomial $p_{n-1}$ represent
+   * the derivative degree of freedom at $x=0$ and $x=1$, respectively.
+   * They are zero at both the end points $x=0, x=1$ and have zero
+   * derivative at the opposite end, $p_1'(1)=0$ and $p_{n-1}'(0)=0$. As
+   * opposed to the original Hermite polynomials, $p_0$ does not have zero
+   * derivative at $x=0$. The additional degree of freedom is used to make
+   * $p_0$ and $p_1$ orthogonal, which for $n=3$ results in a root at
+   * $x=\frac{2}{7}$ for $p_0$ and at $x=\frac{5}{7}$ for $p_n$,
+   * respectively. Furthermore, the extension of these polynomials to higher
+   * degrees $n>3$ is constructed by adding additional nodes inside the unit
+   * interval, again ensuring better conditioning. The nodes are computed as
+   * the roots of the Jacobi polynomials for $\alpha=\beta=4$, which are
+   * orthogonal against the square of the generating function $x^2(1-x)^2$
+   * with the Hermite
+   * property. Then, these polynomials are constructed in the usual way as
+   * Lagrange polynomials with double roots at $x=0$ and $x=1$. For example
+   * with $n=4$, all of $p_0, p_1, p_3, p_4$ get an additional root at $x=0.5$
+   * through the factor $(x-0.5)$. In summary, this basis is dominated by
+   * nodal contributions, but it is not a nodal one because the second and
+   * second to last polynomials that are non-nodal, and due to the presence of
+   * double nodes in $x=0$ and $x=1$. The weights of the basis functions are
+   * set such that the sum of all polynomials with unit weight represents the
+   * constant function 1, similarly to Lagrange polynomials.
+   *
+   * The basis only contains Hermite information for <code>degree>=3</code>,
+   * but it is also implemented for degrees between 0 and two. For the linear
+   * case, the usual hat functions are implemented, whereas the polynomials
+   * for <code>degree=2</code> are $p_0(x)=(1-x)^2$, $p_1(x)=2x(x-1)$, and
+   * $p_2(x)=x^2$, in accordance with the construction principle for degree 3.
+   *
+   * These two relaxations improve the condition number of the mass matrix
+   * (i.e., interpolation) significantly, as can be seen from the following
+   * table:
+   *
+   * <table align="center" border="1">
+   *   <tr>
+   *    <th>&nbsp;</th>
+   *    <th colspan="2">Condition number mass matrix</th>
+   *   </tr>
+   *   <tr>
+   *    <th>degree</th>
+   *    <th>HermiteInterpolation</th>
+   *    <th>HermiteLikeInterpolation</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=3</th>
+   *    <th>1057</th>
+   *    <th>17.18</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=4</th>
+   *    <th>6580</th>
+   *    <th>16.83</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=5</th>
+   *    <th>1.875e+04</th>
+   *    <th>15.99</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=6</th>
+   *    <th>6.033e+04</th>
+   *    <th>16.34</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=10</th>
+   *    <th>9.756e+05</th>
+   *    <th>20.70</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=15</th>
+   *    <th>9.431e+06</th>
+   *    <th>27.91</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=25</th>
+   *    <th>2.220e+08</th>
+   *    <th>43.54</th>
+   *   </tr>
+   *   <tr>
+   *    <th>n=35</th>
+   *    <th>2.109e+09</th>
+   *    <th>59.51</th>
+   *   </tr>
+   * </table>
+   *
+   * This polynomial inherits the advantageous property of Hermite polynomials
+   * where only two functions have value and/or derivative nonzero on a face
+   * advantageous for discontinuous Galerkin methods
+   * but gives better condition numbers of interpolation, which improves the
+   * performance of some iterative schemes like conjugate gradients with
+   * point-Jacobi. This polynomial is used in FE_DGQHermite.
    */
   class HermiteLikeInterpolation : public Polynomial<double>
   {
   public:
     /**
-     * 在设定的度数的多项式中，索引为<tt>index</tt>的多项式的构造函数
-     * @p degree.  。
-     *
+     * Constructor for the polynomial with index <tt>index</tt> within the set
+     * up polynomials of degree @p degree.
      */
     HermiteLikeInterpolation(const unsigned int degree,
                              const unsigned int index);
 
     /**
-     * 返回索引为<tt>0</tt>至<tt>度+1</tt>的多项式在度数为<tt>度</tt>的空间中的情况。
-     *
+     * Return the polynomials with index <tt>0</tt> up to <tt>degree+1</tt> in
+     * a space of degree up to <tt>degree</tt>.
      */
     static std::vector<Polynomial<double>>
     generate_complete_basis(const unsigned int degree);
@@ -597,9 +724,15 @@ namespace Polynomials
 
 
 
-  /* 评估由参数 @p alpha,   @p beta,   @p n, 指定的雅可比多项式 $ P_n^{\alpha, \beta}(x) $ ，其中 @p n 是雅可比多项式的程度。   
-*  @note  雅可比多项式不是正交的，像通常的deal.II一样定义在单位区间 $[0, 1]$ ，而不是文献中经常使用的 $[-1, +1]$ 。  @p x 是评价的点。 
-* */
+  /*
+   * Evaluate a Jacobi polynomial $ P_n^{\alpha, \beta}(x) $ specified by the
+   * parameters @p alpha, @p beta, @p n, where @p n is the degree of the
+   * Jacobi polynomial.
+   *
+   * @note The Jacobi polynomials are not orthonormal and are defined on the
+   * unit interval $[0, 1]$ as usual for deal.II, rather than $[-1, +1]$ often
+   * used in literature. @p x is the point of evaluation.
+   */
   template <typename Number>
   Number
   jacobi_polynomial_value(const unsigned int degree,
@@ -609,10 +742,16 @@ namespace Polynomials
 
 
   /**
-   * 计算单位区间 $[0, 1]$
-   * 上给定度数的雅可比多项式的根。这些根在deal.II库中有多处使用，如Gauss-Lobatto正交公式或用于Hermite-like插值。
-   * 该算法使用牛顿算法，使用切比雪夫多项式的零点作为初始猜测。这段代码已经在α和β等于0（Legendre情况）、1（Gauss-Lobatto情况）以及2的情况下进行了测试，所以在对其他数值使用时要小心，因为牛顿迭代可能会或可能不会收敛。
+   * Compute the roots of the Jacobi polynomials on the unit interval $[0, 1]$
+   * of the given degree. These roots are used in several places inside the
+   * deal.II library, such as the Gauss-Lobatto quadrature formula or for the
+   * Hermite-like interpolation.
    *
+   * The algorithm uses a Newton algorithm, using the zeros of the Chebyshev
+   * polynomials as an initial guess. This code has been tested for alpha and
+   * beta equal to zero (Legendre case), one (Gauss-Lobatto case) as well as
+   * two, so be careful when using it for other values as the Newton iteration
+   * might or might not converge.
    */
   template <typename Number>
   std::vector<Number>
@@ -622,9 +761,9 @@ namespace Polynomials
 } // namespace Polynomials
 
 
- /** @} */ 
+/** @} */
 
- /* -------------------------- inline functions --------------------- */ 
+/* -------------------------- inline functions --------------------- */
 
 namespace Polynomials
 {
@@ -954,5 +1093,3 @@ namespace Polynomials
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

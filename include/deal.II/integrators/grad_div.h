@@ -1,3 +1,4 @@
+//include/deal.II-translator/integrators/grad_div_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2010 - 2020 by the deal.II authors
@@ -34,18 +35,17 @@ DEAL_II_NAMESPACE_OPEN
 namespace LocalIntegrators
 {
   /**
-   * Local integrators related to the grad-div operator and its boundary
-   * traces
-   *
+   * 与grad-div算子及其边界痕迹有关的局部积分器
    * @ingroup Integrators
+   *
    */
   namespace GradDiv
   {
     /**
-     * The weak form of the grad-div operator penalizing volume changes
-     * @f[
-     *  \int_Z \nabla\cdot u \nabla \cdot v \,dx
-     * @f]
+     * 惩罚体积变化的grad-div算子的弱形式 @f[
+     * \int_Z \nabla\cdot u \nabla \cdot v \,dx
+     * @f] 。
+     *
      */
     template <int dim>
     void
@@ -76,10 +76,9 @@ namespace LocalIntegrators
     }
 
     /**
-     * The weak form of the grad-div residual
-     * @f[
-     *  \int_Z \nabla\cdot u \nabla \cdot v \,dx
-     * @f]
+     * grad-div残差的弱形式 @f[
+     * \int_Z \nabla\cdot u \nabla \cdot v \,dx
+     * @f] *
      */
     template <int dim, typename number>
     void
@@ -110,12 +109,51 @@ namespace LocalIntegrators
     }
 
     /**
-     * The matrix for the weak boundary condition of Nitsche type for linear
-     * elasticity:
-     * @f[
-     * \int_F \Bigl(\gamma (u \cdot n)(v \cdot n)  - \nabla\cdot u
-     * v\cdot n - u \cdot n \nabla \cdot v \Bigr)\;ds.
+     * 。
+     *
+     */
+    template <int dim, typename number>
+    void
+    cell_residual(Vector<number> &                                    result,
+                  const FEValuesBase<dim> &                           fetest,
+                  const ArrayView<const std::vector<Tensor<1, dim>>> &input,
+                  const double factor = 1.)
+    {
+      const unsigned int n_dofs = fetest.dofs_per_cell;
+
+      AssertDimension(fetest.get_fe().n_components(), dim);
+      AssertVectorVectorDimension(input, dim, fetest.n_quadrature_points);
+
+      for (unsigned int k = 0; k < fetest.n_quadrature_points; ++k)
+        {
+          const double dx = factor * fetest.JxW(k);
+          for (unsigned int i = 0; i < n_dofs; ++i)
+            {
+              const double divv =
+                fetest[FEValuesExtractors::Vector(0)].divergence(i, k);
+              double du = 0.;
+              for (unsigned int d = 0; d < dim; ++d)
+                du += input[d][k][d];
+
+              result(i) += dx * du * divv;
+            }
+        }
+    }
+
+    /**
+     * 线性弹性的Nitsche类型的弱边界条件的矩阵。    @f[
+     * \int_F \Bigl(\gamma (u \cdot n)(v \cdot n)
+     *
+     *
+     *
+     *
+     *
+     * - \nabla\cdot u
+     * v\cdot n
+     *
+     * - u \cdot n \nabla \cdot v \Bigr)\;ds.
      * @f]
+     *
      */
     template <int dim>
     inline void
@@ -155,19 +193,55 @@ namespace LocalIntegrators
     }
 
     /**
-     * Weak boundary condition for the Laplace operator by Nitsche, vector
-     * valued version, namely on the face <i>F</i> the vector
-     * @f[
+     * Nitsche的拉普拉斯算子的弱边界条件，矢量值版本，即在面<i>F</i>上的矢量@f[
      * \int_F \Bigl(\gamma (\mathbf u \cdot \mathbf n- \mathbf g \cdot
      * \mathbf n) (\mathbf v \cdot \mathbf n)
-     * - \nabla \cdot \mathbf u (\mathbf v \cdot \mathbf n)
-     * - (\mathbf u-\mathbf g) \cdot \mathbf n \nabla \cdot v\Bigr)\;ds.
-     * @f]
      *
-     * Here, <i>u</i> is the finite element function whose values and gradient
-     * are given in the arguments <tt>input</tt> and <tt>Dinput</tt>,
-     * respectively. <i>g</i> is the inhomogeneous boundary value in the
-     * argument <tt>data</tt>. $\gamma$ is the usual penalty parameter.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \nabla \cdot \mathbf u (\mathbf v \cdot \mathbf n)
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - (\mathbf u-\mathbf g) \cdot \mathbf n \nabla \cdot v\Bigr)\;ds.
+     * @f] 这里，<i>u</i>是有限元函数，其值和梯度分别在参数<tt>input</tt>和<tt>Dinput</tt>里给出。<i>g</i>是参数<tt>data</tt>中的非均质边界值。  $\gamma$ 是通常的惩罚参数。
+     *
      */
     template <int dim>
     void
@@ -213,8 +287,8 @@ namespace LocalIntegrators
     }
 
     /**
-     * The interior penalty flux for the grad-div operator. See
-     * ip_residual() for details.
+     * grad-div算子的内部惩罚通量。详见ip_residual()。
+     *
      */
 
     template <int dim>
@@ -287,15 +361,55 @@ namespace LocalIntegrators
     }
 
     /**
-     * Grad-div residual term for the symmetric interior penalty method:
-     * @f[
+     * 对称内部惩罚方法的grad-div残差项。    @f[
      * \int_F \Bigl( \gamma [\mathbf u \cdot\mathbf n]
      * \cdot[\mathbf v \cdot \mathbf n]
-     * - \{\nabla \cdot \mathbf u\}[\mathbf v\cdot \mathbf n]
-     * - [\mathbf u\times \mathbf n]\{\nabla\cdot \mathbf v\} \Bigr) \; ds.
-     * @f]
      *
-     * See for instance Hansbo and Larson, 2002
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - \{\nabla \cdot \mathbf u\}[\mathbf v\cdot \mathbf n]
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * - [\mathbf u\times \mathbf n]\{\nabla\cdot \mathbf v\} \Bigr) \; ds.
+     * @f] 参见Hansbo和Larson, 2002等。
+     *
      */
     template <int dim>
     void
@@ -372,3 +486,5 @@ DEAL_II_NAMESPACE_CLOSE
 
 
 #endif
+
+

@@ -1,4 +1,3 @@
-//include/deal.II-translator/base/memory_space_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2018 - 2020 by the deal.II authors
@@ -22,13 +21,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /**
-  */
+/**
+ */
 namespace MemorySpace
 {
   /**
-   * 描述主机内存空间的结构。
-   *
+   * Structure describing Host memory space.
    */
   struct Host
   {};
@@ -36,8 +34,7 @@ namespace MemorySpace
 
 
   /**
-   * 描述CUDA内存空间的结构。
-   *
+   * Structure describing CUDA memory space.
    */
   struct CUDA
   {};
@@ -47,5 +44,3 @@ namespace MemorySpace
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

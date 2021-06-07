@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/petsc_precondition_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2004 - 2021 by the deal.II authors
@@ -42,78 +41,81 @@ namespace PETScWrappers
 #    endif
 
   /**
-   * 使用PETSc功能的预处理器类的基类。这个层次中的类并不做很多事情，只是提供了一个函数，在求解器的预处理上下文上设置预处理和某些参数。这些类在这里基本上只是为了实现与已经用于deal.II求解器和预处理器类类似的接口。
-   * 请注意，派生类只提供与PETSc相关功能的接口。PETSc并没有为所有的矩阵类型实现所有的预处理程序。特别是，有些预处理程序不能用于并行作业，例如ILU预处理程序。
-   * @ingroup PETScWrappers
+   * Base class for preconditioner classes using the PETSc functionality. The
+   * classes in this hierarchy don't do a whole lot, except for providing a
+   * function that sets the preconditioner and certain parameters on the
+   * preconditioning context of the solver. These classes are basically here
+   * only to allow a similar interface as already used for the deal.II solver
+   * and preconditioner classes.
    *
+   * Note that derived classes only provide interfaces to the relevant
+   * functionality of PETSc. PETSc does not implement all preconditioners for
+   * all matrix types. In particular, some preconditioners are not going to
+   * work for parallel jobs, such as for example the ILU preconditioner.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionBase : public Subscriptor
   {
   public:
     /**
-     * 构造器。
-     *
+     * Constructor.
      */
     PreconditionBase();
 
     /**
-     * 解构器。
-     *
+     * Destructor.
      */
     virtual ~PreconditionBase();
 
     /**
-     * 销毁预处理程序，留下一个像刚刚调用构造函数后的对象。
-     *
+     * Destroys the preconditioner, leaving an object like just after having
+     * called the constructor.
      */
     void
     clear();
 
     /**
-     * 对给定的src向量应用一次预处理程序。
-     *
+     * Apply the preconditioner once to the given src vector.
      */
     void
     vmult(VectorBase &dst, const VectorBase &src) const;
 
     /**
-     * 对给定的src向量应用一次转置的预处理程序。
-     *
+     * Apply the transpose preconditioner once to the given src vector.
      */
     void
     Tvmult(VectorBase &dst, const VectorBase &src) const;
 
 
     /**
-     * 给予对底层PETSc对象的访问权。
-     *
+     * Give access to the underlying PETSc object.
      */
     const PC &
     get_pc() const;
 
   protected:
     /**
-     * PETSc预处理器对象
-     *
+     * the PETSc preconditioner object
      */
     PC pc;
 
     /**
-     * 一个指向作为预处理器的矩阵的指针。
-     *
+     * A pointer to the matrix that acts as a preconditioner.
      */
     Mat matrix;
 
     /**
-     * 用于创建PETSc预处理对象的内部函数。如果调用两次就会失败。
-     *
+     * Internal function to create the PETSc preconditioner object. Fails if
+     * called twice.
      */
     void
     create_pc();
 
     /**
-     * 转换运算符，以获得代表该预处理程序的矩阵的表示。我们在实际求解器中使用它，我们需要将这个矩阵传递给PETSc求解器。
-     *
+     * Conversion operator to get a representation of the matrix that
+     * represents this preconditioner. We use this inside the actual solver,
+     * where we need to pass this matrix to the PETSc solvers.
      */
     operator Mat() const;
 
@@ -125,49 +127,53 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现了使用PETSc雅可比预处理程序接口的类。
-   * 参见基类 @ref PreconditionBase
-   * 中的注释，了解该预处理器在什么情况下可以或不可以工作。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc Jacobi
+   * preconditioner.
    *
+   * See the comment in the base class
+   * @ref PreconditionBase
+   * for when this preconditioner may or may not work.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionJacobi : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {};
 
     /**
-     * 空的构造器。在使用这个对象之前，你需要调用初始化（）。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionJacobi() = default;
 
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，也要取。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionJacobi(
       const MatrixBase &    matrix,
       const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 与上述相同，但不设置矩阵以形成预处理程序。
-     * 旨在与SLEPc对象一起使用。
-     *
+     * Same as above but without setting a matrix to form the preconditioner.
+     * Intended to be used with SLEPc objects.
      */
     PreconditionJacobi(
       const MPI_Comm &      communicator,
       const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在创建没有参数的预处理程序时才会使用。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -175,14 +181,14 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
 
     /**
-     * 在不知道特定矩阵的情况下初始化预处理器对象。这个函数在底层的PETSc对象被创建后为其设置适当的参数。
-     *
+     * Initialize the preconditioner object without knowing a particular
+     * matrix. This function sets up appropriate parameters to the underlying
+     * PETSc object after it has been created.
      */
     void
     initialize();
@@ -191,43 +197,55 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现接口的类，用于使用PETSc块状雅可比预处理程序。PETSc将 "块状雅可比 "
-   * 定义为一个预处理程序，它查看矩阵的一些对角线块，然后定义一个预处理程序，其中预处理程序矩阵的块状结构只与这些对角线块相同，预处理程序的每个对角线块都是原矩阵相应块的逆的近似值。
-   * 矩阵的块状结构是由MPI并行作业中各个处理器的自由度关联决定的。如果你在一个顺序作业(或只有一个进程的MPI作业)中使用这个预处理程序，那么整个矩阵就是唯一的块。
-   * 默认情况下，PETSc使用矩阵的每个对角线块的ILU(0)分解来进行预处理。这一点可以改变，在PETSc手册的相关章节中有解释，但在这里没有实现。
-   * 关于这个预处理程序在什么时候可以工作，什么时候不可以工作，请看基类
-   * @ref PreconditionBase 中的注释。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc Block Jacobi
+   * preconditioner. PETSc defines the term "block Jacobi" as a preconditioner
+   * in which it looks at a number of diagonal blocks of the matrix and then
+   * defines a preconditioner in which the preconditioner matrix has the same
+   * block structure as only these diagonal blocks, and each diagonal block
+   * of the preconditioner is an approximation of the inverse of the
+   * corresponding block of the original matrix.
+   * The blocking structure of the matrix is determined by the
+   * association of degrees of freedom to the individual processors in an
+   * MPI-parallel job. If you use this preconditioner on a sequential job (or an
+   * MPI job with only one process) then the entire matrix is the only block.
    *
+   * By default, PETSc uses an ILU(0) decomposition of each diagonal block of
+   * the matrix for preconditioning. This can be changed, as is explained in
+   * the relevant section of the PETSc manual, but is not implemented here.
+   *
+   * See the comment in the base class
+   * @ref PreconditionBase
+   * for when this preconditioner may or may not work.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionBlockJacobi : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {};
 
     /**
-     * 空的构造器。在使用这个对象之前，你需要调用初始化（）。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionBlockJacobi() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，也要取。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionBlockJacobi(
       const MatrixBase &    matrix,
       const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 与上述相同，但不设置矩阵以形成预处理程序。
-     * 旨在与SLEPc对象一起使用。
-     *
+     * Same as above but without setting a matrix to form the preconditioner.
+     * Intended to be used with SLEPc objects.
      */
     PreconditionBlockJacobi(
       const MPI_Comm &      communicator,
@@ -235,8 +253,10 @@ namespace PETScWrappers
 
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在创建没有参数的预处理程序时才会使用。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -244,14 +264,14 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
 
     /**
-     * 在不知道特定矩阵的情况下初始化预处理程序对象。这个函数在底层的PETSc对象被创建后为其设置了适当的参数。
-     *
+     * Initialize the preconditioner object without knowing a particular
+     * matrix. This function sets up appropriate parameters to the underlying
+     * PETSc object after it has been created.
      */
     void
     initialize();
@@ -260,49 +280,51 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现接口的类，以使用PETSc SOR预处理器。
-   * @note 只在与 PETScWrappers::SparseMatrix. 串联时工作。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc SOR
+   * preconditioner.
    *
+   * @note Only works in serial with a PETScWrappers::SparseMatrix.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionSOR : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。默认情况下，将阻尼参数设置为1。
-       *
+       * Constructor. By default, set the damping parameter to one.
        */
       AdditionalData(const double omega = 1);
 
       /**
-       * 松弛参数。
-       *
+       * Relaxation parameter.
        */
       double omega;
     };
 
     /**
-     * 空的构造函数。在使用这个对象之前，你需要调用初始化()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionSOR() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，则取额外的标志。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionSOR(const MatrixBase &    matrix,
                     const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -310,8 +332,7 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -319,49 +340,51 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现了使用PETSc SSOR预处理程序的接口的类。
-   * @note 只在与 PETScWrappers::SparseMatrix. 串行时工作。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc SSOR
+   * preconditioner.
    *
+   * @note Only works in serial with a PETScWrappers::SparseMatrix.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionSSOR : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。默认情况下，将阻尼参数设置为1。
-       *
+       * Constructor. By default, set the damping parameter to one.
        */
       AdditionalData(const double omega = 1);
 
       /**
-       * 松弛参数。
-       *
+       * Relaxation parameter.
        */
       double omega;
     };
 
     /**
-     * 空的构造函数。在使用这个对象之前，你需要调用初始化（）。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionSSOR() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，则取额外的标志。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionSSOR(const MatrixBase &    matrix,
                      const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -369,8 +392,7 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -378,51 +400,55 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现使用PETSc Eisenstat预处理的接口的类，它在每个处理器所拥有的对角线块上实现SSOR。
-   * 参见基类 @ref PreconditionBase
-   * 中的注释，了解该预处理器在什么情况下可能工作或不工作。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc Eisenstat
+   * preconditioner, which implements SSOR on the diagonal block owned by
+   * each processor.
    *
+   * See the comment in the base class
+   * @ref PreconditionBase
+   * for when this preconditioner may or may not work.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionEisenstat : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。默认情况下，将阻尼参数设置为1。
-       *
+       * Constructor. By default, set the damping parameter to one.
        */
       AdditionalData(const double omega = 1);
 
       /**
-       * 松弛参数。
-       *
+       * Relaxation parameter.
        */
       double omega;
     };
 
     /**
-     * 空的构造函数。在使用这个对象之前，你需要调用初始化()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionEisenstat() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，也要取。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionEisenstat(
       const MatrixBase &    matrix,
       const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -430,8 +456,7 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -439,49 +464,51 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现接口的类，用于使用PETSc不完全Cholesky预处理器。
-   * @note  只与 PETScWrappers::SparseMatrix. 串行工作。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc Incomplete
+   * Cholesky preconditioner.
    *
+   * @note Only works in serial with a PETScWrappers::SparseMatrix.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionICC : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。默认情况下，将填充参数设置为零。
-       *
+       * Constructor. By default, set the fill-in parameter to zero.
        */
       AdditionalData(const unsigned int levels = 0);
 
       /**
-       * 填充参数。
-       *
+       * Fill-in parameter.
        */
       unsigned int levels;
     };
 
     /**
-     * 空的构造函数。在使用这个对象之前，你需要调用initialize()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionICC() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，则取额外的标志。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionICC(const MatrixBase &    matrix,
                     const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -489,8 +516,7 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -498,49 +524,51 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现了使用PETSc ILU预处理程序的接口的类。
-   * @note  仅在与 PETScWrappers::SparseMatrix. 的串行中工作。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc ILU
+   * preconditioner.
    *
+   * @note Only works in serial with a PETScWrappers::SparseMatrix.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionILU : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。默认情况下，将填充参数设置为零。
-       *
+       * Constructor. By default, set the fill-in parameter to zero.
        */
       AdditionalData(const unsigned int levels = 0);
 
       /**
-       * 填充参数。
-       *
+       * Fill-in parameter.
        */
       unsigned int levels;
     };
 
     /**
-     * 空的构造函数。在使用这个对象之前，你需要调用initialize()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionILU() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，也要取。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionILU(const MatrixBase &    matrix,
                     const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -548,8 +576,7 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -557,66 +584,73 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现使用PETSc LU预处理的接口的类 (  @p PCLU).
-   * 与PreconditionILU等类不同，这个类通常（取决于设置）执行矩阵的精确因式分解，所以没有必要用迭代求解器来包装它。该类通常与SolverPreOnly一起使用，以获得一个直接求解器。或者，你也可以直接使用
-   * PreconditionBase::vmult() 。
-   * @note
-   * 这不是一个并行的预处理程序，所以它只适用于单处理器的串行计算。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the PETSc LU preconditioner
+   * (@p PCLU). Unlike classes like PreconditionILU, this class usually
+   * (depending on the settings) performs an exact factorization of the
+   * matrix, so it is not necessary to wrap it in an iterative solver. This
+   * class is typically used with SolverPreOnly to get a direct
+   * solver. Alternatively, you can use PreconditionBase::vmult() directly.
    *
+   * @note This is not a parallel preconditioner so it only works in serial
+   * computations with a single processor.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionLU : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。(默认值取自PETSc库的函数PCCreate_LU)。
-       *
+       * Constructor. (Default values taken from function PCCreate_LU of the
+       * PETSc lib.)
        */
       AdditionalData(const double pivoting   = 1.e-6,
                      const double zero_pivot = 1.e-12,
                      const double damping    = 0.0);
 
       /**
-       * 决定在LU分解过程中何时进行枢轴化。0.0表示没有透视，1.0表示完全透视。更多细节请参考PETSc手册。
-       *
+       * Determines, when Pivoting is done during LU decomposition. 0.0
+       * indicates no pivoting, and 1.0 complete pivoting. Confer PETSc manual
+       * for more details.
        */
       double pivoting;
 
       /**
-       * 小枢轴被宣布为零的大小。更多细节请参考PETSc手册。
-       *
+       * Size at which smaller pivots are declared to be zero. Confer PETSc
+       * manual for more details.
        */
       double zero_pivot;
 
       /**
-       * 在因式分解过程中，这个量被添加到矩阵的对角线上。
-       *
+       * This quantity is added to the diagonal of the matrix during
+       * factorization.
        */
       double damping;
     };
 
     /**
-     * 空构造函数。在使用这个对象之前，你需要调用初始化()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionLU() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，则取额外的标志。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionLU(const MatrixBase &    matrix,
                    const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -624,8 +658,7 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -633,24 +666,26 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现接口的类，用于使用HYPRE套件中的BoomerAMG代数多网格预处理器。请注意，PETSc必须与HYPRE一起配置（例如，使用\--download-hypre=1）。
-   * 该预处理程序确实支持并行分布式计算。见 step-40
-   * 中的一个例子。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the BoomerAMG algebraic
+   * multigrid preconditioner from the HYPRE suite. Note that PETSc has to be
+   * configured with HYPRE (e.g. with \--download-hypre=1).
    *
+   * The preconditioner does support parallel distributed computations. See
+   * step-40 for an example.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionBoomerAMG : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 定义了BoomerAMG的可用松弛类型。
-       *
+       * Defines the available relaxation types for BoomerAMG.
        */
       enum class RelaxationType
       {
@@ -672,8 +707,8 @@ namespace PETScWrappers
       };
 
       /**
-       * 构造函数。请注意，BoomerAMG提供了比这里所揭示的更多的选项来设置。
-       *
+       * Constructor. Note that BoomerAMG offers a lot more options to set
+       * than what is exposed here.
        */
       AdditionalData(
         const bool           symmetric_operator               = false,
@@ -691,98 +726,99 @@ namespace PETScWrappers
         const bool         w_cycle         = false);
 
       /**
-       * 如果你有一个对称的系统矩阵，并且你想使用像CG这样假设有对称预处理的求解器，请将这个标志设置为
-       * "true"。
-       *
+       * Set this flag to true if you have a symmetric system matrix and you
+       * want to use a solver which assumes a symmetric preconditioner like
+       * CG.
        */
       bool symmetric_operator;
 
       /**
-       * 节点被认为是强连接的阈值。参见HYPRE_BoomerAMGSetStrongThreshold（）。推荐值是2D问题的0.25和3D问题的0.5，但这取决于问题。
-       *
+       * Threshold of when nodes are considered strongly connected. See
+       * HYPRE_BoomerAMGSetStrongThreshold(). Recommended values are 0.25 for
+       * 2d and 0.5 for 3d problems, but it is problem dependent.
        */
       double strong_threshold;
 
       /**
-       * 如果设置为小于1.0的值，那么矩阵的对角线主导部分将被视为没有强连接节点。如果由对角线条目加权的行和大于给定值，则被认为是对角线主导的。这个功能可以通过设置数值为1.0来关闭。这是默认的，因为有些矩阵可能导致只有对角线主导的条目，因此没有构建多网格层次。在BoomerAMG中，这个默认值是0.9。当你尝试这样做的时候，请检查所创建的层次的合理数量。
-       *
+       * If set to a value smaller than 1.0 then diagonally dominant parts of
+       * the matrix are treated as having no strongly connected nodes. If the
+       * row sum weighted by the diagonal entry is bigger than the given
+       * value, it is considered diagonally dominant. This feature is turned
+       * of by setting the value to 1.0. This is the default as some matrices
+       * can result in having only diagonally dominant entries and thus no
+       * multigrid levels are constructed. The default in BoomerAMG for this
+       * is 0.9. When you try this, check for a reasonable number of levels
+       * created.
        */
       double max_row_sum;
 
       /**
-       * 积极粗化的层数。增加这个值可以减少构建时间和内存需求，但是可能会降低效果。
-       *
+       * Number of levels of aggressive coarsening. Increasing this value
+       * reduces the construction time and memory requirements but may
+       * decrease effectiveness.
        */
       unsigned int aggressive_coarsening_num_levels;
 
       /**
-       * 当构建预处理程序时，将此标志设置为 "true
-       * "会产生来自HYPRE的调试输出。
-       *
+       * Setting this flag to true produces debug output from HYPRE, when the
+       * preconditioner is constructed.
        */
       bool output_details;
 
       /**
-       * 选择松弛类型了。
-       *
+       * Choose relaxation type up.
        */
       RelaxationType relaxation_type_up;
 
       /**
-       * 选择松弛类型向下。
-       *
+       * Choose relaxation type down.
        */
       RelaxationType relaxation_type_down;
 
       /**
-       * 选择粗放型的放松。
-       *
+       * Choose relaxation type coarse.
        */
       RelaxationType relaxation_type_coarse;
 
       /**
-       * 选择粗放网格上的扫描次数。
-       *
+       * Choose number of sweeps on coarse grid.
        */
       unsigned int n_sweeps_coarse;
 
       /**
-       * 选择BommerAMG公差。
-       *
+       * Choose BommerAMG tolerance.
        */
       double tol;
 
       /**
-       * 选择BommerAMG的最大周期数。
-       *
+       * Choose BommerAMG maximum number of cycles.
        */
       unsigned int max_iter;
 
       /**
-       * 定义是否应该使用w型循环而不是标准设置的v型循环。
-       *
+       * Defines whether a w-cycle should be used instead of the standard
+       * setting of a v-cycle.
        */
       bool w_cycle;
     };
 
     /**
-     * 空构造函数。在使用这个对象之前，你需要调用initialize()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionBoomerAMG() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，也要取。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionBoomerAMG(
       const MatrixBase &    matrix,
       const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 与上述相同，但不设置矩阵以形成预处理程序。
-     * 目的是与SLEPc对象一起使用。
-     *
+     * Same as above but without setting a matrix to form the preconditioner.
+     * Intended to be used with SLEPc objects.
      */
     PreconditionBoomerAMG(
       const MPI_Comm &      communicator,
@@ -790,8 +826,10 @@ namespace PETScWrappers
 
 
     /**
-     * 初始化预处理对象并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时自动调用，只有在创建没有参数的预处理程序时才会使用。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -799,14 +837,14 @@ namespace PETScWrappers
 
   protected:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
 
     /**
-     * 在不知道特定矩阵的情况下初始化预处理程序对象。这个函数在底层PETSc对象被创建后为其设置了适当的参数。
-     *
+     * Initialize the preconditioner object without knowing a particular
+     * matrix. This function sets up appropriate parameters to the underlying
+     * PETSc object after it has been created.
      */
     void
     initialize();
@@ -815,26 +853,35 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现接口的类，用于使用HYPRE套件中的ParaSails稀疏近似反预处理器。请注意，PETSc必须与HYPRE一起配置（例如，使用\--download-hypre=1）。
-   * ParaSails使用最小二乘法来计算稀疏的近似逆。所使用的稀疏模式是稀疏矩阵的幂的模式。ParaSails还使用了一种后过滤技术，以减少应用预处理程序的成本。
-   * ParaSails使用因子化SPD预处理器解决对称正定（SPD）问题，也可以使用非因子化预处理器解决一般（非对称和/或不确定）问题。问题类型必须在
-   * @p AdditionalData.
-   * 中设置，预处理程序确实支持并行分布式计算。
-   * @ingroup PETScWrappers
+   * A class that implements the interface to use the ParaSails sparse
+   * approximate inverse preconditioner from the HYPRE suite. Note that PETSc
+   * has to be configured with HYPRE (e.g. with \--download-hypre=1).
    *
+   * ParaSails uses least-squares minimization to compute a sparse approximate
+   * inverse. The sparsity pattern used is the pattern of a power of a
+   * sparsified matrix. ParaSails also uses a post-filtering technique to
+   * reduce the cost of applying the preconditioner.
+   *
+   * ParaSails solves symmetric positive definite (SPD) problems using a
+   * factorized SPD preconditioner and can also solve general (nonsymmetric
+   * and/or indefinite) problems with a nonfactorized preconditioner. The
+   * problem type has to be set in @p AdditionalData.
+   *
+   * The preconditioner does support parallel distributed computations.
+   *
+   * @ingroup PETScWrappers
    */
   class PreconditionParaSails : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {
       /**
-       * 构造器。
-       *
+       * Constructor.
        */
       AdditionalData(const unsigned int symmetric      = 1,
                      const unsigned int n_levels       = 1,
@@ -843,49 +890,53 @@ namespace PETScWrappers
                      const bool         output_details = false);
 
       /**
-       * 这个参数指定了要解决的问题的类型。        <ul>   <li>   @p 0:  非对称和/或不确定问题，以及非对称预处理  <li>   @p 1:  SPD问题，以及SPD（因子）预处理  <li>   @p 2:  非对称、确定问题，以及SPD（因子）预处理  </ul>  默认为<tt>symmetric = 1</tt>。
-       *
+       * This parameter specifies the type of problem to solve:
+       * <ul>
+       * <li> @p 0: nonsymmetric and/or indefinite problem, and nonsymmetric
+       * preconditioner
+       * <li> @p 1: SPD problem, and SPD (factored) preconditioner
+       * <li> @p 2: nonsymmetric, definite problem, and SPD (factored)
+       * preconditioner
+       * </ul>
+       * Default is <tt>symmetric = 1</tt>.
        */
       unsigned int symmetric;
 
       /**
-       * 用于近似求逆的稀疏模式是幂级<tt>B^m</tt>的模式，其中<tt>B</tt>已经从给定的矩阵<tt>A</tt>中稀疏化，<tt>n_level</tt>等于<tt>m+1</tt>。
-       * 默认值是<tt>n_levels = 1</tt>。
-       *
+       * The sparsity pattern used for the approximate inverse is the pattern
+       * of a power <tt>B^m</tt> where <tt>B</tt> has been sparsified from the
+       * given matrix <tt>A</tt>, <tt>n_level</tt> is equal to <tt>m+1</tt>.
+       * Default value is <tt>n_levels = 1</tt>.
        */
       unsigned int n_levels;
 
       /**
-       * 稀疏化是通过丢弃幅度小于<tt>thresh</tt>的非零点来实现的。较低的<tt>thresh</tt>值会导致更精确，但也更昂贵的预处理程序。
-       * 默认值是<tt>thresh = 0.1</tt>。设置<tt>thresh <
-       * 0</tt>会自动选择一个阈值，这样<tt>thresh</tt>就代表了被放弃的非零元素的比例。例如，如果<tt>thresh
-       * =
-       *
-       * - .9</tt>，那么<tt>B</tt>将包含给定矩阵<tt>A</tt>中约百分之十的非零元素。
-       *
+       * Sparsification is performed by dropping nonzeros which are smaller
+       * than <tt>thresh</tt> in magnitude. Lower values of <tt>thresh</tt>
+       * lead to more accurate, but also more expensive preconditioners.
+       * Default value is <tt>thresh = 0.1</tt>. Setting <tt>thresh < 0</tt> a
+       * threshold is selected automatically, such that <tt>-thresh</tt>
+       * represents the fraction of nonzero elements that are dropped. For
+       * example, if <tt>thresh = -0.9</tt>, then <tt>B</tt> will contain
+       * about ten percent of the nonzeros of the given matrix <tt>A</tt>.
        */
       double threshold;
 
       /**
-       * 过滤是一个后处理过程，<tt>filter</tt>代表在创建近似的反稀疏模式后被丢弃的非零元素的一部分。默认值是<tt>filter
-       * = 0.05</tt>。设置<tt>filter <
-       * 0</tt>会自动选择一个值，这样<tt>-filter</tt>代表被丢弃的非零元素的比例。例如，如果<tt>thresh
-       * =
-       *
-       *
-       *
-       *
-       *
-       *
-       * - .9</tt>，那么在计算的近似逆中约有90%的条目被放弃。
-       *
+       * Filtering is a post-processing procedure, <tt>filter</tt> represents
+       * a fraction of nonzero elements that are dropped after creating the
+       * approximate inverse sparsity pattern. Default value is <tt>filter =
+       * 0.05</tt>. Setting <tt>filter < 0</tt> a value is selected
+       * automatically, such that <tt>-filter</tt> represents the fraction of
+       * nonzero elements that are dropped. For example, if <tt>thresh =
+       * -0.9</tt>, then about 90 percent of the entries in the computed
+       * approximate inverse are dropped.
        */
       double filter;
 
       /**
-       * 当构建预处理程序时，将此标志设置为 "true
-       * "会产生来自HYPRE的输出。
-       *
+       * Setting this flag to true produces output from HYPRE, when the
+       * preconditioner is constructed.
        */
       bool output_details;
     };
@@ -893,22 +944,24 @@ namespace PETScWrappers
 
 
     /**
-     * 空的构造器。在使用这个对象之前，你需要调用初始化()。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionParaSails() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志，也要取。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any.
      */
     PreconditionParaSails(
       const MatrixBase &    matrix,
       const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时被自动调用，只有在你创建没有参数的预处理程序时才会用到。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -916,8 +969,7 @@ namespace PETScWrappers
 
   private:
     /**
-     * 为这个特定的先决条件器存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
@@ -925,36 +977,40 @@ namespace PETScWrappers
 
 
   /**
-   * 一个实现非预处理方法的类。
-   * @ingroup PETScWrappers
+   * A class that implements a non-preconditioned method.
    *
+   * @ingroup PETScWrappers
    */
   class PreconditionNone : public PreconditionBase
   {
   public:
     /**
-     * 标准化的数据结构，用于向预处理程序输送额外的标志。
-     *
+     * Standardized data struct to pipe additional flags to the
+     * preconditioner.
      */
     struct AdditionalData
     {};
 
     /**
-     * 空的构造器。在使用这个对象之前，你需要调用初始化（）。
-     *
+     * Empty Constructor. You need to call initialize() before using this
+     * object.
      */
     PreconditionNone() = default;
 
     /**
-     * 构造函数。取用于形成预处理程序的矩阵，如果有额外的标志的话。该矩阵在计算中被完全忽略。
-     *
+     * Constructor. Take the matrix which is used to form the preconditioner,
+     * and additional flags if there are any. The matrix is completely ignored
+     * in computations.
      */
     PreconditionNone(const MatrixBase &    matrix,
                      const AdditionalData &additional_data = AdditionalData());
 
     /**
-     * 初始化预处理对象，并计算在求解器中应用它所需的所有数据。这个函数在调用具有相同参数的构造函数时自动调用，只有在创建没有参数的预处理程序时才会用到。矩阵在计算中被完全忽略。
-     *
+     * Initialize the preconditioner object and calculate all data that is
+     * necessary for applying it in a solver. This function is automatically
+     * called when calling the constructor with the same arguments and is only
+     * used if you create the preconditioner without arguments. The matrix is
+     * completely ignored in computations.
      */
     void
     initialize(const MatrixBase &    matrix,
@@ -962,16 +1018,14 @@ namespace PETScWrappers
 
   private:
     /**
-     * 为这个特定的预处理程序存储一份标志的副本。
-     *
+     * Store a copy of the flags for this particular preconditioner.
      */
     AdditionalData additional_data;
   };
 
   /**
-   * 向后兼容的别名。    @deprecated  使用
-   * PETScWrappers::PreconditionBase 代替。
-   *
+   * Alias for backwards-compatibility.
+   * @deprecated Use PETScWrappers::PreconditionBase instead.
    */
   using PreconditionerBase DEAL_II_DEPRECATED = PreconditionBase;
 } // namespace PETScWrappers
@@ -984,6 +1038,4 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif // DEAL_II_WITH_PETSC
 
 #endif
- /*--------------------------- petsc_precondition.h --------------------------*/ 
-
-
+/*--------------------------- petsc_precondition.h --------------------------*/

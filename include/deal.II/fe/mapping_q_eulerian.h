@@ -1,3 +1,4 @@
+//include/deal.II-translator/fe/mapping_q_eulerian_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2001 - 2021 by the deal.II authors
@@ -37,77 +38,48 @@ template <typename>
 class Vector;
 
 
-/*!@addtogroup mapping */
-/*@{*/
+ /*!@addtogroup mapping */ 
+ /*@{*/ 
 
 /**
- * This class is an extension of the MappingQ1Eulerian class to higher order
- * $Q_p$ mappings.  It is useful when one wants to calculate shape function
- * information on a domain that is deforming as the computation proceeds.
- *
+ * 这个类是MappingQ1Eulerian类对高阶 $Q_p$ 映射的扩展。
+ * 当人们想在一个随着计算进行而变形的域上计算形状函数信息时，它很有用。
  * <h3>Usage</h3>
+ * 这个类的构造函数需要三个参数：所需Qp映射的多项式程度，对定义从初始配置到当前配置的映射的向量的引用，以及对DoFHandler的引用。最常见的情况是使用所考虑的问题的解决方案向量作为转移向量。关键的要求是，给定矢量场的分量数量必须等于（或可能大于）空间维度的数量。如果分量多于空间维数（例如，如果我们正在处理一个耦合问题，其中有额外的求解变量），则假定第一个<tt>dim</tt>分量代表位移场，其余分量被忽略。
+ * 如果这个假设不成立，我们可能需要在三角结构上设置一个单独的DoFHandler，并将所需的位移矢量与之关联。
+ * 通常情况下，DoFHandler操作的有限元是由连续的FE_Q对象构成的系统元（FESystem）。下面是一个例子。
  *
- * The constructor of this class takes three arguments: the polynomial degree
- * of the desired Qp mapping, a reference to the vector that defines the
- * mapping from the initial configuration to the current configuration, and a
- * reference to the DoFHandler. The most common case is to use the solution
- * vector for the problem under consideration as the shift vector. The key
- * requirement is that the number of components of the given vector field must
- * be equal to (or possibly greater than) the number of space dimensions. If
- * there are more components than space dimensions (for example, if one is
- * working with a coupled problem where there are additional solution
- * variables), the first <tt>dim</tt> components are assumed to represent the
- * displacement field, and the remaining components are ignored.  If this
- * assumption does not hold one may need to set up a separate DoFHandler on
- * the triangulation and associate the desired shift vector to it.
- *
- * Typically, the DoFHandler operates on a finite element that is constructed
- * as a system element (FESystem) from continuous FE_Q objects. An example
- * is shown below:
  * @code
- *    FESystem<dim> fe(FE_Q<dim>(2), dim, FE_Q<dim>(1), 1);
- *    DoFHandler<dim> dof_handler(triangulation);
- *    dof_handler.distribute_dofs(fe);
- *    Vector<double> displacement_field(dof_handler.n_dofs());
- *    // ... compute displacement field somehow...
- *    MappingQEulerian<dim> q2_mapping(2, dof_handler, displacement_field);
+ *  FESystem<dim> fe(FE_Q<dim>(2), dim, FE_Q<dim>(1), 1);
+ *  DoFHandler<dim> dof_handler(triangulation);
+ *  dof_handler.distribute_dofs(fe);
+ *  Vector<double> displacement_field(dof_handler.n_dofs());
+ *  // ... compute displacement field somehow...
+ *  MappingQEulerian<dim> q2_mapping(2, dof_handler, displacement_field);
  * @endcode
  *
- * In this example, our element consists of <tt>(dim+1)</tt> components. Only
- * the first <tt>dim</tt> components will be used, however, to define the Q2
- * mapping.  The remaining components are ignored.
+ * 在这个例子中，我们的元素由<tt>(dim+1)</tt>组件组成。然而，只有第一个<tt>dim</tt>组件将被用于定义Q2映射。
+ * 其余的组件将被忽略。
+ * 注意，在构建映射对象之前，必须调用distribution_dofs(...)函数。
+ * 还要注意的是，由于移位值向量和dof处理程序只在构造时与此对象相关联，所以你必须确保无论何时使用此对象，给定的对象仍然代表有效的数据。
+ * 为了使MappingQEulerian类也能在使用PETSc或Trilinos包装类的并行代码中使用，矢量的类型可以被指定为模板参数<tt>VectorType</tt>。
  *
- * Note that it is essential to call the distribute_dofs(...) function before
- * constructing a mapping object.
  *
- * Also note that since the vector of shift values and the dof handler are
- * only associated to this object at construction time, you have to make sure
- * that whenever you use this object, the given objects still represent valid
- * data.
- *
- * To enable the use of the MappingQEulerian class also in the context of
- * parallel codes using the PETSc or Trilinos wrapper classes, the type
- * of the vector can be specified as template parameter <tt>VectorType</tt>.
  */
 template <int dim, typename VectorType = Vector<double>, int spacedim = dim>
 class MappingQEulerian : public MappingQ<dim, spacedim>
 {
 public:
   /**
-   * Constructor.
+   * 构造函数。      @param[in]  degree 所需 $Q_p$
+   * 映射的多项式程度。    @param[in]  euler_dof_handler
+   * 一个DoFHandler对象，它定义了一个有限元空间。这个空间需要至少有dim分量，空间的第一个dim分量将被视为相对于三角形单元的原始位置的位移。
+   * @param[in]  euler_vector
+   * 第二个参数定义的空间中的有限元函数。这个函数的第一个dim分量将被解释为我们在定义映射时使用的位移，相对于底层三角板的单元位置。
+   * @param[in]  级别
+   * 将使用映射的多网格级别。它主要用于检查 @p euler_vector
+   * 的大小是否与 @p euler_dof_handler 一致。
    *
-   * @param[in] degree The polynomial degree of the desired $Q_p$ mapping.
-   * @param[in] euler_dof_handler A DoFHandler object that defines a finite
-   * element space. This space needs to have at least dim components and the
-   * first dim components of the space will be considered displacements
-   * relative to the original positions of the cells of the triangulation.
-   * @param[in] euler_vector A finite element function in the space defined by
-   * the second argument. The first dim components of this function will be
-   * interpreted as the displacement we use in defining the mapping, relative
-   * to the location of cells of the underlying triangulation.
-   * @param[in] level The multi-grid level at which the mapping will
-   * be used. It is mainly used to check if the size of the @p euler_vector
-   * is consistent with the @p euler_dof_handler .
    */
   MappingQEulerian(const unsigned int               degree,
                    const DoFHandler<dim, spacedim> &euler_dof_handler,
@@ -115,10 +87,8 @@ public:
                    const unsigned int level = numbers::invalid_unsigned_int);
 
   /**
-   * Return the mapped vertices of the cell. For the current class, this
-   * function does not use the support points from the geometry of the current
-   * cell but instead evaluates an externally given displacement field in
-   * addition to the geometry of the cell.
+   * 返回单元格的映射顶点。对于当前类，这个函数不使用当前单元格几何形状中的支持点，而是在单元格的几何形状之外，评估一个外部给定的位移场。
+   *
    */
   virtual boost::container::small_vector<Point<spacedim>,
                                          GeometryInfo<dim>::vertices_per_cell>
@@ -126,16 +96,16 @@ public:
     const override;
 
   /**
-   * Return a pointer to a copy of the present object. The caller of this copy
-   * then assumes ownership of it.
+   * 返回一个指向当前对象副本的指针。这个副本的调用者就拥有了它的所有权。
+   *
    */
   virtual std::unique_ptr<Mapping<dim, spacedim>>
   clone() const override;
 
   /**
-   * Always return @p false because MappingQEulerian does not in general
-   * preserve vertex locations (unless the translation vector happens to
-   * provide zero displacements at vertex locations).
+   * 总是返回 @p false
+   * ，因为MappingQEulerian一般不保留顶点位置（除非翻译矢量碰巧在顶点位置提供零位移）。
+   *
    */
   virtual bool
   preserves_vertex_locations() const override;
@@ -146,19 +116,17 @@ public:
                      &cell) const override;
 
   /**
-   * Exception which is thrown when the mapping is being evaluated at
-   * non-active cell.
+   * 当映射在非活动单元被评估时，会抛出异常。
+   *
    */
   DeclException0(ExcInactiveCell);
 
 protected:
   /**
-   * Compute mapping-related information for a cell. See the documentation of
-   * Mapping::fill_fe_values() for a discussion of purpose, arguments, and
-   * return value of this function.
+   * 计算一个单元的映射相关信息。关于这个函数的目的、参数和返回值的讨论，请参见
+   * Mapping::fill_fe_values() 的文档。
+   * 这个函数覆盖了基类中的函数，因为我们不能为这个类使用任何单元格的相似性。
    *
-   * This function overrides the function in the base class since we cannot
-   * use any cell similarity for this class.
    */
   virtual CellSimilarity::Similarity
   fill_fe_values(
@@ -170,13 +138,15 @@ protected:
       &output_data) const override;
 
   /**
-   * Reference to the vector of shifts.
+   * 对移位矢量的引用。
+   *
    */
   SmartPointer<const VectorType, MappingQEulerian<dim, VectorType, spacedim>>
     euler_vector;
 
   /**
-   * Pointer to the DoFHandler to which the mapping vector is associated.
+   * 指向映射向量所关联的DoFHandler的指针。
+   *
    */
   SmartPointer<const DoFHandler<dim, spacedim>,
                MappingQEulerian<dim, VectorType, spacedim>>
@@ -185,30 +155,29 @@ protected:
 
 private:
   /**
-   * Multigrid level at which the mapping is to be used.
+   * 要使用映射的多网格级别。
+   *
    */
   const unsigned int level;
 
   /**
-   * A class derived from MappingQGeneric that provides the generic mapping
-   * with support points on boundary objects so that the corresponding Q3
-   * mapping ends up being C1.
+   * 一个派生自MappingQGeneric的类，它为通用映射提供边界对象上的支持点，从而使相应的Q3映射最终成为C1。
+   *
    */
   class MappingQEulerianGeneric : public MappingQGeneric<dim, spacedim>
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     MappingQEulerianGeneric(
       const unsigned int                                 degree,
       const MappingQEulerian<dim, VectorType, spacedim> &mapping_q_eulerian);
 
     /**
-     * Return the mapped vertices of the cell. For the current class, this
-     * function does not use the support points from the geometry of the
-     * current cell but instead evaluates an externally given displacement
-     * field in addition to the geometry of the cell.
+     * 返回单元格的映射顶点。对于当前的类，这个函数不使用当前单元格的几何形状中的支持点，而是在单元格的几何形状之外，评估一个外部给定的位移场。
+     *
      */
     virtual boost::container::small_vector<Point<spacedim>,
                                            GeometryInfo<dim>::vertices_per_cell>
@@ -216,9 +185,9 @@ private:
                    &cell) const override;
 
     /**
-     * Compute the positions of the support points in the current
-     * configuration. See the documentation of
-     * MappingQGeneric::compute_mapping_support_points() for more information.
+     * 计算当前配置中的支撑点的位置。更多信息请参见
+     * MappingQGeneric::compute_mapping_support_points() 的文档。
+     *
      */
     virtual std::vector<Point<spacedim>>
     compute_mapping_support_points(
@@ -226,59 +195,61 @@ private:
       const override;
 
     /**
-     * Always return @p false because MappingQEulerianGeneric does not in general
-     * preserve vertex locations (unless the translation vector happens to
-     * provide for zero displacements at vertex locations).
+     * 总是返回 @p false
+     * ，因为MappingQEulerianGeneric一般不保留顶点位置（除非平移矢量刚好规定了顶点位置的零位移）。
+     *
      */
     virtual bool
     preserves_vertex_locations() const override;
 
   private:
     /**
-     * Reference to the surrounding object off of which we live.
+     * 对我们所处的周围物体的参考。
+     *
      */
     const MappingQEulerian<dim, VectorType, spacedim> &mapping_q_eulerian;
 
 
     /**
-     * Special quadrature rule used to define the support points in the
-     * reference configuration.
+     * 用于定义参考配置中的支持点的特殊正交规则。
+     *
      */
     class SupportQuadrature : public Quadrature<dim>
     {
     public:
       /**
-       * Constructor, with an argument defining the desired polynomial degree.
+       * 构造函数，有一个参数定义了所需的多项式程度。
+       *
        */
       SupportQuadrature(const unsigned int map_degree);
     };
 
     /**
-     * A member variable holding the quadrature points in the right order.
+     * 一个成员变量，按正确顺序保存正交点。
+     *
      */
     const SupportQuadrature support_quadrature;
 
     /**
-     * FEValues object used to query the given finite element field at the
-     * support points in the reference configuration.
+     * FEValues对象，用于查询参考配置中支持点的给定有限元场。
+     * 该变量被标记为可变的，因为我们必须从compute_mapping_support_points中调用
+     * FEValues::reinit ，这个函数是'常量'。
      *
-     * The variable is marked as mutable since we have to call
-     * FEValues::reinit from compute_mapping_support_points, a function that
-     * is 'const'.
      */
     mutable FEValues<dim, spacedim> fe_values;
 
     /**
-     * A variable to guard access to the fe_values variable.
+     * 一个变量来保护对fe_values变量的访问。
+     *
      */
     mutable Threads::Mutex fe_values_mutex;
   };
 };
 
-/*@}*/
+ /*@}*/ 
 
 
-/*----------------------------------------------------------------------*/
+ /*----------------------------------------------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -296,3 +267,5 @@ DEAL_II_NAMESPACE_CLOSE
 
 
 #endif // dealii_mapping_q_eulerian_h
+
+

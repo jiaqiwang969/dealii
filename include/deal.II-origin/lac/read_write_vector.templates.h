@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/read_write_vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2015 - 2021 by the deal.II authors
@@ -532,9 +531,9 @@ namespace LinearAlgebra
 
     template <typename PETSC_Number, typename Number>
     void
-    copy_petsc_vector(const std::complex<PETSC_Number> *  /*petsc_start_ptr*/ ,
-                      const std::complex<PETSC_Number> *  /*petsc_end_ptr*/ ,
-                      Number *  /*ptr*/ )
+    copy_petsc_vector(const std::complex<PETSC_Number> * /*petsc_start_ptr*/,
+                      const std::complex<PETSC_Number> * /*petsc_end_ptr*/,
+                      Number * /*ptr*/)
     {
       AssertThrow(false, ExcMessage("Tried to copy complex -> real"));
     }
@@ -546,9 +545,9 @@ namespace LinearAlgebra
   void
   ReadWriteVector<Number>::import(
     const PETScWrappers::MPI::Vector &petsc_vec,
-    VectorOperation::values  /*operation*/ ,
+    VectorOperation::values /*operation*/,
     const std::shared_ptr<const Utilities::MPI::CommunicationPatternBase>
-      &  /*communication_pattern*/ )
+      & /*communication_pattern*/)
   {
     // TODO: this works only if no communication is needed.
     Assert(petsc_vec.locally_owned_elements() == stored_elements,
@@ -1075,5 +1074,3 @@ namespace LinearAlgebra
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

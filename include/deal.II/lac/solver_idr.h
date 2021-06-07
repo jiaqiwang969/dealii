@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/solver_idr_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2020 by the deal.II authors
@@ -33,57 +34,64 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!@addtogroup Solvers */
-/*@{*/
+ /*!@addtogroup Solvers */ 
+ /*@{*/ 
 
 namespace internal
 {
   /**
-   * A namespace for a helper class to the IDR(s) solver.
+   * 一个用于IDR(s)求解器的辅助类的命名空间。
+   *
    */
   namespace SolverIDRImplementation
   {
     /**
-     * Class to hold temporary vectors whose size depends on
-     * the solver parameter s.
+     * 保存临时向量的类，其大小取决于求解器的参数s。
+     *
      */
     template <typename VectorType>
     class TmpVectors
     {
     public:
       /**
-       * Constructor. Prepares an array of @p VectorType of length @p s_param.
+       * 构造函数。准备一个长度为 @p s_param. 的 @p VectorType
+       * 阵列。
+       *
        */
       TmpVectors(const unsigned int s_param, VectorMemory<VectorType> &vmem);
 
       /**
-       * Destructor. Delete all allocated vectors.
+       * 销毁器。删除所有分配的向量。
+       *
        */
       ~TmpVectors() = default;
 
       /**
-       * Get vector number @p i. If this vector was unused before, an error
-       * occurs.
+       * 获取向量编号  @p i.
+       * 如果这个向量之前未被使用，会发生错误。
+       *
        */
       VectorType &operator[](const unsigned int i) const;
 
       /**
-       * Get vector number @p i. Allocate it if necessary.
+       * 获取向量编号  @p i.  必要时分配它。
+       * 如果必须分配一个向量，则使用 @p temp
+       * 将其重新设定为适当的尺寸。
        *
-       * If a vector must be allocated, @p temp is used to reinit it to the
-       * proper dimensions.
        */
       VectorType &
       operator()(const unsigned int i, const VectorType &temp);
 
     private:
       /**
-       * Pool where vectors are obtained from.
+       * 获取向量的池子。
+       *
        */
       VectorMemory<VectorType> &mem;
 
       /**
-       * Field for storing the vectors.
+       * 用于存储向量的字段。
+       *
        */
       std::vector<typename VectorMemory<VectorType>::Pointer> data;
     };
@@ -91,38 +99,37 @@ namespace internal
 } // namespace internal
 
 /**
- * This class implements the IDR(s) method used for solving nonsymmetric,
- * indefinite linear systems, developed in <a
- * href="https://epubs.siam.org/doi/abs/10.1137/070685804">
- * IDR(s): A Family of Simple and Fast Algorithms for Solving Large
- * Nonsymmetric Systems of Linear Equations by Martin B. van Gijzen and Peter
- * Sonneveld </a>. The implementation here is the preconditioned version from <a
- * href="https://dl.acm.org/citation.cfm?id=2049667">
- * Algorithm 913: An Elegant IDR(s) Variant that Efficiently Exploits
- * Biorthogonality Properties
- * by Martin B. van Gijzen and Peter Sonneveld</a>. The local structure
- * @p AdditionalData takes the value for the parameter s which can be any
- * integer greater than or equal to 1. For <code>s=1</code>, this method has
- * similar convergence to BiCGStab.
+ * 该类实现了IDR(s)方法，用于求解非对称、不确定的线性系统，在<a
+ * href="https://epubs.siam.org/doi/abs/10.1137/070685804"> IDR(s): A Family
+ * of Simple and Fast Algorithms for Solving Large Nonsymmetric Systems of
+ * Linear Equations by Martin B. van Gijzen and Peter Sonneveld
+ * </a>中开发。这里的实现是<a
+ * href="https://dl.acm.org/citation.cfm?id=2049667"> Algorithm 913: An
+ * Elegant IDR(s) Variant that Efficiently Exploits Biorthogonality Properties
+ * by Martin B. van Gijzen and Peter
+ * Sonneveld</a>中的预处理版本。本地结构 @p AdditionalData
+ * 的参数s的值可以是大于等于1的任何整数。对于
+ * <code>s=1</code> ，该方法的收敛性与BiCGStab相似。
  *
- * @note Each iteration of IDR(s) requires <code>s+1</code> preconditioning steps
- * and matrix-vector products. In this implementation the residual is updated
- * and convergence is checked after each of these inner steps inside the outer
- * iteration. If the user enables the history data, the residual at each of
- * these steps is stored and therefore there will be multiple values per
- * iteration.
+ *
+ * @note  IDR(s)的每一次迭代都需要 <code>s+1</code>
+ * 的预处理步骤和矩阵-向量积。在这个实现中，残差被更新，并在外迭代内部的每个步骤后检查收敛性。如果用户启用历史数据，这些步骤的残差将被存储，因此每次迭代将有多个值。
+ *
+ *
  */
 template <class VectorType = Vector<double>>
 class SolverIDR : public SolverBase<VectorType>
 {
 public:
   /**
-   * Structure for storing additional data needed by the solver.
+   * 用于存储求解器所需的额外数据的结构。
+   *
    */
   struct AdditionalData
   {
     /**
-     * Constructor. By default, an IDR(2) method is used.
+     * 构造函数。默认情况下，使用一个IDR(2)方法。
+     *
      */
     explicit AdditionalData(const unsigned int s = 2)
       : s(s)
@@ -132,26 +139,29 @@ public:
   };
 
   /**
-   * Constructor.
+   * 构造函数。
+   *
    */
   SolverIDR(SolverControl &           cn,
             VectorMemory<VectorType> &mem,
             const AdditionalData &    data = AdditionalData());
 
   /**
-   * Constructor. Use an object of type GrowingVectorMemory as a default to
-   * allocate memory.
+   * 构造函数。使用一个GrowingVectorMemory类型的对象作为默认分配内存。
+   *
    */
   explicit SolverIDR(SolverControl &       cn,
                      const AdditionalData &data = AdditionalData());
 
   /**
-   * Virtual destructor.
+   * 虚拟解构器。
+   *
    */
   virtual ~SolverIDR() override = default;
 
   /**
-   * Solve the linear system <code>Ax=b</code> for x.
+   * 求解x的线性系统 <code>Ax=b</code> 。
+   *
    */
   template <typename MatrixType, typename PreconditionerType>
   void
@@ -162,9 +172,8 @@ public:
 
 protected:
   /**
-   * Interface for derived class. This function gets the current iteration
-   * vector, the residual and the update vector in each step. It can be used
-   * for graphical output of the convergence history.
+   * 派生类的接口。这个函数在每一步中获得当前的迭代向量，残差和更新向量。它可以用于收敛历史的图形输出。
+   *
    */
   virtual void
   print_vectors(const unsigned int step,
@@ -174,13 +183,14 @@ protected:
 
 private:
   /**
-   * Additional solver parameters.
+   * 附加求解器参数。
+   *
    */
   AdditionalData additional_data;
 };
 
-/*@}*/
-/*------------------------- Implementation ----------------------------*/
+ /*@}*/ 
+ /*------------------------- Implementation ----------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -474,3 +484,5 @@ SolverIDR<VectorType>::solve(const MatrixType &        A,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

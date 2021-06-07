@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/multigrid_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -44,84 +43,83 @@ and using the 'signals' keyword. You can either #include the Qt headers (or any 
 *after* the deal.II headers or you can define the 'QT_NO_KEYWORDS' macro and use the 'Q_SIGNALS' macro."
 #endif
 
- /*!@addtogroup mg */ 
- /*@{*/ 
+/*!@addtogroup mg */
+/*@{*/
 
 namespace mg
 {
   /**
-   * 一个包含 boost::signal
-   * 对象的结构，用于多网格求解器的可选处理。
-   * 每个信号都被调用两次，一次是在执行动作之前，一次是在执行动作之后。这两个函数调用的不同之处在于布尔参数
-   * @p before, ，第一次为真，第二次为假。
+   * A structure containing boost::signal objects for optional processing in
+   * multigrid solvers.
    *
+   * Each of these signals is called twice, once before and once after
+   * the action is performed. The two function calls differ in the
+   * boolean argument @p before, which is true the first time and
+   * false the second.
    */
   struct Signals
   {
     /**
-     * 这个信号在调用 @p before 之前（ @p before
-     * 为真）和之后（ @p before 为假）被触发，
-     * MGTransfer::copy_to_mg 将给定的向量转移到一个多级向量。
-     *
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is false) the call to MGTransfer::copy_to_mg which transfers the vector
+     * given to it to a multi-level vector.
      */
     boost::signals2::signal<void(const bool before)> transfer_to_mg;
 
     /**
-     * 这个信号在调用 @p before 为真之前和 @p before
-     * 为假之后被触发， MGTransfer::copy_from_mg
-     * 将给定的多级向量转为正常向量。
-     *
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is false) the call to MGTransfer::copy_from_mg which transfers the
+     * multi-level vector given to it to a normal vector.
      */
     boost::signals2::signal<void(const bool before)> transfer_to_global;
 
     /**
-     * 这个信号在调用 @p before 之前（ @p before
-     * 为真）和之后（ @p level.
-     * 为假）被触发，粗解将用`defect[leve]`完成，并以`solution[level]`返回，用户可以使用这个信号检查。
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is
+     * false) the call to the coarse solver on @p level.
      *
+     * The coarse solve will be done with ``defect[leve]`` and returned in
+     * ``solution[level]``, which can be inspected by the user using this
+     * signal.
      */
     boost::signals2::signal<void(const bool before, const unsigned int level)>
       coarse_solve;
 
     /**
-     * 这个信号在调用 @p before 之前（ @p before
-     * 为真）和之后（ @p before
-     * 为假）被触发，该信号将一个矢量从 @p level
-     * 限制到下一个更粗的矢量（ @p level  ）。
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is false) the call to MGTransfer::restrict_and_add() which restricts a
+     * vector from @p level to the next coarser one (@p level - 1).
      *
-     * - 1).         向量``defect[level-1]`将在这两个触发器之间被更新，用户可以使用这个信号来检查。
-     *
+     * The vector ``defect[level-1]`` will be updated between these two
+     * triggers and can be inspected by the user using this signal.
      */
     boost::signals2::signal<void(const bool before, const unsigned int level)>
       restriction;
 
     /**
-     * 这个信号在调用 @p before 之前（ @p before
-     * 为真）和之后（ @p before 为假）被触发，
-     * MGTransfer::prolongate()
-     * 将一个向量从下一个较粗的向量延长到 @p level （ @p
-     * level  ）。
-     *
-     * - 1).
-     *
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is false) the call to MGTransfer::prolongate() which prolongs a vector to
+     * @p level from the next coarser one (@p level - 1).
      */
     boost::signals2::signal<void(const bool before, const unsigned int level)>
       prolongation;
 
     /**
-     * 这个信号在（ @p before 为真）和（ @p before 为假）通过
-     * MGPreSmoother::apply() 对 @p level.
-     * 的预平滑步骤的调用之前和之后被触发。平滑的结果将被存储在`solution[level]`中，用户可以通过这个信号来检查。
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is false) the call to a pre-smoothing step via MGPreSmoother::apply() on
+     * @p level.
      *
+     * The smoother result will be stored in ``solution[level]`` and can be
+     * inspected by the user using this signal.
      */
     boost::signals2::signal<void(const bool before, const unsigned int level)>
       pre_smoother_step;
 
     /**
-     * 这个信号在 @p before 为真之前和 @p before
-     * 为假之后被触发，通过 MGPostSmoother::apply() 对 @p level.
-     * 的平滑后步骤进行调用。
-     *
+     * This signal is triggered before (@p before is true) and after (@p before
+     * is false) the call to a post-smoothing step via MGPostSmoother::apply()
+     * on
+     * @p level.
      */
     boost::signals2::signal<void(const bool before, const unsigned int level)>
       post_smoother_step;
@@ -129,24 +127,33 @@ namespace mg
 } // namespace mg
 
 /**
- * 多网格方法的实现。该实现支持连续和非连续元素，并遵循 @ref mg_paper "Janssen和Kanschat的多栅格论文 "
- * 中描述的程序。
- * cycle()是在最细级别上启动多网格循环的函数。根据构造函数选择的循环类型（见枚举Cycle），该函数会触发level_v_step()或level_step()中的一个循环，其中后者可以做不同类型的循环。
- * 使用这个类，预计右手边已经从一个生活在本地最好水平上的向量转换为一个多级向量。这是一个不简单的操作，通常由PreconditionMG类自动启动，由MGTransferBase派生的类执行。
+ * Implementation of the multigrid method. The implementation supports both
+ * continuous and discontinuous elements and follows the procedure described in
+ * the
+ * @ref mg_paper "multigrid paper by Janssen and Kanschat".
  *
+ * The function which starts a multigrid cycle on the finest level is cycle().
+ * Depending on the cycle type chosen with the constructor (see enum Cycle),
+ * this function triggers one of the cycles level_v_step() or level_step(),
+ * where the latter one can do different types of cycles.
  *
- * @note
- * 这个类的接口仍然非常笨拙。特别是，在使用它之前，你必须要设置相当多的辅助性对象。不幸的是，似乎只有以一种不可接受的方式来限制这个类的灵活性，才能避免这种情况。
+ * Using this class, it is expected that the right hand side has been
+ * converted from a vector living on the locally finest level to a multilevel
+ * vector. This is a nontrivial operation, usually initiated automatically by
+ * the class PreconditionMG and performed by the classes derived from
+ * MGTransferBase.
  *
- *
+ * @note The interface of this class is still very clumsy. In particular, you
+ * will have to set up quite a few auxiliary objects before you can use it.
+ * Unfortunately, it seems that this can be avoided only be restricting the
+ * flexibility of this class in an unacceptable way.
  */
 template <typename VectorType>
 class Multigrid : public Subscriptor
 {
 public:
   /**
-   * 实现的循环类型列表。
-   *
+   * List of implemented cycle types.
    */
   enum Cycle
   {
@@ -162,10 +169,13 @@ public:
   using const_vector_type = const VectorType;
 
   /**
-   * 构造函数。<tt>transfer</tt>是一个执行延长和限制的对象。对于[minlevel,
-   * maxlevel]中的级别，矩阵必须包含有效的矩阵。默认情况下，maxlevel被设置为最大的有效级别。
-   * 这个函数已经初始化了向量，这些向量将在以后的计算过程中使用。因此，你应该尽可能晚地创建这种类型的对象。
+   * Constructor. <tt>transfer</tt> is an object performing prolongation and
+   * restriction. For levels in [minlevel, maxlevel] matrix has to contain
+   * valid matrices. By default the maxlevel is set to the maximal valid level.
    *
+   * This function already initializes the vectors which will be used later in
+   * the course of the computations. You should therefore create objects of
+   * this type as late as possible.
    */
   Multigrid(const MGMatrixBase<VectorType> &    matrix,
             const MGCoarseGridBase<VectorType> &coarse,
@@ -177,122 +187,136 @@ public:
             Cycle              cycle    = v_cycle);
 
   /**
-   * 根据#minlevel和#maxlevel来重新启动这个类。
-   *
+   * Reinit this class according to #minlevel and #maxlevel.
    */
   void
   reinit(const unsigned int minlevel, const unsigned int maxlevel);
 
   /**
-   * 执行一个多栅格循环。循环的类型由构造函数参数cycle来选择。可用的类型见枚举循环。
-   *
+   * Execute one multigrid cycle. The type of cycle is selected by the
+   * constructor argument cycle. See the enum Cycle for available types.
    */
   void
   cycle();
 
   /**
-   * 执行V-cycle算法的一个步骤。
-   * 这个函数假定，多级向量#defect是由外部缺陷修正方案的残余物填充的。这通常是由PreconditionMG)处理的。在vcycle()之后，结果是在多级向量#solution中。如果你想自己使用这些向量，请参见MGTools命名空间的<tt>copy_*_mg</tt>。
-   * 这个函数的实际工作是在level_v_step()中完成的。
+   * Execute one step of the V-cycle algorithm.  This function assumes, that
+   * the multilevel vector #defect is filled with the residual of an outer
+   * defect correction scheme. This is usually taken care of by
+   * PreconditionMG). After vcycle(), the result is in the multilevel vector
+   * #solution. See <tt>copy_*_mg</tt> in the MGTools namespace if you want to
+   * use these vectors yourself.
    *
+   * The actual work for this function is done in level_v_step().
    */
   void
   vcycle();
 
   /**
-   * 设置额外的矩阵来修正细化边缘的残差计算。由于我们只对网格细化部分的内部进行平滑处理，所以缺少对细化边缘的耦合。这种耦合是由这两个矩阵提供的。
-   * @note
-   * 虽然使用了<tt>edge_out.vmult</tt>，对于第二个参数，我们使用<tt>edge_in.Tvmult</tt>。因此，<tt>edge_in</tt>应该以转置的形式进行组合。这为<tt>edge_in</tt>节省了第二个稀疏模式。特别是，对于对称运算符来说，两个参数都可以指向同一个矩阵，这样可以节省其中一个的装配。
+   * Set additional matrices to correct residual computation at refinement
+   * edges. Since we only smoothen in the interior of the refined part of the
+   * mesh, the coupling across the refinement edge is missing. This coupling
+   * is provided by these two matrices.
    *
+   * @note While <tt>edge_out.vmult</tt> is used, for the second argument, we
+   * use <tt>edge_in.Tvmult</tt>. Thus, <tt>edge_in</tt> should be assembled
+   * in transposed form. This saves a second sparsity pattern for
+   * <tt>edge_in</tt>. In particular, for symmetric operators, both arguments
+   * can refer to the same matrix, saving assembling of one of them.
    */
   void
   set_edge_matrices(const MGMatrixBase<VectorType> &edge_out,
                     const MGMatrixBase<VectorType> &edge_in);
 
   /**
-   * 设置额外的矩阵来纠正细化边缘的残差计算。这些矩阵源于不连续的Galerkin方法（见FE_DGQ等），它们对应于两层之间细化边缘的边缘通量。
-   * @note
-   * 虽然使用了<tt>edge_down.vmult</tt>，对于第二个参数，我们使用<tt>edge_up.Tvmult</tt>。因此，<tt>edge_up</tt>应该以转置的形式进行组合。这为<tt>edge_up</tt>节省了第二个稀疏模式。特别是，对于对称运算符来说，两个参数都可以指向同一个矩阵，这样可以节省其中一个的装配。
+   * Set additional matrices to correct residual computation at refinement
+   * edges. These matrices originate from discontinuous Galerkin methods (see
+   * FE_DGQ etc.), where they correspond to the edge fluxes at the refinement
+   * edge between two levels.
    *
+   * @note While <tt>edge_down.vmult</tt> is used, for the second argument, we
+   * use <tt>edge_up.Tvmult</tt>. Thus, <tt>edge_up</tt> should be assembled
+   * in transposed form. This saves a second sparsity pattern for
+   * <tt>edge_up</tt>. In particular, for symmetric operators, both arguments
+   * can refer to the same matrix, saving assembling of one of them.
    */
   void
   set_edge_flux_matrices(const MGMatrixBase<VectorType> &edge_down,
                          const MGMatrixBase<VectorType> &edge_up);
 
   /**
-   * 返回多网格的最佳水平。
-   *
+   * Return the finest level for multigrid.
    */
   unsigned int
   get_maxlevel() const;
 
   /**
-   * 返回多网格的最粗层次。
-   *
+   * Return the coarsest level for multigrid.
    */
   unsigned int
   get_minlevel() const;
 
   /**
-   * 设置执行多层次方法的最高层次。默认情况下，这是三角法的最细层次。接受的值不小于当前的#minlevel。
-   *
+   * Set the highest level for which the multilevel method is performed. By
+   * default, this is the finest level of the Triangulation. Accepted are
+   * values not smaller than the current #minlevel.
    */
   void
   set_maxlevel(const unsigned int);
 
   /**
-   * 设置执行多层次方法的最粗层次。默认情况下，该值为零。接受的是不大于当前#maxlevel的非负值。
-   * 如果<tt>relative</tt>是<tt>true</tt>，那么这个函数决定了使用的级别数，也就是说，它将#minlevel设置为#maxlevel-<tt>level</tt>。
-   * @note
-   * 最粗层次上的网格必须覆盖整个领域。在#minlevel上不能有悬空的节点。
-   * @note
-   * 如果#minlevel被设置为非零值，不要忘记调整你的粗略网格解算器
+   * Set the coarsest level for which the multilevel method is performed. By
+   * default, this is zero. Accepted are non-negative values not larger than
+   * the current #maxlevel.
    *
+   * If <tt>relative</tt> is <tt>true</tt>, then this function determines the
+   * number of levels used, that is, it sets #minlevel to
+   * #maxlevel-<tt>level</tt>.
+   *
+   * @note The mesh on the coarsest level must cover the whole domain. There
+   * may not be hanging nodes on #minlevel.
+   *
+   * @note If #minlevel is set to a nonzero value, do not forget to adjust
+   * your coarse grid solver!
    */
   void
   set_minlevel(const unsigned int level, bool relative = false);
 
   /**
-   * 机会#cycle_type在cycle()中使用。
-   *
+   * Chance #cycle_type used in cycle().
    */
   void set_cycle(Cycle);
 
   /**
-   * 连接一个函数到 mg::Signals::coarse_solve. 。
-   *
+   * Connect a function to mg::Signals::coarse_solve.
    */
   boost::signals2::connection
   connect_coarse_solve(
     const std::function<void(const bool, const unsigned int)> &slot);
 
   /**
-   * 将一个函数连接到 mg::Signals::restriction. 。
-   *
+   * Connect a function to mg::Signals::restriction.
    */
   boost::signals2::connection
   connect_restriction(
     const std::function<void(const bool, const unsigned int)> &slot);
 
   /**
-   * 将一个函数连接到 mg::Signals::prolongation. 。
-   *
+   * Connect a function to mg::Signals::prolongation.
    */
   boost::signals2::connection
   connect_prolongation(
     const std::function<void(const bool, const unsigned int)> &slot);
 
   /**
-   * 将一个函数连接到 mg::Signals::pre_smoother_step. 。
-   *
+   * Connect a function to mg::Signals::pre_smoother_step.
    */
   boost::signals2::connection
   connect_pre_smoother_step(
     const std::function<void(const bool, const unsigned int)> &slot);
 
   /**
-   * 将一个函数连接到 mg::Signals::post_smoother_step. 。
-   *
+   * Connect a function to mg::Signals::post_smoother_step.
    */
   boost::signals2::connection
   connect_post_smoother_step(
@@ -300,129 +324,123 @@ public:
 
 private:
   /**
-   * 多重网格算法使用的各种动作的信号。
-   *
+   * Signals for the various actions that the Multigrid algorithm uses.
    */
   mg::Signals signals;
 
   /**
-   * V型循环多网格方法。<tt>level</tt>是函数开始的层次。它通常会从外部调用最高层，但随后会递归调用自己的<tt>level-1</tt>，除非我们在#minlevel上，粗网格求解器完全解决了这个问题。
-   *
+   * The V-cycle multigrid method. <tt>level</tt> is the level the function
+   * starts on. It will usually be called for the highest level from outside,
+   * but will then call itself recursively for <tt>level-1</tt>, unless we are
+   * on #minlevel where the coarse grid solver solves the problem exactly.
    */
   void
   level_v_step(const unsigned int level);
 
   /**
-   * 实际的W-循环或F-循环多网格方法。<tt>level</tt>是函数开始的级别。它通常会从外部调用最高层，但随后会递归调用自己的<tt>level-1</tt>，除非我们在#minlevel上，粗网格求解器完全解决了问题。
-   *
+   * The actual W-cycle or F-cycle multigrid method. <tt>level</tt> is the
+   * level the function starts on. It will usually be called for the highest
+   * level from outside, but will then call itself recursively for
+   * <tt>level-1</tt>, unless we are on #minlevel where the coarse grid solver
+   * solves the problem exactly.
    */
   void
   level_step(const unsigned int level, Cycle cycle);
 
   /**
-   * 由cycle()方法执行的循环类型。
-   *
+   * Cycle type performed by the method cycle().
    */
   Cycle cycle_type;
 
   /**
-   * 用于粗略网格求解的水平。
-   *
+   * Level for coarse grid solution.
    */
   unsigned int minlevel;
 
   /**
-   * 最高级别的单元格。
-   *
+   * Highest level of cells.
    */
   unsigned int maxlevel;
 
 public:
   /**
-   * 循环的输入向量。包含外方法投射到多层次向量的缺陷。
-   *
+   * Input vector for the cycle. Contains the defect of the outer method
+   * projected to the multilevel vectors.
    */
   MGLevelObject<VectorType> defect;
 
   /**
-   * 多网格步骤后的解决方案更新。
-   *
+   * The solution update after the multigrid step.
    */
   MGLevelObject<VectorType> solution;
 
 private:
   /**
-   * 辅助向量。
-   *
+   * Auxiliary vector.
    */
   MGLevelObject<VectorType> t;
 
   /**
-   * 用于W-和F-循环的辅助向量。在V-循环中未被初始化。
-   *
+   * Auxiliary vector for W- and F-cycles. Left uninitialized in V-cycle.
    */
   MGLevelObject<VectorType> defect2;
 
 
   /**
-   * 每个层次的矩阵。
-   *
+   * The matrix for each level.
    */
   SmartPointer<const MGMatrixBase<VectorType>, Multigrid<VectorType>> matrix;
 
   /**
-   * 每一级的矩阵。
-   *
+   * The matrix for each level.
    */
   SmartPointer<const MGCoarseGridBase<VectorType>, Multigrid<VectorType>>
     coarse;
 
   /**
-   * 用于网格转移的对象。
-   *
+   * Object for grid transfer.
    */
   SmartPointer<const MGTransferBase<VectorType>, Multigrid<VectorType>>
     transfer;
 
   /**
-   * 预平滑对象。
-   *
+   * The pre-smoothing object.
    */
   SmartPointer<const MGSmootherBase<VectorType>, Multigrid<VectorType>>
     pre_smooth;
 
   /**
-   * 后平滑对象。
-   *
+   * The post-smoothing object.
    */
   SmartPointer<const MGSmootherBase<VectorType>, Multigrid<VectorType>>
     post_smooth;
 
   /**
-   * 从细化部分的内部到细化边缘的边缘矩阵。
-   * @note 只有<tt>vmult</tt>被用于这些矩阵。
+   * Edge matrix from the interior of the refined part to the refinement edge.
    *
+   * @note Only <tt>vmult</tt> is used for these matrices.
    */
   SmartPointer<const MGMatrixBase<VectorType>> edge_out;
 
   /**
-   * 从细化边缘到细化部分内部的转置边缘矩阵。
-   * @note 只有<tt>Tvmult</tt>被用于这些矩阵。
+   * Transpose edge matrix from the refinement edge to the interior of the
+   * refined part.
    *
+   * @note Only <tt>Tvmult</tt> is used for these matrices.
    */
   SmartPointer<const MGMatrixBase<VectorType>> edge_in;
 
   /**
-   * 从细到粗的边缘矩阵。
-   * @note  只有<tt>vmult</tt>用于这些矩阵。
+   * Edge matrix from fine to coarse.
    *
+   * @note Only <tt>vmult</tt> is used for these matrices.
    */
   SmartPointer<const MGMatrixBase<VectorType>, Multigrid<VectorType>> edge_down;
 
   /**
-   * 从粗到细的转置边缘矩阵。
-   * @note  只有<tt>Tvmult</tt>用于这些矩阵。
+   * Transpose edge matrix from coarse to fine.
    *
+   * @note Only <tt>Tvmult</tt> is used for these matrices.
    */
   SmartPointer<const MGMatrixBase<VectorType>, Multigrid<VectorType>> edge_up;
 
@@ -432,157 +450,159 @@ private:
 
 
 /**
- * 多级预处理器。在这里，我们收集了多级预处理所需的所有信息，并为LAC迭代方法提供标准接口。
- * 此外，它需要函数<tt>void copy_to_mg(const
- * VectorType&)</tt>来存储多级方法右侧的 @p src ，<tt>void
- * copy_from_mg(VectorType&)</tt>来存储 @p dst. 中的v循环结果。
- * 如果VectorType实际上是一个块向量，并且TRANSFER对象支持为每个块使用单独的DoFHandler，这个类也允许被初始化为每个块的单独DoFHandler。
+ * Multi-level preconditioner. Here, we collect all information needed for
+ * multi-level preconditioning and provide the standard interface for LAC
+ * iterative methods.
  *
+ * Furthermore, it needs functions <tt>void copy_to_mg(const VectorType&)</tt>
+ * to store @p src in the right hand side of the multi-level method and
+ * <tt>void copy_from_mg(VectorType&)</tt> to store the result of the v-cycle
+ * in @p dst.
  *
+ * If VectorType is in fact a block vector and the TRANSFER object supports
+ * use of a separate DoFHandler for each block, this class also allows
+ * to be initialized with a separate DoFHandler for each block.
  */
 template <int dim, typename VectorType, class TRANSFER>
 class PreconditionMG : public Subscriptor
 {
 public:
   /**
-   * 构造函数。参数是多网格对象、前平滑器、后平滑器和粗网格求解器。
-   *
+   * Constructor. Arguments are the multigrid object, pre-smoother, post-
+   * smoother and coarse grid solver.
    */
   PreconditionMG(const DoFHandler<dim> &dof_handler,
                  Multigrid<VectorType> &mg,
                  const TRANSFER &       transfer);
 
   /**
-   * 在块向量的每个分量都使用其自己的DoFHandler的情况下，与上述相同。
-   *
+   * Same as above in case every component of a block vector
+   * uses its own DoFHandler.
    */
   PreconditionMG(const std::vector<const DoFHandler<dim> *> &dof_handler,
                  Multigrid<VectorType> &                     mg,
                  const TRANSFER &                            transfer);
 
   /**
-   * 其他类所需的假函数。
-   *
+   * Dummy function needed by other classes.
    */
   bool
   empty() const;
 
   /**
-   * 预设条件运算符。调用传递给构造器的 @p MG 对象的 @p
-   * vcycle 函数。    这是LAC迭代求解器使用的运算器。
+   * Preconditioning operator. Calls the @p vcycle function of the @p MG
+   * object passed to the constructor.
    *
+   * This is the operator used by LAC iterative solvers.
    */
   template <class OtherVectorType>
   void
   vmult(OtherVectorType &dst, const OtherVectorType &src) const;
 
   /**
-   * 预处理运算符。调用传递给构造函数的 @p MG 对象的 @p
-   * vcycle 函数。
-   *
+   * Preconditioning operator. Calls the @p vcycle function of the @p MG
+   * object passed to the constructor.
    */
   template <class OtherVectorType>
   void
   vmult_add(OtherVectorType &dst, const OtherVectorType &src) const;
 
   /**
-   * 转置的预设条件运算符。    未实现，但可能需要定义。
+   * Transposed preconditioning operator.
    *
+   * Not implemented, but the definition may be needed.
    */
   template <class OtherVectorType>
   void
   Tvmult(OtherVectorType &dst, const OtherVectorType &src) const;
 
   /**
-   * 转置的预设条件运算符。    未实现，但可能需要定义。
+   * Transposed preconditioning operator.
    *
+   * Not implemented, but the definition may be needed.
    */
   template <class OtherVectorType>
   void
   Tvmult_add(OtherVectorType &dst, const OtherVectorType &src) const;
 
   /**
-   * 返回这个预处理程序的范围空间的划分，即从矩阵-向量乘积得到的向量的划分。默认情况下，会返回第一个DoFHandler对象的相应信息。
-   *
+   * Return the partitioning of the range space of this preconditioner, i.e.,
+   * the partitioning of the vectors that are result from matrix-vector
+   * products. By default, the respective information for the first DoFHandler
+   * object are returned.
    */
   IndexSet
   locally_owned_range_indices(const unsigned int block = 0) const;
 
   /**
-   * 返回该预处理程序的域空间的划分，即该矩阵必须与之相乘的向量的划分。
-   * 默认情况下，会返回第一个DoFHandler对象的相应信息。
-   *
+   * Return the partitioning of the domain space of this preconditioner, i.e.,
+   * the partitioning of the vectors this matrix has to be multiplied with.
+   * By default, the respective information for the first DoFHandler object
+   * are returned.
    */
   IndexSet
   locally_owned_domain_indices(const unsigned int block = 0) const;
 
   /**
-   * 返回与该预处理程序一起使用的MPI通信器对象。
-   *
+   * Return the MPI communicator object in use with this preconditioner.
    */
   MPI_Comm
   get_mpi_communicator() const;
 
   /**
-   * 连接一个函数到 mg::Signals::transfer_to_mg. 。
-   *
+   * Connect a function to mg::Signals::transfer_to_mg.
    */
   boost::signals2::connection
   connect_transfer_to_mg(const std::function<void(bool)> &slot);
 
   /**
-   * 将一个函数连接到 mg::Signals::transfer_to_global. 。
-   *
+   * Connect a function to mg::Signals::transfer_to_global.
    */
   boost::signals2::connection
   connect_transfer_to_global(const std::function<void(bool)> &slot);
 
 private:
   /**
-   * 关联 @p DoFHandler. 。
-   *
+   * Associated @p DoFHandler.
    */
   std::vector<SmartPointer<const DoFHandler<dim>,
                            PreconditionMG<dim, VectorType, TRANSFER>>>
     dof_handler_vector;
 
   /**
-   * 为没有SmartPointer包装的DoFHandler对象的指针进行存储。
-   *
+   * Storage for the pointers to the DoFHandler objects
+   * without SmartPointer wrapper.
    */
   std::vector<const DoFHandler<dim> *> dof_handler_vector_raw;
 
   /**
-   * 多网格对象。
-   *
+   * The multigrid object.
    */
   SmartPointer<Multigrid<VectorType>, PreconditionMG<dim, VectorType, TRANSFER>>
     multigrid;
 
   /**
-   * 用于网格传输的对象。
-   *
+   * Object for grid transfer.
    */
   SmartPointer<const TRANSFER, PreconditionMG<dim, VectorType, TRANSFER>>
     transfer;
 
   /**
-   * 指示该对象是用一个DoFHandler初始化还是每个区块用一个的标志。
-   *
+   * Flag to indicate if the object is initialized with a single DoFHandler
+   * or with one for each block.
    */
   const bool uses_dof_handler_vector;
 
   /**
-   * 该对象使用的信号
-   *
+   * Signals used by this object
    */
   mg::Signals signals;
 };
 
- /*@}*/ 
+/*@}*/
 
 #ifndef DOXYGEN
- /* --------------------------- inline functions --------------------- */ 
+/* --------------------------- inline functions --------------------- */
 
 
 template <typename VectorType>
@@ -631,7 +651,7 @@ Multigrid<VectorType>::get_minlevel() const
 }
 
 
- /* --------------------------- inline functions --------------------- */ 
+/* --------------------------- inline functions --------------------- */
 
 
 namespace internal
@@ -920,5 +940,3 @@ PreconditionMG<dim, VectorType, TRANSFER>::Tvmult_add(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

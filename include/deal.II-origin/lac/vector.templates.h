@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -999,5 +998,3 @@ Vector<Number>::do_reinit(const size_type new_size,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_dg_vector.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2006 - 2021 by the deal.II authors
@@ -110,5 +109,3 @@ FE_DGVector<PolynomialType, dim, spacedim>::memory_consumption() const
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

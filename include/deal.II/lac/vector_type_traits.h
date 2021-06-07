@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/vector_type_traits_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -25,23 +26,24 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * Type trait for a serial vector, i.e. a vector class for which storage is not
- * supported to be distributed over processes.
+ * 串行向量的类型特质，即不支持在进程中分配存储的向量类。
+ * 专门化
  *
- * The specialization
  * @code
- *   template <>
- *   struct is_serial_vector<VectorType> : std::true_type
- *   {};
+ * template <>
+ * struct is_serial_vector<VectorType> : std::true_type
+ * {};
  * @endcode
- * for a serial vector type, respectively,
+ * 分别为一个串行向量类型。
+ *
  * @code
- *   template <>
- *   struct is_serial_vector<VectorType> : std::false_type
- *   {};
+ * template <>
+ * struct is_serial_vector<VectorType> : std::false_type
+ * {};
  * @endcode
- * for a vector type with support of distributed storage,
- * must be done in a header file of a vector declaration.
+ * 对于支持分布式存储的向量类型，必须在向量声明的头文件中完成。
+ *
+ *
  */
 template <typename T>
 struct is_serial_vector;
@@ -50,3 +52,5 @@ struct is_serial_vector;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

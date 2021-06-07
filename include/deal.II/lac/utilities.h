@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/utilities_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2020 by the deal.II authors
@@ -32,102 +33,85 @@ DEAL_II_NAMESPACE_OPEN
 namespace Utilities
 {
   /**
-   * A collection of linear-algebra utilities.
+   * 一个线性代数实用程序的集合。
+   *
    */
   namespace LinearAlgebra
   {
     /**
-     * Return the elements of a continuous Givens rotation matrix and
-     * the norm of the input vector.
+     * 返回一个连续的吉文斯旋转矩阵的元素和输入矢量的规范。
+     * 即对于给定的一对 @p x 和 @p y, ，返回 $c$  ， $s$ 和
+     * $\sqrt{x^2+y^2}$ ，以便\f[ \begin{bmatrix} c  & s \\
      *
-     * That is for a given
-     * pair @p x and @p y, return $c$ , $s$ and $\sqrt{x^2+y^2}$ such that
-     * \f[
-     * \begin{bmatrix}
-     * c  & s \\
-     * -s & c
-     * \end{bmatrix}
-     * \begin{bmatrix}
-     * x \\
-     * y
-     * \end{bmatrix}
-     * =
-     * \begin{bmatrix}
-     * \sqrt{x^2+y^2} \\
-     * 0
-     * \end{bmatrix}
-     * \f]
      *
-     * @note The function is implemented for real valued numbers only.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * -s & c \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} =
+     * \begin{bmatrix} \sqrt{x^2+y^2} \\ 0 \end{bmatrix} \f] 。
+     * @note  该函数只对实值数实现。
+     *
      */
     template <typename NumberType>
     std::array<NumberType, 3>
     givens_rotation(const NumberType &x, const NumberType &y);
 
     /**
-     * Return the elements of a hyperbolic rotation matrix.
+     * 返回一个双曲旋转矩阵的元素。
+     * 即对于给定的一对  @p x  和  @p y,  返回  $c$  ,  $s$  和
+     * $r$  这样 \f[ \begin{bmatrix} c  &
      *
-     * That is for a given
-     * pair @p x and @p y, return $c$ , $s$ and $r$ such that
-     * \f[
-     * \begin{bmatrix}
-     * c  & -s \\
-     * -s & c
-     * \end{bmatrix}
-     * \begin{bmatrix}
-     * x \\
-     * y
-     * \end{bmatrix}
-     * =
-     * \begin{bmatrix}
-     * r \\
-     * 0
-     * \end{bmatrix}
-     * \f]
+     * -s \\
      *
-     * Real valued solution only exists if $|x|>|g|$, the function will
-     * throw an error otherwise.
      *
-     * @note The function is implemented for real valued numbers only.
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     * -s & c \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} =
+     * \begin{bmatrix} r \\ 0 \end{bmatrix} \f] 只有在  $|x|>|g|$
+     * 时存在实值解，否则函数将抛出一个错误。
+     * @note  该函数只对实值数实现。
+     *
      */
     template <typename NumberType>
     std::array<NumberType, 3>
     hyperbolic_rotation(const NumberType &x, const NumberType &y);
 
     /**
-     * Estimate an upper bound for the largest eigenvalue of @p H by a @p k -step
-     * Lanczos process starting from the initial vector @p v0. Typical
-     * values of @p k are below 10. This estimator computes a k-step Lanczos
-     * decomposition $H V_k=V_k T_k+f_k e_k^T$ where $V_k$ contains k Lanczos
-     * basis, $V_k^TV_k=I_k$, $T_k$ is the tridiagonal Lanczos matrix, $f_k$ is
-     * a residual vector $f_k^TV_k=0$, and $e_k$ is the k-th canonical basis of
-     * $R^k$. The returned value is $ ||T_k||_2 + ||f_k||_2$.
-     * If @p eigenvalues is not <code>nullptr</code>, the eigenvalues of $T_k$ will be written there.
+     * 通过一个 @p k 估计 @p H 的最大特征值的上界。
      *
-     * @p vector_memory is used to allocate memory for temporary vectors.
-     * OperatorType has to provide <code>vmult</code> operation with
-     * VectorType.
-     *
-     * This function implements the algorithm from
+     * - tep Lanczos过程从初始向量 @p v0. 开始， @p k 的典型值低于10。这个估计器计算一个k步Lanczos分解  $H V_k=V_k T_k+f_k e_k^T$  ，其中  $V_k$  包含k个Lanczos基，  $V_k^TV_k=I_k$  ，  $T_k$  是三对角Lanczos矩阵，  $f_k$  是一个残差向量  $f_k^TV_k=0$  ，  $e_k$  是  $R^k$  的第k个典范基。返回的值是  $ ||T_k||_2 + ||f_k||_2$  。    如果 @p eigenvalues 不是 <code>nullptr</code> ， $T_k$ 的特征值将被写在那里。          @p vector_memory  用于为临时向量分配内存。    OperatorType必须提供 <code>vmult</code> 与VectorType的操作。        这个函数实现了以下的算法
      * @code{.bib}
      * @article{Zhou2006,
-     *   Title   = {Self-consistent-field Calculations Using Chebyshev-filtered
-     *              Subspace Iteration},
-     *   Author  = {Zhou, Yunkai and Saad, Yousef and Tiago, Murilo L. and
-     *              Chelikowsky, James R.},
-     *   Journal = {Journal of Computational Physics},
-     *   Year    = {2006},
-     *   Volume  = {219},
-     *   Pages   = {172--184},
+     * Title   = {Self-consistent-field Calculations Using Chebyshev-filtered
+     *            Subspace Iteration},
+     * Author  = {Zhou, Yunkai and Saad, Yousef and Tiago, Murilo L. and
+     *            Chelikowsky, James R.},
+     * Journal = {Journal of Computational Physics},
+     * Year    = {2006},
+     * Volume  = {219},
+     * Pages   = {172--184},
      * }
      * @endcode
      *
-     * @note This function uses Lapack routines to compute the largest
-     * eigenvalue of $T_k$.
-     *
-     * @note This function provides an alternate estimate to that obtained from
-     * several steps of SolverCG with
+     * @note  这个函数使用Lapack例程来计算  $T_k$
+     * 的最大特征值。
+     * @note  这个函数提供了一个替代的估计，即用
      * SolverCG<VectorType>::connect_eigenvalues_slot().
+     * 从SolverCG的几个步骤中得到的估计。
+     *
      */
     template <typename OperatorType, typename VectorType>
     double
@@ -138,51 +122,48 @@ namespace Utilities
                                std::vector<double> *     eigenvalues = nullptr);
 
     /**
-     * Apply Chebyshev polynomial of the operator @p H to @p x. For a
-     * non-defective operator $H$ with a complete set of eigenpairs
-     * $H \psi_i = \lambda_i \psi_i$, the action of a polynomial filter $p$ is
-     * given by $p(H)x =\sum_i a_i p(\lambda_i) \psi_i$, where $x=: \sum_i a_i
-     * \psi_i$. Thus by appropriately choosing the polynomial filter, one can
-     * alter the eigenmodes contained in $x$.
+     * 将算子 @p H 的切比雪夫多项式应用于 @p x.
+     * 对于一个具有完整特征对 $H \psi_i = \lambda_i \psi_i$
+     * 的非缺陷算子 $H$ ，多项式滤波器 $p$ 的作用由 $p(H)x
+     * =\sum_i a_i p(\lambda_i) \psi_i$ 给出，其中 $x=: \sum_i a_i
+     * \psi_i$
+     * 。因此，通过适当地选择多项式滤波器，可以改变  $x$
+     * 中包含的特征模式。
+     * 这个函数使用切比雪夫第一类多项式。下面是一个度数为
+     * $n=8$ 的多项式 $T_n(x)$ 在 $-1.2$ 处归一的例子。  <table>
+     * <tr> <td align="center">
+           @image html chebyshev8.png
+     * </td> </tr> </table>  通过引入从 @p unwanted_spectrum 到 $[-1,1]$
+     * 的线性映射 $L$ ，我们可以在 @p x.
+     * 甩出相应的模式，多项式的度数 $n$ 越高，它在 $[-1,1]$
+     * 之外的增长越快。为了避免数字溢出，我们在  @p tau.
+     * 处将多项式滤波归一，因此，滤波后的算子是  $p(H) =
+     * T_n(L(H))/T_n(L(\tau))$  。
+     * 切比雪夫滤波器的作用只需要对 <code>vmult()</code> 的 @p
+     * H
+     * 进行评估，并基于切比雪夫多项式的递归方程，其度数为
+     * $n$  :  $T_{n}(x) = 2x T_{n-1}(x)
      *
-     * This function uses Chebyshev polynomials of first kind. Below is an
-     * example of polynomial $T_n(x)$ of degree $n=8$ normalized to unity at
-     * $-1.2$. <table> <tr> <td align="center">
-     *       @image html chebyshev8.png
-     *     </td>
-     *   </tr>
-     * </table>
-     * By introducing a linear mapping $L$ from @p unwanted_spectrum to
-     * $[-1,1]$, we can dump the corresponding modes in @p x. The higher
-     * the polynomial degree $n$, the more rapid it grows outside of the
-     * $[-1,1]$. In order to avoid numerical overflow, we normalize
-     * polynomial filter to unity at @p tau. Thus, the filtered operator
-     * is $p(H) = T_n(L(H))/T_n(L(\tau))$.
-     *
-     * The action of the Chebyshev filter only requires
-     * evaluation of <code>vmult()</code> of @p H and is based on the
-     * recursion equation for Chebyshev polynomial of degree $n$:
-     * $T_{n}(x) = 2x T_{n-1}(x) - T_{n-2}(x)$ with $T_0(x)=1$ and $T_1(x)=x$.
-     *
-     * @p vector_memory is used to allocate memory for temporary objects.
-     *
-     * This function implements the algorithm (with a minor fix of sign of
-     * $\sigma_1$) from
+     * - T_{n-2}(x)$  与  $T_0(x)=1$  和  $T_1(x)=x$  。          @p
+     * vector_memory 被用来为临时对象分配内存。
+     * 这个函数实现了 $\sigma_1$ 中的算法（对 $\sigma_1$
+     * 的符号做了一个小的修正）。
      * @code{.bib}
      * @article{Zhou2014,
-     *   Title   = {Chebyshev-filtered subspace iteration method free of sparse
-     *              diagonalization for solving the Kohn--Sham equation},
-     *   Author  = {Zhou, Yunkai and Chelikowsky, James R and Saad, Yousef},
-     *   Journal = {Journal of Computational Physics},
-     *   Year    = {2014},
-     *   Volume  = {274},
-     *   Pages   = {770--782},
+     * Title   = {Chebyshev-filtered subspace iteration method free of sparse
+     *            diagonalization for solving the Kohn--Sham equation},
+     * Author  = {Zhou, Yunkai and Chelikowsky, James R and Saad, Yousef},
+     * Journal = {Journal of Computational Physics},
+     * Year    = {2014},
+     * Volume  = {274},
+     * Pages   = {770--782},
      * }
      * @endcode
      *
-     * @note If @p tau is equal to
-     * <code>std::numeric_limits<double>::infinity()</code>, no normalization
-     * will be performed.
+     * @note  如果 @p tau 等于
+     * <code>std::numeric_limits<double>::infinity()</code>
+     * ，将不进行规范化处理。
+     *
      */
     template <typename OperatorType, typename VectorType>
     void
@@ -198,7 +179,7 @@ namespace Utilities
 } // namespace Utilities
 
 
-/*------------------------- Implementation ----------------------------*/
+ /*------------------------- Implementation ----------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -230,8 +211,8 @@ namespace Utilities
   {
     template <typename NumberType>
     std::array<std::complex<NumberType>, 3>
-    hyperbolic_rotation(const std::complex<NumberType> & /*f*/,
-                        const std::complex<NumberType> & /*g*/)
+    hyperbolic_rotation(const std::complex<NumberType> &  /*f*/ ,
+                        const std::complex<NumberType> &  /*g*/ )
     {
       AssertThrow(false, ExcNotImplemented());
       std::array<NumberType, 3> res;
@@ -264,8 +245,8 @@ namespace Utilities
 
     template <typename NumberType>
     std::array<std::complex<NumberType>, 3>
-    givens_rotation(const std::complex<NumberType> & /*f*/,
-                    const std::complex<NumberType> & /*g*/)
+    givens_rotation(const std::complex<NumberType> &  /*f*/ ,
+                    const std::complex<NumberType> &  /*g*/ )
     {
       AssertThrow(false, ExcNotImplemented());
       std::array<NumberType, 3> res;
@@ -502,3 +483,5 @@ DEAL_II_NAMESPACE_CLOSE
 
 
 #endif
+
+

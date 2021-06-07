@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_dgp_nonparametric_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2002 - 2020 by the deal.II authors
@@ -27,230 +26,258 @@
 
 DEAL_II_NAMESPACE_OPEN
 
- /*!@addtogroup fe */ 
- /*@{*/ 
+/*!@addtogroup fe */
+/*@{*/
 
 /**
- * 在映射的正交点上评估的不连续有限元。
- * 警告：这个类还不能正常工作。不要使用它!
- * 这个有限元实现了完整的多项式空间，即 $d$
- * -维多项式的阶数 $k$  。
- * 多项式是没有映射的。因此，它们在任何网格单元上都是常数、线性、二次等。
- * 由于多项式是在实际网格单元的正交点上评估的，所以没有网格转移和内插矩阵。
- * 这个类的目的是实验性的，因此实现起来将是不完整的。
- * 此外，该类没有对一维的情况（<tt>spacedim !=
- * dim</tt>）进行实现。
+ * Discontinuous finite elements evaluated at the mapped quadrature points.
  *
- *  <h3>Visualization of shape functions</h3>
- * 在2d中，这个元素的形状函数看起来如下。 <h4>$P_0$
- * element</h4> <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0000.png
+ * Warning: this class does not work properly, yet. Don't use it!
+ *
+ * This finite element implements complete polynomial spaces, that is,
+ * $d$-dimensional polynomials of order $k$.
+ *
+ * The polynomials are not mapped. Therefore, they are constant, linear,
+ * quadratic, etc. on any grid cell.
+ *
+ * Since the polynomials are evaluated at the quadrature points of the actual
+ * grid cell, no grid transfer and interpolation matrices are available.
+ *
+ * The purpose of this class is experimental, therefore the implementation
+ * will remain incomplete.
+ *
+ * Besides, this class is not implemented for the codimension one case
+ * (<tt>spacedim != dim</tt>).
+ *
+ *
+ * <h3>Visualization of shape functions</h3> In 2d, the shape functions of
+ * this element look as follows.
+ *
+ * <h4>$P_0$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0000.png
  * </td>
  *
  * <td align="center"> </td> </tr> <tr> <td align="center"> $P_0$ element,
  * shape function 0 </td>
  *
- * <td align="center"></tr> </table> <h4>$P_1$ element</h4> <table> <tr> <td
- * align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0000.png
+ * <td align="center"></tr> </table>
+ *
+ * <h4>$P_1$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_1$ element, shape function 0 </td>
  *
  * <td align="center"> $P_1$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P1/P1_DGPNonparametric_shape0002.png
  * </td>
  *
  * <td align="center"> </td> </tr> <tr> <td align="center"> $P_1$ element,
  * shape function 2 </td>
  *
- * <td align="center"></td> </tr> </table>   <h4>$P_2$ element</h4> <table>
- * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0000.png
+ * <td align="center"></td> </tr> </table>
+ *
+ *
+ * <h4>$P_2$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_2$ element, shape function 0 </td>
  *
  * <td align="center"> $P_2$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0002.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0003.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0003.png
  * </td> </tr> <tr> <td align="center"> $P_2$ element, shape function 2 </td>
  *
  * <td align="center"> $P_2$ element, shape function 3 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0004.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0004.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0005.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P2/P2_DGPNonparametric_shape0005.png
  * </td> </tr> <tr> <td align="center"> $P_2$ element, shape function 4 </td>
  *
  * <td align="center"> $P_2$ element, shape function 5 </td> </tr> </table>
  *
- *  <h4>$P_3$ element</h4> <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0000.png
+ *
+ * <h4>$P_3$ element</h4>
+ *
+ * <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 0 </td>
  *
  * <td align="center"> $P_3$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0002.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0003.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0003.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 2 </td>
  *
  * <td align="center"> $P_3$ element, shape function 3 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0004.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0004.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0005.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0005.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 4 </td>
  *
  * <td align="center"> $P_3$ element, shape function 5 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0006.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0006.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0007.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0007.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 6 </td>
  *
  * <td align="center"> $P_3$ element, shape function 7 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0008.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0008.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0009.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P3/P3_DGPNonparametric_shape0009.png
  * </td> </tr> <tr> <td align="center"> $P_3$ element, shape function 8 </td>
  *
  * <td align="center"> $P_3$ element, shape function 9 </td> </tr> </table>
- * <h4>$P_4$ element</h4>  <table> <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0000.png
+ *
+ *
+ * <h4>$P_4$ element</h4> <table> <tr> <td align="center">
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0000.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0001.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0001.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 0 </td>
  *
  * <td align="center"> $P_4$ element, shape function 1 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0002.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0002.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0003.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0003.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 2 </td>
  *
  * <td align="center"> $P_4$ element, shape function 3 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0004.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0004.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0005.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0005.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 4 </td>
  *
  * <td align="center"> $P_4$ element, shape function 5 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0006.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0006.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0007.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0007.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 6 </td>
  *
  * <td align="center"> $P_4$ element, shape function 7 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0008.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0008.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0009.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0009.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 8 </td>
  *
  * <td align="center"> $P_4$ element, shape function 9 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0010.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0010.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0011.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0011.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 10 </td>
  *
  * <td align="center"> $P_4$ element, shape function 11 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0012.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0012.png
  * </td>
  *
  * <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0013.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0013.png
  * </td> </tr> <tr> <td align="center"> $P_4$ element, shape function 12 </td>
  *
  * <td align="center"> $P_4$ element, shape function 13 </td> </tr>
  *
  * <tr> <td align="center">
- @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0014.png
+ * @image html http://www.dealii.org/images/shape-functions/DGPNonparametric/P4/P4_DGPNonparametric_shape0014.png
  * </td>
  *
  * <td align="center"> </td> </tr> <tr> <td align="center"> $P_4$ element,
  * shape function 14 </td>
  *
- * <td align="center"></td> </tr> </table> 。   <h3> Implementation details
- * </h3>
- * 这个元素没有InternalData类，与所有其他元素不同，因为InternalData类是用来存储那些可以计算一次并多次重复使用的东西（比如参考单元上正交点的形状函数值）。然而，由于该元素没有被映射，这个元素没有任何可以在参考单元上计算的东西
- *
- * - 一切都需要在真实单元上计算
- *
- * 因此，在这样一个对象中没有我们想要存储的东西。因此，我们可以简单地使用
- * FiniteElement::InternalDataBase
- * 已经提供的成员，而不用在这个类的派生类中添加任何东西。
+ * <td align="center"></td> </tr> </table>
  *
  *
+ * <h3> Implementation details </h3>
+ *
+ * This element does not have an InternalData class, unlike all other
+ * elements, because the InternalData classes are used to store things that
+ * can be computed once and reused multiple times (such as the values of shape
+ * functions at quadrature points on the reference cell). However, because the
+ * element is not mapped, this element has nothing that could be computed on
+ * the reference cell -- everything needs to be computed on the real cell --
+ * and consequently there is nothing we'd like to store in such an object. We
+ * can thus simply use the members already provided by
+ * FiniteElement::InternalDataBase without adding anything in a derived class
+ * in this class.
  */
 template <int dim, int spacedim = dim>
 class FE_DGPNonparametric : public FiniteElement<dim, spacedim>
 {
 public:
   /**
-   * 度数为 @p k. 的张量乘积多项式的构造函数。
-   *
+   * Constructor for tensor product polynomials of degree @p k.
    */
   FE_DGPNonparametric(const unsigned int k);
 
   /**
-   * 返回一个唯一标识有限元的字符串。该类返回<tt>FE_DGPNonparametric<dim>(degree)</tt>，其中
-   * @p dim 和 @p 度数由适当的值代替。
-   *
+   * Return a string that uniquely identifies a finite element. This class
+   * returns <tt>FE_DGPNonparametric<dim>(degree)</tt>, with @p dim and @p
+   * degree replaced by appropriate values.
    */
   virtual std::string
   get_name() const override;
@@ -263,21 +290,27 @@ public:
   requires_update_flags(const UpdateFlags update_flags) const override;
 
   /**
-   * 这个函数旨在返回参考单元格上某一点的形状函数的值。然而，由于当前元素没有通过参考单元的映射来实现形状函数，参考单元上不存在形状函数。
-   * 因此，正如基类中相应的函数所讨论的，
-   * FiniteElement::shape_value(), 这个函数抛出了一个
-   * FiniteElement::ExcUnitShapeValuesDoNotExist. 类型的异常。
+   * This function is intended to return the value of a shape function at a
+   * point on the reference cell. However, since the current element does not
+   * implement shape functions by mapping from a reference cell, no shape
+   * functions exist on the reference cell.
    *
+   * Consequently, as discussed in the corresponding function in the base
+   * class, FiniteElement::shape_value(), this function throws an exception of
+   * type FiniteElement::ExcUnitShapeValuesDoNotExist.
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 这个函数旨在返回参考单元格上某一点的形状函数的值。然而，由于当前元素没有通过参考单元的映射来实现形状函数，参考单元上不存在形状函数。
-   * 因此，正如基类中相应的函数所讨论的，
-   * FiniteElement::shape_value_component(), 这个函数抛出了一个
-   * FiniteElement::ExcUnitShapeValuesDoNotExist. 类型的异常。
+   * This function is intended to return the value of a shape function at a
+   * point on the reference cell. However, since the current element does not
+   * implement shape functions by mapping from a reference cell, no shape
+   * functions exist on the reference cell.
    *
+   * Consequently, as discussed in the corresponding function in the base
+   * class, FiniteElement::shape_value_component(), this function throws an
+   * exception of type FiniteElement::ExcUnitShapeValuesDoNotExist.
    */
   virtual double
   shape_value_component(const unsigned int i,
@@ -285,21 +318,27 @@ public:
                         const unsigned int component) const override;
 
   /**
-   * 这个函数的目的是返回一个形状函数在参考单元格上某一点的梯度。然而，由于当前元素没有通过参考单元的映射来实现形状函数，参考单元上不存在形状函数。
-   * 因此，正如基类中相应的函数所讨论的，
-   * FiniteElement::shape_grad(), 这个函数抛出了一个
-   * FiniteElement::ExcUnitShapeValuesDoNotExist. 类型的异常。
+   * This function is intended to return the gradient of a shape function at a
+   * point on the reference cell. However, since the current element does not
+   * implement shape functions by mapping from a reference cell, no shape
+   * functions exist on the reference cell.
    *
+   * Consequently, as discussed in the corresponding function in the base
+   * class, FiniteElement::shape_grad(), this function throws an exception of
+   * type FiniteElement::ExcUnitShapeValuesDoNotExist.
    */
   virtual Tensor<1, dim>
   shape_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 这个函数的目的是返回一个形状函数在参考单元格上某一点的梯度。然而，由于当前元素没有通过参考单元的映射来实现形状函数，参考单元上不存在形状函数。
-   * 因此，正如基类中相应的函数所讨论的，
-   * FiniteElement::shape_grad_component(), 这个函数抛出了一个
-   * FiniteElement::ExcUnitShapeValuesDoNotExist. 类型的异常。
+   * This function is intended to return the gradient of a shape function at a
+   * point on the reference cell. However, since the current element does not
+   * implement shape functions by mapping from a reference cell, no shape
+   * functions exist on the reference cell.
    *
+   * Consequently, as discussed in the corresponding function in the base
+   * class, FiniteElement::shape_grad_component(), this function throws an
+   * exception of type FiniteElement::ExcUnitShapeValuesDoNotExist.
    */
   virtual Tensor<1, dim>
   shape_grad_component(const unsigned int i,
@@ -307,21 +346,27 @@ public:
                        const unsigned int component) const override;
 
   /**
-   * 这个函数的目的是返回参考单元上某一点的形状函数的Hessian。然而，由于当前元素没有通过参考单元的映射来实现形状函数，参考单元上不存在形状函数。
-   * 因此，正如基类中相应的函数所讨论的，
-   * FiniteElement::shape_grad_grad(), 这个函数抛出了一个
-   * FiniteElement::ExcUnitShapeValuesDoNotExist. 类型的异常。
+   * This function is intended to return the Hessian of a shape function at a
+   * point on the reference cell. However, since the current element does not
+   * implement shape functions by mapping from a reference cell, no shape
+   * functions exist on the reference cell.
    *
+   * Consequently, as discussed in the corresponding function in the base
+   * class, FiniteElement::shape_grad_grad(), this function throws an
+   * exception of type FiniteElement::ExcUnitShapeValuesDoNotExist.
    */
   virtual Tensor<2, dim>
   shape_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 这个函数的目的是返回参考单元上某一点的形状函数的Hessian。然而，由于当前元素没有通过参考单元的映射来实现形状函数，参考单元上不存在形状函数。
-   * 因此，正如基类中相应的函数所讨论的，
-   * FiniteElement::shape_grad_grad_component(), 这个函数抛出了一个
-   * FiniteElement::ExcUnitShapeValuesDoNotExist. 类型的异常。
+   * This function is intended to return the Hessian of a shape function at a
+   * point on the reference cell. However, since the current element does not
+   * implement shape functions by mapping from a reference cell, no shape
+   * functions exist on the reference cell.
    *
+   * Consequently, as discussed in the corresponding function in the base
+   * class, FiniteElement::shape_grad_grad_component(), this function throws
+   * an exception of type FiniteElement::ExcUnitShapeValuesDoNotExist.
    */
   virtual Tensor<2, dim>
   shape_grad_grad_component(const unsigned int i,
@@ -329,17 +374,22 @@ public:
                             const unsigned int component) const override;
 
   /**
-   * 返回该有限元的多项式程度，即传递给构造函数的值。
-   *
+   * Return the polynomial degree of this finite element, i.e. the value
+   * passed to the constructor.
    */
   unsigned int
   get_degree() const;
 
   /**
-   * 返回从一个元素的一个面插值到相邻元素的面的矩阵。矩阵的大小是<tt>source.dofs_per_face</tt>乘以<tt>this->dofs_per_face</tt>。
-   * 衍生元素将不得不实现这个函数。他们可能只为某些源有限元提供插值矩阵，例如那些来自同一家族的有限元。如果他们不实现从一个给定元素的内插，那么他们必须抛出一个类型为
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented. 的异常。
+   * Return the matrix interpolating from a face of one element to the face
+   * of the neighboring element. The size of the matrix is then
+   * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.
    *
+   * Derived elements will have to implement this function. They may only
+   * provide interpolation matrices for certain source finite elements, for
+   * example those from the same family. If they don't implement interpolation
+   * from a given element, then they must throw an exception of type
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented.
    */
   virtual void
   get_face_interpolation_matrix(const FiniteElement<dim, spacedim> &source,
@@ -347,10 +397,15 @@ public:
                                 const unsigned int face_no = 0) const override;
 
   /**
-   * 返回从一个元素的一个面插值到邻近元素的面的矩阵。矩阵的大小是<tt>source.dofs_per_face</tt>乘以<tt>this->dofs_per_face</tt>。
-   * 衍生元素将不得不实现这个函数。他们可能只为某些源有限元提供插值矩阵，例如那些来自同一家族的有限元。如果他们不实现从一个给定元素的内插，那么他们必须抛出一个类型为
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented. 的异常。
+   * Return the matrix interpolating from a face of one element to the face
+   * of the neighboring element. The size of the matrix is then
+   * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.
    *
+   * Derived elements will have to implement this function. They may only
+   * provide interpolation matrices for certain source finite elements, for
+   * example those from the same family. If they don't implement interpolation
+   * from a given element, then they must throw an exception of type
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented.
    */
   virtual void
   get_subface_interpolation_matrix(
@@ -360,51 +415,67 @@ public:
     const unsigned int                  face_no = 0) const override;
 
   /**
-   * @name  支持 hp  @{  的函数。
-   *
+   * @name Functions to support hp
+   * @{
    */
 
   /**
-   * 如果在一个顶点上，有几个有限元处于活动状态，hp代码首先为这些FEs的每个自由度分配不同的全局索引。然后调用这个函数来找出其中哪些应该得到相同的值，从而可以得到相同的全局自由度指数。
-   * 因此，该函数返回当前有限元对象的自由度与 @p fe_other,
-   * 的自由度之间的相同性列表，后者是对代表在该特定顶点上活动的其他有限元之一的有限元对象的引用。该函数计算两个有限元对象的哪些自由度是等价的，这两个自由度的编号都在0和两个有限元的n_dofs_per_vertex()的相应值之间。每一对的第一个索引表示本元素的一个顶点自由度，而第二个是另一个有限元素的相应索引。
-   * 作为一个不连续的元素，这种约束的集合当然是空的。
+   * If, on a vertex, several finite elements are active, the hp-code first
+   * assigns the degrees of freedom of each of these FEs different global
+   * indices. It then calls this function to find out which of them should get
+   * identical values, and consequently can receive the same global DoF index.
+   * This function therefore returns a list of identities between DoFs of the
+   * present finite element object with the DoFs of @p fe_other, which is a
+   * reference to a finite element object representing one of the other finite
+   * elements active on this particular vertex. The function computes which of
+   * the degrees of freedom of the two finite element objects are equivalent,
+   * both numbered between zero and the corresponding value of
+   * n_dofs_per_vertex() of the two finite elements. The first index of each
+   * pair denotes one of the vertex dofs of the present element, whereas the
+   * second is the corresponding index of the other finite element.
    *
+   * This being a discontinuous element, the set of such constraints is of
+   * course empty.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_vertex_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * 与hp_vertex_dof_indices()相同，只是该函数处理的是线上的自由度。
-   * 这是一个不连续的元素，这种约束的集合当然是空的。
+   * Same as hp_vertex_dof_indices(), except that the function treats degrees
+   * of freedom on lines.
    *
+   * This being a discontinuous element, the set of such constraints is of
+   * course empty.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_line_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * 与hp_vertex_dof_indices()相同，只是该函数处理的是四边形上的自由度。
-   * 这是一个不连续的元素，这种约束的集合当然是空的。
+   * Same as hp_vertex_dof_indices(), except that the function treats degrees
+   * of freedom on quads.
    *
+   * This being a discontinuous element, the set of such constraints is of
+   * course empty.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_quad_dof_identities(const FiniteElement<dim, spacedim> &fe_other,
                          const unsigned int face_no = 0) const override;
 
   /**
-   * 返回该元素是否以新的方式实现其悬挂节点约束，这必须用于使元素
-   * "hp-compatible"。
-   * 对于FE_DGPNonparametric类，结果总是真（与元素的程度无关），因为它没有悬挂节点（是一个不连续的元素）。
+   * Return whether this element implements its hanging node constraints in
+   * the new way, which has to be used to make elements "hp-compatible".
    *
+   * For the FE_DGPNonparametric class the result is always true (independent
+   * of the degree of the element), as it has no hanging nodes (being a
+   * discontinuous element).
    */
   virtual bool
   hp_constraints_are_implemented() const override;
 
   /**
-   * @copydoc   FiniteElement::compare_for_domination() .
-   *
+   * @copydoc FiniteElement::compare_for_domination()
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim, spacedim> &fe_other,
@@ -412,30 +483,31 @@ public:
 
   /**
    * @}
-   *
    */
 
   /**
-   * 如果形状函数 @p shape_index
-   * 在面的某处有非零函数值，该函数返回 @p true, 。
-   *
+   * This function returns @p true, if the shape function @p shape_index has
+   * non-zero function values somewhere on the face @p face_index.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
                       const unsigned int face_index) const override;
 
   /**
-   * 确定这个对象的内存消耗（以字节为单位）的估计值。
-   * 这个函数是虚拟的，因为有限元对象通常是通过指向其基类的指针来访问的，而不是类本身。
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    *
+   * This function is made virtual, since finite element objects are usually
+   * accessed through pointers to their base class, rather than the class
+   * itself.
    */
   virtual std::size_t
   memory_consumption() const override;
 
 protected:
   /**
-   * 准备内部数据结构并填入独立于单元的值。
-   *
+   * Prepare internal data structures and fill in values independent of the
+   * cell.
    */
   virtual std::unique_ptr<
     typename FiniteElement<dim, spacedim>::InternalDataBase>
@@ -497,18 +569,16 @@ protected:
 
 private:
   /**
-   * 仅供内部使用。它的全称是 @p get_dofs_per_object_vector
-   * 函数，它创建了 @p dofs_per_object
-   * 向量，在构造函数内需要传递给 @p
-   * FiniteElementData的构造函数。
-   *
+   * Only for internal use. Its full name is @p get_dofs_per_object_vector
+   * function and it creates the @p dofs_per_object vector that is needed
+   * within the constructor to be passed to the constructor of @p
+   * FiniteElementData.
    */
   static std::vector<unsigned int>
   get_dpo_vector(const unsigned int degree);
 
   /**
-   * 指向代表这里使用的多项式空间的对象的指针。
-   *
+   * Pointer to an object representing the polynomial space used here.
    */
   const PolynomialSpace<dim> polynomial_space;
 
@@ -517,10 +587,8 @@ private:
   friend class FE_DGPNonparametric;
 };
 
- /*@}*/ 
+/*@}*/
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

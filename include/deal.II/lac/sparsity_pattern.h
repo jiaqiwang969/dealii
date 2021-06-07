@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/sparsity_pattern_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -62,40 +63,40 @@ namespace ChunkSparsityPatternIterators
 }
 #endif
 
-/*! @addtogroup Sparsity
- *@{
- */
+/*!   @addtogroup  稀疏性  @{  
+
+* 
+* */
 
 namespace internals
 {
   namespace SparsityPatternTools
   {
     /**
-     * Declare type for container size.
+     * 申报容器大小的类型。
+     *
      */
     using size_type = types::global_dof_index;
 
     /**
-     * Helper function to get the column index from a dereferenced iterator in
-     * the copy_from() function, if the inner iterator type points to plain
-     * unsigned integers.
+     * 在copy_from()函数中，如果内部迭代器类型指向普通的无符号整数，则用辅助函数从一个被解读的迭代器中获取列索引。
+     *
      */
     size_type
     get_column_index_from_iterator(const size_type i);
 
     /**
-     * Helper function to get the column index from a dereferenced iterator in
-     * the copy_from() function, if the inner iterator type points to pairs of
-     * unsigned integers and some other value.
+     * 在copy_from()函数中，如果内部迭代器类型指向无符号整数和其他值的对，则用辅助函数从一个被解除引用的迭代器中获取列索引。
+     *
      */
     template <typename value>
     size_type
     get_column_index_from_iterator(const std::pair<size_type, value> &i);
 
     /**
-     * Likewise, but sometimes needed for certain types of containers that
-     * make the first element of the pair constant (such as
-     * <tt>std::map</tt>).
+     * 同样，但有时需要用于某些类型的容器，使对中的第一个元素成为常数（如
+     * <tt>std::map</tt>).  ）。
+     *
      */
     template <typename value>
     size_type
@@ -106,7 +107,9 @@ namespace internals
 
 
 /**
- * Iterators on objects of type SparsityPattern.
+ * SparsityPattern类型的对象上的迭代器。
+ *
+ *
  */
 namespace SparsityPatternIterators
 {
@@ -114,103 +117,93 @@ namespace SparsityPatternIterators
   class Iterator;
 
   /**
-   * Declare type for container size.
+   * 为容器大小声明类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Accessor class for iterators into sparsity patterns. This class is also
-   * the base class for both const and non-const accessor classes into sparse
-   * matrices.
+   * 进入稀疏性模式的迭代器的访问器类。这个类也是进入稀疏矩阵的常量和非常量访问器类的基类。
+   * 请注意，这个类只允许对元素进行读取访问，提供它们的行号和列号（或者是完整的稀疏模式中的索引）。它不允许修改稀疏模式本身。
    *
-   * Note that this class only allows read access to elements, providing their
-   * row and column number (or alternatively the index within the complete
-   * sparsity pattern). It does not allow modifying the sparsity pattern
-   * itself.
    */
   class Accessor
   {
   public:
     /**
-     * Size type of SparsityPattern.
+     * SparsityPattern的大小类型。
+     *
      */
     using size_type = SparsityPatternIterators::size_type;
 
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     Accessor(const SparsityPatternBase *matrix, const std::size_t linear_index);
 
     /**
-     * Constructor. Construct the end accessor for the given sparsity pattern.
+     * 构造器。为给定的稀疏性模式构造结束访问器。
+     *
      */
     Accessor(const SparsityPatternBase *matrix);
 
     /**
-     * Default constructor creating a dummy accessor. This constructor is here
-     * only to be able to store accessors in STL containers such as
-     * `std::vector`.
+     * 默认构造器创建一个假访问器。这个构造函数在这里只是为了能够在STL容器中存储访问器，例如
+     * `std::vector`.  。
+     *
      */
     Accessor();
 
     /**
-     * Row number of the element represented by this object. This function can
-     * only be called for entries for which is_valid_entry() is true.
+     * 这个对象所代表的元素的行号。这个函数只能为is_valid_entry()为真的条目调用。
+     *
      */
     size_type
     row() const;
 
     /**
-     * Index within the current row of the element represented by this object.
-     * This function can only be called for entries for which is_valid_entry()
-     * is true.
+     * 这个对象所代表的元素在当前行中的索引。
+     * 这个函数只能对is_valid_entry()为true的条目进行调用。
+     *
      */
     size_type
     index() const;
 
     /**
-     * This function returns the how-many'th entry within the entire sparsity
-     * pattern the current iterator points to. While the order of entries in
-     * a sparsity pattern is generally not important, this function allows
-     * indexing entries of the sparsity pattern using a linear index.
+     * 这个函数返回当前迭代器指向的整个稀疏模式中的第多少个条目。虽然疏散模式中的条目顺序通常并不重要，但这个函数允许使用线性索引来索引疏散模式的条目。
+     * 这个函数只能为is_valid_entry()为真的条目调用。
      *
-     * This function can only be called for entries for which is_valid_entry()
-     * is true.
      */
     size_type
     global_index() const;
 
     /**
-     * Column number of the element represented by this object. This function
-     * can only be called for entries for which is_valid_entry() is true.
+     * 这个对象所代表的元素的列号。这个函数只能为is_valid_entry()为真的条目调用。
+     *
      */
     size_type
     column() const;
 
     /**
-     * Return whether the sparsity pattern entry pointed to by this iterator
-     * is valid or not. Note that after compressing the sparsity pattern, all
-     * entries are valid. However, before compression, the sparsity pattern
-     * allocated some memory to be used while still adding new nonzero
-     * entries; if you create iterators in this phase of the sparsity
-     * pattern's lifetime, you will iterate over elements that are not valid.
-     * If this is so, then this function will return false.
+     * 返回这个迭代器所指向的稀疏模式条目是否有效。注意，在压缩稀疏模式后，所有条目都是有效的。然而，在压缩之前，稀疏模式分配了一些内存来使用，同时仍在增加新的非零条目；如果你在稀疏模式生命周期的这个阶段创建迭代器，你将迭代那些无效的元素。
+     * 如果是这样的话，那么这个函数将返回false。
+     *
      */
     bool
     is_valid_entry() const;
 
     /**
-     * Comparison. True, if both iterators point to the same matrix position.
+     * 比较。真，如果两个迭代器都指向同一个矩阵位置。
+     *
      */
     bool
     operator==(const Accessor &) const;
 
     /**
-     * Comparison operator. Result is true if either the first row number is
-     * smaller or if the row numbers are equal and the first index is smaller.
+     * 比较运算符。如果第一行数字较小，或者行数字相等且第一个索引较小，则结果为真。
+     * 这个函数只有在两个迭代器都指向同一个稀疏模式时才有效。
      *
-     * This function is only valid if both iterators point into the same
-     * sparsity pattern.
      */
     bool
     operator<(const Accessor &) const;
@@ -223,21 +216,20 @@ namespace SparsityPatternIterators
                      " not do any operations.");
 
     /**
-     * The sparsity pattern we operate on accessed.
+     * 我们所操作的稀疏模式被访问。
+     *
      */
     const SparsityPatternBase *container;
 
     /**
-     * Index in global sparsity pattern. This index represents the location
-     * the iterator/accessor points to within the array of the SparsityPattern
-     * class that stores the column numbers. It is also the index within the
-     * values array of a sparse matrix that stores the corresponding value of
-     * this site.
+     * 全局稀疏度模式中的索引。这个索引代表了迭代器/访问器在SparsityPattern类的数组中所指向的位置，该数组存储了列号。它也是稀疏矩阵的数值数组内的索引，该数组存储了该站点的相应数值。
+     *
      */
     std::size_t linear_index;
 
     /**
-     * Move the accessor to the next nonzero entry in the matrix.
+     * 将访问器移动到矩阵中的下一个非零条目。
+     *
      */
     void
     advance();
@@ -252,52 +244,40 @@ namespace SparsityPatternIterators
 
 
   /**
-   * An iterator class for walking over the elements of a sparsity pattern.
+   * 一个迭代器类，用于在稀疏模式的元素上行走。
+   * 这些迭代器的典型用途是迭代稀疏模式的元素（或者，因为它们也是迭代相关矩阵的元素的基础，所以是迭代稀疏矩阵的元素），或者迭代单个行的元素。不能保证行的元素实际上是按照列数单调增加的顺序来遍历的。更多信息请参见SparsityPattern类的文档。
+   * @note
+   * 该类直接对SparsityPatternBase类的内部数据结构进行操作。因此，有些操作很便宜，有些则不然。特别是，访问指向的稀疏模式条目的列索引是很便宜的。另一方面，访问行索引是很昂贵的（对于一个有
+   * $N$ 行的矩阵，这需要 $O(\log(N))$
+   * 次操作）。因此，当你设计使用这些迭代器的算法时，通常的做法是不一次性循环疏散模式的<i>all</i>个元素，而是在所有行上有一个外循环，在这个循环中迭代这个行的元素。这样，你只需要解除对迭代器的引用以获得列索引，而通过使用循环索引可以避免对行索引的（昂贵）查找。
    *
-   * The typical use for these iterators is to iterate over the elements of a
-   * sparsity pattern (or, since they also serve as the basis for iterating
-   * over the elements of an associated matrix, over the elements of a sparse
-   * matrix), or over the elements of individual rows. There is no guarantee
-   * that the elements of a row are actually traversed in an order in which
-   * column numbers monotonically increase. See the documentation of the
-   * SparsityPattern class for more information.
-   *
-   * @note This class operates directly on the internal data structures of the
-   * SparsityPatternBase class. As a consequence, some operations are cheap and
-   * some are not. In particular, it is cheap to access the column index of
-   * the sparsity pattern entry pointed to. On the other hand, it is expensive
-   * to access the row index (this requires $O(\log(N))$ operations for a
-   * matrix with $N$ row). As a consequence, when you design algorithms that
-   * use these iterators, it is common practice to not loop over <i>all</i>
-   * elements of a sparsity pattern at once, but to have an outer loop over
-   * all rows and within this loop iterate over the elements of this row. This
-   * way, you only ever need to dereference the iterator to obtain the column
-   * indices whereas the (expensive) lookup of the row index can be avoided by
-   * using the loop index instead.
    */
   class Iterator : public LinearIndexIterator<Iterator, Accessor>
   {
   public:
     /**
-     * Size type.
+     * 尺寸类型。
+     *
      */
     using size_type = types::global_dof_index;
 
     /**
-     * Type of the stored pointer.
+     * 存储指针的类型。
+     *
      */
     using container_pointer_type = SparsityPatternBase *;
 
     /**
-     * Constructor. Create an iterator into the sparsity pattern @p sp for the
-     * given global index (i.e., the index of the given element counting from
-     * the zeroth row).
+     * 构造函数。为给定的全局索引（即从第2行开始计算的给定元素的索引）创建一个进入稀疏模式
+     * @p sp 的迭代器。
+     *
      */
     Iterator(const SparsityPatternBase *sp, const std::size_t linear_index);
 
     /**
-     * Constructor. Create an iterator into the sparsity pattern @p sp for
-     * a given accessor.
+     * 构造函数。为给定的访问器创建一个进入稀疏模式 @p
+     * sp 的迭代器。
+     *
      */
     Iterator(const Accessor &accessor);
   };
@@ -306,99 +286,77 @@ namespace SparsityPatternIterators
 
 
 /**
- * A class that can store which elements of a matrix are nonzero (or, in fact,
- * <i>may</i> be nonzero) and for which we have to allocate memory to store
- * their values. This class is an example of the "static" type of sparsity
- * patters (see
- * @ref Sparsity).
- * It uses the <a
+ * 一个可以存储矩阵中哪些元素是非零的类（或者，事实上，<i>may</i>是非零的），我们必须为其分配内存以存储其值。这个类是 "静态 "
+ * 类型的稀疏格局的一个例子（见 @ref Sparsity  ）。它使用<a
  * href="https://en.wikipedia.org/wiki/Sparse_matrix">compressed row storage
- * (CSR)</a> format to store data, and is used as the basis for the
- * derived SparsityPattern class and SparseMatrix class.
+ * (CSR)</a>格式来存储数据，并被用作派生的SparsityPattern类和SparseMatrix类的基础。
+ * SparsityPatternBase的元素，对应于SparseMatrix对象可以存储非零条目的地方，被逐行存储。每行中的非零元素的排序（即增加列索引的顺序）取决于派生类。
  *
- * The elements of a SparsityPatternBase, corresponding to the places where
- * SparseMatrix objects can store nonzero entries, are stored row-by-row.
- * The ordering of non-zero elements within each row (i.e. increasing
- * column index order) depends on the derived classes.
+ *
  */
 class SparsityPatternBase : public Subscriptor
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器大小的类型。
+   *
    */
   using size_type = types::global_dof_index;
 
   /**
-   * Typedef an iterator class that allows to walk over all nonzero elements
-   * of a sparsity pattern.
+   * Typedef一个迭代器类，允许在一个稀疏模式的所有非零元素上行走。
+   *
    */
   using const_iterator = SparsityPatternIterators::Iterator;
 
   /**
-   * Typedef an iterator class that allows to walk over all nonzero elements
-   * of a sparsity pattern.
+   * Typedef一个迭代器类，允许在一个稀疏模式的所有非零元素上行走。
+   * 由于该迭代器不允许修改稀疏模式，该类型与 @p
+   * const_iterator. 的类型相同。
    *
-   * Since the iterator does not allow to modify the sparsity pattern, this
-   * type is the same as that for @p const_iterator.
    */
   using iterator = SparsityPatternIterators::Iterator;
 
   /**
-   * Define a value which is used to indicate that a certain value in the
-   * #colnums array is unused, i.e. does not represent a certain column number
-   * index.
+   * 定义一个值，用来表示#colnums数组中的某个值是未使用的，即不代表某个列号索引。
+   * 具有这种无效值的索引被用来使用add()成员函数向稀疏模式插入新条目，并在调用compress()时被删除。
+   * 你不应该认为这里声明的变量有一定的价值。这里给出的初始化只是为了让编译器进行一些优化，但变量的实际值可能会随着时间的推移而改变。
    *
-   * Indices with this invalid value are used to insert new entries to the
-   * sparsity pattern using the add() member function, and are removed when
-   * calling compress().
-   *
-   * You should not assume that the variable declared here has a certain
-   * value. The initialization is given here only to enable the compiler to
-   * perform some optimizations, but the actual value of the variable may
-   * change over time.
    */
   static const size_type invalid_entry = numbers::invalid_size_type;
 
   /**
-   * @name Construction and Initialization
+   * @name  构造和初始化 构造器，析构器，初始化、复制和填充对象的函数。
    *
-   * Constructors, destructor, functions initializing, copying and filling an
-   * object.
    */
   // @{
   /**
-   * Initialize the matrix empty, that is with no memory allocated. This is
-   * useful if you want such objects as member variables in other classes. You
-   * can make the structure usable by calling the reinit() function.
+   * 初始化矩阵是空的，也就是没有分配内存。如果你想让这样的对象作为其他类中的成员变量，这是很有用的。你可以通过调用reinit()函数使该结构可用。
+   *
    */
   SparsityPatternBase();
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   ~SparsityPatternBase() override = default;
 
   /**
-   * Reallocate memory and set up data structures for a new matrix with @p m
-   * rows and @p n columns, with at most @p max_per_row
-   * nonzero entries per row.
+   * 为一个新的矩阵重新分配内存并设置数据结构，该矩阵有
+   * @p m 行和 @p n 列，每行最多有 @p max_per_row 个非零条目。
+   * 这个函数只是将其操作映射到另一个reinit()函数。
    *
-   * This function simply maps its operations to the other reinit()
-   * function.
    */
   void
   reinit(const size_type m, const size_type n, const unsigned int max_per_row);
 
   /**
-   * Reallocate memory for a matrix of size @p m times @p n. The number of
-   * entries for each row is taken from the array @p row_lengths which
-   * has to give this number of each row $i=1\ldots m$.
+   * 为大小为 @p m 乘以 @p n.
+   * 的矩阵重新分配内存，每行的条目数取自数组 @p
+   * row_lengths ，它必须给出每行的这个数字 $i=1\ldots m$  。
+   * 如果<tt>m*n==0</tt>所有的内存被释放，导致对象的完全重新初始化。如果是非零，只有当新的大小扩展到旧的大小时，才会分配新的内存。这样做是为了节省时间和避免堆的碎片化。
    *
-   * If <tt>m*n==0</tt> all memory is freed, resulting in a total
-   * reinitialization of the object. If it is nonzero, new memory is only
-   * allocated if the new size extends the old one. This is done to save time
-   * and to avoid fragmentation of the heap.
    */
   void
   reinit(const size_type                  m,
@@ -406,9 +364,9 @@ public:
          const std::vector<unsigned int> &row_lengths);
 
   /**
-   * Same as above, but with an ArrayView argument instead.
+   * 和上面一样，但用ArrayView参数代替。
+   * 派生类负责实现这个函数。
    *
-   * The derived classes are responsible for implementation of this function.
    */
   virtual void
   reinit(const size_type                      m,
@@ -416,20 +374,18 @@ public:
          const ArrayView<const unsigned int> &row_lengths) = 0;
 
   /**
-   * Make the sparsity pattern symmetric by adding the sparsity pattern of the
-   * transpose object.
+   * 通过添加转置对象的稀疏模式使稀疏模式对称化。
+   * 如果稀疏度模式不代表二次矩阵，这个函数会抛出一个异常。
    *
-   * This function throws an exception if the sparsity pattern does not
-   * represent a quadratic matrix.
    */
   void
   symmetrize();
 
   /**
-   * Add a nonzero entry to the matrix.  This function may only be called for
-   * non-compressed sparsity patterns.
+   * 给矩阵添加一个非零条目。
+   * 这个函数只能用于非压缩的稀疏度模式。
+   * 如果该条目已经存在，则不会发生任何坏事。
    *
-   * If the entry already exists, nothing bad happens.
    */
   void
   add(const size_type i, const size_type j);
@@ -437,48 +393,40 @@ public:
   // @}
 
   /**
-   * @name Iterators
+   * @name  迭代器
+   *
    */
   // @{
 
   /**
-   * Iterator starting at the first entry of the matrix. The resulting
-   * iterator can be used to walk over all nonzero entries of the sparsity
-   * pattern.
+   * 迭代器从矩阵的第一个条目开始。由此产生的迭代器可以用来走过稀疏模式的所有非零条目。
+   * 访问元素的顺序取决于派生类实现的存储方案。
    *
-   * The order in which elements are accessed depends on the storage scheme
-   * implemented by derived classes.
    */
   iterator
   begin() const;
 
   /**
-   * Final iterator.
+   * 最终迭代器。
+   *
    */
   iterator
   end() const;
 
   /**
-   * Iterator starting at the first entry of row <tt>r</tt>.
+   * 迭代器从行<tt>r</tt>的第一个条目开始。
+   * 注意，如果给定的行是空的，即不包含任何非零条目，那么这个函数返回的迭代器就等于<tt>end(r)</tt>。还要注意的是，在这种情况下，迭代器可能不能被解除引用。
+   * 元素被访问的顺序取决于派生类实现的存储方案。
    *
-   * Note that if the given row is empty, i.e. does not contain any nonzero
-   * entries, then the iterator returned by this function equals
-   * <tt>end(r)</tt>. Note also that the iterator may not be dereferenceable in
-   * that case.
-   *
-   * The order in which elements are accessed depends on the storage scheme
-   * implemented by derived classes.
    */
   iterator
   begin(const size_type r) const;
 
   /**
-   * Final iterator of row <tt>r</tt>. It points to the first element past the
-   * end of line @p r, or past the end of the entire sparsity pattern.
+   * 行<tt>r</tt>的最终迭代器。它指向超过行 @p r,
+   * 末尾的第一个元素或超过整个稀疏模式的末尾。
+   * 请注意，结束迭代器不一定是可被解除引用的。特别是如果它是一个矩阵的最后一行的结束迭代器，情况更是如此。
    *
-   * Note that the end iterator is not necessarily dereferenceable. This is in
-   * particular the case if it is the end iterator for the last row of a
-   * matrix.
    */
   iterator
   end(const size_type r) const;
@@ -487,89 +435,91 @@ public:
   // @}
 
   /**
-   * @name Querying information
+   * @name  查询信息
+   *
    */
   // @{
 
   /**
-   * Test for equality of two SparsityPatterns.
+   * 测试两个SparsityPatterns是否相等。
+   *
    */
   bool
   operator==(const SparsityPatternBase &) const;
 
   /**
-   * Return whether the object is empty. It is empty if no memory is
-   * allocated, which is the same as that both dimensions are zero.
+   * 返回该对象是否为空。如果没有分配内存，它就是空的，这与两个维度都是零是一样的。
+   *
    */
   bool
   empty() const;
 
   /**
-   * Check if a value at a certain position may be non-zero.
+   * 检查在某一位置的值是否可能是非零。
+   *
    */
   bool
   exists(const size_type i, const size_type j) const;
 
   /**
-   * Return the maximum number of entries per row. Before compression, this
-   * equals the number given to the constructor, while after compression, it
-   * equals the maximum number of entries actually allocated by the user.
+   * 返回每行的最大条目数。在压缩之前，这等于给构造函数的数字，而在压缩之后，它等于用户实际分配的最大条目数。
+   *
    */
   size_type
   max_entries_per_row() const;
 
   /**
-   * Compute the bandwidth of the matrix represented by this structure. The
-   * bandwidth is the maximum of $|i-j|$ for which the index pair $(i,j)$
-   * represents a nonzero entry of the matrix. Consequently, the maximum
-   * bandwidth a $n\times m$ matrix can have is $\max\{n-1,m-1\}$, a diagonal
-   * matrix has bandwidth 0, and there are at most $2*q+1$ entries per row if
-   * the bandwidth is $q$. The returned quantity is sometimes called "half
-   * bandwidth" in the literature.
+   * 计算这个结构所代表的矩阵的带宽。该带宽是 $|i-j|$
+   * 的最大值，其中索引对 $(i,j)$
+   * 代表矩阵的一个非零条目。因此， $n\times m$
+   * 矩阵的最大带宽为 $\max\{n-1,m-1\}$
+   * ，对角线矩阵的带宽为0，如果带宽为 $q$
+   * ，则每行最多有 $2*q+1$
+   * 个条目。返回的数量有时在文献中被称为 "半带宽"。
+   *
    */
   size_type
   bandwidth() const;
 
   /**
-   * Return the number of nonzero elements of this matrix. Actually, it
-   * returns the number of entries in the sparsity pattern; if any of the
-   * entries should happen to be zero, it is counted anyway.
+   * 返回这个矩阵的非零元素的数量。实际上，它返回的是稀疏模式中的条目数；如果任何一个条目碰巧是零，无论如何都会被计算在内。
+   * 这个函数只有在矩阵结构被压缩的情况下才能被调用。否则就没有太大意义了。
    *
-   * This function may only be called if the matrix struct is compressed. It
-   * does not make too much sense otherwise anyway.
    */
   std::size_t
   n_nonzero_elements() const;
 
   /**
-   * Return whether the structure is compressed or not.
+   * 返回该结构是否被压缩。
+   *
    */
   bool
   is_compressed() const;
 
   /**
-   * Return number of rows of this matrix, which equals the dimension of the
-   * image space.
+   * 返回该矩阵的行数，相当于图像空间的维度。
+   *
    */
   size_type
   n_rows() const;
 
   /**
-   * Return number of columns of this matrix, which equals the dimension of
-   * the range space.
+   * 返回该矩阵的列数，相当于范围空间的维度。
+   *
    */
   size_type
   n_cols() const;
 
   /**
-   * Number of entries in a specific row.
+   * 特定行中的条目数。
+   *
    */
   unsigned int
   row_length(const size_type row) const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object. See MemoryConsumption.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。见MemoryConsumption。
+   *
    */
   std::size_t
   memory_consumption() const;
@@ -577,43 +527,34 @@ public:
   // @}
 
   /**
-   * @name Accessing entries
+   * @name  访问条目
+   *
    */
   // @{
 
   /**
-   * Access to column number field.  Return the column number of the
-   * <tt>index</tt>th entry in <tt>row</tt>. Note that if diagonal elements
-   * are optimized, the first element in each row is the diagonal element,
-   * i.e. <tt>column_number(row,0)==row</tt>.
+   * 访问列号字段。
+   * 返回<tt>index</tt>中的第<tt>row</tt>条目的列号。注意，如果对角线元素被优化，每行的第一个元素就是对角线元素，即<tt>column_number(row,0)==row</tt>。
+   * 如果稀疏模式已经被压缩，那么（除了对角线元素），条目按列排序，即：<tt>column_number(row,i)</tt>
+   * <tt></tt> <tt>column_number(row,i+1)</tt>。
    *
-   * If the sparsity pattern is already compressed, then (except for the
-   * diagonal element), the entries are sorted by columns, i.e.
-   * <tt>column_number(row,i)</tt> <tt><</tt> <tt>column_number(row,i+1)</tt>.
    */
   size_type
   column_number(const size_type row, const unsigned int index) const;
 
   /**
-   * The index of a global matrix entry in its row.
+   * 一个全局矩阵条目在其行中的索引。
+   * 这个函数类似于operator()，但它计算的索引不是关于总域的，而只是关于行的<tt>j</tt>。
    *
-   * This function is analogous to operator(), but it computes the index not
-   * with respect to the total field, but only with respect to the row
-   * <tt>j</tt>.
    */
   size_type
   row_position(const size_type i, const size_type j) const;
 
   /**
-   * This is the inverse operation to operator()(): given a global index, find
-   * out row and column of the matrix entry to which it belongs. The returned
-   * value is the pair composed of row and column index.
+   * 这是operator()()的逆向操作：给定一个全局索引，找出它所属的矩阵条目的行和列。返回值是由行和列索引组成的一对。
+   * 这个函数只有在稀疏模式是封闭的情况下才能被调用。那么全局索引必须在0和n_nonzero_elements()之间。
+   * 如果<tt>N</tt>是这个矩阵的行数，那么这个函数的复杂性是<i>log(N)</i>。
    *
-   * This function may only be called if the sparsity pattern is closed. The
-   * global index must then be between zero and n_nonzero_elements().
-   *
-   * If <tt>N</tt> is the number of rows of this matrix, then the complexity
-   * of this function is <i>log(N)</i>.
    */
   std::pair<size_type, size_type>
   matrix_position(const std::size_t global_index) const;
@@ -621,57 +562,45 @@ public:
   // @}
 
   /**
-   * @name Input/Output
+   * @name  输入/输出
+   *
    */
   // @{
 
   /**
-   * Print the sparsity of the matrix. The output consists of one line per row
-   * of the format <tt>[i,j1,j2,j3,...]</tt>. <i>i</i> is the row number and
-   * <i>jn</i> are the allocated columns in this row.
+   * 打印矩阵的稀疏度。输出包括每行一行，格式为<tt>[i,j1,j2,j3,...]/tt>。<i>i</i>是行号，<i>jn</i>是这一行中分配的列。
+   *
    */
   void
   print(std::ostream &out) const;
 
   /**
-   * Print the sparsity of the matrix in a format that <tt>gnuplot</tt>
-   * understands and which can be used to plot the sparsity pattern in a
-   * graphical way. The format consists of pairs <tt>i j</tt> of nonzero
-   * elements, each representing one entry of this matrix, one per line of the
-   * output file. Indices are counted from zero on, as usual. Since sparsity
-   * patterns are printed in the same way as matrices are displayed, we print
-   * the negative of the column index, which means that the <tt>(0,0)</tt>
-   * element is in the top left rather than in the bottom left corner.
+   * 以<tt>gnuplot</tt>能理解的格式打印矩阵的稀疏度，该格式可用于以图形方式绘制稀疏度模式。该格式由成对的<tt>i
+   * j</tt>非零元素组成，每个元素代表该矩阵的一个条目，输出文件中每行一个。指数从零开始计算，和平常一样。由于稀疏模式的打印方式与矩阵的显示方式相同，我们打印的是列索引的负数，这意味着<tt>(0,0)</tt>元素位于左上角而不是左下角。
+   * 在gnuplot中通过将数据样式设置为点或点来打印稀疏模式，并使用<tt>plot</tt>命令。
    *
-   * Print the sparsity pattern in gnuplot by setting the data style to dots
-   * or points and use the <tt>plot</tt> command.
    */
   void
   print_gnuplot(std::ostream &out) const;
 
   /**
-   * Prints the sparsity of the matrix in a .svg file which can be opened in a
-   * web browser. The .svg file contains squares which correspond to the
-   * entries in the matrix. An entry in the matrix which contains a non-zero
-   * value corresponds with a red square while a zero-valued entry in the
-   * matrix correspond with a white square.
+   * 在一个.svg文件中打印出矩阵的稀疏度，可以在网络浏览器中打开。该.svg文件包含与矩阵中的条目相对应的方块。矩阵中包含非零值的条目对应的是一个红色的方块，而矩阵中零值的条目对应的是一个白色方块。
+   *
    */
   void
   print_svg(std::ostream &out) const;
 
   /**
-   * Write the data of this object to a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
   save(Archive &ar, const unsigned int version) const;
 
   /**
-   * Read the data of this object from a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从一个流中读取此对象的数据，以达到序列化的目的。
+   *
    */
   template <class Archive>
   void
@@ -679,9 +608,8 @@ public:
 
 #ifdef DOXYGEN
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从流中写入和读取此对象的数据，以达到序列化的目的。
+   *
    */
   template <class Archive>
   void
@@ -695,13 +623,13 @@ public:
   // @}
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常  @{ .
+   *
    */
 
   /**
-   * The operation is only allowed after the SparsityPattern has been set up
-   * and compress() was called.
+   * 只有在设置了SparsityPattern并且调用了compress()之后才允许进行该操作。
+   *
    */
   DeclExceptionMsg(
     ExcNotCompressed,
@@ -709,7 +637,8 @@ public:
     "has been set up and compress() was called.");
 
   /**
-   * You tried to add an element to a row, but there was no space left.
+   * 你试图向某一行添加一个元素，但没有剩余的空间。
+   *
    */
   DeclException2(ExcNotEnoughSpace,
                  int,
@@ -720,8 +649,8 @@ public:
                  << "; maybe the matrix is already compressed?)");
 
   /**
-   * This operation changes the structure of the SparsityPattern and is not
-   * possible after compress() has been called.
+   * 这个操作改变了SparsityPattern的结构，在调用了compress()之后就不可能了。
+   *
    */
   DeclExceptionMsg(
     ExcMatrixIsCompressed,
@@ -733,81 +662,59 @@ public:
 
 protected:
   /**
-   * Maximum number of rows that can be stored in the #rowstart array.  Since
-   * reallocation of that array only happens if the present one is too small,
-   * but never when the size of this matrix structure shrinks, #max_dim might
-   * be larger than #rows and in this case #rowstart has more elements than
-   * are used.
+   * 可以存储在#rowstart数组中的最大行数。
+   * 因为只有在当前数组太小的情况下才会重新分配该数组，而不是当该矩阵结构的大小缩小时，#max_dim可能大于#rows，在这种情况下，#rowstart的元素比使用的要多。
+   *
    */
   size_type max_dim;
 
   /**
-   * Number of rows that this sparsity structure shall represent.
+   * 该稀疏结构应表示的行数。
+   *
    */
   size_type rows;
 
   /**
-   * Number of columns that this sparsity structure shall represent.
+   * 该稀疏结构应代表的列数。
+   *
    */
   size_type cols;
 
   /**
-   * Size of the actually allocated array #colnums. Here, the same applies as
-   * for the #rowstart array, i.e. it may be larger than the actually used
-   * part of the array.
+   * 实际分配的数组#colnums的大小。这里，与#rowstart数组的情况相同，即它可能大于数组的实际使用部分。
+   *
    */
   std::size_t max_vec_len;
 
   /**
-   * Maximum number of elements per row. This is set to the value given to the
-   * reinit() function (or to the constructor), or to the maximum row length
-   * computed from the vectors in case the more flexible constructors or
-   * reinit versions are called. Its value is more or less meaningless after
-   * compress() has been called.
+   * 每行的最大元素数。这个值被设置为给reinit()函数（或构造函数）的值，或者在调用更灵活的构造函数或reinit版本时，设置为从向量中计算出的最大行长度。在调用compress()后，它的值或多或少没有意义。
+   *
    */
   unsigned int max_row_length;
 
   /**
-   * Array which hold for each row which is the first element in #colnums
-   * belonging to that row. Note that the size of the array is one larger than
-   * the number of rows, because the last element is used for
-   * <tt>row</tt>=#rows, i.e. the row past the last used one. The value of
-   * #rowstart[#rows]} equals the index of the element past the end in
-   * #colnums; this way, we are able to write loops like <tt>for
-   * (i=rowstart[k]; i<rowstart[k+1]; ++i)</tt> also for the last row.
+   * 数组，为每一行保存属于该行的#colnums中的第一个元素。请注意，数组的大小比行数大一个，因为最后一个元素是用于<tt>row</tt>=#rows，即超过最后使用的行。#rowstart[#rows]}的值等于#colnums中超过终点的元素的索引；这样，我们就能够写出类似<tt>for
+   * (i=rowstart[k]; i<rowstart[k+1];
+   * ++i)</tt>的循环，也是为了最后一行。
+   * 请注意，分配的内存的实际大小可能比使用的区域要大。被分配的实际元素数被存储在#max_dim中。
    *
-   * Note that the actual size of the allocated memory may be larger than the
-   * region that is used. The actual number of elements that was allocated is
-   * stored in #max_dim.
    */
   std::unique_ptr<std::size_t[]> rowstart;
 
   /**
-   * Array of column numbers. In this array, we store for each non-zero
-   * element its column number. The column numbers for the elements in row
-   * <i>r</i> are stored within the index range
-   * #rowstart[<i>r</i>]...#rowstart[<i>r+1</i>]. Therefore to find out
-   * whether a given element (<i>r,c</i>) exists, we have to check whether the
-   * column number <i>c</i> exists in the above-mentioned range within this
-   * array. If it exists, say at position <i>p</i> within this array, the
-   * value of the respective element in the sparse matrix will also be at
-   * position <i>p</i> of the values array of that class.
+   * 列号的数组。在这个数组中，我们为每个非零元素存储其列号。第<i>r</i>行的元素的列号被存储在#rowstart[<i>r</i>]...#rowstart[<i>r+1</i>]的索引范围内。因此要找出一个给定的元素（<i>r,c</i>）是否存在，我们必须检查列号<i>c</i>是否存在于这个数组的上述范围内。如果它存在，比如在这个数组中的<i>p</i>位置，那么稀疏矩阵中相应元素的值也将在该类值数组的<i>p</i>位置。
+   * 在开始时，这个数组的所有元素都被设置为 @p 。
    *
-   * At the beginning, all elements of this array are set to @p -1 indicating
-   * invalid (unused) column numbers (diagonal elements are preset if
-   * optimized storage is requested, though). Now, if nonzero elements are
-   * added, one column number in the row's respective range after the other is
-   * set to the column number of the added element. When compress is called,
-   * unused elements (indicated by column numbers @p -1) are eliminated by
-   * copying the column number of subsequent rows and the column numbers
-   * within each row (with possible exception of the diagonal element) are
-   * sorted, such that finding whether an element exists and determining its
-   * position can be done by a binary search.
+   * - 表示无效的（未使用的）列号（不过如果要求优化存储，对角线元素会被预设）。现在，如果非零元素被添加，那么在行的各自范围内的一个列号在另一个之后被设置为添加元素的列号。当压缩被调用时，未使用的元素（由列号 @p 表示
+   *
+   * - ）通过复制后续行的列号来消除，每行内的列号（对角线元素可能除外）被排序，这样就可以通过二进制搜索来寻找一个元素是否存在并确定其位置。
+   *
    */
   std::unique_ptr<size_type[]> colnums;
 
   /**
-   * Store whether the compress() function was called for this object.
+   * 存储是否为这个对象调用了compress()函数。
+   *
    */
   bool compressed;
 
@@ -831,107 +738,79 @@ protected:
 };
 
 /**
- * This class stores a sparsity pattern in
- * the <a
+ * 这个类以<a
  * href="https://en.wikipedia.org/wiki/Sparse_matrix">compressed row storage
- * (CSR)</a> format to store data, and is used as the basis for the
- * SparseMatrix class.
+ * (CSR)</a>的格式来存储数据的稀疏性模式，并作为SparseMatrix类的基础。
+ * SparsityPattern的元素，对应于SparseMatrix对象可以存储非零条目的地方，被逐行存储。在每一行中，元素通常是按照列索引递增的顺序从左到右存储的；这一规则的例外情况是，如果矩阵是方形的（n_rows()
+ * ==
+ * n_columns()），那么对角线条目会被存储为每一行的第一个元素，以使应用雅可比或SSOR预处理程序等操作更快。因此，如果你在迭代器的帮助下遍历SparsityPattern的一行元素（使用
+ * SparsityPattern::begin 和 SparsityPattern::end)
+ * ，你会发现只要矩阵是方形的，每一行的元素就不是按列索引排序的（第一项是对角线，其次是按列索引排序的其他条目）。
+ * 虽然这个类构成了SparseMatrix对象的存储格式的基础，因此在建立线性系统中起着核心作用，但由于它的信息存储方式，很少被直接建立。相反，人们通常会先通过一个中间格式，例如参见
+ * step-2  教程以及文档模块  @ref Sparsity  。
+ * 你可以使用begin()、end()、begin(row)和end(row)对模式中的条目进行迭代。这些函数返回一个类型为
+ * SparsityPatternIterators::Iterator.
+ * 的迭代器，当取消引用一个迭代器 @p it, 时，你可以访问
+ * SparsityPatternIterators::Accessor,
+ * 中的成员函数，如<tt>it->column()</tt>和<tt>it->row()</tt>。
  *
- * The elements of a SparsityPattern, corresponding to the places where
- * SparseMatrix objects can store nonzero entries, are stored row-by-row.
- * Within each row, elements are generally stored left-to-right in increasing
- * column index order; the exception to this rule is that if the matrix is
- * square (n_rows() == n_columns()), then the diagonal entry is stored as the
- * first element in each row to make operations like applying a Jacobi or SSOR
- * preconditioner faster. As a consequence, if you traverse the elements of a
- * row of a SparsityPattern with the help of iterators into this object (using
- * SparsityPattern::begin and SparsityPattern::end) you will find that the
- * elements are not sorted by column index within each row whenever the matrix
- * is square (the first item will be the diagonal, followed by the other
- * entries sorted by column index).
  *
- * While this class forms the basis upon which SparseMatrix objects base
- * their storage format, and thus plays a central role in setting up linear
- * systems, it is rarely set up directly due to the way it stores its
- * information. Rather, one typically goes through an intermediate format
- * first, see for example the step-2 tutorial program as well as the
- * documentation module
- * @ref Sparsity.
- *
- * You can iterate over entries in the pattern using begin(), end(),
- * begin(row), and end(row). These functions return an iterator of type
- * SparsityPatternIterators::Iterator. When dereferencing an iterator @p it,
- * you have access to the member functions in
- * SparsityPatternIterators::Accessor, like <tt>it->column()</tt> and
- * <tt>it->row()</tt>.
  */
 class SparsityPattern : public SparsityPatternBase
 {
 public:
   /**
-   * Declare type for container size.
+   * 声明容器尺寸的类型。
+   *
    */
   using size_type = SparsityPatternBase::size_type;
 
   /**
-   * Typedef an iterator class that allows to walk over all nonzero elements
-   * of a sparsity pattern.
+   * 类型化一个迭代器类，允许在一个稀疏模式的所有非零元素上行走。
+   *
    */
   using const_iterator = SparsityPatternBase::const_iterator;
 
   /**
-   * Typedef an iterator class that allows to walk over all nonzero elements
-   * of a sparsity pattern.
+   * Typedef一个迭代器类，允许在一个稀疏模式的所有非零元素上行走。
+   * 由于该迭代器不允许修改稀疏模式，该类型与 @p
+   * const_iterator. 的类型相同。
    *
-   * Since the iterator does not allow to modify the sparsity pattern, this
-   * type is the same as that for @p const_iterator.
    */
   using iterator = SparsityPatternBase::iterator;
 
   /**
-   * Since this class has to implement only one reinit() function, we need to
-   * bring all base reinit() functions into the scope so that the compiler can
-   * find them.
+   * 由于这个类只需要实现一个reinit()函数，我们需要将所有的基础reinit()函数带入范围，以便编译器能够找到它们。
+   *
    */
   using SparsityPatternBase::reinit;
 
   /**
-   * @name Construction and setup
+   * @name  构造和设置 构造器、析构器、初始化、复制和填充对象的函数。
    *
-   * Constructors, destructor, functions initializing, copying and filling an
-   * object.
    */
   // @{
   /**
-   * Initialize the matrix empty, that is with no memory allocated. This is
-   * useful if you want such objects as member variables in other classes. You
-   * can make the structure usable by calling the reinit() function.
+   * 初始化矩阵是空的，也就是没有分配内存。如果你想让这样的对象作为其他类中的成员变量，这是很有用的。你可以通过调用reinit()函数使该结构可用。
+   *
    */
   SparsityPattern();
 
   /**
-   * Copy constructor. This constructor is only allowed to be called if the
-   * matrix structure to be copied is empty. This is so in order to prevent
-   * involuntary copies of objects for temporaries, which can use large
-   * amounts of computing time. However, copy constructors are needed if one
-   * wants to place a SparsityPattern in a container, e.g., to write such
-   * statements like <tt>v.push_back (SparsityPattern());</tt>, with
-   * <tt>v</tt> a std::vector of SparsityPattern objects.
+   * 复制构造函数。只有当要复制的矩阵结构为空时，才允许调用该构造函数。这样做是为了防止非自愿的复制对象的临时性，这可能会使用大量的计算时间。然而，如果想把SparsityPattern放在一个容器中，例如，写诸如<tt>v.push_back(SparsityPattern());</tt>这样的语句，<tt>v</tt>一个
+   * std::vector 的SparsityPattern对象，则需要复制构造函数。
+   * 通常，使用显式关键字来禁止不需要的暂存器就足够了，但这对
+   * <tt>std::vector</tt>s.
+   * 不起作用，因为无论如何复制这样的结构是没有用的，因为多个矩阵可以使用相同的稀疏度结构，所以只允许对空对象进行复制，如上所述。
    *
-   * Usually, it is sufficient to use the explicit keyword to disallow
-   * unwanted temporaries, but this does not work for <tt>std::vector</tt>s.
-   * Since copying a structure like this is not useful anyway because multiple
-   * matrices can use the same sparsity structure, copies are only allowed for
-   * empty objects, as described above.
    */
   SparsityPattern(const SparsityPattern &);
 
   /**
-   * Initialize a rectangular pattern of size <tt>m x n</tt>.
+   * 初始化一个大小为<tt>m x n</tt>的矩形图案。      @param[in]
+   * m 行的数量。    @param[in]  n 列的数量。    @param[in]
+   * max_per_row 每行的最大非零条目数。
    *
-   * @param[in] m The number of rows.
-   * @param[in] n The number of columns.
-   * @param[in] max_per_row Maximum number of nonzero entries per row.
    */
   SparsityPattern(const size_type    m,
                   const size_type    n,
@@ -939,80 +818,65 @@ public:
 
 
   /**
-   * Initialize a rectangular pattern of size <tt>m x n</tt>.
+   * 初始化一个大小为<tt>m x n</tt>的矩形图案。      @param[in]
+   * m 行的数量。    @param[in]  n 列的数量。    @param[in]
+   * row_lengths 每行的非零条目的可能数量。
+   * 这个向量的每一行必须有一个条目。
    *
-   * @param[in] m The number of rows.
-   * @param[in] n The number of columns.
-   * @param[in] row_lengths Possible number of nonzero entries for each row.
-   * This vector must have one entry for each row.
    */
   SparsityPattern(const size_type                  m,
                   const size_type                  n,
                   const std::vector<unsigned int> &row_lengths);
 
   /**
-   * Initialize a quadratic pattern of dimension <tt>m</tt> with at most
-   * <tt>max_per_row</tt> nonzero entries per row.
+   * 初始化一个维度为<tt>m</tt>的二次元模式，每行最多有<tt>max_per_row</tt>非零条目。
+   * 这个构造函数自动启用对角线元素的优化存储。为了避免这种情况，请使用分别取行号和列号的构造函数。
    *
-   * This constructor automatically enables optimized storage of diagonal
-   * elements. To avoid this, use the constructor taking row and column
-   * numbers separately.
    */
   SparsityPattern(const size_type m, const unsigned int max_per_row);
 
   /**
-   * Initialize a quadratic pattern of size <tt>m x m</tt>.
+   * 初始化一个大小为<tt>m x m</tt>的二次方格。      @param[in]
+   * m 行和列的数量。    @param[in]  row_lengths
+   * 每行的最大非零条目数。
+   * 这个向量的每一行必须有一个条目。
    *
-   * @param[in] m The number of rows and columns.
-   * @param[in] row_lengths Maximum number of nonzero entries for each row.
-   * This vector must have one entry for each row.
    */
   SparsityPattern(const size_type                  m,
                   const std::vector<unsigned int> &row_lengths);
 
   /**
-   * Make a copy with extra off-diagonals.
+   * 制作一个带有额外对角线的副本。
+   * 这样构造的对象是为了应用ILU(n)方法或其他不完全分解。
+   * 因此，在原始入口结构之外，在主对角线的两边为<tt>extra_off_diagonals</tt>侧对角线提供空间。
+   * <tt>max_per_row</tt>是该结构每行容纳非零元素的最大数量。假设这个数字足够大，以容纳<tt>original</tt>中的元素以及由这个构造函数创建的新的非对角线元素。你通常希望给出与你给<tt>original</tt>相同的数字，再加上对角线的数量乘以2。然而，如果你希望根据其他标准而不是在边对角线上为分解增加更多的非零条目，你可以给一个更大的值。
+   * 这个函数要求<tt>original</tt>指的是一个二次方矩阵结构。
+   * 它必须被压缩。这个函数完成后，矩阵结构不会被压缩。
    *
-   * This constructs objects intended for the application of the ILU(n)-method
-   * or other incomplete decompositions.  Therefore, additional to the
-   * original entry structure, space for <tt>extra_off_diagonals</tt> side-
-   * diagonals is provided on both sides of the main diagonal.
-   *
-   * <tt>max_per_row</tt> is the maximum number of nonzero elements per row
-   * which this structure is to hold. It is assumed that this number is
-   * sufficiently large to accommodate both the elements in <tt>original</tt>
-   * as well as the new off-diagonal elements created by this constructor. You
-   * will usually want to give the same number as you gave for
-   * <tt>original</tt> plus the number of side diagonals times two. You may
-   * however give a larger value if you wish to add further nonzero entries
-   * for the decomposition based on other criteria than their being on side-
-   * diagonals.
-   *
-   * This function requires that <tt>original</tt> refers to a quadratic
-   * matrix structure.  It must be compressed. The matrix structure is not
-   * compressed after this function finishes.
    */
   SparsityPattern(const SparsityPattern &original,
                   const unsigned int     max_per_row,
                   const size_type        extra_off_diagonals);
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   ~SparsityPattern() override = default;
 
   /**
-   * Copy operator. For this the same holds as for the copy constructor: it is
-   * declared, defined and fine to be called, but the latter only for empty
-   * objects.
+   * 复制操作符。对于这一点，与复制构造函数的情况相同：它被声明、定义并可以被调用，但后者只针对空对象。
+   *
    */
   SparsityPattern &
   operator=(const SparsityPattern &);
 
   /**
-   * Reallocate memory for a matrix of size @p m times @p n. The number of
-   * entries for each row is taken from the ArrayView @p row_lengths which
-   * has to give this number of each row $i=0\ldots m-1$.
+   * 为一个大小为 @p m 乘以 @p n.
+   * 的矩阵重新分配内存，每一行的条目数取自ArrayView  @p
+   * row_lengths ，它必须给出每一行的这个数字 $i=0\ldots m-1$
+   * 。
+   *
    */
   virtual void
   reinit(const size_type                      m,
@@ -1020,96 +884,59 @@ public:
          const ArrayView<const unsigned int> &row_lengths) override;
 
   /**
-   * This function compresses the sparsity structure that this object
-   * represents.  It does so by eliminating unused entries and sorting the
-   * remaining ones to allow faster access by usage of binary search
-   * algorithms. A special sorting scheme is used for the diagonal entry of
-   * quadratic matrices, which is always the first entry of each row.
+   * 这个函数压缩了这个对象所代表的稀疏结构。
+   * 它通过消除未使用的条目和对剩余的条目进行排序来实现，以便通过使用二进制搜索算法更快地访问。一个特殊的排序方案被用于二次矩阵的对角线条目，它总是每行的第一个条目。
+   * 不再需要的内存会被释放。
+   * SparseMatrix对象需要对其初始化的SparsityPattern对象进行压缩，以减少内存需求。
    *
-   * The memory which is no more needed is released.
-   *
-   * SparseMatrix objects require the SparsityPattern objects they are
-   * initialized with to be compressed, to reduce memory requirements.
    */
   void
   compress();
 
 
   /**
-   * This function can be used as a replacement for reinit(), subsequent calls
-   * to add() and a final call to close() if you know exactly in advance the
-   * entries that will form the matrix sparsity pattern.
-   *
-   * The first two parameters determine the size of the matrix. For the two
-   * last ones, note that a sparse matrix can be described by a sequence of
-   * rows, each of which is represented by a sequence of pairs of column
-   * indices and values. In the present context, the begin() and end()
-   * parameters designate iterators (of forward iterator type) into a
-   * container, one representing one row. The distance between begin() and
-   * end() should therefore be equal to n_rows(). These iterators may be
-   * iterators of <tt>std::vector</tt>, <tt>std::list</tt>, pointers into a
-   * C-style array, or any other iterator satisfying the requirements of a
-   * forward iterator. The objects pointed to by these iterators (i.e. what we
-   * get after applying <tt>operator*</tt> or <tt>operator-></tt> to one of
-   * these iterators) must be a container itself that provides functions
-   * <tt>begin</tt> and <tt>end</tt> designating a range of iterators that
-   * describe the contents of one line. Dereferencing these inner iterators
-   * must either yield a pair of an unsigned integer as column index and a
-   * value of arbitrary type (such a type would be used if we wanted to
-   * describe a sparse matrix with one such object), or simply an unsigned
-   * integer (of we only wanted to describe a sparsity pattern). The function
-   * is able to determine itself whether an unsigned integer or a pair is what
-   * we get after dereferencing the inner iterators, through some template
-   * magic.
-   *
-   * While the order of the outer iterators denotes the different rows of the
-   * matrix, the order of the inner iterator denoting the columns does not
-   * matter, as they are sorted internal to this function anyway.
-   *
-   * Since that all sounds very complicated, consider the following example
-   * code, which may be used to fill a sparsity pattern:
+   * 如果你事先确切地知道将形成矩阵稀疏模式的条目，这个函数可以用来替代reinit()、对add()的后续调用和对close()的最后调用。
+   * 前两个参数决定了矩阵的大小。对于最后两个，请注意稀疏矩阵可以由一连串的行来描述，每一个行都由一连串的列索引和值来表示。在这里，begin()和end()参数指定了进入一个容器的迭代器（正向迭代器类型），一个代表一行。因此，begin()和end()之间的距离应该等于n_rows()。这些迭代器可以是
+   * <tt>std::vector</tt>,   <tt>std::list</tt>,
+   * 指向C风格数组的迭代器，或者任何其他满足正向迭代器要求的迭代器。这些迭代器所指向的对象（即我们在对这些迭代器之一应用<tt>operator*</tt>或<tt>operator-></tt>后得到的东西）必须是一个容器本身，它提供了<tt>begin</tt>和<tt>end</tt>函数，指定了描述一行内容的迭代器的范围。解除这些内部迭代器必须产生一对作为列索引的无符号整数和一个任意类型的值（如果我们想用一个这样的对象来描述一个稀疏矩阵，就会使用这样的类型），或者只是一个无符号整数（如果我们只想描述一个稀疏的模式）。该函数能够通过一些模板魔法来确定我们在解读内部迭代器后得到的是无符号整数还是一对整数。
+   * 虽然外迭代器的顺序表示矩阵的不同行，但表示列的内迭代器的顺序并不重要，因为无论如何它们在这个函数的内部是被排序的。
+   * 由于这一切听起来非常复杂，请考虑下面的示例代码，它可能被用来填补一个稀疏模式。
    * @code
    * std::vector<std::vector<unsigned int> > column_indices (n_rows);
    * for (unsigned int row=0; row<n_rows; ++row)
-   *         // generate necessary columns in this row
-   *   fill_row (column_indices[row]);
+   *       // generate necessary columns in this row
+   * fill_row (column_indices[row]);
    *
    * sparsity.copy_from (n_rows, n_cols,
-   *                     column_indices.begin(),
-   *                     column_indices.end());
+   *                   column_indices.begin(),
+   *                   column_indices.end());
    * @endcode
-   *
-   * Note that this example works since the iterators dereferenced yield
-   * containers with functions <tt>begin</tt> and <tt>end</tt> (namely
-   * <tt>std::vector</tt>s), and the inner iterators dereferenced yield
-   * unsigned integers as column indices. Note that we could have replaced
-   * each of the two <tt>std::vector</tt> occurrences by <tt>std::list</tt>,
-   * and the inner one by <tt>std::set</tt> as well.
-   *
-   * Another example would be as follows, where we initialize a whole matrix,
-   * not only a sparsity pattern:
+   * 注意这个例子是有效的，因为被解读的迭代器产生的容器有<tt>begin</tt>和<tt>end</tt>函数（即
+   * <tt>std::vector</tt>s),
+   * ，被解读的内部迭代器产生无符号整数作为列索引。请注意，我们可以用
+   * <tt>std::list</tt>, 替换两个 <tt>std::vector</tt>
+   * 的出现，也可以用 <tt>std::set</tt> 替换内部的。
+   * 另一个例子如下，我们初始化整个矩阵，而不仅仅是一个稀疏模式。
    * @code
    * std::vector<std::map<unsigned int,double> > entries (n_rows);
    * for (unsigned int row=0; row<n_rows; ++row)
-   *         // generate necessary pairs of columns
-   *         // and corresponding values in this row
-   *   fill_row (entries[row]);
+   *       // generate necessary pairs of columns
+   *       // and corresponding values in this row
+   * fill_row (entries[row]);
    *
    * sparsity.copy_from (n_rows, n_cols,
-   *                     column_indices.begin(),
-   *                     column_indices.end());
+   *                   column_indices.begin(),
+   *                   column_indices.end());
    * matrix.reinit (sparsity);
    * matrix.copy_from (column_indices.begin(),
-   *                   column_indices.end());
+   *                 column_indices.end());
    * @endcode
+   * 这个例子是可行的，因为解读内部类型的迭代器会产生一对无符号整数和一个值，我们把其中的第一个作为列索引。如前所述，外部的
+   * <tt>std::vector</tt> 可以用 <tt>std::list</tt>, 代替，内部的
+   * <tt>std::map<unsigned  int,double></tt>可以用
+   * <tt>std::vector<std::pair<unsigned
+   * int,double></tt>代替，或者用一个列表或一组这样的对，因为它们都返回指向这种对的迭代器。
    *
-   * This example works because dereferencing iterators of the inner type
-   * yields a pair of unsigned integers and a value, the first of which we
-   * take as column index. As previously, the outer <tt>std::vector</tt> could
-   * be replaced by <tt>std::list</tt>, and the inner <tt>std::map<unsigned
-   * int,double></tt> could be replaced by <tt>std::vector<std::pair<unsigned
-   * int,double> ></tt>, or a list or set of such pairs, as they all return
-   * iterators that point to such pairs.
    */
   template <typename ForwardIterator>
   void
@@ -1119,42 +946,36 @@ public:
             const ForwardIterator end);
 
   /**
-   * Copy data from a DynamicSparsityPattern. Previous content of this object
-   * is lost, and the sparsity pattern is in compressed mode afterwards.
+   * 从一个DynamicSparsityPattern中复制数据。这个对象以前的内容会丢失，之后的稀疏模式会处于压缩模式。
+   *
    */
   void
   copy_from(const DynamicSparsityPattern &dsp);
 
   /**
-   * Copy data from a SparsityPattern. Previous content of this object is
-   * lost, and the sparsity pattern is in compressed mode afterwards.
+   * 从一个SparsityPattern复制数据。这个对象以前的内容会丢失，而之后的稀疏模式处于压缩模式。
+   *
    */
   void
   copy_from(const SparsityPattern &sp);
 
   /**
-   * Take a full matrix and use its nonzero entries to generate a sparse
-   * matrix entry pattern for this object.
+   * 取一个完整的矩阵并使用其非零条目为这个对象生成一个稀疏矩阵条目模式。
+   * 这个对象以前的内容会丢失，之后的稀疏模式处于压缩模式。
+   * 一旦你用这个函数建立了一个稀疏模式，你可能想给它附加一个SparseMatrix对象。然后可以使用以FullMatrix对象为参数的
+   * SparseMatrix::copy_from()
+   * 版本，将原`matrix`对象复制到这个SparseMatrix对象中。通过这个过程，你可以将一个FullMatrix转换为一个SparseMatrix。
    *
-   * Previous content of this object is lost, and the sparsity pattern is in
-   * compressed mode afterwards.
-   *
-   * Once you have built a sparsity pattern with this function, you
-   * probably want to attach a SparseMatrix object to it. The original
-   * `matrix` object can then be copied into this SparseMatrix object
-   * using the version of SparseMatrix::copy_from() that takes a
-   * FullMatrix object as argument. Through this procedure, you can
-   * convert a FullMatrix into a SparseMatrix.
    */
   template <typename number>
   void
   copy_from(const FullMatrix<number> &matrix);
 
   /**
-   * Add several nonzero entries to the specified matrix row.  This function
-   * may only be called for non-compressed sparsity patterns.
+   * 在指定的矩阵行中添加几个非零条目。
+   * 这个函数只能用于非压缩的稀疏模式。
+   * 如果其中一些条目已经存在，则不会发生任何坏事。
    *
-   * If some of the entries already exist, nothing bad happens.
    */
   template <typename ForwardIterator>
   void
@@ -1167,113 +988,88 @@ public:
 
 
   /**
-   * @name Querying information
+   * @name  查询信息
+   *
    */
   // @{
   /**
-   * Test for equality of two SparsityPatterns.
+   * 测试两个SparsityPatterns是否相等。
+   *
    */
   bool
   operator==(const SparsityPattern &) const;
 
   /**
-   * Return whether this object stores only those entries that have been added
-   * explicitly, or if the sparsity pattern contains elements that have been
-   * added through other means (implicitly) while building it. For the current
-   * class, the result is false if and only if it is square because it then
-   * unconditionally stores the diagonal entries whether they have been added
-   * explicitly or not.
+   * 返回这个对象是否只存储那些显式添加的条目，或者稀疏模式是否包含在构建它时通过其他方式（隐式）添加的元素。对于当前的类，当且仅当它是正方形时，结果是假的，因为此时它无条件地存储对角线条目，无论它们是否被显式添加。
+   * 这个函数的主要作用是在几种稀疏模式可以作为模板参数传递的情况下描述当前类。
    *
-   * This function mainly serves the purpose of describing the current class
-   * in cases where several kinds of sparsity patterns can be passed as
-   * template arguments.
    */
   bool
   stores_only_added_elements() const;
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object. See MemoryConsumption.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。参见MemoryConsumption。
+   *
    */
   std::size_t
   memory_consumption() const;
 
   // @}
   /**
-   * @name Accessing entries
+   * @name  访问条目
+   *
    */
   // @{
   /**
-   * Return the index of the matrix element with row number <tt>i</tt> and
-   * column number <tt>j</tt>. If the matrix element is not a nonzero one,
-   * return SparsityPattern::invalid_entry.
+   * 返回行号为<tt>i</tt>、列号为<tt>j</tt>的矩阵元素的索引。如果矩阵元素不是非零，则返回
+   * SparsityPattern::invalid_entry.  这个函数通常由
+   * SparseMatrix::operator()().
+   * 它可能只被用于压缩稀疏模式，因为在这种情况下，搜索条目是否存在可以用二进制排序算法相当快地完成，因为列号被排序了。
+   * 如果<tt>m</tt>是<tt>row</tt>中的条目数，那么如果稀疏模式被压缩，这个函数的复杂度是<i>log(m)</i>
+   * 。
+   * @note
+   * 这个函数并不便宜，因为它必须在给定行<tt>i</tt>的所有元素中进行搜索，以寻找索引<tt>j</tt>是否存在。因此，在你想循环查看这个稀疏模式（或与之相关的稀疏矩阵）的所有非零元素或单一行的非零元素的情况下，它比必要的要昂贵。在这种情况下，使用遍历稀疏模式或稀疏矩阵的元素的迭代器会更有效。
    *
-   * This function is usually called by the SparseMatrix::operator()(). It may
-   * only be called for compressed sparsity patterns, since in this case
-   * searching whether the entry exists can be done quite fast with a binary
-   * sort algorithm because the column numbers are sorted.
-   *
-   * If <tt>m</tt> is the number of entries in <tt>row</tt>, then the
-   * complexity of this function is <i>log(m)</i> if the sparsity pattern is
-   * compressed.
-   *
-   * @note This function is not cheap since it has to search through all of
-   * the elements of the given row <tt>i</tt> to find whether index <tt>j</tt>
-   * exists. Thus, it is more expensive than necessary in cases where you want
-   * to loop over all of the nonzero elements of this sparsity pattern (or of
-   * a sparse matrix associated with it) or of a single row. In such cases, it
-   * is more efficient to use iterators over the elements of the sparsity
-   * pattern or of the sparse matrix.
    */
   size_type
   operator()(const size_type i, const size_type j) const;
 
   // @}
   /**
-   * @name Input/Output
+   * @name  输入/输出
+   *
    */
   // @{
 
   /**
-   * Write the data of this object en bloc to a file. This is done in a binary
-   * mode, so the output is neither readable by humans nor (probably) by other
-   * computers using a different operating system or number format.
+   * 将此对象的数据全部写到文件中。这是以二进制模式进行的，所以输出的数据既不能被人类阅读，也不能（可能）被其他使用不同操作系统或数字格式的计算机阅读。
+   * 这个函数的目的是，如果你的内存不足，想在不同的程序之间进行交流，或者允许对象在程序的不同运行中持续存在，你可以把矩阵和稀疏模式换掉。
    *
-   * The purpose of this function is that you can swap out matrices and
-   * sparsity pattern if you are short of memory, want to communicate between
-   * different programs, or allow objects to be persistent across different
-   * runs of the program.
    */
   void
   block_write(std::ostream &out) const;
 
   /**
-   * Read data that has previously been written by block_write() from a file.
-   * This is done using the inverse operations to the above function, so it is
-   * reasonably fast because the bitstream is not interpreted except for a few
-   * numbers up front.
+   * 从文件中读取先前由block_write()写入的数据。
+   * 这是用上述函数的逆运算来完成的，所以它的速度相当快，因为除了前面的几个数字，比特流是不被解释的。
+   * 在这个操作中，对象被调整了大小，所有以前的内容都被丢失。
+   * 一个原始形式的错误检查被执行，它将识别最直白的尝试，将一些数据解释为按位数存储到文件的向量，但不会超过。
    *
-   * The object is resized on this operation, and all previous contents are
-   * lost.
-   *
-   * A primitive form of error checking is performed which will recognize the
-   * bluntest attempts to interpret some data as a vector stored bitwise to a
-   * file, but not more.
    */
   void
   block_read(std::istream &in);
 
   /**
-   * Write the data of this object to a stream for the purpose of
-   * serialization
+   * 为了序列化的目的，将此对象的数据写入一个流中
+   *
    */
   template <class Archive>
   void
   save(Archive &ar, const unsigned int version) const;
 
   /**
-   * Read the data of this object from a stream for the purpose of
-   * serialization
+   * 为了序列化的目的，从一个流中读取此对象的数据
+   *
    */
   template <class Archive>
   void
@@ -1281,8 +1077,8 @@ public:
 
 #ifdef DOXYGEN
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization.
+   * 为了序列化的目的，从一个流中写和读这个对象的数据。
+   *
    */
   template <class Archive>
   void
@@ -1296,11 +1092,12 @@ public:
   // @}
 
   /**
-   * @addtogroup Exceptions
-   * @{
+   * @addtogroup  异常情况  @{
+   *
    */
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException2(ExcIteratorRange,
                  int,
@@ -1308,7 +1105,8 @@ public:
                  << "The iterators denote a range of " << arg1
                  << " elements, but the given number of rows was " << arg2);
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException1(ExcInvalidNumberOfPartitions,
                  int,
@@ -1317,7 +1115,8 @@ public:
   //@}
 private:
   /**
-   * Is special treatment of diagonals enabled?
+   * 是否启用对角线的特殊处理？
+   *
    */
   bool store_diagonal_first_in_row;
 
@@ -1341,8 +1140,8 @@ private:
 };
 
 
-/*@}*/
-/*---------------------- Inline functions -----------------------------------*/
+ /*@}*/ 
+ /*---------------------- Inline functions -----------------------------------*/ 
 
 #ifndef DOXYGEN
 
@@ -1671,7 +1470,8 @@ namespace internal
   namespace SparsityPatternTools
   {
     /**
-     * Declare type for container size.
+     * 声明容器大小的类型。
+     *
      */
     using size_type = types::global_dof_index;
 
@@ -1758,3 +1558,5 @@ SparsityPattern::copy_from(const size_type       n_rows,
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

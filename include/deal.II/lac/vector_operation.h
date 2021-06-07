@@ -1,3 +1,4 @@
+//include/deal.II-translator/lac/vector_operation_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2017 - 2018 by the deal.II authors
@@ -20,50 +21,55 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*! @addtogroup Vectors
- *@{
- */
+/*!   @addtogroup  矢量  @{  ．
+
+ 
+* */
 
 /**
- * This enum keeps track of the current operation in parallel linear algebra
- * objects like Vectors and Matrices.
+ * 这个枚举记录了像向量和矩阵这样的并行线性代数对象中的当前操作。
+ * 它被用于各种compress()函数中。为了兼容，它们也存在于串行代码中，在那里是空的。
+ * 参见 @ref GlossCompress  "压缩分布式对象 "
+ * 以获得更多信息。
  *
- * It is used in the various compress() functions. They also exist in serial
- * codes for compatibility and are empty there.
  *
- * See
- * @ref GlossCompress "Compressing distributed objects"
- * for more information.
  */
 struct VectorOperation
 {
   enum values
   {
     /**
-     * The current operation is unknown.
+     * 当前的操作是未知的。
+     *
      */
     unknown,
     /**
-     * The current operation is an insertion.
+     * 当前操作是一个插入。
+     *
      */
     insert,
     /**
-     * The current operation is an addition.
+     * 当前的操作是一个加法。
+     *
      */
     add,
     /**
-     * The current operation is a minimization.
+     * 当前的操作是一个最小化操作。
+     *
      */
     min,
     /**
-     * The current operation is a maximization.
+     * 当前的操作是一个最大化的操作。
+     *
      */
     max
   };
 };
 
-/*@}*/
+ /*@}*/ 
 
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

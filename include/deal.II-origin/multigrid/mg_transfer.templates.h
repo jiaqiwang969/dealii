@@ -1,4 +1,3 @@
-//include/deal.II-translator/multigrid/mg_transfer.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2003 - 2021 by the deal.II authors
@@ -50,10 +49,10 @@ namespace internal
   namespace MGTransfer
   {
     /**
-     * 将所有层次的向量调整到正确的大小。
-     * 在这里，我们只是计算每一层的自由度数，并 @p reinit
-     * 每一层的向量到这个长度。为了与下一个函数兼容，这里加入了target_component，但没有使用。
-     *
+     * Adjust vectors on all levels to correct size.  Here, we just count the
+     * numbers of degrees of freedom on each level and @p reinit each level
+     * vector to this length. For compatibility reasons with the next function
+     * the target_component is added here but is not used.
      */
     template <int dim, typename number, int spacedim>
     void
@@ -69,11 +68,10 @@ namespace internal
     }
 
     /**
-     * 将所有级别的向量调整到正确的大小。
-     * 在这里，我们只是计算每一层的自由度数，并 @p reinit
-     * 每一层的向量到这个长度。target_component被交给
-     * MGTools::count_dofs_per_block. 见那里的文件。
-     *
+     * Adjust vectors on all levels to correct size.  Here, we just count the
+     * numbers of degrees of freedom on each level and @p reinit each level
+     * vector to this length. The target_component is handed to
+     * MGTools::count_dofs_per_block. See for documentation there.
      */
     template <int dim, typename number, int spacedim>
     void
@@ -111,10 +109,9 @@ namespace internal
 
 #ifdef DEAL_II_WITH_TRILINOS
     /**
-     * 将所有级别的向量调整到正确的大小。
-     * 在这里，我们只是计算每一层的自由度数量，并 @p
-     * reinit 每一层的向量到这个长度。
-     *
+     * Adjust vectors on all levels to correct size.  Here, we just count the
+     * numbers of degrees of freedom on each level and @p reinit each level
+     * vector to this length.
      */
     template <int dim, int spacedim>
     void
@@ -140,10 +137,9 @@ namespace internal
 
 #ifdef DEAL_II_WITH_PETSC
     /**
-     * 调整所有级别的向量到正确的大小。
-     * 这里，我们只是计算每一级的自由度数，并 @p reinit
-     * 每一级的向量到这个长度。
-     *
+     * Adjust vectors on all levels to correct size.  Here, we just count the
+     * numbers of degrees of freedom on each level and @p reinit each level
+     * vector to this length.
      */
     template <int dim, int spacedim>
     void
@@ -171,7 +167,7 @@ namespace internal
 
 
 
- /* ------------------ MGLevelGlobalTransfer<VectorType> ----------------- */ 
+/* ------------------ MGLevelGlobalTransfer<VectorType> ----------------- */
 
 
 namespace internal
@@ -396,8 +392,8 @@ MGLevelGlobalTransfer<VectorType>::assert_built(
 }
 
 
- /* --------- MGLevelGlobalTransfer<LinearAlgebra::distributed::Vector> -------
- */ 
+/* --------- MGLevelGlobalTransfer<LinearAlgebra::distributed::Vector> -------
+ */
 
 template <typename Number>
 template <int dim, typename Number2, int spacedim>
@@ -664,5 +660,3 @@ MGLevelGlobalTransfer<LinearAlgebra::distributed::Vector<Number>>::assert_built(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

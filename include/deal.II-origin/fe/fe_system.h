@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_system_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2021 by the deal.II authors
@@ -18,7 +17,7 @@
 #  define dealii_fe_system_h
 
 
- /*----------------------------   fe_system.h     ---------------------------*/ 
+/*----------------------------   fe_system.h     ---------------------------*/
 
 
 #  include <deal.II/base/config.h>
@@ -43,88 +42,125 @@ class FE_Enriched;
 #  endif
 
 /**
- * 这个类提供了一个接口，将几个元素组合成一个，矢量值的元素。作为例子，考虑用于解决斯托克斯和纳维-斯托克斯方程的泰勒-霍德元素。在这里，速度（其分量与域的维数
- * $d$ 一样多）用 $Q_2$ 元素离散，压力用 $Q_1$
- * 元素。在数学上，耦合问题的有限元空间通常被写成 $V_h
- * = Q_2^d \times Q_1$ ，其中指数化被理解为空间的张量乘积
- *
- * - 即在2d中，我们有 $V_h=Q_2\times Q_2\times Q_1$
- *
- * - 而张量积导致向量，其中向量值函数空间的每个分量对应于 $Q_2$ 或 $Q_1$ 空间中的一个标量函数。使用FESystem类，这个空间的创建方法是
- *
+ * This class provides an interface to group several elements together into
+ * one, vector-valued element. As example, consider the Taylor-Hood element
+ * that is used for the solution of the Stokes and Navier-Stokes equations:
+ * There, the velocity (of which there are as many components as the dimension
+ * $d$ of the domain) is discretized with $Q_2$ elements and the pressure with
+ * $Q_1$ elements. Mathematically, the finite element space for the coupled
+ * problem is then often written as $V_h = Q_2^d \times Q_1$ where the
+ * exponentiation is understood to be the tensor product of spaces -- i.e.,
+ * in 2d, we have $V_h=Q_2\times Q_2\times Q_1$ -- and tensor products
+ * lead to vectors where each component of the vector-valued function
+ * space corresponds to a scalar function in one of the $Q_2$ or $Q_1$
+ * spaces. Using the FESystem class, this space is created using
  * @code
- * FESystem<dim> taylor_hood_fe (FE_Q<dim>(2)^dim,   // velocity components
- *                               FE_Q<dim>(1));      // pressure component
+ *   FESystem<dim> taylor_hood_fe (FE_Q<dim>(2)^dim,   // velocity components
+ *                                 FE_Q<dim>(1));      // pressure component
  * @endcode
- * 在这里创建这个元素相当于在FESystem构造函数的参数列表的第一行中对
- * $Q_2$
- * 元素进行张量乘法，然后通过另一个张量乘法与第二行中的元素进行串联。例如，在
- * step-22 的教程程序中就使用了这种构造。 同样， step-8
- * 解决了一个弹性方程，我们需要解决一个固体物体的位移。如果域是
- * $d$ -维的，位移又有 $d$
- * 分量，因此，组合有限元是用以下方法创建的
+ * The creation of this element here corresponds to taking tensor-product
+ * powers of the $Q_2$ element in the first line of the list of arguments
+ * to the FESystem constructor, and then concatenation via another tensor
+ * product with the element in the second line. This kind of construction
+ * is used, for example, in the step-22 tutorial program.
  *
+ * Similarly, step-8 solves an elasticity equation where we need to solve
+ * for the displacement of a solid object. The displacement again has
+ * $d$ components if the domain is $d$-dimensional, and so the combined
+ * finite element is created using
  * @code
- * FESystem<dim> displacement_fe (FE_Q<dim>(1)^dim);
+ *   FESystem<dim> displacement_fe (FE_Q<dim>(1)^dim);
  * @endcode
- * 现在组合元素的每个（矢量）分量都对应于一个 $Q_1$
- * 空间。
- * 对外界来说，FESystem对象看起来就像一个普通的有限元对象，它们只是碰巧由其他几个可能是不同类型的有限元组成。这些
- * "基元 "本身可以有多个分量，特别是也可以是矢量值的。
+ * where now each (vector) component of the combined element corresponds to
+ * a $Q_1$ space.
  *
- * - 例如，如果其中一个基元是一个FESystem本身（也见下文）。在命名空间 FETools::Compositing, 的文档中给出了一个使用 "张量乘积 "策略的例子。
- * %矢量值元素在一些教程程序中讨论，例如 step-8
- * ,  step-20  ,  step-21  ,  step-22  ，特别是在 @ref vector_valued
- * 模块中。 @dealiiVideoLecture{19,20}   <h3>FESystem, components and
- * blocks</h3>
- * 一个FESystem，除了最微不足道的情况，会产生一个有多个分量的向量值的有限元。分量的数量n_components()对应于PDE系统中解函数的维度，相应地也对应于你的PDE系统的方程数量。例如， step-20 中涉及的混合拉普拉斯系统在 $d$ 空间维度上有 $d+1$ 个分量：标量压力和速度矢量的 $d$ 分量。同样， step-8 中涉及的弹性方程在 $d$ 空间维度上有 $d$ 分量。一般来说，FES系统元素的分量数是所有基础元素的分量累积数乘以其倍数。在 @ref GlossComponent 的 "元件术语条目 "
- * 中也给出了更多关于元件的信息。
- * 虽然从偏微分方程的角度来看，分量的概念很重要，但在有限元方面看起来有点不同，因为不仅是FESystem，还有像FE_RaviartThomas这样的矢量值元素，都有几个分量。这里需要的概念是一个 @ref GlossBlock "块"
- * 。每个块包含了与FESystem的单个基元相关的自由度集合，其中具有倍数的基元要计算多次。这些块通常使用
- * DoFHandler::block_info().
- * 中的信息来处理，一个FESystem对象的块数只是所有基元的倍数之和，由n_blocks()给出。
- * 例如，用于三维斯托克斯问题的Taylor-Hood元素的FESystem可以用以下代码建立
+ * To the outside world, FESystem objects look just like a usual
+ * finite element object, they just happen to be composed of several other
+ * finite elements that are possibly of different type. These "base elements"
+ * can themselves have multiple components and, in particular, could
+ * also be vector-valued -- for example, if one of the base elements
+ * is an FESystem itself (see also below). An example is given in the
+ * documentation of namespace FETools::Compositing, when using the
+ * "tensor product" strategy.
  *
+ * %Vector valued elements are discussed in a number of
+ * tutorial programs, for example step-8, step-20, step-21, step-22, and in
+ * particular in the
+ * @ref vector_valued
+ * module.
+ *
+ * @dealiiVideoLecture{19,20}
+ *
+ *
+ * <h3>FESystem, components and blocks</h3>
+ *
+ * An FESystem, except in the most trivial case, produces a vector-valued
+ * finite element with several components. The number of components
+ * n_components() corresponds to the dimension of the solution function in the
+ * PDE system, and correspondingly also to the number of equations your PDE
+ * system has. For example, the mixed Laplace system covered in step-20 has
+ * $d+1$ components in $d$ space dimensions: the scalar pressure and the $d$
+ * components of the velocity vector. Similarly, the elasticity equation
+ * covered in step-8 has $d$ components in $d$ space dimensions. In general,
+ * the number of components of a FESystem element is the accumulated number of
+ * components of all base elements times their multiplicities. A bit more on
+ * components is also given in the
+ * @ref GlossComponent "glossary entry on components".
+ *
+ * While the concept of components is important from the viewpoint of a
+ * partial differential equation, the finite element side looks a bit
+ * different Since not only FESystem, but also vector-valued elements like
+ * FE_RaviartThomas, have several components. The concept needed here is a
+ * @ref GlossBlock "block".
+ * Each block encompasses the set of degrees of freedom associated with a
+ * single base element of an FESystem, where base elements with multiplicities
+ * count multiple times. These blocks are usually addressed using the
+ * information in DoFHandler::block_info(). The number of blocks of a FESystem
+ * object is simply the sum of all multiplicities of base elements and is
+ * given by n_blocks().
+ *
+ * For example, the FESystem for the Taylor-Hood element for the
+ * three-dimensional Stokes problem can be built using the code
  * @code
  * const FE_Q<3> u(2);
  * const FE_Q<3> p(1);
  * FESystem<3> sys1(u,3, p,1);
  * @endcode
- * 或者更简洁地通过
- *
+ * or more concisely via
  * @code
  * FESystem<3> sys1(FE_Q<3>(2),3,
- *                FE_Q<3>(1),1);
+ *                  FE_Q<3>(1),1);
  * @endcode
- * 甚至更短（模仿数学符号，我们正在处理一个 $Q_2^3 \times
- * Q_1$ 元素）。
- *
+ * or even shorter (mimicking the mathematical notation that we are dealing
+ * with a $Q_2^3 \times Q_1$ element):
  * @code
  * FESystem<3> sys1(FE_Q<3>(2)^3,
- *                FE_Q<3>(1));
+ *                  FE_Q<3>(1));
  * @endcode
  *
- * 这个例子创建了一个FES系统 @p sys1
- * ，有四个元件，三个是速度元件，一个是压力元件，还有四个块，每个速度元件的自由度和压力都在一个单独的块中。由于第一个基元重复了三次，所以块的数量为四。
- * 另一方面，Taylor-Hood元素也可以用以下方法构造
+ * This example creates an FESystem @p sys1 with four components, three for
+ * the velocity components and one for the pressure, and also four blocks with
+ * the degrees of freedom of each of the velocity components and the pressure
+ * in a separate block each. The number of blocks is four since the first base
+ * element is repeated three times.
  *
+ * On the other hand, a Taylor-Hood element can also be constructed using
  *
  * @code
  * FESystem<3> U(u,3);
  * FESystem<3> sys2(U, p);
  * @endcode
  *
- * 这里创建的FES系统 @p sys2
- * 具有相同的四个部件，但自由度只分布在两个块中。第一个块有
- * @p U,
- * 的所有速度自由度，而第二个块包含压力自由度。请注意，虽然
- * @p U 本身有3个块，但FES系统 @p sys2 并不试图将 @p U
- * 分割成其基本元素，而是将其视为自己的一个块。通过像
- * @p sys2,
- * 那样先将所有速度封锁在一个系统中，我们实现了相同的块结构，如果我们不使用
- * $Q_2^3$
- * 元素来表示速度，而是使用矢量值的基本元素，例如使用达尔西定律的混合离散化，就会产生相同的块结构。
- *
+ * The FESystem @p sys2 created here has the same four components, but the
+ * degrees of freedom are distributed into only two blocks. The first block
+ * has all velocity degrees of freedom from @p U, while the second block
+ * contains the pressure degrees of freedom. Note that while @p U itself has 3
+ * blocks, the FESystem @p sys2 does not attempt to split @p U into its base
+ * elements but considers it a block of its own. By blocking all velocities
+ * into one system first as in @p sys2, we achieve the same block structure
+ * that would be generated if instead of using a $Q_2^3$ element for the
+ * velocities we had used vector-valued base elements, for instance like using
+ * a mixed discretization of Darcy's law using
  *
  * @code
  * FE_RaviartThomas<3> u(1);
@@ -132,23 +168,47 @@ class FE_Enriched;
  * FESystem<3> sys3(u, p);
  * @endcode
  *
- * 这个例子也产生了一个有四个元件的系统，但只有两个块。
- * 在大多数情况下，组成元素的行为就像它是一个普通元素一样。它只是比大多数
- * "普通
- * "元素有更多的自由度。然而，底层结构在限制、延长和界面约束矩阵中是可见的，它们并不与基础元素的自由度相联系。例如，连续性要求是对子对象的形状函数分别施加的；不同子对象的形状函数之间不存在要求，即在上面的例子中：在一个悬挂的节点上，
- * @p u 速度的各自值只与 @p u
- * 的顶点和这个顶点旁边的大单元上的线耦合，但与这个或其他单元的
- * @p v 和 @p w 没有互动。
+ * This example also produces a system with four components, but only two
+ * blocks.
  *
- *  <h3>Internal information on numbering of degrees of freedom</h3>
- * 自由度的总体编号如下：对于每个子对象（顶点、线、四边形或六边形），自由度的编号是这样的：我们首先运行所有的子元素，然后再转向这个子对象的下一个自由度或下一个子对象。例如，对于一个在一个空间维度上有三个分量的元素，前两个分量是立方滞后元素，第三个是二次滞后元素，系统<tt>s=(u,v,p)</tt>的排序是。
- * <ul>   <li>  第一个顶点。<tt>u0, v0, p0 = s0, s1, s2</tt>  <li>  第二个顶点。<tt>u1, v1, p1 = s3, s4, s5</tt>  <li>  线上第一个分量。<tt>u2, u3 = s4, s5</tt>  <li>  线上的第二个分量。<tt>v2, v3 = s6, s7</tt>。  <li>  线路上的第三个分量。<tt>p2 = s8</tt>。  </ul>  也就是说，你不应该在你的应用程序中依赖这个编号，因为这些%的内部成员将来可能会改变。而是使用函数system_to_component_index()和component_to_system_index()。
- * 关于模板参数<tt>spacedim</tt>的更多信息，请参见Triangulation的文档。
+ * In most cases, the composed element behaves as if it were a usual element.
+ * It just has more degrees of freedom than most of the "common" elements.
+ * However the underlying structure is visible in the restriction,
+ * prolongation and interface constraint matrices, which do not couple the
+ * degrees of freedom of the base elements. E.g. the continuity requirement is
+ * imposed for the shape functions of the subobjects separately; no
+ * requirement exist between shape functions of different subobjects, i.e. in
+ * the above example: on a hanging node, the respective value of the @p u
+ * velocity is only coupled to @p u at the vertices and the line on the larger
+ * cell next to this vertex, but there is no interaction with @p v and @p w of
+ * this or the other cell.
  *
+ *
+ * <h3>Internal information on numbering of degrees of freedom</h3>
+ *
+ * The overall numbering of degrees of freedom is as follows: for each
+ * subobject (vertex, line, quad, or hex), the degrees of freedom are numbered
+ * such that we run over all subelements first, before turning for the next
+ * dof on this subobject or for the next subobject. For example, for an
+ * element of three components in one space dimension, the first two
+ * components being cubic lagrange elements and the third being a quadratic
+ * lagrange element, the ordering for the system <tt>s=(u,v,p)</tt> is:
+ *
+ * <ul>
+ * <li> First vertex: <tt>u0, v0, p0 = s0, s1, s2</tt>
+ * <li> Second vertex: <tt>u1, v1, p1 = s3, s4, s5</tt>
+ * <li> First component on the line: <tt>u2, u3 = s4, s5</tt>
+ * <li> Second component on the line: <tt>v2, v3 = s6, s7</tt>.
+ * <li> Third component on the line: <tt>p2 = s8</tt>.
+ * </ul>
+ * That said, you should not rely on this numbering in your application as
+ * these %internals might change in future. Rather use the functions
+ * system_to_component_index() and component_to_system_index().
+ *
+ * For more information on the template parameter <tt>spacedim</tt> see the
+ * documentation of Triangulation.
  *
  * @ingroup febase fe vector_valued
- *
- *
  *
  */
 template <int dim, int spacedim = dim>
@@ -156,33 +216,49 @@ class FESystem : public FiniteElement<dim, spacedim>
 {
 public:
   /**
-   * 删除默认构造函数，以便在没有提供FiniteElement的情况下，`FESystem(FEPairs
-   * &&... fe_pairs)`不会被意外选中。
-   *
+   * Delete default constructor so that `FESystem(FEPairs &&... fe_pairs)` is
+   * not accidentally picked if no FiniteElement is provided.
    */
   FESystem() = delete;
 
   /**
-   * 构造函数。取一个有限元和你想用这个类来组合的元素数量。
-   * 这个对象 @p fe
-   * 除了创建一个副本，然后被当前对象所拥有之外，实际上没有其他用途。换句话说，用一个临时的有限元对象来调用这个构造函数是完全可以的，就像在这个代码片段中。
-   * @code
-   * FESystem<dim> fe (FE_Q<dim>(2), 2);
-   * @endcode
-   * 这里， <code>FE_Q@<dim@>(2)</code> 构造了一个未命名的临时对象，传递给FESystem构造函数来创建一个由两个组件组成的有限元，这两个组件都是二次FE_Q元素。在这一行对应的代码结束时，这个临时对象又被销毁了，但这并不重要，因为FESystem创建了自己的FE_Q对象的副本。    这个构造函数（或其下面的变体）基本上在所有处理矢量值问题的教程程序中都会用到。用例见 step-8  ,  step-20  ,  step-22  等。也可参见  @ref vector_valued  "处理向量值问题 "
-   * 模块。      @dealiiVideoLecture{19,20}   @param[in]  fe
-   * 将被用来表示该组成元素的组件的有限元素。
-   * @param[in]  n_elements
-   * 一个整数，表示这个元素应该由多少份 @p fe 组成。
+   * Constructor. Take a finite element and the number of elements you want to
+   * group together using this class.
    *
+   * The object @p fe is not actually used for anything other than creating a
+   * copy that will then be owned by the current object. In other words, it is
+   * completely fine to call this constructor with a temporary object for the
+   * finite element, as in this code snippet:
+   * @code
+   *   FESystem<dim> fe (FE_Q<dim>(2), 2);
+   * @endcode
+   * Here, <code>FE_Q@<dim@>(2)</code> constructs an unnamed, temporary object
+   * that is passed to the FESystem constructor to create a finite element
+   * that consists of two components, both of which are quadratic FE_Q
+   * elements. The temporary is destroyed again at the end of the code that
+   * corresponds to this line, but this does not matter because FESystem
+   * creates its own copy of the FE_Q object.
+   *
+   * This constructor (or its variants below) is used in essentially all
+   * tutorial programs that deal with vector valued problems. See step-8,
+   * step-20, step-22 and others for use cases. Also see the module on
+   * @ref vector_valued "Handling vector valued problems".
+   *
+   * @dealiiVideoLecture{19,20}
+   *
+   * @param[in] fe The finite element that will be used to represent the
+   * components of this composed element.
+   * @param[in] n_elements An integer denoting how many copies of @p fe this
+   * element should consist of.
    */
   FESystem(const FiniteElement<dim, spacedim> &fe,
            const unsigned int                  n_elements);
 
   /**
-   * 用于具有两个基本元素的混合离散的构造函数。
-   * 参见上面的另一个构造函数，以了解组成元素的一般想法。
+   * Constructor for mixed discretizations with two base elements.
    *
+   * See the other constructor above for an explanation of the general idea of
+   * composing elements.
    */
   FESystem(const FiniteElement<dim, spacedim> &fe1,
            const unsigned int                  n1,
@@ -190,9 +266,10 @@ public:
            const unsigned int                  n2);
 
   /**
-   * 用于具有三个基本元素的混合离散的构造函数。
-   * 参见上面的另一个构造函数，以解释组成元素的一般想法。
+   * Constructor for mixed discretizations with three base elements.
    *
+   * See the other constructor above for an explanation of the general idea of
+   * composing elements.
    */
   FESystem(const FiniteElement<dim, spacedim> &fe1,
            const unsigned int                  n1,
@@ -202,9 +279,10 @@ public:
            const unsigned int                  n3);
 
   /**
-   * 用于具有四个基本元素的混合离散的构造函数。
-   * 参见上述其他构造函数中的第一个，以获得对组成元素的一般概念的解释。
+   * Constructor for mixed discretizations with four base elements.
    *
+   * See the first of the other constructors above for an explanation of the
+   * general idea of composing elements.
    */
   FESystem(const FiniteElement<dim, spacedim> &fe1,
            const unsigned int                  n1,
@@ -216,9 +294,10 @@ public:
            const unsigned int                  n4);
 
   /**
-   * 五个基本元素的混合离散的构造函数。
-   * 关于组成元素的一般概念，请看上面第一个其他构造函数的解释。
+   * Constructor for mixed discretizations with five base elements.
    *
+   * See the first of the other constructors above for an explanation of the
+   * general idea of composing elements.
    */
   FESystem(const FiniteElement<dim, spacedim> &fe1,
            const unsigned int                  n1,
@@ -232,52 +311,141 @@ public:
            const unsigned int                  n5);
 
   /**
-   * 与上述相同，但适用于任何数量的基元。指向基数元素的指针和它们的乘数被作为向量传递给这个构造函数。这些向量的长度被认为是相等的。
-   * 如上所述，第一个参数所指向的有限元对象除了在内部创建副本外，实际上并不使用。因此，你可以在调用这个构造函数后立即再次删除这些指针。
+   * Same as above but for any number of base elements. Pointers to the base
+   * elements and their multiplicities are passed as vectors to this
+   * constructor. The lengths of these vectors are assumed to be equal.
+   *
+   * As above, the finite element objects pointed to by the first argument are
+   * not actually used other than to create copies internally. Consequently,
+   * you can delete these pointers immediately again after calling this
+   * constructor.
+   *
    * <h4>How to use this constructor</h4>
-   * 使用这个构造函数有时会有点尴尬，因为你需要在一个地方传递两个向量，而这个地方可能无法直接构造这样一个向量
    *
-   * - 例如，在一个有FESystem成员变量的类的成员初始化列表中。例如，如果你的主类看起来像这样。
+   * Using this constructor is a bit awkward at times because you need to pass
+   * two vectors in a place where it may not be straightforward to construct
+   * such a vector -- for example, in the member initializer list of a class
+   * with an FESystem member variable. For example, if your main class looks
+   * like this:
+   * @code
+   *   template <int dim>
+   *   class MySimulator {
+   *   public:
+   *     MySimulator (const unsigned int polynomial_degree);
+   *   private:
+   *     FESystem<dim> fe;
+   *   };
+   *
+   *   template <int dim>
+   *   MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
+   *     :
+   *     fe (...)  // what to pass here???
+   *   {}
+   * @endcode
+   *
+   * Using the C++11 language standard (or later) you could do something like
+   * this to create an element with four base elements and multiplicities 1,
+   * 2, 3 and 4:
+   * @code
+   *   template <int dim>
+   *   MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
+   *     :
+   *     fe (std::vector<const FiniteElement<dim>*> { new FE_Q<dim>(1),
+   *                                                  new FE_Q<dim>(2),
+   *                                                  new FE_Q<dim>(3),
+   *                                                  new FE_Q<dim>(4) },
+   *         std::vector<unsigned int> { 1, 2, 3, 4 })
+   *   {}
+   * @endcode
+   * This creates two vectors in place and initializes them using the
+   * initializer list enclosed in braces <code>{ ... }</code>.
+   *
+   * This code has a problem: it creates four memory leaks because the first
+   * vector above is created with pointers to elements that are allocated with
+   * <code>new</code> but never destroyed.
+   *
+   * The solution to the second of these problems is to create two static
+   * member functions that can create vectors. Here is an example:
+   * @code
+   *   template <int dim>
+   *   class MySimulator {
+   *   public:
+   *     MySimulator (const unsigned int polynomial_degree);
+   *
+   *   private:
+   *     FESystem<dim> fe;
+   *
+   *     static std::vector<const FiniteElement<dim>*>
+   *     create_fe_list (const unsigned int polynomial_degree);
+   *
+   *     static std::vector<unsigned int>
+   *     create_fe_multiplicities ();
+   *   };
+   *
+   *   template <int dim>
+   *   std::vector<const FiniteElement<dim>*>
+   *   MySimulator<dim>::create_fe_list (const unsigned int polynomial_degree)
+   *   {
+   *     std::vector<const FiniteElement<dim>*> fe_list;
+   *     fe_list.push_back (new FE_Q<dim>(1));
+   *     fe_list.push_back (new FE_Q<dim>(2));
+   *     fe_list.push_back (new FE_Q<dim>(3));
+   *     fe_list.push_back (new FE_Q<dim>(4));
+   *     return fe_list;
+   *   }
+   *
+   *   template <int dim>
+   *   std::vector<unsigned int>
+   *   MySimulator<dim>::create_fe_multiplicities ()
+   *   {
+   *     std::vector<unsigned int> multiplicities;
+   *     multiplicities.push_back (1);
+   *     multiplicities.push_back (2);
+   *     multiplicities.push_back (3);
+   *     multiplicities.push_back (4);
+   *     return multiplicities;
+   *   }
+   *
+   *   template <int dim>
+   *   MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
+   *     :
+   *     fe (create_fe_list (polynomial_degree),
+   *         create_fe_multiplicities ())
+   *   {}
+   * @endcode
+   *
+   * The way this works is that we have two static member functions that
+   * create the necessary vectors to pass to the constructor of the member
+   * variable <code>fe</code>. They need to be static because they are called
+   * during the constructor of <code>MySimulator</code> at a time when the
+   * <code>*this</code> object isn't fully constructed and, consequently,
+   * regular member functions cannot be called yet.
+   *
+   * The code above does not solve the problem with the memory leak yet,
+   * though: the <code>create_fe_list()</code> function creates a vector of
+   * pointers, but nothing destroys these. This is the solution:
    * @code
    * template <int dim>
-   * class MySimulator {
+   * class MySimulator
+   * {
    * public:
    *   MySimulator (const unsigned int polynomial_degree);
-   * private:
-   *   FESystem<dim> fe;
-   * };
-   *
-   * template <int dim>
-   * MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
-   *   :
-   *   fe (...)  // what to pass here???
-   * {}
-   * @endcode
-   * 使用C++11语言标准（或更高版本），你可以这样做来创建一个具有四个基元和乘数1、2、3、4的元素。
-   * @code
-   * template <int dim>
-   * MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
-   *   :
-   *   fe (std::vector<const FiniteElement<dim>*> { new FE_Q<dim>(1),
-   *                                                new FE_Q<dim>(2),
-   *                                                new FE_Q<dim>(3),
-   *                                                new FE_Q<dim>(4) },
-   *       std::vector<unsigned int> { 1, 2, 3, 4 })
-   * {}
-   * @endcode
-   * 这就在原地创建了两个向量，并使用大括号中的初始化器列表对它们进行初始化
-   * <code>{ ... }</code>  。
-   * 这段代码有一个问题：它产生了四个内存泄漏，因为上面的第一个向量是用指向
-   * <code>new</code> 分配的元素的指针创建的，但从未销毁。
-   * 解决其中第二个问题的方法是创建两个可以创建向量的静态成员函数。下面是一个例子。
-   * @code
-   * template <int dim>
-   * class MySimulator {
-   * public:
-   *   MySimulator (const unsigned int polynomial_degree);
    *
    * private:
    *   FESystem<dim> fe;
+   *
+   *   struct VectorElementDestroyer
+   *   {
+   *     const std::vector<const FiniteElement<dim>*> data;
+   *
+   *     VectorElementDestroyer(
+   *       const std::vector<const FiniteElement<dim>*> &pointers);
+   *
+   *      // destructor to delete the pointers
+   *     ~VectorElementDestroyer ();
+   *
+   *     const std::vector<const FiniteElement<dim>*> & get_data () const;
+   *   };
    *
    *   static std::vector<const FiniteElement<dim>*>
    *   create_fe_list (const unsigned int polynomial_degree);
@@ -287,88 +455,19 @@ public:
    * };
    *
    * template <int dim>
-   * std::vector<const FiniteElement<dim>*>
-   * MySimulator<dim>::create_fe_list (const unsigned int polynomial_degree)
-   * {
-   *   std::vector<const FiniteElement<dim>*> fe_list;
-   *   fe_list.push_back (new FE_Q<dim>(1));
-   *   fe_list.push_back (new FE_Q<dim>(2));
-   *   fe_list.push_back (new FE_Q<dim>(3));
-   *   fe_list.push_back (new FE_Q<dim>(4));
-   *   return fe_list;
-   * }
-   *
-   * template <int dim>
-   * std::vector<unsigned int>
-   * MySimulator<dim>::create_fe_multiplicities ()
-   * {
-   *   std::vector<unsigned int> multiplicities;
-   *   multiplicities.push_back (1);
-   *   multiplicities.push_back (2);
-   *   multiplicities.push_back (3);
-   *   multiplicities.push_back (4);
-   *   return multiplicities;
-   * }
-   *
-   * template <int dim>
-   * MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
-   *   :
-   *   fe (create_fe_list (polynomial_degree),
-   *       create_fe_multiplicities ())
-   * {}
-   * @endcode
-   * 这样做的方法是，我们有两个静态成员函数来创建必要的向量，以传递给成员变量的构造函数
-   * <code>fe</code>  。它们需要是静态的，因为它们是在
-   * <code>MySimulator</code>  的构造函数中被调用的，此时
-   * <code>*this</code>
-   * 对象还没有完全构造好，因此，常规的成员函数还不能被调用。
-   * 不过上面的代码还没有解决内存泄漏的问题：
-   * <code>create_fe_list()</code>
-   * 函数创建了一个指针向量，但没有任何东西破坏这些指针。这就是解决方案。
-   * @code
-   * template <int dim>
-   * class MySimulator
-   * {
-   * public:
-   * MySimulator (const unsigned int polynomial_degree);
-   *
-   * private:
-   * FESystem<dim> fe;
-   *
-   * struct VectorElementDestroyer
-   * {
-   *   const std::vector<const FiniteElement<dim>*> data;
-   *
-   *   VectorElementDestroyer(
-   *     const std::vector<const FiniteElement<dim>*> &pointers);
-   *
-   *    // destructor to delete the pointers
-   *   ~VectorElementDestroyer ();
-   *
-   *   const std::vector<const FiniteElement<dim>*> & get_data () const;
-   * };
-   *
-   * static std::vector<const FiniteElement<dim>*>
-   * create_fe_list (const unsigned int polynomial_degree);
-   *
-   * static std::vector<unsigned int>
-   * create_fe_multiplicities ();
-   * };
-   *
-   * template <int dim>
    * MySimulator<dim>::VectorElementDestroyer::
    * VectorElementDestroyer(
-   * const std::vector<const FiniteElement<dim>*> &pointers)
-   * :
-   * data(pointers)
+   *   const std::vector<const FiniteElement<dim>*> &pointers)
+   *   :
+   *   data(pointers)
    * {}
    *
    * template <int dim>
    * MySimulator<dim>::VectorElementDestroyer::
    * ~VectorElementDestroyer ()
    * {
-   * for (unsigned int i=0; i<data.size(); ++i)
-   *   delete data[i];
+   *   for (unsigned int i=0; i<data.size(); ++i)
+   *     delete data[i];
    * }
    *
    * template <int dim>
@@ -376,57 +475,71 @@ public:
    * MySimulator<dim>::VectorElementDestroyer::
    * get_data () const
    * {
-   * return data;
+   *   return data;
    * }
    *
    * template <int dim>
    * MySimulator<dim>::MySimulator (const unsigned int polynomial_degree)
    * :
    * fe (VectorElementDestroyer(create_fe_list (polynomial_degree)).get_data(),
-   *   create_fe_multiplicities ())
+   *     create_fe_multiplicities ())
    * {}
    * @endcode
-   * 换句话说，我们从 <code>create_fe_list()</code>
-   * 中收到的向量被打包到一个 <code>VectorElementDestroyer</code>
-   * 类型的临时对象中；然后我们立即从这个临时对象中获得向量，将其传递给
-   * <code>fe</code>; and finally, the <code>VectorElementDestroyer</code>
-   * 的构造器，析构器在整个表达式的最后被调用（在
-   * <code>fe</code>
-   * 的构造器完成后），并销毁了临时向量的元素。瞧：既不短也不优雅，但它是有效的!
    *
+   * In other words, the vector we receive from the
+   * <code>create_fe_list()</code> is packed into a temporary object of type
+   * <code>VectorElementDestroyer</code>; we then get the vector from this
+   * temporary object immediately to pass it to the constructor of
+   * <code>fe</code>; and finally, the <code>VectorElementDestroyer</code>
+   * destructor is called at the end of the entire expression (after the
+   * constructor of <code>fe</code> has finished) and destroys the elements of
+   * the temporary vector. Voila: not short nor elegant, but it works!
    */
   FESystem(const std::vector<const FiniteElement<dim, spacedim> *> &fes,
            const std::vector<unsigned int> &multiplicities);
 
 #  if !defined(__INTEL_COMPILER) || __INTEL_COMPILER >= 1900
   /**
-   * 构造函数接受任意数量的参数，类型为
-   * <code>std::pair<std::unique_ptr<FiniteElement<dim,  spacedim>>, unsigned
-   * int></code>。与 FiniteElement::operator^,
-   * 相结合，可以构造如下的FESystem对象。
+   * Constructor taking an arbitrary number of parameters of type
+   * <code>std::pair<std::unique_ptr<FiniteElement<dim, spacedim>>, unsigned
+   * int></code>. In combination with FiniteElement::operator^, this allows to
+   * construct FESystem objects as follows:
    * @code
-   * FiniteElementType1<dim,spacedim> fe_1;
-   * FiniteElementType1<dim,spacedim> fe_2;
-   * FESystem<dim,spacedim> fe_system ( fe_1^dim, fe_2 );
+   *   FiniteElementType1<dim,spacedim> fe_1;
+   *   FiniteElementType1<dim,spacedim> fe_2;
+   *   FESystem<dim,spacedim> fe_system ( fe_1^dim, fe_2 );
    * @endcode
-   * `fe_1`和`fe_2`对象除了创建一个副本，然后被当前对象所拥有之外，实际上没有其他用途。换句话说，用一个临时的有限元对象来调用这个构造函数是完全可以的，就像这个代码片断一样。
-   * @code
-   * FESystem<dim> fe (FE_Q<dim>(2)^2);
-   * @endcode
-   * 这里， <code>FE_Q@<dim@>(2)</code>
-   * 构造了一个未命名的临时对象，传递给FESystem构造函数来创建一个由两个组件组成的有限元，这两个组件都是二次FE_Q元素。在这一行对应的代码结束时，这个临时对象又被销毁了，但这并不重要，因为FESystem创建了自己的FE_Q对象的副本。
-   * 作为一种快捷方式，这个构造函数也允许调用
-   * @code
-   * FESystem<dim> fe (FE_Q<dim>(2)^dim, FE_Q<dim>(1));
-   * @endcode
-   * 而不是更明确的
-   * @code
-   * FESystem<dim> fe (FE_Q<dim>(2)^dim, FE_Q<dim>(1)^1);
-   * @endcode
-   * 换句话说，如果没有通过指数化操作明确指定一个元素的倍数，那么就假定它是1（正如人们所期望的）。
-   * @warning
-   * 这个功能在19.0版之前的英特尔编译器上是不可用的。对于18.0之前的英特尔编译器，定义这个构造函数会导致内部编译器错误。
    *
+   * The `fe_1` and `fe_2` objects are not actually used for anything other than
+   * creating a copy that will then be owned by the current object. In other
+   * words, it is completely fine to call this constructor with a temporary
+   * object for the finite element, as in this code snippet:
+   * @code
+   *   FESystem<dim> fe (FE_Q<dim>(2)^2);
+   * @endcode
+   * Here, <code>FE_Q@<dim@>(2)</code> constructs an unnamed, temporary object
+   * that is passed to the FESystem constructor to create a finite element
+   * that consists of two components, both of which are quadratic FE_Q
+   * elements. The temporary is destroyed again at the end of the code that
+   * corresponds to this line, but this does not matter because FESystem
+   * creates its own copy of the FE_Q object.
+   *
+   * As a shortcut, this constructor also allows calling
+   * @code
+   *   FESystem<dim> fe (FE_Q<dim>(2)^dim, FE_Q<dim>(1));
+   * @endcode
+   * instead of the more explicit
+   * @code
+   *   FESystem<dim> fe (FE_Q<dim>(2)^dim, FE_Q<dim>(1)^1);
+   * @endcode
+   * In other words, if no multiplicity for an element is explicitly specified
+   * via the exponentiation operation, then it is assumed to be one (as one
+   * would have expected).
+   *
+   * @warning This feature is not available for Intel compilers
+   * prior to version 19.0. Defining this
+   * constructor leads to internal compiler errors for Intel compilers prior
+   * to 18.0.
    */
   template <
     class... FEPairs,
@@ -439,15 +552,16 @@ public:
   FESystem(FEPairs &&... fe_pairs);
 
   /**
-   * 与上述相同，允许采用以下语法。
+   * Same as above allowing the following syntax:
    * @code
-   * FiniteElementType1<dim,spacedim> fe_1;
-   * FiniteElementType1<dim,spacedim> fe_2;
-   * FESystem<dim,spacedim> fe_system = { fe_1^dim, fe_2^1 };
+   *   FiniteElementType1<dim,spacedim> fe_1;
+   *   FiniteElementType1<dim,spacedim> fe_2;
+   *   FESystem<dim,spacedim> fe_system = { fe_1^dim, fe_2^1 };
    * @endcode
-   * @warning
-   * 这个功能对19.0版以前的英特尔编译器是不可用的。构造函数只是没有被选中进行重载解析。
    *
+   * @warning This feature is not available for Intel compilers
+   * prior to version 19.0. The constructor is just not selected for overload
+   * resolution.
    */
   FESystem(
     const std::initializer_list<
@@ -456,14 +570,13 @@ public:
 #  endif
 
   /**
-   * 复制构造函数。该构造函数被删除，即不允许复制FESystem对象。
-   *
+   * Copy constructor. This constructor is deleted, i.e., copying
+   * FESystem objects is not allowed.
    */
   FESystem(const FESystem<dim, spacedim> &) = delete;
 
   /**
-   * 移动构造函数。
-   *
+   * Move constructor.
    */
   FESystem(FESystem<dim, spacedim> &&other_fe_system) noexcept
     : FiniteElement<dim, spacedim>(std::move(other_fe_system))
@@ -474,18 +587,17 @@ public:
   }
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~FESystem() override = default;
 
   /**
-   * 返回一个唯一标识一个有限元素的字符串。该元素返回一个字符串，该字符串由基础元素返回的字符串
-   * @p name1...@p
-   * nameN组成。从这些中，我们创建一个序列<tt>FESystem<dim>[name1^m1-name2^m2-...-nameN^mN]</tt>，其中
-   * @p mi
-   * 是基元的倍率。如果一个倍数等于1，那么上标就省略了。
-   *
+   * Return a string that uniquely identifies a finite element. This element
+   * returns a string that is composed of the strings @p name1...@p nameN
+   * returned by the basis elements. From these, we create a sequence
+   * <tt>FESystem<dim>[name1^m1-name2^m2-...-nameN^mN]</tt>, where @p mi are
+   * the multiplicities of the basis elements. If a multiplicity is equal to
+   * one, then the superscript is omitted.
    */
   virtual std::string
   get_name() const override;
@@ -500,30 +612,34 @@ public:
   using FiniteElement<dim, spacedim>::get_sub_fe;
 
   /**
-   * @copydoc   FiniteElement<dim,spacedim>::get_sub_fe() 。
-   *
+   * @copydoc FiniteElement<dim,spacedim>::get_sub_fe()
    */
   virtual const FiniteElement<dim, spacedim> &
   get_sub_fe(const unsigned int first_component,
              const unsigned int n_selected_components) const override;
 
   /**
-   * 返回 @p ith 点的形状函数值  @p p.   @p p
-   * 是参考元素上的一个点。由于这个有限元总是矢量值的，我们返回这个形状函数的矢量值的唯一非零分量的值。如果形状函数有一个以上的非零分量（我们用非原始分量来指代），那么抛出一个
-   * @p ExcShapeFunctionNotPrimitive. 类型的异常 如果 @p FiniteElement
-   * 的形状值（对应于 @p ith
-   * 形状函数）取决于实空间中的单元的形状，就会抛出 @p
-   * ExcUnitShapeValuesDoNotExist 。
+   * Return the value of the @p ith shape function at the point @p p.  @p p is
+   * a point on the reference element. Since this finite element is always
+   * vector-valued, we return the value of the only non-zero component of the
+   * vector value of this shape function. If the shape function has more than
+   * one non-zero component (which we refer to with the term non-primitive),
+   * then throw an exception of type @p ExcShapeFunctionNotPrimitive.
    *
+   * An @p ExcUnitShapeValuesDoNotExist is thrown if the shape values of the
+   * @p FiniteElement (corresponding to the @p ith shape function) depend on
+   * the shape of the cell in real space.
    */
   virtual double
   shape_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回 @p componentth 形状函数的 @p ith 矢量分量在 @p p.
-   * 点的值，关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素一般都是矢量值，所以它把这些值的计算转交给基元素。
+   * Return the value of the @p componentth vector component of the @p ith
+   * shape function at the point @p p. See the FiniteElement base class for
+   * more information about the semantics of this function.
    *
+   * Since this element is vector valued in general, it relays the computation
+   * of these values to the base elements.
    */
   virtual double
   shape_value_component(const unsigned int i,
@@ -531,22 +647,29 @@ public:
                         const unsigned int component) const override;
 
   /**
-   * 返回 @p ith 形状函数在 @p p. 点的梯度 @p p
-   * 是参考元素上的一个点，同样，梯度是单元格上关于单元格坐标的梯度。由于这个有限元总是矢量值的，我们返回这个形状函数的矢量值的唯一非零分量的值。如果形状函数有一个以上的非零分量（我们用非原始分量一词来指代），那么就抛出一个类型为
-   * @p  ExcShapeFunctionNotPrimitive的异常。    如果 @p FiniteElement
-   * 的形状值（对应于 @p ith
-   * 形状函数）取决于实空间中的单元格形状，则抛出一个
-   * @p ExcUnitShapeValuesDoNotExist 。
+   * Return the gradient of the @p ith shape function at the point @p p. @p p
+   * is a point on the reference element, and likewise the gradient is the
+   * gradient on the unit cell with respect to unit cell coordinates. Since
+   * this finite element is always vector-valued, we return the value of the
+   * only non-zero component of the vector value of this shape function. If
+   * the shape function has more than one non-zero component (which we refer
+   * to with the term non-primitive), then throw an exception of type @p
+   * ExcShapeFunctionNotPrimitive.
    *
+   * An @p ExcUnitShapeValuesDoNotExist is thrown if the shape values of the
+   * @p FiniteElement (corresponding to the @p ith shape function) depend on
+   * the shape of the cell in real space.
    */
   virtual Tensor<1, dim>
   shape_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回 @p componentth 形状函数的 @p ith 矢量分量在 @p p.
-   * 点的梯度，关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素一般都是矢量值，它把这些值的计算转给了基元素。
+   * Return the gradient of the @p componentth vector component of the @p ith
+   * shape function at the point @p p. See the FiniteElement base class for
+   * more information about the semantics of this function.
    *
+   * Since this element is vector valued in general, it relays the computation
+   * of these values to the base elements.
    */
   virtual Tensor<1, dim>
   shape_grad_component(const unsigned int i,
@@ -554,22 +677,29 @@ public:
                        const unsigned int component) const override;
 
   /**
-   * 返回 @p ith 形状函数在单元格上 @p p
-   * 点的二次导数的张量。该导数是单元格上相对于单元格坐标的导数。由于这个有限元总是矢量值的，我们返回这个形状函数的矢量值的唯一非零分量的值。如果形状函数有一个以上的非零分量（我们用非原始分量一词来指代），那么抛出一个类型为
-   * @p  ExcShapeFunctionNotPrimitive的异常。    如果 @p FiniteElement
-   * 的形状值（对应于 @p ith
-   * 形状函数）取决于实空间中的单元格形状，则抛出 @p
-   * ExcUnitShapeValuesDoNotExist 。
+   * Return the tensor of second derivatives of the @p ith shape function at
+   * point @p p on the unit cell. The derivatives are derivatives on the unit
+   * cell with respect to unit cell coordinates. Since this finite element is
+   * always vector-valued, we return the value of the only non-zero component
+   * of the vector value of this shape function. If the shape function has
+   * more than one non-zero component (which we refer to with the term non-
+   * primitive), then throw an exception of type @p
+   * ExcShapeFunctionNotPrimitive.
    *
+   * An @p ExcUnitShapeValuesDoNotExist is thrown if the shape values of the
+   * @p FiniteElement (corresponding to the @p ith shape function) depend on
+   * the shape of the cell in real space.
    */
   virtual Tensor<2, dim>
   shape_grad_grad(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * 返回 @p componentth 形状函数的 @p ith 矢量分量在 @p p.
-   * 点的二阶导数，关于这个函数的语义，请看FiniteElement基类的更多信息。
-   * 由于这个元素一般都是矢量值，它把这些值的计算转给了基元素。
+   * Return the second derivatives of the @p componentth vector component of
+   * the @p ith shape function at the point @p p. See the FiniteElement base
+   * class for more information about the semantics of this function.
    *
+   * Since this element is vector valued in general, it relays the computation
+   * of these values to the base elements.
    */
   virtual Tensor<2, dim>
   shape_grad_grad_component(const unsigned int i,
@@ -577,24 +707,30 @@ public:
                             const unsigned int component) const override;
 
   /**
-   * 返回 @p ith 形状函数在单元格上 @p p
-   * 点的三次导数的张量。这些导数是单元格上相对于单元格坐标的导数。由于这个有限元总是矢量值的，我们返回这个形状函数的矢量值的唯一非零分量的值。如果形状函数有一个以上的非零分量（我们用非原始分量一词来指代），那么抛出一个
-   * @p  ExcShapeFunctionNotPrimitive类型的异常。    如果 @p
-   * FiniteElement 的形状值（对应于 @p ith
-   * 形状函数）取决于实空间中的单元格形状，则抛出 @p
-   * ExcUnitShapeValuesDoNotExist 。
+   * Return the tensor of third derivatives of the @p ith shape function at
+   * point @p p on the unit cell. The derivatives are derivatives on the unit
+   * cell with respect to unit cell coordinates. Since this finite element is
+   * always vector-valued, we return the value of the only non-zero component
+   * of the vector value of this shape function. If the shape function has
+   * more than one non-zero component (which we refer to with the term non-
+   * primitive), then throw an exception of type @p
+   * ExcShapeFunctionNotPrimitive.
    *
+   * An @p ExcUnitShapeValuesDoNotExist is thrown if the shape values of the
+   * @p FiniteElement (corresponding to the @p ith shape function) depend on
+   * the shape of the cell in real space.
    */
   virtual Tensor<3, dim>
   shape_3rd_derivative(const unsigned int i,
                        const Point<dim> & p) const override;
 
   /**
-   * 返回 @p componentth 形状函数的 @p ith 矢量分量在点 @p p.
-   * 处的三阶导数
-   * 关于此函数的语义，请参见FiniteElement基类。
-   * 由于这个元素一般都是矢量值，它把这些值的计算转给了基元素。
+   * Return the third derivatives of the @p componentth vector component of
+   * the @p ith shape function at the point @p p. See the FiniteElement base
+   * class for more information about the semantics of this function.
    *
+   * Since this element is vector valued in general, it relays the computation
+   * of these values to the base elements.
    */
   virtual Tensor<3, dim>
   shape_3rd_derivative_component(const unsigned int i,
@@ -602,23 +738,30 @@ public:
                                  const unsigned int component) const override;
 
   /**
-   * 返回 @p ith 形状函数在单元格上 @p p
-   * 点的第四导数的张量。这些导数是单元格上关于单元格坐标的导数。由于这个有限元总是矢量值的，我们返回这个形状函数的矢量值的唯一非零分量的值。如果形状函数有一个以上的非零分量（我们用非原始分量一词来指代），那么抛出一个
-   * @p  ExcShapeFunctionNotPrimitive类型的异常。    如果 @p
-   * FiniteElement 的形状值（对应于 @p ith
-   * 形状函数）取决于实空间中的单元格的形状，则抛出 @p
-   * ExcUnitShapeValuesDoNotExist 。
+   * Return the tensor of fourth derivatives of the @p ith shape function at
+   * point @p p on the unit cell. The derivatives are derivatives on the unit
+   * cell with respect to unit cell coordinates. Since this finite element is
+   * always vector-valued, we return the value of the only non-zero component
+   * of the vector value of this shape function. If the shape function has
+   * more than one non-zero component (which we refer to with the term non-
+   * primitive), then throw an exception of type @p
+   * ExcShapeFunctionNotPrimitive.
    *
+   * An @p ExcUnitShapeValuesDoNotExist is thrown if the shape values of the
+   * @p FiniteElement (corresponding to the @p ith shape function) depend on
+   * the shape of the cell in real space.
    */
   virtual Tensor<4, dim>
   shape_4th_derivative(const unsigned int i,
                        const Point<dim> & p) const override;
 
   /**
-   * 返回 @p componentth 形状函数的 @p ith 矢量分量在点 @p p.
-   * 处的四次导数，关于此函数的语义，请参见FiniteElement基类。
-   * 因为这个元素一般都是矢量值，所以它把这些值的计算转交给基元素。
+   * Return the fourth derivatives of the @p componentth vector component of
+   * the @p ith shape function at the point @p p. See the FiniteElement base
+   * class for more information about the semantics of this function.
    *
+   * Since this element is vector valued in general, it relays the computation
+   * of these values to the base elements.
    */
   virtual Tensor<4, dim>
   shape_4th_derivative_component(const unsigned int i,
@@ -626,49 +769,59 @@ public:
                                  const unsigned int component) const override;
 
   /**
-   * 返回从给定的有限元内插到现在的矩阵。然后矩阵的大小是
-   * @p dofs_per_cell 乘以<tt>source.n_dofs_per_cell()</tt>。
-   * 如果源元素和目的元素都是 @p FESystem
-   * 元素，有相同数量的基本元素，有相同的元素倍数，并且这些基本元素也实现了它们的
-   * @p
-   * get_interpolation_matrix函数，这些矩阵就可以使用。否则，会抛出一个
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented
-   * 类型的异常。
+   * Return the matrix interpolating from the given finite element to the
+   * present one. The size of the matrix is then @p dofs_per_cell times
+   * <tt>source.n_dofs_per_cell()</tt>.
    *
+   * These matrices are available if source and destination element are both
+   * @p FESystem elements, have the same number of base elements with same
+   * element multiplicity, and if these base elements also implement their @p
+   * get_interpolation_matrix functions. Otherwise, an exception of type
+   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented is thrown.
    */
   virtual void
   get_interpolation_matrix(const FiniteElement<dim, spacedim> &source,
                            FullMatrix<double> &matrix) const override;
 
   /**
-   * 访问一个合成元素。索引需要小于基数元素的数量。请注意，如果乘数大于1，基础元素的数量可能反过来小于系统元素的组件数量。
-   *
+   * Access to a composing element. The index needs to be smaller than the
+   * number of base elements. Note that the number of base elements may in
+   * turn be smaller than the number of components of the system element, if
+   * the multiplicities are greater than one.
    */
   virtual const FiniteElement<dim, spacedim> &
   base_element(const unsigned int index) const override;
 
   /**
-   * 如果形状函数 @p shape_index 在面 @p face_index.
-   * 的某处有非零函数值，该函数返回 @p true, 。
-   *
+   * This function returns @p true, if the shape function @p shape_index has
+   * non-zero function values somewhere on the face @p face_index.
    */
   virtual bool
   has_support_on_face(const unsigned int shape_index,
                       const unsigned int face_index) const override;
 
   /**
-   * 从精细网格空间投射到粗略网格空间。重写FiniteElement中的相应方法，实现懒人评估（在请求时初始化）。
-   * 如果这个投影运算符与一个矩阵 @p P,
-   * 相关联，那么这里将返回这个矩阵 @p P_i
-   * 对一个子单元的限制。    矩阵 @p P 是单元格矩阵 @p
-   * P_i的连接或相加，取决于
-   * FiniteElement::restriction_is_additive().
-   * 的值，这区分了插值（连接）和标量积（相加）方面的投影。
-   * 行和列指数分别与粗网格和细网格空间有关，与相关运算符的定义一致。
-   * 如果投影矩阵没有在派生的有限元类中实现，这个函数会以
-   * FiniteElement::ExcProjectionVoid.
-   * 类型的异常中止，你可以通过首先调用restriction_is_implemented()或isotropic_restriction_is_implemented()函数检查是否会发生这种情况。
+   * Projection from a fine grid space onto a coarse grid space. Overrides the
+   * respective method in FiniteElement, implementing lazy evaluation
+   * (initialize when requested).
    *
+   * If this projection operator is associated with a matrix @p P, then the
+   * restriction of this matrix @p P_i to a single child cell is returned
+   * here.
+   *
+   * The matrix @p P is the concatenation or the sum of the cell matrices @p
+   * P_i, depending on the value of FiniteElement::restriction_is_additive().
+   * This distinguishes interpolation (concatenation) and projection with
+   * respect to scalar products (summation).
+   *
+   * Row and column indices are related to coarse grid and fine grid spaces,
+   * respectively, consistent with the definition of the associated operator.
+   *
+   * If projection matrices are not implemented in the derived finite element
+   * class, this function aborts with an exception of type
+   * FiniteElement::ExcProjectionVoid. You can check whether this would happen
+   * by first calling the restriction_is_implemented() or the
+   * isotropic_restriction_is_implemented() function.
    */
   virtual const FullMatrix<double> &
   get_restriction_matrix(
@@ -677,22 +830,31 @@ public:
       RefinementCase<dim>::isotropic_refinement) const override;
 
   /**
-   * 网格间的嵌入矩阵。重写FiniteElement中的相应方法，实现懒人评估（查询时初始化）。
-   * 从粗网格空间到细网格空间的身份运算符与一个矩阵 @p
-   * P. 相关联，该矩阵 @p P_i
-   * 对单个子单元的限制在这里被返回。    矩阵 @p P
-   * 是串联的，而不是单元格矩阵 @p
-   * P_i的总和。也就是说，如果同一个非零条目<tt>j,k</tt>存在于两个不同的子矩阵
-   * @p P_i,
-   * 中，其值在两个矩阵中应该是相同的，它只被复制到矩阵
-   * @p P 中一次。
-   * 行和列指数分别与细格和粗格空间相关，与相关运算符的定义一致。
-   * 这些矩阵被组装多级方法的延长矩阵的程序所使用。
-   * 在使用这个矩阵阵列组装单元间的转移矩阵时，延长矩阵中的零元素被丢弃，不会填满转移矩阵。
-   * 如果延长矩阵没有在一个基本的有限元类中实现，这个函数会以
-   * FiniteElement::ExcEmbeddingVoid.
-   * 类型的异常中止。你可以通过首先调用prolongation_is_implemented()或isotropic_prolongation_is_implemented()函数来检查是否会发生。
+   * Embedding matrix between grids. Overrides the respective method in
+   * FiniteElement, implementing lazy evaluation (initialize when queried).
    *
+   * The identity operator from a coarse grid space into a fine grid space is
+   * associated with a matrix @p P. The restriction of this matrix @p P_i to a
+   * single child cell is returned here.
+   *
+   * The matrix @p P is the concatenation, not the sum of the cell matrices @p
+   * P_i. That is, if the same non-zero entry <tt>j,k</tt> exists in two
+   * different child matrices @p P_i, the value should be the same in both
+   * matrices and it is copied into the matrix @p P only once.
+   *
+   * Row and column indices are related to fine grid and coarse grid spaces,
+   * respectively, consistent with the definition of the associated operator.
+   *
+   * These matrices are used by routines assembling the prolongation matrix
+   * for multi-level methods.  Upon assembling the transfer matrix between
+   * cells using this matrix array, zero elements in the prolongation matrix
+   * are discarded and will not fill up the transfer matrix.
+   *
+   * If prolongation matrices are not implemented in one of the base finite
+   * element classes, this function aborts with an exception of type
+   * FiniteElement::ExcEmbeddingVoid. You can check whether this would happen
+   * by first calling the prolongation_is_implemented() or the
+   * isotropic_prolongation_is_implemented() function.
    */
   virtual const FullMatrix<double> &
   get_prolongation_matrix(
@@ -701,28 +863,42 @@ public:
       RefinementCase<dim>::isotropic_refinement) const override;
 
   /**
-   * 给出一个面的指数自然排序中的指数，返回单元格上相同自由度的指数。
-   * 为了解释这个概念，考虑这样的情况：我们想知道一个面的自由度，例如作为FESystem元素的一部分，是否是原始的。不幸的是，FiniteElement类中的is_primitive()函数需要一个单元格索引，所以我们需要找到对应于当前面的索引的形状函数的单元格索引。
-   * 这个函数可以做到这一点。
-   * 实现这一点的代码将看起来像这样。
+   * Given an index in the natural ordering of indices on a face, return the
+   * index of the same degree of freedom on the cell.
+   *
+   * To explain the concept, consider the case where we would like to know
+   * whether a degree of freedom on a face, for example as part of an FESystem
+   * element, is primitive. Unfortunately, the is_primitive() function in the
+   * FiniteElement class takes a cell index, so we would need to find the cell
+   * index of the shape function that corresponds to the present face index.
+   * This function does that.
+   *
+   * Code implementing this would then look like this:
    * @code
    * for (i=0; i<dofs_per_face; ++i)
-   * if (fe.is_primitive(fe.face_to_cell_index(i, some_face_no)))
-   * ... do whatever
+   *  if (fe.is_primitive(fe.face_to_cell_index(i, some_face_no)))
+   *   ... do whatever
    * @endcode
-   * 这个函数需要额外的参数，以考虑到实际的面可以是相对于所考虑的单元格的标准排序，或者可以是翻转的，定向的，等等。
-   * @param  face_dof_index
-   * 一个面的自由度的索引。这个指数必须在零和每个面的自由度之间。
-   * @param  face
-   * 这个自由度所在的面的编号。这个数字必须介于零和
-   * GeometryInfo::faces_per_cell.   @param  face_orientation
-   * 描述面的方向的一个部分。见  @ref GlossFaceOrientation  。
-   * @param  face_flip 对脸部方向的描述的一部分。参见  @ref
-   * GlossFaceOrientation  。    @param  face_rotation
-   * 描述脸部方向的一部分。见  @ref GlossFaceOrientation  。
-   * @return
-   * 这个自由度在整个单元上的自由度集合中的索引。返回值将介于0和dofs_per_cell之间。
+   * The function takes additional arguments that account for the fact that
+   * actual faces can be in their standard ordering with respect to the cell
+   * under consideration, or can be flipped, oriented, etc.
    *
+   * @param face_dof_index The index of the degree of freedom on a face. This
+   * index must be between zero and dofs_per_face.
+   * @param face The number of the face this degree of freedom lives on. This
+   * number must be between zero and GeometryInfo::faces_per_cell.
+   * @param face_orientation One part of the description of the orientation of
+   * the face. See
+   * @ref GlossFaceOrientation.
+   * @param face_flip One part of the description of the orientation of the
+   * face. See
+   * @ref GlossFaceOrientation.
+   * @param face_rotation One part of the description of the orientation of
+   * the face. See
+   * @ref GlossFaceOrientation.
+   * @return The index of this degree of freedom within the set of degrees of
+   * freedom on the entire cell. The returned value will be between zero and
+   * dofs_per_cell.
    */
   virtual unsigned int
   face_to_cell_index(const unsigned int face_dof_index,
@@ -732,48 +908,54 @@ public:
                      const bool         face_rotation = false) const override;
 
   /**
-   * 在基类中实现相应的函数。
-   *
+   * Implementation of the respective function in the base class.
    */
   virtual Point<dim>
   unit_support_point(const unsigned int index) const override;
 
   /**
-   * 在基类中实现相应的函数。
-   *
+   * Implementation of the respective function in the base class.
    */
   virtual Point<dim - 1>
   unit_face_support_point(const unsigned int index,
                           const unsigned int face_no = 0) const override;
 
   /**
-   * 返回一个元素的常量模式列表。返回表有多少行，就有多少个元素中的元件和dofs_per_cell列。对于有限元的每个分量，返回表中的行包含该元上常数函数1的基础表示。将每个基元的常数模式串联起来。
-   *
+   * Return a list of constant modes of the element. The returns table has as
+   * many rows as there are components in the element and dofs_per_cell
+   * columns. To each component of the finite element, the row in the returned
+   * table contains a basis representation of the constant function 1 on the
+   * element. Concatenates the constant modes of each base element.
    */
   virtual std::pair<Table<2, bool>, std::vector<unsigned int>>
   get_constant_modes() const override;
 
   /**
-   * @name 支持hp的函数  @{ 。
-   *
+   * @name Functions to support hp
+   * @{
    */
 
   /**
-   * 返回该元素是否以新的方式实现其悬挂的节点约束，这必须用于使元素
-   * "hp-兼容"。    当且仅当其所有基础元素都返回 @p true
-   * 时，此函数才会返回 @p true 。
+   * Return whether this element implements its hanging node constraints in
+   * the new way, which has to be used to make elements "hp-compatible".
    *
+   * This function returns @p true if and only if all its base elements return
+   * @p true for this function.
    */
   virtual bool
   hp_constraints_are_implemented() const override;
 
   /**
-   * 返回从一个元素的面插值到邻近元素的面的矩阵。
-   * 矩阵的大小是<tt>source.dofs_per_face</tt>乘以<tt>this->dofs_per_face</tt>。
-   * 这个元素的基础元素将不得不实现这个功能。他们可能只为某些源有限元提供插值矩阵，例如那些来自同一家族的有限元。如果他们不实现给定元素的插值，那么他们必须抛出一个类型为
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented,
-   * 的异常，这个异常将从这个元素传播出去。
+   * Return the matrix interpolating from a face of one element to the face
+   * of the neighboring element.  The size of the matrix is then
+   * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.
    *
+   * Base elements of this element will have to implement this function. They
+   * may only provide interpolation matrices for certain source finite
+   * elements, for example those from the same family. If they don't implement
+   * interpolation from a given element, then they must throw an exception of
+   * type FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented, which
+   * will get propagated out from this element.
    */
   virtual void
   get_face_interpolation_matrix(const FiniteElement<dim, spacedim> &source,
@@ -782,12 +964,16 @@ public:
 
 
   /**
-   * 返回从一个元素的面插值到邻近元素的子面的矩阵。
-   * 矩阵的大小是<tt>source.dofs_per_face</tt>乘以<tt>this->dofs_per_face</tt>。
-   * 这个元素的基础元素将不得不实现这个功能。他们可能只为某些源有限元提供插值矩阵，例如那些来自同一家族的有限元。如果他们不实现给定元素的插值，那么他们必须抛出一个类型为
-   * FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented,
-   * 的异常，这个异常将从这个元素传播出去。
+   * Return the matrix interpolating from a face of one element to the
+   * subface of the neighboring element.  The size of the matrix is then
+   * <tt>source.dofs_per_face</tt> times <tt>this->dofs_per_face</tt>.
    *
+   * Base elements of this element will have to implement this function. They
+   * may only provide interpolation matrices for certain source finite
+   * elements, for example those from the same family. If they don't implement
+   * interpolation from a given element, then they must throw an exception of
+   * type FiniteElement<dim,spacedim>::ExcInterpolationNotImplemented, which
+   * will get propagated out from this element.
    */
   virtual void
   get_subface_interpolation_matrix(
@@ -797,34 +983,42 @@ public:
     const unsigned int                  face_no = 0) const override;
 
   /**
-   * 如果在一个顶点上，有几个有限元被激活，hp-code首先为这些FEs的自由度分配不同的全局索引。然后调用这个函数来找出其中哪些应该得到相同的值，从而可以得到相同的全局自由度指数。
-   * 因此，该函数返回当前有限元对象的自由度与 @p fe_other,
-   * 的自由度之间的相同性列表，后者是对代表在该特定顶点上活动的其他有限元之一的有限元对象的引用。该函数计算两个有限元对象的哪些自由度是等价的，两个自由度的编号都在零和两个有限元的n_dofs_per_vertex()的相应值之间。每一对的第一个索引表示本元素的一个顶点自由度，而第二个是另一个有限元素的相应索引。
-   *
+   * If, on a vertex, several finite elements are active, the hp-code first
+   * assigns the degrees of freedom of each of these FEs different global
+   * indices. It then calls this function to find out which of them should get
+   * identical values, and consequently can receive the same global DoF index.
+   * This function therefore returns a list of identities between DoFs of the
+   * present finite element object with the DoFs of @p fe_other, which is a
+   * reference to a finite element object representing one of the other finite
+   * elements active on this particular vertex. The function computes which of
+   * the degrees of freedom of the two finite element objects are equivalent,
+   * both numbered between zero and the corresponding value of
+   * n_dofs_per_vertex() of the two finite elements. The first index of each
+   * pair denotes one of the vertex dofs of the present element, whereas the
+   * second is the corresponding index of the other finite element.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_vertex_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * 与hp_vertex_dof_indices()相同，只是该函数处理线上自由度。
-   *
+   * Same as hp_vertex_dof_indices(), except that the function treats degrees
+   * of freedom on lines.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_line_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
-   * 与hp_vertex_dof_indices()相同，只是该函数处理四边形上的自由度。
-   *
+   * Same as hp_vertex_dof_indices(), except that the function treats degrees
+   * of freedom on quads.
    */
   virtual std::vector<std::pair<unsigned int, unsigned int>>
   hp_quad_dof_identities(const FiniteElement<dim, spacedim> &fe_other,
                          const unsigned int face_no = 0) const override;
 
   /**
-   * @copydoc   FiniteElement::compare_for_domination() .
-   *
+   * @copydoc FiniteElement::compare_for_domination()
    */
   virtual FiniteElementDomination::Domination
   compare_for_domination(const FiniteElement<dim, spacedim> &fe_other,
@@ -833,13 +1027,18 @@ public:
   //@}
 
   /**
+   * Implementation of the
    * FiniteElement::convert_generalized_support_point_values_to_dof_values()
-   * 函数的实现。    这个函数简单地调用
-   * FiniteElement::convert_generalized_support_point_values_to_dof_values
-   * 的基本元素，并将所有内容重新组合到输出参数中。如果一个基元是非插值的，那么相应的dof值将用
-   * "信号 "NaN来代替。
-   * 如果FES系统的基本元素没有一个是插值的，则该函数失败。
+   * function.
    *
+   * This function simply calls
+   * FiniteElement::convert_generalized_support_point_values_to_dof_values
+   * of the base elements and re-assembles everything into the output
+   * argument. If a base element is non-interpolatory the corresponding dof
+   * values are filled with "signaling" NaNs instead.
+   *
+   * The function fails if none of the base elements of the FESystem are
+   * interpolatory.
    */
   virtual void
   convert_generalized_support_point_values_to_dof_values(
@@ -847,9 +1046,12 @@ public:
     std::vector<double> &              dof_values) const override;
 
   /**
-   * 确定此对象的内存消耗（以字节为单位）的估计值。
-   * 这个函数是虚拟的，因为有限元对象通常是通过指向其基类的指针来访问的，而不是类本身。
+   * Determine an estimate for the memory consumption (in bytes) of this
+   * object.
    *
+   * This function is made virtual, since finite element objects are usually
+   * accessed through pointers to their base class, rather than the class
+   * itself.
    */
   virtual std::size_t
   memory_consumption() const override;
@@ -936,11 +1138,14 @@ protected:
       &output_data) const override;
 
   /**
-   * 为三个<tt>fill_fe*_values</tt>函数做工作。
-   * 调用（除其他外）<tt>fill_fe_([sub]face)_values</tt>的基础元素。如果<tt>face_no==invalid_face_no</tt>和<tt>sub_no==invalid_face_no</tt>，调用
-   * @p fill_fe_values ；调用 @p fill_fe_face_values  ]
-   * 如果<tt>face_no==invalid_face_no</tt>和<tt>sub_no!=invalid_face_no</tt>；如果<tt>face_no!=invalid_face_no</tt>和<tt>sub_no!
+   * Do the work for the three <tt>fill_fe*_values</tt> functions.
    *
+   * Calls (among other things) <tt>fill_fe_([sub]face)_values</tt> of the
+   * base elements. Calls @p fill_fe_values if
+   * <tt>face_no==invalid_face_no</tt> and <tt>sub_no==invalid_face_no</tt>;
+   * calls @p fill_fe_face_values if <tt>face_no==invalid_face_no</tt> and
+   * <tt>sub_no!=invalid_face_no</tt>; and calls @p fill_fe_subface_values if
+   * <tt>face_no!=invalid_face_no</tt> and <tt>sub_no!=invalid_face_no</tt>.
    */
   template <int dim_1>
   void
@@ -960,52 +1165,54 @@ protected:
 
 private:
   /**
-   * 表示一个给定的面或子面编号无效的值。
-   *
+   * Value to indicate that a given face or subface number is invalid.
    */
   static const unsigned int invalid_face_number = numbers::invalid_unsigned_int;
 
   /**
-   * 指向底层有限元对象的指针。
-   * 这个对象包含一个指向混合离散化的每个贡献元素的指针和它的倍率。它是由构造函数创建的，之后是常量。
+   * Pointers to underlying finite element objects.
    *
+   * This object contains a pointer to each contributing element of a mixed
+   * discretization and its multiplicity. It is created by the constructor and
+   * constant afterwards.
    */
   std::vector<std::pair<std::unique_ptr<const FiniteElement<dim, spacedim>>,
                         unsigned int>>
     base_elements;
 
   /**
-   * 一个索引表，将基础元素的广义支持点映射到FE系统的广义支持点的矢量。
-   * 它成立的原因是
+   * An index table that maps generalized support points of a base element
+   * to the vector of generalized support points of the FE System.
+   * It holds true that
    * @code
-   * auto n = generalized_support_points_index_table[i][j];
-   * generalized_support_points[n] ==
-   *         base_elements[i].generalized_support_points[j];
+   *   auto n = generalized_support_points_index_table[i][j];
+   *   generalized_support_points[n] ==
+   *           base_elements[i].generalized_support_points[j];
    * @endcode
-   * 对于每个基元（以i为索引）和基元的每个g.s.点（以j为索引）。
-   *
+   * for each base element (indexed by i) and each g. s. point of the base
+   * element (index by j).
    */
   std::vector<std::vector<std::size_t>> generalized_support_points_index_table;
 
   /**
-   * 这个函数是简单地从构造函数中挑出来的，因为它有几个。它设置了系统的索引表，以及
-   * @p 限制和 @p prolongation 矩阵。
-   *
+   * This function is simply singled out of the constructors since there are
+   * several of them. It sets up the index table for the system as well as @p
+   * restriction and @p prolongation matrices.
    */
   void
   initialize(const std::vector<const FiniteElement<dim, spacedim> *> &fes,
              const std::vector<unsigned int> &multiplicities);
 
   /**
-   * 由 @p initialize. 使用。
-   *
+   * Used by @p initialize.
    */
   void
   build_interface_constraints();
 
   /**
-   * 一个计算hp_vertex_dof_identities()、hp_line_dof_identities()或hp_quad_dof_identities()的函数，这取决于模板参数的值。
-   *
+   * A function that computes the hp_vertex_dof_identities(),
+   * hp_line_dof_identities(), or hp_quad_dof_identities(), depending on the
+   * value of the template parameter.
    */
   template <int structdim>
   std::vector<std::pair<unsigned int, unsigned int>>
@@ -1013,31 +1220,29 @@ private:
                            const unsigned int face_no = 0) const;
 
   /**
-   * 通常情况下。独立于细胞的数据字段。
-   * 然而，在这里，这个类本身并不存储数据，而只是指向每个基本元素的
-   * @p InternalData 对象的指针。
+   * Usually: Fields of cell-independent data.
    *
+   * However, here, this class does not itself store the data but only
+   * pointers to @p InternalData objects for each of the base elements.
    */
   class InternalData : public FiniteElement<dim, spacedim>::InternalDataBase
   {
   public:
     /**
-     * 构造函数。由 @p get_data 函数调用。设置 @p base_fe_datas
-     * 向量的大小为 @p n_base_elements. 。
-     *
+     * Constructor. Is called by the @p get_data function. Sets the size of
+     * the @p base_fe_datas vector to @p n_base_elements.
      */
     InternalData(const unsigned int n_base_elements);
 
     /**
-     * 销毁器。删除所有 @p InternalDatas ，其指针由 @p
-     * base_fe_datas 向量存储。
-     *
+     * Destructor. Deletes all @p InternalDatas whose pointers are stored by
+     * the @p base_fe_datas vector.
      */
     ~InternalData() override;
 
     /**
-     * 对 @p base_noth基元的 @p InternalData 的指针给予写权限。
-     *
+     * Give write-access to the pointer to a @p InternalData of the @p
+     * base_noth base element.
      */
     void
     set_fe_data(
@@ -1045,42 +1250,42 @@ private:
       std::unique_ptr<typename FiniteElement<dim, spacedim>::InternalDataBase>);
 
     /**
-     * 给予对 @p InternalData 的 @p
-     * 基数元素的指针的读访问权。
-     *
+     * Give read-access to the pointer to a @p InternalData of the @p
+     * base_noth base element.
      */
     typename FiniteElement<dim, spacedim>::InternalDataBase &
     get_fe_data(const unsigned int base_no) const;
 
     /**
-     * 当调用 FiniteElement::fill_fe_values()
-     * 和类似函数时，给读访问指向 <code>base_no</code>
-     * 第1个基元的对象的指针，该对象将写入其输出。
-     *
+     * Give read-access to the pointer to an object to which into which the
+     * <code>base_no</code>th base element will write its output when calling
+     * FiniteElement::fill_fe_values() and similar functions.
      */
     internal::FEValuesImplementation::FiniteElementRelatedData<dim, spacedim> &
     get_fe_output_object(const unsigned int base_no) const;
 
   private:
     /**
-     * 指向每个基元的 @p InternalData 对象的指针。它们被 @p
-     * set_ 和 @p get_fe_data 函数所访问。
-     * 这个向量的大小由InternalData构造函数设置为 @p
-     * n_base_elements 。 它由 @p get_data 函数填充。
-     * 请注意，由于基类的每个实例的数据必然是相同的，我们只需要有多少个基类元素就有多少个这样的对象，而不考虑它们的多重性。
+     * Pointers to @p InternalData objects for each of the base elements. They
+     * are accessed to by the @p set_ and @p get_fe_data functions.
      *
+     * The size of this vector is set to @p n_base_elements by the
+     * InternalData constructor.  It is filled by the @p get_data function.
+     * Note that since the data for each instance of a base class is
+     * necessarily the same, we only need as many of these objects as there
+     * are base elements, irrespective of their multiplicity.
      */
     typename std::vector<
       std::unique_ptr<typename FiniteElement<dim, spacedim>::InternalDataBase>>
       base_fe_datas;
 
     /**
-     * 一个对象的集合，当我们对它们调用
-     * FiniteElement::fill_fe_values()
-     * 和相关函数时，基元将把它们的输出写入其中。
-     * 这个向量的大小由InternalData构造函数设置为 @p
-     * n_base_elements 。
+     * A collection of objects to which the base elements will write their
+     * output when we call FiniteElement::fill_fe_values() and related
+     * functions on them.
      *
+     * The size of this vector is set to @p n_base_elements by the
+     * InternalData constructor.
      */
     mutable std::vector<
       internal::FEValuesImplementation::FiniteElementRelatedData<dim, spacedim>>
@@ -1088,8 +1293,7 @@ private:
   };
 
   /**
-   * 用于保护限制和嵌入矩阵的初始化的互斥器。
-   *
+   * Mutex for protecting initialization of restriction and embedding matrix.
    */
   mutable std::mutex mutex;
 
@@ -1199,6 +1403,4 @@ FESystem<dim, spacedim>::FESystem(
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
- /*----------------------------  fe_system.h  ---------------------------*/ 
-
-
+/*----------------------------  fe_system.h  ---------------------------*/

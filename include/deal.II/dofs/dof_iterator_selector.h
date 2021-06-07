@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/dof_iterator_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2020 by the deal.II authors
@@ -51,13 +52,12 @@ namespace internal
 
 
     /**
-     * Define some types for DoF handling in one dimension.
+     * 在一个维度上定义一些用于DoF处理的类型。
+     * 这些类型与
+     * internal::TriangulationImplementation::Iterators<1,spacedim>,
+     * 中声明的类型含义相同，只是对模板的处理要复杂一些。更多信息见
+     * @ref Iterators 模块。
      *
-     * The types have the same meaning as those declared in
-     * internal::TriangulationImplementation::Iterators<1,spacedim>, only the
-     * treatment of templates is a little more complicated. See the
-     * @ref Iterators
-     * module for more information.
      */
     template <int spacedim, bool lda>
     struct Iterators<1, spacedim, lda>
@@ -93,13 +93,12 @@ namespace internal
 
 
     /**
-     * Define some types for DoF handling in two dimensions.
+     * 为二维的DoF处理定义一些类型。
+     * 这些类型与
+     * internal::TriangulationImplementation::Iterators<2,spacedim>,
+     * 中声明的类型具有相同的含义，只是对模板的处理要复杂一些。参见
+     * @ref Iterators 模块以获得更多信息。
      *
-     * The types have the same meaning as those declared in
-     * internal::TriangulationImplementation::Iterators<2,spacedim>, only the
-     * treatment of templates is a little more complicated. See the
-     * @ref Iterators
-     * module for more information.
      */
     template <int spacedim, bool lda>
     struct Iterators<2, spacedim, lda>
@@ -133,13 +132,12 @@ namespace internal
 
 
     /**
-     * Define some types for DoF handling in three dimensions.
+     * 为三维空间的DoF处理定义了一些类型。
+     * 这些类型与
+     * internal::TriangulationImplementation::Iterators<3,spacedim>,
+     * 中声明的类型具有相同的含义，只是对模板的处理要复杂一些。更多信息见
+     * @ref Iterators 模块。
      *
-     * The types have the same meaning as those declared in
-     * internal::TriangulationImplementation::Iterators<3,spacedim>, only the
-     * treatment of templates is a little more complicated. See the
-     * @ref Iterators
-     * module for more information.
      */
     template <int spacedim, bool lda>
     struct Iterators<3, spacedim, lda>
@@ -176,3 +174,5 @@ namespace internal
 DEAL_II_NAMESPACE_CLOSE
 
 #endif // dealii_dof_iterator_selector_h
+
+

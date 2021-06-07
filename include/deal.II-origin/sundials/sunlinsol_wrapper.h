@@ -1,4 +1,3 @@
-//include/deal.II-translator/sundials/sunlinsol_wrapper_0.txt
 //-----------------------------------------------------------
 //
 //    Copyright (C) 2021 by the deal.II authors
@@ -41,37 +40,34 @@ namespace SUNDIALS
 #    endif
 
   /**
-   * 一个包裹SUNDIALS功能的线性运算符。
-   *
+   * A linear operator that wraps SUNDIALS functionality.
    */
   template <typename VectorType>
   struct SundialsOperator
   {
     /**
-     * 将此线性运算符应用于 @p src 并将结果存储在 @p dst.
-     * 中。
-     *
+     * Apply this LinearOperator to @p src and store the result in @p dst.
      */
     void
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * 构造函数。          @param  A_data  @p a_times_fn 所需的数据
-     * @param  a_times_fn 一个指向计算A*v的函数的指针。
+     * Constructor.
      *
+     * @param A_data Data required by @p a_times_fn
+     * @param a_times_fn A function pointer to the function that computes A*v
      */
     SundialsOperator(void *A_data, ATimesFn a_times_fn);
 
   private:
     /**
-     * 评估a_times_fn的必要数据。
-     *
+     * Data necessary to evaluate a_times_fn.
      */
     void *A_data;
 
     /**
-     * 由SUNDIALS声明的%函数指针，用于评估矩阵向量乘积。
-     *
+     * %Function pointer declared by SUNDIALS to evaluate the matrix vector
+     * product.
      */
     ATimesFn a_times_fn;
   };
@@ -79,83 +75,76 @@ namespace SUNDIALS
 
 
   /**
-   * 由SUNDIALS指定的包裹预处理功能的线性运算器。vmult()函数解决预处理方程
-   * $Px=b$ ，即计算 $x=P^{-1}b$  。
-   *
+   * A linear operator that wraps preconditioner functionality as specified by
+   * SUNDIALS. The vmult() function solves the preconditioner equation $Px=b$,
+   * i.e., it computes $x=P^{-1}b$.
    */
   template <typename VectorType>
   struct SundialsPreconditioner
   {
     /**
-     * 应用包裹的预处理程序，即解出  $Px=b$  ，其中  $x$  是
-     * @p dst  矢量，  $b$  是  @p src  矢量。          @param  dst
-     * 前处理程序应用的结果向量  @param  src
-     * 前处理程序应用的目标向量
+     * Apply the wrapped preconditioner, i.e., solve $Px=b$ where $x$ is the
+     * @p dst vector and $b$ the @p src vector.
      *
+     * @param dst Result vector of the preconditioner application
+     * @param src Target vector of the preconditioner application
      */
     void
     vmult(VectorType &dst, const VectorType &src) const;
 
     /**
-     * 构造函数。          @param  P_data  @p p_solve_fn 所需的数据
-     * @param  p_solve_fn 计算A*v的函数指针  @param  tol
-     * 迭代求解器用来判断收敛的公差
+     * Constructor.
      *
+     * @param P_data Data required by @p p_solve_fn
+     * @param p_solve_fn A function pointer to the function that computes A*v
+     * @param tol Tolerance, that an iterative solver should use to judge
+     *   convergence
      */
     SundialsPreconditioner(void *P_data, PSolveFn p_solve_fn, double tol);
 
   private:
     /**
-     * 调用p_solve_fn的必要数据
-     *
+     * Data necessary to calls p_solve_fn
      */
     void *P_data;
 
     /**
-     * %函数指针，用于计算预调节器应用的函数。
-     *
+     * %Function pointer to a function that computes the preconditioner
+     * application.
      */
     PSolveFn p_solve_fn;
 
     /**
-     * 潜在的容忍度，用于预处理程序方程的内部求解。
-     *
+     * Potential tolerance to use in the internal solve of the preconditioner
+     * equation.
      */
     double tol;
   };
 
   /**
-   * 与SUNDIALS线性求解器接口的函数对象类型
-   * 该函数类型封装了求解的动作  $P^{-1}Ax=P^{-1}b$  。
-   * LinearOperator  @p op  封装了矩阵向量乘积  $Ax$
-   * ，LinearOperator  @p prec  封装了前置条件器的应用  $P^{-1}z$
-   * 。
-   * 用户可以指定这种类型的函数对象，将自定义的线性求解器例程附加到SUNDIALS。两个LinearOperators
-   * @p op  和  @p prec
-   * 是由SUNDIALS根据用户的设置在内部建立的。参数的解释如下。
-   * @param[in]  op 一个应用矩阵向量乘积的LinearOperator
-   * @param[in]  prec 一个应用预处理的LinearOperator  @param[out]  x
-   * 输出的解向量  @param[in]  b 右手边  @param[in]  tol
-   * 迭代求解器的公差 这个函数应该返回。
+   * Type of function objects to interface with SUNDIALS linear solvers
    *
+   * This function type encapsulates the action of solving $P^{-1}Ax=P^{-1}b$.
+   * The LinearOperator @p op encapsulates the matrix vector product $Ax$ and
+   * the LinearOperator @p prec encapsulates the application of the
+   * preconditioner $P^{-1}z$.
+   * The user can specify function objects of this type to attach custom linear
+   * solver routines to SUNDIALS. The two LinearOperators @p op and @p prec are
+   * built internally by SUNDIALS based on user settings. The parameters are
+   * interpreted as follows:
    *
+   * @param[in] op A LinearOperator that applies the matrix vector product
+   * @param[in] prec A LinearOperator that applies the preconditioner
+   * @param[out] x The output solution vector
+   * @param[in] b The right-hand side
+   * @param[in] tol Tolerance for the iterative solver
    *
-   *
-   *
-   * - 0: 成功
-   *
-   *
-   *
-   *
-   * - >0: 可恢复的错误，ARKode将重新尝试解决方案并再次调用此函数。
-   *
-   *
-   *
-   *
-   *
-   *
-   * - <0: 无法恢复的错误，计算将被中止，并抛出一个断言。
-   *
+   * This function should return:
+   * - 0: Success
+   * - >0: Recoverable error, ARKode will reattempt the solution and call this
+   *       function again.
+   * - <0: Unrecoverable error, the computation will be aborted and an
+   *       assertion will be thrown.
    */
   template <typename VectorType>
   using LinearSolveFunction =
@@ -167,8 +156,12 @@ namespace SUNDIALS
 
   namespace internal
   {
-    /*!     为SUNDIALS的线性求解器接口附加包装函数。我们假装用户提供的线性求解器是无矩阵的，尽管它可以是基于矩阵的。这样，SUNDIALS就不需要理解我们的矩阵类型。   
-* */
+    /*!
+     * Attach wrapper functions to SUNDIALS' linear solver interface. We pretend
+     * that the user-supplied linear solver is matrix-free, even though it can
+     * be matrix-based. This way SUNDIALS does not need to understand our matrix
+     * types.
+     */
     template <typename VectorType>
     class LinearSolverWrapper
     {
@@ -178,8 +171,7 @@ namespace SUNDIALS
       ~LinearSolverWrapper();
 
       /**
-       * 隐式转换为SUNLinearSolver。
-       *
+       * Implicit conversion to SUNLinearSolver.
        */
       operator SUNLinearSolver();
 
@@ -195,4 +187,3 @@ DEAL_II_NAMESPACE_CLOSE
 #  endif
 #endif
 #endif
-

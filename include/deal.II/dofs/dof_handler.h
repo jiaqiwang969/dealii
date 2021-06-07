@@ -1,3 +1,4 @@
+//include/deal.II-translator/dofs/dof_handler_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1998 - 2021 by the deal.II authors
@@ -97,218 +98,87 @@ namespace parallel
 #endif
 
 /**
- * Given a triangulation and a description of a finite element, this
- * class enumerates degrees of freedom on all vertices, edges, faces,
- * and cells of the triangulation. As a result, it also provides a
- * <i>basis</i> for a discrete space $V_h$ whose elements are finite
- * element functions defined on each cell by a FiniteElement object.
- * This class satisfies the
- * @ref ConceptMeshType "MeshType concept"
- * requirements.
+ * 给定一个三角形和一个有限元的描述，这个类列举了三角形的所有顶点、边、面和单元的自由度。因此，它也为离散空间 $V_h$ 提供了一个<i>basis</i>，其元素是由FiniteElement对象在每个单元上定义的有限元函数。这个类满足了 @ref ConceptMeshType 的 "MeshType概念 "
+ * 要求。 它首次在 step-2 教程程序中使用。
+ * 对于每个顶点、直线、四边形等，这个类存储了一个生活在这个对象上的自由度指数的列表。这些指数指的是无约束的自由度，也就是说，有约束的自由度的编号与无约束的自由度的编号是一样的，只是后来被淘汰了。
+ * 这导致全局向量和矩阵中的指数也是指所有的自由度，需要进行某种浓缩来限制方程组只包括无约束的自由度。指数的实际存储布局在
+ * dealii::internal::DoFHandlerImplementation::DoFLevel 类文档中描述。
+ * 该类提供了遍历所有单元的迭代器，与Triangulation类的方式基本相同。使用begin()和end()函数（和同伴，如begin_active()），可以获得遍历单元的迭代器，并查询自由度结构以及三角形的数据。这些迭代器建立在Triangulation类的迭代器之上，但与纯粹的三角形迭代器相比，提供了额外的自由度功能信息。自由度迭代器由<tt>++</tt>和<tt>--</tt>操作符呈现的顺序与遍历三角形的相应迭代器相同，该DoFHandler是在三角形上构建的。
+ * 如果要解决曲面上的问题，必须使用<tt>spacedim</tt>参数。如果没有指定，这个参数的默认值是<tt>=dim</tt>，意味着我们要在一个维度等于它所嵌入的空间维度的域中解决问题。
  *
- * It is first used in the step-2 tutorial program.
+ *  <h3>Distribution of indices for degrees of freedom</h3>
+ * 自由度（`dofs'）通过函数distribut_dofs()在给定的三角形上分布。它被传递给一个有限元对象，描述有多少自由度位于顶点、线等处。它逐个遍历三角形，如果尚未编号，则对该单元的自由度进行编号。对于非多重网格算法，只考虑活动单元。活动单元被定义为那些没有子单元的单元，也就是说，它们是最精细的单元。
+ * 由于三角形的遍历是从最粗的活动层的单元开始，然后到更细的层次，因此最大的单元以及它们的边界线和顶点的系数最低，更细的单元的系数更高。
+ * 这种编号方式意味着所得矩阵的带宽非常大，因此对于某些求解算法来说是非常不理想的。由于这个原因，DoFRenumbering类提供了几种算法来重新安排dof的编号。关于已实现的算法的讨论见这里。
  *
- * For each vertex, line, quad, etc, this class stores a list of the indices
- * of degrees of freedom living on this object. These indices refer to the
- * unconstrained degrees of freedom, i.e. constrained degrees of freedom are
- * numbered in the same way as unconstrained ones, and are only later
- * eliminated.  This leads to the fact that indices in global vectors and
- * matrices also refer to all degrees of freedom and some kind of condensation
- * is needed to restrict the systems of equations to the unconstrained degrees
- * of freedom only. The actual layout of storage of the indices is described
- * in the dealii::internal::DoFHandlerImplementation::DoFLevel class
- * documentation.
+ *  <h3>Interaction with distributed meshes</h3>
+ * 在构造时，这个类需要一个对三角形对象的引用。在大多数情况下，这将是对Triangulation类型对象的引用，即代表完全驻留在单个处理器上的三角形的类。然而，它也可以是 parallel::distributed::Triangulation
+ * 类型（例如，见 step-32 、 step-40 ，特别是 @ref distributed
+ * 模块），在这种情况下，DoFHandler对象将只管理本地拥有的和幽灵单元的自由度。这个过程对使用者来说是完全透明的。
  *
- * The class offers iterators to traverse all cells, in much the same way as
- * the Triangulation class does. Using the begin() and end() functions (and
- * companions, like begin_active()), one can obtain iterators to walk over
- * cells, and query the degree of freedom structures as well as the
- * triangulation data. These iterators are built on top of those of the
- * Triangulation class, but offer the additional information on degrees of
- * freedom functionality compared to pure triangulation iterators. The order
- * in which dof iterators are presented by the <tt>++</tt> and <tt>\--</tt>
- * operators is the same as that for the corresponding iterators traversing
- * the triangulation on which this DoFHandler is constructed.
+ *  <h3>User defined renumbering schemes</h3>
+ * DoFRenumbering类提供了许多重新编号的方案，如Cuthill-McKee方案。基本上，该函数设置了一个数组，在这个数组中，我们为每个自由度存储了重新编号后这个自由度应该有的新索引。使用这个数组，本类的renumber_dofs()函数被调用，它实际上执行了从旧的DoF指数到数组中给出的指数的改变。然而，在某些情况下，用户可能想计算他们自己的重新编号顺序；在这种情况下，可以分配一个数组，每个自由度有一个元素，并在其中填入各自自由度应被分配的编号。例如，这个数字可以通过对下风方向的自由度的支持点进行排序来获得。
+ * 然后用数组调用
+ * <tt>renumber_dofs(vector<types::global_dof_index>)</tt>
+ * 函数，将旧的自由度指数转换为新的自由度指数。
  *
- * The <tt>spacedim</tt> parameter has to be used if one wants to solve
- * problems on surfaces. If not specified, this parameter takes the default
- * value <tt>=dim</tt> implying that we want to solve problems in a domain
- * whose dimension equals the dimension of the space in which it is embedded.
+ *  <h3>Serializing (loading or storing) DoFHandler objects</h3>
+ * 像deal.II中的许多其他类一样，DoFHandler类可以使用BOOST的序列化设施将其内容流向一个存档。这样存储的数据以后可以再次从存档中检索，以恢复这个对象的内容。这个工具经常被用来将程序的状态保存到磁盘上，以便以后可能复活，通常是在长期运行的计算的检查点/重启策略的背景下，或者在不是很可靠的计算机上（例如，在非常大的集群上，个别节点偶尔会出现故障，然后导致整个MPI作业的失败）。
+ * DoFHandler类这样做的模式与Triangulation类相似（见该类的一般文档中的章节）。特别是，load()函数并不完全恢复与之前使用save()函数存储的相同状态。相反，该函数假设你将数据加载到一个DoFHandler对象中，该对象已经与一个三角测量相关联，其内容与保存数据时使用的三角测量一致。同样，load()函数假定当前对象已经与一个有限元对象相关联，该对象与数据保存时的对象相匹配；后者可以通过在从序列化存档中重新加载数据之前使用同种有限元调用
+ * DoFHandler::distribute_dofs() 实现。
  *
+ *  <h3>hp-adaptive finite element methods</h3>
+ * 该类不允许在所有单元上只使用一个特定的有限元，而是允许在每个单元上列举不同有限元的自由度。为此，我们给每个单元格分配一个
+ * <code>active_fe_index</code>
+ * ，表示在有限元集合中的哪个元素（由 hp::FECollection)
+ * 类型的对象代表）是住在这个单元格上的。然后，该类列举了三角形的每个单元上与这些有限元相关的自由度，如果可能的话，还可以识别单元界面上的自由度，如果它们匹配的话。如果相邻的单元沿共同界面的自由度不立即匹配（例如，如果你有
+ * $Q_2$ 和 $Q_3$
+ * 元素在一个共同的面相遇），那么就需要计算约束，以确保网格上产生的有限元空间保持一致。
+ * 使用这种类型的对象的整个过程在  step-27  中解释。这个类实现的许多算法在 @ref hp_paper  "hp-paper "
+ * 中描述。
  *
- * <h3>Distribution of indices for degrees of freedom</h3>
- *
- * The degrees of freedom (`dofs') are distributed on the given triangulation
- * by the function distribute_dofs(). It gets passed a finite element object
- * describing how many degrees of freedom are located on vertices, lines, etc.
- * It traverses the triangulation cell by cell and numbers the dofs of that
- * cell if not yet numbered. For non-multigrid algorithms, only active cells
- * are considered. Active cells are defined to be those cells which have no
- * children, i.e. they are the most refined ones.
- *
- * Since the triangulation is traversed starting with the cells of the
- * coarsest active level and going to more refined levels, the lowest numbers
- * for dofs are given to the largest cells as well as their bounding lines and
- * vertices, with the dofs of more refined cells getting higher numbers.
- *
- * This numbering implies very large bandwidths of the resulting matrices and
- * is thus vastly suboptimal for some solution algorithms. For this reason,
- * the DoFRenumbering class offers several algorithms to reorder the dof
- * numbering according. See there for a discussion of the implemented
- * algorithms.
+ *  <h3>Active FE indices and their behavior under mesh refinement</h3>
+ * 使用这个类的典型工作流程是创建一个网格，给每个活动单元分配一个活动FE索引，调用
+ * DoFHandler::distribute_dofs(),
+ * ，然后在这个有限元空间上组装一个线性系统并解决问题。
+ * 活跃FE指数将在网格适应过程中自动从旧网格转移到新网格。未来的FE指数是用来确定网格适应后的活动FE指数，并用于为新网格准备旧网格上的数据。如果没有指定未来FE指数，则以有限元为准。
+ * 特别是在适应过程中，以下规则适用。
  *
  *
- * <h3>Interaction with distributed meshes</h3>
  *
- * Upon construction, this class takes a reference to a triangulation object.
- * In most cases, this will be a reference to an object of type Triangulation,
- * i.e. the class that represents triangulations that entirely reside on a
- * single processor. However, it can also be of type
- * parallel::distributed::Triangulation (see, for example, step-32, step-40
- * and in particular the
- * @ref distributed
- * module) in which case the DoFHandler object will proceed to only manage
- * degrees of freedom on locally owned and ghost cells. This process is
- * entirely transparent to the used.
+ * - 网格细化时，子单元会继承父单元的未来FE指数。
  *
  *
- * <h3>User defined renumbering schemes</h3>
  *
- * The DoFRenumbering class offers a number of renumbering schemes like the
- * Cuthill-McKee scheme. Basically, the function sets up an array in which for
- * each degree of freedom we store the new index this DoF should have after
- * renumbering. Using this array, the renumber_dofs() function of the present
- * class is called, which actually performs the change from old DoF indices to
- * the ones given in the array. In some cases, however, a user may want to
- * compute their own renumbering order; in this case, one can allocate an array
- * with one element per degree of freedom and fill it with the number that the
- * respective degree of freedom shall be assigned. This number may, for
- * example, be obtained by sorting the support points of the degrees of
- * freedom in downwind direction.  Then call the
- * <tt>renumber_dofs(vector<types::global_dof_index>)</tt> function with the
- * array, which converts old into new degree of freedom indices.
+ * - 当粗化单元时，父单元（现在处于活动状态）将被分配一个未来的FE指数，该指数由其（不再活动的）子单元决定，遵循FiniteElementDomination逻辑。在以前分配给前子女的元素集合中，我们选择一个由所有子女支配的元素作为父单元。如果没有找到，我们就在整个集合中挑选一个被所有前子女支配的最主要的元素。关于这个主题的进一步信息，请参见 hp::FECollection::find_dominated_fe_extended() 。
+ * 在 hp::Refinement
+ * 命名空间中，有自动hp-适应的策略，它将根据标准设置未来的FE指数。
  *
+ *  <h3>Active FE indices and parallel meshes</h3> 当该类与
+ * parallel::shared::Triangulation  或  parallel::distributed::Triangulation,
+ * 一起使用时，你只能通过
+ * <code>cell-@>set_active_fe_index(...)</code>
+ * 这样的调用，在本地拥有的单元上设置活动FE指数。另一方面，不允许在幽灵或人造单元上设置活动FE指数。
+ * 然而，幽灵单元确实获得了什么元素在其上处于活动状态的信息：每当你调用
+ * DoFHandler::distribute_dofs(),
+ * 时，所有参与并行网格的处理器都会以这样的方式交换信息，幽灵单元上的活动FE指数等于在拥有该特定幽灵单元的处理器上设置的活动FE指数。因此，人们可以在幽灵单元上<i>query</i>
+ * @p active_fe_index ，只是不能用手去设置它。
+ * 在人工单元上，没有关于那里使用的 @p active_fe_index 的信息。这是因为我们甚至不知道这些细胞是否存在，即使存在，目前的处理器也不知道关于它们的任何具体信息。更多信息见 @ref GlossArtificialCell "人工细胞的词汇表条目"
+ * 。 在细化和粗化过程中，关于每个单元的 @p active_fe_index
+ * 的信息将被自动转移。
+ * 然而，在hp模式下使用带有DoFHandler的
+ * parallel::distributed::Triangulation
+ * ，在序列化过程中需要额外注意，因为没有关于活动FE指数的信息会被自动传输。这必须使用prepare_for_serialization_of_active_fe_indices()和deserialize_active_fe_indices()函数手动完成。前者必须在调用
+ * parallel::distributed::Triangulation::save() 之前调用，后者需要在
+ * parallel::distributed::Triangulation::load(). 之后运行。
+ * 如果进一步的数据将通过 parallel::distributed::CellDataTransfer,
+ * parallel::distributed::SolutionTransfer, 或 Particles::ParticleHandler
+ * 类附加到三角形上，所有相应的准备和反序列化函数调用需要以相同顺序发生。更多信息请参考
+ * parallel::distributed::SolutionTransfer 的文档。
  *
- * <h3>Serializing (loading or storing) DoFHandler objects</h3>
- *
- * Like many other classes in deal.II, the DoFHandler class can stream its
- * contents to an archive using BOOST's serialization facilities. The data so
- * stored can later be retrieved again from the archive to restore the
- * contents of this object. This facility is frequently used to save the state
- * of a program to disk for possible later resurrection, often in the context
- * of checkpoint/restart strategies for long running computations or on
- * computers that aren't very reliable (e.g. on very large clusters where
- * individual nodes occasionally fail and then bring down an entire MPI job).
- *
- * The model for doing so is similar for the DoFHandler class as it is for the
- * Triangulation class (see the section in the general documentation of that
- * class). In particular, the load() function does not exactly restore the
- * same state as was stored previously using the save() function. Rather, the
- * function assumes that you load data into a DoFHandler object that is
- * already associated with a triangulation that has a content that matches the
- * one that was used when the data was saved. Likewise, the load() function
- * assumes that the current object is already associated with a finite element
- * object that matches the one that was associated with it when data was
- * saved; the latter can be achieved by calling DoFHandler::distribute_dofs()
- * using the same kind of finite element before re-loading data from the
- * serialization archive.
- *
- *
- * <h3>hp-adaptive finite element methods</h3>
- *
- * Instead of only using one particular FiniteElement on all cells, this class
- * also allows for an enumeration of degrees of freedom on different finite
- * elements on every cells. To this end, one assigns an
- * <code>active_fe_index</code> to every cell that indicates which element
- * within a collection of finite elements (represented by an object of type
- * hp::FECollection) is the one that lives on this cell. The class then
- * enumerates the degree of freedom associated with these finite elements on
- * each cell of a triangulation and, if possible, identifies degrees of
- * freedom at the interfaces of cells if they match. If neighboring cells
- * have degrees of freedom along the common interface that do not immediate
- * match (for example, if you have $Q_2$ and $Q_3$ elements meeting at a
- * common face), then one needs to compute constraints to ensure that the
- * resulting finite element space on the mesh remains conforming.
- *
- * The whole process of working with objects of this type is explained in
- * step-27. Many of the algorithms this class implements are described in
- * the
- * @ref hp_paper "hp-paper".
- *
- *
- * <h3>Active FE indices and their behavior under mesh refinement</h3>
- *
- * The typical workflow for using this class is to create a mesh, assign an
- * active FE index to every active cell, call DoFHandler::distribute_dofs(),
- * and then assemble a linear system and solve a problem on this finite element
- * space.
- *
- * Active FE indices will be automatically transferred during mesh adaptation
- * from the old to the new mesh. Future FE indices are meant to determine the
- * active FE index after mesh adaptation, and are used to prepare data on the
- * old mesh for the new one. If no future FE index is specified, the finite
- * element prevails.
- *
- * In particular, the following rules apply during adaptation:
- * - Upon mesh refinement, child cells inherit the future FE index of
- *   the parent.
- * - When coarsening cells, the (now active) parent cell will be assigned
- *   a future FE index that is determined from its (no longer active)
- *   children, following the FiniteElementDomination logic: Out of the set of
- *   elements previously assigned to the former children, we choose the one
- *   dominated by all children for the parent cell. If none was found, we pick
- *   the most dominant element in the whole collection that is dominated by
- *   all former children. See hp::FECollection::find_dominated_fe_extended()
- *   for further information on this topic.
- *
- * Strategies for automatic hp-adaptation which will set future FE indices based
- * on criteria are available in the hp::Refinement namespace.
- *
- *
- * <h3>Active FE indices and parallel meshes</h3>
- *
- * When this class is used with either a parallel::shared::Triangulation
- * or a parallel::distributed::Triangulation, you can only set active
- * FE indices on cells that are locally owned,
- * using a call such as <code>cell-@>set_active_fe_index(...)</code>.
- * On the other hand, setting the active FE index on ghost
- * or artificial cells is not allowed.
- *
- * Ghost cells do acquire the information what element
- * is active on them, however: whenever you call DoFHandler::distribute_dofs(),
- * all processors that participate in the parallel mesh exchange information in
- * such a way that the active FE index on ghost cells equals the active FE index
- * that was set on that processor that owned that particular ghost cell.
- * Consequently, one can <i>query</i> the @p active_fe_index on ghost
- * cells, just not set it by hand.
- *
- * On artificial cells, no information is available about the
- * @p active_fe_index used there. That's because we don't even know
- * whether these cells exist at all, and even if they did, the
- * current processor does not know anything specific about them.
- * See
- * @ref GlossArtificialCell "the glossary entry on artificial cells"
- * for more information.
- *
- * During refinement and coarsening, information about the @p active_fe_index
- * of each cell will be automatically transferred.
- *
- * However, using a parallel::distributed::Triangulation with a DoFHandler
- * in hp-mode requires additional attention during serialization, since no
- * information on active FE indices will be automatically transferred. This
- * has to be done manually using the
- * prepare_for_serialization_of_active_fe_indices() and
- * deserialize_active_fe_indices() functions. The former has to be called
- * before parallel::distributed::Triangulation::save() is invoked, and the
- * latter needs to be run after parallel::distributed::Triangulation::load().
- * If further data will be attached to the triangulation via the
- * parallel::distributed::CellDataTransfer,
- * parallel::distributed::SolutionTransfer, or Particles::ParticleHandler
- * classes, all corresponding preparation and deserialization function calls
- * need to happen in the same order. Consult the documentation of
- * parallel::distributed::SolutionTransfer for more information.
  *
  * @ingroup dofs
+ *
  */
 template <int dim, int spacedim = dim>
 class DoFHandler : public Subscriptor
@@ -320,179 +190,98 @@ class DoFHandler : public Subscriptor
 
 public:
   /**
-   * An alias that is used to identify cell iterators in DoFHandler objects.
-   * The concept of iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias works, in essence, like the corresponding
-   * Triangulation::cell_accessor alias. However, it also makes available
-   * the member functions of DoFCellAccessor, in addition to the ones
-   * already available through the CellAccessor class.
-   *
+   * 一个别名，用于识别DoFHandler对象中的单元格迭代器。  迭代器的概念在 @ref Iterators "迭代器文档模块 "
+   * 中有详细的讨论。    目前的别名在本质上与相应的
+   * Triangulation::cell_accessor
+   * 别名一样工作。然而，除了已经通过CellAccessor类提供的成员函数外，它还提供了DoFCellAccessor的成员函数。
    * @ingroup Iterators
+   *
    */
   using cell_accessor = typename ActiveSelector::CellAccessor;
 
   /**
-   * An alias that is used to identify iterators that point to faces.
-   * The concept of iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias works, in essence, like the corresponding
-   * Triangulation::face_accessor alias. However, it also makes available
-   * the member functions of DoFAccessor, in addition to the ones
-   * already available through the TriaAccessor class.
-   *
+   * 一个别名，用于识别指向面的迭代器。  迭代器的概念在 @ref Iterators "迭代器文档模块 "
+   * 中有详细的讨论。    当前的别名在本质上与相应的
+   * Triangulation::face_accessor
+   * 别名一样工作。然而，除了已经通过TriaAccessor类提供的成员函数外，它还提供了DoFAccessor的成员函数。
    * @ingroup Iterators
+   *
    */
   using face_accessor = typename ActiveSelector::FaceAccessor;
 
   /**
-   * An alias that defines an iterator over the (one-dimensional) lines
-   * of a mesh. In one-dimensional meshes, these are the cells of the mesh,
-   * whereas in two-dimensional meshes the lines are the faces of cells.
-   *
+   * 一个别名，定义了一个网格的（一维）线条的迭代器。在一维网格中，这些线是网格的单元，而在二维网格中，这些线是单元的面。
    * @ingroup Iterators
+   *
    */
   using line_iterator = typename ActiveSelector::line_iterator;
 
   /**
-   * An alias that allows iterating over the <i>active</i> lines, i.e.,
-   * that subset of lines that have no children. In one-dimensional meshes,
-   * these are the cells of the mesh, whereas in two-dimensional
-   * meshes the lines are the faces of cells.
-   *
-   * In two- or three-dimensional meshes, lines without children (i.e.,
-   * the active lines) are part of at least one active cell. Each such line may
-   * additionally be a child of a line of a coarser cell adjacent to a cell
-   * that is active. (This coarser neighbor would then also be active.)
-   *
+   * 一个别名，允许在<i>active</i>线上迭代，即没有子节点的线的子集。在一维网格中，这些是网格的单元，而在二维网格中，线是单元的面。
+   * 在二维或三维网格中，没有子节点的线（即活动线）是至少一个活动单元的一部分。每条这样的线还可能是与活动单元相邻的更粗的单元的线的子线。(这个较粗的邻居也是活动的)。
    * @ingroup Iterators
+   *
    */
   using active_line_iterator = typename ActiveSelector::active_line_iterator;
 
   /**
-   * An alias that defines an iterator over the (two-dimensional) quads
-   * of a mesh. In two-dimensional meshes, these are the cells of the mesh,
-   * whereas in three-dimensional meshes the quads are the faces of cells.
-   *
+   * 一个别名，定义了一个网格的（二维）四边形的迭代器。在二维网格中，这些是网格的单元，而在三维网格中，四边形是单元的面。
    * @ingroup Iterators
+   *
    */
   using quad_iterator = typename ActiveSelector::quad_iterator;
 
   /**
-   * An alias that allows iterating over the <i>active</i> quads, i.e.,
-   * that subset of quads that have no children. In two-dimensional meshes,
-   * these are the cells of the mesh, whereas in three-dimensional
-   * meshes the quads are the faces of cells.
-   *
-   * In three-dimensional meshes, quads without children (i.e.,
-   * the active quads) are faces of at least one active cell. Each such quad may
-   * additionally be a child of a quad face of a coarser cell adjacent to a cell
-   * that is active. (This coarser neighbor would then also be active.)
-   *
+   * 一个允许在<i>active</i>四边形上迭代的别名，即没有子节点的四边形子集。在二维网格中，这些是网格的单元，而在三维网格中，四边形是单元的面。
+   * 在三维网格中，没有孩子的四边形（即活动四边形）是至少一个活动单元的面。每个这样的四边形还可能是与活动单元相邻的更粗的单元的四边形面的子。这个较粗的邻居也将是活动的）。
    * @ingroup Iterators
+   *
    */
   using active_quad_iterator = typename ActiveSelector::active_quad_iterator;
 
   /**
-   * An alias that defines an iterator over the (three-dimensional) hexes
-   * of a mesh. This iterator only makes sense in three-dimensional meshes,
-   * where hexes are the cells of the mesh.
-   *
+   * 一个别名，定义了一个网格的（三维）六边形的迭代器。这个迭代器只有在三维网格中才有意义，在三维网格中六边形是网格的单元。
    * @ingroup Iterators
+   *
    */
   using hex_iterator = typename ActiveSelector::hex_iterator;
 
   /**
-   * An alias that allows iterating over the <i>active</i> hexes of a mesh.
-   * This iterator only makes sense in three-dimensional meshes,
-   * where hexes are the cells of the mesh. Consequently, in these
-   * three-dimensional meshes, this iterator is equivalent to the
-   * @p active_cell_iterator alias.
-   *
+   * 一个别名，允许遍历网格的<i>active</i>个六边形。
+   * 这个迭代器只有在三维网格中才有意义，在三维网格中六边形是网格的单元。因此，在这些三维网格中，这个迭代器等同于
+   * @p active_cell_iterator  别名。
    * @ingroup Iterators
+   *
    */
   using active_hex_iterator = typename ActiveSelector::active_hex_iterator;
 
   /**
-   * An alias that is used to identify
-   * @ref GlossActive "active cell iterators".
-   * The concept of iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias identifies active cells in a DoFHandler object. While
-   * the actual data type of the alias is hidden behind a few layers of
-   * (unfortunately necessary) indirections, it is in essence
-   * TriaActiveIterator<DoFCellAccessor>. The TriaActiveIterator class works
-   * like a pointer to active objects that when you dereference it yields an
-   * object of type DoFCellAccessor. DoFCellAccessor is a class that
-   * identifies properties that are specific to cells in a DoFHandler, but it
-   * is derived (and consequently inherits) from both DoFAccessor,
-   * TriaCellAccessor and TriaAccessor that describe what you can ask of more
-   * general objects (lines, faces, as well as cells) in a triangulation and
-   * DoFHandler objects.
-   *
    * @ingroup Iterators
+   *
    */
   using active_cell_iterator = typename ActiveSelector::active_cell_iterator;
 
   /**
-   * An alias that is used to identify cell iterators. The concept of
-   * iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * The current alias identifies cells in a DoFHandler object. Some of
-   * these cells may in fact be active (see
-   * @ref GlossActive "active cell iterators")
-   * in which case they can in fact be asked for the degrees of freedom that
-   * live on them. On the other hand, if the cell is not active, any such
-   * query will result in an error. Note that this is what distinguishes this
-   * alias from the level_cell_iterator alias.
-   *
-   * While the actual data type of the alias is hidden behind a few layers
-   * of (unfortunately necessary) indirections, it is in essence
-   * TriaIterator<DoFCellAccessor>. The TriaIterator class works like a
-   * pointer to objects that when you dereference it yields an object of type
-   * DoFCellAccessor. DoFCellAccessor is a class that identifies properties
-   * that are specific to cells in a DoFHandler, but it is derived (and
-   * consequently inherits) from both DoFAccessor, TriaCellAccessor and
-   * TriaAccessor that describe what you can ask of more general objects
-   * (lines, faces, as well as cells) in a triangulation and DoFHandler
-   * objects.
-   *
    * @ingroup Iterators
+   *
    */
   using cell_iterator = typename ActiveSelector::cell_iterator;
 
   /**
-   * An alias that is used to identify iterators that point to faces.
-   * The concept of iterators is discussed at length in the
-   * @ref Iterators "iterators documentation module".
-   *
-   * While the actual data type of the alias is hidden behind a few layers
-   * of (unfortunately necessary) indirections, it is in essence
-   * TriaIterator<DoFAccessor>. The
-   * TriaIterator class works like a pointer to objects that when
-   * you dereference it yields an object of type DoFAccessor. DoFAccessor,
-   * in turn, is a class that can be used to query DoF indices on faces,
-   * but it is also derived from TriaAccessor and consequently can be used
-   * to query geometric properties such as vertices of faces, their area, etc.
-   *
+   * 一个别名，用于识别指向面的迭代器。  迭代器的概念在 @ref Iterators "迭代器文档模块 "
+   * 中有详细的讨论。
+   * 虽然这个别名的实际数据类型隐藏在几层（不幸的是必须的）间接因素后面，但它本质上是TriaIterator<DoFAccessor>。TriaIterator类的工作方式就像一个指向对象的指针，当你解除引用时，会产生一个DoFAccessor类型的对象。DoFAccessor又是一个可以用来查询面的DoF索引的类，但它也是从TriaAccessor派生出来的，因此可以用来查询几何属性，如面的顶点、面积等。
    * @ingroup Iterators
+   *
    */
   using face_iterator = typename ActiveSelector::face_iterator;
 
   /**
-   * An alias that is used to identify iterators that point to active faces,
-   * i.e., to faces that have no children. Active faces must be faces of at
-   * least one active cell.
-   *
-   * Other than the "active" qualification, this alias is identical to the
-   * @p face_iterator alias. In particular, dereferencing either yields
-   * the same kind of object.
-   *
+   * 一个别名，用于识别指向活动面的迭代器，即指向没有子节点的面。活动面必须是至少一个活动单元的面。
+   * 除了 "活动 "的限定，这个别名与 @p face_iterator
+   * 的别名相同。特别是，取消引用这两个别名都会产生相同的对象。
    * @ingroup Iterators
+   *
    */
   using active_face_iterator = typename ActiveSelector::active_face_iterator;
 
@@ -504,80 +293,86 @@ public:
 
 
   /**
-   * Make the dimension available in function templates.
+   * 让维度在函数模板中可用。
+   *
    */
   static const unsigned int dimension = dim;
 
   /**
-   * Make the space dimension available in function templates.
+   * 使空间维度在函数模板中可用。
+   *
    */
   static const unsigned int space_dimension = spacedim;
 
   /**
-   * The default index of the finite element to be used on a given cell.
+   * 在给定单元上使用的有限元的默认索引。
+   *
    */
   static const unsigned int default_fe_index = 0;
 
   /**
-   * Invalid index of the finite element to be used on a given cell.
+   * 在给定单元上使用的有限元的无效索引。
+   *
    */
   static const unsigned int invalid_fe_index = numbers::invalid_unsigned_int;
 
   /**
-   * The type in which we store the active FE index.
+   * 我们存储活动FE索引的类型。
+   *
    */
   using active_fe_index_type = unsigned short int;
 
   /**
-   * The type in which we store the offsets in the CRS data structures.
+   * 我们在CRS数据结构中存储偏移量的类型。
+   *
    */
   using offset_type = unsigned int;
 
   /**
-   * Invalid active FE index which will be used as a default value to determine
-   * whether a future FE index has been set or not.
+   * 无效的活动FE索引，它将被用作默认值，以确定未来的FE索引是否已经被设置。
+   *
    */
   static const active_fe_index_type invalid_active_fe_index =
     static_cast<active_fe_index_type>(-1);
 
   /**
-   * Standard constructor, not initializing any data. After constructing an
-   * object with this constructor, use reinit() to get a valid DoFHandler.
+   * 标准构造函数，不初始化任何数据。用这个构造函数构造一个对象后，使用
+   * reinit() 得到一个有效的 DoFHandler。
+   *
    */
   DoFHandler();
 
   /**
-   * Constructor. Take @p tria as the triangulation to work on.
+   * 构造函数。以 @p tria 作为工作中的三角关系。
+   *
    */
   explicit DoFHandler(const Triangulation<dim, spacedim> &tria);
 
   /**
-   * Copy constructor. DoFHandler objects are large and expensive.
-   * They should not be copied, in particular not by accident, but
-   * rather deliberately constructed. As a consequence, this constructor
-   * is explicitly removed from the interface of this class.
+   * 复制构造函数。DoFHandler对象很大，很昂贵。
+   * 它们不应该被复制，特别是不应该被意外地复制，而应该被有意地构造。因此，这个构造函数被明确地从这个类的接口中移除。
+   *
    */
   DoFHandler(const DoFHandler &) = delete;
 
   /**
-   * Destructor.
+   * 解构器。
+   *
    */
   virtual ~DoFHandler() override;
 
   /**
-   * Copy operator. DoFHandler objects are large and expensive.
-   * They should not be copied, in particular not by accident, but
-   * rather deliberately constructed. As a consequence, this operator
-   * is explicitly removed from the interface of this class.
+   * 复制操作符。DoFHandler对象是大的和昂贵的。
+   * 它们不应该被复制，特别是不应该被意外地复制，而应该被有意地构建。因此，这个操作符被明确地从这个类的接口中移除。
+   *
    */
   DoFHandler &
   operator=(const DoFHandler &) = delete;
 
   /**
-   * Assign a Triangulation and a FiniteElement to the DoFHandler and compute
-   * the distribution of degrees of freedom over the mesh.
+   * 给DoFHandler分配一个三角形和一个有限元素，并计算网格上的自由度分布。
+   * @deprecated  使用 reinit() 和 distribute_dofs() 来代替。
    *
-   * @deprecated Use reinit() and distribute_dofs() instead.
    */
   DEAL_II_DEPRECATED
   void
@@ -585,9 +380,9 @@ public:
              const FiniteElement<dim, spacedim> &fe);
 
   /**
-   * Same as above but taking an hp::FECollection object.
+   * 与上述相同，但需要一个 hp::FECollection 对象。
+   * @deprecated  使用 reinit() 和 distribute_dofs() 来代替。
    *
-   * @deprecated Use reinit() and distribute_dofs() instead.
    */
   DEAL_II_DEPRECATED
   void
@@ -595,534 +390,404 @@ public:
              const hp::FECollection<dim, spacedim> &fe);
 
   /**
-   * Assign a FiniteElement @p fe to this object.
-   *
-   * @note This function makes a copy of the finite element given as
-   * argument, and stores it as a member variable. Consequently, it is
-   * possible to write code such as
+   * 给这个对象分配一个FiniteElement  @p fe  。
+   * @note
+   * 这个函数对作为参数的有限元进行复制，并将其作为成员变量存储。因此，可以编写如下代码
    * @code
-   *   dof_handler.set_fe(FE_Q<dim>(2));
+   * dof_handler.set_fe(FE_Q<dim>(2));
    * @endcode
-   * You can then access the finite element later on by calling
-   * DoFHandler::get_fe(). However, it is often more convenient to
-   * keep a named finite element object as a member variable in your
-   * main class and refer to it directly whenever you need to access
-   * properties of the finite element (such as
-   * FiniteElementData::dofs_per_cell). This is what all tutorial programs do.
+   * 然后你可以通过调用 DoFHandler::get_fe().
+   * 来访问有限元。然而，通常更方便的做法是将命名的有限元对象作为成员变量保存在你的主类中，当你需要访问有限元的属性时直接引用它（如
+   * FiniteElementData::dofs_per_cell).
+   * 这就是所有教程程序的做法。      @warning
+   * 这个函数只设置一个FiniteElement。自由度要么还没有被分配，要么是使用先前设置的元素进行分配。在这两种情况下，访问自由度将导致无效的结果。为了恢复一致性，请调用distribution_dofs()。
+   * @deprecated  用distribution_dofs()代替。
    *
-   * @warning This function only sets a FiniteElement. Degrees of freedom have
-   * either not been distributed yet, or are distributed using a previously set
-   * element. In both cases, accessing degrees of freedom will lead to invalid
-   * results. To restore consistency, call distribute_dofs().
-   *
-   * @deprecated Use distribute_dofs() instead.
    */
   DEAL_II_DEPRECATED
   void
   set_fe(const FiniteElement<dim, spacedim> &fe);
 
   /**
-   * Same as above but taking an hp::FECollection object.
+   * 与上述相同，但需要一个 hp::FECollection 对象。
+   * @deprecated  使用 distribute_dofs() 来代替。
    *
-   * @deprecated Use distribute_dofs() instead.
    */
   DEAL_II_DEPRECATED
   void
   set_fe(const hp::FECollection<dim, spacedim> &fe);
 
   /**
-   * Go through the triangulation and set the active FE indices of all
-   * active cells to the values given in @p active_fe_indices.
+   * 穿过三角形，将所有活动单元的活动FE指数设置为 @p
+   * active_fe_indices. 中给出的值。
+   *
    */
   void
   set_active_fe_indices(const std::vector<unsigned int> &active_fe_indices);
 
   /**
-   * Go through the triangulation and store the active FE indices of all
-   * active cells to the vector @p active_fe_indices. This vector is
-   * resized, if necessary.
+   * 通过三角剖分，将所有活动单元的活动FE指数存储到向量
+   * @p active_fe_indices. 中，如有必要，该向量将被调整大小。
+   *
    */
   void
   get_active_fe_indices(std::vector<unsigned int> &active_fe_indices) const;
 
   /**
-   * Assign a Triangulation to the DoFHandler.
+   * 给DoFHandler分配一个三角图。
+   * 移除与之前的Triangulation对象的所有关联，并与新对象建立连接。所有关于以前的自由度的信息将被删除。激活hp-mode。
    *
-   * Remove all associations with the previous Triangulation object and
-   * establish connections with the new one. All information about previous
-   * degrees of freedom will be removed. Activates hp-mode.
    */
   void
   reinit(const Triangulation<dim, spacedim> &tria);
 
   /**
-   * Go through the triangulation and "distribute" the degrees of
-   * freedom needed for the given finite element. "Distributing"
-   * degrees of freedom involves allocating memory to store the
-   * indices on all entities on which degrees of freedom can be
-   * located (e.g., vertices, edges, faces, etc.) and to then enumerate
-   * all degrees of freedom. In other words, while the mesh and the
-   * finite element object by themselves simply define a finite
-   * element space $V_h$, the process of distributing degrees of
-   * freedom makes sure that there is a basis for this space and that
-   * the shape functions of this basis are enumerated in an indexable,
-   * predictable way.
+   * 通过三角剖分并 "分配
+   * "给定有限元所需的自由度。"分布
+   * "自由度包括分配内存来存储所有自由度的实体（如顶点、边、面等）的索引，然后列举所有自由度。换句话说，虽然网格和有限元对象本身只是定义了一个有限元空间
+   * $V_h$
+   * ，但分配自由度的过程确保了这个空间有一个基础，并且这个基础的形状函数是以可索引、可预测的方式列举的。
+   * 网格上自由度的确切顺序，即有限元空间的基函数被列举的顺序，是deal.II作为一个实现细节处理的东西。一般来说，自由度的列举顺序与我们遍历单元的顺序相同，但你不应该依赖任何特定的编号。相反，如果你想要一个特定的顺序，可以使用命名空间DoFRenumbering中的函数。
+   * 这个函数在 step-2 教程程序的介绍中首次讨论。
+   * @note
+   * 该函数对作为参数给定的有限元进行复制，并将其存储为成员变量，与上述函数set_fe()类似。
    *
-   * The exact order in which degrees of freedom on a mesh are
-   * ordered, i.e., the order in which basis functions of the finite
-   * element space are enumerated, is something that deal.II treats as
-   * an implementation detail. By and large, degrees of freedom are
-   * enumerated in the same order in which we traverse cells, but you
-   * should not rely on any specific numbering. In contrast, if you
-   * want a particular ordering, use the functions in namespace
-   * DoFRenumbering.
-   *
-   * This function is first discussed in the introduction to the
-   * step-2 tutorial program.
-   *
-   * @note This function makes a copy of the finite element given as
-   * argument, and stores it as a member variable, similarly to the above
-   * function set_fe().
    */
   void
   distribute_dofs(const FiniteElement<dim, spacedim> &fe);
 
   /**
-   * Same as above but taking an hp::FECollection object.
+   * 同上，但取一个 hp::FECollection 对象。
+   *
    */
   void
   distribute_dofs(const hp::FECollection<dim, spacedim> &fe);
 
   /**
-   * Distribute level degrees of freedom on each level for geometric
-   * multigrid. The active DoFs need to be distributed using distribute_dofs()
-   * before calling this function.
+   * 为几何多网格在每个层面上分配层面自由度。在调用此函数之前，需要使用distribut_dofs()来分配活动的自由度。
+   *
    */
   void
   distribute_mg_dofs();
 
   /**
-   * Returns whether this DoFHandler has hp-capabilities.
+   * 返回这个DoFHandler是否有hp能力。
+   *
    */
   bool
   has_hp_capabilities() const;
 
   /**
-   * This function returns whether this DoFHandler has DoFs distributed on
-   * each multigrid level or in other words if distribute_mg_dofs() has been
-   * called.
+   * 这个函数返回这个DoFHandler是否有分布在每个多网格层次上的DoF，或者换句话说，如果distribution_mg_dofs()已经被调用。
+   *
    */
   bool
   has_level_dofs() const;
 
   /**
-   * This function returns whether this DoFHandler has active DoFs. This is
-   * equivalent to asking whether (i) distribute_dofs() has been called and
-   * (ii) the finite element for which degrees of freedom have been
-   * distributed actually has degrees of freedom (which is not the case for
-   * FE_Nothing, for example).
+   * 这个函数返回这个DoFHandler是否有活动的DoF。这相当于询问(i)distribution_dofs()是否被调用，以及(ii)被分配自由度的有限元是否真的有自由度（例如FE_Nothing就不是这种情况）。
+   * 如果这个对象是基于 parallel::distributed::Triangulation,
+   * ，那么如果平行DoFHandler对象的<i>any</i>分区有任何自由度，当前函数返回true。换句话说，即使Triangulation在当前MPI进程上不拥有任何活动单元，但至少有一个进程拥有单元，而且至少这一个进程有任何自由度与之相关，该函数也会返回true。
    *
-   * If this object is based on a parallel::distributed::Triangulation, then
-   * the current function returns true if <i>any</i> partition of the parallel
-   * DoFHandler object has any degrees of freedom. In other words, the
-   * function returns true even if the Triangulation does not own any active
-   * cells on the current MPI process, but at least one process owns cells and
-   * at least this one process has any degrees of freedom associated with it.
    */
   bool
   has_active_dofs() const;
 
   /**
-   * After distribute_dofs() with an FESystem element, the block structure of
-   * global and level vectors is stored in a BlockInfo object accessible with
-   * block_info(). This function initializes the local block structure on each
-   * cell in the same object.
+   * 在用FESystem元素distribution_dofs()之后，全局和水平向量的块结构被存储在BlockInfo对象中，可以用block_info()访问。这个函数在同一对象的每个单元上初始化本地块结构。
+   *
    */
   void
   initialize_local_block_info();
 
   /**
-   * Clear all data of this object.
+   * 清除此对象的所有数据。
+   *
    */
   void
   clear();
 
   /**
-   * Renumber degrees of freedom based on a list of new DoF indices for each
-   * of the degrees of freedom.
-   *
-   * This function is called by the functions in DoFRenumbering function after
-   * computing a new ordering of the degree of freedom indices. However, it
-   * can of course also be called from user code.
-   *
-   * @arg new_number This array must have a size equal to the number of
-   * degrees of freedom owned by the current processor, i.e. the size must be
-   * equal to what n_locally_owned_dofs() returns. If only one processor
-   * participates in storing the current mesh, then this equals the total
-   * number of degrees of freedom, i.e. the result of n_dofs(). The contents
-   * of this array are the new global indices for each freedom listed in the
-   * IndexSet returned by locally_owned_dofs(). In the case of a sequential
-   * mesh this means that the array is a list of new indices for each of the
-   * degrees of freedom on the current mesh. In the case that we have a
-   * parallel::shared::Triangulation or
-   * parallel::distributed::Triangulation underlying this DoFHandler object,
-   * the array is a list of new indices for all the locally owned degrees of
-   * freedom, enumerated in the same order as the currently locally owned
-   * DoFs. In other words, assume that degree of freedom <code>i</code> is
-   * currently locally owned, then
+   * 根据每个自由度的新DoF指数列表对自由度重新编号。
+   * 这个函数是由DoFRenumbering函数中的函数在计算自由度指数的新排序后调用的。然而，它当然也可以从用户代码中调用。
+   * @arg  new_number
+   * 这个数组的大小必须等于当前处理器所拥有的自由度数量，也就是说，大小必须等于n_locally_owned_dofs()的返回值。如果只有一个处理器参与存储当前的网格，那么就等于总的自由度数，即n_dofs()的结果。这个数组的内容是由local_owned_dofs()返回的IndexSet中所列的每个自由度的新全局索引。在顺序网格的情况下，这意味着这个数组是当前网格上每个自由度的新索引列表。如果我们有一个
+   * parallel::shared::Triangulation 或 parallel::distributed::Triangulation
+   * 的底层DoFHandler对象，该数组是所有本地拥有的自由度的新索引列表，列举的顺序与当前本地拥有的DoF相同。换句话说，假设自由度
+   * <code>i</code> 是当前本地拥有的，那么
    * <code>new_numbers[locally_owned_dofs().index_within_set(i)]</code>
-   * returns the new global DoF index of <code>i</code>. Since the IndexSet of
-   * locally_owned_dofs() is complete in the sequential case, the latter
-   * convention for the content of the array reduces to the former in the case
-   * that only one processor participates in the mesh.
+   * 返回新的全局自由度索引 <code>i</code>
+   * 。由于在顺序的情况下，local_owned_dofs()的IndexSet是完整的，在只有一个处理器参与网格的情况下，后一种对数组内容的约定可以简化为前一种。
+   * @note  虽然从上面可以看出，知道并行计算中本地拥有的自由度的<i>number</i>是重新编号下的不变量可能会令人惊讶，即使与这些本地拥有的自由度相关的<i>indices</i>不是。从根本上说，这个不变性的存在是因为<i>decision</i>一个自由度是否为本地所有，与该自由度的（新旧）索引无关。事实上，如果自由度在本地拥有的单元上，而不是在相邻单元具有较低 @ref GlossSubdomainId "子域id "
+   * 的单元之间的界面上，那么自由度就是本地拥有的。由于这两个条件都与与DoF相关的索引无关，一个本地拥有的自由度在重新编号后也将是本地拥有的。
+   * 另一方面，诸如本地拥有的DoF的索引集是否形成一个连续的范围（即Local_owned_dofs()是否返回
+   * IndexSet::is_contiguous() 返回 @p true)
+   * 的IndexSet对象）等属性当然会受到这里进行的确切重新编号的影响。例如，虽然在
+   * distribute_dofs() 中对 DoF
+   * 指数进行的初始编号产生了一个连续的编号，但由
+   * DoFRenumbering::component_wise()
+   * 执行的重新编号通常不会产生连续的本地所有 DoF
+   * 指数。
    *
-   * @note While it follows from the above, it may be surprising to know that
-   *   the <i>number</i> of locally owned degrees of freedom in a parallel
-   *   computation is an invariant
-   *   under renumbering, even if the <i>indices</i> associated with these
-   *   locally owned degrees of freedom are not. At a fundamental level,
-   *   this invariant exists because the <i>decision</i> whether a degree of
-   *   freedom is locally owned or not has nothing to do with that
-   *   degree of freedom's (old or new) index. Indeed, degrees of freedom
-   *   are locally owned if they are on a locally owned cell and not on
-   *   an interface between cells where the neighboring cell has a lower
-   *   @ref GlossSubdomainId "subdomain id". Since both of these conditions
-   *   are independent of the index associated with the DoF, a locally
-   *   owned degree of freedom will also be locally owned after renumbering.
-   *   On the other hand, properties such as whether the set of indices
-   *   of locally owned DoFs forms a contiguous range or not
-   *   (i.e., whether the locally_owned_dofs() returns an IndexSet object
-   *   for which IndexSet::is_contiguous() returns @p true) are of
-   *   course affected by the exact renumbering performed here. For example,
-   *   while the initial numbering of DoF indices done in distribute_dofs()
-   *   yields a contiguous numbering, the renumbering performed by
-   *   DoFRenumbering::component_wise() will, in general, not yield
-   *   contiguous locally owned DoF indices.
    */
   void
   renumber_dofs(const std::vector<types::global_dof_index> &new_numbers);
 
   /**
-   * The same function as above, but renumber the degrees of freedom of a
-   * single level of a multigrid hierarchy.
+   * 与上述功能相同，但对多网格层次结构中的单层自由度进行重新编号。
+   *
    */
   void
   renumber_dofs(const unsigned int                          level,
                 const std::vector<types::global_dof_index> &new_numbers);
 
   /**
-   * Return the maximum number of degrees of freedom a degree of freedom in
-   * the given triangulation with the given finite element may couple with.
-   * This is the maximum number of entries per line in the system matrix; this
-   * information can therefore be used upon construction of the
-   * SparsityPattern object.
+   * 返回给定三角结构中一个自由度与给定有限元可能耦合的最大自由度数。
+   * 这是系统矩阵中每行的最大条目数；因此这一信息可以在构建SparsityPattern对象时使用。
+   * 返回的数字并不是真正的最大数字，而是基于有限元和在一个顶点相遇的最大单元数的估计。这个数字对受限矩阵也是有效的。
+   * 耦合数的确定可以通过简单的画图来完成。在这个函数的实现中可以找到一个例子。
+   * @note
+   * 这个函数最常被用来确定稀疏模式的最大行长度。不幸的是，虽然这个函数返回的估计值在1d和2d中相当准确，但在3d中往往明显过高，导致SparsityPattern类在某些情况下分配太多的内存。除非有人能够改进目前的三维函数，否则对于这些情况，我们没有什么办法。解决这个问题的典型方法是使用一个中间压缩的稀疏模式，只在需要时分配内存。请参考
+   * step-2 和 step-11
+   * 的例子程序，了解如何做到这一点。这个问题在  @ref
+   * Sparsity  模块的文档中也有讨论。
    *
-   * The returned number is not really the maximum number but an estimate
-   * based on the finite element and the maximum number of cells meeting at a
-   * vertex. The number holds for the constrained matrix as well.
-   *
-   * The determination of the number of couplings can be done by simple
-   * picture drawing. An example can be found in the implementation of this
-   * function.
-   *
-   * @note This function is most often used to determine the maximal row
-   * length for sparsity patterns. Unfortunately, while the estimates returned
-   * by this function are rather accurate in 1d and 2d, they are often
-   * significantly too high in 3d, leading the SparsityPattern class to
-   * allocate much too much memory in some cases. Unless someone comes around
-   * to improving the present function for 3d, there is not very much one can
-   * do about these cases. The typical way to work around this problem is to
-   * use an intermediate compressed sparsity pattern that only allocates
-   * memory on demand. Refer to the step-2 and step-11 example programs on how
-   * to do this. The problem is also discussed in the documentation of the
-   * module on
-   * @ref Sparsity.
    */
   unsigned int
   max_couplings_between_dofs() const;
 
   /**
-   * Return the number of degrees of freedom located on the boundary another
-   * dof on the boundary can couple with.
+   * 返回位于边界上的自由度的数量，边界上的另一个自由度可以与之耦合。
+   * 这个数字与max_couplings_between_dofs()相同，少一个维度。
+   * @note
+   * 关于这个函数的性能，与max_couplings_per_dofs()相同。可以考虑用一个动态稀疏模式类来代替（见
+   * @ref Sparsity  ）。
    *
-   * The number is the same as for max_couplings_between_dofs() in one
-   * dimension less.
-   *
-   * @note The same applies to this function as to max_couplings_per_dofs() as
-   * regards the performance of this function. Think about one of the dynamic
-   * sparsity pattern classes instead (see
-   * @ref Sparsity).
    */
   unsigned int
   max_couplings_between_boundary_dofs() const;
 
-  /*--------------------------------------*/
+   /*--------------------------------------*/ 
 
   /**
-   * @name Cell iterator functions
+   * @name  细胞迭代器函数
+   *
    */
 
-  /*
-   * @{
-   */
+  /*  @{ .   
+* */
 
   /**
-   * Iterator to the first used cell on level @p level.
+   * 迭代到第一层使用的单元格  @p level.  。
+   *
    */
   cell_iterator
   begin(const unsigned int level = 0) const;
 
   /**
-   * Iterator to the first active cell on level @p level. If the given level
-   * does not contain any active cells (i.e., all cells on this level are
-   * further refined), then this function returns
-   * <code>end_active(level)</code> so that loops of the kind
+   * 到第一层活动单元的迭代器  @p level.
+   * 如果给定的层不包含任何活动单元（即该层的所有单元都被进一步细化），则该函数返回
+   * <code>end_active(level)</code> ，因此，此类的循环是
    * @code
-   *   for (cell=dof_handler.begin_active(level);
-   *        cell!=dof_handler.end_active(level);
-   *        ++cell)
-   *     {
-   *       ...
-   *     }
+   * for (cell=dof_handler.begin_active(level);
+   *      cell!=dof_handler.end_active(level);
+   *      ++cell)
+   *   {
+   *     ...
+   *   }
    * @endcode
-   * have zero iterations, as may be expected if there are no active cells on
-   * this level.
+   * 迭代次数为零，如果这一层没有活动单元，可能会出现这种情况。
+   *
    */
   active_cell_iterator
   begin_active(const unsigned int level = 0) const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 过去结束的迭代器；这个迭代器用于比较过去结束或开始前状态的迭代器。
+   *
    */
   cell_iterator
   end() const;
 
   /**
-   * Return an iterator which is the first iterator not on the given level. If
-   * @p level is the last level, then this returns <tt>end()</tt>.
+   * 返回一个迭代器，它是第一个不在给定级别上的迭代器。如果
+   * @p level 是最后一个层次，那么这将返回<tt>end()</tt>。
+   *
    */
   cell_iterator
   end(const unsigned int level) const;
 
   /**
-   * Return an active iterator which is the first active iterator not on the
-   * given level. If @p level is the last level, then this returns
-   * <tt>end()</tt>.
+   * 返回一个活动的迭代器，它是不在给定级别上的第一个活动迭代器。如果
+   * @p level 是最后一层，那么这个返回<tt>end()</tt>。
+   *
    */
   active_cell_iterator
   end_active(const unsigned int level) const;
 
   /**
-   * Iterator to the first used cell on level @p level. This returns a
-   * level_cell_iterator that returns level dofs when dof_indices() is called.
+   * 迭代器到第 @p level.
+   * 层的第一个使用的单元格，这将返回一个level_cell_iterator，当dof_indices()被调用时，会返回level
+   * dofs。
+   *
    */
   level_cell_iterator
   begin_mg(const unsigned int level = 0) const;
 
   /**
-   * Iterator past the last cell on level @p level. This returns a
-   * level_cell_iterator that returns level dofs when dof_indices() is called.
+   * 遍历最后一个单元的迭代器  @p level.
+   * 当调用dof_indices()时，这将返回一个level_cell_iterator，返回level
+   * dofs。
+   *
    */
   level_cell_iterator
   end_mg(const unsigned int level) const;
 
   /**
-   * Iterator past the end; this iterator serves for comparisons of iterators
-   * with past-the-end or before-the-beginning states.
+   * 过去的迭代器；这个迭代器用于比较具有过去或开始前状态的迭代器。
+   *
    */
   level_cell_iterator
   end_mg() const;
 
   /**
-   * @name Cell iterator functions returning ranges of iterators
+   * @name  返回迭代器范围的单元格迭代器函数
+   *
    */
 
   /**
-   * Return an iterator range that contains all cells (active or not) that
-   * make up this DoFHandler. Such a range is useful to initialize range-based
-   * for loops as supported by C++11. See the example in the documentation of
-   * active_cell_iterators().
-   *
-   * @return The half open range <code>[this->begin(), this->end())</code>
-   *
+   * 返回一个迭代器范围，该范围包含了组成这个DoFHandler的所有单元格（活动或不活动）。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @return
+   * 半开范围  <code>[this->begin(), this->end())</code>
    * @ingroup CPP11
+   *
    */
   IteratorRange<cell_iterator>
   cell_iterators() const;
 
   /**
-   * Return an iterator range that contains all active cells that make up this
-   * DoFHandler. Such a range is useful to initialize range-based for loops as
-   * supported by C++11, see also
-   * @ref CPP11 "C++11 standard".
-   *
-   * Range-based for loops are useful in that they require much less code than
-   * traditional loops (see <a href="http://en.wikipedia.org/wiki/C%2B%2B11
-   * #Range-based_for_loop">here</a> for a discussion of how they work). An
-   * example is that without range-based for loops, one often writes code such
-   * as the following:
+   * #Range-based_for_loop">here</a>）。一个例子是，如果没有基于范围的for循环，人们往往会写出如下的代码。
    * @code
-   *   DoFHandler<dim> dof_handler;
-   *   ...
-   *   typename DoFHandler<dim>::active_cell_iterator
-   *     cell = dof_handler.begin_active(),
-   *     endc = dof_handler.end();
-   *   for (; cell!=endc; ++cell)
-   *     {
-   *       fe_values.reinit (cell);
-   *       ...do the local integration on 'cell'...;
-   *     }
+   * DoFHandler<dim> dof_handler;
+   * ...
+   * typename DoFHandler<dim>::active_cell_iterator
+   *   cell = dof_handler.begin_active(),
+   *   endc = dof_handler.end();
+   * for (; cell!=endc; ++cell)
+   *   {
+   *     fe_values.reinit (cell);
+   *     ...do the local integration on 'cell'...;
+   *   }
    * @endcode
-   * Using C++11's range-based for loops, this is now entirely equivalent to
-   * the following:
+   * 使用C++11的基于范围的for循环，现在这完全等同于以下的代码。
    * @code
-   *   DoFHandler<dim> dof_handler;
-   *   ...
-   *   for (const auto &cell : dof_handler.active_cell_iterators())
-   *     {
-   *       fe_values.reinit (cell);
-   *       ...do the local integration on 'cell'...;
-   *     }
+   * DoFHandler<dim> dof_handler;
+   * ...
+   * for (const auto &cell : dof_handler.active_cell_iterators())
+   *   {
+   *     fe_values.reinit (cell);
+   *     ...do the local integration on 'cell'...;
+   *   }
    * @endcode
-   *
-   * @return The half open range <code>[this->begin_active(),
-   * this->end())</code>
-   *
+   * @return  半开范围<code>[this->begin_active(), this->end())</code>。
    * @ingroup CPP11
+   *
    */
   IteratorRange<active_cell_iterator>
   active_cell_iterators() const;
 
   /**
-   * Return an iterator range that contains all cells (active or not) that
-   * make up this DoFHandler in their level-cell form. Such a range is useful
-   * to initialize range-based for loops as supported by C++11. See the
-   * example in the documentation of active_cell_iterators().
-   *
-   * @return The half open range <code>[this->begin_mg(),
-   * this->end_mg())</code>
-   *
+   * 返回一个迭代器范围，该范围包含了组成这个DoFHandler的所有单元格（无论是否激活）的水平单元格的形式。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @return
+   * 半开范围<code>[this->begin_mg(), this->end_mg())</code>。
    * @ingroup CPP11
+   *
    */
   IteratorRange<level_cell_iterator>
   mg_cell_iterators() const;
 
   /**
-   * Return an iterator range that contains all cells (active or not) that
-   * make up the given level of this DoFHandler. Such a range is useful to
-   * initialize range-based for loops as supported by C++11. See the example
-   * in the documentation of active_cell_iterators().
-   *
-   * @param[in] level A given level in the refinement hierarchy of this
-   * triangulation.
-   * @return The half open range <code>[this->begin(level),
-   * this->end(level))</code>
-   *
-   * @pre level must be less than this->n_levels().
-   *
+   * 返回一个迭代器范围，该范围包含所有构成该DoFHandler的给定级别的单元格（无论是否激活）。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @param[in]  level
+   * 这个三角结构的细化层次中的一个给定的层次。
+   * @return  半开放范围<code>[this->begin(level),
+   * this->end(level))</code>  @pre  level必须小于this->n_levels()。
    * @ingroup CPP11
+   *
    */
   IteratorRange<cell_iterator>
   cell_iterators_on_level(const unsigned int level) const;
 
   /**
-   * Return an iterator range that contains all active cells that make up the
-   * given level of this DoFHandler. Such a range is useful to initialize
-   * range-based for loops as supported by C++11. See the example in the
-   * documentation of active_cell_iterators().
-   *
-   * @param[in] level A given level in the refinement hierarchy of this
-   * triangulation.
-   * @return The half open range <code>[this->begin_active(level),
-   * this->end(level))</code>
-   *
-   * @pre level must be less than this->n_levels().
-   *
+   * 返回一个迭代器范围，该范围包含所有构成此DoFHandler的给定级别的活动单元。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @param[in]  level
+   * 这个三角结构的细化层次中的一个给定的层次。
+   * @return  半开放范围<code>[this->begin_active(level),
+   * this->end(level))</code>  @pre  level必须小于this->n_levels()。
    * @ingroup CPP11
+   *
    */
   IteratorRange<active_cell_iterator>
   active_cell_iterators_on_level(const unsigned int level) const;
 
   /**
-   * Return an iterator range that contains all cells (active or not) that
-   * make up the given level of this DoFHandler in their level-cell form. Such
-   * a range is useful to initialize range-based for loops as supported by
-   * C++11. See the example in the documentation of active_cell_iterators().
-   *
-   * @param[in] level A given level in the refinement hierarchy of this
-   * triangulation.
-   * @return The half open range <code>[this->begin_mg(level),
-   * this->end_mg(level))</code>
-   *
-   * @pre level must be less than this->n_levels().
-   *
+   * 返回一个迭代器范围，该范围包含所有构成该DoFHandler的给定级别的单元格（无论是否激活）的level-cell形式。这样的范围对于初始化基于范围的for循环是很有用的，正如C++11所支持的那样。
+   * 参见active_cell_iterators()文档中的例子。      @param[in]  level
+   * 在这个三角结构的细化层次中的一个给定级别。
+   * @return  半开范围<code>[this->begin_mg(level),
+   * this->end_mg(level))</code>  @pre  level必须小于this->n_levels()。
    * @ingroup CPP11
+   *
    */
   IteratorRange<level_cell_iterator>
   mg_cell_iterators_on_level(const unsigned int level) const;
 
-  /*
-   * @}
-   */
+  /*  @} .   
+* */
 
 
-  /*---------------------------------------*/
+   /*---------------------------------------*/ 
 
 
   /**
-   * Return the global number of degrees of freedom. If the current object
-   * handles all degrees of freedom itself (even if you may intend to solve
-   * your linear system in parallel, such as in step-17 or step-18), then this
-   * number equals the number of locally owned degrees of freedom since this
-   * object doesn't know anything about what you want to do with it and
-   * believes that it owns every degree of freedom it knows about.
+   * 返回全局自由度的数量。如果当前对象自己处理所有的自由度（即使你可能打算并行解决你的线性系统，如 step-17
+   * 或 step-18
+   * ），那么这个数字等于本地拥有的自由度数，因为这个对象不知道你想用它做什么，并认为它拥有它知道的每一个自由度。
+   * 另一方面，如果这个对象在一个
+   * parallel::distributed::Triangulation
+   * 对象上操作，那么这个函数返回全局自由度的数量，在所有处理器上累积。
+   * 在这两种情况下，返回的数字都包括那些被悬挂节点约束的自由度，见
+   * @ref constraints  。
+   * 从数学上讲，这个函数返回的数字等于有限元空间的尺寸（不考虑约束），对应于(i)它所定义的网格，和(ii)当前对象使用的有限元。当然，它也等于跨越这个空间的形状函数的数量。
    *
-   * On the other hand, if this object operates on a
-   * parallel::distributed::Triangulation object, then this function returns
-   * the global number of degrees of freedom, accumulated over all processors.
-   *
-   * In either case, included in the returned number are those DoFs which are
-   * constrained by hanging nodes, see
-   * @ref constraints.
-   *
-   * Mathematically speaking, the number returned by this function equals the
-   * dimension of the finite element space (without taking into account
-   * constraints) that corresponds to (i) the mesh on which it is defined,
-   * and (ii) the finite element that is used by the current object. It
-   * also, of course, equals the number of shape functions that span this
-   * space.
    */
   types::global_dof_index
   n_dofs() const;
 
   /**
-   * The (global) number of multilevel degrees of freedom on a given level.
+   * 某一层次上的多层次自由度的（全局）数量。
+   * 如果没有给这个层次分配自由度，则返回
+   * numbers::invalid_dof_index.  否则返回这个层次的自由度数。
    *
-   * If no level degrees of freedom have been assigned to this level, returns
-   * numbers::invalid_dof_index. Else returns the number of degrees of freedom
-   * on this level.
    */
   types::global_dof_index
   n_dofs(const unsigned int level) const;
 
   /**
-   * Return the number of locally owned degrees of freedom located on the
-   * boundary.
+   * 返回位于边界上的本地拥有的自由度的数量。
+   *
    */
   types::global_dof_index
   n_boundary_dofs() const;
 
   /**
-   * Return the number of locally owned degrees of freedom located on those
-   * parts of the boundary which have a boundary indicator listed in the given
-   * set.
-   * The reason that a @p map rather than a @p set is used is the same as
-   * described in the documentation of that variant of
-   * DoFTools::make_boundary_sparsity_pattern() that takes a map.
+   * 返回位于边界上有边界指标的部分的本地拥有的自由度数，这些边界指标列在给定的集合中。
+   * 使用 @p map 而不是 @p set 的原因与
+   * DoFTools::make_boundary_sparsity_pattern()
+   * 的变体文件中描述的相同，该变体需要一个地图。
+   * 然而，这个函数还有一个重载，需要一个 @p set
+   * 的参数（见下文）。
    *
-   * There is, however, another overload of this function that takes
-   * a @p set argument (see below).
    */
   template <typename number>
   types::global_dof_index
@@ -1131,154 +796,125 @@ public:
       &boundary_ids) const;
 
   /**
-   * Return the number of degrees of freedom located on those parts of the
-   * boundary which have a boundary indicator listed in the given set. The
+   * 返回位于边界部分的自由度的数量，这些部分的边界指标列在给定的集合中。的
+   *
    */
   types::global_dof_index
   n_boundary_dofs(const std::set<types::boundary_id> &boundary_ids) const;
 
   /**
-   * Access to an object informing of the block structure of the dof handler.
+   * 访问一个告知自由度处理程序块结构的对象。    如果在distribution_dofs()中使用了FESystem，自由度自然会被分成几个 @ref GlossBlock "块"
+   * 。
+   * 对于每个基本元素，出现的块数与它的倍数一样多。
+   * 在distribut_dofs()的最后，每个块中的自由度被计算出来，并存储在BlockInfo对象中，可以在这里访问。如果你之前调用了distribution_mg_dofs()，那么在多网格层次结构的每一层都会做同样的事情。此外，每个单元上的块结构可以通过调用initialize_local_block_info()在此对象中生成。
    *
-   * If an FESystem is used in distribute_dofs(), degrees of freedom naturally
-   * split into several
-   * @ref GlossBlock "blocks".
-   * For each base element as many blocks appear as its multiplicity.
-   *
-   * At the end of distribute_dofs(), the number of degrees of freedom in each
-   * block is counted, and stored in a BlockInfo object, which can be accessed
-   * here. If you have previously called distribute_mg_dofs(), the same is
-   * done on each level of the multigrid hierarchy. Additionally, the block
-   * structure on each cell can be generated in this object by calling
-   * initialize_local_block_info().
    */
   const BlockInfo &
   block_info() const;
 
   /**
-   * Return the number of degrees of freedom that belong to this process.
+   * 返回属于这个过程的自由度的数量。
+   * 如果这是一个连续的DoFHandler，那么这个结果等于n_dofs()产生的结果。这里，"顺序
+   * "意味着要么整个程序不使用MPI，要么使用MPI但只使用一个MPI进程，要么有多个MPI进程，但这个DoFHandler建立的Triangulation只在一个MPI进程上工作）。
+   * 另一方面，如果我们在一个 parallel::distributed::Triangulation
+   * 或 parallel::shared::Triangulation,
+   * 上操作，那么它只包括当前处理器拥有的自由度。请注意，在这种情况下，这并不包括所有分布在当前处理器的网格图像上的自由度：特别是，这个处理器所拥有的单元和其他处理器所拥有的单元之间的界面上的一些自由度可能是他们的，而幽灵单元上的自由度也不一定包括在内。
    *
-   * If this is a sequential DoFHandler, then the result equals that produced by
-   * n_dofs(). (Here, "sequential" means that either
-   * the whole program does not use MPI, or that it uses MPI
-   * but only uses a single MPI process, or that there are multiple MPI
-   * processes but the Triangulation on which this DoFHandler builds
-   * works only on one MPI process.)
-   * On the other hand, if we are operating on a
-   * parallel::distributed::Triangulation or parallel::shared::Triangulation,
-   * then it includes only the degrees
-   * of freedom that the current processor owns. Note that in this case this
-   * does not include all degrees of freedom that have been distributed on the
-   * current processor's image of the mesh: in particular, some of the degrees
-   * of freedom on the interface between the cells owned by this processor and
-   * cells owned by other processors may be theirs, and degrees of freedom on
-   * ghost cells are also not necessarily included.
    */
   types::global_dof_index
   n_locally_owned_dofs() const;
 
   /**
-   * Return an IndexSet describing the set of locally owned DoFs as a subset
-   * of 0..n_dofs(). The number of elements of this set equals
-   * n_locally_owned_dofs().
+   * 返回一个IndexSet，描述本地拥有的自由度集合，作为0...n_dofs()的一个子集。这个集合的元素数等于n_locally_owned_dofs()。
+   *
    */
   const IndexSet &
   locally_owned_dofs() const;
 
   /**
-   * Return an IndexSet describing the set of locally owned DoFs used for the
-   * given multigrid level as a subset of 0..n_dofs(level).
+   * 返回一个IndexSet，描述用于给定多网格级别的本地拥有的DoF集合，作为0...n_dofs(level)的一个子集。
+   *
    */
   const IndexSet &
   locally_owned_mg_dofs(const unsigned int level) const;
 
   /**
-   * Return a constant reference to the indexth finite element object that is
-   * used by this object.
+   * 返回一个对该对象所使用的indexth有限元对象的常数引用。
+   *
    */
   const FiniteElement<dim, spacedim> &
   get_fe(const unsigned int index = 0) const;
 
   /**
-   * Return a constant reference to the set of finite element objects that
-   * are used by this object.
+   * 返回对该对象所使用的有限元对象集合的常数引用。
+   *
    */
   const hp::FECollection<dim, spacedim> &
   get_fe_collection() const;
 
   /**
-   * Return a constant reference to the triangulation underlying this object.
+   * 返回对该对象所依据的三角形的常数引用。
+   *
    */
   const Triangulation<dim, spacedim> &
   get_triangulation() const;
 
   /**
-   * Return MPI communicator used by the underlying triangulation.
+   * 返回底层三角法所使用的MPI通信器。
+   *
    */
   MPI_Comm
   get_communicator() const;
 
   /**
-   * Whenever serialization with a parallel::distributed::Triangulation as the
-   * underlying triangulation is considered, we also need to consider storing
-   * the active FE indices on all active cells as well.
+   * 每当考虑用 parallel::distributed::Triangulation
+   * 作为底层三角结构进行序列化时，我们也需要考虑在所有活动单元上存储活动的FE指数。
+   * 这个函数注册了这些指数，当
+   * parallel::distributed::Triangulation::save()
+   * 函数在底层三角结构上被调用时，这些指数将被存储。
+   * @note  目前只对 parallel::distributed::Triangulation.
+   * 类型的三角形实现，如果注册了不同的类型，将触发一个断言。
+   * @see   parallel::distributed::SolutionTransfer
+   * 的文档有关于序列化的进一步信息。
    *
-   * This function registers that these indices are to be stored whenever the
-   * parallel::distributed::Triangulation::save() function is called on the
-   * underlying triangulation.
-   *
-   * @note Currently only implemented for triangulations of type
-   *   parallel::distributed::Triangulation. An assertion will be triggered if
-   *   a different type is registered.
-   *
-   * @see The documentation of parallel::distributed::SolutionTransfer has further
-   *   information on serialization.
    */
   void
   prepare_for_serialization_of_active_fe_indices();
 
   /**
-   * Whenever serialization with a parallel::distributed::Triangulation as the
-   * underlying triangulation is considered, we also need to consider storing
-   * the active FE indices on all active cells as well.
+   * 每当考虑用 parallel::distributed::Triangulation
+   * 作为底层三角的序列化时，我们也需要考虑在所有活动单元上存储活动FE指数。
+   * 这个函数反序列化并将之前存储的活动FE指数分配到所有活动单元上。
+   * @note  目前只针对类型的三角形实现
+   * parallel::distributed::Triangulation.
+   * 如果注册了不同的类型，将触发一个断言。      @see
+   * parallel::distributed::SolutionTransfer
+   * 的文档有关于序列化的进一步信息。
    *
-   * This function deserializes and distributes the previously stored
-   * active FE indices on all active cells.
-   *
-   * @note Currently only implemented for triangulations of type
-   *   parallel::distributed::Triangulation. An assertion will be triggered if
-   *   a different type is registered.
-   *
-   * @see The documentation of parallel::distributed::SolutionTransfer has further
-   *   information on serialization.
    */
   void
   deserialize_active_fe_indices();
 
   /**
-   * Determine an estimate for the memory consumption (in bytes) of this
-   * object.
+   * 确定此对象的内存消耗（以字节为单位）的估计值。
+   * 这个函数是虚拟的，因为dof
+   * handler对象可能通过指向这个基类的指针来访问，尽管实际对象可能是一个派生类。
    *
-   * This function is made virtual, since a dof handler object might be
-   * accessed through a pointers to this base class, although the actual
-   * object might be a derived class.
    */
   virtual std::size_t
   memory_consumption() const;
 
   /**
-   * Write the data of this object to a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)将此对象的数据写入一个流中，以便进行序列化。
+   *
    */
   template <class Archive>
   void
   save(Archive &ar, const unsigned int version) const;
 
   /**
-   * Read the data of this object from a stream for the purpose of
-   * serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 为了序列化的目的，使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从流中读取此对象的数据。
+   *
    */
   template <class Archive>
   void
@@ -1286,9 +922,8 @@ public:
 
 #ifdef DOXYGEN
   /**
-   * Write and read the data of this object from a stream for the purpose
-   * of serialization using the [BOOST serialization
-   * library](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html).
+   * 使用[BOOST序列化库](https://www.boost.org/doc/libs/1_74_0/libs/serialization/doc/index.html)从流中写入和读取此对象的数据，以达到序列化的目的。
+   *
    */
   template <class Archive>
   void
@@ -1300,32 +935,37 @@ public:
 #endif
 
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException0(ExcNoFESelected);
   /**
-   * Exception
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException0(ExcInvalidBoundaryIndicator);
   /**
-   * Exception
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcInvalidLevel,
                  int,
                  << "The given level " << arg1
                  << " is not in the valid range!");
   /**
-   * Exception
+   * 异常情况
    * @ingroup Exceptions
+   *
    */
   DeclException1(ExcNewNumbersNotConsecutive,
                  types::global_dof_index,
                  << "The given list of new dof indices is not consecutive: "
                  << "the index " << arg1 << " does not exist.");
   /**
-   * Exception
+   * 异常情况
+   *
    */
   DeclException2(ExcInvalidFEIndex,
                  int,
@@ -1335,16 +975,16 @@ public:
                  << arg2 << " elements");
 
   /**
-   * Exception used when a certain feature doesn't make sense when
-   * DoFHandler does not hp-capabilities.
+   * 当DoFHandler没有hp-capabilities时，某种功能没有意义时使用的异常。
+   *
    */
   DeclExceptionMsg(ExcOnlyAvailableWithHP,
                    "The current function doesn't make sense when used with a "
                    "DoFHandler without hp-capabilities.");
 
   /**
-   * Exception used when a certain feature is not implemented when the
-   * DoFHandler has hp-capabilities.
+   * 当DoFHandler有hp-capabilities时，某项功能没有实现时使用的异常。
+   *
    */
   DeclExceptionMsg(ExcNotImplementedWithHP,
                    "The current function has not yet been implemented for a "
@@ -1352,23 +992,21 @@ public:
 
 private:
   /**
-   * A data structure that is used to store the DoF indices associated with a
-   * particular vertex. Unlike cells, vertices live on several levels of a
-   * multigrid hierarchy; consequently, we need to store DoF indices for each
-   * vertex for each of the levels it lives on. This class does this.
+   * 一个数据结构，用于存储与特定顶点相关的DoF指数。与单元不同，顶点生活在多网格层次结构的多个层面上；因此，我们需要为每个顶点存储它所处的每个层面的DoF指数。这个类就是这样做的。
+   *
    */
   class MGVertexDoFs
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     MGVertexDoFs();
 
     /**
-     * A function that is called to allocate the necessary amount of memory to
-     * store the indices of the DoFs that live on this vertex for the given
-     * (inclusive) range of levels.
+     * 调用一个函数来分配必要的内存量，以存储该顶点在给定（包括）层次范围内的DoF的索引。
+     *
      */
     void
     init(const unsigned int coarsest_level,
@@ -1376,20 +1014,23 @@ private:
          const unsigned int dofs_per_vertex);
 
     /**
-     * Return the coarsest level for which this structure stores data.
+     * 返回该结构存储数据的最粗的层次。
+     *
      */
     unsigned int
     get_coarsest_level() const;
 
     /**
-     * Return the finest level for which this structure stores data.
+     * 返回该结构存储数据的最细层次。
+     *
      */
     unsigned int
     get_finest_level() const;
 
     /**
-     * Return the index of the <code>dof_number</code>th degree of freedom for
-     * the given level stored for the current vertex.
+     * 返回当前顶点存储的给定级别的 <code>dof_number</code>
+     * 个自由度的索引。
+     *
      */
     types::global_dof_index
     get_index(const unsigned int level,
@@ -1397,8 +1038,9 @@ private:
               const unsigned int dofs_per_vertex) const;
 
     /**
-     * Set the index of the <code>dof_number</code>th degree of freedom for
-     * the given level stored for the current vertex to <code>index</code>.
+     * 为当前顶点存储的给定级别的 <code>dof_number</code>
+     * 个自由度的索引设置为 <code>index</code>  。
+     *
      */
     void
     set_index(const unsigned int            level,
@@ -1408,64 +1050,64 @@ private:
 
   private:
     /**
-     * Coarsest level for which this object stores DoF indices.
+     * 此对象存储自由度指数的最粗层次。
+     *
      */
     unsigned int coarsest_level;
 
     /**
-     * Finest level for which this object stores DoF indices.
+     * 该对象存储DoF指数的最细级别。
+     *
      */
     unsigned int finest_level;
 
     /**
-     * A pointer to an array where we store the indices of the DoFs that live
-     * on the various levels this vertex exists on.
+     * 一个指向数组的指针，在这个数组中，我们存储这个顶点存在的各个层次上的DoFs的索引。
+     * 属于 @p level 的DoF的起始偏移由 <code>n_dofs_per_vertex()
+     * (level-coarsest_level)</code> 给出。 因此， @p
+     * n_dofs_per_vertex()
+     * 必须作为一个参数传递给设置或读取索引的函数。
      *
-     * The starting offset of the DoFs that belong to a @p level are given by
-     * <code>n_dofs_per_vertex() * (level-coarsest_level)</code>. @p n_dofs_per_vertex()
-     * must therefore be passed as an argument to the functions that set or
-     * read an index.
      */
     std::unique_ptr<types::global_dof_index[]> indices;
   };
 
   /**
-   * Whenever the underlying triangulation changes by either
-   * h/p-refinement/coarsening and serialization, the active FE index of cells
-   * needs to be transferred. This structure stores all temporary information
-   * required during that process.
+   * 每当底层三角结构通过h/p-refinement/coarsening和序列化发生变化时，单元格的活动FE索引就需要被转移。这个结构存储了该过程中所需要的所有临时信息。
+   *
    */
   struct ActiveFEIndexTransfer
   {
     /**
-     * Container to temporarily store the iterator and future active FE index
-     * of cells that persist.
+     * 用于临时存储迭代器和未来持续存在的单元格的活动FE索引的容器。
+     *
      */
     std::map<const cell_iterator, const unsigned int> persisting_cells_fe_index;
 
     /**
-     * Container to temporarily store the iterator and future active FE index
-     * of cells that will be refined.
+     * 容器用于临时存储将被精炼的单元格的迭代器和未来的活动FE索引。
+     *
      */
     std::map<const cell_iterator, const unsigned int> refined_cells_fe_index;
 
     /**
-     * Container to temporarily store the iterator and future active FE index
-     * of parent cells that will remain after coarsening.
+     * 容器，用于临时存储粗化后将保留的父单元格的迭代器和未来有效的FE索引。
+     *
      */
     std::map<const cell_iterator, const unsigned int> coarsened_cells_fe_index;
 
     /**
-     * Container to temporarily store the active FE index of every locally
-     * owned cell for transfer across parallel::distributed::Triangulation
-     * objects.
+     * 容器，用于临时存储每个本地拥有的单元格的活动FE索引，以便在
+     * parallel::distributed::Triangulation 对象之间转移。
+     *
      */
     std::vector<unsigned int> active_fe_indices;
 
     /**
-     * Helper object to transfer all active FE indices on
-     * parallel::distributed::Triangulation objects during
-     * refinement/coarsening and serialization.
+     * 帮助对象，在细化/粗化和序列化过程中转移
+     * parallel::distributed::Triangulation
+     * 对象上的所有活动FE指数。
+     *
      */
     std::unique_ptr<
       parallel::distributed::
@@ -1474,164 +1116,167 @@ private:
   };
 
   /**
-   * An object containing information on the block structure.
+   * 一个包含块结构信息的对象。
+   *
    */
   BlockInfo block_info_object;
 
   /**
-   * Boolean indicating whether or not the current DoFHandler has hp-
-   * capabilities.
+   * 表示当前DoFHandler是否有hp-能力的布尔值。
+   *
    */
   bool hp_capability_enabled;
 
   /**
-   * Address of the triangulation to work on.
+   * 要工作的三角结构的地址。
+   *
    */
   SmartPointer<const Triangulation<dim, spacedim>, DoFHandler<dim, spacedim>>
     tria;
 
   /**
-   * Store a hp::FECollection object. If only a single FiniteElement is
-   * used during initialization of this object, it contains the (one)
-   * FiniteElement.
+   * 存储一个 hp::FECollection
+   * 对象。如果在这个对象的初始化过程中只使用了一个FiniteElement，它就包含了（一个）FiniteElement。
+   *
    */
   hp::FECollection<dim, spacedim> fe_collection;
 
   /**
-   * An object that describes how degrees of freedom should be distributed and
-   * renumbered.
+   * 一个描述自由度应如何分配和重新编号的对象。
+   *
    */
   std::unique_ptr<dealii::internal::DoFHandlerImplementation::Policy::
                     PolicyBase<dim, spacedim>>
     policy;
 
   /**
-   * A structure that contains all sorts of numbers that characterize the
-   * degrees of freedom this object works on.
+   * 一个包含各种数字的结构，这些数字表征了这个对象所工作的自由度。
+   * 对于这个结构的大多数成员，在这个类中有一个访问函数来返回其值。
    *
-   * For most members of this structure, there is an accessor function in this
-   * class that returns its value.
    */
   dealii::internal::DoFHandlerImplementation::NumberCache number_cache;
 
   /**
-   * Data structure like number_cache, but for each multigrid level.
+   * 像number_cache一样的数据结构，但为每个多网格层次。
+   *
    */
   std::vector<dealii::internal::DoFHandlerImplementation::NumberCache>
     mg_number_cache;
 
   /**
-   * Cached indices of the degrees of freedom of all active cell. Identification
-   * of the appropriate position of a cell in the vectors is done via
-   * cell_dof_cache_ptr (CRS scheme).
+   * 缓存的所有活动单元的自由度指数。通过cell_dof_cache_ptr（CRS方案）来识别单元在向量中的适当位置。
+   *
    */
   mutable std::vector<std::vector<types::global_dof_index>>
     cell_dof_cache_indices;
 
   /**
-   * Pointer to the first cached degree of freedom of an active cell
-   * (identified by level and level index) within cell_dof_cache_indices.
+   * 指向cell_dof_cache_indices中活动单元的第一个缓存自由度的指针（通过级别和级别索引识别）。
+   *
    */
   mutable std::vector<std::vector<offset_type>> cell_dof_cache_ptr;
 
   /**
-   * Indices of degree of freedom of each d+1 geometric object (3D: vertex,
-   * line, quad, hex) for all relevant active finite elements. Identification
-   * of the appropriate position is done via object_dof_ptr (CRS scheme).
+   * 所有相关活动有限元的每个d+1几何对象（3D：顶点、线、四边形、六边形）的自由度指数。通过object_dof_ptr（CRS方案）识别适当的位置。
+   *
    */
   mutable std::vector<std::array<std::vector<types::global_dof_index>, dim + 1>>
     object_dof_indices;
 
   /**
-   * Pointer to the first cached degree of freedom of a geometric object for all
-   * relevant active finite elements.
+   * 指向所有相关活动有限元的几何对象的第一个缓存自由度的指针。
+   * @note 在正常模式下，可以直接访问这个数据结构。
+   * 在hp模式下，需要通过hp_object_fe_indices/hp_object_fe_ptr进行转接。
    *
-   * @note In normal mode it is possible to access this data structure directly.
-   *   In hp-mode, an indirection via hp_object_fe_indices/hp_object_fe_ptr is
-   * necessary.
    */
   mutable std::vector<std::array<std::vector<offset_type>, dim + 1>>
     object_dof_ptr;
 
   /**
-   * Active FE indices of each geometric object. Identification
-   * of the appropriate position of a cell in the vectors is done via
-   * hp_object_fe_ptr (CRS scheme).
+   * 每个几何对象的有效FE指数。通过hp_object_fe_ptr(CRS方案)来识别一个单元在向量中的适当位置。
+   *
    */
   mutable std::array<std::vector<active_fe_index_type>, dim + 1>
     hp_object_fe_indices;
 
   /**
-   * Pointer to the first FE index of a geometric object.
+   * 指向一个几何对象的第一个FE索引的指针。
+   *
    */
   mutable std::array<std::vector<offset_type>, dim + 1> hp_object_fe_ptr;
 
   /**
-   * Active FE index of an active cell (identified by level and level index).
-   * This vector is only used in hp-mode.
+   * 一个活动单元的活动FE索引（由级别和级别索引识别）。
+   * 这个向量只在hp模式下使用。
+   *
    */
   mutable std::vector<std::vector<active_fe_index_type>>
     hp_cell_active_fe_indices;
 
   /**
-   * Future FE index of an active cell (identified by level and level index).
-   * This vector is only used in hp-mode.
+   * 一个活动单元的未来FE指数（由级别和级别指数识别）。
+   * 这个向量只在hp模式下使用。
+   *
    */
   mutable std::vector<std::vector<active_fe_index_type>>
     hp_cell_future_fe_indices;
 
   /**
-   * An array to store the indices for level degrees of freedom located at
-   * vertices.
+   * 一个数组，用于存储位于顶点的水平自由度的索引。
+   *
    */
   std::vector<MGVertexDoFs> mg_vertex_dofs;
 
   /**
-   * Space to store the DoF numbers for the different multigrid levels.
+   * 用于存储不同多网格层次的自由度编号的空间。
+   *
    */
   std::vector<
     std::unique_ptr<dealii::internal::DoFHandlerImplementation::DoFLevel<dim>>>
     mg_levels;
 
   /**
-   * Space to store DoF numbers of faces in the multigrid context.
+   * 用于存储多网格背景下面的自由度数的空间。
+   *
    */
   std::unique_ptr<dealii::internal::DoFHandlerImplementation::DoFFaces<dim>>
     mg_faces;
 
   /**
-   * We embed our data structure into a pointer to control that
-   * all transfer related data only exists during the actual transfer process.
+   * 我们把我们的数据结构嵌入到一个指针中，以控制所有与传输有关的数据只在实际传输过程中存在。
+   *
    */
   std::unique_ptr<ActiveFEIndexTransfer> active_fe_index_transfer;
 
   /**
-   * A list of connections with which this object connects to the
-   * triangulation to get information about when the triangulation changes.
+   * 一个连接的列表，这个对象用它连接到三角区，以获得三角区变化时的信息。
+   *
    */
   std::vector<boost::signals2::connection> tria_listeners;
 
   /**
-   * A list of connections with which this object connects to the
-   * triangulation. They get triggered specifically when data needs to be
-   * transferred due to refinement or repartitioning. Only active in hp-mode.
+   * 这个对象连接到三角测量的连接的列表。当数据由于细化或重新分区而需要传输时，它们会被特别触发。只有在hp模式下才有效。
+   *
    */
   std::vector<boost::signals2::connection> tria_listeners_for_transfer;
 
   /**
-   * Free all memory used for non-multigrid data structures.
+   * 释放所有用于非多重网格数据结构的内存。
+   *
    */
   void
   clear_space();
 
   /**
-   * Free all memory used for multigrid data structures.
+   * 释放所有用于多栅格数据结构的内存。
+   *
    */
   void
   clear_mg_space();
 
   /**
-   * Return dof index of specified object.
+   * 返回指定对象的dof索引。
+   *
    */
   template <int structdim>
   types::global_dof_index
@@ -1641,7 +1286,8 @@ private:
                 const unsigned int local_index) const;
 
   /**
-   * Return dof index of specified object.
+   * 返回指定对象的dof索引。
+   *
    */
   template <int structdim>
   void
@@ -1652,87 +1298,70 @@ private:
                 const types::global_dof_index global_index) const;
 
   /**
-   * Set up DoFHandler policy.
+   * 设置DoFHandler策略。
+   *
    */
   void
   setup_policy();
 
   /**
-   * Set up connections to signals of the underlying triangulation.
+   * 设置与底层三角结构的信号的连接。
+   *
    */
   void
   connect_to_triangulation_signals();
 
   /**
-   * Create default tables for the active and future fe_indices.
+   * 为活动和未来的fe_indices创建默认表。
+   * 活动指数用一个零指标初始化，这意味着fe[0]将被默认使用。未来的指数被初始化为一个无效的指标，这意味着默认情况下不安排任何p-适应。
+   * 这个方法在构造时和底层三角结构被创建时被调用。这确保每个单元都有一个有效的活动和未来的fe_index。
    *
-   * Active indices are initialized with a zero indicator, meaning that fe[0] is
-   * going to be used by default. Future indices are initialized with an invalid
-   * indicator, meaning that no p-adaptation is scheduled by default.
-   *
-   * This method is called upon construction and whenever the underlying
-   * triangulation gets created. This ensures that each cell has a valid active
-   * and future fe_index.
    */
   void
   create_active_fe_table();
 
   /**
-   * Update tables for active and future fe_indices.
+   * 更新活动和未来fe_indices的表格。
+   * 每当底层三角结构发生变化时（无论是通过适应还是反序列化），活动和未来的FE指数表将被调整为三角结构的当前结构。活动指数和未来指数的缺失值将被初始化为其默认值（参见create_active_fe_table()）。
+   * 这个方法在细化后和反序列化后被调用。这可以确保每个单元格都有一个有效的活动和未来的fe_index。
    *
-   * Whenever the underlying triangulation changes (either by adaptation or
-   * deserialization), active and future FE index tables will be adjusted to the
-   * current structure of the triangulation. Missing values of active and future
-   * indices will be initialized with their defaults (see
-   * create_active_fe_table()).
-   *
-   * This method is called post refinement and post deserialization. This
-   * ensures that each cell has a valid active and future fe_index.
    */
   void
   update_active_fe_table();
 
   /**
-   * A function that will be triggered through a triangulation
-   * signal just before the associated Triangulation or
-   * parallel::shared::Triangulation is modified.
+   * 一个函数，它将在相关的三角函数或
+   * parallel::shared::Triangulation
+   * 被修改之前通过三角函数信号被触发。
+   * 在细化发生之前，存储所有将被细化或粗化的单元的活动FE指数的函数，以便在细化之后可以再次设置这些指数。
    *
-   * The function that stores the active FE indices of all cells that will
-   * be refined or coarsened before the refinement happens, so that
-   * they can be set again after refinement.
    */
   void
   pre_transfer_action();
 
   /**
-   * A function that will be triggered through a triangulation
-   * signal just after the associated Triangulation or
-   * parallel::shared::Triangulation is modified.
+   * 就在相关的三角化或 parallel::shared::Triangulation
+   * 被修改后，将通过三角化信号触发的函数。
+   * 恢复所有被细化或粗化的单元的活动FE指数的函数。
    *
-   * The function that restores the active FE indices of all cells that
-   * were refined or coarsened.
    */
   void
   post_transfer_action();
 
   /**
-   * A function that will be triggered through a triangulation
-   * signal just before the associated parallel::distributed::Triangulation is
-   * modified.
+   * 在相关的 parallel::distributed::Triangulation
+   * 被修改之前，将通过三角测量信号触发的函数。
+   * 将所有活动的FE指数存储在本地拥有的单元上的函数，以分配给所有参与的处理器。
    *
-   * The function that stores all active FE indices on locally owned cells for
-   * distribution over all participating processors.
    */
   void
   pre_distributed_transfer_action();
 
   /**
-   * A function that will be triggered through a triangulation
-   * signal just after the associated parallel::distributed::Triangulation is
-   * modified.
+   * 在相关的 parallel::distributed::Triangulation
+   * 被修改后，就会通过三角信号触发一个函数。
+   * 恢复本地拥有的单元上所有活动的FE指数的函数，这些单元已经被通信了。
    *
-   * The function that restores all active FE indices on locally owned cells
-   * that have been communicated.
    */
   void
   post_distributed_transfer_action();
@@ -1769,43 +1398,30 @@ namespace internal
     namespace DoFHandlerImplementation
     {
       /**
-       * Given a DoFHandler object in hp-mode, make sure that the
-       * future FE indices that a user has set for locally owned cells are
-       * communicated to all other relevant cells as well.
+       * 给定一个hp模式的DoFHandler对象，确保用户为本地拥有的单元设置的未来FE指数也被传达给所有其他相关单元。
+       * 对于 parallel::shared::Triangulation
+       * 对象，该信息同时分布在幽灵和人工单元上。
+       * 在使用 parallel::distributed::Triangulation
+       * 的情况下，指数只传达给幽灵单元。
        *
-       * For parallel::shared::Triangulation objects,
-       * this information is distributed on both ghost and artificial cells.
-       *
-       * In case a parallel::distributed::Triangulation is used,
-       * indices are communicated only to ghost cells.
        */
       template <int dim, int spacedim>
       void
       communicate_future_fe_indices(DoFHandler<dim, spacedim> &dof_handler);
 
       /**
-       * Return the index of the finite element from the entire hp::FECollection
-       * that is dominated by those assigned as future finite elements to the
-       * children of @p parent.
+       * 返回来自整个 hp::FECollection
+       * 的有限元的索引，该有限元被分配给 @p parent.
+       * 的子单元的未来有限元所支配。
+       * 我们在该单元的子单元上的未来有限元中找到相应的有限元。如果没有一个符合条件，我们将搜索范围扩大到整个
+       * hp::FECollection,
+       * ，这是描述最小的有限元空间的元素，包括分配给子单元的所有未来有限元。如果该函数根本无法找到有限元，将触发一个断言。
+       * 通过这种方式，我们在hp-context中h-coarsening的情况下确定父单元的有限元。
+       * @note
+       * 这个函数只能在直接父单元上调用，即子单元都是活动的非活动单元。
+       * @note  在 parallel::shared::Triangulation
+       * 对象中，兄弟姐妹单元可以是幽灵单元，请确保未来的FE指数已经正确地与communication_future_fe_indices()沟通。否则，在不同的处理器上，结果可能不同。没有检查未来FE指数的一致性。
        *
-       * We find the corresponding finite element among the future finite
-       * elements on the children of this cell. If none of them qualify, we
-       * extend our search on the whole hp::FECollection, which is the element
-       * that describes the smallest finite element space that includes all
-       * future finite elements assigned to the children. If the function is not
-       * able to find a finite element at all, an assertion will be triggered.
-       *
-       * In this way, we determine the finite element of the parent cell in case
-       * of h-coarsening in the hp-context.
-       *
-       * @note This function can only be called on direct parent cells, i.e.,
-       * non-active cells whose children are all active.
-       *
-       * @note On parallel::shared::Triangulation objects where sibling cells
-       * can be ghost cells, make sure that future FE indices have been properly
-       * communicated with communicate_future_fe_indices() first. Otherwise,
-       * results might differ on different processors. There is no check for
-       * consistency of future FE indices.
        */
       template <int dim, int spacedim = dim>
       unsigned int
@@ -1813,7 +1429,8 @@ namespace internal
         const typename DoFHandler<dim, spacedim>::cell_iterator &parent);
 
       /**
-       * Exception
+       * 异常情况
+       *
        */
       DeclExceptionMsg(
         ExcNoDominatedFiniteElementOnChildren,
@@ -1825,8 +1442,8 @@ namespace internal
 
 #ifndef DOXYGEN
 
-/* ----------------------- Inline functions ----------------------------------
- */
+ /* ----------------------- Inline functions ----------------------------------
+ */ 
 
 
 template <int dim, int spacedim>
@@ -1997,11 +1614,10 @@ DoFHandler<dim, spacedim>::n_boundary_dofs(
 namespace internal
 {
   /**
-   * Return a string representing the dynamic type of the given argument.
-   * This is basically the same what typeid(...).name() does, but it turns out
-   * this is broken on Intel 13+.
+   * 返回一个字符串，代表给定参数的动态类型。
+   * 这与typeid(...).name()的作用基本相同，但事实证明这在Intel
+   * 13+上是坏的。    定义在dof_handler.cc中。
    *
-   * Defined in dof_handler.cc.
    */
   template <int dim, int spacedim>
   std::string
@@ -2197,3 +1813,5 @@ extern template class DoFHandler<3, 3>;
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

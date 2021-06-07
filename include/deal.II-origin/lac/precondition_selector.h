@@ -1,4 +1,3 @@
-//include/deal.II-translator/lac/precondition_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 1999 - 2020 by the deal.II authors
@@ -36,20 +35,23 @@ class SparseMatrix;
 #endif
 
 
-/*!   @addtogroup  先决条件  @{  。
-
- 
-* */
+/*! @addtogroup Preconditioners
+ *@{
+ */
 
 /**
- * 选择预处理程序。这个类的构造函数接收预处理的名称和预处理的阻尼参数
- * @p omega ， @p use_matrix
- * 函数接收矩阵构建预处理函数所使用的矩阵。每次，<tt>operator()</tt>函数被调用时，这个预选的预处理程序、这个矩阵和这个
- * @p omega 被用于预处理。该类被设计为作为 @p 解算器的 @p
- * solve
- * 函数的参数，它涵盖了所有矩阵构建的预处理函数的选择。其他预处理函数的选择，如BlockSOR或ILU，应该由用户在派生类中处理。
- * <h3>Usage</h3> 这个类的最简单的用途是如下。
+ * Selects the preconditioner. The constructor of this class takes the name of
+ * the preconditioning and the damping parameter @p omega of the
+ * preconditioning and the @p use_matrix function takes the matrix that is
+ * used by the matrix-builtin precondition functions. Each time, the
+ * <tt>operator()</tt> function is called, this preselected preconditioner,
+ * this matrix and this @p omega is used for the preconditioning. This class
+ * is designed for being used as argument of the @p solve function of a @p
+ * Solver and it covers the selection of all matrix-builtin precondition
+ * functions. The selection of other preconditioners, like BlockSOR or ILU
+ * should be handled in derived classes by the user.
  *
+ * <h3>Usage</h3> The simplest use of this class is the following:
  * @code
  * // generate a @p SolverControl and a @p VectorMemory
  * SolverControl control;
@@ -60,7 +62,7 @@ class SparseMatrix;
  *
  * // generate a @p PreconditionSelector
  * PreconditionSelector<SparseMatrix<double>, Vector<double> >
- * preconditioning("jacobi", 1.);
+ *   preconditioning("jacobi", 1.);
  *
  * // give a matrix whose diagonal entries are to be used for the
  * // preconditioning. Generally the matrix of the linear equation system Ax=b.
@@ -69,8 +71,7 @@ class SparseMatrix;
  * // call the @p solve function with this preconditioning as last argument
  * solver.solve(A,x,b,preconditioning);
  * @endcode
- * 同样的例子，也使用了 @p SolverSelector 类，内容如下
- *
+ * The same example where also the @p SolverSelector class is used reads
  * @code
  * // generate a @p SolverControl and a @p VectorMemory
  * SolverControl control;
@@ -78,20 +79,21 @@ class SparseMatrix;
  *
  * // generate a @p SolverSelector that calls the @p SolverCG
  * SolverSelector<SparseMatrix<double>, Vector<double> >
- * solver_selector("cg", control, memory);
+ *   solver_selector("cg", control, memory);
  *
  * // generate a @p PreconditionSelector
  * PreconditionSelector<SparseMatrix<double>, Vector<double> >
- * preconditioning("jacobi", 1.);
+ *   preconditioning("jacobi", 1.);
  *
  * preconditioning.use_matrix(A);
  *
  * solver_selector.solve(A,x,b,preconditioning);
  * @endcode
- * 现在， @p SolverSelector 与 @p
- * PreconditionSelector的结合使用允许用户在程序开始时选择求解器和预处理器，每次求解器启动时（例如在非线性迭代中多次）都会调用预选的求解器和预处理器。
- *
- *
+ * Now the use of the @p SolverSelector in combination with the @p
+ * PreconditionSelector allows the user to select both, the solver and the
+ * preconditioner, at the beginning of their program and each time the solver is
+ * started (that is several times e.g. in a nonlinear iteration) this
+ * preselected solver and preconditioner is called.
  */
 template <typename MatrixType = SparseMatrix<double>,
           typename VectorType = dealii::Vector<double>>
@@ -99,106 +101,104 @@ class PreconditionSelector : public Subscriptor
 {
 public:
   /**
-   * 声明容器大小的类型。
-   *
+   * Declare type for container size.
    */
   using size_type = typename MatrixType::size_type;
 
   /**
-   * 构造函数。  @p omega 表示预调理的阻尼参数。
-   *
+   * Constructor. @p omega denotes the damping parameter of the
+   * preconditioning.
    */
   PreconditionSelector(const std::string &                    preconditioning,
                        const typename VectorType::value_type &omega = 1.);
 
   /**
-   * 解构器。
-   *
+   * Destructor.
    */
   virtual ~PreconditionSelector() override;
 
   /**
-   * 取出涉及矩阵的预处理所需的矩阵。例如，对于 @p
-   * precondition_jacobi,  <tt>~_sor</tt>, <tt>~_ssor</tt>。
-   *
+   * Takes the matrix that is needed for preconditionings that involves a
+   * matrix. e.g. for @p precondition_jacobi, <tt>~_sor</tt>, <tt>~_ssor</tt>.
    */
   void
   use_matrix(const MatrixType &M);
 
   /**
-   * 返回共域（或范围）空间的维数。注意，矩阵的维度是
-   * $m \times n$  。
-   *
+   * Return the dimension of the codomain (or range) space. Note that the
+   * matrix is of dimension $m \times n$.
    */
   size_type
   m() const;
 
   /**
-   * 返回域空间的维度。请注意，矩阵的维度是 $m \times n$  .
-   *
+   * Return the dimension of the domain space. Note that the matrix is of
+   * dimension $m \times n$.
    */
   size_type
   n() const;
 
   /**
-   * 预处理程序。调用构造函数中指定的预处理。
-   *
+   * Precondition procedure. Calls the preconditioning that was specified in
+   * the constructor.
    */
   virtual void
   vmult(VectorType &dst, const VectorType &src) const;
 
   /**
-   * 转置前提条件程序。调用构造函数中指定的预设条件。
-   *
+   * Transpose precondition procedure. Calls the preconditioning that was
+   * specified in the constructor.
    */
   virtual void
   Tvmult(VectorType &dst, const VectorType &src) const;
 
   /**
-   * 获取所有实现的预设条件的名称。可能的选项列表包括。    <ul>   <li>  "无"  </li>   <li>  "jacobi"  </li>   <li>  "sor"  </li>   <li>  "ssor"  </li>   </ul>
-   *
+   * Get the names of all implemented preconditionings. The list of possible
+   * options includes:
+   * <ul>
+   * <li>  "none" </li>
+   * <li>  "jacobi" </li>
+   * <li>  "sor" </li>
+   * <li>  "ssor" </li>
+   * </ul>
    */
   static std::string
   get_precondition_names();
 
   /**
-   * @addtogroup  异常情况  @{
-   *
+   * @addtogroup Exceptions
+   * @{
    */
 
 
   /**
-   * 异常情况。
-   *
+   * Exception.
    */
   DeclException0(ExcNoMatrixGivenToUse);
 
   //@}
 protected:
   /**
-   * 存储预处理的名称。
-   *
+   * Stores the name of the preconditioning.
    */
   std::string preconditioning;
 
 private:
   /**
-   * 用于矩阵构建预处理功能的矩阵。参见 @p
-   * PreconditionUseMatrix. 。
-   *
+   * Matrix that is used for the matrix-builtin preconditioning function. cf.
+   * also @p PreconditionUseMatrix.
    */
   SmartPointer<const MatrixType, PreconditionSelector<MatrixType, VectorType>>
     A;
 
   /**
-   * 存储预处理程序的阻尼参数。
-   *
+   * Stores the damping parameter of the preconditioner.
    */
   const typename VectorType::value_type omega;
 };
 
- /*@}*/ 
- /* --------------------- Inline and template functions ------------------- */ 
+/*@}*/
+/* --------------------- Inline and template functions ------------------- */
 
 
 template <typename MatrixType, typename VectorType>
@@ -319,5 +319,3 @@ PreconditionSelector<MatrixType, VectorType>::get_precondition_names()
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
-
-

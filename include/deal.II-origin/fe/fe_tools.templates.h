@@ -1,4 +1,3 @@
-//include/deal.II-translator/fe/fe_tools.templates_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2000 - 2021 by the deal.II authors
@@ -327,11 +326,10 @@ namespace FETools
 
 
     /**
-     * 取一个 @p FiniteElement
-     * 对象，并返回一个布尔向量，包括由 @p N
-     * 元素组成的子元素 @p fe. 的混合元素的 @p
-     * 限制_is_additive_flags。
-     *
+     * Take a @p FiniteElement object
+     * and return an boolean vector including the @p
+     * restriction_is_additive_flags of the mixed element consisting of @p N
+     * elements of the sub-element @p fe.
      */
     template <int dim, int spacedim>
     std::vector<bool>
@@ -573,8 +571,7 @@ namespace FETools
 
 
     /**
-     * 计算组成的有限元的非零向量分量。
-     *
+     * Compute the non-zero vector components of a composed finite element.
      */
     template <int dim, int spacedim>
     std::vector<ComponentMask>
@@ -3167,6 +3164,4 @@ namespace FETools
 
 DEAL_II_NAMESPACE_CLOSE
 
-#endif  /* dealii_fe_tools_templates_H */ 
-
-
+#endif /* dealii_fe_tools_templates_H */

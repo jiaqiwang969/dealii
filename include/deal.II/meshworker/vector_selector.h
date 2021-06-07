@@ -1,3 +1,4 @@
+//include/deal.II-translator/meshworker/vector_selector_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
@@ -36,28 +37,19 @@ class FEValuesBase;
 namespace MeshWorker
 {
   /**
-   * A class that selects vectors from a list of named vectors.
-   *
-   * Since the number of vectors in an AnyData object may grow with every
-   * nesting of applications or loops, it is important to be able to select
-   * those, which are actually used in computing residuals etc. This class
-   * organizes the selection.
-   *
-   * It is used for instance in IntegrationWorker to determine which values,
-   * derivatives or second derivatives are actually computed.
-   *
+   * 一个从命名向量列表中选择向量的类。
+   * 由于AnyData对象中的向量数量可能随着应用程序或循环的嵌套而增加，因此能够选择那些实际用于计算残差等的向量非常重要。这个类组织了这种选择。
+   * 例如，在IntegrationWorker中，它被用来确定哪些值、导数或二次导数被实际计算。
    * @ingroup MeshWorker
+   *
    */
   class VectorSelector : public Subscriptor
   {
   public:
     /**
-     * Add a vector to the selection of finite element functions. The
-     * arguments are the name of the vector and indicators, which information
-     * is to be extracted from the vector. The name refers to an entry in a
-     * AnyData object, which will be identified by initialize().  The three
-     * bool parameters indicate, whether values, gradients and Hessians of the
-     * finite element function are to be computed on each cell or face.
+     * 在有限元函数的选择中添加一个矢量。参数是矢量的名称和指标，即要从矢量中提取哪些信息。名称指的是AnyData对象中的一个条目，它将被initialize()所识别。
+     * 三个bool参数表明，是否要在每个单元或面计算有限元函数的值、梯度和Hessians。
+     *
      */
     void
     add(const std::string &name,
@@ -66,8 +58,8 @@ namespace MeshWorker
         const bool         hessians  = false);
 
     /**
-     * Does the same as the function above but it is possible to select a
-     * block of the global vector.
+     * 与上面的函数相同，但有可能选择全局矢量的一个块。
+     *
      */
     //      void add(const std::string& name,
     //               const unsigned int selected_block,
@@ -76,186 +68,183 @@ namespace MeshWorker
     //             bool hessians = false);
 
     /**
-     * Initialize the selection field with a data vector. While add() only
-     * enters the names of vectors, which will be used in the integration loop
-     * over cells and faces, this function links the names to actual vectos in
-     * a AnyData object.
+     * 用一个数据向量初始化选择区域。add()只输入向量的名称，这些名称将在单元格和面的积分循环中使用，而这个函数将这些名称与AnyData对象中的实际向量联系起来。
+     * @note
+     * 该函数缓存了与名称相关的索引。因此，在AnyData对象改变后，每次都必须调用它。
      *
-     * @note This function caches the index associated with a name. Therefore,
-     * it must be called every time after the AnyData object has changed.
      */
     void
     initialize(const AnyData &);
 
     /**
-     * Check whether any vector is selected.
+     * 检查是否有任何矢量被选中。
+     *
      */
     bool
     empty() const;
 
     /**
-     * Return true if values are selected for any vector.
+     * 如果任何向量的值被选中，则返回true。
+     *
      */
     bool
     has_values() const;
 
     /**
-     * Return true if gradients are selected for any vector.
+     * 如果任何向量的梯度被选中，则返回true。
+     *
      */
     bool
     has_gradients() const;
 
     /**
-     * Return true if hessians are selected for any vector.
+     * 如果为任何矢量选择了 hessians，则返回 true。
+     *
      */
     bool
     has_hessians() const;
 
     /**
-     * Number of vectors for values
+     * 数值的向量数
+     *
      */
     unsigned int
     n_values() const;
 
     /**
-     * Number of vectors for gradients
+     * 梯度的向量数
+     *
      */
     unsigned int
     n_gradients() const;
 
     /**
-     * Number of vectors for Hessians
+     * Hessians的向量数
+     *
      */
     unsigned int
     n_hessians() const;
 
     /**
-     * The vector index for the ith value
+     * 第1个值的向量索引
+     *
      */
     unsigned int
     value_index(const unsigned int i) const;
 
     /**
-     * The vector index for the ith gradient
+     * 第1个梯度的向量索引
+     *
      */
     unsigned int
     gradient_index(const unsigned int i) const;
 
     /**
-     * The vector index for the ith Hessian
+     * 第一位Hessian的向量索引
+     *
      */
     unsigned int
     hessian_index(const unsigned int i) const;
 
     /**
-     * Print the contents of the selection to the stream.
+     * 打印选择的内容到流中。
+     *
      */
     template <class StreamType, typename DATA>
     void
     print(StreamType &s, const AnyData &v) const;
 
     /**
-     * Print the number of selections to the stream.
+     * 打印选择的数量到流中。
+     *
      */
     template <class StreamType>
     void
     print(StreamType &s) const;
 
     /**
-     * The memory used by this object.
+     * 这个对象所使用的内存。
+     *
      */
     std::size_t
     memory_consumption() const;
 
   protected:
     /**
-     * Selection of the vectors used to compute values.
+     * 用来计算数值的向量的选择。
+     *
      */
     NamedSelection value_selection;
 
     /**
-     * Selection of the vectors used to compute gradients.
+     * 选择用于计算梯度的向量。
+     *
      */
     NamedSelection gradient_selection;
 
     /**
-     * Selection of the vectors used to compute hessians.
+     * 选择用于计算斜率的向量。
+     *
      */
     NamedSelection hessian_selection;
   };
 
   /**
-   * Based on VectorSelector, this is the class used by IntegrationInfo to
-   * compute values of source vectors in quadrature points.
-   *
+   * 基于VectorSelector，这是IntegrationInfo用来计算正交点的源向量值的类。
    * @ingroup MeshWorker
+   *
    */
   template <int dim, int spacedim = dim, typename Number = double>
   class VectorDataBase : public VectorSelector
   {
   public:
     /**
-     * Constructor
+     * 构造函数
+     *
      */
     VectorDataBase() = default;
 
     /**
-     * Constructor from a base class object
+     * 来自基类对象的构造函数
+     *
      */
     VectorDataBase(const VectorSelector &);
 
     /**
-     * Initialize with a AnyData object and cache the indices in the
-     * VectorSelector base class.
+     * 用一个AnyData对象初始化，并在VectorSelector基类中缓存索引。
+     * @note
+     * 在调用此函数之前，确保VectorSelector基类被填充了合理的数据。
      *
-     * @note Make sure the VectorSelector base class was filled with
-     * reasonable data before calling this function.
      */
     void
     initialize(const AnyData &);
 
     /**
-     * Virtual, but empty destructor.
+     * 虚拟的，但空的析构器。
+     *
      */
     virtual ~VectorDataBase() override = default;
 
     /**
-     * The only function added to VectorSelector is an abstract virtual
-     * function implemented in the derived class template and called by
-     * IntegrationInfo.
+     * 添加到VectorSelector的唯一函数是一个抽象的虚拟函数，在派生类模板中实现，由IntegrationInfo调用。
+     * 根据我们基类中的选择，它用有限元函数的局部数据填充前三个参数。它通常是为整个FES系统，或者为每个基元单独调用。
+     * @param  values 是填充有正交点的有限元函数值的向量。
+     * @param  梯度是填充有限元函数在正交点的导数的向量。
+     * @param
+     * hessians是填充有限元函数在正交点的二次导数的向量。
+     * @param
+     * fe是FEValuesBase对象，用于计算函数值。它的UpdateFlags必须被适当地设置。
+     * @param  index是本地索引向量。如果 @p fe
+     * 指的是系统的基本元素，这个向量应该按块排序，下面的参数
+     * @p start 和 @p size 指定使用 @p indices 的子集。
+     * @param  分量是 @p values,  @p gradients 和 @p
+     * 在此函数中输入的第一个索引。          @param
+     * n_comp是要填充的组件的数量。          @param
+     * start是这个块在 @p indices,
+     * 中的第一个索引，如果没有使用基元，则为零。
+     * @param
+     * size是当前元素或基础元素的每个单元的道夫数量。
      *
-     * Depending on the selections made in our base class, this fills the
-     * first three arguments with the local data of the finite element
-     * functions. It is usually called either for the whole FESystem, or for
-     * each base element separately.
-     *
-     * @param values is the vector filled with the values of the finite
-     * element function in the quadrature points.
-     *
-     * @param gradients is the vector filled with the derivatives of the
-     * finite element function in the quadrature points.
-     *
-     * @param hessians is the vector filled with the second derivatives of the
-     * finite element function in the quadrature points.
-     *
-     * @param fe is the FEValuesBase object which is used to compute the
-     * function values. Its UpdateFlags must have been set appropriately.
-     *
-     * @param index is the local index vector. If @p fe refers to base
-     * elements of the system, this vector should be sorted by block and the
-     * arguments @p start and @p size below specify the subset of @p indices
-     * used.
-     *
-     * @param component is the first index in @p values, @p gradients and @p
-     * hessians entered in this function.
-     *
-     * @param n_comp is the number of components to be filled.
-     *
-     * @param start is the first index of this block in @p indices, or zero if
-     * no base elements are used.
-     *
-     * @param size is the number of dofs per cell of the current element or
-     * base element.
      */
     virtual void
     fill(std::vector<std::vector<std::vector<Number>>> &values,
@@ -271,10 +260,8 @@ namespace MeshWorker
          const unsigned int                          size) const;
 
     /**
-     * Fill the local data vector from level vectors. Performs exactly what
-     * the other fill() does, but uses the cell level to access a single level
-     * out of a hierarchy of level vectors, instead of a global data vector on
-     * the active cells.
+     * 从水平向量填充本地数据向量。执行与其他fill()相同的操作，但使用单元格层次来访问层次向量中的一个层次，而不是活动单元格上的全局数据向量。
+     *
      */
     virtual void
     mg_fill(std::vector<std::vector<std::vector<Number>>> &values,
@@ -296,11 +283,10 @@ namespace MeshWorker
 
 
   /**
-   * Based on VectorSelector, this is the class that implements the function
-   * VectorDataBase::fill() for a certain type of vector, using AnyData to
-   * identify vectors by name.
-   *
+   * 基于VectorSelector，这是为某种类型的向量实现函数
+   * VectorDataBase::fill() 的类，使用AnyData按名称识别向量。
    * @ingroup MeshWorker
+   *
    */
   template <typename VectorType, int dim, int spacedim = dim>
   class VectorData
@@ -308,27 +294,29 @@ namespace MeshWorker
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     VectorData() = default;
 
     /**
-     * Constructor using a prefilled VectorSelector
+     * 使用预填充VectorSelector的构造函数
+     *
      */
     VectorData(const VectorSelector &);
 
     /**
-     * Initialize with an object of named vectors.
+     * 用一个命名向量的对象进行初始化。
+     *
      */
     void
     initialize(const AnyData &);
 
     /**
-     * Initialize with a single vector and cache the indices in the
-     * VectorSelector base class.
+     * 用一个单一的向量初始化，并在VectorSelector基类中缓存索引。
+     * @note
+     * 在调用此函数之前，确保VectorSelector基类被填充了合理的数据。
      *
-     * @note Make sure the VectorSelector base class was filled with
-     * reasonable data before calling this function.
      */
     void
     initialize(const VectorType *, const std::string &name);
@@ -368,7 +356,8 @@ namespace MeshWorker
       const unsigned int                          size) const override;
 
     /**
-     * The memory used by this object.
+     * 这个对象所使用的内存。
+     *
      */
     std::size_t
     memory_consumption() const;
@@ -376,38 +365,39 @@ namespace MeshWorker
 
 
   /**
-   * Based on VectorSelector, this is the class that implements the function
-   * VectorDataBase::fill() for a certain type of multilevel vectors, using
-   * AnyData to identify vectors by name.
-   *
+   * 基于VectorSelector，这是实现某类多级向量的函数
+   * VectorDataBase::fill() 的类，使用AnyData按名称识别向量。
    * @ingroup MeshWorker
+   *
    */
   template <typename VectorType, int dim, int spacedim = dim>
   class MGVectorData : public VectorData<VectorType, dim, spacedim>
   {
   public:
     /**
-     * Constructor.
+     * 构造函数。
+     *
      */
     MGVectorData() = default;
 
     /**
-     * Constructor using a prefilled VectorSelector
+     * 使用预填充VectorSelector的构造函数
+     *
      */
     MGVectorData(const VectorSelector &);
 
     /**
-     * Initialize with an object of named vectors
+     * 用一个命名向量的对象进行初始化
+     *
      */
     void
     initialize(const AnyData &);
 
     /**
-     * Initialize with a single vector and cache the indices in the
-     * VectorSelector base class.
+     * 用一个单一的向量初始化，并在VectorSelector基类中缓存索引。
+     * @note
+     * 在调用此函数之前，确保VectorSelector基类被填充了合理的数据。
      *
-     * @note Make sure the VectorSelector base class was filled with
-     * reasonable data before calling this function.
      */
     void
     initialize(const MGLevelObject<VectorType> *, const std::string &name);
@@ -558,3 +548,5 @@ namespace MeshWorker
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+

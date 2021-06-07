@@ -1,3 +1,4 @@
+//include/deal.II-translator/base/types_0.txt
 // ---------------------------------------------------------------------
 //
 // Copyright (C) 2009 - 2020 by the deal.II authors
@@ -25,50 +26,42 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * A namespace in which we declare alias for types used in deal.II, as well
- * as special values for these types.
+ * 一个命名空间，我们在其中为deal.II中使用的类型声明别名，以及这些类型的特殊值。
+ *
+ *
  */
 namespace types
 {
   /**
-   * The type used to denote subdomain_ids of cells.
+   * 用来表示单元格的子域_ID的类型。    参见 @ref GlossSubdomainId "词汇表 "
+   * 以了解更多信息。    有一个特殊的值，
+   * numbers::invalid_subdomain_id ，用来表示这种类型的无效值。
    *
-   * See the
-   * @ref GlossSubdomainId "glossary"
-   * for more information.
-   *
-   * There is a special value, numbers::invalid_subdomain_id that is used to
-   * indicate an invalid value of this type.
    */
   using subdomain_id = unsigned int;
 
   /**
-   * The type used for global indices of vertices.
+   * 用于顶点的全局索引的类型。
+   *
    */
   using global_vertex_index = uint64_t;
 
   /**
-   * An identifier that denotes the MPI type associated with
-   * types::global_vertex_index.
+   * 表示与 types::global_vertex_index.
+   * 相关的MPI类型的一个标识符。
+   *
    */
 #define DEAL_II_VERTEX_INDEX_MPI_TYPE MPI_UINT64_T
 
   /**
-   * The type used to denote the global index of degrees of freedom. This
-   * type is then also used for querying the global *number* of degrees
-   * of freedom, since the number is simply the largest index plus one.
+   * 用来表示自由度的全局索引的类型。这个类型也用于查询全局自由度的数量*，因为这个数量只是最大的索引加1。
+   * 虽然在顺序计算中，32位无符号整数的40亿索引是足够的，但使用（例如）
+   * parallel::distributed::Triangulation
+   * 类的并行计算会溢出这个数字，因此，当配置为使用64位索引时，deal.II会选择一个更大的整数类型。
+   * 数据类型总是与无符号整数类型相对应。    参见 @ref
+   * GlobalDoFIndex
+   * 页，了解何时应该或不应该使用这种类型的指导。
    *
-   * While in sequential computations the 4 billion indices of 32-bit unsigned
-   * integers is plenty, parallel computations using (for example) the
-   * parallel::distributed::Triangulation class can overflow this number and
-   * consequently, deal.II chooses a larger integer type when
-   * configured to use 64-bit indices.
-   *
-   * The data type always corresponds to an unsigned integer type.
-   *
-   * See the
-   * @ref GlobalDoFIndex
-   * page for guidance on when this type should or should not be used.
    */
 #ifdef DEAL_II_WITH_64BIT_INDICES
   using global_dof_index = uint64_t;
@@ -77,8 +70,9 @@ namespace types
 #endif
 
   /**
-   * An identifier that denotes the MPI type associated with
-   * types::global_dof_index.
+   * 表示与 types::global_dof_index.
+   * 相关的MPI类型的一个标识符。
+   *
    */
 #ifdef DEAL_II_WITH_64BIT_INDICES
 #  define DEAL_II_DOF_INDEX_MPI_TYPE MPI_UINT64_T
@@ -87,17 +81,12 @@ namespace types
 #endif
 
   /**
-   * The type used to denote the global index of a cell. This type
-   * is then also used for querying the global *number* of cells in
-   * a triangulation since the number is simply the largest index plus one.
+   * 用于表示一个单元格的全局索引的类型。这个类型也用于查询三角形中单元格的全局数量*，因为这个数量只是最大的索引加1。
+   * 虽然在顺序计算中，32位无符号整数的40亿索引是足够的，但使用（例如）
+   * parallel::distributed::Triangulation
+   * 类的并行计算可能会溢出这个数字，因此，当配置为使用64位索引时，deal.II选择了一个更大的整数类型。
+   * 数据类型总是与无符号整数类型相对应。
    *
-   * While in sequential computations the 4 billion indices of 32-bit unsigned
-   * integers is plenty, parallel computations using (for example) the
-   * parallel::distributed::Triangulation class can overflow this number and
-   * consequently, deal.II chooses a larger integer type when
-   * configured to use 64-bit indices.
-   *
-   * The data type always corresponds to an unsigned integer type.
    */
 #ifdef DEAL_II_WITH_64BIT_INDICES
   using global_cell_index = uint64_t;
@@ -106,59 +95,41 @@ namespace types
 #endif
 
   /**
-   * The type used for coarse-cell ids. See the glossary
-   * entry on
-   * @ref GlossCoarseCellId "coarse cell IDs"
-   * for more information.
+   * 用于粗略的单元ID的类型。更多信息请参见术语表中关于 @ref GlossCoarseCellId "粗略单元ID "
+   * 的条目。
+   *
    */
   using coarse_cell_id = global_cell_index;
 
   /**
-   * The type used to denote boundary indicators associated with every piece
-   * of the boundary and, in the case of meshes that describe manifolds in
-   * higher dimensions, associated with every cell.
+   * 用于表示与边界的每一块相关的边界指标的类型，在描述高维流形的网格中，与每一个单元相关。    有一个特殊的值， numbers::internal_face_boundary_id ，用来表示这种类型的无效值，它被用作位于域内部的面的边界指示器，因此不是任何可寻址的边界组件的一部分。      @see   @ref GlossBoundaryIndicator  "关于边界指示器的词汇条目"
    *
-   * There is a special value, numbers::internal_face_boundary_id that is used
-   * to indicate an invalid value of this type and that is used as the
-   * boundary indicator for faces that are in the interior of the domain and
-   * therefore not part of any addressable boundary component.
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   using boundary_id = unsigned int;
 
   /**
-   * The type used to denote manifold indicators associated with every object
-   * of the mesh.
+   * 用于表示与网格的每个对象相关的流形指标的类型。    有一个特殊的值， numbers::flat_manifold_id ，用于表示标准的笛卡尔流形。      @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * There is a special value, numbers::flat_manifold_id that is used to
-   * indicate the standard cartesian manifold.
-   *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   using manifold_id = unsigned int;
 
   /**
-   * The type used to denote material indicators associated with every cell.
+   * 用于表示与每个单元相关的材料指标的类型。    有一个特殊的值， numbers::invalid_material_id ，用来表示该类型的无效值。      @see   @ref GlossMaterialId  "关于材料指标的词汇条目"
    *
-   * There is a special value, numbers::invalid_material_id that is used to
-   * indicate an invalid value of this type.
-   *
-   * @see
-   * @ref GlossMaterialId "Glossary entry on material indicators"
    */
   using material_id = unsigned int;
 
   /**
-   * The type used to denote geometric entity types.
+   * 用于表示几何实体类型的类型。
+   *
    */
   using geometric_entity_type = std::uint8_t;
 } // namespace types
 
 /**
- * Declare type used in Epetra.
+ * 在Epetra中使用的声明类型。
+ *
+ *
  */
 using TrilinosScalar = double;
 
@@ -169,12 +140,14 @@ namespace TrilinosWrappers
   {
 #ifdef DEAL_II_WITH_64BIT_INDICES
     /**
-     * Declare type of integer used in the Epetra package of Trilinos.
+     * 声明在Trilinos的Epetra包中使用的整数类型。
+     *
      */
     using int_type = long long int;
 #else
     /**
-     * Declare type of integer used in the Epetra package of Trilinos.
+     * 声明在Trilinos的Epetra包中使用的整数类型。
+     *
      */
     using int_type = int;
 #endif
@@ -188,107 +161,75 @@ namespace TrilinosWrappers
 namespace numbers
 {
   /**
-   * Representation of the largest number that can be put into an unsigned
-   * integer. This value is widely used throughout the library as a marker for
-   * an invalid unsigned integer value, such as an invalid array index, an
-   * invalid array size, and the like.
+   * 表示可以放入无符号整数的最大数字。这个值在整个库中被广泛使用，作为无效的无符号整数值的标记，例如无效的数组索引，无效的数组大小，等等。
+   *
    */
   static const unsigned int invalid_unsigned_int =
     static_cast<unsigned int>(-1);
 
   /**
-   * Representation of the largest number that can be put into a size_type.
-   * This value is used throughout the library as a marker for an invalid
-   * size_type value, such as an invalid array index, an invalid array size,
-   * and the like. Invalid_size_type is equivalent to invalid_dof_index.
+   * 表示可以放入一个size_type的最大数字。
+   * 这个值在整个库中被用作无效的size_type值的标记，例如无效的数组索引，无效的数组大小，以及类似的。Invalid_size_type等同于invalid_dof_index。
+   *
    */
   const types::global_dof_index invalid_size_type =
     static_cast<types::global_dof_index>(-1);
 
   /**
-   * An invalid value for indices of degrees of freedom.
+   * 一个无效的自由度索引值。
+   *
    */
   const types::global_dof_index invalid_dof_index =
     static_cast<types::global_dof_index>(-1);
 
   /**
-   * An invalid value for coarse cell ids. See the glossary
-   * entry on
-   * @ref GlossCoarseCellId "coarse cell IDs"
-   * for more information.
+   * 一个无效的粗略单元ID的值。更多信息请参见术语表中的 @ref GlossCoarseCellId "粗略单元ID "
+   * 条目。
+   *
    */
   const types::coarse_cell_id invalid_coarse_cell_id =
     static_cast<types::coarse_cell_id>(-1);
 
   /**
-   * Invalid material_id which we need in several places as a default value.
-   * We assume that all material_ids lie in the range [0,
-   * invalid_material_id).
+   * 无效的 material_id，我们在几个地方需要它作为默认值。
+   * 我们假设所有的 material_id 都在 [0, invalid_material_id)
+   * 范围内。
+   *
    */
   const types::material_id invalid_material_id =
     static_cast<types::material_id>(-1);
 
   /**
-   * Invalid boundary_id which we need in several places as a default value.
-   * We assume that all valid boundary_ids lie in the range [0,
-   * invalid_boundary_id).
+   * 无效的边界_id，我们需要在几个地方作为默认值。  我们假设所有有效的边界ID都在[0, invalid_boundary_id]的范围内。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   const types::boundary_id invalid_boundary_id =
     static_cast<types::boundary_id>(-1);
 
   /**
-   * A boundary indicator number that we reserve for internal faces.  We
-   * assume that all valid boundary_ids lie in the range [0,
-   * internal_face_boundary_id).
+   * 我们为内部面保留的一个边界指示器号码。 我们假设所有有效的边界指标都在[0, internal_face_boundary_id]的范围内。    这是一个内部使用的指标（由库使用），用于区分位于域的边界的面和位于域的内部的面。你不应该在用户代码中尝试将这个边界指标分配给任何东西。      @see   @ref GlossBoundaryIndicator  "关于边界指标的词汇条目"
    *
-   * This is an indicator that is used internally (by the library) to
-   * differentiate between faces that lie at the boundary of the domain and
-   * faces that lie in the interior of the domain. You should never try to
-   * assign this boundary indicator to anything in user code.
-   *
-   * @see
-   * @ref GlossBoundaryIndicator "Glossary entry on boundary indicators"
    */
   const types::boundary_id internal_face_boundary_id =
     static_cast<types::boundary_id>(-1);
 
   /**
-   * A manifold_id we reserve for the default flat Cartesian manifold.
+   * 我们为默认的平直角坐标流形保留的流形_ID。      @see   @ref GlossManifoldIndicator  "关于流形指标的词汇条目"
    *
-   * @see
-   * @ref GlossManifoldIndicator "Glossary entry on manifold indicators"
    */
   const types::manifold_id flat_manifold_id =
     static_cast<types::manifold_id>(-1);
 
   /**
-   * A special id for an invalid subdomain id. This value may not be used as a
-   * valid id but is used, for example, for default arguments to indicate a
-   * subdomain id that is not to be used.
+   * 一个无效的子域id的特殊id。这个值不能作为有效的id使用，但用于例如默认参数，表示不使用的子域id。    参见 @ref GlossSubdomainId "词汇表 "
+   * 以了解更多信息。
    *
-   * See the
-   * @ref GlossSubdomainId "glossary"
-   * for more information.
    */
   const types::subdomain_id invalid_subdomain_id =
     static_cast<types::subdomain_id>(-1);
 
   /**
-   * The subdomain id assigned to a cell whose true subdomain id we don't
-   * know, for example because it resides on a different processor on a mesh
-   * that is kept distributed on many processors. Such cells are called
-   * "artificial".
    *
-   * See the glossary entries on
-   * @ref GlossSubdomainId "subdomain ids"
-   * and
-   * @ref GlossArtificialCell "artificial cells"
-   * as well as the
-   * @ref distributed
-   * module for more information.
    */
   const types::subdomain_id artificial_subdomain_id =
     static_cast<types::subdomain_id>(-2);
@@ -297,3 +238,5 @@ namespace numbers
 DEAL_II_NAMESPACE_CLOSE
 
 #endif
+
+
