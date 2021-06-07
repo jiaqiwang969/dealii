@@ -31,3 +31,6 @@ grep -rl 'aaaModule' ./  | xargs sed -i "" "s/aaaModule/bbbName/g"
 - step2: terminal 运行 `translator_to.sh > log2.txt` 进行元素提取，整理打包文件在transltor_file 找到。 运行 `cat * > merge.txt` 合并为一个。
 - step3: 在Testlab文件夹中，替换已经翻译好的merge.txt， 然后运行  `bash_T.sh` .
 - step4: 最后进行整理，替换。 其中，tutorial有一些文件在修复wrapcomments过程中，出错为空，暂且替换为未修复版本。
+
+# bug
+- bug01: base/polunomials_p.h,fe/fe_simple_p.h 文件的代码块曾出现重复现象，，暂未解决，通过报错找到，并人工修复。 具体位置见commit。2021-06-07

@@ -563,11 +563,7 @@ private:
    */
   bool triangulation_changed;
 
-  /**
-   * 变量）。
-   *
-   */
-  bool triangulation_changed;
+
 
   /**
    * 一个布尔值，记录该类是否用DoFHandler初始化。
