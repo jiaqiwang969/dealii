@@ -85,17 +85,6 @@ namespace internal
         return dealii::ReferenceCells::Vertex;
       }
 
-      /*。      
-* */
-      virtual dealii::ReferenceCell
-      type_of_entity(const unsigned int d, const unsigned int e) const
-      {
-        Assert(false, ExcNotImplemented());
-        (void)d;
-        (void)e;
-
-        return dealii::ReferenceCells::Vertex;
-      }
 
       /**
        * @p face-th 表面的线的数量。
