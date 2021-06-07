@@ -1196,6 +1196,5 @@ DEAL_II_NAMESPACE_CLOSE
 #endif
 
 
-#！/bin/bash
-cat * > 合并
+
 
