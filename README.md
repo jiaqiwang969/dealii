@@ -1,84 +1,33 @@
-What is deal.II?
-================
+# deal.II-translator
+Using Doxygen format to translate packages into different languages-https://www.dealii.org/
 
-deal.II is a C++ program library targeted at the computational solution
-of partial differential equations using adaptive finite elements. It uses
-state-of-the-art programming techniques to offer you a modern interface
-to the complex data structures and algorithms required.
+- 首先，我们利用"./to.py filename" 生成剔除特殊字符的中转文件；
+- 然后，利用deepl或者google翻译；
+- 然后，利用"./from.py filename_0_T.txt";
+- 然后，得到的替换文件回代到source中，再一次进行编译。注意编译需要开启mathjax，否则公式可能乱码"cmake -DDEAL_II_COMPONENT_DOCUMENTATION=ON -DDEAL_II_DOXYGEN_USE_MATHJAX=ON",然后再输入"make documentation"，若有改动，只需输入后者，无需重头开始编译。
 
-For the impatient:
-------------------
+可能用到的批量操作代码：
+- 拆分一次性翻译的文档：
+awk '/\[2.x.0\]/{n++;w=1} n&&w{print >"step-"n"_0_T.txt"}' T.txt
+- 重新批量命名
+for file in `ls *.h`;do mv $file `echo $file|sed 's/_0_T//g'`;done;
+- 批量允许python代码
+for filename in headers/*.h; do
+        ./to.py "$filename" 
+done
+for filename in examples/*_T.txt; do
+        ./from.py ${filename} 
+done
+-在当前目录下，将所有aaaModule都替换为bbbName
+grep -rl 'aaaModule' ./  | xargs sed -i "" "s/aaaModule/bbbName/g"
 
-Let's say you've unpacked the .tar.gz file into a directory /path/to/dealii/sources. 
-Then configure, compile, and install the deal.II library with:
+-r 表示搜索子目录
+-l 表示输出匹配的文件名
 
-    $ mkdir build
-    $ cd build
-    $ cmake -DCMAKE_INSTALL_PREFIX=/path/where/dealii/should/be/installed/to /path/to/dealii/sources
-    $ make install    (alternatively $ make -j<N> install)
-    $ make test
 
-To build from the repository, execute the following commands first:
-
-    $ git clone https://github.com/dealii/dealii
-    $ cd dealii
-
-Then continue as before.
-
-A detailed *ReadME* can be found at [./doc/readme.html](https://dealii.org/developer/readme.html),
-[./doc/users/cmake_user.html](https://dealii.org/developer/users/cmake_user.html),
-or at https://www.dealii.org/.
-
-Getting started:
-----------------
-
-The tutorial steps are located under examples/ of the installation.
-Information about the tutorial steps can be found at
-[./doc/doxygen/tutorial/index.html](https://dealii.org/developer/doxygen/deal.II/Tutorial.html)
-or at https://www.dealii.org/.
-
-deal.II includes support for pretty-printing deal.II objects inside GDB.
-See [`contrib/utilities/dotgdbinit.py`](contrib/utilities/dotgdbinit.py) or
-the new documentation page (under 'information for users') for instructions
-on how to set this up.
-
-License:
---------
-
-Please see the file [./LICENSE.md](LICENSE.md) for details
-
-Further information:
---------------------
-
-For further information have a look at
-[./doc/index.html](https://dealii.org/developer/index.html) or at
-https://www.dealii.org.
-
-Continuous Integration Status:
-------------------------
-
-| System | Status                                                                                                                                                                                                                                           | More information                                                                      |
-| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| Indent | ![indent](https://github.com/dealii/dealii/workflows/indent/badge.svg)                                                                                                                                                                           | using GitHub actions                                                                  |
-| Linux  | [![Build Status](https://jenkins.tjhei.info/job/dealii/job/master/badge/icon)](https://jenkins.tjhei.info/job/dealii/job/master/)                                                                                                                | See https://jenkins.tjhei.info                                                        |
-| MacOS  | [![Build Status](https://jenkins.tjhei.info/job/dealii-OSX/job/master/badge/icon)](https://jenkins.tjhei.info/job/dealii-OSX/job/master/)                                                                                                        | See https://jenkins.tjhei.info                                                        |
-| MacOS  | [![Build Status](https://github.com/dealii/dealii/workflows/github-CI/badge.svg)](https://github.com/dealii/dealii/actions?query=workflow%3Agithub-CI)                                                                                           | See https://github.com/dealii/dealii/actions                                          |
-| MSVC   | [![Build status](https://github.com/dealii/dealii/workflows/github-windows/badge.svg)](https://github.com/dealii/dealii/actions?query=workflow%3Agithub-windows)                                                                                 | See https://github.com/dealii/dealii/actions                                          |
-| Docker | [![Build status](https://github.com/dealii/dealii/workflows/github-docker/badge.svg)](https://github.com/dealii/dealii/actions?query=workflow%3Agithub-docker)                                                                                   | See https://github.com/dealii/dealii/actions                                          |
-| CDash  | [![cdash](https://img.shields.io/website?down_color=lightgrey&down_message=offline&label=CDash&up_color=green&up_message=up&url=https%3A%2F%2Fcdash.43-1.org%2Findex.php%3Fproject%3Ddeal.II)](https://cdash.43-1.org/index.php?project=deal.II) | Various builds and configurations on https://cdash.43-1.org/index.php?project=deal.II |
-
-Docker Images:
--------------
-
-Docker images based on the Ubuntu operating system are available on
-[Docker Hub](https://hub.docker.com/repository/docker/dealii/dealii). You can 
-use any of the available version 
-([list of available tags](https://hub.docker.com/repository/docker/dealii/dealii/tags)) 
-by running, for example:
-
-    $ docker run --rm -t -i dealii/dealii:master-focal
-
-The above command would drop you into an isolated environment, in which you 
-will find the latest version of deal.II (master development branch) installed
-under `/usr/local`.
-
+# 将h文件全部翻译，并进行CI-测试代码 
+使用说明：
+- step1: terminal 运行 `translator_debug.sh > log1.txt` 用来测试，如果有错误，需要进行bug调试
+- step2: terminal 运行 `translator_to.sh > log2.txt` 进行元素提取，整理打包文件在transltor_file 找到。 运行 `cat * > merge.txt` 合并为一个。
+- step3: 在Testlab文件夹中，替换已经翻译好的merge.txt， 然后运行  `bash_T.sh` .
+- step4: 最后进行整理，替换。 其中，tutorial有一些文件在修复wrapcomments过程中，出错为空，暂且替换为未修复版本。
