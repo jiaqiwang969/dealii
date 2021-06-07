@@ -31,7 +31,8 @@
 
 DEAL_II_NAMESPACE_OPEN
 /**
- * @addtogroup  多项式  @{ .
+ * @addtogroup  多项式  
+ * @{ .
  *
  *
  */
@@ -58,7 +59,8 @@ public:
   static const unsigned int dimension = dim;
 
   /**
-   * 构造函数。创建所有  $P_p$  的基函数。  @arg
+   * 构造函数。创建所有  $P_p$  的基函数。  
+   * @arg
    * p：多项式空间的度数
    *
    */
