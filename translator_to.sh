@@ -39,19 +39,19 @@ do
 
 done
 
-for filename in $files
-do
+# for filename in $files
+# do
 
-        # # # step1-初始化clear
-        # rm -rf $path/$filename/*_postcommands
-        # rm -rf $path/$filename/*_commands
-        # rm -rf $path/$filename/*_latex
-        # rm -rf $path/$filename/*_comment
-        # rm -rf $path/$filename/*.txt
-        # rm -rf $path/$filename/*.temp
-        # rm -rf $path/$filename/*.origin
+#         # # # step1-初始化clear
+#         # rm -rf $path/$filename/*_postcommands
+#         # rm -rf $path/$filename/*_commands
+#         # rm -rf $path/$filename/*_latex
+#         # rm -rf $path/$filename/*_comment
+#         # rm -rf $path/$filename/*.txt
+#         # rm -rf $path/$filename/*.temp
+#         # rm -rf $path/$filename/*.origin
 
-done
+# done
 
 
 

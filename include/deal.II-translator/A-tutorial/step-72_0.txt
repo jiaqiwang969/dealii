@@ -1,0 +1,500 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28]
+*  [2.x.3] 
+* [1.x.29]
+* 
+
+* [1.x.30][1.x.31]
+* 
+
+* [1.x.32][1.x.33]
+* 
+
+* This program solves the same problem as  [2.x.4] , that is, it solvesfor the[minimal surface equation](https://en.wikipedia.org/wiki/Minimal_surface) 
+* [1.x.34]
+* 
+* Among the issues we had identified there (see the[1.x.35] section)was that when wanting to usea Newton iteration, we needed to compute the derivative of theresidual of the equation with regard to the solution  [2.x.5]  (here,because the right hand side is zero, the residual is simply the lefthand side). For the equation we have here, this is cumbersome but notimpossible
+* 
+*  -  but one can easily imagine much more complicatedequations where just implementing the residual itself correctly is achallenge, let alone doing so for the derivative necessary to computethe Jacobian matrix. We will address this issue in this program: Usingthe automatic differentiation techniques discussed in great detail in [2.x.6] , we will come up with a way how we only have to implement theresidual and get the Jacobian for free.
+* In fact, we can even go one step further. While in  [2.x.7]  we havejust taken the equation as a given, the minimal surface equation isactually the product of minimizing an energy. Specifically,the minimal surface equations are the Euler-Lagrange equations thatcorrespond to minimizing the energy  [1.x.36]where theenergy density* is given by  [1.x.37]This is the same as saying that we seek to find the stationary point ofthe variation of the energy functional  [1.x.38]as this is where the equilibrium solution to the boundary value problem lies.
+* The key point then is that, maybe, we don't even need to implement theresidual, but that implementing the simpler energy density  [2.x.8] might actually be enough.
+* Our goal then is this: Whenusing a Newton iteration, we need to repeatedly solve thelinear partial differential equation 
+* [1.x.39]
+* so that we can compute the update 
+* [1.x.40]
+* with the solution  [2.x.9]  of the Newton step. As discussed in  [2.x.10] ,we can compute the derivative  [2.x.11]  by hand andobtain  [1.x.41]
+* So here then is what this program is about: It is about techniquesthat can help us with computing  [2.x.12]  without having toimplement it explicitly, either by providing an implementation of [2.x.13]  or an implementation of  [2.x.14] . More precisely, we willimplement three different approaches and compare them in terms ofrun-time but also
+* 
+*  -  maybe more importantly
+* 
+*  -  how much human effortit takes to implement them:
+* 
+*  - The method used in  [2.x.15]  to form the Jacobian matrix.
+* 
+*  - Computing the Jacobian matrix from an implementation of the  residual  [2.x.16] , using automatic differentiation.
+* 
+*  - Computing both the residual and Jacobian matrix from an  implementation of the energy functional  [2.x.17] , also using automatic  differentiation.
+* For the first of these methods, there are no conceptual changescompared to  [2.x.18] .
+* 
+
+* [1.x.42][1.x.43]
+* 
+
+* For the second method, let us outline how we will approach the issueusing automatic differentiationto compute the linearization of the residual vector. To this end, letus change notation for a moment and denote by  [2.x.19]  not the residualof the differential equation, but in fact theresidual vector*
+* 
+*  - i.e., thediscrete residual*. We do so because that is what we
+*actually* do when we discretize the problem on a given mesh: We solvethe problem  [2.x.20]  where  [2.x.21]  is the vector of unknowns.
+* More precisely, the  [2.x.22] th component of the residual is given by[1.x.44]where  [2.x.23] . Given this, thecontribution for cell  [2.x.24]  is[1.x.45]Its first order Taylor expansion is given as[1.x.46]and consequently we can compute the contribution of cell  [2.x.25]  to theJacobian matrix  [2.x.26]  as  [2.x.27] . Theimportant point here is that on cell  [2.x.28] , we can express[1.x.47]For clarity, we have used  [2.x.29]  and  [2.x.30]  as counting indices to makeclear that they are distinct from each other and from  [2.x.31]  above.Because in this formula,  [2.x.32]  only depends on the coefficients [2.x.33] , we can compute the derivative  [2.x.34]  as a matrix viaautomatic differentiation of  [2.x.35] . By the same argument as wealways use, it is clear that  [2.x.36]  does not actually depend on
+*all* unknowns  [2.x.37] , but only on those unknowns for which  [2.x.38]  is ashape function that lives on cell  [2.x.39] , and so in practice, we restrict [2.x.40]  and  [2.x.41]  to that part of the vector and matrix thatcorresponds to thelocal* DoF indices, and then distribute from thelocal cell  [2.x.42]  to the global objects.
+* Using all of these realizations, the approach will then be toimplement  [2.x.43]  in the program and let the automatic differentiationmachinery compute the derivatives  [2.x.44]  from that.
+* 
+
+* [1.x.48][1.x.49]
+* 
+
+* For the final implementation of the assembly process, we will move a levelhigher than the residual: our entire linear system will be determineddirectly from the energy functional that governs the physics of thisboundary value problem. We can take advantage of the fact that we cancalculate the total energy in the domain directly from the localcontributions, i.e.,[1.x.50]In the discrete setting, this means that on each finite element we have[1.x.51]If we implement the cell energy, which depends on the field solution,we can compute its first (discrete) variation[1.x.52]and, thereafter, its second (discrete) variation[1.x.53]So, from the cell contribution to the total energy function, we may expectto have the approximate residual and tangent contributions generatedfor us as long as we can provide an implementation of the local energy [2.x.45] . Again, due to the design of theautomatic differentiation variables used in this tutorial, in practicethese approximations for the contributions to the residual vector andtangent matrix are actually accurate to machine precision.
+* 
+
+*  [1.x.54] [1.x.55]
+*  The majority of this tutorial is an exact replica of  [2.x.46] . So, in the interest of brevity and maintaining a focus on the changes implemented here, we will only document what's new and simply indicate which sections of code are a repetition of what has come before.
+* 
+
+* 
+*  
+*  
+*  [1.x.56]  [1.x.57]
+* 
+
+* 
+*  There are a few new header files that have been included in this tutorial. The first is the one that provides the declaration of the ParameterAcceptor class.
+* 
+
+* 
+* [1.x.58]
+* 
+*  This is the second, which is an all-inclusive header that will allow us to incorporate the automatic differentiation (AD) functionality within this code.
+* 
+
+* 
+* [1.x.59]
+* 
+*  And the next three provide some multi-threading capability using the generic  [2.x.47]  framework.
+* 
+
+* 
+* [1.x.60]
+* 
+*  We then open a namespace for this program and import everything from the dealii namespace into it, as in previous programs:
+* 
+
+* 
+* [1.x.61]
+* 
+*   [1.x.62]  [1.x.63]
+* 
+
+* 
+*  In this tutorial we will implement three different approaches for assembling the linear system. One mirrors the hand implementation originally provided in  [2.x.48] , while the other two use the Sacado automatic differentiation library that is provided as a part of the Trilinos framework.   
+*   To facilitate switching between the three implementations, we have this really basic parameters class that has only two options that are configurable.
+* 
+
+* 
+* [1.x.64]
+* 
+*  Selection for the formulation and corresponding AD framework to be used:
+* 
+
+* 
+* 
+*  -  formulation = 0 : Unassisted implementation (full hand linearization).
+* 
+
+* 
+* 
+*  -  formulation = 1 : Automated linearization of the finite element residual.
+* 
+
+* 
+* 
+*  -  formulation = 2 : Automated computation of finite element residual and linearization using a variational formulation.
+* 
+
+* 
+* [1.x.65]
+* 
+*  The maximum acceptable tolerance for the linear system residual. We will see that the assembly time becomes appreciable once we use the AD framework, so we have increased the tolerance selected in  [2.x.49]  by one order of magnitude. This way, the computations do not take too long to complete.
+* 
+
+* 
+* [1.x.66]
+* 
+*   [1.x.67]  [1.x.68]
+* 
+
+* 
+*  The class template is essentially the same as in  [2.x.50] . The only functional changes to the class are that:
+* 
+
+* 
+* 
+*  - the run() function now takes in two arguments: one to choose which assembly approach is to be adopted, and one for the tolerance for the permissible final residual is, and
+* 
+
+* 
+* 
+*  - there are now three different assembly functions that implement the three methods of assembling the linear system. We'll provide details on these later on.
+* 
+
+* 
+*  
+
+* 
+* [1.x.69]
+* 
+*   [1.x.70]  [1.x.71]
+* 
+
+* 
+*  There are no changes to the boundary conditions applied to the problem.
+* 
+
+* 
+* [1.x.72]
+* 
+*   [1.x.73]  [1.x.74]
+* 
+
+* 
+*   [1.x.75]  [1.x.76]
+* 
+
+* 
+*  There have been no changes made to the class constructor.
+* 
+
+* 
+* [1.x.77]
+* 
+*   [1.x.78]  [1.x.79]
+* 
+
+* 
+*  There have been no changes made to the function that sets up the class data structures, namely the DoFHandler, the hanging node constraints applied to the problem, and the linear system.
+* 
+
+* 
+* [1.x.80]
+* 
+*   [1.x.81]  [1.x.82]
+* 
+
+* 
+*   [1.x.83]  [1.x.84]
+* 
+
+* 
+*  The assembly functions are the interesting contributions to this tutorial. The assemble_system_unassisted() method implements exactly the same assembly function as is detailed in  [2.x.51] , but in this instance we use the  [2.x.52]  function to multithread the assembly process. The reason for doing this is quite simple: When using automatic differentiation, we know that there is to be some additional computational overhead incurred. In order to mitigate this performance loss, we'd like to take advantage of as many (easily available) computational resources as possible. The  [2.x.53]  concept makes this a relatively straightforward task. At the same time, for the purposes of fair comparison, we need to do the same to the implementation that uses no assistance when computing the residual or its linearization. (The  [2.x.54]  function is first discussed in  [2.x.55]  and  [2.x.56] , if you'd like to read up on it.)   
+*   The steps required to implement the multithreading are the same between the three functions, so we'll use the assemble_system_unassisted() function as an opportunity to focus on the multithreading itself.
+* 
+
+* 
+* [1.x.85]
+* 
+*  The  [2.x.57]  expects that we provide two exemplar data structures. The first, `ScratchData`, is to store all large data that is to be reused between threads. The `CopyData` will hold the contributions to the linear system that come from each cell. These independent matrix-vector pairs must be accumulated into the global linear system sequentially. Since we don't need anything on top of what the  [2.x.58]  and  [2.x.59]  classes already provide, we use these exact class definitions for our problem. Note that we only require a single instance of a local matrix, local right-hand side vector, and cell degree of freedom index vector
+* 
+*  -  the  [2.x.60]  therefore has `1` for all three of its template arguments.
+* 
+
+* 
+* [1.x.86]
+* 
+*  We also need to know what type of iterator we'll be working with during assembly. For simplicity, we just ask the compiler to work this out for us using the decltype() specifier, knowing that we'll be iterating over active cells owned by the  [2.x.61] 
+* 
+
+* 
+* [1.x.87]
+* 
+*  Here we initialize the exemplar data structures. Since we know that we need to compute the shape function gradients, weighted Jacobian, and the position of the quadrate points in real space, we pass these flags into the class constructor.
+* 
+
+* 
+* [1.x.88]
+* 
+*  Now we define a lambda function that will perform the assembly on a single cell. The three arguments are those that will be expected by  [2.x.62]  due to the arguments that we'll pass to that final call. We also capture the  [2.x.63]  pointer, which means that we'll have access to "this" (i.e., the current `MinimalSurfaceProblem<dim>`) class instance, and its private member data (since the lambda function is defined within a MinimalSurfaceProblem<dim> method).     
+*   At the top of the function, we initialize the data structures that are dependent on the cell for which the work is being performed. Observe that the reinitialization call actually returns an instance to an FEValues object that is initialized and stored within (and, therefore, reused by) the `scratch_data` object.     
+*   Similarly, we get aliases to the local matrix, local RHS vector, and local cell DoF indices from the `copy_data` instance that  [2.x.64]  provides. We then initialize the cell DoF indices, knowing that the local matrix and vector are already correctly sized.
+* 
+
+* 
+* [1.x.89]
+* 
+*  For Newton's method, we require the gradient of the solution at the point about which the problem is being linearized.       
+*   Once we have that, we can perform assembly for this cell in the usual way.  One minor difference to  [2.x.65]  is that we've used the (rather convenient) range-based loops to iterate over all quadrature points and degrees-of-freedom.
+* 
+
+* 
+* [1.x.90]
+* 
+*  The second lambda function that  [2.x.66]  requires is one that performs the task of accumulating the local contributions in the global linear system. That is precisely what this one does, and the details of the implementation have been seen before. The primary point to recognize is that the local contributions are stored in the `copy_data` instance that is passed into this function. This `copy_data` has been filled with data during  [2.x.67]  some call to the `cell_worker`.
+* 
+
+* 
+* [1.x.91]
+* 
+*  We have all of the required functions definitions in place, so now we call the  [2.x.68]  to perform the actual assembly.  We pass a flag as the last parameter which states that we only want to perform the assembly on the cells. Internally,  [2.x.69]  then distributes the available work to different threads, making efficient use of the multiple cores almost all of today's processors have to offer.
+* 
+
+* 
+* [1.x.92]
+* 
+*  And finally, as is done in  [2.x.70] , we remove hanging nodes from the system and apply zero boundary values to the linear system that defines the Newton updates  [2.x.71] .
+* 
+
+* 
+* [1.x.93]
+* 
+*   [1.x.94]  [1.x.95]
+* 
+
+* 
+*  As outlined in the introduction, what we need to do for this second approach is implement the local contributions  [2.x.72]  from cell  [2.x.73]  to the residual vector, and then let the AD machinery deal with how to compute the derivatives  [2.x.74]  from it.   
+*   For the following, recall that [1.x.96] where  [2.x.75] .   
+*   Let us see how this is implemented in practice:
+* 
+
+* 
+* [1.x.97]
+* 
+*  We'll define up front the AD data structures that we'll be using, utilizing the techniques shown in  [2.x.76] . In this case, we choose the helper class that will automatically compute the linearization of the finite element residual using Sacado forward automatic differentiation types. These number types can be used to compute first derivatives only. This is exactly what we want, because we know that we'll only be linearizing the residual, which means that we only need to compute first-order derivatives. The return values from the calculations are to be of type `double`.     
+*   We also need an extractor to retrieve some data related to the field solution to the problem.
+* 
+
+* 
+* [1.x.98]
+* 
+*  With this, let us define the lambda function that will be used to compute the cell contributions to the Jacobian matrix and the right hand side:
+* 
+
+* 
+* [1.x.99]
+* 
+*  We'll now create and initialize an instance of the AD helper class. To do this, we need to specify how many independent variables and dependent variables there are. The independent variables will be the number of local degrees of freedom that our solution vector has, i.e., the number  [2.x.77]  in the per-element representation of the discretized solution vector  [2.x.78]  that indicates how many solution coefficients are associated with each finite element. In deal.II, this equals  [2.x.79]  The number of dependent variables will be the number of entries in the local residual vector that we will be forming. In this particular problem (like many others that employ the [standard Galerkin method](https://en.wikipedia.org/wiki/Galerkin_method)) the number of local solution coefficients matches the number of local residual equations.
+* 
+
+* 
+* [1.x.100]
+* 
+*  Next we inform the helper of the values of the solution, i.e., the actual values for  [2.x.80]  about which we wish to linearize. As this is done on each element individually, we have to extract the solution coefficients from the global solution vector. In other words, we define all of those coefficients  [2.x.81]  where  [2.x.82]  is a local degree of freedom as the independent variables that enter the computation of the vector  [2.x.83]  (the dependent function).       
+*   Then we get the complete set of degree of freedom values as represented by auto-differentiable numbers. The operations performed with these variables are tracked by the AD library from this point until the object goes out of scope. So it is  [2.x.84] precisely these variables [2.x.85]  with respect to which we will compute derivatives of the residual entries.
+* 
+
+* 
+* [1.x.101]
+* 
+*  Then we do some problem specific tasks, the first being to compute all values, (spatial) gradients, and the like based on "sensitive" AD degree of freedom values. In this instance we are retrieving the solution gradients at each quadrature point. Observe that the solution gradients are now sensitive to the values of the degrees of freedom as they use the  [2.x.86]  as the scalar type and the  [2.x.87]  vector provides the local DoF values.
+* 
+
+* 
+* [1.x.102]
+* 
+*  The next variable that we declare will store the cell residual vector contributions. This is rather self-explanatory, save for one [1.x.103] detail: Note that each entry in the vector is hand-initialized with a value of zero. This is a  [2.x.88] highly recommended [2.x.89]  practice, as some AD libraries appear not to safely initialize the internal data structures of these number types. Not doing so could lead to some very hard to understand or detect bugs (appreciate that the author of this program mentions this out of, generally bad, experience). So out of an abundance of caution it's worthwhile zeroing the initial value explicitly. After that, apart from a sign change the residual assembly looks much the same as we saw for the cell RHS vector before: We loop over all quadrature points, ensure that the coefficient now encodes its dependence on the (sensitive) finite element DoF values by using the correct `ADNumberType`, and finally we assemble the components of the residual vector. For complete clarity, the finite element shape functions (and their gradients, etc.) as well as the "JxW" values remain scalar valued, but the  [2.x.90]  and the   [2.x.91]  at each quadrature point are computed in terms of the independent variables.
+* 
+
+* 
+* [1.x.104]
+* 
+*  Once we have the full cell residual vector computed, we can register it with the helper class.       
+*   Thereafter, we compute the residual values (basically, extracting the real values from what we already computed) and their Jacobian (the linearization of each residual component with respect to all cell DoFs) at the evaluation point. For the purposes of assembly into the global linear system, we have to respect the sign difference between the residual and the RHS contribution: For Newton's method, the right hand side vector needs to be equal to thenegative* residual vector.
+* 
+
+* 
+* [1.x.105]
+* 
+*  The remainder of the function equals what we had previously:
+* 
+
+* 
+* [1.x.106]
+* 
+*   [1.x.107]  [1.x.108]
+* 
+
+* 
+*  In this third approach, we compute residual and Jacobian as first and second derivatives of the local energy functional [1.x.109] with the energy density given by [1.x.110]   
+*   Let us again see how this is done:
+* 
+
+* 
+* [1.x.111]
+* 
+*  In this implementation of the assembly process, we choose the helper class that will automatically compute both the residual and its linearization from the cell contribution to an energy functional using nested Sacado forward automatic differentiation types. The selected number types can be used to compute both first and second derivatives. We require this, as the residual defined as the sensitivity of the potential energy with respect to the DoF values (i.e. its gradient). We'll then need to linearize the residual, implying that second derivatives of the potential energy must be computed. You might want to compare this with the definition of `ADHelper` used int previous function, where we used  [2.x.92] 
+* 
+
+* 
+* [1.x.112]
+* 
+*  Let us then again define the lambda function that does the integration on a cell.     
+*   To initialize an instance of the helper class, we now only require that the number of independent variables (that is, the number of degrees of freedom associated with the element solution vector) are known up front. This is because the second-derivative matrix that results from an energy functional is necessarily square (and also, incidentally, symmetric).
+* 
+
+* 
+* [1.x.113]
+* 
+*  Once more, we register all cell DoFs values with the helper, followed by extracting the "sensitive" variant of these values that are to be used in subsequent operations that must be differentiated
+* 
+*  -  one of those being the calculation of the solution gradients.
+* 
+
+* 
+* [1.x.114]
+* 
+*  We next create a variable that stores the cell total energy. Once more we emphasize that we explicitly zero-initialize this value, thereby ensuring the integrity of the data for this starting value.       
+*   The aim for our approach is then to compute the cell total energy, which is the sum of the internal (due to right hand side functions, typically linear in  [2.x.93] ) and external energies. In this particular case, we have no external energies (e.g., from source terms or Neumann boundary conditions), so we'll focus on the internal energy part.       
+*   In fact, computing  [2.x.94]  is almost trivial, requiring only the following lines:
+* 
+
+* 
+* [1.x.115]
+* 
+*  After we've computed the total energy on this cell, we'll register it with the helper.  Based on that, we may now compute the desired quantities, namely the residual values and their Jacobian at the evaluation point. As before, the Newton right hand side needs to be the negative of the residual:
+* 
+
+* 
+* [1.x.116]
+* 
+*  As in the previous two functions, the remainder of the function is as before:
+* 
+
+* 
+* [1.x.117]
+* 
+*   [1.x.118]  [1.x.119]
+* 
+
+* 
+*  The solve function is the same as is used in  [2.x.95] .
+* 
+
+* 
+* [1.x.120]
+* 
+*   [1.x.121]  [1.x.122]
+* 
+
+* 
+*  Nothing has changed since  [2.x.96]  with respect to the mesh refinement procedure and transfer of the solution between adapted meshes.
+* 
+
+* 
+* [1.x.123]
+* 
+*   [1.x.124]  [1.x.125]
+* 
+
+* 
+*  The choice of boundary conditions remains identical to  [2.x.97] ...
+* 
+
+* 
+* [1.x.126]
+* 
+*   [1.x.127]  [1.x.128]
+* 
+
+* 
+*  ... as does the function used to compute the residual during the solution iteration procedure. One could replace this by differentiation of the energy functional if one really wanted, but for simplicity we here simply copy what we already had in  [2.x.98] .
+* 
+
+* 
+* [1.x.129]
+* 
+*   [1.x.130]  [1.x.131]
+* 
+
+* 
+*  The choice of step length (or, under-relaxation factor) for the nonlinear iterations procedure remains fixed at the value chosen and discussed in  [2.x.99] .
+* 
+
+* 
+* [1.x.132]
+* 
+*   [1.x.133]  [1.x.134]
+* 
+
+* 
+*  This last function to be called from `run()` outputs the current solution (and the Newton update) in graphical form as a VTU file. It is entirely the same as what has been used in previous tutorials.
+* 
+
+* 
+* [1.x.135]
+* 
+*   [1.x.136]  [1.x.137]
+* 
+
+* 
+*  In the run function, most remains the same as was first implemented in  [2.x.100] . The only observable changes are that we can now choose (via the parameter file) what the final acceptable tolerance for the system residual is, and that we can choose which method of assembly we wish to utilize. To make the second choice clear, we output to the console some message which indicates the selection. Since we're interested in comparing the time taken to assemble for each of the three methods, we've also added a timer that keeps a track of how much time is spent during assembly. We also track the time taken to solve the linear system, so that we can contrast those numbers to the part of the code which would normally take the longest time to execute.
+* 
+
+* 
+* [1.x.138]
+* 
+*   [1.x.139]  [1.x.140]
+* 
+
+* 
+*  Finally the main function. This follows the scheme of most other main functions, with two obvious exceptions:
+* 
+
+* 
+* 
+*  - We call  [2.x.101]  in order to set up (via a hidden default parameter) the number of threads using the execution of multithreaded tasks.
+* 
+
+* 
+* 
+*  - We also have a few lines dedicates to reading in or initializing the user-defined parameters that will be considered during the execution of the program.
+* 
+
+* 
+* [1.x.141]
+* [1.x.142][1.x.143]
+* 
+
+* Since there was no change to the physics of the problem that has first been analyzedin  [2.x.102] , there is nothing to report about that. The only outwardly noticeabledifference between them is that, by default, this program will only run 9 meshrefinement steps (as opposed to  [2.x.103] , which executes 11 refinements).This will be observable in the simulation status that appears between theheader text that prints which assembly method is being used, and the finaltimings. (All timings reported below were obtained in release mode.)
+* [1.x.144]
+* 
+* So what is interesting for us to compare is how long the assembly process takesfor the three different implementations, and to put that into some greater context.Below is the output for the hand linearization (as computed on a circa 2012four core, eight thread laptop
+* 
+*  -  but we're only really interested in therelative time between the different implementations):
+* [1.x.145]
+* And for the implementation that linearizes the residual in an automatedmanner using the Sacado dynamic forward AD number type:
+* [1.x.146]
+* And, lastly, for the implementation that computes both the residual andits linearization directly from an energy functional (using nested Sacadodynamic forward AD numbers):
+* [1.x.147]
+* 
+* It's evident that the more work that is passed off to the automatic differentiationframework to perform, the more time is spent during the assembly process. Accumulatedover all refinement steps, using one level of automatic differentiation resultedin  [2.x.104]  more computational time being spent in the assembly stage whencompared to unassisted assembly, while assembling the discrete linear system took [2.x.105]  longer when deriving directly from the energy functional.Unsurprisingly, the overall time spent solving the linear system remained unchanged.This means that the proportion of time spent in the solve phase to the assembly phaseshifted significantly as the number of times automated differentiation was performedat the finite element level. For many, this might mean that leveraging higher-orderdifferentiation (at the finite element level) in production code leads to anunacceptable overhead, but it may still be useful during the prototyping phase.A good compromise between the two may, therefore, be the automated linearizationof the finite element residual, which offers a lot of convenience at a measurable,but perhaps not unacceptable, cost. Alternatively, one could considernot re-building the Newton matrix in every step
+* 
+*  -  a topic that isexplored in substantial depth in  [2.x.106] .
+* Of course, in practice the actual overhead is very much dependent on the problem being evaluated(e.g., how many components there are in the solution, what the nature of the functionbeing differentiated is, etc.). So the exact results presented here should beinterpreted within the context of this scalar problem alone, and when it comes toother problems, some preliminary investigation by the user is certainly warranted.
+* 
+
+* [1.x.148][1.x.149]
+* 
+
+* Like  [2.x.107] , there are a few items related to automatic differentiation that couldbe evaluated further:
+* 
+*  - The use of other AD frameworks should be investigated, with the outlook that  alternative implementations may provide performance benefits.
+* 
+*  - It is also worth evaluating AD number types other than those that have been  hard-coded into this tutorial. With regard to twice differentiable types  employed at the finite-element level, mixed differentiation modes ("RAD-FAD")  should in principle be more computationally efficient than the single  mode ("FAD-FAD") types employed here. The reason that the RAD-FAD type was not  selected by default is that, at the time of writing, there remain some  bugs in its implementation within the Sacado library that lead to memory leaks.  This is documented in the  [2.x.108]  module.
+* 
+*  - It might be the case that using reduced precision types (i.e., `float`) as the  scalar types for the AD numbers could render a reduction in computational  expense during assembly. Using `float` as the data type for the  matrix and the residual is not unreasonable, given that the Newton  update is only meant to get us closer to the solution, but not  actuallyto* the solution; as a consequence, it makes sense to  consider using reduced-precision data types for computing these  updates, and then accumulating these updates in a solution vector  that uses the full `double` precision accuracy.
+* 
+*  - One further method of possibly reducing resources during assembly is to frame  the AD implementations as a constitutive model. This would be similar to the  approach adopted in  [2.x.109] , and pushes the starting point for the automatic  differentiation one level higher up the chain of computations. This, in turn,  means that less operations are tracked by the AD library, thereby reducing the  cost of differentiating (even though one would perform the differentiation at  each cell quadrature point).
+* 
+*  -  [2.x.110]  is yet another variation of  [2.x.111]  that addresses a very  different part of the problem: Line search and whether it is  necessary to re-build the Newton matrix in every nonlinear  iteration. Given that the results above show that using automatic  differentiation comes at a cost, the techniques in  [2.x.112]  have the  potential to offset these costs to some degree. It would therefore  be quite interesting to combine the current program with the  techniques in  [2.x.113] . For production codes, this would certainly be  the way to go.
+* 
+
+* [1.x.150][1.x.151] [2.x.114] 
+* [0.x.1]

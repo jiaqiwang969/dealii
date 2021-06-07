@@ -1,0 +1,55 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27]
+*  [2.x.3] 
+* [1.x.28]
+*  [2.x.4] 
+*  [2.x.5]  As a prerequisite of this program, you need to have both p4est and either the PETScor Trilinos library installed. The installation of deal.II together with these additionallibraries is described in the [1.x.29] file.
+* 
+
+* [1.x.30][1.x.31][1.x.32]
+* 
+
+* 
+* This example shows the usage of the multilevel functions in deal.II onparallel, distributedmeshes and gives a comparison between geometric and algebraic multigrid methods.The algebraic multigrid (AMG) preconditioner is the same used in  [2.x.6] . Two geometricmultigrid (GMG) preconditioners are considered: a matrix-based version similar to thatin  [2.x.7]  (but for parallel computations) and a matrix-free versiondiscussed in  [2.x.8] . The goal is to find out which approach leads tothe best solver for large parallel computations.
+* This tutorial is based on one of the numerical examples in [2.x.9] . Please see that publication for a detailed backgroundon the multigrid implementation in deal.II. We will summarize some of theresults in the following text.
+* Algebraic multigrid methods are obviously the easiest to implementwith deal.II since classes such as  [2.x.10] and  [2.x.11]  are, in essence, black boxpreconditioners that require only a couple of lines to set up even forparallel computations. On the other hand, geometric multigrid methodsrequire changes throughout a code base
+* 
+*  -  not very many, but one hasto know what one is doing.
+* What the results of this program will showis that algebraic and geometric multigrid methods are roughlycomparable in performance [1.x.33],and that matrix-free geometric multigrid methods are vastly better forthe problem under consideration here. A secondary conclusion will bethat matrix-based geometric multigrid methods really don't scale wellstrongly when the number of unknowns per processor becomes smaller than20,000 or so.
+* 
+
+* [1.x.34][1.x.35]
+* 
+
+* We consider the variable-coefficient Laplacian weak formulation
+* [1.x.36]
+* on the domain  [2.x.12]  (an L-shaped domainfor 2D and a Fichera corner for 3D) with  [2.x.13]  if  [2.x.14]  and [2.x.15]  otherwise. In other words,  [2.x.16]  is small along the edgesor faces of the domain that run into the reentrant corner, as will be visiblein the figure below.
+* The boundary conditions are  [2.x.17]  on the whole boundary andthe right-hand side is  [2.x.18] . We use continuous  [2.x.19]  elements for thediscrete finite element space  [2.x.20] , and use aresidual-based, cell-wise a posteriori error estimator [2.x.21]  from  [2.x.22]  with
+* [1.x.37]
+* to adaptively refine the mesh. (This is a generalization of the Kellyerror estimator used in the KellyErrorEstimator class that drives meshrefinement in most of the other tutorial programs.)The following figure visualizes the solution and refinement for 2D: [2.x.23] In 3D, the solution looks similar (see below). On the left you can see the solution and on the right we show a slice for  [2.x.24]  close to thecenter of the domain showing the adaptively refined mesh. [2.x.25] Both in 2D and 3D you can see the adaptive refinement picking up the corner singularity and the inner singularity where the viscosity jumps, while the interface along the line that separates the two viscosities is (correctly) not refined as it is resolved adequately.This is because the kink in the solution that results from the jumpin the coefficient is aligned with cell interfaces.
+* 
+
+* [1.x.38][1.x.39]
+* 
+
+* As mentioned above, the purpose of this program is to demonstrate theuse of algebraic and geometric multigrid methods for this problem, andto do so for parallel computations. An important component of makingalgorithms scale to large parallel machines is ensuring that everyprocessor has the same amount of work to do. (More precisely, whatmatters is that there are no small fraction of processors that havesubstantially more work than the rest since, if that were so, a largefraction of processors will sit idle waiting for the small fraction tofinish. Conversely, a small fraction of processors havingsubstantially [1.x.40] work is not a problem because the majorityof processors continues to be productive and only the small fractionsits idle once finished with their work.)
+* For the active mesh, we use the  [2.x.26]  class as donein  [2.x.27]  which uses functionality in the external library[1.x.41] for the distribution of the active cellsamong processors. For the non-active cells in the multilevel hierarchy, deal.IIimplements what we will refer to as the "first-child rule" where, for each cellin the hierarchy, we recursively assign the parent of a cell to the owner of thefirst child cell. The following figures give an example of such a distribution. Herethe left image represents the active cells for a sample 2D mesh partitioned using aspace-filling curve (which is what p4est uses to partition cells);the center image gives the tree representationof the active mesh; and the right image gives the multilevel hierarchy of cells. Thecolors and numbers represent the different processors. The circular nodes in the treeare the non-active cells which are distributed using the "first-child rule".
+*  [2.x.28] 
+* Included among the output to screen in this example is a value "Partition efficiency"given by one over  [2.x.29]  This value, which will be denotedby  [2.x.30] ,  quantifies the overhead produced by not having a perfect work balanceon each level of the multigrid hierarchy. This imbalance is evident from theexample above: while level  [2.x.31]  is about as well balanced as is possiblewith four cells among three processors, the coarselevel  [2.x.32]  has work for only one processor, and level  [2.x.33]  has workfor only two processors of which one has three times as much work asthe other.
+* For defining  [2.x.34] , it is important to note that, as we are using local smoothingto define the multigrid hierarchy (see the  [2.x.35]  "multigrid paper" for a description oflocal smoothing), the refinement level of a cell corresponds to that cell's multigridlevel. Now, let  [2.x.36]  be the number of cells on level  [2.x.37] (both active and non-active cells) and  [2.x.38]  be the subset owned by process [2.x.39] . We will also denote by  [2.x.40]  the total number of processors.Assuming that the workload for any one processor is proportional to the numberof cells owned by that processor, the optimal workload per processor is given by
+* [1.x.42]
+* Next, assuming a synchronization of work on each level (i.e., on each level of a V-cycle,work must be completed by all processors before moving on to the next level), thelimiting effort on each level is given by
+* [1.x.43]
+* and the total parallel complexity
+* [1.x.44]
+* Then we define  [2.x.41]  as a ratio of the optimal partition to the parallelcomplexity of the current partition
+* [1.x.45]
+* For the example distribution above, we have
+* [1.x.46]
+* The value  [2.x.42]  1/\mathbb{E} [2.x.43] \mathbb{E} [2.x.44] \mathbb{E} \approx 1 [2.x.45] \mathbb{E} [2.x.46] \mathbb{E} [2.x.47] 1/\mathbb{E} [2.x.48] W_\ell [2.x.49] W [2.x.50] r_0 = f-Au_0 [2.x.51] u_0 [2.x.52] u = u_0 + A^{-1}r_0 [2.x.53] u_0 [2.x.54] A^{-1}r_0 [2.x.55] u_0 [2.x.56] A [2.x.57] u_0 [2.x.58] f [2.x.59] u_0 [2.x.60] h^2 \| f + \epsilon \triangle u \|_K^2 [2.x.61] \sum_F h_F \| \jump{\epsilon \nabla u \cdot n} \|_F^2 [2.x.62] \mathbb{E} [2.x.63] 0.371/0.161=2.3 [2.x.64] \mathbb{E} [2.x.65] {\cal O}(N\log N) [2.x.66] {\cal O}(N) [2.x.67] 9\times 9 [2.x.68] 27\times 27 [2.x.69] L [2.x.70] 21\times 21 [2.x.71] 117\times 117$ in 3d. But if the coarse meshconsists of hundreds or thousands of cells, this approach will nolonger work and might start to dominate the overall run-time of each V-cyle.A common approach is then to solve the coarse mesh problem using analgebraic multigrid preconditioner; this would then, however, requireassembling the coarse matrix (even for the matrix-free version) asinput to the AMG implementation.
+* 
+
+* [1.x.134][1.x.135] [2.x.72] 
+* [0.x.1]

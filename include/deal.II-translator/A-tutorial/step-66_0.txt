@@ -1,0 +1,473 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32][1.x.33]
+*  [2.x.3] 
+* [1.x.34]
+* 
+
+* [1.x.35][1.x.36][1.x.37]
+* 
+
+* The aim of this tutorial program is to demonstrate how to solve a nonlinearproblem using Newton's method within the matrix-free framework. This tutorialcombines several techniques already introduced in  [2.x.4] ,  [2.x.5] ,  [2.x.6] , [2.x.7]  and others.
+* 
+
+* [1.x.38][1.x.39]
+* On the unit circle  [2.x.8] we consider the following nonlinear elliptic boundary value problem subject to ahomogeneous Dirichlet boundary condition: Find a function [2.x.9]  such that it holds:
+* [1.x.40]
+* This problem is also called the [1.x.41] and is a typical examplefor problems from combustion theory, see for example [2.x.10] .
+* 
+
+* [1.x.42][1.x.43]
+* As usual, we first derive the weak formulation for this problem by multiplyingwith a smooth test function  [2.x.11]  respecting theboundary condition and integrating over the domain  [2.x.12] . Integration byparts and putting the term from the right hand side to the left yields the weakformulation: Find a function  [2.x.13]  such that for alltest functions  [2.x.14]  it holds:
+* [1.x.44]
+* 
+* Choosing the Lagrangian finite element space  [2.x.15] , which directly incorporatesthe homogeneous Dirichlet boundary condition, we can define a basis [2.x.16]  and thus it suffices to test only with thosebasis functions. So the discrete problem reads as follows: Find  [2.x.17] such that for all  [2.x.18]  it holds:
+* [1.x.45]
+* As each finite element function is a linear combination of the basis functions [2.x.19] , we can identify the finite element solution bya vector from  [2.x.20]  consisting of the unknown values in each degree offreedom (DOF). Thus, we define the nonlinear function [2.x.21]  representing the discrete nonlinearproblem.
+* To solve this nonlinear problem we use Newton's method. So given aninitial guess  [2.x.22] , which already fulfills the Dirichlet boundarycondition, we determine a sequence of Newton steps  [2.x.23]  bysuccessively applying the following scheme:
+* [1.x.46]
+* So in each Newton step we have to solve a linear problem  [2.x.24] , where thesystem matrix  [2.x.25]  is represented by the Jacobian [2.x.26]  and the right hand side [2.x.27]  by the negative residual  [2.x.28] . The solution vector  [2.x.29]  is in thatcase the Newton update of the  [2.x.30] -th Newton step. Note, that we assume aninitial guess  [2.x.31] , which already fulfills the Dirichlet boundary conditionsof the problem formulation (in fact this could also be an inhomogeneousDirichlet boundary condition) and thus the Newton updates  [2.x.32]  satisfy ahomogeneous Dirichlet condition.
+* Until now we only tested with the basis functions, however, we can alsorepresent any function of  [2.x.33]  as linear combination of basis functions. Moremathematically this means, that every element of  [2.x.34]  can beidentified with a vector  [2.x.35]  via the representation formula: [2.x.36] . So using this we can give an expression forthe discrete Jacobian and the residual:
+* [1.x.47]
+* Compared to  [2.x.37]  we could also have formed the Frech{\'e}t derivative of thenonlinear function corresponding to the strong formulation of the problem anddiscretized it afterwards. However, in the end we would get the same set ofdiscrete equations.
+* 
+
+* [1.x.48][1.x.49]
+* Note, how the system matrix, actually the Jacobian, depends on the previousNewton step  [2.x.38] . Hence we need to tell the function that computesthe system matrix about the solution at the last Newton step. In animplementation with a classical  [2.x.39]  function wewould gather this information from the last Newton step during assembly by theuse of the member functions  [2.x.40]  and [2.x.41]  The  [2.x.42] function would then looks like:
+* [1.x.50]
+* 
+* Since we want to solve this problem without storing a matrix, we need to tellthe matrix-free operator this information before we use it. Therefore in thederived class  [2.x.43]  we will implement a functioncalled  [2.x.44] , which will process the information ofthe last Newton step prior to the usage of the matrix-vector implementation.Furthermore we want to use a geometric multigrid (GMG) preconditioner for thelinear solver, so in order to apply the multilevel operators we need to pass thelast Newton step also to these operators. This is kind of a tricky task, sincethe vector containing the last Newton step has to be interpolated to all levelsof the triangulation. In the code this task will be done by the function [2.x.45]  Note, a fundamental difference tothe previous cases, where we set up and used a geometric multigridpreconditioner, is the fact, that we can reuse the MGTransferMatrixFree objectfor the computation of all Newton steps. So we can save some work here bydefining a class variable and using an already set up MGTransferMatrixFreeobject  [2.x.46]  that was initialized in the [2.x.47]  function.
+* [1.x.51]
+* 
+* The function evaluating the nonlinearity works basically in the same way as thefunction  [2.x.48]  from  [2.x.49]  evaluating a coefficientfunction. The idea is to use an FEEvaluation object to evaluate the Newton stepand store the expression in a table for all cells and all quadrature points:
+* [1.x.52]
+* 
+* 
+
+* [1.x.53][1.x.54]
+* As said in  [2.x.50]  the matrix-free method gets more efficient if we choose ahigher order finite element space. Since we want to solve the problem on the [2.x.51] -dimensional unit ball, it would be good to have an appropriate boundaryapproximation to overcome convergence issues. For this reason we use anisoparametric approach with the MappingQGeneric class to recover the smoothboundary as well as the mapping for inner cells. In addition, to get a goodtriangulation in total we make use of the TransfiniteInterpolationManifold.
+* 
+
+*  [1.x.55] [1.x.56]
+*  First we include the typical headers of the deal.II library needed for this tutorial:
+* 
+
+* 
+* [1.x.57]
+* 
+*  In particular, we need to include the headers for the matrix-free framework:
+* 
+
+* 
+* [1.x.58]
+* 
+*  And since we want to use a geometric multigrid preconditioner, we need also the multilevel headers:
+* 
+
+* 
+* [1.x.59]
+* 
+*  Finally some common C++ headers for in and output:
+* 
+
+* 
+* [1.x.60]
+* 
+*   [1.x.61]  [1.x.62]
+* 
+
+* 
+*  In the beginning we define the matrix-free operator for the Jacobian. As a guideline we follow the tutorials  [2.x.52]  and  [2.x.53] , where the precise interface of the  [2.x.54]  class was extensively documented.   
+*   Since we want to use the Jacobian as system matrix and pass it to the linear solver as well as to the multilevel preconditioner classes, we derive the  [2.x.55]  class from the  [2.x.56]  class, such that we have already the right interface. The two functions we need to override from the base class are the  [2.x.57]  and the  [2.x.58]  function. To allow preconditioning with float precision we define the number type as template argument.   
+*   As mentioned already in the introduction, we need to evaluate the Jacobian  [2.x.59]  at the last Newton step  [2.x.60]  for the computation of the Newton update  [2.x.61] . To get the information of the last Newton step  [2.x.62]  we do pretty much the same as in  [2.x.63] , where we stored the values of a coefficient function in a table  [2.x.64]  once before we use the matrix-free operator. Instead of a function  [2.x.65] , we here implement a function  [2.x.66] .   
+*   As additional private member functions of the  [2.x.67]  we implement the  [2.x.68]  and the  [2.x.69]  function. The first one is the actual worker function for the matrix-vector application, which we pass to the  [2.x.70]  in the  [2.x.71]  function. The later one is the worker function to compute the diagonal, which we pass to the  [2.x.72]  function.   
+*   For better readability of the source code we further define an alias for the FEEvaluation object.
+* 
+
+* 
+* [1.x.63]
+* 
+*  The constructor of the  [2.x.73]  just calls the constructor of the base class  [2.x.74]  which is itself derived from the Subscriptor class.
+* 
+
+* 
+* [1.x.64]
+* 
+*  The  [2.x.75]  function resets the table holding the values for the nonlinearity and call the  [2.x.76]  function of the base class.
+* 
+
+* 
+* [1.x.65]
+* 
+*   [1.x.66]  [1.x.67]
+* 
+
+* 
+*  The following  [2.x.77]  function is based on the  [2.x.78]  function from  [2.x.79] . However, it does not evaluate a function object, but evaluates a vector representing a finite element function, namely the last Newton step needed for the Jacobian. Therefore we set up a FEEvaluation object and evaluate the finite element function in the quadrature points with the  [2.x.80]  and  [2.x.81]  functions. We store the evaluated values of the finite element function directly in the  [2.x.82]  table.   
+*   This will work well and in the  [2.x.83]  function we can use the values stored in the table to apply the matrix-vector product. However, we can also optimize the implementation of the Jacobian at this stage. We can directly evaluate the nonlinear function  [2.x.84]  and store these values in the table. This skips all evaluations of the nonlinearity in each call of the  [2.x.85]  function.
+* 
+
+* 
+* [1.x.68]
+* 
+*   [1.x.69]  [1.x.70]
+* 
+
+* 
+*  Now in the  [2.x.86]  function, which actually implements the cell wise action of the system matrix, we can use the information of the last Newton step stored in the table  [2.x.87] . The rest of this function is basically the same as in  [2.x.88] . We set up the FEEvaluation object, gather and evaluate the values and gradients of the input vector  [2.x.89] , submit the values and gradients according to the form of the Jacobian and finally call  [2.x.90]  to perform the cell integration and distribute the local contributions into the global vector  [2.x.91] .
+* 
+
+* 
+* [1.x.71]
+* 
+*  Next we use  [2.x.92]  to perform the actual loop over all cells computing the cell contribution to the matrix-vector product.
+* 
+
+* 
+* [1.x.72]
+* 
+*   [1.x.73]  [1.x.74]
+* 
+
+* 
+*  The internal worker function  [2.x.93]  for the computation of the diagonal is similar to the above worker function  [2.x.94] . However, as major difference we do not read values from a input vector or distribute any local results to an output vector. Instead the only input argument is the used FEEvaluation object.
+* 
+
+* 
+* [1.x.75]
+* 
+*  Finally we override the  [2.x.95]  function of the base class of the  [2.x.96] . Although the name of the function suggests just the computation of the diagonal, this function does a bit more. Because we only really need the inverse of the matrix diagonal elements for the Chebyshev smoother of the multigrid preconditioner, we compute the diagonal and store the inverse elements. Therefore we first initialize the  [2.x.97] . Then we compute the diagonal by passing the worker function  [2.x.98]  to the  [2.x.99]  function. In the end we loop over the diagonal and invert the elements by hand. Note, that during this loop we catch the constrained DOFs and set them manually to one.
+* 
+
+* 
+* [1.x.76]
+* 
+*   [1.x.77]  [1.x.78]
+* 
+
+* 
+*  After implementing the matrix-free operators we can now define the solver class for the [1.x.79]. This class is based on the common structure of all previous tutorial programs, in particular it is based on  [2.x.100] , solving also a nonlinear problem. Since we are using the matrix-free framework, we no longer need an assemble_system function any more, instead the information of the matrix is rebuilt in every call of the  [2.x.101]  function. However, for the application of the Newton scheme we need to assemble the right hand side of the linearized problems and compute the residuals. Therefore, we implement an additional function  [2.x.102] , which we later call in the  [2.x.103]  function. Finally, the typical  [2.x.104]  function here implements the Newton method, whereas the solution of the linearized system is computed in the function  [2.x.105] . As the MatrixFree framework handles the polynomial degree of the Lagrangian finite element method as a template parameter, we declare it also as a template parameter for the problem solver class.
+* 
+
+* 
+* [1.x.80]
+* 
+*  For the parallel computation we define a  [2.x.106]  As the computational domain is a circle in 2D and a ball in 3D, we assign in addition to the SphericalManifold for boundary cells a TransfiniteInterpolationManifold object for the mapping of the inner cells, which takes care of the inner cells. In this example we use an isoparametric finite element approach and thus use the MappingQGeneric class. Note, that we could also create an instance of the MappingQ class and set the  [2.x.107]  flags in the contructor call to  [2.x.108] . For further details on the connection of MappingQ and MappingQGeneric you may read the detailed description of these classes.
+* 
+
+* 
+* [1.x.81]
+* 
+*  As usual we then define the Lagrangian finite elements FE_Q and a DoFHandler.
+* 
+
+* 
+* [1.x.82]
+* 
+*  For the linearized discrete system we define an AffineConstraints objects and the  [2.x.109] , which is in this example represented as a matrix-free operator.
+* 
+
+* 
+* [1.x.83]
+* 
+*  The multilevel object is also based on the matrix-free operator for the Jacobian. Since we need to evaluate the Jacobian with the last Newton step, we also need to evaluate the level operator with the last Newton step for the preconditioner. Thus in addition to  [2.x.110] , we also need a MGLevelObject to store the interpolated solution vector on each level. As in  [2.x.111]  we use float precision for the preconditioner. Moreover, we define the MGTransferMatrixFree object as a class variable, since we need to set it up only once when the triangulation has changed and can then use it again in each Newton step.
+* 
+
+* 
+* [1.x.84]
+* 
+*  Of course we also need vectors holding the  [2.x.112] , the  [2.x.113] . In that way we can always store the last Newton step in the solution vector and just add the update to get the next Newton step.
+* 
+
+* 
+* [1.x.85]
+* 
+*  Finally we have a variable for the number of iterations of the linear solver.
+* 
+
+* 
+* [1.x.86]
+* 
+*  For the output in programs running in parallel with MPI, we use the ConditionalOStream class to avoid multiple output of the same data by different MPI ranks.
+* 
+
+* 
+* [1.x.87]
+* 
+*  Finally for the time measurement we use a TimerOutput object, which prints the elapsed CPU and wall times for each function in a nicely formatted table after the program has finished.
+* 
+
+* 
+* [1.x.88]
+* 
+*  The constructor of the  [2.x.114]  initializes the class variables. In particular, we set up the multilevel support for the  [2.x.115]  set the mapping degree equal to the finite element degree, initialize the ConditionalOStream and tell the TimerOutput that we want to see the wall times only on demand.
+* 
+
+* 
+* [1.x.89]
+* 
+*   [1.x.90]  [1.x.91]
+* 
+
+* 
+*  As the computational domain we use the  [2.x.116] -dimensional unit ball. We follow the instructions for the TransfiniteInterpolationManifold class and also assign a SphericalManifold for the boundary. Finally, we refine the initial mesh 3
+* 
+*  -  [2.x.117]  times globally.
+* 
+
+* 
+* [1.x.92]
+* 
+*   [1.x.93]  [1.x.94]
+* 
+
+* 
+*  The  [2.x.118]  function is quasi identical to the one in  [2.x.119] . The only differences are obviously the time measurement with only one  [2.x.120]  instead of measuring each part individually, and more importantly the initialization of the MGLevelObject for the interpolated solution vector of the previous Newton step. Another important change is the setup of the MGTransferMatrixFree object, which we can reuse in each Newton step as the  [2.x.121]  will not be not changed.   
+*   Note how we can use the same MatrixFree object twice, for the  [2.x.122]  and the multigrid preconditioner.
+* 
+
+* 
+* [1.x.95]
+* 
+*   [1.x.96]  [1.x.97]
+* 
+
+* 
+*  Next we implement a function which evaluates the nonlinear discrete residual for a given input vector ( [2.x.123] ). This function is then used for the assembly of the right hand side of the linearized system and later for the computation of the residual of the next Newton step to check if we already reached the error tolerance. As this function should not affect any class variable we define it as a constant function. Internally we exploit the fast finite element evaluation through the FEEvaluation class and the  [2.x.124]  similar to  [2.x.125] .   
+*   First we create a pointer to the MatrixFree object, which is stored in the  [2.x.126] . Then we pass the worker function  [2.x.127]  for the cell wise evaluation of the residual together with the input and output vector to the  [2.x.128]  In addition, we enable the zero out of the output vector in the loop, which is more efficient than calling <code>dst = 0.0</code> separately before.   
+*   Note that with this approach we do not have to take care about the MPI related data exchange, since all the bookkeeping is done by the  [2.x.129] 
+* 
+
+* 
+* [1.x.98]
+* 
+*   [1.x.99]  [1.x.100]
+* 
+
+* 
+*  This is the internal worker function for the evaluation of the residual. Essentially it has the same structure as the  [2.x.130]  function of the  [2.x.131]  and evaluates the residual for the input vector  [2.x.132]  on the given set of cells  [2.x.133] . The difference to the above mentioned  [2.x.134]  function is, that we split the  [2.x.135]  function into  [2.x.136]  and  [2.x.137]  since the input vector might have constrained DOFs.
+* 
+
+* 
+* [1.x.101]
+* 
+*   [1.x.102]  [1.x.103]
+* 
+
+* 
+*  Using the above function  [2.x.138]  to evaluate the nonlinear residual, the assembly of the right hand side of the linearized system becomes now a very easy task. We just call the  [2.x.139]  function and multiply the result with minus one.   
+*   Experiences show that using the FEEvaluation class is much faster than a classical implementation with FEValues and co.
+* 
+
+* 
+* [1.x.104]
+* 
+*   [1.x.105]  [1.x.106]
+* 
+
+* 
+*  According to  [2.x.140]  the following function computes the norm of the nonlinear residual for the solution  [2.x.141]  with the help of the  [2.x.142]  function. The Newton step length  [2.x.143]  becomes important if we would use an adaptive version of the Newton method. Then for example we would compute the residual for different step lengths and compare the residuals. However, for our problem the full Newton step with  [2.x.144]  is the best we can do. An adaptive version of Newton's method becomes interesting if we have no good initial value. Note that in theory Newton's method converges with quadratic order, but only if we have an appropriate initial value. For unsuitable initial values the Newton method diverges even with quadratic order. A common way is then to use a damped version  [2.x.145]  until the Newton step is good enough and the full Newton step can be performed. This was also discussed in  [2.x.146] .
+* 
+
+* 
+* [1.x.107]
+* 
+*   [1.x.108]  [1.x.109]
+* 
+
+* 
+*  In order to compute the Newton updates in each Newton step we solve the linear system with the CG algorithm together with a geometric multigrid preconditioner. For this we first set up the PreconditionMG object with a Chebyshev smoother like we did in  [2.x.147] .
+* 
+
+* 
+* [1.x.110]
+* 
+*  We remember that the Jacobian depends on the last Newton step stored in the solution vector. So we update the ghost values of the Newton step and pass it to the  [2.x.148]  to store the information.
+* 
+
+* 
+* [1.x.111]
+* 
+*  Next we also have to pass the last Newton step to the multilevel operators. Therefore, we need to interpolate the Newton step to all levels of the triangulation. This is done with the  [2.x.149] 
+* 
+
+* 
+* [1.x.112]
+* 
+*  Now we can set up the preconditioner. We define the smoother and pass the interpolated vectors of the Newton step to the multilevel operators.
+* 
+
+* 
+* [1.x.113]
+* 
+*  Finally we set up the SolverControl and the SolverCG to solve the linearized problem for the current Newton update. An important fact of the implementation of SolverCG or also SolverGMRES is, that the vector holding the solution of the linear system (here  [2.x.150] ) can be used to pass a starting value. In order to start the iterative solver always with a zero vector we reset the  [2.x.151]  explicitly before calling  [2.x.152]  Afterwards we distribute the Dirichlet boundary conditions stored in  [2.x.153]  and store the number of iteration steps for the later output.
+* 
+
+* 
+* [1.x.114]
+* 
+*  Then for bookkeeping we zero out the ghost values.
+* 
+
+* 
+* [1.x.115]
+* 
+*   [1.x.116]  [1.x.117]
+* 
+
+* 
+*  Now we implement the actual Newton solver for the nonlinear problem.
+* 
+
+* 
+* [1.x.118]
+* 
+*  We define a maximal number of Newton steps and tolerances for the convergence criterion. Usually, with good starting values, the Newton method converges in three to six steps, so maximal ten steps should be totally sufficient. As tolerances we use  [2.x.154]  for the norm of the residual and  [2.x.155]  for the norm of the Newton update. This seems a bit over the top, but we will see that, for our example, we will achieve these tolerances after a few steps.
+* 
+
+* 
+* [1.x.119]
+* 
+*  Now we start the actual Newton iteration.
+* 
+
+* 
+* [1.x.120]
+* 
+*  We assemble the right hand side of the linearized problem and compute the Newton update.
+* 
+
+* 
+* [1.x.121]
+* 
+*  Then we compute the errors, namely the norm of the Newton update and the residual. Note that at this point one could incorporate a step size control for the Newton method by varying the input parameter  [2.x.156]  for the compute_residual function. However, here we just use  [2.x.157]  equal to one for a plain Newton iteration.
+* 
+
+* 
+* [1.x.122]
+* 
+*  Next we advance the Newton step by adding the Newton update to the current Newton step.
+* 
+
+* 
+* [1.x.123]
+* 
+*  A short output will inform us on the current Newton step.
+* 
+
+* 
+* [1.x.124]
+* 
+*  After each Newton step we check the convergence criteria. If at least one of those is fulfilled we are done and end the loop. If we haven't found a satisfying solution after the maximal amount of Newton iterations, we inform the user about this shortcoming.
+* 
+
+* 
+* [1.x.125]
+* 
+*   [1.x.126]  [1.x.127]
+* 
+
+* 
+*  The computation of the H1-seminorm of the solution can be done in the same way as in  [2.x.158] . We update the ghost values and use the function  [2.x.159]  In the end we gather all computations from all MPI ranks and return the norm.
+* 
+
+* 
+* [1.x.128]
+* 
+*   [1.x.129]  [1.x.130]
+* 
+
+* 
+*  We generate the graphical output files in vtu format together with a pvtu master file at once by calling the  [2.x.160]  function in the same way as in  [2.x.161] . In addition, as in  [2.x.162] , we query the  [2.x.163]  of each cell and write the distribution of the triangulation among the MPI ranks into the output file. Finally, we generate the patches of the solution by calling  [2.x.164]  However, since we have a computational domain with a curved boundary, we additionally pass the  [2.x.165]  and the finite element degree as number of subdivision. But this is still not enough for the correct representation of the solution, for example in ParaView, because we attached a TransfiniteInterpolationManifold to the inner cells, which results in curved cells in the interior. Therefore we pass as third argument the  [2.x.166]  option, such that also the inner cells use the corresponding manifold description to build the patches.   
+*   Note that we could handle the higher order elements with the flag  [2.x.167]  However, due to the limited compatibility to previous version of ParaView and the missing support by VisIt, we left this option for a future version.
+* 
+
+* 
+* [1.x.131]
+* 
+*   [1.x.132]  [1.x.133]
+* 
+
+* 
+*  The last missing function of the solver class for the [1.x.134] is the run function. In the beginning we print information about the system specifications and the finite element space we use. The problem is solved several times on a successively refined mesh.
+* 
+
+* 
+* [1.x.135]
+* 
+*  The first task in actually solving the problem is to generate or refine the triangulation.
+* 
+
+* 
+* [1.x.136]
+* 
+*  Now we set up the system and solve the problem. These steps are accompanied by time measurement and textual output.
+* 
+
+* 
+* [1.x.137]
+* 
+*  After the problem was solved we compute the norm of the solution and generate the graphical output files.
+* 
+
+* 
+* [1.x.138]
+* 
+*  Finally after each cycle we print the timing information.
+* 
+
+* 
+* [1.x.139]
+* 
+*   [1.x.140]  [1.x.141]
+* 
+
+* 
+*  As typical for programs running in parallel with MPI we set up the MPI framework and disable shared-memory parallelization by limiting the number of threads to one. Finally to run the solver for the [1.x.142] we create an object of the  [2.x.168]  class and call the run function. Exemplarily we solve the problem once in 2D and once in 3D each with fourth-order Lagrangian finite elements.
+* 
+
+* 
+* [1.x.143]
+* [1.x.144][1.x.145]
+* 
+
+* The aim of this tutorial step was to demonstrate the solution of a nonlinearPDE with the matrix-free framework.
+* 
+
+* 
+* [1.x.146][1.x.147]
+* Running the program on two processes in release mode via
+* [1.x.148]
+* gives the following output on the console
+* [1.x.149]
+* 
+* We show the solution for the two- and three-dimensional problem in thefollowing figure.
+*  [2.x.169] 
+* 
+
+* 
+* [1.x.150][1.x.151]
+* In the program output above we find some interesting information about theNewton iterations. The terminal output in each refinement cycle presentsdetailed diagnostics of the Newton method, which show first of all the numberof Newton steps and for each step the norm of the residual  [2.x.170] ,the norm of the Newton update  [2.x.171] , and the number of CG iterations [2.x.172] .
+* We observe that for all cases the Newton method converges in approximatelythree to four steps, which shows the quadratic convergence of the Newton methodwith a full step length  [2.x.173] . However, be aware that for a badly choseninitial guess  [2.x.174] , the Newton method will also diverge quadratically.Usually if you do not have an appropriate initial guess, you try a few dampedNewton steps with a reduced step length  [2.x.175]  until the Newton step isagain in the quadratic convergence domain. This damping and relaxation of theNewton step length truly requires a more sophisticated implementation of theNewton method, which we designate to you as a possible extension of thetutorial.
+* Furthermore, we see that the number of CG iterations is approximately constantwith successive mesh refinements and an increasing number of DoFs. This is ofcourse due to the geometric multigrid preconditioner and similar to theobservations made in other tutorials that use this method, e.g.,  [2.x.176]  and [2.x.177] . Just to give an example, in the three-dimensional case after fiverefinements, we have approximately 14.7 million distributed DoFs withfourth-order Lagrangian finite elements, but the number of CG iterations isstill less than ten.
+* In addition, there is one more very useful optimization that we applied andthat should be mentioned here. In the  [2.x.178]  function weexplicitly reset the vector holding the Newton update before passing it as theoutput vector to the solver. In that case we use a starting value of zero forthe CG method, which is more suitable than the previous Newton update, theactual content of the  [2.x.179]  before resetting, and thusreduces the number of CG iterations by a few steps.
+* 
+
+* 
+* [1.x.152][1.x.153]
+* A couple of possible extensions are available concerning minor updates fo thepresent code as well as a deeper numerical investigation of the Gelfand problem.
+* [1.x.154][1.x.155]
+* Beside a step size controlled version of the Newton iteration as mentionedalready in  [2.x.180] , one could also implement a more flexible stopping criterionfor the Newton iteration. For example one could replace the fixed tolerancesfor the residual  [2.x.181] and implement a mixed error control with a given absolute and relativetolerance, such that the Newton iteration exists with success as, e.g.,
+* [1.x.156]
+* For more advanced applications with many nonlinear systems to solve, forexample at each time step for a time-dependent problem, it turns out that it isnot necessary to set up and assemble the Jacobian anew at every single Newtonstep or even for each time step. Instead, the existing Jacobian from a previousstep can be used for the Newton iteration. The Jacobian is then only rebuiltif, for example, the Newton iteration converges too slowly. Such an idea yieldsa [1.x.157]. Admittedly, when using the matrix-free framework, the assembly ofthe Jacobian is omitted anyway, but with in this way one can try to optimizethe reassembly of the geometric multigrid preconditioner. Remember that eachtime the solution from the old Newton step must be distributed to all levelsand the mutligrid preconditioner must be reinitialized.
+* [1.x.158][1.x.159]
+* In the results section of  [2.x.182]  and others, the parallel scalability of thematrix-free framework on a large number of processors has already beendemonstrated very impressively. In the nonlinear case we consider here, we notethat one of the bottlenecks could become the transfer and evaluation of thematrix-free Jacobi operator and its multistage operators in the previous Newtonstep, since we need to transfer the old solution at all stages in each step. Afirst parallel scalability analysis in  [2.x.183]  shows quitegood strong scalability when the problem size is large enough. However, a moredetailed analysis needs to be performed for reliable results. Moreover, theproblem has been solved only with MPI so far, without using the possibilitiesof shared memory parallelization with threads. Therefore, for this example, youcould try hybrid parallelization with MPI and threads, such as described in [2.x.184] .
+* [1.x.160][1.x.161]
+* Analogously to  [2.x.185]  and the mentioned possible extension of  [2.x.186] , you canconvince yourself which method is faster.
+* [1.x.162][1.x.163]
+* One can consider the corresponding eigenvalue problem, which is called Bratuproblem. For example, if we define a fixed eigenvalue  [2.x.187] , we cancompute the corresponding discrete eigenfunction. You will notice that thenumber of Newton steps will increase with increasing  [2.x.188] . To reduce thenumber of Newton steps you can use the following trick: start from a certain [2.x.189] , compute the eigenfunction, increase  [2.x.190] , and then use the previous solution as an initial guess for theNewton iteration. In the end you can plot the  [2.x.191] -norm over theeigenvalue  [2.x.192] . What do you observe forfurther increasing  [2.x.193] ?
+* 
+
+* [1.x.164][1.x.165] [2.x.194] 
+* [0.x.1]

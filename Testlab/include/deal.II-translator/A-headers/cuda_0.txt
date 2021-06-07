@@ -1,0 +1,11 @@
+include/deal.II-translator/A-headers/cuda_0.txt
+[0.x.0]*
+
+
+* 
+* [2.x.0] 
+* 本模块中的类涉及到使用CUDA在GPU上运行的功能描述。
+
+* 
+* [0.x.1]
+

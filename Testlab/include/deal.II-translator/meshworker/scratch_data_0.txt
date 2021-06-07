@@ -1,0 +1,164 @@
+include/deal.II-translator/meshworker/scratch_data_0.txt
+[0.x.0]*
+   一个帮助类，用于简化线性和非线性问题的并行装配，以及有限元场的评估。    该类是ScratchData中的一个落款，可与[2.x.0]函数和[2.x.1]函数（）一起使用。    ScratchData类有三个主要目标。
+* 
+
+* 
+* 
+
+* 
+ 
+
+ 
+* 
+* - 为当前单元及其相邻单元按要求创建FEValues、FEFaceValues、FESSubfaceValues和FEInterfaceValues*（仅当用户提供的算法需要它们时），并在组装单元、面或子面贡献时提供统一接口访问FEValues对象。
+* 
+
+* 
+* 
+
+* 
+ 
+
+ 
+* 
+* - 存储任意数据类型（或对任意数据类型的引用），可以通过名称检索（例如，当装配需要引用其他对象，如以前的时间步骤的解决方案向量、以前的非线性迭代向量、几何描述等），在一个类型的对象中。
+* 
+
+* 
+* 
+
+* 
+* 
+
+ 
+* 
+* - 为那些用户可能需要在正交点上的临时数据向量的用例提供一个合理的接口，允许按需构建这些临时向量*，并可方便地访问已经计算出的解向量的值、梯度等。    在 "在当前单元上工作的方法 "一节中的方法按要求初始化当前单元上的内部FEValues、FEFaceValues、FESSubfaceValues和FEInterfaceValues对象，允许使用这个类作为四个不同对象的单一替代品，用于整合和查询单元、面和子面的有限元值。    同样地，"在邻接单元上工作的方法 "一节中的方法也会根据需要初始化邻接单元上的（不同的）内部FEValues、FEFaceValues和FESSubfaceValues，允许使用这个类来替代通常需要在邻接单元、其面和子面上集成的另外三个对象（例如，在非连续Galerkin方法中）。    如果你需要在刚刚用 "在当前单元上工作的方法 "一节中的某个函数初始化的单元、面或子面上检索有限元解向量的值或梯度，你可以使用 "在当前单元上评估有限元场及其导数 "一节中的方法。    下面的代码片断给出了这个类的一个使用实例。   
+* [1.x.0]
+* 你调用这个类的函数的顺序很重要：如果你调用[2.x.2]函数，该函数需要一个活动单元的迭代器，那么随后调用内部需要FEValuesBase对象的方法将使用以给定单元初始化的内部FEValues对象来执行其计算。另一方面，如果你调用了[2.x.3]方法，该方法也需要一个面的索引，那么随后所有对需要FEValuesBase对象的方法的调用，将使用内部存储的FEFaceValues对象，用传递给[2.x.4]函数的单元格和面的索引初始化。这同样适用于[2.x.5]方法，它需要三个参数：单元格、面的索引和子面的索引。    用户代码的结构应该是不交错进行单元格的工作和面的工作。    例如，考虑下面的代码片段。   
+* [1.x.1]
+* 当使用这个类时，请引用  
+* [1.x.2]
+*   
+* [0.x.1]*
+     创建一个空的ScratchData对象。一个指向[2.x.6]和[2.x.7]的SmartPointer被内部存储。请确保它们的寿命比这个类实例长。        构造函数不初始化任何内部的FEValues对象。    这些对象会在第一次调用 reinit() 函数时被初始化，使用这里传递的参数。         2.x.8] mapping 在内部FEValues对象中使用的映射 [2.x.9] fe 有限元 [2.x.10] quadrature 单元正交 [2.x.11] update_flags 当前单元FEValues和邻近单元FEValues的更新标志 [2.x.12 ] face_quadrature 面部正交，用于当前单元和邻居单元的FEFaceValues和FESubfaceValues [2.x.13] face_update_flags 用于当前单元和邻居单元的FEFaceValues和FESubfaceValues的更新标志    
+* [0.x.2]*
+     与其他构造函数类似，但这个构造函数允许为相邻单元和面指定不同的标志。         [2.x.14] mapping 在内部FEValues对象中使用的映射 [2.x.15] fe 有限元素 [2.x.16] quadrature 单元正交 [2.x.17] update_flags 当前单元FEValues的更新标志 [2.x.18] neighbor_update_flags 邻居单元FEValues的更新标志 [2.x.19 ] face_quadrature 面部正交，用于当前单元和邻居单元的FEFaceValues和FESubfaceValues [2.x.20] face_update_flags 用于当前单元的FEFaceValues和FESubfaceValues的更新标记 [2.x.21] neighbor_face_update_flags 用于邻居单元的FEFaceValues和FESubfaceValues的更新标记    
+* [0.x.3]*
+     与其他构造函数相同，使用默认的MappingQ1。         [2.x.22] fe 有限元 [2.x.23] quadrature 单元正交 [2.x.24] update_flags 当前单元FEValues和邻近单元FEValues的更新标志 [2.x.25 ] face_quadrature 面部正交，用于当前单元和邻居单元的FEFaceValues和FESubfaceValues [2.x.26] face_update_flags 用于当前单元和邻居单元的FEFaceValues和FESubfaceValues的更新标志    
+* [0.x.4]*
+     与其他构造函数相同，使用默认的MappingQ1。         [2.x.27] fe 有限元 [2.x.28] quadrature 单元正交 [2.x.29] update_flags 当前单元FEValues的更新标志 [2.x.30] neighbor_update_flags 邻近单元FEValues的更新标志 [2.x.31 ] face_quadrature 面部正交，用于当前单元和邻居单元的FEFaceValues和FESubfaceValues [2.x.32] face_update_flags 用于当前单元的FEFaceValues和FESubfaceValues的更新标记 [2.x.33] neighbor_face_update_flags 用于邻居单元的FEFaceValues和FESubfaceValues的更新标记    
+* [0.x.5]*
+     深度复制构造函数。FEValues对象不会被复制。   
+* [0.x.6]*
+      [2.x.34] 对当前单元工作的方法    
+* [0.x.7]*
+     用给定的[2.x.35]初始化内部的FEValues，并返回它的引用。        调用此函数后，get_current_fe_values()将返回此方法的同一对象，作为FEValuesBase引用。   
+* [0.x.8]*
+     初始化内部的FEFaceValues，在给定的[2.x.36]上使用，并返回一个引用。        调用此函数后，get_current_fe_values()将返回此方法的同一对象，作为FEValuesBase引用。   
+* [0.x.9]*
+     初始化内部的FESubfaceValues，使其在给定的[2.x.38]上使用[2.x.39]，并返回一个引用。        调用此函数后，get_current_fe_values()将返回此方法的同一对象，作为FEValuesBase的引用。        如果[2.x.41]是[2.x.42]，则会调用只接收[2.x.43]和[2.x.44]的reinit()函数。   
+* [0.x.10]*
+     用给定的参数初始化内部的FEInterfaceValues，并返回它的一个引用。        调用此函数后，get_local_dof_indices(), get_quadrature_points(), get_normal_vectors(), and get_JxW_values()将被转发给本地FEInterfaceValues对象。方法get_current_fe_values()将返回与当前单元相关的FEValuesBase，而get_neighbor_fe_values()将与邻居单元相关。get_local_dof_indices()方法将返回与[2.x.45]相同的结果，而get_neighbor_dof_indices()将返回邻居单元的本地dof指数。   
+* [0.x.11]*
+     获取当前初始化的FEValues。        如果reinit(cell)函数最后被调用，该函数将返回内部FEValues。如果调用了reinit(cell, face_no)函数，则此函数返回内部的FEFaceValues，如果调用了reinit(cell, face_no, subface_no)函数（有一个有效的[2.x.46]参数），则返回内部的FESubfaceValues对象。   
+* [0.x.12]*
+     返回内部FEValues对象的正交点。   
+* [0.x.13]*
+     返回内部FEValues对象的JxW值。   
+* [0.x.14]*
+     返回最后计算的法向量。   
+* [0.x.15]*
+     返回上次调用reinit()函数时传递的单元格的本地dof指数。   
+* [0.x.16]*
+      [2.x.47] 对邻居单元工作的方法    
+* [0.x.17]*
+     初始化内部邻居FEValues，使用给定的[2.x.48]，并返回对它的引用。        调用此函数后，get_current_neighbor_fe_values()将返回此方法的同一对象，作为FEValuesBase引用。   
+* [0.x.18]*
+     初始化内部的FEFaceValues，在给定的[2.x.49]上使用，并返回一个引用。        调用此函数后，get_current_neighbor_fe_values()将返回此方法的同一对象，作为FEValuesBase引用。   
+* [0.x.19]*
+     初始化内部的FESubfaceValues，使其在给定的[2.x.51]上使用[2.x.52]，并返回一个引用。        调用此函数后，get_current_neighbor_fe_values()将返回此方法的同一对象，作为FEValuesBase引用。        如果[2.x.54]是[2.x.55]，则会调用只接收[2.x.56]和[2.x.57]的reinit()函数。   
+* [0.x.20]*
+     获取当前初始化的邻居FEValues。        如果最后一次调用 reinit_neighbor(cell) 函数，该函数将返回邻居FEValues。如果调用了reinit_neighbor(cell, face_no)函数，则此函数返回内部邻居FEFaceValues，如果调用了reinit_neighbor(cell, face_no, subface_no)函数（有一个有效的[2.x.58]参数），则返回内部邻居FESubfaceValues对象。   
+* [0.x.21]*
+     返回邻居FEValues对象的JxW值。   
+* [0.x.22]*
+     返回邻居上最后计算的法向量。   
+* [0.x.23]*
+     返回上次调用reinit_neighbor()函数时传递的邻居的局部道夫指数。   
+* [0.x.24]*
+     返回一个GeneralDataStorage对象，该对象可用于存储任何数量、任何类型的数据，然后通过一个标识符字符串进行访问。   
+* [0.x.25]*
+     返回一个GeneralDataStorage对象，该对象可用于存储任何类型的任何数量的数据，然后通过一个标识符字符串进行访问。   
+* [0.x.26]*
+      [2.x.59] 评估当前单元上的有限元场及其导数    
+* [0.x.27]*
+     提取与内部初始化单元相关的局部道夫值。        在调用这个函数之前，你必须确保你之前已经调用了reinit()函数中的一个。        在每次调用这个函数时，都会产生一个新的dof值向量并在内部存储，除非找到一个先前的同名向量。如果是这样的话，那个向量的内容就会被覆盖掉。        如果你给出一个唯一的[2.x.60]，那么对于每个单元格，你可以保证得到一个与虚拟变量相同类型的独立的道夫向量。如果你使用一个自动微分的数字类型（如[2.x.61][2.x.62]等），这个方法也会在内部初始化独立变量，允许你进行自动微分。        你可以通过调用get_local_dof_values()方法来访问提取的局部道夫值，参数与你在这里传递的[2.x.63]相同。        注意，使用这种初始化策略会使这个ScratchData对象的使用与AD辅助类不兼容（因为它们会做自己的数据管理）。特别是，用户有必要自己管理所有的AD数据（包括在这个调用之前和之后）。   
+* [0.x.28]*
+     调用extract_local_dof_values()后，你可以通过这个方法检索存储的信息。        参数[2.x.64]和[2.x.65]变量的类型都应该与你传递给extract_local_dof_values()函数的一致。   
+* [0.x.29]*
+     对于由[2.x.66]确定的解向量，计算正交点的函数值，并返回一个由你作为[2.x.67]参数传递的 Extractor 推断出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.68] 字符串，以及相同类型的变量 [2.x.69] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数会抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_values标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用"，以了解更多信息。   
+* [0.x.30]*
+     对于[2.x.70]确定的解向量，计算正交点的函数梯度，并返回一个由你作为[2.x.71]参数传递的提取器推导出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.72] 字符串，以及相同类型的变量 [2.x.73] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数会抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_gradients标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用"，以了解更多信息。   
+* [0.x.31]*
+     对于[2.x.74]确定的解向量，计算函数在正交点的对称梯度，并返回一个由你作为[2.x.75]参数传递的提取器推导出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.76] 字符串，以及相同类型的变量 [2.x.77] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数会抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_gradients标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用 "以获得更多信息。   
+* [0.x.32]*
+     对于由[2.x.78]确定的解向量，计算函数在正交点的发散，并返回一个由你作为[2.x.79]参数传递的提取器推导出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.80] 字符串，以及相同类型的变量 [2.x.81] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数会抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_gradients标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用"，以了解更多信息。   
+* [0.x.33]*
+     对于由[2.x.82]确定的解向量，计算正交点的函数卷曲，并返回一个由你作为[2.x.83]参数传递的提取器推导出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.84] 字符串，以及相同类型的变量 [2.x.85] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数将抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_gradients标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用"，以了解更多信息。   
+* [0.x.34]*
+     对于由[2.x.86]确定的解向量，计算正交点上的函数的 hessians，并返回一个由你作为[2.x.87]参数传递的 Extractor 推断的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.88] 字符串，以及相同类型的变量 [2.x.89] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数会抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_hessians标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用 "以获得更多信息。   
+* [0.x.35]*
+     对于由[2.x.90]确定的解向量，计算正交点上的函数的拉普拉斯，并返回一个由你作为[2.x.91]参数传递的提取器推导出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.92] 字符串，以及相同类型的变量 [2.x.93] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数将抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_hessians标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。    参见FEValues类文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用 "以获得更多信息。   
+* [0.x.36]*
+     对于由[2.x.94]确定的解向量，计算正交点的函数的三次方，并返回一个由你作为[2.x.95]参数传递的提取器推导出的正确类型的向量。        在你调用这个方法之前，你需要至少调用一次 extract_local_dof_values() 方法，传递相同的 [2.x.96] 字符串，以及相同类型的变量 [2.x.97] 如果你之前没有调用 extract_local_dof_values() 方法，这个函数会抛出一个异常。        为了使这个函数正常工作，你所调用的reinit()函数中的底层FEValues、FEFaceValues或FESubfaceValues对象必须已经计算了你所请求的信息。要做到这一点，update_3rd_derivatives标志必须是你传递给这个对象的构造函数的UpdateFlags列表中的一个元素。参见FEValues文档中的 "UpdateFlags、Mapping和FiniteElement的相互作用 "以获得更多信息。   
+* [0.x.37]*
+     返回一个对所用映射的引用。   
+* [0.x.38]*
+     构建一个唯一的名称，以便在内部GeneralDataStorage对象中存储数值、梯度、发散等的向量。   
+* [0.x.39]*
+     构建一个唯一的名称来存储本地dof值。   
+* [0.x.40]*
+     内部FEValues所使用的映射。确保它的寿命比这个类长。   
+* [0.x.41]*
+     内部FEValues使用的有限元。确保它的寿命比这个类长。   
+* [0.x.42]*
+     用于对当前单元和其相邻单元进行积分的正交公式。   
+* [0.x.43]*
+     用于在面、子面、相邻面和子面进行积分的正交公式。   
+* [0.x.44]*
+     在初始化单元格FEValues对象时使用的UpdateFlags。   
+* [0.x.45]*
+     在初始化相邻的单元格FEValues对象时使用的UpdateFlags。   
+* [0.x.46]*
+     在初始化FEFaceValues和FESubfaceValues对象时使用的UpdateFlags。   
+* [0.x.47]*
+     在初始化邻居FEFaceValues和FESubfaceValues对象时使用的UpdateFlags。   
+* [0.x.48]*
+     当前单元上的有限元值。   
+* [0.x.49]*
+     当前面的有限元值。   
+* [0.x.50]*
+     当前子面的有限元值。   
+* [0.x.51]*
+     邻近单元上的有限元值。   
+* [0.x.52]*
+     邻近面的有限元值。   
+* [0.x.53]*
+     邻近子面的有限元值。   
+* [0.x.54]*
+     面上的界面值。   
+* [0.x.55]*
+     当前单元上的Dof指数。   
+* [0.x.56]*
+     邻近单元上的阻值指数。   
+* [0.x.57]*
+     用户数据存储。   
+* [0.x.58]*
+     内部数据存储。   
+* [0.x.59]*
+     指向该单元上最后使用的FEValues/FEFaceValues或FESubfaceValues对象的指针。   
+* [0.x.60]*
+     指向邻近单元上最后使用的FEValues/FEFaceValues或FESubfaceValues对象的指针。   
+* [0.x.61]
+

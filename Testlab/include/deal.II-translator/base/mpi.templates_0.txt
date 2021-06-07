@@ -1,0 +1,5 @@
+include/deal.II-translator/base/mpi.templates_0.txt
+[0.x.0]*
+       为给定的参数返回相应的MPI数据类型id。     
+* [0.x.1]
+

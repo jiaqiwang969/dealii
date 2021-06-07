@@ -1,0 +1,21 @@
+include/deal.II-translator/base/bounding_box_data_out_0.txt
+[0.x.0]*
+ 这个类为BoundingBox对象生成图形输出，从任何可以通过提升转换为BoundingBox的对象开始。
+
+* 
+* [0.x.1]*
+   构造函数。 
+* [0.x.2]*
+   解构器。 
+* [0.x.3]*
+   从一系列对象中生成补丁，可以通过boost转换为BoundingBox对象的集合。    你可以把BoundingBox对象的迭代器传给这个函数，或者传给第一元素是BoundingBox对象的对或图元。 
+* [0.x.4]*
+   从一个对象的容器中生成补丁，可以通过boost转换为BoundingBox对象的集合。    你可以向这个函数传递一个BoundingBox对象的容器，或者一个第一元素是BoundingBox对象的对或图元的容器。 
+* [0.x.5]*
+   为 build_patches() 生成的每个输出补丁附加数据。    [2.x.0]参数应与你在调用build_patches()时使用的容器大小相同，而每个条目应与[2.x.1]参数的大小相同。     [2.x.2] datasets 要附加到每个补丁的实际数据 [2.x.3] dataset_names 数据集的每个组件的名称  
+* [0.x.6]*
+   实际的方框。 
+* [0.x.7]*
+   数据集的名称。 
+* [0.x.8]
+

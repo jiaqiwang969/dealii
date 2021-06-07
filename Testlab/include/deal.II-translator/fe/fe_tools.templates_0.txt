@@ -1,0 +1,7 @@
+include/deal.II-translator/fe/fe_tools.templates_0.txt
+[0.x.0]*
+     取一个[2.x.0]对象，并返回一个布尔向量，包括由[2.x.2]元素组成的子元素[2.x.3]的混合元素的[2.x.1]限制_is_additive_flags。    
+* [0.x.1]*
+     计算组成的有限元的非零向量分量。   
+* [0.x.2]
+

@@ -1,0 +1,18 @@
+include/deal.II-translator/base/polynomials_bernstein_0.txt
+[0.x.0]*
+ 该类实现了欲望度的伯恩斯坦基础多项式，如http://www.idav.ucdavis.edu/education/CAGDNotes/Bernstein-Polynomials.pdf "从伯恩斯坦基础转换到功率基础 "一段中所述。
+* 它们被用来创建Bernstein有限元FE_Bernstein。
+* 
+
+* 
+* [2.x.0] 
+
+ 
+* [0.x.1]*
+   构建[2.x.1]。
+* 
+* - h伯恩斯坦多项式的度数为[2.x.2]。    
+* [1.x.0]
+* [2.x.3] 指数 [2.x.4] 度数  
+* [0.x.2]
+

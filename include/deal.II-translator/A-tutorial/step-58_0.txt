@@ -1,0 +1,376 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27]
+*  [2.x.3] 
+* [1.x.28][1.x.29]
+* [1.x.30][1.x.31][1.x.32]
+* 
+
+* The [1.x.33] for a function  [2.x.4]  and a potential  [2.x.5]  is a model often used inquantum mechanics and nonlinear optics. If one measures in appropriatequantities (so that  [2.x.6] ), then it reads as follows:
+* [1.x.34]
+* If there is no potential, i.e.  [2.x.7] , then it can be usedto describe the propagation of light in optical fibers. If  [2.x.8] , the equation is also sometimes called the [1.x.35] and can be used to model the time dependent behavior of[1.x.36].
+* For this particular tutorial program, the physical interpretation ofthe equation is not of much concern to us. Rather, we want to use itas a model that allows us to explain two aspects:
+* 
+*  - It is a [1.x.37] for  [2.x.9] . We have previously seen complex-valued equations in  [2.x.10] ,  but there have opted to split the equations into real and imaginary  parts and consequently ended up solving a system of two real-valued  equations. In contrast, the goal here is to show how to solve  problems in which we keep everything as complex numbers.
+* 
+*  - The equation is a nice model problem to explain how [1.x.38] work. This is because it has terms with  fundamentally different character: on the one hand,  [2.x.11]  is a regular spatial operator in the way we have seen  many times before; on the other hand,  [2.x.12]  has no spatial or temporal derivatives, i.e., it is a purely  local operator. It turns out that we have efficient methods for each  of these terms (in particular, we have analytic solutions for the  latter), and that we may be better off treating these terms  differently and separately. We will explain this in more detail  below.
+* 
+
+* 
+* [1.x.39][1.x.40]
+* 
+
+* At first glance, the equations appear to be parabolic and similar tothe heat equation (see  [2.x.13] ) as there is only a single timederivative and two spatial derivatives. But this is misleading.Indeed, that this is not the correct interpretation ismore easily seen if we assume for a moment that the potential  [2.x.14] and  [2.x.15] . Then we have the equation
+* [1.x.41]
+* If we separate the solution into real and imaginary parts,  [2.x.16] ,with  [2.x.17] ,then we can split the one equation into its real and imaginary partsin the same way as we did in  [2.x.18] :
+* [1.x.42]
+* Not surprisingly, the factor  [2.x.19]  in front of the time derivativecouples the real and imaginary parts of the equation. If we want tounderstand this equation further, take the time derivative of one ofthe equations, say
+* [1.x.43]
+* (where we have assumed that, at least in some formal sense, we cancommute the spatial and temporal derivatives), and then insert theother equation into it:
+* [1.x.44]
+* This equation is hyperbolic and similar in character to the waveequation. (This will also be obvious if you look at the videoin the "Results" section of this program.) Furthermore, we couldhave arrived at the same equation for  [2.x.20]  as well.Consequently, a better assumption for the NLSE is to think ofit as a hyperbolic, wave-propagation equation than as a diffusionequation such as the heat equation. (You may wonder whether it iscorrect that the operator  [2.x.21]  appears with a positive signwhereas in the wave equation,  [2.x.22]  has a negative sign. This isindeed correct: After multiplying by a test function and integratingby parts, we want to come out with a positive (semi-)definiteform. So, from  [2.x.23]  we obtain  [2.x.24] . Likewise,after integrating by parts twice, we obtain from  [2.x.25]  theform  [2.x.26] . In both cases do we get the desired positivesign.)
+* The real NLSE, of course, also has the terms  [2.x.27]  and [2.x.28] . However, these are of lower order in the spatialderivatives, and while they are obviously important, they do notchange the character of the equation.
+* In any case, the purpose of this discussion is to figure outwhat time stepping scheme might be appropriate for the equation. Theconclusions is that, as a hyperbolic-kind of equation, we need tochoose a time step that satisfies a CFL-type condition. If we were touse an explicit method (which we will not), we would have to investigatethe eigenvalues of the matrix that corresponds to the spatialoperator. If you followed the discussions of the video lectures( [2.x.29] then you will remember that the pattern is that one needs to make surethat  [2.x.30]  where  [2.x.31]  is the time step,  [2.x.32]  the mesh width,and  [2.x.33]  are the orders of temporal and spatial derivatives.Whether you take the original equation ( [2.x.34] ) or the reformulationfor only the real or imaginary part, the outcome is that we would need tochoose  [2.x.35]  if we were to use an explicit time steppingmethod. This is not feasible for the same reasons as in  [2.x.36]  forthe heat equation: It would yield impractically small time stepsfor even only modestly refined meshes. Rather, we have to use animplicit time stepping method and can then choose a more balanced [2.x.37] . Indeed, we will use the implicit Crank-Nicolsonmethod as we have already done in  [2.x.38]  before for the regularwave equation.
+* 
+
+* [1.x.45][1.x.46]
+* 
+
+*  [2.x.39] 
+* If one thought of the NLSE as an ordinary differential equation inwhich the right hand side happens to have spatial derivatives, i.e.,write it as
+* [1.x.47]
+* one may be tempted to "formally solve" it by integrating both sidesover a time interval  [2.x.40]  and obtain
+* [1.x.48]
+* Of course, it's not that simple: the  [2.x.41]  in the integrand isstill changing over time in accordance with the differential equation,so we cannot just evaluate the integral (or approximate it easily viaquadrature) because we don't know  [2.x.42] .But we can write this with separate contributions asfollows, and this will allow us to deal with different terms separately:
+* [1.x.49]
+* The way this equation can now be read is as follows: For each time interval [2.x.43] , the change  [2.x.44]  in thesolution consists of three contributions:
+* 
+*  - The contribution of the Laplace operator.
+* 
+*  - The contribution of the potential  [2.x.45] .
+* 
+*  - The contribution of the "phase" term  [2.x.46] .
+* [1.x.50] is now an approximation technique thatallows us to treat each of these contributions separately. (If wewant: In practice, we will treat the first two together, and the lastone separate. But that is a detail, conceptually we could treat all ofthem differently.) To this end, let us introduce three separate "solutions":
+* [1.x.51]
+* 
+* These three "solutions" can be thought of as satisfying the followingdifferential equations:
+* [1.x.52]
+* In other words, they are all trajectories  [2.x.47]  that start at [2.x.48]  and integrate up the effects of exactly one of the threeterms. The increments resulting from each of these terms over our timeinterval are then  [2.x.49] , [2.x.50] , and [2.x.51] .
+* It is now reasonable to assume (this is an approximation!) that thechange due to all three of the effects in question is well approximatedby the sum of the three separate increments:
+* [1.x.53]
+* This intuition is indeed correct, though the approximation is notexact: the difference between the exact left hand side and the term [2.x.52]  (i.e., the difference between the [1.x.54] incrementfor the exact solution  [2.x.53]  when moving from  [2.x.54]  to  [2.x.55] ,and the increment composed of the three parts on the right hand side),is proportional to  [2.x.56] . In other words, thisapproach introduces an error of size  [2.x.57] . Nothing wehave done so far has discretized anything in time or space, so the[1.x.55] error is going to be  [2.x.58]  plus whatevererror we commit when approximating the integrals (the temporaldiscretization error) plus whatever error we commit when approximatingthe spatial dependencies of  [2.x.59]  (the spatial error).
+* Before we continue with discussions about operator splitting, let ustalk about why one would even want to go this way? The answer issimple: For some of the separate equations for the  [2.x.60] , wemay have ways to solve them more efficiently than if we throweverything together and try to solve it at once. For example, andparticularly pertinent in the current case: The equation for [2.x.61] , i.e.,
+* [1.x.56]
+* or equivalently,
+* [1.x.57]
+* can be solved exactly: the equation is solved by
+* [1.x.58]
+* This is easy to see if (i) you plug this solution into thedifferential equation, and (ii) realize that the magnitude [2.x.62]  is constant, i.e., the term  [2.x.63]  in theexponent is in fact equal to  [2.x.64] . In other words, thesolution of the ODE for  [2.x.65]  only changes its [1.x.59],but the [1.x.60] of the complex-valued function  [2.x.66] remains constant. This makes computing  [2.x.67]  particularly convenient:we don't actually need to solve any ODE, we can write the solutiondown by hand. Using the operator splitting approach, none of themethods to compute  [2.x.68]  therefore have to deal with the nonlinearterm and all of the associated unpleasantries: we can get away withsolving only [1.x.61] problems, as long as we allow ourselves theluxury of using an operator splitting approach.
+* Secondly, one often uses operator splitting if the different physicaleffects described by the different terms have different timescales. Imagine, for example, a case where we really did have somesort of diffusion equation. Diffusion acts slowly, but if  [2.x.69]  islarge, then the "phase rotation" by the term  [2.x.70]  acts quickly. If we treatedeverything together, this would imply having to take rather small timesteps. But with operator splitting, we can take large time steps [2.x.71]  for the diffusion, and (assuming we didn'thave an analytic solution) use an ODE solver with many small timesteps to integrate the "phase rotation" equation for  [2.x.72]  from [2.x.73]  to  [2.x.74] . In other words, operator splitting allows us todecouple slow and fast time scales and treat them differently, withmethods adjusted to each case.
+* 
+
+* [1.x.62][1.x.63]
+* 
+
+* While the method above allows to compute the three contributions [2.x.75]  in parallel, if we want, the method can be made slightlymore accurate and easy to implement if we don't let the trajectoriesfor the  [2.x.76]  start all at  [2.x.77] , but instead let thetrajectory for  [2.x.78]  start at the [1.x.64] of thetrajectory for  [2.x.79] , namely  [2.x.80] ; similarly,we will start the trajectory for  [2.x.81]  start at the end pointof the trajectory for  [2.x.82] , namely  [2.x.83] . Thismethod is then called "Lie splitting" and has the same order of erroras the method above, i.e., the splitting error is  [2.x.84] .
+* This variation of operator splitting can be written asfollows (carefully compare the initial conditions to the ones above):
+* [1.x.65]
+* (Obviously, while the formulas above imply that we should solve theseproblems in this particular order, it is equally valid to first solvefor trajectory 3, then 2, then 1, or any other permutation.)
+* The integrated forms of these equations are then
+* [1.x.66]
+* From a practical perspective, this has the advantage that we needto keep around fewer solution vectors: Once  [2.x.85]  has beencomputed, we don't need  [2.x.86]  any more; once  [2.x.87] has been computed, we don't need  [2.x.88]  any more. And once [2.x.89]  has been computed, we can just call it [2.x.90]  because, if you insert the first into the second, andthen into the third equation, you see that the right hand side of [2.x.91]  now contains the contributions of all three physicaleffects:
+* [1.x.67]
+* (Compare this again with the "exact" computation of  [2.x.92] :It only differs in how we approximate  [2.x.93]  in each of the three integrals.)In other words, Lie splitting is a lot simpler to implement that theoriginal method outlined above because data handling is so muchsimpler.
+* 
+
+* [1.x.68][1.x.69]
+* 
+
+* As mentioned above, Lie splitting is only  [2.x.94] accurate. This is acceptable if we were to use a first order timediscretization, for example using the explicit or implicit Eulermethods to solve the differential equations for  [2.x.95] . This isbecause these time integration methods introduce an error proportionalto  [2.x.96]  themselves, and so the splitting error is proportionalto an error that we would introduce anyway, and does not diminish theoverall convergence order.
+* But we typically want to use something higher order
+* 
+*  -  say, a[1.x.70]or[1.x.71]method
+* 
+*  -  since these are often not more expensive than asimple Euler method. It would be a shame if we were to use a timestepping method that is  [2.x.97] , but then lose theaccuracy again through the operator splitting.
+* This is where the [1.x.72] method comes in. It is easier to explain if we had onlytwo parts, and so let us combine the effects of the Laplace operatorand of the potential into one, and the phase rotation into a secondeffect. (Indeed, this is what we will do in the code since solving theequation with the Laplace equation with or without the potential coststhe same
+* 
+*  -  so we merge these two steps.) The Lie splitting methodfrom above would then do the following: It computes solutions of thefollowing two ODEs,
+* [1.x.73]
+* and then uses the approximation  [2.x.98] . In other words, we first make one full time stepfor physical effect one, then one full time step for physical effecttwo. The solution at the end of the time step is simply the sum of theincrements due to each of these physical effects separately.
+* In contrast,[1.x.74](one of the titans of numerical analysis starting in the mid-20thcentury) figured out that it is more accurate to first doone half-step for one physical effect, then a full time step for theother physical effect, and then another half step for the first. Whichone is which does not matter, but because it is so simple to do thephase rotation, we will use this effect for the half steps and thenonly need to do one spatial solve with the Laplace operator pluspotential. This operator splitting method is now  [2.x.99]  accurate. Written in formulas, this yields the followingsequence of steps:
+* [1.x.75]
+* As before, the first and third step can be computed exactly for thisparticular equation, yielding
+* [1.x.76]
+* 
+* This is then how we are going to implement things in this program:In each time step, we execute three steps, namely
+* 
+*  - Update the solution value at each node by analytically integrating  the phase rotation equation by one half time step;
+* 
+*  - Solving the space-time equation that corresponds to the full step  for  [2.x.100] , namely   [2.x.101] ,  with initial conditions equal to the solution of the first half step  above.
+* 
+*  - Update the solution value at each node by analytically integrating  the phase rotation equation by another half time step.
+* This structure will be reflected in an obvious way in the main timeloop of the program.
+* 
+
+* 
+* [1.x.77][1.x.78]
+* 
+
+* From the discussion above, it should have become clear that the onlypartial differential equation we have to solve in each time step is
+* [1.x.79]
+* This equation is linear. Furthermore, we only have to solve it from [2.x.102]  to  [2.x.103] , i.e., for exactly one time step.
+* To do this, we will apply the second order accurate Crank-Nicolsonscheme that we have already used in some of the other time dependentcodes (specifically:  [2.x.104]  and  [2.x.105] ). It reads as follows:
+* [1.x.80]
+* Here, the "previous" solution  [2.x.106]  (or the "initialcondition" for this part of the time step) is the output of thefirst phase rotation half-step; the output of the current step willbe denoted by  [2.x.107] .  [2.x.108]  isthe length of the time step. (One could argue whether  [2.x.109] and  [2.x.110]  live at time step  [2.x.111]  or  [2.x.112]  and what their upperindices should be. This is a philosophical discussion without practicalimpact, and one might think of  [2.x.113]  as something like [2.x.114] , and  [2.x.115]  as [2.x.116]  if that helps clarify things
+* 
+*  -  though, again [2.x.117]  is not to be understood as "one third time step after [2.x.118] " but more like "we've already done one third of the work necessaryfor time step  [2.x.119] ".)
+* If we multiply the whole equation with  [2.x.120]  and sort terms withthe unknown  [2.x.121]  to the left and those with the known [2.x.122]  to the right, then we obtain the following (spatial)partial differential equation that needs to be solved in each timestep:
+* [1.x.81]
+* 
+* 
+
+* 
+* [1.x.82][1.x.83]
+* 
+
+* As mentioned above, the previous tutorial program dealing withcomplex-valued solutions (namely,  [2.x.123] ) separated real and imaginaryparts of the solution. It thus reduced everything to realarithmetic. In contrast, we here want to keep thingscomplex-valued.
+* The first part of this is that we need to define the discretizedsolution as  [2.x.124]  where the  [2.x.125]  are the usual shape functions (which arereal valued) but the expansion coefficients  [2.x.126]  at time step [2.x.127]  are now complex-valued. This is easily done in deal.II: We justhave to use  [2.x.128]  instead of Vector<double> tostore these coefficients.
+* Of more interest is how to build and solve the linearsystem. Obviously, this will only be necessary for the second step ofthe Strang splitting discussed above, with the time discretization ofthe previous subsection. We obtain the fully discrete version throughstraightforward substitution of  [2.x.129]  by  [2.x.130]  andmultiplication by a test function:
+* [1.x.84]
+* or written in a more compact way:
+* [1.x.85]
+* Here, the matrices are defined in their obvious ways:
+* [1.x.86]
+* Note that all matrices individually are in fact symmetric,real-valued, and at least positive semidefinite, though the same isobviously not true forthe system matrix  [2.x.131] and the corresponding matrix [2.x.132] on the right hand side.
+* 
+
+* [1.x.87][1.x.88]
+* 
+
+*  [2.x.133] 
+* The only remaining important question about the solution procedure ishow to solve the complex-valued linear system
+* [1.x.89]
+* with the matrix  [2.x.134]  and a right hand side that is easily computed as the product ofa known matrix and the previous part-step's solution.As usual, this comes down to the question of what properties thematrix  [2.x.135]  has. If it is symmetric and positive definite, then we canfor example use the Conjugate Gradient method.
+* Unfortunately, the matrix's only useful property is that it is complexsymmetric, i.e.,  [2.x.136] , as is easy to see by recalling that [2.x.137]  are all symmetric. It is not, however,[1.x.90],which would require that  [2.x.138]  where the bar indicates complexconjugation.
+* Complex symmetry can be exploited for iterative solvers as a quickliterature search indicates. We will here not try to become toosophisticated (and indeed leave this to the [1.x.91] section below) andinstead simply go with the good old standby for problems withoutproperties: A direct solver. That's not optimal, especially for largeproblems, but it shall suffice for the purposes of a tutorial program.Fortunately, the SparseDirectUMFPACK class allows solving complex-valuedproblems.
+* 
+
+* [1.x.92][1.x.93]
+* 
+
+* Initial conditions for the NLSE are typically chosen to representparticular physical situations. This is beyond the scope of thisprogram, but suffice it to say that these initial conditions are(i) often superpositions of the wave functions of particles locatedat different points, and that (ii) because  [2.x.139] corresponds to a particle density function, the integral[1.x.94]corresponds to the number of particles in the system. (Clearly, ifone were to be physically correct,  [2.x.140]  better be a constant ifthe system is closed, or  [2.x.141]  if one has absorbingboundary conditions.) The important point is that one should chooseinitial conditions so that[1.x.95]makes sense.
+* What we will use here, primarily because it makes for good graphics,is the following:[1.x.96]where  [2.x.142]  is the distance from the (fixed)locations  [2.x.143] , and [2.x.144]  are chosen so that each of the Gaussians that we areadding up adds an integer number of particles to  [2.x.145] . We achievethis by making sure that[1.x.97]is a positive integer. In other words, we need to choose  [2.x.146] as an integer multiple of[1.x.98]assuming for the moment that  [2.x.147] 
+* 
+*  -  which isof course not the case, but we'll ignore the small difference inintegral.
+* Thus, we choose  [2.x.148]  for all, and [2.x.149] . This  [2.x.150]  is small enough that the difference between theexact (infinite) integral and the integral over  [2.x.151]  should not betoo concerning.We choose the four points  [2.x.152]  as  [2.x.153] 
+* 
+*  -  also far enough away from the boundary of  [2.x.154]  to keepourselves on the safe side.
+* For simplicity, we pose the problem on the square  [2.x.155] . Forboundary conditions, we will use time-independent Neumann conditions of theform[1.x.99]This is not a realistic choice of boundary conditions but sufficientfor what we want to demonstrate here. We will comment further on thisin the [1.x.100] section below.
+* Finally, we choose  [2.x.156] , and the potential as[1.x.101]Using a large potential makes sure that the wave function  [2.x.157]  remainssmall outside the circle of radius 0.7. All of the Gaussians that makeup the initial conditions are within this circle, and the solution willmostly oscillate within it, with a small amount of energy radiating intothe outside. The use of a large potential also makes sure that the nonphysicalboundary condition does not have too large an effect.
+* 
+
+*  [1.x.102] [1.x.103]
+*   [1.x.104]  [1.x.105] The program starts with the usual include files, all of which you should have seen before by now:
+* 
+
+* 
+* [1.x.106]
+* 
+*  Then the usual placing of all content of this program into a namespace and the importation of the deal.II namespace into the one we will work in:
+* 
+
+* 
+* [1.x.107]
+* 
+*   [1.x.108]  [1.x.109]   
+*   Then the main class. It looks very much like the corresponding classes in  [2.x.158]  or  [2.x.159] , with the only exception that the matrices and vectors and everything else related to the linear system are now storing elements of type  [2.x.160]  instead of just `double`.
+* 
+
+* 
+* [1.x.110]
+* 
+*   [1.x.111]  [1.x.112]
+* 
+
+* 
+*  Before we go on filling in the details of the main class, let us define the equation data corresponding to the problem, i.e. initial values, as well as a right hand side class. (We will reuse the initial conditions also for the boundary values, which we simply keep constant.) We do so using classes derived from the Function class template that has been used many times before, so the following should not look surprising. The only point of interest is that we here have a complex-valued problem, so we have to provide the second template argument of the Function class (which would otherwise default to `double`). Furthermore, the return type of the `value()` functions is then of course also complex.   
+*   What precisely these functions return has been discussed at the end of the Introduction section.
+* 
+
+* 
+* [1.x.113]
+* 
+*   [1.x.114]  [1.x.115]
+* 
+
+* 
+*  We start by specifying the implementation of the constructor of the class. There is nothing of surprise to see here except perhaps that we choose quadratic ( [2.x.161] ) Lagrange elements
+* 
+*  -  the solution is expected to be smooth, so we choose a higher polynomial degree than the bare minimum.
+* 
+
+* 
+* [1.x.116]
+* 
+*   [1.x.117]  [1.x.118]
+* 
+
+* 
+*  The next function is the one that sets up the mesh, DoFHandler, and matrices and vectors at the beginning of the program, i.e. before the first time step. The first few lines are pretty much standard if you've read through the tutorial programs at least up to  [2.x.162] :
+* 
+
+* 
+* [1.x.119]
+* 
+*  Next, we assemble the relevant matrices. The way we have written the Crank-Nicolson discretization of the spatial step of the Strang splitting (i.e., the second of the three partial steps in each time step), we were led to the linear system  [2.x.163] . In other words, there are two matrices in play here
+* 
+*  -  one for the left and one for the right hand side. We build these matrices separately. (One could avoid building the right hand side matrix and instead just form theaction* of the matrix on  [2.x.164]  in each time step. This may or may not be more efficient, but efficiency is not foremost on our minds for this program.)
+* 
+
+* 
+* [1.x.120]
+* 
+*   [1.x.121]  [1.x.122]
+* 
+
+* 
+*  Having set up all data structures above, we are now in a position to implement the partial steps that form the Strang splitting scheme. We start with the half-step to advance the phase, and that is used as the first and last part of each time step.   
+*   To this end, recall that for the first half step, we needed to compute  [2.x.165] . Here,  [2.x.166]  and  [2.x.167]  are functions of space and correspond to the output of the previous complete time step and the result of the first of the three part steps, respectively. A corresponding solution must be computed for the third of the part steps, i.e.  [2.x.168] , where  [2.x.169]  is the result of the time step as a whole, and its input  [2.x.170]  is the result of the spatial step of the Strang splitting.   
+*   An important realization is that while  [2.x.171]  may be a finite element function (i.e., is piecewise polynomial), this may not necessarily be the case for the "rotated" function in which we have updated the phase using the exponential factor (recall that the amplitude of that function remains constant as part of that step). In other words, we couldcompute*  [2.x.172]  at every point  [2.x.173] , but we can't represent it on a mesh because it is not a piecewise polynomial function. The best we can do in a discrete setting is to compute a projection or interpolation. In other words, we can compute  [2.x.174]  where  [2.x.175]  is a projection or interpolation operator. The situation is particularly simple if we choose the interpolation: Then, all we need to compute is the value of the right hand sideat the node points* and use these as nodal values for the vector  [2.x.176]  of degrees of freedom. This is easily done because evaluating the right hand side at node points for a Lagrange finite element as used here requires us to only look at a single (complex-valued) entry of the node vector. In other words, what we need to do is to compute  [2.x.177]  where  [2.x.178]  loops over all of the entries of our solution vector. This is what the function below does
+* 
+*  -  in fact, it doesn't even use separate vectors for  [2.x.179]  and  [2.x.180] , but just updates the same vector as appropriate.
+* 
+
+* 
+* [1.x.123]
+* 
+*  The next step is to solve for the linear system in each time step, i.e., the second half step of the Strang splitting we use. Recall that it had the form  [2.x.181]  where  [2.x.182]  and  [2.x.183]  are the matrices we assembled earlier.   
+*   The way we solve this here is using a direct solver. We first form the right hand side  [2.x.184]  using the  [2.x.185]  function and put the result into the `system_rhs` variable. We then call  [2.x.186]  which takes as argument the matrix  [2.x.187]  and the right hand side vector and returns the solution in the same vector `system_rhs`. The final step is then to put the solution so computed back into the `solution` variable.
+* 
+
+* 
+* [1.x.124]
+* 
+*   [1.x.125]  [1.x.126]
+* 
+
+* 
+*  The last of the helper functions and classes we ought to discuss are the ones that create graphical output. The result of running the half and full steps for the local and spatial parts of the Strang splitting is that we have updated the `solution` vector  [2.x.188]  to the correct value at the end of each time step. Its entries contain complex numbers for the solution at the nodes of the finite element mesh.   
+*   Complex numbers are not easily visualized. We can output their real and imaginary parts, i.e., the fields  [2.x.189]  and  [2.x.190] , and that is exactly what the DataOut class does when one attaches as complex-valued vector via  [2.x.191]  and then calls  [2.x.192]  That is indeed what we do below.
+* 
+
+* 
+*  But oftentimes we are not particularly interested in real and imaginary parts of the solution vector, but instead in derived quantities such as the magnitude  [2.x.193]  and phase angle  [2.x.194]  of the solution. In the context of quantum systems such as here, the magnitude itself is not so interesting, but instead it is the "amplitude",  [2.x.195]  that is a physical property: it corresponds to the probability density of finding a particle in a particular place of state. The way to put computed quantities into output files for visualization
+* 
+*  -  as used in numerous previous tutorial programs
+* 
+*  -  is to use the facilities of the DataPostprocessor and derived classes. Specifically, both the amplitude of a complex number and its phase angles are scalar quantities, and so the DataPostprocessorScalar class is the right tool to base what we want to do on.   
+*   Consequently, what we do here is to implement two classes `ComplexAmplitude` and `ComplexPhase` that compute for each point at which DataOut decides to generate output, the amplitudes  [2.x.196]  and phases  [2.x.197]  of the solution for visualization. There is a fair amount of boiler-plate code below, with the only interesting parts of the first of these two classes being how its `evaluate_vector_field()` function computes the `computed_quantities` object.   
+*   (There is also the rather awkward fact that the [1.x.127] function does not compute what one would naively imagine, namely  [2.x.198] , but returns  [2.x.199]  instead. It's certainly quite confusing to have a standard function mis-named in such a way...)
+* 
+
+* 
+* [1.x.128]
+* 
+*  The second of these postprocessor classes computes the phase angle of the complex-valued solution at each point. In other words, if we represent  [2.x.200] , then this class computes  [2.x.201] . The function [1.x.129] does this for us, and returns the angle as a real number between  [2.x.202]  and  [2.x.203] .     
+*   For reasons that we will explain in detail in the results section, we do not actually output this value at each location where output is generated. Rather, we take the maximum over all evaluation points of the phase and then fill each evaluation point's output field with this maximum
+* 
+*  -  in essence, we output the phase angle as a piecewise constant field, where each cell has its own constant value. The reasons for this will become clear once you read through the discussion further down below.
+* 
+
+* 
+* [1.x.130]
+* 
+*  Having so implemented these post-processors, we create output as we always do. As in many other time-dependent tutorial programs, we attach flags to DataOut that indicate the number of the time step and the current simulation time.
+* 
+
+* 
+* [1.x.131]
+* 
+*   [1.x.132]  [1.x.133]
+* 
+
+* 
+*  The remaining step is how we set up the overall logic for this program. It's really relatively simple: Set up the data structures; interpolate the initial conditions onto finite element space; then iterate over all time steps, and on each time step perform the three parts of the Strang splitting method. Every tenth time step, we generate graphical output. That's it.
+* 
+
+* 
+* [1.x.134]
+* 
+*   [1.x.135]  [1.x.136]
+* 
+
+* 
+*  The rest is again boiler plate and exactly as in almost all of the previous tutorial programs:
+* 
+
+* 
+* [1.x.137]
+* [1.x.138][1.x.139]
+* 
+
+* Running the code results in screen output like the following:```Number of active cells: 4096Number of degrees of freedom: 16641
+* Time step 1 at t=0Time step 2 at t=0.00390625Time step 3 at t=0.0078125Time step 4 at t=0.0117188[...]```Running the program also yields a good number of output files that we willvisualize in the following.
+* 
+
+* [1.x.140][1.x.141]
+* 
+
+* The `output_results()` function of this program generates output files thatconsist of a number of variables: The solution (split into its real and imaginaryparts), the amplitude, and the phase. If we visualize these four fields, we getimages like the following after a few time steps (at time  [2.x.204] , to beprecise:
+*  [2.x.205] 
+* While the real and imaginary parts of the solution shown above are notparticularly interesting (because, from a physical perspective, theglobal offset of the phase and therefore the balance between real andimaginary components, is meaningless), it is much more interesting tovisualize the amplitude  [2.x.206]  and phase [2.x.207]  of the solution and, in particular,their evolution. This leads to pictures like the following:
+* The phase picture shown here clearly has some flaws:
+* 
+*  - First, phase is a "cyclic quantity", but the color scale uses a  fundamentally different color for values close to  [2.x.208]  than  for values close to  [2.x.209] . This is a nuisance
+* 
+*  -  what we need  is a "cyclic color map" that uses the same colors for the two  extremes of the range of the phase. Such color maps exist,  see [1.x.142] or  [1.x.143], for example. The problem is that the  author's favorite  one of the two big visualization packages, VisIt, does not have any  of these color maps built in. In an act of desperation, I therefore  had to resort to using Paraview given that it has several of the  color maps mentioned in the post above implemented. The picture  below uses the `nic_Edge` map in which both of the extreme values are shown  as black.
+* 
+*  - There is a problem on cells in which the phase wraps around. If  at some evaluation point of the cell the phase value is close to   [2.x.210]  and at another evaluation point it is close to  [2.x.211] , then  what we would really like to happen is for the entire cell to have a  color close to the extremes. But, instead, visualization programs  produce a linear interpolation in which the values within the cell,  i.e., between the evaluation points, is linearly interpolated between  these two values, covering essentially the entire range of possible  phase values and, consequently, cycling through the entire  rainbow of colors from dark red to dark green over the course of  one cell. The solution to this problem is to just output  the phase value on each cell as a piecewise constant. Because  averaging values close to the  [2.x.212]  and  [2.x.213]  is going to  result in an average that has nothing to do with the actual phase  angle, the `ComplexPhase` class just uses themaximal* phase  angle encountered on each cell.
+* With these modifications, the phase plot now looks as follows:
+*  [2.x.214] 
+* Finally, we can generate a movie out of this. (To be precise, the videouses two more global refinement cycles and a time step half the sizeof what is used in the program above.) The author of these linesmade the movie with VisIt,because that's what he's more familiar with, and using a hacked color mapthat is also cyclic
+* 
+*  -  though this color map lacks all of the skill employed bythe people who wrote the posts mentioned in the links above. Itdoes, however, show the character of the solution as a wave equationif you look at the shaded part of the domain outside the circle ofradius 0.7 in which the potential is zero
+* 
+*  -  you can see how every timeone of the bumps (showing the amplitude  [2.x.215] )bumps into the area where the potential is large: a wave travelsoutbound from there. Take a look at the video:
+* [1.x.144]
+* 
+* So why did I end up shading the area where the potential  [2.x.216]  islarge? In that outside region, the solution is relatively small. It is alsorelatively smooth. As a consequence, to some approximate degree, theequation in that region simplifies to[1.x.145]or maybe easier to read:[1.x.146]To the degree to which this approximation is valid (which, among other things,eliminates the traveling waves you can see in the video), this equation hasa solution[1.x.147]Because  [2.x.217]  is large, this means that the phaserotates quite rapidly*.If you focus on the semi-transparent outer part of the domain, you cansee that. If one colors this region in the same way as the inner part ofthe domain, this rapidly flashing outer part may be psychedelic, but is alsodistracting of what's happening on the inside; it's also quite hard toactually see the radiating waves that are easy to see at the beginningof the video.
+* 
+
+* [1.x.148][1.x.149][1.x.150]
+* 
+
+* [1.x.151][1.x.152]
+* 
+
+* The solver chosen here is just too simple. It is also not efficient.What we do here is give the matrix to a sparse direct solver in everytime step and let it find the solution of the linear system. But weknow that we could do far better:
+* 
+*  - First, we should make use of the fact that the matrix doesn't  actually change from time step to time step. This is an artifact  of the fact that we here have constant boundary values and that  we don't change the time step size
+* 
+*  -  two assumptions that might  not be true in actual applications. But at least in cases where this  does happen to be the case, it would make sense to only factorize  the matrix once (i.e., compute  [2.x.218]  and  [2.x.219]  factors once) and then  use these factors for all following time steps until the matrix   [2.x.220]  changes and requires a new factorization. The interface of the  SparseDirectUMFPACK class allows for this.
+* 
+*  - Ultimately, however, sparse direct solvers are only efficient for  relatively small problems, say up to a few 100,000 unknowns. Beyond  this, one needs iterative solvers such as the Conjugate Gradient method (for  symmetric and positive definite problems) or GMRES. We have used many  of these in other tutorial programs. In all cases, they need to be  accompanied by good preconditioners. For the current case, one  could in principle use GMRES
+* 
+*  -  a method that does not require  any specific properties of the matrix
+* 
+*  -  but would be better  advised to implement an iterative scheme that exploits the one  structural feature we know is true for this problem: That the matrix  is complex-symmetric (albeit not Hermitian).
+* 
+
+* [1.x.153][1.x.154]
+* 
+
+* In order to be usable for actual, realistic problems, solvers for thenonlinear Schr&ouml;dinger equation need to utilize boundary conditionsthat make sense for the problem at hand. We have here restricted ourselvesto simple Neumann boundary conditions
+* 
+*  -  but these do not actually makesense for the problem. Indeed, the equations are generally posed on aninfinite domain. But, since we can't compute on infinite domains, we needto truncate it somewhere and instead pose boundary conditions that makesense for this artificially small domain. The approach widely used is touse the [1.x.155] method that corresponds to a particularkind of attenuation. It is, in a different context, also used in [2.x.221] .
+* 
+
+* [1.x.156][1.x.157]
+* 
+
+* Finally, we know from experience and many other tutorial programs thatit is worthwhile to use adaptively refined meshes, rather than the uniformmeshes used here. It would, in fact, not be very difficult to add thishere: It just requires periodic remeshing and transfer of the solutionfrom one mesh to the next.  [2.x.222]  will be a good guide for how thiscould be implemented.
+* 
+
+* [1.x.158][1.x.159] [2.x.223] 
+* [0.x.1]

@@ -1,0 +1,36 @@
+include/deal.II-translator/base/polynomials_integrated_legendre_sz_0.txt
+[0.x.0]*
+ 实现Sabine Zaglmayr博士论文中描述的集成Legendre多项式的类。
+* 这个类是以现有的deal.II Legendre类为基础编写的，但调整了系数，使递归公式为Sabine Zaglmayr的博士论文中描述的综合Legendre多项式。该多项式可以从以下方面递归生成。
+* 
+
+* 
+* 
+* - [2.x.0](添加后可以从0开始递归生成)
+* 
+
+* 
+* 
+* - [2.x.1] 
+ 
+
+* 
+ 
+* - [2.x.2] 
+ 
+
+* 
+* 
+* - [2.x.3] .
+* 然而，也可以直接从Legendre多项式中生成它们。
+* [2.x.4] 
+
+* 
+* [0.x.1]*
+   生成p度的多项式系数的构造器。 
+* [0.x.2]*
+   返回到给定度数的集成Legendre多项式的完整集合。 
+* [0.x.3]*
+   计算度数为p的多项式的协系数的主函数。 
+* [0.x.4]
+

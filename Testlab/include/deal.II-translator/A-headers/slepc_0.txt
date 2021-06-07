@@ -1,0 +1,17 @@
+include/deal.II-translator/A-headers/slepc_0.txt
+[0.x.0]*
+
+
+* 
+* [2.x.0] 
+* 本模块中的类是对SLEPc库所提供的功能的封装。该组中的所有类和函数都驻留在一个命名空间中 [2.x.1] 。
+* 只有在配置deal.II时检测到SLEPc安装和PETSc安装时，这些类才可用。请参考README文件以了解更多相关细节。
+* [2.x.2] Toby D. Young, 2011
+* 
+
+* 
+* [2.x.3] 
+
+ 
+* [0.x.1]
+

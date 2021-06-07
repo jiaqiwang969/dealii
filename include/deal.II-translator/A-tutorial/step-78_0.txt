@@ -1,0 +1,372 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21]
+* [1.x.22][1.x.23][1.x.24]
+* 
+
+* The Black-Scholes equation is a partial differential equation that falls a bitout of the ordinary scheme. It describes what the fair price of a "Europeancall" stock option is. Without going into too much detail, a stock "option" isa contract one can buy from a bank that allows me, but not requires me, to buya specific stock at a fixed price  [2.x.2]  at a fixed future time  [2.x.3]  in thefuture. The question one would then want to answer as a buyer of such anoption is "How much do I think such a contract is worth?", or as the seller"How much do I need to charge for this contract?", both as a function of thetime  [2.x.4]  before the contract is up at time  [2.x.5]  and as a function of the stockprice  [2.x.6] . Fischer Black and Myron Scholes derived a partial differentialequation for the fair price  [2.x.7]  for such options under the assumption thatstock prices exhibit random price fluctuations with a given level of"volatility" plus a background exponential price increase (which one can thinkof as the inflation rate that simply devalues all money over time). For theirwork, Black and Scholes received the Nobel Prize in Economic Sciences in 1997,making this the first tutorial program dealing with a problem for which someonehas gotten a Nobel Prize  [2.x.8] .
+* The equation reads as follows:
+* [1.x.25]
+* where
+* [1.x.26]
+* 
+* The way we should interpret this equation is that it is a time-dependent partialdifferential equation of one "space" variable [2.x.9]  as the price of the stock, and  [2.x.10]  is the price of the option at time [2.x.11]  if the stock price at that time were  [2.x.12] .
+* [1.x.27][1.x.28]
+* 
+
+* There are a number of oddities in this equation that are worth discussing beforemoving on to its numerical solution. First, the "spatial" domain [2.x.13]  is unbounded, and thus  [2.x.14]  can be unbounded in value.This is because there may be a practical upper bound for stock prices, but not aconceptual one. The boundary conditions  [2.x.15]  as [2.x.16]  can then be interpreted as follows: What is the value ofan option that allows me to buy a stock at price  [2.x.17]  if the stock price (todayor at time  [2.x.18] ) is  [2.x.19] ? One would expect that it is  [2.x.20]  plussome adjustment for inflation, or, if we really truly consider huge values of [2.x.21] , we can neglect  [2.x.22]  and arrive at the statement that the boundary values atthe infinite boundary should be of the form  [2.x.23]  as stated above.
+* In practice, for us to use a finite element method to solve this, we are goingto need to bound  [2.x.24] . Since this equation describes prices, and it doesn'tmake sense to talk about prices being negative, we will set the lower bound of [2.x.25]  to be 0. Then, for an upper bound, we will choose a very large number,one that  [2.x.26]  is not very likely to ever get to. We will call this  [2.x.27] .So,  [2.x.28] .
+* Second, after truncating the domain, we need to ask what boundary values weshould pose at this now finite boundary. To take care of this, we use "put-call"parity  [2.x.29] . A "pull option" is one in which we areallowed, but not required, tosell* a stock at price  [2.x.30]  to someone at a futuretime  [2.x.31] . This says
+* [1.x.29]
+* where  [2.x.32]  is the value of the call option, and  [2.x.33]  is the value of theput option. Since we expect  [2.x.34]  as  [2.x.35] ,this says
+* [1.x.30]
+* and we can use this as a reasonable boundary condition at our finite point [2.x.36] .
+* The second complication of the Block-Scholes equation is that we are given afinal condition, and not an initial condition. This is because we know what theoption is worth at time  [2.x.37] : If the stock price at  [2.x.38]  is  [2.x.39] , then we haveno incentive to use our option of buying a price  [2.x.40]  because we can buy that stockfor cheaper on the open market. So  [2.x.41]  for  [2.x.42] . On the other hand, ifat time  [2.x.43]  we have  [2.x.44] , then we can buy the stock at price  [2.x.45]  via the optionand immediately sell it again on the market for price  [2.x.46] , giving me a profit of [2.x.47] . In other words,  [2.x.48]  for  [2.x.49] . So, we only knowvalues for  [2.x.50]  at theend time* but not the initial time
+* 
+*  -  in fact, findingout what a fair price at the current time (conventionally taken to be  [2.x.51] ) iswhat solving these equations is all about.
+* This means that this is not an equation that is posed going forward intime, but in fact goingbackward* in time. Thus it makes sense to solve thisproblem in reverse by making the change of variables  [2.x.52]  where now  [2.x.53] denotes the time before the strike time  [2.x.54] .
+* With all of this, we finally end up with the following problem:
+* [1.x.31]
+* 
+* Conceptually, this is an advection-diffusion-reaction problem for the variable [2.x.55] : There is both a second-order derivative diffusion term, a first-orderderivative advection term, and a zeroth-order reaction term.We can expect this problem to be a little bit forgiving in practice because forrealistic values of the coefficients, it is diffusive dominated. But, because ofthe advective terms in the problem, we will have to be careful with meshrefinement and time step choice. There is also the issue that the diffusion term is written in a non-conservative form and so integration by parts is not immediately obvious. This will be discussed in the next section.
+* [1.x.32][1.x.33]
+* 
+
+* We will solve this problem using an IMEX method. In particular, we first discretizein time with the theta method and will later pick different values of theta forthe advective and diffusive terms.Let  [2.x.56]  approximate  [2.x.57] :
+* [1.x.34]
+* Here,  [2.x.58]  is the time step size. Given this timediscretization, we can proceed to discretize space by multiplying with testfunctions and then integrating by parts. Because there are some interestingdetails in this due to the advective and non-advective terms in this equation,this process will be explained in detail.
+* So, we begin by multiplying by test functions,  [2.x.59] :
+* [1.x.35]
+* 
+* 
+
+* As usual, (1) becomes  [2.x.60]  and (4) becomes [2.x.61] , where [2.x.62] , and where we have taken theliberty of denoting by  [2.x.63]  not only the function  [2.x.64]  but also the vector ofnodal values after discretization.
+* The interesting parts come from (2) and (3).
+* 
+
+* For (2), we have:
+* [1.x.36]
+* 
+* There are two integrals here, that are more or less the same, with thedifferences being a slightly different coefficient in front of the integral,and a different time step for V. Therefore, we will outline this integral in thegeneral case, and account for the differences at the end. So, consider thegeneral integral, which we will solve using integration by parts:
+* [1.x.37]
+* 
+* So, after adding in the constants and exchanging  [2.x.65]  for  [2.x.66]  whereapplicable, we arrive at the following for (2):
+* [1.x.38]
+* But, because the matrix  [2.x.67]  involves an advective term, we will choose [2.x.68]  there
+* 
+*  -  in other words, we use an explicit Euler method to treatadvection. Conversely, since the matrix  [2.x.69]  involves the diffusive term,we will choose  [2.x.70]  there
+* 
+*  -  i.e., we treat diffusion using the secondorder Crank-Nicolson method.
+* So, we arrive at the following:
+* [1.x.39]
+* 
+* Now, to handle (3). For this, we will again proceed by considering the generalcase like above.
+* [1.x.40]
+* 
+* So, again after adding in the constants and exchanging  [2.x.71]  for  [2.x.72]  whereapplicable, we arrive at the following for (3):
+* [1.x.41]
+* Just as before, we will use  [2.x.73]  for the matrix  [2.x.74]  and [2.x.75]  for the matrix  [2.x.76] . So, we arrive at thefollowing for (3):
+* [1.x.42]
+* 
+* Now, putting everything together, we obtain the following discrete form for theBlack-Scholes Equation:
+* [1.x.43]
+* So, altogether we have:
+* [1.x.44]
+* 
+* As usual, we can write this with the unknown quantities on the left and theknown ones on the right. This leads to the following linear system that wouldhave to be solved in each time step:
+* [1.x.45]
+* 
+* 
+
+* 
+* 
+
+* [1.x.46][1.x.47]
+* For this program, we will use the Method of Manufactured Solutions (MMS) to test that it is working correctly. This means that we will choose our solution to be  a certain function similar to  [2.x.77] . For our case, we will use:
+* [1.x.48]
+* This means that, using our PDE, we arrive at the following problem:
+* [1.x.49]
+* Where,  [2.x.78] .This set-up now has right hand sides for the equation itself and for theboundary conditions at  [2.x.79]  that we did not have before, along with "final"conditions (or, with  [2.x.80] -time "initial conditions") that do not match thereal situation. We will implement this in such a way in the code that it is easyto exchange
+* 
+*  -  the introduction of the changes above is just meant to enable the use of a manufactured solution.
+* If the program is working correctly, then it should produce (**) as thesolution. This does mean that we need to modify our variational form somewhat toaccount for the non-zero right hand side.
+* First, we define the following:
+* [1.x.50]
+* So, we arrive at the new equation:
+* [1.x.51]
+* 
+* We then solve this equation as outlined above.
+* 
+
+*  [1.x.52] [1.x.53]
+*   [1.x.54]  [1.x.55]
+* 
+
+* 
+*  The program starts with the usual include files, all of which you should have seen before by now:
+* 
+
+* 
+* [1.x.56]
+* 
+*  Then the usual placing of all content of this program into a namespace and the importation of the deal.II namespace into the one we will work in. We also define an identifier to allow for the MMS code to be run when  [2.x.81]  is defined. Otherwise, the program solves the original problem:
+* 
+
+* 
+* [1.x.57]
+* 
+*   [1.x.58]  [1.x.59]
+* 
+
+* 
+*  This section creates a class for the known solution when testing using the MMS. Here we are using  [2.x.82]  for the solution. We need to include the solution equation and the gradient for the H1 seminorm calculation.
+* 
+
+* 
+* [1.x.60]
+* 
+*   [1.x.61]  [1.x.62]
+* 
+
+* 
+*  In the following classes and functions, we implement the right hand side and boundary values that define this problem and for which we need function objects. The right hand side is chosen as discussed at the end of the introduction.   
+*   First, we handle the initial condition.
+* 
+
+* 
+* [1.x.63]
+* 
+*  Next, we handle the left boundary condition.
+* 
+
+* 
+* [1.x.64]
+* 
+*  Then, we handle the right boundary condition.
+* 
+
+* 
+* [1.x.65]
+* 
+*  Finally, we handle the right hand side.
+* 
+
+* 
+* [1.x.66]
+* 
+*   [1.x.67]  [1.x.68]
+* 
+
+* 
+*  The next piece is the declaration of the main class of this program. This is very similar to the  [2.x.83]  tutorial, with some modifications. New matrices had to be added to calculate the A and B matrices, as well as the  [2.x.84]  vector mentioned in the introduction. We also define the parameters used in the problem.
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  -  [2.x.85] : The imposed upper bound on the spatial domain. This is the maximum allowed stock price.
+* 
+
+* 
+* 
+*  -  [2.x.86] : The upper bound on the time domain. This is when the option expires.\n
+* 
+
+* 
+* 
+*  -  [2.x.87] : The volatility of the stock price.\n
+* 
+
+* 
+* 
+*  -  [2.x.88] : The risk free interest rate.\n
+* 
+
+* 
+* 
+*  -  [2.x.89] : The agreed upon price that the buyer will have the option of purchasing  the stocks at the expiration time.   
+*   Some slight differences between this program and  [2.x.90]  are the creation of the  [2.x.91] , which is described in the introduction. We then also need to store the current time, the size of the time step, and the number of the current time step. Next, we will store the output into a  [2.x.92]  variable because we will be layering the solution at each time on top of one another to create the solution manifold. Then, we have a variable that stores the current cycle and number of cycles that we will run when calculating the solution. The cycle is one full solution calculation given a mesh. We refine the mesh once in between each cycle to exhibit the convergence properties of our program. Finally, we store the convergence data into a convergence table.   
+*   As far as member functions are concerned, we have a function that calculates the convergence information for each cycle, called  [2.x.93] . This is just like what is done in  [2.x.94] .
+* 
+
+* 
+* [1.x.69]
+* 
+*   [1.x.70]  [1.x.71]
+* 
+
+* 
+*  Now, we get to the implementation of the main class. We will set the values for the various parameters used in the problem. These were chosen because they are fairly normal values for these parameters. Although the stock price has no upper bound in reality (it is in fact infinite), we impose an upper bound that is twice the strike price. This is a somewhat arbitrary choice to be twice the strike price, but it is large enough to see the interesting parts of the solution.
+* 
+
+* 
+* [1.x.72]
+* 
+*   [1.x.73]  [1.x.74]
+* 
+
+* 
+*  The next function sets up the DoFHandler object, computes the constraints, and sets the linear algebra objects to their correct sizes. We also compute the mass matrix here by calling a function from the library. We will compute the other 3 matrices next, because these need to be computed 'by hand'.   
+*   Note, that the time step is initialized here because the maturity time was needed to compute the time step.
+* 
+
+* 
+* [1.x.75]
+* 
+*  Below is the code to create the Laplace matrix with non-constant coefficients. This corresponds to the matrix D in the introduction. This non-constant coefficient is represented in the  [2.x.95]  variable.
+* 
+
+* 
+* [1.x.76]
+* 
+*  Now we will create the A matrix. Below is the code to create the matrix A as discussed in the introduction. The non constant coefficient is again represented in  the  [2.x.96]  variable.
+* 
+
+* 
+* [1.x.77]
+* 
+*  Finally we will create the matrix B. Below is the code to create the matrix B as discussed in the introduction. The non constant coefficient is again represented in the  [2.x.97]  variable.
+* 
+
+* 
+* [1.x.78]
+* 
+*   [1.x.79]  [1.x.80]
+* 
+
+* 
+*  The next function is the one that solves the actual linear system for a single time step. The only interesting thing here is that the matrices we have built are symmetric positive definite, so we can use the conjugate gradient method.
+* 
+
+* 
+* [1.x.81]
+* 
+*   [1.x.82]  [1.x.83]
+* 
+
+* 
+*  This is simply the function to stitch the solution pieces together. For this, we create a new layer at each time, and then add the solution vector for that timestep. The function then stitches this together with the old solutions using 'build_patches'.
+* 
+
+* 
+* [1.x.84]
+* 
+*   [1.x.85]  [1.x.86]
+* 
+
+* 
+*  It is somewhat unnecessary to have a function for the global refinement that we do. The reason for the function is to allow for the possibility of an adaptive refinement later.
+* 
+
+* 
+* [1.x.87]
+* 
+*   [1.x.88]  [1.x.89]
+* 
+
+* 
+*  This is where we calculate the convergence and error data to evaluate the effectiveness of the program. Here, we calculate the  [2.x.98] ,  [2.x.99]  and  [2.x.100]  norms.
+* 
+
+* 
+* [1.x.90]
+* 
+*   [1.x.91]  [1.x.92]
+* 
+
+* 
+*  This next part is building the convergence and error tables. By this, we need to set the settings for how to output the data that was calculated during  [2.x.101] . First, we will create the headings and set up the cells properly. During this, we will also prescribe the precision of our results. Then we will write the calculated errors based on the  [2.x.102] ,  [2.x.103] , and  [2.x.104]  norms to the console and to the error LaTeX file.
+* 
+
+* 
+* [1.x.93]
+* 
+*  Next, we will make the convergence table. We will again write this to the console and to the convergence LaTeX file.
+* 
+
+* 
+* [1.x.94]
+* 
+*   [1.x.95]  [1.x.96]
+* 
+
+* 
+*  Now we get to the main driver of the program. This is where we do all the work of looping through the time steps and calculating the solution vector each time. Here at the top, we set the initial refinement value and then create a mesh. Then we refine this mesh once. Next, we set up the data_out_stack object to store our solution. Finally, we start a for loop to loop through the cycles. This lets us recalculate a solution for each successive mesh refinement. At the beginning of each iteration, we need to reset the time and time step number. We introduce an if statement to accomplish this because we don't want to do this on the first iteration.
+* 
+
+* 
+* [1.x.97]
+* 
+*  Next, we run the main loop which runs until we exceed the maturity time. We first compute the right hand side of the equation, which is described in the introduction. Recall that it contains the term  [2.x.105] . We put these terms into the variable system_rhs, with the help of a temporary vector:
+* 
+
+* 
+* [1.x.98]
+* 
+*  The second piece is to compute the contributions of the source terms. This corresponds to the term  [2.x.106] . The following code calls  [2.x.107]  to compute the vectors  [2.x.108] , where we set the time of the right hand side (source) function before we evaluate it. The result of this all ends up in the forcing_terms variable:
+* 
+
+* 
+* [1.x.99]
+* 
+*  Next, we add the forcing terms to the ones that come from the time stepping, and also build the matrix  [2.x.109]  that we have to invert in each time step. The final piece of these operations is to eliminate hanging node constrained degrees of freedom from the linear system:
+* 
+
+* 
+* [1.x.100]
+* 
+*  There is one more operation we need to do before we can solve it: boundary values. To this end, we create a boundary value object, set the proper time to the one of the current time step, and evaluate it as we have done many times before. The result is used to also set the correct boundary values in the linear system:
+* 
+
+* 
+* [1.x.101]
+* 
+*  With this out of the way, all we have to do is solve the system, generate graphical data on the last cycle, and create the convergence table data.
+* 
+
+* 
+* [1.x.102]
+* 
+*   [1.x.103]  [1.x.104]
+* 
+
+* 
+*  Having made it this far, there is, again, nothing much to discuss for the main function of this program: it looks like all such functions since  [2.x.110] .
+* 
+
+* 
+* [1.x.105]
+* [1.x.106][1.x.107]
+* 
+
+* 
+* Below is the output of the program:
+* [1.x.108]
+* 
+* What is more interesting is the output of the convergence tables. They areoutputted into the console, as well into a LaTeX file. The convergence tablesare shown above. Here, you can see that the the solution has a convergence rateof  [2.x.111]  with respect to the  [2.x.112] -norm, and the solution has a convergence rateof  [2.x.113]  with respect to the  [2.x.114] -norm.
+* 
+
+* Below is the visualization of the solution.
+*  [2.x.115] 
+* 
+
+* [1.x.109][1.x.110] [2.x.116] 
+* [0.x.1]

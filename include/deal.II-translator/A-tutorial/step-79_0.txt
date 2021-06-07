@@ -1,0 +1,55 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32]
+* [1.x.33][1.x.34][1.x.35]
+* 
+
+* Topology Optimization of Elastic Media is a technique used to optimize astructure that is bearing some load. Ideally, we would like to minimize themaximum stress placed on a structure by selecting a region  [2.x.3]  where material isplaced. In other words,[1.x.36][1.x.37][1.x.38]
+* Here,  [2.x.4]  is the stresswithin the body that is caused by the external forces  [2.x.5] , where we have for simplicity assumedthat the material is linear-elastic and so  [2.x.6]  is the stress-strain tensor and [2.x.7]  is thesmall-deformation strain as a function of the displacement  [2.x.8] 
+* 
+*  -  see [2.x.9]  and  [2.x.10]  for more on linear elasticity. In the formulation above, [2.x.11]  is the maximal amount of material we are willing to provide tobuild the object. The last of the constraints is the partial differentialequation that relates stress  [2.x.12]  and forces  [2.x.13]  and is simply thesteady-state force balance.
+* That said, the infinity norm above creates a problem: As a function of locationof material, this objective function is necessarily not differentiable, makingprospects of optimization rather bleak. So instead, a common approach intopology optimization is to find an approximate solution by optimizing a relatedproblem: We would like to minimize the strain energy. This is ameasure of the potential energy stored in an object due to its deformation, butalso works as a measure of total deformation over the structure.
+* [1.x.39][1.x.40][1.x.41]
+* The value of the objective function is calculated using a finite element method,where the solution is the displacements. This is placed inside of a nonlinearsolver loop that solves for a vector denoting placement of material.
+* [1.x.42][1.x.43]
+* 
+
+* In actual practice, we can only build objects in which the material is eitherpresent, or not present, at any given point
+* 
+*  -  i.e., we would have an indicatorfunction  [2.x.14]  that describes the material-filledregion and that we want to find through the optimization problem. In this case,the optimization problem becomes combinatorial, and very expensive to solve.Instead, we use an approach called Solid Isotropic Material with Penalization,or SIMP.  [2.x.15] 
+* The SIMP method is based on an idea of allowing the material to exist in alocation with a density  [2.x.16]  between 0 and 1. A density of 0 suggests thematerial is not there, and it is not a part of the structure, while a density of1 suggests the material is present. Values between 0 and 1 do not reflect adesign we can create in the real-world, but allow us to turn the combinatorialproblem into a continuous one. One then looks at density values  [2.x.17] ,with the constraint that  [2.x.18] . The minimum value [2.x.19] , typically chosen to be around  [2.x.20] , avoids the possibilityof having an infinite strain energy, but is small enough to provide accurateresults.
+* The straightforward application of the effect of this "density" on theelasticity of the media would be to simply multiply the stiffness tensor  [2.x.21] of the medium by the given density, that is,  [2.x.22] . However, thisapproach often gives optimal solutions where density values are far from both 0and 1. As one wants to find a real-world solution, meaning the material eitheris present or it is not, a penalty is applied to these in-between values. Asimple and effective way to do this is to multiply the stiffness tensor by thedensity raised to some integer power penalty parameter  [2.x.23] , so that [2.x.24] . This makes density values farther away from 0 or 1 lesseffective. It has been shown that using  [2.x.25]  is sufficiently high to create'black-and-white' solutions: that is, one gets optimal solutions in whichmaterial is either present or not present at all points.
+* More material should always provide a structure with a lower strain energy, and so theinequality constraint can be viewed as an equality where the total volume usedis the maximum volume.
+* Using this density idea also allows us to reframe the volume constraint on theoptimization problem. Use of SIMP then turns the optimization problem into thefollowing:
+* [1.x.44][1.x.45][1.x.46][1.x.47]The final constraint, the balance of linear momentum (which we will refer to as the elasticity equation), gives a method for finding  [2.x.26]  and  [2.x.27]  given the density  [2.x.28] .
+* [1.x.48][1.x.49]
+* The elasticity equation in the time independent limit reads[1.x.50]In the situations we will care about, we will assume that the medium has a linear material responseand in that case, we have that[1.x.51]In everything we will do below, we will always consider the displacementfield  [2.x.29]  as the only solution variable, rather than considering [2.x.30]  and  [2.x.31]  as solution variables (as is done in mixedformulations).
+* Furthermore, we will make the assumption that the material is linear isotropic,in which case the stress-strain tensor can be expressed in terms of the Lam&eacute;parameters  [2.x.32]  such that
+* [1.x.52]
+* See  [2.x.33]  for how this transformation works.
+* Integrating the objective function by parts gives[1.x.53]into which the linear elasticity equation can then be substituted, giving[1.x.54]Because we are assuming no body forces, this simplifies further to[1.x.55]which is the final form of the governing equation that we'll be consideringfrom this point forward.
+* [1.x.56][1.x.57]
+* 
+
+* Typically, the solutions to topology optimization problems aremesh-dependent, and as such the problem is ill-posed. This is becausefractal structures are often formed as the mesh is refined further. As the mesh gainsresolution, the optimal solution typically gains smaller and smaller structures.There are a few competing workarounds to this issue, but the most popular forfirst order optimization is the sensitivity filter, while second orderoptimization methods tend to prefer use of a density filter.
+* As the filters affect the gradient and Hessian of the strain energy (i.e., theobjective function), the choice of filter has an effect on the solution of theproblem. The density filter as part of a second order method works byintroducing an unfiltered density, which we refer to as  [2.x.34] , and thenrequiring that the density be a convolution of the unfiltered density:[1.x.58]Here,  [2.x.35]  is an operator so that  [2.x.36]  is some kind of average ofthe values of  [2.x.37]  in the area around  [2.x.38] 
+* 
+*  -  i.e., it is a smoothedversion of  [2.x.39] .
+* This prevents checkerboarding; the radius of the filter allows the user todefine an effective minimal beam width for the optimal structures we seek tofind.
+*  [2.x.40] 
+* 
+
+* These pictures show that what we find here is in accordance with what onetypically sees in other publications on the topic  [2.x.41] . Maybe more interestingly, theresult looks like a truss bridge (except that we apply the load at the top ofthe trusses, rather than the bottom as in real truss bridges, akin to a "decktruss" bridge), suggesting that the designs that have been used in bridge-building for centuries are indeed based on ideas we can now show to be optimalin some sense.
+* 
+
+* [1.x.203][1.x.204]
+* 
+
+* The results shown above took around 75 iterations to find, which is quiteconcerning given the expense in solving the large linear systems in eachiteration. Looking at the evolution, it does look as though the convergence hasmoments of happening quickly and moments of happening slowly. We believe this tobe due to both a lack of precision on when and how to decrease the boundaryvalues, as well as our choice of merit function being sub-optimal. In the future,a LOQO barrier update replacing the monotone reduction, as well as a MarkovFilter in place of a merit function will decrease the number of necessaryiterations significantly.
+* The barrier decrease is most sensitive in the middle of the convergence, whichis problematic, as it seems like we need it to decrease quickly, then slowly,then quickly again.
+* Secondly, the linear solver used here is just the sparse direct solver based onthe SparseDirectUMFPACK class. This works reasonably well on small problems,but the formulation of the optimization problem detailed above has quite a largenumber of variables and so the linear problem is not only large but also has alot of nonzero entries in many rows, even on meshes that overall are stillrelatively coarse. As a consequence, the solver time dominates thecomputations, and more sophisticated approaches at solving the linear systemare necessary.
+* 
+
+* [1.x.205][1.x.206] [2.x.42] 
+* [0.x.10]

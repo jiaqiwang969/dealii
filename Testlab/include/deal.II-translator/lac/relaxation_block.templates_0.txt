@@ -1,0 +1,7 @@
+include/deal.II-translator/lac/relaxation_block.templates_0.txt
+[0.x.0]*
+   串行向量的默认实现。在这里，我们不需要复制成一个重影向量，所以只需返回一个引用到 [2.x.0] 。  
+* [0.x.1]*
+   为Trilinos专门设计。使用重影向量。 
+* [0.x.2]
+

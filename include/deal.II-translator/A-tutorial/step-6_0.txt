@@ -1,0 +1,515 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28]
+* [1.x.29][1.x.30][1.x.31]
+* 
+
+*  [2.x.2] 
+* This program is finally about one of the main features of deal.II:the use of adaptively (locally) refined meshes. The program is stillbased on  [2.x.3]  and  [2.x.4] , and, as you will see, it does not actuallytake very much code to enable adaptivity. Indeed, while we do a greatdeal of explaining, adaptive meshes can be added to an existing programwith barely a dozen lines of additional code. The program shows whatthese lines are, as well as another important ingredient of adaptivemesh refinement (AMR): a criterion that can be used to determine whetherit is necessary to refine a cell because the error is large on it,whether the cell can be coarsened because the error is particularlysmall on it, or whether we should just leave the cell as it is. Wewill discuss all of these issues in the following.
+* 
+
+* [1.x.32][1.x.33]
+* 
+
+* There are a number of ways how one can adaptively refine meshes. Thebasic structure of the overall algorithm is always the same and consistsof a loop over the following steps:
+* 
+*  - Solve the PDE on the current mesh;
+* 
+*  - Estimate the error on each cell using some criterion that is indicative  of the error;
+* 
+*  - Mark those cells that have large errors for refinement, mark those that have  particularly small errors for coarsening, and leave the rest alone;
+* 
+*  - Refine and coarsen the cells so marked to obtain a new mesh;
+* 
+*  - Repeat the steps above on the new mesh until the overall error is  sufficiently small.
+* For reasons that are probably lost to history (maybe that these functionsused to be implemented in FORTRAN, a language that does not care aboutwhether something is spelled in lower or UPPER case letters, with programmersoften choosing upper case letters habitually), the loop above is oftenreferenced in publications about mesh adaptivity as theSOLVE-ESTIMATE-MARK-REFINE loop (with this spelling).
+* Beyond this structure, however, there are a variety of ways to achievethis. Fundamentally, they differ in how exactly one generates one meshfrom the previous one.
+* If one were to use triangles (which deal.II does not do), then there aretwo essential possibilities:
+* 
+*  - Longest-edge refinement: In this strategy, a triangle marked for refinement  is cut into two by introducing one new edge from the midpoint of the longest  edge to the opposite vertex. Of course, the midpoint from the longest edge  has to somehow be balanced byalso* refining the cell on the other side of  that edge (if there is one). If the edge in question is also the longest  edge of the neighboring cell, then we can just run a new edge through the  neighbor to the opposite vertex; otherwise a slightly more involved  construction is necessary that adds more new vertices on at least one  other edge of the neighboring cell, and then may propagate to the neighbors  of the neighbor until the algorithm terminates. This is hard to describe  in words, and because deal.II does not use triangles not worth the time here.  But if you're curious, you can always watch video lecture 15 at the link  shown at the top of this introduction.
+* 
+*  - Red-green refinement: An alternative is what is called "red-green refinement".  This strategy is even more difficult to describe (but also discussed in the  video lecture) and has the advantage that the refinement does not propagate  beyond the immediate neighbors of the cell that we want to refine. It is,  however, substantially more difficult to implement.
+* There are other variations of these approaches, but the important point isthat they always generate a mesh where the lines where two cells touchare entire edges of both adjacent cells. With a bit of work, this strategyis readily adapted to three-dimensional meshes made from tetrahedra.
+* Neither of these methods works for quadrilaterals in 2d and hexahedra in 3d,or at least not easily. The reason is that the transition elements createdout of the quadrilateral neighbors of a quadrilateral cell that is to be refinedwould be triangles, and we don't want this. Consequently,the approach to adaptivity chosen in deal.II is to use grids in whichneighboring cells may differ in refinement level by one. This thenresults in nodes on the interfaces of cells which belong to oneside, but are unbalanced on the other. The common term for these is&ldquo;hanging nodes&rdquo;, and these meshes then look like this in a verysimple situation:
+*  [2.x.5] 
+* A more complicated two-dimensional mesh would look like this (and isdiscussed in the "Results" section below):
+* <img src="https://www.dealii.org/images/steps/developer/step_6_grid_5_ladutenko.svg"     alt="Fifth adaptively refined Ladutenko grid: the cells are clustered          along the inner circle."     width="300" height="300">
+* Finally, a three-dimensional mesh (from  [2.x.6] ) with such hanging nodes is shown here:
+* <img src="https://www.dealii.org/images/steps/developer/ [2.x.7] .3d.mesh.png" alt=""     width="300" height="300">
+* The first and third mesh are of course based on a square and a cube, but as thesecond mesh shows, this is not necessary. The important point is simply that wecan refine a mesh independently of its neighbors (subject to the constraintthat a cell can be only refined once more than its neighbors), but that we endup with these &ldquo;hanging nodes&rdquo; if we do this.
+* 
+
+* [1.x.34][1.x.35]
+* 
+
+* Now that you have seen what these adaptively refined meshes look like,you should ask [1.x.36] we would want to do this. After all, we know fromtheory that if we refine the mesh globally, the error will go down to zeroas
+* [1.x.37]
+* where  [2.x.8]  is some constant independent of  [2.x.9]  and  [2.x.10] , [2.x.11]  is the polynomial degree of the finite element in use, and [2.x.12]  is the diameter of the largest cell. So if the[1.x.38] cell is important, then why would we want to makethe mesh fine in some parts of the domain but not all?
+* The answer lies in the observation that the formula above is notoptimal. In fact, some more work shows that the followingis a better estimate (which you should compare to the square ofthe estimate above):
+* [1.x.39]
+* (Because  [2.x.13] , this formula immediately implies theprevious one if you just pull the mesh size out of the sum.)What this formula suggests is that it is not necessary to makethe [1.x.40] cell small, but that the cells really onlyneed to be small [1.x.41]!In other words: The mesh really only has to be fine where thesolution has large variations, as indicated by the  [2.x.14] st derivative.This makes intuitive sense: if, for example, we use a linear element [2.x.15] , then places where the solution is nearly linear (as indicatedby  [2.x.16]  being small) will be well resolved even if the meshis coarse. Only those places where the second derivative is largewill be poorly resolved by large elements, and consequentlythat's where we should make the mesh small.
+* Of course, this [1.x.42] is not very usefulin practice since we don't know the exact solution  [2.x.17]  of theproblem, and consequently, we cannot compute  [2.x.18] .But, and that is the approach commonly taken, we can computenumerical approximations of  [2.x.19]  based only onthe discrete solution  [2.x.20]  that we have computed before. Wewill discuss this in slightly more detail below. This will thenhelp us determine which cells have a large  [2.x.21] st derivative,and these are then candidates for refining the mesh.
+* 
+
+* [1.x.43][1.x.44]
+* 
+
+* The methods using triangular meshes mentioned above go to greatlengths to make sure that each vertex is a vertex of all adjacentcells
+* 
+*  -  i.e., that there are no hanging nodes. This thenautomatically makes sure that we can define shape functions in such away that they are globally continuous (if we use the common  [2.x.22] Lagrange finite element methods we have been using so far in thetutorial programs, as represented by the FE_Q class).
+* On the other hand, if we define shape functions on meshes with hangingnodes, we may end up with shape functions that are not continuous. Tosee this, think about the situation above where the top right cell isnot refined, and consider for a moment the use of a bilinear finiteelement. In that case, the shape functions associated with the hangingnodes are defined in the obvious way on the two small cells adjacentto each of the hanging nodes. But how do we extend them to the bigadjacent cells? Clearly, the function's extension to the big cellcannot be bilinear because then it needs to be linear along each edgeof the large cell, and that means that it needs to be zero on theentire edge because it needs to be zero on the two vertices of thelarge cell on that edge. But it is not zero at the hanging node itselfwhen seen from the small cells' side
+* 
+*  -  so it is not continuous. Thefollowing three figures show three of the shape functions along theedges in question that turn out to not be continuous when defined inthe usual way simply based on the cells they are adjacent to:
+*  [2.x.23] 
+* 
+
+* But we do want the finite element solution to be continuous so that wehave a &ldquo;conforming finite element method&rdquo; where thediscrete finite element space is a proper subset of the  [2.x.24]  functionspace in which we seek the solution of the Laplace equation.To guarantee that the global solution is continuous at these nodes as well, wehave to state some additional constraints on the values of the solution atthese nodes. The trick is to realize that while the shape functions shownabove are discontinuous (and consequently an [1.x.45] linear combinationof them is also discontinuous), that linear combinations in which the shapefunctions are added up as  [2.x.25] can be continuous [1.x.46].In other words, the coefficients  [2.x.26]  can not be chosen arbitrarilybut have to satisfy certain constraints so that the function  [2.x.27]  is in factcontinuous.What these constraints have to look is relatively easy tounderstand conceptually, but the implementation in software iscomplicated and takes several thousand lines of code. On the otherhand, in user code, it is only about half a dozen lines you have toadd when dealing with hanging nodes.
+* In the program below, we will show how we can get theseconstraints from deal.II, and how to use them in the solution of thelinear system of equations. Before going over the details of the programbelow, you may want to take a look at the  [2.x.28]  documentationmodule that explains how these constraints can be computed and what classes indeal.II work on them.
+* 
+
+* [1.x.47][1.x.48]
+* 
+
+* The practice of hanging node constraints is rather simpler than thetheory we have outlined above. In reality, you will really only have toadd about half a dozen lines of additional code to a program like  [2.x.29] to make it work with adaptive meshes that have hanging nodes. Theinteresting part about this is that it is entirely independent of theequation you are solving: The algebraic nature of these constraints has nothingto do with the equation and only depends on the choice of finite element.As a consequence, the code to deal with these constraints is entirelycontained in the deal.II library itself, and you do not need to worryabout the details.
+* The steps you need to make this work are essentially like this:
+* 
+*  - You have to create an AffineConstraints object, which (as the name  suggests) will store all constraints on the finite element space. In  the current context, these are the constraints due to our desire to  keep the solution space continuous even in the presence of hanging  nodes. (Below we will also briefly mention that we will also put  boundary values into this same object, but that is a separate matter.)
+* 
+*  - You have to fill this object using the function   [2.x.30]  to ensure continuity of  the elements of the finite element space.
+* 
+*  - You have to use this object when you copy the local contributions to  the matrix and right hand side into the global objects, by using   [2.x.31]  Up until  now, we have done this ourselves, but now with constraints, this  is where the magic happens and we apply the constraints to the  linear system. What this function does is make sure that the  degrees of freedom located at hanging nodes are not, in fact,  really free. Rather, they are factually eliminated from the  linear system by setting their rows and columns to zero and putting  something on the diagonal to ensure the matrix remains invertible.  The matrix resulting from this process remains symmetric and  positive definite for the Laplace equation we solve here, so we can  continue to use the Conjugate Gradient method for it.
+* 
+*  - You then solve the linear system as usual, but at the end of this  step, you need to make sure that the degrees of "freedom" located  on hanging nodes get their correct (constrained) value so that the  solution you then visualize or evaluate in other ways is in  fact continuous. This is done by calling   [2.x.32]  immediately after solving.
+* These four steps are really all that is necessary
+* 
+*  -  it's that simplefrom a user perspective. The fact that, in the function calls mentionedabove, you will run through several thousand lines of not-so-trivialcode is entirely immaterial to this: In user code, there are reallyonly four additional steps.
+* 
+
+* [1.x.49][1.x.50]
+* 
+
+* The next question, now that we know how to [1.x.51] with meshes thathave these hanging nodes is how we [1.x.52] them.
+* A simple way has already been shown in  [2.x.33] : If you [1.x.53] whereit is necessary to refine the mesh, then you can create one by hand. Butin reality, we don't know this: We don't know the solution of the PDEup front (because, if we did, we wouldn't have to use the finite elementmethod), and consequently we do not know where it is necessary toadd local mesh refinement to better resolve areas where the solutionhas strong variations. But the discussion above shows that maybe wecan get away with using the discrete solution  [2.x.34]  on one mesh toestimate the derivatives  [2.x.35] , and then use this to determinewhich cells are too large and which already small enough. We can thengenerate a new mesh from the current one using local mesh refinement.If necessary, this step is then repeated until we are happy with ournumerical solution
+* 
+*  -  or, more commonly, until we run out of computationalresources or patience.
+* So that's exactly what we will do.The locally refined grids are produced using an [1.x.54]which estimates the energy error for numerical solutions of the Laplaceoperator. Since it was developed by Kelly andco-workers, we often refer to it as the &ldquo;Kelly refinementindicator&rdquo; in the library, documentation, and mailing list. Theclass that implements it is calledKellyErrorEstimator, and there is a great deal of information tobe found in the documentation of that class that need not be repeatedhere. The summary, however, is that the class computes a vector withas many entries as there are  [2.x.36]  "active cells", andwhere each entry contains an estimate of the error on that cell.This estimate is then used to refine the cells of the mesh: thosecells that have a large error will be marked for refinement, thosethat have a particularly small estimate will be marked forcoarsening. We don't have to do this by hand: The functions innamespace GridRefinement will do all of this for us once we haveobtained the vector of error estimates.
+* It is worth noting that while the Kelly error estimator was developedfor Laplace's equation, it has proven to be a suitable tool to generatelocally refined meshes for a wide range of equations, not even restrictedto elliptic only problems. Although it will create non-optimal meshes for otherequations, it is often a good way to quickly produce meshes that arewell adapted to the features of solutions, such as regions of greatvariation or discontinuities.
+* 
+
+* 
+* [1.x.55][1.x.56]
+* 
+
+* It turns out that one can see Dirichlet boundary conditions as just anotherconstraint on the degrees of freedom. It's a particularly simple one,indeed: If  [2.x.37]  is a degree of freedom on the boundary, with position [2.x.38] , then imposing the boundary condition  [2.x.39]  on  [2.x.40] simply yields the constraint  [2.x.41] .
+* The AffineConstraints class can handle such constraints as well, which makes itconvenient to let the same object we use for hanging node constraintsalso deal with these Dirichlet boundary conditions.This way, we don't need to apply the boundary conditions after assembly(like we did in the earlier steps).All that is necessary is that we call the variant of [2.x.42]  that returns its informationin an AffineConstraints object, rather than the  [2.x.43]  we have usedin previous tutorial programs.
+* 
+
+* [1.x.57] [1.x.58]
+* 
+
+* 
+* Since the concepts used for locally refined grids are so important,we do not show much other material in this example. The mostimportant exception is that we show how to use biquadratic elementsinstead of the bilinear ones which we have used in all previousexamples. In fact, the use of higher order elements is accomplished byonly replacing three lines of the program, namely the initialization ofthe  [2.x.44]  member variable in the constructor of the mainclass of this program, and the use of an appropriate quadrature formulain two places. The rest of the program is unchanged.
+* The only other new thing is a method to catch exceptions in the [2.x.45]  function in order to output some information in case theprogram crashes for some reason. This is discussed below in more detail.
+* 
+
+*  [1.x.59] [1.x.60]
+*   [1.x.61]  [1.x.62]
+* 
+
+* 
+*  The first few files have already been covered in previous examples and will thus not be further commented on.
+* 
+
+* 
+* [1.x.63]
+* 
+*  From the following include file we will import the declaration of H1-conforming finite element shape functions. This family of finite elements is called  [2.x.46] , and was used in all examples before already to define the usual bi- or tri-linear elements, but we will now use it for bi-quadratic elements:
+* 
+
+* 
+* [1.x.64]
+* 
+*  We will not read the grid from a file as in the previous example, but generate it using a function of the library. However, we will want to write out the locally refined grids (just the grid, not the solution) in each step, so we need the following include file instead of  [2.x.47] :
+* 
+
+* 
+* [1.x.65]
+* 
+*  When using locally refined grids, we will get so-called <code>hanging nodes</code>. However, the standard finite element methods assumes that the discrete solution spaces be continuous, so we need to make sure that the degrees of freedom on hanging nodes conform to some constraints such that the global solution is continuous. We are also going to store the boundary conditions in this object. The following file contains a class which is used to handle these constraints:
+* 
+
+* 
+* [1.x.66]
+* 
+*  In order to refine our grids locally, we need a function from the library that decides which cells to flag for refinement or coarsening based on the error indicators we have computed. This function is defined here:
+* 
+
+* 
+* [1.x.67]
+* 
+*  Finally, we need a simple way to actually compute the refinement indicators based on some error estimate. While in general, adaptivity is very problem-specific, the error indicator in the following file often yields quite nicely adapted grids for a wide class of problems.
+* 
+
+* 
+* [1.x.68]
+* 
+*  Finally, this is as in previous programs:
+* 
+
+* 
+* [1.x.69]
+* 
+*   [1.x.70]  [1.x.71]
+* 
+
+* 
+*  The main class is again almost unchanged. Two additions, however, are made: we have added the  [2.x.48]  function, which is used to adaptively refine the grid (instead of the global refinement in the previous examples), and a variable which will hold the constraints.
+* 
+
+* 
+* [1.x.72]
+* 
+*  This is the new variable in the main class. We need an object which holds a list of constraints to hold the hanging nodes and the boundary conditions.
+* 
+
+* 
+* [1.x.73]
+* 
+*   [1.x.74]  [1.x.75]
+* 
+
+* 
+*  The implementation of nonconstant coefficients is copied verbatim from  [2.x.49] :
+* 
+
+* 
+* [1.x.76]
+* 
+*   [1.x.77]  [1.x.78]
+* 
+
+* 
+*   [1.x.79]  [1.x.80]
+* 
+
+* 
+*  The constructor of this class is mostly the same as before, but this time we want to use the quadratic element. To do so, we only have to replace the constructor argument (which was  [2.x.50]  in all previous examples) by the desired polynomial degree (here  [2.x.51] ):
+* 
+
+* 
+* [1.x.81]
+* 
+*   [1.x.82]  [1.x.83]
+* 
+
+* 
+*  The next function sets up all the variables that describe the linear finite element problem, such as the DoFHandler, matrices, and vectors. The difference to what we did in  [2.x.52]  is only that we now also have to take care of hanging node constraints. These constraints are handled almost exclusively by the library, i.e. you only need to know that they exist and how to get them, but you do not have to know how they are formed or what exactly is done with them.
+* 
+
+* 
+*  At the beginning of the function, you find all the things that are the same as in  [2.x.53] : setting up the degrees of freedom (this time we have quadratic elements, but there is no difference from a user code perspective to the linear
+* 
+*  -  or any other degree, for that matter
+* 
+*  -  case), generating the sparsity pattern, and initializing the solution and right hand side vectors. Note that the sparsity pattern will have significantly more entries per row now, since there are now 9 degrees of freedom per cell (rather than only four), that can couple with each other.
+* 
+
+* 
+* [1.x.84]
+* 
+*  We may now populate the AffineConstraints object with the hanging node constraints. Since we will call this function in a loop we first clear the current set of constraints from the last system and then compute new ones:
+* 
+
+* 
+* [1.x.85]
+* 
+*  Now we are ready to interpolate the boundary values with indicator 0 (the whole boundary) and store the resulting constraints in our  [2.x.54]  object. Note that we do not to apply the boundary conditions after assembly, like we did in earlier steps: instead we put all constraints on our function space in the AffineConstraints object. We can add constraints to the AffineConstraints object in either order: if two constraints conflict then the constraint matrix either abort or throw an exception via the Assert macro.
+* 
+
+* 
+* [1.x.86]
+* 
+*  After all constraints have been added, they need to be sorted and rearranged to perform some actions more efficiently. This postprocessing is done using the  [2.x.55]  function, after which no further constraints may be added any more:
+* 
+
+* 
+* [1.x.87]
+* 
+*  Now we first build our compressed sparsity pattern like we did in the previous examples. Nevertheless, we do not copy it to the final sparsity pattern immediately.  Note that we call a variant of make_sparsity_pattern that takes the AffineConstraints object as the third argument. We are letting the routine know that we will never write into the locations given by  [2.x.56]  by setting the argument  [2.x.57]  to false (in other words, that we will never write into entries of the matrix that correspond to constrained degrees of freedom). If we were to condense the constraints after assembling, we would have to pass  [2.x.58]  instead because then we would first write into these locations only to later set them to zero again during condensation.
+* 
+
+* 
+* [1.x.88]
+* 
+*  Now all non-zero entries of the matrix are known (i.e. those from regularly assembling the matrix and those that were introduced by eliminating constraints). We may copy our intermediate object to the sparsity pattern:
+* 
+
+* 
+* [1.x.89]
+* 
+*  We may now, finally, initialize the sparse matrix:
+* 
+
+* 
+* [1.x.90]
+* 
+*   [1.x.91]  [1.x.92]
+* 
+
+* 
+*  Next, we have to assemble the matrix. However, to copy the local matrix and vector on each cell into the global system, we are no longer using a hand-written loop. Instead, we use  [2.x.59]  that internally executes this loop while performing Gaussian elimination on rows and columns corresponding to constrained degrees on freedom.
+* 
+
+* 
+*  The rest of the code that forms the local contributions remains unchanged. It is worth noting, however, that under the hood several things are different than before. First, the variable  [2.x.60]  and return value of  [2.x.61]  now are 9 each, where they were 4 before. Introducing such variables as abbreviations is a good strategy to make code work with different elements without having to change too much code. Secondly, the  [2.x.62]  object of course needs to do other things as well, since the shape functions are now quadratic, rather than linear, in each coordinate variable. Again, however, this is something that is completely handled by the library.
+* 
+
+* 
+* [1.x.93]
+* 
+*  Finally, transfer the contributions from  [2.x.63]  and  [2.x.64]  into the global objects.
+* 
+
+* 
+* [1.x.94]
+* 
+*  Now we are done assembling the linear system. The constraint matrix took care of applying the boundary conditions and also eliminated hanging node constraints. The constrained nodes are still in the linear system (there is a nonzero entry, chosen in a way that the matrix is well conditioned, on the diagonal of the matrix and all other entries for this line are set to zero) but the computed values are invalid (i.e., the corresponding entries in  [2.x.65]  are currently meaningless). We compute the correct values for these nodes at the end of the  [2.x.66]  function.
+* 
+
+* 
+* [1.x.95]
+* 
+*   [1.x.96]  [1.x.97]
+* 
+
+* 
+*  We continue with gradual improvements. The function that solves the linear system again uses the SSOR preconditioner, and is again unchanged except that we have to incorporate hanging node constraints. As mentioned above, the degrees of freedom from the AffineConstraints object corresponding to hanging node constraints and boundary values have been removed from the linear system by giving the rows and columns of the matrix a special treatment. This way, the values for these degrees of freedom have wrong, but well-defined values after solving the linear system. What we then have to do is to use the constraints to assign to them the values that they should have. This process, called  [2.x.67]  constraints, computes the values of constrained nodes from the values of the unconstrained ones, and requires only a single additional function call that you find at the end of this function:
+* 
+
+* 
+*  
+
+* 
+* [1.x.98]
+* 
+*   [1.x.99]  [1.x.100]
+* 
+
+* 
+*  We use a sophisticated error estimation scheme to refine the mesh instead of global refinement. We will use the KellyErrorEstimator class which implements an error estimator for the Laplace equation; it can in principle handle variable coefficients, but we will not use these advanced features, but rather use its most simple form since we are not interested in quantitative results but only in a quick way to generate locally refined grids.
+* 
+
+* 
+*  Although the error estimator derived by Kelly et al. was originally developed for the Laplace equation, we have found that it is also well suited to quickly generate locally refined grids for a wide class of problems. This error estimator uses the solution gradient's jump at cell faces (which is a measure for the second derivatives) and scales it by the size of the cell. It is therefore a measure for the local smoothness of the solution at the place of each cell and it is thus understandable that it yields reasonable grids also for hyperbolic transport problems or the wave equation as well, although these grids are certainly suboptimal compared to approaches specially tailored to the problem. This error estimator may therefore be understood as a quick way to test an adaptive program.
+* 
+
+* 
+*  The way the estimator works is to take a  [2.x.68]  object describing the degrees of freedom and a vector of values for each degree of freedom as input and compute a single indicator value for each active cell of the triangulation (i.e. one value for each of the active cells). To do so, it needs two additional pieces of information: a face quadrature formula, i.e., a quadrature formula on  [2.x.69]  dimensional objects. We use a 3-point Gauss rule again, a choice that is consistent and appropriate with the bi-quadratic finite element shape functions in this program. (What constitutes a suitable quadrature rule here of course depends on knowledge of the way the error estimator evaluates the solution field. As said above, the jump of the gradient is integrated over each face, which would be a quadratic function on each face for the quadratic elements in use in this example. In fact, however, it is the square of the jump of the gradient, as explained in the documentation of that class, and that is a quartic function, for which a 3 point Gauss formula is sufficient since it integrates polynomials up to order 5 exactly.)
+* 
+
+* 
+*  Secondly, the function wants a list of boundary indicators for those boundaries where we have imposed Neumann values of the kind  [2.x.70] , along with a function  [2.x.71]  for each such boundary. This information is represented by a map from boundary indicators to function objects describing the Neumann boundary values. In the present example program, we do not use Neumann boundary values, so this map is empty, and in fact constructed using the default constructor of the map in the place where the function call expects the respective function argument.
+* 
+
+* 
+*  The output is a vector of values for all active cells. While it may make sense to compute the [1.x.101] of a solution degree of freedom very accurately, it is usually not necessary to compute the [1.x.102] corresponding to the solution on a cell particularly accurately. We therefore typically use a vector of floats instead of a vector of doubles to represent error indicators.
+* 
+
+* 
+* [1.x.103]
+* 
+*  The above function returned one error indicator value for each cell in the  [2.x.72]  array. Refinement is now done as follows: refine those 30 per cent of the cells with the highest error values, and coarsen the 3 per cent of cells with the lowest values.   
+*   One can easily verify that if the second number were zero, this would approximately result in a doubling of cells in each step in two space dimensions, since for each of the 30 per cent of cells, four new would be replaced, while the remaining 70 per cent of cells remain untouched. In practice, some more cells are usually produced since it is disallowed that a cell is refined twice while the neighbor cell is not refined; in that case, the neighbor cell would be refined as well.   
+*   In many applications, the number of cells to be coarsened would be set to something larger than only three per cent. A non-zero value is useful especially if for some reason the initial (coarse) grid is already rather refined. In that case, it might be necessary to refine it in some regions, while coarsening in some other regions is useful. In our case here, the initial grid is very coarse, so coarsening is only necessary in a few regions where over-refinement may have taken place. Thus a small, non-zero value is appropriate here.   
+*   The following function now takes these refinement indicators and flags some cells of the triangulation for refinement or coarsening using the method described above. It is from a class that implements several different algorithms to refine a triangulation based on cell-wise error indicators.
+* 
+
+* 
+* [1.x.104]
+* 
+*  After the previous function has exited, some cells are flagged for refinement, and some other for coarsening. The refinement or coarsening itself is not performed by now, however, since there are cases where further modifications of these flags is useful. Here, we don't want to do any such thing, so we can tell the triangulation to perform the actions for which the cells are flagged:
+* 
+
+* 
+* [1.x.105]
+* 
+*   [1.x.106]  [1.x.107]
+* 
+
+* 
+*  At the end of computations on each grid, and just before we continue the next cycle with mesh refinement, we want to output the results from this cycle.
+* 
+
+* 
+*  We have already seen in  [2.x.73]  how this can be achieved for the mesh itself. Here, we change a few things:  [2.x.74]   [2.x.75] We use two different formats: gnuplot and VTU. [2.x.76]   [2.x.77] We embed the cycle number in the output file name. [2.x.78]   [2.x.79] For gnuplot output, we set up a  [2.x.80]  object to provide a few extra visualization arguments so that edges appear curved. This is explained in further detail in  [2.x.81] . [2.x.82]   [2.x.83] 
+* 
+
+* 
+* [1.x.108]
+* 
+*   [1.x.109]  [1.x.110]
+* 
+
+* 
+*  The final function before  [2.x.84]  is again the main driver of the class,  [2.x.85] . It is similar to the one of  [2.x.86] , except that we generate a file in the program again instead of reading it from disk, in that we adaptively instead of globally refine the mesh, and that we output the solution on the final mesh in the present function.
+* 
+
+* 
+*  The first block in the main loop of the function deals with mesh generation. If this is the first cycle of the program, instead of reading the grid from a file on disk as in the previous example, we now again create it using a library function. The domain is again a circle with center at the origin and a radius of one (these are the two hidden arguments to the function, which have default values).
+* 
+
+* 
+*  You will notice by looking at the coarse grid that it is of inferior quality than the one which we read from the file in the previous example: the cells are less equally formed. However, using the library function this program works in any space dimension, which was not the case before.
+* 
+
+* 
+*  In case we find that this is not the first cycle, we want to refine the grid. Unlike the global refinement employed in the last example program, we now use the adaptive procedure described above.
+* 
+
+* 
+*  The rest of the loop looks as before:
+* 
+
+* 
+* [1.x.111]
+* 
+*   [1.x.112]  [1.x.113]
+* 
+
+* 
+*  The main function is unaltered in its functionality from the previous example, but we have taken a step of additional caution. Sometimes, something goes wrong (such as insufficient disk space upon writing an output file, not enough memory when trying to allocate a vector or a matrix, or if we can't read from or write to a file for whatever reason), and in these cases the library will throw exceptions. Since these are run-time problems, not programming errors that can be fixed once and for all, this kind of exceptions is not switched off in optimized mode, in contrast to the  [2.x.87]  macro which we have used to test against programming errors. If uncaught, these exceptions propagate the call tree up to the  [2.x.88]  function, and if they are not caught there either, the program is aborted. In many cases, like if there is not enough memory or disk space, we can't do anything but we can at least print some text trying to explain the reason why the program failed. A way to do so is shown in the following. It is certainly useful to write any larger program in this way, and you can do so by more or less copying this function except for the  [2.x.89]  block that actually encodes the functionality particular to the present application.
+* 
+
+* 
+* [1.x.114]
+* 
+*  The general idea behind the layout of this function is as follows: let's try to run the program as we did before...
+* 
+
+* 
+* [1.x.115]
+* 
+*  ...and if this should fail, try to gather as much information as possible. Specifically, if the exception that was thrown is an object of a class that is derived from the C++ standard class  [2.x.90]  member function to get a string which describes the reason why the exception was thrown.   
+*   The deal.II exception classes are all derived from the standard class, and in particular, the  [2.x.91]  function will return approximately the same string as would be generated if the exception was thrown using the  [2.x.92]  macro. You have seen the output of such an exception in the previous example, and you then know that it contains the file and line number of where the exception occurred, and some other information. This is also what the following statements would print.   
+*   Apart from this, there isn't much that we can do except exiting the program with an error code (this is what the  [2.x.93]  does):
+* 
+
+* 
+* [1.x.116]
+* 
+*  If the exception that was thrown somewhere was not an object of a class derived from the standard  [2.x.94]  class, then we can't do anything at all. We then simply print an error message and exit.
+* 
+
+* 
+* [1.x.117]
+* 
+*  If we got to this point, there was no exception which propagated up to the main function (there may have been exceptions, but they were caught somewhere in the program or the library). Therefore, the program performed as was expected and we can return without error.
+* 
+
+* 
+* [1.x.118]
+* [1.x.119][1.x.120]
+* 
+
+* 
+* The output of the program looks as follows:
+* [1.x.121]
+* 
+* 
+
+* 
+* As intended, the number of cells roughly doubles in each cycle. Thenumber of degrees is slightly more than four times the number ofcells; one would expect a factor of exactly four in two spatialdimensions on an infinite grid (since the spacing between the degreesof freedom is half the cell width: one additional degree of freedom oneach edge and one in the middle of each cell), but it is larger thanthat factor due to the finite size of the mesh and due to additionaldegrees of freedom which are introduced by hanging nodes and localrefinement.
+* 
+
+* 
+* The program outputs the solution and mesh in each cycle of therefinement loop. The solution looks as follows:
+*  [2.x.95] 
+* It is interesting to follow how the program arrives at the final mesh:
+*  [2.x.96] 
+* 
+
+* It is clearly visible that the region where the solution has a kink,i.e. the circle at radial distance 0.5 from the center, isrefined most. Furthermore, the central region where the solution isvery smooth and almost flat, is almost not refined at all, but thisresults from the fact that we did not take into account that thecoefficient is large there. The region outside is refined ratherarbitrarily, since the second derivative is constant there and refinementis therefore mostly based on the size of the cells and their deviationfrom the optimal square.
+* 
+
+* 
+* [1.x.122][1.x.123][1.x.124]
+* 
+
+* [1.x.125][1.x.126]
+* 
+
+* 
+* One thing that is always worth playing around with if one solvesproblems of appreciable size (much bigger than the one we have here)is to try different solvers or preconditioners. In the current case,the linear system is symmetric and positive definite, which makes theCG algorithm pretty much the canonical choice for solving. However,the SSOR preconditioner we use in the  [2.x.97]  function isup for grabs.
+* In deal.II, it is relatively simple to change the preconditioner. Forexample, by changing the existing lines of code
+* [1.x.127]
+* into
+* [1.x.128]
+* we can try out different relaxation parameters for SSOR. By using
+* [1.x.129]
+* we can use Jacobi as a preconditioner. And by using
+* [1.x.130]
+* we can use a simple incomplete LU decomposition without any thresholding orstrengthening of the diagonal (to use this preconditioner, you have to alsoadd the header file  [2.x.98]  to the include listat the top of the file).
+* Using these various different preconditioners, we can compare thenumber of CG iterations needed (available through the [2.x.99]  call, see [2.x.100] ) as well as CPU time needed (using the Timer class,discussed, for example, in  [2.x.101] ) and get thefollowing results (left: iterations; right: CPU time):
+*  [2.x.102] 
+* As we can see, all preconditioners behave pretty much the same on thissimple problem, with the number of iterations growing like  [2.x.103]  and because each iteration requires around  [2.x.104]  operations the total CPU time grows like  [2.x.105]  (for the few smallest meshes, the CPU time is so smallthat it doesn't record). Note that even though it is the simplestmethod, Jacobi is the fastest for this problem.
+* The situation changes slightly when the finite element is not abi-quadratic one as set in the constructor of this program, but abi-linear one. If one makes this change, the results are as follows:
+*  [2.x.106] 
+* In other words, while the increase in iterations and CPU time is asbefore, Jacobi is now the method that requires the most iterations; itis still the fastest one, however, owing to the simplicity of theoperations it has to perform. This is not to say that Jacobiis actually a good preconditioner
+* 
+*  -  for problems of appreciable size, it isdefinitely not, and other methods will be substantially better
+* 
+*  -  but reallyonly that it is fast because its implementation is so simple that it cancompensate for a larger number of iterations.
+* The message to take away from this is not that simplicity inpreconditioners is always best. While this may be true for the currentproblem, it definitely is not once we move to more complicatedproblems (elasticity or Stokes, for examples  [2.x.107]  or [2.x.108] ). Secondly, all of these preconditioners stilllead to an increase in the number of iterations as the number  [2.x.109]  ofdegrees of freedom grows, for example  [2.x.110] ; this, inturn, leads to a total growth in effort as  [2.x.111] since each iteration takes  [2.x.112]  work. This behavior isundesirable: we would really like to solve linear systems with  [2.x.113] unknowns in a total of  [2.x.114]  work; there is a classof preconditioners that can achieve this, namely geometric ( [2.x.115] , [2.x.116] ,  [2.x.117] )or algebraic multigrid ( [2.x.118] ,  [2.x.119] , and several others)preconditioners. They are, however, significantly more complex thanthe preconditioners outlined above.
+* Finally, the last message to takehome is that when the data shown above was generated (in 2018), linearsystems with 100,000 unknowns areeasily solved on a desktop machine in about a second, makingthe solution of relatively simple 2d problems even to very highaccuracy not that big a task as it used to be even in thepast. At the time, the situation for 3d problems was entirely different,but even that has changed substantially in the intervening time
+* 
+*  -  thoughsolving problems in 3d to high accuracy remains a challenge.
+* 
+
+* [1.x.131][1.x.132]
+* 
+
+* If you look at the meshes above, you will see even though the domain is theunit disk, and the jump in the coefficient lies along a circle, the cellsthat make up the mesh do not track this geometry well. The reason, already hintedat in  [2.x.120] , is that in the absence of other information,the Triangulation class only sees a bunch ofcoarse grid cells but has, of course, no real idea what kind of geometry theymight represent when looked at together. For this reason, we need to tellthe Triangulation what to do when a cell is refined: where should the newvertices at the edge midpoints and the cell midpoint be located so that thechild cells better represent the desired geometry than the parent cell.
+* To visualize what the triangulation actually knows about the geometry,it is not enough to just output the location of vertices and draw astraight line for each edge; instead, we have to output both interiorand boundary lines as multiple segments so that they lookcurved. We can do this by making one change to the gnuplot part of [2.x.121] :
+* [1.x.133]
+* 
+* In the code above, we already do this for faces that sit at the boundary: thishappens automatically since we use  [2.x.122]  which attaches aSphericalManifold to the boundary of the domain. To make the mesh[1.x.134] also track a circular domain, we need to work a bit harder,though. First, recall that our coarse mesh consists of a central squarecell and four cells around it. Now first consider what would happen if wealso attached the SphericalManifold object not only to the four exterior facesbut also the four cells at the perimeter as well as all of their faces. We cando this by adding the following snippet (testing that the center of a cell islarger than a small multiple, say one tenth, of the cell diameter away fromcenter of the mesh only fails for the central square of the mesh):
+* [1.x.135]
+* 
+* After a few global refinement steps, this would lead to a mesh of the followingkind:
+* 
+
+*    [2.x.123] 
+* Creating good meshes, and in particular making them fit the geometry youwant, is a complex topic in itself. You can find much more on this in [2.x.124] ,  [2.x.125] , and  [2.x.126] , among other tutorial programs that coverthe issue.  [2.x.127]  shows another, less manual way to achieve a meshwell fit to the problem here.Information on curved domains can also be found in thedocumentation module on  [2.x.128]  "Manifold descriptions".
+* Why does it make sense to choose a mesh that tracks the internalinterface? There are a number of reasons, but the most essential onecomes down to what we actually integrate in our bilinearform. Conceptually, we want to integrate the term  [2.x.129]  as thecontribution of cell  [2.x.130]  to the matrix entry  [2.x.131] . We can notcompute it exactly and have to resort to quadrature. We know thatquadrature is accurate if the integrand is smooth. That is becausequadrature in essence computes a polynomial approximation to theintegrand that coincides with the integrand in the quadrature points,and then computes the volume under this polynomial as an approximationto the volume under the original integrand. This polynomialinterpolant is accurate if the integrand is smooth on a cell, but itis usually rather inaccurate if the integrand is discontinuous on acell.
+* Consequently, it is worthwhile to align cells in such a way that theinterfaces across which the coefficient is discontinuous are alignedwith cell interfaces. This way, the coefficient is constant on eachcell, following which the integrand will be smooth, and its polynomialapproximation and the quadrature approximation of the integral willboth be accurate. Note that such an alignment is common in manypractical cases, so deal.II provides a number of functions (such as [2.x.132]  "material_id") to help manage such a scenario.Refer to  [2.x.133]  and  [2.x.134]  for examples of how material ids can beapplied.
+* Finally, let us consider the case of a coefficient that has a smoothand non-uniform distribution in space. We can repeat once again all ofthe above discussion on the representation of such a function with thequadrature. So, to simulate it accurately there are a few readilyavailable options: you could reduce the cell size, increase the orderof the polynomial used in the quadrature formula, select a moreappropriate quadrature formula, or perform a combination of thesesteps. The key is that providing the best fit of the coefficient'sspatial dependence with the quadrature polynomial will lead to a moreaccurate finite element solution of the PDE.
+* As a final note: The discussion in the previous paragraphs shows, we herehave a very concrete way of stating what we think of a good mesh
+* 
+*  -  it shouldbe aligned with the jump in the coefficient. But one could also have askedthis kind of question in a more general setting: Given some equation witha smooth solution and smooth coefficients, can we say what a good meshwould look like? This is a question for which the answer is easier to statein intuitive terms than mathematically: A good mesh has cells that all,by and large, look like squares (or cubes, in 3d). A bad mesh would containcells that are very elongated in some directions or, more generally, for whichthere are cells that have both short and long edges. There are many waysin which one could assign a numerical quality index to each cell that measureswhether the cell is "good" or "bad"; some of these are often chosen becausethey are cheap and easy to compute, whereas others are based on what entersinto proofs of convergence. An example of the former would be the ratio ofthe longest to the shortest edge of a cell: In the ideal case, that ratiowould be one; bad cells have values much larger than one. An example of thelatter kind would consider the gradient (the "Jacobian") of the mappingfrom the reference cell  [2.x.135]  to the real cell  [2.x.136] ; thisgradient is a matrix, and a quantity that enters into error estimatesis the maximum over all points on the reference cell of the ratio of thelargest to the smallest eigenvalue of this matrix. It is again not difficultto see that this ratio is constant if the cell  [2.x.137]  is an affine image of [2.x.138] , and that it is one for squares and cubes.
+* In practice, it might be interesting to visualize such quality measures.The function  [2.x.139]  provides oneway to get this kind of information. Even better, visualization toolssuch as VisIt often allow you to visualize this sort of informationfor a variety of measures from within the visualization softwareitself; in the case of VisIt, just add a "pseudo-color" plot and selectone of the mesh quality measures instead of the solution field.
+* 
+
+* [1.x.138][1.x.139]
+* 
+
+* From a mathematical perspective, solutions of the Laplace equation[1.x.140]on smoothly bounded, convex domains are known to be smooth themselves. The exact degreeof smoothness, i.e., the function space in which the solution lives, dependson how smooth exactly the boundary of the domain is, and how smooth the righthand side is. Some regularity of the solution may be lost at the boundary, butone generally has that the solution is twice more differentiable incompact subsets of the domain than the right hand side.If, in particular, the right hand side satisfies  [2.x.140] , then [2.x.141]  where  [2.x.142]  is any compact subset of  [2.x.143] ( [2.x.144]  is an open domain, so a compact subset needs to keep a positive distancefrom  [2.x.145] ).
+* The situation we chose for the current example is different, however: we lookat an equation with a non-constant coefficient  [2.x.146] :[1.x.141]Here, if  [2.x.147]  is not smooth, then the solution will not be smooth either,regardless of  [2.x.148] . In particular, we expect that wherever  [2.x.149]  is discontinuousalong a line (or along a plane in 3d),the solution will have a kink. This is easy to see: if for example  [2.x.150] is continuous, then  [2.x.151]  needs to becontinuous. This means that  [2.x.152]  must be continuously differentiable(not have a kink). Consequently, if  [2.x.153]  has a discontinuity, then  [2.x.154] must have an opposite discontinuity so that the two exactly cancel and theirproduct yields a function without a discontinuity. But for  [2.x.155]  to havea discontinuity,  [2.x.156]  must have a kink. This is of course exactly what ishappening in the current example, and easy to observe in the pictures of thesolution.
+* In general, if the coefficient  [2.x.157]  is discontinuous along a line in 2d,or a plane in 3d, then the solution may have a kink, but the gradient of thesolution will not go to infinity. That means, that the solution is at leaststill in the [1.x.142] [2.x.158]  (i.e., roughly speaking, in thespace of functions whose derivatives are bounded). On the other hand,we know that in the mostextreme cases
+* 
+*  -  i.e., where the domain has reentrant corners, theright hand side only satisfies  [2.x.159] , or the coefficient  [2.x.160]  is only in [2.x.161] 
+* 
+*  -  all we can expect is that  [2.x.162]  (i.e., the[1.x.143] of functions whose derivative is square integrable), a much larger space than [2.x.163] . It is not very difficult to create cases wherethe solution is in a space  [2.x.164]  where we can get  [2.x.165]  to become as smallas we want. Such cases are often used to test adaptive finite elementmethods because the mesh will have to resolve the singularity that causesthe solution to not be in  [2.x.166]  any more.
+* The typical example one uses for this is called the [1.x.144](referring to  [2.x.167] ), which in the commonly used form has a coefficient [2.x.168]  that has different values in the four quadrants of the plane(or eight different values in the octants of  [2.x.169] ). The exact degreeof regularity (the  [2.x.170]  in the index of the Sobolev space above) depends on thevalues of  [2.x.171]  coming together at the origin, and by choosing thejumps large enough, the regularity of the solution can be made as close asdesired to  [2.x.172] .
+* To implement something like this, one could replace the coefficientfunction by the following (shown here only for the 2d case):
+* [1.x.145]
+* (Adding the  [2.x.173]  at the end ensures that either an exceptionis thrown or that the program aborts if we ever get to that point
+* 
+*  -  which of course we shouldn't,but this is a good way to insure yourself: we all make mistakes bysometimes not thinking of all cases, for example by checkingfor  [2.x.174]  to be less than and greater than zero,rather than greater-or-equal to zero, and thereby forgettingsome cases that would otherwise lead to bugs that are awkwardto find. The  [2.x.175]  at the end is only there toavoid compiler warnings that the function does not end in a [2.x.176]  statement
+* 
+*  -  the compiler cannot see that thefunction would never actually get to that point because of thepreceding  [2.x.177]  statement.)
+* By playing with such cases where four or more sectors cometogether and on which the coefficient has different values, one canconstruct cases where the solution has singularities at theorigin. One can also see how the meshes are refined in such cases.
+* 
+
+* [1.x.146][1.x.147] [2.x.178] 
+* [0.x.1]

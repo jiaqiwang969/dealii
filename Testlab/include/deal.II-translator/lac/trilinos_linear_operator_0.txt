@@ -1,0 +1,25 @@
+include/deal.II-translator/lac/trilinos_linear_operator_0.txt
+[0.x.0]*
+    [2.x.0] 创建一个LinearOperator  
+* [0.x.1]*
+    [2.x.1] LinearOperator 一个封装通用[2.x.2]对象的函数，基于一个[2.x.3]，作用于一个兼容的Vector类型，变成一个LinearOperator。    这个函数等同于[2.x.4]，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。     
+* [2.x.5]   
+* [0.x.2]*
+    [2.x.6] LinearOperator 一个将作用于兼容矢量类型的通用[2.x.7]对象封装为LinearOperator的函数。    这个函数等同于[2.x.8]，但通过预先选择适当的模板参数，确保与Trilinos操作完全兼容。     
+* [2.x.9]   
+* [0.x.3]*
+    [2.x.10] 创建一个BlockLinearOperator  
+* [0.x.4]*
+    [2.x.11] BlockLinearOperator 一个将[2.x.12]封装为BlockLinearOperator的函数。    这个函数等同于[2.x.13]，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。     
+* [2.x.14]   
+* [0.x.5]*
+    [2.x.15] BlockLinearOperator 上述函数的一个变体，从对角线元素的数组[2.x.16]中建立一个块状对角线线性算子（非对角线块被假设为0）。    这个函数等同于[2.x.17]，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。     
+* [2.x.18]   
+* [0.x.6]*
+    [2.x.19] BlockLinearOperator 这个函数提取[2.x.20]的对角线块（可以是块状矩阵类型或BlockLinearOperator），并以对角线创建BlockLinearOperator。对角线外的元素被初始化为null_operator（有正确的 reinit_range_vector 和 reinit_domain_vector 方法）。    这个函数等同于[2.x.21]，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。     
+* [2.x.22]   
+* [0.x.7]*
+    [2.x.23] BlockLinearOperator 上述函数的一个变体，从对角线元素的数组[2.x.24]中建立一个块状对角线线性算子（非对角线块被假设为0）。    这个函数等同于[2.x.25]，但通过预选适当的模板参数，确保与Trilinos操作完全兼容。     
+* [2.x.26]   
+* [0.x.8]
+

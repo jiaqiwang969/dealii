@@ -1,0 +1,15 @@
+include/deal.II-translator/lac/cuda_atomic_0.txt
+[0.x.0]*
+     为浮点数提供atomicAdd。         [2.x.0] 直接使用atomicAdd（address, val）。   
+* [2.x.1]     
+* [0.x.1]*
+     为双数提供atomicAdd。         [2.x.2] 直接使用atomicAdd(address, val)。   
+* [2.x.3]     
+* [0.x.2]*
+     为浮点数提供atomicMax。       
+* [2.x.4]     
+* [0.x.3]*
+     为双数提供atomicMax。       
+* [2.x.5]     
+* [0.x.4]
+

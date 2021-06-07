@@ -1,0 +1,335 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26]
+* [1.x.27][1.x.28] [1.x.29]
+* 
+
+* This program grew out of a student project by Ivan Christov at Texas A&amp;MUniversity. Most of the work for this program is by him.
+* The goal of this program is to solve the sine-Gordon soliton equationin 1, 2 or 3 spatial dimensions. The motivation for solving thisequation is that very little is known about the nature of thesolutions in 2D and 3D, even though the 1D case has been studiedextensively.
+* Rather facetiously, the sine-Gordon equation's moniker is a pun on theso-called Klein-Gordon equation, which is a relativistic version ofthe Schrödinger equation for particles with non-zero mass. The resemblance is not justsuperficial, the sine-Gordon equation has been shown to model someunified-field phenomena such as interaction of subatomic particles(see, e.g., Perring &amp; Skyrme in Nuclear %Physics [1.x.30]) and theJosephson (quantum) effect in superconductor junctions (see, e.g., [1.x.31]).Furthermore, from the mathematical standpoint, since the sine-Gordonequation is "completely integrable," it is a candidate for study usingthe usual methods such as the inverse scatteringtransform. Consequently, over the years, many interestingsolitary-wave, and even stationary, solutions to the sine-Gordonequation have been found. In these solutions, particles correspond tolocalized features. For more on the sine-Gordon equation, theinverse scattering transform and other methods for finding analyticalsoliton equations, the reader should consult the following "classical"references on the subject: G. L. Lamb's [1.x.32] (Chapter 5, Section 2) and G. B. Whitham's [1.x.33] (Chapter 17, Sections 10-13).
+*  [2.x.2]  We will cover a separate nonlinear equation from quantum  mechanics, the Nonlinear Schr&ouml;dinger Equation, in  [2.x.3] .
+* [1.x.34][1.x.35]
+* The sine-Gordon initial-boundary-value problem (IBVP) we wish to solveconsists of the following equations:[1.x.36]It is a nonlinear equation similar to the wave equation wediscussed in  [2.x.4]  and  [2.x.5] .We have chosen to enforce zero Neumann boundary conditions in order for wavesto reflect off the boundaries of our domain. It should be noted, however, thatDirichlet boundary conditions are not appropriate for this problem. Eventhough the solutions to the sine-Gordon equation are localized, it only makessense to specify (Dirichlet) boundary conditions at  [2.x.6] , otherwiseeither a solution does not exist or only the trivial solution  [2.x.7]  exists.
+* However, the form of the equation above is not ideal for numericaldiscretization. If we were to discretize the second-order timederivative directly and accurately, then  we would need a largestencil (i.e., several time steps would need to be kept in thememory), which could become expensive. Therefore, in complete analogyto what we did in  [2.x.8]  and  [2.x.9] ,we split thesecond-order (in time) sine-Gordon equation into a system of twofirst-order (in time) equations, which we call the split, or velocity,formulation. To this end, by setting  [2.x.10] , it is easy to see that the sine-Gordon equation is equivalent to[1.x.37]
+* [1.x.38][1.x.39]
+* Now, we can discretize the split formulation in time using the [2.x.11] -method, which has a stencil of only two time steps. Bychoosing a  [2.x.12] , the latter discretization allows us tochoose from a continuum of schemes. In particular, if we pick [2.x.13]  or  [2.x.14] , we obtain the first-order accurate explicitor implicit Euler method, respectively. Another important choice is [2.x.15] , which gives the second-order accurateCrank-Nicolson scheme. Henceforth, a superscript  [2.x.16]  denotes thevalues of the variables at the  [2.x.17]  time step, i.e. at [2.x.18] , where  [2.x.19]  is the (fixed) time step size. Thus,the split formulation of the time-discretized sine-Gordon equation becomes[1.x.40]
+* We can simplify the latter via a bit of algebra. Eliminating  [2.x.20]  from the first equation and rearranging, we obtain[1.x.41]
+* It may seem as though we can just proceed to discretize the equationsin space at this point. While this is true for the second equation(which is linear in  [2.x.21] ), this would not work for all  [2.x.22]  since thefirst equation above is nonlinear. Therefore, a nonlinear solver must beimplemented, then the equations can be discretized in space and solved.
+* To this end, we can use Newton's method. Given the nonlinear equation  [2.x.23] , we produce successive approximations to  [2.x.24]  as follows:[1.x.42]The iteration can be initialized with the old time step, i.e.  [2.x.25] ,and eventually it will produce a solution to the first equation ofthe split formulation (see above). For the time discretization of thesine-Gordon equation under consideration here, we have that[1.x.43]Notice that while  [2.x.26]  is a function,  [2.x.27]  is an operator.
+* [1.x.44][1.x.45]
+* With hindsight, we choose both the solution and the test space to be  [2.x.28] . Hence, multiplying by a test function  [2.x.29]  and integrating, we obtain the following variational (or weak) formulation of the split formulation (including the nonlinear solver for the first equation) at each time step:[1.x.46]Note that the we have used integration by parts and the zero Neumannboundary conditions on all terms involving the Laplacianoperator. Moreover,  [2.x.30]  and  [2.x.31]  are as defined above,and  [2.x.32]  denotes the usual  [2.x.33]  inner productover the domain  [2.x.34] , i.e.  [2.x.35] . Finally, notice that the first equation is, in fact,the definition of an iterative procedure, so it is solved multipletimes during each time step until a stopping criterion is met.
+* [1.x.47][1.x.48]
+* Using the Finite Element Method, we discretize the variationalformulation in space. To this end, let  [2.x.36]  be a finite-dimensional [2.x.37] -conforming finite element space ( [2.x.38] ) with nodal basis  [2.x.39] . Now,we can expand all functions in the weak formulation (see above) interms of the nodal basis. Henceforth, we shall denote by a capitalletter the vector of coefficients (in the nodal basis) of a functiondenoted by the same letter in lower case; e.g.,  [2.x.40]  where  [2.x.41]  and  [2.x.42] . Thus, the finite-dimensional version of the variational formulation requires that we solve the following matrix equations at each time step:[1.x.49]
+* Above, the matrix  [2.x.43]  and the vector  [2.x.44]  denote the discrete versions of the gadgets discussed above, i.e.,[1.x.50]Again, note that the first matrix equation above is, in fact, thedefinition of an iterative procedure, so it is solved multiple timesuntil a stopping criterion is met. Moreover,  [2.x.45]  is the mass matrix,i.e.  [2.x.46] ,  [2.x.47]  isthe Laplace matrix, i.e.  [2.x.48] ,  [2.x.49]  is the nonlinear term in theequation that defines our auxiliary velocity variable, i.e.  [2.x.50] , and [2.x.51]  is the nonlinear term in the Jacobian matrix of  [2.x.52] ,i.e.  [2.x.53] .
+* What solvers can we use for the first equation? Let's look at the matrix wehave to invert:[1.x.51]for some  [2.x.54]  that depends on the present and previous solution. First,note that the matrix is symmetric. In addition, if the time step  [2.x.55]  is smallenough, i.e. if  [2.x.56] , then the matrix is also going to be positivedefinite. In the program below, this will always be the case, so we will usethe Conjugate Gradient method together with the SSOR method aspreconditioner. We should keep in mind, however, that this will failif we happen to use a bigger time step. Fortunately, in that casethe solver will just throw an exception indicating a failure to converge,rather than silently producing a wrong result. If that happens, then we cansimply replace the CG method by something that can handle indefinite symmetricsystems. The GMRES solver is typically the standard method for all "bad"linear systems, but it is also a slow one. Possibly better would be a solverthat utilizes the symmetry, such as, for example, SymmLQ, which is alsoimplemented in deal.II.
+* This program uses a clever optimization over  [2.x.57]  and  [2.x.58]  " [2.x.59] ": If you read the above formulas closely, it becomes clearthat the velocity  [2.x.60]  only ever appears in products with the mass matrix. In [2.x.61]  and  [2.x.62] , we were, therefore, a bitwasteful: in each time step, we would solve a linear system with the massmatrix, only to multiply the solution of that system by  [2.x.63]  again in the nexttime step. This can, of course, be avoided, and we do so in this program.
+* 
+
+* [1.x.52][1.x.53]
+* 
+
+* There are a few analytical solutions for the sine-Gordon equation, both in 1Dand 2D. In particular, the program as is computes the solution to a problemwith a single kink-like solitary wave initial condition.  This solution isgiven by Leibbrandt in \e Phys. \e Rev. \e Lett. \b 41(7), and is implementedin the  [2.x.64]  class.
+* It should be noted that this closed-form solution, strictly speaking, only holdsfor the infinite-space initial-value problem (not the Neumanninitial-boundary-value problem under consideration here). However, given thatwe impose \e zero Neumann boundary conditions, we expect that the solution toour initial-boundary-value problem would be close to the solution of theinfinite-space initial-value problem, if reflections of waves off theboundaries of our domain do \e not occur. In practice, this is of course notthe case, but we can at least assume that this were so.
+* The constants  [2.x.65]  and  [2.x.66]  in the 2D solution and  [2.x.67] , [2.x.68]  and  [2.x.69]  in the 3D solution are called the B&auml;cklundtransformation parameters. They control such things as the orientation andsteepness of the kink. For the purposes of testing the code against the exactsolution, one should choose the parameters so that the kink is aligned withthe grid.
+* The solutions that we implement in the  [2.x.70]  class arethese: [2.x.71]    [2.x.72] In 1D:  [1.x.54]  where we choose  [2.x.73] .
+*   In 1D, more interesting analytical solutions are known. Many of them are  listed on http://mathworld.wolfram.com/Sine-GordonEquation.html .
+*    [2.x.74] In 2D:  [1.x.55]  where  [2.x.75]  is defined as  [1.x.56]  and where we choose  [2.x.76] .
+*    [2.x.77] In 3D:  [1.x.57]  where  [2.x.78]  is defined as  [1.x.58]  and where we choose  [2.x.79] . [2.x.80] 
+* 
+
+* Since it makes it easier to play around, the  [2.x.81]  classthat is used to set &mdash; surprise! &mdash; the initial values of oursimulation simply queries the class that describes the exact solution for thevalue at the initial time, rather than duplicating the effort to implement asolution function.
+* 
+
+*  [1.x.59] [1.x.60]
+*   [1.x.61]  [1.x.62]
+* 
+
+* 
+*  For an explanation of the include files, the reader should refer to the example programs  [2.x.82]  through  [2.x.83] . They are in the standard order, which is  [2.x.84] 
+* 
+*  -   [2.x.85] 
+* 
+*  -   [2.x.86] 
+* 
+*  -   [2.x.87] 
+* 
+*  -   [2.x.88] 
+* 
+*  -   [2.x.89]  (since each of these categories roughly builds upon previous ones), then a few C++ headers for file input/output and string streams.
+* 
+
+* 
+* [1.x.63]
+* 
+*  The last step is as in all previous programs:
+* 
+
+* 
+* [1.x.64]
+* 
+*   [1.x.65]  [1.x.66]
+* 
+
+* 
+*  The entire algorithm for solving the problem is encapsulated in this class. As in previous example programs, the class is declared with a template parameter, which is the spatial dimension, so that we can solve the sine-Gordon equation in one, two or three spatial dimensions. For more on the dimension-independent class-encapsulation of the problem, the reader should consult  [2.x.90]  and  [2.x.91] .   
+*   Compared to  [2.x.92]  and  [2.x.93] , there isn't anything newsworthy in the general structure of the program (though there is of course in the inner workings of the various functions!). The most notable difference is the presence of the two new functions  [2.x.94]  and  [2.x.95]  that compute the nonlinear contributions to the system matrix and right-hand side of the first equation, as discussed in the Introduction. In addition, we have to have a vector  [2.x.96]  that contains the nonlinear update to the solution vector in each Newton step.   
+*   As also mentioned in the introduction, we do not store the velocity variable in this program, but the mass matrix times the velocity. This is done in the  [2.x.97]  variable (the "x" is intended to stand for "times").   
+*   Finally, the  [2.x.98]  variable stores the number of time steps to be taken each time before graphical output is to be generated. This is of importance when using fine meshes (and consequently small time steps) where we would run lots of time steps and create lots of output files of solutions that look almost the same in subsequent files. This only clogs up our visualization procedures and we should avoid creating more output than we are really interested in. Therefore, if this variable is set to a value  [2.x.99]  bigger than one, output is generated only every  [2.x.100] th time step.
+* 
+
+* 
+* [1.x.67]
+* 
+*   [1.x.68]  [1.x.69]
+* 
+
+* 
+*  In the following two classes, we first implement the exact solution for 1D, 2D, and 3D mentioned in the introduction to this program. This space-time solution may be of independent interest if one wanted to test the accuracy of the program by comparing the numerical against the analytic solution (note however that the program uses a finite domain, whereas these are analytic solutions for an unbounded domain). This may, for example, be done using the  [2.x.101]  function. Note, again (as was already discussed in  [2.x.102] ), how we describe space-time functions as spatial functions that depend on a time variable that can be set and queried using the  [2.x.103]  and  [2.x.104]  member functions of the FunctionTime base class of the Function class.
+* 
+
+* 
+* [1.x.70]
+* 
+*  In the second part of this section, we provide the initial conditions. We are lazy (and cautious) and don't want to implement the same functions as above a second time. Rather, if we are queried for initial conditions, we create an object  [2.x.105] , set it to the correct time, and let it compute whatever values the exact solution has at that time:
+* 
+
+* 
+* [1.x.71]
+* 
+*   [1.x.72]  [1.x.73]
+* 
+
+* 
+*  Let's move on to the implementation of the main class, as it implements the algorithm outlined in the introduction.
+* 
+
+* 
+*   [1.x.74]  [1.x.75]
+* 
+
+* 
+*  This is the constructor of the  [2.x.106]  class. It specifies the desired polynomial degree of the finite elements, associates a  [2.x.107]  object (just as in the example programs  [2.x.108]  and  [2.x.109] ), initializes the current or initial time, the final time, the time step size, and the value of  [2.x.110]  for the time stepping scheme. Since the solutions we compute here are time-periodic, the actual value of the start-time doesn't matter, and we choose it so that we start at an interesting time.   
+*   Note that if we were to chose the explicit Euler time stepping scheme ( [2.x.111] ), then we must pick a time step  [2.x.112] , otherwise the scheme is not stable and oscillations might arise in the solution. The Crank-Nicolson scheme ( [2.x.113] ) and the implicit Euler scheme ( [2.x.114] ) do not suffer from this deficiency, since they are unconditionally stable. However, even then the time step should be chosen to be on the order of  [2.x.115]  in order to obtain a good solution. Since we know that our mesh results from the uniform subdivision of a rectangle, we can compute that time step easily; if we had a different domain, the technique in  [2.x.116]  using  [2.x.117]  would work as well.
+* 
+
+* 
+* [1.x.76]
+* 
+*   [1.x.77]  [1.x.78]
+* 
+
+* 
+*  This function creates a rectangular grid in  [2.x.118]  dimensions and refines it several times. Also, all matrix and vector members of the  [2.x.119]  class are initialized to their appropriate sizes once the degrees of freedom have been assembled. Like  [2.x.120] , we use  [2.x.121]  functions to generate a mass matrix  [2.x.122]  and a Laplace matrix  [2.x.123]  and store them in the appropriate variables for the remainder of the program's life.
+* 
+
+* 
+* [1.x.79]
+* 
+*   [1.x.80]  [1.x.81]
+* 
+
+* 
+*  This function assembles the system matrix and right-hand side vector for each iteration of Newton's method. The reader should refer to the Introduction for the explicit formulas for the system matrix and right-hand side.   
+*   Note that during each time step, we have to add up the various contributions to the matrix and right hand sides. In contrast to  [2.x.124]  and  [2.x.125] , this requires assembling a few more terms, since they depend on the solution of the previous time step or previous nonlinear step. We use the functions  [2.x.126]  and  [2.x.127]  to do this, while the present function provides the top-level logic.
+* 
+
+* 
+* [1.x.82]
+* 
+*  First we assemble the Jacobian matrix  [2.x.128] , where  [2.x.129]  is stored in the vector  [2.x.130]  for convenience.
+* 
+
+* 
+* [1.x.83]
+* 
+*  Next we compute the right-hand side vector. This is just the combination of matrix-vector products implied by the description of  [2.x.131]  in the introduction.
+* 
+
+* 
+* [1.x.84]
+* 
+*   [1.x.85]  [1.x.86]
+* 
+
+* 
+*  This function computes the vector  [2.x.132] , which appears in the nonlinear term in both equations of the split formulation. This function not only simplifies the repeated computation of this term, but it is also a fundamental part of the nonlinear iterative solver that we use when the time stepping is implicit (i.e.  [2.x.133] ). Moreover, we must allow the function to receive as input an "old" and a "new" solution. These may not be the actual solutions of the problem stored in  [2.x.134] , but are simply the two functions we linearize about. For the purposes of this function, let us call the first two arguments  [2.x.135]  and  [2.x.136]  in the documentation of this class below, respectively.   
+*   As a side-note, it is perhaps worth investigating what order quadrature formula is best suited for this type of integration. Since  [2.x.137]  is not a polynomial, there are probably no quadrature formulas that can integrate these terms exactly. It is usually sufficient to just make sure that the right hand side is integrated up to the same order of accuracy as the discretization scheme is, but it may be possible to improve on the constant in the asymptotic statement of convergence by choosing a more accurate quadrature formula.
+* 
+
+* 
+* [1.x.87]
+* 
+*  Once we re-initialize our  [2.x.138]  instantiation to the current cell, we make use of the  [2.x.139]  routine to get the values of the "old" data (presumably at  [2.x.140] ) and the "new" data (presumably at  [2.x.141] ) at the nodes of the chosen quadrature formula.
+* 
+
+* 
+* [1.x.88]
+* 
+*  Now, we can evaluate  [2.x.142]  using the desired quadrature formula.
+* 
+
+* 
+* [1.x.89]
+* 
+*  We conclude by adding up the contributions of the integrals over the cells to the global integral.
+* 
+
+* 
+* [1.x.90]
+* 
+*   [1.x.91]  [1.x.92]
+* 
+
+* 
+*  This is the second function dealing with the nonlinear scheme. It computes the matrix  [2.x.143] , which appears in the nonlinear term in the Jacobian of  [2.x.144] . Just as  [2.x.145] , we must allow this function to receive as input an "old" and a "new" solution, which we again call  [2.x.146]  and  [2.x.147]  below, respectively.
+* 
+
+* 
+* [1.x.93]
+* 
+*  Again, first we re-initialize our  [2.x.148]  instantiation to the current cell.
+* 
+
+* 
+* [1.x.94]
+* 
+*  Then, we evaluate  [2.x.149]  using the desired quadrature formula.
+* 
+
+* 
+* [1.x.95]
+* 
+*  Finally, we add up the contributions of the integrals over the cells to the global integral.
+* 
+
+* 
+* [1.x.96]
+* 
+*   [1.x.97]  [1.x.98]
+* 
+
+* 
+*  As discussed in the Introduction, this function uses the CG iterative solver on the linear system of equations resulting from the finite element spatial discretization of each iteration of Newton's method for the (nonlinear) first equation of the split formulation. The solution to the system is, in fact,  [2.x.150]  so it is stored in  [2.x.151]  in the  [2.x.152]  function.   
+*   Note that we re-set the solution update to zero before solving for it. This is not necessary: iterative solvers can start from any point and converge to the correct solution. If one has a good estimate about the solution of a linear system, it may be worthwhile to start from that vector, but as a general observation it is a fact that the starting point doesn't matter very much: it has to be a very, very good guess to reduce the number of iterations by more than a few. It turns out that for this problem, using the previous nonlinear update as a starting point actually hurts convergence and increases the number of iterations needed, so we simply set it to zero.   
+*   The function returns the number of iterations it took to converge to a solution. This number will later be used to generate output on the screen showing how many iterations were needed in each nonlinear iteration.
+* 
+
+* 
+* [1.x.99]
+* 
+*   [1.x.100]  [1.x.101]
+* 
+
+* 
+*  This function outputs the results to a file. It is pretty much identical to the respective functions in  [2.x.153]  and  [2.x.154] :
+* 
+
+* 
+* [1.x.102]
+* 
+*   [1.x.103]  [1.x.104]
+* 
+
+* 
+*  This function has the top-level control over everything: it runs the (outer) time-stepping loop, the (inner) nonlinear-solver loop, and outputs the solution after each time step.
+* 
+
+* 
+* [1.x.105]
+* 
+*  To acknowledge the initial condition, we must use the function  [2.x.155]  to compute  [2.x.156] . To this end, below we will create an object of type  [2.x.157] ; note that when we create this object (which is derived from the  [2.x.158]  class), we set its internal time variable to  [2.x.159] , to indicate that the initial condition is a function of space and time evaluated at  [2.x.160] .     
+*   Then we produce  [2.x.161]  by projecting  [2.x.162]  onto the grid using  [2.x.163] . We have to use the same construct using hanging node constraints as in  [2.x.164] : the  [2.x.165]  function requires a hanging node constraints object, but to be used we first need to close it:
+* 
+
+* 
+* [1.x.106]
+* 
+*  For completeness, we output the zeroth time step to a file just like any other time step.
+* 
+
+* 
+* [1.x.107]
+* 
+*  Now we perform the time stepping: at every time step we solve the matrix equation(s) corresponding to the finite element discretization of the problem, and then advance our solution according to the time stepping formulas we discussed in the Introduction.
+* 
+
+* 
+* [1.x.108]
+* 
+*  At the beginning of each time step we must solve the nonlinear equation in the split formulation via Newton's method
+* 
+*  - - i.e. solve for  [2.x.166]  then compute  [2.x.167]  and so on. The stopping criterion for this nonlinear iteration is that  [2.x.168] . Consequently, we need to record the norm of the residual in the first iteration.         
+*   At the end of each iteration, we output to the console how many linear solver iterations it took us. When the loop below is done, we have (an approximation of)  [2.x.169] .
+* 
+
+* 
+* [1.x.109]
+* 
+*  Upon obtaining the solution to the first equation of the problem at  [2.x.170] , we must update the auxiliary velocity variable  [2.x.171] . However, we do not compute and store  [2.x.172]  since it is not a quantity we use directly in the problem. Hence, for simplicity, we update  [2.x.173]  directly:
+* 
+
+* 
+* [1.x.110]
+* 
+*  Oftentimes, in particular for fine meshes, we must pick the time step to be quite small in order for the scheme to be stable. Therefore, there are a lot of time steps during which "nothing interesting happens" in the solution. To improve overall efficiency
+* 
+*  -  in particular, speed up the program and save disk space
+* 
+*  -  we only output the solution every  [2.x.174]  time steps:
+* 
+
+* 
+* [1.x.111]
+* 
+*   [1.x.112]  [1.x.113]
+* 
+
+* 
+*  This is the main function of the program. It creates an object of top-level class and calls its principal function. If exceptions are thrown during the execution of the run method of the  [2.x.175]  class, we catch and report them here. For more information about exceptions the reader should consult  [2.x.176] .
+* 
+
+* 
+* [1.x.114]
+* [1.x.115][1.x.116]
+* The explicit Euler time stepping scheme  ( [2.x.177] ) performs adequately for the problems we wish to solve. Unfortunately, a rather small time step has to be chosen due to stability issues
+* 
+*  - -  [2.x.178]  appears to work for most the simulations we performed. On the other hand, the Crank-Nicolson scheme ( [2.x.179] ) is unconditionally stable, and (at least for the case of the 1D breather) we can pick the time step to be as large as  [2.x.180]  without any ill effects on the solution. The implicit Euler scheme ( [2.x.181] ) is "exponentially damped," so it is not a good choice for solving the sine-Gordon equation, which is conservative. However, some of the damped schemes in the continuum that is offered by the  [2.x.182] -method were useful for eliminating spurious oscillations due to boundary effects.
+* In the simulations below, we solve the sine-Gordon equation on the interval  [2.x.183]  in 1D and on the square  [2.x.184]  in 2D. Ineach case, the respective grid is refined uniformly 6 times, i.e.  [2.x.185] .
+* [1.x.117][1.x.118]
+* The first example we discuss is the so-called 1D (stationary) breathersolution of the sine-Gordon equation. The breather has the followingclosed-form expression, as mentioned in the Introduction:[1.x.119]where  [2.x.186] ,  [2.x.187]  and  [2.x.188]  are constants. In the simulation below, we have chosen  [2.x.189] ,  [2.x.190] ,  [2.x.191] . Moreover, it is know that the period of oscillation of the breather is  [2.x.192] , hence we have chosen  [2.x.193]  and  [2.x.194]  so that we can observe three oscillations of the solution. Then, taking  [2.x.195] ,  [2.x.196]  and  [2.x.197] , the program computed the following solution.
+*  [2.x.198] 
+* Though not shown how to do this in the program, another way to visualize the(1+1)-d solution is to use output generated by the DataOutStack class; itallows to "stack" the solutions of individual time steps, so that we get2D space-time graphs from 1D time-dependentsolutions. This produces the space-time plot below instead of the animationabove.
+*  [2.x.199] 
+* Furthermore, since the breather is an analytical solution of the sine-Gordonequation, we can use it to validate our code, although we have to assume thatthe error introduced by our choice of Neumann boundary conditions is smallcompared to the numerical error. Under this assumption, one could use the [2.x.200]  function to compute the difference betweenthe numerical solution and the function described by the [2.x.201]  class of this program. For thesimulation shown in the two images above, the  [2.x.202]  norm of the error in thefinite element solution at each time step remained on the order of [2.x.203] . Hence, we can conclude that the numerical method has beenimplemented correctly in the program.
+* 
+
+* [1.x.120][1.x.121]
+* 
+
+* The only analytical solution to the sine-Gordon equation in (2+1)D that can be found in the literature is the so-called kink solitary wave. It has the following closed-form expression:  [1.x.122]with  [1.x.123]where  [2.x.204] ,  [2.x.205]  and  [2.x.206]  are constants. In the simulation belowwe have chosen  [2.x.207] . Notice that if  [2.x.208]  the kink isstationary, hence it would make a good solution against which we canvalidate the program in 2D because no reflections off the boundary of thedomain occur.
+* The simulation shown below was performed with  [2.x.209] ,  [2.x.210] ,  [2.x.211] ,  [2.x.212]  and  [2.x.213] . The  [2.x.214]  norm of the error of the finite element solution at each time step remained on the order of  [2.x.215] , showing that the program is working correctly in 2D, as well as 1D. Unfortunately, the solution is not very interesting, nonetheless we have included a snapshot of it below for completeness.
+*  [2.x.216] 
+* Now that we have validated the code in 1D and 2D, we move to a problem where the analytical solution is unknown.
+* To this end, we rotate the kink solution discussed above about the  [2.x.217] axis: we let   [2.x.218] . The latter results in asolitary wave that is not aligned with the grid, so reflections occurat the boundaries of the domain immediately. For the simulation shownbelow, we have taken  [2.x.219] , [2.x.220] ,  [2.x.221] ,  [2.x.222]  and  [2.x.223] . Moreover, we hadto pick  [2.x.224]  because for any  [2.x.225] oscillations arose at the boundary, which are likely due to the schemeand not the equation, thus picking a value of  [2.x.226]  a good bit intothe "exponentially damped" spectrum of the time stepping schemesassures these oscillations are not created.
+*  [2.x.227] 
+* Another interesting solution to the sine-Gordon equation (which cannot beobtained analytically) can be produced by using two 1D breathers to constructthe following separable 2D initial condition:[1.x.124]where  [2.x.228] ,  [2.x.229]  as in the 1D case we discussedabove. For the simulation shown below, we have chosen  [2.x.230] , [2.x.231] ,  [2.x.232]  and  [2.x.233] . The solution is pretty interesting
+* 
+*  - - it acts like a breather (as far as the pictures are concerned); however,it appears to break up and reassemble, rather than just oscillate.
+*  [2.x.234] 
+* 
+
+* [1.x.125][1.x.126][1.x.127]
+* 
+
+* It is instructive to change the initial conditions. Most choices will not leadto solutions that stay localized (in the soliton community, suchsolutions are called "stationary", though the solution does changewith time), but lead to solutions where the wave-likecharacter of the equation dominates and a wave travels away from the locationof a localized initial condition. For example, it is worth playing around withthe  [2.x.235]  class, by replacing the call to the [2.x.236]  class by something like this function:[1.x.128]if  [2.x.237] , and  [2.x.238]  outside this region.
+* A second area would be to investigate whether the scheme isenergy-preserving. For the pure wave equation, discussed in  [2.x.239]  " [2.x.240] ", this is the case if we choose the time steppingparameter such that we get the Crank-Nicolson scheme. One could do asimilar thing here, noting that the energy in the sine-Gordon solutionis defined as[1.x.129](We use  [2.x.241]  instead of  [2.x.242]  in the formula to ensure that allcontributions to the energy are positive, and so that decaying solutions havefinite energy on unbounded domains.)
+* Beyond this, there are two obvious areas:
+* 
+*  - Clearly, adaptivity (i.e. time-adaptive grids) would be of interest  to problems like these. Their complexity leads us to leave this out  of this program again, though the general comments in the  introduction of  [2.x.243]  " [2.x.244] " remain true.
+* 
+*  - Faster schemes to solve this problem. While computers today are  plenty fast enough to solve 2d and, frequently, even 3d stationary  problems within not too much time, time dependent problems present  an entirely different class of problems. We address this topic in   [2.x.245]  where we show how to solve this problem in parallel and  without assembling or inverting any matrix at all.
+* 
+
+* [1.x.130][1.x.131] [2.x.246] 
+* [0.x.1]

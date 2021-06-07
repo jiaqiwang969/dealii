@@ -1,0 +1,3 @@
+include/deal.II-translator/lac/linear_operator_tools_0.txt
+[0.x.0]
+

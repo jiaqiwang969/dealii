@@ -1,0 +1,5 @@
+include/deal.II-translator/lac/communication_pattern_base_0.txt
+[0.x.0]*
+   [2.x.0]的别名 该类最初是在LinearAlgebra命名空间中定义的，但现在被用于更普遍的目的。 
+* [0.x.1]
+

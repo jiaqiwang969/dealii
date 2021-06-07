@@ -1,0 +1,26 @@
+include/deal.II-translator/base/polynomials_raviart_thomas_0.txt
+[0.x.0]*
+ 这个类实现了Brezzi和Fortin书中描述的[1.x.0]符合要求的、矢量值的Raviart-Thomas多项式。
+* Raviart-Thomas多项式的构造是这样的：发散是在张量积多项式空间[1.x.1]。因此，每个分量的多项式阶数必须在相应的方向上高一阶，产生二维和三维的多项式空间[1.x.2]和[1.x.3]，分别。
+* 
+
+* 
+* [2.x.0] 
+
+* 
+* [0.x.1]*
+   构造函数。创建给定度数的Raviart-Thomas多项式的所有基函数。     [2.x.1] k：Raviart-Thomas-空间的度数，也就是最大张量积多项式空间的度数 [1.x.4] 包含。 
+* [0.x.2]*
+   计算每个Raviart-Thomas多项式在[2.x.2]的值和一、二次导数 向量的大小必须为零或等于<tt>n()</tt>。 在第一种情况下，该函数将不计算这些值。    如果你需要所有张量积多项式的值或导数，那么使用这个函数，而不是使用任何<tt>compute_value</tt>, <tt>compute_grad</tt>或<tt>compute_grad_grad</tt>函数，见下文，在所有张量积多项式上循环。 
+* [0.x.3]*
+   返回空间的名称，即<tt>RaviartThomas</tt>。 
+* [0.x.4]*
+   返回空间<tt>RT(degree)</tt>中的多项式的数目，而不需要建立PolynomialsRaviartThomas的对象。这是由FiniteElement类所要求的。 
+* [0.x.5]*
+    [2.x.3] [2.x.4].   
+* [0.x.6]*
+   一个代表单个组件的多项式空间的对象。我们可以通过旋转评估点的坐标来重新使用它。 
+* [0.x.7]*
+   一个静态成员函数，用于创建我们用来初始化#polynomial_space成员变量的多项式空间。 
+* [0.x.8]
+

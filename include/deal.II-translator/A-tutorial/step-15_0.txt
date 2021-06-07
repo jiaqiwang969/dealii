@@ -1,0 +1,466 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30]
+*  [2.x.2] 
+* [1.x.31] [2.x.3] 
+* 
+
+* [1.x.32][1.x.33][1.x.34]
+* 
+
+* [1.x.35][1.x.36]
+* 
+
+* This program deals with an example of a non-linear elliptic partialdifferential equation, the[minimal surface equation](https://en.wikipedia.org/wiki/Minimal_surface).You can imagine the solution of this equation to describethe surface spanned by a soap film that is enclosed by aclosed wire loop. We imagine the wire to not just be a planar loop, but infact curved. The surface tension of the soap film will then reduce the surfaceto have minimal surface. The solution of the minimal surface equationdescribes this shape with the wire's vertical displacement as a boundarycondition. For simplicity, we will here assume that the surface can be writtenas a graph  [2.x.4]  although it is clear that it is not very hard toconstruct cases where the wire is bent in such a way that the surface can onlylocally be constructed as a graph but not globally.
+* Because the equation is non-linear, we can't solve it directly. Rather, wehave to use Newton's method to compute the solution iteratively.
+*  [2.x.5] ( [2.x.6] 
+* 
+
+* 
+* [1.x.37][1.x.38]
+* 
+
+* In a classical sense, the problem is given in the following form:
+* 
+
+*  
+* [1.x.39]
+* 
+*  [2.x.7]  is the domain we get by projecting the wire's positions into  [2.x.8] space. In this example, we choose  [2.x.9]  as the unit disk.
+* As described above, we solve this equation using Newton's method in which wecompute the  [2.x.10] th approximate solution from the  [2.x.11] th one, and usea damping parameter  [2.x.12]  to get better global convergence behavior: 
+* [1.x.40]
+* with  [1.x.41]and  [2.x.13]  the derivative of F in direction of  [2.x.14] :[1.x.42]
+* Going through the motions to find out what  [2.x.15]  is, we find thatwe have to solve a linear elliptic PDE in every Newton step, with  [2.x.16] as the solution of:
+*   [1.x.43]
+* In order to solve the minimal surface equation, we have to solve this equationrepeatedly, once per Newton step. To solve this, we have to take a look at theboundary condition of this problem. Assuming that  [2.x.17]  already has theright boundary values, the Newton update  [2.x.18]  should have zeroboundary conditions, in order to have the right boundary condition afteradding both.  In the first Newton step, we are starting with the solution [2.x.19] , the Newton update still has to deliver the right boundarycondition to the solution  [2.x.20] .
+* 
+
+* Summing up, we have to solve the PDE above with the boundary condition  [2.x.21]  in the first step and with  [2.x.22]  in all the following steps.
+*  [2.x.23]  In some sense, one may argue that if the program already  implements  [2.x.24] , it is duplicative to also have to implement   [2.x.25] . As always, duplication tempts bugs and we would like  to avoid it. While we do not explore this issue in this program, we  will come back to it at the end of the [1.x.44] section below,  and specifically in  [2.x.26] .
+* 
+
+* [1.x.45][1.x.46]
+* 
+
+* Starting with the strong formulation above, we get the weak formulation by multiplyingboth sides of the PDE with a test function  [2.x.27]  and integrating by parts on both sides:  [1.x.47]Here the solution  [2.x.28]  is a function in  [2.x.29] , subject tothe boundary conditions discussed above.Reducing this space to a finite dimensional space with basis  [2.x.30] , we can write the solution:
+* [1.x.48]
+* Using the basis functions as test functions and defining  [2.x.31] , we can rewrite the weak formulation:
+* [1.x.49]
+* where the solution  [2.x.32]  is given by the coefficients  [2.x.33] .This linear system of equations can be rewritten as:
+* [1.x.50]
+* where the entries of the matrix  [2.x.34]  are given by:
+* [1.x.51]
+* and the right hand side  [2.x.35]  is given by:
+* [1.x.52]
+* 
+
+* [1.x.53][1.x.54]
+* 
+
+* The matrix that corresponds to the Newton step above can be reformulated toshow its structure a bit better. Rewriting it slightly, we get that it has theform[1.x.55]where the matrix  [2.x.36]  (of size  [2.x.37]  in  [2.x.38]  space dimensions) is givenby the following expression:[1.x.56]From this expression, it is obvious that [2.x.39]  is symmetric, and so  [2.x.40]  is symmetric as well.On the other hand,  [2.x.41]  is also positive definite, which confers the sameproperty onto  [2.x.42] . This can be seen by noting that the vector  [2.x.43]  is an eigenvector of  [2.x.44]  with eigenvalue [2.x.45]  while all vectors  [2.x.46] that are perpendicular to  [2.x.47]  and each other are eigenvectors witheigenvalue  [2.x.48] . Since all eigenvalues are positive,  [2.x.49]  is positive definiteand so is  [2.x.50] . We can thus use the CG method for solving the Newton steps.(The fact that the matrix  [2.x.51]  is symmetric and positive definite should not comeas a surprise. It results from taking the derivative of an operator thatresults from taking the derivative of an energy functional: the minimalsurface equation simply minimizes some non-quadratic energy. Consequently,the Newton matrix, as the matrix of second derivatives of a scalar energy,must be symmetric since the derivative with regard to the  [2.x.52] th and  [2.x.53] thdegree of freedom should clearly commute. Likewise, if the energy functionalis convex, then the matrix of second derivatives must be positive definite,and the direct calculation above simply reaffirms this.)
+* It is worth noting, however, that the positive definiteness degenerates forproblems where  [2.x.54]  becomes large. In other words, if we simply multiplyall boundary values by 2, then to first order  [2.x.55]  and  [2.x.56]  will also bemultiplied by two, but as a consequence the smallest eigenvalue of  [2.x.57]  willbecome smaller and the matrix will become more ill-conditioned. (Morespecifically, for  [2.x.58]  we have that [2.x.59]  whereas [2.x.60] ; thus, the condition number of  [2.x.61] ,which is a multiplicative factor in the condition number of  [2.x.62]  growslike  [2.x.63] .) It is simpleto verify with the current program that indeed multiplying the boundary valuesused in the current program by larger and larger values results in a problemthat will ultimately no longer be solvable using the simple preconditioned CGmethod we use here.
+* 
+
+* [1.x.57][1.x.58]
+* 
+
+* As stated above, Newton's method works by computing a direction [2.x.64]  and then performing the update  [2.x.65]  with a step length  [2.x.66] . It is a commonobservation that for strongly nonlinear models, Newton's method doesnot converge if we always choose  [2.x.67]  unless one starts withan initial guess  [2.x.68]  that is sufficiently close to the solution  [2.x.69] of the nonlinear problem. In practice, we don't always have such aninitial guess, and consequently taking full Newton steps (i.e., using [2.x.70] ) does frequently not work.
+* A common strategy therefore is to use a smaller step length for thefirst few steps while the iterate  [2.x.71]  is still far away from thesolution  [2.x.72]  and as we get closer use larger values for  [2.x.73] until we can finally start to use full steps  [2.x.74]  as we areclose enough to the solution. The question is of course how to choose [2.x.75] . There are basically two widely used approaches: linesearch and trust region methods.
+* In this program, we simply always choose the step length equal to0.1. This makes sure that for the testcase at hand we do getconvergence although it is clear that by not eventually reverting tofull step lengths we forego the rapid, quadratic convergence thatmakes Newton's method so appealing. Obviously, this is a point oneeventually has to address if the program was made into one that ismeant to solve more realistic problems. We will comment on this issuesome more in the [1.x.59], and use aneven better approach in  [2.x.76] .
+* 
+
+* [1.x.60][1.x.61]
+* 
+
+* Overall, the program we have here is not unlike  [2.x.77]  in many regards. Thelayout of the main class is essentially the same. On the other hand, thedriving algorithm in the  [2.x.78]  function is different and works asfollows: [2.x.79]  [2.x.80]   Start with the function  [2.x.81]  and modify it in such a way  that the values of  [2.x.82]  along the boundary equal the correct  boundary values  [2.x.83]  (this happens in   [2.x.84] ). Set   [2.x.85] . [2.x.86] 
+*  [2.x.87]   Compute the Newton update by solving the system  [2.x.88]   with boundary condition  [2.x.89]  on  [2.x.90] . [2.x.91] 
+*  [2.x.92]   Compute a step length  [2.x.93] . In this program, we always set   [2.x.94] . To make things easier to extend later on, this  happens in a function of its own, namely in   [2.x.95] .  (The strategy of always choosing  [2.x.96]  is of course not  optimal
+* 
+*  -  we should choose a step length that works for a given  search direction
+* 
+*  -  but it requires a bit of work to do that. In the  end, we leave these sorts of things to external packages:  [2.x.97]   does that.) [2.x.98] 
+*  [2.x.99]   The new approximation of the solution is given by   [2.x.100] . [2.x.101] 
+*  [2.x.102]   If  [2.x.103]  is a multiple of 5 then refine the mesh, transfer the  solution  [2.x.104]  to the new mesh and set the values of  [2.x.105]   in such a way that along the boundary we have   [2.x.106]  (again in   [2.x.107] ). Note that  this isn't automatically  guaranteed even though by construction we had that before mesh  refinement  [2.x.108]  because mesh refinement  adds new nodes to the mesh where we have to interpolate the old  solution to the new nodes upon bringing the solution from the old to  the new mesh. The values we choose by interpolation may be close to  the exact boundary conditions but are, in general, nonetheless not  the correct values. [2.x.109] 
+*  [2.x.110]   Set  [2.x.111]  and go to step 2. [2.x.112]  [2.x.113] 
+* The testcase we solve is chosen as follows: We seek to find the solution ofminimal surface over the unit disk  [2.x.114]  where the surface attains the values [2.x.115]  along theboundary.
+* 
+
+*  [1.x.62] [1.x.63]
+*   [1.x.64]  [1.x.65]
+* 
+
+* 
+*  The first few files have already been covered in previous examples and will thus not be further commented on.
+* 
+
+* 
+* [1.x.66]
+* 
+*  We will use adaptive mesh refinement between Newton iterations. To do so, we need to be able to work with a solution on the new mesh, although it was computed on the old one. The SolutionTransfer class transfers the solution from the old to the new mesh:
+* 
+
+* 
+*  
+
+* 
+* [1.x.67]
+* 
+*  We then open a namespace for this program and import everything from the dealii namespace into it, as in previous programs:
+* 
+
+* 
+* [1.x.68]
+* 
+*   [1.x.69]  [1.x.70]
+* 
+
+* 
+*  The class template is basically the same as in  [2.x.116] .  Three additions are made:
+* 
+
+* 
+* 
+*  - There are two solution vectors, one for the Newton update  [2.x.117] , and one for the current iterate  [2.x.118] .
+* 
+
+* 
+* 
+*  - The  [2.x.119]  function takes an argument that denotes whether this is the first time it is called or not. The difference is that the first time around we need to distribute the degrees of freedom and set the solution vector for  [2.x.120]  to the correct size. The following times, the function is called after we have already done these steps as part of refining the mesh in  [2.x.121] .
+* 
+
+* 
+* 
+*  - We then also need new functions:  [2.x.122]  takes care of setting the boundary values on the solution vector correctly, as discussed at the end of the introduction.  [2.x.123]  is a function that computes the norm of the nonlinear (discrete) residual. We use this function to monitor convergence of the Newton iteration. The function takes a step length  [2.x.124]  as argument to compute the residual of  [2.x.125] . This is something one typically needs for step length control, although we will not use this feature here. Finally,  [2.x.126]  computes the step length  [2.x.127]  in each Newton iteration. As discussed in the introduction, we here use a fixed step length and leave implementing a better strategy as an exercise. ( [2.x.128]  does this differently: It simply uses an external package for the whole solution process, and a good line search strategy is part of what that package provides.)
+* 
+
+* 
+*  
+
+* 
+* [1.x.71]
+* 
+*   [1.x.72]  [1.x.73]
+* 
+
+* 
+*  The boundary condition is implemented just like in  [2.x.129] .  It is chosen as  [2.x.130] :
+* 
+
+* 
+*  
+
+* 
+* [1.x.74]
+* 
+*   [1.x.75]  [1.x.76]
+* 
+
+* 
+*   [1.x.77]  [1.x.78]
+* 
+
+* 
+*  The constructor and destructor of the class are the same as in the first few tutorials.
+* 
+
+* 
+*  
+
+* 
+* [1.x.79]
+* 
+*   [1.x.80]  [1.x.81]
+* 
+
+* 
+*  As always in the setup-system function, we setup the variables of the finite element method. There are same differences to  [2.x.131] , because there we start solving the PDE from scratch in every refinement cycle whereas here we need to take the solution from the previous mesh onto the current mesh. Consequently, we can't just reset solution vectors. The argument passed to this function thus indicates whether we can distributed degrees of freedom (plus compute constraints) and set the solution vector to zero or whether this has happened elsewhere already (specifically, in  [2.x.132] ).
+* 
+
+* 
+*  
+
+* 
+* [1.x.82]
+* 
+*  The remaining parts of the function are the same as in  [2.x.133] .
+* 
+
+* 
+*  
+
+* 
+* [1.x.83]
+* 
+*   [1.x.84]  [1.x.85]
+* 
+
+* 
+*  This function does the same as in the previous tutorials except that now, of course, the matrix and right hand side functions depend on the previous iteration's solution. As discussed in the introduction, we need to use zero boundary values for the Newton updates; we compute them at the end of this function.   
+*   The top of the function contains the usual boilerplate code, setting up the objects that allow us to evaluate shape functions at quadrature points and temporary storage locations for the local matrices and vectors, as well as for the gradients of the previous solution at the quadrature points. We then start the loop over all cells:
+* 
+
+* 
+* [1.x.86]
+* 
+*  For the assembly of the linear system, we have to obtain the values of the previous solution's gradients at the quadrature points. There is a standard way of doing this: the  [2.x.134]  function takes a vector that represents a finite element field defined on a DoFHandler, and evaluates the gradients of this field at the quadrature points of the cell with which the FEValues object has last been reinitialized. The values of the gradients at all quadrature points are then written into the second argument:
+* 
+
+* 
+* [1.x.87]
+* 
+*  With this, we can then do the integration loop over all quadrature points and shape functions.  Having just computed the gradients of the old solution in the quadrature points, we are able to compute the coefficients  [2.x.135]  in these points.  The assembly of the system itself then looks similar to what we always do with the exception of the nonlinear terms, as does copying the results from the local objects into the global ones:
+* 
+
+* 
+* [1.x.88]
+* 
+*  Finally, we remove hanging nodes from the system and apply zero boundary values to the linear system that defines the Newton updates  [2.x.136] :
+* 
+
+* 
+* [1.x.89]
+* 
+*   [1.x.90]  [1.x.91]
+* 
+
+* 
+*  The solve function is the same as always. At the end of the solution process we update the current solution by setting  [2.x.137] .
+* 
+
+* 
+* [1.x.92]
+* 
+*   [1.x.93]  [1.x.94]
+* 
+
+* 
+*  The first part of this function is the same as in  [2.x.138] ... However, after refining the mesh we have to transfer the old solution to the new one which we do with the help of the SolutionTransfer class. The process is slightly convoluted, so let us describe it in detail:
+* 
+
+* 
+* [1.x.95]
+* 
+*  Then we need an additional step: if, for example, you flag a cell that is once more refined than its neighbor, and that neighbor is not flagged for refinement, we would end up with a jump of two refinement levels across a cell interface.  To avoid these situations, the library will silently also have to refine the neighbor cell once. It does so by calling the  [2.x.139]  function before actually doing the refinement and coarsening.  This function flags a set of additional cells for refinement or coarsening, to enforce rules like the one-hanging-node rule.  The cells that are flagged for refinement and coarsening after calling this function are exactly the ones that will actually be refined or coarsened. Usually, you don't have to do this by hand  [2.x.140]  does this for you). However, we need to initialize the SolutionTransfer class and it needs to know the final set of cells that will be coarsened or refined in order to store the data from the old mesh and transfer to the new one. Thus, we call the function by hand:
+* 
+
+* 
+* [1.x.96]
+* 
+*  With this out of the way, we initialize a SolutionTransfer object with the present DoFHandler and attach the solution vector to it, followed by doing the actual refinement and distribution of degrees of freedom on the new mesh
+* 
+
+* 
+* [1.x.97]
+* 
+*  Finally, we retrieve the old solution interpolated to the new mesh. Since the SolutionTransfer function does not actually store the values of the old solution, but rather indices, we need to preserve the old solution vector until we have gotten the new interpolated values. Thus, we have the new values written into a temporary vector, and only afterwards write them into the solution vector object:
+* 
+
+* 
+* [1.x.98]
+* 
+*  On the new mesh, there are different hanging nodes, for which we have to compute constraints again, after throwing away previous content of the object. To be on the safe side, we should then also make sure that the current solution's vector entries satisfy the hanging node constraints (see the discussion in the documentation of the SolutionTransfer class for why this is necessary). We could do this by calling `hanging_node_constraints.distribute(current_solution)` explicitly; we omit this step because this will happen at the end of the call to `set_boundary_values()` below, and it is not necessary to do it twice.
+* 
+
+* 
+* [1.x.99]
+* 
+*  Once we have the interpolated solution and all information about hanging nodes, we have to make sure that the  [2.x.141]  we now have actually has the correct boundary values. As explained at the end of the introduction, this is not automatically the case even if the solution before refinement had the correct boundary values, and so we have to explicitly make sure that it now has:
+* 
+
+* 
+* [1.x.100]
+* 
+*  We end the function by updating all the remaining data structures, indicating to  [2.x.142]  that this is not the first go-around and that it needs to preserve the content of the solution vector:
+* 
+
+* 
+* [1.x.101]
+* 
+*   [1.x.102]  [1.x.103]
+* 
+
+* 
+*  The next function ensures that the solution vector's entries respect the boundary values for our problem.  Having refined the mesh (or just started computations), there might be new nodal points on the boundary. These have values that are simply interpolated from the previous mesh in `refine_mesh()`, instead of the correct boundary values. This is fixed up by setting all boundary nodes of the current solution vector explicit to the right value.   
+*   There is one issue we have to pay attention to, though: If we have a hanging node right next to a new boundary node, then its value must also be adjusted to make sure that the finite element field remains continuous. This is what the call in the last line of this function does.
+* 
+
+* 
+* [1.x.104]
+* 
+*   [1.x.105]  [1.x.106]
+* 
+
+* 
+*  In order to monitor convergence, we need a way to compute the norm of the (discrete) residual, i.e., the norm of the vector  [2.x.143]  with  [2.x.144]  as discussed in the introduction. It turns out that (although we don't use this feature in the current version of the program) one needs to compute the residual  [2.x.145]  when determining optimal step lengths, and so this is what we implement here: the function takes the step length  [2.x.146]  as an argument. The original functionality is of course obtained by passing a zero as argument.   
+*   In the function below, we first set up a vector for the residual, and then a vector for the evaluation point  [2.x.147] . This is followed by the same boilerplate code we use for all integration operations:
+* 
+
+* 
+* [1.x.107]
+* 
+*  The actual computation is much as in  [2.x.148] . We first evaluate the gradients of  [2.x.149]  at the quadrature points, then compute the coefficient  [2.x.150] , and then plug it all into the formula for the residual:
+* 
+
+* 
+* [1.x.108]
+* 
+*  At the end of this function we also have to deal with the hanging node constraints and with the issue of boundary values. With regard to the latter, we have to set to zero the elements of the residual vector for all entries that correspond to degrees of freedom that sit at the boundary. The reason is that because the value of the solution there is fixed, they are of course no "real" degrees of freedom and so, strictly speaking, we shouldn't have assembled entries in the residual vector for them. However, as we always do, we want to do exactly the same thing on every cell and so we didn't not want to deal with the question of whether a particular degree of freedom sits at the boundary in the integration above. Rather, we will simply set to zero these entries after the fact. To this end, we need to determine which degrees of freedom do in fact belong to the boundary and then loop over all of those and set the residual entry to zero. This happens in the following lines which we have already seen used in  [2.x.151] , using the appropriate function from namespace DoFTools:
+* 
+
+* 
+* [1.x.109]
+* 
+*  At the end of the function, we return the norm of the residual:
+* 
+
+* 
+* [1.x.110]
+* 
+*   [1.x.111]  [1.x.112]
+* 
+
+* 
+*  As discussed in the introduction, Newton's method frequently does not converge if we always take full steps, i.e., compute  [2.x.152] . Rather, one needs a damping parameter (step length)  [2.x.153]  and set  [2.x.154] . This function is the one called to compute  [2.x.155] .   
+*   Here, we simply always return 0.1. This is of course a sub-optimal choice: ideally, what one wants is that the step size goes to one as we get closer to the solution, so that we get to enjoy the rapid quadratic convergence of Newton's method. We will discuss better strategies below in the results section, and  [2.x.156]  also covers this aspect.
+* 
+
+* 
+* [1.x.113]
+* 
+*   [1.x.114]  [1.x.115]
+* 
+
+* 
+*  This last function to be called from `run()` outputs the current solution (and the Newton update) in graphical form as a VTU file. It is entirely the same as what has been used in previous tutorials.
+* 
+
+* 
+* [1.x.116]
+* 
+*   [1.x.117]  [1.x.118]
+* 
+
+* 
+*  In the run function, we build the first grid and then have the top-level logic for the Newton iteration.   
+*   As described in the introduction, the domain is the unit disk around the origin, created in the same way as shown in  [2.x.157] . The mesh is globally refined twice followed later on by several adaptive cycles.   
+*   Before starting the Newton loop, we also need to do a bit of setup work: We need to create the basic data structures and ensure that the first Newton iterate already has the correct boundary values, as discussed in the introduction.
+* 
+
+* 
+* [1.x.119]
+* 
+*  The Newton iteration starts next. We iterate until the (norm of the) residual computed at the end of the previous iteration is less than  [2.x.158] , as checked at the end of the `do { ... } while` loop that starts here. Because we don't have a reasonable value to initialize the variable, we just use the largest value that can be represented as a `double`.
+* 
+
+* 
+* [1.x.120]
+* 
+*  On every mesh we do exactly five Newton steps. We print the initial residual here and then start the iterations on this mesh.         
+*   In every Newton step the system matrix and the right hand side have to be computed first, after which we store the norm of the right hand side as the residual to check against when deciding whether to stop the iterations. We then solve the linear system (the function also updates  [2.x.159] ) and output the norm of the residual at the end of this Newton step.         
+*   After the end of this loop, we then also output the solution on the current mesh in graphical form and increment the counter for the mesh refinement cycle.
+* 
+
+* 
+* [1.x.121]
+* 
+*   [1.x.122]  [1.x.123]
+* 
+
+* 
+*  Finally the main function. This follows the scheme of all other main functions:
+* 
+
+* 
+* [1.x.124]
+* [1.x.125][1.x.126]
+* 
+
+* 
+* The output of the program looks as follows:
+* [1.x.127]
+* 
+* Obviously, the scheme converges, if not very fast. We will come back tostrategies for accelerating the method below.
+* One can visualize the solution after each set of five Newtoniterations, i.e., on each of the meshes on which we approximate thesolution. This yields the following set of images:
+*  [2.x.160] 
+* It is clearly visible, that the solution minimizes the surfaceafter each refinement. The solution converges to a picture onewould imagine a soap bubble to be that is located inside a wire loopthat is bent likethe boundary. Also it is visible, how the boundaryis smoothed out after each refinement. On the coarse mesh,the boundary doesn't look like a sine, whereas it does thefiner the mesh gets.
+* The mesh is mostly refined near the boundary, where the solutionincreases or decreases strongly, whereas it is coarsened onthe inside of the domain, where nothing interesting happens,because there isn't much change in the solution. The ninthsolution and mesh are shown here:
+*  [2.x.161] 
+* 
+
+* 
+* [1.x.128][1.x.129][1.x.130]
+* 
+
+* The program shows the basic structure of a solver for a nonlinear, stationaryproblem. However, it does not converge particularly fast, for good reasons:
+* 
+*  - The program always takes a step size of 0.1. This precludes the rapid,  quadratic convergence for which Newton's method is typically chosen.
+* 
+*  - It does not connect the nonlinear iteration with the mesh refinement  iteration.
+* Obviously, a better program would have to address these two points.We will discuss them in the following.
+* 
+
+* [1.x.131][1.x.132]
+* 
+
+* Newton's method has two well known properties:
+* 
+*  - It may not converge from arbitrarily chosen starting points. Rather, a  starting point has to be close enough to the solution to guarantee  convergence. However, we can enlarge the area from which Newton's method  converges by damping the iteration using a [1.x.133] 0< [2.x.162] .
+* 
+*  - It exhibits rapid convergence of quadratic order if (i) the step length is  chosen as  [2.x.163] , and (ii) it does in fact converge with this choice  of step length.
+* A consequence of these two observations is that a successful strategy is tochoose  [2.x.164]  for the initial iterations until the iterate has comeclose enough to allow for convergence with full step length, at which point wewant to switch to  [2.x.165] . The question is how to choose  [2.x.166]  in anautomatic fashion that satisfies these criteria.
+* We do not want to review the literature on this topic here, but only brieflymention that there are two fundamental approaches to the problem: backtrackingline search and trust region methods. The former is more widely used forpartial differential equations and essentially does the following:
+* 
+*  - Compute a search direction
+* 
+*  - See if the resulting residual of  [2.x.167]  with   [2.x.168]  is "substantially smaller" than that of  [2.x.169]  alone.
+* 
+*  - If so, then take  [2.x.170] .
+* 
+*  - If not, try whether the residual is "substantially smaller" with   [2.x.171] .
+* 
+*  - If so, then take  [2.x.172] .
+* 
+*  - If not, try whether the residual is "substantially smaller" with   [2.x.173] .
+* 
+*  - Etc.One can of course choose other factors  [2.x.174]  than the  [2.x.175]  chosen above, for  [2.x.176] . It is obvious where the term"backtracking" comes from: we try a long step, but if that doesn't work we trya shorter step, and ever shorter step, etc. The function [2.x.177]  is written the way it is to supportexactly this kind of use case.
+* Whether we accept a particular step length  [2.x.178]  depends on how we define"substantially smaller". There are a number of ways to do so, but withoutgoing into detail let us just mention that the most common ones are to use theWolfe and Armijo-Goldstein conditions. For these, one can show the following:
+* 
+*  - There is always a step length  [2.x.179]  for which the conditions are  satisfied, i.e., the iteration never gets stuck as long as the problem is  convex.
+* 
+*  - If we are close enough to the solution, then the conditions allow for   [2.x.180] , thereby enabling quadratic convergence.
+* We will not dwell on this here any further but leave the implementation ofsuch algorithms as an exercise. We note, however, that when implementedcorrectly then it is a common observation that most reasonably nonlinearproblems can be solved in anywhere between 5 and 15 Newton iterations toengineering accuracy &mdash; substantially fewer than we need with the currentversion of the program.
+* More details on globalization methods including backtracking can be found,for example, in  [2.x.181]  and  [2.x.182] .
+* A separate point, very much worthwhile making, however, is that in practicethe implementation of efficient nonlinear solvers is about as complicated asthe implementation of efficient finite element methods. One should notattempt to reinvent the wheel by implementing all of the necessary stepsoneself. Substantial pieces of the puzzle are already available inthe  [2.x.183]  function and could be used to this end.But, instead, just like building finite element solvers on librariessuch as deal.II, one should be building nonlinear solvers on libraries suchas [SUNDIALS](https://computing.llnl.gov/projects/sundials). In fact,deal.II has interfaces to SUNDIALS and in particular to its nonlinear solversub-package KINSOL through the  [2.x.184]  class. It would not bevery difficult to base the current problem on that interface
+* 
+*  - indeed, that is what  [2.x.185]  does.
+* 
+
+* 
+* [1.x.134][1.x.135]
+* 
+
+* We currently do exactly 5 iterations on each mesh. But is this optimal? Onecould ask the following questions:
+* 
+*  - Maybe it is worthwhile doing more iterations on the initial meshes since  there, computations are cheap.
+* 
+*  - On the other hand, we do not want to do too many iterations on every mesh:  yes, we could drive the residual to zero on every mesh, but that would only  mean that the nonlinear iteration error is far smaller than the  discretization error.
+* 
+*  - Should we use solve the linear systems in each Newton step with higher or  lower accuracy?
+* Ultimately, what this boils down to is that we somehow need to couple thediscretization error on the current mesh with the nonlinear residual we wantto achieve with the Newton iterations on a given mesh, and to the lineariteration we want to achieve with the CG method within each Newtoniterations.
+* How to do this is, again, not entirely trivial, and we again leave it as afuture exercise.
+* 
+
+* 
+* [1.x.136][1.x.137]
+* 
+
+* As outlined in the introduction, when solving a nonlinear problem ofthe form  [1.x.138]we use a Newton iteration that requires us to repeatedly solve thelinear partial differential equation 
+* [1.x.139]
+* so that we can compute the update 
+* [1.x.140]
+* with the solution  [2.x.186]  of the Newton step. For the problemhere, we could compute the derivative  [2.x.187]  by hand andobtained  [1.x.141]But this is already a sizable expression that is cumbersome both toderive and to implement. It is also, in some sense, duplicative: If weimplement what  [2.x.188]  is somewhere in the code, then  [2.x.189] is not an independent piece of information but is something that, atleast in principle, a computer should be able to infer itself.Wouldn't it be nice if that could actually happen? That is, if wereally only had to implement  [2.x.190] , and  [2.x.191]  was then somehowdone implicitly? That is in fact possible, and runs under the name"automatic differentiation".  [2.x.192]  discusses this veryconcept in general terms, and  [2.x.193]  illustrates how this can beapplied in practice for the very problem we are considering here.
+* 
+
+* [1.x.142][1.x.143] [2.x.194] 
+* [0.x.1]

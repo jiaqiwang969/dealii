@@ -1,0 +1,10 @@
+include/deal.II-translator/multigrid/mg_transfer_global_coarsening.templates_0.txt
+[0.x.0]*
+   帮助类，选择正确的模板化实现。   
+* [2.x.0]该类与[2.x.1]类似。  
+* [0.x.1]*
+   包含单元格延长操作的辅助类。 
+* [0.x.2]*
+   含有单元格限制操作的辅助类。 
+* [0.x.3]
+

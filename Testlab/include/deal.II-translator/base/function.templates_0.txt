@@ -1,0 +1,11 @@
+include/deal.II-translator/base/function.templates_0.txt
+[0.x.0]*
+ <tt>VectorFunctionFromTensorFunction</tt>的构造函数，启动返回的向量大小为<tt>n_components</tt>。
+
+* 
+* [0.x.1]*
+ 成员函数<tt>vector_value_list </tt>是一个接口，用于给出一个点的列表（[2.x.0]），使用<tt>vector_value</tt>成员函数来评估。 同样，这个函数的写法是为了不重复函数的定义，而是将每个点传递给<tt>vector_value</tt>来进行评估。
+
+* 
+* [0.x.2]
+

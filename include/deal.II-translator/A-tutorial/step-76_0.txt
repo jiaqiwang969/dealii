@@ -1,0 +1,400 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20]
+* 
+*  [2.x.2] 
+* [1.x.21]
+* [1.x.22][1.x.23][1.x.24]
+* 
+
+* This tutorial program solves the Euler equations of fluid dynamics, using anexplicit time integrator with the matrix-free framework applied to ahigh-order discontinuous Galerkin discretization in space. The numericalapproach used here is identical to that used in  [2.x.3] , however, we utilizedifferent advanced MatrixFree techniques to reach even a higher throughput.
+* The two main features of this tutorial are:
+* 
+*  - the usage of shared-memory features from MPI-3.0 and
+* 
+*  - the usage of cell-centric loops, which allow to write to the global vector only  once and, therefore, are ideal for the usage of shared memory.
+* Further topics we discuss in this tutorial are the usage and benefits of thetemplate argument VectorizedArrayType (instead of simply usingVectorizedArray<Number>) as well as the possibility to pass lambdas toMatrixFree loops.
+* For details on the numerics, we refer to the documentation of  [2.x.4] . Weconcentrate here only on the key differences.
+* [1.x.25][1.x.26]
+* 
+
+* [1.x.27][1.x.28]
+* 
+
+* There exist many shared-memory libraries that are based on threads like TBB,OpenMP, or TaskFlow. Integrating such libraries into existing MPI programsallows one to use shared memory. However, these libraries come with an overheadfor the programmer, since all parallelizable code sections have to be found andtransformed according to the library used, including the difficulty when somethird-party numerical library, like an iterative solver package, only relies onMPI.
+* Considering a purely MPI-parallelized FEM application, one can identify thatthe major time and memory benefit of using shared memory would come fromaccessing the part of the solution vector owned by the processes on the samecompute node without the need to make explicit copies and buffering them.Fur this propose, MPI-3.0 provides shared-memory features based on so-calledwindows, where processes can directly access the data of the neighbors on the sameshared-memory domain.
+* [1.x.29][1.x.30]
+* 
+
+* A few relevant MPI-3.0 commands are worth discussing in detail.A new MPI communicator  [2.x.5] , which consists of processes fromthe communicator  [2.x.6]  that have access to the same shared memory,can be created via:
+* [1.x.31]
+* 
+* The following code snippet shows the simplified allocation routines ofshared memory for the value type  [2.x.7]  and the size [2.x.8] , as well as, how to query pointers to the data belongingto processes in the same shared-memory domain:
+* [1.x.32]
+* 
+* Once the data is not needed anymore, the window has to be freed, which alsofrees the locally-owned data:
+* [1.x.33]
+* 
+* [1.x.34][1.x.35]
+* 
+
+* The commands mentioned in the last section are integrated into [2.x.9]  and are used to allocate shared memory ifan optional (second) communicator is provided to the reinit()-functions.
+* For example, a vector can be set up with a partitioner (containing the globalcommunicator) and a sub-communicator (containing the processes on the samecompute node):
+* [1.x.36]
+* 
+* Locally owned values and ghost values can be processed as usual. However, nowusers also have read access to the values of the shared-memory neighbors viathe function:
+* [1.x.37]
+* 
+* [1.x.38][1.x.39]
+* 
+
+* While  [2.x.10]  provides the option to allocateshared memory and to access the values of shared memory of neighboring processesin a coordinated way, it does not actually exploit the benefits of theusage of shared memory itself.
+* The MatrixFree infrastructure, however, does:
+* 
+*  - On the one hand, within the matrix-free loops  [2.x.11]    [2.x.12]  and  [2.x.13]  only ghost  values that need to be updated  [2.x.14] are [2.x.15]  updated. Ghost values from  shared-memory neighbors can be accessed directly, making buffering, i.e.,  copying of the values into the ghost region of a vector possibly redundant.  To deal with possible race conditions, necessary synchronizations are  performed within MatrixFree. In the case that values have to be buffered,  values are copied directly from the neighboring shared-memory process,  bypassing more expensive MPI operations based on  [2.x.16]  and   [2.x.17] .
+* 
+*  - On the other hand, classes like FEEvaluation and FEFaceEvaluation can read  directly from the shared memory, so buffering the values is indeed  not necessary in certain cases.
+* To be able to use the shared-memory capabilities of MatrixFree, MatrixFreehas to be appropriately configured by providing the user-created sub-communicator:
+* [1.x.40]
+* 
+* 
+
+* [1.x.41][1.x.42]
+* 
+
+* [1.x.43][1.x.44]
+* 
+
+* "Face-centric loops" (short FCL) visit cells and faces (inner and boundary ones) inseparate loops. As a consequence, each entity is visited only once and fluxesbetween cells are evaluated only once. How to perform face-centric loopswith the help of  [2.x.18]  by providing three functions (one forthe cell integrals, one for the inner, and one for the boundary faces) hasbeen presented in  [2.x.19]  and  [2.x.20] .
+* "Cell-centric loops" (short CCL or ECL (for element-centric loops)in the hyper.deal release paper), incontrast, process a cell and in direct succession process all itsfaces (i.e., visit all faces twice). Their benefit has become clear formodern CPU processor architecture in the literature  [2.x.21] ,although this kind of loop implies that fluxes have to be computed twice (foreach side of an interior face). CCL has two primary advantages:
+* 
+*  - On the one hand, entries in the solution vector are written exactly once  back to main memory in the case of CCL, while in the case of FCL at least once  despite of cache-efficient scheduling of cell and face loops-due to cache  capacity misses.
+* 
+*  - On the other hand, since each entry of the solution vector is accessed exactly  once, no synchronization between threads is needed while accessing the solution  vector in the case of CCL. This absence of race conditions during writing into  the destination vector makes CCL particularly suitable for shared-memory  parallelization.
+* One should also note that although fluxes are computed twice in the case of CCL,this does not automatically translate into doubling of the computation, sincevalues already interpolated to the cell quadrature points can be interpolatedto a face with a simple 1D interpolation.
+* [1.x.45][1.x.46]
+* 
+
+* For cell-centric loop implementations, the function  [2.x.22] can be used, to which the user can pass a function that should be performed oneach cell.
+* To derive an appropriate function, which can be passed in  [2.x.23] one might, in principle, transform/merge the following three functions, which canbe passed to a  [2.x.24] 
+* [1.x.47]
+* 
+* in the following way:
+* [1.x.48]
+* 
+* It should be noted that FEFaceEvaluation is initialized now with two numbers,the cell number and the local face number. The given example onlyhighlights how to transform face-centric loops into cell-centric loops andis by no means efficient, since data is read and written multiple timesfrom and to the global vector as well as computations are performedredundantly. Below, we will discuss advanced techniques that target these issues.
+* To be able to use  [2.x.25]  following flags of  [2.x.26] have to be enabled:
+* [1.x.49]
+* 
+* In particular, these flags enable that the internal data structures are set upfor all faces of the cells.
+* Currently, cell-centric loops in deal.II only work for uniformly refined meshesand if no constraints are applied (which is the standard case DG is normallyused).
+* 
+
+* [1.x.50][1.x.51]
+* 
+
+* The examples given above have already used lambdas, which have been provided tomatrix-free loops. The following short examples present how to transform functions betweena version where a class and a pointer to one of its methods are used and avariant where lambdas are utilized.
+* In the following code, a class and a pointer to one of its methods, which shouldbe interpreted as cell integral, are passed to  [2.x.27] 
+* [1.x.52]
+* 
+* [1.x.53]
+* 
+* However, it is also possible to pass an anonymous function via a lambda functionwith the same result:
+* [1.x.54]
+* 
+* [1.x.55][1.x.56]
+* 
+
+* The class VectorizedArray<Number> is a key component to achieve the highnode-level performance of the matrix-free algorithms in deal.II.It is a wrapper class around a short vector of  [2.x.28]  entries of type Number andmaps arithmetic operations to appropriate single-instruction/multiple-data(SIMD) concepts by intrinsic functions. The length of the vector can bequeried by  [2.x.29]  and its underlying number type by [2.x.30] 
+* In the default case ( [2.x.31] ), the vector length isset at compile time of the library tomatch the highest value supported by the given processor architecture.However, also a second optional template argument can bespecified as  [2.x.32]  explicitlycontrols the  vector length within the capabilities of a particular instructionset. A full list of supported vector lengths is presented in the following table:
+*  [2.x.33] 
+* This allows users to select the vector length/ISA and, as a consequence, thenumber of cells to be processed at once in matrix-free operator evaluations,possibly reducing the pressure on the caches, an severe issue for very highdegrees (and dimensions).
+* A possible further reason to reduce the number of filled lanesis to simplify debugging: instead of having to look at, e.g., 8cells, one can concentrate on a single cell.
+* The interface of VectorizedArray also enables the replacement by any type witha matching interface. Specifically, this prepares deal.II for the  [2.x.34] class that is planned to become part of the C++23 standard. The following tablecompares the deal.II-specific SIMD classes and the equivalent C++23 classes:
+* 
+
+*  [2.x.35] 
+* 
+
+*  [1.x.57] [1.x.58]
+*   [1.x.59]  [1.x.60]
+* 
+
+* 
+*  The same includes as in  [2.x.36] :
+* 
+
+* 
+* [1.x.61]
+* 
+*  A new include for categorizing of cells according to their boundary IDs:
+* 
+
+* 
+* [1.x.62]
+* 
+*  The same input parameters as in  [2.x.37] :
+* 
+
+* 
+* [1.x.63]
+* 
+*  This parameter specifies the size of the shared-memory group. Currently, only the values 1 and  [2.x.38]  is possible, leading to the options that the memory features can be turned off or all processes having access to the same shared-memory domain are grouped together.
+* 
+
+* 
+* [1.x.64]
+* 
+*  Here, the type of the data structure is chosen for vectorization. In the default case, VectorizedArray<Number> is used, i.e., the highest instruction-set-architecture extension available on the given hardware with the maximum number of vector lanes is used. However, one might reduce the number of filled lanes, e.g., by writing  [2.x.39]  to only process 4 cells.
+* 
+
+* 
+* [1.x.65]
+* 
+*  The following parameters have not changed:
+* 
+
+* 
+* [1.x.66]
+* 
+*  Specify max number of time steps useful for performance studies.
+* 
+
+* 
+* [1.x.67]
+* 
+*  Runge-Kutta-related functions copied from  [2.x.40]  and slightly modified with the purpose to minimize global vector access:
+* 
+
+* 
+* [1.x.68]
+* 
+*  Euler-specific utility functions from  [2.x.41] :
+* 
+
+* 
+* [1.x.69]
+* 
+*  General-purpose utility functions from  [2.x.42] :
+* 
+
+* 
+* [1.x.70]
+* 
+*   [1.x.71]  [1.x.72]
+* 
+
+* 
+*  Euler operator from  [2.x.43]  with some changes as detailed below:
+* 
+
+* 
+* [1.x.73]
+* 
+*  Instance of SubCommunicatorWrapper containing the sub-communicator, which we need to pass to  [2.x.44]  to be able to exploit MPI-3.0 shared-memory capabilities:
+* 
+
+* 
+* [1.x.74]
+* 
+*  New constructor, which creates a sub-communicator. The user can specify the size of the sub-communicator via the global parameter group_size. If the size is set to
+* 
+*  - , all MPI processes of a shared-memory domain are combined to a group. The specified size is decisive for the benefit of the shared-memory capabilities of MatrixFree and, therefore, setting the  [2.x.45]  is a reasonable choice. By setting, the size to  [2.x.46]  users explicitly disable the MPI-3.0 shared-memory features of MatrixFree and rely completely on MPI-2.0 features, like  [2.x.47]  and  [2.x.48] .
+* 
+
+* 
+* [1.x.75]
+* 
+*  New destructor responsible for freeing of the sub-communicator.
+* 
+
+* 
+* [1.x.76]
+* 
+*  Modified reinit() function to setup the internal data structures in MatrixFree in a way that it is usable by the cell-centric loops and the MPI-3.0 shared-memory capabilities are used:
+* 
+
+* 
+* [1.x.77]
+* 
+*  Categorize cells so that all lanes have the same boundary IDs for each face. This is strictly not necessary, however, allows to write simpler code in  [2.x.49]  without masking, since it is guaranteed that all cells grouped together (in a VectorizedArray) have to perform exactly the same operation also on the faces.
+* 
+
+* 
+* [1.x.78]
+* 
+*  Enable MPI-3.0 shared-memory capabilities within MatrixFree by providing the sub-communicator:
+* 
+
+* 
+* [1.x.79]
+* 
+*  The following function does an entire stage of a Runge--Kutta update and is
+* 
+
+* 
+* 
+*  - alongside the slightly modified setup
+* 
+*  - the heart of this tutorial compared to  [2.x.50] .   
+*   In contrast to  [2.x.51] , we are not executing the advection step (using  [2.x.52]  and the inverse mass-matrix step (using  [2.x.53]  in sequence, but evaluate everything in one go inside of  [2.x.54]  This function expects a single function that is executed on each locally-owned (macro) cell as parameter so that we need to loop over all faces of that cell and perform needed integration steps on our own.   
+*   The following function contains to a large extent copies of the following functions from  [2.x.55]  so that comments related the evaluation of the weak form are skipped here:
+* 
+
+* 
+* 
+*  -  [2.x.56] 
+* 
+
+* 
+* 
+*  -  [2.x.57] 
+* 
+
+* 
+* 
+*  -  [2.x.58] 
+* 
+
+* 
+* 
+*  -  [2.x.59] 
+* 
+
+* 
+* [1.x.80]
+* 
+*  Run a cell-centric loop by calling  [2.x.60]  and providing a lambda containing the effects of the cell, face and boundary-face integrals:
+* 
+
+* 
+* [1.x.81]
+* 
+*  Loop over all cell batches:
+* 
+
+* 
+* [1.x.82]
+* 
+*  Read values from global vector and compute the values at the quadrature points:
+* 
+
+* 
+* [1.x.83]
+* 
+*  Buffer the computed values at the quadrature points, since these are overridden by  [2.x.61]  in the next step, however, are needed later on for the face integrals:
+* 
+
+* 
+* [1.x.84]
+* 
+*  Apply the cell integral at the cell quadrature points. See also the function  [2.x.62]  from  [2.x.63] :
+* 
+
+* 
+* [1.x.85]
+* 
+*  Test with the gradient of the test functions in the quadrature points. We skip the interpolation back to the support points of the element, since we first collect all contributions in the cell quadrature points and only perform the interpolation back as the final step.
+* 
+
+* 
+* [1.x.86]
+* 
+*  Loop over all faces of the current cell:
+* 
+
+* 
+* [1.x.87]
+* 
+*  Determine the boundary ID of the current face. Since we have set up MatrixFree in a way that all filled lanes have guaranteed the same boundary ID, we can select the boundary ID of the first lane.
+* 
+
+* 
+* [1.x.88]
+* 
+*  Interpolate the values from the cell quadrature points to the quadrature points of the current face via a simple 1D interpolation:
+* 
+
+* 
+* [1.x.89]
+* 
+*  Check if the face is an internal or a boundary face and select a different code path based on this information:
+* 
+
+* 
+* [1.x.90]
+* 
+*  Process and internal face. The following lines of code are a copy of the function  [2.x.64]  from  [2.x.65] :
+* 
+
+* 
+* [1.x.91]
+* 
+*  Process a boundary face. These following lines of code are a copy of the function  [2.x.66]  from  [2.x.67] :
+* 
+
+* 
+* [1.x.92]
+* 
+*  Evaluate local integrals related to cell by quadrature and add into cell contribution via a simple 1D interpolation:
+* 
+
+* 
+* [1.x.93]
+* 
+*  Apply inverse mass matrix in the cell quadrature points. See also the function  [2.x.68]  from  [2.x.69] :
+* 
+
+* 
+* [1.x.94]
+* 
+*  Transform values from collocation space to the original Gauss-Lobatto space:
+* 
+
+* 
+* [1.x.95]
+* 
+*  Perform Runge-Kutta update and write results back to global vectors:
+* 
+
+* 
+* [1.x.96]
+* 
+*  From here, the code of  [2.x.70]  has not changed.
+* 
+
+* 
+* [1.x.97]
+* [1.x.98][1.x.99]
+* 
+
+* Running the program with the default settings on a machine with 40 processesproduces the following output:
+* [1.x.100]
+* 
+* and the following visual output:
+*  [2.x.71] 
+* As a reference, the results of  [2.x.72]  using FCL are:
+* [1.x.101]
+* 
+* By the modifications shown in this tutorial, we were able to achieve a speedup of27% for the Runge-Kutta stages.
+* [1.x.102][1.x.103]
+* 
+
+* The algorithms are easily extendable to higher dimensions: a high-dimensional[1.x.104]is part of the hyper.deal library. An extension of cell-centric loopsto locally-refined meshes is more involved.
+* [1.x.105][1.x.106]
+* 
+
+* The solver presented in this tutorial program can also be extended to thecompressible Navier–Stokes equations by adding viscous terms, as alsosuggested in  [2.x.73] . To keep as much of the performance obtained here despitethe additional cost of elliptic terms, e.g. via an interior penalty method, thattutorial has proposed to switch the basis from FE_DGQ to FE_DGQHermite like inthe  [2.x.74]  tutorial program. The reasoning behind this switch is that in thecase of FE_DGQ all values of neighboring cells (i.e.,  [2.x.75]  layers) are needed,whilst in the case of FE_DGQHermite only 2 layers, making the lattersignificantly more suitable for higher degrees. The additional layers have to be,on the one hand, loaded from main memory during flux computation and, one theother hand, have to be communicated. Using the shared-memory capabilitiesintroduced in this tutorial, the second point can be eliminated on a singlecompute node or its influence can be reduced in a hybrid context.
+* [1.x.107][1.x.108]
+* 
+
+* Cell-centric loops could be used to create block Gauss-Seidel preconditionersthat are multiplicative within one process and additive over processes. Thesetype of preconditioners use during flux computation, in contrast to Jacobi-typepreconditioners, already updated values from neighboring cells. The followingpseudo-code visualizes how this could in principal be achieved:
+* [1.x.109]
+* 
+* For this purpose, one can exploit the cell-data vector capabilities ofMatrixFree and the range-based iteration capabilities of VectorizedArray.
+* Please note that in the given example we process  [2.x.76] number of blocks, since each lane corresponds to one block. We consider blocksas updated if all blocks processed by a vector register have been updated. Inthe case of Cartesian meshes this is a reasonable approach, however, forgeneral unstructured meshes this conservative approach might lead to a decrease in theefficiency of the preconditioner. A reduction of cells processed in parallelby explicitly reducing the number of lanes used by  [2.x.77] might increase the quality of the preconditioner, but with the cost that eachiteration might be more expensive. This dilemma leads us to a further"possibility for extension": vectorization within an element.
+* 
+
+* [1.x.110][1.x.111] [2.x.78] 
+* [0.x.1]

@@ -1,0 +1,11 @@
+include/deal.II-translator/matrix_free/cuda_matrix_free.templates_0.txt
+[0.x.0]*
+     将一个存储在一维数组中的N×M矩阵转变成一个存储在一维数组中的M×N矩阵。   
+* [0.x.1]*
+     同上，但源和目的是同一个向量。   
+* [0.x.2]*
+     为设备分配一个数组，并将[2.x.0]复制到设备上。   
+* [0.x.3]*
+     帮助类来（重新）初始化MatrixFree对象。   
+* [0.x.4]
+

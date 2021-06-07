@@ -1,0 +1,21 @@
+include/deal.II-translator/numerics/vector_tools_rhs_0.txt
+[0.x.0]*
+    [2.x.0] 右手边的组装  
+* [0.x.1]*
+   创建一个右手边的向量。先前给定的[2.x.1]向量的内容被删除。    更多信息请参见该命名空间的一般文档。 
+* [0.x.2]*
+   调用create_right_hand_side()函数，见上文，<tt>mapping=MappingQGeneric [2.x.2] 。  
+* [0.x.3]*
+   和前面的一组函数一样，但是针对hp-objects。 
+* [0.x.4]*
+   像以前的一组函数，但对hp-objects而言。 
+* [0.x.5]*
+   从边界力创建一个右手边的向量。之前给定的[2.x.3]矢量的内容被删除。    更多信息请参见该命名空间的一般文档。     [2.x.4] [2.x.5] "关于边界指标的词汇条目"  
+* [0.x.6]*
+   调用create_boundary_right_hand_side()函数，见上文，<tt>mapping=MappingQGeneric [2.x.6] [2.x.7] [2.x.8] "关于边界指标的术语条目"  
+* [0.x.7]*
+   与上面的函数集相同，但用于hp-objects。     [2.x.9] [2.x.10] "关于边界指标的词汇条目"  
+* [0.x.8]*
+   调用create_boundary_right_hand_side()函数，见上文，用一个Q1映射作为集合。因此，这个函数只有在使用中的唯一活跃的FE指标为0时才会起作用。     [2.x.11] [2.x.12] "关于边界指标的词汇条目"  
+* [0.x.9]
+

@@ -1,0 +1,32 @@
+include/deal.II-translator/grid/tensor_product_manifold_0.txt
+[0.x.0]*
+
+
+ 
+* [2.x.0] 
+* 这个流形将结合构造函数中给出的ChartManifold [2.x.1] 和 [2.x.2] ，通过建立张量积 [2.x.3] ，形成一个新的ChartManifold 。实空间的第一个[2.x.4]维度和图表的第一个[2.x.5]维度将由流形[2.x.6]给出，而其余坐标由[2.x.7]给出。流形将由<tt>三角法[2.x.8] space_dim_A+space_dim_B [2.x.9] 使用。
+* 一个例子是将空间维度为2的SphericalManifold和空间维度为1的FlatManifold结合起来，形成一个圆柱形流形。
+* pull_back()、push_forward()和push_forward_gradient()是通过将输入参数按照给定的维度分割成[2.x.10]和[2.x.11]的输入并在连接结果之前应用相应的操作来实现的。
+* 
+
+* 
+* [2.x.12] 尺寸参数[2.x.13]和[2.x.14]不被使用。
+* [2.x.15] dim 单元的尺寸（需要与要连接的三角结构的第一个模板参数相匹配。 [2.x.16] dim_A ChartManifold A的尺寸。 [2.x.17] spacedim_A ChartManifold A的空间尺寸。 [2.x.18] chartdim_A ChartManifold A的图表尺寸。
+
+* 
+* [0.x.1]*
+   图表尺寸是流形[2.x.22]和[2.x.23]的图表尺寸之和。  
+* [0.x.2]*
+   空间维度是流形[2.x.24]和[2.x.25]的空间维度之和。  
+* [0.x.3]*
+   构建器。 
+* [0.x.4]*
+   克隆此流形。 
+* [0.x.5]*
+   拉回操作。 
+* [0.x.6]*
+   前推操作。 
+* [0.x.7]*
+   梯度。 
+* [0.x.8]
+

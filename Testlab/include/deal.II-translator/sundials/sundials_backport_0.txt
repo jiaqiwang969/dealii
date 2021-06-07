@@ -1,0 +1,13 @@
+include/deal.II-translator/sundials/sundials_backport_0.txt
+[0.x.0] 这个文件中的函数是基于SUNDIALS软件包中分发的实现，请看这里的许可证：https://computing.llnl.gov/projects/sundials/license。
+* 
+
+* 
+* 
+* - --------------------------------------------------------------- 程序员（们）。Daniel Reynolds @ SMU David J. Gardner, Carol S. Woodward, and Slaven Peles @ LLNL
+ 
+
+* 
+* 
+* - ---------------------------------------------------------------[0.x.1]
+

@@ -1,0 +1,35 @@
+include/deal.II-translator/matrix_free/evaluation_kernels_0.txt
+[0.x.0]*
+   该结构用于对张量有限元的函数值、梯度和Hessians进行评估。该操作用于对称和非对称情况，在各个坐标方向使用不同的应用函数'值'、'梯度'。值的应用函数是通过EvaluatorTensorProduct模板类之一提供的，而这些模板类又是从[2.x.0]模板参数中选择的。    有两个专门的实现类FEEvaluationImplCollocation（用于Gauss-Lobatto元素，其中结点和正交点重合，'值'的操作是identity）和FEEvaluationImplTransformToCollocation（可以转换到collocation空间，然后可以在这些空间使用identity），它们都可以使代码缩短。 
+* [0.x.1]*
+   对[2.x.1]的特化，它不能使用和-因子化的内核。 
+* [0.x.2]*
+   该结构实现了两个不同基数之间的变化。这是FEEvaluationImplTransformToCollocation类中的一个成分，我们首先转换到适当的基数，在那里我们可以通过collocation技术计算导数。    这个类允许独立于维度的操作应用，通过模板递归来实现。它已经被测试到了6维。 
+* [0.x.3]*
+     这应用了在系数数组的行上收缩的变换，沿着系数数组的列生成数值。         [2.x.2] n_components 矢量成分的数量。     [2.x.3] transformation_matrix 作为矢量递进的系数矩阵，如果解释为矩阵，则使用[2.x.4]行和[2.x.5]列。     [2.x.6] values_in 大小为base_size_1^dim的输入数组。它可以与values_out同义 [2.x.7] values_out 大小为basis_size_2^dim的数组，用于存储转换的结果。它可以与value_in数组别名。     [2.x.8] basis_size_1_variable 如果模板参数basis_size_1为零，第一个基的大小可以作为运行时参数传入。如果模板参数为非零，出于效率的考虑，模板参数优先考虑。     [2.x.9] basis_size_2_variable 在模板参数basis_size_1为零的情况下，第二个基的大小可以作为运行时参数传入。   
+* [0.x.4]*
+     这适用于在系数数组的列上收缩的变换，沿着系数数组的行生成数值。         [2.x.10] n_components 矢量成分的数量。     [2.x.11] transformation_matrix 作为向量递进的系数矩阵，如果解释为矩阵，则使用[2.x.12]行和[2.x.13]列。     [2.x.14] add_into_result 定义结果是否应该被添加到数组[2.x.15]中（如果为真）或覆盖之前的内容。如果values_in和values_out指向同一个数组，并且[2.x.16]为真，那么结果是未定义的，在这种情况下会抛出一个异常。     [2.x.17] values_in 大小为base_size_2^dim的输入数组。它可以与values_out同义。请注意，之前的[2.x.18]的内容在函数中被覆盖了。     [2.x.19] values_out 大小为base_size_1^dim的数组，用于存储转换的结果。它可以与[2.x.20]数组别名。     [2.x.21] basis_size_1_variable 如果模板参数basis_size_1为零，第一个基的大小可以作为运行时参数传入。如果模板参数为非零，出于效率的考虑，模板参数优先考虑。     [2.x.22] basis_size_2_variable 在模板参数basis_size_1为零的情况下，第二个基的大小可以作为运行时参数传入。   
+* [0.x.5]*
+     该操作应用了类似质量矩阵的操作，由do_forward()操作、正交点的系数乘法和do_backward()操作组成。         [2.x.23] n_components 矢量成分的数量。     [2.x.24] transformation_matrix 作为矢量递进的系数矩阵，如果解释为矩阵，则使用[2.x.25] 行和[2.x.26] 列。     [2.x.27] coefficients 系数数组，结果被乘以该数组。其长度必须是basis_size_2^dim或n_components*basis_size_2^dim。     [2.x.28] values_in 大小为basis_size_2^dim的输入阵列。它可以与values_out同义。     [2.x.29] scratch_data 在操作过程中用于保存临时数据的数组。                        必须是长度为base_size_2^dim的。     [2.x.30] values_out 用于存储转换结果的base_size_1^dim数组。它可以与value_in数组别名。   
+* [0.x.6]*
+   该结构执行张量有限元的函数值、梯度和Hessians的评估。这是对节点点与正交点重合的元素的特化，如Gauss-Lobatto元素上的FE_Q形状函数与Gauss-Lobatto正交的集成。这一类的假设是形状 "值 "的操作是相同的，这使得我们可以编写更短的代码。    在文献中，这种评价形式通常被称为谱系评价、谱系配位或简单的配位，意思是形状函数和评价空间（正交点）的位置相同。 
+* [0.x.7]*
+   该结构对张量有限元的函数值、梯度和Hessians进行评估。这是对关于单位区间中点0.5的对称基函数的特化，其正交点的数量与自由度相同。在这种情况下，我们可以首先将基数转换为在正交点上有结点的基数（即配位空间），然后在这个转换后的空间中进行一、二次导数的求值，对形状值使用同一性操作。 
+* [0.x.8]*
+   该类根据模板参数和shape_info变量选择合适的评估策略，该变量包含策略底层的运行时参数[2.x.31]，即该类调用[2.x.32][2.x.33]或[2.x.34]适当的模板参数。如果模板参数fe_degree和n_q_points_1d包含有效信息（即fe_degree>-1和n_q_points_1d>0），我们只需将这些值传递给相应的模板专业化。 否则，我们会对运行时参数进行运行时匹配以找到正确的专业化。这种匹配目前支持 [2.x.35] 和 [2.x.36] 。 
+* [0.x.9]*
+   该类根据模板参数和shape_info变量选择合适的评估策略，该变量包含策略基础[2.x.37]的运行时参数，即该类调用[2.x.38][2.x.39]或[2.x.40]合适的模板参数。如果模板参数fe_degree和n_q_points_1d包含有效信息（即fe_degree>-1和n_q_points_1d>0），我们只需将这些值传递给相应的模板专业化。 否则，我们会对运行时参数进行运行时匹配以找到正确的专业化。这种匹配目前支持 [2.x.41] 和 [2.x.42] 。 
+* [0.x.10]*
+     将单元格正交点上的数值内插到一个面上。   
+* [0.x.11]*
+   该结构使用FEEvaluationBaseData参数实现了反质量矩阵操作的动作。 
+* [0.x.12]*
+   这个结构实现了使用FEEvaluationBaseData参数的反质量矩阵操作的动作。 
+* [0.x.13]*
+     度的版本=
+ 
+* -     
+* [0.x.14]*
+   该结构使用FEEvaluationBaseData参数实现了反质量矩阵操作的动作。 
+* [0.x.15]
+

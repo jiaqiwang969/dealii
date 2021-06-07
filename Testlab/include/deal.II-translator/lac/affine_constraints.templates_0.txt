@@ -1,0 +1,13 @@
+include/deal.II-translator/lac/affine_constraints.templates_0.txt
+[0.x.0]*
+     该类是一个访问器类，用于在调用distribut_local_to_global和add_entries_local_to_global时使用的抓取数据。为了避免频繁的内存分配，我们在一个静态变量中保持数据从一次调用到下一次的活力。由于我们希望在矩阵中允许不同的数字类型，这是一个模板。        由于每个线程都从ThreadLocalStorage中获取其私有版本的scratch数据，因此不会发生冲突的访问。为了使之有效，我们需要确保在distribution_local_to_global中没有任何调用本身可以产生任务。    否则，我们可能会出现几个线程争夺数据的情况。   
+* [0.x.1]*
+       构造函数。从提供的对象中取出当前线程的抓取数据对象，并将其标记为已使用。     
+* [0.x.2]*
+       解构器。再次标记从头开始的数据为可用。     
+* [0.x.3]*
+       去引用操作符。     
+* [0.x.4]*
+       解除引用操作符。     
+* [0.x.5]
+

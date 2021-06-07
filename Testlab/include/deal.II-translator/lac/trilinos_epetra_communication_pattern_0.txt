@@ -1,0 +1,17 @@
+include/deal.II-translator/lac/trilinos_epetra_communication_pattern_0.txt
+[0.x.0]*
+     该类实现了对Trilinos Epetra_Import对象的包装器，用于需要[2.x.0]对象的地方。   
+* [0.x.1]*
+       初始化通信模式。第一个参数[2.x.1]vector_space_vector_index_set是与一个VectorSpaceVector对象相关的索引集。第二个参数 [2.x.2] read_write_vector_index_set是与一个ReadWriteVector对象相关的索引集。     
+* [0.x.2]*
+       重新初始化该对象。     
+* [0.x.3]*
+       返回底层的MPI通信器。     
+* [0.x.4]*
+       返回底层的Epetra_Import对象。     
+* [0.x.5]*
+       用于MPI通信器的共享指针。     
+* [0.x.6]*
+       使用的Epetra_Import对象的共享指针。     
+* [0.x.7]
+

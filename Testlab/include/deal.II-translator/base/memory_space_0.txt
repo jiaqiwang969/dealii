@@ -1,0 +1,7 @@
+include/deal.II-translator/base/memory_space_0.txt
+[0.x.0]*
+   描述主机内存空间的结构。 
+* [0.x.1]*
+   描述CUDA内存空间的结构。 
+* [0.x.2]
+
