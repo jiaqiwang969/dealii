@@ -284,13 +284,7 @@ public:
   compute_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @copydoc   ScalarPolynomialsBase::compute_1st_derivative() *
-   */
-  double
-  compute_value(const unsigned int i, const Point<dim> &p) const override;
-
-  /**
-   *
+   * @copydoc   ScalarPolynomialsBase::compute_1st_derivative() 
    */
   Tensor<1, dim>
   compute_1st_derivative(const unsigned int i,
