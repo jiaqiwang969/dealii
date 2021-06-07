@@ -87,23 +87,7 @@ public:
                                 FullMatrix<double> &interpolation_matrix,
                                 const unsigned int  face_no) const override;
 
-  /**
-   * @copydoc   dealii::FiniteElement::get_subface_interpolation_matrix() *
-   */
-  void
-  get_face_interpolation_matrix(const FiniteElement<dim, spacedim> &source_fe,
-                                FullMatrix<double> &interpolation_matrix,
-                                const unsigned int  face_no) const override;
 
-  /**
-   *
-   */
-  void
-  get_subface_interpolation_matrix(
-    const FiniteElement<dim, spacedim> &x_source_fe,
-    const unsigned int                  subface,
-    FullMatrix<double> &                interpolation_matrix,
-    const unsigned int                  face_no) const override;
 
   /**
    * @copydoc   dealii::FiniteElement::hp_constraints_are_implemented() *
