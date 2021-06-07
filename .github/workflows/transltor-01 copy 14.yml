@@ -1,4 +1,4 @@
-name: numerics
+name: multigrid
 
 on: [push, pull_request]
 
@@ -24,8 +24,8 @@ jobs:
     - name: configure
       run: |
         rm -rf CMakeCache.txt CMakeFiles
-        rm -rf include/deal.II/numerics
-        cp -rf include/deal.II-origin/numerics include/deal.II/
+        rm -rf include/deal.II/multigrid
+        cp -rf include/deal.II-origin/multigrid include/deal.II/
         cmake -D CMAKE_BUILD_TYPE=Release -D DEAL_II_CXX_FLAGS='-Werror' -D DEAL_II_EARLY_DEPRECATIONS=ON -DDEAL_II_COMPONENT_PYTHON_BINDINGS=ON -DDEAL_II_COMPONENT_DOCUMENTATION=ON -DDEAL_II_DOXYGEN_USE_MATHJAX=ON .
     - name: archive
       uses: actions/upload-artifact@v1

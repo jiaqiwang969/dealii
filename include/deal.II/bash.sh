@@ -9,7 +9,10 @@ do
         rm -rf $filename/*_comment
         rm -rf $filename/*_latex
         rm -rf $filename/*_postcommands
-        rm -rf $filename/*.txt 
+        rm -rf $filename/*.txt
+        rm -rf $filename/*.origin
+        rm -rf $filename/*.temp
+        rm -rf $filename/*.tempT	
 
 done
 
