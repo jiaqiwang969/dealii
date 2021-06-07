@@ -170,12 +170,6 @@ public:
   hp_vertex_dof_identities(
     const FiniteElement<dim, spacedim> &fe_other) const override;
 
-  /**
-   * @copydoc   dealii::FiniteElement::hp_line_dof_identities() *
-   */
-  std::vector<std::pair<unsigned int, unsigned int>>
-  hp_vertex_dof_identities(
-    const FiniteElement<dim, spacedim> &fe_other) const override;
 
   /**
    *
