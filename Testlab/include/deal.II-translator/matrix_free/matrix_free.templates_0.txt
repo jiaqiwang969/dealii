@@ -1,3 +1,0 @@
-include/deal.II-translator/matrix_free/matrix_free.templates_0.txt
-[0.x.0]
-

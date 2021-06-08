@@ -1,0 +1,93 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] ,  [2.x.3] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32]
+*  [2.x.4] 
+* [1.x.33]
+* 
+
+* 
+*  [2.x.5]  As a prerequisite of this program, you need to have the p4estlibrary and the Trilinos library installed. The installation of deal.IItogether with these additional libraries is described in the [1.x.34] file.
+* 
+
+* 
+* [1.x.35][1.x.36][1.x.37]
+* 
+
+* In the finite element context, more degrees of freedom usually yield amore accurate solution but also require more computational effort.
+* Throughout previous tutorials, we found ways to effectively distributedegrees of freedom by aligning the grid resolution locally with thecomplexity of the solution (adaptive mesh refinement,  [2.x.6] ). Thisapproach is particularly effective if we do not only adapt the gridalone, but also locally adjust the polynomial degree of the associatedfinite element on each cell (hp-adaptation,  [2.x.7] ).
+* In addition, assigning more processes to run your program simultaneouslyhelps to tackle the computational workload in lesser time. Depending onthe hardware architecture of your machine, your program must either beprepared for the case that all processes have access to the same memory(shared memory,  [2.x.8] ), or that processes are hosted on severalindependent nodes (distributed memory,  [2.x.9] ).
+* In the high-performance computing segment, memory access turns out to bethe current bottleneck on supercomputers. We can avoid storing matricesaltogether by computing the effect of matrix-vector products on the flywith MatrixFree methods ( [2.x.10] ). They can be used for geometricmultigrid methods ( [2.x.11] ) and also for polynomial multigrid methods tospeed solving the system of equation tremendously.
+* This tutorial combines all of these particularities and presents astate-of-the-art way how to solve a simple Laplace problem: utilizingboth hp-adaptation and matrix-free hybrid multigrid methods on machineswith distributed memory.
+* 
+
+* [1.x.38][1.x.39]
+* 
+
+* For parallel applications in FEM, we partition the grid intosubdomains (aka domain decomposition), which are assigned to processes.This partitioning happens on active cells in deal.II as demonstrated in [2.x.12] . There, each cell has the same finite element and the samenumber of degrees of freedom assigned, and approximately the sameworkload. To balance the workload among all processes, we have tobalance the number of cells on all participating processes.
+* With hp-adaptive methods, this is no longer the case: the finite elementtype may vary from cell to cell and consequently also the number ofdegrees of freedom. Matching the number of cells does not yield abalanced workload. In the matrix-free context, the workload can beassumed to be proportional the number of degrees of freedom of eachprocess, since in the best case only the source and the destinationvector have to be loaded.
+* One could balance the workload by assigning weights to every cell whichare proportional to the number of degrees of freedom, and balance thesum of all weights between all processes. Assigning individual weightsto each cell can be realized with the class  [2.x.13]  whichwe will use later.
+* 
+
+* [1.x.40][1.x.41]
+* 
+
+* With hp-adaptive methods, we not only have to decide which cells we wantto refine or coarsen, but we also have the choice how we want to dothat: either by adjusting the grid resolution or the polynomial degreeof the finite element.
+* We will again base the decision on which cells to adapt on (aposteriori) computed error estimates of the current solution, e.g.,using the KellyErrorEstimator. We will similarly decide how to adaptwith (a posteriori) computed smoothness estimates: large polynomialdegrees work best on smooth parts of the solution while fine gridresolutions are favorable on irregular parts. In  [2.x.14] , we presented away to calculate smoothness estimates based on the decay of Fouriercoefficients. Let us take here the opportunity and present analternative that follows the same idea, but with Legendre coefficients.
+* We will briefly present the idea of this new technique, but limit itsdescription to 1D for simplicity. Suppose  [2.x.15]  is a finiteelement function defined on a cell  [2.x.16]  as[1.x.42]where each  [2.x.17]  is a shape function.We can equivalently represent  [2.x.18]  in the basis of Legendrepolynomials  [2.x.19]  as[1.x.43]Our goal is to obtain a mapping between the finite element coefficients [2.x.20]  and the Legendre coefficients  [2.x.21] . We will accomplish this bywriting the problem as a  [2.x.22] -projection of  [2.x.23]  onto theLegendre basis. Each coefficient  [2.x.24]  can be calculated via[1.x.44]By construction, the Legendre polynomials are orthogonal under the [2.x.25] -inner product on  [2.x.26] . Additionally, we assume that they have beennormalized, so their inner products can be written as[1.x.45]where  [2.x.27]  is the Kronecker delta, and  [2.x.28]  is the Jacobian ofthe mapping from  [2.x.29]  to  [2.x.30] , which (in this tutorial) is assumedto be constant (i.e., the mapping must be affine).
+* Hence, combining all these assumptions, the projection matrix forexpressing  [2.x.31]  in the Legendre basis is just  [2.x.32] 
+* 
+*  -  that is,  [2.x.33]  times the identity matrix. Let  [2.x.34] be the Mapping from  [2.x.35]  to its reference cell  [2.x.36] . The entries inthe right-hand side in the projection system are, therefore,[1.x.46]Recalling the shape function representation of  [2.x.37] , we canwrite this as  [2.x.38] , where [2.x.39]  is the change-of-basis matrix with entries[1.x.47]so the values of  [2.x.40]  can be written  [2.x.41] independently [2.x.42]  of [2.x.43]  by factoring  [2.x.44]  out front after transforming to referencecoordinates. Hence, putting it all together, the projection problem canbe written as[1.x.48]which can be rewritten as simply[1.x.49]
+* At this point, we need to emphasize that most finite elementapplications use unstructured meshes for which mapping is almost alwaysnon-affine. Put another way: the assumption that  [2.x.45]  is constantacross the cell is not true for general meshes. Hence, a correctcalculation of  [2.x.46]  requires not only that we calculate thecorresponding transformation matrix  [2.x.47]  for every single cell,but that we also define a set of Legendre-like orthogonal functions on acell  [2.x.48]  which may have an arbitrary and very complex geometry. Thesecond part, in particular, is very computationally expensive. Thecurrent implementation of the FESeries transformation classes relies onthe simplification resulting from having a constant Jacobian to increaseperformance and thus only yields correct results for affine mappings.The transformation is only used for the purpose of smoothness estimationto decide on the type of adaptation, which is not a critical componentof a finite element program. Apart from that, this circumstance does notpose a problem for this tutorial as we only use square-shaped cells.
+* Eibner and Melenk  [2.x.49]  argued that a function is analytic,i.e., representable by a power series, if and only if the absolutevalues of the Legendre coefficients decay exponentially with increasingindex  [2.x.50] :[1.x.50]The rate of decay  [2.x.51]  can be interpreted as a measure for thesmoothness of that function. We can get it as the slope of a linearregression fit of the transformation coefficients:[1.x.51]
+* We will perform this fit on each cell  [2.x.52]  to get a local estimate forthe smoothness of the finite element approximation. The decay rate [2.x.53]  then acts as the decision indicator for hp-adaptation. For afinite element on a cell  [2.x.54]  with a polynomial degree  [2.x.55] , calculatingthe coefficients for  [2.x.56]  proved to be a reasonable choice toestimate smoothness. You can find a more detailed and dimensionindependent description in  [2.x.57] .
+* All of the above is already implemented in the  [2.x.58]  classand the  [2.x.59]  namespace. With the errorestimates and smoothness indicators, we are then left to flag the cellsfor actual refinement and coarsening. Some functions from the [2.x.60]  and  [2.x.61]  namespaces willhelp us with that later.
+* 
+
+* [1.x.52][1.x.53]
+* 
+
+* Finite element matrices are typically very sparse. Additionally,hp-adaptive methods correspond to matrices with highly variable numbersof nonzero entries per row. Some state-of-the-art preconditioners, likethe algebraic multigrid (AMG) ones as used in  [2.x.62] , behave poorly inthese circumstances.
+* We will thus rely on a matrix-free hybrid multigrid preconditioner. [2.x.63]  has already demonstrated the superiority of geometric multigridmethods method when combined with the MatrixFree framework. Theapplication on hp-adaptive FEM requires some additional work thoughsince the children of a cell might have different polynomial degrees. Asa remedy, we perform a p-relaxation to linear elements first (similar toMitchell  [2.x.64] ) and then perform h-relaxation in theusual manner. On the coarsest level, we apply an algebraic multigridsolver. The combination of p-multigrid, h-multigrid, and AMG makes thesolver to a hybrid multigrid solver.
+* We will create a custom hybrid multigrid preconditioner with the speciallevel requirements as described above with the help of the existingglobal-coarsening infrastructure via the use ofMGTransferGlobalCoarsening.
+* 
+
+* [1.x.54][1.x.55]
+* 
+
+* For elliptic equations, each reentrant corner typically invokes asingularity  [2.x.65] . We can use this circumstance to put ourhp-decision algorithms to a test: on all cells to be adapted, we wouldprefer a fine grid near the singularity, and a high polynomial degreeotherwise.
+* As the simplest elliptic problem to solve under these conditions, wechose the Laplace equation in a L-shaped domain with the reentrantcorner in the origin of the coordinate system.
+* To be able to determine the actual error, we manufacture a boundaryvalue problem with a known solution. On the above mentioned domain, onesolution to the Laplace equation is, in polar coordinates, [2.x.66] :[1.x.56]
+* See also  [2.x.67]  or  [2.x.68] . The solution looks as follows:
+*  [2.x.69] 
+* 
+
+* 
+* [1.x.160][1.x.161][1.x.162]
+* 
+
+* [1.x.163][1.x.164]
+* 
+
+* The deal.II library offers multiple strategies to decide which type ofadaptation to impose on cells: either adjust the grid resolution orchange the polynomial degree. We only presented the [1.x.165] strategy in this tutorial, while  [2.x.70] demonstrated the [1.x.166] equivalent of the same idea.
+* See the "possibilities for extensions" section of  [2.x.71]  for anoverview over these strategies, or the corresponding documentationfor a detailed description.
+* There, another strategy is mentioned that has not been shown in anytutorial so far: the strategy based on [1.x.167]. Theusage of this method for parallel distributed applications is moretricky than the others, so we will highlight the challenges that comealong with it. We need information about the final state of refinementflags, and we need to transfer the solution across refined meshes. Forthe former, we need to attach the  [2.x.72] function to the  [2.x.73]  signal ina way that it will be called [1.x.168] the [2.x.74]  function. At this stage, allrefinement flags and future FE indices are terminally set and a reliableprediction of the error is possible. The predicted error then needs tobe transferred across refined meshes with the aid of [2.x.75] 
+* Try implementing one of these strategies into this tutorial and observethe subtle changes to the results. You will notice that all strategiesare capable of identifying the singularities near the reentrant cornersand will perform  [2.x.76] -refinement in these regions, while preferring [2.x.77] -refinement in the bulk domain. A detailed comparison of thesestrategies is presented in  [2.x.78]  .
+* 
+
+* [1.x.169][1.x.170]
+* 
+
+* This tutorial focuses solely on matrix-free strategies. All hp-adaptivealgorithms however also work with matrix-based approaches in theparallel distributed context.
+* To create a system matrix, you can either use the [2.x.79]  function, or use an [2.x.80]  function similar to the one of  [2.x.81] .You can then pass the system matrix to the solver as usual.
+* You can time the results of both matrix-based and matrix-freeimplementations, quantify the speed-up, and convince yourself whichvariant is faster.
+* 
+
+* [1.x.171][1.x.172]
+* 
+
+* For sake of simplicity, we have restricted ourselves to a single type ofcoarse-grid solver (CG with AMG), smoother (Chebyshev smoother withpoint Jacobi preconditioner), and geometric-coarsening scheme (globalcoarsening) within the multigrid algorithm. Feel free to try outalternatives and investigate their performance and robustness.
+* 
+
+* [1.x.173][1.x.174] [2.x.82] 
+* [0.x.1]

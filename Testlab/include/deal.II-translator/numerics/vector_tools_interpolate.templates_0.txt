@@ -1,5 +1,0 @@
-include/deal.II-translator/numerics/vector_tools_interpolate.templates_0.txt
-[0.x.0]*
-     返回该单元格及其所有的子代是否为本地所有。   
-* [0.x.1]
-

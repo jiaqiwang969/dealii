@@ -1,3 +1,0 @@
-include/deal.II-translator/lac/la_vector.templates_0.txt
-[0.x.0]
-

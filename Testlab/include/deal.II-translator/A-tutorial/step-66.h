@@ -55,8 +55,7 @@
  * href="#GelfandProblemassemble_rhs">GelfandProblem::assemble_rhs</a><a
  * href="#GelfandProblemassemble_rhs">GelfandProblem::assemble_rhs</a>
  * <li><a
- * href="#GelfandProblemcompute_residual">GelfandProblem::compute_residual</a>
- * ]<a
+ * href="#GelfandProblemcompute_residual">GelfandProblem::compute_residual</a><a
  * href="#GelfandProblemcompute_residual">GelfandProblem::compute_residual</a>
  * <li><a
  * href="#GelfandProblemcompute_update">GelfandProblem::compute_update</a><a
@@ -123,11 +122,11 @@
  * encouragement and advice in writing this tutorial. </i>   <a
  * name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
  * 本教程程序的目的是演示如何在无矩阵框架内使用牛顿方法解决一个非线性问题。本教程结合了在
- * step-15 ,  step-16 ,  step-37 ,  step-48
- * 和其他文件中已经介绍的几种技术。
+ * step-15 、 step-16 、 step-37 、 step-48
+ * 和其他文献中已经介绍的几种技术。
  *
- *  <a name="Problemformulation"></a><h3>Problem formulation</h3> 。
- * 在单位圆 $\Omega = \bigl\{ x \in \mathbb{R}^2 : \|x\| \leq 1 \bigr\}$
+ *  <a name="Problemformulation"></a><h3>Problem formulation</h3> 在单位圆
+ * $\Omega = \bigl\{ x \in \mathbb{R}^2 : \|x\| \leq 1 \bigr\}$
  * 上，我们考虑以下非线性椭圆边界值问题，受制于不均匀的Dirichlet边界条件。找到一个函数
  * $u\colon\Omega\to\mathbb{R}$ ，使其成立。
  * @f{align*}
@@ -157,7 +156,7 @@
  *
  *  <a name="Discretizationwithfiniteelements"></a><h3>Discretization with
  * finite elements</h3> 。
- * 像往常一样，我们首先推导出这个问题的弱表述，即用一个光滑的测试函数
+ * 像往常一样，我们首先推导出这个问题的弱式，即用一个光滑的测试函数
  * $v\colon\Omega\to\mathbb{R}$ 乘以边界条件并在域 $\Omega$
  * 上积分。分别进行积分，并将右边的项放到左边，就得到了弱式计算。找到一个函数
  * $u\colon\Omega\to\mathbb{R}$ ，使所有测试函数 $v$ 都成立。
@@ -219,8 +218,8 @@
  * $V_h$
  * 的任何函数表示为基函数的线性组合。更确切地说，这意味着
  * $V_h$ 的每个元素都可以通过表示公式与向量
- * $U\in\mathbb{R}^N$ 识别。 $u_h = \sum_{i=1}^N U_i \varphi_i$  .
- * 因此，利用这一点我们可以给出离散雅各布和残差的表达。
+ * $U\in\mathbb{R}^N$ 识别。 $u_h = \sum_{i=1}^N U_i \varphi_i$
+ * .因此，利用这一点我们可以给出离散雅各布和残差的表达式。
  * @f{align*}{
  * A_{i,j} = \bigl( F'(u_h^n) \bigr)_{i,j}
  * &=
@@ -247,7 +246,7 @@
  * 相比，我们也可以形成与问题的强表述相对应的非线性函数的Frech{\'e}t导数，并在之后将其具体化。然而，最终我们会得到同样的一组离散方程。
  *
  *  <a name="Numericallinearalgebra"></a><h3>Numerical linear algebra</h3> 。
- * 注意，系统矩阵，实际上是Jacobian，是如何取决于之前的牛顿步骤的
+ * 注意，系统矩阵，实际上是雅各布系数，是如何取决于前一个牛顿步骤的
  * $A = F'(u^n)$
  * 。因此，我们需要告诉计算系统矩阵的函数关于最后一个牛顿步骤的解决方案。在经典
  * <code>assemble_system()</code>
@@ -395,14 +394,13 @@
  * @endcode
  *
  *
- *  <a name="Triangulation"></a><h3>Triangulation</h3>。 正如在 step-37
+ *  <a name="Triangulation"></a><h3>Triangulation</h3> 正如在 step-37
  * 中所说，如果我们选择高阶有限元空间，无矩阵方法会变得更有效率。由于我们想在
  * $d$
  * 维的单位球上解决问题，最好有一个适当的边界逼近来克服收敛问题。出于这个原因，我们使用MappingQGeneric类的异参数方法来恢复平滑边界以及内单元的映射。此外，为了得到一个好的三角计算，我们使用了TransfiniteInterpolationManifold。
  *
  *  <a name="CommProg"></a> <h1> The commented program</h1>。
  * 首先我们包括本教程所需的deal.II库的典型头文件。
- *
  *
  * @code
  * #include <deal.II/base/function.h>
@@ -436,7 +434,6 @@
  *
  * 特别是，我们需要包括无矩阵框架的头文件。
  *
- *
  * @code
  * #include <deal.II/matrix_free/fe_evaluation.h>
  * #include <deal.II/matrix_free/matrix_free.h>
@@ -445,8 +442,7 @@
  *
  * @endcode
  *
- * 由于我们想使用几何多网格预处理程序，我们还需要多级头文件。
- *
+ * 由于我们要使用几何多网格预处理程序，所以我们还需要多级头文件。
  *
  * @code
  * #include <deal.II/multigrid/mg_coarse.h>
@@ -460,7 +456,7 @@
  *
  * @endcode
  *
- * 最后是一些用于输入和输出的普通C++头文件。
+ * 最后是一些常用的C++头文件，用于输入和输出。
  *
  * @code
  * #include <fstream>
@@ -477,9 +473,9 @@
  * @endcode
  *
  * <a name="MatrixfreeJacobianOperator"></a> <h3>Matrix-free
- * JacobianOperator</h3>.
+ * JacobianOperator</h3>。
  *
- * 在开始的时候，我们定义了雅各布系数的无矩阵算子。作为指导，我们遵循教程
+ * 在开始时，我们定义了雅各布的无矩阵算子。作为指导，我们遵循教程
  * step-37 和 step-48 ，其中对 MatrixFreeOperators::Base
  * 类的精确接口做了大量的记录。
  * 由于我们希望将雅各布（Jacobian）作为系统矩阵使用，并将其传递给线性求解器以及多级预处理类，我们从
@@ -487,23 +483,22 @@
  * 类，这样我们就有了正确的接口。我们需要从基类中覆盖的两个函数是
  * MatrixFreeOperators::Base::apply_add() 和
  * MatrixFreeOperators::Base::compute_diagonal()
- * 函数。为了允许用浮动精度进行预处理，我们将数字类型定义为模板参数。
+ * 函数。为了允许用浮动精度进行预处理，我们定义数字类型作为模板参数。
  * 正如在介绍中提到的，我们需要在最后一个牛顿步骤
  * $u_h^n$ 中评估雅各布 $F'$ ，以计算牛顿更新 $s_h^n$
  * 。为了获得最后一个牛顿步骤 $u_h^n$
  * 的信息，我们的做法与 step-37
  * 基本相同，在使用无矩阵算子之前，我们将一个系数函数的值存储在一个表中
- * <code>nonlinear_values</code> 。我们在这里实现了一个函数
- * <code>evaluate_coefficient()</code>  ，而不是一个函数
+ * <code>nonlinear_values</code> 。我们在这里实现的不是一个函数
+ * <code>evaluate_coefficient()</code>  ，而是一个函数
  * <code>evaluate_newton_step()</code>  。 作为
  * <code>JacobianOperator</code> 的额外私有成员函数，我们实现了
  * <code>local_apply()</code> 和 <code>local_compute_diagonal()</code>
  * 函数。第一个是矩阵-向量应用的实际工作函数，我们在
  * <code>apply_add()</code> 函数中把它传递给 MatrixFree::cell_loop()
- * 。后面一个是计算对角线的工作函数，我们把它传递给
+ * 。后一个是计算对角线的工作函数，我们将其传递给
  * MatrixFreeTools::compute_diagonal() 函数。
  * 为了提高源代码的可读性，我们进一步为FEEvaluation对象定义了一个别名。
- *
  *
  * @code
  * template <int dim, int fe_degree, typename number>
@@ -547,8 +542,7 @@
  * @endcode
  *  <code>JacobianOperator</code> 的构造函数只是调用基类
  * MatrixFreeOperators::Base,
- * 的构造函数，而基类本身就是派生自Subscriptor类。
- *
+ * 的构造函数，而基类本身就是由Subscriptor类派生的。
  *
  * @code
  * template <int dim, int fe_degree, typename number>
@@ -565,7 +559,6 @@
  * 函数重置了保存非线性值的表格，并调用基类的
  * <code>clear()</code> 函数。
  *
- *
  * @code
  * template <int dim, int fe_degree, typename number>
  * void JacobianOperator<dim, fe_degree, number>::clear()
@@ -580,7 +573,7 @@
  * @endcode
  *
  * <a name="EvaluationoftheoldNewtonstep"></a> <h4>Evaluation of the old
- * Newton step</h4>.
+ * Newton step</h4>。
  *
  * 下面的  <code>evaluate_newton_step()</code>  函数是基于  step-37
  * 的  <code>evaluate_coefficient()</code>
@@ -593,7 +586,6 @@
  * <code>std::exp(newton_step[q])</code>
  * 并将这些值存储在表中。这就跳过了在每次调用
  * <code>vmult()</code> 函数时对非线性的所有评估。
- *
  *
  * @code
  * template <int dim, int fe_degree, typename number>
@@ -623,20 +615,19 @@
  * @endcode
  *
  * <a name="Nonlinearmatrixfreeoperatorapplication"></a> <h4>Nonlinear
- * matrix-free operator application</h4>.
+ * matrix-free operator application</h4>。
  *
  * 现在在 <code>local_apply()</code>
  * 函数中，实际上实现了系统矩阵的单元格动作，我们可以使用存储在表
  * <code>nonlinear_values</code>
  * 中的最后一个牛顿步骤的信息。这个函数的其余部分与
  * step-37
- * 中的基本相同。我们设置FEEvaluation对象，收集和评估输入向量的值和梯度
+ * 中的基本相同。我们设置FEEvaluation对象，收集并评估输入向量的值和梯度
  * <code>src</code>
  * ，根据Jacobian的形式提交值和梯度，最后调用
  * FEEvaluation::integrate_scatter()
  * 进行单元积分，将局部贡献分配到全局向量  <code>
  * dst</code>  。
- *
  *
  * @code
  * template <int dim, int fe_degree, typename number>
@@ -680,7 +671,6 @@
  * 接下来我们使用 MatrixFree::cell_loop()
  * 对所有单元进行实际循环，计算单元对矩阵-向量积的贡献。
  *
- *
  * @code
  * template <int dim, int fe_degree, typename number>
  * void JacobianOperator<dim, fe_degree, number>::apply_add(
@@ -701,7 +691,6 @@
  * <code>local_compute_diagonal()</code>  与上述工作函数
  * <code>local_apply()</code>
  * 类似。然而，作为主要的区别，我们不从输入向量中读取数值，也不将任何局部结果分配给输出向量。相反，唯一的输入参数是使用的FEEvaluation对象。
- *
  *
  * @code
  * template <int dim, int fe_degree, typename number>
@@ -728,14 +717,14 @@
  *
  *
  * @endcode
- *  最后我们覆盖了  MatrixFreeOperators::Base::compute_diagonal()
- * 的基类的  <code>JacobianOperator</code>
- * 函数。虽然这个函数的名字表明只是计算对角线，但这个函数的作用更大。因为我们实际上只需要矩阵对角线元素的逆值，用于多网格预处理器的切比雪夫平滑器，我们计算对角线并存储逆值元素。因此我们首先初始化
+ *
+ * 最后我们覆盖了 MatrixFreeOperators::Base::compute_diagonal()
+ * 的基类的 <code>JacobianOperator</code>
+ * 的函数。虽然这个函数的名字表明只是计算对角线，但这个函数的作用更大一些。因为我们实际上只需要矩阵对角线元素的逆值，用于多网格预处理器的切比雪夫平滑器，我们计算对角线并存储逆值元素。因此我们首先初始化
  * <code>inverse_diagonal_entries</code>  。然后我们通过将工作函数
  * <code>local_compute_diagonal()</code> 传递给
  * MatrixFreeTools::compute_diagonal()
  * 函数来计算对角线。最后，我们在对角线上循环，用手反转这些元素。注意，在这个循环过程中，我们捕捉受限的DOFs，并手动将它们设置为1。
- *
  *
  * @code
  * template <int dim, int fe_degree, typename number>
@@ -764,10 +753,10 @@
  *
  * @endcode
  *
- * <a name="GelfandProblemclass"></a> <h3>GelfandProblem class</h3>
+ * <a name="GelfandProblemclass"></a> <h3>GelfandProblem class</h3>。
  *
  * 在实现了无矩阵算子之后，我们现在可以为<i>Gelfand
- * problem</i>定义解算器类。这个类是基于之前所有教程程序的共同结构，特别是它是基于
+ * problem</i>定义求解器类。这个类是基于之前所有教程程序的共同结构，特别是它是基于
  * step-15
  * ，解决的也是一个非线性问题。由于我们使用的是无矩阵框架，所以我们不再需要assemble_system函数，相反，在每次调用
  * <code>vmult()</code>
@@ -778,7 +767,6 @@
  * 函数在这里实现了牛顿方法，而线性化系统的解是在函数
  * <code>compute_update()</code>
  * 中计算的。由于MatrixFree框架将拉格朗日有限元方法的多项式程度作为模板参数来处理，我们也将其作为问题求解器类的模板参数来声明。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -821,10 +809,9 @@
  *
  * 对于并行计算，我们定义了一个
  * parallel::distributed::Triangulation.
- * 由于计算域在二维是一个圆，在三维是一个球，我们除了为边界单元分配SphericalManifold外，还为内部单元的映射分配了一个TransfiniteInterpolationManifold对象，它负责处理内部单元的映射。在这个例子中，我们使用了一个等参数的有限元方法，因此使用了MappingQGeneric类。注意，我们也可以创建一个MappingQ类的实例，并在构造器调用中设置
+ * 由于计算域在二维是一个圆，在三维是一个球，我们除了为边界单元分配SphericalManifold外，还为内部单元的映射分配了TransfiniteInterpolationManifold对象，它负责内部单元的映射。在这个例子中，我们使用了一个等参数的有限元方法，因此使用了MappingQGeneric类。注意，我们也可以创建一个MappingQ类的实例，并在构造器调用中设置
  * <code>use_mapping_q_on_all_cells</code> 标志为 <code>true</code>
  * 。关于MappingQ和MappingQGeneric连接的进一步细节，你可以阅读这些类的详细描述。
- *
  *
  * @code
  *   parallel::distributed::Triangulation<dim> triangulation;
@@ -832,8 +819,8 @@
  *
  *
  * @endcode
- * 像往常一样，我们再定义拉格朗日有限元FE_Q和一个DoFHandler。
  *
+ * 像往常一样，我们定义拉格朗日有限元FE_Q和一个DoFHandler。
  *
  * @code
  *   FE_Q<dim>       fe;
@@ -842,10 +829,9 @@
  *
  * @endcode
  *
- * 对于线性化的离散系统，我们定义一个AffineConstraints对象和
+ * 对于线性化离散系统，我们定义了一个AffineConstraints对象和
  * <code>system_matrix</code>
  * ，在本例中它被表示为一个无矩阵算子。
- *
  *
  * @code
  *   AffineConstraints<double> constraints;
@@ -855,12 +841,11 @@
  *
  * @endcode
  *
- * 多级对象也是基于无矩阵算子的Jacobian。由于我们需要用最后一个牛顿步骤来评估雅各布，所以我们也需要用最后一个牛顿步骤来评估预处理程序的水平算子。因此，除了
+ * 多级对象也是基于雅各布系数的无矩阵算子。由于我们需要用最后一个牛顿步骤来评估雅各布式，所以我们也需要用最后一个牛顿步骤来评估水平算子的预调节器。因此，除了
  * <code>mg_matrices</code>
  * 之外，我们还需要一个MGLevelObject来存储每一级的插值解向量。与
  * step-37
  * 一样，我们对预处理程序使用浮点精度。此外，我们将MGTransferMatrixFree对象定义为一个类变量，因为我们只需要在三角形变化时设置一次，然后可以在每个牛顿步骤中再次使用它。
- *
  *
  * @code
  *   MGConstrainedDoFs mg_constrained_dofs;
@@ -871,11 +856,9 @@
  *
  *
  * @endcode
- *
- * 当然我们也需要持有 <code>solution</code> 、
+ *  当然，我们还需要持有  <code>solution</code>  ,
  * <code>newton_update</code> and the <code>system_rhs</code>
  * 的向量。这样，我们就可以一直将上一个牛顿步骤存储在解决方案向量中，只需添加更新就可以得到下一个牛顿步骤。
- *
  *
  * @code
  *   LinearAlgebra::distributed::Vector<double> solution;
@@ -885,8 +868,7 @@
  *
  * @endcode
  *
- * 最后，我们有一个变量用于线性求解器的迭代次数。
- *
+ * 最后我们有一个变量用于线性求解器的迭代次数。
  *
  * @code
  *   unsigned int linear_iterations;
@@ -896,14 +878,13 @@
  *
  * 对于与MPI并行运行的程序中的输出，我们使用ConditionalOStream类来避免不同的MPI等级对同一数据的多次输出。
  *
- *
  * @code
  *   ConditionalOStream pcout;
  *
  *
  * @endcode
- * 最后，对于时间的测量，我们使用TimerOutput对象，在程序结束后，它将每个函数的耗时CPU和墙体时间打印在一个格式良好的表格中。
  *
+ * 最后，对于时间的测量，我们使用一个TimerOutput对象，它在程序结束后将每个函数的耗时CPU和墙体时间打印在一个格式很好的表格中。
  *
  * @code
  *   TimerOutput computing_timer;
@@ -917,7 +898,6 @@
  * 的构造函数初始化了类的变量。特别是，我们为
  * parallel::distributed::Triangulation,
  * 设置了多级支持，设置映射度等于有限元度，初始化ConditionalOStream，并告诉TimerOutput我们只想在需求时看到墙体时间。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -940,13 +920,13 @@
  *
  * @endcode
  *
- * <a name="GelfandProblemmake_grid"></a> <h4>GelfandProblem::make_grid</h4>.
+ * <a name="GelfandProblemmake_grid"></a>
+ * <h4>GelfandProblem::make_grid</h4>。
  *
- * 作为计算域，我们使用 <code>dim</code> -dimensional unit
- * ball。我们遵循TransfiniteInterpolationManifold类的说明，同时也为边界指定了一个SphericalManifold。最后，我们将初始网格细化为3
+ * 作为计算域，我们使用 <code>dim</code>
+ * -维的单位球。我们遵循TransfiniteInterpolationManifold类的说明，同时也为边界指定了一个SphericalManifold。最后，我们将初始网格细化为3
  *
  * -  <code>dim</code> 次全局。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -980,13 +960,12 @@
  * <h4>GelfandProblem::setup_system</h4>。
  *
  * <code>setup_system()</code> 函数与 step-37
- * 中的函数几乎完全相同。唯一的区别显然是时间测量只有一个
+ * 中的函数几乎完全相同。唯一的区别显然是只用一个
  * TimerOutput::Scope
- * ，而不是单独测量每个部分，更重要的是对前一个牛顿步骤的内插解向量的MGLevelObject的初始化。另一个重要的变化是MGTransferMatrixFree对象的设置，我们可以在每个牛顿步骤中重复使用它，因为
+ * 来测量时间，而不是单独测量每个部分，更重要的是对前一个牛顿步骤的内插解矢量进行MGLevelObject的初始化。另一个重要的变化是MGTransferMatrixFree对象的设置，我们可以在每个牛顿步骤中重复使用它，因为
  * <code>triangulation</code> 不会被改变。
  * 请注意，我们可以两次使用同一个MatrixFree对象，用于
  * <code>JacobianOperator</code> 和多棱镜预处理程序。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1092,16 +1071,17 @@
  * <a name="GelfandProblemevaluate_residual"></a>
  * <h4>GelfandProblem::evaluate_residual</h4>。
  *
- * 接下来我们实现了一个函数，该函数对给定的输入向量评估非线性离散残差（
+ * 接下来，我们实现了一个函数，它评估了给定输入矢量的非线性离散残差（
  * $\texttt{dst} = F(\texttt{src})$
- * ）。这个函数随后被用于组装线性化系统的右手边，随后用于计算下一个牛顿步骤的残差，以检查我们是否已经达到误差容限。由于这个函数不应该影响任何类别的变量，我们把它定义为一个常数函数。在内部，我们通过FEEvaluation类和类似于
+ * ）。这个函数随后被用于组装线性化系统的右手边，随后用于计算下一个牛顿步骤的残差，以检查我们是否已经达到了误差容忍度。由于这个函数不应该影响任何类别的变量，我们把它定义为一个常数函数。在内部，我们通过FEEvaluation类和类似于
  * <code>apply_add()</code> function of the <code>JacobianOperator</code> 的
  * MatrixFree::cell_loop(), 来利用快速有限元评估。
  * 首先我们创建一个指向MatrixFree对象的指针，它被存储在
- * <code>system_matrix</code>  中。然后，我们将工作函数
+ * <code>system_matrix</code>
+ * 中。然后，我们将用于残差的单元评价的工作函数
  * <code>local_evaluate_residual()</code>
- * 与输入和输出向量一起传递给  MatrixFree::cell_loop().
- * ，用于对残差进行单元评价，此外，我们在循环中启用输出向量的清零，这比之前单独调用<code>dst
+ * 以及输入和输出向量传递给  MatrixFree::cell_loop().
+ * 此外，我们在循环中启用输出向量的清零，这比之前单独调用<code>dst
  * = 0.0</code>更有效率。
  * 请注意，使用这种方法，我们不必关心MPI相关的数据交换，因为所有的记账工作都由
  * MatrixFree::cell_loop(). 完成。
@@ -1121,20 +1101,18 @@
  *
  *
  * @endcode
- *  <a name="GelfandProblemlocal_evaluate_residual"></a>
- * <h4>GelfandProblem::local_evaluate_residual</h4> * * <a
- * name="GelfandProblemlocal_evaluate_residual"></a>
+ *
+ * <a name="GelfandProblemlocal_evaluate_residual"></a>
  * <h4>GelfandProblem::local_evaluate_residual</h4>。
  *
  * 这是用于评估残差的内部工作函数。本质上，它与
- * <code>JacobianOperator</code> 的 <code>local_apply()</code>
- * 函数具有相同的结构，在给定的单元格集合
- * <code>cell_range</code> 上对输入向量 <code>src</code>
+ * <code>JacobianOperator</code>  的  <code>local_apply()</code>
+ * 函数具有相同的结构，在给定的单元格
+ * <code>cell_range</code>  上对输入向量  <code>src</code>
  * 进行残差评估。与上述 <code>local_apply()</code>
- * 函数不同的是，我们将 FEEvaluation::gather_evaluate() 函数分成
+ * 函数不同的是，我们将 FEEvaluation::gather_evaluate() 函数分为
  * FEEvaluation::read_dof_values_plain() 和 FEEvaluation::evaluate(),
  * ，因为输入向量可能有受限的DOF。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1173,10 +1151,9 @@
  * <h4>GelfandProblem::assemble_rhs</h4>。
  *
  * 使用上述函数 <code>evaluate_residual()</code>
- * 来评估非线性残差，组装线性化系统的右手边现在变得非常容易。我们只需调用
- * <code>evaluate_residual()</code> 函数并将结果乘以减一。
+ * 来评估非线性残差，现在组装线性化系统的右手边变得非常容易。我们只需调用
+ * <code>evaluate_residual()</code> 函数并将结果与减一相乘。
  * 经验表明，使用FEEvaluation类比使用FEValues和co的经典实现要快很多。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1196,11 +1173,10 @@
  * @endcode
  *
  * <a name="GelfandProblemcompute_residual"></a>
- * <h4>GelfandProblem::compute_residual</h4>
+ * <h4>GelfandProblem::compute_residual</h4>。
  *
  * 根据 step-15 ，下面的函数在 <code>evaluate_residual()</code>
- * 函数的帮助下计算出解 $u_h^n + \alpha s_h^n$
- * 的非线性残差规范。如果我们使用牛顿方法的自适应版本，牛顿步长
+ * 函数的帮助下计算出解的非线性残差的规范。如果我们使用牛顿方法的自适应版本，牛顿步长
  * $\alpha$
  * 就变得很重要。例如，我们将计算不同步长的残差并比较残差。然而，对于我们的问题来说，全牛顿步长
  * $\alpha=1$
@@ -1208,7 +1184,6 @@
  * $\alpha<1$
  * ，直到牛顿步骤足够好，可以进行完整的牛顿步骤。这在
  * step-15 中也有讨论。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1238,11 +1213,10 @@
  * @endcode
  *
  * <a name="GelfandProblemcompute_update"></a>
- * <h4>GelfandProblem::compute_update</h4>.
+ * <h4>GelfandProblem::compute_update</h4>。
  *
- * 为了计算每个牛顿步骤中的牛顿更新，我们用CG算法和一个几何多网格预处理器来解决线性系统。为此，我们首先像在
- * step-37  中那样用切比雪夫平滑器设置PreconditionMG对象。
- *
+ * 为了在每个牛顿步骤中计算牛顿更新，我们用CG算法和几何多网格预处理器一起解决线性系统。为此，我们首先像在
+ * step-37 中那样用切比雪夫平滑器设置PreconditionMG对象。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1251,9 +1225,8 @@
  *   TimerOutput::Scope t(computing_timer, "compute update");
  *
  * @endcode
- * 我们记得Jacobian取决于存储在求解向量中的最后一个牛顿步骤。所以我们更新牛顿步的鬼魂值，并将其传递给
+ * 我们记得Jacobian取决于存储在解向量中的最后一个牛顿步骤。所以我们更新牛顿步骤的鬼魂值，并将其传递给
  * <code>JacobianOperator</code> 来存储信息。
- *
  *
  * @code
  *   solution.update_ghost_values();
@@ -1263,18 +1236,15 @@
  *
  * @endcode
  *
- * 接下来我们还要将最后一个牛顿步传递给多级运算符。因此，我们需要将牛顿步骤插值到三角化的所有层次。这是通过
- * MGTransferMatrixFree::interpolate_to_mg(). 完成的。
- *
+ * 接下来我们还要将最后一个牛顿步骤传递给多级运算符。因此，我们需要将牛顿步骤插值到三角化的所有层次。这是用
+ * MGTransferMatrixFree::interpolate_to_mg(). 来完成的。
  *
  * @code
  *   mg_transfer.interpolate_to_mg(dof_handler, mg_solution, solution);
  *
  *
  * @endcode
- *
  * 现在我们可以设置预处理程序了。我们定义平滑器并将牛顿步骤的内插向量传递给多级运算器。
- *
  *
  * @code
  *   using SmootherType =
@@ -1342,13 +1312,12 @@
  *
  *
  * @endcode
- * 最后我们设置SolverControl和SolverCG来解决当前牛顿更新的线性化问题。实现SolverCG或SolverGMRES的一个重要事实是，持有线性系统解决方案的向量（这里是
+ * 最后我们设置了SolverControl和SolverCG来解决当前牛顿更新的线性化问题。实现SolverCG或SolverGMRES的一个重要事实是，持有线性系统解决方案的向量（这里是
  * <code>newton_update</code>
  * ）可以被用来传递一个起始值。为了使迭代求解器总是以零矢量开始，我们在调用
  * SolverCG::solve(). 之前明确地重置了 <code>newton_update</code>
  * ，然后我们分配了存储在 <code>constraints</code>
  * 中的Dirichlet边界条件，并为以后的输出存储了迭代步数。
- *
  *
  * @code
  *   SolverControl solver_control(100, 1.e-12);
@@ -1367,7 +1336,6 @@
  *
  * 然后为了记账，我们把鬼魂的值清零。
  *
- *
  * @code
  *   solution.zero_out_ghost_values();
  * }
@@ -1378,8 +1346,7 @@
  *
  * <a name="GelfandProblemsolve"></a> <h4>GelfandProblem::solve</h4>。
  *
- * 现在我们实现非线性问题的实际牛顿求解器。
- *
+ * 现在我们为非线性问题实现实际的牛顿求解器。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1390,11 +1357,10 @@
  *
  * @endcode
  *
- * 我们定义牛顿步骤的最大数量和收敛标准的公差。通常，在良好的起始值下，牛顿方法在三到六步内收敛，所以最大的十步应该是完全足够的。作为公差，我们使用
+ * 我们定义了牛顿步骤的最大数量和收敛标准的容忍度。通常，在良好的起始值下，牛顿方法在三到六步内收敛，所以最大的十步应该是完全足够的。作为公差，我们使用
  * $\|F(u^n_h)\|<\text{TOL}_f = 10^{-12}$ 作为残差的规范， $\|s_h^n\|
  * < \text{TOL}_x = 10^{-10}$
  * 作为牛顿更新的规范。这似乎有点过头了，但我们将看到，对于我们的例子，我们将在几步之后达到这些公差。
- *
  *
  * @code
  *   const unsigned int itmax = 10;
@@ -1407,9 +1373,7 @@
  *
  *
  * @endcode
- *
- * 现在我们开始实际的牛顿迭代。
- *
+ *  现在我们开始进行实际的牛顿迭代。
  *
  * @code
  *   for (unsigned int newton_step = 1; newton_step <= itmax; ++newton_step)
@@ -1418,7 +1382,6 @@
  *
  * 我们将线性化问题的右侧集合起来，计算牛顿更新。
  *
- *
  * @code
  *       assemble_rhs();
  *       compute_update();
@@ -1426,11 +1389,10 @@
  *
  * @endcode
  *
- * 然后我们计算误差，即牛顿更新的规范和残差。注意，在这一点上，我们可以通过改变compute_residual函数的输入参数
+ * 然后我们计算误差，即牛顿更新的规范和残差。请注意，在这一点上，我们可以通过改变compute_residual函数的输入参数
  * $\alpha$
  * 来加入牛顿方法的步长控制。然而，在这里我们只是使用
  * $\alpha$ 等于1来进行普通的牛顿迭代。
- *
  *
  * @code
  *       const double ERRx = newton_update.l2_norm();
@@ -1441,15 +1403,12 @@
  *
  * 接下来我们通过将牛顿更新添加到当前的牛顿步骤中来推进牛顿步骤。
  *
- *
  * @code
  *       solution.add(1.0, newton_update);
  *
  *
  * @endcode
- *
- * 一个简短的输出将告知我们当前的牛顿步骤。
- *
+ *  一个简短的输出将告知我们当前的牛顿步骤。
  *
  * @code
  *       pcout << "   Nstep " << newton_step << ", errf = " << ERRf
@@ -1460,7 +1419,6 @@
  * @endcode
  *
  * 在每个牛顿步骤之后，我们检查收敛标准。如果其中至少有一个得到满足，我们就完成了，并结束循环。如果我们在牛顿迭代的最大数量之后还没有找到一个满意的解决方案，我们就会通知用户这个缺点。
- *
  *
  * @code
  *       if (ERRf < TOLf || ERRx < TOLx)
@@ -1489,13 +1447,12 @@
  * @endcode
  *
  * <a name="GelfandProblemcompute_solution_norm"></a>
- * <h4>GelfandProblem::compute_solution_norm</h4>.
+ * <h4>GelfandProblem::compute_solution_norm</h4>。
  *
- * 解的H1-seminorm的计算可以用与 step-59
- * 中相同的方法进行。我们更新鬼魂值并使用函数
+ * 解决方案的H1-seminorm的计算可以用与 step-59
+ * 相同的方式进行。我们更新鬼魂值并使用函数
  * VectorTools::integrate_difference().
  * 最后我们收集所有MPI等级的所有计算并返回规范。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1525,9 +1482,9 @@
  * @endcode
  *
  * <a name="GelfandProblemoutput_results"></a>
- * <h4>GelfandProblem::output_results</h4>.
+ * <h4>GelfandProblem::output_results</h4>。
  *
- * 我们通过调用  DataOut::write_vtu_with_pvtu_record()  函数，以与
+ * 我们通过调用 DataOut::write_vtu_with_pvtu_record() 函数，以与
  * step-37
  * 中相同的方式，一次性生成vtu格式的图形输出文件和pvtu主文件。此外，与
  * step-40  一样，我们查询每个单元的  types::subdomain_id
@@ -1537,11 +1494,10 @@
  * <code>mapping</code>
  * 和有限元度作为细分的数量。但这仍然不足以正确表示解决方案，例如在ParaView中，因为我们将TransfiniteInterpolationManifold附加到内部单元上，这导致内部的单元是弯曲的。因此，我们将
  * DataOut::curved_inner_cells
- * 选项作为第三个参数，这样，内部单元也会使用相应的流形描述来构建补丁。
+ * 选项作为第三个参数，这样内部单元也使用相应的流形描述来构建补丁。
  * 请注意，我们可以用标志
  * DataOutBase::VtkFlags::write_higher_order_cells.
- * 来处理高阶元素，但是由于对ParaView以前版本的兼容性有限，而且VisIt的支持缺失，我们把这个选项留给未来的版本。
- *
+ * 来处理高阶元素，但是由于对ParaView以前版本的兼容性有限，而且VisIt的支持缺失，我们把这个选项留给了未来的版本。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1581,11 +1537,10 @@
  *
  * @endcode
  *
- * <a name="GelfandProblemrun"></a> <h4>GelfandProblem::run</h4>
+ * <a name="GelfandProblemrun"></a> <h4>GelfandProblem::run</h4>。
  *
  * <i>Gelfand
- * problem</i>的求解器类的最后一个缺失功能是运行功能。在开始时，我们打印关于系统规格和我们使用的有限元空间的信息。该问题在一个连续细化的网格上被解决了几次。
- *
+ * problem</i>的求解器类的最后一个缺失的函数是运行函数。在开始的时候，我们打印关于系统规格和我们使用的有限元空间的信息。该问题在一个连续细化的网格上被解决了几次。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -1632,8 +1587,7 @@
  *
  * @endcode
  *
- * 实际解决问题的第一个任务是生成或细化三角剖面。
- *
+ * 实际解决问题的第一项任务是生成或完善三角图。
  *
  * @code
  *       if (cycle == 0)
@@ -1647,9 +1601,7 @@
  *
  *
  * @endcode
- *
- * 现在我们建立系统并解决问题。这些步骤都伴随着时间测量和文本输出。
- *
+ * 现在我们建立了系统并解决了问题。这些步骤都伴随着时间测量和文本输出。
  *
  * @code
  *       Timer timer;
@@ -1677,8 +1629,7 @@
  *
  * @endcode
  *
- * 在问题被解决后，我们计算出解决方案的规范，并生成图形输出文件。
- *
+ * 在问题被解决后，我们计算出解决方案的法线，并生成图形输出文件。
  *
  * @code
  *       pcout << "Output results..." << std::endl;
@@ -1692,7 +1643,6 @@
  * @endcode
  *
  * 最后在每个周期后，我们打印计时信息。
- *
  *
  * @code
  *       computing_timer.print_summary();
@@ -1711,7 +1661,6 @@
  * 作为使用MPI并行运行的典型程序，我们设置了MPI框架，并通过将线程数限制为1来禁用共享内存并行化。最后，为了运行<i>Gelfand
  * problem</i>的求解器，我们创建一个 <code>GelfandProblem</code>
  * 类的对象并调用运行函数。举例来说，我们用四阶拉格朗日有限元在二维和三维中各解一次问题。
- *
  *
  * @code
  * int main(int argc, charargv[])
@@ -1762,11 +1711,9 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
  * 本教程步骤的目的是演示用无矩阵框架解决一个非线性PDE。
  *
- *
- * <a name="Programoutput"></a><h3>Program output</h3>.
+ *   <a name="Programoutput"></a><h3>Program output</h3>
  * 通过释放模式在两个进程上运行程序
  * @code
  * cmake . && make release && make && mpirun
@@ -1916,17 +1863,15 @@
  * </div> <div> <img src =
  * "https://www.dealii.org/images/steps/developer/step-66.solution-3d.png" alt
  * = "Solution of the three-dimensional Gelfand problem." width   = "100%">
- * </div> </div>
- *
- * <a name="Newtonsolver"></a><h3>Newton solver</h3> 。
- * 在上面的程序输出中，我们发现了一些关于牛顿迭代的有趣信息。每个细化周期的终端输出显示了牛顿方法的详细诊断，首先显示了牛顿步骤的数量，以及每一步的残差
- * $\|F(u_h^{n+1})\|$ 的规范，牛顿更新的规范 $\|s_h^n\|$
- * ，以及CG迭代的数量 <code>it</code>  。
+ * </div> </div>    <a name="Newtonsolver"></a><h3>Newton solver</h3> 。
+ * 在上面的程序输出中，我们发现一些关于牛顿迭代的有趣信息。每个细化周期的终端输出显示了牛顿方法的详细诊断，首先显示了牛顿步骤的数量，以及每一步的残差
+ * $\|F(u_h^{n+1})\|$ ，牛顿更新的规范 $\|s_h^n\|$
+ * ，和CG迭代的数量 <code>it</code> 。
  * 我们观察到，在所有情况下，牛顿方法大约在三到四步内收敛，这表明牛顿方法在全步长下的二次收敛
  * $\alpha = 1$
  * 。通常，如果你没有一个合适的初始猜测，你可以尝试减少步长的几个阻尼牛顿步骤
  * $\alpha < 1$
- * ，直到牛顿步骤再次进入二次收敛域。这种阻尼和放宽牛顿步长的做法确实需要对牛顿方法进行更复杂的实现，我们将其指定为本教程的一个可能的扩展。
+ * ，直到牛顿步骤再次进入二次收敛域。这种阻尼和放松牛顿步长的做法确实需要更复杂的牛顿方法的实现，我们将其指定为本教程的一个可能的扩展。
  * 此外，我们看到，随着网格的不断细化和DoF数量的增加，CG的迭代次数大致不变。这当然是由于几何多网格预处理的缘故，而且与其他使用这种方法的教程中的观察结果相似，例如
  * step-16  和  step-37
  * 。仅举一例，在三维案例中，经过五次修正后，我们有大约1470万个分布式DoFs和四阶拉格朗日有限元，但CG迭代的次数仍然少于10次。
@@ -1936,8 +1881,7 @@
  * <code>newton_update</code>
  * 的实际内容在重置之前，因此减少了几步CG迭代的次数。
  *
- *
- * <a name="Possibilitiesforextensions"></a><h3>Possibilities for
+ *   <a name="Possibilitiesforextensions"></a><h3>Possibilities for
  * extensions</h3> 。
  * 有几个可能的扩展是关于目前代码的小更新，以及对格尔凡德问题进行更深入的数值研究。
  * <a name="MoresophisticatedNewtoniteration"></a><h4>More sophisticated
@@ -1948,12 +1892,12 @@
  * @f{align*}{
  * \|F(u_h^{n+1})\| \leq \texttt{RelTol} \|u_h^{n+1}\| + \texttt{AbsTol}.
  * @f}
- * 对于有许多非线性系统需要解决的更高级的应用，例如，在时间依赖性问题的每个时间步长，事实证明，没有必要在每一个牛顿步长甚至每个时间步长重新设置和组装雅各布系数。相反，在牛顿迭代中可以使用前一个步骤中的现有Jacobian。只有在牛顿迭代收敛过慢的情况下，才会重新建立雅各布系数。这样的想法产生了一个<a
+ * 对于有许多非线性系统需要解决的更高级的应用，例如，在时间依赖性问题的每个时间步长，事实证明，没有必要在每一个牛顿步长甚至每个时间步长重新设置和组装雅各布系数。相反，在牛顿迭代中可以使用前一个步骤中的现有Jacobian。只有在牛顿迭代收敛过慢的情况下，才会重新建立雅各布式，例如，牛顿迭代。这样的想法产生了一个<a
  * href="https://en.wikipedia.org/wiki/Quasi-Newton_method">quasi-Newton
  * method</a>。诚然，当使用无矩阵框架时，无论如何都会省略雅各布矩阵的组装，但通过这种方式，我们可以尝试优化几何多网格预处理的重新组装。请记住，每次来自旧牛顿步骤的解决方案都必须分布到所有层面，并且必须重新初始化多重网格预处理程序。
  * <a name="Parallelscalabilityandthreadparallelism"></a><h4>Parallel
  * scalability and thread parallelism</h4> 。 在 step-37
- * 和其他文章的结果部分，无矩阵框架在大量处理器上的并行可扩展性已经得到了非常令人印象深刻的展示。在我们这里考虑的非线性情况下，我们注意到瓶颈之一可能成为无矩阵雅可比算子及其多阶段算子在前一个牛顿步骤中的转移和评估，因为我们需要在每个步骤中的所有阶段转移旧的解决方案。
+ * 和其他文章的结果部分，无矩阵框架在大量处理器上的并行可扩展性已经得到了非常令人印象深刻的证明。在我们这里考虑的非线性情况下，我们注意到瓶颈之一可能成为无矩阵雅可比算子及其多阶段算子在前一个牛顿步骤中的转移和评估，因为我们需要在每个步骤中的所有阶段转移旧的解决方案。
  * @cite castelli2021numerical
  * 中的首次并行可扩展性分析显示，当问题规模足够大时，可扩展性非常好。然而，为了得到可靠的结果，还需要进行更详细的分析。此外，到目前为止，这个问题只用MPI解决，没有使用线程的共享内存并行化的可能性。因此，对于这个例子，你可以尝试使用MPI和线程的混合并行化，如
  * step-48 中所述。 <a
@@ -1963,12 +1907,12 @@
  * name="Eigenvalueproblem"></a><h4>Eigenvalue problem</h4> 。
  * 我们可以考虑相应的特征值问题，也就是所谓的Bratuproblem。例如，如果我们定义一个固定的特征值
  * $\lambda\in[0,6]$
- * ，我们可以计算出相应的离散特征函数。你会注意到，牛顿步骤的数量会随着
+ * ，我们可以计算出相应的离散特征函数。你会注意到，随着
  * $\lambda$
- * 的增加而增加。为了减少牛顿步数，你可以使用以下技巧：从某个
+ * 的增加，牛顿步骤的数量也会增加。为了减少牛顿步数，你可以使用以下技巧：从某个
  * $\lambda$ 开始，计算特征函数，增加 $\lambda=\lambda +
  * \delta_\lambda$
- * ，然后用之前的解作为牛顿迭代的初始猜测。最后你可以在特征值
+ * ，然后使用之前的解作为牛顿迭代的初始猜测。最后你可以在特征值
  * $\lambda \mapsto \|u_h\|_{H^1(\Omega)}$ 上绘制出 $H^1(\Omega)$
  * -norm。如果进一步增加 $\lambda>7$ ，你会观察到什么？
  *

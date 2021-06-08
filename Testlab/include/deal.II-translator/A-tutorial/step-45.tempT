@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-45_0.txt
 /**
-  @page step_45 The step-45 tutorial program  
+  @page step_45 The step-45 tutorial program 
 * 本教程依赖于  step-6  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -21,23 +21,23 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>This program was contributed by Daniel Arndt and Matthias Maier.</i><a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1>
- 
 
-* 在这个例子中，我们介绍了如何使用周期性边界条件indeal.II。周期性边界条件是代数约束，通常出现在一个大域的代表性区域的计算中，这些区域在一个或多个方向上重复。
-* 一个例子是模拟光子晶体的电子结构，因为它们有一个类似格子的结构，因此，往往只需要在格子的一个盒子上进行实际计算就可以了。为了能够以这种方式进行，我们必须假设该模型可以周期性地扩展到其他盒子；这就要求解决方案具有周期性结构。
+
+* 在这个例子中，我们介绍了如何使用周期性的边界条件。周期性边界条件是代数约束，通常出现在一个更大领域的代表性区域的计算中，这些区域在一个或多个方向上重复。
+* 一个例子是模拟光子晶体的电子结构，因为它们有一个类似格子的结构，因此，往往只需要在格子的一个盒子上进行实际计算就可以了。为了能够以这种方式进行，我们必须假设该模型可以周期性地扩展到其他盒子；这就要求解具有周期性结构。
 *<a name="Procedure"></a><a name="Procedure"></a><h1>Procedure</h1>
-* 
+*
 
-* 应用周期性边界条件的一般方法包括三个步骤（参见 @ref GlossPeriodicConstraints "关于周期性边界条件的词汇"）。
-* 
+应用周期性边界条件的一般方法包括三个步骤（也见 @ref GlossPeriodicConstraints "关于周期性边界条件的词汇表"）： * deal.II提供了一些高水平的入口来施加周期性边界条件。
+*
 * - 创建一个网格
-* 
+*
 * - 使用 GridTools::collect_periodic_faces() 确定边界不同部分的一对面，在这些面上的解应该是对称的。
-* 
+*
 * - 使用 parallel::distributed::Triangulation::add_periodicity() 将周期性信息添加到网格中。
-* 
+*
 * - 使用 DoFTools::make_periodicity_constraints() 添加周期性约束。
 * 第二和第三步对于使用 parallel::distributed::Triangulation 类的平行网格是必要的，以确保位于域的对面但由周期性面连接的单元是幽灵层的一部分，如果其中一个单元被存储在本地处理器上的话。
 * 第一步包括收集匹配的周期性面，并将它们存储在 GridTools::PeriodicFacePair. 的 <code>std::vector</code> 中，这是通过函数 GridTools::collect_periodic_faces() 完成的，例如可以这样调用。
@@ -51,7 +51,7 @@ GridTools::collect_periodic_faces(dof_handler,
                                   matrix = <default value>,
                                   first_vector_components = <default value>);
 @endcode
-* 
+*
 * 这个调用在容器dof_handler的所有面中循环进行，周期性边界的边界指标分别为 @p b_id1 和 @p b_id2, 。(你可以在创建粗略的网格后手工指定这些边界指标，见 @ref GlossBoundaryIndicator  "边界指标"。另外，如果你指定了 "colorize "标志，你也可以让GridGenerator命名空间中的许多函数来做这件事；在这种情况下，这些函数会给边界的不同部分分配不同的边界指标，细节通常在这些函数的文档中详细说明）。)
 * 具体来说，如果 $\text{vertices}_{1/2}$ 是两个面 $\text{face}_{1/2}$ 的顶点，那么上面的函数调用将匹配成对的面（和道夫），使得 $\text{vertices}_2$ 和 $matrix\cdot \text{vertices}_1+\text{offset}$ 之间的差异除了方向之外在每个分量上都消失，并将产生的对与相关数据存储在 @p matched_pairs. 中（关于匹配过程的详细信息见 GridTools::orthogonal_equality() 。
 * 例如，考虑彩色单元格 $\Omega=[0,1]^2$ ，其边界指示器0在左边，1在右边，2在下面，3在上面。见 GridGenerator::hyper_cube() 的文件，了解这个关于如何分配边界指标的公约）。然后。
@@ -86,7 +86,7 @@ GridTools::collect_periodic_faces(dof_handler,
 * @code
 DoFTools::make_periodicity_constraints(matched_pairs, constraints);
 @endcode
-* 
+*
 * 除了这个高级接口外，还有一些 DoFTools::make_periodicity_constraints 的变体可以结合这两个步骤（见 DofTools::make_periodicity_constraints). 的变体）。
 * 如果需要更多的灵活性，还有一个 DoFTools::make_periodicity_constraints 的低层次接口。低级变体允许直接指定两个应被约束的面。
 * @code
@@ -101,12 +101,12 @@ make_periodicity_constraints(face_1,
                              matrix = <default value>);
 @endcode
 * 这里，我们需要使用 @p face_orientation,  @p face_flip 和 @p face_orientation. 来指定两个面的方向。 关于更详细的描述，请看 DoFTools::make_periodicity_constraints. 的文档。除了自我解释的 @p component_mask 和 @p affine_constraints. 之外，其余参数与高级接口相同。
- 
+*
 
-* <a name="problem"></a><a name="Apracticalexample"></a><h1>A practical example</h1> 。
-* 
+*<a name="problem"></a><a name="Apracticalexample"></a><h1>A practical example</h1>
 
-* 在下文中，我们将展示如何在一个更复杂的例子中使用上述函数。任务是对斯托克斯流的速度分量实施旋转的周期性约束。
+
+* 在下文中，我们将展示如何在一个更复杂的例子中使用上述函数。我们的任务是对斯托克斯流的速度分量实施旋转周期性约束。
 * 在一个由 $\Omega=\{{\bf x}\in(0,1)^2:\|{\bf x}\|\in (0.5,1)\}$ 定义的四分之一圆上，我们要解决斯托克斯问题@f{eqnarray*}
 * 
 
@@ -135,40 +135,40 @@ make_periodicity_constraints(face_1,
   u_x(0,\nu)&=-u_y(\nu,0)&\nu&\in[0,1]\\
   u_y(0,\nu)&=u_x(\nu,0)&\nu&\in[0,1].
 @f}
-* 
+*
 * 网格将由 GridGenerator::quarter_hyper_shell(), 生成，它也记录了如果它的`colorize'参数设置为`true'，它如何给它的各个边界分配边界指标。
-* 
+*
 
 * <a name="CommProg"></a> <h1> The commented program</h1>。
 * 这个例子程序是对 step-22 的轻微修改，使用Trilinos并行运行，以演示在deal.II中使用周期性边界条件。因此我们不讨论大部分的源代码，只对处理周期性约束的部分进行评论。其余的请看 step-22 和底部的完整源代码。
-* 
+*
 
-* 
-* 为了实现周期性边界条件，只有两个函数需要修改。
- 
+*
+*为了实现周期性的边界条件，只有两个函数需要修改。
+*
 
- 
-* 
+
+*
 * -  <code>StokesProblem<dim>::setup_dofs()</code>  : 要用周期性约束来填充AffineConstraints对象
-* 
+*
 
-* 
-* 
-* -  <code>StokesProblem<dim>::create_mesh()</code>  : 为一个分布式三角形提供周期性信息。
-* 
 
-* 
-* 程序的其余部分与 step-22 相同，所以让我们跳过这部分，只在下文中展示这两个函数。(不过，完整的程序可以在下面的 "普通程序 "部分找到)。
-* 
+*
+* -  <code>StokesProblem<dim>::create_mesh()</code>  : 为分布式三角形提供周期性信息。
+*
 
-* 
-*  
-*     
-*  
+
+* 程序的其余部分与 step-22 相同，所以让我们跳过这一部分，只在下面展示这两个函数。(完整的程序可以在下面的 "普通程序 "部分找到。)
+*
+
+
+
+
+*
 * <a name="Settingupperiodicityconstraintsondistributedtriangulations"></a> <h3>Setting up periodicity constraints on distributed triangulations</h3>。
- 
 
- 
+
+
 * @code
    template <int dim>
    void StokesProblem<dim>::create_mesh()
@@ -181,11 +181,11 @@ make_periodicity_constraints(face_1,
        triangulation, center, inner_radius, outer_radius, 0, true);
 * 
  @endcode
-* 
-* 在我们能够规定周期性约束之前，我们需要确保位于域的对面但由周期性面连接的单元是幽灵层的一部分，如果其中一个单元存储在本地处理器上。在这一点上，我们需要考虑我们要如何规定周期性。左边边界上的面的顶点 $\text{vertices}_2$ 应该与下边边界上的面的顶点 $\text{vertices}_1$ 相匹配，由 $\text{vertices}_2=R\cdot
- \text{vertices}_1+b$ 给出，其中旋转矩阵 $R$ 和偏移量 $b$ 由以下公式给出
+*
+* 在我们可以规定周期性约束之前，我们需要确保位于域的对面但由周期性面连接的单元是幽灵层的一部分，如果其中一个单元存储在本地处理器上。在这一点上，我们需要考虑我们要如何规定周期性。左边边界上的面的顶点 $\text{vertices}_2$ 应该与下边边界上的面的顶点 $\text{vertices}_1$ 相匹配，由 $\text{vertices}_2=R\cdot
+ \text{vertices}_1+b$ 给出，其中旋转矩阵 $R$ 和偏移量 $b$ 由以下几点给出
 
-* 
+
 * @f{align*}
  R=\begin{pmatrix}
  0&1\\-1&0
@@ -194,9 +194,9 @@ make_periodicity_constraints(face_1,
  b=\begin{pmatrix}0&0\end{pmatrix}.
  @f}
 * 我们要把得到的信息保存到这里的数据结构是基于三角法的。
-* 
+*
 
-* 
+
 * @code
      std::vector<GridTools::PeriodicFacePair<
        typename parallel::distributed::Triangulation<dim>::cell_iterator>>
@@ -217,11 +217,11 @@ make_periodicity_constraints(face_1,
                                        rotation_matrix);
 * 
  @endcode
-* 
-* 现在只要调用 parallel::distributed::Triangulation::add_periodicity. 就可以告诉三角法所需的周期性，特别容易。
-* 
+*
+* 现在只要调用 parallel::distributed::Triangulation::add_periodicity. 就可以告诉三角函数关于所需的周期性，特别容易。
+*
 
-* 
+
 * @code
      triangulation.add_periodicity(periodicity_vector);
 * 
@@ -278,10 +278,10 @@ make_periodicity_constraints(face_1,
                                                 fe.component_mask(velocities));
 * 
  @endcode
-* 
-* 在我们为网格提供了周期性约束的必要信息之后，我们现在就可以实际创建它们了。对于描述匹配，我们使用与之前相同的方法，也就是说，左边边界上的一个面的 $\text{vertices}_2$ 应该与下面边界上的一个面的顶点 $\text{vertices}_1$ 相匹配，这些顶点的旋转矩阵 $R$ 和偏移量 $b$ 是由以下公式给出的
+*
+* 在我们为网格提供了周期性约束的必要信息后，我们现在就可以实际创建它们了。对于描述匹配，我们使用与之前相同的方法，也就是说，左边边界上的一个面的 $\text{vertices}_2$ 应该与下方边界上的一个面的顶点 $\text{vertices}_1$ 相匹配，这些顶点的旋转矩阵 $R$ 和偏移量 $b$ 是由以下公式给出的
 
-* 
+
 * @f{align*}
  R=\begin{pmatrix}
  0&1\\-1&0
@@ -289,10 +289,10 @@ make_periodicity_constraints(face_1,
  \quad
  b=\begin{pmatrix}0&0\end{pmatrix}.
  @f}
-* 这两个对象不仅描述了面应该如何匹配，而且还描述了解决方案应该从 $\text{face}_2$ 转换到 $\text{face}_1$ 的哪个意义上。
-* 
+* 这两个对象不仅描述了面孔应该如何匹配，而且还描述了解决方案应该在哪种意义上从 $\text{face}_2$ 转换到 $\text{face}_1$ 。
+*
 
-* 
+
 * @code
        FullMatrix<double> rotation_matrix(dim);
        rotation_matrix[0][1] = 1.;
@@ -303,11 +303,11 @@ make_periodicity_constraints(face_1,
        Tensor<1, dim> offset;
 * 
  @endcode
-* 
+*
 * 为了设置约束，我们首先将周期性信息存储在一个类型为 <code>std::vector@<GridTools::PeriodicFacePair<typename   DoFHandler@<dim@>::%cell_iterator@>  </code>的辅助对象中。周期性边界的边界指标为2（x=0）和3（y=0）。所有其他的参数我们之前已经设置好了。在这种情况下，方向并不重要。由于 $\text{vertices}_2=R\cdot \text{vertices}_1+b$ 这正是我们想要的。
-* 
+*
 
-* 
+
 * @code
        std::vector<
          GridTools::PeriodicFacePair<typename DoFHandler<dim>::cell_iterator>>
@@ -324,21 +324,21 @@ make_periodicity_constraints(face_1,
                                          rotation_matrix);
 * 
  @endcode
-* 
-* 接下来，我们需要提供关于解的哪些矢量值分量应该被旋转的信息。由于我们在这里选择只约束速度，而且是从解向量的第一个分量开始的，所以我们只需插入一个0。
-* 
 
-* 
+* 接下来，我们需要提供关于解决方案中哪些矢量值分量应该被旋转的信息。由于我们在这里选择只约束速度，而且是从解向量的第一个分量开始的，所以我们只需插入一个0。
+*
+
+
 * @code
        std::vector<unsigned int> first_vector_components;
        first_vector_components.push_back(0);
 * 
  @endcode
-* 
+*
 * 在周期性_vector中设置了所有的信息后，我们要做的就是告诉make_periodicity_constraints来创建所需的约束。
-* 
+*
 
-* 
+
 * @code
        DoFTools::make_periodicity_constraints<dim, dim>(periodicity_vector,
                                                         constraints,
@@ -424,21 +424,21 @@ make_periodicity_constraints(face_1,
    }
 * 
  @endcode
-* 
+*
 * 然后程序的其余部分又与 step-22 相同。我们现在省略它，但和以前一样，你可以在下面的 "普通程序 "部分找到这些部分。
-* 
+*
 
-* 
-* <a name="Results"></a><h1>Results</h1> 。
-* 
 
-* 创建的输出并不十分令人惊讶。我们只是看到，相对于左边界和下边界，解是周期性的。
-*  <img src="https://www.dealii.org/images/steps/developer/step-45.periodic.png" alt="">  
+*<a name="Results"></a><h1>Results</h1>
+
+
+*创建的输出结果并不十分令人惊讶。我们只是看到，相对于左边界和下边界，解决方案是周期性的。
+*  <img src="https://www.dealii.org/images/steps/developer/step-45.periodic.png" alt=""> 
 * 如果没有周期性约束，我们最终会得到以下的解决方案。
-*  <img src="https://www.dealii.org/images/steps/developer/step-45.non_periodic.png" alt="">  
-* 
+*  <img src="https://www.dealii.org/images/steps/developer/step-45.non_periodic.png" alt=""> 
+*
 
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-45.cc"  。
+*<a name="PlainProg"></a><h1> The plain program</h1>  @include "step-45.cc" 
 * */
 
 

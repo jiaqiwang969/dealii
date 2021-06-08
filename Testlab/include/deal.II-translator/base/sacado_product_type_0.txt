@@ -1,3 +1,0 @@
-include/deal.II-translator/base/sacado_product_type_0.txt
-[0.x.0]
-

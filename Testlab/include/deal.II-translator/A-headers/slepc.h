@@ -17,14 +17,11 @@
 
 
 /**
- *
- * @defgroup SLEPcWrappers SLEPcWrappers
- * 本模块中的类是对SLEPc库所提供的功能的封装。该组中的所有类和函数都驻留在一个命名空间中
+ *    @defgroup SLEPcWrappers SLEPcWrappers
+ * 本模块中的类是对SLEPc库所提供的功能的封装。本组中的所有类和函数都驻留在一个命名空间中
  * @p PETScWrappers.  。
  * 只有在配置deal.II时检测到SLEPc安装和PETSc安装时，这些类才可用。请参考README文件以了解更多相关细节。
  * @author  Toby D. Young, 2011
- *
- *
  * @ingroup LAC PETScWrappers
  *
  */

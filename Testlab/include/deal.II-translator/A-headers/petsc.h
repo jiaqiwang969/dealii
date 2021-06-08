@@ -17,15 +17,13 @@
 
 
 /**
- *
- * @defgroup PETScWrappers PETScWrappers
+ *    @defgroup PETScWrappers PETScWrappers
  * 本模块中的类是PETSc库所提供的功能的封装器。它们提供了一个现代的面向对象的接口，与
  * deal.II
  * 中其他线性代数类的接口兼容。本组中的所有类和函数都驻留在一个命名空间中
  * @p PETScWrappers.  。
  * 这些类只有在配置deal.II时检测到PETSc安装时才可用。请参考README文件以了解更多相关细节。
  * @author  Wolfgang Bangerth, 2004
- *
  *
  * @ingroup LAC
  *

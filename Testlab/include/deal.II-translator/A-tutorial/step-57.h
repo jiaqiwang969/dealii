@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-57_0.txt
 /**
-  @page step_57 The step-57 tutorial program  
+  @page step_57 The step-57 tutorial program 
 * 本教程依赖于  step-15  ,  step-22  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -27,7 +27,7 @@
         <li><a href="#StationaryNavierStokesStationaryNavierStokes">StationaryNavierStokes::StationaryNavierStokes</a><a href="#StationaryNavierStokesStationaryNavierStokes">StationaryNavierStokes::StationaryNavierStokes</a>
         <li><a href="#StationaryNavierStokessetup_dofs">StationaryNavierStokes::setup_dofs</a><a href="#StationaryNavierStokessetup_dofs">StationaryNavierStokes::setup_dofs</a>
         <li><a href="#StationaryNavierStokesinitialize_system">StationaryNavierStokes::initialize_system</a><a href="#StationaryNavierStokesinitialize_system">StationaryNavierStokes::initialize_system</a>
-        <li><a href="#StationaryNavierStokesassemble">StationaryNavierStokes::assemble</a> ]<a href="#StationaryNavierStokesassemble">StationaryNavierStokes::assemble</a>
+        <li><a href="#StationaryNavierStokesassemble">StationaryNavierStokes::assemble</a><a href="#StationaryNavierStokesassemble">StationaryNavierStokes::assemble</a>
         <li><a href="#StationaryNavierStokessolve">StationaryNavierStokes::solve</a><a href="#StationaryNavierStokessolve">StationaryNavierStokes::solve</a>
         <li><a href="#StationaryNavierStokesrefine_mesh">StationaryNavierStokes::refine_mesh</a><a href="#StationaryNavierStokesrefine_mesh">StationaryNavierStokes::refine_mesh</a>
         <li><a href="#StationaryNavierStokesdimnewton_iteration">StationaryNavierStokes<dim>::newton_iteration</a><a href="#StationaryNavierStokesdimnewton_iteration">StationaryNavierStokes<dim>::newton_iteration</a>
@@ -52,7 +52,7 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>This program was contributed by Liang Zhao and Timo Heister.
 * 
 This material is based upon work partially supported by National Science
@@ -60,27 +60,27 @@ Foundation grant DMS1522191 and the Computational Infrastructure in
 Geodynamics initiative (CIG), through the National Science Foundation under
 Award No. EAR-0949446 and The University of California-Davis.
 </i>
-*  @dealiiTutorialDOI{10.5281/zenodo.484156,https://zenodo.org/badge/DOI/10.5281/zenodo.484156.svg}  
+*  @dealiiTutorialDOI{10.5281/zenodo.484156,https://zenodo.org/badge/DOI/10.5281/zenodo.484156.svg} 
 * <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
- 
 
-*<a name="NavierStokesEquations"></a><h3> Navier Stokes Equations </h3> *<a name="NavierStokesEquations"></a><h3> Navier Stokes Equations </h3>
- 
 
-* 在本教程中，我们展示了如何用牛顿方法解决不可压缩的NavierStokes方程（NSE）。我们在这里考虑的流动被假定是稳定的。在域 $\Omega \subset
-\mathbb{R}^{d}$ 、 $d=2,3$ 中，有一个片状光滑边界 $\partial \Omega$ 和一个给定的力场 $\textbf{f}$ ，我们看到一个速度场 $\textbf{u}$ 和一个压力场 $\textbf{p}$ ，满足@f{eqnarray*}
+*<a name="NavierStokesEquations"></a><h3> Navier Stokes Equations </h3>
+
+
+* 在本教程中，我们展示了如何用牛顿方法解决不可压缩的NavierStokes方程（NSE）。我们在这里考虑的流动是稳定的。在一个域 $\Omega \subset
+\mathbb{R}^{d}$ ， $d=2,3$ ，具有片状光滑边界 $\partial \Omega$ ，和一个给定的力场 $\textbf{f}$ ，我们看到一个速度场 $\textbf{u}$ 和一个压力场 $\textbf{p}$ ，满足@f{eqnarray*}
 * 
 - \nu \Delta\textbf{u} + (\textbf{u} \cdot \nabla)\textbf{u} + \nabla p &=& \textbf{f}\\
 * 
 - \nabla \cdot \textbf{u} &=& 0.
 @f} 。
-* 
+*
 * 与 step-22 中讨论的斯托克斯方程不同，由于对流项的存在，NSE是一个非线性方程组  $(\textbf{u} \cdot
 \nabla)\textbf{u}$  。计算数值解的第一步是将系统线性化，这将用牛顿方法完成。时间相关的问题在 step-35 中讨论，其中系统使用最后一个时间步骤的解进行线性化，不需要非线性解。
 * <a name="LinearizationofNavierStokesEquations"></a><h3> Linearization of Navier-Stokes Equations </h3> 。
-* 
+*
 
-* 我们通过@f{eqnarray*}
+* 我们定义一个非线性函数，其根是NSE的解，由@f{eqnarray*}
 F(\mathbf{u}, p) =
   \begin{pmatrix}
 * 
@@ -122,14 +122,14 @@ F(\mathbf{u}, p) =
 * 
 - \nabla \cdot \mathbf{u}
   \end{pmatrix}.
-@f}定义一个非线性函数，其根是NSE的一个解。
- 
+@f}定义。
+*
 * 假设初始猜测足够好，可以保证牛顿迭代的收敛性，并表示为 $\textbf{x} = (\textbf{u}, p)$ ，牛顿对向量函数的迭代可以定义为@f{eqnarray*}
   \textbf{x}^{k+1} = \textbf{x}^{k}
 * 
 - (\nabla F(\textbf{x}^{k}))^{-1} F(\textbf{x}^{k}),
 @f} 。
-* 
+*
 * 其中 $\textbf{x}^{k+1}$ 是步骤 $k+1$ 中的近似解， $\textbf{x}^{k}$ 代表上一步的解， $\nabla
 F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似的迭代可以在 step-15 找到。
 * 牛顿迭代公式意味着新闻解决方案是通过在旧的解决方案中加入更新项来获得的。我们不评估雅各布矩阵并取其倒数，而是将更新项视为一个整体，即@f{eqnarray*}
@@ -137,14 +137,14 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 * 
 - (\nabla F(\textbf{x}^{k}))^{-1} F(\textbf{x}^{k}),
 @f} 。
-* 
+*
 *其中 $\textbf{x}^{k+1}=\textbf{x}^{k}+\delta \textbf{x}^{k}$  。
 * 我们可以通过解决系统@f{eqnarray*}
   \nabla F(\textbf{x}^{k}) \delta \textbf{x}^{k} =
 * 
 -F(\textbf{x}^{k}).
 @f}来找到更新项。
-* 
+*
 * 这里，前一个方程的左边代表 $F(\textbf{x})$ 沿 $\delta
 \textbf{x}^{k}$ 在 $\textbf{x}^{k}$ 的方向梯度。根据定义，方向性梯度由@f{eqnarray*}
   & &\nabla F(\mathbf{u}^{k}, p^{k}) (\delta \mathbf{u}^{k}, \delta p^{k}) \\
@@ -331,7 +331,7 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 - \nabla \cdot \delta \mathbf{u}^{k}
       \end{pmatrix}.
 @f}给出。
-* 
+*
 * 因此，我们得出线性化系统：@f{eqnarray*}
 * 
 
@@ -369,19 +369,19 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 -\nabla \cdot\delta \mathbf{u}^{k}
   = \nabla \cdot \mathbf{u}^{k},
 @f} 。
-* 
+*
 * 其中 $\textbf{u}^k$ 和 $p^k$ 是前次迭代的解。此外，第二个方程的右手边不是零，因为离散解不完全是无发散的（连续解是无发散的）。这里的右手边作为一个修正，导致速度的离散解沿着牛顿迭代是无发散的。在这个线性系统中，唯一的未知数是更新项 $\delta \textbf{u}^{k}$ 和 $\delta p^{k}$ ，我们可以使用与 step-22 类似的策略（并以同样的方式推导出弱形式）。
 * 现在，可以用牛顿迭代法来解决更新项。
-*  <ol>   <li>  初始化。初始猜测  $u_0$  和  $p_0$  ，公差  $\tau$  ；  </li>   <li>  线性求解计算更新项  $\delta\textbf{u}^{k}$  和  $\delta p^k$  ；  </li>   <li>  更新近似值。       $\textbf{u}^{k+1} = \textbf{u}^{k} + \delta\textbf{u}^{k}$  和  $p^{k+1} = p^{k} + \delta p^{k}$  ;  </li>   <li>  检查残差规范。  $E^{k+1} = \|F(\mathbf{u}^{k+1}, p^{k+1})\|$  :  <ul>   <li>  如果  $E^{k+1} \leq \tau$  , 停止。 </li>   <li>  如果  $E^{k+1} > \tau$  ，回到步骤2。 </li>   </ul>   </li>   </ol> 。
+*  <ol>   <li>  初始化。初始猜测  $u_0$  和  $p_0$  ，公差  $\tau$  ；  </li>   <li>  线性求解计算更新项  $\delta\textbf{u}^{k}$  和  $\delta p^k$  ；  </li>   <li>  更新近似值。        $\textbf{u}^{k+1} = \textbf{u}^{k} + \delta\textbf{u}^{k}$  和  $p^{k+1} = p^{k} + \delta p^{k}$  ;  </li>   <li>  检查残差规范。   $E^{k+1} = \|F(\mathbf{u}^{k+1}, p^{k+1})\|$  :  <ul>   <li>  如果  $E^{k+1} \leq \tau$  , 停止。 </li>   <li>  如果  $E^{k+1} > \tau$  ，回到步骤2。 </li>   </ul>   </li>   </ol> 。
 * <a name="FindinganInitialGuess"></a><h3> Finding an Initial Guess </h3>。
- 
 
-* 初始猜测需要足够接近解决方案，以便牛顿方法收敛；因此，找到一个好的起始值对非线性求解器至关重要。
+
+* 初始猜测需要足够接近牛顿方法收敛的解；因此，找到一个好的起始值对非线性求解器是至关重要的。
 * 当粘度 $\nu$ 较大时，可以通过解决带有粘度 $\nu$ 的斯托克斯方程来获得一个好的初始猜测。虽然与问题有关，但对于这里考虑的测试问题来说，这对 $\nu \geq 1/400$ 有效。
-* 然而，如果粘度较小，对流项 $(\mathbf{u}\cdot\nabla)\mathbf{u}$ 将占主导地位，如测试案例2的 $1/7500$ 。 在这种情况下，我们使用延续法建立一系列的辅助NSE，其粘度接近于目标NSE中的粘度。相应地，我们建立一个 $\{\nu_{i}\}$ 与 $\nu_{n}= \nu$ 的序列，如果 $|\nu_{i}
+* 然而，如果粘度较小，对流项 $(\mathbf{u}\cdot\nabla)\mathbf{u}$ 将占主导地位，如测试案例2的 $1/7500$ 。  在这种情况下，我们使用延续法建立一系列的辅助NSE，其粘度接近于目标NSE中的粘度。相应地，我们建立一个 $\{\nu_{i}\}$ 与 $\nu_{n}= \nu$ 的序列，如果 $|\nu_{i}
 * 
 -
-\nu_{i+1}|$ 较小，则接受两个NSE的粘度 $\nu_{i}$ 和 $\nu_{i+1}$ 的解是接近的。 然后，我们使用带有粘度的NSE $\nu_{i}$ 的解作为带有 $\nu_{i+1}$ 的NSE的初始猜测。这可以被认为是一个从斯托克斯方程到我们要解决的NSE的阶梯。
+\nu_{i+1}|$ 较小，则接受两个NSE的粘度 $\nu_{i}$ 和 $\nu_{i+1}$ 的解是接近的。  然后，我们使用带有粘度的NSE $\nu_{i}$ 的解作为带有 $\nu_{i+1}$ 的NSE的初始猜测。这可以被认为是一个从斯托克斯方程到我们要解决的NSE的阶梯。
 * 也就是说，我们首先解决一个斯托克斯问题@f{eqnarray*}
 * 
 
@@ -404,7 +404,7 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 * 
 -\nabla \cdot \textbf{u} &=& 0
 @f} 。
-* 
+*
 * 以得到@f{eqnarray*}
 * 
 
@@ -427,7 +427,7 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 * 
 -\nabla \cdot \textbf{u} &=& 0,
 @f}的初始猜测。
-* 
+*
 * 这里 $\nu_{1}$ 相对较大，因此带粘度的斯托克斯问题的解 $\nu_{1}$ 可以作为牛顿迭代中NSE的初始猜测。
 *然后是@f{eqnarray*}
 * 
@@ -451,7 +451,7 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 * 
 -\nabla \cdot \textbf{u} &=& 0.
 @f}的解。
-* 
+*
 *作为@f{eqnarray*}
 * 
 
@@ -474,12 +474,12 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
 * 
 -\nabla \cdot \textbf{u} &=& 0.
 @f}的初始猜测。
-* 
+*
 * 这个过程是用实验确定的粘度序列 $\{\nu_i\}$ 重复进行的，这样最终的解可以作为牛顿迭代的初始猜测。
 *<a name="TheSolverandPreconditioner"></a><h3>The %Solver and Preconditioner </h3>
-* 
+*
 
-* 在牛顿迭代的每一步，问题的结果是解决形式为@f{eqnarray*}
+*在牛顿迭代的每一步，问题的结果是解决形式为@f{eqnarray*}
     \begin{pmatrix}
       A & B^{T} \\
       B & 0
@@ -493,9 +493,9 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
       F \\
       0
     \end{pmatrix}.
-@f}的鞍点系统。
-* 
-* 这个系统矩阵与 step-22 中的矩阵具有相同的块状结构。然而，左上角的矩阵 $A$ 并不是对称的，因为有非线性项。我们可以不求解上述系统，而是求解等价系统@f{eqnarray*}
+@f}的无鞍点系统。
+*
+* 这个系统矩阵与 step-22 中的矩阵具有相同的块结构。然而，左上角的矩阵 $A$ 并不是对称的，因为有非线性项。我们可以不求解上述系统，而是求解等价系统@f{eqnarray*}
     \begin{pmatrix}
       A + \gamma B^TW^{-1}B & B^{T} \\
       B & 0
@@ -510,22 +510,22 @@ F(\textbf{x}^{k})$ 是在 $\textbf{x}^{k}$ 处评估的雅各布矩阵。类似�
       0
     \end{pmatrix}
 @f} 。
-* 
-*有一个参数 $\gamma$ 和一个可逆矩阵 $W$  。这里 $\gamma B^TW^{-1}B$ 是Augmented Lagrangian项；详见[1]。
-*用 $G$ 表示新系统的系统矩阵，用 $b$ 表示右侧，我们用右侧预处理 $P^{-1}$ 对其进行反复求解，即 $GP^{-1}y = b$ ，其中@f{eqnarray*}
+*
+*有一个参数 $\gamma$ 和一个可逆矩阵 $W$  。这里 $\gamma B^TW^{-1}B$ 是增强的拉格朗日项；详见[1]。
+*用 $G$ 表示新系统的系统矩阵，用 $b$ 表示右侧，我们用右侧预处理 $P^{-1}$ 反复求解为 $GP^{-1}y = b$ ，其中@f{eqnarray*}
 P^{-1} =
   \begin{pmatrix}
     \tilde{A} & B^T \\
     0         & \tilde{S}
   \end{pmatrix}^{-1}
-@f} 。
- 
+@f}
+
 *与 $\tilde{A} = A + \gamma B^TW^{-1}B$ ， $\tilde{S}$ 是对应的Schur补码 $\tilde{S} = B^T \tilde{A}^{-1} B$ 。我们让 $W = M_p$ ，其中 $M_p$ 是压力质量矩阵，那么 $\tilde{S}^{-1}$ 可以被@f{eqnarray*}
 \tilde{S}^{-1} \approx
 * 
 -(\nu+\gamma)M_p^{-1}.
 @f}所近似。
-* 
+*
 * 详见[1]。
 * 我们将 $P^{-1}$ 分解为@f{eqnarray*}
 P^{-1} =
@@ -544,34 +544,34 @@ P^{-1} =
     0 & \tilde{S}^{-1}
   \end{pmatrix}.
 @f}。
-* 
+*
 * 这里需要两个不精确的求解器，分别用于 $\tilde{A}^{-1}$ 和 $\tilde{S}^{-1}$ （见[1]）。由于压力质量矩阵是对称的和正定的，用ILU作为预处理程序的CG适合用于 $\tilde{S}^{-1}$ 。为了简单起见，我们对 $\tilde{A}^{-1}$ 使用直接求解器UMFPACK。最后一个成分是与 $B^T$ 的疏散矩阵-向量乘积。我们不计算 $\tilde{A}$ 中增强拉格朗日项的矩阵乘积，而是采用Grad-Div稳定化 $(\nabla \cdot \phi _{i}, \nabla \cdot \phi _{j}) \approx (B^T
 M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
-*<a name="TestCase"></a><h3> Test Case </h3>
-* 
+*<a name="TestCase"></a><h3> Test Case </h3>。
+*
 
-* 我们使用盖子驱动的空腔流作为我们的测试案例；详见[3]。计算域是单位平方，右手边是 $f=0$  。边界条件是@f{eqnarray*}
+* 我们使用盖子驱动的空腔流作为我们的测试案例；详见[3]。计算域是单位方格，右手边是 $f=0$  。边界条件是@f{eqnarray*}
   (u(x, y), v(x,y)) &=& (1,0) \qquad\qquad \textrm{if}\ y = 1 \\
   (u(x, y), v(x,y)) &=& (0,0) \qquad\qquad \textrm{otherwise}.
 @f} 。
-* 
+*
 * 当解决这个问题时，误差由非线性误差（来自牛顿迭代）和离散化误差（取决于网格大小）组成。非线性部分随着牛顿迭代的进行而减少，离散化误差随着网格的细化而减少。在这个例子中，粗网的解被转移到连续的细网中，并作为初始猜测使用。因此，非线性误差总是低于牛顿迭代的容忍度，离散化误差也随着每次网格细化而减少。
 * 在循环内部，我们涉及三个求解器：一个用于 $\tilde{A}^{-1}$ ，一个用于 $M_p^{-1}$ 和一个用于 $Gx=b$ 。前两个求解器在预处理程序中被调用，外部求解器给出更新项。总体收敛性由非线性残差控制；由于牛顿方法不需要精确的雅各布，我们采用了FGMRES，其外部线性求解器的相对公差仅为1e-4。事实上，我们对这个系统使用了截断的牛顿求解。正如在 step-22 中所描述的，内部线性求解也不需要做得非常精确。这里我们使用CG，压力质量矩阵的相对公差为1e-6。正如预期的那样，我们仍然看到非线性残差收敛到了1e-14。另外，我们使用了一个简单的线搜索算法来实现牛顿方法的全球化。
 *  $\mathrm{Re}=400$ 和 $\mathrm{Re}=7500$ 的腔体参考值分别来自[4]和[5]，其中 $\mathrm{Re}$ 是雷诺数，可以位于[8]。这里的粘度是由 $1/\mathrm{Re}$ 定义的。即使我们仍然可以找到 $\mathrm{Re}=10000$ 的解决方案，并且这些参考文献包含了用于比较的结果，我们在这里的讨论仅限于 $\mathrm{Re}=7500$ 。这是因为从 $\mathrm{Re}=8000$ 附近开始，解不再是静止的，而是变成了周期性的，详见[7]。
 * <a name="References"></a><h3> References </h3> 。
-*  <ol>  
-*  <li>  An Augmented Lagrangian-Based Approach to the Oseen Problem, M. Benzi and M. Olshanskii, SIAM J. SCI. COMPUT. COMPUT. 2006  <li>  Efficient augmented Lagrangian-type preconditioning for the Oseen problem using Grad-Div stabilization, Timo Heister and Gerd Rapin  <li>  http://www.cfd-online.com/Wiki/Lid-driven_cavity_problem  <li>  High-Re solution for incompressible flow using the Navier-Stokes Equations and a Multigrid Method, U. Ghia, K. N. Ghia, and C. T. Shin  <li>  ] 高雷诺数下二维稳定不可压缩驱动空腔流的数值解，E. Erturk, T.C. Corke and C. Gokcol  <li>  三维不可压缩Navier-Stokes方程的隐式加权ENO计划，Yang等人，1998  <li>  二维盖子驱动空腔问题再探讨，C. Bruneau and M. Saad, 2006  <li>  https://en.wikipedia.org/wiki/Reynolds_number  </ol>  
- 
+*  <ol> 
+*  <li>  An Augmented Lagrangian-Based Approach to the Oseen Problem, M. Benzi and M. Olshanskii, SIAM J. SCI. COMPUT.COMPUT.2006  <li>  Efficient augmented Lagrangian-type preconditioning for the Oseen problem using Grad-Div stabilization, Timo Heister and Gerd Rapin  <li>  http://www.cfd-online.com/Wiki/Lid-driven_cavity_problem  <li>  High-Re solution for incompressible flow using the Navier-Stokes Equations and a Multigrid Method, U. Ghia, K. N. Ghia, and C. T. Shin  <li>  高雷诺数下二维稳定不可压缩驱动空腔流的数值解，E. Erturk, T.C. Corke and C. Gokcol  <li>  三维不可压缩Navier-Stokes方程的隐式加权ENO方案，Yang等人，1998  <li>  二维盖子驱动空腔问题再探讨，C. Bruneau and M. Saad, 2006  <li>  https://en.wikipedia.org/wiki/Reynolds_number  </ol> 
+*
 
-* <a name="CommProg"></a> <h1> The commented program</h1>
-* <a name="Includefiles"></a> <h3>Include files</h3>.
- 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* <a name="Includefiles"></a><h3>Include files</h3> 。
 
-* 
+
+*
 * 像往常一样，我们首先包括一些著名的文件。
- 
+*
 
-* 
+
 * @code
  #include <deal.II/base/quadrature_lib.h>
  #include <deal.II/base/function.h>
@@ -606,29 +606,29 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
  #include <deal.II/numerics/error_estimator.h>
 * 
  @endcode
-* 
-* 为了在网格之间转移解决方案，包括这个文件。
-* 
+*
+*为了在网格之间转移解决方案，包括这个文件。
+*
 
-* 
+
 * @code
  #include <deal.II/numerics/solution_transfer.h>
 * 
  @endcode
-* 
+*
 * 这个文件包括UMFPACK：直接求解器。
-* 
+*
 
-* 
+
 * @code
  #include <deal.II/lac/sparse_direct.h>
 * 
  @endcode
-* 
-* 还有一个用于ILU预处理程序。
-* 
 
-* 
+* 还有ILU预处理程序的那个。
+*
+
+
 * @code
  #include <deal.II/lac/sparse_ilu.h>
 * 
@@ -641,15 +641,15 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    using namespace dealii;
 * 
  @endcode
-* 
+*
 * <a name="ThecodeNavierStokesProblemcodeclasstemplate"></a> <h3>The <code>NavierStokesProblem</code> class template</h3>。
- 
 
-* 
-* 这个类管理介绍中描述的矩阵和向量：特别是，我们为当前的解决方案、当前的牛顿更新和线搜索更新存储了一个BlockVector。 我们还存储了两个AffineConstraints对象：一个是强制执行Dirichlet边界条件的对象，另一个是将所有边界值设为0的对象。第一个约束解向量，第二个约束更新（也就是说，我们从不更新边界值，所以我们强制相关的更新向量值为零）。
-* 
 
-* 
+*
+* 这个类管理介绍中描述的矩阵和向量：特别是，我们为当前的解决方案、当前的牛顿更新和直线搜索更新存储了一个BlockVector。  我们还存储了两个AffineConstraints对象：一个是强制执行Dirichlet边界条件的对象，另一个是将所有边界值设为零的对象。第一个约束解向量，第二个约束更新（也就是说，我们从不更新边界值，所以我们强制相关的更新向量值为零）。
+*
+
+
 * @code
    template <int dim>
    class StationaryNavierStokes
@@ -708,15 +708,15 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    };
 * 
  @endcode
-* 
-* <a name="Boundaryvaluesandrighthandside"></a> <h3>Boundary values and right hand side</h3> 。
- 
+*
+* <a name="Boundaryvaluesandrighthandside"></a> <h3>Boundary values and right hand side</h3>。
 
-* 
+
+
 * 在这个问题中，我们设定沿空腔上表面的速度为1，其他三面墙的速度为0。右边的函数为零，所以我们在本教程中不需要设置右边的函数。边界函数的分量数为  <code>dim+1</code>  。我们最终将使用 VectorTools::interpolate_boundary_values 来设置边界值，这就要求边界值函数的分量数与解相同，即使没有全部使用。换句话说：为了让这个函数高兴，我们为压力定义边界值，即使我们永远不会实际使用它们。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class BoundaryValues : public Function<dim>
@@ -746,12 +746,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="BlockSchurPreconditionerforNavierStokesequations"></a> <h3>BlockSchurPreconditioner for Navier Stokes equations</h3>   
+*
+* <a name="BlockSchurPreconditionerforNavierStokesequations"></a> <h3>BlockSchurPreconditioner for Navier Stokes equations</h3>.
 * 正如介绍中所讨论的，Krylov迭代方法中的预处理器是作为一个矩阵-向量乘积算子实现的。在实践中，舒尔补码预处理器被分解为三个矩阵的乘积（如第一节所述）。第一个因素中的 $\tilde{A}^{-1}$ 涉及到线性系统 $\tilde{A}x=b$ 的解。在这里，为了简单起见，我们通过一个直接求解器来解决这个系统。第二个因素中涉及的计算是一个简单的矩阵-向量乘法。舒尔补码 $\tilde{S}$ 可以被压力质量矩阵很好地近似，其逆值可以通过不精确求解器得到。因为压力质量矩阵是对称的和正定的，我们可以用CG来解决相应的线性系统。
-* 
+*
 
-* 
+
 * @code
    template <class PreconditionerMp>
    class BlockSchurPreconditioner : public Subscriptor
@@ -775,14 +775,14 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    };
 * 
  @endcode
-* 
+*
 * 我们可以注意到，左上角的矩阵逆的初始化是在构造函数中完成的。如果是这样的话，那么预处理程序的每一次应用就不再需要计算矩阵因子了。
-* 
+*
 
-* 
-*  
 
-* 
+*
+
+
 * @code
    template <class PreconditionerMp>
    BlockSchurPreconditioner<PreconditionerMp>::BlockSchurPreconditioner(
@@ -833,13 +833,13 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesclassimplementation"></a> <h3>StationaryNavierStokes class implementation</h3>。
-* <a name="StationaryNavierStokesStationaryNavierStokes"></a> <h4>StationaryNavierStokes::StationaryNavierStokes</h4>   
+*
+* <a name="StationaryNavierStokesclassimplementation"></a> <h3>StationaryNavierStokes class implementation</h3>
+* <a name="StationaryNavierStokesStationaryNavierStokes"></a> <h4>StationaryNavierStokes::StationaryNavierStokes</h4>
 * 该类的构造函数看起来与  step-22  中的构造函数非常相似。唯一的区别是粘度和增强的拉格朗日系数  <code>gamma</code>  。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    StationaryNavierStokes<dim>::StationaryNavierStokes(const unsigned int degree)
@@ -852,12 +852,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    {}
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokessetup_dofs"></a> <h4>StationaryNavierStokes::setup_dofs</h4> 。  
+*
+* <a name="StationaryNavierStokessetup_dofs"></a> <h4>StationaryNavierStokes::setup_dofs</h4>
 * 这个函数初始化DoFHandler，列举当前网格的自由度和约束。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::setup_dofs()
@@ -866,20 +866,20 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      pressure_mass_matrix.clear();
 * 
  @endcode
-* 
-* 第一步是将自由度与给定的网格相关联。
-* 
+*
+* 第一步是将DoF与给定的网格联系起来。
+*
 
-* 
+
 * @code
      dof_handler.distribute_dofs(fe);
 * 
  @endcode
-* 
+*
 * 我们对组件进行重新编号，使所有的速度DoFs排在压力DoFs之前，以便能够将解向量分成两个块，在块预处理程序中分别访问。
-* 
+*
 
-* 
+
 * @code
      std::vector<unsigned int> block_component(dim + 1, 0);
      block_component[dim] = 1;
@@ -891,11 +891,11 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      unsigned int dof_p = dofs_per_block[1];
 * 
  @endcode
- 
-* 在牛顿方案中，我们首先将边界条件应用于从初始步骤得到的解。为了确保边界条件在牛顿迭代过程中保持满足，在更新时使用零边界条件  $\delta u^k$  。因此，我们设置了两个不同的约束对象。
-* 
+*
+* 在牛顿方案中，我们首先对初始步骤得到的解施加边界条件。为了确保边界条件在牛顿迭代过程中保持满足，在更新时使用零边界条件  $\delta u^k$  。因此，我们设置了两个不同的约束对象。
+*
 
-* 
+
 * @code
      FEValuesExtractors::Vector velocities(0);
      {
@@ -930,12 +930,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
- 
-* <a name="StationaryNavierStokesinitialize_system"></a> <h4>StationaryNavierStokes::initialize_system</h4>.   
+*
+* <a name="StationaryNavierStokesinitialize_system"></a> <h4>StationaryNavierStokes::initialize_system</h4>.
 * 在每个网格上的SparsityPattern和线性系统的大小是不同的。这个函数在网格细化后初始化它们。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::initialize_system()
@@ -954,12 +954,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesassemble"></a> <h4>StationaryNavierStokes::assemble</h4>.   
+*
+* <a name="StationaryNavierStokesassemble"></a> <h4>StationaryNavierStokes::assemble</h4>。
 * 这个函数建立了我们目前工作的系统矩阵和右手边。 @p initial_step 参数用于确定我们应用哪一组约束（初始步骤为非零，其他为零）。 @p assemble_matrix 参数分别决定是组装整个系统还是只组装右手边的向量。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::assemble(const bool initial_step,
@@ -989,14 +989,14 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      std::vector<types::global_dof_index> local_dof_indices(dofs_per_cell);
 * 
  @endcode
-* 
-* 对于线性化系统，我们为现时速度和梯度以及现时压力创建临时存储。在实践中，它们都是通过其在正交点的形状函数获得的。
-* 
+*
+* 对于线性化系统，我们为现在的速度和梯度，以及现在的压力建立临时存储。在实践中，它们都是通过其在正交点的形状函数获得的。
+*
 
-* 
-*  
 
-* 
+*
+
+
 * @code
      std::vector<Tensor<1, dim>> present_velocity_values(n_q_points);
      std::vector<Tensor<2, dim>> present_velocity_gradients(n_q_points);
@@ -1024,11 +1024,11 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
                                                  present_pressure_values);
 * 
  @endcode
-* 
-* 装配类似于  step-22  。一个以gamma为系数的附加项是扩增拉格朗日（AL），它是通过grad-div稳定化组装的。 正如我们在介绍中所讨论的，系统矩阵的右下块应该为零。由于压力质量矩阵是在创建预处理程序时使用的，所以我们在这里组装它，然后在最后把它移到一个单独的SparseMatrix中（与 step-22 相同）。
-* 
+*
+* 装配类似于  step-22  。一个以gamma为系数的附加项是扩增拉格朗日（AL），它是通过grad-div稳定化组装的。  正如我们在介绍中所讨论的，系统矩阵的右下块应该为零。由于压力质量矩阵是在创建预处理程序时使用的，所以我们在这里组装它，然后在最后把它移到一个单独的SparseMatrix中（与 step-22 相同）。
+*
 
-* 
+
 * @code
          for (unsigned int q = 0; q < n_q_points; ++q)
            {
@@ -1105,21 +1105,21 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      if (assemble_matrix)
        {
  @endcode
- 
-* 最后我们将压力质量矩阵移到一个单独的矩阵中。
-* 
+*
+* 最后我们把压力质量矩阵移到一个单独的矩阵中。
+*
 
-* 
+
 * @code
          pressure_mass_matrix.reinit(sparsity_pattern.block(1, 1));
          pressure_mass_matrix.copy_from(system_matrix.block(1, 1));
 * 
  @endcode
-* 
-* 注意，将这个压力块设置为零并不等同于不在这个块中装配任何东西，因为这里的操作将（错误地）删除从压力DoF的悬挂节点约束进来的对角线条目。这意味着，我们的整个系统矩阵将有完全为零的行。幸运的是，FGMRES处理这些行没有任何问题。
-* 
+*
+* 注意，将这个压力块设置为零并不等同于不在这个块中装配任何东西，因为这里的操作将（错误地）删除从压力作用力的悬挂节点约束中进来的对角线条目。这意味着，我们的整个系统矩阵将有完全为零的行。幸运的是，FGMRES处理这些行没有任何问题。
+*
 
-* 
+
 * @code
          system_matrix.block(1, 1) = 0;
        }
@@ -1138,12 +1138,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
- 
-* <a name="StationaryNavierStokessolve"></a> <h4>StationaryNavierStokes::solve</h4>   
-* 在这个函数中，我们使用FGMRES和程序开始时定义的块状预处理程序来解决线性系统。我们在这一步得到的是解向量。如果这是初始步骤，解向量为我们提供了纳维尔-斯托克斯方程的初始猜测。对于初始步骤，非零约束被应用，以确保边界条件得到满足。在下面的步骤中，我们将求解牛顿更新，所以使用零约束。
-* 
+*
+* <a name="StationaryNavierStokessolve"></a> <h4>StationaryNavierStokes::solve</h4>.
+* 在这个函数中，我们使用FGMRES和在程序开始时定义的块状预处理程序来解决线性系统。我们在这一步得到的是解向量。如果这是初始步骤，解向量为我们提供了纳维尔-斯托克斯方程的初始猜测。对于初始步骤，非零约束被应用，以确保边界条件得到满足。在下面的步骤中，我们将求解牛顿更新，所以使用零约束。
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::solve(const bool initial_step)
@@ -1174,12 +1174,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesrefine_mesh"></a> <h4>StationaryNavierStokes::refine_mesh</h4> <h4>StationaryNavierStokes::refine_mesh</h4>.   
+*
+* <a name="StationaryNavierStokesrefine_mesh"></a> <h4>StationaryNavierStokes::refine_mesh</h4>
 * 在粗略的网格上找到一个好的初始猜测后，我们希望通过细化网格来减少误差。这里我们做了类似于 step-15 的自适应细化，只是我们只对速度使用Kelly估计器。我们还需要使用SolutionTransfer类将当前的解转移到下一个网格。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::refine_mesh()
@@ -1207,45 +1207,45 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      triangulation.execute_coarsening_and_refinement();
 * 
  @endcode
-* 
+*
 * 首先，DoFHandler被设置，约束被生成。然后我们创建一个临时的BlockVector  <code>tmp</code>  ，其大小与新网格上的解决方案一致。
-* 
+*
 
-* 
+
 * @code
      setup_dofs();
 * 
      BlockVector<double> tmp(dofs_per_block);
 * 
  @endcode
-* 
+*
 * 将解决方案从粗网格转移到细网格，并对新转移的解决方案应用边界值约束。注意，present_solution仍然是对应于旧网格的一个向量。
-* 
+*
 
-* 
+
 * @code
      solution_transfer.interpolate(present_solution, tmp);
      nonzero_constraints.distribute(tmp);
 * 
  @endcode
-* 
-* 最后设置矩阵和向量，并将present_solution设置为内插的数据。
-* 
+*
+* 最后设置矩阵和向量，并将present_solution设置为插值的数据。
+*
 
-* 
+
 * @code
      initialize_system();
      present_solution = tmp;
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesdimnewton_iteration"></a> <h4>StationaryNavierStokes<dim>::newton_iteration</h4>   
-* 这个函数实现了牛顿迭代，给定了公差，最大迭代次数，以及要做的网格细化次数。  
+*
+* <a name="StationaryNavierStokesdimnewton_iteration"></a> <h4>StationaryNavierStokes<dim>::newton_iteration</h4>
+* 这个函数实现了牛顿迭代，给定公差，最大迭代次数，以及要做的网格细化次数。   
 * 参数 <code>is_initial_step</code> 告诉我们是否需要 <code>setup_system</code> ，以及哪一部分，系统矩阵或右手边的矢量，应该被组装起来。如果我们做直线搜索，在最后一次迭代中检查残差准则时，右手边已经被组装起来了。因此，我们只需要在当前迭代中装配系统矩阵。最后一个参数 <code>output_result</code> 决定了是否应该产生图形输出。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::newton_iteration(
@@ -1293,11 +1293,11 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
                  solve(first_step);
 * 
  @endcode
-* 
-* 为了确保我们的解决方案越来越接近精确的解决方案，我们让解决方案用一个权重 <code>alpha</code> 来更新，使新的残差小于上一步的残差，这在下面的循环中完成。这与 step-15 中使用的线搜索算法相同。
-* 
+*
+* 为了确保我们的解决方案越来越接近精确的解决方案，我们让解决方案用权重 <code>alpha</code> 更新，使新的残差小于上一步的残差，这在下面的循环中完成。这与 step-15 中使用的线搜索算法相同。
+*
 
-* 
+
 * @code
                  for (double alpha = 1.0; alpha > 1e-5; alpha= 0.5)
                    {
@@ -1339,12 +1339,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokescompute_initial_guess"></a> <h4>StationaryNavierStokes::compute_initial_guess</h4>.   
-* 这个函数将通过使用延续法为我们提供一个初始猜测，正如我们在介绍中讨论的那样。雷诺数被逐级增加 step- ，直到我们达到目标值。通过实验，斯托克斯的解足以成为雷诺数为1000的NSE的初始猜测，所以我们从这里开始。 为了确保前一个问题的解决方案与下一个问题足够接近，步长必须足够小。
-* 
+*
+* <a name="StationaryNavierStokescompute_initial_guess"></a> <h4>StationaryNavierStokes::compute_initial_guess</h4>。
+* 这个函数将通过使用延续法为我们提供一个初始猜测，正如我们在介绍中讨论的那样。雷诺数被逐级增加 step- ，直到我们达到目标值。通过实验，斯托克斯的解足以成为雷诺数为1000的NSE的初始猜测，所以我们从这里开始。  为了确保前一个问题的解决方案与下一个问题足够接近，步长必须足够小。
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::compute_initial_guess(double step_size)
@@ -1365,12 +1365,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesoutput_results"></a> <h4>StationaryNavierStokes::output_results</h4>。  
-* 这个函数与 step-22 中的相同，只是我们为输出文件选择一个也包含雷诺数（即当前背景下的粘度的倒数）的名称。
-* 
+*
+* <a name="StationaryNavierStokesoutput_results"></a> <h4>StationaryNavierStokes::output_results</h4>。
+* 这个函数与 step-22 中的相同，只是我们为输出文件选择一个也包含雷诺数（即在当前背景下的粘度的倒数）的名称。
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::output_results(
@@ -1398,12 +1398,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesprocess_solution"></a> <h4>StationaryNavierStokes::process_solution</h4>   
+*
+* <a name="StationaryNavierStokesprocess_solution"></a> <h4>StationaryNavierStokes::process_solution</h4>。
 * 在我们的测试案例中，我们不知道分析解。该函数输出沿 $x=0.5$ 和 $0 \leq y \leq 1$ 的速度分量，因此可以与文献中的数据进行比较。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::process_solution(unsigned int refinement)
@@ -1437,12 +1437,12 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
    }
 * 
  @endcode
-* 
-* <a name="StationaryNavierStokesrun"></a> <h4>StationaryNavierStokes::run</h4>。  
-* 这是本程序的最后一步。在这一部分，我们分别生成网格和运行其他函数。最大细化可以通过参数设置。
-* 
 
-* 
+* <a name="StationaryNavierStokesrun"></a> <h4>StationaryNavierStokes::run</h4>。
+* 这是本程序的最后一步。在这一部分，我们分别生成网格和运行其他函数。最大细化可以通过参数来设置。
+*
+
+
 * @code
    template <int dim>
    void StationaryNavierStokes<dim>::run(const unsigned int refinement)
@@ -1453,11 +1453,11 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      const double Re = 1.0 / viscosity;
 * 
  @endcode
-* 
-* 如果粘度小于 $1/1000$ ，我们必须首先通过延续法搜索一个初始猜测。我们应该注意的是，搜索总是在初始网格上进行的，也就是本程序中的 $8 \times 8$ 网格。之后，我们只需做与粘度大于 $1/1000$ 时相同的工作：运行牛顿迭代，细化网格，转移解决方案，并重复。
-* 
+*
+* 如果粘度小于 $1/1000$ ，我们必须首先通过延续法搜索一个初始猜测。我们应该注意的是，搜索总是在初始网格上进行的，也就是这个程序中的 $8 \times 8$ 网格。之后，我们只需做与粘度大于 $1/1000$ 时相同的工作：运行牛顿迭代，细化网格，转移解决方案，并重复。
+*
 
-* 
+
 * @code
      if (Re > 1000.0)
        {
@@ -1472,14 +1472,14 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
      else
        {
  @endcode
-* 
+*
 * 当粘度大于1/1000时，斯托克斯方程的解作为初始猜测已经足够好。如果是这样，我们就不需要用延续法来寻找初始猜测。牛顿迭代可以直接开始。
-* 
+*
 
-* 
-*  
 
-* 
+*
+
+
 * @code
          newton_iteration(1e-12, 50, refinement, true, true);
        }
@@ -1524,13 +1524,13 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
  }
  @endcode
 * <a name="Results"></a><h1>Results</h1> 。
- 
 
-* 现在我们使用上面讨论的方法来解决具有粘度的纳维尔-斯托克斯方程 $1/400$ 和 $1/7500$  。
-*<a name="Testcase1LowReynoldsNumber"></a><h3> Test case 1: Low Reynolds Number </h3> 。
-* 
 
-* 在第一个测试案例中，粘度被设置为 $1/400$ 。正如我们在导论中所讨论的，初始猜测是相应的斯托克斯问题的解决方案。在下面的表格中，显示了每一个网格上的牛顿迭代的残差。表中的数据显示，牛顿迭代的结果是四等分的。
+* 现在我们用上面讨论的方法来解决有粘度的纳维尔-斯托克斯方程  $1/400$  和  $1/7500$  。
+* <a name="Testcase1LowReynoldsNumber"></a><h3> Test case 1: Low Reynolds Number </h3> 。
+*
+
+* 在第一个测试案例中，粘度被设定为 $1/400$ 。正如我们在导论中所讨论的，初始猜测是相应的斯托克斯问题的解。在下面的表格中，显示了每一个网格上的牛顿迭代的残差。表中的数据显示，牛顿迭代的结果是四等分的。
 *  <table align="center" class="doxtable">
 <tr>
     <th>$\mathrm{Re}=400$</th>
@@ -1631,16 +1631,16 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
   <td></td>
   <td></td>
 </tr>
-</table>  
-* 
+</table> 
+*
 
-* 
-* 
 
-* 
-* 
+*
 
-* 下面的数字显示了生成网格的顺序。对于 $\mathrm{Re}=400$ 的情况，初始猜测是通过在 $8 \times 8$ 的网格上求解斯托克斯得到的，并且网格是自适应细化的。在不同的网格之间，粗的网格中的解被内插到细的网格中，作为初始猜测使用。
+
+*
+
+* 下面的数字显示了生成网格的顺序。对于 $\mathrm{Re}=400$ 的情况，初始猜测是通过在 $8 \times 8$ 网格上求解斯托克斯得到的，并且网格是自适应细化的。在不同的网格之间，粗的网格中的解被内插到细的网格中，作为初始猜测使用。
 *  <table align="center">
   <tr>
     <td align="center">
@@ -1661,17 +1661,17 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
       <img src="https://www.dealii.org/images/steps/developer/step-57.Re400_Mesh4.png" width="232px" alt="">
     </td>
   </tr>
-</table>  
-* 这张图是用 $\mathrm{Re}=400$ 绘制的盖子驱动的空腔的流线图结果。 <img src="https://www.dealii.org/images/steps/developer/step-57.Re400_Streamline.png" alt="">  
+</table> 
+* 这张图是用 $\mathrm{Re}=400$ 绘制的盖子驱动的空腔的流线图结果。 <img src="https://www.dealii.org/images/steps/developer/step-57.Re400_Streamline.png" alt=""> 
 * 然后将该解与来自[4]的参考解进行比较，参考解的数据可以在文件 "ref_2d_ghia_u.txt "中找到。
-*  <img src="https://www.dealii.org/images/steps/developer/step-57.compare-Re400.svg" style="width:50%" alt="">  
+*  <img src="https://www.dealii.org/images/steps/developer/step-57.compare-Re400.svg" style="width:50%" alt=""> 
 * <a name="Testcase2HighReynoldsNumber"></a><h3> Test case 2: High Reynolds Number </h3> 。
-* 
+*
 
-* 牛顿迭代需要一个良好的初始猜测。然而，当雷诺数很大时，非线性项占主导地位，因此，斯托克斯方程的解可能与精确解相距甚远。如果斯托克斯解作为初始猜测，收敛性就会丧失。下图显示了非线性迭代被卡住，残差在进一步迭代中不再减少。
-*  <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_loss_convergence.svg" style="width:50%" alt="">  
+* 牛顿迭代法需要一个良好的初始猜测。然而，当雷诺数很大时，非线性项占主导地位，因此，斯托克斯方程的解可能与精确解相去甚远。如果斯托克斯解作为初始猜测，收敛性就会丧失。下图显示了非线性迭代被卡住，残差在进一步迭代中不再减少。
+*  <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_loss_convergence.svg" style="width:50%" alt=""> 
 * 因此，初始猜测必须通过延续法来获得，这在介绍中已经讨论过了。这里延续法的步长，即 $|\nu_{i}-\nu_{i+1}|$ ，为2000，初始网格的大小为 $32 \times 32$ 。在获得初始猜测后，如前述测试案例一样对网格进行细化。下图显示，在每次细化中，牛顿迭代都有二次收敛。为解决这个测试案例，共执行了52步牛顿迭代。
-*  <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_get_convergence.svg" style="width:50%" alt="">  
+*  <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_get_convergence.svg" style="width:50%" alt=""> 
 * 我们还显示了每个网格上牛顿迭代的每一步的残差。二次收敛的情况在表中清晰可见。
 *  <table align="center" class="doxtable">
   <tr>
@@ -1786,14 +1786,14 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
   <td></td>
   <td></td>
 </tr>
-</table>  
-* 
+</table> 
+*
 
-* 
-* 
 
-* 
-* 
+*
+
+
+*
 
 * 生成的网格序列看起来像这样。 <table align="center">
   <tr>
@@ -1815,17 +1815,17 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
       <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_Mesh4.png" width="232px" alt="">
     </td>
   </tr>
-</table>  我们将我们的解决方案与[5]的参考解决方案进行比较。 <img src="https://www.dealii.org/images/steps/developer/step-57.compare-Re7500.svg" style="width:50%" alt="">  下图是图形结果。 <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_Streamline.png" alt="">  
+</table>  我们将我们的解决方案与[5]的参考解决方案进行比较。 <img src="https://www.dealii.org/images/steps/developer/step-57.compare-Re7500.svg" style="width:50%" alt="">  下图是图形结果。 <img src="https://www.dealii.org/images/steps/developer/step-57.Re7500_Streamline.png" alt=""> 
 * 此外，误差由非线性误差和离散化误差组成，前者随着牛顿迭代的进行而减少，后者则取决于网格大小。这就是为什么我们必须细化网格并在下一个更细的网格上重复牛顿迭代。从上表中，我们可以看到每个网格上的残差（非线性误差）都在1e-12以下，但下面的图片显示了在随后的细网格上解的差异。
-*  <img src="https://www.dealii.org/images/steps/developer/step-57.converge-Re7500.svg" style="width:50%" alt="">  
+*  <img src="https://www.dealii.org/images/steps/developer/step-57.converge-Re7500.svg" style="width:50%" alt=""> 
 * <a name="extensions"></a>
 * <a name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3> 。
-* 
+*
 
-* <a name="Comparetoothersolvers"></a><h4>Compare to other solvers</h4>。
- 
+*<a name="Comparetoothersolvers"></a><h4>Compare to other solvers</h4>。
 
-* 很容易比较目前实现的线性求解器和仅仅对整个线性系统使用UMFPACK。你需要去掉包含常数压力的nullspace，这在  step-56  中已经完成。更有趣的是与其他最先进的预处理程序如PCD的比较。事实证明，这里的预处理器是非常有竞争力的，在论文[2]中可以看到。
+
+* 很容易比较目前实现的线性求解器和仅仅使用UMFPACK来解决整个线性系统。你需要去掉包含常数压力的nullspace，这在  step-56  中已经完成。更有趣的是与其他最先进的预处理程序如PCD的比较。事实证明，这里的预处理器是非常有竞争力的，在论文[2]中可以看到。
 * 下表显示了我们的迭代方法（FGMRES）与直接求解器（UMFPACK）之间的时间结果，整个系统的粘度设置为1/400。尽管我们在迭代求解器中的速度块使用了相同的直接求解器，但它的速度要快得多，消耗的内存也少。这在三维中会更加明显。
 *  <table align="center" class="doxtable">
 <tr>
@@ -1858,19 +1858,19 @@ M_p^{-1}B)_{ij}$ ，如[2]中所解释的。
   <td>29.17 (24.94)</td>
   <td>(>4GB RAM)</td>
 </tr>
-</table>  
-* 
+</table> 
+*
 
-* <a name="3dcomputations"></a><h4>3d computations</h4>.
-* 
+*<a name="3dcomputations"></a><h4>3d computations</h4> 。
+
 
 * 该代码被设置为也可以在3D中运行。当然，参考值是不同的，例如，见[6]。高分辨率的计算在这个例子中是不可行的，因为速度块的直接求解器在三维中不能很好地工作。相反，需要一个基于代数或几何多重网格的并行求解器。见下文。
 * <a name="Parallelization"></a><h4>Parallelization</h4> 。
-* 
+*
 
-* 对于较大的计算，尤其是三维计算，有必要实现MPI并行求解器和预处理器。一个好的起点是 step-55 ，它对Stokesequations的速度块使用代数多网格。另一个选择是看一下<a href="https://www.dealii.org/code-gallery.html">deal.II code
+* 对于较大的计算，特别是三维计算，有必要实现MPI并行求解器和预处理器。一个好的起点是 step-55 ，它在斯托克方程的速度块上使用代数多网格。另一个选择是看一下<a href="https://www.dealii.org/code-gallery.html">deal.II code
 gallery</a>中的代码列表，它已经包含了并行的纳维-斯托克斯求解器。
-* 
+*
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-57.cc"  。
 * */

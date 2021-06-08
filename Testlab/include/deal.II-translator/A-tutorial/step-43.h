@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-43_0.txt
 /**
-  @page step_43 The step-43 tutorial program  
+  @page step_43 The step-43 tutorial program 
 * 本教程依赖于  step-31  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -32,7 +32,7 @@
         <li><a href="#Assemblingmatricesandpreconditioners">Assembling matrices and preconditioners</a><a href="#Assemblingmatricesandpreconditioners">Assembling matrices and preconditioners</a>
       <ul>
         <li><a href="#TwoPhaseFlowProblemdimassemble_darcy_preconditioner">TwoPhaseFlowProblem<dim>::assemble_darcy_preconditioner</a><a href="#TwoPhaseFlowProblemdimassemble_darcy_preconditioner">TwoPhaseFlowProblem<dim>::assemble_darcy_preconditioner</a>
-        <li><a href="#TwoPhaseFlowProblemdimbuild_darcy_preconditioner">TwoPhaseFlowProblem<dim>::build_darcy_preconditioner</a> ]<a href="#TwoPhaseFlowProblemdimbuild_darcy_preconditioner">TwoPhaseFlowProblem<dim>::build_darcy_preconditioner</a>
+        <li><a href="#TwoPhaseFlowProblemdimbuild_darcy_preconditioner">TwoPhaseFlowProblem<dim>::build_darcy_preconditioner</a><a href="#TwoPhaseFlowProblemdimbuild_darcy_preconditioner">TwoPhaseFlowProblem<dim>::build_darcy_preconditioner</a>
         <li><a href="#TwoPhaseFlowProblemdimassemble_darcy_system">TwoPhaseFlowProblem<dim>::assemble_darcy_system</a><a href="#TwoPhaseFlowProblemdimassemble_darcy_system">TwoPhaseFlowProblem<dim>::assemble_darcy_system</a>
         <li><a href="#TwoPhaseFlowProblemdimassemble_saturation_system">TwoPhaseFlowProblem<dim>::assemble_saturation_system</a><a href="#TwoPhaseFlowProblemdimassemble_saturation_system">TwoPhaseFlowProblem<dim>::assemble_saturation_system</a>
         <li><a href="#TwoPhaseFlowProblemdimassemble_saturation_matrix">TwoPhaseFlowProblem<dim>::assemble_saturation_matrix</a><a href="#TwoPhaseFlowProblemdimassemble_saturation_matrix">TwoPhaseFlowProblem<dim>::assemble_saturation_matrix</a>
@@ -62,7 +62,7 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>
 This program was contributed by Chih-Che Chueh (University of Victoria) and
 Wolfgang Bangerth. Results from this program are used and discussed in the
@@ -94,21 +94,21 @@ necessarily reflect the views of the National Science Foundation, The
 California Institute of Technology, or of The University of California
 &ndash; Davis.
 </i>
-* 
 
-* <a name="Introduction"></a><a name="Intro"></a><h1>Introduction</h1> 。
- 
 
-* 多孔介质中的多相流模拟是一个普遍存在的问题，我们以前在  step-20  和  step-21  中已经以某种形式解决了这个问题。然而，正如在那里很容易看到的，它面临着两个主要困难：数值精度和效率。第一个困难在固定解算器 step-20 中很容易看到：使用最低阶的Raviart-Thomas元素不能期望产生高度精确的解。我们需要更精确的方法。第二个原因从时间依赖性 step-21 中可以看出：该程序慢得令人发指，没有希望在合理的时间范围内得到三维的高度精确解。
+* <a name="Introduction"></a><a name="Intro"></a> <h1>Introduction</h1> 。
+
+
+* 多孔介质中的多相流模拟是一个无处不在的问题，我们以前在  step-20  和  step-21  中已经以某种形式解决了这个问题。然而，正如在那里很容易看到的，它面临着两个主要困难：数值精度和效率。第一个困难在固定解算器 step-20 中很容易看到：使用最低阶的Raviart-Thomas元素不能期望产生高度精确的解。我们需要更精确的方法。第二个原因从时间依赖性 step-21 中可以看出：该程序慢得惊人，没有希望在合理的时间范围内得到三维的高度精确的解。
 * 在这个程序中，为了克服这两个问题，有五个方面我们正在努力改进，以建立一个高性能的模拟器。
-*  <ul>   <li>  高阶空间离散  <li>  自适应网格细化  <li>  自适应时间步进  <li>  运算器分离  <li>  高效求解器和预处理  </ul>  
+*  <ul>   <li>  高阶空间离散  <li>  自适应网格细化  <li>  自适应时间步进  <li>  运算器分割  <li>  高效求解器和预处理  </ul> 
 * 本程序的大部分灵感来自于 step-31 ，但这里讨论的几个技术是原创的。
-* 
+*
 
 *<a name="Advectiondominatedtwophaseflowmathematicalmodel"></a><h3>Advection-dominated two-phase flow mathematical model.</h3>
-* 
 
-* 我们考虑的是两相不混杂、不可压缩的流体的流动。毛细管和重力效应被忽略，而粘性效应被假定为主导因素。这种流动的治理方程与 step-21 中使用的方程相同，为
+
+* 我们考虑的是两相不混杂、不可压缩的流体的流动。毛细管和重力效应被忽略，而粘性效应被假定为主导因素。这种流动的管理方程与 step-21 中使用的方程相同，为
 * @f{align*}
   \mathbf{u}_t &=
 * 
@@ -125,21 +125,21 @@ California Institute of Technology, or of The University of California
 -\lambda_t(S)\mathbf{K} \cdot \nabla p,
 @f}
 * 其中，下标 $w, nw$ 分别代表湿润相和非湿润相。
-* 为方便起见，饱和度方程中的孔隙度 $\epsilon$ 可视为时间变量的缩放系数，被设定为1。根据相对渗透率 $k_{rw}$ 和 $k_{rnw}$ 对饱和度的依赖性的常用规定，我们使用
+* 为方便起见，饱和度方程中的孔隙度 $\epsilon$ 可视为时间变量的上升因子，被设定为1。根据相对渗透率 $k_{rw}$ 和 $k_{rnw}$ 对饱和度的依赖性的常用规定，我们使用
 * @f{align*}
    k_{rw}  &= S^2, \qquad&\qquad
    k_{rnw} &= \left( 1-S \right)^2.
 @f}
-* 
+*
 * 上面的多孔介质方程由饱和度的初始条件和压力的边界条件组成。由于饱和度和压力梯度唯一地决定了速度，因此不需要速度的边界条件。由于流动方程不包含时间导数，因此不需要速度和压力变量的初始条件。流动场将边界分为流入或流出部分。具体来说，@f[
    \mathbf{\Gamma}_{in}(t) = \left\{\mathbf{x} \in \partial \Omega:\mathbf{n} \cdot \mathbf{u}_t<0\right\},
-@f]，我们通过对流入边界的饱和度变量施加边界值来得到一个完整的模型 $\mathbf{\Gamma}_{in}$  。
-* 
+@f]，我们通过对流入边界的饱和度变量施加边界值，得出一个完整的模型 $\mathbf{\Gamma}_{in}$  。
+*
 
-*<a name="Adaptiveoperatorsplittingandtimestepping"></a><h3>Adaptive operator splitting and time stepping.</h3> 。
-* 
+*<a name="Adaptiveoperatorsplittingandtimestepping"></a><h3>Adaptive operator splitting and time stepping.</h3>
 
-* 正如在 step-21 中所看到的，一旦我们知道了流动变量，解决速度和压力的流动方程是程序中花费时间远大于饱和度变量的（显式）更新步骤的部分。另一方面，压力和速度对饱和度的依赖性很弱，因此可以考虑每隔几步只求解压力和速度，而每步更新饱和度。如果我们能找到一个关于何时需要更新流量变量的标准，我们就把这种分割称为 "自适应运算器分割 "方案。
+
+* 正如在 step-21 中所看到的，一旦我们知道了流量变量，求解速度和压力的流量方程是程序中花费时间远大于饱和度变量的（显式）更新步骤的部分。另一方面，压力和速度对饱和度的依赖性很弱，因此可以考虑每隔几步只求解压力和速度，而每步更新饱和度。如果我们能找到一个关于何时需要更新流量变量的标准，我们就把这种分割称为 "自适应运算器分割 "方案。
 * 在这里，我们使用以下后验标准来决定何时重新计算压力和速度变量（详细推导和描述可参见[Chueh, Djilali和Bangerth 2011]）。
 * @f{align*}
   \theta(n,n_p)
@@ -180,7 +180,7 @@ California Institute of Technology, or of The University of California
 * 其中括号内的上标表示定义任何数量的饱和时间步数， $n_p<n$ 代表我们实际计算压力和速度的最后一步。如果 $\theta(n,n_p)$ 超过某个阈值，我们就重新计算流量变量；否则，我们就在时间步骤 $n$ 中停止计算，只将饱和变量向前移动一个时间步骤。
 * 简言之，该算法允许我们执行若干长度为 $\Delta t_c^{(n)}=t^{(n)}_c-t^{(n-1)}_c$ 的饱和时间步长，直到上述准则告诉我们要重新计算速度和压力变量，从而导致一个长度为@f[
    \Delta t_p^{(n)} = \sum_{i=n_p+1}^{n} \Delta t_c^{(i)}.
-@f]的宏观时间步长。 ]，我们已经证实，对于下面讨论的饱和方程的有限元和时间步长方案的选择是稳定的（ $h_K$ 表示单元格 $K$ 的直径）。结果是一个方案，微观和宏观时间步长都不一致，两者都是自适应选择。
+@f]的宏观时间步长。]，我们已经证实，对于下面讨论的饱和方程的有限元和时间步长方案的选择是稳定的（ $h_K$ 表示单元格 $K$ 的直径）。结果是一个方案，微观和宏观时间步长都不一致，两者都是自适应选择。
 *<a name="Timediscretization"></a><h3>Time discretization.</h3>。
 * 使用这种时间离散化，我们可以从IMPES方法中得到以下每个时间步长的方程组（见 step-21 ）。
 * @f{align*}
@@ -188,18 +188,18 @@ California Institute of Technology, or of The University of California
    \nabla \cdot \mathbf{u}^{(n)}_t = q, \\
    \epsilon \left( \frac{S^{(n-1)}-S^{(n)}}{\Delta t^{(n)}_c} \right) + \mathbf{u}^{(n)}_t \cdot \nabla F\left(S^{(n-1)}\right) + F\left(S^{(n-1)}\right) \nabla \cdot \mathbf{u}^{(n)}_t =0.
 @f}
-* 
-* 
+*
+*
 
-* 利用 $\nabla \cdot \mathbf{u}_t = q$ 这一事实，时间离散饱和方程变为
+*利用 $\nabla \cdot \mathbf{u}_t = q$ 这一事实，时间离散饱和度方程变为
 * @f{align*}
   &\epsilon \left( \frac{S^{(n)}-S^{(n-1)}}{\Delta t^{(n)}_c} \right) + \mathbf{u}^{(n)}_t \cdot \nabla F\left(S^{(n-1)}\right) + F\left(S^{(n-1)}\right)q=0.
 @f}
- 
+*
 * <a name="Weakformspacediscretizationforthepressurevelocitypart"></a><h3>Weak form, space discretization for the pressure-velocity part.</h3> 。
-* 
 
-* 通过将定义总速度的方程 $\mathbf u_t^{(n)}$ 和用源项表示其发散的方程分别与测试函数 $\mathbf{v}$ 和 $w$ 相乘，然后根据需要进行分项积分，问题的弱式为。找出 $\mathbf u, p$ ，以便对所有测试函数 $\mathbf{v}, w$ 而言，持有@f{gather*}
+
+* 通过将定义总速度的方程 $\mathbf u_t^{(n)}$ 和用源项表示其发散的方程分别与检验函数 $\mathbf{v}$ 和 $w$ 相乘，然后根据需要进行分项积分，该问题的弱式为：。找出 $\mathbf u, p$ ，以便对所有测试函数 $\mathbf{v}, w$ 而言，持有@f{gather*}
    \left( \left( \mathbf{K} \lambda_t\left(S^{(n-1)}\right) \right)^{-1} \mathbf{u}^{(n)}_t, \mathbf{v}\right)_{\Omega}
 * 
 - \left(p^{(n)}, \nabla \cdot \mathbf{v}\right)_{\Omega} =
@@ -226,7 +226,7 @@ California Institute of Technology, or of The University of California
 \Omega$ 的单位外向法向量，压力 $p^{(n)}$ 可以在边界的开放部分 $\partial \Omega$ 弱化规定，而在那些规定了速度的部分（例如具有 $\mathbf n \cdot \mathbf
 u=0$ 的不透水边界），该术语完全消失，因为 $\mathbf n \cdot \mathbf
 v=0$  。
-* 我们使用连续有限元来离散化速度和压力方程。具体来说，我们使用混合有限元来确保同时对矢量变量（如流体速度）和标量变量（如压力）进行高阶逼近。对于鞍点问题，已经确定所谓的Babuska-Brezzi或Ladyzhenskaya-Babuska-Brezzi（LBB）条件[Brezzi 1991, Chen 2005]需要得到满足以确保压力-速度系统的稳定性。在本工作中，通过使用比压力高一阶的速度元素来满足这些稳定性条件，即 $u_h \in Q^d_{p+1}$ 和 $p_h \in Q_p$ ，其中 $p=1$ ， $d$ 是空间维度， $Q_s$ 表示每个变量的张量积拉格朗多项式的空间 $s$ 。
+* 我们使用连续有限元来离散化速度和压力方程。具体而言，我们使用混合有限元来确保同时对矢量变量（如流体速度）和标量变量（如压力）进行高阶逼近。对于鞍点问题，已经确定所谓的Babuska-Brezzi或Ladyzhenskaya-Babuska-Brezzi（LBB）条件[Brezzi 1991, Chen 2005]需要得到满足以确保压力-速度系统的稳定性。在本工作中，通过使用比压力高一阶的速度元素来满足这些稳定性条件，即 $u_h \in Q^d_{p+1}$ 和 $p_h \in Q_p$ ，其中 $p=1$ 、 $d$ 是空间维度， $Q_s$ 表示每个变量的张量积拉格朗多项式的空间 $s$ 。
 * <a name="Stabilizationweakformandspacediscretizationforthesaturationtransportequation"></a><h3>Stabilization, weak form and space discretization for the saturation transport equation.</h3> 。
 * 为饱和方程选择的 $Q_1$ 元素不能导致没有上卷或其他类型的稳定化的稳定微分，并且在数值解中会出现虚假的震荡。添加一个人工扩散项是消除这些振荡的一种方法[Chen 2005]。另一方面，添加过多的扩散项会在解中涂抹出尖锐的锋芒，并且会有网格定位的困难[Chen 2005]。为了避免这些影响，我们使用了由[Guermond and Pasquetti 2008]提出并在[Chueh, Djilali, Bangerth 2011]和[Kronbichler, Heister and Bangerth, 2011]以及 step-31 中验证的人工扩散项。
 * 这种方法修改了饱和方程的（离散）弱形式，将其改为
@@ -260,15 +260,15 @@ v=0$  。
    c(\mathbf{u}_t,S) = c_R \|\mathbf{u}_t \max\{F'(S),1\}\|_{L^{\infty}(\Omega)} \textrm{var}(S)^\alpha | \textrm{diam} (\Omega) |^{\alpha
 * 
 - 2}
-@f] ]和@f[
+@f]和@f[
    \textrm{Res}(S) = \left( \epsilon \frac{\partial S}{\partial t} + \mathbf{u}_t \cdot \nabla F(S) + F(S)q \right) \cdot S^{\alpha
 * 
 - 1}
 @f]，其中 $c_R$ 是用户定义的第二个无维常数， $\textrm{diam}(\Omega)$ 是域的直径， $\textrm{var}(S) =
 \textrm{max}_{\Omega} S
 * 
-- \textrm{min}_{\Omega} S$ 是整个计算域中呈现的饱和度值的范围 $\Omega$  。
-* 这种稳定方案与更简单的方案相比有很多优势，如有限体积（或不连续Galerkin）方法或流线型上风Petrov Galerkin（SUPG）离散。特别是，人工扩散项主要作用于不连续点附近，因为在饱和度平稳的地方，残差很小。因此，它提供了一个更高的精度。另一方面，它是非线性的，因为 $\nu$ 取决于饱和度 $S$  。我们通过明确处理所有的非线性项来避免这一困难，这导致了在时间步长 $n$ 的以下离散问题。
+- \textrm{min}_{\Omega} S$ 是整个计算域中的饱和度值范围 $\Omega$ 。
+* 这种稳定方案与更简单的方案相比有很多优势，如有限体积（或不连续Galerkin）方法或流线型上风Petrov Galerkin（SUPG）离散。特别是，人工扩散项主要作用于不连续点附近，因为在饱和度平稳的地方，残差很小。因此，它提供了一个更高的精度。另一方面，它是非线性的，因为 $\nu$ 取决于饱和度 $S$ 。我们通过明确处理所有的非线性项来避免这一困难，这导致了在时间步长 $n$ 的以下离散问题。
 * @f{align*}
    &\left( \epsilon S_h^{(n)},\sigma_h\right)_{\Omega}
 * 
@@ -278,7 +278,7 @@ v=0$  。
 - \Delta t^{(n)}_c \bigg(\nu\left(S_h^{(n-1)}\right)\nabla S_h^{(n-1)},\nabla\sigma_h\bigg)_{\Omega} \nonumber \\
    & \qquad + \Delta t^{(n)}_c \bigg(\mathbf{n}\cdot\nu\left(S_h^{(n-1)}\right)\nabla S^{(n-1)},\sigma_h\bigg)_{\partial\Omega}
 @f}
-* 其中 $\mathbf{u}_t^{*}$ 是由 $\mathbf{u}^{(n_p)}_t$ 和 $\mathbf{u}^{(n_{pp})}_t$ 线性外推到当前时间的速度 $t^{(n)}$ ，如果 $\theta<\theta^*$ ，而 $\mathbf{u}_t^{*}$ 是 $\mathbf{u}^{(n_p)}_t$ ，如果 $\theta>\theta^*$  .因此，该方程在 $S_h^{(n)}$ 是线性的，所有需要的是用饱和空间的质量矩阵求解。
+* 其中 $\mathbf{u}_t^{*}$ 为从 $\mathbf{u}^{(n_p)}_t$ 和 $\mathbf{u}^{(n_{pp})}_t$ 线性外推到当前时间的速度 $t^{(n)}$ ，如果 $\theta<\theta^*$ ，而 $\mathbf{u}_t^{*}$ 为 $\mathbf{u}^{(n_p)}_t$ ，如果 $\theta>\theta^*$ 。因此，该方程在 $S_h^{(n)}$ 是线性的，所需要的是用饱和空间的质量矩阵解决。
 * 由于饱和度的Dirichlet边界条件只施加在流入边界上，所以上述方程左侧的第三项需要进一步拆分为两部分。
 * @f{align*}
   &\Delta t^{(n)}_c \Big(F\left(S_h^{(n-1)}\right)\left(\mathbf{n}\cdot\mathbf{u}^{(n)}_t\right),\sigma_h\Big)_{\partial\Omega} \nonumber \\
@@ -287,18 +287,18 @@ v=0$  。
 * 其中 $\partial\Omega_{(-)} = \left\{\mathbf{x} \in \partial\Omega : \mathbf{n}
   \cdot \mathbf{u}_t<0\right\}$ 和 $\partial\Omega_{(+)} = \left\{\mathbf{x} \in \partial\Omega : \mathbf{n} \cdot
   \mathbf{u}_t>0\right\}$ 分别代表流入和流出的边界。我们使用上风公式选择数值，即 $S^{(n-1)}_{(+)}$ 和 $\mathbf{u}^{(n)}_{t(+)}$ 对应于从当前单元中获取的数值，而 $S^{(n-1)}_{(-)}$ 和 $\mathbf{u}^{(n)}_{t(-)}$ 的数值是从邻近边界 $\partial\Omega_{(-)}$ 获取的数值。
-* 
+*
 
-*<a name="Adaptivemeshrefinement"></a><h3>Adaptive mesh refinement.</h3>。
-* 
+*<a name="Adaptivemeshrefinement"></a><h3>Adaptive mesh refinement.</h3>
 
-* 自适应地选择网格以解决尖锐饱和前沿问题是我们算法中实现效率的一个基本要素。在这里，我们使用[Chueh, Djilali and Bangerth 2011]中使用的相同的冲击型细化方法来选择那些应该被细化或粗化的单元。三角形的每个单元 $K$ 的细化指标由@f[
+
+* 适应性地选择网格以解决尖锐饱和前沿问题是我们算法中实现效率的一个基本要素。在这里，我们使用[Chueh, Djilali and Bangerth 2011]中使用的相同的冲击型细化方法来选择那些应该被细化或粗化的单元。三角形的每个单元 $K$ 的细化指标由@f[
    \eta_{K} = |\nabla S_h(\mathbf x_K)|
-@f]计算，其中 $\nabla S_h(\mathbf x_K)$ 是在单元 $K$ 的中心 $\mathbf x_K$ 评估的离散饱和变量的梯度。这种方法类似于在可压缩流动问题中经常使用的方法，其中密度梯度被用来表示细化。也就是说，正如我们将在<a href="#Results">results section</a>末尾讨论的那样，这并不是一个非常有用的标准，因为它基本上在任何地方都导致了细化。我们在这里只是为了说明问题而展示它。
-* 
+@f]计算，其中 $\nabla S_h(\mathbf x_K)$ 是在单元 $K$ 的中心 $\mathbf x_K$ 评价的离散饱和变量的梯度。这种方法类似于在可压缩流动问题中经常使用的方法，其中密度梯度被用来表示细化。也就是说，正如我们将在<a href="#Results">results section</a>末尾讨论的那样，这并不是一个非常有用的标准，因为它基本上在任何地方都导致了细化。我们在这里只是为了说明问题而展示它。
+*
 
-*<a name="Linearsystemanditspreconditioning"></a><h3>Linear system and its preconditioning.</h3>
-* 
+*<a name="Linearsystemanditspreconditioning"></a><h3>Linear system and its preconditioning.</h3> 。
+
 
 * 按照上面讨论的治理方程的离散化，我们得到一个时间步长 $(n)$ 的线性方程组，其形式如下：@f[
  \left(
@@ -423,8 +423,8 @@ v=0$  。
 * 其中，斜线表示精确反矩阵的近似值。特别是，由于 $\left(\mathbf{{M}}^{\mathbf{u}}\right)^{-1}=\left( \left(
     \mathbf{K} \lambda_t \right)^{-1}
   \mathbf{v}_{i},\mathbf{v}_{j}\right)_{\Omega}$ 是一个稀疏的对称和正定矩阵，我们为 $\widetilde{\left(\mathbf{{M}}^{\mathbf{u}}\right)^{-1}}$ 选择了这个矩阵的一个稀疏的不完全Cholesky分解的应用[Golub和Van Loan 1996]。我们注意到，对应于非混合形式的多介质流算子的Schur补， $-\nabla \cdot [\mathbf K
-\lambda_t(S)]\nabla$ 和 $\mathbf{\tilde {S}} = \left( \left( \mathbf{K} \lambda_t \right) \nabla \phi_{i},\nabla \phi_{j}\right)_{\Omega}$  应该是实际Schur补矩阵 $\mathbf
-S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，我们使用 $\mathbf{\tilde S}$ 的不完全Cholesky分解来表示 $\widetilde
+\lambda_t(S)]\nabla$ 和 $\mathbf{\tilde {S}} = \left( \left( \mathbf{K} \lambda_t \right) \nabla \phi_{i},\nabla \phi_{j}\right)_{\Omega}$ 应该是实际Schur补矩阵 $\mathbf
+S$ 的良好近似。由于这两个矩阵又都是对称和正定的，我们使用 $\mathbf{\tilde S}$ 的不完全Cholesky分解来表示 $\widetilde
 {\mathbf{{S}}^{-1}}$ 。需要注意的是， $\mathbf{\tilde S}$ 需要用迪里希特边界条件建立，以确保其可逆性。
 * 一旦有了速度 $\mathbf{U}^{(n)} \equiv \mathbf{u}^*_t$ ，我们就可以把 $\mathbf{H}$ 和 $\mathbf{F}_{3}$ 组合起来，用以下方法解决饱和问题
 * @f{align*}
@@ -434,13 +434,13 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 @f}
 * 其中质量矩阵 $\mathbf{M}^{S}$ 用共轭梯度法求解，再次使用不完整的Cholesky分解作为预处理。
 * <a name="Thetestcases"></a><h3>The test cases.</h3> 。
-* 
+*
 
-* 
-*  @note  这里讨论的实现使用并扩展了本库的 step-21 、 step-31 和 step-33 教程程序的部分内容。特别是，如果你想了解它是如何工作的，请参考 step-21 关于数学问题的讨论，以及 step-31 ，大部分的实现都是来自于此。我们不会讨论已经在 step-31 中讨论过的实现的各个方面。
+
+*  @note  这里讨论的实现使用并扩展了本库的 step-21 、 step-31 和 step-33 教程中的部分程序。特别是，如果你想了解它是如何工作的，请参考 step-21 关于数学问题的讨论，以及 step-31 ，大部分的实现都是来自于此。我们不会讨论已经在 step-31 中讨论过的实现的各个方面。
 * 我们展示了一些两相流方程的数值结果，这些方程通过适当的初始和边界条件与两种不同的渗透率模型的选择进行了增强。在所考虑的问题中，没有内源项（  $q=0$  ）。如上所述，定量的数值结果在[Chueh, Djilali and Bangerth 2011]中提出。
-* 为了简单起见，我们选择了 $\Omega=[0,1]^d,d=2,3$ ，尽管所有的方法（以及我们的实现）在一般的非结构化网格上都应该同样工作。
-* 初始条件只需要饱和变量，我们选择 $S(\mathbf{x},0)=0.2$ ，即多孔介质最初由非湿润（80%）和湿润（20%）的混合相填充。这与 step-21 中的初始条件不同，我们采用了 $S(\mathbf{x},0)=0$ ，但由于复杂的数学原因，在那里有一个很长的注释提到，目前使用基于熵的人工扩散项的方法在这个初始条件下不能收敛到黏度解，除非对方法进行额外的修改。因此，我们为目前的方案选择了这个修改过的版本。
+* 为了简单起见，我们选择了 $\Omega=[0,1]^d,d=2,3$ ，尽管所有的方法（以及我们的实现）在一般的非结构化网格上都应该同样好用。
+* 初始条件只需要饱和变量，我们选择 $S(\mathbf{x},0)=0.2$ ，即多孔介质最初由非湿润（80%）和湿润（20%）的混合相填充。这与 step-21 中的初始条件不同，我们采用了 $S(\mathbf{x},0)=0$ ，但由于复杂的数学原因，在那里有一个很长的注释提到，目前使用基于熵的人工扩散项的方法在这个初始条件下不能收敛到粘度解，不需要对该方法进行额外的修改。因此，我们为目前的方案选择了这个修改过的版本。
 * 此外，我们在边界上规定了一个线性压力：@f[
    p(\mathbf{x},t) = 1
 * 
@@ -464,40 +464,40 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
     <td>Normalization constant              </td><td>$c_R$           </td><td>1.0                 </td><td>- </td></tr><tr>
     <td>Number of high-permeability regions </td><td>$N$             </td><td>50; 200             </td><td>- </td></tr><tr>
     <td>Operator splitting threshold        </td><td>$\theta^\ast$   </td><td>5.0              </td><td>- </td></tr>
-</table>  
-* 
+</table> 
+*
 
-* <a name="Listofreferences"></a><h3>List of references</h3> 。
-* 
+*<a name="Listofreferences"></a><h3>List of references</h3> 。
 
-* 
-*  <ol>   <li>  CC Chueh, N Djilali and W Bangerth.  <br>  三维异质多孔介质中两相流的h-适应性算子分割方法。 <br>  SIAM Journal on Scientific Computing, vol. 35 (2013), pp.
-*  <li>  M. Kronbichler, T. Heister, and W. Bangerth  <br>  High Accuracy Mantle Convection Simulation through Modern NumericalMethods.  <br>  Geophysics Journal International, vol. 191 (2012), pp.
-*  <li>  F Brezzi and M Fortin.  <br>  <i>Mixed and Hybrid Finite Element Methods</i>.  <br>  Springer-Verlag, 1991.
-*  <li>  Z Chen.  <br>  <i>Finite Element Methods and Their Applications</i>.  <br>  Springer, 2005.
-*  <li>  JL Guermond和R Pasquetti.  <br>  基于熵的非线性黏度，用于守恒定律的傅里叶近似。 <br>  <i>Comptes Rendus Mathematique</i>, 346(13-14): 801-806, 2008.
-*  <li>  CC Chueh, M Secanell, W Bangerth, and N Djilali.  <br>  异质多孔介质中瞬态两相流的多级自适应模拟。 <br>  <i>Computers and Fluids</i>, 39:1585-1596, 2010.
-*  <li>  Y Saad和MH Schultz。 <br>  Gmres: 用于解决非对称线性系统的广义最小残差算法。 <br>  <i>SIAM Journal on Scientific and Statistical Computing</i>, 7(3):856-869, 1986.
-*  <li>  F Zhang.  <br>  <i>The Schur Complement and its Applications</i>.  <br>  Springer, 2005.
-*  <li>  D Silvester and A Wathen.  <br>  稳定的斯托克斯系统的快速迭代求解第二部分：使用一般块状先决条件。 <br>  <i>SIAM Journal on Numerical Analysis</i>, 31(5):1352-1367, 1994.
-*  <li>  GH Golub和CF van Loan.  <br>  <i>Matrix Computations</i>.  <br>  第三版，约翰霍普金斯大学，1996年。
+
+
+*  <ol>   <li>  CC Chueh, N Djilali and W Bangerth. <br>  三维异质多孔介质中两相流的h-适应性算子分割方法。 <br>  SIAM Journal on Scientific Computing, vol. 35 (2013), pp.
+*  <li>  M. Kronbichler, T. Heister, and W. Bangerth  <br>  High Accuracy Mantle Convection Simulation through Modern NumericalMethods. <br>  Geophysics Journal International, vol. 191 (2012), pp.
+*  <li>  F Brezzi and M Fortin. <br>  <i>Mixed and Hybrid Finite Element Methods</i>. <br>  Springer-Verlag, 1991.
+*  <li>  Z Chen. <br>  <i>Finite Element Methods and Their Applications</i>. <br>  Springer, 2005.
+*  <li>  JL Guermond和R Pasquetti. <br>  基于熵的非线性黏度，用于守恒定律的傅里叶近似。 <br>  <i>Comptes Rendus Mathematique</i>, 346(13-14): 801-806, 2008.
+*  <li>  CC Chueh, M Secanell, W Bangerth, and N Djilali. <br>  异质多孔介质中瞬态两相流的多级自适应模拟。 <br>  <i>Computers and Fluids</i>, 39:1585-1596, 2010.
+*  <li>  Y Saad和MH Schultz。 <br>  Gmres:用于解决非对称线性系统的广义最小残差算法。 <br>  <i>SIAM Journal on Scientific and Statistical Computing</i>, 7(3):856-869, 1986.
+*  <li>  F Zhang. <br>  <i>The Schur Complement and its Applications</i>. <br>  Springer, 2005.
+*  <li>  D Silvester and A Wathen. <br>  稳定的斯托克斯系统的快速迭代求解第二部分：使用一般块状先决条件。 <br>  <i>SIAM Journal on Numerical Analysis</i>, 31(5):1352-1367, 1994.
+*  <li>  GH Golub和CF van Loan. <br>  <i>Matrix Computations</i>. <br>  第三版，约翰霍普金斯大学，1996年。
 *  <li>  SE Buckley和MC Leverett。 <br>  沙子中流体位移的机制。 <br>  <i>AIME Trans.</i>, 146:107-116, 1942.
-*  </ol>  
- 
+*  </ol> 
 
-* <a name="CommProg"></a> <h1> The commented program</h1>.
-* <a name="Includefiles"></a> <h3>Include files</h3>.
- 
 
-* 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* <a name="Includefiles"></a> <h3>Include files</h3>。
+
+
+*
 * 像往常一样，第一步是包括一些deal.II和C++头文件的功能。
-* 
+*
 
-* 
-* 列表中包括一些提供向量、矩阵和预处理类的头文件，这些头文件实现了各自Trilinos类的接口；关于这些的一些更多信息可以在  step-31  中找到。
-* 
 
-* 
+* 列表中包括一些头文件，这些文件提供了向量、矩阵和先决条件器类，这些类实现了各自Trilinos类的接口；关于这些的一些更多信息可以在  step-31  中找到。
+*
+
+
 * @code
  #include <deal.II/base/quadrature_lib.h>
  #include <deal.II/base/logstream.h>
@@ -540,11 +540,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
- 
+*
 * 在这个顶层设计的最后，我们为当前的项目打开一个命名空间，下面的所有材料都将进入这个命名空间，然后将所有deal.II的名字导入这个命名空间。
-* 
+*
 
-* 
+
 * @code
  namespace Step43
  {
@@ -552,15 +552,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="Boundaryandinitialvalueclasses"></a> <h3>Boundary and initial value classes</h3>
- 
+*
+* <a name="Boundaryandinitialvalueclasses"></a> <h3>Boundary and initial value classes</h3>。
 
-* 
+
+*
 * 下面的部分直接取自 step-21 ，所以没有必要重复那里的描述。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class PressureBoundaryValues : public Function<dim>
@@ -647,15 +647,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
+*
 * <a name="Permeabilitymodels"></a> <h3>Permeability models</h3>。
- 
 
-* 
+
+*
 * 在本教程中，我们仍然使用以前在 step-21 中使用的两个渗透率模型，所以我们再次避免对它们进行详细的评论。
-* 
+*
 
-* 
+
 * @code
    namespace SingleCurvingCrack
    {
@@ -766,15 +766,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
+*
 * <a name="Physicalquantities"></a> <h3>Physical quantities</h3>。
- 
 
-* 
+
+*
 * 所有物理量的实现，如总流动性 $\lambda_t$ 和水的部分流量 $F$ 都来自 step-21 ，所以我们也没有对它们做任何评论。与 step-21 相比，我们增加了检查，以确保传递给这些函数的饱和度实际上是在物理上的有效范围内。此外，鉴于润湿相以速度 $\mathbf u F'(S)$ 移动，很明显 $F'(S)$ 必须大于或等于零，所以我们也断言，以确保我们为得到导数的公式而进行的计算是合理的。
-* 
+*
 
-* 
+
 * @code
    double mobility_inverse(const double S, const double viscosity)
    {
@@ -829,15 +829,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="Helperclassesforsolversandpreconditioners"></a> <h3>Helper classes for solvers and preconditioners</h3>
- 
+*
+* <a name="Helperclassesforsolversandpreconditioners"></a> <h3>Helper classes for solvers and preconditioners</h3>。
 
-* 
+
+*
 * 在这第一部分中，我们定义了一些我们在构建线性求解器和预处理器时需要的类。这一部分与  step-31  中使用的基本相同。唯一不同的是，原来的变量名称stokes_matrix被另一个名称darcy_matrix取代，以配合我们的问题。
-* 
+*
 
-* 
+
 * @code
    namespace LinearSolvers
    {
@@ -946,18 +946,18 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TheTwoPhaseFlowProblemclass"></a> <h3>The TwoPhaseFlowProblem class</h3>.
- 
+*
+* <a name="TheTwoPhaseFlowProblemclass"></a> <h3>The TwoPhaseFlowProblem class</h3>。
 
-* 
-* 定义了解决随时间变化的平流主导的两相流问题（或Buckley-Leverett问题[Buckley 1942]）的顶层逻辑的类，主要是基于教程程序 step-21 和 step-33 ，特别是 step-31 ，其中我们使用的一般结构与这里基本相同。正如在 step-31 中，在下面的实现中需要注意的关键例程是 <code>run()</code> and <code>solve()</code> 函数。  
-* 与 step-31 的主要区别是，由于考虑了自适应算子拆分，我们需要多几个成员变量来保存最近两次计算的Darcy（速度/压力）解，以及当前的解（直接计算，或从前两次计算中推导出来），我们需要记住最近两次计算Darcy解的时间。我们还需要一个辅助函数来计算出我们是否真的需要重新计算达西解。  
-* 与 step-31 不同，这一步多用了一个AffineConstraints对象，叫做 darcy_preconditioner_constraints。这个约束对象仅用于为Darcy预处理程序组装矩阵，包括悬挂节点约束以及压力变量的Dirichlet边界值约束。我们需要这个，因为我们正在为压力建立一个拉普拉斯矩阵，作为舒尔补数的近似值），如果应用边界条件，这个矩阵是正定的。  
+
+
+* 定义了解决随时间变化的平流主导的两相流问题（或Buckley-Leverett问题[Buckley 1942]）的顶层逻辑的类，主要是基于教程程序 step-21 和 step-33 ，特别是 step-31 ，我们在这里使用的一般结构基本相同。与 step-31 一样，在下面的实现中需要寻找的关键例程是 <code>run()</code> and <code>solve()</code> 函数。   
+* 与 step-31 的主要区别是，由于考虑了自适应算子拆分，我们需要多几个成员变量来保存最近两次计算的Darcy（速度/压力）解，以及当前的解（直接计算，或从前两次计算中推导出来），我们需要记住最近两次计算Darcy解的时间。我们还需要一个辅助函数来确定我们是否确实需要重新计算达西解。   
+* 与 step-31 不同，这一步多用了一个AffineConstraints对象，叫做 darcy_preconditioner_constraints。这个约束对象仅用于为Darcy预处理程序组装矩阵，包括悬挂节点约束以及压力变量的Dirichlet边界值约束。我们需要这个，因为我们正在为压力建立一个拉普拉斯矩阵，作为舒尔补数的近似值），如果应用边界条件，这个矩阵是正定的。   
 * 这样在这个类中声明的成员函数和变量的集合与 step-31 中的相当相似。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class TwoPhaseFlowProblem
@@ -990,11 +990,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
      void output_results() const;
 * 
  @endcode
-* 
-* 我们接下来会有一些辅助函数，在整个程序中的不同地方都会用到。
-* 
+*
+* 我们接下来会有一些辅助函数，这些函数在整个程序中的不同地方都会用到。
+*
 
-* 
+
 * @code
      double                    get_max_u_F_prime() const;
      std::pair<double, double> get_extrapolated_saturation_range() const;
@@ -1012,11 +1012,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* 接下来是成员变量，其中大部分与 step-31 中的变量相似，但与速度/压力系统的宏观时间步长有关的变量除外。
-* 
+*
+* 这一切之后是成员变量，其中大部分与 step-31 中的变量相似，但与速度/压力系统的宏观时间步长有关的变量除外。
+*
 
-* 
+
 * @code
      Triangulation<dim> triangulation;
      double             global_Omega_diameter;
@@ -1078,26 +1078,26 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
      bool rebuild_saturation_matrix;
 * 
  @endcode
- 
-* 在最后，我们声明一个变量，表示材料模型。与 step-21 相比，我们在这里把它作为一个成员变量，因为我们想在不同的地方使用它，所以有一个声明这样一个变量的中心位置，将使我们更容易用另一个类来替换一个类（例如用 SingleCurvingCrack::KInverse). 替换 RandomMedium::KInverse ）。
-* 
+*
+* 在最后，我们声明一个变量，表示材料模型。与 step-21 相比，我们在这里把它作为一个成员变量，因为我们想在不同的地方使用它，所以有一个声明这样一个变量的中心位置将使我们更容易用另一个类来替代一个类（例如，用 SingleCurvingCrack::KInverse). 替代 RandomMedium::KInverse ）。
+*
 
-* 
+
 * @code
      const RandomMedium::KInverse<dim> k_inverse;
    };
 * 
  
  @endcode
-* 
+*
 * <a name="TwoPhaseFlowProblemdimTwoPhaseFlowProblem"></a> <h3>TwoPhaseFlowProblem<dim>::TwoPhaseFlowProblem</h3>。
- 
 
-* 
-* 这个类的构造函数是对  step-21  和  step-31  中构造函数的扩展。我们需要添加涉及饱和度的各种变量。正如介绍中所讨论的，我们将再次使用 $Q_2 \times Q_1$ （Taylor-Hood）元素来表示Darcy系统，这是一个满足Ladyzhenskaya-Babuska-Brezzi（LBB）条件的元素组合[Brezzi and Fortin 1991, Chen 2005]，以及 $Q_1$ 元素表示饱和度。然而，通过使用存储Darcy和温度有限元的多项式程度的变量，可以很容易地持续修改这些元素的程度以及在其上使用的所有正交公式的下游。此外，我们还初始化了与算子分割有关的时间步进变量，以及矩阵装配和预处理的选项。
-* 
 
-* 
+*
+* 这个类的构造函数是对  step-21  和  step-31  中的构造函数的扩展。我们需要添加有关饱和度的各种变量。正如介绍中所讨论的，我们将再次使用 $Q_2 \times Q_1$ （Taylor-Hood）元素来表示Darcy系统，这是一个满足Ladyzhenskaya-Babuska-Brezzi（LBB）条件的元素组合[Brezzi and Fortin 1991, Chen 2005]，以及 $Q_1$ 元素表示饱和度。然而，通过使用存储Darcy和温度有限元的多项式程度的变量，可以很容易地持续修改这些元素的程度以及在其上使用的所有正交公式的下游。此外，我们还初始化了与算子分割有关的时间步进变量，以及矩阵装配和预处理的选项。
+*
+
+
 * @code
    template <int dim>
    TwoPhaseFlowProblem<dim>::TwoPhaseFlowProblem(const unsigned int degree)
@@ -1138,19 +1138,19 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimsetup_dofs"></a> <h3>TwoPhaseFlowProblem<dim>::setup_dofs</h3> * <h3>TwoPhaseFlowProblem<dim>::setup_dofs</h3>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimsetup_dofs"></a> <h3>TwoPhaseFlowProblem<dim>::setup_dofs</h3>。
 
-* 
-* 这个函数设置了我们这里的DoFHandler对象（一个用于Darcy部分，一个用于饱和部分），以及将本程序中线性代数所需的各种对象设置为合适的尺寸。其基本操作与 step-31 所做的类似。  
-* 函数的主体首先列举了达西和饱和系统的所有自由度。对于Darcy部分，自由度被排序，以确保速度优先于压力DoF，这样我们就可以将Darcy矩阵划分为一个 $2 \times 2$ 矩阵。  
-* 然后，我们需要将悬挂节点约束和迪里切特边界值约束纳入darcy_preconditioner_constraints。 边界条件约束只设置在压力分量上，因为对应于非混合形式的多孔介质流算子的Schur补码预处理 $-\nabla \cdot [\mathbf K
- \lambda_t(S)]\nabla$  ，只作用于压力变量。因此，我们使用一个过滤掉速度分量的组件_掩码，这样就可以只对压力自由度进行缩减。  
+
+*
+* 这个函数设置了我们这里的DoFHandler对象（一个用于Darcy部分，一个用于饱和部分），以及将本程序中线性代数所需的各种对象设置为合适的尺寸。其基本操作与 step-31 所做的类似。   
+* 函数的主体首先列举了达西和饱和系统的所有自由度。对于Darcy部分，自由度被排序以确保速度优先于压力DoF，这样我们就可以将Darcy矩阵划分为一个 $2 \times 2$ 矩阵。   
+* 然后，我们需要将悬挂节点约束和迪里切特边界值约束纳入darcy_preconditioner_constraints。  边界条件约束只设置在压力分量上，因为对应于非混合形式的多孔介质流算子的Schur补码预处理 $-\nabla \cdot [\mathbf K
+ \lambda_t(S)]\nabla$  ，只作用于压力变量。因此，我们使用一个过滤掉速度分量的分量掩码，这样冷凝就只在压力自由度上进行。   
 * 做完这些后，我们计算各块中的自由度数量。然后，这些信息被用来创建达西和饱和系统矩阵的稀疏模式，以及用于建立达西预处理的预处理矩阵。如同在 step-31 中，我们选择使用DynamicSparsityPattern的封锁版本来创建模式。因此，对于这一点，我们遵循与 step-31 相同的方式，对于成员函数的其他部分，我们不必再重复描述。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::setup_dofs()
@@ -1304,25 +1304,25 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="Assemblingmatricesandpreconditioners"></a> <h3>Assembling matrices and preconditioners</h3>.
- 
+*
+* <a name="Assemblingmatricesandpreconditioners"></a> <h3>Assembling matrices and preconditioners</h3>。
 
-* 
+
+*
 * 接下来的几个函数是专门用来设置我们在这个程序中必须处理的各种系统和预处理矩阵及右手边的。
-* 
+*
 
-* 
-* <a name="TwoPhaseFlowProblemdimassemble_darcy_preconditioner"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_darcy_preconditioner</h4>.
-* 
 
-* 
-* 这个函数组装了我们用于预处理达西系统的矩阵。我们需要的是速度分量上由 $\left(\mathbf{K} \lambda_t\right)^{-1}$ 加权的矢量质量矩阵和压力分量上由 $\left(\mathbf{K} \lambda_t\right)$ 加权的质量矩阵。我们首先生成一个适当阶数的正交对象，即FEValues对象，可以给出正交点的数值和梯度（连同正交权重）。接下来我们为单元格矩阵和局部与全局DoF之间的关系创建数据结构。向量phi_u和grad_phi_p将保存基函数的值，以便更快地建立局部矩阵，正如在  step-22  中已经做的。在我们开始对所有活动单元进行循环之前，我们必须指定哪些成分是压力，哪些是速度。  
-* 本地矩阵的建立相当简单。只有一个由 $\left(\mathbf{K} \lambda_t\right)^{-1}$ 加权的项（关于速度）和一个由 $\left(\mathbf{K} \lambda_t\right)$ 加权的拉普拉斯矩阵需要生成，所以局部矩阵的创建基本上在两行完成。由于该文件顶部的材料模型函数只提供了渗透率和迁移率的倒数，我们必须根据给定的值手工计算 $\mathbf K$ 和 $\lambda_t$ ，每个正交点一次。  
+* <a name="TwoPhaseFlowProblemdimassemble_darcy_preconditioner"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_darcy_preconditioner</h4>。
+
+
+*
+* 这个函数组装了我们用于预处理达西系统的矩阵。我们需要的是一个由 $\left(\mathbf{K} \lambda_t\right)^{-1}$ 加权的速度分量的矢量质量矩阵和一个由 $\left(\mathbf{K} \lambda_t\right)$ 加权的压力分量的质量矩阵。我们首先生成一个适当阶数的正交对象，即FEValues对象，可以给出正交点的数值和梯度（连同正交权重）。接下来我们为单元格矩阵和局部与全局DoF之间的关系创建数据结构。向量phi_u和grad_phi_p将保存基函数的值，以便更快地建立局部矩阵，正如在  step-22  中已经做的。在我们开始对所有活动单元进行循环之前，我们必须指定哪些成分是压力，哪些是速度。   
+* 本地矩阵的建立相当简单。只有一个由 $\left(\mathbf{K} \lambda_t\right)^{-1}$ 加权的项（关于速度）和一个由 $\left(\mathbf{K} \lambda_t\right)$ 加权的拉普拉斯矩阵需要生成，所以局部矩阵的创建基本上在两行完成。由于该文件顶部的材料模型函数只提供了渗透率和迁移率的反值，我们必须根据给定的值手工计算 $\mathbf K$ 和 $\lambda_t$ ，每个正交点一次。   
 * 一旦本地矩阵准备好了（在每个正交点上循环计算本地矩阵的行和列），我们就可以得到本地的DoF指数，并将本地信息写入全局矩阵中。我们通过直接应用约束条件（即darcy_preconditioner_constraints）来做到这一点，该约束条件负责处理悬挂节点和零Dirichlet边界条件约束。这样做，我们就不必事后再做，以后也不必使用 AffineConstraints::condense 和 MatrixTools::apply_boundary_values, 这两个需要修改矩阵和向量项的函数，因此对于我们不能立即访问单个内存位置的特里诺斯类来说，很难编写。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_darcy_preconditioner()
@@ -1407,16 +1407,16 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimbuild_darcy_preconditioner"></a> <h4>TwoPhaseFlowProblem<dim>::build_darcy_preconditioner</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimbuild_darcy_preconditioner"></a> <h4>TwoPhaseFlowProblem<dim>::build_darcy_preconditioner</h4>。
 
-* 
-* 在调用上述函数组装预处理矩阵后，该函数生成将用于舒尔补块预处理的内部预处理器。前置条件需要在每个饱和时间步长时重新生成，因为它们取决于随时间变化的饱和度 $S$ 。  
+
+*
+* 在调用上述函数组装预处理矩阵后，该函数生成将用于舒尔补块预处理的内部预处理器。前置条件需要在每个饱和时间步长时重新生成，因为它们取决于随时间变化的饱和度 $S$ 。   
 *在这里，我们设置了速度-速度矩阵 $\mathbf{M}^{\mathbf{u}}$ 和Schur补码 $\mathbf{S}$ 的预处理器。正如介绍中所解释的，我们将使用一个基于矢量矩阵 $\mathbf{M}^{\mathbf{u}}$ 的IC预处理器和另一个基于标量拉普拉斯矩阵 $\tilde{\mathbf{S}}^p$ 的IC预处理器（其频谱上接近达西矩阵的Schur补集）。通常， TrilinosWrappers::PreconditionIC 类可以被看作是一个很好的黑箱预处理程序，不需要对矩阵结构和/或背后的算子有任何特殊的了解。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::build_darcy_preconditioner()
@@ -1432,18 +1432,18 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimassemble_darcy_system"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_darcy_system</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimassemble_darcy_system"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_darcy_system</h4>。
 
-* 
-* 这是为达西系统组装线性系统的函数。  
-* 关于执行的技术细节，其程序与  step-22  和  step-31  中的程序相似。我们重置矩阵和向量，在单元格上创建正交公式，然后创建相应的FEValues对象。  
-* 有一件事需要评论：由于我们有一个单独的有限元和DoFHandler来处理饱和问题，我们需要生成第二个FEValues对象来正确评估饱和解。要实现这一点并不复杂：只需使用饱和结构，并为基函数值设置一个更新标志，我们需要对饱和解进行评估。这里唯一需要记住的是，两个FEValues对象使用相同的正交公式，以确保我们在两个对象的正交点上循环时得到匹配的信息。  
-* 申报过程中，对数组的大小、本地矩阵的创建、右手边以及与全局系统相比的本地道夫指数的向量进行了一些简化。
-* 
 
-* 
+*
+* 这是为达西系统组装线性系统的函数。   
+* 关于执行的技术细节，其程序与  step-22  和  step-31  中的程序相似。我们重置矩阵和向量，在单元格上创建正交公式，然后创建相应的FEValues对象。   
+* 有一件事需要评论：由于我们有一个单独的有限元和DoFHandler来处理饱和问题，我们需要生成第二个FEValues对象来正确评估饱和解。要实现这一点并不复杂：只需使用饱和结构，并为基函数值设置一个更新标志，我们需要对饱和解进行评估。这里需要记住的唯一重要部分是，两个FEValues对象使用相同的正交公式，以确保我们在两个对象的正交点上循环时得到匹配的信息。   
+* 声明的过程中，对数组的大小、本地矩阵的创建、右手边以及与全局系统相比的本地道夫的指数的向量都有一些快捷方式。
+*
+
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_darcy_system()
@@ -1491,13 +1491,13 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
      std::vector<Tensor<2, dim>> k_inverse_values(n_q_points);
 * 
  @endcode
- 
-* 接下来我们需要一个向量，它将包含前一个时间层次的饱和解在正交点的值，以组装达西方程中的饱和依赖系数。    
-* 我们接下来创建的向量集包含了基函数的评价以及它们的梯度，将用于创建矩阵。把这些放到自己的数组中，而不是每次都向FEValues对象索取这些信息，这是一种优化，可以加速装配过程，详情见 step-22 。    
+*
+* 接下来我们需要一个向量，该向量将包含前一个时间层的饱和解在正交点的值，以组装达西方程中的饱和依赖系数。     
+* 我们接下来创建的向量集包含了基函数的评价以及它们的梯度，将用于创建矩阵。把这些放到自己的数组中，而不是每次都向FEValues对象索取这些信息，这是一种优化，可以加速组装过程，详情见 step-22 。     
 * 最后两个声明是用来从整个FE系统中提取各个块（速度、压力、饱和度）的。
-* 
+*
 
-* 
+
 * @code
      std::vector<double> old_saturation_values(n_q_points);
 * 
@@ -1509,15 +1509,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
      const FEValuesExtractors::Scalar pressure(dim);
 * 
  @endcode
-* 
-* 现在开始对问题中的所有单元进行循环。我们正在为这个装配例程处理两个不同的DoFHandlers，所以我们必须为使用中的两个对象设置两个不同的单元格迭代器。这可能看起来有点奇怪，但是由于达西系统和饱和系统都使用相同的网格，我们可以假设这两个迭代器在两个DoFHandler对象的单元格上同步运行。    
-* 循环中的第一条语句又是非常熟悉的，按照更新标志的规定对有限元数据进行更新，将局部数组清零，并在正交点处得到旧解的值。 在这一点上，我们还必须在正交点上获得前一个时间步长的饱和函数的值。为此，我们可以使用 FEValues::get_function_values （之前已经在 step-9 、 step-14 和 step-15 中使用），这个函数接收一个解向量，并返回当前单元的正交点的函数值列表。事实上，它返回每个正交点的完整矢量值解，即不仅是饱和度，还有速度和压力。    
-* 然后，我们就可以在单元上的正交点上进行循环，以进行积分。这方面的公式直接来自介绍中所讨论的内容。    
-* 一旦完成，我们就开始在局部矩阵的行和列上进行循环，并向矩阵提供相关的产物。    
-* 循环所有单元的最后一步是将本地贡献输入到全局矩阵和向量结构中，并在local_dof_indices中指定位置。同样，我们让AffineConstraints类将单元格矩阵元素插入到全局矩阵中，全局矩阵已经浓缩了悬挂节点的约束。
-* 
+*
+* 现在开始对问题中的所有单元格进行循环。我们正在为这个装配例程处理两个不同的DoFHandlers，所以我们必须为使用中的两个对象设置两个不同的单元格迭代器。这可能看起来有点奇怪，但是由于达西系统和饱和系统都使用相同的网格，我们可以假设这两个迭代器在两个DoFHandler对象的单元格上同步运行。     
+* 循环中的第一条语句又是非常熟悉的，按照更新标志的规定对有限元数据进行更新，将局部数组清零，并在正交点处得到旧解的值。  在这一点上，我们还必须在正交点上获得前一个时间步长的饱和函数的值。为此，我们可以使用 FEValues::get_function_values （之前已经在 step-9 、 step-14 和 step-15 中使用），这个函数接收一个解向量，并返回当前单元的正交点的函数值列表。事实上，它返回每个正交点的完整矢量值解，即不仅是饱和度，还有速度和压力。     
+* 然后，我们就可以在单元上的正交点上进行循环，以进行积分。这方面的公式直接来自介绍中所讨论的内容。     
+* 一旦完成，我们就开始在局部矩阵的行和列上进行循环，并向矩阵提供相关的产物。     
+* 循环所有单元的最后一步是将本地贡献输入到全局矩阵和向量结构中，并在local_dof_indices中指定位置。同样，我们让AffineConstraints类将单元矩阵元素插入到全局矩阵中，全局矩阵已经浓缩了悬挂的节点约束。
+*
 
-* 
+
 * @code
      auto       cell            = darcy_dof_handler.begin_active();
      const auto endc            = darcy_dof_handler.end();
@@ -1694,15 +1694,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimassemble_saturation_system"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_system</h4>
- 
+*
+* <a name="TwoPhaseFlowProblemdimassemble_saturation_system"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_system</h4>。
 
-* 
-* 这个函数是为了组装饱和传输方程的线性系统。如果有必要，它会调用另外两个成员函数：assemble_saturation_matrix()和assemble_saturation_rhs()。前一个函数然后组装饱和度矩阵，只需要偶尔改变。另一方面，后一个组装右手边的函数必须在每个饱和时间步骤中调用。
-* 
 
-* 
+*
+* 这个函数是为了组装饱和传输方程的线性系统。如果有必要，它会调用另外两个成员函数：assemble_saturation_matrix() 和 assemble_saturation_rhs()。前一个函数然后组装饱和度矩阵，只需要偶尔改变。另一方面，后一个组装右手边的函数必须在每个饱和时间步骤中调用。
+*
+
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_saturation_system()
@@ -1720,15 +1720,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimassemble_saturation_matrix"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_matrix</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimassemble_saturation_matrix"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_matrix</h4>。
 
-* 
-* 这个函数很容易理解，因为它只是通过基函数phi_i_s和phi_j_s为饱和线性系统的左手边形成一个简单的质量矩阵。最后，像往常一样，我们通过在local_dof_indices中指定位置将局部贡献输入全局矩阵。这是通过让AffineConstraints类将单元矩阵元素插入全局矩阵来完成的，全局矩阵已经浓缩了悬挂节点约束。
-* 
 
-* 
+*
+*这个函数很容易理解，因为它只是通过基函数phi_i_s和phi_j_s为饱和线性系统的左侧形成一个简单的质量矩阵。最后，像往常一样，我们通过在local_dof_indices中指定位置将局部贡献输入全局矩阵。这是通过让AffineConstraints类将单元矩阵元素插入全局矩阵来完成的，全局矩阵已经浓缩了悬挂节点约束。
+*
+
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_saturation_matrix()
@@ -1776,17 +1776,17 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
- 
-* <a name="TwoPhaseFlowProblemdimassemble_saturation_rhs"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimassemble_saturation_rhs"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs</h4>。
 
-* 
-* 这个函数是用来组装饱和传输方程的右边。在进行这项工作之前，我们必须为达西系统和饱和系统分别创建两个FEValues对象，此外，还要为这两个系统创建两个FEFaceValues对象，因为在饱和方程的弱形式中我们有一个边界积分项。对于饱和系统的FEFaceValues对象，我们还需要法向量，我们使用update_normal_vectors标志来申请。  
-* 接下来，在对所有单元进行循环之前，我们必须计算一些参数（例如global_u_infty、global_S_variation和global_Omega_diameter），这是人工粘度 $\nu$ 需要的。这与 step-31 中的做法基本相同，所以你可以在那里看到更多的信息。  
-* 真正的工作开始于对所有饱和和Darcy单元的循环，以将局部贡献放入全局矢量。在这个循环中，为了简化实现，我们把一些工作分成两个辅助函数：assemble_saturation_rhs_cell_term和assemble_saturation_rhs_boundary_term。 我们注意到，我们在这两个函数中把细胞或边界贡献插入全局向量，而不是在本函数中。
-* 
 
-* 
+*
+* 这个函数是用来组装饱和输运方程的右侧的。在进行这项工作之前，我们必须为达西系统和饱和系统分别创建两个FEValues对象，此外，还需要为这两个系统创建两个FEFaceValues对象，因为我们在饱和方程的弱形式中有一个边界积分项。对于饱和系统的FEFaceValues对象，我们还需要法向量，我们使用update_normal_vectors标志来申请。   
+* 接下来，在对所有单元进行循环之前，我们必须计算一些参数（例如global_u_infty、global_S_variation和global_Omega_diameter），这是人工粘度 $\nu$ 需要的。这与在 step-31 中所做的大致相同，所以你可以在那里获得更多信息。   
+* 真正的工作开始于对所有饱和和Darcy单元的循环，以将局部贡献放入全局矢量。在这个循环中，为了简化实现，我们把一些工作分成两个辅助函数：assemble_saturation_rhs_cell_term和assemble_saturation_rhs_boundary_term。  我们注意到，我们在这两个函数中把细胞或边界贡献插入全局向量，而不是在本函数中。
+*
+
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_saturation_rhs()
@@ -1857,16 +1857,16 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimassemble_saturation_rhs_cell_term"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_cell_term</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimassemble_saturation_rhs_cell_term"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_cell_term</h4>。
 
-* 
-* 这个函数负责整合饱和度方程右边的单元项，然后将其组装成全局右边的矢量。鉴于介绍中的讨论，这些贡献的形式很清楚。唯一棘手的部分是获得人工黏度和计算它所需的一切。该函数的前半部分专门用于这项任务。  
+
+*
+* 这个函数负责整合饱和度方程右边的单元项，然后将其组装成全局右边的矢量。鉴于介绍中的讨论，这些贡献的形式很清楚。唯一棘手的部分是获得人工黏度和计算它所需的一切。该函数的前半部分专门用于这项任务。   
 * 该函数的最后部分是将局部贡献复制到全局向量中，其位置由local_dof_indices指定。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_cell_term(
@@ -1940,15 +1940,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimassemble_saturation_rhs_boundary_term"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_boundary_term</h4> * <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_boundary_term</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimassemble_saturation_rhs_boundary_term"></a> <h4>TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_boundary_term</h4>。
 
-* 
-* 下一个函数负责饱和方程右侧形式中的边界积分项。 对于这些，我们必须计算全局边界面上的上行通量，也就是说，我们只对全局边界的流入部分弱加迪里切特边界条件。如前所述，这在 step-21 中已经描述过了，所以我们不对其进行更多的描述。
-* 
 
-* 
+*
+* 下一个函数负责饱和方程右侧形式中的边界积分项。  对于这些，我们必须计算全局边界面上的上行通量，也就是说，我们只对全局边界的流入部分弱加迪里切特边界条件。如前所述，这在 step-21 中已经描述过了，所以我们不对其进行更多的描述。
+*
+
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::assemble_saturation_rhs_boundary_term(
@@ -2006,16 +2006,16 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
+*
 * <a name="TwoPhaseFlowProblemdimsolve"></a> <h3>TwoPhaseFlowProblem<dim>::solve</h3>。
- 
 
-* 
-* 该函数实现了算子分割算法，即在每个时间步长中，它要么重新计算达西系统的解，要么从以前的时间步长中推算出速度/压力，然后确定时间步长的大小，然后更新饱和变量。其实现主要遵循  step-31  中的类似代码。除了run()函数外，它是本程序中的核心函数。  
+
+*
+* 该函数实现了算子分割算法，即在每个时间步长中，它要么重新计算达西系统的解，要么从以前的时间步长中推算出速度/压力，然后确定时间步长的大小，再更新饱和变量。其实现主要遵循  step-31  中的类似代码。除了run()函数外，它是本程序中的核心函数。   
 * 在函数的开始，我们询问是否要通过评估后验准则来解决压力-速度部分（见下面的函数）。如果有必要，我们将使用GMRES求解器与Schur补充块预处理来求解压力-速度部分，如介绍中所述。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::solve()
@@ -2071,15 +2071,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
          }
        }
  @endcode
- 
-* 另一方面，如果我们已经决定不想计算当前时间步长的达西系统的解，那么我们需要简单地将前两个达西解外推到与我们计算速度/压力的时间相同。我们做一个简单的线性外推，即给定从上次计算达西解到现在的宏观时间步长 $dt$ （由 <code>current_macro_time_step</code> 给出），以及 $DT$ 上一个宏观时间步长（由 <code>old_macro_time_step</code> 给出），然后我们得到 $u^\ast = u_p + dt \frac{u_p-u_{pp}}{DT} = (1+dt/DT)u_p
+*
+* 另一方面，如果我们已经决定不想计算当前时间步长的达西系统的解，那么我们需要简单地将前两个达西解外推到与我们计算速度/压力时相同的时间。我们做一个简单的线性外推，即给定从上次计算达西解到现在的宏观时间步长 $dt$ （由 <code>current_macro_time_step</code> 给出），以及 $DT$ 上一个宏观时间步长（由 <code>old_macro_time_step</code> 给出），然后我们得到 $u^\ast = u_p + dt \frac{u_p-u_{pp}}{DT} = (1+dt/DT)u_p
 * 
 -
- dt/DT u_{pp}$ ，其中 $u_p$ 和 $u_{pp}$ 是最近两次计算的达西解。我们只需用两行代码就可以实现这个公式。    
+ dt/DT u_{pp}$ ，其中 $u_p$ 和 $u_{pp}$ 是最近两个计算的达西解。我们只需用两行代码就可以实现这个公式。     
 * 请注意，这里的算法只有在我们至少有两个先前计算的达西解，我们可以从中推断出当前时间的情况下才会起作用，这一点通过要求重新计算前两个时间步骤的达西解来保证。
-* 
+*
 
-* 
+
 * @code
      else
        {
@@ -2208,11 +2208,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* 用这样计算出来的速度矢量，根据介绍中讨论的CFL标准计算出最佳时间步长......
-* 
+*
+*用这样计算出来的速度矢量，根据介绍中讨论的CFL标准计算出最佳时间步长......
+*
 
-* 
+
 * @code
      {
        old_time_step = time_step;
@@ -2230,11 +2230,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* ...然后在我们处理时间步长的时候也要更新我们使用的宏观时间步长。具体而言，这涉及到 (i) 如果我们刚刚重新计算了达西解，那么之前的宏观时间步长现在是固定的，当前的宏观时间步长，到现在为止，只是当前（微观）时间步长。(ii) 如果我们没有重新计算达西解，那么当前的宏观时间步长刚刚增长了 <code>time_step</code>  。
-* 
+*
+* ......然后还要更新我们使用的宏观时间步长，同时我们要处理时间步长的问题。具体而言，这涉及到(i) 如果我们刚刚重新计算了达西解，那么之前的宏观时间步长现在是固定的，当前的宏观时间步长，到现在为止，只是当前（微观）时间步长。(ii) 如果我们没有重新计算达西解，那么当前的宏观时间步长刚刚增长了 <code>time_step</code>  。
+*
 
-* 
+
 * @code
      if (solve_for_pressure_and_velocity == true)
        {
@@ -2245,11 +2245,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
        current_macro_time_step += time_step;
 * 
  @endcode
-* 
+*
 * 这个函数的最后一步是根据我们刚刚得到的速度场重新计算饱和解。这自然发生在每一个时间步骤中，我们不会跳过任何一个计算。在计算饱和度的最后，我们投射回允许的区间 $[0,1]$ ，以确保我们的解保持物理状态。
-* 
+*
 
-* 
+
 * @code
      {
        std::cout << "   Solving saturation transport equation..." << std::endl;
@@ -2278,15 +2278,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimrefine_mesh"></a> <h3>TwoPhaseFlowProblem<dim>::refine_mesh</h3>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimrefine_mesh"></a> <h3>TwoPhaseFlowProblem<dim>::refine_mesh</h3>。
 
-* 
+
+*
 * 下一个函数是对网格进行细化和粗化。它的工作分三块进行。(i) 计算细化指标，方法是通过使用各自的时间步长（如果这是第一个时间步长，则取唯一的解决方案），从前两个时间步长中线性推断出的解决方案向量的梯度。(ii) 在梯度大于或小于某一阈值的单元中标记出细化和粗化的单元，保留网格细化的最小和最大水平。(iii) 将解决方案从旧网格转移到新网格。这些都不是特别困难。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::refine_mesh(const unsigned int min_grid_level,
@@ -2397,15 +2397,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
+*
 * <a name="TwoPhaseFlowProblemdimoutput_results"></a> <h3>TwoPhaseFlowProblem<dim>::output_results</h3>。
- 
 
-* 
-* 这个函数生成了图形输出。它实质上是对  step-31  中的实现的一个复制。
-* 
 
-* 
+*
+* 这个函数生成了图形输出。它本质上是对  step-31  中的实现的一个复制。
+*
+
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::output_results() const
@@ -2494,21 +2494,21 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="Toolfunctions"></a> <h3>Tool functions</h3>.
- 
+*
+* <a name="Toolfunctions"></a> <h3>Tool functions</h3>。
 
-* 
+
+
 * <a name="TwoPhaseFlowProblemdimdetermine_whether_to_solve_for_pressure_and_velocity"></a> <h4>TwoPhaseFlowProblem<dim>::determine_whether_to_solve_for_pressure_and_velocity</h4>。
-* 
 
-* 
-* 这个函数实现了自适应算子拆分的后验准则。考虑到我们在上面实现其他函数的方式，并考虑到论文中得出的准则公式，这个函数是比较简单的。  
-* 如果人们决定要采用原始的IMPES方法，即在每个时间步长中求解Darcy方程，那么可以通过将阈值 <code>AOS_threshold</code> （默认为 $5.0$ ）设置为零来实现，从而迫使该函数总是返回真。  
+
+*
+* 这个函数实现了自适应算子拆分的后验准则。考虑到我们在上面实现其他函数的方式，并考虑到论文中得出的准则公式，这个函数是相对简单的。   
+* 如果我们决定要采用原始的IMPES方法，即在每个时间步长中求解Darcy方程，那么可以通过将阈值 <code>AOS_threshold</code> （默认为 $5.0$ ）设置为零来实现，从而迫使该函数总是返回真。   
 * 最后，请注意，该函数在前两个时间步骤中无条件地返回真，以确保我们在跳过达西系统的解时总是至少解了两次，从而允许我们从 <code>solve()</code> 中的最后两个解中推算出速度。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    bool TwoPhaseFlowProblem<
@@ -2575,15 +2575,15 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimproject_back_saturation"></a> <h4>TwoPhaseFlowProblem<dim>::project_back_saturation</h4>.
- 
+*
+* <a name="TwoPhaseFlowProblemdimproject_back_saturation"></a> <h4>TwoPhaseFlowProblem<dim>::project_back_saturation</h4>。
 
-* 
+
+*
 * 下一个函数只是确保饱和度值始终保持在 $[0,1]$ 的物理合理范围内。虽然连续方程保证了这一点，但离散方程并没有。然而，如果我们允许离散解逃脱这个范围，我们就会遇到麻烦，因为像 $F(S)$ 和 $F'(S)$ 这样的项会产生不合理的结果（例如 $F'(S)<0$ 为 $S<0$ ，这将意味着润湿液相的流动方向为<i>against</i>的散流体速度））。因此，在每个时间步骤结束时，我们只需将饱和场投射回物理上合理的区域。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::project_back_saturation()
@@ -2598,12 +2598,12 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimget_max_u_F_prime"></a> <h4>TwoPhaseFlowProblem<dim>::get_max_u_F_prime</h4>.   
+*
+* <a name="TwoPhaseFlowProblemdimget_max_u_F_prime"></a> <h4>TwoPhaseFlowProblem<dim>::get_max_u_F_prime</h4>。
 * 另一个比较简单的辅助函数。计算总速度乘以分数流函数的导数的最大值，即计算  $\|\mathbf{u} F'(S)\|_{L_\infty(\Omega)}$  。这个项既用于时间步长的计算，也用于人工黏度中的熵留项的归一化。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    double TwoPhaseFlowProblem<dim>::get_max_u_F_prime() const
@@ -2654,13 +2654,13 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimget_extrapolated_saturation_range"></a> <h4>TwoPhaseFlowProblem<dim>::get_extrapolated_saturation_range</h4> * <a name="TwoPhaseFlowProblemdimget_extrapolated_saturation_range"></a>。  
-* 为了计算稳定化项，我们需要知道饱和变量的范围。与 step-31 不同的是，这个范围很容易被区间 $[0,1]$ 所约束，但我们可以通过在正交点的集合上循环，看看那里的值是什么，从而做得更好。如果可以的话，也就是说，如果周围至少有两个时间步长，我们甚至可以把这些值外推到下一个时间步长。  
+*
+* <a name="TwoPhaseFlowProblemdimget_extrapolated_saturation_range"></a> <h4>TwoPhaseFlowProblem<dim>::get_extrapolated_saturation_range</h4>。
+* 为了计算稳定化项，我们需要知道饱和变量的范围。与 step-31 不同的是，这个范围很容易被区间 $[0,1]$ 所约束，但我们可以通过在正交点的集合上循环，看看那里的值是什么，从而做得更好。如果可以的话，也就是说，如果周围至少有两个时间步长，我们甚至可以把这些值外推到下一个时间步长。   
 * 和以前一样，这个函数是以最小的修改取自 step-31  。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    std::pair<double, double>
@@ -2732,12 +2732,12 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="TwoPhaseFlowProblemdimcompute_viscosity"></a> <h4>TwoPhaseFlowProblem<dim>::compute_viscosity</h4> 。  
+*
+* <a name="TwoPhaseFlowProblemdimcompute_viscosity"></a> <h4>TwoPhaseFlowProblem<dim>::compute_viscosity</h4>。
 * 最后一个工具函数是用来计算给定单元上的人工粘度的。如果你面前有它的公式，这并不特别复杂，看一下  step-31  中的实现。与该教程程序的主要区别是，这里的速度不是简单的 $\mathbf u$ ，而是 $\mathbf u F'(S)$ ，一些公式需要做相应的调整。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    double TwoPhaseFlowProblem<dim>::compute_viscosity(
@@ -2811,16 +2811,16 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 * 
  
  @endcode
-* 
+*
 * <a name="TwoPhaseFlowProblemdimrun"></a> <h3>TwoPhaseFlowProblem<dim>::run</h3>。
- 
 
-* 
-* 除了 <code>solve()</code> 之外，这个函数是本程序的主要功能，因为它控制了迭代的时间，以及何时将解写入输出文件，何时进行网格细化。  
+
+*
+* 除了 <code>solve()</code> 之外，这个函数是这个程序的主要功能，因为它控制了迭代的时间，以及何时将解写入输出文件和何时进行网格细化。   
 * 除了启动代码通过 <code>goto start_time_iteration</code> 标签循环回到函数的开头之外，一切都应该是相对简单的。无论如何，它模仿了  step-31  中的相应函数。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void TwoPhaseFlowProblem<dim>::run()
@@ -2886,19 +2886,19 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  
 * 
  @endcode
-* 
-* <a name="Thecodemaincodefunction"></a> <h3>The <code>main()</code> function</h3>.
- 
+*
+* <a name="Thecodemaincodefunction"></a> <h3>The <code>main()</code> function</h3>。
 
-* 
+
+
 * 主函数看起来与所有其他程序几乎相同。对于使用Trilinos的程序，需要初始化MPI子系统
-* 
-* - 即使是实际上没有并行运行的程序也是如此
-* 
+*
+* - 即使对于实际上没有并行运行的程序也是如此
+*
 * - 在  step-31  中有解释。
-* 
+*
 
-* 
+
 * @code
  int main(int argc, charargv[])
  {
@@ -2911,11 +2911,11 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
          argc, argv, numbers::invalid_unsigned_int);
 * 
  @endcode
-* 
-* 这个程序只能以串行方式运行。否则，抛出一个异常。
-* 
+*
+* 这个程序只能在串行中运行。否则，抛出一个异常。
+*
 
-* 
+
 * @code
        AssertThrow(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 1,
                    ExcMessage(
@@ -2955,10 +2955,10 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
  }
  @endcode
 * <a name="Results"></a><h1>Results</h1> 。
- 
 
-* 
-* 这个程序的输出与 step-21 的输出其实没有什么不同：毕竟它解决的是同一个问题。更重要的是量化的指标，如解决方案的准确性以及计算所需的时间。这些在本页顶部列出的两份出版物中都有详细记载，我们在此不再重复。
+
+*
+* 这个程序的输出与 step-21 的输出其实没有什么不同：毕竟它解决的是同一个问题。更重要的是量化指标，如解决方案的准确性，以及计算所需的时间。这些在本页顶部列出的两份出版物中都有详细记载，我们在此不再重复。
 * 尽管如此，如果没有几张好的图片，任何教程程序都是不完整的，所以这里有一些3D运行的输出。
 *  <table align="center" class="tutorial" cellspacing="3" cellpadding="3">
   <tr>
@@ -2997,18 +2997,18 @@ S$  的一个良好近似。由于这两个矩阵又都是对称和正定的，�
 	</p>
     </td>
   </tr>
-</table>  
-* 
+</table> 
+*
 
 * <a name="extensions"></a><a name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3> 。
-* 
 
-* 人们对这个程序的主要反对意见是它仍然太慢了：在合理的细网格上进行三维计算简直是太昂贵了，不可能经常性地进行，也不可能有合理的快速周转。这与我们编写 step-31 时的情况类似，本程序也是从中得到很多启发的。解决办法也和当时的情况类似。我们需要以类似于从 step-31 中导出 step-32 的方式将程序并行化。事实上， step-32 中使用的所有技术也可以转移到这个程序中，使程序立即在几十或几百个处理器上运行。
+
+* 人们对这个程序的主要反对意见是它仍然太慢了：在合理的细网格上进行三维计算实在是太昂贵了，不可能经常性地进行，也不可能有合理的快速周转。这与我们编写 step-31 时的情况类似，本程序也是从中得到很多启发的。解决办法也和当时的情况类似。我们需要以类似于从 step-31 中导出 step-32 的方式将程序并行化。事实上， step-32 中使用的所有技术也可以转移到这个程序中，使程序立即在几十或几百个处理器上运行。
 * 一个不同的方向是使该程序与许多其他有孔媒体应用更相关。具体来说，一个途径是进入多孔介质流动模拟器的主要用户，即石油工业。在那里，该领域的应用以多相流动为主（即超过我们这里的两相），以及它们之间可能发生的反应（或任何其他相的质量交换方式，如通过溶解和气泡从油相中流出的气体）。此外，气体的存在通常会导致流体的可压缩性效应。这些效应通常共同构成了广泛使用的 "黑油模型"。多相之间的真实反应在油藏模型中也起作用，因为考虑到油藏中石油的控制性燃烧以提高压力和温度。不过，这些问题要复杂得多，留待今后的项目处理。
-* 最后，从数学的角度来看，我们得出了在某一时间步长重新计算速度/压力解的标准，假设我们想把当前时间步长得到的解与上次实际解决该系统时计算的解进行比较。然而，在程序中，每当我们没有重新计算解决方案时，我们不只是使用之前计算的解决方案，而是从之前两次解决该系统的过程中推断出来。因此，该标准被悲观地表述为：我们真正应该比较的是我们在当前时间步长中得到的解和外推的解。在这方面，重新阐述该定理是一个练习。
+* 最后，从数学的角度来看，我们得出了在某一时间步长重新计算速度/压力解的标准，假设我们想把当前时间步长得到的解与上次实际解决该系统时的解进行比较。然而，在程序中，每当我们没有重新计算解决方案时，我们不只是使用之前计算的解决方案，而是从之前两次解决该系统的过程中推断出来。因此，该标准被悲观地表述为：我们真正应该比较的是我们在当前时间步长中得到的解和外推的解。在这方面，重新阐述该定理是一个练习。
 * 还有其他方法可以扩展这个程序的数学基础；例如，我们可以说，我们关心的不是速度，而实际上是饱和度。因此，人们可能会问，我们在这里用来决定是否需要计算 $\mathbf u$ 的标准是否合适；例如，人们可能会建议，决定一个错误的速度场是否（以及多少）事实上影响到饱和方程的解，也是很重要的。这自然会导致敏感性分析。
 * 从算法的角度来看，我们在这里使用了工程中经常使用的细化标准，即通过观察解的梯度。然而，如果你检查解决方案，你会发现它几乎在所有地方都能迅速导致细化，甚至在明显不需要细化的区域：因此经常使用并不意味着它是一个有用的标准。另一方面，用一个不同的、更好的标准来取代这个标准应该不是很困难。例如，许多其他程序中使用的KellyErrorEstimator类肯定也适用于当前的问题。
-* 
+*
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-43.cc" 。
 * */

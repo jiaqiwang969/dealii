@@ -1,0 +1,523 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] ,  [2.x.3] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32][1.x.33][1.x.34]
+*  [2.x.4] 
+* [1.x.35]
+* 
+
+* [1.x.36][1.x.37][1.x.38]
+* 
+
+* This program deals with the problem of coupling different physics in differentparts of the domain. Specifically, let us consider the followingsituation that couples a Stokes fluid with an elastic solid (these twoproblems were previously discussed separately in  [2.x.5]  and  [2.x.6] ,where you may want to read up on the individual equations):
+* 
+*  - In a part  [2.x.7]  of  [2.x.8] , we have a fluid flowing that satisfies the  time independent Stokes equations (in the form that involves the strain  tensor): 
+* [1.x.39]
+*   Here,  [2.x.9]  are the fluid velocity and pressure, respectively.  We prescribe the velocity on part of the external boundary, 
+* [1.x.40]
+*   while we assume free-flow conditions on the remainder of the external  boundary, 
+* [1.x.41]
+* 
+* 
+*  - The remainder of the domain,  [2.x.10]  is  occupied by a solid whose deformation field  [2.x.11]  satisfies the  elasticity equation, 
+* [1.x.42]
+*   where  [2.x.12]  is the rank-4 elasticity tensor (for which we will use a  particularly simple form by assuming that the solid is isotropic).  It deforms in reaction to the forces exerted by the  fluid flowing along the boundary of the solid. We assume this deformation to  be so small that it has no feedback effect on the fluid, i.e. the coupling  is only in one direction. For simplicity, we will assume that the  solid's external boundary is clamped, i.e. 
+* [1.x.43]
+* 
+* 
+*  - As a consequence of the small displacement assumption, we will pose the  following boundary conditions on the interface between the fluid and solid:  first, we have no slip boundary conditions for the fluid, 
+* [1.x.44]
+*   Secondly, the forces (traction) on the solid equal the normal stress from the fluid, 
+* [1.x.45]
+*   where  [2.x.13]  is the normal vector on  [2.x.14]  pointing from  the solid to the fluid.
+* We get a weak formulation of this problem by following our usual rule ofmultiplying from the left by a test function and integrating over thedomain. It then looks like this: Find  [2.x.15]  such that
+* [1.x.46]
+* for all test functions  [2.x.16] ; the first, second, andthird lines correspond to the fluid, solid, and interfacecontributions, respectively.Note that  [2.x.17]  is only a subspace of the spaces listed above to accommodate forthe various Dirichlet boundary conditions.
+* This sort of coupling is of course possible by simply having two Triangulationand two DoFHandler objects, one each for each of the two subdomains. On theother hand, deal.II is much simpler to use if there is a single DoFHandlerobject that knows about the discretization of the entire problem.
+* This program is about how this can be achieved. Note that the goal is not topresent a particularly useful physical model (a realistic fluid-structureinteraction model would have to take into account the finite deformation ofthe solid and the effect this has on the fluid): this is, after all, just atutorial program intended to demonstrate techniques, not to solve actualproblems. Furthermore, we will make the assumption that the interface betweenthe subdomains is aligned with coarse mesh cell faces.
+* 
+
+* [1.x.47][1.x.48]
+* 
+
+* Before going into more details let us state the obvious: this is aproblem with multiple solution variables; for this, you will probablywant to read the  [2.x.18]  documentation module first, whichpresents the basic philosophical framework in which we addressproblems with more than one solution variable. But back to the problemat hand:
+* The fundamental idea to implement these sort of problems in deal.II goes asfollows: in the problem formulation, the velocity and pressure variables [2.x.19]  only live in the fluid subdomain  [2.x.20] . But let's assumethat we extend them by zero to the entire domain  [2.x.21]  (in the general casethis means that they will be discontinuous along  [2.x.22] ). So what is theappropriate function space for these variables? We know that on  [2.x.23]  weshould require  [2.x.24] , so forthe extensions  [2.x.25]  to the whole domain the followingappears a useful set of function spaces:
+* [1.x.49]
+* (Since this is not important for the current discussion, we have omitted thequestion of boundary values from the choice of function spaces; this questionalso affects whether we can choose  [2.x.26]  for the pressure or whether we haveto choose the space  [2.x.27]  for the pressure. None of these questions are relevant to the followingdiscussion, however.)
+* Note that these are indeed a linear function spaces with obvious norm. Since noconfusion is possible in practice, we will henceforth omit the tilde again todenote the extension of a function to the whole domain and simply refer by [2.x.28]  to both the original and the extended function.
+* For discretization, we need finite dimensional subspaces  [2.x.29]  of [2.x.30] . For Stokes, we know from  [2.x.31]  that an appropriate choice is [2.x.32]  but this only holds for that part of the domainoccupied by the fluid. For the extended field, let's use the followingsubspaces defined on the triangulation  [2.x.33] :
+* [1.x.50]
+* In other words, on  [2.x.34]  we choose the usual discrete spaces butwe keep the (discontinuous) extension by zero. The point to make isthat we now need a description of a finite element space for functionsthat are zero on a cell &mdash; and this is where the FE_Nothing classcomes in: it describes a finite dimensional function space offunctions that are constant zero. A particular property of thispeculiar linear vector space is that it has no degrees of freedom: itisn't just finite dimensional, it is in fact zero dimensional, andconsequently for objects of this type,  [2.x.35] will return zero. For discussion below, let us give this space aproper symbol:[1.x.51]The symbol  [2.x.36]  reminds of the fact that functions in this space arezero. Obviously, we choose  [2.x.37] .
+* This entire discussion above can be repeated for the variables we use todescribe the elasticity equation. Here, for the extended variables, wehave
+* [1.x.52]
+* and we will typically use a finite element space of the kind
+* [1.x.53]
+* of polynomial degree  [2.x.38] .
+* So to sum up, we are going to look for a discrete vector-valuedsolution  [2.x.39]  in the followingspace:
+* [1.x.54]
+* 
+* 
+
+* 
+* [1.x.55][1.x.56]
+* 
+
+* So how do we implement this sort of thing? First, we realize that the discretespace  [2.x.40]  essentially calls for two different finite elements: First, on thefluid subdomain, we need the element  [2.x.41]  whichin deal.II is readily implemented by
+* [1.x.57]
+* where  [2.x.42]  implements the space of functions that arealways zero. Second, on the solid subdomain, we need the element [2.x.43] , which we get using
+* [1.x.58]
+* 
+* The next step is that we associate each of these two elements with the cellsthat occupy each of the two subdomains. For this we realize that in a sensethe two elements are just variations of each other in that they have the samenumber of vector components but have different polynomial degrees &mdash; thissmells very much like what one would do in  [2.x.44]  finite element methods, and itis exactly what we are going to do here: we are going to (ab)use the classesand facilities of the hp-namespace to assign different elements to differentcells. In other words, we will use collect the two finite elements in an [2.x.45]  will integrate with an appropriate  [2.x.46]  using an [2.x.47]  object, and our DoFHandler will be in [1.x.59]-mode. Youmay wish to take a look at  [2.x.48]  for an overview of all of these concepts.
+* Before going on describing the testcase, let us clarify a bit [1.x.60] thisapproach of extending the functions by zero to the entire domain and thenmapping the problem on to the hp-framework makes sense:
+* 
+*  - It makes things uniform: On all cells, the number of vector components is  the same (here,  [2.x.49] ). This makes all sorts of  things possible since a uniform description allows for code  re-use. For example, counting degrees of freedom per vector  component  [2.x.50]  sorting degrees of  freedom by component  [2.x.51]  subsequent  partitioning of matrices and vectors into blocks and many other  functions work as they always did without the need to add special  logic to them that describes cases where some of the variables only  live on parts of the domain. Consequently, you have all sorts of  tools already available to you in programs like the current one that  weren't originally written for the multiphysics case but work just  fine in the current context.
+* 
+*  - It allows for easy graphical output: All graphical output formats we support  require that each field in the output is defined on all nodes of the  mesh. But given that now all solution components live everywhere,  our existing DataOut routines work as they always did, and produce  graphical output suitable for visualization
+* 
+*  -  the fields will  simply be extended by zero, a value that can easily be filtered out  by visualization programs if not desired.
+* 
+*  - There is essentially no cost: The trick with the FE_Nothing does not add any  degrees of freedom to the overall problem, nor do we ever have to handle a  shape function that belongs to these components &mdash; the FE_Nothing has  no degrees of freedom, not does it have shape functions, all it does is take  up vector components.
+* 
+
+* [1.x.61][1.x.62]
+* 
+
+* More specifically, in the program we have to address the followingpoints:
+* 
+*  - Implementing the bilinear form, and in particular dealing with the  interface term, both in the matrix and the sparsity pattern.
+* 
+*  - Implementing Dirichlet boundary conditions on the external and  internal parts of the boundaries   [2.x.52] .
+* 
+
+* [1.x.63][1.x.64]
+* 
+
+* Let us first discuss implementing the bilinear form, which at thediscrete level we recall to be
+* [1.x.65]
+* Given that we have extended the fields by zero, we could in principlewrite the integrals over subdomains to the entire domain  [2.x.53] ,though it is little additional effort to first ask whether a cell ispart of the elastic or fluid region before deciding which terms tointegrate. Actually integrating these terms is not very difficult; forthe Stokes equations, the relevant steps have been shown in  [2.x.54] ,whereas for the elasticity equation we take essentially the form shownin the  [2.x.55]  module (rather than the one from  [2.x.56] ).
+* The term that is of more interest is the interface term,[1.x.66]Based on our assumption that the interface  [2.x.57]  coincides withcell boundaries, this can in fact be written as a set of faceintegrals. If we denote the velocity, pressure and displacementcomponents of shape function  [2.x.58]  using the extractornotation  [2.x.59] , then theterm above yields the following contribution to the global matrixentry  [2.x.60] :[1.x.67]Although it isn't immediately obvious, this term presents a slightcomplication: while  [2.x.61]  and  [2.x.62]  are evaluatedon the solid side of the interface (they are test functions for thedisplacement and the normal vector to  [2.x.63] , respectively, weneed to evaluate  [2.x.64]  on the fluidside of the interface since they correspond to the stress/forceexerted by the fluid. In other words, in our implementation, we willneed FEFaceValue objects for both sides of the interface. To makethings slightly worse, we may also have to deal with the fact that oneside or the other may be refined, leaving us with the need tointegrate over parts of a face. Take a look at the implementationbelow on how to deal with this.
+* As an additional complication, the matrix entries that result from this termneed to be added to the sparsity pattern of the matrix somehow. This is therealm of various functions in the DoFTools namespace like [2.x.65]  and [2.x.66]  Essentially, what these functions do issimulate what happens during assembly of the system matrix: whenever assemblywould write a nonzero entry into the global matrix, the functions in DoFToolswould add an entry to the sparsity pattern. We could therefore do thefollowing: let  [2.x.67]  add all those entries to thesparsity pattern that arise from the regular cell-by-cell integration, andthen do the same by hand that arise from the interface terms. If you look atthe implementation of the interface integrals in the program below, it shouldbe obvious how to do that and would require no more than maybe 100 lines ofcode at most.
+* But we're lazy people: the interface term couples degrees of freedom from twoadjacent cells along a face, which is exactly the kind of thing one would doin discontinuous Galerkin schemes for which the function [2.x.68]  was written. This is a superset of matrixentries compared to the usual  [2.x.69]  it will alsoadd all entries that result from computing terms coupling the degrees offreedom from both sides of all faces. Unfortunately, for the simplest versionof this function, this is a pretty big superset. Consider for example thefollowing mesh with two cells and a  [2.x.70]  finite element:
+* [1.x.68]
+* Here, the sparsity pattern produced by  [2.x.71]  willonly have entries for degrees of freedom that couple on a cell. However, itwill not have sparsity pattern entries  [2.x.72] . The sparsitypattern generated by  [2.x.73]  will have theseentries, however: it assumes that you want to build a sparsity pattern for abilinear form that couples [1.x.69] degrees of freedom from adjacentcells. This is not what we want: our interface term acts only on a smallsubset of cells, and we certainly don't need all the extra couplings betweentwo adjacent fluid cells, or two adjacent solid cells. Furthermore, the fact that weuse higher order elements means that we would really generate many many moreentries than we actually need: on the coarsest mesh, in 2d, 44,207 nonzeroentries instead of 16,635 for  [2.x.74]  leading toplenty of zeros in the matrix we later build (of course, the 16,635 are notenough since they don't include the interface entries). This ratio would beeven worse in 3d.
+* So being extremely lazy comes with a cost: too many entries in the matrix. Butwe can get away with being moderately lazy: there is a variant of [2.x.75]  that allows usto specify which vector components of the finite element couple with whichother components, both in cell terms as well as in face terms. For cells thatare in the solid subdomain, we couple all displacements with each other; forfluid cells, all velocities with all velocities and the pressure, but not thepressure with itself. Since no cell has both sets ofvariables, there is no need to distinguish between the two kinds of cells, sowe can write the mask like this:
+* [1.x.70]
+* Here, we have used the fact that the first  [2.x.76]  components of thefinite element are the velocities, then the pressure, and then the [2.x.77]  displacements. (We could as well have stated that thevelocities/pressure also couple with the displacements since no cell ever hasboth sets of variables.) On the other hand, the interface terms require a masklike this:
+* [1.x.71]
+* In other words, all displacement test functions (components [2.x.78] ) couple with all velocity and pressure shape functionson the other side of an interface. This is not entirely true, though close: infact, the exact form of the interface term only those pressure displacementshape functions that are indeed nonzero on the common interface, which is nottrue for all shape functions; on the other hand, it really couples allvelocities (since the integral involves gradients of the velocity shapefunctions, which are all nonzero on all faces of the cell). However, the mask webuild above, is not capable of these subtleties. Nevertheless, through thesemasks we manage to get the number of sparsity pattern entries down to 21,028&mdash; good enough for now.
+* 
+
+* 
+* [1.x.72][1.x.73]
+* 
+
+* The second difficulty is that while we know how to enforce a zerovelocity or stress on the external boundary (using [2.x.79]  called with an appropriatecomponent mask and setting different boundary indicators for solid andfluid external boundaries), we now also needed the velocity to be zeroon the interior interface, i.e.  [2.x.80] . At the timeof writing this, there is no function in deal.II that handles thispart, but it isn't particularly difficult to implement by hand:essentially, we just have to loop over all cells, and if it is a fluidcell and its neighbor is a solid cell, then add constraints thatensure that the velocity degrees of freedom on this face arezero. Some care is necessary to deal with the case that the adjacentsolid cell is refined, yielding the following code:
+* [1.x.74]
+* 
+* The call  [2.x.81]  tells theAffineConstraints to start a new constraint for degree of freedom [2.x.82]  of the form  [2.x.83] . Typically, one would then proceed to set individual coefficients [2.x.84]  to nonzero values (using  [2.x.85]  or set [2.x.86]  to something nonzero (using [2.x.87]  doing nothing as above, funny asit looks, simply leaves the constraint to be  [2.x.88] , which is exactlywhat we need in the current context. The call to [2.x.89]  makes sure that we only setboundary values to zero for velocity but not pressure components.
+* Note that there are cases where this may yield incorrect results:notably, once we find a solid neighbor child to a current fluid cell,we assume that all neighbor children on the common face are in thesolid subdomain. But that need not be so; consider, for example, thefollowing mesh:
+* [1.x.75]
+* 
+* In this case, we would set all velocity degrees of freedom on theright face of the left cell to zero, which is incorrect for the topdegree of freedom on that face. That said, that can only happen if thefluid and solid subdomains do not coincide with a set of completecoarse mesh cells &mdash; but this is a contradiction to theassumption stated at the end of the first section of thisintroduction.
+* 
+
+* 
+* [1.x.76][1.x.77]
+* 
+
+* We will consider the following situation as a testcase:
+*  [2.x.90] 
+* As discussed at the top of this document, we need to assume in a few placesthat a cell is either entirely in the fluid or solid part of the domain and,furthermore, that all children of an inactive cell also belong to the samesubdomain. This can definitely be ensured if the coarse mesh alreadysubdivides the mesh into solid and fluid coarse mesh cells; given the geometryoutlined above, we can do that by using an  [2.x.91]  coarse mesh,conveniently provided by the  [2.x.92] function.
+* The fixed boundary at the bottom implies  [2.x.93] , and we alsoprescribe Dirichlet conditions for the flow at the top so that we getinflow at the left and outflow at the right. At the left and rightboundaries, no boundary conditions are imposed explicitly for theflow, yielding the implicit no-stress condition  [2.x.94] .The conditions on the interface between the two domains has already beendiscussed above.
+* For simplicity, we choose the material parameters to be [2.x.95] . In the results section below, we will also showa 3d simulation that can be obtained from the same program. Theboundary conditions and geometry are defined nearly analogously to the2d situation above.
+* 
+
+* [1.x.78][1.x.79]
+* 
+
+* In the program, we need a way to identify which part of the domain a cell isin. There are many different ways of doing this. A typical way would be to usethe  [2.x.96]  "subdomain_id" tag available with each cell, thoughthis field has a special meaning in %parallel computations. An alternativeis the  [2.x.97]  "material_id" field also available withevery cell. It has the additional advantage that it is inherited from themother to the child cell upon mesh refinement; in other words, we would setthe material id once upon creating the mesh and it will be correct for allactive cells even after several refinement cycles. We therefore go with thisalternative: we define an  [2.x.98]  with symbolic names formaterial_id numbers and will use them to identify which part of the domain acell is on.
+* Secondly, we use an object of type DoFHandler operating in [1.x.80]-mode. Thisclass needs to know which cells will use the Stokes and which the elasticityfinite element. At the beginning of each refinement cycle we will thereforehave to walk over all cells and set the (in hp-parlance) active FE index towhatever is appropriate in the current situation. While we can use symbolicnames for the material id, the active FE index is in fact a number that willfrequently be used to index into collections of objects (e.g. of type [2.x.99]  and  [2.x.100]  that means that the active FE indexactually has to have value zero for the fluid and one for the elastic part ofthe domain.
+* 
+
+* [1.x.81][1.x.82]
+* 
+
+* This program is primarily intended to show how to deal with differentphysics in different parts of the domain, and how to implement suchmodels in deal.II. As a consequence, we won't bother coming up with agood solver: we'll just use the SparseDirectUMFPACK class which alwaysworks, even if not with optimal complexity. We will, however, commenton possible other solvers in the [1.x.83] section.
+* 
+
+* [1.x.84][1.x.85]
+* 
+
+* One of the trickier aspects of this program is how to estimate theerror. Because it works on almost any program, we'd like to use theKellyErrorEstimator, and we can relatively easily do that here as well usingcode like the following:
+* [1.x.86]
+* This gives us two sets of error indicators for each cell. We would thensomehow combine them into one for mesh refinement, for example using somethinglike the following (note that we normalize the squared error indicator in thetwo vectors because error quantities have physical units that do not match inthe current situation, leading to error indicators that may differ by ordersof magnitude between the two subdomains):
+* [1.x.87]
+* (In the code, we actually weigh the error indicators 4:1 in favor of the onescomputed on the Stokes subdomain since refinement is otherwise heavily biasedtowards the elastic subdomain, but this is just a technicality. The factor 4has been determined heuristically to work reasonably well.)
+* While this principle is sound, it doesn't quite work as expected. The reasonis that the KellyErrorEstimator class computes error indicators by integratingthe jump in the solution's gradient around the faces of each cell. This jumpis likely to be very large at the locations where the solution isdiscontinuous and extended by zero; it also doesn't become smaller as the meshis refined. The KellyErrorEstimator class can't just ignore the interfacebecause it essentially only sees a DoFHandler in [1.x.88]-mode where the elementtype changes from one cell to another &mdash; precisely the thing that the[1.x.89]-mode was designed for, the interface in the current program looks nodifferent than the interfaces in  [2.x.101] , for example, and certainly no lesslegitimate. Be that as it may, the end results is that there is a layer ofcells on both sides of the interface between the two subdomains where errorindicators are irrationally large. Consequently, most of the mesh refinementis focused on the interface.
+* This clearly wouldn't happen if we had a refinement indicator that actuallyunderstood something about the problem and simply ignore the interface betweensubdomains when integrating jump terms.On the other hand, this program isabout showing how to represent problems where we have different physics indifferent subdomains, not about the peculiarities of the KellyErrorEstimator,and so we resort to the big hammer called "heuristics": we simply set theerror indicators of cells at the interface to zero. This cuts off the spikesin the error indicators. At first sight one would also think that it preventsthe mesh from being refined at the interface, but the requirement thatneighboring cells may only differ by one level of refinement will still leadto a reasonably refined mesh.
+* While this is clearly a suboptimal solution, it works for now and leaves roomfor future improvement.
+* 
+
+*  [1.x.90] [1.x.91]
+*   [1.x.92]  [1.x.93]
+* 
+
+* 
+*  The include files for this program are the same as for many others before. The only new one is the one that declares FE_Nothing as discussed in the introduction. The ones in the hp directory have already been discussed in  [2.x.102] .
+* 
+
+* 
+*  
+
+* 
+* [1.x.94]
+* 
+*   [1.x.95]  [1.x.96]
+* 
+
+* 
+*  This is the main class. It is, if you want, a combination of  [2.x.103]  and  [2.x.104]  in that it has member variables that either address the global problem (the Triangulation and DoFHandler objects, as well as the  [2.x.105]  and various linear algebra objects) or that pertain to either the elasticity or Stokes sub-problems. The general structure of the class, however, is like that of most of the other programs implementing stationary problems.   
+*   There are a few helper functions (<code>cell_is_in_fluid_domain, cell_is_in_solid_domain</code>) of self-explanatory nature (operating on the symbolic names for the two subdomains that will be used as material_ids for cells belonging to the subdomains, as explained in the introduction) and a few functions (<code>make_grid, set_active_fe_indices, assemble_interface_terms</code>) that have been broken out of other functions that can be found in many of the other tutorial programs and that will be discussed as we get to their implementation.   
+*   The final set of variables ( [2.x.106] ) describes the material properties used for the two physics models.
+* 
+
+* 
+* [1.x.97]
+* 
+*   [1.x.98]  [1.x.99]
+* 
+
+* 
+*  The following class does as its name suggests. The boundary values for the velocity are  [2.x.107]  in 2d and  [2.x.108]  in 3d, respectively. The remaining boundary conditions for this problem are all homogeneous and have been discussed in the introduction. The right hand side forcing term is zero for both the fluid and the solid so we don't need an extra class for it.
+* 
+
+* 
+* [1.x.100]
+* 
+*   [1.x.101]  [1.x.102]
+* 
+
+* 
+*   [1.x.103]  [1.x.104]
+* 
+
+* 
+*  Let's now get to the implementation of the primary class of this program. The first few functions are the constructor and the helper functions that can be used to determine which part of the domain a cell is in. Given the discussion of these topics in the introduction, their implementation is rather obvious. In the constructor, note that we have to construct the  [2.x.109]  object from the base elements for Stokes and elasticity; using the  [2.x.110]  function assigns them spots zero and one in this collection, an order that we have to remember and use consistently in the rest of the program.
+* 
+
+* 
+* [1.x.105]
+* 
+*   [1.x.106]  [1.x.107]
+* 
+
+* 
+*  The next pair of functions deals with generating a mesh and making sure all flags that denote subdomains are correct.  [2.x.111] , as discussed in the introduction, generates an  [2.x.112]  mesh (or an  [2.x.113]  mesh in 3d) to make sure that each coarse mesh cell is completely within one of the subdomains. After generating this mesh, we loop over its boundary and set the boundary indicator to one at the top boundary, the only place where we set nonzero Dirichlet boundary conditions. After this, we loop again over all cells to set the material indicator &mdash; used to denote which part of the domain we are in, to either the fluid or solid indicator.
+* 
+
+* 
+* [1.x.108]
+* 
+*  The second part of this pair of functions determines which finite element to use on each cell. Above we have set the material indicator for each coarse mesh cell, and as mentioned in the introduction, this information is inherited from mother to child cell upon mesh refinement.   
+*   In other words, whenever we have refined (or created) the mesh, we can rely on the material indicators to be a correct description of which part of the domain a cell is in. We then use this to set the active FE index of the cell to the corresponding element of the  [2.x.114]  member variable of this class: zero for fluid cells, one for solid cells.
+* 
+
+* 
+* [1.x.109]
+* 
+*   [1.x.110]  [1.x.111]
+* 
+
+* 
+*  The next step is to setup the data structures for the linear system. To this end, we first have to set the active FE indices with the function immediately above, then distribute degrees of freedom, and then determine constraints on the linear system. The latter includes hanging node constraints as usual, but also the inhomogeneous boundary values at the top fluid boundary, and zero boundary values along the perimeter of the solid subdomain.
+* 
+
+* 
+* [1.x.112]
+* 
+*  There are more constraints we have to handle, though: we have to make sure that the velocity is zero at the interface between fluid and solid. The following piece of code was already presented in the introduction:
+* 
+
+* 
+* [1.x.113]
+* 
+*  At the end of all this, we can declare to the constraints object that we now have all constraints ready to go and that the object can rebuild its internal data structures for better efficiency:
+* 
+
+* 
+* [1.x.114]
+* 
+*  In the rest of this function we create a sparsity pattern as discussed extensively in the introduction, and use it to initialize the matrix; then also set vectors to their correct sizes:
+* 
+
+* 
+* [1.x.115]
+* 
+*   [1.x.116]  [1.x.117]
+* 
+
+* 
+*  Following is the central function of this program: the one that assembles the linear system. It has a long section of setting up auxiliary functions at the beginning: from creating the quadrature formulas and setting up the FEValues, FEFaceValues and FESubfaceValues objects necessary to integrate the cell terms as well as the interface terms for the case where cells along the interface come together at same size or with differing levels of refinement...
+* 
+
+* 
+* [1.x.118]
+* 
+*  ...to objects that are needed to describe the local contributions to the global linear system...
+* 
+
+* 
+* [1.x.119]
+* 
+*  ...to variables that allow us to extract certain components of the shape functions and cache their values rather than having to recompute them at every quadrature point:
+* 
+
+* 
+* [1.x.120]
+* 
+*  Then comes the main loop over all cells and, as in  [2.x.115] , the initialization of the  [2.x.116]  object for the current cell and the extraction of a FEValues object that is appropriate for the current cell:
+* 
+
+* 
+* [1.x.121]
+* 
+*  With all of this done, we continue to assemble the cell terms for cells that are part of the Stokes and elastic regions. While we could in principle do this in one formula, in effect implementing the one bilinear form stated in the introduction, we realize that our finite element spaces are chosen in such a way that on each cell, one set of variables (either velocities and pressure, or displacements) are always zero, and consequently a more efficient way of computing local integrals is to do only what's necessary based on an  [2.x.117]  clause that tests which part of the domain we are in.         
+*   The actual computation of the local matrix is the same as in  [2.x.118]  as well as that given in the  [2.x.119]  documentation module for the elasticity equations:
+* 
+
+* 
+* [1.x.122]
+* 
+*  Once we have the contributions from cell integrals, we copy them into the global matrix (taking care of constraints right away, through the  [2.x.120]  function). Note that we have not written anything into the  [2.x.121]  variable, though we still need to pass it along since the elimination of nonzero boundary values requires the modification of local and consequently also global right hand side values:
+* 
+
+* 
+* [1.x.123]
+* 
+*  The more interesting part of this function is where we see about face terms along the interface between the two subdomains. To this end, we first have to make sure that we only assemble them once even though a loop over all faces of all cells would encounter each part of the interface twice. We arbitrarily make the decision that we will only evaluate interface terms if the current cell is part of the solid subdomain and if, consequently, a face is not at the boundary and the potential neighbor behind it is part of the fluid domain. Let's start with these conditions:
+* 
+
+* 
+* [1.x.124]
+* 
+*  At this point we know that the current cell is a candidate for integration and that a neighbor behind face  [2.x.122]  exists. There are now three possibilities:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - The neighbor is at the same refinement level and has no children.
+* 
+
+* 
+* 
+*  - The neighbor has children.
+* 
+
+* 
+* 
+*  - The neighbor is coarser.                 
+*   In all three cases, we are only interested in it if it is part of the fluid subdomain. So let us start with the first and simplest case: if the neighbor is at the same level, has no children, and is a fluid cell, then the two cells share a boundary that is part of the interface along which we want to integrate interface terms. All we have to do is initialize two FEFaceValues object with the current face and the face of the neighboring cell (note how we find out which face of the neighboring cell borders on the current cell) and pass things off to the function that evaluates the interface terms (the third through fifth arguments to this function provide it with scratch arrays). The result is then again copied into the global matrix, using a function that knows that the DoF indices of rows and columns of the local matrix result from different cells:
+* 
+
+* 
+* [1.x.125]
+* 
+*  The second case is if the neighbor has further children. In that case, we have to loop over all the children of the neighbor to see if they are part of the fluid subdomain. If they are, then we integrate over the common interface, which is a face for the neighbor and a subface of the current cell, requiring us to use an FEFaceValues for the neighbor and an FESubfaceValues for the current cell:
+* 
+
+* 
+* [1.x.126]
+* 
+*  The last option is that the neighbor is coarser. In that case we have to use an FESubfaceValues object for the neighbor and a FEFaceValues for the current cell; the rest is the same as before:
+* 
+
+* 
+* [1.x.127]
+* 
+*  In the function that assembles the global system, we passed computing interface terms to a separate function we discuss here. The key is that even though we can't predict the combination of FEFaceValues and FESubfaceValues objects, they are both derived from the FEFaceValuesBase class and consequently we don't have to care: the function is simply called with two such objects denoting the values of the shape functions on the quadrature points of the two sides of the face. We then do what we always do: we fill the scratch arrays with the values of shape functions and their derivatives, and then loop over all entries of the matrix to compute the local integrals. The details of the bilinear form we evaluate here are given in the introduction.
+* 
+
+* 
+* [1.x.128]
+* 
+*   [1.x.129]  [1.x.130]
+* 
+
+* 
+*  As discussed in the introduction, we use a rather trivial solver here: we just pass the linear system off to the SparseDirectUMFPACK direct solver (see, for example,  [2.x.123] ). The only thing we have to do after solving is ensure that hanging node and boundary value constraints are correct.
+* 
+
+* 
+* [1.x.131]
+* 
+*   [1.x.132]  [1.x.133]
+* 
+
+* 
+*  Generating graphical output is rather trivial here: all we have to do is identify which components of the solution vector belong to scalars and/or vectors (see, for example,  [2.x.124]  for a previous example), and then pass it all on to the DataOut class:
+* 
+
+* 
+* [1.x.134]
+* 
+*   [1.x.135]  [1.x.136]
+* 
+
+* 
+*  The next step is to refine the mesh. As was discussed in the introduction, this is a bit tricky primarily because the fluid and the solid subdomains use variables that have different physical dimensions and for which the absolute magnitude of error estimates is consequently not directly comparable. We will therefore have to scale them. At the top of the function, we therefore first compute error estimates for the different variables separately (using the velocities but not the pressure for the fluid domain, and the displacements in the solid domain):
+* 
+
+* 
+* [1.x.137]
+* 
+*  We then normalize error estimates by dividing by their norm and scale the fluid error indicators by a factor of 4 as discussed in the introduction. The results are then added together into a vector that contains error indicators for all cells:
+* 
+
+* 
+* [1.x.138]
+* 
+*  The second to last part of the function, before actually refining the mesh, involves a heuristic that we have already mentioned in the introduction: because the solution is discontinuous, the KellyErrorEstimator class gets all confused about cells that sit at the boundary between subdomains: it believes that the error is large there because the jump in the gradient is large, even though this is entirely expected and a feature that is in fact present in the exact solution as well and therefore not indicative of any numerical error.     
+*   Consequently, we set the error indicators to zero for all cells at the interface; the conditions determining which cells this affects are slightly awkward because we have to account for the possibility of adaptively refined meshes, meaning that the neighboring cell can be coarser than the current one, or could in fact be refined some more. The structure of these nested conditions is much the same as we encountered when assembling interface terms in  [2.x.125] .
+* 
+
+* 
+* [1.x.139]
+* 
+*   [1.x.140]  [1.x.141]
+* 
+
+* 
+*  This is, as usual, the function that controls the overall flow of operation. If you've read through tutorial programs  [2.x.126]  through  [2.x.127] , for example, then you are already quite familiar with the following structure:
+* 
+
+* 
+* [1.x.142]
+* 
+*   [1.x.143]  [1.x.144]
+* 
+
+* 
+*  This, final, function contains pretty much exactly what most of the other tutorial programs have:
+* 
+
+* 
+* [1.x.145]
+* [1.x.146][1.x.147][1.x.148]
+* 
+
+* [1.x.149][1.x.150]
+* 
+
+* 
+* When running the program, you should get output like the following:
+* [1.x.151]
+* 
+* The results are easily visualized:
+*  [2.x.128] 
+* The plots are easily interpreted: as the flow drives down on the left side andup on the right side of the upright part of the solid, it produces apressure that is high on the left and low on the right, and theseforces bend the vertical part of the solid to the right.
+* 
+
+* [1.x.152][1.x.153]
+* 
+
+* By changing the dimension of the  [2.x.129] class in  [2.x.130]  to 3, we can also run the same problem3d. You'd get output along the following lines:
+* [1.x.154]
+* You'll notice that the big bottleneck is the solver: SparseDirectUmfpack needsnearly 5 hours and some 80 GB of memory to solve the last iteration ofthis problem on a 2016 workstation (the second to last iteration took only 16minutes). Clearly a better solver is needed here, a topic discussed below.
+* The results can also be visualized and yield good pictures aswell. Here is one, showing both a vector plot for the velocity (inoranges), the solid displacement (in blues), and shading the solid region:
+*  [2.x.131] 
+* In addition to the lack of a good solver, the mesh is a bitunbalanced: mesh refinement heavily favors the fluid subdomain (in 2d,it was the other way around, prompting us to weigh the fluid errorindicators higher). Clearly, some tweaking of the relative importanceof error indicators in the two subdomains is important if one wantedto go on doing more 3d computations.
+* 
+
+* [1.x.155][1.x.156][1.x.157]
+* 
+
+* [1.x.158][1.x.159]
+* 
+
+* An obvious place to improve the program would be to use a moresophisticated solver &mdash; in particular one that scales well andwill also work for realistic 3d problems. This shouldn't actually betoo hard to achieve here, because of the one-way coupling from fluidinto solid. To this end, assume we had re-ordered degrees of freedomin such a way that we first have all velocity and pressure degrees offreedom, and then all displacements (this is easily possible using [2.x.132]  Then the system matrix could be splitinto the following block form:[1.x.160]where  [2.x.133]  is the Stokes matrix for velocity and pressure (itcould be further subdivided into a  [2.x.134]  matrix as in  [2.x.135] , thoughthis is immaterial for the current purpose), [2.x.136]  results from the elasticity equations for thedisplacements, and  [2.x.137]  is the matrix that comes from the interfaceconditions. Now notice that the matrix[1.x.161]is the inverse of  [2.x.138] . Applying this matrix requiresonly one solve with  [2.x.139]  and  [2.x.140]  each since[1.x.162]can be computed as  [2.x.141]  followed by [2.x.142] .
+* One can therefore expect that[1.x.163]would be a good preconditioner if  [2.x.143] .
+* That means, we only need good preconditioners for Stokes and theelasticity equations separately. These are well known: forStokes, we can use the preconditioner discussed in the results sectionof  [2.x.144] ; for elasticity, a good preconditioner would be a singleV-cycle of a geometric or algebraic multigrid. There are more openquestions, however: For an "optimized" solver block-triangularpreconditioner built from two sub-preconditioners, one point thatoften comes up is that, when choosing parameters for thesub-preconditioners, values that work well when solving the twoproblems separately may not be optimal when combined into amultiphysics preconditioner.  In particular, when solving just a solidor fluid mechanics problem separately, the balancing act between thenumber of iterations to convergence and the cost of applying thepreconditioner on a per iteration basis may lead one to choose anexpensive preconditioner for the Stokes problem and a cheappreconditioner for the elasticity problem (or vice versa).  Whencombined, however, there is the additional constraint that you wantthe two sub-preconditioners to converge at roughly the same rate, orelse the cheap one may drive up the global number of iterations whilethe expensive one drives up the cost-per-iteration. For example, while a single AMGV-cycle is a good approach for elasticity by itself, when combinedinto a multiphysics problem there may be an incentive to using a fullW-cycle or multiple cycles to help drive down the total solve time.
+* 
+
+* [1.x.164][1.x.165]
+* 
+
+* As mentioned in the introduction, the refinement indicator we use for thisprogram is rather ad hoc. A better one would understand that the jump in thegradient of the solution across the interface is not indicative of the errorbut to be expected and ignore the interface when integrating the jumpterms. Nevertheless, this is not what the KellyErrorEstimator classdoes. Another, bigger question, is whether this kind of estimator is a goodstrategy in the first place: for example, if we want to have maximal accuracyin one particular aspect of the displacement (e.g. the displacement at the topright corner of the solid), then is it appropriate to scale the errorindicators for fluid and solid to the same magnitude? Maybe it is necessary tosolve the fluid problem with more accuracy than the solid because the fluidsolution directly affects the solids solution? Maybe the other way around?
+* Consequently, an obvious possibility for improving the program would be toimplement a better refinement criterion. There is some literature on thistopic; one of a variety of possible starting points would be the paper byThomas Wick on "Adaptive finite elements for monolithic fluid-structureinteraction on a prolongated domain: Applied to an heart valve simulation",Proceedings of the Computer Methods in Mechanics Conference 2011 (CMM-2011),9-12 May 2011, Warszaw, Poland.
+* 
+
+* [1.x.166][1.x.167]
+* 
+
+* The results above are purely qualitative as there is no evidence that ourscheme in fact converges. An obvious thing to do would therefore be to addsome quantitative measures to check that the scheme at least converges to[1.x.168]. For example, we could output for each refinement cycle thedeflection of the top right corner of the part of the solid that protrudesinto the fluid subdomain. Or we could compute the net force vector or torquethe fluid exerts on the solid.
+* 
+
+* [1.x.169][1.x.170]
+* 
+
+* In reality, most fluid structure interaction problems are so that the movementof the solid does affect the flow of the fluid. For example, the forces of theair around an air foil cause it to flex and to change its shape. Likewise, aflag flaps in the wind, completely changing its shape.
+* Such problems where the coupling goes both ways are typically handled in anArbitrary Lagrangian Eulerian (ALE) framework, in which the displacement ofthe solid is extended into the fluid domain in some smooth way, rather than byzero as we do here. The extended displacement field is then used to deform themesh on which we compute the fluid flow. Furthermore, the boundary conditionsfor the fluid on the interface are no longer that the velocity is zero;rather, in a time dependent program, the fluid velocity must be equal to thetime derivative of the displacement along the interface.
+* 
+
+* [1.x.171][1.x.172] [2.x.145] 
+* [0.x.1]

@@ -45,8 +45,7 @@
  * href="#LaplaceProblemassemble_system">LaplaceProblem::assemble_system()</a><a
  * href="#LaplaceProblemassemble_system">LaplaceProblem::assemble_system()</a>
  * <li><a
- * href="#LaplaceProblemassemble_multigrid">LaplaceProblem::assemble_multigrid()</a>
- * ]<a
+ * href="#LaplaceProblemassemble_multigrid">LaplaceProblem::assemble_multigrid()</a><a
  * href="#LaplaceProblemassemble_multigrid">LaplaceProblem::assemble_multigrid()</a>
  * <li><a
  * href="#LaplaceProblemassemble_rhs">LaplaceProblem::assemble_rhs()</a><a
@@ -105,12 +104,9 @@
  * Trilinos库。在<a href="../../readme.html"
  * target="body">README</a>文件中描述了deal.II和这些附加库的安装情况。
  *
- *  <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
+ *  <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1>
  *
- *
- * 这个例子展示了deal.II中的多级函数在平行分布式网格上的使用，并给出了几何多栅和代数多栅方法的比较。代数多栅（AMG）的预处理器与
- * step-40
- * 中使用的相同。考虑了两种几何多网格(GMG)的预处理方法：一种是类似于
+ * 这个例子展示了deal.II中的多级函数在平行分布式网格上的应用，并给出了几何多栅和代数多栅方法的比较。考虑了两种几何多网格(GMG)的预处理方法：一种是类似于
  * step-16
  * 中的基于矩阵的版本（但用于并行计算），另一种是
  * step-37
@@ -124,11 +120,10 @@
  * - 不是非常多，但必须知道自己在做什么。
  * 本程序的结果将显示，代数和几何多网格方法的性能大致相当<i>when
  * using matrix-based
- * formulations</i>，而无矩阵的几何多网格方法对于这里所考虑的问题来说要好很多。次要的结论是，当每个处理器的未知数小于20,000个时，基于矩阵的几何多网格方法确实不能很好地扩展。
+ * formulations</i>，而无矩阵的几何多网格方法对于这里所考虑的问题来说要好得多。次要的结论是，当每个处理器的未知数小于20,000个时，基于矩阵的几何多网格方法确实不能很好地扩展。
  *
  *  <a name="Thetestcase"></a><h3>The testcase</h3>
- *
- *  我们考虑变系数拉普拉斯的弱式公式
+ * 我们考虑变系数拉普拉斯的弱表述
  * @f{align*}
  * (\epsilon \nabla u, \nabla v) = (f,v) \quad \forall v \in V_h
  * @f}
@@ -161,12 +156,11 @@
  *
  *  <a name="Workloadimbalanceforgeometricmultigridmethods"></a><h3>Workload
  * imbalance for geometric multigrid methods</h3>
- *
- * 如上所述，本程序的目的是展示代数和几何多网格方法在这个问题上的应用，并做到并行计算。使算法扩展到大型并行机器的一个重要组成部分是确保每个处理器都有相同的工作量要做。更确切地说，重要的是没有一小部分处理器比其他处理器有更多的工作，因为如果是这样的话，很大一部分处理器将闲置，等待一小部分处理器完成工作。相反，一小部分处理器拥有大量<i>less</i>的工作并不是一个问题，因为大多数处理器会继续生产，只有一小部分处理器在完成工作后会闲置。)
+ * 如上所述，这个程序的目的是展示代数和几何多网格方法在这个问题上的应用，并且是在并行计算中的应用。使算法扩展到大型并行机器的一个重要组成部分是确保每个处理器都有相同的工作量要做。更确切地说，重要的是没有一小部分处理器比其他处理器有更多的工作，因为如果是这样的话，很大一部分处理器将闲置，等待一小部分处理器完成工作。相反，一小部分处理器拥有大量<i>less</i>的工作并不是一个问题，因为大多数处理器会继续生产，只有一小部分处理器在完成工作后会闲置。)
  * 对于活跃的网格，我们使用 parallel::distributed::Triangulation
  * 类，正如在 step-40 中所做的那样，它使用外部库<a
  * href="http://www.p4est.org/">p4est</a>中的功能来分配活跃单元在处理器之间。对于多级层次结构中的非活动单元，deal.II实现了我们所说的
- * "第一子规则"，对于层次结构中的每个单元，我们递归地将一个单元的父级分配给第一个子单元的所有者。下面的图给出了这样一个分布的例子。左图表示使用空间填充曲线划分的二维网格样本的活动单元（这也是p4est用来划分单元的方法）；中间的图片给出了活动网格的树状表示；右图给出了单元的多级层次结构。颜色和数字代表不同的处理器。树状图中的圆形节点是非活动单元，使用
+ * "第一子规则"，对于层次结构中的每个单元，我们递归地将一个单元的父级分配给第一个子单元的所有者。下面的图给出了这样一个分布的例子。左图表示使用空间填充曲线划分的二维网格样本的活动单元（这也是p4est用来划分单元的方法）；中图给出活动网格的树状表示；右图给出单元的多级层次。颜色和数字代表不同的处理器。树状图中的圆形节点是非活动单元，使用
  * "长子规则 "进行分配。 <img width="800px"
  * src="https://www.dealii.org/images/steps/developer/step-50-workload-example.png"
  * alt=""> 在这个例子中，屏幕上的输出包括一个 "分区效率
@@ -218,14 +212,14 @@
  * These sorts of considerations are considered in much greater detail in
  * @cite clevenger_par_gmg, which contains a full discussion of the partition
  * efficiency model and the effect the imbalance has on the GMG V-cycle
- * timing. In summary, the value of $  `mathbb{E}的价值  $ is highly
+ * timing. In summary, the value of $  `mathbb{E}的价值 $ is highly
  * dependent on the degree of local mesh refinement used and has an optimal
  * value $  `mathbb{E}。\约1  $ for globally refined meshes. Typically for
  * adaptively refined meshes, the number of processors used to distribute a
  * single mesh has a negative impact on $  Mathematbb{E}。 $ but only up to a
  * leveling off point, where the imbalance remains relatively constant for an
  * increasing number of processors, and further refinement has very little
- * impact on $  1/2.x.x.  $. Finally, $  1/mathbb{E]。 $ was shown to give an
+ * impact on $  1/2.x.x. $. Finally, $  1/mathbb{E]。 $ was shown to give an
  * accurate representation of the slowdown in parallel scaling expected for
  * the timing of a V-cycle.
  *
@@ -1369,11 +1363,10 @@
  *
  *
  * This function has two parts in the integration loop: applying the negative
- * of matrix $  ] A  $ to $  u_0  $ by submitting the negative of the
- * gradient, and adding the right-hand side contribution by submitting the
- * value $  f  $. We must be sure to use `read_dof_values_plain()` for
- * evaluating $  u_0  $ as `read_dof_vaues()` would set all Dirichlet values
- * to zero.
+ * of matrix $  A  $ to $  u_0  $ by submitting the negative of the gradient,
+ * and adding the right-hand side contribution by submitting the value $  f
+ * $. We must be sure to use `read_dof_values_plain()` for evaluating $  u_0
+ * $ as `read_dof_vaues()` would set all Dirichlet values to zero.
  *
  *
  *
@@ -1876,8 +1869,8 @@
  * @endcode
  *
  *
- * Assembler for face term $  \sum_F h_F \| jump{\epsilon \nabla u \cdot n}.
- * \| $
+ * Assembler for face term $  \sum_F h_F \| jump{\epsilon \nabla u \cdot n}.\|
+ * $
  *
  *
  *
@@ -2389,7 +2382,7 @@
  * <th></th> <th colspan="4">MF-GMG</th> <th></th> <th colspan="4">MB-GMG</th>
  * <th></th> <th colspan="4">AMG</th> </tr> <tr> <th align="right">Procs</th>
  * <th align="right">Cycle</th> <th align="right">DoFs</th> <th
- * align="right">$  `mathbb{E}.  $</th> <th></th> <th align="right">Setup</th>
+ * align="right">$  `mathbb{E}. $</th> <th></th> <th align="right">Setup</th>
  * <th align="right">Prec</th> <th align="right">Solve</th> <th
  * align="right">Total</th> <th></th> <th align="right">Setup</th> <th
  * align="right">Prec</th> <th align="right">Solve</th> <th
@@ -2493,10 +2486,10 @@
  * problems has a $  9\times 9  $ matrix in 2d, and a $  27\times 27  $ matrix
  * in 3d; for the coarse mesh we use on the $  L  $-shaped domain of the
  * current program, these sizes are $  21\times 21  $ in 2d and $  117\times
- * 117$ in 3d.
- * 但是，如果粗网格由数百或数千个单元组成，这种方法将不再起作用，并可能开始主导每个V-cyle的整体运行时间。一个常见的方法是使用代数多网格预处理程序解决粗网格问题；然而，这将需要组装粗矩阵（即使是无矩阵版本）作为AMG实现的输入。
+ * 117$ in
+ * 3d.但是，如果粗网格由数百或数千个单元组成，这种方法将不再起作用，并可能开始主导每个V-cyle的整体运行时间。一个常见的方法是使用代数多网格预处理器解决粗网格问题；然而，这将需要组装粗矩阵（即使是无矩阵版本）作为AMG实现的输入。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-50.cc"
+*<a name="PlainProg"></a><h1> The plain program</h1>  @include "step-50.cc"
  *
  */
 

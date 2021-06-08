@@ -1,3 +1,0 @@
-include/deal.II-translator/lac/vector_element_access_0.txt
-[0.x.0]
-

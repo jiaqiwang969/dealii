@@ -14,6 +14,7 @@ do
         rm -rf $path/$filename/*.h # 删除h文件，保留comment文件
         rm -rf $path/$filename/*.txt # 删除txt文件，保留comment文件
 
+
 done
 
 
@@ -21,7 +22,7 @@ done
 
 # ## step-2 分离翻译文件
 cd ..
-awk '/include\//{close(out); out = $1 } {print  > out}' post/merge_T.txt
+awk '/include\//{close(out); out = $1 } {print  > out}' post/A_T.txt
 
 ## step-3 转化
 path=include/deal.II-translator
@@ -37,9 +38,11 @@ do
                 echo $txtfilename
                 hfile=`echo $txtfilename | sed 's/.txt$/.h/'`
                 hfile1=`echo $txtfilename | sed 's/\_0.txt$/.h/'`
-                ../contrib/transltor/from_T.py $txtfilename  # 输出hfile0 (未修复版)
+                ../contrib/translator/from_T.py $txtfilename  # 输出hfile0 (未修复版)
                 #echo '//' > $hfile1
-                ../contrib/utilities/wrapcomments.py  $hfile >> $hfile1
+                ## 开启debug模式
+                #../contrib/translator/wrap.py  $hfile >> $hfile1
+                ../contrib/translator/wrap.py  $hfile >> $hfile1
                 hfile2=`echo $hfile | sed 's/\_0.h$/.tempT/'`
                 mv $hfile $hfile2 # bak the file
         done

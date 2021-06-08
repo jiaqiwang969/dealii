@@ -16,10 +16,8 @@
 
 
 /**
- *
- * @defgroup CUDAWrappers CUDA Wrappers
+ *    @defgroup CUDAWrappers CUDA Wrappers
  * 本模块中的类涉及到使用CUDA在GPU上运行的功能描述。
- *
  *
  */
 

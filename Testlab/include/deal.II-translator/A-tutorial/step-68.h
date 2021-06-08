@@ -47,7 +47,7 @@
  * href="#ThecodeParticleTrackingcodeclassdeclaration">The
  * <code>ParticleTracking</code> class declaration</a>
  * <li><a href="#ThecodePatricleTrackingcodeclassimplementation">The
- * <code>PatricleTracking</code> class implementation</a> ]<a
+ * <code>PatricleTracking</code> class implementation</a><a
  * href="#ThecodePatricleTrackingcodeclassimplementation">The
  * <code>PatricleTracking</code> class implementation</a>
  * <ul>
@@ -95,10 +95,7 @@
  * NSERC Discovery grant RGPIN-2020-04510, by Compute Canada and Calcul
  * Québec. </i> <a name="Introduction"></a><h1>Introduction</h1>   <a
  * name="Simulationofthemotionofmasslesstracerparticlesinavorticalflow"></a><h3>Simulation
- * of the motion of massless tracer particles in a vortical flow</h3> * <a
- * name="Simulationofthemotionofmasslesstracerparticlesinavorticalflow"></a><h3>Simulation
- * of the motion of massless tracer particles in a vortical flow</h3>。
- *
+ * of the motion of massless tracer particles in a vortical flow</h3>
  * 粒子在大量应用的数值模型中发挥着重要作用。粒子通常被用作无质量的追踪器，以显示瞬时流动的动态。它们也可以作为更复杂的有限元模型的一部分发挥固有的作用，如颗粒在单元（PIC）方法
  * @cite GLHPW2018
  * ，或者它们甚至可以用来模拟颗粒物质的运动，如离散元素法（DEM）
@@ -124,7 +121,7 @@
  * 实施一个更先进的时间积分方案将是这一步骤的直接延伸。
  * <a name="ParticlesindealII"></a><h3>Particles in deal.II</h3>
  *
- *  在交易二中， Particles::Particle
+ *  在deal.II中， Particles::Particle
  * 是非常简单和灵活的实体，可以用来建立PIC、DEM或任何类型的基于粒子的模型。粒子在现实空间中有一个位置，在它们所在的元素的参考空间中有一个位置，还有一个唯一的ID。在大多数情况下，包含粒子的模拟需要大量的粒子。因此，通过一个集合所有粒子的实体来处理所有的粒子变得很有意义。
  * 默认情况下，粒子没有直径、质量或任何其他我们通常期望的物理粒子的物理属性。然而，通过ParticleHandler，粒子可以访问
  * Particles::PropertyPool.
@@ -133,7 +130,7 @@
  * name="Challengesrelatedtodistributedparticlesimulations"></a><h3>Challenges
  * related to distributed particle simulations</h3> 。
  *
- * 尽管本步骤不是计算密集型的，但包括许多粒子的模拟可能是计算要求很高的，需要并行化。
+ * 尽管本步骤不是计算密集型的，但包括许多粒子的模拟可能对计算要求很高，需要并行化。本步骤展示了deal.II对粒子的分布式并行能力。
  *
  * - 在分布式三角形上生成粒子。
  *
@@ -145,8 +142,8 @@
  * step-70  中讨论。 <a name="Parallelparticlegeneration"></a><h4>Parallel
  * particle generation</h4> 。
  *
- * 以可扩展的方式生成分布式粒子并不简单，在找到它们所在的单元之前，必须首先确定它们所属的处理器。交易.II通过
- * Particles::Generator 命名空间提供了许多生成粒子的功能。
+ * 以可扩展的方式生成分布式粒子并不简单，在找到它们所在的单元之前，必须首先确定它们所属的处理器。deal.II通过
+ * Particles::Generator 命名空间提供了许多生成粒子的能力。
  * 其中一些粒子生成器只在本地拥有的子域上创建粒子。例如，
  * Particles::Generators::regular_reference_locations()
  * 在本地子域的每个单元内创建相同参考位置的粒子，
@@ -154,20 +151,20 @@
  * 使用全局定义的概率密度函数来确定在本地生成粒子的数量和位置。
  * 在其他情况下，如本步骤，粒子必须在单元格上的特定位置生成，而这些单元格可能只属于处理器的一个子集。在大多数情况下，粒子的插入只在有限的时间步数内完成，因此，不构成计算成本的很大一部分。对于这些情况，deal.II提供了方便的
  * Particles::Generators
- * ，可以在全局范围内插入粒子，即使粒子不在启动创建粒子的调用的并行进程所拥有的单元中。生成器首先定位粒子所处的子域，确定它们位于哪个单元中，并在处理器之间交换必要的信息，以确保生成的粒子具有正确的属性。因此，这种类型的粒子生成可能是通信密集型的。
+ * ，可以在全局范围内插入粒子，即使粒子不在启动创建粒子的调用的并行进程所拥有的单元中。生成器首先定位粒子所处的子域，确定它们位于哪个单元中，并在处理器之间交换必要的信息，以确保粒子以正确的属性被生成。因此，这种类型的粒子生成可能是通信密集型的。
  * Particles::Generators::dof_support_points 和
  * Particles::Generators::quadrature_points
  * 分别使用三角法和相关DoFHandler或四分法的点来生成粒子。用于生成粒子的三角法可以是用于背景网格的同一三角法，在这种情况下，这些函数与上一段所述的
  * Particles::Generators::regular_reference_locations()
  * 函数非常相似。然而，用于生成粒子的三角形也可以与背景网格的三角形不同（不匹配），这对于生成特定形状的粒子（如本例），或者在两个不同的计算网格之间传递信息（如
- * step-70 ）是很有用的。 此外， Particles::ParticleHandler
+ * step-70 ）是很有用的。  此外， Particles::ParticleHandler
  * 类提供了 Particles::ParticleHandler::insert_global_particles()
  * 函数，可以从任意点的矢量和边界盒的全局矢量中插入粒子。在本步骤中，我们在非匹配三角形上使用
  * Particles::Generators::quadrature_points()
  * 函数来插入位于圆盘形状的位置上的粒子。 <a
  * name="Particleexchange"></a><h4>Particle exchange</h4>
  *
- * 当粒子在平行分布式计算中移动时，它们可能会离开本地拥有的子域，并需要转移到它们的新主人进程中。这种情况可能以两种非常不同的方式出现。首先，如果先前拥有的进程知道丢失的粒子的新主人（例如，因为粒子从一个处理器的本地拥有的单元移动到一个分布式三角计算的相邻的幽灵单元），那么转移可以作为每个进程和新主人之间的点对点通信来有效处理。每当粒子被分类到新单元时，这种转移就会自动发生。第二，以前的所有者可能不知道粒子被转移到哪个进程。在这种情况下，粒子会被默认丢弃，因为在全局范围内搜索粒子的主人可能会很昂贵。
+ * 当粒子在平行分布式计算中移动时，它们可能会离开本地拥有的子域，需要被转移到新的所有者进程中。这种情况可能以两种非常不同的方式出现。首先，如果先前拥有的进程知道丢失的粒子的新主人（例如，因为粒子从一个处理器的本地拥有的单元移动到一个分布式三角计算的相邻的幽灵单元），那么转移可以作为每个进程和新主人之间的点对点通信来有效处理。每当粒子被分类到新单元时，这种转移就会自动发生。第二，以前的所有者可能不知道粒子被转移到哪个进程。在这种情况下，粒子会被默认丢弃，因为在全局范围内搜索粒子的主人可能会很昂贵。
  * step-19
  * 展示了这样一个被丢弃的粒子如何仍然可以被收集、解释，并可能被用户重新插入。在本例中，我们通过在时间步骤上施加一个CFL准则来防止第二种情况，以确保粒子最多只能移动到本地进程的幽灵层，因此可以自动发送到邻近的进程。
  * <a name="Balancingmeshandparticleload"></a><h4>Balancing mesh and particle
@@ -176,7 +173,7 @@
  * 在本节中，我们只讨论了分布式计算中针对粒子的挑战。粒子与有限元解决方案共享的并行挑战（并行输出，网格细化过程中的数据传输）可以用其他例子中已经讨论过的有限元问题的解决方案来解决。
  * <a name="Thetestcase"></a><h3>The testcase</h3>
  *
- * 在本步骤中，我们使用粒子作为无质量追踪器来说明一个特殊的涡流的动力学：Rayleigh--Kothe涡流。这种流动模式通常被用作界面跟踪方法（如流体体积和水平集方法）的复杂测试案例，因为它导致了流体的强烈旋转和拉长
+ * 在本步骤中，我们使用粒子作为无质量的追踪器来说明一个特殊的涡流的动力学：Rayleigh--Kothe涡流。这种流动模式通常被用作界面跟踪方法（如流体体积和水平集方法）的复杂测试案例，因为它导致了流体的强烈旋转和拉长
  * @cite Blais2013  。 这个Rayleigh-Kothe涡流的流函数 $\Psi$
  * 被定义为。
  * @f[
@@ -245,8 +242,7 @@
  * 从下面的include文件中，我们导入了ParticleHandler类，该类允许你管理浮在
  * Particles::Particle), 上的粒子集合（类型为 Particles::Particle),
  * 的对象，代表具有一些附加属性（如id）的点集合）。
- * 命名空间Particles中的方法和类允许人们轻松实现Particle-In-Cell方法和分布三角上的粒子追踪。
- *
+ * 命名空间Particles中的方法和类允许人们轻松实现Particle-In-Cell方法和分布式三角形的粒子追踪。
  *
  * @code
  * #include <deal.II/particles/particle_handler.h>
@@ -255,13 +251,12 @@
  *
  * 我们导入粒子发生器，使我们能够插入粒子。在本步骤中，粒子是使用非匹配的超壳三角法进行全局插入的。
  *
- *
  * @code
  * #include <deal.II/particles/generators.h>
  *
  * @endcode
- * 由于粒子没有形成三角形，它们有自己特定的DataOut类，这将使我们能够把它们写成常用的并行vtu格式（或任何数量的其他文件格式）。
  *
+ * 由于粒子没有形成三角形，它们有自己特定的DataOut类，这将使我们能够把它们写成常用的平行vtu格式（或任何数量的其他文件格式）。
  *
  * @code
  * #include <deal.II/particles/data_out.h>
@@ -278,17 +273,16 @@
  * @endcode
  *
  * <a name="Runtimeparameterhandling"></a> <h3>Run-time parameter
- * handling</h3>
+ * handling</h3>。
  *
  * 与 step-60
  * 中的做法类似，我们设置了一个持有我们问题的所有参数的类，并从ParameterAcceptor类派生出来，以简化参数文件的管理和创建。
  * ParameterAcceptor范式要求所有的参数都可以被ParameterAcceptor方法写入。为了避免出现很难追踪的bug（比如写成`if
  * (time = 0)`而不是`if(time ==
- * 0)`），我们在一个外部类中声明所有的参数，该类在实际的`ParticleTracking`类之前被初始化，并将其作为`const`引用传递给主类。
+ * 0)`），我们在一个外部类中声明所有的参数，这个类在实际的`ParticleTracking`类之前被初始化，并将其作为`const`引用传递给主类。
  * 该类的构造函数负责该类的成员与ParameterHandler中的相应条目之间的连接。由于使用了
  * ParameterHandler::add_parameter()
  * 方法，这种连接是微不足道的，但要求这个类的所有成员都是可写的。
- *
  *
  * @code
  * class ParticleTrackingParameters : public ParameterAcceptor
@@ -298,10 +292,9 @@
  *
  * @endcode
  *
- * 这个类主要由成员变量组成，描述了粒子跟踪模拟及其离散化的细节。下面的参数是关于输出应该写到哪里，速度的空间离散化（默认是
+ * 该类主要由成员变量组成，描述了粒子跟踪模拟及其离散化的细节。下面的参数是关于输出应该写到哪里，速度的空间离散化（默认是
  * $Q_1$
- * ），时间步长和输出频率（在我们再次产生图形输出之前应该经过多少时间步长）。
- *
+ * ），时间步长和输出频率（在我们再次生成图形输出之前应该经过多少时间步长）。
  *
  * @code
  *   std::string output_directory = "./";
@@ -313,8 +306,8 @@
  *   unsigned int repartition_frequency = 5;
  *
  * @endcode
- * 我们允许每一个网格都可以独立地进行细化。在本教程中，流体网格上没有物理学的解析，其速度是分析计算的。
  *
+ * 我们允许每一个网格都可以独立地被细化。在本教程中，流体网格上没有物理学的解析，其速度是分析计算的。
  *
  * @code
  *   unsigned int fluid_refinement              = 4;
@@ -324,8 +317,8 @@
  *
  *
  * @endcode
- * 还有一个任务就是声明我们在输入文件中可以接受哪些运行时参数。由于我们的参数数量非常有限，所有的参数都在同一章节中声明。
  *
+ * 还有一个任务就是声明我们在输入文件中可以接受哪些运行时参数。由于我们的参数数量非常有限，所有的参数都在同一章节中声明。
  *
  * @code
  * ParticleTrackingParameters::ParticleTrackingParameters()
@@ -374,10 +367,9 @@
  *
  * @endcode
  *
- * <a name="Velocityprofile"></a> <h3>Velocity profile</h3>.
+ * <a name="Velocityprofile"></a> <h3>Velocity profile</h3>。
  *
- * 速度曲线是作为一个函数对象提供的。这个函数在例子中是硬编码的。
- *
+ * 速度曲线是作为一个函数对象提供的。这个函数在这个例子中是硬编码的。
  *
  * @code
  * template <int dim>
@@ -397,7 +389,6 @@
  * @endcode
  *
  * Rayleigh-Kothe顶点的速度曲线是随时间变化的。因此，必须从函数对象中收集模拟中的当前时间（t）。
- *
  *
  * @code
  * template <int dim>
@@ -426,10 +417,8 @@
  * @endcode
  *
  * <a name="ThecodeParticleTrackingcodeclassdeclaration"></a> <h3>The
- * <code>ParticleTracking</code> class declaration</h3>.
- *
- * 我们现在准备介绍我们教程程序的主类。
- *
+ * <code>ParticleTracking</code> class declaration</h3>。
+ * 我们现在准备介绍我们的教程程序的主类。
  *
  * @code
  * template <int dim>
@@ -445,23 +434,20 @@
  *
  * 这个函数负责在背景网格之上初始生成粒子。
  *
- *
  * @code
  *   void generate_particles();
  *
  * @endcode
  *
- * 当速度剖面被内插到粒子的位置时，必须首先使用自由度进行存储。因此，与其他并行情况一样（例如
+ * 当速度剖面被内插到粒子的位置时，它必须首先用自由度来存储。因此，与其他并行情况一样（例如
  * step-40 ），我们在背景网格上初始化自由度。
- *
  *
  * @code
  *   void setup_background_dofs();
  *
  * @endcode
  *
- * 在其中一个测试案例中，该函数被映射到背景网格上，并使用有限元插值来计算粒子位置的速度。这个函数计算三角形的支持点处的函数值。
- *
+ * 在其中一个测试案例中，函数被映射到背景网格中，并使用有限元插值来计算粒子位置的速度。这个函数计算三角形的支持点处的函数值。
  *
  * @code
  *   void interpolate_function_to_field();
@@ -470,16 +456,14 @@
  *
  * 接下来的两个函数分别负责对速度场在粒子位置插值或分析计算的情况下进行显式欧拉时间积分的步骤。
  *
- *
  * @code
  *   void euler_step_interpolated(const double dt);
  *   void euler_step_analytical(const double dt);
  *
  * @endcode
  *
- * `cell_weight()`函数向三角计算表明在这个单元上预计会发生多少计算工作，因此需要对域进行划分，以便每个MPI等级收到大致相等的工作量（可能不是相等数量的单元）。虽然该函数是从外部调用的，但它与该类内部的相应信号相连，因此它可以是
+ * `cell_weight()`函数向三角计算表明在这个单元上预计会发生多少计算工作，因此需要对域进行划分，以便每个MPI等级收到大致相等的工作量（可能不是相等的单元数量）。虽然这个函数是从外部调用的，但它与这个类内部的相应信号相连，因此它可以是
  * "私有 "的。
- *
  *
  * @code
  *   unsigned int cell_weight(
@@ -492,16 +476,13 @@
  *
  * 以下两个函数分别负责输出粒子的模拟结果和背景网格上的速度曲线。
  *
- *
  * @code
  *   void output_particles(const unsigned int it);
  *   void output_background(const unsigned int it);
  *
  * @endcode
  *
- * 这个类的私有成员与其他并行deal.II例子相似。参数被存储为`const`成员。值得注意的是，我们保留了`Vortex`类的成员，因为它的时间必须随着模拟的进行而被修改。
- *
- *
+ * 这个类的私有成员与其他并行处理.II的例子类似。参数被存储为`const`成员。值得注意的是，我们保留了`Vortex`类的成员，因为它的时间必须随着模拟的进行而被修改。
  *
  *
  * @code
@@ -529,14 +510,12 @@
  *
  * <a name="ThecodePatricleTrackingcodeclassimplementation"></a> <h3>The
  * <code>PatricleTracking</code> class implementation</h3>。    <a
- * name="Constructor"></a> <h4>Constructor</h4>.
+ * name="Constructor"></a> <h4>Constructor</h4>。
  *
  * 构造函数和析构函数是相当微不足道的。它们与  step-40
  * 中的做法非常相似。我们将我们想要工作的处理器设置为所有可用的机器（`MPI_COMM_WORLD`），并初始化
  * <code>pcout</code>
  * 变量，只允许处理器0输出任何东西到标准输出。
- *
- *
  *
  *
  * @code
@@ -556,11 +535,11 @@
  *
  *
  * @endcode
- *  <a name="Cellweight"></a> <h4>Cell weight</h4>。
  *
- * 这个函数是让我们动态地平衡本例计算负荷的关键部分。该函数为每个单元赋予一个权重，代表该单元的计算工作。在这里，大部分的工作预计会发生在粒子上，因此这个函数的返回值（代表
+ * <a name="Cellweight"></a> <h4>Cell weight</h4>。
+ *
+ * 这个函数是让我们动态平衡这个例子的计算负载的关键部分。该函数为每个单元赋予一个权重，代表该单元的计算工作。在这里，大部分的工作预计会发生在粒子上，因此这个函数的返回值（代表
  * "这个单元的工作"）是根据当前单元中的粒子数量来计算。该函数与三角形内部的cell_weight()信号相连，每一个单元将被调用一次，每当三角形在等级之间重新划分领域时（该连接是在该类的generate_particles()函数中创建的）。
- *
  *
  * @code
  * template <int dim>
@@ -572,8 +551,7 @@
  * {
  * @endcode
  *
- * 我们不给我们不拥有的单元分配任何权重（即人工或幽灵单元）。
- *
+ * 我们不给我们不拥有的细胞分配任何权重（即人工或幽灵细胞）。
  *
  * @code
  *   if (!cell->is_locally_owned())
@@ -581,8 +559,7 @@
  *
  * @endcode
  *
- * 这决定了粒子工作与细胞工作相比有多重要（默认情况下每个细胞的权重为1000）。我们把每个粒子的权重设置得更高，以表明在这个例子中，粒子的负载是唯一对分配单元很重要的。这个数字的最佳值取决于应用，可以从0（廉价的粒子操作，昂贵的单元操作）到远远大于1000（昂贵的粒子操作，廉价的单元操作，就像本例中假定的那样）。
- *
+ * 这决定了粒子工作与单元工作相比有多重要（默认情况下每个单元的权重为1000）。我们将每个粒子的权重设置得更高，以表明在这个例子中，粒子载荷是唯一一个对分配单元很重要的。这个数字的最佳值取决于应用，可以从0（廉价的粒子操作，昂贵的单元操作）到远远大于1000（昂贵的粒子操作，廉价的单元操作，就像本例中假定的那样）。
  *
  * @code
  *   const unsigned int particle_weight = 10000;
@@ -590,7 +567,6 @@
  * @endcode
  *
  * 这个例子没有使用自适应细化，因此每个单元都应该有`CELL_PERSIST`的状态。然而这个函数也可以用来在细化过程中分配负载，因此我们也考虑细化或粗化的单元。
- *
  *
  * @code
  *   if (status == parallel::distributed::Triangulation<dim>::CELL_PERSIST ||
@@ -620,10 +596,9 @@
  *
  * @endcode
  *
- * <a name="Particlesgeneration"></a> <h4>Particles generation</h4>.
+ * <a name="Particlesgeneration"></a> <h4>Particles generation</h4>。
  *
  * 这个函数生成示踪粒子和这些粒子演化的背景三角图。
- *
  *
  * @code
  * template <int dim>
@@ -631,8 +606,7 @@
  * {
  * @endcode
  *
- * 我们创建了一个超立方体三角图，并对其进行全局细化。这个三角形覆盖了粒子的全部运动轨迹。
- *
+ * 我们创建了一个超立方体三角形，并对其进行全局细化。这个三角形覆盖了粒子的全部运动轨迹。
  *
  * @code
  *   GridGenerator::hyper_cube(background_triangulation, 0, 1);
@@ -641,11 +615,10 @@
  * @endcode
  *
  * 为了在重新划分三角形时考虑粒子，该算法需要知道三件事。
- * 1.给每个单元分配多少权重（里面有多少粒子）；2.在运送数据之前如何包装粒子；3.在重新分区之后如何解开粒子的包装。
+ * 1.给每个单元分配多少权重（里面有多少粒子）；2.在运送数据之前如何包装粒子；3.在重新分区之后如何拆开粒子。
  * 我们将正确的函数附加到信号里面
  * parallel::distributed::Triangulation.
  * 这些信号将在每次调用repartition()函数时被调用。这些连接只需要创建一次，所以我们不妨在这个类的构造函数中设置它们，但为了这个例子，我们要把粒子相关的指令分组。
- *
  *
  * @code
  *   background_triangulation.signals.cell_weight.connect(
@@ -667,14 +640,12 @@
  *
  * 这将初始化粒子所处的背景三角，以及粒子的属性数量。
  *
- *
  * @code
  *   particle_handler.initialize(background_triangulation, mapping, 1 + dim);
  *
  * @endcode
  *
- * 我们创建一个粒子三角图，它只用于生成将用于插入粒子的点。这个三角形是一个偏离模拟域中心的超壳。这将被用来生成一个充满粒子的圆盘，这将使我们能够很容易地监测由于漩涡而产生的运动。
- *
+ * 我们创建了一个粒子三角剖面，它只用于生成将用于插入粒子的点。这个三角形是一个偏离模拟域中心的超壳。这将被用来生成一个充满粒子的圆盘，这将使我们能够很容易地监测由于漩涡而产生的运动。
  *
  * @code
  *   Point<dim> center;
@@ -694,8 +665,8 @@
  *   particle_triangulation.refine_global(par.particle_insertion_refinement);
  *
  * @endcode
- * 我们为粒子发生器生成必要的边界盒。这些边界框是用来快速识别插入的粒子位于哪个进程的子域中，以及哪个单元拥有它。
  *
+ * 我们为粒子发生器生成必要的边界盒。这些边界框是用来快速识别插入的粒子位于哪个进程的子域中，以及哪个单元拥有它。
  *
  * @code
  *   const auto my_bounding_box = GridTools::compute_mesh_predicate_bounding_box(
@@ -704,9 +675,7 @@
  *     Utilities::MPI::all_gather(MPI_COMM_WORLD, my_bounding_box);
  *
  * @endcode
- *
  * 我们生成一个空的属性向量。一旦粒子生成，我们将把属性赋予它们。
- *
  *
  * @code
  *   std::vector<std::vector<double>> properties(
@@ -716,7 +685,6 @@
  * @endcode
  *
  * 我们在单点正交的位置生成粒子。因此，在每个单元的中心点将生成一个粒子。
- *
  *
  * @code
  *   Particles::Generators::quadrature_points(particle_triangulation,
@@ -735,10 +703,9 @@
  * @endcode
  *
  * <a name="BackgroundDOFsandinterpolation"></a> <h4>Background DOFs and
- * interpolation</h4>.
+ * interpolation</h4>。
  *
  * 这个函数设置了用于速度插值的背景自由度，并分配了存储整个速度场解决方案的场向量。
- *
  *
  * @code
  * template <int dim>
@@ -758,9 +725,8 @@
  *
  * @endcode
  *
- * 这个函数负责将涡流速度场插值到场向量上。这可以通过使用
+ * 这个函数负责将涡流速度场插值到场矢量上。这可以通过使用
  * VectorTools::interpolate() 函数相当容易地实现。
- *
  *
  * @code
  * template <int dim>
@@ -778,8 +744,7 @@
  * <a name="Timeintegrationofthetrajectories"></a> <h4>Time integration of the
  * trajectories</h4>。
  *
- * 我们使用分析定义的速度场来整合粒子的轨迹。这证明了粒子的一个相对微不足道的用法。
- *
+ * 我们使用一个分析定义的速度场来整合粒子轨迹。这证明了粒子的一个相对微不足道的用法。
  *
  * @code
  * template <int dim>
@@ -793,14 +758,12 @@
  *
  * 使用粒子迭代器在域中的所有粒子上循环运行
  *
- *
  * @code
  *   for (auto &particle : particle_handler)
  *     {
  * @endcode
  *
- * 我们使用粒子的当前位置来计算其速度。
- *
+ * 我们用粒子的当前位置计算它们的速度。
  *
  * @code
  *       Point<dim> particle_location = particle.get_location();
@@ -808,8 +771,7 @@
  *
  * @endcode
  *
- * 这将更新粒子的位置，并将旧的位置设置为等于粒子的新位置。
- *
+ * 这将更新粒子的位置，并将旧位置设置为等于粒子的新位置。
  *
  * @code
  *       for (int d = 0; d < dim; ++d)
@@ -819,8 +781,7 @@
  *
  * @endcode
  *
- * 我们在粒子属性中存储处理器ID（一个标量）和粒子速度（一个矢量）。在这个例子中，这样做纯粹是为了可视化的目的。
- *
+ * 我们在粒子属性中存储了处理器ID（一个标量）和粒子速度（一个矢量）。在这个例子中，这样做纯粹是为了可视化的目的。
  *
  * @code
  *       ArrayView<double> properties = particle.get_properties();
@@ -834,8 +795,7 @@
  *
  * @endcode
  *
- * 与前面的函数相反，在这个函数中，我们通过将自由度处的速度场的值插值到粒子的位置来整合粒子的轨迹。
- *
+ * 与前面的函数不同，在这个函数中，我们通过将自由度处的速度场值插值到粒子的位置来积分粒子的运动轨迹。
  *
  * @code
  * template <int dim>
@@ -845,10 +805,9 @@
  *
  * @endcode
  *
- * 我们循环计算所有的局部粒子。虽然这可以直接通过循环所有的单元格来实现，但这将迫使我们循环许多不包含粒子的单元格。相反，我们在所有的粒子上循环，但是，我们得到粒子所在的单元格的参考，然后在该单元格内循环所有的粒子。这使我们能够从
+ * 我们在所有的本地粒子上循环。虽然这可以直接通过循环所有的单元格来实现，但这将迫使我们循环许多不包含粒子的单元格。相反，我们在所有的粒子上循环，但是，我们得到粒子所在的单元格的参考，然后在该单元格内循环所有的粒子。这使我们能够从
  * "velocity_field
  * "向量中收集一次速度值，并将其用于该单元中的所有粒子。
- *
  *
  * @code
  *   auto particle = particle_handler.begin();
@@ -863,8 +822,7 @@
  *
  * @endcode
  *
- * 接下来，通过评估粒子位置的有限元解来计算粒子位置的速度。这基本上是第19步中粒子平流功能的一个优化版本，但我们不是为每个单元创建正交对象和FEValues对象，而是用手来进行评估，这在一定程度上更有效率，而且只对本教程重要，因为粒子工作是整个程序的主要成本。
- *
+ * 接下来，通过评估粒子位置上的有限元解来计算粒子位置上的速度。这基本上是第19步中粒子平流功能的优化版本，但我们不是为每个单元创建正交对象和FEValues对象，而是用手进行评估，这在一定程度上更有效率，而且只对本教程重要，因为粒子工作是整个程序的主要成本。
  *
  * @code
  *       const auto pic = particle_handler.particles_in_cell(cell);
@@ -888,8 +846,8 @@
  *           p.set_location(particle_location);
  *
  * @endcode
- * 同样，我们在粒子属性中存储了粒子的速度和处理器的ID，以达到可视化的目的。
  *
+ * 同样，我们在粒子属性中存储了粒子的速度和处理器的ID，用于可视化目的。
  *
  * @code
  *           ArrayView<double> properties = p.get_properties();
@@ -908,10 +866,9 @@
  *
  * @endcode
  *
- * <a name="Dataoutput"></a> <h4>Data output</h4>
+ * <a name="Dataoutput"></a> <h4>Data output</h4>。
  *
  * 接下来的两个函数负责将粒子和背景网格用pvtu记录写入vtu。这可以确保在并行启动仿真时，仿真结果可以被可视化。
- *
  *
  * @code
  * template <int dim>
@@ -956,8 +913,8 @@
  *   DataOut<dim> data_out;
  *
  * @endcode
- *  将解决方案的数据附加到data_out对象上
  *
+ * 将解决方案的数据附加到data_out对象上
  *
  * @code
  *   data_out.attach_dof_handler(fluid_dh);
@@ -992,8 +949,6 @@
  * - 以 step-21 或 step-26 为例。注意，我们使用DiscreteTime类来监控时间、时间步长和 step- 数。这个函数相对来说是比较简单的。
  *
  *
- *
- *
  * @code
  * template <int dim>
  * void ParticleTracking<dim>::run()
@@ -1008,8 +963,7 @@
  *
  * @endcode
  *
- * 我们通过在分析法和插值法的情况下进行时间步长为0的显式欧拉迭代来设置粒子的初始属性。
- *
+ * 我们通过在分析法和插值法的情况下做一个时间步长为0的显式欧拉迭代来设置粒子的初始属性。
  *
  * @code
  *   if (interpolated_velocity)
@@ -1026,8 +980,8 @@
  *     output_background(discrete_time.get_step_number());
  *
  * @endcode
- *  粒子是通过循环的时间进行平流的。
  *
+ * 粒子是通过循环的方式随时间推移而平移的。
  *
  * @code
  *   while (!discrete_time.is_at_end())
@@ -1055,7 +1009,6 @@
  * 在粒子被移动之后，有必要确定它们现在所在的单元。这可以通过调用
  * <code>sort_particles_into_subdomains_and_cells</code> 来实现。
  *
- *
  * @code
  *       particle_handler.sort_particles_into_subdomains_and_cells();
  *
@@ -1076,9 +1029,7 @@
  *
  * <a name="Themainfunction"></a> <h3>The main() function</h3>。
  *
- *
  * 代码的其余部分，即`main()`函数，是标准的。我们注意到，我们用分析速度和插值速度运行粒子跟踪，并产生两种结果
- *
  *
  * @code
  * int main(int argc, charargv[])
@@ -1139,7 +1090,6 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
  * 如果你没有在命令行上指定一个参数文件作为参数，程序将尝试默认读取文件
  * "parameters.prm"，并将执行代码。
  * 在任何数量的核心上，模拟输出将看起来像。
@@ -1173,10 +1123,10 @@
  * Writing background field file: background-2000
  * @endcode
  *
- * 我们注意到，在默认情况下，仿真会以分析速度运行粒子跟踪2000次迭代，然后从头开始，以相同的时间运行速度插值的粒子跟踪。每10次迭代都会写出结果。
+ * 我们注意到，在默认情况下，仿真会以分析速度运行粒子跟踪2000次，然后从头开始，以相同的时间运行速度插值的粒子跟踪。每10次迭代都会写出结果。
  * <a name="Motionoftheparticles"></a><h3> Motion of the particles </h3>
  *
- * 下面的动画显示了粒子被流场吸引时的轨迹。我们看到，在流场的整个持续时间之后，粒子又回到了它们的初始配置，这是预料之中的。
+ * 下面的动画显示了粒子在被流场吸引时的轨迹。我们看到，在流场的整个持续时间之后，粒子回到了它们的初始配置，这也是我们所期望的。
  * @htmlonly <p align="center"> <iframe width="560" height="500"
  * src="https://www.youtube.com/embed/EbgS5Ch35Xs" frameborder="0"
  * allow="accelerometer; autoplay; encrypted-media; gyroscope;
@@ -1192,20 +1142,19 @@
  *
  *
  *  <a name="Possibilitiesforextensions"></a><h3>Possibilities for
- * extensions</h3> * <h3>Possibilities for extensions</h3>.
- *
- * 这个程序强调了在deal.II中处理粒子的一些主要能力，特别是它们在分布式并行模拟中使用的能力。然而，这个步骤可以以多种方式进行扩展。
+ * extensions</h3>。
+ * 这个程序强调了在deal.II中处理粒子的一些主要能力，特别是它们用于分布式并行模拟的能力。然而，这个步骤可以以多种方式进行扩展。
  *
  * 高阶时间积分（例如使用Runge-Kutta
  * 4方法）可以用来提高精度，或者在相同精度下允许更大的时间步长。
  *
  * - 完整的运动方程（含惯性）可以为粒子求解。在这种情况下，粒子需要有额外的属性，如它们的质量，如 step-19 ，如果还想考虑与流体的相互作用，它们的直径。
  *
- * - 耦合到流动求解器。这一步可以直接与任何解决斯托克斯方程（ step-32 、 step-70 ）或纳维-斯托克斯方程（例如 step-57 ）的并行程序相耦合。
+ * - 耦合到流动求解器。这一步可以直接与任何解决斯托克斯方程（ step-32 、 step-70 ）或纳维-斯托克斯方程（例如 step-57 ）的并行程序相连接。
  *
  * - 计算两个模型之间最终粒子位置的差异，可以量化插值误差对粒子运动的影响。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-68.cc"  。
+* <a name="PlainProg"></a><h1> The plain program</h1> @include "step-68.cc"
  *
  */
 

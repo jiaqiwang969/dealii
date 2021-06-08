@@ -15,11 +15,10 @@
 // ---------------------------------------------------------------------
 
 /**
- *
- * @defgroup Iterators Iterators on mesh-like containers   @{ .
- * deal.II有几个类，在概念上可以理解为meshes。除了明显的Triangulation之外，还有DoFHandler和
+ * @defgroup Iterators Iterators on mesh-like containers   @{ 。
+ * deal.II有几个类，在概念上被理解为meshes。除了明显的Triangulation之外，这些类还有，例如，DoFHandler和
  * hp::DoFHandler.
- * 所有这些都定义了一组迭代器，允许用户遍历整个网格，即构成网格的单元格、面、边等的集合，或其中的一部分。这些迭代器在某种意义上都是由TriaIteratorclass派生出来的。
+ * 所有这些类都定义了一组迭代器，允许用户遍历整个网格，即构成网格的单元格、面、边等的集合，或其中的一部分。这些迭代器在某种意义上都是由TriaIteratorclass派生出来的。
  * 基本上，TriaIterator的模板签名是
  * @code
  * TriaIterator<Accessor>
@@ -41,7 +40,7 @@
  * 如上所述，deal.II中的迭代器可以被认为是对构成网格的对象进行整体迭代。(这些对象是线、四边形和六边形，并由作为模板参数的Accessor类的类型表示给迭代器)。这表明我们可以将三角形视为单元格和其他对象的集合，这些单元格和其他对象通过某种数据结构联系在一起，就像链接列表是以线性方式连接对象的数据结构一样。
  * 交易二中的三角形确实可以用这种方式来考虑。特别是，它们使用规则树之林的计算概念来存储它们的数据。这可以理解为如下几点。考虑到粗网格的单元有根；然后，如果这些粗网格的一个单元被细化，它将有2<sup>dim</sup>子，而这些子又可以，但不一定要有自己的2<sup>dim</sup>子，等等。这意味着，粗网中的每个细胞都可以被认为是二叉树（1d）、四叉树（2d）或八叉树（3d）的根。这些从粗网格单元中产生的树的集合构成了完整描述三角形的森林，包括所有的活动和非活动单元。特别是，活动单元是树中那些没有后代的终端节点，即没有进一步细化的单元。相应地，非活动单元对应于树中没有后裔的节点，即被进一步细化的单元。
  * 三角形包含线（每个线可能有2个孩子）、四边形（每个四边形可能有4个孩子）和六边形（每个六边形没有或有8个孩子）的森林。根据维度的不同，这些对象也被称为单元或面。
- * 迭代器在这种森林的元素上循环。通常的迭代器在森林的所有节点上循环，而活动迭代器以同样的顺序在元素上循环，但跳过所有非活动条目，因此只访问终端节点（即活动单元、面等）。遍历森林中的元素有很多方法，例如广度优先或深度优先。根据用于存储森林的数据结构的类型，有些方法比其他方法更有效。目前，在deal.II中，迭代器遍历森林的方式是广度优先。也就是说，迭代器首先访问粗网格的所有元素（单元格、面等），然后再转到紧邻层的所有元素，即粗网格对象的紧邻子节点；之后是粗网格的子节点，以此类推。然而，必须注意的是，程序不应该依赖这种特定的树形遍历顺序：这被认为是一个实现细节，可以在不同版本之间改变，即使我们认为这在目前是不可能的选择。
+ * 迭代器在这种森林的元素上循环。通常的迭代器在森林的所有节点上循环，而活动迭代器以相同的顺序在元素上循环，但跳过所有非活动条目，因此只访问终端节点（即活动单元、面等）。遍历森林中的元素有很多方法，例如广度优先或深度优先。根据用于存储森林的数据结构的类型，有些方法比其他方法更有效。目前，在deal.II中，迭代器遍历森林的方式是广度优先。也就是说，迭代器首先访问粗网格的所有元素（单元格、面等），然后再转到直属层的所有元素，即粗网格对象的直属子节点；之后是粗网格的子节点，以此类推。然而，必须注意的是，程序不应该依赖这种特定的树形遍历顺序：这被认为是一个实现细节，可以在不同的版本之间改变，即使我们认为这在目前是一个不太可能的选择。
  *
  *
  * @section  迭代器的区别 不同种类的迭代器
@@ -102,8 +101,7 @@
  * @endcode
  *
  *
- *
- * @section  IteratorsAccessors Accessors
+ *   @section  IteratorsAccessors 访问器
  * 迭代器就像指针一样：它们可以被递增和递减，但它们实际上是很笨的。它们的神奇之处在于它们指向一些有用的对象，在这里是指访问器。对于指针来说，它们指向的是一个存储了一些数据的实际对象。另一方面，deal.II迭代器，当被解除引用时，并不返回对一个实际对象的引用，而是返回一个知道如何获取代表单元格的数据的对象。一般来说，这个对象本身并不存储单元格的顶点或其邻居是什么。然而，它知道如何从Triangulation类为描述网格而设置的数组、表格和列表中获取这类信息。
  * 访问表征一个单元的数据总是通过Accessor完成的，即表达式
  * <code>i-&gt;xxx()</code>
@@ -122,7 +120,7 @@
  *
  *
  * @section  IteratorsTypedefs 访问器的种类
- * 根据你要访问的数据类型，有不同的访问器类。
+ * 根据你要访问的数据种类，有不同的访问器类。
  *
  * - TriaAccessor类为你提供数据，识别构成三角形的单元、面、线、四边形和六边形的几何属性，以及父子关系。
  *
@@ -136,8 +134,8 @@
  * 提供的类型定义，以及生成此类对象的函数。 <table
  * border=1> <tr> <th>Class</th> <th>cell_iterator type</th> <th>function
  * call</th> </tr> <tr> <th>Triangulation</th> <td>typename
- * Triangulation::cell_iterator</td>  ]  <td>Triangulation::begin()</td>
- * </tr> <tr> <th>DoFHandler</th> <td>typename  DoFHandler::cell_iterator</td>
+ * Triangulation::cell_iterator</td>   <td>Triangulation::begin()</td>  </tr>
+ * <tr> <th>DoFHandler</th> <td>typename  DoFHandler::cell_iterator</td>
  * <td>DoFHandler::begin()</td>  </tr> <tr>  <th>hp::DoFHandler</th>
  * <td>typename  hp::DoFHandler::cell_iterator</td>
  * <td>hp::DoFHandler::begin()</td>  </tr></table>
@@ -146,7 +144,7 @@
  * Triangulation::begin_face().  返回。 活动迭代器有以下属性。
  * <table border=1> <tr> <th>Class</th> <th>cell_iterator type</th>
  * <th>function call</th> </tr> <tr> <th>Triangulation</th> <td>typename
- * Triangulation::active_cell_iterator</td>  ]
+ * Triangulation::active_cell_iterator</td>
  * <td>Triangulation::begin_active()</td>  </tr> <tr> <th>DoFHandler</th>
  * <td>typename  DoFHandler::active_cell_iterator</td>
  * <td>DoFHandler::begin_active()</td>  </tr> <tr>  <th>hp::DoFHandler</th>
@@ -173,7 +171,7 @@
  * href="structinternal_1_1Triangulation_1_1Iterators_3_013_00_01spacedim_01_4.html">internal::DoFHandler::Iterators&lt;DoFHandlerType&lt;1,spacedim&gt;,
  * lda&gt;</a>类。 @section  IteratorAccessorInternals
  * 迭代器和访问器的内部结构
- * 迭代器，就像指针一样，就像它们指向一个实际的对象一样，但实际上它们所做的只是在被引用时返回一个访问器。访问器对象包含状态，也就是说，它知道它所代表的对象，例如，通过存储它属于哪个三角形，以及单元格中的层次和索引。因此，它能够访问与它所代表的单元（或面，或边）相对应的数据。
+ * 迭代器，就像指针一样，就像它们指向一个实际的对象一样，但实际上它们所做的只是在被引用时返回一个访问器。访问器对象包含状态，也就是说，它知道它所代表的对象，例如，通过存储它属于哪个三角形，以及单元格中的级别和索引。因此，它能够访问与它所代表的单元（或面，或边）相对应的数据。
  * 有一个过去-末端指针的表示，由TriaAccessor类中的成员变量
  * <code>present_level</code> and <code>present_index</code>
  * 的特殊值表示。如果 <code>present_level</code> @> =0 and
@@ -185,7 +183,6 @@
  * 单元的存储是基于层次结构的，因此上面提到的结构是有用的。然而，面不是按层次组织的，低维度的对象的访问器没有
  * <code>present_level</code> 成员变量。
  *
- *
  * @ingroup grid
  *
  */
@@ -194,9 +191,7 @@
 
 
 /**
- *
- * @defgroup Accessors Accessor classes of the mesh iterators
- *
+ *    @defgroup Accessors Accessor classes of the mesh iterators
  * @ingroup Iterators
  *
  */

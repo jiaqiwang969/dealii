@@ -16,9 +16,8 @@
 
 
 /**
- *
- * @defgroup dofs Degrees of Freedom
- * 这个模块将与处理自由度有关的类和命名空间分组。该组的中心类是DoFHandler类：它建立在三角形和有限元类之上，并根据有限元对象所描述的有限元空间的要求在三角形的每个单元上分配自由度。DoFHandler类还有其他变体，如
+ *    @defgroup dofs Degrees of Freedom
+ * 本模块将与处理自由度有关的类和命名空间分组。该组的中心类是DoFHandler类：它建立在三角形和有限元类之上，并根据有限元对象所描述的有限元空间的要求在三角形的每个单元上分配自由度。DoFHandler类还有其他变体，如
  * hp::DoFHandler ，对更特殊的情况做类似的事情。
  * DoFHandler对象与FiniteElement（或 hp::FECollection 中的
  * hp::DoFHandler)
@@ -28,7 +27,6 @@
  * derived</i>，尽管它们使用Triangulation对象；原因是可以有一个以上的DoFHandler对象对同一个Triangulation对象工作。
  * 除了DoF处理程序类之外，这个模块还拥有一些在应用程序中不常用的辅助类，以及三个与DoFHandler类的数据结构没有直接联系的类。其中第一个是AffineConstraints类，用于存储和处理与悬挂节点相关的约束。其次，DoFRenumbering命名空间提供了可以重新排序自由度的函数；在它的函数中，有在下游方向排序自由度的函数，例如，有以使相关矩阵的带宽最小化的方式排序自由度。最后，DoFTools命名空间提供了各种处理自由度的算法。
  * 从总体上看，这个模块的各个部分与库的其他部分相互作用。
- *
  * @dot digraph G { graph[rankdir="TB",bgcolor="transparent"];
  *
  * node [fontname="FreeSans",fontsize=15, shape=box,height=0.2,width=0.4,
@@ -77,7 +75,6 @@
  * -> tria        [color="black",style="solid"]; manifold
  *
  * -> mapping     [color="black",style="solid"]; } @enddot
- *
  *
  */
 

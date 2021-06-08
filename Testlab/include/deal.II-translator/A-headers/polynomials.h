@@ -16,10 +16,8 @@
 
 
 /**
- *
- * @defgroup Polynomials Polynomials and polynomial spaces
- * 这个模块将定义某些多项式函数家族的类分组。特别是，这包括等距支持点的拉格朗日插值多项式和它们在更高维度上的张量乘积，但也包括更奇特的如Brezzi-Douglas-Marini或Raviart-Thomas空间。
- *
+ *    @defgroup Polynomials Polynomials and polynomial spaces
+ * 本模块将定义某些多项式函数家族的类归类。特别是，这包括等距支持点的拉格朗日插值多项式和它们在更高维度上的张量乘积，但也包括更奇特的如Brezzi-Douglas-Marini或Raviart-Thomas空间。
  *
  */
 

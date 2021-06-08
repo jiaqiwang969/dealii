@@ -1,0 +1,380 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32][1.x.33][1.x.34]
+* [1.x.35][1.x.36][1.x.37]
+* 
+
+* This tutorial program attempts to show how to use  [2.x.2] -finite element methodswith deal.II. It solves the Laplace equation and so builds only on the firstfew tutorial programs, in particular on  [2.x.3]  for dimensionindependent programming and  [2.x.4]  for adaptive mesh refinement.
+* The  [2.x.5] -finite element method was proposed in the early 1980s byBabu&scaron;ka and Guo as an alternative to either(i) mesh refinement (i.e., decreasing the mesh parameter  [2.x.6]  in a finiteelement computation) or (ii) increasing the polynomial degree  [2.x.7]  used forshape functions. It is based on the observation that increasing the polynomialdegree of the shape functions reduces the approximation error if the solutionis sufficiently smooth. On the other hand, it is well knownthat even for the generally well-behaved class of elliptic problems, higherdegrees of regularity can not be guaranteed in the vicinity of boundaries,corners, or where coefficients are discontinuous; consequently, theapproximation can not be improved in these areas by increasing the polynomialdegree  [2.x.8]  but only by refining the mesh, i.e., by reducing the mesh size [2.x.9] . These differing means to reduce theerror have led to the notion of  [2.x.10] -finite elements, where the approximatingfinite element spaces are adapted to have a high polynomial degree  [2.x.11] wherever the solution is sufficiently smooth, while the mesh width  [2.x.12]  isreduced at places wherever the solution lacks regularity. It wasalready realized in the first papers on this method that  [2.x.13] -finite elementscan be a powerful tool that can guarantee that the error is reduced not onlywith some negative power of the number of degrees of freedom, but in factexponentially.
+* In order to implement this method, we need several things above and beyondwhat a usual finite element program needs, and in particular above what wehave introduced in the tutorial programs leading up to  [2.x.14] . In particular,we will have to discuss the following aspects: [2.x.15]    [2.x.16] Instead of using the same finite element on all cells, we now will want  a collection of finite element objects, and associate each cell with one  of these objects in this collection. [2.x.17] 
+*    [2.x.18] Degrees of freedom will then have to be allocated on each cell depending  on what finite element is associated with this particular cell. Constraints  will have to be generated in the same way as for hanging nodes, but we now  also have to deal with the case where two neighboring cells have different  finite elements assigned. [2.x.19] 
+*    [2.x.20] We will need to be able to assemble cell and face contributions  to global matrices and right hand side vectors. [2.x.21] 
+*    [2.x.22] After solving the resulting linear system, we will want to  analyze the solution. In particular, we will want to compute error  indicators that tell us whether a given cell should be refined  and/or whether the polynomial degree of the shape functions used on  it should be increased. [2.x.23]  [2.x.24] 
+* We will discuss all these aspects in the following subsections of thisintroduction. It will not come as a big surprise that most of thesetasks are already well supported by functionality provided by thedeal.II, and that we will only have to provide the logic of what theprogram should do, not exactly how all this is going to happen.
+* In deal.II, the  [2.x.25] -functionality is largely packaged intothe hp-namespace. This namespace provides classes that handle [2.x.26] -discretizations, assembling matrices and vectors, and othertasks. We will get to know many of them further down below. Inaddition, most of the functions in the DoFTools, and VectorToolsnamespaces accept  [2.x.27] -objects in addition to the non- [2.x.28] -ones. Much ofthe  [2.x.29] -implementation is also discussed in the  [2.x.30]  documentationmodule and the links found there.
+* It may be worth giving a slightly larger perspective at the end ofthis first part of the introduction.  [2.x.31] -functionality has beenimplemented in a number of different finite element packages (see, forexample, the list of references cited in the  [2.x.32]  "hp-paper").However, by and large, most of these packages have implemented it onlyfor the (i) the 2d case, and/or (ii) the discontinuous Galerkinmethod. The latter is a significant simplification becausediscontinuous finite elements by definition do not require continuityacross faces between cells and therefore do not require the specialtreatment otherwise necessary whenever finite elements of differentpolynomial degree meet at a common face. In contrast, deal.IIimplements the most general case, i.e., it allows for continuous anddiscontinuous elements in 1d, 2d, and 3d, and automatically handlesthe resulting complexity. In particular, it handles computing theconstraints (similar to hanging node constraints) of elements ofdifferent degree meeting at a face or edge. The many algorithmic anddata structure techniques necessary for this are described in the [2.x.33]  "hp-paper" for those interested in such detail.
+* We hope that providing such a general implementation will help explorethe potential of  [2.x.34] -methods further.
+* 
+
+* 
+* [1.x.38][1.x.39]
+* 
+
+* Now on again to the details of how to use the  [2.x.35] -functionality indeal.II. The first aspect we have to deal with is that now we do nothave only a single finite element any more that is used on all cells,but a number of different elements that cells can choose to use. Forthis, deal.II introduces the concept of a [1.x.40], implemented in the class  [2.x.36]  In essence,such a collection acts like an object of type [2.x.37] , but with a few more bellsand whistles and a memory management better suited to the task athand. As we will later see, we will also use similar quadraturecollections, and &mdash; although we don't use them here &mdash; thereis also the concept of mapping collections. All of these classes aredescribed in the  [2.x.38]  overview.
+* In this tutorial program, we will use continuous Lagrange elements oforders 2 through 7 (in 2d) or 2 through 5 (in 3d). The collection ofused elements can then be created as follows:
+* [1.x.41]
+* 
+* 
+
+* 
+* [1.x.42][1.x.43][1.x.44]
+* 
+
+* The next task we have to consider is what to do with the list offinite element objects we want to use. In previous tutorial programs,starting with  [2.x.39] , we have seen that the DoFHandlerclass is responsible for making the connection between a mesh(described by a Triangulation object) and a finite element, byallocating the correct number of degrees of freedom for each vertex,face, edge, and cell of the mesh.
+* The situation here is a bit more complicated since we do not just havea single finite element object, but rather may want to use differentelements on different cells. We therefore need two things: (i) aversion of the DoFHandler class that can deal with this situation, and(ii) a way to tell the DoFHandler which element to use on which cell.
+* The first of these two things is implemented in the [1.x.45]-mode ofthe DoFHandler class: rather than associating it with a triangulationand a single finite element object, it is associated with a triangulationand a finite element collection. The second part is achieved by a loopover all cells of this DoFHandler and for each cell setting the indexof the finite element within the collection that shall be used on thiscell. We call the index of the finite element object within thecollection that shall be used on a cell the cell's [1.x.46] to indicate that this is the finite element that is activeon this cell, whereas all the other elements of the collection areinactive on it. The general outline of this reads like this:
+* [1.x.47]
+* 
+* Dots in the call to  [2.x.40]  indicate thatwe will have to have some sort of strategy later on to decide whichelement to use on which cell; we will come back to this later. Themain point here is that the first and last line of this code snippetis pretty much exactly the same as for the non- [2.x.41] -case.
+* Another complication arises from the fact that this time we do notsimply have hanging nodes from local mesh refinement, but we also haveto deal with the case that if there are two cells with differentactive finite element indices meeting at a face (for example a Q2 anda Q3 element) then we have to compute additional constraints on thefinite element field to ensure that it is continuous. This isconceptually very similar to how we compute hanging node constraints,and in fact the code looks exactly the same:
+* [1.x.48]
+* In other words, the  [2.x.42]  deals notonly with hanging node constraints, but also with  [2.x.43] -constraints atthe same time.
+* 
+
+* 
+* [1.x.49][1.x.50]
+* 
+
+* Following this, we have to set up matrices and vectors for the linear systemof the correct size and assemble them. Setting them up works in exactly thesame way as for the non- [2.x.44] -case. Assembling requires a bit more thought.
+* The main idea is of course unchanged: we have to loop over all cells, assemblelocal contributions, and then copy them into the global objects. As discussedin some detail first in  [2.x.45] , deal.II has the FEValues class that pullsthe finite element description, mapping, and quadrature formulatogether and aids in evaluating values and gradients of shape functions aswell as other information on each of the quadrature points mapped to the reallocation of a cell. Every time we move on to a new cell we re-initialize thisFEValues object, thereby asking it to re-compute that part of the informationthat changes from cell to cell. It can then be used to sum up localcontributions to bilinear form and right hand side.
+* In the context of  [2.x.46] -finite element methods, we have to deal with the factthat we do not use the same finite element object on each cell. In fact, weshould not even use the same quadrature object for all cells, but ratherhigher order quadrature formulas for cells where we use higher order finiteelements. Similarly, we may want to use higher order mappings on such cells aswell.
+* To facilitate these considerations, deal.II has a class  [2.x.47]  that doeswhat we need in the current context. The difference is that instead of asingle finite element, quadrature formula, and mapping, it takes collectionsof these objects. It's use is very much like the regular FEValues class,i.e., the interesting part of the loop over all cells would look like this:
+* [1.x.51]
+* 
+* In this tutorial program, we will always use a Q1 mapping, so the mappingcollection argument to the  [2.x.48]  construction will be omitted. Insidethe loop, we first initialize the  [2.x.49]  object for the currentcell. The second, third and fourth arguments denote the index within theirrespective collections of the quadrature, mapping, and finite element objectswe wish to use on this cell. These arguments can be omitted (and are in theprogram below), in which case  [2.x.50]  is usedfor this index. The order of these arguments is chosen in this way because onemay sometimes want to pick a different quadrature or mapping object from theirrespective collections, but hardly ever a different finite element than theone in use on this cell, i.e., one with an index different from [2.x.51] . The finite element collection index istherefore the last default argument so that it can be conveniently omitted.
+* What this  [2.x.52]  call does is the following: the [2.x.53]  class checks whether it has previously already allocated anon- [2.x.54] -FEValues object for this combination of finite element, quadrature,and mapping objects. If not, it allocates one. It then re-initializes thisobject for the current cell, after which there is now a FEValues object forthe selected finite element, quadrature and mapping usable on the currentcell. A reference to this object is then obtained using the call [2.x.55] , and will be used in theusual fashion to assemble local contributions.
+* 
+
+* 
+* [1.x.52][1.x.53]
+* 
+
+* One of the central pieces of the adaptive finite element method is that weinspect the computed solution (a posteriori) with an indicator that tells uswhich are the cells where the error is largest, and then refine them. In manyof the other tutorial programs, we use the KellyErrorEstimator class to get anindication of the size of the error on a cell, although we also discuss morecomplicated strategies in some programs, most importantly in  [2.x.56] .
+* In any case, as long as the decision is only "refine this cell" or "do notrefine this cell", the actual refinement step is not particularlychallenging. However, here we have a code that is capable of hp-refinement,i.e., we suddenly have two choices whenever we detect that the error on acertain cell is too large for our liking: we can refine the cell by splittingit into several smaller ones, or we can increase the polynomial degree of theshape functions used on it. How do we know which is the more promisingstrategy? Answering this question is the central problem in  [2.x.57] -finiteelement research at the time of this writing.
+* In short, the question does not appear to be settled in the literature at thistime. There are a number of more or less complicated schemes that address it,but there is nothing like the KellyErrorEstimator that is universally acceptedas a good, even if not optimal, indicator of the error. Most proposals use thefact that it is beneficial to increase the polynomial degree whenever thesolution is locally smooth whereas it is better to refine the mesh wherever itis rough. However, the questions of how to determine the local smoothness ofthe solution as well as the decision when a solution is smooth enough to allowfor an increase in  [2.x.58]  are certainly big and important ones.
+* In the following, we propose a simple estimator of the local smoothness of asolution. As we will see in the results section, this estimator has flaws, inparticular as far as cells with local hanging nodes are concerned. Wetherefore do not intend to present the following ideas as a complete solutionto the problem. Rather, it is intended as an idea to approach it that meritsfurther research and investigation. In other words, we do not intend to entera sophisticated proposal into the fray about answers to the generalquestion. However, to demonstrate our approach to  [2.x.59] -finite elements, weneed a simple indicator that does generate some useful information that isable to drive the simple calculations this tutorial program will perform.
+* 
+
+* [1.x.54][1.x.55]
+* 
+
+* Our approach here is simple: for a function  [2.x.60]  to be in theSobolev space  [2.x.61]  on a cell  [2.x.62] , it has to satisfy the condition[1.x.56]Assuming that the cell  [2.x.63]  is not degenerate, i.e., that the mapping from theunit cell to cell  [2.x.64]  is sufficiently regular, above condition is of courseequivalent to[1.x.57]where  [2.x.65]  is the function  [2.x.66]  mapped back onto the unit cell [2.x.67] . From here, we can do the following: first, let us define theFourier series of  [2.x.68]  as[1.x.58]with Fourier vectors  [2.x.69]  in 2d,  [2.x.70] in 3d, etc, and  [2.x.71] . The coefficients of expansion [2.x.72]  can be obtained using  [2.x.73] -orthogonality of the exponential basis[1.x.59]that leads to the following expression[1.x.60]It becomes clear that we can then write the  [2.x.74]  norm of  [2.x.75]  as[1.x.61]In other words, if this norm is to be finite (i.e., for  [2.x.76]  to be in  [2.x.77] ), we need that[1.x.62]Put differently: the higher regularity  [2.x.78]  we want, the faster theFourier coefficients have to go to zero. If you wonder where theadditional exponent  [2.x.79]  comes from: we would like to makeuse of the fact that  [2.x.80]  if the sequence  [2.x.81]  for any  [2.x.82] . The problem is that wehere have a summation not only over a single variable, but over allthe integer multiples of  [2.x.83]  that are located inside the [2.x.84] -dimensional sphere, because we have vector components  [2.x.85] . In the same way as we prove that the sequence  [2.x.86]  aboveconverges by replacing the sum by an integral over the entire line, wecan replace our  [2.x.87] -dimensional sum by an integral over [2.x.88] -dimensional space. Now we have to note that between distance  [2.x.89] and  [2.x.90] , there are, up to a constant,  [2.x.91]  modes, inmuch the same way as we can transform the volume element  [2.x.92]  into [2.x.93] . Consequently, it is no longer  [2.x.94]  that has to decay as  [2.x.95] , butit is in fact  [2.x.96] . Acomparison of exponents yields the result.
+* We can turn this around: Assume we are given a function  [2.x.97]  of unknownsmoothness. Let us compute its Fourier coefficients  [2.x.98] and see how fast they decay. If they decay as[1.x.63]then consequently the function we had here was in  [2.x.99] .
+* 
+
+* [1.x.64][1.x.65]
+* 
+
+* So what do we have to do to estimate the local smoothness of  [2.x.100]  ona cell  [2.x.101] ? Clearly, the first step is to compute the Fourier coefficientsof our solution. Fourier series being infinite series, we simplify ourtask by only computing the first few terms of the series, such that [2.x.102]  with a cut-off  [2.x.103] . Let us parenthetically remarkthat we want to choose  [2.x.104]  large enough so that we capture at leastthe variation of those shape functions that vary the most. On theother hand, we should not choose  [2.x.105]  too large: clearly, a finiteelement function, being a polynomial, is in  [2.x.106]  on any givencell, so the coefficients will have to decay exponentially at onepoint; since we want to estimate the smoothness of the function thispolynomial approximates, not of the polynomial itself, we need tochoose a reasonable cutoff for  [2.x.107] . Either way, computing this seriesis not particularly hard: from the definition[1.x.66]we see that we can compute the coefficient  [2.x.108]  as[1.x.67]where  [2.x.109]  is the value of the  [2.x.110] th degree of freedom on thiscell. In other words, we can write it as a matrix-vector product[1.x.68]with the matrix[1.x.69]This matrix is easily computed for a given number of shape functions [2.x.111]  and Fourier modes  [2.x.112] . Consequently, finding thecoefficients  [2.x.113]  is a rather trivial job.To simplify our life even further, we will use  [2.x.114]  class whichdoes exactly this.
+* The next task is that we have to estimate how fast these coefficientsdecay with  [2.x.115] . The problem is that, of course, we have onlyfinitely many of these coefficients in the first place. In otherwords, the best we can do is to fit a function  [2.x.116] to our data points  [2.x.117] , for example bydetermining  [2.x.118]  via a least-squares procedure:[1.x.70]However, the problem with this is that it leads to a nonlinearproblem, a fact that we would like to avoid. On the other hand, we cantransform the problem into a simpler one if we try to fit thelogarithm of our coefficients to the logarithm of  [2.x.119] ,like this:[1.x.71]Using the usual facts about logarithms, we see that this yields theproblem[1.x.72]where  [2.x.120] . This is now a problem for which theoptimality conditions  [2.x.121] , are linear in  [2.x.122] . We canwrite these conditions as follows:[1.x.73]This linear system is readily inverted to yield[1.x.74]and[1.x.75]
+* This is nothing else but linear regression fit and to do that we will use [2.x.123] While we are not particularly interested in the actual value of [2.x.124] , the formula above gives us a mean to calculate the value ofthe exponent  [2.x.125]  that we can then use to determine that [2.x.126]  is in  [2.x.127]  with  [2.x.128] .
+* These steps outlined above are applicable to many different scenarios, whichmotivated the introduction of a generic function [2.x.129]  in deal.II, that combines allthe tasks described in this section in one simple function call. We will use itin the implementation of this program.
+* 
+
+* [1.x.76][1.x.77]
+* 
+
+* In the formulas above, we have derived the Fourier coefficients  [2.x.130] . Because  [2.x.131]  is a vector, we will get a number of Fouriercoefficients  [2.x.132]  for the same absolute value  [2.x.133] ,corresponding to the Fourier transform in different directions. If we nowconsider a function like  [2.x.134]  then we will find lots of large Fouriercoefficients in  [2.x.135] -direction because the function is non-smooth in thisdirection, but fast-decaying Fourier coefficients in  [2.x.136] -direction because thefunction is smooth there. The question that arises is this: if we simply fitour polynomial decay  [2.x.137]  to [1.x.78] Fourier coefficients,we will fit it to a smoothness [1.x.79]. Isthis what we want? Or would it be better to only consider the largestcoefficient  [2.x.138]  for all  [2.x.139]  with the same magnitude,essentially trying to determine the smoothness of the solution in that spatialdirection in which the solution appears to be roughest?
+* One can probably argue for either case. The issue would be of more interest ifdeal.II had the ability to use anisotropic finite elements, i.e., ones that usedifferent polynomial degrees in different spatial directions, as they would beable to exploit the directionally variable smoothness much better. Alas, thiscapability does not exist at the time of writing this tutorial program.
+* Either way, because we only have isotopic finite element classes, we adopt theviewpoint that we should tailor the polynomial degree to the lowest amount ofregularity, in order to keep numerical efforts low. Consequently, instead ofusing the formula[1.x.80]To calculate  [2.x.140]  as shown above, we have to slightly modify all sums:instead of summing over all Fourier modes, we only sum over those for whichthe Fourier coefficient is the largest one among all  [2.x.141]  withthe same magnitude  [2.x.142] , i.e., all sums above have to replaced by thefollowing sums:[1.x.81]This is the form we will implement in the program.
+* 
+
+* [1.x.82][1.x.83]
+* 
+
+* One may ask whether it is a problem that we only compute the Fourier transformon the [1.x.84] (rather than the real cell) of thesolution. After all, we stretch the solution by a factor  [2.x.143]  during thetransformation, thereby shifting the Fourier frequencies by a factor of [2.x.144] . This is of particular concern since we may have neighboring cells withmesh sizes  [2.x.145]  that differ by a factor of 2 if one of them is more refinedthan the other. The concern is also motivated by the fact that, as we will seein the results section below, the estimated smoothness of the solution shouldbe a more or less continuous function, but exhibits jumps at locations wherethe mesh size jumps. It therefore seems natural to ask whether we have tocompensate for the transformation.
+* The short answer is "no". In the process outlined above, we attempt to findcoefficients  [2.x.146]  that minimize the sum of squares of the terms[1.x.85]To compensate for the transformation means not attempting to fit a decay [2.x.147]  with respect to the Fourier frequencies  [2.x.148]  [1.x.86], but to fit the coefficients  [2.x.149]  computed on thereference cell [1.x.87], where  [2.x.150]  is the norm of the transformation operator (i.e., somethinglike the diameter of the cell). In other words, we would have to minimize thesum of squares of the terms[1.x.88]instead. However, using fundamental properties of the logarithm, this issimply equivalent to minimizing[1.x.89]In other words, this and the original least squares problem will produce thesame best-fit exponent  [2.x.151] , though the offset will in one case be  [2.x.152] and in the other  [2.x.153] . However, since we are not interested inthe offset at all but only in the exponent, it doesn't matter whether we scaleFourier frequencies in order to account for mesh size effects or not, theestimated smoothness exponent will be the same in either case.
+* 
+
+* 
+* [1.x.90][1.x.91]
+* 
+
+* [1.x.92][1.x.93]
+* 
+
+* One of the problems with  [2.x.154] -methods is that the high polynomial degree ofshape functions together with the large number of constrained degrees offreedom leads to matrices with large numbers of nonzero entries in somerows. At the same time, because there are areas where we use low polynomialdegree and consequently matrix rows with relatively few nonzeroentries. Consequently, allocating the sparsity pattern for these matrices is achallenge: we cannot simply assemble a SparsityPattern by starting with anestimate of the bandwidth without using a lot of extra memory.
+* The way in which we create a SparsityPattern for the underlying linear system istightly coupled to the strategy we use to enforce constraints. deal.II supportshandling constraints in linear systems in two ways: [2.x.155]    [2.x.156] Assembling the matrix without regard to the constraints and applying them  afterwards with  [2.x.157]  or [2.x.158]    [2.x.159] Applying constraints as we assemble the system with   [2.x.160]  [2.x.161] Most programs built on deal.II use the  [2.x.162]  functionto allocate a DynamicSparsityPattern that takes constraints into account. Thesystem matrix then uses a SparsityPattern copied over from theDynamicSparsityPattern. This method is explained in  [2.x.163]  and used in mosttutorial programs.
+* The early tutorial programs use first or second degree finite elements, soremoving entries in the sparsity pattern corresponding to constrained degrees offreedom does not have a large impact on the overall number of zeros explicitlystored by the matrix. However, since as many as a third of the degrees offreedom may be constrained in an hp-discretization (and, with higher degreeelements, these constraints can couple one DoF to as many as ten or twenty otherDoFs), it is worthwhile to take these constraints into consideration since theresulting matrix will be much sparser (and, therefore, matrix-vector products orfactorizations will be substantially faster too).
+* 
+
+* [1.x.94][1.x.95]
+* 
+
+* A second problem particular to  [2.x.164] -methods arises because we have somany constrained degrees of freedom: typically up to about one thirdof all degrees of freedom (in 3d) are constrained because they eitherbelong to cells with hanging nodes or because they are on cellsadjacent to cells with a higher or lower polynomial degree. This is,in fact, not much more than the fraction of constrained degrees offreedom in non- [2.x.165] -mode, but the difference is that each constrainedhanging node is constrained not only against the two adjacent degreesof freedom, but is constrained against many more degrees of freedom.
+* It turns out that the strategy presented first in  [2.x.166]  to eliminate theconstraints while computing the element matrices and vectors with [2.x.167]  is the most efficient approachalso for this case. The alternative strategy to first build the matrix withoutconstraints and then "condensing" away constrained degrees of freedom isconsiderably more expensive. It turns out that building the sparsity patternby this inefficient algorithm requires at least  [2.x.168]  in thenumber of unknowns, whereas an ideal finite element program would of courseonly have algorithms that are linear in the number of unknowns. Timing thesparsity pattern creation as well as the matrix assembly shows that thealgorithm presented in  [2.x.169]  (and used in the code below) is indeed faster.
+* In our program, we will also treat the boundary conditions as (possiblyinhomogeneous) constraints and eliminate the matrix rows and columns tothose as well. All we have to do for this is to call the function thatinterpolates the Dirichlet boundary conditions already in the setup phase inorder to tell the AffineConstraints object about them, and then do thetransfer from local to global data on matrix and vector simultaneously. Thisis exactly what we've shown in  [2.x.170] .
+* 
+
+* 
+* [1.x.96][1.x.97]
+* 
+
+* The test case we will solve with this program is a re-take of the one wealready look at in  [2.x.171] : we solve the Laplace equation[1.x.98]in 2d, with  [2.x.172] , and with zero Dirichlet boundary values for [2.x.173] . We do so on the domain  [2.x.174] ,i.e., a square with a square hole in the middle.
+* The difference to  [2.x.175]  is of course that we use  [2.x.176] -finiteelements for the solution. The test case is of interest because it hasre-entrant corners in the corners of the hole, at which the solution hassingularities. We therefore expect that the solution will be smooth in theinterior of the domain, and rough in the vicinity of the singularities. Thehope is that our refinement and smoothness indicators will be able to see thisbehavior and refine the mesh close to the singularities, while the polynomialdegree is increased away from it. As we will see in the results section, thisis indeed the case.
+* 
+
+*  [1.x.99] [1.x.100]
+*   [1.x.101]  [1.x.102]
+* 
+
+* 
+*  The first few files have already been covered in previous examples and will thus not be further commented on.
+* 
+
+* 
+* [1.x.103]
+* 
+*  These are the new files we need. The first and second provide the FECollection and the [1.x.104] version of the FEValues class as described in the introduction of this program. The next one provides the functionality for automatic  [2.x.177] -adaptation, for which we will use the estimation algorithms based on decaying series expansion coefficients that are part of the last two files.
+* 
+
+* 
+* [1.x.105]
+* 
+*  The last set of include files are standard C++ headers.
+* 
+
+* 
+* [1.x.106]
+* 
+*  Finally, this is as in previous programs:
+* 
+
+* 
+* [1.x.107]
+* 
+*   [1.x.108]  [1.x.109]
+* 
+
+* 
+*  The main class of this program looks very much like the one already used in the first few tutorial programs, for example the one in  [2.x.178] . The main difference is that we have merged the refine_grid and output_results functions into one since we will also want to output some of the quantities used in deciding how to refine the mesh (in particular the estimated smoothness of the solution).   
+*   As far as member variables are concerned, we use the same structure as already used in  [2.x.179] , but we need collections instead of individual finite element, quadrature, and face quadrature objects. We will fill these collections in the constructor of the class. The last variable,  [2.x.180] , indicates the maximal polynomial degree of shape functions used.
+* 
+
+* 
+* [1.x.110]
+* 
+*   [1.x.111]  [1.x.112]   
+*   Next, let us define the right hand side function for this problem. It is  [2.x.181]  in 1d,  [2.x.182]  in 2d, and so on.
+* 
+
+* 
+* [1.x.113]
+* 
+*   [1.x.114]  [1.x.115]
+* 
+
+* 
+*   [1.x.116]  [1.x.117]
+* 
+
+* 
+*  The constructor of this class is fairly straightforward. It associates the DoFHandler object with the triangulation, and then sets the maximal polynomial degree to 7 (in 1d and 2d) or 5 (in 3d and higher). We do so because using higher order polynomial degrees becomes prohibitively expensive, especially in higher space dimensions.   
+*   Following this, we fill the collections of finite element, and cell and face quadrature objects. We start with quadratic elements, and each quadrature formula is chosen so that it is appropriate for the matching finite element in the  [2.x.183]  object.
+* 
+
+* 
+* [1.x.118]
+* 
+*   [1.x.119]  [1.x.120]
+* 
+
+* 
+*  The destructor is unchanged from what we already did in  [2.x.184] :
+* 
+
+* 
+* [1.x.121]
+* 
+*   [1.x.122]  [1.x.123]   
+*   This function is again a verbatim copy of what we already did in  [2.x.185] . Despite function calls with exactly the same names and arguments, the algorithms used internally are different in some aspect since the dof_handler variable here is in  [2.x.186] -mode.
+* 
+
+* 
+* [1.x.124]
+* 
+*   [1.x.125]  [1.x.126]
+* 
+
+* 
+*  This is the function that assembles the global matrix and right hand side vector from the local contributions of each cell. Its main working is as has been described in many of the tutorial programs before. The significant deviations are the ones necessary for [1.x.127] finite element methods. In particular, that we need to use a collection of FEValues object (implemented through the  [2.x.187]  class), and that we have to eliminate constrained degrees of freedom already when copying local contributions into global objects. Both of these are explained in detail in the introduction of this program.   
+*   One other slight complication is the fact that because we use different polynomial degrees on different cells, the matrices and vectors holding local contributions do not have the same size on all cells. At the beginning of the loop over all cells, we therefore each time have to resize them to the correct size (given by  [2.x.188] ). Because these classes are implemented in such a way that reducing the size of a matrix or vector does not release the currently allocated memory (unless the new size is zero), the process of resizing at the beginning of the loop will only require re-allocation of memory during the first few iterations. Once we have found in a cell with the maximal finite element degree, no more re-allocations will happen because all subsequent  [2.x.189]  calls will only set the size to something that fits the currently allocated memory. This is important since allocating memory is expensive, and doing so every time we visit a new cell would take significant compute time.
+* 
+
+* 
+* [1.x.128]
+* 
+*   [1.x.129]  [1.x.130]
+* 
+
+* 
+*  The function solving the linear system is entirely unchanged from previous examples. We simply try to reduce the initial residual (which equals the  [2.x.190]  norm of the right hand side) by a certain factor:
+* 
+
+* 
+* [1.x.131]
+* 
+*   [1.x.132]  [1.x.133]
+* 
+
+* 
+*  After solving the linear system, we will want to postprocess the solution. Here, all we do is to estimate the error, estimate the local smoothness of the solution as described in the introduction, then write graphical output, and finally refine the mesh in both  [2.x.191]  and  [2.x.192]  according to the indicators computed before. We do all this in the same function because we want the estimated error and smoothness indicators not only for refinement, but also include them in the graphical output.
+* 
+
+* 
+* [1.x.134]
+* 
+*  Let us start with computing estimated error and smoothness indicators, which each are one number for each active cell of our triangulation. For the error indicator, we use the KellyErrorEstimator class as always.
+* 
+
+* 
+* [1.x.135]
+* 
+*  Estimating the smoothness is performed with the method of decaying expansion coefficients as outlined in the introduction. We will first need to create an object capable of transforming the finite element solution on every single cell into a sequence of Fourier series coefficients. The SmoothnessEstimator namespace offers a factory function for such a  [2.x.193]  object that is optimized for the process of estimating smoothness. The actual determination of the decay of Fourier coefficients on every individual cell then happens in the last function.
+* 
+
+* 
+* [1.x.136]
+* 
+*  Next we want to generate graphical output. In addition to the two estimated quantities derived above, we would also like to output the polynomial degree of the finite elements used on each of the elements on the mesh.     
+*   The way to do that requires that we loop over all cells and poll the active finite element index of them using  [2.x.194] . We then use the result of this operation and query the finite element collection for the finite element with that index, and finally determine the polynomial degree of that element. The result we put into a vector with one element per cell. The DataOut class requires this to be a vector of  [2.x.195] , even though our values are all integers, so that is what we use:
+* 
+
+* 
+* [1.x.137]
+* 
+*  With now all data vectors available
+* 
+*  -  solution, estimated errors and smoothness indicators, and finite element degrees
+* 
+*  - , we create a DataOut object for graphical output and attach all data:
+* 
+
+* 
+* [1.x.138]
+* 
+*  The final step in generating output is to determine a file name, open the file, and write the data into it (here, we use VTK format):
+* 
+
+* 
+* [1.x.139]
+* 
+*  After this, we would like to actually refine the mesh, in both  [2.x.196]  and  [2.x.197] . The way we are going to do this is as follows: first, we use the estimated error to flag those cells for refinement that have the largest error. This is what we have always done:
+* 
+
+* 
+* [1.x.140]
+* 
+*  Next we would like to figure out which of the cells that have been flagged for refinement should actually have  [2.x.198]  increased instead of  [2.x.199]  decreased. The strategy we choose here is that we look at the smoothness indicators of those cells that are flagged for refinement, and increase  [2.x.200]  for those with a smoothness larger than a certain relative threshold. In other words, for every cell for which (i) the refinement flag is set, (ii) the smoothness indicator is larger than the threshold, and (iii) we still have a finite element with a polynomial degree higher than the current one in the finite element collection, we will assign a future FE index that corresponds to a polynomial with degree one higher than it currently is. The following function is capable of doing exactly this. Absent any better strategies, we will set the threshold via interpolation between the minimal and maximal smoothness indicators on cells flagged for refinement. Since the corner singularities are strongly localized, we will favor  [2.x.201] - over  [2.x.202] -refinement quantitatively. We achieve this with a low threshold by setting a small interpolation factor of 0.2. In the same way, we deal with cells that are going to be coarsened and decrease their polynomial degree when their smoothness indicator is below the corresponding threshold determined on cells to be coarsened.
+* 
+
+* 
+* [1.x.141]
+* 
+*  The above function only determines whether the polynomial degree will change via future FE indices, but does not manipulate the  [2.x.203] -refinement flags. So for cells that are flagged for both refinement categories, we prefer  [2.x.204] - over  [2.x.205] -refinement. The following function call ensures that only one of  [2.x.206] - or  [2.x.207] -refinement is imposed, and not both at once.
+* 
+
+* 
+* [1.x.142]
+* 
+*  For grid adaptive refinement, we ensure a 2:1 mesh balance by limiting the difference of refinement levels of neighboring cells to one by calling  [2.x.208]  We would like to achieve something similar for the p-levels of neighboring cells: levels of future finite elements are not allowed to differ by more than a specified difference. With its default parameters, a call of  [2.x.209]  ensures that their level difference is limited to one. This will not necessarily decrease the number of hanging nodes in the domain, but makes sure that high order polynomials are not constrained to much lower polynomials on faces, e.g., fifth order to second order polynomials.
+* 
+
+* 
+* [1.x.143]
+* 
+*  At the end of this procedure, we then refine the mesh. During this process, children of cells undergoing bisection inherit their mother cell's finite element index. Further, future finite element indices will turn into active ones, so that the new finite elements will be assigned to cells after the next call of  [2.x.210] 
+* 
+
+* 
+* [1.x.144]
+* 
+*   [1.x.145]  [1.x.146]
+* 
+
+* 
+*  The following function is used when creating the initial grid. The grid we would like to create is actually similar to the one from  [2.x.211] , i.e., the square domain with the square hole in the middle. It can be generated by exactly the same function. However, since its implementation is only a specialization of the 2d case, we will present a different way of creating this domain which is dimension independent.   
+*   We first create a hypercube triangulation with enough cells so that it already holds our desired domain  [2.x.212] , subdivided into  [2.x.213]  cells. We then remove those cells in the center of the domain by testing the coordinate values of the vertices on each cell. In the end, we refine the so created grid globally as usual.
+* 
+
+* 
+* [1.x.147]
+* 
+*   [1.x.148]  [1.x.149]
+* 
+
+* 
+*  This function implements the logic of the program, as did the respective function in most of the previous programs already, see for example  [2.x.214] .   
+*   Basically, it contains the adaptive loop: in the first iteration create a coarse grid, and then set up the linear system, assemble it, solve, and postprocess the solution including mesh refinement. Then start over again. In the meantime, also output some information for those staring at the screen trying to figure out what the program does:
+* 
+
+* 
+* [1.x.150]
+* 
+*   [1.x.151]  [1.x.152]
+* 
+
+* 
+*  The main function is again verbatim what we had before: wrap creating and running an object of the main class into a  [2.x.215]  block and catch whatever exceptions are thrown, thereby producing meaningful output if anything should go wrong:
+* 
+
+* 
+* [1.x.153]
+* [1.x.154][1.x.155]
+* 
+
+* In this section, we discuss a few results produced from running thecurrent tutorial program. More results, in particular the extension to3d calculations and determining how much compute time the individualcomponents of the program take, are given in the  [2.x.216]  "hp-paper".
+* When run, this is what the program produces:
+* [1.x.156]
+* 
+* The first thing we learn from this is that the number of constrained degreesof freedom is on the order of 20-25% of the total number of degrees offreedom, at least on the later grids when we have elements of relativelyhigh order (in 3d, the fraction of constrained degrees of freedom can be upto 30%). This is, in fact, on the same order of magnitude as fornon- [2.x.217] -discretizations. For example, in the last step of the  [2.x.218] program, we have 18353 degrees of freedom, 4432 of which areconstrained. The difference is that in the latter program, each constrainedhanging node is constrained against only the two adjacent degrees offreedom, whereas in the  [2.x.219] -case, constrained nodes are constrained againstmany more degrees of freedom. Note also that the current program alsoincludes nodes subject to Dirichlet boundary conditions in the list ofconstraints. In cycle 0, all the constraints are actually because ofboundary conditions.
+* Of maybe more interest is to look at the graphical output. First, here is thesolution of the problem:
+* <img src="https://www.dealii.org/images/steps/developer/ [2.x.220] -solution.png"     alt="Elevation plot of the solution, showing the lack of regularity near          the interior (reentrant) corners."     width="200" height="200">
+* Secondly, let us look at the sequence of meshes generated:
+*  [2.x.221] 
+* It is clearly visible how the mesh is refined near the corner singularities,as one would expect it. More interestingly, we should be curious to see thedistribution of finite element polynomial degrees to these mesh cells, wherethe lightest color corresponds to degree two and the darkest one correspondsto degree seven:
+*  [2.x.222] 
+* While this is certainly not a perfect arrangement, it does make some sense: weuse low order elements close to boundaries and corners where regularity islow. On the other hand, higher order elements are used where (i) the error wasat one point fairly large, i.e., mainly in the general area around the cornersingularities and in the top right corner where the solution is large, and(ii) where the solution is smooth, i.e., far away from the boundary.
+* This arrangement of polynomial degrees of course follows from our smoothnessestimator. Here is the estimated smoothness of the solution, with darker colorsindicating least smoothness and lighter indicating the smoothest areas:
+*  [2.x.223] 
+* The primary conclusion one can draw from this is that the loss of regularity atthe internal corners is a highly localized phenomenon; it only seems to impactthe cells adjacent to the corner itself, so when we refine the mesh the blackcoloring is no longer visible. Besides the corners, this sequence of plotsimplies that the smoothness estimates are somewhat independent of the meshrefinement, particularly when we are far away from boundaries.It is also obvious that the smoothness estimates are independent of the actualsize of the solution (see the picture of the solution above), as it should be.A point of larger concern, however, is that one realizes on closer inspectionthat the estimator we have overestimates the smoothness of the solution oncells with hanging nodes. This in turn leads to higher polynomial degrees inthese areas, skewing the allocation of finite elements onto cells.
+* We have no good explanation for this effect at the moment. One theory is thatthe numerical solution on cells with hanging nodes is, of course, constrainedand therefore not entirely free to explore the function space to get close tothe exact solution. This lack of degrees of freedom may manifest itself byyielding numerical solutions on these cells with suppressed oscillation,meaning a higher degree of smoothness. The estimator picks this signal up andthe estimated smoothness overestimates the actual value. However, a definiteanswer to what is going on currently eludes the authors of this program.
+* The bigger question is, of course, how to avoid this problem. Possibilitiesinclude estimating the smoothness not on single cells, but cell assemblies orpatches surrounding each cell. It may also be possible to find simplecorrection factors for each cell depending on the number of constraineddegrees of freedom it has. In either case, there are ample opportunities forfurther research on finding good  [2.x.224] -refinement criteria. On the other hand,the main point of the current program was to demonstrate using the [2.x.225] -technology in deal.II, which is unaffected by our use of a possiblesub-optimal refinement criterion.
+* 
+
+* 
+* [1.x.157][1.x.158][1.x.159]
+* 
+
+* [1.x.160][1.x.161]
+* 
+
+* This tutorial demonstrates only one particular strategy to decide between  [2.x.226] - and [2.x.227] -adaptation. In fact, there are many more ways to automatically decide on theadaptation type, of which a few are already implemented in deal.II: [2.x.228]    [2.x.229] [1.x.162] This is the strategy currently  implemented in this tutorial. For more information on this strategy, see  the general documentation of the  [2.x.230]  namespace. [2.x.231] 
+*    [2.x.232] [1.x.163] This strategy is quite similar  to the current one, but uses Legendre series expansion rather than the  Fourier one: instead of sinusoids as basis functions, this strategy uses  Legendre polynomials. Of course, since we approximate the solution using a  finite-dimensional polynomial on each cell, the expansion of the solution in  Legendre polynomials is also finite and, consequently, when we talk about the  "decay" of this expansion, we can only consider the finitely many nonzero  coefficients of this expansion, rather than think about it in asymptotic terms.  But, if we have enough of these coefficients, we can certainly think of the  decay of these coefficients as characteristic of the decay of the coefficients  of the exact solution (which is, in general, not polynomial and so will have an  infinite Legendre expansion), and considering the coefficients we have should  reveal something about the properties of the exact solution.
+*   The transition from the Fourier strategy to the Legendre one is quite simple:  You just need to change the series expansion class and the corresponding  smoothness estimation function to be part of the proper namespaces   [2.x.233]  and  [2.x.234]  This strategy is used  in  [2.x.235] . For the theoretical background of this strategy, consult the  general documentation of the  [2.x.236]  namespace, as well  as  [2.x.237]  ,  [2.x.238]  and  [2.x.239]  . [2.x.240] 
+*    [2.x.241] [1.x.164] The last strategy is quite different  from the other two. In theory, we know how the error will converge  after changing the discretization of the function space. With   [2.x.242] -refinement the solution converges algebraically as already pointed  out in  [2.x.243] . If the solution is sufficiently smooth, though, we  expect that the solution will converge exponentially with increasing  polynomial degree of the finite element. We can compare a proper  prediction of the error with the actual error in the following step to  see if our choice of adaptation type was justified.
+*   The transition to this strategy is a bit more complicated. For this, we need  an initialization step with pure  [2.x.244] - or  [2.x.245] -refinement and we need to  transfer the predicted errors over adapted meshes. The extensive  documentation of the  [2.x.246]  function describes not  only the theoretical details of this approach, but also presents a blueprint  on how to implement this strategy in your code. For more information, see   [2.x.247]  .
+*   Note that with this particular function you cannot predict the error for  the next time step in time-dependent problems. Therefore, this strategy  cannot be applied to this type of problem without further ado. Alternatively,  the following approach could be used, which works for all the other  strategies as well: start each time step with a coarse mesh, keep refining  until happy with the result, and only then move on to the next time step. [2.x.248]  [2.x.249] 
+* Try implementing one of these strategies into this tutorial and observe thesubtle changes to the results. You will notice that all strategies arecapable of identifying the singularities near the reentrant corners andwill perform  [2.x.250] -refinement in these regions, while preferring  [2.x.251] -refinementin the bulk domain. A detailed comparison of these strategies is presentedin  [2.x.252]  .
+* 
+
+* [1.x.165][1.x.166]
+* 
+
+* All functionality presented in this tutorial already works for bothsequential and parallel applications. It is possible without too mucheffort to change to either the  [2.x.253]  or the [2.x.254]  classes. If you feel eager to tryit, we recommend reading  [2.x.255]  for the former and  [2.x.256]  for thelatter case first for further background information on the topic, andthen come back to this tutorial to try out your newly acquired skills.
+* We go one step further in  [2.x.257] : Here, we combine hp-adapative andMatrixFree methods in combination with [2.x.258]  objects.
+* 
+
+* [1.x.167][1.x.168] [2.x.259] 
+* [0.x.1]

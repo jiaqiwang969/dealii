@@ -59,8 +59,8 @@
  * functions</a><a href="#Constructorsandhelperfunctions">Constructors and
  * helper functions</a>
  * <li><a href="#Meshesandassigningsubdomains">Meshes and assigning
- * subdomains</a> ]<a href="#Meshesandassigningsubdomains">Meshes and
- * assigning subdomains</a>
+ * subdomains</a><a href="#Meshesandassigningsubdomains">Meshes and assigning
+ * subdomains</a>
  * <li><a
  * href="#codeFluidStructureProblemsetup_dofscode"><code>FluidStructureProblem::setup_dofs</code></a><a
  * href="#codeFluidStructureProblemsetup_dofscode"><code>FluidStructureProblem::setup_dofs</code></a>
@@ -117,10 +117,8 @@
  * &ndash; Davis. Any opinions, findings, and conclusions or recommendations
  * expressed in this publication are those of the author and do not
  * necessarily reflect the views of the National Science Foundation or of The
- * University of California &ndash; Davis.  </i>
- *
- *  <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
- *
+ * University of California &ndash; Davis.  </i>   <a name="Intro"></a><a
+ * name="Introduction"></a><h1>Introduction</h1>
  * 这个程序处理的是在领域的不同部分耦合不同物理学的问题。具体来说，让我们考虑以下情况，将斯托克斯流体与弹性固体耦合起来（这两个问题以前在
  * step-22 和 step-8
  * 中分别讨论过，你可能想在那里阅读一下各个方程式）。
@@ -256,10 +254,9 @@
  * 这个程序是关于如何实现这一目标的。请注意，我们的目标并不是呈现一个特别有用的物理模型（一个现实的流体-结构相互作用模型必须考虑到固体的有限变形以及它对流体的影响）：毕竟，这只是一个旨在演示技术的教程程序，而不是解决实际问题。此外，我们将假设子域之间的界面与粗略的网格单元面对齐。
  *
  *  <a name="Thegeneralidea"></a><h3>The general idea</h3> 。
- *
- * 在进入更多的细节之前，让我们先说明一个显而易见的问题：这是一个有多个求解变量的问题；为此，你可能想先阅读 @ref
+ * 在进入更多的细节之前，让我们先说明一下：这是一个有多个解变量的问题；为此，你可能想先读一下 @ref
  * vector_valued
- * 文件模块，它代表了我们解决有多个求解变量问题的基本哲学框架。但回到手头的问题上。
+ * 文件模块，它代表了我们处理有多个解变量的问题的基本哲学框架。但回到手头的问题上。
  * 在deal.II中实现这类问题的基本思路如下：在问题的表述中，速度和压力变量
  * $\mathbf v, p$ 只存在于流体子域 $\Omega_f$
  * 中。但我们假设将它们以零点扩展到整个域 $\Omega$
@@ -305,7 +302,7 @@
  *     p_h|_K = 0\ \text{if}\ K\subset {\Omega_s}\ \}
  * && \subset P.
  * @f}
- * 换句话说，在 $\Omega_f$ 上，我们选择通常的离散空间，但我们保持（不连续的）扩展为零。需要指出的是，我们现在需要描述一个在单元上为零的函数的有限元空间&mdash；这就是FE_Nothing类的作用：它描述了一个有限维度的函数空间，即恒定为零。这个特殊的线性向量空间的一个特殊属性是它没有自由度：它不仅仅是有限维度的，它实际上是零维的，因此对于这种类型的对象， FiniteElement::n_dofs_per_cell() 将返回零。为了下面的讨论，让我们给这个空间一个合适的符号：@f[
+ * 换句话说，在 $\Omega_f$ 上，我们选择通常的离散空间，但我们保持（不连续的）扩展为零。需要指出的是，我们现在需要描述一个在单元上为零的函数的有限元空间&mdash;这就是FE_Nothing类的作用：它描述了一个有限维度的函数空间，即恒定为零。这个特殊的线性向量空间的一个特殊属性是它没有自由度：它不仅仅是有限维度的，它实际上是零维的，因此对于这种类型的对象， FiniteElement::n_dofs_per_cell() 将返回零。为了下面的讨论，让我们给这个空间一个合适的符号：@f[
  * Z = \{ \varphi: \varphi(x)=0 \}.
  * @f]符号 $Z$ 提醒了这个空间的函数为零的事实。很明显，我们选择 $Z_h=Z$ 。
  * 上面的整个讨论可以重复用于我们用来描述弹性方程的变量。这里，对于扩展变量，我们有
@@ -334,9 +331,7 @@
  *    & y_h|_{\Omega_s} \in Z^d \times Z \times Q_r^d \}.
  * @f}
  *
- *
- * <a name="Implementation"></a><h3>Implementation</h3> 。
- *
+ *   <a name="Implementation"></a><h3>Implementation</h3>
  * 那么我们如何实现这种事情呢？首先，我们意识到离散空间
  * $Y_h$
  * 本质上需要两个不同的有限元。首先，在流体子域上，我们需要元素
@@ -358,14 +353,14 @@
  *
  * 下一步是我们将这两个元素分别与占据两个子域的单元联系起来。为此，我们认识到，从某种意义上说，这两个元素只是彼此的变化，因为它们具有相同数量的向量分量，但具有不同的多项式度数&mdash；这听起来非常像
  * $hp$
- * 有限元方法中的做法，而这正是我们在这里要做的：我们要（ab）使用hp命名空间的类和设施，将不同的元素分配给不同的单元。换句话说，我们将使用
+ * 有限元方法中的做法，而这正是我们在这里要做的：我们将（ab）使用hp命名空间的类和设施，将不同的元素分配给不同的单元。换句话说，我们将使用
  * hp::FECollection, 中的两个有限元与适当的 hp::QCollection
  * 集成，使用 hp::FEValues
  * 对象，而我们的DoFHandler将处于<i>hp</i>模式。你可能希望看一下
  * step-27 ，了解所有这些概念的概况。
  * 在继续描述测试案例之前，让我们澄清一下<i>why</i>这种将函数以0扩展到整个领域，然后将问题映射到HP-框架上的方法是有意义的。
  *
- * - 它使事情变得统一。在所有单元上，向量分量的数量是相同的（这里是 <code>2*dim+1</code> ）。这使得各种事情都成为可能，因为统一的描述允许代码的重复使用。例如，计算每个向量分量的自由度 (DoFTools::count_dofs_per_fe_component), 按分量对自由度进行排序 (DoFRenumbering::component_wise), ，随后将矩阵和向量分割成块，以及其他许多函数都能一如既往地工作，而不需要给它们添加特殊的逻辑来描述某些变量只存在于部分域的情况。因此，在像现在这样的程序中，你已经有了各种工具，这些工具最初并不是为多物理场情况编写的，但在目前的情况下却能正常工作。
+ * - 它使事情变得统一。在所有单元上，向量分量的数量是相同的（这里是 <code>2*dim+1</code> ）。这使得各种事情都成为可能，因为统一的描述允许代码的重复使用。例如，计算每个向量分量的自由度 (DoFTools::count_dofs_per_fe_component), 按分量对自由度进行排序 (DoFRenumbering::component_wise), ，随后将矩阵和向量分割成块，以及其他许多函数都能像以前一样工作，而不需要给它们添加特殊的逻辑，描述某些变量只存在于部分域的情况。因此，在像现在这样的程序中，你已经有了各种工具，这些工具最初并不是为多物理场情况编写的，但在目前的情况下却能正常工作。
  *
  * - 它可以方便地进行图形输出。我们支持的所有图形输出格式都要求输出中的每个字段都定义在网格的所有节点上。但是考虑到现在所有的解决方案组件都存在于各个地方，我们现有的DataOut例程可以像以前一样工作，并产生适合可视化的图形输出。
  *
@@ -375,16 +370,14 @@
  *
  *  <a name="Specificsoftheimplementation"></a><h3> Specifics of the
  * implementation </h3>
- *
- *  更具体地说，在程序中我们要解决以下几点。
+ * 更具体地说，在该方案中，我们必须解决以下问题。
  *
  * - 实现双线性形式，特别是处理界面项，包括矩阵和稀疏模式。
  *
  * - 在边界的外部和内部部分实现迪里切特边界条件  $\partial\Omega_f,\partial\Omega_s$  。
  *
  *  <a name="Dealingwiththeinterfaceterms"></a><h4>Dealing with the interface
- * terms</h4> 。
- *
+ * terms</h4>
  * 让我们首先讨论实现双线性形式，在离散水平上，我们记得它是
  * @f{align*}
  * 2 \eta (\varepsilon(\mathbf a_h), \varepsilon(\mathbf v_h))_{\Omega_f}
@@ -419,16 +412,16 @@
  *
  * - \psi_j[p] \mathbf 1) \mathbf n)_{\partial K \cap \Gamma_i}.
  * @f]虽然不是很明显，但这个条款有一个小小的复杂化：虽然
- * $\psi_i[\mathbf u]$  ]和 $\mathbf n$
+ * $\psi_i[\mathbf u]$ 和 $\mathbf n$
  * 是在界面的实体一侧评估的（它们分别是位移的测试函数和
  * $\Omega_s$ 的法向量，我们需要在界面的流体一侧评估
  * $\psi_j[\mathbf v],\psi_j[p]$
  * ，因为它们对应于流体施加的应力/力。换句话说，在我们的实现中，我们将需要界面两边的FEFaceValue对象。更糟糕的是，我们可能还必须处理这样一个事实，即一方或另一方可能被细化，使我们需要整合一个面的部分内容。请看下面的实现，看看如何处理这个问题。
  * 作为一个额外的复杂因素，由这个术语产生的矩阵条目需要以某种方式加入到矩阵的稀疏模式中。这就是DoFTools命名空间中的各种函数的作用，比如
  * DoFTools::make_sparsity_pattern 和 DoFTools::make_flux_sparsity_pattern.
- * 从本质上讲，这些函数所做的是模拟系统矩阵装配过程中发生的情况：每当装配将一个非零条目写入全局矩阵时，DoFTools中的函数就会在稀疏模式中添加一个条目。因此，我们可以这样做：让
+ * 从本质上讲，这些函数所做的是模拟系统矩阵装配过程中发生的事情：每当装配将一个非零条目写入全局矩阵时，DoFTools中的函数就会在稀疏模式中添加一个条目。因此，我们可以这样做：让
  * DoFTools::make_sparsity_pattern
- * 将所有由常规的逐个单元积分产生的条目添加到稀疏模式中，然后用手将接口项产生的条目也添加进去。如果你看一下下面程序中界面积分的实现，那么如何做应该是显而易见的，最多只需要100行代码就可以了。
+ * 将所有由常规逐个单元积分产生的条目添加到稀疏模式中，然后用手做同样的事情，即由接口项产生的。如果你看一下下面程序中界面积分的实现，那么如何做应该是显而易见的，最多只需要100行代码就可以了。
  * 但我们是懒人：界面项是沿一个面的两个相邻单元的自由度的耦合，这正是人们在非连续Galerkin方案中要做的事情，函数
  * DoFTools::make_flux_sparsity_pattern 就是为此而写。与通常的
  * DoFTools::make_sparsity_pattern:
@@ -475,16 +468,14 @@
  * face_coupling[c][d] = DoFTools::Coupling::always;
  * @endcode
  * 换句话说，所有位移测试函数（组件 <code>c@>=dim+1</code>
- * ）与界面另一侧的所有速度和压力形状函数耦合。这并不完全正确，尽管很接近：事实上，界面的确切形式仅指那些在共同界面上确实为非零的压力位移形状函数，这对所有形状函数来说并不真实；另一方面，它确实耦合了所有velocities（因为积分涉及速度形状函数的梯度，这些梯度在单元的所有面上都是非零的）。然而，上面构建的掩码网络并不具备这些微妙的能力。尽管如此，通过掩码，我们还是设法将稀疏模式的条目数降到了21,028个&mdash;
+ * ）与界面另一侧的所有速度和压力形状函数耦合。这并不完全正确，尽管很接近：事实上，界面的确切形式仅指那些在共同界面上确实为非零的压力位移形状函数，这对所有形状函数来说并不真实；另一方面，它确实耦合了所有的velocities（因为积分涉及速度形状函数的梯度，这些梯度在单元的所有面上都是非零的）。然而，上面构建的掩码网络并不具备这些微妙的能力。尽管如此，通过掩码，我们还是设法将稀疏模式的条目数降到了21,028个&mdash;
  * 目前来说已经足够了。
  *
- *
- * <a name="Velocityboundaryconditionsontheinterface"></a><h4>Velocity
- * boundary conditions on the interface</h4> 。
- *
+ *   <a name="Velocityboundaryconditionsontheinterface"></a><h4>Velocity
+ * boundary conditions on the interface</h4>。
  * 第二个困难是，虽然我们知道如何在外部边界上强制执行速度或应力为零（使用
  * VectorTools::interpolate_boundary_values,
- * 调用适当的分量掩码，并为固体和液体外部边界设置不同的边界指标），但我们现在还需要在内部界面上的速度为零，即
+ * 调用适当的分量掩码，并为固体和液体外部边界设置不同的边界指示器），但我们现在还需要在内部界面上使速度为零，即
  * $\mathbf v|_{\Gamma_i}=0$
  * 。在写这篇文章的时候，deal.II中没有处理这部分的函数，但用手实现并不特别困难：基本上，我们只需要在所有单元上循环，如果它是一个流体单元，而它的邻居是一个固体单元，然后添加约束，确保这个面上的速度自由度为零。在处理相邻的实体单元被细化的情况时，需要注意一些问题，产生以下代码。
  * @code
@@ -532,7 +523,7 @@
  * ，这正是我们在当前情况下需要的。对
  * FiniteElement::face_system_to_component_index
  * 的调用保证了我们只将速度分量的边界值设置为零，而不是压力分量。
- * 请注意，在有些情况下这可能会产生不正确的结果：特别是，一旦我们找到当前流体单元的一个实体邻接子，我们就会假定共同面上的所有邻接子都在实体子域中。但事实并非如此，例如，考虑以下的网格。
+ * 请注意，在有些情况下这可能会产生不正确的结果：特别是，一旦我们找到当前流体单元的一个固体邻接子，我们就会假定共同面上的所有邻接子都在固体子域中。但事实并非如此，例如，考虑以下的网格。
  * @code
  * +---------+----+----+
  * |         | f  |    |
@@ -543,13 +534,11 @@
  *
  * 在这种情况下，我们会将左单元右面的所有速度自由度设置为零，这对该面的顶部自由度来说是不正确的。也就是说，只有当流体和固体子域不与一组完整的粗网格单元重合时，才会发生这种情况；但这与本介绍第一节末尾的假设相矛盾。
  *
- *
- * <a name="Thetestcase"></a><h3>The testcase</h3> 。
- *
- *  我们将考虑以下情况作为一个测试案例。 <img
+ *   <a name="Thetestcase"></a><h3>The testcase</h3>
+ * 我们将考虑以下情况作为一个测试案例。 <img
  * src="https://www.dealii.org/images/steps/developer/step-46.layout.png"
  * alt="">
- * 正如本文顶部所讨论的，我们需要在一些地方假设一个单元完全在域的流体或固体部分，此外，一个不活动的单元的所有子单元也属于同一子域。如果粗网格已经将网格划分为固体和流体的粗网格单元，这一点肯定可以得到保证；考虑到上述的几何形状，我们可以通过使用
+ * 正如本文顶部所讨论的，我们需要在一些地方假设一个单元完全处于域的流体部分或固体部分，此外，一个不活动的单元的所有子域也属于同一子域。如果粗网格已经将网格划分为固体和流体的粗网格单元，这一点肯定可以得到保证；考虑到上述的几何形状，我们可以通过使用
  * $8\times 8$ 粗网格来做到这一点，
  * GridGenerator::subdivided_hyper_rectangle 函数可以方便地提供。
  * 底部的固定边界意味着 $\mathbf u=0$
@@ -563,19 +552,16 @@
  *
  *  <a name="Identifyingwhichsubdomainacellisin"></a><h4>Identifying which
  * subdomain a cell is in</h4> 。
- *
- * 其次，我们使用一个在<i>hp</i>模式下操作的DoFHandler类型的对象。该类需要知道哪些单元将使用斯托克斯（Stokes）元素，哪些单元将使用弹性无限元素。因此，在每个细化周期的开始，我们必须走过所有的单元，并将（在hp-parlance中）活跃的FE索引设置为适合当前情况的索引。虽然我们可以用符号名来表示材料ID，但实际上主动FE索引是一个数字，经常用于索引对象集合（例如
+ * 其次，我们使用一个在<i>hp</i>模式下运行的DoFHandler类型的对象。该类需要知道哪些单元将使用斯托克斯（Stokes）元素，哪些单元将使用弹性无限元素。因此，在每个细化周期的开始，我们必须走过所有的单元，并将（在hp-parlance中）活跃的FE索引设置为适合当前情况的索引。虽然我们可以用符号名来表示材料ID，但实际上主动FE索引是一个数字，经常用于索引对象集合（例如
  * hp::FECollection 和 hp::QCollection);
  * 类型），这意味着主动FE索引实际上对于流体部分必须是0，对于领域的弹性部分必须是1。
  *
- *  <a name="Linearsolvers"></a><h4>Linear solvers</h4> 。
- *
- * 这个程序主要是为了说明如何处理领域内不同部分的不同物理现象，以及如何在deal.II中实现这些模型。因此，我们不会费力想出一个好的求解器：我们只使用SparseDirectUMFPACK类，它总是能起作用，即使不是以最佳的复杂度。然而，我们将在<a
+ *  <a name="Linearsolvers"></a><h4>Linear solvers</h4>
+ * 这个程序主要是为了展示如何处理领域内不同部分的不同物理现象，以及如何在deal.II中实现这些模型。因此，我们不会费心想出一个好的求解器：我们只使用SparseDirectUMFPACK类，它总是能发挥作用，即使不是以最佳的复杂度。然而，我们将在<a
  * href="#Results">results</a>部分对可能的其他求解器进行评论。
  *
- *  <a name="Meshrefinement"></a><h4>Mesh refinement</h4> 。
- *
- * 这个程序的一个比较棘手的方面是如何估计误差。因为它几乎适用于任何程序，所以我们想使用KellyErrorEstimator，在这里我们也可以用下面这样的代码相对容易地做到。
+ *  <a name="Meshrefinement"></a><h4>Mesh refinement</h4>
+ * 这个程序中比较棘手的一个方面是如何估计错误。因为它几乎适用于任何程序，所以我们想使用KellyErrorEstimator，在这里我们也可以用下面这样的代码相对容易地做到。
  * @code
  * Vector<float> stokes_estimated_error_per_cell (triangulation.n_active_cells());
  * Vector<float> elasticity_estimated_error_per_cell (triangulation.n_active_cells());
@@ -612,19 +598,17 @@
  * 在代码中，我们实际上以4:1的比例权衡误差指标，以支持在斯托克斯子域上计算的误差指标，因为细化在其他方面严重偏向于弹性子域，但这只是一个技术问题。因素4已被启发式地确定为相当好的工作。)
  * 虽然这个原则是合理的，但它并不完全像预期的那样工作。原因是KellyErrorEstimator类是通过整合每个单元面周围的解的梯度跳跃来计算误差指标。在解不连续且扩展为零的地方，这个跳跃可能非常大；它也不会随着网格的细化而变小。KellyErrorEstimator类不能忽视这个接口，因为它基本上只在<i>hp</i>模式下看到一个DoFHandler，其中元素类型从一个单元变为另一个单元&mdash；正是<i>hp</i>模式所设计的东西，当前程序中的接口看起来与
  * step-27
- * 中的接口没有什么不同，例如，当然也不逊于合法的。尽管如此，最终的结果是，在两个子域之间的界面两侧都有一层细胞，误差指标大得不合理。因此，大部分的网格细化工作都集中在界面上。
+ * 中的接口没有什么不同，例如，当然也少不了合法化。尽管如此，最终的结果是，在两个子域之间的界面两侧都有一层细胞，误差指标大得不合理。因此，大部分的网格细化工作都集中在界面上。
  * 如果我们有一个真正理解问题的细化指标，并且在积分跳跃项时简单地忽略子域之间的界面，这种情况显然不会发生。另一方面，这个程序是关于如何表示我们有不同的物理学上无所谓的子域的问题，而不是关于KellyErrorEstimator的特殊性，因此我们求助于称为
  * "启发法
  * "的大锤子：我们简单地将界面上的单元的误差指标设置为零。这就切断了误差指标的尖峰。乍一看，我们也会认为这将阻止网格在界面上的细化，但是相邻的单元只能有一个细化级别的差异的要求仍然会导致一个合理的细化网格。
  * 虽然这显然是一个次优的解决方案，但它目前是有效的，并为将来的改进留下了空间。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1>. <a
- * name="Includefiles"></a> <h3>Include files</h3>.
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
+ * name="Includefiles"></a> <h3>Include files</h3>。
  *
- * 这个程序的包含文件与之前许多其他程序的包含文件是一样的。唯一的新文件是在介绍中讨论的声明FE_Nothing的文件。hp目录下的文件已经在
+ * 这个程序的include文件和之前的许多其他程序是一样的。唯一的新文件是在介绍中讨论的声明FE_Nothing的文件。hp目录下的文件已经在
  * step-27  中讨论过了。
- *
- *
  *
  *
  * @code
@@ -679,9 +663,8 @@
  * material_ids。正如介绍中所解释的那样）和几个函数（<code>make_grid,
  * set_active_fe_indices,
  * assemble_interface_terms</code>），这些函数已经从其他函数中分离出来，可以在其他许多教程程序中找到，我们将在实现它们时讨论。
- * 最后一组变量（ <code>viscosity, lambda, eta</code>
+ * 最后一组变量（  <code>viscosity, lambda, eta</code>
  * ）描述了用于两个物理模型的材料属性。
- *
  *
  * @code
  * template <int dim>
@@ -749,10 +732,10 @@
  * <a name="Boundaryvaluesandrighthandside"></a> <h3>Boundary values and right
  * hand side</h3>。
  *
- * 下面这个类如其名。速度的边界值分别为2d的 $\mathbf u=(0,
- * \sin(\pi x))^T$ 和3d的 $\mathbf u=(0, 0, \sin(\pi x)\sin(\pi y))^T$
- * 。这个问题的其余边界条件都是同质的，在引言中已经讨论过。右边的强迫项对于流体和固体都是零，所以我们不需要为它设置额外的类。
- *
+ * 下面这个类就像它的名字所暗示的那样。速度的边界值分别为2d的
+ * $\mathbf u=(0, \sin(\pi x))^T$ 和3d的 $\mathbf u=(0, 0, \sin(\pi
+ * x)\sin(\pi y))^T$
+ * 。这个问题的其余边界条件都是同质的，在导言中已经讨论过。右边的强迫项对于流体和固体都是零，所以我们不需要为它设置额外的类。
  *
  * @code
  * template <int dim>
@@ -806,15 +789,14 @@
  *
  *
  * @endcode
- *  <a name="ThecodeFluidStructureProblemcodeimplementation"></a> <h3>The
- * <code>FluidStructureProblem</code> implementation</h3>.    <a
+ *
+ * <a name="ThecodeFluidStructureProblemcodeimplementation"></a> <h3>The
+ * <code>FluidStructureProblem</code> implementation</h3>。    <a
  * name="Constructorsandhelperfunctions"></a> <h4>Constructors and helper
  * functions</h4>。
- *
  * 现在让我们来看看这个程序的主类的实现。最初的几个函数是构造函数和辅助函数，可以用来确定一个单元格在域的哪个部分。鉴于介绍中对这些主题的讨论，它们的实现是相当明显的。在构造函数中，注意我们必须从斯托克斯和弹性的基本元素中构造
  * hp::FECollection 对象；使用 hp::FECollection::push_back
  * 函数在这个集合中为它们分配了0和1的位置，这个顺序我们必须记住并在程序的其余部分中一致使用。
- *
  *
  * @code
  * template <int dim>
@@ -866,13 +848,12 @@
  * @endcode
  *
  * <a name="Meshesandassigningsubdomains"></a> <h4>Meshes and assigning
- * subdomains</h4> * <h4>Meshes and assigning subdomains</h4>。
+ * subdomains</h4>。
  *
  * 下一对函数处理生成网格，并确保所有表示子域的标志是正确的。
  * <code>make_grid</code>  ，正如在介绍中所讨论的，生成一个
  * $8\times 8$ 的网格（或者一个 $8\times 8\times 8$
  * 的三维网格）以确保每个粗略的网格单元完全在一个子域内。生成这个网格后，我们在其边界上循环，并在顶部边界设置边界指标为1，这是我们设置非零迪里希特边界条件的唯一地方。在这之后，我们再次在所有单元上循环，设置材料指标&mdash；用来表示我们处于域的哪一部分，是流体还是固体指标。
- *
  *
  * @code
  * template <int dim>
@@ -908,11 +889,11 @@
  *
  *
  * @endcode
- * 这对函数的第二部分决定了在每个单元上使用哪一个有限元。上面我们已经为每个粗略的网格单元设置了材料指标，正如在介绍中提到的，这个信息在网格细化时可以从母单元继承到子单元。
+ *
+ * 这对函数的第二部分决定在每个单元上使用哪个有限元。上面我们为每个粗略的网格单元设置了材料指标，正如在介绍中提到的，这个信息在网格细化时是由母单元继承到子单元的。
  * 换句话说，只要我们细化（或创建）了网格，我们就可以依靠材料指标来正确描述一个单元所处的域的哪一部分。然后我们利用这一点将单元的活动FE索引设置为该类的
  * hp::FECollection
  * 成员变量中的相应元素：流体单元为0，固体单元为1。
- *
  *
  * @code
  * template <int dim>
@@ -931,11 +912,11 @@
  *
  *
  * @endcode
- *  <a name="codeFluidStructureProblemsetup_dofscode"></a>
- * <h4><code>FluidStructureProblem::setup_dofs</code></h4>.
+ *
+ * <a name="codeFluidStructureProblemsetup_dofscode"></a>
+ * <h4><code>FluidStructureProblem::setup_dofs</code></h4>。
  *
  * 下一步是为线性系统设置数据结构。为此，我们首先要用上面的函数设置活动的FE指数，然后分配自由度，再确定线性系统的约束。后者包括像往常一样的悬挂节点约束，但也包括顶部流体边界的不均匀边界值，以及沿固体子域周边的零边界值。
- *
  *
  * @code
  * template <int dim>
@@ -966,8 +947,8 @@
  *   }
  *
  * @endcode
- * 不过我们还必须处理更多的约束条件：我们必须确保在流体和固体的界面上速度为零。下面这段代码已经在介绍中介绍过了。
  *
+ * 不过我们还必须处理更多的约束条件：我们必须确保在流体和固体的界面上速度为零。下面这段代码已经在介绍中介绍过了。
  *
  * @code
  *   {
@@ -1010,8 +991,8 @@
  *   }
  *
  * @endcode
- * 在这一切结束时，我们可以向约束对象声明，我们现在已经有了所有的约束条件，并且该对象可以重建其内部数据结构以获得更好的效率。
  *
+ * 在这一切结束时，我们可以向约束对象声明，我们现在已经准备好了所有的约束，并且该对象可以重建其内部数据结构以获得更好的效率。
  *
  * @code
  *   constraints.close();
@@ -1024,7 +1005,6 @@
  * @endcode
  *
  * 在这个函数的其余部分，我们创建了一个在介绍中广泛讨论的稀疏模式，并使用它来初始化矩阵；然后还将向量设置为正确的大小。
- *
  *
  * @code
  *   {
@@ -1066,11 +1046,8 @@
  * @endcode
  *
  * <a name="codeFluidStructureProblemassemble_systemcode"></a>
- * <h4><code>FluidStructureProblem::assemble_system</code></h4> *
- * <h4><code>FluidStructureProblem::assemble_system</code></h4>.
- *
- * 下面是这个程序的中心函数：组装线性系统的函数。它在开始时有一长段设置辅助函数的内容：从创建正交公式到设置FEValues、FEFaceValues和FESubfaceValues对象，这些都是整合单元项以及界面项所必需的，因为在界面上的单元以相同的尺寸或不同的细化程度聚集在一起...
- *
+ * <h4><code>FluidStructureProblem::assemble_system</code></h4>。
+ * 以下是这个程序的中心功能：组装线性系统的功能。它在开始时有一长段设置辅助功能的内容：从创建正交公式到设置FEValues、FEFaceValues和FESubfaceValues对象，这些都是整合单元项以及界面项所必需的，在这种情况下，界面上的单元以相同的尺寸或不同的细化程度聚集在一起...
  *
  * @code
  * template <int dim>
@@ -1115,7 +1092,8 @@
  *                                                       update_values);
  *
  * @endcode
- *  ...描述局部对全局线性系统贡献所需的对象...
+ *
+ * ...到需要描述局部对全局线性系统贡献的对象...
  *
  * @code
  *   const unsigned int stokes_dofs_per_cell = stokes_fe.n_dofs_per_cell();
@@ -1135,8 +1113,7 @@
  *
  * @endcode
  *
- * ...到变量，允许我们提取形状函数的某些分量并缓存它们的值，而不是在每个正交点重新计算它们。
- *
+ * ...到变量，允许我们提取形状函数的某些分量并缓存它们的值，而不是在每个正交点上重新计算它们。
  *
  * @code
  *   const FEValuesExtractors::Vector velocities(0);
@@ -1154,10 +1131,9 @@
  *
  * @endcode
  *
- * 然后是所有单元的主循环，和 step-27
+ * 然后是所有单元的主循环，与 step-27
  * 一样，为当前单元初始化 hp::FEValues
- * 对象并提取适合当前单元的FEValues对象。
- *
+ * 对象，并提取适合于当前单元的FEValues对象。
  *
  * @code
  *   for (const auto &cell : dof_handler.active_cell_iterators())
@@ -1172,13 +1148,12 @@
  *
  * @endcode
  *
- * 所有这些完成后，我们继续为属于斯托克斯和弹性区域的单元组装单元项。虽然我们原则上可以在一个公式中完成，实际上是实现了介绍中所说的一个双线性形式，但我们意识到，我们的有限元空间是这样选择的：在每个单元上，有一组变量（速度和压力，或者位移）总是为零，因此，计算局部积分的更有效的方法是根据
+ * 所有这些完成后，我们继续为属于斯托克斯和弹性区域的单元组装单元项。虽然我们原则上可以在一个公式中完成这些，实际上就是实现介绍中所说的一个双线性形式，但我们意识到，我们的有限元空间的选择方式是，在每个单元上，有一组变量（速度和压力，或者位移）总是为零，因此，计算局部积分的更有效方式是，根据
  * <code>if</code>
- * 条款只做必要的部分，以测试我们处于域的哪一部分。
+ * 条款，只做必要的事情，测试我们处于域的哪一部分。
  * 局部矩阵的实际计算与 step-22
  * 以及 @ref vector_valued
  * 文件模块中给出的弹性方程的计算相同。
- *
  *
  * @code
  *       if (cell_is_in_fluid_domain(cell))
@@ -1249,8 +1224,7 @@
  * AffineConstraints::distribute_local_to_global
  * 函数，立即处理约束）。请注意，我们没有把任何东西写进
  * <code>local_rhs</code>
- * 变量中，尽管我们仍然需要把它传递出去，因为消除非零边界值需要修改局部的，因此也需要修改全局的右手边的值。
- *
+ * 变量中，尽管我们仍然需要把它传递出去，因为消除非零边界值需要修改局部的，因此也需要修改全局的右手边值。
  *
  * @code
  *       local_dof_indices.resize(cell->get_fe().n_dofs_per_cell());
@@ -1262,9 +1236,7 @@
  *                                              system_rhs);
  *
  * @endcode
- *
- * 这个函数更有趣的部分是我们看到的关于沿两个子域之间的界面的脸部条款。为此，我们首先要确保我们只组装一次，即使在所有单元的所有面的循环中会遇到界面的每个部分两次。我们武断地决定，只有当当前单元是固体子域的一部分，并且因此一个面不在边界上，并且它后面的潜在邻居是流体域的一部分时，我们才会评估界面条款。让我们从这些条件开始。
- *
+ * 这个函数更有趣的部分是我们沿着两个子域之间的界面看到关于面的条款。为此，我们首先要确保我们只组装一次，即使在所有单元的所有面的循环中会遇到界面的每个部分两次。我们武断地决定，只有当当前单元是固体子域的一部分，并且因此一个面不在边界上，并且它后面的潜在邻居是流体域的一部分时，我们才会评估界面条款。让我们从这些条件开始。
  *
  * @code
  *       if (cell_is_in_solid_domain(cell))
@@ -1272,8 +1244,25 @@
  *           if (cell->face(f)->at_boundary() == false)
  *             {
  * @endcode
+ *
  * 在这一点上，我们知道当前的单元格是一个候选的整合对象，并且面
  * <code>f</code> 后面存在一个邻居。现在有三种可能性。
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  *
  *
  *
@@ -1283,13 +1272,11 @@
  * - 邻居处于相同的细化水平，没有子女。
  *
  *
- * - 邻居有子女。
- *
+ * - 邻居有孩子。
  *
  *
  * - 邻居是比较粗的。
- * 在所有这三种情况下，我们只对它感兴趣，如果它是流体子域的一部分。因此，让我们从第一种最简单的情况开始：如果邻居处于同一层次，没有子女，并且是一个流体单元，那么这两个单元共享一个边界，这个边界是界面的一部分，我们想沿着这个边界整合界面项。我们所要做的就是用当前面和邻接单元的面初始化两个FEFaceValues对象（注意我们是如何找出邻接单元的哪个面与当前单元接壤的），然后把东西传给评估界面项的函数（这个函数的第三个到第五个参数为它提供了抓取数组）。然后，结果再次被复制到全局矩阵中，使用一个知道本地矩阵的行和列的DoF指数来自不同单元的函数。
- *
+ * 在这三种情况下，我们只对它感兴趣，如果它是流体子域的一部分。因此，让我们从第一种最简单的情况开始：如果邻居处于同一层次，没有子女，并且是一个流体单元，那么这两个单元共享一个边界，这个边界是界面的一部分，我们想沿着这个边界整合界面项。我们所要做的就是用当前面和邻接单元的面初始化两个FEFaceValues对象（注意我们是如何找出邻接单元的哪个面与当前单元接壤的），然后把东西传给评估界面项的函数（这个函数的第三个到第五个参数为它提供了抓取数组）。然后，结果再次被复制到全局矩阵中，使用一个知道本地矩阵的行和列的DoF指数来自不同单元的函数。
  *
  * @code
  *               if ((cell->neighbor(f)->level() == cell->level()) &&
@@ -1317,8 +1304,7 @@
  *
  * @endcode
  *
- * 第二种情况是如果邻居有更多的孩子。在这种情况下，我们必须在邻居的所有子节点上进行循环，看它们是否属于流体子域的一部分。如果它们是，那么我们就在共同界面上进行整合，这个界面是邻居的一个面和当前单元的一个子面，要求我们对邻居使用FEFaceValues，对当前单元使用FESubfaceValues。
- *
+ * 第二种情况是如果邻居有更多的孩子。在这种情况下，我们必须对邻居的所有子代进行循环，看它们是否是流体子域的一部分。如果它们是，那么我们就在共同界面上进行整合，这个界面是邻居的一个面和当前单元的一个子面，要求我们对邻居使用FEFaceValues，对当前单元使用FESubfaceValues。
  *
  * @code
  *               else if ((cell->neighbor(f)->level() == cell->level()) &&
@@ -1471,8 +1457,7 @@
  *
  * @endcode
  *
- * 最后一个选项是邻居比较粗大。在这种情况下，我们必须为邻居使用一个FESubfaceValues对象，为当前单元使用一个FEFaceValues；其余的和以前一样。
- *
+ * 最后一个选项是，邻居比较粗大。在这种情况下，我们必须为邻居使用一个FESubfaceValues对象，为当前单元使用一个FEFaceValues；其余的和以前一样。
  *
  * @code
  *               else if (cell->neighbor_is_coarser(f) &&
@@ -1506,8 +1491,7 @@
  *
  * @endcode
  *
- * 在组装全局系统的函数中，我们将计算接口条款传递给我们在此讨论的一个单独的函数。关键是，尽管我们无法预测FEFaceValues和FESubfaceValues对象的组合，但它们都是从FEFaceValuesBase类派生出来的，因此我们不必在意：该函数只是被调用，其中有两个这样的对象，表示面的两边正交点上的形状函数值。然后我们做我们一直在做的事情：我们用形状函数的值和它们的导数来填充从头数组，然后循环计算矩阵的所有条目来计算局部积分。我们在这里评估的双线性形式的细节在介绍中给出。
- *
+ * 在组装全局系统的函数中，我们将计算接口条款传递给了我们在此讨论的一个单独的函数。关键是，尽管我们无法预测FEFaceValues和FESubfaceValues对象的组合，但它们都是从FEFaceValuesBase类派生出来的，因此我们不必在意：该函数只是被调用，其中有两个这样的对象，表示面的两边正交点上的形状函数值。然后我们做我们一直在做的事情：我们用形状函数的值和它们的导数来填充从头数组，然后循环计算矩阵的所有条目来计算局部积分。我们在这里评估的双线性形式的细节在介绍中给出。
  *
  * @code
  * template <int dim>
@@ -1623,12 +1607,10 @@
  * @endcode
  *
  * <a name="codeFluidStructureProblemsolvecode"></a>
- * <h4><code>FluidStructureProblem::solve</code></h4>.
- *
+ * <h4><code>FluidStructureProblem::solve</code></h4>。
  * 正如介绍中所讨论的，我们在这里使用了一个相当琐碎的求解器：我们只是将线性系统传递给SparseDirectUMFPACK直接求解器（例如，见
  * step-29
- * ）。我们在求解后唯一要做的就是确保悬挂的节点和边界值约束是正确的。
- *
+ * ）。在求解之后，我们唯一要做的是确保悬挂的节点和边界值约束是正确的。
  *
  * @code
  * template <int dim>
@@ -1646,11 +1628,10 @@
  * @endcode
  *
  * <a name="codeFluidStructureProblemoutput_resultscode"></a>
- * <h4><code>FluidStructureProblem::output_results</code></h4>.
+ * <h4><code>FluidStructureProblem::output_results</code></h4>。
  *
  * 生成图形输出在这里是相当微不足道的：我们所要做的就是确定解向量的哪些分量属于标量和/或向量（例如，见
  * step-22 之前的例子），然后把它全部传递给DataOut类。
- *
  *
  * @code
  * template <int dim>
@@ -1687,12 +1668,10 @@
  *
  *
  * @endcode
+ *  <a name="codeFluidStructureProblemrefine_meshcode"></a>
+ * <h4><code>FluidStructureProblem::refine_mesh</code></h4>。
  *
- * <a name="codeFluidStructureProblemrefine_meshcode"></a>
- * <h4><code>FluidStructureProblem::refine_mesh</code></h4>.
- *
- * 下一步是细化网格。正如在介绍中所讨论的，这有点棘手，主要是因为流体和固体子域所使用的变量具有不同的物理尺寸，因此误差估计的绝对大小是不能直接比较的。因此，我们将不得不对它们进行缩放。因此，在函数的顶部，我们首先分别计算不同变量的误差估计值（在流体域中使用速度而不是压力，在固体域中使用位移）。
- *
+ * 下一步是细化网格。正如在介绍中所讨论的，这有点棘手，主要是因为流体和固体子域使用的变量具有不同的物理尺寸，因此误差估计的绝对大小是不能直接比较的。因此，我们将不得不对它们进行缩放。因此，在函数的顶部，我们首先分别计算不同变量的误差估计值（在流体域中使用速度而不是压力，在固体域中使用位移）。
  *
  * @code
  * template <int dim>
@@ -1735,8 +1714,8 @@
  *     fe_collection.component_mask(displacements));
  *
  * @endcode
- * 然后我们通过除以它们的常数对误差估计值进行归一化处理，并按照引言中所讨论的那样，将流体误差指标按4的系数进行缩放。然后将结果加在一起，形成一个包含所有单元的误差指标的向量。
  *
+ * 然后，我们通过除以其常数来归一化误差估计值，并按照介绍中所讨论的那样，将流体误差指标按4的系数进行调整。然后将结果加在一起，形成一个包含所有单元的误差指标的向量。
  *
  * @code
  *   stokes_estimated_error_per_cell=
@@ -1751,11 +1730,10 @@
  *
  * @endcode
  *
- * 在实际细化网格之前，函数的倒数第二部分涉及到我们在介绍中已经提到的启发式方法：由于解是不连续的，KellyErrorEstimator类对位于子域之间边界的单元感到困惑：它认为那里的误差很大，因为梯度的跳跃很大，尽管这完全是预期的，事实上在精确解中也存在这一特征，因此不表明任何数值误差。
+ * 该函数的倒数第二部分，在实际细化网格之前，涉及到我们在介绍中已经提到的启发式方法：由于解是不连续的，KellyErrorEstimator类对位于子域之间边界的单元格感到困惑：它认为那里的误差很大，因为梯度的跳跃很大，尽管这完全是预期的，而且事实上在精确解中也存在这一特征，因此不表明任何数值错误。
  * 因此，我们将界面上的所有单元的误差指标设置为零；决定影响哪些单元的条件略显尴尬，因为我们必须考虑到自适应细化网格的可能性，也就是说，邻近的单元可能比当前的单元更粗，或者事实上可能被细化一些。这些嵌套条件的结构与我们在
  * <code>assemble_system</code>
  * 中组装界面条款时遇到的情况基本相同。
- *
  *
  * @code
  *   for (const auto &cell : dof_handler.active_cell_iterators())
@@ -1801,11 +1779,10 @@
  * @endcode
  *
  * <a name="codeFluidStructureProblemruncode"></a>
- * <h4><code>FluidStructureProblem::run</code></h4>.
+ * <h4><code>FluidStructureProblem::run</code></h4>。
  *
  * 像往常一样，这是控制整个操作流程的函数。如果你读过教程程序
- * step-1 到 step-6 ，例如，那么你已经对以下结构相当熟悉。
- *
+ * step-1 到 step-6 ，例如，那么你已经相当熟悉以下结构了。
  *
  * @code
  * template <int dim>
@@ -1846,8 +1823,7 @@
  * <a name="Thecodemaincodefunction"></a> <h4>The <code>main()</code>
  * function</h4>。
  *
- * 这个，最后的，函数所包含的内容几乎与其他大多数教程程序的内容完全相同。
- *
+ * 这个，最后的，函数包含几乎完全是其他大多数教程程序的内容。
  *
  * @code
  * int main()
@@ -1889,11 +1865,9 @@
  * return 0;
  * }
  * @endcode
- * <a name="Results"></a><a name="Results"></a><h1>Results</h1> 。
- *
- *  <a name="2dresults"></a><h3>2d results</h3>。
- *
- * 当运行该程序时，你应该得到如下的输出。
+ * <a name="Results"></a><a name="Results"></a><h1>Results</h1> 。   <a
+ * name="2dresults"></a><h3>2d results</h3>
+ * 当运行该程序时，你应该得到如下输出。
  * @code
  * Refinement cycle 0
  * Number of active cells: 64
@@ -1937,8 +1911,7 @@
  * Solving...
  * Writing output...
  * @endcode
- *
- * 结果很容易直观化。 <table width="80%" align="center"> <tr
+ *  结果很容易直观化。 <table width="80%" align="center"> <tr
  * valign="top"> <td valign="top" align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-46.9.2.velocity-2d.png"
  * alt=""> <p align="center"> Magnitude and vectors for the fluid velocity.
@@ -1954,10 +1927,9 @@
  * displacement. </p> </td> </tr> </table>
  * 图形很容易解释：当水流在固体直立部分的左边向下、右边向上时，它产生的压力在左边高，在右边低，这些力量使固体的垂直部分向右弯曲。
  *
- *  <a name="3dresults"></a><h3>3d results</h3>
- *
- *  通过将 <code>main()</code> 中的 <code>FluidStructureProblem</code>
- * 类的尺寸改为3，我们也可以运行同样的问题3d。你会得到如下的输出。
+ *  <a name="3dresults"></a><h3>3d results</h3> 。   通过将
+ * <code>main()</code> 中的 <code>FluidStructureProblem</code>
+ * 类的维度改为3，我们也可以运行同样的problem3d。你会得到如下的输出。
  * @code
  * Refinement cycle 0
  * Number of active cells: 512
@@ -1988,12 +1960,8 @@
  *
  *  <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
- * 。
- *
- *  <a name="Linearsolversandpreconditioners"></a><h4>Linear solvers and
- * preconditioners</h4> * <a
- * name="Linearsolversandpreconditioners"></a><h4>Linear solvers and
- * preconditioners</h4>。
+ * 。   <a name="Linearsolversandpreconditioners"></a><h4>Linear solvers and
+ * preconditioners</h4> 。
  * 改进程序的一个明显的地方是使用一个更复杂的求解器&mdash；特别是一个能很好地扩展并能解决现实的三维问题的求解器。这在这里应该不难实现，因为从流体到固体是单向耦合的。为此，假设我们对自由度进行了重新排序，首先是所有的速度和压力自由度，然后是所有的位移自由度（用 DoFRenumbering::component_wise). 很容易实现），那么系统矩阵可以分成以下块状形式：@f[
  * A_\text{global}
  * =
@@ -2001,7 +1969,7 @@
  *  A_{\text{fluid}} & 0 \\
  *  B & A_{\text{solid}}
  * \end{pmatrix}
- * @f] 其中 $A_{\text{fluid}}$  ]是速度和压力的斯托克斯矩阵（它可以进一步细分为 $2\times 2$ 矩阵，如 step-22 ，尽管这对目前的目的并不重要）， $A_{\text{solid}}$ 是位移的弹性方程的结果，而 $B$ 是来自界面条件的矩阵。现在注意到矩阵@f[
+ * @f] 其中 $A_{\text{fluid}}$ 是速度和压力的斯托克斯矩阵（它可以进一步细分为 $2\times 2$ 矩阵，如 step-22 ，尽管这对目前的目的并不重要）， $A_{\text{solid}}$ 来自位移的弹性方程，而 $B$ 是来自界面条件的矩阵。现在注意到矩阵@f[
  * A_\text{global}^{-1} = \begin{pmatrix} A_{\text{fluid}}^{-1} & 0 \\
  *
  *
@@ -2066,23 +2034,19 @@
  * 特别是，当单独解决固体或流体力学问题时，在收敛所需的迭代次数和每次迭代应用预调节器的成本之间的平衡行为，可能导致人们为斯托克斯问题选择昂贵的预调节器，为弹性问题选择廉价的预调节器（反之亦然）。
  * 然而，当两者结合在一起时，还有一个额外的约束，即你希望这两个子调节器以大致相同的速度收敛，否则便宜的调节器可能会增加全局的迭代次数，而昂贵的调节器则会增加每迭代的成本。例如，虽然单个AMGV循环本身就是一个很好的弹性方法，但当结合到一个多物理问题中时，可能有动力使用一个完整的W循环或多个循环来帮助降低总的求解时间。
  *
- *  <a name="Refinementindicators"></a><h4>Refinement indicators</h4> 。
- *
- * 正如介绍中提到的，我们为这个程序使用的细化指标是相当临时的。一个更好的方法是理解解的梯度在界面上的跳跃并不是错误的指示，而是可以预期的，并且在整合跳动值时忽略界面。然而，这并不是KellyErrorEstimator类所做的。另一个更大的问题是，这种估算器首先是否是一个好的策略：例如，如果我们想在位移的一个特定方面（例如实体右上角的位移）有最大的准确性，那么将流体和实体的误差指标扩大到相同的程度是否合适？也许有必要以比固体更高的精度来解决流体问题，因为流体的解决方案会直接影响到固体的解决方案？也许恰恰相反？
+ *  <a name="Refinementindicators"></a><h4>Refinement indicators</h4>
+ * 正如在介绍中提到的，我们在这个程序中使用的细化指标是比较特别的。一个更好的方法是理解解的梯度在界面上的跳跃并不是错误的指示，而是预期的，并且在整合跳跃值时忽略界面。然而，这并不是KellyErrorEstimator类所做的。另一个更大的问题是，这种估算器首先是否是一个好的策略：例如，如果我们想在位移的一个特定方面（例如实体右上角的位移）有最大的准确性，那么将流体和实体的误差指标扩大到相同的程度是否合适？也许有必要以比固体更高的精度来解决流体问题，因为流体的解决方案会直接影响到固体的解决方案？也许恰恰相反？
  * 因此，改进该程序的一个明显的可能性是实施一个更好的细化标准。这方面有一些文献，其中一个可能的起点是Thomas
  * Wick的论文 "Adaptive finite elements for monolithic
- * fluid-structureinteraction on a prolongated domain:
- * 应用于心脏瓣膜模拟"，2011年机械学计算机方法会议论文集（CMM-2011），2011年5月9-12日，波兰华沙。
- *
- *  <a name="Verification"></a><h4>Verification</h4> 。
- *
+ * fluid-structureinteraction on a prolongated
+ * domain:应用于心脏瓣膜模拟"，2011年机械学计算机方法会议论文集（CMM-2011），2011年5月9-12日，波兰华沙。
+ * <a name="Verification"></a><h4>Verification</h4> 。
  * 上面的结果纯粹是定性的，因为没有证据表明我们的方案实际上是收敛的。因此，一个显而易见的做法是增加一些定量的措施来检查该方案至少收敛到<i>something</i>。例如，我们可以为每个细化周期输出实体的右上角突出到流体子域的部分的挠度。或者我们可以计算出流体对实体施加的净力矢量或扭矩。
  *
  *  <a name="Bettermodels"></a><h4>Better models</h4>
- *
- * 在现实中，大多数流体结构的相互作用问题都是这样的，即固体的运动确实会影响流体的流动。例如，空气在气膜周围的作用力会导致气膜弯曲并改变其形状。同样地，一面旗帜在风中飘动，完全改变了它的形状。
+ * 在现实中，大多数流体结构的相互作用问题是这样的：固体的运动确实影响到流体的流动。例如，空气在空气箔周围的作用力导致它弯曲并改变其形状。同样地，一面旗帜在风中飘动，完全改变了它的形状。
  * 这种双向耦合的问题通常在Arbitrary Lagrangian
- * Eulerian（ALE）框架中处理，其中固体的位移以某种平滑的方式扩展到流体域中，而不是像我们在这里做的那样以零为单位。然后，扩展的位移场被用来使网格变形，我们在上面计算流体流动。此外，界面上流体的边界条件不再是速度为零；相反，在一个随时间变化的程序中，流体速度必须等于沿界面位移的时间导数。
+ * Eulerian（ALE）框架中处理，其中固体的位移以某种平滑的方式扩展到流体域中，而不是像我们在这里做的那样以零为单位。然后，扩展的位移场被用来使网格变形，我们在上面计算流体流动。此外，界面上流体的边界条件不再是速度为零；相反，在一个随时间变化的程序中，流体的速度必须等于沿界面的位移的时间导数。
  *
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-46.cc" 。
  *

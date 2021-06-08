@@ -64,7 +64,7 @@
  * href="#ParametersSolver">Parameters::Solver</a>
  * <li><a href="#ParametersRefinement">Parameters::Refinement</a><a
  * href="#ParametersRefinement">Parameters::Refinement</a>
- * <li><a href="#ParametersFlux">Parameters::Flux</a> ]<a
+ * <li><a href="#ParametersFlux">Parameters::Flux</a><a
  * href="#ParametersFlux">Parameters::Flux</a>
  * <li><a href="#ParametersOutput">Parameters::Output</a><a
  * href="#ParametersOutput">Parameters::Output</a>
@@ -145,20 +145,20 @@
  * href="http://trilinos.org">Trilinos</a>线性求解器（这些可以在Trilinos的Aztec/Amesos包中找到）和一个自动差分包，Sacado，也是Trilinos的一部分。请参考<a
  * href="../../readme.html#trilinos">ReadMe</a>文件，了解如何操作。
  * @note
- * 虽然这个程序很好地演示了自动微分的使用，但它并没有表达欧拉方程求解器的技术水平。对于这个方程有更快、更准确的方法，你应该看看
+ * 虽然这个程序很好地演示了自动微分的使用，但它并没有表达欧拉方程求解器的技术水平。对于这个方程，有更快、更准确的方法，你应该看看
  * step-67 和 step-69 ，看看如何更有效地解决这个方程。
  *
- *
- * <a name="Introduction"></a><a name="Intro"></a> <h1>Introduction</h1>。
- *
- *  <a name="Eulerflow"></a><h3>Euler flow</h3> * <a
- * name="Eulerflow"></a><h3>Euler flow</h3>。
- *
- * 描述可压缩、不粘性气体运动的方程（即所谓的气体动力学欧拉方程）领域的基本守恒定律系统。在空间维度 $d$ 中，它们的解@f[
+ *   <a name="Introduction"></a><a name="Intro"></a> <h1>Introduction</h1> 。
+ * <a name="Eulerflow"></a><h3>Euler flow</h3>
+ * 描述可压缩、不粘性气体运动的方程（所谓气体动力学的欧拉方程）是基本的守恒定律系统。在空间维度 $d$ 中，它们读作@f[
  * \partial_t \mathbf{w} + \nabla \cdot \mathbf{F}(\mathbf{w}) =
  * \mathbf{G}(\mathbf w),
- * @f]由 $\rho$ 流体密度、 ${\mathbf v}=(v_1,\ldots v_d)^T$ 流速（因此 $\rho\mathbf v$ 是线性动量密度）和 $E$ 气体的能量密度组成。我们将上述方程解释为  $\partial_t \mathbf{w}_i + \nabla \cdot \mathbf{F}_i(\mathbf{w}) = \mathbf
- * G_i(\mathbf w)$  ,  $i=1,\ldots,dim+2$  。
+ * @f]，解 $\mathbf{w}=(\rho v_1,\ldots,\rho v_d,\rho,
+ * E)^{\top}$ 由 $\rho$ 流体密度、 ${\mathbf v}=(v_1,\ldots v_d)^T$
+ * 流速（因此 $\rho\mathbf v$ 是线性动量密度）和 $E$
+ * 气体的能量密度组成。我们将上述方程解释为  $\partial_t
+ * \mathbf{w}_i + \nabla \cdot \mathbf{F}_i(\mathbf{w}) = \mathbf G_i(\mathbf
+ * w)$  ,  $i=1,\ldots,dim+2$  。
  * 对于欧拉方程，通量矩阵 $\mathbf F$ （或通量函数系统）被定义为（此处显示为 $d=3$ 的情况）@f{eqnarray*}
  * \mathbf F(\mathbf w)
  * =
@@ -195,15 +195,15 @@
  * 这些方程分别描述了动量、质量和能量的守恒。系统由定义压力的关系封闭。
  * $p = (\gamma
  *
- * -1)(E-\frac{1}{2} \rho |\mathbf v|^2)$  .
- * 对于空气（主要是氮气和氧气）和其他双原子气体的成分，其比热比为
+ * -1)(E-\frac{1}{2} \rho |\mathbf v|^2)$
+ * .对于空气（主要是氮气和氧气）和其他双原子气体的成分，其比热比为
  * $\gamma=1.4$  。
  * 这个问题显然属于矢量值问题的范畴。在 @ref
  * vector_valued
  * 模块中可以找到关于如何处理这些问题的deal.II的一般概述。
  * <a name="Discretization"></a><h3>Discretization</h3> 。
  *
- * 考虑到这是一个与 step-12 中讨论的简单问题相同的双曲问题，我们以通常的方式进行微调：我们选择一个有限元空间 $V_h$ ，并针对我们的（矢量值的）测试函数 $\mathbf{z} \in V_h$ 积分我们的守恒定律。 然后我们通过部分积分，用<i> numerical </i>通量 $\mathbf{H}$ 、@f{eqnarray*}
+ * 考虑到这是一个与 step-12 中讨论的简单问题相同的双曲问题，具体化以通常的方式进行：我们选择一个有限元空间 $V_h$ ，并针对我们的（矢量值）测试函数 $\mathbf{z} \in V_h$ 积分我们的保护法。  然后我们通过部分积分，用<i> numerical </i>通量 $\mathbf{H}$ 、@f{eqnarray*}
  * &&\int_{\Omega} (\partial_t \mathbf{w}, \mathbf{z}) + (\nabla \cdot \mathbf{F}(\mathbf{w}), \mathbf{z}) \\
  * &\approx &\int_{\Omega} (\partial_t \mathbf{w}, \mathbf{z})
  *
@@ -214,7 +214,7 @@
  * 是一个参数，规定了要增加多少扩散。
  * 在边界上，我们必须说明外部跟踪 $\mathbf{w}^-$ 是什么。根据边界条件，我们规定以下两种情况。 <ul>   <li>  流入边界： $\mathbf{w}^-$ 被规定为期望值。 <li>  超音速流出边界： $\mathbf{w}^- = \mathbf{w}^+$   <li>  亚音速流出边界： $\mathbf{w}^- = \mathbf{w}^+$  除了能量变量被修改为支持规定的压力 $p_o$  ，即 $\mathbf{w}^- =(\rho^+, \rho v_1^+, \dots, \rho v_d^+, p_o/(\gamma
  *
- * -1) + 0.5 \rho |\mathbf{v}^+|^2)$   <li>  反射边界：我们设置 $\mathbf{w}^-$  ，使 $(\mathbf{v}^+ + \mathbf{v}^-) \cdot \mathbf{n} = 0$  和 $\rho^- = \rho^+,E^-=E^+$  。 </ul>
+ * -1) + 0.5 \rho |\mathbf{v}^+|^2)$   <li>  反射边界：我们设定 $\mathbf{w}^-$  ，使 $(\mathbf{v}^+ + \mathbf{v}^-) \cdot \mathbf{n} = 0$  和 $\rho^- = \rho^+,E^-=E^+$  。 </ul>
  * 关于这些问题的更多信息可以在RalfHartmann的博士论文中找到（"Adaptive
  * Finite Element Methods for theCompressible Euler
  * Equations"，博士论文，海德堡大学，2002）。
@@ -256,8 +256,8 @@
  *
  * - \mathbf{b}))$ ，其中 $\alpha$
  * 是输入文件中指定的一个固定数字，或者 $\alpha$
- * 是一个与网格有关的值。在后一种情况下，它被选择为
- * $\frac{h}{2\delta T}$ ，其中 $h$ 是应用通量的面的直径，而
+ * 是一个与网格有关的值。在后一种情况下，它被选为
+ * $\frac{h}{2\delta T}$ ，其中 $h$ 是应用流量的面的直径，而
  * $\delta T$ 是当前的时间步长。
  * *有了这些选择，将残差等效为零的结果是一个非线性方程组  $R(\mathbf{W}_{n+1})=0$  。我们通过牛顿迭代来解决这个非线性系统（与 step-15 中解释的方法相同），即通过迭代@f{eqnarray*}
  * R'(\mathbf{W}^k_{n+1},\delta \mathbf{W}_{n+1}^k)(\mathbf z) & = &
@@ -277,16 +277,14 @@
  * below</a>中可以看出，这种全隐式迭代转换速度非常快（通常为3步），并具有牛顿方法所期望的二次转换顺序。
  *
  *  <a name="Automaticdifferentiation"></a><h3> Automatic differentiation
- * </h3> 。
- *
- *  由于计算雅各布矩阵 $\mathbf R'(\mathbf W^k)$
- * 是一个可怕的野兽，我们使用一个自动微分包，Sacado，来完成这个任务。
+ * </h3>   由于计算雅各布矩阵 $\mathbf R'(\mathbf W^k)$
+ * 是一个可怕的野兽，我们使用一个自动微分包，Sacado，来做这个。
  * Sacado是<a href="http://trilinos.org"
- * target="_top">Trilinos</a>框架中的一个包，提供了一个C++模板类
+ * target="_top">Trilinos</a>框架内的一个包，提供了一个C++模板类
  * <code>Sacado::Fad::DFad</code> （ <code>Fad</code> 代表
  * "前向自动微分"），支持基本的算术运算和函数，如 <code>
  * sqrt, sin, cos, pow, </code>
- * 等。为了使用这一特性，人们声明一个这种类型的变量集合，然后将这个集合中的一些变量表示为自由度，其余的变量是独立变量的函数。
+ * 等。为了使用这一特性，人们声明了一个这种类型的变量集合，然后将这个集合中的一些变量表示为自由度，其余的变量是独立变量的函数。
  * 这些变量被用于一个算法中，当变量被使用时，它们对自由度的敏感度被不断地更新。
  * 我们可以想象，对于整个雅各布矩阵来说，这可能是非常昂贵的：自变量的数量是
  * $\mathbf W^k$ ，因变量是向量 $\mathbf R(\mathbf W^k)$
@@ -295,11 +293,11 @@
  * 的所有元素都依赖于 $\mathbf W^k$ 的所有元素：事实上，
  * $\mathbf R$ 中的一个条目只依赖于 $\mathbf W^k$
  * 的一个元素，如果两个对应的形状函数重叠并以弱形式耦合。
- * 具体来说，明智的做法是定义一个最小的独立AD变量集，当前单元上的残差可能依赖于这些变量：在每一个元素上，我们定义这些变量为独立变量，对应于定义在这个单元上的自由度（或者，如果我们必须计算单元之间的跳跃项，则对应于定义在两个相邻单元上的自由度），而依赖变量是本地残差向量的元素。如果不这样做，即把<i>all</i>中的
+ * 具体来说，明智的做法是定义一个最小的独立AD变量集，当前单元上的残差可能依赖于这些变量：在每一个元素上，我们定义这些变量为独立变量，对应于定义在这个单元上的自由度（或者，如果我们必须计算单元之间的跳跃项，则对应于定义在两个相邻单元上的自由度），而依赖变量是当地残差向量的元素。如果不这样做，即把<i>all</i>中的
  * $\mathbf W^k$
  * 元素定义为独立的，将导致大量零的计算非常昂贵：局部残差向量的元素几乎与解向量的所有元素无关，因此它们的导数为零；然而，试图计算这些零很容易占用整个程序90%甚至更多的计算时间，正如这个程序首次编写几年后，一个学生无意中做的实验所示。
  *
- * 回到自动计算Jacobian的问题上：作者在不可压缩的Navier-Stokes问题上，将这种方法与手工编码的Jacobian并列使用，发现Sacado的方法与手工编码的Jacobian一样快，但无限简单，而且不容易出错。由于使用自动差分法只需要对残差进行编码
+ * 回到自动计算雅各布的问题上：作者将这种方法与手工编码的雅各布并列用于不可压缩的Navier-Stokes问题，发现Sacado方法与使用手工编码的雅各布一样快，但无限简单，而且不容易出错。由于使用自动差分法只需要对残差进行编码
  * $R(\mathbf{W})$
  * ，确保代码的正确性和维护代码变得非常简单。
  *
@@ -342,15 +340,15 @@
  * 这个非常强大的包可以用来描述向量的平行分布，并定义对这些向量进行操作的稀疏矩阵。
  * 请查看注释代码以了解更多关于这些求解器在例子中的使用细节。
  * <a name="Adaptivity"></a><h3> Adaptivity </h3> 。
- * 这个例子使用了一个特殊的细化指标，该指标在冲击类问题中显示出一定的实用性，在下坡流的例子中也是如此。
+ * 这个例子使用了一个特殊的细化指标，该指标在冲击型问题和下坡流例子中显示出一定的作用。
  * 我们根据密度的平方梯度进行细化。悬空节点是通过计算不同细化水平的单元的数值通量来处理的，而不是像到目前为止的所有其他教程程序那样使用AffineConstraints类。
  * 通过这种方式，这个例子结合了连续和DG的方法论。它还简化了Jacobian的生成，因为我们不必通过用于计算的自动微分来跟踪受约束的自由度。
  * @note
- * 虽然这个程序是在2008年写的，但我们不知道有什么出版物会真正使用这种方法。然而，A.
+ * 虽然这个程序是在2008年写的，但我们不知道是否有任何出版物会真正使用这种方法。然而，A.
  * Dedner, R. Kl&ouml;fkorn, and M.
  * Kr&auml;nkel最近的一篇论文（"Continuous Finite-Elements on
  * Non-Conforming Grids UsingDiscontinuous Galerkin Stabilization",
- * Proceedings of Finite Volumesfor Complex Applications VII.
+ * Proceedings of Finite Volumesfor Complex Applications VII
  *
  * - 方法和理论方面，Springer，2014）接近。
  * 此外，我们强制规定了细化水平的最大数量，以控制细化。
@@ -361,15 +359,14 @@
  * <a name="Inputdeckinitialandboundaryconditions"></a><h3>Input deck, initial
  * and boundary conditions</h3>
  *
- *  我们使用一个输入文件牌来驱动模拟。
+ *  我们使用一个输入文件平台来驱动仿真。
  * 通过这种方式，我们可以改变边界条件和其他重要的模拟属性，而不必重新编译。
  * 关于格式的更多信息，请看<a href="#Results">results
  * section</a>，那里我们更详细地描述了一个输入文件的例子。
  * 在以前的例子程序中，我们通常对初始和边界条件进行硬编码。在这个程序中，我们使用了表达式解析器类FunctionParser，这样我们就可以在输入文件中指定一个通用的表达式，并在运行时对其进行解析&mdash;这样，我们就可以改变初始条件而不需要重新编译程序。因此，在下面的程序中不会声明名为初始条件（InitialConditions）或边界条件（BoundaryConditions）的类。
  *
  *  <a name="Implementation"></a><h3>Implementation</h3>
- *
- * 本程序的实现分为三个基本部分。 <ul>   <li>   <code>EulerEquations</code> 类，它封装了完全描述欧拉方程具体内容的一切。这包括通量矩阵 $\mathbf F(\mathbf W)$ ，数值通量 $\mathbf F(\mathbf
+ * 本程序的实现分为三个基本部分。 <ul>   <li>   <code>EulerEquations</code>  类，它封装了完全描述欧拉方程具体内容的一切。这包括通量矩阵 $\mathbf F(\mathbf W)$ ，数值通量 $\mathbf F(\mathbf
  * W^+,\mathbf W^-,\mathbf n)$ ，右手边 $\mathbf G(\mathbf W)$
  * ，边界条件，细化指标，输出的后处理，以及类似的需要了解解向量和方程的各个组成部分的含义的东西。
  * <li>  一个命名空间，处理与运行时参数有关的一切。
@@ -386,11 +383,9 @@
  * <code>EulerEquations</code> 。
  *
  *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
- * name="Includefiles"></a> <h3>Include files</h3>。
+ * name="Includefiles"></a><h3>Include files</h3> 。
  *
- *
- * 首先是一套标准的deal.II包括。这里没有什么特别要评论的。
- *
+ * 首先是一套标准的交易。II包括。这里没有什么特别需要评论的。
  *
  * @code
  * #include <deal.II/base/quadrature_lib.h>
@@ -426,8 +421,7 @@
  * 然后，正如介绍中提到的，我们使用各种Trilinos软件包作为线性求解器以及自动微分。这些都在以下的包含文件中。
  *
  *
- * 由于deal.II提供了基本的Trilinos矩阵、预处理程序和求解器的接口，我们把它们类似于deal.II的线性代数结构包括在内。
- *
+ * 由于deal.II提供了基本的Trilinos矩阵、预处理程序和求解器的接口，我们把它们类似于deal.II线性代数结构。
  *
  * @code
  * #include <deal.II/lac/trilinos_sparse_matrix.h>
@@ -439,15 +433,11 @@
  *
  * Sacado是Trilinos中的自动微分包，用于寻找全隐式牛顿迭代的雅各布系数。
  *
- *
  * @code
  * #include <Sacado.hpp>
  *
  * @endcode
- *
- * 而这又是C++的。
- *
- *
+ *  而这又是C++。
  * @code
  * #include <iostream>
  * #include <fstream>
@@ -457,8 +447,7 @@
  *
  * @endcode
  *
- * 在本节结束时，将dealii库中的所有内容引入本程序内容将进入的命名空间。
- *
+ * 在本节结束时，将dealii库中的所有内容引入本程序的内容所处的命名空间。
  *
  * @code
  * namespace Step33
@@ -468,12 +457,11 @@
  *
  * @endcode
  *
- * <a name="Eulerequationspecifics"></a> <h3>Euler equation specifics</h3>
+ * <a name="Eulerequationspecifics"></a> <h3>Euler equation specifics</h3>。
  *
- * 这里我们定义了这个特定的守恒定律系统的通量函数，以及几乎所有其他的气体动力学欧拉方程所特有的东西，原因在介绍中讨论过。我们将所有这些归入一个结构，该结构定义了与通量有关的一切。这个结构的所有成员都是静态的，也就是说，这个结构没有由实例成员变量指定的实际状态。与其说是一个拥有所有静态成员的结构，不如说是使用一个命名空间来做到这一点
+ * 在这里，我们为这个特定的守恒定律系统定义了通量函数，以及几乎所有与气体动力学的欧拉方程有关的其他东西，原因在介绍中已经讨论过。我们将所有这些归入一个结构，该结构定义了与通量有关的一切。这个结构的所有成员都是静态的，也就是说，这个结构没有由实例成员变量指定的实际状态。与其说是一个拥有所有静态成员的结构，不如说是使用一个命名空间来做到这一点
  *
  * - 但是命名空间不能被模板化，而且我们希望结构的一些成员变量取决于空间维度，我们以通常的方式用模板参数引入。
- *
  *
  * @code
  * template <int dim>
@@ -481,12 +469,11 @@
  * {
  * @endcode
  *
- * <a name="Componentdescription"></a> <h4>Component description</h4>
+ * <a name="Componentdescription"></a> <h4>Component description</h4>。
  *
- * 首先是几个变量，它们以一种通用的方式描述了我们的解矢量的各个组成部分。这包括系统中分量的数量（欧拉方程中每个空间方向的动量都有一个条目，加上能量和密度分量，总共有
+ * 首先是一些变量，它们以通用的方式描述了我们的解矢量的各个组成部分。这包括系统中分量的数量（欧拉方程中每个空间方向的动量都有一个条目，加上能量和密度分量，总共有
  * <code>dim+2</code>
  * 个分量），以及描述第一个动量分量、密度分量和能量密度分量在解向量中的索引的函数。请注意，所有这些%数都取决于空间维度；以通用的方式定义它们（而不是通过隐含的惯例）使我们的代码更加灵活，并使以后的扩展更加容易，例如，在方程中添加更多的分量。
- *
  *
  * @code
  *   static const unsigned int n_components             = dim + 2;
@@ -496,8 +483,7 @@
  *
  * @endcode
  *
- * 在这个程序中，当生成图形输出的时候，我们需要指定解变量的名称，以及各种成分如何组合成向量和标量场。我们可以在这里进行描述，但为了使与欧拉方程有关的事情在这里得到解决，并使程序的其他部分尽可能通用，我们在以下两个函数中提供这类信息。
- *
+ * 在这个程序中，当生成图形输出的时候，我们需要指定解变量的名称，以及各种成分如何分组为矢量和标量场。我们可以在这里进行描述，但为了使与欧拉方程有关的事情在这里得到解决，并使程序的其他部分尽可能通用，我们在以下两个函数中提供这类信息。
  *
  * @code
  *   static std::vector<std::string> component_names()
@@ -528,23 +514,20 @@
  * @endcode
  *
  * <a name="Transformationsbetweenvariables"></a> <h4>Transformations between
- * variables</h4>
+ * variables</h4>。
  *
  * 接下来，我们定义气体常数。我们将在紧随这个类的声明之后的定义中把它设置为1.4（与整数变量不同，比如上面的变量，静态常数浮点成员变量在C++中不能在类的声明中被初始化）。这个1.4的值代表了由两个原子组成的分子的气体，比如空气，它几乎完全由
- * $N_2$ 和 $O_2$ 组成的小痕迹。
- *
+ * $N_2$ 和 $O_2$ 组成，痕迹很小。
  *
  * @code
  *   static const double gas_gamma;
  *
  *
  * @endcode
- *
- * 在下文中，我们将需要从守恒变量的矢量中计算动能和压力。我们可以根据能量密度和动能
+ * 在下文中，我们需要从保守变量的矢量中计算动能和压力。我们可以根据能量密度和动能
  * $\frac 12 \rho |\mathbf v|^2 = \frac{|\rho \mathbf v|^2}{2\rho}$
- * 来做这件事（注意，独立变量包含动量分量 $\rho v_i$
+ * 做到这一点（注意，独立变量包含动量分量 $\rho v_i$
  * ，而不是速度 $v_i$ ）。
- *
  *
  * @code
  *   template <typename InputVector>
@@ -577,16 +560,15 @@
  * @endcode
  *
  * <a name="EulerEquationscompute_flux_matrix"></a>
- * <h4>EulerEquations::compute_flux_matrix</h4> 。
+ * <h4>EulerEquations::compute_flux_matrix</h4>。
  *
- * 我们将通量函数 $F(W)$ 定义为一个大矩阵。
+ * 我们把通量函数 $F(W)$ 定义为一个大矩阵。
  * 这个矩阵的每一行都代表该行成分的标量守恒定律。
  * 这个矩阵的确切形式在介绍中给出。请注意，我们知道这个矩阵的大小：它的行数与系统的分量一样多，
  * <code>dim</code>
  * 列数一样多；我们没有为这样的矩阵使用FullMatrix对象（它的行数和列数是可变的，因此每次创建这样的矩阵都必须在堆上分配内存），而是马上使用一个矩形的数字阵列。
  * 我们将通量函数的数值类型模板化，这样我们就可以在这里使用自动微分类型。
  * 同样地，我们将用不同的输入矢量数据类型来调用该函数，所以我们也对其进行模板化。
- *
  *
  * @code
  *   template <typename InputVector>
@@ -597,7 +579,7 @@
  *   {
  * @endcode
  *
- * 首先计算出现在通量矩阵中的压力，然后计算对应于动量项的矩阵的前
+ * 首先计算出现在通量矩阵中的压力，然后计算矩阵中对应于动量项的前
  * <code>dim</code> 列。
  *
  * @code
@@ -615,8 +597,7 @@
  *
  * @endcode
  *
- * 然后是密度项（即质量守恒），最后是能量守恒。
- *
+ * 然后是密度（即质量守恒）的条款，最后是能量守恒。
  *
  * @code
  *     for (unsigned int d = 0; d < dim; ++d)
@@ -632,13 +613,11 @@
  * @endcode
  *
  * <a name="EulerEquationscompute_normal_flux"></a>
- * <h4>EulerEquations::compute_normal_flux</h4> *
  * <h4>EulerEquations::compute_normal_flux</h4>。
  *
  * 在域的边界和跨挂节点上，我们使用一个数值通量函数来强制执行边界条件。
- * 这个程序是基本的Lax-Friedrich的通量，有一个稳定的参数
+ * 这个程序是基本的Lax-Friedrich的通量，有一个稳定参数
  * $\alpha$  。它的形式也已经在介绍中给出。
- *
  *
  * @code
  *   template <typename InputVector>
@@ -670,7 +649,8 @@
  *   }
  *
  * @endcode
- *  <a name="EulerEquationscompute_forcing_vector"></a>
+ *
+ * <a name="EulerEquationscompute_forcing_vector"></a>
  * <h4>EulerEquations::compute_forcing_vector</h4>。
  *
  * 与描述通量函数 $\mathbf F(\mathbf w)$
@@ -680,7 +660,6 @@
  * ，这里显示的是三维情况。更具体地说，我们将只考虑三维的
  * $\mathbf g=(0,0,-1)^T$ ，或二维的 $\mathbf g=(0,-1)^T$
  * 。这自然导致了以下的函数。
- *
  *
  * @code
  *   template <typename InputVector>
@@ -718,7 +697,6 @@
  *
  * 我们要处理的另一件事是边界条件。为此，让我们首先定义一下我们目前知道如何处理的各种边界条件。
  *
- *
  * @code
  *   enum BoundaryKind
  *   {
@@ -730,7 +708,8 @@
  *
  *
  * @endcode
- * 接下来的部分是实际决定在每一种边界上做什么。为此，请记住，从介绍中可以看出，边界条件是通过在给定的不均匀性
+ *
+ * 下一部分是实际决定在每种边界上做什么。为此，请记住，从介绍中可以看出，边界条件是通过在给定的不均匀性
  * $\mathbf j$ 的边界外侧选择一个值 $\mathbf w^-$
  * 和可能的解的内侧的值 $\mathbf w^+$
  * 而指定的。然后将两者传递给数值通量 $\mathbf
@@ -739,7 +718,7 @@
  * 边界条件在某些情况下可以为解矢量的每个分量独立指定。例如，如果分量
  * $c$ 被标记为流入，那么 $w^-_c = j_c$  。如果是流出，那么
  * $w^-_c = w^+_c$
- * 。这两种简单的情况在下面的函数中首先得到处理。
+ * 。在下面的函数中首先处理这两种简单的情况。
  * 从C++语言的角度看，有一个小插曲使这个函数不讨人喜欢。输出向量
  * <code>Wminus</code> 当然会被修改，所以它不应该是一个
  * <code>const</code>
@@ -753,7 +732,6 @@
  * 我们在这里把输出参数变成常量，是因为<i>accessor</i>对象是常量，而不是它所指向的表：那个表仍然可以被写到。然而，这个黑客是不愉快的，因为它限制了可以作为这个函数的模板参数的数据类型：一个普通的向量是不行的，因为当标记为
  * <code>const</code>
  * 时，它不能被写到。由于目前没有好的解决方案，我们将采用这里显示的务实的，甚至是不漂亮的解决方案。
- *
  *
  * @code
  *   template <typename DataVector>
@@ -780,8 +758,8 @@
  *             }
  *
  * @endcode
- * 规定的压力边界条件有点复杂，因为即使压力是规定的，我们在这里真正设置的是能量分量，它将取决于速度和压力。因此，尽管这似乎是一个Dirichlet类型的边界条件，我们得到了能量对速度和密度的敏感性（除非这些也是规定的）。
  *
+ * 规定的压力边界条件要复杂一些，因为即使压力是规定的，我们在这里真正设置的是能量分量，它将取决于速度和压力。因此，尽管这似乎是一个Dirichlet类型的边界条件，我们得到了能量对速度和密度的敏感性（除非这些也是规定的）。
  *
  * @code
  *           case pressure_boundary:
@@ -810,9 +788,9 @@
  *           case no_penetration_boundary:
  *             {
  * @endcode
+ *
  * 我们规定了速度（我们在这里处理的是一个特定的分量，所以速度的平均值是与表面法线正交的。
  * 这就产生了整个速度分量的敏感度。
- *
  *
  * @code
  *               typename DataVector::value_type vdotn = 0;
@@ -838,14 +816,13 @@
  * <a name="EulerEquationscompute_refinement_indicators"></a>
  * <h4>EulerEquations::compute_refinement_indicators</h4>。
  *
- * 在这个类中，我们还想指定如何细化网格。
- * <code>ConservationLaw</code> 类将使用我们在
- * <code>EulerEquation</code>
- * 类中提供的所有信息，它对所求解的特定守恒定律是不可知的：因为它甚至不关心一个求解向量有多少个分量。因此，它不可能知道合理的细化指标是什么。另一方面，在这里我们知道，或者至少我们可以想出一个合理的选择：我们简单地看一下密度的梯度，并计算
- * $\eta_K=\log\left(1+|\nabla\rho(x_K)|\right)$  ，其中 $x_K$ 是单元格
+ * 在这个类中，我们还想指定如何细化网格。将使用我们在
+ * <code>EulerEquation</code> 类中提供的所有信息的
+ * <code>ConservationLaw</code>
+ * 类对于它所求解的特定守恒定律是不可知的：因为它甚至不关心一个求解向量有多少个分量。因此，它不可能知道合理的细化指标是什么。另一方面，在这里我们知道，或者至少我们可以想出一个合理的选择：我们简单地看一下密度的梯度，并计算出
+ * $\eta_K=\log\left(1+|\nabla\rho(x_K)|\right)$ ，其中 $x_K$ 是单元格
  * $K$ 的中心。
  * 当然也有一些同样合理的细化指标，但这个指标确实如此，而且很容易计算。
- *
  *
  * @code
  *   static void
@@ -885,7 +862,7 @@
  * <a name="EulerEquationsPostprocessor"></a>
  * <h4>EulerEquations::Postprocessor</h4>。
  *
- * 最后，我们声明一个实现数据组件后处理的类。这个类解决的问题是，我们使用的欧拉方程的表述中的变量是保守的而不是物理形式的：它们是动量密度
+ * 最后，我们声明一个实现数据成分后处理的类。这个类解决的问题是，我们使用的欧拉方程的表述中的变量是保守的而不是物理形式的：它们是动量密度
  * $\mathbf m=\rho\mathbf v$  、密度  $\rho$  和能量密度  $E$
  * 。我们还想把速度  $\mathbf v=\frac{\mathbf m}{\rho}$  和压力
  * $p=(\gamma-1)(E-\frac{1}{2} \rho |\mathbf v|^2)$
@@ -897,10 +874,9 @@
  * "分光"。类似的效果发生在可压缩流中，因为折射率取决于气体的压力（以及因此的密度）。
  * 这个词的起源是指三维体积的二维投影（我们看到的是三维流体的二维图片）。在计算流体力学中，我们可以通过考虑其原因来了解这种效应：密度变化。因此，Schlieren图是通过绘制
  * $s=|\nabla \rho|^2$ 产生的；显然， $s$
- * 在冲击和其他高度动态的地方很大。如果用户需要的话（在输入文件中指定），我们希望除了上面列出的其他派生量之外，还能生成这些雪莲图。
+ * 在冲击和其他高度动态的地方很大。如果用户需要（通过在输入文件中指定），我们希望除了上面列出的其他派生量之外，还能生成这些裂缝图。
  * 计算解决我们问题的派生量并将其输出到数据文件的算法的实现依赖于DataPostprocessor类。它有大量的文档，该类的其他用途也可以在
- * step-29  中找到。因此，我们不作广泛的评论。
- *
+ * step-29  中找到。因此，我们不做广泛的评论。
  *
  * @code
  *   class Postprocessor : public DataPostprocessor<dim>
@@ -939,9 +915,7 @@
  *
  *
  * @endcode
- *
  * 这是唯一值得评论的函数。在生成图形输出时，DataOut和相关的类将在每个单元格上调用这个函数，以获取每个正交点的值、梯度、Hessians和法向量（如果我们在处理面）。请注意，每个正交点的数据本身就是矢量值，即保守变量。我们在这里要做的是计算每个正交点上我们感兴趣的量。注意，为此我们可以忽略Hessians（"inputs.solution_hessians"）和法向量（"inputs.normals"）。
- *
  *
  * @code
  * template <int dim>
@@ -951,12 +925,11 @@
  * {
  * @endcode
  *
- * 在函数的开始，让我们确保所有的变量都有正确的大小，这样我们就可以访问个别的向量元素，而不必怀疑我们是否可能读或写无效的元素；我们还检查
+ * 在函数的开始，让我们确保所有的变量都有正确的大小，这样我们就可以访问各个向量元素，而不必怀疑我们是否可能读或写无效的元素；我们还检查
  * <code>solution_gradients</code>
- * 向量是否只包含我们真正需要的数据（系统知道这一点，因为我们在下面的
+ * 向量只包含我们真正需要的数据（系统知道这一点，因为我们在下面的
  * <code>get_needed_update_flags()</code>
  * 函数中这样说）。对于内向量，我们检查至少外向量的第一个元素具有正确的内部大小。
- *
  *
  * @code
  *   const unsigned int n_quadrature_points = inputs.solution_values.size();
@@ -982,12 +955,11 @@
  *
  * @endcode
  *
- * 然后在所有的正交点上循环，在那里做我们的工作。这段代码应该是不言自明的。输出变量的顺序首先是
+ * 然后在所有的正交点上循环，在那里做我们的工作。这段代码应该是非常不言自明的。输出变量的顺序首先是
  * <code>dim</code>
  * 速度，然后是压力，如果需要的话，还可以是SCHLIEREN图。请注意，我们尝试使用
  * <code>first_momentum_component</code> 和 <code>density_component</code>
  * 的信息，对输入向量中的变量顺序进行通用处理。
- *
  *
  * @code
  *   for (unsigned int q = 0; q < n_quadrature_points; ++q)
@@ -1059,16 +1031,15 @@
  * <a name="Runtimeparameterhandling"></a> <h3>Run time parameter
  * handling</h3>。
  *
- * 我们接下来的工作是定义一些包含运行时参数的类（例如，求解器的公差、迭代次数、稳定参数等等）。我们可以在主类中完成这个工作，但是我们把它和主类分开，使程序更加模块化，更容易阅读。所有与运行时参数有关的东西都将在以下命名空间中，而程序逻辑则在主类中。
- * 我们将把运行时参数分成几个独立的结构，我们将把这些结构全部放在一个命名空间中
+ * 我们接下来的工作是定义一些包含运行时参数的类（例如，求解器的公差、迭代次数、稳定参数等等）。我们可以在主类中做这件事，但是我们把它和主类分开，以使程序更加模块化，更容易阅读。所有与运行时参数有关的东西都将在下面的命名空间中，而程序逻辑则在主类中。
+ * 我们将把运行时参数分成几个独立的结构，我们将把这些结构都放在一个命名空间中
  * <code>Parameters</code>
  * 。在这些类中，有几个是为单独的组进行参数分组的，比如为求解器、网格细化或输出。这些类中的每一个都有函数
  * <code>declare_parameters()</code>  和  <code>parse_parameters()</code>
- * ，分别在ParameterHandler对象中声明参数子段和条目，并从这样的对象中检索实际的参数值。这些类在ParameterHandler的子段中声明他们所有的参数。
- * 以下命名空间的最后一个类结合了前面所有的类，从它们派生出来，并负责处理输入文件顶层的另外几个条目，以及其他一些奇怪的条目，这些条目在子段中太短了，没有理由自己有一个结构。
+ * ，分别在ParameterHandler对象中声明参数子段和条目，并从这样的对象中检索实际的参数值。这些类在ParameterHandler的子段中声明它们的所有参数。
+ * 以下命名空间的最后一个类结合了之前的所有类，从它们派生出来，并负责处理输入文件顶层的一些条目，以及其他一些奇怪的条目，这些条目在子段中太短，不值得单独建立结构。
  * 这里值得指出的是一件事。下面的类中没有一个构造函数可以初始化各种成员变量。不过这不是问题，因为我们将从输入文件中读取这些类中声明的所有变量（或者间接地：一个ParameterHandler对象将从那里读取，而我们将从这个对象中获取数值），它们将以这种方式被初始化。如果输入文件中根本没有指定某个变量，这也不是问题。在这种情况下，ParameterHandler类将简单地采取默认值，这个默认值是在声明下面这些类的
  * <code>declare_parameters()</code> 函数中的一个条目时指定的。
- *
  *
  * @code
  * namespace Parameters
@@ -1076,24 +1047,20 @@
  * @endcode
  *
  * <a name="ParametersSolver"></a> <h4>Parameters::Solver</h4>。
- * 这些类中的第一个涉及到线性内部求解器的参数。它提供的参数表明使用哪种求解器（GMRES作为一般非对称不定式系统的求解器，或者稀疏直接求解器），要产生的输出量，以及各种调整阈值不完全LU分解（ILUT）的参数，我们用它作为GMRES的预处理器。
+ * 这些类中的第一个涉及到线性内部求解器的参数。它提供的参数表明使用哪种求解器（GMRES作为一般非对称不定式系统的求解器，或稀疏直接求解器），要产生的输出量，以及调整阈值不完全LU分解（ILUT）的各种参数，我们使用它作为GMRES的预处理器。
  * 特别是，ILUT需要以下参数。
  *
  *
- *
- * - ilut_fill：形成ILU分解时要增加的额外条目的数量
- *
+ * - ilut_fill: 形成ILU分解时要增加的额外条目的数量。
  *
  *
- * - ilut_atol, ilut_rtol: 在形成预处理程序时，对于某些问题，不好的条件（或者只是运气不好）会导致预处理程序的条件很差。 因此，将对角线扰动添加到原始矩阵中，并为这个稍好的矩阵形成预处理程序会有帮助。 ATOL是一个绝对扰动，在形成预处理之前加到对角线上，RTOL是一个比例系数  $rtol \geq 1$  。
+ * - ilut_atol, ilut_rtol:在形成预处理程序时，对于某些问题，不良的条件（或只是运气不好）会导致预处理程序的条件很差。  因此，将对角线扰动添加到原始矩阵中，并为这个稍好的矩阵形成预处理程序会有帮助。  ATOL是一个绝对扰动，在形成预处理之前加到对角线上，RTOL是一个比例因子  $rtol \geq 1$  。
  *
  *
- *
- * - ilut_drop: ILUT将放弃任何幅度小于此值的数值。 这是一种管理该预处理程序所使用的内存量的方法。
+ * - ilut_drop。ILUT将放弃任何幅度小于此值的数值。  这是一种管理该预处理程序所使用的内存量的方法。
  * 每个参数的含义在  ParameterHandler::declare_entry
  * 调用的第三个参数中也有简要说明
  * <code>declare_parameters()</code>  。
- *
  *
  * @code
  *   struct Solver
@@ -1200,10 +1167,8 @@
  *
  *
  * @endcode
- *
- * <a name="ParametersRefinement"></a> <h4>Parameters::Refinement</h4>.
- * 同样地，这里有几个参数决定了网格如何被细化（以及是否要细化）。关于冲击参数的具体作用，请参见下面的网格细化函数。
- *
+ *  <a name="ParametersRefinement"></a> <h4>Parameters::Refinement</h4>.
+ * 同样的，这里有几个参数决定了网格如何被细化（以及是否要被细化）。关于冲击参数的具体作用，请看下面的网格细化函数。
  *
  * @code
  *   struct Refinement
@@ -1266,7 +1231,7 @@
  *
  * @endcode
  *
- * <a name="ParametersFlux"></a> <h4>Parameters::Flux</h4>.
+ * <a name="ParametersFlux"></a> <h4>Parameters::Flux</h4>。
  * 接下来是关于通量修改的部分，使其更加稳定。特别是，提供了两个选项来稳定Lax-Friedrichs通量：要么选择
  * $\mathbf{H}(\mathbf{a},\mathbf{b},\mathbf{n}) =
  * \frac{1}{2}(\mathbf{F}(\mathbf{a})\cdot \mathbf{n} +
@@ -1277,7 +1242,6 @@
  * 是一个与网格有关的值。在后一种情况下，它被选择为
  * $\frac{h}{2\delta T}$ ，其中 $h$ 是应用通量的面的直径，而
  * $\delta T$ 是当前的时间步长。
- *
  *
  * @code
  *   struct Flux
@@ -1335,9 +1299,9 @@
  *
  *
  * @endcode
- *  <a name="ParametersOutput"></a> <h4>Parameters::Output</h4>。
- * 然后是关于输出参数的部分。我们提供产生Schlieren图（密度的平方梯度，一种可视化冲击前沿的工具），以及图形输出的时间间隔，以防我们不希望每个时间步骤都有输出文件。
  *
+ * <a name="ParametersOutput"></a> <h4>Parameters::Output</h4>。
+ * 然后是关于输出参数的部分。我们提供产生Schlieren图（密度的平方梯度，一种可视化冲击前沿的工具），以及图形输出的时间间隔，以防我们不希望每个时间步骤都有输出文件。
  *
  * @code
  *   struct Output
@@ -1383,7 +1347,8 @@
  *
  * @endcode
  *
- * <a name="ParametersAllParameters"></a> <h4>Parameters::AllParameters</h4>
+ * <a name="ParametersAllParameters"></a>
+ * <h4>Parameters::AllParameters</h4>。
  * 最后，这个类将所有的东西集中在一起。它自己声明了一些参数，主要是参数文件顶层的参数，以及一些太小的部分，以至于没有必要有自己的类。它还包含所有实际上与空间维度有关的东西，比如初始或边界条件。
  * 由于这个类是由上面所有的类派生出来的，
  * <code>declare_parameters()</code> and <code>parse_parameters()</code>
@@ -1392,9 +1357,9 @@
  * "w_0值 "这样的条目，它代表了 $x,y,z$
  * 方面的表达式，将初始或边界条件描述为一个公式，随后将由FunctionParser类来解析。类似的表达方式还有
  * "w_1"、"w_2 "等，表示欧拉系统的 <code>dim+2</code>
- * 守恒变量。同样，我们允许在输入文件中最多使用
+ * 守恒变量。同样，我们允许在输入文件中使用多达
  * <code>max_n_boundaries</code>
- * 个边界指标，这些边界指标中的每一个都可以与流入、流出或压力边界条件相关联，同质边界条件要分别为每个组件和每个边界指标指定。
+ * 个边界指标，这些边界指标中的每一个都可以与流入、流出或压力边界条件相关联，同质边界条件要分别为每个成分和每个边界指标指定。
  * 用来存储边界指标的数据结构有点复杂。它是一个
  * <code>max_n_boundaries</code>
  * 元素的数组，表示将被接受的边界指标的范围。对于这个数组中的每个条目，我们在
@@ -1409,7 +1374,6 @@
  * 由于必须在构造时告诉Function对象其向量大小的同样原因，我们必须有一个
  * <code>AllParameters</code>
  * 类的构造函数，至少要初始化另一个FunctionParser对象，即描述初始条件的对象。
- *
  *
  * @code
  *   template <int dim>
@@ -1642,12 +1606,12 @@
  *
  *
  * @endcode
- *  <a name="Conservationlawclass"></a> <h3>Conservation law class</h3>.
  *
- * 这里终于出现了一个类，它实际上是对我们上面定义的所有欧拉方程和参数的细节做了一些事情。公共接口与以往基本相同（构造函数现在需要一个文件名来读取参数，这个文件名在命令行中传递）。私有函数接口也与通常的安排非常相似，
+ * <a name="Conservationlawclass"></a> <h3>Conservation law class</h3>。
+ *
+ * 这里终于出现了一个类，它实际上是对我们上面定义的所有欧拉方程和参数的具体内容做了一些事情。公有接口和往常一样（构造函数现在需要一个文件名来读取参数，这个文件名在命令行中传递）。私有函数接口也与通常的安排非常相似，
  * <code>assemble_system</code>
  * 函数被分成三个部分：一个包含所有单元的主循环，然后分别调用另外两个单元和面的积分。
- *
  *
  * @code
  * template <int dim>
@@ -1683,14 +1647,14 @@
  *
  *
  * @endcode
- * 前面的几个成员变量也是相当标准的。请注意，我们定义了一个映射对象，在整个程序中组装术语时使用（我们将把它交给每个FEValues和FEFaceValues对象）；我们使用的映射只是标准的
+ *
+ * 前面几个成员变量也是相当标准的。请注意，我们定义了一个映射对象，在整个程序中组装术语时使用（我们将把它交给每个FEValues和FEFaceValues对象）；我们使用的映射只是标准的
  * $Q_1$ 的映射
  *
  * - 没有什么花哨的，换句话说
  *
  * 但在这里声明一个映射并在整个程序中使用它将使以后在有必要时改变它变得更简单。这实际上是相当相关的：众所周知，对于欧拉方程的跨音速模拟，如果边界近似没有足够高的阶数，计算就不会收敛，即使是
  * $h\rightarrow 0$ 。
- *
  *
  * @code
  *   Triangulation<dim>   triangulation;
@@ -1705,13 +1669,13 @@
  * - 1> face_quadrature;
  *
  * @endcode
- *  接下来是一些数据向量，对应于上一时间步的解（
- * <code>old_solution</code> ），当前解的最佳猜测（
+ *
+ * 接下来是一些数据向量，对应于前一个时间步骤的解决方案（
+ * <code>old_solution</code> ），当前解决方案的最佳猜测（
  * <code>current_solution</code>
  * ；我们说<i>guess</i>是因为计算它的牛顿迭代可能还没有收敛，而
  * <code>old_solution</code>
- * 是指上一时间步完全收敛的最终结果），以及下一时间步的解的预测器，通过将当前和之前的解外推到未来一个时间步计算。
- *
+ * 是指前一个时间步骤的完全收敛的最终结果），以及下一个时间步骤的解决方案的预测器，通过将当前和之前的解决方案推断到未来一个时间步骤计算。
  *
  * @code
  *   Vector<double> old_solution;
@@ -1722,10 +1686,9 @@
  *
  * @endcode
  *
- * 这一组最后的成员变量（除了最下面的持有所有运行时参数的对象和一个屏幕输出流，该输出流只在要求verbose输出的情况下打印一些东西）处理我们在这个程序中与为我们提供线性求解器的Trilinos库的接口。与在
+ * 这最后一组成员变量（除了最下面的持有所有运行时参数的对象和一个只在要求verbose输出时才打印东西的屏幕输出流）是处理我们在这个程序中与Trilinos库的接口，该库为我们提供了线性求解器。与在
  * step-17 和 step-18
  * 中包括PETSc矩阵类似，我们需要做的是创建一个Trilinos稀疏矩阵而不是标准的deal.II类。该系统矩阵在每个牛顿步骤中被用于雅各布系数。由于我们不打算并行运行这个程序（不过用Trilinos数据结构也不会太难），所以我们不必考虑其他的事情，比如分配自由度。
- *
  *
  * @code
  *   TrilinosWrappers::SparseMatrix system_matrix;
@@ -1738,9 +1701,8 @@
  * @endcode
  *
  * <a name="ConservationLawConservationLaw"></a>
- * <h4>ConservationLaw::ConservationLaw</h4>.
+ * <h4>ConservationLaw::ConservationLaw</h4>。
  * 关于构造函数，没有什么可说的。基本上，它读取输入文件并将解析后的值填充到参数对象中。
- *
  *
  * @code
  * template <int dim>
@@ -1770,7 +1732,6 @@
  * <h4>ConservationLaw::setup_system</h4>
  * 每次改变网格时都会调用下面这个（简单的）函数。它所做的就是根据我们在以前的所有教程程序中生成的稀疏模式来调整特里诺斯矩阵的大小。
  *
- *
  * @code
  * template <int dim>
  * void ConservationLaw<dim>::setup_system()
@@ -1785,14 +1746,13 @@
  * @endcode
  *
  * <a name="ConservationLawassemble_system"></a>
- * <h4>ConservationLaw::assemble_system</h4>
- * 这个和下面两个函数是这个程序的主要内容。它们将牛顿方法应用于非线性守恒方程组而形成的线性系统组装起来。
+ * <h4>ConservationLaw::assemble_system</h4>。
+ * 这个和下面的两个函数是这个程序的核心。它们集合了将牛顿方法应用于非线性守恒方程组的线性系统。
  * 第一个函数将所有的装配部件放在一个例行程序中，为每个单元格/面派送正确的部件。
  * 对这些对象的装配的实际实现是在以下函数中完成的。
  * 在函数的顶部，我们做了常规的内务处理：分配FEValues、FEFaceValues和FESubfaceValues对象，这些对象是在单元格、面和子面（在不同细化水平上的相邻单元的情况下）进行积分所必需的。请注意，我们并不需要所有这些对象的所有信息（如值、梯度或正交点的真实位置），所以我们只让FEValues类通过指定最小的UpdateFlags集来获得实际需要的信息。例如，当使用邻接单元的FEFaceValues对象时，我们只需要形状值。给定一个特定的面，正交点和
  * <code>JxW</code>
  * 值与当前单元格相同，法向量已知为当前单元格的法向量的负值。
- *
  *
  * @code
  * template <int dim>
@@ -1831,8 +1791,7 @@
  *
  * @endcode
  *
- * 然后在所有单元中循环，初始化当前单元的FEValues对象，并调用在此单元上装配问题的函数。
- *
+ * 然后循环所有单元，初始化当前单元的FEValues对象，并调用在此单元上组装问题的函数。
  *
  * @code
  *   for (const auto &cell : dof_handler.active_cell_iterators())
@@ -1844,11 +1803,10 @@
  *
  * @endcode
  *
- * 然后在这个单元格的所有面中循环。
+ * 然后在这个单元的所有面进行循环。
  * 如果一个面是外部边界的一部分，那么就在那里集合边界条件（
  * <code>assemble_face_terms</code>
  * 的第五个参数表示我们是在外部面还是内部面工作；如果是外部面，表示邻居自由度指数的第四个参数被忽略，所以我们传递一个空矢量）。
- *
  *
  * @code
  *       for (const auto face_no : cell->face_indices())
@@ -1867,18 +1825,17 @@
  *
  * @endcode
  *
- * 另一种情况是，我们正在处理一个内部面。有两种情况我们需要区分：这是同一细化水平的两个单元之间的正常面，和不同细化水平的两个单元之间的面。
+ * 另一种情况是，我们正在处理一个内部面。我们需要区分两种情况：这是在同一细化水平的两个单元之间的正常面，以及它是不同细化水平的两个单元之间的面。
  * 在第一种情况下，我们不需要做什么：我们使用的是连续有限元，在这种情况下，面条款不会出现在双线性表格中。第二种情况下，如果我们强烈地执行悬挂节点约束，通常也不会导致面状项的出现（就像到目前为止，只要我们使用连续有限元，在以前的所有教程程序中都是这样的
  *
  * -这种执行是由AffineConstraints类和
  * DoFTools::make_hanging_node_constraints). 一起完成的
- * 在当前的程序中，我们选择在不同细化水平的单元之间的面弱执行连续性，原因有二。(i)因为我们可以，更重要的是(ii)因为我们必须通过AffineConstraints类的操作将我们用来计算牛顿矩阵元素的自动微分穿起来。这将是可能的，但不是微不足道的，因此我们选择了这种替代方法。
- * 需要决定的是我们坐在两个不同细化水平的单元之间的接口的哪一边。
+ * 在当前的程序中，我们选择在不同细化水平的单元之间的面弱执行连续性，原因有二。(i)因为我们可以，更重要的是(ii)因为我们必须通过AffineConstraints类的操作将我们用来计算牛顿矩阵元素的自动微分穿起来。这是有可能的，但不是微不足道的，所以我们选择了这种替代方法。
+ * 需要决定的是我们坐在不同细化水平的两个单元之间的接口的哪一边。
  * 让我们先来看看邻居更细化的情况。然后，我们必须在当前单元格的面的子代上循环，并在每个子代上进行整合。我们在代码中加入了几个断言，以确保我们试图找出邻居的哪个子面与当前单元格的某个子面相吻合的推理是正确的。
  *
  * - 一点防御性的编程永远不会有坏处。
  * 然后我们调用对面进行整合的函数；由于这是一个内部面，第五个参数是假的，第六个参数被忽略了，所以我们再次传递一个无效的值。
- *
  *
  * @code
  *         else
@@ -1920,8 +1877,7 @@
  *
  * @endcode
  *
- * 我们必须关注的另一种可能性是邻居是否比当前单元更粗（特别是，由于每个面只有一个悬挂节点的通常限制，邻居必须正好比当前单元更粗一级，这一点我们用断言来检查）。同样，我们在这个界面上进行整合。
- *
+ * 我们必须关注的另一种可能性是邻居是否比当前单元更粗（特别是，由于每个面只有一个悬挂节点的通常限制，邻居必须正好比当前单元更粗一层，这一点我们用断言来检查）。同样，我们在这个界面上进行整合。
  *
  * @code
  *             else if (cell->neighbor(face_no)->level() != cell->level())
@@ -1967,7 +1923,7 @@
  * @endcode
  *
  * <a name="ConservationLawassemble_cell_term"></a>
- * <h4>ConservationLaw::assemble_cell_term</h4>.
+ * <h4>ConservationLaw::assemble_cell_term</h4>
  * 这个函数通过计算残差的单元部分来组合单元项，将其负数加到右手边的向量上，并将其相对于局部变量的导数加到雅各布系数（即牛顿矩阵）上。回顾一下，单元格对残差的贡献为
  * $R_i = \left(\frac{\mathbf{w}^{k}_{n+1}
  *
@@ -1989,7 +1945,7 @@
  * $\left(\mathbf{F}(\mathbf{w}), \nabla\mathbf{z}_i\right)_K$ 可以理解为
  * $\int_K \sum_{c=1}^{\text{n\_components}} \sum_{d=1}^{\text{dim}}
  * \mathbf{F}(\mathbf{w})_{cd} \frac{\partial z^c_i}{x_d}$ ，其中 $z^c_i$
- * 是 $i$ 第1个测试函数的第1个分量。
+ * 是 $i$ 第1个测试函数的 $c$ 分量。
  *
  * 在这个函数的顶部，我们做了一些常规的内务工作，即分配一些我们以后需要的局部变量。特别是，我们将分配一些变量，用于保存
  * $k$ 次牛顿迭代后的当前解 $W_{n+1}^k$ （变量 <code>W</code>
@@ -1997,16 +1953,15 @@
  * ）的值。 除此以外，我们还需要当前变量的梯度。
  * 我们必须计算这些是有点遗憾的，我们几乎不需要。
  * 一个简单的守恒定律的好处是，通量一般不涉及任何梯度。
- * 然而，我们确实需要这些，以便进行扩散稳定化。
+ * 然而，我们确实需要这些梯度，用于扩散稳定。
  * 我们存储这些变量的实际格式需要一些解释。首先，我们需要在每个正交点为解矢量的
  * <code>EulerEquations::n_components</code>
  * 分量取值。这就构成了一个二维表，我们使用deal.II的表类（这比
  * <code>std::vector@<std::vector@<T@> @></code>
- * 更有效，因为它只需要分配一次内存，而不是为外向量的每个元素分配一次）。同样地，梯度是一个三维表，Table类也支持这个。
+ * 更有效，因为它只需要分配一次内存，而不是为外向量的每个元素分配一次）。同样地，梯度是一个三维表，Table类也支持。
  * 其次，我们想使用自动微分。为此，我们使用
  * Sacado::Fad::DFad
  * 模板来计算所有我们想计算导数的变量。这包括当前解和正交点的梯度（是自由度的线性组合），以及由它们计算出来的所有东西，如残差，但不包括前一个时间步长的解。这些变量都可以在函数的第一部分找到，同时还有一个变量，我们将用它来存储残差的一个分量的导数。
- *
  *
  * @code
  * template <int dim>
@@ -2032,9 +1987,7 @@
  *   std::vector<double> residual_derivatives(dofs_per_cell);
  *
  * @endcode
- *
- * 接下来，我们必须定义自变量，我们将尝试通过解决一个牛顿步骤来确定这些自变量。这些自变量是局部自由度的值，我们在这里提取出来。
- *
+ * 接下来，我们必须定义自变量，我们将尝试通过解决一个牛顿步骤来确定自变量。这些自变量是我们在这里提取的局部自由度的值。
  *
  * @code
  *   std::vector<Sacado::Fad::DFad<double>> independent_local_dof_values(
@@ -2044,11 +1997,10 @@
  *
  * @endcode
  *
- * 下一步包含了所有的魔法：我们宣布自分变量的一个子集为独立自由度，而所有其他的变量仍然是依赖函数。这些正是刚刚提取的局部自由度。所有引用它们（直接或间接）的计算都将积累与这些变量有关的敏感度。
+ * 下一步包含了所有的魔力：我们宣布自分变量的一个子集为独立自由度，而所有其他的自由度仍然是依赖函数。这些正是刚刚提取的局部自由度。所有引用它们（直接或间接）的计算都将积累与这些变量有关的敏感度。
  * 为了将这些变量标记为独立变量，下面的方法可以做到这一点，将
  * <code>independent_local_dof_values[i]</code> 标记为总共
  * <code>dofs_per_cell</code> 中的 $i$ 个独立变量。
- *
  *
  * @code
  *   for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -2069,7 +2021,6 @@
  * 的东西来计算这些信息，但是由于（i）我们必须为此扩展FEValues类，（ii）我们不想让整个
  * <code>old_solution</code>
  * 矢量的fad类型，只是局部单元变量，我们明确编码上面的循环。在这之前，我们添加另一个循环，将所有的fad变量初始化为零。
- *
  *
  * @code
  *   for (unsigned int q = 0; q < n_q_points; ++q)
@@ -2113,8 +2064,6 @@
  * 。为了存储这些，我们还需要分配一点内存。请注意，我们以自分变量的方式计算通量矩阵和右手边，这样以后就可以很容易地从中计算出雅各布贡献。
  *
  *
- *
- *
  * @code
  *   std::vector<ndarray<Sacado::Fad::DFad<double>,
  *                       EulerEquations<dim>::n_components,
@@ -2141,7 +2090,9 @@
  *
  *
  * @endcode
- * 我们现在已经有了所有的部件，所以要进行组装。 我们有一个通过系统组件的外循环，和一个通过正交点的内循环，在那里我们积累了对
+ *
+ * 我们现在已经有了所有的部件，所以要进行组装。
+ * 我们有一个通过系统组件的外循环，和一个通过正交点的内循环，在那里我们积累了对
  * $i$ 的残差 $R_i$
  * 的贡献。这个残差的一般公式在引言和本函数的顶部给出。然而，考虑到
  * $i$  第三个（矢量值）测试函数 $\mathbf{z}_i$
@@ -2170,7 +2121,6 @@
  * 然后，当我们对 <code>right_hand_side</code>
  * 矢量求和时，我们要否定这个残差。
  *
- *
  * @code
  *   for (unsigned int i = 0; i < fe_v.dofs_per_cell; ++i)
  *     {
@@ -2181,10 +2131,8 @@
  *
  * @endcode
  *
- * 每一行（i）的残差将被累积到这个fad变量中。
+ * 每一行（i）的残差将被累积到这个法德变量中。
  * 在这一行的装配结束时，我们将查询这个变量的敏感度，并将其加入到雅各布系数中。
- *
- *
  *
  *
  * @code
@@ -2234,10 +2182,9 @@
  *
  * @endcode
  *
- * 在循环的最后，我们必须把敏感度加到矩阵上，并从右手边减去残差。Trilinos
+ * 在循环结束时，我们必须将敏感度加入到矩阵中，并从右手边减去残差。Trilinos
  * FAD数据类型让我们可以使用 <code>R_i.fastAccessDx(k)</code>
  * 访问导数，因此我们将数据存储在一个临时数组中。然后，这些关于整行局部道夫的信息被一次性添加到Tridinos矩阵中（它支持我们选择的数据类型）。
- *
  *
  * @code
  *       for (unsigned int k = 0; k < dofs_per_cell; ++k)
@@ -2253,9 +2200,8 @@
  * @endcode
  *
  * <a name="ConservationLawassemble_face_term"></a>
- * <h4>ConservationLaw::assemble_face_term</h4>.
+ * <h4>ConservationLaw::assemble_face_term</h4>。
  * 在这里，我们的做法与前面的函数基本相同。在顶部，我们引入自变量。因为如果我们在两个单元之间的内部面上工作，也会使用当前的函数，所以自变量不仅是当前单元上的自由度，而且在内部面上的情况下，也是邻近单元上的自由度。
- *
  *
  * @code
  * template <int dim>
@@ -2297,13 +2243,13 @@
  *
  *
  * @endcode
- *  接下来，我们需要定义保守变量 ${\mathbf W}$
+ *
+ * 接下来，我们需要定义保守变量 ${\mathbf W}$
  * 在面的这一侧（ $ {\mathbf W}^+$ ）和另一侧（ ${\mathbf W}^-$
  * ）的值，对于 ${\mathbf W} = {\mathbf W}^k_{n+1}$ 和 ${\mathbf W} =
- * {\mathbf W}_n$  。"这一边
+ * {\mathbf W}_n$ 。"这一边
  * "的值可以用与前一个函数完全相同的方式计算，但注意
  * <code>fe_v</code> 变量现在是FEFaceValues或FESubfaceValues的类型。
- *
  *
  * @code
  *   Table<2, Sacado::Fad::DFad<double>> Wplus(
@@ -2326,10 +2272,8 @@
  *       }
  *
  * @endcode
- *
- * 计算 "对立面
- * "是比较复杂的。如果这是一个内部的面，我们可以像上面那样，简单地用邻居的独立变量来计算。
- *
+ *  计算 "对立面
+ * "就比较复杂了。如果这是一个内部面，我们可以像上面那样，简单地用邻居的独立变量来计算。
  *
  * @code
  *   if (external_face == false)
@@ -2348,15 +2292,13 @@
  *           }
  *     }
  * @endcode
- *
- * 另一方面，如果这是一个外部边界面，那么 $\mathbf{W}^-$
+ *  另一方面，如果这是一个外部边界面，那么 $\mathbf{W}^-$
  * 的值将是 $\mathbf{W}^+$
  * 的函数，或者它们将是规定的，取决于这里施加的边界条件的种类。
  * 为了开始评估，让我们确保为这个边界指定的边界ID是我们在参数对象中实际有数据的一个。接下来，我们对不均匀性的函数对象进行评估。
  * 这有点棘手：一个给定的边界可能同时有规定的和隐含的值。
  * 如果一个特定的成分没有被规定，那么这些值就会被评估为零，并在下面被忽略。
  * 其余的由一个实际上知道欧拉方程边界条件的具体内容的函数来完成。请注意，由于我们在这里使用的是fad变量，敏感度将被适当地更新，否则这个过程将是非常复杂的。
- *
  *
  * @code
  *   else
@@ -2380,8 +2322,8 @@
  *             boundary_values[q],
  *             Wminus[q]);
  * @endcode
- * 这里我们假设边界类型、边界法向量和边界数据值在时间推进中保持不变。
  *
+ * 这里我们假设边界类型、边界法向量和边界数据值在时间推进中保持不变。
  *
  * @code
  *           EulerEquations<dim>::compute_Wminus(
@@ -2400,8 +2342,6 @@
  * ，我们可以去计算每个正交点的数值通量函数 $\mathbf
  * H(\mathbf w^+,\mathbf w^-, \mathbf n)$
  * 。在调用这个函数之前，我们还需要确定Lax-Friedrich的稳定参数。
- *
- *
  *
  *
  * @code
@@ -2438,8 +2378,8 @@
  *     }
  *
  * @endcode
- * 现在以与前面函数中的单元贡献完全相同的方式组装面项。唯一的区别是，如果这是一个内部面，我们还必须考虑到剩余贡献对邻近单元自由度的敏感性。
  *
+ * 现在以与前面函数中的单元贡献完全相同的方式组装面项。唯一的区别是，如果这是一个内部面，我们还必须考虑到剩余贡献对邻近单元自由度的敏感性。
  *
  * @code
  *   std::vector<double> residual_derivatives(dofs_per_cell);
@@ -2484,10 +2424,8 @@
  *
  * @endcode
  *
- * <a name="ConservationLawsolve"></a> <h4>ConservationLaw::solve</h4>
+ * <a name="ConservationLawsolve"></a> <h4>ConservationLaw::solve</h4>.
  * 在这里，我们实际求解线性系统，使用Trilinos的Aztec或Amesos线性求解器。计算的结果将被写入传递给这个函数的参数向量中。其结果是一对迭代次数和最终的线性残差。
- *
- *
  *
  *
  * @code
@@ -2499,9 +2437,8 @@
  *     {
  * @endcode
  *
- * 如果参数文件指定要使用直接求解器，那么我们就到这里。这个过程很简单，因为deal.II在Trilinos中为Amesos直接求解器提供了一个封装类。我们所要做的就是创建一个求解器控制对象（这里只是一个虚拟对象，因为我们不会进行任何迭代），然后创建直接求解器对象。在实际进行求解时，注意我们没有传递一个预处理程序。无论如何，这对直接求解器来说没有什么意义。
+ * 如果参数文件中指定要使用直接求解器，那么我们就会到这里。这个过程很简单，因为deal.II在Trilinos中为Amesos直接求解器提供了一个封装类。我们所要做的就是创建一个求解器控制对象（这里只是一个虚拟对象，因为我们不会进行任何迭代），然后创建直接求解器对象。在实际进行求解时，注意我们没有传递一个预处理程序。无论如何，这对直接求解器来说没有什么意义。
  * 最后，我们返回求解器的控制统计信息&mdash；它将告诉我们没有进行任何迭代，并且最终的线性残差为零，这里没有任何可能提供的更好的信息。
- *
  *
  * @code
  *       case Parameters::Solver::direct:
@@ -2518,13 +2455,12 @@
  *
  * @endcode
  *
- * 同样，如果我们要使用一个迭代求解器，我们使用Aztec的GMRES求解器。我们也可以在这里使用Trilinos的迭代求解器和预处理类，但是我们选择直接使用Aztec求解器。对于给定的问题，Aztec的内部预处理实现优于deal.II的包装类，所以我们在AztecOO求解器中使用ILU-T预处理，并设置了一堆可以从参数文件中修改的选项。
+ * 同样地，如果我们要使用一个迭代求解器，我们使用Aztec的GMRES求解器。我们也可以在这里使用Trilinos的迭代求解器和预处理类，但是我们选择直接使用Aztec求解器。对于给定的问题，Aztec的内部预处理实现优于deal.II的包装类，所以我们在AztecOO求解器中使用ILU-T预处理，并设置了一堆可以从参数文件中修改的选项。
  * 还有两个实际问题。由于我们将右手边和求解向量建立为deal.II向量对象（而不是矩阵，它是一个Trilinos对象），我们必须将Trilinos
- * Epetra向量交给求解器。 幸运的是，他们支持 "视图
- * "的概念，所以我们只需发送一个指向deal.II向量的指针。我们必须为设置平行分布的向量提供一个Epetra_Map，这只是一个串行的假对象。最简单的方法是向矩阵要它的地图，我们要用它为矩阵-向量乘积做好准备。
+ * Epetra向量交给求解器。  幸运的是，他们支持 "视图
+ * "的概念，所以我们只需发送一个指向deal.II向量的指针。我们必须为设置平行分布的向量提供一个Epetra_Map，这只是一个串行的假对象。最简单的方法是要求矩阵提供它的地图，我们要用它为矩阵-向量乘积做好准备。
  * 其次，Aztec求解器要我们传入一个Trilinos
  * Epetra_CrsMatrix，而不是deal.II包装类本身。所以我们通过trilinos_matrix()命令来访问Trilinos包装类中的实际Trilinos矩阵。Trilinos希望矩阵是非常量的，所以我们必须使用const_cast手动删除常量。
- *
  *
  * @code
  *       case Parameters::Solver::gmres:
@@ -2573,13 +2509,11 @@
  * @endcode
  *
  * <a name="ConservationLawcompute_refinement_indicators"></a>
- * <h4>ConservationLaw::compute_refinement_indicators</h4>.
+ * <h4>ConservationLaw::compute_refinement_indicators</h4>。
  *
- *
- * 这个函数是真正的简单。我们并不假装我们在这里知道一个好的细化指标是什么。相反，我们假设
+ * 这个函数是非常简单的。我们并不假装我们在这里知道一个好的细化指标是什么。相反，我们假设
  * <code>EulerEquation</code>
  * 类会知道这个问题，所以我们只是简单地服从于我们在那里实现的相应函数。
- *
  *
  * @code
  * template <int dim>
@@ -2597,10 +2531,9 @@
  * @endcode
  *
  * <a name="ConservationLawrefine_grid"></a>
- * <h4>ConservationLaw::refine_grid</h4>.
+ * <h4>ConservationLaw::refine_grid</h4>。
  *
- * 这里，我们使用之前计算的细化指标来细化网格。在开始的时候，我们在所有的单元中进行循环，并标记那些我们认为应该被细化的单元。
- *
+ * 这里，我们使用之前计算的细化指标来细化网格。在开始的时候，我们在所有的单元格上循环，并标记那些我们认为应该被细化的单元格。
  *
  * @code
  * template <int dim>
@@ -2623,8 +2556,8 @@
  *     }
  *
  * @endcode
- * 然后我们需要在进行细化的同时，将各种解决方案的向量从旧网格转移到新网格。SolutionTransfer类是我们的朋友；它有相当丰富的文档，包括例子，所以我们不会对下面的代码做太多评论。最后三行只是把其他一些向量的大小重新设置为现在的正确大小。
  *
+ * 然后我们需要在进行细化的同时，将各种解向量从旧网格转移到新网格。SolutionTransfer类是我们的朋友；它有相当丰富的文档，包括例子，所以我们不会对下面的代码做太多评论。最后三行只是把其他一些向量的大小重新设置为现在的正确大小。
  *
  * @code
  *   std::vector<Vector<double>> transfer_in;
@@ -2670,13 +2603,10 @@
  * @endcode
  *
  * <a name="ConservationLawoutput_results"></a>
- * <h4>ConservationLaw::output_results</h4> *
  * <h4>ConservationLaw::output_results</h4>。
  *
- *
- * 这个函数现在是相当直接的。所有的魔法，包括将数据从保守变量转化为物理变量，都已经被抽象化，并被移到EulerEquations类中，这样在我们想要解决其他双曲守恒定律的情况下就可以被替换。
+ * 这个函数现在是相当直接的。所有的魔法，包括将数据从保守变量转化为物理变量，都已经被抽象化，并被移到EulerEquations类中，以便在我们想要解决其他双曲守恒定律时可以被替换。
  * 请注意，输出文件的数量是通过保持一个静态变量形式的计数器来确定的，这个计数器在我们第一次来到这个函数时被设置为零，并在每次调用结束时被增加一。
- *
  *
  * @code
  * template <int dim>
@@ -2710,12 +2640,10 @@
  *
  * @endcode
  *
- * <a name="ConservationLawrun"></a> <h4>ConservationLaw::run</h4>
+ * <a name="ConservationLawrun"></a> <h4>ConservationLaw::run</h4>。
  *
- *
- * 这个函数包含了本程序的顶层逻辑：初始化、时间循环和牛顿内部迭代。
+ * 这个函数包含了这个程序的顶层逻辑：初始化、时间循环和牛顿内部迭代。
  * 开始时，我们读取参数文件指定的网格文件，设置DoFHandler和各种向量，然后在这个网格上插值给定的初始条件。然后我们在初始条件的基础上进行一系列的网格细化，以获得一个已经很适应起始解的网格。在这个过程结束时，我们输出初始解。
- *
  *
  * @code
  * template <int dim>
@@ -2737,7 +2665,6 @@
  * @endcode
  *
  * 所有字段的大小。
- *
  *
  * @code
  *   old_solution.reinit(dof_handler.n_dofs());
@@ -2774,8 +2701,7 @@
  *
  * @endcode
  *
- * 然后我们进入主时间步进循环。在顶部，我们简单地输出一些状态信息，这样就可以跟踪计算的位置，以及一个表明非线性内部迭代进展的表格的标题。
- *
+ * 然后我们进入主时间步进循环。在顶部，我们简单地输出一些状态信息，这样就可以跟踪计算的位置，以及显示非线性内部迭代进展的表格的标题。
  *
  * @code
  *   Vector<double> newton_update(dof_handler.n_dofs());
@@ -2797,7 +2723,8 @@
  *                 << "   _____________________________________" << std::endl;
  *
  * @endcode
- * 然后是牛顿内迭代，解决每个时间步长的非线性问题。它的工作方式是将矩阵和右手边重置为零，然后组装线性系统。如果右手边的规范足够小，那么我们就宣布牛顿迭代已经收敛了。否则，我们求解线性系统，用牛顿增量更新当前解，并输出收敛信息。最后，我们检查牛顿迭代的次数是否超过10次的限制。
+ *
+ * 然后是内牛顿迭代，在每个时间步长中解决非线性问题。它的工作方式是将矩阵和右手边重置为零，然后组装线性系统。如果右手边的规范足够小，那么我们就宣布牛顿迭代已经收敛了。否则，我们求解线性系统，用牛顿增量更新当前解，并输出收敛信息。最后，我们检查牛顿迭代的次数是否超过10次的限制。
  *
  * 如果超过了，就说明迭代有可能出现分歧，继续迭代也没有好处。如果发生这种情况，我们会抛出一个异常，这个异常会在
  * <code>main()</code>
@@ -2805,7 +2732,6 @@
  * 注意，我们在下面写AssertThrow宏的方式大体上等同于写<code>if
  * (!(nonlin_iter  @<=  10)) throw ExcMessage ("No convergence in nonlinear
  * solver");</code>。唯一显著的区别是，AssertThrow还确保被抛出的异常带有它产生的位置（文件名和行号）的信息。这在这里不是太关键，因为只有一个地方可能发生这种异常；然而，当人们想找出错误发生的地方时，它通常是一个非常有用的工具。
- *
  *
  * @code
  *       unsigned int nonlin_iter = 0;
@@ -2844,6 +2770,7 @@
  *         }
  *
  * @endcode
+ *
  * 我们只有在牛顿迭代已经收敛的情况下才会到达这一点，所以在这里做各种收敛后的任务。
  * 首先，我们更新时间并产生图形输出（如果需要）。然后，我们通过近似
  * $\mathbf w^{n+1}\approx \mathbf w^n + \delta t \frac{\partial \mathbf
@@ -2854,7 +2781,6 @@
  * 来更新下一个时间步长的解决方案的预测器，以尝试使适应性更好地工作。
  * 我们的想法是尝试在前面进行细化，而不是步入一个粗略的元素集并抹去旧的解决方案。
  * 这个简单的时间推断器可以完成这个工作。有了这个，如果用户需要的话，我们就可以细化网格，最后继续进行下一个时间步骤。
- *
  *
  * @code
  *       time += parameters.time_step;
@@ -2891,10 +2817,9 @@
  *
  * @endcode
  *
- * <a name="main"></a> <h3>main()</h3>
+ * <a name="main"></a> <h3>main()</h3>。
  *
- * 下面的``main''函数与前面的例子类似，不需要注释。注意，如果在命令行上没有给出输入文件名，程序就会中止。
- *
+ * 下面的``main''函数与以前的例子类似，不需要注释。注意，如果在命令行上没有给出输入文件名，程序就会中止。
  *
  * @code
  * int main(int argc, charargv[])
@@ -2946,9 +2871,8 @@
  * }
  * @endcode
  * <a name="Results"></a><a name="Results"></a><h1>Results</h1> 。
- *
- *  我们用网格 <code>slide.inp</code>
- * （该文件与本程序的源代码在同一目录下）和下列输入盘（可在同一目录下作为
+ * 我们用网格 <code>slide.inp</code>
+ * （该文件与本程序的源代码在同一目录下）和以下输入盘（可在同一目录下作为
  * <code>input.prm</code> ）运行该问题。
  * @verbatim
  * # Listing of Parameters
@@ -3090,7 +3014,7 @@
  * ...
  * @endverbatim
  *
- * 这个输出报告了牛顿迭代的进度和时间步进的情况。请注意，我们对牛顿迭代的实现确实显示了预期的二次收敛顺序：每一步的非线性残差的规范大致是前一步的规范的平方。这导致了我们在这里可以看到的非常快速的收敛。这一直保持到
+ * 这个输出报告了牛顿迭代的进度和时间步进的情况。请注意，我们对牛顿迭代的实现确实显示了预期的二次收敛顺序：每一步的非线性残差的规范大致是前一步的规范的平方。这导致了我们在这里可以看到的非常快速的收敛。这种情况一直保持到
  * $t=1.9$ ，这时非线性迭代报告缺乏收敛性。
  * @verbatim
  * ...
@@ -3161,51 +3085,42 @@
  *  <img
  * src="https://www.dealii.org/images/steps/developer/step-33.slide.ed2.gif "
  * alt="" height="300">
- * 沉重的流体在重力作用下被拉下斜坡，在那里与滑雪屋相撞，并被抛向空中！希望每个人都能逃过一劫。
- * 希望每个人都能逃脱!
- * 还有，我们可以看到重质和轻质之间的边界由于人为的粘性而迅速模糊了。
+ * 沉重的流体在重力作用下被拉下斜坡，在那里与滑雪屋相撞，并被抛向空中!
+ * 希望每个人都能逃出生天!还有，我们可以看到重质和轻质之间的边界由于人为的粘性而迅速模糊了。
  * 我们还可以看到自适应细化网格的演变。 <img
  * src="https://www.dealii.org/images/steps/developer/step-33.slide.adapt.ed2.gif
  * " alt="" height="300">
  * 根据上面讨论的启发式精炼方案，自适应性跟随并先于流动模式。
  *
  *
- *
  *  <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
- * 。
+ * <a name="Stabilization"></a><h4>Stabilization</h4>
+ * 我们所选择的数值方案在人工粘度较小的情况下不是特别稳定，而在人工粘度较大的情况下则过于扩散。此外，众所周知，还有更先进的技术来稳定解决方案，例如流线型扩散、最小二乘法稳定条款、熵粘性。
  *
- *  <a name="Stabilization"></a><h4>Stabilization</h4>。
- * 我们所选择的数值方案在人工黏度较小时并不特别稳定，而在人工黏度较大时则过于扩散。此外，众所周知，还有更先进的技术来稳定解决方案，例如流线型扩散、最小二乘法稳定条款、熵粘性。
- *
- *
- * <a name="Betterlinearsolvers"></a><h4>Better linear solvers</h4> 。
- *
- * 虽然牛顿法作为非线性求解器在时间步长足够小的情况下似乎工作得很好，但线性求解器可以得到改进。例如，在目前的方案中，只要我们使用迭代求解器，每个牛顿步骤都要重新计算ILU；同样，对于直接求解器，每个步骤都要计算牛顿矩阵的LU分解。这显然是一种浪费：从一个牛顿步骤到另一个牛顿步骤，可能还有不同的时间步骤，牛顿矩阵并没有发生根本性的变化：一个牛顿步骤的ILU或稀疏LU分解可能仍然是下一个牛顿或时间步骤的非常好的预处理。因此，避免这些计算是减少计算时间的一个好办法。
+ *   <a name="Betterlinearsolvers"></a><h4>Better linear solvers</h4>
+ * 虽然作为非线性求解器的牛顿方法在时间步长足够小的情况下似乎效果很好，但线性求解器可以得到改进。例如，在目前的方案中，只要我们使用迭代求解器，每个牛顿步骤都要重新计算ILU；同样，对于直接求解器，每个步骤都要计算牛顿矩阵的LU分解。这显然是一种浪费：从一个牛顿步骤到另一个牛顿步骤，可能还有不同的时间步骤，牛顿矩阵并没有发生根本性的变化：一个牛顿步骤的ILU或稀疏LU分解可能仍然是下一个牛顿或时间步骤的非常好的预处理。因此，避免这些计算是减少计算时间的一个好办法。
  * 我们可以再进一步：由于接近收敛时，牛顿矩阵只发生一点点变化，我们可以定义一个准牛顿方案，在这个方案中，我们只在每次牛顿迭代中重新计算残差（即右手边的向量），并重新使用牛顿矩阵。由此产生的方案很可能不是二次收敛的，我们必须期望多做几次非线性迭代；然而，鉴于我们不必每次都花时间建立牛顿矩阵，由此产生的方案很可能更快。
  *
  *  <a name="Cachetheexplicitpartofresidual"></a><h4>Cache the explicit part
- * of residual</h4>
- *
- *  在 ConservationLaw::assemble_cell_term 中计算的残差读作 $R_i =
- * \left(\frac{\mathbf{w}^{k}_{n+1}
+ * of residual</h4>   在 ConservationLaw::assemble_cell_term
+ * 中计算的残差读作 $R_i = \left(\frac{\mathbf{w}^{k}_{n+1}
  *
  * - \mathbf{w}_n}{\delta t} , \mathbf{z}_i \right)_K  + \theta
  * \mathbf{B}({\mathbf{w}^{k}_{n+1}})(\mathbf{z}_i)_K + (1-\theta)
  * \mathbf{B}({\mathbf{w}_{n}}) (\mathbf{z}_i)_K $
- * 这意味着我们在一个牛顿迭代步骤中计算两次空间残差：一次是关于当前解
+ * ，这意味着我们在一个牛顿迭代步骤中计算两次空间残差：一次是关于当前解
  * $\mathbf{w}^{k}_{n+1}$ ，另一次是关于最后一个时间步骤的解
  * $\mathbf{w}_{n}$
- * ，在一个时间步骤的所有牛顿迭代中都保持不变。在牛顿迭代中缓存残差
+ * ，在一个时间步骤的所有牛顿迭代中保持不变。在牛顿迭代中缓存残差的明确部分
  * $ \mathbf{B}({\mathbf{w}_{n}}) (\mathbf{z}_i)_K$
- * 的明确部分将节省大量劳动。
+ * 将节省大量劳动力。
  *
- *  <a name="Otherconservationlaws"></a><h4>Other conservation laws</h4> 。
- *
- * 最后，作为一个超越欧拉方程直接求解的方向，这个程序非常努力地将所有针对欧拉方程的实现分离到一个类中（
+ *  <a name="Otherconservationlaws"></a><h4>Other conservation laws</h4>
+ * 最后，作为超越欧拉方程直接求解的一个方向，本程序努力将欧拉方程特有的一切实现分离到一个类中（
  * <code>EulerEquation</code>
- * 类），而将所有针对组装矩阵和向量、非线性和线解器以及一般顶层逻辑的实现分离到另一个类中（
- * <code>ConservationLaw</code>  类）。
+ * 类），而将矩阵和向量、非线性和线解器以及一般顶层逻辑特有的一切分离到另一个类中（
+ * <code>ConservationLaw</code> 类）。
  * 通过替换这个类中的通量矩阵和数值通量的定义，以及其中定义的各种其他部分，应该可以将
  * <code>ConservationLaw</code> 类也应用于其他双曲守恒定律。
  *

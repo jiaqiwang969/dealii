@@ -16,21 +16,18 @@
 
 
 /**
- *
- * @defgroup hp hp-finite element support
+ *    @defgroup hp hp-finite element support
  * 与hp-finite元素有关的类和函数。 step-27
- * 教程程序概述了如何使用该命名空间中的类。 step-46
+ * 教程中概述了如何使用该命名空间中的类。 step-46
  * 中给出了一个稍显奇特的应用。
- * hp-命名空间实现了在deal.II中用于hp-framework的算法和数据结构。在  @ref hp_paper  "hp-paper "
+ * hp-命名空间实现了在deal.II中用于hp-framework的算法和数据结构。 @ref hp_paper  "hp-paper "
  * 中给出了关于这些算法如何工作以及使用何种数据结构的细节概述。
- *
  *
  */
 
 /**
- *
- * @defgroup hpcollection hp-Collections 在hp-finite
- * element方法的实现中，每个单元可能有不同的有限元与之相关。为了处理这个问题，
+ *    @defgroup hpcollection hp-Collections 在hp-finite
+ * element方法的实现中，每个单元可能有不同的有限元与之关联。为了处理这个问题，
  * hp::DoFHandler
  * 必须有一整套与之相关的有限元类。这个概念由
  * hp::FECollection
@@ -48,14 +45,12 @@
  * <code>size()</code>
  * 函数可以返回集合中元素的数量。一些类，特别是持有有限元对象的类，也实现了其他特定的功能。
  * 相似性超出了接口的范围。当向集合中添加一个元素时，所有的类都会创建一个参数的副本。这样就可以把一个临时对象传递给添加元素的函数。例如，下面的工作。
- *
  * @verbatim
  * FECollection<dim> fe_collection;
  * for (unsigned int degree=1; degree<5; ++degree)
  *   fe_collection.push_back (FE_Q<dim>(degree));
  * @endverbatim
- *
- * 这样一来，就可以把多项式程度为1到4的元素添加到集合中。没有必要保留所添加的对象：集合会对其进行复制，它不仅存储了一个指向给定有限元对象的指针。这个观察同样适用于其他集合类。
+ * 这样一来，人们就可以把多项式度数为1到4的元素添加到集合中。没有必要保留所添加的对象：集合会对其进行复制，它不仅存储了一个指向给定有限元对象的指针。这个观察同样适用于其他集合类。
  * 习惯上，在一个hp-finite
  * element程序中，人们保留了具有相同数量元素的有限元和正交公式集合，一个集合中的每个元素都与另一个集合中的元素相匹配。这不是必须的，但它常常使编码变得简单得多。如果使用映射的集合，对
  * hp::MappingCollection 对象也是如此。 每当在hp-finite
@@ -66,16 +61,13 @@
  * hp::FECollection::set_hierarchy()
  * 成员函数向集合提供相应的层次结构。
  *
- *
  * @ingroup hp
- *
  *
  */
 
 
 /**
  * 一个用于实现hp-finite元素特定算法和数据结构的命名空间。
- *
  *
  * @ingroup hp
  *

@@ -19,15 +19,15 @@
 /**
 
 
-* 
-*  @defgroup MeshWorker The MeshWorker interface  
-* 一个类和函数的集合，简化了对所有单元和面的循环编码。这个模块的所有类和函数都在MeshWorker命名空间中，其中也包含了使用文档。
-* 
 
-* 
-*  @ingroup Integrators  
+*  @defgroup MeshWorker The MeshWorker interface 
+* 一组类和函数的集合，简化了对所有单元和面的循环编码。该模块的所有类和函数都在MeshWorker命名空间中，其中也包含了使用文档。
+*
 
-* 
+
+*  @ingroup Integrators 
+
+
 * */
 
 

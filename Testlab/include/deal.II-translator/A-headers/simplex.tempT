@@ -18,30 +18,30 @@
 /**
 
 
-* 
-*  @defgroup simplex Simplex support (experimental)  
-* 
 
- 
-*  @brief This module describes the experimental simplex support in deal.II.  
-* deal.II中的Simplex和混合网格仍然是实验性的，即正在进行的工作。库的大部分已经被移植到能够操作这种网格上。然而，仍有许多功能需要被概括。通过查看 "test/simplex "文件夹中的测试，你可以对移植的功能有一个很好的概述。在下文中，我们提供了两个非常基本的例子来入门，并提供一些实现细节。
-* 
+*  @defgroup simplex Simplex support (experimental) 
 
-* 
+
+
+*  @brief This module describes the experimental simplex support in deal.II. 
+* deal.II中的Simplex和混合网格仍然是实验性的，也就是正在进行的工作。该库的大部分内容已经被移植到能够操作这种网格上。然而，仍有许多函数需要被概括。通过查看 "test/simplex "文件夹中的测试，你可以对移植的功能有一个很好的概述。在下文中，我们提供了两个非常基本的例子来入门，并提供一些实现细节。
+*
+
+*
 *  @section  simplex_reference_example_simplex 示例：simplex网格
-* 下面的代码展示了如何处理单纯网格。
-*  @include step_3_simplex.cc  
-* 
+* 下面的代码显示了如何处理单纯x网格。
+*  @include step_3_simplex.cc 
+*
 
-* 
+*
 *  @section  simplex_reference_example_mixed 示例：混合网格
 * 下面的代码显示了如何处理混合网格的工作。
-*  @include step_3_mixed.cc  
-* 
+*  @include step_3_mixed.cc 
+*
 
-* 
+*
 *  @section  simplex_reference_cells 参考单元
-* 在二维中，我们提供三角形和四边形，在三维中具有以下可能的方向。
+* 在二维中，我们提供三角形和四边形，在三维中的可能方向如下。
 *  <div class="twocolumn" style="width: 100%">
    <div class="parent">
      <div class="img" align="center">
@@ -80,9 +80,9 @@
        3D: Hexahedron
      </div>  </div> </div>
 * 一个三维参考单元的每个表面由二维参考单元组成。枚举其顶点和线的编号的文件在右列给出。
-* 
+*
 
-* 
+
 * */
 
 

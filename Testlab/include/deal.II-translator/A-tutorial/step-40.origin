@@ -759,7 +759,7 @@ give problem sizes you are unlikely to exceed anytime soon.
  #ifdef USE_PETSC_LA
      data.symmetric_operator = true;
  #else
-     /* Trilinos defaults are good */
+     // Trilinos defaults are good 
  #endif
      preconditioner.initialize(system_matrix, data);
  

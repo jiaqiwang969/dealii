@@ -1,3 +1,0 @@
-include/deal.II-translator/grid/magic_numbers_0.txt
-[0.x.0]
-

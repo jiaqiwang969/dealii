@@ -1,3 +1,0 @@
-include/deal.II-translator/meshworker/dof_info.templates_0.txt
-[0.x.0]
-

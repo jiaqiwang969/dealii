@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-23_0.txt
 /**
-  @page step_23 The step-23 tutorial program  
+  @page step_23 The step-23 tutorial program 
 * 本教程依赖于  step-4  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -42,10 +42,10 @@
 </ol> </td> </tr> </table>
 @endhtmlonly
 *<a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
-* 
 
-*  @dealiiVideoLecture{28}  
-* 这是一系列教程程序中的第一个，将最终涵盖 "真正的 "时间依赖问题，而不是 step-18 或 step-21 的DAE模型中发现的稍微奇怪的时间依赖形式。特别是，这个程序介绍了有界域中的波浪方程。以后， step-24 将考虑一个吸收边界条件的例子， @ref
+
+*  @dealiiVideoLecture{28} 
+* 这是一系列教程程序中的第一个，它将最终涵盖 "真正的 "时间依赖问题，而不是 step-18 或 step-21 的DAE模型中发现的略显奇怪的时间依赖形式。特别是，这个程序介绍了有界域中的波浪方程。以后， step-24 将考虑一个吸收边界条件的例子， @ref
 step_25 "  step-25 " 一种非线性波方程产生的解决方案称为孤子。
 * 波浪方程的原型形式如下：找到满足@f{eqnarray*}
 	\frac{\partial^2 u}{\partial t^2}
@@ -69,23 +69,23 @@ step_25 "  step-25 " 一种非线性波方程产生的解决方案称为孤子�
 @f}的 $u(x,t), x\in\Omega, t\in[0,T]$ 。
 * 请注意，由于这是一个具有二阶时间导数的方程，我们需要提出两个初始条件，一个是溶液的值，一个是溶液的时间导数。
 * 物理上，该方程描述了弹性介质的运动。在二维空间中，我们可以考虑膜在受到力的作用下如何运动。上面的Dirichlet边界条件表明，膜在边界上被夹在一个高度 $g(x,t)$ （这个高度可能也在移动&mdash；想想人们拿着毯子上下摇晃）。第一个初始条件等于膜的初始偏转，而第二个初始条件则是其速度。例如，我们可以考虑用手指把膜往下推，然后在 $t=0$ 处让它离开（非零偏转但零初始速度），或者在 $t=0$ 处用锤子砸它（零偏转但非零速度）。这两种情况都会引起膜的运动。
-* 
+*
 
 *<a name="Timediscretization"></a><h3>Time discretization</h3>
-* 
 
-* <a name="MethodoflinesorRothesmethod"></a><h4>Method of lines or Rothe's method?</h4> * <h4>Method of lines or Rothe's method?</h4>。
-* 数值分析界有一个长期的争论，即时间依赖方程的离散化是否应该首先离散时间变量，导致每个时间步长的静止PDE，然后用标准的有限元技术来解决（这被称为Rothe方法），或者是否应该首先离散空间变量，导致一个大的常微分方程系统，然后可以由通常的ODE求解器之一来处理（这被称为线的方法）。
+
+*<a name="MethodoflinesorRothesmethod"></a><h4>Method of lines or Rothe's method?</h4>
+* 数值分析界有一个长期的争论，即时间依赖方程的离散化是否应该首先离散时间变量，导致每个时间步长的静止PDE，然后用标准的有限元技术来解决（这被称为Rothe方法），或者是否应该首先离散空间变量，导致一个大的常微分方程系统，然后可以由通常的ODE求解器处理（这被称为线的方法）。
 * 传统上，人们更倾向于线的方法，因为它允许使用非常发达的高阶ODE求解器来处理这种方法产生的相当僵硬的ODE，包括步长控制和时间误差的估计。
 * 另一方面，当使用高阶时间步长法时，罗特的方法变得很笨拙，因为人们不得不写下一个PDE，它不仅将当前时间步长的解与前一个时间步长的解结合起来，而且还可能将早期的解结合起来，从而导致大量的条款。
 * 由于这些原因，线段法一直是人们的首选方法。然而，它有一个很大的缺点：如果我们首先对空间变量进行离散化，导致一个大的ODE系统，我们必须一劳永逸地选择一个网格。如果我们愿意这样做，那么这就是一个合法的、可能是优越的方法。
 * 另一方面，如果我们看的是波浪方程和许多其他与时间有关的问题，我们会发现，随着时间的推移，解决方案的特征会发生变化。例如，对于波浪方程，我们可能有一个单一的波浪穿过域，在波浪前后的解是平滑的甚至是恒定的&mdash；自适应性对于这种情况确实很有用，但关键是我们需要细化网格的区域会随着时间步长而变化
 * 如果我们打算这样做，即为每个时间步长（或一组时间步长）选择不同的网格，那么线的方法就不再合适了：我们不是得到一个变量数等于有限元网格中未知数的ODE系统，而是未知数的数量一直在变化，标准的ODE求解器当然不准备处理这一事实。另一方面，对于罗特方法，我们只是在每个时间步长得到一个PDE，我们可以选择独立于前一个时间步长的网格进行离散化；这种方法不是没有缺点和困难，但至少是一个合理的、定义明确的程序。
 * 由于所有这些原因，在本程序中，我们选择使用Rothe方法进行离散化，即我们首先在时间上进行离散化，然后在空间上进行。我们实际上根本不会使用自适应网格，因为这涉及到大量的额外代码，但我们将在<a href="#Results">results section below</a>中对此进行更多评论。
-* 
+*
 
 *<a name="Rothesmethod"></a><h4>Rothe's method!</h4>
-* 
+
 
 * 鉴于这些考虑，我们将这样进行：让我们首先为这个二阶问题定义一个简单的时间步进方法，然后在第二步进行空间离散化，即我们将遵循Rothe的方法。
 * 对于第一步，让我们先走个小弯路：为了计算二阶时间导数，我们可以直接离散化，或者引入一个额外的变量，将系统转化为一阶系统。在很多情况下，这都是等价的，但处理一阶系统往往更简单。为此，让我们引入@f[
@@ -149,7 +149,7 @@ g}{\partial t}$ 。在数值例子中发现，这实际上是必要的：如果�
 * 
 - \Delta\left[\theta u^n + (1-\theta) u^{n-1}\right]
   &=& \theta f^n + (1-\theta) f^{n-1}.
-\f}注意我们如何在这里引入一个参数 $\theta$ 。如果我们选择 $\theta=0$ ，例如，第一个方程将简化为 $\frac{u^n
+\f}注意我们在这里引入了一个参数 $\theta$ 。如果我们选择 $\theta=0$ ，例如，第一个方程将简化为 $\frac{u^n
 * 
 - u^{n-1}}{k}
 * 
@@ -179,12 +179,12 @@ g}{\partial t}$ 。在数值例子中发现，这实际上是必要的：如果�
    v^n &=& v^{n-1} + k\Delta\left[ \theta u^n + (1-\theta) u^{n-1}\right]
    + k\left[\theta f^n + (1-\theta) f^{n-1}\right].
 \f}在这种形式下，我们看到，如果我们得到前一个时间步长的解决方案 $u^{n-1},v^{n-1}$ ，那么我们可以分别解决变量 $u^n,v^n$ ，即一次一个。这是很方便的。此外，我们认识到第一个方程中的算子是正定的，而第二个方程看起来特别简单。
-* 
+*
 
-* <a name="Spacediscretization"></a><h3>Space discretization</h3> 。
-* 
+*<a name="Spacediscretization"></a><h3>Space discretization</h3>
 
-* 现在我们已经得出了将近似（半离散）解 $u^n(x)$ 及其时间导数 $v^n(x)$ 与前一时间步骤 $t_{n-1}$ 的解 $u^{n-1}(x),v^{n-1}(x)$ 相关的方程。下一步是使用通常的有限元方法将空间变量离散化。为此，我们将每个方程与一个测试函数相乘，在整个域上进行积分，并在必要时进行部分积分。这就导致了\f{eqnarray*}
+
+* 我们现在已经得出了将近似（半离散）解 $u^n(x)$ 及其时间导数 $v^n(x)$ 与前一个时间步骤 $t_{n-1}$ 的解 $u^{n-1}(x),v^{n-1}(x)$ 相关的方程。下一步是使用通常的有限元方法将空间变量离散化。为此，我们将每个方程与一个测试函数相乘，在整个域上进行积分，并在必要时进行部分积分。这就导致了\f{eqnarray*}
   (u^n,\varphi) + k^2\theta^2(\nabla u^n,\nabla \varphi) &=&
   (u^{n-1},\varphi)
 * 
@@ -281,12 +281,12 @@ V_i^{n-1}\phi_i^{n-1}(x)$  。请注意，由于前一个时间步骤的解决�
 	\\
 	F^{n-1}_{i} &=& (f^{n-1},\phi_i^n).
 @f} 。
-* 
+*
 * 如果我们解决这两个方程，我们可以将解决方案向前推进一步，并进入下一个时间步骤。
-* 值得注意的是，如果我们在每个时间步长选择相同的网格（事实上我们将在下面的程序中这样做），那么我们在时间步长 $n$ 和 $n-1$ 上有相同的形状函数，即 $\phi^n_i=\phi_i^{n-1}=\phi_i$  。因此，我们得到  $M^n=M^{n,n-1}=M$  和  $A^n=A^{n,n-1}=A$  。另一方面，如果我们使用了不同的形状函数，那么我们将不得不计算包含定义在两个网格上的形状函数的积分。这是一个有点混乱的过程，我们在此省略，但在  step-28  中有详细的处理。
+* 值得注意的是，如果我们在每个时间步长选择相同的网格（事实上我们将在下面的程序中这样做），那么我们在时间步长 $n$ 和 $n-1$ 上有相同的形状函数，即 $\phi^n_i=\phi_i^{n-1}=\phi_i$  。因此，我们得到  $M^n=M^{n,n-1}=M$  和  $A^n=A^{n,n-1}=A$  。另一方面，如果我们使用了不同的形状函数，那么我们将不得不计算包含定义在两个网格上的形状函数的积分。这是一个有点混乱的过程，我们在此省略，但在 step-28 中有详细的处理。
 * 在这些条件下（即网格不发生变化），我们可以通过基本消除第二线性系统的解来优化求解过程。我们将在 @ref step_25  "  step-25  " 程序的介绍中讨论这个问题。
 * <a name="Energyconservation"></a><h3>Energy conservation</h3> 。
-* 
+*
 
 * 比较时间步进方案质量的一个方法是看数字近似是否保留了连续方程的守恒特性。对于波浪方程来说，自然要看的量是能量。通过将波浪方程乘以 $u_t$ ，对 $\Omega$ 进行积分，并在必要时进行部分积分，我们发现@f[
 	\frac{d}{d t}
@@ -305,24 +305,24 @@ V_i^{n-1}\phi_i^{n-1}(x)$  。请注意，由于前一个时间步骤的解决�
 	+
 	\frac 12 \left<U^n, A^n U^n\right>.
 @f]正如我们将在结果部分看到的，Crank-Nicolson方案确实保存了能量，而前向和后向的Euler方案都没有。
-* 
+*
 
 *<a name="WhoareCourantFriedrichsandLewy"></a><h3>Who are Courant, Friedrichs, and Lewy?</h3>
-* 
 
-* 波浪方程在数值上难以解决的原因之一是，只有在时间步长足够小的情况下，显式时间离散才稳定。特别是，它与空间网格宽度相耦合  $h$  。对于我们在这里使用的最低阶离散化，关系为@f[
+
+* 波浪方程的数值求解令人讨厌的原因之一是，只有在时间步长足够小的情况下，显式时间离散化才是稳定的。特别是，它与空间网格宽度相耦合  $h$  。对于我们在这里使用的最低阶离散化，其关系为@f[
 	k\le \frac hc
-@f]，其中 $c$ 是波速，在我们的波浪方程公式中，波速被归一化。因此，除非我们使用带有 $\theta>0$ 的隐式方案，否则如果我们违反这一限制，我们的解在数值上将不稳定。隐式方案在稳定性方面没有这个限制，但如果时间步长过大，它们就会变得不准确。
-* 这个条件最早是由Courant, Friedrichs, and Lewy &mdash;在1928年认识到的，当时还没有计算机可以用于数值计算! 这个结果出现在德语文章R. 库朗、弗里德里希斯和卢伊。<i>&Uuml;ber die partiellen
+@f]，其中 $c$ 为波速，在我们的波浪方程表述中，波速已被归一。因此，除非我们使用带有 $\theta>0$ 的隐式方案，否则如果我们违反这一限制，我们的解在数值上将不稳定。隐式方案在稳定性方面没有这个限制，但如果时间步长过大，它们就会变得不准确。
+* 这个条件最早是由Courant, Friedrichs, and Lewy &mdash;在1928年认识到的，当时还没有计算机可用于数值计算!这个结果出现在德语文章R.库朗、弗里德里希斯和卢伊。<i>&Uuml;ber die partiellen
 Differenzengleichungen der mathematischen Physik</i>, MathematischeAnnalen, vol. 100, no. 1, pages 32-74, 1928.）这个关于时间步长的条件最常被称为<i>CFL</i>条件。直观地说，CFL条件是指时间步长不能大于一个波穿过一个单元的时间。
-* 在程序中，我们将对正方形 $[-1,1]^2$ 均匀地细化七次，得到一个 $h=\frac 1{64}$ 的网格大小，这就是我们设定的时间步长。我们在两个不同的地方分别设置时间步长和网格尺寸是很容易出错的：很容易再一次细化网格，却忘记了同时调整时间步长。  @ref
+* 在程序中，我们将对正方形 $[-1,1]^2$ 均匀地细化七次，得到一个 $h=\frac 1{64}$ 的网格大小，这就是我们设定的时间步长。我们在两个不同的地方分别设置时间步长和网格尺寸是很容易出错的：很容易再一次细化网格，却忘记了同时调整时间步长。   @ref
 step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同步。
-* 
+*
 
-* <a name="Thetestcase"></a><h3>The test case</h3> 。
- 
+*<a name="Thetestcase"></a><h3>The test case</h3>
 
-* 尽管程序有所有的钩子来处理非零初始条件和边界条件以及体力，我们采取一个简单的案例，域是一个正方形  $[-1,1]^2$  和@f{eqnarray*}
+
+* 尽管该程序具有处理非零初始和边界条件以及体力的所有钩子，但我们采取一个简单的案例，即域是一个正方形 $[-1,1]^2$ 和@f{eqnarray*}
 	f &=& 0,
 	\\
 	u_0 &=& 0,
@@ -338,19 +338,19 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
 	&&\text{otherwise}
 	\end{matrix}
 	\right.
-@f} 。
+@f}。
 * 这相当于一个最初处于静止状态、四周被夹住的膜，有人在夹住的边界的一部分上下挥动，从而向域内发射一个波。
-* 
+*
 
 * <a name="CommProg"></a> <h1> The commented program</h1>。
 * <a name="Includefiles"></a> <h3>Include files</h3>。
- 
+*
 
-* 
+*
 * 我们从通常的各种各样的包含文件开始，我们在以前的许多测试中都看到过。
- 
+*
 
- 
+
 * @code
  #include <deal.II/base/quadrature_lib.h>
  #include <deal.II/base/function.h>
@@ -376,38 +376,38 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  #include <iostream>
 * 
  @endcode
- 
-* 这里是仅有的三个有一些新兴趣的包含文件。第一个文件已经被使用了，例如，用于 VectorTools::interpolate_boundary_values 和 MatrixTools::apply_boundary_values 函数。然而，我们在这里使用该类中的另一个函数， VectorTools::project 来计算我们的初始值，作为连续初始值的 $L^2$ 投影。此外，我们使用 VectorTools::create_right_hand_side 来生成积分 $(f^n,\phi^n_i)$  。这些以前总是由 <code>assemble_system</code> 或应用程序代码中的类似函数手工生成。然而，我们懒得在这里做这些，所以干脆使用库函数。
-* 
 
-* 
+* 这里是仅有的三个有一些新兴趣的包含文件。第一个文件已经被使用了，例如，用于 VectorTools::interpolate_boundary_values 和 MatrixTools::apply_boundary_values 函数。然而，我们在这里使用该类中的另一个函数， VectorTools::project 来计算我们的初始值，作为连续初始值的 $L^2$ 投影。此外，我们使用 VectorTools::create_right_hand_side 来生成积分 $(f^n,\phi^n_i)$  。这些以前总是由 <code>assemble_system</code> 或应用程序代码中的类似函数手工生成。然而，我们懒得在这里做这些，所以干脆使用库函数。
+*
+
+
 * @code
  #include <deal.II/numerics/vector_tools.h>
 * 
  @endcode
-* 
-* 与此类似，我们也懒得写代码来组装质量矩阵和拉普拉斯矩阵，尽管这只需要从以前的任何一个教程程序中复制相关代码。相反，我们想把重点放在这个程序中真正新的东西上，因此使用了 MatrixCreator::create_mass_matrix 和 MatrixCreator::create_laplace_matrix 函数。它们被声明在这里。
-* 
+*
+* 与此非常相似，我们也懒得写代码来组装质量矩阵和拉普拉斯矩阵，虽然这只需要从以前的任何一个教程程序中复制相关代码。相反，我们想把重点放在这个程序中真正新的东西上，因此使用了 MatrixCreator::create_mass_matrix 和 MatrixCreator::create_laplace_matrix 函数。它们被声明在这里。
+*
 
-* 
+
 * @code
  #include <deal.II/numerics/matrix_tools.h>
 * 
  @endcode
-* 
-* 最后，这里有一个include文件，包含了各种有时需要的工具函数。特别是，我们需要 Utilities::int_to_string 类，该类在给定一个整数参数后，返回它的字符串表示。它特别有用，因为它允许有第二个参数，表明我们希望结果用前导零填充的数字数。我们将用它来写输出文件，其形式为 <code>solution-XXX.vtu</code> where <code>XXX</code> ，表示时间步数，并且总是由三位数组成，即使我们仍然处于个位或两位数的时间步数中。
-* 
+*
+* 最后，这里有一个包含文件，它包含了人们有时需要的各种工具函数。特别是，我们需要 Utilities::int_to_string 类，该类在给定一个整数参数后，返回它的字符串表示。它特别有用，因为它允许有第二个参数，表明我们希望结果用前导零填充的数字数。我们将用它来写输出文件，其形式为 <code>solution-XXX.vtu</code> where <code>XXX</code> ，表示时间步数，并且总是由三位数组成，即使我们仍然处于个位或两位数的时间步数中。
+*
 
-* 
+
 * @code
  #include <deal.II/base/utilities.h>
 * 
  @endcode
-* 
-* 最后一步和以前所有的程序一样。
-* 
 
-* 
+* 最后一步和以前的所有程序一样。
+*
+
+
 * @code
  namespace Step23
  {
@@ -415,17 +415,17 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
 * 
  
  @endcode
- 
+*
 * <a name="ThecodeWaveEquationcodeclass"></a> <h3>The <code>WaveEquation</code> class</h3>。
- 
 
-* 
-* 接下来是对主类的声明。它的公共函数接口与其他大多数教程程序中的一样。值得一提的是，我们现在必须存储四个矩阵，而不是一个：质量矩阵  $M$  ，拉普拉斯矩阵  $A$  ，用于求解  $U^n$  的矩阵  $M+k^2\theta^2A$  ，以及用于求解  $V^n$  的带有边界条件的质量矩阵副本。请注意，在周围有一个额外的质量矩阵副本是有点浪费的。我们将在可能的改进部分讨论如何避免这种情况的策略。  
-* 同样，我们需要 $U^n,V^n$ 的解向量，以及前一个时间步骤 $U^{n-1},V^{n-1}$ 的相应向量。 <code>system_rhs</code> 将用于我们在每个时间步长中解决两个线性系统之一时的任何右手向量。这些将在两个函数  <code>solve_u</code>  和  <code>solve_v</code>  中得到解决。  
+
+*
+* 接下来是主类的声明。它的公共函数接口与其他大多数教程程序一样。值得一提的是，我们现在必须存储四个矩阵，而不是一个：质量矩阵  $M$  ，拉普拉斯矩阵  $A$  ，用于求解  $U^n$  的矩阵  $M+k^2\theta^2A$  ，以及用于求解  $V^n$  的带有边界条件的质量矩阵副本。请注意，在周围有一个额外的质量矩阵副本是有点浪费的。我们将在可能的改进部分讨论如何避免这种情况的策略。   
+* 同样，我们需要 $U^n,V^n$ 的解向量，以及前一个时间步长的相应向量， $U^{n-1},V^{n-1}$ 。 <code>system_rhs</code> 将用于我们在每个时间步长中解决两个线性系统之一时的任何右手向量。这些将在两个函数  <code>solve_u</code>  和  <code>solve_v</code>  中得到解决。   
 * 最后，变量 <code>theta</code> 用于表示参数 $\theta$ ，该参数用于定义使用哪种时间步进方案，这在介绍中已经说明。剩下的就不言而喻了。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class WaveEquation
@@ -465,16 +465,16 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
+*
 * <a name="Equationdata"></a> <h3>Equation data</h3>。
- 
 
-* 
-* 在我们继续填写主类的细节之前，让我们定义与问题相对应的方程数据，即解 $u$ 及其时间导数 $v$ 的初始值和边界值，以及一个右手类。我们使用派生自Function类模板的类来做这件事，这个模板以前已经用过很多次了，所以下面的内容不应该是一个惊喜。  
+
+*
+* 在我们继续填写主类的细节之前，让我们定义与问题相对应的方程数据，即解 $u$ 和其时间导数 $v$ 的初始值和边界值，以及一个右手类。我们使用从Function类模板派生出来的类来做这件事，这个模板以前已经用过很多次了，所以下面的内容不应该是一个惊喜。   
 * 让我们从初始值开始，对数值 $u$ 以及它的时间导数，即速度 $v$ 都选择零。
-* 
+*
 
- 
+
 * @code
    template <int dim>
    class InitialValuesU : public Function<dim>
@@ -507,11 +507,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
-* 其次，我们有右手边的强制项。无聊的是，我们在这里也选择零。
- 
 
-* 
+* 其次，我们有右手边的强制项。无聊的是，我们在这里也选择零。
+*
+
+
 * @code
    template <int dim>
    class RightHandSide : public Function<dim>
@@ -529,11 +529,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
-* 最后，我们有 $u$ 和 $v$ 的边界值。它们与介绍中描述的一样，一个是另一个的时间导数。
-* 
 
-* 
+* 最后，我们有  $u$  和  $v$  的边界值。它们就像介绍中描述的那样，一个是另一个的时间导数。
+*
+
+
 * @code
    template <int dim>
    class BoundaryValuesU : public Function<dim>
@@ -580,16 +580,16 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
+*
 * <a name="ImplementationofthecodeWaveEquationcodeclass"></a> <h3>Implementation of the <code>WaveEquation</code> class</h3>。
- 
 
-* 
-* 实际逻辑的实现实际上是相当短的，因为我们把组装矩阵和右手边的向量等事情交给了库。其余的实际代码不超过130行，其中相当一部分是可以从以前的例子程序中提取的模板代码（例如，解决线性系统的函数，或生成输出的函数）。  
+
+*
+* 实际逻辑的实现实际上是相当短的，因为我们把组装矩阵和右手边的向量等事情交给了库。其余的实际代码不超过130行，其中相当一部分是可以从以前的例子程序中获取的模板代码（例如，解决线性系统的函数，或生成输出的函数）。   
 * 让我们从构造函数开始（关于时间步长的选择的解释，见引言中关于Courant、Friedrichs和Lewy的部分）。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    WaveEquation<dim>::WaveEquation()
@@ -603,15 +603,15 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
 * 
  
  @endcode
-* 
-* <a name="WaveEquationsetup_system"></a> <h4>WaveEquation::setup_system</h4>
- 
+*
+* <a name="WaveEquationsetup_system"></a> <h4>WaveEquation::setup_system</h4>。
 
-* 
+
+*
 * 下一个函数是在程序开始时，也就是在第一个时间步骤之前，设置网格、DoFHandler以及矩阵和向量。如果你已经阅读了至少到 step-6 为止的教程程序，那么前几行是相当标准的。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void WaveEquation<dim>::setup_system()
@@ -635,13 +635,13 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
      sparsity_pattern.copy_from(dsp);
 * 
  @endcode
-* 
-* 然后是一个块，我们必须初始化我们在程序过程中需要的3个矩阵：质量矩阵、拉普拉斯矩阵和在每个时间步长中求解 $U^n$ 时使用的矩阵 $M+k^2\theta^2A$ 。    
-*在设置这些矩阵时，注意它们都利用了相同的稀疏模式对象。最后，在deal.II中矩阵和稀疏模式是独立对象的原因（与许多其他有限元或线性代数类不同）变得很清楚：在相当一部分应用中，我们必须持有几个恰好具有相同稀疏模式的矩阵，它们没有理由不共享这一信息，而不是重新建立并多次浪费内存。    
+*
+* 然后是一个区块，我们必须初始化我们在程序过程中需要的3个矩阵：质量矩阵、拉普拉斯矩阵和在每个时间步骤中求解 $M+k^2\theta^2A$ 时使用的矩阵 $U^n$ 。     
+*在设置这些矩阵时，注意它们都利用了相同的稀疏模式对象。最后，在deal.II中，矩阵和稀疏模式是独立的对象的原因（与许多其他有限元或线性代数类不同）变得很清楚：在相当一部分应用中，人们必须持有几个恰好具有相同稀疏模式的矩阵，它们没有理由不共享这一信息，而不是重新建立并多次浪费内存。     
 * 在初始化所有这些矩阵之后，我们调用库函数来建立拉普拉斯和质量矩阵。它们所需要的只是一个DoFHandler对象和一个将用于数值积分的正交公式对象。请注意，在许多方面，这些函数比我们通常在应用程序中做的要好，例如，如果一台机器有多个处理器，它们会自动并行构建矩阵：更多信息请参见WorkStream的文档或 @ref threads "多处理器的并行计算 "模块。解决线性系统的矩阵将在run()方法中被填充，因为我们需要在每个时间步长中重新应用边界条件。
-* 
+*
 
-* 
+
 * @code
      mass_matrix.reinit(sparsity_pattern);
      laplace_matrix.reinit(sparsity_pattern);
@@ -656,11 +656,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
                                           laplace_matrix);
 * 
  @endcode
-* 
-* 该函数的其余部分用于将矢量大小设置为正确的值。最后一行关闭了悬挂的节点约束对象。由于我们在一个均匀细化的网格上工作，所以不存在任何约束条件，也没有计算过任何约束条件（也就是说，没有必要像其他程序那样调用 DoFTools::make_hanging_node_constraints ），但无论如何，我们需要在下面的一个地方进一步建立一个约束对象。
-* 
+*
+* 该函数的其余部分用于将矢量大小设置为正确的值。最后一行关闭了悬挂的节点约束对象。由于我们在一个均匀细化的网格上工作，所以不存在任何约束，也没有计算过任何约束（也就是说，没有必要像其他程序那样调用 DoFTools::make_hanging_node_constraints ），但无论如何，我们需要在下面的一个地方进一步设置一个约束对象。
+*
 
-* 
+
 * @code
      solution_u.reinit(dof_handler.n_dofs());
      solution_v.reinit(dof_handler.n_dofs());
@@ -674,16 +674,16 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
-* <a name="WaveEquationsolve_uandWaveEquationsolve_v"></a> <h4>WaveEquation::solve_u and WaveEquation::solve_v</h4> 。
- 
+*
+* <a name="WaveEquationsolve_uandWaveEquationsolve_v"></a> <h4>WaveEquation::solve_u and WaveEquation::solve_v</h4>。
 
-* 
-* 接下来的两个函数是解决与  $U^n$  和  $V^n$  的方程相关的线性系统。这两个函数并不特别有趣，因为它们基本遵循了之前所有教程程序中使用的方案。  
+
+*
+* 接下来的两个函数是解决与  $U^n$  和  $V^n$  的方程相关的线性系统。这两个函数并不特别有趣，因为它们几乎都是按照以前所有的教程程序中使用的方案。   
 * 我们可以对我们要反转的两个矩阵的预处理程序做一些小实验。然而，事实证明，对于这里的矩阵，使用雅可比或SSOR预处理器可以稍微减少解决线性系统所需的迭代次数，但由于应用预处理器的成本，在运行时间方面并不占优势。这也不是什么损失，但让我们保持简单，只做不做。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void WaveEquation<dim>::solve_u()
@@ -714,15 +714,15 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
-* <a name="WaveEquationoutput_results"></a> <h4>WaveEquation::output_results</h4>.
- 
+*
+* <a name="WaveEquationoutput_results"></a> <h4>WaveEquation::output_results</h4>。
 
-* 
+
+*
 * 同样，下面的函数也和我们之前做的差不多。唯一值得一提的是，这里我们使用 Utilities::int_to_string 函数的第二个参数，生成了一个用前导零填充的时间步长的字符串表示，长度为3个字符。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void WaveEquation<dim>::output_results() const
@@ -738,11 +738,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
      const std::string filename =
        "solution-" + Utilities::int_to_string(timestep_number, 3) + ".vtu";
  @endcode
-* 
+*
 * 与 step-15 一样，由于我们在每个时间步长写输出（而且我们要解决的系统相对简单），我们指示DataOut使用zlib压缩算法，该算法针对速度而不是磁盘使用进行了优化，因为否则绘制输出就会成为一个瓶颈。
-* 
+*
 
-* 
+
 * @code
      DataOutBase::VtkFlags vtk_flags;
      vtk_flags.compression_level =
@@ -755,15 +755,15 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  
 * 
  @endcode
-* 
-* <a name="WaveEquationrun"></a> <h4>WaveEquation::run</h4>
- 
+*
+* <a name="WaveEquationrun"></a> <h4>WaveEquation::run</h4>。
 
-* 
-* 下面是该程序中唯一有趣的功能。它包含了所有时间步骤的循环，但在这之前我们必须设置网格、DoFHandler和矩阵。此外，我们必须以某种方式从初始值开始。为此，我们使用 VectorTools::project 函数，该函数接收一个描述连续函数的对象，并计算该函数在DoFHandler对象所描述的有限元空间的 $L^2$ 投影。再也没有比这更简单的了。
-* 
 
-* 
+
+* 以下是程序中唯一有趣的功能。它包含了所有时间步骤的循环，但在这之前我们必须设置网格、DoFHandler和矩阵。此外，我们必须以某种方式从初始值开始。为此，我们使用 VectorTools::project 函数，该函数接收一个描述连续函数的对象，并计算该函数在DoFHandler对象所描述的有限元空间的 $L^2$ 投影。再也没有比这更简单的了。
+*
+
+
 * @code
    template <int dim>
    void WaveEquation<dim>::run()
@@ -782,17 +782,17 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
                           old_solution_v);
 * 
  @endcode
-* 
+*
 * 接下来是循环所有的时间步骤，直到我们到达结束时间（本例中为 $T=5$ ）。在每个时间步骤中，我们首先要解决 $U^n$ ，使用方程式 $(M^n + k^2\theta^2 A^n)U^n =$   $(M^{n,n-1}
 * 
 - k^2\theta(1-\theta) A^{n,n-1})U^{n-1} + kM^{n,n-1}V^{n-1}
  +$   $k\theta \left[k \theta F^n + k(1-\theta) F^{n-1} \right]$  。请注意，我们在所有的时间步骤中使用相同的网格，因此 $M^n=M^{n,n-1}=M$  和  $A^n=A^{n,n-1}=A$  。因此，我们首先要做的是将 $MU^{n-1}
 * 
-- k^2\theta(1-\theta) AU^{n-1} + kMV^{n-1}$ 和强制项相加，并将结果放入 <code>system_rhs</code> 向量中。(对于这些加法，我们需要在循环之前声明一个临时向量，以避免在每个时间步骤中重复分配内存)。    
-* 这里要意识到的一点是我们如何将时间变量传达给描述右手边的对象：每个从函数类派生的对象都有一个时间字段，可以用 Function::set_time 来设置，用 Function::get_time. 来读取。 实质上，使用这种机制，所有空间和时间的函数因此被认为是在某个特定时间评估的空间的函数。这与我们在有限元程序中的典型需求非常吻合，在有限元程序中，我们几乎总是在一个时间步长上工作，而且从来没有发生过，例如，人们想在任何给定的空间位置为所有时间评估一个时空函数。
-* 
+- k^2\theta(1-\theta) AU^{n-1} + kMV^{n-1}$ 和强制项相加，并将结果放入 <code>system_rhs</code> 向量中。对于这些加法，我们需要在循环之前声明一个临时向量，以避免在每个时间步骤中重复分配内存）。     
+* 这里要意识到的一点是我们如何将时间变量传达给描述右手边的对象：每个从函数类派生的对象都有一个时间字段，可以用 Function::set_time 来设置，用 Function::get_time. 来读取。 实质上，使用这种机制，所有空间和时间的函数因此被认为是在特定时间评估的空间的函数。这与我们在有限元程序中的典型需求非常吻合，在有限元程序中，我们几乎总是在一个时间步长上工作，而且从来没有发生过，例如，人们想在任何给定的空间位置为所有时间评估一个时空函数。
+*
 
-* 
+
 * @code
      Vector<double> tmp(solution_u.size());
      Vector<double> forcing_terms(solution_u.size());
@@ -836,11 +836,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
          system_rhs.add(theta time_step, forcing_terms);
 * 
  @endcode
- 
-* 这样构建了第一个方程的右手边向量后，我们要做的就是应用正确的边界值。至于右手边，这是一个在特定时间评估的时空函数，我们在边界节点进行插值，然后像我们通常做的那样用结果来应用边界值。然后将结果交给solve_u()函数。
-* 
+*
+* 在如此构建了第一个方程的右手边向量之后，我们要做的就是应用正确的边界值。至于右手边，这是一个在特定时间评估的时空函数，我们在边界节点插值，然后像我们通常做的那样用结果来应用边界值。然后将结果交给solve_u()函数。
+*
 
-* 
+
 * @code
          {
            BoundaryValuesU<dim> boundary_values_u_function;
@@ -853,11 +853,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
                                                     boundary_values);
 * 
  @endcode
-* 
+*
 * solution_u()的矩阵在每个时间步骤中都是相同的，所以人们可以认为只在模拟开始时做一次就足够了。然而，由于我们需要对线性系统应用边界值（消除了一些矩阵的行和列，并为右侧提供了贡献），因此在实际应用边界数据之前，我们必须在每个时间步骤中重新填充矩阵。实际内容非常简单：它是质量矩阵和加权拉普拉斯矩阵的总和。
-* 
+*
 
-* 
+
 * @code
            matrix_u.copy_from(mass_matrix);
            matrix_u.add(theta theta time_step time_step, laplace_matrix);
@@ -870,14 +870,14 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
 * 
  
  @endcode
-* 
+*
 * 第二步，即求解 $V^n$ ，工作原理类似，只是这次左边的矩阵是质量矩阵（我们再次复制，以便能够应用边界条件，而右边是 $MV^{n-1}
 * 
 - k\left[ \theta A U^n +
  (1-\theta) AU^{n-1}\right]$ 加上强制项。边界值的应用方式与之前相同，只是现在我们必须使用BoundaryValuesV类。
-* 
+*
 
-* 
+
 * @code
          laplace_matrix.vmult(system_rhs, solution_u);
          system_rhs=
@@ -912,11 +912,11 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
          solve_v();
 * 
  @endcode
- 
-* 最后，在计算完两个解的组成部分后，我们输出结果，计算解中的能量，并在将现在的解移入持有上一个时间步长的解的向量后，继续下一个时间步长。注意函数 SparseMatrix::matrix_norm_square 可以在一个步骤中计算 $\left<V^n,MV^n\right>$ 和 $\left<U^n,AU^n\right>$ ，为我们节省了一个临时向量和几行代码的费用。
-* 
+*
+* 最后，在计算完两个解的组成部分后，我们输出结果，计算解中的能量，并在将现在的解移入持有上一个时间步骤的解的向量后，继续下一个时间步骤。注意函数 SparseMatrix::matrix_norm_square 可以在一个步骤中计算 $\left<V^n,MV^n\right>$ 和 $\left<U^n,AU^n\right>$ ，为我们节省了一个临时向量和几行代码的费用。
+*
 
-* 
+
 * @code
          output_results();
 * 
@@ -934,15 +934,15 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
 * 
  
  @endcode
-* 
-* <a name="Thecodemaincodefunction"></a> <h3>The <code>main</code> function</h3>
- 
+*
+* <a name="Thecodemaincodefunction"></a> <h3>The <code>main</code> function</h3>。
 
-* 
-* 剩下的就是程序的主要功能了。这里没有什么是以前的几个程序中没有展示过的。
-* 
 
-* 
+
+*剩下的是程序的主要功能。这里没有什么是在以前的几个程序中没有展示过的。
+*
+
+
 * @code
  int main()
  {
@@ -984,7 +984,7 @@ step_24  "  step-24  " 展示了一个更好的方法来保持这些东西的同
  }
  @endcode
 * <a name="Results"></a><h1>Results</h1> 。
-* 
+
 
 * 当程序运行时，它产生以下输出。
 * @code
@@ -1042,15 +1042,15 @@ Time step 320 at t=5
    v-equation: 20 CG iterations.
    Total energy: 23.1019
 @endcode
- 
-* 我们立即看到的是，至少在 $t=\frac 12$ 之后，能量是一个常数（在此之前，边界源项 $g$ 是非零的，向系统注入能量）。
+*
+* 我们立即看到，至少在 $t=\frac 12$ 之后，能量是一个常数（在此之前，边界源项 $g$ 是非零的，向系统注入能量）。
 * 除了屏幕输出外，程序还将每个时间段的解写到输出文件中。如果我们充分处理它们并将其粘贴到amovie中，我们会得到以下结果。
-*  <img src="https://www.dealii.org/images/steps/developer/step-23.movie.gif" alt="Animation of the solution of step 23.">  
+*  <img src="https://www.dealii.org/images/steps/developer/step-23.movie.gif" alt="Animation of the solution of step 23."> 
 * 这部电影显示了生成的波很好地穿过域并返回，在夹持的边界处被反射。一些数值噪声跟在波的后面，这是由过大的网格尺寸造成的假象，可以通过减小网格宽度和时间步长来减少。
-* 
+*
 
 * <a name="extensions"></a><a name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3> 。
-* 
+
 
 * 如果你想探索一下，可以尝试以下一些东西。 <ul>   <li>  变化的  $\theta$  。这给出了不同的时间步进方案，其中一些是稳定的，而另一些则不是。看一下能量是如何演变的。
 *  <li>  不同的初始和边界条件，右手边。
@@ -1091,9 +1091,9 @@ Time step 320 at t=5
                                        system_rhs,
                                        false);
   @endcode
- 
-*  <li>  deal.II是一个支持自适应网格的库，如果这个程序支持每隔几步改变网格，那当然更好。考虑到解决方案的结构&mdash; 一个穿越领域的波浪&mdash; 如果我们只在波浪目前所在的地方改进网格，而不是简单地在所有地方改进网格，这似乎是合适的。直观地看，我们应该能够通过这种方式节省大量的单元。虽然经过进一步的思考，我们意识到这只是在模拟的初始阶段。 一段时间后，对于波浪现象来说，域中充满了初始波的反射，向各个方向发展，充满了域中的每个角落。 在这一点上，一般来说，使用局部网格细化是没有什么好处的）。)
-* 为了使自适应改变网格成为可能，基本上有两条途径。 正确的方法是回到我们用Rothe的方法得到的弱形式。例如，在每个时间步骤中要解决的两个方程中的第一个方程看起来是这样的。 \f{eqnarray*}
+
+*  <li>  deal.II是一个支持自适应网格的库，如果这个程序支持每隔几步改变网格，那当然更好。考虑到解决方案的结构&mdash; 一个穿越领域的波浪&mdash; 如果我们只在波浪目前所在的地方完善网格，而不是简单地在所有地方完善网格，这似乎是合适的。直观地看，我们应该能够通过这种方式节省大量的单元。虽然经过进一步的思考，我们意识到这只是在模拟的初始阶段。  一段时间后，对于波浪现象来说，域中充满了初始波的反射，向各个方向发展，充满了域中的每个角落。  在这一点上，一般来说，使用局部网格细化是没有什么好处的）。)
+* 为了使自适应改变网格成为可能，基本上有两条途径。  正确的方法是回到我们用Rothe的方法得到的弱形式。例如，在每个时间步骤中要解决的两个方程中的第一个方程看起来是这样的。  \f{eqnarray*}
   (u^n,\varphi) + k^2\theta^2(\nabla u^n,\nabla \varphi) &=&
   (u^{n-1},\varphi)
 * 
@@ -1116,9 +1116,9 @@ Time step 320 at t=5
   \left[
   \theta (f^n,\varphi) + (1-\theta) (f^{n-1},\varphi)
   \right],
-  \f}， $I^n$ 将一个给定的函数插值到网格 ${\mathbb T}^n$ 上，而不是上面的方程式。 这是一个更简单的方法，因为在每个时间步长中，我们不再需要担心 $u^{n-1},v^{n-1}$ 是在我们现在使用的同一个网格上计算的，还是在不同的网格上计算的。因此，代码的唯一变化是增加了一个计算误差的函数，为细化标记单元，设置SolutionTransfer对象，将解转移到新的网格上，并在新的网格上重建矩阵和右手向量。建立矩阵和右手边的函数以及求解器都不需要改变。
-* 虽然严格来说，这第二种方法在Rothe框架中并不十分正确（它引入了一个额外的误差源，即插值），但它几乎是所有解决时间相关方程的人所做的。我们将在  step-31  中使用这种方法，例如。 </ul>  
-* 
+  \f}， $I^n$ 将一个给定的函数插值到网格 ${\mathbb T}^n$ 上，而不是上面的方程式。  这是一个更简单的方法，因为在每个时间步长中，我们不再需要担心 $u^{n-1},v^{n-1}$ 是在我们现在使用的同一个网格上计算的，还是在不同的网格上计算的。因此，代码的唯一变化是增加了一个计算误差的函数，为细化标记单元，设置SolutionTransfer对象，将解转移到新的网格上，并在新的网格上重建矩阵和右手向量。建立矩阵和右手边的函数以及求解器都不需要改变。
+* 虽然严格来说，这第二种方法在Rothe框架中并不十分正确（它引入了一个额外的误差源，即插值），但它几乎是所有解决时间相关方程的人所做的。我们将在  step-31  中使用这种方法，例如。 </ul> 
+*
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-23.cc"  。
 * */

@@ -1,0 +1,39 @@
+[0.x.0]*
+  [2.x.0] 
+*  New to deal.II? You might want to start with tutorial  [2.x.1]  and work your way up to  [2.x.2] . At that point you can explore what features you are interested in and look at the large collection of programs listed below.
+*  The deal.II tutorial contains a collection of programs, each more or less built atop of previous ones, which demonstrate various aspects of the library. Each such example has the following structure:  [2.x.3]     [2.x.4]  [1.x.0] What the program does, including        the mathematical model, and        what programming techniques are new.    [2.x.5]  [1.x.1] An extensively documented listing of the        source code.    [2.x.6]  [1.x.2] The output of the program, with comments and        interpretation.    [2.x.7]  [1.x.3] The source code stripped of        all comments.  [2.x.8]  You can browse the available tutorial programs  [2.x.9]     [2.x.10]  as [1.x.4][1.x.5] that shows how the major      concepts of each tutorial programs builds on previous ones (though each      program may also use minor pieces from other programs not specifically
+*       connected in the graph).    [2.x.11]  as [1.x.6][1.x.7] that provides a short     synopsis of each program.    [2.x.12]  or [1.x.8][1.x.9].  [2.x.13] 
+*  The programs are in the  [2.x.14]  directory of your local deal.II installation. After compiling the library itself, if you go into one of the tutorial directories, you can configure the program by typing  [2.x.15]  and run it using  [2.x.16] . The latter command also compiles the program if that has not already been done. The CMakeLists.txt files in the different directories are based on the [1.x.10].
+* 
+
+* 
+*  [2.x.17]  Some of the tutorial programs also jointly form   the [1.x.11]. More, often more complex but less well documented,   deal.II-based programs than the ones that form the tutorial can also be   found in the  [2.x.18]  .
+* 
+
+*  [1.x.12]  [2.x.19]  TutorialConnectionGraph [1.x.13]
+*  The following graph shows the connections between tutorial programs and how their major components build on each other. Click on any of the boxes to go to one of the programs. If you hover your mouse pointer over a box, a brief description of the program should appear.
+
+* 
+* [1.x.14]
+*  [1.x.15]<br />
+
+* 
+* [1.x.16]
+*  [1.x.17] [1.x.18]
+*   [2.x.20] 
+* 
+
+*  [1.x.19] [1.x.20]
+*  [1.x.21][1.x.22]  [2.x.21]  [1.x.23][1.x.24]  [2.x.22]  [1.x.25][1.x.26]  [2.x.23] 
+* 
+
+*  [1.x.27][1.x.28]  [2.x.24] 
+* 
+
+* 
+*  [1.x.29][1.x.30]  [2.x.25] 
+* 
+
+* 
+*  [1.x.31][1.x.32]  [2.x.26] 
+* [0.x.1]

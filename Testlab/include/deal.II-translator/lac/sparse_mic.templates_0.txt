@@ -1,3 +1,0 @@
-include/deal.II-translator/lac/sparse_mic.templates_0.txt
-[0.x.0]
-

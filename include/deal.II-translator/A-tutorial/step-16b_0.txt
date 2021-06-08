@@ -1,0 +1,264 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17]
+*  [2.x.2] 
+* [1.x.18][1.x.19][1.x.20]
+* 
+
+* This is a variant of  [2.x.3]  with the only change that we are using theMeshWorker framework with the pre-made LocalIntegrator helper classes insteadof manually assembling the matrices.
+* The details of this framework on how it is used in practice will be explainedas part of this tutorial program.
+* [1.x.21][1.x.22]
+* 
+
+* The problem we solve here is the same as the one in  [2.x.4] .
+* 
+
+*  [1.x.23] [1.x.24]
+*   [1.x.25]  [1.x.26]
+* 
+
+* 
+*  Again, the first few include files are already known, so we won't comment on them:
+* 
+
+* 
+* [1.x.27]
+* 
+*  These, now, are the include necessary for the multilevel methods. The first one declares how to handle Dirichlet boundary conditions on each of the levels of the multigrid method. For the actual description of the degrees of freedom, we do not need any new include file because DoFHandler already has all necessary methods implemented. We will only need to distribute the DoFs for the levels further down.
+* 
+
+* 
+*  The rest of the include files deals with the mechanics of multigrid as a linear operator (solver or preconditioner).
+* 
+
+* 
+* [1.x.28]
+* 
+*  Finally we include the MeshWorker framework. This framework through its function loop() and integration_loop(), automates loops over cells and assembling of data into vectors, matrices, etc. It obeys constraints automatically. Since we have to build several matrices and have to be aware of several sets of constraints, this will save us a lot of headache.
+* 
+
+* 
+* [1.x.29]
+* 
+*  In order to save effort, we use the pre-implemented Laplacian found in
+* 
+
+* 
+* [1.x.30]
+* 
+*  This is C++:
+* 
+
+* 
+* [1.x.31]
+* 
+*   [1.x.32]  [1.x.33]
+* 
+
+* 
+*  The  [2.x.5]  expects a class that provides functions for integration on cells and boundary and interior faces. This is done by the following class. In the constructor, we tell the loop that cell integrals should be computed (the 'true'), but integrals should not be computed on boundary and interior faces (the two 'false'). Accordingly, we only need a cell function, but none for the faces.
+* 
+
+* 
+* [1.x.34]
+* 
+*  Next the actual integrator on each cell. We solve a Poisson problem with a coefficient one in the right half plane and one tenth in the left half plane.
+* 
+
+* 
+*  The  [2.x.6]  base class of  [2.x.7]  contains objects that can be filled in this local integrator. How many objects are created is determined inside the MeshWorker framework by the assembler class. Here, we test for instance that one matrix is required  [2.x.8]  The matrices are accessed through  [2.x.9]  which takes the number of the matrix as its first argument. The second argument is only used for integrals over faces when there are two matrices for each test function used. Then, a second matrix with indicator 'true' would exist with the same index.
+* 
+
+* 
+*   [2.x.10]  provides one or several FEValues objects, which below are used by  [2.x.11]  or  [2.x.12]  Since we are assembling only a single PDE, there is also only one of these objects with index zero.
+* 
+
+* 
+*  In addition, we note that this integrator serves to compute the matrices for the multilevel preconditioner as well as the matrix and the right hand side for the global system. Since the assembler for a system requires an additional vector,  [2.x.13]  is returning a nonzero value. Accordingly, we fill a right hand side vector at the end of this function. Since LocalResults can deal with several BlockVector objects, but we are again in the simplest case here, we enter the information into block zero of vector zero.
+* 
+
+* 
+* [1.x.35]
+* 
+*   [1.x.36]  [1.x.37]
+* 
+
+* 
+*  This main class is basically the same class as in  [2.x.14] . As far as member functions is concerned, the only addition is the  [2.x.15]  function that assembles the matrices that correspond to the discrete operators on intermediate levels:
+* 
+
+* 
+* [1.x.38]
+* 
+*  The following members are the essential data structures for the multigrid method. The first two represent the sparsity patterns and the matrices on individual levels of the multilevel hierarchy, very much like the objects for the global mesh above.     
+*   Then we have two new matrices only needed for multigrid methods with local smoothing on adaptive meshes. They convey data between the interior part of the refined region and the refinement edge, as outlined in detail in the  [2.x.16]  "multigrid paper".     
+*   The last object stores information about the boundary indices on each level and information about indices lying on a refinement edge between two different refinement levels. It thus serves a similar purpose as AffineConstraints, but on each level.
+* 
+
+* 
+* [1.x.39]
+* 
+*   [1.x.40]  [1.x.41]
+* 
+
+* 
+*  Just one short remark about the constructor of the Triangulation: by convention, all adaptively refined triangulations in deal.II never change by more than one level across a face between cells. For our multigrid algorithms, however, we need a slightly stricter guarantee, namely that the mesh also does not change by more than refinement level across vertices that might connect two cells. In other words, we must prevent the following situation:   
+*    [2.x.17]    
+*   This is achieved by passing the  [2.x.18]  flag to the constructor of the triangulation class.
+* 
+
+* 
+* [1.x.42]
+* 
+*   [1.x.43]  [1.x.44]
+* 
+
+* 
+*  In addition to just distributing the degrees of freedom in the DoFHandler, we do the same on each level. Then, we follow the same procedure as before to set up the system on the leaf mesh.
+* 
+
+* 
+* [1.x.45]
+* 
+*  The multigrid constraints have to be initialized. They need to know about the boundary values as well, so we pass the  [2.x.19]  here as well.
+* 
+
+* 
+* [1.x.46]
+* 
+*  Now for the things that concern the multigrid data structures. First, we resize the multilevel objects to hold matrices and sparsity patterns for every level. The coarse level is zero (this is mandatory right now but may change in a future revision). Note that these functions take a complete, inclusive range here (not a starting index and size), so the finest level is  [2.x.20] . We first have to resize the container holding the SparseMatrix classes, since they have to release their SparsityPattern before the can be destroyed upon resizing.
+* 
+
+* 
+* [1.x.47]
+* 
+*  Now, we have to provide a matrix on each level. To this end, we first use the  [2.x.21]  function to generate a preliminary compressed sparsity pattern on each level (see the  [2.x.22]  module for more information on this topic) and then copy it over to the one we really want. The next step is to initialize both kinds of level matrices with these sparsity patterns.     
+*   It may be worth pointing out that the interface matrices only have entries for degrees of freedom that sit at or next to the interface between coarser and finer levels of the mesh. They are therefore even sparser than the matrices on the individual levels of our multigrid hierarchy. If we were more concerned about memory usage (and possibly the speed with which we can multiply with these matrices), we should use separate and different sparsity patterns for these two kinds of matrices.
+* 
+
+* 
+* [1.x.48]
+* 
+*   [1.x.49]  [1.x.50]
+* 
+
+* 
+*  The following function assembles the linear system on the finest level of the mesh. Since we want to reuse the code here for the level assembling below, we use the local integrator class LaplaceIntegrator and leave the loops to the MeshWorker framework. Thus, this function first sets up the objects necessary for this framework, namely
+* 
+
+* 
+* 
+*  - a  [2.x.23]  object, which will provide all the required data in quadrature points on the cell. This object can be seen as an extension of FEValues, providing a lot more useful information,
+* 
+
+* 
+* 
+*  - a  [2.x.24]  object, which on the one hand side extends the functionality of cell iterators, but also provides space for return values in its base class LocalResults,
+* 
+
+* 
+* 
+*  - an assembler, in this case for the whole system. The term 'simple' here refers to the fact that the global system does not have a block structure,
+* 
+
+* 
+* 
+*  - the local integrator, which implements the actual forms.   
+*   After the loop has combined all of these into a matrix and a right hand side, there is one thing left to do: the assemblers leave matrix rows and columns of constrained degrees of freedom untouched. Therefore, we put a one on the diagonal to make the whole system well posed. The value one, or any fixed value has the advantage, that its effect on the spectrum of the matrix is easily understood. Since the corresponding eigenvectors form an invariant subspace, the value chosen does not affect the convergence of Krylov space solvers.
+* 
+
+* 
+* [1.x.51]
+* 
+*   [1.x.52]  [1.x.53]
+* 
+
+* 
+*  The next function is the one that builds the linear operators (matrices) that define the multigrid method on each level of the mesh. The integration core is the same as above, but the loop below will go over all existing cells instead of just the active ones, and the results must be entered into the correct level matrices. Fortunately, MeshWorker hides most of that from us, and thus the difference between this function and the previous lies only in the setup of the assembler and the different iterators in the loop. Also, fixing up the matrices in the end is a little more complicated.
+* 
+
+* 
+* [1.x.54]
+* 
+*   [1.x.55]  [1.x.56]
+* 
+
+* 
+*  This is the other function that is significantly different in support of the multigrid solver (or, in fact, the preconditioner for which we use the multigrid method).   
+*   Let us start out by setting up two of the components of multilevel methods: transfer operators between levels, and a solver on the coarsest level. In finite element methods, the transfer operators are derived from the finite element function spaces involved and can often be computed in a generic way independent of the problem under consideration. In that case, we can use the MGTransferPrebuilt class that, given the constraints of the final linear system and the MGConstrainedDoFs object that knows about the boundary conditions on the each level and the degrees of freedom on interfaces between different refinement level can build the matrices for those transfer operations from a DoFHandler object with level degrees of freedom.   
+*   The second part of the following lines deals with the coarse grid solver. Since our coarse grid is very coarse indeed, we decide for a direct solver (a Householder decomposition of the coarsest level matrix), even if its implementation is not particularly sophisticated. If our coarse mesh had many more cells than the five we have here, something better suited would obviously be necessary here.
+* 
+
+* 
+* [1.x.57]
+* 
+*  The next component of a multilevel solver or preconditioner is that we need a smoother on each level. A common choice for this is to use the application of a relaxation method (such as the SOR, Jacobi or Richardson method) or a small number of iterations of a solver method (such as CG or GMRES). The  [2.x.25]  and MGSmootherPrecondition classes provide support for these two kinds of smoothers. Here, we opt for the application of a single SOR iteration. To this end, we define an appropriate alias and then setup a smoother object.     
+*   The last step is to initialize the smoother object with our level matrices and to set some smoothing parameters. The  [2.x.26]  function can optionally take additional arguments that will be passed to the smoother object on each level. In the current case for the SOR smoother, this could, for example, include a relaxation parameter. However, we here leave these at their default values. The call to  [2.x.27]  indicates that we will use two pre- and two post-smoothing steps on each level; to use a variable number of smoother steps on different levels, more options can be set in the constructor call to the  [2.x.28]  object.     
+*   The last step results from the fact that we use the SOR method as a smoother
+* 
+*  - which is not symmetric
+* 
+*  - but we use the conjugate gradient iteration (which requires a symmetric preconditioner) below, we need to let the multilevel preconditioner make sure that we get a symmetric operator even for nonsymmetric smoothers:
+* 
+
+* 
+* [1.x.58]
+* 
+*  The next preparatory step is that we must wrap our level and interface matrices in an object having the required multiplication functions. We will create two objects for the interface objects going from coarse to fine and the other way around; the multigrid algorithm will later use the transpose operator for the latter operation, allowing us to initialize both up and down versions of the operator with the matrices we already built:
+* 
+
+* 
+* [1.x.59]
+* 
+*  Now, we are ready to set up the V-cycle operator and the multilevel preconditioner.
+* 
+
+* 
+* [1.x.60]
+* 
+*  With all this together, we can finally get about solving the linear system in the usual way:
+* 
+
+* 
+* [1.x.61]
+* 
+*   [1.x.62]  [1.x.63]
+* 
+
+* 
+*  The following two functions postprocess a solution once it is computed. In particular, the first one refines the mesh at the beginning of each cycle while the second one outputs results at the end of each such cycle. The functions are almost unchanged from those in  [2.x.29] , with the exception of one minor difference: we generate output in VTK format, to use the more modern visualization programs available today compared to those that were available when  [2.x.30]  was written.
+* 
+
+* 
+* [1.x.64]
+* 
+*   [1.x.65]  [1.x.66]
+* 
+
+* 
+*  Like several of the functions above, this is almost exactly a copy of the corresponding function in  [2.x.31] . The only difference is the call to  [2.x.32]  that takes care of forming the matrices on every level that we need in the multigrid method.
+* 
+
+* 
+* [1.x.67]
+* 
+*   [1.x.68]  [1.x.69]
+* 
+
+* 
+*  This is again the same function as in  [2.x.33] :
+* 
+
+* 
+* [1.x.70]
+* [1.x.71][1.x.72]
+* 
+
+* As in  [2.x.34] , the solution looks like this on the finest mesh:
+*  [2.x.35] 
+* The output is formatted in a slightly different way compared to  [2.x.36]  but isfunctionally the same and shows the same convergence properties:<pre> [2.x.37]  0DEAL::   Number of active cells:       20DEAL::   Number of degrees of freedom: 25 (by level: 8, 25) [2.x.38]  value 0.510691 [2.x.39]  step 6 value 4.59193e-14 [2.x.40]  1DEAL::   Number of active cells:       44DEAL::   Number of degrees of freedom: 55 (by level: 8, 25, 45) [2.x.41]  value 0.440678 [2.x.42]  step 8 value 1.99419e-13 [2.x.43]  2DEAL::   Number of active cells:       86DEAL::   Number of degrees of freedom: 105 (by level: 8, 25, 69, 49) [2.x.44]  value 0.371855 [2.x.45]  step 9 value 1.13984e-13 [2.x.46]  3DEAL::   Number of active cells:       170DEAL::   Number of degrees of freedom: 200 (by level: 8, 25, 77, 174) [2.x.47]  value 0.318967 [2.x.48]  step 9 value 2.62112e-13 [2.x.49]  4DEAL::   Number of active cells:       332DEAL::   Number of degrees of freedom: 388 (by level: 8, 25, 86, 231, 204) [2.x.50]  value 0.276534 [2.x.51]  step 10 value 1.69562e-13 [2.x.52]  5DEAL::   Number of active cells:       632DEAL::   Number of degrees of freedom: 714 (by level: 8, 25, 89, 231, 514, 141) [2.x.53]  value 0.215300 [2.x.54]  step 10 value 6.47463e-13 [2.x.55]  6DEAL::   Number of active cells:       1202DEAL::   Number of degrees of freedom: 1332 (by level: 8, 25, 89, 282, 771, 435, 257) [2.x.56]  value 0.175848 [2.x.57]  step 10 value 1.80664e-13 [2.x.58]  7DEAL::   Number of active cells:       2288DEAL::   Number of degrees of freedom: 2511 (by level: 8, 25, 89, 318, 779, 1420, 829, 30) [2.x.59]  value 0.136724 [2.x.60]  step 11 value 9.73331e-14</pre>
+* 
+
+* [1.x.73][1.x.74] [2.x.61] 
+* [0.x.1]

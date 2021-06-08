@@ -3,6 +3,6 @@ include/deal.II-translator/A-headers/namespace_dealii_0.txt
  这是deal.II中的所有内容都在其中的命名空间。为了避免在每个类和函数的调用前加上名字空间的名字，因此[2.x.0]在代码的顶部有一个[2.x.1]。
 * 在整个文档中，为了简洁起见，名字空间的前缀被抑制了。
 
-* 
+
 * [0.x.1]
 

@@ -1,3 +1,0 @@
-include/deal.II-translator/base/undefine_macros_0.txt
-[0.x.0]
-

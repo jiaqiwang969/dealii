@@ -20,8 +20,8 @@
  * 初次接触deal.II？你可能想从教程 Step-1 开始，一直到
  * Step-5
  * 。在这一点上，你可以探索你感兴趣的功能，看看下面列出的大量程序。
- * 交易.II教程包含了一系列的程序，每个程序都或多或少地建立在以前的程序之上，这些程序展示了库的各个方面。每个这样的例子都有以下结构。  <ol>   <li>  <b>Introduction:</b> 程序的作用，包括数学模型，以及哪些编程技术是新的。    <li>  <b>The commented program:</b> 广泛记录的源代码清单。    <li>  <b>Results:</b> 程序的输出，包括注释和解释。    <li>  <b>The plain program:</b> 剥去所有注释的源代码。  </ol>  你可以浏览现有的教程程序 <ol>   <li>  作为<b><a href="#graph">a graph</a><a href="#graph">a graph</a></b>，它显示了每个教程程序的主要概念是如何建立在以前的程序之上的（尽管每个程序也可能使用其他程序的次要部分，但没有特别的
- * 在图中连接）。)     <li> 如同<b><a href="#list">a list</a><a href="#list">a list</a></b>，提供每个程序的简短概要。    <li> 或<b><a href="#topic">grouped by topic</a><a href="#topic">grouped by topic</a></b>。  </ol>
+ * 交易.II教程包含了一系列的程序，每个程序都或多或少地建立在以前的程序之上，这些程序展示了库的各个方面。每个这样的例子都有以下结构。   <ol>   <li>  <b>Introduction:</b> 程序的作用，包括数学模型，以及哪些编程技术是新的。     <li>  <b>The commented program:</b> 广泛记录的源代码清单。     <li>  <b>Results:</b> 程序的输出，包括注释和解释。     <li>  <b>The plain program:</b> 剥去所有注释的源代码。   </ol>  你可以浏览现有的教程程序 <ol>   <li>  作为<b><a href="#graph">a graph</a><a href="#graph">a graph</a></b>，它显示了每个教程程序的主要概念是如何建立在以前的程序之上的（尽管每个程序也可能使用其他程序的次要部分，但没有特别的
+ * 在图中连接）。)     <li> 如同<b><a href="#list">a list</a><a href="#list">a list</a></b>，提供每个程序的简短概要。     <li> 或<b><a href="#topic">grouped by topic</a><a href="#topic">grouped by topic</a></b>。   </ol>
  * 这些程序在你本地deal.II安装的 <code>examples/</code>
  * 目录下。在编译库本身之后，如果你进入其中一个教程目录，你可以通过输入
  * <code>cmake .</code>, build it via <code>make</code>
@@ -31,15 +31,14 @@
  * CMakeLists.txt example</a>的。
  *
  *
- * @note  一些教程程序也共同组成了<a
+ * @note  一些教程的程序也共同组成了<a
  * href="../../doxygen/deal.II/group__geodynamics.html">geodynamics
  * demonstration suite</a>。比起构成教程的程序，更多的，通常是更复杂的，但不太完善的，基于deal.II的程序也可以在
  * @ref CodeGallery  中找到。
  *
  *  <a name="graph"></a>  @anchor  TutorialConnectionGraph <h3>Connections
- * between tutorial programs</h3> 。
+ * between tutorial programs</h3>。
  * 下图显示了教程程序之间的联系，以及它们的主要组成部分是如何相互建立的。点击任何一个方框都可以进入其中一个程序。如果你将鼠标指针悬停在一个方框上，就会出现该程序的简要描述。
- *
  * @dot digraph StepsMap { overlap=false; edge [fontname="FreeSans",
  * fontsize="10", labelfontname="FreeSans", labelfontsize="10", color="black",
  * style="solid"]; node [fontname="FreeSans", fontsize="10",
@@ -450,7 +449,7 @@
  *
  * -> Step8 []; Step6
  *
- * -> Step9 []; } @enddot <b>Legend:</b>br />   @dot graph StepsDescription {
+ * -> Step9 []; } @enddot <b>Legend:</b><br />   @dot graph StepsDescription {
  * overlap=false; edge [fontname="FreeSans", fontsize="10",
  * labelfontname="FreeSans", labelfontsize="10", color="black",
  * style="solid"]; node [fontname="FreeSans", fontsize="10",
@@ -499,7 +498,7 @@
  *
  * -- code_gallery [style=invis]; {rank=same; basic, techniques, fluids,
  * solids, time_dependent, unfinished, code_gallery}} @enddot <a
- * name="list"></a> <h3>Tutorial programs listed by number</h3>。 <table
+ * name="list"></a> <h3>Tutorial programs listed by number</h3> <table
  * align="center" width="90%"> <tr valign="top"> <td width="100px">step-1</td>
  * <td> Creating a grid. A simple way to write it to a file. <br/> Keywords:
  * Triangulation, GridGenerator::hyper_cube(), GridGenerator::hyper_shell(),
@@ -857,11 +856,8 @@
  * elastic media using the solid isotropic material penalization (SIMP)
  * formulation. </td></tr>
  *
- * </table>
- *
- *  <a name="topic"></a> <h3>Tutorial programs grouped by topics</h3> * <a
- * name="topic"></a> <h3>Tutorial programs grouped by topics</h3>。
- * <h4><b>Basic techniques</b><b>Basic techniques</b></h4>  <table
+ * </table>   <a name="topic"></a> <h3>Tutorial programs grouped by
+ * topics</h3> <h4><b>Basic techniques</b><b>Basic techniques</b></h4>  <table
  * align="center" width="90%">
  *
  * <tr valign="top"> <td width="400px"> Creating a grid. A simple way to write
@@ -1002,8 +998,8 @@
  * <tr valign="top"> <td> Linear operators </td> <td> step-44, step-60,
  * step-70 </td> </tr>
  *
- * </table>  。   <h4><b>Other equations</b><b>Other equations</b></h4>
- * <table align="center" width="90%">
+ * </table>   <h4><b>Other equations</b><b>Other equations</b></h4>  <table
+ * align="center" width="90%">
  *
  * <tr valign="top"> <td width="400px"> Helmholtz equation </td> <td> step-7,
  * step-29, step-62, step-64 </td> </tr>
@@ -1055,10 +1051,8 @@
  * <tr valign="top"> <td> Coupling different equations in different parts of
  * the domain </td> <td>step-46</td> </tr>
  *
- * </table>  。
- *
- * <h4><b>%Vector problems</b><b>%Vector problems</b></h4>  <table
- * align="center" width="90%">
+ * </table>  。    <h4><b>%Vector problems</b><b>%Vector problems</b></h4>
+ * <table align="center" width="90%">
  *
  * <tr valign="top"> <td width="400px"> Elasticity and elasto-plasticity
  * equations </td> <td> step-8, step-42 </td> </tr>
@@ -1081,8 +1075,8 @@
  * <tr valign="top"> <td> Coupling different equations in different parts of
  * the domain <td>step-46</td> </tr>
  *
- * </table> 。    <h4><b>Time dependent problems</b><b>Time dependent
- * problems</b></h4> <table align="center" width="90%">
+ * </table>  。    <h4><b>Time dependent problems</b><b>Time dependent
+ * problems</b></h4>  <table align="center" width="90%">
  *
  * <tr valign="top"> <td> The heat equation </td> <td>step-26 </td> </tr>
  *
@@ -1108,8 +1102,9 @@
  * <td>step-52</td> </tr>
  *
  * <tr valign="top"> <td> Time dependent fluid structure interaction problems
- * </td> <td>step-70</td> </tr> </table>
+ * </td> <td>step-70</td> </tr> </table>  。
  *
  */
+
 
 

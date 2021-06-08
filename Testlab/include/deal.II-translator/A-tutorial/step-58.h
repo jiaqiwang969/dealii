@@ -48,7 +48,7 @@
  * href="#Equationdata">Equation data</a>
  * <li><a
  * href="#ImplementationofthecodeNonlinearSchroedingerEquationcodeclass">Implementation
- * of the <code>NonlinearSchroedingerEquation</code> class</a> ]<a
+ * of the <code>NonlinearSchroedingerEquation</code> class</a><a
  * href="#ImplementationofthecodeNonlinearSchroedingerEquationcodeclass">Implementation
  * of the <code>NonlinearSchroedingerEquation</code> class</a>
  * <ul>
@@ -103,8 +103,8 @@
  * and by the Computational Infrastructure in Geodynamics initiative (CIG),
  * through the National Science Foundation under Award No. EAR-1550901 and The
  * University of California-Davis. </i>。 <a name="Intro"></a><a
- * name="Introduction"></a><h1>Introduction</h1> 。   函数
- * $\psi=\psi(\mathbf x,t)$ 和势 $V=V(\mathbf x)$ 的<a
+ * name="Introduction"></a><h1>Introduction</h1> 。   一个函数
+ * $\psi=\psi(\mathbf x,t)$ 和一个势 $V=V(\mathbf x)$ 的<a
  * href="https://en.wikipedia.org/wiki/Nonlinear_Schr%C3%B6dinger_equation">Nonlinear
  * Schr&ouml;dinger Equation
  * (NLSE)</a>是量子力学和非线性光学中经常使用的一个模型。如果用适当的量子进行测量（以便
@@ -154,7 +154,7 @@
  * condensates</a>的时间依赖行为。
  * 对于这个特定的教程程序，方程的物理解释对我们来说不是很重要。相反，我们想用它作为一个模型，让我们解释两个方面。
  *
- * - 这是一个<b>complex-valued equation</b>的 $\psi \in H^1(\Omega,{\mathbb
+ * - 它是一个<b>complex-valued equation</b>的 $\psi \in H^1(\Omega,{\mathbb
  * C})$ 。我们以前在 step-29
  * 中看到过复值方程，但那里选择了将方程分成实部和虚部，结果是解决了两个实值方程的系统。相比之下，这里的目标是展示如何解决我们将所有东西都保留为复数的问题。
  *
@@ -166,15 +166,13 @@
  * $\kappa |\psi(\mathbf x,t)|^2 \psi$
  * 没有空间或时间导数，即它是一个纯粹的局部算子。事实证明，我们对这些项中的每一项都有有效的方法（特别是，我们对后者有分析解），而且我们可能最好对这些项进行不同的、单独的处理。我们将在下文中详细解释这一点。
  *
- *
- * <a name="Anoteaboutthecharacteroftheequations"></a><h3>A note about the
+ *   <a name="Anoteaboutthecharacteroftheequations"></a><h3>A note about the
  * character of the equations</h3>
- *
- *  乍一看，这些方程似乎是抛物线，与热力方程相似（见
+ * 乍一看，这些方程似乎是抛物线，与热力方程相似（见
  * step-26
  * ），因为只有一个时间导数和两个空间导数。事实上，如果我们暂时假设势
  * $V=0$ 和 $\kappa=0$
- * ，就会更容易看出这不是正确的解释。那么我们就会有这样的方程
+ * 不是正确的解释，就更容易看出这一点。那么我们就会有这样的方程
  * @f{align*}{
  *
  *
@@ -285,10 +283,8 @@
  * step-23 中对正波方程所做的那样。
  *
  *  <a name="Thegeneralideaofoperatorsplitting"></a><h3>The general idea of
- * operator splitting</h3> 。
- *
- *  @dealiiVideoLecture{30.25}
- * 如果我们把NLSE看作是一个常微分方程，其中的右手边恰好有空间导数，即把它写为
+ * operator splitting</h3>   @dealiiVideoLecture{30.25}
+ * 如果我们把NLSE看作是一个普通微分方程，其中的右手边恰好有空间导数，即把它写为
  * @f{align*}{
  * \frac{d\psi}{dt}
  * &=
@@ -411,8 +407,8 @@
  *
  * - "相位 "项的贡献  $-i\kappa |\psi(t)|^2\,\psi(t)$  .
  * <i>Operator
- * splitting</i>是现在的一种近似技术，允许我们分别处理这些贡献中的每一个。(如果我们想的话。在实践中，我们将把前两项放在一起处理，而把最后一项分开。但这是一个细节，从概念上讲，我们可以以不同的方式处理所有这些贡献）。)
- * 为此，让我们介绍三个独立的 "解决方案"。
+ * splitting</i>是现在的一种近似技术，允许我们分别处理这些贡献中的每一个。(如果我们想的话。在实践中，我们将把前两项放在一起处理，而把最后一项分开。但这是一个细节，从概念上讲，我们可以以不同的方式处理所有这些贡献）。)为此，让我们介绍三个独立的
+ * "解决方案"。
  * @f{align*}{
  * \psi^{(1)}(t_{n+1})
  * &=
@@ -526,9 +522,10 @@
  * 这个直觉确实是正确的，尽管这个近似并不精确：准确的左手边和术语
  * $I^{(1)}+I^{(2)}+I^{(3)}$ 之间的差异（即从 $t_n$ 移动到
  * $t_{n+1}$
- * 时准确解决方案<i>exact</i>的增量与右手边三部分组成的增量之间的差异），正比于
+ * 时准确解<i>exact</i>的增量与右手边三部分组成的增量之间的差异），与
  * $\Delta t=t_{n+1}-t_{n}$
- * 。换句话说，这种方法引入了一个大小为 ${\cal O}(\Delta t)$
+ * 成正比。换句话说，这种方法引入了一个大小为 ${\cal
+ * O}(\Delta t)$
  * 的误差。到目前为止，我们所做的一切都没有在时间或空间上离散化，所以<i>overall</i>的误差将是
  * ${\cal O}(\Delta t)$
  * 加上我们在近似积分时犯的任何错误（时间离散化误差）加上我们在近似
@@ -588,7 +585,7 @@
  * $\psi^{(3)}(t)$
  * 的ODE的解只改变了它的<i>phase</i>，但复值函数
  * $\psi^{(3)}(t)$ 的<i>magnitude</i>保持不变。这使得计算 $I^{(3)}$
- * 特别方便：我们实际上不需要解决任何ODE，我们可以用手写出解。使用算子拆分方法，没有任何一种计算
+ * 特别方便：我们实际上不需要解决任何ODE，我们可以用手写下解决方案。使用算子拆分方法，没有任何一种计算
  * $I^{(1)},I^{(2)}$
  * 的方法需要处理非线性项和所有相关的不愉快：只要我们允许自己使用算子拆分方法，我们就可以摆脱只解决<i>linear</i>的问题了。
  * 其次，如果不同的项所描述的不同的物理效应具有不同的时间尺度，我们经常使用算子拆分。例如，想象一下，我们确实有某种扩散方程的情况。扩散作用缓慢，但如果
@@ -601,12 +598,12 @@
  * "方程。换句话说，算子分割使我们能够将慢速和快速的时间尺度结合起来，并以不同的方式处理它们，并根据每种情况调整方法。
  *
  *  <a name="OperatorsplittingtheLiesplittingapproach"></a><h3>Operator
- * splitting: the "Lie splitting" approach</h3> 。
- *
- *  虽然上述方法允许平行计算三个贡献 $I^{(k)}$
+ * splitting: the "Lie splitting" approach</h3>
+ * 虽然上述方法允许并行计算三个贡献 $I^{(k)}$
  * ，但如果我们愿意，如果我们不让 $\psi^{(k)}$
- * 的轨迹全部从 $\psi(t_n)$ 开始，而让轨迹从 $\psi(t_n)$
- * 开始，该方法可以变得稍微准确和容易实施。 ]，而是让
+ * 的轨迹全部从 $\psi(t_n)$ 开始，而是让 $\psi^{(2)}$ 的轨迹从
+ * $\psi^{(1)}$ 的<i>end point</i>开始，即 $\psi^{(1)}(t_{n+1})$
+ * ，该方法可以变得稍微准确和容易实施。]，而是让
  * $\psi^{(2)}$ 的轨迹从 $\psi^{(1)}$ 的轨迹的<i>end
  * point</i>开始，即 $\psi^{(1)}(t_{n+1})$ ；同样，我们将从
  * $\psi^{(3)}$ 的轨迹的终点开始，即 $\psi^{(2)}(t_{n+1})$
@@ -717,8 +714,9 @@
  * 了；一旦 $\psi^{(2)}(t_n)$ 被计算出来，我们就不再需要
  * $\psi^{(1)}(t_n)$ 了。一旦 $\psi^{(3)}(t_n)$
  * 被计算出来，我们就可以直接称之为 $\psi(t_{n+1})$
- * ，因为如果你把第一个方程插入第二个方程，然后再插入第三个方程，你会发现
- * $\psi^{(3)}(t_n)$ 的右边现在包含所有三个物理效应的贡献。
+ * ，因为如果你把第一个方程插入第二个方程，然后再插入第三个方程，你会看到
+ * $\psi^{(3)}(t_n)$
+ * 的右手边现在包含所有三个物理效应的贡献。
  * @f{align*}{
  * \psi^{(3)}(t_{n+1})
  * &=
@@ -765,9 +763,8 @@
  * 换句话说，Lie拆分法比上述的原始方法简单得多，因为数据处理要简单得多。
  *
  *  <a name="OperatorsplittingtheStrangsplittingapproach"></a><h3>Operator
- * splitting: the "Strang splitting" approach</h3>。
- *
- *  如上所述，Lie分裂法只有 ${\cal O}(\Delta t)$
+ * splitting: the "Strang splitting" approach</h3> 。
+ * 如上所述，Lie拆分只具有 ${\cal O}(\Delta t)$
  * 的准确性。如果我们使用一阶时间微分，例如使用显式或隐式Eulermethods来解决
  * $\psi^{(k)}$
  * 的微分方程，这是可接受的。这是因为这些时间积分方法引入了与
@@ -783,8 +780,7 @@
  * 这就是<a href="https://en.wikipedia.org/wiki/Strang_splitting">Strang
  * splitting</a>方法的作用。如果我们只有两部分，就更容易解释，因此让我们把拉普拉斯算子和势的影响合二为一，把相位旋转合二为一。事实上，这就是我们在代码中要做的，因为用拉普拉斯方程求解，无论有无电势，其代价都是一样的。
  *
- * 所以我们把这两个步骤合并起来）。)
- * 上面的Lie拆分方法将做以下工作。它计算出以下两个ODE的解。
+ * 所以我们把这两个步骤合并起来）。)上面的Lie拆分方法将做以下工作。它计算出以下两个ODE的解。
  * @f{align*}{
  * \frac{d\psi^{(1)}}{dt}
  * &=
@@ -817,9 +813,9 @@
  * 然后使用近似值 $\psi(t_{n+1}) \approx \psi^{(2)}(t_{n+1})$
  * 。换句话说，我们首先为物理效应一做一个完整的时间步骤，然后为物理效应二做一个完整的时间步骤。在时间步数结束时的解决方案只是分别由这些物理效应引起的增量的总和。
  * 相比之下，<a href="https://en.wikipedia.org/wiki/Gilbert_Strang">Gil
- * Strang</a>（20世纪中期开始的数值分析领域的泰斗之一）发现，先对一个物理效应做一个半步，然后对另一个物理效应做一个全时步，再对第一个物理效应做一个半步，这样更准确。哪个是哪个并不重要，但由于做相位旋转是如此简单，我们将使用这个效应做半步，然后只需要用拉普拉斯算子加电势做一个空间解。这种算子拆分方法现在是
+ * Strang</a>（20世纪中期开始的数值分析领域的泰斗之一）发现，先对一个物理效应做一个半步，然后对另一个物理效应做一个全时步，再对第一个物理效应做一个半步，这样更准确。哪个是哪个并不重要，但由于做相位旋转是如此简单，我们将使用这个效应做半步，然后只需要用拉普拉斯算子加电势做一个空间解。这种算子拆分方法现在
  * ${\cal O}(\Delta t^2)$
- * 准确的。写在公式中，这产生了以下的步骤序列。
+ * 是准确的。写在公式中，这产生了以下的步骤序列。
  * @f{align*}{
  * \frac{d\psi^{(1)}}{dt}
  * &=
@@ -891,10 +887,8 @@
  * - 通过对相位旋转方程再进行半个时间步长的分析积分，更新每个节点的解值。
  * 这一结构将以明显的方式反映在程序的主时间环中。
  *
- *
- * <a name="Timediscretization"></a><h3>Time discretization</h3> 。
- *
- * 从上面的讨论中，我们应该清楚地看到，我们在每个时间步长中要解决的唯一部分微分方程是
+ *   <a name="Timediscretization"></a><h3>Time discretization</h3>
+ * 从上面的讨论中，我们应该清楚，我们在每个时间步长中要解决的唯一部分微分方程是
  * @f{align*}{
  *
  *
@@ -951,7 +945,7 @@
  * 这里，"先前 "的解决方案 $\psi^{(n,1)}$
  * （或这部分时间步骤的
  * "初始条件"）是第一个阶段旋转半步的输出；当前步骤的输出将用
- * $\psi^{(n,2)}$ 表示。  $k_{n+1}=t_{n+1}-t_n$
+ * $\psi^{(n,2)}$ 表示。   $k_{n+1}=t_{n+1}-t_n$
  * 是时间步骤的长度。人们可以争论 $\psi^{(n,1)}$ 和
  * $\psi^{(n,1)}$ 是生活在时间步长 $n$ 还是 $n+1$
  * 以及它们的上限值应该是什么。这是一个没有实际影响的哲学讨论，人们可以把
@@ -965,7 +959,7 @@
  * 所需的三分之一的工作"）。) 如果我们将整个方程与
  * $k_{n+1}$ 相乘，并将未知数 $\psi^{(n+1,2)}$
  * 的条款排序到左边，将已知数 $\psi^{(n,2)}$
- * 的条款排序到右边，那么我们得到以下（空间）偏微分方程，需要在每个时间步长中解决。
+ * 的条款排序到右边，那么我们得到以下（空间）偏微分方程，需要在每个时间步长进行求解。
  * @f{align*}{
  *
  *
@@ -1017,12 +1011,10 @@
  * @f}
  *
  *
- *
- * <a
+ *   <a
  * name="Spatialdiscretizationanddealingwithcomplexvariables"></a><h3>Spatial
- * discretization and dealing with complex variables</h3> 。
- *
- *  如上所述，先前处理复值解的教程程序（即 step-29
+ * discretization and dealing with complex variables</h3>。
+ * 如上所述，以前处理复值解的教程程序（即 step-29
  * ）将解的实部和虚部分开。因此，它把一切都简化为实数运算。与此相反，我们在这里希望保持复数值的东西。
  * 这方面的第一部分是，我们需要将离散化的解决方案定义为
  * $\psi_h^n(\mathbf x)=\sum_j \Psi^n_j \varphi_j(\mathbf x) \approx
@@ -1189,9 +1181,8 @@
  * - \frac 12 k_{n+1} W$ 来说，显然不是这样的。
  *
  *  <a name="Linearsolvers"></a><h3>Linear solvers</h3> 。
- *
- *  @dealiiVideoLecture{34}
- * 关于解决程序的唯一剩下的重要问题是如何解决复值线性系统
+ * @dealiiVideoLecture{34}
+ * 关于解决程序的唯一剩下的重要问题是如何解决复值线性系统的问题
  * @f{align*}{
  * C \Psi^{(n+1,2)}
  * =
@@ -1202,7 +1193,7 @@
  * -iM + \frac 14 k_{n+1} A + \frac 12 k_{n+1} W$
  * 的右手边很容易被计算为已知矩阵与上一步骤的解的乘积，像往常一样，这归结为矩阵
  * $C$
- * 具有什么属性的问题。如果它是对称和正定的，那么我们可以使用共轭梯度法。
+ * 具有什么属性的问题。如果它是对称的和正定的，那么我们可以使用共轭梯度法。
  * 不幸的是，该矩阵唯一有用的属性是它是复数对称的，即
  * $C_{ij}=C_{ji}$ ，回顾一下 $M,A,W$
  * 都是对称的，就不难发现。然而，它不是<a
@@ -1214,13 +1205,13 @@
  *
  *  <a name="Definitionofthetestcase"></a><h3>Definition of the test case</h3>
  * 。
- * NLSE的初始条件通常被选择来代表特定的物理情况。这超出了本方案的范围，但只要说这些初始条件是(i)位于不同点的粒子的波函数的叠加，以及(ii)因为 $|\psi(\mathbf x,t)|^2$ 对应于粒子密度函数，积分@f[
+ * 无法律约束力文书的初始条件通常被选择来代表特定的物理情况。这超出了本程序的范围，但只要说这些初始条件是(i)位于不同点的粒子的波函数的叠加，以及(ii)因为 $|\psi(\mathbf x,t)|^2$ 对应于粒子密度函数，积分@f[
  * N(t) = \int_\Omega |\psi(\mathbf x,t)|^2
  * @f]对应于系统中的粒子数。显然，如果要在物理上正确，如果系统是封闭的， $N(t)$ 最好是一个常数，如果有吸收边界条件， $\frac{dN}{dt}<0$ 则是常数）。重要的一点是，我们应该选择初始条件，使@f[
  * N(0) = \int_\Omega |\psi_0(\mathbf x)|^2 @f]有意义。
  * 我们在这里使用的，主要是因为它的图形很好，如下：@f[
  * \psi_0(\mathbf x) = \sqrt{\sum_{k=1}^4 \alpha_k e^{-\frac{r_k^2}{R^2}}},
- * @f]其中 $r_k = |\mathbf x-\mathbf x_k|$ 是与（固定）位置 $\mathbf x_k$ 的距离，而 $\alpha_k$ 的选择是为了使我们所添加的每个高斯都能为 $N(0)$ 添加整数的粒子。我们通过确保@f[
+ * @f]其中 $r_k = |\mathbf x-\mathbf x_k|$ 是与（固定）位置 $\mathbf x_k$ 的距离，而 $\alpha_k$ 的选择是为了使我们所添加的每个高斯都能为 $N(0)$ 增加整数的粒子。我们通过确保@f[
  * \int_\Omega \alpha_k e^{-\frac{r_k^2}{R^2}}
  * @f]是一个正整数来实现这一点。换句话说，我们需要选择 $\alpha$ 作为@f[
  * \left(\int_\Omega e^{-\frac{r_k^2}{R^2}}\right)^{-1} =
@@ -1245,7 +1236,7 @@
  *              \\
  *              1000 & \text{otherwise}.
  * \end{cases}
- * @f]，使用大的势可以确保波函数 $\psi$ 在半径为0.7的圆外保持较小。构成初始条件的所有高斯都在这个圆内，解决方案将主要在这个圆内振荡，有少量的能量辐射到圆外。大势的使用也确保了非物理边界条件不会产生太大影响。
+ * @f]，使用一个大的势可以确保波函数 $\psi$ 在半径为0.7的圆外保持很小。构成初始条件的所有高斯都在这个圆内，解决方案将主要在这个圆内振荡，有少量的能量辐射到圆外。大势的使用也确保了非物理边界条件不会产生太大影响。
  *
  *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
  * name="Includefiles"></a> <h3>Include files</h3>
@@ -1279,7 +1270,7 @@
  *
  * @endcode
  *
- * 然后照例将本程序的所有内容放入一个命名空间，并将deal.II命名空间导入到我们将要工作的命名空间中。
+ * 然后按照惯例将这个程序的所有内容放入一个命名空间，并将deal.II命名空间导入到我们将要工作的命名空间中。
  *
  * @code
  * namespace Step58
@@ -1289,11 +1280,10 @@
  * @endcode
  *
  * <a name="ThecodeNonlinearSchroedingerEquationcodeclass"></a> <h3>The
- * <code>NonlinearSchroedingerEquation</code> class</h3>
+ * <code>NonlinearSchroedingerEquation</code> class</h3>。
  * 然后是主类。它看起来非常像 step-4 或 step-6
  * 中的相应类，唯一的例外是，矩阵和向量以及其他所有与线性系统相关的元素现在都存储为
  * `std::complex<double>` 类型，而不仅仅是`double`。
- *
  *
  * @code
  * template <int dim>
@@ -1335,11 +1325,10 @@
  *
  * @endcode
  *
- * <a name="Equationdata"></a> <h3>Equation data</h3>.
+ * <a name="Equationdata"></a> <h3>Equation data</h3>。
  *
  * 在我们继续填写主类的细节之前，让我们定义与问题相对应的方程数据，即初始值，以及一个右手类。(我们将重复使用初始条件也用于边界值，我们只是保持边界值不变)。我们使用派生自Function类模板的类来做这件事，这个模板之前已经用过很多次了，所以下面的内容看起来并不令人惊讶。唯一值得注意的是，我们这里有一个复值问题，所以我们必须提供Function类的第二个模板参数（否则会默认为`double`）。此外，`value()`函数的返回类型当然也是复数。
  * 这些函数准确地返回什么，在介绍部分的最后已经讨论过了。
- *
  *
  * @code
  * template <int dim>
@@ -1421,13 +1410,12 @@
  * <a
  * name="ImplementationofthecodeNonlinearSchroedingerEquationcodeclass"></a>
  * <h3>Implementation of the <code>NonlinearSchroedingerEquation</code>
- * class</h3>.
+ * class</h3>。
  *
- * 我们首先指定了类的构造函数的实现。这里没有什么值得惊奇的，也许我们选择了二次（
- * $Q_2$  ）拉格朗日元素
+ * 我们首先指定该类的构造函数的实现。除了我们选择二次（
+ * $Q_2$ ）拉格朗日元素外，这里没有什么值得惊奇的。
  *
  * - 解决方案预计是平滑的，所以我们选择了比最低限度更高的多项式度数。
- *
  *
  * @code
  * template <int dim>
@@ -1444,11 +1432,10 @@
  * @endcode
  *
  * <a name="Settingupdatastructuresandassemblingmatrices"></a> <h4>Setting up
- * data structures and assembling matrices</h4>
+ * data structures and assembling matrices</h4>。
  *
  * 下一个函数是在程序开始时，也就是在第一个时间步骤之前，设置网格、DoFHandler以及矩阵和向量。如果你已经阅读了至少到
  * step-6 为止的教程程序，那么前几行是相当标准的。
- *
  *
  * @code
  * template <int dim>
@@ -1485,7 +1472,7 @@
  *
  * @endcode
  *
- * 接下来，我们组装相关的矩阵。按照我们对斯特朗分裂的空间步骤（即每个时间步骤中三个部分步骤中的第二个步骤）的Crank-Nicolson离散化的写法，我们被引导到线性系统
+ * 接下来，我们把相关的矩阵组合起来。按照我们对斯特朗分裂的空间步骤（即每个时间步骤中三个部分步骤中的第二个步骤）的Crank-Nicolson离散化的写法，我们被引导到线性系统
  * $\left[
  *
  * -iM  +  \frac 14 k_{n+1} A + \frac 12 k_{n+1} W \right] \Psi^{(n,2)} =
@@ -1503,7 +1490,6 @@
  * --一个是左手边的，一个是右手边的。我们分别建立这些矩阵。(我们可以避免建立右手边的矩阵，而只是在每个时间步骤中对
  * $\Psi^{(n,1)}$
  * 形成矩阵的作用*。这可能更有效，也可能不更有效，但是对于这个程序来说，效率并不是最重要的）。)
- *
  *
  * @code
  * template <int dim>
@@ -1587,9 +1573,9 @@
  * @endcode
  *
  * <a name="ImplementingtheStrangsplittingsteps"></a> <h4>Implementing the
- * Strang splitting steps</h4>
+ * Strang splitting steps</h4>。
  *
- * 在建立了上述所有数据结构后，我们现在可以实现构成斯特朗分裂方案的部分步骤。我们从推进阶段的半步开始，这被用作每个时间步骤的第一和最后一部分。
+ * 在建立了上述所有数据结构后，我们现在可以实现构成斯特朗分裂方案的部分步骤。我们从半步推进阶段开始，这被用作每个时间步骤的第一和最后部分。
  * 为此，回顾一下，对于第一个半步，我们需要计算
  * $\psi^{(n,1)} = e^{-i\kappa|\psi^{(n,0)}|^2 \tfrac 12\Delta t} \;
  * \psi^{(n,0)}$  。这里， $\psi^{(n,0)}=\psi^{(n)}$ 和 $\psi^{(n,1)}$
@@ -1616,7 +1602,6 @@
  *
  * - 事实上，它甚至没有为 $\Psi^{(n,0)}$ 和 $\Psi^{(n,1)}$ 使用单独的向量，而只是适当地更新同一个向量。
  *
- *
  * @code
  * template <int dim>
  * void NonlinearSchroedingerEquation<dim>::do_half_phase_step()
@@ -1635,7 +1620,7 @@
  *
  * @endcode
  *
- * 下一步是求解每个时间步骤中的线性系统，即我们使用的Strang分割的后半步。记得它的形式是
+ * 下一步是求解每个时间步骤中的线性系统，即我们使用的斯特朗分割的后半步。记得它的形式是
  * $C\Psi^{(n,2)} = R\Psi^{(n,1)}$ ，其中 $C$ 和 $R$
  * 是我们之前组装的矩阵。
  * 我们在这里解决这个问题的方法是使用直接求解器。我们首先使用
@@ -1643,7 +1628,6 @@
  * ，并将结果放入`system_rhs`变量。然后我们调用
  * SparseDirectUMFPACK::solver() ，该函数以矩阵 $C$
  * 和右手边的向量为参数，并将解决方案返回到同一向量`system_rhs`中。最后一步是将计算出的解放回`solution`变量中。
- *
  *
  * @code
  * template <int dim>
@@ -1661,36 +1645,34 @@
  *
  * @endcode
  *
- * <a name="Creatinggraphicaloutput"></a> <h4>Creating graphical output</h4> *
- * <h4>Creating graphical output</h4>.
+ * <a name="Creatinggraphicaloutput"></a> <h4>Creating graphical
+ * output</h4>。
  *
- *
- * 我们应该讨论的最后一个辅助函数和类是那些创建图形输出的函数。对斯特朗分裂的局部和空间部分运行半步和全步的结果是，我们在每个时间步长结束时将`solution`向量
+ * 我们应该讨论的最后一个辅助函数和类是那些创建图形输出的函数。对Strang分裂的局部和空间部分运行半步和全步的结果是，我们在每个时间步长结束时将`solution`向量
  * $\Psi^n$
- * 更新为正确的值。它的条目包含有限元网格节点上的解的复数。
+ * 更新为正确值。它的条目包含有限元网格节点上的解的复数。
  * 复数不容易被可视化。我们可以输出它们的实部和虚部，即字段
  * $\text{Re}(\psi_h^{(n)}(\mathbf x))$ 和 $\text{Im}(\psi_h^{(n)}(\mathbf
  * x))$ ，这正是DataOut类在通过 DataOut::add_data_vector()
  * 附加复数向量，然后调用 DataOut::build_patches(). 时所做的。
  *
  *
- * 但很多时候，我们对解向量的实部和虚部并不特别感兴趣，而是对解的幅度
+ * 但很多时候，我们对解矢量的实部和虚部并不特别感兴趣，而是对解的幅度
  * $|\psi|$ 和相位角 $\text{arg}(\psi)$
- * 等衍生量感兴趣。在这里这样的量子系统的背景下，幅度本身并不那么有趣，相反，"振幅"，
+ * 等衍生量感兴趣。在这里这样的量子系统的背景下，幅值本身并不那么有趣，相反，"振幅"
  * $|\psi|^2$
  * 才是一个物理属性：它对应于在一个特定的状态场所找到一个粒子的概率密度。将计算出的量放入输出文件的方式，以便于可视化
  *
  * - 如同在以前众多的教程程序中使用的那样
  *
- * 是使用DataPostprocessor和派生类的设施。具体来说，一个复数的振幅和它的相位角都是标量，因此DataPostprocessorScalar类是我们要做的正确工具。
+ * 是使用DataPostprocessor和派生类的设施。具体来说，一个复数的振幅和它的相位角都是标量，所以DataPostprocessorScalar类是我们要做的正确工具。
  * 因此，我们在这里做的是实现两个类`ComplexAmplitude`和`ComplexPhase`，为DataOut决定生成输出的每一点计算解决方案的振幅
  * $|\psi_h|^2$ 和相位 $\text{arg}(\psi_h)$
- * ，以实现可视化。下面有相当多的模板代码，这两个类中的第一个唯一有趣的部分是它的`evaluate_vector_field()`函数如何计算`computed_quantities`对象。
+ * ，以实现可视化。下面有相当多的模板代码，这两个类中的第一个唯一有趣的部分是其`evaluate_vector_field()`函数如何计算`computed_quantities`对象。
  * （还有一个相当尴尬的事实是，<a
  * href="https://en.cppreference.com/w/cpp/numeric/complex/norm">std::norm()</a>函数并没有计算人们天真的想象，即
  * $|\psi|$ ，而是返回 $|\psi|^2$
  * 。一个标准函数以这样的方式被错误地命名，这当然是相当令人困惑的......)
- *
  *
  * @code
  * namespace DataPostprocessors
@@ -1739,7 +1721,7 @@
  *
  * @endcode
  *
- * 其中第二个后处理程序类计算每一点的复值解决方案的相位角。换句话说，如果我们表示
+ * 其中第二个后处理器类计算每一点的复值解决方案的相位角。换句话说，如果我们表示
  * $\psi(\mathbf x,t)=r(\mathbf x,t) e^{i\varphi(\mathbf x,t)}$
  * ，那么这个类就会计算 $\varphi(\mathbf x,t)$ 。函数<a
  * href="https://en.cppreference.com/w/cpp/numeric/complex/arg">std::arg</a>为我们做这个，并将角度作为
@@ -1747,7 +1729,6 @@
  * 由于我们将在结果部分详细解释的原因，我们实际上没有在产生输出的每个位置输出这个值。相反，我们取该阶段所有评估点的最大值，然后用这个最大值填充每个评估点的输出域。
  *
  * 本质上，我们将相位角作为一个片状常数域来输出，其中每个单元都有自己的常数值。一旦你读完下面的讨论就会明白其中的原因。
- *
  *
  * @code
  *   template <int dim>
@@ -1803,8 +1784,7 @@
  *
  * @endcode
  *
- * 在这样实现了这些后处理程序后，我们像往常一样创建输出。如同许多其他时间相关的教程程序一样，我们在DataOut上附加标志，表示时间步数和当前模拟时间。
- *
+ * 在如此实现了这些后处理程序后，我们像往常一样创建输出。如同在其他许多时间相关的教程程序中一样，我们给DataOut附加标志，表示时间步数和当前的模拟时间。
  *
  * @code
  * template <int dim>
@@ -1833,10 +1813,8 @@
  *
  * @endcode
  *
- * <a name="Runningthesimulation"></a> <h4>Running the simulation</h4>
- *
+ * <a name="Runningthesimulation"></a> <h4>Running the simulation</h4>。
  * 剩下的步骤是我们如何设置这个程序的整体逻辑。这其实是比较简单的。设置数据结构；将初始条件插值到有限元空间；然后迭代所有时间步长，在每个时间步长上执行斯特朗分割法的三个部分。每隔10个时间步长，我们就生成图形输出。这就是了。
- *
  *
  * @code
  * template <int dim>
@@ -1870,10 +1848,9 @@
  *
  *
  * @endcode
+ *  <a name="Themainfunction"></a> <h4>The main() function</h4>。
  *
- * <a name="Themainfunction"></a> <h4>The main() function</h4>。
- *
- * 其余的又是锅炉板，和以前几乎所有的教程程序完全一样。
+ * 其余的部分又是锅炉板，与以前几乎所有的教程程序完全一样。
  *
  * @code
  * int main()
@@ -1914,13 +1891,12 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
- * 运行代码的结果是屏幕输出如下：```活动单元数：4096自由度数：16641
- * 时间步数1在t=0时间步数2在t=0.00390625时间步数3在t=0.0078125时间步数4在t=0.0117188[...]``运行程序也会产生大量的输出文件，我们将在下面看到。
+ * 运行代码的结果是屏幕输出如下：``活动单元的数量：4096自由度的数量：16641
+ * 时间步数1在t=0时间步数2在t=0.00390625时间步数3在t=0.0078125时间步数4在t=0.0117188[...]``运行该程序也会产生大量的输出文件，我们将在下面进行展示。
  *
  *  <a name="Visualizingthesolution"></a><h3>Visualizing the solution</h3> 。
- *
- * 该程序的`output_results()`函数产生的输出文件由许多变量组成。解（分为实部和虚部），振幅和相位。如果我们将这四个场可视化，在几个时间步骤后，我们会得到如下图像（在时间
+ * 本程序的 "output_results()
+ * "函数生成由若干变量组成的输出文件。解（分为实部和虚部）、振幅和相位。如果我们将这四个场可视化，在几个时间步骤后，我们会得到如下图像（在时间
  * $t=0.242$ ，精确地说。 <div class="twocolumn" style="width: 80%">
  * <div> <img
  * src="https://www.dealii.org/images/steps/developer/step-58.re.png"
@@ -1934,16 +1910,16 @@
  * alt="Phase of the solution at t=0.242" width="400"> </div> </div>
  * 虽然上述解决方案的实部和虚部并不特别有趣（因为从物理角度来看，相位的全局偏移以及实部和虚部之间的平衡是没有意义的），但将解决方案的振幅
  * $|\psi(\mathbf x,t)|^2$ 和相位 $\text{arg}(\psi(\mathbf x,t))$
- * 可视化，尤其是它们的演变，则更有趣。这就导致了以下的图片。
+ * 可视化，特别是它们的演变，则更有趣。这就导致了以下的图片。
  * 这里显示的相位图显然有一些缺陷。
  *
  * - 首先，相位是一个 "循环量"，但是色标对接近 $-\pi$ 的值和接近 $+\pi$ 的值使用了根本不同的颜色。这是个麻烦的问题
  *
- * - 我们需要的是一个 "循环色图"，对相位范围的两个极端使用相同的颜色。这样的颜色图存在，例如见<a href="https://nicoguaro.github.io/posts/cyclic_colormaps/">this
- * blog post of Nicolás Guarín-Zapata</a>或<a
+ * - 我们需要的是一个 "循环色图"，对相位范围的两个极端使用相同的颜色。这样的颜色图是存在的，例如见 <a href="https://nicoguaro.github.io/posts/cyclic_colormaps/">this
+ * blog post of Nicolás Guarín-Zapata</a> 或 <a
  * href="https://stackoverflow.com/questions/23712207/cyclic-colormap-without-visual-distortions-for-use-in-phase-angle-plots">this
- * StackExchange
- * post</a>。问题是，作者最喜欢的两个大的可视化软件包之一VisIt并没有内置这些颜色图。无奈之下，我只好使用Paraview，因为它已经实现了上面帖子中提到的几种颜色地图。下面的图片使用了`nic_Edge`地图，其中两个极端值都显示为黑色。
+ * StackExchange post</a>
+ * 。问题是，作者最喜欢的两个大的可视化软件包之一VisIt并没有内置这些颜色图。无奈之下，我只好使用Paraview，因为它已经实现了上面帖子中提到的几种颜色地图。下面的图片使用了`nic_Edge`地图，其中两个极端值都显示为黑色。
  *
  * - 在相位缠绕的单元格上有一个问题。如果在单元格的某个评估点，相位值接近 $-\pi$ ，而在另一个评估点则接近 $+\pi$ ，那么我们真正希望发生的是整个单元格的颜色接近于极端值。但是，相反，可视化程序产生了一个线性插值，其中单元格内的值，即评估点之间的值，是在这两个值之间线性插值的，基本上涵盖了整个可能的相位值范围，因此，在一个单元格的过程中，从深红色到深绿色的整个彩虹色循环往复。解决这个问题的方法是将每个单元的相位值作为一个片断常数输出。因为对接近 $-\pi$ 和 $+\pi$ 的值进行平均会导致一个与实际相位角无关的平均值，`ComplexPhase'类只是使用每个单元上遇到的最大*相位角。
  * 经过这些修改，现在的相位图看起来如下。 <p
@@ -1951,8 +1927,7 @@
  * src="https://www.dealii.org/images/steps/developer/step-58.phase-cyclic.png"
  * alt="Phase of the solution at t=0.242, with a cyclic color map"
  * width="400"> </p>
- * 最后，我们可以用它来生成一部电影。(准确地说，这段视频又有两个全局细化周期，时间步长是上面程序中使用的一半。)
- * 这几行字的作者用VisIt制作了这部电影，因为这是他比较熟悉的，并使用了一个黑客的颜色地图，它也是循环的。
+ * 最后，我们可以用它来生成一部电影。(准确地说，这段视频又有两个全局细化周期，时间步长是上面程序中使用的一半。)这几行字的作者用VisIt制作了这部电影，因为这是他比较熟悉的，并使用了一个黑客的颜色地图，它也是循环的。
  *
  * - 尽管这个颜色图缺乏上面链接中提到的写帖子的人所采用的所有技巧。然而，如果你看一下半径为0.7的圆以外的域的阴影部分，它显示了作为波浪方程的解决方案的特点，在这个圆中，电势为零。
  *
@@ -1982,17 +1957,15 @@
  *
  * - i V \psi.
  * @f]在这个近似有效的程度上（除其他外，消除了你在视频中看到的行波），这个方程有一个解@f[
- * \psi(\mathbf x, t) = \psi(\mathbf x, 0) e^{-i V t}. @f] 因为 $V$
+ * \psi(\mathbf x, t) = \psi(\mathbf x, 0) e^{-i V t}. @f]因为 $V$
  * 很大，这意味着相位的变化相当快*。如果你把注意力放在域的半透明外部，你可以看到这一点。如果你把这个区域的颜色和域的内部一样，这个快速闪烁的外部区域可能是迷幻的，但也会分散内部发生的事情；也很难真正看到辐射波，在视频的开头很容易看到。
  *
  *  <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
- * 。
+ * 。   <a name="Betterlinearsolvers"></a><h4> Better linear solvers </h4>
+ * 这里选择的求解器实在是太简单了。我们在这里所做的是在每一个步骤中把矩阵交给一个稀疏的直接求解器，让它找到线性系统的解。但我们知道，我们可以做得更好。
  *
- *  <a name="Betterlinearsolvers"></a><h4> Better linear solvers </h4> 。
- * 这里选择的解算器实在是太简单了。我们在这里所做的是在每一个步骤中把矩阵交给一个稀疏的直接求解器，让它找到线性系统的解。但我们知道，我们可以做得更好。
- *
- * - 首先，我们应该利用这样一个事实，即矩阵实际上并没有从时间步长到时间步长的变化。这是一个假象，因为我们在这里有恒定的边界值，而且我们不改变时间步长。
+ * - 首先，我们应该利用这样一个事实，即矩阵实际上并没有从时间步长到时间步长的变化。这是一个伪命题，因为我们这里有恒定的边界值，而且我们不改变时间步长。
  *
  * - 这两个假设在实际应用中可能不成立。但至少在这种情况下，只对矩阵进行一次因式分解（即计算一次 $L$ 和 $U$ 因子），然后在接下来的所有时间步长中使用这些因子，直到矩阵 $C$ 发生变化，需要进行新的因式分解。SparseDirectUMFPACK类的接口允许这样做。
  *
@@ -2002,22 +1975,20 @@
  *
  * 但最好是实施一个迭代方案，利用我们知道的这个问题的一个结构特征：矩阵是复数对称的（尽管不是赫米特的）。
  *
- *  <a name="Boundaryconditions"></a><h4> Boundary conditions </h4> 。
+ *  <a name="Boundaryconditions"></a><h4> Boundary conditions </h4>
+ * 为了能够用于实际的、现实的问题，非线性Schr&ouml;dinger方程的求解器需要利用对手头问题有意义的边界条件。在此，我们将自己限制在简单的诺伊曼边界条件上。
  *
- * 为了能够用于实际的、现实的问题，非线性Schr&ouml;dinger方程的求解器需要利用对手头的问题有意义的边界条件。在此，我们将自己限制在简单的诺伊曼边界条件上
- *
- * 但这些条件实际上对问题没有意义。事实上，这些方程通常是在一个无限的域上提出的。但是，由于我们不能在无限域上进行计算，我们需要在某个地方截断它，而提出对这个人为的小域有意义的边界条件。广泛使用的方法是使用<a
+ * 但这些条件对问题来说实际上是没有意义的。事实上，这些方程通常是在一个无限的域上提出的。但是，由于我们不能在无限域上进行计算，我们需要在某处截断它，而提出对这个人为的小域有意义的边界条件。广泛使用的方法是使用<a
  * href="https://en.wikipedia.org/wiki/Perfectly_matched_layer">Perfectly
  * Matched
  * Layer</a>方法，该方法对应于衰减的一种特殊形式。在不同的情况下，它也被用于
  * step-62 。
  *
  *  <a name="Adaptivemeshes"></a><h4> Adaptive meshes </h4> 。
- *
- * 最后，我们从经验和其他许多教程程序中知道，使用自适应细化的网格是值得的，而不是这里使用的单网格。事实上，在这里添加这些并不困难。它只是需要周期性的重塑和将解决方案从一个网格转移到下一个网格。
+ * 最后，我们从经验和其他许多教程程序中知道，使用自适应细化的网格是值得的，而不是这里使用的单网格。事实上，在这里添加网格并不十分困难。它只是需要周期性的重塑和将解决方案从一个网格转移到下一个网格。
  * step-26 将是一个很好的指南，说明如何实现这一点。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-58.cc" .
+* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-58.cc"  。
  *
  */
 

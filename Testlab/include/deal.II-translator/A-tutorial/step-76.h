@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-76_0.txt
 /**
-  @page step_76 The step-76 tutorial program  
+  @page step_76 The step-76 tutorial program 
 * 本教程依赖于  step-67  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -41,8 +41,8 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
- 
-*  <br>  
+
+*  <br> 
 * <i>
 This program was contributed by Martin Kronbichler, Peter Munch, and David
 Schneider. Many of the features shown here have been added to deal.II during
@@ -61,32 +61,32 @@ element implementations with hybrid parallelization and improved data locality"
 within the KONWIHR program.
 </i>
 * <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
- 
 
-* 这个教程程序求解流体力学的欧拉方程，使用了一个显式时间积分器，其无矩阵框架应用于空间的高阶不连续Galerkin离散化。这里使用的数值方法与 step-67 中使用的相同，但是，我们利用了不同的高级无矩阵技术，以达到更高的吞吐量。
+
+* 这个教程程序解决了流体动力学的欧拉方程，使用了一个显式时间积分器和无矩阵框架应用于空间的高阶非连续Galerkin离散化。这里使用的数值方法与 step-67 中使用的相同，但是，我们利用了不同的高级无矩阵技术，以达到更高的吞吐量。
 * 本教程的两个主要特点是。
-* 
+*
 * - 使用MPI-3.0的共享内存特性和
-* 
+*
 * 使用以单元为中心的循环，它只允许向全局向量写入一次，因此，是使用共享内存的理想选择。
 * 我们在本教程中讨论的其他主题是模板参数VectorizedArrayType的用法和好处（而不是简单地使用VectorizedArray<Number>），以及向MatrixFree循环传递lambdas的可能性。
 * 关于数字的细节，我们可以参考  step-67  的文档。我们在这里只集中讨论主要的区别。
 * <a name="SharedmemoryandhybridparallelizationwithMPI30"></a><h3>Shared-memory and hybrid parallelization with MPI-3.0</h3> 。
-* 
+*
 
-* <a name="Motivation"></a><h4>Motivation</h4> 。
-* 
+*<a name="Motivation"></a><h4>Motivation</h4>
 
-* 存在许多基于线程的共享内存库，如TBB、OpenMP或TaskFlow。将这些库集成到现有的MPI程序中，就可以使用共享内存。然而，这些库对程序员来说有一定的开销，因为所有可并行化的代码部分都要根据所使用的库进行查找和转换，包括当第三方数值库，如迭代求解器包，只依赖MPI时的困难。
+
+* 存在许多基于线程的共享内存库，如TBB、OpenMP或TaskFlow。将这些库集成到现有的MPI程序中，就可以使用共享内存。然而，这些库对程序员来说有一定的开销，因为所有可并行的代码部分都要根据所使用的库进行查找和转换，包括当第三方数值库，如迭代求解器包，只依赖MPI时的困难。
 * 考虑到一个纯粹的MPI并行化的有限元应用，我们可以发现，使用共享内存的主要时间和内存优势来自于访问同一计算节点上的进程所拥有的解向量的部分，而不需要进行明确的复制和缓冲。
 *<a name="BasicMPI30commands"></a><h4>Basic MPI-3.0 commands</h4>
-* 
+*
 
-* 一些相关的MPI-3.0命令值得详细讨论。一个新的MPI通信器 <code>comm_sm</code> ，由可以访问相同共享内存的通信器 <code>comm</code> 的进程组成，可以通过以下方式创建。
+* 一个新的MPI通信器 <code>comm_sm</code> ，由通信器 <code>comm</code> 的进程组成，可以访问相同的共享内存，可以通过以下方式创建。
 * @code
 MPI_Comm_split_type(comm, MPI_COMM_TYPE_SHARED, rank, MPI_INFO_NULL, &comm_sm);
 @endcode
-* 
+*
 * 下面的代码片断显示了简化的共享内存的分配程序，包括值类型 <code>T</code> 和大小 <code>local_size</code> ，以及如何查询属于同一共享内存域的进程的数据指针。
 * @code
 MPI_Win          win;         // window
@@ -120,35 +120,35 @@ for (int i = 0; i < size_sm; ++i)
 * 
 Assert(data_this == data_others[rank_sm], ExcMessage("Something went wrong!"));
 @endcode
-* 
+*
 * 一旦不再需要数据，窗口就必须被释放，这也会释放本地拥有的数据。
 * @code
 MPI_Win_free(&win);
 @endcode
-* 
+*
 * <a name="MPI30andLinearAlgebradistributedVector"></a><h4>MPI-3.0 and LinearAlgebra::distributed::Vector</h4>.
-* 
+*
 
-* 上一节提到的命令被整合到了 LinearAlgebra::distributed::Vector 中，如果为reinit()函数提供了一个可选的（第二）通信器，就可以用来分配共享内存。
+* 上一节提到的命令被整合到了 LinearAlgebra::distributed::Vector 中，如果为reinit()-functions提供了一个可选的（第二）communicator，就可以用来分配共享内存。
 * 例如，可以用一个分区器（包含全局通信器）和一个子通信器（包含同一计算节点上的进程）来设置一个向量。
 * @code
 vec.reinit(partitioner, comm_sm);
 @endcode
- 
+
 *本地拥有的值和幽灵值可以像往常一样被处理。然而，现在用户也可以读取共享内存邻居的值 viathe函数。
 * @code
 const std::vector<ArrayView<const Number>> &
 LinearAlgebra::distributed::Vector::shared_vector_data() const;
 @endcode
-* 
+*
 * <a name="MPI30andMatrixFree"></a><h4>MPI-3.0 and MatrixFree</h4> 。
-* 
+*
 
 * 虽然 LinearAlgebra::distributed::Vector 提供了分配共享内存的选项，并以协调的方式访问相邻进程的共享内存的值，但它实际上并没有利用共享内存本身的使用优势。
 * 然而，MatrixFree基础设施做到了。
-* 
-* - 一方面，在无矩阵循环 MatrixFree::loop(),  MatrixFree::cell_loop(), 和 MatrixFree::loop_cell_centric(), 中，只有需要更新的幽灵值 <em> 被更新。来自共享内存邻居的幽灵值可以被直接访问，这使得缓冲，即把值复制到矢量的幽灵区域可能是多余的。 为了处理可能的竞赛条件，在MatrixFree中进行了必要的同步。在数值必须被缓冲的情况下，数值被直接从邻近的共享内存进程中复制，绕过了基于  <code>MPI_ISend</code>  和  <code>MPI_IRecv</code>  的更昂贵的MPI操作。
-* 
+*
+* - 一方面，在无矩阵循环 MatrixFree::loop(),  MatrixFree::cell_loop(), 和 MatrixFree::loop_cell_centric(), 中，只有需要更新的幽灵值 <em> 被更新。来自共享内存邻居的幽灵值可以被直接访问，这使得缓冲，即把值复制到矢量的幽灵区域可能是多余的。  为了处理可能的竞赛条件，在MatrixFree中进行了必要的同步。在数值必须被缓冲的情况下，数值被直接从邻近的共享内存进程中复制，绕过了基于  <code>MPI_ISend</code>  和  <code>MPI_IRecv</code>  的更昂贵的MPI操作。
+*
 * - 另一方面，像FEEvaluation和FEFaceEvaluation这样的类可以直接从共享内存中读取，所以在某些情况下，缓冲值确实是没有必要。
 * 为了能够使用MatrixFree的共享内存能力，MatrixFree必须通过提供用户创建的子通信器进行适当的配置。
 * @code
@@ -162,26 +162,26 @@ additional_data.communicator_sm = comm_sm;
 * 
 data.reinit(mapping, dof_handler, constraint, quadrature, additional_data);
 @endcode
-* 
-* 
+*
+*
 
-* <a name="Cellcentricloops"></a><h3>Cell-centric loops</h3> 。
-* 
+*<a name="Cellcentricloops"></a><h3>Cell-centric loops</h3>
 
-* <a name="MotivationFCLvsCCL"></a><h4>Motivation: FCL vs. CCL</h4>。
-* 
 
-* "以面为中心的循环"（简称FCL）访问单元和面（内部和边界的）的不分离的循环。因此，每个实体只被访问一次，单元之间的通量只被评估一次。如何在 MatrixFree::loop() 的帮助下，通过提供三个函数（一个用于单元积分，一个用于内部，一个用于边界面）来执行以面为中心的循环，已经在 step-59 和 step-67 中提出。
+*<a name="MotivationFCLvsCCL"></a><h4>Motivation: FCL vs. CCL</h4>
+
+
+* "以面为中心的循环"（简称FCL）访问单元和面（内部和边界的）的独立的循环。因此，每个实体只被访问一次，单元之间的通量只被评估一次。如何在 MatrixFree::loop() 的帮助下，通过提供三个函数（一个用于单元积分，一个用于内部，一个用于边界面）来执行以面为中心的循环已经在 step-59 和 step-67 中提出。
 * "以单元为中心的循环"（简称CCL或ECL（代表以元素为中心的循环），与此相反，处理一个单元并直接连续处理它的所有面（即访问所有面两次）。在文献 @cite KronbichlerKormann2019 中，它们的好处已经很明显了，尽管这种循环意味着通量必须被计算两次（在一个内部面的每一侧）。CCL有两个主要优点。
-* 
-* 一方面，在CCL的情况下，解向量中的条目正好被写回主内存一次，而在FCL的情况下，尽管单元和面循环的缓存有效调度，但由于缓存容量的缺失，至少有一次。
-* 
+*
+* 一方面，在CCL的情况下，解向量中的条目正好被写回主内存一次，而在FCL的情况下，尽管单元和面的循环被高速缓存有效调度，但由于高速缓存容量的缺失，至少有一次。
+*
 * 另一方面，由于解向量的每个条目被精确地访问一次，在CCL的情况下，访问解向量时不需要线程之间的同步。在写入目标向量的过程中不存在竞赛条件，这使得CCL特别适合于共享内存并行化。
 * 人们还应该注意到，尽管在CCL的情况下通量被计算了两次，但这并不自动转化为计算的加倍，因为已经插值到单元正交点的数值可以通过简单的一维插值插值到一个面。
 *<a name="CellcentricloopsandMatrixFree"></a><h4>Cell-centric loops and MatrixFree</h4>
-* 
+*
 
-* 对于以单元为中心的循环实现，可以使用函数 MatrixFree::loop_cell_centric() ，用户可以向其传递一个应该在每个单元上执行的函数。
+* 对于以单元为中心的循环实现，可以使用函数 MatrixFree::loop_cell_centric() ，用户可以向其传递一个应该在每个单元执行的函数。
 * 为了得到一个适当的函数，可以在 MatrixFree::loop_cell_centric(), 中传递，原则上可以转换/合并以下三个函数，它们可以被传递给 MatrixFree::loop(): 。
 * @code
 matrix_free.template loop<VectorType, VectorType>(
@@ -236,7 +236,7 @@ matrix_free.template loop<VectorType, VectorType>(
   dst,
   src);
 @endcode
- 
+
 * 以下列方式。
 * @code
 matrix_free.template loop_cell_centric<VectorType, VectorType>(
@@ -286,8 +286,8 @@ matrix_free.template loop_cell_centric<VectorType, VectorType>(
   dst,
   src);
 @endcode
- 
-* 应该注意的是，FEFaceEvaluation现在是用两个数字初始化的，即单元格号和本地面孔号。给出的例子只是强调了如何将以面为中心的循环转化为以单元为中心的循环，而且绝非高效，因为数据要从全局向量中多次读写，而且计算也要频繁地进行。下面，我们将讨论针对这些问题的高级技术。
+
+* 应该注意的是，FEFaceEvaluation现在是用两个数字初始化的，即单元格号和本地面孔号。给出的例子只是强调了如何将以面为中心的循环转化为以单元为中心的循环，而且绝非高效，因为数据要从全局向量中多次读写，而且计算也要经常进行。下面，我们将讨论针对这些问题的高级技术。
 * 为了能够使用 MatrixFree::loop_cell_centric(), ，必须启用 MatrixFree::AdditionalData 的下列标志。
 * @code
 typename MatrixFree<dim, Number>::AdditionalData additional_data;
@@ -303,15 +303,15 @@ additional_data.mapping_update_flags_faces_by_cells =
 * 
 data.reinit(mapping, dof_handler, constraint, quadrature, additional_data);
 @endcode
-* 
+*
 * 特别是，这些标志可以使内部数据结构为所有的单元面设置。
 * 目前，deal.II中以单元为中心的循环只适用于均匀细化的网格，如果不应用约束条件（这是DG通常使用的标准情况）。
-* 
+*
 
-* <a name="ProvidinglambdastoMatrixFreeloops"></a><h3>Providing lambdas to MatrixFree loops</h3> 。
-* 
+*<a name="ProvidinglambdastoMatrixFreeloops"></a><h3>Providing lambdas to MatrixFree loops</h3>
 
-* 上面的例子已经使用了lambdas，它已经提供了无矩阵循环。下面的简短例子介绍了如何在使用类和指向其方法之一的指针的版本和使用lambdas的变量之间转换函数。
+
+* 上面的例子已经使用了lambdas，它被提供了无矩阵循环。下面的简短例子介绍了如何在使用类和指向其方法之一的指针的版本和使用lambdas的变量之间转换函数。
 * 在下面的代码中，一个类和一个指向其方法之一的指针，应该被解释为单元格积分，被传递给 MatrixFree::loop(): 。
 * @code
 void
@@ -332,11 +332,11 @@ local_apply_cell(const MatrixFree<dim, Number> &              data,
     }
 }
 @endcode
-* 
+*
 * @code
 matrix_free.cell_loop(&Operator::local_apply_cell, this, dst, src);
 @endcode
-* 
+*
 * 然而，也可以通过lambda函数传递匿名函数，其结果是一样的。
 * @code
 matrix_free.template cell_loop<VectorType, VectorType>(
@@ -355,11 +355,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
   dst,
   src);
 @endcode
-* 
+*
 * <a name="VectorizedArrayType"></a><h3>VectorizedArrayType</h3>.
-* 
+*
 
-* VectorizedArray<Number>类是实现deal.II中无矩阵算法的高节点性能的关键组件。它是一个围绕Number类型的 $n$ 条目的短向量的封装类，通过内在函数将算术操作映射到适当的单指令/多数据（SIMD）概念。矢量的长度可以通过 VectorizedArray::size() 查询，其基础数字类型可以通过 VectorizedArray::value_type. 查询。
+* VectorizedArray<Number>类是实现deal.II中无矩阵算法的高节点性能的关键组件。它是一个围绕Number类型的短向量 $n$ 条目的封装类，并通过内在函数将算术操作映射到适当的单指令/多数据（SIMD）概念。矢量的长度可以通过 VectorizedArray::size() 查询，其基础数字类型可以通过 VectorizedArray::value_type. 查询。
 * 在默认情况下（ <code>VectorizedArray<Number></code> ），向量长度是在库的编译时设置的，以匹配给定的处理器架构所支持的最高值。然而，也可以指定第二个可选的模板参数作为 <code>VectorizedArray<Number, size></code>, where <code>size</code> ，明确控制特定指令集能力内的向量长度。下表列出了支持的向量长度的完整列表。
 *  <table align="center" class="doxtable">
   <tr>
@@ -387,11 +387,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
    <td><code>VectorizedArray<float, 16></code></td>
    <td>AVX-512</td>
   </tr>
-</table>  
+</table> 
 * 这允许用户选择矢量长度/ISA，因此，在无矩阵运算器评估中一次处理的单元数，可能会减少对缓存的压力，这对于非常高的度数（和尺寸）来说是一个严重的问题。
 * 一个可能的进一步原因是减少填充线的数量，以简化调试：而不是不得不看，例如8个单元，一个人可以专注于一个单元。
 * VectorizedArray的接口也可以用任何有匹配接口的类型来代替。具体来说，这为deal.II准备了 <code>std::simd</code> 类，它计划成为C++23标准的一部分。下表比较了deal.II特定的SIMD类和相应的C++23类。
-* 
+*
 
 *  <table align="center" class="doxtable">
   <tr>
@@ -406,18 +406,18 @@ matrix_free.template cell_loop<VectorType, VectorType>(
    <td><code>VectorizedArray<Number, size></code></td>
    <td><code>std::experimental::fixed_size_simd<Number, size></code></td>
   </tr>
-</table>  
-* 
+</table> 
 
-* <a name="CommProg"></a> <h1> The commented program</h1>
-* <a name="Parametersandutilityfunctions"></a> <h3>Parameters and utility functions</h3>.
- 
 
-* 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* <a name="Parametersandutilityfunctions"></a><h3>Parameters and utility functions</h3> 。
+*
+
+*
 * 包括与 step-67 中相同的内容。
- 
+*
 
-* 
+
 * @code
  #include <deal.II/base/conditional_ostream.h>
  #include <deal.II/base/function.h>
@@ -453,11 +453,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
  #include <iostream>
 * 
  @endcode
-* 
-* 一个新的包括，用于根据细胞的边界ID进行分类。
-* 
+*
+* 一个新的包括，根据其边界ID对单元格进行分类。
+*
 
-* 
+
 * @code
  #include <deal.II/matrix_free/tools.h>
 * 
@@ -468,11 +468,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
    using namespace dealii;
 * 
  @endcode
-* 
+*
 * 与  step-67  中的输入参数相同。
- 
+*
 
- 
+
 * @code
    constexpr unsigned int testcase             = 1;
    constexpr unsigned int dimension            = 2;
@@ -481,31 +481,31 @@ matrix_free.template cell_loop<VectorType, VectorType>(
    constexpr unsigned int n_q_points_1d        = fe_degree + 2;
 * 
  @endcode
-* 
+*
 * 这个参数指定了共享内存组的大小。目前，只有值1和 numbers::invalid_unsigned_int 是可能的，这导致了内存功能可以被关闭或所有访问同一共享内存域的进程被分组。
-* 
+*
 
-* 
+
 * @code
    constexpr unsigned int group_size = numbers::invalid_unsigned_int;
 * 
    using Number = double;
 * 
  @endcode
-* 
+*
 * 这里，数据结构的类型被选择为矢量化。在默认情况下，使用VectorizedArray<Number>，也就是说，在给定的硬件上使用最高的指令集架构扩展，有最大数量的向量通道。然而，人们可能会减少填充通道的数量，例如，通过编写 <code>using VectorizedArrayType = VectorizedArray<Number, 4></code> ，只处理4个单元。
-* 
+*
 
-* 
+
 * @code
    using VectorizedArrayType = VectorizedArray<Number>;
 * 
  @endcode
-* 
-* 以下参数没有改变。
- 
 
-* 
+* 以下参数没有改变。
+
+
+
 * @code
    constexpr double gamma       = 1.4;
    constexpr double final_time  = testcase == 0 ? 10 : 2.0;
@@ -514,20 +514,20 @@ matrix_free.template cell_loop<VectorType, VectorType>(
    const double courant_number = 0.15 / std::pow(fe_degree, 1.5);
 * 
  @endcode
-* 
+*
 * 指定对性能研究有用的最大时间步骤数。
-* 
+*
 
-* 
+
 * @code
    constexpr unsigned int max_time_steps = numbers::invalid_unsigned_int;
 * 
  @endcode
-* 
-* 从 step-67 复制的Runge-Kutta相关函数，并稍作修改，目的是尽量减少全局向量的访问。
- 
+*
+* 从 step-67 复制的Runge-Kutta相关函数，并稍作修改，目的是尽量减少全局矢量访问。
+*
 
-* 
+
 * @code
    enum LowStorageRungeKuttaScheme
    {
@@ -621,11 +621,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
 * 
  
  @endcode
- 
-* 来自 step-67 的欧拉特定实用函数。
-* 
+*
+* 来自 step-67 的欧拉特定效用函数。
+*
 
- 
+
 * @code
    enum EulerNumericalFlux
    {
@@ -875,11 +875,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
  
 * 
  @endcode
-* 
+*
 * 来自  step-67  的通用实用函数。
-* 
+*
 
-* 
+
 * @code
    template <int dim, typename VectorizedArrayType>
    VectorizedArrayType
@@ -919,15 +919,15 @@ matrix_free.template cell_loop<VectorType, VectorType>(
 * 
  
  @endcode
- 
+*
 * <a name="EuleroperatorusingacellcentricloopandMPI30sharedmemory"></a> <h3>Euler operator using a cell-centric loop and MPI-3.0 shared memory</h3>。
- 
 
-* 
+
+*
 * 来自 step-67 的欧拉算子，有一些变化，详见下文。
-* 
+*
 
-* 
+
 * @code
    template <int dim, int degree, int n_points_1d>
    class EulerOperator
@@ -977,11 +977,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
 * 
    private:
  @endcode
-* 
+*
 * 包含子通信器的SubCommunicatorWrapper实例，我们需要将其传递给 MatrixFree::reinit() ，以便能够利用MPI-3.0的共享内存功能。
-* 
+*
 
-* 
+
 * @code
      MPI_Comm subcommunicator;
 * 
@@ -1000,13 +1000,13 @@ matrix_free.template cell_loop<VectorType, VectorType>(
  
 * 
  @endcode
-* 
+*
 * 新的构造函数，可以创建一个子通信器。用户可以通过全局参数group_size指定子通信器的大小。如果大小被设置为
-* 
+*
 - ，一个共享内存域的所有MPI进程将被合并为一个组。指定的大小对于MatrixFree的共享内存能力的好处是决定性的，因此，设置为 <code>size</code> to <code>-1</code> 是一个合理的选择。通过设置，大小为 <code>1</code> ，用户明确地禁用了MatrixFree的MPI-3.0共享内存功能，而完全依赖MPI-2.0功能，如 <code>MPI_Isend</code> 和 <code>MPI_Irecv</code>  。
-* 
+*
 
-* 
+
 * @code
    template <int dim, int degree, int n_points_1d>
    EulerOperator<dim, degree, n_points_1d>::EulerOperator(TimerOutput &timer)
@@ -1040,11 +1040,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
 * 
  
  @endcode
-* 
-* 新增负责释放子通信器的析构器。
-* 
+*
+* 新的析构器，负责释放子通信器。
+*
 
-* 
+
 * @code
    template <int dim, int degree, int n_points_1d>
    EulerOperator<dim, degree, n_points_1d>::~EulerOperator()
@@ -1057,11 +1057,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
 * 
  
  @endcode
-* 
-* 修改了reinit()函数，以便在MatrixFree中设置内部数据结构，使其能被以单元为中心的循环使用，并使用MPI-3.0的共享内存功能。
-* 
+*
+* 修改了reinit()函数，以设置MatrixFree中的内部数据结构，使其能被以单元为中心的循环所使用，并使用MPI-3.0的共享内存功能。
+*
 
-* 
+
 * @code
    template <int dim, int degree, int n_points_1d>
    void EulerOperator<dim, degree, n_points_1d>::reinit(
@@ -1089,21 +1089,21 @@ matrix_free.template cell_loop<VectorType, VectorType>(
        MatrixFree<dim, Number, VectorizedArrayType>::AdditionalData::none;
 * 
  @endcode
-* 
-* 对单元格进行分类，使所有通道的每个面都有相同的边界ID。这严格来说是没有必要的，然而，允许在 EulerOperator::perform_stage() 中写出更简单的代码，而不需要屏蔽，因为它保证所有分组的单元格（在一个VectorizedArray中）必须对面也执行完全相同的操作。
-* 
+*
+* 对单元格进行分类，使所有的车道在每个面上都有相同的边界ID。这在严格意义上是不必要的，然而，允许在 EulerOperator::perform_stage() 中写出更简单的代码，而不需要屏蔽，因为它保证所有分组的单元格（在一个VectorizedArray中）必须对面也执行完全相同的操作。
+*
 
-* 
+
 * @code
      MatrixFreeTools::categorize_by_boundary_ids(dof_handler.get_triangulation(),
                                                  additional_data);
 * 
  @endcode
-* 
+*
 * 通过提供子通信器在MatrixFree中启用MPI-3.0共享内存功能。
-* 
+*
 
-* 
+
 * @code
      additional_data.communicator_sm = subcommunicator;
 * 
@@ -1113,40 +1113,40 @@ matrix_free.template cell_loop<VectorType, VectorType>(
 * 
  
  @endcode
- 
+*
 * 下面的函数做一个Runge--Kutta更新的整个阶段，并且是
-* 
+*
 
-* 
-* 
-* - 旁边的设置稍作修改
-* 
-* - 与 step-67 相比，本教程的核心内容。  
-* 与 step-67 相比，我们不是依次执行平流步骤（使用 MatrixFree::loop()) 和反质量矩阵步骤（使用 MatrixFree::cell_loop()) ），而是在 MatrixFree::loop_cell_centric(). 中一次性评估所有内容。该函数期望在每个本地拥有的（宏）单元上执行一个函数作为参数，这样我们就需要在该单元的所有面上进行循环并自行执行需要的积分步骤。  
+
+*
+* - 与稍加修改的设置一起
+*
+* - 本教程的核心与 step-67 相比。   
+* 与 step-67 相比，我们不是依次执行平流步骤（使用 MatrixFree::loop()) 和反质量矩阵步骤（使用 MatrixFree::cell_loop()) ），而是在 MatrixFree::loop_cell_centric(). 中一次性评估所有内容。 这个函数期望在每个本地拥有的（宏）单元上执行一个单一的函数作为参数，这样我们就需要在该单元的所有面上循环，自行执行需要的积分步骤。   
 * 下面的函数在很大程度上包含了 step-67 中的下列函数的拷贝，所以这里跳过了与弱形式的评估有关的评论。
-* 
+*
 
-* 
-* 
-* -  <code>EulerDG::EulerOperator::local_apply_cell</code>  
- 
 
-* 
- 
-* -  <code>EulerDG::EulerOperator::local_apply_face</code>  
- 
 
-* 
-* 
-* -  <code>EulerDG::EulerOperator::local_apply_boundary_face</code>  
- 
+* -  <code>EulerDG::EulerOperator::local_apply_cell</code> 
 
-* 
- 
-* -  <code>EulerDG::EulerOperator::local_apply_inverse_mass_matrix</code>  
- 
 
- 
+
+
+* -  <code>EulerDG::EulerOperator::local_apply_face</code> 
+
+
+
+
+* -  <code>EulerDG::EulerOperator::local_apply_boundary_face</code> 
+
+
+
+
+* -  <code>EulerDG::EulerOperator::local_apply_inverse_mass_matrix</code> 
+
+
+
 * @code
    template <int dim, int degree, int n_points_1d>
    void EulerOperator<dim, degree, n_points_1d>::perform_stage(
@@ -1164,11 +1164,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
        i.second->set_time(current_time);
 * 
  @endcode
-* 
-* 通过调用 MatrixFree::loop_cell_centric() 并提供一个包含单元、面和边界面积分效果的lambda，运行一个以单元为中心的循环。
-* 
+*
+* 通过调用 MatrixFree::loop_cell_centric() 并提供一个包含单元、面和边界面积分效果的lambda来运行一个以单元为中心的循环。
+*
 
-* 
+
 * @code
      data.template loop_cell_centric<LinearAlgebra::distributed::Vector<Number>,
                                      LinearAlgebra::distributed::Vector<Number>>(
@@ -1214,11 +1214,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                                                    phi.n_components);
 * 
  @endcode
-* 
-* 循环所有的单元格批次。
-* 
+*
+* 在所有单元格批次上循环。
+*
 
-* 
+
 * @code
          for (unsigned int cell = cell_range.first; cell < cell_range.second;
               ++cell)
@@ -1229,11 +1229,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                phi_temp.reinit(cell);
 * 
  @endcode
-* 
-*从全局向量中读取数值，并计算正交点的数值。
-* 
+*
+*从全局矢量中读取数值并计算正交点的数值。
+*
 
-* 
+
 * @code
              if (ai != Number() && stage == 0)
                {
@@ -1252,21 +1252,21 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                }
 * 
  @endcode
-* 
-* 缓冲正交点的计算值，因为这些值在下一步被 FEEvaluation::submit_value() 所覆盖，但是，在后面的面积分中需要。
-* 
+*
+* 缓冲正交点的计算值，因为这些值在下一步被 FEEvaluation::submit_value() 所覆盖，然而，在后面的面积分中需要。
+*
 
-* 
+
 * @code
              for (unsigned int i = 0; i < phi.static_n_q_points (dim + 2); ++i)
                buffer[i] = phi.begin_values()[i];
 * 
  @endcode
-* 
+*
 * 在单元格正交点应用单元格积分。也可参见来自  step-67  的函数  <code>EulerOperator::local_apply_cell()</code>  。
-* 
+*
 
-* 
+
 * @code
              for (unsigned int q = 0; q < phi.n_q_points; ++q)
                {
@@ -1291,11 +1291,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                }
 * 
  @endcode
-* 
+*
 * 用正交点中的测试函数的梯度进行测试。我们跳过插值回到元素的支持点，因为我们首先收集单元正交点的所有贡献，只在最后一步进行插值。
-* 
+*
 
-* 
+
 * @code
              {
                autovalues_ptr   = phi.begin_values();
@@ -1322,22 +1322,22 @@ matrix_free.template cell_loop<VectorType, VectorType>(
              }
 * 
  @endcode
-* 
-* 循环处理当前单元的所有面。
-* 
+*
+*在当前单元格的所有面上进行循环。
+*
 
-* 
+
 * @code
              for (unsigned int face = 0;
                   face < GeometryInfo<dim>::faces_per_cell;
                   ++face)
                {
  @endcode
-* 
+*
 * 确定当前面的边界ID。由于我们设置MatrixFree的方式是所有填充的车道都保证有相同的边界ID，我们可以选择第一个车道的边界ID。
-* 
+*
 
-* 
+
 * @code
                  const auto boundary_ids =
                    data.get_faces_by_cells_boundary_id(cell, face);
@@ -1353,11 +1353,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                  phi_m.reinit(cell, face);
 * 
  @endcode
-* 
-* 通过简单的一维插值，将单元格正交点的值插到当前面的正交点上。
-* 
+*
+* 通过简单的一维插值，将单元格正交点的数值插到当前面的正交点上。
+*
 
-* 
+
 * @code
                  internal::FEFaceNormalEvaluationImpl<dim,
                                                       n_points_1d
@@ -1373,20 +1373,20 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                      face);
 * 
  @endcode
-* 
+*
 * 检查该面是内部面还是边界面，并根据这一信息选择不同的编码路径。
-* 
+*
 
-* 
+
 * @code
                  if (boundary_id == numbers::internal_face_boundary_id)
                    {
  @endcode
-* 
-* 处理和内部面。以下几行代码是对  step-67  的函数  <code>EulerDG::EulerOperator::local_apply_face</code>  的复制。
-* 
+*
+* 过程和内部面。以下几行代码是对 step-67 中 <code>EulerDG::EulerOperator::local_apply_face</code> 函数的复制。
+*
 
-* 
+
 * @code
                      phi_p.reinit(cell, face);
                      phi_p.gather_evaluate(src, EvaluationFlags::values);
@@ -1403,11 +1403,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                  else
                    {
  @endcode
-* 
+*
 * 处理一个边界面。下面这几行代码是对 step-67 中 <code>EulerDG::EulerOperator::local_apply_boundary_face</code> 函数的复制。
-* 
+*
 
-* 
+
 * @code
                      for (unsigned int q = 0; q < phi_m.n_q_points; ++q)
                        {
@@ -1686,11 +1686,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                    }
 * 
  @endcode
-* 
-* 通过正交评估与单元有关的局部积分，并通过简单的一维插值加入到单元贡献中。
-* 
+*
+*通过正交评估与单元有关的局部积分，并通过简单的一维插值加入到单元贡献中。
+*
 
-* 
+
 * @code
                  internal::FEFaceNormalEvaluationImpl<dim,
                                                       n_points_1d
@@ -1707,11 +1707,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                }
 * 
  @endcode
- 
-* 在单元的正交点上应用反质量矩阵。也可参见来自  step-67  的函数  <code>EulerDG::EulerOperator::local_apply_inverse_mass_matrix()</code>  。
-* 
+*
+* 在单元格的正交点上应用反质量矩阵。也可参见来自  step-67  的函数  <code>EulerDG::EulerOperator::local_apply_inverse_mass_matrix()</code>  。
+*
 
-* 
+
 * @code
              for (unsigned int q = 0; q < phi.static_n_q_points; ++q)
                {
@@ -1722,11 +1722,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                }
 * 
  @endcode
-* 
+*
 * 将数值从配位空间转换到原始的高斯-洛巴托空间。
-* 
 
-* 
+
+
 * @code
              internal::FEEvaluationImplBasisChange<
                dealii::internal::EvaluatorVariant::evaluate_evenodd,
@@ -1744,11 +1744,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
                                                  phi.begin_dof_values());
 * 
  @endcode
-* 
-* 进行Runge-Kutta更新并将结果写回全局向量。
-* 
+*
+*执行Runge-Kutta更新并将结果写回全局向量。
+*
 
- 
+
 * @code
              if (ai == Number())
                {
@@ -1784,11 +1784,11 @@ matrix_free.template cell_loop<VectorType, VectorType>(
  
 * 
  @endcode
-* 
-* 从这里开始， step-67 的代码没有改变。
-* 
 
-* 
+* 从这里开始， step-67 的代码没有改变。
+*
+
+
 * @code
    template <int dim, int degree, int n_points_1d>
    void EulerOperator<dim, degree, n_points_1d>::initialize_vector(
@@ -2479,8 +2479,8 @@ matrix_free.template cell_loop<VectorType, VectorType>(
    return 0;
  }
  @endcode
-* <a name="Results"></a><h1>Results</h1>。
-* 
+*<a name="Results"></a><h1>Results</h1>
+
 
 * 在有40个进程的机器上以默认设置运行该程序，产生以下输出。
 * @code
@@ -2503,7 +2503,7 @@ Time:       0, dt:   0.0003, norm rho:  5.385e-16, rho u:  1.916e-16, energy: 1.
 - integrals L_h |       500 |     8.742s    36 |     8.742s |     8.743s     2 |
 +--------------------------------------+------------------+------------+------------------+
 @endcode
-* 
+*
 * 以及以下视觉输出。
 *  <table align="center" class="doxtable" style="width:85%">
   <tr>
@@ -2522,7 +2522,7 @@ Time:       0, dt:   0.0003, norm rho:  5.385e-16, rho u:  1.916e-16, energy: 1.
         <img src="https://www.dealii.org/images/steps/developer/step-67.pressure_100.png" alt="" width="100%">
     </td>
   </tr>
-</table>  
+</table> 
 * 作为参考，使用FCL的 step-67 的结果是。
 * @code
 Running with 40 MPI processes
@@ -2547,20 +2547,20 @@ Time:       0, dt:   0.0003, norm rho:  5.385e-16, rho u:  1.916e-16, energy: 1.
 - inv mass + vec upd |       500 |     1.944s     0 |     2.377s |      2.55s    10 |
 +-------------------------------------------+------------------+------------+------------------+
 @endcode
-* 
+*
 * 通过本教程中的修改，我们能够使Runge-Kutta阶段的速度提高27%。
 * <a name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>。
-* 
+*
 
-* 这些算法很容易扩展到更高的维度：一个高维的<a href="https://github.com/hyperdeal/hyperdeal/blob/a9e67b4e625ff1dde2fed93ad91cdfacfaa3acdf/include/hyper.deal/operators/advection/advection_operation.h#L219-L569">advection operator based on cell-centric loops</a>是hyper.deal库的一部分。以单元为中心的循环扩展到局部细化的网格是比较复杂的。
+* 这些算法很容易扩展到更高的维度：高维<a href="https://github.com/hyperdeal/hyperdeal/blob/a9e67b4e625ff1dde2fed93ad91cdfacfaa3acdf/include/hyper.deal/operators/advection/advection_operation.h#L219-L569">advection operator based on cell-centric loops</a>是hyper.deal库的一部分。以单元为中心的循环扩展到局部细化的网格是比较复杂的。
 *<a name="ExtensiontothecompressibleNavierStokesequations"></a><h4>Extension to the compressible Navier-Stokes equations</h4>。
-* 
+*
 
-* 本教程中介绍的求解器也可以通过添加粘性项扩展到可压缩的Navier-Stokes方程，这也是在 step-67 中建议的。为了尽量保持这里获得的性能，尽管椭圆项的额外成本，例如通过内部惩罚方法，该教程建议将基础从FE_DGQ切换到FE_DGQHermite，就像在 step-59 教程程序中一样。这种转换的理由是，在FE_DGQ的情况下，需要相邻单元的所有数值（即 $k+1$ 层），而在FE_DGQHermite的情况下，只需要2层，这使得后者明显更适合于更高的程度。额外的层一方面要在通量计算过程中从主内存加载，另一方面要进行通信。使用本教程中介绍的共享内存能力，第二点可以在单个计算节点上消除，或者在混合环境下减少其影响。
+* 本教程中提出的求解器也可以通过增加粘性项扩展到可压缩的Navier-Stokes方程，这也是 step-67 中建议的。为了尽量保持这里获得的性能，尽管椭圆项的额外成本，例如通过内部惩罚方法，该教程建议将基础从FE_DGQ切换到FE_DGQHermite，就像在 step-59 教程程序中一样。这种转换的理由是，在FE_DGQ的情况下，需要相邻单元的所有数值（即 $k+1$ 层），而在FE_DGQHermite的情况下，只需要2层，这使得后者明显更适合于更高的程度。额外的层一方面要在通量计算过程中从主内存加载，另一方面要进行通信。使用本教程中介绍的共享内存能力，第二点可以在单个计算节点上消除，或者在混合环境下减少其影响。
 *<a name="BlockGaussSeidellikepreconditioners"></a><h4>Block Gauss-Seidel-like preconditioners</h4>
-* 
+*
 
-* 以单元为中心的循环可以用来创建块状的高斯-赛德尔预处理程序，该程序在一个过程中是乘法的，在多个过程中是加法的。在通量计算过程中，这种类型的预处理程序与雅可比类型的预处理程序相反，使用来自相邻单元的最新值。下面的伪代码直观地说明了这一目标的实现方式。
+* 以单元为中心的循环可用于创建块状高斯-赛德尔预处理，在一个过程中是乘法的，在多个过程中是加法的。在通量计算过程中，这种类型的预处理程序与雅可比类型的预处理程序相反，使用的是来自相邻单元的最新值。下面的伪代码直观地说明了这一目标的实现方式。
 * @code
 * 
 Vector<Number> visit_flags(data.n_cell_batches () + data.n_ghost_cell_batches ());
@@ -2613,10 +2613,10 @@ data.template loop_cell_centric<VectorType, VectorType>(
   true,
   MatrixFree<dim, Number, VectorizedArrayType>::DataAccessOnFaces::values);
 @endcode
-* 
+*
 * 为此，我们可以利用MatrixFree的单元数据向量功能和VectorizedArray的基于范围的迭代功能。
 * 请注意，在给定的例子中，我们处理了 <code>VectorizedArrayType::size()</code> 个块，因为每个车道对应着一个块。如果一个矢量寄存器处理的所有块都被更新了，我们就认为块被更新了。在笛卡尔网格的情况下，这是一个合理的方法，然而，对于一般的非结构化网格，这种保守的方法可能会导致预处理程序的效率下降。通过明确减少 <code>VectorizedArrayType</code> 使用的通道数量来减少并行处理的单元可能会提高预处理器的质量，但代价是每次迭代可能会更昂贵。这种两难境地使我们看到了进一步的 "扩展可能性"：元素内的矢量化。
-* 
+*
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-76.cc"  。
 * */

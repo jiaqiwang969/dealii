@@ -67,30 +67,28 @@
  * it is done in this tutorial. </i> <a name="Intro"></a><a
  * name="Introduction"></a><h1>Introduction</h1> 。
  *
- * 这个例子显示了deal.II中多级函数的基本用法。它解决的问题与
+ * 这个例子展示了deal.II中多层次函数的基本用法。它解决的问题与
  * step-6
  * 中使用的问题几乎相同，但展示了使用多网格作为预处理程序时必须提供的东西。特别是，这要求我们定义一个层次结构，提供从一个层次到下一个层次以及返回的转移算子，并在每个层次上提供拉普拉斯算子的表示。
  * 为了使微分方程系统和块状预处理程序具有足够的灵活性，在开始使用多层次方法之前，必须创建一些不同的对象，尽管大部分需要做的事情是由deal.II本身提供。这些对象是
  *
  *
  *
- *
- * - 网格之间的对象处理转移；我们使用MGTransferPrebuilt类来处理这个问题，它几乎完成了库内的所有工作。
- *
+ * - 网格之间的对象处理转移；我们为此使用了MGTransferPrebuilt类，它几乎完成了库内所有的工作。
  *
  *
  *
  * - 最粗层次上的求解器；这里，我们使用MGCoarseGridHouseholder。
  *
  *
+ *
  * - 所有其他级别的平滑器，在我们的例子中，这将是使用SOR作为基本方法的 mg::SmootherRelaxation 类。
  *
  *
  *
- *
- *  和 mg::Matrix,
+ * 和 mg::Matrix,
  * 一个具有特殊水平乘法的类，即我们基本上为每个网格水平存储一个矩阵并允许与之相乘。
- * 这些对象中的大多数只在实际解决线性系统的函数中需要。在这里，这些对象被合并到一个多网格类型的对象中，其中包含V-循环的实现，它又被预设条件器PreconditionMG使用，准备插入到LAC库的线性求解器。
+ * 这些对象中的大多数只在实际解决线性系统的函数中需要。在这里，这些对象被合并到一个多网格类型的对象中，其中包含V-循环的实现，它又被预设条件器PreconditionMG使用，准备插入到LAC库的线性求解器中。
  * <p align="center">
   @image html "multigrid.png" ""
  * </p>
@@ -100,11 +98,10 @@
  * <a name="Thetestcase"></a><h3>The testcase</h3>
  *
  *  我们在这里解决的问题与 step-6
- * 相似，主要有两个不同之处：首先，显然是多网格预处理程序。我们还改变了系数的不连续性，使局部汇编器看起来不会比必要的更复杂。
+ * 相似，主要有两点不同：首先，显然是多网格预处理程序。我们还改变了系数的不连续性，使局部汇编器看起来不会比必要的更复杂。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1>. <a
- * name="Includefiles"></a> <h3>Include files</h3>.
- *
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
+ * name="Includefiles"></a> <h3>Include files</h3>。
  *
  * 同样，前几个include文件已经知道了，所以我们不会对它们进行评论。
  *
@@ -136,10 +133,10 @@
  *
  * @endcode
  *
- * 现在，这些是多级方法所需的include。第一个声明了如何处理多网格方法每个层次上的Dirichlet边界条件。对于自由度的实际描述，我们不需要任何新的包含文件，因为DoFHandler已经实现了所有必要的方法。我们只需要将自由度分配给更低的层次。
+ * 这些，现在，是多级方法所必需的包括。第一个声明了如何处理多网格方法每个层次上的Dirichlet边界条件。对于自由度的实际描述，我们不需要任何新的包含文件，因为DoFHandler已经实现了所有必要的方法。我们只需要将自由度分配给更低的层次。
  *
  *
- * 其余的include文件涉及到作为线性算子（求解器或预处理器）的多重网格的力学问题。
+ * 其余的包括文件涉及到作为线性算子（求解器或预处理器）的多重网格的力学。
  *
  * @code
  * #include <deal.II/multigrid/mg_constrained_dofs.h>
@@ -153,8 +150,7 @@
  * @endcode
  *
  * 我们将使用 MeshWorker::mesh_loop
- * 来循环计算单元，所以在这里包括它。
- *
+ * 来循环处理单元格，所以在这里包括它。
  *
  * @code
  * #include <deal.II/meshworker/mesh_loop.h>
@@ -163,7 +159,6 @@
  * @endcode
  *
  * 这就是C++。
- *
  *
  * @code
  * #include <iostream>
@@ -177,8 +172,7 @@
  *
  * <a name="TheScratchandCopyobjects"></a> <h3>The Scratch and Copy
  * objects</h3>。 我们使用 MeshWorker::mesh_loop()
- * 来组装我们的矩阵。为此，我们需要一个ScratchData对象来存储每个单元的临时数据（这只是FEValues对象）和一个CopyData对象，它将包含每个单元组装的输出。关于scratch和copy对象的用法的更多细节，请参阅WorkStream命名空间。
- *
+ * 来组装我们的矩阵。为此，我们需要一个ScratchData对象来存储每个单元的临时数据（这只是FEValues对象）和一个CopyData对象，它将包含每个单元装配的输出。关于scratch和copy对象的用法的更多细节，请参阅WorkStream命名空间。
  *
  * @code
  * template <int dim>
@@ -223,19 +217,16 @@
  * @endcode
  *
  * <a name="ThecodeLaplaceProblemcodeclasstemplate"></a> <h3>The
- * <code>LaplaceProblem</code> class template</h3>
+ * <code>LaplaceProblem</code> class template</h3>。
  *
  * 这个主类与  step-6
  * 中的同一类相似。就成员函数而言，唯一增加的是。
  *
  *
- *
- * -  <code>assemble_multigrid</code> 中的函数，它组装了对应于中间层的离散运算符的矩阵。
- *
+ * -  <code>assemble_multigrid</code> 函数，它组装了对应于中间层次的离散运算符的矩阵。
  *
  *
- * -  <code>cell_worker</code> 函数将我们的PDE组装在一个单元上。
- *
+ * -  <code>cell_worker</code> 函数，将我们的PDE组装在一个单元上。
  *
  * @code
  * template <int dim>
@@ -273,11 +264,11 @@
  *   const unsigned int degree;
  *
  * @endcode
- * 以下成员是多网格方法的基本数据结构。前四个表示稀疏模式和多级层次结构中各个层次上的矩阵，非常像上面全局网格的对象。
- * 然后我们有两个新的矩阵，只需要在自适应网格上进行局部平滑的多网格方法。它们在细化区域的内部和细化边缘之间传递数据，正如 @ref mg_paper "多网格论文 "
- * 中详细介绍的那样。
- * 最后一个对象存储了每个层次上的边界指数信息和位于两个不同细化层次之间的细化边缘上的指数信息。因此，它的作用与AffineConstraints类似，但在每个层次上。
  *
+ * 以下成员是多网格方法的基本数据结构。前四个表示稀疏模式和多级层次结构中各个层次上的矩阵，非常类似于上面的全局网格的对象。
+ * 然后我们有两个新的矩阵，只需要在自适应网格上进行局部平滑的多网格方法。它们在细化区域的内部和细化边缘之间传递数据，如 @ref mg_paper "多网格论文 "
+ * 中详细介绍的。
+ * 最后一个对象存储了每个层次上的边界指数信息和位于两个不同细化层次之间的细化边缘上的指数信息。因此，它的作用与AffineConstraints类似，但在每个层次上。
  *
  * @code
  *   MGLevelObject<SparsityPattern> mg_sparsity_patterns;
@@ -290,14 +281,14 @@
  *
  *
  * @endcode
- *  <a name="ThecodeLaplaceProblemcodeclassimplementation"></a> <h3>The
- * <code>LaplaceProblem</code> class implementation</h3>.
  *
- * 关于三角形的构造函数只有一个简短的评论：按照惯例，deal.II中所有自适应细化的三角形在单元格之间的面的变化都不会超过一个级别。然而，对于我们的多网格算法，我们需要一个更严格的保证，即网格在连接两个单元的顶点上的变化也不超过细化级别。换句话说，我们必须防止出现以下情况。
+ * <a name="ThecodeLaplaceProblemcodeclassimplementation"></a> <h3>The
+ * <code>LaplaceProblem</code> class implementation</h3>。
+ *
+ * 关于三角结构的构造函数，只有一个简短的评论：按照惯例，deal.II中所有自适应细化的三角结构在单元之间的面的变化不会超过一个级别。然而，对于我们的多网格算法，我们需要一个更严格的保证，即网格在连接两个单元的顶点上的变化也不超过细化级别。换句话说，我们必须防止出现以下情况。
 *  @image html limit_level_difference_at_vertices.png ""
  * 这可以通过向三角化类的构造函数传递
  * Triangulation::limit_level_difference_at_vertices 标志来实现。
- *
  *
  * @code
  * template <int dim>
@@ -313,10 +304,9 @@
  * @endcode
  *
  * <a name="LaplaceProblemsetup_system"></a>
- * <h4>LaplaceProblem::setup_system</h4>.
+ * <h4>LaplaceProblem::setup_system</h4>。
  *
- * 除了只是在DoFHandler中分配自由度外，我们在每一层都做同样的事情。然后，我们按照之前的程序，在叶子网格上设置系统。
- *
+ * 除了只是在DoFHandler中分配自由度之外，我们在每一层都做同样的事情。然后，我们按照之前的程序在叶网中设置系统。
  *
  * @code
  * template <int dim>
@@ -362,7 +352,6 @@
  *
  * 多网格约束必须被初始化。他们需要知道哪里有迪里希特边界条件的规定。
  *
- *
  * @code
  *   mg_constrained_dofs.clear();
  *   mg_constrained_dofs.initialize(dof_handler);
@@ -371,10 +360,10 @@
  *
  *
  * @endcode
+ *
  * 现在是关于多网格数据结构的事情。首先，我们调整多级对象的大小，以容纳每一级的矩阵和稀疏度模式。粗略的级别是零（现在是强制性的，但在未来的修订中可能会改变）。注意，这些函数在这里采取的是一个完整的、包容的范围（而不是一个起始索引和大小），所以最细的级别是
  * <code>n_levels-1</code>
  * 。我们首先要调整容纳SparseMatrix类的容器的大小，因为它们必须在调整大小时释放它们的SparsityPattern才能被销毁。
- *
  *
  * @code
  *   const unsigned int n_levels = triangulation.n_levels();
@@ -393,13 +382,11 @@
  * - 1);
  *
  * @endcode
- *
  * 现在，我们必须在每个层次上提供一个矩阵。为此，我们首先使用 MGTools::make_sparsity_pattern
  * 函数在每个层次上生成一个初步的压缩稀疏模式（关于这个主题的更多信息，请参见
  * @ref Sparsity
- * 模块），然后把它复制到我们真正想要的那个层次上。下一步是用拟合的稀疏度模式初始化接口矩阵。
+ * 模块），然后将其复制到我们真正想要的那个层次。下一步是用拟合的稀疏模式初始化接口矩阵。
  * 值得指出的是，界面矩阵只有位于较粗和较细的网格之间的自由度条目。因此，它们甚至比我们的多网格层次结构中的各个层次的矩阵还要稀疏。因此，我们使用一个专门为此目的而建立的函数来生成它。
- *
  *
  * @code
  *   for (unsigned int level = 0; level < n_levels; ++level)
@@ -430,11 +417,10 @@
  * @endcode
  *
  * <a name="LaplaceProblemcell_worker"></a>
- * <h4>LaplaceProblem::cell_worker</h4>.
+ * <h4>LaplaceProblem::cell_worker</h4>。
  *
  * cell_worker函数用于在给定的单元上组装矩阵和右手边。这个函数用于活动单元生成system_matrix，并在每个层次上建立层次矩阵。
  * 请注意，当从assemble_multigrid()调用时，我们也会组装一个右手边，尽管它没有被使用。
- *
  *
  * @code
  * template <int dim>
@@ -477,10 +463,8 @@
  * @endcode
  *
  * <a name="LaplaceProblemassemble_system"></a>
- * <h4>LaplaceProblem::assemble_system</h4>
- *
- * 下面的函数将线性系统组装在网格的活动单元上。为此，我们向Mesh_loop()函数传递两个lambda函数。cell_worker函数重定向到同名的类成员函数，而copyer是这个函数特有的，它使用约束条件将本地矩阵和向量复制到相应的全局矩阵。
- *
+ * <h4>LaplaceProblem::assemble_system</h4>。
+ * 下面的函数将线性系统组装在网格的活动单元上。为此，我们向Mesh_loop()函数传递了两个lambda函数。cell_worker函数重定向到同名的类成员函数，而copyer是这个函数特有的，它使用约束条件将本地矩阵和向量复制到相应的全局矩阵。
  *
  * @code
  * template <int dim>
@@ -525,11 +509,10 @@
  * @endcode
  *
  * <a name="LaplaceProblemassemble_multigrid"></a>
- * <h4>LaplaceProblem::assemble_multigrid</h4>
+ * <h4>LaplaceProblem::assemble_multigrid</h4>。
  *
- * 下一个函数是建立矩阵，定义每一层网格上的多网格方法。集成的核心与上面的相同，但是下面的循环将遍历所有的现有单元，而不仅仅是活动的单元，而且结果必须输入正确的层次矩阵。幸运的是，MeshWorker对我们隐藏了大部分的内容，因此这个函数与之前的函数的区别只在于汇编器的设置和循环中不同的迭代器。
+ * 下一个函数是建立矩阵，定义每一层网格上的多栅方法。集成的核心与上面的相同，但是下面的循环会遍历所有已存在的单元，而不仅仅是活动的单元，而且结果必须输入正确的层次矩阵。幸运的是，MeshWorker对我们隐藏了大部分的内容，因此这个函数和之前的函数的区别只在于汇编器的设置和循环中的不同迭代器。
  * 我们为每个层次生成一个AffineConstraints对象，其中包含了边界和界面道夫作为约束条目。然后，相应的对象被用来生成层次矩阵。
- *
  *
  * @code
  * template <int dim>
@@ -568,8 +551,7 @@
  *
  * @endcode
  *
- * 在填充mg_matrices[cd.level]时，界面条目被上面的boundary_constraints对象所忽略。相反，我们手动将这些条目复制到当前级别的界面矩阵中。
- *
+ * 接口条目在填充mg_matrices[cd.level]时被上面的boundary_constraints对象所忽略。相反，我们手动将这些条目复制到当前级别的界面矩阵中。
  *
  * @code
  *     for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -605,12 +587,11 @@
  *
  * @endcode
  *
- * <a name="LaplaceProblemsolve"></a> <h4>LaplaceProblem::solve</h4>
+ * <a name="LaplaceProblemsolve"></a> <h4>LaplaceProblem::solve</h4>。
  *
- * 这是支持多级求解器（或者说，事实上，我们使用多级方法的前置条件器）的另一个明显不同的函数。
- * 让我们首先建立多层次方法的两个组成部分：层次间的转移算子和最粗层次上的求解器。在有限元方法中，转移算子来自所涉及的有限元函数空间，通常可以用独立于所考虑问题的通用方式计算。在这种情况下，我们可以使用MGTransferPrebuilt类，给定最终线性系统的约束和MGConstrainedDoFs对象，该对象知道每个层次的边界条件和不同细化层次之间接口的自由度，可以从具有层次自由度的DoFHandler对象建立这些转移操作的矩阵。
+ * 这是另一个在支持多网格求解器（或者说，事实上，我们使用多网格方法的前提条件）方面有明显不同的函数。
+ * 让我们首先建立多层次方法的两个组成部分：层次间的转移算子和最粗层次上的求解器。在有限元方法中，转移算子来自所涉及的有限元函数空间，通常可以用独立于所考虑问题的通用方式计算。在这种情况下，我们可以使用MGTransferPrebuilt类，给定最终线性系统的约束条件和MGConstrainedDoFs对象，该对象知道各层的边界条件和不同细化层之间接口的自由度，可以从具有层自由度的DoFHandler对象建立这些转移操作的矩阵。
  * 下面几行的第二部分是关于粗略网格求解器的。由于我们的粗网格确实非常粗，我们决定采用直接求解器（最粗层次矩阵的Householder分解），即使其实现不是特别复杂。如果我们的粗网格比这里的5个单元多得多，那么这里显然需要更合适的东西。
- *
  *
  * @code
  * template <int dim>
@@ -625,12 +606,13 @@
  *   coarse_grid_solver.initialize(coarse_matrix);
  *
  * @endcode
- * 多级求解器或预处理器的下一个组成部分是，我们需要在每一级上有一个平滑器。这方面常见的选择是使用松弛方法的应用（如SOR、Jacobi或Richardson方法）或解算方法的少量迭代（如CG或GMRES）。
+ *
+ * 多级求解器或预处理器的下一个组成部分是，我们需要在每一级上进行平滑处理。这方面常见的选择是使用松弛方法的应用（如SOR、Jacobi或Richardson方法）或求解器方法的少量迭代（如CG或GMRES）。
  * mg::SmootherRelaxation
  * 和MGSmootherPrecondition类为这两种平滑器提供支持。这里，我们选择应用单一的SOR迭代。为此，我们定义一个适当的别名，然后设置一个平滑器对象。
  * 最后一步是用我们的水平矩阵初始化平滑器对象并设置一些平滑参数。
  * <code>initialize()</code>
- * 函数可以有选择地接受额外的参数，这些参数将被传递给每一级的平滑器对象。在目前SOR平滑器的情况下，这可能包括一个松弛参数。然而，我们在这里将这些参数保留为默认值。对
+ * 函数可以有选择地接受额外的参数，这些参数将被传递给每一级的平滑器对象。在当前SOR平滑器的情况下，这可能包括一个松弛参数。然而，我们在这里将这些参数保留为默认值。对
  * <code>set_steps()</code>
  * 的调用表明我们将在每个级别上使用两个前平滑步骤和两个后平滑步骤；为了在不同级别上使用可变数量的平滑器步骤，可以在对
  * <code>mg_smoother</code>
@@ -641,7 +623,6 @@
  *
  * - 但我们使用共轭梯度迭代（这需要一个对称的预处理程序）下面，我们需要让多级预处理程序确保我们得到一个对称的算子，即使是非对称的平滑器。
  *
- *
  * @code
  *   using Smoother = PreconditionSOR<SparseMatrix<double>>;
  *   mg::SmootherRelaxation<Smoother, Vector<double>> mg_smoother;
@@ -651,8 +632,7 @@
  *
  * @endcode
  *
- * 下一个准备步骤是，我们必须将我们的级别和接口矩阵包裹在一个具有所需乘法函数的对象中。我们将为从粗到细的接口对象创建两个对象，反之亦然；多网格算法稍后将使用转置运算器进行后一种操作，允许我们用已经建立的矩阵初始化该运算器的向上和向下版本。
- *
+ * 下一个准备步骤是，我们必须将我们的水平矩阵和接口矩阵包裹在一个具有所需乘法函数的对象中。我们将为从粗到细的接口对象创建两个对象，反之亦然；多网格算法以后将使用转置运算器进行后一种操作，允许我们用已经建立的矩阵初始化该运算器的上下版本。
  *
  * @code
  *   mg::Matrix<Vector<double>> mg_matrix(mg_matrices);
@@ -660,9 +640,7 @@
  *   mg::Matrix<Vector<double>> mg_interface_down(mg_interface_matrices);
  *
  * @endcode
- *
- * 现在，我们已经准备好设置V-循环算子和多级预处理。
- *
+ *  现在，我们准备设置V型循环算子和多级预处理程序。
  *
  * @code
  *   Multigrid<Vector<double>> mg(
@@ -674,8 +652,7 @@
  *
  * @endcode
  *
- * 有了这一切，我们终于可以用通常的方法来解决这个线性系统了。
- *
+ * 有了这些，我们终于可以用通常的方法来解决这个线性系统了。
  *
  * @code
  *   SolverControl            solver_control(1000, 1e-12);
@@ -694,11 +671,10 @@
  *
  * @endcode
  *
- * <a name="Postprocessing"></a> <h4>Postprocessing</h4>.
+ * <a name="Postprocessing"></a> <h4>Postprocessing</h4>。
  *
- * 以下两个函数在计算出解决方案后对其进行后处理。特别是，第一个函数在每个周期开始时细化网格，第二个函数在每个周期结束时输出结果。这些函数与
+ * 以下两个函数在解决方案计算完成后对其进行后处理。特别是，第一个函数在每个周期开始时细化网格，第二个函数在每个周期结束时输出结果。这些函数与
  * step-6 中的函数几乎没有变化。
- *
  *
  * @code
  * template <int dim>
@@ -739,13 +715,12 @@
  *
  * @endcode
  *
- * <a name="LaplaceProblemrun"></a> <h4>LaplaceProblem::run</h4>.
+ * <a name="LaplaceProblemrun"></a> <h4>LaplaceProblem::run</h4>。
  *
- * 和上面的几个函数一样，这几乎是对  step-6
+ * 和上面的几个函数一样，这几乎是对 step-6
  * 中相应函数的复制。唯一的区别是对
  * <code>assemble_multigrid</code>
- * 的调用，它负责形成我们在多网格方法中需要的每一层的矩阵。
- *
+ * 的调用，它负责形成我们在多网格方法中需要的每一级矩阵。
  *
  * @code
  * template <int dim>
@@ -780,9 +755,9 @@
  *
  * @endcode
  *
- * <a name="Themainfunction"></a> <h3>The main() function</h3>
+ * <a name="Themainfunction"></a> <h3>The main() function</h3>。
  *
- * 这又是与 step-6 中相同的功能。
+ * 这又是与  step-6  中的函数相同。
  *
  * @code
  * int main()
@@ -825,12 +800,11 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
- *  在最细的网格上，解决方案看起来像这样。 <p
+ * 在最细的网格上，解决方案看起来像这样。 <p
  * align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-16.solution.png"
  * alt=""> </p>
- * 更重要的是，我们想看看多网格方法是否真的改善了求解器的性能。因此，这里是文本输出。
+ * 更重要的是，我们想看看多网格方法是否真的提高了求解器的性能。因此，这里是文本输出。
  * <pre>第0周期 活动单元数：80 自由度数：89 (按级别：8, 25,
  * 89) CG迭代数。8 周期1 活跃单元数：158
  * 自由度数：183（按级别：8，25，89，138）
@@ -848,11 +822,10 @@
  * 这几乎是完美的多重网格性能：线性残差在10次迭代步骤中减少了12个数量级，而且结果几乎与网格大小无关。这显然部分是由于所解决的问题的简单性质，但它显示了多网格方法的力量。
  *
  *  <a name="Possibilitiesforextensions"></a><h3> Possibilities for extensions
- * </h3>.
- *
+ * </h3> 。
  *
  * 我们鼓励你生成solve()调用的时间，并与  step-6
- * 进行比较。你会看到多网格方法在粗网格上有相当大的开销，但在细网格上，由于其最佳的复杂性，它总是能击败其他方法。
+ * 进行比较。你会看到多网格方法在粗网格上有相当大的开销，但在细网格上，由于其最佳的复杂性，它总是胜过其他方法。
  * 仔细检查这个程序的性能，就会发现它主要是由矩阵-向量操作主导的。
  * step-37
  * 展示了一种可以通过使用无矩阵方法来避免这种情况的方法。

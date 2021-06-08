@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-52_0.txt
 /**
-  @page step_52 The step-52 tutorial program  
+  @page step_52 The step-52 tutorial program 
 * 本教程依赖于  step-26  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -25,7 +25,7 @@
         <li><a href="#ThecodeDiffusioncodeclass">The <code>Diffusion</code> class</a><a href="#ThecodeDiffusioncodeclass">The <code>Diffusion</code> class</a>
       <ul>
         <li><a href="#codeDiffusionsetup_systemcode"><code>Diffusion::setup_system</code></a><a href="#codeDiffusionsetup_systemcode"><code>Diffusion::setup_system</code></a>
-        <li><a href="#codeDiffusionassemble_systemcode"><code>Diffusion::assemble_system</code></a> ]<a href="#codeDiffusionassemble_systemcode"><code>Diffusion::assemble_system</code></a>
+        <li><a href="#codeDiffusionassemble_systemcode"><code>Diffusion::assemble_system</code></a><a href="#codeDiffusionassemble_systemcode"><code>Diffusion::assemble_system</code></a>
         <li><a href="#codeDiffusionget_sourcecode"><code>Diffusion::get_source</code></a><a href="#codeDiffusionget_sourcecode"><code>Diffusion::get_source</code></a>
         <li><a href="#codeDiffusionevaluate_diffusioncode"><code>Diffusion::evaluate_diffusion</code></a><a href="#codeDiffusionevaluate_diffusioncode"><code>Diffusion::evaluate_diffusion</code></a>
         <li><a href="#codeDiffusionid_minus_tau_J_inversecode"><code>Diffusion::id_minus_tau_J_inverse</code></a><a href="#codeDiffusionid_minus_tau_J_inversecode"><code>Diffusion::id_minus_tau_J_inverse</code></a>
@@ -44,21 +44,21 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>This program was contributed by Bruno Turcksin and Damien Lebrun-Grandie.</i>
 *  @note  为了运行这个程序，deal.II必须被配置为使用UMFPACK稀疏直接求解器。请参考<a
 href="../../readme.html#umfpack">ReadMe</a>中关于如何做的说明。
 * <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1>
-* 
+*
 
-* 这个程序展示了如何使用Runge-Kutta方法来解决一个与时间有关的问题。它解决了在 step-26 中首先讨论的热方程的一个小变化，但由于这个程序的目的只是演示使用更先进的方法与deal.II的时间步进算法相连接，所以只解决了一个均匀细化网格上的简单问题。
-* 
+* 这个程序展示了如何使用Runge-Kutta方法来解决一个随时间变化的问题。它解决了在 step-26 中首先讨论的热方程的一个小变体，但由于这个程序的目的只是为了演示使用更高级的方法与deal.II的时间步进算法相连接，所以只解决了一个均匀细化网格上的简单问题。
+*
 
-* <a name="Problemstatement"></a><h3>Problem statement</h3> 。
-* 
+*<a name="Problemstatement"></a><h3>Problem statement</h3>
 
-* 在这个例子中，我们解决了中子输运方程的单组时间依赖的扩散近似（时间依赖的多组扩散见 step-28 ）。这是一个关于中子如何在高散射介质中移动的模型，因此它是时间依赖性扩散方程的一个变体
-* 
+
+* 在这个例子中，我们求解中子输运方程的单组时间依赖性扩散近似值（关于时间依赖性多组扩散见 step-28 ）。这是一个关于中子如何在高散射介质中移动的模型，因此它是时间依赖性扩散方程的一个变体。
+*
 * 我们假设介质是不允许的，因此，中子通量满足以下方程：@f{eqnarray*}
 \frac{1}{v}\frac{\partial \phi(x,t)}{\partial t} = \nabla \cdot D(x) \nabla \phi(x,t)
 * 
@@ -76,12 +76,12 @@ S=A\left(\frac{1}{v}\omega \cos(\omega t)(bx
 \left(\Sigma_a (bx-x^2)+2D\right) \right).
 @f} 。
 * 因为解是时间上的正弦，我们知道精确的解满足 $\phi\left(x,\frac{\pi}{\omega}\right) = 0$ .因此，时间 $t=\frac{\pi}{\omega}$ 的误差只是数值解的规范，即 $\|e(\cdot,t=\frac{\pi}{\omega})\|_{L_2} = \|\phi_h(\cdot,t=\frac{\pi}{\omega})\|_{L_2}$ ，而且特别容易评估。在代码中，我们评估 $l_2$ 的节点值的规范，而不是相关空间函数的 $L_2$ 规范，因为前者更容易计算；然而，在均匀网格上，两者只是由一个常数相关，我们可以因此观察时间收敛顺序，要么。
-* 
+*
 
 *<a name="RungeKuttamethods"></a><h3>Runge-Kutta methods</h3>
-* 
 
-* 在deal.II中实现的Runge-Kutta方法假设要解决的方程可以写成：@f{eqnarray*}
+
+* 在deal.II中实现的Runge-Kutta方法假定要解决的方程可以写成：@f{eqnarray*}
 \frac{dy}{dt} = g(t,y).
 @f} 。
 * 另一方面，当使用有限元时，离散化的时间导数总是导致左手边存在一个质量矩阵。考虑到如果上式中的解向量 $y(t)$ 实际上是一个形式@f{eqnarray*}
@@ -96,7 +96,7 @@ M\frac{dU}{dt} = f(t,U),
 *其中 $M$ 是质量矩阵， $f(t,U)$ 是 $q(t,u(x,t))$ 的空间离散化版本（其中 $q$ 通常是空间衍生物出现的地方，但鉴于我们只考虑时间衍生物，这一点目前还不太关心）。换句话说，如果我们写成@f{eqnarray*}
 \frac{dy}{dt} = g(t,y) = M^{-1}f(t,y).
 @f}，这种形式符合上述的一般方案。
-* 
+*
 * Runk-Kutta方法是一种时间步进方案，通过特定的一步法对 $y(t_n)\approx
 y_{n}$ 进行近似。它们通常被写成@f{eqnarray*}
 y_{n+1} = y_n + \sum_{i=1}^s b_i k_i
@@ -104,29 +104,29 @@ y_{n+1} = y_n + \sum_{i=1}^s b_i k_i
 * 其中对于上面的右手边的形式@f{eqnarray*}
 k_i = h M^{-1} f\left(t_n+c_ih,y_n+\sum_{j=1}^sa_{ij}k_j\right).
 @f}。
-* 这里 $a_{ij}$ 、 $b_i$ 和 $c_i$ 是已知的系数，用于识别你要使用的特定Runge-Kutta方案，而 $h=t_{n+1}-t_n$ 是使用的时间步长。Runge-Kutta类的不同时间步长方法在级数 $s$ 和系数 $a_{ij}$ 、 $b_i$ 和 $c_i$ 上有所不同，但由于可以查找这些系数的列表值，所以很容易实现。这些表格通常被称为Butcher tableaus）。
+* 这里 $a_{ij}$ 、 $b_i$ 和 $c_i$ 是已知的系数，用于识别你要使用的特定Runge-Kutta方案， $h=t_{n+1}-t_n$ 是使用的时间步长。Runge-Kutta类的不同时间步长方法在级数 $s$ 和系数 $a_{ij}$ 、 $b_i$ 和 $c_i$ 上有所不同，但由于可以查找这些系数的列表值，所以很容易实现。这些表格通常被称为Butcher tableaus）。
 * 在编写本教程时，deal.II中实现的方法可以分为三类。 <ol>   <li>  显式Runge-Kutta；为了使一个方法成为显式，必须在上述定义 $k_i$ 的公式中， $k_i$ 不出现在右手边上。换句话说，这些方法必须满足 $a_{ii}=0, i=1,\ldots,s$  。 <li>  嵌入式（或自适应）Runge-Kutta；我们将在下面讨论其特性。 <li>  隐式Runge-Kutta；这类方法需要解决上述阶段 $k_i$ 的可能非线性系统，即它们至少有 $a_{ii}\neq 0$ 个阶段  $i=1,\ldots,s$  。 </ol>  许多众所周知的时间步进方案，通常不与Runge或Kutta的名字联系在一起，事实上，它们也可以用这些类别来表达。它们通常代表了这些家族的最低阶成员。
-* 
+*
 
 *<a name="ExplicitRungeKuttamethods"></a><h4>Explicit Runge-Kutta methods</h4>
-* 
+
 
 * 这些方法，只需要一个函数来评估 $M^{-1}f(t,y)$ ，但不需要（作为隐式方法）来解决涉及 $f(t,y)$ 的 $y$ 的方程。与所有显式时间步长方法一样，当选择的时间步长过大时，它们会变得不稳定。
 * 这类著名的方法包括正向欧拉、三阶Runge-Kutta和四阶Runge-Kutta（通常缩写为RK4）。
-* 
+*
 
-* <a name="EmbeddedRungeKuttamethods"></a><h4>Embedded Runge-Kutta methods</h4> 。
-* 
+*<a name="EmbeddedRungeKuttamethods"></a><h4>Embedded Runge-Kutta methods</h4> 。
 
-* 这些方法同时使用低阶和高阶方法来估计误差，并决定是否需要缩短或增加时间步长。术语 "嵌入 "是指低阶方法不需要对函数进行额外的评估 $M^{-1}f(\cdot,\cdot)$ ，而是重复使用那些必须为高阶方法计算的数据。换句话说，它基本上是免费的，我们得到的误差估计是使用高阶方法的一个副产品。
+
+* 这些方法同时使用低阶和高阶方法来估计误差，并决定是否需要缩短或增加时间步长。术语 "嵌入 "是指低阶方法不需要对函数进行额外的评估 $M^{-1}f(\cdot,\cdot)$ ，而是重复使用那些必须为高阶方法计算的数据。换句话说，它基本上是免费的，而我们得到的误差估计是使用高阶方法的副产品。
 * 这类方法包括Heun-Euler、Bogacki-Shampine、Dormand-Prince（Matlab中的ode45，通常缩写为RK45，表示这里使用的低阶和高阶方法分别为4阶和5阶Runge-Kutta方法）、Fehlberg和Cash-Karp。
 * 在撰写本文时，只有嵌入式显式方法得到了实现。
-* 
+*
 
 *<a name="ImplicitRungeKuttamethods"></a><h4>Implicit Runge-Kutta methods</h4>
-* 
 
-* 隐式方法要求在每个（子）时间步中解决 $\alpha y = f(t,y)$ 和 $y$ 形式的（可能是非线性）系统。在内部，这是用牛顿式方法完成的，因此，它们要求用户提供能够评估 $M^{-1}f(t,y)$ 和 $\left(I-\tau M^{-1} \frac{\partial f}{\partial y}\right)^{-1}$ 或等同于 $\left(M
+
+* 隐式方法要求在每个（子）时间步长中解决 $\alpha y = f(t,y)$ 和 $y$ 形式的（可能是非线性）系统。在内部，这是用牛顿式方法完成的，因此，它们要求用户提供能够评估 $M^{-1}f(t,y)$ 和 $\left(I-\tau M^{-1} \frac{\partial f}{\partial y}\right)^{-1}$ 或等同于 $\left(M
 * 
 - \tau \frac{\partial f}{\partial y}\right)^{-1} M$ 的函数。
 * 这个运算符的特殊形式是由于每个牛顿步骤都需要解决一个形式的方程。
@@ -140,12 +140,12 @@ k_i = h M^{-1} f\left(t_n+c_ih,y_n+\sum_{j=1}^sa_{ij}k_j\right).
 @f}
 *对于某些（给定的） $h(t,y)$ 。无论时间步长如何，隐式方法始终是稳定的，但过大的时间步长当然会影响解的<i>accuracy</i>，即使数值解仍然是稳定和有界的。
 * 这类方法包括后退欧拉法、隐式中点法、Crank-Nicolson法和两阶段SDIRK法（"单对角隐式Runge-Kutta "的简称，这个术语是用来表示定义时间步长方法的对角线元素 $a_{ii}$ 都是相等的；这个特性使得牛顿矩阵 $I-\tau M^{-1}\frac{\partial f}{\partial y}$ 可以在各阶段之间重复使用，因为 $\tau$ 每次都相同）。
-* 
+*
 
-*<a name="Spatiallydiscreteformulation"></a><h3>Spatially discrete formulation</h3>。
-* 
+*<a name="Spatiallydiscreteformulation"></a><h3>Spatially discrete formulation</h3>
 
-* 通过将我们的模型问题的解决方案扩展为总是使用形状函数 $\psi_j$ 并写出@f{eqnarray*}
+
+*通过扩展我们的模型问题的解决方案，即始终使用形状函数 $\psi_j$ 并写出@f{eqnarray*}
 \phi_h(x,t) = \sum_j U_j(t) \psi_j(x),
 @f}。
 * 我们立即得到扩散方程的空间离散化版本，即@f{eqnarray*}
@@ -176,25 +176,25 @@ f(y) =
 * 
 - {\cal A}.
 @f} 。
-* 
-* 
+*
+*
 
-*<a name="Notesonthetestcase"></a><h3>Notes on the testcase</h3>。
-* 
+*<a name="Notesonthetestcase"></a><h3>Notes on the testcase</h3>
 
-* 为了简化问题，域是二维的，网格是均匀细化的（不需要调整网格，因为我们使用二次无限元，而且精确的解是二次的）。从一个二维域到一个三维域并不十分困难。然而，如果你打算解决更复杂的问题，其中网格必须进行调整（例如，在 step-26 中的做法），那么记住以下问题是很重要的。
+
+* 为了简化问题，域是二维的，网格是均匀细化的（不需要调整网格，因为我们使用的是二次无限元，而且精确解是二次的）。从二维域到三维域并不是很有挑战性的。然而，如果你打算解决更复杂的问题，其中网格必须进行调整（例如，在 step-26 中的做法），那么记住以下问题是很重要的。
 *  <ol>   <li>  当网格被改变时，你需要将解决方案投射到新的网格。当然，在每个时间步长中，所使用的网格应该是相同的，这个问题是由于Runge-Kutta方法在每个时间步长中对方程进行多次评估而产生的。 <li>  每次改变网格时，你都需要更新质量矩阵和它的逆值。 </ol>  这些步骤的技术可以通过查看  step-26  随时获得。
-* 
+*
 
-* <a name="CommProg"></a> <h1> The commented program</h1> 。
-* <a name="Includefiles"></a><h3>Include files</h3> 。
- 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* <a name="Includefiles"></a> <h3>Include files</h3>。
 
-* 
+
+*
 * 像往常一样，第一个任务是包括这些著名的deal.II库文件和一些C++头文件的功能。
-* 
+*
 
-* 
+
 * @code
  #include <deal.II/base/discrete_time.h>
  #include <deal.II/base/function.h>
@@ -222,37 +222,37 @@ f(y) =
  #include <map>
 * 
  @endcode
-* 
+*
 * 这是唯一一个新的包含文件：它包括所有的Runge-Kutta方法。
-* 
+*
 
-* 
+
 * @code
  #include <deal.II/base/time_stepping.h>
 * 
  
  @endcode
- 
-* 下一步就像以前所有的教程程序一样。我们把所有的东西放到一个自己的命名空间中，然后把deal.II的类和函数导入其中。
-* 
 
-* 
+* 下一步就像以前所有的教程程序一样。我们把所有东西放到一个自己的命名空间中，然后把deal.II的类和函数导入其中。
+*
+
+
 * @code
  namespace Step52
  {
    using namespace dealii;
 * 
  @endcode
-* 
-* <a name="ThecodeDiffusioncodeclass"></a> <h3>The <code>Diffusion</code> class</h3>.
- 
+*
+* <a name="ThecodeDiffusioncodeclass"></a> <h3>The <code>Diffusion</code> class</h3>。
 
-* 
-* 下一块是主类的声明。这个类中的大多数函数并不新鲜，在以前的教程中已经解释过了。唯一有趣的函数是  <code>evaluate_diffusion()</code>  和  <code>id_minus_tau_J_inverse()</code>. <code>evaluate_diffusion()</code>  评估扩散方程，  $M^{-1}(f(t,y))$  ，在给定时间和给定  $y$  。  <code>id_minus_tau_J_inverse()</code>  在给定的时间和给定的 $\tau$ 和 $y$ 下，评估 $\left(I-\tau
+
+*
+* 下一块是主类的声明。这个类中的大多数函数都不是新的，在以前的教程中已经解释过了。唯一有趣的函数是  <code>evaluate_diffusion()</code>  和  <code>id_minus_tau_J_inverse()</code>. <code>evaluate_diffusion()</code>  评估扩散方程，  $M^{-1}(f(t,y))$  ，在给定的时间和给定的  $y$  。   <code>id_minus_tau_J_inverse()</code>  在给定的时间和给定的 $\tau$ 和 $y$ 下，评估 $\left(I-\tau
  M^{-1} \frac{\partial f(t,y)}{\partial y}\right)^{-1}$ 或等同于 $\left(M-\tau \frac{\partial f}{\partial y}\right)^{-1} M$  。当使用隐式方法时，需要这个函数。
-* 
+*
 
-* 
+
 * @code
    class Diffusion
    {
@@ -280,11 +280,11 @@ f(y) =
                          TimeStepping::runge_kutta_method method) const;
 * 
  @endcode
-* 
+*
 * 接下来的三个函数分别是显式方法、隐式方法和嵌入式显式方法的驱动。嵌入显式方法的驱动函数返回执行的步数，鉴于它只接受作为参数传递的时间步数作为提示，但内部计算了最佳时间步数本身。
-* 
+*
 
-* 
+
 * @code
      void explicit_method(const TimeStepping::runge_kutta_method method,
                           const unsigned int                     n_time_steps,
@@ -330,11 +330,11 @@ f(y) =
  
 * 
  @endcode
-* 
-* 我们选择二次有限元，我们初始化参数。
-* 
 
-* 
+* 我们选择二次有限元，我们初始化参数。
+*
+
+
 * @code
    Diffusion::Diffusion()
      : fe_degree(2)
@@ -347,11 +347,11 @@ f(y) =
  
 * 
  @endcode
-* 
+*
 * <a name="codeDiffusionsetup_systemcode"></a> <h4><code>Diffusion::setup_system</code></h4> 现在，我们创建约束矩阵和稀疏模式。然后，我们初始化这些矩阵和解决方案的向量。
-* 
+*
 
-* 
+
 * @code
    void Diffusion::setup_system()
    {
@@ -376,14 +376,14 @@ f(y) =
  
 * 
  @endcode
-* 
+*
 * <a name="codeDiffusionassemble_systemcode"></a> <h4><code>Diffusion::assemble_system</code></h4> 在这个函数中，我们计算  $-\int D \nabla b_i \cdot \nabla b_j
  d\boldsymbol{r}
 * 
 - \int \Sigma_a b_i b_j d\boldsymbol{r}$  和质量矩阵  $\int b_i b_j d\boldsymbol{r}$  。然后使用直接求解器对质量矩阵进行反演；然后 <code>inverse_mass_matrix</code> 变量将存储质量矩阵的反值，这样 $M^{-1}$ 就可以使用该对象的 <code>vmult()</code> 函数应用于一个矢量。在内部，UMFPACK并没有真正存储矩阵的逆，而是存储它的LU因子；应用逆矩阵就相当于用这两个因子做一次正解和一次逆解，这与应用矩阵的显式逆具有相同的复杂性）。
-* 
+*
 
-* 
+
 * @code
    void Diffusion::assemble_system()
    {
@@ -536,12 +536,12 @@ f(y) =
  
 * 
  @endcode
-* 
-* <a name="codeDiffusionget_sourcecode"></a> <h4><code>Diffusion::get_source</code></h4>.   
+*
+* <a name="codeDiffusionget_sourcecode"></a> <h4><code>Diffusion::get_source</code></h4>。
 * 在这个函数中，计算出给定时间和给定点的方程的源项。
-* 
+*
 
-* 
+
 * @code
    double Diffusion::get_source(const double time, const Point<2> &point) const
    {
@@ -564,17 +564,17 @@ f(y) =
  
 * 
  @endcode
-* 
-* <a name="codeDiffusionevaluate_diffusioncode"></a> <h4><code>Diffusion::evaluate_diffusion</code></h4> 。  
+*
+* <a name="codeDiffusionevaluate_diffusioncode"></a> <h4><code>Diffusion::evaluate_diffusion</code></h4>。
 * 接下来，我们在给定的时间 $t$ 和给定的矢量 $y$ 评估扩散方程的弱形式。换句话说，正如介绍中所述，我们评估  $M^{-1}(-{\cal D}y
 * 
 - {\cal A}y + {\cal
  S})$  。为此，我们必须将矩阵 $-{\cal D}
 * 
-- {\cal A}$ （之前计算并存储在变量 <code>system_matrix</code> 中）应用于 $y$ ，然后添加源项，我们像通常那样进行积分。(如果你想节省几行代码，或者想利用并行积分的优势，可以用 VectorTools::create_right_hand_side() 来进行积分。) 然后将结果乘以 $M^{-1}$  。
-* 
+- {\cal A}$ （之前计算并存储在变量 <code>system_matrix</code> 中）应用于 $y$ ，然后添加源项，我们像通常那样进行积分。(如果你想节省几行代码，或者想利用并行积分的优势，可以用 VectorTools::create_right_hand_side() 来进行积分。)然后将结果乘以 $M^{-1}$  。
+*
 
-* 
+
 * @code
    Vector<double> Diffusion::evaluate_diffusion(const double          time,
                                                 const Vector<double> &y) const
@@ -629,39 +629,39 @@ f(y) =
 * 
  
  @endcode
-* 
-* <a name="codeDiffusionid_minus_tau_J_inversecode"></a> <h4><code>Diffusion::id_minus_tau_J_inverse</code></h4> 。  
+*
+* <a name="codeDiffusionid_minus_tau_J_inversecode"></a> <h4><code>Diffusion::id_minus_tau_J_inverse</code></h4>。
 * 我们计算  $\left(M-\tau \frac{\partial f}{\partial y}\right)^{-1} M$  。这要分几个步骤进行。
-* 
+*
 
-* 
-* 
-* - 计算  $M-\tau \frac{\partial f}{\partial y}$  。
-* 
 
-* 
-* 
+*
+* - 计算 $M-\tau \frac{\partial f}{\partial y}$ 。
+
+
+
+*
 * - 反转矩阵，得到 $\left(M-\tau \frac{\partial f}
  {\partial y}\right)^{-1}$ 。
-* 
+*
 
-* 
-* 
-* - 计算 $tmp=My$ 。
-* 
 
-* 
-* 
+*
+* - 计算  $tmp=My$ 
+
+
+
+*
 * - 计算  $z=\left(M-\tau \frac{\partial f}{\partial y}\right)^{-1} tmp =
- \left(M-\tau \frac{\partial f}{\partial y}\right)^{-1} My$  。
-* 
+ \left(M-\tau \frac{\partial f}{\partial y}\right)^{-1} My$ 
 
-* 
-* 
+
+
+*
 * - 返回z。
-* 
+*
 
-* 
+
 * @code
    Vector<double> Diffusion::id_minus_tau_J_inverse(const double  /*time*/ ,
                                                     const double          tau,
@@ -686,12 +686,12 @@ f(y) =
  
 * 
  @endcode
- 
-* ［<a name="codeDiffusionoutput_resultscode"></a>］ ［<h4><code>Diffusion::output_results</code></h4>   
-* 下面的函数会在vtu文件中输出由时间步长和时间步长方法名称索引的解。当然，所有的时间步长方法的（精确）结果应该是一样的，但这里的输出至少可以让我们对它们进行比较。
-* 
+*
+* <a name="codeDiffusionoutput_resultscode"></a> <h4><code>Diffusion::output_results</code></h4>
+* 下面的函数会以时间步长和时间步长方法的名称为索引输出vtu文件中的解。当然，所有的时间步长方法的（精确）结果应该是一样的，但是这里的输出至少可以让我们对它们进行比较。
+*
 
-* 
+
 * @code
    void Diffusion::output_results(const double                     time,
                                   const unsigned int               time_step,
@@ -794,14 +794,14 @@ f(y) =
 * 
  
  @endcode
-* 
-* <a name="codeDiffusionexplicit_methodcode"></a> <h4><code>Diffusion::explicit_method</code></h4>.   
-* 这个函数是所有显式方法的驱动。在顶部，它初始化了时间步长和解决方案（通过将其设置为零，然后确保边界值和悬挂节点约束得到尊重；当然，对于我们在这里使用的网格，悬挂节点约束实际上并不是一个问题）。然后调用 <code>evolve_one_time_step</code> ，执行一个时间步骤。时间是通过一个DiscreteTime对象来存储和增加的。  
-* 对于显式方法， <code>evolve_one_time_step</code> 需要评估 $M^{-1}(f(t,y))$ ，即，它需要 <code>evaluate_diffusion</code> 。因为 <code>evaluate_diffusion</code> 是一个成员函数，它需要被绑定到 <code>this</code> 。在每个进化步骤之后，我们再次应用正确的边界值和悬挂节点约束。  
+*
+* <a name="codeDiffusionexplicit_methodcode"></a> <h4><code>Diffusion::explicit_method</code></h4>。
+* 这个函数是所有显式方法的驱动。在顶部，它初始化了时间步长和解决方案（通过将其设置为零，然后确保边界值和悬挂节点约束得到尊重；当然，对于我们在这里使用的网格，悬挂节点约束实际上并不是一个问题）。然后调用 <code>evolve_one_time_step</code> ，执行一个时间步骤。时间是通过一个DiscreteTime对象来存储和增加的。   
+* 对于显式方法， <code>evolve_one_time_step</code> 需要评估 $M^{-1}(f(t,y))$ ，即，它需要 <code>evaluate_diffusion</code> 。因为 <code>evaluate_diffusion</code> 是一个成员函数，它需要被绑定到 <code>this</code> 。在每个进化步骤之后，我们再次应用正确的边界值和悬挂节点约束。   
 * 最后，每隔10个时间步骤就会输出解决方案。
-* 
+*
 
-* 
+
 * @code
    void Diffusion::explicit_method(const TimeStepping::runge_kutta_method method,
                                    const unsigned int n_time_steps,
@@ -843,12 +843,12 @@ f(y) =
  
 * 
  @endcode
- 
-* <a name="codeDiffusionimplicit_methodcode"></a> <h4><code>Diffusion::implicit_method</code></h4> 这个函数等同于 <code>explicit_method</code> ，但是对于隐式方法。当使用隐式方法时，我们需要评估 $M^{-1}(f(t,y))$ 和 $\left(I-\tau M^{-1} \frac{\partial f(t,y)}{\partial
+*
+* <a name="codeDiffusionimplicit_methodcode"></a> <h4><code>Diffusion::implicit_method</code></h4> 这个函数等同于 <code>explicit_method</code> ，但用于隐式方法。当使用隐式方法时，我们需要评估 $M^{-1}(f(t,y))$ 和 $\left(I-\tau M^{-1} \frac{\partial f(t,y)}{\partial
  y}\right)^{-1}$ ，为此我们使用之前介绍的两个成员函数。
-* 
+*
 
-* 
+
 * @code
    void Diffusion::implicit_method(const TimeStepping::runge_kutta_method method,
                                    const unsigned int n_time_steps,
@@ -893,57 +893,57 @@ f(y) =
  
 * 
  @endcode
-* 
+*
 * <a name="codeDiffusionembedded_explicit_methodcode"></a> <h4><code>Diffusion::embedded_explicit_method</code></h4> 这个函数是嵌入式显式方法的驱动。它需要更多的参数。
-* 
+*
 
-* 
-* 
-* - coarsen_param：当误差低于阈值时，乘以当前时间步长的系数。
-* 
 
-* 
-* 
-* - refine_param: 当误差高于阈值时，乘以当前时间步长的系数。
-* 
+*
+* - coarsen_param：当误差低于阈值时，乘以当前时间步骤的系数。
+*
 
-* 
-* 
+
+*
+* - refine_param：当误差超过阈值时，乘以当前时间步数的系数。
+*
+
+
+*
 * - min_delta: 可接受的最小的时间步长。
-* 
+*
 
-* 
-* 
+
+*
 * - max_delta: 可接受的最大时间步长。
-* 
+*
 
-* 
-* 
-* - refine_tol: 完善时间步长的阈值。
-* 
 
-* 
-* 
-* - coarsen_tol：阈值，低于此阈值的时间步长将被粗化。  
-* 嵌入式方法使用一个猜测的时间步长。如果使用这个时间步长的误差太大，时间步长将被缩小。如果误差低于阈值，则在下一个时间步长中会尝试更大的时间步长。  <code>delta_t_guess</code> 是由嵌入方法产生的猜测时间步长。总之，时间步长有可能以三种方式修改。
-* 
+*
+* - refine_tol：阈值，超过这个阈值的时间步长将被精炼。
+*
 
-* 
-* 
-* - 在 TimeStepping::EmbeddedExplicitRungeKutta::evolve_one_time_step(). 内减少或增加时间步长 
-* 
 
-* 
-* 
-* - 使用计算出的  <code>delta_t_guess</code>  。
-* 
+*
+* - coarsen_tol：阈值，低于该阈值的时间步长将被粗化。   
+* 嵌入式方法使用一个猜测的时间步长。如果使用这个时间步长的误差太大，时间步长将被缩小。如果误差低于阈值，则在下一个时间步长中会尝试更大的时间步长。   <code>delta_t_guess</code> 是由嵌入方法产生的猜测时间步长。总之，时间步长有可能以三种方式修改。
+*
 
-* 
-* 
+
+*
+* - 在 TimeStepping::EmbeddedExplicitRungeKutta::evolve_one_time_step(). 内减少或增加时间步长
+
+
+
+*
+* - 使用计算的 <code>delta_t_guess</code> .
+*
+
+
+*
 * - 自动调整最后一个时间步骤的步长，以确保模拟在 <code>final_time</code> 处精确结束。这种调整是在DiscreteTime实例中处理的。
-* 
+*
 
-* 
+
 * @code
    unsigned int Diffusion::embedded_explicit_method(
      const TimeStepping::runge_kutta_method method,
@@ -1007,12 +1007,12 @@ f(y) =
  
 * 
  @endcode
-* 
-* <a name="codeDiffusionruncode"></a> <h4><code>Diffusion::run</code></h4>.   
-* 以下是该程序的主要功能。在顶部，我们创建网格（一个[0,5]x[0,5]的正方形）并对其进行四次细化，得到一个有16乘16单元的网格，共256个。 然后我们将边界指示器设置为1，用于边界中 $x=0$ 和 $x=5$ 的部分。
-* 
+*
+* <a name="codeDiffusionruncode"></a> <h4><code>Diffusion::run</code></h4>。
+* 以下是该程序的主要功能。在顶部，我们创建网格（一个[0,5]x[0,5]的正方形）并对其进行四次细化，得到一个有16乘16单元的网格，共256个。  然后我们将边界指示器设置为1，用于边界中 $x=0$ 和 $x=5$ 的部分。
+*
 
-* 
+
 * @code
    void Diffusion::run()
    {
@@ -1030,22 +1030,22 @@ f(y) =
            }
 * 
  @endcode
-* 
-* 接下来，我们设置线性系统并为其填充内容，以便在整个时间步进过程中使用它们。
-* 
+*
+* 接下来，我们设置了线性系统，并为其填充内容，以便在整个时间步进过程中使用它们。
+*
 
-* 
+
 * @code
      setup_system();
 * 
      assemble_system();
 * 
  @endcode
- 
-* 最后，我们使用命名空间TimeStepping中实现的几种Runge-Kutta方法来解决扩散问题，每次都在结束时输出误差。(正如介绍中所解释的，由于精确解在最后时间为零，所以误差等于数值解，只需取解向量的 $l_2$ 准则就可以计算出来)。
-* 
+*
+* 最后，我们使用命名空间TimeStepping中实现的几种Runge-Kutta方法来解决扩散问题，每次都会在结束时间输出误差。(正如介绍中所解释的，由于精确解在最后时间为零，所以误差等于数值解，只需取解向量的 $l_2$ 准则就可以计算出来)。
+*
 
-* 
+
 * @code
      unsigned int       n_steps      = 0;
      const unsigned int n_time_steps = 200;
@@ -1153,15 +1153,15 @@ f(y) =
  
 * 
  @endcode
-* 
-* <a name="Thecodemaincodefunction"></a> <h3>The <code>main()</code> function</h3>
- 
+*
+* <a name="Thecodemaincodefunction"></a> <h3>The <code>main()</code> function</h3>。
 
-* 
-* 下面的 <code>main</code> 函数与前面的例子类似，不需要注释。
-* 
 
-* 
+*
+* 下面的 <code>main</code> 函数与以前的例子类似，不需要注释。
+*
+
+
 * @code
  int main()
  {
@@ -1200,9 +1200,9 @@ f(y) =
  }
  @endcode
 * <a name="Results"></a><h1>Results</h1> 。
-* 
 
-* 这个程序的重点不在于显示特定的结果，而在于显示它是如何完成的。这一点我们已经通过讨论上面的代码证明过了。因此，该程序的输出相对较少，只包括控制台输出和以VTU格式给出的可视化的解决方案。
+
+* 这个程序的重点不在于显示特定的结果，而在于显示它是如何完成的。我们已经通过讨论上面的代码证明了这一点。因此，该程序的输出相对较少，只包括控制台输出和用于可视化的VTU格式的解决方案。
 * 控制台输出包含错误和一些方法所执行的步骤数。
 * @code
 Explicit methods:
@@ -1228,11 +1228,11 @@ Embedded explicit methods:
    Cash-Karp:                error=0.0787735
                    steps performed=106
 @endcode
-* 
+*
 * 正如预期的那样，高阶方法给出了（更）准确的解决方案。我们还看到，（相当不准确的）Heun-Euler方法增加了时间步骤的数量，以满足公差。另一方面，其他嵌入式方法使用的时间步数比规定的要少得多。
-* 
+*
 
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-52.cc" 。
+* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-52.cc"  。
 * */
 
 

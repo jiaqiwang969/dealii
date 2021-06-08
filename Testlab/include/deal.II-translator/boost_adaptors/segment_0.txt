@@ -1,7 +1,0 @@
-include/deal.II-translator/boost_adaptors/segment_0.txt
-[0.x.0]*
- [2.x.0]的一个别名，使用deal.II点类。
-
-* 
-* [0.x.1]
-

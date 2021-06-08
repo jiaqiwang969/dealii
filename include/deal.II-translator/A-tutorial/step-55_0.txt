@@ -1,0 +1,246 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19]
+*  [2.x.3] 
+* [1.x.20]
+* 
+
+* 
+*  [2.x.4]  As a prerequisite of this program, you need to have PETSc or Trilinosand the p4est library installed. The installation of deal.II together withthese additional libraries is described in the [1.x.21] file.
+* [1.x.22][1.x.23][1.x.24]
+* 
+
+* Building on  [2.x.5] , this tutorial shows how to solve linear PDEs with severalcomponents in parallel using MPI with PETSc or Trilinos for the linearalgebra. For this, we return to the Stokes equations as discussed in [2.x.6] . The motivation for writing this tutorial is to provide anintermediate step (pun intended) between  [2.x.7]  (parallel Laplace) and [2.x.8]  (parallel coupled Stokes with Boussinesq for a time dependentproblem).
+* The learning outcomes for this tutorial are:
+* 
+*  - You are able to solve PDEs with several variables in parallel and can  apply this to different problems.
+* 
+*  - You understand the concept of optimal preconditioners and are able to check  this for a particular problem.
+* 
+*  - You are able to construct manufactured solutions using the free computer  algreba system SymPy (https://sympy.org).
+* 
+*  - You can implement various other tasks for parallel programs: error  computation, writing graphical output, etc.
+* 
+*  - You can visualize vector fields, stream lines, and contours of vector  quantities.
+* We are solving for a velocity  [2.x.9]  and pressure  [2.x.10]  that satisfy theStokes equation, which reads[1.x.25]
+* 
+* 
+
+* [1.x.26][1.x.27]
+* 
+
+* Make sure that you read (even better: try) what is described in "Block Schurcomplement preconditioner" in the "Possible Extensions" section in  [2.x.11] .Like described there, we are going to solve the block system using a Krylovmethod and a block preconditioner.
+* Our goal here is to construct a very simple (maybe the simplest?) optimalpreconditioner for the linear system. A preconditioner is called "optimal" or"of optimal complexity", if the number of iterations of the preconditionedsystem is independent of the mesh size  [2.x.12] . You can extend that definition toalso require indepence of the number of processors used (we will discuss thatin the results section), the computational domain and the mesh quality, thetest case itself, the polynomial degree of the finite element space, and more.
+* Why is a constant number of iterations considered to be "optimal"? Assume thediscretized PDE gives a linear system with N unknowns. Because the matrixcoming from the FEM discretization is sparse, a matrix-vector product can bedone in O(N) time. A preconditioner application can also only be O(N) at best(for example doable with multigrid methods). If the number of iterationsrequired to solve the linear system is independent of  [2.x.13]  (and therefore N),the total cost of solving the system will be O(N). It is not possible to beatthis complexity, because even looking at all the entries of the right-handside already takes O(N) time. For more information see  [2.x.14] ,Chapter 2.5 (Multigrid).
+* The preconditioner described here is even simpler than the one described in [2.x.15]  and will typically require more iterations and consequently time tosolve. When considering preconditioners, optimality is not the only importantmetric. But an optimal and expensive preconditioner is typically moredesirable than a cheaper, non-optimal one. This is because, eventually, as themesh size becomes smaller and smaller and linear problems become bigger andbigger, the former will eventually beat the latter.
+* [1.x.28][1.x.29]
+* 
+
+* We precondition the linear system[1.x.30]
+* 
+* with the block diagonal preconditioner[1.x.31]
+* where  [2.x.16]  is the Schur complement.
+* With this choice of  [2.x.17] , assuming that we handle  [2.x.18]  and  [2.x.19]  exactly(which is an "idealized" situation), the preconditioned linear system hasthree distinct eigenvalues independent of  [2.x.20]  and is therefore "optimal".  Seesection 6.2.1 (especially p. 292) in  [2.x.21] . For comparison,using the ideal version of the upper block-triangular preconditioner in [2.x.22]  (also used in  [2.x.23] ) would have all eigenvalues be equal to one.
+* We will use approximations of the inverse operations in  [2.x.24]  that are(nearly) independent of  [2.x.25] . In this situation, one can again show, that theeigenvalues are independent of  [2.x.26] . For the Krylov method we choose MINRES,which is attractive for the analysis (iteration count is proven to beindependent of  [2.x.27] , see the remainder of the chapter 6.2.1 in the bookmentioned above), great from the computational standpoint (simpler and cheaperthan GMRES for example), and applicable (matrix and preconditioner aresymmetric).
+* For the approximations we will use a CG solve with the mass matrix in thepressure space for approximating the action of  [2.x.28] . Note that the massmatrix is spectrally equivalent to  [2.x.29] . We can expect the number of CGiterations to be independent of  [2.x.30] , even with a simple preconditioner likeILU.
+* For the approximation of the velocity block  [2.x.31]  we will perform a single AMGV-cycle. In practice this choice is not exactly independent of  [2.x.32] , which canexplain the slight increase in iteration numbers. A possible explanation isthat the coarsest level will be solved exactly and the number of levels andsize of the coarsest matrix is not predictable.
+* 
+
+* [1.x.32][1.x.33]
+* 
+
+* We will construct a manufactured solution based on the classical Kovasznay problem,see  [2.x.33] . Hereis an image of the solution colored by the x velocity includingstreamlines of the velocity:
+*   [2.x.34] 
+* We have to cheat here, though, because we are not solving the non-linearNavier-Stokes equations, but the linear Stokes system without convectiveterm. Therefore, to recreate the exact same solution, we use the method ofmanufactured solutions with the solution of the Kovasznay problem. This willeffectively move the convective term into the right-hand side  [2.x.35] .
+* The right-hand side is computed using the script "reference.py" and we usethe exact solution for boundary conditions and error computation.
+* 
+
+*  [1.x.34] [1.x.35]
+*  
+
+* 
+* [1.x.36]
+* 
+*  The following chunk out code is identical to  [2.x.36]  and allows switching between PETSc and Trilinos:
+* 
+
+* 
+*  
+
+* 
+* [1.x.37]
+* 
+*   [1.x.38]  [1.x.39]
+* 
+
+* 
+*  We need a few helper classes to represent our solver strategy described in the introduction.
+* 
+
+* 
+*  
+
+* 
+* [1.x.40]
+* 
+*  This class exposes the action of applying the inverse of a giving matrix via the function  [2.x.37]  Internally, the inverse is not formed explicitly. Instead, a linear solver with CG is performed. This class extends the InverseMatrix class in  [2.x.38]  with an option to specify a preconditioner, and to allow for different vector types in the vmult function.
+* 
+
+* 
+* [1.x.41]
+* 
+*  The class A template class for a simple block diagonal preconditioner for 2x2 matrices.
+* 
+
+* 
+* [1.x.42]
+* 
+*   [1.x.43]  [1.x.44]
+* 
+
+* 
+*  The following classes represent the right hand side and the exact solution for the test problem.
+* 
+
+* 
+*  
+
+* 
+* [1.x.45]
+* 
+*   [1.x.46]  [1.x.47]   
+*   The main class is very similar to  [2.x.39] , except that matrices and vectors are now block versions, and we store a  [2.x.40]  for owned and relevant DoFs instead of a single IndexSet. We have exactly two IndexSets, one for all velocity unknowns and one for all pressure unknowns.
+* 
+
+* 
+* [1.x.48]
+* 
+*  The Kovasnay flow is defined on the domain [-0.5, 1.5]^2, which we create by passing the min and max values to  [2.x.41] 
+* 
+
+* 
+* [1.x.49]
+* 
+*   [1.x.50]  [1.x.51]   
+*   The construction of the block matrices and vectors is new compared to  [2.x.42]  and is different compared to serial codes like  [2.x.43] , because we need to supply the set of rows that belong to our processor.
+* 
+
+* 
+* [1.x.52]
+* 
+*  Put all dim velocities into block 0 and the pressure into block 1, then reorder the unknowns by block. Finally count how many unknowns we have per block.
+* 
+
+* 
+* [1.x.53]
+* 
+*  We split up the IndexSet for locally owned and locally relevant DoFs into two IndexSets based on how we want to create the block matrices and vectors.
+* 
+
+* 
+* [1.x.54]
+* 
+*  Setting up the constraints for boundary conditions and hanging nodes is identical to  [2.x.44] . Even though we don't have any hanging nodes because we only perform global refinement, it is still a good idea to put this function call in, in case adaptive refinement gets introduced later.
+* 
+
+* 
+* [1.x.55]
+* 
+*  Now we create the system matrix based on a BlockDynamicSparsityPattern. We know that we won't have coupling between different velocity components (because we use the laplace and not the deformation tensor) and no coupling between pressure with its test functions, so we use a Table to communicate this coupling information to  [2.x.45] 
+* 
+
+* 
+* [1.x.56]
+* 
+*  The preconditioner matrix has a different coupling (we only fill in the 1,1 block with the mass matrix), otherwise this code is identical to the construction of the system_matrix above.
+* 
+
+* 
+* [1.x.57]
+* 
+*  owned_partitioning,
+* 
+
+* 
+* [1.x.58]
+* 
+*  Finally, we construct the block vectors with the right sizes. The function call with two  [2.x.46]  will create a ghosted vector.
+* 
+
+* 
+* [1.x.59]
+* 
+*   [1.x.60]  [1.x.61]   
+*   This function assembles the system matrix, the preconditioner matrix, and the right hand side. The code is pretty standard.
+* 
+
+* 
+* [1.x.62]
+* 
+*   [1.x.63]  [1.x.64]   
+*   This function solves the linear system with MINRES with a block diagonal preconditioner and AMG for the two diagonal blocks as described in the introduction. The preconditioner applies a v cycle to the 0,0 block and a CG with the mass matrix for the 1,1 block (the Schur complement).
+* 
+
+* 
+* [1.x.65]
+* 
+*  The InverseMatrix is used to solve for the mass matrix:
+* 
+
+* 
+* [1.x.66]
+* 
+*  This constructs the block preconditioner based on the preconditioners for the individual blocks defined above.
+* 
+
+* 
+* [1.x.67]
+* 
+*  With that, we can finally set up the linear solver and solve the system:
+* 
+
+* 
+* [1.x.68]
+* 
+*  Like in  [2.x.47] , we subtract the mean pressure to allow error computations against our reference solution, which has a mean value of zero.
+* 
+
+* 
+* [1.x.69]
+* 
+*   [1.x.70]  [1.x.71]   
+*   The remainder of the code that deals with mesh refinement, output, and the main loop is pretty standard.
+* 
+
+* 
+* [1.x.72]
+* [1.x.73][1.x.74]
+* 
+
+* As expected from the discussion above, the number of iterations is independentof the number of processors and only very slightly dependent on  [2.x.48] :
+*  [2.x.49] 
+*  [2.x.50] 
+* While the PETSc results show a constant number of iterations, the iterationsincrease when using Trilinos. This is likely because of the different settingsused for the AMG preconditioner. For performance reasons we do not allowcoarsening below a couple thousand unknowns. As the coarse solver is an exactsolve (we are using LU by default), a change in number of levels willinfluence the quality of a V-cycle. Therefore, a V-cycle is closer to an exactsolver for smaller problem sizes.
+* [1.x.75][1.x.76][1.x.77]
+* 
+
+* [1.x.78][1.x.79]
+* 
+
+* Play with the smoothers, smoothing steps, and other properties for theTrilinos AMG to achieve an optimal preconditioner.
+* [1.x.80][1.x.81]
+* 
+
+* This change requires changing the outer solver to GMRES or BiCGStab, becausethe system is no longer symmetric.
+* You can prescribe the exact flow solution as  [2.x.51]  in the convective term  [2.x.52] . This should give the same solution as the original problem,if you set the right hand side to zero.
+* [1.x.82][1.x.83]
+* 
+
+* So far, this tutorial program refines the mesh globally in each step.Replacing the code in  [2.x.53]  by something like
+* [1.x.84]
+* makes it simple to explore adaptive mesh refinement.
+* 
+
+* [1.x.85][1.x.86] [2.x.54] 
+* [0.x.1]

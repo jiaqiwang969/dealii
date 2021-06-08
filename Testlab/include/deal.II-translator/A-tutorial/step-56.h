@@ -42,7 +42,7 @@
  * <li><a href="#StokesProblemsetup_dofs">StokesProblem::setup_dofs</a><a
  * href="#StokesProblemsetup_dofs">StokesProblem::setup_dofs</a>
  * <li><a
- * href="#StokesProblemassemble_system">StokesProblem::assemble_system</a> ]<a
+ * href="#StokesProblemassemble_system">StokesProblem::assemble_system</a><a
  * href="#StokesProblemassemble_system">StokesProblem::assemble_system</a>
  * <li><a
  * href="#StokesProblemassemble_multigrid">StokesProblem::assemble_multigrid</a><a
@@ -97,14 +97,11 @@
  * supported by EPSRC grant no EP/K032208/1. </i>
  * @dealiiTutorialDOI{10.5281/zenodo.400995,https://zenodo.org/badge/DOI/10.5281/zenodo.400995.svg}
  * <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
- *
- *  <a name="StokesProblem"></a><h3> Stokes Problem </h3> *<a
- * name="StokesProblem"></a><h3> Stokes Problem </h3>。
- *
+ * <a name="StokesProblem"></a><h3> Stokes Problem </h3>
  * 本教程的目的是为斯托克斯方程创建一个高效的线性求解器，并将其与其他方法进行比较。
- * 在这里，我们将使用FGMRES与几何多网格作为预处理速度块，并将在结果部分显示，这是比
+ * 在这里，我们将使用FGMRES与几何多栅作为预处理速度块，并将在结果部分显示，这是比
  * step-22 中使用的线性求解器（包括 "可能的扩展
- * "中描述的方案）更好的根本方法。
+ * "中描述的方案）更好的根本性方法。
  * 从根本上说，这是因为只有多网格才有可能获得 $O(n)$
  * 的求解时间，其中 $n$
  * 是线性系统的未知数的数量。通过使用Timer类，我们收集了一些统计数据来比较设置时间、求解时间和迭代次数。我们还计算错误，以确保我们所实现的是正确的。
@@ -131,15 +128,15 @@
  * （关于两者之间的区别的详细描述可以在 step-22
  * 中找到，但总的来说，变形张量更有物理意义，也更昂贵）。
  * <a name="LinearSolverandPreconditioningIssues"></a><h3> Linear %Solver and
- * Preconditioning Issues </h3> 。
+ * Preconditioning Issues </h3>
  *
- * 离散方程的微弱形式自然导致了以下关于速度场和压力场的节点值的线性系统：@f{eqnarray*}
+ * 离散方程的微弱形式自然导致速度场和压力场的节点值的以下线性系统：@f{eqnarray*}
  * \left(\begin{array}{cc} A & B^T \\ B & 0
  * \end{array}\right) \left(\begin{array}{c} U \\ P \end{array}\right) =
  * \left(\begin{array}{c} F \\ 0 \end{array}\right).
  * @f} 。
  *
- * 我们的目标是比较几种解决方法。 虽然 step-22 使用
+ * 我们的目标是比较几种解决方法。  虽然 step-22 使用
  * "舒尔补码法 "分两步解决了线性系统，但我们本着 step-22
  * 中 "结果
  * "一节所述的方法的精神，使用FMGRES与有效的预处理器一次性解决了该系统。其思路如下：如果我们找到一个块状修饰器
@@ -176,20 +173,19 @@
  * 中所讨论的，其中 $M_p$
  * 是压力质量矩阵，通过使用CG与ILU作为预处理程序来近似求解，而
  * $\widetilde{A^{-1}}$
- * ]是通过多种方法之一得到的：用CG和ILU作为预处理程序求解线性系统，仅仅使用ILU的一次应用，用CG和GMG（GeometricMultigrid，如
+ * 是通过多种方法之一得到的：用CG和ILU作为预处理程序求解线性系统，仅仅使用ILU的一次应用，用CG和GMG（GeometricMultigrid，如
  * step-16
  * 中所述）作为预处理程序求解线性系统，或者仅仅执行GMG的一个V-循环。
  * 作为比较，我们还在整个系统上使用了直接求解器UMFPACK，而不是FGMRES，来比较我们的结果。
  * 如果你想使用直接求解器（如UMFPACK），系统需要是可逆的。为了避免恒定压力带来的一维无效空间，我们将第一个压力未知数固定为零。这对迭代求解器来说是没有必要的。
  *
  *  <a name="ReferenceSolution"></a><h3> Reference Solution </h3> 。
- *
- *  测试问题是一个 "制造的解决方案"（详见 step-7
+ * 测试问题是一个 "制造的解决方案"（详见 step-7
  * ），我们选择 $u=(u_1,u_2,u_3)=(2\sin (\pi x),
  *
  * - \pi y \cos (\pi x),- \pi z \cos (\pi x))$ 和 $p = \sin (\pi x)\cos (\pi
  * y)\sin (\pi z)$
- * .我们对域的整个边界上的速度应用迪里希特边界条件
+ * .我们在域的整个边界上对速度应用迪里希特边界条件
  * $\Omega=[0,1]\times[0,1]\times[0,1]$
  * .为了执行边界条件，我们可以直接使用我们的参考解决方案。
  * 如果你在deal.II手册中查找创建一个源自
@@ -201,7 +197,7 @@
  * @p value().
  * ，函数类中的其他虚拟函数在默认情况下会调用你对 @p
  * value 的实现。 请注意，我们的参考方案符合  $\nabla \cdot u
- * = 0$  。此外，压力被选择为平均值为零。 在 step-7 的
+ * = 0$  。此外，压力被选择为平均值为零。  在 step-7 的
  * "制造解决方案的方法 "中，我们需要找到 $\bf f$ ，以便。
  * @f{align*}
  * {\bf f} =
@@ -224,36 +220,30 @@
  * z) \sin(\pi x) \cos(\pi y)) @f}
  *
  * <a name="ComputingErrors"></a><h3> Computing Errors </h3> 。
- *
  * 因为我们在线性系统中没有强制要求平均压力为零，所以我们需要在求解后对解决方案进行后处理。为了做到这一点，我们使用
  * VectorTools::compute_mean_value()
- * 函数来计算压力的平均值，以便从压力中减去它。
+ * 函数来计算压力的平均值，并将其从压力中减去。
  *
- *  <a name="DoFHandlers"></a><h3> DoF Handlers </h3> 。
- *
- * 我们在这里实现几何多网格的方式只在速度变量（即上面描述的
+ *  <a name="DoFHandlers"></a><h3> DoF Handlers </h3>
+ * 我们在这里实现几何多网格的方式只对速度变量（即上面描述的
  * $A$
- * 矩阵）上执行，而不是压力。我们可以用不同的方法来实现这一点，包括将所有粗网格操作视为作用于
+ * 矩阵）而不是压力进行执行。我们可以用不同的方法来实现这一点，包括将所有粗网格操作视为作用于
  * $2\times 2$
  * 块系统，而我们只考虑左上角的块。另外，我们也可以通过真正只考虑整个有限元离散化的速度部分的线性系统来实现。后者是我们在这里想要使用的方式。
  * 为了实现这一点，我们需要能够提出这样的问题："我可以只拥有一个DoFHandler的一部分吗？"。在写这个程序的时候，这是不可能的，所以为了满足我们的需求，我们只是为velocities创建一个单独的、第二个DoFHandler。然后，我们只根据这个第二DoFHandler为多网格预处理程序建立线性系统，并简单地将第一块（整体）向量转为整个第二DoFHandler的相应向量。为了实现这一目的，我们必须保证两个DoFHandler对象中的（速度）自由度排序的<i>order</i>是相同的。这实际上是通过首先在两个对象上分配自由度，然后在两个对象上使用相同的DoFRenumbering操作序列来实现的。
  *
  *  <a name="DifferencesfromtheStep22tutorial"></a><h3> Differences from the
- * Step 22 tutorial </h3> 。
- *
- *  step-56 和 step-22
+ * Step 22 tutorial </h3>   step-56 和 step-22
  * 之间的主要区别是，我们使用块解算器而不是 step-22
- * 中使用的Schur Complement方法。这种方法的细节可以在 step-22
- * 的 "可能的扩展 "部分的 "Block Schur Complement preconditioner
+ * 中使用的Schur补足方法。这种方法的细节可以在 step-22 的
+ * "可能的扩展 "部分的 "Block Schur Complement preconditioner
  * "小节中找到。对于速度块的预处理，我们从<a
  * href="https://aspect.geodynamics.org">ASPECT</a>中借用了一个名为 @p
  * BlockSchurPreconditioner 的类，该类可以选择求解 $A$
  * 的逆，或者只对其应用一个预处理扫频，这分别为我们提供了一种昂贵和便宜的方法。
  *
  *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
- * name="Includefiles"></a> <h3>Include files</h3>.
- *
- *
+ * name="Includefiles"></a> <h3>Include files</h3>。
  *
  * @code
  * #include <deal.II/base/quadrature_lib.h>
@@ -295,8 +285,8 @@
  * #include <deal.II/grid/grid_out.h>
  *
  * @endcode
- *  我们需要包括以下文件来做计时。
  *
+ * 我们需要包括以下文件来做计时。
  *
  * @code
  * #include <deal.II/base/timer.h>
@@ -324,7 +314,6 @@
  *
  * 为了方便在使用的不同求解器之间进行切换，我们声明了一个枚举，可以作为参数传递给主类的构造函数。
  *
- *
  * @code
  * enum class SolverType
  * {
@@ -336,10 +325,9 @@
  * @endcode
  *
  * <a name="FunctionsforSolutionandRighthandside"></a> <h3>Functions for
- * Solution and Righthand side</h3>
+ * Solution and Righthand side</h3>.
  * 类Solution是用来定义边界条件和计算数值解的误差的。请注意，我们需要定义数值和梯度，以便计算L2和H1误差。在这里，我们决定使用模板的特殊化来分离2D和3D的实现。
  * 请注意，前面的昏暗分量是速度分量，最后一个是压力。
- *
  *
  * @code
  * template <int dim>
@@ -407,8 +395,7 @@
  *
  * @endcode
  *
- * 注意，对于梯度，我们需要返回一个张量<1,dim>。
- *
+ * 注意，对于梯度，我们需要返回一个Tensor<1,dim>。
  *
  * @code
  * template <>
@@ -493,8 +480,7 @@
  *
  * @endcode
  *
- * 实现  $f$  。更多信息见介绍。
- *
+ * $f$ 的实现。更多信息见介绍。
  *
  * @code
  * template <int dim>
@@ -566,14 +552,12 @@
  * @endcode
  *
  * <a name="ASPECTBlockSchurPreconditioner"></a> <h3>ASPECT
- * BlockSchurPreconditioner</h3>.
- *
+ * BlockSchurPreconditioner</h3>。
  * 在下文中，我们将实现一个预处理程序，它扩展了  step-22
- * 的结果部分所讨论的想法。具体来说，我们1.使用一个上块三角的预处理器，因为我们想使用右边的预处理。2.可选择允许使用速度块的内部求解器，而不是单一的预处理程序应用。3.不使用InverseMatrix，而是明确地调用SolverCG。这种方法也被用于ASPECT代码（见https://aspect.geodynamics.org），该代码在模拟地幔对流的背景下求解斯托克斯方程，该代码已被用于解决成千上万个处理器上的问题。
+ * 的结果部分所讨论的想法。具体来说，我们1.使用一个上块三角的预处理器，因为我们想使用右预处理。2.可选择允许使用速度块的内部求解器，而不是单一的预处理程序应用。3.不使用InverseMatrix，而是明确地调用SolverCG。这种方法也被用于ASPECT代码（见https://aspect.geodynamics.org），该代码在模拟地幔对流的背景下求解斯托克斯方程，该代码已被用于解决成千上万个处理器上的问题。
  * 构造函数中的bool标志 @p do_solve_A
  * 允许我们对速度块应用一次预处理，或者使用内部迭代求解器来代替更精确的近似。
  * 注意我们是如何跟踪内部迭代的总和（预处理程序的应用）的。
- *
  *
  * @code
  * template <class PreconditionerAType, class PreconditionerSType>
@@ -629,9 +613,7 @@
  *   Vector<double> utmp(src.block(0));
  *
  * @endcode
- *
- * 首先用S的近似值求解
- *
+ *  首先用S的近似值求解
  *
  * @code
  *   {
@@ -652,8 +634,7 @@
  *
  * @endcode
  *
- * 其次，应用右上角的块（B^T）。
- *
+ * 其次，应用右上方的块状物（B^T）。
  *
  * @code
  *   {
@@ -666,8 +647,7 @@
  *
  * @endcode
  *
- * 最后，要么用左上角的块求解，要么只应用一个预处理程序扫除
- *
+ * 最后，要么用左上角的区块进行求解，要么只应用一个预处理器进行清扫
  *
  * @code
  *   if (do_solve_A == true)
@@ -692,9 +672,8 @@
  *
  * @endcode
  *
- * <a name="TheStokesProblemclass"></a> <h3>The StokesProblem class</h3>.
+ * <a name="TheStokesProblemclass"></a> <h3>The StokesProblem class</h3>。
  * 这是该问题的主要类别。
- *
  *
  * @code
  * template <int dim>
@@ -752,13 +731,11 @@
  * @endcode
  *  仅为速度的有限元。
  *
- *
  * @code
  *   velocity_fe(FE_Q<dim>(pressure_degree + 1), dim)
  *   ,
  * @endcode
  *  整个系统的有限元。
- *
  *
  * @code
  *   fe(velocity_fe, 1, FE_Q<dim>(pressure_degree), 1)
@@ -776,7 +753,6 @@
  *
  * 这个函数设置了DoFHandler、矩阵、向量和Multigrid结构（如果需要）。
  *
- *
  * @code
  * template <int dim>
  * void StokesProblem<dim>::setup_dofs()
@@ -788,7 +764,7 @@
  *
  * @endcode
  *
- * 主DoFHandler只需要活动的DoF，所以我们不在这里调用distribution_mg_dofs()
+ * 主DoFHandler只需要活动的DoF，所以我们不在这里调用distribution_mg_dofs()。
  *
  * @code
  *   dof_handler.distribute_dofs(fe);
@@ -799,7 +775,6 @@
  * step-22
  * 中的dim+1块，因为我们的FES系统是嵌套的，dim速度分量作为一个块出现。
  *
- *
  * @code
  *   std::vector<unsigned int> block_component(2);
  *   block_component[0] = 0;
@@ -807,16 +782,14 @@
  *
  * @endcode
  *
- * 速度从分量0开始。
- *
+ * 速度从组件0开始。
  *
  * @code
  *   const FEValuesExtractors::Vector velocities(0);
  *
  * @endcode
  *
- * 如果我们应用重新排序来减少填充，ILU的表现会更好。对于其他求解器来说，这样做并没有什么好处。
- *
+ * 如果我们应用重排序来减少填充，ILU的表现会更好。对于其他求解器来说，这样做并没有什么好处。
  *
  * @code
  *   if (solver_type == SolverType::FGMRES_ILU)
@@ -828,7 +801,6 @@
  * @endcode
  *
  * 这确保所有的速度DoF在压力未知数之前被列举出来。这允许我们使用块来处理向量和矩阵，并允许我们为dof_handler和velocity_dof_handler获得相同的DoF编号。
- *
  *
  * @code
  *   DoFRenumbering::block_wise(dof_handler);
@@ -844,16 +816,15 @@
  *
  * @endcode
  *
- * 这将速度空间的活动道次和多网格道次分布在一个单独的DoFHandler中，如介绍中所述。
- *
+ * 这将在一个单独的DoFHandler中分配速度空间的主动道夫和多网格道夫，如介绍中所述。
  *
  * @code
  *       velocity_dof_handler.distribute_dofs(velocity_fe);
  *       velocity_dof_handler.distribute_mg_dofs();
  *
  * @endcode
- * 下面的代码块初始化了MGConstrainedDofs（使用速度的边界条件），以及每个层次的稀疏模式和矩阵。MGLevelObject<T>的resize()函数将破坏所有现有的包含对象。
  *
+ * 下面的代码块初始化了MGConstrainedDofs（使用速度的边界条件），以及每个层次的稀疏模式和矩阵。MGLevelObject<T>的resize()函数将破坏所有现有的包含对象。
  *
  * @code
  *       std::set<types::boundary_id> zero_boundary_ids;
@@ -895,9 +866,9 @@
  *   {
  *     constraints.clear();
  * @endcode
- * 下面利用分量掩码对速度的边界值进行插值，这在矢量值dealii
- * step-20  教程中进一步解释。
  *
+ * 下面利用分量掩码对速度的边界值进行插值，这在矢量值dealii
+ * step-20 教程中进一步解释。
  *
  * @code
  *     DoFTools::make_hanging_node_constraints(dof_handler, constraints);
@@ -910,7 +881,6 @@
  * @endcode
  *
  * 正如介绍中所讨论的，我们需要固定压力变量的一个自由度以确保问题的可解性。我们在这里通过标记第一个压力自由度来做到这一点，该自由度的索引为n_u，是一个受约束的自由度。
- *
  *
  * @code
  *     if (solver_type == SolverType::UMFPACK)
@@ -939,10 +909,9 @@
  * @endcode
  *
  * <a name="StokesProblemassemble_system"></a>
- * <h4>StokesProblem::assemble_system</h4>.
+ * <h4>StokesProblem::assemble_system</h4>。
  *
  * 在这个函数中，系统矩阵被组装起来。我们在(1,1)块中组装压力质量矩阵（如果需要），并在此函数结束时将其移出该位置。
- *
  *
  * @code
  * template <int dim>
@@ -954,8 +923,7 @@
  *
  * @endcode
  *
- * 如果为真，我们将在(1,1)块中装配压力质量矩阵。
- *
+ * 如果是真的，我们将在(1,1)块中组装压力质量矩阵。
  *
  * @code
  *   const bool assemble_pressure_mass_matrix =
@@ -1052,10 +1020,10 @@
  * @endcode
  *
  * <a name="StokesProblemassemble_multigrid"></a>
- * <h4>StokesProblem::assemble_multigrid</h4>.
+ * <h4>StokesProblem::assemble_multigrid</h4>。
  *
  * 在这里，就像在 step-16
- * 中一样，我们有一个函数来组装多棱镜预处理程序所需的水平和界面矩阵。
+ * 中一样，我们有一个函数来组装多棱镜前处理程序所需的水平和界面矩阵。
  *
  * @code
  * template <int dim>
@@ -1107,8 +1075,7 @@
  *
  * @endcode
  *
- * 这个迭代器覆盖了所有的单元格（不仅仅是活动的）。
- *
+ * 这个迭代器覆盖所有的单元格（不仅仅是活动的）。
  *
  * @code
  *   for (const auto &cell : velocity_dof_handler.cell_iterators())
@@ -1160,7 +1127,6 @@
  * 这个函数根据你是否想使用ILU或GMG作为预处理程序来设置不同的东西。
  * 这两种方法共享相同的求解器（FGMRES），但需要初始化不同的预处理器。在这里，我们不仅对整个求解函数进行计时，而且对预调节器的设置以及求解本身分别进行计时。
  *
- *
  * @code
  * template <int dim>
  * void StokesProblem<dim>::solve()
@@ -1195,8 +1161,8 @@
  *
  * @endcode
  *
- * 在这里，我们必须确保以 "足够好 "的精度来求解残差。
- *
+ * 在这里，我们必须确保以 "足够好
+ * "的精度来解决残差问题
  *
  * @code
  *   SolverControl solver_control(system_matrix.m(),
@@ -1206,9 +1172,8 @@
  *
  * @endcode
  *
- * 这是用来传递我们是否要在预处理程序中求解A。
- * 我们可以把它改为false，看看是否还有收敛性，如果有的话，那么程序的运行速度是更快还是更慢？
- *
+ * 这是用来传递我们是否要在预处理程序中求解A的信息。
+ * 我们可以把它改为false，看看是否还有收敛性，如果有的话，程序会不会运行得更快或更慢。
  *
  * @code
  *   const bool use_expensive = true;
@@ -1259,8 +1224,8 @@
  * - Set-up Preconditioner");
  *
  * @endcode
- *  在各级之间转移运算符
  *
+ * 在各级之间转移操作者
  *
  * @code
  *       MGTransferPrebuilt<Vector<double>> mg_transfer(mg_constrained_dofs);
@@ -1268,8 +1233,7 @@
  *
  * @endcode
  *
- * 设置粗略的网格解算器
- *
+ * 设置粗略的网格求解器
  *
  * @code
  *       FullMatrix<double> coarse_matrix;
@@ -1284,7 +1248,7 @@
  *
  * @endcode
  *
- * Multigrid，当作为CG的预处理程序时，需要是一个对称算子，所以平滑器必须是对称的
+ * Multigrid，当作为CG的预处理程序时，需要是一个对称的算子，所以平滑器必须是对称的
  *
  * @code
  *       mg_smoother.set_symmetric(true);
@@ -1294,9 +1258,7 @@
  *       mg::Matrix<Vector<double>> mg_interface_down(mg_interface_matrices);
  *
  * @endcode
- *
- * 现在，我们已经准备好设置V型循环算子和多级预处理器了。
- *
+ *  现在，我们准备设置V型循环算子和多级预处理程序。
  *
  * @code
  *       Multigrid<Vector<double>> mg(
@@ -1351,10 +1313,9 @@
  * @endcode
  *
  * <a name="StokesProblemprocess_solution"></a>
- * <h4>StokesProblem::process_solution</h4>.
+ * <h4>StokesProblem::process_solution</h4>。
  *
  * 这个函数计算出解决方案的L2和H1误差。为此，我们需要确保压力的平均值为零。
- *
  *
  * @code
  * template <int dim>
@@ -1365,7 +1326,6 @@
  * 计算平均压力 $\frac{1}{\Omega} \int_{\Omega} p(x) dx $
  * ，然后从每个压力系数中减去它。这将产生一个平均值为零的压力。这里我们利用了压力是分量
  * $dim$ 和有限元空间是节点的事实。
- *
  *
  * @code
  *   const double mean_pressure = VectorTools::compute_mean_value(
@@ -1432,8 +1392,7 @@
  * <a name="StokesProblemoutput_results"></a>
  * <h4>StokesProblem::output_results</h4>。
  *
- * 这个函数生成图形输出，就像在  step-22  中做的那样。
- *
+ * 这个函数生成图形输出，就像在  step-22  中那样。
  *
  * @code
  * template <int dim>
@@ -1466,10 +1425,9 @@
  *
  * @endcode
  *
- * <a name="StokesProblemrun"></a><h4>StokesProblem::run</h4> 。
+ * <a name="StokesProblemrun"></a> <h4>StokesProblem::run</h4>。
  *
  * 斯托克斯类的最后一步是，像往常一样，生成初始网格的函数，并按各自的顺序调用其他函数。
- *
  *
  * @code
  * template <int dim>
@@ -1542,7 +1500,6 @@
  *
  * SolverType的选项。umfpack fgmres_ilu fgmres_gmg
  *
- *
  * @code
  *     StokesProblem<dim> flow_problem(degree, SolverType::FGMRES_GMG);
  *
@@ -1578,11 +1535,10 @@
  * return 0;
  * }
  * @endcode
- * <a name="Results"></a><h1>Results</h1> 。
- *
- *  <a name="Errors"></a><h3> Errors </h3>。
- * 我们首先运行代码，确认有限元解决方案以混合有限元问题的误差分析所预测的正确速率收敛。鉴于足够平滑的精确解
- * $u$ 和 $p$ ，Taylor-Hood元素 $Q_k \times Q_{k-1}$ 的误差应该是
+ * <a name="Results"></a><h1>Results</h1>   <a name="Errors"></a><h3> Errors
+ * </h3> 。
+ * 我们首先运行代码，确认有限元解以混合有限元问题的误差分析所预测的正确速率收敛。鉴于足够平滑的精确解
+ * $u$ 和 $p$ ，Taylor-Hood元 $Q_k \times Q_{k-1}$ 的误差应该是
  * @f[
  * \| u
  *
@@ -1607,9 +1563,9 @@
  * <td>4.0</td> <td>0.00259519</td> <td>4.0</td> </th> </tr> </table> <a
  * name="TimingResults"></a><h3> Timing Results </h3>。
  *
- *  让我们将使用UMFPACK的直接求解方法与我们选择 $\widetilde
- * {A^{-1}}=A^{-1}$ 和 $\widetilde{S^{-1}}=S^{-1}$
- * 的两种方法进行比较，其中使用CG求解 $A,S$
+ *  让我们比较一下使用UMFPACK的直接求解方法和我们选择
+ * $\widetilde {A^{-1}}=A^{-1}$ 和 $\widetilde{S^{-1}}=S^{-1}$
+ * 的两种方法，即使用CG求解 $A,S$
  * 的线性系统。CG的预处理程序是ILU或GMG。下表总结了求解器的迭代次数、时间和虚拟内存（VM）的峰值使用。
  * <table align="center" class="doxtable"> <tr> <th></th> <th
  * colspan="3">General</th> <th colspan="6">GMG</th> <th colspan="6">ILU</th>
@@ -1646,22 +1602,21 @@
  * </h3> 。
  *
  *  <a name="Checkhigherorderdiscretizations"></a><h4> Check higher order
- * discretizations </h4>。
- *
- * 用高阶稳定的FE对进行实验，并检查你是否观察到正确的收敛率。
+ * discretizations </h4>
+ * 用高阶稳定的FE对进行实验，检查你是否观察到正确的收敛率。
  * <a name="Comparewithcheappreconditioner"></a><h4> Compare with cheap
  * preconditioner </h4>
  *
  * 介绍中还概述了另一种对整个系统进行预处理的方案，即我们不选择上表中的
  * $\widetilde {A^{-1}}=A^{-1}$ ，而只选择 $\widetilde{A^{-1}}$
- * ，分别使用GMG或ILU的单一预处理程序。
+ * ，分别用GMG或ILU的单一预处理程序。
  * 这实际上是在代码中实现的。目前，布尔值
  * <code>use_expensive</code> in <code>solve()</code> 被设置为 @p true.
  * 上面提到的选项是通过设置为 @p false. 得到的。
  * 你会发现，如果你以这种方式使用GMG，FGMRES的迭代次数在细化过程中是不变的。这意味着Multigrid是最优的，并且与
  * $h$ 无关。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-56.cc"  。
+*<a name="PlainProg"></a><h1> The plain program</h1>  @include "step-56.cc"
  *
  */
 

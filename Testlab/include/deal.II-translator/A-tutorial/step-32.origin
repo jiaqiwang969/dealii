@@ -1510,20 +1510,20 @@ its <a href="https://aspect.geodynamics.org/">homepage</a>.
  @code
    namespace EquationData
    {
-     constexpr double eta                   = 1e21;    /* Pa s       */
-     constexpr double kappa                 = 1e-6;    /* m^2 / s    */
-     constexpr double reference_density     = 3300;    /* kg / m^3   */
-     constexpr double reference_temperature = 293;     /* K          */
-     constexpr double expansion_coefficient = 2e-5;    /* 1/K        */
-     constexpr double specific_heat         = 1250;    /* J / K / kg */
-     constexpr double radiogenic_heating    = 7.4e-12; /* W / kg     */
+     constexpr double eta                   = 1e21;    // Pa s      
+     constexpr double kappa                 = 1e-6;    // m^2 / s    
+     constexpr double reference_density     = 3300;    // kg / m^3   
+     constexpr double reference_temperature = 293;     // K         
+     constexpr double expansion_coefficient = 2e-5;    // 1/K        
+     constexpr double specific_heat         = 1250;    // J / K / kg 
+     constexpr double radiogenic_heating    = 7.4e-12; // W / kg     
  
  
-     constexpr double R0 = 6371000. - 2890000.; /* m          */
-     constexpr double R1 = 6371000. - 35000.;   /* m          */
+     constexpr double R0 = 6371000. - 2890000.; // m          
+     constexpr double R1 = 6371000. - 35000.;   // m          
  
-     constexpr double T0 = 4000 + 273; /* K          */
-     constexpr double T1 = 700 + 273;  /* K          */
+     constexpr double T0 = 4000 + 273; // K          
+     constexpr double T1 = 700 + 273;  // K          
  
  
  @endcode

@@ -18,15 +18,15 @@
 /**
 
 
-* 
-*  @defgroup Vectors Vector classes  
+
+*  @defgroup Vectors Vector classes 
 * 在这里，我们列出了所有满足 <code>VectorType</code> 概念的类，它们可能被用于线性求解器（见 @ref Solvers  ）和矩阵-向量操作。
-* 
+*
 
-* 
-*  @ingroup LAC  
 
-* 
+*  @ingroup LAC 
+
+
 * */
 
 

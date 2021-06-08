@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-77_0.txt
 /**
-  @page step_77 The step-77 tutorial program  
+  @page step_77 The step-77 tutorial program 
 * 本教程依赖于  step-15  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -35,7 +35,7 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>
 This program was contributed by Wolfgang Bangerth, Colorado State University.
 * 
@@ -44,11 +44,11 @@ Foundation grants OAC-1835673, DMS-1821210, and EAR-1925595;
 and by the Computational Infrastructure in
 Geodynamics initiative (CIG), through the National Science Foundation under
 Award No. EAR-1550901 and The University of California-Davis.
-</i>  <br>  
+</i>  <br> 
 * <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
- 
 
-*  step-15 程序解决了以下描述最小表面问题的非线性方程。
+
+*  step-15 程序解决了以下非线性方程描述的最小表面问题。
 * @f{align*}{
 * 
 
@@ -73,17 +73,17 @@ Award No. EAR-1550901 and The University of California-Davis.
     u&=g \qquad\qquad &&\textrm{on} ~ \partial \Omega.
 @f}
 *  step-15 使用的是牛顿方法，牛顿方法的工作原理是反复求解线性化*问题的更新 $\delta u_k$  。
-* 
+*
 * -称为 "搜索方向"
-* 
+*
 * -，计算 "步长" $\alpha_k$ ，然后将它们结合起来，通过以下方式计算出解决方案的新猜想
 * @f{align*}{
     u_{k+1} = u_k + \alpha_k \, \delta u_k.
 @f}
-* 
+*
 * 在 step-15 的讨论过程中，我们发现计算步长是很困难的，所以就用简单的选择来解决。总是选择  $\alpha_k=0.1$  。这当然是没有效率的：我们知道，如果我们最终能够选择 $\alpha_k=1$ ，我们才能实现牛顿的二次收敛率，尽管我们可能不得不在最初的几个迭代中选择较小的步长，因为我们离得太远，无法使用这么长的步长。
-* 因此，本程序的目标之一就是要解决这个问题。由于行搜索算法的实现并不完全是微不足道的，所以我们还是要做我们应该做的事情。从一个外部库中导入复杂的功能。为此，我们将利用deal.II与大型非线性求解器包之一的接口，即[SUNDIALS](https://computing.llnl.gov/projects/sundials)套件的[KINSOL](https://computing.llnl.gov/projects/sundials/kinsol)子包。SUNDIALS的核心是解决复杂的常微分方程（ODE）和微分代数方程（DAE）的软件包，deal.II接口通过SUNDIALS命名空间中的类来实现。特别是 SUNDIALS::ARKode 和 SUNDIALS::IDA 类。但是，由于这是用隐式方法解决ODE和DAE的一个重要步骤，%SUNDIALS也有一个叫做KINSOL的非线性问题的解算器，deal.II有一个以 SUNDIALS::KINSOL 类形式的接口。这就是我们要用来解决的问题。
-* 但%SUNDIALS并不只是一个方便的方法，我们可以避免编写直线搜索算法。一般来说，非线性问题的解决是相当昂贵的，人们通常希望尽可能地节省计算时间。一个可以实现这个目标的方法是如下。 step-15 中的算法将问题离散化，然后在每次迭代中求解形式为的线性系统
+* 因此，本程序的目标之一就是要解决这个问题。由于行搜索算法的实现并不完全是微不足道的，所以我们还是要做我们应该做的事情。从一个外部库中导入复杂的功能。为此，我们将利用deal.II与大型非线性求解器包之一的接口，即[SUNDIALS](https://computing.llnl.gov/projects/sundials)套件的[KINSOL](https://computing.llnl.gov/projects/sundials/kinsol)子包。SUNDIALS的核心是解决复杂的常微分方程（ODE）和微分代数方程（DAE）的软件包，deal.II接口通过SUNDIALS命名空间中的类来实现。特别是 SUNDIALS::ARKode 和 SUNDIALS::IDA 类。但是，由于这是用隐式方法解决ODE和DAE的一个重要步骤，%SUNDIALS也有一个叫做KINSOL的非线性问题求解器，deal.II有一个以 SUNDIALS::KINSOL 类形式出现的接口。这就是我们要用来解决的问题。
+* 但%SUNDIALS并不只是一个方便的方法，我们可以避免编写直线搜索算法。一般来说，非线性问题的解决是相当昂贵的，人们通常希望尽可能地节省计算时间。一个可以实现这个目标的方法是如下。 step-15 中的算法将问题离散化，然后在每次迭代中求解一个线性系统，其形式为
 * @f{align*}{
   J_k \, \delta U_k =
 * 
@@ -99,13 +99,13 @@ Award No. EAR-1550901 and The University of California-Davis.
 * @f{align*}{
     U_{k+1} = U_k + \alpha_k \, \widetilde{\delta U}_k.
 @f}
-* 这可能需要多一两个迭代，因为我们的更新 $\widetilde{\delta U}_k$ 没有 $\delta U_k$ 那么好，但这可能仍然是一个胜利，因为我们不必经常组装 $J_k$ 。
+* 这可能需要多一两个迭代，因为我们的更新 $\widetilde{\delta U}_k$ 没有 $\delta U_k$ 那么好，但它可能仍然是一个胜利，因为我们不必经常组装 $J_k$ 。
 * 对于 $J_k$ ，我们想要什么样的近似 $\tilde J_k$ ？理论上说，由于 $U_k$ 收敛于精确解 $U^\ast$ ，我们需要确保 $\tilde J_k$ 需要收敛于 $J^\ast = \nabla F(U^\ast)$ 。特别是，由于 $J_k\rightarrow J^\ast$ ，一个有效的选择是 $\tilde J_k = J_k$ 。但是，每一次，比如说，第五次迭代选择 $k=0,5,10,\ldots$ ，对于其他迭代，我们选择 $\tilde J_k$ 等于最后计算的 $J_{k'}$ 。这就是我们要做的：我们将重新使用前一次迭代中的 $\tilde J_{k-1}$ ，这可能又是我们在之前的迭代中使用的， $\tilde J_{k-2}$ 。
-* 如果在求解 $J_k$ 的线性系统时，我们不只是要组合一个矩阵，还要计算一个好的预处理程序，那么这个方案就变得更加有趣了。例如，如果我们通过SparseDirectUMFPACK类使用稀疏的LU分解，或者使用ageometric或代数多重网格。在这些情况下，我们也不必更新预处理程序，因为预处理程序的计算时间可能与最初组装矩阵的时间差不多，甚至更长。事实上，在这种思路下，我们也许应该考虑使用我们能想到的最好的*先决条件器，尽管它们的构建通常相当昂贵。我们希望通过将其应用于不止一个线性求解，来摊销计算该预处理程序的成本。
+* 如果在求解 $J_k$ 的线性系统时，我们不只是要组合一个矩阵，还要计算一个好的预处理程序，那么这个方案就变得更加有趣了。例如，如果我们通过SparseDirectUMFPACK类使用稀疏的LU分解，或者使用ageometric或代数多重网格。在这些情况下，我们也不必更新预处理程序，因为预处理程序的计算时间可能与最初组装矩阵的时间差不多，甚至更长。事实上，在这种思维模式下，我们也许应该考虑使用我们能想到的最好的*先决条件器，尽管它们的构建通常相当昂贵。我们希望通过将其应用于不止一个线性求解，来摊销计算该预处理程序的成本。
 * 当然，最大的问题是。我们根据什么标准来决定我们是否可以摆脱基于先前计算的雅各布矩阵 $J_{k-s}$ 的近似 $s$ 步，或者我们是否需要
-* 
+*
 * - 至少在这次迭代中
-* 
+*
 * 这和直线搜索的问题一样，需要大量的代码来监控整个算法的收敛性。我们可以*自己实现这些东西，但我们也许不应该*。KINSOL已经为我们做了这些。它将告诉我们的代码何时要 "更新 "雅各布矩阵。
 * 如果我们使用迭代求解器而不是上面提到的稀疏直接求解器，还有一个考虑。在求解更新 $\delta U_k$ 时，不仅可以用一些近似值 $\tilde J_k$ 来代替 $J_k$ ，而且还可以问是否有必要求解线性系统
 * @f{align*}{
@@ -114,56 +114,56 @@ Award No. EAR-1550901 and The University of California-Davis.
 -F_k
 @f}
 *高精确度。其思路是这样的。虽然我们目前的解决方案 $U_k$ 离 $U^\ast$ 还很远，但我们为什么要特别精确地解决这个线性系统？更新后的 $U_{k+1}=U_k + \widetilde{\delta U}_k$ 很可能仍然离精确的解决方案很远，那么为什么要花很多时间来解决这个线性系统的精确性？这就是 "Eisenstat-Walker技巧" @cite eiwa96 等算法所依据的思维方式，在该算法中，人们被赋予一个公差，在迭代 $k$ 中必须解决上述线性系统，这个公差取决于整个非线性求解器的进展。像以前一样，人们可以尝试自己实现这个，但是KINSOL已经为我们提供了这种信息
-* 
+*
 * 尽管我们不会在这个程序中使用它，因为我们使用的是直接求解器，不需要求解器的容忍度，只需要精确求解线性系统即可。
 * 作为对所有这些考虑因素的总结，我们可以说以下几点。没有必要重新发明轮子。就像deal.II提供了大量的有限元功能一样，%SUNDIALS'KINSOL软件包提供了大量的非线性求解器功能，我们最好使用它。
-* 
+*
 
 *<a name="HowdealIIinterfaceswithKINSOL"></a><h3> How deal.II interfaces with KINSOL </h3>
-* 
 
-* KINSOL，像许多类似的包一样，以一种相当抽象的方式工作。它的核心是看到一个非线性问题，其形式为
+
+* KINSOL，像许多类似的软件包一样，以一种相当抽象的方式工作。它的核心是看到一个非线性问题，其形式为
 * @f{align*}{
     F(U) = 0
 @f}
-* 并构造一个迭代序列  $U_k$  ，一般来说，这些迭代序列是与函数  $F$  所返回的向量相同的长度。要做到这一点，它需要从用户那里得到一些东西。
-* 
+* 并构造一个迭代序列 $U_k$ ，一般来说，这些迭代序列是与函数 $F$ 返回的向量相同的长度。要做到这一点，它需要从用户那里得到一些东西。
+*
 * - 一种将给定的向量调整到正确大小的方法。
-* 
-* - 对于一个给定的向量 $U$ ，评估函数 $F(U)$ 的一种方法。这个函数通常被称为 "剩余 "操作，因为目标当然是找到一个点 $U^\ast$ ，对于这个点 $F(U^\ast)=0$ ；如果 $F(U)$ 返回一个非零向量，那么这就是<a href="https://en.wikipedia.org/wiki/Residual_(numerical_analysis)">"residual"</a>（即 "剩余"，或任何 "剩余"）。做到这一点的函数本质上与 step-15 中右侧向量的计算相同，但有一个重要区别。 在那里，右手边表示残差的负数*，所以我们必须换一个符号。
-* 
+*
+* - 对于一个给定的向量 $U$ ，评估函数 $F(U)$ 的一种方法。这个函数通常被称为 "剩余 "操作，因为目标当然是找到一个点 $U^\ast$ ，对于这个点 $F(U^\ast)=0$ ；如果 $F(U)$ 返回一个非零向量，那么这就是<a href="https://en.wikipedia.org/wiki/Residual_(numerical_analysis)">"residual"</a>（即 "剩余"，或任何 "剩余"）。做到这一点的函数本质上与 step-15 中右侧向量的计算相同，但有一个重要区别。  在那里，右手边表示残差的负数*，所以我们必须换一个符号。
+*
 * - 计算矩阵 $J_k$ 的方法，如果这在当前迭代中是必要的，可能还有一个预处理程序或其他数据结构（例如，通过SparseDirectUMFPACK进行稀疏分解，如果我们选择用它来解决一个线性系统）。这个操作通常被称为 "设置 "操作。
-* 
+*
 * - 用最后计算的任何矩阵 $\tilde J_k$ 来解决线性系统 $\tilde J_k x = b$ 的方法。这个操作一般会被称为 "求解 "操作。
 * 所有这些操作都需要由 [std::function](https://en.cppreference.com/w/cpp/utility/functional/function) 对象提供给KINSOL，这些对象接受适当的参数集，通常返回一个整数，表示成功（返回值为零）或失败（返回值为非零）。具体来说，我们要访问的对象是 SUNDIALS::KINSOL::reinit_vector,   SUNDIALS::KINSOL::residual,   SUNDIALS::KINSOL::setup_jacobian,  和  SUNDIALS::KINSOL::solve_jacobian_system  成员变量。在我们的实现中，我们将使用[lambda functions](https://en.cppreference.com/w/cpp/language/lambda)来实现这些 "回调"，反过来可以调用成员函数；KINSOL将在其内部算法认为有用时调用这些回调。
-* 
+*
 
 *<a name="Detailsoftheimplementation"></a><h3> Details of the implementation </h3>
-* 
 
-* 本教程程序的大部分代码与 step-15 中的一样，我们将不对其进行详细的评论。实际上只有一个方面需要注意，即如何在一方面给定一个向量 $U$ ，另一方面给定一个向量 $U$ 来计算 $F(U)$ 。乍一看，这似乎很简单：我们只需使用`assemble_system()`函数，在一种情况下扔掉所有处理矩阵的代码，在另一种情况下扔掉处理右手边的向量的代码。就这样。问题解决了。
+
+* 本教程程序的大部分代码与 step-15 一样，我们将不对其进行详细评论。实际上只有一个方面需要注意，即如何在一方面给定一个向量 $U$ ，另一方面给定一个向量 $U$ ，计算 $J(U)$ 。乍一看，这似乎很简单：我们只需使用`assemble_system()`函数，在一种情况下扔掉所有处理矩阵的代码，在另一种情况下扔掉处理右手边的向量的代码。就这样。问题解决了。
 * 但这并不十分简单。这是因为如果我们有非零的Dirichlet边界值，这两者就不是独立的，就像我们在这里一样。我们要解决的线性系统包含内部自由度和边界自由度，当从那些真正 "自由 "的自由度中消除这些自由度时，例如使用 AffineConstraints::distribute_local_to_global(), ，我们需要在组装右手边的向量时知道矩阵。
-* 当然，这完全违背了原意。我们不*
+* 当然，这完全违背了原意。如果我们有能力的话，可以将矩阵组装起来。
 如果我们可以不知道矩阵的话，就不要去组装。我们解决这个问题的方法如下。
-* 
+*
 * - 我们将解向量的起始猜测， $U_0$ ，设定为边界自由度已经有了正确的值。
-* 
-* 这意味着所有的更新都可以对这些自由度进行零更新，我们可以建立残差向量 $F(U_k)$ 和雅各布矩阵 $J_k$ ，对应于线性系统的解在这些向量分量中为零。对于这种特殊情况，矩阵和右手边向量的装配是独立的，可以分解成不同的函数。
-* 这里有一个假设，即每当KINSOL要求一个带有（近似）Jacobian的线解器时，这将是为了更新 $\delta U$ （其边界值为零），其倍数将被添加到解决方案（其已经具有右边界值）。 这可能不是真的，如果是的话，我们可能要重新考虑我们的方法。尽管如此，事实证明，在实践中，这正是KINSOL在使用牛顿方法时的做法，因此我们的方法是成功的。
-* 
+*
+* 这意味着所有的更新都可以对这些自由度进行零更新，我们可以建立残差向量 $F(U_k)$ 和雅各布矩阵 $J_k$ ，对应于线性系统的解在这些向量分量中是零。对于这种特殊情况，矩阵和右手边向量的装配是独立的，可以分解成不同的函数。
+* 这里有一个假设，即每当KINSOL要求一个带有（近似）Jacobian的线解器时，这将是为了更新 $\delta U$ （其边界值为零），其倍数将被添加到解决方案（其已经具有右边界值）。  这可能不是真的，如果是的话，我们可能要重新考虑我们的方法。尽管如此，事实证明，在实践中，这正是KINSOL在使用牛顿方法时的做法，因此我们的方法是成功的。
+*
 
-* <a name="CommProg"></a> <h1> The commented program</h1>.
-* <a name="Includefiles"></a> <h3>Include files</h3>.
- 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* <a name="Includefiles"></a><h3>Include files</h3> 。
+*
 
-* 
-* 这个程序一开始就像其他大多数程序一样，有众所周知的包含文件。与 step-15 程序相比，我们在这里所做的大部分工作都是从该程序中复制出来的，唯一的区别是包括头文件，我们从该文件中导入了SparseDirectUMFPACK类和KINSOL的实际接口。
-* 
 
-* 
-*  
+* 这个程序开始时和其他大多数程序一样，有众所周知的包含文件。与 step-15 程序相比，我们在这里所做的大部分都是复制的，唯一不同的是包括头文件，我们从中导入了SparseDirectUMFPACK类和KINSOL的实际接口。
+*
 
-* 
+
+*
+
+
 * @code
  #include <deal.II/base/quadrature_lib.h>
  #include <deal.II/base/function.h>
@@ -206,17 +206,17 @@ Award No. EAR-1550901 and The University of California-Davis.
 * 
  
  @endcode
-* 
+*
 * <a name="ThecodeMinimalSurfaceProblemcodeclasstemplate"></a> <h3>The <code>MinimalSurfaceProblem</code> class template</h3>。
- 
 
-* 
-* 同样地，这个程序的主类基本上是  step-15  中的一个副本。然而，该类确实将雅各布（系统）矩阵的计算（以及使用直接求解器对其进行因式分解）和残差的计算分成了不同的函数，原因已在介绍中概述。出于同样的原因，该类也有一个指向雅各布矩阵因式分解的指针，该指针在我们每次更新雅各布矩阵时被重置。  
-*（如果你想知道为什么程序对雅各布矩阵使用一个直接对象，而对因式分解使用一个指针。每次KINSOL要求更新雅各布矩阵时，我们可以简单地写`jacobian_matrix=0;`将其重置为一个空矩阵，然后我们可以再次填充。另一方面，SparseDirectUMFPACK类没有办法扔掉它的内容或用新的因式分解来替换它，所以我们使用一个指针。我们只是扔掉整个对象，并在有新的雅各布矩阵需要分解时创建一个新的对象)。  
+
+*
+* 同样地，这个程序的主类基本上是  step-15  中的一个副本。然而，该类确实将雅各布（系统）矩阵的计算（以及使用直接求解器对其进行因式分解）和残差的计算分成了不同的函数，原因已在介绍中概述。出于同样的原因，该类也有一个指向雅各布矩阵因式分解的指针，该指针在我们每次更新雅各布矩阵时被重置。   
+*（如果你想知道为什么程序对雅各布矩阵使用一个直接对象，而对因式分解使用一个指针。每次KINSOL要求更新雅各布矩阵时，我们可以简单地写`jacobian_matrix=0;`将其重置为一个空矩阵，然后我们可以再次填充。另一方面，SparseDirectUMFPACK类没有办法扔掉它的内容或者用新的因式分解来替换它，所以我们使用一个指针。我们只是扔掉整个对象，并在我们有新的雅各布矩阵需要分解时创建一个新的对象)。   
 * 最后，该类有一个定时器变量，我们将用它来评估程序的不同部分需要多长时间，这样我们就可以评估KINSOL不重建矩阵及其因式分解的倾向是否有意义。我们将在下面的 "结果 "部分讨论这个问题。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class MinimalSurfaceProblem
@@ -256,15 +256,15 @@ Award No. EAR-1550901 and The University of California-Davis.
  
 * 
  @endcode
-* 
-* <a name="Boundarycondition"></a> <h3>Boundary condition</h3>.
- 
+*
+* <a name="Boundarycondition"></a> <h3>Boundary condition</h3>。
 
-* 
+
+*
 * 实现边界值的类是对  step-15  的复制。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class BoundaryValues : public Function<dim>
@@ -284,19 +284,19 @@ Award No. EAR-1550901 and The University of California-Davis.
 * 
  
  @endcode
-* 
+*
 * <a name="ThecodeMinimalSurfaceProblemcodeclassimplementation"></a> <h3>The <code>MinimalSurfaceProblem</code> class implementation</h3>。
- 
 
-* 
+
+
 * <a name="Constructorandsetupfunctions"></a> <h4>Constructor and set up functions</h4>。
- 
 
-* 
+
+*
 * 以下几个函数也基本上是复制了 step-15 已经做的事情，因此没有什么可讨论的。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    MinimalSurfaceProblem<dim>::MinimalSurfaceProblem()
@@ -336,16 +336,16 @@ Award No. EAR-1550901 and The University of California-Davis.
  
 * 
  @endcode
- 
-* <a name="AssemblingandfactorizingtheJacobianmatrix"></a> <h4>Assembling and factorizing the Jacobian matrix</h4>.
- 
+*
+* <a name="AssemblingandfactorizingtheJacobianmatrix"></a> <h4>Assembling and factorizing the Jacobian matrix</h4>。
 
-* 
-* 下面的函数负责对雅各布矩阵进行组装和分解。该函数的前半部分实质上是 step-15 的`assemble_system()`函数，只是它没有处理同时形成右手边的向量（即残差），因为我们并不总是要同时进行这些操作。  
+
+*
+* 下面的函数负责对雅各布矩阵进行组装和因子化。该函数的前半部分实质上是 step-15 的`assemble_system()`函数，只是它没有处理同时形成右手边的向量（即残差），因为我们并不总是要同时做这些操作。   
 * 我们把整个装配功能放在一个由大括号围起来的代码块中，这样我们就可以用一个 TimerOutput::Scope 的变量来衡量在这个代码块中花费了多少时间，不包括在这个函数中发生的匹配的闭合括号`}`之后的一切。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void MinimalSurfaceProblem<dim>::compute_and_factorize_jacobian(
@@ -534,13 +534,13 @@ Award No. EAR-1550901 and The University of California-Davis.
      }
 * 
  @endcode
-* 
-* 该函数的后半部分是对计算出的矩阵进行因式分解。为此，我们首先创建一个新的SparseDirectUMFPACK对象，并将其分配给成员变量`jacobian_matrix_factorization`，同时销毁该指针之前指向的任何对象（如果有）。然后我们告诉该对象对雅各布系数进行分解。    
-* 如上所述，我们把这段代码放在大括号里，并使用一个计时器来评估这部分程序需要多长时间。    
+*
+* 该函数的后半部分是对计算出的矩阵进行因子化。要做到这一点，我们首先创建一个新的SparseDirectUMFPACK对象，并将其分配给成员变量`jacobian_matrix_factorization'，同时销毁该指针之前指向的任何对象（如果有）。然后我们告诉该对象对雅各布系数进行分解。     
+* 如上所述，我们把这段代码放在大括号里，用一个计时器来评估这部分程序所需的时间。     
 *（严格来说，我们在这里完成后实际上已经不需要矩阵了，可以把矩阵对象扔掉。一个旨在提高内存效率的代码会这样做，并且只在这个函数中创建矩阵对象，而不是作为周围类的成员变量。我们在这里省略了这一步，因为使用与以前的教程程序相同的编码风格可以培养对通用风格的熟悉，并有助于使这些教程程序更容易阅读)。
-* 
+*
 
-* 
+
 * @code
      {
        TimerOutput::Scope t(computing_timer, "factorizing the Jacobian");
@@ -555,17 +555,17 @@ Award No. EAR-1550901 and The University of California-Davis.
  
 * 
  @endcode
-* 
-* <a name="Computingtheresidualvector"></a> <h4>Computing the residual vector</h4>
- 
+*
+* <a name="Computingtheresidualvector"></a> <h4>Computing the residual vector</h4>。
 
-* 
+
+*
 * `assemble_system()`在 step-15 中用来做的第二部分是计算残差向量，也就是牛顿线性系统的右手向量。我们把这一点从前面的函数中分解出来，但如果你理解了 step-15 中`assemble_system()`的作用，下面的函数就会很容易理解。然而，重要的是，我们需要计算的残差不是围绕当前解向量线性化的，而是我们从KINSOL得到的任何东西。这对于诸如直线搜索的操作是必要的，我们想知道不同的 $\alpha_k$ 值的残差 $F(U^k + \alpha_k \delta
- U^K)$ 是多少；在这些情况下，KINSOL只是给我们函数 $F$ 的参数，然后我们在这一点上计算出残差 $F(\cdot)$ 。  
+ U^K)$ 是多少；在这些情况下，KINSOL只是给我们函数 $F$ 的参数，然后我们在这一点上计算出残差 $F(\cdot)$ 。   
 * 该函数在最后打印出如此计算的残差的规范，作为我们跟踪程序进展的一种方式。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void MinimalSurfaceProblem<dim>::compute_residual(
@@ -633,16 +633,16 @@ Award No. EAR-1550901 and The University of California-Davis.
  
 * 
  @endcode
-* 
-* <a name="SolvinglinearsystemswiththeJacobianmatrix"></a> <h4>Solving linear systems with the Jacobian matrix</h4>
- 
+*
+* <a name="SolvinglinearsystemswiththeJacobianmatrix"></a> <h4>Solving linear systems with the Jacobian matrix</h4>。
 
-* 
-* 接下来是实现用雅各布矩阵解线性系统的函数。由于我们在建立矩阵时已经对矩阵进行了因式分解，所以解决线性系统的方法就是将逆矩阵应用于给定的右侧向量。这就是我们在这里使用的 SparseDirectUMFPACK::vmult() 函数的作用。在这之后，我们必须确保我们也能解决解向量中悬空节点的值，这就是使用 AffineConstraints::distribute(). 完成的。   
+
+*
+* 接下来是实现用雅各布矩阵解线性系统的函数。由于我们在建立矩阵时已经对矩阵进行了因式分解，所以解决一个线性系统的方法就是将逆矩阵应用于给定的右手边向量。这就是我们在这里使用的 SparseDirectUMFPACK::vmult() 函数的作用。在这之后，我们必须确保我们也能解决解向量中悬空节点的值，这就是使用 AffineConstraints::distribute(). 完成的。
 * 该函数需要一个额外的，但未使用的参数`tolerance`，表示我们必须解决线性系统的精确程度。这个参数的含义在介绍中结合 "Eisenstat Walker技巧 "进行了讨论，但是由于我们使用的是直接解法而不是迭代解法，所以我们并没有利用这个机会来解决线性系统的不精确性。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void MinimalSurfaceProblem<dim>::solve(const Vector<double> &rhs,
@@ -661,15 +661,15 @@ Award No. EAR-1550901 and The University of California-Davis.
  
 * 
  @endcode
-* 
-* <a name="Refiningthemeshsettingboundaryvaluesandgeneratinggraphicaloutput"></a> <h4>Refining the mesh, setting boundary values, and generating graphical output</h4>.
- 
+*
+* <a name="Refiningthemeshsettingboundaryvaluesandgeneratinggraphicaloutput"></a> <h4>Refining the mesh, setting boundary values, and generating graphical output</h4>。
 
-* 
-* 以下三个函数又是对 step-15 中的函数的简单复制。
-* 
 
- 
+*
+* 以下三个函数又是 step-15 中的简单拷贝。
+*
+
+
 * @code
    template <int dim>
    void MinimalSurfaceProblem<dim>::refine_mesh()
@@ -755,17 +755,17 @@ Award No. EAR-1550901 and The University of California-Davis.
  
 * 
  @endcode
-* 
+*
 * <a name="Therunfunctionandtheoveralllogicoftheprogram"></a> <h4>The run() function and the overall logic of the program</h4>。
- 
 
-* 
-* 在这个程序中，唯一真正*有趣的函数是驱动整个算法的函数，即从一个粗的网格开始，做一些网格细化循环，并在每个网格上使用KINSOL来寻找我们从这个网格上离散化得到的非线性代数方程的解。上面的`refine_mesh()`函数可以确保一个网格上的解被用作下一个网格的起始猜测。我们还使用一个TimerOutput对象来测量每个网格上的每一次操作所花费的时间，并在每个周期开始时重置该计时器。  
-* 正如在介绍中所讨论的，没有必要特别精确地解决粗略网格上的问题，因为这些问题只会作为下一个网格的起始猜测来解决。因此，我们将对 $k$ 个网格细化周期使用 $\tau=10^{-3} \frac{1}{10^k}$ 的目标公差。  
+
+*
+* 在这个程序中，唯一真正*有趣的函数是驱动整个算法的函数，即从一个粗略的网格开始，做一些网格细化循环，并在每个网格上使用KINSOL来寻找我们从这个网格上离散化得到的非线性代数方程的解。上面的`refine_mesh()`函数可以确保一个网格上的解被用作下一个网格的起始猜测。我们还使用一个TimerOutput对象来测量每个网格上的每一次操作所花费的时间，并在每个周期开始时重置该计时器。   
+* 正如在介绍中所讨论的，没有必要特别精确地解决粗略网格上的问题，因为这些问题只会作为下一个网格的起始猜测来解决。因此，我们将对 $k$ 个网格细化周期使用 $\tau=10^{-3} \frac{1}{10^k}$ 的目标公差。   
 * 所有这些都被编码在这个函数的第一部分。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void MinimalSurfaceProblem<dim>::run()
@@ -790,11 +790,11 @@ Award No. EAR-1550901 and The University of California-Davis.
                    << std::endl;
 * 
  @endcode
-* 
-* 这就是有趣的开始。在顶部我们创建了KINSOL求解器对象，并给它提供了一个对象，该对象编码了一些额外的具体内容（其中我们只改变了我们想要达到的非线性容限；但你可能想看看 SUNDIALS::KINSOL::AdditionalData 类有哪些其他成员，并与它们一起玩）。
-* 
+*
+* 这就是有趣的开始。在顶部，我们创建了KINSOL求解器对象，并给它输入了一个对象，该对象编码了一些额外的细节（其中我们只改变了我们想要达到的非线性容限；但你可能想看看 SUNDIALS::KINSOL::AdditionalData 类有哪些其他成员，并与它们一起玩）。
+*
 
-* 
+
 * @code
          {
            typename SUNDIALS::KINSOL<Vector<double>>::AdditionalData
@@ -804,14 +804,14 @@ Award No. EAR-1550901 and The University of California-Davis.
            SUNDIALS::KINSOL<Vector<double>> nonlinear_solver(additional_data);
 * 
  @endcode
-* 
-* 然后我们要描述在介绍中已经提到的操作。从本质上讲，我们必须教KINSOL如何(i)将一个向量调整到正确的大小，(ii)计算残差向量，(iii)计算雅各布矩阵（期间我们也计算它的因式分解），以及(iv)用雅各布矩阵解决一个线性系统。          
-* 所有这四项操作都由 SUNDIALS::KINSOL 类的成员变量表示，这些成员变量的类型是 `std::function`, ，也就是说，它们是我们可以分配给一个函数的指针的对象，或者像我们在这里做的那样，一个 "lambda函数"，它接受相应的参数并返回相应的信息。按照惯例，KINSOL希望做一些不重要的事情的函数返回一个整数，其中0表示成功。事实证明，我们只需用25行代码就可以做到这一切。          
+
+* 然后我们要描述在介绍中已经提到的操作。从本质上讲，我们必须教KINSOL如何(i)将一个向量调整到正确的大小，(ii)计算残差向量，(iii)计算雅各布矩阵（期间我们还计算其因式分解），以及(iv)用雅各布矩阵解线性系统。           
+* 所有这四项操作都由 SUNDIALS::KINSOL 类的成员变量表示，这些成员变量的类型是 `std::function`, ，也就是说，它们是我们可以分配给一个函数的指针的对象，或者像我们在这里做的那样，一个 "lambda函数"，它接受相应的参数并返回相应的信息。按照惯例，KINSOL希望做一些不重要的事情的函数返回一个整数，其中0表示成功。事实证明，我们只用25行代码就可以完成所有这些工作。           
 *（如果你不熟悉什么是 "lambda函数"，可以看看 step-12 或关于这个主题的[wikipedia页面]（https://en.wikipedia.org/wiki/Anonymous_function）。lambda函数的概念是，人们想用一组参数来定义一个函数，但(i)不使它成为一个命名的函数，因为通常情况下，该函数只在一个地方使用，似乎没有必要给它一个全局名称；(ii)该函数可以访问存在于定义它的地方的一些变量，包括成员变量。lambda函数的语法很笨拙，但最终还是相当有用的）。)           
 * 在代码块的最后，我们告诉KINSOL去工作，解决我们的问题。从'residual'、'setup_jacobian'和'solve_jacobian_system'函数中调用的成员函数将向屏幕打印输出，使我们能够跟踪程序的进展。
-* 
+*
 
-* 
+
 * @code
            nonlinear_solver.reinit_vector = [&](Vector<double> &x) {
              x.reinit(dof_handler.n_dofs());
@@ -845,11 +845,11 @@ Award No. EAR-1550901 and The University of California-Davis.
          }
 * 
  @endcode
-* 
-* 其余的只是一些内务工作。将数据写到一个文件中，以便进行可视化，并显示收集到的时间摘要，以便我们可以解释每个操作花了多长时间，执行的频率如何，等等。
-* 
+*
+* 剩下的就只是内务整理了。将数据写到一个文件中，以便进行可视化，并显示收集到的时间摘要，以便我们可以解释每个操作花了多长时间，执行的频率如何，等等。
+*
 
-* 
+
 * @code
          output_results(refinement_cycle);
 * 
@@ -899,8 +899,8 @@ Award No. EAR-1550901 and The University of California-Davis.
    return 0;
  }
  @endcode
-* <a name="Results"></a><h1>Results</h1> 。
-* 
+*<a name="Results"></a><h1>Results</h1>
+
 
 * 当运行该程序时，你得到的输出看起来像这样。
 * @code
@@ -1041,7 +1041,7 @@ Mesh refinement step 1
 * 
 [...]
 @endcode
-* 
+*
 * 这应该如何解释，最容易解释的是看第一张网的输出的前几行。
 * @code
 Mesh refinement step 0
@@ -1063,15 +1063,15 @@ Mesh refinement step 0
   ...
 @endcode
 * 发生的情况是这样的。
-* 
+*
 * - 在第一次残差计算中，KINSOL计算残差以查看是否已经达到了所需的公差。答案是否定的，所以它要求用户程序计算雅各布矩阵（然后该函数还通过SparseDirectUMFPACK对矩阵进行因子化）。
-* 
+*
 * - KINSOL然后指示我们用这个矩阵和之前计算的残差向量来解决一个形式为 $J_k \, \delta U_k =
 * 
 -F_k$ 的线性系统。
-* 
+*
 * - 然后是确定我们要在这个方向上走多远，也就是做线搜索。为此，KINSOL要求我们计算不同步长的残差向量  $F(U_k + \alpha_k \delta U_k)$  。对于上面的第一步，它在尝试了两次后找到了一个可接受的 $\alpha_k$ ，第二次则需要尝试三次。
-* 
+*
 * - 在找到一个合适的更新解 $U_{k+1}$ 之后，这个过程被重复，只是现在KINSOL对当前的雅各布矩阵很满意，没有指示我们重新建立矩阵和它的因式分解，而是要求我们用同一个矩阵解决一个线性系统。
 * 该程序还在每个网格细化周期结束时将解写到VTU文件中，它看起来如下。 <table width="60%" align="center">
   <tr>
@@ -1079,25 +1079,25 @@ Mesh refinement step 0
       <img src="https://www.dealii.org/images/steps/developer/step-77.solution.png" alt="">
     </td>
   </tr>
-</table>  
-* 
+</table> 
+*
 
-* 这个程序的关键信息有以下几点。
-* 
-* - 解决方案与我们在 step-15 中计算的相同，也就是说，%SUNDIALS的KINSOL包的接口确实做了它们应该做的事情。这不应该是一个惊喜，但重要的一点是，我们不需要自己花时间去实现高级非线性求解器所依据的复杂算法。
-* 
+* 本计划的主要收获信息如下。
+*
+* - 该方案与我们在 step-15 中计算的方案相同，也就是说，%SUNDIALS的KINSOL包的接口确实做了它们应该做的。这不应该是一个惊喜，但重要的一点是，我们不需要自己花时间去实现高级非线性求解器所依据的复杂算法。
+*
 * - KINSOL能够避免各种操作，如重建雅各布矩阵，而这实际上是没有必要的。将上述输出中的线性求解次数与我们重建雅各布矩阵和计算其因式分解的次数相比较，应该可以清楚地看到，这在计算时间上带来了非常可观的节省，而我们无需实现决定何时需要重建这些信息的错综复杂的算法。
 *<a name="extensions"></a><a name="Possibilitiesforextensions"></a><h3> Possibilities for extensions </h3>
-* 
+*
 
-* 除了我们在这里考虑的小问题之外，稀疏直接求解器需要太多的时间和内存
-* 
-* - 我们需要一个迭代求解器，就像我们在许多其他程序中使用的那样。然而，在目前的情况下，构建一个昂贵的预处理程序（例如，一个几何或代数多重网格方法）的权衡是不同的。由于我们可以在许多线性求解中重新使用相同的矩阵，我们也可以对预处理程序做同样的处理，与我们只在单一线性求解中使用预处理程序相比，投入更多的工作来构建一个好的预处理程序更容易被证明。
-* 但迭代求解器也提供了其他机会。例如（正如介绍中简要讨论的那样），只要我们离实际的解还很远，我们可能不需要在早期的非线性迭代中求得高精度（小公差）。这就是那里提到的Eisenstat-Walker技巧的基础。
+* 除了我们在这里考虑的小问题，稀疏直接求解器需要太多的时间和内存。
+*
+* - 我们需要一个迭代求解器，就像我们在许多其他程序中使用的那样。然而，在目前的情况下，构建一个昂贵的预处理程序（例如，一个几何或代数多重网格方法）的权衡是不同的。由于我们可以在许多线性求解中重新使用相同的矩阵，我们也可以对预处理程序做同样的处理，与我们只在单个线性求解中使用预处理程序相比，在构建一个好的预处理程序上投入更多的工作更容易被证明。
+* 但迭代求解器也提供了其他机会。例如（正如介绍中简要讨论的那样），只要我们离实际的解还很远，我们可能不需要在早期的非线性迭代中寻求高精度的解（小公差）。这就是那里提到的Eisenstat-Walker技巧的基础。
 * KINSOL提供了做线性解的函数，有一个需要达到的目标公差。我们在上面的程序中忽略了它，因为我们使用的直接求解器不需要公差，而是精确地求解线性系统（当然是四舍五入），但迭代求解器可以利用这种信息。
-* 
+*
 * - 而且，事实上，应该如此。
-* 
+*
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-77.cc"  。
 * */

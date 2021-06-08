@@ -61,15 +61,14 @@
  * <br>
  * <i> This program was contributed by Bruno Turcksin and Daniel Arndt, Oak
  * Ridge National Laboratory. </i>   <a
- * name="Introduction"></a><h1>Introduction</h1>。
+ * name="Introduction"></a><h1>Introduction</h1>
  * 这个例子展示了如何使用CUDA在GPU上实现无矩阵方法，以解决超立方体上系数可变的亥姆霍兹方程的问题。线性系统将使用共轭梯度法进行求解，并通过MPI进行并行化。
  * 在过去的几年中，异构计算，特别是GPU，获得了很大的普及。这是因为在给定的功率预算下，GPU比CPU提供了更好的计算能力和内存带宽。在2019年初可用的架构中，GPU的功率效率约为服务器CPU的2-3倍，对于PDE相关的任务来说，GPU具有宽<a
  * href="https://en.wikipedia.org/wiki/SIMD">SIMD</a>。GPU也是机器学习中最受欢迎的架构。另一方面，GPU并不容易编程。这个程序探索了deal.II的能力，看看这样的程序可以如何有效地实现。
  * 虽然我们试图让CPU和GPU的无矩阵类的接口尽可能接近，但还是有一些区别。当在GPU上使用无矩阵框架时，人们必须编写一些CUDA代码。然而，其数量相当少，而且CUDA的使用仅限于几个关键词。
  *
- *  <a name="Thetestcase"></a><h3>The test case</h3> 。
- *
- * 在这个例子中，我们考虑Helmholtz问题@f{eqnarray*}
+ *  <a name="Thetestcase"></a><h3>The test case</h3>
+ * 在这个例子中，我们考虑亥姆霍兹问题@f{eqnarray*}
  *
  * - \nabla \cdot
  * \nabla u + a(\mathbf x) u &=&1,\\ u &=& 0 \quad \text{on } \partial \Omega @f} 。
@@ -79,24 +78,19 @@
  * 如果你在本教程中读到这里，你就会知道这个问题的弱式表述是怎样的，以及原则上是怎样为它组成线性系统的。当然，在这个程序中，我们实际上不会形成矩阵，而只是在与之相乘时表示其作用。
  *
  *  <a name="Movingdatatoandfromthedevice"></a><h3>Moving data to and from the
- * device</h3> 。
- *
- *  GPU（我们从现在开始用 "设备
- * "一词来指代GPU）有自己的内存，与CPU（我们从现在开始用
- * "主机
- * "一词）可访问的内存分开。设备上的正常计算可以分为三个独立的步骤。
+ * device</h3>   GPU（从现在开始我们将使用术语 "设备
+ * "来指代GPU）有自己的内存，它与CPU（从现在开始我们将使用术语
+ * "主机"）可访问的内存分开。设备上的正常计算可以分为三个独立的步骤。
  *
  *
- *
- * - 数据从主机转移到设备上。
+ * - 数据从主机移至设备。
  *
  *
  * - 计算是在设备上完成的。
  *
  *
- *
- * - 结果从设备上移回到主机上
- * 数据移动可以由用户代码明确完成，也可以使用UVM（统一虚拟内存）自动完成。在deal.II中，只支持第一种方法。虽然这意味着用户有额外的负担，但这可以更好地控制数据移动，更重要的是可以避免在主机上而不是设备上错误地运行重要的内核。
+ * - 结果从设备上移回主机上
+ * 数据移动可以由用户代码明确完成，也可以使用UVM（统一虚拟内存）自动完成。在deal.II中，只支持第一种方法。虽然这对用户来说意味着额外的负担，但这可以更好地控制数据移动，更重要的是可以避免在主机上而不是设备上错误地运行重要的内核。
  * 在deal.II中的数据移动是通过 LinearAlgebra::ReadWriteVector.
  * 完成的，这些向量可以被看作是主机上的缓冲区，用来存储从设备接收的数据或向设备发送数据。有两种类型的向量可以在设备上使用。
  *
@@ -155,15 +149,13 @@
  * VectorOperation::add).  ）。
  *
  *  <a name="Matrixvectorproductimplementation"></a><h3>Matrix-vector product
- * implementation</h3>。
- *
- * 在设备上评估无矩阵算子所需的代码与主机上的代码非常相似。然而，有一些区别，主要是
+ * implementation</h3>
+ * 设备上评估无矩阵算子所需的代码与主机上的代码非常相似。然而，也有一些区别，主要是
  * Step-37
- * 中的`local_apply()`函数和循环过正交点都需要封装在自己的函数中。
+ * 中的`local_apply()`函数和循环过正交点都需要被封装在自己的函数中。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1>.
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。
  * 首先包括从以前的教程中知道的deal.II库中的必要文件。
- *
  *
  * @code
  * #include <deal.II/base/conditional_ostream.h>
@@ -185,8 +177,8 @@
  * #include <deal.II/numerics/vector_tools.h>
  *
  * @endcode
- *  以下的包括在GPU上实现无矩阵方法的数据结构。
  *
+ * 以下的包括在GPU上实现无矩阵方法的数据结构。
  *
  * @code
  * #include <deal.II/base/cuda.h>
@@ -202,7 +194,6 @@
  *
  * 像往常一样，我们把所有的东西都包围在一个自己的命名空间中。
  *
- *
  * @code
  * namespace Step64
  * {
@@ -210,13 +201,13 @@
  *
  *
  * @endcode
- *  <a name="ClasscodeVaryingCoefficientFunctorcode"></a> <h3>Class
+ *
+ * <a name="ClasscodeVaryingCoefficientFunctorcode"></a> <h3>Class
  * <code>VaryingCoefficientFunctor</code></h3>。
  *
  * 接下来，我们定义一个类，实现我们想在亥姆霍兹算子中使用的变化系数。后来，我们想把这个类型的对象传递给一个
  * CUDAWrappers::MatrixFree
- * 对象，该对象希望该类有一个`operator()`，为给定的单元填充构造器中提供的值。这个操作符需要在设备上运行，所以需要为编译器标记为`__device__`。
- *
+ * 对象，该对象期望该类有一个`operator()`，为给定的单元填充构造器中提供的值。这个操作符需要在设备上运行，所以需要为编译器标记为`__device__`。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -232,10 +223,8 @@
  *     const typename CUDAWrappers::MatrixFree<dim, double>::Datagpu_data);
  *
  * @endcode
- *
- * 由于 CUDAWrappers::MatrixFree::Data
- * 不知道其数组的大小，我们需要在这个类中存储正交点的数量和自由度的数量，以便进行必要的索引转换。
- *
+ *  由于 CUDAWrappers::MatrixFree::Data
+ * 不知道其数组的大小，我们需要在这个类中存储正交点的数量和自由度的数量，以进行必要的索引转换。
  *
  * @code
  *   static const unsigned int n_dofs_1d = fe_degree + 1;
@@ -251,10 +240,8 @@
  *
  *
  * @endcode
- *
  * 下面的函数实现了这个系数。记得在介绍中我们曾将其定义为
  * $a(\mathbf x)=\frac{10}{0.05 + 2\|\mathbf x\|^2}$ 。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -288,7 +275,6 @@
  * step-37  中介绍的 MatrixFree
  * 框架的机制。与那里不同的是，实际的正交点索引是通过转换当前线程索引隐式处理的。和以前一样，这个类的函数需要在设备上运行，所以需要为编译器标记为`__device__`。
  *
- *
  * @code
  * template <int dim, int fe_degree>
  * class HelmholtzOperatorQuad
@@ -308,12 +294,11 @@
  *
  * @endcode
  *
- * 我们在这里要解决的Helmholtz问题以弱的形式读取如下。@f{eqnarray*}
+ * 我们在这里要解决的亥姆霍兹问题以弱的形式读取如下。@f{eqnarray*}
  * (\nabla v, \nabla u)+ (v, a(\mathbf x) u) &=&(v,1) \quad \forall v.
  * @f}
  * 如果你看过 step-37
  * ，那么很明显，左边的两个项对应于这里的两个函数调用。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -328,10 +313,9 @@
  * @endcode
  *
  * <a name="ClasscodeLocalHelmholtzOperatorcode"></a> <h3>Class
- * <code>LocalHelmholtzOperator</code></h3> 。
+ * <code>LocalHelmholtzOperator</code></h3>。
  *
- * 最后，我们需要定义一个类，实现整个运算符的评估，该运算符对应于基于矩阵的方法中的矩阵-向量乘积。
- *
+ * 最后，我们需要定义一个类，实现整个运算符的评估，在基于矩阵的方法中对应于矩阵-向量乘积。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -352,8 +336,7 @@
  * @endcode
  *
  * 同样， CUDAWrappers::MatrixFree
- * 对象不知道自由度的数量和正交点的数量，所以我们需要在调用算子时存储这些来进行索引计算。
- *
+ * 对象不知道自由度的数量和正交点的数量，所以我们需要在调用运算符中存储这些来进行指数计算。
  *
  * @code
  *   static const unsigned int n_dofs_1d    = fe_degree + 1;
@@ -367,8 +350,7 @@
  *
  * @endcode
  *
- * 这是一个调用算子，在给定的单元上执行亥姆霍兹算子的评估，类似于CPU上的MatrixFree框架。特别是，我们需要访问源向量的值和梯度，并将值和梯度信息写入目标向量。
- *
+ * 这是一个调用运算器，在给定的单元上执行亥姆霍兹运算器的评估，类似于CPU上的MatrixFree框架。特别是，我们需要访问源向量的值和梯度，并将值和梯度信息写入目标向量。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -396,10 +378,9 @@
  * @endcode
  *
  * <a name="ClasscodeHelmholtzOperatorcode"></a> <h3>Class
- * <code>HelmholtzOperator</code></h3>.
+ * <code>HelmholtzOperator</code></h3>。
  *
- * `HelmholtzOperator`类作为`LocalHelmholtzOperator`的封装器，定义了一个可以与SolverCG等线性求解器一起使用的接口。特别是，像每一个实现线性算子接口的类一样，它需要有一个`vmult()'函数来执行线性算子在源矢量上的操作。
- *
+ * `HelmholtzOperator`类作为`LocalHelmholtzOperator`的包装，定义了一个可以与SolverCG等线性求解器一起使用的接口。特别是，像每一个实现线性算子接口的类一样，它需要有一个`vmult()'函数，对源向量执行线性算子的操作。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -425,13 +406,13 @@
  *
  *
  * @endcode
- * 下面是这个类的构造函数的实现。在第一部分，我们初始化`mf_data`成员变量，该变量将在评估算子时为我们提供必要的信息。
+ *
+ * 下面是这个类的构造函数的实现。在第一部分，我们初始化`mf_data`成员变量，该变量将在评估运算符时为我们提供必要的信息。
  * 在后半部分，我们需要在每个活动的、本地拥有的单元中存储每个正交点的系数值。我们可以向平行三角法询问活动的、本地拥有的单元的数量，但手头只有一个DoFHandler对象。由于
  * DoFHandler::get_triangulation() 返回的是Triangulation对象，而不是
  * parallel::TriangulationBase
  * 对象，我们必须对返回值进行下移。在这里这样做是安全的，因为我们知道三角形实际上是一个
  * parallel:distributed::Triangulation 对象。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -499,9 +480,8 @@
  *
  * @endcode
  *
- * 然后的关键步骤是使用前面所有的类来循环所有的单元格来执行矩阵-向量乘积。我们在下一个函数中实现这一点。
+ * 那么关键的一步就是使用前面所有的类来循环所有的单元格来进行矩阵-向量的乘积。我们在下一个函数中实现这一点。
  * 在应用亥姆霍兹算子时，我们必须注意正确处理边界条件。因为本地算子不知道约束条件，所以我们必须在之后将正确的值从源头复制到目的向量。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -530,10 +510,8 @@
  * @endcode
  *
  * <a name="ClasscodeHelmholtzProblemcode"></a> <h3>Class
- * <code>HelmholtzProblem</code></h3>.
- *
- * 这是本程序的主类。它定义了我们用于教程程序的通常框架。唯一值得评论的一点是`solve()`函数和向量类型的选择。
- *
+ * <code>HelmholtzProblem</code></h3>。
+ * 这是本程序的主类。它定义了我们用于教程程序的通常框架。唯一值得评论的是`solve()`函数和向量类型的选择。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -568,13 +546,12 @@
  *
  * @endcode
  *
- * 因为`solve()`函数中的所有操作都是在显卡上执行的，所以所用的向量也有必要在GPU上存储其值。
+ * 因为`solve()`函数中的所有操作都是在显卡上执行的，所以所使用的向量也有必要在GPU上存储其值。
  * LinearAlgebra::distributed::Vector
  * 可以被告知要使用哪个内存空间。还有
  * LinearAlgebra::CUDAWrappers::Vector
- * ，总是使用GPU内存存储，但不与MPI一起工作。值得注意的是，如果MPI实现是CUDA感知的，并且配置标志`DEAL_II_MPI_WITH_CUDA_SUPPORT`被启用，不同MPI进程之间的通信可以得到改善。(这个标志的值需要在安装deal.II时调用`cmake`时设置)。
+ * ，总是使用GPU内存存储，但不与MPI一起工作。值得注意的是，如果MPI实现是CUDA感知的，并且配置标志`DEAL_II_MPI_WITH_CUDA_SUPPORT`被启用，不同MPI进程之间的通信可以得到改善。这个标志的值需要在安装deal.II时调用`cmake`时设置）。
  * 此外，我们还保留了一个有CPU存储的解决方案向量，这样我们就可以像平常一样查看和显示解决方案。
- *
  *
  * @code
  *   LinearAlgebra::distributed::Vector<double, MemorySpace::Host>
@@ -590,8 +567,7 @@
  * @endcode
  *
  * 除了 `Helmholtzproblem::solve()`
- * 之外，这个类的所有其余函数的实现并不包含任何新的内容，我们不会对整体的方法作进一步评论。
- *
+ * 之外，这个类的所有其余函数的实现并不包含任何新的内容，我们不会对整体的方法进一步发表过多的评论。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -645,7 +621,6 @@
  * 在函数的最后，我们不能直接将数值从主机复制到设备上，而是需要使用一个类型为
  * LinearAlgebra::ReadWriteVector
  * 的中间对象来构建必要的正确通信模式。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -703,9 +678,8 @@
  * CUDAWrappers::MatrixFree
  * 框架的特殊性。当然，在实际应用中，选择一个合适的预处理程序是至关重要的，但我们至少有与
  * step-37
- * 中相同的限制，因为矩阵条目是即时计算而不是存储的。
+ * 中相同的限制，因为矩阵条目是即时计算的，而不是存储的。
  * 在函数的第一部分解出线性系统后，我们将解从设备上复制到主机上，以便能够查看其值并在`output_results()`中显示。这种转移的工作方式与前一个函数的结尾相同。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -733,14 +707,13 @@
  *
  * @endcode
  *
- * 输出结果的函数和往常一样，因为我们已经将数值从GPU复制回CPU。
+ * 输出结果函数和平常一样，因为我们已经把数值从GPU复制回CPU了。
  * 当我们已经在用这个函数做事情的时候，我们不妨计算一下解决方案的
  * $L_2$ 规范。我们通过调用 VectorTools::integrate_difference().
  * 来做到这一点，该函数旨在通过评估数值解（由自由度值的向量给出）和代表精确解的对象之间的差异来计算误差。但是我们可以通过传入一个零函数来轻松地计算解决方案的
  * $L_2$ 准则。也就是说，我们不是在评估误差
  * $\|u_h-u\|_{L_2(\Omega)}$ ，而是在评估
  * $\|u_h-0\|_{L_2(\Omega)}=\|u_h\|_{L_2(\Omega)}$ 。
- *
  *
  * @code
  * template <int dim, int fe_degree>
@@ -776,8 +749,7 @@
  *
  * @endcode
  *
- * `run()`函数中也没有什么令人惊讶的地方。我们只是在一系列（全局）细化的网格上计算解决方案。
- *
+ * `run()`函数中也没有什么令人惊讶的地方。我们只是在一系列（全局）细化的网格上计算出了解决方案。
  *
  * @code
  * template <int dim, int fe_degree>
@@ -812,12 +784,10 @@
  * @endcode
  *
  * <a name="Thecodemaincodefunction"></a> <h3>The <code>main()</code>
- * function</h3>.
+ * function</h3>。
  *
- * 最后为`main()`函数。
- * 默认情况下，所有的MPI等级将尝试访问编号为0的设备，我们认为这是与某一MPI等级运行的CPU相关的GPU设备。这是可行的，但是如果我们在运行MPI支持时，可能会有多个MPI进程在同一台机器上运行（例如，每个CPU核心一个），然后它们都想访问该机器上的同一个GPU。如果机器上只有一个GPU，我们对此无能为力。该机器上的所有MPI行列都需要共享它。但是如果有不止一个GPU，那么最好为不同的进程解决不同的显卡。下面的选择是基于MPI进程的ID，通过将GPU轮流分配给GPU行列。(为了正确地工作，这个方案假定一台机器上的MPI等级是连续的。如果不是这样的话，那么等级与GPU的关联可能就不是最佳的了）。)
- * 为了使其正常工作，在使用这个函数之前，需要对MPI进行初始化。
- *
+ * 最后是 "main() "函数。
+ * 默认情况下，所有的MPI等级将尝试访问编号为0的设备，我们假设它是与某一MPI等级运行的CPU相关的GPU设备。这是可行的，但是如果我们在运行MPI支持时，可能会有多个MPI进程在同一台机器上运行（例如，每个CPU核心一个），然后它们都想访问该机器上的同一个GPU。如果机器上只有一个GPU，我们对此无能为力。该机器上的所有MPI行列都需要共享它。但是如果有不止一个GPU，那么最好为不同的进程解决不同的显卡。下面的选择是基于MPI进程的ID，通过将GPU轮流分配给GPU行列。(为了正确地工作，这个方案假定一台机器上的MPI等级是连续的。如果不是这样的话，那么等级与GPU的关联可能就不是最佳的了）。)为了使其正常工作，在使用这个函数之前，需要对MPI进行初始化。
  *
  * @code
  * int main(int argc, charargv[])
@@ -870,8 +840,7 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
- *  由于本教程的主要目的是演示如何使用
+ * 由于本教程的主要目的是演示如何使用
  * CUDAWrappers::MatrixFree
  * 接口，而不是计算任何有用的东西本身，我们只是在这里显示预期的输出。
  * @code
@@ -905,9 +874,8 @@
  * 那样增长）。这当然是相当低效的，因为一个最佳解算器的迭代次数与问题的大小是无关的。但是要有这样一个求解器，就需要使用比我们在这里使用的身份矩阵更好的预处理程序。
  *
  *  <a name="extensions"></a><a name="Possibilitiesforextensions"></a><h3>
- * Possibilities for extensions </h3> 。
- *
- * 目前，这个程序根本就没有使用预处理程序。这主要是因为构建一个高效的无矩阵预处理程序并不困难。
+ * Possibilities for extensions </h3>
+ * 目前，这个程序完全没有使用预处理程序。这主要是因为构建一个高效的无矩阵预处理程序并不困难。
  * 然而，只需要相应矩阵的对角线的简单选择是很好的选择，这些选择也可以用无矩阵的方式来计算。另外，也许更好的是，我们可以扩展教程，使用类似于
  * step-37 的切比雪夫平滑器的多网格。
  *

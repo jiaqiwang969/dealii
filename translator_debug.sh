@@ -24,7 +24,7 @@ do
                 # hfile0=`echo $hfilename | sed 's/.h$/\_0.h/'`
                 # hfile1=`echo $hfilename | sed 's/.h$/.origin/'`
                 # hfile2=`echo $hfilename | sed 's/.h$/.temp/'`
-                # ./contrib/transltor/from.py $path/$filename/$txtfile_0  # 输出hfile0 (未修复版)
+                # ./contrib/translator/from.py $path/$filename/$txtfile_0  # 输出hfile0 (未修复版)
                 # mv $path/$filename/$hfilename $path/$filename/$hfile1 # bak the origin file
                 # ./contrib/utilities/wrapcomments.py  $path/$filename/$hfile0 >> $path/$filename/$hfilename
                 # mv $path/$filename/$hfile0 $path/$filename/$hfile2 # bak the file

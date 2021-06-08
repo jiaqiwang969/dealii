@@ -1,0 +1,954 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21]
+*  [2.x.2] 
+* [1.x.22]
+*  [2.x.3] 
+* 
+
+* [1.x.23][1.x.24]
+* 
+
+* [1.x.25][1.x.26]
+* 
+
+* 
+* In this tutorial we consider the case of two domains,  [2.x.4]  in [2.x.5]  and  [2.x.6]  in  [2.x.7] , where  [2.x.8]  isembedded in  [2.x.9]  ( [2.x.10] ). We want to solve a partialdifferential equation on  [2.x.11] , enforcing some conditions on the solution ofthe problemon the embedded domain*  [2.x.12] .
+* There are two interesting scenarios:
+* 
+*  - the geometrical dimension `dim` of the embedded domain  [2.x.13]  is the same ofthe domain  [2.x.14]  (`spacedim`), that is, the spacedim-dimensional measure of [2.x.15]  is not zero, or
+* 
+*  - the embedded domain  [2.x.16]  has an intrinsic dimension `dim` which is smallerthan that of  [2.x.17]  (`spacedim`), thus its spacedim-dimensional measure iszero; for example it is a curve embedded in a two dimensional domain, or asurface embedded in a three-dimensional domain.
+* In both cases define the restriction operator  [2.x.18]  as the operator that,given a continuous function on  [2.x.19] , returns its (continuous) restriction on [2.x.20] , i.e.,
+* [1.x.27]
+* It is well known that the operator  [2.x.21]  can be extended to a continuousoperator on  [2.x.22] , mapping functions in  [2.x.23]  to functions in [2.x.24]  when the intrinsic dimension of  [2.x.25]  is the same of  [2.x.26] .
+* The same is true, with a less regular range space (namely  [2.x.27] ),when the dimension of  [2.x.28]  is one less with respect to  [2.x.29] , and [2.x.30]  does not have a boundary. In this second case, the operator  [2.x.31]  isalso known as thetrace* operator, and it is well defined for Lipschitzco-dimension one curves and surfaces  [2.x.32]  embedded in  [2.x.33]  (read  [1.x.28]for further details on the trace operator).
+* The co-dimension two case is a little more complicated, and in general it is notpossible to construct a continuous trace operator, not even from  [2.x.34]  to [2.x.35] , when the dimension of  [2.x.36]  is zero or one respectively in twoand three dimensions.
+* In this tutorial program we're not interested in further details on  [2.x.37] : wetake the extension  [2.x.38]  for granted, assuming that the dimension of theembedded domain (`dim`) is always smaller by one or equal with respect to thedimension of the embedding domain  [2.x.39]  (`spacedim`).
+* We are going to solve the following differential problem: given a sufficientlyregular function  [2.x.40]  on  [2.x.41] , find the solution  [2.x.42]  to
+* [1.x.29]
+* 
+* This is a constrained problem, where we are looking for a harmonic function  [2.x.43] that satisfies homogeneous boundary conditions on  [2.x.44] , subject tothe constraint  [2.x.45]  using a Lagrange multiplier.
+* This problem has a physical interpretation: harmonic functions, i.e., functionsthat satisfy the Laplace equation, can be thought of as the displacements of amembrane whose boundary values are prescribed. The current situation thencorresponds to finding the shape of a membrane for which not only thedisplacement at the boundary, but also on  [2.x.46]  is prescribed. For example,if  [2.x.47]  is a closed curve in 2d space, then that would model a soap filmthat is held in place by a wire loop along  [2.x.48]  as well as a secondloop along  [2.x.49] . In cases where  [2.x.50]  is a whole area, you can think ofthis as a membrane that is stretched over an obstacle where  [2.x.51]  is thecontact area. (If the contact area is not known we have a different problem
+* 
+*  - called the "obstacle problem"
+* 
+*  -  which is modeled in  [2.x.52] .)
+* As a first example we study the zero Dirichlet boundary condition on [2.x.53] . The same equations apply if we apply zero Neumann boundaryconditions on  [2.x.54]  or a mix of the two.
+* The variational formulation can be derived by introducing two infinitedimensional spaces  [2.x.55]  and  [2.x.56] , respectively for the solution [2.x.57]  and for the Lagrange multiplier  [2.x.58] .
+* Multiplying the first equation by  [2.x.59]  and the second by  [2.x.60] , integrating by parts when possible, and exploiting the boundaryconditions on  [2.x.61] , we obtain the following variational problem:
+* Given a sufficiently regular function  [2.x.62]  on  [2.x.63] , find the solution  [2.x.64]  to[1.x.30]
+* 
+* where  [2.x.65]  and  [2.x.66]  represent,respectively,  [2.x.67]  scalar products in  [2.x.68]  and in  [2.x.69] .
+* Inspection of the variational formulation tells us that the space  [2.x.70] can be taken to be  [2.x.71] . The space  [2.x.72] , in the co-dimensionzero case, should be taken as  [2.x.73] , while in the co-dimension one caseshould be taken as  [2.x.74] .
+* The function  [2.x.75]  should therefore be either in  [2.x.76]  (for theco-dimension zero case) or  [2.x.77]  (for the co-dimension one case).This leaves us with a Lagrange multiplier  [2.x.78]  in  [2.x.79] , which iseither  [2.x.80]  or  [2.x.81] .
+* There are two options for the discretization of the problem above. One could choosematching discretizations, where the Triangulation for  [2.x.82]  is aligned with theTriangulation for  [2.x.83] , or one could choose to discretize the two domains ina completely independent way.
+* The first option is clearly more indicated for the simple problem weproposed above: it is sufficient to use a single Triangulation for  [2.x.84]  andthen impose certain constraints depending  [2.x.85] . An example of this approachis studied in  [2.x.86] , where the solution has to stay above an obstacle and thisis achieved imposing constraints on  [2.x.87] .
+* To solve more complex problems, for example one where the domain  [2.x.88]  is timedependent, the second option could be a more viable solution. Handlingnon aligned meshes is complex by itself: to illustrate how is done we study asimple problem.
+* The technique we describe here is presented in the literature using one of many names:the [1.x.31], the [1.x.32], the[1.x.33], and others. The main principle isthat the discretization of the two grids and of the two finite element spacesare kept completely independent. This technique is particularly efficient forthe simulation of fluid-structure interaction problems, where the configurationof the embedded structure is part of the problem itself, and one solves a(possibly non-linear) elastic problem to determine the (time dependent)configuration of  [2.x.89] , and a (possibly non-linear) flow problem in  [2.x.90] , plus coupling conditions on the interface between the fluidand the solid.
+* In this tutorial program we keep things a little simpler, and we assume that theconfiguration of the embedded domain is given in one of two possible ways:
+* 
+*  - as a deformation mapping  [2.x.91] ,defined on a continuous finite dimensional space on  [2.x.92]  and representing,for any point  [2.x.93] , its coordinate  [2.x.94]  in  [2.x.95] ;
+* 
+*  - as a displacement mapping  [2.x.96]  for  [2.x.97] ,representing for any point  [2.x.98]  the displacement vector applied in order todeform  [2.x.99]  to its actual configuration  [2.x.100] .
+* We define the embedded reference domain  [2.x.101]  `embedded_grid`: onthis triangulation we construct a finite dimensional space (`embedded_configuration_dh`)to describe either the deformation or the displacement through a FiniteElementsystem of FE_Q objects (`embedded_configuration_fe`). This finite dimensionalspace is used only to interpolate a user supplied function(`embedded_configuration_function`) representing either  [2.x.102]  (if theparameter `use_displacement` is set to  [2.x.103]  or  [2.x.104]  (if theparameter `use_displacement` is set to  [2.x.105] 
+* The Lagrange multiplier  [2.x.106]  and the user supplied function  [2.x.107]  aredefined through another finite dimensional space `embedded_dh`, and throughanother FiniteElement `embedded_fe`, using the same reference domain. Inorder to take into account the deformation of the domain, either a MappingFEFieldor a MappingQEulerian object are initialized with the `embedded_configuration`vector.
+* In the embedding space, a standard finite dimensional space `space_dh` isconstructed on the embedding grid `space_grid`, using theFiniteElement `space_fe`, following almost verbatim the approach taken in  [2.x.108] .
+* We represent the discretizations of the spaces  [2.x.109]  and  [2.x.110]  with[1.x.34]and[1.x.35]respectively, where  [2.x.111]  is the dimension of `space_dh`, and  [2.x.112] the dimension of `embedded_dh`.
+* Once all the finite dimensional spaces are defined, the variational formulationof the problem above leaves us with the following finite dimensional systemof equations:
+* [1.x.36]
+* where
+* [1.x.37]
+* 
+* While the matrix  [2.x.113]  is the standard stiffness matrix for the Poisson problem on [2.x.114] , and the vector  [2.x.115]  is a standard right-hand-side vector for a finiteelement problem with forcing term  [2.x.116]  on  [2.x.117] , (see, for example,  [2.x.118] ),the matrix  [2.x.119]  or its transpose  [2.x.120]  are non-standard since they coupleinformation on two non-matching grids.
+* In particular, the integral that appears in the computation of a single entry of [2.x.121] , is computed on  [2.x.122] . As usual in finite elements we split thisintegral into contributions from all cells of the triangulation used todiscretize  [2.x.123] , we transform the integral on  [2.x.124]  to an integral on thereference element  [2.x.125] , where  [2.x.126]  is the mapping from  [2.x.127]  to  [2.x.128] ,and compute the integral on  [2.x.129]  using a quadrature formula:
+* [1.x.38]
+* Computing this sum is non-trivial because we have to evaluate  [2.x.130] . In general, if  [2.x.131]  and  [2.x.132]  are not aligned, the point [2.x.133]  is completely arbitrary with respect to  [2.x.134] , and unlesswe figure out a way to interpolate all basis functions of  [2.x.135]  on anarbitrary point on  [2.x.136] , we cannot compute the integral needed for an entryof the matrix  [2.x.137] .
+* To evaluate  [2.x.138]  the following steps needs to betaken (as shown in the picture below):
+* 
+*  - For a given cell  [2.x.139]  in  [2.x.140]  compute the real point  [2.x.141] , where  [2.x.142]  is one of the quadrature points used for the integral on  [2.x.143] .
+* 
+*  - Find the cell of  [2.x.144]  in which  [2.x.145]  lies. We shall call this element  [2.x.146] .
+* 
+*  - To evaluate the basis function use the inverse of the mapping  [2.x.147]  thattransforms the reference element  [2.x.148]  into the element  [2.x.149] :  [2.x.150] .
+*  [2.x.151] 
+* The three steps above can be computed by calling, in turn,
+* 
+*  -  [2.x.152]  followed by
+* 
+*  -  [2.x.153]  We then
+* 
+*  - construct a custom Quadrature formula, containing the point in the reference cell and then
+* 
+*  - construct an FEValues object, with the given quadrature formula, and initialized with the cell obtained in the first step.
+* This is what the deal.II function  [2.x.154]  does whenevaluating a finite element field (not just a single shape function) at anarbitrary point; but this would be inefficient in this case.
+* A better solution is to use a convenient wrapper to perform the first threesteps on a collection of points:  [2.x.155]  If one isactually interested in computing the full coupling matrix, then it is possibleto call the method  [2.x.156]  that performs theabove steps in an efficient way, reusing all possible data structures, andgathering expensive steps together. This is the function we'll be using later inthis tutorial.
+* We solve the final saddle point problem by an iterative solver, applied to theSchur complement  [2.x.157]  (whose construction is described, for example, in  [2.x.158] ),and we construct  [2.x.159]  using LinearOperator classes.
+* 
+
+* [1.x.39][1.x.40]
+* 
+
+* The problem we solve here is identical to  [2.x.160] , with the difference that weimpose some constraints on an embedded domain  [2.x.161] . The tutorial is writtenin a dimension independent way, and in the results section we show how to varyboth `dim` and `spacedim`.
+* The tutorial is compiled for `dim` equal to one and `spacedim` equal to two. Ifyou want to run the program in embedding dimension `spacedim` equal to three,you will most likely want to change the reference domain for  [2.x.162]  to be, forexample, something you read from file, or a closed sphere that you later deformto something more interesting.
+* In the default scenario,  [2.x.163]  has co-dimension one, and this tutorialprogram implements the Fictitious Boundary Method. As it turns out, the sametechniques are used in the Variational Immersed Finite Element Method, andthe coupling operator  [2.x.164]  defined above is the same in almost all of thesenon-matching methods.
+* The embedded domain is assumed to be included in  [2.x.165] , which we take as theunit square  [2.x.166] . The definition of the fictitious domain  [2.x.167]  can bemodified through the parameter file, and can be given as a mapping from thereference interval  [2.x.168]  to a curve in  [2.x.169] .
+* If the curve is closed, then the results will be similar to running the sameproblem on a grid whose boundary is  [2.x.170] . The program will happily run alsowith a non-closed  [2.x.171] , although in those cases the mathematicalformulation of the problem is more difficult, since  [2.x.172]  will have aboundary by itself that has co-dimension two with respect to the domain [2.x.173] .
+* 
+
+* [1.x.41][1.x.42]
+* 
+
+*  [2.x.174]  [2.x.175]  Glowinski, R., T.-W. Pan, T.I. Hesla, and D.D. Joseph. 1999. “A Distributed  Lagrange Multiplier/fictitious Domain Method for Particulate Flows.”  International Journal of Multiphase Flow 25 (5). Pergamon: 755–94.
+*  [2.x.176]  Boffi, D., L. Gastaldi, L. Heltai, and C.S. Peskin. 2008. “On the  Hyper-Elastic Formulation of the Immersed Boundary Method.” Computer Methods  in Applied Mechanics and Engineering 197 (25–28).
+*  [2.x.177]  Heltai, L., and F. Costanzo. 2012. “Variational Implementation of Immersed  Finite Element Methods.” Computer Methods in Applied Mechanics and Engineering  229–232. [2.x.178] 
+* 
+
+*  [1.x.43] [1.x.44]
+*   [1.x.45]  [1.x.46] Most of these have been introduced elsewhere, we'll comment only on the new ones.
+* 
+
+* 
+*  
+
+* 
+* [1.x.47]
+* 
+*  The parameter acceptor class is the first novelty of this tutorial program: in general parameter files are used to steer the execution of a program at run time. While even a simple approach saves compile time, as the same executable can be run with different parameter settings, it can become difficult to handle hundreds of parameters simultaneously while maintaining compatibility between different programs. This is where the class ParameterAcceptor proves useful.
+* 
+
+* 
+*  This class is used to define a public interface for classes that want to use a single global ParameterHandler to handle parameters. The class provides a static ParameterHandler member, namely  [2.x.179]  and implements the "Command design pattern" (see, for example, E. Gamma, R. Helm, R. Johnson, J. Vlissides, Design Patterns: Elements of Reusable Object-Oriented Software, Addison-Wesley Professional, 1994. https://goo.gl/FNYByc).
+* 
+
+* 
+*  ParameterAcceptor provides a global subscription mechanism. Whenever an object of a class derived from ParameterAcceptor is constructed, a pointer to that object-of-derived-type is registered, together with a section entry in the parameter file. Such registry is traversed upon invocation of the single function  [2.x.180]  which in turn makes sure that all classes stored in the global registry declare the parameters they will be using, and after having declared them, it reads the content of `file.prm` to parse the actual parameters.
+* 
+
+* 
+*  If you call the method  [2.x.181]  for each of the parameters you want to use in your code, there is nothing else you need to do. If you are using an already existing class that provides the two functions `declare_parameters` and `parse_parameters`, you can still use ParameterAcceptor, by encapsulating the existing class into a ParameterAcceptorProxy class.
+* 
+
+* 
+*  In this example, we'll use both strategies, using ParameterAcceptorProxy for deal.II classes, and deriving our own parameter classes directly from ParameterAcceptor.
+* 
+
+* 
+* [1.x.48]
+* 
+*  The other new include file is the one that contains the  [2.x.182]  class. The structure of deal.II, as many modern numerical libraries, is organized following a Directed Acyclic Graph (DAG). A DAG is a directed graph with topological ordering: each node structurally represents an object, and is connected to non-root nodes by one (or more) oriented edges, from the parent to the child. The most significant example of this structure is the Triangulation and its  [2.x.183]  structure. From a Triangulation (the main node), we can access each cell (children nodes of the triangulation). From the cells themselves we can access over all vertices of the cell. In this simple example, the DAG structure can be represented as three node types (the triangulation, the cell iterator, and the vertex) connected by oriented edges from the triangulation to the cell iterators, and from the cell iterator to the vertices. This has several advantages, but it intrinsically creates “asymmetries”, making certain operations fast and their inverse very slow: finding the vertices of a cell has low computational cost, and can be done by simply traversing the DAG, while finding all the cells that share a vertex requires a non-trivial computation unless a new DAG data structure is added that represents the inverse search.
+* 
+
+* 
+*  Since inverse operations are usually not needed in a finite element code, these are implemented in GridTools without the use of extra data structures related to the Triangulation which would make them much faster. One such data structure, for example, is a map from the vertices of a Triangulation to all cells that share those vertices, which would reduce the computations needed to answer to the previous question.
+* 
+
+* 
+*  Some methods, for example  [2.x.184]  make heavy usage of these non-standard operations. If you need to call these methods more than once, it becomes convenient to store those data structures somewhere.  [2.x.185]  does exactly this, giving you access to previously computed objects, or computing them on the fly (and then storing them inside the class for later use), and making sure that whenever the Triangulation is updated, also the relevant data structures are recomputed.
+* 
+
+* 
+* [1.x.49]
+* 
+*  In this example, we will be using a reference domain to describe an embedded Triangulation, deformed through a finite element vector field.
+* 
+
+* 
+*  The next two include files contain the definition of two classes that can be used in these cases. MappingQEulerian allows one to describe a domain through adisplacement* field, based on a FESystem[FE_Q(p)^spacedim] finite element space. The second is a little more generic, and allows you to use arbitrary vector FiniteElement spaces, as long as they provide acontinuous*
+ description of your domain. In this case, the description is done through the actualdeformation* field, rather than adisplacement* field.
+* 
+
+* 
+*  Which one is used depends on how the user wants to specify the reference domain, and/or the actual configuration. We'll provide both options, and experiment a little in the results section of this tutorial program.
+* 
+
+* 
+* [1.x.50]
+* 
+*  The parsed function class is another new entry. It allows one to create a Function object, starting from a string in a parameter file which is parsed into an object that you can use anywhere deal.II accepts a Function (for example, for interpolation, boundary conditions, etc.).
+* 
+
+* 
+* [1.x.51]
+* 
+*  This is the last new entry for this tutorial program. The namespace NonMatching contains a few methods that are useful when performing computations on non-matching grids, or on curves that are not aligned with the underlying mesh.
+* 
+
+* 
+*  We'll discuss its use in detail later on in the `setup_coupling` method.
+* 
+
+* 
+* [1.x.52]
+* 
+*   [1.x.53]  [1.x.54]   
+*   In the DistributedLagrangeProblem, we need two parameters describing the dimensions of the domain  [2.x.186]  (`dim`) and of the domain  [2.x.187]  (`spacedim`).   
+*   These will be used to initialize a Triangulation<dim,spacedim> (for  [2.x.188] ) and a Triangulation<spacedim,spacedim> (for  [2.x.189] ).   
+*   A novelty with respect to other tutorial programs is the heavy use of  [2.x.190]  These behave like classical pointers, with the advantage of doing automatic house-keeping: the contained object is automatically destroyed as soon as the unique_ptr goes out of scope, even if it is inside a container or there's an exception. Moreover it does not allow for duplicate pointers, which prevents ownership problems. We do this, because we want to be able to i) construct the problem, ii) read the parameters, and iii) initialize all objects according to what is specified in a parameter file.   
+*   We construct the parameters of our problem in the internal class `Parameters`, derived from ParameterAcceptor. The `DistributedLagrangeProblem` class takes a const reference to a `Parameters` object, so that it is not possible to modify the parameters from within the DistributedLagrangeProblem class itself.   
+*   We could have initialized the parameters first, and then pass the parameters to the DistributedLagrangeProblem assuming all entries are set to the desired values, but this has two disadvantages:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - We should not make assumptions on how the user initializes a class that is not under our direct control. If the user fails to initialize the class, we should notice and throw an exception;
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - Not all objects that need to read parameters from a parameter file may be available when we construct the Parameters; this is often the case for complex programs, with multiple physics, or where we reuse existing code in some external classes. We simulate this by keeping some "complex" objects, like ParsedFunction objects, inside the `DistributedLagrangeProblem` instead of inside the `Parameters`.   
+*   Here we assume that upon construction, the classes that build up our problem are not usable yet. Parsing the parameter file is what ensures we have all ingredients to build up our classes, and we design them so that if parsing fails, or is not executed, the run is aborted.
+* 
+
+* 
+*  
+
+* 
+* [1.x.55]
+* 
+*  The `Parameters` class is derived from ParameterAcceptor. This allows us to use the  [2.x.191]  method in its constructor.     
+*   The members of this function are all non-const, but the `DistributedLagrangeProblem` class takes a const reference to a `Parameters` object: this ensures that parameters are not modified from within the `DistributedLagrangeProblem` class.
+* 
+
+* 
+* [1.x.56]
+* 
+*  The parameters now described can all be set externally using a parameter file: if no parameter file is present when running the executable, the program will create a "parameters.prm" file with the default values defined here, and then abort to give the user a chance to modify the parameters.prm file.
+* 
+
+* 
+*  Initial refinement for the embedding grid, corresponding to the domain  [2.x.192] .
+* 
+
+* 
+* [1.x.57]
+* 
+*  The interaction between the embedded grid  [2.x.193]  and the embedding grid  [2.x.194]  is handled through the computation of  [2.x.195] , which involves all cells of  [2.x.196]  overlapping with parts of  [2.x.197] : a higher refinement of such cells might improve quality of our computations. For this reason we define `delta_refinement`: if it is greater than zero, then we mark each cell of the space grid that contains a vertex of the embedded grid and its neighbors, execute the refinement, and repeat this process `delta_refinement` times.
+* 
+
+* 
+* [1.x.58]
+* 
+*  Starting refinement of the embedded grid, corresponding to the domain  [2.x.198] .
+* 
+
+* 
+* [1.x.59]
+* 
+*  The list of boundary ids where we impose homogeneous Dirichlet boundary conditions. On the remaining boundary ids (if any), we impose homogeneous Neumann boundary conditions. As a default problem we have zero Dirichlet boundary conditions on  [2.x.199] 
+* 
+
+* 
+* [1.x.60]
+* 
+*  FiniteElement degree of the embedding space:  [2.x.200] 
+* 
+
+* 
+* [1.x.61]
+* 
+*  FiniteElement degree of the embedded space:  [2.x.201] 
+* 
+
+* 
+* [1.x.62]
+* 
+*  FiniteElement degree of the space used to describe the deformation of the embedded domain
+* 
+
+* 
+* [1.x.63]
+* 
+*  Order of the quadrature formula used to integrate the coupling
+* 
+
+* 
+* [1.x.64]
+* 
+*  If set to true, then the embedded configuration function is interpreted as a displacement function
+* 
+
+* 
+* [1.x.65]
+* 
+*  Level of verbosity to use in the output
+* 
+
+* 
+* [1.x.66]
+* 
+*  A flag to keep track if we were initialized or not
+* 
+
+* 
+* [1.x.67]
+* 
+*  Entry point for the DistributedLagrangeProblem
+* 
+
+* 
+* [1.x.68]
+* 
+*  Object containing the actual parameters
+* 
+
+* 
+* [1.x.69]
+* 
+*  The following functions are similar to all other tutorial programs, with the exception that we now need to set up things for two different families of objects, namely the ones related to theembedding* grids, and the ones related to theembedded* one.
+* 
+
+* 
+*  
+
+* 
+* [1.x.70]
+* 
+*  The only unconventional function we have here is the `setup_coupling()` method, used to generate the sparsity patter for the coupling matrix  [2.x.202] .
+* 
+
+* 
+*  
+
+* 
+* [1.x.71]
+* 
+*  first we gather all the objects related to the embedding space geometry
+* 
+
+* 
+*  
+
+* 
+* [1.x.72]
+* 
+*  Then the ones related to the embedded grid, with the DoFHandler associated to the Lagrange multiplier `lambda`
+* 
+
+* 
+*  
+
+* 
+* [1.x.73]
+* 
+*  And finally, everything that is needed todeform* the embedded triangulation
+* 
+
+* 
+* [1.x.74]
+* 
+*  The ParameterAcceptorProxy class is a "transparent" wrapper derived from both ParameterAcceptor and the type passed as its template parameter. At construction, the arguments are split into two parts: the first argument is an  [2.x.203]  forwarded to the ParameterAcceptor class, and containing the name of the section that should be used for this class, while all the remaining arguments are forwarded to the constructor of the templated type, in this case, to the  [2.x.204]  constructor.     
+*   This class allows you to use existing classes in conjunction with the ParameterAcceptor registration mechanism, provided that those classes have the members `declare_parameters()` and `parse_parameters()`.     
+*   This is the case here, making it fairly easy to exploit the  [2.x.205]  class: instead of requiring users to create new Function objects in their code for the RHS, boundary functions, etc., (like it is done in most of the other tutorials), here we allow the user to use deal.II interface to muParser (http://muparser.beltoforion.de), where the specification of the function is not done at compile time, but at run time, using a string that is parsed into an actual Function object.     
+*   In this case, the `embedded_configuration_function` is a vector valued Function that can be interpreted as either adeformation* or adisplacement* according to the boolean value of `parameters.use_displacement`. The number of components is specified later on in the construction.
+* 
+
+* 
+*  
+
+* 
+* [1.x.75]
+* 
+*  We do the same thing to specify the value of the function  [2.x.206] , which is what we want our solution to be in the embedded space. In this case the Function is a scalar one.
+* 
+
+* 
+* [1.x.76]
+* 
+*  Similarly to what we have done with the  [2.x.207]  class, we repeat the same for the ReductionControl class, allowing us to specify all possible stopping criteria for the Schur complement iterative solver we'll use later on.
+* 
+
+* 
+* [1.x.77]
+* 
+*  Next we gather all SparsityPattern, SparseMatrix, and Vector objects we'll need
+* 
+
+* 
+* [1.x.78]
+* 
+*  The TimerOutput class is used to provide some statistics on the performance of our program.
+* 
+
+* 
+* [1.x.79]
+* 
+*   [1.x.80]  [1.x.81]   
+*   At construction time, we initialize also the ParameterAcceptor class, with the section name we want our problem to use when parsing the parameter file.   
+*   Parameter files can be organized into section/subsection/etc.: this has the advantage that defined objects share parameters when sharing the same section/subsection/etc. ParameterAcceptor allows to specify the section name using Unix conventions on paths. If the section name starts with a slash ("/"), then the section is interpreted as anabsolute path*, ParameterAcceptor enters a subsection for each directory in the path, using the last name it encountered as the landing subsection for the current class.   
+*   For example, if you construct your class using `ParameterAcceptor("/first/second/third/My Class")`, the parameters will be organized as follows:   
+*    [2.x.208]    
+*   Internally, thecurrent path* stored in ParameterAcceptor is now considered to be "/first/second/third/", i.e. when you specify an absolute path, ParameterAcceptorchanges* the current section to the current path, i.e. to the path of the section name until thelast* "/".   
+*   You can now construct another class derived from ParameterAcceptor using a relative path (e.g., `ParameterAcceptor("My Other Class")`) instead of the absolute one (e.g. `ParameterAcceptor("/first/second/third/My Other Class")`), obtaining:  [2.x.209]    
+*   If the section nameends* with a slash then subsequent classes will interpret this as a full path: for example, similar to the one above, if we have two classes, one initialized with `ParameterAcceptor("/first/second/third/My Class/")` and the other with `ParameterAcceptor("My Other Class")`, then the resulting parameter file will look like:   
+*    [2.x.210]    
+*   We are going to exploit this, by making our `Parameters` theparent* of all subsequently constructed classes. Since most of the other classes are members of `DistributedLagrangeProblem` this allows, for example, to construct two `DistributedLagrangeProblem` for two different dimensions, without having conflicts in the parameters for the two problems.
+* 
+
+* 
+* [1.x.85]
+* 
+*  The  [2.x.211]  function does a few things:
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - enters the subsection specified at construction time to ParameterAcceptor
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - calls the  [2.x.212]  function
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - calls any signal you may have attached to  [2.x.213] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - leaves the subsection     
+*   In turn,  [2.x.214] 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - declares an entry in the parameter handler for the given variable;
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - takes the current value of the variable
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - transforms it to a string, used as the default value for the parameter file
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+
+* 
+* 
+*  - attaches anaction* to  [2.x.215]  that monitors when a file is parsed, or when an entry is set, and when this happens, it updates the value of the variable passed to `add_parameter()` by setting it to whatever was specified in the input file (of course, after the input file has been parsed and the text representation converted to the type of the variable).
+* 
+
+* 
+* [1.x.86]
+* 
+*  Once the parameter file has been parsed, then the parameters are good to go. Set the internal variable `initialized` to true.
+* 
+
+* 
+* [1.x.87]
+* 
+*  The constructor is pretty standard, with the exception of the `ParameterAcceptorProxy` objects, as explained earlier.
+* 
+
+* 
+* [1.x.88]
+* 
+*  Here is a way to set default values for a ParameterAcceptor class that was constructed using ParameterAcceptorProxy.     
+*   In this case, we set the default deformation of the embedded grid to be a circle with radius  [2.x.216]  and center  [2.x.217] , we set the default value for the embedded_value_function to be the constant one, and specify some sensible values for the SolverControl object.     
+*   It is fundamental for  [2.x.218]  to be embedded: from the definition of  [2.x.219]  is clear that, if  [2.x.220] , certain rows of the matrix  [2.x.221]  will be zero. This would be a problem, as the Schur complement method requires  [2.x.222]  to have full column rank.
+* 
+
+* 
+* [1.x.89]
+* 
+*   [1.x.90]  [1.x.91]   
+*   The function  [2.x.223]  is used to set up the finite element spaces. Notice how  [2.x.224]  is used to create objects wrapped inside  [2.x.225]  objects.
+* 
+
+* 
+* [1.x.92]
+* 
+*  Initializing  [2.x.226] : constructing the Triangulation and wrapping it into a  [2.x.227]  object
+* 
+
+* 
+* [1.x.93]
+* 
+*  Next, we actually create the triangulation using  [2.x.228]  The last argument is set to true: this activates colorization (i.e., assigning different boundary indicators to different parts of the boundary), which we use to assign the Dirichlet and Neumann conditions.
+* 
+
+* 
+* [1.x.94]
+* 
+*  Once we constructed a Triangulation, we refine it globally according to the specifications in the parameter file, and construct a  [2.x.229]  with it.
+* 
+
+* 
+* [1.x.95]
+* 
+*  The same is done with the embedded grid. Since the embedded grid is deformed, we first need to setup the deformation mapping. We do so in the following few lines:
+* 
+
+* 
+* [1.x.96]
+* 
+*  Once we have defined a finite dimensional space for the deformation, we interpolate the `embedded_configuration_function` defined in the parameter file:
+* 
+
+* 
+* [1.x.97]
+* 
+*  Now we can interpret it according to what the user has specified in the parameter file: as a displacement, in which case we construct a mapping thatdisplaces* the position of each support point of our configuration finite element space by the specified amount on the corresponding configuration vector, or as an absolution position.     
+*   In the first case, the class MappingQEulerian offers its services, while in the second one, we'll use the class MappingFEField. They are in fact very similar. MappingQEulerian will only work for systems of FE_Q finite element spaces, where the displacement vector is stored in the first `spacedim` components of the FESystem, and the degree given as a parameter at construction time, must match the degree of the first `spacedim` components.     
+*   The class MappingFEField is slightly more general, in that it allows you to select arbitrary FiniteElement types when constructing your approximation. Naturally some choices may (or may not) make sense, according to the type of FiniteElement you choose. MappingFEField implements the pure iso-parametric concept, and can be used, for example, to implement iso-geometric analysis codes in deal.II, by combining it with the FE_Bernstein finite element class. In this example, we'll use the two interchangeably, by taking into account the fact that one configuration will be a `displacement`, while the other will be an absolute `deformation` field.
+* 
+
+* 
+*  
+
+* 
+* [1.x.98]
+* 
+*  In this tutorial program we not only refine  [2.x.230]  globally, but also allow a local refinement depending on the position of  [2.x.231] , according to the value of `parameters.delta_refinement`, that we use to decide how many rounds of local refinement we should do on  [2.x.232] , corresponding to the position of  [2.x.233] .     
+*   With the mapping in place, it is now possible to query what is the location of all support points associated with the `embedded_dh`, by calling the method  [2.x.234]      
+*   This method has two variants. One that doesnot* take a Mapping, and one that takes a Mapping. If you use the second type, like we are doing in this case, the support points are computed through the specified mapping, which can manipulate them accordingly.     
+*   This is precisely what the `embedded_mapping` is there for.
+* 
+
+* 
+* [1.x.99]
+* 
+*  Once we have the support points of the embedded finite element space, we would like to identify what cells of the embedding space contain what support point, to get a chance at refining the embedding grid where it is necessary, i.e., where the embedded grid is. This can be done manually, by looping over each support point, and then calling the method  [2.x.235]  for each cell of the embedding space, until we find one that returns points in the unit reference cell, or it can be done in a more intelligent way.     
+*   The  [2.x.236]  is a possible option that performs the above task in a cheaper way, by first identifying the closest vertex of the embedding Triangulation to the target point, and then by calling  [2.x.237]  only for those cells that share the found vertex.     
+*   In fact, there are algorithms in the GridTools namespace that exploit a  [2.x.238]  object, and possibly a KDTree object to speed up these operations as much as possible.     
+*   The simplest way to exploit the maximum speed is by calling a specialized method,  [2.x.239]  that will store a lot of useful information and data structures during the first point search, and then reuse all of this for subsequent points.     
+*    [2.x.240]  returns a tuple where the first element is a vector of cells containing the input points, in this case support_points. For refinement, this is the only information we need, and this is exactly what happens now.     
+*   When we need to assemble a coupling matrix, however, we'll also need the reference location of each point to evaluate the basis functions of the embedding space. The other elements of the tuple returned by  [2.x.241]  allow you to reconstruct, for each point, what cell contains it, and what is the location in the reference cell of the given point. Since this information is better grouped into cells, then this is what the algorithm returns: a tuple, containing a vector of all cells that have at least one point in them, together with a list of all reference points and their corresponding index in the original vector.     
+*   In the following loop, we will be ignoring all returned objects except the first, identifying all cells contain at least one support point of the embedded space. This allows for a simple adaptive refinement strategy: refining these cells and their neighbors.     
+*   Notice that we need to do some sanity checks, in the sense that we want to have an embedding grid which is well refined around the embedded grid, but where two consecutive support points lie either in the same cell, or in neighbor embedding cells.     
+*   This is only possible if we ensure that the smallest cell size of the embedding grid is nonetheless bigger than the largest cell size of the embedded grid. Since users can modify both levels of refinements, as well as the amount of local refinement they want around the embedded grid, we make sure that the resulting meshes satisfy our requirements, and if this is not the case, we bail out with an exception.
+* 
+
+* 
+* [1.x.100]
+* 
+*  In order to construct a well posed coupling interpolation operator  [2.x.242] , there are some constraints on the relative dimension of the grids between the embedding and the embedded domains. The coupling operator  [2.x.243]  and the spaces  [2.x.244]  and  [2.x.245]  have to satisfy an inf-sup condition in order for the problem to have a solution. It turns out that the non-matching  [2.x.246]  projection satisfies such inf-sup, provided that the spaces  [2.x.247]  and  [2.x.248]  are compatible between each other (for example, provided that they are chosen to be the ones described in the introduction).     
+*   However, thediscrete* inf-sup condition must also hold. No complications arise here, but it turns out that the discrete inf-sup constant deteriorates when the non-matching grids have local diameters that are too far away from each other. In particular, it turns out that if you choose an embedding grid which isfiner* with respect to the embedded grid, the inf-sup constant deteriorates much more than if you let the embedded grid be finer.     
+*   In order to avoid issues, in this tutorial we will throw an exception if the parameters chosen by the user are such that the maximal diameter of the embedded grid is greater than the minimal diameter of the embedding grid.     
+*   This choice guarantees that almost every cell of the embedded grid spans no more than two cells of the embedding grid, with some rare exceptions, that are negligible in terms of the resulting inf-sup.
+* 
+
+* 
+* [1.x.101]
+* 
+*   [2.x.249]  has been refined and we can now set up its DoFs
+* 
+
+* 
+* [1.x.102]
+* 
+*  We now set up the DoFs of  [2.x.250]  and  [2.x.251] : since they are fundamentally independent (except for the fact that  [2.x.252] 's mesh is more refined "around"  [2.x.253] ) the procedure is standard.
+* 
+
+* 
+* [1.x.103]
+* 
+*  By definition the stiffness matrix involves only  [2.x.254] 's DoFs
+* 
+
+* 
+* [1.x.104]
+* 
+*  By definition the rhs of the system we're solving involves only a zero vector and  [2.x.255] , which is computed using only  [2.x.256] 's DoFs
+* 
+
+* 
+* [1.x.105]
+* 
+*  Creating the coupling sparsity pattern is a complex operation, but it can be easily done using the  [2.x.257]  which requires the two DoFHandler objects, the quadrature points for the coupling, a DynamicSparsityPattern (which then needs to be copied into the sparsity one, as usual), the component mask for the embedding and embedded Triangulation (which we leave empty) and the mappings for both the embedding and the embedded Triangulation.
+* 
+
+* 
+* [1.x.106]
+* 
+*   [1.x.107]  [1.x.108]   
+*   The following function creates the matrices: as noted before computing the stiffness matrix and the rhs is a standard procedure.
+* 
+
+* 
+* [1.x.109]
+* 
+*  Embedding stiffness matrix  [2.x.258] , and the right hand side  [2.x.259] .
+* 
+
+* 
+* [1.x.110]
+* 
+*  To compute the coupling matrix we use the  [2.x.260]  tool, which works similarly to  [2.x.261] 
+* 
+
+* 
+* [1.x.111]
+* 
+*   [1.x.112]  [1.x.113]   
+*   All parts have been assembled: we solve the system using the Schur complement method
+* 
+
+* 
+* [1.x.114]
+* 
+*  Start by creating the inverse stiffness matrix
+* 
+
+* 
+* [1.x.115]
+* 
+*  Initializing the operators, as described in the introduction
+* 
+
+* 
+* [1.x.116]
+* 
+*  Using the Schur complement method
+* 
+
+* 
+* [1.x.117]
+* 
+*  The following function simply generates standard result output on two separate files, one for each mesh.
+* 
+
+* 
+* [1.x.118]
+* 
+*  The only difference between the two output routines is that in the second case, we want to output the data on the current configuration, and not on the reference one. This is possible by passing the actual embedded_mapping to the  [2.x.262]  function. The mapping will take care of outputting the result on the actual deformed configuration.
+* 
+
+* 
+*  
+
+* 
+* [1.x.119]
+* 
+*  Similar to all other tutorial programs, the `run()` function simply calls all other methods in the correct order. Nothing special to note, except that we check if parsing was done before we actually attempt to run our program.
+* 
+
+* 
+* [1.x.120]
+* 
+*  Differently to what happens in other tutorial programs, here we use ParameterAcceptor style of initialization, i.e., all objects are first constructed, and then a single call to the static method  [2.x.263]  is issued to fill all parameters of the classes that are derived from ParameterAcceptor.       
+*   We check if the user has specified a parameter file name to use when the program was launched. If so, try to read that parameter file, otherwise, try to read the file "parameters.prm".       
+*   If the parameter file that was specified (implicitly or explicitly) does not exist,  [2.x.264]  will create one for you, and exit the program.
+* 
+
+* 
+*  
+
+* 
+* [1.x.121]
+* [1.x.122][1.x.123]
+* 
+
+* The directory in which this program is run does not contain a parameter file bydefault. On the other hand, this program wants to read its parameters from afile called parameters.prm
+* 
+*  -  and so, when you execute it the first time, youwill get an exception that no such file can be found:
+* [1.x.124]
+* 
+* However, as the error message already states, the code that triggers theexception will also generate a parameters.prm file that simply contains thedefault values for all parameters this program cares about. By inspection of theparameter file, we see the following:
+* [1.x.125]
+* 
+* If you now run the program, you will get a file called `used_parameters.prm`,containing a shorter version of the above parameters (without comments anddocumentation), documenting all parameters that were used to run your program:
+* [1.x.126]
+* 
+* The rationale behind creating first `parameters.prm` file (the first time theprogram is run) and then a `used_parameters.prm` (every other times you run theprogram), is because you may want to leave most parameters to their defaultvalues, and only modify a handful of them.
+* For example, you could use the following (perfectly valid) parameter file withthis tutorial program:
+* [1.x.127]
+* 
+* and you would obtain exactly the same results as in test case 1 below.
+* [1.x.128][1.x.129]
+* 
+
+* For the default problem the value of  [2.x.265]  on  [2.x.266]  is set to the constant  [2.x.267] :this is like imposing a constant Dirichlet boundary condition on  [2.x.268] , seenas boundary of the portion of  [2.x.269]  inside  [2.x.270] . Similarly on  [2.x.271]  we have zero Dirichlet boundary conditions.
+* 
+
+*  [2.x.272] 
+* The output of the program will look like the following:
+* [1.x.130]
+* 
+* You may notice that, in terms of CPU time, assembling the coupling system istwice as expensive as assembling the standard Poisson system, even though thematrix is smaller. This is due to the non-matching nature of the discretization.Whether this is acceptable or not, depends on the applications.
+* If the problem was set in a three-dimensional setting, and the immersed mesh wastime dependent, it would be much more expensive to recreate the mesh at eachstep rather than use the technique we present here. Moreover, you may be able tocreate a very fast and optimized solver on a uniformly refined square or cubicgrid, and embed the domain where you want to perform your computation using thetechnique presented here. This would require you to only have a surfacerepresentatio of your domain (a much cheaper and easier mesh to produce).
+* To play around a little bit, we are going to complicate a little the fictitiousdomain as well as the boundary conditions we impose on it.
+* [1.x.131][1.x.132]
+* 
+
+* If we use the following parameter file:
+* [1.x.133]
+* 
+* We get a "flowery" looking domain, where we impose a linear boundary condition [2.x.273] . This test shows that the method is actually quite accurate inrecovering an exactly linear function from its boundary conditions, and eventhough the meshes are not aligned, we obtain a pretty good result.
+* Replacing  [2.x.274]  with  [2.x.275] , i.e., modifying the parameter filesuch that we have
+* [1.x.134]
+* produces the saddle on the right.
+*  [2.x.276] 
+* [1.x.135][1.x.136][1.x.137]
+* 
+
+* [1.x.138][1.x.139]
+* 
+
+* While the current tutorial program is written for `spacedim` equal to two, thereare only minor changes you have to do in order for the program to run indifferent combinations of dimensions.
+* If you want to run with `spacedim` equal to three and `dim` equal to two, thenyou will almost certainly want to perform the following changes:
+* 
+*  - use a different reference domain for the embedded grid, maybe reading it from  a file. It is not possible to construct a smooth closed surface with one  single parametrization of a square domain, therefore you'll most likely want  to use a reference domain that is topologically equivalent to a the boundary  of a sphere.
+* 
+*  - use a displacement instead of the deformation to map  [2.x.277]  into  [2.x.278] 
+* [1.x.140][1.x.141]
+* 
+
+* We have seen in other tutorials (for example in  [2.x.279]  and  [2.x.280] ) how to readgrids from input files. A nice generalization for this tutorial program would beto allow the user to select a grid to read from the parameter file itself,instead of hardcoding the mesh type in the tutorial program itself.
+* [1.x.142][1.x.143]
+* 
+
+* At the moment, we have no preconditioner on the Schur complement. This is ok fortwo dimensional problems, where a few hundred iterations bring the residual downto the machine precision, but it's not going to work in three dimensions.
+* It is not obvious what a good preconditioner would be here. The physical problemwe are solving with the Schur complement, is to associate to the Dirichlet data [2.x.281] , the value of the Lagrange multiplier  [2.x.282] .  [2.x.283]  can beinterpreted as thejump* in the normal gradient that needs to be imposed on  [2.x.284] across  [2.x.285] , in order to obtain the Dirichlet data  [2.x.286] .
+* So  [2.x.287]  is some sort of Neumann to Dirichlet map, and we would like to have agood approximation for the Dirichlet to Neumann map. A possibility would be touse a Boundary Element approximation of the problem on  [2.x.288] , and construct arough approximation of the hyper-singular operator for the Poisson problemassociated to  [2.x.289] , which is precisely a Dirichlet to Neumann map.
+* [1.x.144][1.x.145]
+* 
+
+* The simple code proposed here can serve as a starting point for morecomplex problems which, to be solved, need to be run on parallelcode, possibly using distributed meshes (see  [2.x.290] ,  [2.x.291] , and thedocumentation for  [2.x.292]  and [2.x.293] 
+* When using non-matching grids in parallel a problem arises: to compute thematrix  [2.x.294]  a process needs information about both meshes on the same portion ofreal space but, when working with distributed meshes, this information may notbe available, because the locally owned part of the  [2.x.295]  triangulationstored on a given processor may not be physically co-located with the locallyowned part of the  [2.x.296]  triangulation stored on the same processor.
+* Various strategies can be implemented to tackle this problem:
+* 
+*  - distribute the two meshes so that this constraint is satisfied;
+* 
+*  - use communication for the parts of real space where the constraint is not  satisfied;
+* 
+*  - use a distributed triangulation for the embedding space, and a shared  triangulation for the emdedded configuration.
+* The latter strategy is clearly the easiest to implement, as most of thefunctions used in this tutorial program will work unchanged also in the parallelcase. Of course one could use the reversal strategy (that is, have a distributedembedded Triangulation and a shared embedding Triangulation).
+* However, this strategy is most likely going to be more expensive, since bydefinition the embedding grid is larger than the embedded grid, and it makesmore sense to distribute the largest of the two grids, maintaining the smallestone shared among all processors.
+* 
+
+* [1.x.146][1.x.147] [2.x.297] 
+* [0.x.1]

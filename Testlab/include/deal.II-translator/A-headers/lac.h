@@ -17,13 +17,11 @@
 
 
 /**
- *
- * @defgroup LAC Linear algebra classes
- * 本模块包含涉及线性代数的类，即与矩阵、向量和线性系统的求解有关的类。
+ *    @defgroup LAC Linear algebra classes
+ * 本模块包含涉及线性代数的类，即那些与矩阵、向量和线性系统的解有关的类。
  * 各组类的描述可以在子模块中找到。
  * 实现线性代数功能的文件在 <code>lac</code> 子目录中，是
  * <em> L </em> inear <em> A </em> lgebra <em> C </em> lasses的缩写。
- *
  *
  */
 

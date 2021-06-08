@@ -1,5 +1,0 @@
-include/deal.II-translator/multigrid/sparse_matrix_collection_0.txt
-[0.x.0]*
-   处理程序和存储所有五个SparseMatrix对象，涉及使用局部细化的多重网格。 
-* [0.x.1]
-

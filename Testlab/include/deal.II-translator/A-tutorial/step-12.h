@@ -54,33 +54,30 @@
  * FEInterfaceValues as is done in this tutorial. </i> <a name="Intro"></a><a
  * name="AnexampleofanadvectionproblemusingtheDiscountinuousGalerkinmethod"></a><h1>An
  * example of an advection problem using the Discountinuous Galerkin
- * method</h1> 。
- *
- *  <a name="Overview"></a><h3>Overview</h3> * <a
- * name="Overview"></a><h3>Overview</h3>。
- * 本例专门介绍了 <em> 不连续Galerkin方法 </em> ，简称为DG方法。它包括以下内容。 <ol>   <li>  用DG方法对线性平流方程进行离散化。   <li>  使用FEInterfaceValues组装跳跃项和单元间界面的其他表达。   <li>  使用 MeshWorker::mesh_loop().   </ol>  组合系统矩阵。
+ * method</h1> 。   <a name="Overview"></a><h3>Overview</h3>
+ * 本例专门介绍 <em> 不连续Galerkin方法 </em> ，简而言之就是DG方法。它包括以下主题。 <ol>   <li>  用DG方法对线性平流方程进行离散化。    <li>  使用FEInterfaceValues组装跳跃项和单元间界面的其他表达。    <li>  使用 MeshWorker::mesh_loop().   </ol>  组合系统矩阵。
  * 本程序特别关注的是DG方法的循环。这些问题特别复杂，主要是因为对于面的条款，我们必须分别区分边界、规则的内部面和有悬挂节点的内部面的情况。
  * MeshWorker::mesh_loop()
  * 处理了单元和面的迭代的复杂性，并允许为不同的单元和面项指定
  * "工作者"。脸部条款本身的整合，包括对自适应细化脸部的整合，是通过FEInterfaceValuesclass完成的。
- * <a name="Theequation"></a><h3>The equation</h3> 。
+ * <a name="Theequation"></a><h3>The equation</h3>
  *
  * 本例中解决的模型问题是线性平流方程@f[
  * \nabla\cdot \left({\mathbf \beta} u\right)=0 \qquad\mbox{in }\Omega,
  * @f]，受域的边界 $\Gamma=\partial\Omega$ 的流入部分的边界条件@f[
  * u=g\quad\mbox{on }\Gamma_-,
- * @f]的制约。 这里， ${\mathbf \beta}={\mathbf \beta}({\bf x})$ 表示矢量场， $u$ 是（标量）解函数， $g$ 是边界值函数，@f[
+ * @f]制约。  这里， ${\mathbf \beta}={\mathbf \beta}({\bf x})$ 表示矢量场， $u$ 是（标量）解函数， $g$ 是边界值函数，@f[
  * \Gamma_- \dealcoloneq \{{\bf x}\in\Gamma, {\mathbf \beta}({\bf x})\cdot{\bf
  * n}({\bf x})<0\} @f]是域的边界流入部分， ${\bf n}$ 表示边界
- * $\Gamma$ 的单位外向法向。这个方程是本教程 step-9
+ * $\Gamma$ 的单位外向法线。这个方程是本教程 step-9
  * 中已经考虑的平流方程的保守版本。
  *
- * 在每个单元 $T$ 中，我们从左边乘以测试函数 $v_h$ ，并通过部分积分得到：@f[
+ * 在每个单元 $T$ 上，我们从左边乘以测试函数 $v_h$ ，并通过部分积分得到：@f[
  * \left( v_h, \nabla \cdot (\beta u_h) \right)_T
  * =
  *
  * -(\nabla v_h, \beta u_h) + \int_\Gamma v_h u_h \beta \cdot n
- * @f]当对所有单元 $T$ 进行求和时，边界积分是在内部和外部面整体进行的，因此，有三种情况。 <ol>   <li>  流入的外部边界（我们用给定的 $g$ 替换 $u_h$ ）。   $\int_{\Gamma_-} v_h g \beta \cdot n$   <li>  流出的外部边界。   $\int_{\Gamma_+} v_h u_h \beta \cdot n$   <li> 内面（两边的积分变成了跳跃，我们使用上风速度）。   $\int_F [v_h] u_h^{\text{upwind}} \beta \cdot n$   </ol> 。
+ * @f]当对所有单元 $T$ 进行求和时，边界积分是在内部和外部表面整体进行的，因此，有三种情况。 <ol>   <li>  流入的外部边界（我们用给定的 $g$ 替换 $u_h$ ）。    $\int_{\Gamma_-} v_h g \beta \cdot n$   <li>  流出的外部边界。    $\int_{\Gamma_+} v_h u_h \beta \cdot n$   <li> 内面（两边的积分变成了跳跃，我们使用上风速度）。    $\int_F [v_h] u_h^{\text{upwind}} \beta \cdot n$   </ol> 。
  * 这里，跳跃定义为 $[v] = v^+
  *
  * - v^-$
@@ -99,20 +96,17 @@
  * @f]这里， $\mathbb T_h$ 是三角形的所有活动单元的集合， $\mathbb F_h^i$ 是所有活动内部面的集合。这个公式被称为上风非连续Galerkin方法。
  * 为了实现这种双线性形式，我们需要用通常的方法计算单元项（第一个和）来实现单元上的积分，用FEInterfaceValues计算界面项（第二个和），以及边界项（另外两个项）。
  *
- *
- * <a name="Thetestproblem"></a><h3>The test problem</h3>
- *
- *  我们在 $\Omega=[0,1]^2$ 上求解平流方程， ${\mathbf
+ *   <a name="Thetestproblem"></a><h3>The test problem</h3>   我们在
+ * $\Omega=[0,1]^2$ 上求解平流方程， ${\mathbf
  * \beta}=\frac{1}{|x|}(-x_2, x_1)$ 代表一个圆形的逆时针流场，
  * $g=1$ 代表 ${\bf x}\in\Gamma_-^1 := [0,0.5]\times\{0\}$ ， $g=0$ 代表
  * ${\bf x}\in \Gamma_-\setminus \Gamma_-^1$  。
- * 我们通过估计每个单元的梯度规范，自适应地细化网格，在一连串的网格上求解。在每个网格上求解后，我们以vtk格式输出解，并计算解的
+ * 我们通过估计每个单元的梯度规范，自适应地细化网格，在一连串的网格上求解。在每个网格上求解后，我们以vtk格式输出解，并计算出解的
  * $L^\infty$
  * 准则。由于精确的解是0或1，我们可以用这个方法来衡量数值解的偏移量的大小。
  *
  *  <a name="CommProg"></a> <h1> The commented program</h1>。
  * 前面几个文件已经在前面的例子中讲过了，因此不再进一步评论。
- *
  *
  * @code
  * #include <deal.II/base/quadrature_lib.h>
@@ -138,20 +132,16 @@
  *
  * - 用户与有限元类的交互并不多：它们被传递给 <code>DoFHandler</code> 和 <code>FEValues</code> 对象，仅此而已。
  *
- *
  * @code
  * #include <deal.II/fe/fe_dgq.h>
  * @endcode
  *
  * FEInterfaceValues需要这个头来计算界面上的积分。
  *
- *
  * @code
  * #include <deal.II/fe/fe_interface_values.h>
  * @endcode
- *
- * 我们将使用最简单的求解器，称为Richardson迭代，它表示简单的缺陷修正。这与一个块状SSOR预处理器（定义在precondition_block.h中）相结合，该预处理器使用DG离散化产生的系统矩阵的特殊块状结构。
- *
+ * 我们将使用最简单的求解器，称为Richardson迭代，它代表了一种简单的缺陷修正。这与一个块状SSOR预处理器（定义在precondition_block.h中）相结合，该预处理器使用DG离散化产生的系统矩阵的特殊块状结构。
  *
  * @code
  * #include <deal.II/lac/solver_richardson.h>
@@ -160,7 +150,6 @@
  *
  * 我们将使用梯度作为细化指标。
  *
- *
  * @code
  * #include <deal.II/numerics/derivative_approximation.h>
  *
@@ -168,14 +157,12 @@
  *
  * 最后，新的包含文件用于使用MeshWorker框架中的Mesh_loop
  *
- *
  * @code
  * #include <deal.II/meshworker/mesh_loop.h>
  *
  * @endcode
  *
- * 就像所有的程序一样，我们在这一节结束时包括了所需的C++头文件，并声明我们要使用dealii命名空间中的对象，不含前缀。
- *
+ * 就像所有的程序一样，我们在完成这一部分时要包括所需的C++头文件，并声明我们要使用dealii命名空间中的对象，不加前缀。
  *
  * @code
  * #include <iostream>
@@ -188,9 +175,8 @@
  *
  * @endcode
  *
- * <a name="Equationdata"></a> <h3>Equation data</h3> 。
+ * <a name="Equationdata"></a> <h3>Equation data</h3>.
  * 首先，我们定义一个描述不均匀边界数据的类。由于只使用它的值，我们实现value_list()，但不定义Function的所有其他函数。
- *
  *
  * @code
  * template <int dim>
@@ -205,9 +191,8 @@
  *
  * @endcode
  *
- * 考虑到流动方向，单位方格 $[0,1]^2$
- * 的流入边界是右边界和下边界。我们在x轴上规定了不连续的边界值1和0，在右边界上规定了值0。该函数在流出边界上的值将不会在DG方案内使用。
- *
+ * 鉴于流动方向，单位方格 $[0,1]^2$
+ * 的流入边界是右边界和下边界。我们在x轴上规定了不连续的边界值1和0，在右侧边界上规定了值0。该函数在流出边界上的值将不会在DG方案中使用。
  *
  * @code
  * template <int dim>
@@ -231,11 +216,11 @@
  *
  *
  * @endcode
- *  最后，一个计算并返回风场的函数  $\beta=\beta(\mathbf x)$
+ *
+ * 最后，一个计算并返回风场的函数  $\beta=\beta(\mathbf x)$
  * 。正如介绍中所解释的，在2D中我们将使用一个围绕原点的旋转场。在3D中，我们只需不设置
  * $z$
  * 分量（即为零），而该函数在目前的实现中不能用于1D。
- *
  *
  * @code
  * template <int dim>
@@ -259,11 +244,9 @@
  * @endcode
  *
  * <a name="TheScratchDataandCopyDataclasses"></a> <h3>The ScratchData and
- * CopyData classes</h3>. 以下对象是我们在调用
+ * CopyData classes</h3>。 以下对象是我们在调用
  * MeshWorker::mesh_loop(). 时使用的抓取和复制对象
- * 新的对象是FEInterfaceValues对象，它的工作原理类似于FEValues或FEFacesValues，只是它作用于两个单元格之间的接口，并允许我们以我们的弱形式组装接口条款。
- *
- *
+ * 新的对象是FEInterfaceValues对象，它的工作原理类似于FEValues或FEFacesValues，只是它作用于两个单元格之间的接口，并允许我们将接口条款组合成我们的弱形式。
  *
  *
  * @code
@@ -339,9 +322,8 @@
  *
  * <a name="TheAdvectionProblemclass"></a> <h3>The AdvectionProblem
  * class</h3>.
- * 在这个准备工作之后，我们继续进行这个程序的主类，称为AdvectionProblem。
+ * 在这个准备工作之后，我们继续进行本程序的主类，称为AdvectionProblem。
  * 这一切对你来说应该是非常熟悉的。有趣的细节只有在实现集合函数的时候才会出现。
- *
  *
  * @code
  * template <int dim>
@@ -362,9 +344,7 @@
  *   const MappingQ1<dim> mapping;
  *
  * @endcode
- *
- * 此外，我们要使用DG元素。
- *
+ *  此外，我们要使用DG元素。
  *
  * @code
  *   const FE_DGQ<dim> fe;
@@ -376,14 +356,12 @@
  * - 1> quadrature_face;
  *
  * @endcode
- *
- * 接下来的四个成员代表要解决的线性系统。
+ *  接下来的四个成员代表要解决的线性系统。
  * <code>system_matrix</code> and <code>right_hand_side</code> 是由
  * <code>assemble_system()</code>, the <code>solution</code> 产生的，在
  * <code>solve()</code>. The <code>sparsity_pattern</code>
  * 中计算，用于确定 <code>system_matrix</code>
  * 中非零元素的位置。
- *
  *
  * @code
  *   SparsityPattern      sparsity_pattern;
@@ -398,7 +376,6 @@
  *
  * 我们从构造函数开始。 <code>fe</code>
  * 的构造器调用中的1是多项式的度数。
- *
  *
  * @code
  * template <int dim>
@@ -418,20 +395,18 @@
  *
  * 在设置通常的有限元数据结构的函数中，我们首先需要分配DoF。
  *
- *
  * @code
  *   dof_handler.distribute_dofs(fe);
  *
  * @endcode
  *
- * 我们从生成稀疏模式开始。为此，我们首先用系统中出现的耦合物填充一个动态稀疏模式（DynamicSparsityPattern）类型的中间对象。在建立模式之后，这个对象被复制到
+ * 我们从生成稀疏性模式开始。为此，我们首先用系统中出现的耦合物填充一个动态稀疏模式（DynamicSparsityPattern）类型的中间对象。在建立模式之后，这个对象被复制到
  * <code>sparsity_pattern</code> ，可以被丢弃。
  *
  *
- * 为了建立DG离散的稀疏模式，我们可以调用类似于
+ * 为了建立DG离散化的稀疏模式，我们可以调用类似于
  * DoFTools::make_sparsity_pattern, 的函数，它被称为
  * DoFTools::make_flux_sparsity_pattern: 。
- *
  *
  * @code
  *   DynamicSparsityPattern dsp(dof_handler.n_dofs());
@@ -439,9 +414,7 @@
  *   sparsity_pattern.copy_from(dsp);
  *
  * @endcode
- *
- * 最后，我们设置了线性系统的所有组成部分的结构。
- *
+ *  最后，我们设置了线性系统的所有组成部分的结构。
  *
  * @code
  *   system_matrix.reinit(sparsity_pattern);
@@ -454,11 +427,9 @@
  * <a name="Theassemble_systemfunction"></a> <h4>The assemble_system
  * function</h4>。
  *
- * 这里我们看到了与手工组装的主要区别。我们不需要在单元格和面上写循环，而是在调用
+ * 在这里我们看到了与手工组装的主要区别。我们不需要在单元格和面上写循环，而是在调用
  * MeshWorker::mesh_loop()
- * 时包含逻辑，我们只需要指定在每个单元格、每个边界面和每个内部面应该发生什么。这三个任务是由下面的函数里面的lambda函数处理的。
- *
- *
+ * 时包含逻辑，我们只需要指定每个单元格、每个边界面和每个内部面应该发生什么。这三个任务是由下面的函数里面的lambda函数处理的。
  *
  *
  * @code
@@ -471,7 +442,6 @@
  * @endcode
  *
  * 这是每个单元格将被执行的函数。
- *
  *
  * @code
  *   const auto cell_worker = [&](const Iterator &  cell,
@@ -489,9 +459,8 @@
  *
  * @endcode
  *
- * 我们解决的是一个同质方程，因此在单元格项中没有显示出右手。
+ * 我们解决的是一个同质方程，因此在单元项中没有显示出右手。
  * 剩下的就是整合矩阵条目。
- *
  *
  * @code
  *     for (unsigned int point = 0; point < fe_v.n_quadrature_points; ++point)
@@ -592,7 +561,6 @@
  *
  * 这是为边界面调用的函数，包括使用FEFaceValues的正常积分。新的逻辑是决定该术语是进入系统矩阵（流出）还是进入右手边（流入）。
  *
- *
  * @code
  *   const auto boundary_worker = [&](const Iterator &    cell,
  *                                    const unsigned int &face_no,
@@ -638,8 +606,7 @@
  *
  * @endcode
  *
- * 这是在内部面上调用的函数。参数指定了单元格、面和子面的指数（用于自适应细化）。我们只是将它们传递给FEInterfaceValues的reinit()函数。
- *
+ * 这是在内部面调用的函数。参数指定了单元格、面和子面的指数（用于自适应细化）。我们只是将它们传递给FEInterfaceValues的reinit()函数。
  *
  * @code
  *   const auto face_worker = [&](const Iterator &    cell,
@@ -681,9 +648,8 @@
  *
  * @endcode
  *
- * 下面的lambda函数将处理把数据从单元和面组件复制到全局矩阵和右手边。
+ * 下面的lambda函数将处理从单元格和面组件中复制数据到全局矩阵和右侧。
  * 虽然我们不需要AffineConstraints对象，因为在DG离散中没有悬挂的节点约束，但我们在这里使用一个空对象，因为这允许我们使用其`copy_local_to_global`功能。
- *
  *
  * @code
  *   const AffineConstraints<double> constraints;
@@ -707,9 +673,7 @@
  *   CopyData         copy_data;
  *
  * @endcode
- *
- * 在这里，我们最后处理装配。我们传入ScratchData和CopyData对象，以及上面的lambda函数，并指定我们要对内部面进行一次装配。
- *
+ * 在这里，我们最终处理了装配问题。我们传入ScratchData和CopyData对象，以及上面的lambda函数，并指定我们要对内部面进行一次装配。
  *
  * @code
  *   MeshWorker::mesh_loop(dof_handler.begin_active(),
@@ -727,9 +691,8 @@
  *
  * @endcode
  *
- * <a name="Alltherest"></a> <h3>All the rest</h3>
+ * <a name="Alltherest"></a> <h3>All the rest</h3>。
  * 对于这个简单的问题，我们使用最简单的求解器，称为Richardson迭代，它代表了一个简单的缺陷修正。这与一个块状SSOR预调节器相结合，该预调节器使用DG离散化产生的系统矩阵的特殊块状结构。这些块的大小是每个单元的DoF数量。这里，我们使用SSOR预处理，因为我们没有根据流场对DoFs进行重新编号。如果在流的下游方向对DoFs进行重新编号，那么块状高斯-赛德尔预处理（见PreconditionBlockSOR类，放松=1）会做得更好。
- *
  *
  * @code
  * template <int dim>
@@ -739,8 +702,8 @@
  *   SolverRichardson<Vector<double>> solver(solver_control);
  *
  * @endcode
- *  这里我们创建了预处理程序。
  *
+ * 这里我们创建了预处理程序。
  *
  * @code
  *   PreconditionBlockSSOR<SparseMatrix<double>> preconditioner;
@@ -755,7 +718,6 @@
  * @endcode
  *
  * 在这些准备工作之后，我们就可以启动线性求解器了。
- *
  *
  * @code
  *   solver.solve(system_matrix, solution, right_hand_side, preconditioner);
@@ -779,7 +741,6 @@
  * $H^1_\beta$ 中，即在方向 $\beta$
  * 中的导数是可方整的函数空间）。
  *
- *
  * @code
  * template <int dim>
  * void AdvectionProblem<dim>::refine_grid()
@@ -787,16 +748,14 @@
  * @endcode
  *
  * <code>DerivativeApproximation</code>
- * 类计算梯度的精度为浮点。这就足够了，因为它们是近似的，只作为细化的指标。
- *
+ * 类将梯度计算为浮点精度。这就足够了，因为它们是近似的，只作为细化的指标。
  *
  * @code
  *   Vector<float> gradient_indicator(triangulation.n_active_cells());
  *
  * @endcode
  *
- * 现在，近似梯度被计算出来了
- *
+ * 现在计算出了近似梯度
  *
  * @code
  *   DerivativeApproximation::approximate_gradient(mapping,
@@ -805,8 +764,7 @@
  *                                                 gradient_indicator);
  *
  * @endcode
- *
- * 并且它们被单元格按系数 $h^{1+d/2}$ 进行缩放。
+ *  并且它们被单元格按系数 $h^{1+d/2}$ 进行缩放。
  *
  * @code
  *   unsigned int cell_no = 0;
@@ -816,8 +774,7 @@
  *
  * @endcode
  *
- * 最后它们作为细化指标。
- *
+ * 最后他们作为细化指标。
  *
  * @code
  *   GridRefinement::refine_and_coarsen_fixed_number(triangulation,
@@ -831,9 +788,8 @@
  *
  * @endcode
  *
- * 这个程序的输出包括一个自适应细化网格的vtk文件和数值解。最后，我们还用
+ * 这个程序的输出包括一个自适应细化网格和数值解的vtk文件。最后，我们还用
  * VectorTools::integrate_difference(). 计算了解的L-无穷大规范。
- *
  *
  * @code
  * template <int dim>
@@ -870,9 +826,7 @@
  *
  *
  * @endcode
- *
- * 下面的 <code>run</code> 函数与之前的例子类似。
- *
+ *  以下 <code>run</code> 函数与之前的例子类似。
  *
  * @code
  * template <int dim>
@@ -908,10 +862,8 @@
  *
  *
  * @endcode
- *
- * 下面的 <code>main</code>
- * 函数与以前的例子也类似，不需要注释。
- *
+ *  下面的 <code>main</code>
+ * 函数与之前的例子也类似，不需要注释。
  *
  * @code
  * int main()
@@ -951,7 +903,6 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
  *
  * 这个程序的输出包括控制台输出和vtk格式的解决方案。
  * @code
@@ -1003,8 +954,8 @@
  * alt="">
  *
  *  <a name="dg-vs-cg"></a><a name="Whyusediscontinuouselements"></a><h3>Why
- * use discontinuous elements</h3> 。
- * 在这个程序中，我们使用了不连续的元素。这是一个合理的问题，为什么不简单地使用正常的、连续的元素呢？当然，对于每一个有数值方法背景的人来说，答案是显而易见的：连续Galerkin（cG）方法对于传输方程来说是不稳定的，除非特别增加稳定项。然而，DG方法<i>is</i>则是稳定的。用目前的程序来说明这一点并不困难；事实上，只需要做以下一些小的修改就可以了。
+ * use discontinuous elements</h3>
+ * 在这个程序中，我们使用了不连续的元素。这是一个合理的问题，为什么不简单地使用正常的、连续的元素呢？当然，对于每一个有数值方法背景的人来说，答案是显而易见的：连续Galerkin（cG）方法对于传输方程来说是不稳定的，除非特别添加稳定项。然而，DG方法<i>is</i>则是稳定的。用目前的程序来说明这一点并不困难；事实上，只需要做以下一些小的修改就可以了。
  *
  * 将元素改为FE_Q而不是FE_DGQ。
  *
@@ -1034,22 +985,20 @@
  * 如果人们出于某种原因想使用连续元素，有许多策略可以稳定cG方法。讨论这些方法超出了本教程的范围；例如，感兴趣的读者可以看一下
  * step-31 。
  *
- *
- * <a name="extensions"></a><a
+ *   <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
  * 。
- *
- * 鉴于在这种情况下确切的解决方案是已知的，进一步扩展的一个有趣的途径是确认这个程序的收敛顺序。在目前的情况下，解是不光滑的，因此我们不能期望得到特别高的收敛阶数，即使我们使用更高阶元素。但是，即使解<i>is</i>是光滑的，该方程也不是椭圆的，因此并不清楚我们应该获得与最优插值估计相等的收敛阶数（例如，通过使用二次元，我们将获得
- * $h^3$ 在 $L^2$ 准则下的收敛）。
- * 事实上，对于双曲方程，理论预测常常表明，最好的希望是比插值估计值低二分之一的阶。例如，对于流线扩散法（此处用于稳定传输方程解的DG法的替代方法），我们可以证明，对于度数为
+ * 鉴于在这种情况下精确的解是已知的，进一步扩展的一个有趣的领域是确认这个程序的收敛顺序。在目前的情况下，解是不光滑的，因此我们不能期望得到特别高的收敛顺序，即使我们使用高阶元素。但是，即使解<i>is</i>是光滑的，该方程也不是椭圆的，因此并不清楚我们应该获得与最优插值估计相等的收敛阶数（例如，我们可以通过使用二次元得到
+ * $h^3$ 准则的收敛）。
+ * 事实上，对于双曲方程，理论预测常常表明，最好的希望是低于插值估计值二分之一的阶。例如，对于流线扩散法（此处用于稳定传输方程解的DG法的替代方法），我们可以证明，对于度数为
  * $p$ 的元素，在任意网格上的收敛顺序为 $p+\frac 12$
  * 。虽然在均匀细化的网格上观察到的顺序经常是 $p+1$
- * ，但我们可以构建所谓的Peterson网格，在这些网格上实际上达到了更差的理论约束。这应该是比较容易验证的，例如使用
+ * ，但我们可以构造所谓的Peterson网格，在这些网格上实际上达到了更差的理论界限。这应该是比较容易验证的，例如使用
  * VectorTools::integrate_difference 函数。
  * 一个不同的方向是观察运输问题的解决往往具有不连续性，因此我们<i>bisect</i>在每个坐标方向的每个单元的网格可能不是最佳的。相反，一个更好的策略是只在平行于不连续的方向上切割单元。这被称为<i>anisotropic
  * mesh refinement</i>，是 step-30 的主题。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-12.cc"  。
+*<a name="PlainProg"></a><h1> The plain program</h1>  @include "step-12.cc"
  *
  */
 

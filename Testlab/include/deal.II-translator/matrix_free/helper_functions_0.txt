@@ -1,3 +1,0 @@
-include/deal.II-translator/matrix_free/helper_functions_0.txt
-[0.x.0]
-

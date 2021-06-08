@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-79_0.txt
 /**
-  @page step_79 The step-79 tutorial program  
+  @page step_79 The step-79 tutorial program 
 * 本教程依赖于  step-8  ,  step-15  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -25,7 +25,7 @@
         <li><a href="#Constructorandsetupfunctions">Constructor and set-up functions</a><a href="#Constructorandsetupfunctions">Constructor and set-up functions</a>
         <li><a href="#Settingupblockmatricesandvectors">Setting up block matrices and vectors</a><a href="#Settingupblockmatricesandvectors">Setting up block matrices and vectors</a>
         <li><a href="#Creatingthefiltermatrix">Creating the filter matrix</a><a href="#Creatingthefiltermatrix">Creating the filter matrix</a>
-        <li><a href="#AssemblingtheNewtonmatrix">Assembling the Newton matrix</a> ]<a href="#AssemblingtheNewtonmatrix">Assembling the Newton matrix</a>
+        <li><a href="#AssemblingtheNewtonmatrix">Assembling the Newton matrix</a><a href="#AssemblingtheNewtonmatrix">Assembling the Newton matrix</a>
         <li><a href="#SolvingtheNewtonlinearsystem">Solving the Newton linear system</a><a href="#SolvingtheNewtonlinearsystem">Solving the Newton linear system</a>
         <li><a href="#Detailsoftheoptimizationalgorithm">Details of the optimization algorithm</a><a href="#Detailsoftheoptimizationalgorithm">Details of the optimization algorithm</a>
       <ul>
@@ -52,7 +52,7 @@
 </ol> </td> </tr> </table>
 @endhtmlonly
 *<a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
-* 
+
 
 * 弹性介质的拓扑优化是一种用于优化承受某种载荷的结构的技术。理想情况下，我们希望通过选择一个放置材料的区域 $E$ ，使放置在结构上的最大应力最小。换句话说，@f[
   \text{minimize}\| \boldsymbol{\sigma} (\mathbf{u}) \|_\infty
@@ -62,8 +62,8 @@
   \text{and } \nabla \cdot \boldsymbol{\sigma} + \mathbf{F} = \mathbf{0}.
 @f] 。
 * 这里， $\boldsymbol{\sigma} = \mathbf{C} : \boldsymbol{\varepsilon}(\mathbf{u})$ 是由外力 $\mathbf F$ 引起的身体内的应力，为了简单起见，我们假设材料是线性弹性的，因此 $\mathbf{C}$ 是应力-应变张量， $\boldsymbol{\varepsilon}(\mathbf{u})=\frac{1}{2} (\nabla \mathbf{u} + (\nabla\mathbf{u})^T)$ 是小变形应变作为位移的函数 $\mathbf{u}$  。
-* 
-* - 关于线性弹性的更多信息，见 step-8 和 step-17 。在上面的表述中， $V_\text{max}$ 是我们愿意提供的建造物体的最大材料量。最后一个约束是与应力 $\boldsymbol{\sigma}$ 和力 $\mathbf F$ 有关的偏微分方程，它只是稳态力的平衡。
+*
+* - 关于线性弹性的更多信息，请参见 step-8 和 step-17 。在上面的表述中， $V_\text{max}$ 是我们愿意提供的建造物体的最大材料量。最后一个约束是与应力 $\boldsymbol{\sigma}$ 和力 $\mathbf F$ 有关的偏微分方程，它只是稳态力的平衡。
 * 也就是说，上面的无穷大准则造成了一个问题：作为材料位置的函数，这个目标函数必然是不可微分的，使得优化的前景相当暗淡。因此，生态优化的一个常见方法是通过优化一个相关的问题找到一个近似的解决方案：我们希望最小化应变能量。这是对物体因其变形而储存的势能的衡量，但也可以作为对结构上总变形的衡量。
 * @f[
   \text{minimize  } \int_E \frac{1}{2}\boldsymbol{\sigma} : \boldsymbol{\varepsilon} dV
@@ -74,11 +74,11 @@
 @f] 。
 * 目标函数的值是用有限元方法计算的，其中的解决方案是位移。这被放置在一个非线性求解器的循环中，求解的矢量表示材料的位置。
 * <a name="SolidIsotropicMaterialwithPenalization"></a><h3>Solid Isotropic Material with Penalization</h3> 。
-* 
+*
 
-* 在实际操作中，我们只能建立材料在任何给定点上都存在或不存在的物体。
-* 
-* 也就是说，我们会有一个指示函数 $\rho_E(\mathbf{x})\in \{0,1\}$ 来描述材料充满的区域，并且我们想通过优化问题来找到这个指示函数。在这种情况下，优化问题就变成了组合问题，而且解决起来非常昂贵。相反，我们使用一种叫做Solid Isotropic Material with Penalization，或SIMP的方法。  @cite Bendse2004  
+* 在实际操作中，我们只能建造一些物体，在这些物体中，材料要么存在，要么不存在，在任何给定的点上都是如此。
+*
+* 也就是说，我们会有一个指示函数 $\rho_E(\mathbf{x})\in \{0,1\}$ 来描述材料填充的区域，并且我们想通过优化问题来找到它。在这种情况下，优化问题就变成了组合问题，而且解决起来非常昂贵。相反，我们使用一种叫做Solid Isotropic Material with Penalization，或SIMP的方法。   @cite Bendse2004 
 * SIMP方法是基于允许材料存在于密度 $\rho$ 在0和1之间的位置的想法。密度为0表明材料不存在，它不是结构的一部分，而密度为1表明材料存在。0和1之间的值并不反映我们在现实世界中可以创造的设计，但允许我们将组合问题变成一个连续问题。然后我们看一下密度值 $\rho$ ，约束条件是 $0 < \rho_{\min} \leq \rho \leq 1$  。最小值 $\rho_{\min}$ ，通常选择在 $10^{-3}$ 左右，避免了出现无限应变能量的可能性，但小到足以提供准确的结果。
 * 这个 "密度 "对介质弹性的影响的直接应用是将介质的刚度张量 $\mathbf{C}_0$ 简单地乘以给定的密度，即 $\mathbf{C} = \rho \mathbf{C}_0$ 。然而，这种方法经常给出密度值离0和1都很远的最佳解决方案。做到这一点的简单而有效的方法是将刚度张量乘以密度，并将其提高到某个整数的惩罚参数 $p$ ，这样 $\mathbf{C} = \rho^p \mathbf{C}_0$ 。这使得密度值离0或1更远的时候就没有效果了。已经证明，使用 $p=3$ 足够高，可以产生'黑白'的解决方案：也就是说，我们得到的最佳解决方案中，材料要么存在，要么不存在于所有点。
 * 更多的材料应该总是提供一个具有较低应变能量的结构，因此inequality约束可以被视为一个等式，其中使用的总体积是最大体积。
@@ -119,15 +119,15 @@
   = \int_{\partial \Omega} \mathbf{t} \cdot \mathbf{u} d\partial\Omega,
 @f]，这是我们从这一点出发考虑的管理方程的最终形式。
 *<a name="Makingthesolutionmeshindependent"></a><h3>Making the solution mesh-independent</h3>。
-* 
+*
 
 * 通常情况下，拓扑优化问题的解决方案是依赖于网格的，因此该问题是不成立的。这是因为随着网格的进一步细化，往往会形成分形结构。随着网格分辨率的提高，最优解通常会获得越来越小的结构。对于这个问题，有一些竞争性的解决方法，但对于一阶优化来说，最流行的是灵敏度滤波器，而二阶优化方法则倾向于使用密度滤波器。
 * 由于滤波器会影响应变能量（即目标函数）的梯度和Hessian，滤波器的选择对问题的解决有影响。作为二阶方法的一部分，密度滤波器的工作原理是引入一个未经过滤的密度，我们称之为 $\varrho$ ，然后要求密度是未经过滤的密度的卷积：@f[
   \rho = H(\varrho).
 @f]这里， $H$ 是一个算子，因此 $\rho(\mathbf{x})$ 是 $\varrho$ 在 $\mathbf{x}$ 周围地区的某种平均值。
-* 
+*
 * -即，它是 $\varrho$ 的平滑版本。
-* 这可以防止跳票；过滤器的半径允许用户为我们寻找的最佳结构定义一个有效的最小光束宽度。
+* 这可以防止棋盘游戏；过滤器的半径允许用户为我们寻找的最佳结构定义一个有效的最小光束宽度。
 *  <div style="text-align:center;">
   <img src="https://www.dealii.org/images/steps/developer/step-79.checkerboard.png"
        alt="Checkerboarding occurring in an MBB Beam">
@@ -1424,7 +1424,7 @@ prove to be more efficient.
        coupling[unfiltered_density_multiplier<dim>][density<dim>] =
          DoFTools::always;
 * 
-        [4.x.0] 
+       // Coupling for displacement 
 * 
        for (unsigned int i = 0; i < dim; ++i)
          {
@@ -1437,7 +1437,7 @@ prove to be more efficient.
              }
          }
 * 
-        [4.x.1] 
+       // Coupling for slack variables 
        coupling[density_lower_slack<dim>][density_lower_slack<dim>] =
          DoFTools::always;
        coupling[density_lower_slack<dim>][density_upper_slack<dim>] =
@@ -2216,7 +2216,7 @@ prove to be more efficient.
 * 
 * 
 @code
-                      [4.x.2] 
+                     // Equation 1 
                      cell_matrix(i, j) +=
                        fe_values.JxW(q_point)
                        (
@@ -2365,7 +2365,7 @@ prove to be more efficient.
                                 (old_displacement_multiplier_symmgrads[q_point]
                                  displacement_phi_j_symmgrad)));
 * 
-                      [4.x.3] 
+                     // Equation 2 
                      cell_matrix(i, j) +=
                        fe_values.JxW(q_point)
                        (density_penalty_exponent
@@ -2390,11 +2390,7 @@ prove to be more efficient.
 * 
                        );
 * 
-                     /* Equation 3, which has to do with the filter and which is
-                      calculated elsewhere.
-* 
-[0.x.1] Equation 3, which has to do with the filter and which is
-                      calculated elsewhere./
+                     // Equation 3, which has to do with the filter and which is calculated elsewhere. 
                      cell_matrix(i, j) +=
                        fe_values.JxW(q_point)
                        (-1 unfiltered_density_phi_i
@@ -2402,7 +2398,7 @@ prove to be more efficient.
                         unfiltered_density_phi_i upper_slack_multiplier_phi_j);
 * 
  
-                      [4.x.4] 
+                     // Equation 4: Primal feasibility 
                      cell_matrix(i, j) +=
                        fe_values.JxW(q_point)
                        (
@@ -2429,7 +2425,7 @@ prove to be more efficient.
                                 (displacement_phi_j_symmgrad
                                  displacement_multiplier_phi_i_symmgrad)));
 * 
-                      [4.x.5] 
+                     // Equation 5: Primal feasibility 
                      cell_matrix(i, j) +=
 * 
 
@@ -2530,7 +2526,7 @@ prove to be more efficient.
 * 
 - lower_slack_phi_j);
 * 
-                      [4.x.6] 
+                     // Equation 6: Primal feasibility 
                      cell_matrix(i, j) +=
 * 
 
@@ -2631,22 +2627,16 @@ prove to be more efficient.
 * 
 - upper_slack_phi_j);
 * 
-                     /* Equation 7: Primal feasibility
+                     // Equation 7: Primal feasibility
 * 
-- the part with the filter
-                      is added later
-* 
-[0.x.2] Equation 7: Primal feasibility
-* 
-- the part with the filter
-                      is added later/
+- the part with the filter is added later 
                      cell_matrix(i, j) +=
 * 
 -1 fe_values.JxW(q_point)
                                           unfiltered_density_multiplier_phi_i
                                           (density_phi_j);
 * 
-                      [4.x.7] 
+                     // Equation 8: Complementary slackness 
                      cell_matrix(i, j) +=
                        fe_values.JxW(q_point)
                        (lower_slack_phi_i lower_slack_multiplier_phi_j
@@ -2655,7 +2645,7 @@ prove to be more efficient.
                             old_lower_slack_multiplier_values[q_point] /
                             old_lower_slack_values[q_point]);
 * 
-                      [4.x.8] 
+                     // Equation 9: Complementary slackness 
                      cell_matrix(i, j) +=
                        fe_values.JxW(q_point)
                        (upper_slack_phi_i upper_slack_multiplier_phi_j
@@ -3114,21 +3104,9 @@ prove to be more efficient.
                    fe_values[density_upper_slack_multipliers<dim>].value(
                      i, q_point);
 * 
-                 /* Equation 1: This equation, along with equations
-                  2 and 3, are the variational derivatives of the
-                  Lagrangian with respect to the decision
-                  variables
+                 // Equation 1: This equation, along with equations 2 and 3, are the variational derivatives of the Lagrangian with respect to the decision variables
 * 
-- the density, displacement, and
-                  unfiltered density.
-* 
-[0.x.3] Equation 1: This equation, along with equations
-                  2 and 3, are the variational derivatives of the
-                  Lagrangian with respect to the decision
-                  variables
-* 
-- the density, displacement, and
-                  unfiltered density./
+- the density, displacement, and unfiltered density. 
                  cell_rhs(i) +=
 * 
 
@@ -3225,11 +3203,7 @@ prove to be more efficient.
                     density_phi_i
                       old_unfiltered_density_multiplier_values[q_point]);
 * 
-                 /* Equation 2; the boundary terms will be added further down
-                  below.
-* 
-[0.x.4] Equation 2; the boundary terms will be added further down
-                  below./
+                 // Equation 2; the boundary terms will be added further down below. 
                  cell_rhs(i) +=
 * 
 
@@ -3317,7 +3291,7 @@ prove to be more efficient.
                        (old_displacement_multiplier_symmgrads[q_point]
                         displacement_phi_i_symmgrad)));
 * 
-                  [4.x.9] 
+                 // Equation 3 
                  cell_rhs(i) +=
 * 
 
@@ -3488,15 +3462,7 @@ prove to be more efficient.
 * 
  
 * 
-                 /* Equation 4; boundary term will again be dealt
-                  with below. This equation being driven to 0
-                  ensures that the elasticity equation is met as
-                  a constraint.
-* 
-[0.x.5] Equation 4; boundary term will again be dealt
-                  with below. This equation being driven to 0
-                  ensures that the elasticity equation is met as
-                  a constraint./
+                 // Equation 4; boundary term will again be dealt with below. This equation being driven to 0 ensures that the elasticity equation is met as a constraint. 
                  cell_rhs(i) +=
 * 
 -1 fe_values.JxW(q_point)
@@ -3509,13 +3475,7 @@ prove to be more efficient.
                                     (displacement_multiplier_phi_i_symmgrad
                                      old_displacement_symmgrads[q_point])));
 * 
-                 /* Equation 5: This equation sets the lower slack
-                  variable equal to the unfiltered density,
-                  giving a minimum density of 0.
-* 
-[0.x.6] Equation 5: This equation sets the lower slack
-                  variable equal to the unfiltered density,
-                  giving a minimum density of 0./
+                 // Equation 5: This equation sets the lower slack variable equal to the unfiltered density, giving a minimum density of 0. 
                  cell_rhs(i) += fe_values.JxW(q_point)
                                 (lower_slack_multiplier_phi_i
                                  (old_unfiltered_density_values[q_point]
@@ -3523,13 +3483,7 @@ prove to be more efficient.
 -
                                   old_lower_slack_values[q_point]));
 * 
-                 /* Equation 6: This equation sets the upper slack
-                  variable equal to one minus the unfiltered
-                  density.
-* 
-[0.x.7] Equation 6: This equation sets the upper slack
-                  variable equal to one minus the unfiltered
-                  density./
+                 // Equation 6: This equation sets the upper slack variable equal to one minus the unfiltered density. 
                  cell_rhs(i) += fe_values.JxW(q_point)
                                 (upper_slack_multiplier_phi_i
                                  (1
@@ -3539,17 +3493,7 @@ prove to be more efficient.
 -
                                   old_upper_slack_values[q_point]));
 * 
-                 /* Equation 7: This is the difference between the
-                  density and the filter applied to the
-                  unfiltered density. This being driven to 0 by
-                  the Newton steps ensures that the filter is
-                  applied correctly.
-* 
-[0.x.8] Equation 7: This is the difference between the
-                  density and the filter applied to the
-                  unfiltered density. This being driven to 0 by
-                  the Newton steps ensures that the filter is
-                  applied correctly./
+                 // Equation 7: This is the difference between the density and the filter applied to the unfiltered density. This being driven to 0 by the Newton steps ensures that the filter is applied correctly. 
                  cell_rhs(i) += fe_values.JxW(q_point)
                                 (unfiltered_density_multiplier_phi_i
                                  (old_density_values[q_point]
@@ -3557,15 +3501,7 @@ prove to be more efficient.
 -
                                   filtered_unfiltered_density_values[q_point]));
 * 
-                 /* Equation 8: This along with equation 9 give the
-                  requirement that s*z = \alpha for the barrier
-                  size alpha, and gives complementary slackness
-                  from KKT conditions when \alpha goes to 0.
-* 
-[0.x.9] Equation 8: This along with equation 9 give the
-                  requirement that s*z = \alpha for the barrier
-                  size alpha, and gives complementary slackness
-                  from KKT conditions when \alpha goes to 0./
+                 // Equation 8: This along with equation 9 give the requirement that s*z = \alpha for the barrier size alpha, and gives complementary slackness from KKT conditions when \alpha goes to 0. 
                  cell_rhs(i) +=
 * 
 
@@ -3651,7 +3587,7 @@ prove to be more efficient.
 -
                      barrier_size / old_lower_slack_values[q_point]));
 * 
-                  [4.x.10] 
+                 // Equation 9 
                  cell_rhs(i) +=
 * 
 
@@ -4424,7 +4360,7 @@ prove to be more efficient.
 * 
              if (is_right_handed_cell)
                {
-                  [4.x.11] 
+                 // Write one side at z = 0. 
                  stlfile << "   facet normal " << 0.000000e+00 << " "
                          << 0.000000e+00 << " " <<
 * 
@@ -4452,7 +4388,7 @@ prove to be more efficient.
                  stlfile << "      endloop\n";
                  stlfile << "   endfacet\n";
 * 
-                  [4.x.12] 
+                 // Write one side at z = height. 
                  stlfile << "   facet normal " << 0.000000e+00 << " "
                          << 0.000000e+00 << " " << 1.000000e+00 << "\n";
                  stlfile << "      outer loop\n";
@@ -4476,9 +4412,9 @@ prove to be more efficient.
                  stlfile << "      endloop\n";
                  stlfile << "   endfacet\n";
                }
-             else  [4.x.13] 
+             else // The cell has a left-handed set up 
                {
-                  [4.x.14] 
+                 // Write one side at z = 0. 
                  stlfile << "   facet normal " << 0.000000e+00 << " "
                          << 0.000000e+00 << " " <<
 * 
@@ -4506,7 +4442,7 @@ prove to be more efficient.
                  stlfile << "      endloop\n";
                  stlfile << "   endfacet\n";
 * 
-                  [4.x.15] 
+                 // Write one side at z = height. 
                  stlfile << "   facet normal " << 0.000000e+00 << " "
                          << 0.000000e+00 << " " << 1.000000e+00 << "\n";
                  stlfile << "      outer loop\n";
@@ -5128,21 +5064,21 @@ individual components of the solution look as follows:
     <img src="https://www.dealii.org/images/steps/developer/step-79.unfiltereddensity.png"
          alt="Unfiltered Density Solution">
   </div>
-</div>  
-* 
+</div> 
+*
 
-* 这些图片表明，我们在这里找到的东西与其他出版物中关于该主题的典型情况是一致的  @cite Bendse2004  。也许更有趣的是，其结果看起来像一座桁架桥（除了我们在桁架的顶部施加负载，而不是像真正的桁架桥那样在底部施加负载，类似于 "甲板桁架 "桥），这表明几个世纪以来一直用于建桥的设计确实是基于我们现在可以证明在某种意义上是最佳的想法。
-* 
+* 这些图片表明，我们在这里发现的情况与在其他关于该主题的出版物 @cite Bendse2004 中通常看到的情况是一致的。也许更有趣的是，其结果看起来像一座桁架桥（除了我们在桁架的顶部施加负载，而不是像真正的桁架桥那样在底部施加负载，类似于 "甲板桁架 "桥），这表明几个世纪以来一直用于建桥的设计确实是基于我们现在可以证明在某种意义上是最佳的想法。
+*
 
-* <a name="Possibilitiesforextensions"></a><h4>Possibilities for extensions</h4> 。
-* 
+*<a name="Possibilitiesforextensions"></a><h4>Possibilities for extensions</h4>
+
 
 * 上面显示的结果花了大约75次迭代才找到，考虑到每次迭代中解决大型线性系统的费用，这是很值得关注的。从演化过程来看，收敛过程确实有快速发生的时候，也有缓慢发生的时候。我们认为这是由于在何时和如何减少边界值方面缺乏精确性，以及我们对优点函数的选择不够理想。在未来，用LOQO障碍更新代替单调还原，以及用MarkovFilter代替优点函数将大大减少必要的迭代次数。
 * 障碍物的减少在收敛的中间阶段最为敏感，这是有问题的，因为我们似乎需要它快速减少，然后缓慢减少，然后又快速减少。
 * 其次，这里使用的线性求解器只是基于SparseDirectUMFPACK类的稀疏直接求解器。这在小问题上效果还不错，但是上面详述的优化问题的表述有相当多的变量，因此线性问题不仅大，而且在很多行中有很多非零项，即使在总体上仍然相对粗糙的网格上也是如此。因此，解算器的时间在计算中占主导地位，必须采用更复杂的方法来解决这个线性系统。
-* 
+*
 
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-79.cc"  
+* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-79.cc"  。
 * */
 
 

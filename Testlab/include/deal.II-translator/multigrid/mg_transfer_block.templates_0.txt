@@ -1,3 +1,0 @@
-include/deal.II-translator/multigrid/mg_transfer_block.templates_0.txt
-[0.x.0]
-

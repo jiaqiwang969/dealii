@@ -1616,7 +1616,7 @@ Other than that, let us comment only on the following aspects:
    template <int dim>
    void PlasticityContactProblem<dim>::setup_system()
    {
-     /* setup dofs and get index sets for locally owned and relevant dofs */
+     // setup dofs and get index sets for locally owned and relevant dofs 
      {
        TimerOutput::Scope t(computing_timer, "Setup: distribute DoFs");
        dof_handler.distribute_dofs(fe);
@@ -1627,7 +1627,7 @@ Other than that, let us comment only on the following aspects:
                                                locally_relevant_dofs);
      }
  
-     /* setup hanging nodes and Dirichlet constraints */
+     // setup hanging nodes and Dirichlet constraints 
      {
        TimerOutput::Scope t(computing_timer, "Setup: constraints");
        constraints_hanging_nodes.reinit(locally_relevant_dofs);
@@ -1643,7 +1643,7 @@ Other than that, let us comment only on the following aspects:
        compute_dirichlet_constraints();
      }
  
-     /* initialization of vectors and the active set */
+     // initialization of vectors and the active set 
      {
        TimerOutput::Scope t(computing_timer, "Setup: vectors");
        solution.reinit(locally_relevant_dofs, mpi_communicator);

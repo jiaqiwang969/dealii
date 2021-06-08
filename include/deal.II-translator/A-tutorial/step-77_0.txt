@@ -1,0 +1,245 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18]
+*  [2.x.2] 
+* [1.x.19] [2.x.3] 
+* [1.x.20][1.x.21][1.x.22]
+* 
+
+* The  [2.x.4]  program solved the following, nonlinear equationdescribing the minimal surface problem:
+* [1.x.23]
+*  [2.x.5]  uses a Newton method, andNewton's method works by repeatedly solving alinearized* problem foran update  [2.x.6] 
+* 
+*  -  called the "search direction"
+* 
+*  - , computing a"step length" [2.x.7] , and then combining them to compute the newguess for the solution via
+* [1.x.24]
+* 
+* In the course of the discussions in  [2.x.8] , we found that it isawkward to compute the step length, and so just settled for simplechoice: Always choose  [2.x.9] . This is of course not efficient:We know that we can only realize Newton's quadratic convergence rateif we eventually are able to choose  [2.x.10] , though we may haveto choose it smaller for the first few iterations where we are stilltoo far away to use this long a step length.
+* Among the goals of this program is therefore to address thisshortcoming. Since line search algorithms are not entirely trivial toimplement, one does as one should do anyway: Import complicatedfunctionality from an external library. To this end, we will make useof the interfaces deal.II has to one of the big nonlinear solverpackages, namely the[KINSOL](https://computing.llnl.gov/projects/sundials/kinsol)sub-package of the[SUNDIALS](https://computing.llnl.gov/projects/sundials)suite. %SUNDIALS is, at its heart, a package meant to solve complexordinary differential equations (ODEs) and differential-algebraicequations (DAEs), and the deal.II interfaces allow for this via theclasses in the SUNDIALS namespace: Notably the  [2.x.11]  and [2.x.12]  classes. But, because that is an important step in thesolution of ODEs and DAEs with implicit methods, %SUNDIALS also has asolver for nonlinear problems called KINSOL, and deal.II has aninterface to it in the form of the  [2.x.13]  class. This iswhat we will use for the solution of our problem.
+* But %SUNDIALS isn't just a convenient way for us to avoid writing aline search algorithm. In general, the solution of nonlinear problemsis quite expensive, and one typically wants to save as much computetime as possible. One way one can achieve this is as follows: Thealgorithm in  [2.x.14]  discretizes the problem and then in everyiteration solves a linear system of the form
+* [1.x.25]
+* where  [2.x.15]  is the residual vector computed using the current vectorof nodal values  [2.x.16] ,  [2.x.17]  is its derivative (called the"Jacobian"), and  [2.x.18]  is the update vector that corresponds tothe function  [2.x.19]  mentioned above. The construction of [2.x.20]  has been thoroughly discussed in  [2.x.21] , as has the way tosolve the linear system in each Newton iteration. So let us focus onanother aspect of the nonlinear solution procedure: Computing  [2.x.22]  isexpensive, and assembling the matrix  [2.x.23]  even more so. Do weactually need to do that in every iteration? It turns out that in manyapplications, this is not actually necessary: These methods often convergeeven if we replace  [2.x.24]  by an approximation  [2.x.25]  and solve
+* [1.x.26]
+* instead, then update
+* [1.x.27]
+* This may require an iteration or two more because our update [2.x.26]  is not quite as good as  [2.x.27] , but itmay still be a win because we don't have to assemble  [2.x.28]  quite asoften.
+* What kind of approximation  [2.x.29]  would we like for  [2.x.30] ? Theorysays that as  [2.x.31]  converges to the exact solution  [2.x.32] , we need toensure that  [2.x.33]  needs to converge to  [2.x.34] .In particular, since  [2.x.35] , a valid choice is [2.x.36] . But so is choosing  [2.x.37]  every, say,fifth iteration  [2.x.38]  and for the other iterations, we choose [2.x.39]  equal to the last computed  [2.x.40] . This is what we will dohere: we will just re-use  [2.x.41]  from theprevious iteration, which may again be what we had used in theiteration before that,  [2.x.42] .
+* This scheme becomes even more interesting if, for the solution of thelinear system with  [2.x.43] , we don't just have to assemble a matrix, butalso compute a good preconditioner. For example, if we were to use asparse LU decomposition via the SparseDirectUMFPACK class, or used ageometric or algebraic multigrid. In those cases, we would also nothave to update the preconditioner, whose computation may have takenabout as long or longer than the assembly of the matrix in the firstplace. Indeed, with this mindset, we should probably think about usingthebest* preconditioner we can think of, even though theirconstruction is typically quite expensive: We will hope to amortizethe cost of computing this preconditioner by applying it to more thanone just one linear solve.
+* The big question is, of course: By what criterion do we decide whetherwe can get away with the approximation  [2.x.44]  based on apreviously computed Jacobian matrix  [2.x.45]  that goes back  [2.x.46] steps, or whether we need to
+* 
+*  -  at least in this iteration
+* 
+*  -  actuallyre-compute the Jacobian  [2.x.47]  and the corresponding preconditioner?This is, like the issue with line search, one that requires anon-trivial amount of code that monitors the convergence of theoverall algorithm. Wecould* implement these sorts of thingsourselves, but we probablyshouldn't*: KINSOL already does that forus. It will tell our code when to "update" the Jacobian matrix.
+* One last consideration if we were to use an iterative solver instead ofthe sparse direct one mentioned above: Not only is it possible to getaway with replacing  [2.x.48]  by some approximation  [2.x.49]  whensolving for the update  [2.x.50] , but one can also ask whether itis necessary to solve the linear system
+* [1.x.28]
+* to high accuracy. The thinking goes like this: While our current solution [2.x.51]  is still far away from  [2.x.52] , why would we solve this linearsystem particularly accurately? The update [2.x.53]  is likely still going to be far awayfrom the exact solution, so why spend much time on solving the linear systemto great accuracy? This is the kind of thinking that underlies algorithmssuch as the "Eisenstat-Walker trick"  [2.x.54]  in which one is givena tolerance to which the linear system above in iteration  [2.x.55]  has to besolved, with this tolerance dependent on the progress in the overallnonlinear solver. As before, one could try to implement this oneself,but KINSOL already provides this kind of information for us
+* 
+*  -  though wewill not use it in this program since we use a direct solver that requiresno solver tolerance and just solves the linear system exactly up toround-off.
+* As a summary of all of these considerations, we could say thefollowing: There is no need to reinvent the wheel. Just like deal.IIprovides a vast amount of finite-element functionality, %SUNDIALS'KINSOL package provides a vast amount of nonlinear solverfunctionality, and we better use it.
+* 
+
+* [1.x.29][1.x.30]
+* 
+
+* KINSOL, like many similar packages, works in a pretty abstract way. Atits core, it sees a nonlinear problem of the form
+* [1.x.31]
+* and constructs a sequence of iterates  [2.x.56]  which, in general, arevectors of the same length as the vector returned by the function [2.x.57] . To do this, there are a few things it needs from the user:
+* 
+*  - A way to resize a given vector to the correct size.
+* 
+*  - A way to evaluate, for a given vector  [2.x.58] , the function  [2.x.59] . This  function is generally called the "residual" operation because the  goal is of course to find a point  [2.x.60]  for which  [2.x.61] ;  if  [2.x.62]  returns a nonzero vector, then this is the  [1.x.32]  (i.e., the "rest", or whatever is "left over"). The function  that will do this is in essence the same as the computation of  the right hand side vector in  [2.x.63] , but with an important difference:  There, the right hand side denoted thenegative* of the residual,  so we have to switch a sign.
+* 
+*  - A way to compute the matrix  [2.x.64]  if that is necessary in the  current iteration, along with possibly a preconditioner or other  data structures (e.g., a sparse decomposition via  SparseDirectUMFPACK if that's what we choose to use to solve a  linear system). This operation will generally be called the  "setup" operation.
+* 
+*  - A way to solve a linear system  [2.x.65]  with whatever  matrix  [2.x.66]  was last computed. This operation will generally  be called the "solve" operation.
+* All of these operations need to be provided to KINSOL by [2.x.67] objects that take the appropriate set of arguments and that generallyreturn an integer that indicates success (a zero return value) orfailure (a nonzero return value). Specifically, the objects we willaccess are the [2.x.68]  [2.x.69]  [2.x.70]  and [2.x.71] member variables. (See the documentation of these variables for theirdetails.) In our implementation, we will use[lambda functions](https://en.cppreference.com/w/cpp/language/lambda)to implement these "callbacks" that in turn can call member functions;KINSOL will then call these callbacks whenever its internal algorithmsthink it is useful.
+* 
+
+* [1.x.33][1.x.34]
+* 
+
+* The majority of the code of this tutorial program is as in  [2.x.72] ,and we will not comment on it in much detail. There is really just oneaspect one has to pay some attention to, namely how to compute  [2.x.73] given a vector  [2.x.74]  on the one hand, and  [2.x.75]  given a vector  [2.x.76] separately. At first, this seems trivial: We just take the`assemble_system()` function and in the one case throw out all codethat deals with the matrix and in the other case with the right handside vector. There: Problem solved.
+* But it isn't quite as simple. That's because the two are notindependent if we have nonzero Dirichlet boundary values, as we dohere. The linear system we want to solve contains both interior andboundary degrees of freedom, and when eliminating those degrees offreedom from those that are truly "free", using for example [2.x.77]  we need to know thematrix when assembling the right hand side vector.
+* Of course, this completely contravenes the original intent: Tonot*
+assemble the matrix if we can get away without it. We solve thisproblem as follows:
+* 
+*  - We set the starting guess for the solution vector,  [2.x.78] , to one  where boundary degrees of freedom already have their correct values.
+* 
+*  - This implies that all updates can have zero updates for these  degrees of freedom, and we can build both residual vectors  [2.x.79]   and Jacobian matrices  [2.x.80]  that corresponds to linear systems whose  solutions are zero in these vector components. For this special  case, the assembly of matrix and right hand side vectors is  independent, and can be broken into separate functions.
+* There is an assumption here that whenever KINSOL asks for a linearsolver with the (approximation of the) Jacobian, that this will be forfor an update  [2.x.81]  (which has zero boundary values), a multipleof which will be added to the solution (which already has the rightboundary values).  This may not be true and if so, we might have torethink our approach. That said, it turns out that in practice this isexactly what KINSOL does when using a Newton method, and so ourapproach is successful.
+* 
+
+*  [1.x.35] [1.x.36]
+*   [1.x.37]  [1.x.38]
+* 
+
+* 
+*  This program starts out like most others with well known include files. Compared to the  [2.x.82]  program from which most of what we do here is copied, the only difference is the include of the header files from which we import the SparseDirectUMFPACK class and the actual interface to KINSOL:
+* 
+
+* 
+*  
+
+* 
+* [1.x.39]
+* 
+*   [1.x.40]  [1.x.41]
+* 
+
+* 
+*  Similarly, the main class of this program is essentially a copy of the one in  [2.x.83] . The class does, however, split the computation of the Jacobian (system) matrix (and its factorization using a direct solver) and residual into separate functions for the reasons outlined in the introduction. For the same reason, the class also has a pointer to a factorization of the Jacobian matrix that is reset every time we update the Jacobian matrix.   
+*   (If you are wondering why the program uses a direct object for the Jacobian matrix but a pointer for the factorization: Every time KINSOL requests that the Jacobian be updated, we can simply write `jacobian_matrix=0;` to reset it to an empty matrix that we can then fill again. On the other hand, the SparseDirectUMFPACK class does not have any way to throw away its content or to replace it with a new factorization, and so we use a pointer: We just throw away the whole object and create a new one whenever we have a new Jacobian matrix to factor.)   
+*   Finally, the class has a timer variable that we will use to assess how long the different parts of the program take so that we can assess whether KINSOL's tendency to not rebuild the matrix and its factorization makes sense. We will discuss this in the "Results" section below.
+* 
+
+* 
+* [1.x.42]
+* 
+*   [1.x.43]  [1.x.44]
+* 
+
+* 
+*  The classes implementing boundary values are a copy from  [2.x.84] :
+* 
+
+* 
+* [1.x.45]
+* 
+*   [1.x.46]  [1.x.47]
+* 
+
+* 
+*   [1.x.48]  [1.x.49]
+* 
+
+* 
+*  The following few functions are also essentially copies of what  [2.x.85]  already does, and so there is little to discuss.
+* 
+
+* 
+* [1.x.50]
+* 
+*   [1.x.51]  [1.x.52]
+* 
+
+* 
+*  The following function is then responsible for assembling and factorizing the Jacobian matrix. The first half of the function is in essence the `assemble_system()` function of  [2.x.86] , except that it does not deal with also forming a right hand side vector (i.e., the residual) since we do not always have to do these operations at the same time.   
+*   We put the whole assembly functionality into a code block enclosed by curly braces so that we can use a  [2.x.87]  variable to measure how much time is spent in this code block, excluding everything that happens in this function after the matching closing brace `}`.
+* 
+
+* 
+* [1.x.53]
+* 
+*  The second half of the function then deals with factorizing the so-computed matrix. To do this, we first create a new SparseDirectUMFPACK object and by assigning it to the member variable `jacobian_matrix_factorization`, we also destroy whatever object that pointer previously pointed to (if any). Then we tell the object to factorize the Jacobian.     
+*   As above, we enclose this block of code into curly braces and use a timer to assess how long this part of the program takes.     
+*   (Strictly speaking, we don't actually need the matrix any more after we are done here, and could throw the matrix object away. A code intended to be memory efficient would do this, and only create the matrix object in this function, rather than as a member variable of the surrounding class. We omit this step here because using the same coding style as in previous tutorial programs breeds familiarity with the common style and helps make these tutorial programs easier to read.)
+* 
+
+* 
+* [1.x.54]
+* 
+*   [1.x.55]  [1.x.56]
+* 
+
+* 
+*  The second part of what `assemble_system()` used to do in  [2.x.88]  is computing the residual vector, i.e., the right hand side vector of the Newton linear systems. We have broken this out of the previous function, but the following function will be easy to understand if you understood what `assemble_system()` in  [2.x.89]  did. Importantly, however, we need to compute the residual not linearized around the current solution vector, but whatever we get from KINSOL. This is necessary for operations such as line search where we want to know what the residual  [2.x.90]  is for different values of  [2.x.91] ; KINSOL in those cases simply gives us the argument to the function  [2.x.92]  and we then compute the residual  [2.x.93]  at this point.   
+*   The function prints the norm of the so-computed residual at the end as a way for us to follow along the progress of the program.
+* 
+
+* 
+* [1.x.57]
+* 
+*   [1.x.58]  [1.x.59]
+* 
+
+* 
+*  Next up is the function that implements the solution of a linear system with the Jacobian matrix. Since we have already factored the matrix when we built the matrix, solving a linear system comes down to applying the inverse matrix to the given right hand side vector: This is what the  [2.x.94]  function does that we use here. Following this, we have to make sure that we also address the values of hanging nodes in the solution vector, and this is done using  [2.x.95]    
+*   The function takes an additional, but unused, argument `tolerance` that indicates how accurately we have to solve the linear system. The meaning of this argument is discussed in the introduction in the context of the "Eisenstat Walker trick", but since we are using a direct rather than an iterative solver, we are not using this opportunity to solve linear systems only inexactly.
+* 
+
+* 
+* [1.x.60]
+* 
+*   [1.x.61]  [1.x.62]
+* 
+
+* 
+*  The following three functions are again simply copies of the ones in  [2.x.96] :
+* 
+
+* 
+* [1.x.63]
+* 
+*   [1.x.64]  [1.x.65]
+* 
+
+* 
+*  The only function thatreally* is interesting in this program is the one that drives the overall algorithm of starting on a coarse mesh, doing some mesh refinement cycles, and on each mesh using KINSOL to find the solution of the nonlinear algebraic equation we obtain from discretization on this mesh. The `refine_mesh()` function above makes sure that the solution on one mesh is used as the starting guess on the next mesh. We also use a TimerOutput object to measure how much time every operation on each mesh costs, and reset the timer at the beginning of each cycle.   
+*   As discussed in the introduction, it is not necessary to solve problems on coarse meshes particularly accurately since these will only solve as starting guesses for the next mesh. As a consequence, we will use a target tolerance of  [2.x.97]  for the  [2.x.98] th mesh refinement cycle.   
+*   All of this is encoded in the first part of this function:
+* 
+
+* 
+* [1.x.66]
+* 
+*  This is where the fun starts. At the top we create the KINSOL solver object and feed it with an object that encodes a number of additional specifics (of which we only change the nonlinear tolerance we want to reach; but you might want to look into what other members the  [2.x.99]  class has and play with them).
+* 
+
+* 
+* [1.x.67]
+* 
+*  Then we have to describe the operations that were already mentioned in the introduction. In essence, we have to teach KINSOL how to (i) resize a vector to the correct size, (ii) compute the residual vector, (iii) compute the Jacobian matrix (during which we also compute its factorization), and (iv) solve a linear system with the Jacobian.           
+*   All four of these operations are represented by member variables of the  [2.x.100]  class that are of type  [2.x.101]  i.e., they are objects to which we can assign a pointer to a function or, as we do here, a "lambda function" that takes the appropriate arguments and returns the appropriate information. By convention, KINSOL wants that functions doing something nontrivial return an integer where zero indicates success. It turns out that we can do all of this in just 25 lines of code.           
+*   (If you're not familiar what "lambda functions" are, take a look at  [2.x.102]  or at the [wikipedia page](https://en.wikipedia.org/wiki/Anonymous_function) on the subject. The idea of lambda functions is that one wants to define a function with a certain set of arguments, but (i) not make it a named functions because, typically, the function is used in only one place and it seems unnecessary to give it a global name; and (ii) that the function has access to some of the variables that exist at the place where it is defined, including member variables. The syntax of lambda functions is awkward, but ultimately quite useful.)           
+*   At the very end of the code block we then tell KINSOL to go to work and solve our problem. The member functions called from the 'residual', 'setup_jacobian', and 'solve_jacobian_system' functions will then print output to screen that allows us to follow along with the progress of the program.
+* 
+
+* 
+* [1.x.68]
+* 
+*  The rest is then just house-keeping: Writing data to a file for visualizing, and showing a summary of the timing collected so that we can interpret how long each operation has taken, how often it was executed, etc:
+* 
+
+* 
+* [1.x.69]
+* [1.x.70][1.x.71]
+* 
+
+* When running the program, you get output that looks like this:
+* [1.x.72]
+* 
+* The way this should be interpreted is most easily explained by looking atthe first few lines of the output on the first mesh:
+* [1.x.73]
+* What is happening is this:
+* 
+*  - In the first residual computation, KINSOL computes the residual to see whether  the desired tolerance has been reached. The answer is no, so it requests the  user program to compute the Jacobian matrix (and the function then also  factorizes the matrix via SparseDirectUMFPACK).
+* 
+*  - KINSOL then instructs us to solve a linear system of the form   [2.x.103]  with this matrix and the previously computed  residual vector.
+* 
+*  - It is then time to determine how far we want to go in this direction,  i.e., do line search. To this end, KINSOL requires us to compute the  residual vector  [2.x.104]  for different step lengths   [2.x.105] . For the first step above, it finds an acceptable  [2.x.106]   after two tries, the second time around it takes three tries.
+* 
+*  - Having found a suitable updated solution  [2.x.107] , the process is  repeated except now KINSOL is happy with the current Jacobian matrix  and does not instruct us to re-build the matrix and its factorization,  and instead asks us to solve a linear system with that same matrix.
+* The program also writes the solution to a VTU file at the endof each mesh refinement cycle, and it looks as follows: [2.x.108] 
+* 
+
+* The key takeaway messages of this program are the following:
+* 
+*  - The solution is the same as the one we computed in  [2.x.109] , i.e., the  interfaces to %SUNDIALS' KINSOL package really did what they were supposed  to do. This should not come as a surprise, but the important point is that  we don't have to spend the time implementing the complex algorithms that  underlie advanced nonlinear solvers ourselves.
+* 
+*  - KINSOL is able to avoid all sorts of operations such as rebuilding the  Jacobian matrix when that is not actually necessary. Comparing the  number of linear solves in the output above with the number of times  we rebuild the Jacobian and compute its factorization should make it  clear that this leads to very substantial savings in terms of compute  times, without us having to implement the intricacies of algorithms  that determine when we need to rebuild this information.
+* [1.x.74][1.x.75][1.x.76]
+* 
+
+* For all but the small problems we consider here, a sparse direct solverrequires too much time and memory
+* 
+*  -  we need an iterative solver likewe use in many other programs. The trade-off between constructing anexpensive preconditioner (say, a geometric or algebraic multigrid method)is different in the current case, however: Since we can re-use the samematrix for numerous linear solves, we can do the same for the preconditionerand putting more work into building a good preconditioner can more easilybe justified than if we used it only for a single linear solve as onedoes for many other situations.
+* But iterative solvers also afford other opportunities. For example (and asdiscussed briefly in the introduction), we may not need to solve tovery high accuracy (small tolerances) in early nonlinear iterations as longas we are still far away from the actual solution. This was the basis of theEisenstat-Walker trick mentioned there.
+* KINSOL provides the function that does the linear solution with a targettolerance that needs to be reached. We ignore it in the program abovebecause the direct solver we use does not need a tolerance and insteadsolves the linear system exactly (up to round-off, of course), but iterativesolvers could make use of this kind of information
+* 
+*  -  and, in fact, should.
+* 
+
+* [1.x.77][1.x.78] [2.x.110] 
+* [0.x.1]

@@ -1,0 +1,6 @@
+[0.x.0]*
+ This is the namespace in which everything in deal.II is. To avoid prefixing every class and function call with the namespace name, the  [2.x.0]  therefore have a  [2.x.1]  at the top of the code.
+*  Throughout the documentation, the namespace prefix is suppressed for brevity.
+
+* 
+* [0.x.1]

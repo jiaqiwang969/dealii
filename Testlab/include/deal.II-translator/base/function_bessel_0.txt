@@ -1,8 +1,0 @@
-include/deal.II-translator/base/function_bessel_0.txt
-[0.x.0]*
-   第一类或正整数阶的贝塞尔函数。   
-* [2.x.0]   
-* [0.x.1]*
-     构造函数。 [2.x.1]必须为非负数。   
-* [0.x.2]
-

@@ -894,10 +894,10 @@ in the <a href="#Results">results section</a> below.
    const double courant_number = 0.15 / std::pow(fe_degree, 1.5);
    enum LowStorageRungeKuttaScheme
    {
-     stage_3_order_3, /* Kennedy, Carpenter, Lewis, 2000 */
-     stage_5_order_4, /* Kennedy, Carpenter, Lewis, 2000 */
-     stage_7_order_4, /* Tselios, Simos, 2007 */
-     stage_9_order_5, /* Kennedy, Carpenter, Lewis, 2000 */
+     stage_3_order_3, // Kennedy, Carpenter, Lewis, 2000 
+     stage_5_order_4, // Kennedy, Carpenter, Lewis, 2000 
+     stage_7_order_4, // Tselios, Simos, 2007 
+     stage_9_order_5, // Kennedy, Carpenter, Lewis, 2000 
    };
    constexpr LowStorageRungeKuttaScheme lsrk_scheme = stage_5_order_4;
  
@@ -2445,7 +2445,7 @@ in the <a href="#Results">results section</a> below.
            const Number bi = factor_solution;
            if (ai == Number())
              {
-               /* DEAL_II_OPENMP_SIMD_PRAGMA */
+               // DEAL_II_OPENMP_SIMD_PRAGMA 
                for (unsigned int i = start_range; i < end_range; ++i)
                  {
                    const Number k_i          = next_ri.local_element(i);
@@ -2455,7 +2455,7 @@ in the <a href="#Results">results section</a> below.
              }
            else
              {
-               /* DEAL_II_OPENMP_SIMD_PRAGMA */
+               // DEAL_II_OPENMP_SIMD_PRAGMA 
                for (unsigned int i = start_range; i < end_range; ++i)
                  {
                    const Number k_i          = next_ri.local_element(i);

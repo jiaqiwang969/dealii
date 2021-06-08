@@ -17,13 +17,11 @@
 
 
 /**
- *
- * @defgroup TrilinosWrappers TrilinosWrappers
- * 本模块中的类是对Trilinos库所提供的功能的包装。它们提供了一个现代的面向对象的接口，与deal.II中其他线性代数类的接口兼容。本组中的所有类和函数都驻留在一个命名空间中
+ *    @defgroup TrilinosWrappers TrilinosWrappers
+ * 本模块中的类是对Trilinos库所提供的功能的封装。它们提供了一个现代面向对象的接口，与deal.II中其他线性代数类的接口兼容。本组中的所有类和函数都驻留在一个命名空间中
  * @p TrilinosWrappers.  。
  * 这些类只有在配置deal.II时检测到有Trilinos安装时才可用。请参考README文件以了解更多相关细节。
  * @author  Martin Kronbichler, Wolfgang Bangerth, 2008
- *
  *
  * @ingroup LAC
  *

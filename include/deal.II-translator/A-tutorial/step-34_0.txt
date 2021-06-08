@@ -1,0 +1,528 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25]
+*  [2.x.2] 
+* [1.x.26]
+*  [2.x.3] 
+* [1.x.27]
+* [1.x.28][1.x.29]
+* 
+
+* [1.x.30][1.x.31]
+* The incompressible motion of an inviscid fluid past a body (forexample air past an airplane wing, or air or water past a propeller) isusually modeled by the Euler equations of fluid dynamics:
+* [1.x.32]where the fluid density  [2.x.4]  and the acceleration  [2.x.5]  dueto external forces are given and the velocity  [2.x.6]  and thepressure  [2.x.7]  are the unknowns. Here  [2.x.8]  is a closed boundedregion representing the body around which the fluid moves.
+* The above equations can be derived from Navier-Stokes equationsassuming that the effects due to viscosity are negligible compared tothose due to the pressure gradient, inertial forces and the externalforces. This is the opposite case of the Stokes equations discussed in [2.x.9]  which are the limit case of dominant viscosity,i.e. where the velocity is so small that inertia forces can beneglected. On the other hand, owing to the assumed incompressibility,the equations are not suited for very high speed gas flows wherecompressibility and the equation of state of the gas have to be takeninto account, leading to the Euler equations of gas dynamics, ahyperbolic system.
+* For the purpose of this tutorial program, we will consider only stationaryflow without external forces:[1.x.33]
+* 
+
+* Uniqueness of the solution of the Euler equations is ensured by adding theboundary conditions[1.x.34]
+* which is to say that the body is at rest in our coordinate systems andis not permeable, and that the fluid has (constant) velocity [2.x.10]  at infinity. An alternative viewpoint is that ourcoordinate system moves along with the body whereas the backgroundfluid is at rest at infinity. Notice that we define the normal [2.x.11]  as the [1.x.35] normal to the domain  [2.x.12] , whichis the opposite of the outer normal to the integration domain.
+* For both stationary and non stationary flow, the solution processstarts by solving for the velocity in the second equation andsubstituting in the first equation in order to find the pressure.The solution of the stationary Euler equations is typically performedin order to understand the behavior of the given (possibly complex)geometry when a prescribed motion is enforced on the system.
+* The first step in this process is to change the frame of reference from acoordinate system moving along with the body to one in which the body movesthrough a fluid that is at rest at infinity. This can be expressed byintroducing a new velocity  [2.x.13]  forwhich we find that the same equations hold (because  [2.x.14] ) and we have boundary conditions[1.x.36]
+* If we assume that the fluid is irrotational, i.e.,  [2.x.15]  in  [2.x.16] , we can represent thevelocity, and consequently also the perturbation velocity, as thegradient of a scalar function:[1.x.37]and so the second part of Euler equations above can be rewrittenas the homogeneous Laplace equation for the unknown  [2.x.17] :[1.x.38]while the momentum equation reduces to Bernoulli's equation that expresses thepressure  [2.x.18]  as a function of the potential  [2.x.19] :[1.x.39]
+* So we can solve the problem by solving the Laplace equation for thepotential.  We recall that the following functions, called fundamentalsolutions of the Laplace equation,
+* [1.x.40]
+* satisfy in a distributional sense the equation:
+* [1.x.41]
+* where the derivative is done in the variable  [2.x.20] . By usingthe usual Green identities, our problem can be written on the boundary [2.x.21]  only. We recall the general definition ofthe second Green %identity:
+* [1.x.42]
+* where  [2.x.22]  is the normal to the surface of  [2.x.23]  pointingoutwards from the domain of integration  [2.x.24] .
+* In our case the domain of integration is the domain [2.x.25] , whose boundary is  [2.x.26] , where the "boundary" at infinity is defined as
+* [1.x.43]
+* In our program the normals are defined as [1.x.44] to the domain [2.x.27] , that is, they are in fact [1.x.45] to the integrationdomain, and some care is required in defining the various integralswith the correct signs for the normals, i.e. replacing  [2.x.28] by  [2.x.29] .
+* If we substitute  [2.x.30]  and  [2.x.31]  in the Green %identity with the solution [2.x.32]  and with the fundamental solution of the Laplace equationrespectively, as long as  [2.x.33]  is chosen in the region [2.x.34] , we obtain:[1.x.46]
+* where the normals are now pointing [1.x.47] the domain ofintegration.
+* Notice that in the above equation, we also have the integrals on theportion of the boundary at  [2.x.35] . Using the boundaryconditions of our problem, we have that  [2.x.36]  is zero atinfinity (which simplifies the integral on  [2.x.37]  on theright hand side).
+* The integral on  [2.x.38]  that appears on the left hand side canbe treated by observing that  [2.x.39]  implies that  [2.x.40]  atinfinity is necessarily constant. We define its value to be [2.x.41] .  It is an easy exercise to prove that
+* [1.x.48]
+* Using this result, we can reduce the above equation only on theboundary  [2.x.42]  using the so-called Single and Double LayerPotential operators:
+* [1.x.49]
+* (The name of these operators comes from the fact that they describe theelectric potential in  [2.x.43]  due to a single thin sheet of chargesalong a surface, and due to a double sheet of charges and anti-charges alongthe surface, respectively.)
+* In our case, we know the Neumann values of  [2.x.44]  on the boundary: [2.x.45] .Consequently,[1.x.50]If we take the limit for  [2.x.46]  tending to  [2.x.47]  ofthe above equation, using well known properties of the single and double layeroperators, we obtain an equation for  [2.x.48]  just on the boundary  [2.x.49]  of [2.x.50] :
+* [1.x.51]
+* which is the Boundary Integral Equation (BIE) we were looking for,where the quantity  [2.x.51]  is the fraction of angle orsolid angle by which the point  [2.x.52]  sees the domain ofintegration  [2.x.53] .
+* In particular, at points  [2.x.54]  where the boundary [2.x.55]  is differentiable (i.e. smooth) we have [2.x.56] , but the value may be smaller or largerat points where the boundary has a corner or an edge.
+* Substituting the single and double layer operators we get:[1.x.52]for two dimensional flows and[1.x.53]for three dimensional flows, where the normal derivatives of the fundamentalsolutions have been written in a form that makes computation easier. In eithercase,  [2.x.57]  is the solution of an integral equation posed entirely on theboundary since both  [2.x.58] .
+* Notice that the fraction of angle (in 2d) or solid angle (in 3d) [2.x.59]  by which the point  [2.x.60]  sees the domain [2.x.61]  can be defined using the double layer potential itself:[1.x.54]
+* The reason why this is possible can be understood if we consider thefact that the solution of a pure Neumann problem is known up to anarbitrary constant  [2.x.62] , which means that, if we set the Neumann datato be zero, then any constant  [2.x.63]  will be a solution.Inserting the constant solution and the Neumann boundary condition in theboundary integral equation, we have
+* [1.x.55]
+* The integral on  [2.x.64]  is unity, see above, so division by the constant  [2.x.65]  gives us the explicitexpression above for  [2.x.66] .
+* While this example program is really only focused on the solution of theboundary integral equation, in a realistic setup one would still need to solvefor the velocities. To this end, note that we have just computed [2.x.67]  for all  [2.x.68] . In the next step, wecan compute (analytically, if we want) the solution  [2.x.69]  in allof  [2.x.70] . To this end, recall that we had[1.x.56]where now we have everything that is on the right hand side ( [2.x.71]  and  [2.x.72]  areintegrals we can evaluate, the normal velocity on the boundary is given, and [2.x.73]  on the boundary we have just computed). Finally, we can then recoverthe velocity as  [2.x.74] .
+* Notice that the evaluation of the above formula for  [2.x.75]  should yield zero as a result, since the integration of theDirac delta  [2.x.76]  in the domain [2.x.77]  is always zero by definition.
+* As a final test, let us verify that this velocity indeed satisfies themomentum balance equation for a stationary flow field, i.e., whether [2.x.78]  where [2.x.79]  for some (unknown) pressure [2.x.80]  and a given constant  [2.x.81] . In other words, we would like to verify thatBernoulli's law as stated above indeed holds. To show this, we use thatthe left hand side of this equation equates to
+* [1.x.57]
+* where we have used that  [2.x.82]  is constant. We would like towrite this expression as the gradient of something (remember that  [2.x.83]  is aconstant). The next step is moreconvenient if we consider the components of the equation individually(summation over indices that appear twice is implied):
+* [1.x.58]
+* because  [2.x.84]  and  [2.x.85] . Next,
+* [1.x.59]
+* Again, the last term disappears because  [2.x.86]  is constant and wecan merge the first and third term into one:
+* [1.x.60]
+* 
+* We now only need to massage that last term a bit more. Using the product rule,we get
+* [1.x.61]
+* The first of these terms is zero (because, again, the summation over  [2.x.87]  gives [2.x.88] , which is zero). The last term can be written as  [2.x.89]  which is in the desired gradientform. As a consequence, we can now finally state that
+* [1.x.62]
+* or in vector form:[1.x.63]or in other words:[1.x.64]Because the pressure is only determined up to a constant (it appears only witha gradient in the equations), an equally valid definition is[1.x.65]This is exactly Bernoulli's law mentioned above.
+* 
+
+* [1.x.66][1.x.67]
+* 
+
+* Numerical approximations of Boundary Integral Equations (BIE) are commonlyreferred to as the boundary element method or panel method (the latterexpression being used mostly in the computational fluid dynamics community).The goal of the following test problem is to solve the integralformulation of the Laplace equation with Neumann boundary conditions,using a circle and a sphere respectively in two and three spacedimensions, illustrating along the way the features that allow one totreat boundary element problems almost as easily as finite elementproblems using the deal.II library.
+* To this end, let  [2.x.90]  be a subdivision of themanifold  [2.x.91]  into  [2.x.92]  line segments if  [2.x.93] , or  [2.x.94] quadrilaterals if  [2.x.95] . We will call each individual segment orquadrilateral an [1.x.68] or [1.x.69], independently of thedimension  [2.x.96]  of the surrounding space  [2.x.97] .We define the finite dimensional space  [2.x.98]  as[1.x.70]with basis functions  [2.x.99]  for which we will use the usual FE_Qfinite element, with the catch that this time it is defined on a manifold ofcodimension one (which we do by using the second template argument that isusually defaulted to equal the first; here, we will create objects [2.x.100] dimensional cells in a  [2.x.101]  dimensional space).An element  [2.x.102]  of  [2.x.103]  is uniquelyidentified by the vector  [2.x.104]  of its coefficients [2.x.105] , that is:[1.x.71]where summation  is implied over repeated indexes. Note that we could usediscontinuous elements here &mdash; in fact, there is no real reason to usecontinuous ones since the integral formulation does notimply any derivatives on our trial functions so continuity is unnecessary,and often in the literature only piecewise constant elements are used.
+* [1.x.72][1.x.73]
+* 
+
+* By far, the most common approximation of boundary integral equationsis by use of the collocation based boundary element method.
+* This method requires the evaluation of the boundary integral equationat a number of collocation points which is equal to the number ofunknowns of the system. The choice of these points is a delicatematter, that requires a careful study. Assume that these points areknown for the moment, and call them  [2.x.106]  with  [2.x.107] .
+* The problem then becomes:Given the datum  [2.x.108] , find a function  [2.x.109]  in  [2.x.110] such that the following  [2.x.111]  equations are satisfied:
+* [1.x.74]
+* where the quantity  [2.x.112]  is the fraction of (solid)angle by which the point  [2.x.113]  sees the domain  [2.x.114] , asexplained above, and we set  [2.x.115]  to be zero.  If the supportpoints  [2.x.116]  are chosen appropriately, then the problem canbe written as the following linear system:
+* [1.x.75]
+* where
+* [1.x.76]
+* From a linear algebra point of view, the best possible choice of thecollocation points is the one that renders the matrix [2.x.117]  the most diagonally dominant. A natural choiceis then to select the  [2.x.118]  collocation points to be thesupport points of the nodal basis functions  [2.x.119] . In thatcase,  [2.x.120] , and as a consequence the matrix [2.x.121]  is diagonal with entries[1.x.77]where we have used that  [2.x.122]  for the usual Lagrangeelements.With this choice of collocation points, the computation of the entriesof the matrices  [2.x.123] ,  [2.x.124]  and of the right hand side [2.x.125]  requires the evaluation of singular integrals on theelements  [2.x.126]  of the triangulation  [2.x.127] .As usual in these cases, all integrations are performed on a referencesimple domain, i.e., we assume that each element  [2.x.128]  of [2.x.129]  can be expressed as a linear (in two dimensions) orbi-linear (in three dimensions) transformation of the referenceboundary element  [2.x.130] , and we perform the integrations after achange of variables from the real element  [2.x.131]  to the referenceelement  [2.x.132] .
+* [1.x.78][1.x.79]
+* 
+
+* In two dimensions it is not necessary to compute the diagonal elements [2.x.133]  of the system matrix, since, even if the denominatorgoes to zero when  [2.x.134] , the numerator is alwayszero because  [2.x.135]  and  [2.x.136]  areorthogonal (on our polygonal approximation of the boundary of  [2.x.137] ), andthe only singular integral arises in the computationof  [2.x.138]  on the i-th element of  [2.x.139] :[1.x.80]
+* This can be easily treated by the QGaussLogR quadratureformula.
+* Similarly, it is possible to use the QGaussOneOverR quadrature formulato perform the singular integrations in three dimensions. Theinterested reader will find detailed explanations on how thesequadrature rules work in their documentation.
+* The resulting matrix  [2.x.140]  is full. Depending on itssize, it might be convenient to use a direct solver or an iterativeone. For the purpose of this example code, we chose to use only aniterative solver, without providing any preconditioner.
+* If this were a production code rather than a demonstration of principles,there are techniques that are available to not store full matrices but insteadstore only those entries that are large and/or relevant. In the literature onboundary element methods, a plethora of methods is available that allows todetermine which elements are important and which are not, leading to asignificantly sparser representation of these matrices that also facilitatesrapid evaluations of the scalar product between vectors and matrices. This notbeing the goal of this program, we leave this for more sophisticatedimplementations.
+* 
+
+* [1.x.81][1.x.82]
+* 
+
+* The implementation is rather straight forward. The main point that hasn't beenused in any of the previous tutorial programs is that most classes in deal.IIare not only templated on the dimension, but in fact on the dimension of themanifold on which we pose the differential equation as well as the dimensionof the space into which this manifold is embedded. By default, the secondtemplate argument equals the first, meaning for example that we want to solveon a two-dimensional region of two-dimensional space. The triangulation classto use in this case would be  [2.x.141] , which is anequivalent way of writing  [2.x.142] .
+* However, this doesn't have to be so: in the current example, we will forexample want to solve on the surface of a sphere, which is a two-dimensionalmanifold embedded in a three-dimensional space. Consequently, the right classwill be  [2.x.143] , and correspondingly we will use [2.x.144]  as the DoF handler class and [2.x.145]  for finite elements.
+* Some further details on what one can do with things that live oncurved manifolds can be found in the report[1.x.83][1.x.84]. In addition, the [2.x.146]  tutorial program extends what we show here to cases where the equationposed on the manifold is not an integral operator but in fact involvesderivatives.
+* 
+
+* [1.x.85][1.x.86]
+* 
+
+* The testcase we will be solving is for a circular (in 2d) or spherical(in 3d) obstacle. Meshes for these geometries will be read in fromfiles in the current directory and an object of type SphericalManifoldwill then be attached to the triangulation to allow mesh refinementthat respects the continuous geometry behind the discrete initialmesh.
+* For a sphere of radius  [2.x.147]  translating at a velocity of  [2.x.148]  in the  [2.x.149]  direction, the potential reads
+* [1.x.87]
+* see, e.g. J. N. Newman, [1.x.88], 1977,pp. 127. For unit speed and radius, and restricting  [2.x.150]  to lieon the surface of the sphere, [2.x.151] . In the test problem,the flow is  [2.x.152] , so the appropriate exact solution on thesurface of the sphere is the superposition of the above solution withthe analogous solution along the  [2.x.153]  and  [2.x.154]  axes, or  [2.x.155] .
+* 
+
+*  [1.x.89] [1.x.90]
+*   [1.x.91]  [1.x.92]
+* 
+
+* 
+*  The program starts with including a bunch of include files that we will use in the various parts of the program. Most of them have been discussed in previous tutorials already:
+* 
+
+* 
+* [1.x.93]
+* 
+*  And here are a few C++ standard header files that we will need:
+* 
+
+* 
+* [1.x.94]
+* 
+*  The last part of this preamble is to import everything in the dealii namespace into the one into which everything in this program will go:
+* 
+
+* 
+* [1.x.95]
+* 
+*   [1.x.96]  [1.x.97]
+* 
+
+* 
+*  First, let us define a bit of the boundary integral equation machinery.
+* 
+
+* 
+*  The following two functions are the actual calculations of the single and double layer potential kernels, that is  [2.x.156]  and  [2.x.157] . They are well defined only if the vector  [2.x.158]  is different from zero.
+* 
+
+* 
+* [1.x.98]
+* 
+*   [1.x.99]  [1.x.100]
+* 
+
+* 
+*  The structure of a boundary element method code is very similar to the structure of a finite element code, and so the member functions of this class are like those of most of the other tutorial programs. In particular, by now you should be familiar with reading parameters from an external file, and with the splitting of the different tasks into different modules. The same applies to boundary element methods, and we won't comment too much on them, except on the differences.
+* 
+
+* 
+* [1.x.101]
+* 
+*  The only really different function that we find here is the assembly routine. We wrote this function in the most possible general way, in order to allow for easy generalization to higher order methods and to different fundamental solutions (e.g., Stokes or Maxwell).     
+*   The most noticeable difference is the fact that the final matrix is full, and that we have a nested loop inside the usual loop on cells that visits all support points of the degrees of freedom.  Moreover, when the support point lies inside the cell which we are visiting, then the integral we perform becomes singular.     
+*   The practical consequence is that we have two sets of quadrature formulas, finite element values and temporary storage, one for standard integration and one for the singular integration, which are used where necessary.
+* 
+
+* 
+* [1.x.102]
+* 
+*  There are two options for the solution of this problem. The first is to use a direct solver, and the second is to use an iterative solver. We opt for the second option.     
+*   The matrix that we assemble is not symmetric, and we opt to use the GMRES method; however the construction of an efficient preconditioner for boundary element methods is not a trivial issue. Here we use a non preconditioned GMRES solver. The options for the iterative solver, such as the tolerance, the maximum number of iterations, are selected through the parameter file.
+* 
+
+* 
+* [1.x.103]
+* 
+*  Once we obtained the solution, we compute the  [2.x.159]  error of the computed potential as well as the  [2.x.160]  error of the approximation of the solid angle. The mesh we are using is an approximation of a smooth curve, therefore the computed diagonal matrix of fraction of angles or solid angles  [2.x.161]  should be constantly equal to  [2.x.162] . In this routine we output the error on the potential and the error in the approximation of the computed angle. Notice that the latter error is actually not the error in the computation of the angle, but a measure of how well we are approximating the sphere and the circle.     
+*   Experimenting a little with the computation of the angles gives very accurate results for simpler geometries. To verify this you can comment out, in the read_domain() method, the tria.set_manifold(1, manifold) line, and check the alpha that is generated by the program. By removing this call, whenever the mesh is refined new nodes will be placed along the straight lines that made up the coarse mesh, rather than be pulled onto the surface that we really want to approximate. In the three dimensional case, the coarse grid of the sphere is obtained starting from a cube, and the obtained values of alphas are exactly  [2.x.163]  on the nodes of the faces,  [2.x.164]  on the nodes of the edges and  [2.x.165]  on the 8 nodes of the vertices.
+* 
+
+* 
+* [1.x.104]
+* 
+*  Once we obtained a solution on the codimension one domain, we want to interpolate it to the rest of the space. This is done by performing again the convolution of the solution with the kernel in the compute_exterior_solution() function.     
+*   We would like to plot the velocity variable which is the gradient of the potential solution. The potential solution is only known on the boundary, but we use the convolution with the fundamental solution to interpolate it on a standard dim dimensional continuous finite element space. The plot of the gradient of the extrapolated solution will give us the velocity we want.     
+*   In addition to the solution on the exterior domain, we also output the solution on the domain's boundary in the output_results() function, of course.
+* 
+
+* 
+* [1.x.105]
+* 
+*  To allow for dimension independent programming, we specialize this single function to extract the singular quadrature formula needed to integrate the singular kernels in the interior of the cells.
+* 
+
+* 
+* [1.x.106]
+* 
+*  The usual deal.II classes can be used for boundary element methods by specifying the "codimension" of the problem. This is done by setting the optional second template arguments to Triangulation, FiniteElement and DoFHandler to the dimension of the embedding space. In our case we generate either 1 or 2 dimensional meshes embedded in 2 or 3 dimensional spaces.     
+*   The optional argument by default is equal to the first argument, and produces the usual finite element classes that we saw in all previous examples.     
+*   The class is constructed in a way to allow for arbitrary order of approximation of both the domain (through high order mapping) and the finite element space. The order of the finite element space and of the mapping can be selected in the constructor of the class.
+* 
+
+* 
+*  
+
+* 
+* [1.x.107]
+* 
+*  In BEM methods, the matrix that is generated is dense. Depending on the size of the problem, the final system might be solved by direct LU decomposition, or by iterative methods. In this example we use an unpreconditioned GMRES method. Building a preconditioner for BEM method is non trivial, and we don't treat this subject here.
+* 
+
+* 
+*  
+
+* 
+* [1.x.108]
+* 
+*  The next two variables will denote the solution  [2.x.166]  as well as a vector that will hold the values of  [2.x.167]  (the fraction of  [2.x.168]  visible from a point  [2.x.169] ) at the support points of our shape functions.
+* 
+
+* 
+*  
+
+* 
+* [1.x.109]
+* 
+*  The convergence table is used to output errors in the exact solution and in the computed alphas.
+* 
+
+* 
+*  
+
+* 
+* [1.x.110]
+* 
+*  The following variables are the ones that we fill through a parameter file.  The new objects that we use in this example are the  [2.x.170]  object and the QuadratureSelector object.     
+*   The  [2.x.171]  class allows us to easily and quickly define new function objects via parameter files, with custom definitions which can be very complex (see the documentation of that class for all the available options).     
+*   We will allocate the quadrature object using the QuadratureSelector class that allows us to generate quadrature formulas based on an identifying string and on the possible degree of the formula itself. We used this to allow custom selection of the quadrature formulas for the standard integration, and to define the order of the singular quadrature rule.     
+*   We also define a couple of parameters which are used in case we wanted to extend the solution to the entire domain.
+* 
+
+* 
+*  
+
+* 
+* [1.x.111]
+* 
+*   [1.x.112]  [1.x.113]
+* 
+
+* 
+*  The constructor initializes the various object in much the same way as done in the finite element programs such as  [2.x.172]  or  [2.x.173] . The only new ingredient here is the ParsedFunction object, which needs, at construction time, the specification of the number of components.   
+*   For the exact solution the number of vector components is one, and no action is required since one is the default value for a ParsedFunction object. The wind, however, requires dim components to be specified. Notice that when declaring entries in a parameter file for the expression of the  [2.x.174]  we need to specify the number of components explicitly, since the function  [2.x.175]  is static, and has no knowledge of the number of components.
+* 
+
+* 
+* [1.x.114]
+* 
+*  For both two and three dimensions, we set the default input data to be such that the solution is  [2.x.176]  or  [2.x.177] . The actually computed solution will have value zero at infinity. In this case, this coincide with the exact solution, and no additional corrections are needed, but you should be aware of the fact that we arbitrarily set  [2.x.178] , and the exact solution we pass to the program needs to have the same value at infinity for the error to be computed correctly.     
+*   The use of the  [2.x.179]  object is pretty straight forward. The  [2.x.180]  function takes an additional integer argument that specifies the number of components of the given function. Its default value is one. When the corresponding  [2.x.181]  method is called, the calling object has to have the same number of components defined here, otherwise an exception is thrown.     
+*   When declaring entries, we declare both 2 and three dimensional functions. However only the dim-dimensional one is ultimately parsed. This allows us to have only one parameter file for both 2 and 3 dimensional problems.     
+*   Notice that from a mathematical point of view, the wind function on the boundary should satisfy the condition  [2.x.182] , for the problem to have a solution. If this condition is not satisfied, then no solution can be found, and the solver will not converge.
+* 
+
+* 
+* [1.x.115]
+* 
+*  In the solver section, we set all SolverControl parameters. The object will then be fed to the GMRES solver in the solve_system() function.
+* 
+
+* 
+* [1.x.116]
+* 
+*  After declaring all these parameters to the ParameterHandler object, let's read an input file that will give the parameters their values. We then proceed to extract these values from the ParameterHandler object:
+* 
+
+* 
+* [1.x.117]
+* 
+*  Finally, here's another example of how to use parameter files in dimension independent programming.  If we wanted to switch off one of the two simulations, we could do this by setting the corresponding "Run 2d simulation" or "Run 3d simulation" flag to false:
+* 
+
+* 
+* [1.x.118]
+* 
+*   [1.x.119]  [1.x.120]
+* 
+
+* 
+*  A boundary element method triangulation is basically the same as a (dim-1) dimensional triangulation, with the difference that the vertices belong to a (dim) dimensional space.   
+*   Some of the mesh formats supported in deal.II use by default three dimensional points to describe meshes. These are the formats which are compatible with the boundary element method capabilities of deal.II. In particular we can use either UCD or GMSH formats. In both cases, we have to be particularly careful with the orientation of the mesh, because, unlike in the standard finite element case, no reordering or compatibility check is performed here.  All meshes are considered as oriented, because they are embedded in a higher dimensional space. (See the documentation of the GridIn and of the Triangulation for further details on orientation of cells in a triangulation.) In our case, the normals to the mesh are external to both the circle in 2d or the sphere in 3d.   
+*   The other detail that is required for appropriate refinement of the boundary element mesh is an accurate description of the manifold that the mesh approximates. We already saw this several times for the boundary of standard finite element meshes (for example in  [2.x.183]  and  [2.x.184] ), and here the principle and usage is the same, except that the SphericalManifold class takes an additional template parameter that specifies the embedding space dimension.
+* 
+
+* 
+*  
+
+* 
+* [1.x.121]
+* 
+*  The call to  [2.x.185]  copies the manifold (via  [2.x.186]  so we do not need to worry about invalid pointers to  [2.x.187] :
+* 
+
+* 
+* [1.x.122]
+* 
+*   [1.x.123]  [1.x.124]
+* 
+
+* 
+*  This function globally refines the mesh, distributes degrees of freedom, and resizes matrices and vectors.
+* 
+
+* 
+*  
+
+* 
+* [1.x.125]
+* 
+*   [1.x.126]  [1.x.127]
+* 
+
+* 
+*  The following is the main function of this program, assembling the matrix that corresponds to the boundary integral equation.
+* 
+
+* 
+* [1.x.128]
+* 
+*  First we initialize an FEValues object with the quadrature formula for the integration of the kernel in non singular cells. This quadrature is selected with the parameter file, and needs to be quite precise, since the functions we are integrating are not polynomial functions.
+* 
+
+* 
+* [1.x.129]
+* 
+*  Unlike in finite element methods, if we use a collocation boundary element method, then in each assembly loop we only assemble the information that refers to the coupling between one degree of freedom (the degree associated with support point  [2.x.188] ) and the current cell. This is done using a vector of fe.dofs_per_cell elements, which will then be distributed to the matrix in the global row  [2.x.189] . The following object will hold this information:
+* 
+
+* 
+* [1.x.130]
+* 
+*  The index  [2.x.190]  runs on the collocation points, which are the support points of the  [2.x.191] th basis function, while  [2.x.192]  runs on inner integration points.
+* 
+
+* 
+*  We construct a vector of support points which will be used in the local integrations:
+* 
+
+* 
+* [1.x.131]
+* 
+*  After doing so, we can start the integration loop over all cells, where we first initialize the FEValues object and get the values of  [2.x.193]  at the quadrature points (this vector field should be constant, but it doesn't hurt to be more general):
+* 
+
+* 
+* [1.x.132]
+* 
+*  We then form the integral over the current cell for all degrees of freedom (note that this includes degrees of freedom not located on the current cell, a deviation from the usual finite element integrals). The integral that we need to perform is singular if one of the local degrees of freedom is the same as the support point  [2.x.194] . A the beginning of the loop we therefore check whether this is the case, and we store which one is the singular index:
+* 
+
+* 
+* [1.x.133]
+* 
+*  We then perform the integral. If the index  [2.x.195]  is not one of the local degrees of freedom, we simply have to add the single layer terms to the right hand side, and the double layer terms to the matrix:
+* 
+
+* 
+* [1.x.134]
+* 
+*  Now we treat the more delicate case. If we are here, this means that the cell that runs on the  [2.x.196]  index contains support_point[i]. In this case both the single and the double layer potential are singular, and they require special treatment.                 
+*   Whenever the integration is performed with the singularity inside the given cell, then a special quadrature formula is used that allows one to integrate arbitrary functions against a singular weight on the reference cell.                 
+*   The correct quadrature formula is selected by the get_singular_quadrature function, which is explained in detail below.
+* 
+
+* 
+* [1.x.135]
+* 
+*  Finally, we need to add the contributions of the current cell to the global matrix.
+* 
+
+* 
+* [1.x.136]
+* 
+*  The second part of the integral operator is the term  [2.x.197] . Since we use a collocation scheme,  [2.x.198]  and the corresponding matrix is a diagonal one with entries equal to  [2.x.199] .
+* 
+
+* 
+*  One quick way to compute this diagonal matrix of the solid angles, is to use the Neumann matrix itself. It is enough to multiply the matrix with a vector of elements all equal to
+* 
+*  - , to get the diagonal matrix of the alpha angles, or solid angles (see the formula in the introduction for this). The result is then added back onto the system matrix object to yield the final form of the matrix:
+* 
+
+* 
+* [1.x.137]
+* 
+*   [1.x.138]  [1.x.139]
+* 
+
+* 
+*  The next function simply solves the linear system.
+* 
+
+* 
+* [1.x.140]
+* 
+*   [1.x.141]  [1.x.142]
+* 
+
+* 
+*  The computation of the errors is exactly the same in all other example programs, and we won't comment too much. Notice how the same methods that are used in the finite element methods can be used here.
+* 
+
+* 
+* [1.x.143]
+* 
+*  The error in the alpha vector can be computed directly using the  [2.x.200]  function, since on each node, the value should be  [2.x.201] . All errors are then output and appended to our ConvergenceTable object for later computation of convergence rates:
+* 
+
+* 
+* [1.x.144]
+* 
+*  Singular integration requires a careful selection of the quadrature rules. In particular the deal.II library provides quadrature rules which are tailored for logarithmic singularities (QGaussLog, QGaussLogR), as well as for 1/R singularities (QGaussOneOverR).   
+*   Singular integration is typically obtained by constructing weighted quadrature formulas with singular weights, so that it is possible to write   
+*   [1.x.145]   
+*   where  [2.x.202]  is a given singularity, and the weights and quadrature points  [2.x.203]  are carefully selected to make the formula above an equality for a certain class of functions  [2.x.204] .   
+*   In all the finite element examples we have seen so far, the weight of the quadrature itself (namely, the function  [2.x.205] ), was always constantly equal to 1.  For singular integration, we have two choices: we can use the definition above, factoring out the singularity from the integrand (i.e., integrating  [2.x.206]  with the special quadrature rule), or we can ask the quadrature rule to "normalize" the weights  [2.x.207]  with  [2.x.208] :   
+*   [1.x.146]   
+*   We use this second option, through the  [2.x.209]  parameter of both QGaussLogR and QGaussOneOverR.   
+*   These integrals are somewhat delicate, especially in two dimensions, due to the transformation from the real to the reference cell, where the variable of integration is scaled with the determinant of the transformation.   
+*   In two dimensions this process does not result only in a factor appearing as a constant factor on the entire integral, but also on an additional integral altogether that needs to be evaluated:   
+*   [1.x.147]   
+*   This process is taken care of by the constructor of the QGaussLogR class, which adds additional quadrature points and weights to take into consideration also the second part of the integral.   
+*   A similar reasoning should be done in the three dimensional case, since the singular quadrature is tailored on the inverse of the radius  [2.x.210]  in the reference cell, while our singular function lives in real space, however in the three dimensional case everything is simpler because the singularity scales linearly with the determinant of the transformation. This allows us to build the singular two dimensional quadrature rules only once and, reuse them over all cells.   
+*   In the one dimensional singular integration this is not possible, since we need to know the scaling parameter for the quadrature, which is not known a priori. Here, the quadrature rule itself depends also on the size of the current cell. For this reason, it is necessary to create a new quadrature for each singular integration.   
+*   The different quadrature rules are built inside the get_singular_quadrature, which is specialized for dim=2 and dim=3, and they are retrieved inside the assemble_system function. The index given as an argument is the index of the unit support point where the singularity is located.
+* 
+
+* 
+*  
+
+* 
+* [1.x.148]
+* 
+*   [1.x.149]  [1.x.150]
+* 
+
+* 
+*  We'd like to also know something about the value of the potential  [2.x.211]  in the exterior domain: after all our motivation to consider the boundary integral problem was that we wanted to know the velocity in the exterior domain!   
+*   To this end, let us assume here that the boundary element domain is contained in the box  [2.x.212] , and we extrapolate the actual solution inside this box using the convolution with the fundamental solution. The formula for this is given in the introduction.   
+*   The reconstruction of the solution in the entire space is done on a continuous finite element grid of dimension dim. These are the usual ones, and we don't comment any further on them. At the end of the function, we output this exterior solution in, again, much the usual way.
+* 
+
+* 
+* [1.x.151]
+* 
+*   [1.x.152]  [1.x.153]
+* 
+
+* 
+*  Outputting the results of our computations is a rather mechanical tasks. All the components of this function have been discussed before.
+* 
+
+* 
+* [1.x.154]
+* 
+*   [1.x.155]  [1.x.156]
+* 
+
+* 
+*  This is the main function. It should be self explanatory in its briefness:
+* 
+
+* 
+* [1.x.157]
+* 
+*   [1.x.158]  [1.x.159]
+* 
+
+* 
+*  This is the main function of this program. It is exactly like all previous tutorial programs:
+* 
+
+* 
+* [1.x.160]
+* [1.x.161][1.x.162]
+* 
+
+* We ran the program using the following  [2.x.213]  file (whichcan also be found in the directory in which all the other source files are):
+* [1.x.163]
+* 
+* When we run the program, the following is printed on screen:
+* [1.x.164]
+* 
+* As we can see from the convergence table in 2d, if we choosequadrature formulas which are accurate enough, then the error weobtain for  [2.x.214]  should be exactly the inverse of thenumber of elements. The approximation of the circle with N segments ofequal size generates a regular polygon with N faces, whose angles areexactly  [2.x.215] , therefore the error we commit should beexactly  [2.x.216] . In fact this isa very good indicator that we are performing the singular integrals inan appropriate manner.
+* The error in the approximation of the potential  [2.x.217]  is largely dueto approximation of the domain. A much better approximation could beobtained by using higher order mappings.
+* If we modify the main() function, setting fe_degree and mapping_degreeto two, and raise the order of the quadrature formulas  inthe parameter file, we obtain the following convergence table for thetwo dimensional simulation
+* [1.x.165]
+* 
+* and
+* [1.x.166]
+* 
+* for the three dimensional case. As we can see, convergence results aremuch better with higher order mapping, mainly due to a betterresolution of the curved geometry. Notice that, given the same numberof degrees of freedom, for example in step 3 of the Q1 case and step 2of Q2 case in the three dimensional simulation, the error is roughlythree orders of magnitude lower.
+* The result of running these computations is a bunch of output files that wecan pass to our visualization program of choice.The output files are of two kind: the potential on the boundaryelement surface, and the potential extended to the outer and innerdomain. The combination of the two for the two dimensional case lookslike
+*  [2.x.218] 
+* while in three dimensions we show first the potential on the surface,together with a contour plot,
+*  [2.x.219] 
+* and then the external contour plot of the potential, with opacity set to 25%:
+*  [2.x.220] 
+* 
+
+* [1.x.167][1.x.168][1.x.169]
+* 
+
+* This is the first tutorial program that considers solving equations defined onsurfaces embedded in higher dimensional spaces. But the equation discussedhere was relatively simple because it only involved an integral operator, notderivatives which are more difficult to define on the surface. The  [2.x.221] tutorial program considers such problems and provides the necessary tools.
+* From a practical perspective, the Boundary Element Method (BEM) usedhere suffers from two bottlenecks. The first is that assembling thematrix has a cost that isquadratic* in the number of unknowns, thatis  [2.x.222]  where  [2.x.223]  is the total number of unknowns. This canbe seen by looking at the `assemble_system()` function, which has thisstructure:
+* [1.x.170]
+* Here, the first loop walks over all cells (one factor of  [2.x.224] ) whereasthe inner loop contributes another factor of  [2.x.225] .
+* This has to be contrasted with the finite element method forlocal*
+differential operators: There, we loop over all cells (one factor of [2.x.226] ) and on each cell do an amount of work that is independent of howmany cells or unknowns there are. This clearly presents abottleneck.
+* The second bottleneck is that the system matrix is dense (i.e., is oftype FullMatrix) because every degree of freedom couples with everyother degree of freedom. As pointed out above, justcomputing* thismatrix with its  [2.x.227]  nonzero entries necessarily requires at least [2.x.228]  operations, but it's worth pointing out that it alsocosts this many operations to just do one matrix-vector product. Ifthe GMRES method used to solve the linear system requires a number ofiterations that grows with the size of the problem, as is typicallythe case, then solving the linear system will require a number ofoperations that grows even faster than just  [2.x.229] .
+* "Real" boundary element methods address these issues by strategiesthat determine which entries of the matrix will be small and canconsequently be neglected (at the cost of introducing an additionalerror, of course). This is possible by recognizing that the matrixentries decay with the (physical) distance between the locations wheredegrees of freedom  [2.x.230]  and  [2.x.231]  are defined. This can be exploited inmethods such as the Fast Multipole Method (FMM) that control whichmatrix entries must be stored and computed to achieve a certainaccuracy, and
+* 
+*  -  if done right
+* 
+*  -  result in methods in which bothassembly and solution of the linear system requires less than [2.x.232]  operations.
+* Implementing these methods clearly presents opportunities to extendthe current program.
+* 
+
+* [1.x.171][1.x.172] [2.x.233] 
+* [0.x.1]

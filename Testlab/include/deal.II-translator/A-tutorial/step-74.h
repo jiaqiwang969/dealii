@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-74_0.txt
 /**
-  @page step_74 The step-74 tutorial program  
+  @page step_74 The step-74 tutorial program 
 * 本教程依赖于  step-12  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -37,7 +37,7 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>
 This program was contributed by Timo Heister and Jiaqi Zhang.
 <br>
@@ -48,13 +48,13 @@ EAR-0949446 and EAR-1550901 and The University of California
 * 
 -- Davis.
 </i>
-* 
 
-* <a name="Intro"></a><a name="emSymmetricinteriorpenaltyGalerkinemSIPGmethodforPoissonsequation"></a><h1><em>Symmetric interior penalty Galerkin</em> (SIPG) method for Poisson's equation</h1> 。
-* 
 
-* <a name="Overview"></a><h3>Overview</h3>。
-* 在本教程中，我们展示了FEInterfaceValues类的用法，该类是为集合非连续加尔金（DG）方法产生的面项而设计的。FEInterfaceValues类提供了一种简单的方法来获得形状函数和跨单元面解的跳跃和平均值。 <ol>   <li>  泊松方程的SIPG方法，在 step-39 和 step-59 中已经使用过。   <li>  使用FEInterfaceValues组装面项，使用 MeshWorker::mesh_loop(), 组装系统矩阵，这与 step-12 类似。   <li>  使用误差估计器进行自适应网格细化。   <li>  两个测试案例：平滑函数的收敛测试和奇异解的适应性网格细化测试。 </ol>  
+*<a name="Intro"></a><a name="emSymmetricinteriorpenaltyGalerkinemSIPGmethodforPoissonsequation"></a><h1><em>Symmetric interior penalty Galerkin</em> (SIPG) method for Poisson's equation</h1>
+
+
+* <a name="Overview"></a><h3>Overview</h3> 。
+* 在本教程中，我们展示了FEInterfaceValues类的用法，该类是为集合不连续Galerkin（DG）方法产生的面项而设计的。FEInterfaceValues类提供了一种简单的方法来获得形状函数和跨单元面解的跳跃和平均。 <ol>   <li>  泊松方程的SIPG方法，在 step-39 和 step-59 中已经使用过。    <li>  使用FEInterfaceValues组装面项，使用 MeshWorker::mesh_loop(), 组装系统矩阵，这与 step-12 类似。    <li>  使用误差估计器进行自适应网格细化。    <li>  两个测试案例：平滑函数的收敛测试和奇异解的适应性网格细化测试。 </ol> 
 *<a name="Theequation"></a><h3>The equation</h3>
 * 在这个例子中，我们考虑泊松方程@f[
 * 
@@ -68,7 +68,7 @@ u = g_D \qquad \mbox{on } \partial \Omega.
 - v^1
 @f]和平均运算符分别为@f[
 \average{v} = \frac{v^0 + v^1}{2}
-@f]。请注意，当 $f\subset \partial \Omega$ 时，我们定义 $\jump{v} = v$ 和 $\average{v}=v$ 。使用SIPG的离散化由以下弱式给出（更多细节可以在 @cite di2011mathematical 和其中的参考资料中找到）。
+@f]。请注意，当 $f\subset \partial \Omega$ 时，我们定义 $\jump{v} = v$ 和 $\average{v}=v$ 。使用SIPG的离散化由以下弱式给出（更多细节可以在 @cite di2011mathematical 和其中的参考文献中找到）。
 * @f{align*}
 &\sum_{K\in {\mathbb T}_h} (\nabla v_h, \nu \nabla u_h)_K\\
 &-\sum_{F \in F_h^i} \left\{
@@ -119,16 +119,16 @@ u = g_D \qquad \mbox{on } \partial \Omega.
 - \left<v_h,\nu \sigma g_D\right>_F
   \right\}.
 @f}
-* 
-* 
+*
+*
 
-* <a name="Thepenaltyparameter"></a><h3>The penalty parameter</h3>。
-* 惩罚参数定义为  $\sigma = \gamma/h_f$  ，其中  $h_f$  是与细胞面相关的局部长度尺度；这里我们选择细胞在面的法线方向的长度近似值。 $\frac 1{h_f} = \frac 12 \left(\frac 1{h_K} + \frac 1{h_{K'}}\right)$  ，其中 $K,K'$ 是与面相邻的两个单元 $f$ ，我们计算出 $h_K = \frac{|K|}{|f|}$ 。
+* <a name="Thepenaltyparameter"></a><h3>The penalty parameter</h3> 。
+* 惩罚参数定义为  $\sigma = \gamma/h_f$  ，其中  $h_f$  是与细胞面相关的局部长度尺度；这里我们选择细胞在面的法线方向上的长度近似值。 $\frac 1{h_f} = \frac 12 \left(\frac 1{h_K} + \frac 1{h_{K'}}\right)$  ，其中 $K,K'$ 是与面相邻的两个单元 $f$ ，我们计算出 $h_K = \frac{|K|}{|f|}$ 。
 * 在上述公式中， $\gamma$ 是惩罚常数。为了确保离散矫捷性，惩罚常数必须足够大 @cite ainsworth2007posteriori 。人们对于应该使用文献中提出的哪个公式并没有真正的共识。(这与 step-47 的 "结果 "部分所讨论的情况相似。)人们可以直接选择一个大的常数，而其他选择可以是 $(p+1)^2$ 或 $p(p+1)$ 的倍数。在本代码中，我们遵循  step-39  并使用  $\gamma = p(p+1)$  。
-* 
+*
 
-* <a name="Aposteriorierrorestimator"></a><h3>A posteriori error estimator</h3> 。
-* 在这个例子中，稍作修改，我们使用Karakashian和Pascal的误差估计器  @cite karakashian2003posteriori  @f[
+*<a name="Aposteriorierrorestimator"></a><h3>A posteriori error estimator</h3>
+* 在这个例子中，稍加修改，我们使用卡拉卡希安和帕斯卡尔的误差估计器 @cite karakashian2003posteriori @f[
 \eta^2 = \sum_{K \in {\mathbb T}_h} \eta^2_{K} +  \sum_{f_i \in {\mathbb F}^i_h}  \eta^2_{f_i} + \sum_{f_b \in F^i_b}\eta^2_{f_b}
 @f]，其中
 * @f{align*}{
@@ -151,7 +151,7 @@ u = g_D \qquad \mbox{on } \partial \Omega.
 @f}
 * 然后每个单元的误差估计的平方是@f[
 \eta_\text{local}^2 =\eta_{c}^2+0.5\eta_{f}^2+\eta_{b}^2.
-@f]， $0.5$ 的系数是由于整体误差估计器只包括每个内部面一次，所以每个单元的估计器对相邻的两个单元都以一半的系数来计算。 注意我们计算 $\eta_\text{local}^2$ 而不是 $\eta_\text{local}$ 以简化实现。然后每个单元的误差估计方被存储在一个全局向量中，其 $l_1$ 准则等于 $\eta^2$  。
+@f]， $0.5$ 的系数是由于整体误差估计器只包括每个内部面一次，所以每个单元的估计器对相邻的两个单元都以一半的系数来计算。注意我们计算 $\eta_\text{local}^2$ 而不是 $\eta_\text{local}$ 以简化实现。然后每个单元的误差估计方被存储在一个全局向量中，其 $l_1$ 准则等于 $\eta^2$  。
 *<a name="Thetestcase"></a><h3>The test case</h3> 。
 * 在第一个测试问题中，我们使用二维的 $\nu =1$ 的平滑制造解进行收敛测试
 * @f{align*}{
@@ -161,13 +161,13 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
 @f}
 * 和  $f= 8\pi^2 u$  。我们针对制造的解决方案计算误差并评估收敛率。
 * 在第二个测试中，我们在二维的L形域 (GridGenerator::hyper_L) 上选择了 Functions::LSingularityFunction 。该解在极坐标中由 $u(r,\phi) = r^{\frac{2}{3}}\sin \left(\frac{2}{3}\phi \right)$ 给出，它在原点有一个奇点。我们构建了一个误差估计器来检测有大误差的区域，根据这个估计器来自适应地细化网格。
-* 
+*
 
-* <a name="CommProg"></a> <h1> The commented program</h1>.
-* 前面几个文件已经在前面的例子中介绍过了，因此不再进一步评论。
-* 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* 前面几个文件已经在前面的例子中讲过了，因此不再进一步评论。
+*
 
-* 
+
 * @code
  #include <deal.II/base/quadrature_lib.h>
  #include <deal.II/base/function.h>
@@ -186,11 +186,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  #include <deal.II/numerics/data_out.h>
  #include <deal.II/fe/mapping_q1.h>
  @endcode
-* 
+*
 * 这里定义了不连续的有限元和FEInterfaceValues。
- 
+*
 
-* 
+
 * @code
  #include <deal.II/fe/fe_dgq.h>
  #include <deal.II/fe/fe_interface_values.h>
@@ -208,11 +208,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
    using namespace dealii;
 * 
  @endcode
-* 
+*
 * <a name="Equationdata"></a> <h3>Equation data</h3> 这里我们定义了两个测试案例：平滑函数的收敛率和 Functions::LSingularityFunction.  的l_singularity。
-* 
+*
 
-* 
+
 * @code
    enum class TestCase
    {
@@ -223,11 +223,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
- 
-* 收敛性测试的平滑解。
-* 
+*
+*收敛性测试的平滑解。
+*
 
-* 
+
 * @code
    template <int dim>
    class SmoothSolution : public Function<dim>
@@ -278,11 +278,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
+*
 * 相应的平滑函数的右手边。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class SmoothRightHandSide : public Function<dim>
@@ -314,11 +314,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
+*
 * 对应于函数 Functions::LSingularityFunction, 的右手边，我们假设扩散系数 $\nu = 1$  。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class SingularRightHandSide : public Function<dim>
@@ -353,11 +353,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
-* <a name="Auxiliaryfunctions"></a> <h3>Auxiliary functions</h3> 以下两个辅助函数分别用于计算 $u_h$ 和 $\nabla u_h$ 在一个面上的跳跃项。
-* 
+*
+* <a name="Auxiliaryfunctions"></a> <h3>Auxiliary functions</h3> 以下两个辅助函数分别用于计算一个面上的 $u_h$ 和 $\nabla u_h$ 的跳转项。
+*
 
-* 
+
 * @code
    template <int dim>
    void get_function_jump(const FEInterfaceValues<dim> &fe_iv,
@@ -402,11 +402,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
    }
 * 
  @endcode
-* 
-* 这个函数计算了 $\sigma$ 的惩罚。
-* 
+*
+* 这个函数计算惩罚  $\sigma$  。
+*
 
-* 
+
 * @code
    double get_penalty_factor(const unsigned int fe_degree,
                              const double       cell_extent_left,
@@ -419,11 +419,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
 * 
  
  @endcode
-* 
-* <a name="TheCopyData"></a> <h3>The CopyData</h3> 在下文中，我们为 MeshWorker::mesh_loop(), 定义了 "复制 "对象，它基本上与 step-12 相同。注意，这里没有定义 "Scratch "对象，因为我们用 MeshWorker::ScratchData<dim> 代替。("复制 "和 "抓取 "对象的使用在WorkStream命名空间文档中有广泛的解释。
-* 
+*
+* <a name="TheCopyData"></a> <h3>The CopyData</h3> 在下文中，我们为  MeshWorker::mesh_loop(),  定义了 "复制 "对象，它与  step-12  基本上相同。注意，这里没有定义 "Scratch "对象，因为我们用 MeshWorker::ScratchData<dim> 代替。("复制 "和 "抓取 "对象的使用在WorkStream命名空间文档中有广泛的解释。
+*
 
-* 
+
 * @code
    struct CopyDataFace
    {
@@ -458,11 +458,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
+*
 * <a name="TheSIPGLaplaceclass"></a> <h3>The SIPGLaplace class</h3> 在这些准备工作之后，我们进行本程序的主类，称为`SIPGLaplace`。该类的整体结构与其他许多教程程序一样。主要的区别只出现在集合函数的实现上，因为我们使用FEInterfaceValues来集合面的条件。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class SIPGLaplace
@@ -505,31 +505,31 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      Vector<double>       system_rhs;
 * 
  @endcode
-* 
+*
 * 该类的其余成员用于以下方面。
- 
+*
 
-* 
-* 
-* - 用于存储每个单元的误差估计方和能量规范方的矢量。
-* 
 
-* 
-* 
-* - 在屏幕上打印收敛率和误差。
-* 
+*
+* - 每个单元存储误差估计器平方和能量规范平方的矢量。
+*
 
-* 
-* 
+
+*
+* - 在屏幕上打印收敛率和错误。
+*
+
+
+*
 * - 扩散系数 $\nu$ 被设置为1。
-* 
+*
 
-* 
-* 
+
+*
 * - 存储要计算的测试案例的信息的成员。
-* 
+*
 
-* 
+
 * @code
      Vector<double> estimated_error_square_per_cell;
      Vector<double> energy_norm_square_per_cell;
@@ -544,11 +544,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
    };
 * 
  @endcode
-* 
+*
 * 这里的构造函数将测试案例作为输入，然后确定正确的解决方案和右手边的类。其余的成员变量以明显的方式进行初始化。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    SIPGLaplace<dim>::SIPGLaplace(const TestCase &test_case)
@@ -596,12 +596,12 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
-* <a name="Theassemble_systemfunction"></a> <h3>The assemble_system function</h3> 这里的装配函数与 step-12 和 step-47 中的相似。与手工装配不同的是，我们只需要专注于在每个单元格、每个边界面和每个内部面进行装配。单元和面的循环是由 MeshWorker::mesh_loop(). 自动处理的。   
+*
+* <a name="Theassemble_systemfunction"></a> <h3>The assemble_system function</h3> 这里的装配功能与  step-12  和  step-47  中的相似。与手工装配不同的是，我们只需要专注于在每个单元格、每个边界面和每个内部面进行装配。单元和面的循环是由 MeshWorker::mesh_loop(). 自动处理的。
 * 该函数首先定义了一个局部（lambda）函数，用于整合单元项。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void SIPGLaplace<dim>::assemble_system()
@@ -636,11 +636,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
        };
 * 
  @endcode
-* 
+*
 * 接下来，我们需要一个在边界上集合面积分的函数。
-* 
+*
 
-* 
+
 * @code
      const auto boundary_worker = [&](const auto &        cell,
                                       const unsigned int &face_no,
@@ -779,11 +779,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      };
 * 
  @endcode
- 
+*
 * 最后，一个在内部面组装面积分的函数。为了重新初始化FEInterfaceValues，我们需要向FEInterfaceValues的reinit()函数传递单元格、面和子面指数（用于自适应细化）。
-* 
+*
 
-* 
+
 * @code
      const auto face_worker = [&](const auto &        cell,
                                   const unsigned int &f,
@@ -913,11 +913,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      };
 * 
  @endcode
-* 
-* 下面的lambda函数将把数据复制到全局矩阵和右手边。 虽然DG离散化中没有悬空节点约束，但我们定义了一个空的AffineConstraints对象，允许我们使用 AffineConstraints::distribute_local_to_global() 功能。
-* 
 
-* 
+* 下面的lambda函数就会将数据复制到全局矩阵和右手边。  虽然DG离散化中没有悬空节点约束，但我们定义了一个空的AffineConstraints对象，使我们可以使用 AffineConstraints::distribute_local_to_global() 的功能。
+*
+
+
 * @code
      AffineConstraints<double> constraints;
      constraints.close();
@@ -929,11 +929,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
                                               system_rhs);
 * 
  @endcode
-* 
+*
 * 从内部面组件复制数据到全局矩阵。
-* 
+*
 
-* 
+
 * @code
        for (auto &cdf : c.face_data)
          {
@@ -945,11 +945,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
 * 
  
  @endcode
-* 
-* 随着装配函数的定义，我们现在可以创建ScratchData和CopyData对象，并将它们与上面的lambda函数一起传递给  MeshWorker::mesh_loop().  此外，我们需要指定我们要在内部面组装一次。
-* 
+*
+* 在定义了装配函数后，我们现在可以创建ScratchData和CopyData对象，并将它们与上面的lambda函数一起传递给 MeshWorker::mesh_loop(). 此外，我们需要指定我们要在内部面完全装配一次。
+*
 
-* 
+
 * @code
      const UpdateFlags cell_flags = update_values | update_gradients |
                                     update_quadrature_points | update_JxW_values;
@@ -977,11 +977,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
+*
 * <a name="Thesolveandoutput_resultsfunction"></a> <h3>The solve() and output_results() function</h3> 以下两个函数完全是标准的，没有难度。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void SIPGLaplace<dim>::solve()
@@ -1010,11 +1010,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
 * 
  
  @endcode
-* 
+*
 * <a name="Thecompute_error_estimatefunction"></a> <h3>The compute_error_estimate() function</h3> 这里的误差估计器的装配与全局矩阵和右前侧的装配很相似，可以由 MeshWorker::mesh_loop() 框架处理。为了理解每个局部（lambda）函数的作用，首先回顾一下，局部单元残差的定义为  $h_K^2 \left\| f + \nu \Delta u_h \right\|_K^2$  。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void SIPGLaplace<dim>::compute_error_estimate()
@@ -1048,12 +1048,12 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
        };
 * 
  @endcode
-* 
+*
 * 接下来计算边界项  $\sum_{f\in \partial K \cap \partial \Omega}
  \sigma \left\| [  u_h-g_D ]  \right\|_f^2  $  。
-* 
+*
 
-* 
+
 * @code
      const auto boundary_worker = [&](const auto &        cell,
                                       const unsigned int &face_no,
@@ -1087,13 +1087,13 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      };
 * 
  @endcode
-* 
-* 最后是内部面条款  $\sum_{f\in \partial K}\lbrace \sigma
+
+* 最后是内部面孔条款 $\sum_{f\in \partial K}\lbrace \sigma
  \left\| [u_h]  \right\|_f^2   +  h_f \left\|  [\nu \nabla u_h \cdot
  \mathbf n ] \right\|_f^2 \rbrace$  。
-* 
+*
 
-* 
+
 * @code
      const auto face_worker = [&](const auto &        cell,
                                   const unsigned int &f,
@@ -1145,11 +1145,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      };
 * 
  @endcode
-* 
-* 在计算了每个单元的局部贡献后，我们仍然需要一种方法将这些复制到全局向量中，该向量将容纳所有单元的误差估计。
-* 
+*
+* 在计算了每个单元的局部贡献后，我们仍然需要一种方法将这些贡献复制到全局向量中，该向量将容纳所有单元的误差估计值。
+*
 
-* 
+
 * @code
      const auto copier = [&](const auto &copy_data) {
        if (copy_data.cell_index != numbers::invalid_unsigned_int)
@@ -1161,11 +1161,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      };
 * 
  @endcode
-* 
+*
 * 在所有这些设置之后，让我们来做实际的工作。我们调整向量的大小，将结果写入其中，然后用 MeshWorker::mesh_loop() 函数驱动整个过程。
-* 
+*
 
-* 
+
 * @code
      estimated_error_square_per_cell.reinit(triangulation.n_active_cells());
 * 
@@ -1193,7 +1193,7 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
    }
 * 
  @endcode
-* 
+*
 * <a name="Thecompute_energy_norm_errorfunction"></a> <h3>The compute_energy_norm_error() function</h3> 接下来，我们用能量准则来评估准确性。这个功能类似于上面的误差估计器的集合。这里我们计算由@f[
  \|u \|_{1,h}^2 = \sum_{K \in \Gamma_h} \nu\|\nabla u \|_K^2 +
  \sum_{f \in F_i} \sigma \| [ u ] \|_f^2 +
@@ -1207,9 +1207,9 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  + \sum_{f \in F_i} \sigma  \|[ u_h ] \|_f^2 + \sum_{f \in F_b}\sigma
  \|u_h-g_D\|_f^2.
  @f]
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    double SIPGLaplace<dim>::compute_energy_norm_error()
@@ -1217,13 +1217,13 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      energy_norm_square_per_cell.reinit(triangulation.n_active_cells());
 * 
  @endcode
-* 
+*
 * 组装  $\sum_{K \in \Gamma_h} \nu\|\nabla (u_h
 * 
 - u)  \|_K^2 $  。
-* 
+*
 
- 
+
 * @code
      const auto cell_worker =
        [&](const auto &cell, auto &scratch_data, auto &copy_data) {
@@ -1253,11 +1253,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
        };
 * 
  @endcode
-* 
-* 组装  $\sum_{f \in F_b}\sigma  \|u_h-g_D\|_f^2$  .
- 
+*
+* 组装  $\sum_{f \in F_b}\sigma  \|u_h-g_D\|_f^2$  。
+*
 
-* 
+
 * @code
      const auto boundary_worker = [&](const auto &        cell,
                                       const unsigned int &face_no,
@@ -1291,11 +1291,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
      };
 * 
  @endcode
-* 
-* 组装  $\sum_{f \in F_i} \sigma  \| [ u_h ] \|_f^2$  .
-* 
+*
+* 组装  $\sum_{f \in F_i} \sigma  \| [ u_h ] \|_f^2$  。
+*
 
- 
+
 * @code
      const auto face_worker = [&](const auto &        cell,
                                   const unsigned int &f,
@@ -1375,11 +1375,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
- 
-* <a name="Therefine_gridfunction"></a><h3>The refine_grid() function</h3> 。
- 
+*
+* <a name="Therefine_gridfunction"></a> <h3>The refine_grid() function</h3>。
 
- 
+
+
 * @code
    template <int dim>
    void SIPGLaplace<dim>::refine_grid()
@@ -1395,11 +1395,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
-* <a name="Thecompute_errorsfunction"></a> <h3>The compute_errors() function</h3> 我们分别计算 $L_2$ 准则、 $H_1$ 半准则和能量准则的三个误差。这些误差将被打印到屏幕上，同时也被存储在一个表格中，该表格记录了这些误差是如何随着网格细化而衰减的，并且可以在程序的最后一步输出。
-* 
+*
+* <a name="Thecompute_errorsfunction"></a> <h3>The compute_errors() function</h3> 我们分别计算 $L_2$ 规范、 $H_1$ 半规范和能量规范中的三个误差。这些误差将被打印到屏幕上，同时也被存储在一个表格中，该表格记录了这些误差是如何随着网格细化而衰减的，并且可以在程序的最后一步输出。
+*
 
-* 
+
 * @code
    template <int dim>
    void SIPGLaplace<dim>::compute_errors()
@@ -1452,11 +1452,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
-* <a name="Therunfunction"></a> <h3>The run() function</h3>.
- 
+*
+* <a name="Therunfunction"></a> <h3>The run() function</h3>。
 
- 
+
+
 * @code
    template <int dim>
    void SIPGLaplace<dim>::run()
@@ -1536,11 +1536,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
        }
 * 
  @endcode
-* 
+*
 * 在运行了我们所有的计算之后，让我们告诉收敛表如何格式化它的数据并将其输出到屏幕。
-* 
+*
 
-* 
+
 * @code
      convergence_table.set_precision("L2", 3);
      convergence_table.set_precision("H1", 3);
@@ -1572,11 +1572,11 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
  
 * 
  @endcode
-* 
+*
 * <a name="Themainfunction"></a> <h3>The main() function</h3> 下面的 <code>main</code> 函数与前面的例子也类似，不需要注释。
-* 
+*
 
-* 
+
 * @code
  int main()
  {
@@ -1619,8 +1619,8 @@ u&=0,                        &\qquad\qquad &\text{on } \partial \Omega,
    return 0;
  }
  @endcode
-* <a name="Results"></a><h1>Results</h1>。
-* 
+* <a name="Results"></a><h1>Results</h1> 。
+
 
 * 这个程序的输出包括控制台输出和vtu格式的解决方案。
 * 在第一个测试案例中，当你运行该程序时，屏幕输出应该是以下样子。
@@ -1644,7 +1644,7 @@ Cycle 2
 .
 .
 @endcode
-* 
+*
 * 当使用多项式度数为3的光滑情况时，收敛表将看起来像这样。 <table align="center" class="doxtable">
   <tr>
     <th>cycle</th>
@@ -1716,7 +1716,7 @@ Cycle 2
     <td align="center">3.00</td>
     <td align="center">1.657e-06</td>
   </tr>
-</table>  
+</table> 
 * 理论上，对于多项式度数 $p$ ，在 $L_2$ 规范和 $H^1$ 半规范中的收敛顺序应该是 $p+1$ 和 $p$ ，分别。我们的数值结果与理论有很好的一致性。
 * 在第二个测试案例中，当你运行程序时，屏幕输出应该是以下样子。
 * @code
@@ -1741,14 +1741,14 @@ Cycle 2
 .
 .
 @endcode
-* 
-* 下图提供了一个L型域上这个测试案例的误差与自由度数的对数图。为了解释它，让 $n$ 为自由度数，那么在均匀细化的网格上， $h$ 是二维的 $1/\sqrt{n}$ 阶。结合前面的理论结果，我们可以看到，如果解足够光滑，我们可以预期 $L_2$ 准则的误差为 $O(n^{-\frac{p+1}{2}})$ 阶， $H^1$ 半准则的误差为 $O(n^{-\frac{p}{2}})$ 。在自适应细化的网格上，如我们在第二个测试案例中使用的网格，会不会得到与 $n$ 的函数相同的行为，这并不是一个先决条件，但人们当然可以希望。事实上，从图中我们可以看出，带有自适应网格细化的SIPG产生了渐进式的那种希望的结果。
-*  <img width="600px" src="https://www.dealii.org/images/steps/developer/step-74.log-log-plot.png" alt="">  
+*
+* 下图提供了一个L型域上这个测试案例的误差与自由度数的对数图。为了解释它，让 $n$ 为自由度数，那么在均匀细化的网格上， $h$ 是二维的 $1/\sqrt{n}$ 阶。结合前面的理论结果，我们可以看到，如果解足够光滑，我们可以预期 $L_2$ 准则的误差为 $O(n^{-\frac{p+1}{2}})$ 阶， $H^1$ 半准则的误差为 $O(n^{-\frac{p}{2}})$ 。在自适应细化的网格上，如我们在第二个测试案例中使用的网格，会不会得到与 $n$ 函数相同的行为，这不是一个先验的说法，但人们当然可以希望。事实上，从图中我们可以看出，带有自适应网格细化的SIPG产生了渐进式的那种希望的结果。
+*  <img width="600px" src="https://www.dealii.org/images/steps/developer/step-74.log-log-plot.png" alt=""> 
 * 此外，我们观察到误差估计值的下降速度几乎与能量准则和 $H^1$ 半准则的误差相同，并且比 $L_2$ 的误差低一阶。这表明它有能力预测具有较大误差的区域。
 * 虽然本教程侧重于实现，但 step-59 教程程序以无矩阵求解技术在计算时间上实现了一个高效的大规模求解器。注意， step-59 教程目前不能与含有悬空节点的网格一起工作，因为多网格界面矩阵不那么容易确定，但这只是deal.II中缺少一些界面，没有什么根本原因。
-* 
+*
 
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-74.cc" . 
+* <a name="PlainProg"></a><h1> The plain program</h1> @include "step-74.cc" 
 * */
 
 

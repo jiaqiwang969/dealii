@@ -1,0 +1,21 @@
+[0.x.0]*
+
+
+* 
+*  [2.x.0] 
+* 
+
+* 
+*  [2.x.1] 
+*  This module contains information on %parallel computing. It is subdivided into parts on  [2.x.2]  and on  [2.x.3] .
+
+* 
+* [0.x.1]*
+ A namespace in which we define classes and algorithms that deal with running in %parallel on shared memory machines when deal.II is configured to use multiple threads (see  [2.x.4] ), as well as running things in %parallel on %distributed memory machines (see  [2.x.5] ).
+* 
+
+* 
+*  [2.x.6]   [2.x.7]  Wolfgang Bangerth, 2008, 2009
+
+* 
+* [0.x.2]

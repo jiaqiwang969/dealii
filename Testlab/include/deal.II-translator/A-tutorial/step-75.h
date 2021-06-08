@@ -53,7 +53,7 @@
  * href="#ThecodeLaplaceProblemcodeclassimplementation">The
  * <code>LaplaceProblem</code> class implementation</a>
  * <ul>
- * <li><a href="#Constructor">Constructor</a> ]<a
+ * <li><a href="#Constructor">Constructor</a><a
  * href="#Constructor">Constructor</a>
  * <li><a
  * href="#LaplaceProbleminitialize_grid">LaplaceProblem::initialize_grid</a><a
@@ -121,18 +121,16 @@
  * href="../../readme.html"
  * target="body">README</a>文件中描述了deal.IItogether与这些附加库的安装。
  *
- *
- * <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
- *
- * 在有限元背景下，更多的自由度通常会产生更精确的解决方案，但也需要更多的计算工作。
- * 在以前的整个教程中，我们找到了通过将网格分辨率与解的复杂性进行局部调整来有效分布自由度的方法（自适应网格细化，
+ *   <a name="Intro"></a><a name="Introduction"></a><h1>Introduction</h1> 。
+ * 在有限元背景下，更多的自由度通常会产生更精确的解决方案，但也需要更多的计算努力。
+ * 在以前的教程中，我们找到了通过将网格分辨率与解的复杂性进行局部调整来有效分布自由度的方法（自适应网格细化，
  * step-6
  * ）。如果我们不仅调整网格，而且还局部调整每个单元上的相关无限元素的多项式程度，这种方法就特别有效（hp-adaptation,
  * step-27  ）。
  * 此外，分配更多的进程来同时运行你的程序，有助于在更短的时间内解决计算的工作量。根据你的机器的硬件架构，你的程序必须为所有进程都能访问相同的内存（共享内存，
  * step-18
  * ），或者进程被托管在几个独立的节点上（分布式内存，
- * step-40 ）的情况做好准备。
+ * step-40 ）这种情况做好准备。
  * 在高性能计算领域，内存访问被证明是当前超级计算机的瓶颈。我们可以通过MatrixFree方法（
  * step-37
  * ）在飞行中计算矩阵向量乘积的效果来避免完全存储矩阵。它们可用于几何多网格方法（
@@ -140,21 +138,19 @@
  * ），也可用于多项式多网格方法，以极大地加快方程组的求解速度。
  * 本教程结合所有这些特点，以最先进的方式介绍了如何解决一个简单的拉普拉斯问题：在具有分布式内存的机器上利用hp-adaptation和无矩阵混合多栅方法。
  *
- *  <a name="Loadbalancing"></a><h3>Load balancing</h3> 。
- *
- * 对于有限元的并行应用，我们将网格划分为子域（又称域分解），并将其分配给进程。正如在
+ *  <a name="Loadbalancing"></a><h3>Load balancing</h3>
+ * 对于有限元的并行应用，我们将网格划分为子域（又称域分解），并将其分配给进程。这种划分发生在deal.II的活动单元上，正如在
  * step-40
- * 中所展示的，这种划分发生在deal.II的活动单元上。在那里，每个单元都有相同的有限元和相同的自由度分配，以及大约相同的工作负荷。为了平衡所有进程的工作量，我们必须平衡所有参与进程中的单元数量。
- * 有了hp自适应方法，情况就不一样了：有限元类型可能因单元而异，因此自由度的数量也不同。匹配单元的数量并不能产生平衡的工作量。在无矩阵的情况下，工作量可以假定为与每个过程的自由度数量成正比，因为在最好的情况下，只有源向量和目的向量需要被加载。
+ * 中演示的那样。在那里，每个单元都有相同的有限元和相同的自由度分配，以及大约相同的工作负荷。为了平衡所有进程的工作量，我们必须平衡所有参与进程中的单元数量。
+ * 有了hp自适应方法，情况就不一样了：有限元类型可能因单元而异，因此自由度的数量也不同。匹配单元的数量并不能产生均衡的工作量。在无矩阵的情况下，工作量可以假定为与每个过程的自由度数量成正比，因为在最好的情况下，只有源向量和目的向量需要被加载。
  * 我们可以通过给每个单元分配权重来平衡工作量，这些权重与自由度的数量成正比，并在所有进程之间平衡所有权重的总和。给每个单元分配单独的权重可以用我们以后要用的
  * parallel::CellWeights 类来实现。
  *
- *  <a name="hpdecisionindicators"></a><h3>hp-decision indicators</h3>。
- *
- * 使用hp-adaptive方法，我们不仅要决定哪些单元要细化或粗化，而且还要选择如何做：要么调整网格分辨率，要么调整有限元的多项式程度。
+ *  <a name="hpdecisionindicators"></a><h3>hp-decision indicators</h3>
+ * 使用hp自适应方法，我们不仅要决定哪些单元需要细化或粗化，而且还可以选择如何做：要么调整网格分辨率，要么调整有限元的多项式程度。
  * 我们将再次根据当前解决方案的（后验）计算误差估计值来决定哪些单元需要调整，例如，使用KellyErrorEstimator。我们将同样决定如何适应（事后）计算的平滑度估计：大的多项式度数在解决方案的平滑部分效果最好，而细的网格分辨率在不规则部分是有利的。在
  * step-27
- * 中，我们提出了基于傅里叶系数的衰减来计算光滑度估计值。让我们利用这个机会，提出另一种遵循同样思路的方法，但采用Legendre系数。
+ * 中，我们提出了根据傅里叶系数的衰减来计算光滑度估计。让我们利用这个机会，提出另一种遵循同样思路的方法，但采用Legendre系数。
  * 我们将简要介绍这种新技术的思路，但为了简单起见，将其描述限于一维。假设 $u_\text{hp}(x)$ 是一个定义在单元 $K$ 上的有限元函数@f[
  * u_\text{hp}(x) = \sum c_i \varphi_i(x)
  * @f]，其中每个 $\varphi_i(x)$ 是一个形状函数。我们可以在Legendre多项式 $P_k$ 的基础上等效地表示 $u_\text{hp}(x)$ 为@f[
@@ -171,12 +167,12 @@
  * *也就是说， $\det(J_K)$ 乘以身份矩阵。让 $F_K$ 成为从 $K$ 到其参考单元 $\hat{K}$ 的映射。因此，投影系统中右侧的条目为：@f[
  * \int_K u_\text{hp}(x) P_k(x) dx
  * = \det(J_K) \int_\hat{K} u_\text{hp}(F_K(\hat{x})) P_k(F_K(\hat{x})) d\hat{x}.
- * @f]回顾 $u_\text{hp}(x)$ 的形状函数表示，我们可以将其写成 $\det(J_K) \, \mathbf{C} \, \mathbf{c}$ ，其中 $\mathbf{C}$  ]是具有条目@f[
+ * @f]回顾 $u_\text{hp}(x)$ 的形状函数表示，我们可以把它写成 $\det(J_K) \, \mathbf{C} \, \mathbf{c}$ ，其中 $\mathbf{C}$ 是具有条目@f[
  * \int_K P_i(x) \varphi_j(x) dx = \det(J_K) \int_{\hat{K}} P_i(F_K(\hat{x}))
  * \varphi_j(F_K(\hat{x})) d\hat{x} = \det(J_K) \int_{\hat{K}}
  * \hat{P}_i(\hat{x}) \hat{\varphi}_j(\hat{x}) d\hat{x} \dealcoloneq \det(J_K)
  * \, C_{ij}
- * @f]的基数变化矩阵，因此 $\mathbf{C}$ 的值可以写成 <em> 独立于 </em> 的 $K$ ，在转换为参考坐标后，将 $\det(J_K)$ 前置因数。因此，把这一切放在一起，投影问题可以写成@f[
+ * @f]的基数变化矩阵，因此 $\mathbf{C}$ 的值可以写成 <em> ，通过在转换为参考坐标后将 $\det(J_K)$ 的前部因式分解，独立写成 $K$ 。因此，把这一切放在一起，投影问题可以写成@f[
  * \det(J_K) \, \mathbb{I} \, \mathbf{l} = \det(J_K) \, \mathbf{C} \,
  * \mathbf{c}
  * @f]，可以简单地改写成@f[
@@ -209,11 +205,9 @@
  * 命名空间的一些函数将在后面帮助我们完成这些工作。
  *
  *  <a name="Hybridgeometricmultigrid"></a><h3>Hybrid geometric multigrid</h3>
- * 。
- *
- * 有限元矩阵通常是非常稀疏的。此外，hp-adaptive方法对应于每行非零项数量变化很大的矩阵。一些最先进的预处理程序，如
+ * 有限元矩阵通常是非常稀疏的。此外，hp-adaptive方法对应的矩阵每行的非零项数量变化很大。一些最先进的预处理程序，如
  * step-40
- * 中使用的代数多重网格（AMG），在这些情况下表现不佳。
+ * 中使用的代数多重网格（AMG），在这些情况下表现很差。
  * 因此，我们将依靠一个无矩阵的混合多网格预处理器。
  * step-50
  * 已经证明了几何多网格方法与MatrixFree框架结合时的优越性。在hp-adaptive
@@ -223,10 +217,9 @@
  * 我们将通过使用MGTransferGlobalCoarsening，在现有的全局粗化基础设施的帮助下，创建一个具有上述特殊要求的自定义混合多网格预处理器。
  *
  *  <a name="Thetestcase"></a><h3>The test case</h3>
- *
- *  对于椭圆方程来说，每个再入角通常会调用asingularity
- * @cite brenner2008
- * 。我们可以利用这种情况对我们的hp决策算法进行测试：在所有需要调整的单元上，我们倾向于在奇点附近采用精细的网格，而在其他地方则采用高的多项式程度。
+ * 对于椭圆方程，每个重入角通常都会调用奇点 @cite
+ * brenner2008
+ * 。我们可以利用这种情况来测试我们的h-decision算法：在所有需要调整的单元上，我们倾向于在奇点附近采用精细的网格，而在其他地方则采用高的多项式程度。
  * 作为在这些条件下要解决的最简单的椭圆问题，我们选择了L型域中的拉普拉斯方程，其重角在坐标系的原点。
  * 为了能够确定实际误差，我们制造了一个有已知解的边界值问题。在上述领域中，拉普拉斯方程的解是，在极坐标中， $(r, \varphi)$  : @f[
  * u_\text{sol} = r^{2/3} \sin(2/3 \varphi).
@@ -2395,14 +2388,11 @@
  *
  *   <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
- * 。
- *
- *  <a name="Differenthpdecisionstrategies"></a><h4>Different hp-decision
- * strategies</h4>。
- *
+ * 。   <a name="Differenthpdecisionstrategies"></a><h4>Different hp-decision
+ * strategies</h4>
  * deal.II库提供了多种策略来决定对单元的适应类型：要么调整网格分辨率，要么改变多项式程度。我们在本教程中只介绍了<i>Legendre
  * coefficient decay</i>策略，而 step-27
- * 则展示了相同想法的<i>Fourier</i>等价物。
+ * 则展示了相同想法的<i>Fourier</i>等值。
  * 关于这些策略的概述，请参见 step-27 中的 "扩展的可能性
  * "一节，或相应的文档中的详细描述。
  * 在那里，提到了另一个到目前为止还没有在任何教程中展示过的策略：基于<i>refinement
@@ -2419,21 +2409,19 @@
  * 精化。这些策略的详细比较见 @cite fehling2020 。
  *
  *  <a name="Solvewithmatrixbasedmethods"></a><h4>Solve with matrix-based
- * methods</h4> 。
- *
+ * methods</h4>
  * 本教程只关注无矩阵策略。然而，所有的hp-adaptivealgorithms在并行分布式环境中也可以使用基于矩阵的方法。
  * 要创建一个系统矩阵，你可以使用
  * LaplaceOperator::get_system_matrix() 函数，或者使用类似于 step-27
  * 的 <code>assemble_system()</code>
  * 函数，然后你可以像往常一样将系统矩阵传递给求解器。
- * 你可以对基于矩阵和无矩阵实现的结果进行计时，量化加速，并说服自己哪种变量更快。
+ * 你可以对基于矩阵和无矩阵实现的结果进行计时，量化加速，并说服自己哪个变量更快。
  *
  *  <a name="Multigridvariants"></a><h4>Multigrid variants</h4>
- *
  * 为了简单起见，我们将自己限制在单一类型的粗网格求解器（带AMG的CG）、平滑器（带point
- * Jacobi预处理的Chebyshev平滑器），以及多网格算法中的几何粗化方案（globalcoarsening）。请自由尝试其他方法，研究它们的性能和稳健性。
+ * Jacobi预处理的Chebyshev平滑器）以及多网格算法中的几何粗化方案（全局粗化）。请自由尝试其他方法，研究它们的性能和稳健性。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-75.cc"
+* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-75.cc"  。
  *
  */
 

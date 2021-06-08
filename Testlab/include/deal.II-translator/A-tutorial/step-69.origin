@@ -1494,8 +1494,7 @@ originally advanced in @cite GuermondEtAl2018.
            if (cell->is_artificial())
              continue;
  
-           /* We transform the set of global dof indices on the cell to the
-            * corresponding "local" index range on the MPI process: */
+           // We transform the set of global dof indices on the cell to the corresponding "local" index range on the MPI process: 
            cell->get_dof_indices(dof_indices);
            std::transform(dof_indices.begin(),
                           dof_indices.end(),
@@ -1504,8 +1503,7 @@ originally advanced in @cite GuermondEtAl2018.
                             return partitioner->global_to_local(index);
                           });
  
-           /* And simply add, for each dof, a coupling to all other "local"
-            * dofs on the cell: */
+           // And simply add, for each dof, a coupling to all other "local" dofs on the cell: 
            for (const auto dof : dof_indices)
              dsp.add_entries(dof, dof_indices.begin(), dof_indices.end());
          }
@@ -1873,9 +1871,9 @@ originally advanced in @cite GuermondEtAl2018.
                        for (unsigned int d = 0; d < dim; ++d)
                          copy.cell_cij_matrix[d](i, j) += value * grad_JxW[d];
  
-                     } /* i */
-                 }     /* j */
-             }         /* q */
+                     } // i 
+                 }     // j 
+             }         // q 
  
  @endcode
  
@@ -2346,7 +2344,7 @@ originally advanced in @cite GuermondEtAl2018.
      lambda1_minus(const std::array<double, 4> &riemann_data,
                    const double                 p_star)
      {
-       /* Implements formula (3.7) in Guermond-Popov-2016 */
+       // Implements formula (3.7) in Guermond-Popov-2016 
  
        constexpr double gamma = ProblemDescription<1>::gamma;
        const auto       u     = riemann_data[1];
@@ -2373,7 +2371,7 @@ originally advanced in @cite GuermondEtAl2018.
      DEAL_II_ALWAYS_INLINE inline double
      lambda3_plus(const std::array<double, 4> &riemann_data, const double p_star)
      {
-       /* Implements formula (3.8) in Guermond-Popov-2016 */
+       // Implements formula (3.8) in Guermond-Popov-2016 
  
        constexpr double gamma = ProblemDescription<1>::gamma;
        const auto       u     = riemann_data[1];
@@ -2413,7 +2411,7 @@ originally advanced in @cite GuermondEtAl2018.
        const double denominator =
          a_i * std::pow(p_i / p_j, -1. * (gamma - 1.) / 2. / gamma) + a_j * 1.;
  
-       /* Formula (4.3) in Guermond-Popov-2016 */
+       // Formula (4.3) in Guermond-Popov-2016 
  
        const double p_star =
          p_j * std::pow(numerator / denominator, 2. * gamma / (gamma - 1));
@@ -2421,7 +2419,7 @@ originally advanced in @cite GuermondEtAl2018.
        const double lambda1 = lambda1_minus(riemann_data_i, p_star);
        const double lambda3 = lambda3_plus(riemann_data_j, p_star);
  
-       /* Formula (2.11) in Guermond-Popov-2016 */
+       // Formula (2.11) in Guermond-Popov-2016 
  
        return std::max(positive_part(lambda3), negative_part(lambda1));
      }
@@ -2543,8 +2541,7 @@ originally advanced in @cite GuermondEtAl2018.
    InitialValues<dim>::InitialValues(const std::string &subsection)
      : ParameterAcceptor(subsection)
    {
-     /* We wire up the slot InitialValues<dim>::parse_parameters_callback to
-        the ParameterAcceptor::parse_parameters_call_back signal: */
+     // We wire up the slot InitialValues<dim>::parse_parameters_callback to the ParameterAcceptor::parse_parameters_call_back signal: 
      ParameterAcceptor::parse_parameters_call_back.connect(
        std::bind(&InitialValues<dim>::parse_parameters_callback, this));
  
@@ -2606,7 +2603,7 @@ originally advanced in @cite GuermondEtAl2018.
  
  
  @code
-     initial_state = [this](const Point<dim> & /*point*/, double /*t*/) {
+     initial_state = [this](const Point<dim> & //！改point/, double //!改t/) {
        const double            rho   = initial_1d_state[0];
        const double            u     = initial_1d_state[1];
        const double            p     = initial_1d_state[2];
@@ -2645,7 +2642,7 @@ originally advanced in @cite GuermondEtAl2018.
      TimerOutput &             computing_timer,
      const OfflineData<dim> &  offline_data,
      const InitialValues<dim> &initial_values,
-     const std::string &       subsection /*= "TimeStepping"*/)
+     const std::string &       subsection //= "TimeStepping" ！改)
      : ParameterAcceptor(subsection)
      , mpi_communicator(mpi_communicator)
      , computing_timer(computing_timer)
@@ -3179,7 +3176,7 @@ originally advanced in @cite GuermondEtAl2018.
      const MPI_Comm          mpi_communicator,
      TimerOutput &           computing_timer,
      const OfflineData<dim> &offline_data,
-     const std::string &     subsection /*= "SchlierenPostprocessor"*/)
+     const std::string &     subsection //= "SchlierenPostprocessor" ！改)
      : ParameterAcceptor(subsection)
      , mpi_communicator(mpi_communicator)
      , computing_timer(computing_timer)
@@ -3574,7 +3571,7 @@ originally advanced in @cite GuermondEtAl2018.
          std::string((34 - secondary_size) / 2, ' ') + secondary +
          std::string((35 - secondary_size) / 2, ' ');
  
-       /* clang-format off */
+       // clang-format off 
        pcout << std::endl;
        pcout << "    ####################################################" << std::endl;
        pcout << "    #########                                  #########" << std::endl;
@@ -3583,7 +3580,7 @@ originally advanced in @cite GuermondEtAl2018.
        pcout << "    #########                                  #########" << std::endl;
        pcout << "    ####################################################" << std::endl;
        pcout << std::endl;
-       /* clang-format on */
+       // clang-format on 
      }
    } // namespace
  

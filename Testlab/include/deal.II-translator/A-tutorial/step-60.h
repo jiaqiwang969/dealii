@@ -65,15 +65,12 @@
  * Trieste. </i>
  * @dealiiTutorialDOI{10.5281/zenodo.1243280,https://zenodo.org/badge/DOI/10.5281/zenodo.1243280.svg}
  *
- *  <a name="Introduction"></a><h1>Introduction</h1>。
- *
- *  <a
+ *  <a name="Introduction"></a><h1>Introduction</h1>   <a
  * name="NonmatchinggridconstraintsthroughdistributedLagrangemultipliers"></a><h3>Non-matching
  * grid constraints through distributed Lagrange multipliers</h3>
- *
- * 在本教程中，我们考虑两个域的情况， $\Omega$ 在
- * $R^{\text{spacedim}}$ 中， $\Gamma$ 在 $R^{\text{dim}}$ 中，其中
- * $\Gamma$ 被嵌入 $\Omega$ 中（ $\Gamma \subseteq \Omega$
+ * 在本教程中，我们考虑两个域的情况， $R^{\text{spacedim}}$
+ * 中的 $\Omega$ 和 $R^{\text{dim}}$ 中的 $\Gamma$ ，其中 $\Gamma$
+ * 被嵌入到 $\Omega$ 中（ $\Gamma \subseteq \Omega$
  * ）。我们想解决 $\Omega$ 上的偏微分方程，对嵌入域*
  * $\Gamma$ 上的问题的解决强制执行一些条件。
  * 有两种有趣的情况。
@@ -119,7 +116,7 @@
  * $\Gamma$ 上的位移也是规定的。例如，如果 $\Gamma$
  * 是二维空间中的一条封闭曲线，那么这将是一个肥皂膜的模型，它被沿
  * $\partial \Omega$ 的一个线环和沿 $\Gamma$
- * 的第二个线环所固定。在 $\Gamma$
+ * 的第二个线环固定。在 $\Gamma$
  * 是整个区域的情况下，你可以把它看作是在障碍物上伸展的膜，其中
  * $\Gamma$
  * 是接触区域。如果接触面积不知道，我们有一个不同的问题
@@ -153,9 +150,9 @@
  * $\lambda$ ，即 $H^{-1}(\Gamma)$ 或 $H^{-1/2}(\Gamma)$  。
  * 上述问题的离散化有两种选择。人们可以选择匹配离散化，即
  * $\Gamma$ 的三角法与 $\Omega$
- * 的三角法相一致，或者可以选择以完全独立的方式离散化这两个域。
+ * 的三角法相一致，或者选择以完全独立的方式离散化这两个域。
  * 对于我们上面提出的简单问题，第一种选择显然更有意义：只需对
- * $\Omega$ 使用一个三角形计算，然后根据 $\Gamma$
+ * $\Omega$ 使用单一的三角法，然后根据 $\Gamma$
  * 施加某些约束。这种方法的一个例子是在 step-40
  * 中研究的，其中解决方案必须保持在一个障碍物之上，这是在
  * $\Omega$ 上施加的约束。
@@ -164,10 +161,10 @@
  * 我们在这里描述的技术在文献中使用了许多名称：<b>immersed
  * finite element method</b>、<b>fictitious boundary
  * method</b>、<b>distributed Lagrange multiplier
- * method</b>和其他名称之一。其主要原理是，两个网格和两个有限元空间的离散化是完全独立的。这种技术对于模拟流固耦合问题特别有效，其中嵌入结构的配置是问题本身的一部分，人们要解决一个（可能是非线性）弹性问题来确定
+ * method</b>和其他名称之一。其主要原理是，两个网格和两个有限元空间的离散化是完全独立的。这种技术对于模拟流固耦合问题特别有效，其中嵌入结构的配置是问题本身的一部分，人们要解决一个（可能是非线性的）弹性问题来确定
  * $\Gamma$ 的（与时间有关的）配置，以及 $\Omega \setminus
  * \Gamma$
- * 的（可能是非线性）流动问题，加上流体和固体之间界面上的耦合条件。
+ * 的（可能是非线性的）流动问题，加上流体和固体之间界面上的耦合条件。
  * 在这个教程程序中，我们把事情变得简单一些，我们假设嵌入域的配置是以两种可能的方式之一给出的。
  *
  * -作为变形映射 $\psi: \Gamma_0 \mapsto \Gamma \subseteq \Omega$
@@ -198,16 +195,16 @@
  *
  * 虽然矩阵 $K$ 是 $\Omega$
  * 上泊松问题的标准刚度矩阵，而向量 $G$ 是 $\Gamma$
- * 上带有强迫项 $g$
+ * 上带有强制项 $g$
  * 的有限元问题的标准右手向量（例如，见 step-3
  * ），但矩阵 $C$ 或其转置 $C^T$
- * 是非标准的，因为它们在两个非匹配网格上耦合信息。
+ * 是非标准的，因为它们在两个非匹配的网格上耦合信息。
  * 特别是，在计算 $C$ 的一个条目时出现的积分，是在
  * $\Gamma$
- * 上计算的。像通常的有限元一样，我们将这个积分分成来自用于解算
- * $\Gamma$ 的三角形的所有单元的贡献，我们将 $K$
- * 上的积分转换为其边界元素 $\hat K$ 上的积分，其中 $F_{K}$
- * 是从 $\hat K$ 到 $K$ 的映射，并且使用正交公式计算 $\hat K$
+ * 上计算的。像通常的有限元一样，我们把这个积分分成来自用于解算
+ * $\Gamma$ 的三角形的所有单元的贡献，我们把 $K$
+ * 上的积分转化为其边界元素 $\hat K$ 上的积分，其中 $F_{K}$
+ * 是从 $\hat K$ 到 $K$ 的映射，并使用正交公式计算 $\hat K$
  * 上的积分。 \f[ C_{\alpha j} \dealcoloneq (v_j, q_\alpha)_\Gamma  =
  * \sum_{K\in \Gamma} \int_{\hat K} \hat q_\alpha(\hat x) (v_j \circ F_{K})
  * (\hat x) J_K (\hat x) \mathrm{d} \hat x = \sum_{K\in \Gamma}
@@ -219,8 +216,9 @@
  * 是完全任意的，除非我们想出一个办法，在 $\Omega$
  * 上的一个任意点上插值 $V_h(\Omega)$
  * 的所有基函数，否则我们无法计算出矩阵 $C$
- * 的一个条目需要的积分。 为了评估 $(v_j \circ F_{K}) (\hat
+ * 的一个条目所需的积分。 为了评估 $(v_j \circ F_{K}) (\hat
  * x_i)$ ，需要采取以下步骤（如下图所示）。
+ *
  * - 对于 $\Gamma$ 中的给定单元 $K$ ，计算实点 $y_i \dealcoloneq F_{K} (\hat
  * x_i)$ ，其中 $x_i$ 是用于对 $K \subseteq \Gamma$
  * 进行积分的正交点之一。
@@ -251,10 +249,9 @@
  * 中有所描述），我们使用LinearOperator类构造 $S$ 。
  *
  *  <a name="Thetestcase"></a><h3>The testcase</h3>
- *
- *  我们在这里解决的问题与 step-4
- * 相同，不同的是我们对一个嵌入域 $\Gamma$
- * 施加一些约束。本教程是以独立于维度的方式编写的，在结果部分我们展示了如何改变`dim`和`spacedim`。
+ * 我们在这里解决的问题与 step-4
+ * 相同，不同的是我们对一个嵌入域施加了一些约束 $\Gamma$
+ * 。本教程是以独立于维度的方式编写的，在结果部分我们展示了如何改变`dim`和`spacedim`。
  * 本教程是在`dim`等于1，`spacedim`等于2的情况下编译的。如果你想在嵌入维度`spacedim`等于3的情况下运行程序，你很可能想改变
  * $\Gamma$
  * 的参考域，例如，你从文件中读到的东西，或者你后来变形为更有趣的东西的封闭球。
@@ -271,18 +268,14 @@
  * $\Gamma$ 本身就有一个边界，相对于域 $\Omega$
  * 来说是二维的。
  *
- *  <a name="References"></a><h3>References</h3> 。
- *
- * <ul>   <li>  Glowinski, R., T.-W. Pan, T.I. Hesla, and D.D. Joseph. 1999. "分布式拉格朗日乘数/虚构域方法用于颗粒物流动"。 International Journal of Multiphase Flow 25 (5). Pergamon: 755-94.
- * <li>  Boffi, D., L. Gastaldi, L. Heltai, and C.S. Peskin. 2008.
- * "论沉浸边界法的超弹性公式"。应用力学和工程中的计算机方法197（25-28）。
- * <li>  Heltai, L., and F. Costanzo. 2012. "浸没式有限元方法的变量实现"。应用力学和工程中的计算机方法》229-232。 </ul>
- *
- *  <a name="CommProg"></a> <h1> The commented program</h1>. <a
+ *  <a name="References"></a><h3>References</h3>
+ * <ul>   <li>  Glowinski, R., T.-W.Pan, T.I. Hesla, and D.D. Joseph.1999."分布式拉格朗日乘数/虚构域方法用于颗粒物流动"。  International Journal of Multiphase Flow 25 (5).Pergamon: 755-94.
+ * <li>  Boffi, D., L. Gastaldi, L. Heltai, and C.S.
+ * Peskin.2008."论沉浸边界法的超弹性公式"。应用力学和工程中的计算机方法197（25-28）。
+ * <li>  Heltai, L., and F. Costanzo.2012."浸没式有限元方法的变量实现"。应用力学和工程中的计算机方法》229-232。 </ul>
+ *   <a name="CommProg"></a> <h1> The commented program</h1>。 <a
  * name="Includefiles"></a> <h3>Include files</h3>
- * 其中大部分已在其他地方介绍过，我们只对新的进行评论。
- *
- *
+ * 其中大部分已经在其他地方介绍过了，我们只对新的内容进行评论。
  *
  *
  * @code
@@ -294,11 +287,10 @@
  *
  * 参数接受器类是本教程程序的第一个新颖之处：一般来说，参数文件是用来在运行时引导程序的执行。虽然即使是简单的方法也能节省编译时间，因为同一个可执行文件可以用不同的参数设置来运行，但要同时处理数百个参数，同时保持不同程序之间的兼容性会变得很困难。这就是ParameterAcceptor类证明有用的地方。
  *
- *
- * 这个类用来定义一个公共接口，供那些想使用一个全局ParameterHandler来处理参数的类使用。该类提供了一个静态的ParameterHandler成员，即
+ * 该类用于定义一个公共接口，供那些希望使用一个全局ParameterHandler来处理参数的类使用。该类提供了一个静态的ParameterHandler成员，即
  * ParameterAcceptor::prm, ，并实现了
  * "命令设计模式"（例如，见E. Gamma, R. Helm, R. Johnson, J.
- * Vlissides, 设计模式。Elements of Reusable Object-Oriented Software,
+ * Vlissides, Design Patterns:Elements of Reusable Object-Oriented Software,
  * Addison-Wesley Professional, 1994. https://goo.gl/FNYByc）。)
  *
  *
@@ -309,11 +301,10 @@
  *
  * 如果你为你想在代码中使用的每个参数调用方法
  * ParameterHandler::add_parameter
- * ，你就不需要做其他事情了。如果你使用一个已经存在的类，它提供了两个函数`declare_parameters`和`parse_parameters`，你仍然可以使用ParameterAcceptor，方法是将现有的类封装成ParameterAcceptorProxy类。
+ * ，你就不需要做其他事情了。如果你使用的是一个已经存在的类，它提供了两个函数`declare_parameters`和`parse_parameters`，你仍然可以使用ParameterAcceptor，方法是将现有的类封装成ParameterAcceptorProxy类。
  *
  *
- * 在这个例子中，我们将使用这两种策略，为deal.II类使用ParameterAcceptorProxy，并直接从ParameterAcceptor派生我们自己的参数类。
- *
+ * 在这个例子中，我们将使用两种策略，为deal.II类使用ParameterAcceptorProxy，并直接从ParameterAcceptor派生我们自己的参数类。
  *
  * @code
  * #include <deal.II/base/parameter_acceptor.h>
@@ -331,14 +322,13 @@
  * "不对称"，使某些操作变得很快，而它们的逆向操作却很慢：寻找一个单元的顶点的计算成本很低，可以通过简单地遍历DAG来完成，而寻找所有共享一个顶点的单元则需要进行非难事的计算，除非添加一个新的DAG数据结构来表示逆向搜索。
  *
  *
- * 由于逆向操作在有限元代码中通常是不需要的，所以在GridTools中实现了这些操作，而没有使用与三角形相关的额外数据结构，这将使它们的速度更快。例如，一个这样的数据结构是一个从三角形的顶点到所有共享这些顶点的单元的映射，这将减少回答前面问题所需的计算。
+ * 由于在有限元代码中通常不需要反操作，所以在GridTools中实现了这些操作，而没有使用与三角形相关的额外数据结构，这将使它们的速度更快。例如，一个这样的数据结构是一个从三角形的顶点到所有共享这些顶点的单元的映射，这将减少回答前面问题所需的计算。
  *
  *
  * 有些方法，例如 GridTools::find_active_cell_around_point,
- * 大量使用了这些非标准的操作。如果你需要多次调用这些方法，那么把这些数据结构储存在某个地方就变得很方便了。
+ * 大量使用了这些非标准的操作。如果你需要多次调用这些方法，那么把这些数据结构存储在某个地方就变得很方便。
  * GridTools::Cache
  * 正是这样做的，它让你可以访问以前计算过的对象，或者在飞行中计算它们（然后将它们存储在类中供以后使用），并确保每当三角测量被更新时，相关的数据结构也被重新计算。
- *
  *
  * @code
  * #include <deal.II/grid/grid_tools_cache.h>
@@ -348,16 +338,15 @@
  * #include <deal.II/fe/fe_system.h>
  *
  * @endcode
- * 在这个例子中，我们将使用一个参考域来描述一个嵌入的Triangulation，通过一个有限元矢量场进行变形。
+ *
+ * 在这个例子中，我们将使用一个参考域来描述一个嵌入的三角形，通过一个有限元矢量场进行变形。
  *
  *
- * 接下来的两个包含文件包含了在这些情况下可以使用的两个类的定义。MappingQEulerian允许人们通过位移*场来描述一个域，基于FESystem[FE_Q(p)^spacedim]
- * 有限元空间。第二种是比较通用的，允许你使用任意的矢量有限元空间，只要它们能提供一个连续的*域描述。
+ * 接下来的两个包含文件包含了在这些情况下可以使用的两个类的定义。MappingQEulerian允许人们通过位移*场来描述一个领域，基于FESystem[FE_Q(p)^spacedim]有限元空间。第二种是比较通用的，允许你使用任意的矢量有限元空间，只要它们能提供一个连续的*域描述。
  * 对你的领域的描述。在这种情况下，描述是通过实际变形*场，而不是位移*场完成的。
  *
  *
- * 哪一个被使用取决于用户想如何指定参考域，和/或实际配置。我们将提供这两个选项，并在本教程程序的结果部分做一些实验。
- *
+ * 使用哪一个取决于用户想如何指定参考域，和/或实际配置。我们将提供这两个选项，并在本教程程序的结果部分做一些实验。
  *
  * @code
  * #include <deal.II/fe/mapping_q_eulerian.h>
@@ -368,7 +357,6 @@
  * @endcode
  *
  * 被解析的函数类是另一个新条目。它允许人们创建一个Function对象，从参数文件中的一个字符串开始，它被解析成一个对象，你可以在deal.II接受Function的任何地方使用（例如，用于插值、边界条件等）。
- *
  *
  * @code
  * #include <deal.II/base/parsed_function.h>
@@ -383,7 +371,6 @@
  *
  *
  * 我们将在后面的 "setup_coupling "方法中详细讨论其用途。
- *
  *
  * @code
  * #include <deal.II/non_matching/coupling.h>
@@ -406,20 +393,23 @@
  *
  * @endcode
  *
- * ［<a name="DistributedLagrangeProblem"></a>］
- * ［<h3>DistributedLagrangeProblem</h3>
+ * <a name="DistributedLagrangeProblem"></a>
+ * <h3>DistributedLagrangeProblem</h3>.
  * 在DistributedLagrangeProblem中，我们需要两个参数来描述域
  * $\Gamma$ （`dim`）和域 $\Omega$ （`spacedim`）的尺寸。
- * 这些参数将被用来初始化一个Triangulation<dim,spacedim>（用于
- * $\Gamma$ ）和一个Triangulation<spacedim,spacedim>（用于 $\Omega$
- * ）。
+ * 这些将被用来初始化一个三角形<dim,spacedim>（用于 $\Gamma$
+ * ）和一个三角形<spacedim,spacedim>（用于 $\Omega$  ）。
  * 与其他教程程序相比，一个新奇之处在于大量使用了
  * std::unique_ptr.
- * 这些行为就像经典的指针，其优点是可以进行自动的内部管理：一旦unique_ptr超出范围，所包含的对象就会被自动销毁，即使它在一个容器内或者有一个异常。此外，它不允许有重复的指针，这可以防止所有权问题。我们这样做，是因为我们希望能够
+ * 这些行为就像经典的指针，其优点是可以进行自动的内部管理：一旦unique_ptr超出范围，所包含的对象就会被自动销毁，即使它在一个容器中或者有一个异常。此外，它不允许有重复的指针，这可以防止所有权问题。我们这样做，是因为我们希望能够
  * i) 构建问题，ii) 读取参数，iii)
  * 根据参数文件中指定的内容初始化所有对象。
- * 我们在派生于ParameterAcceptor的内部类`Parameters`中构建我们问题的参数。`DistributedLagrangeProblem`类需要一个对`Parameters`对象的常量引用，因此不可能从DistributedLagrangeProblem类本身修改参数。
+ * 我们在派生于ParameterAcceptor的内部类`Parameters`中构建我们问题的参数。DistributedLagrangeProblem
+ * "类需要一个对 "Parameters
+ * "对象的常量引用，因此不可能从DistributedLagrangeProblem类本身修改参数。
  * 我们可以先初始化参数，然后将参数传递给DistributedLagrangeProblem，假设所有条目都设置为所需的值，但这有两个缺点。
+ *
+ *
  *
  *
  *
@@ -433,10 +423,10 @@
  *
  *
  *
- * - 并非所有需要从参数文件中读取参数的对象在我们构造参数时都可以使用；对于复杂的程序，有多种物理现象，或者我们在一些外部类中重复使用现有的代码，往往是这种情况。我们通过将一些 "复杂 "的对象，如ParsedFunction对象，保留在`DistributedLagrangeProblem`内而不是`Parameters`内来模拟这一点。
+ *
+ *
+ * - 当我们构造参数时，并不是所有需要从参数文件中读取参数的对象都是可用的；对于复杂的程序，有多种物理现象，或者我们在一些外部类中重复使用现有的代码，往往是这种情况。我们通过将一些 "复杂 "的对象，如ParsedFunction对象，保留在`DistributedLagrangeProblem`内而不是`Parameters`内来模拟这种情况。
  * 这里我们假设在构建时，构建我们问题的类还不能使用。解析参数文件是确保我们有所有的成分来建立我们的类，我们的设计是，如果解析失败，或者没有被执行，运行就会被中止。
- *
- *
  *
  *
  * @code
@@ -450,7 +440,6 @@
  * ParameterAcceptor::add_parameter() 方法。
  * 这个函数的成员都是非常量的，但是`DistributedLagrangeProblem`类需要一个对`Parameters`对象的常量引用：这确保参数不会从`DistributedLagrangeProblem`类中被修改。
  *
- *
  * @code
  *   class Parameters : public ParameterAcceptor
  *   {
@@ -459,88 +448,81 @@
  *
  * @endcode
  *
- * 现在描述的参数都可以用参数文件在外部设置：如果运行可执行文件时没有参数文件，程序将用这里定义的默认值创建一个
- * "parameters.prm
+ * 现在描述的参数都可以用参数文件在外部设置：如果运行可执行文件时没有参数文件，程序会用这里定义的默认值创建一个
+ * "参数.prm
  * "文件，然后中止，让用户有机会修改参数.prm文件。
  *
  *
  * 嵌入网格的初始细化，对应于域 $\Omega$  。
- *
  *
  * @code
  *     unsigned int initial_refinement = 4;
  *
  * @endcode
  *
- * 嵌入网格 $\Omega$ 和嵌入网格 $\Gamma$ 之间的互动是通过 $C$
- * 的计算来处理的，这涉及到 $\Omega$ 的所有单元与 $\Gamma$
- * 的部分重叠：对这些单元的更高细化可能会提高我们的计算质量。为此，我们定义了
+ * 嵌入网格 $\Omega$ 和嵌入网格 $\Gamma$
+ * 之间的互动是通过计算 $C$ 来处理的，这涉及到 $\Omega$
+ * 的所有单元与 $\Gamma$
+ * 的部分重叠：对这些单元进行更高的细化可能提高我们计算的质量。为此，我们定义了
  * "delta_refinement"：如果它大于零，那么我们将空间网格中包含嵌入网格顶点的每个单元及其相邻的单元标记出来，执行细化，并重复这个过程
  * "delta_refinement "次。
- *
  *
  * @code
  *     unsigned int delta_refinement = 3;
  *
  * @endcode
  *
- * 开始细化嵌入网格，对应于域 $\Gamma$  。
- *
+ * 开始细化嵌入式网格，对应于域 $\Gamma$ 。
  *
  * @code
  *     unsigned int initial_embedded_refinement = 8;
  *
  * @endcode
  *
- * 边界id的列表，在这个列表中我们施加了同质的Dirichlet边界条件。在其余的边界id上（如果有的话），我们施加同质的诺伊曼边界条件。作为一个默认的问题，我们在
+ * 边界id的列表，在这个列表中我们施加同质的Dirichlet边界条件。在其余的边界id上（如果有的话），我们施加同质的诺伊曼边界条件。作为一个默认的问题，我们在
  * $\partial \Omega$ 上设置了零迪里切特边界条件。
- *
  *
  * @code
  *     std::list<types::boundary_id> homogeneous_dirichlet_ids{0, 1, 2, 3};
  *
  * @endcode
- *  嵌入空间的有限元素程度。  $V_h(\Omega)$
  *
+ * 嵌入空间的有限元素程度。   $V_h(\Omega)$
  *
  * @code
  *     unsigned int embedding_space_finite_element_degree = 1;
  *
  * @endcode
- *  嵌入空间的有限元素程度。  $Q_h(\Gamma)$
  *
+ * 嵌入空间的有限元素程度。   $Q_h(\Gamma)$
  *
  * @code
  *     unsigned int embedded_space_finite_element_degree = 1;
  *
  * @endcode
  *
- * 用于描述嵌入域变形的空间的有限元程度
- *
+ * 用于描述嵌入域的变形的空间的有限元程度
  *
  * @code
  *     unsigned int embedded_configuration_finite_element_degree = 1;
  *
  * @endcode
  *
- * 用于积分耦合的正交公式的阶数
- *
+ * 用于整合耦合的正交公式的顺序
  *
  * @code
  *     unsigned int coupling_quadrature_order = 3;
  *
  * @endcode
  *
- * 如果设置为 "真"，则嵌入式配置函数被解释为位移函数
- *
+ * 如果设置为
+ * "true"，那么嵌入式配置函数将被解释为位移函数
  *
  * @code
  *     bool use_displacement = false;
  *
  * @endcode
- *
- * 在输出中使用的粗略程度
- *
+ *  在输出中使用的粗略程度
  *
  * @code
  *     unsigned int verbosity_level = 10;
@@ -548,7 +530,6 @@
  * @endcode
  *
  * 一个标志，用于跟踪我们是否被初始化了
- *
  *
  * @code
  *     bool initialized = false;
@@ -568,15 +549,12 @@
  *
  * 包含实际参数的对象
  *
- *
  * @code
  *   const Parameters &parameters;
  *
  * @endcode
  *
- * 下面的函数与其他所有的教程程序相似，不同的是，我们现在需要为两个不同系列的对象设置东西，即与embedding*网格有关的对象，以及与embedded*有关的对象。
- *
- *
+ * 下面的函数与其他所有的教程程序相似，不同的是我们现在需要为两个不同系列的对象进行设置，即与embedding*网格相关的对象，以及与embedded*相关的对象。
  *
  *
  * @code
@@ -592,8 +570,6 @@
  * $C$  。
  *
  *
- *
- *
  * @code
  *   void setup_coupling();
  *
@@ -605,9 +581,8 @@
  *
  *
  * @endcode
- *  首先我们收集所有与嵌入空间几何有关的对象
  *
- *
+ * 首先我们收集所有与嵌入空间几何学有关的对象
  *
  *
  * @code
@@ -622,16 +597,14 @@
  * 然后是与嵌入网格有关的，与拉格朗日乘数`lambda`有关的DoFHandler
  *
  *
- *
- *
  * @code
  *   std::unique_ptr<Triangulation<dim, spacedim>> embedded_grid;
  *   std::unique_ptr<FiniteElement<dim, spacedim>> embedded_fe;
  *   std::unique_ptr<DoFHandler<dim, spacedim>>    embedded_dh;
  *
  * @endcode
- *  最后，所有需要形成*内嵌三角形的东西都是如此
  *
+ * 最后，所有需要形成*内嵌三角形的东西。
  *
  * @code
  *   std::unique_ptr<FiniteElement<dim, spacedim>> embedded_configuration_fe;
@@ -641,16 +614,14 @@
  * @endcode
  *
  * ParameterAcceptorProxy类是一个 "透明
- * "的包装器，它源自ParameterAcceptor和作为其模板参数传递的类型。在构造时，参数被分成两部分：第一个参数是转发给ParameterAcceptor类的
+ * "的包装器，从ParameterAcceptor和作为其模板参数传递的类型中衍生出来。在构造时，参数被分成两部分：第一个参数是转发给ParameterAcceptor类的
  * std::string,
- * ，并包含应该用于该类的部分名称，而所有其余的参数都被转发给模板类型的构造器，在这种情况下，转发给
+ * ，并包含应该用于该类的部分名称，而所有其余的参数都被转发给模板类型的构造器，在这里是转发给
  * Functions::ParsedFunction 构造器。
  * 这个类允许你结合ParameterAcceptor注册机制使用现有的类，只要这些类有`declare_parameters()`和`parse_parameters()`成员。
  * 这里就是这种情况，使得利用 Functions::ParsedFunction
  * 类相当容易：不要求用户在代码中为RHS、边界函数等创建新的Function对象（就像在其他大多数教程中那样），这里我们允许用户使用deal.II接口到muParser（http://muparser.beltoforion.de），其中函数的规范不是在编译时完成，而是在运行时，使用一个字符串被解析成一个实际的Function对象。
  * 在这种情况下，`embedded_configuration_function`是一个向量值的Function，根据`parameters.use_displacement`的布尔值，可以被解释为adeformation*或adisplacement*。组件的数量在后面的构造中指定。
- *
- *
  *
  *
  * @code
@@ -660,9 +631,9 @@
  *   std::unique_ptr<Mapping<dim, spacedim>> embedded_mapping;
  *
  * @endcode
- *  我们做同样的事情来指定函数 $g$
- * 的值，这就是我们希望我们的解在嵌入空间中的值。在这种情况下，该函数是一个标量函数。
  *
+ * 我们做同样的事情来指定函数 $g$
+ * 的值，这就是我们希望我们的解在嵌入空间中的值。在这种情况下，该函数是一个标量函数。
  *
  * @code
  *   ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -671,17 +642,15 @@
  * @endcode
  *
  * 与我们对 Functions::ParsedFunction
- * 类所做的类似，我们对ReductionControl类重复同样的做法，允许我们为我们以后要使用的Schur补码迭代求解器指定所有可能的停止标准。
- *
+ * 类所做的类似，我们对ReductionControl类重复同样的做法，允许我们为我们以后使用的Schur补码迭代求解器指定所有可能的停止标准。
  *
  * @code
  *   ParameterAcceptorProxy<ReductionControl> schur_solver_control;
  *
  * @endcode
  *
- * 接下来我们收集所有我们需要的SparsityPattern,
- * SparseMatrix和Vector对象
- *
+ * 接下来我们收集所有我们需要的SparsityPattern, SparseMatrix,
+ * 和Vector对象
  *
  * @code
  *   SparsityPattern stiffness_sparsity;
@@ -701,8 +670,7 @@
  *
  * @endcode
  *
- * TimerOutput类是用来提供一些关于我们程序性能的统计数据。
- *
+ * TimerOutput类被用来提供一些关于我们程序性能的统计数据。
  *
  * @code
  *   TimerOutput monitor;
@@ -712,9 +680,8 @@
  *
  * <a name="DistributedLagrangeProblemParameters"></a>
  * <h3>DistributedLagrangeProblem::Parameters</h3>
- * <h3>DistributedLagrangeProblem::Parameters</h3>.
- * 在构造时，我们也要初始化ParameterAcceptor类，在解析参数文件时，我们希望我们的问题能使用节的名称。
- * 参数文件可以被组织成节/子节/等等：这样做的好处是，定义的对象在共享同一节/子节/等等时可以共享参数。ParameterAcceptor允许使用Unix约定的路径来指定部分名称。如果部分名称以斜线（"/"）开头，那么该部分将被解释为一个绝对路径*，ParameterAcceptor为路径中的每个目录输入一个小节，使用它遇到的最后一个名称作为当前类的登陆小节。
+ * 在构建时，我们也要初始化ParameterAcceptor类，并在解析参数文件时使用我们希望的章节名称。
+ * 参数文件可以被组织成节/子节/等等：这样做的好处是，定义的对象在共享同一节/子节/等等时可以共享参数。ParameterAcceptor允许使用Unix约定的路径来指定部分名称。如果部分名称以斜线（"/"）开头，那么该部分将被解释为绝对路径*，ParameterAcceptor为路径中的每个目录输入一个小节，使用它遇到的最后一个名称作为当前类的登陆小节。
  * 例如，如果你用`ParameterAcceptor("/first/second/third/My
  * Class")`构建你的类，参数将被组织如下。 <div
  * class=CodeFragmentInTutorialComment>
@@ -759,7 +726,7 @@
  * @endcode
  *
  * </div>
- * 如果部分名称*以斜线结尾，那么后续的类将把它解释为全路径：例如，与上面类似，如果我们有两个类，一个用`ParameterAcceptor("/first/second/third/My
+ * 如果部分名称*以斜线结尾，那么后续的类将把它解释为完整的路径：例如，与上面类似，如果我们有两个类，一个用`ParameterAcceptor("/first/second/third/My
  * Class/")`初始化，另一个用`ParameterAcceptor("My Other
  * Class")`，那么得到的参数文件将看起来像。 <div
  * class=CodeFragmentInTutorialComment>
@@ -786,8 +753,7 @@
  * 我们将利用这一点，使我们的`Parameters`成为所有后续构建的类的父*。由于大多数其他的类都是
  * "DistributedLagrangeProblem
  * "的成员，这允许，例如，为两个不同的维度构造两个
- * "DistributedLagrangeProblem"，而不会在这两个问题的参数上有冲突。
- *
+ * "DistributedLagrangeProblem"，而不会在这两个问题的参数中产生冲突。
  *
  * @code
  * template <int dim, int spacedim>
@@ -805,7 +771,18 @@
  *
  *
  *
- * - 在施工时向ParameterAcceptor输入指定的分段
+ *
+ *
+ *
+ *
+ * - 在施工时向ParameterAcceptor输入指定的分节。
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  *
  *
  *
@@ -815,14 +792,27 @@
  *
  *
  *
- * - 调用你可能连接到 ParameterAcceptor::declare_parameters_call_back 的任何信号
  *
  *
  *
  *
  *
- * - 离开了该小节
+ * - 调用你可能附加在 ParameterAcceptor::declare_parameters_call_back 上的任何信号
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * - 离开分节
  * 反过来， ParameterAcceptor::prm.add_parameter 。
+ *
+ *
+ *
  *
  *
  *
@@ -833,7 +823,23 @@
  *
  *
  *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  * - 获取变量的当前值
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  *
  * - 将其转换为一个字符串，作为参数文件的默认值使用
  *
@@ -842,8 +848,11 @@
  *
  *
  *
- * - 在 ParameterAcceptor::prm 中附加一个动作*，当文件被解析时，或当一个条目被设置时，它将更新传递给`add_parameter()`的变量的值，将其设置为输入文件中指定的内容（当然，在输入文件被解析并将文本表示转换为变量的类型之后）。
  *
+ *
+ *
+ *
+ * - 在 ParameterAcceptor::prm 中附加一个动作*，当文件被解析时，或当一个条目被设置时，它会更新传递给`add_parameter()`的变量的值，将其设置为输入文件中指定的内容（当然，是在输入文件被解析并将文本表示法转换为变量的类型之后）。
  *
  * @code
  *   add_parameter("Initial embedding space refinement", initial_refinement);
@@ -876,7 +885,6 @@
  *
  * 一旦参数文件被解析，那么参数就可以使用了。设置内部变量`initialized`为true。
  *
- *
  * @code
  *   parse_parameters_call_back.connect([&]()
  *
@@ -885,8 +893,8 @@
  *
  * @endcode
  *
- * 构造函数是非常标准的，除了前面解释的`ParameterAcceptorProxy`对象之外。
- *
+ * 构造函数是非常标准的，除了 "ParameterAcceptorProxy
+ * "对象，如前所述。
  *
  * @code
  * template <int dim, int spacedim>
@@ -900,7 +908,7 @@
  * {
  * @endcode
  *
- * 这里是为使用ParameterAcceptorProxy构建的ParameterAcceptor类设置默认值的一种方法。
+ * 这里有一种方法可以为使用ParameterAcceptorProxy构建的ParameterAcceptor类设置默认值。
  * 在这种情况下，我们将嵌入式网格的默认变形设置为半径为
  * $R$ 、中心为 $(Cx, Cy)$
  * 的圆，我们将embedded_value_function的默认值设置为常数，并为SolverControl对象指定一些合理的值。
@@ -908,7 +916,6 @@
  * 的定义可以看出，如果 $\Gamma \not\subseteq \Omega$ ，矩阵 $C$
  * 的某些行将为零。这将是一个问题，因为舒尔补码法要求
  * $C$ 具有全列秩。
- *
  *
  * @code
  *   embedded_configuration_function.declare_parameters_call_back.connect(
@@ -943,7 +950,6 @@
  * 是用来设置有限元空间的。注意 `std::make_unique`
  * 是如何用来创建包裹在 `std::unique_ptr` 对象内的对象的。
  *
- *
  * @code
  * template <int dim, int spacedim>
  * void DistributedLagrangeProblem<dim, spacedim>::setup_grids_and_dofs()
@@ -952,9 +958,8 @@
  *
  * @endcode
  *
- * 初始化 $\Omega$ ：构造三角形并将其包裹到 `std::unique_ptr`
- * 对象中
- *
+ * 初始化  $\Omega$  : 构建三角形，并将其包装成一个
+ * `std::unique_ptr` 对象
  *
  * @code
  *   space_grid = std::make_unique<Triangulation<spacedim>>();
@@ -962,16 +967,15 @@
  * @endcode
  *
  * 接下来，我们使用 GridGenerator::hyper_cube().
- * 实际创建三角形，最后一个参数被设置为true：这激活了着色（即为边界的不同部分分配不同的边界指标），我们用它来分配Dirichlet和Neumann条件。
- *
+ * 实际创建三角形，最后一个参数设置为真：这激活了着色（即为边界的不同部分分配不同的边界指标），我们用它来分配迪里切特和诺伊曼条件。
  *
  * @code
  *   GridGenerator::hyper_cube(*space_grid, 0, 1, true);
  *
  * @endcode
+ *
  * 一旦我们构建了一个三角形，我们就根据参数文件中的规格对其进行全局细化，并用它构建一个
  * GridTools::Cache 。
- *
  *
  * @code
  *   space_grid->refine_global(parameters.initial_refinement);
@@ -980,8 +984,7 @@
  *
  * @endcode
  *
- * 对嵌入式网格也是这样做的。由于嵌入式网格是变形的，我们首先需要设置变形映射。我们在下面几行中这样做。
- *
+ * 对嵌入式网格也是如此。由于嵌入式网格是变形的，我们首先需要设置变形映射。我们在下面几行中这样做。
  *
  * @code
  *   embedded_grid = std::make_unique<Triangulation<dim, spacedim>>();
@@ -1004,7 +1007,6 @@
  * 一旦我们为变形定义了一个有限维度的空间，我们就对参数文件中定义的
  * "嵌入_配置_函数 "进行插值。
  *
- *
  * @code
  *   VectorTools::interpolate(*embedded_configuration_dh,
  *                            embedded_configuration_function,
@@ -1012,13 +1014,11 @@
  *
  * @endcode
  *
- * 现在我们可以根据用户在参数文件中指定的内容来解释它：作为位移，在这种情况下，我们构建一个映射，将我们配置有限元空间的每个支撑点的位置在相应的配置矢量上按指定的量进行位移*，或者作为一个缺省位置。
- * 在第一种情况下，MappingQEulerian类提供其服务，而在第二种情况下，我们将使用MappingFEField类。它们实际上是非常相似的。MappingQEulerian只适用于FE_Q有限元空间系统，其中位移矢量被存储在FESystem的第一个`spacedim`分量中，并且在构造时作为参数给出的度数必须与第一个`spacedim`分量的度数相匹配。
+ * 现在我们可以根据用户在参数文件中指定的内容来解释它：作为位移，在这种情况下，我们构建一个映射，将我们的配置有限元空间的每个支持点的位置在相应的配置矢量上按指定的量进行位移*，或者作为赦免位置。
+ * 在第一种情况下，MappingQEulerian类提供其服务，而在第二种情况下，我们将使用MappingFEField类。它们实际上是非常相似的。MappingQEulerian只适用于FE_Q有限元空间系统，其中位移矢量存储在FES系统的第一个`spacedim`分量中，并且在构造时作为参数给出的度数必须与第一个`spacedim`分量的度数一致。
  * MappingFEField类稍显一般，因为它允许你在构造近似时选择任意的FiniteElement类型。当然，根据你选择的FiniteElement的类型，一些选择可能（也可能没有）意义。MappingFEField实现了纯粹的等参量概念，例如，可以通过与FE_Bernstein有限元类结合，在deal.II中实现等参量分析代码。在这个例子中，我们将考虑到一个配置将是一个
  * "位移"，而另一个将是一个绝对的 "变形
  * "场，从而将两者互换使用。
- *
- *
  *
  *
  * @code
@@ -1044,9 +1044,8 @@
  * 有了这个映射，现在就可以通过调用方法
  * DoFTools::map_dofs_to_support_points.
  * 来查询与`嵌入式_dh'相关的所有支持点的位置。
- * 这个方法有两个变体。一种是不*接受Mapping，另一种是接受Mapping。如果你使用第二种类型，就像我们在这种情况下所做的那样，支持点是通过指定的映射来计算的，它可以对它们进行相应操作。
+ * 这个方法有两个变体。一种是不*接受Mapping，另一种是接受Mapping。如果你使用第二种类型，就像我们在这个案例中做的那样，支持点是通过指定的映射来计算的，它可以对它们进行相应的操作。
  * 这正是`embedded_mapping`的作用。
- *
  *
  * @code
  *   std::vector<Point<spacedim>> support_points(embedded_dh->n_dofs());
@@ -1057,27 +1056,26 @@
  *
  * @endcode
  *
- * 一旦我们有了嵌入有限元空间的支持点，我们就想确定嵌入空间的哪些单元包含哪些支持点，以便有机会在必要的地方细化嵌入网格，也就是嵌入网格的位置。这可以手动完成，通过循环每个支持点，然后为嵌入空间的每个单元调用方法
+ * 一旦我们有了嵌入有限元空间的支持点，我们就想确定嵌入空间的哪些单元包含哪些支持点，以便在有必要的地方，也就是嵌入网格的地方，获得完善嵌入网格的机会。这可以手动完成，在每个支持点上循环，然后为嵌入空间的每个单元调用方法
  * Mapping::transform_real_to_unit_cell
  * ，直到我们找到一个返回单位参考单元中的点，或者可以用更智能的方式完成。
  * GridTools::find_active_cell_around_point
- * 是一个可能的选择，它以更便宜的方式执行上述任务，首先确定嵌入三角的最接近目标点的顶点，然后只对那些共享找到的顶点的单元格调用
+ * 是一个可能的选择，它以更便宜的方式执行上述任务，首先确定嵌入三角的最接近目标点的顶点，然后只对那些共享找到的顶点的单元调用
  * Mapping::transform_real_to_unit_cell 。
  * 事实上，在GridTools命名空间中，有一些算法利用
  * GridTools::Cache
  * 对象，可能还有KDTree对象来尽可能地加快这些操作。
  * 利用最大速度的最简单的方法是调用一个专门的方法，
  * GridTools::compute_point_locations,
- * 在第一次点搜索时，会存储很多有用的信息和数据结构，然后在后续的点中重复使用所有这些信息。
+ * ，在第一个点的搜索过程中会存储很多有用的信息和数据结构，然后在后续的点上重用所有这些。
  * GridTools::compute_point_locations
- * 返回一个元组，其中第一个元素是一个包含输入点的单元格向量，在这里是support_points。对于细化来说，这是我们唯一需要的信息，而这正是现在所发生的。
+ * 返回一个元组，其中第一个元素是一个包含输入点的单元格向量，在这里是support_points。对于细化，这是我们唯一需要的信息，而这正是现在发生的事情。
  * 然而，当我们需要组装一个耦合矩阵时，我们还需要每个点的参考位置来评估嵌入空间的基础函数。由
  * GridTools::compute_point_locations
  * 返回的元组的其他元素允许你重建，对于每个点，什么单元包含它，以及什么是给定点的参考单元的位置。由于这些信息最好被分组到单元格中，那么这就是算法返回的内容：一个元组，包含所有单元格中至少有一个点的向量，以及所有参考点的列表和它们在原始向量中的相应索引。
  * 在下面的循环中，我们将忽略所有返回的对象，除了第一个，确定所有单元格至少包含一个嵌入空间的支持点。这允许一个简单的自适应细化策略：细化这些单元和它们的邻居。
- * 请注意，我们需要做一些理智的检查，在这个意义上，我们希望有一个嵌入网格，它在嵌入网格周围被很好地细化，但其中两个连续的支持点要么位于同一个单元，要么位于邻居嵌入单元。
- * 这只有在我们确保嵌入网格的最小单元尺寸仍然大于嵌入网格的最大单元尺寸时才有可能。由于用户可以修改细化水平，以及他们希望在嵌入网格周围进行的局部细化的数量，我们要确保所得到的网格满足我们的要求，如果不是这样，我们就以例外的方式放弃。
- *
+ * 注意，我们需要做一些理智的检查，在这个意义上，我们希望有一个嵌入网格，它在嵌入网格周围被很好地细化，但其中两个连续的支持点要么位于同一个单元，要么位于邻居嵌入单元。
+ * 这只有在我们确保嵌入网格的最小单元尺寸仍然大于嵌入网格的最大单元尺寸的情况下才能实现。由于用户可以修改细化水平，以及他们希望在嵌入网格周围进行的局部细化的数量，我们要确保所得到的网格满足我们的要求，如果不是这样，我们就以例外的方式放弃。
  *
  * @code
  *   for (unsigned int i = 0; i < parameters.delta_refinement; ++i)
@@ -1098,17 +1096,16 @@
  *
  * @endcode
  *
- * 为了构造一个良好的耦合插值算子 $C$
+ * 为了构建一个良好的耦合插值算子 $C$
  * ，对嵌入域和被嵌入域之间的网格的相对尺寸有一些限制。耦合算子
  * $C$ 和空间 $V$ 和 $Q$
  * 必须满足一个inf-sup条件，以使问题有一个解决方案。事实证明，只要空间
  * $V$ 和 $Q$
- * 之间相互兼容（例如，只要它们被选为引言中所述的空间），非匹配的
- * $L^2$ 投影就满足这种inf-sup条件。 然而，discrete*
- * inf-sup条件也必须成立。这里没有出现复杂的情况，但事实证明，当非匹配网格的局部直径离得太远时，离散的inf-sup常数会恶化。特别是，事实证明，如果你选择了一个相对于嵌入网格更细*的嵌入网格，inf-sup常数的恶化程度要比你让嵌入网格更细的情况下要大得多。
+ * 之间相互兼容（例如，只要它们被选为引言中描述的那些），非匹配
+ * $L^2$ 投影就满足这样的inf-sup条件。 然而，discrete*
+ * inf-sup条件也必须成立。这里没有出现复杂的情况，但事实证明，当非匹配网格的局部直径离得太远时，离散inf-sup常数会恶化。特别是，事实证明，如果你选择一个相对于嵌入网格更细*的嵌入网格，那么inf-sup常数的恶化程度要比你让嵌入网格更细的情况下大得多。
  * 为了避免问题，在本教程中，如果用户选择的参数使嵌入网格的最大直径大于嵌入网格的最小直径，我们将抛出一个异常。
- * 这种选择保证了几乎每个嵌入网格的单元都不超过两个嵌入网格的单元，但也有一些罕见的例外，这些例外在产生的inf-sup方面可以忽略不计。
- *
+ * 这种选择保证了几乎每个嵌入网格的单元都不超过两个嵌入网格的单元，只有一些罕见的例外，这些例外在结果的inf-sup方面可以忽略不计。
  *
  * @code
  *   const double embedded_space_maximal_diameter =
@@ -1134,17 +1131,17 @@
  *
  * @endcode
  *
- * $\Omega$ 已经被完善，我们现在可以设置它的DoF了
+ * $\Omega$ 已被完善，我们现在可以设置它的DoF了
  *
  * @code
  *   setup_embedding_dofs();
  * }
  *
  * @endcode
- *  我们现在设置 $\Omega$ 和 $\Gamma$
- * 的DoF：因为它们基本上是独立的（除了 $\Omega$ 的网格在
- * $\Gamma$ 周围更加精细），所以程序是标准的。
  *
+ * 我们现在设置 $\Omega$ 和 $\Gamma$
+ * 的DoF：因为它们从根本上是独立的（除了 $\Omega$
+ * 的网格在 $\Gamma$ 周围更加精细），程序是标准的。
  *
  * @code
  * template <int dim, int spacedim>
@@ -1164,8 +1161,8 @@
  *   constraints.close();
  *
  * @endcode
- *  根据定义，刚度矩阵只涉及 $\Omega$ 的DoFs。
  *
+ * 根据定义，刚度矩阵只涉及 $\Omega$ 的DoF。
  *
  * @code
  *   DynamicSparsityPattern dsp(space_dh->n_dofs(), space_dh->n_dofs());
@@ -1187,9 +1184,9 @@
  *   embedded_dh->distribute_dofs(*embedded_fe);
  *
  * @endcode
- *  根据定义，我们要解决的系统的Rhs只涉及一个零向量和
- * $G$ ，它只用 $\Gamma$ 的DoF来计算。
  *
+ * 根据定义，我们要解决的系统的Rhs只涉及一个零向量和
+ * $G$ ，它只用 $\Gamma$ 的DoF计算。
  *
  * @code
  *   lambda.reinit(embedded_dh->n_dofs());
@@ -1201,10 +1198,9 @@
  *
  * @endcode
  *
- * 创建耦合稀疏模式是一个复杂的操作，但是可以使用
+ * 创建耦合稀疏模式是一个复杂的操作，但可以使用
  * NonMatching::create_coupling_sparsity_pattern,
- * 轻松完成，它需要两个DoFHandler对象，耦合的正交点，一个DynamicSparsityPattern（然后需要复制到稀疏模式中，像往常一样），嵌入和嵌入三角形的分量掩码（我们留空）以及嵌入和嵌入三角形的映射关系。
- *
+ * 轻松完成，它需要两个DoFHandler对象，耦合的正交点，一个DynamicSparsityPattern（然后需要像往常一样复制到稀疏模式中），嵌入和嵌入三角形的分量掩码（我们留空）以及嵌入和嵌入三角形的映射。
  *
  * @code
  * template <int dim, int spacedim>
@@ -1231,9 +1227,8 @@
  *
  * @endcode
  *
- * <a name="Assembly"></a> <h3>Assembly</h3>
+ * <a name="Assembly"></a> <h3>Assembly</h3>.
  * 以下函数创建矩阵：如前所述，计算刚度矩阵和rhs是一个标准程序。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1244,7 +1239,7 @@
  *
  * @endcode
  *
- * 嵌入刚度矩阵  $K$  ，以及右手  $G$  。
+ * 嵌入刚度矩阵  $K$  ，以及右手边  $G$  。
  * @code
  *     MatrixTools::create_laplace_matrix(
  *      space_dh,
@@ -1267,8 +1262,7 @@
  *
  * 为了计算耦合矩阵，我们使用
  * NonMatching::create_coupling_mass_matrix 工具，其工作原理与
- * NonMatching::create_coupling_sparsity_pattern. 类似。
- *
+ * NonMatching::create_coupling_sparsity_pattern. 相似。
  *
  * @code
  *     QGauss<dim> quad(parameters.coupling_quadrature_order);
@@ -1294,7 +1288,6 @@
  * <a name="Solve"></a> <h3>Solve</h3>。
  * 所有的部分都已经组装好了：我们用舒尔补数法解决这个系统
  *
- *
  * @code
  * template <int dim, int spacedim>
  * void DistributedLagrangeProblem<dim, spacedim>::solve()
@@ -1302,9 +1295,7 @@
  *   TimerOutput::Scope timer_section(monitor, "Solve system");
  *
  * @endcode
- *
- * 从创建反刚度矩阵开始
- *
+ *  从创建反刚度矩阵开始
  *
  * @code
  *   SparseDirectUMFPACK K_inv_umfpack;
@@ -1313,7 +1304,6 @@
  * @endcode
  *
  * 初始化运算符，如介绍中所述
- *
  *
  * @code
  *   auto K  = linear_operator(stiffness_matrix);
@@ -1325,7 +1315,6 @@
  * @endcode
  *
  * 使用舒尔补数法
- *
  *
  * @code
  *   auto                     S = C K_inv Ct;
@@ -1340,9 +1329,7 @@
  * }
  *
  * @endcode
- *
  * 下面的函数只是在两个独立的文件上生成标准结果输出，每个网格一个。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1362,11 +1349,9 @@
  *
  * @endcode
  *
- * 这两个输出例程的唯一区别是，在第二种情况下，我们要输出当前配置的数据，而不是参考配置的数据。这可以通过将实际的embedded_mapping传递给
+ * 这两个输出例程之间的唯一区别是，在第二种情况下，我们想在当前配置上输出数据，而不是在参考配置上。这可以通过将实际的embedded_mapping传递给
  * DataOut::build_patches
  * 函数来实现。该映射将负责在实际变形的配置上输出结果。
- *
- *
  *
  *
  * @code
@@ -1385,7 +1370,6 @@
  * @endcode
  *
  * 与所有其他教程程序类似，`run()`函数只是按正确的顺序调用所有其他方法。没有什么特别需要注意的，只是在我们实际尝试运行我们的程序之前，我们检查是否完成了解析。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1419,11 +1403,9 @@
  * ParameterAcceptor::initialize
  * 发出一次调用，以填充从ParameterAcceptor派生的类的所有参数。
  * 我们检查用户是否在程序启动时指定了一个参数文件名来使用。如果是，就尝试读取该参数文件，否则就尝试读取文件
- * "parameters.prm"。
+ * "参数.prm"。
  * 如果指定的参数文件（隐含的或明确的）不存在，
  * ParameterAcceptor::initialize 将为你创建一个，并退出程序。
- *
- *
  *
  *
  * @code
@@ -1468,7 +1450,6 @@
  * }
  * @endcode
  * <a name="Results"></a><h1>Results</h1> 。
- *
  * 运行这个程序的目录中默认不包含参数文件。另一方面，这个程序想从一个叫做parameters.prm的文件中读取它的参数。
  *
  * 因此，当你第一次执行它时，你会得到一个异常，即找不到这样的文件。
@@ -1668,10 +1649,8 @@
  * @endcode
  *
  * 你会得到与下面测试案例1完全相同的结果。 <a
- * name="Testcase1"></a><h3> Test case 1: </h3> 。
- *
- *  对于默认问题， $u$ 在 $\Gamma$ 上的值被设置为常数 $1$
- * ：这就像在 $\Gamma$
+ * name="Testcase1"></a><h3> Test case 1: </h3> 。   对于默认问题，
+ * $u$ 在 $\Gamma$ 上的值被设置为常数 $1$ ：这就像在 $\Gamma$
  * 上施加一个常数迪里切特边界条件，被视为 $\Omega$ 在
  * $\Gamma$ 内的部分的边界。同样，在 $\partial \Omega$
  * 上我们有零迪里切特边界条件。
@@ -1683,7 +1662,7 @@
  * align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-60.1_grid.png" alt
  * = "" width="500"> </div> </div> </div>
- * 程序的输出将看起来像下面这样。
+ * 该程序的输出结果将如下所示。
  * @code
  * DEAL::Embedded dofs: 129
  * DEAL::Embedding minimal diameter: 0.0110485, embedded maximal diameter: 0.00781250, ratio: 0.707107
@@ -1731,7 +1710,7 @@
  * 为了玩一玩，我们要把虚构的领域以及我们施加在它上面的边界条件复杂化一点。
  * <a name="Testcase2and3"></a><h3> Test case 2 and 3: </h3> 。
  *
- *  如果我们使用下面的参数文件。
+ *  如果我们使用以下参数文件。
  * @code
  * subsection Distributed Lagrange<1,2>
  * set Coupling quadrature order                    = 3
@@ -1765,7 +1744,7 @@
  * end
  * @endcode
  *
- * 我们得到一个看起来 "花花绿绿
+ * 我们得到一个看起来像 "花
  * "的域，在这里我们施加一个线性边界条件  $g=x-.5$
  * 。这个测试表明，该方法在从其边界条件中恢复一个完全线性的函数方面实际上是相当准确的，即使网格没有对齐，我们也得到了一个相当好的结果。
  * 用 $2(x-.5)^2-2(y-.5)^2$ 替换 $x-.5$
@@ -1787,24 +1766,23 @@
  * = "" width="500"> </div> </div> </div> <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
  * 。   <a name="Runningwithspacedimequaltothree"></a><h4> Running with
- * `spacedim` equal to three</h4> 。   虽然目前的教程程序是为
+ * `spacedim` equal to three</h4>。   虽然目前的教程程序是为
  * "spacedim
  * "等于2而编写的，但为了使程序能够在不同的尺寸组合中运行，你只需要做一些小的改动。
  * 如果你想在 "spacedim "等于3，"dim
- * "等于2的情况下运行，你几乎肯定要做以下改变。
+ * "等于2的情况下运行，你几乎肯定要做以下改动。
  *
- * - 为嵌入式网格使用不同的参考域，也许是从文件中读取。不可能用一个正方形域的单一参数来构造一个光滑的封闭表面，因此你很可能想用一个拓扑学上等同于球体边界的参考域。
+ * - 为嵌入式网格使用不同的参考域，也许是从文件中读取。不可能用一个正方形域的单一参数来构造一个光滑的封闭表面，因此你很可能想使用一个拓扑学上等同于球体边界的参考域。
  *
  * - 使用位移而不是变形来将 $\Gamma_0$ 映射到 $\Gamma$ 。
  * <a name="Moregeneraldomains"></a><h4> More general domains </h4>。
  *
  *  我们已经在其他教程中看到（例如在 step-5 和 step-54
- * ）如何从输入文件中读取网格。这个教程程序的一个很好的概括是允许用户从参数文件中选择要读取的网格，而不是在教程程序本身硬编码网格类型。
+ * ）如何从输入文件中读取网格。对于这个教程程序来说，一个很好的概括是允许用户从参数文件中选择要读取的网格，而不是在教程程序本身硬编码网格类型。
  * <a name="Preconditioner"></a><h4> Preconditioner</h4> 。
- *
- * 目前，我们没有关于Schur补数的预处理程序。这在二维问题上是可以的，几百次的迭代就可以把残差降到机器的精度，但是在三维问题上就不可行了。
+ * 目前，我们没有关于Schur补数的预处理程序。这在二维问题上是可以的，几百次迭代就可以把残差降低到机器的精度，但在三维问题上就不行了。
  * 在这里，好的预处理程序是什么并不明显。我们用舒尔补码解决的物理问题是将迪里切特数据
- * $g$ 与拉格朗日乘数 $\lambda$ 的值联系起来。  $\lambda$
+ * $g$ 与拉格朗日乘数 $\lambda$ 的值联系起来。   $\lambda$
  * 可以解释为法线梯度的跳跃*，需要强加在 $u$ 和 $\Gamma$
  * 之间，以获得Dirichlet数据 $g$ 。 所以 $S$
  * 是某种诺伊曼到迪里切特的地图，我们希望有一个迪里切特到诺伊曼地图的良好近似。一个可能性是使用
@@ -1813,7 +1791,7 @@
  * <a name="ParallelCode"></a><h4> Parallel Code </h4>
  *
  * 这里提出的简单代码可以作为更复杂问题的起点，要解决这些问题，需要在并行代码上运行，可能使用分布式网格（见
- * step-17 ， step-40 ，以及 parallel::shared::Triangulation 和
+ * step-17 、 step-40 ，以及 parallel::shared::Triangulation 和
  * parallel::distributed::Triangulation). 的文档）。
  * 当并行使用非匹配网格时，会出现一个问题：为了计算矩阵
  * $C$
@@ -1831,7 +1809,7 @@
  * 后一种策略显然是最容易实现的，因为本教程程序中使用的大多数函数在并行情况下也会不变地工作。当然，我们可以使用反转策略（即有一个分布式嵌入式三角函数和一个共享的嵌入三角函数）。
  * 然而，这种策略很可能会更加昂贵，因为根据定义，嵌入网格要比嵌入网格大，而且分布两个网格中最大的网格更有意义，保持所有处理器之间共享的小石块。
  *
-* <a name="PlainProg"></a><h1> The plain program</h1> @include "step-60.cc"
+* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-60.cc"  。
  *
  */
 

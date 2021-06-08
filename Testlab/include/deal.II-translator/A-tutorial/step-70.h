@@ -48,7 +48,7 @@
  * StokesImmersedProblem class implementation</a>
  * <ul>
  * <li><a href="#Objectconstructionandmeshinitializationfunctions">Object
- * construction and mesh initialization functions</a> ]<a
+ * construction and mesh initialization functions</a><a
  * href="#Objectconstructionandmeshinitializationfunctions">Object
  * construction and mesh initialization functions</a>
  * <li><a href="#Particleinitializationfunctions">Particle initialization
@@ -94,13 +94,11 @@
  * Gassmöller (University of California Davis) </i>
  * @dealiiTutorialDOI{10.5281/zenodo.3829064,https://zenodo.org/badge/DOI/10.5281/zenodo.3829064.svg}
  *
- *  <a name="Introduction"></a><h1>Introduction</h1>
- *
- *  <a
+ *  <a name="Introduction"></a><h1>Introduction</h1>   <a
  * name="Massivelyparallelnonmatchinggridsimulationsoffluidstructureinteractionproblems"></a><h3>Massively
  * parallel non-matching grid simulations of fluid structure interaction
  * problems</h3>
- * 在本教程中，我们考虑了层流体系中的混合问题。这种问题在从化学工程到发电（如涡轮机械）的广泛应用中都会出现。混合问题特别难以用数值解决，因为它们通常涉及一个容器（有固定的边界，可能还有复杂的几何形状，如挡板），由域
+ * 在本教程中，我们考虑了层流体系中的混合问题。这种问题在从化学工程到发电（如涡轮机械）的广泛的应用中出现。混合问题特别难以用数值解决，因为它们通常涉及一个容器（有固定的边界，可能还有复杂的几何形状，如挡板），由域
  * $\Omega$ 表示，和一个（或多个）浸入和旋转的叶轮（由域
  * $\Omega^{\text{imp}}$
  * 表示）。我们想解决流动方程的域是两个域之间的（随时间变化）差异，即。
@@ -117,13 +115,13 @@
  * 来表示 ${\mathbb R}^{\text{spacedim}}$
  * 中代表流体和叶轮容器的域，并且我们在 ${\mathbb
  * R}^{\text{dim}}$ 中使用 $\Gamma$
- * ]表示整个叶轮（当它的`spacedim'度量是不可忽略的，也就是说，当我们可以把它表示为维数`dim'等于`spacedim'的网格），薄叶轮的同维表示，或者只是整个叶轮的边界。
+ * 表示整个叶轮（当它的`spacedim'度量是不可忽略的，也就是说，当我们可以把它表示为维数`dim'等于`spacedim'的网格），薄叶轮的同维表示，或者只是整个叶轮的边界。
  * 域 $\Gamma$ 被嵌入到 $\Omega$ （ $\Gamma \subseteq \Omega$
  * ）中，它是不匹配的：一般来说，它不与体积网格的任何特征对齐。我们在
  * $\Omega$
- * 上求解一个偏微分方程，通过一些惩罚技术在嵌入域
+ * 上求解一个偏微分方程，通过一些惩罚技术对嵌入域
  * $\Gamma$
- * 上强制执行一些问题的解决条件。在当前情况下，条件是流体在
+ * 上的问题的求解执行一些条件。在当前情况下，条件是流体在
  * $\Gamma$ 上各点的速度等于固体叶轮在该点的速度。
  * 我们在此描述的技术在文献中使用了一个名称：<b>immersed
  * finite element method</b>和<b>fictitious boundary method</b>等。
@@ -140,7 +138,7 @@
  * step-60 的实现中是不可能的）。 当人们想在嵌入域 $\Gamma$
  * 上执行条件时，有两种有趣的情况发生。
  *
- * - 嵌入域 $\Gamma$ 的几何维度`dim`与域 $\Omega$ 相同（`spacedim`），即 $\Gamma$ 的spacedim维度不是零。在这种情况下，对 $\Gamma$ 施加Dirichlet边界条件是通过体积惩罚完成的。如果施加的惩罚只取决于速度，这通常被称为 $\mathcal{L}^2$ 惩罚，而如果惩罚同时取决于速度及其梯度，则是 $\mathcal{H}^1$ 惩罚。 $\mathcal{L}^2$ 惩罚的情况与达西型方法非常相似。对 $\mathcal{L}^2$ 和 $\mathcal{H}^1$ 两种惩罚方式都进行了广泛的分析（例如，见 @cite Angot1999 ）。
+ * - 嵌入域 $\Gamma$ 的几何维度`dim`与域 $\Omega$ 相同（`spacedim`），即 $\Gamma$ 的spacedim维度不是零。在这种情况下，对 $\Gamma$ 施加Dirichlet边界条件是通过体积惩罚完成的。如果施加的惩罚只取决于速度，这通常被称为 $\mathcal{L}^2$ 惩罚，而如果惩罚同时取决于速度及其梯度，则是 $\mathcal{H}^1$ 惩罚。 $\mathcal{L}^2$ 惩罚的情况与达西型方法非常相似。对 $\mathcal{L}^2$ 和 $\mathcal{H}^1$ 两种惩罚方法都进行了广泛的分析（例如，见 @cite Angot1999 ）。
  *
  * - 嵌入域 $\Gamma$ 的内在维度`dim`小于 $\Omega$ 的维度（`spacedim`），因此其spacedim维度为零；例如，它是一条嵌入二维域的曲线，或嵌入三维域的面。当然，这在物理学上是不可能的，但是如果金属片的厚度可以忽略不计的话，我们可以把在流体中运动的非常薄的金属片视为本质上的低维。在这种情况下，边界条件通过应用<a href="https://en.wikipedia.org/wiki/Joachim_Nitsche">Nitsche</a>方法弱化地施加在 $\Gamma$ 上（见 @cite Freund1995  ）。
  * 这两种方法都有非常相似的要求，并产生了非常相似的公式。因此，我们几乎以同样的方式对待它们。
@@ -225,7 +223,7 @@
  * 这对所有测试函数 $\phi = \begin{pmatrix}\textbf{v} \\
  * q\end{pmatrix}$ 都必须成立。
  *
- * 通过部分积分并利用 $\partial\Omega$ 上的边界条件，我们得到以下变分问题：@f{eqnarray*}{
+ * *通过部分积分并利用 $\partial\Omega$ 的边界条件，我们得到以下变分问题：@f{eqnarray*}{
  * (\nabla \textbf{v}, \nabla \textbf{u})_{\Omega}
  *
  * - (\textrm{div}\; \textbf{v}, p)_{\Omega}
@@ -235,17 +233,17 @@
  *
  *
  * - (q, \textrm{div}\; \textbf{u})_{\Omega}&=& 0
- * @f} 。
- *  其中 $(\cdot, \cdot)_{\Omega}$ 代表 $L^2$ 的标量产品。这与
- * step-22 中使用的变异形式相同。 与 step-60
- * 相反，我们没有对 $\textbf{u}$ 的约束条件在 $\Gamma$
+ * @f}
+ *
+ * 其中 $(\cdot, \cdot)_{\Omega}$ 代表 $L^2$ 的标量积。这与 step-22
+ * 中使用的变异形式相同。 与 step-60 相反，我们没有对
+ * $\textbf{u}$ 的约束条件在 $\Gamma$
  * 上进行强执行，而是通过惩罚项进行弱执行。
  * 对这种弱的边界条件的分析取决于 $\Gamma$
  * 的spacedim-dimensional度量是正的（如果`dim`等于`spacedim`）还是零（如果`dim`小于`spacedim`）。我们讨论这两种情况.
  *
- *  <a name="Codimensiononecase"></a><h4>Co-dimension one case</h4>.
- *
- *  在这种情况下，我们假设 $\Gamma$
+ *  <a name="Codimensiononecase"></a><h4>Co-dimension one case</h4>
+ * 在这种情况下，我们假设 $\Gamma$
  * 是实际叶轮的边界，即嵌入二维域的封闭曲线或三维域的封闭表面。该方法的思路是考虑按照Nitsche方法，对
  * $\Gamma$
  * 弱加迪里切特边界条件。这是通过在流体域上使用以下修改后的公式来实现的，其中没有对
@@ -348,10 +346,10 @@
  * \leq 10$
  * 。这就像人们通常用Nitschepenalty方法来强制执行Dirichlet边界条件那样。
  * 另一方面，非对称方法与人们如何为非连续Galerkin方法的非对称内部惩罚方法（"NIPG
- * "方法 @cite Riviere1999 ）加强连续性有关。
- * ]。即使非对称情况在稳定参数的可能选择方面似乎更有优势，我们还是选择了对称分解，因为在这种情况下，可以证明对偶问题也是一致的，导致一个解决方案，不仅解决方案的能量准则以正确的顺序收敛，而且其
+ * "方法 @cite Riviere1999
+ * ）加强连续性有关。]。即使非对称情况在稳定参数的可能选择方面似乎更有优势，我们还是选择了对称分解，因为在这种情况下，可以证明对偶问题也是一致的，导致一个解决方案，不仅解决方案的能量准则以正确的顺序收敛，而且其
  * $L^2$ 准则也是如此。此外，得到的矩阵仍然是对称的。
- * 上述公式是在假设领域被完全离散化的情况下进行的。然而，如果叶轮的变形是一种刚体运动，就有可能人为地将斯托克斯问题的解决方案扩展到螺旋桨本身，因为刚体运动也是斯托克斯问题的解决方案。我们的想法是在
+ * 上述表述是在假设领域被精确离散化的情况下进行的。然而，如果叶轮的变形是一种刚体运动，就有可能人为地将斯托克斯问题的解决方案扩展到螺旋桨本身，因为刚体运动也是斯托克斯问题的解决方案。我们的想法是在
  * $\Omega^{\text{imp}}$ 内解决同样的问题，在 $\Gamma$
  * 上施加同样的边界条件，使用同样的惩罚技术，并用在
  * $\Omega$ 上全局连续的测试函数 $\mathbf{v}$ 来测试。
@@ -410,7 +408,7 @@
  * $\Gamma$
  * 只在有限的几个点上切过一个单元与它的边界相交，所有在
  * $\Gamma$
- * 上的贡献，除了稳定化的之外，可以从公式中忽略掉，结果形成以下最终形式的变分公式。
+ * 上的贡献，除了稳定化的贡献外，都可以从公式中忽略，结果形成以下最终形式的变分公式。
  * @f{multline*}{
  * (\nabla \textbf{v}, \nabla \textbf{u})_{\Omega}
  *
@@ -433,12 +431,11 @@
  * $\textbf{u}$ 不会与规定的速度 $\textbf{g}$
  * 完全匹配，而只能达到与有限元方法的插值误差相同的数值误差。此外，正如在
  * step-60
- * 中，我们仍然需要对当时的嵌入式网格进行积分，以构建必要的边界项来施加边界条件
+ * 中，我们仍然需要对当时的嵌入式网格进行积分，以构建必要的边界项，对其施加边界条件
  * $\Gamma$  。
  *
  *  <a name="Codimensionzerocase"></a><h4>Co-dimension zero case</h4> 。
- *
- *  在这种情况下， $\Gamma$ 具有相同的尺寸，但是被嵌入到
+ * 在这种情况下， $\Gamma$ 具有相同的维度，但是被嵌入到
  * $\Omega$ 中。在 $\mathcal{L}^2$
  * 惩罚的情况下，额外的惩罚项可以被解释为 $\Gamma$
  * 中的达西项，结果是。
@@ -491,17 +488,16 @@
  * 注意 $L^2$
  * 的惩罚（`dim`等于`spacedim`）和Nitsche的惩罚（`dim`等于`spacedim-1`）的结果是完全相同的数值实现，这要感谢deal.II的独立维度能力。
  *
- *  <a name="Representationofand"></a><h4>Representation of Ω and Γ</h4> 。
- *
- *  在本教程中，嵌入网格 $\Gamma$ 和嵌入网格都是用
- * parallel::distributed::Triangulation. 来描述的。
- * 这两个三角计算可以通过GridGenerator命名空间中的函数来建立，或者通过读取其他应用程序（例如GMSH，见
+ *  <a name="Representationofand"></a><h4>Representation of Ω and Γ</h4>
+ * 在本教程中，嵌入网格 $\Gamma$ 和嵌入网格都是用
+ * parallel::distributed::Triangulation.
+ * 来描述的。这两个三角计算可以通过GridGenerator命名空间中的函数来建立，也可以通过读取其他应用程序（例如GMSH，见
  * step-49 中的讨论）产生的网格文件来建立。这比之前在
- * step-60  中所做的略微更普遍。 无论是在 "dim=spacedim "还是
+ * step-60  中所做的略微更普遍。 不管是在 "dim=spacedim "还是
  * "dim<spacedim
- * "的情况下，增加沉没边界方法，都只是在系统矩阵和系统的右手边引入了额外的项，这些项是在
+ * "的情况下，增加浸没边界方法，只是在系统矩阵和系统的右手边引入了额外的项，这些项是由对
  * $\Gamma$
- * 上进行积分后产生的。这并没有改变问题必须解决的变量的数量。因此，挑战与必须进行的积分有关
+ * 的积分产生的。这并没有改变问题必须解决的变量的数量。因此，挑战与必须进行的积分有关
  * $\Gamma$  。
  * 如同在有限元中一样，我们将这个积分分成来自用于解算
  * $\Gamma$ 的三角形的所有单元的贡献，我们将 $K$
@@ -519,12 +515,12 @@
  * 的所有基函数插在 $\Omega$
  * 上的一个任意点，否则我们无法计算出所需的积分。
  *
- *  为了评估 $(v_j \circ F_{K}) (\hat x_i)$
+ *  要评估 $(v_j \circ F_{K}) (\hat x_i)$
  * ，需要采取以下步骤（如下图所示）。
  *
  * - 对于 $\Gamma$ 中的给定单元 $K$ ，计算实点 $y_i \dealcoloneq F_{K} (\hat
- * x_i)$ ，其中 $x_i$ 是用于对 $K \subseteq \Gamma$
- * 进行积分的正交点之一。这是最容易的部分。
+ * x_i)$ ，其中 $x_i$ 是用于 $K \subseteq \Gamma$
+ * 的积分的正交点之一。这是最容易的部分。
  * FEValues::quadrature_point()
  * 给了我们所有正交点的实空间位置。
  *
@@ -536,8 +532,8 @@
  *
  *  <p align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-60.C_interpolation.png"
- * alt=""> </p> 在  step-60
- * 中，上面的第二到第四步是通过依次调用来计算的。
+ * alt=""> </p> 在 step-60
+ * 中，上述第二至第四步是通过依次调用来计算的。
  *
  * -  GridTools::find_active_cell_around_point(), ，然后是
  *
@@ -554,11 +550,9 @@
  * $\Gamma$
  * 中单元格数量的增加，这将导致内存方面的严重瓶颈。因此，在这一步骤中寻求一种替代策略。
  *
- *  <a name="Usingparticlestotrack"></a><h4>Using particles to track
- * Γ</h4>。
- *
- *  请记住，对于惩罚方法（ $\mathcal{L}^2$ 或 $\mathcal{H}^1$
- * ）和Nitsche方法，我们要计算的积分是由正交法近似的。也就是说，我们需要计算\f[
+ *  <a name="Usingparticlestotrack"></a><h4>Using particles to track Γ</h4>
+ * 请记住，对于惩罚方法（ $\mathcal{L}^2$ 或 $\mathcal{H}^1$
+ * ）和Nitsche方法，我们要计算的是由正交法近似的积分。也就是说，我们需要计算\f[
  * \beta (\textbf{v},\textbf{u})_{\Gamma} = \sum_{K\in \Gamma}
  * \sum_{i=1}^{n_q}  \big(\hat{\textbf{u}}(\hat x_i)  (\textbf{v} \circ F_{K})
  * (\hat x_i) J_K (\hat x_i) w_i \big)
@@ -568,7 +562,7 @@
  * $F_K(\hat x_i)$ 是一个实体单元上的正交点的位置，它是
  * $\Gamma$ 的一部分， $J_K$ 是其雅各布系数的行列式，而
  * $w_i$ 是相应的正交权重。
- * 现在要意识到的重要部分是这样的。  $w_i$
+ * 现在要意识到的重要部分是这样的。   $w_i$
  * 是正交公式的一个属性，不随时间变化。此外， $F_K$
  * 的雅各布矩阵本身随着固体障碍物在流体中的移动而变化，但由于固体被认为是不变形的（它只是平移和旋转，但不扩张），雅各布矩阵的行列式保持不变。因此，乘积
  * $J_K(\hat x_i) w_i$
@@ -579,8 +573,7 @@
  * 换句话说，我们实际上根本不需要保持实体网格。我们所需要的只是位置
  * $x_i(t)$
  * 由于这些属性都是附着在实体材料上的点属性（或点向量），它们可以被理想化为一组不相连的极小的
- * "粒子"，它们随着实体的运动携带所需的`JxW`信息。
- * ]），我们将在本教程中使用这一功能。
+ * "粒子"，它们随着实体的运动携带所需的`JxW`信息。]），我们将在本教程中使用这一功能。
  * 因此，这一步采取的方法如下。
  *
  * - 为域 parallel::distributed::Triangulation 创建一个 $\Gamma$  。
@@ -607,8 +600,7 @@
  * 中描述），我们使用LinearOperator类构建 $S$ 。
  *
  *  <a name="Thetestcase"></a><h3>The testcase</h3>
- *
- * 我们在这里解决的问题是对斯托克斯流的时间可逆性的一个证明。这在科学教育实验中经常用泰勒-库埃特流和染料滴来说明，这些染料滴在流体以周期性的方式位移后又恢复到原来的形状。
+ * 我们在这里解决的问题是对斯托克斯流的时间可逆性的证明。这在科学教育实验中经常用泰勒-库埃特流和染料液滴来说明，在流体以周期性的方式位移后，染料液滴又恢复到原来的形状。
  * @htmlonly
  *
  * <iframe width="560" height="315"
@@ -618,20 +610,17 @@
  *
  * @endhtmlonly
  *
- * 在这个问题中，一个非常粘稠的流体被一个叶轮的旋转所搅动，在二维中，叶轮由一个矩形网格建模。叶轮旋转了一定的圈数，之后流动被逆转，从而在相反的方向上进行同样的圈数。我们记得，由于斯托克斯方程是自关节的，蠕动流是可逆的。因此，如果叶轮运动在相反的方向上被逆转，流体应该回到其原来的位置。在本例中，我们通过插入一圈被动示踪粒子来说明这一点，这些粒子被流体吸入，并返回到原来的位置，从而证明了流动的时间可逆性。
+ * 在这个问题中，一个非常粘稠的流体被一个叶轮的旋转所搅动，在二维中，叶轮是由一个矩形网格所模拟的。叶轮旋转了一定的圈数，之后流动被逆转，从而在相反的方向上进行同样的圈数。我们记得，由于斯托克斯方程是自关节的，蠕动流是可逆的。因此，如果叶轮运动在相反的方向上被逆转，流体应该回到其原来的位置。在本例中，我们通过插入一圈被动示踪粒子来说明这一点，这些粒子被流体吸入，并返回到原来的位置，从而证明了流动的时间可逆性。
  *
  *  <a name="Morereferences"></a><h3> More references</h3>
- *
- * 本教程程序使用了一些技术，对流体内部的非匹配界面施加速度条件。对于更多的背景材料，你可能需要查找以下参考资料。
+ * 本教程程序使用了一些关于对流体内部的非匹配界面施加速度条件的技术。对于更多的背景材料，你可能想查一下以下参考资料。
  * @cite Freund1995  ,  @cite Angot1999  ,  @cite Glowinski1999  ,  @cite
  * Boffi2008  ,  @cite Heltai2012  。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1> <a
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
  * name="Includefiles"></a> <h3>Include files</h3>
- * 其中大部分已经在其他地方介绍过了，我们只对新的进行评论。靠近顶部的开关允许在PETSc和Trilinos线性代数功能之间进行选择，与
+ * 其中大部分已经在其他地方介绍过了，我们只对新的部分进行评论。靠近顶部的开关允许在PETSc和Trilinos线性代数功能之间进行选择，与
  * step-40  和  step-50  中的开关类似。
- *
- *
  *
  *
  * @code
@@ -708,22 +697,21 @@
  * 的唯一新的包含文件。在本教程中，固体和流体之间的非匹配耦合是通过一个中间数据结构来计算的，该结构可以跟踪固体的正交点在流体网格中的位置如何演变。这个数据结构需要跟踪描述实体域的每个单元上的正交点的位置，正交权重，以及可能的每个点的法向量，如果实体域是同维的。
  *
  *
- * Deal.II通过ParticleHandler类在Particles命名空间中提供这些设施。ParticleHandler是一个允许你管理粒子集合的类（类型为
+ * Deal.II在粒子命名空间中，通过ParticleHandler类提供了这些设施。ParticleHandler是一个允许你管理粒子集合的类（类型为
  * Particles::Particle),
- * 的对象，代表具有一些附加属性（例如，ID）的点的集合，漂浮在
- * parallel::distributed::Triangulation. 上。
- * Particles命名空间的方法和类允许人们轻松实现Particle-In-Cell方法和分布式三角形上的粒子追踪。
+ * 的对象，代表具有一些附加属性（例如，一个id）的点的集合，漂浮在
+ * parallel::distributed::Triangulation.
+ * 命名空间中的方法和类允许人们轻松实现Particle-In-Cell方法和分布式三角形上的粒子追踪。
  *
  *
  * 我们 "滥用
- * "这个数据结构来存储嵌入在周围流体网格中的实体正交点的位置信息，包括积分权重，可能还有表面法线。我们之所以使用这个额外的数据结构，是因为实体网格和流体网格可能是不重叠的，如果我们使用两个独立的三角计算对象，则会在并行进程中独立分布。
+ * "这个数据结构来存储嵌入周围流体网格中的实体正交点的位置信息，包括积分权重，以及可能的表面法线。我们之所以使用这个额外的数据结构，是因为实体网格和流体网格可能是不重叠的，如果我们使用两个独立的三角测量对象，则会在并行进程中独立分布。
  *
  *
- * 为了耦合这两个问题，我们依靠ParticleHandler类，在每个粒子中存储一个实体正交点的位置（一般来说，它不与任何流体正交点对齐），它的权重，以及任何其他可能需要耦合这两个问题的信息。然后这些位置与固体叶轮的（规定）速度一起传播。
+ * 为了耦合这两个问题，我们依靠ParticleHandler类，在每个粒子中存储固体正交点的位置（通常不与任何流体正交点对齐）、其重量以及耦合这两个问题可能需要的任何其他信息。然后这些位置与固体叶轮的（规定）速度一起传播。
  *
  *
- * 实体正交点的所有权最初是从实体网格本身的MPI分区中继承的。这样产生的粒子后来通过ParticleHandler类的方法分布到流体网格上。这允许MPI进程之间透明地交换关于流体单元和实体正交点之间的重叠模式的信息。
- *
+ * 实体正交点的所有权最初是从实体网格本身的MPI分区中继承的。这样产生的粒子后来通过ParticleHandler类的方法分配到流体网格中。这允许MPI进程之间透明地交换关于流体单元和实体正交点之间的重叠模式的信息。
  *
  * @code
  * #include <deal.II/particles/data_out.h>
@@ -733,10 +721,9 @@
  *
  * @endcode
  *
- * 在生成网格时，我们允许从文件中读取它，如果deal.II已经建立了OpenCASCADE支持，我们也允许读取CAD文件，并将它们作为网格的流形描述符（见
+ * 当生成网格时，我们允许从文件中读取它，如果deal.II已经建立了OpenCASCADE支持，我们也允许读取CAD文件，并将它们作为网格的流形描述符（见
  * step-54
  * 对OpenCASCADE命名空间中的各种流形描述符的详细描述）。
- *
  *
  * @code
  * #include <deal.II/opencascade/manifold_lib.h>
@@ -757,17 +744,16 @@
  * @endcode
  *
  * <a name="Runtimeparameterhandling"></a> <h3>Run-time parameter
- * handling</h3>
+ * handling</h3>。
  *
  * 与我们在 step-60
  * 中所做的类似，我们建立了一个持有我们问题的所有参数的类，并从ParameterAcceptor类派生出来，以简化参数文件的管理和创建。
  * ParameterAcceptor范式要求所有的参数都可以被ParameterAcceptor方法写入。为了避免出现很难追踪的错误（比如写成`time
  * = 0`而不是`time ==
- * 0`），我们在一个外部类中声明所有的参数，这个类在实际的`StokesImmersedProblem`类之前被初始化，并将其作为`const`引用传递给主类。
+ * 0`），我们在一个外部类中声明所有的参数，该类在实际的`StokesImmersedProblem`类之前初始化，并将其作为`const`引用传递给主类。
  * 该类的构造函数负责该类的成员与ParameterHandler中的相应条目之间的连接。由于使用了
  * ParameterHandler::add_parameter()
  * 方法，这种连接是微不足道的，但要求这个类的所有成员都是可写的。
- *
  *
  * @code
  * template <int dim, int spacedim = dim>
@@ -784,7 +770,6 @@
  * `StokesImmersedProblemParameters::angular_velocity` 成员都是 "可变
  * "的，并定义以下的小辅助方法，将它们的时间设置为正确的值。
  *
- *
  * @code
  *   void set_time(const double &time) const
  *   {
@@ -794,10 +779,9 @@
  *
  * @endcode
  *
- * 该类的其余部分主要由描述仿真及其离散化细节的成员变量组成。下面的参数是关于输出应该在哪里，空间和时间离散化（默认是
+ * 该类的其余部分主要由描述模拟及其离散化细节的成员变量组成。下面的参数是关于输出应该在哪里，空间和时间离散化（默认是
  * $Q_2\times Q_1$
  * Taylor-Hood离散化，该离散化对速度使用2度的多项式），以及在我们再次生成图形输出之前应该经过多少时间步长。
- *
  *
  * @code
  *   std::string output_directory = ".";
@@ -811,8 +795,7 @@
  *
  * @endcode
  *
- * 我们允许每一个网格都可以独立地进行细化。在本教程中，没有物理学在实体网格上进行解析，它的速度被作为一个基准点给出。然而，在本教程中加入一些弹性模型，并将其转化为一个完全成熟的FSI求解器是相对简单的。
- *
+ * 我们允许每个网格独立地被细化。在本教程中，没有物理学在实体网格上进行解析，它的速度被作为一个基准点给出。然而，在本教程中加入一些弹性模型，并将其转化为一个完全成熟的FSI求解器是相对简单的。
  *
  * @code
  *   unsigned int initial_fluid_refinement      = 5;
@@ -821,16 +804,15 @@
  *
  * @endcode
  *
- * 为了提供对流体领域的粗略描述，我们使用extract_rtree_level()方法应用于流体三角结构中每个局部拥有的单元的边界盒树。树的级别越高，提取的边界盒数量就越多，对流体领域的描述也就越准确。然而，大量的边界盒也意味着巨大的通信成本，因为边界盒的收集是由所有进程收集的。
- *
+ * 为了提供对流体领域的粗略描述，我们使用extract_rtree_level()方法，应用于流体三角形中每个局部拥有的单元的边界盒树。树的级别越高，提取的边界盒数量就越多，对流体领域的描述也就越准确。然而，大量的边界盒也意味着巨大的通信成本，因为边界盒的收集是由所有进程收集的。
  *
  * @code
  *   unsigned int fluid_rtree_extraction_level = 1;
  *
  * @endcode
- * 方程中使用的唯一两个数值参数是流体的粘度，以及Nitsche公式中使用的惩罚项
- * $\beta$ 。
  *
+ * 方程中使用的唯一两个数值参数是流体的粘度，以及尼采公式中使用的惩罚项
+ * $\beta$ 。
  *
  * @code
  *   double viscosity    = 1.0;
@@ -838,22 +820,21 @@
  *
  * @endcode
  *
- * 默认情况下，我们创建一个没有着色的hyper_cube，并且使用同质的Dirichlet边界条件。在这个集合中，我们存储了在设置边界条件时要使用的边界ID。
- *
+ * 默认情况下，我们创建一个没有着色的hyper_cube，并且我们使用同质的Dirichlet边界条件。在这个集合中，我们存储了在设置边界条件时要使用的边界ID。
  *
  * @code
  *   std::list<types::boundary_id> homogeneous_dirichlet_ids{0};
  *
  * @endcode
  *
- * 我们在此说明另一种从参数文件创建三角形的方法，使用
+ * 我们在这里说明了从参数文件中创建三角形的另一种方法，使用方法
  * GridGenerator::generate_from_name_and_arguments(),
  * ，该方法接收GridGenerator命名空间中的函数名称，其参数为一个字符串，代表参数的元组。
  * 在 Patterns::Tools::Convert
- * 类中详细解释了将参数从字符串解析成字符串的机制，该类用于将字符串转换为大多数基本STL类型（向量、映射、图元）和基本deal.II类型（点、张量、BoundingBox等）。
+ * 类中详细解释了将参数从字符串解析成字符串的机制，该类用于将字符串翻译成大多数基本STL类型（向量、映射、元组）和基本deal.II类型（点、张量、BoundingBox等）。
  * 一般来说，可以用等级1的统一元素表示的对象（即
  * std::vector<double>,  Point<dim>,  std::set<int>,
- * 等）是用逗号分开的。额外的等级采取分号，允许你将字符串解析为
+ * 等）是用逗号分隔的。额外的等级采取分号，允许你将字符串解析为
  * `std::vector<std::vector<double>>`, 或例如 `std::vector<Point<dim>>`,
  * 类型的对象，如`0.0, 0.1; 0.1,
  * 0.2`。这个字符串可以被解释为两个Point对象的向量，或者一个双数向量的向量。
@@ -862,9 +843,8 @@
  * `std::pair<int,  Point<2>>的对象或者一个 `std::tuple<int,
  * std::vector<double>>`.  的对象。
  * 在我们的例子中，大多数参数是点对象（代表中心、角、细分元素等）、整数值（细分的数量）、双倍值（半径、长度等）或布尔选项（如许多GridGenerator函数采取的`colorize`选项）。
- * 在下面的例子中，我们设置了合理的默认值，但这些值可以在运行时通过选择GridGenerator命名空间的任何其他支持的函数来改变。如果GridGenerator函数失败，本程序将把网格的名称解释为vtk网格文件名，把参数解释为从manifold_id到描述域的几何形状的CAD文件的映射。每个CAD文件都将被分析，并根据CAD文件本身的内容生成OpenCASCADE命名空间的Manifold。
+ * 在下面的例子中，我们设置了合理的默认值，但这些值可以在运行时通过选择GridGenerator命名空间的任何其他支持的函数来改变。如果GridGenerator函数失败，本程序将把网格的名称解释为vtk网格文件名，把参数解释为从manifold_id到描述域的几何形状的CAD文件的映射。每个CAD文件都将被分析，并根据CAD文件本身的内容生成OpenCASCADE命名空间的Mifold。
  * 为了尽可能的通用，我们对每一个生成的网格都要这样做：流体网格、固体网格，还有也是用三角法生成的示踪粒子。
- *
  *
  * @code
  *   std::string name_of_fluid_grid       = "hyper_cube";
@@ -884,13 +864,13 @@
  *     spacedim == 2 ? "0.3, 0.3: 0.1: false" : "0.3, 0.3, 0.3 : 0.1: false";
  *
  * @endcode
+ *
  * 同样地，我们允许不同的局部细化策略。特别是，我们限制了细化水平的最大数量，以控制流体网格的最小尺寸，并保证它与实体网格兼容。细化级数的最小值也得到了控制，以确保在大部分流动中具有足够的精度。此外，我们根据流体速度场的标准误差估计器进行局部细化。
  * 我们允许用户选择两种最常见的细化策略，即 "固定数
  * "或 "固定分数"，这些策略参考了
  * GridRefinement::refine_and_coarsen_fixed_fraction() 和
  * GridRefinement::refine_and_coarsen_fixed_number(). 的方法。
  * 细化可以每隔几步时间进行一次，而不是连续进行，我们通过`细化_频率`参数控制这个值。
- *
  *
  * @code
  *   int          max_level_refinement = 8;
@@ -905,7 +885,6 @@
  *
  * 最后，以下两个函数对象被用来控制斯托克斯流的源项和我们移动固体体的角速度。在一个更现实的模拟中，固体速度或其变形将来自于固体域上的辅助问题的解决。在这个例子中，我们把这部分放在一边，只是在浸没的固体上沿Z轴施加一个固定的旋转速度场，由一个可以在参数文件中指定的函数控制。
  *
- *
  * @code
  *   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
  *   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -916,8 +895,7 @@
  *
  * @endcode
  *
- * 还有一个任务就是声明我们在输入文件中可以接受哪些运行时参数。我们将这些参数分成不同的类别，把它们放在ParameterHandler类的不同部分。我们首先声明StokesImmersedProblem在全局范围内使用的所有全局参数。
- *
+ * 还有一项任务是声明我们在输入文件中可以接受哪些运行时参数。我们将这些参数分成不同的类别，把它们放在ParameterHandler类的不同部分。我们首先声明StokesImmersedProblem在全局范围内使用的所有全局参数。
  *
  * @code
  * template <int dim, int spacedim>
@@ -965,11 +943,11 @@
  *     "Boundary Ids over which homogeneous Dirichlet boundary conditions are applied");
  *
  * @endcode
- * 下一节专门介绍用于创建各种网格的参数。我们将需要三种不同的三角形。流体网格
+ *
+ * 下一节是专门讨论用于创建各种网格的参数。我们将需要三种不同的三角形。流体网格
  * "用于定义流体领域，"固体网格
  * "用于定义固体领域，"粒子网格
  * "用于分布一些示踪粒子，这些粒子随速度平流，只作为被动示踪物使用。
- *
  *
  * @code
  *   enter_subsection("Grid generation");
@@ -1005,8 +983,8 @@
  *   leave_subsection();
  *
  * @endcode
- * 最后的任务是纠正右侧函数的默认尺寸，并定义一个有意义的默认角速度，而不是零。
  *
+ * 最后的任务是纠正右侧函数的默认尺寸，并定义一个有意义的默认角速度，而不是零。
  *
  * @code
  *   rhs.declare_parameters_call_back.connect([&]() {
@@ -1024,9 +1002,8 @@
  *
  * @endcode
  *
- * 一旦角速度被提供为一个函数对象，我们就通过下面这个派生于函数类的类来重建点状实体速度。它通过假设实体以给定的角速度绕原点（或3D中的
+ * 一旦角速度被提供为一个函数对象，我们就通过下面这个派生自函数类的类来重构点状实体速度。它通过假设实体以给定的角速度绕原点（或3D中的
  * $z$ 轴）旋转，提供实体在给定位置的速度值。
- *
  *
  * @code
  * template <int spacedim>
@@ -1047,8 +1024,7 @@
  *
  * @endcode
  *
- * 我们假设角速度是沿Z轴方向的，也就是说，我们把实际的角速度模拟成二维旋转，而不考虑`spacedim`的实际值。
- *
+ * 我们假设角速度是沿Z轴方向的，也就是说，我们把实际的角速度当作二维旋转来建模，而不考虑`spacedim`的实际值。
  *
  * @code
  *     const double omega = angular_velocity.value(p);
@@ -1067,8 +1043,7 @@
  *
  * @endcode
  *
- * 同样地，我们假设实体位置可以在每个时间步长中明确计算，利用角速度的知识。我们计算固体粒子的确切位置，假定固体的旋转量等于时间步长乘以在`p'点计算的角速度。
- *
+ * 同样，我们假设固体位置可以在每个时间步长中明确计算，利用角速度的知识。我们计算固体粒子的确切位置，假定固体的旋转量等于时间步长乘以在`p'点计算的角速度。
  *
  * @code
  * template <int spacedim>
@@ -1114,11 +1089,9 @@
  * @endcode
  *
  * <a name="TheStokesImmersedProblemclassdeclaration"></a> <h3>The
- * StokesImmersedProblem class declaration</h3>
- *
- * 我们现在准备介绍我们的教程程序的主类。像往常一样，除了构造函数外，我们只留下一个公共入口：`run()`方法。其他的都是
+ * StokesImmersedProblem class declaration</h3>。
+ * 我们现在准备介绍我们的教程程序的主类。像往常一样，除了构造函数外，我们只留下一个公共入口点：`run()`方法。其他的都是
  * "私有 "的，并通过run方法本身进行访问。
- *
  *
  * @code
  * template <int dim, int spacedim = dim>
@@ -1131,10 +1104,10 @@
  *   void run();
  *
  * @endcode
+ *
  * 下一节包含了该类的`private`成员。第一个方法与之前的例子中的类似。然而，它不仅负责生成流体的网格，而且还负责生成固体的网格。第二个方法是计算最大的时间步长，保证每个粒子最多移动一个单元。这对于确保
  * Particles::ParticleHandler
  * 能够找到粒子最终所在的单元是非常重要的，因为它只能从一个单元看向它的近邻（因为在并行设置中，每个MPI进程只知道它拥有的单元以及它们的近邻）。
- *
  *
  * @code
  * private:
@@ -1148,7 +1121,6 @@
  * Particles::ParticleHandler
  * 对象。我们有两个这样的对象。一个代表被动追踪器，用于绘制流体粒子的轨迹，而另一个代表固体的材料粒子，它们被放置在固体网格的正交点上。
  *
- *
  * @code
  *   void setup_tracer_particles();
  *   void setup_solid_particles();
@@ -1157,15 +1129,13 @@
  *
  * 其余的设置分为两部分。以下两个函数中的第一个函数创建了每次模拟需要的所有对象，而另一个函数则设置了所有需要在每个细化步骤中重新初始化的对象。
  *
- *
  * @code
  *   void initial_setup();
  *   void setup_dofs();
  *
  * @endcode
  *
- * 装配例程与其他斯托克斯装配例程非常相似，但Nitsche限制部分除外，它利用其中一个粒子处理程序在流体域的非匹配部分进行整合，对应于实体的位置。我们将这两部分分成两个独立的函数。
- *
+ * 装配例程与其他斯托克斯装配例程非常相似，但Nitsche限制部分除外，它利用其中一个粒子处理程序在流体域的非匹配部分进行积分，对应于固体的位置。我们将这两部分分成两个独立的函数。
  *
  * @code
  *   void assemble_stokes_system();
@@ -1175,7 +1145,6 @@
  *
  * 其余的函数求解线性系统（看起来与 step-60
  * 中的线性系统几乎相同），然后对解进行后处理。refine_and_transfer()方法仅在每一个`refinement_frequency`步骤中被调用，以适应网格，并确保所有在细化前的时间步骤中计算的场都能正确地转移到新的网格中。这包括矢量场，以及粒子信息。同样，我们每隔`output_frequency`步就会调用两个输出方法。
- *
  *
  * @code
  *   void solve();
@@ -1189,18 +1158,16 @@
  *                         const double time) const;
  *
  * @endcode
- *
  * 然后让我们继续讨论该类的成员函数。第一个是处理从参数文件中读取的运行时参数。如前所述，我们通过使其成为一个`const`引用，确保我们不能从这个类中修改这个对象。
- *
  *
  * @code
  *   const StokesImmersedProblemParameters<dim, spacedim> &par;
  *
  * @endcode
  *
- * 然后还有MPI通信器对象，如果程序是并行运行的，我们将用它来让进程在网络上发送信息，还有`pcout`对象和定时器信息，也被
+ * 然后还有MPI
+ * communicator对象，如果程序并行运行，我们将用它来让进程在网络上发送信息，还有`pcout`对象和定时器信息，也被
  * step-40 采用，例如。
- *
  *
  * @code
  *   MPI_Comm mpi_communicator;
@@ -1211,8 +1178,8 @@
  *
  * @endcode
  *
- * 接下来是关于  step-60
- * 的主要创新之一。这里我们假设固体和流体都是完全分布的三角形。这使得问题可以扩展到非常大的自由度，代价是要沟通所有非匹配三角形之间的重叠区域。这一点特别棘手，因为我们没有对两个三角形的各个子域的相对位置或分布做出假设。特别是，我们假设每个进程只拥有
+ * 接下来是关于 step-60
+ * 的主要创新点之一。这里我们假设固体和流体都是完全分布的三角形。这使得问题可以扩展到非常大的自由度，代价是要沟通所有非匹配三角形之间的重叠区域。这一点特别棘手，因为我们没有对两个三角形的各个子域的相对位置或分布做出假设。特别是，我们假设每个进程只拥有
  * "solid_tria "的一部分，以及 "fluid_tria
  * "的一部分，不一定在同一个物理区域，也不一定重叠。
  * 我们原则上可以尝试创建初始分区，使每个过程的子域在固体和流体区域之间重叠。然而，这种重叠在模拟过程中会被破坏，我们将不得不一次又一次地重新分配DoF。我们在本教程中采用的方法更加灵活，而且成本也不高。我们在模拟开始时进行两次全对全的通信，以交换每个处理器的几何占用信息（近似的）（通过包围盒的集合完成）。
@@ -1220,17 +1187,16 @@
  * 类用来交换（使用某对某的通信模式）所有的粒子，因此每个进程都知道生活在它所拥有的流体子域所占区域上的粒子。
  * 为了把重叠的区域联系起来，我们利用了ParticleHandler类中实现的设施。
  *
- *
  * @code
  *   parallel::distributed::Triangulation<spacedim>      fluid_tria;
  *   parallel::distributed::Triangulation<dim, spacedim> solid_tria;
  *
  * @endcode
- * 接下来是对使用中的有限元的描述，以及适当的正交公式和相应的DoFHandler对象。对于目前的实现，只有`fluid_fe`是真正必要的。为了完整起见，也为了便于扩展，我们还保留了`solid_fe`，但它被初始化为FE_Nothing有限元空间，即没有自由度的空间。
+ *
+ * 接下来是对使用中的有限元的描述，以及适当的正交公式和相应的DoFHandler对象。对于目前的实现，只有`fluid_fe`是真正必要的。为了完整起见，也为了便于扩展，我们还保留了`solid_fe`，但它被初始化为FE_Nothing有限元空间，也就是没有自由度的空间。
  * 我们将这两个有限元空间声明为 `std::unique_ptr`
  * 对象，而不是普通的成员变量，以便在`StokesImmersedProblemParameters'被初始化后生成它们。特别是，它们将在
  * "initial_setup() "方法中被初始化。
- *
  *
  * @code
  *   std::unique_ptr<FiniteElement<spacedim>>      fluid_fe;
@@ -1247,8 +1213,7 @@
  * @endcode
  *
  * 与 step-22
- * 中的做法类似，我们使用一个块系统来处理问题的斯托克斯部分，并非常密切地遵循那里的做法。
- *
+ * 中的做法类似，我们使用一个块状系统来处理问题的斯托克斯部分，并非常密切地遵循那里的做法。
  *
  * @code
  *   std::vector<IndexSet> fluid_owned_dofs;
@@ -1258,8 +1223,8 @@
  *   std::vector<IndexSet> solid_relevant_dofs;
  *
  * @endcode
- * 利用这种自由度的划分，我们可以定义所有必要的对象来描述有关的线性系统。
  *
+ * 利用这种自由度的划分，我们就可以定义描述有关的线性系统所需的所有对象。
  *
  * @code
  *   AffineConstraints<double> constraints;
@@ -1277,20 +1242,18 @@
  * Particles::ParticleHandler
  * 对象用于耦合固体和流体，以及描述被动追踪器。在许多方面，这些对象的作用类似于离散化中使用的DoFHandler类，也就是说，它们提供了一个粒子的枚举，并允许查询每个粒子的信息。
  *
- *
  * @code
  *   Particles::ParticleHandler<spacedim> tracer_particle_handler;
  *   Particles::ParticleHandler<spacedim> solid_particle_handler;
  *
  * @endcode
  *
- * 对于每个示踪粒子，我们需要计算其当前位置的速度场，并使用离散时间步进方案更新其位置。我们使用分布式线性代数对象来做这件事，这些对象存储了每个粒子的位置或速度的坐标。也就是说，这些向量有`tracer_particle_handler.n_global_particles()spacedim`项，我们将以一种方式来存储这些向量的一部分，以便在所有进程中进行划分。(隐含地，我们在此假设每个粒子的`spacedim`坐标被存储在向量的连续条目中)。因此，我们需要确定每个向量条目的所有者是谁。我们将这个所有者设定为等于在时间
+ * 对于每个示踪粒子，我们需要计算其当前位置的速度场，并使用离散时间步进方案更新其位置。我们使用分布式线性代数对象来做这件事，这些对象存储了每个粒子的位置或速度的坐标。也就是说，这些向量有`tracer_particle_handler.n_global_particles()spacedim`项，我们将以一种方式来存储这些向量的一部分，以便在所有进程中进行分割。(隐含地，我们在这里假设每个粒子的`spacedim'坐标被存储在向量的连续条目中)。因此，我们需要确定每个向量条目的所有者是谁。我们将这个所有者设定为等于在时间
  * $t=0$
- * 产生该粒子的进程。这个信息被存储在每个进程的`locally_owned_tracer_particle_coordinates`索引集中。
- * 一旦粒子被分配到与拥有粒子所在区域的进程相匹配，我们将需要从该进程读取相应的速度场的权限。我们通过填充一个只读的速度矢量场来实现这一点，该矢量场包含了幽灵项中的相关信息。这是通过`locally_relevant_tracer_particle_coordinates`索引集来实现的，该索引集记录了模拟过程中的变化情况，也就是说，它记录了当前进程拥有的粒子最终在哪里，以及谁拥有最终在我的子域中的粒子。
- * 虽然这不是最有效的策略，但我们保持这种方式是为了说明事情在真正的流体-结构相互作用（FSI）问题上是如何运作的。如果一个粒子与一个特定的固体自由度相联系，我们就不能自由选择谁拥有它，我们必须把这个信息传达给周围的人。我们在这里说明了这一点，并表明通信模式是点对点的，就算法的总成本而言可以忽略不计。
+ * 产生该粒子的进程。这个信息为每个进程存储在`locally_owned_tracer_particle_coordinates`索引集。
+ * 一旦粒子被分配到与拥有粒子所在区域的进程相匹配，我们将需要从该进程读取相应的速度场的权限。我们通过填充一个只读的速度矢量场来实现这一点，该矢量场包含了幽灵项中的相关信息。这是通过`locally_relevant_tracer_particle_coordinates`索引集来实现的，该索引集记录了模拟过程中的变化情况，也就是说，它记录了当前进程拥有的粒子最终出现在哪里，以及谁拥有最终出现在我的子域的粒子。
+ * 虽然这不是最有效的策略，但我们保持这种方式是为了说明事情在真正的流体-结构相互作用（FSI）问题上是如何运作的。如果一个粒子与一个特定的固体自由度相联系，我们就不能自由选择谁拥有它，我们必须把这个信息传达给周围的人。我们在此说明了这一点，并表明通信模式是点对点的，就算法的总成本而言可以忽略不计。
  * 然后，基于这些细分定义的向量被用来存储粒子的速度（只读，有幽灵条目）和它们的位移（读/写，没有幽灵条目）。
- *
  *
  * @code
  *   IndexSet locally_owned_tracer_particle_coordinates;
@@ -1300,25 +1263,25 @@
  *   LA::MPI::Vector relevant_tracer_particle_displacements;
  *
  * @endcode
- *  本教程程序的关键点之一是两个独立的
+ *
+ * 本教程程序的关键点之一是两个独立的
  * parallel::distributed::Triangulation
- * 物体之间的耦合，其中一个物体可能相对于另一个物体运动和变形（可能有较大的变形）。当流体和实体的三角形都是
+ * 对象之间的耦合，其中一个对象可能相对于另一个对象移动和变形（可能有很大的变形）。当流体和实体的三角形都是
  * parallel::distributed::Triangulation,
- * 类型时，每个进程只能访问这两个三角形中每个单元的局部拥有的部分。如上所述，一般情况下，本地拥有的域是不重叠的。
+ * 类型时，每个进程只能访问这两个三角形中每个单元的局部拥有的部分。如上所述，一般来说，本地拥有的域是不重叠的。
  * 为了允许不重叠的 parallel::distributed::Triangulation
  * 对象之间有效地交换信息，该库的一些算法要求用户提供三角形本地拥有部分所占区域的粗略描述，其形式是每个进程的轴对齐的边界盒集合，这些边界盒提供了域的本地拥有部分的完整覆盖。这种信息就可以用于这样的情况：人们需要向已知位置周围的单元格的所有者发送信息，而不知道这个所有者实际上是谁。但是，如果我们知道每个进程拥有的几何区域或体积的边界盒集合，那么我们就可以确定可能拥有该位置所在单元的所有进程的一个子集：即其边界盒包含该点的所有进程。与其向所有进程发送与该位置相关的信息，不如只向具有点对点通信基元的一小部分进程发送信息。你会注意到，这也允许典型的时间与内存的权衡：我们愿意存储的关于每个进程拥有的区域的数据越多
  *
  * - 以更精细的边界盒信息的形式
  *
- * - 我们要执行的通信就越少）。)
+ * 我们要执行的通信就越少）。)
  * 我们通过收集一个向量（长度为
  * Utilities::MPI::n_mpi_processes())
  * 的BoundingBox对象的向量）来构建这些信息。我们使用extract_rtree_level()函数填充这个向量，并允许用户选择要提取的树的哪一级。这个
  * "级别 "对应的是与边界框重叠的区域应该有多粗/多细。
- * 作为一个例子，这是extract_rtree_level()函数应用于一个二维超球，分布在三个过程中所提取的内容。每张图片都用绿色显示了与每个进程上的三角形局部拥有的单元相关的边界盒，用紫色显示了从rtree提取的边界盒。
+ * 作为一个例子，这是extract_rtree_level()函数应用于一个二维超球，分布在三个过程中所提取的内容。每张图片中，绿色显示的是与每个进程上的三角形的本地所有单元相关的边界框，紫色显示的是从rtree中提取的边界框。
 *  @image html rtree-process-0.png   @image html rtree-process-1.png   @image html rtree-process-2.png 。
  * 我们将这些盒子存储在一个全局成员变量中，在每个细化步骤中都会更新。
- *
  *
  * @code
  *   std::vector<std::vector<BoundingBox<spacedim>>> global_fluid_bounding_boxes;
@@ -1329,14 +1292,11 @@
  * @endcode
  *
  * <a name="TheStokesImmersedProblemclassimplementation"></a> <h3>The
- * StokesImmersedProblem class implementation</h3>。
- *
- * <a name="Objectconstructionandmeshinitializationfunctions"></a> <h4>Object
+ * StokesImmersedProblem class implementation</h3>。    <a
+ * name="Objectconstructionandmeshinitializationfunctions"></a> <h4>Object
  * construction and mesh initialization functions</h4>。
  *
- *
- * 在构造函数中，我们创建了mpi_communicator，以及流体和实体的三角形和dof_handler。使用mpi_communicator，构建ConditionalOStream和TimerOutput对象。
- *
+ * 在构造函数中，我们创建了mpi_communicator，以及流体和实体的三角计算和dof_handler。使用mpi_communicator，构建ConditionalOStream和TimerOutput对象。
  *
  * @code
  * template <int dim, int spacedim>
@@ -1368,8 +1328,7 @@
  * 为了生成网格，我们首先尝试使用deal.II
  * GridGenerator命名空间中的函数，通过利用
  * GridGenerator::generate_from_name_and_argument().
- * 如果这个函数失败了，那么我们使用下面的方法，名字被解释为文件名，参数被解释为从流形ID到CAD文件的映射，并使用OpenCASCADE命名空间设施转换为流形描述符。在顶部，我们把文件读成一个三角图。
- *
+ * 如果这个函数失败，那么我们使用以下方法，名称被解释为文件名，参数被解释为从流形ID到CAD文件的映射，并使用OpenCASCADE命名空间设施转换为流形描述符。在顶部，我们把文件读成一个三角图。
  *
  * @code
  * template <int dim, int spacedim>
@@ -1383,7 +1342,7 @@
  *
  * @endcode
  *
- * 如果我们走到这一步，那么三角法已经读完了，我们就可以给它附加正确的流形描述了。只有在deal.II支持OpenCASCADE的情况下，我们才会执行接下来的几行代码。对于地图中的每个条目，我们尝试打开相应的CAD文件，分析它，并根据其内容，选择一个
+ * 如果我们走到了这一步，那么Triangulation就已经被读取了，我们就可以给它附加正确的流形描述了。只有在deal.II支持OpenCASCADE的情况下，我们才会执行接下来的几行代码。对于地图中的每个条目，我们尝试打开相应的CAD文件，分析它，并根据其内容，选择一个
  * OpenCASCADE::ArcLengthProjectionLineManifold
  * （如果CAD文件包含一个`TopoDS_Edge'或一个`TopoDS_Wire'）或一个
  * OpenCASCADE::NURBSPatchManifold,
@@ -1417,11 +1376,10 @@
  *
  * @endcode
  *
- * 现在我们检查 "形状
- * "中包含多少个面。OpenCASCADE本质上是三维的，所以如果这个数字是零，我们就把它解释为线状流形，否则就解释为
- * OpenCASCADE::NormalToMeshProjectionManifold 在`spacedim`=3时，或者
+ * 现在我们检查一下这个 "形状
+ * "中包含了多少个面。OpenCASCADE本质上是三维的，所以如果这个数字是零，我们就把它解释为线状流形，否则就解释为
+ * OpenCASCADE::NormalToMeshProjectionManifold 在`spacedim`=3时，或
  * OpenCASCADE::NURBSPatchManifold 在`spacedim`=2时。
- *
  *
  * @code
  *       const auto n_elements = OpenCASCADE::count_elements(shape);
@@ -1437,7 +1395,6 @@
  * OpenCASCADE::NormalToMeshProjectionManifold
  * 只在spacedim=3时实现。上面的检查确保了事情的实际运作是正确的。
  *
- *
  * @code
  *           const auto t = reinterpret_cast<Triangulation<dim, 3>>(&tria);
  *           t->set_manifold(manifold_id,
@@ -1448,7 +1405,6 @@
  * @endcode
  *
  * 我们也允许基于单个NURBS补丁的二维空间的表面描述。要做到这一点，CAD文件必须包含一个单一的`TopoDS_Face`。
- *
  *
  * @code
  *         tria.set_manifold(manifold_id,
@@ -1464,10 +1420,10 @@
  *
  *
  * @endcode
- * 现在让我们把东西放在一起，并制作所有必要的网格。如上所述，我们首先尝试在内部生成网格，如果我们失败了（即，如果我们最终进入了
+ *
+ * 现在让我们把事情放在一起，并制作所有必要的网格。如上所述，我们首先尝试在内部生成网格，如果失败了（即，如果我们最终进入了
  * "catch "子句），那么我们就继续使用上述函数。
  * 我们对流体和固体网格都重复这个模式。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1506,20 +1462,19 @@
  * @endcode
  *
  * <a name="Particleinitializationfunctions"></a> <h4>Particle initialization
- * functions</h4>.
+ * functions</h4>。
  *
  * 一旦固体和流体网格被创建，我们就开始填充
  * Particles::ParticleHandler
- * 对象。我们要处理的第一个对象是用来跟踪流体中的被动追踪器的。这些东西只是沿途传送，从某种意义上说，它们的位置并不重要：我们只是想用它们来查看流动被传送的位置。我们可以使用任何我们选择的方式来确定它们的初始位置。一个方便的方法是将初始位置创建为我们选择的形状的网格的顶点
+ * 对象。我们要处理的第一个对象是用来跟踪流体中的被动追踪器的对象。这些东西只是沿途传送，从某种意义上说，它们的位置并不重要：我们只是想用它们来查看流动被传送的位置。我们可以使用任何我们选择的方式来确定它们的初始位置。一个方便的方法是将初始位置创建为我们选择的形状的网格的顶点
  *
- * - 由参数文件中的一个运行时参数决定的选择。
+ * 这个选择由参数文件中的一个运行时参数决定。
  * 在这个实现中，我们使用FE_Q有限元空间的支持点来创建追踪器，这些支持点定义在一个临时网格上，然后被丢弃。在这个网格中，我们只保留与支撑点相关的
  * Particles::Particle 对象（存储在 Particles::ParticleHandler
  * 类中）。 Particles::ParticleHandler
- * 类提供了插入一组粒子的可能性，这些粒子实际生活在活动过程所拥有的域的一部分。然而，在这种情况下，这个功能是不够的。作为任意网格（与流体网格不匹配）上FE_Q对象的本地拥有的支持点所产生的粒子没有理由位于流体网格的本地拥有的子域的同一物理区域。事实上，这种情况几乎不会发生，特别是由于我们要跟踪粒子本身发生了什么。
+ * 类提供了插入一组粒子的可能性，这些粒子实际生活在活动过程所拥有的域的一部分。然而，在这种情况下，这个功能是不够的。作为任意网格（与流体网格不匹配）上FE_Q对象的本地拥有的支持点所生成的粒子没有理由位于流体网格的本地拥有的子域的同一物理区域。事实上，这种情况几乎不会发生，特别是由于我们要跟踪粒子本身的情况。
  * 在粒子入室方法（PIC）中，人们通常习惯于将粒子的所有权分配给粒子所在的过程。在本教程中，我们说明了一种不同的方法，如果想跟踪与粒子有关的信息，这种方法是有用的（例如，如果一个粒子与一个特定的自由度有关，而这个自由度是由一个特定的过程所拥有的，不一定是在任何特定时间拥有该粒子所在的流体单元的同一过程）。在这里使用的方法中，粒子的所有权在开始时被分配一次，每当原始所有者需要从拥有粒子所在单元的进程中获得信息时，就会发生一对一的通信。我们确保使用初始粒子分布来设置粒子的所有权，并在程序的整个执行过程中保持相同的所有权。
  * 随着这个概述的结束，让我们看看这个函数做了什么。在顶部，我们创建了一个临时的三角形和DoFHandler对象，我们将从中获取初始粒子位置的节点位置。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1538,9 +1493,9 @@
  *   particles_dof_handler.distribute_dofs(particles_fe);
  *
  * @endcode
- * 这就是事情开始变得复杂的地方。由于我们可能在并行环境中运行这个程序，每个并行进程现在都会创建这些临时三角形和DoFHandlers。但是，在完全分布式三角形中，活动进程只知道本地拥有的单元，而不知道其他进程是如何分布自己的单元的。这对于上面创建的临时三角形以及我们想嵌入粒子的流体三角形都是如此。另一方面，一般来说，这两个三角形的局部已知部分不会重合。也就是说，我们将从临时网格的节点位置创建的粒子的位置是任意的，并且可能落在当前进程无法访问的流体三角结构的区域内（即流体域中细胞是人工的区域）。为了了解将这些粒子发送给谁，我们需要对流体网格在处理器中的分布有一个（粗略的）概念。
- * 我们通过首先建立一个以本地拥有的单元为边界的盒子的索引树，然后提取该树的第一层之一，来构建这一信息。
  *
+ * 这就是事情开始变得复杂的地方。由于我们可能会在并行环境中运行这个程序，每个并行进程现在都会创建这些临时三角形和DoFHandlers。但是，在完全分布式三角形中，活动进程只知道本地拥有的单元，而不知道其他进程是如何分布自己的单元的。这对于上面创建的临时三角形以及我们想嵌入粒子的流体三角形都是如此。另一方面，一般来说，这两个三角形的局部已知部分不会重合。也就是说，我们将从临时网格的节点位置创建的粒子的位置是任意的，并且可能落在当前进程无法访问的流体三角结构的区域内（即流体领域中细胞是人工的区域）。为了了解将这些粒子发送给谁，我们需要对流体网格在处理器中的分布有一个（粗略的）概念。
+ * 我们通过首先建立一个以本地拥有的单元为边界的盒子的索引树，然后提取该树的第一层之一，来构建这一信息。
  *
  * @code
  *   std::vector<BoundingBox<spacedim>> all_boxes;
@@ -1555,11 +1510,10 @@
  *
  * @endcode
  *
- * 每个进程现在都有一个完全包围所有本地拥有的进程的界线盒集合（但可能与其他进程的界线盒重叠）。然后，我们在所有参与的进程之间交换这一信息，以便每个进程都知道所有其他进程的边界盒。
+ * 每个进程现在都有一个完全包围所有本地拥有的进程的边界框的集合（但可能与其他进程的边界框相重叠）。然后，我们在所有参与的进程之间交换这一信息，以便每个进程都知道所有其他进程的边界盒。
  * 有了这些知识，我们就可以将`tracer_particle_handler`初始化为流体网格，并从（临时）tracer
  * particles
  * triangulation的支持点生成粒子。这个函数调用使用了我们刚刚构建的`global_bounding_boxes`对象，以确定将位置来自`particles_dof_handler`的本地拥有部分的粒子发送到哪里。在这个调用结束时，每个粒子将被分配到正确的进程（即拥有粒子所在的流体单元的进程）。在这一点上，我们也将它们的数量输出到屏幕上。
- *
  *
  * @code
  *   global_fluid_bounding_boxes =
@@ -1584,7 +1538,6 @@
  * spacedim`之间的索引空间。我们可以通过查询`tracer_particle_handler`的本地相关粒子的ID来做到这一点，并构建所需的索引，将所有粒子的位置和速度存储在一个（平行分布的）矢量中，其中我们隐含地假设我们将每个位置或速度的坐标存储在`spacedim`连续的矢量元素中（这就是
  * IndexSet::tensor_priduct() 函数的作用）。
  *
- *
  * @code
  *   locally_owned_tracer_particle_coordinates =
  *     tracer_particle_handler.locally_owned_particle_ids().tensor_product(
@@ -1594,18 +1547,17 @@
  *
  * 在模拟开始时，所有粒子都在它们的原始位置。当粒子移动时，它们可能会穿越到另一个进程所拥有的领域的某个部分。如果发生这种情况，当前的进程会正式保持对粒子的
  * "所有权"，但可能需要从粒子落地的进程中读取访问。我们将这一信息保存在另一个索引集中，该索引集存储了当前进程的子域中的所有粒子的索引，不管它们是否一直在这里。
- * 保留这个索引集使我们能够利用线性代数类来进行有关粒子位置和速度的所有通信。这模拟了在固体域中解决另一个问题的情况下会发生的情况（如在流体-结构相互作用中。在后一种情况下，实体域上的额外DOFs将被耦合到流体域中发生的情况。
- *
+ * 保持这个索引集使我们能够利用线性代数类来进行有关粒子位置和速度的所有通信。这模拟了在固体域中解决另一个问题的情况下会发生的情况（如在流体-结构相互作用中。在后一种情况下，实体域上的额外DOFs将被耦合到流体域中发生的情况。
  *
  * @code
  *   locally_relevant_tracer_particle_coordinates =
  *     locally_owned_tracer_particle_coordinates;
  *
  * @endcode
- * 最后，我们要确保在细化时，粒子被正确转移。在进行局部细化或粗化时，粒子会落在另一个单元中。原则上我们可以在细化后重新分配所有的粒子，然而这将是过于昂贵的。
+ *
+ * 最后，我们确保在细化时，粒子被正确转移。在进行局部细化或粗化时，粒子会落在另一个单元中。原则上我们可以在细化后重新分配所有的粒子，然而这将是过于昂贵的。
  * Particles::ParticleHandler
  * 类有一种方法可以在细化时将信息从一个单元转移到它的子单元或它的父单元，而不需要重构整个数据结构。这是通过向三角结构注册两个回调函数来实现的。这些函数将在细化即将发生和刚刚发生时收到一个信号，并将以最小的计算成本将所有信息转移到新的细化网格中。
- *
  *
  * @code
  *   fluid_tria.signals.pre_distributed_refinement.connect(
@@ -1621,13 +1573,12 @@
  *
  * 与我们对被动追踪器所做的类似，我们接下来设置追踪实体网格正交点的粒子。这里的主要区别是，我们还想给每个粒子附加一个权重值（正交点的
  * "JxW
- * "值），这样我们即使不直接访问原始实体网格也可以计算积分。
+ * "值），这样我们就可以在没有直接访问原始实体网格的情况下计算积分。
  * 这是通过利用 Particles::Particle 类的 "属性
  * "概念实现的。有可能（以一种有效的内存方式）在一个
  * Particles::ParticleHandler 对象内为每个 Particles::Particle
- * 对象存储任意数量的`双`数字。我们利用这种可能性来存储实体网格的正交点的JxW值。
+ * 对象存储任意数量的`双`数。我们利用这种可能性来存储实体网格的正交点的JxW值。
  * 在我们的案例中，我们只需要为每个粒子存储一个属性：实体网格上的积分的JxW值。这将在构造时作为最后一个参数传递给solid_particle_handler对象。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1643,7 +1594,6 @@
  * @endcode
  *
  * 我们在本地生成的粒子数等于本地拥有的单元总数乘以每个单元中使用的正交点的数量。我们将所有这些点存储在一个向量中，并将其相应的属性存储在一个向量的向量中。
- *
  *
  * @code
  *   std::vector<Point<spacedim>> quadrature_points_vec;
@@ -1678,7 +1628,6 @@
  * 由于我们已经存储了正交点的位置，我们可以使用这些位置来直接使用`solid_particle_handler`插入粒子，而不是通过
  * Particles::Generators 函数。
  *
- *
  * @code
  *   Assert(!global_fluid_bounding_boxes.empty(),
  *          ExcInternalError(
@@ -1695,7 +1644,6 @@
  * @endcode
  *
  * 和前面的函数一样，我们最后确保在细化时，粒子被正确转移。
- *
  *
  * @code
  *   fluid_tria.signals.pre_distributed_refinement.connect(
@@ -1715,13 +1663,12 @@
  * <a name="DoFinitializationfunctions"></a> <h4>DoF initialization
  * functions</h4>。
  *
- * 我们设置了有限元空间和正交公式，在整个步骤中使用。对于流体，我们使用Taylor-Hood元素（例如
+ * 我们设置了有限元空间和整个步骤中使用的正交公式。对于流体，我们使用Taylor-Hood元素（例如
  * $Q_k \times Q_{k-1}$
  * ）。由于我们没有解决固体领域的任何方程，所以产生了一个空的有限元空间。这个程序的一个自然扩展是解决流体结构的相互作用问题，这就要求`solid_fe`使用更有用的FiniteElement类。
  * 和其他许多函数一样，我们在这里存储了进行操作所需的时间。当前的函数将其时间信息放入一个标签为
  * "初始设置
  * "的部分。在不同的函数中对这个定时器进行了许多其他的调用。它们允许监测每个单独函数的绝对和相对成本，以确定瓶颈。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1753,7 +1700,6 @@
  *
  * 我们接下来构建分布式块状矩阵和向量，用于解决问题中出现的线性方程。这个函数改编自
  * step-55 ，我们参考这个步骤进行全面解释。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1867,12 +1813,10 @@
  *
  * @endcode
  *
- * <a name="Assemblyfunctions"></a> <h4>Assembly functions</h4>.
- *
+ * <a name="Assemblyfunctions"></a> <h4>Assembly functions</h4>。
  * 我们将系统矩阵、预处理矩阵和右手边组合起来。该代码改编自
  * step-55 ，基本上是 step-27
  * 的内容，如果你知道斯托克斯方程是什么样子的，就会觉得很标准。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -1973,8 +1917,7 @@
  *
  * @endcode
  *
- * 下面的方法是处理因对叶轮施加速度而产生的惩罚项的方法。从某种意义上说，它是本教程的核心，但它相对简单。这里我们利用`solid_particle_handler`来计算Nitsche限制或嵌入域的惩罚。
- *
+ * 下面的方法是处理因对叶轮施加速度而产生的惩罚项。从某种意义上说，它是本教程的核心，但它相对简单。这里我们利用`solid_particle_handler`来计算Nitsche限制或嵌入域的惩罚。
  *
  * @code
  * template <int dim, int spacedim>
@@ -1999,8 +1942,7 @@
  *
  * @endcode
  *
- * 我们对所有的局部粒子进行循环。虽然这可以直接通过循环所有的单元格来实现，但这将迫使我们循环许多不包含粒子的单元格。因此，我们对所有的粒子进行循环，但是，我们得到粒子所在的单元格的引用，然后对该单元格中的所有粒子进行循环。这使得我们能够跳过那些不包含粒子的单元，但却能将每个单元的局部矩阵和rhs组合起来，以应用Nitsche限制。一旦我们完成了一个单元格上的所有粒子，我们就将`粒子`迭代器推进到当前单元格上的粒子的末端（这是`while`循环主体的最后一行）。
- *
+ * 我们在所有的本地粒子上循环。虽然这可以直接通过循环所有的单元格来实现，但这将迫使我们循环许多不包含粒子的单元格。因此，我们对所有的粒子进行循环，但是，我们得到粒子所在的单元格的引用，然后对该单元格中的所有粒子进行循环。这使得我们能够跳过不包含粒子的单元格，但又能集合每个单元格的局部矩阵和rhs来应用Nitsche的限制。一旦我们完成了一个单元格上的所有粒子，我们就将`粒子`迭代器推进到当前单元格上的粒子的末端（这是`while`循环主体的最后一行）。
  *
  * @code
  *   auto particle = solid_particle_handler.begin();
@@ -2013,7 +1955,6 @@
  *
  * 我们从粒子本身得到一个通往粒子所在单元的迭代器。然后，我们可以像通常那样，在系统矩阵和右手边组装附加项。
  *
- *
  * @code
  *       const auto &cell = particle->get_surrounding_cell(fluid_tria);
  *       const auto &dh_cell =
@@ -2022,10 +1963,9 @@
  *
  * @endcode
  *
- * 那么，让我们得到位于这个单元上的单元的集合，并对它们进行迭代。从每个粒子中，我们收集该粒子的位置和参考位置，以及附加在该粒子上的额外信息。在本例中，这些信息是用于生成粒子的正交点的
+ * 那么，让我们得到位于这个单元格上的单元格集合，并对它们进行迭代。从每个粒子中，我们收集该粒子的位置和参考位置，以及附加在该粒子上的额外信息。在本例中，这些信息是用于生成粒子的正交点的
  * "JxW"。
  * 利用这些信息，我们可以将正交点的贡献加入到local_matrix和local_rhs中。我们可以利用每个粒子的参考位置，轻松地评估每个粒子位置上的形状函数值。
- *
  *
  * @code
  *       const auto pic = solid_particle_handler.particles_in_cell(cell);
@@ -2075,12 +2015,11 @@
  *
  * @endcode
  *
- * <a name="Solvingthelinearsystem"></a> <h4>Solving the linear system</h4>.
+ * <a name="Solvingthelinearsystem"></a> <h4>Solving the linear system</h4>。
  *
- * 这个函数用FGMRES求解线性系统，有一个对角线块的预处理和一个对角线块的代数多重网格（AMG）方法。该预处理程序对
+ * 该函数用FGMRES求解线性系统，并对对角线块进行块状预处理和代数多重网格（AMG）方法。该预处理程序对
  * $(0,0)$ （即速度-速度）块应用V循环，对 $(1,1)$
  * 块应用质量矩阵的CG（这是我们对舒尔补码的近似值：上面组装的压力质量矩阵）。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -2158,8 +2097,7 @@
  *
  * <a name="Meshrefinement"></a> <h4>Mesh refinement</h4>。
  *
- * 我们以完全标准的方式处理网格细化问题。
- *
+ * 我们以一种完全标准的方式处理网格细化问题。
  *
  * @code
  * template <int dim, int spacedim>
@@ -2224,10 +2162,10 @@
  * @endcode
  *
  * <a name="Creatingoutputforvisualization"></a> <h4>Creating output for
- * visualization</h4>.
+ * visualization</h4>。
  *
- * 我们使用deal.II的标准并行能力在流体域上输出结果（速度和压力）。编写一个压缩的vtu文件，将所有处理器的信息聚集在一起。另外还写了一条`.pvd`记录，将物理时间与vtu文件联系起来。
- *
+ * 我们使用deal.II的标准并行功能在流体域上输出结果（速度和压力）。编写一个压缩的vtu文件，将所有处理器的信息聚集在一起。额外的".pvd
+ * "记录被写入，将物理时间与vtu文件联系起来。
  *
  * @code
  * template <int dim, int spacedim>
@@ -2273,12 +2211,12 @@
  *
  *
  * @endcode
- *  同样地，我们通过 Particles::DataOut
+ *
+ * 同样地，我们通过 Particles::DataOut
  * 对象将粒子（无论是来自实体还是追踪器）写成一个单一的压缩vtu文件。这个简单的对象不写作为
  * "属性 "附加到粒子上的额外信息，而只写它们的id
  *
  * - 但是，无论如何，我们并不关心这些粒子位置的 "JxW "值，所以我们可能想要可视化的信息都不会丢失。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -2309,12 +2247,11 @@
  *
  * @endcode
  *
- * <a name="Therunfunction"></a> <h4>The "run" function</h4>
+ * <a name="Therunfunction"></a> <h4>The "run" function</h4>。
  *
  * 这个函数现在协调了整个模拟。它与其他时间相关的教程程序非常相似
  *
  * - 以 step-21 或 step-26 为例。在开始的时候，我们会输出一些状态信息，也会把所有的当前参数保存到输出目录下的一个文件中，以便于重现。
- *
  *
  * @code
  * template <int dim, int spacedim>
@@ -2336,8 +2273,7 @@
  *
  * @endcode
  *
- * 然后我们开始进行时间循环。我们在第一个循环中初始化模拟的所有元素
- *
+ * 然后我们开始时间循环。我们在第一个循环中初始化模拟的所有元素
  *
  * @code
  *   const double time_step    = par.final_time / (par.number_of_time_steps
@@ -2380,8 +2316,7 @@
  *         }
  * @endcode
  *
- * 在第一个时间步长后，我们在每个时间步长的开始时对实体进行位移，以考虑到它已经移动的事实。
- *
+ * 在第一个时间步长后，我们在每个时间步长的开始时对固体体进行位移，以考虑到它已经移动的事实。
  *
  * @code
  *       else
@@ -2397,8 +2332,7 @@
  *
  * @endcode
  *
- * 为了更新系统的状态，我们首先插值示踪粒子位置上的流体速度，并采用天真的显式欧拉方案，对无质量示踪粒子进行移动。
- *
+ * 为了更新系统的状态，我们首先插值示踪粒子位置的流体速度，并采用天真的显式欧拉方案，对无质量示踪粒子进行漂移。
  *
  * @code
  *       {
@@ -2429,8 +2363,7 @@
  *
  * @endcode
  *
- * 使用这些新的位置，我们就可以组装斯托克斯系统并求解。
- *
+ * 使用这些新的位置，我们就可以组装斯托克斯系统并解决它。
  *
  * @code
  *       assemble_stokes_system();
@@ -2439,8 +2372,7 @@
  *
  * @endcode
  *
- * 有了适当的频率，我们再把固体粒子、示踪粒子和流体域的信息写进文件，以便进行可视化，并通过调整网格来结束时间步骤。
- *
+ * 在适当的频率下，我们再将固体粒子、示踪粒子和流体域的信息写入文件，以便进行可视化，并通过调整网格来结束时间步骤。
  *
  * @code
  *       if (cycle % par.output_frequency == 0)
@@ -2475,9 +2407,9 @@
  *
  * @endcode
  *
- * <a name="Themainfunction"></a> <h3>The main() function</h3>
+ * <a name="Themainfunction"></a> <h3>The main() function</h3>。
  *
- * 代码的其余部分，即`main()`函数，是标准的，除了对输入参数文件的处理。我们允许用户指定一个可选的参数文件作为程序的参数。如果没有指定，我们就使用默认文件
+ * 代码的其余部分，即`main()`函数，是标准的，但对输入参数文件的处理除外。我们允许用户指定一个可选的参数文件作为程序的参数。如果没有指定，我们就使用默认文件
  * "parameters.prm"，如果不存在，我们就创建这个文件。文件名首先被扫描为字符串
  * "23"，然后是 "3"。如果文件名包含字符串
  * "23"，问题类将分别以模板参数2和3进行实例化。如果只找到
@@ -2487,7 +2419,6 @@
  *
  * 如果程序的调用没有任何命令行参数（即`argc==1`），那么我们就默认使用
  * "参数.prm"。
- *
  *
  * @code
  * int main(int argc, charargv[])
@@ -2560,9 +2491,8 @@
  * return 0;
  * }
  * @endcode
- * <a name="Results"></a><h1>Results</h1>.
- *
- * 运行本程序的目录中包含一些样本参数文件，你可以用这些文件来重现本节中的结果。如果你没有在命令行上指定参数文件作为参数，程序将尝试默认读取文件"`参数.prm`"，并执行二维版本的代码。正如在源代码的讨论中所解释的那样，如果你的文件名包含字符串
+ * <a name="Results"></a><h1>Results</h1> 。
+ * 运行本程序的目录中包含一些样本参数文件，你可以用它们来重现本节中的结果。如果你没有在命令行上指定参数文件作为参数，程序将默认读取文件"`参数.prm`"，并执行二维版本的代码。正如在源代码的讨论中所解释的那样，如果你的文件名包含字符串
  * "23"，那么程序将运行一个三维的问题，其中有一个同维的沉浸实体。如果文件名中包含字符串
  * "3"，那么它将运行一个三维问题，其中浸入的实体同维度为零，否则它将运行一个二维问题，其中浸入的实体同维度为零。
  * 不管具体的参数文件名是什么，如果指定的文件不存在，当你执行程序时，你会得到一个异常，即找不到这样的文件。
@@ -2810,8 +2740,7 @@
  * "parameters_22.prm "中查看所有其他参数。
  *
  *  <a name="Twodimensionaltestcase"></a><h3> Two dimensional test case </h3>
- *
- * 默认的问题是生成一个同维度的零叶轮，由一个旋转的矩形网格组成，其中旋转的方向为半个时间单位，反方向为半个时间单位，恒定角速度等于
+ * 缺省问题产生了一个同维度的零叶轮，由一个旋转的矩形网格组成，其中旋转是在一个方向上的半个时间单位，和在相反方向上的半个时间单位，恒定角速度等于
  * $\approx 2\pi \frac{\text{rad}}{\text{time unit}}$
  * 。因此，叶轮做了一半的旋转，然后返回到原来的位置。下面的动画显示了速度的大小，固体叶轮和示踪粒子的运动。
  *
@@ -2892,8 +2821,7 @@
  *
  *  <a name="Threedimensionaltestcase"></a><h3> Three dimensional test case
  * </h3>
- *
- * 为了玩一玩，我们将虚构的领域复杂化（取自https://grabcad.com/library/lungstors-blower-1），并在三个空间维度上运行一个共维度的模拟，使用以下"`参数_23.prm`"文件。
+ * 为了玩一玩，我们将虚构的领域复杂化（取自https://grabcad.com/library/lungstors-blower-1），并在三个空间维度上运行一个共维度的一元模拟，使用以下"`参数_23.prm`"文件。
  * @code
  * subsection Stokes Immersed Problem
  * set Final time                            = 1
@@ -2965,22 +2893,20 @@
  *
  * 现在，求解器在三维空间中占用了大部分的求解时间，就运行时间而言，粒子运动和Nitsche装配仍然相对不重要。
  *
- *
- * @htmlonly <p align="center"> <iframe width="560" height="315"
+ *   @htmlonly <p align="center"> <iframe width="560" height="315"
  * src="https://www.youtube.com/embed/Srwq7zyR9mg" frameborder="0"
  * allow="accelerometer; autoplay; encrypted-media; gyroscope;
- * picture-in-picture" allowfullscreen></iframe> </p> @endhtmlonly    <a
- * name="extensions"></a><a
- * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
- * 。
+ * picture-in-picture" allowfullscreen></iframe> </p> @endhtmlonly
  *
+ *  <a name="extensions"></a><a
+ * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
  * 目前的教程程序显示了流体和固体之间的单向耦合，其中固体运动是强加的（而不是求解的），并通过利用固体正交点的位置和权重在固体域中读取。
  * 代码的结构已经允许人们通过利用在实体网格的正交点上读取流体速度值的可能性来实现双向的耦合。为了提高MPI通信模式的效率，我们应该在拥有创建正交点的单元的实体处理器上保持正交点的所有权。在当前的代码中，只需定义用于交换正交点信息的向量的IndexSet，使用实体分区而不是初始流体分区。
  * 这使得本教程程序中使用的技术与教程 step-60
  * 中提出的技术相结合，以解决具有分布式拉格朗日乘数的流体结构相互作用问题，关于
  * parallel::distributed::Triangulation 对象。
  * 上面的时间显示，目前的预处理策略对Nitsche惩罚并不奏效，如果我们想针对更大的问题，我们应该想出一个更好的预处理方法。此外，应该实施一个检查点重启策略，以允许较长的模拟被中断和恢复，例如在
- * step-69 的教程中就有这样的做法。
+ * step-69 教程中就有这样的做法。
  *
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-70.cc"  。
  *

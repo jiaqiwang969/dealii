@@ -516,7 +516,7 @@ of the standard Galerkin finite element method for this problem.
  
    void Settings::get_parameters(const std::string &prm_filename)
    {
-     /* First declare the parameters... */
+     // First declare the parameters... 
      ParameterHandler prm;
  
      prm.declare_entry("Epsilon",
@@ -550,7 +550,7 @@ of the standard Galerkin finite element method for this problem.
                        Patterns::Bool(),
                        "Generate graphical output: true|false");
  
-     /* ...and then try to read their values from the input file: */
+     // ...and then try to read their values from the input file: 
      if (prm_filename.empty())
        {
          prm.print_parameters(std::cout, ParameterHandler::Text);
@@ -1011,7 +1011,7 @@ of the standard Galerkin finite element method for this problem.
      DoFTools::make_sparsity_pattern(dof_handler,
                                      dsp,
                                      constraints,
-                                     /*keep_constrained_dofs = */ false);
+                                     //keep_constrained_dofs ！改 =  false);
  
      sparsity_pattern.copy_from(dsp);
      system_matrix.reinit(sparsity_pattern);
@@ -1049,7 +1049,7 @@ of the standard Galerkin finite element method for this problem.
                DoFRenumbering::downstream(dof_handler,
                                           level,
                                           direction,
-                                          /*dof_wise_renumbering = */ true);
+                                          //dof_wise_renumbering = !改 true);
            }
          else if (settings.dof_renumbering ==
                   Settings::DoFRenumberingStrategy::random)

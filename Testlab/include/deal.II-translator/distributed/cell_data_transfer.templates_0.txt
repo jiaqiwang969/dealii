@@ -1,3 +1,0 @@
-include/deal.II-translator/distributed/cell_data_transfer.templates_0.txt
-[0.x.0]
-

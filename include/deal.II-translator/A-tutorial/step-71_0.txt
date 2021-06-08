@@ -1,0 +1,1611 @@
+[0.x.0]*
+ [2.x.0] 
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32][1.x.33]
+*  [2.x.1] 
+* [1.x.34]
+* 
+
+* [1.x.35][1.x.36]
+* 
+
+* The aim of this tutorial is, quite simply, to introduce the fundamentals of both[automatic](https://en.wikipedia.org/wiki/Automatic_differentiation)and [symbolic differentiation](https://en.wikipedia.org/wiki/Computer_algebra)(respectively abbreviated as ADand SD): Ways in which one can, in source code, describe a function [2.x.2]  and automatically also obtain a representation of derivatives [2.x.3]  (the "Jacobian"), [2.x.4]  (the "Hessian"), etc., without havingto write additional lines of code. Doing this is quite helpful insolving nonlinear or optimization problems where one would like toonly describe the nonlinear equation or the objective function in thecode, without having to also provide their derivatives (which arenecessary for a Newton method for solving a nonlinear problem, or forfinding a minimizer).
+* Since AD and SD tools are somewhat independent of finite elements and boundary valueproblems, this tutorial is going to be different to the others that you may haveread beforehand. It will focus specifically on how these frameworks work andthe principles and thinking behind them, and will forgo looking at them in thedirect context of a finite element simulation.
+* We will, in fact, look at two different sets of problems that have greatlydifferent levels of complexity, but when framed properly hold sufficientsimilarity that the same AD and SD frameworks can be leveraged. With theseexamples the aim is to build up an understanding of the steps that are requiredto use the AD and SD tools, the differences between them, and hopefully identifywhere they could be immediately be used in order to improve or simplify existingcode.
+* It's plausible that you're wondering what AD and SD are, in the first place. Well,that question is easy to answer but without context is not very insightful. Sowe're not going to cover that in this introduction, but will rather defer thisuntil the first introductory example where we lay out the key points as thisexample unfolds. To complement this, we should mention that the core theory forboth frameworks is extensively discussed in the  [2.x.5]  module, soit bears little repeating here.
+* Since we have to picksome* sufficiently interesting topic to investigateand identify where AD and SD can be used effectively, the main problem that'simplemented in the second half of the tutorial is one of modeling a coupledconstitutive law, specifically a magneto-active material (with hysteretic effects).As a means of an introduction to that, later in the introduction some groundingtheory for that class of materials will be presented.Naturally, this is not a field (or even a class of materials) that is ofinterest to a wide audience. Therefore, the author wishes to express up frontthat this theory and any subsequent derivations mustn't be considered the focusof this tutorial. Instead, keep in mind the complexity of the problem that arisesfrom the relatively innocuous description of the constitutive law, and what wemight (in the context of a boundary value problem) need to derive from that.We will perform some computations with these constitutive laws at the level of arepresentative continuum point (so, remaining in the  realm of continuummechanics), and will produce some benchmark results around which we can framea final discussion on the topic of computational performance.
+* Once we have the foundation upon which we can build further concepts, wewill see how AD in particular can be exploited at a finite element (rather thancontinuum) level: this is a topic that is covered in  [2.x.6] , as well as  [2.x.7] .But before then, let's take a moment to think about why we might want to considerusing these sorts of tools, and what benefits they can potentially offer you.
+* 
+
+* [1.x.37][1.x.38]
+* 
+
+* The primary driver for using AD or SD is typically that there is some situationthat requires differentiation to be performed, and that doing so is sufficientlychallenging to make the prospect of using an external tool to perform that specifictask appealing. A broad categorization for the circumstances under which AD orSD can be rendered most useful include (but are probably not limited to) thefollowing:
+* 
+*  - [1.x.39] For a new class of problems where you're trying to  implement a solution quickly, and want to remove some of the intricate details  (in terms of both the mathematics as well as the organizational structure of  the code itself). You might be willing to justify any additional computational  cost, which would be offset by an increased agility in restructuring your code  or modifying the part of the problem that is introducing some complex nonlinearity  with minimal effort.
+* 
+*  - [1.x.40] It could very well be that some problems just happen to have  a nonlinearity that is incredibly challenging to linearize or formulate by hand.  Having this challenge taken care of for you by a tool that is, for the most part,  robust, reliable, and accurate may alleviate some of the pains in implementing  certain problems. Examples of this include  [2.x.8] , where the  derivative of the nonlinear PDE we solve is not incredibly difficult  to derive, but sufficiently cumbersome that one has to pay attention  in doing so by hand, and where implementing the corresponding finite  element formulation of the Newton step takes more than just the few  lines that it generally takes to implement the bilinear form;   [2.x.9]  (where we actually use AD) is an even more extreme example.
+* 
+*  - [1.x.41] For materials and simulations that exhibit nonlinear response,  an accurate rather than only approximate material tangent (the term mechanical engineers use for  the derivative of a material law) can be the difference between convergent and  divergent behavior, especially at high external (or coupling) loads.  As the complexity of the problem increases, so do the opportunities to introduce  subtle (or, perhaps, not-so-subtle) errors that produce predictably negative  results.  Additionally, there is a lot to be gained by verifying that the implementation is  completely correct. For example, certain categories of problems are known to exhibit  instabilities, and therefore when you start to lose quadratic convergence in a  nonlinear solver (e.g., Newton's method) then this may not be a huge surprise to  the investigator. However, it is hard (if not impossible) to distinguish between  convergence behavior that is produced as you near an unstable solution and when  you simply have an error in the material or finite element linearization, and  start to drift off the optimal convergence path due to that. Having a  method of verifying the correctness of the implementation of a constitutive law  linearization, for example, is perhaps the only meaningful way that you can  use to catch such errors, assuming that you've got nobody else to scrutinize your code.  Thankfully, with some tactical programming it is quite straight-forward to structure  a code for reuse, such that you can use the same classes in production code and  directly verify them in, for instance, a unit-test framework.
+* This tutorial program will have two parts: One where we just introducethe basic ideas of automatic and symbolic differentiation support indeal.II using a simple set of examples; and one where we apply this toa realistic but much more complicated case. For that second half, thenext section will provide some background on magneto-mechanicalmaterials
+* 
+*  -  you can skip this section if all you want to learnabout is what AD and SD actually are, but you probably want to readover this section if you are interested in how to apply AD and SD forconcrete situations.
+* 
+
+* [1.x.42][1.x.43]
+* 
+
+* [1.x.44][1.x.45]
+* 
+
+* As a prelude to introducing the coupled magneto-mechanical material law that we'll useto model a magneto-active polymer, we'll start with a very concise summary ofthe salient thermodynamics to which these constitutive laws must subscribe.The basis for the theory, as summarized here, is described in copious detail byTruesdell and Toupin  [2.x.10]  and Coleman and Noll  [2.x.11] ,and follows the logic laid out by Holzapfel  [2.x.12] .
+* Starting from the first law of thermodynamics, and following a few technicalassumptions, it can be shown the the balance between the kinetic plus internalenergy rates and the power supplied to the system from externalsources is given by the following relationship that equates the rateof change of the energy in an (arbitrary) volume  [2.x.13]  on the left, andthe sum of forces acting on that volume on the right:[1.x.46]Here  [2.x.14]  represents the total time derivative, [2.x.15]  is the material density as measured in the Lagrangian reference frame, [2.x.16]  is the material velocity and  [2.x.17]  its acceleration, [2.x.18]  is the internal energy per unit reference volume, [2.x.19]  is the total Piola stress tensor and  [2.x.20]  isthe time rate of the deformation gradient tensor, [2.x.21]  and  [2.x.22]  are, respectively, the magnetic field vector and themagnetic induction (or magnetic flux density) vector, [2.x.23]  and  [2.x.24]  are the electric field vector and electricdisplacement vector, and [2.x.25]  and  [2.x.26]  represent the referential thermal flux vector and thermalsource.The material differential operator [2.x.27] where  [2.x.28]  is the material position vector.With some rearrangement of terms, invoking the arbitrariness of the integrationvolume  [2.x.29] , the total internal energy density rate  [2.x.30]  can be identified as[1.x.47]The total internal energy includes contributions that arise not only due tomechanical deformation (the first term), and thermal fluxes and sources (thefourth and fifth terms), but also due to the intrinsic energy stored in themagnetic and electric fields themselves (the second and third terms,respectively).
+* The second law of thermodynamics, known also as the entropy inequality principle,informs us that certain thermodynamic processes are irreversible. After accountingfor the total entropy and rate of entropy input, the Clausius-Duhem inequalitycan be derived. In local form (and in the material configuration), this reads[1.x.48]The quantity  [2.x.31]  is the absolute temperature, and [2.x.32]  represents the entropy per unit reference volume.
+* Using this to replace  [2.x.33]  in the resultstemming from the first law of thermodynamics, we now have the relation[1.x.49]On the basis of Fourier's law, which informs us that heat flows from regionsof high temperature to low temperature, the last term is always positive andcan be ignored.This renders the local dissipation inequality[1.x.50]It is postulated  [2.x.34]  that the Legendre transformation[1.x.51]from which we may define the free energy density function  [2.x.35]  with the statedparameterization, exists and is valid.Taking the material rate of this equation and substituting it into the localdissipation inequality results in the generic expression[1.x.52]Under the assumption of isothermal conditions, and that the electric field doesnot excite the material in a manner that is considered non-negligible, then thisdissipation inequality reduces to[1.x.53]
+* [1.x.54][1.x.55]
+* 
+
+* When considering materials that exhibit mechanically dissipative behavior,it can be shown that this can be captured within the dissipation inequalitythrough the augmentation of the material free energy density function with additionalparameters that represent internal variables  [2.x.36] . Consequently,we write it as[1.x.56]where  [2.x.37]  represents theinternal variable (which acts like a measure of the deformation gradient)associated with the `i`th mechanical dissipative (viscous) mechanism.As can be inferred from its parameterization, each of these internal parametersis considered to evolve in time.Currently the free energy density function  [2.x.38]  is parameterized in terms ofthe magnetic induction  [2.x.39] . This is the natural parameterization thatcomes as a consequence of the considered balance laws. Should such a class ofmaterials to be incorporated within a finite-element model, it would be ascertainedthat a certain formulation of the magnetic problem, known as the magnetic vectorpotential formulation, would need to be adopted. This has its own set of challenges,so where possible the more simple magnetic scalar potential formulation may bepreferred. In that case, the magnetic problem needs to be parameterized in termsof the magnetic field  [2.x.40] . To make this re-parameterization, we executea final Legendre transformation[1.x.57]At the same time, we may take advantage of the principle of material frameindifference in order to express the energy density function in terms of symmetricdeformation measures:[1.x.58]The upshot of these two transformations (leaving out considerable explicit andhidden details) renders the final expression for the reduced dissipationinequality as[1.x.59](Notice the sign change on the second term on the right hand side, and thetransfer of the time derivative to the magnetic induction vector.)The stress quantity  [2.x.41]  is known as the total Piola-Kirchhoffstress tensor and its energy conjugate  [2.x.42] is the right Cauchy-Green deformation tensor, and [2.x.43]  is the re-parameterizedinternal variable associated with the `i`th mechanical dissipative (viscous)mechanism.
+* Expansion of the material rate of the energy density function, and rearrangement of thevarious terms, results in the expression[1.x.60]At this point, its worth noting the use of the[partial derivatives](https://en.wikipedia.org/wiki/Partial_derivative) [2.x.44] . This is an important detail that will befundamental to a certain design choice made within the tutorial.As brief reminder of what this signifies, the partial derivative of amulti-variate function returns the derivative of that function with respectto one of those variables while holding the others constant:[1.x.61]More specific to what's encoded in the dissipation inequality (with the very generalfree energy density function  [2.x.45]  with its parameterization yet to be formalized),if one of the input variables is a function of another, it is also held constantand the chain rule does not propagate any further, while the computing totalderivative would imply judicious use of the chain rule. This can be betterunderstood by comparing the following two statements:
+* [1.x.62]
+* 
+* Returning to the thermodynamics of the problem, we next exploit the arbitrarinessof the quantities  [2.x.46]  and  [2.x.47] ,by application of the Coleman-Noll procedure  [2.x.48] ,  [2.x.49] .This leads to the identification of the kinetic conjugate quantities[1.x.63](Again, note the use of the partial derivatives to define the stress and magneticinduction in this generalized setting.)From what terms remain in the dissipative power (namely those related to themechanical dissipative mechanisms), if they are assumed to be independent ofone another then, for each mechanism `i`,[1.x.64]This constraint must be satisfied through the appropriate choice of free energyfunction, as well as a carefully considered evolution law for the internalvariables.
+* In the case that there are no dissipative mechanisms to be captured within theconstitutive model (e.g., if the material to be modelled is magneto-hyperelastic)then the free energy density function [2.x.50]  reduces to a storedenergy density function, and the total stress and magnetic induction can be simplified
+* [1.x.65]
+* where the operator  [2.x.51]  denotes the total derivative operation.
+* For completeness, the linearization of the stress tensor and magnetic inductionare captured within the fourth-order total referential elastic tangent tensor [2.x.52] , the second-order magnetostatic tangent tensor  [2.x.53]  and thethird-order total referential magnetoelastic coupling tensor  [2.x.54] .Irrespective of the parameterization of  [2.x.55]  and  [2.x.56] ,these quantities may be computed by
+* [1.x.66]
+* For the case of rate-dependent materials, this expands to
+* [1.x.67]
+* while for rate-independent materials the linearizations are
+* [1.x.68]
+* The subtle difference between them is the application of a partial derivative duringthe calculation of the first derivatives. We'll see later how this affects the choiceof AD versus SD for this specific application. For now, we'll simply introducethe two specific materials that are implemented within this tutorial.
+* [1.x.69][1.x.70]
+* 
+
+* The first material that we'll consider is one that is governed by amagneto-hyperelastic constitutive law. This material responds to bothdeformation as well as immersion in a magnetic field, but exhibits notime- or history-dependent behavior (such as dissipation through viscousdamping or magnetic hysteresis, etc.). Thestored energy densityfunction* for such a material is only parameterized in terms of the(current) field variables, but not their time derivatives or past values.
+* We'll choose the energy density function, which captures both the energystored in the material due to deformation and magnetization, as well asthe energy stored in the magnetic field itself, to be[1.x.71]with[1.x.72]and for which the variable  [2.x.57]  ( [2.x.58] being the rank-2 identity tensor) represents the spatial dimension and [2.x.59]  is the deformation gradient tensor. To give some briefbackground to the various components of  [2.x.60] , the first two termsbear a great resemblance to the stored energy density function for a(hyperelastic) Neohookean material. The only difference between what'sused here and the Neohookean material is the scaling of the elastic shearmodulus by the magnetic field-sensitive saturation function  [2.x.61]  (see  [2.x.62] , equation29). This function will, in effect, cause the material to stiffen in thepresence of a strong magnetic field. As it is governed by a sigmoid-typefunction, the shear modulus will asymptotically converge on the specifiedsaturation shear modulus. It can also be shown that the last term in [2.x.63]  is the stored energy density function for magnetic field (asderived from first principles), scaled by the relative permeabilityconstant. This definition collectively implies that the material islinearly magnetized, i.e., the magnetization vector and magnetic fieldvector are aligned. (This is certainly not obvious with the magnetic energystated in its current form, but when the magnetic induction and magnetizationare derived from  [2.x.64]  and all magnetic fields are expressed in the [2.x.65] current configuration [2.x.66]  then this correlation becomes clear.)As for the specifics of what the magnetic induction, stress tensor, and thevarious material tangents look like, we'll defer presenting these to thetutorial body where the full, unassisted implementation of the constitutivelaw is defined.
+* [1.x.73][1.x.74]
+* 
+
+* The second material that we'll formulate is one for amagneto-viscoelastic material with a single dissipative mechanism `i`.Thefree energy density function* that we'll be considering is defined as
+* [1.x.75]
+* with[1.x.76][1.x.77]and the evolution law[1.x.78]for the internal viscous variable.We've chosen the magnetoelastic part of the energy [2.x.67] to match that of the first material model that we explored, so this partneeds no further explanation. As for the viscous part  [2.x.68] ,this component of the free energy (in conjunction with the evolution law forthe viscous deformation tensor) is taken from  [2.x.69]  (with theadditional scaling by the viscous saturation function described in [2.x.70] ). It is derived in a thermodynamically consistentframework that, at its core, models the movement of polymer chains on amicro-scale level.
+* To proceed beyond this point, we'll also need to consider the timediscretization of the evolution law.Choosing the implicit first-order backwards difference scheme, then[1.x.79]where the superscript  [2.x.71]  denotes that the quantity is taken at thecurrent timestep, and  [2.x.72]  denotes quantities taken at the previoustimestep (i.e., a history variable). The timestep size  [2.x.73]  is thedifference between the current time and that of the previous timestep.Rearranging the terms so that all internal variable quantities at thecurrent time are on the left hand side of the equation, we get[1.x.80]that matches  [2.x.74]  equation 54.
+* [1.x.81][1.x.82]
+* 
+
+* Now that we have shown all of these formulas for the thermodynamics and theorygoverning magneto-mechanics and constitutive models, let us outline what theprogram will do with all of this.We wish to do somethingmeaningful* with the materials laws that we've formulated,and so it makes sense to subject them to some mechanical and magnetic loadingconditions that are, in some way, representative of some conditions that mightbe found either in an application or in a laboratory setting. One way to achievethat aim would be to embed these constitutive laws in a finite element model tosimulate a device. In this instance, though, we'll keep things simple (we arefocusing on the automatic and symbolic differentiation concepts, after all)and will find a concise way to faithfully replicate an industry-standardrheological experiment using an analytical expression for the loading conditions.
+* The rheological experiment that we'll reproduce,which idealizes a laboratory experiment that was used to characterizemagneto-active polymers, is detailed in  [2.x.75] (as well as  [2.x.76] , in which it is documented along with thereal-world experiments). The images below provide a visual description ofthe problem set up.
+*  [2.x.77] 
+* Under the assumptions that an incompressible medium is being tested,and that the deformation profile through the sample thickness is linear,then the displacement at some measurement point  [2.x.78]  withinthe sample, expressed in radial coordinates, is
+* [1.x.83]
+* where [2.x.79]  and  [2.x.80]  are the radius at
+* 
+*  -  and angle of
+* 
+*  -  the sampling point, [2.x.81]  is the (constant) axial deformation, [2.x.82]  is the time-dependenttorsion angle per unit length that will be prescribed using asinusoidally repeating oscillation of fixed amplitude  [2.x.83] .The magnetic field is aligned axially, i.e., in the  [2.x.84]  direction.
+* This summarizes everything that we need to fully characterize the idealizedloading at any point within the rheological sample. We'll set up the problemin such a way that we "pick" a representative point with this sample, andsubject it to a harmonic shear deformation at a constant axial deformation(by default, a compressive load) and a constant, axially applied magneticfield. We will record the stress and magnetic induction at this point, andwill output that data to file for post-processing. Although its not necessaryfor this particular problem, we will also be computing the tangents as well.Even though they are not directly used in this particular piece of work, thesesecond derivatives are needed to embed the constitutive law within afinite element model (one possible extension to this work). We'll thereforetake the opportunity to check our hand calculations for correctness usingthe assisted differentiation frameworks.
+* [1.x.84][1.x.85]
+* 
+
+* In addition to the already mentioned  [2.x.85]  module, the following are a fewreferences that discuss in more detail
+* 
+*  - magneto-mechanics, and some aspects of automated differentiation frameworks:  [2.x.86] ,  [2.x.87] , and
+* 
+*  - the automation of finite element frameworks using AD and/or SD:  [2.x.88] ,  [2.x.89] .
+*  [2.x.90] 
+* 
+
+*  [1.x.86] [1.x.87]
+*  We start by including all the necessary deal.II header files and some C++ related ones. This first header will give us access to a data structure that will allow us to store arbitrary data within it.
+* 
+
+* 
+* [1.x.88]
+* 
+*  Next come some core classes, including one that provides an implementation for time-stepping.
+* 
+
+* 
+* [1.x.89]
+* 
+*  Then some headers that define some useful coordinate transformations and kinematic relationships that are often found in nonlinear elasticity.
+* 
+
+* 
+* [1.x.90]
+* 
+*  The following two headers provide all of the functionality that we need to perform automatic differentiation, and use the symbolic computer algebra system that deal.II can utilize. The headers of all automatic differentiation and symbolic differentiation wrapper classes, and any ancillary data structures that are required, are all collected inside these unifying headers.
+* 
+
+* 
+* [1.x.91]
+* 
+*  Including this header allows us the capability to write output to a file stream.
+* 
+
+* 
+* [1.x.92]
+* 
+*  As per usual, the entire tutorial program is defined within its own unique namespace.
+* 
+
+* 
+* [1.x.93]
+* 
+*   [1.x.94]  [1.x.95]
+* 
+
+* 
+*  Automatic and symbolic differentiation have some magical and mystical qualities. Although their use in a project can be beneficial for a multitude of reasons, the barrier to understanding how to use these frameworks or how they can be leveraged may exceed the patience of the developer that is trying to (reliably) integrate them into their work.   
+*   Although it is the wish of the author to successfully illustrate how these tools can be integrated into workflows for finite element modelling, it might be best to first take a step back and start right from the basics. So to start off with, we'll first have a look at differentiating a "simple" mathematical function using both frameworks, so that the fundamental operations (both their sequence and function) can be firmly established and understood with minimal complication. In the second part of this tutorial we will put these fundamentals into practice and build on them further.   
+*   Accompanying the description of the algorithmic steps to use the frameworks will be a simplified view as to what theymight* be doing in the background. This description will be very much one designed to aid understanding, and the reader is encouraged to view the  [2.x.91]  module documentation for a far more formal description into how these tools actually work.   
+*  
+*  [1.x.96]  [1.x.97]
+* 
+
+* 
+* [1.x.98]
+* 
+*  In order to convince the reader that these tools are indeed useful in practice, let us choose a function for which it is not too difficult to compute the analytical derivatives by hand. It's just sufficiently complicated to make you think about whether or not you truly want to go through with this exercise, and might also make you question whether you are completely sure that your calculations and implementation for its derivatives are correct. The point, of course, is that differentiation of functions is in a sense relatively formulaic and should be something computers are good at
+* 
+*  -  if we could build on existing software that understands the rules, we wouldn't have to bother with doing it ourselves.     
+*   We choose the two variable trigonometric function  [2.x.92]  for this purpose. Notice that this function is templated on the number type. This is done because we can often (but not always) use special auto-differentiable and symbolic types as drop-in replacements for real or complex valued types, and these will then perform some elementary calculations, such as evaluate a function value along with its derivatives. We will exploit that property and make sure that we need only define our function once, and then it can be re-used in whichever context we wish to perform differential operations on it.
+* 
+
+* 
+* [1.x.99]
+* 
+*  Rather than revealing this function's derivatives immediately, we'll forward declare functions that return them and defer their definition to later. As implied by the function names, they respectively return the derivatives  [2.x.93] :
+* 
+
+* 
+* [1.x.100]
+* 
+*   [2.x.94] :
+* 
+
+* 
+* [1.x.101]
+* 
+*   [2.x.95] :
+* 
+
+* 
+* [1.x.102]
+* 
+*   [2.x.96] :
+* 
+
+* 
+* [1.x.103]
+* 
+*   [2.x.97] :
+* 
+
+* 
+* [1.x.104]
+* 
+*  and, lastly,  [2.x.98] :
+* 
+
+* 
+* [1.x.105]
+* 
+*   [1.x.106]  [1.x.107]
+* 
+
+* 
+*  To begin, we'll use AD as the tool to automatically compute derivatives for us. We will evaluate the function with the arguments `x` and `y`, and expect the resulting value and all of the derivatives to match to within the given tolerance.
+* 
+
+* 
+* [1.x.108]
+* 
+*  Our function  [2.x.99]  is a scalar-valued function, with arguments that represent the typical input variables that one comes across in algebraic calculations or tensor calculus. For this reason, the  [2.x.100]  class is the appropriate wrapper class to use to do the computations that we require. (As a point of comparison, if the function arguments represented finite element cell degrees-of-freedom, we'd want to treat them differently.) The spatial dimension of the problem is irrelevant since we have no vector- or tensor-valued arguments to accommodate, so the `dim` template argument is arbitrarily assigned a value of 1. The second template argument stipulates which AD framework will be used (deal.II has support for several external AD frameworks), and what the underlying number type provided by this framework is to be used. This number type influences the maximum order of the differential operation, and the underlying algorithms that are used to compute them. Given its template nature, this choice is a compile-time decision because many (but not all) of the AD libraries exploit compile-time meta-programming to implement these special number types in an efficient manner. The third template parameter states what the result type is; in our case, we're working with `double`s.
+* 
+
+* 
+* [1.x.109]
+* 
+*  It is necessary that we pre-register with our  [2.x.101]  class how many arguments (what we will call "independent variables") the function  [2.x.102]  has. Those arguments are `x` and `y`, so obviously there are two of them.
+* 
+
+* 
+* [1.x.110]
+* 
+*  We now have sufficient information to create and initialize an instance of the helper class. We can also get the concrete number type that will be used in all subsequent calculations. This is useful, because we can write everything from here on by referencing this type, and if we ever want to change the framework used, or number type (e.g., if we need more differential operations) then we need only adjust the `ADTypeCode` template parameter.
+* 
+
+* 
+* [1.x.111]
+* 
+*  The next step is to register the numerical values of the independent variables with the helper class. This is done because the function and its derivatives will be evaluated for exactly these arguments. Since we register them in the order `{x,y}`, the variable `x` will be assigned component number `0`, and `y` will be component `1`
+* 
+
+* 
+* 
+*  -  a detail that will be used in the next few lines.
+* 
+
+* 
+* [1.x.112]
+* 
+*  We now ask for the helper class to give to us the independent variables with their auto-differentiable representation. These are termed "sensitive variables", because from this point on any operations that we do with the components `independent_variables_ad` are tracked and recorded by the AD framework, and will be considered when we ask for the derivatives of something that they're used to compute. What the helper returns is a `vector` of auto-differentiable numbers, but we can be sure that the zeroth element represents `x` and the first element `y`. Just to make completely sure that there's no ambiguity of what number type these variables are, we suffix all of the auto-differentiable variables with `ad`.
+* 
+
+* 
+* [1.x.113]
+* 
+*  We can immediately pass in our sensitive representation of the independent variables to our templated function that computes  [2.x.103] . This also returns an auto-differentiable number.
+* 
+
+* 
+* [1.x.114]
+* 
+*  So now the natural question to ask is what we have actually just computed by passing these special `x_ad` and `y_ad` variables to the function `f`, instead of the original `double` variables `x` and `y`? In other words, how is all of this related to the computation of the derivatives that we were wanting to determine? Or, more concisely: What is so special about this returned `ADNumberType` object that gives it the ability to magically return derivatives?       
+*   In essence, how thiscould* be done is the following: This special number can be viewed as a data structure that stores the function value, and the prescribed number of derivatives. For a once-differentiable number expecting two arguments, it might look like this:       
+*    [2.x.104]        
+*   For our independent variable `x_ad`, the starting value of `x_ad.value` would simply be its assigned value (i.e., the real value of that this variable represents). The derivative `x_ad.derivatives[0]` would be initialized to `1`, since `x` is the zeroth independent variable and  [2.x.105] . The derivative `x.derivatives[1]` would be initialized to zero, since the first independent variable is `y` and  [2.x.106] .       
+*   For the function derivatives to be meaningful, we must assume that not only is this function differentiable in an analytical sense, but that it is also differentiable at the evaluation point `x,y`. We can exploit both of these assumptions: when we use this number type in mathematical operations, the AD frameworkcould*
+ overload the operations (e.g., `%operator+()`, `%operator*()` as well as `%sin()`, `%exp()`, etc.) such that the returned result has the expected value. At the same time, it would then compute the derivatives through the knowledge of exactly what function is being overloaded and rigorous application of the chain-rule. So, the `%sin()` function (with its argument `a` itself being a function of the independent variables `x` and `y`)might* be defined as follows:       
+*    [2.x.107]        
+*   All of that could of course also be done for second and even higher order derivatives.       
+*   So it is now clear that with the above representation the `ADNumberType` is carrying around some extra data that represents the various derivatives of differentiable functions with respect to the original (sensitive) independent variables. It should therefore be noted that there is computational overhead associated with using them (as we compute extra functions when doing derivative computations) as well as memory overhead in storing these results. So the prescribed number of levels of differential operations should ideally be kept to a minimum to limit computational cost. We could, for instance, have computed the first derivatives ourself and then have used the  [2.x.108]  helper class to determine the gradient of the collection of dependent functions, which would be the second derivatives of the original scalar function.       
+*   It is also worth noting that because the chain rule is indiscriminately applied and we only see the beginning and end-points of the calculation `{x,y}`  [2.x.109]  `f(x,y)`, we will only ever be able to query the total derivatives of `f`; the partial derivatives (`a.derivatives[0]` and `a.derivatives[1]` in the above example) are intermediate values and are hidden from us.
+* 
+
+* 
+*  Okay, since we now at least have some idea as to exactly what `f_ad` represents and what is encoded within it, let's put all of that to some actual use. To gain access to those hidden derivative results, we register the final result with the helper class. After this point, we can no longer change the value of `f_ad` and have those changes reflected in the results returned by the helper class.
+* 
+
+* 
+* [1.x.117]
+* 
+*  The next step is to extract the derivatives (specifically, the function gradient and Hessian). To do so we first create some temporary data structures (with the result type `double`) to store the derivatives (noting that all derivatives are returned at once, and not individually)...
+* 
+
+* 
+* [1.x.118]
+* 
+*  ... and we then request that the helper class compute these derivatives, and the function value itself. And that's it. We have everything that we were aiming to get.
+* 
+
+* 
+* [1.x.119]
+* 
+*  We can convince ourselves that the AD framework is correct by comparing it to the analytical solution. (Or, if you're like the author, you'll be doing the opposite and will rather verify that your implementation of the analytical solution is correct!)
+* 
+
+* 
+* [1.x.120]
+* 
+*  Because we know the ordering of the independent variables, we know which component of the gradient relates to which derivative...
+* 
+
+* 
+* [1.x.121]
+* 
+*  ... and similar for the Hessian.
+* 
+
+* 
+* [1.x.122]
+* 
+*  That's pretty great. There wasn't too much work involved in computing second-order derivatives of this trigonometric function.
+* 
+
+* 
+*   [1.x.123]  [1.x.124]
+* 
+
+* 
+*  Since we now know how much "implementation effort" it takes to have the AD framework compute those derivatives for us, let's compare that to the same computed by hand and implemented in several stand-alone functions.
+* 
+
+* 
+*  Here are the two first derivatives of  [2.x.110] :     
+*    [2.x.111] 
+* 
+
+* 
+* [1.x.125]
+* 
+*   [2.x.112] 
+* 
+
+* 
+* [1.x.126]
+* 
+*  And here are the four second derivatives of  [2.x.113] :     
+*    [2.x.114] 
+* 
+
+* 
+* [1.x.127]
+* 
+*   [2.x.115] 
+* 
+
+* 
+* [1.x.128]
+* 
+*   [2.x.116]  (as expected, on the basis of [Schwarz's theorem](https://en.wikipedia.org/wiki/Symmetry_of_second_derivatives))
+* 
+
+* 
+* [1.x.129]
+* 
+*   [2.x.117] 
+* 
+
+* 
+* [1.x.130]
+* 
+*  Hmm... there's a lot of places in the above where we could have introduced an error in the above, especially when it comes to applying the chain rule. Although they're no silver bullet, at the very least these AD frameworks can serve as a verification tool to make sure that we haven't made any errors (either by calculation or by implementation) that would negatively affect our results.
+* 
+
+* 
+*  The point of this example of course is that we might have chosen a relatively simple function  [2.x.118]  for which we can hand-verify that the derivatives the AD framework computed is correct. But the AD framework didn't care that the function was simple: It could have been a much much more convoluted expression, or could have depended on more than two variables, and it would still have been able to compute the derivatives
+* 
+*  -  the only difference would have been thatwe* wouldn't have been able to come up with the derivatives any more to verify correctness of the AD framework.
+* 
+
+* 
+*  
+*  
+* 
+
+* 
+*   [1.x.131]  [1.x.132]
+* 
+
+* 
+*  We'll now repeat the same exercise using symbolic differentiation. The term "symbolic differentiation" is a little bit misleading because differentiation is just one tool that the Computer Algebra System (CAS) (i.e., the symbolic framework) provides. Nevertheless, in the context of finite element modeling and applications it is the most common use of a CAS and will therefore be the one that we'll focus on. Once more, we'll supply the argument values `x` and `y` with which to evaluate our function  [2.x.119]  and its derivatives, and a tolerance with which to test the correctness of the returned results.
+* 
+
+* 
+* [1.x.133]
+* 
+*  The first step that we need to take is to form the symbolic variables that represent the function arguments that we wish to differentiate with respect to. Again, these will be the independent variables for our problem and as such are, in some sense, primitive variables that have no dependencies on any other variable. We create these types of (independent) variables by initializing a symbolic type  [2.x.120]  which is a wrapper to a set of classes used by the symbolic framework, with a unique identifier. On this occasion it makes sense that this identifier, a  [2.x.121]  be simply `"x"` for the  [2.x.122]  argument, and likewise `"y"` for the  [2.x.123]  argument to the dependent function. Like before, we'll suffix symbolic variable names with `sd` so that we can clearly see which variables are symbolic (as opposed to numeric) in nature.
+* 
+
+* 
+* [1.x.134]
+* 
+*  Using the templated function that computes  [2.x.124] , we can pass these independent variables as arguments to the function. The returned result will be another symbolic type that represents the sequence of operations used to compute  [2.x.125] .
+* 
+
+* 
+* [1.x.135]
+* 
+*  At this point it is legitimate to print out the expression `f_sd`, and if we did so  [2.x.126]  we would see `f(x,y) = cos(y/x)` printed to the console.       
+*   You might notice that we've constructed our symbolic function `f_sd` with no context as to how we might want to use it: In contrast to the AD approach shown above, what we were returned from calling `f(x_sd, y_sd)` is not the evaluation of the function `f` at some specific point, but is in fact a symbolic representation of the evaluation at a generic, as yet undetermined, point. This is one of the key points that makes symbolic frameworks (the CAS) different from automatic differentiation frameworks. Each of the variables `x_sd` and `y_sd`, and even the composite dependent function `f_sd`, are in some sense respectively "placeholders" for numerical values and a composition of operations. In fact, the individual components that are used to compose the function are also placeholders. The sequence of operations are encoded into in a tree-like data structure (conceptually similar to an [abstract syntax tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree)).       
+*   Once we form these data structures we can defer any operations that we might want to do with them until some later time. Each of these placeholders represents something, but we have the opportunity to define or redefine what they represent at any convenient point in time. So for this particular problem it makes sense that we somehow want to associate "x" and "y" withsome* numerical value (with type yet to be determined), but we could conceptually (and if it made sense) assign the ratio "y/x" a value instead of the variables "x" and "y" individually. We could also associate with "x" or "y" some other symbolic function `g(a,b)`. Any of these operations involves manipulating the recorded tree of operations, and substituting the salient nodes on the tree (and that nodes' subtree) with something else. The key word here is "substitution", and indeed there are many functions in the  [2.x.127]  namespace that have this word in their names.       
+*   This capability makes the framework entirely generic. In the context of finite element simulations, the types of operations that we would typically perform with our symbolic types are function composition, differentiation, substitution (partial or complete), and evaluation (i.e., conversion of the symbolic type to its numerical counterpart). But should you need it, a CAS is often capable of more than just this: It could be forming anti-derivatives (integrals) of functions, perform simplifications on the expressions that form a function (e.g., replace  [2.x.128]  by  [2.x.129] ; or, more simply: if the function did an operation like `1+2`, a CAS could replace it by `3`), and so forth: Theexpression* that a variable represents is obtained from how the function  [2.x.130]  is implemented, but a CAS can do with it whatever its functionality happens to be.       
+*   Specifically, to compute the symbolic representation of the first derivatives of the dependent function with respect to its individual independent variables, we use the  [2.x.131]  function with the independent variable given as its argument. Each call will cause the CAS to go through the tree of operations that compose `f_sd` and differentiate each node of the expression tree with respect to the given symbolic argument.
+* 
+
+* 
+* [1.x.137]
+* 
+*  To compute the symbolic representation of the second derivatives, we simply differentiate the first derivatives with respect to the independent variables. So to compute a higher order derivative, we first need to compute the lower order derivative. (As the return type of the call to `differentiate()` is an expression, we could in principal execute double differentiation directly from the scalar by chaining two calls together. But this is unnecessary in this particular case, since we have the intermediate results at hand.)
+* 
+
+* 
+* [1.x.138]
+* 
+*  Printing the expressions for the first and second derivatives, as computed by the CAS, using the statements  [2.x.132]  renders the following output:  [2.x.133]  This compares favorably to the analytical expressions for these derivatives that were presented earlier.
+* 
+
+* 
+*  Now that we have formed the symbolic expressions for the function and its derivatives, we want to evaluate them for the numeric values for the main function arguments `x` and `y`. To accomplish this, we construct asubstitution map*, which maps the symbolic values to their numerical counterparts.
+* 
+
+* 
+* [1.x.141]
+* 
+*  The last step in the process is to convert all symbolic variables and operations into numerical values, and produce the numerical result of this operation. To do this we combine the substitution map with the symbolic variable in the step we have already mentioned above: "substitution".       
+*   Once we pass this substitution map to the CAS, it will substitute each instance of the symbolic variable (or, more generally, sub-expression) with its numerical counterpart and then propagate these results up the operation tree, simplifying each node on the tree if possible. If the tree is reduced to a single value (i.e., we have substituted all of the independent variables with their numerical counterpart) then the evaluation is complete.       
+*   Due to the strongly-typed nature of C++, we need to instruct the CAS to convert its representation of the result into an intrinsic data type (in this case a `double`). This is the "evaluation" step, and through the template type we define the return type of this process. Conveniently, these two steps can be done at once if we are certain that we've performed a full substitution.
+* 
+
+* 
+* [1.x.142]
+* 
+*  We can do the same for the first derivatives...
+* 
+
+* 
+* [1.x.143]
+* 
+*  ... and the second derivatives. Notice that we can reuse the same substitution map for each of these operations because we wish to evaluate all of these functions for the same values of `x` and `y`. Modifying the values in the substitution map renders the result of same symbolic expression evaluated with different values being assigned to the independent variables. We could also happily have each variable represent a real value in one pass, and a complex value in the next.
+* 
+
+* 
+* [1.x.144]
+* 
+*   [1.x.145]  [1.x.146]
+* 
+
+* 
+*  The function used to drive these initial examples is straightforward. We'll arbitrarily choose some values at which to evaluate the function (although knowing that `x = 0` is not permissible), and then pass these values to the functions that use the AD and SD frameworks.
+* 
+
+* 
+* [1.x.147]
+* 
+*   [1.x.148]  [1.x.149]
+* 
+
+* 
+*  Now that we've introduced the principles behind automatic and symbolic differentiation, we'll put them into action by formulating two coupled magneto-mechanical constitutive laws: one that is rate-independent, and another that exhibits rate-dependent behavior.   
+*   As you will recall from the introduction, the material constitutive laws we will consider are far more complicated than the simple example above. This is not just because of the form of the function  [2.x.134]  that we will consider, but in particular because  [2.x.135]  doesn't just depend on two scalar variables, but instead on a whole bunch oftensors*, each with several components. In some cases, these aresymmetric* tensors, for which only a subset of components is in fact independent, and one has to think about what it actually means to compute a derivative such as  [2.x.136]  where  [2.x.137]  is a symmetric tensor. How all of this will work will, hopefully, become clear below. It will also become clear that doing this by hand is going to be, at the very best,exceedingly*
+tedious* and, at worst, riddled with hard-to-find bugs.
+* 
+
+* 
+* [1.x.150]
+* 
+*   [1.x.151]  [1.x.152]
+* 
+
+* 
+*  We start with a description of the various material parameters that appear in the description of the energy function  [2.x.138] .     
+*   The ConstitutiveParameters class is used to hold these values. Values for all parameters (both constitutive and rheological) are taken from  [2.x.139] , and are given values that produce a constitutive response that is broadly representative of a real, laboratory-made magneto-active polymer, though the specific values used here are of no consequence to the purpose of this program of course.     
+*   The first four constitutive parameters respectively represent
+* 
+
+* 
+* 
+*  - the elastic shear modulus  [2.x.140] ,
+* 
+
+* 
+* 
+*  - the elastic shear modulus at magnetic saturation  [2.x.141] ,
+* 
+
+* 
+* 
+*  - the saturation magnetic field strength for the elastic shear modulus  [2.x.142] , and
+* 
+
+* 
+* 
+*  - the Poisson ratio  [2.x.143] .
+* 
+
+* 
+* [1.x.153]
+* 
+*  The next four, which only pertain to the rate-dependent material, are parameters for
+* 
+
+* 
+* 
+*  - the viscoelastic shear modulus  [2.x.144] ,
+* 
+
+* 
+* 
+*  - the viscoelastic shear modulus at magnetic saturation  [2.x.145] ,
+* 
+
+* 
+* 
+*  - the saturation magnetic field strength for the viscoelastic shear modulus  [2.x.146] , and
+* 
+
+* 
+* 
+*  - the characteristic relaxation time  [2.x.147] .
+* 
+
+* 
+* [1.x.154]
+* 
+*  The last parameter is the relative magnetic permeability  [2.x.148] .
+* 
+
+* 
+* [1.x.155]
+* 
+*  The parameters are initialized through the ParameterAcceptor framework, which is discussed in detail in  [2.x.149] .
+* 
+
+* 
+* [1.x.156]
+* 
+*   [1.x.157]  [1.x.158]
+* 
+
+* 
+*  Since we'll be formulating two constitutive laws for the same class of materials, it makes sense to define a base class that ensures a unified interface to them.     
+*   The class declaration starts with the constructor that will accept the set of constitutive parameters that, in conjunction with the material law itself, dictate the material response.
+* 
+
+* 
+* [1.x.159]
+* 
+*  Instead of computing and returning the kinetic variables or their linearization at will, we'll calculate and store these values within a single method. These cached results will then be returned upon request. We'll defer the precise explanation as to why we'd want to do this to a later stage. What is important for now is to see that this function accepts all of the field variables, namely the magnetic field vector  [2.x.150]  and right Cauchy-Green deformation tensor  [2.x.151] , as well as the time discretizer. These, in addition to the  [2.x.152]  are all the fundamental quantities that are required to compute the material response.
+* 
+
+* 
+* [1.x.160]
+* 
+*  The next few functions provide the interface to probe the material response due subject to the applied deformation and magnetic loading.       
+*   Since the class of materials can be expressed in terms of a free energy  [2.x.153] , we can compute that...
+* 
+
+* 
+* [1.x.161]
+* 
+*  ... as well as the two kinetic quantities:
+* 
+
+* 
+* 
+*  - the magnetic induction vector  [2.x.154] , and
+* 
+
+* 
+* 
+*  - the total Piola-Kirchhoff stress tensor  [2.x.155] 
+* 
+
+* 
+* [1.x.162]
+* 
+*  ... and the linearization of the kinetic quantities, which are:
+* 
+
+* 
+* 
+*  - the magnetostatic tangent tensor  [2.x.156] ,
+* 
+
+* 
+* 
+*  - the total referential magnetoelastic coupling tensor  [2.x.157] , and
+* 
+
+* 
+* 
+*  - the total referential elastic tangent tensor  [2.x.158] .
+* 
+
+* 
+* [1.x.163]
+* 
+*  We'll also define a method that provides a mechanism for this class instance to do any additional tasks before moving on to the next timestep. Again, the reason for doing this will become clear a little later.
+* 
+
+* 
+* [1.x.164]
+* 
+*  In the `protected` part of the class, we store a reference to an instance of the constitutive parameters that govern the material response. For convenience, we also define some functions that return various constitutive parameters (both explicitly defined, as well as calculated).       
+*   The parameters related to the elastic response of the material are, in order:
+* 
+
+* 
+* 
+*  - the elastic shear modulus,
+* 
+
+* 
+* 
+*  - the elastic shear modulus at saturation magnetic field,
+* 
+
+* 
+* 
+*  - the saturation magnetic field strength for the elastic shear modulus,
+* 
+
+* 
+* 
+*  - the Poisson ratio,
+* 
+
+* 
+* 
+*  - the Lam&eacute; parameter, and
+* 
+
+* 
+* 
+*  - the bulk modulus.
+* 
+
+* 
+* [1.x.165]
+* 
+*  The parameters related to the elastic response of the material are, in order:
+* 
+
+* 
+* 
+*  - the viscoelastic shear modulus,
+* 
+
+* 
+* 
+*  - the viscoelastic shear modulus at magnetic saturation,
+* 
+
+* 
+* 
+*  - the saturation magnetic field strength for the viscoelastic shear modulus, and
+* 
+
+* 
+* 
+*  - the characteristic relaxation time.
+* 
+
+* 
+* [1.x.166]
+* 
+*  The parameters related to the magnetic response of the material are, in order:
+* 
+
+* 
+* 
+*  - the relative magnetic permeability, and
+* 
+
+* 
+* 
+*  - the magnetic permeability constant  [2.x.159]  (not really a material constant, but rather a universal constant that we'll group here for simplicity).       
+*   We'll also implement a function that returns the timestep size from the time discretizion.
+* 
+
+* 
+* [1.x.167]
+* 
+*  In the following, let us start by implementing the several relatively trivial member functions of the class just defined:
+* 
+
+* 
+* [1.x.168]
+* 
+*   [1.x.169]  [1.x.170]
+* 
+
+* 
+*  We'll begin by considering a non-dissipative material, namely one that is governed by a magneto-hyperelastic constitutive law that exhibits stiffening when immersed in a magnetic field. As described in the introduction, the stored energy density function for such a material might be given by [1.x.171] with [1.x.172]     
+*   Now on to the class that implements this behavior. Since we expect that this class fully describes a single material, we'll mark it as "final" so that the inheritance tree terminated here. At the top of the class, we define the helper type that we will use in the AD computations for our scalar energy density function. Note that we expect it to return values of type `double`. We also have to specify the number of spatial dimensions, `dim`, so that the link between vector, tensor and symmetric tensor fields and the number of components that they contain may be established. The concrete `ADTypeCode` used for the ADHelper class will be provided as a template argument at the point where this class is actually used.
+* 
+
+* 
+* [1.x.173]
+* 
+*  Since the public interface to the base class is pure-`virtual`, here we'll declare that this class will override all of these base class methods.
+* 
+
+* 
+* [1.x.174]
+* 
+*  In the `private` part of the class, we need to define some extractors that will help us set independent variables and later get the computed values related to the dependent variables. If this class were to be used in the context of a finite element problem, then each of these extractors is (most likely) related to the gradient of a component of the solution field (in this case, displacement and magnetic scalar potential). As you can probably infer by now, here "C" denotes the right Cauchy-Green tensor and "H" denotes the magnetic field vector.
+* 
+
+* 
+* [1.x.175]
+* 
+*  This is an instance of the automatic differentiation helper that we'll set up to do all of the differential calculations related to the constitutive law...
+* 
+
+* 
+* [1.x.176]
+* 
+*  ... and the following three member variables will store the output from the  [2.x.160]  The  [2.x.161]  returns the derivatives with respect to all field variables at once, so we'll retain the full gradient vector and Hessian matrix. From that, we'll extract the individual entries that we're actually interested in.
+* 
+
+* 
+* [1.x.177]
+* 
+*  When setting up the field component extractors, it is completely arbitrary as to how they are ordered. But it is important that the extractors do not have overlapping indices. The total number of components of these extractors defines the number of independent variables that the  [2.x.162]  needs to track, and with respect to which we'll be taking derivatives. The resulting data structures  [2.x.163]  and  [2.x.164]  must also be sized accordingly. Once the  [2.x.165]  is configured (its input argument being the total number of components of  [2.x.166]  and  [2.x.167] ), we can directly interrogate it as to how many independent variables it uses.
+* 
+
+* 
+* [1.x.178]
+* 
+*  As stated before, due to the way that the automatic differentiation libraries work, the  [2.x.168]  will always returns the derivatives of the energy density function with respect to all field variables simultaneously. For this reason, it does not make sense to compute the derivatives in the functions `get_B()`, `get_S()`, etc. because we'd be doing a lot of extra computations that are then simply discarded. So, the best way to deal with that is to have a single function call that does all of the calculations up-front, and then we extract the stored data as its needed. That's what we'll do in the `update_internal_data()` method. As the material is rate-independent, we can ignore the DiscreteTime argument.
+* 
+
+* 
+* [1.x.179]
+* 
+*  Since we reuse the  [2.x.169]  data structure at each time step, we need to clear it of all stale information before use.
+* 
+
+* 
+* [1.x.180]
+* 
+*  The next step is to set the values for all field components. These define the "point" around which we'll be computing the function gradients and their linearization. The extractors that we created before provide the association between the fields and the registry within the  [2.x.170] 
+* 
+*  -  they'll be used repeatedly to ensure that we have the correct interpretation of which variable corresponds to which component of `H` or `C`.
+* 
+
+* 
+* [1.x.181]
+* 
+*  Now that we've done the initial setup, we can retrieve the AD counterparts of our fields. These are truly the independent variables for the energy function, and are "sensitive" to the calculations that are performed with them. Notice that the AD number are treated as a special number type, and can be used in many templated classes (in this example, as the scalar type for the Tensor and SymmetricTensor class).
+* 
+
+* 
+* [1.x.182]
+* 
+*  We can also use them in many functions that are templated on the scalar type. So, for these intermediate values that we require, we can perform tensor operations and some mathematical functions. The resulting type will also be an automatically differentiable number, which encodes the operations performed in these functions.
+* 
+
+* 
+* [1.x.183]
+* 
+*  Next we'll compute the scaling function that will cause the shear modulus to change (increase) under the influence of a magnetic field...
+* 
+
+* 
+* [1.x.184]
+* 
+*  ... and then we can define the material stored energy density function. We'll see later that this example is sufficiently complex to warrant the use of AD to, at the very least, verify an unassisted implementation.
+* 
+
+* 
+* [1.x.185]
+* 
+*  The stored energy density function is, in fact, the dependent variable for this problem, so as a final step in the  "configuration" phase, we register its definition with the  [2.x.171] 
+* 
+
+* 
+* [1.x.186]
+* 
+*  Finally, we can retrieve the resulting value of the stored energy density function, as well as its gradient and Hessian with respect to the input fields, and cache them.
+* 
+
+* 
+* [1.x.187]
+* 
+*  The following few functions then allow for querying the so-stored value of  [2.x.172] , and to extract the desired components of the gradient vector and Hessian matrix. We again make use of the extractors to express which parts of the total gradient vector and Hessian matrix we wish to retrieve. They only return the derivatives of the energy function, so for our definitions of the kinetic variables and their linearization a few more manipulations are required to form the desired result.
+* 
+
+* 
+* [1.x.188]
+* 
+*  Note that for coupled terms the order of the extractor arguments is especially important, as it dictates the order in which the directional derivatives are taken. So, if we'd reversed the order of the extractors in the call to `extract_hessian_component()` then we'd actually have been retrieving part of  [2.x.173] .
+* 
+
+* 
+* [1.x.189]
+* 
+*   [1.x.190]  [1.x.191]
+* 
+
+* 
+*  The second material law that we'll consider will be one that represents a magneto-viscoelastic material with a single dissipative mechanism. We'll consider the free energy density function for such a material to be defined as
+
+* 
+* [1.x.192]
+*  with [1.x.193] [1.x.194] in conjunction with the evolution law for the internal viscous variable [1.x.195] that was discretized using a first-order backward difference approximation.     
+*   Again, let us see how this is implemented in a concrete class. Instead of the AD framework used in the previous class, we will now utilize the SD approach. To support this, the class constructor accepts not only the  [2.x.174]  but also two additional variables that will be used to initialize a  [2.x.175]  We'll give more context to this later.
+* 
+
+* 
+* [1.x.196]
+* 
+*  Like for the automatic differentiation helper, the  [2.x.176]  will return a collection of results all at once. So, in order to do that just once, we'll utilize a similar approach to before and do all of the expensive calculations within the `update_internal_data()` function, and cache the results for layer extraction.
+* 
+
+* 
+* [1.x.197]
+* 
+*  Since we're dealing with a rate dependent material, we'll have to update the history variable at the appropriate time. That will be the purpose of this function.
+* 
+
+* 
+* [1.x.198]
+* 
+*  In the `private` part of the class, we will want to keep track of the internal viscous deformation, so the following two (real-valued, non-symbolic) member variables respectively hold
+* 
+
+* 
+* 
+*  - the value of internal variable time step (and, if embedded within a nonlinear solver framework, Newton step), and
+* 
+
+* 
+* 
+*  - the value of internal variable at the previous timestep.       
+*   (We've labeled these variables "Q" so that they're easy to identify; in a sea of calculations it is not necessarily easy to distinguish `Cv` or `C_v` from `C`.)
+* 
+
+* 
+* [1.x.199]
+* 
+*  As we'll be using symbolic types, we'll need to define some symbolic variables to use with the framework. (They are all suffixed with "SD" to make it easy to distinguish the symbolic types or expressions from real-valued types or scalars.) This can be done once up front (potentially even as `static` variables) to minimize the overhead associated with creating these variables. For the ultimate in generic programming, we can even describe the constitutive parameters symbolically,potentially* allowing a single class instance to be reused with different inputs for these values too.       
+*   These are the symbolic scalars that represent the elastic, viscous, and magnetic material parameters (defined mostly in the same order as they appear in the  [2.x.177]  class). We also store a symbolic expression,  [2.x.178]  that represents the time step size):
+* 
+
+* 
+* [1.x.200]
+* 
+*  Next we define some tensorial symbolic variables that represent the independent field variables, upon which the energy density function is parameterized:
+* 
+
+* 
+* [1.x.201]
+* 
+*  And similarly we have the symbolic representation of the internal viscous variables (both its current value and its value at the previous timestep):
+* 
+
+* 
+* [1.x.202]
+* 
+*  We should also store the definitions of the dependent expressions: Although we'll only compute them once, we require them to retrieve data from the  [2.x.179]  that is declared below. Furthermore, when serializing a material class like this one (not done as a part of this tutorial) we'd either need to serialize these expressions as well or we'd need to reconstruct them upon reloading.
+* 
+
+* 
+* [1.x.203]
+* 
+*  The next variable is then the optimizer that is used to evaluate the dependent functions. More specifically, it provides the possibility to accelerate the evaluation of the symbolic dependent expressions. This is a vital tool, because the native evaluation of lengthy expressions (using no method of acceleration, but rather direct evaluation directly of the symbolic expressions) can be very slow. The  [2.x.180]  class provides a mechanism by which to transform the symbolic expression tree into another code path that, for example, shares intermediate results between the various dependent expressions (meaning that these intermediate values only get calculated once per evaluation) and/or compiling the code using a just-in-time compiler (thereby retrieving near-native performance for the evaluation step).       
+*   Performing this code transformation is very computationally expensive, so we store the optimizer so that it is done just once per class instance. This also further motivates the decision to make the constitutive parameters themselves symbolic. We could then reuse a single instance of this  [2.x.181]  across several materials (with the same energy function, of course) and potentially multiple continuum points (if embedded within a finite element simulation).       
+*   As specified by the template parameter, the numerical result will be of type <tt>double</tt>.
+* 
+
+* 
+* [1.x.204]
+* 
+*  During the evaluation phase, we must map the symbolic variables to their real-valued counterparts. The next method will provide this functionality.       
+*   The final method of this class will configure the  [2.x.182] 
+* 
+
+* 
+* [1.x.205]
+* 
+*  As the resting deformation state is one at which the material is considered to be completely relaxed, the internal viscous variables are initialized with the identity tensor, i.e.  [2.x.183] . The various symbolic variables representing the constitutive parameters, time step size, and field and internal variables all get a unique identifier. The optimizer is passed the two parameters that declare which optimization (acceleration) technique should be applied, as well as which additional steps should be taken by the CAS to help improve performance during evaluation.
+* 
+
+* 
+* [1.x.206]
+* 
+*  The substitution map simply pairs all of the following data together:
+* 
+
+* 
+* 
+*  - the constitutive parameters (with values retrieved from the base class),
+* 
+
+* 
+* 
+*  - the time step size (with its value retrieved from the time discretizer),
+* 
+
+* 
+* 
+*  - the field values (with their values being prescribed by an external function that is calling into this  [2.x.184]  instance), and
+* 
+
+* 
+* 
+*  - the current and previous internal viscous deformation (with their values stored within this class instance).
+* 
+
+* 
+* [1.x.207]
+* 
+*  Due to the "natural" use of the symbolic expressions, much of the procedure to configure the  [2.x.185]  looks very similar to that which is used to construct the automatic differentiation helper. Nevertheless, we'll detail these steps again to highlight the differences that underlie the two frameworks.     
+*   The function starts with expressions that symbolically encode the determinant of the deformation gradient (as expressed in terms of the right Cauchy-Green deformation tensor, our primary field variable), as well as the inverse of  [2.x.186]  itself:
+* 
+
+* 
+* [1.x.208]
+* 
+*  Next is the symbolic representation of the saturation function for the elastic part of the free energy density function, followed by the magnetoelastic contribution to the free energy density function. This all has the same structure as we'd seen previously.
+* 
+
+* 
+* [1.x.209]
+* 
+*  In addition, we define the magneto-viscoelastic contribution to the free energy density function. The first component required to implement this is a scaling function that will cause the viscous shear modulus to change (increase) under the influence of a magnetic field (see  [2.x.187] , equation 29). Thereafter we can compute the dissipative component of the energy density function; its expression is stated in  [2.x.188]  (equation 28), which is a straight-forward extension of an energy density function formulated in  [2.x.189]  (equation 46).
+* 
+
+* 
+* [1.x.210]
+* 
+*  From these building blocks, we can then define the material's total free energy density function:
+* 
+
+* 
+* [1.x.211]
+* 
+*  As it stands, to the CAS the variable  [2.x.190]  appears to be independent of  [2.x.191]  Our tensorial symbolic expression  [2.x.192]  just has an identifier associated with it, and there is nothing that links it to the other tensorial symbolic expression  [2.x.193]  So any derivatives taken with respect to  [2.x.194]  will ignore this inherent dependence which, as we can see from the evolution law, is in fact  [2.x.195] . This means that deriving any function  [2.x.196]  with respect to   [2.x.197]  will return partial derivatives  [2.x.198]  as opposed to the total derivative  [2.x.199] .       
+*   By contrast, with the current AD libraries the total derivative would always be returned. This implies that the computed kinetic variables would be incorrect for this class of material model, making AD the incorrect tool from which to derive (at the continuum point level) the constitutive law for this dissipative material from an energy density function.       
+*   It is this specific level of control that characterizes a defining difference difference between the SD and AD frameworks. In a few lines we'll be manipulating the expression for the internal variable  [2.x.200]  such that it produces the correct linearization.
+* 
+
+* 
+*  But, first, we'll compute the symbolic expressions for the kinetic variables, i.e., the magnetic induction vector and the Piola-Kirchhoff stress tensor. The code that performs the differentiation quite closely mimics the definition stated in the theory.
+* 
+
+* 
+* [1.x.212]
+* 
+*  Since the next step is to linearize the above, it is the appropriate time to inform the CAS of the explicit dependency of  [2.x.201]  on  [2.x.202]  i.e., state that  [2.x.203] . This means that all future differential operations made with respect to  [2.x.204]  will take into account this dependence (i.e., compute total derivatives). In other words, we will transform some expression such that their intrinsic parameterization changes from  [2.x.205]  to  [2.x.206] .       
+*   To do this, we consider the time-discrete evolution law. From that, we have the explicit expression for the internal variable in terms of its history as well as the primary field variable. That is what it described in this expression:
+* 
+
+* 
+* [1.x.213]
+* 
+*  Next we produce an intermediate substitution map, which will take every instance of  [2.x.207]  (our identifier) found in an expression and replace it with the full expression held in  [2.x.208] 
+* 
+
+* 
+* [1.x.214]
+* 
+*  We can the perform this substitution on the two kinetic variables and immediately differentiate the result that appears after that substitution with the field variables. (If you'd like, this could be split up into two steps with the intermediate results stored in a temporary variable.) Again, if you overlook the "complexity" generated by the substitution, these calls that linearize the kinetic variables and produce the three tangent tensors quite closely resembles what's stated in the theory.
+* 
+
+* 
+* [1.x.215]
+* 
+*  Now we need to tell the  [2.x.209]  what entries we need to provide numerical values for in order for it to successfully perform its calculations. These essentially act as the input arguments to all dependent functions that the  [2.x.210]  must evaluate. They are, collectively, the independent variables for the problem, the history variables, the time step sie and the constitutive parameters (since we've not hard encoded them in the energy density function).       
+*   So what we really want is to provide it a collection of symbols, which one could accomplish in this way:  [2.x.211]  But this is all actually already encoded as the keys of the substitution map. Doing the above would also mean that we need to manage the symbols in two places (here and when constructing the substitution map), which is annoying and a potential source of error if this material class is modified or extended. Since we're not interested in the values at this point, it is alright if the substitution map is filled with invalid data for the values associated with each key entry. So we'll simply create a fake substitution map, and extract the symbols from that. Note that any substitution map passed to the  [2.x.212]  will have to, at the very least, contain entries for these symbols.
+* 
+
+* 
+* [1.x.217]
+* 
+*  We then inform the optimizer of what values we want calculated, which in our situation encompasses all of the dependent variables (namely the energy density function and its various derivatives).
+* 
+
+* 
+* [1.x.218]
+* 
+*  The last step is to finalize the optimizer. With this call it will determine an equivalent code path that will evaluate all of the dependent functions at once, but with less computational cost than when evaluating the symbolic expression directly. Note: This is an expensive call, so we want execute it as few times as possible. We've done it in the constructor of our class, which achieves the goal of being called only once per class instance.
+* 
+
+* 
+* [1.x.219]
+* 
+*  Since the configuration of the  [2.x.213]  was done up front, there's very little to do each time we want to compute kinetic variables or their linearization (derivatives).
+* 
+
+* 
+* [1.x.220]
+* 
+*  To update the internal history variable, we first need to compute a few fundamental quantities, which we've seen before. We can also ask the time discretizer for the time step size that was used to iterate from the previous time step to the current one.
+* 
+
+* 
+* [1.x.221]
+* 
+*  Now we can update the (real valued) internal viscous deformation tensor, as per the definition given by the evolution law in conjunction with the chosen time discretization scheme.
+* 
+
+* 
+* [1.x.222]
+* 
+*  Next we pass the optimizer the numeric values that we wish the independent variables, time step size and (implicit to this call), the constitutive parameters to represent.
+* 
+
+* 
+* [1.x.223]
+* 
+*  When making this next call, the call path used to (numerically) evaluate the dependent functions is quicker than dictionary substitution.
+* 
+
+* 
+* [1.x.224]
+* 
+*  Having called `update_internal_data()`, it is then valid to extract data from the optimizer. When doing the evaluation, we need the exact symbolic expressions of the data to extracted from the optimizer. The implication of this is that we needed to store the symbolic expressions of all dependent variables for the lifetime of the optimizer (naturally, the same is implied for the input variables).
+* 
+
+* 
+* [1.x.225]
+* 
+*  When moving forward in time, the "current" state of the internal variable instantaneously defines the state at the "previous" timestep. As such, we record value of history variable for use as the "past value" at the next time step.
+* 
+
+* 
+* [1.x.226]
+* 
+*   [1.x.227]  [1.x.228]
+* 
+
+* 
+*  Now that we've seen how the AD and SD frameworks can make light(er) work of defining these constitutive laws, we'll implement the equivalent classes by hand for the purpose of verification and to do some preliminary benchmarking of the frameworks versus a native implementation.     
+*   At the expense of the author's sanity, what is documented below (hopefully accurately) are the full definitions for the kinetic variables and their tangents, as well as some intermediate computations. Since the structure and design of the constitutive law classes has been outlined earlier, we'll gloss over it and simply delineate between the various stages of calculations in the `update_internal_data()` method definition. It should be easy enough to link the derivative calculations (with their moderately expressive variable names) to their documented definitions that appear in the class descriptions. We will, however, take the opportunity to present two different paradigms for implementing constitutive law classes. The second will provide more flexibility than the first (thereby making it more easily extensible, in the author's opinion) at the expense of some performance.
+* 
+
+* 
+*   [1.x.229]  [1.x.230]
+* 
+
+* 
+*  From the stored energy that, as mentioned earlier, is defined as [1.x.231] with [1.x.232] for this magnetoelastic material, the first derivatives that correspond to the magnetic induction vector and total Piola-Kirchhoff stress tensor are [1.x.233]
+
+* 
+* [1.x.234]
+*  with [1.x.235] [1.x.236] [1.x.237] [1.x.238] [1.x.239] The use of the symmetry operator  [2.x.214]  in the one derivation above helps to ensure that the resulting rank-4 tensor, which holds minor symmetries due to the symmetry of  [2.x.215] , still maps rank-2 symmetric tensors to rank-2 symmetric tensors. See the SymmetricTensor class documentation and the introduction to  [2.x.216]  and for further explanation as to what symmetry means in the context of fourth-order tensors.     
+*   The linearization of each of the kinematic variables with respect to their arguments are [1.x.240]
+
+* 
+* [1.x.241]
+* 
+
+* 
+* [1.x.242]
+*  with [1.x.243] [1.x.244] [1.x.245]
+
+* 
+* [1.x.246]
+*      
+*   Well, that escalated quickly
+* 
+*  -  although the the definition of  [2.x.217]  and  [2.x.218]  might have given some hints that the calculating the kinetic fields and their linearization would take some effort, it is likely that there's a little more complexity to the final definitions that perhaps initially thought. Knowing what we now do, it's probably fair to say that we really do not want to compute first and second derivatives of these functions with respect to their arguments
+* 
+*  -  regardless of well we did in calculus classes, or how good a programmer we may be.     
+*   In the class method definition where these are ultimately implemented, we've composed these calculations slightly differently. Some intermediate steps are also retained to give another perspective of how to systematically compute the derivatives. Additionally, some calculations are decomposed less or further to reuse some of the intermediate values and, hopefully, aid the reader to follow the derivative operations.
+* 
+
+* 
+* [1.x.247]
+* 
+*  For this class's update method, we'll simply precompute a collection of intermediate values (for function evaluations, derivative calculations, and the like) and "manually" arrange them in the order that's required to maximize their reuse. This means that we have to manage this ourselves, and decide what values must be compute before others, all while keeping some semblance of order or structure in the code itself. It's effective, but perhaps a little tedious. It also doesn't do too much to help future extension of the class, because all of these values remain local to this single method.     
+*   Interestingly, this basic technique of precomputing intermediate expressions that are used in more than one place has a name: [common subexpression elimination (CSE)](https://en.wikipedia.org/wiki/Common_subexpression_elimination). It is a strategy used by Computer Algebra Systems to reduce the computational expense when they are tasked with evaluating similar expressions.
+* 
+
+* 
+* [1.x.248]
+* 
+*  The saturation function for the magneto-elastic energy.
+* 
+
+* 
+* [1.x.249]
+* 
+*  The first derivative of the saturation function, noting that  [2.x.219] .
+* 
+
+* 
+* [1.x.250]
+* 
+*  The second derivative of saturation function, noting that  [2.x.220] .
+* 
+
+* 
+* [1.x.251]
+* 
+*  Some intermediate quantities attained directly from the field / kinematic variables.
+* 
+
+* 
+* [1.x.252]
+* 
+*  First derivatives of the intermediate quantities.
+* 
+
+* 
+* [1.x.253]
+* 
+*  Second derivatives of the intermediate quantities.
+* 
+
+* 
+* [1.x.254]
+* 
+*  The stored energy density function.
+* 
+
+* 
+* [1.x.255]
+* 
+*  The kinetic quantities.
+* 
+
+* 
+* [1.x.256]
+* 
+*  The linearization of the kinetic quantities.
+* 
+
+* 
+* [1.x.257]
+* 
+*   [1.x.258]  [1.x.259]
+* 
+
+* 
+*  As mentioned before, the free energy density function for the magneto-viscoelastic material with one dissipative mechanism that we'll be considering is defined as [1.x.260] [1.x.261] [1.x.262] with [1.x.263] [1.x.264] and the evolution law [1.x.265] that itself is parameterized in terms of  [2.x.221] . By design, the magnetoelastic part of the energy  [2.x.222]  is identical to that of the magnetoelastic material presented earlier. So, for the derivatives of the various contributions stemming from this part of the energy, please refer to the previous section. We'll continue to highlight the specific contributions from those terms by superscripting the salient terms with  [2.x.223] , while contributions from the magneto-viscoelastic component are superscripted with  [2.x.224] . Furthermore, the magnetic saturation function  [2.x.225]  for the damping term has the identical form as that of the elastic term (i.e.,  [2.x.226]  ), and so the structure of its derivatives are identical to that seen before; the only change is for the three constitutive parameters that are now associated with the viscous shear modulus  [2.x.227]  rather than the elastic shear modulus  [2.x.228] .     
+*   For this magneto-viscoelastic material, the first derivatives that correspond to the magnetic induction vector and total Piola-Kirchhoff stress tensor are [1.x.266] [1.x.267] with the viscous contributions being [1.x.268] [1.x.269] and with [1.x.270] The time-discretized evolution law, [1.x.271] will also dictate how the linearization of the internal variable with respect to the field variables is composed.     
+*   Observe that in order to attain thecorrect* expressions for the magnetic induction vector and total Piola-Kirchhoff stress tensor for this dissipative material, we must adhere strictly to the outcome of applying the Coleman-Noll procedure: we must takepartial derivatives*
+ of the free energy density function with respect to the field variables. (For our non-dissipative magnetoelastic material, taking either partial or total derivatives would have had the same result, so there was no need to draw your attention to this before.) The crucial part of the operation is to freeze the internal variable  [2.x.229]  while computing the derivatives of  [2.x.230]  with respect to  [2.x.231] 
+* 
+*  -  the dependence of  [2.x.232]  on  [2.x.233]  is not to be taken into account. When deciding whether to use AD or SD to perform this task the choice is clear
+* 
+*  -  only the symbolic framework provides a mechanism to do this; as was mentioned before, AD can only return total derivatives so it is unsuitable for the task.     
+*   To wrap things up, we'll present the material tangents for this rate-dependent coupled material. The linearization of both kinetic variables with respect to their arguments are [1.x.272] [1.x.273] [1.x.274] where the tangents for the viscous contributions are [1.x.275] [1.x.276]
+
+* 
+* [1.x.277]
+*  with [1.x.278] and, from the evolution law, [1.x.279] Notice that just the last term of  [2.x.234]  contains the tangent of the internal variable. The linearization of this particular evolution law is linear. For an example of a nonlinear evolution law, for which this linearization must be solved for in an iterative manner, see  [2.x.235] -Theiss2011a.
+* 
+
+* 
+* [1.x.280]
+* 
+*  A data structure that is used to store all intermediate calculations. We'll see shortly precisely how this can be leveraged to make the part of the code where we actually perform calculations clean and easy (well, at least easier) to follow and maintain. But for now, we can say that it will allow us to move the parts of the code where we compute the derivatives of intermediate quantities away from where they are used.
+* 
+
+* 
+* [1.x.281]
+* 
+*  The next two functions are used to update the state of the field and internal variables, and will be called before we perform any detailed calculations.
+* 
+
+* 
+* [1.x.282]
+* 
+*  The remainder of the class interface is dedicated to methods that are used to compute the components required to calculate the free energy density function, and all of its derivatives:
+* 
+
+* 
+*  The kinematic, or field, variables.
+* 
+
+* 
+* [1.x.283]
+* 
+*  A generalized formulation for the saturation function, with the required constitutive parameters passed as arguments to each function.
+* 
+
+* 
+* [1.x.284]
+* 
+*  A generalized formulation for the first derivative of saturation function, with the required constitutive parameters passed as arguments to each function.
+* 
+
+* 
+* [1.x.285]
+* 
+*  A generalized formulation for the second derivative of saturation function, with the required constitutive parameters passed as arguments to each function.
+* 
+
+* 
+* [1.x.286]
+* 
+*  Intermediate quantities attained directly from the field / kinematic variables.
+* 
+
+* 
+* [1.x.287]
+* 
+*  First derivatives of the intermediate quantities.
+* 
+
+* 
+* [1.x.288]
+* 
+*  Derivative of internal variable with respect to field variables. Notice that we only need this one derivative of the internal variable, as this variable is only differentiated as part of the linearization of the kinetic variables.
+* 
+
+* 
+* [1.x.289]
+* 
+*  Second derivatives of the intermediate quantities.
+* 
+
+* 
+* [1.x.290]
+* 
+*  Record the applied deformation state as well as the magnetic load. Thereafter, update internal (viscous) variable based on new deformation state.
+* 
+
+* 
+* [1.x.291]
+* 
+*  Get the values for the elastic and viscous saturation function based on the current magnetic field...
+* 
+
+* 
+* [1.x.292]
+* 
+*  ... as well as their first derivatives...
+* 
+
+* 
+* [1.x.293]
+* 
+*  ... and their second derivatives.
+* 
+
+* 
+* [1.x.294]
+* 
+*  Intermediate quantities. Note that, since we're fetching these values from a cache that has a lifetime that outlasts this function call, we can alias the result rather than copying the value from the cache.
+* 
+
+* 
+* [1.x.295]
+* 
+*  First derivatives of intermediate values, as well as the that of the internal variable with respect to the right Cauchy-Green deformation tensor.
+* 
+
+* 
+* [1.x.296]
+* 
+*  Second derivatives of intermediate values.
+* 
+
+* 
+* [1.x.297]
+* 
+*  Since the definitions of the linearizations become particularly lengthy, we'll decompose the free energy density function into three additive components:
+* 
+
+* 
+* 
+*  - the "Neo-Hookean"-like term,
+* 
+
+* 
+* 
+*  - the rate-dependent term, and
+* 
+
+* 
+* 
+*  - the term that resembles that of the energy stored in the magnetic field.       
+*   To remain consistent, each of these contributions will be individually added to the variables that we want to compute in that same order.       
+*   So, first of all this is the energy density function itself:
+* 
+
+* 
+* [1.x.298]
+* 
+*  ... followed by the magnetic induction vector and Piola-Kirchhoff stress:
+* 
+
+* 
+* [1.x.299]
+* 
+*  ... and lastly the tangents due to the linearization of the kinetic variables.
+* 
+
+* 
+* [1.x.300]
+* 
+*  Now that we're done using all of those temporary variables stored in our cache, we can clear it out to free up some memory.
+* 
+
+* 
+* [1.x.301]
+* 
+*  The next few functions implement the generalized formulation for the saturation function, as well as its various derivatives.
+* 
+
+* 
+* [1.x.302]
+* 
+*  A scaling function that will cause the shear modulus to change (increase) under the influence of a magnetic field.
+* 
+
+* 
+* [1.x.303]
+* 
+*  First derivative of scaling function
+* 
+
+* 
+* [1.x.304]
+* 
+*  For the cached calculation approach that we've adopted for this material class, the root of all calculations are the field variables, and the immutable ancillary data such as the constitutive parameters and time step size. As such, we need to enter them into the cache in a different manner to the other variables, since they are inputs that are prescribed from outside the class itself. This function simply adds them to the cache directly from the input arguments, checking that there is no equivalent data there in the first place (we expect to call the `update_internal_data()` method only once per time step, or Newton iteration).
+* 
+
+* 
+* [1.x.305]
+* 
+*  Set value for  [2.x.236] .
+* 
+
+* 
+* [1.x.306]
+* 
+*  Set value for  [2.x.237] .
+* 
+
+* 
+* [1.x.307]
+* 
+*  After that, we can fetch them from the cache at any point in time.
+* 
+
+* 
+* [1.x.308]
+* 
+*  With the primary variables guaranteed to be in the cache when we need them, we can not compute all intermediate values (either directly, or indirectly) from them.     
+*   If the cache does not already store the value that we're looking for, then we quickly calculate it, store it in the cache and return the value just stored in the cache. That way we can return it as a reference and avoid copying the object. The same goes for any values that a compound function might depend on. Said another way, if there is a dependency chain of calculations that come before the one that we're currently interested in doing, then we're guaranteed to resolve the dependencies before we proceed with using any of those values. Although there is a cost to fetching data from the cache, the "resolved dependency" concept might be sufficiently convenient to make it worth looking past the extra cost. If these material laws are embedded within a finite element framework, then the added cost might not even be noticeable.
+* 
+
+* 
+* [1.x.309]
+* 
+*   [1.x.310]  [1.x.311]
+* 
+
+* 
+*  The  [2.x.238]  class is used to drive the numerical experiments that are to be conducted on the coupled materials that we've implemented constitutive laws for.
+* 
+
+* 
+* [1.x.312]
+* 
+*  These are  dimensions of the rheological specimen that is to be simulated. They, effectively, define the measurement point for our virtual experiment.
+* 
+
+* 
+* [1.x.313]
+* 
+*  The three steady-state loading parameters are respectively
+* 
+
+* 
+* 
+*  - the axial stretch,
+* 
+
+* 
+* 
+*  - the shear strain amplitude, and
+* 
+
+* 
+* 
+*  - the axial magnetic field strength.
+* 
+
+* 
+* [1.x.314]
+* 
+*  Moreover, the parameters for the time-dependent rheological loading conditions are
+* 
+
+* 
+* 
+*  - the loading cycle frequency,
+* 
+
+* 
+* 
+*  - the number of load cycles, and
+* 
+
+* 
+* 
+*  - the number of discrete timesteps per cycle.
+* 
+
+* 
+* [1.x.315]
+* 
+*  We also declare some self-explanatory parameters related to output data generated for the experiments conducted with rate-dependent and rate-independent materials.
+* 
+
+* 
+* [1.x.316]
+* 
+*  The next few functions compute time-related parameters for the experiment...
+* 
+
+* 
+* [1.x.317]
+* 
+*  ... while the following two prescribe the mechanical and magnetic loading at any given time...
+* 
+
+* 
+* [1.x.318]
+* 
+*  ... and this last one outputs the status of the experiment to the console.
+* 
+
+* 
+* [1.x.319]
+* 
+*  The applied magnetic field is always aligned with the axis of rotation of the rheometer's rotor.
+* 
+
+* 
+* [1.x.320]
+* 
+*  The applied deformation (gradient) is computed based on the geometry of the rheometer and the sample, the sampling point, and the experimental parameters. From the displacement profile documented in the introduction, the deformation gradient may be expressed in Cartesian coordinates as [1.x.321]
+* 
+
+* 
+* [1.x.322]
+* 
+*   [1.x.323]  [1.x.324]
+* 
+
+* 
+*  This is the function that will drive the numerical experiments.
+* 
+
+* 
+* [1.x.325]
+* 
+*  We can take the hand-implemented constitutive law and compare the results that we attain with it to those that we get using AD or SD. In this way, we can verify that they produce identical results (which indicates that either both implementations have a high probability of being correct, or that they're incorrect with identical flaws being present in both). Either way, it is a decent sanity check for the fully self-implemented variants and can certainly be used as a debugging strategy when differences between the results are detected).
+* 
+
+* 
+* [1.x.326]
+* 
+*  We'll be outputting the constitutive response of the material to file for post-processing, so here we declare a `stream` that will act as a buffer for this output. We'll use a simple CSV format for the outputted results.
+* 
+
+* 
+* [1.x.327]
+* 
+*  Using the DiscreteTime class, we iterate through each timestep using a fixed time step size.
+* 
+
+* 
+* [1.x.328]
+* 
+*  We fetch and compute the loading to be applied to the material at this time step...
+* 
+
+* 
+* [1.x.329]
+* 
+*  ... then we update the state of the materials...
+* 
+
+* 
+* [1.x.330]
+* 
+*  ... and test for discrepancies between the two.
+* 
+
+* 
+* [1.x.331]
+* 
+*  The next thing that we will do is collect some results to post-process. All quantities are in the "current configuration" (rather than the "reference configuration", in which all quantities computed by the constitutive laws are framed).
+* 
+
+* 
+* [1.x.332]
+* 
+*  Finally, we output the strain-stress and magnetic loading history to file.
+* 
+
+* 
+* [1.x.333]
+* 
+*   [1.x.334]  [1.x.335]
+* 
+
+* 
+*  The purpose of this driver function is to read in all of the parameters from file and, based off of that, create a representative instance of each constitutive law and invoke the function that conducts a rheological experiment with it.
+* 
+
+* 
+* [1.x.336]
+* 
+*  We start the actual work by configuring and running the experiment using our rate-independent constitutive law. The automatically differentiable number type is hard-coded here, but with some clever templating it is possible to select which framework to use at run time (e.g., as selected through the parameter file). We'll simultaneously perform the experiments with the counterpary material law that was fully implemented by hand, and check what it computes against our assisted implementation.
+* 
+
+* 
+* [1.x.337]
+* 
+*  Next we do the same for the rate-dependent constitutive law. The highest performance option is selected as default if SymEngine is set up to use the LLVM just-in-time compiler which (in conjunction with some aggressive compilation flags) produces the fastest code evaluation path of all of the available option. As a fall-back, the so called "lambda" optimizer (which only requires a C++11 compliant compiler) will be selected. At the same time, we'll ask the CAS to perform common subexpression elimination to minimize the number of intermediate calculations used during evaluation. We'll record how long it takes to execute the "initialization" step inside the constructor for the SD implementation, as this is where the abovementioned transformations occur.
+* 
+
+* 
+* [1.x.338]
+* 
+*   [1.x.339]  [1.x.340]
+* 
+
+* 
+*  The main function only calls the driver functions for the two sets of examples that are to be executed.
+* 
+
+* 
+* [1.x.341]
+* [1.x.342][1.x.343]
+* 
+
+* [1.x.344][1.x.345]
+* 
+
+* The first exploratory example produces the following output. It is verified thatall three implementations produce identical results.
+* [1.x.346]
+* 
+* [1.x.347][1.x.348]
+* 
+
+* To help summarize the results from the virtual experiment itself, below are somegraphs showing the shear stress, plotted against the shear strain, at a selectlocation within the material sample. The plots show the stress-strain curves underthree different magnetic loads, and for the last cycle of the (mechanical)loading profile, when the rate-dependent material reaches a repeatable("steady-state") response. These types of graphs are often referred to as[Lissajous plots](https://en.wikipedia.org/wiki/Lissajous_curve). The areaof the ellipse that the curve takes for viscoelastic materials provides somemeasure of how much energy is dissipated by the material, and its ellipticityindicates the phase shift of the viscous response with respect to the elasticresponse.
+*  [2.x.239] 
+* It is not surprising to see that the magneto-elastic material response has an unloadingcurve that matches the loading curve
+* 
+*  -  the material is non-dissipative after all.But here it's clearly noticeable how the gradient of the curve increases as theapplied magnetic field increases. The tangent at any point along this curve isrelated to the instantaneous shear modulus and, due to the way that the energydensity function was defined, we expect that the shear modulus increases as themagnetic field strength increases.We observe much the same behavior for the magneto-viscoelastic material. The majoraxis of the ellipse traced by the loading-unloading curve has a slope that increasesas a greater magnetic load is applied. At the same time, the more energy isdissipated by the material.
+* As for the code output, this is what is printed to the console for the partpertaining to the rheological experiment conducted with the magnetoelasticmaterial:
+* [1.x.349]
+* 
+* And this portion of the output pertains to the experiment performed with themagneto-viscoelastic material:
+* [1.x.350]
+* 
+* The timer output is also emitted to the console, so we can compare time takento perform the hand- and assisted- calculations and get some idea of the overheadof using the AD and SD frameworks.Here are the timings taken from the magnetoelastic experiment usingthe AD framework, based on the Sacado component of the Trilinos library:
+* [1.x.351]
+* With respect to the computations performed using automatic differentiation(as a reminder, this is with two levels of differentiation using the Sacadolibrary in conjunction with dynamic forward auto-differentiable types), weobserve that the assisted computations takes about  [2.x.240]  longer tocompute the desired quantities. This does seem like quite a lot of overheadbut, as mentioned in the introduction, it's entirely subjective andcircumstance-dependent as to whether or not this is acceptable or not:Do you value computer time more than human time for doing thenecessary hand-computations of derivatives, verify their correctness,implement them, and verify the correctness of the implementation? Ifyou develop a research code that will only be run for a relativelysmall number of experiments, you might value your own time more. Ifyou develop a production code that will be run over and over on10,000-core clusters for hours, your considerations might be different.In any case, the one nice featureof the AD approach is the "drop in" capability when functions and classes aretemplated on the scalar type. This means that minimal effort is required tostart working with it.
+* In contrast, the timings for magneto-viscoelastic material as implemented usingjust-in-time (JIT) compiled symbolic algebra indicate that, at some non-negligible cost duringinitialization, the calculations themselves are a lot more efficiently executed:
+* [1.x.352]
+* Since the initialization phase need, most likely, only be executed once perthread, this initial expensive phase can be offset by the repeated use of asingle  [2.x.241]  instance. Even though themagneto-viscoelastic constitutive law has more terms to calculate when comparedto its magnetoelastic counterpart, it still is a whole order of magnitude fasterto execute the computations of the kinetic variables and tangents. And when comparedto the hand computed variant that uses the caching scheme, the calculation timeis nearly equal. So although using the symbolic framework requires a paradigmshift in terms of how one implements and manipulates the symbolic expressions,it can offer good performance and flexibility that the AD frameworks lack.
+* On the point of data caching, the added cost of value caching for themagneto-viscoelastic material implementation is, in fact, about a  [2.x.242] increase in the time spent in `update_internal_data()` when compared to theimplementation using intermediate values for the numerical experiments conductedwith this material. Here's a sample output of the timing comparison extracted forthe "hand calculated" variant when the caching data structure is removed:
+* [1.x.353]
+* 
+* With some minor adjustment we can quite easily test the different optimizationschemes for the batch optimizer. So let's compare the computational expenseassociated with the `LLVM` batch optimizer setting versus the alternatives.Below are the timings reported for the `lambda` optimization method (retainingthe use of CSE):
+* [1.x.354]
+* The primary observation here is that an order of magnitude greater time is spentin the "Assisted computation" section when compared to the `LLVM` approach.
+* Last of all we'll test how `dictionary` substitution, in conjunction with CSE,performs. Dictionary substitution simply does all of the evaluation within thenative CAS framework itself, with no transformation of the underlying datastructures taking place. Only the use of CSE, which caches intermediate results,will provide any "acceleration" in this instance. With that in mind, here arethe results from this selection:
+* [1.x.355]
+* Needless to say, compared to the other two methods, these results took quitesome time to produce... The `dictionary` substitutionmethod is perhaps only really viable for simple expressions or when the numberof calls is sufficiently small.
+* [1.x.356][1.x.357]
+* 
+
+* Perhaps you've been convinced that these tools have some merit, and can beof immediate help or use to you. The obvious question now is which one touse. Focusing specifically at a continuum point level, where you would beusing these frameworks to compute derivatives of a constitutive law inparticular, we can say the following:
+* 
+*  - Automatic differentiation probably provides the simplest entry point into  the world of assisted differentiation.
+* 
+*  - Given a sufficiently generic implementation of a constitutive framework,  AD can often be used as a drop-in replacement for the intrinsic scalar types  and the helper classes can then be leveraged to compute first (and possibly  higher order) derivatives with minimal effort.
+* 
+*  - As a qualification to the above point, being a "drop-in replacement" does not  mean that you must not be contentious of what the algorithms that these numbers  are being passed through are doing. It is possible to inadvertently perform  an operation that would, upon differentiating, return an incorrect result.  So this is definitely something that one should be aware of.  A concrete example: When computing the eigenvalues of a tensor, if the tensor  is diagonal then a short-cut to the result is simply to return the diagonal  entries directly (as extracted from the input tensor). This is completely  correct in terms of computing the eigenvalues themselves, but not going  through the algorithm that would otherwise compute the eigenvalues for a  non-diagonal tensor has had an unintended side-effect, namely that the  eigenvalues appear (to the AD framework) to be completely decoupled from  one another and their cross-sensitivities are not encoded in the returned  result. Upon differentiating, many entries of the derivative tensor will  be missing. To fix this issue, one has to ensure that the standard eigenvalue  solving algorithm is used so that the sensitivities of the returned eigenvalues  with respect to one another are encoded in the result.
+* 
+*  - Computations involving AD number types may be expensive. The expense increases  (sometimes quite considerably) as the order of the differential operations  increases. This may be mitigated by computational complexity of surrounding  operations (such as a linear solve, for example), but is ultimately problem  specific.
+* 
+*  - AD is restricted to the case where only total derivatives are required. If a  differential operation requires a partial derivative with respect to an  independent variable then it is not appropriate to use it.
+* 
+*  - Each AD library has its own quirks (sad to say but, in the author's experience,  true), so it may take some trial and error to find the appropriate library and  choice of AD number to suit your purposes. The reason for these "quirks"  often boils down to the overall philosophy behind the library (data structures,  the use of template meta-programming, etc.) as well as the mathematical  implementation of the derivative computations (for example, manipulations of  results using logarithmic functions to change basis might restrict the domain  for the input values
+* 
+*  -  details all hidden from the user, of course).  Furthermore, one library might be able to compute the desired results quicker  than another, so some initial exploration might be beneficial in that regard.
+* 
+*  - Symbolic differentiation (well, the use of a CAS in general) provides the most  flexible framework with which to perform assisted computations.
+* 
+*  - The SD framework can do everything that the AD frameworks can, with the  additional benefit of having low-level control over when certain manipulations  and operations are performed.
+* 
+*  - Acceleration of expression evaluation is possible, potentially leading to  near-native performance of the SD framework compared to some hand implementations  (this comparison being dependent on the overall program design, of course) at  the expense of the initial optimization call.
+* 
+*  - Clever use of the  [2.x.243]  could minimize the  expense of the costly call that optimizes the dependent expressions.  The possibility to serialize the  [2.x.244]   that often (but not always) this expensive call can be done once and then  reused in a later simulation.
+* 
+*  - If two or more material laws differ by only their material parameters, for  instance, then a single batch optimizer can be shared between them as long  as those material parameters are considered to be symbolic. The implication  of this is that you can "differentiate once, evaluate in many contexts".
+* 
+*  - The SD framework may partially be used as a "drop-in replacement" for scalar  types, but one (at the very least) has to add some more framework around it  to perform the value substitution step, converting symbolic types to their  numerical counterparts.
+* 
+*  - It may not be possible to use SD numbers within some specialized algorithms.  For example, if an algorithm has an exit point or code branch based off of  some concrete, numerical value that the (symbolic) input argument should take,  then obviously this isn't going to work. One either has to reimplement the  algorithm specifically for SD number types (somewhat inconvenient, but  frequently possible as conditionals are supported by the   [2.x.245]  class), or one must use a creative means  around this specific issue (e.g., introduce a symbolic expression that  represents the result returned by this algorithm, perhaps declaring it  to be a  [symbolic function](https://dealii.org/developer/doxygen/deal.II/namespaceDifferentiation_1_1SD.html#a876041f6048705c7a8ad0855cdb1bd7a)  if that makes sense within the context in which it is to be used. This can  later be substituted by its numerical values, and if declared a symbolic  function then its deferred derivatives may also be incorporated into the  calculations as substituted results.).
+* 
+*  - The biggest drawback to using SD is that using it requires a paradigm shift,  and that one has to frame most problems differently in order to take the  most advantage of it. (Careful consideration of how the data structures  are used and reused is also essential to get it to work effectively.) This may  mean that one needs to play around with it a bit and build up an understanding  of what the sequence of typical operations is and what specifically each step  does in terms of manipulating the underlying data. If one has the time and  inclination to do so, then the benefits of using this tool may be substantial.
+* [1.x.358][1.x.359]
+* 
+
+* There are a few logical ways in which this program could be extended:
+* 
+*  - Perhaps the most obvious extension would be to implement and test other constitutive models.  This could still be within the realm of coupled magneto-mechanical problems, perhaps considering  alternatives to the "Neo-Hookean"-type elastic part of the energy functions, changing the  constitutive law for the dissipative energy (and its associated evolution law), or including  magnetic hysteretic effects or damage models for the composite polymer that these material  seek to model.
+* 
+*  - Of course, the implemented models could be modified or completely replaced with models that are  focused on other aspects of physics, such as electro-active polymers, biomechanical materials,  elastoplastic media, etc.
+* 
+*  - Implement a different time-discretization scheme for the viscoelastic evolution law.
+* 
+*  - Instead of deriving everything directly from an energy density function, use the   [2.x.246]  to directly linearize the kinetic quantities.  This would mean that only a once-differentiable auto-differentiable number type  would be required, and would certainly improve the performance greatly.  Such an approach would also offer the opportunity for dissipative materials,  such as the magneto-viscoelastic one consider here, to be implemented in  conjunction with AD. This is because the linearization invokes the total  derivative of the dependent variables with respect to the field variables, which  is exactly what the AD frameworks can provide.
+* 
+*  - Investigate using other auto-differentiable number types and frameworks (such as  ADOL-C). Since each AD library has its own implementation, the choice of which  to use could result in performance increases and, in the most unfortunate cases,  more stable computations. It can at least be said that for the AD libraries that  deal.II supports, the accuracy of results should be largely unaffected by this decision.
+* 
+*  - Embed one of these constitutive laws within a finite element simulation.
+* With less effort, one could think about re-writing nonlinear problemsolvers such as the one implemented in  [2.x.247]  using AD or SDapproaches to compute the Newton matrix. Indeed, this is done in [2.x.248] .
+* 
+
+* [1.x.360][1.x.361] [2.x.249] 
+* [0.x.1]

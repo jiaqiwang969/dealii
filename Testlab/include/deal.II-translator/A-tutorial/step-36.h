@@ -68,7 +68,7 @@
  * <br>
  * <i>This program was contributed by Toby D. Young and Wolfgang Bangerth.
  * </i> <a name="Preamble"></a><a name="Preamble"></a><h1>Preamble</h1> 。
- * 在这个例子中，我们要解决的问题是一个特征值问题（eigenspectrumproblem）。特征值问题出现在广泛的问题中，例如，在计算电磁驻波凹槽、鼓膜的振动模式或湖泊和河口的振荡中。最神秘的应用之一可能是量子力学中静止或准静止波函数的计算。后一种应用是我们想在这里研究的，尽管本计划中概述的一般技术当然同样适用于上述其他应用。
+ * 在这个例子中，我们要解决的问题是一个特征值问题（eigenspectrumproblem）。特征值问题出现在许多问题中，例如，在计算电磁驻波的空腔、鼓膜的振动模式或湖泊和河口的振荡时。最神秘的应用之一可能是量子力学中静止或准静止波函数的计算。后一种应用是我们想在这里研究的，尽管本计划中概述的一般技术当然同样适用于上述其他应用。
  * Eigenspectrum问题有一般的形式
  * @f{align*}
  * L \Psi &= \varepsilon \Psi \qquad &&\text{in}\ \Omega\quad,
@@ -102,7 +102,7 @@
  * 。量子力学的正统（哥本哈根）解释认为，如果粒子具有能量
  * $\varepsilon_\ell$ ，那么在位置 $\mathbf x$ 发现它的概率与
  * $|\Psi_\ell(\mathbf x)|^2$ 成正比，其中 $\Psi_\ell$
- * 是对应于该特征值的特征函数。
+ * 是对应于这个特征值的特征函数。
  * 为了在数值上找到这个方程的解，即一组成对的特征值/特征函数，我们使用通常的有限元方法，将方程从左边乘以测试函数，通过部分积分，在有限维空间中通过近似
  * $\Psi(\mathbf
  * x)\approx\Psi_h(\mathbf x)=\sum_{j}\phi_j(\mathbf x)\tilde\psi_j$ 寻找解，其中 $\tilde\psi$ 是一个扩展系数的矢量。然后我们立即得出以下方程，该方程离散化了连续特征值问题：@f[ \sum_j [(\nabla\phi_i,
@@ -115,10 +115,10 @@
  * \phi_j\tilde{\psi}_j$  。
  *
  *  <a name="EigenvaluesandDirichletboundaryconditions"></a><h3>Eigenvalues
- * and Dirichlet boundary conditions</h3> 。
+ * and Dirichlet boundary conditions</h3>
  * 在这个程序中，我们对波函数 $\Psi$
- * 使用迪里切特边界条件。从有限元代码的角度来看，这意味着只有内部自由度是<i>freedom</i>的实数：边界上的自由度不是自由的，而是被迫有一个零值，毕竟。另一方面，无限元方法的强大和简单在于，我们只需在每个单元上做同样的事情，而不必过多考虑一个单元的位置，它是否与一个不那么精细的单元相接，因而有一个悬空的节点，或者与边界相接。所有这些检查都会使有限元线性系统的组装变得难以编写，甚至更难阅读。
- * 当然，当你用DoFHandler对象分配自由度时，你并不关心你所列举的一些自由度是否在迪里切特边界。它们都有数字。我们只需要在以后应用边界值的时候照顾到这些自由度。有两种基本的方法（要么使用 MatrixTools::apply_boundary_values() <i>after</i>装配线性系统，要么使用 AffineConstraints::distribute_local_to_global() <i>during</i>装配；详见 @ref constraints "约束模块"
+ * 使用迪里切特边界条件。从有限元代码的角度来看，这意味着只有内部自由度是<i>freedom</i>的真实度：边界上的自由度不是自由的，但毕竟是被迫为零的。另一方面，无限元方法的强大和简单在于，我们只需在每个单元上做同样的事情，而不必过多考虑一个单元的位置，它是否与一个不那么精细的单元相接，因而有一个悬空的节点，或者与边界相接。所有这些检查都会使有限元线性系统的组装变得难以编写，甚至更难阅读。
+ * 当然，当你用DoFHandler对象分配自由度时，你并不关心你列举的一些自由度是否在迪里切特边界。它们都有数字。我们只需要在以后应用边界值的时候照顾到这些自由度。有两种基本的方法（要么使用 MatrixTools::apply_boundary_values() <i>after</i>装配线性系统，要么使用 AffineConstraints::distribute_local_to_global() <i>during</i>装配；详见 @ref constraints "约束模块"
  * ），但两者的结果是一样的：线性系统的总行数等于<i>all</i>自由度的数目，包括那些位于边界的自由度。然而，受迪里希特条件约束的自由度与线性系统的其他部分分开，方法是将相应的行和列清零，在对角线上放一个正条目，并在右手边放相应的迪里希特值。
  * 如果你暂时假设我们对自由度进行了重新编号，使迪里切特边界上的所有自由度都排在最后，那么在解一个有右手边的常规PDE时，我们会得到这样的线性系统。
  * @f{align*}
@@ -141,7 +141,7 @@
  * 的选择方式是， $U_{b,j}=D_{b,jj}^{-1} F_{b,j}$
  * 对于每个边界自由度 $j$
  * 都有正确的边界值（对于好奇的人来说，矩阵 $D_b$
- * 的条目是将修改后的局部贡献添加到全局矩阵中的结果，对于局部矩阵来说，对角线元素如果不是零，则被设置为其绝对值；否则，它们被设置为对角线的绝对值的平均值。这个过程保证了
+ * 的条目是将修改后的局部贡献添加到全局矩阵中的结果，对于局部矩阵来说，对角线元素如果不是零，则被设置为其绝对值；否则，它们被设置为对角线绝对值的平均值。这个过程保证了
  * $D_b$
  * 的条目是正的，而且大小与对角线的其他条目相当，确保所产生的矩阵不会因为涉及到大小截然不同的矩阵条目的舍入而造成不合理的精度损失。最终出现在对角线上的实际数值是很难预测的，你应该把它们当作任意的和不可预测的，但却是正数。)
  * 对于 "常规
@@ -164,7 +164,7 @@
  * @f}
  * 这种形式清楚地表明，有两组特征值：我们关心的那些，以及来自这些分割问题的虚假特征值@f[
  * D_A \tilde \Psi_b = \epsilon_h D_M \Psi_b.
- * @f]这些特征值是虚假的，因为它们是由一个只对边界节点进行操作的特征值系统产生的
+ * @f]这些特征值是虚假的，因为它们是由一个只对边界节点进行操作的特征值系统产生的。
  *
  * 当然，由于两个矩阵 $D_A,D_M$
  * 是对角线，我们可以准确地量化这些虚假的特征值：它们是
@@ -185,15 +185,13 @@
  * @endcode
  * 然而，这里没有采用这种策略，因为我们从程序中得到的虚假特征值恰好大于我们要计算的和感兴趣的最低的五个。
  *
- *  <a name="Implementationdetails"></a><h3>Implementation details</h3> 。
- *
- *  下面的程序实质上只是 step-4
- * 的一个稍加修改的版本。有所不同的是以下内容。
+ *  <a name="Implementationdetails"></a><h3>Implementation details</h3>
+ * 下面的程序实质上只是 step-4
+ * 的一个稍加修改的版本。不同的地方有以下几点。
  * <ul>
  * <li>  主类（名为 <code>EigenvalueProblem</code>
- * ）现在不再有单一的解向量，而是有一整套我们想要计算的各种特征函数的向量。此外，
- * <code>main</code>
- * 函数在这里拥有对所有事情的最高控制权，它通过
+ * ）现在不再有单一的解向量，而是有一整套我们要计算的各种特征函数的向量。此外，
+ * <code>main</code> 函数，在这里拥有最高级别的控制权，通过
  * <code>SlepcInitialize</code> 和 <code>SlepFinalize</code>
  * 同时初始化和最终确定SLEPc和PETSc的接口。 </li>
  * <li>  我们使用PETSc的矩阵和向量，如 step-17 和 step-18
@@ -211,12 +209,11 @@
  * </ul>
  * 程序的其余部分以一种相当直接的方式从 step-4 开始。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1>. <a
- * name="Includefiles"></a> <h3>Include files</h3>.
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。 <a
+ * name="Includefiles"></a><h3>Include files</h3> 。
  *
- * 正如在介绍中提到的，本程序基本上只是 step-4
- * 的一个小修改版本。因此，以下大部分的include文件都是在那里使用的，或者至少是在以前的教程程序中已经使用的。
- *
+ *   正如在介绍中提到的，本程序基本上只是 step-4
+ * 的一个小修改版本。因此，以下大多数include文件都是在那里使用的，或者至少是在以前的教程程序中已经使用的。
  *
  * @code
  * #include <deal.II/base/logstream.h>
@@ -240,6 +237,7 @@
  * @endcode
  *
  * IndexSet用于设置每个  PETScWrappers::MPI::Vector:  的大小。
+ *
  * @code
  * #include <deal.II/base/index_set.h>
  *
@@ -247,15 +245,13 @@
  *
  * PETSc出现在这里是因为SLEPc依赖于这个库。
  *
- *
  * @code
  * #include <deal.II/lac/petsc_sparse_matrix.h>
  * #include <deal.II/lac/petsc_vector.h>
  *
  * @endcode
  *
- * 然后我们需要实际导入SLEPc所提供的求解器的接口。
- *
+ * 然后我们需要实际导入SLEPc提供的求解器的接口。
  *
  * @code
  * #include <deal.II/lac/slepc_solver.h>
@@ -264,15 +260,13 @@
  *
  * 我们还需要一些标准的C++。
  *
- *
  * @code
  * #include <fstream>
  * #include <iostream>
  *
  * @endcode
  *
- * 最后，和以前的程序一样，我们把所有的deal.II类和函数名导入到这个程序中的所有东西都将进入的名字空间。
- *
+ * 最后，和以前的程序一样，我们将所有的deal.II类和函数名导入到这个程序中的所有东西都将进入的名字空间。
  *
  * @code
  * namespace Step36
@@ -282,11 +276,10 @@
  * @endcode
  *
  * <a name="ThecodeEigenvalueProblemcodeclasstemplate"></a> <h3>The
- * <code>EigenvalueProblem</code> class template</h3> 。
+ * <code>EigenvalueProblem</code> class template</h3>。
  *
  * 以下是主类模板的类声明。它看起来和在  step-4
  * 中已经展示过的差不多了。
- *
  *
  * @code
  * template <int dim>
@@ -308,8 +301,7 @@
  *
  * @endcode
  *
- * 除了这些例外情况。对于我们的特征值问题，我们既需要左手边的刚度矩阵，也需要右手边的质量矩阵。我们还需要的不仅仅是一个解函数，而是一整套用于我们要计算的特征函数的解函数，以及相应的特征值。
- *
+ * 有了这些例外情况。对于我们的特征值问题，我们既需要左手边的刚度矩阵，也需要右手边的质量矩阵。我们还需要的不仅仅是一个解函数，而是一整套用于我们要计算的特征函数的解函数，以及相应的特征值。
  *
  * @code
  *   PETScWrappers::SparseMatrix             stiffness_matrix, mass_matrix;
@@ -318,18 +310,15 @@
  *
  * @endcode
  *
- * 然后我们需要一个对象来存储我们将在输入文件中指定的几个运行时参数。
- *
+ * 然后我们需要一个对象来存储几个运行时参数，我们将在输入文件中指定。
  *
  * @code
  *   ParameterHandler parameters;
  *
  * @endcode
- *
- * 最后，我们将有一个对象，包含对我们自由度的
- * "约束"。如果我们有自适应细化的网格（在目前的程序中我们没有），这可能包括悬挂节点的约束。在这里，我们将存储边界节点的约束
+ *  最后，我们将有一个包含对我们自由度的 "约束
+ * "的对象。如果我们有自适应细化的网格（在目前的程序中我们没有），这可能包括悬挂节点的约束。在这里，我们将存储边界节点的约束
  * $U_i=0$  。
- *
  *
  * @code
  *   AffineConstraints<double> constraints;
@@ -338,13 +327,11 @@
  * @endcode
  *
  * <a name="ImplementationofthecodeEigenvalueProblemcodeclass"></a>
- * <h3>Implementation of the <code>EigenvalueProblem</code> class</h3> 。
- *
+ * <h3>Implementation of the <code>EigenvalueProblem</code> class</h3>。
  * <a name="EigenvalueProblemEigenvalueProblem"></a>
  * <h4>EigenvalueProblem::EigenvalueProblem</h4>。
  *
  * 首先是构造函数。主要的新部分是处理运行时的输入参数。我们需要首先声明它们的存在，然后从输入文件中读取它们的值，该文件的名称被指定为该函数的参数。
- *
  *
  * @code
  * template <int dim>
@@ -354,8 +341,8 @@
  * {
  * @endcode
  *
- * TODO
- * 调查为什么获得正确的特征值退化所需的最小细化步骤数是6
+ * TODO调查为什么获得正确的特征值退化所需的最小细化步骤数为6
+ *
  * @code
  *   parameters.declare_entry(
  *     "Global mesh refinement steps",
@@ -380,8 +367,9 @@
  * @endcode
  *
  * <a name="EigenvalueProblemmake_grid_and_dofs"></a>
- * <h4>EigenvalueProblem::make_grid_and_dofs</h4>    下一个函数在域
- * $[-1,1]^d$
+ * <h4>EigenvalueProblem::make_grid_and_dofs</h4>。
+ *
+ * 下一个函数在域 $[-1,1]^d$
  * 上创建一个网格，根据输入文件的要求对其进行多次细化，然后给它附加一个DoFHandler，并将矩阵和向量初始化为正确的大小。我们还建立了对应于边界值的约束条件
  * $u|_{\partial\Omega}=0$  。
  * 对于矩阵，我们使用PETSc包装器。这些包装器能够在非零项被添加时根据需要分配内存。这似乎是低效的：我们可以先计算稀疏模式，用它来初始化矩阵，然后在我们插入条目时，我们可以确定我们不需要重新分配内存和释放之前使用的内存。一种方法是使用这样的代码。
@@ -402,7 +390,6 @@
  * 的刚度和质量矩阵的调用。
  * 不幸的是，这并不完全可行。上面的代码可能会导致在非零模式下的一些条目，我们只写零条目；最值得注意的是，对于那些属于边界节点的行和列的非对角线条目，这一点是成立的。这不应该是一个问题，但是不管什么原因，PETSc的ILU预处理程序（我们用来解决特征值求解器中的线性系统）不喜欢这些额外的条目，并以错误信息中止。
  * 在没有任何明显的方法来避免这种情况的情况下，我们干脆选择了第二种最佳方案，即让PETSc在必要时分配内存。也就是说，由于这不是一个时间上的关键部分，这整个事件就不再重要了。
- *
  *
  * @code
  * template <int dim>
@@ -426,7 +413,6 @@
  *                      dof_handler.max_couplings_between_dofs());
  *
  * @endcode
- *
  * 下一步是处理特征谱的问题。在这种情况下，输出是特征值和特征函数，所以我们把特征函数和特征值列表的大小设置为我们在输入文件中要求的那样大。当使用
  * PETScWrappers::MPI::Vector,
  * 时，Vector是使用IndexSet初始化的。IndexSet不仅用于调整
@@ -435,7 +421,6 @@
  * 中的一个索引与一个自由度联系起来（更详细的解释见
  * step-40
  * ）。函数complete_index_set()创建了一个IndexSet，每个有效的索引都是这个集合的一部分。请注意，这个程序只能按顺序运行，如果并行使用，将抛出一个异常。
- *
  *
  * @code
  *   IndexSet eigenfunction_index_set = dof_handler.locally_owned_dofs();
@@ -451,17 +436,16 @@
  * @endcode
  *
  * <a name="EigenvalueProblemassemble_system"></a>
- * <h4>EigenvalueProblem::assemble_system</h4>.
+ * <h4>EigenvalueProblem::assemble_system</h4>。
  *
  * 在这里，我们分别从局部贡献 $A^K_{ij} = \int_K
  * \nabla\varphi_i(\mathbf x) \cdot \nabla\varphi_j(\mathbf x) + V(\mathbf
  * x)\varphi_i(\mathbf x)\varphi_j(\mathbf x)$ 和 $M^K_{ij} = \int_K
  * \varphi_i(\mathbf x)\varphi_j(\mathbf x)$
- * 组装全局刚度和质量矩阵。如果你看过以前的教程程序，这个函数应该会很熟悉。唯一新的东西是使用我们从输入文件得到的表达式设置一个描述势
+ * 中组合出全局刚度和质量矩阵。如果你看过以前的教程程序，这个函数应该会很熟悉。唯一新的东西是使用我们从输入文件得到的表达式设置一个描述势
  * $V(\mathbf x)$
  * 的对象。然后我们需要在每个单元的正交点上评估这个对象。如果你见过如何评估函数对象（例如，见
  * step-5 中的系数），这里的代码也会看起来相当熟悉。
- *
  *
  * @code
  * template <int dim>
@@ -520,8 +504,7 @@
  *
  * @endcode
  *
- * 现在我们有了局部的矩阵贡献，我们把它们转移到全局对象中，并处理好零边界约束。
- *
+ * 现在我们有了局部的矩阵贡献，我们把它们转移到全局对象中，并照顾到零边界约束。
  *
  * @code
  *       cell->get_dof_indices(local_dof_indices);
@@ -536,8 +519,7 @@
  *
  * @endcode
  *
- * 在这个函数的结尾，我们告诉PETSc，矩阵现在已经完全组装好了，稀疏矩阵表示法现在可以被压缩了，因为不会再增加任何条目。
- *
+ * 在这个函数的结尾，我们告诉PETSc，矩阵现在已经被完全组装好了，稀疏矩阵表示法现在可以被压缩了，因为不会再增加任何条目。
  *
  * @code
  *   stiffness_matrix.compress(VectorOperation::add);
@@ -546,8 +528,7 @@
  *
  * @endcode
  *
- * 在离开函数之前，我们计算虚假的特征值，这些特征值是由零Dirichlet约束引入到系统中的。正如在介绍中所讨论的，使用Dirichlet边界条件，加上位于域的边界的自由度仍然是我们所求解的线性系统的一部分，引入了一些虚假的特征值。下面，我们输出它们所处的区间，以确保我们在计算中出现时可以忽略它们。
- *
+ * 在离开函数之前，我们计算虚假的特征值，这些特征值是由零迪里切特约束条件引入系统的。正如在介绍中所讨论的，使用Dirichlet边界条件，加上位于域的边界的自由度仍然是我们所求解的线性系统的一部分，引入了一些虚假的特征值。下面，我们输出它们所处的区间，以确保我们在计算中出现时可以忽略它们。
  *
  * @code
  *   double min_spurious_eigenvalue = std::numeric_limits<double>::max(),
@@ -571,20 +552,19 @@
  *
  * @endcode
  *
- * <a name="EigenvalueProblemsolve"></a> <h4>EigenvalueProblem::solve</h4>
+ * <a name="EigenvalueProblemsolve"></a> <h4>EigenvalueProblem::solve</h4>。
  *
  * 这是该程序的关键新功能。现在系统已经设置好了，现在是实际解决问题的好时机：和其他例子一样，这是通过
- * "解决
- * "例程来完成的。从本质上讲，它的工作原理与其他程序一样：你设置一个SolverControl对象，描述我们要解决的线性系统的精度，然后我们选择我们想要的解算器类型。在这里，我们选择SLEPc的Krylov-Schur求解器，对于这种问题来说，这是一个相当快速和强大的选择。
- *
+ * "求解
+ * "例程完成的。从本质上讲，它的工作原理与其他程序一样：你设置一个SolverControl对象，描述我们要解决的线性系统的精度，然后我们选择我们想要的解算器类型。在这里，我们选择SLEPc的Krylov-Schur求解器，对于这种问题来说，这是一个相当快速和强大的选择。
  *
  * @code
  * template <int dim>
  * unsigned int EigenvalueProblem<dim>::solve()
  * {
  * @endcode
- * 我们从这里开始，就像我们通常做的那样，指定我们想要的收敛控制。
  *
+ * 我们从这里开始，就像我们通常做的那样，指定我们想要的收敛控制。
  *
  * @code
  *   SolverControl                    solver_control(dof_handler.n_dofs(), 1e-9);
@@ -596,7 +576,6 @@
  *
  * 在我们实际求解特征函数和 * -
  * 路径之前，我们还必须选择哪一组特征值来求解。让我们选择那些实部最小的特征值和相应的特征函数（事实上，我们在这里解决的问题是对称的，所以特征值是纯实部的）。之后，我们就可以真正让SLEPc做它的工作了。
- *
  *
  * @code
  *   eigensolver.set_which_eigenpairs(EPS_SMALLEST_REAL);
@@ -611,10 +590,10 @@
  *
  * @endcode
  *
- * 上述调用的输出是一组向量和值。在特征值问题中，特征函数只确定到一个常数，这个常数可以很随意地固定。由于对特征值问题的原点一无所知，SLEPc除了将特征向量归一到
+ * 上述调用的输出是一组向量和数值。在特征值问题中，特征函数只确定到一个常数，这个常数可以很随意地固定。由于对特征值问题的原点一无所知，SLEPc除了将特征向量归一到
  * $l_2$
  * （向量）准则外，没有其他选择。不幸的是，这个规范与我们从特征函数角度可能感兴趣的任何规范没有什么关系：
- * $L_2(\Omega)$ 规范，或者也许是 $L_\infty(\Omega)$ 规范。
+ * $L_2(\Omega)$ 规范，或者可能是 $L_\infty(\Omega)$ 规范。
  * 让我们选择后者，重新划分特征函数的尺度，使其具有
  * $\|\phi_i(\mathbf x)\|_{L^\infty(\Omega)}=1$ 而不是 $\|\Phi\|_{l_2}=1$
  * （其中 $\phi_i$ 是 $i$ 第三个特征<i>function</i>， $\Phi_i$
@@ -628,7 +607,6 @@
  * $\max_{\mathbf x}\phi_i(\mathbf x)\ge\max_j (\Phi_i)_j$
  * （尽管平等通常几乎是真的）。
  *
- *
  * @code
  *   for (unsigned int i = 0; i < eigenfunctions.size(); ++i)
  *     eigenfunctions[i] /= eigenfunctions[i].linfty_norm();
@@ -637,19 +615,17 @@
  *
  * 最后返回收敛所需的迭代次数。
  *
- *
  * @code
  *   return solver_control.last_step();
  * }
  *
  *
  * @endcode
- *  <a name="EigenvalueProblemoutput_results"></a>
+ *
+ * <a name="EigenvalueProblemoutput_results"></a>
  * <h4>EigenvalueProblem::output_results</h4>。
- *
- * 这是本程序的最后一个重要功能。它使用DataOut类来生成特征函数的图形输出，以便以后进行可视化。它的工作原理与许多其他的教程程序一样。
+ * 这是本程序的最后一个重要功能。它使用DataOut类来生成特征函数的图形输出，以便日后进行可视化。它的工作原理与其他许多教程中的一样。
  * 整个函数的集合被输出为一个单一的VTK文件。
- *
  *
  * @code
  * template <int dim>
@@ -666,10 +642,9 @@
  *
  * @endcode
  *
- * 唯一值得讨论的可能是，由于潜能在输入文件中被指定为一个函数表达式，因此最好也能将其与特征函数一起作为图形表示。实现这一目的的过程相对简单：我们建立一个代表
+ * 唯一值得讨论的可能是，由于势在输入文件中被指定为一个函数表达式，如果能把它和特征函数一起作为图形表示就更好了。实现这一目的的过程相对简单：我们建立一个代表
  * $V(\mathbf x)$
- * 的对象，然后将这个连续函数插值到有限元空间。我们还将结果附加到DataOut对象上，以实现可视化。
- *
+ * 的对象，然后将这个连续函数插值到有限元空间。其结果我们也附加到DataOut对象上，以便于可视化。
  *
  * @code
  *   Vector<double> projected_potential(dof_handler.n_dofs());
@@ -691,11 +666,10 @@
  *
  * @endcode
  *
- * <a name="EigenvalueProblemrun"></a> <h4>EigenvalueProblem::run</h4>.
+ * <a name="EigenvalueProblemrun"></a> <h4>EigenvalueProblem::run</h4>。
  *
  * 这是一个对一切都有顶层控制的函数。它几乎与  step-4
  * 中的内容完全相同。
- *
  *
  * @code
  * template <int dim>
@@ -739,8 +713,8 @@
  *
  *
  * @endcode
- *  这个程序只能在串行中运行。否则，抛出一个异常。
  *
+ * 这个程序只能在串行中运行。否则，抛出一个异常。
  *
  * @code
  *     AssertThrow(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 1,
@@ -753,8 +727,7 @@
  *
  * @endcode
  *
- * 在这期间，我们一直在注意是否有任何异常应该被生成。如果是这样的话，我们就会惊慌失措...
- *
+ * 同时，我们也在注意是否有任何异常应该被生成。如果是这样的话，我们就会惊慌失措...
  *
  * @code
  * catch (std::exception &exc)
@@ -788,16 +761,14 @@
  *
  * 如果没有抛出异常，那么我们就告诉程序不要再胡闹了，乖乖地退出。
  *
- *
  * @code
  * std::cout << std::endl << "   Job done." << std::endl;
  *
  * return 0;
  * }
  * @endcode
- * <a name="Results"></a><h1>Results</h1>。
- *
- *  <a name="Runningtheproblem"></a><h3>Running the problem</h3>。
+ * <a name="Results"></a><h1>Results</h1>   <a
+ * name="Runningtheproblem"></a><h3>Running the problem</h3> 。
  * 该问题的输入由一个输入文件 <code>\step-36.prm</code>
  * 作为参数，例如，该文件可以包含以下文本。
  * @code
@@ -837,9 +808,7 @@
  * alt=""></td> <td></td> </tr> </table> <a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for
  * extensions</h3>。
- *
- *  在操场上玩一些游戏总是值得的!
- * 因此，这里有一些建议。
+ * 在操场上玩几个游戏总是值得的!因此，这里有几个建议。
  * <ul>
  * <li>  上面使用的势（称为<i>infinite
  * well</i>，因为它是一个由无限高的墙包围的平坦势）是有趣的，因为它允许有分析性的已知解。然而，除此之外，它是相当无聊的。也就是说，只要在输入文件中设置不同的势，就可以很容易地玩转这个势。例如，让我们假设我们想在2d中处理以下电势：@f[
@@ -943,12 +912,12 @@
  * $\Omega$ 中，并且在这个域的边界，其存在的概率 $|\Psi|^2$
  * 为零。这相当于解决所有 ${\mathbb R}^d$
  * 的特征值问题，并假设能量势只在一个区域 $\Omega$
- * 内是有限的，而在区域外是无限的。相对来说，可以证明
+ * 内是有限的，而在外面是无限的。相对来说，可以证明
  * $|\Psi(\mathbf x)|^2$ 在 $\mathbf x$ 的所有位置上， $V(\mathbf
  * x)=\infty$
  * 。那么问题来了，如果我们的势不是这种形式的，也就是说，没有一个势是无限的有界域，会发生什么？在这种情况下，可能值得考虑在边界上有一个非常大的域，其中
  * $V(\mathbf x)$
- * 即使不是无限的，也至少是非常大的。玩一玩这样的案例，探索一下当我们把计算区域变得越来越大时，频谱和特征函数是如何变化的。
+ * 即使不是无限的，也至少是非常大的。玩玩这样的几个案例，探索一下当我们把计算区域越做越大时，频谱和特征函数是如何变化的。
  * <li>  如果我们研究简单的谐波振荡器问题 $V(\mathbf
  * x)=c|\mathbf x|^2$
  * 会怎样？这个势正是上一段所讨论的形式，具有超球面对称性。人们可能想用一个大的外半径的球面域来近似整个空间问题（例如，通过调用
@@ -962,7 +931,7 @@
  * 如果盒子里的粒子有%的内部自由度会怎样？例如，如果该粒子是一个自旋
  * $1/2$
  * 粒子？在这种情况下，我们可能要开始解决一个矢量值的问题，而不是。
- * 我们在这里对deal.II库的实现使用了PETScWrappers和SLEPcWrappers，适用于在串行机器结构上运行。然而，对于更大的网格和大量的自由度，我们可能希望在并行架构上运行我们的应用程序。上述编解码器的并行实现在这里特别有用，因为广义的特征谱问题比前面大多数教程中所考虑的标准问题的解决成本更高。幸运的是，修改上述程序使其符合MPI标准是一个相对简单的过程。关于如何做到这一点，可以在 @ref
+ * 我们在这里对deal.II库的实现使用了PETScWrappers和SLEPcWrappers，适用于在串行机器结构上运行。然而，对于更大的网格和大量的自由度，我们可能希望在并行架构上运行我们的应用程序。上述编解码器的并行实现在这里特别有用，因为广义谱系问题的解决比前面大多数教程中所考虑的标准问题要昂贵一些。幸运的是，修改上述程序使其符合MPI标准是一个相对简单的过程。关于如何做到这一点，可以在 @ref
  * step_17  "  step-17  " 中找到。
  * 最后，还有一些使用SLEPc特征值求解器的替代方法。deal.II有与其中之一ARPACK（见<a
  * href="../../external-libs/arpack.html">the ARPACK configuration
@@ -1038,7 +1007,7 @@
  * @endcode
  * 请注意我们是如何使用精确分解（使用SparseDirectUMFPACK）作为ARPACK的去调节器的。 </ul>
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-36.cc"  。
+*<a name="PlainProg"></a><h1> The plain program</h1>  @include "step-36.cc"
  *
  */
 

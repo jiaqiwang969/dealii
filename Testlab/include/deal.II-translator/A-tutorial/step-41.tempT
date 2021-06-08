@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-41_0.txt
 /**
-  @page step_41 The step-41 tutorial program  
+  @page step_41 The step-41 tutorial program 
 * 本教程依赖于  step-15  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -24,7 +24,7 @@
         <li><a href="#Righthandsideboundaryvaluesandtheobstacle">Right hand side, boundary values, and the obstacle</a><a href="#Righthandsideboundaryvaluesandtheobstacle">Right hand side, boundary values, and the obstacle</a>
         <li><a href="#ImplementationofthecodeObstacleProblemcodeclass">Implementation of the <code>ObstacleProblem</code> class</a><a href="#ImplementationofthecodeObstacleProblemcodeclass">Implementation of the <code>ObstacleProblem</code> class</a>
       <ul>
-        <li><a href="#ObstacleProblemObstacleProblem">ObstacleProblem::ObstacleProblem</a> ]<a href="#ObstacleProblemObstacleProblem">ObstacleProblem::ObstacleProblem</a>
+        <li><a href="#ObstacleProblemObstacleProblem">ObstacleProblem::ObstacleProblem</a><a href="#ObstacleProblemObstacleProblem">ObstacleProblem::ObstacleProblem</a>
         <li><a href="#ObstacleProblemmake_grid">ObstacleProblem::make_grid</a><a href="#ObstacleProblemmake_grid">ObstacleProblem::make_grid</a>
         <li><a href="#ObstacleProblemsetup_system">ObstacleProblem::setup_system</a><a href="#ObstacleProblemsetup_system">ObstacleProblem::setup_system</a>
         <li><a href="#ObstacleProblemassemble_system">ObstacleProblem::assemble_system</a><a href="#ObstacleProblemassemble_system">ObstacleProblem::assemble_system</a>
@@ -44,19 +44,19 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
+*  <br> 
 * <i>This program was contributed by Jörg Frohne (University of Siegen,
 Germany) while on a long-term visit to Texas A&amp;M University.
 <br>
 This material is based upon work partly supported by ThyssenKrupp Steel Europe.
 </i>
- 
 
-* <a name="Intro"></a><a name="Introduction"></a><h3>Introduction</h3> 。
- 
 
-* 这个例子是基于2d中的拉普拉斯方程，涉及的问题是，如果一个膜被一些外力偏转，但也被一个障碍物所限制，会发生什么。换句话说，想想一个弹性膜在边界处被夹在一个矩形框架（我们选择 $\Omega =
-\left[-1,1\right]^2$ ）上，由于重力作用而下垂。如果膜下有一个障碍物，阻止它达到平衡位置，如果重力是唯一存在的力，现在会发生什么？在目前的例子程序中，我们将考虑在膜下有一个空气台阶的障碍物，重力将膜推到上面。
+*<a name="Intro"></a><a name="Introduction"></a><h3>Introduction</h3>
+
+
+* 这个例子是基于二维的拉普拉斯方程，涉及的问题是，如果一个膜受到某种外力的偏转，但同时也受到障碍物的限制，会发生什么？换句话说，想想一个弹性膜在边界处被夹在一个矩形框架上（我们选择 $\Omega =
+\left[-1,1\right]^2$ ），由于重力作用而下垂。如果膜下有一个障碍物，阻止它达到平衡位置，如果重力是唯一存在的力，现在会发生什么？在目前的例子程序中，我们将考虑在膜下有一个空气台阶的障碍物，重力将膜推到上面。
 * 这个问题通常被称为 "障碍物问题"（也见<a
 href="http://en.wikipedia.org/wiki/Obstacle_problem">this Wikipedia article</a>），它的结果是一个变量不等式，而不是一个弱化形式的变量方程。我们将在下面从经典公式中推导出它，但在我们继续讨论数学之前，让我们展示一下我们将在本教程中考虑的问题的解决方案，以获得一些我们应该期待的直觉。
 *  <table align="center" class="tutorial" cellspacing="3" cellpadding="3">
@@ -68,14 +68,14 @@ href="http://en.wikipedia.org/wiki/Obstacle_problem">this Wikipedia article</a>�
         <img src="https://www.dealii.org/images/steps/developer/step-41.active-set.png" alt="">
     </td>
   </tr>
-</table>  
+</table> 
 * 这里，在左边，我们看到膜的位移。下面的障碍物的形状是清晰可见的。在右边，我们叠加了膜的哪些部分与障碍物接触。我们以后会把这组点称为 "活动集"，以表明这里有一个不等式约束是活动的。
-* 
+*
 
 *<a name="Classicalformulation"></a><h3>Classical formulation</h3>
-* 
 
-* 该问题的经典表述具有以下形式。
+
+*该问题的经典表述拥有以下形式。
 * @f{align*}
 * 
 
@@ -92,22 +92,22 @@ href="http://en.wikipedia.org/wiki/Obstacle_problem">this Wikipedia article</a>�
 - g) &= 0 & &\quad\text{in } \Omega,\\
  u(\mathbf x) &\geq g(\mathbf x) & &\quad\text{in } \Omega
 @f}
-* 与 $u\in H^2(\Omega)$  .    $u$ 是一个标量值函数，表示膜的垂直位移。第一个方程被称为平衡条件，有一个面积密度为  $f$  的力。在这里，我们将考虑这个力是重力。第二个方程被称为胡克定律，即应力 $\sigma$ 与位移 $u$ 的梯度成正比（比例常数，通常用 $E$ 表示，在这里被设定为1，但不失为一般性的；如果它是常数，它可以被放入右手边的函数）。在边界，我们有零迪里希条件。很明显，前两个方程可以结合起来得到 $-\Delta u \ge f$ 。
-* 直观地说，重力作用是向下的，所以 $f(\mathbf x)$ 是一个负函数（在本程序中我们选择 $f=-10$ ）。那么第一个条件意味着作用在膜上的总力是重力加上一些正值：即障碍物在它们两个接触的地方对膜施加的向上的力。这个额外的力有多大？我们还不知道（我们也不知道它实际作用的 "位置"），但它必须使膜不能穿透障碍物。
+*与 $u\in H^2(\Omega)$  。    $u$ 是一个标量值函数，表示膜的垂直位移。第一个方程被称为平衡条件，有一个面积密度为  $f$  的力。在这里，我们将考虑这个力是重力。第二个方程被称为胡克定律，即应力 $\sigma$ 与位移 $u$ 的梯度成正比（比例常数，通常用 $E$ 表示，在这里被设定为1，但不失为一般性的；如果它是常数，它可以被放入右手边的函数）。在边界，我们有零迪里希条件。很明显，前两个方程可以结合起来得到 $-\Delta u \ge f$ 。
+* 直观地说，重力作用是向下的，所以 $f(\mathbf x)$ 是一个负函数（我们在这个程序中选择 $f=-10$ ）。那么第一个条件意味着作用在膜上的总力是重力加上一些正值：即障碍物在它们两个接触的地方对膜施加的向上的力。这个额外的力有多大？我们还不知道（我们也不知道它实际作用的 "位置"），但它必须使膜不能穿透障碍物。
 * 上面的第四个等式和最后一个不等式构成了障碍条件，它必须在整个领域的每一点上都成立。这两个条件中的后者意味着膜必须在任何地方都高于障碍物 $g(\mathbf x)$ 。第二个到最后一个方程，通常被称为 "互补条件"，说的是在膜不与障碍物接触的地方（即那些 $\mathbf x$ 和 $u(\mathbf x)
 * 
 - g(\mathbf x) \neq 0$ 的地方），那么 $-\Delta u=f$ 在这些地方；换句话说，在那里没有额外的力作用，正如预期的那样。另一方面，在 $u=g$ 的地方，我们可以有 $-\Delta u-f
-\neq 0$ ，也就是说，可以有额外的力（尽管不一定要有：膜有可能只是接触而不是压在障碍物上）。
-* 
+\neq 0$ ，也就是说，可以有额外的力（尽管不一定要有：膜有可能只是接触而不是压住障碍物）。
+*
 
 *<a name="Derivationofthevariationalinequality"></a><h3>Derivation of the variational inequality</h3>
- 
 
-获得障碍物问题的变异表述的一个明显方法是考虑总势能：@f{equation*}
+
+* 获得障碍问题的变异表述的一个明显方法是考虑总势能：@f{equation*}
  E(u) \dealcoloneq \dfrac{1}{2}\int\limits_{\Omega} \nabla u \cdot \nabla u
 * 
 - \int\limits_{\Omega} fu.
-@f} *我们必须找到一个解决方案<h3>Derivation of the variational inequality</h3> 。
+@f} 。
 * 我们必须找到以下最小化问题的解 $u\in G$ ：@f{equation*}
  E(u)\leq E(v)\quad \forall v\in G,
 @f} 。
@@ -119,22 +119,22 @@ href="http://en.wikipedia.org/wiki/Obstacle_problem">this Wikipedia article</a>�
 G$  。那么函数@f{equation*}
  F(\varepsilon) \dealcoloneq E(u+\varepsilon(v-u)),\quad\varepsilon\in\left[0,1\right],
 @f}的
-*在 $\varepsilon = 0$ 处取最小值（因为 $u$ 是能量函数 $E(\cdot)$ 的最小值），因此，对于任何选择的 $v$ ， $F'(0)\geq 0$ 。请注意， $u+\varepsilon(v-u) = (1-\varepsilon)u+\varepsilon v\in G$ 是因为 $G$ 的凸性。如果我们计算出 $F'(\varepsilon)\vert_{\varepsilon=0}$ ，就会得到我们要寻找的变分公式。
+*在 $\varepsilon = 0$ 处取最小值（因为 $u$ 是能量函数 $E(\cdot)$ 的最小值），因此，对于任何选择 $v$ 的情况， $F'(0)\geq 0$ 。请注意， $u+\varepsilon(v-u) = (1-\varepsilon)u+\varepsilon v\in G$ 是因为 $G$ 的凸性。如果我们计算出 $F'(\varepsilon)\vert_{\varepsilon=0}$ ，就会得到我们要寻找的变分公式。
 *<i>Find a function $u\in G$ with</i>@f{equation*}
  \left(\nabla u, \nabla(v-u)\right) \geq \left(f,v-u\right) \quad \forall v\in G.
 @f} 。
-* 
+*
 * 这就是典型的变分不等式的形式，在双线性形式中不仅有 $v$ 出现，而且还有 $v-u$ 。原因是这样的：如果 $u$ 不受约束，那么我们可以在 $G$ 中找到测试函数 $v$ ，从而使 $v-u$ 可以有任何符号。通过选择测试函数 $v_1,v_2$ 使 $v_1-u =
 * 
--(v_2-u)$ ，我们可以推断出，如果两边实际上是相等的，那么不等式只能对 $v_1$ 和 $v_2$ 都成立，也就是说，我们得到一个变异的平等。
+-(v_2-u)$ ，我们可以推断出，如果两边实际上是相等的，那么不等式只能对 $v_1$ 和 $v_2$ 都成立，也就是说，我们得到一个变异的相等。
 * 另一方面，如果 $u=g$ ，那么 $G$ 只允许检验函数 $v$ ，所以事实上 $v-u\ge 0$  。这意味着我们不能像上面那样用 $v-u$ 和 $-(v-u)$ 来测试这个方程，所以我们不能再得出两边实际上相等的结论。因此，这就模拟了我们在上面讨论互补条件的方式。
-* 
+*
 
-* 
-* <a name="Formulationasasaddlepointproblem"></a><h3>Formulation as a saddle point problem</h3> 。
-* 
 
-* 上面的变分不等式很难用得上。因此我们想把它重新表述为一个等价的鞍点问题。我们引入一个拉格朗日乘子 $\lambda$ 和拉格朗日乘子 $V$ 、 $K \dealcoloneq \{\mu\in V': \langle\mu,v\rangle\geq 0,\quad \forall
+*<a name="Formulationasasaddlepointproblem"></a><h3>Formulation as a saddle point problem</h3>
+
+
+* 上面的变分不等式是很难处理的。因此，我们希望将其重新表述为一个等价的鞍点问题。我们引入一个拉格朗日乘子 $\lambda$ 和拉格朗日乘子 $V$ 、 $K \dealcoloneq \{\mu\in V': \langle\mu,v\rangle\geq 0,\quad \forall
 v\in V, v \le 0 \}$ 的凸锥 $K\subset V'$ 、 $V'$ 对偶空间，其中 $\langle\cdot,\cdot\rangle$ 表示 $V'$ 和 $V$ 之间的对偶性。直观地说， $K$ 是所有 "非正函数 "的锥体，但 $K\subset (H_0^1)'$ 除外，因此也包含除正函数之外的其他对象。
 * <i>Find $u\in V$ and $\lambda\in K$ such that</i>
 * @f{align*}
@@ -151,14 +151,14 @@ v\in V, v \le 0 \}$ 的凸锥 $K\subset V'$ 、 $V'$ 对偶空间，其中 $\lan
  b(u,\mu) &\dealcoloneq \langle u,\mu\rangle,\quad &&u\in V,\quad\mu\in V'.
 @f}
 * 换句话说，我们可以把 $\lambda$ 看作是障碍物对膜施加的额外正向力的负数。上面陈述的第二行中的不等式似乎只有错误的符号，因为我们在 $\lambda=0$ 的地方有 $\mu-\lambda<0$ ，鉴于 $K$ 的定义。
-* 这个鞍点问题的 $(u,\lambda)\in V\times K$ 的存在性和唯一性已经在Glowinski, Lions and Tr&eacute;moli&egrave;res: Numerical Analysis of VariationalInequalities, North-Holland, 1981.
-* 
+* 这个鞍点问题的 $(u,\lambda)\in V\times K$ 的存在性和唯一性已经在Glowinski, Lions and Tr&eacute;moli&egrave;res:Numerical Analysis of VariationalInequalities, North-Holland, 1981.
+*
 
-* 
-* <a name="ActiveSetmethodstosolvethesaddlepointproblem"></a><h3>Active Set methods to solve the saddle point problem</h3> 。
-* 
 
-* 有不同的方法来解决变分不等式。作为一种可能性，你可以把鞍点问题理解为一个带有不平等约束的凸二次方程序（QP）。
+*<a name="ActiveSetmethodstosolvethesaddlepointproblem"></a><h3>Active Set methods to solve the saddle point problem</h3>
+
+
+* 有不同的方法来解决变量不等式。作为一种可能性，你可以将鞍点问题理解为一个具有不平等约束的凸二次方程序（QP）。
 * 为了达到这个目的，让我们假设我们用相同的有限元空间来离散 $u$ 和 $\lambda$ ，例如，通常的 $Q_k$ 空间。我们将得到方程@f{eqnarray*}
  &A U + B\Lambda = F,&\\
  &[BU-G]_i \geq 0, \quad \Lambda_i \leq 0,\quad \Lambda_i[BU-G]_i = 0
@@ -175,7 +175,7 @@ v\in V, v \le 0 \}$ 的凸锥 $K\subset V'$ 、 $V'$ 对偶空间，其中 $\lan
   G_{i} = \int_\Omega g_h(x) \varphi_i(\mathbf x)\ \textrm{d}x,
 @f}
 *其中 $g_h$ 是 $g$ 的一个合适的近似值。然后， $B_{ii}$ 和 $G_i$ 定义中的积分由梯形规则近似。
-* 
+*
 * 现在我们为每个自由度 $i$ 定义函数@f{equation*}
  C([BU]_i,\Lambda_i) \dealcoloneq
 * 
@@ -187,20 +187,20 @@ v\in V, v \le 0 \}$ 的凸锥 $K\subset V'$ 、 $V'$ 对偶空间，其中 $\lan
 * 经过一番挠头，人们可以说服自己，上面的不等式可以等效地改写为@f{equation*}
  C([BU]_i,\Lambda_i) = 0, \qquad \forall i\in{\cal S}.
 @f} 。
-* 我们在这里将使用的原始-双重活动集策略是一个迭代方案，它基于这个条件来预测下一个活动集和非活动集 $\mathcal{A}_k$ 和 $\mathcal{F}_k$ （即那些指数 $i$ 的互补集，对于这些指数 $U_i$ 要么等于要么不等于障碍物的值 $B^{-1}G$ ）。关于这种方法的更深入的处理，见Hintermueller, Ito, Kunisch: The primal-dual active setstrategy as a semismooth newton method, SIAM J. OPTIM., 2003, Vol. 13, No. 3,pp. 865-888.
+* 我们在这里将使用的原始-双重活动集策略是一个迭代方案，它基于这个条件来预测下一个活动集和非活动集 $\mathcal{A}_k$ 和 $\mathcal{F}_k$ （即那些指数 $i$ 的互补集，对于这些指数 $U_i$ 要么等于要么不等于障碍物的值 $B^{-1}G$ ）。关于这种方法的更深入的处理，见Hintermueller, Ito, Kunisch:The primal-dual active setstrategy as a semismooth newton method, SIAM J. OPTIM., 2003, Vol. 13, No. 3,pp.865-888.
 *<a name="Theprimaldualactivesetalgorithm"></a><h3>The primal-dual active set algorithm</h3>
-* 
+*
 
-* 原始-对偶主动集方法的算法工作如下（注： $B = B^T$ ）。
-* 1. 初始化 $\mathcal{A}_k$ 和 $\mathcal{F}_k$  ，使 $\mathcal{S}=\mathcal{A}_k\cup\mathcal{F}_k$ 和 $\mathcal{A}_k\cap\mathcal{F}_k=\emptyset$ 并设置 $k=1$  .2. 找出满足以下条件的原始-双数对 $(U^k,\Lambda^k)$ ： 1.
+* 初级-二级主动集方法的算法工作如下（注： $B = B^T$  ）。
+* 1. 初始化 $\mathcal{A}_k$ 和 $\mathcal{F}_k$  ，使 $\mathcal{S}=\mathcal{A}_k\cup\mathcal{F}_k$ 和 $\mathcal{A}_k\cap\mathcal{F}_k=\emptyset$ 并设置 $k=1$  .2.找出满足以下条件的原始-双数对 $(U^k,\Lambda^k)$ ： 1.
 
-* 
+
 * @f{align*}
   AU^k + B\Lambda^k &= F,\\
   [BU^k]_i &= G_i\quad&&\forall i\in\mathcal{A}_k,\\
   \Lambda_i^k &= 0\quad&&\forall i\in\mathcal{F}_k.
  @f}
-* 注意第二和第三个条件意味着正好 $|S|$ 的未知数是固定的，第一个条件产生了确定 $U$ 和 $\Lambda$ 所需的剩余 $|S|$ 方程 .3。用@f{equation*}
+* 注意第二和第三条件意味着恰恰是 $|S|$ 的未知数是固定的，第一个条件产生了确定 $U$ 和 $\Lambda$ 所需的其余 $|S|$ 方程 .3。用@f{equation*}
  \begin{split}
   \mathcal{A}_{k+1} \dealcoloneq \lbrace i\in\mathcal{S}:\Lambda^k_i + c([BU^k]_i
 * 
@@ -211,13 +211,13 @@ v\in V, v \le 0 \}$ 的凸锥 $K\subset V'$ 、 $V'$ 对偶空间，其中 $\lan
  \end{split}
  @f}定义新的活动和非活动集。
 * 4. 如果 $\mathcal{A}_{k+1}=\mathcal{A}_k$ （然后，显然也是 $\mathcal{F}_{k+1}=\mathcal{F}_k$ ），则停止，否则设置 $k=k+1$ 并转到步骤（2）。
-* 该方法被称为 "原始-双重"，因为它同时使用原始变量（位移 $U$ ）和双重变量（拉格朗日乘数 $\Lambda$ ）来确定下一个活动集。
+* 该方法被称为 "原始-双重"，因为它同时使用原始变量（位移 $U$ ）和双重变量（拉格朗日乘数 $\Lambda$ ）来确定下一个活动集合。
 * 在本节的最后，让我们补充两点意见。首先，对于任何满足条件的原始-对偶 $(U^k,\Lambda^k)$ ，我们可以区分以下几种情况。
 * 1.  $\Lambda^k_i + c([BU^k]_i
 * 
-- G_i) < 0$ （i active）。   <br>  然后要么是 $[BU^k]_i<G_i$ 和 $\Lambda^k_i=0$ （渗透），要么是 $\Lambda^k_i<0$ 和 $[BU^k]_i=G_i$ （压载）。  $\Lambda^k_i + c([BU^k]_i
+- G_i) < 0$ （i active）。    <br>  然后要么是 $[BU^k]_i<G_i$ 和 $\Lambda^k_i=0$ （渗透），要么是 $\Lambda^k_i<0$ 和 $[BU^k]_i=G_i$ （压载）。   $\Lambda^k_i + c([BU^k]_i
 * 
-- G_i)\geq 0$  (i不活动)。   <br>  然后是 $[BU^k]_i\geq G_i$ 和 $\Lambda^k_i=0$ （无接触）或 $\Lambda^k_i\geq0$ 和 $[BU^k]_i=G_i$ （解压负荷）。
+- G_i)\geq 0$  (i不活动)。    <br>  然后是 $[BU^k]_i\geq G_i$ 和 $\Lambda^k_i=0$ （无接触）或 $\Lambda^k_i\geq0$ 和 $[BU^k]_i=G_i$ （解压负荷）。
 * 其次，上面的方法从直觉上看是正确的，也是有用的，但有点临时性。然而，它可以通过以下方式简明地推导出来。为此，请注意，我们要解决非线性系统@f{eqnarray*}
  &A U + B\Lambda = F,&\\
  &C([BU-G]_i, \Lambda_i) = 0,
@@ -482,32 +482,32 @@ U^{k+1}
 \end{pmatrix},
 @f} 。
 * 然后让AffineConstraints类消除所有受限的自由度，即 $U^k_{\mathcal{A}_k}=B^{-1}_{\mathcal{A}_k}G_{\mathcal{A}_k}$ ，其方式与 $\mathcal{A}_k$ 中的自由度是Dirichlet数据一样。结果线性系统（上面倒数第二条）是对称的和正无限的，我们用CG方法和Trilinos的AMG预处理程序来解决它。
-* 
+*
 
 *<a name="Implementation"></a><h3>Implementation</h3>
-* 
 
-* 本教程与  step-4  非常相似。程序的总体结构遵循 step-4 ，但有细微差别。
-* 
-* - 我们需要两个新的方法，  <code>assemble_mass_matrix_diagonal</code>  和  <code>update_solution_and_constraints</code>  。
-* 
+
+* 本教程与 step-4 十分相似。程序的总体结构遵循 step-4 ，但有细微差别。
+*
+* - 我们需要两个新方法，  <code>assemble_mass_matrix_diagonal</code>  和  <code>update_solution_and_constraints</code>  。
+*
 * - 我们需要新的成员变量来表示我们这里的约束。
-* 
+*
 * - 我们改变求解器的预处理程序。
-* 
+*
 
 * 如果你想了解当前的程序，你可能想阅读一下 step-4 。
-* 
+*
 
 * <a name="CommProg"></a> <h1> The commented program</h1>。
-* <a name="Includefiles"></a> <h3>Include files</h3>。
-* 
+* <a name="Includefiles"></a><h3>Include files</h3> 。
 
-* 
+
+*
 * 像往常一样，在开始的时候，我们把所有我们需要的头文件都包含在这里。除了为Trilinos库提供接口的各种文件外，没有什么意外。
-* 
+*
 
-* 
+
 * @code
  #include <deal.II/base/quadrature_lib.h>
  #include <deal.II/base/function.h>
@@ -543,15 +543,15 @@ U^{k+1}
    using namespace dealii;
 * 
  @endcode
-* 
-* <a name="ThecodeObstacleProblemcodeclasstemplate"></a> <h3>The <code>ObstacleProblem</code> class template</h3> 。
- 
+*
+* <a name="ThecodeObstacleProblemcodeclasstemplate"></a> <h3>The <code>ObstacleProblem</code> class template</h3>。
 
-* 
-* 这个类提供了描述障碍物问题所需的所有函数和变量。它与我们在 step-4 中要做的事情很接近，所以相对简单。唯一真正的新组件是计算主动集合的update_solution_and_constraints函数和一些描述线性系统原始（无约束）形式所需的变量（ <code>complete_system_matrix</code> 和 <code>complete_system_rhs</code> ），以及主动集合本身和主动集合公式中用于缩放拉格朗日乘法器的质量矩阵 $B$ 的对角线。其余的与 step-4 中一样。
-* 
 
-* 
+*
+* 这个类提供了描述障碍物问题所需的所有函数和变量。它与我们在 step-4 中要做的很接近，所以相对简单。唯一真正的新组件是计算主动集合的update_solution_and_constraints函数和一些描述线性系统原始（无约束）形式所需的变量（  <code>complete_system_matrix</code>  和  <code>complete_system_rhs</code>  ），以及主动集合本身和主动集合公式中用于缩放拉格朗日乘数的质量矩阵的对角线  $B$  。其余的与 step-4 中一样。
+*
+
+
 * @code
    template <int dim>
    class ObstacleProblem
@@ -588,15 +588,15 @@ U^{k+1}
 * 
  
  @endcode
-* 
+*
 * <a name="Righthandsideboundaryvaluesandtheobstacle"></a> <h3>Right hand side, boundary values, and the obstacle</h3>。
- 
 
-* 
+
+*
 * 在下文中，我们定义了描述右侧函数、Dirichlet边界值以及作为 $\mathbf x$ 函数的障碍物高度的类。在这三种情况下，我们都从函数 @<dim@>, 派生出这些类，尽管在 <code>RightHandSide</code> 和 <code>Obstacle</code> 的情况下，这更多的是出于惯例而不是必要，因为我们从未将这类对象传递给库。在任何情况下，鉴于我们选择了  $f=-10$  ,  $u|_{\partial\Omega}=0$  ，右手和边界值类的定义是明显的。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class RightHandSide : public Function<dim>
@@ -633,11 +633,11 @@ U^{k+1}
  
 * 
  @endcode
-* 
-* 我们用一个级联的障碍物来描述障碍函数（想想：楼梯的阶梯）。
-* 
+*
+* 我们用一个级联的障碍物（想想看：楼梯的阶梯）来描述障碍物的功能。
+*
 
-* 
+
 * @code
    template <int dim>
    class Obstacle : public Function<dim>
@@ -675,21 +675,21 @@ U^{k+1}
  
 * 
  @endcode
- 
-* <a name="ImplementationofthecodeObstacleProblemcodeclass"></a> <h3>Implementation of the <code>ObstacleProblem</code> class</h3>.
- 
+*
+* <a name="ImplementationofthecodeObstacleProblemcodeclass"></a> <h3>Implementation of the <code>ObstacleProblem</code> class</h3>。
 
-* 
-*  
-  
+
+
+
+
 * <a name="ObstacleProblemObstacleProblem"></a> <h4>ObstacleProblem::ObstacleProblem</h4>。
- 
 
-* 
-* 对每个看过前几个教程程序的人来说，构造函数是完全显而易见的。
-* 
 
-* 
+*
+* 对于每个看过前几个教程程序的人来说，构造函数是完全显而易见的。
+*
+
+
 * @code
    template <int dim>
    ObstacleProblem<dim>::ObstacleProblem()
@@ -699,15 +699,15 @@ U^{k+1}
 * 
  
  @endcode
-* 
-* <a name="ObstacleProblemmake_grid"></a> <h4>ObstacleProblem::make_grid</h4>.
- 
+*
+* <a name="ObstacleProblemmake_grid"></a> <h4>ObstacleProblem::make_grid</h4>。
 
-* 
+
+*
 * 我们在二维的正方形 $[-1,1]\times [-1,1]$ 上解决我们的障碍物问题。因此这个函数只是设置了一个最简单的网格。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::make_grid()
@@ -725,15 +725,15 @@ U^{k+1}
 * 
  
  @endcode
-* 
-* <a name="ObstacleProblemsetup_system"></a> <h4>ObstacleProblem::setup_system</h4>.
- 
+*
+* <a name="ObstacleProblemsetup_system"></a> <h4>ObstacleProblem::setup_system</h4>。
 
-* 
+
+*
 * 在这个值得注意的第一个函数中，我们设置了自由度处理程序，调整了向量和矩阵的大小，并处理了约束。最初，约束条件当然只是由边界值给出的，所以我们在函数的顶部对它们进行插值。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::setup_system()
@@ -764,11 +764,11 @@ U^{k+1}
      contact_force.reinit(solution_index_set, MPI_COMM_WORLD);
 * 
  @endcode
-* 
+*
 * 这里唯一要做的事情是计算 $B$ 矩阵中的因子，该矩阵用于缩放残差。正如在介绍中所讨论的，我们将使用一个小技巧来使这个质量矩阵成为对角线，在下文中，然后首先将所有这些计算成一个矩阵，然后提取对角线元素供以后使用。
-* 
+*
 
-* 
+
 * @code
      TrilinosWrappers::SparseMatrix mass_matrix;
      mass_matrix.reinit(dsp);
@@ -780,15 +780,15 @@ U^{k+1}
 * 
  
  @endcode
-* 
-* <a name="ObstacleProblemassemble_system"></a> <h4>ObstacleProblem::assemble_system</h4>
- 
+*
+* <a name="ObstacleProblemassemble_system"></a> <h4>ObstacleProblem::assemble_system</h4>。
 
-* 
-* 这个函数一次就把系统矩阵和右手边集合起来，并把约束条件（由于活动集以及来自边界值）应用于我们的系统。否则，它在功能上等同于例如  step-4  中的相应函数。
-* 
 
-* 
+*
+* 这个函数一下子就把系统矩阵和右手边集合起来，并把约束条件（既由于活动集，也由于边界值）应用到我们的系统中。否则，它在功能上等同于例如 step-4 中的相应函数。
+*
+
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::assemble_system()
@@ -848,17 +848,17 @@ U^{k+1}
  
 * 
  @endcode
-* 
+*
 * <a name="ObstacleProblemassemble_mass_matrix_diagonal"></a> <h4>ObstacleProblem::assemble_mass_matrix_diagonal</h4>。
- 
 
-* 
-* 下一个函数用于计算对角线质量矩阵 $B$ ，用于在主动集方法中缩放变量。正如介绍中所讨论的，我们通过选择正交的梯形规则来获得质量矩阵的对角线。这样一来，我们就不再需要在正交点、指数 $i$ 和指数 $j$ 上进行三层循环，而是可以直接使用双层循环。鉴于我们在以前的许多教程程序中讨论过的内容，该函数的其余部分是显而易见的。  
-* 请注意，在调用这个函数时，约束对象只包含边界值约束；因此我们在最后的复制-本地-全局步骤中不必注意保留矩阵项的值，这些项以后可能被活动集约束。  
+
+*
+* 下一个函数用于计算对角线质量矩阵 $B$ ，用于在主动集方法中缩放变量。正如介绍中所讨论的，我们通过选择正交的梯形规则来获得质量矩阵的对角线。这样一来，我们就不再需要在正交点、指数 $i$ 和指数 $j$ 上进行三层循环，而是可以直接使用双层循环。考虑到我们在以前的许多教程程序中讨论过的内容，该函数的其余部分是显而易见的。   
+* 请注意，在调用这个函数时，约束对象只包含边界值约束；因此我们在最后的复制-本地-全局步骤中不必注意保留矩阵项的值，这些项以后可能会受到活动集的约束。   
 * 还需要注意的是，只有在我们拥有 $Q_1$ 元素的情况下，使用梯形规则的技巧才有效。对于更高阶的元素，我们需要使用一个正交公式，在有限元的所有支持点都有正交点。构建这样一个正交公式其实并不难，但不是这里的重点，所以我们只是在函数的顶部断言我们对有限元的隐含假设实际上得到了满足。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::assemble_mass_matrix_diagonal(
@@ -898,21 +898,21 @@ U^{k+1}
 * 
  
  @endcode
-* 
-* <a name="ObstacleProblemupdate_solution_and_constraints"></a> <h4>ObstacleProblem::update_solution_and_constraints</h4>
- 
+*
+* <a name="ObstacleProblemupdate_solution_and_constraints"></a> <h4>ObstacleProblem::update_solution_and_constraints</h4>。
 
-* 
-* 在某种意义上，这是本程序的核心功能。 它更新了引言中讨论的活动的受限自由度集，并从中计算出一个AffineConstraints对象，然后可以用来消除下一次迭代的解中的受限自由度。同时，我们将解决方案的受限自由度设置为正确的值，即障碍物的高度。  
+
+
+* 在某种意义上，这是本程序的核心功能。  它更新了引言中所讨论的活动的受限自由度集，并从中计算出一个AffineConstraints对象，然后可以用来消除下一次迭代的解中的受限自由度。同时，我们将解决方案的受限自由度设置为正确的值，即障碍物的高度。   
 * 从根本上说，这个函数是相当简单的。我们必须在所有自由度上循环，并检查函数 $\Lambda^k_i +
  c([BU^k]_i
 * 
 - G_i) = \Lambda^k_i + cB_i(U^k_i
 * 
 - [g_h]_i)$ 的符号，因为在我们的例子中 $G_i = B_i[g_h]_i$  。为此，我们使用介绍中给出的公式，通过该公式我们可以计算出拉格朗日乘数，作为原始线性系统的残差（通过变量 <code>complete_system_matrix</code> and <code>complete_system_rhs</code> 给出。在这个函数的顶部，我们使用一个属于矩阵类的函数来计算这个残差。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::update_solution_and_constraints()
@@ -926,13 +926,13 @@ U^{k+1}
      complete_system_matrix.residual(lambda, solution, complete_system_rhs);
 * 
  @endcode
-* 
-* 计算 contact_force[i] =
-* 
+*
+*计算 contact_force[i] =
+*
 * - lambda[i] diagonal_of_mass_matrix[i]。
-* 
+*
 
-* 
+
 * @code
      contact_force = lambda;
      contact_force.scale(diagonal_of_mass_matrix);
@@ -941,13 +941,13 @@ U^{k+1}
 -1;
 * 
  @endcode
- 
-* 下一步是重置活动集和约束对象，并在所有自由度上开始循环。由于我们不能只是在求解向量的所有元素上进行循环，所以这变得稍微复杂了一些，因为我们没有办法找出一个DoF与哪个位置相关联；然而，我们需要这个位置来测试一个DoF的位移是大于还是小于这个位置的障碍物的高度。    
-* 我们通过对所有单元和定义在每个单元上的DoF进行循环来解决这个问题。我们在这里使用位移是用 $Q_1$ 函数来描述的，对于该函数来说，自由度总是位于单元格的顶点上；因此，我们可以通过询问顶点来获得每个自由度的索引及其位置的信息。另一方面，这显然对高阶元素不起作用，因此我们增加了一个断言，确保我们只处理所有自由度都位于顶点的元素，以避免在有人想玩增加解的多项式程度时用非功能性代码绊倒自己。    
-* 循环处理单元格而不是自由度的代价是，我们可能会多次遇到一些自由度，即每次我们访问与给定顶点相邻的一个单元格时。因此，我们必须跟踪我们已经接触过的顶点和尚未接触的顶点。我们通过使用一个标志数组来做到这一点  <code>dof_touched</code>  。
-* 
+*
+* 下一步是重置活动集和约束对象，并开始在所有自由度上进行循环。由于我们不能只是在求解向量的所有元素上循环，这使事情变得稍微复杂，因为我们没有办法找出一个自由度与哪个位置相关；但是，我们需要这个位置来测试一个自由度的位移是大于还是小于这个位置的障碍物高度。     
+* 我们通过对所有单元和定义在每个单元上的DoF进行循环来解决这个问题。我们在这里使用位移是用 $Q_1$ 函数来描述的，对于该函数来说，自由度总是位于单元格的顶点上；因此，我们可以通过询问顶点来获得每个自由度的索引及其位置的信息。另一方面，这显然对高阶元素不起作用，因此我们添加了一个断言，确保我们只处理所有自由度都位于顶点的元素，以避免在有人想玩增加解的多项式程度时用非功能性代码绊倒自己。     
+* 循环处理单元格而不是自由度的代价是，我们可能不止一次地遇到一些自由度，即每次我们访问与某个顶点相邻的一个单元格时。因此，我们必须跟踪我们已经接触过的顶点和尚未接触的顶点。我们通过使用一个标志数组来做到这一点  <code>dof_touched</code>  。
+*
 
-* 
+
 * @code
      constraints.clear();
      active_set.clear();
@@ -969,12 +969,12 @@ U^{k+1}
              continue;
 * 
  @endcode
-* 
-* 现在我们知道我们还没有触及这个DoF，让我们得到那里的位移函数的值以及障碍函数的值，并以此来决定当前DoF是否属于活动集。为此，我们使用上面和介绍中给出的函数。          
-* 如果我们决定该DoF应该是活动集的一部分，我们将其索引添加到活动集中，在AffineConstraints对象中引入一个不均匀的平等约束，并将解的值重置为障碍物的高度。最后，系统的非接触部分的残差作为一个额外的控制（残差等于剩余的、未计算的力，在接触区之外应该为零），所以我们把残差向量的分量（即拉格朗日乘数lambda）清零，这些分量对应于身体接触的区域；在所有单元的循环结束时，残差将因此只包括非接触区的残差。我们在循环结束后输出这个残差的规范和活动集的大小。
-* 
+*
+* 现在我们知道我们还没有触及这个DoF，让我们得到那里的位移函数的值以及障碍函数的值，用它来决定当前DoF是否属于活动集。为此，我们使用上面和介绍中给出的函数。           
+* 如果我们决定该DoF应该是活动集的一部分，我们将其索引添加到活动集中，在AffineConstraints对象中引入一个不均匀的平等约束，并将解的值重置为障碍物的高度。最后，系统的非接触部分的残差作为一个额外的控制（残差等于剩余的、未计算的力，在接触区之外应该为零），所以我们将残差向量的分量（即拉格朗日乘数lambda）清零，这些分量对应于身体接触的区域；在所有单元的循环结束时，残差将因此只包括非接触区的残差。我们在循环结束后输出这个残差的规范和活动集的大小。
+*
 
-* 
+
 * @code
            const double obstacle_value = obstacle.value(cell->vertex(v));
            const double solution_value = solution(dof_index);
@@ -1002,11 +1002,11 @@ U^{k+1}
                << lambda.l2_norm() << std::endl;
 * 
  @endcode
- 
-* 在最后一步，我们将到目前为止从活动集中得到的关于DoF的约束集添加到那些由Dirichlet边界值产生的约束中，并关闭约束对象。
-* 
+*
+* 在最后一步中，我们将迄今为止从活动集中得到的关于DoF的约束集加入那些由Dirichlet边界值产生的约束，并关闭约束对象。
+*
 
-* 
+
 * @code
      VectorTools::interpolate_boundary_values(dof_handler,
                                               0,
@@ -1016,15 +1016,15 @@ U^{k+1}
    }
 * 
  @endcode
-* 
-* <a name="ObstacleProblemsolve"></a> <h4>ObstacleProblem::solve</h4>
- 
+*
+* <a name="ObstacleProblemsolve"></a> <h4>ObstacleProblem::solve</h4>。
 
-* 
-* 关于求解函数，其实没有什么可说的。在牛顿方法的背景下，我们通常对非常高的精度不感兴趣（为什么要求一个高度精确的线性问题的解，而我们知道它只能给我们一个非线性问题的近似解），因此我们使用ReductionControl类，当达到一个绝对公差（为此我们选择 $10^{-12}$ ）或当残差减少某个系数（这里是 $10^{-3}$ ）时，就停止迭代。
-* 
 
-* 
+*
+* 关于求解函数，其实没有什么可说的。在牛顿方法的背景下，我们通常对非常高的精度不感兴趣（为什么要求一个高度精确的线性问题的解，而我们知道它只能给我们一个非线性问题的近似解），因此我们使用ReductionControl类，当达到一个绝对公差（为此我们选择 $10^{-12}$ ）或当残差减少一定的系数（这里是 $10^{-3}$ ）时停止迭代。
+*
+
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::solve()
@@ -1049,15 +1049,15 @@ U^{k+1}
 * 
  
  @endcode
-* 
-* <a name="ObstacleProblemoutput_results"></a> <h4>ObstacleProblem::output_results</h4> * <a name="ObstacleProblemoutput_results"></a> <h4>ObstacleProblem::output_results</h4>。
- 
+*
+* <a name="ObstacleProblemoutput_results"></a> <h4>ObstacleProblem::output_results</h4>。
 
-* 
-* 我们使用vtk-format进行输出。 该文件包含位移和活动集的数字表示。
-* 
 
-* 
+*
+* 我们使用vtk-format进行输出。  该文件包含位移和活动集的数字表示。
+*
+
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::output_results(const unsigned int iteration) const
@@ -1086,16 +1086,16 @@ U^{k+1}
  
 * 
  @endcode
- 
+*
 * <a name="ObstacleProblemrun"></a> <h4>ObstacleProblem::run</h4>。
- 
 
-* 
-* 这是一个对所有事情都有顶层控制的函数。 它并不长，而且事实上相当直接：在主动集方法的每一次迭代中，我们都要组装线性系统，求解它，更新主动集并将解投射回可行集，然后输出结果。只要主动集在前一次迭代中没有变化，迭代就会终止。  
+
+*
+* 这是一个对所有事情都有顶层控制的函数。  它并不长，而且事实上相当直接：在主动集方法的每一次迭代中，我们都要组装线性系统，求解它，更新主动集并将解投射回可行集，然后输出结果。只要主动集在前一次迭代中没有变化，迭代就会终止。   
 * 唯一比较棘手的部分是，我们必须在第一次迭代中组装好线性系统（即矩阵和右手边）后保存它。原因是这是唯一的步骤，我们可以在没有任何接触约束的情况下访问建立的线性系统。我们需要这个来计算其他迭代中解决方案的残差，但是在其他迭代中，我们形成的线性系统中对应于约束自由度的行和列被消除了，因此我们不能再访问原始方程的全部残差。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ObstacleProblem<dim>::run()
@@ -1132,15 +1132,15 @@ U^{k+1}
 * 
  
  @endcode
-* 
-* <a name="Thecodemaincodefunction"></a> <h3>The <code>main</code> function</h3>
- 
+*
+* <a name="Thecodemaincodefunction"></a> <h3>The <code>main</code> function</h3>。
 
-* 
+
+*
 * 而这是主函数。它遵循所有其他主函数的模式。调用初始化MPI是因为我们在这个程序中建立线性求解器的Trilinos库需要它。
-* 
+*
 
-* 
+
 * @code
  int main(int argc, charargv[])
  {
@@ -1153,11 +1153,11 @@ U^{k+1}
          argc, argv, numbers::invalid_unsigned_int);
 * 
  @endcode
-* 
-* 这个程序只能以串行方式运行。否则，抛出一个异常。
-* 
+*
+* 这个程序只能在串行中运行。否则，抛出一个异常。
+*
 
-* 
+
 * @code
        AssertThrow(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 1,
                    ExcMessage(
@@ -1197,7 +1197,7 @@ U^{k+1}
  }
  @endcode
 * <a name="Results"></a><h1>Results</h1> 。
-* 
+
 
 * 运行该程序会产生这样的输出。
 * @code
@@ -1251,9 +1251,9 @@ Newton iteration 18
    Residual of the non-contact part of the system: 2.8033e-07
    Writing graphical output...
 @endcode
-* 
+*
 * 一旦活动集不再变化，迭代就结束了（此时它有5,399个受限自由度）。代数条件显然工作得很好，因为我们只需要4-6次CG迭代来解决线性系统（尽管这也与我们对线性求解器的精度要求不高有很大关系）。
-* 更具启发性的是看一连串的图形输出文件（每三步显示一次，最左边一栏是迭代的数字）。
+* 更具启发性的是看一连串的图形输出文件（每三步显示一次，最左边一栏是迭代数）。
 *  <table align="center">
   <tr>
     <td valign="top">
@@ -1353,7 +1353,7 @@ Newton iteration 18
       <img src="https://www.dealii.org/images/steps/developer/step-41.displacement.3d.18.png" alt="">
     </td>
   </tr>
-</table>  
+</table> 
 * 这些图片显示，在第一步中，解决方案（在没有任何约束条件的情况下计算出来的）是如此的弯曲，以至于几乎每一个内部点都必须被弹回第一步的函数，产生了一个不连续的解决方案。在活动集迭代的过程中，这种不切实际的膜的形状被磨平了，与最下层阶梯的接触消失了，解决方案也稳定下来。
 * 除此以外，该程序还输出了拉格朗日乘数的值。请记住，这些是接触力，所以在接触集上应该是正的，而在接触集外是零。另一方面，如果一个拉格朗日乘数在行动集上是负的，那么这个自由度必须从行动集上删除。下面的图片显示了迭代1、9和18中的乘数，我们用红色和棕色表示正值，蓝色表示负值。
 *  <table align="center">
@@ -1379,19 +1379,19 @@ Newton iteration 18
       Iteration 18
     </td>
   </tr>
-</table>  
+</table> 
 * 很容易看到，正值在接触集的内部很好地收敛为适度的值，在台阶的边缘有很大的上升力，正如人们所期望的那样（以支持那里的膜的大曲率）；在活动集的边缘，乘数最初是负的，导致该集缩小，直到在迭代18，没有更多的负乘数，算法已经收敛了。
-* 
+*
 
-* 
+
 * <a name="extensions"></a><a name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3> 。
-* 
 
-* 与本教程中的任何程序一样，有许多明显的扩展和实验的可能性。第一个很清楚：引入适应性。接触问题是自适应网格的主要候选者，因为解决方案有一些线条，沿着这些线条它是不太规则的（在膜和障碍物之间建立接触的地方），而其他区域的解决方案是非常光滑的（或者，在目前的情况下，在与障碍物接触的地方是恒定的）。在目前的程序中加入这一点应该不会造成太大的困难，但要找到一个好的误差估计器来实现这一目的并不容易。
+
+* 与本教程的任何程序一样，有许多明显的扩展和实验的可能性。第一个可能性很明显：引入适应性。接触问题是自适应网格的主要候选者，因为解决方案有一些线条，沿着这些线条是不太规则的（在膜和障碍物之间建立接触的地方），而其他区域的解决方案是非常平滑的（或者，在目前的情况下，在与障碍物接触的地方是恒定的）。在目前的程序中加入这一点应该不会造成太大的困难，但要找到一个好的误差估计器来实现这一目的并不容易。
 * 一个更具挑战性的任务是扩展到三维。这里的问题不是简单地让所有的东西都在三维中运行。相反，当一个三维体变形并与一个障碍物接触时，障碍物并不像这里的情况那样在域内起约束体的作用。相反，接触力只作用于物体的边界。那么不等式就不在微分方程中，而实际上是在（诺伊曼型）边界条件中，尽管这导致了一种类似的变分质量。在数学上，这意味着拉格朗日乘数只存在于表面，当然，如果方便的话，它也可以通过零点扩展到域。在目前的程序中，我们不需要明确地形成和存储这个拉格朗日乘数。
 * 在三维情况下，另一个有趣的问题是考虑有摩擦的接触问题。在几乎每个机械过程中，摩擦都有很大的影响。对于建模，我们必须考虑到接触面的切向应力。我们还必须注意到，摩擦给我们的问题增加了另一个非线性。
 * 另一个不简单的修改是实现一个更复杂的构成法，如非线性弹性或弹塑性材料行为。这里的困难是处理通过非线性构成法产生的额外非线性。
-* 
+*
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-41.cc"  。
 * */

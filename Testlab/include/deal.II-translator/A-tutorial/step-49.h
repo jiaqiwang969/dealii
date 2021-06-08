@@ -48,7 +48,7 @@
  * <li><a href="#Generatingoutputforagivenmesh">Generating output for a given
  * mesh</a><a href="#Generatingoutputforagivenmesh">Generating output for a
  * given mesh</a>
- * <li><a href="#Mainroutines">Main routines</a> ]<a href="#Mainroutines">Main
+ * <li><a href="#Mainroutines">Main routines</a><a href="#Mainroutines">Main
  * routines</a>
  * <ul>
  * <li><a href="#grid_1Loadingameshgeneratedbygmsh">grid_1: Loading a mesh
@@ -111,25 +111,23 @@
  * 文件。没有做其他的计算或适应性修正；我们的想法是，你可以把这里使用的技术作为其他更复杂的模拟器的构建模块。请注意，这个示例程序并没有展示本介绍中所讨论的所有生成网格的方法。
  *
  *  <a name="Generalconcernsaboutmeshes"></a><h3>General concerns about
- * meshes</h3> 。
- *
+ * meshes</h3>
  * 当你使用自适应网格细化时，你肯定希望初始网格尽可能地粗大。原因是只要你有内存和CPU时间，你就可以用自适应细化技术把它做得很细。然而，这就要求你不要把网格单元浪费在域的某些地方，因为这些单元是没有价值的。因此，你不希望从一个太细的网格开始，因为这已经占用了你的单元预算的很大一部分，而且你无法粗化初始网格中的单元。
  * 也就是说，你的网格需要充分地捕捉给定的几何体。
  *
- *  <a name="Howtocreatemeshes"></a><h3>How to create meshes</h3> 。
- *
- * 有几种方法来创建初始网格。网格可以通过多种方式进行修改或组合，这一点将在后面讨论。
- * <a name="UsingGridGenerator"></a><h4>Using GridGenerator</h4>.
+ *  <a name="Howtocreatemeshes"></a><h3>How to create meshes</h3>
+ * 有几种方法可以创建一个初始网格。网格可以通过多种方式进行修改或组合，这一点将在后面讨论。
+ * <a name="UsingGridGenerator"></a><h4>Using GridGenerator</h4>
  *
  * 生成网格最简单的方法是使用namespaceGridGenerator中的函数，在
- * step-1  中已经讨论过。 有许多不同的辅助函数可用，包括
- * GridGenerator::hyper_cube(),   GridGenerator::hyper_shell(),
- * GridGenerator::hyper_ball(),  和
+ * step-1  中已经讨论过。
+ * 有许多不同的辅助函数可用，包括  GridGenerator::hyper_cube(),
+ * GridGenerator::hyper_shell(),   GridGenerator::hyper_ball(),  和
  * GridGenerator::hyper_cube_with_cylindrical_hole().  。
  *
  *  <a name="Constructingyourownmeshprogrammatically"></a><h4>Constructing
  * your own mesh programmatically</h4> 。
- * 如果GridGenerator命名空间中没有适合你想要做的事情，你总是可以在你的程序中
+ * 如果GridGenerator命名空间中没有适合你要做的事情，你总是可以在你的程序中
  * "手工
  * "创建一个三角测量。为此，你需要一个带有坐标的顶点列表和一个引用这些顶点的单元格列表。你可以在
  * step-14
@@ -137,11 +135,10 @@
  * 我们很乐意接受更多的函数被添加到GridGenerator中。所以，如果你最终写了一个对更多人有用的函数，请贡献出来。
  *
  *  <a name="Importingfromexternalprograms"></a><h4>Importing from external
- * programs</h4> 。
- *
+ * programs</h4>
  * GridIn类可以从磁盘的文件中读取许多不同的网格格式。如何做到这一点，在
  * step-5 中有解释，在这个例子中可以看到函数
- * <code>grid_1</code> ，请看下面的代码。
+ * <code>grid_1</code> ，见下面的代码。
  * 网格可以由不同的工具生成，如<a href="http://gmsh.info"
  * target="_top">gmsh</a>、<a href="https://lagrit.lanl.gov/"
  * target="_top">lagrit</a>和<a href="http://cubit.sandia.gov/"
@@ -152,7 +149,7 @@
  * 在%Gmsh中，网格的基本描述是基于文本的 <code>.geo</code>
  * 文件，其格式可以包含计算、循环、变量等。这种格式相当灵活，允许描述复杂的几何形状。网格是由表面表示法生成的，表面表示法是由线环列表建立的，线环列表是由线组成的，而线又是由点组成的。
  * <code>.geo</code>
- * 脚本可以手工编写和编辑，也可以通过在%Gmsh中以图形方式创建对象自动生成。在许多情况下，最好把这两种方法结合起来。如果你想用手写的话，可以在
+ * 脚本可以手工编写和编辑，也可以通过在%Gmsh中以图形方式创建对象自动生成。在许多情况下，最好是把这两种方法结合起来。如果你想用手写的话，可以在
  * "Geometry "标签下按 "reload
  * "键轻松加载该文件，并在gmsh的图形用户界面上看到效果。
  * 本教程包含一个 <code>.geo</code>
@@ -176,7 +173,7 @@
  * @endcode
  *
  * 在命令行中，或者在加载文件后点击%Gmsh中的 "Mesh "和
- * "2D"。 现在这是从 <code>.msh</code>
+ * "2D"。  现在这是从 <code>.msh</code>
  * 文件中读取的网格，并由deal.II再次保存为图像（见当前程序的
  * <code>grid_1</code> 功能）。 <img
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-1.png"
@@ -186,20 +183,18 @@
  * "文件可能是最简单的方法），而是想对几何体进行参数化研究，为此需要为某些参数不同的几何体生成许多网格。另一种情况是，如果已经有一个CAD几何体，只需要一个网格；事实上，这可以在deal.II中使用
  * Gmsh::create_triangulation_from_boundary_curve() 函数来完成。
  *
- *  <a name="ModifyingaMesh"></a><h3>Modifying a Mesh</h3> 。
+ *  <a name="ModifyingaMesh"></a><h3>Modifying a Mesh</h3>
+ * 在以上述方式获得一个（或几个）网格后，在将其用于有限元计算之前，有许多方法可以对其进行操作。
  *
- * 在以上述方式获得一个(或几个)网格后，有许多方法可以在有限元计算中使用它们之前对它们进行操作。
- *
- *  <a name="Transformations"></a><h4>Transformations</h4> 。
- *
- * GridTools命名空间包含了一系列的小函数，用于以不同的方式转换给定的网格。函数
- * GridTools::shift,  GridTools::rotate,  GridTools::scale
- * 的用法相当明显，所以我们不在此讨论这些函数。 函数
+ *  <a name="Transformations"></a><h4>Transformations</h4>
+ * GridTools命名空间包含了一系列的小函数，用于以各种方式转换给定的网格。函数
+ * GridTools::shift,   GridTools::rotate,   GridTools::scale
+ * 的用法相当明显，所以我们在此不讨论这些函数。 函数
  * GridTools::transform
- * 允许你用一个平滑函数来变换给定网格的顶点。在 step-38
+ * 允许你使用平滑函数来变换给定网格的顶点。在 step-38
  * 的结果部分也给出了一个使用的例子，但让我们在这里展示一个更简单的例子：在当前程序的函数
  * <code>grid_5()</code>
- * 中，我们用正弦曲线扰动一个网格的Y坐标。 <table
+ * 中，我们用正弦曲线扰动一个网格的y坐标。 <table
  * width="60%" align="center"> <tr> <td align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-5a.png"
  * alt=""> regular input mesh </td> <td align="center"> <img
@@ -214,7 +209,7 @@
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-6.png"
  * alt=""> wall-adapted output mesh </td> </tr> </table> 最后，函数
  * GridTools::distort_random
- * 允许你将网格中的顶点（可选择忽略边界节点）以随机的数量移动。这在
+ * 允许你将网格中的顶点（可选择忽略边界节点）随机移动。这在
  * <code>grid_7()</code> 中进行了演示，其结果如下。 <table
  * width="60%" align="center"> <tr> <td align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-7a.png"
@@ -226,11 +221,10 @@
  * 例如，如果进入一个顶点的边对这个顶点是对称的，并且如果对一个单元的所有顶点都是这样的话
  *
  * 解往往比通常的误差分析所预期的更高阶收敛。最后，这是一个事实，即如果对误差进行泰勒扩展，对称性导致了这样一个事实，即预期的扩展的下一个项恰好是零，而误差的阶数是由第二项决定的。
- * 第二项下*项。一个扭曲的网格没有这些对称性，因此误差反映了在任何*种网格上解方程时都会看到的情况，而不是显示只反映特定情况的东西)。
+ * 第二项下*项。一个扭曲的网格没有这些对称性，因此，误差反映了在任何*种网格上解方程时都会看到的情况，而不是显示只反映特定情况的东西)。
  *
- *  <a name="MergingMeshes"></a><h4>Merging Meshes</h4> 。
- *
- *  函数 GridGenerator::merge_triangulations()
+ *  <a name="MergingMeshes"></a><h4>Merging Meshes</h4>   该函数
+ * GridGenerator::merge_triangulations()
  * 允许你将两个给定的三角形对象合并成一个。
  * 要做到这一点，共享边或面的顶点必须完全匹配。
  * 排列两个网格可以用  GridTools::shift  和  GridTools::scale.
@@ -240,7 +234,7 @@
  * 生成）和一个三角形（用
  * GridGenerator::subdivided_hyper_rectangle()).  生成）。函数
  * GridGenerator::subdivided_hyper_rectangle()
- * 允许你指定重复的数量和角的位置，所以这里不需要手动转移三角网格。你应该以图形方式检查网格，以确保单元格排布正确，并且在三角剖分中没有未配对的节点存在。
+ * 允许你指定重复的数量和角的位置，所以这里不需要手动移动三角网格。你应该以图形方式检查网格，以确保单元格排布正确，并且在三角剖分中没有未配对的节点存在。
  * 这些是输入的网格和输出的网格。 <table width="80%"
  * align="center"> <tr> <td align="center"><img
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-2a.png"
@@ -250,9 +244,8 @@
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-2.png"
  * alt="" height="200px">merged mesh</td> </tr> </table>
  *
- *  <a name="MovingVertices"></a><h4>Moving Vertices</h4> 。
- *
- *  函数  <code>grid_3()</code>
+ *  <a name="MovingVertices"></a><h4>Moving Vertices</h4>   函数
+ * <code>grid_3()</code>
  * 展示了在现有网格中挑选单个顶点并移动它们的能力。请注意，这有可能产生退化或倒置的单元，你不应该指望使用这样的网格会产生任何有用的东西。这里，我们通过向上移动顶部顶点来创建一个不完全居中的圆柱形孔的盒子。
  * <table width="60%" align="center"> <tr> <td align="center"> <img
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-3a.png"
@@ -261,12 +254,11 @@
  * alt="" height="200px"> top vertices moved upwards </td> </tr> </table>
  * 关于如何做到这一点的确切方法，见下面的代码。
  *
- *  <a name="ExtrudingMeshes"></a><h4>Extruding Meshes</h4> 。
- *
+ *  <a name="ExtrudingMeshes"></a><h4>Extruding Meshes</h4>
  * 如果你需要一个可以通过挤压给定的2D网格（可以通过上述任何一种方式创建）来创建的3D网格，你可以使用函数
  * GridGenerator::extrude_triangulation().  参见本教程中的
  * <code>grid_4()</code>
- * 函数为例。请注意，在这个特殊的情况下，给定的结果也可以用3D版本的
+ * 函数的例子。请注意，在这个特殊的情况下，给定的结果也可以用3D版本的
  * GridGenerator::hyper_cube_with_cylindrical_hole().
  * 来实现。主要用途是一个2dmesh，例如用%Gmsh生成，如上所述从
  * <code>.msh</code> 文件中读入。这是grid_4()的输出。 <table
@@ -277,18 +269,14 @@
  * alt=""> extruded output mesh </td> </tr> </table>
  *
  *  <a name="Afteryouhaveacoarsemesh"></a><h3> After you have a coarse mesh
- * </h3> 。
- *
- * 使用上面讨论的方法创建一个粗略的网格只是第一步。当你有了它，它通常会作为进一步细化网格的基础。这并不困难，事实上，如果你的几何体只由直面组成，那就没有其他事情可做。然而，如果你有一个更复杂的几何体，情况往往就不是这样了，除了创建网格之外，还有更多的步骤是必须的。我们将在下面的<a
+ * </h3>
+ * 使用上面讨论的方法创建一个粗略的网格只是第一步。当你有了它，它通常会作为进一步的网格细化的基础。这并不困难，事实上，如果你的几何体只由直面组成，那就没有其他事情可做。然而，如果你有一个更复杂的几何体，情况往往就不是这样了，除了创建网格之外，还有更多的步骤是必须的。我们将在下面的<a
  * href="#Results">results section</a>中介绍其中的一些步骤。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1>.
- * 这个教程程序很奇怪，因为与其他大多数步骤不同，介绍中已经提供了大部分关于如何使用各种策略生成网格的信息。因此，这里没有什么需要评论的，我们在代码中穿插了相对较少的文字。从本质上讲，这里的代码只是提供了一个在介绍中已经描述过的参考实现。
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。
+ * 这个教程程序很奇怪，因为与其他大多数步骤不同，介绍已经提供了关于如何使用各种策略来生成网格的大部分信息。因此，这里没有什么需要评论的，我们在代码中穿插了相对较少的文字。从本质上讲，这里的代码只是提供了一个在介绍中已经描述过的参考实现。
  *
- *
- * <a name="Includefiles"></a> <h3>Include files</h3>.
- *
- *
+ *   <a name="Includefiles"></a> <h3>Include files</h3>。
  *
  * @code
  * #include <deal.II/grid/tria.h>
@@ -310,21 +298,17 @@
  * <a name="Generatingoutputforagivenmesh"></a> <h3>Generating output for a
  * given mesh</h3>。
  *
- * 下面的函数为我们将在本程序的剩余部分中生成的任何网格生成一些输出。特别是，它生成了以下信息。
- *
- *
+ * 下面的函数为我们将在本程序的剩余部分生成的任何网格生成一些输出。特别是，它生成了以下信息。
  *
  *
  *
  * - 一些关于这个网格所处的空间维数和它的单元数的一般信息。
  *
  *
+ * - 使用每个边界指标的边界面的数量，这样就可以与我们预期的情况进行比较。
  *
- * - 使用每个边界指标的边界面的数量，这样就可以与我们所期望的进行比较。
  *
- *
- * 最后，该函数将网格输出为VTU格式，可以很容易地在Paraview或VisIt中进行可视化。
- *
+ * 最后，该函数输出VTU格式的网格，可以在Paraview或VisIt中轻松实现可视化。
  *
  * @code
  * template <int dim>
@@ -337,13 +321,12 @@
  *
  * @endcode
  *
- * 接下来循环所有单元的所有面，并找出每个边界指标的使用频率（记得如果你访问一个不存在的
+ * 接下来循环所有单元格的所有面，找出每个边界指标的使用频率（记得如果你访问一个不存在的
  * std::map 对象的元素，它将被隐式创建并默认初始化
  *
  * - 为零，在当前情况下
  *
  * - 在我们向它递增之前）。)
- *
  *
  * @code
  * {
@@ -362,8 +345,8 @@
  * }
  *
  * @endcode
- *  最后，产生一个网格的图形表示到一个输出文件。
  *
+ * 最后，产生一个网格的图形表示到一个输出文件。
  *
  * @code
  * std::ofstream out(filename);
@@ -374,15 +357,13 @@
  *
  * @endcode
  *
- * <a name="Mainroutines"></a> <h3>Main routines</h3>
- *
- * <a name="grid_1Loadingameshgeneratedbygmsh"></a> <h4>grid_1: Loading a mesh
- * generated by gmsh</h4>.
+ * <a name="Mainroutines"></a> <h3>Main routines</h3>。    <a
+ * name="grid_1Loadingameshgeneratedbygmsh"></a> <h4>grid_1: Loading a mesh
+ * generated by gmsh</h4>。
  *
  * 在这第一个例子中，我们展示了如何加载我们在介绍中讨论过的如何生成的网格。这与在
  * step-5
- * 中使用的加载网格的模式相同，尽管那里是用不同的文件格式（UCD而不是MSH）编写的。
- *
+ * 中使用的加载网格的模式相同，尽管那里是以不同的文件格式（UCD而不是MSH）编写的。
  *
  * @code
  * void grid_1()
@@ -401,11 +382,10 @@
  * @endcode
  *
  * <a name="grid_2Mergingtriangulations"></a> <h4>grid_2: Merging
- * triangulations</h4>
+ * triangulations</h4>。
  *
  * 在这里，我们首先创建两个三角形，然后将它们合并成一个。
- * 正如介绍中所讨论的，必须确保共同界面的顶点位于相同的坐标。
- *
+ * 正如介绍中所讨论的，必须确保共同界面的顶点位于相同的坐标上。
  *
  * @code
  * void grid_2()
@@ -433,7 +413,7 @@
  *
  * @endcode
  *
- * <a name="grid_3Movingvertices"></a> <h4>grid_3: Moving vertices</h4>.
+ * <a name="grid_3Movingvertices"></a> <h4>grid_3: Moving vertices</h4>。
  *
  * 在这个函数中，我们移动一个网格的顶点。这比人们通常想象的要简单：如果你用
  * <code>cell-@>vertex(i)</code> 询问一个单元格的第 <code>i</code>
@@ -442,15 +422,14 @@
  *
  * 所以这就是我们在这个函数的第一部分所做的。我们创建一个几何形状为
  * $[-1,1]^2$
- * 的正方形，在原点处有一个半径为0.25的圆孔。然后我们在所有单元格和所有顶点上循环，如果一个顶点的
+ * 的正方形，在原点上有一个半径为0.25的圆孔。然后我们在所有单元格和所有顶点上循环，如果一个顶点的
  * $y$ 坐标等于1，我们就把它向上移动0.5。
  *
  *
- * 请注意，这种程序通常不会这样工作，因为通常会多次遇到相同的顶点，而且可能会移动它们不止一次。它在这里起作用是因为我们根据顶点的几何位置来选择我们要使用的顶点，一个顶点被移动过一次，以后就不会再有这种测试。解决这个问题的一个更普遍的方法是保留一个
+ * 请注意，这种程序通常不会这样工作，因为人们通常会多次遇到相同的顶点，并可能多次移动它们。它在这里起作用是因为我们根据顶点的几何位置来选择要使用的顶点，一个被移动过一次的顶点在未来将无法通过这个测试。解决这个问题的一个更普遍的方法是保留一个
  * std::set 的那些我们已经移动过的顶点索引（我们可以用
  * <code>cell-@>vertex_index(i)</code>
  * 获得，并且只移动那些索引还不在这个集合中的顶点。
- *
  *
  * @code
  * void grid_3()
@@ -478,7 +457,6 @@
  * href="#Results">results section</a>中一个完全可行的例子，我们
  * <em> 做 </em> 附加一个Manifold对象）。
  *
- *
  * @code
  * triangulation.refine_global(2);
  * print_mesh_info(triangulation, "grid-3.vtu");
@@ -486,21 +464,15 @@
  *
  * @endcode
  *
- * 如上所示，做事情有一个障碍。如果像这里显示的那样移动边界上的节点，由于内部的节点没有被移动，往往会导致内部的单元严重变形。在目前的情况下，这并不是一个很大的问题，因为当节点被移动时，网格并不包含任何内部节点。
+ * 如上图所示，做事有一个障碍。如果像这里显示的那样移动边界上的节点，由于内部的节点没有被移动，往往会导致内部的单元严重变形。在目前的情况下，这并不是一个很大的问题，因为当节点被移动时，网格并不包含任何内部节点。
  *
- * - 这是粗略的网格，而且恰好所有的顶点都在边界上。还有一种情况是，我们在这里的移动，与平均单元尺寸相比，并没有过于夸张。然而，有时我们确实想把顶点移动一段距离，在这种情况下，我们也需要移动内部节点。一个自动完成的方法是调用函数 GridTools::laplace_transform ，该函数接收一组转换后的顶点坐标并移动所有其他的顶点，使生成的网格在某种意义上有一个小的变形。
- *
- *
+ * - 这是粗略的网格，而且恰好所有顶点都在边界上。还有一种情况是，我们在这里的移动，与平均单元大小相比，并没有过于夸张。然而，有时我们确实想把顶点移动一段距离，在这种情况下，我们也需要移动内部节点。一个自动完成的方法是调用函数 GridTools::laplace_transform ，该函数接收一组转换后的顶点坐标并移动所有其他的顶点，使生成的网格在某种意义上有一个小的变形。
  *
  *
- *
- *
- * <a name="grid_4Demonstratingextrude_triangulation"></a> <h4>grid_4:
+ *   <a name="grid_4Demonstratingextrude_triangulation"></a> <h4>grid_4:
  * Demonstrating extrude_triangulation</h4>。
  *
- *
  * 这个例子从前面的函数中获取初始网格，并简单地将其挤压到第三空间维度。
- *
  *
  * @code
  * void grid_4()
@@ -517,21 +489,19 @@
  * @endcode
  *
  * <a name="grid_5DemonstratingGridToolstransformpart1"></a> <h4>grid_5:
- * Demonstrating GridTools::transform, part 1</h4> * * <h4>grid_5:
  * Demonstrating GridTools::transform, part 1</h4>。
  *
- * 这个例子和下一个例子首先创建一个网格，然后根据一个函数移动网格的每个节点，这个函数接收一个点并返回一个映射的点。在这个例子中，我们转换了
+ * 这个例子和下一个例子首先创建一个网格，然后根据一个函数移动网格的每个节点，这个函数接收一个点并返回一个映射的点。在这个例子中，我们转换
  * $(x,y) \mapsto (x,y+\sin(\pi x/5))$  .
  *
  *
  * GridTools::transform()
- * 需要一个三角形和一个参数，这个参数可以像一个函数一样被调用，接收一个点并返回一个点。有不同的方式来提供这样一个参数。它可以是一个函数的指针；它可以是一个具有`operator()`的类的对象；它可以是一个lambda函数；或者它可以是任何通过
+ * 需要一个三角函数和一个参数，这个参数可以像一个函数一样被调用，接收一个点并返回一个点。有不同的方式来提供这样一个参数。它可以是一个函数的指针；它可以是一个具有`operator()`的类的对象；它可以是一个lambda函数；或者它可以是任何通过
  * <code>std::function@<Point@<2@>(const Point@<2@>)@></code>
  * 对象描述的东西。
  *
  *
- * 决定性的是，更现代的方式是使用一个接受一个点并返回一个点的lambda函数，这就是我们在下面所做的。
- *
+ * 决定性的是，更现代的方法是使用一个接受一个点并返回一个点的lambda函数，这就是我们在下面所做的。
  *
  * @code
  * void grid_5()
@@ -558,7 +528,7 @@
  * @endcode
  *
  * <a name="grid_6DemonstratingGridToolstransformpart2"></a> <h4>grid_6:
- * Demonstrating GridTools::transform, part 2</h4>.
+ * Demonstrating GridTools::transform, part 2</h4>。
  *
  * 在第二个例子中，我们将使用映射 $(x,y) \mapsto
  * (x,\tanh(2y)/\tanh(2))$
@@ -566,7 +536,6 @@
  * <code>operator()</code> 的对象，这个对象将被
  * GridTools::transform.
  * 所调用。当然，这个对象实际上可能要复杂得多：这个对象可能有成员变量，在计算顶点的新位置方面起作用。
- *
  *
  * @code
  * struct Grid6Func
@@ -601,13 +570,12 @@
  * @endcode
  *
  * <a name="grid_7Demonstratingdistort_random"></a> <h4>grid_7: Demonstrating
- * distort_random</h4>.
+ * distort_random</h4>。
  *
  * 在这最后一个例子中，我们创建了一个网格，然后通过随机扰动使其（内部）顶点变形。这不是你想在生产计算中做的事情（因为在具有
- * "很好形状 "的单元的网格上的结果通常比在
+ * "良好形状 "单元的网格上的结果通常比在由
  * GridTools::distort_random()),
- * 产生的变形单元上的结果要好，但这是一个有用的工具，用于测试离散化和代码，以确保它们不会因为网格碰巧是均匀结构和支持超级收敛特性而意外地工作。
- *
+ * 产生的变形单元上的结果要好），但它是一个有用的工具，用于测试离散化和代码，以确保它们不会因为网格碰巧是均匀结构和支持超收敛特性而意外地工作。
  *
  * @code
  * void grid_7()
@@ -627,10 +595,9 @@
  *
  * @endcode
  *
- * <a name="Themainfunction"></a> <h3>The main function</h3>
+ * <a name="Themainfunction"></a> <h3>The main function</h3>。
  *
  * 最后是主函数。这里没有什么可做的，只是调用我们上面写的所有各种函数。
- *
  *
  * @code
  * int main()
@@ -673,14 +640,12 @@
  *   }
  * }
  * @endcode
- * <a name="Results"></a><h1>Results</h1> 。
+ * <a name="Results"></a><h1>Results</h1> 。   该程序产生一系列
+ * <code>.vtu</code>
+ * 的三角计算文件。这些方法在上面已经讨论过了。
  *
- *  该程序产生一系列 <code>.vtu</code>
- * 的三角计算文件。这些方法在上面有讨论。
- *
- *  <a name="NextstepsCurvedCells"></a><h3>Next steps: Curved Cells</h3>。
- *
- * 正如在介绍中提到的，使用这里讨论的方法创建一个粗略的网格仅仅是第一步。为了细化一个网格，三角计算需要知道在边、面和单元的中点上放置新的顶点。默认情况下，这些新的点会被放置在周围点的算术平均值上，但如果你需要的是没有被粗网格充分解决的弯曲边界，这并不是你想要的。例如，对于这个网格，中心孔应该是圆形的。
+ *  <a name="NextstepsCurvedCells"></a><h3>Next steps: Curved Cells</h3> 。
+ * 正如在介绍中提到的，使用这里讨论的方法创建一个粗略的网格仅仅是第一步。为了细化网格，三角计算需要知道在边、面和单元的中点上放置新的顶点。默认情况下，这些新的点会被放置在周围点的算术平均值上，但如果你需要的是没有被粗网格充分解决的弯曲边界，这并不是你想要的。例如，对于这个网格，中心孔应该是圆形的。
  * <img
  * src="https://www.dealii.org/images/steps/developer/step-49.grid-2a.png"
  * alt="" height="200px">
@@ -690,7 +655,7 @@
  * alt="" height="200px">
  * 需要做的是，你告诉三角计算，你实际上是想使用一个弯曲的几何体。要做到这一点需要三个步骤。
  *
- * - 创建一个描述所需几何体的对象。这个对象将在细化三角测量的新点位置时被查询。如果在系统装配过程中使用了MappingQ或MappingQGeneric这样的高阶映射，它也将被用来计算形状函数值。 在deal.II中，Manifold类和继承自它的类（如PolarManifold和FlatManifold）执行这些计算。
+ * - 创建一个描述所需几何体的对象。这个对象将在细化三角测量的新点位置时被查询。如果在系统装配过程中使用了MappingQ或MappingQGeneric这样的高阶映射，它也将被用来计算形状函数值。  在deal.II中，Manifold类和继承自它的类（如PolarManifold和FlatManifold）执行这些计算。
  *
  * - 通知Triangulation对象使用哪个Manifold类。默认情况下，一个Triangulation使用FlatManifold来进行所有的几何计算，它假设所有的单元格边缘都是直线，所有的四边形都是平的。你可以通过调用 Triangulation::set_manifold 函数将Manifold类附加到Triangulation上，该函数将 <code>manifold_id</code> 与Manifold对象关联。关于这一点的更多信息，请参见 @ref GlossManifoldIndicator "关于这个主题的词汇条"。
  *
@@ -715,7 +680,7 @@
  * src="https://www.dealii.org/images/steps/developer/step-49.yuhan.1.png"
  * alt="">
  * 在下文中，我们将指导你完成为这个几何体创建网格的整个过程，包括一些常见的陷阱，展示可能出错的东西。
- * 第一步是创建一个粗略的网格，通过为每个截面创建一个2D粗略的网格，将它们挤压到第三个方向，然后将它们粘在一起。下面的代码使用之前描述的技术来完成这个工作。
+ * 第一步是创建一个粗略的网格，通过为每个截面创建一个2D粗略的网格，将它们挤压到第三个方向，然后将它们粘在一起。下面的代码使用之前描述的技术完成了这个工作。
  * @code
  *
  *
@@ -879,7 +844,7 @@
  * ）对域本身一无所知，只是假设给它的点是沿着测度线的。在这种情况下，对于下面构建的圆柱形模子，节点线是沿着以
  * $z$ 轴为中心的正交圆弧。
  * 由于域的三个顶部部分都使用相同的测地线，我们将把中心在
- * $y = 3$ 线以上的所有单元都标记为圆柱性质。
+ * $y = 3$ 线以上的所有单元标记为圆柱性质。
  * @code
  * const Tensor<1, 3>           axis({0.0, 0.0, 1.0});
  * const Point<3>               axial_point(0, 3.0, 0.0);
@@ -940,13 +905,10 @@
  * .yuhan.11.png" alt="" width="400" height="355">。
  *
  *  <a name="Possibilitiesforextensions"></a><h3> Possibilities for extensions
- * </h3> 。
- *
- *  <a name="Assigningdifferentboundaryids"></a><h4> Assigning different
- * boundary ids </h4>。
- *
- * 对本教程中描述的以某种形式生成的网格指定不同的边界ID，以应用不同的边界条件，通常是有用的。
- * 例如，你可能想为这个程序中的第一个网格的右边边界应用不同的边界条件。要做到这一点，需要遍历单元格和它们的面，并识别正确的面（例如，使用`cell->center()`查询单元格中心的坐标，如
+ * </h3>   <a name="Assigningdifferentboundaryids"></a><h4> Assigning
+ * different boundary ids </h4> 。
+ * 对本教程中描述的以某种形式生成的网格分配不同的边界ID，以应用不同的边界条件，通常是很有用的。
+ * 例如，你可能想为本程序中第一个网格的右边边界应用不同的边界条件。要做到这一点，需要遍历单元格和它们的面，并识别正确的面（例如，使用`cell->center()`查询单元格中心的坐标，如
  * step-1 ，或者使用`cell->face(f)->get_boundary_id()`查询该单元格
  * $f$
  * 的当前边界指示灯）。你可以使用`cell->face(f)->set_boundary_id()`来设置边界指标。你可以回顾一下
@@ -954,7 +916,7 @@
  * name="Extractingaboundarymesh"></a><h4> Extracting a boundary mesh </h4>
  *
  *  在流形上的计算，就像在 step-38
- * 中所做的那样，需要一个嵌入到高维空间的表面网格。虽然有些网格可以用GridGenerator命名空间来构建，或者从文件中加载，但有时从体积网格中提取一个表面网格也是很有用的。
+ * 中所做的那样，需要一个嵌入高维空间的曲面网格。虽然有些网格可以用GridGenerator命名空间来构建，或者从文件中加载，但有时从体积网格中提取一个表面网格也是很有用的。
  * 使用函数 GridGenerator::extract_boundary_mesh()
  * 来提取网格的表面元素。在一个三维网格上使用该函数(一个`Triangulation<3,3>`，例如来自`grid_4()`)，这将返回一个`Triangulation<2,3>`，你可以在
  * step-38  中使用。
@@ -968,7 +930,7 @@
  *
  * - >
  *
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-49.cc" 。
+* <a name="PlainProg"></a><h1> The plain program</h1> @include "step-49.cc"
  *
  */
 

@@ -46,11 +46,10 @@
  * 这个框架在实践中如何使用的细节将作为本教程程序的一部分加以解释。
  * <a name="Thetestcase"></a><h3>The testcase</h3>
  *
- *  我们在这里解决的问题与 step-12 中的问题相同。
+ *  我们在这里解决的问题与  step-12  中的问题相同。
  *
- *  <a name="CommProg"></a><h1> The commented program</h1> 。
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。
  * 前面几个文件已经在前面的例子中讲过了，因此不再进一步评论。
- *
  *
  * @code
  * #include <deal.II/base/quadrature_lib.h>
@@ -75,13 +74,10 @@
  *
  * - 用户与有限元类的交互并不多：它们被传递给 <code>DoFHandler</code> 和 <code>FEValues</code> 对象，仅此而已。
  *
- *
  * @code
  * #include <deal.II/fe/fe_dgq.h>
  * @endcode
- *
- * 我们将使用最简单的求解器，称为Richardson迭代，它代表了一个简单的缺陷修正。这与一个块状SSOR预处理器（定义在precondition_block.h中）相结合，该预处理器使用DG离散化产生的系统矩阵的特殊块状结构。
- *
+ * 我们将使用最简单的求解器，称为Richardson迭代，它表示简单的缺陷修正。这与一个块状SSOR预处理器（定义在precondition_block.h中）相结合，该预处理器使用DG离散化产生的系统矩阵的特殊块状结构。
  *
  * @code
  * #include <deal.II/lac/solver_richardson.h>
@@ -89,7 +85,6 @@
  * @endcode
  *
  * 我们将使用梯度作为细化指标。
- *
  *
  * @code
  * #include <deal.II/numerics/derivative_approximation.h>
@@ -102,7 +97,6 @@
  * MeshWorker::IntegrationInfo,
  * 的对象，它主要是对一组FEValues对象的封装。文件<tt>meshworker/simple.h</tt>包含了将局部集成数据组装成只包含一个矩阵的全局系统的类。最后，我们将需要在所有的网格单元和面上运行循环的文件。
  *
- *
  * @code
  * #include <deal.II/meshworker/dof_info.h>
  * #include <deal.II/meshworker/integration_info.h>
@@ -111,8 +105,7 @@
  *
  * @endcode
  *
- * 就像所有的程序一样，我们在完成这一部分时要包括所需的C++头文件，并声明我们要使用dealii命名空间中的对象，不含前缀。
- *
+ * 就像所有的程序一样，我们在完成这一部分时要包括所需的C++头文件，并声明我们要使用dealii命名空间中的对象，不加前缀。
  *
  * @code
  * #include <iostream>
@@ -125,9 +118,8 @@
  *
  * @endcode
  *
- * <a name="Equationdata"></a> <h3>Equation data</h3>
+ * <a name="Equationdata"></a> <h3>Equation data</h3>.
  * 首先，我们定义一个描述不均匀边界数据的类。由于只使用它的值，我们实现value_list()，但不定义Function的所有其他函数。
- *
  *
  * @code
  * template <int dim>
@@ -142,9 +134,8 @@
  *
  * @endcode
  *
- * 考虑到流动方向，单位方块 $[0,1]^2$
- * 的流入边界是右边界和下边界。我们在x轴上规定了不连续的边界值1和0，在右边界上规定了值0。该函数在流出边界上的值将不会在DG方案内使用。
- *
+ * 鉴于流动方向，单位方格 $[0,1]^2$
+ * 的流入边界是右边界和下边界。我们在x轴上规定了不连续的边界值1和0，在右侧边界上规定了值0。该函数在流出边界上的值将不会在DG方案内使用。
  *
  * @code
  * template <int dim>
@@ -168,11 +159,11 @@
  *
  *
  * @endcode
- *  最后，一个计算并返回风场的函数  $\beta=\beta(\mathbf x)$
+ *
+ * 最后，一个计算并返回风场的函数  $\beta=\beta(\mathbf x)$
  * 。正如介绍中所解释的，在2D中我们将使用一个围绕原点的旋转场。在3D中，我们只需不设置
  * $z$
  * 分量（即为零），而该函数在目前的实现中不能用于1D。
- *
  *
  * @code
  * template <int dim>
@@ -194,14 +185,13 @@
  * @endcode
  *
  * <a name="TheAdvectionProblemclass"></a> <h3>The AdvectionProblem
- * class</h3>。
+ * class</h3>.
  * 在这个准备工作之后，我们继续进行本程序的主类，称为AdvectionProblem。它基本上是
  * step-6
  * 的主类。我们没有AffineConstraints对象，因为在DG离散中没有悬挂节点约束。
  *
  *
  * 主要的区别只出现在集合函数的实现上，因为在这里，我们不仅需要覆盖面上的通量积分，我们还使用MeshWorker接口来简化涉及的循环。
- *
  *
  * @code
  * template <int dim>
@@ -225,20 +215,17 @@
  *
  * 此外，我们想使用1度的DG元素（但这只在构造函数中指定）。如果你想使用不同度数的DG方法，整个程序保持不变，只需在构造函数中用所需的多项式度数替换1。
  *
- *
  * @code
  *   FE_DGQ<dim>     fe;
  *   DoFHandler<dim> dof_handler;
  *
  * @endcode
- *
- * 接下来的四个成员代表要解决的线性系统。
+ *  接下来的四个成员代表要解决的线性系统。
  * <code>system_matrix</code> and <code>right_hand_side</code> 是由
  * <code>assemble_system()</code>, the <code>solution</code> 产生的，在
  * <code>solve()</code>. The <code>sparsity_pattern</code>
  * 中计算，用于确定 <code>system_matrix</code>
  * 中非零元素的位置。
- *
  *
  * @code
  *   SparsityPattern      sparsity_pattern;
@@ -249,8 +236,7 @@
  *
  * @endcode
  *
- * 最后，我们必须提供集合单元、边界和内表面项的函数。在MeshWorker框架中，所有单元的循环和大部分操作的设置都将在这个类之外完成，所以我们所要提供的只是这三个操作。他们将在中间对象上工作，首先，我们在这里定义了交给本地整合函数的信息对象的别名，以使我们的生活更轻松。
- *
+ * 最后，我们必须提供集合单元格、边界和内表面条款的函数。在MeshWorker框架中，所有单元的循环和大部分操作的设置都将在这个类之外完成，所以我们所要提供的只是这三个操作。他们将在中间对象上工作，首先，我们在这里定义了交给本地整合函数的信息对象的别名，以使我们的生活更轻松。
  *
  * @code
  *   using DoFInfo  = MeshWorker::DoFInfo<dim>;
@@ -258,11 +244,10 @@
  *
  * @endcode
  *
- * 下面的三个函数是在所有单元和面的通用循环中被调用的。它们是进行实际整合的函数。
- * 在我们下面的代码中，这些函数并没有访问当前类的成员变量，所以我们可以将它们标记为
+ * 下面的三个函数是在所有单元和面的通用循环中被调用的。它们是进行实际积分的函数。
+ * 在我们下面的代码中，这些函数并不访问当前类的成员变量，所以我们可以将它们标记为
  * <code>static</code>
  * ，并简单地将这些函数的指针传递给MeshWorker框架。然而，如果这些函数想要访问成员变量（或者需要超出下面指定的参数），我们可以使用lambda函数的设施来为MeshWorker框架提供对象，这些对象就像拥有所需的参数数量和类型，但实际上已经绑定了其他参数。
- *
  *
  * @code
  *   static void integrate_cell_term(DoFInfo &dinfo, CellInfo &info);
@@ -278,7 +263,6 @@
  *
  * 我们从构造函数开始。 <code>fe</code>
  * 的构造器调用中的1是多项式的度数。
- *
  *
  * @code
  * template <int dim>
@@ -296,20 +280,18 @@
  *
  * 在设置通常的有限元数据结构的函数中，我们首先需要分配DoF。
  *
- *
  * @code
  *   dof_handler.distribute_dofs(fe);
  *
  * @endcode
  *
- * 我们从生成稀疏模式开始。为此，我们首先用系统中出现的耦合物填充一个动态稀疏模式（DynamicSparsityPattern）类型的中间对象。在建立模式之后，这个对象被复制到
+ * 我们从生成稀疏性模式开始。为此，我们首先用系统中出现的耦合物填充一个动态稀疏模式（DynamicSparsityPattern）类型的中间对象。在建立模式之后，这个对象被复制到
  * <code>sparsity_pattern</code> ，可以被丢弃。
  *
  *
- * 为了建立DG离散的稀疏模式，我们可以调用类似于
+ * 为了建立DG离散化的稀疏模式，我们可以调用类似于
  * DoFTools::make_sparsity_pattern, 的函数，它被称为
- * DoFTools::make_flux_sparsity_pattern:
- *
+ * DoFTools::make_flux_sparsity_pattern: 。
  *
  * @code
  *   DynamicSparsityPattern dsp(dof_handler.n_dofs());
@@ -317,9 +299,7 @@
  *   sparsity_pattern.copy_from(dsp);
  *
  * @endcode
- *
- * 最后，我们设置了线性系统的所有组成部分的结构。
- *
+ *  最后，我们设置了线性系统的所有组成部分的结构。
  *
  * @code
  *   system_matrix.reinit(sparsity_pattern);
@@ -330,11 +310,10 @@
  * @endcode
  *
  * <a name="Theassemble_systemfunction"></a> <h4>The assemble_system
- * function</h4>.
+ * function</h4>。
  *
  * 这里我们看到了与手工组装的主要区别。我们不需要在单元格和面上写循环，而是将这一切交给MeshWorker框架。为了做到这一点，我们只需要定义局部的集成函数，并使用命名空间
  * MeshWorker::Assembler 中的一个类来构建全局系统。
- *
  *
  * @code
  * template <int dim>
@@ -349,14 +328,12 @@
  * MeshWorker::Assembler::SystemSimple
  * 对象将这些分布到全局稀疏矩阵和右手边的向量中。
  *
- *
  * @code
  *   MeshWorker::IntegrationInfoBox<dim> info_box;
  *
  * @endcode
  *
- * 首先，我们在工作者基类中初始化正交公式和更新标志。对于正交，我们采取安全措施，使用QGauss公式，其点数比使用的多项式度数高一个。由于单元格、边界和内部面的正交率可以独立选择，所以我们必须把这个值交给三次。
- *
+ * 首先，我们初始化正交公式和工作者基类中的更新标志。对于正交，我们采取安全策略，使用QGauss公式，其点数比使用的多项式度数高一个。由于单元格、边界和内部面的正交率可以独立选择，所以我们必须把这个值交给三次。
  *
  * @code
  *   const unsigned int n_gauss_points = dof_handler.get_fe().degree + 1;
@@ -366,9 +343,8 @@
  *
  * @endcode
  *
- * 这些是我们整合系统时需要的数值类型。它们被添加到用于单元格、边界和内部面以及内部邻居面的标志中，这是由四个
+ * 这些是我们在整合系统时需要的数值类型。它们被添加到用于单元格、边界和内部面以及内部邻居面的标志中，这是由四个
  * @p true 值强制的。
- *
  *
  * @code
  *   info_box.initialize_update_flags();
@@ -380,21 +356,19 @@
  *
  * 在准备好<tt>info_box</tt>中的所有数据后，我们初始化其中的FEValues对象。
  *
- *
  * @code
  *   info_box.initialize(fe, mapping);
  *
  * @endcode
  *
- * 到目前为止创建的对象帮助我们在每个单元和面做局部积分。现在，我们需要一个对象来接收整合后的（本地）数据，并把它们转发给装配程序。
- *
+ * 到目前为止创建的对象帮助我们在每个单元和面做局部的整合。现在，我们需要一个对象来接收整合后的（本地）数据，并把它们转发给装配程序。
  *
  * @code
  *   MeshWorker::DoFInfo<dim> dof_info(dof_handler);
  *
  * @endcode
- * 现在，我们必须创建汇编器对象，并告诉它，将本地数据放在哪里。这些将是我们的系统矩阵和右手边的数据。
  *
+ * 现在，我们必须创建汇编对象，并告诉它，把本地数据放在哪里。这些将是我们的系统矩阵和右手边的数据。
  *
  * @code
  *   MeshWorker::Assembler::SystemSimple<SparseMatrix<double>, Vector<double>>
@@ -403,9 +377,8 @@
  *
  * @endcode
  *
- * 最后，在所有活动单元上进行积分循环（由第一个参数决定，它是一个活动的迭代器）。
+ * 最后，在所有活动单元上进行积分循环（由第一个参数决定，它是一个活动迭代器）。
  * 正如在类声明中声明局部积分函数时的讨论中所指出的，集合积分器类所期望的参数实际上不是函数指针。相反，它们是可以像函数一样被调用的对象，有一定数量的参数。因此，我们也可以在这里传递具有适当的operator()实现的对象，或者如果本地集成器是，例如，非静态成员函数，则可以传递lambda函数。
- *
  *
  * @code
  *   MeshWorker::loop<dim,
@@ -425,11 +398,10 @@
  *
  * @endcode
  *
- * <a name="Thelocalintegrators"></a> <h4>The local integrators</h4>
+ * <a name="Thelocalintegrators"></a> <h4>The local integrators</h4>。
  *
- * 这些是给上面调用的 MeshWorker::integration_loop()
- * 的函数。它们计算单元格和面中对系统矩阵和右手边的局部贡献。
- *
+ * 这些是给上面所说的 MeshWorker::integration_loop()
+ * 的函数。它们计算单元格和面对系统矩阵和右手边的局部贡献。
  *
  * @code
  * template <int dim>
@@ -437,9 +409,9 @@
  *                                                 CellInfo &info)
  * {
  * @endcode
- *  首先，让我们从 @p info.
- * 中检索这里使用的一些对象。注意，这些对象可以处理更复杂的结构，因此这里的访问看起来比看起来更复杂。
  *
+ * 首先，让我们从 @p info.
+ * 中检索这里使用的一些对象。注意，这些对象可以处理更复杂的结构，因此这里的访问看起来比看起来更复杂。
  *
  * @code
  *   const FEValuesBase<dim> &  fe_values    = info.fe_values();
@@ -448,8 +420,7 @@
  *
  * @endcode
  *
- * 有了这些对象，我们像往常一样继续进行局部整合。首先，我们在正交点上循环，计算当前点的平流矢量。
- *
+ * 有了这些对象，我们像往常一样继续进行局部积分。首先，我们在正交点上循环，计算当前点的平流矢量。
  *
  * @code
  *   for (unsigned int point = 0; point < fe_values.n_quadrature_points; ++point)
@@ -460,8 +431,7 @@
  * @endcode
  *
  * 我们解决的是一个同质方程，因此在单元项中没有显示出右手。
- * 剩下的是对矩阵项的积分。
- *
+ * 剩下的就是整合矩阵条目。
  *
  * @code
  *       for (unsigned int i = 0; i < fe_values.dofs_per_cell; ++i)
@@ -478,7 +448,6 @@
  * @endcode
  *
  * 现在对边界项也是如此。注意，现在我们使用FEValuesBase，即FEFaceValues和FESubfaceValues的基类，以便获得法向量。
- *
  *
  * @code
  * template <int dim>
@@ -522,9 +491,7 @@
  * }
  *
  * @endcode
- *
  * 最后，内部面的条款。这里的区别是，我们收到两个信息对象，每个与面相邻的单元都有一个，我们组装了四个矩阵，每个单元一个，两个用于来回耦合。
- *
  *
  * @code
  * template <int dim>
@@ -537,15 +504,13 @@
  *
  * 对于正交点、权重等，我们使用第一个参数的FEValuesBase对象。
  *
- *
  * @code
  *   const FEValuesBase<dim> &fe_face_values = info1.fe_values();
  *   const unsigned int       dofs_per_cell  = fe_face_values.dofs_per_cell;
  *
  * @endcode
  *
- * 对于额外的形状函数，我们必须询问邻居的FEValuesBase。
- *
+ * 对于额外的形状函数，我们必须询问邻居FEValuesBase。
  *
  * @code
  *   const FEValuesBase<dim> &fe_face_values_neighbor = info2.fe_values();
@@ -553,9 +518,7 @@
  *     fe_face_values_neighbor.dofs_per_cell;
  *
  * @endcode
- *
- * 然后我们得到对四个局部矩阵的引用。字母u和v分别指的是试验和测试函数。％的数字表示由info1和info2提供的单元。按照惯例，每个信息对象中的两个矩阵指的是各自单元上的试验函数。第一个矩阵包含该单元的内部耦合，而第二个矩阵包含单元之间的耦合。
- *
+ * 然后我们得到对四个局部矩阵的引用。字母u和v分别指的是试验和测试函数。%的数字表示由info1和info2提供的单元。按照惯例，每个信息对象中的两个矩阵指的是各自单元上的试验函数。第一个矩阵包含该单元的内部耦合，而第二个矩阵包含单元之间的耦合。
  *
  * @code
  *   FullMatrix<double> &u1_v1_matrix = dinfo1.matrix(0, false).matrix;
@@ -566,8 +529,6 @@
  * @endcode
  *
  * 这里，按照前面的函数，我们会有局部的右手边向量。幸运的是，界面条款只涉及解决方案，右手边没有收到任何贡献。
- *
- *
  *
  *
  * @code
@@ -583,8 +544,8 @@
  *       if (beta_dot_n > 0)
  *         {
  * @endcode
- *  这个词我们已经看过了。
  *
+ * 这个词我们已经看过了。
  *
  * @code
  *           for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -596,9 +557,8 @@
  *
  * @endcode
  *
- * 我们另外组装了术语 $(\beta\cdot n u,\hat v)_{\partial \kappa_+}$
- * 。
- *
+ * 我们另外组装了 $(\beta\cdot n u,\hat v)_{\partial \kappa_+}$
+ * 这个术语。
  *
  * @code
  *           for (unsigned int k = 0; k < neighbor_dofs_per_cell; ++k)
@@ -689,9 +649,7 @@
  *       else
  *         {
  * @endcode
- *
- * 这个我们也已经看过了。
- *
+ *  这个我们也已经看过了。
  *
  * @code
  *           for (unsigned int i = 0; i < dofs_per_cell; ++i)
@@ -703,8 +661,7 @@
  *                 JxW[point];
  *
  * @endcode
- *
- * 而这是另一个新的。  $(\beta\cdot n \hat u,\hat v)_{\partial
+ *  而这是另一个新的。   $(\beta\cdot n \hat u,\hat v)_{\partial
  * \kappa_-}$  :
  *
  * @code
@@ -800,8 +757,7 @@
  * @endcode
  *
  * <a name="Alltherest"></a> <h3>All the rest</h3>。
- * 对于这个简单的问题，我们使用最简单的求解器，称为Richardson迭代，它代表了一个简单的缺陷修正。这与一个块状SSOR预调节器相结合，该预调节器使用DG离散化产生的系统矩阵的特殊块状结构。这些块的大小是每个单元的DoF数量。在这里，我们使用SSOR预处理，因为我们没有根据流场对DoFs进行重新编号。如果在流的下游方向对DoFs进行重新编号，那么块状高斯-赛德尔预处理（见PreconditionBlockSOR类，放松=1）会做得更好。
- *
+ * 对于这个简单的问题，我们使用最简单的求解器，称为Richardson迭代，它代表了一个简单的缺陷修正。这与一个块状SSOR预调节器相结合，该预调节器使用DG离散化产生的系统矩阵的特殊块状结构。这些块的大小是每个单元的DoF数量。这里，我们使用SSOR预处理，因为我们没有根据流场对DoFs进行重新编号。如果在流的下游方向对DoFs进行重新编号，那么块状高斯-赛德尔预处理（见PreconditionBlockSOR类，放松=1）会做得更好。
  *
  * @code
  * template <int dim>
@@ -811,8 +767,8 @@
  *   SolverRichardson<Vector<double>> solver(solver_control);
  *
  * @endcode
- *  这里我们创建了预处理程序。
  *
+ * 这里我们创建了预处理程序。
  *
  * @code
  *   PreconditionBlockSSOR<SparseMatrix<double>> preconditioner;
@@ -827,7 +783,6 @@
  * @endcode
  *
  * 在这些准备工作之后，我们就可以启动线性求解器了。
- *
  *
  * @code
  *   solver.solve(system_matrix, solution, right_hand_side, preconditioner);
@@ -848,7 +803,6 @@
  * $H^1_\beta$ 中，即在方向 $\beta$
  * 中的导数是可平方整除的函数空间）。
  *
- *
  * @code
  * template <int dim>
  * void AdvectionProblem<dim>::refine_grid()
@@ -856,16 +810,14 @@
  * @endcode
  *
  * <code>DerivativeApproximation</code>
- * 类计算梯度的精度为浮点。这就足够了，因为它们是近似的，只作为细化的指标。
- *
+ * 类将梯度计算为浮点精度。这就足够了，因为它们是近似的，只作为细化的指标。
  *
  * @code
  *   Vector<float> gradient_indicator(triangulation.n_active_cells());
  *
  * @endcode
  *
- * 现在，近似梯度被计算出来了
- *
+ * 现在计算出了近似的梯度
  *
  * @code
  *   DerivativeApproximation::approximate_gradient(mapping,
@@ -877,7 +829,6 @@
  *
  * 并且它们被单元格按系数 $h^{1+d/2}$ 进行缩放。
  *
- *
  * @code
  *   unsigned int cell_no = 0;
  *   for (const auto &cell : dof_handler.active_cell_iterators())
@@ -886,8 +837,7 @@
  *
  * @endcode
  *
- * 最后它们作为细化指标。
- *
+ * 最后他们作为细化指标。
  *
  * @code
  *   GridRefinement::refine_and_coarsen_fixed_number(triangulation,
@@ -903,15 +853,12 @@
  *
  * 该程序的输出包括自适应细化网格的eps文件和gnuplot格式的数值解。
  *
- *
  * @code
  * template <int dim>
  * void AdvectionProblem<dim>::output_results(const unsigned int cycle) const
  * {
  * @endcode
- *
- * 首先将网格写成eps格式。
- *
+ *  首先将网格写成eps格式。
  *
  * @code
  *   {
@@ -925,7 +872,6 @@
  *
  * @endcode
  *  然后以gnuplot格式输出解决方案。
- *
  *
  * @code
  *   {
@@ -945,9 +891,7 @@
  *
  *
  * @endcode
- *
- * 下面的 <code>run</code> 函数与前面的例子类似。
- *
+ *  下面的 <code>run</code> 函数与之前的例子类似。
  *
  * @code
  * template <int dim>
@@ -985,10 +929,8 @@
  *
  *
  * @endcode
- *
- * 下面的 <code>main</code>
- * 函数与以前的例子也类似，不需要注释。
- *
+ *  下面的 <code>main</code>
+ * 函数与之前的例子也类似，不需要注释。
  *
  * @code
  * int main()
@@ -1029,12 +971,11 @@
  * return 0;
  * }
  * @endcode
- * <a name="Results"></a><h1>Results</h1> 。
- *
+ * <a name="Results"></a><h1>Results</h1>
  *
  * 这个程序的输出与 step-16
  * 非常相似，我们在此不重复输出。
- * 我们展示了在初始网格上的解决方案，以及经过两个和五个自适应细化步骤后的网格。
+ * 我们展示了在初始网格上的解决方案，经过两个和五个自适应细化步骤后的网格。
  * <img src="https://www.dealii.org/images/steps/developer/step-12.sol-0.png"
  * alt="">   <img
  * src="https://www.dealii.org/images/steps/developer/step-12.sol-2.png"
@@ -1042,23 +983,21 @@
  * src="https://www.dealii.org/images/steps/developer/step-12.sol-5.png"
  * alt=""> .
  *
- * 然后我们再次展示最终的网格（经过5个细化步骤）和解决方案，这一次我们使用了更好的三维渲染（使用
+ * 然后我们再次展示最终的网格（经过5个细化步骤）和解决方案，这一次有一个更好的三维渲染（使用
  * DataOutBase::write_vtk
- * 函数和基于VTK的VisIt可视化程序获得），更好地显示了细化网格上跳跃的清晰度以及解决方案沿界面的过冲和欠冲。
+ * 函数和基于VTK的VisIt可视化程序获得），更好地显示了细化网格上跳跃的清晰度和解决方案沿界面的过冲和欠冲现象。
  * <img src="https://www.dealii.org/images/steps/developer/step-12.grid-5.png"
  * alt="">   <img
  * src="https://www.dealii.org/images/steps/developer/step-12.3d-solution.png"
  * alt="">
  *
- *  最后我们展示一个三维计算的图。 <img
+ *  最后我们展示一个3D计算的图。 <img
  * src="https://www.dealii.org/images/steps/developer/step-12.sol-5-3d.png"
  * alt="">
  *
  *  <a name="extensions"></a><a
  * name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
- * 。
- *
- *  关于进一步扩展的想法，请见见  step-12  。
+ * 关于进一步扩展的想法，请参见见  step-12  。
  *
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-12b.cc"  。
  *

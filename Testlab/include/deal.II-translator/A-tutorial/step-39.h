@@ -1,7 +1,7 @@
 //include/deal.II-translator/A-tutorial/step-39_0.txt
 /**
  * @page step_39 The step-39 tutorial program
- * 本教程取决于  step-12  b. @htmlonly <table class="tutorial"
+ * 本教程取决于 step-12  b. @htmlonly <table class="tutorial"
  * width="50%"> <tr><th colspan="2"><b><small>Table of
  * contents</small></b><b><small>Table of contents</small></b></th></tr>
  * <tr><td width="50%" valign="top">
@@ -33,7 +33,7 @@
  * </ol> </td> </tr> </table>
  * @endhtmlonly <a name="Intro"></a>
  * 在这个程序中，我们使用内部惩罚法和Nitsche的弱边界条件来解决Poisson方程。我们在局部细化的网格上使用多网格方法，这些网格是用一个bulkcriterion和一个基于单元和面的标准误差估计器生成的。所有的操作都是通过MeshWorker接口实现的。
- * 与 step-12 一样，离散化依赖于有限元空间，其在网格单元内是多项式的 $K\in \mathbb T_h$ ，但在单元之间没有连续性。由于这种函数在每个内部面 $F\in \mathbb F_h^i$ 上有两个值，每边一个，我们定义均值和跳跃算子如下：让<i>K</i><sub>1</sub>和<i>K</i><sub>2</sub>为两个单元，并让函数的轨迹<i>u<sub>i</sub></i>和外层法向量<b>n</b><i><sub>i</sub></i> 被相应地标记。然后，在这个面上，我们让@f[
+ * 与 step-12 一样，离散化依赖于有限元空间，其在网格单元内是多项式的 $K\in \mathbb T_h$ ，但在单元之间没有连续性。由于这种函数在每个内部面 $F\in \mathbb F_h^i$ 上有两个值，每边一个，我们定义均值和跳跃算子如下：让<i>K</i><sub>1</sub>和<i>K</i><sub>2</sub>为两个单元，并让函数的轨迹<i>u<sub>i</sub></i>和外层法向量<b>n</b><i><sub>i</sub></i> 被相应地标记为。然后，在这个面上，我们让@f[
  * \average{ u } = \frac{u_1 + u_2}2
  * @f]。
  * 注意，如果这样的表达式包含一个法向量，平均运算符就会变成一个跳跃。对问题@f[
@@ -103,9 +103,8 @@
  * Kanschat和Warburton
  * (2009)讨论了自适应迭代及其收敛性（对于三角形网格）。
  *
- *  <a name="CommProg"></a> <h1> The commented program</h1>.
- * 线性代数的包含文件。一个常规的SparseMatrix，它将包括SparsityPattern和Vector类的必要文件。
- *
+ *  <a name="CommProg"></a> <h1> The commented program</h1>。
+ * 线性代数的包含文件。一个普通的SparseMatrix，它又将包括SparsityPattern和Vector类的必要文件。
  *
  * @code
  * #include <deal.II/lac/sparse_matrix.h>
@@ -119,14 +118,13 @@
  *
  * 包括用于设置网格的文件
  *
- *
  * @code
  * #include <deal.II/grid/grid_generator.h>
  * #include <deal.II/grid/grid_refinement.h>
  *
  * @endcode
- *  FiniteElement类和DoFHandler的包含文件。
  *
+ * FiniteElement类和DoFHandler的包含文件。
  *
  * @code
  * #include <deal.II/fe/fe_q.h>
@@ -138,7 +136,6 @@
  *
  * 使用MeshWorker框架的包含文件
  *
- *
  * @code
  * #include <deal.II/meshworker/dof_info.h>
  * #include <deal.II/meshworker/integration_info.h>
@@ -149,14 +146,12 @@
  *
  * 与拉普拉斯相关的局部积分器的包含文件
  *
- *
  * @code
  * #include <deal.II/integrators/laplace.h>
  *
  * @endcode
  *
- * 支持多网格方法
- *
+ * 支持多棱镜方法
  *
  * @code
  * #include <deal.II/multigrid/mg_tools.h>
@@ -170,7 +165,6 @@
  *
  * 最后，我们从库中取出我们的精确解，以及正交和附加工具。
  *
- *
  * @code
  * #include <deal.II/base/function_lib.h>
  * #include <deal.II/base/quadrature_lib.h>
@@ -182,8 +176,7 @@
  *
  * @endcode
  *
- * deal.II库的所有类都在dealii的命名空间。为了节省打字，我们告诉编译器也要在那里搜索名字。
- *
+ * deal.II库的所有类都在dealii命名空间中。为了节省打字，我们告诉编译器也要在那里搜索名字。
  *
  * @code
  * namespace Step39
@@ -194,25 +187,23 @@
  *
  * 这是我们用来设置边界值的函数，也是我们比较的精确解。
  *
- *
  * @code
  * Functions::SlitSingularityFunction<2> exact_solution;
  *
  * @endcode
  *
- * <a name="Thelocalintegrators"></a> <h3>The local integrators</h3>.
+ * <a name="Thelocalintegrators"></a> <h3>The local integrators</h3>。
  *
- * MeshWorker将局部积分与单元格和面的循环分开。因此，我们必须编写局部积分类来生成矩阵、右手边和误差估计器。
+ * MeshWorker将局部积分与单元格和面的循环分离开来。因此，我们必须编写局部积分类来生成矩阵、右手边和误差估计器。
  *
  *
- * 所有这些类都有相同的三个函数，分别用于对单元、边界面和内部面的积分。局部积分所需的所有信息都是由
+ * 所有这些类都有相同的三个函数，分别用于在单元格、边界面和内部面的积分。局部积分所需的所有信息都是由
  * MeshWorker::IntegrationInfo<dim>.
- * 提供的。请注意，函数的签名不能改变，因为它是由
+ * 提供的。请注意，这些函数的签名不能被改变，因为它是由
  * MeshWorker::integration_loop(). 预期的。
  *
  *
- * 第一个定义局部积分器的类负责计算单元和面矩阵。它被用来组装全局矩阵以及水平矩阵。
- *
+ * 定义局部积分器的第一类负责计算单元和面矩阵。它被用来组装全局矩阵以及水平矩阵。
  *
  * @code
  * template <int dim>
@@ -238,7 +229,6 @@
  * LocalIntegrators::Laplace::compute_penalty()
  * 中可以找到这个参数对常数系数的安全选择，我们在下面使用这个参数。
  *
- *
  * @code
  * template <int dim>
  * void MatrixIntegrator<dim>::cell(
@@ -263,8 +253,8 @@
  * }
  *
  * @endcode
- *  内部面使用内部惩罚方法
  *
+ * 内部面使用内部惩罚方法
  *
  * @code
  * template <int dim>
@@ -289,7 +279,6 @@
  * @endcode
  *
  * 第二个局部积分器建立了右手边。在我们的例子中，右手边的函数是零，这样，这里只设置了弱形式的边界条件。
- *
  *
  * @code
  * template <int dim>
@@ -349,9 +338,9 @@
  *
  *
  * @endcode
+ *
  * 第三个局部积分器负责对误差估计的贡献。这是由Karakashian和Pascal
  * (2003)提出的标准能量估计器。
- *
  *
  * @code
  * template <int dim>
@@ -371,8 +360,8 @@
  *
  *
  * @endcode
- *  单元贡献是离散解的拉普拉斯，因为右手边是零。
  *
+ * 单元贡献是离散解的拉普拉斯，因为右手边是零。
  *
  * @code
  * template <int dim>
@@ -394,7 +383,6 @@
  * @endcode
  *
  * 在边界，我们简单地使用边界残差的加权形式，即有限元解和正确边界条件之间的差值的规范。
- *
  *
  * @code
  * template <int dim>
@@ -425,8 +413,8 @@
  *
  *
  * @endcode
- * 最后，在内部面，估算器由解的跳跃和它的法向导数组成，并进行适当的加权。
  *
+ * 最后，在内部面，估计器由解的跳跃和它的法向导数组成，适当加权。
  *
  * @code
  * template <int dim>
@@ -468,17 +456,15 @@
  *
  * @endcode
  *
- * 最后我们有一个误差的积分器。由于不连续Galerkin问题的能量准则不仅涉及到单元内部的梯度差，还涉及到跨面和边界的跳跃项，所以我们不能仅仅使用
+ * 最后我们有一个误差的积分器。由于不连续Galerkin问题的能量准则不仅涉及到单元内部的梯度差，而且还涉及到跨面和边界的跳跃项，所以我们不能仅仅使用
  * VectorTools::integrate_difference().
- * 而是使用MeshWorker接口来自己计算误差。
+ * 而是使用MeshWorker接口来计算误差。
  *
  *
  * 有几种不同的方法来定义这个能量准则，但是所有的方法都是随着网格大小的变化而等价的（有些不是随着多项式程度的变化而等价）。这里，我们选择@f[ \|u\|_{1,h} =
  * \sum_{K\in \mathbb T_h} \|\nabla u\|_K^2 + \sum_{F \in F_h^i}
  * 4\sigma_F\|\average{ u \mathbf n}\|^2_F + \sum_{F \in F_h^b}
  * 2\sigma_F\|u\|^2_F @f]。
- *
- *
  *
  *
  * @code
@@ -498,11 +484,10 @@
  * };
  *
  * @endcode
- * 这里我们有单元格上的积分。目前MeshWorker中还没有一个很好的接口可以让我们访问正交点的正规函数的值。因此，我们必须在单元格积分器中为精确的函数值和梯度创建向量。之后，一切都和以前一样，我们只需将差值的平方加起来。
+ * 这里我们有单元格上的积分。目前MeshWorker中还没有一个很好的接口可以让我们访问正交点的正规函数的值。因此，我们必须在单元格积分器中为精确的函数值和梯度创建向量。之后，一切照旧，我们只需将差值的平方加起来。
  *
  *
- * 除了计算能量准则的误差，我们还利用网格工作者的能力同时计算两个函数，并在同一循环中计算<i>L<sup>2</sup></i>的误差。很明显，这个函数没有任何跳跃项，只出现在单元格的积分中。
- *
+ * 除了计算能量准则的误差，我们还利用网格工作者的能力，在同一时间计算两个函数，并在同一循环中计算<i>L<sup>2</sup></i>的误差。很明显，这个函数没有任何跳跃项，只出现在单元格的积分中。
  *
  * @code
  * template <int dim>
@@ -601,10 +586,9 @@
  *
  * @endcode
  *
- * <a name="Themainclass"></a> <h3>The main class</h3>.
+ * <a name="Themainclass"></a> <h3>The main class</h3>。
  *
  * 这个类做主要的工作，就像前面的例子一样。关于这里声明的函数的描述，请参考下面的实现。
- *
  *
  * @code
  * template <int dim>
@@ -629,8 +613,7 @@
  *
  * @endcode
  *
- * 与离散化有关的成员对象在这里。
- *
+ * 与离散化有关的成员对象在此。
  *
  * @code
  *   Triangulation<dim>        triangulation;
@@ -639,9 +622,7 @@
  *   DoFHandler<dim>           dof_handler;
  *
  * @endcode
- *
- * 然后，我们有与全局离散系统相关的矩阵和向量。
- *
+ *  然后，我们有与全局离散系统有关的矩阵和向量。
  *
  * @code
  *   SparsityPattern      sparsity;
@@ -655,7 +636,6 @@
  * 最后，我们有一组与多级预处理程序有关的稀疏模式和稀疏矩阵。
  * 首先，我们有一个水平矩阵和它的稀疏性模式。
  *
- *
  * @code
  *   MGLevelObject<SparsityPattern>      mg_sparsity;
  *   MGLevelObject<SparseMatrix<double>> mg_matrix;
@@ -664,19 +644,17 @@
  *
  * 当我们在局部细化的网格上进行局部平滑的多重网格时，需要额外的矩阵；见Kanschat（2004）。这里是这些边缘矩阵的稀疏性模式。我们只需要一个，因为上矩阵的模式是下矩阵的转置。实际上，我们并不太关心这些细节，因为MeshWorker正在填充这些矩阵。
  *
- *
  * @code
  *   MGLevelObject<SparsityPattern> mg_sparsity_dg_interface;
  * @endcode
- *  细化边缘的通量矩阵，将细级自由度耦合到粗级。
  *
+ * 细化边缘的通量矩阵，将细级自由度与粗级自由度耦合。
  *
  * @code
  *   MGLevelObject<SparseMatrix<double>> mg_matrix_dg_down;
  * @endcode
  *
  * 细化边缘的通量矩阵的转置，将粗级自由度耦合到细级。
- *
  *
  * @code
  *   MGLevelObject<SparseMatrix<double>> mg_matrix_dg_up;
@@ -686,7 +664,6 @@
  * @endcode
  *
  * 构造函数简单地设置了粗略的网格和DoFHandler。FiniteElement作为一个参数被提供，以实现灵活性。
- *
  *
  * @code
  * template <int dim>
@@ -708,24 +685,19 @@
  *
  * 在这个函数中，我们设置了线性系统的维度和全局矩阵以及水平矩阵的稀疏性模式。
  *
- *
  * @code
  * template <int dim>
  * void InteriorPenaltyProblem<dim>::setup_system()
  * {
  * @endcode
- *
  * 首先，我们使用有限元将自由度分布在网格上并对其进行编号。
- *
  *
  * @code
  *   dof_handler.distribute_dofs(fe);
  *   dof_handler.distribute_mg_dofs();
  *   unsigned int n_dofs = dof_handler.n_dofs();
  * @endcode
- *
- * 然后，我们已经知道代表有限元函数的向量的大小。
- *
+ *  然后，我们已经知道代表有限元函数的向量的大小。
  *
  * @code
  *   solution.reinit(n_dofs);
@@ -733,8 +705,7 @@
  *
  * @endcode
  *
- * 接下来，我们为全局矩阵设置稀疏性模式。由于我们事先不知道行的大小，所以我们首先填充一个临时的DynamicSparsityPattern对象，一旦完成，就将其复制到常规的SparsityPattern中。
- *
+ * 接下来，我们为全局矩阵设置稀疏性模式。由于我们事先不知道行的大小，所以我们首先填充一个临时的DynamicSparsityPattern对象，一旦完成，就把它复制到常规的SparsityPattern中。
  *
  * @code
  *   DynamicSparsityPattern dsp(n_dofs);
@@ -745,8 +716,7 @@
  *   const unsigned int n_levels = triangulation.n_levels();
  * @endcode
  *
- * 全局系统已经设置好了，现在我们来处理水平矩阵。我们调整所有的矩阵对象的大小，以便每个级别容纳一个矩阵。
- *
+ * 全局系统已经设置好了，现在我们来处理关卡矩阵。我们调整所有矩阵对象的大小，以便每一级都有一个矩阵。
  *
  * @code
  *   mg_matrix.resize(0, n_levels
@@ -762,8 +732,8 @@
  * - 1);
  *   mg_matrix_dg_down.clear_elements();
  * @endcode
- * 在<tt>clear()</tt>被调用后，对级别矩阵进行更新是很重要的，因为矩阵通过SmartPointer和Subscriptor机制锁定了稀疏性模式。
  *
+ * 在为水平矩阵调用<tt>clear()</tt>之后，更新稀疏模式非常重要，因为矩阵通过SmartPointer和Subscriptor机制锁定了稀疏模式。
  *
  * @code
  *   mg_sparsity.resize(0, n_levels
@@ -775,8 +745,7 @@
  *
  * @endcode
  *
- * 现在所有的对象都准备好了，可以为每个级别持有一个稀疏模式或矩阵。剩下的就是在每一层设置稀疏模式了。
- *
+ * 现在所有的对象都准备好了，每一层都有一个稀疏模式或矩阵。剩下的就是在每个层次上设置稀疏模式了。
  *
  * @code
  *   for (unsigned int level = mg_sparsity.min_level();
@@ -784,8 +753,8 @@
  *        ++level)
  *     {
  * @endcode
- * 这与上面的全局矩阵的行数大致相同，现在是针对每一级。
  *
+ * 这些是与上面的全局矩阵大致相同的行，现在是针对每个级别。
  *
  * @code
  *       DynamicSparsityPattern dsp(dof_handler.n_dofs(level));
@@ -795,8 +764,7 @@
  *
  * @endcode
  *
- * 另外，我们需要初始化各层之间细化边缘的转移矩阵。它们被存储在指代两个索引中较细的索引处，因此在第0层没有这样的对象。
- *
+ * 此外，我们需要初始化各级之间细化边缘的转移矩阵。它们被存储在指代两个索引中较细的索引处，因此在0层没有这样的对象。
  *
  * @code
  *       if (level > 0)
@@ -817,18 +785,15 @@
  *
  * @endcode
  *
- * 在这个函数中，我们组装全局系统矩阵，这里的全局是指我们所解决的离散系统的矩阵，它覆盖了整个网格。
- *
+ * 在这个函数中，我们组装全局系统矩阵，这里的全局是指我们解决的离散系统的矩阵，它覆盖了整个网格。
  *
  * @code
  * template <int dim>
  * void InteriorPenaltyProblem<dim>::assemble_matrix()
  * {
  * @endcode
- *
- * 首先，我们需要建立一个提供积分值的对象。这个对象包含所有需要的FEValues和FEFaceValues对象，并且自动维护它们，使它们总是指向当前的单元。为此，我们首先需要告诉它，在哪里计算，计算什么。由于我们没有做任何花哨的事情，我们可以依靠他们对正交规则的标准选择。
+ * 首先，我们需要设置提供我们集成值的对象。这个对象包含所有需要的FEValues和FEFaceValues对象，并且自动维护它们，使它们总是指向当前的单元。为此，我们首先需要告诉它，在哪里计算，计算什么。由于我们没有做任何花哨的事情，我们可以依靠他们对正交规则的标准选择。
  * 由于他们的默认更新标志是最小的，我们额外添加我们需要的东西，即所有对象（单元、边界和内部面）上的形状函数的值和梯度。之后，我们准备初始化容器，它将创建所有必要的FEValuesBase对象进行整合。
- *
  *
  * @code
  *   MeshWorker::IntegrationInfoBox<dim> info_box;
@@ -837,32 +802,28 @@
  *   info_box.initialize(fe, mapping);
  *
  * @endcode
- *
  * 这是我们整合本地数据的对象。它由MatrixIntegrator中的局部整合例程填充，然后由汇编者用来将信息分配到全局矩阵中。
- *
  *
  * @code
  *   MeshWorker::DoFInfo<dim> dof_info(dof_handler);
  *
  * @endcode
- * 此外，我们需要一个将局部矩阵装配到全局矩阵的对象。这些装配对象拥有目标对象结构的所有知识，在这种情况下是一个稀疏矩阵，可能的约束和网格结构。
  *
+ * 此外，我们需要一个将局部矩阵组装成全局矩阵的对象。这些装配对象拥有目标对象结构的所有知识，在这种情况下是一个稀疏矩阵，可能的约束和网格结构。
  *
  * @code
  *   MeshWorker::Assembler::MatrixSimple<SparseMatrix<double>> assembler;
  *   assembler.initialize(matrix);
  *
  * @endcode
- * 现在是我们自己编码的部分，局部积分器。这是唯一与问题有关的部分。
  *
+ * 现在是我们自己编码的部分，局部积分器。这是唯一与问题有关的部分。
  *
  * @code
  *   MatrixIntegrator<dim> integrator;
  * @endcode
- *
- * 现在，我们把所有的东西都扔到 MeshWorker::loop(),
+ *  现在，我们把所有东西都扔到 MeshWorker::loop(),
  * 中，这里遍历网格的所有活动单元，计算单元和面的矩阵，并把它们集合到全局矩阵中。我们在这里使用变量<tt>dof_handler</tt>，以便使用全局自由度的编号。
- *
  *
  * @code
  *   MeshWorker::integration_loop<dim, dim>(dof_handler.begin_active(),
@@ -878,7 +839,6 @@
  *
  * 现在，我们对水平矩阵做同样的处理。不太令人惊讶的是，这个函数看起来像前一个函数的孪生兄弟。事实上，只有两个小的区别。
  *
- *
  * @code
  * template <int dim>
  * void InteriorPenaltyProblem<dim>::assemble_mg_matrix()
@@ -891,8 +851,8 @@
  *   MeshWorker::DoFInfo<dim> dof_info(dof_handler);
  *
  * @endcode
- * 很明显，汇编器需要被一个填充水平矩阵的汇编器所取代。请注意，它也会自动填充边缘矩阵。
  *
+ * 很明显，汇编器需要被一个填充水平矩阵的汇编器所取代。请注意，它也会自动填充边缘矩阵。
  *
  * @code
  *   MeshWorker::Assembler::MGMatrixSimple<SparseMatrix<double>> assembler;
@@ -902,10 +862,9 @@
  *   MatrixIntegrator<dim> integrator;
  * @endcode
  *
- * 这里是与前一个函数的另一个区别：我们在所有的单元格上运行，而不仅仅是活动单元格。而且我们使用以
+ * 这里是与前一个函数的另一个区别：我们在所有的单元上运行，而不仅仅是活动单元。而且我们使用以
  * <code>_mg</code>
  * 结尾的函数，因为我们需要每一层的自由度，而不是全局的编号。
- *
  *
  * @code
  *   MeshWorker::integration_loop<dim, dim>(dof_handler.begin_mg(),
@@ -921,7 +880,6 @@
  *
  * 这里我们有另一个assemble函数的克隆。与组装系统矩阵的区别在于，我们在这里组装了一个向量。
  *
- *
  * @code
  * template <int dim>
  * void InteriorPenaltyProblem<dim>::assemble_right_hand_side()
@@ -936,8 +894,7 @@
  *
  * @endcode
  *
- * 因为这个汇编器允许我们填充几个向量，所以接口就像上面那样复杂了。向量的指针必须存储在一个AnyData对象中。虽然这在这里似乎造成了两行额外的代码，但实际上在更复杂的应用中它是很方便的。
- *
+ * 因为这个汇编器允许我们填充几个向量，所以接口要比上面复杂一些。向量的指针必须存储在一个AnyData对象中。虽然这在这里似乎造成了两行额外的代码，但实际上在更复杂的应用中它是很方便的。
  *
  * @code
  *   MeshWorker::Assembler::ResidualSimple<Vector<double>> assembler;
@@ -963,23 +920,20 @@
  *
  * 现在我们已经编码了建立离散线性系统的所有函数，现在是我们实际解决它的时候了。
  *
- *
  * @code
  * template <int dim>
  * void InteriorPenaltyProblem<dim>::solve()
  * {
  * @endcode
- *  选择的求解器是共轭梯度。
  *
+ * 选择的求解器是共轭梯度。
  *
  * @code
  *   SolverControl            control(1000, 1.e-12);
  *   SolverCG<Vector<double>> solver(control);
  *
  * @endcode
- *
  * 现在我们正在设置多级预处理程序的组件。首先，我们需要在网格层之间进行转移。我们在这里使用的对象为这些转移生成了稀疏矩阵。
- *
  *
  * @code
  *   MGTransferPrebuilt<Vector<double>> mg_transfer;
@@ -988,7 +942,6 @@
  * @endcode
  *
  * 然后，我们需要在最粗的层次上对矩阵进行精确求解。
- *
  *
  * @code
  *   FullMatrix<double> coarse_matrix;
@@ -1000,7 +953,6 @@
  *
  * 虽然转移和粗略的网格求解器几乎是通用的，但为平滑器提供了更多的灵活性。首先，我们选择Gauss-Seidel作为我们的平滑方法。
  *
- *
  * @code
  *   GrowingVectorMemory<Vector<double>> mem;
  *   using RELAXATION = PreconditionSOR<SparseMatrix<double>>;
@@ -1009,22 +961,20 @@
  *   mg_smoother.initialize(mg_matrix, smoother_data);
  *
  * @endcode
- *  在每个层次上做两个平滑步骤。
  *
+ * 在每个级别上做两个平滑的步骤。
  *
  * @code
  *   mg_smoother.set_steps(2);
  * @endcode
  *
- * 由于SOR方法不是对称的，但我们在下面使用共轭梯度迭代，这里有一个技巧，使多级预处理器成为对称算子，即使是非对称的平滑器。
- *
+ * 由于SOR方法不是对称的，但我们在下面使用共轭梯度迭代，这里有一个技巧，使多级预处理器成为对称算子，即使是对非对称平滑器。
  *
  * @code
  *   mg_smoother.set_symmetric(true);
  * @endcode
  *
- * 平滑器类可以选择实现可变的V型循环，我们在这里不希望这样。
- *
+ * 平滑器类可以选择实现变量V-cycle，我们在这里不需要。
  *
  * @code
  *   mg_smoother.set_variable(false);
@@ -1033,16 +983,13 @@
  *
  * 最后，我们必须将我们的矩阵包裹在一个具有所需乘法函数的对象中。
  *
- *
  * @code
  *   mg::Matrix<Vector<double>> mgmatrix(mg_matrix);
  *   mg::Matrix<Vector<double>> mgdown(mg_matrix_dg_down);
  *   mg::Matrix<Vector<double>> mgup(mg_matrix_dg_up);
  *
  * @endcode
- *
- * 现在，我们已经准备好设置V-循环算子和多级预处理程序。
- *
+ *  现在，我们准备设置V型循环算子和多级预处理程序。
  *
  * @code
  *   Multigrid<Vector<double>> mg(
@@ -1051,20 +998,18 @@
  *
  * 我们不要忘记因为自适应细化而需要的边缘矩阵。
  *
- *
  * @code
  *   mg.set_edge_flux_matrices(mgdown, mgup);
  *
  * @endcode
  *
- * 在所有准备工作完成后，将多重网格对象包裹到另一个对象中，它可以作为一个常规的预处理程序使用。
- *
+ * 在所有的准备工作完成后，将Multigrid对象包装成另一个对象，它可以作为一个普通的预处理程序使用。
  *
  * @code
  *   PreconditionMG<dim, Vector<double>, MGTransferPrebuilt<Vector<double>>>
  *     preconditioner(dof_handler, mg, mg_transfer);
  * @endcode
- *  并用它来解系统。
+ *  并用它来解决这个系统。
  *
  * @code
  *   solver.solve(matrix, solution, right_hand_side, preconditioner);
@@ -1073,8 +1018,7 @@
  *
  * @endcode
  *
- * 另一个assemble函数的克隆。与之前的函数最大的不同是，这里我们也有一个输入向量。
- *
+ * 另一个克隆的assemble函数。与之前的最大区别是，这里我们也有一个输入向量。
  *
  * @code
  * template <int dim>
@@ -1082,9 +1026,8 @@
  * {
  * @endcode
  *
- * 估算器的结果被存储在一个向量中，每个单元格有一个条目。由于deal.II中的单元格没有编号，我们必须建立自己的编号，以便使用这个向量。对于下面使用的汇编器来说，结果存储在向量的哪个分量中的信息是由每个单元的user_index变量传送的。我们需要在这里设置这个编号。
+ * 估计器的结果存储在一个向量中，每个单元格有一个条目。由于deal.II中的单元格没有编号，我们必须建立自己的编号，以便使用这个向量。对于下面使用的汇编器来说，结果存储在向量的哪个分量中的信息是由每个单元的user_index变量传送的。我们需要在这里设置这个编号。
  * 另一方面，有人可能已经使用了用户索引。所以，让我们做个好公民，在篡改它们之前保存它们。
- *
  *
  * @code
  *   std::vector<unsigned int> old_user_indices;
@@ -1097,8 +1040,7 @@
  *
  * @endcode
  *
- * 这像以前一样开始。
- *
+ * 这和以前一样开始。
  *
  * @code
  *   MeshWorker::IntegrationInfoBox<dim> info_box;
@@ -1112,7 +1054,6 @@
  *
  * 但现在我们需要通知信息框我们要在正交点上评估的有限元函数。首先，我们用这个向量创建一个AnyData对象，这个向量就是我们刚刚计算的解。
  *
- *
  * @code
  *   AnyData solution_data;
  *   solution_data.add<const Vector<double>>(&solution, "solution");
@@ -1120,15 +1061,13 @@
  * @endcode
  *
  * 然后，我们告诉单元格的 Meshworker::VectorSelector
- * ，我们需要这个解的二阶导数（用来计算拉普拉斯）。因此，选择函数值和第一导数的布尔参数是假的，只有选择第二导数的最后一个参数是真的。
- *
+ * ，我们需要这个解决方案的第二导数（以计算拉普拉斯）。因此，选择函数值和第一导数的布尔参数是假的，只有选择第二导数的最后一个参数是真的。
  *
  * @code
  *   info_box.cell_selector.add("solution", false, false, true);
  * @endcode
  *
  * 在内部和边界面，我们需要函数值和第一导数，但不需要第二导数。
- *
  *
  * @code
  *   info_box.boundary_selector.add("solution", true, true, false);
@@ -1138,7 +1077,6 @@
  *
  * 我们继续像以前一样，除了默认的更新标志已经被调整为我们上面要求的值和导数之外。
  *
- *
  * @code
  *   info_box.add_update_flags_boundary(update_quadrature_points);
  *   info_box.initialize(fe, mapping, solution_data, solution);
@@ -1147,8 +1085,7 @@
  *
  * @endcode
  *
- * 汇编器在每个单元格中存储一个数字，否则这与计算右手边的数字是一样的。
- *
+ * 汇编器在每个单元格中存储一个数字，否则这就与右手边的计算相同。
  *
  * @code
  *   MeshWorker::Assembler::CellsAndFaces<double> assembler;
@@ -1168,7 +1105,6 @@
  *
  * 就在我们返回错误估计的结果之前，我们恢复了旧的用户索引。
  *
- *
  * @code
  *   triangulation.load_user_indices(old_user_indices);
  *   return estimates.block(0).l2_norm();
@@ -1176,11 +1112,10 @@
  *
  * @endcode
  *
- * 这里我们将我们的有限元解与（已知的）精确解进行比较，计算梯度和函数本身的平均二次误差。这个函数是上面那个估计函数的克隆。
+ * 这里我们将我们的有限元解与（已知的）精确解进行比较，并计算梯度和函数本身的平均二次方误差。这个函数是上面那个估计函数的克隆。
  *
  *
  * 因为我们分别计算了能量和<i>L<sup>2</sup></i>-norm的误差，所以我们的块向量在这里需要两个块。
- *
  *
  * @code
  * template <int dim>
@@ -1239,7 +1174,6 @@
  *
  * 创建图形输出。我们通过整理其各个组成部分的名称来产生文件名，包括我们用两个数字输出的细化周期。
  *
- *
  * @code
  * template <int dim>
  * void
@@ -1264,8 +1198,7 @@
  *
  * @endcode
  *
- * 最后是自适应循环，或多或少与前面的例子一样。
- *
+ * 最后是自适应循环，或多或少和前面的例子一样。
  *
  * @code
  * template <int dim>
@@ -1354,9 +1287,8 @@
  * return 0;
  * }
  * @endcode
- * <a name="Results"></a><h1>Results</h1> 。
- *
- *  <a name="Logfileoutput"></a><h3>Logfile output</h3>。
+ * <a name="Results"></a><h1>Results</h1> 。   <a
+ * name="Logfileoutput"></a><h3>Logfile output</h3> 。
  * 首先，该程序产生通常的日志文件，在这里存储在<tt>deallog</tt>。它的内容是（省略了中间的步骤
  * @code
  * DEAL::Element: FE_DGQ<2>(3)
@@ -1441,7 +1373,7 @@
  *  <img
  * src="https://www.dealii.org/images/steps/developer/step-39-convergence.svg"
  * alt="">
- * 使用perl脚本<tt>postprocess.pl</tt>，我们提取相关数据到<tt>output.dat</tt>，可以用<tt>gnuplot</tt>来绘制图表。例如，上面的图是用gnuplot脚本<tt>plot_errors.gpl</tt>通过以下方式制作的
+ * 使用perl脚本<tt>postprocess.pl</tt>，我们提取相关数据到<tt>output.dat</tt>中，可以用<tt>gnuplot</tt>绘制图形。例如，上面的图是用gnuplot脚本<tt>plot_errors.gpl</tt>通过以下方式制作的
  * @code
  * perl postprocess.pl deallog &> output.dat
  * gnuplot plot_errors.gpl

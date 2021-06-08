@@ -1,3 +1,0 @@
-include/deal.II-translator/base/time_stepping.templates_0.txt
-[0.x.0]
-

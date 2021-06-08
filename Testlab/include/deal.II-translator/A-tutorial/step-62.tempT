@@ -1,6 +1,6 @@
 //include/deal.II-translator/A-tutorial/step-62_0.txt
 /**
-  @page step_62 The step-62 tutorial program  
+  @page step_62 The step-62 tutorial program 
 * 本教程依赖于  step-8  ,  step-40  。
 * @htmlonly
 <table class="tutorial" width="50%">
@@ -31,7 +31,7 @@
         <li><a href="#ThePMLclassimplementation">The `PML` class implementation</a><a href="#ThePMLclassimplementation">The `PML` class implementation</a>
         <li><a href="#TheRhoclassimplementation">The `Rho` class implementation</a><a href="#TheRhoclassimplementation">The `Rho` class implementation</a>
         <li><a href="#TheParametersclassimplementation">The `Parameters` class implementation</a><a href="#TheParametersclassimplementation">The `Parameters` class implementation</a>
-        <li><a href="#TheQuadratureCacheclassimplementation">The `QuadratureCache` class implementation</a> ]<a href="#TheQuadratureCacheclassimplementation">The `QuadratureCache` class implementation</a>
+        <li><a href="#TheQuadratureCacheclassimplementation">The `QuadratureCache` class implementation</a><a href="#TheQuadratureCacheclassimplementation">The `QuadratureCache` class implementation</a>
       </ul>
         <li><a href="#ImplementationoftheElasticWaveclass">Implementation of the `ElasticWave` class</a><a href="#ImplementationoftheElasticWaveclass">Implementation of the `ElasticWave` class</a>
       <ul>
@@ -59,32 +59,32 @@
   <li> <a href="#PlainProg" class=bold>The plain program</a><a href="#PlainProg" class=bold>The plain program</a>
 </ol> </td> </tr> </table>
 @endhtmlonly
-*  <br>  
-* <i>This program was contributed by Daniel Garcia-Sanchez.</i>  <br>  
- 
+*  <br> 
+* <i>This program was contributed by Daniel Garcia-Sanchez.</i>  <br> 
 
- 
+
+*
 *  @note  作为这个程序的先决条件，你需要安装HDF5、复杂的PETSc和p4est库。在<a
 href="../../readme.html" target="body">README</a>文件中描述了deal.II和这些附加库的安装情况。
 * <a name="Introduction"></a><h1>Introduction</h1> 。
 * 声子晶体是一种周期性的纳米结构，它可以改变机械振动或[声子]的运动(https://en.wikipedia.org/wiki/Phonon)。声子结构可以用来分散、引导和限制机械振动。这些结构在[量子信息](https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.86.1391)方面有潜在的应用，并被用来研究[宏观量子现象](https://science.sciencemag.org/content/358/6360/203)。声子晶体通常在[洁净室]中制造(https://en.wikipedia.org/wiki/Cleanroom)。
-* 在本教程中，我们展示了如何设计一个[声子超晶格空腔](https://doi.org/10.1103/PhysRevA.94.033813)，这是一种特殊类型的声子晶体，可以用来限制机械振动。声子超晶格空腔是由两个[分布式布拉格反射器](https://en.wikipedia.org/wiki/Distributed_Bragg_reflector)、镜子和一个 $\lambda/2$ 空腔组成，其中 $\lambda$ 是声学波长。声学DBRs是一种周期性结构，一组具有对比物理特性（声速指数）的双层叠层被重复 $N$  ] 次。超晶格空腔通常通过[分子束外延](https://en.wikipedia.org/wiki/Molecular-beam_epitaxy)在[砷化镓](https://en.wikipedia.org/wiki/Gallium_arsenide)晶片上生长。双层对应于GaAs/AlAs镜像对。如下图所示，镜像层（褐色和绿色）的厚度为 $\lambda/4$ ，空腔（蓝色）的厚度为 $\lambda/2$  。
-*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.01.svg" height="200" />  
+* 在本教程中，我们展示了如何设计一个[声子超晶格空腔](https://doi.org/10.1103/PhysRevA.94.033813)，这是一种特殊类型的声子晶体，可以用来限制机械振动。声子超晶格空腔是由两个[分布式布拉格反射器](https://en.wikipedia.org/wiki/Distributed_Bragg_reflector)、镜子和一个 $\lambda/2$ 空腔组成，其中 $\lambda$ 是声学波长。声学DBRs是一种周期性结构，一组具有对比物理特性（声速指数）的双层叠层被重复 $N$  次。超晶格空腔通常通过[分子束外延](https://en.wikipedia.org/wiki/Molecular-beam_epitaxy)在[砷化镓](https://en.wikipedia.org/wiki/Gallium_arsenide)晶片上生长。双层对应于GaAs/AlAs镜像对。如下图所示，镜像层（褐色和绿色）的厚度为 $\lambda/4$ ，空腔（蓝色）的厚度为 $\lambda/2$  。
+*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.01.svg" height="200" /> 
 * 在本教程中，我们计算了一个声子超晶格空腔的[带隙](https://en.wikipedia.org/wiki/Band_gap)和机械共振，但是这里介绍的代码可以很容易地用于设计和计算其他类型的[声子晶体](https://science.sciencemag.org/content/358/6360/203)。
 * 本教程的模拟是在二维中完成的，但代码与尺寸无关，可以很容易地用于三维模拟。波导宽度等于域的 $y$ 维，波导长度等于域的 $x$ 维。
-* 
-*-单模。在这种情况下，结构的宽度要比波长小得多。 这种情况可以用有限元法（我们在此采取的方法）或用简单的半分析法[一维转移矩阵形式]（https://en.wikipedia.org/wiki/Transfer_matrix）来解决。
-* 
-* - 多模。在这种情况下，结构的宽度比波长大。 这种情况可以用有限元法或[散射矩阵形式主义](https://doi.org/10.1103/PhysRevA.94.033813)来解决。 虽然我们在本教程中没有研究这种情况，但通过增加波导宽度参数（jupyter笔记本中的`dimension_y'），很容易达到多模制度。
+*
+*-单模。在这种情况下，结构的宽度要比波长小得多。  这种情况可以用有限元法（我们在此采取的方法）或用简单的半分析法[一维转移矩阵形式]（https://en.wikipedia.org/wiki/Transfer_matrix）来解决。
+*
+* - 多模。在这种情况下，结构的宽度比波长大。  这种情况可以用有限元法或[散射矩阵形式主义](https://doi.org/10.1103/PhysRevA.94.033813)来解决。  虽然我们在本教程中没有研究这种情况，但通过增加波导宽度参数（jupyter笔记本中的`dimension_y'），很容易达到多模制度。
 * 本教程的模拟是在频域中进行的。为了计算传输光谱，我们使用了一个[程序](https://meep.readthedocs.io/en/latest/Python_Tutorials/Resonant_Modes_and_Transmission_in_a_Waveguide_Cavity/)，这在时域[FDTD](https://en.wikipedia.org/wiki/Finite-difference_time-domain_method)模拟中是常用的。在结构的左侧产生一个特定频率的脉冲，在结构的右侧测量传输的能量。首先，我们用声子结构运行模拟，并测量传输的能量。
-*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.02.svg" height="200" />  
+*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.02.svg" height="200" /> 
 * 然后，我们运行没有声子结构的模拟，并测量传输的能量。我们使用没有结构的模拟来进行校准。
-*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.03.svg" height="200" />  
-* 传输系数相当于第一个模拟的能量除以校准能量。我们对每个频率步骤重复这个程序。
-* 
+*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.03.svg" height="200" /> 
+* 传输系数相当于第一个模拟的能量除以校准能量。我们对每个频率步骤重复这一程序。
+*
 
-* <a name="Elasticequations"></a><h3>Elastic equations</h3> 。
-* 我们在这里要模拟的是弹性波的传输。因此，问题的正确描述使用了弹性方程，在时域中由@f[
+*<a name="Elasticequations"></a><h3>Elastic equations</h3>
+* 我们在这里要模拟的是弹性波的传输。因此，对问题的正确描述是使用弹性方程，在时域中由@f[
 \rho\partial_{tt} u_i
 * 
 - \partial_j (c_{ijkl} \varepsilon_{kl}) = f_i,
@@ -101,7 +101,7 @@ href="../../readme.html" target="body">README</a>文件中描述了deal.II和这
 \boldsymbol{\Lambda} &=& \operatorname{diag}(1/s_0,1/s_1,1/s_2)\qquad\textrm{for 3D}\\
 \boldsymbol{\Lambda} &=& \operatorname{diag}(1/s_0,1/s_1)\qquad\textrm{for 2D}
 @f} 。
-*其中系数 $s_i = 1+is_i'(x,y,z)$ 说明了吸收情况。在三维中有3个 $s_i$ 系数，在二维中有2个。 $s_i$ 的虚部在PML外等于零。PML只对精确的波方程无反射。当方程组被离散化时，PML不再无反射。只要hemedium缓慢变化，反射可以变得任意小，见[绝热定理] (https://doi.org/10.1103/PhysRevE.66) .066608）。在代码中使用了PML的二次开启。线性和三次开启也[已知可行](https://doi.org/10.1364/OE.16.011376)。这些方程可以扩展为@f[
+*其中系数 $s_i = 1+is_i'(x,y,z)$ 说明了吸收情况。在三维中有3个 $s_i$ 系数，在二维中有2个。 $s_i$ 的虚部在PML外等于零。PML只对精确的波方程无反射。当方程组被离散化时，PML不再无反射。只要hemedium缓慢变化，反射可以被任意地变小，见[绝热定理] (https://doi.org/10.1103/PhysRevE.66).066608）。在代码中使用了PML的二次开启。线性和三次开启也[已知可行](https://doi.org/10.1364/OE.16.011376)。这些方程可以扩展为@f[
 * 
 -\omega^2\rho \xi  u_m
 * 
@@ -110,7 +110,7 @@ href="../../readme.html" target="body">README</a>文件中描述了deal.II和这
 @f]@f[
 \varepsilon_{kl} =\frac{1}{2}\left(\frac{1}{s_k}\partial_k u_l
 + \frac{1}{s_l}\partial_l u_k\right)
-@f]，其中对重复指数进行求和（这里是 $n$  ]，以及 $k$ 和 $l$ )的求和总是隐含的。注意，在应用PML的复数坐标拉伸后，应变不再是对称的。这组方程可以写成@f[
+@f]，其中对重复指数进行求和（这里是 $n$ ，以及 $k$ 和 $l$ )的求和总是隐含的。注意，在应用PML的复数坐标拉伸后，应变不再是对称的。这组方程可以写成@f[
 * 
 -\omega^2\rho \xi  u_m
 * 
@@ -120,7 +120,7 @@ href="../../readme.html" target="body">README</a>文件中描述了deal.II和这
 * 与应变一样，应力张量在PML内也不是对称的（ $s_j\neq 0$ ）。事实上，PML内的场不是物理的。引入张量 $\alpha_{mnkl}$ 和 $\beta_{mnkl}$ 是有用的。
 * 我们可以乘以 $\varphi_m$ ，并在域 $\Omega$ 上进行积分，并通过部分积分。
 * 正是这组方程，我们要解决一组频率 $\omega$ ，以计算传输系数作为频率的函数。
-* 
+*
 *<a name="Simulationparameters"></a><h3>Simulation parameters</h3>。
 * 在本教程中，我们使用python[jupyter notebook](https://github.com/dealii/dealii/blob/master/examples/  step-62  /  step-62  .ipynb)来设置参数和运行模拟。首先，我们创建一个HDF5文件，在其中存储参数和模拟的结果。
 * 每个模拟（位移和校准）都存储在一个单独的HDF5组中。
@@ -215,18 +215,18 @@ for group in [displacement, calibration]:
 * 
 h5_file.close()
 @endcode
-* 
-* 
+*
+*
 
-* <a name="CommProg"></a> <h1> The commented program</h1>
-* <a name="Includefiles"></a> <h3>Include files</h3>。
- 
+* <a name="CommProg"></a> <h1> The commented program</h1>。
+* <a name="Includefiles"></a><h3>Include files</h3> 。
+*
 
-* 
+*
 * 我们在这个程序中需要的大部分包含文件已经在以前的程序中讨论过了，特别是在  step-40  中。
-* 
+*
 
-* 
+
 * @code
  #include <deal.II/base/conditional_ostream.h>
  #include <deal.II/base/function.h>
@@ -260,39 +260,39 @@ h5_file.close()
  #include <iostream>
 * 
  @endcode
- 
-* 下面的头文件提供了我们用来表示材料属性的张量类。
-* 
 
-* 
+* 下面的标头提供了我们用来表示材料属性的张量类。
+*
+
+
 * @code
  #include <deal.II/base/tensor.h>
 * 
  
  @endcode
-* 
-* 以下标头对于deal.II的HDF5接口是必要的。
-* 
+*
+* 以下是deal.II的HDF5接口所需的头。
+*
 
-* 
+
 * @code
  #include <deal.II/base/hdf5.h>
 * 
  @endcode
-* 
-* 这个头是我们用来评估模拟结果的函数 VectorTools::point_value 所需要的。
-* 
+*
+* 这个标头是我们用来评估模拟结果的函数 VectorTools::point_value 所需要的。
+*
 
-* 
+
 * @code
  #include <deal.II/numerics/vector_tools.h>
 * 
  @endcode
-* 
-* 我们在函数 GridTools::find_active_cell_around_point 中使用的函数 `ElasticWave::store_frequency_step_data()` 需要这些头文件。
- 
 
-* 
+* 我们需要这些头文件，用于我们在函数 `ElasticWave::store_frequency_step_data()` 中使用的函数 GridTools::find_active_cell_around_point  。
+
+
+
 * @code
  #include <deal.II/grid/grid_tools.h>
  #include <deal.II/grid/grid_tools_cache.h>
@@ -302,15 +302,15 @@ h5_file.close()
    using namespace dealii;
 * 
  @endcode
-* 
+*
 * <a name="Auxiliaryclassesandfunctions"></a> <h3>Auxiliary classes and functions</h3> 以下类用于存储模拟的参数。
-* 
+*
 
-* 
+*
 * <a name="TheRightHandSideclass"></a> <h4>The `RightHandSide` class</h4> 该类用于定义结构左侧的力脉冲。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class RightHandSide : public Function<dim>
@@ -323,20 +323,20 @@ h5_file.close()
 * 
    private:
  @endcode
-* 
-* 变量`data`是 HDF5::Group ，所有的模拟结果都将被储存在其中。注意，变量 `RightHandSide::data`,  `PML::data`,  `Rho::data` 和 `Parameters::data` 指向HDF5文件的同一组。当 HDF5::Group 被复制时，它将指向HDF5文件的同一组。
-* 
+*
+* 变量`data`是 HDF5::Group ，所有的模拟结果都将存储在其中。注意，变量 `RightHandSide::data`,  `PML::data`,  `Rho::data` 和 `Parameters::data` 指向HDF5文件的同一组。当 HDF5::Group 被复制时，它将指向HDF5文件的同一组。
+*
 
-* 
+
 * @code
      HDF5::Group data;
 * 
  @endcode
-* 
+*
 * 仿真参数作为HDF5属性存储在`data`中。以下属性在jupyter笔记本中定义，作为HDF5属性存储在`data`中，然后由构造函数读取。
-* 
+*
 
-* 
+
 * @code
      const double     max_force_amplitude;
      const double     force_sigma_x;
@@ -347,21 +347,21 @@ h5_file.close()
 * 
    public:
  @endcode
-* 
-* 在这个特定的模拟中，力只有一个 $x$ 分量， $F_y=0$  。
-* 
+*
+*在这个特定的模拟中，力只有一个 $x$ 分量， $F_y=0$  。
+*
 
-* 
+
 * @code
      const unsigned int force_component = 0;
    };
 * 
  @endcode
-* 
-* <a name="ThePMLclass"></a> <h4>The `PML` class</h4> 该类用于定义完美匹配层（PML）的形状，以吸收向边界移动的波。
-* 
+*
+* <a name="ThePMLclass"></a> <h4>The `PML` class</h4> 该类用于定义完美匹配层（PML）的形状，以吸收向边界传播的波。
+*
 
-* 
+
 * @code
    template <int dim>
    class PML : public Function<dim, std::complex<double>>
@@ -374,20 +374,20 @@ h5_file.close()
 * 
    private:
  @endcode
- 
-*  HDF5::Group  所有的模拟结果将被储存在其中。
-* 
+*
+*  HDF5::Group ，所有的模拟结果都将被储存在其中。
+*
 
-* 
+
 * @code
      HDF5::Group data;
 * 
  @endcode
-* 
+*
 * 和以前一样，以下属性在jupyter笔记本中定义，作为HDF5属性存储在`data`中，然后由构造函数读取。
-* 
+*
 
-* 
+
 * @code
      const double pml_coeff;
      const int    pml_coeff_degree;
@@ -404,11 +404,11 @@ h5_file.close()
  
 * 
  @endcode
- 
-* <a name="TheRhoclass"></a> <h4>The `Rho` class</h4> 这个类是用来定义质量密度的。
-* 
+*
+* <a name="TheRhoclass"></a> <h4>The `Rho` class</h4> 该类用于定义质量密度。
+*
 
-* 
+
 * @code
    template <int dim>
    class Rho : public Function<dim>
@@ -421,20 +421,20 @@ h5_file.close()
 * 
    private:
  @endcode
-* 
-*  HDF5::Group  所有的模拟结果将被储存在其中。
-* 
+*
+*  HDF5::Group ，所有的模拟结果将被储存在其中。
+*
 
-* 
+
 * @code
      HDF5::Group data;
 * 
  @endcode
-* 
+*
 * 和以前一样，以下属性在jupyter笔记本中定义，作为HDF5属性存储在`data`中，然后由构造函数读取。
-* 
+*
 
-* 
+
 * @code
      const double       lambda;
      const double       mu;
@@ -450,11 +450,11 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="TheParametersclass"></a> <h4>The `Parameters` class</h4> 这个类包含所有将在模拟中使用的参数。
-* 
+*
+* <a name="TheParametersclass"></a> <h4>The `Parameters` class</h4> 该类包含所有将在模拟中使用的参数。
+*
 
-* 
+
 * @code
    template <int dim>
    class Parameters
@@ -463,20 +463,20 @@ h5_file.close()
      Parameters(HDF5::Group &data);
 * 
  @endcode
-* 
-*  HDF5::Group  所有的模拟结果将被储存在其中。
-* 
+*
+*  HDF5::Group ，所有的模拟结果将被储存在其中。
+*
 
-* 
+
 * @code
      HDF5::Group data;
 * 
  @endcode
-* 
+*
 * 和以前一样，以下属性在jupyter笔记本中定义，作为HDF5属性存储在`data`中，然后由构造函数读取。
-* 
+*
 
-* 
+
 * @code
      const std::string        simulation_name;
      const bool               save_vtu_files;
@@ -502,11 +502,11 @@ h5_file.close()
  
 * 
  @endcode
-* 
+*
 * <a name="TheQuadratureCacheclass"></a> <h4>The `QuadratureCache` class</h4> 质量和刚度矩阵的计算非常昂贵。这些矩阵对所有的频率步骤都是一样的。右手边的向量对于所有的频率步骤也是一样的。我们用这个类来存储这些对象，并在每个频率步骤中重新使用它们。请注意，这里我们不存储集合的质量和刚度矩阵以及右手边，而是存储单个单元的数据。QuadratureCache "类与 "PointHistory "类非常相似，后者已在  step-18  中使用。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class QuadratureCache
@@ -519,11 +519,11 @@ h5_file.close()
 * 
    public:
  @endcode
- 
+*
 * 我们在变量mass_coefficient和stiffness_coefficient中存储质量和刚度矩阵。我们还存储了右手边和JxW值，这些值对所有的频率步骤都是一样的。
-* 
+*
 
-* 
+
 * @code
      FullMatrix<std::complex<double>>  mass_coefficient;
      FullMatrix<std::complex<double>>  stiffness_coefficient;
@@ -534,20 +534,20 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="Theget_stiffness_tensorfunction"></a> <h4>The `get_stiffness_tensor()` function</h4>
- 
+*
+* <a name="Theget_stiffness_tensorfunction"></a> <h4>The `get_stiffness_tensor()` function</h4>。
 
-* 
+
+
 * 这个函数返回材料的刚度张量。为了简单起见，我们认为刚度是各向同性和同质的；只有密度  $\rho$  取决于位置。正如我们之前在  step-8  中所表明的，如果刚度是各向同性和均质的，刚度系数  $c_{ijkl}$  可以表示为两个系数  $\lambda$  和  $\mu$  的函数。系数张量简化为 @f[
  c_{ijkl}
  =
  \lambda \delta_{ij} \delta_{kl} +
  \mu (\delta_{ik} \delta_{jl} + \delta_{il} \delta_{jk}).
  @f] 。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    SymmetricTensor<4, dim> get_stiffness_tensor(const double lambda,
@@ -568,30 +568,30 @@ h5_file.close()
  
 * 
  @endcode
-* 
+*
 * <a name="TheElasticWaveclass"></a> <h3>The `ElasticWave` class</h3>。
- 
 
-* 
-* 接下来让我们来声明这个程序的主类。它的结构与 step-40 的教程程序非常相似。主要的区别是。
-* 
 
-* 
-* 
+*
+* 接下来我们来声明这个程序的主类。它的结构与 step-40 的教程程序非常相似。主要的区别是。
+*
+
+
+*
 * - 扫过的频率值。
-* 
+*
 
-* 
-* 
+
+*
 * - 我们将刚度和质量矩阵保存在`quadrature_cache`中，并将其用于每个频率步骤。
-* 
+*
 
-* 
-* 
+
+*
 * - 我们在HDF5文件中存储每个频率步骤的探头测量的能量。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    class ElasticWave
@@ -610,29 +610,29 @@ h5_file.close()
      void output_results();
 * 
  @endcode
-* 
-* 在每个频率步骤之前都要调用这个程序，以便为缓存变量设置一个原始状态。
-* 
+*
+* 在每一个频率步骤之前都会被调用，以便为缓存变量设置一个原始状态。
+*
 
-* 
+
 * @code
      void setup_quadrature_cache();
 * 
  @endcode
-* 
-* 这个函数在频率向量上循环，为每个频率步骤运行模拟。
-* 
+*
+* 这个函数在频率向量上循环，并对每个频率步骤运行模拟。
+*
 
-* 
+
 * @code
      void frequency_sweep();
 * 
  @endcode
-* 
+*
 * 参数存储在这个变量中。
-* 
+*
 
-* 
+
 * @code
      Parameters<dim> parameters;
 * 
@@ -643,11 +643,11 @@ h5_file.close()
      QGauss<dim> quadrature_formula;
 * 
  @endcode
-* 
-* 我们把每个单元的质量和刚度矩阵储存在这个向量中。
-* 
+*
+* 我们为每个单元存储质量和刚度矩阵，这个向量。
+*
 
-* 
+
 * @code
      std::vector<QuadratureCache<dim>> quadrature_cache;
 * 
@@ -666,39 +666,39 @@ h5_file.close()
 * 
  
  @endcode
-* 
+*
 * 这个向量包含我们要模拟的频率范围。
-* 
+*
 
-* 
+
 * @code
      std::vector<double> frequency;
 * 
  @endcode
-* 
+*
 * 这个向量包含了测量探头的点的坐标 $(x,y)$ 。
-* 
+*
 
-* 
+
 * @code
      FullMatrix<double> probe_positions;
 * 
  @endcode
-* 
-* HDF5数据集用于存储频率和`探头位置`向量。
-* 
+*
+* HDF5数据集来存储频率和`探针位置`向量。
+*
 
-* 
+
 * @code
      HDF5::DataSet frequency_dataset;
      HDF5::DataSet probe_positions_dataset;
 * 
  @endcode
-* 
-* HDF5数据集，存储探头测量的能量值。
-* 
+*
+* HDF5数据集，存储探针测量的能量值。
+*
 
-* 
+
 * @code
      HDF5::DataSet displacement;
 * 
@@ -710,19 +710,19 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="Implementationoftheauxiliaryclasses"></a> <h3>Implementation of the auxiliary classes</h3>.
- 
+*
+* <a name="Implementationoftheauxiliaryclasses"></a> <h3>Implementation of the auxiliary classes</h3>。
 
-* 
-* <a name="TheRightHandSideclassimplementation"></a> <h4>The `RightHandSide` class implementation</h4>.
- 
 
-* 
-* 构造函数使用 HDF5::Group::get_attribute() 函数从 HDF5::Group 的`data`中读取所有参数。
-* 
 
-* 
+* <a name="TheRightHandSideclassimplementation"></a> <h4>The `RightHandSide` class implementation</h4>。
+
+
+*
+*构造函数使用 HDF5::Group 函数从 HDF5::Group::get_attribute() `data`中读取所有参数。
+*
+
+
 * @code
    template <int dim>
    RightHandSide<dim>::RightHandSide(HDF5::Group &data)
@@ -738,10 +738,10 @@ h5_file.close()
    {}
 * 
  @endcode
-* 
-* 这个函数定义了力矢量脉冲的空间形状，它采用高斯函数的形式
+*
+* 这个函数定义了力矢量脉冲的空间形状，其形式为高斯函数
 
-* 
+
 * @f{align*}
  F_x &=
  \left\{
@@ -753,10 +753,10 @@ h5_file.close()
  \end{array}
  \right.\\ F_y &= 0
  @f}
-* 其中 $a$ 是取力的最大振幅， $\sigma_x$ 和 $\sigma_y$ 是 $x$ 和 $y$ 成分的标准偏差。注意，脉冲已被裁剪为 $x_\textrm{min}<x<x_\textrm{max}$ 和 $y_\textrm{min} <y<y_\textrm{max}$  。
-* 
+*其中 $a$ 是取力的最大振幅， $\sigma_x$ 和 $\sigma_y$ 是 $x$ 和 $y$ 成分的标准偏差。注意，脉冲已被裁剪为 $x_\textrm{min}<x<x_\textrm{max}$ 和 $y_\textrm{min} <y<y_\textrm{max}$  。
+*
 
-* 
+
 * @code
    template <int dim>
    double RightHandSide<dim>::value(const Point<dim> & p,
@@ -795,15 +795,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ThePMLclassimplementation"></a> <h4>The `PML` class implementation</h4> 。
- 
+*
+* <a name="ThePMLclassimplementation"></a> <h4>The `PML` class implementation</h4>。
 
-* 
-* 和以前一样，构造函数使用 HDF5::Group 函数从 HDF5::Group::get_attribute() `data`中读取所有参数。正如我们所讨论的，在jupyter笔记本中已经定义了PML的二次开机。通过改变参数`pml_coeff_degree`，可以使用线性、立方或其他幂度。参数`pml_x`和`pml_y`可以用来打开和关闭`x`和`y`PML。
-* 
 
-* 
+*
+* 和以前一样，构造函数使用 HDF5::Group  `data`函数从 HDF5::Group::get_attribute() 中读取所有参数。正如我们已经讨论过的，在jupyter笔记本中已经定义了PML的二次方开启。通过改变参数`pml_coeff_degree`，可以使用线性、立方或其他幂度。参数`pml_x`和`pml_y`可以用来开启和关闭`x`和`y`PML。
+*
+
+
 * @code
    template <int dim>
    PML<dim>::PML(HDF5::Group &data)
@@ -824,11 +824,11 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* `x`部分的PML系数的形式为  $s'_x = a_x x^{\textrm{degree}}$  。
- 
+*
+* `x`部分的PML系数的形式为 $s'_x = a_x x^{\textrm{degree}}$  。
+*
 
-* 
+
 * @code
    template <int dim>
    std::complex<double> PML<dim>::value(const Point<dim> & p,
@@ -874,15 +874,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
+*
 * <a name="TheRhoclassimplementation"></a> <h4>The `Rho` class implementation</h4>。
- 
 
-* 
-* 这个类别是用来定义质量密度的。正如我们之前所解释的，一个声学超晶格空腔是由两个[分布式反射器](https://en.wikipedia.org/wiki/Band_gap)、镜子和一个 $\lambda/2$ 空腔组成，其中 $\lambda$ 是声学波长。声学DBRs是一种周期性结构，其中一组具有对比物理特性（声速指数）的双层叠层被重复 $N$ 次。波速的变化是由具有不同密度的层交替产生的。
-* 
 
-* 
+*
+* 这个类是用来定义质量密度的。正如我们之前解释的那样，声学超晶格空腔是由两个[分布式反射器](https://en.wikipedia.org/wiki/Band_gap)、镜子和一个 $\lambda/2$ 空腔组成，其中 $\lambda$ 是声学波长。声学DBRs是一种周期性结构，其中一组具有对比物理特性（声速指数）的双层叠层被重复 $N$ 次。波速的变化是由具有不同密度的层交替产生的。
+*
+
+
 * @code
    template <int dim>
    Rho<dim>::Rho(HDF5::Group &data)
@@ -899,11 +899,11 @@ h5_file.close()
      , grid_level(data.get_attribute<int>("grid_level"))
    {
  @endcode
- 
-* 为了提高精度，我们使用了[子像素平滑法](https://meep.readthedocs.io/en/latest/Subpixel_Smoothing/)。
-* 
+*
+* 为了提高精度，我们使用[子像素平滑](https://meep.readthedocs.io/en/latest/Subpixel_Smoothing/)。
+*
 
-* 
+
 * @code
      average_rho_width = dimension_y / (std::pow(2.0, grid_level));
      data.set_attribute("average_rho_width", average_rho_width);
@@ -916,7 +916,7 @@ h5_file.close()
                           const unsigned int  /*component*/ ) const
    {
  @endcode
-* 
+*
 * 声速由@f[
  c = \frac{K_e}{\rho}
  @f]定义，其中 $K_e$ 是有效弹性常数， $\rho$ 是密度。这里我们考虑波导宽度远小于波长的情况。在这种情况下，可以证明对于二维的情况@f[
@@ -924,9 +924,9 @@ h5_file.close()
  @f]和三维的情况 $K_e$ 等于杨氏模量。@f[
  K_e = \mu\frac{3\lambda +2\mu}{\lambda+\mu}
  @f]
-* 
+*
 
-* 
+
 * @code
      double elastic_constant;
      if (dim == 2)
@@ -951,11 +951,11 @@ h5_file.close()
        material_b_speed_of_sound / cavity_resonance_frequency;
 * 
  @endcode
-* 
-* 密度 $\rho$ 采取以下形式 <img alt="声学超晶格空腔" src="https://www.dealii.org/images/steps/developer/  step-62  .04.svg" height="200" />其中棕色代表材料_a，绿色代表材料_b。
-* 
+*
+*密度 $\rho$ 采取以下形式 <img alt="音素超晶格空腔" src="https://www.dealii.org/images/steps/developer/  step-62  .04.svg" height="200" />其中棕色代表材料_a，绿色代表材料_b。
+*
 
-* 
+
 * @code
      for (unsigned int idx = 0; idx < nb_mirror_pairs; idx++)
        {
@@ -984,11 +984,11 @@ h5_file.close()
        }
 * 
  @endcode
-* 
-* 这里我们定义了[subpixel smoothing](https://meep.readthedocs.io/en/latest/Subpixel_Smoothing/)，它提高了模拟的精度。
-* 
+*
+* 这里我们定义了[subpixel smoothing](https://meep.readthedocs.io/en/latest/Subpixel_Smoothing/)，它可以提高模拟的精度。
+*
 
-* 
+
 * @code
      for (unsigned int idx = 0; idx < nb_mirror_pairs; idx++)
        {
@@ -1018,11 +1018,11 @@ h5_file.close()
        }
 * 
  @endcode
-* 
+*
 * 那么腔体
-* 
+*
 
-* 
+
 * @code
      if (std::abs(p[0]) <= material_a_wavelength / 2)
        {
@@ -1030,11 +1030,11 @@ h5_file.close()
        }
 * 
  @endcode
-* 
-* 材料_a层
-* 
+*
+* material_a层
+*
 
-* 
+
 * @code
      for (unsigned int idx = 0; idx < nb_mirror_pairs; idx++)
        {
@@ -1053,11 +1053,11 @@ h5_file.close()
        }
 * 
  @endcode
-* 
+*
 * material_b层
-* 
+*
 
-* 
+
 * @code
      for (unsigned int idx = 0; idx < nb_mirror_pairs; idx++)
        {
@@ -1076,11 +1076,11 @@ h5_file.close()
        }
 * 
  @endcode
-* 
-* 最后是默认的 material_a。
-* 
+*
+* 最后默认为 material_a。
+*
 
-* 
+
 * @code
      return material_a_rho;
    }
@@ -1088,15 +1088,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
+*
 * <a name="TheParametersclassimplementation"></a> <h4>The `Parameters` class implementation</h4>。
- 
 
-* 
-* 构造函数使用 HDF5::Group 函数从 HDF5::Group::get_attribute() `data`中读取所有参数。
-* 
 
-* 
+*
+*构造函数使用 HDF5::Group 函数从 HDF5::Group::get_attribute() `data`中读取所有参数。
+*
+
+
 * @code
    template <int dim>
    Parameters<dim>::Parameters(HDF5::Group &data)
@@ -1128,15 +1128,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="TheQuadratureCacheclassimplementation"></a> <h4>The `QuadratureCache` class implementation</h4>.
- 
+*
+* <a name="TheQuadratureCacheclassimplementation"></a> <h4>The `QuadratureCache` class implementation</h4>。
 
-* 
+
+*
 * 我们需要为质量和刚度矩阵以及右手边的矢量保留足够的空间。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    QuadratureCache<dim>::QuadratureCache(const unsigned int dofs_per_cell)
@@ -1149,19 +1149,19 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ImplementationoftheElasticWaveclass"></a> <h3>Implementation of the `ElasticWave` class</h3>.
- 
+*
+* <a name="ImplementationoftheElasticWaveclass"></a> <h3>Implementation of the `ElasticWave` class</h3>。
 
- 
+
+
 * <a name="Constructor"></a> <h4>Constructor</h4>。
- 
 
-* 
+
+*
 * 这与  step-40  的构造函数非常相似。此外，我们创建了HDF5数据集`frequency_dataset`，`position_dataset`和`displacement`。注意在创建HDF5数据集时使用了`template'关键字。这是C++的要求，使用`template`关键字是为了将`create_dataset`作为一个依赖的模板名称。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    ElasticWave<dim>::ElasticWave(const Parameters<dim> &parameters)
@@ -1198,15 +1198,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ElasticWavesetup_system"></a> <h4>ElasticWave::setup_system</h4>.
- 
+*
+* <a name="ElasticWavesetup_system"></a> <h4>ElasticWave::setup_system</h4>。
 
-* 
-* 这个函数没有什么新内容，与 step-40 的唯一区别是，我们不需要应用边界条件，因为我们使用PML来截断域。
-* 
 
-* 
+*
+* 这个函数没有什么新内容，与 step-40 的唯一区别是，我们不必应用边界条件，因为我们用PML来截断域。
+*
+
+
 * @code
    template <int dim>
    void ElasticWave<dim>::setup_system()
@@ -1247,15 +1247,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ElasticWaveassemble_system"></a> <h4>ElasticWave::assemble_system</h4>.
- 
+*
+* <a name="ElasticWaveassemble_system"></a> <h4>ElasticWave::assemble_system</h4>。
 
-* 
-* 这个函数也与 step-40 非常相似，尽管有明显的区别。我们为每个频率/OMEGA步骤组装系统。在第一步，我们设置`calculate_quadrature_data = True'，我们计算质量和刚度矩阵以及右手边的矢量。在随后的步骤中，我们将使用这些数据来加速计算。
-* 
 
-* 
+*
+* 这个函数也与 step-40 非常相似，尽管有明显的区别。我们为每个频率/欧米茄步骤组装系统。在第一步中，我们设置`calculate_quadrature_data = True`，我们计算质量和刚度矩阵以及右手边的矢量。在随后的步骤中，我们将使用这些数据来加速计算。
+*
+
+
 * @code
    template <int dim>
    void ElasticWave<dim>::assemble_system(const double omega,
@@ -1276,11 +1276,11 @@ h5_file.close()
      std::vector<types::global_dof_index> local_dof_indices(dofs_per_cell);
 * 
  @endcode
-* 
-* 这里我们存储了右手边的值，rho和PML。
-* 
 
-* 
+* 这里我们存储了右手边的值，rho和PML。
+*
+
+
 * @code
      std::vector<Vector<double>> rhs_values(n_q_points, Vector<double>(dim));
      std::vector<double>         rho_values(n_q_points);
@@ -1288,21 +1288,21 @@ h5_file.close()
        n_q_points, Vector<std::complex<double>>(dim));
 * 
  @endcode
-* 
+*
 * 我们计算在jupyter笔记本中定义的 $\lambda$ 和 $\mu$ 的刚度张量。注意，与 $\rho$ 相反，刚度在整个领域中是恒定的。
-* 
+*
 
-* 
+
 * @code
      const SymmetricTensor<4, dim> stiffness_tensor =
        get_stiffness_tensor<dim>(parameters.lambda, parameters.mu);
 * 
  @endcode
-* 
-* 我们使用与 step-20 相同的方法处理矢量值问题。
-* 
 
-* 
+* 我们使用 step-20 的相同方法处理向量值问题。
+*
+
+
 * @code
      const FEValuesExtractors::Vector displacement(0);
 * 
@@ -1313,11 +1313,11 @@ h5_file.close()
            cell_rhs    = 0;
 * 
  @endcode
-* 
+*
 * 只有当我们要计算质量和刚度矩阵时，我们才必须计算右手边的值，rho和PML。否则我们可以跳过这个计算，这样可以大大减少总的计算时间。
-* 
+*
 
-* 
+
 * @code
            if (calculate_quadrature_data)
              {
@@ -1332,11 +1332,11 @@ h5_file.close()
              }
 * 
  @endcode
-* 
-* 我们在  step-18  中已经做了这个。获得一个指向当前单元本地的正交缓存数据的指针，作为一种防御措施，确保这个指针在全局数组的范围内。
-* 
 
-* 
+* 我们在  step-18  中已经做了这个。获得一个指向当前单元本地的正交缓存数据的指针，作为一种防御措施，确保这个指针在全局数组的范围内。
+*
+
+
 * @code
            QuadratureCache<dim>local_quadrature_points_data =
              reinterpret_cast<QuadratureCache<dim>>(cell->user_pointer());
@@ -1347,52 +1347,52 @@ h5_file.close()
            for (unsigned int q = 0; q < n_q_points; ++q)
              {
  @endcode
-* 
+*
 * quadrature_data变量用于存储质量和刚度矩阵、右手边向量和`JxW`的值。
-* 
+*
 
-* 
+
 * @code
                QuadratureCache<dim> &quadrature_data =
                  local_quadrature_points_data[q];
 * 
  @endcode
-* 
-* 下面我们声明力向量和PML的参数  $s$  和  $\xi$  。
-* 
 
-* 
+* 下面我们声明力向量和PML的参数  $s$  和  $\xi$  。
+*
+
+
 * @code
                Tensor<1, dim>                       force;
                Tensor<1, dim, std::complex<double>> s;
                std::complex<double>                 xi(1, 0);
 * 
  @endcode
-* 
-* 下面的块只在第一个频率步骤中计算。
-* 
 
-* 
+* 下面的块只在第一个频率步骤中计算。
+*
+
+
 * @code
                if (calculate_quadrature_data)
                  {
  @endcode
-* 
+*
 * 存储`JxW`的值。
-* 
+*
 
-* 
+
 * @code
                    quadrature_data.JxW = fe_values.JxW(q);
 * 
                    for (unsigned int component = 0; component < dim; ++component)
                      {
  @endcode
-* 
+*
 * 将向量转换为张量并计算xi
-* 
+*
 
-* 
+
 * @code
                        force[component] = rhs_values[q][component];
                        s[component]     = pml_values[q][component];
@@ -1400,11 +1400,11 @@ h5_file.close()
                      }
 * 
  @endcode
-* 
+*
 * 这里我们计算 $\alpha_{mnkl}$ 和 $\beta_{mnkl}$ 的张量。
-* 
+*
 
-* 
+
 * @code
                    Tensor<4, dim, std::complex<double>> alpha;
                    Tensor<4, dim, std::complex<double>> beta;
@@ -1436,21 +1436,21 @@ h5_file.close()
                              fe_values[displacement].gradient(j, q);
 * 
  @endcode
-* 
+*
 * 计算质量矩阵的值。
-* 
+*
 
-* 
+
 * @code
                            quadrature_data.mass_coefficient[i][j] =
                              rho_values[q] xi phi_i phi_j;
 * 
  @endcode
-* 
-* 循环计算刚度张量的 $mnkl$ 指数。
-* 
+*
+*在刚度张量的 $mnkl$ 指数上循环。
+*
 
-* 
+
 * @code
                            std::complex<double> stiffness_coefficient = 0;
                            for (unsigned int m = 0; m < dim; ++m)
@@ -1459,15 +1459,15 @@ h5_file.close()
                                  for (unsigned int l = 0; l < dim; ++l)
                                    {
  @endcode
-* 
-* 这里我们计算出刚度矩阵。注意，由于PML的存在，刚度矩阵不是对称的。我们使用梯度函数（见[文件](https://www.dealii.org/current/doxygen/deal.II/group__vector__valued.html)），它是一个  <code>Tensor@<2,dim@></code>  。矩阵 $G_{ij}$ 由条目@f[
+*
+* 这里我们计算了刚度矩阵。注意，由于PML的存在，刚度矩阵不是对称的。我们使用梯度函数（见[文件](https://www.dealii.org/current/doxygen/deal.II/group__vector__valued.html)），它是一个  <code>Tensor@<2,dim@></code>  。矩阵 $G_{ij}$ 由条目@f[
  G_{ij}=
  \frac{\partial\phi_i}{\partial x_j}
  =\partial_j \phi_i
- @f]组成 注意指数 $i$ 和 $j$ 的位置以及我们在本教程中使用的符号。  $\partial_j\phi_i$  . 由于刚度张量不是对称的，所以很容易出错。
-* 
+ @f]组成 注意指数 $i$ 和 $j$ 的位置以及我们在本教程中使用的符号。   $\partial_j\phi_i$  .由于刚度张量不是对称的，所以很容易出错。
+*
 
-* 
+
 * @code
                                      stiffness_coefficient +=
                                        grad_phi_i[m][n]
@@ -1476,22 +1476,22 @@ h5_file.close()
                                    }
 * 
  @endcode
-* 
-* 我们把刚度矩阵的值保存在quadrature_data中
-* 
+*
+* 我们将刚度矩阵的值保存在quadrature_data中
+*
 
-* 
+
 * @code
                            quadrature_data.stiffness_coefficient[i][j] =
                              stiffness_coefficient;
                          }
 * 
  @endcode
-* 
-* 并在quadrature_data中保存右手边的值。
-* 
+*
+*和正交_数据中的右手边的值。
+*
 
-* 
+
 * @code
                        quadrature_data.right_hand_side[i] =
                          phi_i force fe_values.JxW(q);
@@ -1499,11 +1499,11 @@ h5_file.close()
                  }
 * 
  @endcode
-* 
+*
 * 我们再次循环单元的自由度来计算系统矩阵。这些循环真的很快，因为我们已经计算了刚度和质量矩阵，只有 $\omega$ 的值发生了变化。
-* 
+*
 
-* 
+
 * @code
                for (unsigned int i = 0; i < dofs_per_cell; ++i)
                  {
@@ -1533,15 +1533,15 @@ h5_file.close()
    }
 * 
  @endcode
-* 
-* <a name="ElasticWavesolve"></a> <h4>ElasticWave::solve</h4>.
- 
+*
+* <a name="ElasticWavesolve"></a> <h4>ElasticWave::solve</h4>。
 
-* 
-* 这比  step-40  更加简单。我们使用并行的直接求解器MUMPS，它比迭代求解器需要更少的选项。它的缺点是不能很好地扩展。用迭代求解器来解决Helmholtz方程并不简单。移位拉普拉斯多网格法是一种众所周知的预处理该系统的方法，但这超出了本教程的范围。
-* 
 
-* 
+*
+* 这比 step-40 中更加简单。我们使用并行的直接求解器MUMPS，它比迭代求解器需要更少的选项。缺点是它的规模不是很好。用迭代求解器来解决Helmholtz方程并不简单。移位拉普拉斯多网格法是一种众所周知的预处理该系统的方法，但这超出了本教程的范围。
+*
+
+
 * @code
    template <int dim>
    void ElasticWave<dim>::solve()
@@ -1561,15 +1561,15 @@ h5_file.close()
    }
 * 
  @endcode
-* 
-* <a name="ElasticWaveinitialize_position_vector"></a> <h4>ElasticWave::initialize_position_vector</h4> * <h4>ElasticWave::initialize_position_vector</h4>.
- 
+*
+* <a name="ElasticWaveinitialize_position_vector"></a> <h4>ElasticWave::initialize_position_vector</h4>。
 
-* 
+
+*
 * 我们用这个函数来计算位置向量的值。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ElasticWave<dim>::initialize_probe_positions_vector()
@@ -1579,13 +1579,13 @@ h5_file.close()
           ++position_idx)
        {
  @endcode
-* 
-* 由于运算符+和
-* 
+*
+* 因为运算符+和的方式
+*
 * -被重载来减去两个点，所以必须做如下操作。`Point_b<dim> + (-Point_a<dim>)`。
-* 
+*
 
-* 
+
 * @code
          const Point<dim> p =
            (position_idx / ((double)(parameters.nb_probe_points
@@ -1603,15 +1603,15 @@ h5_file.close()
    }
 * 
  @endcode
-* 
-* <a name="ElasticWavestore_frequency_step_data"></a> <h4>ElasticWave::store_frequency_step_data</h4>.
- 
+*
+* <a name="ElasticWavestore_frequency_step_data"></a> <h4>ElasticWave::store_frequency_step_data</h4>。
 
-* 
-* 这个函数在HDF5文件中存储探头测量的能量。
-* 
 
-* 
+*
+* 这个函数在HDF5文件中存储了探头测量的能量。
+*
+
+
 * @code
    template <int dim>
    void
@@ -1620,20 +1620,20 @@ h5_file.close()
      TimerOutput::Scope t(computing_timer, "store_frequency_step_data");
 * 
  @endcode
-* 
-* 我们存储的是 $x$ 方向的位移； $y$ 方向的位移可以忽略不计。
-* 
+*
+* 我们存储 $x$ 方向的位移； $y$ 方向的位移可以忽略不计。
+*
 
-* 
+
 * @code
      const unsigned int probe_displacement_component = 0;
 * 
  @endcode
-* 
-* 向量坐标包含探针的点在HDF5文件中的坐标，这些点位于本地拥有的单元中。向量displacement_data包含这些点的位移值。
-* 
+*
+* 向量坐标包含HDF5文件中位于本地所有单元中的探针点的坐标。向量displacement_data包含这些点的位移值。
+*
 
-* 
+
 * @code
      std::vector<hsize_t>              coordinates;
      std::vector<std::complex<double>> displacement_data;
@@ -1667,11 +1667,11 @@ h5_file.close()
          if (point_in_locally_owned_cell)
            {
  @endcode
-* 
-* 然后我们可以把探头各点的位移值存储在`displacement_data`中。
-* 
+*
+* 然后我们可以在`displacement_data`中存储探头各点的位移值。
+*
 
-* 
+
 * @code
              Vector<std::complex<double>> tmp_vector(dim);
              VectorTools::point_value(dof_handler,
@@ -1686,22 +1686,22 @@ h5_file.close()
        }
 * 
  @endcode
-* 
-* 我们在HDF5文件中写入位移数据。调用 HDF5::DataSet::write_selection() 是MPI集体的，这意味着所有的进程都要参与。
-* 
 
-* 
+* 我们在HDF5文件中写入位移数据。调用 HDF5::DataSet::write_selection() 是MPI集体的，这意味着所有的进程都要参与。
+*
+
+
 * @code
      if (coordinates.size() > 0)
        {
          displacement.write_selection(displacement_data, coordinates);
        }
  @endcode
- 
-* 因此，即使进程没有数据要写，它也必须参与集体调用。为此，我们可以使用 HDF5::DataSet::write_none().  注意，我们必须指定数据类型，在这种情况下是 `std::complex<double>`.  。
-* 
+*
+* 因此，即使进程没有数据可写，它也必须参与集体调用。为此，我们可以使用 HDF5::DataSet::write_none().  注意，我们必须指定数据类型，在这种情况下是 `std::complex<double>`.  。
+*
 
-* 
+
 * @code
      else
        {
@@ -1709,11 +1709,11 @@ h5_file.close()
        }
 * 
  @endcode
-* 
+*
 * 如果输入文件中的变量`save_vtu_files`等于`True`，那么所有的数据将被保存为vtu。写入`vtu`文件的程序已经在  step-40  中描述。
-* 
+*
 
-* 
+
 * @code
      if (parameters.save_vtu_files)
        {
@@ -1753,11 +1753,11 @@ h5_file.close()
                    parameters.rho.value(cell->center());
                }
  @endcode
- 
-* 在我们不感兴趣的单元格上，将各自的值设置为一个假的值，以确保如果我们的假设有什么错误，我们会通过查看图形输出发现。
- 
+*
+* 在我们不感兴趣的单元格上，将各自的值设置为一个假的值，以确保如果我们的假设有什么错误，我们会通过看图形输出发现的。
+*
 
-* 
+
 * @code
              else
                {
@@ -1801,25 +1801,25 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ElasticWaveoutput_results"></a> <h4>ElasticWave::output_results</h4>
-* 
+*
+* <a name="ElasticWaveoutput_results"></a> <h4>ElasticWave::output_results</h4>。
 
-* 
+
+*
 * 这个函数写入尚未写入的数据集。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ElasticWave<dim>::output_results()
    {
  @endcode
-* 
-* 向量`frequency`和`position`对所有进程都是一样的。因此任何一个进程都可以写入相应的`数据集'。因为调用 HDF5::DataSet::write 是MPI集体的，其余进程将不得不调用 HDF5::DataSet::write_none. 。
-* 
+*
+* 向量`频率`和`位置`对所有进程都是一样的。因此任何一个进程都可以写入相应的`数据集'。因为调用 HDF5::DataSet::write 是MPI集体的，其余进程将不得不调用 HDF5::DataSet::write_none. 。
+*
 
-* 
+
 * @code
      if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
        {
@@ -1836,15 +1836,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ElasticWavesetup_quadrature_cache"></a> <h4>ElasticWave::setup_quadrature_cache</h4> 。
- 
+*
+* <a name="ElasticWavesetup_quadrature_cache"></a> <h4>ElasticWave::setup_quadrature_cache</h4>。
 
-* 
+
+*
 * 我们在计算开始时使用这个函数来设置缓存变量的初始值。这个函数已经在  step-18  中描述过。与  step-18  的函数没有区别。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ElasticWave<dim>::setup_quadrature_cache()
@@ -1872,15 +1872,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ElasticWavefrequency_sweep"></a> <h4>ElasticWave::frequency_sweep</h4>.
-* 
+*
+* <a name="ElasticWavefrequency_sweep"></a> <h4>ElasticWave::frequency_sweep</h4>。
 
-* 
-* 为了清楚起见，我们将 step-40 的函数`run`分为函数`run`和`frequency_sweep`。在函数`frequency_sweep`中，我们把迭代放在频率向量上。
-* 
 
-* 
+*
+* 为了清楚起见，我们把 step-40 的函数`run`分为`run`和`frequency_sweep`两个函数。在函数`frequency_sweep`中，我们在频率向量上进行迭代。
+*
+
+
 * @code
    template <int dim>
    void ElasticWave<dim>::frequency_sweep()
@@ -1909,11 +1909,11 @@ h5_file.close()
          if (frequency_idx == 0)
            {
  @endcode
-* 
-* 只写一次模拟参数
-* 
+*
+*只写一次模拟参数
+*
 
-* 
+
 * @code
              parameters.data.set_attribute("active_cells",
                                            triangulation.n_active_cells());
@@ -1922,11 +1922,11 @@ h5_file.close()
            }
 * 
  @endcode
-* 
-* 我们计算这个特定步骤的频率和欧米茄值。
-* 
 
-* 
+* 我们计算出这个特定步骤的频率和欧米茄值。
+*
+
+
 * @code
          const double current_loop_frequency =
            (parameters.start_frequency +
@@ -1941,11 +1941,11 @@ h5_file.close()
            2 numbers::PI current_loop_frequency;
 * 
  @endcode
-* 
-* 在第一个频率步骤中，我们计算出质量和刚度矩阵以及右手边。在随后的频率步骤中，我们将使用这些值。这大大改善了计算时间。
-* 
+*
+* 在第一个频率步骤中，我们计算出质量和刚度矩阵以及右手边。在随后的频率步骤中，我们将使用这些值。这大大地改善了计算时间。
+*
 
-* 
+
 * @code
          assemble_system(current_loop_omega,
                          (frequency_idx == 0) ? true : false);
@@ -1963,15 +1963,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="ElasticWaverun"></a> <h4>ElasticWave::run</h4>.
- 
+*
+* <a name="ElasticWaverun"></a> <h4>ElasticWave::run</h4>。
 
-* 
+
+*
 * 这个函数与  step-40  中的函数非常相似。
-* 
+*
 
-* 
+
 * @code
    template <int dim>
    void ElasticWave<dim>::run()
@@ -2031,15 +2031,15 @@ h5_file.close()
  
 * 
  @endcode
-* 
-* <a name="Themainfunction"></a> <h4>The main function</h4>.
-* 
+*
+* <a name="Themainfunction"></a> <h4>The main function</h4>。
 
-* 
+
+*
 * 主函数与  step-40  中的函数非常相似。
-* 
+*
 
-* 
+
 * @code
  int main(int argc, charargv[])
  {
@@ -2056,75 +2056,75 @@ h5_file.close()
        auto       data = data_file.create_group("data");
 * 
  @endcode
-* 
+*
 * 每个模拟（位移和校准）都存储在一个单独的HDF5组中。
-* 
+*
 
-* 
+
 * @code
        const std::vector<std::string> group_names = {"displacement",
                                                      "calibration"};
        for (auto group_name : group_names)
          {
  @endcode
-* 
-* 对于这两个组名中的每一个，我们现在创建组并将属性放入这些组中。具体来说，这些是。
-* 
+*
+* 对于这两个组名中的每一个，我们现在创建组并将属性放入这些组。具体来说，这些是。
+*
 
-* 
-* 
+
+*
 * - 波导的尺寸（在 $x$ 和 $y$ 方向）。
-* 
+*
 
-* 
-* 
+
+*
 * - 探头的位置（在 $x$ 和 $y$ 方向）。
-* 
+*
 
-* 
-* 
+
+*
 * - 探针中的点的数量
-* 
+*
 
-* 
-* 
+
+*
 * - 全局细化水平
-* 
+*
 
-* 
-* 
+
+*
 * - 腔体谐振频率
-* 
+*
 
-* 
-* 
+
+*
 * - 镜像对的数量
-* 
+*
 
-* 
-* 
+
+*
 * - 材料属性
-* 
 
-* 
-* 
-* - 力的参数
- 
 
-* 
-* 
-* - PML参数
- 
 
-* 
- 
+*
+* - 力量参数
+*
+
+
+*
+* - PML的参数
+*
+
+
+*
 * - 频率参数
- 
+*
 
-* 
-*  
 
-* 
+*
+
+
 * @code
            auto group = data.create_group(group_name);
 * 
@@ -2203,11 +2203,11 @@ h5_file.close()
 * 
        {
  @endcode
- 
+*
 * 位移模拟。参数从位移HDF5组中读取，结果保存在同一HDF5组中。
-* 
+*
 
- 
+
 * @code
          auto                    displacement = data.open_group("displacement");
          step62::Parameters<dim> parameters(displacement);
@@ -2218,11 +2218,11 @@ h5_file.close()
 * 
        {
  @endcode
-* 
+*
 * 校准模拟。参数从校准HDF5组中读取，结果保存在同一HDF5组中。
-* 
+*
 
-* 
+
 * @code
          auto                    calibration = data.open_group("calibration");
          step62::Parameters<dim> parameters(calibration);
@@ -2261,11 +2261,11 @@ h5_file.close()
    return 0;
  }
  @endcode
-* <a name="Results"></a><h1>Results</h1>。
-* 
+* <a name="Results"></a><h1>Results</h1> 。
 
-* <a name="Resonancefrequencyandbandgap"></a><h3>Resonance frequency and bandgap</h3>。
-* 
+
+*<a name="Resonancefrequencyandbandgap"></a><h3>Resonance frequency and bandgap</h3>
+
 
 * 在[jupyter notebook](https://github.com/dealii/dealii/blob/master/examples/  step-62  /  step-62  .ipynb)中用以下代码分析结果
 * @code{.py}
@@ -2323,7 +2323,7 @@ plt.title('Phase (transmission coefficient)\n')
 plt.show()
 h5_file.close()
 @endcode
-* 
+*
 * 一个声腔的特点是[共振频率](https://en.wikipedia.org/wiki/Resonance)和[品质因数](https://en.wikipedia.org/wiki/Q_factor)。品质因数等于共振器中储存的能量与每周期耗散的能量之间的比率，大约相当于共振频率与[半满宽度（FWHM）](https://en.wikipedia.org/wiki/Full_width_at_half_maximum)之间的比率。FWHM等于振动功率大于共振频率功率一半的带宽。@f[
 Q = \frac{f_r}{\Delta f} = \frac{\omega_r}{\Delta \omega} =
 2 \pi \times \frac{\text{energy stored}}{\text{energy dissipated per cycle}}
@@ -2331,28 +2331,28 @@ Q = \frac{f_r}{\Delta f} = \frac{\omega_r}{\Delta \omega} =
 *机械共振 $a^2$ 振幅的平方作为频率的函数具有高斯形状@f[
 a^2 = a_\textrm{max}^2\frac{\omega^2\Gamma^2}{(\omega_r^2-\omega^2)^2+\Gamma^2\omega^2}
 @f]，其中 $f_r = \frac{\omega_r}{2\pi}$ 是共振频率， $\Gamma=\frac{\omega_r}{Q}$ 是耗散率。我们在jupyter笔记本中使用之前的方程式来拟合机械共振。
-*鉴于我们为参数选择的值，人们可以通过分析来估计共振频率。事实上，我们在这个程序中得到的结果证实了这一点：声子超晶格空腔在20GHz时表现出机械共振，质量因子为5046。以下图片显示了在共振频率附近的传输振幅和相位与频率的函数关系。
+*鉴于我们为参数选择的值，人们可以通过分析来估计共振频率。事实上，我们在这个程序中得到的结果证实了这一点：声子超晶格空腔在20GHz时表现出机械共振，质量系数为5046。以下图片显示了在共振频率附近的传输振幅和相位与频率的函数关系。
 *  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.05.png" height="400" />   <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.06.png" height="400" /> 。
 * 上述图像表明，周期性结构有其预期的效果：它实际上只让一个非常特殊的频率的波通过，而所有其他的波都被反射。当然，这正是人们建造这类装置的目的。但这并不十分容易。在实践中，实际上只有一个 "带隙"，也就是说，该设备只在一定的频率范围内阻止20GHz以外的其他波。事实上，要想知道这个 "差距 "有多大，我们可以通过输入文件中的适当参数将频率范围扩大到16GHz。然后我们得到以下图像。
-*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.07.png" height="400" />  
+*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.07.png" height="400" /> 
 * 这张图表明，在18到22GHz左右的范围内，实际上只有频率为20GHz的波被允许通过，但在这个范围之外，还有很多其他频率的波可以通过设备。
 *<a name="Modeprofile"></a><h3>Mode profile</h3>
-* 
+*
 
 * 我们可以用Paraview或VisIt检查模式剖面。正如我们已经讨论过的，在共振时，所有的机械能都被传输，运动的振幅在腔内被放大了。
-*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.08.png" height="400" />  
+*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.08.png" height="400" /> 
 * 另一方面，在共振之外，所有的机械能都被反射了。下图显示了19.75GHz时的轮廓。注意力脉冲和反射波在 $x=-8\mu\textrm{m}$ 位置的干扰。
-*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.09.png" height="400" />  
+*  <img alt="Phononic superlattice cavity" src="https://www.dealii.org/images/steps/developer/step-62.09.png" height="400" /> 
 * <a name="Experimentalapplications"></a><h3>Experimental applications</h3> 。
-* 
+*
 
-* 声波超晶格空腔在[量子光学力学](https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.86.1391)中找到了应用。这里我们介绍了二维超晶格空腔的模拟，但这个代码也可以用来模拟 "现实世界 "的三维器件，如[微柱超晶格空腔](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.99.060101)，它是研究宏观量子现象的有希望的候选器件。微柱超晶格空腔的20GHz模式本质上是一个机械谐波振荡器，与环境隔离得非常好。如果该装置在稀释冰箱中被冷却到20mK，那么该模式将成为一个宏观的量子谐波振荡器。
-* 
+* 声波超晶格空腔在[量子光学力学](https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.86.1391)中找到了应用。这里我们介绍了一个二维超晶格空腔的模拟，但这个代码也可以用来模拟 "现实世界 "的三维器件，如[微柱超晶格空腔](https://journals.aps.org/prb/abstract/10.1103/PhysRevB.99.060101)，它是研究宏观量子现象的有希望的候选器件。微柱超晶格空腔的20GHz模式本质上是一个机械谐波振荡器，与环境隔离得非常好。如果该装置在稀释冰箱中被冷却到20mK，那么该模式将成为一个宏观的量子谐波振荡器。
+*
 
 *<a name="Possibilitiesforextensions"></a><h3>Possibilities for extensions</h3>
-* 
 
-* 我们可以用python脚本来设置参数，并将其保存在我们将用于模拟的HDF5文件中，而不是在C++文件中设置这些参数。然后deal.II程序将从HDF5文件中读取这些参数。
+
+* 我们可以用Python脚本来设置参数，并将其保存在我们将用于模拟的HDF5文件中，而不是在C++文件中设置参数。然后，deal.II程序将从HDF5文件中读取这些参数。
 * @code{.py}
 import numpy as np
 import h5py
@@ -2444,7 +2444,7 @@ for group in [displacement, calibration]:
 * 
 h5_file.close()
 @endcode
-* 
+*
 * 为了读取HDF5参数，我们必须使用 HDF5::File::FileAccessMode::open 标志。
 * @code{.py}
       HDF5::File data_file("results.h5",
@@ -2452,10 +2452,10 @@ h5_file.close()
                            MPI_COMM_WORLD);
       auto       data = data_file.open_group("data");
 @endcode
-* 
-* 
+*
+*
 
-* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-62.cc" 。
+* <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-62.cc"  。
 * */
 
 

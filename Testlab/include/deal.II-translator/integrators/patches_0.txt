@@ -1,6 +1,0 @@
-include/deal.II-translator/integrators/patches_0.txt
-[0.x.0]*
-  
-* [2.x.0]   
-* [0.x.1]
-

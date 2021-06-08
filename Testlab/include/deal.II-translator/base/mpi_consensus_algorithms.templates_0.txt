@@ -1,3 +1,0 @@
-include/deal.II-translator/base/mpi_consensus_algorithms.templates_0.txt
-[0.x.0]
-

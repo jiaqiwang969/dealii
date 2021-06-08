@@ -19,16 +19,16 @@
 /**
 
 
-* 
-*  @defgroup VMemory Vector memory management  
-* 这个模块将一些类分组，用于避免在迭代过程中反复分配和解配向量。这些方法都使用基类VectorMemory的一个对象来获取它们的辅助向量。
+
+*  @defgroup VMemory Vector memory management 
+* 这个模块将一些类分组，用来避免在迭代过程中反复分配和解配向量。这些方法都使用基类VectorMemory的一个对象来获取它们的辅助向量。
 * 关于这个话题的一些讨论可以在 step-20 中关于InverseMatrix类的讨论中找到。
-* 
+*
 
-* 
-*  @ingroup LAC  
 
-* 
+*  @ingroup LAC 
+
+
 * */
 
 

@@ -1,0 +1,672 @@
+[0.x.0]*
+ [2.x.0] 
+* This tutorial depends on  [2.x.1] ,  [2.x.2] .
+* [1.x.0][1.x.1][1.x.2][1.x.3][1.x.4][1.x.5][1.x.6][1.x.7][1.x.8][1.x.9][1.x.10][1.x.11][1.x.12][1.x.13][1.x.14][1.x.15][1.x.16][1.x.17][1.x.18][1.x.19][1.x.20][1.x.21][1.x.22][1.x.23][1.x.24][1.x.25][1.x.26][1.x.27][1.x.28][1.x.29][1.x.30][1.x.31][1.x.32][1.x.33][1.x.34][1.x.35][1.x.36][1.x.37][1.x.38][1.x.39][1.x.40][1.x.41][1.x.42][1.x.43][1.x.44]
+*  [2.x.3] 
+* [1.x.45]
+* 
+
+* 
+* [1.x.46][1.x.47][1.x.48]
+* 
+
+* This program deals with the Stokes system of equations which reads asfollows in non-dimensionalized form:[1.x.49]
+* where  [2.x.4]  denotes the velocity of a fluid,  [2.x.5]  is itspressure,  [2.x.6]  are external forces, and [2.x.7]   is therank-2 tensor of symmetrized gradients; a component-wise definitionof it is  [2.x.8] .
+* The Stokes equations describe the steady-state motion of aslow-moving, viscous fluid such as honey, rocks in the earth mantle,or other cases where inertia does not play a significant role. If afluid is moving fast enough that inertia forces are significantcompared to viscous friction, the Stokes equations are no longervalid; taking into account inertia effects then leads to thenonlinear Navier-Stokes equations. However, in this tutorial program,we will focus on the simpler Stokes system.
+* Note that when deriving the more general compressible Navier-Stokes equations,the diffusion is modeled as the divergence of the stress tensor[1.x.50]
+* where  [2.x.9]  is the viscosity of the fluid. With the assumption of  [2.x.10] (assume constant viscosity and non-dimensionalize the equation by dividing out [2.x.11] ) and assuming incompressibility ( [2.x.12] ), wearrive at the formulation from above:[1.x.51]
+* A different formulation uses the Laplace operator ( [2.x.13] )instead of the symmetrized gradient. A big difference here is that thedifferent components of the velocity do not couple. If you assume additionalregularity of the solution  [2.x.14]  (second partial derivatives exist andare continuous), the formulations are equivalent:[1.x.52]
+* This is because the  [2.x.15] th entry of   [2.x.16]  is given by:[1.x.53]
+* If you can not assume the above mentioned regularity, or if your viscosity isnot a constant, the equivalence no longer holds. Therefore, we decided tostick with the more physically accurate symmetric tensor formulation in thistutorial.
+* 
+
+* To be well-posed, we will have to add boundary conditions to theequations. What boundary conditions are readily possible here willbecome clear once we discuss the weak form of the equations.
+* The equations covered here fall into the class of vector-valued problems. Atoplevel overview of this topic can be found in the  [2.x.17]  module.
+* 
+
+* [1.x.54][1.x.55]
+* 
+
+* The weak form of the equations is obtained by writing it in vectorform as[1.x.56]
+* forming the dot product from the left with a vector-valued testfunction  [2.x.18]  and integratingover the domain  [2.x.19] , yielding the following set of equations:[1.x.57]
+* which has to hold for all test functions  [2.x.20] .
+* A generally good rule of thumb is that if one [1.x.58] reduce howmany derivatives are taken on any variable in the formulation, thenone [1.x.59] in fact do that using integration by parts. (This ismotivated by the theory of [1.x.60], and in particular the difference betweenstrong and [1.x.61].) We have already done that for the Laplace equation,where we have integrated the second derivative by parts to obtain theweak formulation that has only one derivative on both test and trialfunction.
+* In the current context, we integrate by parts the second term:[1.x.62]
+* Likewise, we integrate by parts the first term to obtain[1.x.63]
+* where the scalar product between two tensor-valued quantities is heredefined as[1.x.64]
+* Using this, we have now reduced the requirements on our variables tofirst derivatives for  [2.x.21]  and no derivatives at allfor  [2.x.22] .
+* Because the scalar product between a general tensor like [2.x.23]  and a symmetric tensor like [2.x.24]  equals the scalar product between thesymmetrized forms of the two, we can also write the bilinear formabove as follows:[1.x.65]
+* We will deal with the boundary terms in the next section, but it is alreadyclear from the domain terms[1.x.66]
+* of the bilinear form that the Stokes equations yield a symmetric bilinearform, and consequently a symmetric (if indefinite) system matrix.
+* 
+
+* [1.x.67][1.x.68]
+* 
+
+*  [2.x.25] ( [2.x.26] 
+* The weak form just derived immediately presents us with differentpossibilities for imposing boundary conditions: [2.x.27]  [2.x.28] Dirichlet velocity boundary conditions: On a part     [2.x.29]  we may impose Dirichlet conditions    on the velocity  [2.x.30] :
+*     [1.x.69]
+*     Because test functions  [2.x.31]  come from the tangent space of    the solution variable, we have that  [2.x.32]  on  [2.x.33]     and consequently that    [1.x.70]
+*     In other words, as usual, strongly imposed boundary values do not    appear in the weak form.
+*     It is noteworthy that if we impose Dirichlet boundary values on the entire    boundary, then the pressure is only determined up to a constant. An    algorithmic realization of that would use similar tools as have been seen in     [2.x.34] .
+*  [2.x.35] Neumann-type or natural boundary conditions: On the rest of the boundary     [2.x.36] , let us re-write the    boundary terms as follows:    [1.x.71]
+*     In other words, on the Neumann part of the boundary we can    prescribe values for the total stress:    [1.x.72]
+*     If the boundary is subdivided into Dirichlet and Neumann parts     [2.x.37] , this then leads to the following weak form:    [1.x.73]
+* 
+* 
+
+*  [2.x.38] Robin-type boundary conditions: Robin boundary conditions are a mixture of    Dirichlet and Neumann boundary conditions. They would read    [1.x.74]
+*     with a rank-2 tensor (matrix)  [2.x.39] . The associated weak form is    [1.x.75]
+* 
+*  [2.x.40] Partial boundary conditions: It is possible to combine Dirichlet and    Neumann boundary conditions by only enforcing each of them for certain    components of the velocity. For example, one way to impose artificial    boundary conditions is to require that the flow is perpendicular to the    boundary, i.e. the tangential component  [2.x.41]  be zero, thereby constraining     [2.x.42] -1 components of the velocity. The remaining component can    be constrained by requiring that the normal component of the normal    stress be zero, yielding the following set of boundary conditions:    [1.x.76]
+* 
+*     An alternative to this is when one wants the flow to be [1.x.77]    rather than perpendicular to the boundary (in deal.II, the     [2.x.43]  function can do this for    you). This is frequently the case for problems with a free boundary    (e.g. at the surface of a river or lake if vertical forces of the flow are    not large enough to actually deform the surface), or if no significant    friction is exerted by the boundary on the fluid (e.g. at the interface    between earth mantle and earth core where two fluids meet that are    stratified by different densities but that both have small enough    viscosities to not introduce much tangential stress on each other).    In formulas, this means that    [1.x.78]
+*     the first condition (which needs to be imposed strongly) fixing a single    component of the velocity, with the second (which would be enforced in the    weak form) fixing the remaining two components. [2.x.44] 
+* Despite this wealth of possibilities, we will only use Dirichlet and(homogeneous) Neumann boundary conditions in this tutorial program.
+* 
+
+* [1.x.79][1.x.80]
+* 
+
+* As developed above, the weak form of the equations with Dirichlet and Neumannboundary conditions on  [2.x.45]  and  [2.x.46]  reads like this: find [2.x.47]  so that[1.x.81]
+* for all test functions [2.x.48] .
+* These equations represent a symmetric [1.x.82]. It is well knownthat then a solution only exists if the function spaces in which we search fora solution have to satisfy certain conditions, typically referred to as theBabuska-Brezzi or Ladyzhenskaya-Babuska-Brezzi (LBB) conditions. The continuousfunction spaces above satisfy these. However, when we discretize the equations byreplacing the continuous variables and test functions by finite elementfunctions in finite dimensional spaces  [2.x.49] , we have to make sure that  [2.x.50]  also satisfy the LBBconditions. This is similar to what we had to do in  [2.x.51] .
+* For the Stokes equations, there are a number of possible choices to ensurethat the finite element spaces are compatible with the LBB condition. A simpleand accurate choice that we will use here is  [2.x.52] , i.e. use elements one order higher for the velocities than for thepressures.
+* This then leads to the following discrete problem: find  [2.x.53]  sothat[1.x.83]
+* for all test functions  [2.x.54] . Assembling the linear systemassociated with this problem follows the same lines used in  [2.x.55] " [2.x.56] ",  [2.x.57] , and explained in detail in the  [2.x.58]  module.
+* 
+
+* 
+* [1.x.84][1.x.85]
+* 
+
+* The weak form of the discrete equations naturally leads to the followinglinear system for the nodal values of the velocity and pressure fields:[1.x.86]
+* Like in  [2.x.59]  and  [2.x.60] , we will solve thissystem of equations by forming the Schur complement, i.e. we will first findthe solution  [2.x.61]  of[1.x.87]
+* and then[1.x.88]
+* The way we do this is pretty much exactly like we did in these previoustutorial programs, i.e. we use the same classes  [2.x.62] and  [2.x.63]  again. There are two significant differences,however:
+*  [2.x.64]  [2.x.65] First, in the mixed Laplace equation we had to deal with the question of howto precondition the Schur complement  [2.x.66] , which was spectrallyequivalent to the Laplace operator on the pressure space (because  [2.x.67] represents the gradient operator,  [2.x.68]  its adjoint  [2.x.69] , and  [2.x.70] the identity (up to the material parameter  [2.x.71] ), so  [2.x.72]  issomething like  [2.x.73] ). Consequently, thematrix is badly conditioned for small mesh sizes and we had to come up with anelaborate preconditioning scheme for the Schur complement.
+*  [2.x.74] Second, every time we multiplied with  [2.x.75]  we had to solve with themass matrix  [2.x.76] . This wasn't particularly difficult, however, since the massmatrix is always well conditioned and so simple to invert using CG and alittle bit of preconditioning. [2.x.77] In other words, preconditioning the inner solver for  [2.x.78]  was simple whereaspreconditioning the outer solver for  [2.x.79]  was complicated.
+* Here, the situation is pretty much exactly the opposite. The difference stemsfrom the fact that the matrix at the heart of the Schur complement does notstem from the identity operator but from a variant of the Laplace operator, [2.x.80]  (where  [2.x.81]  is the symmetric gradient)acting on a vector field. In the investigation of this issuewe largely follow the paper D. Silvester and A. Wathen:"Fast iterative solution of stabilised Stokes systems part II. Usinggeneral block preconditioners." (SIAM J. Numer. Anal., 31 (1994),pp. 1352-1367), which is available online [1.x.89].Principally, the difference in the matrix at the heart of the Schurcomplement has two consequences:
+*  [2.x.82]  [2.x.83] First, it makes the outer preconditioner simple: the Schur complementcorresponds to the operator  [2.x.84]  on the pressure space; forgetting about the fact that we deal withsymmetric gradients instead of the regular one, the Schur complement issomething like  [2.x.85] , which, even if not mathematicallyentirely concise, is spectrally equivalent to the identity operator (aheuristic argument would be to commute the operators into [2.x.86] ). It turns out that it isn't easy to solvethis Schur complement in a straightforward way with the CG method:using no preconditioner, the condition number of the Schur complement matrixdepends on the size ratios of the largest to the smallest cells, and one stillneeds on the order of 50-100 CG iterations. However, there is a simple cure:precondition with the mass matrix on the pressure space and we get down to anumber between 5-15 CG iterations, pretty much independently of the structureof the mesh (take a look at the [1.x.90] of thisprogram to see that indeed the number of CG iterations does not change as werefine the mesh).
+* So all we need in addition to what we already have is the mass matrix on thepressure variables and we will store it in a separate object.
+* 
+
+* 
+*  [2.x.87] While the outer preconditioner has become simpler compared to themixed Laplace case discussed in  [2.x.88] , the issue ofthe inner solver has become more complicated. In the mixed Laplacediscretization, the Schur complement has the form  [2.x.89] . Thus,every time we multiplied with the Schur complement, we had to solve alinear system  [2.x.90] ; this isn't too complicated there, however,since the mass matrix  [2.x.91]  on the pressure space is well-conditioned.
+* 
+
+* On the other hand, for the Stokes equation we consider here, the Schurcomplement is  [2.x.92]  where the matrix  [2.x.93]  is related to theLaplace operator (it is, in fact, the matrix corresponding to thebilinear form  [2.x.94] ). Thus,solving with  [2.x.95]  is a lot more complicated: the matrix is badlyconditioned and we know that we need many iterations unless we have avery good preconditioner. What is worse, we have to solve with  [2.x.96] every time we multiply with the Schur complement, which is 5-15 timesusing the preconditioner described above.
+* Because we have to solve with  [2.x.97]  several times, it pays off to spenda bit more time once to create a good preconditioner for thismatrix. So here's what we're going to do: if in 2d, we use theultimate preconditioner, namely a direct sparse LU decomposition ofthe matrix. This is implemented using the SparseDirectUMFPACK classthat uses the UMFPACK direct solver to compute the decomposition. Touse it, you will have to build deal.II with UMFPACK support (which is thedefault); see the [1.x.91]for instructions. With this, the inner solver converges in one iteration.
+* In 2d, we can do this sort of thing because even reasonably large problemsrarely have more than a few 100,000 unknowns with relatively few nonzeroentries per row. Furthermore, the bandwidth of matrices in 2d is  [2.x.98]  and therefore moderate. For such matrices, sparse factors can becomputed in a matter of a few seconds. (As a point of reference, computing thesparse factors of a matrix of size  [2.x.99]  and bandwidth  [2.x.100]  takes  [2.x.101]  operations. In 2d, this is  [2.x.102] ; though this is a highercomplexity than, for example, assembling the linear system which takes  [2.x.103] , the constant for computing the decomposition is so small that itdoesn't become the dominating factor in the entire program until we get tovery large %numbers of unknowns in the high 100,000s or more.)
+* The situation changes in 3d, because there we quickly have many moreunknowns and the bandwidth of matrices (which determines the number ofnonzero entries in sparse LU factors) is  [2.x.104] , and thereare many more entries per row as well. This makes using a sparsedirect solver such as UMFPACK inefficient: only for problem sizes of afew 10,000 to maybe 100,000 unknowns can a sparse decomposition becomputed using reasonable time and memory resources.
+* What we do in that case is to use an incomplete LU decomposition (ILU) as apreconditioner, rather than actually computing complete LU factors. As it sohappens, deal.II has a class that does this: SparseILU. Computing the ILUtakes a time that only depends on the number of nonzero entries in the sparsematrix (or that we are willing to fill in the LU factors, if these should bemore than the ones in the matrix), but is independent of the bandwidth of thematrix. It is therefore an operation that can efficiently also be computed in3d. On the other hand, an incomplete LU decomposition, by definition, does notrepresent an exact inverse of the matrix  [2.x.105] . Consequently, preconditioningwith the ILU will still require more than one iteration, unlikepreconditioning with the sparse direct solver. The inner solver will thereforetake more time when multiplying with the Schur complement: an unavoidabletrade-off. [2.x.106] 
+* In the program below, we will make use of the fact that the SparseILU andSparseDirectUMFPACK classes have a very similar interface and can be usedinterchangeably. All that we need is a switch class that, depending on thedimension, provides a type that is either of the two classes mentionedabove. This is how we do that:
+* [1.x.92]
+* 
+* From here on, we can refer to the type <code>typename [2.x.107]  and automatically get the correctpreconditioner class. Because of the similarity of the interfaces of the twoclasses, we will be able to use them interchangeably using the same syntax inall places.
+* 
+
+* [1.x.93][1.x.94]
+* 
+
+* The discussions above showedone* way in which the linear system thatresults from the Stokes equations can be solved, and because thetutorial programs are teaching tools that makes sense. But is this theway this system of equationsshould* be solved?
+* The answer to this is no. The primary bottleneck with the approach,already identified above, is that we have to repeatedly solve linearsystems with  [2.x.108]  inside the Schur complement, and because we don'thave a good preconditioner for the Schur complement, these solves justhave to happen too often. A better approach is to use a blockdecomposition, which is based on an observation of Silvester andWathen  [2.x.109]  and explained in much greater detail in [2.x.110]  . An implementation of this alternative approach isdiscussed below, in the section on a [1.x.95] in the results section of this program.
+* 
+
+* [1.x.96][1.x.97]
+* 
+
+* Above, we have claimed that the linear system has the form[1.x.98]
+* i.e., in particular that there is a zero block at the bottom right of thematrix. This then allowed us to write the Schur complement as [2.x.111] . But this is not quite correct.
+* Think of what would happen if there are constraints on somepressure variables (see the [2.x.112]  "Constraints on degrees of freedom" documentationmodule), for example because we use adaptivelyrefined meshes and continuous pressure finite elements so that thereare hanging nodes. Another cause for such constraints are Dirichletboundary conditions on the pressure. Then the AffineConstraintsclass, upon copying the local contributions to the matrix into theglobal linear system will zero out rows and columns correspondingto constrained degrees of freedom and put a positive entry onthe diagonal. (You can think of this entry as being one forsimplicity, though in reality it is a value of the same orderof magnitude as the other matrix entries.) In other words,the bottom right block is really not empty at all: It hasa few entries on the diagonal, one for each constrainedpressure degree of freedom, and a correct descriptionof the linear system we have to solve is that it has theform[1.x.99]
+* where  [2.x.113]  is the zero matrix with the exception of thepositive diagonal entries for the constrained degrees offreedom. The correct Schur complement would then in factbe the matrix  [2.x.114]  instead of the onestated above.
+* Thinking about this makes us, first, realize that theresulting Schur complement is now indefinite because [2.x.115]  is symmetric and positive definite whereas [2.x.116]  is a positive semidefinite, and subtracting the latterfrom the former may no longer be positive definite. Thisis annoying because we could no longer employ the ConjugateGradient method on this true Schur complement. That said, we couldfix the issue in  [2.x.117]  bysimply puttingnegative* values onto the diagonal for the constrainedpressure variables
+* 
+*  -  because we really only put something nonzeroto ensure that the resulting matrix is not singular; we really didn'tcare whether that entry is positive or negative. So if the entrieson the diagonal of  [2.x.118]  were negative, then  [2.x.119]  would again be asymmetric and positive definite matrix.
+* But, secondly, the code below doesn't actually do any of that: Ithappily solves the linear system with the wrong Schur complement [2.x.120]  that just ignores the issue altogether. Whydoes this even work? To understand why this is so, recall thatwhen writing local contributions into the global matrix, [2.x.121]  zeros out therows and columns that correspond to constrained degrees of freedom.This means that  [2.x.122]  has some zero rows, and  [2.x.123]  zero columns.As a consequence, if one were to multiply out what the entriesof  [2.x.124]  are, one would realize that it has zero rows and columnsfor all constrained pressure degrees of freedom, including azero on the diagonal. The nonzero entries of  [2.x.125]  would fitinto exactly those zero diagonal locations, and ensure that  [2.x.126] is invertible. Not doing so, strictly speaking, means that  [2.x.127] remains singular: It is symmetric and positive definite on thesubset of non-constrained pressure degrees of freedom, andsimply the zero matrix on the constrained pressures. Whydoes the Conjugate Gradient method work for this matrix?Because  [2.x.128] also makes sure that the right hand side entries thatcorrespond to these zero rows of the matrix arealso*
+zero, i.e., the right hand side is compatible.
+* What this means is that whatever the values of the solutionvector for these constrained pressure degrees of freedom,these rows will always have a zero residual and, if onewere to consider what the CG algorithm does internally, justnever produce any updates to the solution vector. In otherwords, the CG algorithm justignores* these rows, despite thefact that the matrix is singular. This only works because thesedegrees of freedom are entirely decoupled from the rest of thelinear system (because the entire row and corresponding columnare zero). At the end of the solution process, the constrainedpressure values in the solution vector therefore remain exactlyas they were when we started the call to the solver; they arefinally overwritten with their correct values when we call [2.x.129]  after the CG solver is done.
+* The upshot of this discussion is that the assumption that thebottom right block of the big matrix is zero is a bitsimplified, but that just going with it does not actually leadto any practical problems worth addressing.
+* 
+
+* [1.x.100][1.x.101]
+* 
+
+* The domain, right hand side and boundary conditions we implement below relateto a problem in geophysics: there, one wants to compute the flow field ofmagma in the earth's interior under a mid-ocean rift. Rifts are places wheretwo continental plates are very slowly drifting apart (a few centimeters peryear at most), leaving a crack in the earth crust that is filled with magmafrom below. Without trying to be entirely realistic, we model this situationby solving the following set of equations and boundary conditions on thedomain  [2.x.130] :[1.x.102]
+* and using natural boundary conditions  [2.x.131]  everywhere else. In other words, at theleft part of the top surface we prescribe that the fluid moves with thecontinental plate to the left at speed  [2.x.132] , that it moves to the right on theright part of the top surface, and impose natural flow conditions everywhereelse. If we are in 2d, the description is essentially the same, with theexception that we omit the second component of all vectors stated above.
+* As will become apparent in the [1.x.103], theflow field will pull material from below and move it to the left and rightends of the domain, as expected. The discontinuity of velocity boundaryconditions will produce a singularity in the pressure at the center of the topsurface that sucks material all the way to the top surface to fill the gapleft by the outward motion of material at this location.
+* 
+
+* [1.x.104][1.x.105]
+* 
+
+* [1.x.106][1.x.107]
+* 
+
+* In all the previous tutorial programs, we used the AffineConstraints object merelyfor handling hanging node constraints (with exception of  [2.x.133] ). However,the class can also be used to implement Dirichlet boundary conditions, as wewill show in this program, by fixing some node values  [2.x.134] . Note thatthese are inhomogeneous constraints, and we have to pay some specialattention to that. The way we are going to implement this is to first readin the boundary values into the AffineConstraints object by using the call
+* [1.x.108]
+* 
+* very similar to how we were making the list of boundary nodesbefore (note that we set Dirichlet conditions only on boundaries withboundary flag 1). The actual application of the boundary values is thenhandled by the AffineConstraints object directly, without any additionalinterference.
+* We could then proceed as before, namely by filling the matrix, and thencalling a condense function on the constraints object of the form
+* [1.x.109]
+* 
+* Note that we call this on the system matrix and system right hand sidesimultaneously, since resolving inhomogeneous constraints requires knowledgeabout both the matrix entries and the right hand side. For efficiencyreasons, though, we choose another strategy: all the constraints collectedin the AffineConstraints object can be resolved on the fly while writing local datainto the global matrix, by using the call
+* [1.x.110]
+* 
+* This technique is further discussed in the  [2.x.135]  tutorialprogram. All we need to know here is that this functions does three thingsat once: it writes the local data into the global matrix and right handside, it distributes the hanging node constraints and additionallyimplements (inhomogeneous) Dirichlet boundary conditions. That's nice, isn'tit?
+* We can conclude that the AffineConstraints class provides an alternative to using [2.x.136]  for implementing Dirichlet boundaryconditions.
+* 
+
+* [1.x.111][1.x.112][1.x.113]
+* Frequently, a sparse matrix contains a substantial amount of elements thatactually are zero when we are about to start a linear solve. Such elements areintroduced when we eliminate constraints or implement Dirichlet conditions,where we usually delete all entries in constrained rows and columns, i.e., weset them to zero. The fraction of elements that are present in the sparsitypattern, but do not really contain any information, can be up to one fourthof the total number of elements in the matrix for the 3D applicationconsidered in this tutorial program. Remember that matrix-vector products orpreconditioners operate on all the elements of a sparse matrix (even thosethat are zero), which is an inefficiency we will avoid here.
+* An advantage of directly resolving constrained degrees of freedom is that wecan avoid having most of the entries that are going to be zero in our sparsematrix &mdash; we do not need constrained entries during matrix construction(as opposed to the traditional algorithms, which first fill the matrix, andonly resolve constraints afterwards). This will save both memory and timewhen forming matrix-vector products. The way we are going to do that is topass the information about constraints to the function that generates thesparsity pattern, and then set a <tt>false</tt> argument specifying that wedo not intend to use constrained entries:
+* [1.x.114]
+* This functions obviates, by the way, also the call to the<tt>condense()</tt> function on the sparsity pattern.
+* 
+
+* [1.x.115][1.x.116]
+* 
+
+* The program developed below has seen a lot of TLC. We have run it over andover under profiling tools (mainly [1.x.117]'s cachegrind and callgrindtools, as well as the KDE [1.x.118] program forvisualization) to see where the bottlenecks are. This has paid off: throughthis effort, the program has become about four times as fast whenconsidering the runtime of the refinement cycles zero through three,reducing the overall number of CPU instructions executed from869,574,060,348 to 199,853,005,625. For higher refinement levels, the gainis probably even larger since some algorithms that are not  [2.x.137] have been eliminated.
+* Essentially, there are currently two algorithms in the program that do notscale linearly with the number of degrees of freedom: renumbering of degreesof freedom (which is  [2.x.138] , and the linear solver (which is [2.x.139] ). As for the first, while reordering degrees of freedommay not scale linearly, it is an indispensable part of the overall algorithmas it greatly improves the quality of the sparse ILU, easily making up forthe time spent on computing the renumbering; graphs and timings todemonstrate this are shown in the documentation of the DoFRenumberingnamespace, also underlining the choice of the Cuthill-McKee reorderingalgorithm chosen below.
+* As for the linear solver: as mentioned above, our implementation here uses aSchur complement formulation. This is not necessarily the very best choicebut demonstrates various important techniques available in deal.II. Thequestion of which solver is best is again discussed in the [1.x.119]of this program, along with code showing alternative solvers and acomparison of their results.
+* Apart from this, many other algorithms have been tested and improved duringthe creation of this program. For example, in building the sparsity pattern,we originally used a (now no longer existing) BlockCompressedSparsityPatternobject that added one element at a time; however, its data structures were poorlyadapted for the large numbers of nonzero entries per row created by ourdiscretization in 3d, leading to a quadratic behavior. Replacing the internalalgorithms in deal.II to set many elements at a time, and using aBlockCompressedSimpleSparsityPattern (which has, as of early 2015, been in turnreplaced by BlockDynamicSparsityPattern) as a better adapted data structure,removed this bottleneck at the price of a slightly higher memoryconsumption. Likewise, the implementation of the decomposition step in theSparseILU class was very inefficient and has been replaced by one that isabout 10 times faster. Even the vmult function of the SparseILU has beenimproved to save about twenty percent of time. Small improvements wereapplied here and there. Moreover, the AffineConstraints object has been usedto eliminate a lot of entries in the sparse matrix that are eventually goingto be zero, see [1.x.120].
+* A profile of how many CPU instructions are spent at the variousdifferent places in the program during refinement cycleszero through three in 3d is shown here:
+*  [2.x.140] 
+* As can be seen, at this refinement level approximately three quarters of theinstruction count is spent on the actual solver (the  [2.x.141]  callson the left, the  [2.x.142]  call in the middle for the Schurcomplement solve, and another box representing the multiplications withSparseILU and SparseMatrix in the solve for [1.x.121]). About one fifth ofthe instruction count is spent on matrix assembly and sparse ILU computation(box in the lower right corner) and the rest on other things. Since floatingpoint operations such as in the  [2.x.143]  calls typically take muchlonger than many of the logical operations and table lookups in matrixassembly, the fraction of the run time taken up by matrix assembly isactually significantly less than the fraction of instructions, as willbecome apparent in the comparison we make in the results section.
+* For higher refinement levels, the boxes representing the solver as well asthe blue box at the top right stemming from reordering algorithm are goingto grow at the expense of the other parts of the program, since they don'tscale linearly. The fact that at this moderate refinement level (3168 cellsand 93176 degrees of freedom) the linear solver already makes up about threequarters of the instructions is a good sign that most of the algorithms usedin this program are well-tuned and that major improvements in speeding upthe program are most likely not to come from hand-optimizing individualaspects but by changing solver algorithms. We will address this point in thediscussion of results below as well.
+* As a final point, and as a point of reference, the following picture alsoshows how the profile looked at an early stage of optimizing this program:
+*  [2.x.144] 
+* As mentioned above, the runtime of this version was about four times as long asfor the first profile, with the SparseILU decomposition taking up about 30% ofthe instruction count, and operations an early, inefficient version ofDynamicSparsityPattern about 10%. Both these bottlenecks have since beencompletely removed.
+* 
+
+*  [1.x.122] [1.x.123]
+*   [1.x.124]  [1.x.125]
+* 
+
+* 
+*  As usual, we start by including some well-known files:
+* 
+
+* 
+* [1.x.126]
+* 
+*  Then we need to include the header file for the sparse direct solver UMFPACK:
+* 
+
+* 
+* [1.x.127]
+* 
+*  This includes the library for the incomplete LU factorization that will be used as a preconditioner in 3D:
+* 
+
+* 
+* [1.x.128]
+* 
+*  This is C++:
+* 
+
+* 
+* [1.x.129]
+* 
+*  As in all programs, the namespace dealii is included:
+* 
+
+* 
+* [1.x.130]
+* 
+*   [1.x.131]  [1.x.132]
+* 
+
+* 
+*  As explained in the introduction, we are going to use different preconditioners for two and three space dimensions, respectively. We distinguish between them by the use of the spatial dimension as a template parameter. See  [2.x.145]  for details on templates. We are not going to create any preconditioner object here, all we do is to create class that holds a local alias determining the preconditioner class so we can write our program in a dimension-independent way.
+* 
+
+* 
+* [1.x.133]
+* 
+*  In 2D, we are going to use a sparse direct solver as preconditioner:
+* 
+
+* 
+* [1.x.134]
+* 
+*  And the ILU preconditioning in 3D, called by SparseILU:
+* 
+
+* 
+* [1.x.135]
+* 
+*   [1.x.136]  [1.x.137]
+* 
+
+* 
+*  This is an adaptation of  [2.x.146] , so the main class and the data types are nearly the same as used there. The only difference is that we have an additional member  [2.x.147] , that is used for preconditioning the Schur complement, and a corresponding sparsity pattern  [2.x.148] . In addition, instead of relying on LinearOperator, we implement our own InverseMatrix class.   
+*   In this example we also use adaptive grid refinement, which is handled in analogy to  [2.x.149] . According to the discussion in the introduction, we are also going to use the AffineConstraints object for implementing Dirichlet boundary conditions. Hence, we change the name  [2.x.150] .
+* 
+
+* 
+* [1.x.138]
+* 
+*  This one is new: We shall use a so-called shared pointer structure to access the preconditioner. Shared pointers are essentially just a convenient form of pointers. Several shared pointers can point to the same object (just like regular pointers), but when the last shared pointer object to point to a preconditioner object is deleted (for example if a shared pointer object goes out of scope, if the class of which it is a member is destroyed, or if the pointer is assigned a different preconditioner object) then the preconditioner object pointed to is also destroyed. This ensures that we don't have to manually track in how many places a preconditioner object is still referenced, it can never create a memory leak, and can never produce a dangling pointer to an already destroyed object:
+* 
+
+* 
+* [1.x.139]
+* 
+*   [1.x.140]  [1.x.141]
+* 
+
+* 
+*  As in  [2.x.151]  and most other example programs, the next task is to define the data for the PDE: For the Stokes problem, we are going to use natural boundary values on parts of the boundary (i.e. homogeneous Neumann-type) for which we won't have to do anything special (the homogeneity implies that the corresponding terms in the weak form are simply zero), and boundary conditions on the velocity (Dirichlet-type) on the rest of the boundary, as described in the introduction.   
+*   In order to enforce the Dirichlet boundary values on the velocity, we will use the  [2.x.152]  function as usual which requires us to write a function object with as many components as the finite element has. In other words, we have to define the function on the  [2.x.153] -space, but we are going to filter out the pressure component when interpolating the boundary values.
+* 
+
+* 
+*  The following function object is a representation of the boundary values described in the introduction:
+* 
+
+* 
+* [1.x.142]
+* 
+*  We implement similar functions for the right hand side which for the current example is simply zero:
+* 
+
+* 
+* [1.x.143]
+* 
+*   [1.x.144]  [1.x.145]
+* 
+
+* 
+*  The linear solvers and preconditioners are discussed extensively in the introduction. Here, we create the respective objects that will be used.
+* 
+
+* 
+*   [1.x.146]  [1.x.147] The  [2.x.154]  class represents the data structure for an inverse matrix. Unlike  [2.x.155] , we implement this with a class instead of the helper function inverse_linear_operator() we will apply this class to different kinds of matrices that will require different preconditioners (in  [2.x.156]  we only used a non-identity preconditioner for the mass matrix). The types of matrix and preconditioner are passed to this class via template parameters, and matrix and preconditioner objects of these types will then be passed to the constructor when an  [2.x.157]  object is created. The member function  [2.x.158]  is obtained by solving a linear system:
+* 
+
+* 
+* [1.x.148]
+* 
+*  This is the implementation of the  [2.x.159]  function.
+* 
+
+* 
+*  In this class we use a rather large tolerance for the solver control. The reason for this is that the function is used very frequently, and hence, any additional effort to make the residual in the CG solve smaller makes the solution more expensive. Note that we do not only use this class as a preconditioner for the Schur complement, but also when forming the inverse of the Laplace matrix &ndash; which is hence directly responsible for the accuracy of the solution itself, so we can't choose a too large tolerance, either.
+* 
+
+* 
+* [1.x.149]
+* 
+*   [1.x.150]  [1.x.151]
+* 
+
+* 
+*  This class implements the Schur complement discussed in the introduction. It is in analogy to  [2.x.160] .  Though, we now call it with a template parameter  [2.x.161]  in order to access that when specifying the respective type of the inverse matrix class. As a consequence of the definition above, the declaration  [2.x.162]  now contains the second template parameter for a preconditioner class as above, which affects the  [2.x.163]  as well.
+* 
+
+* 
+* [1.x.152]
+* 
+*   [1.x.153]  [1.x.154]
+* 
+
+* 
+*   [1.x.155]  [1.x.156]
+* 
+
+* 
+*  The constructor of this class looks very similar to the one of  [2.x.164] . The constructor initializes the variables for the polynomial degree, triangulation, finite element system and the dof handler. The underlying polynomial functions are of order  [2.x.165]  for the vector-valued velocity components and of order  [2.x.166]  for the pressure.  This gives the LBB-stable element pair  [2.x.167] , often referred to as the Taylor-Hood element.   
+*   Note that we initialize the triangulation with a MeshSmoothing argument, which ensures that the refinement of cells is done in a way that the approximation of the PDE solution remains well-behaved (problems arise if grids are too unstructured), see the documentation of  [2.x.168]  for details.
+* 
+
+* 
+* [1.x.157]
+* 
+*   [1.x.158]  [1.x.159]
+* 
+
+* 
+*  Given a mesh, this function associates the degrees of freedom with it and creates the corresponding matrices and vectors. At the beginning it also releases the pointer to the preconditioner object (if the shared pointer pointed at anything at all at this point) since it will definitely not be needed any more after this point and will have to be re-computed after assembling the matrix, and unties the sparse matrices from their sparsity pattern objects.   
+*   We then proceed with distributing degrees of freedom and renumbering them: In order to make the ILU preconditioner (in 3D) work efficiently, it is important to enumerate the degrees of freedom in such a way that it reduces the bandwidth of the matrix, or maybe more importantly: in such a way that the ILU is as close as possible to a real LU decomposition. On the other hand, we need to preserve the block structure of velocity and pressure already seen in  [2.x.169]  and  [2.x.170] . This is done in two steps: First, all dofs are renumbered to improve the ILU and then we renumber once again by components. Since  [2.x.171]  does not touch the renumbering within the individual blocks, the basic renumbering from the first step remains. As for how the renumber degrees of freedom to improve the ILU: deal.II has a number of algorithms that attempt to find orderings to improve ILUs, or reduce the bandwidth of matrices, or optimize some other aspect. The DoFRenumbering namespace shows a comparison of the results we obtain with several of these algorithms based on the testcase discussed here in this tutorial program. Here, we will use the traditional Cuthill-McKee algorithm already used in some of the previous tutorial programs.  In the [1.x.160] we're going to discuss this issue in more detail.
+* 
+
+* 
+*  There is one more change compared to previous tutorial programs: There is no reason in sorting the  [2.x.172]  velocity components individually. In fact, rather than first enumerating all  [2.x.173] -velocities, then all  [2.x.174] -velocities, etc, we would like to keep all velocities at the same location together and only separate between velocities (all components) and pressures. By default, this is not what the  [2.x.175]  function does: it treats each vector component separately; what we have to do is group several components into "blocks" and pass this block structure to that function. Consequently, we allocate a vector  [2.x.176]  with as many elements as there are components and describe all velocity components to correspond to block 0, while the pressure component will form block 1:
+* 
+
+* 
+* [1.x.161]
+* 
+*  Now comes the implementation of Dirichlet boundary conditions, which should be evident after the discussion in the introduction. All that changed is that the function already appears in the setup functions, whereas we were used to see it in some assembly routine. Further down below where we set up the mesh, we will associate the top boundary where we impose Dirichlet boundary conditions with boundary indicator 1.  We will have to pass this boundary indicator as second argument to the function below interpolating boundary values.  There is one more thing, though.  The function describing the Dirichlet conditions was defined for all components, both velocity and pressure. However, the Dirichlet conditions are to be set for the velocity only.  To this end, we use a ComponentMask that only selects the velocity components. The component mask is obtained from the finite element by specifying the particular components we want. Since we use adaptively refined grids, the affine constraints object needs to be first filled with hanging node constraints generated from the DoF handler. Note the order of the two functions &mdash; we first compute the hanging node constraints, and then insert the boundary values into the constraints object. This makes sure that we respect H<sup>1</sup> conformity on boundaries with hanging nodes (in three space dimensions), where the hanging node needs to dominate the Dirichlet boundary values.
+* 
+
+* 
+* [1.x.162]
+* 
+*  In analogy to  [2.x.177] , we count the dofs in the individual components. We could do this in the same way as there, but we want to operate on the block structure we used already for the renumbering: The function  [2.x.178]  does the same as  [2.x.179] , but now grouped as velocity and pressure block via  [2.x.180] .
+* 
+
+* 
+* [1.x.163]
+* 
+*  The next task is to allocate a sparsity pattern for the system matrix we will create and one for the preconditioner matrix. We could do this in the same way as in  [2.x.181] , i.e. directly build an object of type SparsityPattern through  [2.x.182]  However, there is a major reason not to do so: In 3D, the function  [2.x.183]  yields a conservative but rather large number for the coupling between the individual dofs, so that the memory initially provided for the creation of the sparsity pattern of the matrix is far too much
+* 
+*  -  so much actually that the initial sparsity pattern won't even fit into the physical memory of most systems already for moderately-sized 3D problems, see also the discussion in  [2.x.184] . Instead, we first build temporary objects that use a different data structure that doesn't require allocating more memory than necessary but isn't suitable for use as a basis of SparseMatrix or BlockSparseMatrix objects; in a second step we then copy these objects into objects of type BlockSparsityPattern. This is entirely analogous to what we already did in  [2.x.185]  and  [2.x.186] . In particular, we make use of the fact that we will never write into the  [2.x.187]  block of the system matrix and that this is the only block to be filled for the preconditioner matrix.     
+*   All this is done inside new scopes, which means that the memory of  [2.x.188]  will be released once the information has been copied to  [2.x.189] .
+* 
+
+* 
+* [1.x.164]
+* 
+*  Finally, the system matrix, the preconsitioner matrix, the solution and the right hand side vector are created from the block structure similar to the approach in  [2.x.190] :
+* 
+
+* 
+* [1.x.165]
+* 
+*   [1.x.166]  [1.x.167]
+* 
+
+* 
+*  The assembly process follows the discussion in  [2.x.191]  and in the introduction. We use the well-known abbreviations for the data structures that hold the local matrices, right hand side, and global numbering of the degrees of freedom for the present cell.
+* 
+
+* 
+* [1.x.168]
+* 
+*  Next, we need two objects that work as extractors for the FEValues object. Their use is explained in detail in the report on  [2.x.192]  vector_valued :
+* 
+
+* 
+* [1.x.169]
+* 
+*  As an extension over  [2.x.193]  and  [2.x.194] , we include a few optimizations that make assembly much faster for this particular problem. The improvements are based on the observation that we do a few calculations too many times when we do as in  [2.x.195] : The symmetric gradient actually has  [2.x.196]  different values per quadrature point, but we extract it  [2.x.197]  times from the FEValues object
+* 
+*  - for both the loop over  [2.x.198]  and the inner loop over  [2.x.199] . In 3d, that means evaluating it  [2.x.200]  instead of  [2.x.201]  times, a not insignificant difference.     
+*   So what we're going to do here is to avoid such repeated calculations by getting a vector of rank-2 tensors (and similarly for the divergence and the basis function value on pressure) at the quadrature point prior to starting the loop over the dofs on the cell. First, we create the respective objects that will hold these values. Then, we start the loop over all cells and the loop over the quadrature points, where we first extract these values. There is one more optimization we implement here: the local matrix (as well as the global one) is going to be symmetric, since all the operations involved are symmetric with respect to  [2.x.202]  and  [2.x.203] . This is implemented by simply running the inner loop not to  [2.x.204] , the index of the outer loop.
+* 
+
+* 
+* [1.x.170]
+* 
+*  Now finally for the bilinear forms of both the system matrix and the matrix we use for the preconditioner. Recall that the formulas for these two are
+
+* 
+* [1.x.171]
+*  and
+
+* 
+* [1.x.172]
+*  respectively, where  [2.x.205]  and  [2.x.206]  are the velocity and pressure components of the  [2.x.207] th shape function. The various terms above are then easily recognized in the following implementation:
+* 
+
+* 
+* [1.x.173]
+* 
+*  Note that in the implementation of (1) above, `operator*` is overloaded for symmetric tensors, yielding the scalar product between the two tensors.                 
+*   For the right-hand side we use the fact that the shape functions are only non-zero in one component (because our elements are primitive).  Instead of multiplying the tensor representing the dim+1 values of shape function i with the whole right-hand side vector, we only look at the only non-zero component. The function  [2.x.208]  will return which component this shape function lives in (0=x velocity, 1=y velocity, 2=pressure in 2d), which we use to pick out the correct component of the right-hand side vector to multiply with.
+* 
+
+* 
+* [1.x.174]
+* 
+*  Before we can write the local data into the global matrix (and simultaneously use the AffineConstraints object to apply Dirichlet boundary conditions and eliminate hanging node constraints, as we discussed in the introduction), we have to be careful about one thing, though. We have only built half of the local matrices because of symmetry, but we're going to save the full matrices in order to use the standard functions for solving. This is done by flipping the indices in case we are pointing into the empty part of the local matrices.
+* 
+
+* 
+* [1.x.175]
+* 
+*  Before we're going to solve this linear system, we generate a preconditioner for the velocity-velocity matrix, i.e.,  [2.x.209]  in the system matrix. As mentioned above, this depends on the spatial dimension. Since the two classes described by the  [2.x.210]  alias have the same interface, we do not have to do anything different whether we want to use a sparse direct solver or an ILU:
+* 
+
+* 
+* [1.x.176]
+* 
+*   [1.x.177]  [1.x.178]
+* 
+
+* 
+*  After the discussion in the introduction and the definition of the respective classes above, the implementation of the  [2.x.211]  function is rather straight-forward and done in a similar way as in  [2.x.212] . To start with, we need an object of the  [2.x.213]  class that represents the inverse of the matrix A. As described in the introduction, the inverse is generated with the help of an inner preconditioner of type  [2.x.214] .
+* 
+
+* 
+* [1.x.179]
+* 
+*  This is as in  [2.x.215] . We generate the right hand side  [2.x.216]  for the Schur complement and an object that represents the respective linear operation  [2.x.217] , now with a template parameter indicating the preconditioner
+* 
+*  - in accordance with the definition of the class.
+* 
+
+* 
+* [1.x.180]
+* 
+*  The usual control structures for the solver call are created...
+* 
+
+* 
+* [1.x.181]
+* 
+*  Now to the preconditioner to the Schur complement. As explained in the introduction, the preconditioning is done by a mass matrix in the pressure variable.       
+*   Actually, the solver needs to have the preconditioner in the form  [2.x.218] , so we need to create an inverse operation. Once again, we use an object of the class  [2.x.219] , which implements the  [2.x.220]  operation that is needed by the solver.  In this case, we have to invert the pressure mass matrix. As it already turned out in earlier tutorial programs, the inversion of a mass matrix is a rather cheap and straight-forward operation (compared to, e.g., a Laplace matrix). The CG method with ILU preconditioning converges in 5-10 steps, independently on the mesh size.  This is precisely what we do here: We choose another ILU preconditioner and take it along to the InverseMatrix object via the corresponding template parameter.  A CG solver is then called within the vmult operation of the inverse matrix.       
+*   An alternative that is cheaper to build, but needs more iterations afterwards, would be to choose a SSOR preconditioner with factor 1.2. It needs about twice the number of iterations, but the costs for its generation are almost negligible.
+* 
+
+* 
+* [1.x.182]
+* 
+*  With the Schur complement and an efficient preconditioner at hand, we can solve the respective equation for the pressure (i.e. block 0 in the solution vector) in the usual way:
+* 
+
+* 
+* [1.x.183]
+* 
+*  After this first solution step, the hanging node constraints have to be distributed to the solution in order to achieve a consistent pressure field.
+* 
+
+* 
+* [1.x.184]
+* 
+*  As in  [2.x.221] , we finally need to solve for the velocity equation where we plug in the solution to the pressure equation. This involves only objects we already know
+* 
+*  - so we simply multiply  [2.x.222]  by  [2.x.223] , subtract the right hand side and multiply by the inverse of  [2.x.224] . At the end, we need to distribute the constraints from hanging nodes in order to obtain a consistent flow field:
+* 
+
+* 
+* [1.x.185]
+* 
+*   [1.x.186]  [1.x.187]
+* 
+
+* 
+*  The next function generates graphical output. In this example, we are going to use the VTK file format.  We attach names to the individual variables in the problem:  [2.x.225]  components of velocity and  [2.x.226]  to the pressure.   
+*   Not all visualization programs have the ability to group individual vector components into a vector to provide vector plots; in particular, this holds for some VTK-based visualization programs. In this case, the logical grouping of components into vectors should already be described in the file containing the data. In other words, what we need to do is provide our output writers with a way to know which of the components of the finite element logically form a vector (with  [2.x.227]  components in  [2.x.228]  space dimensions) rather than letting them assume that we simply have a bunch of scalar fields.  This is achieved using the members of the  [2.x.229]  namespace: as with the filename, we create a vector in which the first  [2.x.230]  components refer to the velocities and are given the tag  [2.x.231]  we finally push one tag  [2.x.232]  to describe the grouping of the pressure variable.
+* 
+
+* 
+*  The rest of the function is then the same as in  [2.x.233] .
+* 
+
+* 
+* [1.x.188]
+* 
+*   [1.x.189]  [1.x.190]
+* 
+
+* 
+*  This is the last interesting function of the  [2.x.234]  class.  As indicated by its name, it takes the solution to the problem and refines the mesh where this is needed. The procedure is the same as in the respective step in  [2.x.235] , with the exception that we base the refinement only on the change in pressure, i.e., we call the Kelly error estimator with a mask object of type ComponentMask that selects the single scalar component for the pressure that we are interested in (we get such a mask from the finite element class by specifying the component we want). Additionally, we do not coarsen the grid again:
+* 
+
+* 
+* [1.x.191]
+* 
+*   [1.x.192]  [1.x.193]
+* 
+
+* 
+*  The last step in the Stokes class is, as usual, the function that generates the initial grid and calls the other functions in the respective order.   
+*   We start off with a rectangle of size  [2.x.236]  (in 2d) or  [2.x.237]  (in 3d), placed in  [2.x.238]  as  [2.x.239]  or  [2.x.240] , respectively. It is natural to start with equal mesh size in each direction, so we subdivide the initial rectangle four times in the first coordinate direction. To limit the scope of the variables involved in the creation of the mesh to the range where we actually need them, we put the entire block between a pair of braces:
+* 
+
+* 
+* [1.x.194]
+* 
+*  A boundary indicator of 1 is set to all boundaries that are subject to Dirichlet boundary conditions, i.e.  to faces that are located at 0 in the last coordinate direction. See the example description above for details.
+* 
+
+* 
+* [1.x.195]
+* 
+*  We then apply an initial refinement before solving for the first time. In 3D, there are going to be more degrees of freedom, so we refine less there:
+* 
+
+* 
+* [1.x.196]
+* 
+*  As first seen in  [2.x.241] , we cycle over the different refinement levels and refine (except for the first cycle), setup the degrees of freedom and matrices, assemble, solve and create output:
+* 
+
+* 
+* [1.x.197]
+* 
+*   [1.x.198]  [1.x.199]
+* 
+
+* 
+*  The main function is the same as in  [2.x.242] . We pass the element degree as a parameter and choose the space dimension at the well-known template slot.
+* 
+
+* 
+* [1.x.200]
+* [1.x.201][1.x.202][1.x.203]
+* 
+
+* [1.x.204][1.x.205]
+* 
+
+* [1.x.206][1.x.207]
+* 
+
+* Running the program with the space dimension set to 2 in the  [2.x.243] function yields the following output (in "release mode", [2.x.244] 
+* [1.x.208]
+* 
+* The entire computation above takes about 2 seconds on a reasonablyquick (for 2015 standards) machine.
+* What we see immediately from this is that the number of (outer)iterations does not increase as we refine the mesh. This confirms thestatement in the introduction that preconditioning the Schurcomplement with the mass matrix indeed yields a matrix spectrallyequivalent to the identity matrix (i.e. with eigenvalues bounded aboveand below independently of the mesh size or the relative sizes ofcells). In other words, the mass matrix and the Schur complement arespectrally equivalent.
+* In the images below, we show the grids for the first six refinementsteps in the program.  Observe how the grid is refined in regionswhere the solution rapidly changes: On the upper boundary, we haveDirichlet boundary conditions that are
+* 
+*  -  in the left half of the lineand 1 in the right one, so there is an abrupt change at  [2.x.245] . Likewise,there are changes from Dirichlet to Neumann data in the two uppercorners, so there is need for refinement there as well:
+*  [2.x.246] 
+* Finally, following is a plot of the flow field. It shows fluidtransported along with the moving upper boundary and being replaced bymaterial coming from below:
+*  [2.x.247] 
+* This plot uses the capability of VTK-based visualization programs (inthis case of VisIt) to show vector data; this is the result of usdeclaring the velocity components of the finite element in use to be aset of vector components, rather than independent scalar components inthe  [2.x.248]  function of thistutorial program.
+* 
+
+* 
+* [1.x.209][1.x.210]
+* 
+
+* In 3d, the screen output of the program looks like this:
+* [1.x.211]
+* 
+* Again, we see that the number of outer iterations does not increase aswe refine the mesh. Nevertheless, the compute time increasessignificantly: for each of the iterations above separately, it takes about0.14 seconds, 0.63 seconds, 4.8 seconds, 35 seconds, 2 minutes and 33 seconds,and 13 minutes and 12 seconds. This overall superlinear (in the number ofunknowns) increase in runtime is due to the fact that our inner solver is not [2.x.249] : a simple experiment shows that as we keep refining the mesh, theaverage number of ILU-preconditioned CG iterations to invert thevelocity-velocity block  [2.x.250]  increases.
+* We will address the question of how possibly to improve our solver [1.x.212].
+* As for the graphical output, the grids generated during the solutionlook as follow:
+*  [2.x.251] 
+* Again, they show essentially the location of singularities introducedby boundary conditions. The vector field computed makes for aninteresting graph:
+*  [2.x.252] 
+* The isocontours shown here as well are those of the pressurevariable, showing the singularity at the point of discontinuousvelocity boundary conditions.
+* 
+
+* 
+* [1.x.213][1.x.214]
+* 
+
+* As explained during the generation of the sparsity pattern, it isimportant to have the numbering of degrees of freedom in mind whenusing preconditioners like incomplete LU decompositions. This is mostconveniently visualized using the distribution of nonzero elements inthe stiffness matrix.
+* If we don't do anything special to renumber degrees of freedom (i.e.,without using  [2.x.253]  but with using [2.x.254]  to ensure that degrees of freedom areappropriately sorted into their corresponding blocks of the matrix andvector), then we get the following image after the first adaptiverefinement in two dimensions:
+*  [2.x.255] 
+* In order to generate such a graph, you have to insert a piece ofcode like the following to the end of the setup step.
+* [1.x.215]
+* 
+* It is clearly visible that the nonzero entries are spread over almost thewhole matrix.  This makes preconditioning by ILU inefficient: ILU generates aGaussian elimination (LU decomposition) without fill-in elements, which meansthat more tentative fill-ins left out will result in a worse approximation ofthe complete decomposition.
+* In this program, we have thus chosen a more advanced renumbering ofcomponents.  The renumbering with  [2.x.256]  and groupingthe components into velocity and pressure yields the following output:
+*  [2.x.257] 
+* It is apparent that the situation has improved a lot. Most of the elements arenow concentrated around the diagonal in the (0,0) block in the matrix. Similareffects are also visible for the other blocks. In this case, the ILUdecomposition will be much closer to the full LU decomposition, which improvesthe quality of the preconditioner. (It may be interesting to note that thesparse direct solver UMFPACK does some %internal renumbering of the equationsbefore actually generating a sparse LU decomposition; that procedure leads toa very similar pattern to the one we got from the Cuthill-McKee algorithm.)
+* Finally, we want to have a closerlook at a sparsity pattern in 3D. We show only the (0,0) block of thematrix, again after one adaptive refinement. Apart from the fact that the matrixsize has increased, it is also visible that there are many more entriesin the matrix. Moreover, even for the optimized renumbering, there will be aconsiderable amount of tentative fill-in elements. This illustrates why UMFPACKis not a good choice in 3D
+* 
+*  - a full decomposition needs many new entries that eventually won't fit into the physical memory (RAM):
+*  [2.x.258] 
+* 
+
+* 
+* [1.x.216][1.x.217]
+* 
+
+* [1.x.218][1.x.219][1.x.220]
+* We have seen in the section of computational results that the number of outeriterations does not depend on the mesh size, which is optimal in a sense ofscalability. This does, however, not apply to the solver as a whole, asmentioned above:We did not look at the number of inner iterations when generating the inverse ofthe matrix  [2.x.259]  and the mass matrix  [2.x.260] . Of course, this is unproblematic inthe 2D case where we precondition  [2.x.261]  with a direct solver and the [2.x.262]  operation of the inverse matrix structure will converge inone single CG step, but this changes in 3D where we only use an ILUpreconditioner.  There, the number of required preconditioned CG steps toinvert  [2.x.263]  increases as the mesh is refined, and each  [2.x.264] operation involves on average approximately 14, 23, 36, 59, 75 and 101 innerCG iterations in the refinement steps shown above. (On the other hand,the number of iterations for applying the inverse pressure mass matrix isalways around five, both in two and three dimensions.)  To summarize, most workis spent on solving linear systems with the same matrix  [2.x.265]  over and over again.What makes this look even worse is the fact that weactually invert a matrix that is about 95 percent the size of the total systemmatrix and stands for 85 percent of the non-zero entries in the sparsitypattern. Hence, the natural question is whether it is reasonable to solve alinear system with matrix  [2.x.266]  for about 15 times when calculating the solutionto the block system.
+* The answer is, of course, that we can do that in a few other (most of the timebetter) ways.Nevertheless, it has to be remarked that an indefinite system as the oneat hand puts indeed much higherdemands on the linear algebra than standard elliptic problems as we have seenin the early tutorial programs. The improvements are still ratherunsatisfactory, if one compares with an elliptic problem of similarsize. Either way, we will introduce below a number of improvements to thelinear solver, a discussion that we will re-consider again with additionaloptions in the  [2.x.267]  program.
+* [1.x.221][1.x.222][1.x.223]A first attempt to improve the speed of the linear solution process is to choosea dof reordering that makes the ILU being closer to a full LU decomposition, asalready mentioned in the in-code comments. The DoFRenumbering namespace comparesseveral choices for the renumbering of dofs for the Stokes equations. The bestresult regarding the computing time was found for the King ordering, which isaccessed through the call  [2.x.268]  With thatprogram, the inner solver needs considerably less operations, e.g. about 62inner CG iterations for the inversion of  [2.x.269]  at cycle 4 compared to about 75iterations with the standard Cuthill-McKee-algorithm. Also, the computing timeat cycle 4 decreased from about 17 to 11 minutes for the  [2.x.270] call. However, the King ordering (and the orderings provided by the [2.x.271]  namespace in general) has a serious drawback
+* 
+*  - it usesmuch more memory than the in-build deal versions, since it acts on abstractgraphs rather than the geometry provided by the triangulation. In the presentcase, the renumbering takes about 5 times as much memory, which yields aninfeasible algorithm for the last cycle in 3D with 1.2 millionunknowns.
+* [1.x.224][1.x.225]
+* Another idea to improve the situation even more would be to choose apreconditioner that makes CG for the (0,0) matrix  [2.x.272]  converge in amesh-independent number of iterations, say 10 to 30. We have seen such acandidate in  [2.x.273] : multigrid.
+* [1.x.226][1.x.227]
+* [1.x.228]Even with a good preconditioner for  [2.x.274] , we stillneed to solve of the same linear system repeatedly (with differentright hand sides, though) in order to make the Schur complement solveconverge. The approach we are going to discuss here is how inner iterationand outer iteration can be combined. If we persist in calculating the Schurcomplement, there is no other possibility.
+* The alternative is to attack the block system at once and use an approximateSchur complement as efficient preconditioner. The idea is asfollows: If we find a block preconditioner  [2.x.275]  such that the matrix[1.x.229]
+* is simple, then an iterative solver with that preconditioner will converge in afew iterations. Using the Schur complement  [2.x.276] , one finds that[1.x.230]
+* would appear to be a good choice since[1.x.231]
+* This is the approach taken by the paper by Silvester and Wathen referencedto in the introduction (with the exception that Silvester and Wathen useright preconditioning). In this case, a Krylov-based iterative method wouldconverge in one step only if exact inverses of  [2.x.277]  and  [2.x.278]  were applied,since all the eigenvalues are one (and the number of iterations in such amethod is bounded by the number of distinct eigenvalues). Below, we willdiscuss the choice of an adequate solver for this problem. First, we aregoing to have a closer look at the implementation of the preconditioner.
+* Since  [2.x.279]  is aimed to be a preconditioner only, we shall use approximations tothe inverse of the Schur complement  [2.x.280]  and the matrix  [2.x.281] . Hence, the Schurcomplement will be approximated by the pressure mass matrix  [2.x.282] , and we usea preconditioner to  [2.x.283]  (without an InverseMatrix class around it) forapproximating  [2.x.284] .
+* Here comes the class that implements the block Schurcomplement preconditioner. The  [2.x.285]  operation for block vectorsaccording to the derivation above can be specified by three successiveoperations:
+* [1.x.232]
+* 
+* Since we act on the whole block system now, we have to live with onedisadvantage: we need to perform the solver iterations onthe full block system instead of the smaller pressure space.
+* Now we turn to the question which solver we should use for the blocksystem. The first observation is that the resulting preconditioned matrix cannotbe solved with CG since it is neither positive definite nor symmetric.
+* The deal.II libraries implement several solvers that are appropriate for theproblem at hand. One choice is the solver  [2.x.286]  "BiCGStab", whichwas used for the solution of the unsymmetric advection problem in  [2.x.287] . Thesecond option, the one we are going to choose, is  [2.x.288]  "GMRES"(generalized minimum residual). Both methods have their pros and cons
+* 
+*  - thereare problems where one of the two candidates clearly outperforms the other, andvice versa.[1.x.233]'sarticle on the GMRES method gives a comparative presentation.A more comprehensive and well-founded comparison can be read e.g. in the book byJ.W. Demmel (Applied Numerical Linear Algebra, SIAM, 1997, section 6.6.6).
+* For our specific problem with the ILU preconditioner for  [2.x.289] , we certainly needto perform hundreds of iterations on the block system for large problem sizes(we won't beat CG!). Actually, this disfavors GMRES: During the GMRESiterations, a basis of Krylov vectors is successively built up and someoperations are performed on these vectors. The more vectors are in this basis,the more operations and memory will be needed. The number of operations scalesas  [2.x.290]  and memory as  [2.x.291] , where  [2.x.292]  is the number ofvectors in the Krylov basis and  [2.x.293]  the size of the (block) matrix.To not let these demands grow excessively, deal.II limits the size  [2.x.294]  of thebasis to 30 vectors by default.Then, the basis is rebuilt. This implementation of the GMRES method is calledGMRES(k), with default  [2.x.295] . What we have gained by this restriction,namely a bound on operations and memory requirements, will be compensated bythe fact that we use an incomplete basis
+* 
+*  - this will increase the number ofrequired iterations.
+* BiCGStab, on the other hand, won't get slower when many iterations are needed(one iteration uses only results from one preceding step andnot all the steps as GMRES). Besides the fact the BiCGStab is more expensive perstep since two matrix-vector products are needed (compared to one forCG or GMRES), there is one main reason which makes BiCGStab not appropriate forthis problem: The preconditioner applies the inverse of the pressuremass matrix by using the InverseMatrix class. Since the application of theinverse matrix to a vector is done only in approximative way (an exact inverseis too expensive), this will also affect the solver. In the case of BiCGStab,the Krylov vectors will not be orthogonal due to that perturbation. Whilethis is uncritical for a small number of steps (up to about 50), it ruins theperformance of the solver when these perturbations have grown to a significantmagnitude in the coarse of iterations.
+* We did some experiments with BiCGStab and found it tobe faster than GMRES up to refinement cycle 3 (in 3D), but it became very slowfor cycles 4 and 5 (even slower than the original Schur complement), so thesolver is useless in this situation. Choosing a sharper tolerance for theinverse matrix class ( [2.x.296]  instead of [2.x.297] ) made BiCGStab perform well also for cycle 4,but did not change the failure on the very large problems.
+* GMRES is of course also effected by the approximate inverses, but it is not assensitive to orthogonality and retains a relatively good performance also forlarge sizes, see the results below.
+* With this said, we turn to the realization of the solver call with GMRES with [2.x.298]  temporary vectors:
+* [1.x.234]
+* 
+* Obviously, one needs to add the include file  [2.x.299] "<lac/solver_gmres.h>" in order to make this run.We call the solver with a BlockVector template in order to enableGMRES to operate on block vectors and matrices.Note also that we need to set the (1,1) block in the systemmatrix to zero (we saved the pressure mass matrix there which is not part of theproblem) after we copied the information to another matrix.
+* Using the Timer class, we collect some statistics that compare the runtimeof the block solver with the one from the problem implementation above.Besides the solution with the two options we also check if the solutionsof the two variants are close to each other (i.e. this solver gives indeed thesame solution as we had before) and calculate the infinitynorm of the vector difference.
+* Let's first see the results in 2D:
+* [1.x.235]
+* 
+* We see that there is no huge difference in the solution time between theblock Schur complement preconditioner solver and the Schur complementitself. The reason is simple: we used a direct solve as preconditioner for [2.x.300] 
+* 
+*  - so we cannot expect any gain by avoiding the inner iterations. We seethat the number of iterations has slightly increased for GMRES, but all inall the two choices are fairly similar.
+* The picture of course changes in 3D:
+* [1.x.236]
+* 
+* Here, the block preconditioned solver is clearly superior to the Schurcomplement, but the advantage gets less for more mesh points. This isbecause GMRES(k) scales worse with the problem size than CG, as we discussedabove.  Nonetheless, the improvement by a factor of 3-6 for moderate problemsizes is quite impressive.
+* 
+
+* [1.x.237][1.x.238]
+* An ultimate linear solver for this problem could be imagined as acombination of an optimalpreconditioner for  [2.x.301]  (e.g. multigrid) and the block preconditionerdescribed above, which is the approach taken in the  [2.x.302] and  [2.x.303]  tutorial programs (where we use an algebraic multigridmethod) and  [2.x.304]  (where we use a geometric multigrid method).
+* 
+
+* [1.x.239][1.x.240]
+* Another possibility that can be taken into account is to not set up a blocksystem, but rather solve the system of velocity and pressure all at once. Theoptions are direct solve with UMFPACK (2D) or GMRES with ILUpreconditioning (3D). It should be straightforward to try that.
+* 
+
+* 
+* [1.x.241][1.x.242]
+* 
+
+* The program can of course also serve as a basis to compute the flow in moreinteresting cases. The original motivation to write this program was for it tobe a starting point for some geophysical flow problems, such as themovement of magma under places where continental plates drift apart (forexample mid-ocean ridges). Of course, in such places, the geometry is morecomplicated than the examples shown above, but it is not hard to accommodatefor that.
+* For example, by using the following modification of the boundary valuesfunction
+* [1.x.243]
+* and the following way to generate the mesh as the domain [2.x.305] 
+* [1.x.244]
+* then we get images where the fault line is curved: [2.x.306] 
+* 
+
+* [1.x.245][1.x.246] [2.x.307] 
+* [0.x.1]

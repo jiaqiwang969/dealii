@@ -1,3 +1,0 @@
-include/deal.II-translator/matrix_free/evaluation_template_factory.templates_0.txt
-[0.x.0]
-
