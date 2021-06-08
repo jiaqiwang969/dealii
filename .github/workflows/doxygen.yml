@@ -11,6 +11,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: modules
+      run: |
+        sudo apt-get install libboost-all-dev doxygen python
     - name: configure
       run: |
         rm -rf CMakeCache.txt CMakeFiles
@@ -22,7 +25,6 @@ jobs:
         path: detailed.log
     - name: build
       run: |
-        sudo apt-get install libboost-all-dev doxygen python
         make documentation
     
     - name: Publish Doxygen documentation
