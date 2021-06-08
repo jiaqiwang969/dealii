@@ -23,90 +23,68 @@
  * href="modules.html">Modules
  * page</a>或本页面顶部菜单中的相应条目）。这些模块围绕着任何有限元程序的构建块而形成。下面的点击图给出了deal.II中主要类组的交互方式的概要，下面有更详细的描述（灰色方框表示可选的外部库的子集，灰色椭圆表示可选的外部应用程序的子集，deal.II可以与之交互）。
  *
- *   @dot digraph G { graph[rankdir="TB",bgcolor="transparent"];
- *
- * node [fontname="FreeSans",fontsize=15, shape=record,height=0.2,width=0.4,
- * color="black", fillcolor="white", style="filled"]; edge [color="black",
- * weight=10];
- *
- * tria       [label="Triangulation",    URL="\ref grid"]; fe
- * [label="Finite elements",    URL="\ref feall"]; mapping
- * [label="Mapping",          URL="\ref mapping"]; quadrature
- * [label="Quadrature",       URL="\ref Quadrature"]; dh
- * [label="DoFHandler",       URL="\ref dofs"]; fevalues   [label="FEValues",
- * URL="\ref feaccess"]; systems    [label="Linear systems",   URL="\ref
- * LAC"]; solvers    [label="Linear solvers",   URL="\ref Solvers"]; output
- * [label="Graphical output", URL="\ref output"]; manifold
- * [label="Manifold",         URL="\ref manifold"];
- *
- * tria
- *
- * -> dh              [color="black",style="solid"]; fe
- *
- * -> dh                [color="black",style="solid"]; fe
- *
- * -> fevalues          [color="black",style="solid"]; mapping
- *
- * -> fevalues     [color="black",style="solid"]; quadrature
- *
- * -> fevalues  [color="black",style="solid"]; dh
- *
- * -> systems           [color="black",style="solid"]; fevalues
- *
- * -> systems     [color="black",style="solid"]; systems
- *
- * -> solvers      [color="black",style="solid"]; solvers
- *
- * -> output       [color="black",style="solid"]; manifold
- *
- * -> tria        [color="black",style="solid"]; manifold
- *
- * -> mapping     [color="black",style="solid"];
- *
- *
- *
- * node [fontname="FreeSans",fontsize=12, shape=record,height=0.2,width=0.4,
- * color="gray55", fontcolor="gray55", fillcolor="white", style="filled"];
- * edge [color="gray55", weight=1];
- *
- * opencascade [label="OpenCASCADE"]; subgraph linalglibs { rank="same"; petsc
- * [label="PETSc",    URL="\ref PETScWrappers"]; trilinos
- * [label="Trilinos", URL="\ref TrilinosWrappers"]; cuda        [label="CUDA",
- * URL="\ref CUDAWrappers"]; } umfpack     [label="UMFPACK"];
- *
- * petsc
- *
- * -> systems        [dir="none"]; petsc
- *
- * -> solvers        [dir="none"]; trilinos
- *
- * -> systems     [dir="none"]; trilinos
- *
- * -> solvers     [dir="none"]; cuda
- *
- * -> systems         [dir="none"]; cuda
- *
- * -> solvers         [dir="none"]; umfpack
- *
- * -> solvers      [dir="none"]; opencascade
- *
- * -> manifold [dir="none"];
- *
- *
- * node [fontname="FreeSans",fontsize=12, shape=ellipse,height=0.2,width=0.4,
- * color="gray55", fontcolor="gray55", fillcolor="white", style="filled"];
- * edge [color="gray55", weight=1];
- *
- * gmsh        [label="gmsh", URL="\ref Gmsh"]; visit       [label="VisIt"]
- * paraview    [label="ParaView"]
- *
- * gmsh
- *
- * -> tria       [dir="none"]; output
- *
- * -> visit    [dir="none"]; output
- *
- * -> paraview [dir="none"]; } @enddot
+* @dot
+ digraph G
+{
+  graph[rankdir="TB",bgcolor="transparent"];
+  node [fontname="FreeSans",fontsize=15,
+        shape=record,height=0.2,width=0.4,
+        color="black", fillcolor="white", style="filled"];
+  edge [color="black", weight=10];
+  tria       [label="Triangulation",    URL="\ref grid"];
+  fe         [label="Finite elements",    URL="\ref feall"];
+  mapping    [label="Mapping",          URL="\ref mapping"];
+  quadrature [label="Quadrature",       URL="\ref Quadrature"];
+  dh         [label="DoFHandler",       URL="\ref dofs"];
+  fevalues   [label="FEValues",         URL="\ref feaccess"];
+  systems    [label="Linear systems",   URL="\ref LAC"];
+  solvers    [label="Linear solvers",   URL="\ref Solvers"];
+  output     [label="Graphical output", URL="\ref output"];
+  manifold   [label="Manifold",         URL="\ref manifold"];
+  tria -> dh              [color="black",style="solid"];
+  fe -> dh                [color="black",style="solid"];
+  fe -> fevalues          [color="black",style="solid"];
+  mapping -> fevalues     [color="black",style="solid"];
+  quadrature -> fevalues  [color="black",style="solid"];
+  dh -> systems           [color="black",style="solid"];
+  fevalues -> systems     [color="black",style="solid"];
+  systems -> solvers      [color="black",style="solid"];
+  solvers -> output       [color="black",style="solid"];
+  manifold -> tria        [color="black",style="solid"];
+  manifold -> mapping     [color="black",style="solid"];
+  node [fontname="FreeSans",fontsize=12,
+        shape=record,height=0.2,width=0.4,
+        color="gray55", fontcolor="gray55", fillcolor="white", style="filled"];
+  edge [color="gray55", weight=1];
+  opencascade [label="OpenCASCADE"];
+  subgraph linalglibs {
+    rank="same";
+    petsc       [label="PETSc",    URL="\ref PETScWrappers"];
+    trilinos    [label="Trilinos", URL="\ref TrilinosWrappers"];
+    cuda        [label="CUDA",     URL="\ref CUDAWrappers"];
+  }
+  umfpack     [label="UMFPACK"];
+  petsc -> systems        [dir="none"];
+  petsc -> solvers        [dir="none"];
+  trilinos -> systems     [dir="none"];
+  trilinos -> solvers     [dir="none"];
+  cuda -> systems         [dir="none"];
+  cuda -> solvers         [dir="none"];
+  umfpack -> solvers      [dir="none"];
+  opencascade -> manifold [dir="none"];
+  node [fontname="FreeSans",fontsize=12,
+        shape=ellipse,height=0.2,width=0.4,
+        color="gray55", fontcolor="gray55", fillcolor="white", style="filled"];
+  edge [color="gray55", weight=1];
+  gmsh        [label="gmsh", URL="\ref Gmsh"];
+  visit       [label="VisIt"]
+  paraview    [label="ParaView"]
+  gmsh -> tria       [dir="none"];
+  output -> visit    [dir="none"];
+  output -> paraview [dir="none"];
+}
+ * @enddot
+
  * 这些组在教程程序中都有涉及，在 step-3
  * 中首先概述了它们的组合方式。下面是这个组的分类指南，以及与每个组有关的文档链接。
  * <ol>   <li>  <b>%Triangulation</b>。三角形是单元及其低维边界对象的集合。单元是参考超立方体[0,1]<sup>dim</sup>在 @ref mapping 模块中的适当映射下的图像。

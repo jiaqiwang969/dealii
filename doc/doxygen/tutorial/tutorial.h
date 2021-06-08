@@ -39,465 +39,520 @@
  *  <a name="graph"></a>  @anchor  TutorialConnectionGraph <h3>Connections
  * between tutorial programs</h3>。
  * 下图显示了教程程序之间的联系，以及它们的主要组成部分是如何相互建立的。点击任何一个方框都可以进入其中一个程序。如果你将鼠标指针悬停在一个方框上，就会出现该程序的简要描述。
- * @dot digraph StepsMap { overlap=false; edge [fontname="FreeSans",
- * fontsize="10", labelfontname="FreeSans", labelfontsize="10", color="black",
- * style="solid"]; node [fontname="FreeSans", fontsize="10",
- * shape="rectangle", height=0.2, width=0.4, color="black", fillcolor="white",
- * style="filled"]; Step1 [label="1", URL="\ref step_1", tooltip="Creating a
- * mesh, refining it, writing it to a
- * file.",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step10
- * [label="10", URL="\ref step_10", tooltip="Higher order
- * mappings.",height=.35,width=.35,fillcolor="orange"]; Step11 [label="11",
- * URL="\ref step_11", tooltip="Higher order mappings. Dealing with
- * constraints.",height=.35,width=.35,fillcolor="orange"]; Step12 [label="12",
- * URL="\ref step_12", tooltip="The Discontinuous Galerkin method for a linear
- * advection problem.",height=.35,width=.35,fillcolor="orange"]; Step12b
- * [label="12b", URL="\ref step_12b", tooltip="Discontinuous Galerkin for
- * linear advection, MeshWorker
- * version.",height=.35,width=.35,fillcolor="orange"]; Step13 [label="13",
- * URL="\ref step_13", tooltip="Modularity. Software
- * design.",height=.35,width=.35,fillcolor="orange"]; Step14 [label="14",
- * URL="\ref step_14", tooltip="Duality based error estimates.
- * Adaptivity.",height=.35,width=.35,fillcolor="orange"]; Step15 [label="15",
- * URL="\ref step_15", tooltip="A nonlinear elliptic problem. Newton's
- * method.",height=.35,width=.35,fillcolor="orange"]; Step16 [label="16",
- * URL="\ref step_16", tooltip="Multigrid on adaptive
- * meshes.",height=.35,width=.35,fillcolor="orange"]; Step16b [label="16b",
- * URL="\ref step_16b", tooltip="MeshWorker for multigrid on adaptive
- * meshes.",height=.35,width=.35,fillcolor="orange"]; Step17 [label="17",
- * URL="\ref step_17", tooltip="Parallel computing using MPI, using
- * PETSc.",height=.25,width=.25,fillcolor="lightblue"]; Step18 [label="18",
- * URL="\ref step_18", tooltip="Quasistatic elasticity. More parallel
- * computing.",height=.25,width=.25,fillcolor="lightblue"]; Step19
- * [label="19", URL="\ref step_19", tooltip="Coupling particles to the
- * solution of partial differential
- * equations.",height=.35,width=.35,fillcolor="orange"]; Step2 [label="2",
- * URL="\ref step_2", tooltip="Assigning degrees of freedom to a
- * grid.",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step20
- * [label="20", URL="\ref step_20", tooltip="Mixed finite elements for the
- * mixed Laplacian. Block solvers.",height=.25,width=.25,fillcolor="yellow2"];
- * Step21 [label="21", URL="\ref step_21", tooltip="Two-phase flow in porous
- * media.",height=.25,width=.25,fillcolor="yellow2"]; Step22 [label="22",
- * URL="\ref step_22", tooltip="The Stokes equation on adaptive
- * meshes.",height=.25,width=.25,fillcolor="yellow2"]; Step23 [label="23",
- * URL="\ref step_23", tooltip="Time dependent problems. The wave
- * equation.",height=.25,width=.25,fillcolor="dodgerblue1"]; Step24
- * [label="24", URL="\ref step_24", tooltip="The wave equation with absorbing
- * boundary conditions. Extracting point
- * values.",height=.25,width=.25,fillcolor="dodgerblue1"]; Step25 [label="25",
- * URL="\ref step_25", tooltip="The nonlinear sine-Gordon soliton
- * equation.",height=.25,width=.25,fillcolor="dodgerblue1"]; Step26
- * [label="26", URL="\ref step_26", tooltip="The heat equation. Time dependent
- * meshes.",height=.25,width=.25,fillcolor="dodgerblue1"]; Step27 [label="27",
- * URL="\ref step_27", tooltip="Using the hp-finite element method for an
- * elliptic problem.",height=.35,width=.35,fillcolor="orange"]; Step28
- * [label="28", URL="\ref step_28", tooltip="Handling multiple meshes at the
- * same time. Neutron transport.",height=.35,width=.35,fillcolor="orange"];
- * Step29 [label="29", URL="\ref step_29", tooltip="A complex-valued Helmholtz
- * equation. Sparse direct solvers.",height=.35,width=.35,fillcolor="orange"];
- * Step3 [label="3", URL="\ref step_3", tooltip="Solving Poisson's
- * equation.",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step30
- * [label="30", URL="\ref step_30", tooltip="Anisotropic refinement for DG
- * methods.",height=.35,width=.35,fillcolor="orange"]; Step31 [label="31",
- * URL="\ref step_31", tooltip="Boussinesq flow for thermal
- * convection.",height=.25,width=.25,fillcolor="yellow2"]; Step32 [label="32",
- * URL="\ref step_32", tooltip="A parallel Boussinesq flow solver for thermal
- * convection in the earth mantle.",height=.25,width=.25,fillcolor="yellow2"];
- * Step33 [label="33", URL="\ref step_33", tooltip="Hyperbolic conservation
- * laws: the Euler equations of gas
- * dynamics.",height=.25,width=.25,fillcolor="yellow2"]; Step34 [label="34",
- * URL="\ref step_34", tooltip="Boundary element methods for potential
- * flow.",height=.25,width=.25,fillcolor="yellow2"]; Step35 [label="35",
- * URL="\ref step_35", tooltip="A projection solver for the Navier-Stokes
- * equations.",height=.25,width=.25,fillcolor="yellow2"]; Step36 [label="36",
- * URL="\ref step_36", tooltip="Finding eigenvalues of the Schrödinger
- * equation.",height=.35,width=.35,fillcolor="orange"]; Step37 [label="37",
- * URL="\ref step_37", tooltip="Matrix-free methods. Multigrid. Fast assembly
- * techniques.",height=.35,width=.35,fillcolor="orange"]; Step38 [label="38",
- * URL="\ref step_38", tooltip="Solving the Laplace-Beltrami operator on a
- * surface.",height=.35,width=.35,fillcolor="orange"]; Step39 [label="39",
- * URL="\ref step_39", tooltip="Interior Penalty for the Laplace equation.
- * Adaptive refinement. Multigrid.",height=.35,width=.35,fillcolor="orange"];
- * Step4 [label="4", URL="\ref step_4", tooltip="Dimension independent
- * programming. Boundary conditions.
- * Functions.",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step40
- * [label="40", URL="\ref step_40", tooltip="Solving the Laplace equation on
- * adaptive meshes on thousands of
- * processors.",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step41
- * [label="41", URL="\ref step_41", tooltip="Solving the obstacle problem: a
- * variational inequality.",height=.25,width=.25,fillcolor="lightblue"];
- * Step42 [label="42", URL="\ref step_42", tooltip="An adaptive, 3d solver for
- * an elasto-plastic contact
- * problem.",height=.25,width=.25,fillcolor="lightblue"]; Step43 [label="43",
- * URL="\ref step_43", tooltip="Efficient ways to solve two-phase flow
- * problems on adaptive meshes in 2d and
- * 3d.",height=.25,width=.25,fillcolor="yellow2"]; Step44 [label="44",
- * URL="\ref step_44", tooltip="Quasi-static finite-strain
- * elasticity.",height=.25,width=.25,fillcolor="lightblue"]; Step45
- * [label="45", URL="\ref step_45", tooltip="Periodic boundary
- * conditions.",height=.35,width=.35,fillcolor="orange"]; Step46 [label="46",
- * URL="\ref step_46", tooltip="Coupling different physical models (flow,
- * elasticity) in different parts of the
- * domain.",height=.35,width=.35,fillcolor="orange"]; Step47 [label="47",
- * URL="\ref step_47", tooltip="Solving the fourth-order biharmonic
- * equation.",height=.35,width=.35,fillcolor="orange"]; Step48 [label="48",
- * URL="\ref step_48", tooltip="Parallelization via MPI. The wave equation, in
- * linear and nonlinear variants. Mass lumping. Fast assembly
- * techniques.",height=.25,width=.25,fillcolor="dodgerblue1"]; Step49
- * [label="49", URL="\ref step_49", tooltip="How to create and modify
- * meshes.",height=.35,width=.35,fillcolor="orange"]; Step5 [label="5",
- * URL="\ref step_5", tooltip="Reading a grid from disk. Computations on
- * successively refined grids. Variable coefficients.
- * Assertions.",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step50
- * [label="50", URL="\ref step_50", tooltip="Multigrid on adaptive meshes
- * distributed in parallel.",height=.35,width=.35,fillcolor="orange"]; Step51
- * [label="51", URL="\ref step_51", tooltip="The convection-diffusion
- * equation. Hybridizable discontinuous Galerkin methods. Face
- * elements.",height=.35,width=.35,fillcolor="orange"]; Step52 [label="52",
- * URL="\ref step_52", tooltip="Time-dependent diffusion equation. Time
- * stepping methods.",height=.25,width=.25,fillcolor="dodgerblue1"]; Step53
- * [label="53", URL="\ref step_53", tooltip="Geometry: Dealing with deformed
- * domains.",height=.35,width=.35,fillcolor="orange"]; Step54 [label="54",
- * URL="\ref step_54", tooltip="Geometry: Using industry standard IGES files
- * as boundary descriptors.",height=.35,width=.35,fillcolor="orange"]; Step55
- * [label="55", URL="\ref step_55", tooltip="Solving the Stokes problem in
- * parallel.",height=.25,width=.25,fillcolor="yellow2"]; Step56 [label="56",
- * URL="\ref step_56", tooltip="Geometric multigrid preconditioners for the
- * Stokes problem.",height=.35,width=.35,fillcolor="orange"]; Step57
- * [label="57", URL="\ref step_57", tooltip="The Navier Stokes equations via
- * Newton's iteration.",height=.25,width=.25,fillcolor="yellow2"]; Step58
- * [label="58", URL="\ref step_58", tooltip="The complex-valued Nonlinear
- * Schrödinger Equation.",height=.25,width=.25,fillcolor="dodgerblue1"];
- * Step59 [label="59", URL="\ref step_59", tooltip="Matrix-free methods.
- * Multigrid. Fast assembly
- * techniques.",height=.35,width=.35,fillcolor="orange"]; Step6 [label="6",
- * URL="\ref step_6", tooltip="Adaptive local refinement. Higher order
- * elements",height=.8,width=.8,shape="octagon",fillcolor="green"]; Step60
- * [label="60", URL="\ref step_60", tooltip="The fictitious domain method
- * using distributed Lagrange
- * multipliers.",height=.35,width=.35,fillcolor="orange"]; Step61 [label="61",
- * URL="\ref step_61", tooltip="The Weak Galerkin method applied to the
- * Poisson equation.",height=.35,width=.35,fillcolor="orange"]; Step62
- * [label="62", URL="\ref step_62", tooltip="Elastic equation in the frequency
- * domain. Calculating the transmission and resonance frequency of a phononic
- * structure.",height=.35,width=.35,fillcolor="orange"]; Step63 [label="63",
- * URL="\ref step_63", tooltip="Block smoothers for Geometric
- * Multigrid.",height=.35,width=.35,fillcolor="orange"]; Step64 [label="64",
- * URL="\ref step_64", tooltip="Matrix-free methods using CUDA and
- * MPI.",height=.35,width=.35,fillcolor="orange"]; Step65 [label="65",
- * URL="\ref step_65", tooltip="Geometry: Working efficiently with expensive
- * manifolds.",height=.35,width=.35,fillcolor="orange"]; Step66 [label="66",
- * URL="\ref step_66", tooltip="Parallel matrix-free geometric multigrid for a
- * nonlinear problem.",height=.35,width=.35,fillcolor="orange"]; Step67
- * [label="67", URL="\ref step_67", tooltip="An explicit time integrator for
- * the Euler equations with matrix-free
- * implementation.",height=.25,width=.25,fillcolor="yellow2"]; Step68
- * [label="68", URL="\ref step_68", tooltip="A particle tracking problem using
- * an analytically defined velocity
- * field.",height=.35,width=.35,fillcolor="orange"]; Step69 [label="69",
- * URL="\ref step_69", tooltip="Hyperbolic conservation laws: a first-order
- * guaranteed maximum wavespeed method for the compressible Euler
- * equations.",height=.25,width=.25,fillcolor="yellow2"]; Step7 [label="7",
- * URL="\ref step_7", tooltip="Helmholtz equation. Computing errors. Boundary
- * integrals.",height=.35,width=.35,fillcolor="orange"]; Step70 [label="70",
- * URL="\ref step_70", tooltip="A fluid structure interaction problem, using a
- * penalty term.",height=.25,width=.25,fillcolor="yellow2"]; Step71
- * [label="71", URL="\ref step_71", tooltip="Coupled constitutive modeling
- * using automatic and symbolic
- * differentiation",height=.35,width=.35,fillcolor="orange"]; Step72
- * [label="72", URL="\ref step_72", tooltip="Newton's method for a nonlinear
- * elliptic problem. Automatic
- * differentiation",height=.35,width=.35,fillcolor="orange"]; Step74
- * [label="74", URL="\ref step_74", tooltip="Symmetric interior penalty
- * Galerkin for Poisson's equation.
- * ",height=.35,width=.35,fillcolor="orange"]; Step75 [label="75", URL="\ref
- * step_75", tooltip="Solving the Laplace equation on hp-adaptive meshes with
- * a MatrixFree hybrid",height=.35,width=.35,fillcolor="orange"]; Step76
- * [label="76", URL="\ref step_76", tooltip="An alternative implementation for
- * an explicit time integrator for the Euler equations with matrix-free
- * implementation.",height=.25,width=.25,fillcolor="yellow2"]; Step77
- * [label="77", URL="\ref step_77", tooltip="Newton's method for a nonlinear
- * elliptic problem. Uses
- * %SUNDIALS'",height=.35,width=.35,fillcolor="orange"]; Step78 [label="78",
- * URL="\ref step_78", tooltip="Black-Scholes equation for stock
- * options.",height=.35,width=.35,fillcolor="orange"]; Step79 [label="79",
- * URL="\ref step_79", tooltip="Topology optimization of elastic
- * media.",height=.25,width=.25,fillcolor="lightblue"]; Step8 [label="8",
- * URL="\ref step_8", tooltip="Systems of PDE. Elasticity.
- * Tensors.",height=.35,width=.35,fillcolor="orange"]; Step9 [label="9",
- * URL="\ref step_9", tooltip="Advection equation. Multithreading. Refinement
- * criteria.",height=.35,width=.35,fillcolor="orange"]; Step7
- *
- * -> Step10 [color="orange",weight=5,]; Step10
- *
- * -> Step11 [color="orange",weight=5,]; Step7
- *
- * -> Step12 [color="orange",weight=5,]; Step16
- *
- * -> Step12b [color="orange",weight=5,]; Step7
- *
- * -> Step12b [color="orange",weight=5,]; Step39
- *
- * -> Step12b [color="orange",weight=5,]; Step6
- *
- * -> Step13 []; Step13
- *
- * -> Step14 [color="orange",weight=5,]; Step6
- *
- * -> Step15 []; Step6
- *
- * -> Step16 []; Step16
- *
- * -> Step16b [color="orange",weight=5,]; Step8
- *
- * -> Step17 []; Step17
- *
- * -> Step18 [color="lightblue",weight=5,]; Step6
- *
- * -> Step19 []; Step1
- *
- * -> Step2 [color="green",weight=100,]; Step4
- *
- * -> Step20 []; Step20
- *
- * -> Step21 [color="yellow2",weight=5,]; Step6
- *
- * -> Step22 []; Step21
- *
- * -> Step22 [color="yellow2",weight=5,]; Step4
- *
- * -> Step23 []; Step23
- *
- * -> Step24 [color="dodgerblue1",weight=5,]; Step24
- *
- * -> Step25 [color="dodgerblue1",weight=5,]; Step6
- *
- * -> Step26 []; Step6
- *
- * -> Step27 []; Step6
- *
- * -> Step28 []; Step4
- *
- * -> Step29 []; Step2
- *
- * -> Step3 [color="green",weight=100,]; Step12
- *
- * -> Step30 [color="orange",weight=5,]; Step22
- *
- * -> Step31 [color="yellow2",weight=5,]; Step31
- *
- * -> Step32 [color="yellow2",weight=5,]; Step55
- *
- * -> Step32 [color="yellow2",weight=5,]; Step12
- *
- * -> Step33 []; Step71
- *
- * -> Step33 []; Step4
- *
- * -> Step34 []; Step22
- *
- * -> Step35 [color="yellow2",weight=5,]; Step4
- *
- * -> Step36 []; Step16
- *
- * -> Step37 [color="orange",weight=5,]; Step40
- *
- * -> Step37 []; Step34
- *
- * -> Step38 []; Step12b
- *
- * -> Step39 [color="orange",weight=5,]; Step3
- *
- * -> Step4 [color="green",weight=100,]; Step40a [style="invis"];  Step40b
- * [style="invis"];  Step40c [style="invis"];  Step6
- *
- * -> Step40a [style="invis"];  Step40a
- *
- * -> Step40b [style="invis"];  Step40b
- *
- * -> Step40c [style="invis"];  Step40c
- *
- * -> Step40 [style="invis"];  Step6
- *
- * -> Step40 [weight=100,color="green"];  Step15
- *
- * -> Step41 []; Step41
- *
- * -> Step42 [color="lightblue",weight=5,]; Step40
- *
- * -> Step42 []; Step31
- *
- * -> Step43 [color="yellow2",weight=5,]; Step18
- *
- * -> Step44 [color="lightblue",weight=5,]; Step6
- *
- * -> Step45 []; Step8
- *
- * -> Step46 [color="orange",weight=5,]; Step22
- *
- * -> Step46 []; Step27
- *
- * -> Step46 [color="orange",weight=5,]; Step12
- *
- * -> Step47 [color="orange",weight=5,]; Step25
- *
- * -> Step48 [color="dodgerblue1",weight=5,]; Step37
- *
- * -> Step48 []; Step1
- *
- * -> Step49 []; Step4
- *
- * -> Step5 [color="green",weight=100,]; Step16
- *
- * -> Step50 [color="orange",weight=5,]; Step37
- *
- * -> Step50 [color="orange",weight=5,]; Step7
- *
- * -> Step51 [color="orange",weight=5,]; Step9
- *
- * -> Step51 [color="orange",weight=5,]; Step61
- *
- * -> Step51 [color="orange",weight=5,]; Step26
- *
- * -> Step52 [color="dodgerblue1",weight=5,]; Step49
- *
- * -> Step53 [color="orange",weight=5,]; Step53
- *
- * -> Step54 [color="orange",weight=5,]; Step40
- *
- * -> Step55 []; Step22
- *
- * -> Step55 [color="yellow2",weight=5,]; Step16
- *
- * -> Step56 [color="orange",weight=5,]; Step22
- *
- * -> Step56 []; Step15
- *
- * -> Step57 []; Step22
- *
- * -> Step57 [color="yellow2",weight=5,]; Step26
- *
- * -> Step58 [color="dodgerblue1",weight=5,]; Step29
- *
- * -> Step58 []; Step37
- *
- * -> Step59 [color="orange",weight=5,]; Step5
- *
- * -> Step6 [color="green",weight=100,]; Step6
- *
- * -> Step60 []; Step51
- *
- * -> Step61 [color="orange",weight=5,]; Step8
- *
- * -> Step62 [color="orange",weight=5,]; Step40
- *
- * -> Step62 []; Step16
- *
- * -> Step63 [color="orange",weight=5,]; Step7
- *
- * -> Step64 [color="orange",weight=5,]; Step37
- *
- * -> Step64 [color="orange",weight=5,]; Step49
- *
- * -> Step65 [color="orange",weight=5,]; Step15
- *
- * -> Step66 [color="orange",weight=5,]; Step37
- *
- * -> Step66 [color="orange",weight=5,]; Step33
- *
- * -> Step67 [color="yellow2",weight=5,]; Step48
- *
- * -> Step67 []; Step59
- *
- * -> Step67 []; Step19
- *
- * -> Step68 [color="orange",weight=5,]; Step33
- *
- * -> Step69 [color="yellow2",weight=5,]; Step40
- *
- * -> Step69 []; Step6
- *
- * -> Step7 []; Step19
- *
- * -> Step70 []; Step32
- *
- * -> Step70 [color="yellow2",weight=5,]; Step60
- *
- * -> Step70 []; Step71
- *
- * -> Step72 [color="orange",weight=5,]; Step15
- *
- * -> Step72 [color="orange",weight=5,]; Step12
- *
- * -> Step74 [color="orange",weight=5,]; Step27
- *
- * -> Step75 [color="orange",weight=5,]; Step37
- *
- * -> Step75 [color="orange",weight=5,]; Step40
- *
- * -> Step75 []; Step67
- *
- * -> Step76 [color="yellow2",weight=5,]; Step15
- *
- * -> Step77 [color="orange",weight=5,]; Step26
- *
- * -> Step78 []; Step8
- *
- * -> Step79 []; Step15
- *
- * -> Step79 []; Step6
- *
- * -> Step8 []; Step6
- *
- * -> Step9 []; } @enddot <b>Legend:</b><br />   @dot graph StepsDescription {
- * overlap=false; edge [fontname="FreeSans", fontsize="10",
- * labelfontname="FreeSans", labelfontsize="10", color="black",
- * style="solid"]; node [fontname="FreeSans", fontsize="10",
- * shape="rectangle", height=0.2, width=0.4, color="black", fillcolor="white",
- * style="filled"]; fluids [label="" ,height=.25,width=.25,
- * fillcolor="yellow2"]; fake_fluids [label="Fluid dynamics",
- * shape=plaintext]; fluids
- *
- * -- fake_fluids [style=dotted, arrowhead=odot, arrowsize=1]; unfinished
- * [label="" ,height=.25,width=.25,style="dashed", fillcolor="white"];
- * fake_unfinished [label="Unfinished codes", shape=plaintext]; unfinished
- *
- * -- fake_unfinished [style=dotted, arrowhead=odot, arrowsize=1];
- * time_dependent [label="" ,height=.25,width=.25, fillcolor="dodgerblue1"];
- * fake_time_dependent [label="Time dependent problems", shape=plaintext];
- * time_dependent
- *
- * -- fake_time_dependent [style=dotted, arrowhead=odot, arrowsize=1]; solids
- * [label="" ,height=.25,width=.25, fillcolor="lightblue"]; fake_solids
- * [label="Solid mechanics", shape=plaintext]; solids
- *
- * -- fake_solids [style=dotted, arrowhead=odot, arrowsize=1]; techniques
- * [label="" ,height=.35,width=.35, fillcolor="orange"]; fake_techniques
- * [label="Advanced techniques", shape=plaintext]; techniques
- *
- * -- fake_techniques [style=dotted, arrowhead=odot, arrowsize=1];
- * code_gallery [label="" ,height=.08,width=.125,shape="circle",
- * fillcolor="white"]; fake_code_gallery [label="Code gallery",
- * shape=plaintext]; code_gallery
- *
- * -- fake_code_gallery [style=dotted, arrowhead=odot, arrowsize=1]; basic
- * [label="" ,height=.8,width=.8,shape="octagon", fillcolor="green"];
- * fake_basic [label="Basic techniques", shape=plaintext]; basic
- *
- * -- fake_basic [style=dotted, arrowhead=odot, arrowsize=1]; basic
- *
- * -- techniques [style=invis]; techniques
- *
- * -- fluids [style=invis]; fluids
- *
- * -- solids [style=invis]; solids
- *
- * -- time_dependent [style=invis]; time_dependent
- *
- * -- unfinished [style=invis]; unfinished
- *
- * -- code_gallery [style=invis]; {rank=same; basic, techniques, fluids,
- * solids, time_dependent, unfinished, code_gallery}} @enddot <a
+ 
+  * @dot
+
+digraph StepsMap
+
+{
+
+  overlap=false;
+
+  edge [fontname="FreeSans",
+
+        fontsize="10",
+
+        labelfontname="FreeSans",
+
+        labelfontsize="10",
+
+        color="black",
+
+        style="solid"];
+
+  node [fontname="FreeSans",
+
+        fontsize="10",
+
+        shape="rectangle",
+
+        height=0.2,
+
+        width=0.4,
+
+        color="black",
+
+        fillcolor="white",
+
+        style="filled"];
+
+  Step1 [label="1", URL="\ref step_1", tooltip="Creating a mesh, refining it, writing it to a file.",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step10 [label="10", URL="\ref step_10", tooltip="Higher order mappings.",height=.35,width=.35,fillcolor="orange"];
+
+  Step11 [label="11", URL="\ref step_11", tooltip="Higher order mappings. Dealing with constraints.",height=.35,width=.35,fillcolor="orange"];
+
+  Step12 [label="12", URL="\ref step_12", tooltip="The Discontinuous Galerkin method for a linear advection problem.",height=.35,width=.35,fillcolor="orange"];
+
+  Step12b [label="12b", URL="\ref step_12b", tooltip="Discontinuous Galerkin for linear advection, MeshWorker version.",height=.35,width=.35,fillcolor="orange"];
+
+  Step13 [label="13", URL="\ref step_13", tooltip="Modularity. Software design.",height=.35,width=.35,fillcolor="orange"];
+
+  Step14 [label="14", URL="\ref step_14", tooltip="Duality based error estimates. Adaptivity.",height=.35,width=.35,fillcolor="orange"];
+
+  Step15 [label="15", URL="\ref step_15", tooltip="A nonlinear elliptic problem. Newton's method.",height=.35,width=.35,fillcolor="orange"];
+
+  Step16 [label="16", URL="\ref step_16", tooltip="Multigrid on adaptive meshes.",height=.35,width=.35,fillcolor="orange"];
+
+  Step16b [label="16b", URL="\ref step_16b", tooltip="MeshWorker for multigrid on adaptive meshes.",height=.35,width=.35,fillcolor="orange"];
+
+  Step17 [label="17", URL="\ref step_17", tooltip="Parallel computing using MPI, using PETSc.",height=.25,width=.25,fillcolor="lightblue"];
+
+  Step18 [label="18", URL="\ref step_18", tooltip="Quasistatic elasticity. More parallel computing.",height=.25,width=.25,fillcolor="lightblue"];
+
+  Step19 [label="19", URL="\ref step_19", tooltip="Coupling particles to the solution of partial differential equations.",height=.35,width=.35,fillcolor="orange"];
+
+  Step2 [label="2", URL="\ref step_2", tooltip="Assigning degrees of freedom to a grid.",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step20 [label="20", URL="\ref step_20", tooltip="Mixed finite elements for the mixed Laplacian. Block solvers.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step21 [label="21", URL="\ref step_21", tooltip="Two-phase flow in porous media.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step22 [label="22", URL="\ref step_22", tooltip="The Stokes equation on adaptive meshes.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step23 [label="23", URL="\ref step_23", tooltip="Time dependent problems. The wave equation.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step24 [label="24", URL="\ref step_24", tooltip="The wave equation with absorbing boundary conditions. Extracting point values.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step25 [label="25", URL="\ref step_25", tooltip="The nonlinear sine-Gordon soliton equation.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step26 [label="26", URL="\ref step_26", tooltip="The heat equation. Time dependent meshes.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step27 [label="27", URL="\ref step_27", tooltip="Using the hp-finite element method for an elliptic problem.",height=.35,width=.35,fillcolor="orange"];
+
+  Step28 [label="28", URL="\ref step_28", tooltip="Handling multiple meshes at the same time. Neutron transport.",height=.35,width=.35,fillcolor="orange"];
+
+  Step29 [label="29", URL="\ref step_29", tooltip="A complex-valued Helmholtz equation. Sparse direct solvers.",height=.35,width=.35,fillcolor="orange"];
+
+  Step3 [label="3", URL="\ref step_3", tooltip="Solving Poisson's equation.",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step30 [label="30", URL="\ref step_30", tooltip="Anisotropic refinement for DG methods.",height=.35,width=.35,fillcolor="orange"];
+
+  Step31 [label="31", URL="\ref step_31", tooltip="Boussinesq flow for thermal convection.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step32 [label="32", URL="\ref step_32", tooltip="A parallel Boussinesq flow solver for thermal convection in the earth mantle.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step33 [label="33", URL="\ref step_33", tooltip="Hyperbolic conservation laws: the Euler equations of gas dynamics.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step34 [label="34", URL="\ref step_34", tooltip="Boundary element methods for potential flow.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step35 [label="35", URL="\ref step_35", tooltip="A projection solver for the Navier-Stokes equations.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step36 [label="36", URL="\ref step_36", tooltip="Finding eigenvalues of the Schrödinger equation.",height=.35,width=.35,fillcolor="orange"];
+
+  Step37 [label="37", URL="\ref step_37", tooltip="Matrix-free methods. Multigrid. Fast assembly techniques.",height=.35,width=.35,fillcolor="orange"];
+
+  Step38 [label="38", URL="\ref step_38", tooltip="Solving the Laplace-Beltrami operator on a surface.",height=.35,width=.35,fillcolor="orange"];
+
+  Step39 [label="39", URL="\ref step_39", tooltip="Interior Penalty for the Laplace equation. Adaptive refinement. Multigrid.",height=.35,width=.35,fillcolor="orange"];
+
+  Step4 [label="4", URL="\ref step_4", tooltip="Dimension independent programming. Boundary conditions. Functions.",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step40 [label="40", URL="\ref step_40", tooltip="Solving the Laplace equation on adaptive meshes on thousands of processors.",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step41 [label="41", URL="\ref step_41", tooltip="Solving the obstacle problem: a variational inequality.",height=.25,width=.25,fillcolor="lightblue"];
+
+  Step42 [label="42", URL="\ref step_42", tooltip="An adaptive, 3d solver for an elasto-plastic contact problem.",height=.25,width=.25,fillcolor="lightblue"];
+
+  Step43 [label="43", URL="\ref step_43", tooltip="Efficient ways to solve two-phase flow problems on adaptive meshes in 2d and 3d.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step44 [label="44", URL="\ref step_44", tooltip="Quasi-static finite-strain elasticity.",height=.25,width=.25,fillcolor="lightblue"];
+
+  Step45 [label="45", URL="\ref step_45", tooltip="Periodic boundary conditions.",height=.35,width=.35,fillcolor="orange"];
+
+  Step46 [label="46", URL="\ref step_46", tooltip="Coupling different physical models (flow, elasticity) in different parts of the domain.",height=.35,width=.35,fillcolor="orange"];
+
+  Step47 [label="47", URL="\ref step_47", tooltip="Solving the fourth-order biharmonic equation.",height=.35,width=.35,fillcolor="orange"];
+
+  Step48 [label="48", URL="\ref step_48", tooltip="Parallelization via MPI. The wave equation, in linear and nonlinear variants. Mass lumping. Fast assembly techniques.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step49 [label="49", URL="\ref step_49", tooltip="How to create and modify meshes.",height=.35,width=.35,fillcolor="orange"];
+
+  Step5 [label="5", URL="\ref step_5", tooltip="Reading a grid from disk. Computations on successively refined grids. Variable coefficients. Assertions.",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step50 [label="50", URL="\ref step_50", tooltip="Multigrid on adaptive meshes distributed in parallel.",height=.35,width=.35,fillcolor="orange"];
+
+  Step51 [label="51", URL="\ref step_51", tooltip="The convection-diffusion equation. Hybridizable discontinuous Galerkin methods. Face elements.",height=.35,width=.35,fillcolor="orange"];
+
+  Step52 [label="52", URL="\ref step_52", tooltip="Time-dependent diffusion equation. Time stepping methods.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step53 [label="53", URL="\ref step_53", tooltip="Geometry: Dealing with deformed domains.",height=.35,width=.35,fillcolor="orange"];
+
+  Step54 [label="54", URL="\ref step_54", tooltip="Geometry: Using industry standard IGES files as boundary descriptors.",height=.35,width=.35,fillcolor="orange"];
+
+  Step55 [label="55", URL="\ref step_55", tooltip="Solving the Stokes problem in parallel.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step56 [label="56", URL="\ref step_56", tooltip="Geometric multigrid preconditioners for the Stokes problem.",height=.35,width=.35,fillcolor="orange"];
+
+  Step57 [label="57", URL="\ref step_57", tooltip="The Navier Stokes equations via Newton's iteration.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step58 [label="58", URL="\ref step_58", tooltip="The complex-valued Nonlinear Schrödinger Equation.",height=.25,width=.25,fillcolor="dodgerblue1"];
+
+  Step59 [label="59", URL="\ref step_59", tooltip="Matrix-free methods. Multigrid. Fast assembly techniques.",height=.35,width=.35,fillcolor="orange"];
+
+  Step6 [label="6", URL="\ref step_6", tooltip="Adaptive local refinement. Higher order elements",height=.8,width=.8,shape="octagon",fillcolor="green"];
+
+  Step60 [label="60", URL="\ref step_60", tooltip="The fictitious domain method using distributed Lagrange multipliers.",height=.35,width=.35,fillcolor="orange"];
+
+  Step61 [label="61", URL="\ref step_61", tooltip="The Weak Galerkin method applied to the Poisson equation.",height=.35,width=.35,fillcolor="orange"];
+
+  Step62 [label="62", URL="\ref step_62", tooltip="Elastic equation in the frequency domain. Calculating the transmission and resonance frequency of a phononic structure.",height=.35,width=.35,fillcolor="orange"];
+
+  Step63 [label="63", URL="\ref step_63", tooltip="Block smoothers for Geometric Multigrid.",height=.35,width=.35,fillcolor="orange"];
+
+  Step64 [label="64", URL="\ref step_64", tooltip="Matrix-free methods using CUDA and MPI.",height=.35,width=.35,fillcolor="orange"];
+
+  Step65 [label="65", URL="\ref step_65", tooltip="Geometry: Working efficiently with expensive manifolds.",height=.35,width=.35,fillcolor="orange"];
+
+  Step66 [label="66", URL="\ref step_66", tooltip="Parallel matrix-free geometric multigrid for a nonlinear problem.",height=.35,width=.35,fillcolor="orange"];
+
+  Step67 [label="67", URL="\ref step_67", tooltip="An explicit time integrator for the Euler equations with matrix-free implementation.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step68 [label="68", URL="\ref step_68", tooltip="A particle tracking problem using an analytically defined velocity field.",height=.35,width=.35,fillcolor="orange"];
+
+  Step69 [label="69", URL="\ref step_69", tooltip="Hyperbolic conservation laws: a first-order guaranteed maximum wavespeed method for the compressible Euler equations.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step7 [label="7", URL="\ref step_7", tooltip="Helmholtz equation. Computing errors. Boundary integrals.",height=.35,width=.35,fillcolor="orange"];
+
+  Step70 [label="70", URL="\ref step_70", tooltip="A fluid structure interaction problem, using a penalty term.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step71 [label="71", URL="\ref step_71", tooltip="Coupled constitutive modeling using automatic and symbolic differentiation",height=.35,width=.35,fillcolor="orange"];
+
+  Step72 [label="72", URL="\ref step_72", tooltip="Newton's method for a nonlinear elliptic problem. Automatic differentiation",height=.35,width=.35,fillcolor="orange"];
+
+  Step74 [label="74", URL="\ref step_74", tooltip="Symmetric interior penalty Galerkin for Poisson's equation. ",height=.35,width=.35,fillcolor="orange"];
+
+  Step75 [label="75", URL="\ref step_75", tooltip="Solving the Laplace equation on hp-adaptive meshes with a MatrixFree hybrid",height=.35,width=.35,fillcolor="orange"];
+
+  Step76 [label="76", URL="\ref step_76", tooltip="An alternative implementation for an explicit time integrator for the Euler equations with matrix-free implementation.",height=.25,width=.25,fillcolor="yellow2"];
+
+  Step77 [label="77", URL="\ref step_77", tooltip="Newton's method for a nonlinear elliptic problem. Uses %SUNDIALS'",height=.35,width=.35,fillcolor="orange"];
+
+  Step78 [label="78", URL="\ref step_78", tooltip="Black-Scholes equation for stock options.",height=.35,width=.35,fillcolor="orange"];
+
+  Step79 [label="79", URL="\ref step_79", tooltip="Topology optimization of elastic media.",height=.25,width=.25,fillcolor="lightblue"];
+
+  Step8 [label="8", URL="\ref step_8", tooltip="Systems of PDE. Elasticity. Tensors.",height=.35,width=.35,fillcolor="orange"];
+
+  Step9 [label="9", URL="\ref step_9", tooltip="Advection equation. Multithreading. Refinement criteria.",height=.35,width=.35,fillcolor="orange"];
+
+  Step7 -> Step10 [color="orange",weight=5,];
+
+  Step10 -> Step11 [color="orange",weight=5,];
+
+  Step7 -> Step12 [color="orange",weight=5,];
+
+  Step16 -> Step12b [color="orange",weight=5,];
+
+  Step7 -> Step12b [color="orange",weight=5,];
+
+  Step39 -> Step12b [color="orange",weight=5,];
+
+  Step6 -> Step13 [];
+
+  Step13 -> Step14 [color="orange",weight=5,];
+
+  Step6 -> Step15 [];
+
+  Step6 -> Step16 [];
+
+  Step16 -> Step16b [color="orange",weight=5,];
+
+  Step8 -> Step17 [];
+
+  Step17 -> Step18 [color="lightblue",weight=5,];
+
+  Step6 -> Step19 [];
+
+  Step1 -> Step2 [color="green",weight=100,];
+
+  Step4 -> Step20 [];
+
+  Step20 -> Step21 [color="yellow2",weight=5,];
+
+  Step6 -> Step22 [];
+
+  Step21 -> Step22 [color="yellow2",weight=5,];
+
+  Step4 -> Step23 [];
+
+  Step23 -> Step24 [color="dodgerblue1",weight=5,];
+
+  Step24 -> Step25 [color="dodgerblue1",weight=5,];
+
+  Step6 -> Step26 [];
+
+  Step6 -> Step27 [];
+
+  Step6 -> Step28 [];
+
+  Step4 -> Step29 [];
+
+  Step2 -> Step3 [color="green",weight=100,];
+
+  Step12 -> Step30 [color="orange",weight=5,];
+
+  Step22 -> Step31 [color="yellow2",weight=5,];
+
+  Step31 -> Step32 [color="yellow2",weight=5,];
+
+  Step55 -> Step32 [color="yellow2",weight=5,];
+
+  Step12 -> Step33 [];
+
+  Step71 -> Step33 [];
+
+  Step4 -> Step34 [];
+
+  Step22 -> Step35 [color="yellow2",weight=5,];
+
+  Step4 -> Step36 [];
+
+  Step16 -> Step37 [color="orange",weight=5,];
+
+  Step40 -> Step37 [];
+
+  Step34 -> Step38 [];
+
+  Step12b -> Step39 [color="orange",weight=5,];
+
+  Step3 -> Step4 [color="green",weight=100,];
+
+  Step40a [style="invis"];  Step40b [style="invis"];  Step40c [style="invis"];  Step6 -> Step40a [style="invis"];  Step40a -> Step40b [style="invis"];  Step40b -> Step40c [style="invis"];  Step40c -> Step40 [style="invis"];  Step6 -> Step40 [weight=100,color="green"];  Step15 -> Step41 [];
+
+  Step41 -> Step42 [color="lightblue",weight=5,];
+
+  Step40 -> Step42 [];
+
+  Step31 -> Step43 [color="yellow2",weight=5,];
+
+  Step18 -> Step44 [color="lightblue",weight=5,];
+
+  Step6 -> Step45 [];
+
+  Step8 -> Step46 [color="orange",weight=5,];
+
+  Step22 -> Step46 [];
+
+  Step27 -> Step46 [color="orange",weight=5,];
+
+  Step12 -> Step47 [color="orange",weight=5,];
+
+  Step25 -> Step48 [color="dodgerblue1",weight=5,];
+
+  Step37 -> Step48 [];
+
+  Step1 -> Step49 [];
+
+  Step4 -> Step5 [color="green",weight=100,];
+
+  Step16 -> Step50 [color="orange",weight=5,];
+
+  Step37 -> Step50 [color="orange",weight=5,];
+
+  Step7 -> Step51 [color="orange",weight=5,];
+
+  Step9 -> Step51 [color="orange",weight=5,];
+
+  Step61 -> Step51 [color="orange",weight=5,];
+
+  Step26 -> Step52 [color="dodgerblue1",weight=5,];
+
+  Step49 -> Step53 [color="orange",weight=5,];
+
+  Step53 -> Step54 [color="orange",weight=5,];
+
+  Step40 -> Step55 [];
+
+  Step22 -> Step55 [color="yellow2",weight=5,];
+
+  Step16 -> Step56 [color="orange",weight=5,];
+
+  Step22 -> Step56 [];
+
+  Step15 -> Step57 [];
+
+  Step22 -> Step57 [color="yellow2",weight=5,];
+
+  Step26 -> Step58 [color="dodgerblue1",weight=5,];
+
+  Step29 -> Step58 [];
+
+  Step37 -> Step59 [color="orange",weight=5,];
+
+  Step5 -> Step6 [color="green",weight=100,];
+
+  Step6 -> Step60 [];
+
+  Step51 -> Step61 [color="orange",weight=5,];
+
+  Step8 -> Step62 [color="orange",weight=5,];
+
+  Step40 -> Step62 [];
+
+  Step16 -> Step63 [color="orange",weight=5,];
+
+  Step7 -> Step64 [color="orange",weight=5,];
+
+  Step37 -> Step64 [color="orange",weight=5,];
+
+  Step49 -> Step65 [color="orange",weight=5,];
+
+  Step15 -> Step66 [color="orange",weight=5,];
+
+  Step37 -> Step66 [color="orange",weight=5,];
+
+  Step33 -> Step67 [color="yellow2",weight=5,];
+
+  Step48 -> Step67 [];
+
+  Step59 -> Step67 [];
+
+  Step19 -> Step68 [color="orange",weight=5,];
+
+  Step33 -> Step69 [color="yellow2",weight=5,];
+
+  Step40 -> Step69 [];
+
+  Step6 -> Step7 [];
+
+  Step19 -> Step70 [];
+
+  Step32 -> Step70 [color="yellow2",weight=5,];
+
+  Step60 -> Step70 [];
+
+  Step71 -> Step72 [color="orange",weight=5,];
+
+  Step15 -> Step72 [color="orange",weight=5,];
+
+  Step12 -> Step74 [color="orange",weight=5,];
+
+  Step27 -> Step75 [color="orange",weight=5,];
+
+  Step37 -> Step75 [color="orange",weight=5,];
+
+  Step40 -> Step75 [];
+
+  Step67 -> Step76 [color="yellow2",weight=5,];
+
+  Step15 -> Step77 [color="orange",weight=5,];
+
+  Step26 -> Step78 [];
+
+  Step8 -> Step79 [];
+
+  Step15 -> Step79 [];
+
+  Step6 -> Step8 [];
+
+  Step6 -> Step9 [];
+
+}
+
+ * @enddot
+
+ *
+
+ * <b>Legend:</b><br />
+
+ * @dot
+
+graph StepsDescription
+
+{
+
+  overlap=false;
+
+  edge [fontname="FreeSans",
+
+        fontsize="10",
+
+        labelfontname="FreeSans",
+
+        labelfontsize="10",
+
+        color="black",
+
+        style="solid"];
+
+  node [fontname="FreeSans",
+
+        fontsize="10",
+
+        shape="rectangle",
+
+        height=0.2,
+
+        width=0.4,
+
+        color="black",
+
+        fillcolor="white",
+
+        style="filled"];
+
+  unfinished [label="" ,height=.25,width=.25,style="dashed", fillcolor="white"];
+
+  fake_unfinished [label="Unfinished codes", shape=plaintext];
+
+  unfinished -- fake_unfinished [style=dotted, arrowhead=odot, arrowsize=1];
+
+  fluids [label="" ,height=.25,width=.25, fillcolor="yellow2"];
+
+  fake_fluids [label="Fluid dynamics", shape=plaintext];
+
+  fluids -- fake_fluids [style=dotted, arrowhead=odot, arrowsize=1];
+
+  time_dependent [label="" ,height=.25,width=.25, fillcolor="dodgerblue1"];
+
+  fake_time_dependent [label="Time dependent problems", shape=plaintext];
+
+  time_dependent -- fake_time_dependent [style=dotted, arrowhead=odot, arrowsize=1];
+
+  basic [label="" ,height=.8,width=.8,shape="octagon", fillcolor="green"];
+
+  fake_basic [label="Basic techniques", shape=plaintext];
+
+  basic -- fake_basic [style=dotted, arrowhead=odot, arrowsize=1];
+
+  code_gallery [label="" ,height=.08,width=.125,shape="circle", fillcolor="white"];
+
+  fake_code_gallery [label="Code gallery", shape=plaintext];
+
+  code_gallery -- fake_code_gallery [style=dotted, arrowhead=odot, arrowsize=1];
+
+  techniques [label="" ,height=.35,width=.35, fillcolor="orange"];
+
+  fake_techniques [label="Advanced techniques", shape=plaintext];
+
+  techniques -- fake_techniques [style=dotted, arrowhead=odot, arrowsize=1];
+
+  solids [label="" ,height=.25,width=.25, fillcolor="lightblue"];
+
+  fake_solids [label="Solid mechanics", shape=plaintext];
+
+  solids -- fake_solids [style=dotted, arrowhead=odot, arrowsize=1];
+
+  basic -- techniques [style=invis];
+
+  techniques -- fluids [style=invis];
+
+  fluids -- solids [style=invis];
+
+  solids -- time_dependent [style=invis];
+
+  time_dependent -- unfinished [style=invis];
+
+  unfinished -- code_gallery [style=invis];
+
+  {rank=same; basic, techniques, fluids, solids, time_dependent, unfinished, code_gallery}}
+
+ * @enddot
+
+ *
+ 
+ * <a
  * name="list"></a> <h3>Tutorial programs listed by number</h3> <table
  * align="center" width="90%"> <tr valign="top"> <td width="100px">step-1</td>
  * <td> Creating a grid. A simple way to write it to a file. <br/> Keywords:
