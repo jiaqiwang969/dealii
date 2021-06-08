@@ -1,5 +1,0 @@
-/workspaces/dealii/CMakeFiles/FortranCInterface/CMakeFiles/rebuild_cache.dir
-/workspaces/dealii/CMakeFiles/FortranCInterface/CMakeFiles/FortranCInterface.dir
-/workspaces/dealii/CMakeFiles/FortranCInterface/CMakeFiles/symbols.dir
-/workspaces/dealii/CMakeFiles/FortranCInterface/CMakeFiles/edit_cache.dir
-/workspaces/dealii/CMakeFiles/FortranCInterface/CMakeFiles/myfort.dir
