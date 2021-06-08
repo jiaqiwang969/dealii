@@ -22,6 +22,7 @@ jobs:
         path: detailed.log
     - name: build
       run: |
+        sudo apt-get install libboost-all-dev doxygen python
         make documentation
     
     - name: Publish Doxygen documentation
