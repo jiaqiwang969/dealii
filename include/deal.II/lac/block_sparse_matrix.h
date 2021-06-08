@@ -31,10 +31,12 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!   @addtogroup  Matrix1  @{ . 
+/*!   @addtogroup  Matrix1  
+     * @{  
 
 * 
-* */
+*
+*/
 
 
 /**
@@ -317,7 +319,8 @@ public:
                   const double       denominator = 1.) const;
   //@}
   /**
-   * @addtogroup  Exceptions @{ 
+   * @addtogroup  Exceptions 
+     * @{ 
    *
    */
 

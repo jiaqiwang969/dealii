@@ -25,4 +25,5 @@
 *  The files implementing linear algebra functionality are in the   <code>lac</code>   subdirectory, an abbreviation for   <em>  L  </em>  inear   <em>  A  </em>  lgebra   <em>  C  </em>  lasses.
 
 * 
-* */
+*
+*/

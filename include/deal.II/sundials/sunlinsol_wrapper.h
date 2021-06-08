@@ -168,7 +168,8 @@ namespace SUNDIALS
   namespace internal
   {
     /*!     为SUNDIALS的线性求解器接口附加包装函数。我们假装用户提供的线性求解器是无矩阵的，尽管它可以是基于矩阵的。这样，SUNDIALS就不需要理解我们的矩阵类型。   
-* */
+*
+*/
     template <typename VectorType>
     class LinearSolverWrapper
     {

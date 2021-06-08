@@ -267,7 +267,8 @@ namespace MeshWorker
      * @name  FEValues设置
      *
      */
-     /* @{ */ 
+     /* 
+     * @{ */ 
 
     /**
      * 在initialize()之前调用这个函数，以便根据选择的数据猜测需要的更新标志。
@@ -386,7 +387,8 @@ namespace MeshWorker
      * @name  数据向量
      *
      */
-     /* @{ */ 
+     /* 
+     * @{ */ 
 
     /**
      * 初始化VectorSelector对象#cell_selector、#boundary_selector和#face_selector，以节省计算工作。如果没有使用选择器，那么
@@ -425,7 +427,8 @@ namespace MeshWorker
      * @name   MeshWorker::loop() 的接口。
      *
      */
-     /* @{ */ 
+     /* 
+     * @{ */ 
     /**
      * 一个回调函数，它在所有单元格的循环中被调用，在对一个单元格的操作被执行后，在面的处理之前。
      * 为了使这个函数产生这种效果，至少loop()的参数<tt>boundary_worker</tt>或<tt>face_worker</tt>应该是非零的。此外，<tt>cells_first</tt>应该为真。如果<tt>cells_first</tt>是假的，那么在对一个单元格采取任何行动之前就会调用这个函数。

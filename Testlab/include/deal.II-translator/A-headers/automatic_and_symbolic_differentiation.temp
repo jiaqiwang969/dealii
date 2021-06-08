@@ -555,4 +555,5 @@
 *  - symengine_utilities.h: Provides some utility functions that are useful within the context of   symbolic computations.
 
 * 
-* */
+*
+*/

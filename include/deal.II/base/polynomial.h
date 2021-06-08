@@ -31,7 +31,8 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup Polynomials   @{ .
+ * @addtogroup Polynomials   
+     * @{ 
  *
  */
 
@@ -599,7 +600,8 @@ namespace Polynomials
 
   /* 评估由参数 @p alpha,   @p beta,   @p n, 指定的雅可比多项式 $ P_n^{\alpha, \beta}(x) $ ，其中 @p n 是雅可比多项式的程度。   
 *  @note  雅可比多项式不是正交的，像通常的deal.II一样定义在单位区间 $[0, 1]$ ，而不是文献中经常使用的 $[-1, +1]$ 。  @p x 是评价的点。 
-* */
+*
+*/
   template <typename Number>
   Number
   jacobi_polynomial_value(const unsigned int degree,

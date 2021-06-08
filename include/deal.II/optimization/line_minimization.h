@@ -671,7 +671,8 @@ namespace LineMinimization
     /* Assert((f_lo < f_hi) && w1(a_lo, f_lo), ExcInternalError()) ; Assert((a_hi
 * 
 * - a_lo) g_lo < 0) && !w2(g_lo), ExcInternalError()); Assert((w1(a_hi, f_hi) || f_hi >= f_lo), ExcInternalError()。  
-* */
+*
+*/
 
     // keep short history of last points to improve interpolation
     FiniteSizeHistory<NumberType> a_rec(5), f_rec(5), g_rec(5);

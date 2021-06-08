@@ -27,7 +27,8 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /* 注意：这个文件只包含模板定义，因此不会产生一个对象文件。它被认为是包含在the_accessor.cc文件中。
-* */
+*
+*/
 
 
  /*------------------------ Functions: TriaRawIterator ------------------*/ 

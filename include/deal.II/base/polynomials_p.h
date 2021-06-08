@@ -32,7 +32,8 @@
 DEAL_II_NAMESPACE_OPEN
 /**
  * @addtogroup Polynomials   
- * @{ .
+ * 
+     * @{ 
  *
  *
  */

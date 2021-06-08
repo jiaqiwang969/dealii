@@ -4985,6 +4985,7 @@ in Earth's ConvecTion</i>）代码中进行激活开发。具体来说，以下�
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-32.cc"  。
-* */
+*
+*/
 
 

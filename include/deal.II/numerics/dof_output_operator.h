@@ -45,7 +45,8 @@ namespace Algorithms
   {
   public:
     /*构造器。<tt>filename</tt>是所有文件的共同基础名称，参数<tt>digits</tt>应该是序列中最高数字的位数。文件名默认为 "outputNNN "的形式，其中NNN是由上一步命令设定的数字。位数较少的数字从左边开始用零填充。   
-* */
+*
+*/
     DoFOutputOperator(const std::string &filename_base = std::string("output"),
                       const unsigned int digits        = 3);
 

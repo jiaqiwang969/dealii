@@ -61,8 +61,10 @@ namespace LinearAlgebra
 {
   namespace distributed
   {
-    /*!   @addtogroup Vectors  @{     
-* */
+    /*!   @addtogroup Vectors  
+     * @{     
+*
+*/
 
 
     /**

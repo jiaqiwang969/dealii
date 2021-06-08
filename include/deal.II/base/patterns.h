@@ -475,7 +475,8 @@ namespace Patterns
     memory_consumption() const override;
 
     /**
-     * @addtogroup  Exceptions @{ 
+     * @addtogroup  Exceptions 
+     * @{ 
      *
      */
 
@@ -623,7 +624,8 @@ namespace Patterns
     get_key_value_separator() const;
 
     /**
-     * @addtogroup  Exceptions  @{ .
+     * @addtogroup  Exceptions  
+     * @{ 
      *
      */
 
@@ -1294,7 +1296,8 @@ namespace Patterns
     to_value(const std::string &s, T &t);
 
     /**
-     * @addtogroup  Exceptions  @{ 
+     * @addtogroup  Exceptions  
+     * @{ 
      *
      */
 

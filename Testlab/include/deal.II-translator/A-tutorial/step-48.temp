@@ -1205,4 +1205,5 @@ Vectorization over 4 doubles = 256 bits (AVX)
 * 
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-48.cc"  
-* */
+*
+*/

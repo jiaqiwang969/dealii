@@ -125,7 +125,8 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const override;
 
   /**
-   * @name  参考单元和实数单元之间的映射点 @{ 
+   * @name  参考单元和实数单元之间的映射点 
+     * @{ 
    *
    */
 
@@ -198,7 +199,8 @@ public:
    */
 
   /**
-   * @name  与FEValues和朋友的接口  @{ .
+   * @name  与FEValues和朋友的接口  
+     * @{ 
    *
    */
 
@@ -390,7 +392,8 @@ public:
     const unsigned int n_shape_functions;
 
     /* 默认的线支持点。是在计算形状函数值时使用的。        正交点的数量取决于该类的度数，它与FE_Q<1>(this->degree)的自由度数相匹配。   
-* */
+*
+*/
     QGaussLobatto<1> line_support_points;
 
     /**
@@ -564,19 +567,23 @@ protected:
   const unsigned int polynomial_degree;
 
   /* 默认的线支持点。在计算线和四边形上的支持点在实空间中的位置时，这些支持点是由Manifold<dim,spacedim>类需要的。    点的数量取决于这个类的程度，它与FE_Q<1>(this->degree)的自由度数量相匹配。 
-* */
+*
+*/
   const std::vector<Point<1>> line_support_points;
 
   /* 从线支持点定义为拉格朗日多项式的一维多项式。这些用于点评估，与FE_Q<1>(this->degree)的多项式空间相匹配。 
-* */
+*
+*/
   const std::vector<Polynomials::Polynomial<double>> polynomials_1d;
 
   /* 在扩展与映射支持点（以分层数字形式出现）的张量积时，使用的从词法到分层排序的编号。 
-* */
+*
+*/
   const std::vector<unsigned int> renumber_lexicographic_to_hierarchic;
 
   /* 参考坐标中的支持点。这些用于构建计算_mapping_support_points()的输出的近似值，而不是通过InternalData提供的FEValues接口来评估映射时。    点的数量取决于这个类的程度，它与FE_Q<dim>(this->degree)的自由度数量相匹配。 
-* */
+*
+*/
   const std::vector<Point<dim>> unit_cell_support_points;
 
   /**

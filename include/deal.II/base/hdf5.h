@@ -1603,7 +1603,8 @@ namespace HDF5
 
 
     /* 创建标量属性。   
-* */
+*
+*/
     aid = H5Screate(H5S_SCALAR);
     Assert(aid >= 0, ExcMessage("Error at H5Screate"));
     attr = H5Acreate2(*hdf5_reference,
@@ -1615,7 +1616,8 @@ namespace HDF5
     Assert(attr >= 0, ExcMessage("Error at H5Acreate2"));
 
     /* 编写标量属性。   
-* */
+*
+*/
     ret = H5Awrite(attr, *t_type, &value);
     Assert(ret >= 0, ExcMessage("Error at H5Awrite"));
 
@@ -1656,7 +1658,8 @@ namespace HDF5
     Assert(ret >= 0, ExcInternalError());
 
     /* 创建标量属性。   
-* */
+*
+*/
     aid = H5Screate(H5S_SCALAR);
     Assert(aid >= 0, ExcMessage("Error at H5Screate"));
     attr = H5Acreate2(
@@ -1664,7 +1667,8 @@ namespace HDF5
     Assert(attr >= 0, ExcMessage("Error at H5Acreate2"));
 
     /* 编写标量属性。    在大多数情况下，H5Awrite和H5Dwrite需要一个指向数据的指针。    但是在可变长度的字符串的特殊情况下，H5Awrite取的是字符串的指针的地址。   
-* */
+*
+*/
     const char *c_string_value = value.c_str();
     ret                        = H5Awrite(attr, t_type, &c_string_value);
     Assert(ret >= 0, ExcInternalError());

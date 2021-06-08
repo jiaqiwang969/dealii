@@ -328,7 +328,8 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const = 0;
 
   /**
-   * @name  引用单元格和实数单元格之间的映射点  @{ 
+   * @name  引用单元格和实数单元格之间的映射点  
+     * @{ 
    *
    */
 
@@ -445,7 +446,8 @@ public:
    */
 
   /**
-   * @name  与FEValues的接口  @{ .
+   * @name  与FEValues的接口  
+     * @{ 
    *
    */
 
@@ -722,7 +724,8 @@ protected:
 
 public:
   /**
-   * @name  将张量从参考坐标转换为实数坐标的函数  @{ 
+   * @name  将张量从参考坐标转换为实数坐标的函数  
+     * @{ 
    *
    */
 

@@ -45,10 +45,12 @@ class MatrixIterator;
 #endif
 
 
-/*!   @addtogroup  Matrix1  @{ 
+/*!   @addtogroup  Matrix1  
+     * @{ 
 
 * 
-* */
+*
+*/
 
 /**
  * 实现块状矩阵中迭代器的名称空间。
@@ -747,7 +749,8 @@ public:
   memory_consumption() const;
 
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

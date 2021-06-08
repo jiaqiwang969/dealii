@@ -45,7 +45,8 @@ public:
 
   /* 构造函数将多项式 @p degree 作为输入。   
 *  @note  目前，只实现了线性（度数=1）和二次多项式（度数=2）。 
-* */
+*
+*/
   ScalarLagrangePolynomialWedge(const unsigned int degree);
 
   /**

@@ -141,7 +141,8 @@ public:
   // @}
 
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

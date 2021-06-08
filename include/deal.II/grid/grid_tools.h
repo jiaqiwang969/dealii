@@ -2354,7 +2354,8 @@ namespace GridTools
         true});
 
   /* 与MPI通信器的所有处理器交换边界框的向量  @p local_bboxes.  这个函数的目的是交换边界框，描述用函数  GridTools::compute_mesh_predicate_bounding_box  获得的分布式三角形中本地拥有的单元。    输出向量的大小是MPI通信器的进程数：其第i个条目包含第i个进程的向量 @p local_bboxes 。 
-* */
+*
+*/
   template <int spacedim>
   std::vector<std::vector<BoundingBox<spacedim>>>
   exchange_local_bounding_boxes(

@@ -387,7 +387,8 @@ namespace MeshWorker
      * @name  对邻居单元工作的方法
      *
      */
-     /** @{ */  // NeighborCellMethods
+     /** 
+     * @{ */  // NeighborCellMethods
 
     /**
      * 初始化内部邻居FEValues，使用给定的 @p cell,
@@ -477,7 +478,8 @@ namespace MeshWorker
      * @name  评估当前单元上的有限元场及其导数
      *
      */
-     /** @{ */  // CurrentCellEvaluation
+     /** 
+     * @{ */  // CurrentCellEvaluation
 
     /**
      * 提取与内部初始化单元相关的局部道夫值。

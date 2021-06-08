@@ -40,10 +40,12 @@ template <typename number>
 class FullMatrix;
 #  endif
 
-/*!   @addtogroup  Matrix1  @{ 
+/*!   @addtogroup  Matrix1  
+     * @{ 
 
 * 
-* */
+*
+*/
 
 /**
  * 一个命名空间，我们在其中声明对稀疏矩阵元素的迭代器。
@@ -1149,7 +1151,8 @@ public:
   block_read(std::istream &in);
   //@}
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

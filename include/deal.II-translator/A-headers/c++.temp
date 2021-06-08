@@ -74,7 +74,8 @@
 *  assuming `A` is declared with the `constexpr` specifier. This example shows the performance gains of using `constexpr` because here we performed an operation with   $O(\text{dim}^3)$   complexity during compile time, avoiding any runtime cost.
 
 * 
-* */
+*
+*/
 
 
 
@@ -90,7 +91,8 @@
 *   @note   If the compiler in use actually does support C++14, then the   contents of this namespace are simply imported classes and   functions from namespace `std`. That is, we fall back to what the   compiler provides, rather than our own implementations.
 
 * 
-* */
+*
+*/
 namespace std_cxx14
 {}
 
@@ -107,7 +109,8 @@ namespace std_cxx14
 *   @note   If the compiler in use actually does support C++17, then the   contents of this namespace are simply imported classes and   functions from namespace `std`. That is, we fall back to what the   compiler provides, rather than our own implementations.
 
 * 
-* */
+*
+*/
 namespace std_cxx17
 {}
 
@@ -124,6 +127,7 @@ namespace std_cxx17
 *   @note   If the compiler in use actually does support C++20, then the   contents of this namespace are simply imported classes and   functions from namespace `std`. That is, we fall back to what the   compiler provides, rather than our own implementations.
 
 * 
-* */
+*
+*/
 namespace std_cxx20
 {}

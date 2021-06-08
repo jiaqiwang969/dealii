@@ -44,10 +44,12 @@ template <typename number>
 class SparseBlockVanka;
 #endif
 
-/*!   @addtogroup Preconditioners  @{ 
+/*!   @addtogroup Preconditioners  
+     * @{ 
 
  
-* */
+*
+*/
 
 /**
  * 点对点的Vanka预处理。该类在一个点-明智的基础上进行Vanka预处理。Vanka预处理用于鞍点问题，如Stokes问题或优化中出现的拉格朗日乘数和牛顿方法矩阵有一个零块的问题。对于这些矩阵，应用Jacobi或Gauss-Seidel方法是不可能的，因为在拉格朗日乘子的行中，一些对角线元素是零。Vanka的方法是为每个朗格朗日乘数变量解决一个小的（通常是不确定的）方程组（我们也将把斯托克斯方程中的压力称为朗格朗日乘数，因为它可以被解释为朗格朗日乘数）。

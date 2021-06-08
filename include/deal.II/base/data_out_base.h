@@ -204,7 +204,8 @@ namespace DataOutBase
     static const unsigned int no_neighbor = numbers::invalid_unsigned_int;
 
     /**
-     * @addtogroup  Exceptions  @{ .
+     * @addtogroup  Exceptions  
+     * @{ 
      *
      */
 
@@ -332,7 +333,8 @@ namespace DataOutBase
     static const unsigned int no_neighbor = numbers::invalid_unsigned_int;
 
     /**
-     * @addtogroup  Exceptions  @{ .
+     * @addtogroup  Exceptions  
+     * @{ 
      *
      */
 
@@ -1220,7 +1222,8 @@ namespace DataOutBase
       operator()(const Point<3> &one, const Point<3> &two) const
       {
         /*下面的返回语句是以下代码的优化版本： for (unsigned int d=0; d<3; ++d){ if (one(d) < two(d)) return true; else if (one(d) > two(d) return false; } return false;        
-* */
+*
+*/
 
         return (one(0) < two(0) ||
                 (!(two(0) < one(0)) &&
@@ -1956,7 +1959,8 @@ namespace DataOutBase
   default_suffix(const OutputFormat output_format);
 
   /**
-   * @addtogroup  Exceptions @{ 
+   * @addtogroup  Exceptions 
+     * @{ 
    *
    */
 

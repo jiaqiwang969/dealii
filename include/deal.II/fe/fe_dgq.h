@@ -165,7 +165,8 @@ public:
       RefinementCase<dim>::isotropic_refinement) const override;
 
   /**
-   * @name  支持hp的函数  @{ 
+   * @name  支持hp的函数  
+     * @{ 
    *
    */
 
@@ -282,7 +283,8 @@ private:
                  const char                 direction) const;
 
   /* 用于保护限制和嵌入矩阵的初始化的互斥。 
-* */
+*
+*/
   mutable Threads::Mutex mutex;
 
   // Allow access from other dimensions.

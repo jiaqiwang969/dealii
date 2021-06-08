@@ -73,7 +73,8 @@ public:
 
 protected:
   /*注意：以下函数的定义被内联到类的声明中，因为我们在MS Visual Studio中否则会遇到编译器错误。 
-* */
+*
+*/
 
 
   virtual std::unique_ptr<

@@ -1205,7 +1205,8 @@ make_array_view(const Table<2, ElementType> &                   table,
 *  @relatesalso  ArrayView
 
 * 
-* */
+*
+*/
 template <typename Container>
 inline auto
 make_const_array_view(const Container &container)

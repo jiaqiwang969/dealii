@@ -3011,6 +3011,7 @@ S$ 的良好近似。由于这两个矩阵又都是对称和正定的，我们�
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-43.cc" 。
-* */
+*
+*/
 
 

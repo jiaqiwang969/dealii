@@ -38,7 +38,8 @@ class FullMatrix;
 #  endif
 
 /**
- * @addtogroup  Matrix1  @{ .
+ * @addtogroup  Matrix1  
+     * @{ 
  *
  *
  */

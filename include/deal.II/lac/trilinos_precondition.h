@@ -61,10 +61,12 @@ class Vector;
 class SparsityPattern;
 #    endif
 
-/*!   @addtogroup  TrilinosWrappers  @{ 
+/*!   @addtogroup  TrilinosWrappers  
+     * @{ 
 
  
-* */
+*
+*/
 
 namespace TrilinosWrappers
 {

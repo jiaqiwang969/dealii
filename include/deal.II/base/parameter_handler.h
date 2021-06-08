@@ -1333,7 +1333,8 @@ public:
   assert_that_entries_have_been_set() const;
 
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

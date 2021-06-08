@@ -18,7 +18,8 @@
 *  Throughout the documentation, the namespace prefix is suppressed for brevity.
 
 * 
-* */
+*
+*/
 namespace dealii
 {
 }

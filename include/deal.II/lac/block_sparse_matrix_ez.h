@@ -41,10 +41,12 @@ template <typename Number>
 class BlockVector;
 #endif
 
-/*!   @addtogroup  Matrix1  @{ . 
+/*!   @addtogroup  Matrix1  
+     * @{  
 
 * 
-* */
+*
+*/
 
 
 /**

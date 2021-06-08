@@ -24,10 +24,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup Preconditioners  @{ 
+/*!   @addtogroup Preconditioners  
+     * @{ 
 
  
-* */
+*
+*/
 
 /**
  * 实现对称矩阵的修正不完全Cholesky（MIC(0)）预处理。该类符合SparseLUDecomposition中的状态和使用规范。

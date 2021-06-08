@@ -153,7 +153,8 @@ public:
 
   /**
    * @addtogroup  Exceptions
-   *  @{ 
+   *  
+     * @{ 
    *
    */
 

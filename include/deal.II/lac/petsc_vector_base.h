@@ -94,7 +94,8 @@ namespace PETScWrappers
 
     public:
       /*复制构造函数。     
-* */
+*
+*/
       VectorReference(const VectorReference &vector) = default;
 
       /**

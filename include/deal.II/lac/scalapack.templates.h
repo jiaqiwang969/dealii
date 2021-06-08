@@ -695,7 +695,8 @@ extern "C"
            int *        info);
 
   /* PDGESVD计算M乘N矩阵A的奇异值分解（SVD），可以选择计算左和/或右奇异向量  
-* */
+*
+*/
   void
   pdgesvd_(const char *jobu,
            const char *jobvt,
@@ -740,7 +741,8 @@ extern "C"
            int *       info);
 
   /* P_GELS使用A的QR或LQ因子化，解决涉及M乘N矩阵A或其转置的过定或欠定实数线性系统，假定A具有全秩。 
-* */
+*
+*/
   void
   pdgels_(const char *trans,
           const int * m,
@@ -778,7 +780,8 @@ extern "C"
    C \dealcoloneq \beta C + \alpha op(A),
    @f}
 * 其中 $op(A)$ 表示 $op(A) = A$ 或 $op(A)=A^T$  。 
-* */
+*
+*/
   void
   pdgeadd_(const char *  transa,
            const int *   m,
@@ -900,7 +903,8 @@ extern "C"
 /* 在下面的内容中，我们为ScaLAPACK例程提供了模板包装器，其他数字类型的包装器可以在将来添加。
 
 * 
-* */
+*
+*/
 template <typename number>
 inline void
 Cgerv2d(int  /*context*/ ,
@@ -2151,7 +2155,8 @@ psyevr(const char *  jobz,
        int *         info)
 {
   /* Netlib ScaLAPACK在调用pdsyevr时进行浮点测试（例如除以零），导致浮点异常被抛出（至少在调试模式下）。因此，我们把对pdsyevr的调用包装成以下代码，以抑制异常。 
-* */
+*
+*/
 #  ifdef DEAL_II_HAVE_FP_EXCEPTIONS
   fenv_t fp_exceptions;
   feholdexcept(&fp_exceptions);
@@ -2214,7 +2219,8 @@ psyevr(const char * jobz,
        int *        info)
 {
   /* Netlib ScaLAPACK在调用pssyevr时进行浮点测试（例如除以零），导致浮点异常被抛出（至少在调试模式下）。因此，我们把对pssyevr的调用包装成以下代码，以抑制异常。 
-* */
+*
+*/
 #  ifdef DEAL_II_HAVE_FP_EXCEPTIONS
   fenv_t fp_exceptions;
   feholdexcept(&fp_exceptions);

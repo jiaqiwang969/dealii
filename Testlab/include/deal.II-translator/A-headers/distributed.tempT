@@ -105,7 +105,8 @@
  relevant</i>的解值。另一方面，我们可以用于并行线性代数的两个包（PETSc和Trilinos）以及 parallel::distributed::Vector 都将向量细分为每个处理器拥有的块和存储在其他处理器的块。因此，要对东西进行后处理意味着我们必须告诉PETSc或Trilinos，它也应该导入<i>ghost elements</i>，即除了我们本地拥有的向量之外，还应该导入解向量的其他向量元素。对于重影向量，这可以通过使用以分布式向量为参数的operator=来实现。
 
 
-* */
+*
+*/
 
 
 
@@ -114,7 +115,8 @@ namespace parallel
   /**
    一个命名空间，用于支持%分布式内存机器上的%并行计算的类和函数。参见 @ref 分布式模块，以了解该命名空间提供的设施的概况。    
 *  @ingroup distributed 
-* */
+*
+*/
   namespace distributed
   {
   }

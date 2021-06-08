@@ -35,7 +35,8 @@
 /* 包含 MeshWorker::Assembler::MatrixSimple,  MeshWorker::Assembler::MGMatrixSimple,  MeshWorker::Assembler::ResidualSimple, 和 MeshWorker::Assembler::SystemSimple. 类的页眉。
 
  
-* */
+*
+*/
 
 DEAL_II_NAMESPACE_OPEN
 

@@ -25,13 +25,15 @@
 *  @brief A module dedicated to the implementation of functions and 与连续体物理学、物理场和材料有关的课程。
 
 
-* */
+*
+*/
 
 /**
  命名空间和实用程序的集合，以协助定义、构建和操作与物理场和材料有关的数据。
 
 
-* */
+*
+*/
 namespace Physics
 {
 
@@ -39,7 +41,8 @@ namespace Physics
    减少张量的顺序的符号，有效地将它们存储在某种一致的压缩存储模式中。一个例子是将 $3\times 3$ 等级2的对称张量的6个独立分量存储为一个有6个分量的向量，然后将等级4的对称 $3\times 3 \times 3\times 3$ 张量的36个独立元素（当应用于一个对称等级2张量时，会产生另一个对称等级2张量）表示为一个 $6 \times 6$ 矩阵。     尽管这种表示张量的方法最常与四阶弹性张量的有效存储联系在一起，但随着它的泛化，它具有更广泛的适用性。这种表示方法在物理学、材料科学和有限元文献中也很常见。     张量符号有几种变化，每一种结构都略有不同。各种形式的张量符号之间的主要区别是对压缩张量的各种元素所规定的权重。   这个<a
    href="https://en.wikipedia.org/wiki/Voigt_notation">wikipedia article</a>对这个主题有一些进一步的一般见解。    
 *  @ingroup physics   @author  Jean-Paul Pelteret, 2017
-* */
+*
+*/
   namespace Notation
   {
 
@@ -55,7 +58,8 @@ namespace Physics
 *
 *  @ingroup physics 
 *  @author  Jean-Paul Pelteret, Andrew McBride, 2016
-* */
+*
+*/
   namespace Transformations
   {
   }
@@ -112,7 +116,8 @@ namespace Physics
 - \mathbf{A}^T] \, .
    @f] identity_tensor()返回的四阶对称张量是 $\mathcal{S}$  。       @author  Jean-Paul Pelteret, Andrew McBride, 2016年
 *  @ingroup physics 
-* */
+*
+*/
   namespace Elasticity
   {
   }

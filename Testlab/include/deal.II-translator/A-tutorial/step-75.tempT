@@ -2580,6 +2580,7 @@ coefficient decay</i>策略，而 step-27 则展示了相同想法的<i>Fourier<
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-75.cc"  。
-* */
+*
+*/
 
 

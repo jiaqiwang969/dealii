@@ -37,10 +37,12 @@ template <typename>
 class ChunkSparseMatrix;
 #endif
 
-/*!   @addtogroup Sparsity  @{  
+/*!   @addtogroup Sparsity  
+     * @{  
 
 * 
-* */
+*
+*/
 
 
 

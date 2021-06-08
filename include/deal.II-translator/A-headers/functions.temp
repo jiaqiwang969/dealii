@@ -32,4 +32,5 @@
 *  The Function class is the most frequently used, but sometimes one needs a function the values of which are tensors, rather than scalars. The TensorFunction template can do this for you. Apart from the return type, the interface is most the same as that of the Function class.
 
 * 
-* */
+*
+*/

@@ -475,7 +475,8 @@ class QGaussRadauChebyshev : public Quadrature<dim>
 {
 public:
   /* EndPoint用于指定单位区间的两个端点中的哪一个也作为正交点使用。 
-* */
+*
+*/
   enum EndPoint
   {
     /**

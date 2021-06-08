@@ -99,7 +99,8 @@ public:
     std::vector<double> &              nodal_values) const override;
 
   /**
-   * @name 支持hp的函数  @{ 
+   * @name 支持hp的函数  
+     * @{ 
    *
    */
 

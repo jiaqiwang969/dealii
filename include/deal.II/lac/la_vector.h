@@ -58,8 +58,10 @@ DEAL_II_NAMESPACE_OPEN
  */
 namespace LinearAlgebra
 {
-  /*!   @addtogroup Vectors  @{   
-* */
+  /*!   @addtogroup Vectors  
+     * @{   
+*
+*/
 
   /**
    * 数值化的数据向量。该类同时派生自

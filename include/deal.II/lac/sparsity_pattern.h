@@ -63,10 +63,12 @@ namespace ChunkSparsityPatternIterators
 }
 #endif
 
-/*!   @addtogroup Sparsity  @{  
+/*!   @addtogroup Sparsity  
+     * @{  
 
 * 
-* */
+*
+*/
 
 namespace internals
 {
@@ -623,7 +625,8 @@ public:
   // @}
 
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

@@ -3553,7 +3553,8 @@ public:
 
   /* 重新初始化 "进入三角形对象的迭代器 "类型的给定单元上的给定面的梯度、雅各比行列式等，以及给定的有限元。由于进入三角剖分的迭代器只传递单元的几何信息，而不传递可能与此单元相关的自由度的信息，所以如果需要自由度的信息，你将无法调用这一类的一些函数。这些函数首先是<tt>get_function_value/gradients/hessians/third_derivatives</tt>函数。如果你想调用这些函数，你必须调用 @p  reinit变体，将迭代器带入DoFHandler或其他DoF处理程序类型对象。   
 *  @note   @p face 必须是 @p cell's 面的迭代器之一。 
-* */
+*
+*/
   void
   reinit(const typename Triangulation<dim, spacedim>::cell_iterator &cell,
          const typename Triangulation<dim, spacedim>::face_iterator &face);

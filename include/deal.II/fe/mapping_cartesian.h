@@ -84,7 +84,8 @@ public:
   is_compatible_with(const ReferenceCell &reference_cell) const override;
 
   /**
-   * @name  参考单元和实数单元之间的映射点 @{ 
+   * @name  参考单元和实数单元之间的映射点 
+     * @{ 
    *
    */
 
@@ -153,7 +154,8 @@ public:
 
 private:
   /**
-   * @name  与FEValues的接口  @{ .
+   * @name  与FEValues的接口  
+     * @{ 
    *
    */
 

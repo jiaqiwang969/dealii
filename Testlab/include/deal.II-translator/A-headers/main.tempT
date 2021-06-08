@@ -172,6 +172,7 @@
 * 我们提供了Doxygen标签文件，供那些想把应用程序的文档直接链接到deal.II在线文档的用户使用。该标签文件在<a href="../deal.tag"><code>deal.tag</code></a>。对于deal.II的每个版本，它都驻留在Doxygen参考文档的正上方的目录中。为了使用这个标签文件，你必须把它下载到一个Doxygen可以找到的地方。之后，在你的Doxygen选项文件中找到 <code>TAGFILES</code> 这个键，然后写一些类似于<pre> TAGFILES = deal.tag=http://www.dealii.org/X.Y.Z/doxygen/deal.II </pre> 其中 <code>X.Y.Z</code> 指的是你要链接的版本。请确保你使用匹配的标签文件。理论上，你也可以针对deal.II的发展中的修订版进行链接，但你必须担心，如果deal.II的结构发生变化，你的链接可能会变得无效。
 
 
-* */
+*
+*/
 
 

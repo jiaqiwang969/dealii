@@ -926,7 +926,8 @@ public:
                            operator[](const unsigned int fe_index) const;
 
   /**
-   * @name  形状函数访问 @{ 
+   * @name  形状函数访问 
+     * @{ 
    *
    */
 
@@ -1188,7 +1189,8 @@ public:
   //@}
 
   /**
-   * @name 支持hp的函数  @{ 
+   * @name 支持hp的函数  
+     * @{ 
    *
    */
 
@@ -1220,7 +1222,8 @@ public:
 
 
   /**
-   * @name  支持HP的函数-  @{ .
+   * @name  支持HP的函数-  
+     * @{ 
    *
    */
 
@@ -1586,7 +1589,8 @@ public:
   //@}
 
   /**
-   * @name  分量和块状矩阵  @{ .
+   * @name  分量和块状矩阵  
+     * @{ 
    *
    */
 
@@ -1695,7 +1699,8 @@ public:
   //@}
 
   /**
-   * @name 支持点和插值 @{ 
+   * @name 支持点和插值 
+     * @{ 
    *
    */
 

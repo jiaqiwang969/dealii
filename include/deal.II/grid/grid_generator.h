@@ -84,7 +84,8 @@ namespace GridGenerator
           const std::vector<Point<dim>> &vertices);
 
   /* 创建一个具有所提供的参考单元形状的单一单元的（粗略）网格。这是上面hyper_cube()和simplex()函数的一个概括。 
-* */
+*
+*/
   template <int dim, int spacedim>
   void
   reference_cell(Triangulation<dim, spacedim> &tria,

@@ -27,10 +27,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup Preconditioners  @{ 
+/*!   @addtogroup Preconditioners  
+     * @{ 
 
  
-* */
+*
+*/
 
 /**
  * 该类计算稀疏矩阵的不完全LU（ILU）分解，使用相同的稀疏模式或不同的模式。我们所说的不完全是指，与精确的分解不同，不完全的分解也是使用稀疏因子计算的，分解中不适合给定的稀疏结构的条目被丢弃。

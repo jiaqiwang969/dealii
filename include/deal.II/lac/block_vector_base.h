@@ -321,7 +321,8 @@ namespace internal
       operator-=(const difference_type &d);
 
       /**
-       * @addtogroup  Exceptions @{ 
+       * @addtogroup  Exceptions 
+     * @{ 
        *
        */
 
@@ -418,7 +419,8 @@ public:
   using BlockType = VectorType;
 
   /* 声明所有容器中使用的标准类型。这些类型与<tt>C++</tt>标准库 <tt>std::vector<...></tt> 类中的类型平行。这包括迭代器类型。 
-* */
+*
+*/
   using value_type    = typename BlockType::value_type;
   using pointer       = value_type *;
   using const_pointer = const value_type *;

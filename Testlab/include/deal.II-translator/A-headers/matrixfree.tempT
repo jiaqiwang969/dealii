@@ -181,6 +181,7 @@ digraph G
 * 最后， MatrixFree::loop 函数还需要一个参数来传递面积分的数据访问类型，由结构 MatrixFree::DataAccessOnFaces, 描述，以减少处理器之间需要交换的数据量。不幸的是，目前还没有办法将这些信息传达给 MatrixFree::loop ，这些信息在FEFaceEvaluation内部通过评估类型（值和/或梯度）和底层形状函数的组合获得，以避免在第二个地方手动设置这类信息。
 
 
-* */
+*
+*/
 
 

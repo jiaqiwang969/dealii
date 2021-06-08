@@ -1226,6 +1226,7 @@ for(unsigned int m = 0; m<num_rows; ++m)
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-26.cc" 。
-* */
+*
+*/
 
 

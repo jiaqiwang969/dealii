@@ -41,8 +41,10 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*!   @addtogroup Vectors  @{   
-* */
+  /*!   @addtogroup Vectors  
+     * @{   
+*
+*/
 
   /**
    * VectorSpaceVector是一个抽象类，用于定义向量类在想要实现全局操作时需要实现的接口。这个类是ReadWriteVector的补充，它允许访问单个元素，但不允许全局操作。

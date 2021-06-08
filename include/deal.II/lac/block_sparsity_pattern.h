@@ -39,10 +39,12 @@ class BlockSparseMatrix;
 class BlockDynamicSparsityPattern;
 #endif
 
-/*!   @addtogroup Sparsity  @{  
+/*!   @addtogroup Sparsity  
+     * @{  
 
 * 
-* */
+*
+*/
 
 
 /**
@@ -273,7 +275,8 @@ public:
 
   /**
    * @addtogroup Exceptions  
-   * @{ 
+   * 
+     * @{ 
    *
    */
 
@@ -557,8 +560,10 @@ public:
 
 namespace TrilinosWrappers
 {
-  /*!   @addtogroup  TrilinosWrappers  @{   
-* */
+  /*!   @addtogroup  TrilinosWrappers  
+     * @{   
+*
+*/
 
   /**
    * 这个类扩展了基类，实现了一个Trilinos稀疏模式的数组，可以用来初始化Trilinos块状稀疏矩阵，可以分布在不同的处理器中。除了建立在 TrilinosWrappers::SparsityPattern 而不是 dealii::SparsityPattern. 的基础上，它的使用方式与 dealii::BlockSparsityPattern 相同。该类具有 @ref Sparsity 的 "动态 "

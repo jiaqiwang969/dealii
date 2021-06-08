@@ -31,8 +31,10 @@ DEAL_II_NAMESPACE_OPEN
 
 namespace PETScWrappers
 {
-  /*!   @addtogroup  PETScWrappers  @{   
-* */
+  /*!   @addtogroup  PETScWrappers  
+     * @{   
+*
+*/
 
   /**
    * 实现一个基于PETSc的连续密集矩阵类。所有的功能实际上都在基类中，除了生成连续密集矩阵的调用。这是可能的，因为PETSc只在一个抽象的矩阵类型上工作，并在内部根据实际的矩阵类型分配给做实际工作的函数（很像使用虚拟函数）。只有创建特定类型矩阵的函数不同，并在这个特定的类中实现。

@@ -86,7 +86,8 @@ struct all_same_as
 /*  `std::enable_if` 的概括，只有在给定的布尔模板参数中的<i>all</i>为真时才起作用。
 
 * 
-* */
+*
+*/
 template <bool... Values>
 struct enable_if_all
   : std::enable_if<internal::TemplateConstraints::all_true<Values...>::value>

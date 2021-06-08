@@ -1205,7 +1205,8 @@ public:
   flip_all_direction_flags();
 
   /**
-   * @name  网格细化  @{ 
+   * @name  网格细化  
+     * @{ 
    *
    */
 
@@ -1279,10 +1280,12 @@ public:
   prepare_coarsening_and_refinement();
 
   /*  @} 。  
-* */
+*
+*/
 
   /**
-   * @name  跟上一个三角形所发生的事情  @{ 
+   * @name  跟上一个三角形所发生的事情  
+     * @{ 
    *
    */
 
@@ -1520,10 +1523,12 @@ public:
   mutable Signals signals;
 
   /*  @} .   
-* */
+*
+*/
 
   /**
-   * @name  一个三角形的历史  @{ 
+   * @name  一个三角形的历史  
+     * @{ 
    *
    */
 
@@ -1592,7 +1597,8 @@ public:
   get_anisotropic_refinement_flag() const;
 
   /*  @} .   
-* */
+*
+*/
 
   /**
    * @name  用户数据  @{
@@ -1900,10 +1906,12 @@ public:
   load_user_pointers_hex(const std::vector<void *> &v);
 
   /*  @}  。  
-* */
+*
+*/
 
   /**
-   * @name  细胞迭代器函数  @{ 
+   * @name  细胞迭代器函数  
+     * @{ 
    *
    */
 
@@ -2075,12 +2083,14 @@ public:
   active_cell_iterators_on_level(const unsigned int level) const;
 
   /*  @} 。  
-* */
+*
+*/
 
    /*-------------------------------------------------------------------------*/ 
 
   /**
-   * @name  面对迭代器函数  @{ 
+   * @name  面对迭代器函数  
+     * @{ 
    *
    */
 
@@ -2124,7 +2134,8 @@ public:
   active_face_iterators() const;
 
   /*  @} .   
-* */
+*
+*/
 
    /*-------------------------------------------------------------------------*/ 
 
@@ -2155,10 +2166,12 @@ public:
   end_vertex() const;
 
   /*  @} 。  
-* */
+*
+*/
 
   /**
-   * @name  关于三角形的信息 @{ 
+   * @name  关于三角形的信息 
+     * @{ 
    *
    */
 
@@ -2415,10 +2428,12 @@ public:
 
 
   /*  @} .   
-* */
+*
+*/
 
   /**
-   * @name  有关对象数量的内部信息  @{ 
+   * @name  有关对象数量的内部信息  
+     * @{ 
    *
    */
 
@@ -2486,7 +2501,8 @@ public:
   n_raw_faces() const;
 
   /*  @} 。  
-* */
+*
+*/
 
   /**
    * 确定这个对象的内存消耗（以字节为单位）的估计值。
@@ -2740,7 +2756,8 @@ private:
     periodic_face_map;
 
   /**
-   * @name  内部使用的细胞迭代器函数  @{ 
+   * @name  内部使用的细胞迭代器函数  
+     * @{ 
    *
    */
 
@@ -2776,7 +2793,8 @@ private:
   end_raw(const unsigned int level) const;
 
   /*  @} 。  
-* */
+*
+*/
 
   /**
    * @name  内部使用的行迭代器函数  @{
@@ -2831,7 +2849,8 @@ private:
   end_line() const;
 
   /*  @} .   
-* */
+*
+*/
 
   /**
    * @name  内部使用的四重迭代器函数  @{
@@ -2893,10 +2912,12 @@ private:
   end_quad() const;
 
   /*  @} .   
-* */
+*
+*/
 
   /**
-   * @name  内部使用的十六进制迭代器函数  @{ .
+   * @name  内部使用的十六进制迭代器函数  
+     * @{ 
    *
    */
 
@@ -2955,7 +2976,8 @@ private:
   end_hex() const;
 
   /*  @} .   
-* */
+*
+*/
 
 
   /**

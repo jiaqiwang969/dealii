@@ -21,10 +21,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup Vectors  @{  ．
+/*!   @addtogroup Vectors  
+     * @{  ．
 
  
-* */
+*
+*/
 
 /**
  * 这个枚举记录了像向量和矩阵这样的并行线性代数对象中的当前操作。

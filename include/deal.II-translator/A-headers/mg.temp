@@ -31,7 +31,8 @@
 *  The disadvantage of this decomposition is, that we need additional matrices to handle the issues that arise at refinement edges. Furthermore, the treatment is different, depending on whether the method is continuous (thus having degrees of freedom on the refinement edge) or discontinuous (employs flux matrices at the refinement edge). While these matrices are small, we have to assemble them and notify the multigrid method of them.
 
 * 
-* */
+*
+*/
 
 /**
  This namespace contains the reimplementation of multilevel support after we know what is needed in the context of local refinement and block systems.
@@ -41,7 +42,8 @@
 *   @ingroup mg  
 
 * 
-* */
+*
+*/
 namespace mg
 {
 }

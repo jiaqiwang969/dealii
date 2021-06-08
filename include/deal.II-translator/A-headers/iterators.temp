@@ -17,7 +17,8 @@
 
 
 * 
-*   @defgroup Iterators Iterators on mesh-like containers     @{  
+*   @defgroup Iterators Iterators on mesh-like containers     
+     * @{  
 * deal.II has several classes which are understood conceptually asmeshes. Apart from the obvious Triangulation, these are, for example,DoFHandler and   hp::DoFHandler.   All of those define a setof iterators, allowing the user to traverse the whole mesh, i.e. theset of cells, faces, edges, etc that comprise the mesh, or portions ofit. These iterators are all in a sense derived from the TriaIteratorclass.
 * Basically, the template signature of TriaIterator is
 * @code
@@ -153,7 +154,8 @@ lda&gt;</a> classes for DoFHandler and   hp::DoFHandler   iterators.
 
 * 
 *   @ingroup grid  
-* */
+*
+*/
 
 //@}
 
@@ -168,4 +170,5 @@ lda&gt;</a> classes for DoFHandler and   hp::DoFHandler   iterators.
 *   @ingroup Iterators  
 
 * 
-* */
+*
+*/

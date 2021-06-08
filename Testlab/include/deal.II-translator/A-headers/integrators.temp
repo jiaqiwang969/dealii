@@ -30,4 +30,5 @@
 *  Support for the outer loop in deal.II can be found in the namespace MeshWorker (see the documentation there). In order to support the cell and face contributions (referred to as local contributions from now on), deal.II offers FEValuesBase and its derived classes. While the outer loop is generic (with exception of the data types), the computation of local contributions is problem dependent. Therefore, no generic algorithm is possible here. Nevertheless, we can define a generic interface for functions for this purpose and provide a library of local integrators for use in applications. These are collected in the namespace LocalIntegrators
 
 * 
-* */
+*
+*/

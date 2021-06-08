@@ -294,7 +294,8 @@ public:
 
 protected:
   /* 继承类应该有一个默认的构造函数。 
-* */
+*
+*/
   LinearIndexIterator() = default; // NOLINT
 
   /**

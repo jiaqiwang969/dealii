@@ -657,7 +657,8 @@ namespace internal
   };
 
   /*下面的结构需要在一些特殊的数字类型之间进行转换。  也可以参见tensor.h了解另一种特殊化。 
-* */
+*
+*/
   template <typename T>
   struct NumberType
   {

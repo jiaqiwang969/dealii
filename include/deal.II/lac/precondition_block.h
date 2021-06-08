@@ -30,10 +30,12 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup Preconditioners  @{ 
+/*!   @addtogroup Preconditioners  
+     * @{ 
 
  
-* */
+*
+*/
 
 
 /**
@@ -280,7 +282,8 @@ public:
   memory_consumption() const;
 
   /**
-   * @addtogroup  Exceptions @{ 
+   * @addtogroup  Exceptions 
+     * @{ 
    *
    */
 

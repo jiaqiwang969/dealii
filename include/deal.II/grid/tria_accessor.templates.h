@@ -669,7 +669,8 @@ namespace internal
                        const unsigned int)
       {
         /*在1d中使用的默认实现 在1d中，face_orientation始终为true        
-* */
+*
+*/
 
         return true;
       }
@@ -715,7 +716,8 @@ namespace internal
                 const unsigned int)
       {
         /* 1d和2d中使用的默认实现 在1d中，face_flip总是假的，因为在1d中没有 "翻转 "面的概念。                在2D中，我们目前只支持所有面都在标准方向的网格，所以结果也是假的。这也符合一个事实，即在2D中，人们可以*将面的方向定为不需要翻转的方式。       
-* */
+*
+*/
         return false;
       }
 
@@ -748,7 +750,8 @@ namespace internal
                     const unsigned int)
       {
         /*在1d和2d中使用的默认实现 在1d和2d中，face_rotation总是假的，因为在1d和2d中不存在 "旋转 "面的概念。       
-* */
+*
+*/
         return false;
       }
 

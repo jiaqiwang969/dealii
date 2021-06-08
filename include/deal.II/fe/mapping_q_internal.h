@@ -139,7 +139,8 @@ namespace internal
         (std::abs(eta1 - 0.5) < std::abs(eta2 - 0.5)) ? eta1 : eta2;
 
       /*有两种方法可以从eta计算xi，但任何一种都可能有一个零分母。     
-* */
+*
+*/
       const long double subexpr0        = -eta * x2 + x0 * (eta - 1);
       const long double xi_denominator0 = eta * x3 - x1 * (eta - 1) + subexpr0;
       const long double max_x = std::max(std::max(std::abs(x0), std::abs(x1)),

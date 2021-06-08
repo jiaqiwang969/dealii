@@ -118,7 +118,8 @@ namespace parallel
                             const WeightingFunction &weighting_function);
 
     /**
-     * @name  选择加权函数 @{ 
+     * @name  选择加权函数 
+     * @{ 
      *
      */
 

@@ -237,7 +237,8 @@ namespace internal
 /* MGTransferBase在mg_base.h中定义。
 
 * 
-* */
+*
+*/
 
  /*!@addtogroup mg */ 
  /*@{*/ 

@@ -35,7 +35,8 @@ DEAL_II_NAMESPACE_OPEN
 /* MGSmootherBase在mg_base.h中定义。
 
 * 
-* */
+*
+*/
 
  /*!@addtogroup mg */ 
  /*@{*/ 

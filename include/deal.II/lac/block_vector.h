@@ -47,10 +47,12 @@ namespace TrilinosWrappers
 #endif
 
 
-/*!   @addtogroup  Vectors @{  
+/*!   @addtogroup  Vectors 
+     * @{  
 
  
-* */
+*
+*/
 
 
 /**

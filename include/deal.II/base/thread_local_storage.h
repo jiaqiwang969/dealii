@@ -44,7 +44,8 @@ namespace Threads
   namespace internal
   {
     /* 解决方法。当涉及到STL容器和包含不可复制的对象T时，标准不幸地在 std::is_copy_constructible 的类型特征中存在一个不幸的设计 "缺陷"。通过解压一些常用的容器来解决这个问题。   
-* */
+*
+*/
     template <typename T>
     struct unpack_container
     {
@@ -324,7 +325,8 @@ namespace Threads
   namespace internal
   {
     /* 我们必须确保，如果相应的元素不能被复制构建，就不要调用 "data.emplace(id,exemplar)"。我们使用一些SFINAE魔法来解决C++14没有 "if constexpr "的问题。   
-* */
+*
+*/
     template <typename T>
     typename std::enable_if_t<
       std::is_copy_constructible<typename unpack_container<T>::type>::value,

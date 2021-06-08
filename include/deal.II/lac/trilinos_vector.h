@@ -59,7 +59,8 @@ namespace LinearAlgebra
 #  endif
 
 /**
- * @addtogroup  TrilinosWrappers  @{ .
+ * @addtogroup  TrilinosWrappers  
+     * @{ 
  *
  */
 

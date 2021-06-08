@@ -46,7 +46,8 @@ class DoFHandler;
 /* MGTransferBase在mg_base.h中定义。
 
 * 
-* */
+*
+*/
 
  /*!@addtogroup mg */ 
  /*@{*/ 

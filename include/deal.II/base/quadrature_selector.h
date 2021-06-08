@@ -57,7 +57,8 @@ public:
   get_quadrature_names();
 
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

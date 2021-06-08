@@ -180,4 +180,5 @@ digraph G
 *  Finally, the   MatrixFree::loop   functions also take an argument to pass the type of data access on face integrals, described by the struct   MatrixFree::DataAccessOnFaces,   to reduce the amount of data that needs to be exchanged between processors. Unfortunately, there is currently no way of communicating this information, that gets available inside FEFaceEvaluation by the combination of the type of evaluation (values and/or gradients) and the underlying shape functions, to the   MatrixFree::loop   for avoiding to manually set this kind of information at a second spot.
 
 * 
-* */
+*
+*/

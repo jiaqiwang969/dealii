@@ -760,24 +760,28 @@ private:
                      std::numeric_limits<NumberType>::quiet_NaN()));
 
   /* 使用串行例程在 @p filename 中存储分布矩阵。 
-* */
+*
+*/
   void
   save_serial(const std::string &                          filename,
               const std::pair<unsigned int, unsigned int> &chunk_size) const;
 
   /* 使用串行例程从文件 @p filename 加载分布式矩阵。 
-* */
+*
+*/
   void
   load_serial(const std::string &filename);
 
   /* 使用并行例程将分布式矩阵存储在 @p filename 中。 
-* */
+*
+*/
   void
   save_parallel(const std::string &                          filename,
                 const std::pair<unsigned int, unsigned int> &chunk_size) const;
 
   /* 使用并行例程从文件 @p filename 中加载分布式矩阵。 
-* */
+*
+*/
   void
   load_parallel(const std::string &filename);
 

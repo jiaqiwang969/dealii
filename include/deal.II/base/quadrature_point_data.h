@@ -764,7 +764,8 @@ CellDataStorage<CellIteratorType, DataType>::try_get_data(
 /*将使用 @p data_storage 存储在 @p cell 中的每个正交点的 @p matrix_data. 类型的单元数据打包到 @p matrix_data 这里 @p matrix_data 是一个矩阵，其第一个索引对应于单元上的不同正交点，而第二个索引代表存储在DataType类中每个正交点的不同值。
 
 * 
-* */
+*
+*/
 template <typename CellIteratorType, typename DataType>
 inline void
 pack_cell_data(const CellIteratorType &                           cell,
@@ -803,7 +804,8 @@ pack_cell_data(const CellIteratorType &                           cell,
 /* 与上面的打包函数相反。
 
 * 
-* */
+*
+*/
 template <typename CellIteratorType, typename DataType>
 inline void
 unpack_to_cell_data(const CellIteratorType &                     cell,

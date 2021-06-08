@@ -108,7 +108,8 @@ public:
                       const unsigned int face_index) const override;
 
   /**
-   * @name  支持hp的函数  @{ 
+   * @name  支持hp的函数  
+     * @{ 
    *
    */
 
@@ -294,7 +295,8 @@ public:
 
 protected:
   /*注意：以下函数的定义被内联到类声明中，因为我们在MS Visual Studio中会遇到编译器错误。 
-* */
+*
+*/
 
 
   virtual std::unique_ptr<typename FiniteElement<1, spacedim>::InternalDataBase>

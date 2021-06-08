@@ -339,7 +339,8 @@ public:
   get_expressions() const;
 
   /**
-   * @addtogroup  Exceptions @{ 
+   * @addtogroup  Exceptions 
+     * @{ 
    *
    */
   DeclException2(ExcParseError,

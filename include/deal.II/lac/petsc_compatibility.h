@@ -17,7 +17,8 @@
 /* 与其到处使用ifdefs，不如尝试将PETSc的旧版本函数包裹在一个地方。
 
 * 
-* */
+*
+*/
 #ifndef dealii_petsc_compatibility_h
 #define dealii_petsc_compatibility_h
 

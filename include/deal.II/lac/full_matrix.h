@@ -44,10 +44,12 @@ template <typename number>
 class LAPACKFullMatrix;
 #endif
 
-/*!   @addtogroup  Matrix1  @{ 
+/*!   @addtogroup  Matrix1  
+     * @{ 
 
  
-* */
+*
+*/
 
 
 /**
@@ -960,7 +962,8 @@ public:
   //@}
 
   /**
-   * @addtogroup  Exceptions @{ 
+   * @addtogroup  Exceptions 
+     * @{ 
    *
    */
 

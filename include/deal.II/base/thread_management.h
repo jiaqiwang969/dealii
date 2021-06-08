@@ -1030,7 +1030,8 @@ namespace Threads
 
 
     /**
-     * @addtogroup  Exceptions  @{ 
+     * @addtogroup  Exceptions  
+     * @{ 
      *
      */
 

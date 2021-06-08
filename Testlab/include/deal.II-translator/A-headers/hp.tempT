@@ -24,7 +24,8 @@
 * hp-命名空间实现了在deal.II中用于hp-framework的算法和数据结构。 @ref hp_paper  "hp-paper "中给出了关于这些算法如何工作以及使用何种数据结构的细节概述。
 
 
-* */
+*
+*/
 
 /**
 
@@ -54,7 +55,8 @@
 *  @ingroup hp 
 
 
-* */
+*
+*/
 
 
 /**
@@ -65,7 +67,8 @@
 *  @ingroup hp 
 
 
-* */
+*
+*/
 namespace hp
 {
 }

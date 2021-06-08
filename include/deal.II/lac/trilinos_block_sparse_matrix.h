@@ -43,8 +43,10 @@ class BlockSparseMatrix;
 
 namespace TrilinosWrappers
 {
-  /*!   @addtogroup  TrilinosWrappers  @{   
-* */
+  /*!   @addtogroup  TrilinosWrappers  
+     * @{   
+*
+*/
 
   /**
    * 基于 TrilinosWrappers::SparseMatrix 类的阻塞式稀疏矩阵。

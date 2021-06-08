@@ -38,8 +38,10 @@ namespace PETScWrappers
 {
   namespace MPI
   {
-    /*!   @addtogroup  PETScWrappers  @{     
-* */
+    /*!   @addtogroup  PETScWrappers  
+     * @{     
+*
+*/
 
     /**
      * 基于 PETScWrappers::MPI::SparseMatrix

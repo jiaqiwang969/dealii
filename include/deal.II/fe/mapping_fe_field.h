@@ -195,7 +195,8 @@ public:
     const override;
 
   /**
-   * @name  参考单元和实数单元之间的映射点 @{ 
+   * @name  参考单元和实数单元之间的映射点 
+     * @{ 
    *
    */
 
@@ -282,7 +283,8 @@ public:
 
 private:
   /**
-   * @name  与FEValues的接口 @{ 
+   * @name  与FEValues的接口 
+     * @{ 
    *
    */
 
@@ -623,7 +625,8 @@ private:
       &data) const;
 
   /*在映射中使用哪些组件。 
-* */
+*
+*/
   const ComponentMask fe_mask;
 
   /**

@@ -113,7 +113,8 @@ public:
   free(const VectorType *const) = 0;
 
   /**
-   * @addtogroup  Exceptions @{ 
+   * @addtogroup  Exceptions 
+     * @{ 
    *
    */
 

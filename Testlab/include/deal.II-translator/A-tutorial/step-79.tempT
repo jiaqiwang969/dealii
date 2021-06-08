@@ -5079,6 +5079,7 @@ individual components of the solution look as follows:
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-79.cc"  。
-* */
+*
+*/
 
 

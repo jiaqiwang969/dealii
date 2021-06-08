@@ -67,7 +67,8 @@ namespace TrilinosWrappers
 #  endif
 
 /**
- * @addtogroup  Matrix1  @{ .
+ * @addtogroup  Matrix1  
+     * @{ 
  *
  *
  */
@@ -1419,7 +1420,8 @@ public:
   block_read(std::istream &in);
   //@}
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 

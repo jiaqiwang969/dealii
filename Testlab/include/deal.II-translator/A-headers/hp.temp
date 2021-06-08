@@ -23,7 +23,8 @@
 *  The hp-namespace implements the algorithms and data structures used for the hp-framework in deal.II. An overview over the details of how these algorithms work and what data structures are used is given in the   @ref hp_paper   "hp-paper".
 
 * 
-* */
+*
+*/
 
 /**
 
@@ -53,7 +54,8 @@
 *   @ingroup hp  
 
 * 
-* */
+*
+*/
 
 
 /**
@@ -64,7 +66,8 @@
 *   @ingroup hp  
 
 * 
-* */
+*
+*/
 namespace hp
 {
 }

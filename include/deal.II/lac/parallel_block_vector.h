@@ -35,8 +35,10 @@ namespace parallel
 {
   namespace distributed
   {
-    /*!   @addtogroup Vectors  @{     
-* */
+    /*!   @addtogroup Vectors  
+     * @{     
+*
+*/
 
     /**
      * 一个基于分布式deal.II向量的块向量的实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型的特定函数。

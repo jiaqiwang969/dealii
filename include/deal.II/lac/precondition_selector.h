@@ -36,10 +36,12 @@ class SparseMatrix;
 #endif
 
 
-/*!   @addtogroup Preconditioners  @{ 
+/*!   @addtogroup Preconditioners  
+     * @{ 
 
  
-* */
+*
+*/
 
 /**
  * 选择预处理程序。这个类的构造函数接收预处理的名称和预处理的阻尼参数

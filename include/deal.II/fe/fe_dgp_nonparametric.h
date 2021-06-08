@@ -360,7 +360,8 @@ public:
     const unsigned int                  face_no = 0) const override;
 
   /**
-   * @name  支持 hp  @{  的函数。
+   * @name  支持 hp  
+     * @{  的函数。
    *
    */
 

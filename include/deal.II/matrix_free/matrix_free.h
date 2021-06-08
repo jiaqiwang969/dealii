@@ -1472,7 +1472,8 @@ public:
   get_task_info() const;
 
   /*返回单元格上与几何有关的信息。 
-* */
+*
+*/
   const internal::MatrixFreeFunctions::
     MappingInfo<dim, Number, VectorizedArrayType> &
     get_mapping_info() const;

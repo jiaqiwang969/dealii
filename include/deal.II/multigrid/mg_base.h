@@ -20,7 +20,8 @@
 /* 该文件包含Multigrid使用的一些抽象基类。
 
 * 
-* */
+*
+*/
 
 #include <deal.II/base/config.h>
 
@@ -48,7 +49,8 @@ class MGMatrixBase : public Subscriptor
 {
 public:
   /*虚拟解构器。 
-* */
+*
+*/
   virtual ~MGMatrixBase() override = default;
 
   /**

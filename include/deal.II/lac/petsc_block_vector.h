@@ -38,8 +38,10 @@ namespace PETScWrappers
 
   namespace MPI
   {
-    /*!   @addtogroup  PETScWrappers  @{     
-* */
+    /*!   @addtogroup  PETScWrappers  
+     * @{     
+*
+*/
 
     /**
      * 基于PETScWrappers中实现的平行向量类的块向量的实现。虽然基类提供了大部分的接口，但这个类处理了向量的实际分配，并提供了底层向量类型的特定函数。

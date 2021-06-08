@@ -1240,4 +1240,5 @@ double coefficient (const Point<dim> &p)
 * 
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-6.cc"  
-* */
+*
+*/

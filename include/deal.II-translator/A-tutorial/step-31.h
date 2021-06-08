@@ -3082,4 +3082,5 @@ $   to eliminate the effect of the constant   $c_R$   (we know thatsolutions are
 * 
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-31.cc"  
-* */
+*
+*/

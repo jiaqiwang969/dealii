@@ -38,10 +38,12 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!   @addtogroup Sparsity  @{  
+/*!   @addtogroup Sparsity  
+     * @{  
 
 * 
-* */
+*
+*/
 
 /**
  * 一个命名空间，用于处理可以在稀疏性模式上做的事情的函数，例如根据连通性对行和列（或者自由度，如果你想的话）重新编号，或者对自由度进行分区。

@@ -149,7 +149,8 @@ namespace VectorTools
 
 
     /*对FiniteElement的任意数量的组件进行project()的无矩阵实现。   
-* */
+*
+*/
     template <int components, int dim, typename Number, int spacedim>
     void
     project_matrix_free(

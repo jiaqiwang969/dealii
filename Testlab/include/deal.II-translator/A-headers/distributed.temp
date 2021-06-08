@@ -104,7 +104,8 @@
  relevant</i>. On the other hand, both of the packages we can use for parallel linear algebra (PETSc and Trilinos) as well as   parallel::distributed::Vector   subdivide vectors into chunks each processor owns and chunks stored on other processors. To postprocess stuff therefore means that we have to tell PETSc or Trilinos that it should also import <i>ghost elements</i>, i.e. additional vector elements of the solution vector other than the ones we own locally. For ghosted vectors, this can be achieved by using operator= with a distributed vector as argument.
 
 * 
-* */
+*
+*/
 
 
 
@@ -113,7 +114,8 @@ namespace parallel
   /**
    A namespace for class and   functions that support %parallel   computing on %distributed memory   machines. See the   @ref     distributed module for an   overview of the facilities this   namespace offers.    
 *   @ingroup distributed    
-* */
+*
+*/
   namespace distributed
   {
   }

@@ -1221,6 +1221,7 @@ step_23 " step-23 "中讨论的纯波方程，如果我们选择时间步进参�
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-25.cc" 。
-* */
+*
+*/
 
 

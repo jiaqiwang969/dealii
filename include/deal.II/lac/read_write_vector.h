@@ -93,8 +93,10 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*!   @addtogroup Vectors  @{   
-* */
+  /*!   @addtogroup Vectors  
+     * @{   
+*
+*/
 
   /**
    * ReadWriteVector旨在表示 ${\mathbb R}^N$

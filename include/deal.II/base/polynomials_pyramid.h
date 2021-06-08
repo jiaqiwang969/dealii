@@ -48,7 +48,8 @@ public:
 
   /* 构造函数将多项式 @p degree 作为输入。   
 *  @note  目前，只实现了线性多项式（度数=1）。 
-* */
+*
+*/
   ScalarLagrangePolynomialPyramid(const unsigned int degree);
 
   /**

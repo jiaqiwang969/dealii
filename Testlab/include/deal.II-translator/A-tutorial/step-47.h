@@ -2077,6 +2077,7 @@ p(p+1)$ 的结果相比，变化更大。同样，我们可以对 $Q_3$ 和 $Q_4
 *
 
 * <a name="PlainProg"></a><h1> The plain program</h1>  @include "step-47.cc"  。
-* */
+*
+*/
 
 

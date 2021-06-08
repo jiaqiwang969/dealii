@@ -574,8 +574,10 @@ public:
    *
    */
 
-  /*  @{ .   
-* */
+  /*  
+     * @{    
+*
+*/
 
   /**
    * 迭代到第一层使用的单元格  @p level.  。
@@ -743,7 +745,8 @@ public:
   mg_cell_iterators_on_level(const unsigned int level) const;
 
   /*  @} .   
-* */
+*
+*/
 
 
    /*---------------------------------------*/ 

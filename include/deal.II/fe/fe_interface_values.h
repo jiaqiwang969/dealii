@@ -510,7 +510,8 @@ public:
   get_update_flags() const;
 
   /**
-   * @name  查询给定接口信息的函数  @{ .
+   * @name  查询给定接口信息的函数  
+     * @{ 
    *
    */
 
@@ -806,7 +807,8 @@ private:
   FEFaceValuesBase<dim, spacedim> *fe_face_values_neighbor;
 
   /* 让视图类成为该类的朋友，因为它们访问内部数据。 
-* */
+*
+*/
   template <int, int>
   friend class FEInterfaceViews::Scalar;
   template <int, int>

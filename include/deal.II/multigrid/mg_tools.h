@@ -38,7 +38,8 @@ class MGConstrainedDoFs;
 #endif
 
  /* !@addtogroup mg */ 
- /* @{ */ 
+ /* 
+     * @{ */ 
 
 /**
  * 这是在多级三角中操作和处理自由度数量的函数集合。它在目的和功能上与

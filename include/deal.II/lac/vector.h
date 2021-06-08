@@ -76,10 +76,12 @@ namespace parallel
 #endif
 
 
-/*!   @addtogroup Vectors  @{ 
+/*!   @addtogroup Vectors  
+     * @{ 
 
  
-* */
+*
+*/
 
 /**
  * 一个表示数字元素向量的类。至于其他类，在 @ref
@@ -1274,10 +1276,12 @@ Vector<Number>::load(Archive &ar, const unsigned int)
 #endif
 
 
-/*!   @addtogroup Vectors  @{ 
+/*!   @addtogroup Vectors  
+     * @{ 
 
 * 
-* */
+*
+*/
 
 
 /**

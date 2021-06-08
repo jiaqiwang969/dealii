@@ -223,7 +223,8 @@ public:
   memory_consumption() const;
 
   /**
-   * @addtogroup  Exceptions  @{ .
+   * @addtogroup  Exceptions  
+     * @{ 
    *
    */
 
