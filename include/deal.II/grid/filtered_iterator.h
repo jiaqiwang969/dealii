@@ -688,7 +688,7 @@ private:
  * 这个函数使创建临时对象（例如作为函数参数）变得简单得多，因为人们不需要明确地用手指定基迭代器的类型。
  *
  * - 它是在这里自动推导出来的。
- * @relatesalso  过滤迭代器
+ * @relatesalso FilteredIterator
  *
  *
  */
@@ -762,7 +762,7 @@ namespace internal
  *   }
  * @endcode
  *
- * @relatesalso  过滤的迭代器
+ * @relatesalso FilteredIterator
  *
  * @ingroup CPP11
  *
@@ -814,7 +814,7 @@ filter_iterators(IteratorRange<BaseIterator> i, const Predicate &p)
  *   }
  * @endcode
  *
- * @relatesalso  过滤的迭代器
+ * @relatesalso FilteredIterator
  *
  * @ingroup CPP11
  *

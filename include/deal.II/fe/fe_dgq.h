@@ -165,7 +165,7 @@ public:
       RefinementCase<dim>::isotropic_refinement) const override;
 
   /**
-   * @name  支持hp的函数  @{ 。
+   * @name  支持hp的函数  @{ 
    *
    */
 

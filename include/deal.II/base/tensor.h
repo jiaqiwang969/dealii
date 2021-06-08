@@ -1724,7 +1724,7 @@ constexpr unsigned int Tensor<rank_, dim, Number>::n_independent_components;
 
 /**
  * 张量的输出运算符。连续打印元素，中间有一个空格，等级1的子张量之间有两个空格，等级2之间有三个空格，以此类推。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1745,7 +1745,7 @@ operator<<(std::ostream &out, const Tensor<rank_, dim, Number> &p)
 
 /**
  * 秩为0的张量的输出算子。由于这种张量是标量，我们只需打印这一个值。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1774,7 +1774,7 @@ operator<<(std::ostream &out, const Tensor<0, dim, Number> &p)
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1795,7 +1795,7 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1835,7 +1835,7 @@ DEAL_II_CUDA_HOST_DEV constexpr DEAL_II_ALWAYS_INLINE
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1856,7 +1856,7 @@ DEAL_II_CUDA_HOST_DEV constexpr DEAL_II_ALWAYS_INLINE
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1875,7 +1875,7 @@ constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1895,7 +1895,7 @@ constexpr DEAL_II_ALWAYS_INLINE DEAL_II_CUDA_HOST_DEV
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1921,7 +1921,7 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -1992,7 +1992,7 @@ namespace internal
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2014,7 +2014,7 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2039,7 +2039,7 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
  *
  *
  * @note  这个函数也可以在CUDA设备代码中使用。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2059,7 +2059,7 @@ constexpr DEAL_II_CUDA_HOST_DEV inline DEAL_II_ALWAYS_INLINE
 
 /**
  * 两个等级为0的张量对象的进位乘法（即两个标量值的乘法）。
- * @relatesalso 张量
+ * @relatesalso Tensor
  *
  *
  */
@@ -2084,7 +2084,7 @@ inline constexpr DEAL_II_ALWAYS_INLINE
  *   \text{right}_{i, j}
  * @f]
  * @tparam  rank 两个张量的等级。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2129,7 +2129,7 @@ inline constexpr DEAL_II_ALWAYS_INLINE
  *
  * @note
  * 如果收缩产生一个等级为0的张量，那么标量数将作为一个未包装的数字类型返回。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2187,7 +2187,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE
  *
  * @note
  * 如果收缩产生一个等级为0的张量，那么标量数将作为一个未包装的数字类型返回。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2261,7 +2261,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE
  *
  * @note
  * 如果收缩产生一个等级为0的张量，那么标量数将作为一个未包装的数字类型返回。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2348,7 +2348,7 @@ constexpr inline
  * \text{left}_{i_1,\ldots,i_r}
  * \text{right}_{i_1,\ldots,i_r}
  * @f]完全收缩的结果。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2374,7 +2374,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE
  *
  * @note
  * 三个输入张量中的每一个都可以是Tensor或SymmetricTensor。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2406,7 +2406,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE
  * \text{result}_{i_1,\ldots,i_{r1},j_1,\ldots,j_{r2}}
  * = \text{left}_{i_1,\ldots,i_{r1}}\,\text{right}_{j_1,\ldots,j_{r2}.}
  * @f]
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  */
 template <int rank_1,
@@ -2438,7 +2438,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 /**
  * 返回2d中的交叉积。这只是顺时针旋转90度来计算切向矢量的外法线。这个函数是为所有空间维度定义的，以允许独立于维度的编程（例如在空间维度的开关内），但只有当参数的实际维度为2时才可以调用（例如来自开关中的<tt>dim==2</tt>情况）。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2459,7 +2459,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE Tensor<1, dim, Number>
 
 /**
  * 返回2个向量在3D中的交叉积。这个函数是为所有空间维度定义的，以允许独立于维度的编程（例如在空间维度的开关内），但只有当参数的实际维度是3时才可以调用（例如来自开关中的<tt>dim==3</tt>情况）。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2497,7 +2497,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE
 
 /**
  * 计算一个张量或等级2的行列式。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2526,7 +2526,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE Number
 
 /**
  * dim==1的特殊化。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  */
 template <typename Number>
@@ -2538,7 +2538,7 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 /**
  * 对dim==2的特化。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  */
 template <typename Number>
@@ -2551,7 +2551,7 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 /**
  * 对dim的特殊化==3。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  */
 template <typename Number>
@@ -2571,7 +2571,7 @@ constexpr DEAL_II_ALWAYS_INLINE Number
 
 /**
  * 计算并返回等级为2的张量的轨迹，即其对角线项的总和。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2588,7 +2588,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE Number
 
 /**
  * 计算并返回给定张量的逆值。由于编译器可以进行返回值的优化，并且由于返回对象的大小是已知的，所以可以接受通过值来返回结果，而不是通过引用作为一个参数。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2676,7 +2676,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE Tensor<2, 3, Number>
 
 /**
  * 返回给定张量的转置。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2706,7 +2706,7 @@ constexpr inline DEAL_II_ALWAYS_INLINE Tensor<2, dim, Number>
  * @f]。
  *
  * @note  这要求张量是可逆的。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2726,7 +2726,7 @@ adjugate(const Tensor<2, dim, Number> &t)
  * @f] 。
  *
  * @note  这要求该张量是可逆的。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2793,7 +2793,7 @@ cofactor(const Tensor<2, dim, Number> &t)
  * 都有解，除了 $\mathbf x=0$
  * 。我们在这里考虑的问题的相应条件是， $\mathbf A$
  * 不能有零特征值。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */
@@ -2805,7 +2805,7 @@ project_onto_orthogonal_tensors(const Tensor<2, dim, Number> &A);
 /**
  * 返回给定等级2张量的 $l_1$ 规范，其中 $\|\mathbf T\|_1 =
  * \max_j \sum_i |T_{ij}|$ （列上之和的最大值）。
- * @relatesalso 张量
+ * @relatesalso Tensor
  *
  *
  */
@@ -2831,7 +2831,7 @@ l1_norm(const Tensor<2, dim, Number> &t)
 /**
  * 返回给定的2级张量的 $l_\infty$ 规范，其中 $\|\mathbf
  * T\|_\infty = \max_i \sum_j |T_{ij}|$ （行上和的最大值）。
- * @relatesalso  张量
+ * @relatesalso  Tensor
  *
  *
  */

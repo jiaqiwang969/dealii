@@ -63,7 +63,7 @@ namespace ChunkSparsityPatternIterators
 }
 #endif
 
-/*!   @addtogroup  稀疏性  @{  
+/*!   @addtogroup Sparsity  @{  
 
 * 
 * */
@@ -623,7 +623,7 @@ public:
   // @}
 
   /**
-   * @addtogroup  异常  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 
@@ -1092,7 +1092,7 @@ public:
   // @}
 
   /**
-   * @addtogroup  异常情况  @{
+   * @addtogroup  Exceptions  @{
    *
    */
   /**

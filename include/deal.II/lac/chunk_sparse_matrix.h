@@ -40,7 +40,7 @@ template <typename number>
 class FullMatrix;
 #  endif
 
-/*!   @addtogroup  Matrix1  @{ ! 
+/*!   @addtogroup  Matrix1  @{ 
 
 * 
 * */
@@ -1149,7 +1149,7 @@ public:
   block_read(std::istream &in);
   //@}
   /**
-   * @addtogroup  异常情况  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 

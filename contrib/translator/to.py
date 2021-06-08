@@ -135,7 +135,7 @@ if(nitems > 0):
 # 将“!!.*” 非翻译的部分掩盖，翻译完之后，再替换成\n
 # Replace LaTeX commands, formulas and comments by tokens
 recommand = re.compile(
-    r'\@defgroup.*|\@ingroup.*|\@brief.*|\/\*\*|\*\/|@ref\s\w+|@cite\s\w+|@note|@dealiiTutorialDOI.*|@dealiiVideoLecture.*|@image.*|@include.*|[sS]tep-\d{0,2}|@page.*|<div\s\w{5}=\"[^>]*?>[\s\S]*?<\/div>[\s\S]<\/div>|<div\s\w{5}=[^>]*?>[\s\S]*?<\/div>|(\$+)(?:(?!\1)[\s\S])*\1|(\<code\>)[\s\S].*(\<\/code\>+)|\<img.*[\s\S]\>|\<em\>|\<\/em\>|\S+\:\:\S+|@p \S+|<table\s\w{5}=\"[^>]*?>[\s\S]*?<\/table>|<table>[\s\S]*?<\/table>|<p\s\w{5}=\"[^>]*?>[\s\S]*?<\/p>|\<ol\>|\<li\>|\<\/li\>|\<\/ol\>|\<ul\>|\<\/ul\>|\<br\>|\<p\>|\<\/p\>|\@\S+|\<dl\>|\<\/dl\>|\<dd\>|\<\/dd\>')
+    r'\@relatesalso.*|\@name.*|\@addtogroup.*|\@defgroup.*|\@ingroup.*|\@brief.*|\/\*\*|\*\/|@ref\s\w+|@cite\s\w+|@note|@dealiiTutorialDOI.*|@dealiiVideoLecture.*|@image.*|@include.*|[sS]tep-\d{0,2}|@page.*|<div\s\w{5}=\"[^>]*?>[\s\S]*?<\/div>[\s\S]<\/div>|<div\s\w{5}=[^>]*?>[\s\S]*?<\/div>|(\$+)(?:(?!\1)[\s\S])*\1|(\<code\>)[\s\S].*(\<\/code\>+)|\<img.*[\s\S]\>|\<em\>|\<\/em\>|\S+\:\:\S+|@p \S+|<table\s\w{5}=\"[^>]*?>[\s\S]*?<\/table>|<table>[\s\S]*?<\/table>|<p\s\w{5}=\"[^>]*?>[\s\S]*?<\/p>|\<ol\>|\<li\>|\<\/li\>|\<\/ol\>|\<ul\>|\<\/ul\>|\<br\>|\<p\>|\<\/p\>|\@\S+|\<dl\>|\<\/dl\>|\<dd\>|\<\/dd\>')
 commands = []
 for m in recommand.finditer(text):
     commands.append(m.group())

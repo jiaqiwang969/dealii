@@ -39,10 +39,9 @@
 DEAL_II_NAMESPACE_OPEN
 
 
-/*!   @addtogroup  矢量  @{  。
-
-* 
-* */
+/*! @addtogroup Vectors
+ *@{
+ */
 
 // Forward declaration
 #ifndef DOXYGEN
@@ -322,7 +321,7 @@ namespace internal
       operator-=(const difference_type &d);
 
       /**
-       * @addtogroup  异常情况 @{ 。
+       * @addtogroup  Exceptions @{ 
        *
        */
 

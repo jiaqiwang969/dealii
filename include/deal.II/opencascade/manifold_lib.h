@@ -36,7 +36,7 @@
 DEAL_II_NAMESPACE_OPEN
 
 /**
- * @addtogroup  OpenCASCADE  @{ 。
+ * @addtogroup  OpenCASCADE  @{ 
  *
  */
 

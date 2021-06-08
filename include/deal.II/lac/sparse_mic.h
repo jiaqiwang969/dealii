@@ -24,7 +24,7 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup  先决条件  @{  。
+/*!   @addtogroup Preconditioners  @{ 
 
  
 * */
@@ -127,7 +127,7 @@ public:
   memory_consumption() const override;
 
   /**
-   * @addtogroup  异常情况  @{
+   * @addtogroup  Exceptions  @{
    *
    */
 

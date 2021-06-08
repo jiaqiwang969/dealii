@@ -754,7 +754,7 @@ public:
   get_constant_modes() const override;
 
   /**
-   * @name 支持hp的函数  @{ 。
+   * @name 支持hp的函数  @{ 
    *
    */
 

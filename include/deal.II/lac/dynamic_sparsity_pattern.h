@@ -37,7 +37,7 @@ DEAL_II_NAMESPACE_OPEN
 class DynamicSparsityPattern;
 #endif
 
-/*!   @addtogroup  稀疏性  @{  
+/*!   @addtogroup Sparsity  @{  
 
 * 
 * */

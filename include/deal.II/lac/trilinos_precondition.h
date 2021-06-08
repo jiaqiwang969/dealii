@@ -61,7 +61,7 @@ class Vector;
 class SparsityPattern;
 #    endif
 
-/*!   @addtogroup  TrilinosWrappers  @{ ! 
+/*!   @addtogroup  TrilinosWrappers  @{ 
 
  
 * */
@@ -217,7 +217,7 @@ namespace TrilinosWrappers
     //@}
 
     /**
-     * @addtogroup  例外情况
+     * @addtogroup  Exceptions
      *
      */
     //@{

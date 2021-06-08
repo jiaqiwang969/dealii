@@ -396,7 +396,7 @@ namespace PETScWrappers
       get_mpi_communicator() const override;
 
       /**
-       * @addtogroup  异常情况  @{ .
+       * @addtogroup  Exceptions  @{ .
        *
        */
       /**

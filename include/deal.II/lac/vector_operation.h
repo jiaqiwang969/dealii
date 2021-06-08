@@ -21,7 +21,7 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup  矢量  @{  ．
+/*!   @addtogroup Vectors  @{  ．
 
  
 * */

@@ -33,7 +33,7 @@ DEAL_II_NAMESPACE_OPEN
 
 
 /**
- * @addtogroup  多项式  @{ .
+ * @addtogroup Polynomials   @{ .
  *
  */
 

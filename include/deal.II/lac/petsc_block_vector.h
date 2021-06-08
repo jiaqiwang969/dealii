@@ -38,7 +38,7 @@ namespace PETScWrappers
 
   namespace MPI
   {
-    /*!   @addtogroup  PETScWrappers  @{ !     
+    /*!   @addtogroup  PETScWrappers  @{     
 * */
 
     /**

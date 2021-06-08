@@ -367,7 +367,7 @@ public:
 //@{
 
 /**
- * @relatesalso  线性运算器 两个线性运算符 @p first_op 和 @p
+ * @relatesalso LinearOperator 两个线性运算符 @p first_op 和 @p
  * second_op 的相加，由 $(\mathrm{first\_op}+\mathrm{second\_op})x
  * \dealcoloneq \mathrm{first\_op}(x) + \mathrm{second\_op}(x)$ 给出。
  *
@@ -425,7 +425,7 @@ operator+(const LinearOperator<Range, Domain, Payload> &first_op,
 
 
 /**
- * @relatesalso  线性运算器 两个线性运算符 @p first_op 和 @p
+ * @relatesalso LinearOperator 两个线性运算符 @p first_op 和 @p
  * second_op 的减法，由 $(\mathrm{first\_op}-\mathrm{second\_op})x
  * \dealcoloneq \mathrm{first\_op}(x)
  *
@@ -567,7 +567,7 @@ operator*(const LinearOperator<Range, Domain, Payload> &op,
 //@{
 
 /**
- * @relatesalso  线性运算器 两个线性运算符 @p first_op 和 @p
+ * @relatesalso LinearOperator 两个线性运算符 @p first_op 和 @p
  * second_op 的组合，由 $(\mathrm{first\_op}*\mathrm{second\_op})x
  * \dealcoloneq \mathrm{first\_op}(\mathrm{second\_op}(x))$ 给出。
  *

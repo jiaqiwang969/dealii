@@ -47,7 +47,7 @@ namespace TrilinosWrappers
 } // namespace TrilinosWrappers
 #  endif
 
-/*!   @addtogroup  TrilinosWrappers  @{ ! 
+/*!   @addtogroup  TrilinosWrappers  @{ 
 
  
 * */

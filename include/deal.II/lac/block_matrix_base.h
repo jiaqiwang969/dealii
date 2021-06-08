@@ -45,7 +45,7 @@ class MatrixIterator;
 #endif
 
 
-/*!   @addtogroup  Matrix1  @{ ! 
+/*!   @addtogroup  Matrix1  @{ 
 
 * 
 * */
@@ -747,7 +747,7 @@ public:
   memory_consumption() const;
 
   /**
-   * @addtogroup  异常  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 

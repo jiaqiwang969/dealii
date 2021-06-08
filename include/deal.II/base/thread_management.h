@@ -1030,7 +1030,7 @@ namespace Threads
 
 
     /**
-     * @addtogroup  异常  @{ 。
+     * @addtogroup  Exceptions  @{ 
      *
      */
 

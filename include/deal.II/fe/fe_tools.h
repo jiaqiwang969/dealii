@@ -160,7 +160,7 @@ namespace FETools
                             bool return_start_indices = true);
 
   /**
-   * @name 生成局部矩阵  @{ 。
+   * @name 生成局部矩阵  @{ 
    *
    */
   /**

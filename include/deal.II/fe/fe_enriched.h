@@ -354,7 +354,7 @@ public:
   shape_value(const unsigned int i, const Point<dim> &p) const override;
 
   /**
-   * @name 转移矩阵 @{  。
+   * @name 转移矩阵 @{ 
    *
    */
 
@@ -383,7 +383,7 @@ public:
   //@}
 
   /**
-   * @name 支持hp的函数  @{  。
+   * @name 支持hp的函数  @{ 
    *
    */
 

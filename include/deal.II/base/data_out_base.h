@@ -204,7 +204,7 @@ namespace DataOutBase
     static const unsigned int no_neighbor = numbers::invalid_unsigned_int;
 
     /**
-     * @addtogroup  异常情况  @{ .
+     * @addtogroup  Exceptions  @{ .
      *
      */
 
@@ -332,7 +332,7 @@ namespace DataOutBase
     static const unsigned int no_neighbor = numbers::invalid_unsigned_int;
 
     /**
-     * @addtogroup  异常情况  @{ .
+     * @addtogroup  Exceptions  @{ .
      *
      */
 
@@ -1956,7 +1956,7 @@ namespace DataOutBase
   default_suffix(const OutputFormat output_format);
 
   /**
-   * @addtogroup  异常情况 @{ 。
+   * @addtogroup  Exceptions @{ 
    *
    */
 

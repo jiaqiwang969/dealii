@@ -44,7 +44,7 @@ template <typename number>
 class SparseBlockVanka;
 #endif
 
-/*!   @addtogroup  先决条件  @{  。
+/*!   @addtogroup Preconditioners  @{ 
 
  
 * */

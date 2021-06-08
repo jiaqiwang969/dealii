@@ -1419,7 +1419,7 @@ public:
   block_read(std::istream &in);
   //@}
   /**
-   * @addtogroup  异常情况  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 

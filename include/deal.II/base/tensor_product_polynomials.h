@@ -41,7 +41,7 @@ template <int dim>
 class TensorProductPolynomialsConst;
 
 /**
- * @addtogroup  多项式  @{ .
+ * @addtogroup Polynomials   @{ .
  *
  */
 

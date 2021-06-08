@@ -55,7 +55,7 @@ namespace LinearAlgebra
 #endif
 
 
-/*!   @addtogroup  先决条件  @{  。
+/*!   @addtogroup Preconditioners  @{ 
 
  
 * */

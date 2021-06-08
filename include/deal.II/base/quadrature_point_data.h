@@ -227,7 +227,7 @@ private:
   std::map<CellId, std::vector<std::shared_ptr<DataType>>> map;
 
   /**
-   * @addtogroup  异常情况
+   * @addtogroup  Exceptions
    *
    */
   DeclExceptionMsg(
@@ -235,7 +235,7 @@ private:
     "Cell data is being retrieved with a type which is different than the type used to initialize it");
 
   /**
-   * @addtogroup  异常情况
+   * @addtogroup  Exceptions
    *
    */
   DeclExceptionMsg(

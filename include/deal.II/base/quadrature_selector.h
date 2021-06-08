@@ -57,7 +57,7 @@ public:
   get_quadrature_names();
 
   /**
-   * @addtogroup  异常情况  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 

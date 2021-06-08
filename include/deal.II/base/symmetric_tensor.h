@@ -2605,7 +2605,7 @@ constexpr DEAL_II_ALWAYS_INLINE Number
  * $2\times 2$ 对称张量，这等于张量的行列式。这是因为对于
  * $2\times 2$
  * 对称张量，实际上只有两个不变式，所以第二个和第三个不变式是一样的；行列式是第三个不变式）。
- * @relatesalso  对称张量
+ * @relatesalso SymmetricTensor
  *
  *
  */
@@ -2624,7 +2624,7 @@ constexpr DEAL_II_ALWAYS_INLINE Number
  * \left[ (\text{tr} \mathbf A)^2
  *
  * - \text{tr} (\mathbf{A}^2) \right]$  。
- * @relatesalso  对称张量
+ * @relatesalso SymmetricTensor
  *
  */
 template <typename Number>
@@ -3022,7 +3022,7 @@ constexpr DEAL_II_ALWAYS_INLINE SymmetricTensor<rank_, dim, Number>
  * - \frac{1}{\text{dim}} \text{tr}\mathbf T \; \mathbf I$  ，其中
  * $\mathbf I$
  * 是身份算子。这个量等于原始张量减去其收缩或扩张成分，指的是弹性等方面的剪切力。
- * @relatesalso  对称张量
+ * @relatesalso SymmetricTensor
  *
  *
  */

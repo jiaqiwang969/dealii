@@ -94,7 +94,7 @@ public:
         const PreconditionerType &preconditioner);
 
   /**
-   * @addtogroup  异常情况  @{  。
+   * @addtogroup  Exceptions  @{ 
    *
    */
 

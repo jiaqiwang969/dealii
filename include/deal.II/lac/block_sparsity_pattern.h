@@ -39,7 +39,7 @@ class BlockSparseMatrix;
 class BlockDynamicSparsityPattern;
 #endif
 
-/*!   @addtogroup  稀疏性  @{  
+/*!   @addtogroup Sparsity  @{  
 
 * 
 * */
@@ -272,7 +272,8 @@ public:
   print_svg(std::ostream &out) const;
 
   /**
-   * @addtogroup  例外  @{ .
+   * @addtogroup Exceptions  
+   * @{ 
    *
    */
 
@@ -556,7 +557,7 @@ public:
 
 namespace TrilinosWrappers
 {
-  /*!   @addtogroup  TrilinosWrappers  @{ !   
+  /*!   @addtogroup  TrilinosWrappers  @{   
 * */
 
   /**

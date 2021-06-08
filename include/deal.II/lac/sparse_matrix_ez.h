@@ -770,7 +770,7 @@ public:
   //@}
 
   /**
-   * @addtogroup  异常  @{
+   * @addtogroup  Exceptions  @{
    *
    */
 

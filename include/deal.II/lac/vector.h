@@ -76,7 +76,7 @@ namespace parallel
 #endif
 
 
-/*!   @addtogroup  矢量  @{  。
+/*!   @addtogroup Vectors  @{ 
 
  
 * */
@@ -1274,7 +1274,7 @@ Vector<Number>::load(Archive &ar, const unsigned int)
 #endif
 
 
-/*!   @addtogroup  矢量  @{ ! 
+/*!   @addtogroup Vectors  @{ 
 
 * 
 * */
@@ -1283,7 +1283,7 @@ Vector<Number>::load(Archive &ar, const unsigned int)
 /**
  * 全局函数 @p swap
  * ，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
- * @relatesalso  向量
+ * @relatesalso  Vectors
  *
  *
  */
@@ -1297,7 +1297,7 @@ swap(Vector<Number> &u, Vector<Number> &v)
 
 /**
  * 输出操作符将一个向量写入流中。该操作符逐一输出向量的元素，条目之间有一个空格。每个条目都会根据输出流上设置的标志进行格式化。
- * @relatesalso  矢量
+ * @relatesalso  Vectors
  *
  *
  */
@@ -1322,7 +1322,7 @@ operator<<(std::ostream &out, const Vector<number> &v)
 
 /**
  * 声明  dealii::Vector<  数字 > 作为串行矢量。
- * @relatesalso  矢量
+ * @relatesalso  Vectors
  *
  *
  */

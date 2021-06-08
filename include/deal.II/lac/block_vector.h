@@ -47,7 +47,7 @@ namespace TrilinosWrappers
 #endif
 
 
-/*!   @addtogroup  向量 @{  
+/*!   @addtogroup  Vectors @{  
 
  
 * */
@@ -316,7 +316,7 @@ public:
   block_read(std::istream &in);
 
   /**
-   * @addtogroup  异常情况  @{
+   * @addtogroup  Exceptions  @{
    *
    */
 

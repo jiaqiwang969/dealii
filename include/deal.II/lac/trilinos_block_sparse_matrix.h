@@ -43,7 +43,7 @@ class BlockSparseMatrix;
 
 namespace TrilinosWrappers
 {
-  /*!   @addtogroup  TrilinosWrappers  @{ !   
+  /*!   @addtogroup  TrilinosWrappers  @{   
 * */
 
   /**
@@ -278,7 +278,7 @@ namespace TrilinosWrappers
     using BlockMatrixBase<SparseMatrix>::clear;
 
     /**
-     * @addtogroup  异常情况  @{
+     * @addtogroup  Exceptions  @{
      *
      */
 

@@ -496,7 +496,7 @@ namespace DoFRenumbering
    */
 
   /**
-   * @name  各种单元格的编号 @{  。
+   * @name  各种单元格的编号 @{ 
    *
    */
 
@@ -633,7 +633,7 @@ namespace DoFRenumbering
    */
 
   /**
-   * @name 方向性编号  @{ 。
+   * @name 方向性编号  @{ 
    *
    */
 
@@ -739,7 +739,7 @@ namespace DoFRenumbering
    */
 
   /**
-   * @name  选择性的和随机的编号  @{  。
+   * @name  选择性的和随机的编号  @{ 
    *
    */
 
@@ -841,7 +841,7 @@ namespace DoFRenumbering
    */
 
   /**
-   * @name  基于单元格属性的编号  @{  。
+   * @name  基于单元格属性的编号  @{ 
    *
    */
 

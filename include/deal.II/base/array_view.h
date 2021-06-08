@@ -758,7 +758,7 @@ make_array_view(ArrayView<Number, MemorySpaceType> &array_view)
  * 我们希望有一个数组视图对象的张量。数组视图对应于
  * <em> 整个 </em>
  * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -801,7 +801,7 @@ make_array_view(Tensor<rank, dim, Number> &tensor)
  * 我们希望有一个数组视图对象的SymmetricTensor。数组视图对应于
  * <em> 整个 </em>
  * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -822,7 +822,7 @@ make_array_view(const SymmetricTensor<rank, dim, Number> &tensor)
  * 我们希望有一个数组视图对象的SymmetricTensor。数组视图对应于
  * <em> 整个 </em>
  * 对象，但条目在数组中的呈现顺序是一个实现细节，不应该被依赖。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -860,7 +860,7 @@ inline ArrayView<ElementType> make_array_view(ElementType (&array)[N])
  * @param[in]  vector
  * 我们希望有一个数组视图对象的Vector。数组视图对应于
  * <em>  整个 </em>  Vector。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -881,7 +881,7 @@ make_array_view(Vector<ElementType> &vector)
  * @param[in]  vector
  * 我们希望有一个数组视图对象的Vector。该数组视图对应于
  * <em> 整个 </em> 向量。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -902,7 +902,7 @@ make_array_view(const Vector<ElementType> &vector)
  * @param[in]  矢量
  * 我们希望有一个阵列视图对象的矢量。该数组视图对应于
  * <em> 整个 </em> 向量。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -924,7 +924,7 @@ make_array_view(std::vector<ElementType> &vector)
  * @param[in]  矢量
  * 我们希望有一个数组视图对象的矢量。该数组视图对应于
  * <em> 整个 </em> 向量。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -1008,7 +1008,7 @@ make_array_view(const std::vector<ElementType> &vector,
  * 我们希望有一个数组视图对象的表。数组视图对应于  <em>
  * 整个  </em>  行。  @param[in]  row
  * 该视图所对应的表的行的索引。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -1095,7 +1095,7 @@ make_array_view(LAPACKFullMatrix<ElementType> &matrix)
  * 我们希望有一个阵列视图对象的LAPACKFullMatrix。阵列视图对应于
  * <em> 整个 </em>
  * 对象，但条目在阵列中的呈现顺序是一个实现细节，不应依赖。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */
@@ -1117,7 +1117,7 @@ make_array_view(const LAPACKFullMatrix<ElementType> &matrix)
  * 我们希望有一个数组视图对象的表。数组视图对应于一个
  * <em> 整个 </em> 行。  @param[in]  row
  * 该视图所对应的表的行的索引。
- * @relatesalso  阵列视图
+ * @relatesalso ArrayView
  *
  *
  */

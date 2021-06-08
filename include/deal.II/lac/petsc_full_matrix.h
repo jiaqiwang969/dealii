@@ -31,7 +31,7 @@ DEAL_II_NAMESPACE_OPEN
 
 namespace PETScWrappers
 {
-  /*!   @addtogroup  PETScWrappers  @{ !   
+  /*!   @addtogroup  PETScWrappers  @{   
 * */
 
   /**

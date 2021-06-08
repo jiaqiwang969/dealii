@@ -682,7 +682,7 @@ private:
 
 /**
  * 创建一个矢量数组，将数组中的所有条目设置为给定的标量，也就是说，将标量广播到所有数组元素。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4633,8 +4633,9 @@ private:
 //@{
 
 /**
- * 对VectorizedArray的关系运算符==。
- * @relatesalso  VectorizedArray的运算
+ * 对VectorizedArray的关系运算符==
+ * 
+ * @relatesalso  VectorizedArray 
  *
  *
  */
@@ -4670,7 +4671,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 两个矢量数组的减法，用操作符
  *
  * -
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4685,7 +4686,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * 用运算符对两个矢量数组进行乘法。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4732,7 +4733,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 在标量是双数的情况下，标量的加法（扩展为矢量数组，
  * @p
  * size()相等的条目）和矢量数组的加法（为了能够用通常是双数的常量编写简单的代码而需要）。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4762,7 +4763,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 在标量为双数的情况下，将一个矢量数组和一个标量相加（扩展为一个具有
  * @p size()
  * 相等条目的矢量数组）（为了能够用通常为双数的常量编写简单的代码而需要）。
- * @relatesalso  矢量化数组
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4792,7 +4793,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 在标量为双数的情况下，从标量中减去一个矢量数组（扩展为一个具有
  * @p size()
  * 相等条目的矢量数组）（为了能够用通常为双数的常数编写简单的代码而需要）。
- * @relatesalso  矢量化数组
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4823,7 +4824,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 从一个矢量数组中减去一个标量（扩展为一个矢量数组，
  * @p
  * size()相等的条目），如果该标量是一个双数（为了能够用通常是双数的常量编写简单的代码而需要）。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4838,7 +4839,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 /**
  * 一个标量（扩展为一个具有 @p
  * size()等分项的向量数组）和一个向量数组的乘法。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4853,7 +4854,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 /**
  * 在标量是双数的情况下，标量（扩展为一个矢量数组， @p
  * size()相等的条目）和矢量数组的乘法（为了能够用通常是双数的常量编写简单的代码而需要）。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4883,7 +4884,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 在标量为双数的情况下，矢量数组和标量的乘法（扩展为具有
  * @p size()
  * 相等条目的矢量数组）（为了能够用通常为双数的常量编写简单的代码而需要）。
- * @relatesalso  矢量化数组
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4897,7 +4898,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 /**
  * 标量（扩展为矢量数组， @p
  * size()等于条目）与矢量数组之间的商。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4912,7 +4913,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 /**
  * 在标量是双数的情况下，标量（扩展为具有 @p
  * size()相等条目的向量数组）和向量数组之间的商（为了能够用通常为双数的常量编写简单的代码，需要）。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4927,7 +4928,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 /**
  * 矢量数组和标量之间的商（扩展为具有 @p size()
  * 相等条目的矢量数组）。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4943,7 +4944,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 在标量为双数的情况下，矢量数组和标量之间的商（扩展为具有
  * @p size()
  * 相等条目的矢量数组）（为了能够用通常为双数的常量编写简单的代码而需要）。
- * @relatesalso  矢量化数组
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4957,7 +4958,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<float, width>
 
 /**
  * 矢量化数组上的单项运算符+。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4972,7 +4973,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
  * 单元运算符
  *
  * - 在一个矢量化数组上。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -4987,7 +4988,7 @@ inline DEAL_II_ALWAYS_INLINE VectorizedArray<Number, width>
 
 /**
  * 矢量化数组的输出运算符。
- * @relatesalso  矢量Array
+ * @relatesalso VectorizedArray
  *
  *
  */
@@ -5350,7 +5351,7 @@ namespace std
 
   /**
    * 计算一个矢量数据域的余弦。结果以矢量数组的形式返回<tt>{cos(x[0]),
-   * cos(x[1]), ..., cos(x[size()-1]) }</tt>。      @relatesalso  矢量Array
+   * cos(x[1]), ..., cos(x[size()-1]) }</tt>。      @relatesalso VectorizedArray
    *
    */
   template <typename Number, std::size_t width>
@@ -5370,7 +5371,7 @@ namespace std
 
   /**
    * 计算一个矢量数据域的正切。结果以矢量数组的形式返回<tt>{tan(x[0]),
-   * tan(x[1]), ..., tan(x[size()-1]) }</tt>。      @relatesalso  矢量Array
+   * tan(x[1]), ..., tan(x[size()-1]) }</tt>。      @relatesalso VectorizedArray
    *
    */
   template <typename Number, std::size_t width>
@@ -5471,7 +5472,7 @@ namespace std
    * 将给定的数字 @p x 提高到幂数 @p p
    * ，用于一个矢量数据域。结果以矢量数组的形式返回<tt>{pow(x[0],p[0]),
    * pow(x[1],p[1]), ..., pow(x[size()-1],p[size()-1]) }</tt>。
-   * @relatesalso  矢量Array
+   * @relatesalso VectorizedArray
    *
    */
   template <typename Number, std::size_t width>
@@ -5522,7 +5523,7 @@ namespace std
 
   /**
    * 计算两个矢量数据域的分量最小值。结果以矢量数组的形式返回<tt>{min(x[0],y[0]),
-   * min(x[1],y[1), ...}</tt>。      @relatesalso  矢量Array
+   * min(x[1],y[1), ...}</tt>。      @relatesalso VectorizedArray
    *
    */
   template <typename Number, std::size_t width>

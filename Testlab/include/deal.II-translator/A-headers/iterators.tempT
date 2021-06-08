@@ -18,7 +18,7 @@
 
 
 
-*  @defgroup Iterators Iterators on mesh-like containers   @{ 。
+*  @defgroup Iterators Iterators on mesh-like containers   @{ 
 * deal.II有几个类，在概念上被理解为meshes。除了明显的Triangulation之外，这些类还有，例如，DoFHandler和 hp::DoFHandler.  所有这些类都定义了一组迭代器，允许用户遍历整个网格，即构成网格的单元格、面、边等的集合，或其中的一部分。这些迭代器在某种意义上都是由TriaIteratorclass派生出来的。
 * 基本上，TriaIterator的模板签名是
 * @code

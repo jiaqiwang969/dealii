@@ -362,7 +362,7 @@ namespace LinearAlgebra
 /**
  * 全局函数 @p swap
  * ，它重载了C++标准库的默认实现，它使用一个临时对象。该函数简单地交换了两个向量的数据。
- * @relatesalso  向量
+ * @relatesalso  Vectors
  *
  *
  */

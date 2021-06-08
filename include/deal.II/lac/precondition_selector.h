@@ -36,7 +36,7 @@ class SparseMatrix;
 #endif
 
 
-/*!   @addtogroup  先决条件  @{  。
+/*!   @addtogroup Preconditioners  @{ 
 
  
 * */
@@ -162,7 +162,7 @@ public:
   get_precondition_names();
 
   /**
-   * @addtogroup  异常情况  @{
+   * @addtogroup  Exceptions  @{
    *
    */
 

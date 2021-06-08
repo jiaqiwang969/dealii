@@ -1333,7 +1333,7 @@ public:
   assert_that_entries_have_been_set() const;
 
   /**
-   * @addtogroup  异常  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 

@@ -61,7 +61,7 @@ namespace LinearAlgebra
 {
   namespace distributed
   {
-    /*!   @addtogroup 矢量  @{ !     
+    /*!   @addtogroup Vectors  @{     
 * */
 
 
@@ -612,7 +612,7 @@ namespace LinearAlgebra
       //@}
 
       /**
-       * @addtogroup  异常情况  @{
+       * @addtogroup  Exceptions  @{
        *
        */
 

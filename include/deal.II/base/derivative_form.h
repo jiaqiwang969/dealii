@@ -434,7 +434,7 @@ DerivativeForm<order, dim, spacedim, Number>::memory_consumption()
  * [\text{result}]_{i_1,\dots,i_k} = i\sum_{j} \left[\nabla \mathbf F(\mathbf
  * x)\right]_{i_1,\dots,i_k, j} \Delta x_j @f]，对应于矩阵符号的
  * $[\Delta \mathbf x] [\nabla \mathbf F(\mathbf x)]^T$ 。
- * @relatesalso  衍生形式
+ * @relatesalso DerivativeForm
  *
  *
  */
@@ -455,7 +455,7 @@ apply_transformation(const DerivativeForm<1, dim, spacedim, Number1> &grad_F,
  * 与之前的apply_transformation()类似。结果的每一行都对应于由
  * @p grad_F, 转换的 @p D_X 中的一行，在矩阵符号中相当于
  * $\mathrm{D\_X} \, \mathrm{grad\_F}^T$ 。
- * @relatesalso  衍生形式
+ * @relatesalso DerivativeForm
  *
  *
  */
@@ -481,7 +481,7 @@ apply_transformation(const DerivativeForm<1, dim, spacedim, Number1> &grad_F,
 /**
  * 与之前的apply_transformation()类似。结果的每一行都对应于由
  * @p grad_F. 变换的 @p D_X 中的一行。
- * @relatesalso  衍生表格
+ * @relatesalso  DerivativeForm
  *
  */
 template <int spacedim,
@@ -513,7 +513,7 @@ apply_transformation(
  * \mathbf u \cdot \mathbf A \mathbf v =
  * \text{DF2}^{-1}(\mathbf u) \cdot \text{DF1}^{-1}(\mathbf v)
  * @f]
- * @relatesalso  衍生形式
+ * @relatesalso DerivativeForm
  *
  *
  */

@@ -2183,7 +2183,7 @@ namespace GridTools
    * 这个函数将边界面和边的边界_id复制到相同面和边的manifold_id上，允许用户改变边界_id并将其用于边界条件，而不考虑几何形状，这将使用manifold_id来创建新点。只有活动单元会被迭代。当你的三角网格上只有一个活动层时，通常会调用这个函数。然后，网格细化会将这些指标继承到子单元、面和边上。
    * 可选参数 @p reset_boundary_ids,
    * 表示该函数在将边界面和边的值复制到manifold_id后，是否应将其重置为默认值0。默认情况下，boundary_ids不做任何改动。
-   * @ingroup manifold   @relatesalso  边界
+   * @ingroup manifold   @relatesalso boundary
    *
    */
   template <int dim, int spacedim>
@@ -2202,7 +2202,7 @@ namespace GridTools
    * 如果输入向量的大小不匹配，将抛出异常。如果 @p
    * src_boundary_ids
    * 中指出的边界ID不存在于三角形中，在这个过程中会被简单地忽略。
-   * @ingroup manifold   @relatesalso  边界
+   * @ingroup manifold   @relatesalso boundary
    *
    */
   template <int dim, int spacedim>

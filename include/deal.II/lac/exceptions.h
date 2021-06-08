@@ -26,7 +26,7 @@ DEAL_II_NAMESPACE_OPEN
 namespace LACExceptions
 {
   /**
-   * @addtogroup  异常情况
+   * @addtogroup Exceptions
    *
    */
   //@{

@@ -1403,7 +1403,7 @@ namespace TrilinosWrappers
 
     //@}
     /**
-     * @addtogroup  异常情况
+     * @addtogroup  Exceptions
      *
      */
     //@{

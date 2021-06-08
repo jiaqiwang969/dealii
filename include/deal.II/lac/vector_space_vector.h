@@ -41,7 +41,7 @@ namespace LinearAlgebra
 
 namespace LinearAlgebra
 {
-  /*!   @addtogroup 矢量  @{ !   
+  /*!   @addtogroup Vectors  @{   
 * */
 
   /**

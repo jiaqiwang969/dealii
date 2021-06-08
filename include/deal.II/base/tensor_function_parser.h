@@ -216,7 +216,7 @@ public:
   get_expressions() const;
 
   /**
-   * @addtogroup  异常情况 @{ 。
+   * @addtogroup  Exceptions @{ 
    *
    */
   DeclException2(ExcParseError,

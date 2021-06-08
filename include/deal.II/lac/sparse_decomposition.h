@@ -25,10 +25,9 @@
 
 DEAL_II_NAMESPACE_OPEN
 
-/*!   @addtogroup  先决条件 @{  
-
- 
-* */
+/*! @addtogroup Preconditioners
+ *@{
+ */
 
 /**
  * 用于将稀疏矩阵不完全分解为稀疏因子的抽象基类。这个类本身不能使用，只能作为实际实现特定分解的派生类的基类，如SparseILU或SparseMIC。
@@ -224,7 +223,7 @@ public:
   memory_consumption() const;
 
   /**
-   * @addtogroup  异常情况  @{ .
+   * @addtogroup  Exceptions  @{ .
    *
    */
 

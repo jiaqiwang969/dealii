@@ -58,7 +58,7 @@ DEAL_II_NAMESPACE_OPEN
  */
 namespace LinearAlgebra
 {
-  /*!   @addtogroup 矢量  @{ !   
+  /*!   @addtogroup Vectors  @{   
 * */
 
   /**

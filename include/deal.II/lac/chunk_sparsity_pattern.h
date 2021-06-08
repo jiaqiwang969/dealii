@@ -37,7 +37,7 @@ template <typename>
 class ChunkSparseMatrix;
 #endif
 
-/*!   @addtogroup  稀疏性  @{  
+/*!   @addtogroup Sparsity  @{  
 
 * 
 * */
@@ -650,7 +650,7 @@ public:
   memory_consumption() const;
 
   /**
-   * @addtogroup  异常情况  @{
+   * @addtogroup  Exceptions  @{
    *
    */
   /**

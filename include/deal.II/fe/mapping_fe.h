@@ -97,7 +97,7 @@ public:
   preserves_vertex_locations() const override;
 
   /**
-   * @name  参考单元和实数单元之间的映射点 @{  。
+   * @name  参考单元和实数单元之间的映射点 @{ 
    *
    */
 

@@ -152,12 +152,13 @@ public:
   evaluate_all_convergence_rates(const RateMode rate_mode);
 
   /**
-   * @addtogroup  异常  @{ .
+   * @addtogroup  Exceptions
+   *  @{ 
    *
    */
 
   /**
-   * 异常情况
+   * Exceptions
    *
    */
   DeclException1(ExcRateColumnAlreadyExists,

@@ -13,7 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: modules
       run: |
-        sudo apt-get install libboost-all-dev doxygen python
+        sudo apt-get install libboost-all-dev doxygen python graphviz
     - name: configure
       run: |
         rm -rf CMakeCache.txt CMakeFiles

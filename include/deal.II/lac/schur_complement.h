@@ -252,7 +252,7 @@ schur_complement(const LinearOperator<Domain_1, Range_1, Payload> &A_inv,
 //@{
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 对于方程组@f{eqnarray*}{
  * Ax + By &=& f \\
  * Cx + Dy &=& g \quad ,
@@ -287,7 +287,7 @@ condense_schur_rhs(const LinearOperator<Range_1, Domain_1, Payload> &A_inv,
 }
 
 /**
- * @relatesalso  打包操作
+ * @relatesalso PackagedOperation
  * 对于方程组@f{eqnarray*}{
  * Ax + By &=& f \\
  * Cx + Dy &=& g \quad ,

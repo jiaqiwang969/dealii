@@ -317,7 +317,7 @@ public:
                   const double       denominator = 1.) const;
   //@}
   /**
-   * @addtogroup  异常情况 @{ 。
+   * @addtogroup  Exceptions @{ 
    *
    */
 

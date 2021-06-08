@@ -35,7 +35,7 @@ namespace parallel
 {
   namespace distributed
   {
-    /*!   @addtogroup 矢量  @{ !     
+    /*!   @addtogroup Vectors  @{     
 * */
 
     /**

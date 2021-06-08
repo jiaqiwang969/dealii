@@ -35,7 +35,7 @@ template <typename number>
 class Vector;
 #endif
 
-/*!   @addtogroup  Matrix2  @{ ! 
+/*!   @addtogroup  Matrix2  @{ 
 
  
 * */

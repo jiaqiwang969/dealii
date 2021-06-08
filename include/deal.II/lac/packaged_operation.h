@@ -301,7 +301,7 @@ public:
 //@{
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 两个PackagedOperation对象 @p first_comp 和 @p second_comp
  * 的加法，通过向量空间加法给出相应结果。
  *
@@ -335,7 +335,7 @@ operator+(const PackagedOperation<Range> &first_comp,
 }
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 两个PackagedOperation对象 @p first_comp 和 @p
  * second_comp的减法，由相应结果的向量空间相加给出。
  *
@@ -373,7 +373,7 @@ operator-(const PackagedOperation<Range> &first_comp,
 }
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 一个PackagedOperation对象 @p comp 与一个标量 @p number
  * 的标量乘法，这个标量是由PackagedOperation的结果与 @p
  * number. 的标量给出的。
@@ -416,7 +416,7 @@ PackagedOperation<Range> operator*(const PackagedOperation<Range> &comp,
 }
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 一个PackagedOperation对象 @p comp 与一个标量 @p number
  * 的标量乘法，这个标量是由PackagedOperation的结果与 @p
  * number. 的标量给定的。
@@ -434,7 +434,7 @@ PackagedOperation<Range> operator*(typename Range::value_type      number,
 }
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 在PackagedOperation的结果中添加一个常数 @p offset （属于 @p
  * Range 空间）。
  *
@@ -451,7 +451,7 @@ operator+(const PackagedOperation<Range> &comp, const Range &offset)
 }
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 在PackagedOperation的结果中添加一个常数 @p offset （属于 @p
  * Range 空间）。
  *
@@ -467,7 +467,7 @@ operator+(const Range &offset, const PackagedOperation<Range> &comp)
 }
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 从一个PackagedOperation的结果中减去一个常数 @p offset
  * （属于 @p Range 空间）。
  *
@@ -485,7 +485,7 @@ operator-(const PackagedOperation<Range> &comp, const Range &offset)
 
 
 /**
- * @relatesalso  打包操作 从一个常数 @p offset （属于 @p Range
+ * @relatesalso PackagedOperation 从一个常数 @p offset （属于 @p Range
  * 空间）减去一个计算结果。其结果是一个PackagedOperation对象，应用这个计算。
  *
  *
@@ -542,7 +542,7 @@ namespace internal
 
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 创建一个PackagedOperation对象，存储两个向量的相加。
  * 创建的PackagedOperation对象存储了对 @p u 和 @p v.
  * 的引用。因此，向量必须在PackagedOperation对象的整个生命周期内保持有效引用。在创建PackagedOperation对象后，在
@@ -585,7 +585,7 @@ operator+(const Range &u, const Range &v)
 
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 创建一个PackagedOperation对象，存储两个向量的减法。
  * 创建的PackagedOperation对象存储了对 @p u 和 @p v.
  * 的引用。因此，这些向量必须在PackagedOperation对象的整个生命周期内保持有效的引用。在创建PackagedOperation对象后，在
@@ -628,7 +628,7 @@ operator-(const Range &u, const Range &v)
 
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 创建一个PackagedOperation对象，该对象存储一个具有 @p
  * number. 的向量的缩放比例。
  * 创建的PackagedOperation对象存储了对 @p u.
@@ -652,7 +652,7 @@ PackagedOperation<Range> operator*(const Range &              u,
 
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 创建一个PackagedOperation对象，该对象存储了对一个具有 @p
  * number. 的向量的缩放。 创建的PackagedOperation对象存储了对
  * @p u.
@@ -676,7 +676,7 @@ PackagedOperation<Range> operator*(typename Range::value_type number,
 
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 从一个LinearOperator和对域空间的向量 @p u
  * 的引用中创建一个PackagedOperation对象。该对象存储PackagedOperation
  * $\text{op} \,u$  （用矩阵表示）。  <code>return</code>  (
@@ -710,7 +710,7 @@ operator*(const LinearOperator<Range, Domain, Payload> &op, const Domain &u)
 
 
 /**
- * @relatesalso  打包操作（PackagedOperation
+ * @relatesalso PackagedOperation（PackagedOperation
  * 从一个LinearOperator和一个对Range空间的向量 @p u
  * 的引用创建一个PackagedOperation对象。该对象存储PackagedOperation
  * $\text{op}^T \,u$  （用矩阵符号表示）。  <code>return</code>  (
@@ -744,7 +744,7 @@ operator*(const Range &u, const LinearOperator<Range, Domain, Payload> &op)
 
 
 /**
- * @relatesalso  打包操作(PackagedOperation)
+ * @relatesalso PackagedOperation(PackagedOperation)
  * 一个PackagedOperation对象与一个LinearOperator的组合。该对象存储了计算
  * $\text{op} \,comp$ （用矩阵符号表示）。
  *
@@ -789,7 +789,7 @@ operator*(const LinearOperator<Range, Domain, Payload> &op,
 
 
 /**
- * @relatesalso  打包操作(PackagedOperation)
+ * @relatesalso PackagedOperation(PackagedOperation)
  * 一个PackagedOperation对象与一个LinearOperator的组合。该对象存储了计算
  * $\text{op}^T \,comp$ （用矩阵符号表示）。
  *

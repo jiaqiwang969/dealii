@@ -498,7 +498,7 @@ public:
   serialize(Archive &ar, const unsigned int version);
 
   /**
-   * @addtogroup  异常情况  @{
+   * @addtogroup  Exceptions  @{
    *
    */
 

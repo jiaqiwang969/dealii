@@ -84,7 +84,7 @@ namespace hp
       std::function<bool(const Number &, const Number &)>;
 
     /**
-     * @name  设置p-adaptivity标志  @{  。
+     * @name  设置p-adaptivity标志  @{ 
      *
      */
 
@@ -261,7 +261,7 @@ namespace hp
      */
 
     /**
-     * @name  误差预测  @{  。
+     * @name  误差预测  @{ 
      *
      */
 
@@ -439,7 +439,7 @@ namespace hp
      */
 
     /**
-     * @name  在h-adaptivity和p-adaptivity之间做出决定  @{  。
+     * @name  在h-adaptivity和p-adaptivity之间做出决定  @{ 
      *
      */
 
@@ -480,7 +480,7 @@ namespace hp
      */
 
     /**
-     * @name  优化p级分布  @{  。
+     * @name  优化p级分布  @{ 
      *
      */
 

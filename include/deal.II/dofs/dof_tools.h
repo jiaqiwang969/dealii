@@ -203,7 +203,7 @@ namespace DoFTools
    */
 
   /**
-   * @name  稀疏模式生成  @{  。
+   * @name  稀疏模式生成  @{ 
    *
    */
 
@@ -455,7 +455,7 @@ namespace DoFTools
    */
 
   /**
-   * @name  悬空节点和其他约束  @{  。
+   * @name  悬空节点和其他约束  @{ 
    *
    */
 
@@ -535,7 +535,7 @@ namespace DoFTools
 
 
   /**
-   * @name  周期性的边界条件  @{  。
+   * @name  周期性的边界条件  @{ 
    *
    */
 
@@ -785,7 +785,7 @@ namespace DoFTools
    */
 
   /**
-   * @name  识别具有特殊性质的自由度子集  @{ 。
+   * @name  识别具有特殊性质的自由度子集  @{ 
    *
    */
 
@@ -930,7 +930,7 @@ namespace DoFTools
   //@}
 
   /**
-   * @name  并行化和域分解 @{  。
+   * @name  并行化和域分解 @{ 
    *
    */
   /**
@@ -1263,7 +1263,7 @@ namespace DoFTools
    *
    */
   /**
-   * @name  计算自由度和相关函数  @{  。
+   * @name  计算自由度和相关函数  @{ 
    *
    */
 
@@ -1461,7 +1461,7 @@ namespace DoFTools
    */
 
   /**
-   * @name  杂项  @{ 。
+   * @name  杂项  @{ 
    *
    */
 
@@ -1600,7 +1600,7 @@ namespace DoFTools
    */
 
   /**
-   * @name  异常情况  @{  。
+   * @name  异常情况  @{ 
    *
    */
 
