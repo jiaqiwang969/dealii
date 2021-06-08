@@ -1,4 +1,4 @@
-name: ci-test
+name: doxygen documentation
 
 on: [push, pull_request]
 
