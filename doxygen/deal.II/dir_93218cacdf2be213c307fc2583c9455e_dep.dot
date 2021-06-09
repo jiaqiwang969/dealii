@@ -1,0 +1,20 @@
+digraph "include/deal.II-translator/base" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_386d89ad50a3909c2af5a93b48d2c3ff {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II-translator" fontname="Helvetica", fontsize="10", URL="dir_386d89ad50a3909c2af5a93b48d2c3ff.html"]
+  subgraph clusterdir_93218cacdf2be213c307fc2583c9455e {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_93218cacdf2be213c307fc2583c9455e.html"];
+    dir_93218cacdf2be213c307fc2583c9455e [shape=plaintext label="base"];
+    dir_e9fc4b149f73046135bd8561c50bad8c [shape=box label="std_cxx14" color="black" fillcolor="white" style="filled" URL="dir_e9fc4b149f73046135bd8561c50bad8c.html"];
+    dir_ea86a01180abcf0f7512e0fd2fc46180 [shape=box label="std_cxx17" color="black" fillcolor="white" style="filled" URL="dir_ea86a01180abcf0f7512e0fd2fc46180.html"];
+    dir_becddc0cb5a746bdb7d1a9d2c37161a0 [shape=box label="std_cxx20" color="black" fillcolor="white" style="filled" URL="dir_becddc0cb5a746bdb7d1a9d2c37161a0.html"];
+  }
+  }
+  dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
+  dir_93218cacdf2be213c307fc2583c9455e->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="473", labeldistance=1.5 headhref="dir_000012_000009.html"];
+  dir_e9fc4b149f73046135bd8561c50bad8c->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="3", labeldistance=1.5 headhref="dir_000024_000009.html"];
+  dir_becddc0cb5a746bdb7d1a9d2c37161a0->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="1", labeldistance=1.5 headhref="dir_000093_000009.html"];
+  dir_ea86a01180abcf0f7512e0fd2fc46180->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="4", labeldistance=1.5 headhref="dir_000090_000009.html"];
+}

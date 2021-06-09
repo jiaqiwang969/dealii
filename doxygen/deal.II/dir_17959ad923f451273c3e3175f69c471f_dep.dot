@@ -1,0 +1,11 @@
+digraph "include/deal.II-origin/hp" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_1627ce85bc33b76c4cb222dfe9aeffd7 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="deal.II-origin" fontname="Helvetica", fontsize="10", URL="dir_1627ce85bc33b76c4cb222dfe9aeffd7.html"]
+  dir_17959ad923f451273c3e3175f69c471f [shape=box, label="hp", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_17959ad923f451273c3e3175f69c471f.html"];
+  }
+  dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
+  dir_17959ad923f451273c3e3175f69c471f->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="30", labeldistance=1.5 headhref="dir_000109_000009.html"];
+}
