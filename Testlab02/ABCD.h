@@ -23284,7 +23284,7 @@ data provided by D. Sarah Stamps.</i>
 manifold "三角形的流形描述 "的文档模块。其他信息见那里。
 
  @note  本教程也可作为Jupyter Python笔记本，使用deal.II python接口。该笔记本与原始的C++程序在同一目录下可用。渲染的笔记本也可以在<a
-href="https://github.com/dealii/dealii/blob/master/examples/step-53/step-53.ipynb">github</a>上查看。
+href="https://github.com/dealii/dealii/blob/master/example/step-53/step-53.ipynb">github</a>上查看。
 
 
 <a name="Intro"></a>
