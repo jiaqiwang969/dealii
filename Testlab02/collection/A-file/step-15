@@ -1,0 +1,579 @@
+examples/step-15/doc/intro.dox
+<br>
+
+<i>
+This program grew out of a student project by Sven Wetterauer at the
+University of Heidelberg, Germany. Most of the work for this program
+is by him.
+</i>
+<br>
+
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+<h3>Foreword</h3>
+
+This program deals with an example of a non-linear elliptic partial
+differential equation, the
+[minimal surface equation](https://en.wikipedia.org/wiki/Minimal_surface).
+You can imagine the solution of this equation to describe
+the surface spanned by a soap film that is enclosed by a
+closed wire loop. We imagine the wire to not just be a planar loop, but in
+fact curved. The surface tension of the soap film will then reduce the surface
+to have minimal surface. The solution of the minimal surface equation
+describes this shape with the wire's vertical displacement as a boundary
+condition. For simplicity, we will here assume that the surface can be written
+as a graph $u=u(x,y)$ although it is clear that it is not very hard to
+construct cases where the wire is bent in such a way that the surface can only
+locally be constructed as a graph but not globally.
+
+Because the equation is non-linear, we can't solve it directly. Rather, we
+have to use Newton's method to compute the solution iteratively.
+
+@dealiiVideoLecture{31.5,31.55,31.6}
+(@dealiiVideoLectureSeeAlso{31.65,31.7})
+
+
+
+<h3>Classical formulation</h3>
+
+In a classical sense, the problem is given in the following form:
+
+
+  @f{align*}
+    -\nabla \cdot \left( \frac{1}{\sqrt{1+|\nabla u|^{2}}}\nabla u \right) &= 0 \qquad
+    \qquad &&\textrm{in} ~ \Omega
+    \\
+    u&=g \qquad\qquad &&\textrm{on} ~ \partial \Omega.
+  @f}
+
+$\Omega$ is the domain we get by projecting the wire's positions into $x-y$
+space. In this example, we choose $\Omega$ as the unit disk.
+
+As described above, we solve this equation using Newton's method in which we
+compute the $n$th approximate solution from the $(n-1)$th one, and use
+a damping parameter $\alpha^n$ to get better global convergence behavior:
+  @f{align*}
+    F'(u^{n},\delta u^{n})&=- F(u^{n})
+    \\
+    u^{n+1}&=u^{n}+\alpha^n \delta u^{n}
+  @f}
+with
+  @f[
+    F(u) \dealcoloneq -\nabla \cdot \left( \frac{1}{\sqrt{1+|\nabla u|^{2}}}\nabla u \right)
+  @f]
+and $F'(u,\delta u)$ the derivative of F in direction of $\delta u$:
+@f[
+  F'(u,\delta u)=\lim \limits_{\epsilon \rightarrow 0}{\frac{F(u+\epsilon \delta u)-
+  F(u)}{\epsilon}}.
+@f]
+
+Going through the motions to find out what $F'(u,\delta u)$ is, we find that
+we have to solve a linear elliptic PDE in every Newton step, with $\delta u^n$
+as the solution of:
+
+  @f[
+  - \nabla \cdot \left( \frac{1}{\left(1+|\nabla u^{n}|^{2}\right)^{\frac{1}{2}}}\nabla
+  \delta u^{n} \right) +
+  \nabla \cdot \left( \frac{\nabla u^{n} \cdot
+  \nabla \delta u^{n}}{\left(1+|\nabla u^{n}|^{2}\right)^{\frac{3}{2}}} \nabla u^{n}
+  \right)  =
+  -\left( - \nabla \cdot \left( \frac{1}{\left(1+|\nabla u^{n}|^{2}\right)^{\frac{1}{2}}}
+  \nabla u^{n} \right) \right)
+  @f]
+
+In order to solve the minimal surface equation, we have to solve this equation
+repeatedly, once per Newton step. To solve this, we have to take a look at the
+boundary condition of this problem. Assuming that $u^{n}$ already has the
+right boundary values, the Newton update $\delta u^{n}$ should have zero
+boundary conditions, in order to have the right boundary condition after
+adding both.  In the first Newton step, we are starting with the solution
+$u^{0}\equiv 0$, the Newton update still has to deliver the right boundary
+condition to the solution $u^{1}$.
+
+
+Summing up, we have to solve the PDE above with the boundary condition $\delta
+u^{0}=g$ in the first step and with $\delta u^{n}=0$ in all the following steps.
+
+@note In some sense, one may argue that if the program already
+  implements $F(u)$, it is duplicative to also have to implement
+  $F'(u,\delta)$. As always, duplication tempts bugs and we would like
+  to avoid it. While we do not explore this issue in this program, we
+  will come back to it at the end of the <a
+  href="#extensions">Possibilities for extensions</a> section below,
+  and specifically in step-72.
+
+
+<h3>Weak formulation of the problem</h3>
+
+Starting with the strong formulation above, we get the weak formulation by multiplying
+both sides of the PDE with a test function $\varphi$ and integrating by parts on both sides:
+  @f[
+  \left( \nabla \varphi , \frac{1}{\left(1+|\nabla u^{n}|^{2}\right)^{\frac{1}{2}}}\nabla
+  \delta u^{n} \right)-\left(\nabla \varphi ,\frac{\nabla u^{n} \cdot \nabla
+  \delta u^{n}}{\left(1+|\nabla u^{n}|^{2}\right)^{\frac{3}{2}}}\nabla u^{n}  \right)
+  = -\left(\nabla \varphi , \frac{1}{\left(1+|\nabla u^{n}|^{2}\right)^{\frac{1}{2}}} \nabla u^{n}
+   \right).
+  @f]
+Here the solution $\delta u^{n}$ is a function in $H^{1}(\Omega)$, subject to
+the boundary conditions discussed above.
+Reducing this space to a finite dimensional space with basis $\left\{
+\varphi_{0},\dots , \varphi_{N-1}\right\}$, we can write the solution:
+
+@f[
+  \delta u^{n}=\sum_{j=0}^{N-1} \delta U_{j} \varphi_{j}.
+@f]
+
+Using the basis functions as test functions and defining $a_{n} \dealcoloneq \frac{1}
+{\sqrt{1+|\nabla u^{n}|^{2}}}$, we can rewrite the weak formulation:
+
+@f[
+  \sum_{j=0}^{N-1}\left[ \left( \nabla \varphi_{i} , a_{n} \nabla \varphi_{j} \right) -
+  \left(\nabla u^{n}\cdot \nabla \varphi_{i} , a_{n}^{3} \nabla u^{n} \cdot \nabla
+  \varphi_{j} \right) \right] \cdot \delta U_{j}=-\left( \nabla \varphi_{i} , a_{n}
+  \nabla u^{n}\right) \qquad \forall i=0,\dots ,N-1,
+@f]
+
+where the solution $\delta u^{n}$ is given by the coefficients $\delta U^{n}_{j}$.
+This linear system of equations can be rewritten as:
+
+@f[
+  A^{n}\; \delta U^{n}=b^{n},
+@f]
+
+where the entries of the matrix $A^{n}$ are given by:
+
+@f[
+  A^{n}_{ij} \dealcoloneq \left( \nabla \varphi_{i} , a_{n} \nabla \varphi_{j} \right) -
+  \left(\nabla u^{n}\cdot \nabla \varphi_{i} , a_{n}^{3} \nabla u^{n} \cdot \nabla
+  \varphi_{j} \right),
+@f]
+
+and the right hand side $b^{n}$ is given by:
+
+@f[
+  b^{n}_{i} \dealcoloneq -\left( \nabla \varphi_{i} , a_{n} \nabla u^{n}\right).
+@f]
+
+
+<h3> Questions about the appropriate solver </h3>
+
+The matrix that corresponds to the Newton step above can be reformulated to
+show its structure a bit better. Rewriting it slightly, we get that it has the
+form
+@f[
+  A_{ij}
+  =
+  \left(
+    \nabla \varphi_i,
+    B
+    \nabla \varphi_j
+  \right),
+@f]
+where the matrix $B$ (of size $d \times d$ in $d$ space dimensions) is given
+by the following expression:
+@f[
+  B
+  =
+  a_n \left\{
+   \mathbf I
+   -
+   a_n^2 [\nabla u_n] \otimes [\nabla u_n]
+  \right\}
+  =
+  a_n \left\{
+   \mathbf I
+   -
+  \frac{\nabla u_n}{\sqrt{1+|\nabla u^{n}|^{2}}} \otimes
+  \frac{\nabla u_n}{\sqrt{1+|\nabla u^{n}|^{2}}}
+  \right\}.
+@f]
+From this expression, it is obvious that
+$B$ is symmetric, and so $A$ is symmetric as well.
+On the other hand, $B$ is also positive definite, which confers the same
+property onto $A$. This can be seen by noting that the vector $v_1 =
+\frac{\nabla u^n}{|\nabla u^n|}$ is an eigenvector of $B$ with eigenvalue
+$\lambda_1=a_n \left(1-\frac{|\nabla u^n|^2}{1+|\nabla u^n|^2}\right) > 0$ while all vectors $v_2\ldots v_d$
+that are perpendicular to $v_1$ and each other are eigenvectors with
+eigenvalue $a_n$. Since all eigenvalues are positive, $B$ is positive definite
+and so is $A$. We can thus use the CG method for solving the Newton steps.
+(The fact that the matrix $A$ is symmetric and positive definite should not come
+as a surprise. It results from taking the derivative of an operator that
+results from taking the derivative of an energy functional: the minimal
+surface equation simply minimizes some non-quadratic energy. Consequently,
+the Newton matrix, as the matrix of second derivatives of a scalar energy,
+must be symmetric since the derivative with regard to the $i$th and $j$th
+degree of freedom should clearly commute. Likewise, if the energy functional
+is convex, then the matrix of second derivatives must be positive definite,
+and the direct calculation above simply reaffirms this.)
+
+It is worth noting, however, that the positive definiteness degenerates for
+problems where $\nabla u$ becomes large. In other words, if we simply multiply
+all boundary values by 2, then to first order $u$ and $\nabla u$ will also be
+multiplied by two, but as a consequence the smallest eigenvalue of $B$ will
+become smaller and the matrix will become more ill-conditioned. (More
+specifically, for $|\nabla u^n|\rightarrow\infty$ we have that
+$\lambda_1 \propto a_n \frac{1}{|\nabla u^n|^2}$ whereas
+$\lambda_2\ldots \lambda_d=a_n$; thus, the condition number of $B$,
+which is a multiplicative factor in the condition number of $A$ grows
+like ${\cal O}(|\nabla u^n|^2)$.) It is simple
+to verify with the current program that indeed multiplying the boundary values
+used in the current program by larger and larger values results in a problem
+that will ultimately no longer be solvable using the simple preconditioned CG
+method we use here.
+
+
+<h3> Choice of step length and globalization </h3>
+
+As stated above, Newton's method works by computing a direction
+$\delta u^n$ and then performing the update $u^{n+1} = u^{n}+\alpha^n
+\delta u^{n}$ with a step length $0 < \alpha^n \le 1$. It is a common
+observation that for strongly nonlinear models, Newton's method does
+not converge if we always choose $\alpha^n=1$ unless one starts with
+an initial guess $u^0$ that is sufficiently close to the solution $u$
+of the nonlinear problem. In practice, we don't always have such an
+initial guess, and consequently taking full Newton steps (i.e., using
+$\alpha=1$) does frequently not work.
+
+A common strategy therefore is to use a smaller step length for the
+first few steps while the iterate $u^n$ is still far away from the
+solution $u$ and as we get closer use larger values for $\alpha^n$
+until we can finally start to use full steps $\alpha^n=1$ as we are
+close enough to the solution. The question is of course how to choose
+$\alpha^n$. There are basically two widely used approaches: line
+search and trust region methods.
+
+In this program, we simply always choose the step length equal to
+0.1. This makes sure that for the testcase at hand we do get
+convergence although it is clear that by not eventually reverting to
+full step lengths we forego the rapid, quadratic convergence that
+makes Newton's method so appealing. Obviously, this is a point one
+eventually has to address if the program was made into one that is
+meant to solve more realistic problems. We will comment on this issue
+some more in the <a href="#Results">results section</a>, and use an
+even better approach in step-77.
+
+
+<h3> Summary of the algorithm and testcase </h3>
+
+Overall, the program we have here is not unlike step-6 in many regards. The
+layout of the main class is essentially the same. On the other hand, the
+driving algorithm in the <code>run()</code> function is different and works as
+follows:
+<ol>
+<li>
+  Start with the function $u^{0}\equiv 0$ and modify it in such a way
+  that the values of $u^0$ along the boundary equal the correct
+  boundary values $g$ (this happens in
+  <code>MinimalSurfaceProblem::set_boundary_values</code>). Set
+  $n=0$.
+</li>
+
+<li>
+  Compute the Newton update by solving the system $A^{n}\;\delta
+  U^{n}=b^{n}$
+  with boundary condition $\delta u^{n}=0$ on $\partial \Omega$.
+</li>
+
+<li>
+  Compute a step length $\alpha^n$. In this program, we always set
+  $\alpha^n=0.1$. To make things easier to extend later on, this
+  happens in a function of its own, namely in
+  <code>MinimalSurfaceProblem::determine_step_length</code>.
+  (The strategy of always choosing $\alpha^n=0.1$ is of course not
+  optimal -- we should choose a step length that works for a given
+  search direction -- but it requires a bit of work to do that. In the
+  end, we leave these sorts of things to external packages: step-77
+  does that.)
+</li>
+
+<li>
+  The new approximation of the solution is given by
+  $u^{n+1}=u^{n}+\alpha^n \delta u^{n}$.
+</li>
+
+<li>
+  If $n$ is a multiple of 5 then refine the mesh, transfer the
+  solution $u^{n+1}$ to the new mesh and set the values of $u^{n+1}$
+  in such a way that along the boundary we have
+  $u^{n+1}|_{\partial\Gamma}=g$ (again in
+  <code>MinimalSurfaceProblem::set_boundary_values</code>). Note that
+  this isn't automatically
+  guaranteed even though by construction we had that before mesh
+  refinement $u^{n+1}|_{\partial\Gamma}=g$ because mesh refinement
+  adds new nodes to the mesh where we have to interpolate the old
+  solution to the new nodes upon bringing the solution from the old to
+  the new mesh. The values we choose by interpolation may be close to
+  the exact boundary conditions but are, in general, nonetheless not
+  the correct values.
+</li>
+
+<li>
+  Set $n\leftarrow n+1$ and go to step 2.
+</li>
+</ol>
+
+The testcase we solve is chosen as follows: We seek to find the solution of
+minimal surface over the unit disk $\Omega=\{\mathbf x: \|\mathbf
+x\|<1\}\subset {\mathbb R}^2$ where the surface attains the values
+$u(x,y)|{\partial\Omega} = g(x,y) \dealcoloneq \sin(2 \pi (x+y))$ along the
+boundary.
+
+
+examples/step-15/doc/results.dox
+<h1>Results</h1>
+
+
+The output of the program looks as follows:
+@code
+Mesh refinement step 0
+  Initial residual: 1.53143
+  Residual: 1.08746
+  Residual: 0.966748
+  Residual: 0.859602
+  Residual: 0.766462
+  Residual: 0.685475
+
+Mesh refinement step 1
+  Initial residual: 0.868959
+  Residual: 0.762125
+  Residual: 0.677792
+  Residual: 0.605762
+  Residual: 0.542748
+  Residual: 0.48704
+
+Mesh refinement step 2
+  Initial residual: 0.426445
+  Residual: 0.382731
+  Residual: 0.343865
+  Residual: 0.30918
+  Residual: 0.278147
+  Residual: 0.250327
+
+Mesh refinement step 3
+  Initial residual: 0.282026
+  Residual: 0.253146
+  Residual: 0.227414
+  Residual: 0.20441
+  Residual: 0.183803
+  Residual: 0.165319
+
+Mesh refinement step 4
+  Initial residual: 0.154404
+  Residual: 0.138723
+  Residual: 0.124694
+  Residual: 0.112124
+  Residual: 0.100847
+  Residual: 0.0907222
+
+....
+@endcode
+
+Obviously, the scheme converges, if not very fast. We will come back to
+strategies for accelerating the method below.
+
+One can visualize the solution after each set of five Newton
+iterations, i.e., on each of the meshes on which we approximate the
+solution. This yields the following set of images:
+
+<div class="twocolumn" style="width: 80%">
+  <div>
+    <img src="https://www.dealii.org/images/steps/developer/step_15_solution_1.png"
+         alt="Solution after zero cycles with contour lines." width="230" height="273">
+  </div>
+  <div>
+    <img src="https://www.dealii.org/images/steps/developer/step_15_solution_2.png"
+         alt="Solution after one cycle with contour lines." width="230" height="273">
+  </div>
+  <div>
+    <img src="https://www.dealii.org/images/steps/developer/step_15_solution_3.png"
+         alt="Solution after two cycles with contour lines." width="230" height="273">
+  </div>
+  <div>
+    <img src="https://www.dealii.org/images/steps/developer/step_15_solution_4.png"
+         alt="Solution after three cycles with contour lines." width="230" height="273">
+  </div>
+</div>
+
+It is clearly visible, that the solution minimizes the surface
+after each refinement. The solution converges to a picture one
+would imagine a soap bubble to be that is located inside a wire loop
+that is bent like
+the boundary. Also it is visible, how the boundary
+is smoothed out after each refinement. On the coarse mesh,
+the boundary doesn't look like a sine, whereas it does the
+finer the mesh gets.
+
+The mesh is mostly refined near the boundary, where the solution
+increases or decreases strongly, whereas it is coarsened on
+the inside of the domain, where nothing interesting happens,
+because there isn't much change in the solution. The ninth
+solution and mesh are shown here:
+
+<div class="onecolumn" style="width: 60%">
+  <div>
+    <img src="https://www.dealii.org/images/steps/developer/step_15_solution_9.png"
+         alt="Grid and solution of the ninth cycle with contour lines." width="507" height="507">
+  </div>
+</div>
+
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+The program shows the basic structure of a solver for a nonlinear, stationary
+problem. However, it does not converge particularly fast, for good reasons:
+
+- The program always takes a step size of 0.1. This precludes the rapid,
+  quadratic convergence for which Newton's method is typically chosen.
+- It does not connect the nonlinear iteration with the mesh refinement
+  iteration.
+
+Obviously, a better program would have to address these two points.
+We will discuss them in the following.
+
+
+<h4> Step length control </h4>
+
+Newton's method has two well known properties:
+- It may not converge from arbitrarily chosen starting points. Rather, a
+  starting point has to be close enough to the solution to guarantee
+  convergence. However, we can enlarge the area from which Newton's method
+  converges by damping the iteration using a <i>step length</i> 0<$\alpha^n\le
+  1$.
+- It exhibits rapid convergence of quadratic order if (i) the step length is
+  chosen as $\alpha^n=1$, and (ii) it does in fact converge with this choice
+  of step length.
+
+A consequence of these two observations is that a successful strategy is to
+choose $\alpha^n<1$ for the initial iterations until the iterate has come
+close enough to allow for convergence with full step length, at which point we
+want to switch to $\alpha^n=1$. The question is how to choose $\alpha^n$ in an
+automatic fashion that satisfies these criteria.
+
+We do not want to review the literature on this topic here, but only briefly
+mention that there are two fundamental approaches to the problem: backtracking
+line search and trust region methods. The former is more widely used for
+partial differential equations and essentially does the following:
+- Compute a search direction
+- See if the resulting residual of $u^n + \alpha^n\;\delta u^n$ with
+  $\alpha^n=1$ is "substantially smaller" than that of $u^n$ alone.
+- If so, then take $\alpha^n=1$.
+- If not, try whether the residual is "substantially smaller" with
+  $\alpha^n=2/3$.
+- If so, then take $\alpha^n=2/3$.
+- If not, try whether the residual is "substantially smaller" with
+  $\alpha^n=(2/3)^2$.
+- Etc.
+One can of course choose other factors $r, r^2, \ldots$ than the $2/3,
+(2/3)^2, \ldots$ chosen above, for $0<r<1$. It is obvious where the term
+"backtracking" comes from: we try a long step, but if that doesn't work we try
+a shorter step, and ever shorter step, etc. The function
+<code>determine_step_length()</code> is written the way it is to support
+exactly this kind of use case.
+
+Whether we accept a particular step length $\alpha^n$ depends on how we define
+"substantially smaller". There are a number of ways to do so, but without
+going into detail let us just mention that the most common ones are to use the
+Wolfe and Armijo-Goldstein conditions. For these, one can show the following:
+- There is always a step length $\alpha^n$ for which the conditions are
+  satisfied, i.e., the iteration never gets stuck as long as the problem is
+  convex.
+- If we are close enough to the solution, then the conditions allow for
+  $\alpha^n=1$, thereby enabling quadratic convergence.
+
+We will not dwell on this here any further but leave the implementation of
+such algorithms as an exercise. We note, however, that when implemented
+correctly then it is a common observation that most reasonably nonlinear
+problems can be solved in anywhere between 5 and 15 Newton iterations to
+engineering accuracy &mdash; substantially fewer than we need with the current
+version of the program.
+
+More details on globalization methods including backtracking can be found,
+for example, in @cite GNS08 and @cite NW99.
+
+A separate point, very much worthwhile making, however, is that in practice
+the implementation of efficient nonlinear solvers is about as complicated as
+the implementation of efficient finite element methods. One should not
+attempt to reinvent the wheel by implementing all of the necessary steps
+oneself. Substantial pieces of the puzzle are already available in
+the LineMinimization::line_search() function and could be used to this end.
+But, instead, just like building finite element solvers on libraries
+such as deal.II, one should be building nonlinear solvers on libraries such
+as [SUNDIALS](https://computing.llnl.gov/projects/sundials). In fact,
+deal.II has interfaces to SUNDIALS and in particular to its nonlinear solver
+sub-package KINSOL through the SUNDIALS::KINSOL class. It would not be
+very difficult to base the current problem on that interface --
+indeed, that is what step-77 does.
+
+
+
+<h4> Integrating mesh refinement and nonlinear and linear solvers </h4>
+
+We currently do exactly 5 iterations on each mesh. But is this optimal? One
+could ask the following questions:
+- Maybe it is worthwhile doing more iterations on the initial meshes since
+  there, computations are cheap.
+- On the other hand, we do not want to do too many iterations on every mesh:
+  yes, we could drive the residual to zero on every mesh, but that would only
+  mean that the nonlinear iteration error is far smaller than the
+  discretization error.
+- Should we use solve the linear systems in each Newton step with higher or
+  lower accuracy?
+
+Ultimately, what this boils down to is that we somehow need to couple the
+discretization error on the current mesh with the nonlinear residual we want
+to achieve with the Newton iterations on a given mesh, and to the linear
+iteration we want to achieve with the CG method within each Newton
+iterations.
+
+How to do this is, again, not entirely trivial, and we again leave it as a
+future exercise.
+
+
+
+<h4> Using automatic differentiation to compute the Jacobian matrix </h4>
+
+As outlined in the introduction, when solving a nonlinear problem of
+the form
+  @f[
+    F(u) \dealcoloneq
+    -\nabla \cdot \left( \frac{1}{\sqrt{1+|\nabla u|^{2}}}\nabla u \right)
+    = 0
+  @f]
+we use a Newton iteration that requires us to repeatedly solve the
+linear partial differential equation
+  @f{align*}
+    F'(u^{n},\delta u^{n}) &=- F(u^{n})
+  @f}
+so that we can compute the update
+  @f{align*}
+    u^{n+1}&=u^{n}+\alpha^n \delta u^{n}
+  @f}
+with the solution $\delta u^{n}$ of the Newton step. For the problem
+here, we could compute the derivative $F'(u,\delta u)$ by hand and
+obtained
+  @f[
+  F'(u,\delta u)
+  =
+  - \nabla \cdot \left( \frac{1}{\left(1+|\nabla u|^{2}\right)^{\frac{1}{2}}}\nabla
+  \delta u \right) +
+  \nabla \cdot \left( \frac{\nabla u \cdot
+  \nabla \delta u}{\left(1+|\nabla u|^{2}\right)^{\frac{3}{2}}} \nabla u
+  \right).
+  @f]
+But this is already a sizable expression that is cumbersome both to
+derive and to implement. It is also, in some sense, duplicative: If we
+implement what $F(u)$ is somewhere in the code, then $F'(u,\delta u)$
+is not an independent piece of information but is something that, at
+least in principle, a computer should be able to infer itself.
+Wouldn't it be nice if that could actually happen? That is, if we
+really only had to implement $F(u)$, and $F'(u,\delta u)$ was then somehow
+done implicitly? That is in fact possible, and runs under the name
+"automatic differentiation". step-71 discusses this very
+concept in general terms, and step-72 illustrates how this can be
+applied in practice for the very problem we are considering here.
+
+

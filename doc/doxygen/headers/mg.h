@@ -16,7 +16,8 @@
 
 
 /**
- *    @defgroup mg Multilevel support 与多栅格算法有关的类。
+ * @defgroup mg Multilevel support 
+ * 与多栅格算法有关的类。
  * 实现多网格方案的主要类是Multigrid，其功能是
  * Multigrid::cycle().  它使用以下抽象类来执行多网格循环。
  * <ol>   <li>  MGMatrixBase包含水平矩阵，在 mg::Matrix   <li>  MGCoarseGridBase是最粗层次上的求解器。   <li>  MGSmootherBase在每个层次上进行平滑处理。   <li>  MGTransferBase组织层次间的转移。   </ol>

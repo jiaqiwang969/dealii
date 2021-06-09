@@ -1,0 +1,275 @@
+examples/step-12/doc/intro.dox
+<br>
+
+<i> Note: A variant called step-12b of this tutorial exists, using
+MeshWorker and LocalIntegrators instead of assembling matrices using
+FEInterfaceValues as is done in this tutorial.
+</i>
+
+<a name="Intro"></a>
+<h1>An example of an advection problem using the Discountinuous Galerkin method</h1>
+
+<h3>Overview</h3>
+
+This example is devoted to the <em>discontinuous
+Galerkin method</em>, or in short, the DG method. It includes the following topics.
+<ol>
+  <li> Discretization of the linear advection equation with the DG method.
+  <li> Assembling of jump terms and other expressions on the interface between cells using FEInterfaceValues.
+  <li> Assembling of the system matrix using the MeshWorker::mesh_loop().
+</ol>
+
+The particular concern of this program are the loops of DG methods. These turn
+out to be especially complex, primarily because for the face terms, we have to
+distinguish the cases of boundary, regular interior faces and interior faces
+with hanging nodes, respectively. The MeshWorker::mesh_loop() handles the
+complexity on iterating over cells and faces and allows specifying "workers"
+for the different cell and face terms. The integration of face terms itself,
+including on adaptively refined faces, is done using the FEInterfaceValues
+class.
+
+<h3>The equation</h3>
+
+The model problem solved in this example is the linear advection equation
+@f[
+  \nabla\cdot \left({\mathbf \beta} u\right)=0 \qquad\mbox{in }\Omega,
+@f]
+subject to the boundary conditions
+@f[
+u=g\quad\mbox{on }\Gamma_-,
+@f]
+on the inflow part $\Gamma_-$ of the boundary $\Gamma=\partial\Omega$
+of the domain.  Here, ${\mathbf \beta}={\mathbf \beta}({\bf x})$ denotes a
+vector field, $u$ the (scalar) solution
+function, $g$ a boundary value function,
+@f[
+\Gamma_- \dealcoloneq \{{\bf x}\in\Gamma, {\mathbf \beta}({\bf x})\cdot{\bf n}({\bf x})<0\}
+@f]
+the inflow part of the boundary of the domain and ${\bf n}$ denotes
+the unit outward normal to the boundary $\Gamma$. This equation is the
+conservative version of the advection equation already considered in
+step-9 of this tutorial.
+
+
+On each cell $T$, we multiply by a test function $v_h$ from the left and integrate by parts
+to get:
+@f[
+  \left( v_h, \nabla \cdot (\beta u_h) \right)_T
+= -(\nabla v_h, \beta u_h) + \int_\Gamma v_h u_h \beta \cdot n
+@f]
+When summing this expression over all cells $T$, the boundary integral is done over
+all internal and external faces and as such there are three cases:
+<ol>
+<li> outer boundary on the inflow (we replace $u_h$ by given $g$):
+  $\int_{\Gamma_-} v_h g \beta \cdot n$
+<li> outer boundary on the outflow:
+  $\int_{\Gamma_+} v_h u_h \beta \cdot n$
+<li> inner faces (integral from two sides turns into jump, we use the upwind velocity):
+  $\int_F [v_h] u_h^{\text{upwind}} \beta \cdot n$
+</ol>
+
+Here, the jump is defined as $[v] = v^+ - v^-$, where the superscripts refer
+to the left ('+') and right ('-') values at the face. The upwind value
+$u^{\text{upwind}}$ is defined to be $u^+$ if $\beta \cdot n>0$ and $u^-$ otherwise.
+
+As a result, the mesh-dependent weak form reads:
+@f[
+\sum_{T\in \mathbb T_h} -\bigl(\nabla \phi_i,{\mathbf \beta}\cdot \phi_j \bigr)_T +
+\sum_{F\in\mathbb F_h^i} \bigl< [\phi_i], \phi_j^{upwind} \beta\cdot \mathbf n\bigr>_{F} +
+\bigl<\phi_i, \phi_j \beta\cdot \mathbf n\bigr>_{\Gamma_+}
+= -\bigl<\phi_i, g \beta\cdot\mathbf n\bigr>_{\Gamma_-}.
+@f]
+Here, $\mathbb T_h$ is the set of all active cells of the triangulation
+and $\mathbb F_h^i$ is the set of all active interior faces. This formulation
+is known as the upwind discontinuous Galerkin method.
+
+In order to implement this bilinear form, we need to compute the cell terms
+(first sum) using the usual way to achieve integration on a cell, the interface terms (second sum) using
+FEInterfaceValues, and the boundary terms (the other two terms).
+The summation of all those is done by MeshWorker::mesh_loop().
+
+
+
+<h3>The test problem</h3>
+
+We solve the advection equation on
+$\Omega=[0,1]^2$ with ${\mathbf \beta}=\frac{1}{|x|}(-x_2, x_1)$
+representing a circular counterclockwise flow field, and $g=1$
+on ${\bf x}\in\Gamma_-^1 := [0,0.5]\times\{0\}$ and $g=0$ on ${\bf x}\in
+\Gamma_-\setminus \Gamma_-^1$.
+
+We solve on a sequence of meshes by refining the mesh adaptively by estimating
+the norm of the gradient on each cell. After solving on each mesh, we output
+the solution in vtk format and compute the $L^\infty$ norm of the solution. As
+the exact solution is either 0 or 1, we can measure the magnitude of the
+overshoot of the numerical solution with this.
+
+
+examples/step-12/doc/results.dox
+<h1>Results</h1>
+
+
+The output of this program consist of the console output and
+solutions in vtk format:
+@code
+Cycle 0
+  Number of active cells:       64
+  Number of degrees of freedom: 256
+  Solver converged in 4 iterations.
+  Writing solution to <solution-0.vtk>
+  L-infinity norm: 1.09057
+Cycle 1
+  Number of active cells:       112
+  Number of degrees of freedom: 448
+  Solver converged in 9 iterations.
+  Writing solution to <solution-1.vtk>
+  L-infinity norm: 1.10402
+Cycle 2
+  Number of active cells:       214
+  Number of degrees of freedom: 856
+  Solver converged in 16 iterations.
+  Writing solution to <solution-2.vtk>
+  L-infinity norm: 1.09813
+Cycle 3
+  Number of active cells:       415
+  Number of degrees of freedom: 1660
+  Solver converged in 26 iterations.
+  Writing solution to <solution-3.vtk>
+  L-infinity norm: 1.09579
+Cycle 4
+  Number of active cells:       796
+  Number of degrees of freedom: 3184
+  Solver converged in 44 iterations.
+  Writing solution to <solution-4.vtk>
+  L-infinity norm: 1.09612
+Cycle 5
+  Number of active cells:       1561
+  Number of degrees of freedom: 6244
+  Solver converged in 81 iterations.
+  Writing solution to <solution-5.vtk>
+@endcode
+
+We show the solutions on the initial mesh, the mesh after two
+and after five adaptive refinement steps.
+
+<img src="https://www.dealii.org/images/steps/developer/step-12.sol-0.png" alt="">
+<img src="https://www.dealii.org/images/steps/developer/step-12.sol-2.png" alt="">
+<img src="https://www.dealii.org/images/steps/developer/step-12.sol-5.png" alt="">
+
+And finally we show a plot of a 3d computation.
+
+<img src="https://www.dealii.org/images/steps/developer/step-12.sol-5-3d.png" alt="">
+
+
+<a name="dg-vs-cg"></a>
+<h3>Why use discontinuous elements</h3>
+
+In this program we have used discontinuous elements. It is a legitimate
+question to ask why not simply use the normal, continuous ones. Of course, to
+everyone with a background in numerical methods, the answer is obvious: the
+continuous Galerkin (cG) method is not stable for the transport equation,
+unless one specifically adds stabilization terms. The DG method, however,
+<i>is</i> stable. Illustrating this with the current program is not very
+difficult; in fact, only the following minor modifications are necessary:
+- Change the element to FE_Q instead of FE_DGQ.
+- Add handling of hanging node constraints in exactly the same way as step-6.
+- We need a different solver; the direct solver in step-29 is a convenient
+  choice.
+An experienced deal.II user will be able to do this in less than 10 minutes.
+
+While the 2d solution has been shown above, containing a number of small
+spikes at the interface that are, however, stable in height under mesh
+refinement, results look much different when using a continuous element:
+
+<table align="center">
+  <tr>
+    <td valign="top">
+      0 &nbsp;
+    </td>
+    <td valign="top">
+      <img src="https://www.dealii.org/images/steps/developer/step-12.cg.sol-0.png" alt="">
+    </td>
+    <td valign="top">
+      1 &nbsp;
+    </td>
+    <td valign="top">
+      <img src="https://www.dealii.org/images/steps/developer/step-12.cg.sol-1.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      2 &nbsp;
+    </td>
+    <td valign="top">
+      <img src="https://www.dealii.org/images/steps/developer/step-12.cg.sol-2.png" alt="">
+    </td>
+    <td valign="top">
+      3 &nbsp;
+    </td>
+    <td valign="top">
+      <img src="https://www.dealii.org/images/steps/developer/step-12.cg.sol-3.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      4 &nbsp;
+    </td>
+    <td valign="top">
+      <img src="https://www.dealii.org/images/steps/developer/step-12.cg.sol-4.png" alt="">
+    </td>
+    <td valign="top">
+      5 &nbsp;
+    </td>
+    <td valign="top">
+      <img src="https://www.dealii.org/images/steps/developer/step-12.cg.sol-5.png" alt="">
+    </td>
+  </tr>
+</table>
+
+In refinement iteration 5, the image can't be plotted in a reasonable way any
+more as a 3d plot. We thus show a color plot with a range of $[-1,2]$ (the
+solution values of the exact solution lie in $[0,1]$, of course). In any case,
+it is clear that the continuous Galerkin solution exhibits oscillatory
+behavior that gets worse and worse as the mesh is refined more and more.
+
+There are a number of strategies to stabilize the cG method, if one wants to
+use continuous elements for some reason. Discussing these methods is beyond
+the scope of this tutorial program; an interested reader could, for example,
+take a look at step-31.
+
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+Given that the exact solution is known in this case, one interesting
+avenue for further extensions would be to confirm the order of
+convergence for this program. In the current case, the solution is
+non-smooth, and so we can not expect to get a particularly high order
+of convergence, even if we used higher order elements. But even if the
+solution <i>is</i> smooth, the equation is not elliptic and so it is not
+immediately clear that we should obtain a convergence order that
+equals that of the optimal interpolation estimates (i.e. for example
+that we would get $h^3$ convergence in the $L^2$ norm by using
+quadratic elements).
+
+In fact, for hyperbolic equations, theoretical predictions often
+indicate that the best one can hope for is an order one half below the
+interpolation estimate. For example, for the streamline diffusion
+method (an alternative method to the DG method used here to stabilize
+the solution of the transport equation), one can prove that for
+elements of degree $p$, the order of convergence is $p+\frac 12$ on
+arbitrary meshes. While the observed order is frequently $p+1$ on
+uniformly refined meshes, one can construct so-called Peterson meshes
+on which the worse theoretical bound is actually attained. This should
+be relatively simple to verify, for example using the
+VectorTools::integrate_difference function.
+
+A different direction is to observe that the solution of transport problems
+often has discontinuities and that therefore a mesh in which we <i>bisect</i>
+every cell in every coordinate direction may not be optimal. Rather, a better
+strategy would be to only cut cells in the direction parallel to the
+discontinuity. This is called <i>anisotropic mesh refinement</i> and is the
+subject of step-30.
+
+

@@ -1,4 +1,6 @@
 #!/bin/bash
+# coding=UTF-8
+
 # ./translator_debug.sh >> translator1.log 
 # 输出到log目的：是滤掉一些无关到输出信息，只留下assertError输出到信息
 

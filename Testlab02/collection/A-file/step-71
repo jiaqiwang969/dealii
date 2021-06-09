@@ -1,0 +1,1018 @@
+examples/step-71/doc/intro.dox
+<br>
+
+<i>This program was contributed by Jean-Paul Pelteret.
+</i>
+
+
+<h1>Introduction</h1>
+
+The aim of this tutorial is, quite simply, to introduce the fundamentals of both
+[automatic](https://en.wikipedia.org/wiki/Automatic_differentiation)
+and [symbolic differentiation](https://en.wikipedia.org/wiki/Computer_algebra)
+(respectively abbreviated as AD
+and SD): Ways in which one can, in source code, describe a function
+$\mathbf f(\mathbf x)$ and automatically also obtain a representation of derivatives
+$\nabla \mathbf f(\mathbf x)$ (the "Jacobian"),
+$\nabla^2 \mathbf f(\mathbf x)$ (the "Hessian"), etc., without having
+to write additional lines of code. Doing this is quite helpful in
+solving nonlinear or optimization problems where one would like to
+only describe the nonlinear equation or the objective function in the
+code, without having to also provide their derivatives (which are
+necessary for a Newton method for solving a nonlinear problem, or for
+finding a minimizer).
+
+Since AD and SD tools are somewhat independent of finite elements and boundary value
+problems, this tutorial is going to be different to the others that you may have
+read beforehand. It will focus specifically on how these frameworks work and
+the principles and thinking behind them, and will forgo looking at them in the
+direct context of a finite element simulation.
+
+We will, in fact, look at two different sets of problems that have greatly
+different levels of complexity, but when framed properly hold sufficient
+similarity that the same AD and SD frameworks can be leveraged. With these
+examples the aim is to build up an understanding of the steps that are required
+to use the AD and SD tools, the differences between them, and hopefully identify
+where they could be immediately be used in order to improve or simplify existing
+code.
+
+It's plausible that you're wondering what AD and SD are, in the first place. Well,
+that question is easy to answer but without context is not very insightful. So
+we're not going to cover that in this introduction, but will rather defer this
+until the first introductory example where we lay out the key points as this
+example unfolds. To complement this, we should mention that the core theory for
+both frameworks is extensively discussed in the @ref auto_symb_diff module, so
+it bears little repeating here.
+
+Since we have to pick *some* sufficiently interesting topic to investigate
+and identify where AD and SD can be used effectively, the main problem that's
+implemented in the second half of the tutorial is one of modeling a coupled
+constitutive law, specifically a magneto-active material (with hysteretic effects).
+As a means of an introduction to that, later in the introduction some grounding
+theory for that class of materials will be presented.
+Naturally, this is not a field (or even a class of materials) that is of
+interest to a wide audience. Therefore, the author wishes to express up front
+that this theory and any subsequent derivations mustn't be considered the focus
+of this tutorial. Instead, keep in mind the complexity of the problem that arises
+from the relatively innocuous description of the constitutive law, and what we
+might (in the context of a boundary value problem) need to derive from that.
+We will perform some computations with these constitutive laws at the level of a
+representative continuum point (so, remaining in the  realm of continuum
+mechanics), and will produce some benchmark results around which we can frame
+a final discussion on the topic of computational performance.
+
+Once we have the foundation upon which we can build further concepts, we
+will see how AD in particular can be exploited at a finite element (rather than
+continuum) level: this is a topic that is covered in step-72, as well as step-33.
+But before then, let's take a moment to think about why we might want to consider
+using these sorts of tools, and what benefits they can potentially offer you.
+
+
+<h3>A motivation: Why would I use these tools?</h3>
+
+The primary driver for using AD or SD is typically that there is some situation
+that requires differentiation to be performed, and that doing so is sufficiently
+challenging to make the prospect of using an external tool to perform that specific
+task appealing. A broad categorization for the circumstances under which AD or
+SD can be rendered most useful include (but are probably not limited to) the
+following:
+- <b>Rapid prototyping:</b> For a new class of problems where you're trying to
+  implement a solution quickly, and want to remove some of the intricate details
+  (in terms of both the mathematics as well as the organizational structure of
+  the code itself). You might be willing to justify any additional computational
+  cost, which would be offset by an increased agility in restructuring your code
+  or modifying the part of the problem that is introducing some complex nonlinearity
+  with minimal effort.
+- <b>Complex problems:</b> It could very well be that some problems just happen to have
+  a nonlinearity that is incredibly challenging to linearize or formulate by hand.
+  Having this challenge taken care of for you by a tool that is, for the most part,
+  robust, reliable, and accurate may alleviate some of the pains in implementing
+  certain problems. Examples of this include step-15, where the
+  derivative of the nonlinear PDE we solve is not incredibly difficult
+  to derive, but sufficiently cumbersome that one has to pay attention
+  in doing so by hand, and where implementing the corresponding finite
+  element formulation of the Newton step takes more than just the few
+  lines that it generally takes to implement the bilinear form;
+  step-33 (where we actually use AD) is an even more extreme example.
+- <b>Verification:</b> For materials and simulations that exhibit nonlinear response,
+  an accurate rather than only approximate material tangent (the term mechanical engineers use for
+  the derivative of a material law) can be the difference between convergent and
+  divergent behavior, especially at high external (or coupling) loads.
+  As the complexity of the problem increases, so do the opportunities to introduce
+  subtle (or, perhaps, not-so-subtle) errors that produce predictably negative
+  results.
+  Additionally, there is a lot to be gained by verifying that the implementation is
+  completely correct. For example, certain categories of problems are known to exhibit
+  instabilities, and therefore when you start to lose quadratic convergence in a
+  nonlinear solver (e.g., Newton's method) then this may not be a huge surprise to
+  the investigator. However, it is hard (if not impossible) to distinguish between
+  convergence behavior that is produced as you near an unstable solution and when
+  you simply have an error in the material or finite element linearization, and
+  start to drift off the optimal convergence path due to that. Having a
+  method of verifying the correctness of the implementation of a constitutive law
+  linearization, for example, is perhaps the only meaningful way that you can
+  use to catch such errors, assuming that you've got nobody else to scrutinize your code.
+  Thankfully, with some tactical programming it is quite straight-forward to structure
+  a code for reuse, such that you can use the same classes in production code and
+  directly verify them in, for instance, a unit-test framework.
+
+This tutorial program will have two parts: One where we just introduce
+the basic ideas of automatic and symbolic differentiation support in
+deal.II using a simple set of examples; and one where we apply this to
+a realistic but much more complicated case. For that second half, the
+next section will provide some background on magneto-mechanical
+materials -- you can skip this section if all you want to learn
+about is what AD and SD actually are, but you probably want to read
+over this section if you are interested in how to apply AD and SD for
+concrete situations.
+
+
+<h3>Theory for magneto-mechanical materials</h3>
+
+<h4>Thermodynamic principles</h4>
+
+As a prelude to introducing the coupled magneto-mechanical material law that we'll use
+to model a magneto-active polymer, we'll start with a very concise summary of
+the salient thermodynamics to which these constitutive laws must subscribe.
+The basis for the theory, as summarized here, is described in copious detail by
+Truesdell and Toupin @cite Truesdell1960a and Coleman and Noll @cite Coleman1963a,
+and follows the logic laid out by Holzapfel @cite Holzapfel2007a.
+
+Starting from the first law of thermodynamics, and following a few technical
+assumptions, it can be shown the the balance between the kinetic plus internal
+energy rates and the power supplied to the system from external
+sources is given by the following relationship that equates the rate
+of change of the energy in an (arbitrary) volume $V$ on the left, and
+the sum of forces acting on that volume on the right:
+@f[
+  D_{t} \int\limits_{V} \left[
+    \frac{1}{2} \rho_{0} \mathbf{v} \cdot \mathbf{v}
+    + U^{*}_{0} \right] dV
+= \int\limits_{V} \left[
+  \rho_{0} \mathbf{v} \cdot \mathbf{a}
+  + \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  + \mathbb{E} \cdot \dot{\mathbb{D}}
+  - D_{t} M^{*}_{0}
+  - \nabla_{0} \cdot \mathbf{Q}
+  + R_{0} \right] dV .
+@f]
+Here $D_{t}$ represents the total time derivative,
+$\rho_{0}$ is the material density as measured in the Lagrangian reference frame,
+$\mathbf{v}$ is the material velocity and $\mathbf{a}$ its acceleration,
+$U^{*}_{0}$ is the internal energy per unit reference volume,
+$\mathbf{P}^{\text{tot}}$ is the total Piola stress tensor and $\dot{\mathbf{F}}$ is
+the time rate of the deformation gradient tensor,
+$\boldsymbol{\mathbb{H}}$ and $\boldsymbol{\mathbb{B}}$ are, respectively, the magnetic field vector and the
+magnetic induction (or magnetic flux density) vector,
+$\mathbb{E}$ and $\mathbb{D}$ are the electric field vector and electric
+displacement vector, and
+$\mathbf{Q}$ and $R_{0}$ represent the referential thermal flux vector and thermal
+source.
+The material differential operator
+$\nabla_{0} (\bullet) \dealcoloneq \frac{d(\bullet)}{d\mathbf{X}}$
+where $\mathbf{X}$ is the material position vector.
+With some rearrangement of terms, invoking the arbitrariness of the integration
+volume $V$, the total internal energy density rate $\dot{E}_{0}$ can be identified as
+@f[
+  \dot{E}_{0}
+= \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  + \mathbb{E} \cdot \dot{\mathbb{D}}
+  - \nabla_{0} \cdot \mathbf{Q}
+  + R_{0} .
+@f]
+The total internal energy includes contributions that arise not only due to
+mechanical deformation (the first term), and thermal fluxes and sources (the
+fourth and fifth terms), but also due to the intrinsic energy stored in the
+magnetic and electric fields themselves (the second and third terms,
+respectively).
+
+The second law of thermodynamics, known also as the entropy inequality principle,
+informs us that certain thermodynamic processes are irreversible. After accounting
+for the total entropy and rate of entropy input, the Clausius-Duhem inequality
+can be derived. In local form (and in the material configuration), this reads
+@f[
+  \theta \dot{\eta}_{0}
+  - R_{0}
+  + \nabla_{0} \cdot \mathbf{Q}
+  - \frac{1}{\theta} \nabla_{0} \theta \cdot \mathbf{Q}
+  \geq 0 .
+@f]
+The quantity $\theta$ is the absolute temperature, and
+$\eta_{0}$ represents the entropy per unit reference volume.
+
+Using this to replace $R_{0} - \nabla_{0} \cdot \mathbf{Q}$ in the result
+stemming from the first law of thermodynamics, we now have the relation
+@f[
+  \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  + \mathbb{E} \cdot \dot{\mathbb{D}}
+  + \theta \dot{\eta}_{0}
+  - \dot{E}_{0}
+  - \frac{1}{\theta} \nabla_{0} \theta \cdot \mathbf{Q}
+  \geq 0 .
+@f]
+On the basis of Fourier's law, which informs us that heat flows from regions
+of high temperature to low temperature, the last term is always positive and
+can be ignored.
+This renders the local dissipation inequality
+@f[
+  \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  + \mathbb{E} \cdot \dot{\mathbb{D}}
+  - \left[ \dot{E}_{0} - \theta \dot{\eta}_{0}  \right]
+  \geq 0 .
+@f]
+It is postulated @cite Holzapfel2007a that the Legendre transformation
+@f[
+  \psi^{*}_{0}
+= \psi^{*}_{0} \left( \mathbf{F}, \boldsymbol{\mathbb{B}}, \mathbb{D}, \theta \right)
+= E_{0} - \theta \eta_{0} ,
+@f]
+from which we may define the free energy density function $\psi^{*}_{0}$ with the stated
+parameterization, exists and is valid.
+Taking the material rate of this equation and substituting it into the local
+dissipation inequality results in the generic expression
+@f[
+  \mathcal{D}_{\text{int}}
+  = \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  + \mathbb{E} \cdot \dot{\mathbb{D}}
+  - \dot{\theta} \eta_{0}
+  - \dot{\psi}^{*}_{0} \left( \mathbf{F}, \boldsymbol{\mathbb{B}}, \mathbb{D}, \theta \right)
+  \geq 0 .
+@f]
+Under the assumption of isothermal conditions, and that the electric field does
+not excite the material in a manner that is considered non-negligible, then this
+dissipation inequality reduces to
+@f[
+  \mathcal{D}_{\text{int}}
+  = \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  - \dot{\psi}^{*}_{0} \left( \mathbf{F}, \boldsymbol{\mathbb{B}} \right)
+  \geq 0 .
+@f]
+
+<h4>Constitutive laws</h4>
+
+When considering materials that exhibit mechanically dissipative behavior,
+it can be shown that this can be captured within the dissipation inequality
+through the augmentation of the material free energy density function with additional
+parameters that represent internal variables @cite Holzapfel1996a. Consequently,
+we write it as
+@f[
+  \mathcal{D}_{\text{int}}
+  = \mathbf{P}^{\text{tot}} : \dot{\mathbf{F}}
+  + \boldsymbol{\mathbb{H}} \cdot \dot{\boldsymbol{\mathbb{B}}}
+  - \dot{\psi}^{*}_{0} \left( \mathbf{F}, \mathbf{F}_{v}^{i}, \boldsymbol{\mathbb{B}} \right)
+  \geq 0 .
+@f]
+where $\mathbf{F}_{v}^{i} = \mathbf{F}_{v}^{i} \left( t \right)$ represents the
+internal variable (which acts like a measure of the deformation gradient)
+associated with the `i`th mechanical dissipative (viscous) mechanism.
+As can be inferred from its parameterization, each of these internal parameters
+is considered to evolve in time.
+Currently the free energy density function $\psi^{*}_{0}$ is parameterized in terms of
+the magnetic induction $\boldsymbol{\mathbb{B}}$. This is the natural parameterization that
+comes as a consequence of the considered balance laws. Should such a class of
+materials to be incorporated within a finite-element model, it would be ascertained
+that a certain formulation of the magnetic problem, known as the magnetic vector
+potential formulation, would need to be adopted. This has its own set of challenges,
+so where possible the more simple magnetic scalar potential formulation may be
+preferred. In that case, the magnetic problem needs to be parameterized in terms
+of the magnetic field $\boldsymbol{\mathbb{H}}$. To make this re-parameterization, we execute
+a final Legendre transformation
+@f[
+  \tilde{\psi}_{0} \left( \mathbf{F}, \mathbf{F}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  = \psi^{*}_{0} \left( \mathbf{F}, \mathbf{F}_{v}^{i}, \boldsymbol{\mathbb{B}} \right)
+  - \boldsymbol{\mathbb{H}} \cdot \boldsymbol{\mathbb{B}} .
+@f]
+At the same time, we may take advantage of the principle of material frame
+indifference in order to express the energy density function in terms of symmetric
+deformation measures:
+@f[
+  \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  = \tilde{\psi}_{0} \left( \mathbf{F}, \mathbf{F}_{v}^{i}, \boldsymbol{\mathbb{H}} \right) .
+@f]
+The upshot of these two transformations (leaving out considerable explicit and
+hidden details) renders the final expression for the reduced dissipation
+inequality as
+@f[
+  \mathcal{D}_{\text{int}}
+  = \mathbf{S}^{\text{tot}} : \frac{1}{2} \dot{\mathbf{C}}
+  - \boldsymbol{\mathbb{B}} \cdot \dot{\boldsymbol{\mathbb{H}}}
+  - \dot{\psi}_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  \geq 0 .
+@f]
+(Notice the sign change on the second term on the right hand side, and the
+transfer of the time derivative to the magnetic induction vector.)
+The stress quantity $\mathbf{S}^{\text{tot}}$ is known as the total Piola-Kirchhoff
+stress tensor and its energy conjugate $\mathbf{C} = \mathbf{F}^{T} \cdot \mathbf{F}$
+is the right Cauchy-Green deformation tensor, and
+$\mathbf{C}_{v}^{i} = \mathbf{C}_{v}^{i} \left( t \right)$ is the re-parameterized
+internal variable associated with the `i`th mechanical dissipative (viscous)
+mechanism.
+
+Expansion of the material rate of the energy density function, and rearrangement of the
+various terms, results in the expression
+@f[
+  \mathcal{D}_{\text{int}}
+  = \left[ \mathbf{S}^{\text{tot}} - 2 \frac{\partial \psi_{0}}{\partial \mathbf{C}} \right] : \frac{1}{2} \dot{\mathbf{C}}
+  - \sum\limits_{i}\left[ 2 \frac{\partial \psi_{0}}{\partial \mathbf{C}_{v}^{i}} \right] : \frac{1}{2} \dot{\mathbf{C}}_{v}^{i}
+  + \left[ - \boldsymbol{\mathbb{B}} - \frac{\partial \psi_{0}}{\partial \boldsymbol{\mathbb{H}}} \right] \cdot \dot{\boldsymbol{\mathbb{H}}}
+  \geq 0 .
+@f]
+At this point, its worth noting the use of the
+[partial derivatives](https://en.wikipedia.org/wiki/Partial_derivative)
+$\partial \left( \bullet \right)$. This is an important detail that will be
+fundamental to a certain design choice made within the tutorial.
+As brief reminder of what this signifies, the partial derivative of a
+multi-variate function returns the derivative of that function with respect
+to one of those variables while holding the others constant:
+@f[
+  \frac{\partial f\left(x, y\right)}{\partial x}
+  = \frac{d f\left(x, y\right)}{d x} \Big\vert_{y} .
+@f]
+More specific to what's encoded in the dissipation inequality (with the very general
+free energy density function $\psi_{0}$ with its parameterization yet to be formalized),
+if one of the input variables is a function of another, it is also held constant
+and the chain rule does not propagate any further, while the computing total
+derivative would imply judicious use of the chain rule. This can be better
+understood by comparing the following two statements:
+@f{align*}
+  \frac{\partial f\left(x, y\left(x\right)\right)}{\partial x}
+  &= \frac{d f\left(x, y\left(x\right)\right)}{d x} \Big\vert_{y} \\
+  \frac{d f\left(x, y\left(x\right)\right)}{d x}
+  &= \frac{d f\left(x, y\left(x\right)\right)}{d x} \Big\vert_{y}
+   + \frac{d f\left(x, y\left(x\right)\right)}{d y} \Big\vert_{x} \frac{d y\left(x\right)}{x} .
+@f}
+
+Returning to the thermodynamics of the problem, we next exploit the arbitrariness
+of the quantities $\dot{\mathbf{C}}$ and $\dot{\boldsymbol{\mathbb{H}}}$,
+by application of the Coleman-Noll procedure @cite Coleman1963a, @cite Coleman1967a.
+This leads to the identification of the kinetic conjugate quantities
+@f[
+  \mathbf{S}^{\text{tot}}
+  = \mathbf{S}^{\text{tot}} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  \dealcoloneq 2 \frac{\partial \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)}{\partial \mathbf{C}} , \\
+  \boldsymbol{\mathbb{B}}
+  = \boldsymbol{\mathbb{B}} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  \dealcoloneq - \frac{\partial \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)}{\partial \boldsymbol{\mathbb{H}}} .
+@f]
+(Again, note the use of the partial derivatives to define the stress and magnetic
+induction in this generalized setting.)
+From what terms remain in the dissipative power (namely those related to the
+mechanical dissipative mechanisms), if they are assumed to be independent of
+one another then, for each mechanism `i`,
+@f[
+  \frac{\partial \psi_{0}}{\partial \mathbf{C}_{v}^{i}} : \dot{\mathbf{C}}_{v}^{i}
+  \leq 0 .
+@f]
+This constraint must be satisfied through the appropriate choice of free energy
+function, as well as a carefully considered evolution law for the internal
+variables.
+
+In the case that there are no dissipative mechanisms to be captured within the
+constitutive model (e.g., if the material to be modelled is magneto-hyperelastic)
+then the free energy density function
+$\psi_{0} = \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)$ reduces to a stored
+energy density function, and the total stress and magnetic induction can be simplified
+@f{align*}{
+  \mathbf{S}^{\text{tot}}
+  = \mathbf{S}^{\text{tot}} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+  &\dealcoloneq 2 \frac{d \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)}{d \mathbf{C}} , \\
+  \boldsymbol{\mathbb{B}}
+  = \boldsymbol{\mathbb{B}} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+  &\dealcoloneq - \frac{d \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)}{d \boldsymbol{\mathbb{H}}} ,
+@f}
+where the operator $d$ denotes the total derivative operation.
+
+For completeness, the linearization of the stress tensor and magnetic induction
+are captured within the fourth-order total referential elastic tangent tensor
+$\mathcal{H}^{\text{tot}} $, the second-order magnetostatic tangent tensor $\mathbb{D}$ and the
+third-order total referential magnetoelastic coupling tensor $\mathfrak{P}^{\text{tot}}$.
+Irrespective of the parameterization of $\mathbf{S}^{\text{tot}}$ and $\boldsymbol{\mathbb{B}}$,
+these quantities may be computed by
+@f{align*}{
+  \mathcal{H}^{\text{tot}}
+  &= 2 \frac{d \mathbf{S}^{\text{tot}}}{d \mathbf{C}} , \\
+  \mathbb{D}
+  &= \frac{d \boldsymbol{\mathbb{B}}}{d \boldsymbol{\mathbb{H}}} , \\
+  \mathfrak{P}^{\text{tot}}
+  &= - \frac{d \mathbf{S}^{\text{tot}}}{d \boldsymbol{\mathbb{H}}} , \\
+  \left[ \mathfrak{P}^{\text{tot}} \right]^{T}
+  &= 2 \frac{d \boldsymbol{\mathbb{B}}}{d \mathbf{C}} .
+@f}
+For the case of rate-dependent materials, this expands to
+@f{align*}{
+  \mathcal{H}^{\text{tot}} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  &= 4 \frac{d^{2} \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)}{\partial \mathbf{C} \otimes d \mathbf{C}} , \\
+  \mathbb{D} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  &= -\frac{d^{2} \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)}{\partial \boldsymbol{\mathbb{H}} \otimes d \boldsymbol{\mathbb{H}}} , \\
+  \mathfrak{P}^{\text{tot}} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)
+  &= - 2 \frac{d^{2} \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)}{\partial \boldsymbol{\mathbb{H}} \otimes d \mathbf{C}} , \\
+  \left[ \mathfrak{P}^{\text{tot}} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)  \right]^{T}
+  &= - 2 \frac{d^{2} \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}^{i}, \boldsymbol{\mathbb{H}} \right)}{\partial \mathbf{C} \otimes d \boldsymbol{\mathbb{H}}} ,
+@f}
+while for rate-independent materials the linearizations are
+@f{align*}{
+  \mathcal{H}^{\text{tot}} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+  &= 4 \frac{d^{2} \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)}{d \mathbf{C} \otimes d \mathbf{C}} , \\
+  \mathbb{D} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+  &= -\frac{d^{2} \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)}{d \boldsymbol{\mathbb{H}} \otimes d \boldsymbol{\mathbb{H}}} , \\
+  \mathfrak{P}^{\text{tot}} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+  &= - 2 \frac{d^{2} \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)}{d \boldsymbol{\mathbb{H}} \otimes d \mathbf{C}} , \\
+  \left[ \mathfrak{P}^{\text{tot}} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)  \right]^{T}
+  &= - 2 \frac{d^{2} \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)}{d \mathbf{C} \otimes d \boldsymbol{\mathbb{H}}} .
+@f}
+The subtle difference between them is the application of a partial derivative during
+the calculation of the first derivatives. We'll see later how this affects the choice
+of AD versus SD for this specific application. For now, we'll simply introduce
+the two specific materials that are implemented within this tutorial.
+
+<h5>Magnetoelastic constitutive law</h5>
+
+The first material that we'll consider is one that is governed by a
+magneto-hyperelastic constitutive law. This material responds to both
+deformation as well as immersion in a magnetic field, but exhibits no
+time- or history-dependent behavior (such as dissipation through viscous
+damping or magnetic hysteresis, etc.). The *stored energy density
+function* for such a material is only parameterized in terms of the
+(current) field variables, but not their time derivatives or past values.
+
+We'll choose the energy density function, which captures both the energy
+stored in the material due to deformation and magnetization, as well as
+the energy stored in the magnetic field itself, to be
+@f[
+  \psi_{0} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+= \frac{1}{2} \mu_{e} f_{\mu_{e}} \left( \boldsymbol{\mathbb{H}} \right)
+    \left[ \text{tr}(\mathbf{C}) - d - 2 \ln (\text{det}(\mathbf{F}))
+    \right]
++ \lambda_{e} \ln^{2} \left(\text{det}(\mathbf{F}) \right)
+- \frac{1}{2} \mu_{0} \mu_{r} \text{det}(\mathbf{F})
+    \left[ \boldsymbol{\mathbb{H}} \cdot \mathbf{C}^{-1} \cdot
+    \boldsymbol{\mathbb{H}} \right]
+@f]
+with
+@f[
+  f_{\mu_{e}} \left( \boldsymbol{\mathbb{H}} \right)
+= 1 + \left[ \frac{\mu_{e}^{\infty}}{\mu_{e}} - 1 \right]
+    \tanh \left( 2 \frac{\boldsymbol{\mathbb{H}} \cdot
+    \boldsymbol{\mathbb{H}}}
+      {\left(h_{e}^{\text{sat}}\right)^{2}} \right)
+@f]
+and for which the variable $d = \text{tr}(\mathbf{I})$ ($\mathbf{I}$
+being the rank-2 identity tensor) represents the spatial dimension and
+$\mathbf{F}$ is the deformation gradient tensor. To give some brief
+background to the various components of $\psi_{0}$, the first two terms
+bear a great resemblance to the stored energy density function for a
+(hyperelastic) Neohookean material. The only difference between what's
+used here and the Neohookean material is the scaling of the elastic shear
+modulus by the magnetic field-sensitive saturation function $f_{\mu_{e}}
+\left( \boldsymbol{\mathbb{H}} \right)$ (see @cite Pelteret2018a, equation
+29). This function will, in effect, cause the material to stiffen in the
+presence of a strong magnetic field. As it is governed by a sigmoid-type
+function, the shear modulus will asymptotically converge on the specified
+saturation shear modulus. It can also be shown that the last term in
+$\psi_{0}$ is the stored energy density function for magnetic field (as
+derived from first principles), scaled by the relative permeability
+constant. This definition collectively implies that the material is
+linearly magnetized, i.e., the magnetization vector and magnetic field
+vector are aligned. (This is certainly not obvious with the magnetic energy
+stated in its current form, but when the magnetic induction and magnetization
+are derived from $\psi_{0}$ and all magnetic fields are expressed in the
+<em>current configuration</em> then this correlation becomes clear.)
+As for the specifics of what the magnetic induction, stress tensor, and the
+various material tangents look like, we'll defer presenting these to the
+tutorial body where the full, unassisted implementation of the constitutive
+law is defined.
+
+<h5>Magneto-viscoelastic constitutive law</h5>
+
+The second material that we'll formulate is one for a
+magneto-viscoelastic material with a single dissipative mechanism `i`.
+The *free energy density function* that we'll be considering is defined as
+@f{align*}{
+  \psi_{0} \left( \mathbf{C}, \mathbf{C}_{v}, \boldsymbol{\mathbb{H}}
+  \right)
+&= \psi_{0}^{ME} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
++ \psi_{0}^{MVE} \left( \mathbf{C}, \mathbf{C}_{v},
+\boldsymbol{\mathbb{H}} \right)
+\\ \psi_{0}^{ME} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)
+&= \frac{1}{2} \mu_{e} f_{\mu_{e}^{ME}} \left( \boldsymbol{\mathbb{H}}
+\right)
+    \left[ \text{tr}(\mathbf{C}) - d - 2 \ln (\text{det}(\mathbf{F}))
+    \right]
++ \lambda_{e} \ln^{2} \left(\text{det}(\mathbf{F}) \right)
+- \frac{1}{2} \mu_{0} \mu_{r} \text{det}(\mathbf{F})
+    \left[ \boldsymbol{\mathbb{H}} \cdot \mathbf{C}^{-1} \cdot
+    \boldsymbol{\mathbb{H}} \right]
+\\ \psi_{0}^{MVE} \left( \mathbf{C}, \mathbf{C}_{v},
+\boldsymbol{\mathbb{H}} \right)
+&= \frac{1}{2} \mu_{v} f_{\mu_{v}^{MVE}} \left( \boldsymbol{\mathbb{H}}
+\right)
+    \left[ \mathbf{C}_{v} : \left[
+      \left[\text{det}\left(\mathbf{F}\right)\right]^{-\frac{2}{d}}
+      \mathbf{C} \right] - d - \ln\left(
+      \text{det}\left(\mathbf{C}_{v}\right) \right)  \right]
+@f}
+with
+@f[
+  f_{\mu_{e}}^{ME} \left( \boldsymbol{\mathbb{H}} \right)
+= 1 + \left[ \frac{\mu_{e}^{\infty}}{\mu_{e}} - 1 \right]
+    \tanh \left( 2 \frac{\boldsymbol{\mathbb{H}} \cdot
+    \boldsymbol{\mathbb{H}}}
+      {\left(h_{e}^{\text{sat}}\right)^{2}} \right)
+@f]
+@f[
+  f_{\mu_{v}}^{MVE} \left( \boldsymbol{\mathbb{H}} \right)
+= 1 + \left[ \frac{\mu_{v}^{\infty}}{\mu_{v}} - 1 \right]
+    \tanh \left( 2 \frac{\boldsymbol{\mathbb{H}} \cdot
+    \boldsymbol{\mathbb{H}}}
+      {\left(h_{v}^{\text{sat}}\right)^{2}} \right)
+@f]
+and the evolution law
+@f[
+  \dot{\mathbf{C}}_{v} \left( \mathbf{C} \right)
+= \frac{1}{\tau} \left[
+      \left[\left[\text{det}\left(\mathbf{F}\right)\right]^{-\frac{2}{d}}
+        \mathbf{C}\right]^{-1}
+    - \mathbf{C}_{v} \right]
+@f]
+for the internal viscous variable.
+We've chosen the magnetoelastic part of the energy
+$\psi_{0}^{ME} \left( \mathbf{C}, \boldsymbol{\mathbb{H}} \right)$
+to match that of the first material model that we explored, so this part
+needs no further explanation. As for the viscous part $\psi_{0}^{MVE}$,
+this component of the free energy (in conjunction with the evolution law for
+the viscous deformation tensor) is taken from @cite Linder2011a (with the
+additional scaling by the viscous saturation function described in
+@cite Pelteret2018a). It is derived in a thermodynamically consistent
+framework that, at its core, models the movement of polymer chains on a
+micro-scale level.
+
+To proceed beyond this point, we'll also need to consider the time
+discretization of the evolution law.
+Choosing the implicit first-order backwards difference scheme, then
+@f[
+  \dot{\mathbf{C}}_{v}
+\approx \frac{\mathbf{C}_{v}^{(t)} - \mathbf{C}_{v}^{(t-1)}}{\Delta t}
+= \frac{1}{\tau} \left[
+      \left[\left[\text{det}\left(\mathbf{F}\right)\right]^{-\frac{2}{d}}
+        \mathbf{C}\right]^{-1}
+    - \mathbf{C}_{v}^{(t)} \right]
+@f]
+where the superscript $(t)$ denotes that the quantity is taken at the
+current timestep, and $(t-1)$ denotes quantities taken at the previous
+timestep (i.e., a history variable). The timestep size $\Delta t$ is the
+difference between the current time and that of the previous timestep.
+Rearranging the terms so that all internal variable quantities at the
+current time are on the left hand side of the equation, we get
+@f[
+\mathbf{C}_{v}^{(t)}
+= \frac{1}{1 + \frac{\Delta t}{\tau_{v}}} \left[
+    \mathbf{C}_{v}^{(t-1)}
+  + \frac{\Delta t}{\tau_{v}}
+    \left[\left[\text{det}\left(\mathbf{F}\right)\right]^{-\frac{2}{d}}
+    \mathbf{C} \right]^{-1}
+  \right]
+@f]
+that matches @cite Linder2011a equation 54.
+
+<h3>Rheological experiment</h3>
+
+Now that we have shown all of these formulas for the thermodynamics and theory
+governing magneto-mechanics and constitutive models, let us outline what the
+program will do with all of this.
+We wish to do something *meaningful* with the materials laws that we've formulated,
+and so it makes sense to subject them to some mechanical and magnetic loading
+conditions that are, in some way, representative of some conditions that might
+be found either in an application or in a laboratory setting. One way to achieve
+that aim would be to embed these constitutive laws in a finite element model to
+simulate a device. In this instance, though, we'll keep things simple (we are
+focusing on the automatic and symbolic differentiation concepts, after all)
+and will find a concise way to faithfully replicate an industry-standard
+rheological experiment using an analytical expression for the loading conditions.
+
+The rheological experiment that we'll reproduce,
+which idealizes a laboratory experiment that was used to characterize
+magneto-active polymers, is detailed in @cite Pelteret2018a
+(as well as @cite Pelteret2019a, in which it is documented along with the
+real-world experiments). The images below provide a visual description of
+the problem set up.
+
+<table align="center" class="tutorial" cellspacing="3" cellpadding="3">
+  <tr>
+    <td align="center">
+        <img
+        src="https://www.dealii.org/images/steps/developer/step-71.parallel_plate-geometry.png"
+        alt="" height="300">
+  <p align="center">
+        The basic functional geometry of the parallel-plate rotational
+        rheometer. The smooth rotor (blue) applies a torque to an
+        experimental sample (red) of radius $r$ and height $H$ while an
+        axially aligned magnetic field generated by a a
+        magneto-rheological device. Although the time-dependent
+        deformation profile of the may be varied, one common experiment
+        would be to subject the material to a harmonic torsional
+        deformation of constant amplitude and frequency $\omega$.
+  </p>
+    </td>
+    <td align="center">
+        <img
+        src="https://www.dealii.org/images/steps/developer/step-71.parallel_plate-kinematics.png"
+        alt="" height="300">
+  <p align="center">
+        Schematic of the kinematics of the problem, assuming no
+        preloading or compression of the sample. A point $\mathbf{P}$
+        located at azimuth $\Theta$ is displaced to location $\mathbf{p}$
+        at azimuth $\theta = \Theta + \alpha$.
+  </p>
+    </td>
+  </tr>
+</table>
+
+Under the assumptions that an incompressible medium is being tested,
+and that the deformation profile through the sample thickness is linear,
+then the displacement at some measurement point $\mathbf{X}$ within
+the sample, expressed in radial coordinates, is
+@f{align*}
+  r(\mathbf{X})
+  &= \frac{R(X_{1}, X_{2})}{\sqrt{\lambda_{3}}} , \\
+  \theta(\mathbf{X})
+  & = \Theta(X_{1}, X_{2}) + \underbrace{\tau(t)
+       \lambda_{3} X_{3}}_{\alpha(X_{3}, t)} , \\
+  z(\mathbf{X})
+  &= \lambda_{3} X_{3}
+@f}
+where
+$R(X_{1}, X_{2})$ and $\Theta(X_{1}, X_{2})$ are the radius at
+-- and angle of -- the sampling point,
+$\lambda_{3}$ is the (constant) axial deformation,
+$\tau(t) = \frac{A}{RH} \sin\left(\omega t\right)$ is the time-dependent
+torsion angle per unit length that will be prescribed using a
+sinusoidally repeating oscillation of fixed amplitude $A$.
+The magnetic field is aligned axially, i.e., in the $X_{3}$ direction.
+
+This summarizes everything that we need to fully characterize the idealized
+loading at any point within the rheological sample. We'll set up the problem
+in such a way that we "pick" a representative point with this sample, and
+subject it to a harmonic shear deformation at a constant axial deformation
+(by default, a compressive load) and a constant, axially applied magnetic
+field. We will record the stress and magnetic induction at this point, and
+will output that data to file for post-processing. Although its not necessary
+for this particular problem, we will also be computing the tangents as well.
+Even though they are not directly used in this particular piece of work, these
+second derivatives are needed to embed the constitutive law within a
+finite element model (one possible extension to this work). We'll therefore
+take the opportunity to check our hand calculations for correctness using
+the assisted differentiation frameworks.
+
+<h3>Suggested literature</h3>
+
+In addition to the already mentioned @ref auto_symb_diff module, the following are a few
+references that discuss in more detail
+- magneto-mechanics, and some aspects of automated differentiation frameworks: @cite Pao1978a, @cite Pelteret2019a, and
+- the automation of finite element frameworks using AD and/or SD: @cite Logg2012a, @cite Korelc2016a.
+
+<br>
+
+
+examples/step-71/doc/results.dox
+<h1>Results</h1>
+
+<h3>Introductory example</h3>
+
+The first exploratory example produces the following output. It is verified that
+all three implementations produce identical results.
+@code
+> ./step-71
+Simple example using automatic differentiation...
+... all calculations are correct!
+Simple example using symbolic differentiation.
+... all calculations are correct!
+@endcode
+
+<h3>Constitutive modelling</h3>
+
+To help summarize the results from the virtual experiment itself, below are some
+graphs showing the shear stress, plotted against the shear strain, at a select
+location within the material sample. The plots show the stress-strain curves under
+three different magnetic loads, and for the last cycle of the (mechanical)
+loading profile, when the rate-dependent material reaches a repeatable
+("steady-state") response. These types of graphs are often referred to as
+[Lissajous plots](https://en.wikipedia.org/wiki/Lissajous_curve). The area
+of the ellipse that the curve takes for viscoelastic materials provides some
+measure of how much energy is dissipated by the material, and its ellipticity
+indicates the phase shift of the viscous response with respect to the elastic
+response.
+
+<table align="center" class="tutorial" cellspacing="3" cellpadding="3">
+  <tr>
+     <td align="center">
+        <img src="https://www.dealii.org/images/steps/developer/step-71.lissajous_plot-me.png" alt="" width="400">
+	<p align="center">
+        Lissajous plot for the magneto-elastic material.
+	</p>
+    </td>
+    <td align="center">
+        <img src="https://www.dealii.org/images/steps/developer/step-71.lissajous_plot-mve.png" alt="" width="400">
+	<p align="center">
+        Lissajous plot for the magneto-viscoelastic material.
+	</p>
+    </td>
+  </tr>
+</table>
+
+It is not surprising to see that the magneto-elastic material response has an unloading
+curve that matches the loading curve -- the material is non-dissipative after all.
+But here it's clearly noticeable how the gradient of the curve increases as the
+applied magnetic field increases. The tangent at any point along this curve is
+related to the instantaneous shear modulus and, due to the way that the energy
+density function was defined, we expect that the shear modulus increases as the
+magnetic field strength increases.
+We observe much the same behavior for the magneto-viscoelastic material. The major
+axis of the ellipse traced by the loading-unloading curve has a slope that increases
+as a greater magnetic load is applied. At the same time, the more energy is
+dissipated by the material.
+
+As for the code output, this is what is printed to the console for the part
+pertaining to the rheological experiment conducted with the magnetoelastic
+material:
+@code
+Coupled magnetoelastic constitutive law using automatic differentiation.
+Timestep = 0 @ time = 0s.
+Timestep = 125 @ time = 0.314159s.
+Timestep = 250 @ time = 0.628318s.
+Timestep = 375 @ time = 0.942477s.
+...
+Timestep = 12250 @ time = 30.7876s.
+Timestep = 12375 @ time = 31.1018s.
+Timestep = 12500 @ time = 31.4159s.
+... all calculations are correct!
+@endcode
+
+And this portion of the output pertains to the experiment performed with the
+magneto-viscoelastic material:
+@code
+Coupled magneto-viscoelastic constitutive law using symbolic differentiation.
+Using LLVM optimizer.
+Timestep = 0 @ time = 0s.
+Timestep = 125 @ time = 0.314159s.
+Timestep = 250 @ time = 0.628318s.
+Timestep = 375 @ time = 0.942477s.
+...
+Timestep = 12250 @ time = 30.7876s.
+Timestep = 12375 @ time = 31.1018s.
+Timestep = 12500 @ time = 31.4159s.
+... all calculations are correct!
+@endcode
+
+The timer output is also emitted to the console, so we can compare time taken
+to perform the hand- and assisted- calculations and get some idea of the overhead
+of using the AD and SD frameworks.
+Here are the timings taken from the magnetoelastic experiment using
+the AD framework, based on the Sacado component of the Trilinos library:
+@code
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |       3.2s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assisted computation            |     12501 |      3.02s |        95% |
+| Hand calculated                 |     12501 |    0.0464s |       1.5% |
++---------------------------------+-----------+------------+------------+
+@endcode
+With respect to the computations performed using automatic differentiation
+(as a reminder, this is with two levels of differentiation using the Sacado
+library in conjunction with dynamic forward auto-differentiable types), we
+observe that the assisted computations takes about $65 \times$ longer to
+compute the desired quantities. This does seem like quite a lot of overhead
+but, as mentioned in the introduction, it's entirely subjective and
+circumstance-dependent as to whether or not this is acceptable or not:
+Do you value computer time more than human time for doing the
+necessary hand-computations of derivatives, verify their correctness,
+implement them, and verify the correctness of the implementation? If
+you develop a research code that will only be run for a relatively
+small number of experiments, you might value your own time more. If
+you develop a production code that will be run over and over on
+10,000-core clusters for hours, your considerations might be different.
+In any case, the one nice feature
+of the AD approach is the "drop in" capability when functions and classes are
+templated on the scalar type. This means that minimal effort is required to
+start working with it.
+
+In contrast, the timings for magneto-viscoelastic material as implemented using
+just-in-time (JIT) compiled symbolic algebra indicate that, at some non-negligible cost during
+initialization, the calculations themselves are a lot more efficiently executed:
+@code
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      1.34s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assisted computation            |     12501 |     0.376s |        28% |
+| Hand calculated                 |     12501 |     0.368s |        27% |
+| Initialize symbolic CL          |         1 |     0.466s |        35% |
++---------------------------------+-----------+------------+------------+
+@endcode
+Since the initialization phase need, most likely, only be executed once per
+thread, this initial expensive phase can be offset by the repeated use of a
+single Differentiation::SD::BatchOptimizer instance. Even though the
+magneto-viscoelastic constitutive law has more terms to calculate when compared
+to its magnetoelastic counterpart, it still is a whole order of magnitude faster
+to execute the computations of the kinetic variables and tangents. And when compared
+to the hand computed variant that uses the caching scheme, the calculation time
+is nearly equal. So although using the symbolic framework requires a paradigm
+shift in terms of how one implements and manipulates the symbolic expressions,
+it can offer good performance and flexibility that the AD frameworks lack.
+
+On the point of data caching, the added cost of value caching for the
+magneto-viscoelastic material implementation is, in fact, about a $6\times$
+increase in the time spent in `update_internal_data()` when compared to the
+implementation using intermediate values for the numerical experiments conducted
+with this material. Here's a sample output of the timing comparison extracted for
+the "hand calculated" variant when the caching data structure is removed:
+@code
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      1.01s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assisted computation            |     12501 |     0.361s |        36% |
+| Hand calculated                 |     12501 |    0.0562s |       5.6% |
+| Initialize symbolic CL          |         1 |     0.469s |        47% |
++---------------------------------+-----------+------------+------------+
+@endcode
+
+With some minor adjustment we can quite easily test the different optimization
+schemes for the batch optimizer. So let's compare the computational expense
+associated with the `LLVM` batch optimizer setting versus the alternatives.
+Below are the timings reported for the `lambda` optimization method (retaining
+the use of CSE):
+@code
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |      3.87s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assisted computation            |     12501 |      3.12s |        81% |
+| Hand calculated                 |     12501 |     0.394s |        10% |
+| Initialize symbolic CL          |         1 |     0.209s |       5.4% |
++---------------------------------+-----------+------------+------------+
+@endcode
+The primary observation here is that an order of magnitude greater time is spent
+in the "Assisted computation" section when compared to the `LLVM` approach.
+
+Last of all we'll test how `dictionary` substitution, in conjunction with CSE,
+performs. Dictionary substitution simply does all of the evaluation within the
+native CAS framework itself, with no transformation of the underlying data
+structures taking place. Only the use of CSE, which caches intermediate results,
+will provide any "acceleration" in this instance. With that in mind, here are
+the results from this selection:
+@code
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |  1.54e+03s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assisted computation            |     12501 |  1.54e+03s |     1e+02% |
+| Hand calculated                 |     12501 |     0.563s |         0% |
+| Initialize symbolic CL          |         1 |     0.184s |         0% |
++---------------------------------+-----------+------------+------------+
+@endcode
+Needless to say, compared to the other two methods, these results took quite
+some time to produce... The `dictionary` substitution
+method is perhaps only really viable for simple expressions or when the number
+of calls is sufficiently small.
+
+<h1>So, which framework should I use?</h1>
+
+Perhaps you've been convinced that these tools have some merit, and can be
+of immediate help or use to you. The obvious question now is which one to
+use. Focusing specifically at a continuum point level, where you would be
+using these frameworks to compute derivatives of a constitutive law in
+particular, we can say the following:
+- Automatic differentiation probably provides the simplest entry point into
+  the world of assisted differentiation.
+- Given a sufficiently generic implementation of a constitutive framework,
+  AD can often be used as a drop-in replacement for the intrinsic scalar types
+  and the helper classes can then be leveraged to compute first (and possibly
+  higher order) derivatives with minimal effort.
+- As a qualification to the above point, being a "drop-in replacement" does not
+  mean that you must not be contentious of what the algorithms that these numbers
+  are being passed through are doing. It is possible to inadvertently perform
+  an operation that would, upon differentiating, return an incorrect result.
+  So this is definitely something that one should be aware of.
+  A concrete example: When computing the eigenvalues of a tensor, if the tensor
+  is diagonal then a short-cut to the result is simply to return the diagonal
+  entries directly (as extracted from the input tensor). This is completely
+  correct in terms of computing the eigenvalues themselves, but not going
+  through the algorithm that would otherwise compute the eigenvalues for a
+  non-diagonal tensor has had an unintended side-effect, namely that the
+  eigenvalues appear (to the AD framework) to be completely decoupled from
+  one another and their cross-sensitivities are not encoded in the returned
+  result. Upon differentiating, many entries of the derivative tensor will
+  be missing. To fix this issue, one has to ensure that the standard eigenvalue
+  solving algorithm is used so that the sensitivities of the returned eigenvalues
+  with respect to one another are encoded in the result.
+- Computations involving AD number types may be expensive. The expense increases
+  (sometimes quite considerably) as the order of the differential operations
+  increases. This may be mitigated by computational complexity of surrounding
+  operations (such as a linear solve, for example), but is ultimately problem
+  specific.
+- AD is restricted to the case where only total derivatives are required. If a
+  differential operation requires a partial derivative with respect to an
+  independent variable then it is not appropriate to use it.
+- Each AD library has its own quirks (sad to say but, in the author's experience,
+  true), so it may take some trial and error to find the appropriate library and
+  choice of AD number to suit your purposes. The reason for these "quirks"
+  often boils down to the overall philosophy behind the library (data structures,
+  the use of template meta-programming, etc.) as well as the mathematical
+  implementation of the derivative computations (for example, manipulations of
+  results using logarithmic functions to change basis might restrict the domain
+  for the input values -- details all hidden from the user, of course).
+  Furthermore, one library might be able to compute the desired results quicker
+  than another, so some initial exploration might be beneficial in that regard.
+- Symbolic differentiation (well, the use of a CAS in general) provides the most
+  flexible framework with which to perform assisted computations.
+- The SD framework can do everything that the AD frameworks can, with the
+  additional benefit of having low-level control over when certain manipulations
+  and operations are performed.
+- Acceleration of expression evaluation is possible, potentially leading to
+  near-native performance of the SD framework compared to some hand implementations
+  (this comparison being dependent on the overall program design, of course) at
+  the expense of the initial optimization call.
+- Clever use of the Differentiation::SD::BatchOptimizer could minimize the
+  expense of the costly call that optimizes the dependent expressions.
+  The possibility to serialize the Differentiation::SD::BatchOptimizer
+  that often (but not always) this expensive call can be done once and then
+  reused in a later simulation.
+- If two or more material laws differ by only their material parameters, for
+  instance, then a single batch optimizer can be shared between them as long
+  as those material parameters are considered to be symbolic. The implication
+  of this is that you can "differentiate once, evaluate in many contexts".
+- The SD framework may partially be used as a "drop-in replacement" for scalar
+  types, but one (at the very least) has to add some more framework around it
+  to perform the value substitution step, converting symbolic types to their
+  numerical counterparts.
+- It may not be possible to use SD numbers within some specialized algorithms.
+  For example, if an algorithm has an exit point or code branch based off of
+  some concrete, numerical value that the (symbolic) input argument should take,
+  then obviously this isn't going to work. One either has to reimplement the
+  algorithm specifically for SD number types (somewhat inconvenient, but
+  frequently possible as conditionals are supported by the
+  Differentiation::SD::Expression class), or one must use a creative means
+  around this specific issue (e.g., introduce a symbolic expression that
+  represents the result returned by this algorithm, perhaps declaring it
+  to be a
+  [symbolic function](https://dealii.org/developer/doxygen/deal.II/namespaceDifferentiation_1_1SD.html#a876041f6048705c7a8ad0855cdb1bd7a)
+  if that makes sense within the context in which it is to be used. This can
+  later be substituted by its numerical values, and if declared a symbolic
+  function then its deferred derivatives may also be incorporated into the
+  calculations as substituted results.).
+- The biggest drawback to using SD is that using it requires a paradigm shift,
+  and that one has to frame most problems differently in order to take the
+  most advantage of it. (Careful consideration of how the data structures
+  are used and reused is also essential to get it to work effectively.) This may
+  mean that one needs to play around with it a bit and build up an understanding
+  of what the sequence of typical operations is and what specifically each step
+  does in terms of manipulating the underlying data. If one has the time and
+  inclination to do so, then the benefits of using this tool may be substantial.
+
+<h1>Possibilities for extension</h1>
+
+There are a few logical ways in which this program could be extended:
+- Perhaps the most obvious extension would be to implement and test other constitutive models.
+  This could still be within the realm of coupled magneto-mechanical problems, perhaps considering
+  alternatives to the "Neo-Hookean"-type elastic part of the energy functions, changing the
+  constitutive law for the dissipative energy (and its associated evolution law), or including
+  magnetic hysteretic effects or damage models for the composite polymer that these material
+  seek to model.
+- Of course, the implemented models could be modified or completely replaced with models that are
+  focused on other aspects of physics, such as electro-active polymers, biomechanical materials,
+  elastoplastic media, etc.
+- Implement a different time-discretization scheme for the viscoelastic evolution law.
+- Instead of deriving everything directly from an energy density function, use the
+  Differentiation::AD::VectorFunction to directly linearize the kinetic quantities.
+  This would mean that only a once-differentiable auto-differentiable number type
+  would be required, and would certainly improve the performance greatly.
+  Such an approach would also offer the opportunity for dissipative materials,
+  such as the magneto-viscoelastic one consider here, to be implemented in
+  conjunction with AD. This is because the linearization invokes the total
+  derivative of the dependent variables with respect to the field variables, which
+  is exactly what the AD frameworks can provide.
+- Investigate using other auto-differentiable number types and frameworks (such as
+  ADOL-C). Since each AD library has its own implementation, the choice of which
+  to use could result in performance increases and, in the most unfortunate cases,
+  more stable computations. It can at least be said that for the AD libraries that
+  deal.II supports, the accuracy of results should be largely unaffected by this decision.
+- Embed one of these constitutive laws within a finite element simulation.
+
+With less effort, one could think about re-writing nonlinear problem
+solvers such as the one implemented in step-15 using AD or SD
+approaches to compute the Newton matrix. Indeed, this is done in
+step-72.
+
+

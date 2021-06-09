@@ -168,7 +168,7 @@ with open(doxygen_commands, 'wb') as fp:
 
 # 最后将换行户转化为空格
 regex = r"(?<=[^\n\*])(\n)(?=[^-\*])"
-subst = ""
+subst = " "
 text = re.sub(regex, subst, text, 0, re.MULTILINE)
 
 

@@ -1,0 +1,380 @@
+examples/step-13/doc/intro.dox
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+<h3>Background and purpose</h3>
+
+
+In this example program, we will not so much be concerned with
+describing new ways how to use deal.II and its facilities, but rather
+with presenting methods of writing modular and extensible finite
+element programs. The main reason for this is the size and complexity
+of modern research software: applications implementing modern error
+estimation concepts and adaptive solution methods tend to become
+rather large. For example, when this program was written in 2002, the
+three largest applications by the main
+authors of deal.II, are at the time of writing of this example
+program:
+<ol>
+<li> a program for solving conservation hyperbolic equations by the
+     Discontinuous Galerkin Finite Element method: 33,775 lines of
+     code;
+<li> a parameter estimation program: 28,980 lines of code;
+<li> a wave equation solver: 21,020 lines of code.
+</ol>
+
+(The library proper - without example programs and test suite - has slightly
+more than 150,000 lines of code as of spring 2002. It is of course several
+times larger now.) The sizes of these applications are at the edge of what
+one person, even an experienced programmer, can manage.
+
+
+
+The numbers above make one thing rather clear: monolithic programs that
+are not broken up into smaller, mostly independent pieces have no way
+of surviving, since even the author will quickly lose the overview of
+the various dependencies between different parts of a program. Only
+data encapsulation, for example using object oriented programming
+methods, and modularization by defining small but fixed interfaces can
+help structure data flow and mutual interdependencies. It is also an
+absolute prerequisite if more than one person is developing a program,
+since otherwise confusion will quickly prevail as one developer
+would need to know if another changed something about the internals of
+a different module if they were not cleanly separated.
+
+
+
+In previous examples, you have seen how the library itself is broken
+up into several complexes each building atop the underlying ones, but
+relatively independent of the other ones:
+<ol>
+<li>the triangulation class complex, with associated iterator classes;
+<li>the finite element classes;
+<li>the DoFHandler class complex, with associated iterators, built on
+    the triangulation and finite element classes;
+<li>the classes implementing mappings between unit and real cells;
+<li>the FEValues class complex, built atop the finite elements and
+    mappings.
+</ol>
+Besides these, and a large number of smaller classes, there are of
+course the following "tool" modules:
+<ol>
+<li>output in various graphical formats;
+<li>linear algebra classes.
+</ol>
+These complexes can also be found as a flow chart on the front page of
+the deal.II manual website.
+
+
+
+The goal of this program is now to give an example of how a relatively
+simple finite element program could be structured such that we end up
+with a set of modules that are as independent of each other as
+possible. This allows to change the program at one end, without having to
+worry that it might break at the other, as long as we do not touch the
+interface through which the two ends communicate. The interface in
+C++, of course, is the declaration of abstract base classes.
+
+
+
+Here, we will implement (again) a Laplace solver, although with a
+number of differences compared to previous example programs:
+<ol>
+<li>The classes that implement the process of numerically solving the
+    equation are no more responsible for driving the process of
+    "solving-estimating error-refining-solving again", but we delegate
+    this to external functions. This allows first to use it as a
+    building block in a larger context, where the solution of a
+    Laplace equation might only be one part (for example, in a
+    nonlinear problem, where Laplace equations might have to be solved
+    in each nonlinear step). It would also allow to build a framework
+    around this class that would allow using solvers for other
+    equations (but with the same external interface) instead, in case
+    some techniques shall be evaluated for different types of partial
+    differential equations.
+<li>It splits the process of evaluating the computed solution to a
+    separate set of classes. The reason is that one is usually not
+    interested in the solution of a PDE per se, but rather in certain
+    aspects of it. For example, one might wish to compute the traction
+    at a certain boundary in elastic computations, or in the signal of
+    a seismic wave at a receiver position at a given
+    location. Sometimes, one might have an interest in several of
+    these aspects. Since the evaluation of a solution is something
+    that does not usually affect the process of solution, we split it
+    off into a separate module, to allow for the development of such
+    evaluation filters independently of the development of the solver
+    classes.
+<li>Separate the classes that implement mesh refinement from the
+    classes that compute the solution.
+<li>Separate the description of the test case with which we will
+    present the program, from the rest of the program.
+<li>Parallelize the assembly of linear systems using the WorkStream
+    facilities. This follows the extensive description that can be
+    found in the @ref threads "Parallel computing with multiple processors accessing shared memory"
+    documentation module. The implementation essentially follows what
+    has already been described in step-9.
+</ol>
+
+
+
+The things the program does are not new. In fact, this is more like a
+melange of previous programs, cannibalizing various parts and
+functions from earlier examples. It is the way they are arranged in
+this program that should be the focus of the reader, i.e. the software
+design techniques used in the program to achieve the goal of
+implementing the desired mathematical method. However, we must
+stress that software design is in part also a subjective matter:
+different persons have different programming backgrounds and have
+different opinions about the "right" style of programming; this
+program therefore expresses only what the author considers useful
+practice, and is not necessarily a style that you have to adopt in
+order to write successful numerical software if you feel uncomfortable
+with the chosen ways. It should serve as a case study, however,
+inspiring the reader with ideas to the desired end.
+
+
+
+Once you have worked through the program, you will remark that it is
+already somewhat complex in its structure. Nevertheless, it
+only has about 850 lines of code, without comments. In real
+applications, there would of course be comments and class
+documentation, which would bring that to maybe 1200 lines. Yet, compared to
+the applications listed above, this is still small, as they are 20 to
+25 times as large. For programs as large, a proper design right from
+the start is thus indispensable. Otherwise, it will have to be
+redesigned at one point in its life, once it becomes too large to be
+manageable.
+
+
+
+Despite of this, all three programs listed above have undergone major
+revisions, or even rewrites. The wave program, for example, was once
+entirely teared to parts when it was still significantly smaller, just
+to assemble it again in a more modular form. By that time, it had
+become impossible to add functionality without affecting older parts
+of the code (the main problem with the code was the data flow: in time
+dependent application, the major concern is when to store data to disk
+and when to reload it again; if this is not done in an organized
+fashion, then you end up with data released too early, loaded too
+late, or not released at all). Although the present example program
+thus draws from several years of experience, it is certainly not
+without flaws in its design, and in particular might not be suited for
+an application where the objective is different. It should serve as an
+inspiration for writing your own application in a modular way, to
+avoid the pitfalls of too closely coupled codes.
+
+
+
+<h3>What the program does</h3>
+
+
+What the program actually does is not even the main point of this
+program, the structure of the program is more important. However, in a
+few words, a description would be: solve the Laplace equation for a
+given right hand side such that the solution is the function
+$u(x,t)=\exp(x+\sin(10y+5x^2))$. The goal of the
+computation is to get the value of the solution at the point
+$x_0=(0.5,0.5)$, and to compare the accuracy with
+which we resolve this value for two refinement criteria, namely global
+refinement and refinement by the error indicator by Kelly et al. which
+we have already used in previous examples.
+
+
+
+The results will, as usual, be discussed in the respective section of
+this document. In doing so, we will find a slightly irritating
+observation about the relative performance of the two refinement
+criteria. In a later example program, building atop this one, we will
+devise a different method that should hopefully perform better than
+the techniques discussed here.
+
+
+
+So much now for all the theoretical and anecdotal background. The best
+way of learning about a program is to look at it, so here it is:
+
+
+examples/step-13/doc/results.dox
+<h1>Results</h1>
+
+
+
+The results of this program are not that interesting - after all
+its purpose was not to demonstrate some new mathematical idea, and
+also not how to program with deal.II, but rather to use the material
+which we have developed in the previous examples to form something
+which demonstrates a way to build modern finite element software in a
+modular and extensible way.
+
+
+
+Nevertheless, we of course show the results of the program. Of
+foremost interest is the point value computation, for which we had
+implemented the corresponding evaluation class. The results (i.e. the
+output) of the program looks as follows:
+@code
+Running tests with "global" refinement criterion:
+-------------------------------------------------
+Refinement cycle: 0 1 2 3 4 5 6
+DoFs  u(x_0)
+   25 1.2868
+   81 1.6945
+  289 1.4658
+ 1089 1.5679
+ 4225 1.5882
+16641 1.5932
+66049 1.5945
+
+Running tests with "kelly" refinement criterion:
+------------------------------------------------
+Refinement cycle: 0 1 2 3 4 5 6 7 8 9 10 11
+DoFs  u(x_0)
+   25 1.2868
+   47 0.8775
+   89 1.5365
+  165 1.2974
+  316 1.6442
+  589 1.5221
+ 1093 1.5724
+ 2042 1.5627
+ 3766 1.5916
+ 7124 1.5876
+13111 1.5942
+24838 1.5932
+@endcode
+
+
+What surprises here is that the exact value is 1.59491554..., and that
+it is apparently surprisingly complicated to compute the solution even to
+only one per cent accuracy, although the solution is smooth (in fact
+infinitely often differentiable). This smoothness is shown in the
+graphical output generated by the program, here coarse grid and the
+first 9 refinement steps of the Kelly refinement indicator:
+
+
+<table width="80%" align="center">
+  <tr>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-0.png" alt="">
+    </td>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-1.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-2.png" alt="">
+    </td>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-3.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-4.png" alt="">
+    </td>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-5.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-6.png" alt="">
+    </td>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-7.png" alt="">
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-8.png" alt="">
+    </td>
+    <td>
+      <img src="https://www.dealii.org/images/steps/developer/step-13.solution-kelly-9.png" alt="">
+    </td>
+  </tr>
+</table>
+
+
+While we're already at watching pictures, this is the eighth grid, as
+viewed from top:
+
+
+<img src="https://www.dealii.org/images/steps/developer/step-13.grid-kelly-8.png" alt="">
+
+
+However, we are not yet finished with evaluation the point value
+computation. In fact, plotting the error
+$e=|u(x_0)-u_h(x_0)|$ for the two
+refinement criteria yields the following picture:
+
+
+<img src="https://www.dealii.org/images/steps/developer/step-13.error.png" alt="">
+
+
+
+
+What <em>is</em> disturbing about this picture is that not only is the
+adaptive mesh refinement not better than global refinement as one
+would usually expect, it is even significantly worse since its
+convergence is irregular, preventing all extrapolation techniques when
+using the values of subsequent meshes! On the other hand, global
+refinement provides a perfect $1/N$ or $h^{-2}$
+convergence history and provides every opportunity to even improve on
+the point values by extrapolation. Global mesh refinement must
+therefore be considered superior in this example! This is even more
+surprising as the evaluation point is not somewhere in the left part
+where the mesh is coarse, but rather to the right and the adaptive
+refinement should refine the mesh around the evaluation point as well.
+
+
+
+We thus close the discussion of this example program with a question:
+
+<p align="center">
+  <strong><em>What is wrong with adaptivity if it is not better than
+  global refinement?</em></strong>
+
+
+
+
+<em>Exercise at the end of this example:</em> There is a simple reason
+for the bad and irregular behavior of the adapted mesh solutions. It
+is simple to find out by looking at the mesh around the evaluation
+point in each of the steps - the data for this is in the output files
+of the program. An exercise would therefore be to modify the mesh
+refinement routine such that the problem (once you remark it) is
+avoided. The second exercise is to check whether the results are then
+better than global refinement, and if so if even a better order of
+convergence (in terms of the number of degrees of freedom) is
+achieved, or only by a better constant.
+
+
+
+(<em>Very brief answers for the impatient:</em> at steps with larger
+errors, the mesh is not regular at the point of evaluation, i.e. some
+of the adjacent cells have hanging nodes; this destroys some
+superapproximation effects of which the globally refined mesh can
+profit. Answer 2: this quick hack
+@code
+  bool refinement_indicated = false;
+  for (const auto &cell : triangulation.active_cell_iterators())
+    for (const auto v : cell->vertex_indices())
+	  if (cell->vertex(v) == Point<dim>(.5,.5))
+	    {
+	      cell->clear_coarsen_flag();
+	      refinement_indicated |= cell->refine_flag_set();
+	    }
+  if (refinement_indicated)
+    for (const auto &cell : triangulation.active_cell_iterators())
+      for (const auto v : cell->vertex_indices())
+	    if (cell->vertex(v) == Point<dim>(.5,.5))
+	      cell->set_refine_flag ();
+@endcode
+in the refinement function of the Kelly refinement class right before
+executing refinement would improve the results (exercise: what does
+the code do?), making them consistently better than global
+refinement. Behavior is still irregular, though, so no results about
+an order of convergence are possible.)
+
+

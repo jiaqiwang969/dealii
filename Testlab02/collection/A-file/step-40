@@ -1,0 +1,337 @@
+examples/step-40/doc/intro.dox
+<br>
+
+<i>This program was contributed by Timo Heister, Martin Kronbichler and Wolfgang
+Bangerth.
+<br>
+This material is based upon work partly supported by the National
+Science Foundation under Award No. EAR-0426271 and The California Institute of
+Technology. Any opinions, findings, and conclusions or recommendations
+expressed in this publication are those of the author and do not
+necessarily reflect the views of the National Science Foundation or of The
+California Institute of Technology.
+</i>
+
+
+@note As a prerequisite of this program, you need to have both PETSc and the
+p4est library installed. The installation of deal.II
+together with these two additional libraries is described in the <a
+href="../../readme.html" target="body">README</a> file. Note also that
+to work properly, this program needs access to the Hypre
+preconditioner package implementing algebraic multigrid; it can be
+installed as part of PETSc but has to be explicitly enabled during
+PETSc configuration; see the page linked to from the installation
+instructions for PETSc.
+
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+@dealiiVideoLecture{41.5,41.75}
+
+Given today's computers, most finite element computations can be done on
+a single machine. The majority of previous tutorial programs therefore
+shows only this, possibly splitting up work among a number of
+processors that, however, can all access the same, shared memory
+space. That said, there are problems that are simply too big for a
+single machine and in that case the problem has to be split up in a
+suitable way among multiple machines each of which contributes its
+part to the whole. A simple way to do that was shown in step-17 and
+step-18, where we show how a program can use <a
+href="http://www.mpi-forum.org/" target="_top">MPI</a> to parallelize
+assembling the linear system, storing it, solving it, and computing
+error estimators. All of these operations scale relatively trivially
+(for a definition of what it means for an operation to "scale", see
+@ref GlossParallelScaling "this glossary entry"),
+but there was one significant drawback: for this to be moderately
+simple to implement, each MPI processor had to keep its own copy of
+the entire Triangulation and DoFHandler objects. Consequently, while
+we can suspect (with good reasons) that the operations listed above
+can scale to thousands of computers and problem sizes of billions of
+cells and billions of degrees of freedom, building the one big mesh for the
+entire problem these thousands of computers are solving on every last
+processor is clearly not going to scale: it is going to take forever,
+and maybe more importantly no single machine will have enough memory
+to store a mesh that has a billion cells (at least not at the time of
+writing this). In reality, programs like step-17 and step-18 can
+therefore not be run on more than maybe 100 or 200 processors and even
+there storing the Triangulation and DoFHandler objects consumes the
+vast majority of memory on each machine.
+
+Consequently, we need to approach the problem differently: to scale to
+very large problems each processor can only store its own little piece
+of the Triangulation and DoFHandler objects. deal.II implements such a
+scheme in the parallel::distributed namespace and the classes
+therein. It builds on an external library, <a
+href="http://www.p4est.org/">p4est</a> (a play on the expression
+<i>parallel forest</i> that describes the parallel storage of a
+hierarchically constructed mesh as a forest of quad- or
+oct-trees). You need to <a
+href="../../external-libs/p4est.html">install and configure p4est</a>
+but apart from that all of its workings are hidden under the surface
+of deal.II.
+
+In essence, what the parallel::distributed::Triangulation class and
+code inside the DoFHandler class do is to split
+the global mesh so that every processor only stores a small bit it
+"owns" along with one layer of "ghost" cells that surround the ones it
+owns. What happens in the rest of the domain on which we want to solve
+the partial differential equation is unknown to each processor and can
+only be inferred through communication with other machines if such
+information is needed. This implies that we also have to think about
+problems in a different way than we did in, for example, step-17 and
+step-18: no processor can have the entire solution vector for
+postprocessing, for example, and every part of a program has to be
+parallelized because no processor has all the information necessary
+for sequential operations.
+
+A general overview of how this parallelization happens is described in
+the @ref distributed documentation module. You should read it for a
+top-level overview before reading through the source code of this
+program. A concise discussion of many terms we will use in the program
+is also provided in the @ref distributed_paper "Distributed Computing paper".
+It is probably worthwhile reading it for background information on how
+things work internally in this program.
+
+
+<h3>The testcase</h3>
+
+This program essentially re-solves what we already do in
+step-6, i.e. it solves the Laplace equation
+@f{align*}
+  -\Delta u &= f \qquad &&\text{in}\ \Omega=[0,1]^2, \\
+  u &= 0 \qquad &&\text{on}\ \partial\Omega.
+@f}
+The difference of course is now that we want to do so on a mesh that
+may have a billion cells, with a billion or so degrees of
+freedom. There is no doubt that doing so is completely silly for such
+a simple problem, but the point of a tutorial program is, after all,
+not to do something useful but to show how useful programs can be
+implemented using deal.II. Be that as it may, to make things at least
+a tiny bit interesting, we choose the right hand side as a
+discontinuous function,
+@f{align*}
+  f(x,y)
+  =
+  \left\{
+  \begin{array}{ll}
+    1 & \text{if}\ y > \frac 12 + \frac 14 \sin(4\pi x), \\
+    -1 & \text{otherwise},
+  \end{array}
+  \right.
+@f}
+so that the solution has a singularity along the sinusoidal line
+snaking its way through the domain. As a consequence, mesh refinement
+will be concentrated along this line. You can see this in the mesh
+picture shown below in the results section.
+
+Rather than continuing here and giving a long introduction, let us go
+straight to the program code. If you have read through step-6 and the
+@ref distributed documentation module, most of things that are going
+to happen should be familiar to you already. In fact, comparing the two
+programs you will notice that the additional effort necessary to make things
+work in %parallel is almost insignificant: the two programs have about the
+same number of lines of code (though step-6 spends more space on dealing with
+coefficients and output). In either case, the comments below will only be on
+the things that set step-40 apart from step-6 and that aren't already covered
+in the @ref distributed documentation module.
+
+
+@note This program will be able to compute on as many processors as you want
+to throw at it, and for as large a problem as you have the memory and patience
+to solve. However, there <i>is</i> a limit: the number of unknowns can not
+exceed the largest number that can be stored with an object of type
+types::global_dof_index. By default, this is an alias for <code>unsigned
+int</code>, which on most machines today is a 32-bit integer, limiting you to
+some 4 billion (in reality, since this program uses PETSc, you will be limited
+to half that as PETSc uses signed integers). However, this can be changed
+during configuration to use 64-bit integers, see the ReadMe file. This will
+give problem sizes you are unlikely to exceed anytime soon.
+
+
+examples/step-40/doc/results.dox
+<h1>Results</h1>
+
+When you run the program, on a single processor or with your local MPI
+installation on a few, you should get output like this:
+@code
+Cycle 0:
+   Number of active cells:       1024
+   Number of degrees of freedom: 4225
+   Solved in 10 iterations.
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |     0.176s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| assembly                        |         1 |    0.0209s |        12% |
+| output                          |         1 |    0.0189s |        11% |
+| setup                           |         1 |    0.0299s |        17% |
+| solve                           |         1 |    0.0419s |        24% |
++---------------------------------+-----------+------------+------------+
+
+
+Cycle 1:
+   Number of active cells:       1954
+   Number of degrees of freedom: 8399
+   Solved in 10 iterations.
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |     0.327s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| assembly                        |         1 |    0.0368s |        11% |
+| output                          |         1 |    0.0208s |       6.4% |
+| refine                          |         1 |     0.157s |        48% |
+| setup                           |         1 |    0.0452s |        14% |
+| solve                           |         1 |    0.0668s |        20% |
++---------------------------------+-----------+------------+------------+
+
+
+Cycle 2:
+   Number of active cells:       3664
+   Number of degrees of freedom: 16183
+   Solved in 11 iterations.
+
+...
+@endcode
+
+The exact numbers differ, depending on how many processors we use;
+this is due to the fact that the preconditioner depends on the
+partitioning of the problem, the solution then differs in the last few
+digits, and consequently the mesh refinement differs slightly.
+The primary thing to notice here, though, is that the number of
+iterations does not increase with the size of the problem. This
+guarantees that we can efficiently solve even the largest problems.
+
+When run on a sufficiently large number of machines (say a few
+thousand), this program can relatively easily solve problems with well
+over one billion unknowns in less than a minute. On the other hand,
+such big problems can no longer be visualized, so we also ran the
+program on only 16 processors. Here are a mesh, along with its
+partitioning onto the 16 processors, and the corresponding solution:
+
+<table width="100%">
+<tr>
+<td>
+  <img src="https://www.dealii.org/images/steps/developer/step-40.mesh.png" alt="">
+</td>
+<td>
+  <img src="https://www.dealii.org/images/steps/developer/step-40.solution.png" alt="">
+</td>
+</tr>
+</table>
+
+The mesh on the left has a mere 7,069 cells. This is of course a
+problem we would easily have been able to solve already on a single
+processor using step-6, but the point of the program was to show how
+to write a program that scales to many more machines. For example,
+here are two graphs that show how the run time of a large number of parts
+of the program scales on problems with around 52 and 375 million degrees of
+freedom if we take more and more processors (these and the next couple of
+graphs are taken from an earlier version of the
+@ref distributed_paper "Distributed Computing paper"; updated graphs showing
+data of runs on even larger numbers of processors, and a lot
+more interpretation can be found in the final version of the paper):
+
+<table width="100%">
+<tr>
+<td>
+  <img src="https://www.dealii.org/images/steps/developer/step-40.strong2.png" alt="">
+</td>
+<td>
+  <img src="https://www.dealii.org/images/steps/developer/step-40.strong.png" alt="">
+</td>
+</tr>
+</table>
+
+As can clearly be seen, the program scales nicely to very large
+numbers of processors.
+(For a discussion of what we consider "scalable" programs, see
+@ref GlossParallelScaling "this glossary entry".)
+The curves, in particular the linear solver, become a
+bit wobbly at the right end of the graphs since each processor has too little
+to do to offset the cost of communication (the part of the whole problem each
+processor has to solve in the above two examples is only 13,000 and 90,000
+degrees of freedom when 4,096 processors are used; a good rule of thumb is that
+parallel programs work well if each processor has at least 100,000 unknowns).
+
+While the strong scaling graphs above show that we can solve a problem of
+fixed size faster and faster if we take more and more processors, the more
+interesting question may be how big problems can become so that they can still
+be solved within a reasonable time on a machine of a particular size. We show
+this in the following two graphs for 256 and 4096 processors:
+
+<table width="100%">
+<tr>
+<td>
+  <img src="https://www.dealii.org/images/steps/developer/step-40.256.png" alt="">
+</td>
+<td>
+  <img src="https://www.dealii.org/images/steps/developer/step-40.4096.png" alt="">
+</td>
+</tr>
+</table>
+
+What these graphs show is that all parts of the program scale linearly with
+the number of degrees of freedom. This time, lines are wobbly at the left as
+the size of local problems is too small. For more discussions of these results
+we refer to the @ref distributed_paper "Distributed Computing paper".
+
+So how large are the largest problems one can solve? At the time of writing
+this problem, the
+limiting factor is that the program uses the BoomerAMG algebraic
+multigrid method from the <a
+href="http://acts.nersc.gov/hypre/" target="_top">Hypre package</a> as
+a preconditioner, which unfortunately uses signed 32-bit integers to
+index the elements of a %distributed matrix. This limits the size of
+problems to $2^{31}-1=2,147,483,647$ degrees of freedom. From the graphs
+above it is obvious that the scalability would extend beyond this
+number, and one could expect that given more than the 4,096 machines
+shown above would also further reduce the compute time. That said, one
+can certainly expect that this limit will eventually be lifted by the
+hypre developers.
+
+On the other hand, this does not mean that deal.II cannot solve bigger
+problems. Indeed, step-37 shows how one can solve problems that are not
+just a little, but very substantially larger than anything we have shown
+here.
+
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+In a sense, this program is the ultimate solver for the Laplace
+equation: it can essentially solve the equation to whatever accuracy
+you want, if only you have enough processors available. Since the
+Laplace equation by itself is not terribly interesting at this level
+of accuracy, the more interesting possibilities for extension
+therefore concern not so much this program but what comes beyond
+it. For example, several of the other programs in this tutorial have
+significant run times, especially in 3d. It would therefore be
+interesting to use the techniques explained here to extend other
+programs to support parallel distributed computations. We have done
+this for step-31 in the step-32 tutorial program, but the same would
+apply to, for example, step-23 and step-25 for hyperbolic time
+dependent problems, step-33 for gas dynamics, or step-35 for the
+Navier-Stokes equations.
+
+Maybe equally interesting is the problem of postprocessing. As
+mentioned above, we only show pictures of the solution and the mesh
+for 16 processors because 4,096 processors solving 1 billion unknowns
+would produce graphical output on the order of several 10
+gigabyte. Currently, no program is able to visualize this amount of
+data in any reasonable way unless it also runs on at least several
+hundred processors. There are, however, approaches where visualization
+programs directly communicate with solvers on each processor with each
+visualization process rendering the part of the scene computed by the
+solver on this processor. Implementing such an interface would allow
+to quickly visualize things that are otherwise not amenable to
+graphical display.
+
+

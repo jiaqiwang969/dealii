@@ -1,4 +1,6 @@
 #!/bin/bash
+# coding=UTF-8
+
 mkdir translator_file
 rm -rf translator_file/*
 path=include/deal.II-translator

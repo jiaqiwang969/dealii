@@ -1,0 +1,570 @@
+examples/step-50/doc/intro.dox
+<br>
+
+<i>
+This program was contributed by Thomas C. Clevenger and Timo Heister.
+<br>
+This material is based upon work partly supported by the National
+Science Foundation Award DMS-2028346, OAC-2015848, EAR-1925575, by the Computational
+Infrastructure in Geodynamics initiative (CIG), through the NSF under Award
+EAR-0949446 and EAR-1550901 and The University of California -- Davis.
+</i>
+
+@dealiiTutorialDOI{10.5281/zenodo.4004166,https://zenodo.org/badge/DOI/10.5281/zenodo.4004166.svg}
+
+@note As a prerequisite of this program, you need to have both p4est and either the PETSc
+or Trilinos library installed. The installation of deal.II together with these additional
+libraries is described in the <a href="../../readme.html" target="body">README</a> file.
+
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+
+This example shows the usage of the multilevel functions in deal.II on
+parallel, distributed
+meshes and gives a comparison between geometric and algebraic multigrid methods.
+The algebraic multigrid (AMG) preconditioner is the same used in step-40. Two geometric
+multigrid (GMG) preconditioners are considered: a matrix-based version similar to that
+in step-16 (but for parallel computations) and a matrix-free version
+discussed in step-37. The goal is to find out which approach leads to
+the best solver for large parallel computations.
+
+This tutorial is based on one of the numerical examples in
+@cite clevenger_par_gmg. Please see that publication for a detailed background
+on the multigrid implementation in deal.II. We will summarize some of the
+results in the following text.
+
+Algebraic multigrid methods are obviously the easiest to implement
+with deal.II since classes such as TrilinosWrappers::PreconditionAMG
+and PETScWrappers::PreconditionBoomerAMG are, in essence, black box
+preconditioners that require only a couple of lines to set up even for
+parallel computations. On the other hand, geometric multigrid methods
+require changes throughout a code base -- not very many, but one has
+to know what one is doing.
+
+What the results of this program will show
+is that algebraic and geometric multigrid methods are roughly
+comparable in performance <i>when using matrix-based formulations</i>,
+and that matrix-free geometric multigrid methods are vastly better for
+the problem under consideration here. A secondary conclusion will be
+that matrix-based geometric multigrid methods really don't scale well
+strongly when the number of unknowns per processor becomes smaller than
+20,000 or so.
+
+
+<h3>The testcase</h3>
+
+We consider the variable-coefficient Laplacian weak formulation
+@f{align*}
+ (\epsilon \nabla u, \nabla v) = (f,v) \quad \forall v \in V_h
+@f}
+on the domain $\Omega = [-1,1]^\text{dim} \setminus [0,1]^\text{dim}$ (an L-shaped domain
+for 2D and a Fichera corner for 3D) with $\epsilon = 1$ if $\min(x,y,z)>-\frac{1}{2}$ and
+$\epsilon = 100$ otherwise. In other words, $\epsilon$ is small along the edges
+or faces of the domain that run into the reentrant corner, as will be visible
+in the figure below.
+
+The boundary conditions are $u=0$ on the whole boundary and
+the right-hand side is $f=1$. We use continuous $Q_2$ elements for the
+discrete finite element space $V_h$, and use a
+residual-based, cell-wise a posteriori error estimator
+$e(K) = e_{\text{cell}}(K) + e_{\text{face}}(K)$ from @cite karakashian2003posteriori with
+@f{align*}
+ e_{\text{cell}}(K) &= h^2 \| f + \epsilon \triangle u \|_K^2, \\
+ e_{\text{face}}(K) &= \sum_F h_F \| \jump{ \epsilon \nabla u \cdot n } \|_F^2,
+@f}
+to adaptively refine the mesh. (This is a generalization of the Kelly
+error estimator used in the KellyErrorEstimator class that drives mesh
+refinement in most of the other tutorial programs.)
+The following figure visualizes the solution and refinement for 2D:
+<img width="400px" src="https://www.dealii.org/images/steps/developer/step-50-2d-solution.png" alt="">
+In 3D, the solution looks similar (see below). On the left you can see the solution and on the right we show a slice for $x$ close to the
+center of the domain showing the adaptively refined mesh.
+<table width="60%" align="center">
+  <tr>
+    <td align="center">
+      <img width="400px" src="https://www.dealii.org/images/steps/developer/step-50-3d-solution.png" alt="">
+    </td>
+    <td align="center">
+      <img width="400px" src="https://www.dealii.org/images/steps/developer/step-50-refinement.png" alt="">
+    </td>
+  </tr>
+</table>
+Both in 2D and 3D you can see the adaptive refinement picking up the corner singularity and the inner singularity where the viscosity jumps, while the interface along the line that separates the two viscosities is (correctly) not refined as it is resolved adequately.
+This is because the kink in the solution that results from the jump
+in the coefficient is aligned with cell interfaces.
+
+
+<h3>Workload imbalance for geometric multigrid methods</h3>
+
+As mentioned above, the purpose of this program is to demonstrate the
+use of algebraic and geometric multigrid methods for this problem, and
+to do so for parallel computations. An important component of making
+algorithms scale to large parallel machines is ensuring that every
+processor has the same amount of work to do. (More precisely, what
+matters is that there are no small fraction of processors that have
+substantially more work than the rest since, if that were so, a large
+fraction of processors will sit idle waiting for the small fraction to
+finish. Conversely, a small fraction of processors having
+substantially <i>less</i> work is not a problem because the majority
+of processors continues to be productive and only the small fraction
+sits idle once finished with their work.)
+
+For the active mesh, we use the parallel::distributed::Triangulation class as done
+in step-40 which uses functionality in the external library
+<a href="http://www.p4est.org/">p4est</a> for the distribution of the active cells
+among processors. For the non-active cells in the multilevel hierarchy, deal.II
+implements what we will refer to as the "first-child rule" where, for each cell
+in the hierarchy, we recursively assign the parent of a cell to the owner of the
+first child cell. The following figures give an example of such a distribution. Here
+the left image represents the active cells for a sample 2D mesh partitioned using a
+space-filling curve (which is what p4est uses to partition cells);
+the center image gives the tree representation
+of the active mesh; and the right image gives the multilevel hierarchy of cells. The
+colors and numbers represent the different processors. The circular nodes in the tree
+are the non-active cells which are distributed using the "first-child rule".
+
+<img width="800px" src="https://www.dealii.org/images/steps/developer/step-50-workload-example.png" alt="">
+
+Included among the output to screen in this example is a value "Partition efficiency"
+given by one over MGTools::workload_imbalance(). This value, which will be denoted
+by $\mathbb{E}$,  quantifies the overhead produced by not having a perfect work balance
+on each level of the multigrid hierarchy. This imbalance is evident from the
+example above: while level $\ell=2$ is about as well balanced as is possible
+with four cells among three processors, the coarse
+level $\ell=0$ has work for only one processor, and level $\ell=1$ has work
+for only two processors of which one has three times as much work as
+the other.
+
+For defining $\mathbb{E}$, it is important to note that, as we are using local smoothing
+to define the multigrid hierarchy (see the @ref mg_paper "multigrid paper" for a description of
+local smoothing), the refinement level of a cell corresponds to that cell's multigrid
+level. Now, let $N_{\ell}$ be the number of cells on level $\ell$
+(both active and non-active cells) and $N_{\ell,p}$ be the subset owned by process
+$p$. We will also denote by $P$ the total number of processors.
+Assuming that the workload for any one processor is proportional to the number
+of cells owned by that processor, the optimal workload per processor is given by
+@f{align*}
+W_{\text{opt}} = \frac1{P}\sum_{\ell} N_{\ell} = \sum_{\ell}\left(\frac1{P}\sum_{p}N_{\ell,p}\right).
+@f}
+Next, assuming a synchronization of work on each level (i.e., on each level of a V-cycle,
+work must be completed by all processors before moving on to the next level), the
+limiting effort on each level is given by
+@f{align*}
+W_\ell = \max_{p} N_{\ell,p},
+@f}
+and the total parallel complexity
+@f{align*}
+W = \sum_{\ell} W_\ell.
+@f}
+Then we define $\mathbb{E}$ as a ratio of the optimal partition to the parallel
+complexity of the current partition
+@f{align*}
+  \mathbb{E} = \frac{W_{\text{opt}}}{W}.
+@f}
+For the example distribution above, we have
+@f{align*}
+W_{\text{opt}}&=\frac{1}{P}\sum_{\ell} N_{\ell} = \frac{1}{3} \left(1+4+4\right)= 3 \qquad
+\\
+W &= \sum_\ell W_\ell = 1 + 2 + 3 = 6
+\\
+\mathbb{E} &= \frac{W_{\text{opt}}}{W} = \frac12.
+@f}
+The value MGTools::workload_imbalance()$= 1/\mathbb{E}$ then represents the factor increase
+in timings we expect for GMG methods (vmults, assembly, etc.) due to the imbalance of the
+mesh partition compared to a perfectly load-balanced workload. We will
+report on these in the results section below for a sequence of meshes,
+and compare with the observed slow-downs as we go to larger and larger
+processor numbers (where, typically, the load imbalance becomes larger
+as well).
+
+These sorts of considerations are considered in much greater detail in
+@cite clevenger_par_gmg, which contains a full discussion of the partition efficiency model
+and the effect the imbalance has on the GMG V-cycle timing. In summary, the value
+of $\mathbb{E}$ is highly dependent on the degree of local mesh refinement used and has
+an optimal value $\mathbb{E} \approx 1$ for globally refined meshes. Typically for adaptively
+refined meshes, the number of processors used to distribute a single mesh has a
+negative impact on $\mathbb{E}$ but only up to a leveling off point, where the imbalance
+remains relatively constant for an increasing number of processors, and further refinement
+has very little impact on $\mathbb{E}$. Finally, $1/\mathbb{E}$ was shown to give an
+accurate representation of the slowdown in parallel scaling expected for the timing of
+a V-cycle.
+
+It should be noted that there is potential for some asynchronous work between multigrid
+levels, specifically with purely nearest neighbor MPI communication, and an adaptive mesh
+could be constructed such that the efficiency model would far overestimate the V-cycle slowdown
+due to the asynchronous work "covering up" the imbalance (which assumes synchronization over levels).
+However, for most realistic adaptive meshes the expectation is that this asynchronous work will
+only cover up a very small portion of the imbalance and the efficiency model will describe the
+slowdown very well.
+
+
+<h3>Workload imbalance for algebraic multigrid methods</h3>
+
+The considerations above show that one has to expect certain limits on
+the scalability of the geometric multigrid algorithm as it is implemented in deal.II because even in cases
+where the finest levels of a mesh are perfectly load balanced, the
+coarser levels may not be. At the same time, the coarser levels are
+weighted less (the contributions of $W_\ell$ to $W$ are small) because
+coarser levels have fewer cells and, consequently, do not contribute
+to the overall run time as much as finer levels. In other words,
+imbalances in the coarser levels may not lead to large effects in the
+big picture.
+
+Algebraic multigrid methods are of course based on an entirely
+different approach to creating a hierarchy of levels. In particular,
+they create these purely based on analyzing the system matrix, and
+very sophisticated algorithms for ensuring that the problem is well
+load-balanced on every level are implemented in both the hypre and
+ML/MueLu packages that underly the TrilinosWrappers::PreconditionAMG
+and PETScWrappers::PreconditionBoomerAMG classes. In some sense, these
+algorithms are simpler than for geometric multigrid methods because
+they only deal with the matrix itself, rather than all of the
+connotations of meshes, neighbors, parents, and other geometric
+entities. At the same time, much work has also been put into making
+algebraic multigrid methods scale to very large problems, including
+questions such as reducing the number of processors that work on a
+given level of the hierarchy to a subset of all processors, if
+otherwise processors would spend less time on computations than on
+communication. (One might note that it is of course possible to
+implement these same kinds of ideas also in geometric multigrid
+algorithms where one purposefully idles some processors on coarser
+levels to reduce the amount of communication. deal.II just doesn't do
+this at this time.)
+
+These are not considerations we typically have to worry about here,
+however: For most purposes, we use algebraic multigrid methods as
+black-box methods.
+
+
+
+<h3>Running the program</h3>
+
+As mentioned above, this program can use three different ways of
+solving the linear system: matrix-based geometric multigrid ("MB"),
+matrix-free geometric multigrid ("MF"), and algebraic multigrid
+("AMG"). The directory in which this program resides has input files
+with suffix `.prm` for all three of these options, and for both 2d and
+3d.
+
+You can execute the program as in
+@code
+  ./step-50 gmg_mb_2d.prm
+@endcode
+and this will take the run-time parameters from the given input
+file (here, `gmg_mb_2d.prm`).
+
+The program is intended to be run in parallel, and you can achieve
+this using a command such as
+@code
+  mpirun -np 4 ./step-50 gmg_mb_2d.prm
+@endcode
+if you want to, for example, run on four processors. (That said, the
+program is also ready to run with, say, `-np 28672` if that's how many
+processors you have available.)
+
+
+examples/step-50/doc/results.dox
+<h1>Results</h1>
+
+When you run the program using the following command
+@code
+mpirun -np 16 ./step-50  gmg_mf_2d.prm
+@endcode
+the screen output should look like the following:
+@code
+Cycle 0:
+   Number of active cells:       12 (2 global levels)
+   Partition efficiency:         0.1875
+   Number of degrees of freedom: 65 (by level: 21, 65)
+   Number of CG iterations:      10
+   Global error estimate:        0.355373
+   Wrote solution_00.pvtu
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |    0.0163s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assemble right-hand side        |         1 |  0.000374s |       2.3% |
+| Estimate                        |         1 |  0.000724s |       4.4% |
+| Output results                  |         1 |   0.00277s |        17% |
+| Setup                           |         1 |   0.00225s |        14% |
+| Setup multigrid                 |         1 |   0.00181s |        11% |
+| Solve                           |         1 |   0.00364s |        22% |
+| Solve: 1 multigrid V-cycle      |         1 |  0.000354s |       2.2% |
+| Solve: CG                       |         1 |   0.00151s |       9.3% |
+| Solve: Preconditioner setup     |         1 |   0.00125s |       7.7% |
++---------------------------------+-----------+------------+------------+
+
+Cycle 1:
+   Number of active cells:       24 (3 global levels)
+   Partition efficiency:         0.276786
+   Number of degrees of freedom: 139 (by level: 21, 65, 99)
+   Number of CG iterations:      10
+   Global error estimate:        0.216726
+   Wrote solution_01.pvtu
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |    0.0169s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assemble right-hand side        |         1 |  0.000309s |       1.8% |
+| Estimate                        |         1 |   0.00156s |       9.2% |
+| Output results                  |         1 |   0.00222s |        13% |
+| Refine grid                     |         1 |   0.00278s |        16% |
+| Setup                           |         1 |   0.00196s |        12% |
+| Setup multigrid                 |         1 |    0.0023s |        14% |
+| Solve                           |         1 |   0.00565s |        33% |
+| Solve: 1 multigrid V-cycle      |         1 |  0.000349s |       2.1% |
+| Solve: CG                       |         1 |   0.00285s |        17% |
+| Solve: Preconditioner setup     |         1 |   0.00195s |        12% |
++---------------------------------+-----------+------------+------------+
+
+Cycle 2:
+   Number of active cells:       51 (4 global levels)
+   Partition efficiency:         0.41875
+   Number of degrees of freedom: 245 (by level: 21, 65, 225, 25)
+   Number of CG iterations:      11
+   Global error estimate:        0.112098
+   Wrote solution_02.pvtu
+
+
++---------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start    |    0.0183s |            |
+|                                             |            |            |
+| Section                         | no. calls |  wall time | % of total |
++---------------------------------+-----------+------------+------------+
+| Assemble right-hand side        |         1 |  0.000274s |       1.5% |
+| Estimate                        |         1 |   0.00127s |       6.9% |
+| Output results                  |         1 |   0.00227s |        12% |
+| Refine grid                     |         1 |    0.0024s |        13% |
+| Setup                           |         1 |   0.00191s |        10% |
+| Setup multigrid                 |         1 |   0.00295s |        16% |
+| Solve                           |         1 |   0.00702s |        38% |
+| Solve: 1 multigrid V-cycle      |         1 |  0.000398s |       2.2% |
+| Solve: CG                       |         1 |   0.00376s |        21% |
+| Solve: Preconditioner setup     |         1 |   0.00238s |        13% |
++---------------------------------+-----------+------------+------------+
+.
+.
+.
+@endcode
+Here, the timing of the `solve()` function is split up in 3 parts: setting
+up the multigrid preconditioner, execution of a single multigrid V-cycle, and
+the CG solver. The V-cycle that is timed is unnecessary for the overall solve
+and only meant to give an insight at the different costs for AMG and GMG.
+Also it should be noted that when using the AMG solver, "Workload imbalance"
+is not included in the output since the hierarchy of coarse meshes is not
+required.
+
+All results in this section are gathered on Intel Xeon Platinum 8280 (Cascade
+Lake) nodes which have 56 cores and 192GB per node and support AVX-512 instructions,
+allowing for vectorization over 8 doubles (vectorization used only in the matrix-free
+computations). The code is compiled using gcc 7.1.0 with intel-mpi 17.0.3. Trilinos
+12.10.1 is used for the matrix-based GMG/AMG computations.
+
+We can then gather a variety of information by calling the program
+with the input files that are provided in the directory in which
+step-50 is located. Using these, and adjusting the number of mesh
+refinement steps, we can produce information about how well the
+program scales.
+
+The following table gives weak scaling timings for this program on up to 256M DoFs
+and 7,168 processors. (Recall that weak scaling keeps the number of
+degrees of freedom per processor constant while increasing the number of
+processors; i.e., it considers larger and larger problems.)
+Here, $\mathbb{E}$ is the partition efficiency from the
+ introduction (also equal to 1.0/workload imbalance), "Setup" is a combination
+of setup, setup multigrid, assemble, and assemble multigrid from the timing blocks,
+and "Prec" is the preconditioner setup. Ideally all times would stay constant
+over each problem size for the individual solvers, but since the partition
+efficiency decreases from 0.371 to 0.161 from largest to smallest problem size,
+we expect to see an approximately $0.371/0.161=2.3$ times increase in timings
+for GMG. This is, in fact, pretty close to what we really get:
+
+<table align="center" class="doxtable">
+<tr>
+  <th colspan="4"></th>
+  <th></th>
+  <th colspan="4">MF-GMG</th>
+  <th></th>
+  <th colspan="4">MB-GMG</th>
+  <th></th>
+  <th colspan="4">AMG</th>
+</tr>
+<tr>
+  <th align="right">Procs</th>
+  <th align="right">Cycle</th>
+  <th align="right">DoFs</th>
+  <th align="right">$\mathbb{E}$</th>
+  <th></th>
+  <th align="right">Setup</th>
+  <th align="right">Prec</th>
+  <th align="right">Solve</th>
+  <th align="right">Total</th>
+  <th></th>
+  <th align="right">Setup</th>
+  <th align="right">Prec</th>
+  <th align="right">Solve</th>
+  <th align="right">Total</th>
+  <th></th>
+  <th align="right">Setup</th>
+  <th align="right">Prec</th>
+  <th align="right">Solve</th>
+  <th align="right">Total</th>
+</tr>
+<tr>
+  <td align="right">112</th>
+  <td align="right">13</th>
+  <td align="right">4M</th>
+  <td align="right">0.37</th>
+  <td></td>
+  <td align="right">0.742</th>
+  <td align="right">0.393</th>
+  <td align="right">0.200</th>
+  <td align="right">1.335</th>
+  <td></td>
+  <td align="right">1.714</th>
+  <td align="right">2.934</th>
+  <td align="right">0.716</th>
+  <td align="right">5.364</th>
+  <td></td>
+  <td align="right">1.544</th>
+  <td align="right">0.456</th>
+  <td align="right">1.150</th>
+  <td align="right">3.150</th>
+</tr>
+<tr>
+  <td align="right">448</th>
+  <td align="right">15</th>
+  <td align="right">16M</th>
+  <td align="right">0.29</th>
+  <td></td>
+  <td align="right">0.884</th>
+  <td align="right">0.535</th>
+  <td align="right">0.253</th>
+  <td align="right">1.672</th>
+  <td></td>
+  <td align="right">1.927</th>
+  <td align="right">3.776</th>
+  <td align="right">1.190</th>
+  <td align="right">6.893</th>
+  <td></td>
+  <td align="right">1.544</th>
+  <td align="right">0.456</th>
+  <td align="right">1.150</th>
+  <td align="right">3.150</th>
+</tr>
+<tr>
+  <td align="right">1,792</th>
+  <td align="right">17</th>
+  <td align="right">65M</th>
+  <td align="right">0.22</th>
+  <td></td>
+  <td align="right">1.122</th>
+  <td align="right">0.686</th>
+  <td align="right">0.309</th>
+  <td align="right">2.117</th>
+  <td></td>
+  <td align="right">2.171</th>
+  <td align="right">4.862</th>
+  <td align="right">1.660</th>
+  <td align="right">8.693</th>
+  <td></td>
+  <td align="right">1.654</th>
+  <td align="right">0.546</th>
+  <td align="right">1.460</th>
+  <td align="right">3.660</th>
+</tr>
+<tr>
+  <td align="right">7,168</th>
+  <td align="right">19</th>
+  <td align="right">256M</th>
+  <td align="right">0.16</th>
+  <td></td>
+  <td align="right">1.214</th>
+  <td align="right">0.893</th>
+  <td align="right">0.521</th>
+  <td align="right">2.628</th>
+  <td></td>
+  <td align="right">2.386</th>
+  <td align="right">7.260</th>
+  <td align="right">2.560</th>
+  <td align="right">12.206</th>
+  <td></td>
+  <td align="right">1.844</th>
+  <td align="right">1.010</th>
+  <td align="right">1.890</th>
+  <td align="right">4.744</th>
+</tr>
+</table>
+
+On the other hand, the algebraic multigrid in the last set of columns
+is relatively unaffected by the increasing imbalance of the mesh
+hierarchy (because it doesn't use the mesh hierarchy) and the growth
+in time is rather driven by other factors that are well documented in
+the literature (most notably that the algorithmic complexity of
+some parts of algebraic multigrid methods appears to be ${\cal O}(N
+\log N)$ instead of ${\cal O}(N)$ for geometric multigrid).
+
+The upshort of the table above is that the matrix-free geometric multigrid
+method appears to be the fastest approach to solving this equation if
+not by a huge margin. Matrix-based methods, on the other hand, are
+consistently the worst.
+
+The following figure provides strong scaling results for each method, i.e.,
+we solve the same problem on more and more processors. Specifically,
+we consider the problems after 16 mesh refinement cycles
+(32M DoFs) and 19 cycles (256M DoFs), on between 56 to 28,672 processors:
+
+<img width="600px" src="https://www.dealii.org/images/steps/developer/step-50-strong-scaling.png" alt="">
+
+While the matrix-based GMG solver and AMG scale similarly and have a
+similar time to solution (at least as long as there is a substantial
+number of unknowns per processor -- say, several 10,000), the
+matrix-free GMG solver scales much better and solves the finer problem
+in roughly the same time as the AMG solver for the coarser mesh with
+only an eighth of the number of processors. Conversely, it can solve the
+same problem on the same number of processors in about one eighth the
+time.
+
+
+<h3> Possibilities for extensions </h3>
+
+<h4> Testing convergence and higher order elements </h4>
+
+The finite element degree is currently hard-coded as 2, see the template
+arguments of the main class. It is easy to change. To test, it would be
+interesting to switch to a test problem with a reference solution. This way,
+you can compare error rates.
+
+<h4> Coarse solver </h4>
+
+A more interesting example would involve a more complicated coarse mesh (see
+step-49 for inspiration). The issue in that case is that the coarsest
+level of the mesh hierarchy is actually quite large, and one would
+have to think about ways to solve the coarse level problem
+efficiently. (This is not an issue for algebraic multigrid methods
+because they would just continue to build coarser and coarser levels
+of the matrix, regardless of their geometric origin.)
+
+In the program here, we simply solve the coarse level problem with a
+Conjugate Gradient method without any preconditioner. That is acceptable
+if the coarse problem is really small -- for example, if the coarse
+mesh had a single cell, then the coarse mesh problems has a $9\times 9$
+matrix in 2d, and a $27\times 27$ matrix in 3d; for the coarse mesh we
+use on the $L$-shaped domain of the current program, these sizes are
+$21\times 21$ in 2d and $117\times 117$ in 3d. But if the coarse mesh
+consists of hundreds or thousands of cells, this approach will no
+longer work and might start to dominate the overall run-time of each V-cyle.
+A common approach is then to solve the coarse mesh problem using an
+algebraic multigrid preconditioner; this would then, however, require
+assembling the coarse matrix (even for the matrix-free version) as
+input to the AMG implementation.
+
+

@@ -1,0 +1,663 @@
+examples/step-14/doc/intro.dox
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+<h3>The maths</h3>
+
+The Heidelberg group of Professor Rolf Rannacher, to which the three initial
+authors of the deal.II library belonged during their PhD time and partly also
+afterwards, has been involved with adaptivity and error estimation for finite
+element discretizations since the mid-1990ies. The main achievement is the
+development of error estimates for arbitrary functionals of the solution, and
+of optimal mesh refinement for its computation.
+
+We will not discuss the derivation of these concepts in too great detail, but
+will implement the main ideas in the present example program. For a thorough
+introduction into the general idea, we refer to the seminal work of Becker and
+Rannacher @cite BR95, @cite BR96r, and the overview article of the same authors in
+Acta Numerica @cite BR01; the first introduces the concept of error
+estimation and adaptivity for general functional output for the Laplace
+equation, while the second gives many examples of applications of these
+concepts to a large number of other, more complicated equations. For
+applications to individual types of equations, see also the publications by
+Becker @cite Bec95, @cite Bec98, Kanschat @cite Kan96, @cite FK97, Suttmeier
+@cite Sut96, @cite RS97, @cite RS98c, @cite RS99, Bangerth @cite BR99b,
+@cite Ban00w, @cite BR01a, @cite Ban02, and Hartmann @cite Har02, @cite HH01,
+@cite HH01b. All of these works, from the original introduction by Becker and
+Rannacher to individual contributions to particular equations, have later been
+summarized in a book by Bangerth and Rannacher that covers all of these topics,
+see @cite BR03.
+
+
+The basic idea is the following: in applications, one is not usually
+interested in the solution per se, but rather in certain aspects of it. For
+example, in simulations of flow problems, one may want to know the lift or
+drag of a body immersed in the fluid; it is this quantity that we want to know
+to best accuracy, and whether the rest of the solution of the describing
+equations is well resolved is not of primary interest. Likewise, in elasticity
+one might want to know about values of the stress at certain points to guess
+whether maximal load values of joints are safe, for example. Or, in radiative
+transfer problems, mean flux intensities are of interest.
+
+In all the cases just listed, it is the evaluation of a functional $J(u)$ of
+the solution which we are interested in, rather than the values of $u$
+everywhere. Since the exact solution $u$ is not available, but only its
+numerical approximation $u_h$, it is sensible to ask whether the computed
+value $J(u_h)$ is within certain limits of the exact value $J(u)$, i.e. we
+want to bound the error with respect to this functional, $J(u)-J(u_h)$.
+
+For simplicity of exposition, we henceforth assume that both the quantity of
+interest $J$, as well as the equation are linear, and we will in particular
+show the derivation for the Laplace equation with homogeneous Dirichlet
+boundary conditions, although the concept is much more general. For this
+general case, we refer to the references listed above.  The goal is to obtain
+bounds on the error, $J(e)=J(u)-J(u_h)$. For this, let us denote by $z$ the
+solution of a dual problem, defined as follows:
+@f[
+  a(\varphi,z) = J(\varphi) \qquad \forall \varphi,
+@f]
+where $a(\cdot,\cdot)$ is the bilinear form associated with the differential
+equation, and the test functions are chosen from the corresponding solution
+space. Then, taking as special test function $\varphi=e$ the error, we have
+that
+@f[
+  J(e) = a(e,z)
+@f]
+and we can, by Galerkin orthogonality, rewrite this as
+@f[
+  J(e) = a(e,z-\varphi_h)
+@f]
+where $\varphi_h$ can be chosen from the discrete test space in
+whatever way we find convenient.
+
+Concretely, for Laplace's equation, the error identity reads
+@f[
+  J(e) = (\nabla e, \nabla(z-\varphi_h)).
+@f]
+Because we want to use this formula not only to compute error, but
+also to refine the mesh, we need to rewrite the expression above as a
+sum over cells where each cell's contribution can then be used as an
+error indicator for this cell.
+Thus, we split the scalar products into terms for each cell, and
+integrate by parts on each of them:
+@f{eqnarray*}
+  J(e)
+  &=&
+  \sum_K (\nabla (u-u_h), \nabla (z-\varphi_h))_K
+  \\
+  &=&
+  \sum_K (-\Delta (u-u_h), z-\varphi_h)_K
+  + (\partial_n (u-u_h), z-z_h)_{\partial K}.
+@f}
+Next we use that $-\Delta u=f$, and that for solutions of the Laplace
+equation, the solution is smooth enough that $\partial_n u$ is
+continuous almost everywhere -- so the terms involving $\partial_n u$ on one
+cell cancels with that on its neighbor, where the normal vector has the
+opposite sign. (The same is not true for $\partial_n u_h$, though.)
+At the boundary of the domain, where there is no neighbor cell
+with which this term could cancel, the weight $z-\varphi_h$ can be chosen as
+zero, and the whole term disappears.
+
+Thus, we have
+@f{eqnarray*}
+  J(e)
+  &=&
+  \sum_K (f+\Delta u_h, z-\varphi_h)_K
+  - (\partial_n u_h, z-\varphi_h)_{\partial K\backslash \partial\Omega}.
+@f}
+In a final step, note that when taking the normal derivative of $u_h$, we mean
+the value of this quantity as taken from this side of the cell (for the usual
+Lagrange elements, derivatives are not continuous across edges). We then
+rewrite the above formula by exchanging half of the edge integral of cell $K$
+with the neighbor cell $K'$, to obtain
+@f{eqnarray*}
+  J(e)
+  &=&
+  \sum_K (f+\Delta u_h, z-\varphi_h)_K
+  - \frac 12 (\partial_n u_h|_K + \partial_{n'} u_h|_{K'},
+              z-\varphi_h)_{\partial K\backslash \partial\Omega}.
+@f}
+Using that for the normal vectors on adjacent cells we have $n'=-n$, we define the jump of the
+normal derivative by
+@f[
+  [\partial_n u_h] \dealcoloneq \partial_n u_h|_K + \partial_{n'} u_h|_{K'}
+  =
+  \partial_n u_h|_K - \partial_n u_h|_{K'},
+@f]
+and get the final form after setting the discrete function $\varphi_h$, which
+is by now still arbitrary, to the point interpolation of the dual solution,
+$\varphi_h=I_h z$:
+@f{eqnarray*}
+  J(e)
+  &=&
+  \sum_K (f+\Delta u_h, z-I_h z)_K
+  - \frac 12 ([\partial_n u_h],
+              z-I_h z)_{\partial K\backslash \partial\Omega}.
+@f}
+
+With this, we have obtained an exact representation of the error of the finite
+element discretization with respect to arbitrary (linear) functionals
+$J(\cdot)$. Its structure is a weighted form of a residual estimator, as both
+$f+\Delta u_h$ and $[\partial_n u_h]$ are cell and edge residuals that vanish
+on the exact solution, and $z-I_h z$ are weights indicating how important the
+residuals on a certain cell is for the evaluation of the given functional.
+Furthermore, it is a cell-wise quantity, so we can use it as a mesh refinement
+criterion. The question, is: how to evaluate it? After all, the evaluation
+requires knowledge of the dual solution $z$, which carries the information
+about the quantity we want to know to best accuracy.
+
+In some, very special cases, this dual solution is known. For example, if the
+functional $J(\cdot)$ is the point evaluation, $J(\varphi)=\varphi(x_0)$, then
+the dual solution has to satisfy
+@f[
+  -\Delta z = \delta(x-x_0),
+@f]
+with the Dirac delta function on the right hand side, and the dual solution is
+the Green's function with respect to the point $x_0$. For simple geometries,
+this function is analytically known, and we could insert it into the error
+representation formula.
+
+However, we do not want to restrict ourselves to such special cases. Rather,
+we will compute the dual solution numerically, and approximate $z$ by some
+numerically obtained $\tilde z$. We note that it is not sufficient to compute
+this approximation $\tilde z$ using the same method as used for the primal
+solution $u_h$, since then $\tilde z-I_h \tilde z=0$, and the overall error
+estimate would be zero. Rather, the approximation $\tilde z$ has to be from a
+larger space than the primal finite element space. There are various ways to
+obtain such an approximation (see the cited literature), and we will choose to
+compute it with a higher order finite element space. While this is certainly
+not the most efficient way, it is simple since we already have all we need to
+do that in place, and it also allows for simple experimenting. For more
+efficient methods, again refer to the given literature, in particular
+@cite BR95, @cite BR03.
+
+With this, we end the discussion of the mathematical side of this program and
+turn to the actual implementation.
+
+
+@note There are two steps above that do not seem necessary if all you
+care about is computing the error: namely, (i) the subtraction of
+$\phi_h$ from $z$, and (ii) splitting the integral into a sum of cells
+and integrating by parts on each. Indeed, neither of these two steps
+change $J(e)$ at all, as we only ever consider identities above until
+the substitution of $z$ by $\tilde z$. In other words, if you care
+only about <i>estimating the global error</i> $J(e)$, then these steps
+are not necessary. On the other hand, if you want to use the error
+estimate also as a refinement criterion for each cell of the mesh,
+then it is necessary to (i) break the estimate into a sum of cells,
+and (ii) massage the formulas in such a way that each cell's
+contributions have something to do with the local error. (While the
+contortions above do not change the value of the <i>sum</i> $J(e)$,
+they change the values we compute for each cell $K$.) To this end, we
+want to write everything in the form "residual times dual weight"
+where a "residual" is something that goes to zero as the approximation
+becomes $u_h$ better and better. For example, the quantity $\partial_n
+u_h$ is not a residual, since it simply converges to the (normal
+component of) the gradient of the exact solution. On the other hand,
+$[\partial_n u_h]$ is a residual because it converges to $[\partial_n
+u]=0$. All of the steps we have taken above in developing the final
+form of $J(e)$ have indeed had the goal of bringing the final formula
+into a form where each term converges to zero as the discrete solution
+$u_h$ converges to $u$. This then allows considering each cell's
+contribution as an "error indicator" that also converges to zero -- as
+it should as the mesh is refined.
+
+
+
+<h3>The software</h3>
+
+The step-14 example program builds heavily on the techniques already used in
+the step-13 program. Its implementation of the dual weighted residual error
+estimator explained above is done by deriving a second class, properly called
+<code>DualSolver</code>, from the <code>Solver</code> base class, and having a class
+(<code>WeightedResidual</code>) that joins the two again and controls the solution
+of the primal and dual problem, and then uses both to compute the error
+indicator for mesh refinement.
+
+The program continues the modular concept of the previous example, by
+implementing the dual functional, describing quantity of interest, by an
+abstract base class, and providing two different functionals which implement
+this interface. Adding a different quantity of interest is thus simple.
+
+One of the more fundamental differences is the handling of data. A common case
+is that you develop a program that solves a certain equation, and test it with
+different right hand sides, different domains, different coefficients and
+boundary values, etc. Usually, these have to match, so that exact solutions
+are known, or that their combination makes sense at all.
+
+We demonstrate a way how this can be achieved in a simple, yet very flexible
+way. We will put everything that belongs to a certain setup into one class,
+and provide a little C++ mortar around it, so that entire setups (domains,
+coefficients, right hand sides, etc.) can be exchanged by only changing
+something in <em>one</em> place.
+
+Going this way a little further, we have also centralized all the other
+parameters that describe how the program is to work in one place, such as the
+order of the finite element, the maximal number of degrees of freedom, the
+evaluation objects that shall be executed on the computed solutions, and so
+on. This allows for simpler configuration of the program, and we will show in
+a later program how to use a library class that can handle setting these
+parameters by reading an input file. The general aim is to reduce the places
+within a program where one may have to look when wanting to change some
+parameter, as it has turned out in practice that one forgets where they are as
+programs grow. Furthermore, putting all options describing what the program
+does in a certain run into a file (that can be stored with the results) helps
+repeatability of results more than if the various flags were set somewhere in
+the program, where their exact values are forgotten after the next change to
+this place.
+
+Unfortunately, the program has become rather long. While this admittedly
+reduces its usefulness as an example program, we think that it is a very good
+starting point for development of a program for other kinds of problems,
+involving different equations than the Laplace equation treated here.
+Furthermore, it shows everything that we can show you about our way of a
+posteriori error estimation, and its structure should make it simple for you
+to adjust this method to other problems, other functionals, other geometries,
+coefficients, etc.
+
+The author believes that the present program is his masterpiece among the
+example programs, regarding the mathematical complexity, as well as the
+simplicity to add extensions. If you use this program as a basis for your own
+programs, we would kindly like to ask you to state this fact and the name of
+the author of the example program, Wolfgang Bangerth, in publications that
+arise from that, of your program consists in a considerable part of the
+example program.
+
+
+examples/step-14/doc/results.dox
+<h1>Results</h1>
+
+<h3>Point values</h3>
+
+
+This program offers a lot of possibilities to play around. We can thus
+only show a small part of all possible results that can be obtained
+with the help of this program. However, you are encouraged to just try
+it out, by changing the settings in the main program. Here, we start
+by simply letting it run, unmodified:
+@code
+Refinement cycle: 0
+   Number of degrees of freedom=72
+   Point value=0.03243
+   Estimated error=0.000702385
+Refinement cycle: 1
+   Number of degrees of freedom=67
+   Point value=0.0324827
+   Estimated error=0.000888953
+Refinement cycle: 2
+   Number of degrees of freedom=130
+   Point value=0.0329619
+   Estimated error=0.000454606
+Refinement cycle: 3
+   Number of degrees of freedom=307
+   Point value=0.0331934
+   Estimated error=0.000241254
+Refinement cycle: 4
+   Number of degrees of freedom=718
+   Point value=0.0333675
+   Estimated error=7.4912e-05
+Refinement cycle: 5
+   Number of degrees of freedom=1665
+   Point value=0.0334083
+   Estimated error=3.69111e-05
+Refinement cycle: 6
+   Number of degrees of freedom=3975
+   Point value=0.033431
+   Estimated error=1.54218e-05
+Refinement cycle: 7
+   Number of degrees of freedom=8934
+   Point value=0.0334406
+   Estimated error=6.28359e-06
+Refinement cycle: 8
+   Number of degrees of freedom=21799
+   Point value=0.0334444
+@endcode
+
+
+First let's look what the program actually computed. On the seventh
+grid, primal and dual numerical solutions look like this (using a
+color scheme intended to evoke the snow-capped mountains of
+Colorado that the original author of this program now calls
+home):
+<table align="center">
+  <tr>
+    <td width="50%">
+      <img src="https://www.dealii.org/images/steps/developer/step-14.point-value.solution-7.9.2.png" alt="">
+    </td>
+    <td width="50%">
+      <img src="https://www.dealii.org/images/steps/developer/step-14.point-value.solution-7-dual.9.2.png" alt="">
+    </td>
+  </tr>
+</table>
+Apparently, the region at the bottom left is so unimportant for the
+point value evaluation at the top right that the grid is left entirely
+unrefined there, even though the solution has singularities at the inner
+corner of that cell! Due
+to the symmetry in right hand side and domain, the solution should
+actually look like at the top right in all four corners, but the mesh
+refinement criterion involving the dual solution chose to refine them
+differently -- because we said that we really only care about a single
+function value somewhere at the top right.
+
+
+
+Here are some of the meshes that are produced in refinement cycles 0,
+2, 4 (top row), and 5, 7, and 8 (bottom row):
+
+<table width="80%" align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.grid-0.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.grid-2.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.grid-4.9.2.png" alt="" width="100%"></td>
+  </tr>
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.grid-5.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.grid-7.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.grid-8.9.2.png" alt="" width="100%"></td>
+  </tr>
+</table>
+
+Note the subtle interplay between resolving the corner singularities,
+and resolving around the point of evaluation. It will be rather
+difficult to generate such a mesh by hand, as this would involve to
+judge quantitatively how much which of the four corner singularities
+should be resolved, and to set the weight compared to the vicinity of
+the evaluation point.
+
+
+
+The program prints the point value and the estimated error in this
+quantity. From extrapolating it, we can guess that the exact value is
+somewhere close to 0.0334473, plus or minus 0.0000001 (note that we get
+almost 6 valid digits from only 22,000 (primal) degrees of
+freedom. This number cannot be obtained from the value of the
+functional alone, but I have used the assumption that the error
+estimator is mostly exact, and extrapolated the computed value plus
+the estimated error, to get an approximation of the true
+value. Computing with more degrees of freedom shows that this
+assumption is indeed valid.
+
+
+
+From the computed results, we can generate two graphs: one that shows
+the convergence of the error $J(u)-J(u_h)$ (taking the
+extrapolated value as correct) in the point value, and the value that
+we get by adding up computed value $J(u_h)$ and estimated
+error eta (if the error estimator $eta$ were exact, then the value
+$J(u_h)+\eta$ would equal the exact point value, and the error
+in this quantity would always be zero; however, since the error
+estimator is only a - good - approximation to the true error, we can
+by this only reduce the size of the error). In this graph, we also
+indicate the complexity ${\cal O}(1/N)$ to show that mesh refinement
+acts optimal in this case. The second chart compares
+true and estimated error, and shows that the two are actually very
+close to each other, even for such a complicated quantity as the point
+value:
+
+
+<table width="80%" align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.error.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-value.error-estimation.png" alt="" width="100%"></td>
+  </tr>
+</table>
+
+
+<h3>Comparing refinement criteria</h3>
+
+
+Since we have accepted quite some effort when using the mesh
+refinement driven by the dual weighted error estimator (for solving
+the dual problem, and for evaluating the error representation), it is
+worth while asking whether that effort was successful. To this end, we
+first compare the achieved error levels for different mesh refinement
+criteria. To generate this data, simply change the value of the mesh
+refinement criterion variable in the main program. The results are
+thus (for the weight in the Kelly indicator, we have chosen the
+function $1/(r^2+0.1^2)$, where $r$
+is the distance to the evaluation point; it can be shown that this is
+the optimal weight if we neglect the effects of boundaries):
+
+<img src="https://www.dealii.org/images/steps/developer/step-14.point-value.error-comparison.png" alt="">
+
+
+
+Checking these numbers, we see that for global refinement, the error
+is proportional to $O(1/(sqrt(N) log(N)))$, and for the dual
+estimator $O(1/N)$. Generally speaking, we see that the dual
+weighted error estimator is better than the other refinement
+indicators, at least when compared with those that have a similarly
+regular behavior. The Kelly indicator produces smaller errors, but
+jumps about the picture rather irregularly, with the error also
+changing signs sometimes. Therefore, its behavior does not allow to
+extrapolate the results to larger values of N. Furthermore, if we
+trust the error estimates of the dual weighted error estimator, the
+results can be improved by adding the estimated error to the computed
+values. In terms of reliability, the weighted estimator is thus better
+than the Kelly indicator, although the latter sometimes produces
+smaller errors.
+
+
+
+<h3>Evaluation of point stresses</h3>
+
+
+Besides evaluating the values of the solution at a certain point, the
+program also offers the possibility to evaluate the x-derivatives at a
+certain point, and also to tailor mesh refinement for this. To let the
+program compute these quantities, simply replace the two occurrences of
+<code>PointValueEvaluation</code> in the main function by
+<code>PointXDerivativeEvaluation</code>, and let the program run:
+@code
+Refinement cycle: 0
+   Number of degrees of freedom=72
+   Point x-derivative=-0.0719397
+   Estimated error=-0.0126173
+Refinement cycle: 1
+   Number of degrees of freedom=61
+   Point x-derivative=-0.0707956
+   Estimated error=-0.00774316
+Refinement cycle: 2
+   Number of degrees of freedom=131
+   Point x-derivative=-0.0568671
+   Estimated error=-0.00313426
+Refinement cycle: 3
+   Number of degrees of freedom=247
+   Point x-derivative=-0.053033
+   Estimated error=-0.00136114
+Refinement cycle: 4
+   Number of degrees of freedom=532
+   Point x-derivative=-0.0526429
+   Estimated error=-0.000558868
+Refinement cycle: 5
+   Number of degrees of freedom=1267
+   Point x-derivative=-0.0526955
+   Estimated error=-0.000220116
+Refinement cycle: 6
+   Number of degrees of freedom=2864
+   Point x-derivative=-0.0527495
+   Estimated error=-9.46731e-05
+Refinement cycle: 7
+   Number of degrees of freedom=6409
+   Point x-derivative=-0.052785
+   Estimated error=-4.21543e-05
+Refinement cycle: 8
+   Number of degrees of freedom=14183
+   Point x-derivative=-0.0528028
+   Estimated error=-2.04241e-05
+Refinement cycle: 9
+   Number of degrees of freedom=29902
+   Point x-derivative=-0.052814
+@endcode
+
+
+
+The solution looks roughly the same as before (the exact solution of
+course <em>is</em> the same, only the grid changed a little), but the
+dual solution is now different. A close-up around the point of
+evaluation shows this:
+<table align="center">
+  <tr>
+    <td width="50%">
+      <img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.solution-7-dual.png" alt="">
+    </td>
+    <td width="50%">
+      <img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.solution-7-dual-close-up.png" alt="">
+    </td>
+</table>
+This time, the grids in refinement cycles 0, 5, 6, 7, 8, and 9 look
+like this:
+
+<table align="center" width="80%">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.grid-0.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.grid-5.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.grid-6.9.2.png" alt="" width="100%"></td>
+  </tr>
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.grid-7.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.grid-8.9.2.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.grid-9.9.2.png" alt="" width="100%"></td>
+  </tr>
+</table>
+
+Note the asymmetry of the grids compared with those we obtained for
+the point evaluation. This is due to the fact that the domain and the primal
+solution may be symmetric about the diagonal, but the $x$-derivative is
+not, and the latter enters the refinement criterion.
+
+
+
+Then, it is interesting to compare actually computed values of the
+quantity of interest (i.e. the x-derivative of the solution at one
+point) with a reference value of -0.0528223... plus or minus
+0.0000005. We get this reference value by computing on finer grid after
+some more mesh refinements, with approximately 130,000 cells.
+Recall that if the error is $O(1/N)$ in the optimal case, then
+taking a mesh with ten times more cells gives us one additional digit
+in the result.
+
+
+
+In the left part of the following chart, you again see the convergence
+of the error towards this extrapolated value, while on the right you
+see a comparison of true and estimated error:
+
+<table width="80%" align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.error.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.point-derivative.error-estimation.png" alt="" width="100%"></td>
+  </tr>
+</table>
+
+After an initial phase where the true error changes its sign, the
+estimated error matches it quite well, again. Also note the dramatic
+improvement in the error when using the estimated error to correct the
+computed value of $J(u_h)$.
+
+
+
+<h3>step-13 revisited</h3>
+
+
+If instead of the <code>Exercise_2_3</code> data set, we choose
+<code>CurvedRidges</code> in the main function, and choose $(0.5,0.5)$
+as the evaluation point, then we can redo the
+computations of the previous example program, to compare whether the
+results obtained with the help of the dual weighted error estimator
+are better than those we had previously.
+
+
+
+First, the meshes after 9 adaptive refinement cycles obtained with
+the point evaluation and derivative evaluation refinement
+criteria, respectively, look like this:
+
+<table width="80%" align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.step-13.point-value.png" alt="" width="100%"></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.step-13.point-derivative.png" alt="" width="100%"></td>
+  </tr>
+</table>
+
+The features of the solution can still be seen in the mesh, but since the
+solution is smooth, the singularities of the dual solution entirely
+dominate the mesh refinement criterion, and lead to strongly
+concentrated meshes. The solution after the seventh refinement step looks
+like the following:
+
+<table width="40%" align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-14.step-13.solution-7.9.2.png" alt="" width="100%"></td>
+  </tr>
+</table>
+
+Obviously, the solution is worse at some places, but the mesh
+refinement process should have taken care that these places are not
+important for computing the point value.
+
+
+
+
+The next point is to compare the new (duality based) mesh refinement
+criterion with the old ones. These are the results:
+
+<img src="https://www.dealii.org/images/steps/developer/step-14.step-13.error-comparison.png" alt="">
+
+
+
+The results are, well, somewhat mixed. First, the Kelly indicator
+disqualifies itself by its unsteady behavior, changing the sign of the
+error several times, and with increasing errors under mesh
+refinement. The dual weighted error estimator has a monotone decrease
+in the error, and is better than the weighted Kelly and global
+refinement, but the margin is not as large as expected. This is, here,
+due to the fact the global refinement can exploit the regular
+structure of the meshes around the point of evaluation, which leads to
+a better order of convergence for the point error. However, if we had
+a mesh that is not locally rectangular, for example because we had to
+approximate curved boundaries, or if the coefficients were not
+constant, then this advantage of globally refinement meshes would
+vanish, while the good performance of the duality based estimator
+would remain.
+
+
+
+
+<h3>Conclusions and outlook</h3>
+
+
+The results here are not too clearly indicating the superiority of the
+dual weighted error estimation approach for mesh refinement over other
+mesh refinement criteria, such as the Kelly indicator. This is due to
+the relative simplicity of the shown applications. If you are not
+convinced yet that this approach is indeed superior, you are invited
+to browse through the literature indicated in the introduction, where
+plenty of examples are provided where the dual weighted approach can
+reduce the necessary numerical work by orders of magnitude, making
+this the only way to compute certain quantities to reasonable
+accuracies at all.
+
+
+
+Besides the objections you may raise against its use as a mesh
+refinement criterion, consider that accurate knowledge of the error in
+the quantity one might want to compute is of great use, since we can
+stop computations when we are satisfied with the accuracy. Using more
+traditional approaches, it is very difficult to get accurate estimates
+for arbitrary quantities, except for, maybe, the error in the energy
+norm, and we will then have no guarantee that the result we computed
+satisfies any requirements on its accuracy. Also, as was shown for the
+evaluation of point values and derivatives, the error estimate can be
+used to extrapolate the results, yielding much higher accuracy in the
+quantity we want to know.
+
+
+
+Leaving these mathematical considerations, we tried to write the
+program in a modular way, such that implementing another test case, or
+another evaluation and dual functional is simple. You are encouraged
+to take the program as a basis for your own experiments, and to play a
+little.
+
+

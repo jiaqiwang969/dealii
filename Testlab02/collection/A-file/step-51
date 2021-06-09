@@ -1,0 +1,767 @@
+examples/step-51/doc/intro.dox
+<br>
+
+<i>
+This program was contributed by Martin Kronbichler and Scott Miller.
+</i>
+
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+This tutorial program presents the implementation of a hybridizable
+discontinuous Galkerin method for the convection-diffusion equation.
+
+<h3> Hybridizable discontinuous Galerkin methods </h3>
+
+One common argument against the use of discontinuous Galerkin elements
+is the large number of globally coupled degrees of freedom that one
+must solve in an implicit system.  This is because, unlike continuous finite
+elements, in typical discontinuous elements there is one degree of freedom at
+each vertex <i>for each of the adjacent elements</i>, rather than just one,
+and similarly for edges and faces.  As an example of how fast the number of
+unknowns grows, consider the FE_DGPMonomial basis: each
+scalar solution component is represented by polynomials of degree $p$
+with $(1/\text{dim}!) \prod_{i=1}^{\text{dim}}(p+i)$ degrees of freedom per
+element. Typically, all degrees of freedom in an element are coupled
+to all of the degrees of freedom in the adjacent elements.  The resulting
+discrete equations yield very large linear systems very quickly, especially
+for systems of equations in 2 or 3 dimensions.
+
+<h4> Reducing the size of the linear system </h4>
+To alleviate the computational cost of solving such large linear systems,
+the hybridizable discontinuous Galerkin (HDG) methodology was introduced
+by Cockburn and co-workers (see the references in the recent HDG overview
+article by Nguyen and Peraire @cite Ngu2012).
+
+The HDG method achieves this goal by formulating the mathematical problem using
+Dirichlet-to-Neumann mappings.  The partial differential equations are first
+written as a first order system, and each field is then discretized via a DG
+method.  At this point, the single-valued "trace" values on the skeleton of the
+mesh, i.e., element faces, are taken to be independent unknown quantities.
+This yields unknowns in the discrete formulation that fall into two categories:
+- Face unknowns that only couple with the cell unknowns from both sides of the face;
+- Cell unknowns that only couple with the cell and face unknowns
+  defined within the same cell. Crucially, no cell interior degree of freedom
+  on one cell ever couples to any interior cell degree of freedom of a
+  different cell.
+
+The Dirichlet-to-Neumann map concept then permits the following solution procedure:
+<ol>
+  <li>  Use local element interior data to enforce a Neumann condition on the
+skeleton of the triangulation.  The global problem is then to solve for the
+trace values, which are the only globally coupled unknowns.
+  <li>  Use the known skeleton values as Dirichlet data for solving local
+element-level solutions.  This is known as the 'local solver', and is an
+<i>embarrassingly parallel</i> element-by-element solution process.
+</ol>
+
+<h4> Relation with Static Condensation </h4>
+The above procedure also has a linear algebra interpretation---referred to
+as <i>static condensation</i>---that was exploited to reduce the size of the
+global linear system by Guyan in the context of continuous Finite Elements
+@cite G65, and by Fraeijs de Veubeke for mixed methods @cite F65. In the
+latter case (mixed formulation), the system reduction was achieved through the
+use of discontinuous fluxes combined with the introduction of an additional
+auxiliary <i>hybrid</i> variable that approximates the trace of the unknown
+at the boundary of every element. This procedure became known as hybridization
+and---by analogy---is the reason why the local discontinuous Galerkin method
+introduced by Cockburn, Gopalakrishnan, and Lazarov in 2009 @cite CGL2009, and
+subsequently developed by their collaborators, eventually came to be known as
+the <i>hybridizable discontinuous Galerkin</i> (HDG) method.
+
+Let us write the complete linear system associated to the HDG problem as a
+block system with the discrete DG (cell interior) variables $U$ as first block
+and the skeleton (face) variables $\Lambda$ as the second block:
+@f{eqnarray*}
+\begin{pmatrix} A & B \\ C & D \end{pmatrix}
+\begin{pmatrix} U \\ \Lambda \end{pmatrix}
+=
+\begin{pmatrix} F \\ G \end{pmatrix}.
+@f}
+Our aim is now to eliminate the $U$ block with a Schur complement
+approach similar to step-20, which results in the following two steps:
+@f{eqnarray*}
+(D - C A^{-1} B) \Lambda &=& G - C A^{-1} F, \\
+A U &=& F - B \Lambda.
+@f}
+The point is that the presence of $A^{-1}$ is not a problem because $A$ is a
+block diagonal matrix where each block corresponds to one cell and is
+therefore easy enough to invert.
+The coupling to other cells is introduced by the matrices
+$B$ and $C$ over the skeleton variable. The block-diagonality of
+$A$ and the structure in $B$ and $C$ allow us to invert the
+matrix $A$ element by element (the local solution of the Dirichlet
+problem) and subtract $CA^{-1}B$ from $D$. The steps in the Dirichlet-to-Neumann
+map concept hence correspond to
+<ol>
+  <li> constructing the Schur complement matrix $D-C A^{-1} B$ and right hand
+    side $G - C A^{-1} F$  <i>locally on each cell</i>
+    and inserting the contribution into the global trace matrix in the usual way,
+  <li> solving the Schur complement system for $\Lambda$, and
+  <li> solving for $U$ using the second equation, given $\Lambda$.
+</ol>
+
+
+<h4> Solution quality and rates of convergence</h4>
+Another criticism of traditional DG methods is that the approximate fluxes
+converge suboptimally.  The local HDG solutions can be shown to converge
+as $\mathcal{O}(h^{p+1})$, i.e., at optimal order.  Additionally, a
+super-convergence property can be used to post-process a new approximate
+solution that converges at the rate $\mathcal{O}(h^{p+2})$.
+
+
+<h4> Alternative approaches </h4>
+
+The hybridizable discontinuous Galerkin method is only one way in
+which the problems of the discontinuous Galerkin method can be
+addressed. Another idea is what is called the "weak Galerkin"
+method. It is explored in step-61.
+
+
+<h3> HDG applied to the convection-diffusion problem </h3>
+
+The HDG formulation used for this example is taken from
+<br>
+<b>
+  N.C. Nguyen, J. Peraire, B. Cockburn:
+  <i>An implicit high-order hybridizable discontinuous Galerkin method
+  for linear convection–diffusion equations</i>,
+  Journal of Computational Physics, 2009, 228:9, 3232-3254.
+  <a href="http://dx.doi.org/10.1016/j.jcp.2009.01.030">[DOI]</a>
+</b>
+
+We consider the convection-diffusion equation over the domain $\Omega$
+with Dirichlet boundary $\partial \Omega_D$ and Neumann boundary
+$\partial \Omega_N$:
+@f{eqnarray*}
+	\nabla \cdot (\mathbf{c} u) - \nabla \cdot (\kappa \nabla u) &=& f,
+	\quad \text{ in } \Omega, \\
+	u &=& g_D, \quad \text{ on } \partial \Omega_D, \\
+	(\mathbf{c} u - \kappa \nabla u)\cdot \mathbf{n} &=& g_N,
+	\quad \text{ on }  \partial \Omega_N.
+@f}
+
+Introduce the auxiliary variable $\mathbf{q}=-\kappa \nabla u$ and rewrite
+the above equation as the first order system:
+@f{eqnarray*}
+  \mathbf{q} + \kappa \nabla u &=& 0, \quad \text{ in } \Omega, \\
+  \nabla \cdot (\mathbf{c} u + \mathbf{q}) &=& f, \quad \text{ in } \Omega, \\
+  u &=& g_D, \quad \text{ on } \partial \Omega_D, \\
+  (\mathbf{q} + \mathbf{c}u)\cdot\mathbf{n}  &=& g_N,
+	\quad \text{ on }  \partial \Omega_N.
+@f}
+
+We multiply these equations by the weight functions $\mathbf{v}, w$
+and integrate by parts over every element $K$ to obtain:
+@f{eqnarray*}
+  (\mathbf{v}, \kappa^{-1} \mathbf{q})_K - (\nabla\cdot\mathbf{v}, u)_K
+    + \left<\mathbf{v}\cdot\mathbf{n}, {\hat{u}}\right>_{\partial K} &=& 0, \\
+  - (\nabla w, \mathbf{c} u + \mathbf{q})_K
+    + \left<w, (\widehat{\mathbf{c} u}+{\hat{\mathbf{q}}})\cdot\mathbf{n}\right>_{\partial K}
+    &=& (w,f)_K.
+@f}
+
+The terms decorated with a hat denote the numerical traces (also commonly referred
+to as numerical fluxes).  They are approximations
+to the interior values on the boundary of the element.  To ensure conservation,
+these terms must be single-valued on any given element edge $\partial K$ even
+though, with discontinuous shape functions, there may of course be multiple
+values coming from the cells adjacent to an interface.
+We eliminate the numerical trace $\hat{\mathbf{q}}$ by using traces of the form:
+@f{eqnarray*}
+  \widehat{\mathbf{c} u}+\hat{\mathbf{q}} = \mathbf{c}\hat{u} + \mathbf{q}
+  + \tau(u - \hat{u})\mathbf{n} \quad \text{ on } \partial K.
+@f}
+
+The variable $\hat {u}$ is introduced as an additional independent variable
+and is the one for which we finally set up a globally coupled linear
+system. As mentioned above, it is defined on the element faces and
+discontinuous from one face to another wherever faces meet (at
+vertices in 2d, and at edges and vertices in 3d).
+Values for $u$ and $\mathbf{q}$ appearing in the numerical trace function
+are taken to be the cell's interior solution restricted
+to the boundary $\partial K$.
+
+The local stabilization parameter $\tau$ has effects on stability and accuracy
+of HDG solutions; see the literature for a further discussion. A stabilization
+parameter of unity is reported to be the choice which gives best results. A
+stabilization parameter $\tau$ that tends to infinity prohibits jumps in the
+solution over the element boundaries, making the HDG solution approach the
+approximation with continuous finite elements. In the program below, we choose
+the stabilization parameter as
+@f{eqnarray*}
+  \tau = \frac{\kappa}{\ell} + |\mathbf{c} \cdot \mathbf{n}|
+@f}
+where we set the diffusion $\kappa=1$ and the diffusion length scale to
+$\ell = \frac{1}{5}$.
+
+The trace/skeleton variables in HDG methods are single-valued on element
+faces.  As such, they must strongly represent the Dirichlet data on
+$\partial\Omega_D$.  This means that
+@f{equation*}
+  \hat{u}|_{\partial \Omega_D} = g_D,
+@f}
+where the equal sign actually means an $L_2$ projection of the boundary
+function $g$ onto the space of the face variables (e.g. linear functions on
+the faces). This constraint is then applied to the skeleton variable $\hat{u}$
+using inhomogeneous constraints by the method
+VectorTools::project_boundary_values.
+
+Summing the elemental
+contributions across all elements in the triangulation, enforcing the normal
+component of the numerical flux, and integrating by parts
+on the equation weighted by $w$, we arrive at the final form of the problem:
+Find $(\mathbf{q}_h, u_h, \hat{u}_h) \in
+\mathcal{V}_h^p \times \mathcal{W}_h^p \times \mathcal{M}_h^p$ such that
+@f{align*}
+  (\mathbf{v}, \kappa^{-1} \mathbf{q}_h)_{\mathcal{T}}
+    - ( \nabla\cdot\mathbf{v}, u_h)_{\mathcal{T}}
+    + \left<\mathbf{v}\cdot\mathbf{n}, \hat{u}_h\right>_{\partial\mathcal{T}}
+    &= 0,
+    \quad &&\forall \mathbf{v} \in \mathcal{V}_h^p,
+\\
+   - (\nabla w, \mathbf{c} u_h)_{\mathcal{T}}
+   + (w, \nabla \cdot \mathbf{q}_h)_{\mathcal{T}}
+   + (w, (\mathbf{c}\cdot\mathbf{n}) \hat{u}_h)_{\partial \mathcal{T}}
+    + \left<w, \tau (u_h - \hat{u}_h)\right>_{\partial \mathcal{T}}
+    &=
+    (w, f)_{\mathcal{T}},
+    \quad &&\forall w \in \mathcal{W}_h^p,
+\\
+  \left< \mu, \hat{u}_h\mathbf{c} \cdot \mathbf{n}
+  		+ \mathbf{q}_h\cdot \mathbf{n}
+  	    + \tau (u_h - \hat{u}_h)\right>_{\partial \mathcal{T}}
+    &=
+    \left<\mu, g_N\right>_{\partial\Omega_N},
+    \quad &&\forall \mu \in \mathcal{M}_h^p.
+@f}
+
+The unknowns $(\mathbf{q}_h, u_h)$ are referred to as local variables; they are
+represented as standard DG variables.  The unknown $\hat{u}_h$ is the skeleton
+variable which has support on the codimension-1 surfaces (faces) of the mesh.
+
+We use the notation $(\cdot, \cdot)_{\mathcal{T}} = \sum_K (\cdot, \cdot)_K$
+to denote the sum of integrals over all cells and $\left<\cdot,
+\cdot\right>_{\partial \mathcal{T}} = \sum_K \left<\cdot,
+\cdot\right>_{\partial K}$ to denote integration over all faces of all cells,
+i.e., interior faces are visited twice, once from each side and with
+the corresponding normal vectors. When combining the contribution from
+both elements sharing a face, the above equation yields terms familiar
+from the DG method, with jumps of the solution over the cell boundaries.
+
+In the equation above, the space $\mathcal {W}_h^{p}$ for the scalar variable
+$u_h$ is defined as the space of functions that are tensor
+product polynomials of degree $p$ on each cell and discontinuous over the
+element boundaries $\mathcal Q_{-p}$, i.e., the space described by
+<code>FE_DGQ<dim>(p)</code>. The space for the gradient or flux variable
+$\mathbf{q}_i$ is a vector element space where each component is
+a locally polynomial and discontinuous $\mathcal Q_{-p}$. In the code below,
+we collect these two local parts together in one FESystem where the first @p
+dim components denote the gradient part and the last scalar component
+corresponds to the scalar variable. For the skeleton component $\hat{u}_h$, we
+define a space that consists of discontinuous tensor product polynomials that
+live on the element faces, which in deal.II is implemented by the class
+FE_FaceQ. This space is otherwise similar to FE_DGQ, i.e., the solution
+function is not continuous between two neighboring faces, see also the results
+section below for an illustration.
+
+In the weak form given above, we can note the following coupling patterns:
+<ol>
+  <li> The matrix $A$ consists of local-local coupling terms.  These arise when the
+  local weighting functions $(\mathbf{v}, w)$ multiply the local solution terms
+  $(\mathbf{q}_h, u_h)$. Because the elements are discontinuous, $A$
+  is block diagonal.
+  <li> The matrix $B$ represents the local-face coupling.  These are the terms
+  with weighting functions $(\mathbf{v}, w)$ multiplying the skeleton variable
+  $\hat{u}_h$.
+  <li> The matrix $C$ represents the face-local coupling, which involves the
+  weighting function $\mu$ multiplying the local solutions $(\mathbf{q}_h, u_h)$.
+  <li>  The matrix $D$ is the face-face coupling;
+  terms involve both $\mu$ and $\hat{u}_h$.
+</ol>
+
+<h4> Post-processing and super-convergence </h4>
+
+One special feature of the HDG methods is that they typically allow for
+constructing an enriched solution that gains accuracy. This post-processing
+takes the HDG solution in an element-by-element fashion and combines it such
+that one can get $\mathcal O(h^{p+2})$ order of accuracy when using
+polynomials of degree $p$. For this to happen, there are two necessary
+ingredients:
+<ol>
+  <li> The computed solution gradient $\mathbf{q}_h$ converges at optimal rate,
+   i.e., $\mathcal{O}(h^{p+1})$.
+  <li> The cell-wise average of the scalar part of the solution,
+   $\frac{(1,u_h)_K}{\text{vol}(K)}$, super-converges at rate
+   $\mathcal{O}(h^{p+2})$.
+</ol>
+
+We now introduce a new variable $u_h^* \in \mathcal{V}_h^{p+1}$, which we find
+by minimizing the expression $|\kappa \nabla u_h^* + \mathbf{q}_h|^2$ over the cell
+$K$ under the constraint $\left(1, u_h^*\right)_K = \left(1,
+u_h\right)_K$. The constraint is necessary because the minimization
+functional does not determine the constant part of $u_h^*$. This
+translates to the following system of equations:
+@f{eqnarray*}
+\left(1, u_h^*\right)_K &=& \left(1, u_h\right)_K\\
+\left(\nabla w_h^*, \kappa \nabla u_h^*\right)_K &=&
+-\left(\nabla w_h^*, \mathbf{q}_h\right)_K
+\quad \text{for all } w_h^* \in \mathcal Q^{p+1}.
+@f}
+
+Since we test by the whole set of basis functions in the space of tensor
+product polynomials of degree $p+1$ in the second set of equations, this
+is an overdetermined system with one more equation than unknowns. We fix this
+in the code below by omitting one of these equations (since the rows in the
+Laplacian are linearly dependent when representing a constant function). As we
+will see below, this form of the post-processing gives the desired
+super-convergence result with rate $\mathcal {O}(h^{p+2})$.  It should be
+noted that there is some freedom in constructing $u_h^*$ and this minimization
+approach to extract the information from the gradient is not the only one. In
+particular, the post-processed solution defined here does not satisfy the
+convection-diffusion equation in any sense. As an alternative, the paper by
+Nguyen, Peraire and Cockburn cited above suggests another somewhat more
+involved formula for convection-diffusion that can also post-process the flux
+variable into an $H(\Omega,\mathrm{div})$-conforming variant and better
+represents the local convection-diffusion operator when the diffusion is
+small. We leave the implementation of a more sophisticated post-processing as
+a possible extension to the interested reader.
+
+Note that for vector-valued problems, the post-processing works similarly. One
+simply sets the constraint for the mean value of each vector component
+separately and uses the gradient as the main source of information.
+
+<h3> Problem specific data </h3>
+
+For this tutorial program, we consider almost the same test case as in
+step-7. The computational domain is $\Omega \dealcoloneq [-1,1]^d$ and the exact
+solution corresponds to the one in step-7, except for a scaling. We use the
+following source centers $x_i$ for the exponentials
+<ul>
+  <li> 1D:  $\{x_i\}^1 = \{ -\frac{1}{3}, 0, \frac{1}{3} \}$,
+  <li> 2D: $\{\mathbf{x}_i\}^2 = \{ (-\frac{1}{2},\frac{1}{2}),
+                        		 (-\frac{1}{2},-\frac{1}{2}),
+  					 (\frac{1}{2},-\frac{1}{2})
+  				   \}$,
+  <li> 3D: $\{\mathbf{x}_i\}^3 = \{ (-\frac{1}{2},\frac{1}{2}, \frac{1}{4}),
+  				      (-\frac{3}{5},-\frac{1}{2}, -\frac{1}{8}),
+  				      (\frac{1}{2},-\frac{1}{2}, \frac{1}{2})
+  				   \}$.
+</ul>
+
+With the exact solution given, we then choose the forcing on the right hand
+side and the Neumann boundary condition such that we obtain this solution
+(manufactured solution technique). In this example, we choose the diffusion
+equal to one and the convection as
+\f[
+\mathbf{c} = \begin{cases}
+1, & \textrm{dim}=1 \\
+(y, -x), & \textrm{dim}=2 \\
+(y, -x, 1), & \textrm{dim}=3
+\end{cases}
+\f]
+Note that the convection is divergence-free, $\nabla \cdot c = 0$.
+
+<h3> Implementation </h3>
+
+Besides implementing the above equations, the implementation below provides
+the following features:
+<ul>
+  <li> WorkStream to parallelize local solvers. Workstream has been presented
+  in detail in step-9.
+  <li> Reconstruct the local DG solution from the trace.
+  <li> Post-processing the solution for superconvergence.
+  <li> DataOutFaces for direct output of the global skeleton solution.
+</ul>
+
+
+examples/step-51/doc/results.dox
+<h1>Results</h1>
+
+<h3>Program output</h3>
+
+We first have a look at the output generated by the program when run in 2D. In
+the four images below, we show the solution for polynomial degree $p=1$
+and cycles 2, 3, 4, and 8 of the program. In the plots, we overlay the data
+generated from the internal data (DG part) with the skeleton part ($\hat{u}$)
+into the same plot. We had to generate two different data sets because cells
+and faces represent different geometric entities, the combination of which (in
+the same file) is not supported in the VTK output of deal.II.
+
+The images show the distinctive features of HDG: The cell solution (colored
+surfaces) is discontinuous between the cells. The solution on the skeleton
+variable sits on the faces and ties together the local parts. The skeleton
+solution is not continuous on the vertices where the faces meet, even though
+its values are quite close along lines in the same coordinate direction. The
+skeleton solution can be interpreted as a rubber spring between the two sides
+that balances the jumps in the solution (or rather, the flux $\kappa \nabla u
++ \mathbf{c} u$). From the picture at the top left, it is clear that
+the bulk solution frequently over- and undershoots and that the
+skeleton variable in indeed a better approximation to the exact
+solution; this explains why we can get a better solution using a
+postprocessing step.
+
+As the mesh is refined, the jumps between the cells get
+small (we represent a smooth solution), and the skeleton solution approaches
+the interior parts. For cycle 8, there is no visible difference in the two
+variables. We also see how boundary conditions are implemented weakly and that
+the interior variables do not exactly satisfy boundary conditions. On the
+lower and left boundaries, we set Neumann boundary conditions, whereas we set
+Dirichlet conditions on the right and top boundaries.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.sol_2.png" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.sol_3.png" alt=""></td>
+  </tr>
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.sol_4.png" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.sol_8.png" alt=""></td>
+  </tr>
+</table>
+
+Next, we have a look at the post-processed solution, again at cycles 2, 3, 4,
+and 8. This is a discontinuous solution that is locally described by second
+order polynomials. While the solution does not look very good on the mesh of
+cycle two, it looks much better for cycles three and four. As shown by the
+convergence table below, we find that is also converges more quickly to the
+analytical solution.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.post_2.png" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.post_3.png" alt=""></td>
+  </tr>
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.post_4.png" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.post_8.png" alt=""></td>
+  </tr>
+</table>
+
+Finally, we look at the solution for $p=3$ at cycle 2. Despite the coarse
+mesh with only 64 cells, the post-processed solution is similar in quality
+to the linear solution (not post-processed) at cycle 8 with 4,096
+cells. This clearly shows the superiority of high order methods for smooth
+solutions.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.sol_q3_2.png" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.post_q3_2.png" alt=""></td>
+  </tr>
+</table>
+
+<h4>Convergence tables</h4>
+
+When the program is run, it also outputs information about the respective
+steps and convergence tables with errors in the various components in the
+end. In 2D, the convergence tables look the following:
+
+@code
+Q1 elements, adaptive refinement:
+cells dofs   val L2    grad L2  val L2-post
+   16    80 1.804e+01 2.207e+01   1.798e+01
+   31   170 9.874e+00 1.322e+01   9.798e+00
+   61   314 7.452e-01 3.793e+00   4.891e-01
+  121   634 3.240e-01 1.511e+00   2.616e-01
+  238  1198 8.585e-02 8.212e-01   1.808e-02
+  454  2290 4.802e-02 5.178e-01   2.195e-02
+  898  4378 2.561e-02 2.947e-01   4.318e-03
+ 1720  7864 1.306e-02 1.664e-01   2.978e-03
+ 3271 14638 7.025e-03 9.815e-02   1.075e-03
+ 6217 27214 4.119e-03 6.407e-02   9.975e-04
+
+Q1 elements, global refinement:
+cells dofs      val L2        grad L2      val L2-post
+   16    80 1.804e+01    - 2.207e+01    - 1.798e+01    -
+   36   168 6.125e+00 2.66 9.472e+00 2.09 6.084e+00 2.67
+   64   288 9.785e-01 6.38 4.260e+00 2.78 7.102e-01 7.47
+  144   624 2.730e-01 3.15 1.866e+00 2.04 6.115e-02 6.05
+  256  1088 1.493e-01 2.10 1.046e+00 2.01 2.880e-02 2.62
+  576  2400 6.965e-02 1.88 4.846e-01 1.90 9.204e-03 2.81
+ 1024  4224 4.018e-02 1.91 2.784e-01 1.93 4.027e-03 2.87
+ 2304  9408 1.831e-02 1.94 1.264e-01 1.95 1.236e-03 2.91
+ 4096 16640 1.043e-02 1.96 7.185e-02 1.96 5.306e-04 2.94
+ 9216 37248 4.690e-03 1.97 3.228e-02 1.97 1.599e-04 2.96
+
+Q3 elements, global refinement:
+cells dofs      val L2        grad L2      val L2-post
+   16   160 3.613e-01    - 1.891e+00    - 3.020e-01    -
+   36   336 6.411e-02 4.26 5.081e-01 3.24 3.238e-02 5.51
+   64   576 3.480e-02 2.12 2.533e-01 2.42 5.277e-03 6.31
+  144  1248 8.297e-03 3.54 5.924e-02 3.58 6.330e-04 5.23
+  256  2176 2.254e-03 4.53 1.636e-02 4.47 1.403e-04 5.24
+  576  4800 4.558e-04 3.94 3.277e-03 3.96 1.844e-05 5.01
+ 1024  8448 1.471e-04 3.93 1.052e-03 3.95 4.378e-06 5.00
+ 2304 18816 2.956e-05 3.96 2.104e-04 3.97 5.750e-07 5.01
+ 4096 33280 9.428e-06 3.97 6.697e-05 3.98 1.362e-07 5.01
+ 9216 74496 1.876e-06 3.98 1.330e-05 3.99 1.788e-08 5.01
+@endcode
+
+
+One can see the error reduction upon grid refinement, and for the cases where
+global refinement was performed, also the convergence rates. The quadratic
+convergence rates of Q1 elements in the $L_2$ norm for both the scalar
+variable and the gradient variable is apparent, as is the cubic rate for the
+postprocessed scalar variable in the $L_2$ norm. Note this distinctive
+feature of an HDG solution. In typical continuous finite elements, the
+gradient of the solution of order $p$ converges at rate $p$ only, as
+opposed to $p+1$ for the actual solution. Even though superconvergence
+results for finite elements are also available (e.g. superconvergent patch
+recovery first introduced by Zienkiewicz and Zhu), these are typically limited
+to structured meshes and other special cases. For Q3 HDG variables, the scalar
+variable and gradient converge at fourth order and the postprocessed scalar
+variable at fifth order.
+
+The same convergence rates are observed in 3d.
+@code
+Q1 elements, adaptive refinement:
+cells   dofs    val L2    grad L2  val L2-post
+     8     144 7.122e+00 1.941e+01   6.102e+00
+    29     500 3.309e+00 1.023e+01   2.145e+00
+   113    1792 2.204e+00 1.023e+01   1.912e+00
+   379    5732 6.085e-01 5.008e+00   2.233e-01
+  1317   19412 1.543e-01 1.464e+00   4.196e-02
+  4579   64768 5.058e-02 5.611e-01   9.521e-03
+ 14596  199552 2.129e-02 3.122e-01   4.569e-03
+ 46180  611400 1.033e-02 1.622e-01   1.684e-03
+144859 1864212 5.007e-03 8.371e-02   7.364e-04
+451060 5684508 2.518e-03 4.562e-02   3.070e-04
+
+Q1 elements, global refinement:
+cells   dofs       val L2          grad L2       val L2-post
+     8     144 7.122e+00    - 1.941e+01     - 6.102e+00    -
+    27     432 5.491e+00 0.64 2.184e+01 -0.29 4.448e+00 0.78
+    64     960 3.646e+00 1.42 1.299e+01  1.81 3.306e+00 1.03
+   216    3024 1.595e+00 2.04 8.550e+00  1.03 1.441e+00 2.05
+   512    6912 6.922e-01 2.90 5.306e+00  1.66 2.511e-01 6.07
+  1728   22464 2.915e-01 2.13 2.490e+00  1.87 8.588e-02 2.65
+  4096   52224 1.684e-01 1.91 1.453e+00  1.87 4.055e-02 2.61
+ 13824  172800 7.972e-02 1.84 6.861e-01  1.85 1.335e-02 2.74
+ 32768  405504 4.637e-02 1.88 3.984e-01  1.89 5.932e-03 2.82
+110592 1354752 2.133e-02 1.92 1.830e-01  1.92 1.851e-03 2.87
+
+Q3 elements, global refinement:
+cells   dofs       val L2        grad L2      val L2-post
+     8     576 5.670e+00    - 1.868e+01    - 5.462e+00    -
+    27    1728 1.048e+00 4.16 6.988e+00 2.42 8.011e-01 4.73
+    64    3840 2.831e-01 4.55 2.710e+00 3.29 1.363e-01 6.16
+   216   12096 7.883e-02 3.15 7.721e-01 3.10 2.158e-02 4.55
+   512   27648 3.642e-02 2.68 3.305e-01 2.95 5.231e-03 4.93
+  1728   89856 8.546e-03 3.58 7.581e-02 3.63 7.640e-04 4.74
+  4096  208896 2.598e-03 4.14 2.313e-02 4.13 1.783e-04 5.06
+ 13824  691200 5.314e-04 3.91 4.697e-03 3.93 2.355e-05 4.99
+ 32768 1622016 1.723e-04 3.91 1.517e-03 3.93 5.602e-06 4.99
+110592 5419008 3.482e-05 3.94 3.055e-04 3.95 7.374e-07 5.00
+@endcode
+
+<h3>Comparison with continuous finite elements</h3>
+
+<h4>Results for 2D</h4>
+
+The convergence tables verify the expected convergence rates stated in the
+introduction. Now, we want to show a quick comparison of the computational
+efficiency of the HDG method compared to a usual finite element (continuous
+Galkerin) method on the problem of this tutorial. Of course, stability aspects
+of the HDG method compared to continuous finite elements for
+transport-dominated problems are also important in practice, which is an
+aspect not seen on a problem with smooth analytic solution. In the picture
+below, we compare the $L_2$ error as a function of the number of degrees of
+freedom (left) and of the computing time spent in the linear solver (right)
+for two space dimensions of continuous finite elements (CG) and the hybridized
+discontinuous Galerkin method presented in this tutorial. As opposed to the
+tutorial where we only use unpreconditioned BiCGStab, the times shown in the
+figures below use the Trilinos algebraic multigrid preconditioner in
+TrilinosWrappers::PreconditionAMG. For the HDG part, a wrapper around
+ChunkSparseMatrix for the trace variable has been used in order to utilize the
+block structure in the matrix on the finest level.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.2d_plain.png" width="400" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.2dt_plain.png" width="400" alt=""></td>
+  </tr>
+</table>
+
+The results in the graphs show that the HDG method is slower than continuous
+finite elements at $p=1$, about equally fast for cubic elements and
+faster for sixth order elements. However, we have seen above that the HDG
+method actually produces solutions which are more accurate than what is
+represented in the original variables. Therefore, in the next two plots below
+we instead display the error of the post-processed solution for HDG (denoted
+by $p=1^*$ for example). We now see a clear advantage of HDG for the same
+amount of work for both $p=3$ and $p=6$, and about the same quality
+for $p=1$.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.2d_post.png" width="400" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.2dt_post.png" width="400" alt=""></td>
+  </tr>
+</table>
+
+Since the HDG method actually produces results converging as
+$h^{p+2}$, we should compare it to a continuous Galerkin
+solution with the same asymptotic convergence behavior, i.e., FE_Q with degree
+$p+1$. If we do this, we get the convergence curves below. We see that
+CG with second order polynomials is again clearly better than HDG with
+linears. However, the advantage of HDG for higher orders remains.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.2d_postb.png" width="400" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.2dt_postb.png" width="400" alt=""></td>
+  </tr>
+</table>
+
+The results are in line with properties of DG methods in general: Best
+performance is typically not achieved for linear elements, but rather at
+somewhat higher order, usually around $p=3$. This is because of a
+volume-to-surface effect for discontinuous solutions with too much of the
+solution living on the surfaces and hence duplicating work when the elements
+are linear. Put in other words, DG methods are often most efficient when used
+at relatively high order, despite their focus on a discontinuous (and hence,
+seemingly low accurate) representation of solutions.
+
+<h4>Results for 3D</h4>
+
+We now show the same figures in 3D: The first row shows the number of degrees
+of freedom and computing time versus the $L_2$ error in the scalar variable
+$u$ for CG and HDG at order $p$, the second row shows the
+post-processed HDG solution instead of the original one, and the third row
+compares the post-processed HDG solution with CG at order $p+1$. In 3D,
+the volume-to-surface effect makes the cost of HDG somewhat higher and the CG
+solution is clearly better than HDG for linears by any metric. For cubics, HDG
+and CG are of similar quality, whereas HDG is again more efficient for sixth
+order polynomials. One can alternatively also use the combination of FE_DGP
+and FE_FaceP instead of (FE_DGQ, FE_FaceQ), which do not use tensor product
+polynomials of degree $p$ but Legendre polynomials of <i>complete</i>
+degree $p$. There are fewer degrees of freedom on the skeleton variable
+for FE_FaceP for a given mesh size, but the solution quality (error vs. number
+of DoFs) is very similar to the results for FE_FaceQ.
+
+<table align="center">
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.3d_plain.png" width="400" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.3dt_plain.png" width="400" alt=""></td>
+  </tr>
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.3d_post.png" width="400" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.3dt_post.png" width="400" alt=""></td>
+  </tr>
+  <tr>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.3d_postb.png" width="400" alt=""></td>
+    <td><img src="https://www.dealii.org/images/steps/developer/step-51.3dt_postb.png" width="400" alt=""></td>
+  </tr>
+</table>
+
+One final note on the efficiency comparison: We tried to use general-purpose
+sparse matrix structures and similar solvers (optimal AMG preconditioners for
+both without particular tuning of the AMG parameters on any of them) to give a
+fair picture of the cost versus accuracy of two methods, on a toy example. It
+should be noted however that geometric multigrid (GMG) for continuous finite
+elements is about a factor four to five faster for $p=3$ and $p=6$. As of
+2019, optimal-complexity iterative solvers for HDG are still under development
+in the research community. Also, there are other implementation aspects for CG
+available such as fast matrix-free approaches as shown in step-37 that make
+higher order continuous elements more competitive. Again, it is not clear to
+the authors of the tutorial whether similar improvements could be made for
+HDG. We refer to <a href="https://dx.doi.org/10.1137/16M110455X">Kronbichler
+and Wall (2018)</a> for a recent efficiency evaluation.
+
+
+<h3>Possibilities for improvements</h3>
+
+As already mentioned in the introduction, one possibility is to implement
+another post-processing technique as discussed in the literature.
+
+A second item that is not done optimally relates to the performance of this
+program, which is of course an issue in practical applications (weighing in
+also the better solution quality of (H)DG methods for transport-dominated
+problems). Let us look at
+the computing time of the tutorial program and the share of the individual
+components:
+
+<table align="center" class="doxtable">
+  <tr>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>Setup</th>
+    <th>Assemble</th>
+    <th>Solve</th>
+    <th>Trace reconstruct</th>
+    <th>Post-processing</th>
+    <th>Output</th>
+  </tr>
+  <tr>
+    <th>&nbsp;</th>
+    <th>Total time</th>
+    <th colspan="6">Relative share</th>
+  </tr>
+  <tr>
+    <td align="left">2D, Q1, cycle 9, 37,248 dofs</td>
+    <td align="center">5.34s</td>
+    <td align="center">0.7%</td>
+    <td align="center">1.2%</td>
+    <td align="center">89.5%</td>
+    <td align="center">0.9%</td>
+    <td align="center">2.3%</td>
+    <td align="center">5.4%</td>
+  </tr>
+  <tr>
+    <td align="left">2D, Q3, cycle 9, 74,496 dofs</td>
+    <td align="center">22.2s</td>
+    <td align="center">0.4%</td>
+    <td align="center">4.3%</td>
+    <td align="center">84.1%</td>
+    <td align="center">4.1%</td>
+    <td align="center">3.5%</td>
+    <td align="center">3.6%</td>
+  </tr>
+  <tr>
+    <td align="left">3D, Q1, cycle 7, 172,800 dofs</td>
+    <td align="center">9.06s</td>
+    <td align="center">3.1%</td>
+    <td align="center">8.9%</td>
+    <td align="center">42.7%</td>
+    <td align="center">7.0%</td>
+    <td align="center">20.6%</td>
+    <td align="center">17.7%</td>
+  </tr>
+  <tr>
+    <td align="left">3D, Q3, cycle 7, 691,200 dofs</td>
+    <td align="center">516s</td>
+    <td align="center">0.6%</td>
+    <td align="center">34.5%</td>
+    <td align="center">13.4%</td>
+    <td align="center">32.8%</td>
+    <td align="center">17.1%</td>
+    <td align="center">1.5%</td>
+  </tr>
+</table>
+
+As can be seen from the table, the solver and assembly calls dominate the
+runtime of the program. This also gives a clear indication of where
+improvements would make the most sense:
+
+<ol>
+  <li> Better linear solvers: We use a BiCGStab iterative solver without
+  preconditioner, where the number of iteration increases with increasing
+  problem size (the number of iterations for Q1 elements and global
+  refinements starts at 35 for the small sizes but increase up to 701 for the
+  largest size). To do better, one could for example use an algebraic
+  multigrid preconditioner from Trilinos, or some more advanced variants as
+  the one discussed in <a
+  href="https://dx.doi.org/10.1137/16M110455X">Kronbichler and Wall
+  (2018)</a>. For diffusion-dominated problems such as the problem at hand
+  with finer meshes, such a solver can be designed that uses the matrix-vector
+  products from the more efficient ChunkSparseMatrix on the finest level, as
+  long as we are not working in parallel with MPI. For MPI-parallelized
+  computations, a standard TrilinosWrappers::SparseMatrix can be used.
+
+  <li> Speed up assembly by pre-assembling parts that do not change from one
+  cell to another (those that do neither contain variable coefficients nor
+  mapping-dependent terms).
+</ol>
+
+

@@ -1,0 +1,259 @@
+examples/step-4/doc/intro.dox
+<a name="Intro"></a>
+<h1>Introduction</h1>
+
+@dealiiVideoLecture{12,13}
+
+deal.II has a unique feature which we call
+``dimension independent programming''. You may have noticed in the
+previous examples that many classes had a number in angle brackets
+suffixed to them. This is to indicate that for example the
+triangulation in two and three space dimensions are different, but
+related data %types. We could as well have called them
+<code>Triangulation2d</code> and <code>Triangulation3d</code> instead
+of <code>Triangulation@<2@></code> and
+<code>Triangulation@<3@></code> to name the two classes, but this
+has an important drawback: assume you have a function which does
+exactly the same functionality, but on 2d or 3d triangulations,
+depending on which dimension we would like to solve the equation in
+presently (if you don't believe that it is the common case that a
+function does something that is the same in all dimensions, just take
+a look at the code below - there are almost no distinctions between 2d
+and 3d!). We would have to write the same function twice, once
+working on <code>Triangulation2d</code> and once working with a
+<code>Triangulation3d</code>. This is an unnecessary obstacle in
+programming and leads to a nuisance to keep the two function in sync
+(at best) or difficult to find errors if the two versions get out of
+sync (at worst; this would probably the more common case).
+
+
+
+
+Such obstacles can be circumvented by using some template magic as
+provided by the C++ language: templatized classes and functions are
+not really classes or functions but only a pattern depending on an
+as-yet undefined data type parameter or on a numerical value which is
+also unknown at the point of definition. However, the compiler can
+build proper classes or functions from these templates if you provide
+it with the information that is needed for that. Of course, parts of
+the template can depend on the template parameters, and they will be
+resolved at the time of compilation for a specific template
+parameter. For example, consider the following piece of code:
+@code
+  template <int dim>
+  void make_grid (Triangulation<dim> &triangulation)
+  {
+    GridGenerator::hyper_cube (triangulation, -1, 1);
+  };
+@endcode
+
+
+
+At the point where the compiler sees this function, it does not know
+anything about the actual value of <code>dim</code>. The only thing the compiler has is
+a template, i.e. a blueprint, to generate
+functions <code>make_grid</code> if given a particular value of
+<code>dim</code>. Since <code>dim</code> has an unknown value, there is no
+code the compiler can generate for the moment.
+
+
+
+However, if later down the compiler would encounter code that looks, for
+example, like this,
+@code
+  Triangulation<2> triangulation;
+  make_grid (triangulation);
+@endcode
+then the compiler will deduce that the function <code>make_grid</code> for
+<code>dim==2</code> was
+requested and will compile the template above into a function with dim replaced
+by 2 everywhere, i.e. it will compile the function as if it were defined
+as
+@code
+  void make_grid (Triangulation<2> &triangulation)
+  {
+    GridGenerator::hyper_cube (triangulation, -1, 1);
+  };
+@endcode
+
+
+
+However, it is worth to note that the function
+<code>GridGenerator::hyper_cube</code> depends on the dimension as
+well, so in this case, the compiler will call the function
+<code>GridGenerator::hyper_cube@<2@></code> while if dim were 3,
+it would call <code>GridGenerator::hyper_cube@<3@></code> which
+might be (and actually is) a totally unrelated  function.
+
+
+
+The same can be done with member variables. Consider the following
+function, which might in turn call the above one:
+@code
+  template <int dim>
+  void make_grid_and_dofs (Triangulation<dim> &triangulation)
+  {
+    make_grid (triangulation);
+
+    DoFHandler<dim> dof_handler(triangulation);
+    ...
+  };
+@endcode
+This function has a member variable of type
+<code>DoFHandler@<dim@></code>. Again, the compiler can't
+compile this function until it knows for which dimension. If you call
+this function for a specific dimension as above, the compiler will
+take the template, replace all occurrences of dim by the dimension for
+which it was called, and compile it. If you call the function several
+times for different dimensions, it will compile it several times, each
+time calling the right <code>make_grid</code> function and reserving the right
+amount of memory for the member variable; note that the size of a
+<code>DoFHandler</code> might, and indeed does, depend on the space dimension.
+
+
+
+The deal.II library is built around this concept
+of dimension-independent programming, and therefore allows you to program in
+a way that will not need to
+distinguish between the space dimensions. It should be noted that in
+only a very few places is it necessary to actually compare the
+dimension using <code>if</code>s or <code>switch</code>es. However, since the compiler
+has to compile each function for each dimension separately, even there
+it knows the value of <code>dim</code> at the time of compilation and will
+therefore be able to optimize away the <code>if</code> statement along with the
+unused branch.
+
+
+
+In this example program, we will show how to program dimension
+independently (which in fact is even simpler than if you had to take
+care about the dimension) and we will extend the Laplace problem of
+the last example to a program that runs in two and three space
+dimensions at the same time. Other extensions are the use of a
+non-constant right hand side function and of non-zero boundary values.
+
+
+@note When using templates, C++ imposes all sorts of syntax constraints that
+make it sometimes a bit difficult to understand why exactly something has to
+be written this way. A typical example is the need to use the keyword
+<code>typename</code> in so many places. If you are not entirely familiar with
+this already, then several of these difficulties are explained in the deal.II
+Frequently Asked Questions (FAQ) linked to from the <a
+href="http://www.dealii.org/">deal.II homepage</a>.
+
+<!--We need a blank line to end the above block properly.-->
+
+
+examples/step-4/doc/results.dox
+<h1>Results</h1>
+
+
+The output of the program looks as follows (the number of iterations
+may vary by one or two, depending on your computer, since this is
+often dependent on the round-off accuracy of floating point
+operations, which differs between processors):
+@code
+Solving problem in 2 space dimensions.
+   Number of active cells: 256
+   Total number of cells: 341
+   Number of degrees of freedom: 289
+   26 CG iterations needed to obtain convergence.
+Solving problem in 3 space dimensions.
+   Number of active cells: 4096
+   Total number of cells: 4681
+   Number of degrees of freedom: 4913
+   30 CG iterations needed to obtain convergence.
+@endcode
+It is obvious that in three spatial dimensions the number of cells and
+therefore also the number of degrees of freedom is
+much higher. What cannot be seen here, is that besides this higher
+number of rows and columns in the matrix, there are also significantly
+more entries per row of the matrix in three space
+dimensions. Together, this leads to a much higher numerical effort for
+solving the system of equation, which you can feel in the run time of the two
+solution steps when you actually run the program.
+
+
+
+The program produces two files: <code>solution-2d.vtk</code> and
+<code>solution-3d.vtk</code>, which can be viewed using the programs
+VisIt or Paraview (in case you do not have these programs, you can easily
+change the
+output format in the program to something which you can view more
+easily). Visualizing solutions is a bit of an art, but it can also be fun, so
+you should play around with your favorite visualization tool to get familiar
+with its functionality. Here's what I have come up with for the 2d solution:
+
+<p align="center">
+  <img src="https://www.dealii.org/images/steps/developer/step-4.solution-2d.png" alt="">
+</p>
+
+(@dealiiVideoLectureSeeAlso{11,32})
+The picture shows the solution of the problem under consideration as
+a 3D plot. As can be seen, the solution is almost flat in the interior
+of the domain and has a higher curvature near the boundary. This, of
+course, is due to the fact that for Laplace's equation the curvature
+of the solution is equal to the right hand side and that was chosen as
+a quartic polynomial which is nearly zero in the interior and is only
+rising sharply when approaching the boundaries of the domain; the
+maximal values of the right hand side function are at the corners of
+the domain, where also the solution is moving most rapidly.
+It is also nice to see that the solution follows the desired quadratic
+boundary values along the boundaries of the domain.
+It can also be useful to verify a computed solution against an analytical
+solution. For an explanation of this technique, see step-7.
+
+On the other hand, even though the picture does not show the mesh lines
+explicitly, you can see them as little kinks in the solution. This clearly
+indicates that the solution hasn't been computed to very high accuracy and
+that to get a better solution, we may have to compute on a finer mesh.
+
+In three spatial dimensions, visualization is a bit more difficult. The left
+picture shows the solution and the mesh it was computed on on the surface of
+the domain. This is nice, but it has the drawback that it completely hides
+what is happening on the inside. The picture on the right is an attempt at
+visualizing the interior as well, by showing surfaces where the solution has
+constant values (as indicated by the legend at the top left). Isosurface
+pictures look best if one makes the individual surfaces slightly transparent
+so that it is possible to see through them and see what's behind.
+
+<table width="60%" align="center">
+  <tr>
+    <td align="center">
+      <img src="https://www.dealii.org/images/steps/developer/step-4.solution-3d.png" alt="">
+    </td>
+    <td align="center">
+      <img src="https://www.dealii.org/images/steps/developer/step-4.contours-3d.png" alt="">
+    </td>
+  </tr>
+</table>
+
+@note
+A final remark on visualization: the idea of visualization is to give insight,
+which is not the same as displaying information. In particular, it is easy to
+overload a picture with information, but while it shows more information it
+makes it also more difficult to glean insight. As an example, the program I
+used to generate these pictures, VisIt, by default puts tick marks on every
+axis, puts a big fat label "X Axis" on the $x$ axis and similar for the other
+axes, shows the file name from which the data was taken in the top left and
+the name of the user doing so and the time and date on the bottom right. None
+of this is important
+here: the axes are equally easy to make out because the tripod at the bottom
+left is still visible, and we know from the program that the domain is
+$[-1,1]^3$, so there is no need for tick marks. As a consequence, I have
+switched off all the extraneous stuff in the picture: the art of visualization
+is to reduce the picture to those parts that are important to see what one
+wants to see, but no more.
+
+
+
+<a name="extensions"></a>
+<h3>Possibilities for extensions</h3>
+
+
+Essentially the possibilities for playing around with the program are the same
+as for the previous one, except that they will now also apply to the 3d
+case. For inspiration read up on <a href="step_3.html#extensions"
+target="body">possible extensions in the documentation of step 3</a>.
+
+

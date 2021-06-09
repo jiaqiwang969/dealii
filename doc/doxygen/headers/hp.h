@@ -26,8 +26,8 @@
  */
 
 /**
- *    @defgroup hpcollection hp-Collections 在hp-finite
- * element方法的实现中，每个单元可能有不同的有限元与之关联。为了处理这个问题，
+ *    @defgroup hpcollection hp-Collections 
+ * 在hp-finite element方法的实现中，每个单元可能有不同的有限元与之关联。为了处理这个问题，
  * hp::DoFHandler
  * 必须有一整套与之相关的有限元类。这个概念由
  * hp::FECollection
