@@ -1,0 +1,11 @@
+digraph "include/deal.II-translator/differentiation/ad" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_246939c7da9b1a85fadbff90a906fca9 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="differentiation" fontname="Helvetica", fontsize="10", URL="dir_246939c7da9b1a85fadbff90a906fca9.html"]
+  dir_98837c6d59c5b0c22aef4ed07391b564 [shape=box, label="ad", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_98837c6d59c5b0c22aef4ed07391b564.html"];
+  }
+  dir_ee90d91a514b839c31faec7a1d916f67 [shape=box label="deal.II" fillcolor="white" style="filled" color="red" URL="dir_ee90d91a514b839c31faec7a1d916f67.html"];
+  dir_98837c6d59c5b0c22aef4ed07391b564->dir_ee90d91a514b839c31faec7a1d916f67 [headlabel="44", labeldistance=1.5 headhref="dir_000098_000009.html"];
+}

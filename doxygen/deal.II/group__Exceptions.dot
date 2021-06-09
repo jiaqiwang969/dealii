@@ -1,0 +1,26 @@
+digraph "Exceptions and assertions This module contains classes"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=box];
+  rankdir=LR;
+  Node4 [label="Vector classes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Vectors.html",tooltip="Here, we list all the classes that satisfy the VectorType concept and may be used in linear solvers (..."];
+  Node1 [label="Exceptions and assertions\l This module contains classes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip="that are used in the exception mechanism of deal.II."];
+  Node7 [label="PETScWrappers The classes\l in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__PETScWrappers.html",tooltip="wrappers around functionality provided by the PETSc library. They provide a modern object-oriented in..."];
+  Node5 [label="Preconditioners and\l Relaxation Operators",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Preconditioners.html",tooltip=" "];
+  Node3 [label="Sparsity patterns Almost\l all finite element formulations",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Sparsity.html",tooltip="lead to matrices that are \"sparse\", i.e., for which the number of nonzero elements per row is (i) rel..."];
+  Node2 [label="Basic matrices",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__Matrix1.html",tooltip="These are the actual matrix classes provided by deal.II. It is possible to store values in them and r..."];
+  Node8 [label="Input deal.II can read\l meshes in a number of\l different",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__input.html",tooltip="formats. However, all of them are constrained to so-called \"coarse meshes\", i.e. meshes that have no ..."];
+  Node6 [label="TrilinosWrappers The\l classes in this module are",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__TrilinosWrappers.html",tooltip="wrappers around functionality provided by the Trilinos library. They provide a modern object-oriented..."];
+  Node2->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node3->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node4->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node5->Node1 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node6 [shape=plaintext, dir="back", style="solid"];
+  Node1->Node4 [shape=plaintext, label="internal::LinearOperator\lImplementation::ReinitHelper", color="orange", dir="none", style="dashed"];
+  Node1->Node7 [shape=plaintext, label="internal::LinearOperator\lImplementation::ReinitHelper", color="orange", dir="none", style="dashed"];
+  Node1->Node6 [shape=plaintext, label="internal::LinearOperator\lImplementation::ReinitHelper", color="orange", dir="none", style="dashed"];
+  Node1->Node8 [shape=plaintext, label="Patterns::Tools", color="blueviolet", dir="none", style="dashed"];
+  Node1->Node4 [shape=plaintext, label="internal::LinearOperator\lImplementation", color="blueviolet", dir="none", style="dashed"];
+  Node1->Node7 [shape=plaintext, label="internal::LinearOperator\lImplementation", color="blueviolet", dir="none", style="dashed"];
+  Node1->Node6 [shape=plaintext, label="internal::LinearOperator\lImplementation", color="blueviolet", dir="none", style="dashed"];
+}

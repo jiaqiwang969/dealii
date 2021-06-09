@@ -1,0 +1,25 @@
+digraph "Step14::Data::Exercise_2_3&lt; dim &gt;::RightHandSide"
+{
+ // LATEX_PDF_SIZE
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Step14::Data::Exercise\l_2_3\< dim \>::RightHandSide",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black",tooltip=" "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Functions::ConstantFunction\l\< dim \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunctions_1_1ConstantFunction.html",tooltip=" "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Function\< dim, double \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunction.html",tooltip=" "];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="FunctionTime\< numbers\l::NumberTraits\< double\l \>::real_type \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunctionTime.html",tooltip=" "];
+  Node5 -> Node4 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< numbers::NumberTraits\l\< double \>::real_type \>" ,fontname="Helvetica"];
+  Node5 [label="FunctionTime\< Number \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunctionTime.html",tooltip=" "];
+  Node6 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="Subscriptor",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classSubscriptor.html",tooltip=" "];
+  Node7 -> Node3 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim, double \>" ,fontname="Helvetica"];
+  Node7 [label="Function\< dim, RangeNumber\lType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunction.html",tooltip=" "];
+  Node4 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 -> Node2 [dir="back",color="orange",fontsize="10",style="dashed",label=" \< dim \>" ,fontname="Helvetica"];
+  Node8 [label="Functions::ConstantFunction\l\< dim, RangeNumberType \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classFunctions_1_1ConstantFunction.html",tooltip=" "];
+  Node3 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}
